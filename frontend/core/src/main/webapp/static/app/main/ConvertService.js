@@ -149,7 +149,7 @@
   }
 
   function removeList(item) {
-    if (item.transientProperties && item.transientProperties.list) delete item.transientProperties.list;
+    if (item.trans && item.trans.list) delete item.trans.list;
   }
 
   function copyTaskPersistentPropertiesToConvert(task) {
@@ -179,14 +179,14 @@
    function copyConvertToItemTransientProperties(item, convert, fromItemType, toItemType) {
     // NOTE:  Delete existing 'toItemType' convert object
     //        because it may be out of sync before full offline implementation.
-    if (item.transientProperties && item.transientProperties.convert) {
-      if (item.transientProperties.convert[toItemType]) delete item.transientProperties.convert[toItemType];
+    if (item.trans && item.trans.convert) {
+      if (item.trans.convert[toItemType]) delete item.trans.convert[toItemType];
     }
     // Check that convert object is not empty
     if (convert && Object.getOwnPropertyNames(convert).length > 0) {
-      if (!item.transientProperties) item.transientProperties = {};
-      if (!item.transientProperties.convert) item.transientProperties.convert = {};
-      item.transientProperties.convert[fromItemType] = convert;
+      if (!item.trans) item.trans = {};
+      if (!item.trans.convert) item.trans.convert = {};
+      item.trans.convert[fromItemType] = convert;
     }
   }
 

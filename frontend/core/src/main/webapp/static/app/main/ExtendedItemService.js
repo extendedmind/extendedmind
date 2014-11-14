@@ -20,8 +20,8 @@
 
   function copyParentToList(extendedItem) {
     if (extendedItem.relationships && extendedItem.relationships.parent) {
-      if (!extendedItem.transientProperties) extendedItem.transientProperties = {};
-      extendedItem.transientProperties.list = extendedItem.relationships.parent;
+      if (!extendedItem.trans) extendedItem.trans = {};
+      extendedItem.trans.list = extendedItem.relationships.parent;
     }
   }
 
@@ -30,15 +30,15 @@
       for (var i = 0, len = extendedItem.relationships.tags.length; i < len; i++) {
         var tag = TagsService.getTagByUUID(extendedItem.relationships.tags[i], ownerUUID);
         if (tag) {
-          if (!extendedItem.transientProperties) extendedItem.transientProperties = {};
+          if (!extendedItem.trans) extendedItem.trans = {};
           if (tag.tagType === 'context') {
-            extendedItem.transientProperties.context = tag.uuid;
+            extendedItem.trans.context = tag.uuid;
             break;
           } else if (tag.tagType === 'keyword') {
-            if (!extendedItem.transientProperties.keywords) extendedItem.transientProperties.keywords = [];
-            if (extendedItem.transientProperties.keywords.indexOf(tag) === -1) {
+            if (!extendedItem.trans.keywords) extendedItem.trans.keywords = [];
+            if (extendedItem.trans.keywords.indexOf(tag) === -1) {
                 // Push keyword if it does not exist in transient keywords.
-                extendedItem.transientProperties.keywords.push(tag);
+                extendedItem.trans.keywords.push(tag);
               }
             }
           }
@@ -48,7 +48,7 @@
 
     function copyKeywordsToTags(extendedItem, ownerUUID) {
     // Item has transient keywords.
-    if (extendedItem.transientProperties && extendedItem.transientProperties.keywords) {
+    if (extendedItem.trans && extendedItem.trans.keywords) {
       // Item has persistent tags.
       if (extendedItem.relationships && extendedItem.relationships.tags) {
         extendedItem.relationships.tags = filterRemovedTransientKeywordsFromTags()
@@ -59,8 +59,8 @@
       else {
         if (!extendedItem.relationships) extendedItem.relationships = {};
         extendedItem.relationships.tags = [];
-        for (var i = 0, len = extendedItem.transientProperties.keywords.length; i < len; i++) {
-          extendedItem.relationships.tags.push(extendedItem.transientProperties.keywords[i].uuid);
+        for (var i = 0, len = extendedItem.trans.keywords.length; i < len; i++) {
+          extendedItem.relationships.tags.push(extendedItem.trans.keywords[i].uuid);
         }
       }
     }
@@ -84,7 +84,7 @@
           if (tag.tagType === 'context') filteredTags.push(extendedItem.relationships.tags[i]);
           else if (tag.tagType === 'keyword') {
             // Find persistent keyword from transient keywords
-            var persistentKeyword = extendedItem.transientProperties.keywords
+            var persistentKeyword = extendedItem.trans.keywords
             .findFirstObjectByKeyValue('uuid', extendedItem.relationships.tags[i]);
 
             if (persistentKeyword !== undefined) {
@@ -100,8 +100,8 @@
       // Iterate transient keywords.
       //  * add transient keyword if it is not found from persistent keywords.
       var filteredTags = [];
-      for (var i = 0, len = extendedItem.transientProperties.keywords.length; i < len; i++) {
-        var transientKeyword = extendedItem.transientProperties.keywords[i];
+      for (var i = 0, len = extendedItem.trans.keywords.length; i < len; i++) {
+        var transientKeyword = extendedItem.trans.keywords[i];
         if (extendedItem.relationships.tags.indexOf(transientKeyword.uuid) === -1) {
           filteredTags.push(transientKeyword.uuid);
         }
@@ -128,9 +128,9 @@
     var previousContextIndex;
 
     // Transient context exists
-    if (extendedItem.transientProperties && extendedItem.transientProperties.context) {
+    if (extendedItem.trans && extendedItem.trans.context) {
       var foundCurrentTag = false;
-      var context = extendedItem.transientProperties.context;
+      var context = extendedItem.trans.context;
 
       if (extendedItem.relationships) {
         if (extendedItem.relationships.tags) {
@@ -166,18 +166,18 @@
 
   function copyListToParent(extendedItem) {
     // Transient list exists.
-    if (extendedItem.transientProperties && extendedItem.transientProperties.list) {
+    if (extendedItem.trans && extendedItem.trans.list) {
       if (!extendedItem.relationships) extendedItem.relationships = {};
       if (!extendedItem.relationships.parent) extendedItem.relationships.parent = {};
-      extendedItem.relationships.parent = extendedItem.transientProperties.list;
+      extendedItem.relationships.parent = extendedItem.trans.list;
     }
     // List has been removed from item, delete persistent value
     else if (extendedItem.relationships && extendedItem.relationships.parent) {
       delete extendedItem.relationships.parent;
     }
     // AngularJS sets transient property to 'null' if it is used in ng-model data-binding and no value is set.
-    if (extendedItem.transientProperties && extendedItem.transientProperties.list === null)
-      delete extendedItem.transientProperties.list;
+    if (extendedItem.trans && extendedItem.trans.list === null)
+      delete extendedItem.trans.list;
   }
 
   return {
@@ -193,8 +193,8 @@
 
         for (var i = 0, len = extendedItemsArray.length; i < len; i++) {
           var extendedItem = extendedItemsArray[i];
-          if (!extendedItem.transientProperties) extendedItem.transientProperties = {};
-          extendedItem.transientProperties.itemType = itemType;
+          if (!extendedItem.trans) extendedItem.trans = {};
+          extendedItem.trans.itemType = itemType;
           copyParentToList(extendedItem);
           copyTagToTransientProperty(extendedItem, ownerUUID);
           if (hasAddExtraTransientPropertyCopyFunction) addExtraTransientPropertyFn(extendedItem, ownerUUID);
@@ -207,9 +207,9 @@
       }
     },
     attachTransientProperties: function(extendedItem, transientProperties, itemType) {
-      if (transientProperties) extendedItem.transientProperties = transientProperties;
-      if (!extendedItem.transientProperties) extendedItem.transientProperties = {};
-      extendedItem.transientProperties.itemType = itemType;
+      if (transientProperties) extendedItem.trans = transientProperties;
+      if (!extendedItem.trans) extendedItem.trans = {};
+      extendedItem.trans.itemType = itemType;
     },
     detachTransientProperties: function(extendedItem, ownerUUID, detachExtraPropertyFn) {
       // copy transient values into persistent values
@@ -225,19 +225,19 @@
 
       // Check that transientProperties object is not empty
       // http://stackoverflow.com/a/4994244
-      if (extendedItem.transientProperties &&
-          Object.getOwnPropertyNames(extendedItem.transientProperties).length > 0)
+      if (extendedItem.trans &&
+          Object.getOwnPropertyNames(extendedItem.trans).length > 0)
       {
         // store transient values into variable and delete transient object from item
-        var transients = extendedItem.transientProperties;
-        delete extendedItem.transientProperties;
+        var transients = extendedItem.trans;
+        delete extendedItem.trans;
         return transients;
       }
       else {
         // No persistent relationships. Delete relationships object.
         if (extendedItem.relationships && Object.getOwnPropertyNames(extendedItem.relationships).length === 0)
           delete extendedItem.relationships;
-        delete extendedItem.transientProperties;
+        delete extendedItem.trans;
       }
     }
   };

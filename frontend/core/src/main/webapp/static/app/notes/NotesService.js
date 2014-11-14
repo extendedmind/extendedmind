@@ -117,8 +117,8 @@
 
   function copyFavorited(note) {
     if (note.favorited) {
-      if (!note.transientProperties) note.transientProperties = {};
-      note.transientProperties.favorited = note.favorited !== undefined;
+      if (!note.trans) note.trans = {};
+      note.trans.favorited = note.favorited !== undefined;
     }
   }
 
@@ -356,7 +356,7 @@
         BackendClientService.post('/api/' + ownerUUID + '/note/' + note.uuid + '/unfavorite',
          this.unfavoriteNoteRegex, params);
         delete note.favorited;
-        note.transientProperties.favorited = false;
+        note.trans.favorited = false;
         note.modified = BackendClientService.generateFakeTimestamp();
         updateNote(note, ownerUUID);
         deferred.resolve(note);
@@ -367,7 +367,7 @@
         .then(function(result) {
           if (result.data) {
             delete note.favorited;
-            note.transientProperties.favorited = false;
+            note.trans.favorited = false;
             note.modified = result.data.modified;
             updateNote(note, ownerUUID);
           }
@@ -378,10 +378,10 @@
     },
     resetNote: function(note, ownerUUID) {
       var notesArray = [note];
-      if (note.transientProperties) {
-        if (note.transientProperties.list) delete note.transientProperties.list;
-        if (note.transientProperties.keywords) delete note.transientProperties.keywords;
-        if (note.transientProperties.starred) delete note.transientProperties.starred;
+      if (note.trans) {
+        if (note.trans.list) delete note.trans.list;
+        if (note.trans.keywords) delete note.trans.keywords;
+        if (note.trans.starred) delete note.trans.starred;
       }
       addTransientProperties(notesArray, ownerUUID);
     },

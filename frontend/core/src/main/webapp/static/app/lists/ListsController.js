@@ -21,8 +21,8 @@
   var featureChangedCallback = function featureChangedCallback(name, data/*, state*/) {
     if (name === 'list') {
       $scope.list = data;
-      $scope.subtask = {transientProperties: {list: $scope.list.uuid}};
-      $scope.newNote = {transientProperties: {list: $scope.list.uuid}};
+      $scope.subtask = {trans: {list: $scope.list.uuid}};
+      $scope.newNote = {trans: {list: $scope.list.uuid}};
     } else if (name === 'lists') {
       if (data && data.archived) {
         // List was archived, swipe to archived lists slide.
@@ -104,7 +104,7 @@
       return ListsService.deleteList(list, UISessionService.getActiveUUID()).then(function(){
         UISessionService.pushDelayedNotification({
           type: 'deleted',
-          itemType: 'list', // NOTE: Same as list.transientProperties.itemType.
+          itemType: 'list', // NOTE: Same as list.trans.itemType.
           item: list,
           undoFn: $scope.undeleteList
         });

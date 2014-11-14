@@ -196,9 +196,9 @@
             }
           }
         }
-        if (items[i].transientProperties && items[i].transientProperties.context) {
-          if (items[i].transientProperties.context === deletedTag.uuid) {
-            delete items[i].transientProperties.context;
+        if (items[i].trans && items[i].trans.context) {
+          if (items[i].trans.context === deletedTag.uuid) {
+            delete items[i].trans.context;
           }
         }
       }

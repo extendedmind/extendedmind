@@ -109,44 +109,44 @@
   // due is persistent, date is transient
   function copyDueToDate(task) {
     if (task.due) {
-      if (!task.transientProperties) task.transientProperties = {};
-      task.transientProperties.date = task.due;
+      if (!task.trans) task.trans = {};
+      task.trans.date = task.due;
     }
   }
   // copies completed field from persistent to transient
   function copyCompleted(task) {
     if (task.completed){
-      if (!task.transientProperties) task.transientProperties = {};
-      task.transientProperties.completed = task.completed !== undefined;
+      if (!task.trans) task.trans = {};
+      task.trans.completed = task.completed !== undefined;
     }
   }
   // date is transient, due is persistent
   function copyDateToDue(task) {
-    if (task.transientProperties && task.transientProperties.date) task.due = task.transientProperties.date;
+    if (task.trans && task.trans.date) task.due = task.trans.date;
 
     // date has been removed from task, delete persistent value
     else if (task.due) delete task.due;
 
     // AngularJS sets date property to 'null' if it is used in ng-model data-binding and no value is set.
     // http://stackoverflow.com/a/7445368
-    if (task.transientProperties)
-      if (!Date.parse(task.transientProperties.date)) delete task.transientProperties.date;
+    if (task.trans)
+      if (!Date.parse(task.trans.date)) delete task.trans.date;
   }
 
   function copyDescriptionToTransientProperties(task) {
     if (task.description) {
-      if (!task.transientProperties) task.transientProperties = {};
-      task.transientProperties.description = task.description;
+      if (!task.trans) task.trans = {};
+      task.trans.description = task.description;
     }
   }
   function copyTransientDescriptionToPersistent(task) {
-    if (task.transientProperties && task.transientProperties.description)
-      task.description = task.transientProperties.description;
+    if (task.trans && task.trans.description)
+      task.description = task.trans.description;
     else if (task.description) delete task.description;
 
     // AngularJS sets property to empty string '""' if it is used in ng-model data-binding and text is removed.
-    if (task.transientProperties && task.transientProperties.description === '')
-      delete task.transientProperties.description;
+    if (task.trans && task.trans.description === '')
+      delete task.trans.description;
   }
 
   function addTransientProperties(tasksArray, ownerUUID, addExtraTransientPropertyFn) {
@@ -410,12 +410,12 @@
     },
     resetTask: function(task, ownerUUID) {
       var tasksArray = [task];
-      if (task.transientProperties) {
-        if (task.transientProperties.description) delete task.transientProperties.description;
-        if (task.transientProperties.context) delete task.transientProperties.context;
-        if (task.transientProperties.list) delete task.transientProperties.list;
-        if (task.transientProperties.date) delete task.transientProperties.date;
-        if (task.transientProperties.completed) delete task.transientProperties.completed;
+      if (task.trans) {
+        if (task.trans.description) delete task.trans.description;
+        if (task.trans.context) delete task.trans.context;
+        if (task.trans.list) delete task.trans.list;
+        if (task.trans.date) delete task.trans.date;
+        if (task.trans.completed) delete task.trans.completed;
       }
       this.addTransientProperties(tasksArray, ownerUUID);
     },

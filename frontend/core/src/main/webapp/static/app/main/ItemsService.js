@@ -86,8 +86,8 @@
         deferred.reject(item);
       } else if (item.uuid) {
         // Existing item
-        var transientProperties = item.transientProperties;
-        delete item.transientProperties;
+        var transientProperties = item.trans;
+        delete item.trans;
 
         if (UserSessionService.isOfflineEnabled()) {
           // Push to offline buffer
@@ -95,7 +95,7 @@
           BackendClientService.put('/api/' + params.owner + '/item/' + item.uuid,
            this.putNewItemRegex, params, item);
           item.modified = BackendClientService.generateFakeTimestamp();
-          item.transientProperties = transientProperties;
+          item.trans = transientProperties;
           updateItem(item, ownerUUID);
           deferred.resolve(item);
         } else {
@@ -104,7 +104,7 @@
            this.putExistingItemRegex, item).then(function(result) {
             if (result.data) {
               item.modified = result.data.modified;
-              item.transientProperties = transientProperties;
+              item.trans = transientProperties;
               updateItem(item, ownerUUID);
               deferred.resolve(item);
             }
@@ -122,7 +122,7 @@
           // it to the end of the list
           item.uuid = fakeUUID;
           item.created = item.modified = BackendClientService.generateFakeTimestamp();
-          item.transientProperties = {itemType: 'item'};
+          item.trans = {itemType: 'item'};
           setItem(item, ownerUUID);
           deferred.resolve(item);
         } else {
@@ -133,7 +133,7 @@
               item.uuid = result.data.uuid;
               item.created = result.data.created;
               item.modified = result.data.modified;
-              item.transientProperties = {itemType: 'item'};
+              item.trans = {itemType: 'item'};
               setItem(item, ownerUUID);
               deferred.resolve(item);
             }
@@ -248,8 +248,8 @@
     addTransientProperties: function(items) {
       if (items && items.length > 0){
         for (var i = 0; i< items.length; i++){
-          if (!items[i].transientProperties) items[i].transientProperties = {};
-          items[i].transientProperties.itemType = 'item';
+          if (!items[i].trans) items[i].trans = {};
+          items[i].trans.itemType = 'item';
         }
       }
     },

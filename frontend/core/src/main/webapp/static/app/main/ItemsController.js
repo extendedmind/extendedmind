@@ -41,7 +41,7 @@
 
       UISessionService.pushDelayedNotification({
         type: 'deleted',
-        itemType: 'item', // NOTE: Same as item.transientProperties.itemType
+        itemType: 'item', // NOTE: Same as item.trans.itemType
         item: item,
         undoFn: $scope.undeleteItem
       });

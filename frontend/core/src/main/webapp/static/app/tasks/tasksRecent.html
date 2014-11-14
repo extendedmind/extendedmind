@@ -7,7 +7,7 @@
         </div>
         <div class="group-mixed--right" task-list-completed></div>
       </div>
-      <div list-item-add="{transientProperties: {completed: false, itemType: 'task'}}"
+      <div list-item-add="{trans: {completed: false, itemType: 'task'}}"
       list-item-add-save="saveTask(newItem)" ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
       <div class="animate-list-item-leave"
       ng-repeat="task in recentTasks = (getList() | paramFilter:isListItemVisible) | orderBy:getTaskModified:true

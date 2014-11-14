@@ -419,7 +419,7 @@ it('should remove pre-existing parent from task when converting existing task to
   toBeUndefined();
 });
 
-it('should set convert object with \'task\' property in transientProperties ' +
+it('should set convert object with \'task\' property in transient properties ' +
   'when converting existing task with persistent values to list', function() {
   // SETUP
   var printTickets = TasksService.getTaskByUUID('9a1ce3aa-f476-43c4-845e-af59a9a33760', testOwnerUUID);
@@ -433,14 +433,14 @@ it('should set convert object with \'task\' property in transientProperties ' +
   // TESTS
   var convertedList = ListsService.getListByUUID(taskToListResponse.uuid, testOwnerUUID);
 
-  expect(convertedList.transientProperties.convert.task)
+  expect(convertedList.trans.convert.task)
   .toBeDefined();
 
-  expect(convertedList.transientProperties.convert.task.due).toEqual('2014-01-02');
-  expect(convertedList.transientProperties.convert.task.reminder).toEqual('10:00');
+  expect(convertedList.trans.convert.task.due).toEqual('2014-01-02');
+  expect(convertedList.trans.convert.task.reminder).toEqual('10:00');
 });
 
-it('should set convert object with \'note\' property in transientProperties ' +
+it('should set convert object with \'note\' property in transient properties ' +
  'when converting existing note with persistent values to task', function() {
   // SETUP
   var notesOnProductivity = NotesService.getNoteByUUID('848cda60-d725-40cc-b756-0b1e9fa5b7d8', testOwnerUUID);
@@ -459,13 +459,13 @@ it('should set convert object with \'note\' property in transientProperties ' +
   // TESTS
   var convertedTask = TasksService.getTaskByUUID(noteToTaskResponse.uuid, testOwnerUUID);
 
-  expect(convertedTask.transientProperties.convert.note)
+  expect(convertedTask.trans.convert.note)
   .toBeDefined();
 
-  expect(convertedTask.transientProperties.convert.note.favorited).toBe(favoritedTimestamp);
+  expect(convertedTask.trans.convert.note.favorited).toBe(favoritedTimestamp);
 });
 
-it('should set transientProperties object with \'date\' property to task ' +
+it('should set transient properties object with \'date\' property to task ' +
   'when converting existing list which has previously been a task to task', function() {
   // SETUP
   var writeEssayOnCognitiveBiases = ListsService.getListByUUID('07bc96d1-e8b2-49a9-9d35-1eece6263f98', testOwnerUUID);
@@ -481,7 +481,7 @@ it('should set transientProperties object with \'date\' property to task ' +
   // TESTS
   var convertedTask = TasksService.getTaskByUUID(listToTaskResponse.uuid, testOwnerUUID);
 
-  expect(convertedTask.transientProperties.date)
+  expect(convertedTask.trans.date)
   .toEqual('2014-08-29');
 });
 

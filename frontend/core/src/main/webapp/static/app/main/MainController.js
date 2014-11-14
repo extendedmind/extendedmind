@@ -441,7 +441,7 @@ function MainController(
     var activeArchivedTasks = [];
     var i = 0;
     while ($scope.archivedTasks[i]) {
-      if ($scope.tasks[i].transientProperties && !$scope.tasks[i].transientProperties.completed) {
+      if ($scope.tasks[i].trans && !$scope.tasks[i].trans.completed) {
         activeArchivedTasks.push($scope.archivedTasks[i]);
       }
       i++;
@@ -450,7 +450,7 @@ function MainController(
     var activeTasks = [];
     i = 0;
     while ($scope.tasks[i]) {
-      if ($scope.tasks[i].transientProperties && !$scope.tasks[i].transientProperties.completed) {
+      if ($scope.tasks[i].trans && !$scope.tasks[i].trans.completed) {
         activeTasks.push($scope.tasks[i]);
       }
       i++;

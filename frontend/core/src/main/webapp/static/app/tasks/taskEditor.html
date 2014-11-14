@@ -13,7 +13,7 @@
 
       <form role="form" class="group-mixed with-checkbox" autocapitalize="none" autocorrect="off">
         <div class="group-mixed--left">
-          <input type="checkbox" ng-click="clickCompleteTaskInEdit()" ng-checked="task.transientProperties.completed" ng-model="task.transientProperties.completed" icon-checkbox="editorTitlebarCheckbox" />
+          <input type="checkbox" ng-click="clickCompleteTaskInEdit()" ng-checked="task.trans.completed" ng-model="task.trans.completed" icon-checkbox="editorTitlebarCheckbox" />
         </div>
         <div class="group-mixed--middle">
           <textarea ng-hide="isTaskTitleClamped()" ng-model="titlebar.text"
@@ -37,15 +37,15 @@
 
           <!-- LIST PICKER -->
           <div ng-if="listPickerOpen" class="swiper-no-swiping animate-fade-in" editable-field-container="auto" editable-field-container-scrollable="true" editable-field-container-clicked-elsewhere="closeListPicker()" data-snap-ignore="true">
-            <div list-picker="lists" list-picker-new-item="{}" list-picker-archived-lists="archivedLists" list-picker-save="closeListPickerAndSetListToItem(task, list)" list-picker-clear="closeListPickerAndClearListFromItem(task, list)" list-picker-get-selected="getListFromUUID(task.transientProperties.list)"></div>
+            <div list-picker="lists" list-picker-new-item="{}" list-picker-archived-lists="archivedLists" list-picker-save="closeListPickerAndSetListToItem(task, list)" list-picker-clear="closeListPickerAndClearListFromItem(task, list)" list-picker-get-selected="getListFromUUID(task.trans.list)"></div>
           </div>
 
           <div ng-if="!listPickerOpen">
             <div ng-hide="descriptionFocused" class="group-mixed vertically-centered animate-fade-in">
-              <a href ng-class="{downplayed: !task.transientProperties.date}" class="group-mixed--middle" ng-click="openCalendar()">
-                <span class="text-link" ng-bind="task.transientProperties.date ? (task.transientProperties.date | date:'EEE MMM d y' | lowercase) : 'select date\u2026'"></span>
+              <a href ng-class="{downplayed: !task.trans.date}" class="group-mixed--middle" ng-click="openCalendar()">
+                <span class="text-link" ng-bind="task.trans.date ? (task.trans.date | date:'EEE MMM d y' | lowercase) : 'select date\u2026'"></span>
               </a>
-              <div ng-if="task.transientProperties.date" class="group-mixed--right">
+              <div ng-if="task.trans.date" class="group-mixed--right">
                 <button type="button" class="btn-clear" ng-click="clearTransientDate(task)"></button>
               </div>
             </div>
@@ -60,13 +60,13 @@
             </div>
 
             <div ng-hide="descriptionFocused || calendarOpen" class="row-vertically-centered">
-              <a href ng-class="{downplayed: !task.transientProperties.list}" ng-click="openListPicker()">
-                <span class="text-link" ng-bind="task.transientProperties.list ? getListTitleFromUUID(task.transientProperties.list) : 'select list\u2026'"></span>
+              <a href ng-class="{downplayed: !task.trans.list}" ng-click="openListPicker()">
+                <span class="text-link" ng-bind="task.trans.list ? getListTitleFromUUID(task.trans.list) : 'select list\u2026'"></span>
               </a>
             </div>
 
             <div ng-hide="calendarOpen" class="row-vertically-centered with-textarea">
-              <textarea ng-model="task.transientProperties.description" ng-focus="setDescriptionFocus(true)"
+              <textarea ng-model="task.trans.description" ng-focus="setDescriptionFocus(true)"
                 ng-blur="setDescriptionFocus(false)" msd-elastic placeholder="enter description&#8230;"
                 maxlength="1024" autocapitalize="none" autocorrect="off">
               </textarea>
@@ -96,7 +96,7 @@
 
           <!-- CONTEXT PICKER -->
           <div ng-if="contextPickerOpen" class="swiper-no-swiping animate-fade-in" editable-field-container="auto" editable-field-container-scrollable="true" editable-field-container-clicked-elsewhere="closeContextPicker()" data-snap-ignore="true">
-            <div list-picker="contexts" list-picker-new-item="{tagType: 'context'}" list-picker-save="closeContextPickerAndSetContextToItem(task, list)" list-picker-clear="closeContextPickerAndClearContextFromItem(task, list)" list-picker-get-selected="getContextFromUUID(task.transientProperties.context)" list-picker-type="context" list-picker-prefix="@"></div>
+            <div list-picker="contexts" list-picker-new-item="{tagType: 'context'}" list-picker-save="closeContextPickerAndSetContextToItem(task, list)" list-picker-clear="closeContextPickerAndClearContextFromItem(task, list)" list-picker-get-selected="getContextFromUUID(task.trans.context)" list-picker-type="context" list-picker-prefix="@"></div>
           </div>
 
           <!-- REPEATING PICKER -->
@@ -107,12 +107,12 @@
           <div ng-if="!contextPickerOpen && !repeatingPickerOpen">
 
             <div ng-hide="urlFocused" class="row-vertically-centered">
-              <a href ng-class="{downplayed: !task.transientProperties.context}" ng-click="openContextPicker()">
-                <span class="text-link" ng-bind="task.transientProperties.context ? '@' + getContextTitleFromUUID(task.transientProperties.context) : 'select context\u2026'"></span>
+              <a href ng-class="{downplayed: !task.trans.context}" ng-click="openContextPicker()">
+                <span class="text-link" ng-bind="task.trans.context ? '@' + getContextTitleFromUUID(task.trans.context) : 'select context\u2026'"></span>
               </a>
             </div>
 
-            <div ng-hide="urlFocused || !task.transientProperties.date" class="row-vertically-centered">
+            <div ng-hide="urlFocused || !task.trans.date" class="row-vertically-centered">
               <a href ng-class="{downplayed: !task.repeating}" ng-click="openRepeatingPicker()">
                 <span class="text-link" ng-bind="task.repeating ? task.repeating : 'select repeating\u2026'"></span>
               </a>

@@ -372,7 +372,7 @@
 
   $scope.getNewDayTask = function(daySlidesIndex){
     return {
-      transientProperties: {
+      trans: {
         date: $scope.daySlides[daySlidesIndex].info,
         completed: false,
         itemType: 'task'

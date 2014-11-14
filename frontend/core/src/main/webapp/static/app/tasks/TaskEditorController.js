@@ -93,8 +93,8 @@
   };
 
   $scope.getCalendarStartingDate = function(task) {
-    if (task.transientProperties && task.transientProperties.date)
-      return DateService.getDateTodayOrFromLaterYYYYMMDD(task.transientProperties.date);
+    if (task.trans && task.trans.date)
+      return DateService.getDateTodayOrFromLaterYYYYMMDD(task.trans.date);
   };
 
   $scope.closeCalendar = function() {
@@ -107,8 +107,8 @@
   };
 
   $scope.setTaskDate = function(task, date) {
-    if (!task.transientProperties) task.transientProperties = {};
-    task.transientProperties.date = DateService.getYYYYMMDD(date);
+    if (!task.trans) task.trans = {};
+    task.trans.date = DateService.getYYYYMMDD(date);
   };
 
   $scope.setDateAndSave = function(date) {
@@ -120,7 +120,7 @@
   };
 
   $scope.clearTransientDate = function(task) {
-    if (task.transientProperties) delete task.transientProperties.date;
+    if (task.trans) delete task.trans.date;
   };
 
   // CONTEXT PICKER
@@ -143,8 +143,8 @@
 
     function doCloseAndSave() {
       $scope.closeContextPicker();
-      if (!item.transientProperties) item.transientProperties = {};
-      item.transientProperties.context = context.uuid;
+      if (!item.trans) item.trans = {};
+      item.trans.context = context.uuid;
     }
 
     if (!context.uuid)  // Context is new, save it first. Close context picker on error saving new context.
@@ -155,8 +155,8 @@
 
   $scope.closeContextPickerAndClearContextFromItem = function(item, context) {
     $scope.closeContextPicker();
-    if (item.transientProperties && item.transientProperties.context === context.uuid)
-      delete item.transientProperties.context;
+    if (item.trans && item.trans.context === context.uuid)
+      delete item.trans.context;
   };
 
   // REPEATING PICKER

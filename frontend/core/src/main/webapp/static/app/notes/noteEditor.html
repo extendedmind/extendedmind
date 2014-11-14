@@ -43,13 +43,13 @@
 
           <!-- LIST PICKER -->
           <div ng-if="listPickerOpen" ng-hide="onboardingInProgress" class="swiper-no-swiping animate-fade-in" editable-field-container="auto" editable-field-container-scrollable="true" editable-field-container-clicked-elsewhere="closeListPicker()" data-snap-ignore="true">
-            <div list-picker="lists" list-picker-new-item="{}" list-picker-archived-lists="archivedLists" list-picker-save="closeListPickerAndSetListToItem(note, list)" list-picker-clear="closeListPickerAndClearListFromItem(note, list)" list-picker-get-selected="getListFromUUID(note.transientProperties.list)"></div>
+            <div list-picker="lists" list-picker-new-item="{}" list-picker-archived-lists="archivedLists" list-picker-save="closeListPickerAndSetListToItem(note, list)" list-picker-clear="closeListPickerAndClearListFromItem(note, list)" list-picker-get-selected="getListFromUUID(note.trans.list)"></div>
           </div>
 
           <div ng-if="!listPickerOpen">
             <div ng-hide="mode === 'fullScreen'" class="row-vertically-centered">
-              <a href ng-class="{downplayed: !note.transientProperties.list}" ng-click="openListPicker()">
-                <span class="text-link" ng-bind="note.transientProperties.list ? getListTitleFromUUID(note.transientProperties.list) : 'select list\u2026'"></span>
+              <a href ng-class="{downplayed: !note.trans.list}" ng-click="openListPicker()">
+                <span class="text-link" ng-bind="note.trans.list ? getListTitleFromUUID(note.trans.list) : 'select list\u2026'"></span>
               </a>
             </div>
 
@@ -80,7 +80,7 @@
         <footer ng-hide="isNoteFooterHidden()" class="container-content--after editor-footer animate-fade-in-out">
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
             <a href ng-hide="onboardingInProgress" ng-click="clickFavorite()" class="group-symmetrical--left">
-              <span class="icon-star" ng-class="!note.transientProperties.favorited && 'inactive'"></span>
+              <span class="icon-star" ng-class="!note.trans.favorited && 'inactive'"></span>
             </a>
             <a href ng-click="swipeToAdvanced()" ng-hide="isFooterNavigationHidden()" class="group-symmetrical--right link-navigation">
               <span class="text-navigation-forward">advanced</span>
@@ -101,7 +101,7 @@
           <span class="text-details row" ng-if="newKeyword.title" class="row" clamp=2>hit enter to create #{{newKeyword.title}}</span>
 
           <div ng-if="noteHasKeywords(note)" class="keywords-container row">
-            <div class="keyword-wrapper" ng-repeat="keyword in note.transientProperties.keywords | orderBy:'title'">
+            <div class="keyword-wrapper" ng-repeat="keyword in note.trans.keywords | orderBy:'title'">
               <a href class="keyword highlighted" ng-click="removeKeywordFromNote(note, keyword)">
                 <span class="text-keyword" ng-bind="'#' + keyword.title" clamp=1></span>
               </a>

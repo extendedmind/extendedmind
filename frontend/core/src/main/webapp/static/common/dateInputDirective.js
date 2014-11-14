@@ -29,7 +29,7 @@
       }
 
       function dateInputBlurred() {
-        if (!scope.task.transientProperties || !scope.task.transientProperties.date) {
+        if (!scope.task.trans || !scope.task.trans.date) {
           scope.$evalAsync(function() {
             unfocusDate();
           });
@@ -40,9 +40,9 @@
       // http://ruoyusun.com/2013/08/24/a-glimpse-of-angularjs-scope-via-example.html
       scope.$watch('isFocused', function(newValue) {
         if (newValue) {
-          if (!scope.task.transientProperties) scope.task.transientProperties = {};
-          if (!scope.task.transientProperties.date) {
-            scope.task.transientProperties.date = new Date().toISOString().substring(0, 10);
+          if (!scope.task.trans) scope.task.trans = {};
+          if (!scope.task.trans.date) {
+            scope.task.trans.date = new Date().toISOString().substring(0, 10);
             element[0].value = new Date().toISOString().substring(0, 10);
           }
 

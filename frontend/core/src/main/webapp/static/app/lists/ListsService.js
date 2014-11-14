@@ -276,9 +276,9 @@
             delete items[i].relationships.parent;
           }
         }
-        if (items[i].transientProperties) {
-          if (items[i].transientProperties.list === deletedList.uuid) {
-            delete items[i].transientProperties.list;
+        if (items[i].trans) {
+          if (items[i].trans.list === deletedList.uuid) {
+            delete items[i].trans.list;
           }
         }
       }

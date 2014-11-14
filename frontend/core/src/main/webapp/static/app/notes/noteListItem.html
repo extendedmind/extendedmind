@@ -7,7 +7,7 @@
       <span class="text-teaser" clamp=3 ng-bind="getNoteContentTeaser(note)"></span>
     </a>
   </div>
-  <div ng-if="note.transientProperties.favorited" class="group-mixed--right">
+  <div ng-if="note.trans.favorited" class="group-mixed--right">
     <a href ng-click="unfavoriteNote(note)">
       <span class="icon-star small"></span>
     </a>

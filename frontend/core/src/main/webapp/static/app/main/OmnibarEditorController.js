@@ -142,12 +142,12 @@
 
       // Then
       if (!$scope.selectedKeywords || !$scope.selectedKeywords.length) return false;
-      if (!item.transientProperties || !item.transientProperties.keywords) return false;
+      if (!item.trans || !item.trans.keywords) return false;
     }
 
     for (var i = 0, len = $scope.selectedKeywords.length; i < len; i++) {
-      if (item.transientProperties && item.transientProperties.keywords) {
-        if (item.transientProperties.keywords.indexOf($scope.selectedKeywords[i]) === -1) {
+      if (item.trans && item.trans.keywords) {
+        if (item.trans.keywords.indexOf($scope.selectedKeywords[i]) === -1) {
           // Selected keyword is not found in the item.
           return false;
         }
@@ -236,8 +236,8 @@
 
     for (var i = 0, len = $scope.filteredItems.searchResults.length; i < len; i++) {
       var item = $scope.filteredItems.searchResults[i];
-      if (item.transientProperties && item.transientProperties.keywords &&
-          item.transientProperties.keywords.indexOf(keyword) !== -1)
+      if (item.trans && item.trans.keywords &&
+          item.trans.keywords.indexOf(keyword) !== -1)
       {
         // Keyword found in search results from item which has keywords.
         return true;

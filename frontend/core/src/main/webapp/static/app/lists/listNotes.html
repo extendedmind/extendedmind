@@ -1,5 +1,5 @@
 <div class="container-content--outer" ng-if="isFeatureActive('list')" list-container>
-  <section class="container-content" list="allNotes | itemsFilter:{name:'byListUUID', filterBy: list.uuid}" list-open="openEditor('note', {transientProperties: {list:list.uuid, itemType: 'note'}})" list-order="top" swiper-prevent>
+  <section class="container-content" list="allNotes | itemsFilter:{name:'byListUUID', filterBy: list.uuid}" list-open="openEditor('note', {trans: {list:list.uuid, itemType: 'note'}})" list-order="top" swiper-prevent>
     <h2 class="group-heading justified row">notes</h2>
 
     <div class="animate-list-item-leave tall"

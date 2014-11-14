@@ -52,7 +52,7 @@
   itemsFilters.favorited = function(items) {
     var filteredItems = [];
     for (var i = 0, len = items.length; i < len; i++) {
-      if (items[i].transientProperties && (items[i].transientProperties.favorited === true)){
+      if (items[i].trans && (items[i].trans.favorited === true)){
         filteredItems.push(items[i]);
       }
     }

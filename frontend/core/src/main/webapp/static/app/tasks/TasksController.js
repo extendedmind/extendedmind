@@ -94,7 +94,7 @@
 
     // Don't try to complete a task that hasn't been saved, saveTask will call this again
     // after the task has a uuid
-    if (!task.uuid){ return !task.transientProperties.completed;}
+    if (!task.uuid){ return !task.trans.completed;}
     if (taskCompletingReadyDeferred) {
       taskCompletingReadyDeferred.promise.then(function(task) {
         unfreezeTask(task);
@@ -144,7 +144,7 @@
       AnalyticsService.do('saveTask');
     }else{
       AnalyticsService.do('addTask');
-      if (task.transientProperties && task.transientProperties.completed){
+      if (task.trans && task.trans.completed){
         completeOnSave = true;
       }
     }
@@ -164,7 +164,7 @@
 
       UISessionService.pushDelayedNotification({
         type: 'deleted',
-        itemType: 'task', // NOTE: Same as task.transientProperties.itemType
+        itemType: 'task', // NOTE: Same as task.trans.itemType
         item: task,
         undoFn: $scope.undeleteTask
       });
@@ -190,7 +190,7 @@
   $scope.getNewTaskWithContext = function(context){
     if (context) {
       return {
-        transientProperties: {
+        trans: {
           context: context.uuid,
           completed: false,
           itemType: 'task'
@@ -198,7 +198,7 @@
       };
     }
     else return {
-      transientProperties: {
+      trans: {
         completed: false,
         itemType: 'task'
       }

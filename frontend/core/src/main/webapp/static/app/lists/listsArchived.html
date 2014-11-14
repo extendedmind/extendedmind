@@ -1,7 +1,7 @@
 <div class="container-content--outer" ng-if="isFeatureActive('lists')" list-container>
   <section class="container-content" list="archivedLists" list-order="top" swiper-prevent>
     <h2 class="group-heading justified row">archived</h2>
-    <div list-item-add="{transientProperties: {itemType: 'list'}}" list-item-add-save="saveAndArchiveList(newItem)"
+    <div list-item-add="{trans: {itemType: 'list'}}" list-item-add-save="saveAndArchiveList(newItem)"
     ng-include="urlBase + 'app/lists/listListItemAdd.html'"></div>
     <div class="animate-list-item-leave"
     ng-repeat="list in getList() | orderBy:'created':true | limitTo: currentListLimitTo"

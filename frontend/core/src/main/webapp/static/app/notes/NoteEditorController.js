@@ -60,7 +60,7 @@
   }
 
   $scope.clickFavorite = function() {
-    if (!$scope.note.transientProperties.favorited){
+    if (!$scope.note.trans.favorited){
       $scope.favoriteNote($scope.note);
     }else{
       $scope.unfavoriteNote($scope.note);
@@ -128,8 +128,8 @@
 
   $scope.addNewKeywordToNote = function(note, newKeyword) {
     if (!newKeyword || !newKeyword.title) return; // No text entered.
-    if (note.transientProperties && note.transientProperties.keywords) {
-      var noteKeyword = note.transientProperties.keywords
+    if (note.trans && note.trans.keywords) {
+      var noteKeyword = note.trans.keywords
       .findFirstObjectByKeyValue('title', newKeyword.title);
 
       if (noteKeyword !== undefined) {
@@ -145,14 +145,14 @@
   };
 
   $scope.addKeywordToNote = function(note, keyword) {
-    if (!$scope.note.transientProperties) $scope.note.transientProperties = {};
-    if (!$scope.note.transientProperties.keywords) $scope.note.transientProperties.keywords = [];
-    $scope.note.transientProperties.keywords.push(keyword);
+    if (!$scope.note.trans) $scope.note.trans = {};
+    if (!$scope.note.trans.keywords) $scope.note.trans.keywords = [];
+    $scope.note.trans.keywords.push(keyword);
     clearKeyword();
   };
 
   $scope.removeKeywordFromNote = function(note, keyword) {
-    note.transientProperties.keywords.splice(note.transientProperties.keywords.indexOf(keyword), 1);
+    note.trans.keywords.splice(note.trans.keywords.indexOf(keyword), 1);
   };
 
 }

@@ -2,7 +2,7 @@
   <section ng-show="isOnboarded('inbox')" class="container-content" list="items" list-order="top">
     <h2 class="group-heading justified row" ng-bind="items.length + ' items'"></h2>
 
-    <div list-item-add="{transientProperties: {itemType: 'item'}}" list-item-add-save="saveItem(newItem)">
+    <div list-item-add="{trans: {itemType: 'item'}}" list-item-add-save="saveItem(newItem)">
       <form role="form" class="group-mixed with-checkbox swiper-no-swiping"
         ng-submit="callAndExit(saveItem, newItem)" data-snap-ignore="true" editable-field-container
         editable-field-container-clicked-elsewhere="clickedElsewhere()"

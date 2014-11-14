@@ -19,8 +19,8 @@
                           UISessionService) {
 
   $scope.noteHasKeywords = function noteHasKeywords(note) {
-    return note.transientProperties && note.transientProperties.keywords &&
-    note.transientProperties.keywords.length;
+    return note.trans && note.trans.keywords &&
+    note.trans.keywords.length;
   };
 
   // Return keywords, that has beend added during note edit.
@@ -40,7 +40,7 @@
   function saveKeywords(note) {
     if ($scope.noteHasKeywords(note)) {
       // http://stackoverflow.com/a/21315112
-      var newKeywords = getNewKeywords(note.transientProperties.keywords);
+      var newKeywords = getNewKeywords(note.trans.keywords);
       if (newKeywords) {
         var saveNewKeywordPromises = newKeywords.map(function(newKeyword) {
           // Make array of save keyword promises from new keywords.
@@ -67,7 +67,7 @@
 
     return saveKeywords(note).then(function() {
       return NotesService.saveNote(note, UISessionService.getActiveUUID()).then(function(note){
-        if (newNote && note.transientProperties && note.transientProperties.favorited){
+        if (newNote && note.trans && note.trans.favorited){
           return $scope.favoriteNote(note);
         }
       });
@@ -81,7 +81,7 @@
 
       UISessionService.pushDelayedNotification({
         type: 'deleted',
-        itemType: 'note', // NOTE: Same as note.transientProperties.itemType
+        itemType: 'note', // NOTE: Same as note.trans.itemType
         item: note,
         undoFn: $scope.undeleteNote
       });
@@ -122,8 +122,8 @@
     // Don't try to favorite a note that hasn't been saved, saveNote will call this again
     // after the note has a uuid
     if (!note.uuid){
-      if (!note.transientProperties) note.transientProperties = {};
-      note.transientProperties.favorited = true;
+      if (!note.trans) note.trans = {};
+      note.trans.favorited = true;
       return;
     }
 
@@ -140,8 +140,8 @@
 
     // Don't try to unfavorite a note that hasn't been saved
     if (!note.uuid){
-      if (!note.transientProperties) note.transientProperties = {};
-      note.transientProperties.favorited = false;
+      if (!note.trans) note.trans = {};
+      note.trans.favorited = false;
       return;
     }
 

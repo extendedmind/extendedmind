@@ -318,7 +318,7 @@ describe('SynchronizeService', function() {
     // Check that task got the right context
 
     expect(TasksService.getTaskByUUID('9a1ce3aa-f476-43c4-845e-af59a9a33760',testOwnerUUID)
-            .transientProperties.context).toBe('1208d45b-3b8c-463e-88f3-f7ef19ce87cd');
+            .trans.context).toBe('1208d45b-3b8c-463e-88f3-f7ef19ce87cd');
   });
 
   it('should syncronize with empty result', function () {
@@ -532,7 +532,7 @@ describe('SynchronizeService', function() {
     var updatedTestTask = {
       uuid: testItem.uuid,
       title: testItem.title,
-      transientProperties: {
+      trans: {
         description: 'test description'
       }
     };

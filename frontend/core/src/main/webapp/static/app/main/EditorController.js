@@ -122,15 +122,15 @@
 
   $scope.convertToNote = function(itemInEdit){
     var convertToNotePromise;
-    if (itemInEdit.transientProperties.itemType === 'item') {
+    if (itemInEdit.trans.itemType === 'item') {
       convertToNotePromise = ItemsService.itemToNote(itemInEdit,
                                                      UISessionService.getActiveUUID());
     }
-    else if (itemInEdit.transientProperties.itemType === 'task') {
+    else if (itemInEdit.trans.itemType === 'task') {
       convertToNotePromise = ConvertService.finishTaskToNoteConvert(itemInEdit,
                                                                     UISessionService.getActiveUUID());
     }
-    else if (itemInEdit.transientProperties.itemType === 'list') {
+    else if (itemInEdit.trans.itemType === 'list') {
       convertToNotePromise = ConvertService.finishListToNoteConvert(itemInEdit,
                                                                     UISessionService.getActiveUUID());
     }
@@ -143,14 +143,14 @@
 
   $scope.convertToTask = function(itemInEdit){
     var convertToTaskPromise;
-    if (itemInEdit.transientProperties.itemType === 'item') {
+    if (itemInEdit.trans.itemType === 'item') {
       convertToTaskPromise = ItemsService.itemToTask(itemInEdit,
                                                      UISessionService.getActiveUUID());
     }
-    else if (itemInEdit.transientProperties.itemType === 'note') {
+    else if (itemInEdit.trans.itemType === 'note') {
       convertToTaskPromise = ConvertService.finishNoteToTaskConvert(itemInEdit,
                                                                     UISessionService.getActiveUUID());
-    } else if (itemInEdit.transientProperties.itemType === 'list') {
+    } else if (itemInEdit.trans.itemType === 'list') {
       convertToTaskPromise = ConvertService.finishListToTaskConvert(itemInEdit,
                                                                     UISessionService.getActiveUUID());
     }
@@ -163,15 +163,15 @@
 
   $scope.convertToList = function(itemInEdit){
     var convertToListPromise;
-    if (itemInEdit.transientProperties.itemType === 'item'){
+    if (itemInEdit.trans.itemType === 'item'){
       convertToListPromise = ItemsService.itemToList(itemInEdit,
                                                      UISessionService.getActiveUUID());
     }
-    else if (itemInEdit.transientProperties.itemType === 'task') {
+    else if (itemInEdit.trans.itemType === 'task') {
       convertToListPromise = ConvertService.finishTaskToListConvert(itemInEdit,
                                                                     UISessionService.getActiveUUID());
     }
-    else if (itemInEdit.transientProperties.itemType === 'note') {
+    else if (itemInEdit.trans.itemType === 'note') {
       convertToListPromise = ConvertService.finishNoteToListConvert(itemInEdit,
                                                                     UISessionService.getActiveUUID());
     }
@@ -256,8 +256,8 @@
 
     function doCloseAndSave() {
       $scope.closeListPicker();
-      if (!item.transientProperties) item.transientProperties = {};
-      item.transientProperties.list = list.uuid;
+      if (!item.trans) item.trans = {};
+      item.trans.list = list.uuid;
     }
 
     if (!list.uuid) // List is new, save it first. Close list picker on error saving new list.
@@ -268,8 +268,8 @@
 
   $scope.closeListPickerAndClearListFromItem = function(item, list) {
     $scope.closeListPicker();
-    if (item.transientProperties && item.transientProperties.list === list.uuid)
-      delete item.transientProperties.list;
+    if (item.trans && item.trans.list === list.uuid)
+      delete item.trans.list;
   };
 
   // DESCRIPTION

@@ -18,10 +18,10 @@
   var keywordsFilters = {};
 
   keywordsFilters.byOtherThanNoteKeywords = function(keywords, note) {
-    if (note.transientProperties && note.transientProperties.keywords) {
+    if (note.trans && note.trans.keywords) {
       var filteredKeywords = [];
       for (var i = 0, len = keywords.length; i < len; i++) {
-        if (note.transientProperties.keywords.indexOf(keywords[i]) === -1)
+        if (note.trans.keywords.indexOf(keywords[i]) === -1)
           filteredKeywords.push(keywords[i]);
       }
       return filteredKeywords;

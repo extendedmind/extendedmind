@@ -2,7 +2,7 @@
   ng-submit="callAndExit(saveTask, newItem)" data-snap-ignore="true" editable-field-container
   editable-field-container-clicked-elsewhere="clickedElsewhere()" autocapitalize="none" autocorrect="off" >
   <div class="group-mixed--left">
-    <input type="checkbox" ng-model="newItem.transientProperties.completed"
+    <input type="checkbox" ng-model="newItem.trans.completed"
     swiper-click="toggleLeftCheckbox(toggleCompleteTask)" icon-checkbox="getListItemAddId()" ng-disabled="!newItem.title">
   </div>
   <div class="group-mixed--middle">

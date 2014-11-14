@@ -187,13 +187,13 @@
     var notesOnProductivity = NotesService.getNoteByUUID('848cda60-d725-40cc-b756-0b1e9fa5b7d8', testOwnerUUID);
 
     // Change transient values
-    notesOnProductivity.transientProperties.list = '1da0bff6-3bd7-4884-adba-f47fab9f270d';
+    notesOnProductivity.trans.list = '1da0bff6-3bd7-4884-adba-f47fab9f270d';
 
     // Reset note
     NotesService.resetNote(notesOnProductivity, testOwnerUUID);
 
     // Values should be back to their original values
-    expect(notesOnProductivity.transientProperties.list).toBe('0da0bff6-3bd7-4884-adba-f47fab9f270d');
+    expect(notesOnProductivity.trans.list).toBe('0da0bff6-3bd7-4884-adba-f47fab9f270d');
   });
 
 });
