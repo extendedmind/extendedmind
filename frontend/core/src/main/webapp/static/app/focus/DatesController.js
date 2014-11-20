@@ -440,9 +440,11 @@
 
   function gotoToday() {
     $scope.changeDaySlide(DateService.getTodayYYYYMMDD(), true);
+    $scope.closeDatepicker();
   }
   function gotoNoDate() {
     $scope.changeDaySlide(null);
+    $scope.closeDatepicker();
   }
 
   /*
@@ -538,6 +540,9 @@
           SwiperService.swipeNext('datepicker');
         }
       }
+    }else{
+      // The current day clicked, close week picker
+      $scope.closeDatepicker();
     }
   };
 
