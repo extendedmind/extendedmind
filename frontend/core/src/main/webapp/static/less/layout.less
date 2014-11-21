@@ -842,7 +842,7 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 }
 
 // FIXME: refactor or move (overrides.less)
-@margin-top-heading-justified: -11px;
+@margin-top-heading-justified: -20px;
 // 1. Justify whitespace between toolbar and content
 .group-heading.justified {
   margin-top: @margin-top-heading-justified; // [1]
@@ -1013,6 +1013,13 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
 .group-symmetrical--right.link-navigation > .text-navigation-forward {
   display: block;         // [1]
   height: @grid-vertical; // [1]
+}
+
+// .container-toolbar has a special .group-symmetrical
+@height-toolbar: 62px;
+.container-toolbar .group-symmetrical {
+  height: @height-toolbar;
+  line-height: @height-toolbar;
 }
 
 .group-centered {

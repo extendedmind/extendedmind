@@ -1,5 +1,5 @@
 <div class="container-toolbar--inner" ng-controller="ToolbarController">
-  <div ng-hide="isCustomToolbar()" class="swiper-no-swiping group-symmetrical height-large">
+  <div ng-hide="isCustomToolbar()" class="swiper-no-swiping group-symmetrical">
     <button ng-disabled="!isOnboarded('tasks') && checkListOnboardingLock('tasks', undefined)" class="group-symmetrical--left btn" type="button" ng-click="toggleMenu()" alt="menu">
       <span class="icon-menu"></span>
     </button>
@@ -12,7 +12,7 @@
       <span class="icon-logo"></span>
     </button>
   </div>
-  <div ng-if="isCustomToolbar()" class="group-symmetrical height-large" editable-field-container="auto">
+  <div ng-if="isCustomToolbar()" class="group-symmetrical" editable-field-container="auto">
     <a href class="group-symmetrical--left link-navigation highlighted" ng-click="customToolbar.leftActionFn()">
       <span class="text-navigation" ng-bind="customToolbar.leftActionName"></span>
     </a>
