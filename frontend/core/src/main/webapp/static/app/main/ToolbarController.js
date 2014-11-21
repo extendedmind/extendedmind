@@ -30,6 +30,8 @@
     var currentHeading = $scope.getActiveFeature();
     if (currentHeading === 'list'){
       currentHeading = UISessionService.getFeatureData(currentHeading).title;
+    }else if (currentHeading === 'user'){
+      currentHeading = $scope.getActiveDisplayName();
     }
     if (!$scope.online) {
       currentHeading = '*' + currentHeading;

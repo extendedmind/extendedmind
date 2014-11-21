@@ -17,23 +17,6 @@
  function MenuController($location, $rootScope, $scope, AnalyticsService, AuthenticationService,
                          ListsService, UISessionService, UserSessionService) {
 
-  $scope.getActiveDisplayName = function() {
-    var activeUUID = UISessionService.getActiveUUID();
-    if (activeUUID){
-      var ownerName;
-      if (activeUUID === UserSessionService.getUserUUID()) {
-        ownerName = UserSessionService.getEmail();
-      } else {
-        angular.forEach($scope.collectives, function(collective, uuid) {
-          if (activeUUID === uuid) {
-            ownerName = collective[0];
-          }
-        });
-      }
-      return ownerName;
-    }
-  };
-
   $scope.gotoFeature = function (feature, data) {
     $scope.changeFeature(feature,data);
     if ($rootScope.columns === 1) $scope.closeMenu();

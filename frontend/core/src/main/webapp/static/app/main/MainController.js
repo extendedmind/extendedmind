@@ -746,6 +746,23 @@ function MainController(
     $scope.customToolbar = undefined;
   };
 
+  $scope.getActiveDisplayName = function() {
+    var activeUUID = UISessionService.getActiveUUID();
+    if (activeUUID){
+      var ownerName;
+      if (activeUUID === UserSessionService.getUserUUID()) {
+        ownerName = UserSessionService.getEmail();
+      } else {
+        angular.forEach($scope.collectives, function(collective, uuid) {
+          if (activeUUID === uuid) {
+            ownerName = collective[0];
+          }
+        });
+      }
+      return ownerName;
+    }
+  };
+
   // INJECT OTHER CONTENT CONTROLLERS HERE
 
   $controller('TasksController',{$scope: $scope});
