@@ -145,7 +145,9 @@ Vertically center .container-master and .container-editor in large screens
 **************************************************************************
 # LEVEL 4: Fluid, toaster
 */
-@height-footer: @grid-vertical;
+// 1. Match with .container-toolbar.
+@height-footer: 62px; // [1]
+@height-footer-short: @grid-vertical;
 
 /*
 `.container-fluid` sets the vertical positioning of the content area.
@@ -222,6 +224,49 @@ Vertically center .container-master and .container-editor in large screens
   bottom: -@height-footer;  // [1]
 }
 
+// 1. Footer with buttons is shorter.
+.container-master .container-content--after.group-btn {
+  height: @height-footer-short; // [1]
+}
+
+// 1. For inbox.
+//    TODO: better comments
+.container-master .container-fluid--inner > .container-content--after.group-btn {
+  position: absolute; // [1]
+  left: 0;            // [1]
+  bottom: 0;          // [1]
+  right: 0;           // [1]
+}
+
+/*
+*************************************************************
+# Master footer
+*/
+
+.container-master .container-content--after .group-symmetrical {
+  height: @height-footer;
+  line-height: @height-footer;
+
+  // 1. Align plus icon vertically.
+  // 2. plus-icon element is taller than icon itself and since it's a font, its baseline is somewhere.
+  //    Set vertical-align to adjust icon inside element.
+  .group-symmetrical--middle > a > .icon-plus {
+    display: block;               // [1]
+    line-height: @height-footer;
+    &:after {
+      vertical-align: -5%;      // [2]
+    }
+  }
+
+  // 1. Set height, and also to ensure icons in .text-navigation-back:before and
+  //    .text-navigation-forward:after does not increase height.
+  .group-symmetrical--left.link-navigation > .text-navigation-back,
+  .group-symmetrical--right.link-navigation > .text-navigation-forward {
+    display: block;         // [1]
+    height: @height-footer;
+  }
+}
+
 
 /*
 *************************************************************
@@ -276,30 +321,21 @@ Vertically center .container-master and .container-editor in large screens
 .container-toaster {
   position: absolute; // [1]
   .center-horizontally-absolute; // [1]
-  bottom: 0;
-  /*
   bottom: 9px;  // [2]
   left: 9px;    // [2]
   right: 9px;   // [2]
-  */
   max-width: @width-column-max; // [1]
   height: @grid-vertical; // [3]
   line-height: @grid-vertical; // [3]
   background-color: @color-background-toaster; // [3]
   &.group-mixed {
     .group-mixed--middle {
-      /*
-      padding-left: 19px;
-      */
+      padding-left: 19px; // TODO: comments
     }
     .group-mixed--right {
-      /*
-      padding-right: 19px;
-      */
+      padding-right: 19px;  // TODO: comments
       & > .icon-x {
-        /*
-        padding-right: 0;
-        */
+        padding-right: 0; // TODO: comments
         height: 44px;
         line-height: 44px;
         display: block;
@@ -996,23 +1032,6 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
 
 .group-symmetrical--middle.width-large {
   max-width: @max-width-group-symmetrical-middle * 2;
-}
-
-// 1. Align plus icon vertically.
-// 2. plus-icon element is taller than icon itself and since it's a font, its baseline is somewhere.
-//    Set vertical-align to adjust icon inside element.
-.group-symmetrical--middle > a > .icon-plus {
-  display: block;               // [1]
-  line-height: @grid-vertical;  // [1]
-  &:after {
-    vertical-align: -7.5%;      // [2]
-  }
-}
-
-// 1. Set height, and also to ensure icon in .text-navigation-forward:after does not increase height.
-.group-symmetrical--right.link-navigation > .text-navigation-forward {
-  display: block;         // [1]
-  height: @grid-vertical; // [1]
 }
 
 // .container-toolbar has a special .group-symmetrical
