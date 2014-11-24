@@ -10,8 +10,8 @@
             <span class="text-navigation">note settings</span>
           </a>
         </div>
-        <a ng-if="!note.deleted && !onboardingInProgress" class="group-symmetrical--right" href ng-click="deleteNoteInEdit()"><span class="icon-trash"></span></a>
-        <a ng-if="note.deleted && !onboardingInProgress" class="group-symmetrical--right link-navigation highlighted active" href ng-click="undeleteNote(note)"><span class="text-navigation">restore</span></a>
+        <a href ng-if="!note.deleted && !onboardingInProgress" class="group-symmetrical--right" ng-click="deleteNoteInEdit()"><span class="icon-trash"></span></a>
+        <a href ng-if="note.deleted && !onboardingInProgress" class="group-symmetrical--right link-navigation highlighted active" ng-click="undeleteNote(note)"><span class="text-navigation">restore</span></a>
       </div>
 
       <!-- NOTE TITLE -->

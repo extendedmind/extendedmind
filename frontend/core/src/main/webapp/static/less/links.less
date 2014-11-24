@@ -50,6 +50,19 @@ a:active.downplayed {
   }
 }
 
+a.icon-downplayed {
+  *, *:before, *:after {
+    color: @color-icon-deactivated; // [1]
+  }
+}
+
+a:active.icon-downplayed {
+  *, *:before, *:after {
+    color: @color-icon-deactivated-pressed; // [1]
+  }
+}
+
+
 /*
 Basic link.
 */

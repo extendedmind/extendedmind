@@ -8,7 +8,7 @@
         <a href ng-if="!task.deleted" class="group-symmetrical--right" ng-click="deleteTaskInEdit()" >
           <span class="icon-trash"></span>
         </a>
-        <a ng-if="task.deleted" class="group-symmetrical--right link-navigation highlighted active" href ng-click="undeleteTask(task)"><span class="text-navigation">restore</span></a>
+        <a href ng-if="task.deleted" class="group-symmetrical--right link-navigation highlighted active" ng-click="undeleteTask(task)"><span class="text-navigation">restore</span></a>
       </div>
 
       <form role="form" class="group-mixed with-checkbox" autocapitalize="none" autocorrect="off">
@@ -79,7 +79,7 @@
         <footer ng-hide="isTaskFooterHidden()" class="container-content--after editor-footer animate-fade-in-out" editor-footer="basicSlideInfo" editor-footer-ios-click>
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
             <div class="group-symmetrical--middle">
-              <a href id="editorFooterExpandLink" ng-click="toggleExpand()">
+              <a href id="editorFooterExpandLink" class="icon-downplayed" ng-click="toggleExpand()">
                 <span id="editorFooterExpandIcon" class="icon-calendar"></span>
               </a>
             </div>

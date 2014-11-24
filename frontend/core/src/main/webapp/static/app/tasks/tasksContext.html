@@ -3,7 +3,7 @@
     <div class="group-mixed heading vertically-centered">
       <div class="group-mixed--middle">
         <h2 class="group-heading justified">
-          <a ng-if="context" href ng-click="openEditor('tag', context)">
+          <a href ng-if="context" class="link" ng-click="openEditor('tag', context)">
             <span class="text-heading" ng-bind="'@' + context.title"
             ng-class="context.title.length > 6 && 'long'" clamp=2></span>
           </a>

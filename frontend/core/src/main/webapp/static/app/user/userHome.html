@@ -6,18 +6,18 @@
       <h3 class="row-form">switch to</h3>
       <div ng-repeat="(key, value) in collectives">
         <div ng-if="value[2] === false && !isCollectiveActive(key)">
-          <a href class="row-form" ng-click="setCollectiveActive(key)">
+          <a href class="row-form link" ng-click="setCollectiveActive(key)">
             <span ng-bind="value[0]"></span>
           </a>
         </div>
       </div>
-      <a href class="row-form" ng-if="!isMyActive()"  ng-click="setMyActive()" class="row-form">
+      <a href class="row-form link" ng-if="!isMyActive()"  ng-click="setMyActive()" class="row-form">
         <span ng-bind="getUserEmail()"></span>
       </a>
     </div>
 
     <div class="group-mixed">
-      <a href class="group-mixed--middle" swiper-click="swipeToDetails('account')">
+      <a href class="group-mixed--middle link" swiper-click="swipeToDetails('account')">
         <span class="text-link">account</span>
       </a>
       <div class="group-mixed--right">
@@ -27,7 +27,7 @@
       </div>
     </div>
     <div class="group-mixed">
-      <a href class="group-mixed--middle" swiper-click="swipeToDetails('settings')">
+      <a href class="group-mixed--middle link" swiper-click="swipeToDetails('settings')">
         <span class="text-link">settings</span>
       </a>
       <div class="group-mixed--right">
@@ -37,7 +37,7 @@
       </div>
     </div>
     <div class="group-mixed">
-      <a href class="group-mixed--middle" swiper-click="swipeToDetails('about')">
+      <a href class="group-mixed--middle link" swiper-click="swipeToDetails('about')">
         <span class="text-link">about</span>
       </a>
       <div class="group-mixed--right">
@@ -47,7 +47,7 @@
       </div>
     </div>
     <div ng-if="isAdmin()" class="group-mixed">
-      <a href class="group-mixed--middle" swiper-click="changeFeature('admin')">
+      <a href class="group-mixed--middle link" swiper-click="changeFeature('admin')">
         <span class="text-link">admin</span>
       </a>
     </div>

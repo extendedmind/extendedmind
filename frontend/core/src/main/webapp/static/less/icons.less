@@ -105,6 +105,15 @@ Icon classes
   }
 }
 
+// 1. Change color for active icons colored with @color-text.
+.icon-menu,
+.icon-logo,
+.icon-trash {
+  &:active:after {
+    color: @color-text-pressed; // [1]
+  }
+}
+
 .icon-toggle-completed {
   font-size: @size-icon-toggle-completed;
   line-height: @size-icon-toggle-completed;
@@ -125,6 +134,9 @@ Icon classes
     .set-icon-font;
     color: @color-text-highlighted;
     content: @icon-plus;
+  }
+  &:active:after {
+    color: @color-text-highlighted-pressed;
   }
 }
 
