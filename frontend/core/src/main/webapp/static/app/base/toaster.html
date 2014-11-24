@@ -3,8 +3,8 @@
   <!-- DELETED -->
   <div class="group-mixed--middle textgroup-toaster" ng-switch-when="deleted">
     <span ng-bind="notification.itemType + ' deleted,'"></span>
-    <a href ng-click="closeNotificationAndCall(notification, notification.item, notification.undoFn)">
-      <span class="text-highlighted">undo</span><span>?</span>
+    <a href class="highlighted" ng-click="closeNotificationAndCall(notification, notification.item, notification.undoFn)">
+      <span>undo</span><span>?</span>
     </a>
   </div>
 
@@ -15,12 +15,12 @@
 
   <!-- INBOX -->
   <div class="group-mixed--middle textgroup-toaster" ng-switch-when="inbox">
-    <a href ng-click="closeNotificationAndCall(notification, notification.item, notification.openFn)">
-      <span class="text-highlighted">item</span>
+    <a href class="highlighted" ng-click="closeNotificationAndCall(notification, notification.item, notification.openFn)">
+      <span>item</span>
     </a>
     <span>saved to</span>
-    <a href ng-click="closeNotificationAndCall(notification, notification.item, notification.gotoFn)">
-      <span class="text-highlighted">inbox</span>
+    <a href class="highlighted" ng-click="closeNotificationAndCall(notification, notification.item, notification.gotoFn)">
+      <span>inbox</span>
     </a>
   </div>
 

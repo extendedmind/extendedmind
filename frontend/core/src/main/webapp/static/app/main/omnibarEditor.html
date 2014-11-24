@@ -41,15 +41,15 @@
     <footer class="container-content--after editor-footer" editor-footer="containerInfo" editor-footer-toggled-callback="setKeywordsAndItemsFilters" editor-footer-expand-height-change="notifyFilteredKeywordsLengthChange">
 
       <div class="group-symmetrical">
-        <a href ng-hide="footerExpandOpen" class="group-symmetrical--left animate-fade-in-out" ng-click="convertToTask()">
+        <a href ng-hide="footerExpandOpen" class="group-symmetrical--left animate-fade-in-out link" ng-click="convertToTask()">
           <span class="text-convert">task</span>
         </a>
         <div ng-if="keywords && keywords.length" class="group-symmetrical--middle">
-          <a href ng-click="toggleExpand()">
+          <a href class="link" ng-click="toggleExpand()">
             <span>#</span>
           </a>
         </div>
-        <a href ng-hide="footerExpanded" class="group-symmetrical--right" ng-click="convertToNote()">
+        <a href ng-hide="footerExpanded" class="group-symmetrical--right link" ng-click="convertToNote()">
           <span class="text-convert">note</span>
         </a>
         <a href ng-if="footerExpanded && (!selectedKeywords || !selectedKeywords.length)" class="group-symmetrical--right highlighted" ng-click="toggleExpandFooterToMaxHeight()">
@@ -77,7 +77,7 @@
         <!-- SELECT MODE -->
         <div ng-if="!footerExpandedToMaxHeight" class="keywords-container row">
           <div class="keyword-wrapper" ng-repeat="keyword in filteredItems.unselectedKeywords = (keywords | filter:keywordsFilter) | filter:{title:keywordsSearch.text} | orderBy:'title'">
-            <a href class="keyword" ng-click="selectKeyword(keyword)">
+            <a href class="keyword link" ng-click="selectKeyword(keyword)">
               <span class="text-keyword" ng-bind="'#' + keyword.title" clamp=1></span>
             </a>
           </div>
@@ -86,7 +86,7 @@
         <!-- EDIT MODE -->
         <div ng-if="footerExpandedToMaxHeight" class="keywords-container row">
           <div class="keyword-wrapper" ng-repeat="keyword in keywords | orderBy:'title'">
-            <a href class="keyword" ng-click="initializeEditor('tag', keyword)">
+            <a href class="keyword link" ng-click="initializeEditor('tag', keyword)">
               <span class="text-keyword" ng-bind="'#' + keyword.title" clamp=1></span>
             </a>
           </div>

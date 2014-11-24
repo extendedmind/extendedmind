@@ -6,8 +6,8 @@
           <span class="text-navigation-back" ng-class="!isFirstSlide() && 'not-swipeable'" ng-bind="titlebarHasText() && !note.deleted ? 'save' : 'back'"></span>
         </a>
         <div ng-hide="onboardingInProgress" ng-if="mode === 'fullScreen'" class="group-symmetrical--middle width-large animate-fade-in-out">
-          <a href ng-class="link-navigation" ng-click="toggleNoteEditMode()">
-            <span class="text-navigation downplayed">note settings</span>
+          <a href class="link-navigation downplayed" ng-click="toggleNoteEditMode()">
+            <span class="text-navigation">note settings</span>
           </a>
         </div>
         <a ng-if="!note.deleted && !onboardingInProgress" class="group-symmetrical--right" href ng-click="deleteNoteInEdit()"><span class="icon-trash"></span></a>
@@ -48,7 +48,7 @@
 
           <div ng-if="!listPickerOpen">
             <div ng-hide="mode === 'fullScreen'" class="row-vertically-centered">
-              <a href ng-class="{downplayed: !note.trans.list}" ng-click="openListPicker()">
+              <a href ng-class="note.trans.list ? 'link' : 'downplayed'" ng-click="openListPicker()">
                 <span class="text-link" ng-bind="note.trans.list ? getListTitleFromUUID(note.trans.list) : 'select list\u2026'"></span>
               </a>
             </div>
@@ -110,7 +110,7 @@
 
           <div ng-if="keywords" class="keywords-container row">
             <div class="keyword-wrapper" ng-repeat="keyword in keywords | keywordsFilter:{name:'byOtherThanNoteKeywords', item: note} | filter:newKeyword.title | orderBy:'title'">
-              <a href class="keyword" ng-click="addKeywordToNote(note, keyword)">
+              <a href class="keyword link" ng-click="addKeywordToNote(note, keyword)">
                 <span class="text-keyword" ng-bind="'#' + keyword.title" clamp=1></span>
               </a>
             </div>
@@ -121,10 +121,10 @@
 
           <div class="table">
             <div class="table-row">
-              <a href class="table-cell" ng-click="convertToTask(note)">
+              <a href class="table-cell link" ng-click="convertToTask(note)">
                 <span class="text-convert">task</span>
               </a>
-              <a href class="table-cell" ng-click="convertToList(note)">
+              <a href class="table-cell link" ng-click="convertToList(note)">
                 <span class="text-convert">list</span>
               </a>
             </div>
