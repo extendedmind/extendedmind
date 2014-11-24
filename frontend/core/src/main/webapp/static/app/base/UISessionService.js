@@ -226,8 +226,7 @@
       // NOTE: Should delayedNotificationMap[uuid] be traversed as well?
       if (notification.reverseType) removeReverseNotification(notification, notificationMap[uuid]);
       notificationMap[uuid].push(notification);
-      // NOTE: should notifications be removed/marked as displayed?
-      executeNotificationsActiveCallbacks(notificationMap[uuid]);
+      executeNotificationsActiveCallbacks([notification]);
     },
     pushDelayedNotification: function(notification) {
       var uuid = this.getActiveUUID();
