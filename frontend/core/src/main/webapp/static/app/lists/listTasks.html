@@ -1,5 +1,5 @@
 <div class="container-content--outer" ng-if="isFeatureActive('list')" list-container drawer-handle="left">
-  <section class="container-content" list="allActiveTasks | itemsFilter:{name:'byListUUID', filterBy: list.uuid}" list-order="top" swiper-prevent>
+  <section class="container-content" list="allTasks | itemsFilter:{name:'byListUUID', filterBy: list.uuid}" list-order="top" swiper-prevent>
     <div class="group-mixed heading">
       <div class="group-mixed--middle">
         <h2 class="group-heading justified">
