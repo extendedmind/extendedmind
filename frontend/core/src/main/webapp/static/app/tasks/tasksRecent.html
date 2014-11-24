@@ -18,7 +18,7 @@
 
     <div ng-if="!isOnboarded('tasks') && checkListOnboardingLock('tasks', undefined)" class="group-instruction">
       <h2 class="group-heading instruction row">what do you want to
-        <span class="highlighted">get done?</span>
+        <span class="highlighted">get done</span>?
       </h2>
       <div class="textgroup-ingress row">add a <span class="text-highlighted">task</span> by clicking the
       plus sign below</div>
@@ -28,8 +28,11 @@
         <span ng-if="isOneOnboardingItemCreated('tasks')">first</span> <span class="highlighted">task</span>
         created!
       </h2>
-      <div class="textgroup-ingress row">go to <span class="text-highlighted">notes</span> by clicking
-      the menu icon in the top-left corner</div>
+      <div class="textgroup-ingress row">go to
+        <a href ng-click="changeFeature('notes', undefined, true)">
+          <span class="text-highlighted">notes</span>
+        </a> by clicking the menu icon in the top-left corner
+      </div>
       <div class="text-normal row">&#8230;or add more tasks by hitting the plus sign again</div>
     </div>
   </section>
