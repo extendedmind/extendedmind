@@ -28,7 +28,7 @@
         </div>
       </div>
 
-      <div ng-if="!isOnboarded('notes') && checkListOnboardingLock('notes', 'on')" class="group-instruction-input">
+      <div ng-if="!isOnboarded('notes') && checkListOnboardingLock('notes', 'on')">
         <div ng-if="!titlebar.text || titlebar.text.length === 0" class="text-details row">e.g. reading suggestions, budget meeting minutes, summer plans</div>
          <div ng-if="titlebar.text.length && !hideNoteTitle" class="text-details row">when done, hit return</div>
        </div>
@@ -69,7 +69,7 @@
               </textarea>
             </div>
 
-            <div ng-if="!isOnboarded('notes') && checkListOnboardingLock('notes', 'on')" class="group-instruction-input">
+            <div ng-if="!isOnboarded('notes') && checkListOnboardingLock('notes', 'on')">
               <div ng-if="note.content.length" class="text-details row">when done, save your note by
                 clicking 'save' in the top-left corner or swipe left
               </div>
