@@ -8,10 +8,12 @@
         <div><span class="text-heading-primary" clamp=2 ng-bind="getCurrentHeading()"></span></div>
       </a>
     </div>
-    <button ng-disabled="onboardingInProgress" class="group-symmetrical--right btn" ng-click="openEditor('omnibar')">
+    <button ng-hide="onboardingInProgress" class="group-symmetrical--right btn animate-fade-in" ng-click="openEditor('omnibar')">
       <span class="icon-logo"></span>
     </button>
   </div>
+
+  <!-- CUSTOM TOOLBAR -->
   <div ng-if="isCustomToolbar()" class="group-symmetrical" editable-field-container="auto">
     <a href class="group-symmetrical--left link-navigation highlighted" ng-click="customToolbar.leftActionFn()">
       <span class="text-navigation" ng-bind="customToolbar.leftActionName"></span>
@@ -25,4 +27,5 @@
       <span class="text-navigation" ng-bind="customToolbar.rightActionName"></span>
     </a>
   </div>
+
 </div>

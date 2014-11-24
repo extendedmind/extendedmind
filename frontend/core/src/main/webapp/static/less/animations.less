@@ -157,8 +157,8 @@ input[type="checkbox"]:checked + label:before {
   transition: opacity @speed-animate-date-active @timing-animate-date-active;         // [1]
 }
 
-// 1. Fade in animating only ng-enter part of ng-if, and ng-hide.
-.animate-fade-in.ng-enter,
+// 1. Fade in (and out). Animating only ng-enter part of ng-if in fade in, and ng-hide.
+.animate-fade-in.ng-enter, .animate-fade-in.ng-hide-remove,
 .animate-fade-in-out.ng-hide-add, .animate-fade-in-out.ng-hide-remove,
 .animate-fade-in-out.ng-enter, .animate-fade-in-out.ng-leave {
   pointer-events: none;
@@ -170,11 +170,13 @@ input[type="checkbox"]:checked + label:before {
 }
 
 // 1. Fade in start.
+.animate-fade-in.ng-hide-remove,
 .animate-fade-in.ng-enter {
   opacity: 0; // [1]
 }
 
 // 1. Fade in end.
+.animate-fade-in.ng-hide-remove.ng-hide-remove-active,
 .animate-fade-in.ng-enter.ng-enter-active {
   opacity: 1; // [1]
 }
