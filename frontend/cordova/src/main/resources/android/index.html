@@ -44,13 +44,12 @@
     // device APIs are available
     //
     function onDeviceReady() {
-      // Now safe to use device APIs
-
+      navigator.splashscreen.hide();
     }
 
   </script>
 </head>
-<body>
+<body onload="onLoad()">
   <div class="android" root-view></div>
   <script src="static/${project.version}/em.min.js"></script>
 </body>
