@@ -734,7 +734,8 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 }
 
 // 1. Align show completed tasks button with heading.
-.group-mixed.heading > .group-mixed--right > button {
+//    Font-size and line-height is different than heading so adjust position correctly.
+.group-mixed.heading > .group-mixed--right[task-list-completed] > button {
   margin-top: @margin-top-heading-justified / 2 - 1px;  // [1]
 }
 
