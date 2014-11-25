@@ -119,15 +119,21 @@
   }
 
   /*
-  * Search filter for all item fields: title, content and description.
+  * Case insensitive search filter for all item fields: title, content and description.
+  *
+  * @see: http://stackoverflow.com/a/2140644
+  *       http://en.wikipedia.org/wiki/Capital_%E1%BA%9E
+  *       http://msdn.microsoft.com/en-us/library/bb386042.aspx
   */
   function searchItemFields(item) {
-    if ($scope.searchText && $scope.searchText.delayed &&
-        (item.title.indexOf($scope.searchText.delayed)!=-1 ||
-         (item.description && item.description.indexOf($scope.searchText.delayed)!=-1) ||
-         (item.content && item.content.indexOf($scope.searchText.delayed)!=-1)))
-    {
-      return true;
+    if ($scope.searchText && $scope.searchText.delayed) {
+      var delayedUserInput = angular.uppercase($scope.searchText.delayed);
+      if (item.title && angular.uppercase(item.title).indexOf(delayedUserInput) !== -1 ||
+          item.description && angular.uppercase(item.description).indexOf(delayedUserInput) !== -1 ||
+          item.content && angular.uppercase(item.content).indexOf(delayedUserInput) !== -1)
+      {
+        return true;
+      }
     }
     return false;
   }
@@ -248,5 +254,5 @@
 }
 
 OmnibarEditorController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout',
-  'ArrayService', 'packaging', 'UISessionService'];
+'ArrayService', 'packaging', 'UISessionService'];
 angular.module('em.main').controller('OmnibarEditorController', OmnibarEditorController);
