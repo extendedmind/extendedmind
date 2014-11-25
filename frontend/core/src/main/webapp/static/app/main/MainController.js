@@ -179,7 +179,7 @@ function MainController(
   };
 
   $scope.isVibrationDisabled = function(){
-    return UserSessionService.getUIPreference('hideFooter');
+    return UserSessionService.getUIPreference('disableVibration');
   };
 
   // FEATURE CHANGING
