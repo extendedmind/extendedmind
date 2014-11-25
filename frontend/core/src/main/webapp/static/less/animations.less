@@ -11,12 +11,17 @@
 
 @timing-animate: cubic-bezier(0.250, 0.460, 0.450, 0.940);
 @timing-animate-steep: cubic-bezier(.01, 1.11, 0, .97);
-@timing-animate-gradual: cubic-bezier(.97,.01,.93,.63);
+@timing-animate-gradual: cubic-bezier(.97, .01, .93, .63);
 
 @speed-animate-item-fade: .5s;
 @speed-animate-item-shrink: .4s;
 @delay-animate-item-shrink: .6s;
 @timing-animate-item: @timing-animate;
+
+@speed-animate-checkbox-checked: 3s;
+@speed-animate-checkbox-checked-highlighted: 1.5s;
+@speed-animate-checkbox-checked-downplayed: 1.5s;
+@delay-animate-checkbox-checked-downplayed: 1.5s;
 
 @speed-animate-toaster-fade: .5s;
 @timing-animate-toaster: @timing-animate;
@@ -88,9 +93,98 @@
   opacity: 1;       // [1]
 }
 
-// Animate checkbox checking
+// Animate checkbox checking.
 input[type="checkbox"]:checked + label:before {
-  transition: color 2s cubic-bezier(.01,1.11,0,.97);
+  -webkit-transition: color 2s @timing-animate-steep; // [1,2]
+  -moz-transition: color 2s @timing-animate-steep;    // [1,2]
+  -o-transition: color 2s @timing-animate-steep;      // [1,2]
+  -ms-transition: color 2s @timing-animate-steep;     // [1,2]
+  transition: color 2s @timing-animate-steep;
+}
+
+.animate-checkbox-checked,
+.animate-checkbox-checked-add {
+  -webkit-animation-duration: @speed-animate-checkbox-checked;
+  animation-duration: @speed-animate-checkbox-checked;
+  // 1. Clear default checkox transition.
+  // 2. Start with grayish color.
+  input[type="checkbox"]:checked + label:before {
+    -webkit-transition: none; // [1]
+    -moz-transition: none;    // [1]
+    -o-transition: none;      // [1]
+    -ms-transition: none;     // [1]
+    transition: none;         // [1]
+    color: @color-text-downplayed-light;  // [2]
+  }
+}
+
+// 1. Downplay with gray color.
+.animate-checkbox-checked {
+  .text-link {
+    color: @color-text-downplayed;  // [1]
+  }
+}
+
+// 1. First highlight checkbox, then downplay it.
+.animate-checkbox-checked-add.animate-checkbox-checked-add-active {
+  input[type="checkbox"]:checked + label:before {
+    -webkit-animation-name: checkbox-checked-hightlighted, checkbox-checked-downplayed; // [1]
+    -webkit-animation-duration: @speed-animate-checkbox-checked-highlighted, @speed-animate-checkbox-checked-downplayed;
+    -webkit-animation-timing-function: @timing-animate-steep, @timing-animate-gradual;
+    -webkit-animation-delay: 0s, @delay-animate-checkbox-checked-downplayed;
+
+    animation-name: checkbox-checked-hightlighted, checkbox-checked-downplayed; // [1]
+    animation-duration: @speed-animate-checkbox-checked-highlighted, @speed-animate-checkbox-checked-downplayed;
+    animation-timing-function: @timing-animate-steep, @timing-animate-gradual;
+    animation-delay: 0s, @delay-animate-checkbox-checked-downplayed;
+  }
+}
+
+.animate-checkbox-checked-add {
+  .text-link {
+    -webkit-transition-property: color;
+    -webkit-transition-duration: @speed-animate-checkbox-checked-downplayed;
+    -webkit-transition-timing-function: @timing-animate-gradual;
+    -webkit-transition-delay: @delay-animate-checkbox-checked-downplayed;
+
+    -moz-transition-property: color;
+    -moz-transition-duration: @speed-animate-checkbox-checked-downplayed;
+    -moz-transition-timing-function: @timing-animate-gradual;
+    -moz-transition-delay: @delay-animate-checkbox-checked-downplayed;
+
+    -o-transition-property: color;
+    -o-transition-duration: @speed-animate-checkbox-checked-downplayed;
+    -o-transition-timing-function: @timing-animate-gradual;
+    -o-transition-delay: @delay-animate-checkbox-checked-downplayed;
+
+    -ms-transition-property: color;
+    -ms-transition-duration: @speed-animate-checkbox-checked-downplayed;
+    -ms-transition-timing-function: @timing-animate-gradual;
+    -ms-transition-delay: @delay-animate-checkbox-checked-downplayed;
+
+    transition-property: color;
+    transition-duration: @speed-animate-checkbox-checked-downplayed;
+    transition-timing-function: @timing-animate-gradual;
+    transition-delay: @delay-animate-checkbox-checked-downplayed;
+  }
+}
+
+@-webkit-keyframes checkbox-checked-hightlighted {
+  from {color: @color-text-downplayed-light;}
+  to {color: @color-text-highlighted;}
+}
+@keyframes checkbox-checked-hightlighted {
+  from {color: @color-text-downplayed-light;}
+  to {color: @color-text-highlighted;}
+}
+
+@-webkit-keyframes checkbox-checked-downplayed {
+  from {color: @color-text-highlighted;}
+  to {color: @color-text-downplayed-light;}
+}
+@keyframes checkbox-checked-downplayed {
+  from {color: @color-text-highlighted;}
+  to {color: @color-text-downplayed-light;}
 }
 
 // 1. Simple fade-in-out animation.
