@@ -225,7 +225,7 @@
   BackendClientService.registerBeforeLastGetCallback(synchronizeUserAccountCallback);
   BackendClientService.registerDefaultCallback(defaultCallback);
 
-  var getAllOnline = function getAllOnline(ownerUUID, getAllMethod, deferred) {
+  function getAllOnline(ownerUUID, getAllMethod, deferred) {
     getAllMethod(ownerUUID).then(
       function(result) {
         deferred.resolve(true);
@@ -250,7 +250,7 @@
       });
   };
 
-  var getAllItemsOnline = function getAllItemsOnline(ownerUUID) {
+  function getAllItemsOnline(ownerUUID) {
     return BackendClientService.getSecondary('/api/' +
                                              ownerUUID +
                                              '/items', getItemsRegex,
@@ -274,7 +274,7 @@
     });
   };
 
-  var synchronize = function(ownerUUID) {
+  function synchronize(ownerUUID) {
     var deferred = $q.defer();
     var latestModified = UserSessionService.getLatestModified(ownerUUID);
     var url = '/api/' + ownerUUID + '/items';
@@ -309,7 +309,7 @@
     return deferred.promise;
   };
 
-  var getAllArchivedAndCompletedOnline = function getAllArchivedOnline(ownerUUID) {
+  function getAllArchivedAndCompletedOnline(ownerUUID) {
     return BackendClientService.getSecondary('/api/' +
                                              ownerUUID +
                                              '/items?archived=true&completed=true&active=false',
@@ -326,7 +326,7 @@
     });
   };
 
-  var getAllDeletedOnline = function getAllArchivedOnline(ownerUUID) {
+  function getAllDeletedOnline(ownerUUID) {
     return BackendClientService.getSecondary('/api/' +
                                              ownerUUID +
                                              '/items?deleted=true&active=false',
