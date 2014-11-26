@@ -63,7 +63,7 @@
 
   var retryingExecution = false;
   // Recursive method to empty the queue
-  function executeRequests() {
+  function executeRequests(recursive, previousWasPrimary) {
     // First always check if primary should be created first
     // to avoid errors with authentication
     if (!HttpRequestQueueService.isPrimaryHead() && primaryCreateCallback) {
@@ -72,7 +72,12 @@
         processPrimaryRequest(primaryRequestInfo.url, primaryRequestInfo.data);
       }
     }
-    var headRequest = HttpRequestQueueService.getHead();
+    // Get head request but skip the secondary request if recursively emptying queue,
+    // (and previous was not the primary request in which case secondary will need
+    // to be next). This is needed to prevent secondary requests from being called
+    // in between emptying a long queue, where the secondary request would get results of
+    // earlier queue operations and cause all sorts of problems.
+    var headRequest = HttpRequestQueueService.getHead(recursive && !previousWasPrimary);
     if (headRequest) {
       if (!headRequest.last) {
         $http(headRequest.content).
@@ -101,7 +106,7 @@
           }
 
           // Try to execute the next request in the queue
-          executeRequests();
+          executeRequests(true, headRequest.primary);
         })
         .error(function(data, status, headers, config) {
           if (isOffline(status)) {
@@ -120,7 +125,7 @@
             if (!retryingExecution && status === 403) {
               retryingExecution = true;
               HttpRequestQueueService.releaseLock();
-              executeRequests();
+              executeRequests(true, headRequest.primary);
             } else {
               retryingExecution = false;
               if (headRequest.errorStatus !== undefined && headRequest.errorStatus === status) {
@@ -130,7 +135,7 @@
                 // unchanged, so it looks like something is stored even though it isn't. It
                 // is still a better alternative than endless looping.
                 HttpRequestQueueService.remove(headRequest);
-                executeRequests();
+                executeRequests(true, headRequest.primary);
               } else {
                 // Emit error to root scope, so that
                 // it can be listened on at by the application

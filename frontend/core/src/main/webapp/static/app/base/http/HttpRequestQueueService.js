@@ -104,10 +104,10 @@ function HttpRequestQueueService() {
     }
   }
 
-  function getHead() {
+  function getHead(skipSecondary) {
     if (primary) {
       return primary;
-    } else if (secondary) {
+    } else if (secondary && !skipSecondary) {
       return secondary;
     } else if (queue && queue.length > 0) {
       return queue[0];
@@ -223,12 +223,12 @@ function HttpRequestQueueService() {
     releaseLock: function() {
       processing = false;
     },
-    getHead: function() {
+    getHead: function(skipSecondary) {
       if (!processing) {
-        var headRequest = getHead();
+        var headRequest = getHead(skipSecondary);
         if (headRequest) {
           processing = true;
-          return getHead();
+          return headRequest;
         }
       }
     },
