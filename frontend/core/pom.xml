@@ -260,27 +260,8 @@
           <version>2.6</version>
           <executions>
               <execution>
-                  <id>copy-em-unpacked</id>
-                  <phase>prepare-package</phase>
-                  <goals>
-                      <goal>copy-resources</goal>
-                  </goals>
-                  <configuration>
-                      <outputDirectory>${project.basedir}/src/main/webapp/static/css/</outputDirectory>
-                      <overwrite>true</overwrite>
-                      <resources>
-                          <resource>
-                              <directory>${project.build.directory}/less/</directory>
-                              <includes>
-                                  <include>em.css</include>
-                              </includes>
-                          </resource>
-                      </resources>
-                  </configuration>
-              </execution>
-              <execution>
                   <id>copy-favicons</id>
-                  <phase>prepare-package</phase>
+                  <phase>generate-resources</phase>
                   <goals>
                       <goal>copy-resources</goal>
                   </goals>
@@ -296,7 +277,7 @@
               </execution>
               <execution>
                   <id>copy-store-icons</id>
-                  <phase>prepare-package</phase>
+                  <phase>generate-resources</phase>
                   <goals>
                       <goal>copy-resources</goal>
                   </goals>
@@ -307,8 +288,26 @@
                           <resource>
                               <directory>${project.basedir}/src/main/webapp/landing/img</directory>
                               <includes>
-                                  <include>appstore.png</include>
-                                  <include>playstore.png</include>
+                                  <include>download*@2x.png</include>
+                              </includes>
+                          </resource>
+                      </resources>
+                  </configuration>
+              </execution>
+              <execution>
+                  <id>copy-em-unpacked</id>
+                  <phase>prepare-package</phase>
+                  <goals>
+                      <goal>copy-resources</goal>
+                  </goals>
+                  <configuration>
+                      <outputDirectory>${project.basedir}/src/main/webapp/static/css/</outputDirectory>
+                      <overwrite>true</overwrite>
+                      <resources>
+                          <resource>
+                              <directory>${project.build.directory}/less/</directory>
+                              <includes>
+                                  <include>em.css</include>
                               </includes>
                           </resource>
                       </resources>
