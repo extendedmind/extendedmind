@@ -113,9 +113,11 @@ function ArrayService() {
     },
     // item and activeArray are mandatory, rest are optional
     getActiveArrayInfo: function(item, activeArray, deletedArray, otherArrays) {
-      if (activeArray.indexOf(item) !== -1) return {type: 'active', array: activeArray};
-      else if (deletedArray && deletedArray.indexOf(item) !== -1) return {type: 'deleted', array: deletedArray};
-      else if (otherArrays) {
+      if (activeArray && activeArray.findFirstIndexByKeyValue('uuid', item.uuid) !== undefined){
+        return {type: 'active', array: activeArray};
+      }else if (deletedArray && deletedArray.findFirstIndexByKeyValue('uuid', item.uuid) !== undefined){
+        return {type: 'deleted', array: deletedArray};
+      }else if (otherArrays) {
         var otherArrayWithItemInfo = getFirstMatchingArrayInfoByUUID(item.uuid, otherArrays);
         if (otherArrayWithItemInfo) return {type: otherArrayWithItemInfo.id, array: otherArrayWithItemInfo.array};
       }

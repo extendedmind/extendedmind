@@ -100,8 +100,29 @@
       initializeArrays(ownerUUID);
       return lists[ownerUUID].deletedLists;
     },
-    getListByUUID: function(uuid, ownerUUID) {
-      return lists[ownerUUID].activeLists.findFirstObjectByKeyValue('uuid', uuid);
+    getListInfo: function(uuid, ownerUUID) {
+      initializeArrays(ownerUUID);
+      var list = lists[ownerUUID].activeLists.findFirstObjectByKeyValue('uuid', uuid);
+      if (list){
+        return {
+          type: 'active',
+          list: list
+        };
+      }
+      list = lists[ownerUUID].deletedLists.findFirstObjectByKeyValue('uuid', uuid);
+      if (list){
+        return {
+          type: 'deleted',
+          list: list
+        };
+      }
+      list = lists[ownerUUID].archivedLists.findFirstObjectByKeyValue('uuid', uuid);
+      if (list){
+        return {
+          type: 'archived',
+          list: list
+        };
+      }
     },
     saveList: function(list, ownerUUID) {
       initializeArrays(ownerUUID);
@@ -156,8 +177,6 @@
     },
     removeList: function(list, ownerUUID) {
       initializeArrays(ownerUUID);
-      // Check that list is not deleted before trying to remove
-      if (this.getListStatus(list, ownerUUID) === 'deleted') return;
       ArrayService.removeFromArrays(list,
                                     lists[ownerUUID].activeLists,
                                     lists[ownerUUID].deletedLists,

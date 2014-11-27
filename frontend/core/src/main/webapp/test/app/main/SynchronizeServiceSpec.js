@@ -214,14 +214,16 @@ describe('SynchronizeService', function() {
               'created': 1390912600947,
               'modified': 1390912600947,
               'title': 'trip to Dublin',
-              'completable': true,
-              'due': '2013-10-31'
+            }, {
+              'uuid': 'cf726d03-8fee-4614-8b68-f9f885938a53',
+              'created': 1390915600947,
+              'modified': 1390915600947,
+              'title': 'shopping list',
             }, {
               'uuid': '07bc96d1-e8b2-49a9-9d35-1eece6263f98',
               'created': 1390912600983,
               'modified': 1390912600983,
-              'title': 'write essay on cognitive biases',
-              'completable': true
+              'title': 'write essay on cognitive biases'
           }],
           'tags': [{
               'uuid': '1208d45b-3b8c-463e-88f3-f7ef19ce87cd',
@@ -306,7 +308,7 @@ describe('SynchronizeService', function() {
     expect(TagsService.getTags(testOwnerUUID).length)
       .toBe(3);
     expect(ListsService.getLists(testOwnerUUID).length)
-      .toBe(3);
+      .toBe(4);
     expect(TasksService.getTasks(testOwnerUUID).length)
       .toBe(4);
     expect(NotesService.getNotes(testOwnerUUID).length)
@@ -317,7 +319,7 @@ describe('SynchronizeService', function() {
 
     // Check that task got the right context
 
-    expect(TasksService.getTaskByUUID('9a1ce3aa-f476-43c4-845e-af59a9a33760',testOwnerUUID)
+    expect(TasksService.getTaskInfo('9a1ce3aa-f476-43c4-845e-af59a9a33760',testOwnerUUID).task
             .trans.context).toBe('1208d45b-3b8c-463e-88f3-f7ef19ce87cd');
   });
 
@@ -366,7 +368,7 @@ describe('SynchronizeService', function() {
       .toBe(0);
 
     // First complete one of the tasks, but not the other
-    var printTickets = TasksService.getTaskByUUID('9a1ce3aa-f476-43c4-845e-af59a9a33760', testOwnerUUID);
+    var printTickets = TasksService.getTaskInfo('9a1ce3aa-f476-43c4-845e-af59a9a33760', testOwnerUUID).task;
     $httpBackend.expectPOST('/api/' + MockUserSessionService.getActiveUUID() + '/task/' + printTickets.uuid + '/complete')
        .respond(200, completeTaskResponse);
     TasksService.completeTask(printTickets, testOwnerUUID);
@@ -376,22 +378,22 @@ describe('SynchronizeService', function() {
     expect(printTickets.completed).toBeDefined();
 
     // Archive list
-    var tripToDublin = ListsService.getListByUUID('bf726d03-8fee-4614-8b68-f9f885938a51', testOwnerUUID);
+    var tripToDublin = ListsService.getListInfo('bf726d03-8fee-4614-8b68-f9f885938a51', testOwnerUUID).list;
     $httpBackend.expectPOST('/api/' + MockUserSessionService.getActiveUUID() + '/list/' + tripToDublin.uuid + '/archive')
        .respond(200, archiveTripToDublinResponse);
     ListsService.archiveList(tripToDublin, testOwnerUUID);
     $httpBackend.flush();
 
     // The list should not be active anymore
-    expect(ListsService.getListByUUID(tripToDublin.uuid, testOwnerUUID))
-      .toBeUndefined();
+    expect(ListsService.getListInfo(tripToDublin.uuid, testOwnerUUID).type)
+      .toBe('archived');
     expect(ListsService.getLists(testOwnerUUID).length)
-      .toBe(2);
+      .toBe(3);
     expect(ListsService.getArchivedLists(testOwnerUUID).length)
       .toBe(1);
 
     // TagsService should have the new generated tag
-    expect(TagsService.getTagByUUID(archiveTripToDublinResponse.history.uuid, testOwnerUUID))
+    expect(TagsService.getTagInfo(archiveTripToDublinResponse.history.uuid, testOwnerUUID))
       .toBeDefined();
 
     // There should be two new archived task
@@ -781,6 +783,238 @@ describe('SynchronizeService', function() {
       .toBeUndefined();
     expect(notes[4].modified)
       .toBe(undeleteItemResponse.modified);
+  });
+
+  it('should handle item, note and list converted to task in different client', function () {
+    var latestModified = Date.now() - 10000;
+    MockUserSessionService.latestModified = latestModified;
+
+    // 1. process an update response for one of the items
+
+    var itemsResponseWithItemToTask = {
+      tasks: [
+        {'uuid': 'f7724771-4469-488c-aabd-9db188672a9b',
+         'created': 1391278509634,
+         'modified': latestModified + 1000,
+         'title': 'should I start yoga?'
+        }
+      ]
+    };
+    SynchronizeService.synchronize(MockUserSessionService.getActiveUUID()).then(function(){
+      expect(ItemsService.getItems(testOwnerUUID).length)
+        .toBe(2);
+      expect(TasksService.getTasks(testOwnerUUID).length)
+        .toBe(5);
+    });
+    $httpBackend.expectGET('/api/' + MockUserSessionService.getActiveUUID() +
+                           '/items?modified=' + latestModified +
+                           '&deleted=true&archived=true&completed=true').respond(
+                           200, itemsResponseWithItemToTask);
+    latestModified = itemsResponseWithItemToTask.tasks[0].modified;
+    $httpBackend.flush();
+
+    var itemsResponseWithNoteToTask = {
+      tasks: [
+        {
+          'uuid': 'b2cd149a-a287-40a0-86d9-0a14462f22d8',
+          'created': 1391627811075,
+          'modified': latestModified + 1000,
+          'title': 'booth number A23',
+          'relationships': {
+            'parent': 'bf726d03-8fee-4614-8b68-f9f885938a51'
+          }
+        }
+      ]
+    };
+    SynchronizeService.synchronize(MockUserSessionService.getActiveUUID()).then(function(){
+      expect(NotesService.getNotes(testOwnerUUID).length)
+        .toBe(3);
+      expect(TasksService.getTasks(testOwnerUUID).length)
+        .toBe(6);
+    });
+    $httpBackend.expectGET('/api/' + MockUserSessionService.getActiveUUID() +
+                           '/items?modified=' + latestModified +
+                           '&deleted=true&archived=true&completed=true').respond(
+                           200, itemsResponseWithNoteToTask);
+    latestModified = itemsResponseWithNoteToTask.tasks[0].modified;
+    $httpBackend.flush();
+
+    var itemsResponseWithListToTask = {
+      tasks: [
+        {
+          'uuid': 'cf726d03-8fee-4614-8b68-f9f885938a53',
+          'created': 1390915600947,
+          'modified': 1390915600947,
+          'title': 'shopping list',
+        }
+      ]
+    };
+    SynchronizeService.synchronize(MockUserSessionService.getActiveUUID()).then(function(){
+      expect(ListsService.getLists(testOwnerUUID).length)
+        .toBe(3);
+      expect(TasksService.getTasks(testOwnerUUID).length)
+        .toBe(7);
+    });
+    $httpBackend.expectGET('/api/' + MockUserSessionService.getActiveUUID() +
+                           '/items?modified=' + latestModified +
+                           '&deleted=true&archived=true&completed=true').respond(
+                           200, itemsResponseWithListToTask);
+    $httpBackend.flush();
+  });
+
+  it('should handle item, task and list converted to note in different client', function () {
+
+    var latestModified = Date.now() - 10000;
+    MockUserSessionService.latestModified = latestModified;
+
+    // 1. process an update response for one of the items
+
+    var itemsResponseWithItemToNote = {
+      notes: [
+        {'uuid': 'f7724771-4469-488c-aabd-9db188672a9b',
+         'created': 1391278509634,
+         'modified': latestModified + 1000,
+         'title': 'should I start yoga?'
+        }
+      ]
+    };
+    SynchronizeService.synchronize(MockUserSessionService.getActiveUUID()).then(function(){
+      expect(ItemsService.getItems(testOwnerUUID).length)
+        .toBe(2);
+      expect(NotesService.getNotes(testOwnerUUID).length)
+        .toBe(5);
+    });
+    $httpBackend.expectGET('/api/' + MockUserSessionService.getActiveUUID() +
+                           '/items?modified=' + latestModified +
+                           '&deleted=true&archived=true&completed=true').respond(
+                           200, itemsResponseWithItemToNote);
+    latestModified = itemsResponseWithItemToNote.notes[0].modified;
+    $httpBackend.flush();
+
+    var itemsResponseWithTaskToNote = {
+      notes: [
+        {
+          'uuid': '7b53d509-853a-47de-992c-c572a6952629',
+          'created': 1391278509698,
+          'modified': 1391278509698,
+          'completed': 1391278509917,
+          'title': 'clean closet'
+        }
+      ]
+    };
+    SynchronizeService.synchronize(MockUserSessionService.getActiveUUID()).then(function(){
+      expect(TasksService.getTasks(testOwnerUUID).length)
+        .toBe(3);
+      expect(NotesService.getNotes(testOwnerUUID).length)
+        .toBe(6);
+    });
+    $httpBackend.expectGET('/api/' + MockUserSessionService.getActiveUUID() +
+                           '/items?modified=' + latestModified +
+                           '&deleted=true&archived=true&completed=true').respond(
+                           200, itemsResponseWithTaskToNote);
+    latestModified = itemsResponseWithTaskToNote.notes[0].modified;
+    $httpBackend.flush();
+
+    var itemsResponseWithListToNote = {
+      notes: [
+        {
+          'uuid': 'cf726d03-8fee-4614-8b68-f9f885938a53',
+          'created': 1390915600947,
+          'modified': 1390915600947,
+          'title': 'shopping list',
+        }
+      ]
+    };
+    SynchronizeService.synchronize(MockUserSessionService.getActiveUUID()).then(function(){
+      expect(ListsService.getLists(testOwnerUUID).length)
+        .toBe(3);
+      expect(NotesService.getNotes(testOwnerUUID).length)
+        .toBe(7);
+    });
+    $httpBackend.expectGET('/api/' + MockUserSessionService.getActiveUUID() +
+                           '/items?modified=' + latestModified +
+                           '&deleted=true&archived=true&completed=true').respond(
+                           200, itemsResponseWithListToNote);
+    $httpBackend.flush();
+  });
+
+  it('should handle item, task and note converted to list in different client', function () {
+
+    var latestModified = Date.now() - 10000;
+    MockUserSessionService.latestModified = latestModified;
+
+    // 1. process an update response for one of the items
+
+    var itemsResponseWithItemToList = {
+      lists: [
+        {'uuid': 'f7724771-4469-488c-aabd-9db188672a9b',
+         'created': 1391278509634,
+         'modified': latestModified + 1000,
+         'title': 'should I start yoga?'
+        }
+      ]
+    };
+    SynchronizeService.synchronize(MockUserSessionService.getActiveUUID()).then(function(){
+      expect(ItemsService.getItems(testOwnerUUID).length)
+        .toBe(2);
+      expect(ListsService.getLists(testOwnerUUID).length)
+        .toBe(5);
+    });
+    $httpBackend.expectGET('/api/' + MockUserSessionService.getActiveUUID() +
+                           '/items?modified=' + latestModified +
+                           '&deleted=true&archived=true&completed=true').respond(
+                           200, itemsResponseWithItemToList);
+    latestModified = itemsResponseWithItemToList.lists[0].modified;
+    $httpBackend.flush();
+
+    var itemsResponseWithTaskToList = {
+      lists: [
+        {
+          'uuid': '7b53d509-853a-47de-992c-c572a6952629',
+          'created': 1391278509698,
+          'modified': 1391278509698,
+          'title': 'clean closet'
+        }
+      ]
+    };
+    SynchronizeService.synchronize(MockUserSessionService.getActiveUUID()).then(function(){
+      expect(TasksService.getTasks(testOwnerUUID).length)
+        .toBe(3);
+      expect(ListsService.getLists(testOwnerUUID).length)
+        .toBe(6);
+    });
+    $httpBackend.expectGET('/api/' + MockUserSessionService.getActiveUUID() +
+                           '/items?modified=' + latestModified +
+                           '&deleted=true&archived=true&completed=true').respond(
+                           200, itemsResponseWithTaskToList);
+    latestModified = itemsResponseWithTaskToList.lists[0].modified;
+    $httpBackend.flush();
+
+    var itemsResponseWithNoteToList = {
+      lists: [
+        {
+          'uuid': 'b2cd149a-a287-40a0-86d9-0a14462f22d8',
+          'created': 1391627811075,
+          'modified': latestModified + 1000,
+          'title': 'booth number A23',
+          'relationships': {
+            'parent': 'bf726d03-8fee-4614-8b68-f9f885938a51'
+          }
+        }
+      ]
+    };
+    SynchronizeService.synchronize(MockUserSessionService.getActiveUUID()).then(function(){
+      expect(NotesService.getNotes(testOwnerUUID).length)
+        .toBe(3);
+      expect(ListsService.getLists(testOwnerUUID).length)
+        .toBe(7);
+    });
+    $httpBackend.expectGET('/api/' + MockUserSessionService.getActiveUUID() +
+                           '/items?modified=' + latestModified +
+                           '&deleted=true&archived=true&completed=true').respond(
+                           200, itemsResponseWithNoteToList);
+    latestModified = itemsResponseWithNoteToList.lists[0].modified;
+    $httpBackend.flush();
   });
 
   it('should handle swap token when offline', function () {

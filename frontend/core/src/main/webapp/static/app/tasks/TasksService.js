@@ -200,8 +200,29 @@
       initializeArrays(ownerUUID);
       return tasks[ownerUUID].deletedTasks;
     },
-    getTaskByUUID: function(uuid, ownerUUID) {
-      return tasks[ownerUUID].activeTasks.findFirstObjectByKeyValue('uuid', uuid);
+    getTaskInfo: function(uuid, ownerUUID) {
+      initializeArrays(ownerUUID);
+      var task = tasks[ownerUUID].activeTasks.findFirstObjectByKeyValue('uuid', uuid);
+      if (task){
+        return {
+          type: 'active',
+          task: task
+        };
+      }
+      task = tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue('uuid', uuid);
+      if (task){
+        return {
+          type: 'deleted',
+          task: task
+        };
+      }
+      task = tasks[ownerUUID].archivedTasks.findFirstObjectByKeyValue('uuid', uuid);
+      if (task){
+        return {
+          type: 'archived',
+          task: task
+        };
+      }
     },
     saveTask: function(task, ownerUUID) {
       initializeArrays(ownerUUID);
@@ -284,10 +305,6 @@
     },
     removeTask: function(task, ownerUUID) {
       initializeArrays(ownerUUID);
-
-      // Check that task is not deleted before trying to remove
-      if (this.getTaskStatus(task, ownerUUID) === 'deleted') return;
-
       ArrayService.removeFromArrays(task,
                                     tasks[ownerUUID].activeTasks,
                                     tasks[ownerUUID].deletedTasks,

@@ -107,12 +107,12 @@
   });
 
   it('should find note by uuid', function() {
-    expect(NotesService.getNoteByUUID('848cda60-d725-40cc-b756-0b1e9fa5b7d8', testOwnerUUID))
+    expect(NotesService.getNoteInfo('848cda60-d725-40cc-b756-0b1e9fa5b7d8', testOwnerUUID))
     .toBeDefined();
   });
 
   it('should not find note by unknown uuid', function() {
-    expect(NotesService.getNoteByUUID('848c3a60-d725-40cc-b756-0b1e9fa5b7d8', testOwnerUUID))
+    expect(NotesService.getNoteInfo('848c3a60-d725-40cc-b756-0b1e9fa5b7d8', testOwnerUUID))
     .toBeUndefined();
   });
 
@@ -124,7 +124,7 @@
     .respond(200, putNewNoteResponse);
     NotesService.saveNote(testNote, testOwnerUUID);
     $httpBackend.flush();
-    expect(NotesService.getNoteByUUID(putNewNoteResponse.uuid, testOwnerUUID))
+    expect(NotesService.getNoteInfo(putNewNoteResponse.uuid, testOwnerUUID))
     .toBeDefined();
 
     // Should move to the end of the array
@@ -136,13 +136,13 @@
   });
 
   it('should update existing note', function() {
-    var officeDoorCode = NotesService.getNoteByUUID('c2cd149a-a287-40a0-86d9-0a14462f22d6', testOwnerUUID);
+    var officeDoorCode = NotesService.getNoteInfo('c2cd149a-a287-40a0-86d9-0a14462f22d6', testOwnerUUID).note;
     officeDoorCode.content = '1234';
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/note/' + officeDoorCode.uuid, officeDoorCode)
     .respond(200, putExistingNoteResponse);
     NotesService.saveNote(officeDoorCode, testOwnerUUID);
     $httpBackend.flush();
-    expect(NotesService.getNoteByUUID(officeDoorCode.uuid, testOwnerUUID).modified)
+    expect(NotesService.getNoteInfo(officeDoorCode.uuid, testOwnerUUID).note.modified)
     .toBe(putExistingNoteResponse.modified);
 
     // Should stay in its old place
@@ -154,13 +154,13 @@
   });
 
   it('should delete and undelete note', function() {
-    var officeDoorCode = NotesService.getNoteByUUID('c2cd149a-a287-40a0-86d9-0a14462f22d6', testOwnerUUID);
+    var officeDoorCode = NotesService.getNoteInfo('c2cd149a-a287-40a0-86d9-0a14462f22d6', testOwnerUUID).note;
     $httpBackend.expectDELETE('/api/' + testOwnerUUID + '/note/' + officeDoorCode.uuid)
     .respond(200, deleteNoteResponse);
     NotesService.deleteNote(officeDoorCode, testOwnerUUID);
     $httpBackend.flush();
-    expect(NotesService.getNoteByUUID(officeDoorCode.uuid, testOwnerUUID))
-    .toBeUndefined();
+    expect(NotesService.getNoteInfo(officeDoorCode.uuid, testOwnerUUID).type)
+    .toBe('deleted');
 
     // There should be just two left
     var notes = NotesService.getNotes(testOwnerUUID);
@@ -172,7 +172,7 @@
     .respond(200, undeleteNoteResponse);
     NotesService.undeleteNote(officeDoorCode, testOwnerUUID);
     $httpBackend.flush();
-    expect(NotesService.getNoteByUUID(officeDoorCode.uuid, testOwnerUUID).modified)
+    expect(NotesService.getNoteInfo(officeDoorCode.uuid, testOwnerUUID).note.modified)
     .toBe(undeleteNoteResponse.modified);
 
     // There should be three left with the undeleted officeDoorCode in its old place
@@ -184,7 +184,7 @@
   });
 
   it('should reset note', function() {
-    var notesOnProductivity = NotesService.getNoteByUUID('848cda60-d725-40cc-b756-0b1e9fa5b7d8', testOwnerUUID);
+    var notesOnProductivity = NotesService.getNoteInfo('848cda60-d725-40cc-b756-0b1e9fa5b7d8', testOwnerUUID).note;
 
     // Change transient values
     notesOnProductivity.trans.list = '1da0bff6-3bd7-4884-adba-f47fab9f270d';

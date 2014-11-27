@@ -70,8 +70,22 @@
       initializeArrays(ownerUUID);
       return items[ownerUUID].activeItems;
     },
-    getItemByUUID: function(uuid, ownerUUID) {
-      return items[ownerUUID].activeItems.findFirstObjectByKeyValue('uuid', uuid);
+    getItemInfo: function(uuid, ownerUUID) {
+      initializeArrays(ownerUUID);
+      var item = items[ownerUUID].activeItems.findFirstObjectByKeyValue('uuid', uuid);
+      if (item){
+        return {
+          type: 'active',
+          item: item
+        };
+      }
+      item = items[ownerUUID].deletedItems.findFirstObjectByKeyValue('uuid', uuid);
+      if (item){
+        return {
+          type: 'deleted',
+          item: item
+        };
+      }
     },
     getDeletedItems: function(ownerUUID) {
       initializeArrays(ownerUUID);
@@ -202,6 +216,12 @@
           }
         });
       }
+    },
+    removeItem: function(item, ownerUUID) {
+      initializeArrays(ownerUUID);
+      ArrayService.removeFromArrays(item,
+                                    items[ownerUUID].activeItems,
+                                    items[ownerUUID].deletedItems);
     },
     itemToTask: function(item, ownerUUID) {
       initializeArrays(ownerUUID);

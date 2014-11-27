@@ -168,9 +168,29 @@
       initializeArrays(ownerUUID);
       return notes[ownerUUID].deletedNotes;
     },
-    getNoteByUUID: function(uuid, ownerUUID) {
+    getNoteInfo: function(uuid, ownerUUID) {
       initializeArrays(ownerUUID);
-      return notes[ownerUUID].activeNotes.findFirstObjectByKeyValue('uuid', uuid);
+      var note = notes[ownerUUID].activeNotes.findFirstObjectByKeyValue('uuid', uuid);
+      if (note){
+        return {
+          type: 'active',
+          note: note
+        };
+      }
+      note = notes[ownerUUID].deletedNotes.findFirstObjectByKeyValue('uuid', uuid);
+      if (note){
+        return {
+          type: 'deleted',
+          note: note
+        };
+      }
+      note = notes[ownerUUID].archivedNotes.findFirstObjectByKeyValue('uuid', uuid);
+      if (note){
+        return {
+          type: 'archived',
+          note: note
+        };
+      }
     },
     saveNote: function(note, ownerUUID) {
       initializeArrays(ownerUUID);
@@ -250,9 +270,6 @@
     },
     removeNote: function(note, ownerUUID) {
       initializeArrays(ownerUUID);
-      // Check that note is not deleted before trying to remove
-      if (this.getNoteStatus(note, ownerUUID) === 'deleted') return;
-
       ArrayService.removeFromArrays(note,
                                     notes[ownerUUID].activeNotes,
                                     notes[ownerUUID].deletedNotes,

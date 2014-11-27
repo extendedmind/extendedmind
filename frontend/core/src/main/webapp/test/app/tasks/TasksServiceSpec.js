@@ -100,12 +100,12 @@ afterEach(function() {
   });
 
   it('should find task by uuid', function () {
-    expect(TasksService.getTaskByUUID('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID))
+    expect(TasksService.getTaskInfo('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID).task)
     .toBeDefined();
   });
 
   it('should not find task by unknown uuid', function () {
-    expect(TasksService.getTaskByUUID('bf726d03-8fee-4614-8b68-f9f885938a50', testOwnerUUID))
+    expect(TasksService.getTaskInfo('bf726d03-8fee-4614-8b68-f9f885938a50', testOwnerUUID))
     .toBeUndefined();
   });
 
@@ -117,7 +117,7 @@ afterEach(function() {
     .respond(200, putNewTaskResponse);
     TasksService.saveTask(testTask, testOwnerUUID);
     $httpBackend.flush();
-    expect(TasksService.getTaskByUUID(putNewTaskResponse.uuid, testOwnerUUID))
+    expect(TasksService.getTaskInfo(putNewTaskResponse.uuid, testOwnerUUID).task)
     .toBeDefined();
 
     // Should go to the end of the array
@@ -129,13 +129,13 @@ afterEach(function() {
   });
 
   it('should update existing task', function () {
-    var cleanCloset = TasksService.getTaskByUUID('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID);
+    var cleanCloset = TasksService.getTaskInfo('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID).task;
     cleanCloset.title = 'clean closet now';
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid, cleanCloset)
     .respond(200, putExistingTaskResponse);
     TasksService.saveTask(cleanCloset, testOwnerUUID);
     $httpBackend.flush();
-    expect(TasksService.getTaskByUUID(cleanCloset.uuid, testOwnerUUID).modified)
+    expect(TasksService.getTaskInfo(cleanCloset.uuid, testOwnerUUID).task.modified)
     .toBe(putExistingTaskResponse.modified);
 
     // Should stay iin its old place
@@ -147,13 +147,13 @@ afterEach(function() {
   });
 
   it('should delete and undelete task', function () {
-    var cleanCloset = TasksService.getTaskByUUID('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID);
+    var cleanCloset = TasksService.getTaskInfo('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID).task;
     $httpBackend.expectDELETE('/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid)
     .respond(200, deleteTaskResponse);
     TasksService.deleteTask(cleanCloset, testOwnerUUID);
     $httpBackend.flush();
-    expect(TasksService.getTaskByUUID(cleanCloset.uuid, testOwnerUUID))
-    .toBeUndefined();
+    expect(TasksService.getTaskInfo(cleanCloset.uuid, testOwnerUUID).type)
+    .toBe('deleted');
 
     // There should be just two left
     var tasks = TasksService.getTasks(testOwnerUUID);
@@ -165,7 +165,7 @@ afterEach(function() {
     .respond(200, undeleteTaskResponse);
     TasksService.undeleteTask(cleanCloset, testOwnerUUID);
     $httpBackend.flush();
-    expect(TasksService.getTaskByUUID(cleanCloset.uuid, testOwnerUUID).modified)
+    expect(TasksService.getTaskInfo(cleanCloset.uuid, testOwnerUUID).task.modified)
     .toBe(undeleteTaskResponse.modified);
 
     // There should be three left with the undeleted cleanCloset in its old place
@@ -179,7 +179,7 @@ afterEach(function() {
 
 it('should complete and uncomplete task', function () {
     // Complete
-    var cleanCloset = TasksService.getTaskByUUID('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID);
+    var cleanCloset = TasksService.getTaskInfo('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID).task;
 
     expect(TasksService.getTasks(testOwnerUUID).length)
     .toBe(3);
@@ -190,7 +190,7 @@ it('should complete and uncomplete task', function () {
     $httpBackend.flush();
 
     // The task should be active and in its old place, but with the complete flag set
-    expect(TasksService.getTaskByUUID(cleanCloset.uuid, testOwnerUUID).completed)
+    expect(TasksService.getTaskInfo(cleanCloset.uuid, testOwnerUUID).task.completed)
     .toBeDefined();
     expect(TasksService.getTasks(testOwnerUUID)[0].uuid)
     .toBe(cleanCloset.uuid);
@@ -203,7 +203,7 @@ it('should complete and uncomplete task', function () {
     TasksService.uncompleteTask(cleanCloset, testOwnerUUID);
     $httpBackend.flush();
 
-    expect(TasksService.getTaskByUUID(cleanCloset.uuid, testOwnerUUID).completed)
+    expect(TasksService.getTaskInfo(cleanCloset.uuid, testOwnerUUID).task.completed)
         .toBeUndefined();
     var tasks = TasksService.getTasks(testOwnerUUID);
     expect(tasks.length)
@@ -216,7 +216,7 @@ it('should complete and uncomplete task', function () {
   });
 
 it('should reset task', function () {
-  var printTickets = TasksService.getTaskByUUID('9a1ce3aa-f476-43c4-845e-af59a9a33760', testOwnerUUID);
+  var printTickets = TasksService.getTaskInfo('9a1ce3aa-f476-43c4-845e-af59a9a33760', testOwnerUUID).task;
 
     // Change transient values
     printTickets.trans.date = '3014-01-02';

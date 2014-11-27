@@ -115,12 +115,12 @@ describe('ItemsService', function() {
   });
 
   it('should find item by uuid', function () {
-    expect(ItemsService.getItemByUUID('d1e764e8-3be3-4e3f-8bec-8c3f9e7843e9', testOwnerUUID))
+    expect(ItemsService.getItemInfo('d1e764e8-3be3-4e3f-8bec-8c3f9e7843e9', testOwnerUUID))
       .toBeDefined();
   });
 
   it('should not find item by unknown uuid', function () {
-    expect(ItemsService.getItemByUUID('bf726d03-8fee-4614-8b68-f9f885938a50', testOwnerUUID))
+    expect(ItemsService.getItemInfo('bf726d03-8fee-4614-8b68-f9f885938a50', testOwnerUUID))
       .toBeUndefined();
   });
 
@@ -132,7 +132,7 @@ describe('ItemsService', function() {
        .respond(200, putNewItemResponse);
     ItemsService.saveItem(testItem, testOwnerUUID);
     $httpBackend.flush();
-    expect(ItemsService.getItemByUUID(putNewItemResponse.uuid, testOwnerUUID))
+    expect(ItemsService.getItemInfo(putNewItemResponse.uuid, testOwnerUUID))
       .toBeDefined();
 
     // Should go to the end of the array
@@ -144,13 +144,13 @@ describe('ItemsService', function() {
   });
 
   it('should update existing item', function () {
-    var rememberTheMilk = ItemsService.getItemByUUID('d1e764e8-3be3-4e3f-8bec-8c3f9e7843e9', testOwnerUUID);
+    var rememberTheMilk = ItemsService.getItemInfo('d1e764e8-3be3-4e3f-8bec-8c3f9e7843e9', testOwnerUUID).item;
     rememberTheMilk.title = 'remember the milk!';
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item/' + rememberTheMilk.uuid, rememberTheMilk)
        .respond(200, putExistingItemResponse);
     ItemsService.saveItem(rememberTheMilk, testOwnerUUID);
     $httpBackend.flush();
-    expect(ItemsService.getItemByUUID(rememberTheMilk.uuid, testOwnerUUID).modified)
+    expect(ItemsService.getItemInfo(rememberTheMilk.uuid, testOwnerUUID).item.modified)
       .toBe(putExistingItemResponse.modified);
 
     // Should not change places
@@ -162,13 +162,13 @@ describe('ItemsService', function() {
   });
 
   it('should delete and undelete item', function () {
-    var rememberTheMilk = ItemsService.getItemByUUID('d1e764e8-3be3-4e3f-8bec-8c3f9e7843e9', testOwnerUUID);
+    var rememberTheMilk = ItemsService.getItemInfo('d1e764e8-3be3-4e3f-8bec-8c3f9e7843e9', testOwnerUUID).item;
     $httpBackend.expectDELETE('/api/' + testOwnerUUID + '/item/' + rememberTheMilk.uuid)
        .respond(200, deleteItemResponse);
     ItemsService.deleteItem(rememberTheMilk, testOwnerUUID);
     $httpBackend.flush();
-    expect(ItemsService.getItemByUUID(rememberTheMilk.uuid, testOwnerUUID))
-      .toBeUndefined();
+    expect(ItemsService.getItemInfo(rememberTheMilk.uuid, testOwnerUUID).type)
+      .toBe('deleted');
 
     // There should be just two left
     var items = ItemsService.getItems(testOwnerUUID);
@@ -180,7 +180,7 @@ describe('ItemsService', function() {
        .respond(200, undeleteItemResponse);
     ItemsService.undeleteItem(rememberTheMilk, testOwnerUUID);
     $httpBackend.flush();
-    expect(ItemsService.getItemByUUID(rememberTheMilk.uuid, testOwnerUUID).modified)
+    expect(ItemsService.getItemInfo(rememberTheMilk.uuid, testOwnerUUID).item.modified)
       .toBe(undeleteItemResponse.modified);
 
     // There should be three left with the undeleted rememberTheMilk in its old place
@@ -192,60 +192,60 @@ describe('ItemsService', function() {
   });
 
   it('should convert item to task', function () {
-    var rememberTheMilk = ItemsService.getItemByUUID('d1e764e8-3be3-4e3f-8bec-8c3f9e7843e9', testOwnerUUID);
+    var rememberTheMilk = ItemsService.getItemInfo('d1e764e8-3be3-4e3f-8bec-8c3f9e7843e9', testOwnerUUID).item;
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' + rememberTheMilk.uuid)
        .respond(200, putExistingTaskResponse);
     ItemsService.itemToTask(rememberTheMilk, testOwnerUUID);
     $httpBackend.flush();
 
     // There should be two left
-    expect(ItemsService.getItemByUUID(rememberTheMilk.uuid, testOwnerUUID))
+    expect(ItemsService.getItemInfo(rememberTheMilk.uuid, testOwnerUUID))
       .toBeUndefined();
     expect(ItemsService.getItems(testOwnerUUID).length)
       .toBe(2);
 
     // Tasks should have the new item
-    expect(TasksService.getTaskByUUID(rememberTheMilk.uuid, testOwnerUUID))
+    expect(TasksService.getTaskInfo(rememberTheMilk.uuid, testOwnerUUID))
       .toBeDefined();
     expect(TasksService.getTasks(testOwnerUUID).length)
       .toBe(1);
   });
 
   it('should convert item to note', function () {
-    var yoga = ItemsService.getItemByUUID('f7724771-4469-488c-aabd-9db188672a9b', testOwnerUUID);
+    var yoga = ItemsService.getItemInfo('f7724771-4469-488c-aabd-9db188672a9b', testOwnerUUID).item;
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/note/' + yoga.uuid)
        .respond(200, putExistingNoteResponse);
     ItemsService.itemToNote(yoga, testOwnerUUID);
     $httpBackend.flush();
 
     // There should be two left
-    expect(ItemsService.getItemByUUID(yoga.uuid, testOwnerUUID))
+    expect(ItemsService.getItemInfo(yoga.uuid, testOwnerUUID))
       .toBeUndefined();
     expect(ItemsService.getItems(testOwnerUUID).length)
       .toBe(2);
 
     // Notes should have the new item
-    expect(NotesService.getNoteByUUID(yoga.uuid, testOwnerUUID))
+    expect(NotesService.getNoteInfo(yoga.uuid, testOwnerUUID))
       .toBeDefined();
     expect(NotesService.getNotes(testOwnerUUID).length)
       .toBe(1);
   });
 
   it('should convert item to list', function () {
-    var yoga = ItemsService.getItemByUUID('f7724771-4469-488c-aabd-9db188672a9b', testOwnerUUID);
+    var yoga = ItemsService.getItemInfo('f7724771-4469-488c-aabd-9db188672a9b', testOwnerUUID).item;
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/list/' + yoga.uuid)
        .respond(200, putExistingListResponse);
     ItemsService.itemToList(yoga, testOwnerUUID);
     $httpBackend.flush();
 
     // There should be two left
-    expect(ItemsService.getItemByUUID(yoga.uuid, testOwnerUUID))
+    expect(ItemsService.getItemInfo(yoga.uuid, testOwnerUUID))
       .toBeUndefined();
     expect(ItemsService.getItems(testOwnerUUID).length)
       .toBe(2);
 
     // Lists should have the new item
-    expect(ListsService.getListByUUID(yoga.uuid, testOwnerUUID))
+    expect(ListsService.getListInfo(yoga.uuid, testOwnerUUID))
       .toBeDefined();
     expect(ListsService.getLists(testOwnerUUID).length)
       .toBe(1);

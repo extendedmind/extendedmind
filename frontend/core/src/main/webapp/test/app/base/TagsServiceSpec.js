@@ -87,12 +87,12 @@ afterEach(function() {
   });
 
   it('should find tag by uuid', function () {
-    expect(TagsService.getTagByUUID('81daf688-d34d-4551-9a24-564a5861ace9', testOwnerUUID))
+    expect(TagsService.getTagInfo('81daf688-d34d-4551-9a24-564a5861ace9', testOwnerUUID).tag)
     .toBeDefined();
   });
 
   it('should not find tag by unknown uuid', function () {
-    expect(TagsService.getTagByUUID('bf726d03-8fee-4614-8b68-f9f885938a50', testOwnerUUID))
+    expect(TagsService.getTagInfo('bf726d03-8fee-4614-8b68-f9f885938a50', testOwnerUUID))
     .toBeUndefined();
   });
 
@@ -104,7 +104,7 @@ afterEach(function() {
     .respond(200, putNewTagResponse);
     TagsService.saveTag(testTag, testOwnerUUID);
     $httpBackend.flush();
-    expect(TagsService.getTagByUUID(putNewTagResponse.uuid, testOwnerUUID))
+    expect(TagsService.getTagInfo(putNewTagResponse.uuid, testOwnerUUID))
     .toBeDefined();
 
     // Should go to the end of the array
@@ -116,13 +116,13 @@ afterEach(function() {
   });
 
   it('should update existing tag', function () {
-    var secret = TagsService.getTagByUUID('c933e120-90e7-488b-9f15-ea2ee2887e67', testOwnerUUID);
+    var secret = TagsService.getTagInfo('c933e120-90e7-488b-9f15-ea2ee2887e67', testOwnerUUID).tag;
     secret.title = 'top secret';
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/tag/' + secret.uuid, secret)
     .respond(200, putExistingTagResponse);
     TagsService.saveTag(secret, testOwnerUUID);
     $httpBackend.flush();
-    expect(TagsService.getTagByUUID(secret.uuid, testOwnerUUID).modified)
+    expect(TagsService.getTagInfo(secret.uuid, testOwnerUUID).tag.modified)
     .toBe(putExistingTagResponse.modified);
 
     // Should not change places
@@ -134,13 +134,13 @@ afterEach(function() {
   });
 
   it('should delete and undelete tag', function () {
-    var secret = TagsService.getTagByUUID('c933e120-90e7-488b-9f15-ea2ee2887e67', testOwnerUUID);
+    var secret = TagsService.getTagInfo('c933e120-90e7-488b-9f15-ea2ee2887e67', testOwnerUUID).tag;
     $httpBackend.expectDELETE('/api/' + testOwnerUUID + '/tag/' + secret.uuid)
     .respond(200, deleteTagResponse);
     TagsService.deleteTag(secret, testOwnerUUID);
     $httpBackend.flush();
-    expect(TagsService.getTagByUUID(secret.uuid, testOwnerUUID))
-    .toBeUndefined();
+    expect(TagsService.getTagInfo(secret.uuid, testOwnerUUID).type)
+    .toBe('deleted');
 
     // There should be just two left
     var tags = TagsService.getTags(testOwnerUUID);
@@ -152,7 +152,7 @@ afterEach(function() {
     .respond(200, undeleteTagResponse);
     TagsService.undeleteTag(secret, testOwnerUUID);
     $httpBackend.flush();
-    expect(TagsService.getTagByUUID(secret.uuid, testOwnerUUID).modified)
+    expect(TagsService.getTagInfo(secret.uuid, testOwnerUUID).tag.modified)
     .toBe(undeleteTagResponse.modified);
 
     // There should be three left with the undeleted secret in its old place

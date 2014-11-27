@@ -33,12 +33,77 @@
       isNaN(latestItem) ? -Infinity : latestItem);
   }
 
+  function getLocallyDifferentType(ownerUUID, item, itemType){
+    switch(itemType) {
+    case 'item':
+      if (TasksService.getTaskInfo(item.uuid, ownerUUID)) return 'task';
+      if (NotesService.getNoteInfo(item.uuid, ownerUUID)) return 'note';
+      if (ListsService.getListInfo(item.uuid, ownerUUID)) return 'list';
+      break;
+    case 'task':
+      if (ItemsService.getItemInfo(item.uuid, ownerUUID)) return 'item';
+      if (NotesService.getNoteInfo(item.uuid, ownerUUID)) return 'note';
+      if (ListsService.getListInfo(item.uuid, ownerUUID)) return 'list';
+      break;
+    case 'note':
+      if (ItemsService.getItemInfo(item.uuid, ownerUUID)) return 'item';
+      if (TasksService.getTaskInfo(item.uuid, ownerUUID)) return 'task';
+      if (ListsService.getListInfo(item.uuid, ownerUUID)) return 'list';
+      break;
+    case 'list':
+      console.log()
+      if (ItemsService.getItemInfo(item.uuid, ownerUUID)) return 'item';
+      if (TasksService.getTaskInfo(item.uuid, ownerUUID)) return 'task';
+      if (NotesService.getNoteInfo(item.uuid, ownerUUID)) return 'note';
+      break;
+    }
+  }
+
+  function removeItemFromArray(ownerUUID, item, itemType){
+    switch(itemType) {
+    case 'item':
+      ItemsService.removeItem(item, ownerUUID);
+      break;
+    case 'task':
+      TasksService.removeTask(item, ownerUUID);
+      break;
+    case 'note':
+      NotesService.removeNote(item, ownerUUID);
+      break;
+    case 'list':
+      ListsService.removeList(item, ownerUUID);
+      break;
+    }
+  }
+
+  function removeItemsFromWrongArrays(ownerUUID, items, itemType){
+    var locallyDifferentType;
+    for (var i = 0, len = items.length; i < len; i++){
+      locallyDifferentType = getLocallyDifferentType(ownerUUID, items[i], itemType);
+      if (locallyDifferentType) removeItemFromArray(ownerUUID, items[i], locallyDifferentType)
+    }
+  }
+
   function processSynchronizeUpdateResult(ownerUUID, response) {
     var latestTag = TagsService.updateTags(response.tags, ownerUUID);
-    var latestList = ListsService.updateLists(response.lists, ownerUUID);
-    var latestTask = TasksService.updateTasks(response.tasks, ownerUUID);
-    var latestNote = NotesService.updateNotes(response.notes, ownerUUID);
-    var latestItem = ItemsService.updateItems(response.items, ownerUUID);
+    var latestList, latestTask, latestNote, latestItem;
+    if (response.lists && response.lists.length){
+      removeItemsFromWrongArrays(ownerUUID, response.lists, 'list');
+      latestList = ListsService.updateLists(response.lists, ownerUUID);
+    }
+    if (response.tasks && response.tasks.length){
+      removeItemsFromWrongArrays(ownerUUID, response.tasks, 'task');
+      latestTask = TasksService.updateTasks(response.tasks, ownerUUID);
+    }
+    if (response.notes && response.notes.length){
+      removeItemsFromWrongArrays(ownerUUID, response.notes, 'note');
+      latestNote = NotesService.updateNotes(response.notes, ownerUUID);
+    }
+    if (response.items && response.items.length){
+      removeItemsFromWrongArrays(ownerUUID, response.items, 'item');
+      latestItem = ItemsService.updateItems(response.items, ownerUUID);
+    }
+
     var latestModified = null;
     if (latestTag || latestList || latestTask || latestNote || latestItem) {
       // Set latest modified

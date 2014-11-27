@@ -28,17 +28,17 @@
   function copyTagToTransientProperty(extendedItem, ownerUUID) {
     if (extendedItem.relationships && extendedItem.relationships.tags) {
       for (var i = 0, len = extendedItem.relationships.tags.length; i < len; i++) {
-        var tag = TagsService.getTagByUUID(extendedItem.relationships.tags[i], ownerUUID);
-        if (tag) {
+        var tagInfo = TagsService.getTagInfo(extendedItem.relationships.tags[i], ownerUUID);
+        if (tagInfo) {
           if (!extendedItem.trans) extendedItem.trans = {};
-          if (tag.tagType === 'context') {
-            extendedItem.trans.context = tag.uuid;
+          if (tagInfo.tag.tagType === 'context') {
+            extendedItem.trans.context = tagInfo.tag.uuid;
             break;
-          } else if (tag.tagType === 'keyword') {
+          } else if (tagInfo.tag.tagType === 'keyword') {
             if (!extendedItem.trans.keywords) extendedItem.trans.keywords = [];
-            if (extendedItem.trans.keywords.indexOf(tag) === -1) {
+            if (extendedItem.trans.keywords.indexOf(tagInfo.tag) === -1) {
                 // Push keyword if it does not exist in transient keywords.
-                extendedItem.trans.keywords.push(tag);
+                extendedItem.trans.keywords.push(tagInfo.tag);
               }
             }
           }
@@ -79,10 +79,10 @@
       //  * remove persistent keyword if it is not found from transient keywords.
       for (var i = 0, len = extendedItem.relationships.tags.length; i < len; i++) {
         // Find tag
-        var tag = TagsService.getTagByUUID(extendedItem.relationships.tags[i], ownerUUID);
-        if (tag) {
-          if (tag.tagType === 'context') filteredTags.push(extendedItem.relationships.tags[i]);
-          else if (tag.tagType === 'keyword') {
+        var tagInfo = TagsService.getTagInfo(extendedItem.relationships.tags[i], ownerUUID);
+        if (tagInfo) {
+          if (tagInfo.tag.tagType === 'context') filteredTags.push(extendedItem.relationships.tags[i]);
+          else if (tagInfo.tag.tagType === 'keyword') {
             // Find persistent keyword from transient keywords
             var persistentKeyword = extendedItem.trans.keywords
             .findFirstObjectByKeyValue('uuid', extendedItem.relationships.tags[i]);
@@ -115,9 +115,9 @@
       var filteredTags = [];
       for (var i = 0, len = extendedItem.relationships.tags.length; i < len; i++) {
         // Find tag
-        var tag = TagsService.getTagByUUID(extendedItem.relationships.tags[i], ownerUUID);
-        if (tag) {
-          if (tag.tagType === 'context') filteredTags.push(extendedItem.relationships.tags[i]);
+        var tagInfo = TagsService.getTagInfo(extendedItem.relationships.tags[i], ownerUUID);
+        if (tagInfo) {
+          if (tagInfo.tag.tagType === 'context') filteredTags.push(extendedItem.relationships.tags[i]);
         }
       }
       return filteredTags;
@@ -135,9 +135,9 @@
       if (extendedItem.relationships) {
         if (extendedItem.relationships.tags) {
           for (var i = 0, len = extendedItem.relationships.tags.length; i < len; i++) {
-            var tag = TagsService.getTagByUUID(extendedItem.relationships.tags[i], ownerUUID);
-            if (tag && tag.tagType === 'context') {
-              if (tag.uuid === context) foundCurrentTag = true;
+            var tagInfo = TagsService.getTagInfo(extendedItem.relationships.tags[i], ownerUUID);
+            if (tagInfo && tagInfo.tag.tagType === 'context') {
+              if (tagInfo.tag.uuid === context) foundCurrentTag = true;
               else previousContextIndex = i;
             }
           }
@@ -157,8 +157,8 @@
     else if (extendedItem.relationships && extendedItem.relationships.tags) {
       previousContextIndex = undefined;
       for (var j = 0, jLen = extendedItem.relationships.tags.length; j < jLen; j++) {
-        var jTag = TagsService.getTagByUUID(extendedItem.relationships.tags[j], ownerUUID);
-        if (jTag && jTag.tagType === 'context') previousContextIndex = j;
+        var jTagInfo = TagsService.getTagInfo(extendedItem.relationships.tags[j], ownerUUID);
+        if (jTagInfo && jTagInfo.tag.tagType === 'context') previousContextIndex = j;
       }
       if (previousContextIndex !== undefined) extendedItem.relationships.tags.splice(previousContextIndex, 1);
     }

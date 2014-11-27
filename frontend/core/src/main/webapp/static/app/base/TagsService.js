@@ -67,9 +67,22 @@
       initializeArrays(ownerUUID);
       return tags[ownerUUID].deletedTags;
     },
-    getTagByUUID: function(uuid, ownerUUID) {
+    getTagInfo: function(uuid, ownerUUID) {
       initializeArrays(ownerUUID);
-      return tags[ownerUUID].activeTags.findFirstObjectByKeyValue('uuid', uuid);
+      var tag = tags[ownerUUID].activeTags.findFirstObjectByKeyValue('uuid', uuid);
+      if (tag){
+        return {
+          type: 'active',
+          tag: tag
+        };
+      }
+      tag = tags[ownerUUID].deletedTags.findFirstObjectByKeyValue('uuid', uuid);
+      if (tag){
+        return {
+          type: 'deleted',
+          tag: tag
+        };
+      }
     },
     saveTag: function(tag, ownerUUID) {
       initializeArrays(ownerUUID);
