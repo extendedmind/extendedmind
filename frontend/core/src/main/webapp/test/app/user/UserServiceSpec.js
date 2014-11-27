@@ -28,6 +28,17 @@ describe('UserService', function() {
   beforeEach(function() {
     module('em.appTest');
 
+    var sessionStore = {};
+    spyOn(sessionStorage, 'getItem').andCallFake(function (key) {
+      return sessionStore[key];
+    });
+    spyOn(sessionStorage, 'setItem').andCallFake(function (key, value) {
+      return sessionStore[key] = value + '';
+    });
+    spyOn(sessionStorage, 'clear').andCallFake(function () {
+        sessionStore = {};
+    });
+
     inject(function (_$httpBackend_, _UserService_, _UserSessionService_) {
       $httpBackend = _$httpBackend_;
       UserService = _UserService_;
