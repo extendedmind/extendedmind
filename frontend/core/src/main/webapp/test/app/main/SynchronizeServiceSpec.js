@@ -340,69 +340,6 @@ describe('SynchronizeService', function() {
       .toBe(0);
   });
 
-  it('should archive tasks alongside list', function () {
-    var modified = now.getTime();
-    var archiveTripToDublinResponse = {
-      'archived': modified,
-      'children': [{
-        'uuid': '9a1ce3aa-f476-43c4-845e-af59a9a33760',
-        'modified': modified
-      }, {
-        'uuid': '1a1ce3aa-f476-43c4-845e-af59a9a33760',
-        'modified': modified
-      }],
-      'history': {
-        'uuid': '3fab3a32-3933-4b00-bf7e-9f2f516fae5f',
-        'modified': modified,
-        'title': 'bf726d03-8fee-4614-8b68-f9f885938a51',
-        'tagType': 'history'
-      },
-      'result': {
-        'modified': modified
-      }
-    };
-    // Initial situation
-    expect(TasksService.getTasks(testOwnerUUID).length)
-      .toBe(4);
-    expect(TasksService.getArchivedTasks(testOwnerUUID).length)
-      .toBe(0);
-
-    // First complete one of the tasks, but not the other
-    var printTickets = TasksService.getTaskInfo('9a1ce3aa-f476-43c4-845e-af59a9a33760', testOwnerUUID).task;
-    $httpBackend.expectPOST('/api/' + MockUserSessionService.getActiveUUID() + '/task/' + printTickets.uuid + '/complete')
-       .respond(200, completeTaskResponse);
-    TasksService.completeTask(printTickets, testOwnerUUID);
-    $httpBackend.flush();
-
-    // The task should be completed task
-    expect(printTickets.completed).toBeDefined();
-
-    // Archive list
-    var tripToDublin = ListsService.getListInfo('bf726d03-8fee-4614-8b68-f9f885938a51', testOwnerUUID).list;
-    $httpBackend.expectPOST('/api/' + MockUserSessionService.getActiveUUID() + '/list/' + tripToDublin.uuid + '/archive')
-       .respond(200, archiveTripToDublinResponse);
-    ListsService.archiveList(tripToDublin, testOwnerUUID);
-    $httpBackend.flush();
-
-    // The list should not be active anymore
-    expect(ListsService.getListInfo(tripToDublin.uuid, testOwnerUUID).type)
-      .toBe('archived');
-    expect(ListsService.getLists(testOwnerUUID).length)
-      .toBe(3);
-    expect(ListsService.getArchivedLists(testOwnerUUID).length)
-      .toBe(1);
-
-    // TagsService should have the new generated tag
-    expect(TagsService.getTagInfo(archiveTripToDublinResponse.history.uuid, testOwnerUUID))
-      .toBeDefined();
-
-    // There should be two new archived task
-    expect(TasksService.getArchivedTasks(testOwnerUUID).length)
-      .toBe(2);
-    expect(TasksService.getTasks(testOwnerUUID).length)
-      .toBe(2);
-  });
-
   it('should handle item offline create, update, delete', function () {
     MockUserSessionService.offlineEnabled = true;
 
