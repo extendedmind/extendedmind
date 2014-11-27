@@ -51,7 +51,6 @@
       if (ListsService.getListInfo(item.uuid, ownerUUID)) return 'list';
       break;
     case 'list':
-      console.log()
       if (ItemsService.getItemInfo(item.uuid, ownerUUID)) return 'item';
       if (TasksService.getTaskInfo(item.uuid, ownerUUID)) return 'task';
       if (NotesService.getNoteInfo(item.uuid, ownerUUID)) return 'note';
