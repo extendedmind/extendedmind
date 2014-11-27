@@ -199,7 +199,11 @@
       }
       if (UserSessionService.isOfflineEnabled()) {
         // Offline
-        var params = {type: 'item', owner: ownerUUID, uuid: item.uuid, replaceable: true};
+        var params = {type: 'item', owner: ownerUUID, uuid: item.uuid,
+        reverse: {
+          method: 'post',
+          url: '/api/' + ownerUUID + '/item/' + item.uuid + '/delete'
+        }, replaceable: true};
         BackendClientService.post('/api/' + ownerUUID + '/item/' + item.uuid + '/undelete',
                                   this.deleteItemRegex, params);
         delete item.deleted;

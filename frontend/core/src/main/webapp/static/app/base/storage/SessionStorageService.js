@@ -15,6 +15,7 @@
  'use strict';
 
  function SessionStorageService() {
+  var cachedBackendDelta;
   var cachedActiveUUID;
   var cachedUserUUID;
   var cachedEmail;
@@ -23,6 +24,10 @@
   return {
 
     // setters
+    setBackendDelta: function(delta) {
+      cachedBackendDelta = delta;
+      sessionStorage.setItem('backendDelta', delta);
+    },
     setActiveUUID: function(uuid) {
       cachedActiveUUID = uuid;
       sessionStorage.setItem('activeUUID', uuid);
@@ -91,6 +96,10 @@
     },
 
     // getters
+    getBackendDelta: function() {
+      if (!cachedBackendDelta) cachedBackendDelta = sessionStorage.getItem('backendDelta');
+      return cachedBackendDelta;
+    },
     getActiveUUID: function() {
       if (!cachedActiveUUID) cachedActiveUUID = sessionStorage.getItem('activeUUID');
       return cachedActiveUUID;
@@ -145,6 +154,7 @@
       if (state) return JSON.parse(state);
     },
     clearUser: function() {
+      sessionStorage.removeItem('backendDelta');
       sessionStorage.removeItem('activeUUID');
       sessionStorage.removeItem('collectives');
       sessionStorage.removeItem('email');
@@ -156,7 +166,7 @@
       sessionStorage.removeItem('preferences');
       sessionStorage.removeItem('userModified');
       sessionStorage.removeItem('state');
-      cachedActiveUUID = cachedUserUUID = cachedEmail = cachedPreferences = cachedCollectives = undefined;
+      cachedBackendDelta = cachedActiveUUID = cachedUserUUID = cachedEmail = cachedPreferences = cachedCollectives = undefined;
     }
   };
 }

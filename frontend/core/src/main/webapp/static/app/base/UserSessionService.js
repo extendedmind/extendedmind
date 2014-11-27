@@ -30,6 +30,7 @@
   }
 
   function setUserSessionStorageData() {
+    SessionStorageService.setBackendDelta(LocalStorageService.getBackendDelta());
     SessionStorageService.setCollectives(LocalStorageService.getCollectives());
     SessionStorageService.setEmail(LocalStorageService.getEmail());
     SessionStorageService.setExpires(LocalStorageService.getExpires());
@@ -105,12 +106,13 @@
 
     // Web storage setters
     setAuthenticateInformation: function(authenticateResponse, email) {
-      var authExpiresDelta = Date.now() - authenticateResponse.authenticated;
+      var backendDelta = Date.now() - authenticateResponse.authenticated;
       var credentials = encodeUsernamePassword('token', authenticateResponse.token);
       var preferences = migrateTransportPreferences(authenticateResponse.preferences);
 
+      SessionStorageService.setBackendDelta(backendDelta);
       SessionStorageService.setCollectives(authenticateResponse.collectives);
-      SessionStorageService.setExpires(authenticateResponse.expires + authExpiresDelta);
+      SessionStorageService.setExpires(authenticateResponse.expires + backendDelta);
       SessionStorageService.setCredentials(credentials);
       SessionStorageService.setUserType(authenticateResponse.userType);
       SessionStorageService.setUserUUID(authenticateResponse.userUUID);
@@ -119,10 +121,11 @@
       SessionStorageService.setUserModified(authenticateResponse.modified);
 
       if (authenticateResponse.replaceable) {
-        LocalStorageService.setExpires(authenticateResponse.expires + authExpiresDelta);
+        LocalStorageService.setBackendDelta(backendDelta);
+        LocalStorageService.setExpires(authenticateResponse.expires + backendDelta);
         LocalStorageService.setCollectives(authenticateResponse.collectives);
         LocalStorageService.setCredentials(credentials);
-        LocalStorageService.setReplaceable(authenticateResponse.replaceable + authExpiresDelta);
+        LocalStorageService.setReplaceable(authenticateResponse.replaceable + backendDelta);
         LocalStorageService.setUserType(authenticateResponse.userType);
         LocalStorageService.setUserUUID(authenticateResponse.userUUID);
         LocalStorageService.setCohort(authenticateResponse.cohort);
@@ -133,6 +136,10 @@
         setEmail(email);
       }
       return credentials;
+    },
+    getBackendDelta: function(){
+      syncWebStorages();
+      return SessionStorageService.getBackendDelta();
     },
     setEmail: function(email) {
       setEmail(email);

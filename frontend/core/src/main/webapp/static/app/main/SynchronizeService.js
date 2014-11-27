@@ -111,12 +111,84 @@
     UserSessionService.setLatestModified(latestModified, ownerUUID);
   }
 
+  function getItemFromResponse(response, uuid, itemType){
+    switch(itemType) {
+    case 'item':
+      if (response.items && response.items.length){
+        return response.items.findFirstObjectByKeyValue('uuid', uuid);
+      }
+      break;
+    case 'task':
+      if (response.tasks && response.tasks.length){
+        return response.tasks.findFirstObjectByKeyValue('uuid', uuid);
+      }
+      break;
+    case 'note':
+      if (response.notes && response.notes.length){
+        return response.notes.findFirstObjectByKeyValue('uuid', uuid);
+      }
+      break;
+    case 'list':
+      if (response.lists && response.lists.length){
+        return response.lists.findFirstObjectByKeyValue('uuid', uuid);
+      }
+      break;
+    case 'tag':
+      if (response.tags && response.tags.length){
+        return response.tags.findFirstObjectByKeyValue('uuid', uuid);
+      }
+      break;
+    }
+  }
+
   // Register callbacks to BackendClientService
-  function synchronizeCallback(request, response /*, queue*/) {
+  function synchronizeCallback(request, response, queue) {
     if (!jQuery.isEmptyObject(response)) {
-      // TODO: The entire offline queue should be evaluated to see, if
-      //       something will fail. I.e. delete task on desktop, and try to
-      //       complete it on offline mobile.
+      if (queue && queue.length){
+        for (var i = queue.length-1; i >= 0; i--){
+          var conflictingItem =
+            getItemFromResponse(response,
+                                queue[i].params.uuid,
+                                queue[i].params.type);
+          if (conflictingItem){
+
+            if (conflictingItem.deleted){
+              // Deleted elsewhere overrides everything
+              queue.splice(i, 1);
+            }else if (queue[i].content.method === 'put'){
+              if (queue[i].params.type === 'note' &&
+                  queue[i].content.data.content && queue[i].content.data.content.length &&
+                  conflictingItem.content && conflictingItem.content.length &&
+                  queue[i].content.data.content !== conflictingItem.content){
+                // Content conflict, create hybrid and change PUT in queue to reflect the change
+                if (conflictingItem.modified > queue[i].content.data.modified){
+                  conflictingItem.content = conflictingItem.content +
+                                            '\n\n>>>>>>> conflicting changes >>>>>>>\n\n' +
+                                            queue[i].content.data.content;
+                  queue[i].content.data = conflictingItem;
+                }else{
+                  var conflictedContent = queue[i].content.data.content +
+                                            '\n\n>>>>>>> conflicting changes >>>>>>>\n\n' +
+                                            queue[i].content.data.content;
+                  queue[i].content.data.content = conflictedContent;
+                }
+              }else if (conflictingItem.modified > queue[i].content.data.modified){
+                queue.splice(i, 1);
+              }
+            }else if (queue[i].content.method === 'post'){
+              if (queue[i].content.url.endsWith('/complete') && conflictingItem.completed){
+                queue.splice(i, 1);
+              }else if (queue[i].content.url.endsWith('/uncomplete') && !conflictingItem.completed){
+                queue.splice(i, 1);
+              }else if (queue[i].content.url.endsWith('/favorite') && conflictingItem.completed){
+                queue.splice(i, 1);
+              }else if (queue[i].content.url.endsWith('/unfavorite') && !conflictingItem.completed){
+                queue.splice(i, 1);
+              }
+            }
+          }
+        }
+      }
       var ownerUUID = request.params.owner;
       processSynchronizeUpdateResult(ownerUUID, response);
     }

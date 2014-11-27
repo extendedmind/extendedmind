@@ -118,6 +118,31 @@ function HttpRequestQueueService() {
     }
   }
 
+  function pruneQueue(request){
+    var reverseRequestIndex = findReverseRequestIndex(request);
+    if (reverseRequestIndex !== undefined &&
+      (getHead() !== queue[reverseRequestIndex] || queue[reverseRequestIndex].offline)) {
+        // Found reverse method that is either not the head or is the head but has been set offline
+      removeFromQueue(reverseRequestIndex);
+      return false;
+    }
+    var replaceableIndex = findReplaceableRequestIndex(request);
+    if (replaceableIndex !== undefined){
+      if (queue[replaceableIndex].content.data === undefined && request.content.data === undefined){
+        // The method does not have a payload, we just stop here. This happens e.g. for
+        // delete, where second identical call will fail with "already deleted" if this is not done.
+        return false;
+      }else if (getHead() !== queue[replaceableIndex] || queue[replaceableIndex].offline){
+        // There is data to be replaced, and the request is not the head, or is the head but
+        // not on its way to the server: just replace
+        queue[replaceableIndex].content.data = request.content.data;
+        persistQueue();
+        return false;
+      }
+    }
+    return true;
+  }
+
   var service = {
     push: function(request) {
       if (request.primary) {
@@ -135,31 +160,11 @@ function HttpRequestQueueService() {
           beforeLast = request;
           localStorage.setItem('beforeLastRequest', JSON.stringify(beforeLast));
         }
-      }
-      else {
-        var reverseRequestIndex = findReverseRequestIndex(request);
-        if (reverseRequestIndex !== undefined &&
-          (getHead() !== queue[reverseRequestIndex] || queue[reverseRequestIndex].offline)) {
-            // Found reverse method that is either not the head or is the head but has been set offline
-          removeFromQueue(reverseRequestIndex);
-          return false;
-        } else {
-          var replaceableIndex = findReplaceableRequestIndex(request);
-
-          if (replaceableIndex !== undefined){
-            if (queue[replaceableIndex].content.data === undefined && request.content.data === undefined){
-              // The method does not have a payload, we just stop here. This happens e.g. for
-              // delete, where second identical call will fail with "already deleted" if this is not done.
-              return false;
-            }else if (getHead() !== queue[replaceableIndex] || queue[replaceableIndex].offline){
-              // There is data to be replaced, and the request is not the head, or is the head but
-              // not on its way to the server: just replace
-              queue[replaceableIndex].content.data = request.content.data;
-              persistQueue();
-              return false;
-            }
-          }
+      } else {
+        if (pruneQueue(request)){
           pushToQueue(request);
+        }else{
+          return false;
         }
       }
       return true;
@@ -210,7 +215,12 @@ function HttpRequestQueueService() {
         var requestIndex = findRequestIndex(request);
         if (requestIndex !== undefined) {
           queue[requestIndex].offline = true;
-          localStorage.setItem('requestQueue', JSON.stringify(queue));
+          // We want to retry to see if there are reverse or replaceable items in the queue
+          if (pruneQueue(queue[requestIndex])){
+            persistQueue();
+          }else{
+            removeFromQueue(requestIndex);
+          }
         } else {
           // This shouldn't happen, but if it does, I guess we want to retry
           request.offline = true;

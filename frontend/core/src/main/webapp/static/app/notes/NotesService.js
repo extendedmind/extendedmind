@@ -308,7 +308,11 @@
       if (this.getNoteStatus(note, ownerUUID) !== 'deleted') return;
       if (UserSessionService.isOfflineEnabled()) {
         // Offline
-        var params = {type: 'note', owner: ownerUUID, uuid: note.uuid, replaceable: true};
+        var params = {type: 'note', owner: ownerUUID, uuid: note.uuid,
+        reverse: {
+          method: 'post',
+          url: '/api/' + ownerUUID + '/note/' + note.uuid + '/delete'
+        }, replaceable: true};
         BackendClientService.post('/api/' + ownerUUID + '/note/' + note.uuid + '/undelete',
                                   this.deleteNoteRegex, params);
         delete note.deleted;
@@ -366,7 +370,11 @@
       if (this.getNoteStatus(note, ownerUUID) === 'deleted' || !note.favorited) return;
 
       if (UserSessionService.isOfflineEnabled()) {
-        var params = {type: 'note', owner: ownerUUID, uuid: note.uuid, replaceable: true};
+        var params = {type: 'note', owner: ownerUUID, uuid: note.uuid,
+        reverse: {
+          method: 'post',
+          url: '/api/' + ownerUUID + '/note/' + note.uuid + '/favorite'
+        }, replaceable: true};
         // Offline
         BackendClientService.post('/api/' + ownerUUID + '/note/' + note.uuid + '/unfavorite',
                                   this.unfavoriteNoteRegex, params);

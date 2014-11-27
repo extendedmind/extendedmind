@@ -18,6 +18,9 @@
   return {
 
     // setters
+    setBackendDelta: function(delta) {
+      localStorage.setItem('backendDelta', delta);
+    },
     setCollectives: function(collectives) {
       localStorage.setItem('collectives', JSON.stringify(collectives));
     },
@@ -60,6 +63,9 @@
       }
     },
     // getters
+    getBackendDelta: function() {
+      return localStorage.getItem('backendDelta');
+    },
     getCollectives: function() {
       if (localStorage.getItem('collectives')) {
         return JSON.parse(localStorage.getItem('collectives'));
@@ -100,6 +106,7 @@
       }
     },
     clearUser: function() {
+      localStorage.removeItem('backendDelta');
       localStorage.removeItem('collectives');
       localStorage.removeItem('email');
       localStorage.removeItem('expires');

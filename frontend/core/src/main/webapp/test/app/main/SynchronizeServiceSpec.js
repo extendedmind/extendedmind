@@ -61,6 +61,9 @@ describe('SynchronizeService', function() {
     isAuthenticateReplaceable: function() {
       return this.authenticateReplaceable;
     },
+    getBackendDelta: function() {
+      return 0;
+    },
     getCredentials: function () {
       return '123456789';
     },
@@ -439,6 +442,62 @@ describe('SynchronizeService', function() {
       .toBeUndefined();
     expect(items[1].modified)
       .toBe(undeleteItemResponse.modified);
+  });
+
+  it('should handle item offline update with conflicting sync from server', function () {
+    MockUserSessionService.offlineEnabled = true;
+
+    // 1. save existing item
+    var yoga = ItemsService.getItemInfo('f7724771-4469-488c-aabd-9db188672a9b', testOwnerUUID).item;
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item/' + yoga.uuid, yoga)
+       .respond(404);
+    ItemsService.saveItem(yoga, testOwnerUUID);
+    $httpBackend.flush();
+    var items = ItemsService.getItems(testOwnerUUID);
+    expect(items.length)
+      .toBe(3);
+
+    // 2. synchronize items and get back online with conflicting yoga response, that's older than the
+    //    offline saved item: the newer is still executed
+    var latestModified = now.getTime()-100000;
+    MockUserSessionService.setLatestModified(latestModified);
+
+    var newLatestModified = latestModified + 1000;
+    var conflictYogaResponse = {
+      items: [{
+        'uuid': 'f7724771-4469-488c-aabd-9db188672a9b',
+        'created': 1391278509634,
+        'modified': newLatestModified,
+        'title': 'I start yoga'
+      }]
+    }
+    $httpBackend.expectGET('/api/' + MockUserSessionService.getActiveUUID() + '/items?modified=' +
+                            latestModified + '&deleted=true&archived=true&completed=true')
+        .respond(200, conflictYogaResponse);
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item/' + yoga.uuid, yoga)
+        .respond(200, putNewItemResponse);
+    SynchronizeService.synchronize(testOwnerUUID);
+    $httpBackend.flush();
+    MockUserSessionService.setLatestModified(newLatestModified);
+
+    // 3. save existing offline again
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item/' + yoga.uuid, yoga)
+       .respond(404);
+    ItemsService.saveItem(yoga, testOwnerUUID);
+    $httpBackend.flush();
+    var items = ItemsService.getItems(testOwnerUUID);
+    expect(items.length)
+      .toBe(3);
+
+    // 4. synchronize with conflicting item that is newer, expect PUT to have been deleted
+    var veryLatestModified = Date.now() + 1;
+    conflictYogaResponse.items[0].modified = veryLatestModified;
+    $httpBackend.expectGET('/api/' + MockUserSessionService.getActiveUUID() + '/items?modified=' +
+                            newLatestModified + '&deleted=true&archived=true&completed=true')
+        .respond(200, conflictYogaResponse);
+    SynchronizeService.synchronize(testOwnerUUID);
+    $httpBackend.flush();
+
   });
 
   it('should handle task offline create, update, delete', function () {

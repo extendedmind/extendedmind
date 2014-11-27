@@ -207,10 +207,10 @@
   };
 
   methods.generateFakeTimestamp = function() {
-    // Put the fake timestamp 1000 seconds in the future to make sure the
-    // new timestamp is in the future even if the local time is slightly
-    // behind server time
-    return (new Date()).getTime() + 1000000;
+    // Use the backend delta that's received from authentication, or 0 if backend delta is not found
+    var backendDelta = UserSessionService.getBackendDelta();
+    if (!backendDelta) backendDelta = 0;
+    return (new Date()).getTime() + backendDelta;
   },
 
   // Callback registration
