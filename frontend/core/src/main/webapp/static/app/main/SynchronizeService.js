@@ -170,7 +170,7 @@
                 }else{
                   var conflictedContent = queue[i].content.data.content +
                                             conflictDelimiter +
-                                            queue[i].content.data.content;
+                                            conflictingItem.content;
                   queue[i].content.data.content = conflictedContent;
                   conflictingItem.content = conflictedContent;
                 }
