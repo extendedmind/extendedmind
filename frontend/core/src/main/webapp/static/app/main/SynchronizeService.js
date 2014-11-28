@@ -161,14 +161,15 @@
                   conflictingItem.content && conflictingItem.content.length &&
                   queue[i].content.data.content !== conflictingItem.content){
                 // Content conflict, create hybrid and change PUT in queue to reflect the change
+                var conflictDelimiter = '\n\n>>> conflicting changes >>>\n\n';
                 if (conflictingItem.modified > queue[i].content.data.modified){
                   conflictingItem.content = conflictingItem.content +
-                                            '\n\n>>>>>>> conflicting changes >>>>>>>\n\n' +
+                                            conflictDelimiter +
                                             queue[i].content.data.content;
                   queue[i].content.data = conflictingItem;
                 }else{
                   var conflictedContent = queue[i].content.data.content +
-                                            '\n\n>>>>>>> conflicting changes >>>>>>>\n\n' +
+                                            conflictDelimiter +
                                             queue[i].content.data.content;
                   queue[i].content.data.content = conflictedContent;
                   conflictingItem.content = conflictedContent;
