@@ -175,7 +175,8 @@ describe('SynchronizeService', function() {
               'uuid': 'a1cd149a-a287-40a0-86d9-0a14462f22d6',
               'created': 1391627811070,
               'modified': 1391627811070,
-              'title': 'contexts could be used to prevent access to data'
+              'title': 'contexts could be used to prevent access to data',
+              'content': 'might be a good idea'
             },{
               'uuid': 'c2cd149a-a287-40a0-86d9-0a14462f22d6',
               'created': 1391627811050,
@@ -485,7 +486,6 @@ describe('SynchronizeService', function() {
        .respond(404);
     ItemsService.saveItem(yoga, testOwnerUUID);
     $httpBackend.flush();
-    var items = ItemsService.getItems(testOwnerUUID);
     expect(items.length)
       .toBe(3);
 
@@ -497,6 +497,8 @@ describe('SynchronizeService', function() {
         .respond(200, conflictYogaResponse);
     SynchronizeService.synchronize(testOwnerUUID);
     $httpBackend.flush();
+    expect(items.length)
+      .toBe(3);
 
   });
 
@@ -670,8 +672,96 @@ describe('SynchronizeService', function() {
       .toBe(5);
     expect(testTask.modified)
       .toBe(uncompleteTaskResponse.modified);
+
+    // 6. complete offline but get conflicting completed response from the server: expect that double
+    //    complete has been removed from queue
+    var cleanCloset = TasksService.getTaskInfo('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID).task;
+    $httpBackend.expectPOST('/api/' + MockUserSessionService.getActiveUUID() + '/task/' + cleanCloset.uuid + '/complete')
+       .respond(404);
+    TasksService.completeTask(cleanCloset, testOwnerUUID);
+    $httpBackend.flush();
+    expect(tasks.length)
+      .toBe(5);
+    expect(cleanCloset.completed).toBeDefined();
+
+    var latestModified = now.getTime()-100000;
+    MockUserSessionService.setLatestModified(latestModified);
+
+    var conflictModified = now.getTime() + 1;
+    var conflictingCleanCloset = {
+      'uuid': '7b53d509-853a-47de-992c-c572a6952629',
+      'created': 1391278509698,
+      'modified': conflictModified,
+      'completed': conflictModified,
+      'title': 'clean closet'
+    };
+
+    $httpBackend.expectGET('/api/' + MockUserSessionService.getActiveUUID() + '/items?modified=' +
+                            latestModified + '&deleted=true&archived=true&completed=true')
+        .respond(200, {tasks: [conflictingCleanCloset]});
+    SynchronizeService.synchronize(testOwnerUUID);
+    $httpBackend.flush();
+
+    expect(TasksService.getTaskInfo(conflictingCleanCloset.uuid, testOwnerUUID).task.completed)
+      .toBe(conflictModified);
   });
 
+  it('should handle task offline update with conflicting sync from server', function () {
+    MockUserSessionService.offlineEnabled = true;
+
+    // 1. save existing task
+    var cleanCloset = TasksService.getTaskInfo('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID).task;
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/task/' + cleanCloset.uuid, cleanCloset)
+       .respond(404);
+    TasksService.saveTask(cleanCloset, testOwnerUUID);
+    $httpBackend.flush();
+    var tasks = TasksService.getTasks(testOwnerUUID);
+    expect(tasks.length)
+      .toBe(4);
+
+    // 2. synchronize items and get back online with conflicting response, that's older than the
+    //    offline saved one: the newer is still executed
+    var latestModified = now.getTime()-100000;
+    MockUserSessionService.setLatestModified(latestModified);
+
+    var newLatestModified = latestModified + 1000;
+    var conflictCleanClosetResponse = {
+      tasks: [{
+        'uuid': '7b53d509-853a-47de-992c-c572a6952629',
+        'created': 1391278509698,
+        'modified': newLatestModified,
+        'completed': 1391278509917,
+        'title': 'clean closet!'
+      }]
+    }
+    $httpBackend.expectGET('/api/' + MockUserSessionService.getActiveUUID() + '/items?modified=' +
+                            latestModified + '&deleted=true&archived=true&completed=true')
+        .respond(200, conflictCleanClosetResponse);
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/task/' + cleanCloset.uuid, cleanCloset)
+        .respond(200, putNewItemResponse);
+    SynchronizeService.synchronize(testOwnerUUID);
+    $httpBackend.flush();
+    MockUserSessionService.setLatestModified(newLatestModified);
+
+    // 3. save existing offline again
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/task/' + cleanCloset.uuid, cleanCloset)
+       .respond(404);
+    TasksService.saveTask(cleanCloset, testOwnerUUID);
+    $httpBackend.flush();
+    expect(tasks.length)
+      .toBe(4);
+
+    // 4. synchronize with conflicting task that is newer, expect PUT to have been deleted
+    var veryLatestModified = Date.now() + 1;
+    conflictCleanClosetResponse.tasks[0].modified = veryLatestModified;
+    $httpBackend.expectGET('/api/' + MockUserSessionService.getActiveUUID() + '/items?modified=' +
+                            newLatestModified + '&deleted=true&archived=true&completed=true')
+        .respond(200, conflictCleanClosetResponse);
+    SynchronizeService.synchronize(testOwnerUUID);
+    $httpBackend.flush();
+    expect(tasks.length)
+      .toBe(4);
+  });
 
   it('should handle note offline create, update, delete', function () {
     MockUserSessionService.offlineEnabled = true;
@@ -779,6 +869,71 @@ describe('SynchronizeService', function() {
       .toBeUndefined();
     expect(notes[4].modified)
       .toBe(undeleteItemResponse.modified);
+  });
+
+
+  it('should handle note offline update with conflicting sync from server', function () {
+    MockUserSessionService.offlineEnabled = true;
+
+    // 1. save existing note
+    var aboutContexts = NotesService.getNoteInfo('a1cd149a-a287-40a0-86d9-0a14462f22d6', testOwnerUUID).note;
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/note/' + aboutContexts.uuid, aboutContexts)
+       .respond(404);
+    NotesService.saveNote(aboutContexts, testOwnerUUID);
+    $httpBackend.flush();
+    var notes = NotesService.getNotes(testOwnerUUID);
+    expect(notes.length)
+      .toBe(4);
+
+    // 2. synchronize items and get back online with conflicting response, that's older than the
+    //    offline saved one: the newer is still executed
+    var latestModified = now.getTime()-100000;
+    MockUserSessionService.setLatestModified(latestModified);
+
+    var newLatestModified = latestModified + 1000;
+    var conflictAboutContextsResponse = {
+      notes: [{
+        'uuid': 'a1cd149a-a287-40a0-86d9-0a14462f22d6',
+        'created': 1391627811070,
+        'modified': newLatestModified,
+        'title': 'contexts should be used to prevent access to data',
+        'content': 'might be a good idea, maybe'
+      }]
+    }
+    $httpBackend.expectGET('/api/' + MockUserSessionService.getActiveUUID() + '/items?modified=' +
+                            latestModified + '&deleted=true&archived=true&completed=true')
+        .respond(200, conflictAboutContextsResponse);
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/note/' + aboutContexts.uuid,
+                           aboutContexts)
+        .respond(200, putNewItemResponse);
+    SynchronizeService.synchronize(testOwnerUUID);
+    $httpBackend.flush();
+    MockUserSessionService.setLatestModified(newLatestModified);
+
+    var aboutContextsConflictingContent = NotesService.getNoteInfo('a1cd149a-a287-40a0-86d9-0a14462f22d6',
+                                                      testOwnerUUID).note;
+    expect(aboutContextsConflictingContent.content).toContain('conflicting changes');
+
+    // 3. save existing offline again
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/note/' + aboutContexts.uuid,
+                           aboutContextsConflictingContent)
+       .respond(404);
+    NotesService.saveNote(aboutContextsConflictingContent, testOwnerUUID);
+    $httpBackend.flush();
+    expect(notes.length)
+      .toBe(4);
+
+    // 4. synchronize with conflicting note that is newer but with same content, expect PUT to be deleted
+    var veryLatestModified = Date.now() + 1;
+    conflictAboutContextsResponse.notes[0].modified = veryLatestModified;
+    conflictAboutContextsResponse.notes[0].content = aboutContextsConflictingContent.content;
+    $httpBackend.expectGET('/api/' + MockUserSessionService.getActiveUUID() + '/items?modified=' +
+                            newLatestModified + '&deleted=true&archived=true&completed=true')
+        .respond(200, conflictAboutContextsResponse);
+    SynchronizeService.synchronize(testOwnerUUID);
+    $httpBackend.flush();
+    expect(notes.length)
+      .toBe(4);
   });
 
   it('should handle item, note and list converted to task in different client', function () {

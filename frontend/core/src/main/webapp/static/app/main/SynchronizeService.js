@@ -171,6 +171,7 @@
                                             '\n\n>>>>>>> conflicting changes >>>>>>>\n\n' +
                                             queue[i].content.data.content;
                   queue[i].content.data.content = conflictedContent;
+                  conflictingItem.content = conflictedContent;
                 }
               }else if (conflictingItem.modified > queue[i].content.data.modified){
                 queue.splice(i, 1);

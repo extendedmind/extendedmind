@@ -80,8 +80,10 @@
     var headRequest = HttpRequestQueueService.getHead(recursive && !previousWasPrimary);
     if (headRequest) {
       if (!headRequest.last) {
+        headRequest.executing = true;
         $http(headRequest.content).
         success(function(data /*, status, headers, config*/) {
+          delete headRequest.executing;
           retryingExecution = false;
           // First, execute callback
           if (headRequest.primary && primaryResultCallback) {
@@ -109,6 +111,7 @@
           executeRequests(true, headRequest.primary);
         })
         .error(function(data, status, headers, config) {
+          delete headRequest.executing;
           if (isOffline(status)) {
             retryingExecution = false;
             // Seems to be offline, stop processing

@@ -120,9 +120,8 @@ function HttpRequestQueueService() {
 
   function pruneQueue(request){
     var reverseRequestIndex = findReverseRequestIndex(request);
-    if (reverseRequestIndex !== undefined &&
-      (getHead() !== queue[reverseRequestIndex] || queue[reverseRequestIndex].offline)) {
-        // Found reverse method that is either not the head or is the head but has been set offline
+    if (reverseRequestIndex !== undefined && !queue[reverseRequestIndex].executing) {
+        // Found reverse method that is not currently executing
       removeFromQueue(reverseRequestIndex);
       return false;
     }
@@ -132,7 +131,7 @@ function HttpRequestQueueService() {
         // The method does not have a payload, we just stop here. This happens e.g. for
         // delete, where second identical call will fail with "already deleted" if this is not done.
         return false;
-      }else if (getHead() !== queue[replaceableIndex] || queue[replaceableIndex].offline){
+      }else if (!queue[reverseRequestIndex].executing){
         // There is data to be replaced, and the request is not the head, or is the head but
         // not on its way to the server: just replace
         queue[replaceableIndex].content.data = request.content.data;
