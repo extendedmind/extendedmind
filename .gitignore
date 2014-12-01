@@ -34,3 +34,6 @@ frontend/cordova/app/www
 frontend/cordova/app/config.xml
 frontend/cordova/app/merges
 
+# Analytics
+frontend/core/src/main/webapp/analytics/data/
+
