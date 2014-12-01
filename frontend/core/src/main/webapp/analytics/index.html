@@ -114,6 +114,19 @@
     <code id="dauOmniCode">https://ext.md/evaluate/1.0/metric?expression=distinct(visit_omnibar(user.uuid).eq(user.type,2))&start=2014-05-1&stop=2014-07-23&step=864e5</code>
     <div id="chart5"></div>
 
+    <h3>Visiting sign up</h3>
+    <code id="visitSignUpCode"></code>
+    <div id="chart6"></div>
+
+    <h3>Sign up</h3>
+    <code id="signUpCode"></code>
+    <div id="chart7"></div>
+
+    <h3>Complete tutorial</h3>
+    <p>Does not include admin or alpha users.</p>
+    <code id="tutorialCompleteCode"></code>
+    <div id="chart8"></div>
+
     <hr>
 
     <!-- <h3>First item added</h3>
@@ -148,7 +161,7 @@
 <script src="js/combineSources.js"></script>
 <script>
 
-    // these defined in autodate.js 
+    // these defined in autodate.js
     var startDay = dateToString(startDate);
     var endDay = dateToString(today);
 
@@ -162,6 +175,9 @@
     var dauTasksQuery = baseUrl + "distinct(addTask(user.uuid).eq(user.type,2))&step=864e5&start=" + startDay + "&stop=" + endDay;
     var dauNotesQuery = baseUrl + "distinct(addNote(user.uuid).eq(user.type,2))&step=864e5&start=" + startDay + "&stop=" + endDay;
     var dauOmnibarQuery = baseUrl + "distinct(visit_omnibar(user.uuid).eq(user.type,2))&step=864e5&start=" + startDay + "&stop=" + endDay;
+    var visitSignUpQuery = baseUrl + "sum(visit_signup)&step=864e5&start=" + startDay + "&stop=" + endDay;
+    var signUpQuery = baseUrl + "sum(signUp)&step=864e5&start=" + startDay + "&stop=" + endDay;
+    var tutorialCompleteQuery = baseUrl + "sum(onboarded.eq(user.type,2))&step=864e5&start=" + startDay + "&stop=" + endDay;
 
     // print queries to code blocks and make visible
     $('#dauCode').text(dauQuery);
@@ -169,13 +185,21 @@
     $('#dauTasksCode').text(dauTasksQuery);
     $('#dauNotesCode').text(dauNotesQuery);
     $('#dauOmniCode').text(dauOmnibarQuery);
+    $('#visitSignUpCode').text(visitSignUpQuery);
+    $('#signUpCode').text(signUpQuery);
+    $('#tutorialCompleteCode').text(tutorialCompleteQuery);
 
     initChartToElement("#chart1",dauQuery);         //"data/unique_users_sessions.json"
     initChartToElement("#chart2",sessionsQuery);    //"data/sessions.json"
     initChartToElement("#chart3",dauTasksQuery);    //"data/unique_users_addtask.json"
     initChartToElement("#chart4",dauNotesQuery);    //"data/unique_users_addnote.json"
     initChartToElement("#chart5",dauOmnibarQuery);  // "data/unique_users_omnibar.json"
-    /* 
+    initChartToElement("#chart6",visitSignUpQuery);     // "data/unique_visit_entry.json"
+    initChartToElement("#chart7",signUpQuery);            // "data/sign_up.json"
+    initChartToElement("#chart8",tutorialCompleteQuery);  // "data/onboarded.json"
+
+
+    /*
     Not in use
     initChartToElement("#chart7","data/firstitemadded.json");
     initChartToElement("#chart8","data/visit_signup.json");
