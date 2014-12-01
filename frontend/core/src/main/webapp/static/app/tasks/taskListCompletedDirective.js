@@ -56,7 +56,7 @@
           }
 
           scope.containsCompleted = function(){
-            var taskArray = scope.getList();
+            var taskArray = scope.getFullArray();
             if (taskArray && taskArray.length){
               for (var i = 0; i < taskArray.length;i++){
                 if (taskArray[i].completed && !scope.isTaskFrozen(taskArray[i])){

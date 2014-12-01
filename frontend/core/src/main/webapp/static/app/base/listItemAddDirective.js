@@ -22,13 +22,12 @@
     compile: function(){
       return {
         pre: function(scope, element, attrs, controllers) {
-
           var createNewItemFn = $parse(attrs.listItemAdd).bind(undefined, scope);
           var saveNewItemFn = $parse(attrs.listItemAddSave).bind(undefined, scope);
 
           // Use this instead of ng-show to get focus() to work. With ng-show this doesn't work
           // as ng-show has not been evaluated before we reach the callback.
-          element[0].style.display = "none";
+          element[0].style.display = 'none';
 
           var addItemFocusCallback;
           var addItemBlurCallback;
@@ -36,7 +35,7 @@
             addItemFocusCallback = focusCallback;
             addItemBlurCallback = blurCallback;
             controllers[0].registerAddActiveCallback(enter);
-          }
+          };
 
           scope.toggleLeftCheckbox = function (toggleFn) {
             controllers[0].toggleLeftCheckbox(scope.newItem, toggleFn,
@@ -44,10 +43,11 @@
           };
 
           function enter(){
-            element[0].style.display = "initial";
+            element[0].style.display = 'initial';
             // Initialize first item on focus
             scope.newItem = createNewItemFn();
             addItemFocusCallback();
+            controllers[0].notifyListItemAddActive(true);
           }
 
           function exit(deactivateAfterBlur){
@@ -55,22 +55,23 @@
               addItemBlurCallback(deactivateAfterBlur);
               controllers[0].notifyListItemAddBlurred();
             }
-            element[0].style.display = "none";
+            element[0].style.display = 'none';
+            controllers[0].notifyListItemAddActive(false);
           }
 
           scope.clickedElsewhere = function(){
             if (scope.newItem.title && scope.newItem.title.length > 0)
               saveNewItem(scope.newItem);
             exit();
-          }
+          };
 
           scope.getListItemAddId = function(){
             if (controllers[1]){
-              return controllers[1].getSlidePath() + "/newItem";
+              return controllers[1].getSlidePath() + '/newItem';
             }else{
-              return "newItem";
+              return 'newItem';
             }
-          }
+          };
 
           scope.textareaKeyDown = function (event) {
             // ESC button
@@ -98,7 +99,7 @@
           scope.callAndExit = function(fn, parameter){
             fn(parameter);
             exit();
-          }
+          };
         }
       };
     }

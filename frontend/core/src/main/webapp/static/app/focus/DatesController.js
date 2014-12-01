@@ -109,7 +109,7 @@
   // DAY SLIDES
 
   var offsetFromOldActiveDaySlide = 0;
-  var daySlidesInfosCleared = false;
+  $scope.daySlidesInfosCleared = false;
 
   SwiperService.registerSlideChangeStartCallback(daySlideChangeStart, 'focus/tasks', 'DatesController');
   function daySlideChangeStart(activeIndex, direction) {
@@ -121,8 +121,10 @@
     // Infos will be cleared when absolute value of offset from old active day slide is >= 2.
     // We are in slide change start callback and it is potentially fired many times, so check that infos are
     // cleared before comparing the absolute value.
-    if (!daySlidesInfosCleared && (offsetFromOldActiveDaySlide >= 2 || offsetFromOldActiveDaySlide <= -2)) {
-      daySlidesInfosCleared = true;
+    if (!$scope.daySlidesInfosCleared &&
+        (offsetFromOldActiveDaySlide >= 2 || offsetFromOldActiveDaySlide <= -2))
+    {
+      $scope.daySlidesInfosCleared = true;
       clearDaySlidesInfos();
       if (!$scope.$$phase && !$rootScope.$$phase) $scope.$digest();
     }
@@ -136,7 +138,7 @@
     // Swiper is in loop mode so array that stores slide infos is circular.
     var activeDaySlideInfo;
 
-    if (daySlidesInfosCleared) {
+    if ($scope.daySlidesInfosCleared) {
       // Moved offset is the remainder from total moves divided by slides array length.
       var movedOffset = offsetFromOldActiveDaySlide % $scope.daySlides.length;
       var oldActiveIndex = (newActiveIndex - movedOffset + $scope.daySlides.length) % $scope.daySlides.length;
@@ -153,12 +155,14 @@
     var nextIndex = (newActiveIndex + 1 + $scope.daySlides.length) % $scope.daySlides.length;
     refreshAdjacentDaySlides(previousIndex, nextIndex, activeDaySlideInfo);
 
+    // Set to initial value before UI update.
+    $scope.daySlidesInfosCleared = false;
+
     // Update UI.
     if (!$scope.$$phase && !$rootScope.$$phase) $scope.$digest();
 
-    // Set variables to initial values.
+    // Set to initial value.
     offsetFromOldActiveDaySlide = 0;
-    daySlidesInfosCleared = false;
   }
 
   /*
@@ -548,11 +552,11 @@
 
   $scope.swipeDatepickerLeft = function(){
     SwiperService.swipePrevious('datepicker');
-  }
+  };
 
   $scope.swipeDatepickerRight = function(){
     SwiperService.swipeNext('datepicker');
-  }
+  };
 
   $scope.$on('$destroy', function() {
     if (angular.isFunction($scope.unregisterSynchronizeCallback))

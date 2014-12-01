@@ -1,12 +1,13 @@
 <div class="container-content--outer" ng-if="isFeatureActive('lists')" list-container>
-  <section class="container-content" list="archivedLists" list-order="top" swiper-prevent>
+  <section class="container-content" list="archivedLists" swiper-prevent>
     <h2 class="group-heading justified row">archived</h2>
     <div list-item-add="{trans: {itemType: 'list'}}" list-item-add-save="saveAndArchiveList(newItem)"
-    ng-include="urlBase + 'app/lists/listListItemAdd.html'"></div>
+      ng-include="urlBase + 'app/lists/listListItemAdd.html'"></div>
     <div class="animate-list-item-leave"
-    ng-repeat="list in getList() | orderBy:'created':true | limitTo: currentListLimitTo"
-    list-item="getList().length" ng-include="urlBase + 'app/lists/listListItem.html'"></div>
-    <div ng-if="(currentListLimitTo < listLength) && nearListBottom" loading-animation></div>
+      ng-repeat="list in listInfos.array = (getFullArray()) | orderBy:'created':true
+      | limitTo: currentListLimitTo"
+      list-item ng-include="urlBase + 'app/lists/listListItem.html'"></div>
+    <div list-prompt="lists" list-prompt-infos="listInfos" list-prompt-hide="[listItemAddActive]"></div>
   </section>
   <footer class="container-content--after" list-footer="getFeatureMap('lists')"></footer>
 </div>

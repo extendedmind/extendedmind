@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function listItemDirective($parse) {
+ function listItemDirective() {
   return {
     restrict: 'A',
     require: '^list',
@@ -22,8 +22,7 @@
     compile: function(){
       return {
         post: function(scope, element, attrs, listController) {
-          var listLength = $parse(attrs.listItem)(scope);
-          listController.notifyListLength(listLength);
+          if (scope.$last) listController.notifyArrayVisible();
 
           scope.toggleLeftCheckbox = function (item, toggleFn) {
             listController.toggleLeftCheckbox(item, toggleFn, angular.element(element[0].firstElementChild));
@@ -33,7 +32,6 @@
     }
   };
 }
-listItemDirective['$inject'] = ['$parse'];
 angular.module('em.base').directive('listItem', listItemDirective);
 
 /*

@@ -60,7 +60,8 @@
           'left': (base.$element.width() / 2) - (base.$loadingText.width() / 2)
         });
 
-        base.theInterval = setInterval(base.dotItUp, base.options.speed, base.$dots, base.options.maxDots);
+        if (!base.options.paused)
+          base.theInterval = setInterval(base.dotItUp, base.options.speed, base.$dots, base.options.maxDots);
 
       };
 
@@ -93,9 +94,14 @@
 
   return {
     restrict: 'A',
-    link: function(scope, element) {
+    link: function(scope, element, attrs) {
       element.addClass('loading-animation');
-      element.Loadingdotdotdot();
+      var options;
+      if (attrs.loadingAnimation === 'paused') {
+        options = {};
+        options.paused = true;
+      }
+      element.Loadingdotdotdot(options);
     }
   };
 }

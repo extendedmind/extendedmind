@@ -1,5 +1,6 @@
 <div class="container-content--outer" ng-if="isFeatureActive('list')" list-container drawer-handle="left">
-  <section class="container-content" list="allTasks | itemsFilter:{name:'byListUUID', filterBy: list.uuid}" list-order="top" swiper-prevent>
+  <section class="container-content" list="allTasks | itemsFilter:{name:'byListUUID', filterBy: list.uuid}"
+    swiper-prevent>
     <div class="group-mixed heading">
       <div class="group-mixed--middle">
         <h2 class="group-heading justified">
@@ -8,13 +9,14 @@
       </div>
       <div class="group-mixed--right" task-list-completed></div>
     </div>
-    <div list-item-add="{trans: {completed: false, list: list.uuid, itemType: 'task'}}" list-item-add-save="saveTask(newItem)"
-    ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
+    <div list-item-add="{trans: {completed: false, list: list.uuid, itemType: 'task'}}"
+      list-item-add-save="saveTask(newItem)" ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
     <div class="animate-list-item-leave"
-    ng-repeat="task in listTasks = (getList() | paramFilter:isListItemVisible) | orderBy:'created':true
-    | limitTo: currentListLimitTo"
-    list-item="listTasks.length" ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
-    <div ng-if="(currentListLimitTo < listLength) && nearListBottom" loading-animation></div>
+      ng-repeat="task in listInfos.array = (getFullArray() | paramFilter:isListItemVisible)
+      | orderBy:'created':true
+      | limitTo: currentListLimitTo"
+      list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
+    <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-hide="[listItemAddActive]"></div>
   </section>
   <footer class="container-content--after" list-footer="getFeatureMap('list')"></footer>
 </div>

@@ -136,7 +136,7 @@
 
       // Registers the path of the slide to the swiper
       // and sets up listeners for element, if needed
-      this.registerSlide = function registerSlide(path, element, index, duplicate) {
+      this.registerSlide = function(path, slideElement, index, duplicate, verticalMovementCallback) {
         if (duplicate){
           // Registered a duplicate slide, this is a looping swiper
           $scope.loop = true;
@@ -145,24 +145,36 @@
         // For vertical page outerSwiping, we need to the register touch elements
         // to decide whether events should propagate to the underlying horizontal
         // swiper or not.
+        var slideChildElement;
         if ($scope.swiperType === 'page') {
-          // We're expecting a slide, which has "inner-slide-content-container", which has section
-          element[0].firstElementChild.addEventListener('touchstart', pageSwiperSlideTouchStart, false);
-          element[0].firstElementChild.addEventListener('touchmove', pageSwiperSlideTouchMove, false);
-          element[0].firstElementChild.addEventListener('touchend', pageSwiperSlideTouchEnd, false);
-          element[0].firstElementChild.addEventListener('scroll', pageSwiperSlideScroll, false);
+          // We're expecting a slide, which has "container-content" as child.
+          slideChildElement = slideElement[0].firstElementChild;
+
+          slideChildElement.addEventListener('touchstart', pageSwiperSlideTouchStart, false);
+          slideChildElement.addEventListener('touchmove', pageSwiperSlideTouchMove, false);
+          slideChildElement.addEventListener('touchend', pageSwiperSlideTouchEnd, false);
+          slideChildElement.addEventListener('scroll', pageSwiperSlideScroll, false);
 
           // http://blogs.windows.com/windows_phone/b/wpdev/archive/2012/11/15/adapting-your-webkit-optimized-site-for-internet-explorer-10.aspx#step4
           if ($window.navigator.msPointerEnabled) {
-            element[0].firstElementChild.addEventListener('MSPointerDown', pageSwiperSlideTouchStart, false);
-            element[0].firstElementChild.addEventListener('MSPointerMove', pageSwiperSlideTouchMove, false);
-            element[0].firstElementChild.addEventListener('MSPointerUp', pageSwiperSlideTouchEnd, false);
+            slideChildElement.addEventListener('MSPointerDown', pageSwiperSlideTouchStart, false);
+            slideChildElement.addEventListener('MSPointerMove', pageSwiperSlideTouchMove, false);
+            slideChildElement.addEventListener('MSPointerUp', pageSwiperSlideTouchEnd, false);
           }
         }
 
         // Slides from DOM (AngularJS directive) are not necessarily registered in desired order.
         // Slide array of objects is sorted later, during swiper initialization.
-        var slideInfo = {slidePath: path, slideIndex: index, slideElement: element};
+        var slideInfo = {
+          slidePath: path,
+          slideIndex: index,
+          slideChildElement: slideChildElement
+        };
+        if (verticalMovementCallback) {
+          // When present, attach vertical movement callback into slide info.
+          slideInfo.verticalMovementCallback = verticalMovementCallback;
+        }
+
         var oldSlideInfosIndex;
         if (initializeSwiperCalled) {
           oldSlideInfosIndex = getSlideInfosIndex(path);
@@ -219,8 +231,12 @@
       else disableDrawer();
     }
 
-    function onSlideResetCallback() {
+    function onSlideResetCallback(swiper) {
       SwiperService.onSlideReset($scope, $scope.swiperPath);
+      var slideInfo = swiperSlideInfos.findFirstObjectByKeyValue('slideIndex', swiper.activeIndex);
+      if (slideInfo && slideInfo.verticalMovementCallback) {
+        slideInfo.verticalMovementCallback(0);
+      }
     }
 
     function onSlideChangeStartCallback(swiper, direction) {
@@ -229,6 +245,13 @@
 
     function onSlideChangeEndCallback(swiper, direction) {
       SwiperService.onSlideChangeEnd($scope, $scope.swiperPath, direction);
+    }
+
+    function notifyVerticalMovement(movement, slideChildElement) {
+      var slideInfo = swiperSlideInfos.findFirstObjectByKeyValue('slideChildElement', slideChildElement);
+      if (slideInfo && slideInfo.verticalMovementCallback) {
+        slideInfo.verticalMovementCallback(movement);
+      }
     }
 
     var swipeUp = false;
@@ -416,10 +439,22 @@
           // https://developer.mozilla.org/en-US/docs/Web/API/Element.scrollHeight#Determine_if_an_element_has_been_totally_scrolled
           if (swipePageSlideBottom && swipePageSlideDown) {
             // Bottom of a slide and swiping down. Let the event bubble to swiper.
+
+            // Notify swiping down to change to next slide (direction = +1).
+            notifyVerticalMovement(1, this);
+
           } else if (swipePageSlideTop && swipePageSlideUp) {
             // Top of a slide on swiping up. Let the event bubble to swiper.
+
+            // Notify swiping up to change to previous slide (direction = -1).
+            notifyVerticalMovement(-1, this);
+
           } else {
             // Middle of a slide. Do a regular scroll and stop the event bubbling to swiper.
+
+            // Notify scrolling in the middle of a slide (direction = 0).
+            notifyVerticalMovement(0, this);
+
             event.stopPropagation();
             event.stopImmediatePropagation();
           }
@@ -463,16 +498,16 @@
 
         if ($scope.swiperType === 'page') {
           for (var i = 0, len = swiperSlideInfos.length; i < len; i++) {
-            swiperSlideInfos[i].slideElement[0].firstElementChild.
+            swiperSlideInfos[i].slideChildElement.
             removeEventListener('touchstart', pageSwiperSlideTouchStart, false);
 
-            swiperSlideInfos[i].slideElement[0].firstElementChild.
+            swiperSlideInfos[i].slideChildElement.
             removeEventListener('touchmove', pageSwiperSlideTouchMove, false);
 
-            swiperSlideInfos[i].slideElement[0].firstElementChild.
+            swiperSlideInfos[i].slideChildElement.
             removeEventListener('touchend', pageSwiperSlideTouchEnd, false);
 
-            swiperSlideInfos[i].slideElement[0].firstElementChild.
+            swiperSlideInfos[i].slideChildElement.
             removeEventListener('scroll', pageSwiperSlideScroll, false);
           }
           // http://blogs.windows.com/windows_phone/b/wpdev/archive/2012/11/15/adapting-your-webkit-optimized-site-for-internet-explorer-10.aspx#step4
@@ -480,13 +515,13 @@
             for (var j = 0, swiperSlideInfosLength = swiperSlideInfos.length;
                  j < swiperSlideInfosLength; j++)
             {
-              swiperSlideInfos[j].slideElement[0].firstElementChild.
+              swiperSlideInfos[j].slideChildElement.
               removeEventListener('MSPointerDown', pageSwiperSlideTouchStart, false);
 
-              swiperSlideInfos[j].slideElement[0].firstElementChild.
+              swiperSlideInfos[j].slideChildElement.
               removeEventListener('MSPointerMove', pageSwiperSlideTouchMove, false);
 
-              swiperSlideInfos[j].slideElement[0].firstElementChild.
+              swiperSlideInfos[j].slideChildElement.
               removeEventListener('MSPointerUp', pageSwiperSlideTouchEnd, false);
             }
           }
@@ -501,6 +536,8 @@
       function toggleAdjacentInactiveSwiperSlidesVisiblity(visibilityValue) {
         var activeSlideIndex = SwiperService.getActiveSlideIndex(scope.swiperPath);
         var swiperSlides = SwiperService.getSwiperSlides(scope.swiperPath);
+
+        if (!swiperSlides) return;
 
         // hide previous
         var previousSlideIndex = activeSlideIndex - 1;
@@ -624,5 +661,5 @@
   };
 }
 swiperContainerDirective['$inject'] = ['$rootScope', '$window', 'DetectBrowserService', 'DrawerService',
-                                       'SwiperService'];
+  'SwiperService'];
 angular.module('em.base').directive('swiperContainer', swiperContainerDirective);

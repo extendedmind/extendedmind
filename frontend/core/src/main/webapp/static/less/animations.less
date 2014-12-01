@@ -93,6 +93,17 @@
   opacity: 1;       // [1]
 }
 
+// FIXME
+.animate-list-item-leave.ng-leave.ng-leave-active + .no-items-prompt {
+  opacity: 1;
+  transition: opacity 1s linear;
+}
+
+// FIXME
+.animate-list-item-leave.ng-leave + .no-items-prompt {
+  opacity: 0;
+}
+
 // Animate checkbox checking.
 input[type="checkbox"]:checked + label:before {
   -webkit-transition: color 2s @timing-animate-steep; // [1,2]
@@ -347,4 +358,102 @@ input[type="checkbox"]:checked + label:before {
   -ms-transition: background-color @speed-animation-editor @timing-animate;     // [1]
   transition: background-color @speed-animation-editor @timing-animate;         // [1]
   background-color: @color-background-editor-inactive;                          // [1]
+}
+
+// 1. Initial source: http://stackoverflow.com/a/13017201
+.container-fluid--inner:not(.swiper-container),
+.swiper-slide-active {
+  .one {
+    -webkit-animation: dot-first 2s infinite; // [1]
+    animation: dot-first 2s infinite;         // [1]
+  }
+  .two {
+    -webkit-animation: dot-second 2s infinite;  // [1]
+    animation: dot-second 2s infinite;          // [1]
+  }
+  .three {
+    -webkit-animation: dot-third 2s infinite; // [1]
+    animation: dot-third 2s infinite;         // [1]
+  }
+}
+
+@-webkit-keyframes dot-first {
+  0% {
+    opacity: 0;
+  }
+  25% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes dot-first {
+  0% {
+    opacity: 0;
+  }
+  25% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes dot-second {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0;
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes dot-second {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0;
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes dot-third {
+  0% {
+    opacity: 0;
+  }
+  75% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes dot-third {
+  0% {
+    opacity: 0;
+  }
+  75% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }

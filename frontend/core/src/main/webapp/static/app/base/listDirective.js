@@ -13,6 +13,7 @@
  * limitations under the License.
  */
  'use strict';
+ /*jshint -W008 */
 
  function listDirective($parse, $q, $rootScope, $timeout, UISessionService) {
   return {
@@ -20,18 +21,48 @@
     restrict: 'A',
     scope: true,
     controller: function($scope, $element, $attrs) {
+      $scope.listInfos = {};
+      var arrayVisible;
       $scope.listOnboarding = {};
 
       var listArrayFn = $parse($attrs.list);
-      $scope.getList = function(){
+      $scope.getFullArray = function(){
         return listArrayFn($scope);
+      };
+
+      $scope.getVisibleArrayLength = function() {
+        if ($scope.listInfos && $scope.listInfos.array) {
+          return $scope.listInfos.array.length;
+        }
+      };
+
+      this.getVisibleArray = function() {
+        return $scope.listInfos;
+      };
+
+      this.notifyArrayVisible = function(/*array*/) {
+        arrayVisible = true;
+        if (arrayVisibleCallback) {
+          arrayVisibleCallback();
+        }
+      };
+
+      var arrayVisibleCallback;
+      this.registerArrayVisibleCallback = function(callback) {
+        arrayVisibleCallback = callback;
+      };
+      this.unregisterArrayVisibleCallback = function() {
+        if (arrayVisibleCallback) {
+          arrayVisibleCallback = undefined;
+        }
       };
 
       this.registerAddActiveCallback = function(callback){
         $scope.activateAddItem = callback;
       };
-      this.notifyListLength = function(length){
-        $scope.listLength = length;
+
+      this.notifyListItemAddActive = function(active) {
+        $scope.listItemAddActive = active;
       };
 
       this.notifyListItemAddBlurred = function(){
@@ -44,15 +75,6 @@
         if ($scope.onboardingInProgress && $scope.listOnboarding.lock === 'on'){
           $scope.turnOffListOnboardingLock($scope.listOnboarding);
           return true;
-        }
-        if ($attrs.listOrder !== 'top'){
-          // NOTE: This is called before notifyListLength, that's why we
-          // have to set list length directly here
-          $scope.listLength = $scope.listLength + 1;
-          $scope.activateListBottom();
-          $timeout(function(){
-            $element[0].scrollTop = $element[0].scrollHeight;
-          });
         }
       };
 
@@ -68,6 +90,14 @@
             return false;
           }
           return true;
+        }
+      };
+
+      this.registerIsNearListBottomCallback = function(callback) {
+        $scope.isNearListBottomCallback = callback;
+        if ($scope.listInfos && $scope.listInfos.array) {
+          // Return initial status to caller.
+          return $scope.currentListLimitTo < $scope.listInfos.array.length;
         }
       };
 
@@ -94,7 +124,6 @@
 
     },
     link: function(scope, element, attrs, controllers) {
-
       var listOpenOnAddFn;
       if (attrs.listOpen){
         listOpenOnAddFn = $parse(attrs.listOpen).bind(undefined, scope);
@@ -109,27 +138,50 @@
           // Execute open function
           listOpenOnAddFn();
         }else if (scope.activateAddItem){
-          if (attrs.listOrder !== 'top'){
-            scope.activateListBottom();
-            // If the entire list was not visible, we
-            // have to wait for digest to complete for focus to move to the
-            // bottom. Can't think of a better way to do this, can you?
-            $timeout(function(){
-              scope.activateAddItem();
-            });
-            return;
-          }
           scope.activateAddItem();
         }
       }
+
       function listActive(){
         controllers[0].registerActivateAddListItemCallback(activateListAdd, element);
+
+        var elementHeight = element[0].offsetHeight;
+        var elementScrollHeight = element[0].scrollHeight;
+        var elementScrollPosition, remainingToBottom;
+
+        if (elementHeight !== elementScrollHeight) {
+          // Item has scrollable content
+          elementScrollPosition = element[0].scrollTop;
+          remainingToBottom = elementScrollHeight - elementScrollPosition - elementHeight;
+
+          if (remainingToBottom === 0) {
+            // At the bottom, load more.
+            preventListModify = false;  // Clear state variable when returning to bottom of the list.
+            addMoreItemsToBottom();
+          }
+        }
+        // Did we return into list that has been scrolled near the bottom.
+        setIsNearListBottom();
       }
+
+      /*
+      * Set flag to prevent/allow modifying list.
+      */
+      var preventListModify;
+      function listMoved(movement) {
+        preventListModify = movement !== 0;
+        if (!preventListModify && allowListModifyDeferred) {
+          // Resolve existing list modifying lock when list modifying is allowed again.
+          allowListModifyDeferred.resolve();
+        }
+      }
+
       if (controllers[1]){
         controllers[1].registerSlideActiveCallback(listActive, 'listDirective');
         if (controllers[1].isSlideActiveByDefault()){
           listActive();
         }
+        controllers[1].registerSlideMovementCallback(listMoved, 'listDirective');
       }else {
         // List is active as it doesn't have a swiper to begin with
         listActive();
@@ -150,46 +202,160 @@
 
       element[0].addEventListener('scroll', listScroll, false);
 
-      // Coefficient of container height, which specifies when add more
-      // is called.
-      var addMoreCoefficientToEdge = 1;
-      var removeCoefficientToEdge = 2;
-      var nearingCoefficientToEdge = 2;
-
+      // Coefficient of container height, which specifies when add more is called.
+      var removeCoefficientToEdge = 3;
+      var nearingCoefficientToEdge = .5;
       var lastScrollPosition = 0;
+      var bottomVerificationTimer;
 
+      function startBottomVerificationTimer() {
+        bottomVerificationTimer = setTimeout(function() {
+          // Stayed at the lower position of the container for long enough - add more items to bottom.
+          addMoreItemsToBottom();
+
+          // Clear state variables.
+          stoppedInNegativeScrollPosition = false;
+          cameFromNegativePosition = false;
+        }, 800);
+      }
+
+      /*
+      * When reached negative scroll position, start timer.
+      *
+      * If we are at the negative position after time limit, set flag on.
+      */
+      var negativeHoldPositionTimer;
+      function startNegativeHoldPositionTimer() {
+        negativeHoldPositionTimer = setTimeout(function() {
+          var elementHeight = element[0].offsetHeight;
+          var elementScrollHeight = element[0].scrollHeight;
+          var elementScrollPosition = element[0].scrollTop;
+          var remainingToBottom = elementScrollHeight - elementScrollPosition - elementHeight;
+
+          if (remainingToBottom < 0) {
+            // Stayed at the negative position of the container for long enough
+            stoppedInNegativeScrollPosition = true;
+          } else {
+            stoppedInNegativeScrollPosition = false;
+          }
+          negativeHoldPositionTimer = undefined;  // Clear state variable.
+        }, 1300);
+      }
+
+      var cameFromNegativePosition, stoppedInNegativeScrollPosition;
+
+      /*
+      * FIXME
+      * i.  kun ei olla käyty negatiivisella puolella:
+      *       - kun kaksi kertaa pohjalla sekunnin välein, lisää pohjalle
+      *
+      * ii. kun ollaan käyty negatiivisella puolella:
+      *       - kun seuraavaksi pohjalla, tarkista lyhyen ajan (~50ms) jälkeen, ollaanko yhä pohjalla ja
+      *       - lisää sitten pohjalle.
+      *
+      * iii.  kun ollaan pohjalla tai negatiivisella puolella, näytä ja käynnistä latausanimaatio
+      * iv.   kun ollaan positiivisella puolella, pysäytä ja piilota latausanimaatio
+      */
       function listScroll(/*event*/){
 
         // get scroll position
         var elementHeight = element[0].offsetHeight;
         var elementScrollHeight = element[0].scrollHeight;
         var elementScrollPosition = element[0].scrollTop;
-        var remainingToBottom = elementScrollHeight - elementScrollPosition;
+        var remainingToBottom = elementScrollHeight - elementScrollPosition - elementHeight;
 
-        // evaluate direction
-        var scrollingDown = true;
-        if (lastScrollPosition > elementScrollPosition){
-          scrollingDown = false;
-        }
-        lastScrollPosition = elementScrollPosition;
+        var scrollingDown = lastScrollPosition < elementScrollPosition; // evaluate direction
 
-        // Set near list bottom variable
-        if (remainingToBottom <= elementHeight * nearingCoefficientToEdge){
-          scope.nearListBottom = true;
-        }else {
-          scope.nearListBottom = false;
-        }
+        // FIXME: not needed
+        lastScrollPosition = elementScrollPosition; // Store last scroll position for reference.
 
-        // call add methods if distance to edge is smaller than the safe zone
-        if (scrollingDown && (remainingToBottom <= elementHeight * addMoreCoefficientToEdge)) {
-          addMoreItemsToBottom();
-        }else if (!scrollingDown && (remainingToBottom > elementHeight * removeCoefficientToEdge)) {
-          removeItemsFromBottom();
+        if (remainingToBottom >= 0 && remainingToBottom <= elementHeight * nearingCoefficientToEdge) {
+          // At the bottom or at lower half of the element.
+
+          if (stoppedInNegativeScrollPosition && remainingToBottom > 0) {
+            // Do nothing when stopped in negative scroll position and then scrolled towards the top.
+            return;
+          } else if (stoppedInNegativeScrollPosition) {
+            // Stopped in negative position, add more items immediately.
+            addMoreItemsToBottom();
+            stoppedInNegativeScrollPosition = false;  // Clear state variable.
+            return;
+          }
+          if ((scrollingDown || cameFromNegativePosition) && !bottomVerificationTimer) {
+            // Start verification timer when scrolling down or came from negative scroll position,
+            // e.g from momentum scrolling.
+            startBottomVerificationTimer();
+          }
+        } else {
+          if (remainingToBottom < 0) {
+            // Came from negative position, e.g from momentum scrolling or intentionally.
+            cameFromNegativePosition = true;
+            if (!negativeHoldPositionTimer) {
+              // Determine, whether user stayed in negative scroll position.
+              startNegativeHoldPositionTimer();
+            }
+          }
+          else if (!scrollingDown && (remainingToBottom >= elementHeight * removeCoefficientToEdge)) {
+            // Call remove method when distance to edge is smaller than the safe zone
+            // and when scroll direction is up.
+            removeItemsFromBottom();
+          }
+          if (bottomVerificationTimer) {
+            // Clear verification timer and state variables.
+            clearTimeout(bottomVerificationTimer);
+            bottomVerificationTimer = undefined;
+          }
         }
       }
 
-      // TODO: Max number and increase amount should be calculated based on the height of the
-      // container and the height of individual elements in the list.
+      var allowListModifyDeferred;
+
+      function addMoreItemsToBottom(){
+
+        function doAddMoreItemsToBottom(){
+          if (scope.maximumNumberOfItems + scope.itemIncreaseAmount >= visibleArrayLength) {
+            setLimits(visibleArrayLength - scope.maximumNumberOfItems);
+          } else {
+            setLimits(scope.currentListStartIndex + scope.itemIncreaseAmount);
+          }
+        }
+
+        var visibleArrayLength = scope.getVisibleArrayLength();
+        if ((visibleArrayLength - scope.currentListStartIndex) > scope.maximumNumberOfItems) {
+          if (preventListModify) {
+            // List modifying is prevented.
+            allowListModifyDeferred = $q.defer();
+            allowListModifyDeferred.promise.then(function() {
+              // List modifying is allowed again.
+              doAddMoreItemsToBottom(visibleArrayLength);
+              allowListModifyDeferred = undefined;
+            });
+          } else {
+            // Ok to to add more items.
+            doAddMoreItemsToBottom(visibleArrayLength);
+            if (!$rootScope.$$phase && !scope.$$phase) scope.$digest(); // Update UI.
+          }
+        }
+      }
+
+      function removeItemsFromBottom(){
+        function doRemoveItemsFromBottom(){
+          if (scope.currentListStartIndex <= scope.itemIncreaseAmount) {
+            setLimits(0);
+          } else {
+            setLimits(scope.currentListStartIndex - scope.itemIncreaseAmount);
+          }
+        }
+
+        if (scope.currentListStartIndex !== 0 && !preventListModify) {
+          // Ok to remove items.
+          doRemoveItemsFromBottom();
+          if (!scope.$$phase && !$rootScope.$$phase) scope.$digest(); // Update UI.
+        }
+      }
+
+      // TODO:  Max number and increase amount should be calculated based on the height of the
+      //        container and the height of individual elements in the list.
       scope.maximumNumberOfItems = 25;
       scope.itemIncreaseAmount = 25;
       setLimits(0);
@@ -197,59 +363,19 @@
         scope.currentListStartIndex = startIndex;
         scope.currentListLimitTo = scope.maximumNumberOfItems + scope.currentListStartIndex;
 
-        if (startIndex === 0){
+        if (startIndex === 0) {
           scope.currentListStartIndexLimit = scope.currentListLimitTo;
-        }else{
+        } else {
           scope.currentListStartIndexLimit = -startIndex;
         }
+        setIsNearListBottom();
       }
 
-      scope.activateListBottom = function() {
-        if ((scope.listLength - scope.maximumNumberOfItems) > 0){
-          setLimits(scope.listLength - scope.maximumNumberOfItems);
-          return true;
-        }
-      };
-
-      function addMoreItemsToBottom(){
-        function doAddMoreItemsToBottom(){
-          scope.scrollDownLoading = true;
-          var startScrollTop = element[0].scrollTop + $rootScope.LOADING_ANIMATION_HEIGHT;
-
-          $timeout(function(){
-            scope.scrollDownLoading = false;
-            // Only add more elements if a full second at the bottom
-            if (startScrollTop >= element[0].scrollTop) {
-              if (scope.maximumNumberOfItems + scope.itemIncreaseAmount >= scope.listLength){
-                setLimits(scope.listLength - scope.maximumNumberOfItems);
-              }else{
-                setLimits(scope.currentListStartIndex + scope.itemIncreaseAmount);
-              }
-            }
-          }, 1000);
-        }
-        if ((scope.listLength - scope.currentListStartIndex) > scope.maximumNumberOfItems){
-          if (scope.$$phase) {
-            doAddMoreItemsToBottom();
-          } else {
-            if (!$rootScope.$$phase && !scope.$$phase) scope.$apply();
-            doAddMoreItemsToBottom();
-          }
-        }
-      }
-
-      function removeItemsFromBottom(){
-        function doRemoveItemsFromBottom(){
-          if (scope.currentListStartIndex <= scope.itemIncreaseAmount){
-            setLimits(0);
-          }else{
-            setLimits(scope.currentListStartIndex - scope.itemIncreaseAmount);
-          }
-        }
-
-        if (scope.currentListStartIndex !== 0){
-          if (!scope.$$phase && !$rootScope.$$phase) scope.$apply();
-          doRemoveItemsFromBottom();
+      function setIsNearListBottom() {
+        if (scope.currentListLimitTo >= scope.getVisibleArrayLength()) {
+          if (angular.isFunction(scope.isNearListBottomCallback)) scope.isNearListBottomCallback(false);
+        } else if (scope.getVisibleArrayLength()) {
+          if (angular.isFunction(scope.isNearListBottomCallback)) scope.isNearListBottomCallback(true);
         }
       }
 

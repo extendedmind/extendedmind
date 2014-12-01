@@ -377,7 +377,7 @@ function SwiperService($q, $timeout) {
         }
       }
     },
-    isSlideActive: function(slidePath) {
+    isSlideActive: function(slidePath) {
       var swiperInfos = getSwiperInfosBySlidePath(slidePath);
       if (!swiperInfos || !swiperInfos.main){
         return false;
@@ -465,7 +465,7 @@ function SwiperService($q, $timeout) {
       if (slideActiveCallbacks[slidePath]){
         var index = slideActiveCallbacks[slidePath].findFirstIndexByKeyValue('id', id);
         if (index !== undefined){
-          slideActiveCallbacks[slidePath].splice(index, 1)
+          slideActiveCallbacks[slidePath].splice(index, 1);
         }
       }
     },
@@ -477,7 +477,7 @@ function SwiperService($q, $timeout) {
         return swipers[swiperPath].swiper.params.loop ?
       swipers[swiperPath].swiper.activeLoopIndex : swipers[swiperPath].swiper.activeIndex;
     },
-    setTouchSimulation: function(simulate) {
+    setTouchSimulation: function(simulate) {
       simulateTouch = simulate;
     },
     setEnableSwipeToNext: function(swiperPath, enable) {

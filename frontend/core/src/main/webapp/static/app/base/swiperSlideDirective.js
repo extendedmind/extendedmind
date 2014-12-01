@@ -27,7 +27,7 @@
       duplicateSlide: '=?swiperSlideDuplicate',
       loopStart: '=?swiperSlideLoopStart'
     },
-    controller: function($scope, $element){
+    controller: function($scope){
       this.isSlideActiveByDefault = function(){
         if ($scope.slideIndex === 0 && !$scope.duplicateSlide) return true;
         if ($scope.slideIndex === 1 && $scope.loopStart) return true;
@@ -37,23 +37,33 @@
       };
       this.swipeToSibling = function(siblingSlidePath){
         return SwiperService.swipeTo(siblingSlidePath);
-      }
+      };
 
       // CALLBACKS
 
       this.registerSlideActiveCallback = function(callback, id) {
         SwiperService.registerSlideActiveCallback(callback,
                                                   $scope.slidePath, id);
-      }
+      };
       this.unregisterSlideActiveCallback = function(id){
         SwiperService.unregisterSlideActiveCallback($scope.slidePath, id);
-      }
+      };
+
+      var slideMovementCallback;
+      this.registerSlideMovementCallback = function(callback) {
+        slideMovementCallback = callback;
+      };
+      $scope.getSlideMovementCallbackFn = function() {
+        return slideMovementCallback;
+      };
     },
     link: function(scope, element, attrs, swiperContainerDirectiveController) {
       swiperContainerDirectiveController.registerSlide(scope.slidePath,
                                                        element,
                                                        scope.slideIndex,
-                                                       scope.duplicateSlide);
+                                                       scope.duplicateSlide,
+                                                       scope.getSlideMovementCallbackFn());
+
       scope.$on('$destroy', function() {
         swiperContainerDirectiveController.unregisterSlide(scope.slidePath);
       });

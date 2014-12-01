@@ -20,6 +20,27 @@ Extended Mind specific UI-components, e.g. welcome/landing page, timeline, sidem
   height: @grid-vertical-half;
 }
 
+/*
+*************************************************************
+# List prompt. Includes loading animation and 'no <ITEMS>' prompt
+*/
+.list-prompt {
+  width: 100%;
+  text-align: center;
+
+  // 1. Hide initially.
+  .loading-prompt {
+    display: none;
+  }
+  .no-items-prompt {
+    position: absolute;
+    top: 100px;
+    width: 100%;
+    text-align: center;
+    color: @color-text-downplayed;
+  }
+}
+
 .container-master > .container-fluid > .container-fluid--inner > .loading-animation {
   padding-top: @grid-vertical * 2;
 }

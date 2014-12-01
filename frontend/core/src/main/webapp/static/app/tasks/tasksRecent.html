@@ -1,5 +1,6 @@
 <div class="container-content--outer" ng-if="isFeatureActive('tasks')" list-container drawer-handle="left">
-  <section class="container-content" list="allTasks" list-order="top" list-recent ng-init="setListOnboarding('tasks', listOnboarding)" swiper-prevent>
+  <section class="container-content" list="allTasks" list-recent
+    ng-init="setListOnboarding('tasks', listOnboarding)" swiper-prevent>
     <div ng-show="isOnboarded('tasks') || isListOnboardingLockedOrReleased('tasks')">
       <div class="group-mixed heading">
         <div class="group-mixed--middle">
@@ -8,14 +9,17 @@
         <div class="group-mixed--right" task-list-completed></div>
       </div>
       <div list-item-add="{trans: {completed: false, itemType: 'task'}}"
-      list-item-add-save="saveTask(newItem)" ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
+        list-item-add-save="saveTask(newItem)" ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
       <div class="animate-list-item-leave"
-      ng-repeat="task in recentTasks = (getList() | paramFilter:isListItemVisible) | orderBy:getTaskModified:true
-      | limitTo: currentListLimitTo"
-      list-item="recentTasks.length" ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
-      <div ng-if="(currentListLimitTo < listLength) && nearListBottom" loading-animation></div>
+        ng-repeat="task in listInfos.array = (getFullArray() | paramFilter:isListItemVisible)
+        | orderBy:getTaskModified:true | limitTo: currentListLimitTo" list-item
+        ng-include="urlBase + 'app/tasks/taskListItem.html'">
+      </div>
+      <div list-prompt="tasks" list-prompt-infos="listInfos"
+        list-prompt-hide="[listItemAddActive, onboardingInProgress]"></div>
     </div>
 
+    <!-- ONBOARDING -->
     <div ng-if="!isOnboarded('tasks') && checkListOnboardingLock('tasks', undefined)" class="group-instruction">
       <h2 class="group-heading instruction row">what do you want to
         <span class="highlighted">get done</span>?
@@ -35,6 +39,7 @@
       </div>
       <div class="text-normal row">&#8230;or add more tasks by hitting the plus sign again</div>
     </div>
+
   </section>
   <footer class="container-content--after" list-footer="getFeatureMap('tasks')"></footer>
 </div>

@@ -322,7 +322,7 @@
 
         <div class="swiper-slide" swiper-slide="focus/tasks/rightDuplicate" slide-index="0" swiper-slide-duplicate="true">
           <div class="container-content" ng-class="daySlides[2].pastDate && 'past-date'"
-          list="tasks | tasksByDate:daySlides[2].info:daySlides[2].pastDate" list-order="top" list-hide-item-default>
+            list="tasks | tasksByDate:daySlides[2].info:daySlides[2].pastDate" list-hide-item-default>
             <div ng-if="isFeatureActive('focus')">
 
               <div ng-hide="datepickerVisible" class="group-mixed heading">
@@ -333,21 +333,22 @@
               </div>
 
               <div list-item-add="getNewDayTask(2)" list-item-add-save="saveTask(newItem)"
-              ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
+                ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
               <div class="animate-list-item-leave"
-              ng-repeat="task in rightDuplicateTasks = (getList()
-              | paramFilter:isListItemVisible:daySlides[2].pastDate)
-              | orderBy:'created':true
-              | limitTo: currentListLimitTo"
-              list-item="rightDuplicateTasks.length" ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
-              <div ng-if="(currentListLimitTo < listLength) && nearListBottom" loading-animation></div>
+                ng-repeat="task in listInfos.array = (getFullArray()
+                | paramFilter:isListItemVisible:daySlides[2].pastDate)
+                | orderBy:'created':true
+                | limitTo: currentListLimitTo"
+                list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
+              <div list-prompt="tasks" list-prompt-infos="listInfos"
+                list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
             </div>
           </div>
         </div>
 
         <div class="swiper-slide" swiper-slide="focus/tasks/left" slide-index="1" swiper-slide-loop-start="true">
           <div class="container-content" ng-class="daySlides[0].pastDate && 'past-date'"
-          list="tasks | tasksByDate:daySlides[0].info:daySlides[0].pastDate" list-order="top" list-hide-item-default>
+            list="tasks | tasksByDate:daySlides[0].info:daySlides[0].pastDate" list-hide-item-default>
             <div ng-if="isFeatureActive('focus')">
 
               <div ng-hide="datepickerVisible" class="group-mixed heading">
@@ -358,22 +359,22 @@
               </div>
 
               <div list-item-add="getNewDayTask(0)" list-item-add-save="saveTask(newItem)"
-              ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
+                ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
               <div class="animate-list-item-leave"
-              ng-repeat="task in leftTasks = (getList()
-              | paramFilter:isListItemVisible:daySlides[0].pastDate)
-              | orderBy:'created':true
-              | limitTo: currentListLimitTo"
-              list-item="leftTasks.length" ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
-              <div ng-if="(currentListLimitTo < listLength) && nearListBottom" loading-animation></div>
-
+                ng-repeat="task in listInfos.array = (getFullArray()
+                | paramFilter:isListItemVisible:daySlides[0].pastDate)
+                | orderBy:'created':true
+                | limitTo: currentListLimitTo"
+                list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
+              <div list-prompt="tasks" list-prompt-infos="listInfos"
+                list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
             </div>
           </div>
         </div>
 
         <div class="swiper-slide" swiper-slide="focus/tasks/middle" slide-index="2">
           <div class="container-content" ng-class="daySlides[1].pastDate && 'past-date'"
-          list="tasks | tasksByDate:daySlides[1].info:daySlides[1].pastDate" list-order="top" list-hide-item-default>
+            list="tasks | tasksByDate:daySlides[1].info:daySlides[1].pastDate" list-hide-item-default>
             <div ng-if="isFeatureActive('focus')">
 
               <div ng-hide="datepickerVisible" class="group-mixed heading">
@@ -384,22 +385,22 @@
               </div>
 
               <div list-item-add="getNewDayTask(1)" list-item-add-save="saveTask(newItem)"
-              ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
+                ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
               <div class="animate-list-item-leave"
-              ng-repeat="task in middleTasks = (getList()
-              | paramFilter:isListItemVisible:daySlides[1].pastDate)
-              | orderBy:'created':true
-              | limitTo: currentListLimitTo"
-              list-item="middleTasks.length" ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
-              <div ng-if="(currentListLimitTo < listLength) && nearListBottom" loading-animation></div>
-
+                ng-repeat="task in listInfos.array = (getFullArray()
+                | paramFilter:isListItemVisible:daySlides[1].pastDate)
+                | orderBy:'created':true
+                | limitTo: currentListLimitTo"
+                list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
+              <div list-prompt="tasks" list-prompt-infos="listInfos"
+                list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
             </div>
           </div>
         </div>
 
         <div class="swiper-slide" swiper-slide="focus/tasks/right" slide-index="3">
           <div class="container-content" ng-class="daySlides[2].pastDate && 'past-date'"
-          list="tasks | tasksByDate:daySlides[2].info:daySlides[2].pastDate" list-order="top" list-hide-item-default>
+            list="tasks | tasksByDate:daySlides[2].info:daySlides[2].pastDate" list-hide-item-default>
             <div ng-if="isFeatureActive('focus')">
 
               <div ng-hide="datepickerVisible" class="group-mixed heading">
@@ -410,22 +411,22 @@
               </div>
 
               <div list-item-add="getNewDayTask(2)" list-item-add-save="saveTask(newItem)"
-              ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
+                ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
               <div class="animate-list-item-leave"
-              ng-repeat="task in rightTasks = (getList()
-              | paramFilter:isListItemVisible:daySlides[2].pastDate)
-              | orderBy:'created':true
-              | limitTo: currentListLimitTo"
-              list-item="rightTasks.length" ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
-              <div ng-if="(currentListLimitTo < listLength) && nearListBottom" loading-animation></div>
-
+                ng-repeat="task in listInfos.array = (getFullArray()
+                | paramFilter:isListItemVisible:daySlides[2].pastDate)
+                | orderBy:'created':true
+                | limitTo: currentListLimitTo"
+                list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
+              <div list-prompt="tasks" list-prompt-infos="listInfos"
+                list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
             </div>
           </div>
         </div>
 
         <div class="swiper-slide" swiper-slide="focus/tasks/leftDuplicate" slide-index="4" swiper-slide-duplicate="true">
           <div class="container-content" ng-class="daySlides[0].pastDate && 'past-date'"
-          list="tasks | tasksByDate:daySlides[0].info:daySlides[0].pastDate" list-order="top" list-hide-item-default>
+            list="tasks | tasksByDate:daySlides[0].info:daySlides[0].pastDate" list-hide-item-default>
             <div ng-if="isFeatureActive('focus')">
 
               <div ng-hide="datepickerVisible" class="group-mixed heading">
@@ -436,15 +437,15 @@
               </div>
 
               <div list-item-add="getNewDayTask(0)" list-item-add-save="saveTask(newItem)"
-              ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
+                ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
               <div class="animate-list-item-leave"
-              ng-repeat="task in leftDuplicateTasks = (getList()
-              | paramFilter:isListItemVisible:daySlides[0].pastDate)
-              | orderBy:'created':true
-              | limitTo: currentListLimitTo"
-              list-item="leftDuplicateTasks.length" ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
-              <div ng-if="(currentListLimitTo < listLength) && nearListBottom" loading-animation></div>
-
+                ng-repeat="task in listInfos.array = (getFullArray()
+                | paramFilter:isListItemVisible:daySlides[0].pastDate)
+                | orderBy:'created':true
+                | limitTo: currentListLimitTo"
+                list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
+              <div list-prompt="tasks" list-prompt-infos="listInfos"
+                list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
             </div>
           </div>
         </div>
@@ -454,6 +455,7 @@
   </section>
   <footer ng-show="isOnboarded('focusTasks')" class="container-content--after" list-footer="getFeatureMap('focus')"></footer>
 
+  <!-- ONBOARDING -->
   <section ng-if="!isOnboarded('focusTasks')" class="container-content">
     <div class="group-instruction">
       <h2 class="group-heading instruction row">what to do right
