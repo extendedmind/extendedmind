@@ -90,28 +90,32 @@
 
     <h3>DAU</h3>
     <p>Daily active users who have session. Does not include admin or alpha users.</p>
-    <code id="dauCode">https://ext.md/evaluate/1.0/metric?expression=distinct(session(user.uuid).eq(user.type,2))&start=2014-05-1&stop=2014-07-23&step=864e5
-</code>
+    <code id="dauCode"></code>
     <div id="chart1"></div>
+
+    <h3>MAU</h3>
+    <p>Unique active users in the last month who have session. Does not include admin or alpha users.</p>
+    <code id="mauCode"></code>
+    <h4 id="mauValue"></h4><br/>
 
     <h3>Daily sessions</h3>
     <p>Total number of daily sessions. Does not include admin or alpha users.</p>
-    <code id="sessionsCode">https://ext.md/evaluate/1.0/metric?expression=sum(session.eq(user.type,2))&start=2014-05-1&stop=2014-07-23&step=864e5</code>
+    <code id="sessionsCode"></code>
     <div id="chart2"></div>
 
     <h3>DAU: creating tasks</h3>
     <p>Total tasks created on a day. Does not include admin or alpha users.</p>
-    <code id="dauTasksCode">https://ext.md/evaluate/1.0/metric?expression=distinct(addTask(user.uuid).eq(user.type,2))&start=2014-05-1&stop=2014-07-23&step=864e5</code>
+    <code id="dauTasksCode"></code>
     <div id="chart3"></div>
 
     <h3>DAU: creating notes</h3>
     <p>Total notes created on a day. Does not include admin or alpha users.</p>
-    <code id="dauNotesCode">https://ext.md/evaluate/1.0/metric?expression=distinct(addNote(user.uuid).eq(user.type,2))&start=2014-05-1&stop=2014-07-23&step=864e5</code>
+    <code id="dauNotesCode"></code>
     <div id="chart4"></div>
 
     <h3>DAU: visiting omnibar</h3>
     <p>Does not include admin or alpha users.</p>
-    <code id="dauOmniCode">https://ext.md/evaluate/1.0/metric?expression=distinct(visit_omnibar(user.uuid).eq(user.type,2))&start=2014-05-1&stop=2014-07-23&step=864e5</code>
+    <code id="dauOmniCode"></code>
     <div id="chart5"></div>
 
     <h3>Visiting sign up</h3>
@@ -178,9 +182,13 @@
     var visitSignUpQuery = baseUrl + "sum(visit_signup)&step=864e5&start=" + startDay + "&stop=" + endDay;
     var signUpQuery = baseUrl + "sum(signUp)&step=864e5&start=" + startDay + "&stop=" + endDay;
     var tutorialCompleteQuery = baseUrl + "sum(onboarded.eq(user.type,2))&step=864e5&start=" + startDay + "&stop=" + endDay;
+    var mauStartDate = new Date();
+    mauStartDate.setMonth(mauStartDate.getMonth() - 1);
+    var mauEventQuery = "https://ext.md/evaluate/1.0/event?expression=session(user.uuid).eq(user.type,2)&step=864e5&start=" + dateToString(mauStartDate) + "&stop=" + endDay;
 
     // print queries to code blocks and make visible
     $('#dauCode').text(dauQuery);
+    $('#mauCode').text(mauEventQuery);
     $('#sessionsCode').text(sessionsQuery);
     $('#dauTasksCode').text(dauTasksQuery);
     $('#dauNotesCode').text(dauNotesQuery);
@@ -198,6 +206,22 @@
     initChartToElement("#chart7",signUpQuery);            // "data/sign_up.json"
     initChartToElement("#chart8",tutorialCompleteQuery);  // "data/onboarded.json"
 
+    var dauStartDate = new Date();
+    dauStartDate.setMonth(dauStartDate.getMonth() - 1);
+    $.getJSON( mauEventQuery, function( data ) { // "data/user_sessions_last_month.json"
+      var mauUUIDs = [], i, duplicate;
+      $.each( data, function( key, val ) {
+          duplicate = false;
+          for (i=0; i<mauUUIDs.length; i++){
+            if (mauUUIDs[i] === val.data.user.uuid){
+              duplicate = true;
+              break;
+            }
+          }
+          if (!duplicate) mauUUIDs.push(val.data.user.uuid);
+      });
+      $('#mauValue').text(mauUUIDs.length);
+    });
 
     /*
     Not in use
