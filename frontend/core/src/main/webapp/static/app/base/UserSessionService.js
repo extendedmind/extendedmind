@@ -76,10 +76,10 @@
     isAuthenticateValid: function() {
       var authenticateCurrentReferenceTime, authenticateValidTime;
 
-      authenticateValidTime = SessionStorageService.getExpires() || LocalStorageService.getExpires();
+      authenticateValidTime = parseInt(SessionStorageService.getExpires() || LocalStorageService.getExpires());
       authenticateCurrentReferenceTime = Date.now() + swapTokenBufferTime;
 
-      if (authenticateValidTime > authenticateCurrentReferenceTime) {
+      if (authenticateValidTime && (authenticateValidTime > authenticateCurrentReferenceTime)) {
         return true;
       }
     },
@@ -139,7 +139,8 @@
     },
     getBackendDelta: function(){
       syncWebStorages();
-      return SessionStorageService.getBackendDelta();
+      var storedDelta = SessionStorageService.getBackendDelta();
+      return storedDelta ? parseInt(storedDelta) : undefined;
     },
     setEmail: function(email) {
       setEmail(email);
