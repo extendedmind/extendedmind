@@ -443,7 +443,7 @@
   };
 
   function gotoToday() {
-    $scope.changeDaySlide(DateService.getTodayYYYYMMDD(), true);
+    $scope.changeDaySlide(DateService.getTodayYYYYMMDD());
     $scope.closeDatepicker();
   }
   function gotoNoDate() {
@@ -458,7 +458,7 @@
   *       used to determine swipe direction. Change implementation to one found here:
   *       http://stackoverflow.com/a/543152 if needed for something.
   */
-  $scope.changeDaySlide = function(newDateYYYYMMDD, calculateWeekOffset) {
+  $scope.changeDaySlide = function(newDateYYYYMMDD) {
     if (preventDaySlideClicking) return;
     setDayActive(newDateYYYYMMDD);
 
@@ -494,8 +494,6 @@
       offsetBetweenDays = (newActiveDate - oldActiveDate) / (1000*60*60*24);
     }
 
-    var oldWeekNumber, newWeekNumber, offsetBetweenWeeks, activeDatepickerSlideIndex, currentWeek;
-
     // Offset between days determines swipe direction.
     // Set new active date to adjacent slide and swipe to that slide.
     // Slide did not change when offset between days is zero.
@@ -504,47 +502,13 @@
       var previousIndex = (activeSlideIndex - 1 + $scope.daySlides.length) % $scope.daySlides.length;
       makeDaySlide(previousIndex, newActiveDate);
       SwiperService.swipePrevious('focus/tasks');
-
-      if (calculateWeekOffset) {
-        oldWeekNumber = DateService.getWeekNumber(oldActiveDate || new Date());
-        newWeekNumber = DateService.getWeekNumber(newActiveDate || new Date());
-        offsetBetweenWeeks = newWeekNumber - oldWeekNumber;
-
-        if (offsetBetweenWeeks < 0) {
-         activeDatepickerSlideIndex = SwiperService.getActiveSlideIndex('datepicker');
-         var previousDatepickerSlideIndex = (activeDatepickerSlideIndex - 1 +
-                                             $scope.datepickerWeeks.length) % $scope.datepickerWeeks.length;
-
-         currentWeek = DateService.generateAndReturnCurrentWeek(newActiveDate || new Date());
-         $scope.datepickerWeeks[previousDatepickerSlideIndex] = currentWeek;
-         preventDaySlideChange = true;
-         SwiperService.swipePrevious('datepicker');
-       }
-     }
-   }
-   else if (offsetBetweenDays > 0) {
+    }
+    else if (offsetBetweenDays > 0) {
       // Get adjacent circular array index.
       var nextIndex = (activeSlideIndex + 1 + $scope.daySlides.length) % $scope.daySlides.length;
       makeDaySlide(nextIndex, newActiveDate);
       SwiperService.swipeNext('focus/tasks');
-
-      if (calculateWeekOffset) {
-        oldWeekNumber = DateService.getWeekNumber(oldActiveDate || new Date());
-        newWeekNumber = DateService.getWeekNumber(newActiveDate || new Date());
-        offsetBetweenWeeks = newWeekNumber - oldWeekNumber;
-
-        if (offsetBetweenWeeks > 0) {
-          activeDatepickerSlideIndex = SwiperService.getActiveSlideIndex('datepicker');
-          var nextDatepickerSlideIndex = (activeDatepickerSlideIndex + 1 +
-                                          $scope.datepickerWeeks.length) % $scope.datepickerWeeks.length;
-
-          currentWeek = DateService.generateAndReturnCurrentWeek(newActiveDate || new Date());
-          $scope.datepickerWeeks[nextDatepickerSlideIndex] = currentWeek;
-          preventDaySlideChange = true;
-          SwiperService.swipeNext('datepicker');
-        }
-      }
-    }else{
+    } else {
       // The current day clicked, close week picker
       $scope.closeDatepicker();
     }
