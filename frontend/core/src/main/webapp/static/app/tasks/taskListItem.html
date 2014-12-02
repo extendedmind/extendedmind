@@ -1,8 +1,9 @@
-<div class="group-mixed with-checkbox" ng-class="{'animate-checkbox-checked': task.trans.completed}">
+<div class="group-mixed with-checkbox"
+  ng-class="{'checkbox-checked': task.completed && task.trans.completed}">
 
   <div class="group-mixed--left">
     <input type="checkbox" ng-model="task.trans.completed"
-    swiper-click="toggleLeftCheckbox(task, toggleCompleteTask)" icon-checkbox="task.uuid">
+      swiper-click="toggleLeftCheckbox(task, toggleCompleteTask)" icon-checkbox="task.uuid">
   </div>
 
   <a href ng-class="onboardingInProgress && 'link-disable'" class="group-mixed--middle link-list-item" swiper-click="callAndWaitThenScroll(openTaskEditor, task)">

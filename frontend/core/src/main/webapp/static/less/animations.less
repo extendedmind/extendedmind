@@ -113,12 +113,10 @@ input[type="checkbox"]:checked + label:before {
   transition: color 2s @timing-animate-steep;
 }
 
-.animate-checkbox-checked,
-.animate-checkbox-checked-add {
-  -webkit-animation-duration: @speed-animate-checkbox-checked;
-  animation-duration: @speed-animate-checkbox-checked;
-  // 1. Clear default checkox transition.
-  // 2. Start with grayish color.
+// 1. Clear default checkox transition.
+// 2. Downplay with grayish color.
+// 3. Downplay with gray color.
+.checkbox-checked:not(.checkbox-checked-active) {
   input[type="checkbox"]:checked + label:before {
     -webkit-transition: none; // [1]
     -moz-transition: none;    // [1]
@@ -127,18 +125,18 @@ input[type="checkbox"]:checked + label:before {
     transition: none;         // [1]
     color: @color-text-downplayed-light;  // [2]
   }
-}
-
-// 1. Downplay with gray color.
-.animate-checkbox-checked {
   .text-link {
-    color: @color-text-downplayed;  // [1]
+    color: @color-text-downplayed;  // [3]
   }
 }
 
 // 1. First highlight checkbox, then downplay it.
-.animate-checkbox-checked-add.animate-checkbox-checked-add-active {
+// 2. Start with grayish color.
+// 3. Downplay with gray color.
+.checkbox-checked-active {
   input[type="checkbox"]:checked + label:before {
+    color: @color-text-downplayed-light;  // [2]
+
     -webkit-animation-name: checkbox-checked-hightlighted, checkbox-checked-downplayed; // [1]
     -webkit-animation-duration: @speed-animate-checkbox-checked-highlighted, @speed-animate-checkbox-checked-downplayed;
     -webkit-animation-timing-function: @timing-animate-steep, @timing-animate-gradual;
@@ -149,10 +147,9 @@ input[type="checkbox"]:checked + label:before {
     animation-timing-function: @timing-animate-steep, @timing-animate-gradual;
     animation-delay: 0s, @delay-animate-checkbox-checked-downplayed;
   }
-}
-
-.animate-checkbox-checked-add {
   .text-link {
+    color: @color-text-downplayed;  // [3]
+
     -webkit-transition-property: color;
     -webkit-transition-duration: @speed-animate-checkbox-checked-downplayed;
     -webkit-transition-timing-function: @timing-animate-gradual;
