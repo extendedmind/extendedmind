@@ -106,35 +106,20 @@
       return weekDaysStartingFrom(date);
     },
     generateAndReturnPreviousWeek: function(week) {
-      var date = new Date(week[0].yyyymmdd);
+      var date = week[0].yyyymmdd.yyyymmddToNoonDate();
       date.setDate(date.getDate() + daysFromActiveWeekToPrevious);
       return weekDaysStartingFrom(date);
     },
     generateAndReturnNextWeek: function(week) {
-      var date = new Date(week[0].yyyymmdd);
+      var date = week[0].yyyymmdd.yyyymmddToNoonDate();
       date.setDate(date.getDate() + daysFromActiveWeekToNext);
       return weekDaysStartingFrom(date);
     },
     generateAndReturnWeekWithOffset: function(offsetWeeks, week) {
-      var date = new Date(week[0].yyyymmdd);
+      var date = week[0].yyyymmdd.yyyymmddToNoonDate();
       var offsetDays = daysFromActiveWeekToNext * offsetWeeks;
       date.setDate(date.getDate() + offsetDays);
       return weekDaysStartingFrom(date);
-    },
-    /**
-    * @description
-    * Check if week is current week and that today is in the right day.
-    */
-    isCurrentWeekValid: function(week) {
-      var todayYYYYMMDD = this.getTodayYYYYMMDD(new Date());
-      for (var i = 0, len = week.length; i < len; i++) {
-        if (week[i].displayDate === 'today') return week[i].yyyymmdd === todayYYYYMMDD;
-      }
-      return true;
-    },
-    isDateBeforeCurrentWeek: function(date) {
-      var firstDayOfCurrentWeek = getFirstDateOfTheWeek(new Date());
-      return date.yyyymmdd < (yyyymmdd(firstDayOfCurrentWeek));
     },
 
     // getters
@@ -184,7 +169,7 @@
       return yyyymmdd(tomorrow);
     },
     getDateTodayOrFromLaterYYYYMMDD: function(dateYYYYMMDD) {
-      if (dateYYYYMMDD && (dateYYYYMMDD > yyyymmdd(new Date()))) return new Date(dateYYYYMMDD);
+      if (dateYYYYMMDD && (dateYYYYMMDD > yyyymmdd(new Date()))) return dateYYYYMMDD.yyyymmddToNoonDate();
       else return new Date();
     },
     getShortWeekdayNames: function() {

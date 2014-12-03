@@ -77,7 +77,7 @@
               if (task.completed) {
                 // Match task completed on past date.
                 return (new Date(task.completed).setHours(0, 0, 0, 0) ===
-                        new Date(pastDate).setHours(0, 0, 0, 0));
+                        pastDate.yyyymmddToNoonDate().setHours(0, 0, 0, 0));
               }
               return false;
             }
@@ -94,5 +94,5 @@
     }
   };
 }
-taskListCompletedDirective['$inject'] = ['$rootScope']
+taskListCompletedDirective['$inject'] = ['$rootScope'];
 angular.module('em.base').directive('taskListCompleted', taskListCompletedDirective);

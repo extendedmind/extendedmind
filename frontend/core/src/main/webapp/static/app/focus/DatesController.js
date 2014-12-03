@@ -59,11 +59,11 @@
         activeDaySlide = $scope.daySlides[activeDaySlideIndex];
       }
       if (activeDaySlide && activeDaySlide.heading === 'today') {
-       // Swipe from old today to new today slide.
-       $scope.changeDaySlide(DateService.getTodayYYYYMMDD());
-     }
-   }
- }
+        // Swipe from old today to new today slide.
+        $scope.changeDaySlide(DateService.getTodayYYYYMMDD());
+      }
+    }
+  }
 
 
   // DATEPICKER SLIDES CONSTRUCTOR
@@ -76,10 +76,13 @@
   */
   function initializeDatepickerWeeks(startingDateYYYYMMDD) {
     var startingDate;
-    if (!startingDateYYYYMMDD)
+    if (!startingDateYYYYMMDD) {
+      // FIXME: initialize to correct date when 'no date'
       startingDate = new Date();
-    else
-      startingDate = new Date(startingDateYYYYMMDD);
+    }
+    else {
+      startingDate = startingDateYYYYMMDD.yyyymmddToNoonDate();
+    }
 
     var currentWeek = DateService.generateAndReturnCurrentWeek(startingDate);
     $scope.datepickerWeeks = [];
@@ -194,7 +197,7 @@
     }
 
     // Old active day is in old active slide index.
-    var oldActiveDate = new Date($scope.daySlides[oldActiveIndex].referenceDate);
+    var oldActiveDate = $scope.daySlides[oldActiveIndex].referenceDate.yyyymmddToNoonDate();
     newActiveDate = DateService.getDateWithOffset(offset, oldActiveDate);
     makeDaySlide(newActiveIndex, newActiveDate);
 
@@ -225,7 +228,7 @@
   */
   function getActiveDaySlideInfo(slideIndex) {
     var referenceDate = $scope.daySlides[slideIndex].referenceDate;
-    if (referenceDate) return new Date($scope.daySlides[slideIndex].referenceDate);
+    if (referenceDate) return $scope.daySlides[slideIndex].referenceDate.yyyymmddToNoonDate();
     else if (referenceDate === null) {
       // Slide's reference date is null so it is a 'no date' slide.
       return null;
@@ -245,7 +248,7 @@
     }
     else if (activeDate === null) {
       // 'no date' slide. Next date is in next index and previous date is date before next.
-      nextDate = new Date($scope.daySlides[nextIndex].referenceDate);
+      nextDate = $scope.daySlides[nextIndex].referenceDate.yyyymmddToNoonDate();
       previousDate = DateService.getDateWithOffset(-1, nextDate);
     }
 
@@ -366,7 +369,7 @@
       oldActiveDaySlideIndex = (oldActiveDaySlideIndex + 1 + $scope.daySlides.length
                                 ) % $scope.daySlides.length;
     }
-    var oldActiveDate = new Date($scope.daySlides[oldActiveDaySlideIndex].referenceDate);
+    var oldActiveDate = $scope.daySlides[oldActiveDaySlideIndex].referenceDate.yyyymmddToNoonDate();
     var daysOffset = weeksOffset * 7;
     return DateService.setOffsetDate(daysOffset, oldActiveDate).getYYYYMMDD(oldActiveDate);
   }
@@ -473,9 +476,9 @@
       return;
     } else if (oldDateYYYYMMDD === null) {
       // Came from 'no date'. Reference next day as an old active date and compare it with new active date.
-      newActiveDate = new Date(newDateYYYYMMDD);
+      newActiveDate = newDateYYYYMMDD.yyyymmddToNoonDate();
       var activeDayIndex = (activeSlideIndex + 1 + $scope.daySlides.length) % $scope.daySlides.length;
-      oldActiveDate = new Date($scope.daySlides[activeDayIndex].referenceDate);
+      oldActiveDate = $scope.daySlides[activeDayIndex].referenceDate.yyyymmddToNoonDate();
       offsetBetweenDays = ((newActiveDate.setHours(0, 0, 0, 0)) - (oldActiveDate.setHours(0, 0, 0, 0))
                            ) / (1000*60*60*24);
       if (offsetBetweenDays === 0) {
@@ -488,8 +491,8 @@
       offsetBetweenDays = -1;
     } else {
       // Default.
-      newActiveDate = new Date(newDateYYYYMMDD);
-      oldActiveDate = new Date($scope.daySlides[activeSlideIndex].referenceDate);
+      newActiveDate = newDateYYYYMMDD.yyyymmddToNoonDate();
+      oldActiveDate = $scope.daySlides[activeSlideIndex].referenceDate.yyyymmddToNoonDate();
       // http://stackoverflow.com/a/543152
       offsetBetweenDays = (newActiveDate - oldActiveDate) / (1000*60*60*24);
     }

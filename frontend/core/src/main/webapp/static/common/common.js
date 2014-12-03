@@ -14,34 +14,53 @@
  */
  'use strict';
 
- angular.module('common', []).config(
-  function() {
-    if (typeof String.prototype.startsWith != 'function') {
-      String.prototype.startsWith = function (str){
-        return this.slice(0, str.length) == str;
-      };
-    }
+ angular.module('common', []).config(function() {
+  if (typeof String.prototype.startsWith != 'function') {
+    String.prototype.startsWith = function (str){
+      return this.slice(0, str.length) == str;
+    };
+  }
 
-    if (typeof String.prototype.endsWith != 'function') {
-      String.prototype.endsWith = function (str){
-        return this.slice(-str.length) == str;
-      };
-    }
+  if (typeof String.prototype.endsWith != 'function') {
+    String.prototype.endsWith = function (str){
+      return this.slice(-str.length) == str;
+    };
+  }
 
-    if (typeof Array.prototype.findFirstObjectByKeyValue != 'function') {
-      Array.prototype.findFirstObjectByKeyValue = function (key, value){
-        for (var i=0, len=this.length; i<len; i++) {
-          if (this[i][key] === value) return this[i];
-        }
-      };
-    }
-    if (typeof Array.prototype.findFirstIndexByKeyValue != 'function') {
-      Array.prototype.findFirstIndexByKeyValue = function (key, value){
-        for (var i=0, len=this.length; i<len; i++) {
-          if (this[i][key] === value) return i;
-        }
-      };
-    }
+  /*
+  * Adds timezone offset in ISO 8601 format.
+  *
+  * @see http://stackoverflow.com/a/17415677
+  */
+  if (typeof String.prototype.yyyymmddToNoonDate !== 'function') {
+    String.prototype.yyyymmddToNoonDate = function() {
+      var now = new Date();
+      var tzo = -now.getTimezoneOffset();
+      var dif = tzo >= 0 ? '+' : '-'; // http://en.wikipedia.org/wiki/ISO_8601#Time_offsets_from_UTC
+
+      function pad(num) {
+        var norm = Math.abs(Math.floor(num));
+        return (norm < 10 ? '0' : '') + norm;
+      }
+
+      return new Date(this.concat('T12:00' + dif + pad(tzo / 60) + ':' + pad(tzo % 60)));
+    };
+  }
+
+  if (typeof Array.prototype.findFirstObjectByKeyValue != 'function') {
+    Array.prototype.findFirstObjectByKeyValue = function (key, value){
+      for (var i=0, len=this.length; i<len; i++) {
+        if (this[i][key] === value) return this[i];
+      }
+    };
+  }
+  if (typeof Array.prototype.findFirstIndexByKeyValue != 'function') {
+    Array.prototype.findFirstIndexByKeyValue = function (key, value){
+      for (var i=0, len=this.length; i<len; i++) {
+        if (this[i][key] === value) return i;
+      }
+    };
+  }
 
     /*
     * See: http://jsperf.com/new-array-vs-splice-vs-slice/42 for fastest implementation
