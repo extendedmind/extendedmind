@@ -437,17 +437,6 @@
       }
       return deferred.promise;
     },
-    resetTask: function(task, ownerUUID) {
-      var tasksArray = [task];
-      if (task.trans) {
-        if (task.trans.description) delete task.trans.description;
-        if (task.trans.context) delete task.trans.context;
-        if (task.trans.list) delete task.trans.list;
-        if (task.trans.date) delete task.trans.date;
-        if (task.trans.completed) delete task.trans.completed;
-      }
-      this.addTransientProperties(tasksArray, ownerUUID);
-    },
     addTransientProperties: function(tasksArray, ownerUUID, addExtraTransientPropertyFn) {
       addTransientProperties(tasksArray, ownerUUID, addExtraTransientPropertyFn);
     },

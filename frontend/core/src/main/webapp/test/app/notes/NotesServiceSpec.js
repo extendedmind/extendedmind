@@ -182,18 +182,4 @@
     expect(notes[0].uuid)
     .toBe(officeDoorCode.uuid);
   });
-
-  it('should reset note', function() {
-    var notesOnProductivity = NotesService.getNoteInfo('848cda60-d725-40cc-b756-0b1e9fa5b7d8', testOwnerUUID).note;
-
-    // Change transient values
-    notesOnProductivity.trans.list = '1da0bff6-3bd7-4884-adba-f47fab9f270d';
-
-    // Reset note
-    NotesService.resetNote(notesOnProductivity, testOwnerUUID);
-
-    // Values should be back to their original values
-    expect(notesOnProductivity.trans.list).toBe('0da0bff6-3bd7-4884-adba-f47fab9f270d');
-  });
-
 });

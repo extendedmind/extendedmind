@@ -399,15 +399,6 @@
       }
       return deferred.promise;
     },
-    resetNote: function(note, ownerUUID) {
-      var notesArray = [note];
-      if (note.trans) {
-        if (note.trans.list) delete note.trans.list;
-        if (note.trans.keywords) delete note.trans.keywords;
-        if (note.trans.starred) delete note.trans.starred;
-      }
-      addTransientProperties(notesArray, ownerUUID);
-    },
     addTransientProperties: function(notes, ownerUUID, addExtraTransientPropertyFn) {
       return addTransientProperties(notes, ownerUUID, addExtraTransientPropertyFn);
     },
