@@ -17,9 +17,11 @@
  'use strict';
 
  function OmnibarEditorController($q, $rootScope, $scope, $timeout,
-                                  ArrayService, packaging, UISessionService) {
+                                  AnalyticsService, ArrayService, packaging, UISessionService) {
 
   // INITIALIZING
+
+  AnalyticsService.visit('omnibar');
 
   $scope.titlebar.text = '';
   $scope.searchText = {};
@@ -254,5 +256,5 @@
 }
 
 OmnibarEditorController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout',
-'ArrayService', 'packaging', 'UISessionService'];
+'AnalyticsService', 'ArrayService', 'packaging', 'UISessionService'];
 angular.module('em.main').controller('OmnibarEditorController', OmnibarEditorController);
