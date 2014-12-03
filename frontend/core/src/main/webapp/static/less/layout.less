@@ -758,6 +758,7 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 // 9. Increase click area and align vertically with textarea in .group-mixed---middle
 //    Star icon wrapper is 24px, .group-mixed default height is 44px, use remaining 20px for padding.
 //    NOTE: Star icon height is a combination of @size-icon-star-small and line-height: @grid-vertical-half.
+// 10.  Increase click area and clear padding from .group-mixed--left
 .group-mixed.with-checkbox {
   .group-mixed--left, .group-mixed--right {
     vertical-align: baseline;  // [1]
@@ -766,6 +767,8 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
     & > input[type="checkbox"] + label {
       padding-top: @group-mixed--left-vertical-padding + 1px;     // [2]
       padding-bottom: @group-mixed--left-vertical-padding - 1px;  // [2]
+      padding-right: @padding-inner-group-mixed;  // [10]
+      margin-right: -@padding-inner-group-mixed;  // [10]
       &:before {
         line-height: initial; // [4]
       }
