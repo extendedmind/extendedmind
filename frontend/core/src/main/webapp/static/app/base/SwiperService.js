@@ -111,6 +111,7 @@ function SwiperService($q, $timeout) {
 
     var swiperParams = {
       speed: 300, // set default speed for reference purposes only
+      moveStartThreshold: 10, // same than touchBoundary FastClick and minDragDistance in Snap.js
       onlyExternal: false,
       noSwiping: true,
       loop: loop ? true : false,

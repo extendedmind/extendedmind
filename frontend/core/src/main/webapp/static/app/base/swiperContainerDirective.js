@@ -259,8 +259,10 @@
     var swipeLeft = false;
     var swipeRight = false;
     var swipeStartX, swipeStartY, swipeDistanceX, swipeDistanceY;
-    var swipeRestraintX = 1;
-    var swipeRestraintY = 1;
+
+    // Set swipe restraints into same amoumt than Swiper.params.moveStartThreshold.
+    var swipeRestraintX = 10;
+    var swipeRestraintY = 10;
 
     function mainSwiperTouchStart(event) {
       if (event.type === 'touchstart') {
@@ -304,7 +306,9 @@
 
         // http://www.javascriptkit.com/javatutors/touchevents2.shtml
         if (Math.abs(swipeDistanceX) >= swipeRestraintX &&
-            Math.abs(swipeDistanceY) <= swipeRestraintX) { // horizontal
+            Math.abs(swipeDistanceY) <= swipeRestraintX)
+        {
+          // Horizontal swipe.
           if (swipeDistanceX < 0) {
             disableDrawer();  // FIXME: Listen touch events only on first slide(?)
             swipeLeft = true;
@@ -315,7 +319,9 @@
             swipeRight = true;
           }
         } else if (Math.abs(swipeDistanceY) >= swipeRestraintY &&
-                   Math.abs(swipeDistanceX) <= swipeRestraintY) { // vertical
+                   Math.abs(swipeDistanceX) <= swipeRestraintY)
+        {
+          // Vertical swipe.
           if (swipeDistanceY < 0) {
             swipeDown = false;
             swipeUp = true;
@@ -425,8 +431,14 @@
 
         // Determine swipe direction.
         // http://www.javascriptkit.com/javatutors/touchevents2.shtml
-        if (Math.abs(swipePageSlideDistX) > Math.abs(swipePageSlideDistY)) { // horizontal
-        } else if (Math.abs(swipePageSlideDistX) < Math.abs(swipePageSlideDistY)) { // vertical
+        if (Math.abs(swipePageSlideDistX) >= swipeRestraintX &&
+            Math.abs(swipePageSlideDistY) <= swipeRestraintY)
+        {
+          // Horizontal swipe.
+        } else if (Math.abs(swipePageSlideDistY) >= swipeRestraintY &&
+                   Math.abs(swipePageSlideDistX) <= swipePageSlideStartX)
+        {
+          // Vertical swipe.
           if (swipePageSlideDistY < 0) {
             swipePageSlideDown = true;
             swipePageSlideUp = false;
