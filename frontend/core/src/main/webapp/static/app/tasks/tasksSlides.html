@@ -1,8 +1,8 @@
 <div ng-show="isFeatureActive('tasks')" class="swiper-container container-fluid--inner"
 swiper-container="tasks" swiper-type="main" expected-slides=3>
   <div class="swiper-wrapper" ng-class="onboardingInProgress && 'swiper-no-swiping'">
-    <div class="swiper-slide" swiper-slide="tasks/recent" slide-index=0
-    ng-include="urlBase + 'app/tasks/tasksRecent.html'"></div>
+    <div class="swiper-slide" swiper-slide="tasks/all" slide-index=0
+    ng-include="urlBase + 'app/tasks/tasksAll.html'"></div>
     <div class="swiper-slide" swiper-slide="tasks/contexts" slide-index=1
     ng-include="urlBase + 'app/tasks/tasksContexts.html'"></div>
     <div class="swiper-slide" swiper-slide="tasks/context" slide-index=2

@@ -62,8 +62,8 @@ function MainController(
       heading: 'tasks',
       slides: {
         left: {
-          path: 'tasks/recent',
-          heading: 'recent'
+          path: 'tasks/all',
+          heading: 'all tasks'
         },
         middle: {
           path: 'tasks/contexts',

@@ -3,7 +3,7 @@
     list-open="openEditor('note', {trans: {favorited: false, itemType: 'note'}})"
     ng-init="setListOnboarding('notes', listOnboarding)">
     <div ng-show="isOnboarded('notes') || isListOnboardingLockedOrReleased('notes')">
-      <h2 class="group-heading justified row">recent</h2>
+      <h2 class="group-heading justified row">all notes</h2>
       <div class="animate-list-item-leave tall"
         ng-repeat="note in listInfos.array = (getFullArray()) | orderBy:'modified':true
         | limitTo: currentListLimitTo" list-item ng-include="urlBase + 'app/notes/noteListItem.html'"></div>
