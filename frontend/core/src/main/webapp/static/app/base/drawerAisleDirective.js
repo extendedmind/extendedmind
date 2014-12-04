@@ -69,10 +69,10 @@ function drawerAisleDirective($rootScope, DrawerService) {
       };
 
       this.registerAreaMovedToNewPosition = function(callback, feature) {
-        areaMovedToNewPositionCallbacks[feature] = callback;
+        areaMovedToNewPositionCallbacks[feature] = callback;
       };
       this.registerAreaMovedToInitialPosition = function(callback, feature) {
-        areaMovedToInitialPositionCallbacks[feature] = callback;
+        areaMovedToInitialPositionCallbacks[feature] = callback;
       };
 
       // INITIALIZATION
@@ -84,7 +84,7 @@ function drawerAisleDirective($rootScope, DrawerService) {
           disable: 'right', // use left only
           transitionSpeed: $rootScope.MENU_ANIMATION_SPEED / 1000,
           easing: 'ease-out',
-          minDragDistance: 0,
+          minDragDistance: 10,
           addBodyClasses: false,
           tapToClose: true, // default value for reference
           maxPosition: $rootScope.MENU_WIDTH

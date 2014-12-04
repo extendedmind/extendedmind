@@ -367,10 +367,15 @@
                             cache.intentChecked = true;
                         }
 
-                        if (
-                            (settings.minDragDistance>=Math.abs(thePageX-cache.startDragX)) || // Has user met minimum drag distance?
-                            (cache.hasIntent === false)
-                        ) {
+                        /*
+                        * FORK
+                        *
+                        * When minDragDistance is set and drawer is not open, return.
+                        * When drawer is open, ignore minDragDistance and react to touch immediately.
+                        */
+                        if (((settings.minDragDistance>=Math.abs(thePageX-cache.startDragX)) || // Has user met minimum drag distance?
+                            (cache.hasIntent === false)) &&
+                            (settings.maxPosition !== translated)) {
                             return;
                         }
 
@@ -378,6 +383,20 @@
                         utils.dispatchEvent('drag');
 
                         cache.dragWatchers.current = thePageX;
+                        /*
+                        * FORK
+                        *
+                        * Adjust position for seamless translation when drawer is not yet open and
+                        * minDragDistance is set.
+                        *
+                        * Otherwise drawer would wait until minDragDistance is passed and then jump into
+                        * position for the amount that is stored into minDragDistance. It would continue
+                        * dragging animation from that point.
+                        */
+                        if (settings.maxPosition !== translated) {
+                            cache.dragWatchers.current -= settings.minDragDistance;
+                            translated -= settings.minDragDistance;
+                        }
                         // Determine which direction we are going
                         if (cache.dragWatchers.last > thePageX) {
                             if (cache.dragWatchers.state !== 'left') {
