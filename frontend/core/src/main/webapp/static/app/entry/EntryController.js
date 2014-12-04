@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function EntryController($http, $location, $rootScope, $scope, $timeout, $window,
+ function EntryController($http, $location, $rootScope, $routeParams, $scope, $timeout, $window,
                           AnalyticsService, AuthenticationService,
                           BackendClientService, DetectBrowserService, SwiperService,
                           UISessionService, UserService, UserSessionService, packaging) {
@@ -31,6 +31,10 @@
 
   if (packaging === 'web' && DetectBrowserService.isMobile()){
     $scope.entryState = 'download';
+  }
+
+  if ($routeParams.offline === 'true'){
+    UserSessionService.enableOffline();
   }
 
   $scope.swipeToSignup = function() {
@@ -230,9 +234,8 @@
   };
 }
 
-EntryController['$inject'] = [
-'$http', '$location', '$rootScope', '$scope', '$timeout', '$window',
-'AnalyticsService', 'AuthenticationService',
-'BackendClientService', 'DetectBrowserService', 'SwiperService',
-'UISessionService', 'UserService', 'UserSessionService', 'packaging'];
+EntryController['$inject'] = ['$http', '$location', '$rootScope', '$routeParams', '$scope', '$timeout',
+                              '$window', 'AnalyticsService', 'AuthenticationService',
+                              'BackendClientService', 'DetectBrowserService', 'SwiperService',
+                              'UISessionService', 'UserService', 'UserSessionService', 'packaging'];
 angular.module('em.entry').controller('EntryController', EntryController);

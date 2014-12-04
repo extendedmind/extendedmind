@@ -20,7 +20,7 @@
   var swapTokenBufferTime = 10*60*1000; // 10 minutes in milliseconds
   var latestModified = {};
   var itemsSynchronized = {};
-  var offlineBufferEnabled = (typeof useOfflineBuffer !== 'undefined') ? useOfflineBuffer: false;
+  var offlineEnabled = false;
 
   // Sync session storage with local storage.
   function syncWebStorages() {
@@ -49,7 +49,7 @@
   function setEmail(email) {
     if (email) {
       SessionStorageService.setEmail(email);
-      if (offlineBufferEnabled || LocalStorageService.getReplaceable() !== null) {
+      if (offlineEnabled || LocalStorageService.getReplaceable() !== null) {
         LocalStorageService.setEmail(email);
       }
     }
@@ -70,6 +70,9 @@
   }
 
   return {
+    enableOffline: function() {
+      offlineEnabled = true;
+    },
     isAuthenticated: function() {
       return SessionStorageService.getExpires() || LocalStorageService.getExpires();
     },
@@ -95,7 +98,7 @@
       }
     },
     isOfflineEnabled: function() {
-      return offlineBufferEnabled;
+      return offlineEnabled;
     },
     clearUser: function() {
       SessionStorageService.clearUser();
@@ -167,7 +170,7 @@
     },
     setPreferences: function(preferences) {
       SessionStorageService.setPreferences(preferences);
-      if (offlineBufferEnabled || LocalStorageService.getReplaceable() !== null) {
+      if (offlineEnabled || LocalStorageService.getReplaceable() !== null) {
         LocalStorageService.setPreferences(preferences);
       }
     },
@@ -182,7 +185,7 @@
     },
     setUserModified: function(modified) {
       SessionStorageService.setUserModified(modified);
-      if (offlineBufferEnabled || LocalStorageService.getReplaceable() !== null) {
+      if (offlineEnabled || LocalStorageService.getReplaceable() !== null) {
         LocalStorageService.setUserModified(modified);
       }
     },
@@ -249,7 +252,7 @@
       }
     },
     getRememberByDefault: function() {
-      return offlineBufferEnabled;
+      return offlineEnabled;
     },
     getUser: function() {
       syncWebStorages();

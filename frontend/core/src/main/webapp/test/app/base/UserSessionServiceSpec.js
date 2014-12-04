@@ -168,10 +168,10 @@ describe('UserSessionService', function() {
   });
 
   it('should set email to Web Storage when authenticate information is set and user is remembered by default', function() {
-    window.useOfflineBuffer = true;
     inject(function(_UserSessionService_) {
       UserSessionService = _UserSessionService_;
     });
+    UserSessionService.enableOffline();
     var email = 'example@example.com';
     spyOn(SessionStorageService, 'setEmail');
     spyOn(LocalStorageService, 'setEmail');
@@ -192,10 +192,10 @@ describe('UserSessionService', function() {
   });
 
   it('should set email to Web Storage if user is remembered by default', function() {
-    window.useOfflineBuffer = true;
     inject(function(_UserSessionService_) {
       UserSessionService = _UserSessionService_;
     });
+    UserSessionService.enableOffline();
     spyOn(SessionStorageService, 'setEmail');
     spyOn(LocalStorageService, 'setEmail');
     UserSessionService.setEmail('example@example.com');

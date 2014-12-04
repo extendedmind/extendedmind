@@ -32,7 +32,6 @@
     var urlPrefix = 'https://ext.md';
     var html5Mode = false;
     var bindToFocusEvent = false;
-    var useOfflineBuffer = true;
 
     // Wait for device API libraries to load
     //
@@ -51,7 +50,7 @@
   </script>
 </head>
 <body onload="onLoad()">
-  <div class="ios" root-view></div>
+  <div class="ios" root-view="offline"></div>
   <script src="static/${project.version}/em.min.js"></script>
 </body>
 </html>
