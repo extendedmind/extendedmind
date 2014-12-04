@@ -18,7 +18,7 @@
 * TODO: Loading prompt is not shown when it is initially hidden and then items are added passing the limit:
 *        -list has to become inactive and active again
 */
-function listPromptDirective($rootScope) {
+function listPromptDirective($animate, $rootScope, UISessionService) {
   return {
     restrict: 'A',
     require: '^list',
@@ -31,6 +31,7 @@ function listPromptDirective($rootScope) {
     link: function(scope, element, attrs, listController) {
       var loadingAnimationElementVisible;
       var loadingAnimationElement;
+      var animateNoItemsPromptWhenEmpty = false;
 
       function init() {
         loadingAnimationElementVisible = listController.registerIsNearListBottomCallback(isNearListBottom);
@@ -38,7 +39,7 @@ function listPromptDirective($rootScope) {
         loadingAnimationElement = element[0].firstElementChild.lastElementChild;
         if (loadingAnimationElement && loadingAnimationElementVisible) {
           // Set loading animation element initially visible.
-          loadingAnimationElement.style.display = 'initial';
+          loadingAnimationElement.style.display = 'block';
         }
       }
 
@@ -75,6 +76,8 @@ function listPromptDirective($rootScope) {
 
       function listHasItems() {
         if (scope.listInfos && scope.listInfos.array && scope.listInfos.array.length) {
+          // List has items. Animate prompt when it becomes visible.
+          animateNoItemsPromptWhenEmpty = true;
           return true;
         }
         if (loadingAnimationElement && loadingAnimationElementVisible) {
@@ -99,13 +102,20 @@ function listPromptDirective($rootScope) {
           }
         }
         // No items and no additional hiders.
+        if (animateNoItemsPromptWhenEmpty && UISessionService.isAllowed('leaveAnimation')) {
+          animateNoItemsPromptWhenEmpty = false;
+          $animate.addClass(element, 'animate-no-items-prompt').then(function() {
+            // Animate prompt visible.
+            element[0].classList.remove('animate-no-items-prompt');
+          });
+        }
         return true;
       };
 
       function isNearListBottom(nearBottom) {
         if (nearBottom) {
           if (loadingAnimationElement && !loadingAnimationElementVisible) {
-            loadingAnimationElement.style.display = 'initial';
+            loadingAnimationElement.style.display = 'block';
             loadingAnimationElementVisible = true;
           }
         } else {
@@ -119,5 +129,5 @@ function listPromptDirective($rootScope) {
     }
   };
 }
-listPromptDirective['$inject'] = ['$rootScope'];
+listPromptDirective['$inject'] = ['$animate', '$rootScope', 'UISessionService'];
 angular.module('em.base').directive('listPrompt', listPromptDirective);

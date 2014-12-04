@@ -93,15 +93,25 @@
   opacity: 1;       // [1]
 }
 
-// FIXME
-.animate-list-item-leave.ng-leave.ng-leave-active + .no-items-prompt {
-  opacity: 1;
-  transition: opacity 1s linear;
+// 1. Fade prompt in with delay.
+//    This is used when list empties, and 1 second delay ensures there is no more .animate-list-item-leave
+//    animations running.
+.animate-no-items-prompt {
+  -webkit-transition: opacity @timing-animate 0.5s 1s;
+  -moz-transition: opacity @timing-animate 0.5s 1s;
+  -o-transition: opacity @timing-animate 0.5s 1s;
+  -ms-transition: opacity @timing-animate 0.5s 1s;
+  transition: opacity @timing-animate 0.5s 1s;
 }
 
-// FIXME
-.animate-list-item-leave.ng-leave + .no-items-prompt {
-  opacity: 0;
+// 1. Fade in start.
+.animate-no-items-prompt-add {
+  opacity: 0; // [1]
+}
+
+// 1. Fade in end.
+.animate-no-items-prompt-add-active {
+  opacity: 1; // [1]
 }
 
 // Animate checkbox checking.

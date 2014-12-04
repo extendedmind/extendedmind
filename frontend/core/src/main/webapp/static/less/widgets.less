@@ -24,20 +24,14 @@ Extended Mind specific UI-components, e.g. welcome/landing page, timeline, sidem
 *************************************************************
 # List prompt. Includes loading animation and 'no <ITEMS>' prompt
 */
+
+// 1. Hide .loading-prompt initially.
 .list-prompt {
   width: 100%;
-  text-align: center;
-
-  // 1. Hide initially.
   .loading-prompt {
-    display: none;
-  }
-  .no-items-prompt {
-    position: absolute;
-    top: 100px;
     width: 100%;
     text-align: center;
-    color: @color-text-downplayed;
+    display: none;  // [1]
   }
 }
 
