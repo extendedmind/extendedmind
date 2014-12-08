@@ -19,8 +19,7 @@
                           UISessionService) {
 
   $scope.noteHasKeywords = function noteHasKeywords(note) {
-    return note.trans && note.trans.keywords &&
-    note.trans.keywords.length;
+    return note.trans && note.trans.keywords && note.trans.keywords.length;
   };
 
   // Return keywords, that has beend added during note edit.

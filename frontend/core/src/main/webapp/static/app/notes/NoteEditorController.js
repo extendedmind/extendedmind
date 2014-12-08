@@ -51,7 +51,7 @@
     });
   };
 
-  $scope.endNoteEdit = function() {
+  $scope.endNoteEdit = function() {
     $scope.closeNoteEditor();
   };
 
@@ -127,10 +127,9 @@
   clearKeyword(); // Initialize new keyword.
 
   $scope.addNewKeywordToNote = function(note, newKeyword) {
-    if (!newKeyword || !newKeyword.title) return; // No text entered.
+    if (!newKeyword || !newKeyword.title) return; // No text entered.
     if (note.trans && note.trans.keywords) {
-      var noteKeyword = note.trans.keywords
-      .findFirstObjectByKeyValue('title', newKeyword.title);
+      var noteKeyword = note.trans.keywords.findFirstObjectByKeyValue('title', newKeyword.title);
 
       if (noteKeyword !== undefined) {
         // Note's existing keyword. Do not re-add.
