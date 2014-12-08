@@ -198,6 +198,8 @@
       if (attrs.editorFooterStartExpanded !== undefined) {
         // Open on init, without animation.
         scope.openExpand(true);
+        // Register close callback when initially expanded.
+        scope.registerEditorFooterCloseCallback(scope.closeExpand);
       }
 
       /*

@@ -275,11 +275,13 @@
       delete item.trans.list;
   };
 
-  $scope.setTitleBarBlur = function() {
-    $scope.titleBarFocused = false;
+  var editorFooterCloseCallback;
+  $scope.registerEditorFooterCloseCallback = function(callback) {
+    editorFooterCloseCallback = callback;
   };
+
   $scope.setTitleBarFocus = function() {
-    $scope.titleBarFocused = true;
+    if (typeof editorFooterCloseCallback === 'function') editorFooterCloseCallback();
   };
 
   // DESCRIPTION

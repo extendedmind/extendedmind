@@ -182,7 +182,7 @@
   };
 
   $scope.isTaskFooterHidden = function(footerHiddenCallback) {
-    var footerHidden = $scope.isTaskTitleClamped() || $scope.titleBarFocused;
+    var footerHidden = $scope.isTaskTitleClamped();
     if (typeof footerHiddenCallback === 'function') footerHiddenCallback(footerHidden);
     return footerHidden;
   };

@@ -326,7 +326,8 @@ input[type="checkbox"]:checked + label:before {
 }
 
 // 1. Override transform style applied directly into element by $animate.addClass options.
-.animate-editor-footer-close {
+//    NOTE: Do not use during ng-hide since it will use delay set here.
+.animate-editor-footer-close:not(.ng-hide-animate) {
   -webkit-transition: -webkit-transform @speed-animate-editor-footer-toggle @timing-animate;
   -moz-transition: -moz-transform @speed-animate-editor-footer-toggle @timing-animate;
   -o-transition: -o-transform @speed-animate-editor-footer-toggle @timing-animate;
