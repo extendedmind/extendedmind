@@ -16,12 +16,13 @@
  /* global angular*/
  'use strict';
 
- function ItemsService($q, ArrayService, BackendClientService, ListsService, NotesService, TagsService,
-                       TasksService, UISessionService, UserSessionService, UUIDService) {
+ function ItemsService($q, ArrayService, BackendClientService, ItemLikeService, ListsService, NotesService,
+                       TagsService, TasksService, UISessionService, UserSessionService, UUIDService) {
   var items = {};
 
   var itemRegex = /\/item/;
   var itemSlashRegex = /\/item\//;
+  var itemFieldInfos = ItemLikeService.getDefaultFieldInfos();
 
   function initializeArrays(ownerUUID) {
     if (!items[ownerUUID]) {
@@ -94,66 +95,20 @@
     saveItem: function(item, ownerUUID) {
       initializeArrays(ownerUUID);
       var deferred = $q.defer();
-      var params;
       if (items[ownerUUID].deletedItems.indexOf(item) > -1) {
         deferred.reject(item);
-      } else if (item.uuid) {
-        // Existing item
-        var transientProperties = item.trans;
-        delete item.trans;
-
-        if (UserSessionService.isOfflineEnabled()) {
-          // Push to offline buffer
-          params = {type: 'item', owner: ownerUUID, uuid: item.uuid};
-          BackendClientService.put('/api/' + params.owner + '/item/' + item.uuid,
-                                   this.putNewItemRegex, params, item);
-          item.modified = BackendClientService.generateFakeTimestamp();
-          item.trans = transientProperties;
-          updateItem(item, ownerUUID);
-          deferred.resolve(item);
-        } else {
-          // Online
-          BackendClientService.putOnline('/api/' + ownerUUID + '/item/' + item.uuid,
-                                         this.putExistingItemRegex, item)
-          .then(function(result) {
-            if (result.data) {
-              item.modified = result.data.modified;
-              item.trans = transientProperties;
-              updateItem(item, ownerUUID);
-              deferred.resolve(item);
-            }
-          });
-        }
       } else {
-        // New item
-        if (UserSessionService.isOfflineEnabled()) {
-          // Push to offline queue with fake UUID
-          var fakeUUID = UUIDService.generateFakeUUID();
-          params = {type: 'item', owner: ownerUUID, fakeUUID: fakeUUID};
-          BackendClientService.put('/api/' + params.owner + '/item',
-                                   this.putNewItemRegex, params, item);
-          // Use the fake uuid and a fake modified that is far enough in the to make
-          // it to the end of the list
-          item.uuid = fakeUUID;
-          item.created = item.modified = BackendClientService.generateFakeTimestamp();
-          item.trans = {itemType: 'item'};
-          setItem(item, ownerUUID);
-          deferred.resolve(item);
-        } else {
-          // Online
-          BackendClientService.putOnline('/api/' + ownerUUID + '/item',
-                                         this.putNewItemRegex, item)
-          .then(function(result) {
-            if (result.data) {
-              item.uuid = result.data.uuid;
-              item.created = result.data.created;
-              item.modified = result.data.modified;
-              item.trans = {itemType: 'item'};
-              setItem(item, ownerUUID);
-              deferred.resolve(item);
-            }
-          });
-        }
+        ItemLikeService.saveItem(item, 'item', ownerUUID, itemFieldInfos,
+                                 this.putNewItemRegex, this.putExistingItemRegex).then(
+          function(newItem){
+            if (newItem) setItem(item, ownerUUID);
+            else updateItem(item, ownerUUID);
+            deferred.resolve(item);
+          }, function(){
+            // Failure
+            deferred.reject(item);
+          }
+        );
       }
       return deferred.promise;
     },
@@ -304,6 +259,6 @@
   };
 }
 
-ItemsService['$inject'] = ['$q', 'ArrayService', 'BackendClientService', 'ListsService', 'NotesService',
-  'TagsService', 'TasksService', 'UISessionService', 'UserSessionService', 'UUIDService'];
+ItemsService['$inject'] = ['$q', 'ArrayService', 'BackendClientService', 'ItemLikeService', 'ListsService',
+  'NotesService', 'TagsService', 'TasksService', 'UISessionService', 'UserSessionService', 'UUIDService'];
 angular.module('em.main').factory('ItemsService', ItemsService);
