@@ -56,7 +56,9 @@
 
   // Callback from Snap.js, outside of AngularJS event loop
   function editorOpened() {
-    if ((!itemInEdit || !itemInEdit.deleted) && typeof titleBarInputFocusCallbackFunction === 'function'){
+    if ((!itemInEdit || !itemInEdit.deleted) && typeof titleBarInputFocusCallbackFunction === 'function' &&
+        $scope.editorType !== 'task')
+    {
       // Focus on found and not deleted item
       if (!$scope.$$phase && !$rootScope.$$phase){
         $scope.$apply(setFocusOnTitlebarInput);
@@ -273,6 +275,10 @@
       delete item.trans.list;
   };
 
+  $scope.setTitleBarFocus = function(value) {
+    $scope.titleBarFocused = value;
+  };
+
   // DESCRIPTION
   $scope.setDescriptionFocus = function(value){
     $scope.descriptionFocused = value;
@@ -286,5 +292,5 @@
 }
 
 EditorController['$inject'] = ['$rootScope', '$scope',
-  'ConvertService', 'ItemsService', 'SwiperService', 'UISessionService', 'UserSessionService'];
+'ConvertService', 'ItemsService', 'SwiperService', 'UISessionService', 'UserSessionService'];
 angular.module('em.main').controller('EditorController', EditorController);

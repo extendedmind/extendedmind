@@ -317,7 +317,7 @@ input[type="checkbox"]:checked + label:before {
 @speed-animate-editor-footer-toggle: .3s;
 
 // 1. Animate editor to expanded position.
-.animate-editor-footer-open-add {
+.animate-editor-footer-open-add:not(.no-animate) {
   -webkit-transition: -webkit-transform @speed-animate-editor-footer-toggle @timing-animate;
   -moz-transition: -moz-transform @speed-animate-editor-footer-toggle @timing-animate;
   -o-transition: -o-transform @speed-animate-editor-footer-toggle @timing-animate;

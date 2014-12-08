@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function editorFooterDirective($animate, $document, $parse, $rootScope, $timeout, packaging) {
+ function editorFooterDirective($animate, $document, $parse, $rootScope, $timeout) {
   var footerHeight = 44;  // NOTE: Match with @grid-vertical in LESS.
   return {
     restrict: 'A',
@@ -81,7 +81,7 @@
         element[0].classList.remove('expanded-one-row');  // Remove padding-bottom fix class.
       };
 
-      function startFooterExpandAnimation(expandedHeight) {
+      function startFooterExpand(expandedHeight, noAnimation) {
         // Footer expands so it needs new height and bottom.
         element[0].style.height = expandedHeight + footerHeight + 'px';
         element[0].style.bottom = -expandedHeight + 'px';
@@ -90,7 +90,13 @@
         element[0].classList.remove('animate-editor-footer-close');
         element[0].classList.remove('animate-editor-footer-open');
 
-        expandPromise = $animate.addClass(element, 'animate-editor-footer-open', {
+        var editorFooterOpenClass = 'animate-editor-footer-open';
+        if (noAnimation) {
+          // Prevent animation.
+          editorFooterOpenClass += ' no-animate';
+        }
+
+        expandPromise = $animate.addClass(element, editorFooterOpenClass, {
           from: {
             transform: 'translate3d(0, ' + -oldTranslateYPosition + 'px' + ', 0)'
           },
@@ -111,6 +117,10 @@
             });
           }
           expandPromise = undefined;
+
+          if (noAnimation) {
+            element[0].classList.remove('no-animate');
+          }
         });
         // Need to digest ot be sure that class is applied
         if (!$rootScope.$$phase && !scope.$$phase){
@@ -119,7 +129,7 @@
         oldTranslateYPosition = expandedHeight;
       }
 
-      scope.openExpand = function() {
+      scope.openExpand = function(noAnimation) {
         if (!scope.footerExpanded){
           scope.footerExpanded = true;  // Create element in the DOM.
 
@@ -129,7 +139,7 @@
             registerExpandedHeightChangeCallbackFn(setNewExpandHeightAndStartAnimation);
           } else {
             // Expand to max height.
-            startFooterExpandAnimation(expandedFooterMaxHeight);
+            startFooterExpand(expandedFooterMaxHeight, noAnimation);
           }
         }
       };
@@ -164,13 +174,18 @@
           // Decrease max position by footer height to make un-expandable part visible.
           maxPosition -= footerHeight;
 
-          startFooterExpandAnimation(maxPosition);
+          startFooterExpand(maxPosition);
         } else {
           scope.footerExpandedToMaxHeight = false;
           // Animate to previous position.
-          startFooterExpandAnimation(currentExpandedFooterHeight);
+          startFooterExpand(currentExpandedFooterHeight);
         }
       };
+
+      if (attrs.editorFooterStartExpanded !== undefined) {
+        // Open on init, without animation.
+        scope.openExpand(true);
+      }
 
       /*
       * There are three elements in a row, so divide elements in a container by three and round that upwards
@@ -191,7 +206,7 @@
           // Do not expand beyond max height.
           expandedHeight = expandedFooterMaxHeight;
         }
-        startFooterExpandAnimation(expandedHeight);
+        startFooterExpand(expandedHeight);
 
         // Toggle padding-bottom with this class. When expanded only one row, area would have undesired scroll
         // due to padding-bottom.
@@ -279,5 +294,5 @@
     }
   };
 }
-editorFooterDirective['$inject'] = ['$animate', '$document', '$parse', '$rootScope', '$timeout', 'packaging'];
+editorFooterDirective['$inject'] = ['$animate', '$document', '$parse', '$rootScope', '$timeout'];
 angular.module('em.base').directive('editorFooter', editorFooterDirective);

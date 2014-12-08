@@ -19,6 +19,7 @@
           <textarea ng-hide="isTaskTitleClamped()" ng-model="titlebar.text"
             ng-keydown="taskTitlebarTextKeyDown($event)" editable-field
             editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
+            ng-focus="setTitleBarFocus(true)" ng-blur="setTitleBarFocus(false)"
             msd-elastic dynamic-placeholder="enter task title&#8230;" maxlength="128">
           </textarea>
           <div ng-if="isTaskTitleClamped()">
@@ -76,18 +77,18 @@
 
         </div>
 
-        <footer ng-hide="isTaskFooterHidden()" class="container-content--after editor-footer animate-fade-in-out" editor-footer="basicSlideInfo" editor-footer-ios-click>
+        <footer ng-hide="isTaskFooterHidden()" class="container-content--after editor-footer animate-fade-in-out" editor-footer="basicSlideInfo" editor-footer-start-expanded>
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
             <div class="group-symmetrical--middle">
-              <a href id="editorFooterExpandLink" class="icon-downplayed" ng-click="toggleExpand()">
-                <span id="editorFooterExpandIcon" class="icon-calendar"></span>
+              <a href class="icon-downplayed" ng-click="toggleExpand()">
+                <span class="icon-calendar"></span>
               </a>
             </div>
-            <a href ng-click="swipeToAdvanced()" ng-hide="isFooterNavigationHidden() || footerExpandOpen" class="group-symmetrical--right link-navigation animate-fade-in-out">
+            <a href ng-click="swipeToAdvanced()" ng-hide="isFooterNavigationHidden()" class="group-symmetrical--right link-navigation animate-fade-in-out">
               <span class="text-navigation-forward">advanced</span>
             </a>
           </nav>
-          <div ng-if="footerExpanded" later="setDateAndSave(date)" editable-field-container="auto" editable-field-container-clicked-elsewhere="closeExpand()"></div>
+          <div ng-if="footerExpanded" later="setDateAndSave(date)"></div>
         </footer>
       </div>
 

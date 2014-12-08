@@ -182,7 +182,7 @@
   };
 
   $scope.isTaskFooterHidden = function() {
-    return $scope.isTaskTitleClamped();
+    return $scope.isTaskTitleClamped() || $scope.titleBarFocused;
   };
 
 }
