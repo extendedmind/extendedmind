@@ -181,8 +181,10 @@
     $scope.calendarOpen || $scope.contextPickerOpen || $scope.repeatingPickerOpen;
   };
 
-  $scope.isTaskFooterHidden = function() {
-    return $scope.isTaskTitleClamped() || $scope.titleBarFocused;
+  $scope.isTaskFooterHidden = function(footerHiddenCallback) {
+    var footerHidden = $scope.isTaskTitleClamped() || $scope.titleBarFocused;
+    if (typeof footerHiddenCallback === 'function') footerHiddenCallback(footerHidden);
+    return footerHidden;
   };
 
 }

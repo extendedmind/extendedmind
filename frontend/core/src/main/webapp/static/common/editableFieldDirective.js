@@ -13,6 +13,7 @@
  * limitations under the License.
  */
  'use strict';
+ /* global cordova */
 
  function editableFieldDirective($document, $parse, $rootScope, $timeout, packaging) {
   return {
@@ -28,7 +29,14 @@
 
       if (attrs.editableFieldRegisterCallbacks){
         var registerCallbacksFn = $parse(attrs.editableFieldRegisterCallbacks).bind(undefined, scope);
-        registerCallbacksFn({focus: focusElement, blur: blurElement}) ;
+        registerCallbacksFn({focus: focusElement, blur: blurElement});
+      }
+
+      if (attrs.editableFieldBlur) {
+        var blurCallback = $parse(attrs.editableFieldBlur).bind(undefined, scope);
+      }
+      if (attrs.editableFieldFocus) {
+        var focusCallback = $parse(attrs.editableFieldFocus).bind(undefined, scope);
       }
 
       function focusElement() {
@@ -89,6 +97,7 @@
         if (!refocusInProgress){
           if (editableFieldContainerController) editableFieldContainerController.notifyFocus();
           element.addClass('active');
+          if (typeof blurCallback === 'function') executeFocusCallbacks(focusCallback);
         }
         refocusInProgress = false;
       };
@@ -105,7 +114,19 @@
             cordova.plugins.Keyboard.close();
           }
         }
+        if (typeof blurCallback === 'function') executeFocusCallbacks(blurCallback);
       };
+
+      function executeFocusCallbacks(callback) {
+        // Use $evalAsync, because: "As the focus event is executed synchronously when calling input.focus()
+        // AngularJS executes the expression using scope.$evalAsync if the event is fired during an $apply to
+        // ensure a consistent state"
+        if ($rootScope.$$phase || scope.$$phase){
+          scope.$evalAsync(callback);
+        } else {
+          scope.$apply(callback);
+        }
+      }
 
       var editableFieldKeydown = function(event){
         // ESC button

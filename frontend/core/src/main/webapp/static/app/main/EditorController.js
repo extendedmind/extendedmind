@@ -275,8 +275,11 @@
       delete item.trans.list;
   };
 
-  $scope.setTitleBarFocus = function(value) {
-    $scope.titleBarFocused = value;
+  $scope.setTitleBarBlur = function() {
+    $scope.titleBarFocused = false;
+  };
+  $scope.setTitleBarFocus = function() {
+    $scope.titleBarFocused = true;
   };
 
   // DESCRIPTION

@@ -19,7 +19,7 @@
           <textarea ng-hide="isTaskTitleClamped()" ng-model="titlebar.text"
             ng-keydown="taskTitlebarTextKeyDown($event)" editable-field
             editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
-            ng-focus="setTitleBarFocus(true)" ng-blur="setTitleBarFocus(false)"
+            editable-field-blur="setTitleBarBlur()" editable-field-focus="setTitleBarFocus()"
             msd-elastic dynamic-placeholder="enter task title&#8230;" maxlength="128">
           </textarea>
           <div ng-if="isTaskTitleClamped()">
@@ -77,7 +77,9 @@
 
         </div>
 
-        <footer ng-hide="isTaskFooterHidden()" class="container-content--after editor-footer animate-fade-in-out" editor-footer="basicSlideInfo" editor-footer-start-expanded>
+        <footer ng-hide="isTaskFooterHidden(editorFooterHiddenCallback)"
+          class="container-content--after editor-footer" editor-footer="basicSlideInfo"
+          editor-footer-start-expanded>
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
             <div class="group-symmetrical--middle">
               <a href class="icon-downplayed" ng-click="toggleExpand()">
@@ -128,7 +130,7 @@
 
         </div>
       </div>
-      <footer ng-hide="isTaskFooterHidden()" class="container-content--after editor-footer" editor-footer="advancedSlideInfo">
+      <footer ng-hide="isTaskFooterHidden(editorFooterHiddenCallback)" class="container-content--after editor-footer" editor-footer="advancedSlideInfo">
 
         <div class="table">
           <div class="table-row">

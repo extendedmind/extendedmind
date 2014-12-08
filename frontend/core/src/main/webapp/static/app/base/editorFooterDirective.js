@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function editorFooterDirective($animate, $document, $parse, $rootScope, $timeout) {
+ function editorFooterDirective($animate, $document, $parse, $rootScope, $timeout, packaging) {
   var footerHeight = 44;  // NOTE: Match with @grid-vertical in LESS.
   return {
     restrict: 'A',
@@ -25,6 +25,19 @@
       var currentExpandedFooterHeight;    // Current expanded footer height.
       var expandPromise, shrinkPromise;   // Animation promises.
       var expandedHeightChangeWatcher;    // Attach watcher into variable to be able to unregister it.
+
+      scope.editorFooterHiddenCallback = function(hidden) {
+        if (hidden && containerInfos.footerHeight !== 0) {
+          // Store old footer height and set footer height temporarily to zero.
+          containerInfos.oldFooterHeight = containerInfos.footerHeight;
+          containerInfos.footerHeight = 0;
+        } else if (!hidden && containerInfos.oldFooterHeight !== undefined &&
+                   containerInfos.footerHeight !== containerInfos.oldFooterHeight)
+        {
+          // Reset footer height.
+          containerInfos.footerHeight = containerInfos.oldFooterHeight;
+        }
+      };
 
       if (attrs.editorFooter) {
         // Delegate footer height info.
@@ -45,7 +58,7 @@
       scope.closeExpand = function() {
         // Reset container's padding-bottom to default footer height before animation so that the backside
         // of expanded footer is not blank.
-        containerInfos.footerHeight = footerHeight;
+        containerInfos.footerHeight = containerInfos.oldFooterHeight = footerHeight;
 
         // Set footer height and bottom to default values.
         element[0].style.height = footerHeight + 'px';
@@ -112,7 +125,7 @@
 
             scope.$apply(function() {
               // Set padding-bottom for container to make content scrollable.
-              containerInfos.footerHeight = expandedHeight + footerHeight;
+              containerInfos.footerHeight = containerInfos.oldFooterHeight = expandedHeight + footerHeight;
               scope.footerExpandOpen = true;  // Footer is now opened.
             });
           }
@@ -281,12 +294,12 @@
         }
       }
 
-      if (attrs.editorFooterIosClick !== undefined/* && packaging === 'ios-cordova'*/){
+      if (attrs.editorFooterIosClick !== undefined && packaging === 'ios-cordova'){
         element[0].addEventListener('touchstart', iOSEditorFooterTouchStart);
         element[0].addEventListener('touchend', iOSEditorFooterTouchEnd);
       }
       scope.$on('$destroy', function() {
-        if (attrs.editorFooterIosClick !== undefined/* && packaging === 'ios-cordova'*/){
+        if (attrs.editorFooterIosClick !== undefined && packaging === 'ios-cordova'){
           element[0].removeEventListener('touchstart', iOSEditorFooterTouchStart);
           element[0].removeEventListener('touchend', iOSEditorFooterTouchEnd);
         }
@@ -294,5 +307,5 @@
     }
   };
 }
-editorFooterDirective['$inject'] = ['$animate', '$document', '$parse', '$rootScope', '$timeout'];
+editorFooterDirective['$inject'] = ['$animate', '$document', '$parse', '$rootScope', '$timeout', 'packaging'];
 angular.module('em.base').directive('editorFooter', editorFooterDirective);
