@@ -335,19 +335,24 @@ function SwiperService($q, $timeout) {
       this.swipePageSlide(slidePath, swiperInfos);
       return swiperInfos;
     },
+    swipeToWithoutAnimation: function(slidePath) {
+      var swiperInfos = getSwiperInfosBySlidePath(slidePath);
+      this.swipeMainSlide(slidePath, swiperInfos, 0);
+      this.swipePageSlide(slidePath, swiperInfos, 0);
+    },
     swipeToWithCallback: function(slidePath) {
       var swiperInfos = this.swipeTo(slidePath);
       if (swiperInfos.pagePath) {
         executeSlideChangeCallbacks(swiperInfos.pagePath, slidePath);
       }
     },
-    swipeMainSlide: function(slidePath, swiperInfos) {
+    swipeMainSlide: function(slidePath, swiperInfos, speed) {
       swiperInfos = swiperInfos || getSwiperInfosBySlidePath(slidePath);
 
       if (swiperInfos.main) {
         var mainSwiperIndex = getSlideIndexBySlidePath(slidePath, swiperInfos.main.slidesPaths);
         if (mainSwiperIndex !== undefined) {
-          swiperInfos.main.swiper.swipeTo(mainSwiperIndex);
+          swiperInfos.main.swiper.swipeTo(mainSwiperIndex, speed);
         }
       }
     },

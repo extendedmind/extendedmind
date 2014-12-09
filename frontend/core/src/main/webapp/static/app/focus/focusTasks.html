@@ -1,4 +1,6 @@
-<div class="container-content--outer" list-container drawer-handle="left" drawer-handle-register-activate="registerFocusActivateCallback(activate)" list-container-override-vertical-resize="true">
+<div class="container-content--outer" list-container list-container-override-vertical-resize="true"
+  drawer-handle="left"
+  drawer-handle-register-activate="registerFocusActivateCallback(activate, 'drawerHandleDirective')">
   <section ng-show="isOnboarded('focusTasks')" class="container-content" ng-controller="DatesController">
 
     <div ng-if="datepickerVisible && columns > 1" editable-field-container="auto">

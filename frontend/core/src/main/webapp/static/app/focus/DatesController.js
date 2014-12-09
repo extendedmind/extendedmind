@@ -45,6 +45,14 @@
   $scope.daySlides[2].pastDate = $scope.daySlides[2].referenceDate;
   $scope.daySlides[2].heading = daySlideHeading($scope.daySlides[2].referenceDate);
 
+  if (angular.isFunction($scope.registerFocusActivateCallback))
+    $scope.registerFocusActivateCallback(focusActive, 'DatesController');
+
+  function focusActive() {
+    // Swipe to today when focus is active and DOM is rendered.
+    setTimeout(gotoToday, 0);
+  }
+
   if (angular.isFunction($scope.registerSynchronizeCallback))
     $scope.registerSynchronizeCallback(detectDayChange, 'DatesController');
 

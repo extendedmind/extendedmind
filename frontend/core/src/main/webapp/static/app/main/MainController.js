@@ -189,6 +189,15 @@ function MainController(
     var currentFeature = UISessionService.getCurrentFeatureName();
     var currentData = UISessionService.getFeatureData();
 
+    if ($scope.features[feature].loaded &&
+        $scope.features[feature].slides && $scope.features[feature].slides.left)
+    {
+      setTimeout(function() {
+        // Swipe to initial slide when feature changes and DOM is rendered.
+        SwiperService.swipeToWithoutAnimation($scope.features[feature].slides.left.path);
+      }, 0);
+    }
+
     if (!(currentFeature === feature && currentData === data)) {
       if (!$scope.isMenuVisible() && toggleMenu){
         // Open only after menu has been opened
@@ -216,10 +225,13 @@ function MainController(
 
       AnalyticsService.visit(feature);
     }
+
     // Run special case focus callbacks because drawer-handle directive does not re-register itself when
     // feature changes to focus.
-    if (feature === 'focus' && typeof focusActiveCallback === 'function')
-      focusActiveCallback();
+    if (feature === 'focus' && focusActiveCallbacks) {
+      for (var id in focusActiveCallbacks)
+        focusActiveCallbacks[id]();
+    }
   };
 
   $scope.isFeatureLoaded = function(feature){
@@ -238,9 +250,9 @@ function MainController(
     return $scope.features[feature];
   };
 
-  var focusActiveCallback;
-  $scope.registerFocusActivateCallback = function(activateFn) {
-    focusActiveCallback = activateFn;
+  var focusActiveCallbacks = {};
+  $scope.registerFocusActivateCallback = function(activateFn, id) {
+    focusActiveCallbacks[id] = activateFn;
   };
 
   // ONBOARDING
