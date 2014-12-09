@@ -63,6 +63,29 @@
     return editedFieldInfos;
   }
 
+  function validate(item, ownerUUID, fieldInfos){
+    var validationErrors = [];
+    for (var i=0, len=fieldInfos; i<len; i++){
+      if (angular.isObject(fieldInfos[i])){
+        // Custom field overrides all
+        if (fieldInfos[i].validate){
+          var validationError = fieldInfos[i].validate(item, ownerUUID);
+          if (validationError) validationErrors.push(validationError);
+        }
+      }else if (fieldInfos[i] === 'title'){
+        if (item.trans['title'] === undefined || item.trans['title'].length === 0)){
+          validationErrors('title is mandatory');
+        }else if (item.trans['title'].length > 128){
+          validationErrors('title can not be more than 128 characters');
+        }
+      }else if (fieldInfos[i] === 'description' && item.trans['description'] !== undefined &&
+                item.trans['description'].length > 1024){
+        validationErrors.push('description can not be more than 1024 characters');
+      }
+    }
+    return validationErrors;
+  }
+
   function copyEditedFieldsToMod(item, ownerUUID, fieldInfos){
     var editedFieldInfos = getEditedFieldInfos(item, ownerUUID, fieldInfos);
 
@@ -154,6 +177,9 @@
     isEdited: function(item, ownerUUID, fieldInfos){
       return isEdited(item, ownerUUID, fieldInfos);
     },
+    validate: function(item, ownerUUID, fieldInfos){
+      return validate(item, ownerUUID, fieldInfos);
+    },
     refreshTrans: function(item, itemType, ownerUUID, fieldInfos){
       return refreshTrans(item, itemType, ownerUUID, fieldInfos);
     },
@@ -163,13 +189,18 @@
         return PersistentStorageService.persist(createPersistableItem(item), itemType, ownerUUID);
       }
     },
-    saveItem: function(item, itemType, ownerUUID, fieldInfos){
+    // Returns promise which returns 'new', 'existing', 'unmodified', or failure on failed save because
+    // data is invalid
+    save: function(item, itemType, ownerUUID, fieldInfos){
       var deferred = $q.defer();
 
-      if (this.getEditedFieldInfos(item, ownerUUID, fieldInfos).length){
+      var validationErrors = validate(item, ownerUUID, fieldInfos);
+      if (validationErrors.length){
+        deferred.reject({type: 'validation', value: validationErrors);
+      }else if (this.getEditedFieldInfos(item, ownerUUID, fieldInfos).length){
         // When item is not edited, just resolve without giving an item as parameter to indicate
         // nothing was actually saved
-        deferred.resolve();
+        deferred.resolve('unmodified');
       } else {
         this.prepareTransport(item, itemType, ownerUUID, fieldInfos);
         var transportItem = createTransportItem(item, ownerUUID, fieldInfos);
@@ -224,15 +255,13 @@
             BackendClientService.putOnline('/api/' + ownerUUID + '/'+ itemType,
                                            this.getPutNewRegex(itemType), item)
             .then(function(result) {
-              if (result.data) {
-                if (UserSessionService.isOfflineEnabled()){
-                  PersistentStorageService.persistSetResult(createPersistableItem(item),
-                                                          itemType, ownerUUID, result.data);
-                }
-                updateObjectWithSetResult(item, result.data);
-                refreshTrans(item, itemType, ownerUUID, fieldInfos);
-                deferred.resolve(item);
+              if (UserSessionService.isOfflineEnabled()){
+                PersistentStorageService.persistSetResult(createPersistableItem(item),
+                                                        itemType, ownerUUID, result.data);
               }
+              updateObjectWithSetResult(item, result.data);
+              refreshTrans(item, itemType, ownerUUID, fieldInfos);
+              deferred.resolve(item);
             });
           }
         }

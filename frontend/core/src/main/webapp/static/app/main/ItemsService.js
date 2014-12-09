@@ -96,16 +96,15 @@
       initializeArrays(ownerUUID);
       var deferred = $q.defer();
       if (items[ownerUUID].deletedItems.indexOf(item) > -1) {
-        deferred.reject(item);
+        deferred.reject({type: 'deleted'});
       } else {
-        ItemLikeService.saveItem(item, 'item', ownerUUID, itemFieldInfos).then(
-          function(newItem){
-            if (newItem) setItem(item, ownerUUID);
-            else updateItem(item, ownerUUID);
-            deferred.resolve(item);
-          }, function(){
-            // Failure
-            deferred.reject(item);
+        ItemLikeService.save(item, 'item', ownerUUID, itemFieldInfos).then(
+          function(result){
+            if (result === 'new') setItem(item, ownerUUID);
+            else if (result === 'existing') updateItem(item, ownerUUID);
+            deferred.resolve(result);
+          }, function(validationErrors){
+            deferred.reject(failure);
           }
         );
       }

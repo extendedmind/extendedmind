@@ -41,8 +41,8 @@
   $scope.saveOmnibarToItem = function() {
     var item = {title: $scope.titlebar.text};
     UISessionService.deferAction('omnibarToItem', $rootScope.EDITOR_CLOSED_FAILSAFE_TIME).then(function() {
-      $scope.saveItem(item).then(function(){
-        if (!$scope.isFeatureActive('inbox')){
+      $scope.saveItem(item).then(function(result){
+        if (!$scope.isFeatureActive('inbox') && result === 'new'){
           UISessionService.pushNotification({
             type: 'inbox',
             itemType: 'item',
