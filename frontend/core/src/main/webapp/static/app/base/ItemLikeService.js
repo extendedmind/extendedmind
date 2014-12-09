@@ -163,7 +163,7 @@
         return PersistentStorageService.persist(createPersistableItem(item), itemType, ownerUUID);
       }
     },
-    saveItem: function(item, itemType, ownerUUID, fieldInfos, putNewItemRegex, putExistingItemRegex){
+    saveItem: function(item, itemType, ownerUUID, fieldInfos){
       var deferred = $q.defer();
 
       if (this.getEditedFieldInfos(item, ownerUUID, fieldInfos).length){
@@ -182,14 +182,14 @@
             // Push to offline buffer
             params = {type: 'item', owner: ownerUUID, uuid: item.uuid};
             BackendClientService.put('/api/' + params.owner + '/'+ itemType + '/' + item.uuid,
-                                     putExistingItemRegex, params, transportItem);
+                                     this.getPutExistingRegex(itemType), params, transportItem);
             updateObjectWithSetResult(item.mod, {modified: BackendClientService.generateFakeTimestamp()});
             refreshTrans(item, itemType, ownerUUID, fieldInfos);
             deferred.resolve();
           } else {
             // Online
             BackendClientService.putOnline('/api/' + ownerUUID + '/'+ itemType + '/' + item.uuid,
-                                           putExistingItemRegex, transportItem)
+                                           this.getPutExistingRegex(itemType), transportItem)
             .then(function(result) {
               if (result.data) {
                 if (UserSessionService.isOfflineEnabled()){
@@ -212,7 +212,7 @@
             var fakeUUID = UUIDService.generateFakeUUID();
             params = {type: 'item', owner: ownerUUID, fakeUUID: fakeUUID};
             BackendClientService.put('/api/' + params.owner + '/'+ itemType,
-                                     putNewItemRegex, params, transportItem);
+                                     this.getPutNewRegex(itemType), params, transportItem);
             var fakeTimestamp = BackendClientService.generateFakeTimestamp();
             updateObjectWithSetResult(item.mod, {uuid: fakeUUID,
                                                  modified: fakeTimestamp,
@@ -222,7 +222,7 @@
           } else {
             // Online
             BackendClientService.putOnline('/api/' + ownerUUID + '/'+ itemType,
-                                           putNewItemRegex, item)
+                                           this.getPutNewRegex(itemType), item)
             .then(function(result) {
               if (result.data) {
                 if (UserSessionService.isOfflineEnabled()){
@@ -238,6 +238,31 @@
         }
       }
       return deferred.promise;
+    },
+    // Regexp helper functions
+    getPutNewRegex: function(itemType){
+      return new RegExp(BackendClientService.apiPrefixRegex.source +
+                        BackendClientService.uuidRegex.source +
+                        '/' + itemType);
+    },
+    getPutExistingRegex: function(itemType){
+      return new RegExp(BackendClientService.apiPrefixRegex.source +
+                        BackendClientService.uuidRegex.source +
+                        '/' + itemType + '/' +
+                        BackendClientService.uuidRegex.source);
+    },
+    getDeleteRegex: function(itemType){
+      return new RegExp(BackendClientService.apiPrefixRegex.source +
+                        BackendClientService.uuidRegex.source +
+                        '/' + itemType + '/' +
+                        BackendClientService.uuidRegex.source);
+    },
+    getUndeleteRegex: function(itemType){
+      return new RegExp(BackendClientService.apiPrefixRegex.source +
+                        BackendClientService.uuidRegex.source +
+                        '/' + itemType + '/' +
+                        BackendClientService.uuidRegex.source +
+                        BackendClientService.undeleteRegex.source);
     },
   };
 }

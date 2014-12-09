@@ -98,8 +98,7 @@
       if (items[ownerUUID].deletedItems.indexOf(item) > -1) {
         deferred.reject(item);
       } else {
-        ItemLikeService.saveItem(item, 'item', ownerUUID, itemFieldInfos,
-                                 this.putNewItemRegex, this.putExistingItemRegex).then(
+        ItemLikeService.saveItem(item, 'item', ownerUUID, itemFieldInfos).then(
           function(newItem){
             if (newItem) setItem(item, ownerUUID);
             else updateItem(item, ownerUUID);
@@ -236,26 +235,10 @@
       }
     },
     // Regular expressions for item requests
-    putNewItemRegex:
-    new RegExp(BackendClientService.apiPrefixRegex.source +
-               BackendClientService.uuidRegex.source +
-               itemRegex.source),
-    putExistingItemRegex:
-    new RegExp(BackendClientService.apiPrefixRegex.source +
-               BackendClientService.uuidRegex.source +
-               itemSlashRegex.source +
-               BackendClientService.uuidRegex.source),
-    deleteItemRegex:
-    new RegExp(BackendClientService.apiPrefixRegex.source +
-               BackendClientService.uuidRegex.source +
-               itemSlashRegex.source +
-               BackendClientService.uuidRegex.source),
-    undeleteItemRegex:
-    new RegExp(BackendClientService.apiPrefixRegex.source +
-               BackendClientService.uuidRegex.source +
-               itemSlashRegex.source +
-               BackendClientService.uuidRegex.source +
-               BackendClientService.undeleteRegex.source),
+    putNewItemRegex: ItemLikeService.getPutNewRegex('item'),
+    putExistingItemRegex: ItemLikeService.getPutExistingRegex('item'),
+    deleteItemRegex: ItemLikeService.getDeleteRegex('item'),
+    undeleteItemRegex: ItemLikeService.getUndeleteRegex('item'),
   };
 }
 
