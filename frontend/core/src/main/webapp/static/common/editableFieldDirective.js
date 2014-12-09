@@ -28,8 +28,8 @@
       }
 
       if (attrs.editableFieldRegisterCallbacks){
-        var registerCallbacksFn = $parse(attrs.editableFieldRegisterCallbacks).bind(undefined, scope);
-        registerCallbacksFn({focus: focusElement, blur: blurElement});
+        var registerCallbacksFn = $parse(attrs.editableFieldRegisterCallbacks);
+        registerCallbacksFn(scope, {focus: focusElement, blur: blurElement});
       }
 
       if (attrs.editableFieldFocus) {
