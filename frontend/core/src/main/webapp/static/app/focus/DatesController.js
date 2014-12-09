@@ -48,9 +48,17 @@
   if (angular.isFunction($scope.registerFocusActivateCallback))
     $scope.registerFocusActivateCallback(focusActive, 'DatesController');
 
-  function focusActive() {
-    // Swipe to today without animation when focus is active and DOM is rendered.
-    $scope.changeDaySlide(DateService.getTodayYYYYMMDD(), 0);
+  function focusActive(featureChanged) {
+    if (featureChanged) {
+      // Swipe to today without animation when feature changes, ng-show is evaluated and the DOM is rendered.
+      setTimeout(function() {
+        $scope.changeDaySlide(DateService.getTodayYYYYMMDD(), 0);
+      }, 0);
+    }
+    else {
+      // Swipe to today slide immediately.
+      $scope.changeDaySlide(DateService.getTodayYYYYMMDD(), 0);
+    }
   }
 
   if (angular.isFunction($scope.registerSynchronizeCallback))

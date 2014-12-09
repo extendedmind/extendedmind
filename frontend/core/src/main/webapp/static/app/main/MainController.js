@@ -188,17 +188,11 @@ function MainController(
   $scope.changeFeature = function(feature, data, toggleMenu, pending){
     var currentFeature = UISessionService.getCurrentFeatureName();
     var currentData = UISessionService.getFeatureData();
+    var featureChanged = !(currentFeature === feature && currentData === data);
 
-    if ($scope.features[feature].loaded &&
-        $scope.features[feature].slides && $scope.features[feature].slides.left)
-    {
-      setTimeout(function() {
-        // Swipe to initial slide when feature changes and DOM is rendered.
-        SwiperService.swipeToWithoutAnimation($scope.features[feature].slides.left.path);
-      }, 0);
-    }
-
-    if (!(currentFeature === feature && currentData === data)) {
+    if (featureChanged) {
+      // Feature changed
+      setInitialSlideActive(true, feature);
       if (!$scope.isMenuVisible() && toggleMenu){
         // Open only after menu has been opened
         featurePendingOpen = {
@@ -224,15 +218,34 @@ function MainController(
       }
 
       AnalyticsService.visit(feature);
+    } else {
+      // Feature not changed
+      setInitialSlideActive(false, feature);
     }
 
     // Run special case focus callbacks because drawer-handle directive does not re-register itself when
     // feature changes to focus.
     if (feature === 'focus' && focusActiveCallbacks) {
       for (var id in focusActiveCallbacks)
-        focusActiveCallbacks[id]();
+        focusActiveCallbacks[id](featureChanged);
     }
   };
+
+  function setInitialSlideActive(featureChanged, feature) {
+    if ($scope.features[feature].loaded &&
+        $scope.features[feature].slides && $scope.features[feature].slides.left)
+    {
+      if (featureChanged) {
+        setTimeout(function() {
+          // Swipe to initial slide when feature changes, ng-show is evaluated and the DOM is rendered.
+          SwiperService.swipeToWithoutAnimation($scope.features[feature].slides.left.path);
+        }, 0);
+      } else {
+        // Swipe to initial slide immediately.
+        SwiperService.swipeToWithoutAnimation($scope.features[feature].slides.left.path);
+      }
+    }
+  }
 
   $scope.isFeatureLoaded = function(feature){
     return $rootScope.syncState !== 'active' && $scope.features[feature].loaded;
