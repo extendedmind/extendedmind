@@ -49,8 +49,8 @@
     $scope.registerFocusActivateCallback(focusActive, 'DatesController');
 
   function focusActive() {
-    // Swipe to today when focus is active and DOM is rendered.
-    setTimeout(gotoToday, 0);
+    // Swipe to today without animation when focus is active and DOM is rendered.
+    $scope.changeDaySlide(DateService.getTodayYYYYMMDD(), 0);
   }
 
   if (angular.isFunction($scope.registerSynchronizeCallback))
@@ -286,7 +286,7 @@
     offsetFromOldActiveDatepickerSlide += direction === 'prev' ? -1 : 1;
 
     if (!datepickerWeeksInfosCleared && (
-        offsetFromOldActiveDatepickerSlide >= 2 || offsetFromOldActiveDatepickerSlide <= -2))
+        offsetFromOldActiveDatepickerSlide >= 2 || offsetFromOldActiveDatepickerSlide <= -2))
     {
       datepickerWeeksInfosCleared = true;
       clearDatepickerSlidesInfos();
@@ -469,7 +469,7 @@
   *       used to determine swipe direction. Change implementation to one found here:
   *       http://stackoverflow.com/a/543152 if needed for something.
   */
-  $scope.changeDaySlide = function(newDateYYYYMMDD) {
+  $scope.changeDaySlide = function(newDateYYYYMMDD, speed) {
     if (preventDaySlideClicking) return;
     setDayActive(newDateYYYYMMDD);
 
@@ -512,13 +512,13 @@
       // Get adjacent circular array index.
       var previousIndex = (activeSlideIndex - 1 + $scope.daySlides.length) % $scope.daySlides.length;
       makeDaySlide(previousIndex, newActiveDate);
-      SwiperService.swipePrevious('focus/tasks');
+      SwiperService.swipePrevious('focus/tasks', speed);
     }
     else if (offsetBetweenDays > 0) {
       // Get adjacent circular array index.
       var nextIndex = (activeSlideIndex + 1 + $scope.daySlides.length) % $scope.daySlides.length;
       makeDaySlide(nextIndex, newActiveDate);
-      SwiperService.swipeNext('focus/tasks');
+      SwiperService.swipeNext('focus/tasks', speed);
     } else {
       // The current day clicked, close week picker
       $scope.closeDatepicker();

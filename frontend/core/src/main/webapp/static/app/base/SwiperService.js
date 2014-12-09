@@ -316,14 +316,22 @@ function SwiperService($q, $timeout) {
         }
       }
     },
-    swipeNext: function(swiperPath) {
+    swipeNext: function(swiperPath, speed) {
       if (swipers[swiperPath] && swipers[swiperPath].swiper) {
-        swipers[swiperPath].swiper.swipeNext();
+        swipers[swiperPath].swiper.swipeNext(false, speed); // 1. parameter is 'external'
+        if (speed === 0) {
+          // Manually fire slide change end callback when speed is zero meaning there will be no animation.
+          this.onSlideChangeEnd(undefined, swiperPath);
+        }
       }
     },
-    swipePrevious: function(swiperPath) {
+    swipePrevious: function(swiperPath, speed) {
       if (swipers[swiperPath] && swipers[swiperPath].swiper) {
-        swipers[swiperPath].swiper.swipePrev();
+        swipers[swiperPath].swiper.swipePrev(false, speed); // 1. parameter is 'external'
+        if (speed === 0) {
+          // Manually fire slide change end callback when speed is zero meaning there will be no animation.
+          this.onSlideChangeEnd(undefined, swiperPath);
+        }
       }
     },
     swipeTo: function(slidePath) {
@@ -353,16 +361,26 @@ function SwiperService($q, $timeout) {
         var mainSwiperIndex = getSlideIndexBySlidePath(slidePath, swiperInfos.main.slidesPaths);
         if (mainSwiperIndex !== undefined) {
           swiperInfos.main.swiper.swipeTo(mainSwiperIndex, speed);
+          if (speed === 0 && swiperInfos.mainPath) {
+            // Manually execute slide change end callbacks when speed is zero
+            // meaning there will be no animation.
+            executeSlideChangeCallbacks(swiperInfos.mainPath, slidePath, mainSwiperIndex);
+          }
         }
       }
     },
-    swipePageSlide: function(slidePath, swiperInfos) {
+    swipePageSlide: function(slidePath, swiperInfos, speed) {
       swiperInfos = swiperInfos || getSwiperInfosBySlidePath(slidePath);
 
       if (swiperInfos.page) {
         var pageSwiperIndex = swiperInfos.page.slidesPaths.indexOf(slidePath);
         if (pageSwiperIndex !== -1) {
-          swiperInfos.page.swiper.swipeTo(pageSwiperIndex);
+          swiperInfos.page.swiper.swipeTo(pageSwiperIndex, speed);
+          if (speed === 0 && swiperInfos.pagePath) {
+            // Manually execute slide change end callbacks when speed is zero
+            // meaning there will be no animation.
+            executeSlideChangeCallbacks(swiperInfos.pagePath, slidePath, pageSwiperIndex);
+          }
         }
       }
     },

@@ -1787,7 +1787,10 @@ var Swiper = function (selector, params) {
     /*==================================================
         Swipe Functions
     ====================================================*/
-    _this.swipeNext = function (internal) {
+    /*
+    * FORK: Speed support for 'prev' and 'next' actions.
+    */
+    _this.swipeNext = function (internal, speed) {
         if (!internal && params.loop) _this.fixLoop();
         if (!internal && params.autoplay) _this.stopAutoplay(true);
         _this.callPlugins('onSwipeNext');
@@ -1809,10 +1812,13 @@ var Swiper = function (selector, params) {
             newPosition = -maxWrapperPosition();
         }
         if (newPosition === currentPosition) return false;
-        swipeToPosition(newPosition, 'next');
+        swipeToPosition(newPosition, 'next', {speed: speed});
         return true;
     };
-    _this.swipePrev = function (internal) {
+    /*
+    * FORK: Speed support for 'prev' and 'next' actions.
+    */
+    _this.swipePrev = function (internal, speed) {
         if (!internal && params.loop) _this.fixLoop();
         if (!internal && params.autoplay) _this.stopAutoplay(true);
         _this.callPlugins('onSwipePrev');
@@ -1840,7 +1846,7 @@ var Swiper = function (selector, params) {
         if (newPosition > 0) newPosition = 0;
 
         if (newPosition === currentPosition) return false;
-        swipeToPosition(newPosition, 'prev');
+        swipeToPosition(newPosition, 'prev', {speed: speed});
         return true;
 
     };
@@ -1908,7 +1914,11 @@ var Swiper = function (selector, params) {
     };
 
     function swipeToPosition(newPosition, action, toOptions) {
-        var speed = (action === 'to' && toOptions.speed >= 0) ? toOptions.speed : params.speed;
+        /*
+        * FORK: Speed support for 'prev' and 'next' actions.
+        */
+        var speed = ((action === 'to' || action === 'prev' || action === 'next')
+                     && toOptions.speed >= 0) ? toOptions.speed : params.speed;
         var timeOld = + new Date();
 
         function anim() {
