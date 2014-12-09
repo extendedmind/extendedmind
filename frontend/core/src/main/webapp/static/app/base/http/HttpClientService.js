@@ -39,7 +39,7 @@
       exceptionType = 'onlineRequired';
     }
     if (!skipLogStatuses || skipLogStatuses.indexOf(error.status) === -1) {
-      $rootScope.$emit('emException', {type: exceptionType, status: error.status, data: error.data});
+      $rootScope.$emit('emException', {type: exceptionType, value: {status: error.status, data: error.data}});
     }
   }
 
@@ -145,7 +145,7 @@
                 headRequest.errorStatus = status;
                 HttpRequestQueueService.saveQueue();
                 HttpRequestQueueService.releaseLock();
-                $rootScope.$emit('emException', {type: 'http', status: status, data: data, url: config.url});
+                $rootScope.$emit('emException', {type: 'http', value: {status: status, data: data, url: config.url}});
               }
             }
           }
@@ -202,7 +202,7 @@
             onlineCallback(online);
           }
         }
-        return $q.reject(error);
+        return $q.reject({type:'http', value: error});
       });
     };
   });
@@ -217,7 +217,7 @@
       return success;
     }, function(error) {
       emitException(error, skipLogStatuses);
-      return $q.reject(error);
+      return $q.reject({type:'http', value: error});
     });
   };
 
@@ -226,7 +226,7 @@
       return success;
     }, function(error) {
       emitException(error);
-      return $q.reject(error);
+      return $q.reject({type:'http', value: error});
     });
   };
 
@@ -241,7 +241,7 @@
       return success;
     }, function(error) {
       emitException(error, skipLogStatuses);
-      return $q.reject(error);
+      return $q.reject({type:'http', value: error});
     });
   };
 
@@ -250,7 +250,7 @@
       return success;
     }, function(error) {
       emitException(error);
-      return $q.reject(error);
+      return $q.reject({type:'http', value: error});
     });
   };
 

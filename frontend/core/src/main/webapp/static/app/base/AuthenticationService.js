@@ -162,27 +162,31 @@
                 // Emit online required exception
                 $rootScope.$emit('emException', {
                   type: 'onlineRequired',
-                  status: error.status,
-                  data: error.data,
-                  retry: swapTokenAndAuthenticate,
-                  redirectUrl: '/',
-                  promise: deferredAuthentication
-                });
+                  value: {
+                    status: error.status,
+                    data: error.data,
+                    retry: swapTokenAndAuthenticate,
+                    redirectUrl: '/',
+                    promise: deferredAuthentication
+                  }});
               }else {
-                $rootScope.$emit('emException',
-                                 {type: 'http',
-                                  status: error.status,
-                                  data: error.data,
-                                  url: error.config.url});
+                var rejection = {type: 'http',
+                                  value: {
+                                    status: error.status,
+                                    data: error.data,
+                                    url: error.config.url
+                                  }};
+                $rootScope.$emit('emException', rejection);
+                deferredAuthentication.reject(rejection);
               }
             });
           }
         } else {
-          deferredAuthentication.reject();
+          deferredAuthentication.reject({type: 'authentication', value: 'authentication not replaceable'});
         }
       }
     } else {
-      deferredAuthentication.reject();
+      deferredAuthentication.reject({type: 'authentication', value: 'user not authenticated'});
     }
 
     deferredAuthentication.promise.then(null, function() {

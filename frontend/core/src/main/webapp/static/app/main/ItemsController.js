@@ -26,6 +26,10 @@
     $scope.changeFeature('inbox', item, true);
   };
 
+  $scope.getNewItem = function(initialValues){
+    return ItemsService.getNewItem(initialValues, UISessionService.getActiveUUID());
+  };
+
   // SAVING
 
   $scope.saveItem = function(item) {

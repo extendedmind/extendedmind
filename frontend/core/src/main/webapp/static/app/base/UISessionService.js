@@ -112,7 +112,7 @@
         ownerPrefix = 'my';
       } else {
         // User's UUID not known
-        $rootScope.$emit('emException', {type: 'session', description: 'user UUID not available'});
+        $rootScope.$emit('emException', {type: 'session', value: 'user UUID not available'});
       }
     },
     getActiveUUID: function() {

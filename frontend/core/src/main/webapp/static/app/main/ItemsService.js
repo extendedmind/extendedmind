@@ -47,6 +47,9 @@
   }
 
   return {
+    getNewItem: function(initialValues, ownerUUID) {
+      return ItemLikeService.getNew(initialValues, 'item', ownerUUID, itemFieldInfos);
+    },
     setItems: function(itemsResponse, ownerUUID) {
       initializeArrays(ownerUUID);
       this.addTransientProperties(itemsResponse);
@@ -77,14 +80,14 @@
       if (item){
         return {
           type: 'active',
-          item: item
+          item: ItemLikeService.refreshTrans(item, 'item', ownerUUID, itemFieldInfos)
         };
       }
       item = items[ownerUUID].deletedItems.findFirstObjectByKeyValue('uuid', uuid);
       if (item){
         return {
           type: 'deleted',
-          item: item
+          item: ItemLikeService.refreshTrans(item, 'item', ownerUUID, itemFieldInfos)
         };
       }
     },
@@ -238,6 +241,7 @@
     putExistingItemRegex: ItemLikeService.getPutExistingRegex('item'),
     deleteItemRegex: ItemLikeService.getDeleteRegex('item'),
     undeleteItemRegex: ItemLikeService.getUndeleteRegex('item'),
+    itemFieldInfos: itemFieldInfos
   };
 }
 

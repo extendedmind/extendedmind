@@ -226,8 +226,12 @@
             // The item might have moved to either notes or tasks
             if (!TasksService.updateTaskProperties(request.params.uuid, properties, request.params.owner)) {
               if (!NotesService.updateNoteProperties(request.params.uuid, properties, request.params.owner)) {
-                $rootScope.$emit('emException', {type: 'response', response: response,
-                  description: 'Could not update undeleted item with values from server'});
+                $rootScope.$emit('emException',
+                                 {type: 'response',
+                                 value: {
+                                  response: response,
+                                  description: 'Could not update undeleted item with values from server'
+                                }});
                 return;
               }
             }
@@ -242,8 +246,12 @@
           properties = {completed: response.completed, modified: response.result.modified};
         }
         if (!TasksService.updateTaskProperties(request.params.uuid, properties, request.params.owner)) {
-          $rootScope.$emit('emException', {type: 'response', response: response,
-            description: 'Could not update modified task with values from server'});
+          $rootScope.$emit('emException',
+                           {type: 'response',
+                           value: {
+                            response: response,
+                            description: 'Could not update modified task with values from server'
+                          }});
           return;
         }
       } else if (request.params.type === 'note') {
@@ -254,8 +262,12 @@
           properties = {favorited: response.favorited, modified: response.result.modified};
         }
         if (!NotesService.updateNoteProperties(request.params.uuid, properties, request.params.owner)) {
-          $rootScope.$emit('emException', {type: 'response', response: response,
-            description: 'Could not update modified note with values from server'});
+          $rootScope.$emit('emException',
+                           {type: 'response',
+                           value: {
+                            response: response,
+                            description: 'Could not update modified note with values from server'
+                          }});
           return;
         }
       }
@@ -278,7 +290,11 @@
         // New, there should be an uuid in the response and a fake one in the request
         if (!response.uuid) {
           $rootScope.$emit('emException',
-                           {type: 'response', response: response, description: 'No uuid from server'});
+                           {type: 'response',
+                           value: {
+                            response: response,
+                            description: 'No uuid from server'
+                          }});
           return;
         } else {
           oldUuid = request.params.fakeUUID;
@@ -305,8 +321,12 @@
           // The item might have moved to either notes or tasks
           if (!TasksService.updateTaskProperties(oldUuid, properties, request.params.owner)) {
             if (!NotesService.updateNoteProperties(oldUuid, properties, request.params.owner)) {
-              $rootScope.$emit('emException', {type: 'response', response: response,
-                description: 'Could not update item with values from server'});
+              $rootScope.$emit('emException',
+                               {type: 'response',
+                               value: {
+                                response: response,
+                                description: 'Could not update item with values from server'
+                              }});
               return;
             }
           }
@@ -315,16 +335,19 @@
         if (!TasksService.updateTaskProperties(oldUuid, properties, request.params.owner)) {
           $rootScope.$emit('emException',
             {type: 'response',
-            response: response,
-            description: 'Could not update task with values from server'});
+            value: {
+              response: response,
+              description: 'Could not update task with values from server'
+            }});
           return;
         }
       } else if (request.params.type === 'note') {
         if (!NotesService.updateNoteProperties(oldUuid, properties, request.params.owner)) {
           $rootScope.$emit('emException',
             {type: 'response',
-            response: response,
-            description: 'Could not update note with values from server'});
+              value: {response: response,
+              description: 'Could not update note with values from server'
+            }});
           return;
         }
       }
@@ -338,22 +361,34 @@
           // The item might have moved to either notes or tasks
           if (!TasksService.updateTaskProperties(request.params.uuid, properties, request.params.owner)) {
             if (!NotesService.updateNoteProperties(request.params.uuid, properties, request.params.owner)) {
-              $rootScope.$emit('emException', {type: 'response', response: response,
-                description: 'Could not update deleted item with values from server'});
+              $rootScope.$emit('emException',
+                               {type: 'response',
+                               value: {
+                                response: response,
+                                description: 'Could not update deleted item with values from server'
+                               }});
               return;
             }
           }
         }
       } else if (request.params.type === 'task') {
         if (!TasksService.updateTaskProperties(request.params.uuid, properties, request.params.owner)) {
-          $rootScope.$emit('emException', {type: 'response', response: response,
-            description: 'Could not update deleted task with values from server'});
+          $rootScope.$emit('emException',
+                           {type: 'response',
+                            value: {
+                              response: response,
+                              description: 'Could not update deleted task with values from server'
+                            }});
           return;
         }
       } else if (request.params.type === 'note') {
         if (!NotesService.updateNoteProperties(request.params.uuid, properties, request.params.owner)) {
-          $rootScope.$emit('emException', {type: 'response', response: response,
-            description: 'Could not update deleted note with values from server'});
+          $rootScope.$emit('emException',
+                           {type: 'response',
+                            value: {
+                              response: response,
+                              description: 'Could not update deleted note with values from server'
+                            }});
           return;
         }
       }
@@ -370,21 +405,28 @@
         return result;
       },
       function(error) {
+        var rejection;
         if (BackendClientService.isOffline(error.status)) {
           // Emit online required exception
-          $rootScope.$emit('emException', {
+          rejection = {
             type: 'onlineRequired',
-            status: error.status,
-            data: error.data,
-            retry: getAllMethod,
-            retryParam: ownerUUID,
-            promise: deferred,
-            promiseParam: true
-          });
+            value: {
+              status: error.status,
+              data: error.data,
+              retry: getAllMethod,
+              retryParam: ownerUUID,
+              promise: deferred,
+              promiseParam: true
+          }};
         } else {
-          $rootScope.$emit('emException', {type: 'http', status: error.status,
-                           data: error.data, url: error.config.url});
+          rejection = {type: 'http',
+                       value: {
+                         status: error.status,
+                         data: error.data, url: error.config.url
+                       }};
         }
+        $rootScope.$emit('emException', rejection);
+        return $q.reject(rejection);
       });
   };
 
@@ -433,8 +475,10 @@
         }, function(error) {
           if (error && error.status === 403) {
             // Got 403, need to go to login
-            $rootScope.$emit('emException',
-                             {type: 'http', status: error.status, data: error.data, url: error.config.url});
+            var rejection = {type: 'http', value: {
+              status: error.status, data: error.data, url: error.config.url}};
+            $rootScope.$emit('emException', rejection);
+            deferred.reject(rejection);
           } else {
             // just resolve, because this command does not need to always succeed
             deferred.resolve(false);

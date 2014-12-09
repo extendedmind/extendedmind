@@ -139,7 +139,7 @@
         if (exception.type === 'onlineRequired') {
           if (!$scope.retrying) {
             $scope.errorMessageHeading = 'no online connection';
-            if (exception.retry) {
+            if (exception.value.retry) {
               $scope.errorMessageText = 'please connect to the internet and press retry to access your ' +
               'information';
               $scope.modalSuccessText = 'retry';
@@ -147,10 +147,10 @@
               modalOptions.asyncSuccess = true;
               modalOptions.success = {
                 fn: onlineRequiredRetryCallback,
-                fnParam: exception.retry,
-                fnParamParam: exception.retryParam,
-                fnPromise: exception.promise,
-                fnPromiseParam: exception.promiseParam,
+                fnParam: exception.value.retry,
+                fnParamParam: exception.value.retryParam,
+                fnPromise: exception.value.promise,
+                fnPromiseParam: exception.value.promiseParam,
               };
               ModalService.createDialog($rootScope.urlBase + 'app/root/errorMessage.html', modalOptions);
             } else {
@@ -160,16 +160,17 @@
               ModalService.createDialog($rootScope.urlBase + 'app/root/errorMessage.html', modalOptions);
             }
           }
-        } else if (exception.type === 'http' && exception.status === 403) {
+        } else if (exception.type === 'http' && exception.value.status === 403) {
           // Redirect thrown 403 Forbidden exception to the login page
           AnalyticsService.error('forbidden', JSON.stringify(exception));
           $rootScope.redirectToEntry();
         } else if (exception.type === 'session') {
           if (!exiting) {
             // Redirect session errors to the login page
-            AnalyticsService.error('session', exception.description);
+            AnalyticsService.error('session', exception.value);
             $rootScope.redirectToEntry();
           }
+        // TODO: Type 'response' for offline responses!
         } else {
           AnalyticsService.error('unexpected', JSON.stringify(exception));
           $scope.errorMessageHeading = 'something unexpected happened, sorry!';

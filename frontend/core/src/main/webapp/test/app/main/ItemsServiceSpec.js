@@ -22,7 +22,7 @@ describe('ItemsService', function() {
 
   var $httpBackend;
   var ItemsService, BackendClientService, HttpClientService,
-      ListsService, TagsService, TasksService, NotesService;
+      ListsService, TagsService, TasksService, NotesService, ItemLikeService;
 
   // MOCKS
 
@@ -50,7 +50,7 @@ describe('ItemsService', function() {
     module('em.appTest');
 
     inject(function (_$httpBackend_, _ItemsService_, _BackendClientService_, _HttpClientService_,
-                    _ListsService_, _TagsService_, _TasksService_, _NotesService_) {
+                    _ListsService_, _TagsService_, _TasksService_, _NotesService_, _ItemLikeService_) {
       $httpBackend = _$httpBackend_;
       ItemsService = _ItemsService_;
       BackendClientService = _BackendClientService_;
@@ -59,6 +59,7 @@ describe('ItemsService', function() {
       TagsService = _TagsService_;
       TasksService = _TasksService_;
       NotesService = _NotesService_;
+      ItemLikeService = _ItemLikeService_;
 
       ItemsService.setItems(
         [{
@@ -125,10 +126,9 @@ describe('ItemsService', function() {
   });
 
   it('should save new item', function () {
-    var testItem = {
-      'title': 'test item'
-    };
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItem)
+    var testItemValues = {title: 'test item'};
+    var testItem = ItemsService.getNewItem(testItemValues);
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
        .respond(200, putNewItemResponse);
     ItemsService.saveItem(testItem, testOwnerUUID);
     $httpBackend.flush();
@@ -145,8 +145,12 @@ describe('ItemsService', function() {
 
   it('should update existing item', function () {
     var rememberTheMilk = ItemsService.getItemInfo('d1e764e8-3be3-4e3f-8bec-8c3f9e7843e9', testOwnerUUID).item;
-    rememberTheMilk.title = 'remember the milk!';
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item/' + rememberTheMilk.uuid, rememberTheMilk)
+    rememberTheMilk.trans.title = 'remember the milk!';
+    console.log(rememberTheMilk)
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item/' + rememberTheMilk.uuid,
+                           {uuid: rememberTheMilk.uuid,
+                           title: rememberTheMilk.trans.title,
+                           modified: rememberTheMilk.modified})
        .respond(200, putExistingItemResponse);
     ItemsService.saveItem(rememberTheMilk, testOwnerUUID);
     $httpBackend.flush();

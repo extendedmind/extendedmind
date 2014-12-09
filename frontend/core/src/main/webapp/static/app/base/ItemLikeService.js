@@ -29,12 +29,12 @@
   }
 
   function isEdited(item, ownerUUID, fieldInfos){
-    for (var i=0, len=fieldInfos; i<len; i++){
+    for (var i=0, len=fieldInfos.length; i<len; i++){
       if (angular.isObject(fieldInfos[i])){
         if (fieldInfos[i].isEdited(item, ownerUUID)){
           return true;
         }
-      }else if (item.mod && item.mod.hasOwnProperty[fieldInfos[i]] &&
+      }else if (item.mod && item.mod.hasOwnProperty(fieldInfos[i]) &&
         item.mod[fieldInfos[i]] !== item.trans[fieldInfos[i]]){
         return true;
       }else if (item[fieldInfos[i]] !== item.trans[fieldInfos[i]]){
@@ -45,13 +45,13 @@
 
   function getEditedFieldInfos(item, ownerUUID, fieldInfos){
     var editedFieldInfos = [];
-    for (var i=0, len=fieldInfos; i<len; i++){
+    for (var i=0, len=fieldInfos.length; i<len; i++){
       if (angular.isObject(fieldInfos[i])){
         // Custom field overrides all
         if (fieldInfos[i].isEdited(item, ownerUUID)){
           editedFieldInfos.push(fieldInfos[i].name);
         }
-      }else if (item.mod && item.mod.hasOwnProperty[fieldInfos[i]] &&
+      }else if (item.mod && item.mod.hasOwnProperty(fieldInfos[i]) &&
         item.mod[fieldInfos[i]] !== item.trans[fieldInfos[i]]){
         // This field has been modified, and the modification does not match
         editedFieldInfos.push(fieldInfos[i]);
@@ -65,7 +65,7 @@
 
   function validate(item, ownerUUID, fieldInfos){
     var validationErrors = [];
-    for (var i=0, len=fieldInfos; i<len; i++){
+    for (var i=0, len=fieldInfos.length; i<len; i++){
       if (angular.isObject(fieldInfos[i])){
         // Custom field overrides all
         if (fieldInfos[i].validate){
@@ -73,7 +73,7 @@
           if (validationError) validationErrors.push(validationError);
         }
       }else if (fieldInfos[i] === 'title'){
-        if (item.trans['title'] === undefined || item.trans['title'].length === 0)){
+        if (item.trans['title'] === undefined || item.trans['title'].length === 0){
           validationErrors('title is mandatory');
         }else if (item.trans['title'].length > 128){
           validationErrors('title can not be more than 128 characters');
@@ -91,7 +91,7 @@
 
     if (editedFieldInfos && editedFieldInfos.length){
       if (!item.mod) item.mod = {};
-      for(var i=0, len=editedFieldInfos; i<len; i++){
+      for(var i=0, len=editedFieldInfos.length; i<len; i++){
         if (angular.isObject(editedFieldInfos[i])){
           editedFieldInfos[i].copyTransToMod(item, ownerUUID);
         }else{
@@ -103,8 +103,8 @@
   }
 
   function copyModToPersistent(item, ownerUUID, fieldInfos){
-    for (var i=0, len=fieldInfos; i<len; i++){
-      if (item.mod && item.mod.hasOwnProperty[fieldInfos[i]] &&
+    for (var i=0, len=fieldInfos.length; i<len; i++){
+      if (item.mod && item.mod.hasOwnProperty(fieldInfos[i]) &&
         item.mod[fieldInfos[i]] !== item[fieldInfos[i]]){
         // This field has been modified, and the modification does not match
         item[fieldInfos[i]] = item.mod[fieldInfos[i]];
@@ -118,7 +118,7 @@
     if (!item.trans) item.trans = {};
     if (item.trans.itemType !== itemType) item.trans.itemType = itemType;
 
-    for (var i=0, len=fieldInfos; i<len; i++){
+    for (var i=0, len=fieldInfos.length; i<len; i++){
       if (angular.isObject(fieldInfos[i])){
         // Custom refresh method overrides
         fieldInfos[i].refreshTrans(item, ownerUUID);
@@ -130,19 +130,20 @@
         item.trans[fieldInfos[i]] = item[fieldInfos[i]];
       }
     }
+    return item;
   }
 
   function createTransportItem(item, ownerUUID, fieldInfos){
     var transportItem = {};
-    for (var i=0, len=fieldInfos; i<len; i++){
+    for (var i=0, len=fieldInfos.length; i<len; i++){
       if (angular.isObject(fieldInfos[i])){
         // Custom refresh method overrides
         transportItem[fieldInfos[i].name] = fieldInfos[i].createTransportValue(item, ownerUUID);
       }else if (fieldInfos[i] !== 'created' && fieldInfos[i] !== 'deleted'){
-        if (item.mod && item.mod.hasOwnProperty[fieldInfos[i]] &&
+        if (item.mod && item.mod.hasOwnProperty(fieldInfos[i]) &&
             item.mod[fieldInfos[i]] !== undefined){
           transportItem[fieldInfos[i]] = item.mod[fieldInfos[i]];
-        }else{
+        }else if (item[fieldInfos[i]] !== undefined) {
           transportItem[fieldInfos[i]] = item[fieldInfos[i]];
         }
       }
@@ -154,7 +155,7 @@
     var persistItem = {};
     // Copy every field except trans to persisted value
     for (var property in item){
-      if (item.hasOwnProperty(property && property !== 'trans')){
+      if (item.hasOwnProperty(property) && property !== 'trans'){
         persistItem[property] = item[property];
       }
     }
@@ -180,14 +181,26 @@
     validate: function(item, ownerUUID, fieldInfos){
       return validate(item, ownerUUID, fieldInfos);
     },
+    getNew: function(trans, itemType, ownerUUID, fieldInfos) {
+      var newItem = refreshTrans({}, itemType, ownerUUID, fieldInfos);
+      if (trans){
+        for (var property in trans){
+          if (trans.hasOwnProperty(property)){
+            newItem.trans[property] = trans[property];
+          }
+        }
+      }
+      return newItem;
+    },
     refreshTrans: function(item, itemType, ownerUUID, fieldInfos){
       return refreshTrans(item, itemType, ownerUUID, fieldInfos);
     },
     prepareTransport: function(item, itemType, ownerUUID, fieldInfos){
       copyEditedFieldsToMod(item, ownerUUID, fieldInfos);
       if (UserSessionService.isOfflineEnabled()){
-        return PersistentStorageService.persist(createPersistableItem(item), itemType, ownerUUID);
+        PersistentStorageService.persist(createPersistableItem(item), itemType, ownerUUID);
       }
+      return createTransportItem(item, ownerUUID, fieldInfos);
     },
     // Returns promise which returns 'new', 'existing', 'unmodified', or failure on failed save because
     // data is invalid
@@ -195,15 +208,15 @@
       var deferred = $q.defer();
 
       var validationErrors = validate(item, ownerUUID, fieldInfos);
+
       if (validationErrors.length){
-        deferred.reject({type: 'validation', value: validationErrors);
-      }else if (this.getEditedFieldInfos(item, ownerUUID, fieldInfos).length){
+        deferred.reject({type: 'validation', value: validationErrors});
+      }else if (!isEdited(item, ownerUUID, fieldInfos)){
         // When item is not edited, just resolve without giving an item as parameter to indicate
         // nothing was actually saved
         deferred.resolve('unmodified');
       } else {
-        this.prepareTransport(item, itemType, ownerUUID, fieldInfos);
-        var transportItem = createTransportItem(item, ownerUUID, fieldInfos);
+        var transportItem = this.prepareTransport(item, itemType, ownerUUID, fieldInfos);
         if (item.uuid) {
           /////////////////////////
           // Existing item
@@ -216,7 +229,7 @@
                                      this.getPutExistingRegex(itemType), params, transportItem);
             updateObjectWithSetResult(item.mod, {modified: BackendClientService.generateFakeTimestamp()});
             refreshTrans(item, itemType, ownerUUID, fieldInfos);
-            deferred.resolve();
+            deferred.resolve('existing');
           } else {
             // Online
             BackendClientService.putOnline('/api/' + ownerUUID + '/'+ itemType + '/' + item.uuid,
@@ -229,7 +242,7 @@
                 }
                 updateObjectWithSetResult(item, result.data);
                 refreshTrans(item, itemType, ownerUUID, fieldInfos);
-                deferred.resolve();
+                deferred.resolve('existing');
               }
             });
           }
@@ -249,11 +262,11 @@
                                                  modified: fakeTimestamp,
                                                  created: fakeTimestamp});
             refreshTrans(item, itemType, ownerUUID, fieldInfos);
-            deferred.resolve(item);
+            deferred.resolve('new');
           } else {
             // Online
             BackendClientService.putOnline('/api/' + ownerUUID + '/'+ itemType,
-                                           this.getPutNewRegex(itemType), item)
+                                           this.getPutNewRegex(itemType), transportItem)
             .then(function(result) {
               if (UserSessionService.isOfflineEnabled()){
                 PersistentStorageService.persistSetResult(createPersistableItem(item),
@@ -261,7 +274,7 @@
               }
               updateObjectWithSetResult(item, result.data);
               refreshTrans(item, itemType, ownerUUID, fieldInfos);
-              deferred.resolve(item);
+              deferred.resolve('new');
             });
           }
         }

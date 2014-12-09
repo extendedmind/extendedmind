@@ -40,7 +40,9 @@
     }
     if (refreshCredentialsCallback) {
       return refreshCredentialsCallback(online).then(function() {
-        doRefreshCredentials();
+        return doRefreshCredentials();
+      }, function(error){
+        return $q.reject(error);
       });
     } else {
       var deferred = $q.defer();
@@ -51,7 +53,9 @@
   }
 
   function emitRegexException(regex, method, url) {
-    $rootScope.$emit('emException', {type: 'regex', regex: regex.source, method: method, url: url});
+    var regexError = {type: 'regex', value: {regex: regex.source, method: method, url: url}};
+    $rootScope.$emit('emException', regexError);
+    return $q.reject(regexError);
   }
 
   // Method for setting credentials to all subsequent http calls
@@ -67,7 +71,7 @@
       if (regex.test(url)) {
         return HttpClientService.get(getUrlPrefix() + url);
       } else {
-        emitRegexException(regex, 'get', url);
+        return emitRegexException(regex, 'get', url);
       }
     }
     if (!skipRefresh) {
@@ -88,7 +92,7 @@
           return HttpClientService.getSecondary(getUrlPrefix() + url, params);
         }
       } else {
-        emitRegexException(regex, 'get', url);
+        return emitRegexException(regex, 'get', url);
       }
     });
   };
@@ -102,7 +106,7 @@
           return HttpClientService.getBeforeLast(getUrlPrefix() + url, params);
         }
       } else {
-        emitRegexException(regex, 'get', url);
+        return emitRegexException(regex, 'get', url);
       }
     });
   };
@@ -112,7 +116,7 @@
       if (regex.test(url)) {
         return HttpClientService.deleteOffline(getUrlPrefix() + url, params);
       } else {
-        emitRegexException(regex, 'delete', url);
+        return emitRegexException(regex, 'delete', url);
       }
     });
 
@@ -123,7 +127,7 @@
       if (regex.test(url)) {
         return HttpClientService.deleteOnline(getUrlPrefix() + url);
       } else {
-        emitRegexException(regex, 'delete', url);
+        return emitRegexException(regex, 'delete', url);
       }
     });
   };
@@ -133,7 +137,7 @@
       if (regex.test(url)) {
         return HttpClientService.put(getUrlPrefix() + url, params, data);
       } else {
-        emitRegexException(regex, 'put', url);
+        return emitRegexException(regex, 'put', url);
       }
     });
   };
@@ -143,7 +147,7 @@
       if (regex.test(url)) {
         return HttpClientService.putOnline(getUrlPrefix() + url, data);
       } else {
-        emitRegexException(regex, 'put', url);
+        return emitRegexException(regex, 'put', url);
       }
     });
   };
@@ -155,7 +159,7 @@
                                                         usernamePasswordCredentials,
                                                         skipLogStatuses);
     } else {
-      emitRegexException(regex, 'put', data);
+      return emitRegexException(regex, 'put', data);
     }
   };
 
@@ -163,7 +167,7 @@
     if (regex.test(url)) {
       return HttpClientService.postPrimary(getUrlPrefix() + url, data);
     } else {
-      emitRegexException(regex, 'post', url);
+      return emitRegexException(regex, 'post', url);
     }
   };
 
@@ -176,7 +180,7 @@
       if (regex.test(url)) {
         return HttpClientService.postOnline(getUrlPrefix() + url, data, skipLogStatuses);
       } else {
-        emitRegexException(regex, 'post', url);
+        return emitRegexException(regex, 'post', url);
       }
     }
     if (!skipRefresh) {
@@ -193,7 +197,7 @@
       if (regex.test(url)) {
         return HttpClientService.post(getUrlPrefix() + url, params, data);
       } else {
-        emitRegexException(regex, 'post', url);
+        return emitRegexException(regex, 'post', url);
       }
     });
   };
