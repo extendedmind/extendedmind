@@ -80,14 +80,14 @@
       if (item){
         return {
           type: 'active',
-          item: ItemLikeService.refreshTrans(item, 'item', ownerUUID, itemFieldInfos)
+          item: ItemLikeService.resetTrans(item, 'item', ownerUUID, itemFieldInfos)
         };
       }
       item = items[ownerUUID].deletedItems.findFirstObjectByKeyValue('uuid', uuid);
       if (item){
         return {
           type: 'deleted',
-          item: ItemLikeService.refreshTrans(item, 'item', ownerUUID, itemFieldInfos)
+          item: ItemLikeService.resetTrans(item, 'item', ownerUUID, itemFieldInfos)
         };
       }
     },

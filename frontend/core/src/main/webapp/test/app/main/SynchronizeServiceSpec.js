@@ -349,10 +349,11 @@ describe('SynchronizeService', function() {
 
     // 1. save new item
 
-    var testItem = {
+    var testItemValues = {
       'title': 'test item'
-    };
-    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItem)
+    }
+    var testItem = ItemsService.getNewItem(testItemValues, testOwnerUUID);
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItemValues)
        .respond(404);
     ItemsService.saveItem(testItem, testOwnerUUID);
     $httpBackend.flush();
@@ -366,13 +367,14 @@ describe('SynchronizeService', function() {
 
     // 2. update item
 
-    var updatedTestItem = {
+    var updatedTestItemValues = {
       'uuid': testItem.uuid,
       'title': testItem.title,
       'description': 'test description'
-    };
+    }
+    var updatedTestItem = ItemsService.getNewItem(updatedTestItemValues, testOwnerUUID);
     // We're expecting to get another try at creating the item
-    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItem)
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', updatedTestItemValues)
        .respond(404);
     ItemsService.saveItem(updatedTestItem, testOwnerUUID);
     $httpBackend.flush();
@@ -404,10 +406,10 @@ describe('SynchronizeService', function() {
     $httpBackend.expectGET('/api/' + MockUserSessionService.getActiveUUID() + '/items?modified=' +
                             latestModified + '&deleted=true&archived=true&completed=true')
         .respond(200, '{}');
-    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItem)
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItemValues)
         .respond(200, putNewItemResponse);
     $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item/' + putNewItemResponse.uuid,
-                           updatedTestItem)
+                           updatedTestItemValues)
         .respond(200, putExistingItemResponse);
     SynchronizeService.synchronize(testOwnerUUID);
     $httpBackend.flush();
