@@ -231,7 +231,8 @@
 		case 'button':
 		case 'select':
 		case 'textarea':
-			if (target.disabled) {
+			if (target.disabled || target.value.length) {
+      	// FORK: Request click when textarea has content.
 				return true;
 			}
 
@@ -263,7 +264,7 @@
 	FastClick.prototype.needsFocus = function(target) {
 		switch (target.nodeName.toLowerCase()) {
 		case 'textarea':
-			return true;
+			return !target.value.length;	// FORK: Request focus when textarea has no content.
 		case 'select':
 			return !deviceIsAndroid;
 		case 'input':
