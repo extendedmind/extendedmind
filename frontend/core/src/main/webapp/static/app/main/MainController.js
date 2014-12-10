@@ -713,13 +713,8 @@ function MainController(
   DrawerService.registerClosedCallback('right', editorClosed, 'MainController');
   function editorClosed() {
     if (openMenuAfterEditorClosed) {
-      // Snap.js clears transition style from drawer aisle element and executes closed (animated) callback.
-      // Wait until DOM manipulation is ready before opening editor
-      // to have correct transition style in drawer aisle element.
-      setTimeout(function() {
-        DrawerService.open('left');
-        openMenuAfterEditorClosed = false;
-      }, 0);
+      DrawerService.open('left');
+      openMenuAfterEditorClosed = false;
     }
     for (var id in editorClosedCallbacks)
       editorClosedCallbacks[id]();
@@ -746,7 +741,7 @@ function MainController(
       // Snap.js clears transition style from drawer aisle element and executes closed (animated) callback.
       // Wait until DOM manipulation is ready before opening editor
       // to have correct transition style in drawer aisle element.
-      $timeout(function() {
+      $scope.$evalAsync(function() {
         executeEditorAboutToOpenCallbacks(openEditorAfterMenuClosed.type,
                                           openEditorAfterMenuClosed.item,
                                           openEditorAfterMenuClosed.mode);
