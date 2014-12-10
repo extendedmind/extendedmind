@@ -15,7 +15,7 @@
  'use strict';
  /* global cordova */
 
- function editableFieldDirective($parse, $rootScope, packaging) {
+ function editableFieldDirective($parse, $rootScope, $timeout, packaging) {
   return {
     require: '^?editableFieldContainer',
     restrict: 'A',
@@ -49,11 +49,25 @@
 
       var unfocusInProgress = false;
       function blurElement(deactivateAfterBlur) {
-        if (document.activeElement === element[0]){
-          unfocusInProgress = true;
+        function doBlurElement(){
           element[0].blur();
           if (deactivateAfterBlur && editableFieldContainerController)
             editableFieldContainerController.deactivateContainer();
+        }
+
+        if (document.activeElement === element[0]){
+          unfocusInProgress = true;
+          if ($rootScope.$$phase || scope.$$phase){
+            // It seems $timeout can not be avoided here:
+            // https://github.com/angular/angular.js/issues/1250
+            // "In the future, this will (hopefully) be solved with Object.observe."
+            // We would get "$digest already in progress" without this in some cases.
+            $timeout(function(){
+              doBlurElement();
+            });
+          }else {
+            doBlurElement();
+          }
         }
       }
 
@@ -127,5 +141,5 @@
     }
   };
 }
-editableFieldDirective['$inject'] = ['$parse', '$rootScope', 'packaging'];
+editableFieldDirective['$inject'] = ['$parse', '$rootScope', '$timeout', 'packaging'];
 angular.module('common').directive('editableField', editableFieldDirective);
