@@ -37,12 +37,25 @@
       }
 
       function focusElement() {
-        // https://developer.mozilla.org/en-US/docs/Web/API/document.activeElement
-        if (document.activeElement !== element[0]){
+        function doFocusElement(){
           element[0].focus();
           if (packaging === 'android-cordova'){
             // In Android we need to force the keyboard up
             cordova.plugins.Keyboard.show();
+          }
+        }
+        // https://developer.mozilla.org/en-US/docs/Web/API/document.activeElement
+        if (document.activeElement !== element[0]){
+          if ($rootScope.$$phase || scope.$$phase){
+            // It seems $timeout can not be avoided here:
+            // https://github.com/angular/angular.js/issues/1250
+            // "In the future, this will (hopefully) be solved with Object.observe."
+            // We would get "$digest already in progress" without this in some cases.
+            $timeout(function(){
+              doFocusElement();
+            });
+          }else {
+            doFocusElement();
           }
         }
       }
