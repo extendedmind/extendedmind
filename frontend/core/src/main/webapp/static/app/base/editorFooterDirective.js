@@ -197,6 +197,7 @@
 
       if (attrs.editorFooterStartExpanded !== undefined) {
         // Open on init, without animation.
+        // NOTE: scope.openExpand is defined in run-time so it needs to be defined before calling it.
         scope.openExpand(true);
         // Register close callback when initially expanded.
         scope.registerEditorFooterCloseCallback(scope.closeExpand);
