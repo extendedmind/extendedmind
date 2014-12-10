@@ -634,9 +634,13 @@
         // TODO: update cordova and uncomment: https://issues.apache.org/jira/browse/CB-7043
         //if (iOsVersion && iOsVersion[0] < 8) {  // running iOS 7 or earlier
           var activeSlideIndex = SwiperService.getActiveSlideIndex(scope.swiperPath);
-          if (activeSlideIndex > 0) {
+          if (activeSlideIndex >= 0) {
             var swiperSlides = SwiperService.getSwiperSlides(scope.swiperPath);
-            swiperSlides[activeSlideIndex - 1].classList.toggle('swiper-slide-under-element', false);
+            // Remove class if it exists. Slide with class is in previous index or in first index - active
+            // slide may have been set to first slide (initial slide except in loop mode).
+            var slideIndexWithClass = activeSlideIndex === 0 ? 0 : activeSlideIndex - 1;
+            swiperSlides[slideIndexWithClass].classList.contains('swiper-slide-under-element');
+            swiperSlides[slideIndexWithClass].classList.toggle('swiper-slide-under-element', false);
           }
         //}
       }
