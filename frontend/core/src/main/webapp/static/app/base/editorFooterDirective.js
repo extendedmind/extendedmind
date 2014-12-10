@@ -290,6 +290,8 @@
         }
         if ($rootScope.$$phase || scope.$$phase){
           $timeout(function(){
+            // FIXME: $timeout should not be needed since AngularJS version 1.2.24
+            //        See: https://github.com/angular/angular.js/commit/54f0bc0fe0c6b6d974d23f2c5ef07359dd93eb99
             doProcessTouchEnd(event);
           });
         }else {
