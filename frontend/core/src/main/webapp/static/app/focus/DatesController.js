@@ -50,10 +50,12 @@
 
   function focusActive(featureChanged) {
     if (featureChanged) {
-      // Swipe to today without animation when feature changes, ng-show is evaluated and the DOM is rendered.
-      setTimeout(function() {
+      // Swipe to today without animation before next repaint when feature changes,
+      // ng-show is evaluated and the DOM is rendered.
+      // NOTE: use setTimeout(callback, 0) if requestAnimationFrame is not working.
+      window.requestAnimationFrame(function() {
         $scope.changeDaySlide(DateService.getTodayYYYYMMDD(), 0);
-      }, 0);
+      });
     }
     else {
       // Swipe to today slide immediately.

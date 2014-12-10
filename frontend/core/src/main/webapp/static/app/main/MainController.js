@@ -189,10 +189,10 @@ function MainController(
     var currentFeature = UISessionService.getCurrentFeatureName();
     var currentData = UISessionService.getFeatureData();
     var featureChanged = !(currentFeature === feature && currentData === data);
+    var featureInfos = $scope.features[feature];
 
     if (featureChanged) {
       // Feature changed
-      setInitialSlideActive(true, feature);
       if (!$scope.isMenuVisible() && toggleMenu){
         // Open only after menu has been opened
         featurePendingOpen = {
@@ -201,8 +201,7 @@ function MainController(
         };
         $scope.openMenu();
       }else {
-
-        if (!$scope.features[feature].loaded) $scope.features[feature].loaded = true;
+        if (!featureInfos.loaded) featureInfos.loaded = true;
 
         var state = UISessionService.getFeatureState(feature);
 
@@ -217,10 +216,11 @@ function MainController(
         }
       }
 
+      if (featureInfos.loaded) setInitialSlideActive(true, featureInfos.slides);
       AnalyticsService.visit(feature);
     } else {
       // Feature not changed
-      setInitialSlideActive(false, feature);
+      setInitialSlideActive(false, featureInfos.slides);
     }
 
     // Run special case focus callbacks because drawer-handle directive does not re-register itself when
@@ -231,18 +231,18 @@ function MainController(
     }
   };
 
-  function setInitialSlideActive(featureChanged, feature) {
-    if ($scope.features[feature].loaded &&
-        $scope.features[feature].slides && $scope.features[feature].slides.left)
-    {
+  function setInitialSlideActive(featureChanged, featureSlides) {
+    if (featureSlides && featureSlides.left) {
       if (featureChanged) {
-        setTimeout(function() {
-          // Swipe to initial slide when feature changes, ng-show is evaluated and the DOM is rendered.
-          SwiperService.swipeToWithoutAnimation($scope.features[feature].slides.left.path);
-        }, 0);
+        // Swipe to initial slide before the next repaint when feature changes,
+        // ng-show is evaluated and the DOM is rendered.
+        // NOTE: use setTimeout(callback, 0) if requestAnimationFrame is not working.
+        window.requestAnimationFrame(function() {
+          SwiperService.swipeToWithoutAnimation(featureSlides.left.path);
+        });
       } else {
         // Swipe to initial slide immediately.
-        SwiperService.swipeToWithoutAnimation($scope.features[feature].slides.left.path);
+        SwiperService.swipeToWithoutAnimation(featureSlides.left.path);
       }
     }
   }
