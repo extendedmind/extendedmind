@@ -60,11 +60,7 @@
         $scope.editorType !== 'task')
     {
       // Focus on found and not deleted item
-      if (!$scope.$$phase && !$rootScope.$$phase){
-        $scope.$apply(setFocusOnTitlebarInput);
-      }else{
-        setFocusOnTitlebarInput();
-      }
+      setFocusOnTitlebarInput();
     }
   }
 

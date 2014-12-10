@@ -15,7 +15,7 @@
  'use strict';
  /* global cordova */
 
- function editableFieldDirective($document, $parse, $rootScope, $timeout, packaging) {
+ function editableFieldDirective($parse, $rootScope, packaging) {
   return {
     require: '^?editableFieldContainer',
     restrict: 'A',
@@ -37,45 +37,23 @@
       }
 
       function focusElement() {
-        function doFocusElement(){
+        // https://developer.mozilla.org/en-US/docs/Web/API/document.activeElement
+        if (document.activeElement !== element[0]){
           element[0].focus();
           if (packaging === 'android-cordova'){
             // In Android we need to force the keyboard up
             cordova.plugins.Keyboard.show();
           }
         }
-        // https://developer.mozilla.org/en-US/docs/Web/API/document.activeElement
-        if ($document[0].activeElement !== element[0]){
-          if ($rootScope.$$phase || scope.$$phase){
-            // It seems $timeout can not be avoided here:
-            // https://github.com/angular/angular.js/issues/1250
-            // "In the future, this will (hopefully) be solved with Object.observe."
-            $timeout(function(){
-              doFocusElement();
-            });
-          }else {
-            doFocusElement();
-          }
-        }
       }
 
       var unfocusInProgress = false;
       function blurElement(deactivateAfterBlur) {
-        function doBlurElement(){
+        if (document.activeElement === element[0]){
+          unfocusInProgress = true;
           element[0].blur();
           if (deactivateAfterBlur && editableFieldContainerController)
             editableFieldContainerController.deactivateContainer();
-        }
-
-        if ($document[0].activeElement === element[0]){
-          unfocusInProgress = true;
-          if ($rootScope.$$phase || scope.$$phase){
-            $timeout(function(){
-              doBlurElement();
-            });
-          }else {
-            doBlurElement();
-          }
         }
       }
 
@@ -149,5 +127,5 @@
     }
   };
 }
-editableFieldDirective['$inject'] = ['$document', '$parse', '$rootScope', '$timeout', 'packaging'];
+editableFieldDirective['$inject'] = ['$parse', '$rootScope', 'packaging'];
 angular.module('common').directive('editableField', editableFieldDirective);
