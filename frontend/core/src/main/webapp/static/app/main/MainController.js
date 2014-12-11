@@ -185,9 +185,7 @@ function MainController(
           $scope.getActiveFeature() === 'tasks')
       {
         return true;
-      } else if (!$scope.isOnboarded('notes') &&
-                 ($scope.checkListOnboardingLock('notes', 'off') ||
-                  $scope.checkListOnboardingLock('notes', 'on')) &&
+      } else if (!$scope.isOnboarded('notes') && $scope.checkListOnboardingLock('notes', 'off') &&
                  $scope.getActiveFeature() === 'notes')
       {
         return true;
