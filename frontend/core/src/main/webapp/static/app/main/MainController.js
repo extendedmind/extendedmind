@@ -179,7 +179,12 @@ function MainController(
   };
 
   $scope.isFooterAddItemHidden = function() {
-    return !$scope.isOnboarded('tasks') && $scope.checkListOnboardingLock('tasks', 'off');
+    if (!$scope.isOnboarded('tasks') &&
+        ($scope.checkListOnboardingLock('tasks', 'off') || $scope.checkListOnboardingLock('tasks', 'on')) &&
+        $scope.getActiveFeature() === 'tasks')
+    {
+      return true;
+    }
   };
 
   $scope.isVibrationDisabled = function(){
