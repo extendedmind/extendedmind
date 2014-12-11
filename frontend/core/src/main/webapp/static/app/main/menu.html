@@ -1,28 +1,29 @@
 <div class="container-menu swiper-no-swiping" ng-controller="MenuController" drawer="left">
   <div class="container-menu--top">
-    <a href class="link-menu row" ng-click="gotoFeature('user')"
-    ng-class="[isFeatureActive('user') && 'highlighted', onboardingInProgress && 'link-disable downplayed']">
+
+    <a href ng-if="!onboardingInProgress" class="link-menu row" ng-click="gotoFeature('user')"
+      ng-class="{'highlighted': isFeatureActive('user')}">
       <span class="text-navigation-menu-small" clamp=1 ng-bind="getActiveDisplayName()"></span>
     </a>
 
-    <a href class="link-menu separate row" ng-click="gotoFeature('focus')"
-    ng-class="[isFeatureActive('focus') && 'highlighted', onboardingInProgress && 'link-disable downplayed']">
+    <a href ng-if="!onboardingInProgress" class="link-menu separate row" ng-click="gotoFeature('focus')"
+      ng-class="{'highlighted': isFeatureActive('focus')}">
       <span class="text-navigation-menu">focus</span>
     </a>
-    <a href class="link-menu row" ng-click="gotoFeature('inbox')"
-    ng-class="[isFeatureActive('inbox') && 'highlighted', onboardingInProgress && 'link-disable downplayed']">
+    <a href ng-if="!onboardingInProgress" class="link-menu row" ng-click="gotoFeature('inbox')"
+      ng-class="{'highlighted': isFeatureActive('inbox')}">
       <span class="text-navigation-menu">inbox</span>
     </a>
     <a href class="link-menu row" ng-click="gotoFeature('tasks')"
-    ng-class="isFeatureActive('tasks') && 'highlighted'">
+      ng-class="{'highlighted': isFeatureActive('tasks')}">
       <span class="text-navigation-menu">tasks</span>
     </a>
-    <a href class="link-menu row" ng-click="gotoFeature('notes')"
-    ng-class="[isFeatureActive('notes') && 'highlighted', isOnboardingNotReady('tasks') && 'link-disable downplayed']">
+    <a href ng-if="!isOnboardingNotReady('tasks')" class="link-menu row" ng-click="gotoFeature('notes')"
+      ng-class="{'highlighted': isFeatureActive('notes')}">
       <span class="text-navigation-menu">notes</span>
     </a>
-    <a href class="link-menu row" ng-click="gotoFeature('lists')"
-    ng-class="[isFeatureActive('lists') && 'highlighted', isOnboardingNotReady('notes') && 'link-disable downplayed']">
+    <a href ng-if="!isOnboardingNotReady('notes')" class="link-menu row" ng-click="gotoFeature('lists')"
+      ng-class="{'highlighted': isFeatureActive('lists')}">
       <span class="text-navigation-menu">lists</span>
     </a>
 
@@ -54,8 +55,8 @@
     <div class="container-menu--push"></div>
   </div>
   <div class="container-menu--bottom">
-    <a href class="link-menu height-large row" ng-click="gotoFeature('trash')"
-    ng-class="[isFeatureActive('trash') ? 'highlighted' : 'downplayed', onboardingInProgress && 'link-disable']">
+    <a href ng-if="!onboardingInProgress" class="link-menu height-large row" ng-click="gotoFeature('trash')"
+      ng-class="isFeatureActive('trash') ? 'highlighted' : 'downplayed'">
       <span class="text-navigation-menu-small">trash</h4>
     </a>
   </div>
