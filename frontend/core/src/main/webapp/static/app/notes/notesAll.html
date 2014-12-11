@@ -15,7 +15,9 @@
       <h2 class="group-heading instruction long row">what do you want to
         <span class="highlighted">remember</span>?
       </h2>
-      <div class="textgroup-ingress row">add your first <span class="text-highlighted">note</span> by clicking the plus sign below</div>
+      <div class="textgroup-ingress row">add your first <span class="text-highlighted">note</span>
+        by clicking the plus sign below
+      </div>
     </div>
     <div ng-if="!isOnboarded('notes') && checkListOnboardingLock('notes', 'off')" class="group-instruction">
       <h2 class="group-heading instruction row">
@@ -25,7 +27,6 @@
       <a href class="highlighted" ng-click="changeFeature('lists', undefined, true)">
         <span>lists</span>
       </a> by using the menu</div>
-      <div class="text-normal row">&#8230;or add more notes by hitting the plus sign again</div>
     </div>
 
   </section>

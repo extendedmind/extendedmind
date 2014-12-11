@@ -179,11 +179,19 @@ function MainController(
   };
 
   $scope.isFooterAddItemHidden = function() {
-    if (!$scope.isOnboarded('tasks') &&
-        ($scope.checkListOnboardingLock('tasks', 'off') || $scope.checkListOnboardingLock('tasks', 'on')) &&
-        $scope.getActiveFeature() === 'tasks')
-    {
-      return true;
+    if ($scope.onboardingInProgress) {
+      if (!$scope.isOnboarded('tasks') &&
+          ($scope.checkListOnboardingLock('tasks', 'off') || $scope.checkListOnboardingLock('tasks', 'on')) &&
+          $scope.getActiveFeature() === 'tasks')
+      {
+        return true;
+      } else if (!$scope.isOnboarded('notes') &&
+                 ($scope.checkListOnboardingLock('notes', 'off') ||
+                  $scope.checkListOnboardingLock('notes', 'on')) &&
+                 $scope.getActiveFeature() === 'notes')
+      {
+        return true;
+      }
     }
   };
 

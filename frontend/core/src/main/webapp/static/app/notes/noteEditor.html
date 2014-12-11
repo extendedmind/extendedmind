@@ -29,8 +29,10 @@
       </div>
 
       <div ng-if="!isOnboarded('notes') && checkListOnboardingLock('notes', 'on')">
-        <div ng-if="!titlebar.text || titlebar.text.length === 0" class="text-details row">e.g. reading suggestions, budget meeting minutes, summer plans</div>
-         <div ng-if="titlebar.text.length && !hideNoteTitle" class="text-details row">when done, hit return</div>
+        <div ng-show="!titlebar.text || titlebar.text.length === 0" class="text-details row">
+          e.g. reading suggestions, budget meeting minutes, summer plans
+        </div>
+        <div ng-show="titlebar.text.length && !hideNoteTitle" class="text-details row">when done, hit return</div>
        </div>
      </div>
    </header>
