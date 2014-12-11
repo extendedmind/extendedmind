@@ -196,7 +196,6 @@
             <include>lib/angularjs/angular-sanitize.js</include>
             <include>lib/base64.js</include>
             <include>lib/elastic.js</include>
-            <include>lib/fastclick.js</include>
             <include>lib/clamp.js</include>
             <include>lib/lawnchair/lawnchair.js</include>
             <include>lib/lawnchair/lawnchair-memory.js</include>
