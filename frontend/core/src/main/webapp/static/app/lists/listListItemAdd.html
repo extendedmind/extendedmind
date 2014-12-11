@@ -1,6 +1,6 @@
 <form role="form" class="group-mixed vertically-centered swiper-no-swiping"
   ng-submit="callAndExit(saveList, newItem)" data-snap-ignore="true" editable-field-container
-  editable-field-container-clicked-elsewhere="clickedElsewhere()"
+  editable-field-container-clicked-elsewhere="clickedElsewhere({clickedElsewhereDisabled: onboardingInProgress})"
   autocapitalize="none" autocorrect="off">
   <div class="group-mixed--left">
     <a href ng-click="!onboardingInProgress ? callAndExit(saveListAndChangeFeature, newItem) : undefined">
@@ -22,6 +22,8 @@
 
 <!-- ONBOARDING -->
 <div ng-if="!isOnboarded('lists') && checkListOnboardingLock('lists', 'on')" class="group-instruction-input">
-  <div ng-if="!newItem.title || newItem.title.length === 0" class="text-details row">e.g. groceries, studies, company retreat</div>
-  <div ng-if="newItem.title.length" class="text-details row">when done, hit return</div>
+  <div ng-show="!newItem.title || newItem.title.length === 0" class="text-details row">
+    e.g. groceries, studies, company retreat
+  </div>
+  <div ng-show="newItem.title.length" class="text-details row">when done, hit return</div>
 </div>
