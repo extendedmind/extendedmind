@@ -178,6 +178,10 @@ function MainController(
     (packaging.endsWith('cordova') && UserSessionService.getUIPreference('hideFooter'));
   };
 
+  $scope.isFooterAddItemHidden = function() {
+    return !$scope.isOnboarded('tasks') && $scope.checkListOnboardingLock('tasks', 'off');
+  };
+
   $scope.isVibrationDisabled = function(){
     return UserSessionService.getUIPreference('disableVibration');
   };

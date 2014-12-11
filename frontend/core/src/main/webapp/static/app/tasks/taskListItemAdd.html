@@ -1,9 +1,11 @@
 <form role="form" class="group-mixed with-checkbox with-textarea swiper-no-swiping"
   ng-submit="callAndExit(saveTask, newItem)" data-snap-ignore="true" editable-field-container
-  editable-field-container-clicked-elsewhere="clickedElsewhere()" autocapitalize="none" autocorrect="off" >
+  editable-field-container-clicked-elsewhere="clickedElsewhere({clickedElsewhereDisabled: onboardingInProgress})"
+  autocapitalize="none" autocorrect="off" >
   <div class="group-mixed--left">
     <input type="checkbox" ng-model="newItem.trans.completed"
-    swiper-click="toggleLeftCheckbox(toggleCompleteTask)" icon-checkbox="getListItemAddId()" ng-disabled="!newItem.title">
+      swiper-click="toggleLeftCheckbox(toggleCompleteTask)" icon-checkbox="getListItemAddId()"
+      ng-disabled="!newItem.title">
   </div>
   <div class="group-mixed--middle">
     <textarea ng-model="newItem.title" msd-elastic ng-keydown="textareaKeyDown($event)"
@@ -12,13 +14,17 @@
     </textarea>
   </div>
   <div class="group-mixed--right">
-    <a href ng-hide="onboardingInProgress" class="link-navigation" editable-field-deactivate ng-click="openTaskEditor(newItem)">
+    <a href ng-hide="onboardingInProgress" class="link-navigation" editable-field-deactivate
+      ng-click="openTaskEditor(newItem)">
       <span class="text-navigation-forward"></span>
     </a>
   </div>
 </form>
+
+<!-- ONBOARDING -->
 <div ng-if="!isOnboarded('tasks') && checkListOnboardingLock('tasks', 'on')" class="group-instruction-input">
-  <div ng-if="!newItem.title || newItem.title.length === 0" class="text-details row">
-  e.g. call mom, email boss, buy milk</div>
-  <div ng-if="newItem.title.length" class="text-details row">when done, hit return</div>
+  <div ng-show="!newItem.title || newItem.title.length === 0" class="text-details row">
+    e.g. call mom, email boss, buy milk
+  </div>
+  <div ng-show="newItem.title.length" class="text-details row">when done, hit return</div>
 </div>

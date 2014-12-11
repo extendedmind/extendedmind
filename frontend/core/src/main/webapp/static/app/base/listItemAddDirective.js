@@ -51,18 +51,17 @@
           }
 
           function exit(deactivateAfterBlur){
-            if (addItemBlurCallback){
-              addItemBlurCallback(deactivateAfterBlur);
-              controllers[0].notifyListItemAddBlurred();
-            }
+            if (addItemBlurCallback) addItemBlurCallback(deactivateAfterBlur);
             element[0].style.display = 'none';
             controllers[0].notifyListItemAddActive(false);
           }
 
-          scope.clickedElsewhere = function(){
-            if (scope.newItem.title && scope.newItem.title.length > 0)
-              saveNewItem(scope.newItem);
-            exit();
+          scope.clickedElsewhere = function(options){
+            if (!options || !options.clickedElsewhereDisabled) {
+              // Only execute when not disabled.
+              if (scope.newItem.title && scope.newItem.title.length > 0) saveNewItem(scope.newItem);
+              exit();
+            }
           };
 
           scope.getListItemAddId = function(){

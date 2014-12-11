@@ -65,12 +65,6 @@
         $scope.listItemAddActive = active;
       };
 
-      this.notifyListItemAddBlurred = function(){
-        if ($scope.onboardingInProgress && $scope.listOnboarding.lock === 'on'){
-          $scope.listOnboarding.lock = undefined;
-        }
-      };
-
       this.notifyListItemAdd = function(){
         if ($scope.onboardingInProgress && $scope.listOnboarding.lock === 'on'){
           $scope.turnOffListOnboardingLock($scope.listOnboarding);
