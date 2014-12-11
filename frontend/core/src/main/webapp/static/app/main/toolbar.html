@@ -1,6 +1,6 @@
 <div class="container-toolbar--inner" ng-controller="ToolbarController">
   <div ng-hide="isCustomToolbar()" class="swiper-no-swiping group-symmetrical">
-    <button ng-disabled="!isOnboarded('tasks') && checkListOnboardingLock('tasks', undefined)" class="group-symmetrical--left btn" type="button" ng-click="toggleMenu()" alt="menu">
+    <button ng-hide="isToolbarMenuHidden()" class="group-symmetrical--left btn" type="button" ng-click="toggleMenu()" alt="menu">
       <span class="icon-menu"></span>
     </button>
     <div class="group-symmetrical--middle" ng-style="{maxWidth: calculateHeadingWidth()}">

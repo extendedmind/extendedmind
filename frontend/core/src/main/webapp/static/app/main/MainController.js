@@ -178,16 +178,33 @@ function MainController(
     (packaging.endsWith('cordova') && UserSessionService.getUIPreference('hideFooter'));
   };
 
+  $scope.isToolbarMenuHidden = function() {
+    if (!$scope.isOnboarded('tasks') &&
+        ($scope.checkListOnboardingLock('tasks', undefined) ||
+         $scope.checkListOnboardingLock('tasks', 'on')) &&
+        $scope.getActiveFeature() === 'tasks')
+    {
+      return true;
+    }
+  };
+
   $scope.isFooterAddItemHidden = function() {
     if ($scope.onboardingInProgress) {
       if (!$scope.isOnboarded('tasks') &&
-          ($scope.checkListOnboardingLock('tasks', 'off') || $scope.checkListOnboardingLock('tasks', 'on')) &&
+          ($scope.checkListOnboardingLock('tasks', 'off') ||
+           $scope.checkListOnboardingLock('tasks', 'on')) &&
           $scope.getActiveFeature() === 'tasks')
       {
         return true;
-      } else if (!$scope.isOnboarded('notes') && $scope.checkListOnboardingLock('notes', 'off') &&
+      } else if (!$scope.isOnboarded('notes') &&
+                 $scope.checkListOnboardingLock('notes', 'off') &&
                  $scope.getActiveFeature() === 'notes')
       {
+        return true;
+      } else if (!$scope.isOnboarded('lists') &&
+                 ($scope.checkListOnboardingLock('lists', 'off') ||
+                  $scope.checkListOnboardingLock('lists', 'on')) &&
+                 $scope.getActiveFeature() === 'lists') {
         return true;
       }
     }
