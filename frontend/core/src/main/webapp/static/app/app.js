@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
- /* global $, angular, html5Mode, FastClick, packaging */
+ /* global angular, html5Mode, FastClick, packaging, version */
  'use strict';
 
  angular.module('em.app', ['em.root', 'em.entry', 'em.main', 'em.focus', 'em.lists',
@@ -89,8 +89,11 @@
         userStatus: ['$location', 'UserSessionService',
         function($location, UserSessionService) {
           if (UserSessionService.getUserUUID()){
-            // Existing user
-            $location.path('/my');
+            var userPreferences = UserSessionService.getPreferences();
+            if (userPreferences && userPreferences.onboarded) {
+              // Existing, onboarded user. Go to app.
+              $location.path('/my');
+            }
           }
         }]
       }
@@ -160,14 +163,14 @@
           if (verifyCode && email) {
             // verify email directly
             AuthenticationService.postVerifyEmail(verifyCode, email).then(
-              function(success){
+              function(/*success*/){
                 $location.url($location.path());
                 $location.path('/');
                 UISessionService.pushNotification({
                   type: 'fyi',
                   text: 'email verified'
                 });
-              }, function(failure){
+              }, function(/*failure*/){
                 $location.url($location.path());
                 $location.path('/');
                 UISessionService.pushNotification({
@@ -207,7 +210,7 @@ angular.module('em.app').run(['$rootScope', 'version', function($rootScope, vers
   if (version !== 'devel'){
     $rootScope.urlBase = 'static/' + version + '/';
   }else{
-    $rootScope.urlBase = 'static/'
+    $rootScope.urlBase = 'static/';
   }
 
   // http://stackoverflow.com/a/21113518

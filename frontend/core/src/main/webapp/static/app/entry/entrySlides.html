@@ -1,12 +1,13 @@
 <div id="entry" class="container-master entry" ng-controller="EntryController" vertical-resize="entry">
   <div class="container-fluid">
-    <div class="swiper-container container-fluid--inner" swiper-container="entry" swiper-type="main" expected-slides="3" swiper-container-slide-changed="entrySwiperSlideChanged(path, activeIndex)">
+    <div ng-if="!userAuthenticated" class="swiper-container container-fluid--inner animate-fade-out" swiper-container="entry" swiper-type="main" expected-slides="3" swiper-container-slide-changed="entrySwiperSlideChanged(path, activeIndex)">
       <div class="swiper-wrapper">
         <div class="swiper-slide swiper-no-swiping" swiper-slide="entry/home" slide-index=0 ng-include="urlBase + 'app/entry/entryHome.html'"></div>
         <div class="swiper-slide swiper-no-swiping" swiper-slide="entry/main" slide-index=1 ng-include="urlBase + 'app/entry/entryMain.html'"></div>
         <div class="swiper-slide swiper-no-swiping" swiper-slide="entry/details" slide-index=2 ng-include="urlBase + 'app/entry/entryDetails.html'"></div>
       </div>
     </div>
+    <div ng-if="userAuthenticated && showTutorial " class="container-fluid--inner animate-fade-in" ng-include="urlBase + 'app/entry/tutorial.html'"></div>
   </div>
   <div toaster="entry"></div>
 </div>
