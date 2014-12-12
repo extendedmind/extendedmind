@@ -48,16 +48,24 @@
   }
 
   if (typeof Array.prototype.findFirstObjectByKeyValue != 'function') {
-    Array.prototype.findFirstObjectByKeyValue = function (key, value){
+    Array.prototype.findFirstObjectByKeyValue = function (key, value, keyParent){
       for (var i=0, len=this.length; i<len; i++) {
-        if (this[i][key] === value) return this[i];
+        if (keyParent){
+          if (this[i][keyParent][key] === value) return this[i];
+        }else{
+          if (this[i][key] === value) return this[i];
+        }
       }
     };
   }
   if (typeof Array.prototype.findFirstIndexByKeyValue != 'function') {
-    Array.prototype.findFirstIndexByKeyValue = function (key, value){
+    Array.prototype.findFirstIndexByKeyValue = function (key, value, keyParent){
       for (var i=0, len=this.length; i<len; i++) {
-        if (this[i][key] === value) return i;
+        if (keyParent){
+          if (this[i][keyParent][key] === value) return i;
+        }else{
+          if (this[i][key] === value) return i;
+        }
       }
     };
   }

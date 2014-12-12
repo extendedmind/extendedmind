@@ -16,7 +16,15 @@
  /*global angular */
  'use strict';
 
- function TagsService($q, ArrayService, BackendClientService) {
+ function TagsService($q, ArrayService, BackendClientService, ItemLikeService) {
+
+  var tagFieldInfos = ItemLikeService.getFieldInfos(
+    ['tagType',
+    // TODO
+    //'parent',
+    //'visibility'
+    ]
+  );
 
   // An object containing tags for every owner
   var tags = {};
@@ -34,16 +42,33 @@
     }
   }
 
+  function updateTag(tag, ownerUUID) {
+    return ArrayService.updateItem(tag,
+                                   tags[ownerUUID].activeTags,
+                                   tags[ownerUUID].deletedTags);
+  }
+
+  function setTag(tag, ownerUUID) {
+    initializeArrays(ownerUUID);
+    return ArrayService.setItem(tag,
+                                tags[ownerUUID].activeTags,
+                                tags[ownerUUID].deletedTags);
+  }
+
   return {
+    getNewTag: function(initialValues, ownerUUID) {
+      return ItemLikeService.getNew(initialValues, 'tag', ownerUUID, tagFieldInfos);
+    },
     setTags: function(tagsResponse, ownerUUID) {
       initializeArrays(ownerUUID);
+      ItemLikeService.resetTrans(tagsResponse, 'tag', ownerUUID, tagFieldInfos);
       return ArrayService.setArrays(tagsResponse,
                                     tags[ownerUUID].activeTags,
                                     tags[ownerUUID].deletedTags);
     },
     updateTags: function(tagsResponse, ownerUUID) {
       initializeArrays(ownerUUID);
-
+      ItemLikeService.resetTrans(tagsResponse, 'tag', ownerUUID, tagFieldInfos);
       var latestModified = ArrayService.updateArrays(tagsResponse,
                                                      tags[ownerUUID].activeTags,
                                                      tags[ownerUUID].deletedTags);
@@ -69,14 +94,14 @@
     },
     getTagInfo: function(uuid, ownerUUID) {
       initializeArrays(ownerUUID);
-      var tag = tags[ownerUUID].activeTags.findFirstObjectByKeyValue('uuid', uuid);
+      var tag = tags[ownerUUID].activeTags.findFirstObjectByKeyValue('uuid', uuid, 'trans');
       if (tag){
         return {
           type: 'active',
           tag: tag
         };
       }
-      tag = tags[ownerUUID].deletedTags.findFirstObjectByKeyValue('uuid', uuid);
+      tag = tags[ownerUUID].deletedTags.findFirstObjectByKeyValue('uuid', uuid, 'trans');
       if (tag){
         return {
           type: 'deleted',
@@ -87,106 +112,68 @@
     saveTag: function(tag, ownerUUID) {
       initializeArrays(ownerUUID);
       var deferred = $q.defer();
-      if (tags[ownerUUID].deletedTags.indexOf(tag) > -1) {
-        deferred.reject(tag);
-      } else if (tag.uuid) {
-        // Existing tag
-        BackendClientService.putOnline('/api/' + ownerUUID + '/tag/' + tag.uuid,
-                                       this.putExistingTagRegex, tag)
-        .then(function(result) {
-          if (result.data) {
-            tag.modified = result.data.modified;
-            ArrayService.updateItem(
-                                    tag,
-                                    tags[ownerUUID].activeTags,
-                                    tags[ownerUUID].deletedTags);
-            deferred.resolve(tag);
-          }
-        });
+      if (tags[ownerUUID].deletedTags.findFirstObjectByKeyValue('uuid', tag.trans.uuid, 'trans')) {
+        deferred.reject({type: 'deleted'});
       } else {
-        // New tag
-        BackendClientService.putOnline('/api/' + ownerUUID + '/tag',
-                                       this.putNewTagRegex, tag)
-        .then(function(result) {
-          if (result.data) {
-            tag.uuid = result.data.uuid;
-            tag.created = result.data.created;
-            tag.modified = result.data.modified;
-            ArrayService.setItem(
-                                 tag,
-                                 tags[ownerUUID].activeTags,
-                                 tags[ownerUUID].deletedTags);
-            deferred.resolve(tag);
+        ItemLikeService.save(tag, 'tag', ownerUUID, tagFieldInfos).then(
+          function(result){
+            if (result === 'new') setTag(tag, ownerUUID);
+            else if (result === 'existing') updateTag(tag, ownerUUID);
+            deferred.resolve(result);
+          }, function(failure){
+            deferred.reject(failure);
           }
-        });
+        );
       }
       return deferred.promise;
     },
     deleteTag: function(tag, ownerUUID) {
       initializeArrays(ownerUUID);
       var deferred = $q.defer();
-
-      // Check if tag has already been deleted
-      if (tags[ownerUUID].deletedTags.indexOf(tag) > -1) {
-        deferred.reject(tag);
-      }else {
-        BackendClientService.deleteOnline('/api/' + ownerUUID + '/tag/' + tag.uuid,
-                                          this.deleteTagRegex)
-        .then(function(result) {
-          if (result.data) {
-            tag.deleted = result.data.deleted;
-            tag.modified = result.data.result.modified;
-            ArrayService.updateItem(
-                                    tag,
-                                    tags[ownerUUID].activeTags,
-                                    tags[ownerUUID].deletedTags);
+      // Check if item has already been deleted
+      if (tags[ownerUUID].deletedTags.findFirstObjectByKeyValue('uuid', tag.trans.uuid, 'trans')) {
+        deferred.resolve('unmodified');
+      }else{
+        ItemLikeService.processDelete(tag, 'tag', ownerUUID, tagFieldInfos).then(
+          function(){
+            updateTag(tag, ownerUUID);
             for (var id in tagDeletedCallbacks) {
               tagDeletedCallbacks[id](tag, ownerUUID);
             }
             deferred.resolve(tag);
+          }, function(failure){
+            deferred.reject(failure);
           }
-        });
+        );
       }
       return deferred.promise;
     },
     undeleteTag: function(tag, ownerUUID) {
       initializeArrays(ownerUUID);
+      var deferred = $q.defer();
       // Check that tag is deleted before trying to undelete
-      if (tags[ownerUUID].deletedTags.indexOf(tag) === -1) {
-        return;
+      if (!tags[ownerUUID].deletedTags.findFirstObjectByKeyValue('uuid', tag.trans.uuid, 'trans')) {
+        deferred.resolve('unmodified');
+      }else{
+        ItemLikeService.undelete(tag, 'tag', ownerUUID, tagFieldInfos).then(
+          function(){
+            updateTag(tag, ownerUUID);
+            for (var id in tagDeletedCallbacks) {
+              tagDeletedCallbacks[id](tag, ownerUUID, true);
+            }
+            deferred.resolve(tag);
+          }, function(failure){
+            deferred.reject(failure);
+          }
+        );
       }
-      BackendClientService.postOnline('/api/' + ownerUUID + '/tag/' + tag.uuid + '/undelete',
-                                      this.deleteTagRegex)
-      .then(function(result) {
-        if (result.data) {
-          delete tag.deleted;
-          tag.modified = result.data.modified;
-          ArrayService.updateItem(tag,
-                                  tags[ownerUUID].activeTags,
-                                  tags[ownerUUID].deletedTags);
-        }
-      });
+      return deferred.promise;
     },
     // Regular expressions for tag requests
-    putNewTagRegex: new RegExp(BackendClientService.apiPrefixRegex.source +
-                               BackendClientService.uuidRegex.source +
-                               tagRegex.source),
-
-    putExistingTagRegex: new RegExp(BackendClientService.apiPrefixRegex.source +
-                                    BackendClientService.uuidRegex.source +
-                                    tagSlashRegex.source +
-                                    BackendClientService.uuidRegex.source),
-
-    deleteTagRegex: new RegExp(BackendClientService.apiPrefixRegex.source +
-                               BackendClientService.uuidRegex.source +
-                               tagSlashRegex.source +
-                               BackendClientService.uuidRegex.source),
-
-    undeleteTagRegex: new RegExp(BackendClientService.apiPrefixRegex.source +
-                                 BackendClientService.uuidRegex.source +
-                                 tagSlashRegex.source +
-                                 BackendClientService.uuidRegex.source +
-                                 BackendClientService.undeleteRegex.source),
+    putNewTagRegex: ItemLikeService.getPutNewRegex('tag'),
+    putExistingTagRegex: ItemLikeService.getPutExistingRegex('tag'),
+    deleteTagRegex: ItemLikeService.getDeleteRegex('tag'),
+    undeleteTagRegex: ItemLikeService.getUndeleteRegex('tag'),
 
     // Special method used by ListsService to insert a generated
     // history tag to the tags array
@@ -219,5 +206,5 @@
   };
 }
 
-TagsService['$inject'] = ['$q', 'ArrayService', 'BackendClientService'];
+TagsService['$inject'] = ['$q', 'ArrayService', 'BackendClientService', 'ItemLikeService'];
 angular.module('em.base').factory('TagsService', TagsService);

@@ -57,6 +57,10 @@
 
   // CONTEXTS
 
+  $scope.getNewContext = function() {
+    return TagsService.getNewTag({tagType: 'context'}, UISessionService.getActiveUUID());
+  };
+
   // SAVING
 
   $scope.saveContext = function(context) {

@@ -22,7 +22,7 @@
 
   var itemRegex = /\/item/;
   var itemSlashRegex = /\/item\//;
-  var itemFieldInfos = ItemLikeService.getDefaultFieldInfos();
+  var itemFieldInfos = ItemLikeService.getFieldInfos();
 
   function initializeArrays(ownerUUID) {
     if (!items[ownerUUID]) {
@@ -52,14 +52,14 @@
     },
     setItems: function(itemsResponse, ownerUUID) {
       initializeArrays(ownerUUID);
-      this.addTransientProperties(itemsResponse);
+      ItemLikeService.resetTrans(itemsResponse, 'item', ownerUUID, itemFieldInfos);
       return ArrayService.setArrays(itemsResponse,
                                     items[ownerUUID].activeItems,
                                     items[ownerUUID].deletedItems);
     },
     updateItems: function(itemsResponse, ownerUUID) {
       initializeArrays(ownerUUID);
-      this.addTransientProperties(itemsResponse);
+      ItemLikeService.resetTrans(itemsResponse, 'item', ownerUUID, itemFieldInfos);
       return ArrayService.updateArrays(itemsResponse,
                                        items[ownerUUID].activeItems,
                                        items[ownerUUID].deletedItems);
@@ -76,14 +76,14 @@
     },
     getItemInfo: function(uuid, ownerUUID) {
       initializeArrays(ownerUUID);
-      var item = items[ownerUUID].activeItems.findFirstObjectByKeyValue('uuid', uuid);
+      var item = items[ownerUUID].activeItems.findFirstObjectByKeyValue('uuid', uuid, 'trans');
       if (item){
         return {
           type: 'active',
           item: ItemLikeService.resetTrans(item, 'item', ownerUUID, itemFieldInfos)
         };
       }
-      item = items[ownerUUID].deletedItems.findFirstObjectByKeyValue('uuid', uuid);
+      item = items[ownerUUID].deletedItems.findFirstObjectByKeyValue('uuid', uuid, 'trans');
       if (item){
         return {
           type: 'deleted',
@@ -98,7 +98,7 @@
     saveItem: function(item, ownerUUID) {
       initializeArrays(ownerUUID);
       var deferred = $q.defer();
-      if (items[ownerUUID].deletedItems.indexOf(item) > -1) {
+      if (items[ownerUUID].deletedItems.findFirstObjectByKeyValue('uuid', item.trans.uuid, 'trans')) {
         deferred.reject({type: 'deleted'});
       } else {
         ItemLikeService.save(item, 'item', ownerUUID, itemFieldInfos).then(
@@ -106,7 +106,7 @@
             if (result === 'new') setItem(item, ownerUUID);
             else if (result === 'existing') updateItem(item, ownerUUID);
             deferred.resolve(result);
-          }, function(validationErrors){
+          }, function(failure){
             deferred.reject(failure);
           }
         );
@@ -117,65 +117,37 @@
       initializeArrays(ownerUUID);
       var deferred = $q.defer();
       // Check if item has already been deleted
-      if (items[ownerUUID].deletedItems.indexOf(item) > -1) {
-        return;
-      }
-      if (UserSessionService.isOfflineEnabled()) {
-        // Offline
-        var params = {type: 'item', owner: ownerUUID, uuid: item.uuid,
-        reverse: {
-          method: 'post',
-          url: '/api/' + ownerUUID + '/item/' + item.uuid + '/undelete'
-        }, replaceable: true};
-        BackendClientService.deleteOffline('/api/' + ownerUUID + '/item/' + item.uuid,
-                                           this.deleteItemRegex, params);
-        item.deleted = item.modified = BackendClientService.generateFakeTimestamp();
-        updateItem(item, ownerUUID);
-        deferred.resolve(item);
-      } else {
-        // Online
-        BackendClientService.deleteOnline('/api/' + ownerUUID + '/item/' + item.uuid,
-                                          this.deleteItemRegex)
-        .then(function(result) {
-          if (result.data) {
-            item.deleted = result.data.deleted;
-            item.modified = result.data.result.modified;
+      if (items[ownerUUID].deletedItems.findFirstObjectByKeyValue('uuid', item.trans.uuid, 'trans')) {
+        deferred.resolve('unmodified');
+      }else{
+        ItemLikeService.processDelete(item, 'item', ownerUUID, itemFieldInfos).then(
+          function(){
             updateItem(item, ownerUUID);
             deferred.resolve(item);
+          }, function(failure){
+            deferred.reject(failure);
           }
-        });
+        );
       }
       return deferred.promise;
     },
     undeleteItem: function(item, ownerUUID) {
       initializeArrays(ownerUUID);
+      var deferred = $q.defer();
       // Check that item is deleted before trying to undelete
-      if (items[ownerUUID].deletedItems.indexOf(item) === -1) {
-        return;
-      }
-      if (UserSessionService.isOfflineEnabled()) {
-        // Offline
-        var params = {type: 'item', owner: ownerUUID, uuid: item.uuid,
-        reverse: {
-          method: 'post',
-          url: '/api/' + ownerUUID + '/item/' + item.uuid + '/delete'
-        }, replaceable: true};
-        BackendClientService.post('/api/' + ownerUUID + '/item/' + item.uuid + '/undelete',
-                                  this.deleteItemRegex, params);
-        delete item.deleted;
-        updateItem(item, ownerUUID);
-      } else {
-        // Online
-        BackendClientService.postOnline('/api/' + ownerUUID + '/item/' + item.uuid + '/undelete',
-                                        this.deleteItemRegex)
-        .then(function(result) {
-          if (result.data) {
-            delete item.deleted;
-            item.modified = result.data.modified;
+      if (!items[ownerUUID].deletedItems.findFirstObjectByKeyValue('uuid', item.trans.uuid, 'trans')) {
+        deferred.resolve('unmodified');
+      }else{
+        ItemLikeService.undelete(item, 'item', ownerUUID, itemFieldInfos).then(
+          function(){
             updateItem(item, ownerUUID);
+            deferred.resolve(item);
+          }, function(failure){
+            deferred.reject(failure);
           }
-        });
+        );
       }
+      return deferred.promise;
     },
     removeItem: function(item, ownerUUID) {
       initializeArrays(ownerUUID);
@@ -228,20 +200,11 @@
         });
       }
     },
-    addTransientProperties: function(items) {
-      if (items && items.length > 0){
-        for (var i = 0; i< items.length; i++){
-          if (!items[i].trans) items[i].trans = {};
-          items[i].trans.itemType = 'item';
-        }
-      }
-    },
     // Regular expressions for item requests
     putNewItemRegex: ItemLikeService.getPutNewRegex('item'),
     putExistingItemRegex: ItemLikeService.getPutExistingRegex('item'),
     deleteItemRegex: ItemLikeService.getDeleteRegex('item'),
-    undeleteItemRegex: ItemLikeService.getUndeleteRegex('item'),
-    itemFieldInfos: itemFieldInfos
+    undeleteItemRegex: ItemLikeService.getUndeleteRegex('item')
   };
 }
 

@@ -15,7 +15,7 @@
 
  'use strict';
 
- function NoteEditorController($scope, UISessionService) {
+ function NoteEditorController($scope, TagsService, UISessionService) {
 
   // INITIALIZING
 
@@ -120,9 +120,7 @@
   // KEYWORDS
 
   function clearKeyword() {
-    $scope.newKeyword = {
-      tagType: 'keyword'
-    };
+    $scope.newKeyword = TagsService.getNewTag({tagType: 'keyword'}, UISessionService.getActiveUUID());
   }
   clearKeyword(); // Initialize new keyword.
 
@@ -156,5 +154,5 @@
 
 }
 
-NoteEditorController['$inject'] = ['$scope', 'UISessionService'];
+NoteEditorController['$inject'] = ['$scope', 'TagsService', 'UISessionService'];
 angular.module('em.main').controller('NoteEditorController', NoteEditorController);

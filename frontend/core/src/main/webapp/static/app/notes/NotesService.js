@@ -97,21 +97,31 @@
   // Setup callback for tag deletion
   var tagDeletedCallback = function(deletedTag, ownerUUID) {
     if (notes[ownerUUID] && deletedTag) {
-      // Remove deleted tags from notes
-      TagsService.removeDeletedTagFromItems(notes[ownerUUID].activeNotes, deletedTag);
-      TagsService.removeDeletedTagFromItems(notes[ownerUUID].deletedNotes, deletedTag);
-      TagsService.removeDeletedTagFromItems(notes[ownerUUID].archivedNotes, deletedTag);
+      if (!undelete){
+        // Remove deleted tags from notes
+        TagsService.removeDeletedTagFromItems(notes[ownerUUID].activeNotes, deletedTag);
+        TagsService.removeDeletedTagFromItems(notes[ownerUUID].deletedNotes, deletedTag);
+        TagsService.removeDeletedTagFromItems(notes[ownerUUID].archivedNotes, deletedTag);
+      }else{
+        // Undelete
+        // TODO: Deleted keywords should not be removed completely but instead put to a note.history
+        // object so that here it would be possible to undo a keyword deletion easily!
+      }
     }
   };
   TagsService.registerTagDeletedCallback(tagDeletedCallback, 'NotesService');
 
   // Setup callback for list deletion
-  var listDeletedCallback = function(deletedList, ownerUUID) {
+  var listDeletedCallback = function(deletedList, ownerUUID, undelete) {
     if (notes[ownerUUID] && deletedList) {
-      // Remove deleted list from notes
-      ListsService.removeDeletedListFromItems(notes[ownerUUID].activeNotes, deletedList);
-      ListsService.removeDeletedListFromItems(notes[ownerUUID].deletedNotes, deletedList);
-      ListsService.removeDeletedListFromItems(notes[ownerUUID].archivedNotes, deletedList);
+      if (!undelete){
+        // Remove deleted list from notes
+        ListsService.removeDeletedListFromItems(notes[ownerUUID].activeNotes, deletedList);
+        ListsService.removeDeletedListFromItems(notes[ownerUUID].deletedNotes, deletedList);
+        ListsService.removeDeletedListFromItems(notes[ownerUUID].archivedNotes, deletedList);
+      }else{
+        // TODO: Undelete
+      }
     }
   };
   ListsService.registerListDeletedCallback(listDeletedCallback, 'NotesService');
@@ -170,21 +180,21 @@
     },
     getNoteInfo: function(uuid, ownerUUID) {
       initializeArrays(ownerUUID);
-      var note = notes[ownerUUID].activeNotes.findFirstObjectByKeyValue('uuid', uuid);
+      var note = notes[ownerUUID].activeNotes.findFirstObjectByKeyValue('uuid', uuid, 'trans');
       if (note){
         return {
           type: 'active',
           note: note
         };
       }
-      note = notes[ownerUUID].deletedNotes.findFirstObjectByKeyValue('uuid', uuid);
+      note = notes[ownerUUID].deletedNotes.findFirstObjectByKeyValue('uuid', uuid, 'trans');
       if (note){
         return {
           type: 'deleted',
           note: note
         };
       }
-      note = notes[ownerUUID].archivedNotes.findFirstObjectByKeyValue('uuid', uuid);
+      note = notes[ownerUUID].archivedNotes.findFirstObjectByKeyValue('uuid', uuid, 'trans');
       if (note){
         return {
           type: 'archived',

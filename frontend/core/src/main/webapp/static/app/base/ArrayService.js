@@ -35,12 +35,13 @@ function ArrayService() {
     var pivot = parseInt(start + (end - start) / 2, 10);
     if (end - start <= 1) {
       if (reverse) {
-        return (array[pivot] && (array[pivot][field] < element[field])) ? pivot - 1 : pivot;
+        return (array[pivot] && (array[pivot].trans[field] < element.trans[field])) ? pivot - 1 : pivot;
       } else {
-        return (array[pivot] && (array[pivot][field] > element[field])) ? pivot - 1 : pivot;
+        return (array[pivot] && (array[pivot].trans[field] > element.trans[field])) ? pivot - 1 : pivot;
       }
     }
-    if ((!reverse && array[pivot][field] < element[field]) || (reverse && array[pivot][field] > element[field])) {
+    if ((!reverse && array[pivot].trans[field] < element.trans[field]) ||
+        (reverse && array[pivot].trans[field] > element.trans[field])) {
       return locationOfItemInArray(element, array, field, reverse, pivot, end);
     } else {
       return locationOfItemInArray(element, array, field, reverse, start, pivot);

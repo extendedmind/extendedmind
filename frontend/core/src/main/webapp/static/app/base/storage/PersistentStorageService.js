@@ -33,8 +33,13 @@ function PersistentStorageService($q) {
   function itemToPersistedItem(item, itemType, ownerUUID){
     item.itemType = itemType;
     item.owner = trimUUID(ownerUUID);
-    var uuid = trimUUID(item.uuid);
-    delete item.uuid;
+    var uuid;
+    if (item.uuid){
+      uuid = trimUUID(item.uuid);
+      delete item.uuid;
+    }else{
+      uuid = trimUUID(item.mod.uuid);
+    }
     return uuid;
   }
 
@@ -42,7 +47,13 @@ function PersistentStorageService($q) {
     var item = persistedItem.value;
     var itemType = item.itemType;
     delete item.itemType;
-    item.uuid = untrimUUID(persistedItem.key);
+    // If persisted modified value has been set, then set
+    // the real uuid, else the modified value
+    if (item.modified){
+      item.uuid = untrimUUID(persistedItem.key);
+    }else{
+      item.mod.uuid = untrimUUID(persistedItem.key);
+    }
     var ownerUUID = untrimUUID(item.owner);
     delete item.owner;
     return {
@@ -53,47 +64,37 @@ function PersistentStorageService($q) {
   }
 
   return {
-    persistSetResult: function(item, itemType, ownerUUID, setResult) {
+    persistWithNewUUID: function(oldUUID, item, itemType, ownerUUID) {
       var deferred = $q.defer();
       if (!database) database = Lawnchair({name:'items'});
-      var uuid = trimUUID(item.uuid);
+
       var thisService = this;
-      database.get(uuid, function(persisted){
+      database.get(trimUUID(oldUUID), function(persisted){
         if (persisted){
+
           var persistedItem = persisted.value;
-          persistedItem.modified = setResult.modified;
-          if (setResult.created) persistedItem.created = setResult.created;
-          if (setResult.uuid) {
-            // Need to change persisted uuid
-            thisService.destroy(untrimUUID(persisted.key), ownerUUID).then(
-              // Success
-              function(){
-                database.save({key:trimUUID(setResult.uuid), value:persistedItem}, function(){
+          thisService.destroy(untrimUUID(persisted.key), ownerUUID).then(
+            // Success
+            function(){
+              thisService.persist(item, itemType, ownerUUID).then(
+                // Success
+                function(){
                   deferred.resolve();
-                });
-              },
-              // Failure
-              function(){
-                deferred.reject();
-              }
-            );
-          }else{
-            // UUID has not changed, just persist
-            database.save({key:persisted.key, value:persistedItem}, function(){
-              deferred.resolve();
-            });
-          }
+                },
+                // Failure
+                function(){
+                  deferred.reject();
+                }
+              );
+            },
+            // Failure
+            function(){
+              deferred.reject();
+            }
+          );
         }else{
-          // New item, use the existing persist code
-
-          item.modified = setResult.modified;
-          if (setResult.created) item.created = setResult.created;
-          if (setResult.uuid) item.uuid = setResult.uuid;
-          var uuid = itemToPersistedItem(item, itemType, ownerUUID);
-
-          database.save({key:uuid, value:item}, function(){
-            deferred.resolve();
-          });
+          // Old UUID not found
+          deferred.reject();
         }
       });
       return deferred.promise;

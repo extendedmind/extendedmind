@@ -16,12 +16,22 @@
  /*global angular */
  'use strict';
 
- function ListsService($q, ArrayService, BackendClientService, ExtendedItemService, TagsService) {
+ function ListsService($q, ArrayService, BackendClientService, ExtendedItemService, ItemLikeService,
+                       TagsService) {
+
+  var listFieldInfos = ItemLikeService.getFieldInfos(
+    [ // TODO
+      // due,
+      // assignee,
+      // assigner,
+      // visibility,
+      ExtendedItemService.getRelationshipsFieldInfo()
+    ]
+  );
 
   // An object containing lists for every owner
   var lists = {};
 
-  var listRegex = /\/list/;
   var listSlashRegex = /\/list\//;
   var archiveRegex = /\/archive/;
 
@@ -43,6 +53,7 @@
   }
 
   function updateList(list, ownerUUID) {
+    ItemLikeService.resetTrans(list, 'list', ownerUUID, listFieldInfos);
     return ArrayService.updateItem(list,
                                    lists[ownerUUID].activeLists,
                                    lists[ownerUUID].deletedLists,
@@ -51,6 +62,7 @@
 
   function setList(list, ownerUUID) {
     initializeArrays(ownerUUID);
+    ItemLikeService.resetTrans(list, 'list', ownerUUID, listFieldInfos);
     ArrayService.setItem(list,
                          lists[ownerUUID].activeLists,
                          lists[ownerUUID].deletedLists,
@@ -60,8 +72,7 @@
   return {
     setLists: function(listsResponse, ownerUUID) {
       initializeArrays(ownerUUID);
-      this.addTransientProperties(listsResponse, ownerUUID);
-
+      ItemLikeService.resetTrans(listsResponse, 'list', ownerUUID, listFieldInfos);
       return ArrayService.setArrays(listsResponse,
                                     lists[ownerUUID].activeLists,
                                     lists[ownerUUID].deletedLists,
@@ -69,8 +80,7 @@
     },
     updateLists: function(listsResponse, ownerUUID) {
       initializeArrays(ownerUUID);
-      this.addTransientProperties(listsResponse, ownerUUID);
-
+      ItemLikeService.resetTrans(listsResponse, 'list', ownerUUID, listFieldInfos);
       var latestModified = ArrayService.updateArrays(listsResponse,
                                                      lists[ownerUUID].activeLists,
                                                      lists[ownerUUID].deletedLists,
@@ -102,21 +112,21 @@
     },
     getListInfo: function(uuid, ownerUUID) {
       initializeArrays(ownerUUID);
-      var list = lists[ownerUUID].activeLists.findFirstObjectByKeyValue('uuid', uuid);
+      var list = lists[ownerUUID].activeLists.findFirstObjectByKeyValue('uuid', uuid, 'trans');
       if (list){
         return {
           type: 'active',
           list: list
         };
       }
-      list = lists[ownerUUID].deletedLists.findFirstObjectByKeyValue('uuid', uuid);
+      list = lists[ownerUUID].deletedLists.findFirstObjectByKeyValue('uuid', uuid, 'trans');
       if (list){
         return {
           type: 'deleted',
           list: list
         };
       }
-      list = lists[ownerUUID].archivedLists.findFirstObjectByKeyValue('uuid', uuid);
+      list = lists[ownerUUID].archivedLists.findFirstObjectByKeyValue('uuid', uuid, 'trans');
       if (list){
         return {
           type: 'archived',
@@ -127,36 +137,18 @@
     saveList: function(list, ownerUUID) {
       initializeArrays(ownerUUID);
       var deferred = $q.defer();
-      var transientProperties;
-      // Check that list is not deleted before trying to save
-      if (this.getListStatus(list, ownerUUID) === 'deleted') deferred.reject(list);
-      else if (list.uuid) {
-        // Existing list
-        transientProperties = ExtendedItemService.detachTransientProperties(list, ownerUUID);
-        BackendClientService.putOnline('/api/' + ownerUUID + '/list/' + list.uuid,
-                                       this.putExistingListRegex, list)
-        .then(function(result) {
-          if (result.data) {
-            list.modified = result.data.modified;
-            ExtendedItemService.attachTransientProperties(list, transientProperties, 'list');
-            updateList(list, ownerUUID);
-            deferred.resolve(list);
-          }
-        });
+      if (lists[ownerUUID].deletedLists.findFirstObjectByKeyValue('uuid', list.trans.uuid, 'trans')) {
+        deferred.reject({type: 'deleted'});
       } else {
-        // New list
-        transientProperties = ExtendedItemService.detachTransientProperties(list, ownerUUID);
-        BackendClientService.putOnline('/api/' + ownerUUID + '/list',this.putNewListRegex, list)
-        .then(function(result) {
-          if (result.data) {
-            list.uuid = result.data.uuid;
-            list.created = result.data.created;
-            list.modified = result.data.modified;
-            ExtendedItemService.attachTransientProperties(list, transientProperties, 'list');
-            updateList(list, ownerUUID);
-            deferred.resolve(list);
+        ItemLikeService.save(list, 'list', ownerUUID, listFieldInfos).then(
+          function(result){
+            if (result === 'new') setList(list, ownerUUID);
+            else if (result === 'existing') updateList(list, ownerUUID);
+            deferred.resolve(result);
+          }, function(failure){
+            deferred.reject(failure);
           }
-        });
+        );
       }
       return deferred.promise;
     },
@@ -211,6 +203,10 @@
           delete list.deleted;
           list.modified = result.data.modified;
           updateList(list, ownerUUID);
+
+          for (var id in listDeletedCallbacks) {
+            listDeletedCallbacks[id](list, ownerUUID, true);
+          }
         }
       });
     },
@@ -226,7 +222,7 @@
         .then(function(result) {
           if (result.data) {
             list.archived = result.data.archived;
-            list.modified = result.data.result.modified;
+            ItemLikeService.updateObjectWithSetResult(list, result.data.result);
             updateList(list, ownerUUID);
             var latestModified = list.modified;
 
@@ -248,34 +244,13 @@
 
       return deferred.promise;
     },
-    addTransientProperties: function(lists, ownerUUID, addExtraTransientPropertyFn) {
-      var addExtraTransientPropertyFunction;
-      if (typeof addExtraTransientPropertyFn === 'function')
-        addExtraTransientPropertyFunction = addExtraTransientPropertyFn;
-      ExtendedItemService.addTransientProperties(lists, ownerUUID, 'list', addExtraTransientPropertyFunction);
-    },
 
     // Regular expressions for list requests
-    putNewListRegex: new RegExp(BackendClientService.apiPrefixRegex.source +
-                                BackendClientService.uuidRegex.source +
-                                listRegex.source),
 
-    putExistingListRegex: new RegExp(BackendClientService.apiPrefixRegex.source +
-                                     BackendClientService.uuidRegex.source +
-                                     listSlashRegex.source +
-                                     BackendClientService.uuidRegex.source),
-
-    deleteListRegex: new RegExp(BackendClientService.apiPrefixRegex.source +
-                                BackendClientService.uuidRegex.source +
-                                listSlashRegex.source +
-                                BackendClientService.uuidRegex.source),
-
-    undeleteListRegex: new RegExp(BackendClientService.apiPrefixRegex.source +
-                                  BackendClientService.uuidRegex.source +
-                                  listSlashRegex.source +
-                                  BackendClientService.uuidRegex.source +
-                                  BackendClientService.undeleteRegex.source),
-
+    putNewListRegex: ItemLikeService.getPutNewRegex('list'),
+    putExistingListRegex: ItemLikeService.getPutExistingRegex('list'),
+    deleteListRegex: ItemLikeService.getDeleteRegex('list'),
+    undeleteListRegex: ItemLikeService.getUndeleteRegex('list'),
     archiveListRegex: new RegExp(BackendClientService.apiPrefixRegex.source +
                                  BackendClientService.uuidRegex.source +
                                  listSlashRegex.source +
@@ -309,6 +284,5 @@
 }
 
 ListsService['$inject'] = ['$q', 'ArrayService', 'BackendClientService', 'ExtendedItemService',
-  'TagsService'
-];
+                           'ItemLikeService', 'TagsService'];
 angular.module('em.lists').factory('ListsService', ListsService);

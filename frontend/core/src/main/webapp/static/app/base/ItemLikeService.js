@@ -141,10 +141,7 @@
   function createTransportItem(item, ownerUUID, fieldInfos){
     var transportItem = {};
     for (var i=0, len=fieldInfos.length; i<len; i++){
-      if (angular.isObject(fieldInfos[i])){
-        // Custom refresh method overrides
-        transportItem[fieldInfos[i].name] = fieldInfos[i].createTransportValue(item, ownerUUID);
-      }else if (fieldInfos[i] !== 'uuid' && fieldInfos[i] !== 'created' && fieldInfos[i] !== 'deleted'){
+      if (fieldInfos[i] !== 'uuid' && fieldInfos[i] !== 'created' && fieldInfos[i] !== 'deleted'){
         if (item.mod && item.mod.hasOwnProperty(fieldInfos[i]) &&
             item.mod[fieldInfos[i]] !== undefined){
           transportItem[fieldInfos[i]] = item.mod[fieldInfos[i]];
@@ -174,11 +171,18 @@
   }
 
   return {
-    getDefaultFieldInfos: function(){
-      return getDefaultFieldInfos();
+    getFieldInfos: function(additionalFieldInfos){
+      var fieldInfos = getDefaultFieldInfos();
+      if (additionalFieldInfos){
+        return fieldInfos.concat(additionalFieldInfos);
+      }
+      return fieldInfos;
     },
     getEditedFieldInfos: function(item, ownerUUID, fieldInfos){
       return getEditedFieldInfos(item, ownerUUID, fieldInfos);
+    },
+    updateObjectWithSetResult: function(object, setResult){
+      updateObjectWithSetResult(object, setResult);
     },
     isEdited: function(item, ownerUUID, fieldInfos){
       return isEdited(item, ownerUUID, fieldInfos);
@@ -187,8 +191,7 @@
       return validate(item, ownerUUID, fieldInfos);
     },
     getNew: function(trans, itemType, ownerUUID, fieldInfos) {
-      var newItem = resetTrans({uuid: UUIDService.generateFakeUUID()},
-                               itemType, ownerUUID, fieldInfos);
+      var newItem = resetTrans({}, itemType, ownerUUID, fieldInfos);
       if (trans){
         for (var property in trans){
           if (trans.hasOwnProperty(property)){
@@ -198,9 +201,17 @@
       }
       return newItem;
     },
-    // Resets transient values to match modified and persistent, destroyes changes
-    resetTrans: function(item, itemType, ownerUUID, fieldInfos){
-      return resetTrans(item, itemType, ownerUUID, fieldInfos);
+    // Resets transient values of either single item or array of items to match modified and persistent,
+    // destroys existing changes in trans
+    resetTrans: function(data, itemType, ownerUUID, fieldInfos){
+      if (angular.isArray(data)){
+        for (var i=0, len=data.length; i<len; i++){
+          resetTrans(data[i], itemType, ownerUUID, fieldInfos);
+        }
+      }else if (data){
+        resetTrans(data, itemType, ownerUUID, fieldInfos);
+      }
+      return data;
     },
     prepareTransport: function(item, itemType, ownerUUID, fieldInfos){
       copyEditedFieldsToMod(item, ownerUUID, fieldInfos);
@@ -210,7 +221,6 @@
     // data is invalid
     save: function(item, itemType, ownerUUID, fieldInfos){
       var deferred = $q.defer();
-
       var validationErrors = validate(item, ownerUUID, fieldInfos);
 
       if (validationErrors.length){
@@ -223,36 +233,32 @@
         var transportItem = this.prepareTransport(item, itemType, ownerUUID, fieldInfos);
         var params;
 
-        if (item.uuid) {
+        if (item.trans.uuid) {
+
           /////////////////////////
           // Existing item
           /////////////////////////
 
-          // Save before
-          if (UserSessionService.isOfflineEnabled()){
-            PersistentStorageService.persist(createPersistableItem(item), itemType, ownerUUID);
-          }
-
           // TODO: implement offline for lists and tags and remove the two latter conditions!
           if (UserSessionService.isOfflineEnabled() && itemType !== 'list' && itemType !== 'tag') {
             // Push to offline buffer
-            params = {type: 'item', owner: ownerUUID, uuid: item.uuid};
-            BackendClientService.put('/api/' + params.owner + '/'+ itemType + '/' + item.uuid,
+            params = {type: itemType, owner: ownerUUID, uuid: item.uuid};
+            BackendClientService.put('/api/' + params.owner + '/'+ itemType + '/' + item.trans.uuid,
                                      this.getPutExistingRegex(itemType), params, transportItem);
             updateObjectWithSetResult(item.mod, {modified: BackendClientService.generateFakeTimestamp()});
+            PersistentStorageService.persist(createPersistableItem(item), itemType, ownerUUID);
             resetTrans(item, itemType, ownerUUID, fieldInfos);
             deferred.resolve('existing');
           } else {
             // Online
-            BackendClientService.putOnline('/api/' + ownerUUID + '/'+ itemType + '/' + item.uuid,
+            BackendClientService.putOnline('/api/' + ownerUUID + '/'+ itemType + '/' + item.trans.uuid,
                                            this.getPutExistingRegex(itemType), transportItem)
             .then(function(result) {
               if (result.data) {
-                if (UserSessionService.isOfflineEnabled()){
-                  PersistentStorageService.persistSetResult(createPersistableItem(item),
-                                                            itemType, ownerUUID, result.data);
-                }
                 updateObjectWithSetResult(item, result.data);
+                if (UserSessionService.isOfflineEnabled()){
+                  PersistentStorageService.persist(createPersistableItem(item), itemType, ownerUUID);
+                }
                 resetTrans(item, itemType, ownerUUID, fieldInfos);
                 deferred.resolve('existing');
               }
@@ -267,15 +273,12 @@
           if (UserSessionService.isOfflineEnabled() && itemType !== 'list' && itemType !== 'tag') {
             // Push to offline queue with fake UUID
             var fakeUUID = UUIDService.generateFakeUUID();
-            params = {type: 'item', owner: ownerUUID, fakeUUID: fakeUUID};
+            params = {type: itemType, owner: ownerUUID, fakeUUID: fakeUUID};
             BackendClientService.put('/api/' + params.owner + '/'+ itemType,
                                      this.getPutNewRegex(itemType), params, transportItem);
             var fakeTimestamp = BackendClientService.generateFakeTimestamp();
-
-            var fakeSetResult = {uuid: fakeUUID, modified: fakeTimestamp, created: fakeTimestamp}
-            updateObjectWithSetResult(item.mod, fakeSetResult);
-            PersistentStorageService.persistSetResult(createPersistableItem(item),
-                                                    itemType, ownerUUID, fakeSetResult);
+            updateObjectWithSetResult(item.mod, {uuid: fakeUUID, modified: fakeTimestamp, created: fakeTimestamp});
+            PersistentStorageService.persist(createPersistableItem(item), itemType, ownerUUID);
             resetTrans(item, itemType, ownerUUID, fieldInfos);
             deferred.resolve('new');
           } else {
@@ -283,16 +286,84 @@
             BackendClientService.putOnline('/api/' + ownerUUID + '/'+ itemType,
                                            this.getPutNewRegex(itemType), transportItem)
             .then(function(result) {
-              if (UserSessionService.isOfflineEnabled()){
-                PersistentStorageService.persistSetResult(createPersistableItem(item),
-                                                        itemType, ownerUUID, result.data);
-              }
               updateObjectWithSetResult(item, result.data);
+              if (UserSessionService.isOfflineEnabled()){
+                PersistentStorageService.persist(createPersistableItem(item), itemType, ownerUUID);
+              }
               resetTrans(item, itemType, ownerUUID, fieldInfos);
               deferred.resolve('new');
             });
           }
         }
+      }
+      return deferred.promise;
+    },
+    processDelete: function(item, itemType, ownerUUID, fieldInfos){
+      var deferred = $q.defer();
+
+      // TODO: implement offline for lists and tags and remove the two latter conditions!
+      if (UserSessionService.isOfflineEnabled() && itemType !== 'list' && itemType !== 'tag') {
+        // Offline
+        var params = {type: itemType, owner: ownerUUID, uuid: item.uuid,
+        reverse: {
+          method: 'post',
+          url: '/api/' + ownerUUID + '/item/' + item.uuid + '/undelete'
+        }, replaceable: true};
+        BackendClientService.deleteOffline('/api/' + ownerUUID + '/' + itemType +'/' + item.uuid,
+                                           this.getDeleteRegex(itemType), params);
+
+        var fakeTimestamp = BackendClientService.generateFakeTimestamp();
+        updateObjectWithSetResult(item.mod, {modified: fakeTimestamp, deleted: fakeTimestamp});
+        PersistentStorageService.persist(createPersistableItem(item), itemType, ownerUUID);
+        resetTrans(item, itemType, ownerUUID, fieldInfos);
+        deferred.resolve();
+      } else {
+        // Online
+        BackendClientService.deleteOnline('/api/' + ownerUUID + '/' + itemType +'/' + item.uuid,
+                                          this.getDeleteRegex(itemType))
+        .then(function(result) {
+          item.deleted = result.data.deleted;
+          updateObjectWithSetResult(item, result.data.result);
+          if (UserSessionService.isOfflineEnabled()){
+            PersistentStorageService.persist(createPersistableItem(item), itemType, ownerUUID);
+          }
+          resetTrans(item, itemType, ownerUUID, fieldInfos);
+          deferred.resolve();
+        });
+      }
+      return deferred.promise;
+    },
+    undelete: function(item, itemType, ownerUUID, fieldInfos){
+      var deferred = $q.defer();
+      // TODO: implement offline for lists and tags and remove the two latter conditions!
+      if (UserSessionService.isOfflineEnabled() && itemType !== 'list' && itemType !== 'tag') {
+        // Offline
+        var params = {type: itemType, owner: ownerUUID, uuid: item.uuid,
+        reverse: {
+          method: 'post',
+          url: '/api/' + ownerUUID + '/item/' + item.uuid + '/delete'
+        }, replaceable: true};
+        BackendClientService.post('/api/' + ownerUUID + '/' + itemType +'/' + item.uuid + '/undelete',
+                                    this.getUndeleteRegex(itemType), params);
+        delete item.mod.deleted;
+        var fakeTimestamp = BackendClientService.generateFakeTimestamp();
+        updateObjectWithSetResult(item.mod, {modified: fakeTimestamp});
+        PersistentStorageService.persist(createPersistableItem(item), itemType, ownerUUID);
+        resetTrans(item, itemType, ownerUUID, fieldInfos);
+        deferred.resolve();
+      } else {
+        // Online
+        BackendClientService.postOnline('/api/' + ownerUUID + '/' + itemType +'/' + item.uuid + '/undelete',
+                                        this.getUndeleteRegex(itemType), params)
+        .then(function(result) {
+          delete item.deleted;
+          updateObjectWithSetResult(item, result.data);
+          if (UserSessionService.isOfflineEnabled()){
+            PersistentStorageService.persist(createPersistableItem(item), itemType, ownerUUID);
+          }
+          resetTrans(item, itemType, ownerUUID, fieldInfos);
+          deferred.resolve();
+        });
       }
       return deferred.promise;
     },

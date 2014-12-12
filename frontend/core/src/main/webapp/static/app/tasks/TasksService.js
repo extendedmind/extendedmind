@@ -17,11 +17,38 @@
  'use strict';
 
  function TasksService($q, $rootScope,
-                       ArrayService, BackendClientService, ExtendedItemService,
+                       ArrayService, BackendClientService, ExtendedItemService, ItemLikeService,
                        ListsService, TagsService, UISessionService, UserSessionService, UUIDService) {
-  var tasks = {};
+  var taskFieldInfos = ItemLikeService.getFieldInfos(
+    [ {
+        name: 'due',
+        isEdited: function(item, ownerUUID){
+          if (item.mod && item.mod.due !== item.trans.date) return true;
+          else if (item.due !== item.trans.date) return true;
+        },
+        copyTransToMod: copyDateToDue,
+        resetTrans: copyDueToDate,
+      },
+      'reminder',
+      'repeating',
+      {
+        name: 'completed',
+        isEdited: function(item, ownerUUID){
+          if (item.mod && item.mod.completed && !item.trans.completed) return true;
+          else if (item.completed && !item.trans.completed) return true;
+        },
+        copyTransToMod: copyCompletedTransToMod,
+        resetTrans: copyCompletedToTrans,
+      },
+      // TODO:
+      // assignee,
+      // assigner,
+      // visibility,
+      ExtendedItemService.getRelationshipsFieldInfo()
+    ]
+  );
 
-  var taskRegex = /\/task/;
+  var tasks = {};
   var taskSlashRegex = /\/task\//;
   var completeRegex = /\/complete/;
   var uncompleteRegex = /\/uncomplete/;
@@ -41,7 +68,7 @@
   }
 
   function updateTask(task, ownerUUID) {
-    if (task) addTransientProperties([task], ownerUUID);
+    ItemLikeService.resetTrans(task, 'task', ownerUUID, taskFieldInfos);
     return ArrayService.updateItem(task,
                                    tasks[ownerUUID].activeTasks,
                                    tasks[ownerUUID].deletedTasks,
@@ -50,6 +77,7 @@
 
   function setTask(task, ownerUUID) {
     initializeArrays(ownerUUID);
+    ItemLikeService.resetTrans(task, 'task', ownerUUID, taskFieldInfos);
     ArrayService.setItem(task,
                          tasks[ownerUUID].activeTasks,
                          tasks[ownerUUID].deletedTasks,
@@ -87,23 +115,33 @@
   ListsService.registerItemArchiveCallback(itemArchiveCallback, 'TasksService');
 
   // Setup callback for tags
-  var tagDeletedCallback = function(deletedTag, ownerUUID) {
+  var tagDeletedCallback = function(deletedTag, ownerUUID, undelete) {
     if (tasks[ownerUUID] && deletedTag) {
-      // Remove tags from existing parents
-      TagsService.removeDeletedTagFromItems(tasks[ownerUUID].activeTasks, deletedTag);
-      TagsService.removeDeletedTagFromItems(tasks[ownerUUID].deletedTasks, deletedTag);
-      TagsService.removeDeletedTagFromItems(tasks[ownerUUID].archivedTasks, deletedTag);
+      if (!undelete){
+        // Remove tags from existing parents
+        TagsService.removeDeletedTagFromItems(tasks[ownerUUID].activeTasks, deletedTag);
+        TagsService.removeDeletedTagFromItems(tasks[ownerUUID].deletedTasks, deletedTag);
+        TagsService.removeDeletedTagFromItems(tasks[ownerUUID].archivedTasks, deletedTag);
+      }else{
+        // Undelete
+        // TODO: Deleted context should not be removed completely but instead put to a task.history
+        // object so that here it would be possible to undo a context deletion easily!
+      }
     }
   };
   TagsService.registerTagDeletedCallback(tagDeletedCallback, 'TasksService');
 
   // Setup callback for lists
-  var listDeletedCallback = function(deletedList, ownerUUID) {
-    if (tasks[ownerUUID] && deletedList) {
-      // Remove list from existing parents
-      ListsService.removeDeletedListFromItems(tasks[ownerUUID].activeTasks, deletedList);
-      ListsService.removeDeletedListFromItems(tasks[ownerUUID].deletedTasks, deletedList);
-      ListsService.removeDeletedListFromItems(tasks[ownerUUID].archivedTasks, deletedList);
+  var listDeletedCallback = function(deletedList, ownerUUID, undelete) {
+    if (tasks[ownerUUID] && deletedList){
+      if (!undelete){
+        // Remove list from existing parents
+        ListsService.removeDeletedListFromItems(tasks[ownerUUID].activeTasks, deletedList);
+        ListsService.removeDeletedListFromItems(tasks[ownerUUID].deletedTasks, deletedList);
+        ListsService.removeDeletedListFromItems(tasks[ownerUUID].archivedTasks, deletedList);
+      }else{
+        // TODO: Undelete
+      }
     }
   };
   ListsService.registerListDeletedCallback(listDeletedCallback, 'TasksService');
@@ -113,13 +151,6 @@
     if (task.due) {
       if (!task.trans) task.trans = {};
       task.trans.date = task.due;
-    }
-  }
-  // copies completed field from persistent to transient
-  function copyCompleted(task) {
-    if (task.completed){
-      if (!task.trans) task.trans = {};
-      task.trans.completed = task.completed !== undefined;
     }
   }
   // date is transient, due is persistent
@@ -135,37 +166,21 @@
       if (!Date.parse(task.trans.date)) delete task.trans.date;
   }
 
-  function copyDescriptionToTransientProperties(task) {
-    if (task.description) {
-      if (!task.trans) task.trans = {};
-      task.trans.description = task.description;
+  function copyCompletedTransToMod(task){
+    if (task.trans.completed){
+      if (!task.mod) task.mod = {};
+      task.mod.completed = BackendClientService.getFakeTimestamp();
     }
   }
-  function copyTransientDescriptionToPersistent(task) {
-    if (task.trans && task.trans.description)
-      task.description = task.trans.description;
-    else if (task.description) delete task.description;
 
-    // AngularJS sets property to empty string '""' if it is used in ng-model data-binding and text is
-    // removed.
-    if (task.trans && task.trans.description === '')
-      delete task.trans.description;
-  }
-
-  function addTransientProperties(tasksArray, ownerUUID, addExtraTransientPropertyFn) {
-    var addExtraTransientPropertyFunctions = [copyDueToDate, copyCompleted,
-      copyDescriptionToTransientProperties];
-    if (typeof addExtraTransientPropertyFn === 'function')
-      addExtraTransientPropertyFunctions.push(addExtraTransientPropertyFn);
-    ExtendedItemService.addTransientProperties(tasksArray, ownerUUID, 'task',
-                                               addExtraTransientPropertyFunctions);
+  function copyCompletedToTrans(task) {
+    task.trans.completed = task.completed !== undefined;
   }
 
   return {
     setTasks: function(tasksResponse, ownerUUID) {
       initializeArrays(ownerUUID);
-      this.addTransientProperties(tasksResponse, ownerUUID);
-
+      ItemLikeService.resetTrans(tasksResponse, 'task', ownerUUID, taskFieldInfos);
       return ArrayService.setArrays(tasksResponse,
                                     tasks[ownerUUID].activeTasks,
                                     tasks[ownerUUID].deletedTasks,
@@ -173,7 +188,7 @@
     },
     updateTasks: function(tasksResponse, ownerUUID) {
       initializeArrays(ownerUUID);
-      this.addTransientProperties(tasksResponse, ownerUUID);
+      ItemLikeService.resetTrans(tasksResponse, 'task', ownerUUID, taskFieldInfos);
       return ArrayService.updateArrays(tasksResponse,
                                        tasks[ownerUUID].activeTasks,
                                        tasks[ownerUUID].deletedTasks,
@@ -185,7 +200,9 @@
                                                           tasks[ownerUUID].activeTasks,
                                                           tasks[ownerUUID].deletedTasks,
                                                           getOtherArrays(ownerUUID));
-      if (updatedTask) this.addTransientProperties([updatedTask], ownerUUID);
+      if (updatedTask){
+        ItemLikeService.resetTrans(updatedTask, 'task', ownerUUID, taskFieldInfos);
+      }
       return updatedTask;
     },
     getTasks: function(ownerUUID) {
@@ -202,21 +219,21 @@
     },
     getTaskInfo: function(uuid, ownerUUID) {
       initializeArrays(ownerUUID);
-      var task = tasks[ownerUUID].activeTasks.findFirstObjectByKeyValue('uuid', uuid);
+      var task = tasks[ownerUUID].activeTasks.findFirstObjectByKeyValue('uuid', uuid, 'trans');
       if (task){
         return {
           type: 'active',
           task: task
         };
       }
-      task = tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue('uuid', uuid);
+      task = tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue('uuid', uuid, 'trans');
       if (task){
         return {
           type: 'deleted',
           task: task
         };
       }
-      task = tasks[ownerUUID].archivedTasks.findFirstObjectByKeyValue('uuid', uuid);
+      task = tasks[ownerUUID].archivedTasks.findFirstObjectByKeyValue('uuid', uuid, 'trans');
       if (task){
         return {
           type: 'archived',
@@ -447,32 +464,15 @@
     },
 
     // Regular expressions for task requests
-    putNewTaskRegex: new RegExp(BackendClientService.apiPrefixRegex.source +
-                                BackendClientService.uuidRegex.source +
-                                taskRegex.source),
-
-    putExistingTaskRegex: new RegExp(BackendClientService.apiPrefixRegex.source +
-                                     BackendClientService.uuidRegex.source +
-                                     taskSlashRegex.source +
-                                     BackendClientService.uuidRegex.source),
-
-    deleteTaskRegex: new RegExp(BackendClientService.apiPrefixRegex.source +
-                                BackendClientService.uuidRegex.source +
-                                taskSlashRegex.source +
-                                BackendClientService.uuidRegex.source),
-
-    undeleteTaskRegex: new RegExp(BackendClientService.apiPrefixRegex.source +
-                                  BackendClientService.uuidRegex.source +
-                                  taskSlashRegex.source +
-                                  BackendClientService.uuidRegex.source +
-                                  BackendClientService.undeleteRegex.source),
-
+    putNewTaskRegex: ItemLikeService.getPutNewRegex('task'),
+    putExistingTaskRegex: ItemLikeService.getPutExistingRegex('task'),
+    deleteTaskRegex: ItemLikeService.getDeleteRegex('task'),
+    undeleteTaskRegex: ItemLikeService.getUndeleteRegex('task'),
     completeTaskRegex: new RegExp(BackendClientService.apiPrefixRegex.source +
                                   BackendClientService.uuidRegex.source +
                                   taskSlashRegex.source +
                                   BackendClientService.uuidRegex.source +
                                   completeRegex.source),
-
     uncompleteTaskRegex: new RegExp(BackendClientService.apiPrefixRegex.source +
                                     BackendClientService.uuidRegex.source +
                                     taskSlashRegex.source +
@@ -482,6 +482,6 @@
 }
 
 TasksService['$inject'] = ['$q', '$rootScope',
-  'ArrayService', 'BackendClientService', 'ExtendedItemService', 'ListsService', 'TagsService',
-  'UISessionService', 'UserSessionService', 'UUIDService'];
+  'ArrayService', 'BackendClientService', 'ExtendedItemService', 'ItemLikeService',
+  'ListsService', 'TagsService', 'UISessionService', 'UserSessionService', 'UUIDService'];
 angular.module('em.tasks').factory('TasksService', TasksService);

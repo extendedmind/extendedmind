@@ -18,6 +18,7 @@ describe('PersistentStorageService', function() {
 
   var testOwnerUUID = '6be16f46-7b35-4b2d-b875-e13d19681e77';
   var flag;
+  var now = Date.now();
 
   // INJECTS
 
@@ -44,22 +45,30 @@ describe('PersistentStorageService', function() {
 
   it('should persist and get all item from persistent storage', function () {
 
-    var itemUUID = '00000000-0000-4e5d-afb6-eae0e5150c1f';
+    var itemUUID = '1be16f46-7b35-4b2d-b875-e13d19681e77';
     var item = {
       uuid: itemUUID,
-      title: 'test item'
+      title: 'test item',
+      created: now,
+      modified: now
     };
 
-    var taskUUID = '00000000-0000-4e5d-afb6-eae0e5150c1e';
+    var taskUUID = '2be16f46-7b35-4b2d-b875-e13d19681e77';
     var task = {
       uuid: taskUUID,
-      title: 'test task'
+      title: 'test task',
+      created: now,
+      modified: now
     };
 
-    var noteUUID = '00000000-0000-4e5d-afb6-eae0e5150c1d';
-    var note = {
-      uuid: noteUUID,
-      title: 'test note'
+    var offlineNoteUUID = '00000000-0000-4e5d-afb6-eae0e5150c1e';
+    var offlineNote = {
+      mod: {
+        uuid: offlineNoteUUID,
+        title: 'test note',
+        created: now,
+        modified: now
+      }
     };
 
     // 1. Persist new item
@@ -92,13 +101,29 @@ describe('PersistentStorageService', function() {
       return flag;
     }, 100);
 
-    // 3. Get all items
+
+    // 3. Persist offline note
+
+    runs(function() {
+      flag = false;
+      PersistentStorageService.persist(offlineNote, 'note', testOwnerUUID).then(
+        function(item){
+          flag = true;
+        }
+      );
+      $rootScope.$digest();
+    });
+    waitsFor(function(){
+      return flag;
+    }, 100);
+
+    // 4. Get all items
 
     runs(function() {
       flag = false;
       PersistentStorageService.getAll().then(
         function(itemInfos){
-          expect(itemInfos.length).toBe(2);
+          expect(itemInfos.length).toBe(3);
           expect(itemInfos[0].item.uuid).toBe(itemUUID);
           expect(itemInfos[0].itemType).toBe('item');
           expect(itemInfos[0].ownerUUID).toBe(testOwnerUUID);
@@ -106,6 +131,11 @@ describe('PersistentStorageService', function() {
           expect(itemInfos[1].item.uuid).toBe(taskUUID);
           expect(itemInfos[1].itemType).toBe('task');
           expect(itemInfos[1].ownerUUID).toBe(testOwnerUUID);
+
+          expect(itemInfos[2].item.mod.uuid).toBe(offlineNoteUUID);
+          expect(itemInfos[2].itemType).toBe('note');
+          expect(itemInfos[2].ownerUUID).toBe(testOwnerUUID);
+
           flag = true;
         }
       );
@@ -119,21 +149,29 @@ describe('PersistentStorageService', function() {
 
   });
 
-  it('should persist set result of existing item to persistent storage', function () {
+  it('should persist database result of stored offline item to persistent storage', function () {
 
     var itemUUID = '00000000-0000-4e5d-afb6-eae0e5150c1f';
     var item = {
-      uuid: itemUUID,
-      title: 'test item'
+      mod: {
+        uuid: itemUUID,
+        title: 'test item',
+        created: now,
+        modified: now
+      }
     };
 
     var taskUUID = '00000000-0000-4e5d-afb6-eae0e5150c1e';
     var task = {
-      uuid: taskUUID,
-      title: 'test task'
+      mod: {
+        uuid: taskUUID,
+        title: 'test task',
+        created: now,
+        modified: now
+      }
     };
 
-    // 1. Persist two items
+    // 1. Persist two offline items
 
     runs(function() {
       flag = 0;
@@ -153,12 +191,13 @@ describe('PersistentStorageService', function() {
       return flag === 2;
     }, 100);
 
-    // 2. Persist set result for the latter one
+    // 2. Persist database values for the latter one
 
     var databaseUUID = 'f7724771-4469-488c-aabd-9db188672a9b';
     var databaseCreated = 1391278509630;
     var databaseModified = 1391278509634;
-    var setResult = {
+    var databaseTask = {
+      title: task.mod.title,
       'uuid': databaseUUID,
       'created': databaseCreated,
       'modified': databaseModified
@@ -166,10 +205,7 @@ describe('PersistentStorageService', function() {
 
     runs(function() {
       flag = false;
-      // NOTE: This is needed because of the in-memory data store holds references and not copies
-      task.uuid = taskUUID;
-
-      PersistentStorageService.persistSetResult(task, 'task', testOwnerUUID, setResult).then(
+      PersistentStorageService.persistWithNewUUID(taskUUID, databaseTask, 'task', testOwnerUUID).then(
         function(){
           flag = true;
         }
@@ -187,10 +223,11 @@ describe('PersistentStorageService', function() {
       PersistentStorageService.getAll().then(
         function(itemInfos){
           expect(itemInfos.length).toBe(2);
-          expect(itemInfos[0].item.uuid).toBe(itemUUID);
+          expect(itemInfos[0].item.mod.uuid).toBe(itemUUID);
           expect(itemInfos[0].itemType).toBe('item');
           expect(itemInfos[0].ownerUUID).toBe(testOwnerUUID);
 
+          expect(itemInfos[1].item.title).toBe(task.mod.title);
           expect(itemInfos[1].item.uuid).toBe(databaseUUID);
           expect(itemInfos[1].item.created).toBe(databaseCreated);
           expect(itemInfos[1].item.modified).toBe(databaseModified);
@@ -207,73 +244,24 @@ describe('PersistentStorageService', function() {
     }, 100);
   });
 
-  it('should persist set result of alongside new task to persistent storage', function () {
-
-    var taskUUID = 'f7724771-4469-488c-aabd-9db188672a9b';
-    var task = {
-      uuid: taskUUID,
-      title: 'test task'
-    };
-
-    // 1. Persist task with set result
-
-    var databaseCreated = 1391278509630;
-    var databaseModified = 1391278509634;
-    var setResult = {
-      'uuid': taskUUID,
-      'created': databaseCreated,
-      'modified': databaseModified
-    };
-
-    runs(function() {
-      flag = false;
-
-      PersistentStorageService.persistSetResult(task, 'task', testOwnerUUID, setResult).then(
-        function(){
-          flag = true;
-        }
-      );
-      $rootScope.$digest();
-    });
-    waitsFor(function(){
-      return flag;
-    }, 100);
-
-    // 3. Get all items
-
-    runs(function() {
-      flag = false;
-      PersistentStorageService.getAll().then(
-        function(itemInfos){
-          expect(itemInfos.length).toBe(1);
-          expect(itemInfos[0].item.uuid).toBe(taskUUID);
-          expect(itemInfos[0].item.created).toBe(databaseCreated);
-          expect(itemInfos[0].item.modified).toBe(databaseModified);
-          expect(itemInfos[0].itemType).toBe('task');
-          expect(itemInfos[0].ownerUUID).toBe(testOwnerUUID);
-
-          flag = true;
-        }
-      );
-      $rootScope.$digest();
-    });
-    waitsFor(function(){
-      return flag;
-    }, 100);
-  });
-
   it('should destroy item from persistent storage', function () {
 
     var itemUUID = '00000000-0000-4e5d-afb6-eae0e5150c1f';
     var item = {
-      uuid: itemUUID,
-      title: 'test item'
+      mod: {
+        uuid: itemUUID,
+        title: 'test item',
+        created: now,
+        modified: now
+      }
     };
 
-    var taskUUID = '00000000-0000-4e5d-afb6-eae0e5150c1e';
+    var taskUUID = 'f7724771-4469-488c-aabd-9db188672a9b';
     var task = {
       uuid: taskUUID,
-      title: 'test task'
+      title: 'test task',
+      created: now,
+      modified: now
     };
 
     // 1. Persist two items
@@ -337,13 +325,17 @@ describe('PersistentStorageService', function() {
     var itemUUID = '00000000-0000-4e5d-afb6-eae0e5150c1f';
     var item = {
       uuid: itemUUID,
-      title: 'test item'
+      title: 'test item',
+      created: now,
+      modified: now
     };
 
     var taskUUID = '00000000-0000-4e5d-afb6-eae0e5150c1e';
     var task = {
       uuid: taskUUID,
-      title: 'test task'
+      title: 'test task',
+      created: now,
+      modified: now
     };
 
     // 1. Persist two items

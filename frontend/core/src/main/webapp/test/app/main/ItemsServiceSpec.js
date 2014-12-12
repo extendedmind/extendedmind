@@ -146,10 +146,8 @@ describe('ItemsService', function() {
   it('should update existing item', function () {
     var rememberTheMilk = ItemsService.getItemInfo('d1e764e8-3be3-4e3f-8bec-8c3f9e7843e9', testOwnerUUID).item;
     rememberTheMilk.trans.title = 'remember the milk!';
-    console.log(rememberTheMilk)
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item/' + rememberTheMilk.uuid,
-                           {uuid: rememberTheMilk.uuid,
-                           title: rememberTheMilk.trans.title,
+                           {title: rememberTheMilk.trans.title,
                            modified: rememberTheMilk.modified})
        .respond(200, putExistingItemResponse);
     ItemsService.saveItem(rememberTheMilk, testOwnerUUID);

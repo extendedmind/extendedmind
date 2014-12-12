@@ -97,11 +97,10 @@ afterEach(function() {
   });
 
   it('should save new tag', function () {
-    var testTag = {
-      'title': 'test tag'
-    };
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/tag', testTag)
-    .respond(200, putNewTagResponse);
+    var testTagValues = {title: 'test tag', tagType: 'keyword'};
+    var testTag = TagsService.getNewTag(testTagValues, testOwnerUUID);
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/tag', testTagValues)
+      .respond(200, putNewTagResponse);
     TagsService.saveTag(testTag, testOwnerUUID);
     $httpBackend.flush();
     expect(TagsService.getTagInfo(putNewTagResponse.uuid, testOwnerUUID))
@@ -117,8 +116,11 @@ afterEach(function() {
 
   it('should update existing tag', function () {
     var secret = TagsService.getTagInfo('c933e120-90e7-488b-9f15-ea2ee2887e67', testOwnerUUID).tag;
-    secret.title = 'top secret';
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/tag/' + secret.uuid, secret)
+    secret.trans.title = 'top secret';
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/tag/' + secret.uuid,
+                           {title: secret.trans.title,
+                            tagType: secret.tagType,
+                            modified: secret.modified})
     .respond(200, putExistingTagResponse);
     TagsService.saveTag(secret, testOwnerUUID);
     $httpBackend.flush();

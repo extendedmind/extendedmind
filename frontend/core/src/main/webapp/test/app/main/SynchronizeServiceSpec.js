@@ -362,7 +362,7 @@ describe('SynchronizeService', function() {
     var items = ItemsService.getItems(testOwnerUUID);
     expect(items.length)
       .toBe(4);
-    expect(UUIDService.isFakeUUID(items[3].uuid))
+    expect(UUIDService.isFakeUUID(items[3].trans.uuid))
       .toBeTruthy();
 
     // 2. update item
