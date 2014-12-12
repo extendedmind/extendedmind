@@ -31,7 +31,7 @@
   */
   $scope.getCurrentHeading = function getCurrentHeading() {
     if ($scope.onboardingInProgress) {
-      return $scope.getOnboardingPhase();
+      return $scope.getTutorialPhase();
     } else {
       var currentHeading = $scope.getActiveFeature();
       if (currentHeading === 'list'){

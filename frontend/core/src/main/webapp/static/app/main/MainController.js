@@ -311,15 +311,17 @@ function MainController(
   * 2/3 - notes
   * 3/3 - lists
   */
-  $scope.getOnboardingPhase = function() {
+  $scope.getTutorialPhase = function() {
+    var phase;
     if (UISessionService.getCurrentFeatureName() === 'tasks') {
-      return 1 + '/3';
+      phase = 1;
     }
     else if (UISessionService.getCurrentFeatureName() === 'notes') {
-      return 2 + '/3';
+      phase = 2;
     } else if ($scope.isOnboardingNotReady('lists')) {
-      return 3 + '/3';
+      phase = 3;
     }
+    return 'tutorial ' + phase + '/3';
   };
 
   $scope.isOneOnboardingItemCreated = function(feature){
