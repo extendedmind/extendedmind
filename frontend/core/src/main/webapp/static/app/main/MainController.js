@@ -315,13 +315,15 @@ function MainController(
     var phase;
     if (UISessionService.getCurrentFeatureName() === 'tasks') {
       phase = 1;
+      return 'tutorial ' + phase + '/3';
     }
     else if (UISessionService.getCurrentFeatureName() === 'notes') {
       phase = 2;
+      return 'tutorial ' + phase + '/3';
     } else if ($scope.isOnboardingNotReady('lists')) {
       phase = 3;
+      return 'tutorial ' + phase + '/3';
     }
-    return 'tutorial ' + phase + '/3';
   };
 
   $scope.isOneOnboardingItemCreated = function(feature){
