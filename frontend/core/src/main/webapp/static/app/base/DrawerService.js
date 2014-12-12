@@ -102,6 +102,15 @@
     }
   }
 
+  function executeSnapperCreatedCallbacks(snapperSide) {
+    var createdCallbacks = snappers[snapperSide].createdCallbacks;
+    if (createdCallbacks) {
+      for (var i = 0, len = createdCallbacks.length; i < len; i++) {
+        createdCallbacks[i](snapperSide);
+      }
+    }
+  }
+
   // PRIVATE METHODS
 
   function hideRightAndShowLeft() {
@@ -135,7 +144,8 @@
       aboutToOpenCallbacks: {},
       aboutToCloseCallbacks: {},
       openedCallbacks: {},
-      closedCallbacks: {}
+      closedCallbacks: {},
+      createdCallbacks: []
     };
   }
 
@@ -177,6 +187,8 @@
         snappers[drawerSide].snapper.on('open', function(){
           snapperOpen(drawerSide);
         });
+
+        executeSnapperCreatedCallbacks(drawerSide);
 
       } else {
         // Snapper created already, update settings
@@ -221,7 +233,7 @@
         }
       }
     },
-    close: function(drawerSide) {
+    close: function(drawerSide) {
       if (snapperExists(drawerSide) && snappers[drawerSide].snapper.state().state === drawerSide){
         snappers[drawerSide].snapper.close();
       }
@@ -236,7 +248,13 @@
       }
     },
     disableDragging: function(drawerSide) {
-      if (snapperExists(drawerSide) && snappers[drawerSide].isDraggable) {
+      if (!snappers[drawerSide]) {
+        // Create skeleton and push into created callbacks.
+        snappers[drawerSide] = createDrawerSkeleton();
+        snappers[drawerSide].createdCallbacks.push(this.disableDragging);
+      }
+
+      else if (snappers[drawerSide].isDraggable) {
         snappers[drawerSide].snapper.disable();
         snappers[drawerSide].isDraggable = false;
       }

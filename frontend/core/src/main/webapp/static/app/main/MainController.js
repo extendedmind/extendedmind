@@ -308,6 +308,8 @@ function MainController(
   if (!userPreferences || (userPreferences && !userPreferences.onboarded)) {
     $scope.onboardingInProgress = true;
     onboardingPhase = 'new';
+    DrawerService.disableDragging('left');
+    // Disable dragging in the beginning of the tutorial and enable it later.
   }
 
   $scope.isOneOnboardingItemCreated = function(feature){
@@ -349,6 +351,10 @@ function MainController(
     if (listOnboardingMap[feature] && listOnboardingMap[feature].lock === 'on'){
       listOnboardingMap[feature].lock = 'off';
       AnalyticsService.do(feature + 'Onboarded');
+      if (feature === 'tasks') {
+        // Tasks onboarded. Menu is shown and dragging enabled at this point of tutorial.
+        DrawerService.enableDragging('left');
+      }
     }
   };
 
