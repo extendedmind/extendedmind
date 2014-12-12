@@ -124,8 +124,8 @@
       }
 
       var listLockedCallback;
-      if (attrs.listActivate) {
-        listLockedCallback = $parse(attrs.listActivate).bind(undefined, scope);
+      if (attrs.listLocked) {
+        listLockedCallback = $parse(attrs.listLocked).bind(undefined, scope);
       }
 
       function activateListAdd() {
