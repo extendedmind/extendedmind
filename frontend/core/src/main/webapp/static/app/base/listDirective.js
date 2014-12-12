@@ -123,9 +123,17 @@
         listOpenOnAddFn = $parse(attrs.listOpen).bind(undefined, scope);
       }
 
+      var listLockedCallback;
+      if (attrs.listActivate) {
+        listLockedCallback = $parse(attrs.listActivate).bind(undefined, scope);
+      }
+
       function activateListAdd() {
         if (scope.onboardingInProgress){
-          if (scope.listOnboarding.lock === undefined) scope.listOnboarding.lock = 'on';
+          if (scope.listOnboarding.lock === undefined) {
+            scope.listOnboarding.lock = 'on';
+            if (typeof listLockedCallback === 'function') listLockedCallback();
+          }
           else if (scope.listOnboarding.lock === 'off') scope.listOnboarding.lock = 'released';
         }
         if (listOpenOnAddFn){

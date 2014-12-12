@@ -1,5 +1,5 @@
 <div class="container-content--outer" ng-if="isFeatureActive('lists')" list-container drawer-handle="left">
-  <section class="container-content" list="lists" swiper-prevent
+  <section class="container-content" list="lists" list-locked="disableDragging()" swiper-prevent
     ng-init="setListOnboarding('lists', listOnboarding)">
     <div ng-show="isOnboarded('lists') || isListOnboardingLockedOrReleased('lists')">
       <h2 class="group-heading justified row">active</h2>
@@ -30,8 +30,10 @@
     </div>
 
   </section>
-  <footer ng-if="isOnboarded('lists') || !checkListOnboardingLock('lists', 'off')" class="container-content--after" list-footer="getFeatureMap('lists')"></footer>
-  <footer ng-if="!isOnboarded('lists') && checkListOnboardingLock('lists', 'off')" class="container-content--after group-btn">
+  <footer ng-if="isOnboarded('lists') || !checkListOnboardingLock('lists', 'off')"
+    class="container-content--after" list-footer="getFeatureMap('lists')"></footer>
+  <footer ng-if="!isOnboarded('lists') && checkListOnboardingLock('lists', 'off')"
+    class="container-content--after group-btn">
     <button type="submit" class="btn-action" ng-click="completeOnboarding()">
       <span class="text-btn">got it</span>
     </button>

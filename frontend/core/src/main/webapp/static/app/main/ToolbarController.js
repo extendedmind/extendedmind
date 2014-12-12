@@ -26,17 +26,43 @@
     }
   };
 
+  /*
+  * Show feature name, list title or onboarding phase in heading.
+  */
   $scope.getCurrentHeading = function getCurrentHeading() {
-    var currentHeading = $scope.getActiveFeature();
-    if (currentHeading === 'list'){
-      currentHeading = UISessionService.getFeatureData(currentHeading).title;
-    }else if (currentHeading === 'user'){
-      currentHeading = $scope.getActiveDisplayName();
+    if ($scope.onboardingInProgress) {
+      return $scope.getOnboardingPhase();
+    } else {
+      var currentHeading = $scope.getActiveFeature();
+      if (currentHeading === 'list'){
+        currentHeading = UISessionService.getFeatureData(currentHeading).title;
+      }else if (currentHeading === 'user'){
+        currentHeading = $scope.getActiveDisplayName();
+      }
+      if (!$scope.online) {
+        currentHeading = '*' + currentHeading;
+      }
+      return currentHeading;
     }
-    if (!$scope.online) {
-      currentHeading = '*' + currentHeading;
+  };
+
+  $scope.isToolbarMenuHidden = function() {
+    if ($scope.onboardingInProgress) {
+      if (!$scope.isOnboarded('tasks') &&
+          ($scope.checkListOnboardingLock('tasks', undefined) ||
+           $scope.checkListOnboardingLock('tasks', 'on')) &&
+          $scope.getActiveFeature() === 'tasks')
+      {
+        return true;
+      }
+      else if (!$scope.isOnboarded('lists') &&
+               ($scope.checkListOnboardingLock('lists', 'off') ||
+                $scope.checkListOnboardingLock('lists', 'on')) &&
+               $scope.getActiveFeature() === 'lists')
+      {
+        return true;
+      }
     }
-    return currentHeading;
   };
 
   function switchFeature() {

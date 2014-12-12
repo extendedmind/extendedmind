@@ -165,6 +165,10 @@ function MainController(
     }
   };
 
+  $scope.disableDragging = function() {
+    DrawerService.disableDragging('left');
+  };
+
   $scope.isEditorVisible = function isEditorVisible() {
     return DrawerService.isOpen('right');
   };
@@ -174,18 +178,8 @@ function MainController(
   };
 
   $scope.isFooterNavigationHidden = function(){
-    return $scope.onboardingInProgress ||
-    (packaging.endsWith('cordova') && UserSessionService.getUIPreference('hideFooter'));
-  };
-
-  $scope.isToolbarMenuHidden = function() {
-    if (!$scope.isOnboarded('tasks') &&
-        ($scope.checkListOnboardingLock('tasks', undefined) ||
-         $scope.checkListOnboardingLock('tasks', 'on')) &&
-        $scope.getActiveFeature() === 'tasks')
-    {
-      return true;
-    }
+    return $scope.onboardingInProgress || (packaging.endsWith('cordova') &&
+                                           UserSessionService.getUIPreference('hideFooter'));
   };
 
   $scope.isFooterAddItemHidden = function() {
@@ -312,6 +306,22 @@ function MainController(
     // Disable dragging in the beginning of the tutorial and enable it later.
   }
 
+  /*
+  * 1/3 - tasks
+  * 2/3 - notes
+  * 3/3 - lists
+  */
+  $scope.getOnboardingPhase = function() {
+    if (UISessionService.getCurrentFeatureName() === 'tasks') {
+      return 1 + '/3';
+    }
+    else if (UISessionService.getCurrentFeatureName() === 'notes') {
+      return 2 + '/3';
+    } else if ($scope.isOnboardingNotReady('lists')) {
+      return 3 + '/3';
+    }
+  };
+
   $scope.isOneOnboardingItemCreated = function(feature){
     if (feature === 'tasks'){
       // Tasks onboarding is not ready if there are no tasks
@@ -383,7 +393,8 @@ function MainController(
     if (feature === 'focusTasks' || feature === 'focusNotes' || feature === 'inbox'){
       UserSessionService.setUIPreference(feature + 'Onboarded', packaging);
       AnalyticsService.do(feature + 'Onboarded');
-    }else {
+    } else {
+      DrawerService.enableDragging('left'); // Enable dragging when tutorial completed.
       UserSessionService.setPreference('onboarded', packaging);
       AnalyticsService.do('onboarded');
     }

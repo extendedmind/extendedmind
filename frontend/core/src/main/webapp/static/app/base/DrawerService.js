@@ -102,11 +102,11 @@
     }
   }
 
-  function executeSnapperCreatedCallbacks(snapperSide) {
-    var createdCallbacks = snappers[snapperSide].createdCallbacks;
-    if (createdCallbacks) {
-      for (var i = 0, len = createdCallbacks.length; i < len; i++) {
-        createdCallbacks[i](snapperSide);
+  function executeSnapperinitializedCallbacks(snapperSide) {
+    var initializedCallbacks = snappers[snapperSide].initializedCallbacks;
+    if (initializedCallbacks) {
+      for (var i = 0, len = initializedCallbacks.length; i < len; i++) {
+        initializedCallbacks[i](snapperSide);
       }
     }
   }
@@ -145,7 +145,7 @@
       aboutToCloseCallbacks: {},
       openedCallbacks: {},
       closedCallbacks: {},
-      createdCallbacks: []
+      initializedCallbacks: []
     };
   }
 
@@ -188,8 +188,6 @@
           snapperOpen(drawerSide);
         });
 
-        executeSnapperCreatedCallbacks(drawerSide);
-
       } else {
         // Snapper created already, update settings
         snappers[drawerSide].snapper.settings(settings);
@@ -198,6 +196,7 @@
         if (settings.touchToDrag) this.enableDragging(drawerSide);
         else this.disableDragging(drawerSide);
       }
+      executeSnapperinitializedCallbacks(drawerSide);
     },
     deleteDrawer: function(drawerSide) {
       if (snapperExists(drawerSide))
@@ -249,12 +248,14 @@
     },
     disableDragging: function(drawerSide) {
       if (!snappers[drawerSide]) {
-        // Create skeleton and push into created callbacks.
+        // Create skeleton.
         snappers[drawerSide] = createDrawerSkeleton();
-        snappers[drawerSide].createdCallbacks.push(this.disableDragging);
       }
 
-      else if (snappers[drawerSide].isDraggable) {
+      if (!snapperExists(drawerSide)) {
+        // Push into created callbacks.
+        snappers[drawerSide].initializedCallbacks.push(this.disableDragging);
+      } else if (snappers[drawerSide].isDraggable) {
         snappers[drawerSide].snapper.disable();
         snappers[drawerSide].isDraggable = false;
       }
