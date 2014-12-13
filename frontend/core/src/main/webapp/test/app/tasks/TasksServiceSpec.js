@@ -20,7 +20,7 @@
   // INJECTS
 
   var $httpBackend;
-  var TasksService, BackendClientService, HttpClientService, ListsService;
+  var TasksService, BackendClientService, HttpClientService, ListsService, UserSessionService;
 
   // MOCKS
 
@@ -45,12 +45,16 @@
   beforeEach(function() {
     module('em.appTest');
 
-    inject(function (_$httpBackend_, _TasksService_, _BackendClientService_, _HttpClientService_, _ListsService_) {
+    inject(function (_$httpBackend_, _TasksService_, _BackendClientService_, _HttpClientService_,
+                     _ListsService_, _UserSessionService_) {
       $httpBackend = _$httpBackend_;
       TasksService = _TasksService_;
       BackendClientService = _BackendClientService_;
       HttpClientService = _HttpClientService_;
       ListsService = _ListsService_;
+      UserSessionService = _UserSessionService_;
+      UserSessionService.executeNotifyOwnerCallbacks(testOwnerUUID);
+
       TasksService.setTasks(
         [{
           'uuid': '7a612ca2-7de0-45ad-a758-d949df37f51e',

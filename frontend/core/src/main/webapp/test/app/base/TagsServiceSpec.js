@@ -19,7 +19,7 @@ describe('TagsService', function() {
   // INJECTS
 
   var $httpBackend;
-  var TagsService, BackendClientService, HttpClientService;
+  var TagsService, BackendClientService, HttpClientService, UserSessionService;
 
   // MOCKS
 
@@ -40,11 +40,15 @@ describe('TagsService', function() {
   beforeEach(function() {
     module('em.appTest');
 
-    inject(function (_$httpBackend_, _TagsService_, _BackendClientService_, _HttpClientService_) {
+    inject(function (_$httpBackend_, _TagsService_, _BackendClientService_, _HttpClientService_,
+                     _UserSessionService_) {
       $httpBackend = _$httpBackend_;
       TagsService = _TagsService_;
       BackendClientService = _BackendClientService_;
       HttpClientService = _HttpClientService_;
+      UserSessionService = _UserSessionService_;
+      UserSessionService.executeNotifyOwnerCallbacks(testOwnerUUID);
+
       TagsService.setTags(
         [{
           'uuid': '1208d45b-3b8c-463e-88f3-f7ef19ce87cd',

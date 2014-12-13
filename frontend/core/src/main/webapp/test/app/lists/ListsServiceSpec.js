@@ -26,7 +26,8 @@ describe('ListsService', function() {
       TagsService,
       TasksService,
       BackendClientService,
-      HttpClientService;
+      HttpClientService,
+      UserSessionService;
 
   // MOCKS
 
@@ -52,7 +53,7 @@ describe('ListsService', function() {
     module('em.appTest');
 
     inject(function (_$httpBackend_, _ListsService_, _ArrayService_, _TagsService_, _TasksService_,
-                     _BackendClientService_, _HttpClientService_) {
+                     _BackendClientService_, _HttpClientService_, _UserSessionService_) {
       $httpBackend = _$httpBackend_;
       ListsService = _ListsService_;
       ArrayService = _ArrayService_;
@@ -60,6 +61,9 @@ describe('ListsService', function() {
       TasksService = _TasksService_;
       BackendClientService = _BackendClientService_;
       HttpClientService = _HttpClientService_;
+      UserSessionService = _UserSessionService_;
+      UserSessionService.executeNotifyOwnerCallbacks(testOwnerUUID);
+
       ListsService.setLists(
         [{
             'uuid': '0da0bff6-3bd7-4884-adba-f47fab9f270d',
@@ -72,14 +76,12 @@ describe('ListsService', function() {
             'created': 1390912600947,
             'modified': 1390912600947,
             'title': 'trip to Dublin',
-            'completable': true,
             'due': '2013-10-31'
           }, {
             'uuid': '07bc96d1-e8b2-49a9-9d35-1eece6263f98',
             'created': 1390912600983,
             'modified': 1390912600983,
             'title': 'write essay on cognitive biases',
-            'completable': true
         }], testOwnerUUID);
       TasksService.setTasks(
         [{
@@ -126,10 +128,12 @@ describe('ListsService', function() {
   });
 
   it('should save new list', function () {
-    var testList = {
+    var testListValues = {
       'title': 'test list'
     };
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/list', testList)
+    var testList = ListsService.getNewList(testListValues, testOwnerUUID);
+
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/list', testListValues)
        .respond(200, putNewListResponse);
     ListsService.saveList(testList, testOwnerUUID);
     $httpBackend.flush();
@@ -145,8 +149,11 @@ describe('ListsService', function() {
 
   it('should update existing list', function () {
     var tripToDublin = ListsService.getListInfo('bf726d03-8fee-4614-8b68-f9f885938a51', testOwnerUUID).list;
-    tripToDublin.title = 'another trip to Dublin';
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/list/' + tripToDublin.uuid, tripToDublin)
+    tripToDublin.trans.title = 'another trip to Dublin';
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/list/' + tripToDublin.uuid,
+                          {title: tripToDublin.trans.title,
+                           due: tripToDublin.due,
+                           modified: tripToDublin.modified})
        .respond(200, putExistingListResponse);
     ListsService.saveList(tripToDublin, testOwnerUUID);
     $httpBackend.flush();

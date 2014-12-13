@@ -22,7 +22,8 @@ describe('ItemsService', function() {
 
   var $httpBackend;
   var ItemsService, BackendClientService, HttpClientService,
-      ListsService, TagsService, TasksService, NotesService, ItemLikeService;
+      ListsService, TagsService, TasksService, NotesService, ItemLikeService,
+      UserSessionService;
 
   // MOCKS
 
@@ -50,7 +51,8 @@ describe('ItemsService', function() {
     module('em.appTest');
 
     inject(function (_$httpBackend_, _ItemsService_, _BackendClientService_, _HttpClientService_,
-                    _ListsService_, _TagsService_, _TasksService_, _NotesService_, _ItemLikeService_) {
+                    _ListsService_, _TagsService_, _TasksService_, _NotesService_, _ItemLikeService_,
+                    _UserSessionService_) {
       $httpBackend = _$httpBackend_;
       ItemsService = _ItemsService_;
       BackendClientService = _BackendClientService_;
@@ -60,6 +62,8 @@ describe('ItemsService', function() {
       TasksService = _TasksService_;
       NotesService = _NotesService_;
       ItemLikeService = _ItemLikeService_;
+      UserSessionService = _UserSessionService_;
+      UserSessionService.executeNotifyOwnerCallbacks(testOwnerUUID);
 
       ItemsService.setItems(
         [{

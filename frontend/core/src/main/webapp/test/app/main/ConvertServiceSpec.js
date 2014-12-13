@@ -483,7 +483,7 @@ it('should set transient properties object with \'date\' property to task ' +
   // TESTS
   var convertedTask = TasksService.getTaskInfo(listToTaskResponse.uuid, testOwnerUUID).task;
 
-  expect(convertedTask.trans.date)
+  expect(convertedTask.trans.due)
   .toEqual('2014-08-29');
 });
 

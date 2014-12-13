@@ -32,15 +32,17 @@
       };
     }
   }
+  UserSessionService.registerNofifyOwnerCallback(initializeArrays, 'ItemsService');
 
   function updateItem(item, ownerUUID) {
+    ItemLikeService.persistAndReset(item, 'item', ownerUUID, itemFieldInfos);
     return ArrayService.updateItem(item,
                                    items[ownerUUID].activeItems,
                                    items[ownerUUID].deletedItems);
   }
 
   function setItem(item, ownerUUID) {
-    initializeArrays(ownerUUID);
+    ItemLikeService.persistAndReset(item, 'item', ownerUUID, itemFieldInfos);
     return ArrayService.setItem(item,
                                 items[ownerUUID].activeItems,
                                 items[ownerUUID].deletedItems);
@@ -51,31 +53,29 @@
       return ItemLikeService.getNew(initialValues, 'item', ownerUUID, itemFieldInfos);
     },
     setItems: function(itemsResponse, ownerUUID) {
-      initializeArrays(ownerUUID);
-      ItemLikeService.resetTrans(itemsResponse, 'item', ownerUUID, itemFieldInfos);
+      ItemLikeService.persistAndReset(itemsResponse, 'item', ownerUUID, itemFieldInfos);
       return ArrayService.setArrays(itemsResponse,
                                     items[ownerUUID].activeItems,
                                     items[ownerUUID].deletedItems);
     },
     updateItems: function(itemsResponse, ownerUUID) {
-      initializeArrays(ownerUUID);
-      ItemLikeService.resetTrans(itemsResponse, 'item', ownerUUID, itemFieldInfos);
+      ItemLikeService.persistAndReset(itemsResponse, 'item', ownerUUID, itemFieldInfos);
       return ArrayService.updateArrays(itemsResponse,
                                        items[ownerUUID].activeItems,
                                        items[ownerUUID].deletedItems);
     },
     updateItemProperties: function(uuid, properties, ownerUUID) {
-      return ArrayService.updateItemProperties(uuid,
-                                               properties,
-                                               items[ownerUUID].activeItems,
-                                               items[ownerUUID].deletedItems);
+      var itemInfo = this.getItemInfo(uuid, ownerUUID);
+      if (itemInfo){
+        ItemLikeService.updateObjectProperties(itemInfo.item, properties);
+        updateItem(itemInfo.item, ownerUUID);
+        return itemInfo.item;
+      }
     },
     getItems: function(ownerUUID) {
-      initializeArrays(ownerUUID);
       return items[ownerUUID].activeItems;
     },
     getItemInfo: function(uuid, ownerUUID) {
-      initializeArrays(ownerUUID);
       var item = items[ownerUUID].activeItems.findFirstObjectByKeyValue('uuid', uuid, 'trans');
       if (item){
         return {
@@ -92,11 +92,9 @@
       }
     },
     getDeletedItems: function(ownerUUID) {
-      initializeArrays(ownerUUID);
       return items[ownerUUID].deletedItems;
     },
     saveItem: function(item, ownerUUID) {
-      initializeArrays(ownerUUID);
       var deferred = $q.defer();
       if (items[ownerUUID].deletedItems.findFirstObjectByKeyValue('uuid', item.trans.uuid, 'trans')) {
         deferred.reject({type: 'deleted'});
@@ -114,7 +112,6 @@
       return deferred.promise;
     },
     deleteItem: function(item, ownerUUID) {
-      initializeArrays(ownerUUID);
       var deferred = $q.defer();
       // Check if item has already been deleted
       if (items[ownerUUID].deletedItems.findFirstObjectByKeyValue('uuid', item.trans.uuid, 'trans')) {
@@ -132,7 +129,6 @@
       return deferred.promise;
     },
     undeleteItem: function(item, ownerUUID) {
-      initializeArrays(ownerUUID);
       var deferred = $q.defer();
       // Check that item is deleted before trying to undelete
       if (!items[ownerUUID].deletedItems.findFirstObjectByKeyValue('uuid', item.trans.uuid, 'trans')) {
@@ -150,13 +146,11 @@
       return deferred.promise;
     },
     removeItem: function(item, ownerUUID) {
-      initializeArrays(ownerUUID);
       ArrayService.removeFromArrays(item,
                                     items[ownerUUID].activeItems,
                                     items[ownerUUID].deletedItems);
     },
     itemToTask: function(item, ownerUUID) {
-      initializeArrays(ownerUUID);
       // Check that item is not deleted before trying to turn it into a task
       if (items[ownerUUID].deletedItems.indexOf(item) > -1) {
         return;
@@ -170,7 +164,6 @@
       }
     },
     itemToNote: function(item, ownerUUID) {
-      initializeArrays(ownerUUID);
       // Check that item is not deleted before trying to turn it into a note
       if (items[ownerUUID].deletedItems.indexOf(item) > -1) {
         return;
@@ -185,7 +178,6 @@
       }
     },
     itemToList: function(item, ownerUUID) {
-      initializeArrays(ownerUUID);
       // Check that item is not deleted before trying to turn it into a list
       if (items[ownerUUID].deletedItems.indexOf(item) > -1) {
         return;

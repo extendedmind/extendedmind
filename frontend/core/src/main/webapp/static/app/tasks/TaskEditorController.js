@@ -93,8 +93,8 @@
   };
 
   $scope.getCalendarStartingDate = function(task) {
-    if (task.trans && task.trans.date)
-      return DateService.getDateTodayOrFromLaterYYYYMMDD(task.trans.date);
+    if (task.trans.due)
+      return DateService.getDateTodayOrFromLaterYYYYMMDD(task.trans.due);
   };
 
   $scope.closeCalendar = function() {
@@ -107,8 +107,7 @@
   };
 
   $scope.setTaskDate = function(task, date) {
-    if (!task.trans) task.trans = {};
-    task.trans.date = DateService.getYYYYMMDD(date);
+    task.trans.due = DateService.getYYYYMMDD(date);
   };
 
   $scope.setDateAndSave = function(date) {
@@ -120,7 +119,7 @@
   };
 
   $scope.clearTransientDate = function(task) {
-    if (task.trans) delete task.trans.date;
+    if (task.trans.due) delete task.trans.due;
   };
 
   // CONTEXT PICKER

@@ -43,10 +43,10 @@
 
           <div ng-if="!listPickerOpen">
             <div ng-hide="descriptionFocused" class="group-mixed vertically-centered animate-fade-in">
-              <a href ng-class="task.trans.date ? 'link' : 'downplayed'" class="group-mixed--middle" ng-click="openCalendar()">
-                <span class="text-link" ng-bind="task.trans.date ? (task.trans.date | date:'EEE MMM d y' | lowercase) : 'select date\u2026'"></span>
+              <a href ng-class="task.trans.due ? 'link' : 'downplayed'" class="group-mixed--middle" ng-click="openCalendar()">
+                <span class="text-link" ng-bind="task.trans.due ? (task.trans.due | date:'EEE MMM d y' | lowercase) : 'select date\u2026'"></span>
               </a>
-              <div ng-if="task.trans.date" class="group-mixed--right">
+              <div ng-if="task.trans.due" class="group-mixed--right">
                 <button type="button" class="btn-clear" ng-click="clearTransientDate(task)"></button>
               </div>
             </div>
@@ -115,7 +115,7 @@
               </a>
             </div>
 
-            <div ng-hide="urlFocused || !task.trans.date" class="row-vertically-centered">
+            <div ng-hide="urlFocused || !task.trans.due" class="row-vertically-centered">
               <a href ng-class="task.repeating ? 'link' : 'downplayed'" ng-click="openRepeatingPicker()">
                 <span class="text-link" ng-bind="task.repeating ? task.repeating : 'select repeating\u2026'"></span>
               </a>

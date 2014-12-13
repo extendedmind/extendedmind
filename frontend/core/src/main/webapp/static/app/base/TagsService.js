@@ -16,7 +16,8 @@
  /*global angular */
  'use strict';
 
- function TagsService($q, ArrayService, BackendClientService, ItemLikeService) {
+ function TagsService($q, ArrayService, BackendClientService, ItemLikeService, PersistentStorageService,
+                      UserSessionService) {
 
   var tagFieldInfos = ItemLikeService.getFieldInfos(
     ['tagType',
@@ -41,15 +42,17 @@
       };
     }
   }
+  UserSessionService.registerNofifyOwnerCallback(initializeArrays, 'TagsService');
 
   function updateTag(tag, ownerUUID) {
+    ItemLikeService.persistAndReset(tag, 'tag', ownerUUID, tagFieldInfos);
     return ArrayService.updateItem(tag,
                                    tags[ownerUUID].activeTags,
                                    tags[ownerUUID].deletedTags);
   }
 
   function setTag(tag, ownerUUID) {
-    initializeArrays(ownerUUID);
+    ItemLikeService.persistAndReset(tag, 'tag', ownerUUID, tagFieldInfos);
     return ArrayService.setItem(tag,
                                 tags[ownerUUID].activeTags,
                                 tags[ownerUUID].deletedTags);
@@ -60,15 +63,13 @@
       return ItemLikeService.getNew(initialValues, 'tag', ownerUUID, tagFieldInfos);
     },
     setTags: function(tagsResponse, ownerUUID) {
-      initializeArrays(ownerUUID);
-      ItemLikeService.resetTrans(tagsResponse, 'tag', ownerUUID, tagFieldInfos);
+      ItemLikeService.persistAndReset(tagsResponse, 'tag', ownerUUID, tagFieldInfos);
       return ArrayService.setArrays(tagsResponse,
                                     tags[ownerUUID].activeTags,
                                     tags[ownerUUID].deletedTags);
     },
     updateTags: function(tagsResponse, ownerUUID) {
-      initializeArrays(ownerUUID);
-      ItemLikeService.resetTrans(tagsResponse, 'tag', ownerUUID, tagFieldInfos);
+      ItemLikeService.persistAndReset(tagsResponse, 'tag', ownerUUID, tagFieldInfos);
       var latestModified = ArrayService.updateArrays(tagsResponse,
                                                      tags[ownerUUID].activeTags,
                                                      tags[ownerUUID].deletedTags);
@@ -85,15 +86,12 @@
       return latestModified;
     },
     getTags: function(ownerUUID) {
-      initializeArrays(ownerUUID);
       return tags[ownerUUID].activeTags;
     },
     getDeletedTags: function(ownerUUID) {
-      initializeArrays(ownerUUID);
       return tags[ownerUUID].deletedTags;
     },
     getTagInfo: function(uuid, ownerUUID) {
-      initializeArrays(ownerUUID);
       var tag = tags[ownerUUID].activeTags.findFirstObjectByKeyValue('uuid', uuid, 'trans');
       if (tag){
         return {
@@ -110,7 +108,6 @@
       }
     },
     saveTag: function(tag, ownerUUID) {
-      initializeArrays(ownerUUID);
       var deferred = $q.defer();
       if (tags[ownerUUID].deletedTags.findFirstObjectByKeyValue('uuid', tag.trans.uuid, 'trans')) {
         deferred.reject({type: 'deleted'});
@@ -128,9 +125,7 @@
       return deferred.promise;
     },
     deleteTag: function(tag, ownerUUID) {
-      initializeArrays(ownerUUID);
       var deferred = $q.defer();
-      // Check if item has already been deleted
       if (tags[ownerUUID].deletedTags.findFirstObjectByKeyValue('uuid', tag.trans.uuid, 'trans')) {
         deferred.resolve('unmodified');
       }else{
@@ -149,9 +144,7 @@
       return deferred.promise;
     },
     undeleteTag: function(tag, ownerUUID) {
-      initializeArrays(ownerUUID);
       var deferred = $q.defer();
-      // Check that tag is deleted before trying to undelete
       if (!tags[ownerUUID].deletedTags.findFirstObjectByKeyValue('uuid', tag.trans.uuid, 'trans')) {
         deferred.resolve('unmodified');
       }else{
@@ -178,33 +171,29 @@
     // Special method used by ListsService to insert a generated
     // history tag to the tags array
     setGeneratedTag: function(tag, ownerUUID) {
-      initializeArrays(ownerUUID);
-      return ArrayService.setItem(tag,
-                                  tags[ownerUUID].activeTags,
-                                  tags[ownerUUID].deletedTags);
+      setTag(tag, ownerUUID);
     },
     // Register callbacks that are fired on tag deletion.
     registerTagDeletedCallback: function(tagDeletedCallback, id) {
       tagDeletedCallbacks[id] = tagDeletedCallback;
     },
     removeDeletedTagFromItems: function(items, deletedTag) {
+      var modifiedItems = [];
       for (var i = 0, len = items.length; i < len; i++) {
         if (items[i].relationships && items[i].relationships.tags) {
           for (var j = 0, jlen = items[i].relationships.tags.length; j < jlen; j++) {
             if (items[i].relationships.tags[j] === deletedTag.uuid) {
               items[i].relationships.tags.splice(j, 1);
+              modifiedItems.push(items[i]);
             }
           }
         }
-        if (items[i].trans && items[i].trans.context) {
-          if (items[i].trans.context === deletedTag.uuid) {
-            delete items[i].trans.context;
-          }
-        }
       }
+      return modifiedItems;
     }
   };
 }
 
-TagsService['$inject'] = ['$q', 'ArrayService', 'BackendClientService', 'ItemLikeService'];
+TagsService['$inject'] = ['$q', 'ArrayService', 'BackendClientService', 'ItemLikeService',
+                          'PersistentStorageService', 'UserSessionService'];
 angular.module('em.base').factory('TagsService', TagsService);

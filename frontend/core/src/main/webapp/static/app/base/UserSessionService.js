@@ -21,6 +21,7 @@
   var latestModified = {};
   var itemsSynchronized = {};
   var offlineEnabled = false;
+  var notifyOwnerCallbacks = {};
 
   // Sync session storage with local storage.
   function syncWebStorages() {
@@ -66,6 +67,17 @@
       return preferences;
     } else {
       return {};
+    }
+  }
+
+  function executeNotifyOwnerCallbacks(userUUID, collectives) {
+    for (var id in notifyOwnerCallbacks) {
+      notifyOwnerCallbacks[id](userUUID);
+      if (collectives){
+        for (var uuid in collectives){
+          notifyOwnerCallbacks[id](uuid, true);
+        }
+      }
     }
   }
 
@@ -138,12 +150,10 @@
       if (email) {
         setEmail(email);
       }
+
+      // Notify owner UUID's
+      executeNotifyOwnerCallbacks(authenticateResponse.userUUID, authenticateResponse.collectives);
       return credentials;
-    },
-    getBackendDelta: function(){
-      syncWebStorages();
-      var storedDelta = SessionStorageService.getBackendDelta();
-      return storedDelta ? parseInt(storedDelta) : undefined;
     },
     setEmail: function(email) {
       setEmail(email);
@@ -200,6 +210,11 @@
     getCredentials: function() {
       syncWebStorages();
       return SessionStorageService.getCredentials();
+    },
+    getBackendDelta: function(){
+      syncWebStorages();
+      var storedDelta = SessionStorageService.getBackendDelta();
+      return storedDelta ? parseInt(storedDelta) : undefined;
     },
     getEmail: function() {
       // Sync only email in Web Storages.
@@ -270,6 +285,26 @@
     },
     getUserType: function() {
       return parseInt(SessionStorageService.getUserType());
+    },
+    registerNofifyOwnerCallback: function(callback, id){
+      notifyOwnerCallbacks[id] = callback;
+
+      // In case the registration comes after UserSessionService has received owners,
+      // notify caller immediately
+      var userUUID = this.getUserUUID();
+      if (userUUID){
+        callback(userUUID);
+      }
+      var collectives = this.getCollectives();
+      if (collectives){
+        for (var uuid in collectives){
+          callback(uuid, true);
+        }
+      }
+    },
+    // NOTE: Here for easier testing!
+    executeNotifyOwnerCallbacks: function(userUUID, collectives){
+      executeNotifyOwnerCallbacks(userUUID, collectives);
     }
   };
 }

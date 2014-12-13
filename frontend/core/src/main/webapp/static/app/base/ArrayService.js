@@ -196,37 +196,6 @@ function ArrayService() {
 
       return item.modified;
     },
-    // uuid, properties and activeArray are mandatory, rest are optional
-    updateItemProperties: function(uuid, properties, activeArray, deletedArray, otherArrays) {
-      function updateProperties(item, properties) {
-        for (var property in properties) {
-          if (properties.hasOwnProperty(property)) {
-            item[property] = properties[property];
-          }
-        }
-        return item;
-      }
-      var item;
-      var activeItemId = activeArray.findFirstIndexByKeyValue('uuid', uuid);
-      if (activeItemId !== undefined) {
-        item = updateProperties(activeArray[activeItemId], properties);
-      } else if (deletedArray) {
-        var deletedItemId = deletedArray.findFirstIndexByKeyValue('uuid', uuid);
-        if (deletedItemId !== undefined) {
-          item = updateProperties(deletedArray[deletedItemId], properties);
-        } else {
-          // Try other arrays
-          var otherArrayWithItemInfo = getFirstMatchingArrayInfoByUUID(uuid, otherArrays);
-          if (otherArrayWithItemInfo) {
-            var otherArrayItemId = otherArrayWithItemInfo.array.findFirstIndexByKeyValue('uuid', uuid);
-            if (otherArrayItemId !== undefined) {
-              item = updateProperties(otherArrayWithItemInfo.array[otherArrayItemId], properties);
-            }
-          }
-        }
-      }
-      return item;
-    },
     combineArrays: function(firstArray, secondArray, id, reverse) {
       function compareById(firstItem, secondItem) {
 

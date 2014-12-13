@@ -20,25 +20,18 @@
                        ArrayService, BackendClientService, ExtendedItemService, ItemLikeService,
                        ListsService, TagsService, UISessionService, UserSessionService, UUIDService) {
   var taskFieldInfos = ItemLikeService.getFieldInfos(
-    [ {
-        name: 'due',
-        isEdited: function(item, ownerUUID){
-          if (item.mod && item.mod.due !== item.trans.date) return true;
-          else if (item.due !== item.trans.date) return true;
-        },
-        copyTransToMod: copyDateToDue,
-        resetTrans: copyDueToDate,
-      },
+    [ 'due',
       'reminder',
       'repeating',
       {
         name: 'completed',
-        isEdited: function(item, ownerUUID){
-          if (item.mod && item.mod.completed && !item.trans.completed) return true;
-          else if (item.completed && !item.trans.completed) return true;
+        isEdited: function(task, ownerUUID){
+          if (task.mod && task.mod.completed && !task.trans.completed) return true;
+          else if (task.completed && !task.trans.completed) return true;
         },
-        copyTransToMod: copyCompletedTransToMod,
-        resetTrans: copyCompletedToTrans,
+        resetTrans: function(task){
+          task.trans.completed = task.completed !== undefined;
+        },
       },
       // TODO:
       // assignee,
@@ -62,13 +55,14 @@
       };
     }
   }
+  UserSessionService.registerNofifyOwnerCallback(initializeArrays, 'TasksService');
 
   function getOtherArrays(ownerUUID) {
     return [{array: tasks[ownerUUID].archivedTasks, id: 'archived'}];
   }
 
   function updateTask(task, ownerUUID) {
-    ItemLikeService.resetTrans(task, 'task', ownerUUID, taskFieldInfos);
+    ItemLikeService.persistAndReset(task, 'task', ownerUUID, taskFieldInfos);
     return ArrayService.updateItem(task,
                                    tasks[ownerUUID].activeTasks,
                                    tasks[ownerUUID].deletedTasks,
@@ -76,8 +70,7 @@
   }
 
   function setTask(task, ownerUUID) {
-    initializeArrays(ownerUUID);
-    ItemLikeService.resetTrans(task, 'task', ownerUUID, taskFieldInfos);
+    ItemLikeService.persistAndReset(task, 'task', ownerUUID, taskFieldInfos);
     ArrayService.setItem(task,
                          tasks[ownerUUID].activeTasks,
                          tasks[ownerUUID].deletedTasks,
@@ -119,9 +112,12 @@
     if (tasks[ownerUUID] && deletedTag) {
       if (!undelete){
         // Remove tags from existing parents
-        TagsService.removeDeletedTagFromItems(tasks[ownerUUID].activeTasks, deletedTag);
-        TagsService.removeDeletedTagFromItems(tasks[ownerUUID].deletedTasks, deletedTag);
-        TagsService.removeDeletedTagFromItems(tasks[ownerUUID].archivedTasks, deletedTag);
+        var modifiedItems = TagsService.removeDeletedTagFromItems(tasks[ownerUUID].activeTasks, deletedTag);
+        modifiedItems.concat(TagsService.removeDeletedTagFromItems(tasks[ownerUUID].deletedTasks, deletedTag));
+        modifiedItems.concat(TagsService.removeDeletedTagFromItems(tasks[ownerUUID].archivedTasks,deletedTag));
+        for (var i=0,len=modifiedItems.length;i<len;i++){
+          updateTask(modifiedItems[i], ownerUUID);
+        }
       }else{
         // Undelete
         // TODO: Deleted context should not be removed completely but instead put to a task.history
@@ -136,9 +132,15 @@
     if (tasks[ownerUUID] && deletedList){
       if (!undelete){
         // Remove list from existing parents
-        ListsService.removeDeletedListFromItems(tasks[ownerUUID].activeTasks, deletedList);
-        ListsService.removeDeletedListFromItems(tasks[ownerUUID].deletedTasks, deletedList);
-        ListsService.removeDeletedListFromItems(tasks[ownerUUID].archivedTasks, deletedList);
+        var modifiedItems = ListsService.removeDeletedListFromItems(tasks[ownerUUID].activeTasks,
+                                                                    deletedList);
+        modifiedItems.concat(ListsService.removeDeletedListFromItems(tasks[ownerUUID].deletedTasks,
+                                                                     deletedList));
+        modifiedItems.concat(ListsService.removeDeletedListFromItems(tasks[ownerUUID].archivedTasks,
+                                                                     deletedList));
+        for (var i=0,len=modifiedItems.length;i<len;i++){
+          updateTask(modifiedItems[i], ownerUUID);
+        }
       }else{
         // TODO: Undelete
       }
@@ -146,103 +148,62 @@
   };
   ListsService.registerListDeletedCallback(listDeletedCallback, 'TasksService');
 
-  // due is persistent, date is transient
-  function copyDueToDate(task) {
-    if (task.due) {
-      if (!task.trans) task.trans = {};
-      task.trans.date = task.due;
-    }
-  }
-  // date is transient, due is persistent
-  function copyDateToDue(task) {
-    if (task.trans && task.trans.date) task.due = task.trans.date;
-
-    // date has been removed from task, delete persistent value
-    else if (task.due) delete task.due;
-
-    // AngularJS sets date property to 'null' if it is used in ng-model data-binding and no value is set.
-    // http://stackoverflow.com/a/7445368
-    if (task.trans)
-      if (!Date.parse(task.trans.date)) delete task.trans.date;
-  }
-
-  function copyCompletedTransToMod(task){
-    if (task.trans.completed){
-      if (!task.mod) task.mod = {};
-      task.mod.completed = BackendClientService.getFakeTimestamp();
-    }
-  }
-
-  function copyCompletedToTrans(task) {
-    task.trans.completed = task.completed !== undefined;
-  }
-
   return {
     setTasks: function(tasksResponse, ownerUUID) {
-      initializeArrays(ownerUUID);
-      ItemLikeService.resetTrans(tasksResponse, 'task', ownerUUID, taskFieldInfos);
+      ItemLikeService.persistAndReset(tasksResponse, 'task', ownerUUID, taskFieldInfos);
       return ArrayService.setArrays(tasksResponse,
                                     tasks[ownerUUID].activeTasks,
                                     tasks[ownerUUID].deletedTasks,
                                     getOtherArrays(ownerUUID));
     },
     updateTasks: function(tasksResponse, ownerUUID) {
-      initializeArrays(ownerUUID);
-      ItemLikeService.resetTrans(tasksResponse, 'task', ownerUUID, taskFieldInfos);
+      ItemLikeService.persistAndReset(tasksResponse, 'task', ownerUUID, taskFieldInfos);
       return ArrayService.updateArrays(tasksResponse,
                                        tasks[ownerUUID].activeTasks,
                                        tasks[ownerUUID].deletedTasks,
                                        getOtherArrays(ownerUUID));
     },
     updateTaskProperties: function(uuid, properties, ownerUUID) {
-      var updatedTask = ArrayService.updateItemProperties(uuid,
-                                                          properties,
-                                                          tasks[ownerUUID].activeTasks,
-                                                          tasks[ownerUUID].deletedTasks,
-                                                          getOtherArrays(ownerUUID));
-      if (updatedTask){
-        ItemLikeService.resetTrans(updatedTask, 'task', ownerUUID, taskFieldInfos);
+      var taskInfo = this.getTaskInfo(uuid, ownerUUID);
+      if (taskInfo){
+        ItemLikeService.updateObjectProperties(taskInfo.task, properties);
+        updateTask(taskInfo.task, ownerUUID);
+        return taskInfo.task;
       }
-      return updatedTask;
     },
     getTasks: function(ownerUUID) {
-      initializeArrays(ownerUUID);
       return tasks[ownerUUID].activeTasks;
     },
     getArchivedTasks: function(ownerUUID) {
-      initializeArrays(ownerUUID);
       return tasks[ownerUUID].archivedTasks;
     },
     getDeletedTasks: function(ownerUUID) {
-      initializeArrays(ownerUUID);
       return tasks[ownerUUID].deletedTasks;
     },
     getTaskInfo: function(uuid, ownerUUID) {
-      initializeArrays(ownerUUID);
       var task = tasks[ownerUUID].activeTasks.findFirstObjectByKeyValue('uuid', uuid, 'trans');
       if (task){
         return {
           type: 'active',
-          task: task
+          task: ItemLikeService.resetTrans(task, 'task', ownerUUID, taskFieldInfos)
         };
       }
       task = tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue('uuid', uuid, 'trans');
       if (task){
         return {
           type: 'deleted',
-          task: task
+          task: ItemLikeService.resetTrans(task, 'task', ownerUUID, taskFieldInfos)
         };
       }
       task = tasks[ownerUUID].archivedTasks.findFirstObjectByKeyValue('uuid', uuid, 'trans');
       if (task){
         return {
           type: 'archived',
-          task: task
+          task: ItemLikeService.resetTrans(task, 'task', ownerUUID, taskFieldInfos)
         };
       }
     },
     saveTask: function(task, ownerUUID) {
-      initializeArrays(ownerUUID);
       var deferred = $q.defer();
       if (this.getTaskStatus(task, ownerUUID) === 'deleted') deferred.reject(task);
       else {
@@ -306,7 +267,6 @@
       return deferred.promise;
     },
     getTaskStatus: function(task, ownerUUID) {
-      initializeArrays(ownerUUID);
       var arrayInfo = ArrayService.getActiveArrayInfo(task,
                                                       tasks[ownerUUID].activeTasks,
                                                       tasks[ownerUUID].deletedTasks,
@@ -315,20 +275,17 @@
       if (arrayInfo) return arrayInfo.type;
     },
     addTask: function(task, ownerUUID) {
-      initializeArrays(ownerUUID);
       // Check that task is not deleted before trying to add
       if (this.getTaskStatus(task, ownerUUID) === 'deleted') return;
       setTask(task, ownerUUID);
     },
     removeTask: function(task, ownerUUID) {
-      initializeArrays(ownerUUID);
       ArrayService.removeFromArrays(task,
                                     tasks[ownerUUID].activeTasks,
                                     tasks[ownerUUID].deletedTasks,
                                     getOtherArrays(ownerUUID));
     },
     deleteTask: function(task, ownerUUID) {
-      initializeArrays(ownerUUID);
       // Check if task has already been deleted
       if (this.getTaskStatus(task, ownerUUID) === 'deleted') return;
 
@@ -357,7 +314,6 @@
       }
     },
     undeleteTask: function(task, ownerUUID) {
-      initializeArrays(ownerUUID);
       // Check that task is deleted before trying to undelete
       if (this.getTaskStatus(task, ownerUUID) !== 'deleted') return;
 
@@ -387,7 +343,6 @@
       }
     },
     completeTask: function(task, ownerUUID) {
-      initializeArrays(ownerUUID);
       var deferred = $q.defer();
       // Check that task is not deleted before trying to complete
       if (this.getTaskStatus(task, ownerUUID) === 'deleted') return;
@@ -420,7 +375,6 @@
       return deferred.promise;
     },
     uncompleteTask: function(task, ownerUUID) {
-      initializeArrays(ownerUUID);
       var deferred = $q.defer();
       // Check that task is not deleted before trying to uncomplete
       if (this.getTaskStatus(task, ownerUUID) === 'deleted') return;

@@ -35,6 +35,7 @@
       };
     }
   }
+  UserSessionService.registerNofifyOwnerCallback(initializeArrays, 'NotesService');
 
   function getOtherArrays(ownerUUID) {
     return [{array: notes[ownerUUID].archivedNotes, id: 'archived'}];
@@ -57,7 +58,6 @@
   }
 
   function setNote(note, ownerUUID) {
-    initializeArrays(ownerUUID);
     ArrayService.setItem(note,
                          notes[ownerUUID].activeNotes,
                          notes[ownerUUID].deletedNotes,
@@ -99,9 +99,15 @@
     if (notes[ownerUUID] && deletedTag) {
       if (!undelete){
         // Remove deleted tags from notes
-        TagsService.removeDeletedTagFromItems(notes[ownerUUID].activeNotes, deletedTag);
-        TagsService.removeDeletedTagFromItems(notes[ownerUUID].deletedNotes, deletedTag);
-        TagsService.removeDeletedTagFromItems(notes[ownerUUID].archivedNotes, deletedTag);
+        var modifiedItems = TagsService.removeDeletedTagFromItems(notes[ownerUUID].activeNotes,
+                                                                  deletedTag);
+        modifiedItems.concat(TagsService.removeDeletedTagFromItems(notes[ownerUUID].deletedNotes,
+                                                                   deletedTag));
+        modifiedItems.concat(TagsService.removeDeletedTagFromItems(notes[ownerUUID].archivedNotes,
+                                                                   deletedTag));
+        for (var i=0,len=modifiedItems.length;i<len;i++){
+          updateNote(modifiedItems[i], ownerUUID);
+        }
       }else{
         // Undelete
         // TODO: Deleted keywords should not be removed completely but instead put to a note.history
@@ -116,9 +122,15 @@
     if (notes[ownerUUID] && deletedList) {
       if (!undelete){
         // Remove deleted list from notes
-        ListsService.removeDeletedListFromItems(notes[ownerUUID].activeNotes, deletedList);
-        ListsService.removeDeletedListFromItems(notes[ownerUUID].deletedNotes, deletedList);
-        ListsService.removeDeletedListFromItems(notes[ownerUUID].archivedNotes, deletedList);
+        var modifiedItems = ListsService.removeDeletedListFromItems(notes[ownerUUID].activeNotes,
+                                                                    deletedList);
+        modifiedItems.concat(ListsService.removeDeletedListFromItems(notes[ownerUUID].deletedNotes,
+                                                                     deletedList));
+        modifiedItems.concat(ListsService.removeDeletedListFromItems(notes[ownerUUID].archivedNotes,
+                                                                     deletedList));
+        for (var i=0,len=modifiedItems.length;i<len;i++){
+          updateNote(modifiedItems[i], ownerUUID);
+        }
       }else{
         // TODO: Undelete
       }
@@ -135,14 +147,12 @@
 
   return {
     setNotes: function(notesResponse, ownerUUID) {
-      initializeArrays(ownerUUID);
       addTransientProperties(notesResponse, ownerUUID);
       return ArrayService.setArrays(notesResponse,
                                     notes[ownerUUID].activeNotes,
                                     notes[ownerUUID].deletedNotes, getOtherArrays(ownerUUID));
     },
     updateNotes: function(notesResponse, ownerUUID) {
-      initializeArrays(ownerUUID);
       addTransientProperties(notesResponse, ownerUUID);
 
       return ArrayService.updateArrays(notesResponse,
@@ -159,27 +169,21 @@
       return updatedNote;
     },
     getNoteArrays: function(ownerUUID) {
-      initializeArrays(ownerUUID);
       return notes[ownerUUID];
     },
     isNoteDeleted: function(note, ownerUUID) {
-      initializeArrays(ownerUUID);
       return notes[ownerUUID].deletedNotes.indexOf(note) > 1;
     },
     getNotes: function(ownerUUID) {
-      initializeArrays(ownerUUID);
       return notes[ownerUUID].activeNotes;
     },
     getArchivedNotes: function(ownerUUID) {
-      initializeArrays(ownerUUID);
       return notes[ownerUUID].archivedNotes;
     },
     getDeletedNotes: function(ownerUUID) {
-      initializeArrays(ownerUUID);
       return notes[ownerUUID].deletedNotes;
     },
     getNoteInfo: function(uuid, ownerUUID) {
-      initializeArrays(ownerUUID);
       var note = notes[ownerUUID].activeNotes.findFirstObjectByKeyValue('uuid', uuid, 'trans');
       if (note){
         return {
@@ -203,7 +207,6 @@
       }
     },
     saveNote: function(note, ownerUUID) {
-      initializeArrays(ownerUUID);
       var deferred = $q.defer();
       if (this.getNoteStatus(note, ownerUUID) === 'deleted') return;
       var params;
@@ -264,7 +267,6 @@
       return deferred.promise;
     },
     getNoteStatus: function(note, ownerUUID) {
-      initializeArrays(ownerUUID);
       var arrayInfo = ArrayService.getActiveArrayInfo(note,
                                                       notes[ownerUUID].activeNotes,
                                                       notes[ownerUUID].deletedNotes,
@@ -273,20 +275,17 @@
       if (arrayInfo) return arrayInfo.type;
     },
     addNote: function(note, ownerUUID) {
-      initializeArrays(ownerUUID);
       // Check that note is not deleted before trying to add
       if (this.getNoteStatus(note, ownerUUID) === 'deleted') return;
       setNote(note, ownerUUID);
     },
     removeNote: function(note, ownerUUID) {
-      initializeArrays(ownerUUID);
       ArrayService.removeFromArrays(note,
                                     notes[ownerUUID].activeNotes,
                                     notes[ownerUUID].deletedNotes,
                                     getOtherArrays(ownerUUID));
     },
     deleteNote: function(note, ownerUUID) {
-      initializeArrays(ownerUUID);
       // Check if note has already been deleted
       if (this.getNoteStatus(note, ownerUUID) === 'deleted') return;
       if (UserSessionService.isOfflineEnabled()) {
@@ -313,7 +312,6 @@
       }
     },
     undeleteNote: function(note, ownerUUID) {
-      initializeArrays(ownerUUID);
       // Check that note is deleted before trying to undelete
       if (this.getNoteStatus(note, ownerUUID) !== 'deleted') return;
       if (UserSessionService.isOfflineEnabled()) {
@@ -341,7 +339,6 @@
       }
     },
     favoriteNote: function(note, ownerUUID) {
-      initializeArrays(ownerUUID);
       var deferred = $q.defer();
       // Check that note is not deleted before trying to complete
       if (this.getNoteStatus(note, ownerUUID) === 'deleted') return;
@@ -374,7 +371,6 @@
       return deferred.promise;
     },
     unfavoriteNote: function(note, ownerUUID) {
-      initializeArrays(ownerUUID);
       var deferred = $q.defer();
       // Check that note is not deleted before trying to unfavorite
       if (this.getNoteStatus(note, ownerUUID) === 'deleted' || !note.favorited) return;
