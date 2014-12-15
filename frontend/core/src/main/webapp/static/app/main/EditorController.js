@@ -183,8 +183,6 @@
 
   // TITLEBAR
 
-  $scope.titlebar = {};
-
   var titleBarInputFocusCallbackFunction;
   var titleBarInputBlurCallbackFunction;
 
@@ -199,10 +197,6 @@
   function blurTitlebarInput() {
     if (typeof titleBarInputBlurCallbackFunction === 'function') titleBarInputBlurCallbackFunction();
   }
-
-  $scope.titlebarHasText = function() {
-    return $scope.titlebar.text && $scope.titlebar.text.length !== 0;
-  };
 
   $scope.handleBasicTitlebarKeydown = function(keydownEvent/*, item*/){
     // Escape

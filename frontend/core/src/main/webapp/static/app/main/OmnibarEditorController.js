@@ -23,7 +23,7 @@
 
   AnalyticsService.visit('omnibar');
 
-  $scope.titlebar.text = '';
+  $scope.titlebar = {};
   $scope.searchText = {};
 
   if (angular.isFunction($scope.registerFeatureEditorAboutToCloseCallback))
@@ -39,7 +39,7 @@
   // SAVING
 
   $scope.saveOmnibarToItem = function() {
-    var item = {title: $scope.titlebar.text};
+    var item = $scope.getNewItem({title: $scope.titlebar.text});
     UISessionService.deferAction('omnibarToItem', $rootScope.EDITOR_CLOSED_FAILSAFE_TIME).then(function() {
       $scope.saveItem(item).then(function(result){
         if (!$scope.isFeatureActive('inbox') && result === 'new'){
@@ -66,6 +66,10 @@
   };
 
   // TITLEBAR
+
+  $scope.titlebarHasText = function() {
+    return $scope.titlebar.text && $scope.titlebar.text.length !== 0;
+  };
 
   $scope.omnibarTitlebarTextKeyDown = function (keydownEvent) {
     // Escape

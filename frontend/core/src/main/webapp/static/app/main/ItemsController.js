@@ -33,9 +33,7 @@
   // SAVING
 
   $scope.saveItem = function(item) {
-    if (item.title && item.title.length > 0) {
-      return ItemsService.saveItem(item, UISessionService.getActiveUUID());
-    }
+    return ItemsService.saveItem(item, UISessionService.getActiveUUID());
   };
 
   // DELETING
