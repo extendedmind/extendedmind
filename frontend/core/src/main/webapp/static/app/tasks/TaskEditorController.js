@@ -22,10 +22,6 @@
   if (angular.isFunction($scope.registerFeatureEditorAboutToCloseCallback))
     $scope.registerFeatureEditorAboutToCloseCallback(taskEditorAboutToClose, 'TaskEditorController');
 
-  // We expect there to be a $scope.task via ng-init
-
-  $scope.titlebar.text = $scope.task.title;
-
   // COMPLETING, SAVING, DELETING
 
   var completeReadyDeferred;
@@ -40,7 +36,6 @@
   };
 
   function saveTaskInEdit() {
-    $scope.task.title = $scope.titlebar.text;
     $scope.deferEdit().then(function() {
       $scope.saveTask($scope.task);
       if (completeReadyDeferred){
@@ -69,15 +64,19 @@
   };
 
   function taskEditorAboutToClose() {
-    if ($scope.titlebarHasText() && !$scope.task.deleted) saveTaskInEdit();
+    if ($scope.taskTitlebarHasText() && !$scope.task.deleted) saveTaskInEdit();
   }
 
   // TITLEBAR
 
+  $scope.taskTitlebarHasText = function() {
+    return $scope.task.trans.title && $scope.task.trans.title.length !== 0;
+  };
+
   $scope.taskTitlebarTextKeyDown = function (keydownEvent) {
     $scope.handleBasicTitlebarKeydown(keydownEvent, $scope.task);
     // Return
-    if (event.keyCode === 13 && $scope.titlebarHasText()) {
+    if (event.keyCode === 13 && $scope.taskTitlebarHasText()) {
       // Enter in editor saves, no line breaks allowed
       $scope.closeTaskEditor();
       saveTaskInEdit();
@@ -189,6 +188,6 @@
 }
 
 TaskEditorController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout',
-  'DateService', 'UISessionService'
+'DateService', 'UISessionService'
 ];
 angular.module('em.main').controller('TaskEditorController', TaskEditorController);
