@@ -5,10 +5,10 @@
   <div class="group-mixed--left">
     <input type="checkbox" ng-model="newItem.trans.completed"
       swiper-click="toggleLeftCheckbox(toggleCompleteTask)" icon-checkbox="getListItemAddId()"
-      ng-disabled="!newItem.title">
+      ng-disabled="!newItem.trans.title">
   </div>
   <div class="group-mixed--middle">
-    <textarea ng-model="newItem.title" msd-elastic ng-keydown="textareaKeyDown($event)"
+    <textarea ng-model="newItem.trans.title" msd-elastic ng-keydown="textareaKeyDown($event)"
       editable-field editable-field-register-callbacks="registerAddItemCallbacks(focus, blur)"
       placeholder="add task&#8230;" maxlength="128">
     </textarea>
@@ -23,8 +23,8 @@
 
 <!-- ONBOARDING -->
 <div ng-if="!isOnboarded('tasks') && checkListOnboardingLock('tasks', 'on')" class="group-instruction-input">
-  <div ng-show="!newItem.title || newItem.title.length === 0" class="text-details row">
+  <div ng-show="!newItem.trans.title || newItem.trans.title.length === 0" class="text-details row">
     e.g. call mom, email boss, buy milk
   </div>
-  <div ng-show="newItem.title.length" class="text-details row">when done, hit return</div>
+  <div ng-show="newItem.trans.title.length" class="text-details row">when done, hit return</div>
 </div>

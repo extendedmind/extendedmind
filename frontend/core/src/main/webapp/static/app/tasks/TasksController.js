@@ -15,7 +15,8 @@
  'use strict';
 
  function TasksController($rootScope, $scope, $timeout,
-                          AnalyticsService, DateService, SwiperService, TasksService, UISessionService) {
+                          AnalyticsService, DateService, ItemsService, SwiperService, TasksService,
+                          UISessionService) {
 
 
   $scope.getNewTask = function(initialValues){
@@ -143,7 +144,6 @@
   // SAVING
 
   $scope.saveTask = function(task) {
-    if (!task || !task.title || task.title.length === 0) return false;
     var completeOnSave = false;
     if (task.uuid){
       AnalyticsService.do('saveTask');
@@ -238,6 +238,6 @@
 
 TasksController['$inject'] = [
 '$rootScope', '$scope', '$timeout',
-'AnalyticsService', 'DateService', 'SwiperService', 'TasksService', 'UISessionService'
+'AnalyticsService', 'DateService', 'ItemsService', 'SwiperService', 'TasksService', 'UISessionService'
 ];
 angular.module('em.tasks').controller('TasksController', TasksController);

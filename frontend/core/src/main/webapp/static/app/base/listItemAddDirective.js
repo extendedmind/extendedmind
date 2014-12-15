@@ -59,7 +59,9 @@
           scope.clickedElsewhere = function(options){
             if (!options || !options.clickedElsewhereDisabled) {
               // Only execute when not disabled.
-              if (scope.newItem.title && scope.newItem.title.length > 0) saveNewItem(scope.newItem);
+              if (scope.newItem.trans.title && scope.newItem.trans.title.length > 0) {
+                saveNewItem(scope.newItem);
+              }
               exit();
             }
           };
@@ -77,7 +79,7 @@
             if (event.keyCode === 27) exit();
             // RETURN button
             else if (event.keyCode === 13){
-              if (scope.newItem.title && scope.newItem.title.length > 0) {
+              if (scope.newItem.trans.title && scope.newItem.trans.title.length > 0) {
                 // Enter in add item saves, no line breaks allowed
                 saveNewItem(scope.newItem);
                 scope.newItem = createNewItemFn();
