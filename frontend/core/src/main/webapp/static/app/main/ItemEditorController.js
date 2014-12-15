@@ -22,14 +22,9 @@
   if (angular.isFunction($scope.registerFeatureEditorAboutToCloseCallback))
     $scope.registerFeatureEditorAboutToCloseCallback(itemEditorAboutToClose, 'ItemEditorController');
 
-  // We expect there to be a $scope.list via ng-init
-
-  $scope.titlebar.text = $scope.item.title;
-
   // SAVING, DELETING
 
   function saveItemInEdit() {
-    $scope.item.title = $scope.titlebar.text;
     $scope.deferEdit().then(function() {
       $scope.saveItem($scope.item);
     });
@@ -48,20 +43,24 @@
     });
   };
 
-  $scope.endItemEdit = function() {
+  $scope.endItemEdit = function() {
     $scope.closeEditor();
   };
 
   function itemEditorAboutToClose() {
-    if ($scope.titlebarHasText() && !$scope.item.deleted) saveItemInEdit();
+    if ($scope.itemTitlebarHasText() && !$scope.item.deleted) saveItemInEdit();
   }
 
   // TITLEBAR
 
+  $scope.itemTitlebarHasText = function() {
+    return $scope.item.trans.title && $scope.item.trans.title.length !== 0;
+  };
+
   $scope.itemTitlebarTextKeyDown = function (keydownEvent) {
     $scope.handleBasicTitlebarKeydown(keydownEvent, $scope.item);
     // Return
-    if (event.keyCode === 13 && $scope.titlebarHasText()) {
+    if (event.keyCode === 13 && $scope.itemTitlebarHasText()) {
       // Enter in editor saves, no line breaks allowed
       $scope.closeEditor();
       saveItemInEdit();
