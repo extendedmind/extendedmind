@@ -436,7 +436,7 @@
         {
           // Horizontal swipe.
         } else if (Math.abs(swipePageSlideDistY) >= swipeRestraintY &&
-                   Math.abs(swipePageSlideDistX) <= swipePageSlideStartX)
+                   Math.abs(swipePageSlideDistX) <= swipeRestraintX)
         {
           // Vertical swipe.
           if (swipePageSlideDistY < 0) {
