@@ -271,6 +271,7 @@
             .then(
               function(result) {
                 updateObjectProperties(item, result.data);
+                copyModToPersistent(item, ownerUUID, fieldInfos);
                 deferred.resolve('existing');
               },function(error){
                 destroyModAndReset(item, itemType, ownerUUID, fieldInfos);
@@ -300,6 +301,7 @@
             .then(
               function(result) {
                 updateObjectProperties(item, result.data);
+                copyModToPersistent(item, ownerUUID, fieldInfos);
                 deferred.resolve('new');
               },function(error){
                 destroyModAndReset(item, itemType, ownerUUID, fieldInfos);

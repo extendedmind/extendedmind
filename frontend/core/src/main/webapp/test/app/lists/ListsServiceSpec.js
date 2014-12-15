@@ -146,8 +146,8 @@ describe('ListsService', function() {
     expect(lists[3].uuid)
       .toBe(putNewListResponse.uuid);
     expect(lists[3].title)
-      .toBe('test task');
-    expect(lists[3].list)
+      .toBe('test list');
+    expect(lists[3].mod)
       .toBeUndefined();
   });
 
