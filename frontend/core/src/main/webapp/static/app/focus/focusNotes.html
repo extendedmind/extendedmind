@@ -1,7 +1,7 @@
 <div ng-if="isFeatureActive('focus')" class="container-content--outer" list-container>
   <section ng-show="isOnboarded('focusNotes')" class="container-content"
     list="allNotes | itemsFilter:{name:'favorited'}"
-    list-open="openEditor('note', {trans: {favorited:true, itemType: 'note'}})" swiper-prevent>
+    list-open="openEditor('note', getNewNote({favorited:true})" swiper-prevent>
     <h2 class="group-heading justified row">favorite</h2>
     <div class="animate-list-item-leave tall"
       ng-repeat="note in listInfos.array = (getFullArray()) | orderBy:'favorited':true

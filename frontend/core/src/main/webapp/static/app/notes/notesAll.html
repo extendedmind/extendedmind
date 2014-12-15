@@ -1,6 +1,6 @@
 <div class="container-fluid--inner" list-container drawer-handle="left">
   <section class="container-content" list="allNotes" list-recent
-    list-open="openEditor('note', {trans: {favorited: false, itemType: 'note'}})"
+    list-open="openEditor('note', getNewNote())"
     ng-init="setListOnboarding('notes', listOnboarding)">
     <div ng-show="isOnboarded('notes')">
       <h2 class="group-heading justified row">all notes</h2>

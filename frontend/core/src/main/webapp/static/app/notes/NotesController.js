@@ -18,6 +18,10 @@
                           AnalyticsService, ListsService, NotesService, TagsService, SwiperService,
                           UISessionService) {
 
+  $scope.getNewNote = function(initialValues){
+    return ItemsService.getNewItem(initialValues, UISessionService.getActiveUUID());
+  };
+
   $scope.noteHasKeywords = function noteHasKeywords(note) {
     return note.trans && note.trans.keywords && note.trans.keywords.length;
   };
