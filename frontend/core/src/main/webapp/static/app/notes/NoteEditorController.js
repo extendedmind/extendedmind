@@ -22,17 +22,12 @@
   if (angular.isFunction($scope.registerFeatureEditorAboutToCloseCallback))
     $scope.registerFeatureEditorAboutToCloseCallback(noteEditorAboutToClose, 'NoteEditorController');
 
-  // We expect there to be a $scope.note
-
-  $scope.titlebar.text = $scope.note.title;
-
   // SAVING, DELETING
 
   function saveNoteInEdit() {
     if ($scope.onboardingInProgress) $scope.turnOffListOnboardingLock('notes');
 
     // TODO: Keywords
-    $scope.note.title = $scope.titlebar.text;
     $scope.deferEdit().then(function() {
       $scope.saveNote($scope.note);
     });
@@ -56,7 +51,7 @@
   };
 
   function noteEditorAboutToClose() {
-    if ($scope.titlebarHasText() && !$scope.note.deleted) saveNoteInEdit();
+    if ($scope.noteTitlebarHasText() && !$scope.note.deleted) saveNoteInEdit();
   }
 
   $scope.clickFavorite = function() {
@@ -106,10 +101,14 @@
 
   // TITLEBAR
 
+  $scope.noteTitlebarHasText = function() {
+    return $scope.note.trans.title && $scope.note.trans.title.length !== 0;
+  };
+
   $scope.noteTitlebarTextKeyDown = function (keydownEvent) {
     $scope.handleBasicTitlebarKeydown(keydownEvent, $scope.note);
     // Return
-    if (event.keyCode === 13 && $scope.titlebarHasText()) {
+    if (event.keyCode === 13 && $scope.noteTitlebarHasText()) {
       // TODO: Move focus to content field on enter!
       noteContentFocusCallback();
       event.preventDefault();
