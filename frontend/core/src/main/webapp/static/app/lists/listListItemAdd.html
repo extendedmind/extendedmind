@@ -8,7 +8,7 @@
     </a>
   </div>
   <div class="group-mixed--middle">
-    <textarea ng-model="newItem.title" msd-elastic ng-keydown="textareaKeyDown($event)"
+    <textarea ng-model="newItem.trans.title" msd-elastic ng-keydown="textareaKeyDown($event)"
       editable-field placeholder="add list&#8230;"
       editable-field-register-callbacks="registerAddItemCallbacks(focus, blur)" maxlength="128">
     </textarea>
@@ -22,8 +22,8 @@
 
 <!-- ONBOARDING -->
 <div ng-if="!isOnboarded('lists') && checkListOnboardingLock('lists', 'on')" class="group-instruction-input">
-  <div ng-show="!newItem.title || newItem.title.length === 0" class="text-details row">
+  <div ng-show="!newItem.trans.title || newItem.trans.title.length === 0" class="text-details row">
     e.g. groceries, studies, company retreat
   </div>
-  <div ng-show="newItem.title.length" class="text-details row">when done, hit return</div>
+  <div ng-show="newItem.trans.title.length" class="text-details row">when done, hit return</div>
 </div>

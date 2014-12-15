@@ -38,7 +38,7 @@
     $scope.refreshFavoriteLists();
   }
 
-  $scope.favoriteList = function(list) {
+  $scope.favoriteList = function(list) {
     var favoriteListUuids = UserSessionService.getUIPreference('favoriteLists');
     if (!favoriteListUuids) favoriteListUuids = [];
     if (favoriteListUuids.indexOf(list.uuid) === -1){
@@ -47,7 +47,7 @@
     }
   };
 
-  $scope.unfavoriteList = function(list) {
+  $scope.unfavoriteList = function(list) {
     var favoriteListUuids = UserSessionService.getUIPreference('favoriteLists');
     if (favoriteListUuids){
       var favoriteIndex = favoriteListUuids.indexOf(list.uuid);
@@ -61,17 +61,15 @@
   // SAVING
 
   $scope.saveList = function(list) {
-    if (list && list.title && list.title.length > 0){
-      if (list.uuid){
-        AnalyticsService.do('saveList');
-      }else{
-        AnalyticsService.do('addList');
-      }
-      return ListsService.saveList(list, UISessionService.getActiveUUID());
+    if (list.uuid){
+      AnalyticsService.do('saveList');
+    }else{
+      AnalyticsService.do('addList');
     }
+    return ListsService.saveList(list, UISessionService.getActiveUUID());
   };
 
-  $scope.saveListAndChangeFeature = function(list) {
+  $scope.saveListAndChangeFeature = function(list) {
     var saveListDeferred = $scope.saveList(list);
     if (saveListDeferred){
       return saveListDeferred.then(function(savedList){
@@ -123,7 +121,6 @@
   };
 
   // Navigation
-
 
   $scope.saveListAndMoveToLists = function(list) {
     $scope.editListFields(list);
