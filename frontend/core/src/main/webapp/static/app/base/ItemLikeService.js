@@ -183,6 +183,11 @@
     return createTransportItem(item, ownerUUID, fieldInfos);
   }
 
+  function destroyModAndReset(item, itemType, ownerUUID, fieldInfos){
+    delete item.mod;
+    return resetTrans(item, itemType, ownerUUID, fieldInfos);
+  }
+
   return {
     getFieldInfos: function(additionalFieldInfos){
       var fieldInfos = getDefaultFieldInfos();
@@ -193,9 +198,6 @@
     },
     updateObjectProperties: function(object, properties){
       updateObjectProperties(object, properties);
-    },
-    validate: function(item, ownerUUID, fieldInfos){
-      return validate(item, ownerUUID, fieldInfos);
     },
     getNew: function(trans, itemType, ownerUUID, fieldInfos) {
       var newItem = resetTrans({}, itemType, ownerUUID, fieldInfos);
@@ -271,6 +273,7 @@
                 updateObjectProperties(item, result.data);
                 deferred.resolve('existing');
               },function(error){
+                destroyModAndReset(item, itemType, ownerUUID, fieldInfos);
                 deferred.reject(error);
               }
             );
@@ -299,6 +302,7 @@
                 updateObjectProperties(item, result.data);
                 deferred.resolve('new');
               },function(error){
+                destroyModAndReset(item, itemType, ownerUUID, fieldInfos);
                 deferred.reject(error);
               }
             );

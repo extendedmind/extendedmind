@@ -131,6 +131,10 @@ afterEach(function() {
     .toBe(4);
     expect(tasks[3].uuid)
     .toBe(putNewTaskResponse.uuid);
+    expect(tasks[3].title)
+      .toBe('test task');
+    expect(tasks[3].mod)
+      .toBeUndefined();
   });
 
   it('should update existing task', function () {
@@ -151,6 +155,10 @@ afterEach(function() {
     .toBe(3);
     expect(tasks[0].uuid)
     .toBe(cleanCloset.uuid);
+    expect(tasks[0].title)
+      .toBe('clean closet now');
+    expect(tasks[0].mod)
+      .toBeUndefined();
   });
 
   it('should delete and undelete task', function () {

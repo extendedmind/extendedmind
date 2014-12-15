@@ -148,6 +148,10 @@
     .toBe(4);
     expect(notes[3].uuid)
     .toBe(putNewNoteResponse.uuid);
+    expect(notes[3].title)
+      .toBe('test note');
+    expect(notes[3].mod)
+      .toBeUndefined();
   });
 
   it('should update existing note', function() {
@@ -170,6 +174,10 @@
     .toBe(3);
     expect(notes[0].uuid)
     .toBe(officeDoorCode.uuid);
+    expect(notes[0].content)
+      .toBe('1234');
+    expect(notes[0].mod)
+      .toBeUndefined();
   });
 
   it('should delete and undelete note', function() {

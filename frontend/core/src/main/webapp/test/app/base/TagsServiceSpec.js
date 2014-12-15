@@ -116,6 +116,10 @@ afterEach(function() {
     .toBe(4);
     expect(tags[3].uuid)
     .toBe(putNewTagResponse.uuid);
+    expect(tags[3].title)
+      .toBe('test tag');
+    expect(tags[3].mod)
+      .toBeUndefined();
   });
 
   it('should update existing tag', function () {
@@ -137,6 +141,11 @@ afterEach(function() {
     .toBe(3);
     expect(tags[1].uuid)
     .toBe(secret.uuid);
+    expect(tags[1].title)
+      .toBe('top secret');
+    expect(tags[1].mod)
+      .toBeUndefined();
+
   });
 
   it('should delete and undelete tag', function () {

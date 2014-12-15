@@ -145,6 +145,10 @@ describe('ListsService', function() {
       .toBe(4);
     expect(lists[3].uuid)
       .toBe(putNewListResponse.uuid);
+    expect(lists[3].title)
+      .toBe('test task');
+    expect(lists[3].list)
+      .toBeUndefined();
   });
 
   it('should update existing list', function () {
@@ -167,6 +171,10 @@ describe('ListsService', function() {
       .toBe(3);
     expect(lists[0].uuid)
       .toBe(tripToDublin.uuid);
+    expect(lists[0].title)
+      .toBe('another trip to Dublin');
+    expect(lists[0].mod)
+      .toBeUndefined();
   });
 
   it('should delete and undelete list', function () {
