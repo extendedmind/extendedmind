@@ -64,7 +64,6 @@
   // SAVING
 
   $scope.saveContext = function(context) {
-    if (!context || !context.title || !context.title.length) return;
     if (context.uuid) AnalyticsService.do('saveContext');
     else AnalyticsService.do('addContext');
 
