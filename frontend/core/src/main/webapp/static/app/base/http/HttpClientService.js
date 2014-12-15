@@ -43,7 +43,7 @@
     }
   }
 
-  function getRequest(method, url, params, data) {
+  function getRequest(method, url, params, data, timestamp) {
     var request = {
       content: {
         method: method,
@@ -53,6 +53,9 @@
     };
     if (data) {
       request.content.data = data;
+    }
+    if (timestamp){
+      request.content.timestamp = timestamp;
     }
     return request;
   }
@@ -245,7 +248,7 @@
     });
   };
 
-  methods.deleteOnline = function(url) {
+  methods.deleteOnline = function(url, data) {
     return $http({method: 'delete', url: url}).then(function(success) {
       return success;
     }, function(error) {
@@ -307,21 +310,21 @@
   // DELETE, POST and PUT are methods which utilize
   // the offline request queue
 
-  methods.deleteOffline = function(url, params) {
-    var request = getRequest('delete', url, params);
+  methods.deleteOffline = function(url, params, data, timestamp) {
+    var request = getRequest('delete', url, params, data, timestamp);
     HttpRequestQueueService.push(request);
     executeRequests();
   };
 
-  methods.post = function(url, params, data) {
-    var request = getRequest('post', url, params, data);
+  methods.post = function(url, params, data, timestamp) {
+    var request = getRequest('post', url, params, data, timestamp);
     var pushed = HttpRequestQueueService.push(request);
     executeRequests();
     return pushed;
   };
 
-  methods.put = function(url, params, data) {
-    var request = getRequest('put', url, params, data);
+  methods.put = function(url, params, data, timestamp) {
+    var request = getRequest('put', url, params, data, timestamp);
     HttpRequestQueueService.push(request);
     executeRequests();
   };

@@ -111,10 +111,10 @@
     });
   };
 
-  methods.deleteOffline = function(url, regex, params) {
+  methods.deleteOffline = function(url, regex, params, data, timestamp) {
     return refreshCredentials().then(function() {
       if (regex.test(url)) {
-        return HttpClientService.deleteOffline(getUrlPrefix() + url, params);
+        return HttpClientService.deleteOffline(getUrlPrefix() + url, params, data, timestamp);
       } else {
         return emitRegexException(regex, 'delete', url);
       }
@@ -122,20 +122,20 @@
 
   };
 
-  methods.deleteOnline = function(url, regex) {
+  methods.deleteOnline = function(url, regex, data) {
     return refreshCredentials(true).then(function() {
       if (regex.test(url)) {
-        return HttpClientService.deleteOnline(getUrlPrefix() + url);
+        return HttpClientService.deleteOnline(getUrlPrefix() + url, data);
       } else {
         return emitRegexException(regex, 'delete', url);
       }
     });
   };
 
-  methods.put = function(url, regex, params, data) {
+  methods.put = function(url, regex, params, data, timestamp) {
     return refreshCredentials().then(function() {
       if (regex.test(url)) {
-        return HttpClientService.put(getUrlPrefix() + url, params, data);
+        return HttpClientService.put(getUrlPrefix() + url, params, data, timestamp);
       } else {
         return emitRegexException(regex, 'put', url);
       }
@@ -192,10 +192,10 @@
     }
   };
 
-  methods.post = function(url, regex, params, data) {
+  methods.post = function(url, regex, params, data, timestamp) {
     return refreshCredentials().then(function() {
       if (regex.test(url)) {
-        return HttpClientService.post(getUrlPrefix() + url, params, data);
+        return HttpClientService.post(getUrlPrefix() + url, params, data, timestamp);
       } else {
         return emitRegexException(regex, 'post', url);
       }

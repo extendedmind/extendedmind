@@ -299,9 +299,9 @@
             method: 'post',
             url: '/api/' + ownerUUID + '/note/' + note.uuid + '/unfavorite'
           },replaceable: true};
-          BackendClientService.post('/api/' + ownerUUID + '/note/' + note.uuid + '/favorite',
-                                    this.favoriteNoteRegex, params);
           var fakeTimestamp = BackendClientService.generateFakeTimestamp();
+          BackendClientService.post('/api/' + ownerUUID + '/note/' + note.uuid + '/favorite',
+                                    this.favoriteNoteRegex, params, undefined, fakeTimestamp);
           if (!note.mod) note.mod = {};
           ItemLikeService.updateObjectProperties(note.mod,
                                                  {modified: fakeTimestamp, favorited: true});
@@ -335,10 +335,9 @@
             method: 'post',
             url: '/api/' + ownerUUID + '/note/' + note.uuid + '/favorite'
           }, replaceable: true};
-          BackendClientService.post('/api/' + ownerUUID + '/note/' + note.uuid + '/unfavorite',
-                                    this.unfavoriteNoteRegex, params);
-
           var fakeTimestamp = BackendClientService.generateFakeTimestamp();
+          BackendClientService.post('/api/' + ownerUUID + '/note/' + note.uuid + '/unfavorite',
+                                    this.unfavoriteNoteRegex, params, undefined, fakeTimestamp);
           if (!note.mod) note.mod = {};
           ItemLikeService.updateObjectProperties(note.mod,
                                                  {modified: fakeTimestamp, favorited: false});

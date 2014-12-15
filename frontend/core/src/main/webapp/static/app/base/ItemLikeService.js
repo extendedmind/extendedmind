@@ -172,7 +172,10 @@
     if (properties && object){
       for (var property in properties){
         if (properties.hasOwnProperty(property)){
-          object[property] = properties[property];
+          if (properties[property] === undefined && object[property])
+            delete object[property];
+          else
+            object[property] = properties[property];
         }
       }
     }
@@ -263,9 +266,11 @@
           if (UserSessionService.isOfflineEnabled() && itemType !== 'list' && itemType !== 'tag') {
             // Push to offline buffer
             params = {type: itemType, owner: ownerUUID, uuid: item.trans.uuid};
+            var fakeTimestamp = BackendClientService.generateFakeTimestamp();
             BackendClientService.put('/api/' + params.owner + '/'+ itemType + '/' + item.trans.uuid,
-                                     this.getPutExistingRegex(itemType), params, transportItem);
-            updateObjectProperties(item.mod, {modified: BackendClientService.generateFakeTimestamp()});
+                                     this.getPutExistingRegex(itemType), params, transportItem,
+                                     fakeTimestamp);
+            updateObjectProperties(item.mod, {modified: fakeTimestamp});
             deferred.resolve('existing');
           } else {
             // Online
@@ -291,10 +296,10 @@
           if (UserSessionService.isOfflineEnabled() && itemType !== 'list' && itemType !== 'tag') {
             // Push to offline queue with fake UUID
             var fakeUUID = UUIDService.generateFakeUUID();
+            var fakeTimestamp = BackendClientService.generateFakeTimestamp();
             params = {type: itemType, owner: ownerUUID, fakeUUID: fakeUUID};
             BackendClientService.put('/api/' + params.owner + '/'+ itemType,
-                                     this.getPutNewRegex(itemType), params, transportItem);
-            var fakeTimestamp = BackendClientService.generateFakeTimestamp();
+                                     this.getPutNewRegex(itemType), params, transportItem, fakeTimestamp);
             updateObjectProperties(item.mod, {uuid: fakeUUID, modified: fakeTimestamp,
                                               created: fakeTimestamp});
             deferred.resolve('new');
@@ -328,10 +333,10 @@
           method: 'post',
           url: '/api/' + ownerUUID + '/item/' + item.trans.uuid + '/undelete'
         }, replaceable: true};
-        BackendClientService.deleteOffline('/api/' + ownerUUID + '/' + itemType +'/' + item.trans.uuid,
-                                           this.getDeleteRegex(itemType), params);
-
         var fakeTimestamp = BackendClientService.generateFakeTimestamp();
+        BackendClientService.deleteOffline('/api/' + ownerUUID + '/' + itemType +'/' + item.trans.uuid,
+                                           this.getDeleteRegex(itemType), params, undefined, fakeTimestamp);
+        if (!item.mod) item.mod = {};
         updateObjectProperties(item.mod, {modified: fakeTimestamp, deleted: fakeTimestamp});
         deferred.resolve();
       } else {
@@ -363,10 +368,11 @@
           method: 'post',
           url: '/api/' + ownerUUID + '/item/' + item.trans.uuid + '/delete'
         }, replaceable: true};
-        BackendClientService.post('/api/' + ownerUUID + '/' + itemType +'/' + item.trans.uuid + '/undelete',
-                                    this.getUndeleteRegex(itemType), params);
-        delete item.mod.deleted;
         var fakeTimestamp = BackendClientService.generateFakeTimestamp();
+        BackendClientService.post('/api/' + ownerUUID + '/' + itemType +'/' + item.trans.uuid + '/undelete',
+                                    this.getUndeleteRegex(itemType), params, undefined, fakeTimestamp);
+        if (!item.mod) item.mod = {};
+        if (item.mod.deleted) delete item.mod.deleted;
         updateObjectProperties(item.mod, {modified: fakeTimestamp});
         PersistentStorageService.persist(createPersistableItem(item), itemType, ownerUUID);
         resetTrans(item, itemType, ownerUUID, fieldInfos);

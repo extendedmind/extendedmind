@@ -264,10 +264,6 @@ function HttpRequestQueueService() {
         localStorage.removeItem('primaryRequest');
       }
     },
-    // NOTE: This is used primarily in tests
-    refresh: function() {
-      initialize();
-    }
   };
   return service;
 }

@@ -162,7 +162,7 @@
                   queue[i].content.data.content !== conflictingItem.content){
                 // Content conflict, create hybrid and change PUT in queue to reflect the change
                 var conflictDelimiter = '\n\n>>> conflicting changes >>>\n\n';
-                if (conflictingItem.modified > queue[i].content.data.modified){
+                if (conflictingItem.modified > queue[i].content.timestamp){
                   conflictingItem.content = conflictingItem.content +
                                             conflictDelimiter +
                                             queue[i].content.data.content;
@@ -174,7 +174,7 @@
                   queue[i].content.data.content = conflictedContent;
                   conflictingItem.content = conflictedContent;
                 }
-              }else if (conflictingItem.modified > queue[i].content.data.modified){
+              }else if (conflictingItem.modified > queue[i].content.timestamp){
                 queue.splice(i, 1);
               }
             }else if (queue[i].content.method === 'post'){
@@ -221,7 +221,7 @@
       if (request.params.type === 'item') {
         if (request.content.url.endsWith('/undelete')) {
           // Undelete
-          properties = {modified: response.modified};
+          properties = {modified: response.modified, deleted: undefined};
           if (!ItemsService.updateItemProperties(request.params.uuid, properties, request.params.owner)) {
             // The item might have moved to either notes or tasks
             if (!TasksService.updateTaskProperties(request.params.uuid, properties, request.params.owner)) {

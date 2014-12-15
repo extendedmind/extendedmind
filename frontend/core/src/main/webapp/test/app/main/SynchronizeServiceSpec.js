@@ -21,7 +21,7 @@ describe('SynchronizeService', function() {
   // INJECTS
 
   var $httpBackend;
-  var SynchronizeService, ItemsService, BackendClientService, HttpClientService, HttpRequestQueueService,
+  var SynchronizeService, ItemsService, BackendClientService, HttpClientService,
       ListsService, TagsService, TasksService, NotesService, UUIDService, AuthenticationService;
 
   // MOCKS
@@ -100,14 +100,13 @@ describe('SynchronizeService', function() {
     });
 
     inject(function (_$httpBackend_, _SynchronizeService_, _ItemsService_, _BackendClientService_,
-                     _HttpClientService_, _HttpRequestQueueService_, _ListsService_, _TagsService_,
+                     _HttpClientService_, _ListsService_, _TagsService_,
                      _TasksService_, _NotesService_, _UUIDService_, _AuthenticationService_) {
       $httpBackend = _$httpBackend_;
       SynchronizeService = _SynchronizeService_;
       ItemsService = _ItemsService_;
       BackendClientService = _BackendClientService_;
       HttpClientService = _HttpClientService_;
-      HttpRequestQueueService = _HttpRequestQueueService_;
       ListsService = _ListsService_;
       TagsService = _TagsService_;
       TasksService = _TasksService_;
@@ -369,7 +368,6 @@ describe('SynchronizeService', function() {
       .toBe(4);
     expect(UUIDService.isFakeUUID(items[3].trans.uuid))
       .toBeTruthy();
-    HttpRequestQueueService.refresh();
 
     // 2. update item
 
@@ -382,7 +380,6 @@ describe('SynchronizeService', function() {
     $httpBackend.flush();
     expect(items.length)
       .toBe(4);
-    HttpRequestQueueService.refresh();
 
     // 3. delete item
     // We're still expecting to get another try at creating the first
@@ -392,7 +389,6 @@ describe('SynchronizeService', function() {
     $httpBackend.flush();
     expect(items.length)
       .toBe(3);
-    HttpRequestQueueService.refresh();
 
     // 4. undelete item
     // We're again, still expecting to get another try at creating the first
@@ -402,7 +398,6 @@ describe('SynchronizeService', function() {
     $httpBackend.flush();
     expect(items.length)
       .toBe(4);
-    HttpRequestQueueService.refresh();
 
     // 5. synchronize items and get back online, we're expecting the delete and undelete to cancel each other
 
@@ -420,7 +415,6 @@ describe('SynchronizeService', function() {
         .respond(200, putExistingItemResponse);
     SynchronizeService.synchronize(testOwnerUUID);
     $httpBackend.flush();
-    HttpRequestQueueService.refresh();
 
     // Verify that everything is right with the created item
     expect(items.length)
@@ -449,9 +443,9 @@ describe('SynchronizeService', function() {
     $httpBackend.flush();
     expect(items.length)
       .toBe(4);
-    expect(items[1].deleted)
+    expect(items[3].deleted)
       .toBeUndefined();
-    expect(items[1].modified)
+    expect(items[3].modified)
       .toBe(undeleteItemResponse.modified);
   });
 
@@ -460,7 +454,13 @@ describe('SynchronizeService', function() {
 
     // 1. save existing item
     var yoga = ItemsService.getItemInfo('f7724771-4469-488c-aabd-9db188672a9b', testOwnerUUID).item;
-    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item/' + yoga.uuid, yoga)
+    yoga.trans.description = 'just do it';
+    var yogaValues = {title: yoga.trans.title,
+                      description: yoga.trans.description,
+                      modified: yoga.modified}
+
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item/' + yoga.trans.uuid,
+                          yogaValues)
        .respond(404);
     ItemsService.saveItem(yoga, testOwnerUUID);
     $httpBackend.flush();
@@ -485,14 +485,19 @@ describe('SynchronizeService', function() {
     $httpBackend.expectGET('/api/' + MockUserSessionService.getActiveUUID() + '/items?modified=' +
                             latestModified + '&deleted=true&archived=true&completed=true')
         .respond(200, conflictYogaResponse);
-    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item/' + yoga.uuid, yoga)
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item/' + yoga.uuid,
+                           yogaValues)
         .respond(200, putNewItemResponse);
     SynchronizeService.synchronize(testOwnerUUID);
     $httpBackend.flush();
     MockUserSessionService.setLatestModified(newLatestModified);
 
     // 3. save existing offline again
-    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item/' + yoga.uuid, yoga)
+    yoga.trans.description = 'just do it, or not';
+    yogaValues.description = yoga.trans.description;
+    yogaValues.modified = yoga.trans.modified;
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item/' + yoga.uuid,
+                           yogaValues)
        .respond(404);
     ItemsService.saveItem(yoga, testOwnerUUID);
     $httpBackend.flush();
@@ -516,10 +521,11 @@ describe('SynchronizeService', function() {
     MockUserSessionService.offlineEnabled = true;
 
     // 1. save new item
-    var testItem = {
+    var testItemValues = {
       'title': 'test task'
     };
-    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItem)
+    var testItem = ItemsService.getNewItem(testItemValues, testOwnerUUID);
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItemValues)
        .respond(404);
     ItemsService.saveItem(testItem, testOwnerUUID);
     $httpBackend.flush();
@@ -528,7 +534,7 @@ describe('SynchronizeService', function() {
       .toBe(4);
 
     // 2. make item into task
-    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItem)
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItemValues)
        .respond(404);
     ItemsService.itemToTask(testItem, testOwnerUUID);
     $httpBackend.flush();
@@ -537,16 +543,13 @@ describe('SynchronizeService', function() {
     var tasks = TasksService.getTasks(testOwnerUUID);
     expect(tasks.length)
       .toBe(5);
+    expect(tasks[4].trans.title)
+      .toBe('test task');
 
     // 3. update task
-    var updatedTestTask = {
-      uuid: testItem.uuid,
-      title: testItem.title,
-      trans: {
-        description: 'test description'
-      }
-    };
-    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItem)
+    var updatedTestTask = tasks[4];
+    updatedTestTask.trans.description = 'test description';
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItemValues)
        .respond(404);
     TasksService.saveTask(updatedTestTask, testOwnerUUID);
     $httpBackend.flush();
@@ -555,7 +558,7 @@ describe('SynchronizeService', function() {
       .toBe(5);
 
     // 4. delete task
-    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItem)
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItemValues)
        .respond(404);
     TasksService.deleteTask(updatedTestTask, testOwnerUUID);
     $httpBackend.flush();
@@ -563,7 +566,7 @@ describe('SynchronizeService', function() {
       .toBe(4);
 
     // 5. undelete task
-    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItem)
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItemValues)
        .respond(404);
     TasksService.undeleteTask(updatedTestTask, testOwnerUUID);
     $httpBackend.flush();
@@ -576,13 +579,18 @@ describe('SynchronizeService', function() {
     $httpBackend.expectGET('/api/' + MockUserSessionService.getActiveUUID() + '/items?modified=' +
                             latestModified + '&deleted=true&archived=true&completed=true')
         .respond(200, '{}');
-    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItem)
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItemValues)
         .respond(200, putNewItemResponse);
-    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/task/' + putNewItemResponse.uuid,
-                           testItem)
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/task/' +
+                           putNewItemResponse.uuid,
+                           {title: updatedTestTask.trans.title,
+                            modified: putNewItemResponse.modified})
         .respond(200, putExistingItemResponse);
-    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/task/' + putNewItemResponse.uuid,
-                           updatedTestTask)
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/task/' +
+                           putNewItemResponse.uuid,
+                           {title: updatedTestTask.trans.title,
+                            description: updatedTestTask.trans.description,
+                            modified: putExistingItemResponse.modified})
         .respond(200, putExistingItemResponse);
     SynchronizeService.synchronize(testOwnerUUID);
     $httpBackend.flush();

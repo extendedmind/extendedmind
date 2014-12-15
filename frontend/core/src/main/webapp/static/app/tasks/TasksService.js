@@ -306,9 +306,9 @@
             method: 'post',
             url: '/api/' + ownerUUID + '/task/' + task.uuid + '/uncomplete'
           }, replaceable: true};
-          BackendClientService.post('/api/' + ownerUUID + '/task/' + task.trans.uuid + '/complete',
-                                    this.completeTaskRegex, params);
           var fakeTimestamp = BackendClientService.generateFakeTimestamp();
+          BackendClientService.post('/api/' + ownerUUID + '/task/' + task.trans.uuid + '/complete',
+                                    this.completeTaskRegex, params, undefined, fakeTimestamp);
           if (!task.mod) task.mod = {};
           ItemLikeService.updateObjectProperties(task.mod,
                                                  {modified: fakeTimestamp, completed: true});
@@ -343,9 +343,9 @@
             url: '/api/' + ownerUUID + '/task/' + task.uuid + '/complete'
           },
           replaceable: true};
-          BackendClientService.post('/api/' + ownerUUID + '/task/' + task.uuid + '/uncomplete',
-                                    this.uncompleteTaskRegex, params);
           var fakeTimestamp = BackendClientService.generateFakeTimestamp();
+          BackendClientService.post('/api/' + ownerUUID + '/task/' + task.uuid + '/uncomplete',
+                                    this.uncompleteTaskRegex, params, undefined, fakeTimestamp);
           if (!task.mod) task.mod = {};
           ItemLikeService.updateObjectProperties(task.mod,
                                                  {modified: fakeTimestamp, completed: false});
