@@ -3,7 +3,7 @@
     <div class="container-titlebar--inner">
       <div class="group-symmetrical height-large">
         <a href class="group-symmetrical--left link-navigation highlighted active" ng-click="endTagEdit()">
-          <span class="text-navigation-back" ng-bind="titlebarHasText() && !tag.deleted ? 'save' : 'back'"></span>
+          <span class="text-navigation-back" ng-bind="tagTitlebarHasText() && !tag.deleted ? 'save' : 'back'"></span>
         </a>
         <a href ng-if="!tag.deleted" class="group-symmetrical--right" ng-click="deleteTagInEdit()" >
           <span class="icon-trash"></span>
@@ -13,7 +13,7 @@
 
       <div class="row-vertically-centered with-textarea">
         <!-- TODO: @ or # symbol! -->
-        <textarea ng-model="titlebar.text" ng-keydown="tagTitlebarTextKeyDown($event)" editable-field
+        <textarea ng-model="tag.trans.title" ng-keydown="tagTitlebarTextKeyDown($event)" editable-field
           editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)" msd-elastic
           dynamic-placeholder="enter {{tag.tagType}} title&#8230;" maxlength="128"
           autocapitalize="none" autocorrect="off">
@@ -26,13 +26,13 @@
     <div class="container-content" drawer-override-aisle="right">
 
       <div class="row-vertically-centered with-textarea">
-        <textarea ng-model="tag.link" msd-elastic maxlength="128" placeholder="enter url&#8230;"
+        <textarea ng-model="tag.trans.link" msd-elastic maxlength="128" placeholder="enter url&#8230;"
           autocapitalize="none" autocorrect="off">
         </textarea>
       </div>
 
       <div class="row-vertically-centered with-textarea">
-        <textarea ng-model="tag.description" msd-elastic placeholder="enter description&#8230;"
+        <textarea ng-model="tag.trans.description" msd-elastic placeholder="enter description&#8230;"
           maxlength="1024" autocapitalize="none" autocorrect="off">
         </textarea>
       </div>

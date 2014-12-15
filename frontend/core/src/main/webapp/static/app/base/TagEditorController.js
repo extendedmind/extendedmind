@@ -22,13 +22,8 @@
   if (angular.isFunction($scope.registerFeatureEditorAboutToCloseCallback))
     $scope.registerFeatureEditorAboutToCloseCallback(tagEditorAboutToClose, 'TagEditorController');
 
-  // We expect there to be a $scope.tag via ng-init
-
-  $scope.titlebar.text = $scope.tag.title;
-
   // SAVING, DELETING
   function saveTagInEdit() {
-    $scope.tag.title = $scope.titlebar.text;
     $scope.deferEdit().then(function() {
       if ($scope.tag.tagType === 'context'){
         $scope.saveContext($scope.tag);
@@ -65,7 +60,7 @@
   };
 
   function tagEditorAboutToClose() {
-    if ($scope.titlebarHasText() && !$scope.tag.deleted){
+    if ($scope.tagTitlebarHasText() && !$scope.tag.deleted){
       saveTagInEdit();
     }else if (deleting){
       $scope.swipeToContextsAndReset();
@@ -75,10 +70,14 @@
 
   // TITLEBAR
 
+  $scope.tagTitlebarHasText = function() {
+    return $scope.tag.trans.title && $scope.tag.trans.title.length !== 0;
+  };
+
   $scope.tagTitlebarTextKeyDown = function (keydownEvent) {
     $scope.handleBasicTitlebarKeydown(keydownEvent, $scope.item);
     // Return
-    if (event.keyCode === 13 && $scope.titlebarHasText()) {
+    if (event.keyCode === 13 && $scope.tagTitlebarHasText()) {
       // Enter in editor saves, no line breaks allowed
       $scope.closeEditor();
       saveTagInEdit();
