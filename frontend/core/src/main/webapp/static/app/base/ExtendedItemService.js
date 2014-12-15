@@ -195,7 +195,7 @@
         var hasContext = false;
         if (extendedItem.trans.context){
           if (!angular.isArray(extendedItem.relationships.tags)) return true;
-          if (extendedItem.relationships.tags.indexOf(extendedItem.trans.context.trans.uuid) === -1){
+          if (extendedItem.relationships.tags.indexOf(extendedItem.trans.context) === -1){
             return true;
           }
           hasContext = true;
