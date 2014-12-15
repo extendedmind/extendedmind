@@ -186,9 +186,9 @@
         validate: this.validateRelatioships,
         copyTransToMod: this.copyRelationshipsTransToMod,
         resetTrans: this.resetRelationshipsTrans,
-      }
+      };
     },
-    isRelationshipsEdited: function(extendedItem, ownerUUID){
+    isRelationshipsEdited: function(extendedItem /*, ownerUUID*/){
       if (extendedItem.trans.list || extendedItem.trans.context || extendedItem.trans.keywords){
         if (!extendedItem.relationships) return true;
         if (extendedItem.trans.list !== extendedItem.parent) return true;
@@ -220,10 +220,10 @@
         return true;
       }
     },
-    validateRelationships: function(extendedItem, ownerUUID){
+    validateRelationships: function(/*extendedItem, ownerUUID*/){
       // TODO: Actually validate this
     },
-    copyRelationshipsTransToMod: function(extendedItem, ownerUUID){
+    copyRelationshipsTransToMod: function(extendedItem /*, ownerUUID*/){
       copyListToParent(extendedItem.trans, extendedItem.mod);
       copyKeywordsToTags(extendedItem.trans, extendedItem.mod);
       copyContextToTags(extendedItem.trans, extendedItem.mod);

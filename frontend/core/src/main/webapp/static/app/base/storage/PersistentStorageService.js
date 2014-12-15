@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
- /*global angular */
+ /*global angular, Lawnchair */
  'use strict';
 
 function PersistentStorageService($q) {
@@ -71,8 +71,6 @@ function PersistentStorageService($q) {
       var thisService = this;
       database.get(trimUUID(oldUUID), function(persisted){
         if (persisted){
-
-          var persistedItem = persisted.value;
           thisService.destroy(untrimUUID(persisted.key), ownerUUID).then(
             // Success
             function(){
@@ -112,7 +110,6 @@ function PersistentStorageService($q) {
     getAll: function(){
       var deferred = $q.defer();
       if (database){
-        var deferred = $q.defer();
         database.all(function(persistedItems) {
           var itemInfos = [];
           if (persistedItems){
@@ -132,7 +129,7 @@ function PersistentStorageService($q) {
       if (database){
         database.remove(trimUUID(uuid), function(){
           deferred.resolve();
-        })
+        });
       }else {
         deferred.reject();
       }

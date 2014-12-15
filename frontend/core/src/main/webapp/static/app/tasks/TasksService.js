@@ -18,14 +18,14 @@
 
  function TasksService($q, $rootScope,
                        ArrayService, BackendClientService, ExtendedItemService, ItemLikeService,
-                       ListsService, TagsService, UISessionService, UserSessionService, UUIDService) {
+                       ListsService, TagsService, UISessionService, UserSessionService) {
   var taskFieldInfos = ItemLikeService.getFieldInfos(
     [ 'due',
       'reminder',
       'repeating',
       {
         name: 'completed',
-        isEdited: function(task, ownerUUID){
+        isEdited: function(task){
           if (task.mod && (task.mod.completed !== task.trans.completed)) return true;
           else if ((task.completed && !task.trans.completed) || (!task.completed && task.trans.completed))
             return true;
@@ -386,5 +386,5 @@
 
 TasksService['$inject'] = ['$q', '$rootScope',
   'ArrayService', 'BackendClientService', 'ExtendedItemService', 'ItemLikeService',
-  'ListsService', 'TagsService', 'UISessionService', 'UserSessionService', 'UUIDService'];
+  'ListsService', 'TagsService', 'UISessionService', 'UserSessionService'];
 angular.module('em.tasks').factory('TasksService', TasksService);

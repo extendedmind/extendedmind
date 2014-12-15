@@ -17,13 +17,13 @@
  'use strict';
 
  function NotesService($q, ArrayService, BackendClientService, ExtendedItemService, ItemLikeService,
-                       ListsService, TagsService, UISessionService, UserSessionService, UUIDService) {
+                       ListsService, TagsService, UISessionService, UserSessionService) {
 
   var noteFieldInfos = ItemLikeService.getFieldInfos(
     [ 'content',
       {
         name: 'favorited',
-        isEdited: function(note, ownerUUID){
+        isEdited: function(note){
           if (note.mod && (note.mod.favorited !== note.trans.favorited)) return true;
           else if ((note.favorited && !note.trans.favorited) || (!note.favorited && note.trans.favorited))
             return true;
@@ -107,7 +107,7 @@
   ListsService.registerItemArchiveCallback(itemArchiveCallback, 'NotesService');
 
   // Setup callback for tag deletion
-  var tagDeletedCallback = function(deletedTag, ownerUUID) {
+  var tagDeletedCallback = function(deletedTag, ownerUUID, undelete) {
     if (notes[ownerUUID] && deletedTag) {
       if (!undelete){
         // Remove deleted tags from notes
@@ -351,18 +351,12 @@
           .then(function(result) {
             delete note.completed;
             ItemLikeService.updateObjectProperties(note, result.data.result);
-            updatenote(note, ownerUUID);
+            updateNote(note, ownerUUID);
             deferred.resolve(note);
           });
         }
       }
       return deferred.promise;
-    },
-    addTransientProperties: function(notes, ownerUUID, addExtraTransientPropertyFn) {
-      return addTransientProperties(notes, ownerUUID, addExtraTransientPropertyFn);
-    },
-    detachTransientProperties: function(note, ownerUUID) {
-      return ExtendedItemService.detachTransientProperties(note, ownerUUID);
     },
 
     // Regular expressions for note requests
@@ -384,5 +378,5 @@
 }
 
 NotesService['$inject'] = ['$q', 'ArrayService', 'BackendClientService', 'ExtendedItemService',
-'ItemLikeService', 'ListsService', 'TagsService', 'UISessionService', 'UserSessionService', 'UUIDService'];
+'ItemLikeService', 'ListsService', 'TagsService', 'UISessionService', 'UserSessionService'];
 angular.module('em.notes').factory('NotesService', NotesService);

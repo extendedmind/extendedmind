@@ -29,8 +29,6 @@
 
   // An object containing tags for every owner
   var tags = {};
-  var tagRegex = /\/tag/;
-  var tagSlashRegex = /\/tag\//;
 
   var tagDeletedCallbacks = {};
 

@@ -292,7 +292,8 @@
             BackendClientService.put('/api/' + params.owner + '/'+ itemType,
                                      this.getPutNewRegex(itemType), params, transportItem);
             var fakeTimestamp = BackendClientService.generateFakeTimestamp();
-            updateObjectProperties(item.mod, {uuid: fakeUUID, modified: fakeTimestamp, created: fakeTimestamp});
+            updateObjectProperties(item.mod, {uuid: fakeUUID, modified: fakeTimestamp,
+                                              created: fakeTimestamp});
             deferred.resolve('new');
           } else {
             // Online
@@ -369,8 +370,9 @@
         deferred.resolve();
       } else {
         // Online
-        BackendClientService.postOnline('/api/' + ownerUUID + '/' + itemType +'/' + item.trans.uuid + '/undelete',
-                                        this.getUndeleteRegex(itemType), params)
+        BackendClientService.postOnline('/api/' + ownerUUID + '/' + itemType +'/' +
+                                        item.trans.uuid + '/undelete',
+                                        this.getUndeleteRegex(itemType))
         .then(
           function(result) {
             delete item.deleted;

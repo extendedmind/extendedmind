@@ -17,12 +17,11 @@
  'use strict';
 
  function ItemsService($q, ArrayService, BackendClientService, ItemLikeService, ListsService, NotesService,
-                       TagsService, TasksService, UISessionService, UserSessionService, UUIDService) {
-  var items = {};
+                       TagsService, TasksService, UISessionService, UserSessionService) {
 
-  var itemRegex = /\/item/;
-  var itemSlashRegex = /\/item\//;
   var itemFieldInfos = ItemLikeService.getFieldInfos();
+
+  var items = {};
 
   function initializeArrays(ownerUUID) {
     if (!items[ownerUUID]) {
@@ -171,7 +170,7 @@
       } else {
         var index = items[ownerUUID].activeItems.findFirstIndexByKeyValue('uuid', item.trans.uuid);
         TasksService.saveTask(items[ownerUUID].activeItems[index],
-                              ownerUUID).then(function(result){
+                              ownerUUID).then(function(/*result*/){
           removeActiveItem(index, ownerUUID);
           deferred.resolve(item);
         },function(failure){
@@ -187,7 +186,7 @@
       } else {
         var index = items[ownerUUID].activeItems.findFirstIndexByKeyValue('uuid', item.trans.uuid);
         NotesService.saveNote(items[ownerUUID].activeItems[index],
-                              ownerUUID).then(function(result){
+                              ownerUUID).then(function(/*result*/){
           removeActiveItem(index, ownerUUID);
           deferred.resolve(item);
         },function(failure){
@@ -203,7 +202,7 @@
       } else {
         var index = items[ownerUUID].activeItems.findFirstIndexByKeyValue('uuid', item.trans.uuid);
         ListsService.saveList(items[ownerUUID].activeItems[index],
-                              ownerUUID).then(function(result){
+                              ownerUUID).then(function(/*result*/){
           removeActiveItem(index, ownerUUID);
           deferred.resolve(item);
         },function(failure){
@@ -221,5 +220,5 @@
 }
 
 ItemsService['$inject'] = ['$q', 'ArrayService', 'BackendClientService', 'ItemLikeService', 'ListsService',
-  'NotesService', 'TagsService', 'TasksService', 'UISessionService', 'UserSessionService', 'UUIDService'];
+  'NotesService', 'TagsService', 'TasksService', 'UISessionService', 'UserSessionService'];
 angular.module('em.main').factory('ItemsService', ItemsService);
