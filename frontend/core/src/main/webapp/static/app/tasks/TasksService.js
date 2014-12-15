@@ -26,8 +26,9 @@
       {
         name: 'completed',
         isEdited: function(task, ownerUUID){
-          if (task.mod && task.mod.completed && !task.trans.completed) return true;
-          else if (task.completed && !task.trans.completed) return true;
+          if (task.mod && (task.mod.completed !== task.trans.completed)) return true;
+          else if ((task.completed && !task.trans.completed) || (!task.completed && task.trans.completed))
+            return true;
         },
         resetTrans: function(task){
           if (task.mod && task.mod.completed !== undefined) task.trans.completed = task.mod.completed;
@@ -155,6 +156,9 @@
   ListsService.registerListDeletedCallback(listDeletedCallback, 'TasksService');
 
   return {
+    getNewTask: function(initialValues, ownerUUID) {
+      return ItemLikeService.getNew(initialValues, 'task', ownerUUID, taskFieldInfos);
+    },
     setTasks: function(tasksResponse, ownerUUID) {
       ItemLikeService.persistAndReset(tasksResponse, 'task', ownerUUID, taskFieldInfos);
       return ArrayService.setArrays(tasksResponse,
@@ -338,8 +342,8 @@
           deferred.resolve(task);
         } else {
           // Online
-          BackendClientService.postOnline('/api/' + ownerUUID + '/task/' + task.trans.uuid + '/complete',
-                                          this.completeTaskRegex)
+          BackendClientService.postOnline('/api/' + ownerUUID + '/task/' + task.trans.uuid + '/uncomplete',
+                                          this.uncompleteTaskRegex)
           .then(function(result) {
             delete task.completed;
             ItemLikeService.updateObjectProperties(task, result.data.result);

@@ -206,7 +206,7 @@
                                             extendedItem.trans.keywords.length;
           if (extendedItem.relationships.tags.length !== expectedLength) return true;
 
-          for (var i=0, i=extendedItem.trans.keywords.length; i<len; i++){
+          for (var i=0, len=extendedItem.trans.keywords.length; i<len; i++){
             if (extendedItem.relationships.tags.indexOf(extendedItem.trans.keywords[i].uuid) === -1)
               return true;
           }

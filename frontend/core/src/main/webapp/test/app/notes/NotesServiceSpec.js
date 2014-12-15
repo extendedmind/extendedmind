@@ -21,7 +21,7 @@
   // INJECTS
 
   var $httpBackend;
-  var NotesService, BackendClientService, HttpClientService, ListsService;
+  var NotesService, BackendClientService, HttpClientService, ListsService, TagsService, UserSessionService;
 
   // MOCKS
 
@@ -44,12 +44,26 @@
   beforeEach(function() {
     module('em.appTest');
 
-    inject(function(_$httpBackend_, _NotesService_, _BackendClientService_, _HttpClientService_, _ListsService_) {
+    inject(function(_$httpBackend_, _NotesService_, _BackendClientService_, _HttpClientService_,
+                    _ListsService_, _TagsService_, _UserSessionService_) {
       $httpBackend = _$httpBackend_;
       NotesService = _NotesService_;
       BackendClientService = _BackendClientService_;
       HttpClientService = _HttpClientService_;
       ListsService = _ListsService_;
+      TagsService = _TagsService_;
+      UserSessionService = _UserSessionService_;
+      UserSessionService.executeNotifyOwnerCallbacks(testOwnerUUID);
+
+      TagsService.setTags(
+        [{
+            'uuid': 'c933e120-90e7-488b-9f15-ea2ee2887e67',
+            'created': 1390912600957,
+            'modified': 1390912600957,
+            'title': 'codes',
+            'tagType': 'keyword'
+          }], testOwnerUUID);
+
       NotesService.setNotes(
         [{
           'uuid': 'a1cd149a-a287-40a0-86d9-0a14462f22d6',
@@ -117,10 +131,11 @@
   });
 
   it('should save new note', function() {
-    var testNote = {
+    var testNoteValues = {
       'title': 'test note'
     };
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/note', testNote)
+    var testNote = NotesService.getNewNote(testNoteValues, testOwnerUUID);
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/note', testNoteValues)
     .respond(200, putNewNoteResponse);
     NotesService.saveNote(testNote, testOwnerUUID);
     $httpBackend.flush();
@@ -137,8 +152,12 @@
 
   it('should update existing note', function() {
     var officeDoorCode = NotesService.getNoteInfo('c2cd149a-a287-40a0-86d9-0a14462f22d6', testOwnerUUID).note;
-    officeDoorCode.content = '1234';
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/note/' + officeDoorCode.uuid, officeDoorCode)
+    officeDoorCode.trans.content = '1234';
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/note/' + officeDoorCode.uuid,
+                           {title: officeDoorCode.trans.title,
+                            content: officeDoorCode.trans.content,
+                            relationships: officeDoorCode.relationships,
+                            modified: officeDoorCode.modified})
     .respond(200, putExistingNoteResponse);
     NotesService.saveNote(officeDoorCode, testOwnerUUID);
     $httpBackend.flush();

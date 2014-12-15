@@ -145,11 +145,12 @@
     var transportItem = {};
     for (var i=0, len=fieldInfos.length; i<len; i++){
       if (fieldInfos[i] !== 'uuid' && fieldInfos[i] !== 'created' && fieldInfos[i] !== 'deleted'){
-        if (item.mod && item.mod.hasOwnProperty(fieldInfos[i]) &&
-            item.mod[fieldInfos[i]] !== undefined){
-          transportItem[fieldInfos[i]] = item.mod[fieldInfos[i]];
-        }else if (item[fieldInfos[i]] !== undefined) {
-          transportItem[fieldInfos[i]] = item[fieldInfos[i]];
+        var fieldName = angular.isObject(fieldInfos[i]) ? fieldInfos[i].name : fieldInfos[i];
+        if (item.mod && item.mod.hasOwnProperty(fieldName) &&
+            item.mod[fieldName] !== undefined){
+          transportItem[fieldName] = item.mod[fieldName];
+        }else if (item[fieldName] !== undefined) {
+          transportItem[fieldName] = item[fieldName];
         }
       }
     }

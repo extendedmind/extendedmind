@@ -114,10 +114,11 @@ afterEach(function() {
   });
 
   it('should save new task', function () {
-    var testTask = {
+    var testTaskValues = {
       'title': 'test task'
     };
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task', testTask)
+    var testTask = TasksService.getNewTask(testTaskValues, testOwnerUUID);
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task', testTaskValues)
     .respond(200, putNewTaskResponse);
     TasksService.saveTask(testTask, testOwnerUUID);
     $httpBackend.flush();
@@ -134,8 +135,10 @@ afterEach(function() {
 
   it('should update existing task', function () {
     var cleanCloset = TasksService.getTaskInfo('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID).task;
-    cleanCloset.title = 'clean closet now';
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid, cleanCloset)
+    cleanCloset.trans.title = 'clean closet now';
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid,
+                           {title: cleanCloset.trans.title,
+                           modified: cleanCloset.modified})
     .respond(200, putExistingTaskResponse);
     TasksService.saveTask(cleanCloset, testOwnerUUID);
     $httpBackend.flush();
