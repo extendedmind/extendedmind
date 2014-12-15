@@ -275,12 +275,6 @@
     // PUT
     // ***
   } else if (request.content.method === 'put') {
-      // TODO: Make this better by not replacing the UUID and modified values
-      //       right away but instead creating a realUuid and realModified values
-      //       that can be traded for the real ones on synchronize callback. That
-      //       would ensure that when going online, the items don't change places
-      //       and also (if using 'track by' with uuid+modified key in lists) no
-      //       unnecessary rendering would take place after online => faster UX.
       var uuid, oldUuid;
       if (request.params.uuid) {
         // Put existing
@@ -301,11 +295,15 @@
           uuid = response.uuid;
 
           // Also update queue to replace all calls with the old fake uuid with the new one
+          // and at the same time swap the modified value
           if (queue && queue.length > 0) {
             for (var i=0, len=queue.length; i<len; i++) {
               if (queue[i].params.uuid === oldUuid) {
                 queue[i].params.uuid = uuid;
                 queue[i].content.url = queue[i].content.url.replace(oldUuid,uuid);
+                if (queue[i].content.data && queue[i].content.data.modified){
+                  queue[i].content.data.modified = response.modified;
+                }
               }
             }
           }

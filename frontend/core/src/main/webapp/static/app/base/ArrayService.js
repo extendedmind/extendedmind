@@ -132,7 +132,7 @@ function ArrayService() {
     // item and activeArray are mandatory, rest are optional
     setItem: function(item, activeArray, deletedArray, otherArrays) {
       var otherArrayInfo = getFirstMatchingArrayInfoByProperty(item, otherArrays);
-      if (deletedArray && item.deleted) {
+      if (deletedArray && item.trans.deleted) {
         insertItemToArray(item, deletedArray, 'deleted');
       } else if (otherArrayInfo) {
         insertItemToArray(item, otherArrayInfo.array, otherArrayInfo.id, otherArrayInfo.reverse);
@@ -157,7 +157,7 @@ function ArrayService() {
 
       if (activeItemId !== undefined) {
         activeArray.splice(activeItemId, 1);
-        if (item.deleted) {
+        if (item.trans.deleted) {
           insertItemToArray(item, deletedArray, 'deleted');
         } else if (otherArrayInfo && item[otherArrayInfo.id]) {
           insertItemToArray(item, otherArrayInfo.array, otherArrayInfo.id, otherArrayInfo.reverse);
@@ -166,7 +166,7 @@ function ArrayService() {
         }
       } else if (deletedItemId !== undefined) {
         deletedArray.splice(deletedItemId, 1);
-        if (!item.deleted) {
+        if (!item.trans.deleted) {
           if (otherArrayInfo && item[otherArrayInfo.id]) {
             insertItemToArray(item, otherArrayInfo.array, otherArrayInfo.id, otherArrayInfo.reverse);
           } else {
@@ -177,7 +177,7 @@ function ArrayService() {
         }
       } else if (otherArrayItemId !== undefined) {
         otherArrayWithItemInfo.array.splice(otherArrayItemId, 1);
-        if (item.deleted) {
+        if (item.trans.deleted) {
           insertItemToArray(item, deletedArray, 'deleted');
         } else if (!otherArrayInfo &&
          (!otherArrayWithItemInfo || !item[otherArrayWithItemInfo.id])) {

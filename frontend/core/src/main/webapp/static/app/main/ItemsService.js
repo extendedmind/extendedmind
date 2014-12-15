@@ -71,7 +71,8 @@
     updateItemProperties: function(uuid, properties, ownerUUID) {
       var itemInfo = this.getItemInfo(uuid, ownerUUID);
       if (itemInfo){
-        ItemLikeService.updateObjectProperties(itemInfo.item, properties);
+        ItemLikeService.updateObjectProperties(itemInfo.item.mod, properties);
+        ItemLikeService.copyModToPersistent(itemInfo.item, ownerUUID, itemFieldInfos);
         updateItem(itemInfo.item, ownerUUID);
         return itemInfo.item;
       }

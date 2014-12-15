@@ -37,21 +37,29 @@ function HttpRequestQueueService() {
 
   // Initialize variables from local storage when service
   // is created
-  if (localStorage.getItem('primaryRequest')) {
-    primary = JSON.parse(localStorage.getItem('primaryRequest'));
+  function initialize(){
+    var stored = localStorage.getItem('primaryRequest');
+    if (stored) {
+      primary = JSON.parse(stored);
+    }
+    stored = localStorage.getItem('secondaryRequest');
+    if (stored) {
+      secondary = JSON.parse(stored);
+    }
+    stored = localStorage.getItem('requestQueue');
+    if (stored) {
+      queue = JSON.parse(stored);
+    }
+    stored = localStorage.getItem('beforeLastRequest');
+    if (stored) {
+      beforeLast = JSON.parse(stored);
+    }
+    stored = localStorage.getItem('lastRequest');
+    if (stored) {
+      last = JSON.parse(stored);
+    }
   }
-  if (localStorage.getItem('secondaryRequest')) {
-    secondary = JSON.parse(localStorage.getItem('secondaryRequest'));
-  }
-  if (localStorage.getItem('requestQueue')) {
-    queue = JSON.parse(localStorage.getItem('requestQueue'));
-  }
-  if (localStorage.getItem('beforeLastRequest')) {
-    beforeLast = JSON.parse(localStorage.getItem('beforeLastRequest'));
-  }
-  if (localStorage.getItem('lastRequest')) {
-    last = JSON.parse(localStorage.getItem('lastRequest'));
-  }
+  initialize();
 
   // Find index of a reversible item in queue
   function findReverseRequestIndex(request) {
@@ -255,6 +263,10 @@ function HttpRequestQueueService() {
         primary = undefined;
         localStorage.removeItem('primaryRequest');
       }
+    },
+    // NOTE: This is used primarily in tests
+    refresh: function() {
+      initialize();
     }
   };
   return service;

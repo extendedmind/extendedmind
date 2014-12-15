@@ -78,9 +78,9 @@
         }
       }else if (fieldInfos[i] === 'title'){
         if (item.trans['title'] === undefined || item.trans['title'].length === 0){
-          validationErrors('title is mandatory');
+          validationErrors.push('title is mandatory');
         }else if (item.trans['title'].length > 128){
-          validationErrors('title can not be more than 128 characters');
+          validationErrors.push('title can not be more than 128 characters');
         }
       }else if (fieldInfos[i] === 'description' && item.trans['description'] !== undefined &&
                 item.trans['description'].length > 1024){
@@ -233,6 +233,9 @@
       if (UserSessionService.isOfflineEnabled()){
         return PersistentStorageService.destroy(uuid);
       }
+    },
+    copyModToPersistent: function(item, ownerUUID, fieldInfos){
+      return copyModToPersistent(item, ownerUUID, fieldInfos);
     },
     // Returns promise which returns 'new', 'existing', 'unmodified', or failure on failed save because
     // data is invalid

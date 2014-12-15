@@ -21,7 +21,7 @@ describe('SynchronizeService', function() {
   // INJECTS
 
   var $httpBackend;
-  var SynchronizeService, ItemsService, BackendClientService, HttpClientService,
+  var SynchronizeService, ItemsService, BackendClientService, HttpClientService, HttpRequestQueueService,
       ListsService, TagsService, TasksService, NotesService, UUIDService, AuthenticationService;
 
   // MOCKS
@@ -84,6 +84,9 @@ describe('SynchronizeService', function() {
     },
     isOfflineEnabled: function () {
       return this.offlineEnabled;
+    },
+    registerNofifyOwnerCallback: function(callback, id){
+      callback(testOwnerUUID);
     }
   };
 
@@ -96,13 +99,15 @@ describe('SynchronizeService', function() {
       $provide.value('UserSessionService', MockUserSessionService);
     });
 
-    inject(function (_$httpBackend_, _SynchronizeService_, _ItemsService_, _BackendClientService_, _HttpClientService_,
-                    _ListsService_, _TagsService_, _TasksService_, _NotesService_, _UUIDService_, _AuthenticationService_) {
+    inject(function (_$httpBackend_, _SynchronizeService_, _ItemsService_, _BackendClientService_,
+                     _HttpClientService_, _HttpRequestQueueService_, _ListsService_, _TagsService_,
+                     _TasksService_, _NotesService_, _UUIDService_, _AuthenticationService_) {
       $httpBackend = _$httpBackend_;
       SynchronizeService = _SynchronizeService_;
       ItemsService = _ItemsService_;
       BackendClientService = _BackendClientService_;
       HttpClientService = _HttpClientService_;
+      HttpRequestQueueService = _HttpRequestQueueService_;
       ListsService = _ListsService_;
       TagsService = _TagsService_;
       TasksService = _TasksService_;
@@ -364,40 +369,40 @@ describe('SynchronizeService', function() {
       .toBe(4);
     expect(UUIDService.isFakeUUID(items[3].trans.uuid))
       .toBeTruthy();
+    HttpRequestQueueService.refresh();
 
     // 2. update item
 
-    var updatedTestItemValues = {
-      'uuid': testItem.uuid,
-      'title': testItem.title,
-      'description': 'test description'
-    }
-    var updatedTestItem = ItemsService.getNewItem(updatedTestItemValues, testOwnerUUID);
+    testItem.trans.description = 'test description';
     // We're expecting to get another try at creating the item
-    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', updatedTestItemValues)
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item',
+                           testItemValues)
        .respond(404);
-    ItemsService.saveItem(updatedTestItem, testOwnerUUID);
+    ItemsService.saveItem(testItem, testOwnerUUID);
     $httpBackend.flush();
     expect(items.length)
       .toBe(4);
+    HttpRequestQueueService.refresh();
 
     // 3. delete item
     // We're still expecting to get another try at creating the first
-    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItem)
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItemValues)
        .respond(404);
-    ItemsService.deleteItem(updatedTestItem, testOwnerUUID);
+    ItemsService.deleteItem(testItem, testOwnerUUID);
     $httpBackend.flush();
     expect(items.length)
       .toBe(3);
+    HttpRequestQueueService.refresh();
 
     // 4. undelete item
     // We're again, still expecting to get another try at creating the first
-    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItem)
+    $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItemValues)
        .respond(404);
-    ItemsService.undeleteItem(updatedTestItem, testOwnerUUID);
+    ItemsService.undeleteItem(testItem, testOwnerUUID);
     $httpBackend.flush();
     expect(items.length)
       .toBe(4);
+    HttpRequestQueueService.refresh();
 
     // 5. synchronize items and get back online, we're expecting the delete and undelete to cancel each other
 
@@ -409,35 +414,38 @@ describe('SynchronizeService', function() {
     $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item', testItemValues)
         .respond(200, putNewItemResponse);
     $httpBackend.expectPUT('/api/' + MockUserSessionService.getActiveUUID() + '/item/' + putNewItemResponse.uuid,
-                           updatedTestItemValues)
+                           {title: testItem.trans.title,
+                            description: testItem.trans.description,
+                            modified: putNewItemResponse.modified})
         .respond(200, putExistingItemResponse);
     SynchronizeService.synchronize(testOwnerUUID);
     $httpBackend.flush();
+    HttpRequestQueueService.refresh();
 
     // Verify that everything is right with the created item
     expect(items.length)
       .toBe(4);
     expect(UUIDService.isFakeUUID(items[3].uuid))
       .toBeFalsy();
-    expect(items[1].description)
-      .toBeDefined();
+    expect(items[3].description)
+      .toBe('test description');
 
     // 6. delete online
-    $httpBackend.expectDELETE('/api/' + MockUserSessionService.getActiveUUID() + '/item/' + updatedTestItem.uuid)
+    $httpBackend.expectDELETE('/api/' + MockUserSessionService.getActiveUUID() + '/item/' + testItem.uuid)
        .respond(200, deleteItemResponse);
-    ItemsService.deleteItem(updatedTestItem, testOwnerUUID);
+    ItemsService.deleteItem(testItem, testOwnerUUID);
     $httpBackend.flush();
     expect(items.length)
       .toBe(3);
-    expect(updatedTestItem.deleted)
+    expect(testItem.deleted)
       .toBe(deleteItemResponse.deleted);
-    expect(updatedTestItem.modified)
+    expect(testItem.modified)
       .toBe(deleteItemResponse.result.modified);
 
     // 7. undelete online
-    $httpBackend.expectPOST('/api/' + MockUserSessionService.getActiveUUID() + '/item/' + updatedTestItem.uuid + '/undelete')
+    $httpBackend.expectPOST('/api/' + MockUserSessionService.getActiveUUID() + '/item/' + testItem.uuid + '/undelete')
        .respond(200, undeleteItemResponse);
-    ItemsService.undeleteItem(updatedTestItem, testOwnerUUID);
+    ItemsService.undeleteItem(testItem, testOwnerUUID);
     $httpBackend.flush();
     expect(items.length)
       .toBe(4);
