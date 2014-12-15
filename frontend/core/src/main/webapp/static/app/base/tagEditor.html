@@ -8,7 +8,8 @@
         <a href ng-if="!tag.deleted" class="group-symmetrical--right" ng-click="deleteTagInEdit()" >
           <span class="icon-trash"></span>
         </a>
-        <a ng-if="tag.deleted" class="group-symmetrical--right link-navigation highlighted active" href ng-click="undeleteTagInEdit()"><span class="text-navigation">restore</span></a>
+        <a ng-if="tag.deleted" href class="group-symmetrical--right link-navigation highlighted active"
+        ng-click="undeleteTagInEdit()"><span class="text-navigation">restore</span></a>
       </div>
 
       <div class="row-vertically-centered with-textarea">
