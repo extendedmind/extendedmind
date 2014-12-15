@@ -15,8 +15,8 @@
  'use strict';
 
  function NotesController($filter, $q, $rootScope, $scope, $timeout,
-                          AnalyticsService, ListsService, NotesService, TagsService, SwiperService,
-                          UISessionService) {
+                          AnalyticsService, ItemsService, ListsService, NotesService, TagsService,
+                          SwiperService, UISessionService) {
 
   $scope.getNewNote = function(initialValues){
     return ItemsService.getNewItem(initialValues, UISessionService.getActiveUUID());
@@ -170,6 +170,7 @@
 
 NotesController['$inject'] = [
 '$filter', '$q', '$rootScope', '$scope', '$timeout',
-'AnalyticsService', 'ListsService', 'NotesService', 'TagsService', 'SwiperService', 'UISessionService'
+'AnalyticsService', 'ItemsService', 'ListsService', 'NotesService', 'TagsService', 'SwiperService',
+'UISessionService'
 ];
 angular.module('em.notes').controller('NotesController', NotesController);
