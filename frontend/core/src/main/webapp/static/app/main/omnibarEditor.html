@@ -23,11 +23,14 @@
   </header>
 
   <div ng-if="syncState !== 'active'" class="container-fluid--inner" ng-init="containerInfo = {}">
-    <div ng-style="{'padding-bottom': containerInfo.footerHeight}" class="container-content with-expandable-footer" drawer-override-aisle="right">
+    <div ng-style="{'padding-bottom': containerInfo.footerHeight}"
+      class="container-content with-expandable-footer" drawer-override-aisle="right">
 
       <!-- SEARCH / FILTERED RESULTS -->
-      <div ng-repeat="searchResult in filteredItems.searchResults = (searchItems | filter: itemsFilter)" class="group-mixed with-checkbox">
-        <a href class="group-mixed--middle link-search-result" ng-click="initializeEditor(searchResult.trans.itemType, searchResult)">
+      <div ng-repeat="searchResult in filteredItems.searchResults = (searchItems | filter: itemsFilter)"
+        class="group-mixed with-checkbox">
+        <a href class="group-mixed--middle link-search-result"
+          ng-click="initializeEditor(searchResult.trans.itemType, searchResult)">
           <span class="text-search-result" clamp=2 ng-bind="searchResult.title"></span>
         </a>
         <div class="group-mixed--right">
@@ -38,10 +41,13 @@
     </div>
 
     <!-- FOOTER -->
-    <footer class="container-content--after editor-footer" editor-footer="containerInfo" editor-footer-toggled-callback="setKeywordsAndItemsFilters" editor-footer-expand-height-change="notifyFilteredKeywordsLengthChange">
+    <footer class="container-content--after editor-footer" editor-footer="containerInfo"
+      editor-footer-toggled-callback="setKeywordsAndItemsFilters"
+      editor-footer-expand-height-change="notifyFilteredKeywordsLengthChange">
 
       <div class="group-symmetrical">
-        <a href ng-hide="footerExpandOpen" class="group-symmetrical--left animate-fade-in-out link" ng-click="convertToTask()">
+        <a href ng-hide="footerExpandOpen" class="group-symmetrical--left animate-fade-in-out link"
+          ng-click="convertToTask()">
           <span class="text-convert">task</span>
         </a>
         <div ng-if="keywords && keywords.length" class="group-symmetrical--middle">
@@ -52,16 +58,20 @@
         <a href ng-hide="footerExpanded" class="group-symmetrical--right link" ng-click="convertToNote()">
           <span class="text-convert">note</span>
         </a>
-        <a href ng-if="footerExpanded && (!selectedKeywords || !selectedKeywords.length)" class="group-symmetrical--right highlighted" ng-click="toggleExpandFooterToMaxHeight()">
+        <a href ng-if="footerExpanded && (!selectedKeywords || !selectedKeywords.length)"
+          class="group-symmetrical--right highlighted" ng-click="toggleExpandFooterToMaxHeight()">
           <span class="text-edit" ng-bind="footerExpandedToMaxHeight ? 'done' : 'edit'"></span>
         </a>
       </div>
 
       <!-- EXPANDABLE FOOTER CONTENT -->
-      <div ng-if="footerExpanded" class="keywords-footer" ng-class="{'keywords-select-active': selectedKeywords && selectedKeywords.length}" ng-init="clearSelectedKeywords()">
+      <div ng-if="footerExpanded" class="keywords-footer"
+        ng-class="{'keywords-select-active': selectedKeywords && selectedKeywords.length}"
+        ng-init="clearSelectedKeywords()">
 
         <!-- KEYWORDS -->
-        <div ng-hide="(selectedKeywords && selectedKeywords.length) || footerExpandedToMaxHeight" class="keywords-search row">
+        <div ng-hide="(selectedKeywords && selectedKeywords.length) || footerExpandedToMaxHeight"
+          class="keywords-search row">
           <input type="search" class="text-keyword" ng-model="keywordsSearch.text"
             placeholder="search keywords&#8230;" maxlength="128" autocapitalize="none" autocorrect="off">
         </div>
@@ -76,7 +86,9 @@
 
         <!-- SELECT MODE -->
         <div ng-if="!footerExpandedToMaxHeight" class="keywords-container row">
-          <div class="keyword-wrapper" ng-repeat="keyword in filteredItems.unselectedKeywords = (keywords | filter:keywordsFilter) | filter:{title:keywordsSearch.text} | orderBy:'title'">
+          <div class="keyword-wrapper"
+            ng-repeat="keyword in filteredItems.unselectedKeywords = (keywords | filter:keywordsFilter)
+            | filter:{title:keywordsSearch.text} | orderBy:'title'">
             <a href class="keyword link" ng-click="selectKeyword(keyword)">
               <span class="text-keyword" ng-bind="'#' + keyword.title" clamp=1></span>
             </a>
