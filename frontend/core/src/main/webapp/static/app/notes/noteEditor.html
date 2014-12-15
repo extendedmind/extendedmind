@@ -43,15 +43,21 @@
      </div>
    </header>
 
-   <div class="swiper-container container-fluid--inner" swiper-container="noteEditor" swiper-type="main" expected-slides="2" swiper-container-slide-changed="editorSwiperSlideChanged()">
+   <div class="swiper-container container-fluid--inner" swiper-container="noteEditor" swiper-type="main"
+    expected-slides="2" swiper-container-slide-changed="editorSwiperSlideChanged()">
     <div class="swiper-wrapper" ng-class="onboardingInProgress && 'swiper-no-swiping'">
       <div class="swiper-slide" swiper-slide="noteEditor/basic" slide-index="0">
         <div ng-style="{'padding-bottom': mode === 'fullScreen' ? 0 : EDITOR_FOOTER_HEIGHT}"
         class="container-content" drawer-override-aisle="right" swiper-prevent>
 
           <!-- LIST PICKER -->
-          <div ng-if="listPickerOpen" ng-hide="onboardingInProgress" class="swiper-no-swiping animate-fade-in" editable-field-container="auto" editable-field-container-scrollable="true" editable-field-container-clicked-elsewhere="closeListPicker()" data-snap-ignore="true">
-            <div list-picker="lists" list-picker-new-item="{}" list-picker-archived-lists="archivedLists" list-picker-save="closeListPickerAndSetListToItem(note, list)" list-picker-clear="closeListPickerAndClearListFromItem(note, list)" list-picker-get-selected="getListFromUUID(note.trans.list)"></div>
+          <div ng-if="listPickerOpen" ng-hide="onboardingInProgress" class="swiper-no-swiping animate-fade-in"
+            editable-field-container="auto" editable-field-container-scrollable="true"
+              editable-field-container-clicked-elsewhere="closeListPicker()" data-snap-ignore="true">
+            <div list-picker="lists" list-picker-new-item="{}" list-picker-archived-lists="archivedLists"
+              list-picker-save="closeListPickerAndSetListToItem(note, list)"
+              list-picker-clear="closeListPickerAndClearListFromItem(note, list)"
+              list-picker-get-selected="getListFromUUID(note.trans.list)"></div>
           </div>
 
           <div ng-if="!listPickerOpen">
@@ -90,7 +96,8 @@
             <a href ng-hide="onboardingInProgress" ng-click="clickFavorite()" class="group-symmetrical--left">
               <span class="icon-star" ng-class="!note.trans.favorited && 'inactive'"></span>
             </a>
-            <a href ng-click="swipeToAdvanced()" ng-hide="isFooterNavigationHidden()" class="group-symmetrical--right link-navigation">
+            <a href ng-click="swipeToAdvanced()" ng-hide="isFooterNavigationHidden()"
+              class="group-symmetrical--right link-navigation">
               <span class="text-navigation-forward">advanced</span>
             </a>
           </nav>
@@ -117,7 +124,11 @@
           </div>
 
           <div ng-if="keywords" class="keywords-container row">
-            <div class="keyword-wrapper" ng-repeat="keyword in keywords | keywordsFilter:{name:'byOtherThanNoteKeywords', item: note} | filter:newKeyword.title | orderBy:'title'">
+            <div class="keyword-wrapper"
+              ng-repeat="keyword in keywords
+              | keywordsFilter:{name:'byOtherThanNoteKeywords', item: note}
+              | filter:newKeyword.title
+              | orderBy:'title'">
               <a href class="keyword link" ng-click="addKeywordToNote(note, keyword)">
                 <span class="text-keyword" ng-bind="'#' + keyword.title" clamp=1></span>
               </a>
@@ -125,7 +136,8 @@
           </div>
 
         </div>
-        <footer ng-hide="isNoteFooterHidden()" class="container-content--after editor-footer" editor-footer="advancedSlideInfo">
+        <footer ng-hide="isNoteFooterHidden()" class="container-content--after editor-footer"
+          editor-footer="advancedSlideInfo">
 
           <div class="table">
             <div class="table-row">
@@ -139,7 +151,8 @@
           </div>
 
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
-            <a href ng-click="swipeToBasic()" ng-hide="isFooterNavigationHidden()" class="group-symmetrical--left link-navigation">
+            <a href ng-click="swipeToBasic()" ng-hide="isFooterNavigationHidden()"
+              class="group-symmetrical--left link-navigation">
               <span class="text-navigation-back">basic</span>
             </a>
           </nav>

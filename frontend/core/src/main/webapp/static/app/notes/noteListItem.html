@@ -3,7 +3,8 @@
     <a href class="link-list-item" swiper-click="callAndWaitThenScroll(openNoteEditor, note)">
       <span class="text-heading-primary" ng-bind="note.title" clamp=2></span>
     </a>
-    <a href ng-if="note.content" class="link-teaser" swiper-click="callAndWaitThenScroll(openNoteEditorView, note)">
+    <a href ng-if="note.content" class="link-teaser"
+      swiper-click="callAndWaitThenScroll(openNoteEditorView, note)">
       <span class="text-teaser" clamp=3 ng-bind="getNoteContentTeaser(note)"></span>
     </a>
   </div>

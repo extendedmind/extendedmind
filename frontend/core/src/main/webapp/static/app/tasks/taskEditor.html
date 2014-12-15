@@ -34,20 +34,29 @@
     </div>
   </header>
 
-  <div class="swiper-container container-fluid--inner" swiper-container="taskEditor" swiper-type="main" expected-slides="2" swiper-container-toggle-drawer-sliding-events="true" swiper-container-slide-changed="editorSwiperSlideChanged()">
+  <div class="swiper-container container-fluid--inner" swiper-container="taskEditor" swiper-type="main"
+    expected-slides="2" swiper-container-toggle-drawer-sliding-events="true"
+    swiper-container-slide-changed="editorSwiperSlideChanged()">
     <div class="swiper-wrapper">
       <div class="swiper-slide" swiper-slide="taskEditor/basic" slide-index="0" ng-init="basicSlideInfo = {}">
 
-        <div ng-style="{'padding-bottom': basicSlideInfo.footerHeight}" class="container-content" drawer-override-aisle="right" swiper-prevent>
+        <div ng-style="{'padding-bottom': basicSlideInfo.footerHeight}" class="container-content"
+          drawer-override-aisle="right" swiper-prevent>
 
           <!-- LIST PICKER -->
-          <div ng-if="listPickerOpen" class="swiper-no-swiping animate-fade-in" editable-field-container="auto" editable-field-container-scrollable="true" editable-field-container-clicked-elsewhere="closeListPicker()" data-snap-ignore="true">
-            <div list-picker="lists" list-picker-new-item="{}" list-picker-archived-lists="archivedLists" list-picker-save="closeListPickerAndSetListToItem(task, list)" list-picker-clear="closeListPickerAndClearListFromItem(task, list)" list-picker-get-selected="getListFromUUID(task.trans.list)"></div>
+          <div ng-if="listPickerOpen" class="swiper-no-swiping animate-fade-in" editable-field-container="auto"
+            editable-field-container-scrollable="true"
+            editable-field-container-clicked-elsewhere="closeListPicker()" data-snap-ignore="true">
+            <div list-picker="lists" list-picker-new-item="{}" list-picker-archived-lists="archivedLists"
+              list-picker-save="closeListPickerAndSetListToItem(task, list)"
+              list-picker-clear="closeListPickerAndClearListFromItem(task, list)"
+              list-picker-get-selected="getListFromUUID(task.trans.list)"></div>
           </div>
 
           <div ng-if="!listPickerOpen">
             <div ng-hide="descriptionFocused" class="group-mixed vertically-centered animate-fade-in">
-              <a href ng-class="task.trans.due ? 'link' : 'downplayed'" class="group-mixed--middle" ng-click="openCalendar()">
+              <a href ng-class="task.trans.due ? 'link' : 'downplayed'" class="group-mixed--middle"
+                ng-click="openCalendar()">
                 <span class="text-link" ng-bind="task.trans.due ? (task.trans.due | date:'EEE MMM d y' | lowercase) : 'select date\u2026'"></span>
               </a>
               <div ng-if="task.trans.due" class="group-mixed--right">
@@ -56,8 +65,12 @@
             </div>
 
             <!-- CALENDAR -->
-            <div ng-if="calendarOpen" class="row swiper-no-swiping animate-fade-in" editable-field-container="auto" editable-field-container-clicked-elsewhere="closeCalendar()" data-snap-ignore="true">
-              <div calendar="getCalendarStartingDate(task)" calendar-return-date="closeCalendarAndCall(setTaskDate, task, date)" calendar-set-default-date="true" calendar-bound="false">
+            <div ng-if="calendarOpen" class="row swiper-no-swiping animate-fade-in"
+              editable-field-container="auto" editable-field-container-clicked-elsewhere="closeCalendar()"
+              data-snap-ignore="true">
+              <div calendar="getCalendarStartingDate(task)"
+                calendar-return-date="closeCalendarAndCall(setTaskDate, task, date)"
+                calendar-set-default-date="true" calendar-bound="false">
                 <a href class="pikaday-today highlighted" ng-click="gotoCurrentMonth()">
                   <span>today</span>
                 </a>
@@ -90,7 +103,8 @@
                 <span class="icon-calendar"></span>
               </a>
             </div>
-            <a href ng-click="swipeToAdvanced()" ng-hide="isFooterNavigationHidden()" class="group-symmetrical--right link-navigation animate-fade-in-out">
+            <a href ng-click="swipeToAdvanced()" ng-hide="isFooterNavigationHidden()"
+              class="group-symmetrical--right link-navigation animate-fade-in-out">
               <span class="text-navigation-forward">advanced</span>
             </a>
           </nav>
@@ -102,13 +116,24 @@
         <div class="container-content" ng-style="{'padding-bottom': advancedSlideInfo.footerHeight}" swiper-prevent>
 
           <!-- CONTEXT PICKER -->
-          <div ng-if="contextPickerOpen" class="swiper-no-swiping animate-fade-in" editable-field-container="auto" editable-field-container-scrollable="true" editable-field-container-clicked-elsewhere="closeContextPicker()" data-snap-ignore="true">
-            <div list-picker="contexts" list-picker-new-item="getNewContext()" list-picker-save="closeContextPickerAndSetContextToTask(task, list)" list-picker-clear="closeContextPickerAndClearContextFromTask(task, list)" list-picker-get-selected="getContextFromUUID(task.trans.context)" list-picker-type="context" list-picker-prefix="@"></div>
+          <div ng-if="contextPickerOpen" class="swiper-no-swiping animate-fade-in"
+            editable-field-container="auto" editable-field-container-scrollable="true"
+            editable-field-container-clicked-elsewhere="closeContextPicker()" data-snap-ignore="true">
+            <div list-picker="contexts" list-picker-new-item="getNewContext()"
+              list-picker-save="closeContextPickerAndSetContextToTask(task, list)"
+              list-picker-clear="closeContextPickerAndClearContextFromTask(task, list)"
+              list-picker-get-selected="getContextFromUUID(task.trans.context)" list-picker-type="context"
+              list-picker-prefix="@"></div>
           </div>
 
           <!-- REPEATING PICKER -->
-          <div ng-if="repeatingPickerOpen" class="swiper-no-swiping animate-fade-in" editable-field-container="auto" editable-field-container-scrollable="true" editable-field-container-clicked-elsewhere="closeRepeatingPicker()" data-snap-ignore="true">
-            <div list-picker="repeatTypes" list-picker-save="closeRepeatingPickerAndSetRepeatTypeToTask(task, list)" list-picker-clear="closeRepeatingPickerAndClearRepeatTypeFromtask(task, list)" list-picker-get-selected="task.repeating ? {title: task.repeating} : undefined" list-picker-type="repeating"></div>
+          <div ng-if="repeatingPickerOpen" class="swiper-no-swiping animate-fade-in"
+            editable-field-container="auto" editable-field-container-scrollable="true"
+            editable-field-container-clicked-elsewhere="closeRepeatingPicker()" data-snap-ignore="true">
+            <div list-picker="repeatTypes" list-picker-save="closeRepeatingPickerAndSetRepeatTypeToTask(task, list)"
+              list-picker-clear="closeRepeatingPickerAndClearRepeatTypeFromtask(task, list)"
+              list-picker-get-selected="task.repeating ? {title: task.repeating} : undefined"
+              list-picker-type="repeating"></div>
           </div>
 
           <div ng-if="!contextPickerOpen && !repeatingPickerOpen">
@@ -130,30 +155,32 @@
                 msd-elastic maxlength="128" placeholder="enter url&#8230;"
                 autocapitalize="none" autocorrect="off">
               </textarea>
+            </div>
+
+          </div>
+        </div>
+        <footer ng-hide="isTaskFooterHidden(editorFooterHiddenCallback)"
+          class="container-content--after editor-footer" editor-footer="advancedSlideInfo">
+
+          <div class="table">
+            <div class="table-row">
+              <a href class="table-cell link" ng-click="convertToNote(task)">
+                <span class="text-convert">note</span>
+              </a>
+              <a href class="table-cell link" ng-click="convertToList(task)">
+                <span class="text-convert">list</span>
+              </a>
+            </div>
           </div>
 
-        </div>
+          <nav role="navigation" class="swiper-no-swiping group-symmetrical">
+            <a href ng-hide="isFooterNavigationHidden()" ng-click="swipeToBasic()"
+              class="group-symmetrical--left link-navigation">
+              <span class="text-navigation-back">basic</span>
+            </a>
+          </nav>
+        </footer>
       </div>
-      <footer ng-hide="isTaskFooterHidden(editorFooterHiddenCallback)" class="container-content--after editor-footer" editor-footer="advancedSlideInfo">
-
-        <div class="table">
-          <div class="table-row">
-            <a href class="table-cell link" ng-click="convertToNote(task)">
-              <span class="text-convert">note</span>
-            </a>
-            <a href class="table-cell link" ng-click="convertToList(task)">
-              <span class="text-convert">list</span>
-            </a>
-          </div>
-        </div>
-
-        <nav role="navigation" class="swiper-no-swiping group-symmetrical">
-          <a href ng-hide="isFooterNavigationHidden()" ng-click="swipeToBasic()" class="group-symmetrical--left link-navigation">
-            <span class="text-navigation-back">basic</span>
-          </a>
-        </nav>
-      </footer>
     </div>
   </div>
-</div>
 </div>

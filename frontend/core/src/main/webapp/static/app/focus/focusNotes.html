@@ -8,7 +8,8 @@
       | limitTo: currentListLimitTo" list-item ng-include="urlBase + 'app/notes/noteListItem.html'"></div>
     <div list-prompt="notes" list-prompt-infos="listInfos" list-prompt-hide="[onboardingInProgress]"></div>
   </section>
-  <footer ng-show="isOnboarded('focusNotes')" class="container-content--after" list-footer="getFeatureMap('focus')"></footer>
+  <footer ng-show="isOnboarded('focusNotes')" class="container-content--after"
+    list-footer="getFeatureMap('focus')"></footer>
 
   <!-- ONBOARDING -->
   <section ng-if="!isOnboarded('focusNotes')" class="container-content">
