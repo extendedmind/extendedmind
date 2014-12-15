@@ -30,7 +30,8 @@
           else if (task.completed && !task.trans.completed) return true;
         },
         resetTrans: function(task){
-          task.trans.completed = task.completed !== undefined;
+          if (task.mod && task.mod.completed !== undefined) task.trans.completed = task.mod.completed;
+          else task.trans.completed = task.completed !== undefined;
         },
       },
       // TODO:
@@ -81,20 +82,22 @@
   var itemArchiveCallback = function(children, archived, ownerUUID) {
     if (tasks[ownerUUID] && children) {
       for (var i=0, len=children.length; i<len; i++) {
-        var activeTask = tasks[ownerUUID].activeTasks.findFirstObjectByKeyValue('uuid', children[i].uuid);
+        var activeTask =
+          tasks[ownerUUID].activeTasks.findFirstObjectByKeyValue('uuid', children[i].uuid);
         if (activeTask) {
           activeTask.archived = archived;
           activeTask.modified = children[i].modified;
           updateTask(activeTask, ownerUUID);
         } else {
-          var deletedTask = tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue('uuid', children[i].uuid);
+          var deletedTask =
+            tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue('uuid', children[i].uuid);
           if (deletedTask) {
             deletedTask.archived = archived;
             deletedTask.modified = children[i].modified;
             updateTask(deletedTask, ownerUUID);
           } else {
-            var archivedTask = tasks[ownerUUID].archivedTasks.findFirstObjectByKeyValue('uuid',
-                                                                                        children[i].uuid);
+            var archivedTask =
+              tasks[ownerUUID].archivedTasks.findFirstObjectByKeyValue('uuid', children[i].uuid);
             if (archivedTask) {
               archivedTask.archived = archived;
               archivedTask.modified = children[i].modified;
@@ -112,9 +115,12 @@
     if (tasks[ownerUUID] && deletedTag) {
       if (!undelete){
         // Remove tags from existing parents
-        var modifiedItems = TagsService.removeDeletedTagFromItems(tasks[ownerUUID].activeTasks, deletedTag);
-        modifiedItems.concat(TagsService.removeDeletedTagFromItems(tasks[ownerUUID].deletedTasks, deletedTag));
-        modifiedItems.concat(TagsService.removeDeletedTagFromItems(tasks[ownerUUID].archivedTasks,deletedTag));
+        var modifiedItems = TagsService.removeDeletedTagFromItems(tasks[ownerUUID].activeTasks,
+                                                                  deletedTag);
+        modifiedItems.concat(TagsService.removeDeletedTagFromItems(tasks[ownerUUID].deletedTasks,
+                                                                   deletedTag));
+        modifiedItems.concat(TagsService.removeDeletedTagFromItems(tasks[ownerUUID].archivedTasks,
+                                                                   deletedTag));
         for (var i=0,len=modifiedItems.length;i<len;i++){
           updateTask(modifiedItems[i], ownerUUID);
         }
@@ -205,64 +211,18 @@
     },
     saveTask: function(task, ownerUUID) {
       var deferred = $q.defer();
-      if (this.getTaskStatus(task, ownerUUID) === 'deleted') deferred.reject(task);
-      else {
-        var transientProperties = this.detachTransientProperties(task, ownerUUID);
-        if (task.uuid) {
-          // Existing task
-          if (UserSessionService.isOfflineEnabled()) {
-            // Push to offline buffer
-            params = {type: 'task', owner: ownerUUID, uuid: task.uuid};
-            BackendClientService.put('/api/' + params.owner + '/task/' + task.uuid,
-                                     this.putExistingTaskRegex, params, task);
-            task.modified = BackendClientService.generateFakeTimestamp();
-            ExtendedItemService.attachTransientProperties(task, transientProperties, 'task');
-            updateTask(task, ownerUUID);
-            deferred.resolve(task);
-          } else {
-            // Online
-            BackendClientService.putOnline('/api/' + ownerUUID + '/task/' + task.uuid,
-                                           this.putExistingTaskRegex, task).
-            then(function(result) {
-              if (result.data) {
-                task.modified = result.data.modified;
-                ExtendedItemService.attachTransientProperties(task, transientProperties, 'task');
-                updateTask(task, ownerUUID);
-                deferred.resolve(task);
-              }
-            });
+      if (tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue('uuid', task.trans.uuid, 'trans')) {
+        deferred.reject({type: 'deleted'});
+      } else {
+        ItemLikeService.save(task, 'task', ownerUUID, taskFieldInfos).then(
+          function(result){
+            if (result === 'new') setTask(task, ownerUUID);
+            else if (result === 'existing') updateTask(task, ownerUUID);
+            deferred.resolve(result);
+          }, function(failure){
+            deferred.reject(failure);
           }
-        } else {
-          // New task
-          if (UserSessionService.isOfflineEnabled()) {
-            // Push to offline queue with fake UUID
-            var fakeUUID = UUIDService.generateFakeUUID();
-            var params = {type: 'task', owner: ownerUUID, fakeUUID: fakeUUID};
-            BackendClientService.put('/api/' + params.owner + '/task',
-                                     this.putNewTaskRegex, params, task);
-            task.uuid = fakeUUID;
-            // Use a fake modified that is far enough in the to make
-            // it to the end of the list
-            task.created = task.modified = BackendClientService.generateFakeTimestamp();
-            ExtendedItemService.attachTransientProperties(task, transientProperties, 'task');
-            setTask(task, ownerUUID);
-            deferred.resolve(task);
-          } else {
-            // Online
-            BackendClientService.putOnline('/api/' + ownerUUID + '/task',
-                                           this.putNewTaskRegex, task).
-            then(function(result) {
-              if (result.data) {
-                task.uuid = result.data.uuid;
-                task.created = result.data.created;
-                task.modified = result.data.modified;
-                ExtendedItemService.attachTransientProperties(task, transientProperties, 'task');
-                setTask(task, ownerUUID);
-                deferred.resolve(task);
-              }
-            });
-          }
-        }
+        );
       }
       return deferred.promise;
     },
@@ -286,135 +246,109 @@
                                     getOtherArrays(ownerUUID));
     },
     deleteTask: function(task, ownerUUID) {
-      // Check if task has already been deleted
-      if (this.getTaskStatus(task, ownerUUID) === 'deleted') return;
-
-      if (UserSessionService.isOfflineEnabled()) {
-        // Offline
-        var params = {type: 'task', owner: ownerUUID, uuid: task.uuid,
-        reverse: {
-          method: 'post',
-          url: '/api/' + ownerUUID + '/task/' + task.uuid + '/undelete'
-        }, replaceable: true};
-        BackendClientService.deleteOffline('/api/' + ownerUUID + '/task/' + task.uuid,
-                                           this.deleteTaskRegex, params);
-        task.deleted = task.modified = BackendClientService.generateFakeTimestamp();
-        updateTask(task, ownerUUID);
-      } else {
-        // Online
-        BackendClientService.deleteOnline('/api/' + ownerUUID + '/task/' + task.uuid,
-                                          this.deleteTaskRegex)
-        .then(function(result) {
-          if (result.data) {
-            task.deleted = result.data.deleted;
-            task.modified = result.data.result.modified;
+      var deferred = $q.defer();
+      if (tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue('uuid', task.trans.uuid, 'trans')) {
+        deferred.resolve('unmodified');
+      }else{
+        ItemLikeService.processDelete(task, 'task', ownerUUID, taskFieldInfos).then(
+          function(){
             updateTask(task, ownerUUID);
+            deferred.resolve(task);
+          }, function(failure){
+            deferred.reject(failure);
           }
-        });
+        );
       }
+      return deferred.promise;
     },
     undeleteTask: function(task, ownerUUID) {
-      // Check that task is deleted before trying to undelete
-      if (this.getTaskStatus(task, ownerUUID) !== 'deleted') return;
-
-      if (UserSessionService.isOfflineEnabled()) {
-        // Offline
-        var params ={type: 'task', owner: ownerUUID, uuid: task.uuid,
-        reverse: {
-          method: 'post',
-          url: '/api/' + ownerUUID + '/task/' + task.uuid + '/delete'
-        },
-        replaceable: true};
-        BackendClientService.post('/api/' + ownerUUID + '/task/' + task.uuid + '/undelete',
-                                  this.undeleteTaskRegex, params);
-        delete task.deleted;
-        updateTask(task, ownerUUID);
-      } else {
-        // Online
-        BackendClientService.postOnline('/api/' + ownerUUID + '/task/' + task.uuid + '/undelete',
-                                        this.undeleteTaskRegex)
-        .then(function(result) {
-          if (result.data) {
-            delete task.deleted;
-            task.modified = result.data.modified;
+      var deferred = $q.defer();
+      if (!tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue('uuid', task.trans.uuid, 'trans')) {
+        deferred.resolve('unmodified');
+      }else{
+        ItemLikeService.undelete(task, 'task', ownerUUID, taskFieldInfos).then(
+          function(){
             updateTask(task, ownerUUID);
+            deferred.resolve(task);
+          }, function(failure){
+            deferred.reject(failure);
           }
-        });
+        );
       }
+      return deferred.promise;
     },
     completeTask: function(task, ownerUUID) {
       var deferred = $q.defer();
-      // Check that task is not deleted before trying to complete
-      if (this.getTaskStatus(task, ownerUUID) === 'deleted') return;
-
-      if (UserSessionService.isOfflineEnabled()) {
-        // Offline
-        var params = {type: 'task', owner: ownerUUID, uuid: task.uuid,
-        reverse: {
-          method: 'post',
-          url: '/api/' + ownerUUID + '/task/' + task.uuid + '/uncomplete'
-        }, replaceable: true};
-        BackendClientService.post('/api/' + ownerUUID + '/task/' + task.uuid + '/complete',
-                                  this.completeTaskRegex, params);
-        task.completed = task.modified = BackendClientService.generateFakeTimestamp();
-        updateTask(task, ownerUUID);
+      if (tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue('uuid', task.trans.uuid, 'trans')) {
+        deferred.reject({type: 'deleted'});
+      } else if (task.trans.completed === true){
         deferred.resolve(task);
       } else {
-        // Online
-        BackendClientService.postOnline('/api/' + ownerUUID + '/task/' + task.uuid + '/complete',
-                                        this.completeTaskRegex)
-        .then(function(result) {
-          if (result.data) {
-            task.completed = result.data.completed;
-            task.modified = result.data.modified;
-          }
+        if (UserSessionService.isOfflineEnabled()) {
+          // Offline
+          var params = {type: 'task', owner: ownerUUID, uuid: task.trans.uuid,
+          reverse: {
+            method: 'post',
+            url: '/api/' + ownerUUID + '/task/' + task.uuid + '/uncomplete'
+          }, replaceable: true};
+          BackendClientService.post('/api/' + ownerUUID + '/task/' + task.trans.uuid + '/complete',
+                                    this.completeTaskRegex, params);
+          var fakeTimestamp = BackendClientService.generateFakeTimestamp();
+          if (!task.mod) task.mod = {};
+          ItemLikeService.updateObjectProperties(task.mod,
+                                                 {modified: fakeTimestamp, completed: true});
           updateTask(task, ownerUUID);
           deferred.resolve(task);
-        });
+        } else {
+          // Online
+          BackendClientService.postOnline('/api/' + ownerUUID + '/task/' + task.trans.uuid + '/complete',
+                                          this.completeTaskRegex)
+          .then(function(result) {
+            task.completed = result.data.completed;
+            ItemLikeService.updateObjectProperties(task, result.data.result);
+            updateTask(task, ownerUUID);
+            deferred.resolve(task);
+          });
+        }
       }
       return deferred.promise;
     },
     uncompleteTask: function(task, ownerUUID) {
       var deferred = $q.defer();
-      // Check that task is not deleted before trying to uncomplete
-      if (this.getTaskStatus(task, ownerUUID) === 'deleted') return;
-
-      if (UserSessionService.isOfflineEnabled()) {
-        var params = {type: 'task', owner: ownerUUID, uuid: task.uuid,
-        reverse: {
-          method: 'post',
-          url: '/api/' + ownerUUID + '/task/' + task.uuid + '/complete'
-        },
-        replaceable: true};
-        // Offline
-        BackendClientService.post('/api/' + ownerUUID + '/task/' + task.uuid + '/uncomplete',
-                                  this.uncompleteTaskRegex, params);
-        delete task.completed;
-        task.modified = BackendClientService.generateFakeTimestamp();
-        updateTask(task, ownerUUID);
+      if (tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue('uuid', task.trans.uuid, 'trans')) {
+        deferred.reject({type: 'deleted'});
+      } else if (!task.trans.completed){
         deferred.resolve(task);
       } else {
-        // Online
-        BackendClientService.postOnline('/api/' + ownerUUID + '/task/' + task.uuid + '/uncomplete',
-                                        this.uncompleteTaskRegex)
-        .then(function(result) {
-          if (result.data) {
-            delete task.completed;
-            task.modified = result.data.modified;
-            updateTask(task, ownerUUID);
-          }
+        if (UserSessionService.isOfflineEnabled()) {
+          // Offline
+          var params = {type: 'task', owner: ownerUUID, uuid: task.uuid,
+          reverse: {
+            method: 'post',
+            url: '/api/' + ownerUUID + '/task/' + task.uuid + '/complete'
+          },
+          replaceable: true};
+          BackendClientService.post('/api/' + ownerUUID + '/task/' + task.uuid + '/uncomplete',
+                                    this.uncompleteTaskRegex, params);
+          var fakeTimestamp = BackendClientService.generateFakeTimestamp();
+          if (!task.mod) task.mod = {};
+          ItemLikeService.updateObjectProperties(task.mod,
+                                                 {modified: fakeTimestamp, completed: false});
+          updateTask(task, ownerUUID);
           deferred.resolve(task);
-        });
+        } else {
+          // Online
+          BackendClientService.postOnline('/api/' + ownerUUID + '/task/' + task.trans.uuid + '/complete',
+                                          this.completeTaskRegex)
+          .then(function(result) {
+            delete task.completed;
+            ItemLikeService.updateObjectProperties(task, result.data.result);
+            updateTask(task, ownerUUID);
+            deferred.resolve(task);
+          });
+        }
       }
       return deferred.promise;
-    },
-    addTransientProperties: function(tasksArray, ownerUUID, addExtraTransientPropertyFn) {
-      addTransientProperties(tasksArray, ownerUUID, addExtraTransientPropertyFn);
-    },
-    detachTransientProperties: function(task, ownerUUID) {
-      var detachExtraTransientPropertyFunctions = [copyDateToDue, copyTransientDescriptionToPersistent];
-      return ExtendedItemService.detachTransientProperties(task, ownerUUID,
-                                                           detachExtraTransientPropertyFunctions);
     },
 
     // Regular expressions for task requests

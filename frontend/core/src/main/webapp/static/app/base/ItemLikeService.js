@@ -29,7 +29,10 @@
             'deleted'];
   }
 
-  function isEdited(item, ownerUUID, fieldInfos){
+  function isEdited(item, itemType, ownerUUID, fieldInfos){
+    if (item.trans.itemType !== itemType){
+      return true;
+    }
     for (var i=0, len=fieldInfos.length; i<len; i++){
       if (angular.isObject(fieldInfos[i])){
         if (fieldInfos[i].isEdited(item, ownerUUID)){
@@ -44,7 +47,7 @@
     }
   }
 
-  function getEditedFieldInfos(item, ownerUUID, fieldInfos){
+  function getEditedFieldInfos(item, itemType, ownerUUID, fieldInfos){
     var editedFieldInfos = [];
     for (var i=0, len=fieldInfos.length; i<len; i++){
       if (angular.isObject(fieldInfos[i])){
@@ -87,8 +90,8 @@
     return validationErrors;
   }
 
-  function copyEditedFieldsToMod(item, ownerUUID, fieldInfos){
-    var editedFieldInfos = getEditedFieldInfos(item, ownerUUID, fieldInfos);
+  function copyEditedFieldsToMod(item, itemType, ownerUUID, fieldInfos){
+    var editedFieldInfos = getEditedFieldInfos(item, itemType, ownerUUID, fieldInfos);
 
     if (editedFieldInfos && editedFieldInfos.length){
       if (!item.mod) item.mod = {};
@@ -175,7 +178,7 @@
   }
 
   function prepareTransport(item, itemType, ownerUUID, fieldInfos){
-    copyEditedFieldsToMod(item, ownerUUID, fieldInfos);
+    copyEditedFieldsToMod(item, itemType, ownerUUID, fieldInfos);
     return createTransportItem(item, ownerUUID, fieldInfos);
   }
 
@@ -187,14 +190,8 @@
       }
       return fieldInfos;
     },
-    getEditedFieldInfos: function(item, ownerUUID, fieldInfos){
-      return getEditedFieldInfos(item, ownerUUID, fieldInfos);
-    },
     updateObjectProperties: function(object, properties){
       updateObjectProperties(object, properties);
-    },
-    isEdited: function(item, ownerUUID, fieldInfos){
-      return isEdited(item, ownerUUID, fieldInfos);
     },
     validate: function(item, ownerUUID, fieldInfos){
       return validate(item, ownerUUID, fieldInfos);
@@ -229,6 +226,11 @@
       }
       return data;
     },
+    remove: function(uuid){
+      if (UserSessionService.isOfflineEnabled()){
+        return PersistentStorageService.destroy(uuid);
+      }
+    },
     // Returns promise which returns 'new', 'existing', 'unmodified', or failure on failed save because
     // data is invalid
     save: function(item, itemType, ownerUUID, fieldInfos){
@@ -237,7 +239,7 @@
 
       if (validationErrors.length){
         deferred.reject({type: 'validation', value: validationErrors});
-      }else if (!isEdited(item, ownerUUID, fieldInfos)){
+      }else if (!isEdited(item, itemType, ownerUUID, fieldInfos)){
         // When item is not edited, just resolve without giving an item as parameter to indicate
         // nothing was actually saved
         deferred.resolve('unmodified');
@@ -254,7 +256,7 @@
           // TODO: implement offline for lists and tags and remove the two latter conditions!
           if (UserSessionService.isOfflineEnabled() && itemType !== 'list' && itemType !== 'tag') {
             // Push to offline buffer
-            params = {type: itemType, owner: ownerUUID, uuid: item.uuid};
+            params = {type: itemType, owner: ownerUUID, uuid: item.trans.uuid};
             BackendClientService.put('/api/' + params.owner + '/'+ itemType + '/' + item.trans.uuid,
                                      this.getPutExistingRegex(itemType), params, transportItem);
             updateObjectProperties(item.mod, {modified: BackendClientService.generateFakeTimestamp()});
@@ -310,12 +312,12 @@
       // TODO: implement offline for lists and tags and remove the two latter conditions!
       if (UserSessionService.isOfflineEnabled() && itemType !== 'list' && itemType !== 'tag') {
         // Offline
-        var params = {type: itemType, owner: ownerUUID, uuid: item.uuid,
+        var params = {type: itemType, owner: ownerUUID, uuid: item.trans.uuid,
         reverse: {
           method: 'post',
-          url: '/api/' + ownerUUID + '/item/' + item.uuid + '/undelete'
+          url: '/api/' + ownerUUID + '/item/' + item.trans.uuid + '/undelete'
         }, replaceable: true};
-        BackendClientService.deleteOffline('/api/' + ownerUUID + '/' + itemType +'/' + item.uuid,
+        BackendClientService.deleteOffline('/api/' + ownerUUID + '/' + itemType +'/' + item.trans.uuid,
                                            this.getDeleteRegex(itemType), params);
 
         var fakeTimestamp = BackendClientService.generateFakeTimestamp();
@@ -323,7 +325,7 @@
         deferred.resolve();
       } else {
         // Online
-        BackendClientService.deleteOnline('/api/' + ownerUUID + '/' + itemType +'/' + item.uuid,
+        BackendClientService.deleteOnline('/api/' + ownerUUID + '/' + itemType +'/' + item.trans.uuid,
                                           this.getDeleteRegex(itemType))
         .then(
           function(result) {
@@ -345,12 +347,12 @@
       // TODO: implement offline for lists and tags and remove the two latter conditions!
       if (UserSessionService.isOfflineEnabled() && itemType !== 'list' && itemType !== 'tag') {
         // Offline
-        var params = {type: itemType, owner: ownerUUID, uuid: item.uuid,
+        var params = {type: itemType, owner: ownerUUID, uuid: item.trans.uuid,
         reverse: {
           method: 'post',
-          url: '/api/' + ownerUUID + '/item/' + item.uuid + '/delete'
+          url: '/api/' + ownerUUID + '/item/' + item.trans.uuid + '/delete'
         }, replaceable: true};
-        BackendClientService.post('/api/' + ownerUUID + '/' + itemType +'/' + item.uuid + '/undelete',
+        BackendClientService.post('/api/' + ownerUUID + '/' + itemType +'/' + item.trans.uuid + '/undelete',
                                     this.getUndeleteRegex(itemType), params);
         delete item.mod.deleted;
         var fakeTimestamp = BackendClientService.generateFakeTimestamp();
@@ -360,7 +362,7 @@
         deferred.resolve();
       } else {
         // Online
-        BackendClientService.postOnline('/api/' + ownerUUID + '/' + itemType +'/' + item.uuid + '/undelete',
+        BackendClientService.postOnline('/api/' + ownerUUID + '/' + itemType +'/' + item.trans.uuid + '/undelete',
                                         this.getUndeleteRegex(itemType), params)
         .then(
           function(result) {

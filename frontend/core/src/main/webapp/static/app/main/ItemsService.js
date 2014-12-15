@@ -48,6 +48,11 @@
                                 items[ownerUUID].deletedItems);
   }
 
+  function removeItem(activeItemsIndex, ownerUUID) {
+    ItemLikeService.remove(items[ownerUUID].activeItems[activeItemsIndex].trans.uuid);
+    items[ownerUUID].activeItems.splice(activeItemsIndex, 1);
+  }
+
   return {
     getNewItem: function(initialValues, ownerUUID) {
       return ItemLikeService.getNew(initialValues, 'item', ownerUUID, itemFieldInfos);
@@ -151,46 +156,52 @@
                                     items[ownerUUID].deletedItems);
     },
     itemToTask: function(item, ownerUUID) {
-      // Check that item is not deleted before trying to turn it into a task
-      if (items[ownerUUID].deletedItems.indexOf(item) > -1) {
-        return;
-      }
-      var index = items[ownerUUID].activeItems.findFirstIndexByKeyValue('uuid', item.uuid);
-      if (index !== undefined) {
-        return TasksService.saveTask(item, ownerUUID).then(function(task){
-          items[ownerUUID].activeItems.splice(index, 1);
-          return task;
+      var deferred = $q.defer();
+      if (items[ownerUUID].deletedItems.findFirstObjectByKeyValue('uuid', item.trans.uuid, 'trans')) {
+        deferred.reject({type: 'deleted'});
+      } else {
+        var index = items[ownerUUID].activeItems.findFirstIndexByKeyValue('uuid', item.trans.uuid);
+        TasksService.saveTask(items[ownerUUID].activeItems[index],
+                              ownerUUID).then(function(result){
+          removeItem(index, ownerUUID);
+          deferred.resolve(item);
+        },function(failure){
+          deferred.reject(failure);
         });
       }
+      return deferred.promise;
     },
     itemToNote: function(item, ownerUUID) {
-      // Check that item is not deleted before trying to turn it into a note
-      if (items[ownerUUID].deletedItems.indexOf(item) > -1) {
-        return;
-      }
-      var index = items[ownerUUID].activeItems.findFirstIndexByKeyValue('uuid', item.uuid);
-
-      if (index !== undefined) {
-        return NotesService.saveNote(item, ownerUUID).then(function(note){
-          items[ownerUUID].activeItems.splice(index, 1);
-          return note;
+      var deferred = $q.defer();
+      if (items[ownerUUID].deletedItems.findFirstObjectByKeyValue('uuid', item.trans.uuid, 'trans')) {
+        deferred.reject({type: 'deleted'});
+      } else {
+        var index = items[ownerUUID].activeItems.findFirstIndexByKeyValue('uuid', item.trans.uuid);
+        NotesService.saveNote(items[ownerUUID].activeItems[index],
+                              ownerUUID).then(function(result){
+          removeItem(index, ownerUUID);
+          deferred.resolve(item);
+        },function(failure){
+          deferred.reject(failure);
         });
       }
+      return deferred.promise;
     },
     itemToList: function(item, ownerUUID) {
-      // Check that item is not deleted before trying to turn it into a list
-      if (items[ownerUUID].deletedItems.indexOf(item) > -1) {
-        return;
-      }
-
-      var index = items[ownerUUID].activeItems.findFirstIndexByKeyValue('uuid', item.uuid);
-      if (index !== undefined) {
-        // Save as list and remove from the activeItems array
-        return ListsService.saveList(item, ownerUUID).then(function(list){
-          items[ownerUUID].activeItems.splice(index, 1);
-          return list;
+      var deferred = $q.defer();
+      if (items[ownerUUID].deletedItems.findFirstObjectByKeyValue('uuid', item.trans.uuid, 'trans')) {
+        deferred.reject({type: 'deleted'});
+      } else {
+        var index = items[ownerUUID].activeItems.findFirstIndexByKeyValue('uuid', item.trans.uuid);
+        ListsService.saveList(items[ownerUUID].activeItems[index],
+                              ownerUUID).then(function(result){
+          removeItem(index, ownerUUID);
+          deferred.resolve(item);
+        },function(failure){
+          deferred.reject(failure);
         });
       }
+      return deferred.promise;
     },
     // Regular expressions for item requests
     putNewItemRegex: ItemLikeService.getPutNewRegex('item'),

@@ -213,15 +213,12 @@
       }else if (lists[ownerUUID].archivedLists.findFirstObjectByKeyValue('uuid', list.trans.uuid, 'trans')) {
         deferred.resolve('unmodified');
       } else {
-        BackendClientService.postOnline('/api/' + ownerUUID + '/list/' + list.uuid + '/archive',
+        BackendClientService.postOnline('/api/' + ownerUUID + '/list/' + list.trans.uuid + '/archive',
                                         this.deleteListRegex)
         .then(function(result) {
           list.archived = result.data.archived;
           ItemLikeService.updateObjectProperties(list, result.data.result);
           updateList(list, ownerUUID);
-          if (UserSessionService.isOfflineEnabled()){
-            PersistentStorageService.persist(ItemLikeService.createPersistableItem(tag), 'tag', ownerUUID);
-          }
 
           // Add generated tag to the tag array
           TagsService.setGeneratedTag(result.data.history, ownerUUID);
@@ -264,7 +261,7 @@
       var modifiedItems = [];
       for (var i = 0, len = items.length; i < len; i++) {
         if (items[i].relationships) {
-          if (items[i].relationships.parent === deletedList.uuid) {
+          if (items[i].relationships.parent === deletedList.trans.uuid) {
             delete items[i].relationships.parent;
             modifiedItems.push(items[i]);
           }
