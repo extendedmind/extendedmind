@@ -232,15 +232,26 @@
       if (arrayInfo) return arrayInfo.type;
     },
     addNote: function(note, ownerUUID) {
-      // Check that note is not deleted before trying to add
-      if (this.getNoteStatus(note, ownerUUID) === 'deleted') return;
       setNote(note, ownerUUID);
     },
     removeNote: function(note, ownerUUID) {
-      ArrayService.removeFromArrays(note,
-                                    notes[ownerUUID].activeNotes,
-                                    notes[ownerUUID].deletedNotes,
-                                    getOtherArrays(ownerUUID));
+      var noteInfo = this.getNoteInfo(note.trans.uuid, ownerUUID);
+      if (noteInfo) {
+        var noteIndex;
+        if (noteInfo.type === 'active') {
+          noteIndex = notes[ownerUUID].activeNotes.indexOf(noteInfo.note);
+          ItemLikeService.remove(noteInfo.note.trans.uuid);
+          notes[ownerUUID].activeNotes.splice(noteIndex, 1);
+        } else if (noteInfo.type === 'deleted') {
+          noteIndex = notes[ownerUUID].deletedNotes.indexOf(noteInfo.note);
+          ItemLikeService.remove(noteInfo.note.trans.uuid);
+          notes[ownerUUID].deletedNotes.splice(noteIndex, 1);
+        } else if (noteInfo.type === 'archived') {
+          noteIndex = notes[ownerUUID].archivedNotes.indexOf(noteInfo.note);
+          ItemLikeService.remove(noteInfo.note.trans.uuid);
+          notes[ownerUUID].archivedNotes.splice(noteIndex, 1);
+        }
+      }
     },
     deleteNote: function(note, ownerUUID) {
       var deferred = $q.defer();
@@ -335,13 +346,13 @@
           deferred.resolve(note);
         } else {
           // Online
-          BackendClientService.postOnline('/api/' + ownerUUID + '/task/' + task.trans.uuid + '/complete',
-                                          this.completeTaskRegex)
+          BackendClientService.postOnline('/api/' + ownerUUID + '/note/' + note.trans.uuid + '/complete',
+                                          this.completenoteRegex)
           .then(function(result) {
-            delete task.completed;
-            ItemLikeService.updateObjectProperties(task, result.data.result);
-            updateTask(task, ownerUUID);
-            deferred.resolve(task);
+            delete note.completed;
+            ItemLikeService.updateObjectProperties(note, result.data.result);
+            updatenote(note, ownerUUID);
+            deferred.resolve(note);
           });
         }
       }

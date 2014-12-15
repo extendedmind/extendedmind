@@ -89,61 +89,43 @@
   }
 
   function processTaskToNoteResponse(task, note, ownerUUID) {
-    var copyConvertToNoteTransientPropertiesFn;
     var convert = copyTaskPersistentPropertiesToConvert(task);
-    // NOTE: No need to pass 'this' to the target function.
-    if (convert) copyConvertToNoteTransientPropertiesFn = copyConvertToItemTransientProperties
-      .bind(undefined, note, convert, 'task', 'note');
+    if (convert) copyConvertToItemTransientProperties(note, convert, 'task', 'note');
 
-    NotesService.addTransientProperties([note], ownerUUID, copyConvertToNoteTransientPropertiesFn);
     NotesService.addNote(note, ownerUUID);
     TasksService.removeTask(task, ownerUUID);
   }
 
   function processTaskToListResponse(task, list, ownerUUID) {
-    var copyConvertToListTransientPropertiesFn;
     var convert = copyTaskPersistentPropertiesToConvert(task);
-    // NOTE: No need to pass 'this' to the target function.
-    if (convert) copyConvertToListTransientPropertiesFn = copyConvertToItemTransientProperties
-      .bind(undefined, list, convert, 'task', 'list');
+    if (convert) copyConvertToItemTransientProperties(list, convert, 'task', 'list');
 
-    ListsService.addTransientProperties([list], ownerUUID, copyConvertToListTransientPropertiesFn);
     ListsService.addList(list, ownerUUID);
     TasksService.removeTask(task, ownerUUID);
   }
 
   function processNoteToTaskResponse(note, task, ownerUUID) {
-    var copyConvertToTaskTransientPropertiesFn;
     var convert = copyNotePersistentPropertiesToConvert(note);
-    // NOTE: No need to pass 'this' to the target function.
-    if (convert) copyConvertToTaskTransientPropertiesFn = copyConvertToItemTransientProperties
-      .bind(undefined, task, convert, 'note', 'task');
+    if (convert) copyConvertToItemTransientProperties(task, convert, 'note', 'task');
 
-    TasksService.addTransientProperties([task], ownerUUID, copyConvertToTaskTransientPropertiesFn);
     TasksService.addTask(task, ownerUUID);
     NotesService.removeNote(note, ownerUUID);
   }
 
   function processNoteToListResponse(note, list, ownerUUID) {
-    var copyConvertToListTransientPropertiesFn;
     var convert = copyNotePersistentPropertiesToConvert(note);
-    // NOTE: No need to pass 'this' to the target function.
-    if (convert) copyConvertToListTransientPropertiesFn = copyConvertToItemTransientProperties
-      .bind(undefined, list, convert, 'note', 'list');
+    if (convert) copyConvertToItemTransientProperties(list, convert, 'note', 'list');
 
-    ListsService.addTransientProperties(list, ownerUUID, copyConvertToListTransientPropertiesFn);
     ListsService.addList(list, ownerUUID);
     NotesService.removeNote(note, ownerUUID);
   }
 
   function processListToTaskResponse(list, task, ownerUUID) {
-    TasksService.addTransientProperties([task], ownerUUID);
     TasksService.addTask(task, ownerUUID);
     ListsService.removeList(list, ownerUUID);
   }
 
   function processListToNoteResponse(list, note, ownerUUID) {
-    NotesService.addTransientProperties(note, ownerUUID);
     NotesService.addNote(note, ownerUUID);
     ListsService.removeList(list, ownerUUID);
   }
@@ -153,7 +135,7 @@
   }
 
   function copyTaskPersistentPropertiesToConvert(task) {
-    if (task.due || task.repeating || task.reminder) {
+    if (task.due || task.repeating || task.reminder) {
       var convert = {};
       if (task.due) convert.due = task.due;
       if (task.repeating) convert.repeating = task.repeating;
@@ -200,7 +182,6 @@
     */
     finishTaskToNoteConvert: function(task, ownerUUID) {
       if (TasksService.getTaskStatus(task, ownerUUID) === 'deleted') return;
-      TasksService.detachTransientProperties(task, ownerUUID);
       return postConvertTaskToNote(task, ownerUUID).then(function(result) {
         processTaskToNoteResponse(task, result.data, ownerUUID);
         return result.data;
@@ -210,9 +191,8 @@
       // TODO: should cleanRecentlyCompletedTasks(ownerUUID) be called first?
       if (TasksService.getTaskStatus(task, ownerUUID) === 'deleted') return;
       // NOTE: Currently only one-level lists are supported.
-      // Remove pre-existing list before convertin to list.
+      // Remove pre-existing list before converting to list.
       removeList(task);
-      TasksService.detachTransientProperties(task, ownerUUID);
 
       return postConvertTaskToList(task, ownerUUID).then(function(result) {
         processTaskToListResponse(task, result.data, ownerUUID);
@@ -223,7 +203,6 @@
       if (note.uuid) {
         if (NotesService.getNoteStatus(note, ownerUUID) === 'deleted') return;
 
-        NotesService.detachTransientProperties(note, ownerUUID);
         return postConvertNoteToTask(note, ownerUUID).then(function(result) {
           processNoteToTaskResponse(note, result.data, ownerUUID);
           return result.data;
@@ -237,7 +216,6 @@
       // NOTE: Currently only one-level lists are supported.
       // Remove pre-existing list before convertin to list.
       removeList(note);
-      NotesService.detachTransientProperties(note, ownerUUID);
       return postConvertNoteToList(note, ownerUUID).then(function(result) {
         processNoteToListResponse(note, result.data, ownerUUID);
         return result.data;

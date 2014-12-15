@@ -239,15 +239,26 @@
       if (arrayInfo) return arrayInfo.type;
     },
     addTask: function(task, ownerUUID) {
-      // Check that task is not deleted before trying to add
-      if (this.getTaskStatus(task, ownerUUID) === 'deleted') return;
       setTask(task, ownerUUID);
     },
     removeTask: function(task, ownerUUID) {
-      ArrayService.removeFromArrays(task,
-                                    tasks[ownerUUID].activeTasks,
-                                    tasks[ownerUUID].deletedTasks,
-                                    getOtherArrays(ownerUUID));
+      var taskInfo = this.getTaskInfo(task.trans.uuid, ownerUUID);
+      if (taskInfo) {
+        var taskIndex;
+        if (taskInfo.type === 'active') {
+          taskIndex = tasks[ownerUUID].activeTasks.indexOf(taskInfo.task);
+          ItemLikeService.remove(taskInfo.task.trans.uuid);
+          tasks[ownerUUID].activeTasks.splice(taskIndex, 1);
+        } else if (taskInfo.type === 'deleted') {
+          taskIndex = tasks[ownerUUID].deletedTasks.indexOf(taskInfo.task);
+          ItemLikeService.remove(taskInfo.task.trans.uuid);
+          tasks[ownerUUID].deletedTasks.splice(taskIndex, 1);
+        } else if (taskInfo.type === 'archived') {
+          taskIndex = tasks[ownerUUID].archivedTasks.indexOf(taskInfo.task);
+          ItemLikeService.remove(taskInfo.task.trans.uuid);
+          tasks[ownerUUID].archivedTasks.splice(taskIndex, 1);
+        }
+      }
     },
     deleteTask: function(task, ownerUUID) {
       var deferred = $q.defer();

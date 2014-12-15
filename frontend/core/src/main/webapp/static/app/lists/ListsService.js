@@ -162,10 +162,23 @@
       setList(list, ownerUUID);
     },
     removeList: function(list, ownerUUID) {
-      ArrayService.removeFromArrays(list,
-                                    lists[ownerUUID].activeLists,
-                                    lists[ownerUUID].deletedLists,
-                                    getOtherArrays(ownerUUID));
+      var listInfo = this.getListInfo(list.trans.uuid, ownerUUID);
+      if (listInfo) {
+        var listIndex;
+        if (listInfo.type === 'active') {
+          listIndex = lists[ownerUUID].activeLists.indexOf(listInfo.list);
+          ItemLikeService.remove(listInfo.list.trans.uuid);
+          lists[ownerUUID].activeLists.splice(listIndex, 1);
+        } else if (listInfo.type === 'deleted') {
+          listIndex = lists[ownerUUID].deletedLists.indexOf(listInfo.list);
+          ItemLikeService.remove(listInfo.list.trans.uuid);
+          lists[ownerUUID].deletedLists.splice(listIndex, 1);
+        } else if (listInfo.type === 'archived') {
+          listIndex = lists[ownerUUID].archivedLists.indexOf(listInfo.list);
+          ItemLikeService.remove(listInfo.list.trans.uuid);
+          lists[ownerUUID].archivedLists.splice(listIndex, 1);
+        }
+      }
     },
     deleteList: function(list, ownerUUID) {
       var deferred = $q.defer();

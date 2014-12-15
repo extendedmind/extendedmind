@@ -48,7 +48,7 @@
                                 items[ownerUUID].deletedItems);
   }
 
-  function removeItem(activeItemsIndex, ownerUUID) {
+  function removeActiveItem(activeItemsIndex, ownerUUID) {
     ItemLikeService.remove(items[ownerUUID].activeItems[activeItemsIndex].trans.uuid);
     items[ownerUUID].activeItems.splice(activeItemsIndex, 1);
   }
@@ -151,9 +151,18 @@
       return deferred.promise;
     },
     removeItem: function(item, ownerUUID) {
-      ArrayService.removeFromArrays(item,
-                                    items[ownerUUID].activeItems,
-                                    items[ownerUUID].deletedItems);
+      var itemInfo = this.getItemInfo(item.trans.uuid, ownerUUID);
+      if (itemInfo) {
+        var itemIndex;
+        if (itemInfo.type === 'active') {
+          itemIndex = items[ownerUUID].activeItems.indexOf(itemInfo.item);
+          removeActiveItem(itemIndex, ownerUUID);
+        } else if (itemInfo.type === 'deleted') {
+          itemIndex = items[ownerUUID].deletedItems.indexOf(itemInfo.item);
+          ItemLikeService.remove(itemInfo.item.trans.uuid);
+          items[ownerUUID].deletedItems.splice(itemIndex, 1);
+        }
+      }
     },
     itemToTask: function(item, ownerUUID) {
       var deferred = $q.defer();
@@ -163,7 +172,7 @@
         var index = items[ownerUUID].activeItems.findFirstIndexByKeyValue('uuid', item.trans.uuid);
         TasksService.saveTask(items[ownerUUID].activeItems[index],
                               ownerUUID).then(function(result){
-          removeItem(index, ownerUUID);
+          removeActiveItem(index, ownerUUID);
           deferred.resolve(item);
         },function(failure){
           deferred.reject(failure);
@@ -179,7 +188,7 @@
         var index = items[ownerUUID].activeItems.findFirstIndexByKeyValue('uuid', item.trans.uuid);
         NotesService.saveNote(items[ownerUUID].activeItems[index],
                               ownerUUID).then(function(result){
-          removeItem(index, ownerUUID);
+          removeActiveItem(index, ownerUUID);
           deferred.resolve(item);
         },function(failure){
           deferred.reject(failure);
@@ -195,7 +204,7 @@
         var index = items[ownerUUID].activeItems.findFirstIndexByKeyValue('uuid', item.trans.uuid);
         ListsService.saveList(items[ownerUUID].activeItems[index],
                               ownerUUID).then(function(result){
-          removeItem(index, ownerUUID);
+          removeActiveItem(index, ownerUUID);
           deferred.resolve(item);
         },function(failure){
           deferred.reject(failure);
