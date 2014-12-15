@@ -3,12 +3,14 @@
     <div class="container-titlebar--inner">
       <div class="group-symmetrical height-large">
         <a href class="group-symmetrical--left link-navigation highlighted active" ng-click="endListEdit()" >
-          <span class="text-navigation-back" ng-class="!isFirstSlide() && 'not-swipeable'" ng-bind="listTitlebarHasText() && !list.deleted ? 'save' : 'back'"></span>
+          <span class="text-navigation-back" ng-class="!isFirstSlide() && 'not-swipeable'"
+            ng-bind="listTitlebarHasText() && !list.deleted ? 'save' : 'back'"></span>
         </a>
         <a href ng-if="!list.deleted" class="group-symmetrical--right" ng-click="deleteListInEdit()" >
           <span class="icon-trash"></span>
         </a>
-        <a href ng-if="list.deleted" class="group-symmetrical--right link-navigation highlighted active" ng-click="undeleteList(list)"><span class="text-navigation">restore</span></a>
+        <a href ng-if="list.deleted" class="group-symmetrical--right link-navigation highlighted active"
+          ng-click="undeleteList(list)"><span class="text-navigation">restore</span></a>
       </div>
 
       <div class="row-vertically-centered with-textarea">
@@ -21,7 +23,8 @@
     </div>
   </header>
 
-  <div class="swiper-container container-fluid--inner" swiper-container="listEditor" swiper-type="main" expected-slides="2" swiper-container-slide-changed="editorSwiperSlideChanged()">
+  <div class="swiper-container container-fluid--inner" swiper-container="listEditor" swiper-type="main"
+    expected-slides="2" swiper-container-slide-changed="editorSwiperSlideChanged()">
     <div class="swiper-wrapper">
       <div class="swiper-slide" swiper-slide="listEditor/basic" slide-index="0">
         <div ng-style="{'padding-bottom': EDITOR_FOOTER_HEIGHT}" class="container-content"
@@ -38,7 +41,8 @@
             <a href ng-click="clickFavorite()" class="group-symmetrical--left">
               <span class="icon-star" ng-class="!isFavoriteList(list) && 'inactive'"></span>
             </a>
-            <a href ng-click="swipeToAdvanced()" ng-hide="isFooterNavigationHidden()" class="group-symmetrical--right link-navigation">
+            <a href ng-click="swipeToAdvanced()" ng-hide="isFooterNavigationHidden()"
+              class="group-symmetrical--right link-navigation">
               <span class="text-navigation-forward">advanced</span>
             </a>
           </nav>
@@ -70,7 +74,8 @@
           </div>
 
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
-            <a href ng-click="swipeToBasic()" ng-hide="isFooterNavigationHidden()" class="group-symmetrical--left link-navigation">
+            <a href ng-click="swipeToBasic()" ng-hide="isFooterNavigationHidden()"
+              class="group-symmetrical--left link-navigation">
               <span class="text-navigation-back">basic</span>
             </a>
             <a href ng-click="archiveListInEdit(list)"
