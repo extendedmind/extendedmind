@@ -17,6 +17,11 @@
  function TasksController($rootScope, $scope, $timeout,
                           AnalyticsService, DateService, SwiperService, TasksService, UISessionService) {
 
+
+  $scope.getNewTask = function(initialValues){
+    return ItemsService.getNewItem(initialValues, UISessionService.getActiveUUID());
+  };
+
   $scope.repeatTypes = [
   {title:'daily'},
   {title:'weekly'},
