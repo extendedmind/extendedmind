@@ -49,7 +49,8 @@
           replaceable: true,
           type: 'user'
         }
-        BackendClientService.put('/api/account', this.putAccountRegex, params, payload);
+        BackendClientService.put('/api/account', this.putAccountRegex, params, payload,
+                                 BackendClientService.generateFakeTimestamp());
       }else{
         // Online
         BackendClientService.putOnline('/api/account', this.putAccountRegex, payload);
