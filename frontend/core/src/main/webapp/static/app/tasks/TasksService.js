@@ -301,11 +301,13 @@
       } else {
         if (UserSessionService.isOfflineEnabled()) {
           // Offline
-          var params = {type: 'task', owner: ownerUUID, uuid: task.trans.uuid,
-          reverse: {
-            method: 'post',
-            url: '/api/' + ownerUUID + '/task/' + task.uuid + '/uncomplete'
-          }, replaceable: true};
+          var params = {
+            type: 'task', owner: ownerUUID, uuid: task.trans.uuid,
+            reverse: {
+              method: 'post',
+              url: '/api/' + ownerUUID + '/task/' + task.uuid + '/uncomplete'
+            }, lastReplaceable: true
+          };
           var fakeTimestamp = BackendClientService.generateFakeTimestamp();
           BackendClientService.post('/api/' + ownerUUID + '/task/' + task.trans.uuid + '/complete',
                                     this.completeTaskRegex, params, undefined, fakeTimestamp);
@@ -337,12 +339,7 @@
       } else {
         if (UserSessionService.isOfflineEnabled()) {
           // Offline
-          var params = {type: 'task', owner: ownerUUID, uuid: task.uuid,
-          reverse: {
-            method: 'post',
-            url: '/api/' + ownerUUID + '/task/' + task.uuid + '/complete'
-          },
-          replaceable: true};
+          var params = {type: 'task', owner: ownerUUID, uuid: task.uuid, lastReplaceable: true};
           var fakeTimestamp = BackendClientService.generateFakeTimestamp();
           BackendClientService.post('/api/' + ownerUUID + '/task/' + task.uuid + '/uncomplete',
                                     this.uncompleteTaskRegex, params, undefined, fakeTimestamp);

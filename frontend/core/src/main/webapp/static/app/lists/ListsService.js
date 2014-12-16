@@ -157,8 +157,6 @@
       if (arrayInfo) return arrayInfo.type;
     },
     addList: function(list, ownerUUID) {
-      // Check that list is not deleted before trying to add
-      if (this.getListStatus(list, ownerUUID) === 'deleted') return;
       setList(list, ownerUUID);
     },
     removeList: function(list, ownerUUID) {

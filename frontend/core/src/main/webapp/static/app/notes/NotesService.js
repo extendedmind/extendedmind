@@ -294,11 +294,13 @@
       } else {
         if (UserSessionService.isOfflineEnabled()) {
           // Offline
-          var params = {type: 'note', owner: ownerUUID, uuid: note.uuid,
-          reverse: {
-            method: 'post',
-            url: '/api/' + ownerUUID + '/note/' + note.uuid + '/unfavorite'
-          },replaceable: true};
+          var params = {
+            type: 'note', owner: ownerUUID, uuid: note.uuid,
+            reverse: {
+              method: 'post',
+              url: '/api/' + ownerUUID + '/note/' + note.uuid + '/unfavorite'
+            }, lastReplaceable: true
+          };
           var fakeTimestamp = BackendClientService.generateFakeTimestamp();
           BackendClientService.post('/api/' + ownerUUID + '/note/' + note.uuid + '/favorite',
                                     this.favoriteNoteRegex, params, undefined, fakeTimestamp);
@@ -330,11 +332,7 @@
       } else {
         if (UserSessionService.isOfflineEnabled()) {
           // Offline
-          var params = {type: 'note', owner: ownerUUID, uuid: note.uuid,
-          reverse: {
-            method: 'post',
-            url: '/api/' + ownerUUID + '/note/' + note.uuid + '/favorite'
-          }, replaceable: true};
+          var params = {type: 'note', owner: ownerUUID, uuid: note.uuid, lastReplaceable: true};
           var fakeTimestamp = BackendClientService.generateFakeTimestamp();
           BackendClientService.post('/api/' + ownerUUID + '/note/' + note.uuid + '/unfavorite',
                                     this.unfavoriteNoteRegex, params, undefined, fakeTimestamp);

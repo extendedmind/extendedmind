@@ -63,7 +63,7 @@ function HttpRequestQueueService() {
 
   // Find index of a reversible item in queue
   function findReverseRequestIndex(request) {
-    for (var i=0, len=queue.length; i<len; i++) {
+    for (var i=queue.length-1; i>=0; i--) {
       if (queue[i].params && queue[i].params.reverse &&
         request.content.url === queue[i].params.reverse.url &&
         request.content.method === queue[i].params.reverse.method) {
@@ -75,8 +75,9 @@ function HttpRequestQueueService() {
 
   // Returns true if there is the same request in the queue
   function findReplaceableRequestIndex(request) {
-    for (var i=0, len=queue.length; i<len; i++) {
-      if (queue[i].params && queue[i].params.replaceable &&
+    for (var i=queue.length-1; i>=0; i--) {
+      if (queue[i].params &&
+          (queue[i].params.replaceable || (queue[i].params.lastReplaceable && i===(queue.length-1))) &&
           request.content.url === queue[i].content.url &&
           request.content.method === queue[i].content.method) {
         // Found a replaceable request from the queue
@@ -135,11 +136,12 @@ function HttpRequestQueueService() {
     }
     var replaceableIndex = findReplaceableRequestIndex(request);
     if (replaceableIndex !== undefined){
-      if (queue[replaceableIndex].content.data === undefined && request.content.data === undefined){
+      if (queue[replaceableIndex].content.data === undefined && request.content.data === undefined
+          && replaceableIndex === queue.length-1){
         // The method does not have a payload, we just stop here. This happens e.g. for
         // delete, where second identical call will fail with "already deleted" if this is not done.
         return false;
-      }else if (!queue[reverseRequestIndex].executing){
+      }else if (!queue[replaceableIndex].executing){
         // There is data to be replaced, and the request is not the head, or is the head but
         // not on its way to the server: just replace
         queue[replaceableIndex].content.data = request.content.data;

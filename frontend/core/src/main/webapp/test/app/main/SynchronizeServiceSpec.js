@@ -380,6 +380,8 @@ describe('SynchronizeService', function() {
     $httpBackend.flush();
     expect(items.length)
       .toBe(4);
+    expect(UUIDService.isFakeUUID(items[3].mod.uuid))
+      .toBeTruthy();
 
     // 3. delete item
     // We're still expecting to get another try at creating the first
@@ -419,34 +421,57 @@ describe('SynchronizeService', function() {
     // Verify that everything is right with the created item
     expect(items.length)
       .toBe(4);
-    expect(UUIDService.isFakeUUID(items[3].uuid))
+    expect(UUIDService.isFakeUUID(items[3].mod.uuid))
       .toBeFalsy();
-    expect(items[3].description)
+    expect(items[3].mod.description)
       .toBe('test description');
 
     // 6. delete online
-    $httpBackend.expectDELETE('/api/' + MockUserSessionService.getActiveUUID() + '/item/' + testItem.uuid)
+    $httpBackend.expectDELETE('/api/' + MockUserSessionService.getActiveUUID() + '/item/' +
+                              testItem.mod.uuid)
        .respond(200, deleteItemResponse);
     ItemsService.deleteItem(testItem, testOwnerUUID);
     $httpBackend.flush();
     expect(items.length)
       .toBe(3);
-    expect(testItem.deleted)
+    expect(testItem.mod.deleted)
       .toBe(deleteItemResponse.deleted);
-    expect(testItem.modified)
+    expect(testItem.mod.modified)
       .toBe(deleteItemResponse.result.modified);
 
     // 7. undelete online
-    $httpBackend.expectPOST('/api/' + MockUserSessionService.getActiveUUID() + '/item/' + testItem.uuid + '/undelete')
+    $httpBackend.expectPOST('/api/' + MockUserSessionService.getActiveUUID() + '/item/' + testItem.mod.uuid +
+                            '/undelete')
        .respond(200, undeleteItemResponse);
     ItemsService.undeleteItem(testItem, testOwnerUUID);
     $httpBackend.flush();
     expect(items.length)
       .toBe(4);
-    expect(items[3].deleted)
+    expect(items[3].mod.deleted)
+      .toBeUndefined();
+    expect(items[3].mod.modified)
+      .toBe(undeleteItemResponse.modified);
+
+    // 8. synchronize and get new item as it is back,
+    $httpBackend.expectGET('/api/' + MockUserSessionService.getActiveUUID() + '/items?modified=' +
+                            latestModified + '&deleted=true&archived=true&completed=true')
+        .respond(200, {
+          items: [
+            {uuid: items[3].mod.uuid,
+             title: items[3].mod.title,
+             description: items[3].mod.description,
+             created: items[3].mod.modified,
+             modified: items[3].mod.modified}]
+          });
+    SynchronizeService.synchronize(testOwnerUUID);
+    $httpBackend.flush();
+    expect(items.length)
+      .toBe(4);
+    expect(items[3].mod)
       .toBeUndefined();
     expect(items[3].modified)
       .toBe(undeleteItemResponse.modified);
+
   });
 
   it('should handle item offline update with conflicting sync from server', function () {

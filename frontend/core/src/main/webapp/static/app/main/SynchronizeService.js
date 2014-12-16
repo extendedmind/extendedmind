@@ -311,6 +311,7 @@
       }
 
       properties = {uuid: uuid, modified: response.modified};
+      if (response.created) properties.created = response.created;
 
       if (request.params.type === 'user') {
         UserSessionService.setUserModified(properties.modified);

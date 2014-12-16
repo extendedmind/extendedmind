@@ -61,7 +61,7 @@ function ArrayService() {
   function getFirstMatchingArrayInfoByUUID(uuid, otherArrays) {
     if (otherArrays) {
       for (var i=0, len=otherArrays.length; i<len; i++) {
-        var itemInOtherArray = otherArrays[i].array.findFirstObjectByKeyValue('uuid', uuid);
+        var itemInOtherArray = otherArrays[i].array.findFirstObjectByKeyValue('uuid', uuid, 'trans');
         if (itemInOtherArray) {
           return otherArrays[i];
         }
@@ -114,12 +114,12 @@ function ArrayService() {
     },
     // item and activeArray are mandatory, rest are optional
     getActiveArrayInfo: function(item, activeArray, deletedArray, otherArrays) {
-      if (activeArray && activeArray.findFirstIndexByKeyValue('uuid', item.uuid) !== undefined){
+      if (activeArray && activeArray.findFirstIndexByKeyValue('uuid', item.trans.uuid, 'trans') !== undefined){
         return {type: 'active', array: activeArray};
-      }else if (deletedArray && deletedArray.findFirstIndexByKeyValue('uuid', item.uuid) !== undefined){
+      }else if (deletedArray && deletedArray.findFirstIndexByKeyValue('uuid', item.trans.uuid, 'trans') !== undefined){
         return {type: 'deleted', array: deletedArray};
       }else if (otherArrays) {
-        var otherArrayWithItemInfo = getFirstMatchingArrayInfoByUUID(item.uuid, otherArrays);
+        var otherArrayWithItemInfo = getFirstMatchingArrayInfoByUUID(item.trans.uuid, otherArrays);
         if (otherArrayWithItemInfo) return {type: otherArrayWithItemInfo.id, array: otherArrayWithItemInfo.array};
       }
     },
@@ -145,13 +145,14 @@ function ArrayService() {
     updateItem: function(item, activeArray, deletedArray, otherArrays) {
       var activeItemId, deletedItemId, otherArrayItemId;
       var otherArrayInfo = getFirstMatchingArrayInfoByProperty(item, otherArrays);
-      var otherArrayWithItemInfo = getFirstMatchingArrayInfoByUUID(item.uuid, otherArrays);
+      var otherArrayWithItemInfo = getFirstMatchingArrayInfoByUUID(item.trans.uuid, otherArrays);
 
-      activeItemId = activeArray.findFirstIndexByKeyValue('uuid', item.uuid);
+      activeItemId = activeArray.findFirstIndexByKeyValue('uuid', item.trans.uuid, 'trans');
       if (activeItemId === undefined && deletedArray) {
-        deletedItemId = deletedArray.findFirstIndexByKeyValue('uuid', item.uuid);
+        deletedItemId = deletedArray.findFirstIndexByKeyValue('uuid', item.trans.uuid, 'trans');
         if (otherArrayWithItemInfo && deletedItemId === undefined) {
-          otherArrayItemId = otherArrayWithItemInfo.array.findFirstIndexByKeyValue('uuid', item.uuid);
+          otherArrayItemId = otherArrayWithItemInfo.array
+                             .findFirstIndexByKeyValue('uuid', item.trans.uuid, 'trans');
         }
       }
 

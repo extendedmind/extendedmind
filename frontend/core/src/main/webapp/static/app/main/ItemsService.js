@@ -63,16 +63,25 @@
                                     items[ownerUUID].deletedItems);
     },
     updateItems: function(itemsResponse, ownerUUID) {
-      ItemLikeService.persistAndReset(itemsResponse, 'item', ownerUUID, itemFieldInfos);
-      return ArrayService.updateArrays(itemsResponse,
-                                       items[ownerUUID].activeItems,
-                                       items[ownerUUID].deletedItems);
+      if (itemsResponse && itemsResponse.length){
+        // Go through itemsResponse, and add .mod values if the fields in the current .mod do not match
+        // the values in the persistent response
+        for (var i=0, len=itemsResponse.length; i<len; i++){
+          var itemInfo = this.getItemInfo(itemsResponse[i].uuid, ownerUUID);
+          if (itemInfo){
+            ItemLikeService.evaluateMod(itemsResponse[i], itemInfo.item, 'item', ownerUUID, itemFieldInfos);
+          }
+        }
+        ItemLikeService.persistAndReset(itemsResponse, 'item', ownerUUID, itemFieldInfos);
+        return ArrayService.updateArrays(itemsResponse,
+                                         items[ownerUUID].activeItems,
+                                         items[ownerUUID].deletedItems);
+      }
     },
     updateItemProperties: function(uuid, properties, ownerUUID) {
       var itemInfo = this.getItemInfo(uuid, ownerUUID);
       if (itemInfo){
         ItemLikeService.updateObjectProperties(itemInfo.item.mod, properties);
-        ItemLikeService.copyModToPersistent(itemInfo.item, ownerUUID, itemFieldInfos);
         updateItem(itemInfo.item, ownerUUID);
         return itemInfo.item;
       }
