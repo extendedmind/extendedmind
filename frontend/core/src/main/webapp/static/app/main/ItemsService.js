@@ -194,7 +194,7 @@
       if (items[ownerUUID].deletedItems.findFirstObjectByKeyValue('uuid', item.trans.uuid, 'trans')) {
         deferred.reject({type: 'deleted'});
       } else {
-        var index = items[ownerUUID].activeItems.findFirstIndexByKeyValue('uuid', item.trans.uuid);
+        var index = items[ownerUUID].activeItems.findFirstIndexByKeyValue('uuid', item.trans.uuid, 'trans');
         NotesService.saveNote(items[ownerUUID].activeItems[index],
                               ownerUUID).then(function(/*result*/){
           removeActiveItem(index, ownerUUID);
@@ -210,7 +210,7 @@
       if (items[ownerUUID].deletedItems.findFirstObjectByKeyValue('uuid', item.trans.uuid, 'trans')) {
         deferred.reject({type: 'deleted'});
       } else {
-        var index = items[ownerUUID].activeItems.findFirstIndexByKeyValue('uuid', item.trans.uuid);
+        var index = items[ownerUUID].activeItems.findFirstIndexByKeyValue('uuid', item.trans.uuid, 'trans');
         ListsService.saveList(items[ownerUUID].activeItems[index],
                               ownerUUID).then(function(/*result*/){
           removeActiveItem(index, ownerUUID);

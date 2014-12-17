@@ -513,6 +513,7 @@ describe('SynchronizeService', function() {
         'title': 'I start yoga'
       }]
     }
+    yogaValues.modified = newLatestModified;
     $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
                             latestModified + '&deleted=true&archived=true&completed=true')
         .respond(200, conflictYogaResponse);
@@ -746,7 +747,9 @@ describe('SynchronizeService', function() {
 
     // 6. complete offline but get conflicting completed response from the server: expect that double
     //    complete has been removed from queue
+    console.log(tasks[0].title)
     var cleanCloset = TasksService.getTaskInfo('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID).task;
+
     $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid + '/complete')
        .respond(404);
     TasksService.completeTask(cleanCloset, testOwnerUUID);
@@ -760,8 +763,8 @@ describe('SynchronizeService', function() {
 
     var conflictModified = now.getTime() + 1;
     var conflictingCleanCloset = {
-      'uuid': '7b53d509-853a-47de-992c-c572a6952629',
-      'created': 1391278509698,
+      'uuid': cleanCloset.trans.uuid,
+      'created': cleanCloset.trans.created,
       'modified': conflictModified,
       'completed': conflictModified,
       'title': 'clean closet'
@@ -775,6 +778,7 @@ describe('SynchronizeService', function() {
 
     expect(tasks.length)
       .toBe(5);
+
     expect(tasks[0].mod)
       .toBeUndefined();
     expect(tasks[0].completed)
@@ -785,12 +789,17 @@ describe('SynchronizeService', function() {
     MockUserSessionService.offlineEnabled = true;
 
     // 1. save existing task
+    var tasks = TasksService.getTasks(testOwnerUUID);
     var cleanCloset = TasksService.getTaskInfo('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID).task;
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid, cleanCloset)
+    cleanCloset.trans.description = 'now';
+    var cleanClosetTransport = {title: cleanCloset.trans.title,
+                                description: cleanCloset.trans.description,
+                                modified: cleanCloset.trans.modified};
+
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' + cleanCloset.trans.uuid, cleanClosetTransport)
        .respond(404);
     TasksService.saveTask(cleanCloset, testOwnerUUID);
     $httpBackend.flush();
-    var tasks = TasksService.getTasks(testOwnerUUID);
     expect(tasks.length)
       .toBe(4);
 
@@ -802,24 +811,37 @@ describe('SynchronizeService', function() {
     var newLatestModified = latestModified + 1000;
     var conflictCleanClosetResponse = {
       tasks: [{
-        'uuid': '7b53d509-853a-47de-992c-c572a6952629',
-        'created': 1391278509698,
+        'uuid': cleanCloset.trans.uuid,
+        'created': cleanCloset.trans.created,
         'modified': newLatestModified,
-        'completed': 1391278509917,
+        'completed': newLatestModified + 1,
         'title': 'clean closet!'
       }]
     }
+    cleanClosetTransport.modified = newLatestModified;
     $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
                             latestModified + '&deleted=true&archived=true&completed=true')
         .respond(200, conflictCleanClosetResponse);
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid, cleanCloset)
-        .respond(200, putNewItemResponse);
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' + cleanCloset.trans.uuid,
+        cleanClosetTransport).respond(200, {modified: newLatestModified});
     SynchronizeService.synchronize(testOwnerUUID);
     $httpBackend.flush();
     MockUserSessionService.setLatestModified(newLatestModified);
 
+    expect(tasks.length)
+      .toBe(4);
+    expect(tasks[0].modified)
+      .toBe(newLatestModified);
+    expect(tasks[0].mod.modified)
+      .toBe(newLatestModified);
+    expect(tasks[0].trans.modified)
+      .toBe(newLatestModified);
+
     // 3. save existing offline again
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid, cleanCloset)
+    cleanClosetTransport.modified = newLatestModified;
+    cleanCloset = TasksService.getTaskInfo(cleanCloset.trans.uuid, testOwnerUUID).task;
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' + cleanCloset.trans.uuid,
+                           cleanClosetTransport)
        .respond(404);
     TasksService.saveTask(cleanCloset, testOwnerUUID);
     $httpBackend.flush();
@@ -842,10 +864,11 @@ describe('SynchronizeService', function() {
     MockUserSessionService.offlineEnabled = true;
 
     // 1. save new item
-    var testItem = {
+    var testItemValues = {
       'title': 'test note'
     };
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItem)
+    var testItem = ItemsService.getNewItem(testItemValues, testOwnerUUID);
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
        .respond(404);
     ItemsService.saveItem(testItem, testOwnerUUID);
     $httpBackend.flush();
@@ -854,7 +877,7 @@ describe('SynchronizeService', function() {
       .toBe(4);
 
     // 2. make item into note
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItem)
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
        .respond(404);
     ItemsService.itemToNote(testItem, testOwnerUUID);
     $httpBackend.flush();
@@ -863,14 +886,14 @@ describe('SynchronizeService', function() {
     var notes = NotesService.getNotes(testOwnerUUID);
     expect(notes.length)
       .toBe(5);
+    expect(notes[4].trans.title)
+      .toBe('test note');
 
     // 3. update note
-    var updatedTestNote = {
-      'uuid': testItem.uuid,
-      'title': testItem.title,
-      'description': 'test description'
-    };
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItem)
+    var updatedTestNote = notes[4];
+    updatedTestNote.trans.description = 'test description';
+
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
        .respond(404);
     NotesService.saveNote(updatedTestNote, testOwnerUUID);
     $httpBackend.flush();
@@ -879,7 +902,7 @@ describe('SynchronizeService', function() {
       .toBe(5);
 
     // 4. delete note
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItem)
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
        .respond(404);
     NotesService.deleteNote(updatedTestNote, testOwnerUUID);
     $httpBackend.flush();
@@ -887,7 +910,7 @@ describe('SynchronizeService', function() {
       .toBe(4);
 
     // 5. undelete note
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItem)
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
        .respond(404);
     NotesService.undeleteNote(updatedTestNote, testOwnerUUID);
     $httpBackend.flush();
@@ -900,13 +923,12 @@ describe('SynchronizeService', function() {
     $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
                             latestModified + '&deleted=true&archived=true&completed=true')
         .respond(200, '{}');
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItem)
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
         .respond(200, putNewItemResponse);
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/note/' + putNewItemResponse.uuid,
-                           testItem)
-        .respond(200, putExistingItemResponse);
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/note/' + putNewItemResponse.uuid,
-                           updatedTestNote)
+                           {title: updatedTestNote.trans.title,
+                            description: updatedTestNote.trans.description,
+                            modified: putNewItemResponse.modified})
         .respond(200, putExistingItemResponse);
     SynchronizeService.synchronize(testOwnerUUID);
     $httpBackend.flush();
@@ -918,29 +940,49 @@ describe('SynchronizeService', function() {
       .toBe(5);
     expect(UUIDService.isFakeUUID(notes[4].uuid))
       .toBeFalsy();
-    expect(notes[4].description)
+    expect(notes[4].mod.description)
       .toBeDefined();
 
     // 7. delete online
-    $httpBackend.expectDELETE('/api/' + testOwnerUUID + '/note/' + updatedTestNote.uuid)
+    $httpBackend.expectDELETE('/api/' + testOwnerUUID + '/note/' + updatedTestNote.mod.uuid)
        .respond(200, deleteItemResponse);
     NotesService.deleteNote(updatedTestNote, testOwnerUUID);
     $httpBackend.flush();
     expect(notes.length)
       .toBe(4);
-    expect(updatedTestNote.deleted)
+    expect(updatedTestNote.mod.deleted)
       .toBe(deleteItemResponse.deleted);
-    expect(updatedTestNote.modified)
+    expect(updatedTestNote.mod.modified)
       .toBe(deleteItemResponse.result.modified);
 
     // 8. undelete online
-    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/note/' + updatedTestNote.uuid + '/undelete')
+    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/note/' + updatedTestNote.mod.uuid + '/undelete')
        .respond(200, undeleteItemResponse);
     NotesService.undeleteNote(updatedTestNote, testOwnerUUID);
     $httpBackend.flush();
     expect(notes.length)
       .toBe(5);
-    expect(notes[4].deleted)
+    expect(notes[4].mod.deleted)
+      .toBeUndefined();
+    expect(notes[4].mod.modified)
+      .toBe(undeleteItemResponse.modified);
+
+    // 9. synchronize and get new note as it is back
+    $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
+                            latestModified + '&deleted=true&archived=true&completed=true')
+        .respond(200, {
+          notes: [
+            {uuid: notes[4].mod.uuid,
+             title: notes[4].mod.title,
+             description: notes[4].mod.description,
+             created: notes[4].mod.created,
+             modified: notes[4].mod.modified}]
+          });
+    SynchronizeService.synchronize(testOwnerUUID);
+    $httpBackend.flush();
+    expect(notes.length)
+      .toBe(5);
+    expect(notes[4].mod)
       .toBeUndefined();
     expect(notes[4].modified)
       .toBe(undeleteItemResponse.modified);

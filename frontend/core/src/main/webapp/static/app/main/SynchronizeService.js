@@ -141,6 +141,42 @@
     }
   }
 
+  function removeItemFromResponse(response, uuid, itemType){
+    var index;
+    switch(itemType) {
+    case 'item':
+      if (response.items && response.items.length){
+        index = response.items.findFirstIndexByKeyValue('uuid', uuid);
+        if (index !== undefined) response.items.splice(index, 1);
+      }
+      break;
+    case 'task':
+      if (response.tasks && response.tasks.length){
+        index = response.tasks.findFirstIndexByKeyValue('uuid', uuid);
+        if (index !== undefined) response.tasks.splice(index, 1);
+      }
+      break;
+    case 'note':
+      if (response.notes && response.notes.length){
+        index = response.notes.findFirstIndexByKeyValue('uuid', uuid);
+        if (index !== undefined) response.notes.splice(index, 1);
+      }
+      break;
+    case 'list':
+      if (response.lists && response.lists.length){
+        index = response.lists.findFirstIndexByKeyValue('uuid', uuid);
+        if (index !== undefined) response.lists.splice(index, 1);
+      }
+      break;
+    case 'tag':
+      if (response.tags && response.tags.length){
+        index = response.tags.findFirstIndexByKeyValue('uuid', uuid);
+        if (index !== undefined) response.tags.splice(index, 1);
+      }
+      break;
+    }
+  }
+
   // Register callbacks to BackendClientService
   function synchronizeCallback(request, response, queue) {
     if (!jQuery.isEmptyObject(response)) {
@@ -172,10 +208,26 @@
                                             conflictDelimiter +
                                             conflictingItem.content;
                   queue[i].content.data.content = conflictedContent;
+                  queue[i].content.data.modified = conflictedContent.modified;
                   conflictingItem.content = conflictedContent;
                 }
-              }else if (conflictingItem.modified > queue[i].content.timestamp){
-                queue.splice(i, 1);
+              }else{
+                // Other types: no need to do a merge
+                if (conflictingItem.modified > queue[i].content.timestamp){
+                  queue.splice(i, 1);
+                }else{
+                  // Don't splice it from the buffer, but we still want to change the modified value so that
+                  // the call doesn't fail with next sync
+                  queue[i].content.data.modified = conflictingItem.modified;
+                  // Update modified value to reflect backend from both persistent and mod fields
+                  var taskInfo = TasksService.getTaskInfo(conflictingItem.uuid, request.params.owner);
+                  if (taskInfo){
+                    taskInfo.task.mod.modified = conflictingItem.modified;
+                    taskInfo.task.modified = conflictingItem.modified;
+                  }
+                  // Remove item from response
+                  removeItemFromResponse(response, conflictingItem.uuid, queue[i].params.type);
+                }
               }
             }else if (queue[i].content.method === 'post'){
               if (queue[i].content.url.endsWith('/complete') && conflictingItem.completed){
@@ -321,7 +373,9 @@
       }
 
       properties = {uuid: uuid, modified: response.modified};
-      if (response.created) properties.created = response.created;
+      if (response.created){
+        properties.created = response.created;
+      }
 
       if (request.params.type === 'user') {
         UserSessionService.setUserModified(properties.modified);
