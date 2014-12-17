@@ -474,51 +474,87 @@ input[type="checkbox"]:checked + label:before {
 */
 
 @speed-animate-modal: 70ms;
+@speed-animate-blur: 70ms;
 
-.animate-modal.ng-enter, .animate-modal.ng-leave {
-  -webkit-transition: -webkit-transform @speed-animate-modal @timing-animate;
-  -moz-transition: -moz-transform @speed-animate-modal @timing-animate;
-  -ms-transition: -ms-transform @speed-animate-modal @timing-animate;
-  -o-transition: -o-transform @speed-animate-modal @timing-animate;
-  transition: transform @speed-animate-modal @timing-animate;
-}
-
-// Fade out start.
+.animate-modal.ng-enter,
 .animate-modal.ng-leave {
+  -webkit-transition-property: -webkit-transform, opacity;
+  -webkit-transition-duration: @speed-animate-modal, @speed-animate-modal;
+  -webkit-transition-timing-function: @timing-animate, @timing-animate;
+
+  -moz-transition-property: -webkit-transform, opacity;
+  -moz-transition-duration: @speed-animate-modal, @speed-animate-modal;
+  -moz-transition-timing-function: @timing-animate, @timing-animate;
+
+  -ms-transition-property: -webkit-transform, opacity;
+  -ms-transition-duration: @speed-animate-modal, @speed-animate-modal;
+  -ms-transition-timing-function: @timing-animate, @timing-animate;
+
+  -o-transition-property: -webkit-transform, opacity;
+  -o-transition-duration: @speed-animate-modal, @speed-animate-modal;
+  -o-transition-timing-function: @timing-animate, @timing-animate;
+
+  transition-property: -webkit-transform, opacity;
+  transition-duration: @speed-animate-modal, @speed-animate-modal;
+  transition-timing-function: @timing-animate, @timing-animate;
+}
+// Fade out start.
+// Fade in end.
+.animate-modal.ng-leave,
+.animate-modal.ng-enter.ng-enter-active {
   -webkit-transform: scale(1) translateY(-50%);
   -moz-transform: scale(1) translateY(-50%);
-  -ms-transform: scale(1) translateY(-50%);
   -o-transform: scale(1) translateY(-50%);
+  -ms-transform: scale(1) translateY(-50%);
   transform: scale(1) translateY(-50%);
   opacity: 1;
 }
 
 // Fade out end.
-.animate-modal.ng-leave.ng-leave-active {
-  -webkit-transform: scale(.9);
-  -moz-transform: scale(.9);
-  -ms-transform: scale(.9);
-  -o-transform: scale(.9);
-  transform: scale(.9);
-  opacity: 0;
-}
-
-// Fade in start.
+// Fade in end.
+.animate-modal.ng-leave.ng-leave-active,
 .animate-modal.ng-enter {
   -webkit-transform: scale(.9) translateY(-50%);
   -moz-transform: scale(.9) translateY(-50%);
-  -ms-transform: scale(.9) translateY(-50%);
   -o-transform: scale(.9) translateY(-50%);
+  -ms-transform: scale(.9) translateY(-50%);
   transform: scale(.9) translateY(-50%);
   opacity: 0;
 }
 
-// Fade in end.
-.animate-modal.ng-enter.ng-enter-active {
-  -webkit-transform: scale(1) translateY(-50%);
-  -moz-transform: scale(1) translateY(-50%);
-  -ms-transform: scale(1) translateY(-50%);
-  -o-transform: scale(1) translateY(-50%);
-  transform: scale(1) translateY(-50%);
-  opacity: 1;
+
+// 1. Blur backdrop. See http://tympanus.net/codrops/2011/12/14/item-blur-effect-with-css3-and-jquery/
+.blur {
+  &,
+  span, span:after,
+  textarea {
+    -webkit-transition-property: opacity, text-shadow, color;
+    -webkit-transition-duration: @speed-animate-blur, @speed-animate-blur, @speed-animate-blur;
+    -webkit-transition-timing-function: @timing-animate, @timing-animate, @timing-animate;
+
+    -moz-transition-property: opacity, text-shadow, color;
+    -moz-transition-duration: @speed-animate-blur, @speed-animate-blur, @speed-animate-blur;
+    -moz-transition-timing-function: @timing-animate, @timing-animate, @timing-animate;
+
+    -o-transition-property: opacity, text-shadow, color;
+    -o-transition-duration: @speed-animate-blur, @speed-animate-blur, @speed-animate-blur;
+    -o-transition-timing-function: @timing-animate, @timing-animate, @timing-animate;
+
+    -ms-transition-property: opacity, text-shadow, color;
+    -ms-transition-duration: @speed-animate-blur, @speed-animate-blur, @speed-animate-blur;
+    -ms-transition-timing-function: @timing-animate, @timing-animate, @timing-animate;
+
+    transition-property: opacity, text-shadow, color;
+    transition-duration: @speed-animate-blur, @speed-animate-blur, @speed-animate-blur;
+    transition-timing-function: @timing-animate, @timing-animate, @timing-animate;
+  }
+  text-shadow: 0px 0px 10px rgba(0, 0, 0, 0.9);
+  color: rgba(0, 0, 0, 0) !important;
+  opacity: 0.5;
+  span,
+  span:after,
+  textarea {
+    text-shadow: 0px 0px 10px rgba(51, 51, 51, 0.9);
+    color: rgba(51, 51, 51, 0) !important;
+  }
 }

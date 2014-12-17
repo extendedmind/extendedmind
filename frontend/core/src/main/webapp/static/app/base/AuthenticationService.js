@@ -158,9 +158,10 @@
               validateAuthentication();
             },function(error) {
               // Error branch, emit onlineRequired
+              var rejection, emitType;
               if (BackendClientService.isOffline(error.status)) {
-                // Emit online required exception
-                $rootScope.$emit('emException', {
+                emitType = 'emInteraction';
+                rejection = {
                   type: 'onlineRequired',
                   value: {
                     status: error.status,
@@ -168,17 +169,21 @@
                     retry: swapTokenAndAuthenticate,
                     redirectUrl: '/',
                     promise: deferredAuthentication
-                  }});
+                  }
+                };
               }else {
-                var rejection = {type: 'http',
-                                  value: {
-                                    status: error.status,
-                                    data: error.data,
-                                    url: error.config.url
-                                  }};
-                $rootScope.$emit('emException', rejection);
+                emitType = 'emException';
+                rejection = {
+                  type: 'http',
+                  value: {
+                    status: error.status,
+                    data: error.data,
+                    url: error.config.url
+                  }
+                };
                 deferredAuthentication.reject(rejection);
               }
+              $rootScope.$emit(emitType, rejection);
             });
           }
         } else {

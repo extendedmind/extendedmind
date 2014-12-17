@@ -17,7 +17,39 @@
  function modalDirective($rootScope) {
   return {
     restrict: 'A',
+    scope: {
+      modalInfos: '=modal',
+      closeModal: '&modalClose'
+    },
     templateUrl: $rootScope.urlBase + 'app/base/modal.html',
+    link: function(scope) {
+      scope.closeText = scope.modalInfos.closeText;
+      scope.messageText = scope.modalInfos.messageText;
+      scope.confirmText = scope.modalInfos.confirmText || 'ok';
+
+      scope.confirmAction = function() {
+        if (typeof scope.modalInfos.confirmActionDeferredFn === 'function') {
+          // Confirm action is a promise.
+          scope.confirmText = scope.modalInfos.confirmTextDeferred;
+          scope.confirmDisabled = true;
+
+          scope.modalInfos.confirmActionDeferredFn(scope.modalInfos.confirmActionDeferredParam)
+          .then(confirmActionPromiseSuccess, confirmActionPromiseError);
+        }
+      };
+
+      function confirmActionPromiseSuccess() {
+        scope.confirmDisabled = false;
+        scope.closeModal();
+        if (scope.modalInfos.confirmActionPromiseFn) {
+          scope.modalInfos.confirmActionPromiseFn(scope.modalInfos.confirmActionPromiseParam);
+        }
+      }
+      function confirmActionPromiseError() {
+        scope.confirmText = scope.modalInfos.confirmText;
+        scope.confirmDisabled = false;
+      }
+    }
   };
 }
 modalDirective['$inject'] = ['$rootScope'];

@@ -31,15 +31,17 @@
 
   function emitException(error, skipLogStatuses) {
     var exceptionType = 'http';
+    var emitType = 'emException';
     if (error && isOffline(error.status)) {
       online = false;
       if (onlineCallback) {
         onlineCallback(online);
       }
+      emitType = 'emInteraction';
       exceptionType = 'onlineRequired';
     }
     if (!skipLogStatuses || skipLogStatuses.indexOf(error.status) === -1) {
-      $rootScope.$emit('emException', {type: exceptionType, value: {status: error.status, data: error.data}});
+      $rootScope.$emit(emitType, {type: exceptionType, value: {status: error.status, data: error.data}});
     }
   }
 

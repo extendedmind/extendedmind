@@ -414,9 +414,9 @@
         return result;
       },
       function(error) {
-        var rejection;
+        var rejection, emitType;
         if (BackendClientService.isOffline(error.value.status)) {
-          // Emit online required exception
+          emitType = 'emInteraction';
           rejection = {
             type: 'onlineRequired',
             value: {
@@ -428,13 +428,14 @@
               promiseParam: true
           }};
         } else {
+          emitType = 'emException';
           rejection = {type: 'http',
                        value: {
                          status: error.value.status,
                          data: error.value.data, url: error.value.config.url
                        }};
         }
-        $rootScope.$emit('emException', rejection);
+        $rootScope.$emit(emitType, rejection);
         return $q.reject(rejection);
       });
   };

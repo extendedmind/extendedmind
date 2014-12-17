@@ -1,16 +1,19 @@
 <section class="container-content">
   <header class="group-symmetrical">
-    <a href class="group-symmetrical--right link-navigation" ng-click="hideModal()">
-      <span class="text-navigation">cancel</span>
+    <a href ng-if="closeText" class="group-symmetrical--right link-navigation" ng-click="closeModal()">
+      <span class="text-navigation" ng-bind="closeText"></span>
     </a>
   </header>
   <div class="group-instruction">
-    <h2 class="group-heading row">mo' dal</h2>
+    <!-- TODO: note style or something similar here -->
+    <h2 class="group-heading row" ng-bind="modalInfos.messageHeading"></h2>
+    <div class="textgroup-ingress last row" ng-bind="messageText"></div>
+    <!-- TODO: note style or something similar here -->
   </div>
 </section>
 
-<footer class="container-content--after group-btn">
-  <button type="submit" class="btn-action" ng-click="hideModal()">
-    <span class="text-btn">fin</span>
+<footer class="container-content--after group-btn" style="height: 44px;">
+  <button type="submit" ng-disabled="confirmDisabled" class="btn-action" ng-click="confirmAction()">
+    <span class="text-btn" ng-bind="confirmText"></span>
   </button>
 </footer>

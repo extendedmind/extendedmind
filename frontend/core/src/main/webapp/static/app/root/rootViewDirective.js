@@ -15,8 +15,8 @@
  'use strict';
 
  function rootViewDirective($injector, $rootScope, $templateCache, $window,
-                            AnalyticsService, BackendClientService, ModalService, UISessionService,
-                            UUIDService, UserSessionService, packaging) {
+                            AnalyticsService, BackendClientService, UISessionService, UUIDService,
+                            UserSessionService, packaging) {
 
   return {
     restrict: 'A',
@@ -68,32 +68,6 @@
       };
       BackendClientService.registerOnlineStatusCallback(onlineStatusCallback);
 
-      $scope.retrying = false;
-      var onlineRequiredRetryCallback = function(modalScope, modalClose, retryFunction, retryFunctionParam,
-                                                 promise, promiseParam) {
-        $scope.retrying = true;
-        modalScope.modalSuccessText = 'retrying\u2026';
-        modalScope.modalSuccessDisabled = true;
-        retryFunction(retryFunctionParam).then(function() {
-          $scope.retrying = false;
-          modalClose();
-          if (promise) {
-            promise.resolve(promiseParam);
-          }
-        },function(error) {
-          $scope.retrying = false;
-          if (error.status === 403) {
-            modalClose();
-            if (promise) {
-              promise.resolve(promiseParam);
-            }
-          } else {
-            modalScope.modalSuccessText = 'retry';
-            modalScope.modalSuccessDisabled = false;
-          }
-        });
-      };
-
       var exiting = false;
       $rootScope.redirectToEntry = function() {
         exiting = true;
@@ -125,42 +99,28 @@
         $templateCache.removeAll();
       };
 
-      // Listen to exceptions emitted to rootscope
-      var unbindEmException = $rootScope.$on('emException', function(name, exception) {
-        var modalOptions = {
-          scope: $scope,
-          id: 'errorDialog',
-          showHeaderCloseButton: false,
-          backdrop: true,
-          footerTemplateUrl: $rootScope.urlBase + 'app/base/modalFooter.html',
-          modalClass: 'modal small-modal'
-        };
+      // Listen to interactions emitted to $rootScope.
+      var unbindEmInteraction = $rootScope.$on('emInteraction', function(name, interaction) {
+        if (interaction.type === 'onlineRequired') {
+          var params = {
+            messageHeading: 'no online connection',
+            messageText: 'please connect to the internet and press retry to access your information',
+            confirmText: 'retry',
+            confirmTextDeferred: 'retrying\u2026',
+            confirmActionDeferredFn: interaction.value.retry,
+            confirmActionDeferredParam: interaction.value.retryParam,
+            confirmActionPromiseFn: interaction.value.promise,
+            confirmActionPromiseParam: interaction.value.promiseParam
+          };
 
-        if (exception.type === 'onlineRequired') {
-          if (!$scope.retrying) {
-            $scope.errorMessageHeading = 'no online connection';
-            if (exception.value.retry) {
-              $scope.errorMessageText = 'please connect to the internet and press retry to access your ' +
-              'information';
-              $scope.modalSuccessText = 'retry';
-              modalOptions.allowBackdropDismiss = false;
-              modalOptions.asyncSuccess = true;
-              modalOptions.success = {
-                fn: onlineRequiredRetryCallback,
-                fnParam: exception.value.retry,
-                fnParamParam: exception.value.retryParam,
-                fnPromise: exception.value.promise,
-                fnPromiseParam: exception.value.promiseParam,
-              };
-              ModalService.createDialog($rootScope.urlBase + 'app/root/errorMessage.html', modalOptions);
-            } else {
-              // No retry possibility
-              $scope.modalSuccessText = 'close';
-              $scope.errorMessageText = 'you need to be online to complete this action';
-              ModalService.createDialog($rootScope.urlBase + 'app/root/errorMessage.html', modalOptions);
-            }
-          }
-        } else if (exception.type === 'http' && exception.value.status === 403) {
+          $scope.showModal(undefined, params);
+        }
+      });
+
+      // Listen to exceptions emitted to $rootScope.
+      var unbindEmException = $rootScope.$on('emException', function(name, exception) {
+
+        if (exception.type === 'http' && exception.value.status === 403) {
           // Redirect thrown 403 Forbidden exception to the login page
           AnalyticsService.error('forbidden', JSON.stringify(exception));
           $rootScope.redirectToEntry();
@@ -171,14 +131,17 @@
             $rootScope.redirectToEntry();
           }
         // TODO: Type 'response' for offline responses!
-        } else {
-          AnalyticsService.error('unexpected', JSON.stringify(exception));
-          $scope.errorMessageHeading = 'something unexpected happened, sorry!';
-          $scope.errorMessageText = JSON.stringify(exception, null, 4);
-          $scope.modalSuccessText = 'close';
-          ModalService.createDialog($rootScope.urlBase + 'app/root/errorMessage.html', modalOptions);
-        }
-      });
+      } else {
+        AnalyticsService.error('unexpected', JSON.stringify(exception));
+
+        var params = {
+          messageHeading: 'something unexpected happened, sorry!',
+          messageText: JSON.stringify(exception, null, 4),
+          confirmText: 'close'
+        };
+        $scope.showModal(undefined, params);
+      }
+    });
 
       // MODAL
       $scope.modal = {
@@ -202,7 +165,10 @@
       };
 
       // Clean up listening by executing the variable
-      $scope.$on('$destroy', unbindEmException);
+      $scope.$on('$destroy', function() {
+        unbindEmInteraction();
+        unbindEmException();
+      });
     },
     link: function (scope) {
 
@@ -308,6 +274,6 @@
 }
 
 rootViewDirective['$inject'] = ['$injector', '$rootScope', '$templateCache', '$window',
-'AnalyticsService', 'BackendClientService', 'ModalService', 'UISessionService', 'UUIDService',
-'UserSessionService', 'packaging'];
+'AnalyticsService', 'BackendClientService', 'UISessionService', 'UUIDService', 'UserSessionService',
+'packaging'];
 angular.module('em.root').directive('rootView', rootViewDirective);
