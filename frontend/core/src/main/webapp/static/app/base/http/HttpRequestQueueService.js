@@ -136,8 +136,7 @@ function HttpRequestQueueService() {
     }
     var replaceableIndex = findReplaceableRequestIndex(request);
     if (replaceableIndex !== undefined){
-      if (queue[replaceableIndex].content.data === undefined && request.content.data === undefined
-          && replaceableIndex === queue.length-1){
+      if (queue[replaceableIndex].content.data === undefined && request.content.data === undefined){
         // The method does not have a payload, we just stop here. This happens e.g. for
         // delete, where second identical call will fail with "already deleted" if this is not done.
         return false;
