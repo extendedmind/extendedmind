@@ -82,6 +82,7 @@ function MockItemsBackendService($httpBackend, ItemsService, SynchronizeService,
           } else if (headers.Authorization === 'Basic dG9rZW46T0ZGTElORQ==') {
             return [404, 'Not found'];
           }
+          return expectResponse(method, url, data, headers, getJSONFixture('itemsResponse.json'));
         }
       });
   }
