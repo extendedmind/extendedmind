@@ -55,11 +55,7 @@
   }
 
   $scope.clickFavorite = function() {
-    if (!$scope.note.trans.favorited){
-      $scope.favoriteNote($scope.note);
-    }else{
-      $scope.unfavoriteNote($scope.note);
-    }
+    $scope.note.trans.favorite(!$scope.note.trans.favorite());
   };
 
   // MODES

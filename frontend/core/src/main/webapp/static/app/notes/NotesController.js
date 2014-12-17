@@ -75,7 +75,7 @@
       var favoriteBeforeSave = note.trans.favorite();
       return NotesService.saveNote(note, UISessionService.getActiveUUID()).then(function(result){
         if (result === 'new' && favoriteBeforeSave){
-          return $scope.favoriteNote(note);
+          return favoriteNote(note);
         }
       });
     });
@@ -123,10 +123,10 @@
   /*
   * Favorite note.
   */
-  $scope.favoriteNote = function(note) {
+  function favoriteNote(note) {
     AnalyticsService.do('favoriteNote');
     return NotesService.favoriteNote(note, UISessionService.getActiveUUID());
-  };
+  }
 
   /*
   * Unfavorite note.
