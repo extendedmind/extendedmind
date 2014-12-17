@@ -20,7 +20,7 @@
 
 
   $scope.getNewTask = function(initialValues){
-    return ItemsService.getNewItem(initialValues, UISessionService.getActiveUUID());
+    return TasksService.getNewTask(initialValues, UISessionService.getActiveUUID());
   };
 
   $scope.repeatTypes = [
