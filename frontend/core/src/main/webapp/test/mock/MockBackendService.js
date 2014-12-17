@@ -16,8 +16,9 @@
  /*global angular */
  'use strict';
 
- function MockBackendService(MockListsBackendService, MockTagsBackendService, MockTasksBackendService, MockNotesBackendService,
-  MockItemsBackendService, MockConvertBackendService, MockUserBackendService, MockAuthBackendService, MockAdminBackendService, base64) {
+ function MockBackendService(MockListsBackendService, MockTagsBackendService, MockTasksBackendService,
+                             MockNotesBackendService, MockItemsBackendService, MockConvertBackendService,
+                             MockUserBackendService, MockAuthBackendService, MockAdminBackendService, base64) {
   return {
     expectResponse: function(method, url, data, headers, responseData, skipAuthenticationCheck) {
       var parsedAuthorizationHeader, userNamePass, parsedUserNamePass, userName, response;
@@ -26,17 +27,31 @@
         userNamePass = base64.decode(parsedAuthorizationHeader[1]);
         parsedUserNamePass = userNamePass.split(':');
         userName = parsedUserNamePass[0];
-        if (userNamePass === 'timo@ext.md:timopwd' || userNamePass === 'timo@ext.md:timopwdnew') {
+
+        // USER WITH DATA
+        if (userNamePass === 'timo@ext.md:timopwd') {
           response = [200, responseData];
-        } else if (userNamePass === 'jp@ext.md:jiipeepwd') {
+        }
+
+        // USER WITH DATA - OFFLINE
+        else if (userNamePass === 'timo@ext.md:timopwdoffline') {
+          if (responseData.token) responseData.token = 'OFFLINE';
+          response = [200, responseData];
+        }
+
+        // NEW USER
+        else if (userNamePass === 'jp@ext.md:jiipeepwd') {
           if (responseData.preferences) delete responseData.preferences;
           if (responseData.token) responseData.token = 'TEST';
           response = [200, responseData];
-        } else if (userName === 'token') {
+        }
+        else if (userName === 'token') {
           response = [200, responseData];
-        } else if (userNamePass === 'example@example.com:examplePass') {
+        }
+        else if (userNamePass === 'example@example.com:examplePass') {
           response = [200, responseData];
-        } else {
+        }
+        else {
           response = [403, 'Forbidden'];
         }
       } else {

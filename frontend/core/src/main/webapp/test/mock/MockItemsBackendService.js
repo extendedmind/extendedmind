@@ -58,9 +58,9 @@ function MockItemsBackendService($httpBackend, ItemsService, SynchronizeService,
               'modified': referenceEpoch,
               'completed': referenceEpoch + i,
               'title': 'test completed ' + i
-            })
+            });
           }
-          return expectResponse(method, url, data, headers, response)
+          return expectResponse(method, url, data, headers, response);
         }else if (url.indexOf('?archived=true') != -1){
           return expectResponse(method, url, data, headers, {});
         }else if (url.indexOf('?deleted=true') != -1){
@@ -79,8 +79,9 @@ function MockItemsBackendService($httpBackend, ItemsService, SynchronizeService,
           if (headers.Authorization === 'Basic dG9rZW46VEVTVA=='){
             // Token 'TEST' returned for jp@ext.md
             return expectResponse(method, url, data, headers, {});
-          };
-          return expectResponse(method, url, data, headers, getJSONFixture('itemsResponse.json'));
+          } else if (headers.Authorization === 'Basic dG9rZW46T0ZGTElORQ==') {
+            return [404, 'Not found'];
+          }
         }
       });
   }
