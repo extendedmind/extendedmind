@@ -36,7 +36,7 @@
           deactivate: deactivateFn,
           clickedElsewhere: callback
         });
-      }
+      };
 
       this.unregisterContainer = function(id) {
         var containerIndex = containerInfos.findFirstIndexByKeyValue('id', id);
@@ -48,7 +48,7 @@
       function backdropClicked() {
 
         if (preventBackdropBubbleClick) {
-          if (preventBackdropBubbleClick > (new Date).getTime() - 200){
+          if (preventBackdropBubbleClick > Date.now() - 200){
             // Event bubbled from undesired click less than 200ms ago. Do nothing.
             preventBackdropBubbleClick = false;
             return;
@@ -69,28 +69,28 @@
           }
           if (foundActiveClicked) return;
 
-          for (var i = 0, len = containerInfos.length; i < len; i++) {
-            if (containerInfos[i] && (!containerInfos[i].clicked && containerInfos[i].active)) {
+          for (var j = 0, jLen = containerInfos.length; j < jLen; j++) {
+            if (containerInfos[j] && (!containerInfos[j].clicked && containerInfos[j].active)) {
               // Clicked elsewhere than container for an active container, deactivate container.
               // NOTE: Make sure container is not removed same time as looping containers.
-              containerInfos[i].deactivate();
-              if (typeof containerInfos[i].clickedElsewhere === 'function'){
+              containerInfos[j].deactivate();
+              if (typeof containerInfos[j].clickedElsewhere === 'function'){
                 // Click elsewhere callback.
                 // NOTE: use $apply because callback may not be inside scope.
                 if (!$scope.$$phase && !$rootScope.$$phase)
-                  $scope.$apply(containerInfos[i].clickedElsewhere);
-                else containerInfos[i].clickedElsewhere();
+                  $scope.$apply(containerInfos[j].clickedElsewhere);
+                else containerInfos[j].clickedElsewhere();
               }
             }
           }
         }
       }
 
-      this.activateContainer = function (id) {
+      this.activateContainer = function (id, blurBackdrop) {
         // Function called in the middle of a click event. It may be unsafe to stop event bubbling,
         // so prevent bubbling locally to backdrop click event.
         if (event && (event.type === 'click' || event.type === 'focus')){
-          preventBackdropBubbleClick = (new Date).getTime();
+          preventBackdropBubbleClick = Date.now();
         }
 
         // activate container
@@ -101,6 +101,11 @@
         $element[0].addEventListener('click', backdropClicked, false);
         $rootScope.backdropActive = true;
         $element.addClass('active');
+
+        if (blurBackdrop) {
+          // Add blur class to first child.
+          $element[0].firstElementChild.classList.add('blur');
+        }
       };
 
       this.deactivateContainer = function(id) {
@@ -115,6 +120,7 @@
           $element[0].removeEventListener('click', backdropClicked, false);
           $rootScope.backdropActive = false;
           $element.removeClass('active');
+          $element[0].firstElementChild.classList.remove('blur');
         }
       };
 

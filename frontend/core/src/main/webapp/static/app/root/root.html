@@ -1,2 +1,8 @@
-<div class="container-root" ng-view editable-field-backdrop ng-class="smallDeviceHeight && 'height-small'">
+<div class="container-root" editable-field-backdrop>
+  <div class="container-root--inner" ng-view ng-class="smallDeviceHeight && 'height-small'">
+  </div>
+
+  <div ng-if="modal.visible" class="container-modal animate-modal" modal editable-field-container="auto"
+    editable-field-container-blur
+    editable-field-container-clicked-elsewhere="hideModal()"></div>
 </div>

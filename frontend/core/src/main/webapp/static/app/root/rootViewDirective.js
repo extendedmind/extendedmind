@@ -180,6 +180,27 @@
         }
       });
 
+      // MODAL
+      $scope.modal = {
+        visible: false
+      };
+
+      $scope.showModal = function(type, params) {
+        $scope.modal.visible = true;
+        $scope.modal.type = type;
+        if (params) {
+          $scope.modal.params = params;
+        }
+      };
+
+      $scope.hideModal = function() {
+        $scope.modal.visible = false;
+        $scope.modal.type = undefined;
+        if ($scope.modal.params) {
+          delete $scope.modal.params;
+        }
+      };
+
       // Clean up listening by executing the variable
       $scope.$on('$destroy', unbindEmException);
     },

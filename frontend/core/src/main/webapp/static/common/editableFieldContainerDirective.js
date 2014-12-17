@@ -47,7 +47,7 @@
           // Scrollable editable field container has height: 100% so when it does not have enough content to
           // be scrollable, container click may hit into area where is no content.
           var targetElement = event.target;
-          if (targetElement === element[0] || targetElement === element[0].firstElementChild) {
+          if (targetElement === element[0] || targetElement === element[0].firstElementChild) {
             // Clicked on non-scrollable content. Do not notify about container click.
             return;
           }
@@ -57,7 +57,7 @@
 
       scope.activateContainer = function() {
         if (!scope.containerActive){
-          backdropController.activateContainer(element[0]);
+          backdropController.activateContainer(element[0], attrs.editableFieldContainerBlur !== undefined);
           element.bind('click', clickedContainer);
           element.addClass('active');
           scope.containerActive = true;

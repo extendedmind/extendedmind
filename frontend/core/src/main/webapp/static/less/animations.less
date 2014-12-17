@@ -465,3 +465,60 @@ input[type="checkbox"]:checked + label:before {
     opacity: 1;
   }
 }
+
+
+
+/*
+*************************************************************
+# Modal
+*/
+
+@speed-animate-modal: 70ms;
+
+.animate-modal.ng-enter, .animate-modal.ng-leave {
+  -webkit-transition: -webkit-transform @speed-animate-modal @timing-animate;
+  -moz-transition: -moz-transform @speed-animate-modal @timing-animate;
+  -ms-transition: -ms-transform @speed-animate-modal @timing-animate;
+  -o-transition: -o-transform @speed-animate-modal @timing-animate;
+  transition: transform @speed-animate-modal @timing-animate;
+}
+
+// Fade out start.
+.animate-modal.ng-leave {
+  -webkit-transform: scale(1) translateY(-50%);
+  -moz-transform: scale(1) translateY(-50%);
+  -ms-transform: scale(1) translateY(-50%);
+  -o-transform: scale(1) translateY(-50%);
+  transform: scale(1) translateY(-50%);
+  opacity: 1;
+}
+
+// Fade out end.
+.animate-modal.ng-leave.ng-leave-active {
+  -webkit-transform: scale(.9);
+  -moz-transform: scale(.9);
+  -ms-transform: scale(.9);
+  -o-transform: scale(.9);
+  transform: scale(.9);
+  opacity: 0;
+}
+
+// Fade in start.
+.animate-modal.ng-enter {
+  -webkit-transform: scale(.9) translateY(-50%);
+  -moz-transform: scale(.9) translateY(-50%);
+  -ms-transform: scale(.9) translateY(-50%);
+  -o-transform: scale(.9) translateY(-50%);
+  transform: scale(.9) translateY(-50%);
+  opacity: 0;
+}
+
+// Fade in end.
+.animate-modal.ng-enter.ng-enter-active {
+  -webkit-transform: scale(1) translateY(-50%);
+  -moz-transform: scale(1) translateY(-50%);
+  -ms-transform: scale(1) translateY(-50%);
+  -o-transform: scale(1) translateY(-50%);
+  transform: scale(1) translateY(-50%);
+  opacity: 1;
+}
