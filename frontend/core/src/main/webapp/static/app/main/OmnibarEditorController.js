@@ -58,11 +58,11 @@
   // CONVERTING
 
   $scope.convertToNote = function(){
-    $scope.initializeEditor('note', {title: $scope.titlebar.text});
+    $scope.initializeEditor('note', $scope.getNewNote({title: $scope.titlebar.text}));
   };
 
   $scope.convertToTask = function(){
-    $scope.initializeEditor('task', {title: $scope.titlebar.text});
+    $scope.initializeEditor('task', $scope.getNewTask({title: $scope.titlebar.text}));
   };
 
   // TITLEBAR
