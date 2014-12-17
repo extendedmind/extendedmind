@@ -181,16 +181,26 @@
                                     getOtherArrays(ownerUUID));
     },
     updateTasks: function(tasksResponse, ownerUUID) {
-      ItemLikeService.persistAndReset(tasksResponse, 'task', ownerUUID, taskFieldInfos);
-      return ArrayService.updateArrays(tasksResponse,
-                                       tasks[ownerUUID].activeTasks,
-                                       tasks[ownerUUID].deletedTasks,
-                                       getOtherArrays(ownerUUID));
+      if (tasksResponse && tasksResponse.length){
+        // Go through tasksResponse, and add .mod values if the fields in the current .mod do not match
+        // the values in the persistent response
+        for (var i=0, len=tasksResponse.length; i<len; i++){
+          var taskInfo = this.getTaskInfo(tasksResponse[i].uuid, ownerUUID);
+          if (taskInfo){
+            ItemLikeService.evaluateMod(tasksResponse[i], taskInfo.task, 'task', ownerUUID, taskFieldInfos);
+          }
+        }
+        ItemLikeService.persistAndReset(tasksResponse, 'task', ownerUUID, taskFieldInfos);
+        return ArrayService.updateArrays(tasksResponse,
+                                         tasks[ownerUUID].activeTasks,
+                                         tasks[ownerUUID].deletedTasks,
+                                         getOtherArrays(ownerUUID));
+      }
     },
     updateTaskProperties: function(uuid, properties, ownerUUID) {
       var taskInfo = this.getTaskInfo(uuid, ownerUUID);
       if (taskInfo){
-        ItemLikeService.updateObjectProperties(taskInfo.task, properties);
+        ItemLikeService.updateObjectProperties(taskInfo.task.mod, properties);
         updateTask(taskInfo.task, ownerUUID);
         return taskInfo.task;
       }

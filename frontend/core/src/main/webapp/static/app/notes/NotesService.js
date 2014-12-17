@@ -176,15 +176,25 @@
                                     notes[ownerUUID].deletedNotes, getOtherArrays(ownerUUID));
     },
     updateNotes: function(notesResponse, ownerUUID) {
-      ItemLikeService.persistAndReset(notesResponse, 'note', ownerUUID, noteFieldInfos);
-      return ArrayService.updateArrays(notesResponse,
-                                       notes[ownerUUID].activeNotes,
-                                       notes[ownerUUID].deletedNotes, getOtherArrays(ownerUUID));
+      if (notesResponse && notesResponse.length){
+        // Go through notesResponse, and add .mod values if the fields in the current .mod do not match
+        // the values in the persistent response
+        for (var i=0, len=notesResponse.length; i<len; i++){
+          var noteInfo = this.getNoteInfo(notesResponse[i].uuid, ownerUUID);
+          if (noteInfo){
+            ItemLikeService.evaluateMod(notesResponse[i], noteInfo.note, 'note', ownerUUID, noteFieldInfos);
+          }
+        }
+        ItemLikeService.persistAndReset(notesResponse, 'note', ownerUUID, noteFieldInfos);
+        return ArrayService.updateArrays(notesResponse,
+                                         notes[ownerUUID].activeNotes,
+                                         notes[ownerUUID].deletedNotes, getOtherArrays(ownerUUID));
+      }
     },
     updateNoteProperties: function(uuid, properties, ownerUUID) {
       var noteInfo = this.getNoteInfo(uuid, ownerUUID);
       if (noteInfo){
-        ItemLikeService.updateObjectProperties(noteInfo.note, properties);
+        ItemLikeService.updateObjectProperties(noteInfo.note.mod, properties);
         updateNote(noteInfo.note, ownerUUID);
         return noteInfo.note;
       }

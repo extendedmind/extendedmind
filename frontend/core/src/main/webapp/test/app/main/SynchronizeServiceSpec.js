@@ -460,7 +460,7 @@ describe('SynchronizeService', function() {
             {uuid: items[3].mod.uuid,
              title: items[3].mod.title,
              description: items[3].mod.description,
-             created: items[3].mod.modified,
+             created: items[3].mod.created,
              modified: items[3].mod.modified}]
           });
     SynchronizeService.synchronize(testOwnerUUID);
@@ -627,34 +627,58 @@ describe('SynchronizeService', function() {
       .toBe(3);
     expect(tasks.length)
       .toBe(5);
-    expect(UUIDService.isFakeUUID(tasks[3].uuid))
+    expect(UUIDService.isFakeUUID(tasks[4].mod.uuid))
       .toBeFalsy();
-    expect(tasks[1].description)
-      .toBeDefined();
+    expect(tasks[4].mod.description)
+      .toBe('test description');
+    expect(tasks[4].description)
+      .toBeUndefined();
 
     // 7. delete online
-    $httpBackend.expectDELETE('/api/' + testOwnerUUID + '/task/' + updatedTestTask.uuid)
+    $httpBackend.expectDELETE('/api/' + testOwnerUUID + '/task/' + updatedTestTask.mod.uuid)
        .respond(200, deleteItemResponse);
     TasksService.deleteTask(updatedTestTask, testOwnerUUID);
     $httpBackend.flush();
+
     expect(tasks.length)
       .toBe(4);
-    expect(updatedTestTask.deleted)
+    expect(updatedTestTask.mod.deleted)
       .toBe(deleteItemResponse.deleted);
-    expect(updatedTestTask.modified)
+    expect(updatedTestTask.mod.modified)
       .toBe(deleteItemResponse.result.modified);
 
     // 8. undelete online
-    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + updatedTestTask.uuid + '/undelete')
+    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + updatedTestTask.mod.uuid + '/undelete')
        .respond(200, undeleteItemResponse);
     TasksService.undeleteTask(updatedTestTask, testOwnerUUID);
     $httpBackend.flush();
     expect(tasks.length)
       .toBe(5);
-    expect(tasks[1].deleted)
+    expect(tasks[4].mod.deleted)
       .toBeUndefined();
-    expect(tasks[1].modified)
+    expect(tasks[4].mod.modified)
       .toBe(undeleteItemResponse.modified);
+
+    // 9. synchronize and get new task as it is back,
+    $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
+                            latestModified + '&deleted=true&archived=true&completed=true')
+        .respond(200, {
+          tasks: [
+            {uuid: tasks[4].mod.uuid,
+             title: tasks[4].mod.title,
+             description: tasks[4].mod.description,
+             created: tasks[4].mod.created,
+             modified: tasks[4].mod.modified}]
+          });
+    SynchronizeService.synchronize(testOwnerUUID);
+    $httpBackend.flush();
+    expect(tasks.length)
+      .toBe(5);
+    expect(tasks[4].mod)
+      .toBeUndefined();
+    expect(tasks[4].modified)
+      .toBe(undeleteItemResponse.modified);
+
   });
 
   it('should handle task offline complete, uncomplete', function () {

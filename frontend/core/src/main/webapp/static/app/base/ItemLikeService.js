@@ -347,7 +347,7 @@
           type: itemType, owner: ownerUUID, uuid: item.trans.uuid,
           reverse: {
             method: 'post',
-            url: '/api/' + ownerUUID + '/item/' + item.trans.uuid + '/undelete'
+            url: '/api/' + ownerUUID + '/' + itemType + '/' + item.trans.uuid + '/undelete'
           }, lastReplaceable: true
         };
         var fakeTimestamp = BackendClientService.generateFakeTimestamp();
