@@ -23,6 +23,7 @@
     [ 'content',
       {
         name: 'favorited',
+        skipTransport: true,
         isEdited: function(note){
           if (note.mod && (note.mod.favorited !== note.trans.favorited)) return true;
           else if ((note.favorited && !note.trans.favorited) || (!note.favorited && note.trans.favorited))
@@ -30,7 +31,14 @@
         },
         resetTrans: function(note){
           if (note.mod && note.mod.favorited !== undefined) note.trans.favorited = note.mod.favorited;
-          else note.trans.favorited = note.favorited !== undefined;
+          else if (note.favorited !== undefined) note.trans.favorited = note.favorited;
+          else if (note.trans.favorited !== undefined) delete note.trans.favorited
+          // Create a separate 'favorite' getter/setter which can be used by checkbox ng-bind
+          note.trans.favorite = function(value) {
+            return value !== undefined ?
+              (note.trans.favorited = BackendClientService.generateFakeTimestamp()) :
+              note.trans.favorited !== undefined;
+          }
         },
       },
       // TODO:
@@ -306,7 +314,8 @@
                                     this.favoriteNoteRegex, params, undefined, fakeTimestamp);
           if (!note.mod) note.mod = {};
           ItemLikeService.updateObjectProperties(note.mod,
-                                                 {modified: fakeTimestamp, favorited: true});
+                                                 {modified: fakeTimestamp,
+                                                  favorited: BackendClientService.generateFakeTimestamp()});
           updateNote(note, ownerUUID);
           deferred.resolve(note);
         } else {
@@ -338,15 +347,16 @@
                                     this.unfavoriteNoteRegex, params, undefined, fakeTimestamp);
           if (!note.mod) note.mod = {};
           ItemLikeService.updateObjectProperties(note.mod,
-                                                 {modified: fakeTimestamp, favorited: false});
+                                                 {modified: fakeTimestamp,
+                                                  favorited: undefined});
           updateNote(note, ownerUUID);
           deferred.resolve(note);
         } else {
           // Online
-          BackendClientService.postOnline('/api/' + ownerUUID + '/note/' + note.trans.uuid + '/complete',
-                                          this.completenoteRegex)
+          BackendClientService.postOnline('/api/' + ownerUUID + '/note/' + note.trans.uuid + '/unfavorite',
+                                          this.unfavoriteNoteRegex)
           .then(function(result) {
-            delete note.completed;
+            delete note.favorited;
             ItemLikeService.updateObjectProperties(note, result.data.result);
             updateNote(note, ownerUUID);
             deferred.resolve(note);

@@ -25,14 +25,21 @@
       'repeating',
       {
         name: 'completed',
+        skipTransport: true,
         isEdited: function(task){
           if (task.mod && (task.mod.completed !== task.trans.completed)) return true;
-          else if ((task.completed && !task.trans.completed) || (!task.completed && task.trans.completed))
-            return true;
+          else if (task.completed !== task.trans.completed) return true;
         },
         resetTrans: function(task){
           if (task.mod && task.mod.completed !== undefined) task.trans.completed = task.mod.completed;
-          else task.trans.completed = task.completed !== undefined;
+          else if (task.completed !== undefined) task.trans.completed = task.completed;
+          else if (task.trans.completed !== undefined) delete task.trans.completed
+          // Create a separate 'complete' getter/setter which can be used by checkbox ng-bind
+          task.trans.complete = function(value) {
+            return value !== undefined ?
+              (task.trans.completed = BackendClientService.generateFakeTimestamp()) :
+              task.trans.completed !== undefined;
+          }
         },
       },
       // TODO:
@@ -313,7 +320,8 @@
                                     this.completeTaskRegex, params, undefined, fakeTimestamp);
           if (!task.mod) task.mod = {};
           ItemLikeService.updateObjectProperties(task.mod,
-                                                 {modified: fakeTimestamp, completed: true});
+                                                 {modified: fakeTimestamp,
+                                                  completed: BackendClientService.generateFakeTimestamp()});
           updateTask(task, ownerUUID);
           deferred.resolve(task);
         } else {
@@ -345,7 +353,8 @@
                                     this.uncompleteTaskRegex, params, undefined, fakeTimestamp);
           if (!task.mod) task.mod = {};
           ItemLikeService.updateObjectProperties(task.mod,
-                                                 {modified: fakeTimestamp, completed: false});
+                                                 {modified: fakeTimestamp,
+                                                  completed: undefined});
           updateTask(task, ownerUUID);
           deferred.resolve(task);
         } else {

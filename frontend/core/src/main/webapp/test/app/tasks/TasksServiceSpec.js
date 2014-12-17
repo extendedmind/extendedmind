@@ -205,12 +205,21 @@ it('should complete and uncomplete task', function () {
     $httpBackend.flush();
 
     // The task should be active and in its old place, but with the complete flag set
+    var tasks = TasksService.getTasks(testOwnerUUID);
     expect(TasksService.getTaskInfo(cleanCloset.uuid, testOwnerUUID).task.completed)
     .toBeDefined();
-    expect(TasksService.getTasks(testOwnerUUID)[0].uuid)
+    expect(tasks[0].uuid)
     .toBe(cleanCloset.uuid);
-    expect(TasksService.getTasks(testOwnerUUID).length)
+    expect(tasks.length)
     .toBe(3);
+    expect(tasks[0].uuid)
+    .toBe(cleanCloset.uuid);
+    expect(tasks[0].trans.complete())
+    .toBeTruthy()
+    expect(tasks[0].trans.completed)
+    .toBeDefined()
+    expect(tasks[0].trans.completed)
+    .toBe(tasks[0].completed)
 
     // Uncomplete
     $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid + '/uncomplete')
@@ -220,7 +229,6 @@ it('should complete and uncomplete task', function () {
 
     expect(TasksService.getTaskInfo(cleanCloset.uuid, testOwnerUUID).task.completed)
         .toBeUndefined();
-    var tasks = TasksService.getTasks(testOwnerUUID);
     expect(tasks.length)
     .toBe(3);
 
@@ -228,5 +236,10 @@ it('should complete and uncomplete task', function () {
     .toBe(cleanCloset.uuid);
     expect(tasks[0].modified)
     .toBe(cleanCloset.modified);
+    expect(tasks[0].trans.complete())
+    .toBeFalsy()
+    expect(tasks[0].trans.completed)
+    .toBeUndefined()
+
   });
 });

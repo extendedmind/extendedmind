@@ -152,7 +152,8 @@
   function createTransportItem(item, ownerUUID, fieldInfos){
     var transportItem = {};
     for (var i=0, len=fieldInfos.length; i<len; i++){
-      if (fieldInfos[i] !== 'uuid' && fieldInfos[i] !== 'created' && fieldInfos[i] !== 'deleted'){
+      if (fieldInfos[i] !== 'uuid' && fieldInfos[i] !== 'created' && fieldInfos[i] !== 'deleted' &&
+          !(angular.isObject(fieldInfos[i]) && fieldInfos[i].skipTransport)){
         var fieldName = angular.isObject(fieldInfos[i]) ? fieldInfos[i].name : fieldInfos[i];
         if (item.mod && item.mod.hasOwnProperty(fieldName) &&
             item.mod[fieldName] !== undefined){

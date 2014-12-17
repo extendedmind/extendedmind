@@ -577,7 +577,8 @@ describe('SynchronizeService', function() {
     expect(tasks[4].trans.title)
       .toBe('test task');
 
-    // 3. update task
+    // 3. update task, this should just replace the previous call because itemToTask
+    //    is a task update and updating is lastReplaceable
     var updatedTestTask = tasks[4];
     updatedTestTask.trans.description = 'test description';
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
@@ -615,13 +616,8 @@ describe('SynchronizeService', function() {
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' +
                            putNewItemResponse.uuid,
                            {title: updatedTestTask.trans.title,
-                            modified: putNewItemResponse.modified})
-        .respond(200, putExistingItemResponse);
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' +
-                           putNewItemResponse.uuid,
-                           {title: updatedTestTask.trans.title,
                             description: updatedTestTask.trans.description,
-                            modified: putExistingItemResponse.modified})
+                            modified: putNewItemResponse.modified})
         .respond(200, putExistingItemResponse);
     SynchronizeService.synchronize(testOwnerUUID);
     $httpBackend.flush();

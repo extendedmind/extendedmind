@@ -36,6 +36,10 @@
   undeleteNoteResponse.modified = now.getTime();
   var noteToTaskResponse = getJSONFixture('noteToTaskResponse.json');
   noteToTaskResponse.modified = now.getTime();
+  var favoriteNoteResponse = getJSONFixture('favoriteNoteResponse.json');
+  favoriteNoteResponse.result.modified = now.getTime();
+  var unfavoriteNoteResponse = getJSONFixture('unfavoriteNoteResponse.json');
+  unfavoriteNoteResponse.modified = now.getTime();
 
   var testOwnerUUID = '6be16f46-7b35-4b2d-b875-e13d19681e77';
 
@@ -209,4 +213,44 @@
     expect(notes[0].uuid)
     .toBe(officeDoorCode.uuid);
   });
+
+
+  it('should favorite and unfavorite note', function () {
+    // Favorite
+    var officeDoorCode = NotesService.getNoteInfo('c2cd149a-a287-40a0-86d9-0a14462f22d6', testOwnerUUID).note;
+
+    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/note/' + officeDoorCode.uuid + '/favorite')
+    .respond(200, favoriteNoteResponse);
+    NotesService.favoriteNote(officeDoorCode, testOwnerUUID);
+    $httpBackend.flush();
+
+    var notes = NotesService.getNotes(testOwnerUUID);
+    expect(NotesService.getNoteInfo(officeDoorCode.uuid, testOwnerUUID).note.favorited)
+        .toBeDefined();
+    expect(notes.length)
+    .toBe(3);
+    expect(notes[0].trans.favorite())
+    .toBeTruthy()
+    expect(notes[0].trans.favorited)
+    .toBeDefined()
+    expect(notes[0].trans.favorited)
+    .toBe(notes[0].favorited)
+
+    // Unfavorite
+    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/note/' + officeDoorCode.uuid + '/unfavorite')
+    .respond(200, unfavoriteNoteResponse);
+    NotesService.unfavoriteNote(officeDoorCode, testOwnerUUID);
+    $httpBackend.flush();
+
+    expect(NotesService.getNoteInfo(officeDoorCode.uuid, testOwnerUUID).note.favorited)
+        .toBeUndefined();
+    expect(notes.length)
+    .toBe(3);
+
+    expect(notes[1].trans.favorite())
+    .toBeFalsy()
+    expect(notes[1].trans.favorited)
+    .toBeUndefined()
+  });
+
 });
