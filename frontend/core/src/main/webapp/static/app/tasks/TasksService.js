@@ -36,9 +36,16 @@
           else if (task.trans.completed !== undefined) delete task.trans.completed
           // Create a separate 'complete' getter/setter which can be used by checkbox ng-bind
           task.trans.complete = function(value) {
-            return value !== undefined ?
-              (task.trans.completed = BackendClientService.generateFakeTimestamp()) :
-              task.trans.completed !== undefined;
+            if (value !== undefined){
+              // setter
+              if (value === true)
+                task.trans.completed = BackendClientService.generateFakeTimestamp();
+              else if (task.trans.completed !== undefined)
+                delete task.trans.completed;
+            }else{
+              // getter
+              return task.trans.completed !== undefined;
+            }
           }
         },
       },

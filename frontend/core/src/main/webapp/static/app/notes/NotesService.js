@@ -35,9 +35,16 @@
           else if (note.trans.favorited !== undefined) delete note.trans.favorited
           // Create a separate 'favorite' getter/setter which can be used by checkbox ng-bind
           note.trans.favorite = function(value) {
-            return value !== undefined ?
-              (note.trans.favorited = BackendClientService.generateFakeTimestamp()) :
-              note.trans.favorited !== undefined;
+            if (value !== undefined){
+              // setter
+              if (value === true)
+                note.trans.favorited = BackendClientService.generateFakeTimestamp();
+              else if (note.trans.favorited !== undefined)
+                delete note.trans.favorited;
+            }else{
+              // getter
+              return note.trans.favorited !== undefined;
+            }
           }
         },
       },
