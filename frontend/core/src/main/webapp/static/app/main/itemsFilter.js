@@ -29,15 +29,13 @@
   itemsFilters.byTagUUID = function(items, uuid) {
     var filteredItems = [];
     for (var i = 0, len = items.length; i < len; i++) {
-      if (uuid){
-        if (items[i].relationships && items[i].relationships.tags)
-          if (items[i].relationships.tags.indexOf(uuid) !== -1) filteredItems.push(items[i]);
-      }else {
-        if (!items[i].relationships || !items[i].relationships.tags ||
-            items[i].relationships.tags.length === 0)
-        {
-          filteredItems.push(items[i]);
-        }
+      var item = items[i];
+      if (uuid && item.trans.context && item.trans.context === uuid) {
+        // Context exists and item is in the context.
+        filteredItems.push(item);
+      } else if (!uuid && !item.trans.context) {
+        // No context and item has no context.
+        filteredItems.push(item);
       }
     }
     return filteredItems;
