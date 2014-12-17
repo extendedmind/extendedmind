@@ -398,7 +398,7 @@
   $scope.getNewDayTask = function(daySlidesIndex){
     return {
       trans: {
-        date: $scope.daySlides[daySlidesIndex].info,
+        due: $scope.daySlides[daySlidesIndex].info,
         completed: false,
         itemType: 'task'
       }
