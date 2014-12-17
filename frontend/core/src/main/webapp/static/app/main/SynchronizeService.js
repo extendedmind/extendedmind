@@ -405,13 +405,13 @@
       },
       function(error) {
         var rejection;
-        if (BackendClientService.isOffline(error.status)) {
+        if (BackendClientService.isOffline(error.value.status)) {
           // Emit online required exception
           rejection = {
             type: 'onlineRequired',
             value: {
-              status: error.status,
-              data: error.data,
+              status: error.value.status,
+              data: error.value.data,
               retry: getAllMethod,
               retryParam: ownerUUID,
               promise: deferred,
@@ -420,8 +420,8 @@
         } else {
           rejection = {type: 'http',
                        value: {
-                         status: error.status,
-                         data: error.data, url: error.config.url
+                         status: error.value.status,
+                         data: error.value.data, url: error.value.config.url
                        }};
         }
         $rootScope.$emit('emException', rejection);
