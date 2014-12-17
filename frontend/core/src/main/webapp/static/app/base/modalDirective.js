@@ -35,6 +35,8 @@
 
           scope.modalInfos.confirmActionDeferredFn(scope.modalInfos.confirmActionDeferredParam)
           .then(confirmActionPromiseSuccess, confirmActionPromiseError);
+        } else {
+          scope.closeModal();
         }
       };
 
