@@ -14,19 +14,32 @@
  */
  'use strict';
 
- function listItemDirective() {
+ function listItemDirective($parse) {
   return {
     restrict: 'A',
     require: '^list',
     scope: true,
     compile: function(){
       return {
+        pre: function(scope, _, attrs) {
+          if (attrs.listItem) {
+            var listId = $parse(attrs.listItem)(scope);
+          }
+
+          scope.getUniqueListItemId = function(itemUUID) {
+            var uniqueListItemId = itemUUID;
+            if (listId) {
+              uniqueListItemId += listId;
+            }
+            return uniqueListItemId;
+          };
+        },
         post: function(scope, element, attrs, listController) {
           if (scope.$last) listController.notifyArrayVisible();
 
           scope.toggleLeftCheckbox = function (item, toggleFn) {
             // Add class for animation when item is not completed, remove when item is completed.
-            element[0].firstElementChild.classList.toggle('checkbox-checked-active', !item.completed);
+            element[0].firstElementChild.classList.toggle('checkbox-checked-active', item.trans.complete());
             listController.toggleLeftCheckbox(item, toggleFn, angular.element(element[0].firstElementChild));
           };
         }
@@ -34,6 +47,7 @@
     }
   };
 }
+listItemDirective['$inject'] = ['$parse'];
 angular.module('em.base').directive('listItem', listItemDirective);
 
 /*

@@ -234,6 +234,10 @@
     SwiperService.swipeTo('tasks/contexts');
     refreshFeatureMapHeading();
   };
+
+  $scope.getContextId = function() {
+    return $scope.context ? $scope.context.uuid : 'no';
+  };
 }
 
 TasksController['$inject'] = [

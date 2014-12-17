@@ -1,12 +1,14 @@
 <div class="group-mixed with-checkbox"
-  ng-class="{'checkbox-checked': task.completed && task.trans.completed}">
+  ng-class="{'checkbox-checked': task.trans.complete()}">
 
   <div class="group-mixed--left">
-    <input type="checkbox" ng-model="task.trans.completed"
-      swiper-click="toggleLeftCheckbox(task, toggleCompleteTask)" icon-checkbox="task.uuid">
+    <input type="checkbox" ng-model="task.trans.complete" ng-model-options="{getterSetter: true}"
+      swiper-click="toggleLeftCheckbox(task, toggleCompleteTask)"
+      icon-checkbox="getUniqueListItemId(task.uuid)">
   </div>
 
-  <a href ng-class="onboardingInProgress && 'link-disable'" class="group-mixed--middle link-list-item" swiper-click="callAndWaitThenScroll(openTaskEditor, task)">
+  <a href ng-class="onboardingInProgress && 'link-disable'" class="group-mixed--middle link-list-item"
+    swiper-click="callAndWaitThenScroll(openTaskEditor, task)">
     <span class="text-link" clamp=2 ng-bind="task.title"></span>
   </a>
 </div>
