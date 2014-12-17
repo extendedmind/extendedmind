@@ -76,7 +76,8 @@ function HttpRequestQueueService() {
   // Returns true if there is the same request in the queue
   function findReplaceableRequestIndex(request) {
     for (var i=queue.length-1; i>=0; i--) {
-      if (queue[i].params &&
+      if (queue[i] !== request &&
+          queue[i].params &&
           (queue[i].params.replaceable || (queue[i].params.lastReplaceable && i===(queue.length-1))) &&
           request.content.url === queue[i].content.url &&
           request.content.method === queue[i].content.method) {
