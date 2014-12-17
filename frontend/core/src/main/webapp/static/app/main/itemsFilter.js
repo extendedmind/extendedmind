@@ -55,7 +55,7 @@
   itemsFilters.favorited = function(items) {
     var filteredItems = [];
     for (var i = 0, len = items.length; i < len; i++) {
-      if (items[i].trans && (items[i].trans.favorited === true)){
+      if (items[i].trans.favorite()) {
         filteredItems.push(items[i]);
       }
     }
