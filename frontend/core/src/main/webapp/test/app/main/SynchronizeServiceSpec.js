@@ -685,10 +685,11 @@ describe('SynchronizeService', function() {
     MockUserSessionService.offlineEnabled = true;
 
     // 1. save new task
-    var testTask = {
+    var testTaskValues = {
       'title': 'test task'
     };
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task', testTask)
+    var testTask = TasksService.getNewTask(testTaskValues, testOwnerUUID);
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task', testTaskValues)
        .respond(404);
     TasksService.saveTask(testTask, testOwnerUUID);
     $httpBackend.flush();
@@ -698,27 +699,28 @@ describe('SynchronizeService', function() {
 
     // 2. complete it
 
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task', testTask)
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task', testTaskValues)
        .respond(404);
     TasksService.completeTask(testTask, testOwnerUUID);
     $httpBackend.flush();
     expect(tasks.length)
       .toBe(5);
-    expect(testTask.completed).toBeDefined();
+    expect(testTask.mod.completed).toBeDefined();
 
     // 3. uncomplete it
 
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task', testTask)
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task', testTaskValues)
        .respond(404);
     TasksService.uncompleteTask(testTask, testOwnerUUID);
     $httpBackend.flush();
+
     expect(tasks.length)
       .toBe(5);
     expect(testTask.completed).toBeUndefined();
 
     // 4. complete it again but go online, expect only one complete
 
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task', testTask)
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task', testTaskValues)
        .respond(200, putNewItemResponse);
     $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + putNewItemResponse.uuid + '/complete')
        .respond(200, completeTaskResponse);
@@ -726,9 +728,9 @@ describe('SynchronizeService', function() {
     $httpBackend.flush();
     expect(tasks.length)
       .toBe(5);
-    expect(testTask.completed)
+    expect(testTask.mod.completed)
       .toBe(completeTaskResponse.completed);
-    expect(testTask.modified)
+    expect(testTask.mod.modified)
       .toBe(completeTaskResponse.result.modified);
 
     // 5. uncomplete online
@@ -739,7 +741,7 @@ describe('SynchronizeService', function() {
     $httpBackend.flush();
     expect(tasks.length)
       .toBe(5);
-    expect(testTask.modified)
+    expect(testTask.mod.modified)
       .toBe(uncompleteTaskResponse.modified);
 
     // 6. complete offline but get conflicting completed response from the server: expect that double
@@ -751,7 +753,7 @@ describe('SynchronizeService', function() {
     $httpBackend.flush();
     expect(tasks.length)
       .toBe(5);
-    expect(cleanCloset.completed).toBeDefined();
+    expect(cleanCloset.mod.completed).toBeDefined();
 
     var latestModified = now.getTime()-100000;
     MockUserSessionService.setLatestModified(latestModified);
@@ -771,7 +773,11 @@ describe('SynchronizeService', function() {
     SynchronizeService.synchronize(testOwnerUUID);
     $httpBackend.flush();
 
-    expect(TasksService.getTaskInfo(conflictingCleanCloset.uuid, testOwnerUUID).task.completed)
+    expect(tasks.length)
+      .toBe(5);
+    expect(tasks[0].mod)
+      .toBeUndefined();
+    expect(tasks[0].completed)
       .toBe(conflictModified);
   });
 

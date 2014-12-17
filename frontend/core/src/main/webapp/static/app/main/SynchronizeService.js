@@ -180,9 +180,19 @@
             }else if (queue[i].content.method === 'post'){
               if (queue[i].content.url.endsWith('/complete') && conflictingItem.completed){
                 queue.splice(i, 1);
+                // Need to change completed value to make sure mod is deleted on update
+                TasksService.updateTaskProperties(conflictingItem.uuid,
+                                                  {modified: conflictingItem.modified,
+                                                  completed: conflictingItem.completed},
+                                                  request.params.owner);
               }else if (queue[i].content.url.endsWith('/uncomplete') && !conflictingItem.completed){
                 queue.splice(i, 1);
               }else if (queue[i].content.url.endsWith('/favorite') && conflictingItem.completed){
+                // Need to change completed value to make sure mod is deleted on update
+                NotesService.updateNoteProperties(conflictingItem.uuid,
+                                                  {modified: conflictingItem.modified,
+                                                  favorited: conflictingItem.favorited},
+                                                  request.params.owner);
                 queue.splice(i, 1);
               }else if (queue[i].content.url.endsWith('/unfavorite') && !conflictingItem.completed){
                 queue.splice(i, 1);

@@ -26,9 +26,16 @@
       {
         name: 'completed',
         skipTransport: true,
-        isEdited: function(task){
-          if (task.mod && (task.mod.completed !== task.trans.completed)) return true;
-          else if (task.completed !== task.trans.completed) return true;
+        isEdited: function(task, ownerUUID, compareValues){
+          var compareCompleted = compareValues ? compareValues.completed : task.trans.completed;
+          if (task.mod && task.mod.completed !== undefined){
+            if (task.mod.completed !== compareCompleted){
+              return true;
+            }
+          }
+          else if (task.completed !== compareCompleted){
+            return true;
+          }
         },
         resetTrans: function(task){
           if (task.mod && task.mod.completed !== undefined) task.trans.completed = task.mod.completed;
@@ -329,7 +336,7 @@
             type: 'task', owner: ownerUUID, uuid: task.trans.uuid,
             reverse: {
               method: 'post',
-              url: '/api/' + ownerUUID + '/task/' + task.uuid + '/uncomplete'
+              url: '/api/' + ownerUUID + '/task/' + task.trans.uuid + '/uncomplete'
             }, lastReplaceable: true
           };
           var fakeTimestamp = BackendClientService.generateFakeTimestamp();
@@ -364,9 +371,9 @@
       } else {
         if (UserSessionService.isOfflineEnabled()) {
           // Offline
-          var params = {type: 'task', owner: ownerUUID, uuid: task.uuid, lastReplaceable: true};
+          var params = {type: 'task', owner: ownerUUID, uuid: task.trans.uuid, lastReplaceable: true};
           var fakeTimestamp = BackendClientService.generateFakeTimestamp();
-          BackendClientService.post('/api/' + ownerUUID + '/task/' + task.uuid + '/uncomplete',
+          BackendClientService.post('/api/' + ownerUUID + '/task/' + task.trans.uuid + '/uncomplete',
                                     this.uncompleteTaskRegex, params, undefined, fakeTimestamp);
           if (!task.mod) task.mod = {};
           ItemLikeService.updateObjectProperties(task.mod,
