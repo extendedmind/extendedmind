@@ -16,19 +16,25 @@
 
  describe('TasksByDateFilter', function() {
 
-  var $filter, DateService;
-  var tasks, todayYYYYMMDD, tomorrowYYYYMMDD;
+  var $filter, DateService, TasksService, UserSessionService;
+  var todayYYYYMMDD, tomorrowYYYYMMDD;
+
+  var testOwnerUUID = '6be16f46-7b35-4b2d-b875-e13d19681e77';
 
   beforeEach(function() {
     module('em.appTest');
 
-    inject(function(_$filter_, _DateService_) {
+    inject(function(_$filter_, _DateService_, _TasksService_, _UserSessionService_) {
       $filter = _$filter_;
       DateService = _DateService_;
+      TasksService = _TasksService_;
+      UserSessionService = _UserSessionService_;
+      UserSessionService.executeNotifyOwnerCallbacks(testOwnerUUID);
+
       todayYYYYMMDD = DateService.getTodayYYYYMMDD();
       tomorrowYYYYMMDD = DateService.getTomorrowYYYYMMDD();
 
-      tasks = [{
+      var tasks = [{
         uuid: '7a612ca2-7de0-45ad-a758-d949df37f51e',
         created: 1391278509745,
         modified: 1391278509745,
@@ -64,12 +70,14 @@
           parent: 'c9b70bd9-b9c7-4c8a-8a48-30a22185108d'
         }
       }];
+      TasksService.setTasks(tasks, testOwnerUUID);
     });
 
 });
 
 it('should filter tasks by past date', function() {
   // EXECUTE
+  var tasks = TasksService.getTasks(testOwnerUUID);
   var filteredTasks = $filter('tasksByDate')(tasks, '2014-03-08');
 
   // TESTS
@@ -84,6 +92,7 @@ it('should filter tasks by past date', function() {
 
 it('should filter overdue and today\'s tasks', function() {
   // EXECUTE
+  var tasks = TasksService.getTasks(testOwnerUUID);
   var filteredTasks = $filter('tasksByDate')(tasks, todayYYYYMMDD);
 
   // TESTS
@@ -110,6 +119,7 @@ it('should filter overdue and today\'s tasks', function() {
 
 it('should filter future tasks', function() {
   // EXECUTE
+  var tasks = TasksService.getTasks(testOwnerUUID);
   var filteredTasks = $filter('tasksByDate')(tasks, tomorrowYYYYMMDD);
 
   // TESTS
