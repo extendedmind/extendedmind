@@ -215,11 +215,11 @@ it('should complete and uncomplete task', function () {
     expect(tasks[0].uuid)
     .toBe(cleanCloset.uuid);
     expect(tasks[0].trans.completed)
-    .toBeTruthy()
+    .toBeTruthy();
     expect(tasks[0].trans.completed)
-    .toBeDefined()
+    .toBeDefined();
     expect(tasks[0].trans.completed)
-    .toBe(tasks[0].completed)
+    .toBe(tasks[0].completed);
 
     // Uncomplete
     $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid + '/uncomplete')
@@ -236,10 +236,10 @@ it('should complete and uncomplete task', function () {
     .toBe(cleanCloset.uuid);
     expect(tasks[0].modified)
     .toBe(cleanCloset.modified);
-    expect(tasks[0].trans.completed
-    .toBeFalsy()
     expect(tasks[0].trans.completed)
-    .toBeUndefined()
+    .toBeFalsy();
+    expect(tasks[0].trans.completed)
+    .toBeUndefined();
 
   });
 });
