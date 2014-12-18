@@ -39,7 +39,7 @@
 
           scope.toggleLeftCheckbox = function (item, toggleFn) {
             // Add class for animation when item is not completed, remove when item is completed.
-            element[0].firstElementChild.classList.toggle('checkbox-checked-active', item.trans.complete());
+            element[0].firstElementChild.classList.toggle('checkbox-checked-active', item.trans.optimisticComplete());
             listController.toggleLeftCheckbox(item, toggleFn, angular.element(element[0].firstElementChild));
           };
         }

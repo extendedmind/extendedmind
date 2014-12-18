@@ -59,7 +59,7 @@
             var taskArray = scope.getFullArray();
             if (taskArray && taskArray.length){
               for (var i = 0; i < taskArray.length;i++){
-                if (taskArray[i].completed && !scope.isTaskFrozen(taskArray[i])){
+                if (taskArray[i].trans.completed && !scope.isTaskFrozen(taskArray[i])){
                   containsCompleted = true;
                   tryToChangeElementActivityStatus();
                   return true;
@@ -74,16 +74,16 @@
           function filterCompletedTasks(task, pastDate){
             if (pastDate) {
               disableCompleted = true;
-              if (task.completed) {
+              if (task.trans.completed) {
                 // Match task completed on past date.
-                return (new Date(task.completed).setHours(0, 0, 0, 0) ===
+                return (new Date(task.trans.completed).setHours(0, 0, 0, 0) ===
                         pastDate.yyyymmddToNoonDate().setHours(0, 0, 0, 0));
               }
               return false;
             }
             disableCompleted = false;
 
-            if (!scope.showCompletedTasks && task.completed && !scope.isTaskFrozen(task)) {
+            if (!scope.showCompletedTasks && task.trans.completed && !scope.isTaskFrozen(task)) {
               return false;
             }
             return true;

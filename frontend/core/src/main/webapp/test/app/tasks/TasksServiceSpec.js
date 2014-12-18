@@ -214,7 +214,7 @@ it('should complete and uncomplete task', function () {
     .toBe(3);
     expect(tasks[0].uuid)
     .toBe(cleanCloset.uuid);
-    expect(tasks[0].trans.complete())
+    expect(tasks[0].trans.completed)
     .toBeTruthy()
     expect(tasks[0].trans.completed)
     .toBeDefined()
@@ -236,7 +236,7 @@ it('should complete and uncomplete task', function () {
     .toBe(cleanCloset.uuid);
     expect(tasks[0].modified)
     .toBe(cleanCloset.modified);
-    expect(tasks[0].trans.complete())
+    expect(tasks[0].trans.completed
     .toBeFalsy()
     expect(tasks[0].trans.completed)
     .toBeUndefined()

@@ -114,8 +114,7 @@
       navigator.vibrate(200);
 
     freezeTask(task);
-
-    if (task.completed) {
+    if (task.trans.completed) {
       AnalyticsService.do('uncompleteTask');
       TasksService.uncompleteTask(task, UISessionService.getActiveUUID()).then(function(task) {
         unfreezeTask(task, true);

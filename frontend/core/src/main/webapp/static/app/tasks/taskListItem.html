@@ -1,8 +1,7 @@
-<div class="group-mixed with-checkbox"
-  ng-class="{'checkbox-checked': task.trans.complete()}">
+<div class="group-mixed with-checkbox" ng-class="{'checkbox-checked': task.trans.completed}">
 
   <div class="group-mixed--left">
-    <input type="checkbox" ng-model="task.trans.complete" ng-model-options="{getterSetter: true}"
+    <input type="checkbox" ng-model="task.trans.optimisticComplete" ng-model-options="{getterSetter: true}"
       swiper-click="toggleLeftCheckbox(task, toggleCompleteTask)"
       icon-checkbox="getUniqueListItemId(task.uuid)">
   </div>

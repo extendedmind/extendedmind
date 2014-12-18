@@ -40,20 +40,43 @@
         resetTrans: function(task){
           if (task.mod && task.mod.completed !== undefined) task.trans.completed = task.mod.completed;
           else if (task.completed !== undefined) task.trans.completed = task.completed;
-          else if (task.trans.completed !== undefined) delete task.trans.completed
-          // Create a separate 'complete' getter/setter which can be used by checkbox ng-bind
-          task.trans.complete = function(value) {
+          else if (task.trans.completed !== undefined) delete task.trans.completed;
+          // Create a separate 'optimisticComplete' getter/setter which can be used by checkbox ng-bind
+          task.trans.optimisticComplete = function(value) {
             if (value !== undefined){
               // setter
               if (value === true)
-                task.trans.completed = BackendClientService.generateFakeTimestamp();
-              else if (task.trans.completed !== undefined)
-                delete task.trans.completed;
+                task.trans._complete = Date.now();
+              else
+                task.trans._complete = Date.now() * -1;
             }else{
               // getter
+              if (task.trans._complete > 0 && task.trans.completed === undefined) {
+                // Task is completed in the UI and its internal status is uncompleted.
+                if (Date.now() - task.trans._complete < 500) {
+                  // Complete action fired less than half a second ago - we are propably in a $digest() loop
+                  // caused by it.
+                  return true;
+                } else {
+                  // Reset status so that comparison is not run again.
+                  task.trans._complete = 0;
+                }
+              } else if (task.trans._complete < 0 && task.trans.completed !== undefined) {
+                // Task is uncompleted in the UI and its internal status is completed.
+                if (Date.now() + task.trans._complete < 500) {
+                  // Uncomplete action fired less than half a second ago - we are propably in a $digest() loop
+                  // caused by it.
+                  return false;
+                } else {
+                  // Reset status so that comparison is not run again.
+                  task.trans._complete = 0;
+                }
+              }
+
+              // No UI complete/uncomplete actions in last 500ms. Get value from internal status.
               return task.trans.completed !== undefined;
             }
-          }
+          };
         },
       },
       // TODO:
@@ -327,7 +350,7 @@
       var deferred = $q.defer();
       if (tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue('uuid', task.trans.uuid, 'trans')) {
         deferred.reject({type: 'deleted'});
-      } else if (task.trans.completed === true){
+      } else if (task.trans.completed){
         deferred.resolve(task);
       } else {
         if (UserSessionService.isOfflineEnabled()) {
