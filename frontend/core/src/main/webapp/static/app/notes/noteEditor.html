@@ -94,7 +94,7 @@
         <footer ng-hide="isNoteFooterHidden()" class="container-content--after editor-footer animate-fade-in-out">
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
             <a href ng-hide="onboardingInProgress" ng-click="clickFavorite()" class="group-symmetrical--left">
-              <span class="icon-star" ng-class="!note.trans.favorite() && 'inactive'"></span>
+              <span class="icon-star" ng-class="!note.trans.favorited && 'inactive'"></span>
             </a>
             <a href ng-click="swipeToAdvanced()" ng-hide="isFooterNavigationHidden()"
               class="group-symmetrical--right link-navigation">

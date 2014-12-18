@@ -24,34 +24,14 @@
       {
         name: 'favorited',
         skipTransport: true,
-        isEdited: function(note, ownerUUID, compareValues){
-          var compareFavorited = compareValues ? compareValues.favorited : note.trans.favorited;
-          if (note.mod && note.mod.favorited !== undefined){
-            if (note.mod.favorited !== compareFavorited){
-              return true;
-            }
-          }
-          else if (note.favorited !== compareFavorited){
-            return true;
-          }
+        isEdited: function(){
+          // Changing favorite should not save note. Favoriting is done with separate functions.
+          return false;
         },
         resetTrans: function(note){
           if (note.mod && note.mod.favorited !== undefined) note.trans.favorited = note.mod.favorited;
           else if (note.favorited !== undefined) note.trans.favorited = note.favorited;
-          else if (note.trans.favorited !== undefined) delete note.trans.favorited
-          // Create a separate 'favorite' getter/setter which can be used by checkbox ng-bind
-          note.trans.favorite = function(value) {
-            if (value !== undefined){
-              // setter
-              if (value === true)
-                note.trans.favorited = BackendClientService.generateFakeTimestamp();
-              else if (note.trans.favorited !== undefined)
-                delete note.trans.favorited;
-            }else{
-              // getter
-              return note.trans.favorited !== undefined;
-            }
-          }
+          else if (note.trans.favorited !== undefined) delete note.trans.favorited;
         },
       },
       // TODO:

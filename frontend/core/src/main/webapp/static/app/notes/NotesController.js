@@ -15,16 +15,16 @@
  'use strict';
 
  function NotesController($filter, $q, $rootScope, $scope, $timeout,
-                          AnalyticsService, ItemsService, ListsService, NotesService, TagsService,
-                          SwiperService, UISessionService) {
+                          AnalyticsService, BackendClientService, ItemsService, ListsService, NotesService,
+                          TagsService, SwiperService, UISessionService) {
 
   $scope.getNewNote = function(initialValues){
     return NotesService.getNewNote(initialValues, UISessionService.getActiveUUID());
   };
 
   $scope.getNewFavoriteNote = function(){
-    var newNote = NotesService.getNewNote(undefined, UISessionService.getActiveUUID());
-    newNote.trans.favorite(true);
+    var newNote = NotesService.getNewNote({favorited: BackendClientService.generateFakeTimestamp()},
+                                          UISessionService.getActiveUUID());
     return newNote;
   };
 
@@ -72,10 +72,10 @@
     if (note.uuid) AnalyticsService.do('saveNote');
     else AnalyticsService.do('addNote');
     return saveKeywords(note).then(function() {
-      var favoriteBeforeSave = note.trans.favorite();
+      var favoriteBeforeSave = note.trans.favorited;
       return NotesService.saveNote(note, UISessionService.getActiveUUID()).then(function(result){
         if (result === 'new' && favoriteBeforeSave){
-          return favoriteNote(note);
+          return $scope.favoriteNote(note);
         }
       });
     });
@@ -123,17 +123,25 @@
   /*
   * Favorite note.
   */
-  function favoriteNote(note) {
-    AnalyticsService.do('favoriteNote');
-    return NotesService.favoriteNote(note, UISessionService.getActiveUUID());
-  }
+  $scope.favoriteNote = function(note) {
+    if (note.uuid) {
+      AnalyticsService.do('favoriteNote');
+      return NotesService.favoriteNote(note, UISessionService.getActiveUUID());
+    } else {
+      note.trans.favorited = BackendClientService.generateFakeTimestamp();
+    }
+  };
 
   /*
   * Unfavorite note.
   */
   $scope.unfavoriteNote = function(note) {
-    AnalyticsService.do('unfavoriteNote');
-    return NotesService.unfavoriteNote(note, UISessionService.getActiveUUID());
+    if (note.uuid) {
+      AnalyticsService.do('unfavoriteNote');
+      return NotesService.unfavoriteNote(note, UISessionService.getActiveUUID());
+    } else {
+      delete note.trans.favorited;
+    }
   };
 
   $scope.openNoteEditor = function(note){
@@ -153,7 +161,7 @@
 
 NotesController['$inject'] = [
 '$filter', '$q', '$rootScope', '$scope', '$timeout',
-'AnalyticsService', 'ItemsService', 'ListsService', 'NotesService', 'TagsService', 'SwiperService',
-'UISessionService'
+'AnalyticsService', 'BackendClientService', 'ItemsService', 'ListsService', 'NotesService', 'TagsService',
+'SwiperService', 'UISessionService'
 ];
 angular.module('em.notes').controller('NotesController', NotesController);

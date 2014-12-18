@@ -53,7 +53,7 @@
   itemsFilters.favorited = function(items) {
     var filteredItems = [];
     for (var i = 0, len = items.length; i < len; i++) {
-      if (items[i].trans.favorite()) {
+      if (items[i].trans.favorited) {
         filteredItems.push(items[i]);
       }
     }
