@@ -36,20 +36,22 @@
       var todayMidnight = new Date().setHours(0, 0, 0, 0);
 
       for (var k = 0, kLen = tasks.length; k < kLen; k++) {
-        if (tasks[k].due) {
-          // match tasks with given date, or if date is today match also overdue tasks
-          if (tasks[k].due === date || (date === today && tasks[k].due < today)){
+        var task = tasks[k];
+        if (task.due) {
+          // Match tasks with given date, or if date is today match also overdue tasks
+          if (task.due === date || (date === today && task.due < today)) {
             // Don't add completed tasks to future dates or tasks that were completed before today
-            if (!(tasks[k].completed && date > today) &&
-                !(tasks[k].completed && tasks[k].completed < todayMidnight)){
-              filteredItems.push(tasks[k])
+            if (!(task.trans.completed && date > today) &&
+                !(task.trans.completed && task.trans.completed < todayMidnight))
+            {
+              filteredItems.push(task);
               continue;
             }
           }
         }
         // But do add all tasks that were completed today to today's tasks
-        if (date === today && tasks[k].completed && tasks[k].completed > todayMidnight){
-          filteredItems.push(tasks[k])
+        if (date === today && task.trans.completed && task.trans.completed > todayMidnight) {
+          filteredItems.push(task);
         }
       }
     }
