@@ -747,42 +747,41 @@ describe('SynchronizeService', function() {
 
     // 6. complete offline but get conflicting completed response from the server: expect that double
     //    complete has been removed from queue
-    console.log(tasks[0].title)
-    var cleanCloset = TasksService.getTaskInfo('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID).task;
-
-    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid + '/complete')
+    var buyTickets = TasksService.getTaskInfo('1a1ce3aa-f476-43c4-845e-af59a9a33760', testOwnerUUID).task;
+    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + buyTickets.uuid + '/complete')
        .respond(404);
-    TasksService.completeTask(cleanCloset, testOwnerUUID);
+    TasksService.completeTask(buyTickets, testOwnerUUID);
     $httpBackend.flush();
     expect(tasks.length)
       .toBe(5);
-    expect(cleanCloset.mod.completed).toBeDefined();
+    expect(buyTickets.mod.completed).toBeDefined();
 
     var latestModified = now.getTime()-100000;
     MockUserSessionService.setLatestModified(latestModified);
 
     var conflictModified = now.getTime() + 1;
-    var conflictingCleanCloset = {
-      'uuid': cleanCloset.trans.uuid,
-      'created': cleanCloset.trans.created,
+    var conflictingBuyTickets = {
+      'uuid': buyTickets.trans.uuid,
+      'created': buyTickets.trans.created,
       'modified': conflictModified,
-      'completed': conflictModified,
-      'title': 'clean closet'
+      'completed': conflictModified + 1,
+      'title': buyTickets.trans.title,
+      'relationships': buyTickets.relationships
     };
 
     $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
                             latestModified + '&deleted=true&archived=true&completed=true')
-        .respond(200, {tasks: [conflictingCleanCloset]});
+        .respond(200, {tasks: [conflictingBuyTickets]});
     SynchronizeService.synchronize(testOwnerUUID);
     $httpBackend.flush();
 
     expect(tasks.length)
       .toBe(5);
 
-    expect(tasks[0].mod)
+    expect(tasks[3].mod)
       .toBeUndefined();
-    expect(tasks[0].completed)
-      .toBe(conflictModified);
+    expect(tasks[3].completed)
+      .toBe(conflictModified+1);
   });
 
   it('should handle task offline update with conflicting sync from server', function () {
