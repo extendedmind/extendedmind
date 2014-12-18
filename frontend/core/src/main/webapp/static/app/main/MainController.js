@@ -663,7 +663,7 @@ function MainController(
               itemsSynchronizeCounter%userSyncCounterTreshold === 0 ||
               sinceLastItemsSynchronized > userSyncTimeTreshold)
           {
-            SynchronizeService.synchronizeUser(activeUUID).then(function(){
+            SynchronizeService.synchronizeUser().then(function(){
               $scope.refreshFavoriteLists();
             });
           }

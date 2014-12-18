@@ -53,8 +53,8 @@
     return [{array: lists[ownerUUID].archivedLists, id: 'archived'}];
   }
 
-  function updateList(list, ownerUUID) {
-    ItemLikeService.persistAndReset(list, 'list', ownerUUID, listFieldInfos);
+  function updateList(list, ownerUUID, oldUUID) {
+    ItemLikeService.persistAndReset(list, 'list', ownerUUID, listFieldInfos, oldUUID);
     return ArrayService.updateItem(list,
                                    lists[ownerUUID].activeLists,
                                    lists[ownerUUID].deletedLists,
@@ -98,6 +98,22 @@
         }
       }
       return latestModified;
+    },
+    updateListModProperties: function(uuid, properties, ownerUUID) {
+      var listInfo = this.getListInfo(uuid, ownerUUID);
+      if (listInfo){
+        if (properties === null){
+          if (listInfo.list.mod){
+            delete listInfo.list.mod;
+            updateList(listInfo.list, ownerUUID);
+          }
+        }else if (properties !== undefined){
+          if (!listInfo.list.mod) listInfo.list.mod = {};
+          ItemLikeService.updateObjectProperties(listInfo.list.mod, properties);
+          updateList(listInfo.list, ownerUUID, properties.uuid ? uuid : undefined);
+        }
+        return listInfo.list;
+      }
     },
     getLists: function(ownerUUID) {
       return lists[ownerUUID].activeLists;

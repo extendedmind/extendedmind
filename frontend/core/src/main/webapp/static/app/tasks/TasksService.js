@@ -107,8 +107,8 @@
     return [{array: tasks[ownerUUID].archivedTasks, id: 'archived'}];
   }
 
-  function updateTask(task, ownerUUID) {
-    ItemLikeService.persistAndReset(task, 'task', ownerUUID, taskFieldInfos);
+  function updateTask(task, ownerUUID, oldUUID) {
+    ItemLikeService.persistAndReset(task, 'task', ownerUUID, taskFieldInfos, oldUUID);
     return ArrayService.updateItem(task,
                                    tasks[ownerUUID].activeTasks,
                                    tasks[ownerUUID].deletedTasks,
@@ -227,11 +227,19 @@
                                          getOtherArrays(ownerUUID));
       }
     },
-    updateTaskProperties: function(uuid, properties, ownerUUID) {
+    updateTaskModProperties: function(uuid, properties, ownerUUID) {
       var taskInfo = this.getTaskInfo(uuid, ownerUUID);
       if (taskInfo){
-        ItemLikeService.updateObjectProperties(taskInfo.task.mod, properties);
-        updateTask(taskInfo.task, ownerUUID);
+        if (properties === null){
+          if (taskInfo.task.mod){
+            delete taskInfo.task.mod;
+            updateTask(taskInfo.task, ownerUUID);
+          }
+        }else if (properties !== undefined){
+          if (!taskInfo.task.mod) taskInfo.task.mod = {};
+          ItemLikeService.updateObjectProperties(taskInfo.task.mod, properties);
+          updateTask(taskInfo.task, ownerUUID, properties.uuid ? uuid : undefined);
+        }
         return taskInfo.task;
       }
     },

@@ -79,7 +79,7 @@
     var locallyDifferentType;
     for (var i = 0, len = items.length; i < len; i++){
       locallyDifferentType = getLocallyDifferentType(ownerUUID, items[i], itemType);
-      if (locallyDifferentType) removeItemFromArray(ownerUUID, items[i], locallyDifferentType)
+      if (locallyDifferentType) removeItemFromArray(ownerUUID, items[i], locallyDifferentType);
     }
   }
 
@@ -111,33 +111,74 @@
     UserSessionService.setLatestModified(latestModified, ownerUUID);
   }
 
-  function getItemFromResponse(response, uuid, itemType){
-    switch(itemType) {
+  function updateModProperties(itemUUID, probableItemType, properties, ownerUUID){
+    function updateItemModProperties (itemUUID, properties, ownerUUID){
+      return {type: 'item', item: ItemsService.updateItemModProperties(itemUUID, properties, ownerUUID)};
+    }
+    function updateTaskModProperties (itemUUID, properties, ownerUUID){
+      return {type: 'task', item: TasksService.updateTaskModProperties(itemUUID, properties, ownerUUID)};
+    }
+    function updateNoteModProperties (itemUUID, properties, ownerUUID){
+      return {type: 'note', item: NotesService.updateNoteModProperties(itemUUID, properties, ownerUUID)};
+    }
+    function updateListModProperties (itemUUID, properties, ownerUUID){
+      return {type: 'list', item: ListsService.updateListModProperties(itemUUID, properties, ownerUUID)};
+    }
+    function updateTagModProperties (itemUUID, properties, ownerUUID){
+      return {type: 'tag', item: ListsService.updateListModProperties(itemUUID, properties, ownerUUID)};
+    }
+
+    var updateFns = [updateItemModProperties,
+                     updateTaskModProperties,
+                     updateNoteModProperties,
+                     updateListModProperties,
+                     updateTagModProperties];
+    switch(probableItemType) {
     case 'item':
-      if (response.items && response.items.length){
-        return response.items.findFirstObjectByKeyValue('uuid', uuid);
-      }
+      // Already right order
       break;
     case 'task':
-      if (response.tasks && response.tasks.length){
-        return response.tasks.findFirstObjectByKeyValue('uuid', uuid);
-      }
+      updateFns.move(1, 0);
       break;
     case 'note':
-      if (response.notes && response.notes.length){
-        return response.notes.findFirstObjectByKeyValue('uuid', uuid);
-      }
+      updateFns.move(2, 0);
       break;
     case 'list':
-      if (response.lists && response.lists.length){
-        return response.lists.findFirstObjectByKeyValue('uuid', uuid);
-      }
+      updateFns.move(3, 0);
       break;
     case 'tag':
-      if (response.tags && response.tags.length){
-        return response.tags.findFirstObjectByKeyValue('uuid', uuid);
-      }
+      updateFns.move(4, 0);
       break;
+    }
+    // Now execute the functions
+    for (var i=0, len=updateFns.length; i<len; i++){
+      var itemInfo = updateFns[i](itemUUID, properties, ownerUUID);
+      if (itemInfo.item) return itemInfo;
+    }
+  }
+
+
+  function getItemInfoFromResponse(response, uuid){
+    var item;
+    if (response.items && response.items.length){
+      item = response.items.findFirstObjectByKeyValue('uuid', uuid);
+      if (item) return {type: 'item', item: item};
+    }
+    if (response.tasks && response.tasks.length){
+      item = response.tasks.findFirstObjectByKeyValue('uuid', uuid);
+      if (item) return {type: 'task', item: item};
+    }
+    if (response.notes && response.notes.length){
+      item = response.notes.findFirstObjectByKeyValue('uuid', uuid);
+      if (item) return {type: 'note', item: item};
+    }
+    if (response.lists && response.lists.length){
+      item = response.lists.findFirstObjectByKeyValue('uuid', uuid);
+      if (item) return {type: 'list', item: item};
+    }
+    if (response.tags && response.tags.length){
+      item = response.tags.findFirstObjectByKeyValue('uuid', uuid);
+      if (item) return {type: 'tag', item: item};
     }
   }
 
@@ -181,77 +222,148 @@
   function synchronizeCallback(request, response, queue) {
     if (!jQuery.isEmptyObject(response)) {
       if (queue && queue.length){
-        for (var i = queue.length-1; i >= 0; i--){
-          var conflictingItem =
-            getItemFromResponse(response,
-                                queue[i].params.uuid,
-                                queue[i].params.type);
-          if (conflictingItem){
+        var updatedPutUUIDs = [];
+        var mismatchTypeConflictInfos = [];
+        var i, len;
+        for (i = queue.length-1; i >= 0; i--){
+          var conflictingItemInfo =
+            getItemInfoFromResponse(response,
+                                queue[i].params.uuid);
+          if (conflictingItemInfo && conflictingItemInfo.type === queue[i].params.type){
 
+            // *******************************************************************************
+            // NORMAL: Database item is of the same type as the type in the request queue
+
+            var conflictingItem = conflictingItemInfo.item;
             if (conflictingItem.deleted){
               // Deleted elsewhere overrides everything
               queue.splice(i, 1);
             }else if (queue[i].content.method === 'put'){
-              if (queue[i].params.type === 'note' &&
-                  queue[i].content.data.content && queue[i].content.data.content.length &&
-                  conflictingItem.content && conflictingItem.content.length &&
-                  queue[i].content.data.content !== conflictingItem.content){
-                // Content conflict, create hybrid and change PUT in queue to reflect the change
-                var conflictDelimiter = '\n\n>>> conflicting changes >>>\n\n';
-                if (conflictingItem.modified > queue[i].content.timestamp){
-                  conflictingItem.content = conflictingItem.content +
-                                            conflictDelimiter +
-                                            queue[i].content.data.content;
-                  queue[i].content.data = conflictingItem;
-                }else{
-                  var conflictedContent = queue[i].content.data.content +
-                                            conflictDelimiter +
-                                            conflictingItem.content;
-                  queue[i].content.data.content = conflictedContent;
-                  queue[i].content.data.modified = conflictedContent.modified;
-                  conflictingItem.content = conflictedContent;
-                }
-              }else{
-                // Other types: no need to do a merge
-                if (conflictingItem.modified > queue[i].content.timestamp){
-                  queue.splice(i, 1);
-                }else{
-                  // Don't splice it from the buffer, but we still want to change the modified value so that
-                  // the call doesn't fail with next sync
-                  queue[i].content.data.modified = conflictingItem.modified;
-                  // Update modified value to reflect backend from both persistent and mod fields
-                  var taskInfo = TasksService.getTaskInfo(conflictingItem.uuid, request.params.owner);
-                  if (taskInfo){
-                    taskInfo.task.mod.modified = conflictingItem.modified;
-                    taskInfo.task.modified = conflictingItem.modified;
+              if (!updatedPutUUIDs.findFirstObjectByKeyValue('uuid', conflictingItem.uuid)){
+                if (queue[i].params.type === 'note' &&
+                    queue[i].content.data.content && queue[i].content.data.content.length &&
+                    conflictingItem.content && conflictingItem.content.length &&
+                    queue[i].content.data.content !== conflictingItem.content){
+                  // Content conflict, create hybrid and change PUT in queue to reflect the change
+                  var conflictDelimiter = '\n\n>>> conflicting changes >>>\n\n', conflictedContent;
+                  if (conflictingItem.modified > queue[i].content.timestamp){
+                    conflictedContent = conflictingItem.content +
+                                              conflictDelimiter +
+                                              queue[i].content.data.content;
+                    conflictingItem.content = conflictedContent;
+                    queue[i].content.data = conflictingItem;
+                  }else{
+                    conflictedContent = queue[i].content.data.content +
+                                              conflictDelimiter +
+                                              conflictingItem.content;
+                    queue[i].content.data.content = conflictedContent;
+                    queue[i].content.data.modified = conflictedContent.modified;
+                    conflictingItem.content = conflictedContent;
                   }
-                  // Remove item from response
-                  removeItemFromResponse(response, conflictingItem.uuid, queue[i].params.type);
+                  // Also update the current note modifications to match the queue
+                  updateModProperties(conflictingItem.uuid,
+                                      queue[i].params.type,
+                                      {content: conflictedContent,
+                                       modified: conflictingItem.modified},
+                                       request.params.owner);
+                }else{
+                  // Other types than note: no need to do a merge of content
+                  if (conflictingItem.modified > queue[i].content.timestamp){
+                    // We now removed the latest PUT from the queue, so we sould also remove the local
+                    // modifications on the item
+                    updateModProperties(conflictingItem.uuid, queue[i].params.type,
+                                        null, request.params.owner);
+                    // Database item is newer, remove the PUT from the queue
+                    queue.splice(i, 1);
+                  }else{
+
+                    // Don't splice it from the buffer, but we still want to change the modified value so that
+                    // the call doesn't fail with next sync
+                    queue[i].content.data.modified = conflictingItem.modified;
+
+                    // Update modified value to reflect backend from both persistent and mod fields
+                    updateModProperties(conflictingItem.uuid,
+                                        queue[i].params.type,
+                                        {modified: conflictingItem.modified},
+                                        request.params.owner);
+                    // Remove database item from response
+                    removeItemFromResponse(response, conflictingItem.uuid, queue[i].params.type);
+                  }
                 }
+                updatedPutUUIDs.push(conflictingItem.uuid);
+              }else{
+                // This has already been updated, but we want to change the modified value anyway to
+                // match the backend
+                queue[i].content.data.modified = conflictingItem.modified;
               }
             }else if (queue[i].content.method === 'post'){
               if (queue[i].content.url.endsWith('/complete') && conflictingItem.completed){
-                queue.splice(i, 1);
                 // Need to change completed value to make sure mod is deleted on update
-                TasksService.updateTaskProperties(conflictingItem.uuid,
-                                                  {modified: conflictingItem.modified,
-                                                  completed: conflictingItem.completed},
-                                                  request.params.owner);
+                updateModProperties(conflictingItem.uuid,
+                                    queue[i].params.type,
+                                    {modified: conflictingItem.modified,
+                                    completed: conflictingItem.completed},
+                                    request.params.owner);
+                queue.splice(i, 1);
               }else if (queue[i].content.url.endsWith('/uncomplete') && !conflictingItem.completed){
                 queue.splice(i, 1);
               }else if (queue[i].content.url.endsWith('/favorite') && conflictingItem.completed){
-                // Need to change completed value to make sure mod is deleted on update
-                NotesService.updateNoteProperties(conflictingItem.uuid,
-                                                  {modified: conflictingItem.modified,
-                                                  favorited: conflictingItem.favorited},
-                                                  request.params.owner);
+                // Need to change favorited value to make sure mod is deleted on update
+                updateModProperties(conflictingItem.uuid,
+                                    queue[i].params.type,
+                                    {modified: conflictingItem.modified,
+                                    completed: conflictingItem.completed},
+                                    request.params.owner);
                 queue.splice(i, 1);
               }else if (queue[i].content.url.endsWith('/unfavorite') && !conflictingItem.completed){
                 queue.splice(i, 1);
               }
             }
+          }else if (conflictingItemInfo && conflictingItemInfo.type !== queue[i].params.type){
+            // *****************************************************************************
+            // MISMATCH: Database item is of different type as the type in the request queue
+
+            // As we loop the queue from the end, we could have a convert in the queue before
+            // this one. We need to just collect store this conflict and loop the queue again
+            // in starting from the beginning, where we know to delete
+            if (mismatchTypeConflictInfos.indexOf(conflictingItemInfo) === -1)
+              mismatchTypeConflictInfos.push(conflictingItemInfo);
           }
         }
+
+        if (mismatchTypeConflictInfos.length){
+          // Loop again from the beginning
+          var queueSpliceInfos = [];
+          for (i = 0, len=queue.length; i < len; i++){
+            for(var j = mismatchTypeConflictInfos.length-1; j >= 0; j--){
+              if (mismatchTypeConflictInfos[j].item.uuid === queue[i].params.uuid){
+                if (queue[i].params.type !== mismatchTypeConflictInfos[j].type){
+                  // Wrong type, need to splice IF not turning an item into a task/note which is ok
+                  if (mismatchTypeConflictInfos[j].type === 'item' && queue[i].content.method === 'put'){
+                    // We just remove this conflict, everything is cool as the item was converted in the
+                    // offline queue to anbther type
+                    mismatchTypeConflictInfos.splice(j, 1);
+                  }else{
+                    queueSpliceInfos.push({index: j, correctType: mismatchTypeConflictInfos[j].type});
+                  }
+                }
+              }
+            }
+          }
+          for (i=0, len=queueSpliceInfos.length; i<len; i++){
+            // Remove mod from the item and then remove the entire item
+            var itemInfo = updateModProperties(queue[queueSpliceInfos[i].index].params.uuid,
+                                               queue[queueSpliceInfos[i].index].params.type,
+                                               null, request.params.owner);
+            if (itemInfo){
+              removeItemFromArray(request.params.owner, itemInfo.item, itemInfo.type);
+            }
+            // All that's left is to remove the request from the queue: the response and will be added to
+            // the right service after this
+            queue.splice(queueSpliceInfos[i].index, 1);
+          }
+        }
+
       }
       var ownerUUID = request.params.owner;
       processSynchronizeUpdateResult(ownerUUID, response);
@@ -284,20 +396,7 @@
         if (request.content.url.endsWith('/undelete')) {
           // Undelete
           properties = {modified: response.modified, deleted: undefined};
-          if (!ItemsService.updateItemProperties(request.params.uuid, properties, request.params.owner)) {
-            // The item might have moved to either notes or tasks
-            if (!TasksService.updateTaskProperties(request.params.uuid, properties, request.params.owner)) {
-              if (!NotesService.updateNoteProperties(request.params.uuid, properties, request.params.owner)) {
-                $rootScope.$emit('emException',
-                                 {type: 'response',
-                                 value: {
-                                  response: response,
-                                  description: 'Could not update undeleted item with values from server'
-                                }});
-                return;
-              }
-            }
-          }
+          updateModProperties(request.params.uuid, request.params.type, properties, request.params.owner);
         }
       } else if (request.params.type === 'task') {
         if (request.content.url.endsWith('/undelete') || request.content.url.endsWith('/uncomplete')) {
@@ -307,15 +406,7 @@
           // Complete
           properties = {completed: response.completed, modified: response.result.modified};
         }
-        if (!TasksService.updateTaskProperties(request.params.uuid, properties, request.params.owner)) {
-          $rootScope.$emit('emException',
-                           {type: 'response',
-                           value: {
-                            response: response,
-                            description: 'Could not update modified task with values from server'
-                          }});
-          return;
-        }
+        updateModProperties(request.params.uuid, request.params.type, properties, request.params.owner);
       } else if (request.params.type === 'note') {
         if (request.content.url.endsWith('/undelete')  || request.content.url.endsWith('/unfavorite')) {
           properties = {modified: response.modified};
@@ -323,140 +414,66 @@
           // Favorite
           properties = {favorited: response.favorited, modified: response.result.modified};
         }
-        if (!NotesService.updateNoteProperties(request.params.uuid, properties, request.params.owner)) {
-          $rootScope.$emit('emException',
-                           {type: 'response',
-                           value: {
-                            response: response,
-                            description: 'Could not update modified note with values from server'
-                          }});
-          return;
-        }
+        updateModProperties(request.params.uuid, request.params.type, properties, request.params.owner);
       }
     // ***
     // PUT
     // ***
-  } else if (request.content.method === 'put') {
-      var uuid, oldUuid;
-      if (request.params.uuid) {
-        // Put existing
-        oldUuid = request.params.uuid;
-        uuid = oldUuid;
-      } else {
-        // New, there should be an uuid in the response and a fake one in the request
-        if (!response.uuid) {
-          $rootScope.$emit('emException',
-                           {type: 'response',
-                           value: {
-                            response: response,
-                            description: 'No uuid from server'
-                          }});
-          return;
+    } else if (request.content.method === 'put') {
+        var uuid, oldUuid;
+        if (request.params.uuid) {
+          // Put existing
+          oldUuid = request.params.uuid;
+          uuid = oldUuid;
+          properties = {};
         } else {
-          oldUuid = request.params.fakeUUID;
-          uuid = response.uuid;
-
-          // Also update queue to replace all calls with the old fake uuid with the new one
-          // and at the same time swap the modified value
-          if (queue && queue.length > 0) {
-            for (var i=0, len=queue.length; i<len; i++) {
-              if (queue[i].params.uuid === oldUuid) {
-                queue[i].params.uuid = uuid;
-                queue[i].content.url = queue[i].content.url.replace(oldUuid,uuid);
-                if (queue[i].content.data && queue[i].content.data.modified){
-                  queue[i].content.data.modified = response.modified;
+          // New, there should be an uuid in the response and a fake one in the request
+          if (!response.uuid) {
+            $rootScope.$emit('emException',
+                             {type: 'response',
+                             value: {
+                              response: response,
+                              description: 'No uuid from server'
+                            }});
+            return;
+          } else {
+            oldUuid = request.params.fakeUUID;
+            uuid = response.uuid;
+            properties = {uuid: uuid};
+            // Also update queue to replace all calls with the old fake uuid with the new one
+            // and at the same time swap the modified value
+            if (queue && queue.length > 0) {
+              for (var i=0, len=queue.length; i<len; i++) {
+                if (queue[i].params.uuid === oldUuid) {
+                  queue[i].params.uuid = uuid;
+                  queue[i].content.url = queue[i].content.url.replace(oldUuid,uuid);
+                  if (queue[i].content.data && queue[i].content.data.modified){
+                    queue[i].content.data.modified = response.modified;
+                  }
                 }
               }
             }
           }
         }
-      }
+        properties.modified = response.modified;
+        if (response.created){
+          properties.created = response.created;
+        }
 
-      properties = {uuid: uuid, modified: response.modified};
-      if (response.created){
-        properties.created = response.created;
-      }
-
-      if (request.params.type === 'user') {
-        UserSessionService.setUserModified(properties.modified);
-      } else if (request.params.type === 'item') {
-        if (!ItemsService.updateItemProperties(oldUuid, properties, request.params.owner)) {
-          // The item might have moved to either notes or tasks
-          if (!TasksService.updateTaskProperties(oldUuid, properties, request.params.owner)) {
-            if (!NotesService.updateNoteProperties(oldUuid, properties, request.params.owner)) {
-              $rootScope.$emit('emException',
-                               {type: 'response',
-                               value: {
-                                response: response,
-                                description: 'Could not update item with values from server'
-                              }});
-              return;
-            }
-          }
+        if (request.params.type === 'user') {
+          UserSessionService.setUserModified(properties.modified);
+        } else {
+          updateModProperties(oldUuid, request.params.type, properties, request.params.owner);
         }
-      } else if (request.params.type === 'task') {
-        if (!TasksService.updateTaskProperties(oldUuid, properties, request.params.owner)) {
-          $rootScope.$emit('emException',
-            {type: 'response',
-            value: {
-              response: response,
-              description: 'Could not update task with values from server'
-            }});
-          return;
-        }
-      } else if (request.params.type === 'note') {
-        if (!NotesService.updateNoteProperties(oldUuid, properties, request.params.owner)) {
-          $rootScope.$emit('emException',
-            {type: 'response',
-              value: {response: response,
-              description: 'Could not update note with values from server'
-            }});
-          return;
-        }
-      }
-    // ******
-    // DELETE
-    // ******
-  } else if (request.content.method === 'delete') {
-    properties = {deleted: response.deleted, modified: response.result.modified};
-    if (request.params.type === 'item') {
-      if (!ItemsService.updateItemProperties(request.params.uuid, properties, request.params.owner)) {
-          // The item might have moved to either notes or tasks
-          if (!TasksService.updateTaskProperties(request.params.uuid, properties, request.params.owner)) {
-            if (!NotesService.updateNoteProperties(request.params.uuid, properties, request.params.owner)) {
-              $rootScope.$emit('emException',
-                               {type: 'response',
-                               value: {
-                                response: response,
-                                description: 'Could not update deleted item with values from server'
-                               }});
-              return;
-            }
-          }
-        }
-      } else if (request.params.type === 'task') {
-        if (!TasksService.updateTaskProperties(request.params.uuid, properties, request.params.owner)) {
-          $rootScope.$emit('emException',
-                           {type: 'response',
-                            value: {
-                              response: response,
-                              description: 'Could not update deleted task with values from server'
-                            }});
-          return;
-        }
-      } else if (request.params.type === 'note') {
-        if (!NotesService.updateNoteProperties(request.params.uuid, properties, request.params.owner)) {
-          $rootScope.$emit('emException',
-                           {type: 'response',
-                            value: {
-                              response: response,
-                              description: 'Could not update deleted note with values from server'
-                            }});
-          return;
-        }
-      }
+      // ******
+      // DELETE
+      // ******
+    } else if (request.content.method === 'delete') {
+      properties = {deleted: response.deleted, modified: response.result.modified};
+      updateModProperties(request.params.uuid, request.params.type, properties, request.params.owner);
     }
   }
+
   BackendClientService.registerSecondaryGetCallback(synchronizeCallback);
   BackendClientService.registerBeforeLastGetCallback(synchronizeUserAccountCallback);
   BackendClientService.registerDefaultCallback(defaultCallback);
@@ -492,7 +509,7 @@
         $rootScope.$emit(emitType, rejection);
         return $q.reject(rejection);
       });
-  };
+  }
 
   function getAllItemsOnline(ownerUUID) {
     return BackendClientService.getSecondary('/api/' +
@@ -516,7 +533,7 @@
       }
       return result;
     });
-  };
+  }
 
   function synchronize(ownerUUID) {
     var deferred = $q.defer();
@@ -553,7 +570,7 @@
       getAllOnline(ownerUUID, getAllItemsOnline, deferred);
     }
     return deferred.promise;
-  };
+  }
 
   function getAllArchivedAndCompletedOnline(ownerUUID) {
     return BackendClientService.getSecondary('/api/' +
@@ -570,7 +587,7 @@
       }
       return result;
     });
-  };
+  }
 
   function getAllDeletedOnline(ownerUUID) {
     return BackendClientService.getSecondary('/api/' +
@@ -587,7 +604,7 @@
       }
       return result;
     });
-  };
+  }
 
   return {
     // Main method to synchronize all arrays with backend.
@@ -604,7 +621,7 @@
       getAllOnline(ownerUUID, getAllDeletedOnline, deferred);
       return deferred.promise;
     },
-    synchronizeUser: function(ownerUUID) {
+    synchronizeUser: function() {
       var deferred = $q.defer();
 
       if (UserSessionService.isOfflineEnabled()) {

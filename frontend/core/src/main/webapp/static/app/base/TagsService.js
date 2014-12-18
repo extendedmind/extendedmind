@@ -42,8 +42,8 @@
   }
   UserSessionService.registerNofifyOwnerCallback(initializeArrays, 'TagsService');
 
-  function updateTag(tag, ownerUUID) {
-    ItemLikeService.persistAndReset(tag, 'tag', ownerUUID, tagFieldInfos);
+  function updateTag(tag, ownerUUID, oldUUID) {
+    ItemLikeService.persistAndReset(tag, 'tag', ownerUUID, tagFieldInfos, oldUUID);
     return ArrayService.updateItem(tag,
                                    tags[ownerUUID].activeTags,
                                    tags[ownerUUID].deletedTags);
@@ -82,6 +82,22 @@
         }
       }
       return latestModified;
+    },
+    updateTagModProperties: function(uuid, properties, ownerUUID) {
+      var tagInfo = this.getNoteInfo(uuid, ownerUUID);
+      if (tagInfo){
+        if (properties === null){
+          if (listInfo.list.mod){
+            delete tagInfo.tag.mod;
+            updateTag(tagInfo.tag, ownerUUID);
+          }
+        }else if (properties !== undefined){
+          if (!tagInfo.tag.mod) tagInfo.tag.mod = {};
+          ItemLikeService.updateObjectProperties(tagInfo.tag.mod, properties);
+          updateTag(tagInfo.tag, ownerUUID, properties.uuid ? uuid : undefined);
+        }
+        return tagInfo.tag;
+      }
     },
     getTags: function(ownerUUID) {
       return tags[ownerUUID].activeTags;

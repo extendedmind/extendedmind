@@ -81,8 +81,8 @@
     return [{array: notes[ownerUUID].archivedNotes, id: 'archived'}];
   }
 
-  function updateNote(note, ownerUUID) {
-    ItemLikeService.persistAndReset(note, 'note', ownerUUID, noteFieldInfos);
+  function updateNote(note, ownerUUID, oldUUID) {
+    ItemLikeService.persistAndReset(note, 'note', ownerUUID, noteFieldInfos, oldUUID);
     return ArrayService.updateItem(note,
                                    notes[ownerUUID].activeNotes,
                                    notes[ownerUUID].deletedNotes,
@@ -197,11 +197,19 @@
                                          notes[ownerUUID].deletedNotes, getOtherArrays(ownerUUID));
       }
     },
-    updateNoteProperties: function(uuid, properties, ownerUUID) {
+    updateNoteModProperties: function(uuid, properties, ownerUUID) {
       var noteInfo = this.getNoteInfo(uuid, ownerUUID);
       if (noteInfo){
-        ItemLikeService.updateObjectProperties(noteInfo.note.mod, properties);
-        updateNote(noteInfo.note, ownerUUID);
+        if (properties === null){
+          if (noteInfo.note.mod){
+            delete noteInfo.note.mod;
+            updateNote(noteInfo.note, ownerUUID);
+          }
+        }else if (properties !== undefined){
+          if (!noteInfo.note.mod) noteInfo.note.mod = {};
+          ItemLikeService.updateObjectProperties(noteInfo.note.mod, properties);
+          updateNote(noteInfo.note, ownerUUID, properties.uuid ? uuid : undefined);
+        }
         return noteInfo.note;
       }
     },

@@ -231,10 +231,14 @@
         databaseItem.mod = item.mod;
       }
     },
-    persistAndReset: function(data, itemType, ownerUUID, fieldInfos){
+    persistAndReset: function(data, itemType, ownerUUID, fieldInfos, oldUUID){
       function doResetAndPersist(item, itemType, ownerUUID, fieldInfos){
         if (UserSessionService.isOfflineEnabled()){
-          PersistentStorageService.persist(createPersistableItem(item), itemType, ownerUUID);
+          if (oldUUID){
+            PersistentStorageService.persistWithNewUUID(oldUUID, createPersistableItem(item), itemType, ownerUUID);
+          }else{
+            PersistentStorageService.persist(createPersistableItem(item), itemType, ownerUUID);
+          }
         }
         resetTrans(item, itemType, ownerUUID, fieldInfos);
       }

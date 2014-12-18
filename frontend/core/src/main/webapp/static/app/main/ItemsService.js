@@ -33,8 +33,8 @@
   }
   UserSessionService.registerNofifyOwnerCallback(initializeArrays, 'ItemsService');
 
-  function updateItem(item, ownerUUID) {
-    ItemLikeService.persistAndReset(item, 'item', ownerUUID, itemFieldInfos);
+  function updateItem(item, ownerUUID, oldUUID) {
+    ItemLikeService.persistAndReset(item, 'item', ownerUUID, itemFieldInfos, oldUUID);
     return ArrayService.updateItem(item,
                                    items[ownerUUID].activeItems,
                                    items[ownerUUID].deletedItems);
@@ -78,11 +78,19 @@
                                          items[ownerUUID].deletedItems);
       }
     },
-    updateItemProperties: function(uuid, properties, ownerUUID) {
+    updateItemModProperties: function(uuid, properties, ownerUUID) {
       var itemInfo = this.getItemInfo(uuid, ownerUUID);
       if (itemInfo){
-        ItemLikeService.updateObjectProperties(itemInfo.item.mod, properties);
-        updateItem(itemInfo.item, ownerUUID);
+        if (properties === null){
+          if (itemInfo.item.mod){
+            delete itemInfo.item.mod;
+            updateItem(itemInfo.item, ownerUUID);
+          }
+        }else if (properties !== undefined){
+          if (!itemInfo.item.mod) itemInfo.item.mod = {};
+          ItemLikeService.updateObjectProperties(itemInfo.item.mod, properties);
+          updateItem(itemInfo.item, ownerUUID, properties.uuid ? uuid : undefined);
+        }
         return itemInfo.item;
       }
     },

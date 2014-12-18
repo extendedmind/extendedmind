@@ -507,17 +507,17 @@ describe('SynchronizeService', function() {
     var newLatestModified = latestModified + 1000;
     var conflictYogaResponse = {
       items: [{
-        'uuid': 'f7724771-4469-488c-aabd-9db188672a9b',
+        'uuid': yoga.uuid,
         'created': 1391278509634,
         'modified': newLatestModified,
-        'title': 'I start yoga'
+        'title': 'I will start yoga'
       }]
     }
     yogaValues.modified = newLatestModified;
     $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
                             latestModified + '&deleted=true&archived=true&completed=true')
         .respond(200, conflictYogaResponse);
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item/' + yoga.uuid,
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item/' + yoga.trans.uuid,
                            yogaValues)
         .respond(200, putNewItemResponse);
     SynchronizeService.synchronize(testOwnerUUID);
@@ -791,6 +791,7 @@ describe('SynchronizeService', function() {
     // 1. save existing task
     var tasks = TasksService.getTasks(testOwnerUUID);
     var cleanCloset = TasksService.getTaskInfo('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID).task;
+    var cleanClosetOriginalModified = cleanCloset.modified;
     cleanCloset.trans.description = 'now';
     var cleanClosetTransport = {title: cleanCloset.trans.title,
                                 description: cleanCloset.trans.description,
@@ -831,7 +832,7 @@ describe('SynchronizeService', function() {
     expect(tasks.length)
       .toBe(4);
     expect(tasks[0].modified)
-      .toBe(newLatestModified);
+      .toBe(cleanClosetOriginalModified);
     expect(tasks[0].mod.modified)
       .toBe(newLatestModified);
     expect(tasks[0].trans.modified)
@@ -858,6 +859,12 @@ describe('SynchronizeService', function() {
     $httpBackend.flush();
     expect(tasks.length)
       .toBe(4);
+    expect(tasks[0].modified)
+      .toBe(veryLatestModified);
+    expect(tasks[0].mod)
+      .toBeUndefined();
+    expect(tasks[0].trans.modified)
+      .toBe(veryLatestModified);
   });
 
   it('should handle note offline create, update, delete', function () {
@@ -994,7 +1001,11 @@ describe('SynchronizeService', function() {
 
     // 1. save existing note
     var aboutContexts = NotesService.getNoteInfo('a1cd149a-a287-40a0-86d9-0a14462f22d6', testOwnerUUID).note;
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/note/' + aboutContexts.uuid, aboutContexts)
+    aboutContexts.trans.title = 'contexts might be used to prevent access to data';
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/note/' + aboutContexts.uuid,
+                          { title: aboutContexts.trans.title,
+                            content: aboutContexts.trans.content,
+                            modified: aboutContexts.trans.modified})
        .respond(404);
     NotesService.saveNote(aboutContexts, testOwnerUUID);
     $httpBackend.flush();
@@ -1021,7 +1032,9 @@ describe('SynchronizeService', function() {
                             latestModified + '&deleted=true&archived=true&completed=true')
         .respond(200, conflictAboutContextsResponse);
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/note/' + aboutContexts.uuid,
-                           aboutContexts)
+                           { title: aboutContexts.trans.title,
+                            content: aboutContexts.trans.content,
+                            modified: newLatestModified})
         .respond(200, putNewItemResponse);
     SynchronizeService.synchronize(testOwnerUUID);
     $httpBackend.flush();
