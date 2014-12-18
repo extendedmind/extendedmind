@@ -303,8 +303,8 @@
     addTask: function(task, ownerUUID) {
       setTask(task, ownerUUID);
     },
-    removeTask: function(task, ownerUUID) {
-      var taskInfo = this.getTaskInfo(task.trans.uuid, ownerUUID);
+    removeTask: function(uuid, ownerUUID) {
+      var taskInfo = this.getTaskInfo(uuid, ownerUUID);
       if (taskInfo) {
         var taskIndex;
         if (taskInfo.type === 'active') {

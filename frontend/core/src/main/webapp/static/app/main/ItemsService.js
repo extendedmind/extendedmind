@@ -167,8 +167,8 @@
       }
       return deferred.promise;
     },
-    removeItem: function(item, ownerUUID) {
-      var itemInfo = this.getItemInfo(item.trans.uuid, ownerUUID);
+    removeItem: function(uuid, ownerUUID) {
+      var itemInfo = this.getItemInfo(uuid, ownerUUID);
       if (itemInfo) {
         var itemIndex;
         if (itemInfo.type === 'active') {

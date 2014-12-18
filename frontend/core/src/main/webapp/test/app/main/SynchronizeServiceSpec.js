@@ -1332,12 +1332,13 @@ describe('SynchronizeService', function() {
     };
     BackendClientService.registerPrimaryPostResultCallback(authenticateCallback);
 
-    var testItem = {
+    var testItemValues = {
       'title': 'test note'
     };
+    var testItem = ItemsService.getNewItem(testItemValues, testOwnerUUID);
     $httpBackend.expectPOST('/api/authenticate', {rememberMe: true})
        .respond(200, authenticateResponse);
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItem)
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
         .respond(200, putNewItemResponse);
     ItemsService.saveItem(testItem, testOwnerUUID);
     $httpBackend.flush();

@@ -273,8 +273,8 @@
     addNote: function(note, ownerUUID) {
       setNote(note, ownerUUID);
     },
-    removeNote: function(note, ownerUUID) {
-      var noteInfo = this.getNoteInfo(note.trans.uuid, ownerUUID);
+    removeNote: function(uuid, ownerUUID) {
+      var noteInfo = this.getNoteInfo(uuid, ownerUUID);
       if (noteInfo) {
         var noteIndex;
         if (noteInfo.type === 'active') {

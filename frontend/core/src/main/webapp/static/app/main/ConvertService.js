@@ -93,7 +93,7 @@
     if (convert) copyConvertToItemTransientProperties(note, convert, 'task', 'note');
 
     NotesService.addNote(note, ownerUUID);
-    TasksService.removeTask(task, ownerUUID);
+    TasksService.removeTask(task.trans.uuid, ownerUUID);
   }
 
   function processTaskToListResponse(task, list, ownerUUID) {
@@ -101,7 +101,7 @@
     if (convert) copyConvertToItemTransientProperties(list, convert, 'task', 'list');
 
     ListsService.addList(list, ownerUUID);
-    TasksService.removeTask(task, ownerUUID);
+    TasksService.removeTask(task.trans.uuid, ownerUUID);
   }
 
   function processNoteToTaskResponse(note, task, ownerUUID) {
@@ -109,7 +109,7 @@
     if (convert) copyConvertToItemTransientProperties(task, convert, 'note', 'task');
 
     TasksService.addTask(task, ownerUUID);
-    NotesService.removeNote(note, ownerUUID);
+    NotesService.removeNote(note.trans.uuid, ownerUUID);
   }
 
   function processNoteToListResponse(note, list, ownerUUID) {
@@ -117,17 +117,17 @@
     if (convert) copyConvertToItemTransientProperties(list, convert, 'note', 'list');
 
     ListsService.addList(list, ownerUUID);
-    NotesService.removeNote(note, ownerUUID);
+    NotesService.removeNote(note.trans.uuid, ownerUUID);
   }
 
   function processListToTaskResponse(list, task, ownerUUID) {
     TasksService.addTask(task, ownerUUID);
-    ListsService.removeList(list, ownerUUID);
+    ListsService.removeList(list.trans.uuid, ownerUUID);
   }
 
   function processListToNoteResponse(list, note, ownerUUID) {
     NotesService.addNote(note, ownerUUID);
-    ListsService.removeList(list, ownerUUID);
+    ListsService.removeList(list.trans.uuid, ownerUUID);
   }
 
   function removeList(item) {

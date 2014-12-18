@@ -175,8 +175,8 @@
     addList: function(list, ownerUUID) {
       setList(list, ownerUUID);
     },
-    removeList: function(list, ownerUUID) {
-      var listInfo = this.getListInfo(list.trans.uuid, ownerUUID);
+    removeList: function(uuid, ownerUUID) {
+      var listInfo = this.getListInfo(uuid, ownerUUID);
       if (listInfo) {
         var listIndex;
         if (listInfo.type === 'active') {

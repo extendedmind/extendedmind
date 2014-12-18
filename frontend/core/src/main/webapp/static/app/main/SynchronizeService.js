@@ -61,16 +61,16 @@
   function removeItemFromArray(ownerUUID, item, itemType){
     switch(itemType) {
     case 'item':
-      ItemsService.removeItem(item, ownerUUID);
+      ItemsService.removeItem(item.uuid, ownerUUID);
       break;
     case 'task':
-      TasksService.removeTask(item, ownerUUID);
+      TasksService.removeTask(item.uuid, ownerUUID);
       break;
     case 'note':
-      NotesService.removeNote(item, ownerUUID);
+      NotesService.removeNote(item.uuid, ownerUUID);
       break;
     case 'list':
-      ListsService.removeList(item, ownerUUID);
+      ListsService.removeList(item.uuid, ownerUUID);
       break;
     }
   }
