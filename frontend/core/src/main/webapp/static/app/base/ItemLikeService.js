@@ -39,9 +39,10 @@
           return true;
         }
       }else if (!compareValues){
-        if (item.mod && item.mod.hasOwnProperty(fieldInfos[i]) &&
-          item.mod[fieldInfos[i]] !== item.trans[fieldInfos[i]]){
-          return true;
+        if (item.mod && item.mod.hasOwnProperty(fieldInfos[i])){
+          if (item.mod[fieldInfos[i]] !== item.trans[fieldInfos[i]]){
+            return true;
+          }
         }else if (item[fieldInfos[i]] !== item.trans[fieldInfos[i]]){
           return true;
         }
@@ -63,10 +64,11 @@
         if (fieldInfos[i].isEdited(item, ownerUUID)){
           editedFieldInfos.push(fieldInfos[i].name);
         }
-      }else if (item.mod && item.mod.hasOwnProperty(fieldInfos[i]) &&
-        item.mod[fieldInfos[i]] !== item.trans[fieldInfos[i]]){
-        // This field has been modified, and the modification does not match
-        editedFieldInfos.push(fieldInfos[i]);
+      }else if (item.mod && item.mod.hasOwnProperty(fieldInfos[i])) {
+        if (item.mod[fieldInfos[i]] !== item.trans[fieldInfos[i]]){
+          // This field has been modified, and the modification does not match
+          editedFieldInfos.push(fieldInfos[i]);
+        }
       }else if (item[fieldInfos[i]] !== item.trans[fieldInfos[i]]){
         // Persistent value does not match
         editedFieldInfos.push(fieldInfos[i]);

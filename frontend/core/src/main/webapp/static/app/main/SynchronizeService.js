@@ -244,28 +244,30 @@
                     queue[i].content.data.content && queue[i].content.data.content.length &&
                     conflictingItem.content && conflictingItem.content.length &&
                     queue[i].content.data.content !== conflictingItem.content){
+
                   // Content conflict, create hybrid and change PUT in queue to reflect the change
                   var conflictDelimiter = '\n\n>>> conflicting changes >>>\n\n', conflictedContent;
                   if (conflictingItem.modified > queue[i].content.timestamp){
                     conflictedContent = conflictingItem.content +
                                               conflictDelimiter +
                                               queue[i].content.data.content;
-                    conflictingItem.content = conflictedContent;
-                    queue[i].content.data = conflictingItem;
                   }else{
                     conflictedContent = queue[i].content.data.content +
                                               conflictDelimiter +
                                               conflictingItem.content;
-                    queue[i].content.data.content = conflictedContent;
-                    queue[i].content.data.modified = conflictedContent.modified;
-                    conflictingItem.content = conflictedContent;
                   }
+                  queue[i].content.data.content = conflictedContent;
+                  queue[i].content.data.modified = conflictingItem.modified;
+                  conflictingItem.content = conflictedContent;
+
                   // Also update the current note modifications to match the queue
-                  updateModProperties(conflictingItem.uuid,
+                  var itemInfo = updateModProperties(conflictingItem.uuid,
                                       queue[i].params.type,
                                       {content: conflictedContent,
                                        modified: conflictingItem.modified},
                                        request.params.owner);
+                  // In both cases remove the item to prevent mixed data model
+                  removeItemFromResponse(response, conflictingItem.uuid, queue[i].params.type);
                 }else{
                   // Other types than note: no need to do a merge of content
                   if (conflictingItem.modified > queue[i].content.timestamp){

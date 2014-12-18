@@ -840,6 +840,9 @@ describe('SynchronizeService', function() {
     // 3. save existing offline again
     cleanClosetTransport.modified = newLatestModified;
     cleanCloset = TasksService.getTaskInfo(cleanCloset.trans.uuid, testOwnerUUID).task;
+
+    cleanCloset.trans.title = 'clean my closet';
+    cleanClosetTransport.title = cleanCloset.trans.title;
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' + cleanCloset.trans.uuid,
                            cleanClosetTransport)
        .respond(404);
@@ -851,6 +854,8 @@ describe('SynchronizeService', function() {
     // 4. synchronize with conflicting task that is newer, expect PUT to have been deleted
     var veryLatestModified = Date.now() + 1;
     conflictCleanClosetResponse.tasks[0].modified = veryLatestModified;
+    conflictCleanClosetResponse.tasks[0].title = cleanCloset.trans.title;
+
     $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
                             newLatestModified + '&deleted=true&archived=true&completed=true')
         .respond(200, conflictCleanClosetResponse);
@@ -858,6 +863,9 @@ describe('SynchronizeService', function() {
     $httpBackend.flush();
     expect(tasks.length)
       .toBe(4);
+
+    expect(tasks[0].title)
+      .toBe('clean my closet');
     expect(tasks[0].modified)
       .toBe(veryLatestModified);
     expect(tasks[0].mod)
@@ -1000,6 +1008,7 @@ describe('SynchronizeService', function() {
 
     // 1. save existing note
     var aboutContexts = NotesService.getNoteInfo('a1cd149a-a287-40a0-86d9-0a14462f22d6', testOwnerUUID).note;
+    var aboutContextsOriginalTitle = aboutContexts.trans.title;
     aboutContexts.trans.title = 'contexts might be used to prevent access to data';
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/note/' + aboutContexts.uuid,
                           { title: aboutContexts.trans.title,
@@ -1030,22 +1039,28 @@ describe('SynchronizeService', function() {
     $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
                             latestModified + '&deleted=true&archived=true&completed=true')
         .respond(200, conflictAboutContextsResponse);
+    var aboutContextsTransport = {
+      title: aboutContexts.trans.title,
+      content: aboutContexts.trans.content + '\n\n>>> conflicting changes >>>\n\n' +
+               conflictAboutContextsResponse.notes[0].content,
+      modified: newLatestModified}
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/note/' + aboutContexts.uuid,
-                           { title: aboutContexts.trans.title,
-                            content: aboutContexts.trans.content,
-                            modified: newLatestModified})
-        .respond(200, putNewItemResponse);
+                           aboutContextsTransport)
+        .respond(200, {modified: newLatestModified + 1});
     SynchronizeService.synchronize(testOwnerUUID);
     $httpBackend.flush();
     MockUserSessionService.setLatestModified(newLatestModified);
 
     var aboutContextsConflictingContent = NotesService.getNoteInfo('a1cd149a-a287-40a0-86d9-0a14462f22d6',
                                                       testOwnerUUID).note;
-    expect(aboutContextsConflictingContent.content).toContain('conflicting changes');
+    expect(aboutContextsConflictingContent.mod.content).toContain('conflicting changes');
 
     // 3. save existing offline again
+    aboutContextsConflictingContent.trans.title = aboutContextsOriginalTitle;
+    aboutContextsTransport.title = aboutContextsOriginalTitle;
+    aboutContextsTransport.modified = newLatestModified + 1;
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/note/' + aboutContexts.uuid,
-                           aboutContextsConflictingContent)
+                           aboutContextsTransport)
        .respond(404);
     NotesService.saveNote(aboutContextsConflictingContent, testOwnerUUID);
     $httpBackend.flush();
@@ -1055,7 +1070,8 @@ describe('SynchronizeService', function() {
     // 4. synchronize with conflicting note that is newer but with same content, expect PUT to be deleted
     var veryLatestModified = Date.now() + 1;
     conflictAboutContextsResponse.notes[0].modified = veryLatestModified;
-    conflictAboutContextsResponse.notes[0].content = aboutContextsConflictingContent.content;
+    conflictAboutContextsResponse.notes[0].title = aboutContextsConflictingContent.trans.title;
+    conflictAboutContextsResponse.notes[0].content = aboutContextsConflictingContent.trans.content;
     $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
                             newLatestModified + '&deleted=true&archived=true&completed=true')
         .respond(200, conflictAboutContextsResponse);
@@ -1063,6 +1079,13 @@ describe('SynchronizeService', function() {
     $httpBackend.flush();
     expect(notes.length)
       .toBe(4);
+
+    expect(notes[2].title)
+      .toBe(conflictAboutContextsResponse.notes[0].title);
+    expect(notes[2].mod)
+      .toBeUndefined();
+    expect(notes[2].modified)
+      .toBe(veryLatestModified);
   });
 
   it('should handle item, note and list converted to task in different client', function () {
