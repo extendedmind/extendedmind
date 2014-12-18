@@ -99,10 +99,10 @@ it('should filter overdue and today\'s tasks', function() {
   expect(filteredTasks.length)
   .toBe(2);
 
-  var cleanCloset = tasks[1];           // no date
+  var cleanCloset = tasks[0];           // no date
   var sketchOutlineForEssay = tasks[3]; // past date
-  var writeEssayBody = tasks[0];        // today
-  var printTickets = tasks[2];          // future
+  var writeEssayBody = tasks[2];        // today
+  var printTickets = tasks[1];          // future
 
   expect(filteredTasks.indexOf(cleanCloset))
   .toBe(-1);
@@ -126,8 +126,8 @@ it('should filter future tasks', function() {
   expect(filteredTasks.length)
   .toBe(1);
 
-  var writeEssayBody = tasks[0];        // today
-  var printTickets = tasks[2];          // future
+  var writeEssayBody = tasks[2];        // today
+  var printTickets = tasks[1];          // future
 
   expect(filteredTasks.indexOf(writeEssayBody))
   .toBe(-1);
