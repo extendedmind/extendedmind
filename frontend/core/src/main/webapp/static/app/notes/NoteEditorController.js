@@ -15,7 +15,13 @@
 
  'use strict';
 
- function NoteEditorController($scope, TagsService, UISessionService) {
+ function NoteEditorController($scope, NotesService, TagsService, UISessionService) {
+
+  $scope.isNoteEdited = function() {
+    if ($scope.noteTitlebarHasText()) {
+      return NotesService.isNoteEdited($scope.note, UISessionService.getActiveUUID());
+    }
+  };
 
   // INITIALIZING
 
@@ -51,7 +57,7 @@
   };
 
   function noteEditorAboutToClose() {
-    if ($scope.noteTitlebarHasText() && !$scope.note.deleted) saveNoteInEdit();
+    if ($scope.isNoteEdited()) saveNoteInEdit();
   }
 
   $scope.clickFavorite = function() {
@@ -153,5 +159,5 @@
 
 }
 
-NoteEditorController['$inject'] = ['$scope', 'TagsService', 'UISessionService'];
+NoteEditorController['$inject'] = ['$scope', 'NotesService', 'TagsService', 'UISessionService'];
 angular.module('em.main').controller('NoteEditorController', NoteEditorController);

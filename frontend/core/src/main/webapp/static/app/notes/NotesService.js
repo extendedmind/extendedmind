@@ -376,6 +376,9 @@
       }
       return deferred.promise;
     },
+    isNoteEdited: function(note, ownerUUID) {
+      return ItemLikeService.isEdited(note, 'note', ownerUUID, noteFieldInfos);
+    },
 
     // Regular expressions for note requests
     putNewNoteRegex: ItemLikeService.getPutNewRegex('note'),

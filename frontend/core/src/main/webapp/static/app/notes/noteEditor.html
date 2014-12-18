@@ -4,7 +4,7 @@
       <div class="group-symmetrical height-large">
         <a href class="group-symmetrical--left link-navigation highlighted active" ng-click="endNoteEdit()" >
           <span class="text-navigation-back" ng-class="!isFirstSlide() && 'not-swipeable'"
-            ng-bind="noteTitlebarHasText() && !note.deleted ? 'save' : 'back'"></span>
+            ng-bind="isNoteEdited() && !note.deleted ? 'save' : 'back'"></span>
         </a>
         <div ng-hide="onboardingInProgress" ng-if="mode === 'fullScreen'"
           class="group-symmetrical--middle width-large animate-fade-in-out">
@@ -22,6 +22,7 @@
       <!-- NOTE TITLE -->
       <div ng-hide="hideNoteTitle && isOnboarded('notes')" class="row-vertically-centered with-textarea">
         <textarea ng-hide="isTitleClamped()" class="text-heading-primary" ng-model="note.trans.title"
+          input-model-validator ng-trim="false"
           ng-keydown="noteTitlebarTextKeyDown($event)" ng-focus="noteTitleFocused()" editable-field
           editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)" msd-elastic
           dynamic-placeholder="enter note title&#8230;" maxlength="128"
@@ -69,15 +70,16 @@
 
             <!-- URL -->
             <div ng-hide="mode === 'fullScreen'" class="row-vertically-centered with-textarea">
-              <textarea ng-model="note.trans.link" msd-elastic maxlength="128" placeholder="enter url&#8230;"
-                autocapitalize="none" autocorrect="off">
+              <textarea ng-model="note.trans.link" input-model-validator ng-trim="false" msd-elastic
+                maxlength="128" placeholder="enter url&#8230;" autocapitalize="none" autocorrect="off">
               </textarea>
             </div>
 
             <!-- CONTENT -->
             <div class="row-vertically-centered with-textarea">
               <textarea ng-class="(!isOnboarded('notes') && checkListOnboardingLock('notes', 'on') && !hideNoteTitle) && 'input-separate'"
-                ng-model="note.trans.content" msd-elastic ng-focus="noteContentFocused()" editable-field
+                ng-model="note.trans.content" input-model-validator ng-focus="noteContentFocused()"
+                msd-elastic editable-field ng-trim="false"
                 editable-field-register-callbacks="registerNoteContentInputCallbacks(focus, blur)"
                 placeholder="enter content&#8230;" autocapitalize="none" autocorrect="off">
               </textarea>

@@ -203,6 +203,9 @@
   }
 
   return {
+    isEdited: function(item, itemType, ownerUUID, fieldInfos, compareValues) {
+      return isEdited(item, itemType, ownerUUID, fieldInfos, compareValues);
+    },
     getFieldInfos: function(additionalFieldInfos){
       var fieldInfos = getDefaultFieldInfos();
       if (additionalFieldInfos){
