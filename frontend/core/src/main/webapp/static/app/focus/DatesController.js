@@ -399,7 +399,6 @@
     return {
       trans: {
         due: $scope.daySlides[daySlidesIndex].info,
-        completed: false,
         itemType: 'task'
       }
     };
