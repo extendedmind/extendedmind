@@ -229,8 +229,8 @@
         .toBeDefined();
     expect(notes.length)
     .toBe(3);
-    expect(notes[0].trans.favorite())
-    .toBeTruthy()
+    expect(notes[0].trans.favorited)
+    .toBeDefined()
     expect(notes[0].trans.favorited)
     .toBeDefined()
     expect(notes[0].trans.favorited)
@@ -247,8 +247,8 @@
     expect(notes.length)
     .toBe(3);
 
-    expect(notes[1].trans.favorite())
-    .toBeFalsy()
+    expect(notes[1].trans.favorited)
+    .toBeUndefined()
     expect(notes[1].trans.favorited)
     .toBeUndefined()
   });
