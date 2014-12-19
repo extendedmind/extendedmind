@@ -71,7 +71,7 @@
   };
 
   function taskEditorAboutToClose() {
-    if ($scope.isTaskEdited()) saveTaskInEdit();
+    if ($scope.isTaskEdited() && !$scope.task.deleted) saveTaskInEdit();
     else TasksService.resetTask($scope.task, UISessionService.getActiveUUID());
   }
 
