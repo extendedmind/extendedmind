@@ -17,12 +17,6 @@
 
  function NoteEditorController($scope, NotesService, TagsService, UISessionService) {
 
-  $scope.isNoteEdited = function() {
-    if ($scope.noteTitlebarHasText()) {
-      return NotesService.isNoteEdited($scope.note, UISessionService.getActiveUUID());
-    }
-  };
-
   // INITIALIZING
 
   if (angular.isFunction($scope.registerFeatureEditorAboutToCloseCallback))
@@ -50,6 +44,13 @@
       UISessionService.allow('leaveAnimation', 200);
       $scope.deleteNote($scope.note);
     });
+  };
+
+  $scope.isNoteEdited = function() {
+    // Note without title is unedited
+    if ($scope.noteTitlebarHasText()) {
+      return NotesService.isNoteEdited($scope.note, UISessionService.getActiveUUID());
+    }
   };
 
   $scope.endNoteEdit = function() {
