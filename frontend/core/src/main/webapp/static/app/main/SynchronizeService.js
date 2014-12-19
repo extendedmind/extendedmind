@@ -239,6 +239,7 @@
             if (conflictingItem.deleted){
               // Deleted elsewhere overrides everything
               queue.splice(i, 1);
+              continue;
             }else if (queue[i].content.method === 'put'){
               if (!updatedPutUUIDs.findFirstObjectByKeyValue('uuid', conflictingItem.uuid)){
                 if (queue[i].params.type === 'note' &&
@@ -278,6 +279,7 @@
                                         null, request.params.owner);
                     // Database item is newer, remove the PUT from the queue
                     queue.splice(i, 1);
+                    continue;
                   }else{
 
                     // Don't splice it from the buffer, but we still want to change the modified value so that
@@ -308,8 +310,10 @@
                                     completed: conflictingItem.completed},
                                     request.params.owner);
                 queue.splice(i, 1);
+                continue;
               }else if (queue[i].content.url.endsWith('/uncomplete') && !conflictingItem.completed){
                 queue.splice(i, 1);
+                continue;
               }else if (queue[i].content.url.endsWith('/favorite') && conflictingItem.completed){
                 // Need to change favorited value to make sure mod is deleted on update
                 updateModProperties(conflictingItem.uuid,
@@ -318,8 +322,10 @@
                                     completed: conflictingItem.completed},
                                     request.params.owner);
                 queue.splice(i, 1);
+                continue;
               }else if (queue[i].content.url.endsWith('/unfavorite') && !conflictingItem.completed){
                 queue.splice(i, 1);
+                continue;
               }
             }
           }else if (conflictingItemInfo && conflictingItemInfo.type !== queue[i].params.type){
@@ -331,6 +337,43 @@
             // in starting from the beginning, where we know to delete
             if (mismatchTypeConflictInfos.indexOf(conflictingItemInfo) === -1)
               mismatchTypeConflictInfos.push(conflictingItemInfo);
+          }
+
+          // Handle deleted lists and tags
+          if (queue[i].content.method === 'put' && queue[i].content.data &&
+              queue[i].content.data.relationships){
+            // Check list
+            if (queue[i].content.data.relationships.parent){
+              var listInfoInResponse = getItemInfoFromResponse(response,
+                                                               queue[i].content.data.relationships.parent);
+              if (listInfoInResponse){
+                if (listInfoInResponse.type !== 'tag'){
+                  if (listInfoInResponse.type !== 'list' || listInfoInResponse.item.deleted){
+                    // The UUID here has been transformed into another type or it has been deleted,
+                    // remove it from the queue
+                    delete queue[i].content.data.relationships.parent;
+                  }else if (listInfoInResponse.item.deleted){
+                    // List has been deleted, remove it from the queue
+                    delete queue[i].content.data.relationships.parent;
+                  }
+                }else{
+                  // TODO: Tag has as parent another tag
+                }
+              }
+            }
+
+            // Check tags
+            if (queue[i].content.data.relationships.tags){
+              for (j=queue[i].content.data.relationships.tags.length-1; j>=0; j--){
+                var tagInfoInResponse = getItemInfoFromResponse(
+                                          response,
+                                          queue[i].content.data.relationships.tags[j]);
+                if (tagInfoInResponse && tagInfoInResponse.item.deleted){
+                  // tag has been deleted, remove it from item in the queue
+                  queue[i].content.data.relationships.tags.splice(j, 1);
+                }
+              }
+            }
           }
         }
 

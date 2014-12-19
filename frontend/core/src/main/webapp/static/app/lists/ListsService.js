@@ -199,6 +199,10 @@
           lists[ownerUUID].archivedLists.splice(listIndex, 1);
         }
       }
+      // Notify others that this list has been removed => same callback as in when it is deleted
+      for (var id in listDeletedCallbacks) {
+        listDeletedCallbacks[id](listsResponse[i], ownerUUID);
+      }
     },
     deleteList: function(list, ownerUUID) {
       var deferred = $q.defer();
