@@ -44,6 +44,7 @@
     SessionStorageService.setUserModified(LocalStorageService.getUserModified());
     SessionStorageService.setUserState(LocalStorageService.getUserState());
     SessionStorageService.setLatestModified(LocalStorageService.getLatestModified());
+    SessionStorageService.setOffline(LocalStorageService.getOffline());
   }
 
   function encodeUsernamePassword(username, password) {
@@ -85,8 +86,13 @@
   }
 
   return {
-    enableOffline: function() {
+    enableOffline: function(bypass) {
       offlineEnabled = true;
+      if (bypass){
+        // when bypassing store the value to stores
+        LocalStorageService.setOffline(true);
+        SessionStorageService.setOffline(true);
+      }
     },
     isAuthenticated: function() {
       return SessionStorageService.getExpires() || LocalStorageService.getExpires();
@@ -113,6 +119,11 @@
       }
     },
     isOfflineEnabled: function() {
+      syncWebStorages();
+      var storedOffline = SessionStorageService.getOffline();
+      if (storedOffline !== undefined){
+        offlineEnabled = storedOffline;
+      }
       return offlineEnabled;
     },
     clearUser: function() {
@@ -122,6 +133,7 @@
       if (offlineEnabled){
         PersistentStorageService.destroyAll();
       }
+      offlineEnabled = false;
     },
 
     // Web storage setters

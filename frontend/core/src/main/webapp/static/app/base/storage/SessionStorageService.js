@@ -21,6 +21,7 @@
   var cachedEmail;
   var cachedPreferences;
   var cachedCollectives;
+  var cachedOffline;
   return {
 
     // setters
@@ -108,6 +109,12 @@
         sessionStorage.setItem('modified', JSON.stringify(latestModified));
       }
     },
+    setOffline: function(value){
+      if (value !== undefined){
+        cachedOffline = value;
+        sessionStorage.setItem('offline', cachedOffline);
+      }
+    },
     // getters
     getBackendDelta: function() {
       if (!cachedBackendDelta) cachedBackendDelta = sessionStorage.getItem('backendDelta');
@@ -174,6 +181,13 @@
         else return latestModified;
       }
     },
+    getOffline: function(){
+      if (cachedOffline === undefined){
+        var storedOffline = localStorage.getItem('offline');
+        if (storedOffline !== null) cachedOffline = storedOffline;
+      }
+      return cachedOffline;
+    },
     clearUser: function() {
       sessionStorage.removeItem('backendDelta');
       sessionStorage.removeItem('activeUUID');
@@ -188,8 +202,10 @@
       sessionStorage.removeItem('userModified');
       sessionStorage.removeItem('state');
       sessionStorage.removeItem('modified');
+      sessionStorage.removeItem('offline');
+
       cachedBackendDelta = cachedActiveUUID = cachedUserUUID = cachedEmail =
-      cachedPreferences = cachedCollectives = undefined;
+      cachedPreferences = cachedCollectives = cachedOffline = undefined;
     }
   };
 }

@@ -34,7 +34,7 @@
   }
 
   if ($routeParams.offline === 'true'){
-    UserSessionService.enableOffline();
+    UserSessionService.enableOffline(true);
   }
 
   $scope.swipeToSignup = function() {

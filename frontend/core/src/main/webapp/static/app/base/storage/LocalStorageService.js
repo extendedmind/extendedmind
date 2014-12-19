@@ -76,6 +76,11 @@
         localStorage.setItem('modified', JSON.stringify(latestModified));
       }
     },
+    setOffline: function(value){
+      if (value !== undefined){
+        localStorage.setItem('offline', value);
+      }
+    },
     // getters
     getBackendDelta: function() {
       return localStorage.getItem('backendDelta');
@@ -127,6 +132,9 @@
         else return latestModified;
       }
     },
+    getOffline: function(){
+      return localStorage.getItem('offline');
+    },
     clearUser: function() {
       localStorage.removeItem('backendDelta');
       localStorage.removeItem('collectives');
@@ -141,6 +149,7 @@
       localStorage.removeItem('userModified');
       localStorage.removeItem('state');
       localStorage.removeItem('modified');
+      localStorage.removeItem('offline');
 
       // Also clear offline queue
       if (localStorage.getItem('primaryRequest')) {

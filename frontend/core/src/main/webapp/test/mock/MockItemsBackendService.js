@@ -16,12 +16,17 @@
  /*global angular, getJSONFixture */
 'use strict';
 
-function MockItemsBackendService($httpBackend, ItemsService, SynchronizeService, UUIDService) {
+function MockItemsBackendService($httpBackend, ItemsService, PersistentStorageService, SynchronizeService,
+                                 UserSessionService, UUIDService) {
 
   function mockGetItems(expectResponse){
     $httpBackend.whenGET(SynchronizeService.getItemsRegex)
       .respond(function(method, url, data, headers) {
         if (url.indexOf('?modified=') != -1){
+          if (UserSessionService.isOfflineEnabled()){
+            // Search values that contain mod from the PersistentStorageService and return them
+            // TODO
+          }
           return expectResponse(method, url, data, headers, {});
         }else if (url.indexOf('?completed=true') != -1){
           var response = {
@@ -136,5 +141,6 @@ function MockItemsBackendService($httpBackend, ItemsService, SynchronizeService,
   };
 }
 
-MockItemsBackendService.$inject = ['$httpBackend', 'ItemsService', 'SynchronizeService', 'UUIDService'];
+MockItemsBackendService.$inject = ['$httpBackend', 'ItemsService', 'PersistentStorageService',
+'SynchronizeService', 'UserSessionService', 'UUIDService'];
 angular.module('em.appTest').factory('MockItemsBackendService', MockItemsBackendService);
