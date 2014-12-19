@@ -9,7 +9,7 @@
       </div>
       <div class="group-mixed--right" task-list-completed></div>
     </div>
-    <div list-item-add="getNewTask({completed: false, list: list.uuid})"
+    <div list-item-add="getNewTask({list: list.uuid})"
       list-item-add-save="saveTask(newItem)" ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
     <div class="animate-list-item-leave"
       ng-repeat="task in listInfos.array = (getFullArray() | paramFilter:isListItemVisible)
