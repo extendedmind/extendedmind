@@ -196,14 +196,12 @@
       return {
         trans: {
           context: context.uuid,
-          completed: false,
           itemType: 'task'
         }
       };
     }
     else return {
       trans: {
-        completed: false,
         itemType: 'task'
       }
     };
