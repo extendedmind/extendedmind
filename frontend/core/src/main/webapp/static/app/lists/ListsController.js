@@ -65,7 +65,7 @@
   // SAVING
 
   $scope.saveList = function(list) {
-    if (list.uuid){
+    if (list.trans.uuid){
       AnalyticsService.do('saveList');
     }else{
       AnalyticsService.do('addList');

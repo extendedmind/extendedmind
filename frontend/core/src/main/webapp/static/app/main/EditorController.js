@@ -242,26 +242,26 @@
   };
   $scope.getListTitleFromUUID = function(uuid) {
     var list = $scope.allLists.findFirstObjectByKeyValue('uuid', uuid);
-    if (list) return list.title;
+    if (list) return list.trans.title;
   };
 
   $scope.closeListPickerAndSetListToItem = function(item, list) {
 
     function doCloseAndSave() {
       $scope.closeListPicker();
-      if (!item.trans) item.trans = {};
-      item.trans.list = list.uuid;
+      item.trans.list = list.trans.uuid;
     }
 
-    if (!list.uuid) // List is new, save it first. Close list picker on error saving new list.
+    if (!list.trans.uuid) {// List is new, save it first. Close list picker on error saving new list.
       $scope.saveList(list).then(doCloseAndSave, $scope.closeListPicker);
+    }
     else
       doCloseAndSave();
   };
 
   $scope.closeListPickerAndClearListFromItem = function(item, list) {
     $scope.closeListPicker();
-    if (item.trans && item.trans.list === list.uuid)
+    if (item.trans.list === list.trans.uuid)
       delete item.trans.list;
   };
 
