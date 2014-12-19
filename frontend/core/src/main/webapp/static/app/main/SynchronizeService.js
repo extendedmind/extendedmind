@@ -454,6 +454,14 @@
                     queue[i].content.data.modified = response.modified;
                   }
                 }
+                if (queue[i].content.method  === 'put'){
+                  // Need to also replace list and tag UUID from relationships array
+                  if (queue[i].content.data && queue[i].content.data.relationships){
+                    var stringRelationships = JSON.stringify(queue[i].content.data.relationships);
+                    queue[i].content.data.relationships =
+                      JSON.parse(stringRelationships.replace(oldUuid,uuid));
+                  }
+                }
               }
             }
           }

@@ -304,8 +304,7 @@
           // Existing item
           /////////////////////////
 
-          // TODO: implement offline for lists and tags and remove the two latter conditions!
-          if (UserSessionService.isOfflineEnabled() && itemType !== 'list' && itemType !== 'tag') {
+          if (UserSessionService.isOfflineEnabled()) {
             // Push to offline buffer
             params = {type: itemType, owner: ownerUUID, uuid: item.trans.uuid, lastReplaceable: true};
             fakeTimestamp = BackendClientService.generateFakeTimestamp();
@@ -332,8 +331,7 @@
           // New item
           /////////////////////////
 
-          // TODO: implement offline for lists and tags and remove the two latter conditions!
-          if (UserSessionService.isOfflineEnabled() && itemType !== 'list' && itemType !== 'tag') {
+          if (UserSessionService.isOfflineEnabled()) {
             // Push to offline queue with fake UUID
             var fakeUUID = UUIDService.generateFakeUUID();
             fakeTimestamp = BackendClientService.generateFakeTimestamp();
