@@ -247,7 +247,7 @@
         deferred.resolve('unmodified');
       } else {
         BackendClientService.postOnline('/api/' + ownerUUID + '/list/' + list.trans.uuid + '/archive',
-                                        this.deleteListRegex)
+                                        this.archiveListRegex)
         .then(function(result) {
           list.archived = result.data.archived;
           ItemLikeService.updateObjectProperties(list, result.data.result);
