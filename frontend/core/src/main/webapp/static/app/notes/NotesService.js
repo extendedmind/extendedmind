@@ -272,6 +272,12 @@
         }
       }
     },
+    isNoteEdited: function(note, ownerUUID) {
+      return ItemLikeService.isEdited(note, 'note', ownerUUID, noteFieldInfos);
+    },
+    resetNote: function(note, ownerUUID) {
+      return ItemLikeService.resetTrans(note, 'note', ownerUUID, noteFieldInfos);
+    },
     deleteNote: function(note, ownerUUID) {
       var deferred = $q.defer();
       if (notes[ownerUUID].deletedNotes.findFirstObjectByKeyValue('uuid', note.trans.uuid, 'trans')) {
@@ -375,9 +381,6 @@
         }
       }
       return deferred.promise;
-    },
-    isNoteEdited: function(note, ownerUUID) {
-      return ItemLikeService.isEdited(note, 'note', ownerUUID, noteFieldInfos);
     },
 
     // Regular expressions for note requests

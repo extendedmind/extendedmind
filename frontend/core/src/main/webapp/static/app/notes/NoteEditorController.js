@@ -58,6 +58,7 @@
 
   function noteEditorAboutToClose() {
     if ($scope.isNoteEdited()) saveNoteInEdit();
+    else NotesService.resetNote($scope.note, UISessionService.getActiveUUID());
   }
 
   $scope.clickFavorite = function() {
