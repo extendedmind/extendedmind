@@ -59,7 +59,8 @@
     BackendClientService.apiPrefixRegex.source +
     adminRegex.source +
     /invite\/request\//.source +
-    BackendClientService.uuidRegex.source
+    BackendClientService.uuidRegex.source +
+    '$'
     );
 
   var deleteInviteRegexp = new RegExp(
@@ -67,14 +68,17 @@
     BackendClientService.apiPrefixRegex.source +
     adminRegex.source +
     /invite\//.source +
-    BackendClientService.uuidRegex.source
+    BackendClientService.uuidRegex.source +
+    '$'
     );
 
-  var destroyUserRegexp = new RegExp(/^/.source +
+  var destroyUserRegexp = new RegExp(
+    /^/.source +
     BackendClientService.apiPrefixRegex.source +
     adminRegex.source +
     /user\//.source +
-    BackendClientService.uuidRegex.source
+    BackendClientService.uuidRegex.source +
+    '$'
     );
 
   return {
@@ -100,7 +104,7 @@
     },
     deleteInviteRequest: function(inviteRequest) {
       return BackendClientService.deleteOnline('/api/admin/invite/request/' + inviteRequest.uuid,
-        deleteInviteRequestRegex, true);
+        deleteInviteRequestRegexp, true);
     },
     deleteInvite: function(invite) {
       return BackendClientService.deleteOnline('/api/admin/invite/' + invite.uuid,

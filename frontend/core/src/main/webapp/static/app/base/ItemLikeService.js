@@ -434,31 +434,39 @@
     },
     // Regexp helper functions
     getPutNewRegex: function(itemType){
-      return new RegExp(BackendClientService.apiPrefixRegex.source +
+      return new RegExp('^' +
+                        BackendClientService.apiPrefixRegex.source +
                         BackendClientService.uuidRegex.source +
-                        '/' + itemType);
+                        '/' + itemType +
+                        '$');
     },
     getPutExistingRegex: function(itemType){
-      return new RegExp(BackendClientService.apiPrefixRegex.source +
+      return new RegExp('^' +
+                        BackendClientService.apiPrefixRegex.source +
                         BackendClientService.uuidRegex.source +
                         '/' + itemType + '/' +
-                        BackendClientService.uuidRegex.source);
+                        BackendClientService.uuidRegex.source +
+                        '$');
     },
     getDeleteRegex: function(itemType){
-      return new RegExp(BackendClientService.apiPrefixRegex.source +
+      return new RegExp('^' +
+                        BackendClientService.apiPrefixRegex.source +
                         BackendClientService.uuidRegex.source +
                         '/' + itemType + '/' +
-                        BackendClientService.uuidRegex.source);
+                        BackendClientService.uuidRegex.source +
+                        '$');
     },
     getUndeleteRegex: function(itemType){
-      return new RegExp(BackendClientService.apiPrefixRegex.source +
+      return new RegExp('^' +
+                        BackendClientService.apiPrefixRegex.source +
                         BackendClientService.uuidRegex.source +
                         '/' + itemType + '/' +
                         BackendClientService.uuidRegex.source +
-                        BackendClientService.undeleteRegex.source);
+                        BackendClientService.undeleteRegex.source +
+                        '$');
     },
   };
 }
 ItemLikeService['$inject'] = ['$q', 'BackendClientService', 'PersistentStorageService', 'UserSessionService',
-  'UUIDService'];
+'UUIDService'];
 angular.module('em.main').factory('ItemLikeService', ItemLikeService);

@@ -388,16 +388,20 @@
     putExistingNoteRegex: ItemLikeService.getPutExistingRegex('note'),
     deleteNoteRegex: ItemLikeService.getDeleteRegex('note'),
     undeleteNoteRegex: ItemLikeService.getUndeleteRegex('note'),
-    favoriteNoteRegex: new RegExp(BackendClientService.apiPrefixRegex.source +
+    favoriteNoteRegex: new RegExp('^' +
+                                  BackendClientService.apiPrefixRegex.source +
                                   BackendClientService.uuidRegex.source +
                                   noteSlashRegex.source +
                                   BackendClientService.uuidRegex.source +
-                                  favoriteRegex.source),
-    unfavoriteNoteRegex: new RegExp(BackendClientService.apiPrefixRegex.source +
+                                  favoriteRegex.source +
+                                  '$'),
+    unfavoriteNoteRegex: new RegExp('^' +
+                                    BackendClientService.apiPrefixRegex.source +
                                     BackendClientService.uuidRegex.source +
                                     noteSlashRegex.source +
                                     BackendClientService.uuidRegex.source +
-                                    unfavoriteRegex.source),
+                                    unfavoriteRegex.source +
+                                    '$'),
   };
 }
 

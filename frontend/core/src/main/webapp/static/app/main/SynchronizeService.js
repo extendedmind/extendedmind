@@ -20,9 +20,10 @@
                              NotesService, TagsService, TasksService, UserService, UserSessionService) {
 
   var itemsRegex = /\/items/;
+  // NOTE: Do not set start/end of string anchors into getItemsRegex!
   var getItemsRegex = new RegExp(BackendClientService.apiPrefixRegex.source +
-   BackendClientService.uuidRegex.source +
-   itemsRegex.source);
+                                 BackendClientService.uuidRegex.source +
+                                 itemsRegex.source);
 
   function getLatestModified(latestTag, latestList, latestTask, latestNote, latestItem) {
     return Math.max(

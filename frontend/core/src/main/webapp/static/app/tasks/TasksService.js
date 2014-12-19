@@ -438,16 +438,20 @@
     putExistingTaskRegex: ItemLikeService.getPutExistingRegex('task'),
     deleteTaskRegex: ItemLikeService.getDeleteRegex('task'),
     undeleteTaskRegex: ItemLikeService.getUndeleteRegex('task'),
-    completeTaskRegex: new RegExp(BackendClientService.apiPrefixRegex.source +
+    completeTaskRegex: new RegExp('^' +
+                                  BackendClientService.apiPrefixRegex.source +
                                   BackendClientService.uuidRegex.source +
                                   taskSlashRegex.source +
                                   BackendClientService.uuidRegex.source +
-                                  completeRegex.source),
-    uncompleteTaskRegex: new RegExp(BackendClientService.apiPrefixRegex.source +
+                                  completeRegex.source +
+                                  '$'),
+    uncompleteTaskRegex: new RegExp('^' +
+                                    BackendClientService.apiPrefixRegex.source +
                                     BackendClientService.uuidRegex.source +
                                     taskSlashRegex.source +
                                     BackendClientService.uuidRegex.source +
-                                    uncompleteRegex.source),
+                                    uncompleteRegex.source +
+                                    '$'),
   };
 }
 

@@ -27,41 +27,53 @@
   var noteRegex = /\/note/;
   var taskRegex = /\/task/;
 
-  var convertTaskToNoteRegexp = new RegExp(BackendClientService.apiPrefixRegex.source +
+  var convertTaskToNoteRegexp = new RegExp('^' +
+                                           BackendClientService.apiPrefixRegex.source +
                                            BackendClientService.uuidRegex.source +
                                            taskSlashRegex.source +
                                            BackendClientService.uuidRegex.source +
-                                           noteRegex.source),
+                                           noteRegex.source +
+                                           '$'),
 
-  convertTaskToListRegexp = new RegExp(BackendClientService.apiPrefixRegex.source +
+  convertTaskToListRegexp = new RegExp('^' +
+                                       BackendClientService.apiPrefixRegex.source +
                                        BackendClientService.uuidRegex.source +
                                        taskSlashRegex.source +
                                        BackendClientService.uuidRegex.source +
-                                       listRegex.source),
+                                       listRegex.source +
+                                       '$'),
 
-  convertNoteToTaskRegexp = new RegExp(BackendClientService.apiPrefixRegex.source +
+  convertNoteToTaskRegexp = new RegExp('^' +
+                                       BackendClientService.apiPrefixRegex.source +
                                        BackendClientService.uuidRegex.source +
                                        noteSlashRegex.source +
                                        BackendClientService.uuidRegex.source +
-                                       taskRegex.source),
+                                       taskRegex.source +
+                                       '$'),
 
-  convertNoteToListRegexp = new RegExp(BackendClientService.apiPrefixRegex.source +
+  convertNoteToListRegexp = new RegExp('^' +
+                                       BackendClientService.apiPrefixRegex.source +
                                        BackendClientService.uuidRegex.source +
                                        noteSlashRegex.source +
                                        BackendClientService.uuidRegex.source +
-                                       listRegex.source),
+                                       listRegex.source +
+                                       '$'),
 
-  convertListToTaskRegexp = new RegExp(BackendClientService.apiPrefixRegex.source +
+  convertListToTaskRegexp = new RegExp('^' +
+                                       BackendClientService.apiPrefixRegex.source +
                                        BackendClientService.uuidRegex.source +
                                        listSlashRegex.source +
                                        BackendClientService.uuidRegex.source +
-                                       taskRegex.source),
+                                       taskRegex.source +
+                                       '$'),
 
-  convertListToNoteRegexp = new RegExp(BackendClientService.apiPrefixRegex.source +
+  convertListToNoteRegexp = new RegExp('^' +
+                                       BackendClientService.apiPrefixRegex.source +
                                        BackendClientService.uuidRegex.source +
                                        listSlashRegex.source +
                                        BackendClientService.uuidRegex.source +
-                                       noteRegex.source);
+                                       noteRegex.source +
+                                       '$');
 
   function postConvertTaskToNote(task, ownerUUID) {
     var path = '/api/' + ownerUUID + '/task/' + task.uuid + '/note';
@@ -246,5 +258,5 @@
   };
 }
 ConvertService['$inject'] = ['BackendClientService', 'ExtendedItemService', 'ListsService', 'NotesService',
-  'TasksService'];
+'TasksService'];
 angular.module('em.main').factory('ConvertService', ConvertService);

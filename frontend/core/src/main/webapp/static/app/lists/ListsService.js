@@ -275,11 +275,13 @@
     putExistingListRegex: ItemLikeService.getPutExistingRegex('list'),
     deleteListRegex: ItemLikeService.getDeleteRegex('list'),
     undeleteListRegex: ItemLikeService.getUndeleteRegex('list'),
-    archiveListRegex: new RegExp(BackendClientService.apiPrefixRegex.source +
+    archiveListRegex: new RegExp('^' +
+                                 BackendClientService.apiPrefixRegex.source +
                                  BackendClientService.uuidRegex.source +
                                  listSlashRegex.source +
                                  BackendClientService.uuidRegex.source +
-                                 archiveRegex.source),
+                                 archiveRegex.source +
+                                 '$'),
 
     // Register callbacks that are fired for implicit archiving of
     // elements. Callback must return the latest modified value it
