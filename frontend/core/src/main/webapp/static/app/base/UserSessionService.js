@@ -127,13 +127,13 @@
       return offlineEnabled;
     },
     clearUser: function() {
+      if (SessionStorageService.getOffline() === true){
+        PersistentStorageService.destroyAll();
+        offlineEnabled = false;
+      }
       SessionStorageService.clearUser();
       LocalStorageService.clearUser();
       itemsSynchronized = {};
-      if (offlineEnabled){
-        PersistentStorageService.destroyAll();
-      }
-      offlineEnabled = false;
     },
 
     // Web storage setters
