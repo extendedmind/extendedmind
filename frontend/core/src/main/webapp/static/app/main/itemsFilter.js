@@ -44,37 +44,12 @@
     return filteredItems;
   };
 
-  itemsFilters.unsorted = function(items) {
-    var filteredItems = [];
-    for (var i = 0, len = items.length; i < len; i++) {
-      if (!items[i].relationships || !items[i].relationships.tags || items[i].relationships.tags.length === 0)
-        filteredItems.push(items[i]);
-    }
-    return filteredItems;
-  };
-
   itemsFilters.favorited = function(items) {
     var filteredItems = [];
     for (var i = 0, len = items.length; i < len; i++) {
       if (items[i].trans.favorited) {
         filteredItems.push(items[i]);
       }
-    }
-    return filteredItems;
-  };
-
-  itemsFilters.noList = function(items) {
-    var filteredItems = [];
-    for (var i = 0, len = items.length; i < len; i++) {
-      if (!items[i].relationships || !items[i].relationships.parent)
-        filteredItems.push(items[i]);
-    }
-    return filteredItems;
-  };
-  itemsFilters.noDate = function(items) {
-    var filteredItems = [];
-    for (var i = 0, len = items.length; i < len; i++) {
-      if (!items[i].due) filteredItems.push(items[i]);
     }
     return filteredItems;
   };
