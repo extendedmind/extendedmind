@@ -94,7 +94,20 @@
         sessionStorage.setItem('state', JSON.stringify(state));
       }
     },
-
+    setLatestModified: function(modified, ownerUUID) {
+      if (angular.isObject(modified)) {
+        sessionStorage.setItem('modified', JSON.stringify(modified));
+      }else if (ownerUUID && modified){
+        var latestModified = this.getLatestModified();
+        if (latestModified){
+          latestModified[ownerUUID] = modified;
+        }else{
+          latestModified = {};
+          latestModified[ownerUUID] = modified;
+        }
+        sessionStorage.setItem('modified', JSON.stringify(latestModified));
+      }
+    },
     // getters
     getBackendDelta: function() {
       if (!cachedBackendDelta) cachedBackendDelta = sessionStorage.getItem('backendDelta');
@@ -153,6 +166,14 @@
       var state = sessionStorage.getItem('state');
       if (state) return JSON.parse(state);
     },
+    getLatestModified: function(ownerUUID) {
+      var latestModifiedString = sessionStorage.getItem('modified');
+      if (latestModifiedString){
+        var latestModified = JSON.parse(latestModifiedString);
+        if (ownerUUID) return latestModified[ownerUUID];
+        else return latestModified;
+      }
+    },
     clearUser: function() {
       sessionStorage.removeItem('backendDelta');
       sessionStorage.removeItem('activeUUID');
@@ -166,7 +187,9 @@
       sessionStorage.removeItem('preferences');
       sessionStorage.removeItem('userModified');
       sessionStorage.removeItem('state');
-      cachedBackendDelta = cachedActiveUUID = cachedUserUUID = cachedEmail = cachedPreferences = cachedCollectives = undefined;
+      sessionStorage.removeItem('modified');
+      cachedBackendDelta = cachedActiveUUID = cachedUserUUID = cachedEmail =
+      cachedPreferences = cachedCollectives = undefined;
     }
   };
 }

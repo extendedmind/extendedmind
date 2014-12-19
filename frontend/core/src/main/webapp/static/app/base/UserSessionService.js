@@ -16,8 +16,9 @@
  /* global angular, useOfflineBuffer */
  'use strict';
 
- function UserSessionService(base64, LocalStorageService, SessionStorageService) {
+ function UserSessionService(base64, LocalStorageService, PersistentStorageService, SessionStorageService) {
   var swapTokenBufferTime = 10*60*1000; // 10 minutes in milliseconds
+  // When offline isn't enabled, use transient value for latest modified
   var latestModified = {};
   var itemsSynchronized = {};
   var offlineEnabled = false;
@@ -41,6 +42,8 @@
     SessionStorageService.setCohort(LocalStorageService.getCohort());
     SessionStorageService.setPreferences(LocalStorageService.getPreferences());
     SessionStorageService.setUserModified(LocalStorageService.getUserModified());
+    SessionStorageService.setUserState(LocalStorageService.getUserState());
+    SessionStorageService.setLatestModified(LocalStorageService.getLatestModified());
   }
 
   function encodeUsernamePassword(username, password) {
@@ -115,8 +118,10 @@
     clearUser: function() {
       SessionStorageService.clearUser();
       LocalStorageService.clearUser();
-      latestModified = {};
       itemsSynchronized = {};
+      if (offlineEnabled){
+        PersistentStorageService.destroyAll();
+      }
     },
 
     // Web storage setters
@@ -189,8 +194,16 @@
     },
     setLatestModified: function(modified, ownerUUID) {
       // Only set if given value is larger than set value
-      if (!latestModified[ownerUUID] || (modified && latestModified[ownerUUID] < modified)) {
-        latestModified[ownerUUID] = modified;
+      var currentLatestModified = this.getLatestModified(ownerUUID);
+      if (!currentLatestModified || (modified && currentLatestModified < modified)) {
+        if (offlineEnabled){
+          SessionStorageService.setLatestModified(modified, ownerUUID);
+          if (offlineEnabled) {
+            LocalStorageService.setLatestModified(modified, ownerUUID);
+          }
+        }else{
+          latestModified[ownerUUID] = modified;
+        }
       }
     },
     setUserModified: function(modified) {
@@ -232,7 +245,12 @@
       return SessionStorageService.getCohort();
     },
     getLatestModified: function(ownerUUID) {
-      return latestModified[ownerUUID];
+      if (offlineEnabled){
+        var currentLatestModified = SessionStorageService.getLatestModified(ownerUUID);
+        if (currentLatestModified) return parseInt(currentLatestModified);
+      }else{
+        return latestModified[ownerUUID];
+      }
     },
     getItemsSynchronized: function(ownerUUID) {
       return itemsSynchronized[ownerUUID];
@@ -308,5 +326,6 @@
     }
   };
 }
-UserSessionService['$inject'] = ['base64', 'LocalStorageService', 'SessionStorageService'];
+UserSessionService['$inject'] = ['base64', 'LocalStorageService', 'PersistentStorageService',
+'SessionStorageService'];
 angular.module('em.base').factory('UserSessionService', UserSessionService);
