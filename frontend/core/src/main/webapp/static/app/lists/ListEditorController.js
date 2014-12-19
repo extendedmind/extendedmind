@@ -15,7 +15,7 @@
 
  'use strict';
 
- function ListEditorController($q, $rootScope, $scope) {
+ function ListEditorController($q, $rootScope, $scope, ListsService, UISessionService) {
 
   // INITIALIZING
 
@@ -43,12 +43,19 @@
     });
   };
 
+  $scope.isListEdited = function() {
+    if ($scope.listTitlebarHasText()) {
+      return ListsService.isListEdited($scope.list, UISessionService.getActiveUUID());
+    }
+  };
+
   $scope.endListEdit = function() {
     $scope.closeEditor();
   };
 
   function listEditorAboutToClose() {
-    if ($scope.listTitlebarHasText() && !$scope.list.deleted) saveListInEdit();
+    if ($scope.isListEdited() && !$scope.list.deleted) saveListInEdit();
+    else ListsService.resetList($scope.list, UISessionService.getActiveUUID());
   }
 
   $scope.archiveListInEdit = function() {
@@ -88,5 +95,5 @@
   };
 }
 
-ListEditorController['$inject'] = ['$q', '$rootScope', '$scope'];
+ListEditorController['$inject'] = ['$q', '$rootScope', '$scope', 'ListsService', 'UISessionService'];
 angular.module('em.main').controller('ListEditorController', ListEditorController);

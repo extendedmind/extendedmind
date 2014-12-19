@@ -164,6 +164,12 @@
       }
       return deferred.promise;
     },
+    isListEdited: function(list, ownerUUID) {
+      return ItemLikeService.isEdited(list, 'list', ownerUUID, listFieldInfos);
+    },
+    resetList: function(list, ownerUUID) {
+      return ItemLikeService.resetTrans(list, 'list', ownerUUID, listFieldInfos);
+    },
     getListStatus: function(list, ownerUUID) {
       var arrayInfo = ArrayService.getActiveArrayInfo(list,
                                                       lists[ownerUUID].activeLists,

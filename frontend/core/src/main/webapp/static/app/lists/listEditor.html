@@ -4,7 +4,7 @@
       <div class="group-symmetrical height-large">
         <a href class="group-symmetrical--left link-navigation highlighted active" ng-click="endListEdit()" >
           <span class="text-navigation-back" ng-class="!isFirstSlide() && 'not-swipeable'"
-            ng-bind="listTitlebarHasText() && !list.deleted ? 'save' : 'back'"></span>
+            ng-bind="isListEdited() && !list.deleted ? 'save' : 'back'"></span>
         </a>
         <a href ng-if="!list.deleted" class="group-symmetrical--right" ng-click="deleteListInEdit()" >
           <span class="icon-trash"></span>
@@ -14,8 +14,9 @@
       </div>
 
       <div class="row-vertically-centered with-textarea">
-        <textarea ng-model="list.trans.title" ng-keydown="listTitlebarTextKeyDown($event)" editable-field
-          editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
+        <textarea ng-model="list.trans.title" input-model-validator ng-trim="false"
+          ng-keydown="listTitlebarTextKeyDown($event)"
+          editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
           msd-elastic dynamic-placeholder="enter list title&#8230;" maxlength="128"
           autocapitalize="none" autocorrect="off">
         </textarea>
@@ -30,8 +31,9 @@
         <div ng-style="{'padding-bottom': EDITOR_FOOTER_HEIGHT}" class="container-content"
         drawer-override-aisle="right" swiper-prevent>
           <div class="row-vertically-centered with-textarea" editable-field-container>
-            <textarea ng-model="list.trans.description" msd-elastic editable-field
+            <textarea ng-model="list.trans.description" input-model-validator ng-trim="false"
               ng-focus="setDescriptionFocus(true)" ng-blur="setDescriptionFocus(false)"
+              editable-field msd-elastic
               placeholder="enter description&#8230;" maxlength="1024" autocapitalize="none" autocorrect="off">
            </textarea>
           </div>
@@ -54,8 +56,8 @@
         swiper-prevent>
 
           <div class="row-vertically-centered with-textarea">
-            <textarea ng-model="list.trans.link" msd-elastic maxlength="128" placeholder="enter url&#8230;"
-              autocapitalize="none" autocorrect="off">
+            <textarea ng-model="list.trans.link" input-model-validator ng-trim="false" msd-elastic
+              maxlength="128" placeholder="enter url&#8230;" autocapitalize="none" autocorrect="off">
             </textarea>
           </div>
         </div>
