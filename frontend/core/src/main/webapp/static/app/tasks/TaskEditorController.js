@@ -142,26 +142,28 @@
   };
   $scope.getContextTitleFromUUID = function(uuid) {
     var context = $scope.contexts.findFirstObjectByKeyValue('uuid', uuid);
-    if (context) return context.title;
+    if (context) return context.trans.title;
   };
 
   $scope.closeContextPickerAndSetContextToTask = function(task, context) {
 
     function doCloseAndSave() {
       $scope.closeContextPicker();
-      if (!task.trans) task.trans = {};
-      task.trans.context = context.uuid;
+      task.trans.context = context.trans.uuid;
     }
 
-    if (!context.uuid)  // Context is new, save it first. Close context picker on error saving new context.
+    if (!context.trans.uuid) {
+      // Context is new, save it first. Close context picker on error saving new context.
       $scope.saveContext(context).then(doCloseAndSave, $scope.closeContextPicker);
-    else
+    }
+    else {
       doCloseAndSave();
+    }
   };
 
   $scope.closeContextPickerAndClearContextFromTask = function(task, context) {
     $scope.closeContextPicker();
-    if (task.trans && task.trans.context === context.uuid)
+    if (task.trans.context === context.trans.uuid)
       delete task.trans.context;
   };
 
@@ -174,12 +176,12 @@
   };
   $scope.closeRepeatingPickerAndSetRepeatTypeToTask = function(task, repeatType) {
     $scope.closeRepeatingPicker();
-    task.repeating = repeatType.title;
+    task.trans.repeating = repeatType.trans.title;
   };
   $scope.closeRepeatingPickerAndClearRepeatTypeFromtask = function(task, repeatType) {
     $scope.closeRepeatingPicker();
-    if (task.repeating === repeatType.title)
-      delete task.repeating;
+    if (task.trans.repeating === repeatType.trans.title)
+      delete task.trans.repeating;
   };
 
   $scope.isTaskTitleClamped = function () {

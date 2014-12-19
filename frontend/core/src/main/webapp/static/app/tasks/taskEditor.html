@@ -134,7 +134,7 @@
             editable-field-container-clicked-elsewhere="closeRepeatingPicker()" data-snap-ignore="true">
             <div list-picker="repeatTypes" list-picker-save="closeRepeatingPickerAndSetRepeatTypeToTask(task, list)"
               list-picker-clear="closeRepeatingPickerAndClearRepeatTypeFromtask(task, list)"
-              list-picker-get-selected="task.trans.repeating ? {title: task.trans.repeating} : undefined"
+              list-picker-get-selected="task.trans.repeating ? {trans: {title: task.trans.repeating}} : undefined"
               list-picker-type="repeating"></div>
           </div>
 

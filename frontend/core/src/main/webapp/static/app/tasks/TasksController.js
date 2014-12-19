@@ -24,10 +24,18 @@
   };
 
   $scope.repeatTypes = [
-  {title:'daily'},
-  {title:'weekly'},
-  {title:'monthly'},
-  {title:'yearly'}
+  {
+    trans: {title: 'daily'}
+  },
+  {
+    trans: {title: 'weekly'}
+  },
+  {
+    trans: {title: 'monthly'}
+  },
+  {
+    trans: {title:'yearly'}
+  }
   ];
 
   $scope.openTaskEditor = function openTaskEditor(task) {
@@ -43,7 +51,7 @@
   * Relates to isTaskVisible filter filter function,
   * and getTaskModifiedOrder and getTaskOrder orderBy filter functions, for example:
   *
-  *   <div ng-repeat="task in tasks | filter:isTaskVisible | orderBy:getTaskModifiedOrder"></div>
+  *   <div ng-repeat="task in tasks | filter:isTaskVisible | orderBy:getTaskModifiedOrder"></div>
   *
   */
   var freezedTasksInLists = [];
@@ -57,7 +65,7 @@
     if (frozenTask !== undefined){
       return frozenTask.modified;
     }else {
-      return task.modified;
+      return task.trans.modified;
     }
   };
 
@@ -69,7 +77,7 @@
     if (taskIndex === undefined) {
       freezedTasksInLists.push({
         task: task,
-        modified: task.modified
+        modified: task.trans.modified
       });
     } else {
       // Freeze some more.
@@ -100,7 +108,10 @@
 
     // Don't try to complete a task that hasn't been saved, saveTask will call this again
     // after the task has a uuid
-    if (!task.uuid){ return !task.trans.completed;}
+    if (!task.trans.uuid){
+      return !task.trans.completed;
+    }
+
     if (taskCompletingReadyDeferred) {
       taskCompletingReadyDeferred.promise.then(function(task) {
         unfreezeTask(task);
@@ -144,11 +155,11 @@
 
   $scope.saveTask = function(task) {
     var completeOnSave = false;
-    if (task.uuid){
+    if (task.trans.uuid){
       AnalyticsService.do('saveTask');
     }else{
       AnalyticsService.do('addTask');
-      if (task.trans && task.trans.completed){
+      if (task.trans.completed){
         completeOnSave = true;
       }
     }
@@ -164,7 +175,7 @@
   // (UN)DELETING
 
   $scope.deleteTask = function(task) {
-    if (task.uuid){
+    if (task.trans.uuid){
 
       UISessionService.pushDelayedNotification({
         type: 'deleted',
@@ -183,7 +194,7 @@
   };
 
   $scope.undeleteTask = function(task) {
-    if (task.uuid){
+    if (task.trans.uuid){
       AnalyticsService.do('undeleteTask');
       TasksService.undeleteTask(task, UISessionService.getActiveUUID());
     }
@@ -233,7 +244,7 @@
   };
 
   $scope.getContextId = function() {
-    return $scope.context ? $scope.context.uuid : 'no';
+    return $scope.context ? $scope.context.trans.uuid : 'no';
   };
 }
 
