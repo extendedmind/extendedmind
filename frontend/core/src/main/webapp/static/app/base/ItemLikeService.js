@@ -20,13 +20,15 @@
                           UUIDService) {
 
   function getDefaultFieldInfos(){
-    return ['uuid',
-            'title',
-            'description',
-            'link',
-            'created',
-            'modified',
-            'deleted'];
+    return [
+    'uuid',
+    'title',
+    'description',
+    'link',
+    'created',
+    'modified',
+    'deleted'
+    ];
   }
 
   function isEdited(item, itemType, ownerUUID, fieldInfos, compareValues){
@@ -49,7 +51,8 @@
       }else{
         // Use compare values to do the isEdited comparison
         if (item.mod && item.mod.hasOwnProperty(fieldInfos[i]) &&
-          item.mod[fieldInfos[i]] !== compareValues[fieldInfos[i]]){
+            item.mod[fieldInfos[i]] !== compareValues[fieldInfos[i]])
+        {
           return true;
         }
       }
@@ -62,7 +65,7 @@
       if (angular.isObject(fieldInfos[i])){
         // Custom field overrides all
         if (fieldInfos[i].isEdited(item, ownerUUID)){
-          editedFieldInfos.push(fieldInfos[i].name);
+          editedFieldInfos.push(fieldInfos[i]);
         }
       }else if (item.mod && item.mod.hasOwnProperty(fieldInfos[i])) {
         if (item.mod[fieldInfos[i]] !== item.trans[fieldInfos[i]]){
@@ -116,12 +119,24 @@
     }
   }
 
-  function copyModToPersistent(item, ownerUUID, fieldInfos){
+  function copyModToPersistent(item, ownerUUID, fieldInfos) {
     for (var i=0, len=fieldInfos.length; i<len; i++){
-      if (item.mod && item.mod.hasOwnProperty(fieldInfos[i]) &&
-        item.mod[fieldInfos[i]] !== item[fieldInfos[i]]){
-        // This field has been modified, and the modification does not match
-        item[fieldInfos[i]] = item.mod[fieldInfos[i]];
+      var fieldName = angular.isObject(fieldInfos[i]) ? fieldInfos[i].name : fieldInfos[i];
+      if (item.mod && item.mod.hasOwnProperty(fieldName)) {
+        // OBJECT
+        if (angular.isObject(item.mod[fieldName])) {
+          // NOTE: Should this fail, there is something wrong with the data model
+          // From http://stackoverflow.com/a/1144249
+          if (JSON.stringify(item[fieldName]) !== JSON.stringify(item.mod[fieldName])) {
+            // This field has been modified, and the modification does not match
+            item[fieldName] = item.mod[fieldName];
+          }
+        }
+        // SINGLE VALUE
+        else if (item.mod[fieldName] !== item[fieldName]) {
+          // This field has been modified, and the modification does not match
+          item[fieldInfos[i]] = item.mod[fieldInfos[i]];
+        }
       }
     }
     // Finally delete mod as all modifications have been persisted
@@ -155,10 +170,12 @@
     var transportItem = {};
     for (var i=0, len=fieldInfos.length; i<len; i++){
       if (fieldInfos[i] !== 'uuid' && fieldInfos[i] !== 'created' && fieldInfos[i] !== 'deleted' &&
-          !(angular.isObject(fieldInfos[i]) && fieldInfos[i].skipTransport)){
+          !(angular.isObject(fieldInfos[i]) && fieldInfos[i].skipTransport))
+      {
         var fieldName = angular.isObject(fieldInfos[i]) ? fieldInfos[i].name : fieldInfos[i];
         if (item.mod && item.mod.hasOwnProperty(fieldName) &&
-            item.mod[fieldName] !== undefined){
+            item.mod[fieldName] !== undefined)
+        {
           transportItem[fieldName] = item.mod[fieldName];
         }else if (item[fieldName] !== undefined) {
           transportItem[fieldName] = item[fieldName];
@@ -240,7 +257,8 @@
       function doResetAndPersist(item, itemType, ownerUUID, fieldInfos){
         if (UserSessionService.isOfflineEnabled()){
           if (oldUUID){
-            PersistentStorageService.persistWithNewUUID(oldUUID, createPersistableItem(item), itemType, ownerUUID);
+            PersistentStorageService.persistWithNewUUID(oldUUID, createPersistableItem(item), itemType,
+                                                        ownerUUID);
           }else{
             PersistentStorageService.persist(createPersistableItem(item), itemType, ownerUUID);
           }
@@ -278,7 +296,7 @@
         deferred.resolve('unmodified');
       } else {
         var transportItem = prepareTransport(item, itemType, ownerUUID, fieldInfos);
-        var params;
+        var params, fakeTimestamp;
 
         if (item.trans.uuid) {
 
@@ -290,7 +308,7 @@
           if (UserSessionService.isOfflineEnabled() && itemType !== 'list' && itemType !== 'tag') {
             // Push to offline buffer
             params = {type: itemType, owner: ownerUUID, uuid: item.trans.uuid, lastReplaceable: true};
-            var fakeTimestamp = BackendClientService.generateFakeTimestamp();
+            fakeTimestamp = BackendClientService.generateFakeTimestamp();
             BackendClientService.put('/api/' + params.owner + '/'+ itemType + '/' + item.trans.uuid,
                                      this.getPutExistingRegex(itemType), params, transportItem,
                                      fakeTimestamp);
@@ -300,16 +318,14 @@
             // Online
             BackendClientService.putOnline('/api/' + ownerUUID + '/'+ itemType + '/' + item.trans.uuid,
                                            this.getPutExistingRegex(itemType), transportItem)
-            .then(
-              function(result) {
-                updateObjectProperties(item, result.data);
-                copyModToPersistent(item, ownerUUID, fieldInfos);
-                deferred.resolve('existing');
-              },function(error){
-                destroyModAndReset(item, itemType, ownerUUID, fieldInfos);
-                deferred.reject(error);
-              }
-            );
+            .then(function(result) {
+              updateObjectProperties(item, result.data);
+              copyModToPersistent(item, ownerUUID, fieldInfos);
+              deferred.resolve('existing');
+            },function(error){
+              destroyModAndReset(item, itemType, ownerUUID, fieldInfos);
+              deferred.reject(error);
+            });
           }
         } else {
           /////////////////////////
@@ -320,27 +336,26 @@
           if (UserSessionService.isOfflineEnabled() && itemType !== 'list' && itemType !== 'tag') {
             // Push to offline queue with fake UUID
             var fakeUUID = UUIDService.generateFakeUUID();
-            var fakeTimestamp = BackendClientService.generateFakeTimestamp();
+            fakeTimestamp = BackendClientService.generateFakeTimestamp();
             params = {type: itemType, owner: ownerUUID, fakeUUID: fakeUUID};
             BackendClientService.put('/api/' + params.owner + '/'+ itemType,
                                      this.getPutNewRegex(itemType), params, transportItem, fakeTimestamp);
             updateObjectProperties(item.mod, {uuid: fakeUUID, modified: fakeTimestamp,
-                                              created: fakeTimestamp});
+              created: fakeTimestamp});
             deferred.resolve('new');
           } else {
             // Online
             BackendClientService.putOnline('/api/' + ownerUUID + '/'+ itemType,
                                            this.getPutNewRegex(itemType), transportItem)
-            .then(
-              function(result) {
-                updateObjectProperties(item, result.data);
-                copyModToPersistent(item, ownerUUID, fieldInfos);
-                deferred.resolve('new');
-              },function(error){
-                destroyModAndReset(item, itemType, ownerUUID, fieldInfos);
-                deferred.reject(error);
-              }
-            );
+            .then(function(result) {
+              updateObjectProperties(item, result.data);
+              copyModToPersistent(item, ownerUUID, fieldInfos);
+
+              deferred.resolve('new');
+            },function(error){
+              destroyModAndReset(item, itemType, ownerUUID, fieldInfos);
+              deferred.reject(error);
+            });
           }
         }
       }
@@ -369,18 +384,17 @@
         // Online
         BackendClientService.deleteOnline('/api/' + ownerUUID + '/' + itemType +'/' + item.trans.uuid,
                                           this.getDeleteRegex(itemType))
-        .then(
-          function(result) {
-            item.deleted = result.data.deleted;
-            updateObjectProperties(item, result.data.result);
-            if (UserSessionService.isOfflineEnabled()){
-              PersistentStorageService.persist(createPersistableItem(item), itemType, ownerUUID);
-            }
-            resetTrans(item, itemType, ownerUUID, fieldInfos);
-            deferred.resolve();
-          },function(error){
-            deferred.reject(error);
-          });
+        .then(function(result) {
+          item.deleted = result.data.deleted;
+          updateObjectProperties(item, result.data.result);
+          if (UserSessionService.isOfflineEnabled()){
+            PersistentStorageService.persist(createPersistableItem(item), itemType, ownerUUID);
+          }
+          resetTrans(item, itemType, ownerUUID, fieldInfos);
+          deferred.resolve();
+        },function(error){
+          deferred.reject(error);
+        });
       }
       return deferred.promise;
     },
@@ -392,7 +406,7 @@
         var params = {type: itemType, owner: ownerUUID, uuid: item.trans.uuid, lastReplaceable: true};
         var fakeTimestamp = BackendClientService.generateFakeTimestamp();
         BackendClientService.post('/api/' + ownerUUID + '/' + itemType +'/' + item.trans.uuid + '/undelete',
-                                    this.getUndeleteRegex(itemType), params, undefined, fakeTimestamp);
+                                  this.getUndeleteRegex(itemType), params, undefined, fakeTimestamp);
         if (!item.mod) item.mod = {};
         if (item.mod.deleted) delete item.mod.deleted;
         updateObjectProperties(item.mod, {modified: fakeTimestamp});
@@ -404,18 +418,17 @@
         BackendClientService.postOnline('/api/' + ownerUUID + '/' + itemType +'/' +
                                         item.trans.uuid + '/undelete',
                                         this.getUndeleteRegex(itemType))
-        .then(
-          function(result) {
-            delete item.deleted;
-            updateObjectProperties(item, result.data);
-            if (UserSessionService.isOfflineEnabled()){
-              PersistentStorageService.persist(createPersistableItem(item), itemType, ownerUUID);
-            }
-            resetTrans(item, itemType, ownerUUID, fieldInfos);
-            deferred.resolve();
-          },function(error){
-            deferred.reject(error);
-          });
+        .then(function(result) {
+          delete item.deleted;
+          updateObjectProperties(item, result.data);
+          if (UserSessionService.isOfflineEnabled()){
+            PersistentStorageService.persist(createPersistableItem(item), itemType, ownerUUID);
+          }
+          resetTrans(item, itemType, ownerUUID, fieldInfos);
+          deferred.resolve();
+        },function(error){
+          deferred.reject(error);
+        });
       }
       return deferred.promise;
     },
@@ -447,5 +460,5 @@
   };
 }
 ItemLikeService['$inject'] = ['$q', 'BackendClientService', 'PersistentStorageService', 'UserSessionService',
-                              'UUIDService'];
+  'UUIDService'];
 angular.module('em.main').factory('ItemLikeService', ItemLikeService);
