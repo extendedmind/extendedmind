@@ -133,6 +133,12 @@
       }
       return deferred.promise;
     },
+    isItemEdited: function(item, ownerUUID) {
+      return ItemLikeService.isEdited(item, 'item', ownerUUID, itemFieldInfos);
+    },
+    resetItem: function(item, ownerUUID) {
+      return ItemLikeService.resetTrans(item, 'item', ownerUUID, itemFieldInfos);
+    },
     deleteItem: function(item, ownerUUID) {
       var deferred = $q.defer();
       // Check if item has already been deleted

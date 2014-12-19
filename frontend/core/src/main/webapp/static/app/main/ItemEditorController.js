@@ -15,7 +15,7 @@
 
  'use strict';
 
- function ItemEditorController($q, $rootScope, $scope, UISessionService) {
+ function ItemEditorController($q, $rootScope, $scope, ItemsService, UISessionService) {
 
   // INITIALIZING
 
@@ -43,12 +43,19 @@
     });
   };
 
+  $scope.isItemEdited = function() {
+    if ($scope.itemTitlebarHasText()) {
+      return ItemsService.isItemEdited($scope.item, UISessionService.getActiveUUID());
+    }
+  };
+
   $scope.endItemEdit = function() {
     $scope.closeEditor();
   };
 
   function itemEditorAboutToClose() {
-    if ($scope.itemTitlebarHasText() && !$scope.item.deleted) saveItemInEdit();
+    if ($scope.isItemEdited() && !$scope.item.deleted) saveItemInEdit();
+    else ItemsService.resetItem($scope.item, UISessionService.getActiveUUID());
   }
 
   // TITLEBAR
@@ -70,5 +77,5 @@
   };
 }
 
-ItemEditorController['$inject'] = ['$q', '$rootScope', '$scope', 'UISessionService'];
+ItemEditorController['$inject'] = ['$q', '$rootScope', '$scope', 'ItemsService', 'UISessionService'];
 angular.module('em.main').controller('ItemEditorController', ItemEditorController);

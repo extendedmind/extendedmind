@@ -3,7 +3,7 @@
     <div class="container-titlebar--inner">
       <div class="group-symmetrical height-large">
         <a href class="group-symmetrical--left link-navigation highlighted" ng-click="endItemEdit()">
-          <span class="text-navigation-back" ng-bind="itemTitlebarHasText() && !item.deleted ? 'save' : 'back'"></span>
+          <span class="text-navigation-back" ng-bind="isItemEdited() && !item.deleted ? 'save' : 'back'"></span>
         </a>
         <a ng-if="!item.deleted" href class="group-symmetrical--right" ng-click="deleteItemInEdit()" >
           <span class="icon-trash"></span>
@@ -13,10 +13,10 @@
       </div>
 
       <div class="row-vertically-centered with-textarea">
-        <textarea ng-model="item.trans.title" ng-keydown="itemTitlebarTextKeyDown($event)" editable-field
-          editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
-          msd-elastic dynamic-placeholder="enter item title&#8230;" maxlength="128"
-          autocapitalize="none" autocorrect="off">
+        <textarea ng-model="item.trans.title" input-model-validator ng-trim="false" msd-elastic
+          ng-keydown="itemTitlebarTextKeyDown($event)"
+          editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
+          placeholder="enter item title&#8230;" maxlength="128" autocapitalize="none" autocorrect="off">
         </textarea>
       </div>
     </div>
@@ -25,8 +25,8 @@
   <div ng-style="{'padding-bottom': EDITOR_FOOTER_HEIGHT}" class="container-fluid--inner">
     <div class="container-content" drawer-override-aisle="right">
       <div class="row-vertically-centered with-textarea">
-        <textarea ng-model="item.trans.description" msd-elastic placeholder="enter description&#8230;"
-          maxlength="1024" autocapitalize="none" autocorrect="off">
+        <textarea ng-model="item.trans.description" input-model-validator ng-trim="false" msd-elastic
+          placeholder="enter description&#8230;" maxlength="1024" autocapitalize="none" autocorrect="off">
         </textarea>
       </div>
     </div>
