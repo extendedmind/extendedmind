@@ -127,8 +127,10 @@
       return offlineEnabled;
     },
     clearUser: function() {
-      if (SessionStorageService.getOffline() === true){
+      if (offlineEnabled){
         PersistentStorageService.destroyAll();
+      }
+      if (SessionStorageService.getOffline() === true){
         offlineEnabled = false;
       }
       SessionStorageService.clearUser();
