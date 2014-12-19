@@ -15,7 +15,8 @@
 
  'use strict';
 
- function TaskEditorController($q, $rootScope, $scope, $timeout, DateService, UISessionService) {
+ function TaskEditorController($q, $rootScope, $scope, $timeout, DateService, TasksService,
+                               UISessionService) {
 
   // INITIALIZING
 
@@ -59,12 +60,19 @@
     });
   };
 
+  $scope.isTaskEdited = function() {
+    if ($scope.taskTitlebarHasText()) {
+      return TasksService.isTaskEdited($scope.task, UISessionService.getActiveUUID());
+    }
+  };
+
   $scope.endTaskEdit = function() {
     $scope.closeTaskEditor();
   };
 
   function taskEditorAboutToClose() {
-    if ($scope.taskTitlebarHasText() && !$scope.task.deleted) saveTaskInEdit();
+    if ($scope.isTaskEdited()) saveTaskInEdit();
+    else TasksService.resetTask($scope.task, UISessionService.getActiveUUID());
   }
 
   // TITLEBAR
@@ -188,6 +196,6 @@
 }
 
 TaskEditorController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout',
-'DateService', 'UISessionService'
+'DateService', 'TasksService', 'UISessionService'
 ];
 angular.module('em.main').controller('TaskEditorController', TaskEditorController);

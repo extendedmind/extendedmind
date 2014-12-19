@@ -322,6 +322,12 @@
         }
       }
     },
+    isTaskEdited: function(task, ownerUUID) {
+      return ItemLikeService.isEdited(task, 'task', ownerUUID, taskFieldInfos);
+    },
+    resetTask: function(task, ownerUUID) {
+      return ItemLikeService.resetTrans(task, 'task', ownerUUID, taskFieldInfos);
+    },
     deleteTask: function(task, ownerUUID) {
       var deferred = $q.defer();
       if (tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue('uuid', task.trans.uuid, 'trans')) {

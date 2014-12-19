@@ -4,7 +4,7 @@
       <div class="group-symmetrical height-large">
         <a href class="group-symmetrical--left link-navigation highlighted active" ng-click="endTaskEdit()" >
           <span class="text-navigation-back" ng-class="!isFirstSlide() && 'not-swipeable'"
-            ng-bind="taskTitlebarHasText() && !task.deleted ? 'save' : 'back'"></span>
+            ng-bind="isTaskEdited() && !task.deleted ? 'save' : 'back'"></span>
         </a>
         <a href ng-if="!task.deleted" class="group-symmetrical--right" ng-click="deleteTaskInEdit()" >
           <span class="icon-trash"></span>
@@ -19,11 +19,11 @@
             ng-model="task.trans.completed" icon-checkbox="editorTitlebarCheckbox" />
         </div>
         <div class="group-mixed--middle">
-          <textarea ng-hide="isTaskTitleClamped()" ng-model="task.trans.title"
-            ng-keydown="taskTitlebarTextKeyDown($event)" editable-field
-            editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
-            editable-field-focus="setTitleBarFocus()" msd-elastic
-            dynamic-placeholder="enter task title&#8230;" maxlength="128">
+          <textarea ng-hide="isTaskTitleClamped()" ng-model="task.trans.title" input-model-validator
+            ng-trim="false" ng-keydown="taskTitlebarTextKeyDown($event)"
+            editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
+            editable-field-focus="setTitleBarFocus()"
+            msd-elastic dynamic-placeholder="enter task title&#8230;" maxlength="128">
           </textarea>
           <div ng-if="isTaskTitleClamped()">
             <span ng-class="{'text-downplayed': !task.trans.title}" class="text-clamped"
@@ -84,8 +84,9 @@
             </div>
 
             <div ng-hide="calendarOpen" class="row-vertically-centered with-textarea">
-              <textarea ng-model="task.trans.description" ng-focus="setDescriptionFocus(true)"
-                ng-blur="setDescriptionFocus(false)" msd-elastic placeholder="enter description&#8230;"
+              <textarea ng-model="task.trans.description" input-model-validator ng-trim="false"
+                ng-focus="setDescriptionFocus(true)" ng-blur="setDescriptionFocus(false)" msd-elastic
+                placeholder="enter description&#8230;"
                 maxlength="1024" autocapitalize="none" autocorrect="off">
               </textarea>
             </div>
@@ -151,9 +152,9 @@
             </div>
 
             <div class="row-vertically-centered with-textarea">
-              <textarea ng-model="task.trans.link" ng-focus="setUrlFocus(true)" ng-blur="setUrlFocus(false)"
-                msd-elastic maxlength="128" placeholder="enter url&#8230;"
-                autocapitalize="none" autocorrect="off">
+              <textarea ng-model="task.trans.link" input-model-validator ng-trim="false"
+                ng-focus="setUrlFocus(true)" ng-blur="setUrlFocus(false)" msd-elastic maxlength="128"
+                placeholder="enter url&#8230;" autocapitalize="none" autocorrect="off">
               </textarea>
             </div>
 
