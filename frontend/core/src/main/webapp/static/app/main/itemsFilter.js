@@ -20,8 +20,11 @@
   itemsFilters.byListUUID = function(items, uuid) {
     var filteredItems = [];
     for (var i = 0, len = items.length; i < len; i++) {
-      if (items[i].relationships && items[i].relationships.parent)
-        if (items[i].relationships.parent === uuid) filteredItems.push(items[i]);
+      var item = items[i];
+
+      if (item.trans.list && item.trans.list === uuid) {
+        filteredItems.push(item);
+      }
     }
     return filteredItems;
   };
