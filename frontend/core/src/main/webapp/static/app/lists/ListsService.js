@@ -184,6 +184,10 @@
     removeList: function(uuid, ownerUUID) {
       var listInfo = this.getListInfo(uuid, ownerUUID);
       if (listInfo) {
+        // Notify others that this list will be removed => same callback as in when it is deleted
+        for (var id in listDeletedCallbacks) {
+          listDeletedCallbacks[id](listInfo.list, ownerUUID);
+        }
         var listIndex;
         if (listInfo.type === 'active') {
           listIndex = lists[ownerUUID].activeLists.indexOf(listInfo.list);
@@ -199,10 +203,7 @@
           lists[ownerUUID].archivedLists.splice(listIndex, 1);
         }
       }
-      // Notify others that this list has been removed => same callback as in when it is deleted
-      for (var id in listDeletedCallbacks) {
-        listDeletedCallbacks[id](listsResponse[i], ownerUUID);
-      }
+
     },
     deleteList: function(list, ownerUUID) {
       var deferred = $q.defer();
