@@ -2,7 +2,7 @@
 
   <div ng-if="selectedList" class="group-mixed vertically-centered">
     <a href class="group-mixed--middle link" ng-click="listSelected(selectedList)">
-      <span class="text-link emphasis" clamp=2>{{::prefix}}{{selectedList.title}}</span>
+      <span class="text-link emphasis" clamp=2>{{::prefix}}{{selectedList.trans.title}}</span>
     </a>
 
     <div class="group-mixed--right">
@@ -11,21 +11,23 @@
   </div>
 
   <div ng-if="newList" class="row-vertically-centered with-textarea">
-    <textarea ng-model="newList.title" msd-elastic
-      ng-click="watchForTitleChange()" ng-keydown="textareaKeyDown($event)" placeholder="{{placeholder}}"
-      maxlength="128" autocapitalize="none" autocorrect="off">
+    <textarea ng-model="newList.trans.title" msd-elastic
+      ng-click="watchForTitleChange()" ng-keydown="textareaKeyDown($event)"
+      dynamic-placeholder="add {{type}}&#8230;" maxlength="128" autocapitalize="none" autocorrect="off">
     </textarea>
   </div>
 
-  <div class="row-vertically-centered" ng-repeat="list in lists | filter:notSelectedList | orderBy:'title'" ng-click="listSelected(list)">
+  <div class="row-vertically-centered"
+    ng-repeat="list in lists | filter:notSelectedList | orderBy:'trans.title'" ng-click="listSelected(list)">
     <a href class="link">
-      <span class="text-link" clamp=2>{{::prefix}}{{list.title}}</span>
+      <span class="text-link" clamp=2>{{::prefix}}{{list.trans.title}}</span>
     </a>
   </div>
 
-  <div class="row-vertically-centered" ng-repeat="archivedList in archivedLists | filter:notSelectedList" ng-click="listSelected(archivedList)">
+  <div class="row-vertically-centered" ng-repeat="archivedList in archivedLists | filter:notSelectedList"
+    ng-click="listSelected(archivedList)">
     <a href class="link">
-      <span class="text-link" ng-bind="archivedList.title" clamp=2></span>
+      <span class="text-link" ng-bind="archivedList.trans.title" clamp=2></span>
     </a>
   </div>
 

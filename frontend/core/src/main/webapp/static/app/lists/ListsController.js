@@ -18,6 +18,10 @@
                           AnalyticsService, ListsService, SwiperService, UISessionService, UserService,
                           UserSessionService) {
 
+  $scope.getNewList = function(initialValues) {
+    return ListsService.getNewList(initialValues, UISessionService.getActiveUUID());
+  };
+
   var featureChangedCallback = function featureChangedCallback(name, data/*, state*/) {
     if (name === 'list') {
       $scope.list = data;

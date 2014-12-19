@@ -20,17 +20,18 @@
     templateUrl: $rootScope.urlBase + 'app/base/listPicker.html',
     scope: {
       lists: '=listPicker',
-      newList: '=?listPickerNewItem',
       type: '@listPickerType',
       prefix: '@listPickerPrefix',
       archivedLists: '=listPickerArchivedLists',
+      getNewList: '&?listPickerNewItem',
       getSelectedList: '&listPickerGetSelected',
       closeAndSave: '&listPickerSave',
       closeAndClearList: '&listPickerClear'
     },
     link: function(scope) {
-      if (angular.isFunction(scope.getSelectedList))
-        scope.selectedList = scope.getSelectedList();
+      scope.newList = scope.getNewList();
+      scope.selectedList = scope.getSelectedList();
+      scope.type = scope.type || 'list';
 
       /*
       * Filter selected list from lists.
@@ -38,28 +39,29 @@
       scope.notSelectedList = function(list) {
         if (!scope.selectedList) return true;  // No list selected.
 
-        if (list.uuid) {
+        if (list.trans.uuid) {
           // Compare with uuid.
-          return scope.selectedList.uuid && list.uuid !== scope.selectedList.uuid;
+          return scope.selectedList.trans.uuid && list.trans.uuid !== scope.selectedList.trans.uuid;
         } else {
           // Compare with title.
-          return scope.selectedList.title !== list.title;
+          return scope.selectedList.trans.title !== list.trans.title;
         }
       };
 
       scope.listSelected = function(list) {
         var listToSave = {};
         if (scope.prefix) {
-          if (list.title && list.title.length <= 1) return; // Title has only prefix. Do not save.
+          if (list.trans.title && list.trans.title.length <= 1) return; // Title has only prefix. Do not save.
 
           for (var listProperty in list) {
             if (list.hasOwnProperty(listProperty)) {
               listToSave[listProperty] = list[listProperty];
             }
           }
-          listToSave.title = listToSave.title.substring(1);
-        } else
-        listToSave = list;
+          listToSave.trans.title = listToSave.trans.title.substring(1);
+        } else {
+          listToSave = list;
+        }
 
         scope.closeAndSave({list: listToSave});
       };
@@ -71,7 +73,7 @@
       scope.textareaKeyDown = function(event) {
         if (event.keyCode === 13) { // RETURN button
           // Enter in add item saves, no line breaks allowed
-          if (scope.newList.title && scope.newList.title.length > 0) {
+          if (scope.newList.trans.title && scope.newList.trans.title.length > 0) {
            scope.listSelected(scope.newList);
          }
          event.preventDefault();
@@ -84,7 +86,7 @@
       var preventWatch;
       if (watch) return;  // no rebind
 
-      watch = scope.$watch('newList.title', function(newTitle) {
+      watch = scope.$watch('newList.trans.title', function(newTitle) {
         if (preventWatch) {
           preventWatch = false;
           return;
@@ -93,19 +95,17 @@
         if (!newTitle) {
           // Title cleared. Add prefix.
           preventWatch = true;
-          scope.newList.title = scope.prefix;
+          scope.newList.trans.title = scope.prefix;
           return;
         } else if (newTitle) {
           // New title.
           if (newTitle.charAt(0) !== scope.prefix) {
             // Add prefix to first character of title.
-            scope.newList.title = scope.prefix + newTitle;
+            scope.newList.trans.title = scope.prefix + newTitle;
           }
         }
       });
     }
-
-    scope.placeholder = 'add ' + (scope.type ? scope.type : 'list') + '\u2026';
 
     scope.watchForTitleChange = function() {
       if (scope.prefix) bindWatcher();
