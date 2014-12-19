@@ -15,7 +15,7 @@
 
  'use strict';
 
- function TagEditorController($q, $rootScope, $scope) {
+ function TagEditorController($q, $rootScope, $scope, TagsService, UISessionService) {
 
   // INITIALIZING
 
@@ -55,16 +55,24 @@
     }
   };
 
+  $scope.isTagEdited = function() {
+    if ($scope.tagTitlebarHasText()) {
+      return TagsService.isTagEdited($scope.tag, UISessionService.getActiveUUID());
+    }
+  };
+
   $scope.endTagEdit = function() {
     $scope.closeEditor();
   };
 
   function tagEditorAboutToClose() {
-    if ($scope.tagTitlebarHasText() && !$scope.tag.deleted){
+    if ($scope.isTagEdited() && !$scope.tag.deleted){
       saveTagInEdit();
-    }else if (deleting){
+    } else if (deleting){
       $scope.swipeToContextsAndReset();
       deleting = false;
+    } else {
+      TagsService.resetTag($scope.tag, UISessionService.getActiveUUID());
     }
   }
 
@@ -87,5 +95,5 @@
   };
 }
 
-TagEditorController['$inject'] = ['$q', '$rootScope', '$scope'];
+TagEditorController['$inject'] = ['$q', '$rootScope', '$scope', 'TagsService', 'UISessionService'];
 angular.module('em.main').controller('TagEditorController', TagEditorController);

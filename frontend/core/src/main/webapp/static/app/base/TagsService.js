@@ -138,6 +138,12 @@
       }
       return deferred.promise;
     },
+    isTagEdited: function(tag, ownerUUID) {
+      return ItemLikeService.isEdited(tag, 'tag', ownerUUID, tagFieldInfos);
+    },
+    resetTag: function(tag, ownerUUID) {
+      return ItemLikeService.resetTrans(tag, 'tag', ownerUUID, tagFieldInfos);
+    },
     deleteTag: function(tag, ownerUUID) {
       var deferred = $q.defer();
       if (tags[ownerUUID].deletedTags.findFirstObjectByKeyValue('uuid', tag.trans.uuid, 'trans')) {
