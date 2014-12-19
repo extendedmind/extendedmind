@@ -27,7 +27,7 @@
       // Tasks with 'no date'.
       if (date === null) {
         for (var i = 0, len = tasks.length; i < len; i++) {
-          if (!tasks[i].due) filteredItems.push(tasks[i]);
+          if (!tasks[i].trans.due) filteredItems.push(tasks[i]);
         }
         return filteredItems;
       }
@@ -37,9 +37,9 @@
 
       for (var k = 0, kLen = tasks.length; k < kLen; k++) {
         var task = tasks[k];
-        if (task.due) {
+        if (task.trans.due) {
           // Match tasks with given date, or if date is today match also overdue tasks
-          if (task.due === date || (date === today && task.due < today)) {
+          if (task.trans.due === date || (date === today && task.trans.due < today)) {
             // Don't add completed tasks to future dates or tasks that were completed before today
             if (!(task.trans.completed && date > today) &&
                 !(task.trans.completed && task.trans.completed < todayMidnight))
