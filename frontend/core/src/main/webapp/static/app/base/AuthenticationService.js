@@ -195,9 +195,10 @@
     }
 
     deferredAuthentication.promise.then(null, function() {
-      // On error redirect to login
-      if ($rootScope.redirectToEntry) $rootScope.redirectToEntry();
+      // On error, emit redirectToEntry
+      $rootScope.$emit('emException', {type: 'redirectToEntry'});
     });
+
     return deferredAuthentication.promise;
   }
 

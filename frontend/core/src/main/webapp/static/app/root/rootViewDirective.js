@@ -99,6 +99,8 @@
         $templateCache.removeAll();
       };
 
+      // EVENTS - user interactions, exceptions
+
       // Listen to interactions emitted to $rootScope.
       var unbindEmInteraction = $rootScope.$on('emInteraction', function(name, interaction) {
         if (interaction.type === 'onlineRequired') {
@@ -131,6 +133,8 @@
             $rootScope.redirectToEntry();
           }
         // TODO: Type 'response' for offline responses!
+      } else if (exception.type === 'redirectToEntry') {
+        $rootScope.redirectToEntry();
       } else {
         AnalyticsService.error('unexpected', JSON.stringify(exception));
 
