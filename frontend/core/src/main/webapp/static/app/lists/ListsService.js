@@ -303,6 +303,7 @@
         if (items[i].relationships) {
           if (items[i].relationships.parent === deletedList.trans.uuid) {
             delete items[i].relationships.parent;
+            if (!items[i].relationships.tags) delete items[i].relationships
             modifiedItems.push(items[i]);
           }
         }

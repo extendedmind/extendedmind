@@ -263,7 +263,7 @@
                   conflictingItem.content = conflictedContent;
 
                   // Also update the current note modifications to match the queue
-                  var itemInfo = updateModProperties(conflictingItem.uuid,
+                  updateModProperties(conflictingItem.uuid,
                                       queue[i].params.type,
                                       {content: conflictedContent,
                                        modified: conflictingItem.modified},
@@ -319,11 +319,11 @@
                 updateModProperties(conflictingItem.uuid,
                                     queue[i].params.type,
                                     {modified: conflictingItem.modified,
-                                    completed: conflictingItem.completed},
+                                    favorited: conflictingItem.favorited},
                                     request.params.owner);
                 queue.splice(i, 1);
                 continue;
-              }else if (queue[i].content.url.endsWith('/unfavorite') && !conflictingItem.completed){
+              }else if (queue[i].content.url.endsWith('/unfavorite') && !conflictingItem.favorited){
                 queue.splice(i, 1);
                 continue;
               }
@@ -351,10 +351,20 @@
                   if (listInfoInResponse.type !== 'list' || listInfoInResponse.item.deleted){
                     // The UUID here has been transformed into another type or it has been deleted,
                     // remove it from the queue
+
+                    var listDeleteProperties;
+
                     delete queue[i].content.data.relationships.parent;
-                  }else if (listInfoInResponse.item.deleted){
-                    // List has been deleted, remove it from the queue
-                    delete queue[i].content.data.relationships.parent;
+                    if (!queue[i].content.data.relationships.tags){
+                      delete queue[i].content.data.relationships;
+                      listDeleteProperties = {relationships: null};
+                    }else{
+                      listDeleteProperties = {relationships: queue[i].content.data.relationships};
+                    }
+                    updateModProperties(queue[i].params.uuid,
+                                        queue[i].params.type,
+                                        listDeleteProperties,
+                                        request.params.owner);
                   }
                 }else{
                   // TODO: Tag has as parent another tag
@@ -363,7 +373,9 @@
             }
 
             // Check tags
-            if (queue[i].content.data.relationships.tags){
+            if (queue[i].content.data.relationships && queue[i].content.data.relationships.tags){
+
+              var tagRemoved = false;
               for (j=queue[i].content.data.relationships.tags.length-1; j>=0; j--){
                 var tagInfoInResponse = getItemInfoFromResponse(
                                           response,
@@ -371,7 +383,29 @@
                 if (tagInfoInResponse && tagInfoInResponse.item.deleted){
                   // tag has been deleted, remove it from item in the queue
                   queue[i].content.data.relationships.tags.splice(j, 1);
+                  tagRemoved = true;
                 }
+              }
+
+              if (tagRemoved){
+                var tagRemoveProperties;
+                if (queue[i].content.data.relationships.tags.length === 0 &&
+                    !queue[i].content.data.relationships.parent){
+                  delete queue[i].content.data.relationships;
+                  tagRemoveProperties = {relationships: null};
+                }else{
+                  tagRemoveProperties = {relationships: {}};
+                  if (queue[i].content.data.relationships.parent){
+                    tagRemoveProperties.parent = queue[i].content.data.relationships.parent;
+                  }
+                  if (queue[i].content.data.relationships.tags.length){
+                    tagRemoveProperties.tags = queue[i].content.data.relationships.tags;
+                  }
+                }
+                updateModProperties(queue[i].params.uuid,
+                                    queue[i].params.type,
+                                    tagRemoveProperties,
+                                    request.params.owner);
               }
             }
           }
@@ -398,11 +432,11 @@
           }
           for (i=0, len=queueSpliceInfos.length; i<len; i++){
             // Remove mod from the item and then remove the entire item
-            var itemInfo = updateModProperties(queue[queueSpliceInfos[i].index].params.uuid,
+            var mismatchItemInfo = updateModProperties(queue[queueSpliceInfos[i].index].params.uuid,
                                                queue[queueSpliceInfos[i].index].params.type,
                                                null, request.params.owner);
-            if (itemInfo){
-              removeItemFromArray(request.params.owner, itemInfo.item, itemInfo.type);
+            if (mismatchItemInfo){
+              removeItemFromArray(request.params.owner, mismatchItemInfo.item, mismatchItemInfo.type);
             }
             // All that's left is to remove the request from the queue: the response and will be added to
             // the right service after this

@@ -1313,6 +1313,100 @@ describe('SynchronizeService', function() {
   });
 
 
+  it('should handle sync with deleted list and tag that are used in put', function () {
+    MockUserSessionService.offlineEnabled = true;
+
+    // 1. save new task with shopping list uuid
+    var tasks = TasksService.getTasks(testOwnerUUID);
+    var shoppingListUUID = 'cf726d03-8fee-4614-8b68-f9f885938a53';
+    var homeUUID = '1208d45b-3b8c-463e-88f3-f7ef19ce87cd';
+    var orangesTransport = {
+      title: 'buy oranges',
+      relationships: {
+        parent: shoppingListUUID,
+        tags: [homeUUID]
+      }
+    };
+    var oranges = TasksService.getNewTask({title: 'buy oranges', list: shoppingListUUID,
+                                           context: homeUUID}, testOwnerUUID);
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task',
+                           orangesTransport)
+       .respond(404);
+    TasksService.saveTask(oranges, testOwnerUUID);
+    $httpBackend.flush();
+    expect(tasks.length)
+      .toBe(5);
+    expect(tasks[4].uuid)
+      .toBeUndefined();
+    expect(tasks[4].modified)
+      .toBeUndefined();
+    expect(tasks[4].mod.relationships.parent)
+      .toBe(shoppingListUUID);
+
+    // 2. save existing task with shopping list uuid
+    var cleanCloset = TasksService.getTaskInfo('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID).task;
+    cleanCloset.trans.list = shoppingListUUID;
+    cleanCloset.trans.context = homeUUID;
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task',
+                           orangesTransport)
+       .respond(404);
+    TasksService.saveTask(cleanCloset, testOwnerUUID);
+    $httpBackend.flush();
+    expect(tasks.length)
+      .toBe(5);
+    expect(tasks[0].mod.relationships.parent)
+      .toBe(shoppingListUUID);
+
+    // 3. sync online with the list deleted, the list should have been removed from tasks
+
+    var latestModified = now.getTime();
+    MockUserSessionService.setLatestModified(latestModified);
+
+    var shoppingList = ListsService.getListInfo(shoppingListUUID, testOwnerUUID).list;
+    var homeContext = TagsService.getTagInfo(homeUUID, testOwnerUUID).tag;
+
+    delete orangesTransport.relationships;
+    $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
+                            latestModified + '&deleted=true&archived=true&completed=true')
+        .respond(200, {
+          lists: [
+            {uuid: shoppingList.uuid,
+             title: shoppingList.title,
+             created: shoppingList.created,
+             deleted: latestModified,
+             modified: latestModified}],
+          tags: [
+            {uuid: homeContext.uuid,
+             title: homeContext.title,
+             tagType: homeContext.tagType,
+             created: shoppingList.created,
+             deleted: latestModified,
+             modified: latestModified
+            }
+          ]});
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task',
+                           orangesTransport)
+        .respond(200, putNewItemResponse);
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' +
+                           cleanCloset.trans.uuid,
+                           {title: cleanCloset.trans.title,
+                            modified: cleanCloset.modified})
+        .respond(200, putExistingItemResponse);
+    SynchronizeService.synchronize(testOwnerUUID);
+    $httpBackend.flush();
+
+    var shoppingList = ListsService.getListInfo(shoppingListUUID, testOwnerUUID).list;
+    expect(shoppingList.mod)
+      .toBeUndefined();
+    expect(shoppingList.deleted)
+      .toBe(latestModified);
+    expect(cleanCloset.mod.relationships)
+      .toBeUndefined();
+    expect(oranges.mod.relatiohships)
+      .toBeUndefined();
+  });
+
+
   it('should handle item, note and list converted to task in different client', function () {
     var latestModified = Date.now() - 10000;
     MockUserSessionService.latestModified = latestModified;

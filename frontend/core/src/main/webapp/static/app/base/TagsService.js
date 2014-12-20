@@ -201,9 +201,14 @@
       var modifiedItems = [];
       for (var i = 0, len = items.length; i < len; i++) {
         if (items[i].relationships && items[i].relationships.tags) {
-          for (var j = 0, jlen = items[i].relationships.tags.length; j < jlen; j++) {
+          for (var j = items[i].relationships.tags.length - 1; j >= 0; j--) {
             if (items[i].relationships.tags[j] === deletedTag.uuid) {
               items[i].relationships.tags.splice(j, 1);
+              if (items[i].relationships.tags.length === 0){
+                delete items[i].relationships.tags;
+                if (!items[i].relationships.parent)
+                  delete items[i].relationships;
+              }
               modifiedItems.push(items[i]);
             }
           }

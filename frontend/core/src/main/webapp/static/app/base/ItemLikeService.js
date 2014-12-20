@@ -200,7 +200,7 @@
     if (properties && object){
       for (var property in properties){
         if (properties.hasOwnProperty(property)){
-          if (properties[property] === undefined && object[property])
+          if (properties[property] === null && object[property])
             delete object[property];
           else
             object[property] = properties[property];
