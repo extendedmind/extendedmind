@@ -5,8 +5,8 @@
       <div class="group-mixed--middle">
         <h2 class="group-heading justified">
           <a href ng-if="context" class="link" ng-click="openEditor('tag', context)">
-            <span class="text-heading" ng-bind="'@' + context.title"
-            ng-class="context.title.length > 6 && 'long'" clamp=2></span>
+            <span class="text-heading" ng-bind="'@' + context.trans.title"
+              ng-class="context.trans.title.length > 6 && 'long'" clamp=2></span>
           </a>
           <div ng-if="!context">
             <span class="text-heading long" clamp=2>no context</span>

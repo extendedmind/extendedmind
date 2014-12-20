@@ -25,9 +25,9 @@
   // SAVING, DELETING
   function saveTagInEdit() {
     $scope.deferEdit().then(function() {
-      if ($scope.tag.tagType === 'context'){
+      if ($scope.tag.trans.tagType === 'context'){
         $scope.saveContext($scope.tag);
-      }else if ($scope.tag.tagType === 'keyword'){
+      }else if ($scope.tag.trans.tagType === 'keyword'){
         $scope.saveKeyword($scope.tag);
       }
     });
@@ -37,9 +37,9 @@
   $scope.deleteTagInEdit = function() {
     deleting = true;
     var deferredDelete;
-    if ($scope.tag.tagType === 'context'){
+    if ($scope.tag.trans.tagType === 'context'){
       deferredDelete = $scope.deleteContext($scope.tag);
-    }else if ($scope.tag.tagType === 'keyword'){
+    }else if ($scope.tag.trans.tagType === 'keyword'){
       deferredDelete = $scope.deleteKeyword($scope.tag);
     }
     deferredDelete.then(function(){
@@ -48,9 +48,9 @@
   };
 
   $scope.undeleteTagInEdit = function() {
-    if ($scope.tag.tagType === 'context'){
+    if ($scope.tag.trans.tagType === 'context'){
       $scope.undeleteContext($scope.tag);
-    }else if ($scope.tag.tagType === 'keyword'){
+    }else if ($scope.tag.trans.tagType === 'keyword'){
       $scope.undeleteKeyword($scope.tag);
     }
   };

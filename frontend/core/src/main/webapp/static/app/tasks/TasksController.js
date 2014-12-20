@@ -206,7 +206,7 @@
     if (context) {
       return {
         trans: {
-          context: context.uuid,
+          context: context.trans.uuid,
           itemType: 'task'
         }
       };
@@ -225,7 +225,7 @@
   function refreshFeatureMapHeading(){
     $scope.$evalAsync(function(){
       if ($scope.context)
-        $scope.getFeatureMap('tasks').slides.right.heading = '@' + $scope.context.title;
+        $scope.getFeatureMap('tasks').slides.right.heading = '@' + $scope.context.trans.title;
       else
         $scope.getFeatureMap('tasks').slides.right.heading = 'no context';
     });
