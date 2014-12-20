@@ -124,8 +124,8 @@
 
   methods.deleteOnline = function(url, regex, data) {
     return refreshCredentials(true).then(function() {
-      if (regex.test(url)) {
-        return HttpClientService.deleteOnline(getUrlPrefix() + url, data);
+      if (regex.test(angular.isObject(url) ? url.value : url)) {
+        return HttpClientService.deleteOnline(getUrlPrefix(), url, data);
       } else {
         return emitRegexException(regex, 'delete', url);
       }
@@ -177,8 +177,8 @@
 
   methods.postOnline = function(url, regex, data, skipRefresh, skipLogStatuses) {
     function doPostOnline(url, regex, data, skipLogStatuses) {
-      if (regex.test(url)) {
-        return HttpClientService.postOnline(getUrlPrefix() + url, data, skipLogStatuses);
+      if (regex.test(angular.isObject(url) ? url.value : url)) {
+        return HttpClientService.postOnline(getUrlPrefix(), url, data, skipLogStatuses);
       } else {
         return emitRegexException(regex, 'post', url);
       }

@@ -360,6 +360,9 @@
       return deferred.promise;
     },
     processDelete: function(item, itemType, ownerUUID, fieldInfos){
+      function getDeleteUrl(params){
+        return params.prefix + params.item.trans.uuid;
+      }
       var deferred = $q.defer();
 
       // TODO: implement offline for lists and tags and remove the two latter conditions!
@@ -380,7 +383,12 @@
         deferred.resolve();
       } else {
         // Online
-        BackendClientService.deleteOnline('/api/' + ownerUUID + '/' + itemType +'/' + item.trans.uuid,
+        BackendClientService.deleteOnline({ value: '/api/' + ownerUUID + '/' + itemType +'/' +
+                                                        item.trans.uuid,
+                                            refresh: getDeleteUrl,
+                                            params: {
+                                              prefix: '/api/' + ownerUUID + '/' + itemType +'/',
+                                              item: item }},
                                           this.getDeleteRegex(itemType))
         .then(function(result) {
           item.deleted = result.data.deleted;
@@ -397,6 +405,9 @@
       return deferred.promise;
     },
     undelete: function(item, itemType, ownerUUID, fieldInfos){
+      function getUndeleteUrl(params){
+        return params.prefix + params.item.trans.uuid + '/undelete';
+      }
       var deferred = $q.defer();
       // TODO: implement offline for lists and tags and remove the two latter conditions!
       if (UserSessionService.isOfflineEnabled() && itemType !== 'list' && itemType !== 'tag') {
@@ -413,8 +424,12 @@
         deferred.resolve();
       } else {
         // Online
-        BackendClientService.postOnline('/api/' + ownerUUID + '/' + itemType +'/' +
-                                        item.trans.uuid + '/undelete',
+        BackendClientService.postOnline({ value: '/api/' + ownerUUID + '/' + itemType +'/' +
+                                                 item.trans.uuid + '/undelete',
+                                          refresh: getUndeleteUrl,
+                                          params: {
+                                            prefix: '/api/' + ownerUUID + '/' + itemType +'/',
+                                            item: item }},
                                         this.getUndeleteRegex(itemType))
         .then(function(result) {
           delete item.deleted;

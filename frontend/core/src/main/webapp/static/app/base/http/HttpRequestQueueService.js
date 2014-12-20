@@ -266,6 +266,12 @@ function HttpRequestQueueService() {
         localStorage.removeItem('primaryRequest');
       }
     },
+    isProcessing: function() {
+      return processing;
+    },
+    isEmpty: function() {
+      return !primary && !secondary && !queue.length && !beforeLast;
+    }
   };
   return service;
 }

@@ -150,7 +150,8 @@
                 headRequest.errorStatus = status;
                 HttpRequestQueueService.saveQueue();
                 HttpRequestQueueService.releaseLock();
-                $rootScope.$emit('emException', {type: 'http', value: {status: status, data: data, url: config.url}});
+                $rootScope.$emit('emException', {type: 'http', value: {status: status, data: data,
+                                                                       url: config.url}});
               }
             }
           }
@@ -173,6 +174,67 @@
         });
       }
     }
+  }
+
+
+  var checkRequestsExecutionInterval = 50;
+  var periodicChecker;
+  function checkRequestsPeriodic(deferred){
+    return setTimeout(function() {
+      checkRequestExecuting(deferred);
+      periodicChecker = checkRequestsPeriodic(deferred);
+    }, checkRequestsExecutionInterval);
+  }
+
+  function checkRequestExecuting(deferred){
+    if (!HttpRequestQueueService.isProcessing() && !HttpRequestQueueService.isEmpty()){
+      deferred.reject();
+    }
+    if (HttpRequestQueueService.isEmpty()){
+      deferred.resolve();
+    }
+  }
+
+  function waitForRequestsExecution(){
+    // There are requests in queue, start looping them, and check back once every 500ms to see
+    // if the queue is empty and we're not offline
+    var deferred = $q.defer();
+    if (HttpRequestQueueService.isProcessing()){
+      periodicChecker = checkRequestsPeriodic(deferred);
+      deferred.promise.then(
+        function(){
+          clearTimeout(periodicChecker);
+        },
+        function(){
+          clearTimeout(periodicChecker);
+          return $q.reject();
+        }
+      );
+    }else{
+      deferred.reject();
+    }
+    return deferred.promise;
+  }
+
+  function executeRequestsAndPoll(doFn, urlPrefix, url, data, skipLogStatuses){
+    var deferred = $q.defer();
+    executeRequests();
+    var exectionReadyPromise = waitForRequestsExecution();
+    exectionReadyPromise.then(
+      function(){
+        doFn(urlPrefix, url, data, skipLogStatuses).then(
+          function (success){
+            deferred.resolve(success);
+          },function(failure){
+            deferred.reject(failure);
+          }
+        );
+      },
+      function(failure){
+        deferred.reject(failure);
+      }
+    );
+    return deferred.promise;
   }
 
   function processPrimaryRequest(url, data) {
@@ -212,18 +274,33 @@
     };
   });
 
+  function getRefreshedUrlString(urlPrefix, url){
+    if (angular.isObject(url)){
+      return urlPrefix + url.refresh(url.params);
+    }else{
+      return urlPrefix + url;
+    }
+  }
+
   // Online alternatives for POST, PUT and DELETE
-  methods.postOnline = function(url, data, skipLogStatuses) {
-    return $http({method: 'post', url: url, data: data}).then(function(success) {
-      online = true;
-      if (onlineCallback) {
-        onlineCallback(online);
-      }
-      return success;
-    }, function(error) {
-      emitException(error, skipLogStatuses);
-      return $q.reject({type:'http', value: error});
-    });
+  methods.postOnline = function(urlPrefix, url, data, skipLogStatuses) {
+    function doPostOnline(urlPrefix, url, data, skipLogStatuses){
+      return $http({method: 'post', url: getRefreshedUrlString(urlPrefix, url), data: data}).then(function(success) {
+        online = true;
+        if (onlineCallback) {
+          onlineCallback(online);
+        }
+        return success;
+      }, function(error) {
+        emitException(error, skipLogStatuses);
+        return $q.reject({type:'http', value: error});
+      });
+    }
+    if (HttpRequestQueueService.isEmpty()){
+      return doPostOnline(urlPrefix, url, data, skipLogStatuses);
+    }else{
+      return executeRequestsAndPoll(doPostOnline, urlPrefix, url, data, skipLogStatuses)
+    }
   };
 
   methods.putOnline = function(url, data) {
@@ -250,13 +327,20 @@
     });
   };
 
-  methods.deleteOnline = function(url, data) {
-    return $http({method: 'delete', url: url}).then(function(success) {
-      return success;
-    }, function(error) {
-      emitException(error);
-      return $q.reject({type:'http', value: error});
-    });
+  methods.deleteOnline = function(urlPrefix, url, data) {
+    function doDeleteOnline(urlPrefix, url, data){
+      return $http({method: 'delete', url: getRefreshedUrlString(urlPrefix, url), data: data}).then(function(success) {
+        return success;
+      }, function(error) {
+        emitException(error);
+        return $q.reject({type:'http', value: error});
+      });
+    }
+    if (HttpRequestQueueService.isEmpty()){
+      return doDeleteOnline(urlPrefix, url, data);
+    }else{
+      return executeRequestsAndPoll(doDeleteOnline, urlPrefix, url, data)
+    }
   };
 
   // Custom method for a primary POST, i.e. authentication

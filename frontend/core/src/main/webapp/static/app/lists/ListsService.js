@@ -244,6 +244,9 @@
       return deferred.promise;
     },
     archiveList: function(list, ownerUUID) {
+      function getArchiveUrl(params){
+        return params.prefix + params.list.trans.uuid + '/archive';
+      }
       // Check that list is active before trying to archive
       var deferred = $q.defer();
       if (lists[ownerUUID].deletedLists.findFirstObjectByKeyValue('uuid', list.trans.uuid, 'trans')) {
@@ -251,7 +254,12 @@
       }else if (lists[ownerUUID].archivedLists.findFirstObjectByKeyValue('uuid', list.trans.uuid, 'trans')) {
         deferred.resolve('unmodified');
       } else {
-        BackendClientService.postOnline('/api/' + ownerUUID + '/list/' + list.trans.uuid + '/archive',
+        BackendClientService.postOnline({ value: '/api/' + ownerUUID + '/list/' +
+                                                 list.trans.uuid + '/archive',
+                                          refresh: getArchiveUrl,
+                                          params: {
+                                            prefix: '/api/' + ownerUUID + '/list/',
+                                            list: list }},
                                         this.archiveListRegex)
         .then(function(result) {
           list.archived = result.data.archived;
@@ -303,7 +311,7 @@
         if (items[i].relationships) {
           if (items[i].relationships.parent === deletedList.trans.uuid) {
             delete items[i].relationships.parent;
-            if (!items[i].relationships.tags) delete items[i].relationships
+            if (!items[i].relationships.tags) delete items[i].relationships;
             modifiedItems.push(items[i]);
           }
         }

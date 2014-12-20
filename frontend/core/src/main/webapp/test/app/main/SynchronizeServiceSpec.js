@@ -17,6 +17,7 @@
 'use strict';
 
 describe('SynchronizeService', function() {
+  var flag;
 
   // INJECTS
 
@@ -1202,6 +1203,109 @@ describe('SynchronizeService', function() {
       .toBeUndefined();
     expect(lists[4].modified)
       .toBe(undeleteItemResponse.modified);
+  });
+
+  it('should handle wait for offline update to finish before doing list delete and undelete', function () {
+    MockUserSessionService.offlineEnabled = true;
+
+    var lists = ListsService.getLists(testOwnerUUID);
+
+    // 1. Create three items to the offline queue
+    var testItemValues = {
+      'title': 'test list'
+    };
+    var testItem = ItemsService.getNewItem(testItemValues, testOwnerUUID);
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
+       .respond(404);
+    ItemsService.saveItem(testItem, testOwnerUUID);
+    $httpBackend.flush();
+
+    // 2. make item into list
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
+       .respond(404);
+    ItemsService.itemToList(testItem, testOwnerUUID);
+    $httpBackend.flush();
+
+    // 3. update list, this should just replace the previous call because itemToList
+    //    is a list update and updating is lastReplaceable
+    var updatedTestList = lists[4];
+    updatedTestList.trans.description = 'test description';
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
+       .respond(404);
+    ListsService.saveList(updatedTestList, testOwnerUUID);
+    $httpBackend.flush();
+
+    // 4. delete online, expect queue to empty
+    var latestModified = now.getTime();
+    MockUserSessionService.setLatestModified(latestModified);
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
+        .respond(200, putNewItemResponse);
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/list/' +
+                           putNewItemResponse.uuid,
+                           {title: updatedTestList.trans.title,
+                            description: updatedTestList.trans.description,
+                            modified: putNewItemResponse.modified})
+        .respond(200, putExistingItemResponse);
+    ListsService.deleteList(updatedTestList, testOwnerUUID);
+    $httpBackend.flush();
+
+    runs(function() {
+      flag = false;
+      $httpBackend.expectDELETE('/api/' + testOwnerUUID + '/list/' + updatedTestList.mod.uuid)
+         .respond(200, deleteItemResponse);
+      setTimeout(function(){
+        $httpBackend.flush();
+        expect(lists.length)
+          .toBe(4);
+        expect(updatedTestList.deleted)
+          .toBe(deleteItemResponse.deleted);
+        expect(updatedTestList.modified)
+          .toBe(deleteItemResponse.result.modified);
+        flag = true;
+      }, 100);
+    });
+    waitsFor(function(){
+      return flag;
+    }, 1000);
+
+    runs(function() {
+      flag = false;
+
+      // 5. Create item to the offline queue
+      var testItemValues2 = {
+        'title': 'test item 2'
+      };
+      var testItem2 = ItemsService.getNewItem(testItemValues2, testOwnerUUID);
+      $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues2)
+         .respond(404);
+      ItemsService.saveItem(testItem2, testOwnerUUID);
+      $httpBackend.flush();
+
+      // 6. undelete online, expect queue to empty
+      var latestModified = now.getTime();
+      MockUserSessionService.setLatestModified(latestModified);
+      $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues2)
+          .respond(200, putNewItemResponse);
+      ListsService.undeleteList(updatedTestList, testOwnerUUID);
+      $httpBackend.flush();
+
+      $httpBackend.expectPOST('/api/' + testOwnerUUID + '/list/' + updatedTestList.mod.uuid + '/undelete')
+         .respond(200, undeleteItemResponse);
+      setTimeout(function(){
+        $httpBackend.flush();
+        expect(lists.length)
+          .toBe(5);
+        expect(updatedTestList.deleted)
+          .toBeUndefined();
+        expect(updatedTestList.modified)
+          .toBe(undeleteItemResponse.modified);
+        flag = true;
+      }, 100);
+    });
+    waitsFor(function(){
+      return flag;
+    }, 1000);
+
   });
 
   it('should handle tag offline create, update', function () {
