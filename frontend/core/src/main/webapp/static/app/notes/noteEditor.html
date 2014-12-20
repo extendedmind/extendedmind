@@ -121,7 +121,7 @@
           </span>
 
           <div ng-if="noteHasKeywords(note)" class="keywords-container row">
-            <div class="keyword-wrapper" ng-repeat="keyword in note.trans.keywords | orderBy:'title'">
+            <div class="keyword-wrapper" ng-repeat="keyword in note.trans.keywords | orderBy:'trans.title'">
               <a href class="keyword highlighted" ng-click="removeKeywordFromNote(note, keyword)">
                 <span class="text-keyword" ng-bind="'#' + keyword.trans.title" clamp=1></span>
               </a>
@@ -132,8 +132,8 @@
             <div class="keyword-wrapper"
               ng-repeat="keyword in keywords
               | keywordsFilter:{name:'byOtherThanNoteKeywords', item: note}
-              | filter:newKeyword.title
-              | orderBy:'title'">
+              | filter:newKeyword.trans.title
+              | orderBy:'trans.title'">
               <a href class="keyword link" ng-click="addKeywordToNote(note, keyword)">
                 <span class="text-keyword" ng-bind="'#' + keyword.trans.title" clamp=1></span>
               </a>

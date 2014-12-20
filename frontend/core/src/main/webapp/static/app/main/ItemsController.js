@@ -39,7 +39,7 @@
   // DELETING
 
   $scope.deleteItem = function(item) {
-    if (item.uuid) {
+    if (item.trans.uuid) {
 
       UISessionService.pushDelayedNotification({
         type: 'deleted',
@@ -58,7 +58,7 @@
   };
 
   $scope.undeleteItem = function(item) {
-    if (item.uuid) {
+    if (item.trans.uuid) {
       AnalyticsService.do('undeleteItem');
       return ItemsService.undeleteItem(item, UISessionService.getActiveUUID());
     }

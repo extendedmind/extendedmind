@@ -37,7 +37,7 @@
     var newKeywords = [];
     for (var i=0; i<keywords.length; i++){
       var keyword = keywords[i];
-      if (!keyword.uuid) {
+      if (!keyword.trans.uuid) {
         // Keyword is new when it doesn't have an UUID.
         newKeywords.push(keyword);
       }

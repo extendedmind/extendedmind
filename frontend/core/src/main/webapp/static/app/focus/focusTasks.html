@@ -339,7 +339,7 @@
               <div class="animate-list-item-leave"
                 ng-repeat="task in listInfos.array = (getFullArray()
                 | paramFilter:isListItemVisible:daySlides[2].pastDate)
-                | orderBy:'created':true
+                | orderBy:'trans.created':true
                 | limitTo: currentListLimitTo"
                 list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
               <div list-prompt="tasks" list-prompt-infos="listInfos"
@@ -365,7 +365,7 @@
               <div class="animate-list-item-leave"
                 ng-repeat="task in listInfos.array = (getFullArray()
                 | paramFilter:isListItemVisible:daySlides[0].pastDate)
-                | orderBy:'created':true
+                | orderBy:'trans.created':true
                 | limitTo: currentListLimitTo"
                 list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
               <div list-prompt="tasks" list-prompt-infos="listInfos"
@@ -391,7 +391,7 @@
               <div class="animate-list-item-leave"
                 ng-repeat="task in listInfos.array = (getFullArray()
                 | paramFilter:isListItemVisible:daySlides[1].pastDate)
-                | orderBy:'created':true
+                | orderBy:'trans.created':true
                 | limitTo: currentListLimitTo"
                 list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
               <div list-prompt="tasks" list-prompt-infos="listInfos"
@@ -417,7 +417,7 @@
               <div class="animate-list-item-leave"
                 ng-repeat="task in listInfos.array = (getFullArray()
                 | paramFilter:isListItemVisible:daySlides[2].pastDate)
-                | orderBy:'created':true
+                | orderBy:'trans.created':true
                 | limitTo: currentListLimitTo"
                 list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
               <div list-prompt="tasks" list-prompt-infos="listInfos"
@@ -443,7 +443,7 @@
               <div class="animate-list-item-leave"
                 ng-repeat="task in listInfos.array = (getFullArray()
                 | paramFilter:isListItemVisible:daySlides[0].pastDate)
-                | orderBy:'created':true
+                | orderBy:'trans.created':true
                 | limitTo: currentListLimitTo"
                 list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
               <div list-prompt="tasks" list-prompt-infos="listInfos"

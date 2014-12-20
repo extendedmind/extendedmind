@@ -20,7 +20,7 @@
       </form>
     </div>
     <div class="animate-list-item-leave"
-      ng-repeat="context in listInfos.array = (getFullArray()) | orderBy:'created':true
+      ng-repeat="context in listInfos.array = (getFullArray()) | orderBy:'trans.created':true
       | limitTo: currentListLimitTo" list-item>
       <div class="group-mixed">
         <a href class="group-mixed--middle link-list-item" swiper-click="swipeToContext(context)">

@@ -23,7 +23,7 @@
 
     <div class="animate-list-item-leave row-vertically-centered"
       ng-repeat="item in listInfos.array = (getFullArray())
-      | orderBy:'created':true
+      | orderBy:'trans.created':true
       | limitTo: currentListLimitTo"
       list-item>
       <a href class="link-list-item" swiper-click="openItemEditor(item)">

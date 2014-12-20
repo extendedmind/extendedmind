@@ -5,7 +5,7 @@
     <div ng-show="isOnboarded('notes')">
       <h2 class="group-heading justified row">all notes</h2>
       <div class="animate-list-item-leave tall"
-        ng-repeat="note in listInfos.array = (getFullArray()) | orderBy:'modified':true
+        ng-repeat="note in listInfos.array = (getFullArray()) | orderBy:'trans.modified':true
         | limitTo: currentListLimitTo" list-item ng-include="urlBase + 'app/notes/noteListItem.html'"></div>
       <div list-prompt="notes" list-prompt-infos="listInfos" list-prompt-hide="[onboardingInProgress]"></div>
     </div>

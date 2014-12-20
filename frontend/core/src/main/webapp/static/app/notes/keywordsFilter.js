@@ -18,7 +18,7 @@
   var keywordsFilters = {};
 
   keywordsFilters.byOtherThanNoteKeywords = function(keywords, note) {
-    if (note.trans && note.trans.keywords) {
+    if (note.trans.keywords) {
       var filteredKeywords = [];
       for (var i = 0, len = keywords.length; i < len; i++) {
         if (note.trans.keywords.indexOf(keywords[i]) === -1)

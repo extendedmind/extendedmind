@@ -21,8 +21,7 @@
   // SAVING
 
   $scope.saveKeyword = function(keyword) {
-    if (!keyword || !keyword.title || !keyword.title.length) return;
-    if (keyword.uuid) AnalyticsService.do('saveKeyword');
+    if (keyword.trans.uuid) AnalyticsService.do('saveKeyword');
     else AnalyticsService.do('addKeyword');
 
     TagsService.saveTag(keyword, UISessionService.getActiveUUID());
@@ -31,28 +30,17 @@
   // DELETING
 
   $scope.deleteKeyword = function (keyword) {
-    if (keyword.uuid){
+    if (keyword.trans.uuid){
       AnalyticsService.do('deleteKeyword');
       return TagsService.deleteTag(keyword, UISessionService.getActiveUUID());
     }
   };
 
   $scope.undeleteKeyword = function(keyword) {
-    if (keyword.uuid){
+    if (keyword.trans.uuid){
       AnalyticsService.do('undeleteKeyword');
       return TagsService.undeleteTag(keyword, UISessionService.getActiveUUID());
     }
-  };
-
-  $scope.addKeyword = function addKeyword(newKeyword) {
-    if (!newKeyword.title || newKeyword.title.length === 0) return false;
-
-    var keywordToSave = {title: newKeyword.title, tagType: newKeyword.tagType};
-    delete newKeyword.title;
-
-    TagsService.saveTag(keywordToSave, UISessionService.getActiveUUID()).then(function(/*keyword*/) {
-      AnalyticsService.do('addKeyword');
-    });
   };
 
   // CONTEXTS
@@ -64,7 +52,7 @@
   // SAVING
 
   $scope.saveContext = function(context) {
-    if (context.uuid) AnalyticsService.do('saveContext');
+    if (context.trans.uuid) AnalyticsService.do('saveContext');
     else AnalyticsService.do('addContext');
 
     return TagsService.saveTag(context, UISessionService.getActiveUUID());
@@ -73,7 +61,7 @@
   // DELETING
 
   $scope.deleteContext = function(context) {
-    if (context.uuid){
+    if (context.trans.uuid){
 
       UISessionService.pushDelayedNotification({
         type: 'deleted',
@@ -92,7 +80,7 @@
   };
 
   $scope.undeleteContext = function(context) {
-    if (context.uuid){
+    if (context.trans.uuid){
       AnalyticsService.do('undeleteContext');
       return TagsService.undeleteTag(context, UISessionService.getActiveUUID());
     }

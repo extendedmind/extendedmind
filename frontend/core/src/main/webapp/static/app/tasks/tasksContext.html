@@ -1,6 +1,6 @@
 <div class="container-content--outer" ng-if="isFeatureActive('tasks')" list-container>
   <section class="container-content"
-    list="tasks | itemsFilter:{name:'byTagUUID', filterBy: context ? context.uuid : undefined}" swiper-prevent>
+    list="tasks | itemsFilter:{name:'byTagUUID', filterBy: context ? context.trans.uuid : undefined}" swiper-prevent>
     <div class="group-mixed heading vertically-centered">
       <div class="group-mixed--middle">
         <h2 class="group-heading justified">
@@ -19,7 +19,7 @@
       ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
     <div class="animate-list-item-leave"
       ng-repeat="task in listInfos.array = (getFullArray() | paramFilter:isListItemVisible)
-      | orderBy:'created':true | limitTo: currentListLimitTo" list-item="getContextId()"
+      | orderBy:'trans.created':true | limitTo: currentListLimitTo" list-item="getContextId()"
       ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
     <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-hide="[listItemAddActive]"></div>
   </section>

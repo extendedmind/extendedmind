@@ -1,12 +1,13 @@
 <div class="container-content--outer" ng-if="isFeatureActive('list')" list-container>
-  <section class="container-content" list="allNotes | itemsFilter:{name:'byListUUID', filterBy: list.uuid}"
-    list-open="openEditor('note', getNewNote({list:list.uuid}))" swiper-prevent>
+  <section class="container-content"
+    list="allNotes | itemsFilter:{name:'byListUUID', filterBy: list.trans.uuid}"
+    list-open="openEditor('note', getNewNote({list: list.trans.uuid}))" swiper-prevent>
     <h2 class="group-heading justified row">notes</h2>
 
     <div class="animate-list-item-leave tall"
       ng-repeat="note in listInfos.array = (getFullArray())
-      | itemsFilter:{name:'byListUUID', filterBy: list.uuid}
-      | orderBy:'created':true | limitTo: currentListLimitTo"
+      | itemsFilter:{name:'byListUUID', filterBy: list.trans.uuid}
+      | orderBy:'trans.created':true | limitTo: currentListLimitTo"
       list-item ng-include="urlBase + 'app/notes/noteListItem.html'"></div>
     <div list-prompt="notes" list-prompt-infos="listInfos"></div>
   </section>

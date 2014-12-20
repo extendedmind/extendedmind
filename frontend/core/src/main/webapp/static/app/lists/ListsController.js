@@ -25,8 +25,6 @@
   var featureChangedCallback = function featureChangedCallback(name, data/*, state*/) {
     if (name === 'list') {
       $scope.list = data;
-      $scope.subtask = {trans: {list: $scope.list.uuid}};
-      $scope.newNote = {trans: {list: $scope.list.uuid}};
     } else if (name === 'lists') {
       if (data && data.archived) {
         // List was archived, swipe to archived lists slide.
@@ -45,8 +43,8 @@
   $scope.favoriteList = function(list) {
     var favoriteListUuids = UserSessionService.getUIPreference('favoriteLists');
     if (!favoriteListUuids) favoriteListUuids = [];
-    if (favoriteListUuids.indexOf(list.uuid) === -1){
-      favoriteListUuids.push(list.uuid);
+    if (favoriteListUuids.indexOf(list.trans.uuid) === -1){
+      favoriteListUuids.push(list.trans.uuid);
       updateFavoriteLists(favoriteListUuids);
     }
   };
@@ -54,7 +52,7 @@
   $scope.unfavoriteList = function(list) {
     var favoriteListUuids = UserSessionService.getUIPreference('favoriteLists');
     if (favoriteListUuids){
-      var favoriteIndex = favoriteListUuids.indexOf(list.uuid);
+      var favoriteIndex = favoriteListUuids.indexOf(list.trans.uuid);
       if (favoriteIndex !== -1){
         favoriteListUuids.splice(favoriteIndex, 1);
         updateFavoriteLists(favoriteListUuids);
@@ -92,7 +90,7 @@
   };
 
   $scope.archiveList = function(list) {
-    if (list.uuid){
+    if (list.trans.uuid){
       AnalyticsService.do('archiveList');
       return ListsService.archiveList(list, UISessionService.getActiveUUID());
     }
@@ -101,7 +99,7 @@
   // (UN)DELETING
 
   $scope.deleteList = function(list) {
-    if (list.uuid){
+    if (list.trans.uuid){
       AnalyticsService.do('deleteList');
       return ListsService.deleteList(list, UISessionService.getActiveUUID()).then(function(){
         UISessionService.pushDelayedNotification({
@@ -118,7 +116,7 @@
   };
 
   $scope.undeleteList = function(list) {
-    if (list.uuid){
+    if (list.trans.uuid){
       AnalyticsService.do('undeleteList');
       return ListsService.undeleteList(list, UISessionService.getActiveUUID());
     }

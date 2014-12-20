@@ -4,7 +4,7 @@
     list-open="openEditor('note', getNewFavoriteNote())" swiper-prevent>
     <h2 class="group-heading justified row">favorite</h2>
     <div class="animate-list-item-leave tall"
-      ng-repeat="note in listInfos.array = (getFullArray()) | orderBy:'favorited':true
+      ng-repeat="note in listInfos.array = (getFullArray()) | orderBy:'trans.favorited':true
       | limitTo: currentListLimitTo" list-item ng-include="urlBase + 'app/notes/noteListItem.html'"></div>
     <div list-prompt="notes" list-prompt-infos="listInfos" list-prompt-hide="[onboardingInProgress]"></div>
   </section>
