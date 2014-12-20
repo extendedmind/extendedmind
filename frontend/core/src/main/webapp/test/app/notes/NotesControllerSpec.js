@@ -23,7 +23,7 @@ describe('NotesController', function() {
     MockNotesService = {
       notes: [],
       saveNote: function(note) {
-        note.uuid = 'TEST';
+        note.trans.uuid = 'TEST';
         this.notes.push(note);
       },
       getNotes: function() {
@@ -52,7 +52,9 @@ describe('NotesController', function() {
 
   it('should delete note', function() {
     var note = {
-      title: 'note'
+      trans: {
+        title: 'note'
+      }
     };
     expect(MockNotesService.getNotes().length).toEqual(0);
     MockNotesService.saveNote(note);
