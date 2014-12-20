@@ -23,7 +23,7 @@
             ng-trim="false" ng-keydown="taskTitlebarTextKeyDown($event)"
             editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
             editable-field-focus="setTitleBarFocus()"
-            msd-elastic dynamic-placeholder="enter task title&#8230;" maxlength="128">
+            msd-elastic placeholder="enter task title&#8230;" maxlength="128">
           </textarea>
           <div ng-if="isTaskTitleClamped()">
             <span ng-class="{'text-downplayed': !task.trans.title}" class="text-clamped"

@@ -114,14 +114,16 @@
           <!-- KEYWORDS -->
           <form role="form" class="row-form" ng-submit="addNewKeywordToNote(note, newKeyword)"
             autocapitalize="none" autocorrect="off">
-            <input type="text" ng-model="newKeyword.title" placeholder="add keyword&#8230;" maxlength="128">
+            <input type="text" ng-model="newKeyword.trans.title" placeholder="add keyword&#8230;" maxlength="128">
           </form>
-          <span class="text-details row" ng-if="newKeyword.title" class="row" clamp=2>hit enter to create #{{newKeyword.title}}</span>
+          <span class="text-details row" ng-if="newKeyword.trans.title"
+            ng-bind="'hit enter to create #' + newKeyword.trans.title" clamp=2>
+          </span>
 
           <div ng-if="noteHasKeywords(note)" class="keywords-container row">
             <div class="keyword-wrapper" ng-repeat="keyword in note.trans.keywords | orderBy:'title'">
               <a href class="keyword highlighted" ng-click="removeKeywordFromNote(note, keyword)">
-                <span class="text-keyword" ng-bind="'#' + keyword.title" clamp=1></span>
+                <span class="text-keyword" ng-bind="'#' + keyword.trans.title" clamp=1></span>
               </a>
             </div>
           </div>
@@ -133,7 +135,7 @@
               | filter:newKeyword.title
               | orderBy:'title'">
               <a href class="keyword link" ng-click="addKeywordToNote(note, keyword)">
-                <span class="text-keyword" ng-bind="'#' + keyword.title" clamp=1></span>
+                <span class="text-keyword" ng-bind="'#' + keyword.trans.title" clamp=1></span>
               </a>
             </div>
           </div>

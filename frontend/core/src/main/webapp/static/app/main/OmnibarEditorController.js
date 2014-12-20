@@ -127,6 +127,8 @@
   /*
   * Case insensitive search filter for all item fields: title, content and description.
   *
+  * NOTE: See the links, why we are using angular.uppercase here.
+  *
   * @see: http://stackoverflow.com/a/2140644
   *       http://en.wikipedia.org/wiki/Capital_%E1%BA%9E
   *       http://msdn.microsoft.com/en-us/library/bb386042.aspx
@@ -134,9 +136,11 @@
   function searchItemFields(item) {
     if ($scope.searchText && $scope.searchText.delayed) {
       var delayedUserInput = angular.uppercase($scope.searchText.delayed);
-      if (item.title && angular.uppercase(item.title).indexOf(delayedUserInput) !== -1 ||
-          item.description && angular.uppercase(item.description).indexOf(delayedUserInput) !== -1 ||
-          item.content && angular.uppercase(item.content).indexOf(delayedUserInput) !== -1)
+
+      if (item.trans.title && angular.uppercase(item.trans.title).indexOf(delayedUserInput) !== -1 ||
+          item.trans.description &&
+          angular.uppercase(item.trans.description).indexOf(delayedUserInput) !== -1 ||
+          item.trans.content && angular.uppercase(item.trans.content).indexOf(delayedUserInput) !== -1)
       {
         return true;
       }
@@ -155,11 +159,11 @@
 
       // Then
       if (!$scope.selectedKeywords || !$scope.selectedKeywords.length) return false;
-      if (!item.trans || !item.trans.keywords) return false;
+      if (!item.trans.keywords) return false;
     }
 
     for (var i = 0, len = $scope.selectedKeywords.length; i < len; i++) {
-      if (item.trans && item.trans.keywords) {
+      if (item.trans.keywords) {
         if (item.trans.keywords.indexOf($scope.selectedKeywords[i]) === -1) {
           // Selected keyword is not found in the item.
           return false;
@@ -249,7 +253,7 @@
 
     for (var i = 0, len = $scope.filteredItems.searchResults.length; i < len; i++) {
       var item = $scope.filteredItems.searchResults[i];
-      if (item.trans && item.trans.keywords &&
+      if (item.trans.keywords &&
           item.trans.keywords.indexOf(keyword) !== -1)
       {
         // Keyword found in search results from item which has keywords.

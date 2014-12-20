@@ -14,11 +14,10 @@
       </div>
 
       <div class="row-vertically-centered with-textarea">
-        <textarea ng-model="list.trans.title" input-model-validator ng-trim="false"
+        <textarea ng-model="list.trans.title" input-model-validator ng-trim="false" msd-elastic
           ng-keydown="listTitlebarTextKeyDown($event)"
           editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
-          msd-elastic dynamic-placeholder="enter list title&#8230;" maxlength="128"
-          autocapitalize="none" autocorrect="off">
+          placeholder="enter list title&#8230;" maxlength="128" autocapitalize="none" autocorrect="off">
         </textarea>
       </div>
     </div>

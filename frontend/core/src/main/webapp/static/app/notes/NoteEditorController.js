@@ -132,9 +132,9 @@
   clearKeyword(); // Initialize new keyword.
 
   $scope.addNewKeywordToNote = function(note, newKeyword) {
-    if (!newKeyword || !newKeyword.title) return; // No text entered.
-    if (note.trans && note.trans.keywords) {
-      var noteKeyword = note.trans.keywords.findFirstObjectByKeyValue('title', newKeyword.title);
+    if (!newKeyword || !newKeyword.trans.title) return; // No text entered.
+    if (note.trans.keywords) {
+      var noteKeyword = note.trans.keywords.findFirstObjectByKeyValue('title', newKeyword.trans.title);
 
       if (noteKeyword !== undefined) {
         // Note's existing keyword. Do not re-add.
@@ -143,13 +143,13 @@
       }
     }
 
-    var keywordToAdd = $scope.keywords.findFirstObjectByKeyValue('title', newKeyword.title) || newKeyword;
+    var keywordToAdd = $scope.keywords.findFirstObjectByKeyValue('title', newKeyword.trans.title
+                                                                 ) || newKeyword;
     // Add already existing keyword or newly created keyword.
     $scope.addKeywordToNote(note, keywordToAdd);
   };
 
   $scope.addKeywordToNote = function(note, keyword) {
-    if (!$scope.note.trans) $scope.note.trans = {};
     if (!$scope.note.trans.keywords) $scope.note.trans.keywords = [];
     $scope.note.trans.keywords.push(keyword);
     clearKeyword();

@@ -29,7 +29,7 @@
   };
 
   $scope.noteHasKeywords = function noteHasKeywords(note) {
-    return note.trans && note.trans.keywords && note.trans.keywords.length;
+    return note.trans.keywords && note.trans.keywords.length;
   };
 
   // Return keywords, that has beend added during note edit.
@@ -69,7 +69,7 @@
   // SAVING
 
   $scope.saveNote = function saveNote(note) {
-    if (note.uuid) AnalyticsService.do('saveNote');
+    if (note.trans.uuid) AnalyticsService.do('saveNote');
     else AnalyticsService.do('addNote');
     return saveKeywords(note).then(function() {
       var favoriteBeforeSave = note.trans.favorited;
@@ -84,7 +84,7 @@
   // (UN)DELETING
 
   $scope.deleteNote = function deleteNote(note) {
-    if (note.uuid){
+    if (note.trans.uuid){
 
       UISessionService.pushDelayedNotification({
         type: 'deleted',
@@ -103,19 +103,19 @@
   };
 
   $scope.undeleteNote = function(note) {
-    if (note.uuid){
+    if (note.trans.uuid){
       AnalyticsService.do('undeleteNote');
       NotesService.undeleteNote(note, UISessionService.getActiveUUID());
     }
   };
 
   $scope.getNoteContentTeaser = function getNoteContentTeaser(note) {
-    if (note.content) {
+    if (note.trans.content) {
       var maximumTeaserLength = 300;
-      if (note.content.length <= maximumTeaserLength) {
-        return note.content;
+      if (note.trans.content.length <= maximumTeaserLength) {
+        return note.trans.content;
       } else {
-        return note.content.substring(0, maximumTeaserLength);
+        return note.trans.content.substring(0, maximumTeaserLength);
       }
     }
   };
@@ -124,7 +124,7 @@
   * Favorite note.
   */
   $scope.favoriteNote = function(note) {
-    if (note.uuid) {
+    if (note.trans.uuid) {
       AnalyticsService.do('favoriteNote');
       return NotesService.favoriteNote(note, UISessionService.getActiveUUID());
     } else {
@@ -136,7 +136,7 @@
   * Unfavorite note.
   */
   $scope.unfavoriteNote = function(note) {
-    if (note.uuid) {
+    if (note.trans.uuid) {
       AnalyticsService.do('unfavoriteNote');
       return NotesService.unfavoriteNote(note, UISessionService.getActiveUUID());
     } else {

@@ -1,9 +1,9 @@
 <div class="group-mixed with-checkbox">
   <div class="group-mixed--middle">
     <a href class="link-list-item" swiper-click="callAndWaitThenScroll(openNoteEditor, note)">
-      <span class="text-heading-primary" ng-bind="note.title" clamp=2></span>
+      <span class="text-heading-primary" ng-bind="note.trans.title" clamp=2></span>
     </a>
-    <a href ng-if="note.content" class="link-teaser"
+    <a href ng-if="note.trans.content" class="link-teaser"
       swiper-click="callAndWaitThenScroll(openNoteEditorView, note)">
       <span class="text-teaser" clamp=3 ng-bind="getNoteContentTeaser(note)"></span>
     </a>
