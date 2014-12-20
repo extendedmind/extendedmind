@@ -84,10 +84,10 @@
       return latestModified;
     },
     updateTagModProperties: function(uuid, properties, ownerUUID) {
-      var tagInfo = this.getNoteInfo(uuid, ownerUUID);
+      var tagInfo = this.getTagInfo(uuid, ownerUUID);
       if (tagInfo){
         if (properties === null){
-          if (listInfo.list.mod){
+          if (tagInfo.tag.mod){
             delete tagInfo.tag.mod;
             updateTag(tagInfo.tag, ownerUUID);
           }

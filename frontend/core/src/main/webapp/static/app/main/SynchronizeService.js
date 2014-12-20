@@ -126,7 +126,7 @@
       return {type: 'list', item: ListsService.updateListModProperties(itemUUID, properties, ownerUUID)};
     }
     function updateTagModProperties (itemUUID, properties, ownerUUID){
-      return {type: 'tag', item: ListsService.updateListModProperties(itemUUID, properties, ownerUUID)};
+      return {type: 'tag', item: TagsService.updateTagModProperties(itemUUID, properties, ownerUUID)};
     }
 
     var updateFns = [updateItemModProperties,
