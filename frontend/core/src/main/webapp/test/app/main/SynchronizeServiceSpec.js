@@ -85,7 +85,7 @@ describe('SynchronizeService', function() {
     isOfflineEnabled: function () {
       return this.offlineEnabled;
     },
-    registerNofifyOwnerCallback: function(callback, id){
+    registerNofifyOwnerCallback: function(callback){
       callback(testOwnerUUID);
     }
   };
@@ -355,7 +355,7 @@ describe('SynchronizeService', function() {
 
     var testItemValues = {
       'title': 'test item'
-    }
+    };
     var testItem = ItemsService.getNewItem(testItemValues, testOwnerUUID);
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
        .respond(404);
@@ -482,7 +482,7 @@ describe('SynchronizeService', function() {
     yoga.trans.description = 'just do it';
     var yogaValues = {title: yoga.trans.title,
                       description: yoga.trans.description,
-                      modified: yoga.modified}
+                      modified: yoga.modified};
 
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item/' + yoga.trans.uuid,
                           yogaValues)
@@ -512,7 +512,7 @@ describe('SynchronizeService', function() {
         'modified': newLatestModified,
         'title': 'I will start yoga'
       }]
-    }
+    };
     yogaValues.modified = newLatestModified;
     $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
                             latestModified + '&deleted=true&archived=true&completed=true')
@@ -817,7 +817,7 @@ describe('SynchronizeService', function() {
         'completed': newLatestModified + 1,
         'title': 'clean closet!'
       }]
-    }
+    };
     cleanClosetTransport.modified = newLatestModified;
     $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
                             latestModified + '&deleted=true&archived=true&completed=true')
@@ -1035,7 +1035,7 @@ describe('SynchronizeService', function() {
         'title': 'contexts should be used to prevent access to data',
         'content': 'might be a good idea, maybe'
       }]
-    }
+    };
     $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
                             latestModified + '&deleted=true&archived=true&completed=true')
         .respond(200, conflictAboutContextsResponse);
@@ -1043,7 +1043,7 @@ describe('SynchronizeService', function() {
       title: aboutContexts.trans.title,
       content: aboutContexts.trans.content + '\n\n>>> conflicting changes >>>\n\n' +
                conflictAboutContextsResponse.notes[0].content,
-      modified: newLatestModified}
+      modified: newLatestModified};
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/note/' + aboutContexts.uuid,
                            aboutContextsTransport)
         .respond(200, {modified: newLatestModified + 1});
@@ -1395,7 +1395,7 @@ describe('SynchronizeService', function() {
     SynchronizeService.synchronize(testOwnerUUID);
     $httpBackend.flush();
 
-    var shoppingList = ListsService.getListInfo(shoppingListUUID, testOwnerUUID).list;
+    shoppingList = ListsService.getListInfo(shoppingListUUID, testOwnerUUID).list;
     expect(shoppingList.mod)
       .toBeUndefined();
     expect(shoppingList.deleted)
@@ -1406,6 +1406,77 @@ describe('SynchronizeService', function() {
       .toBeUndefined();
   });
 
+
+  it('should handle sync with converted list that is used in put', function () {
+    MockUserSessionService.offlineEnabled = true;
+
+    // 1. save existing task with shopping list uuid
+    var tasks = TasksService.getTasks(testOwnerUUID);
+    var lists = ListsService.getLists(testOwnerUUID);
+    var shoppingListUUID = 'cf726d03-8fee-4614-8b68-f9f885938a53';
+
+    var cleanCloset = TasksService.getTaskInfo('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID).task;
+    cleanCloset.trans.list = shoppingListUUID;
+    var cleanClosetTransport = {
+      title: cleanCloset.title,
+      relationships: {
+        parent: shoppingListUUID
+      },
+      modified: cleanCloset.modified
+    }
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid,
+                           cleanClosetTransport)
+       .respond(404);
+    TasksService.saveTask(cleanCloset, testOwnerUUID);
+    $httpBackend.flush();
+    expect(tasks.length)
+      .toBe(4);
+    expect(tasks[0].mod.relationships.parent)
+      .toBe(shoppingListUUID);
+
+    // 2. Update the list as well
+    var shoppingList = ListsService.getListInfo(shoppingListUUID, testOwnerUUID).list;
+    shoppingList.trans.description = 'test description';
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid,
+       cleanClosetTransport)
+       .respond(404);
+    ListsService.saveList(shoppingList, testOwnerUUID);
+    $httpBackend.flush();
+    expect(lists.length)
+      .toBe(4);
+    expect(lists[3].mod.description)
+      .toBe('test description');
+
+    // 3. sync online with the list converted, the list should have been removed from the task and
+    //    the put should have been deleted
+    var latestModified = now.getTime();
+    MockUserSessionService.setLatestModified(latestModified);
+
+    delete cleanClosetTransport.relationships;
+    $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
+                            latestModified + '&deleted=true&archived=true&completed=true')
+        .respond(200, {
+          notes: [
+            {uuid: shoppingList.uuid,
+             title: shoppingList.title,
+             created: shoppingList.created,
+             modified: latestModified}]
+           });
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' +
+                           cleanCloset.trans.uuid,
+                           cleanClosetTransport)
+        .respond(200, putExistingItemResponse);
+    SynchronizeService.synchronize(testOwnerUUID);
+    $httpBackend.flush();
+
+    shoppingList = NotesService.getNoteInfo(shoppingListUUID, testOwnerUUID).note;
+    expect(shoppingList.modified)
+      .toBe(latestModified);
+    expect(cleanCloset.mod.relationships)
+      .toBeUndefined();
+    expect(ListsService.getListInfo(shoppingListUUID, testOwnerUUID))
+      .toBeUndefined();
+  });
 
   it('should handle item, note and list converted to task in different client', function () {
     var latestModified = Date.now() - 10000;

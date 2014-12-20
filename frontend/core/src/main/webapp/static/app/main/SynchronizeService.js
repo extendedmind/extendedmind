@@ -424,7 +424,7 @@
                     // offline queue to anbther type
                     mismatchTypeConflictInfos.splice(j, 1);
                   }else{
-                    queueSpliceInfos.push({index: j, correctType: mismatchTypeConflictInfos[j].type});
+                    queueSpliceInfos.push({index: i, correctType: mismatchTypeConflictInfos[j].type});
                   }
                 }
               }
