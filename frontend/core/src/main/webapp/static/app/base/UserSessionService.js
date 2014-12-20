@@ -42,7 +42,7 @@
     SessionStorageService.setCohort(LocalStorageService.getCohort());
     SessionStorageService.setPreferences(LocalStorageService.getPreferences());
     SessionStorageService.setUserModified(LocalStorageService.getUserModified());
-    SessionStorageService.setUserState(LocalStorageService.getUserState());
+    SessionStorageService.setState(LocalStorageService.getState());
     SessionStorageService.setLatestModified(LocalStorageService.getLatestModified());
     SessionStorageService.setOffline(LocalStorageService.getOffline());
   }
