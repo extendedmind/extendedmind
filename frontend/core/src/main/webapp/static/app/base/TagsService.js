@@ -109,6 +109,10 @@
     getDeletedTags: function(ownerUUID) {
       return tags[ownerUUID].deletedTags;
     },
+    getModifiedTags: function(ownerUUID) {
+      return ArrayService.getModifiedItems(tags[ownerUUID].activeTags,
+                                           tags[ownerUUID].deletedTags)
+    },
     getTagInfo: function(uuid, ownerUUID) {
       var tag = tags[ownerUUID].activeTags.findFirstObjectByKeyValue('uuid', uuid, 'trans');
       if (tag){

@@ -128,6 +128,11 @@
     getDeletedLists: function(ownerUUID) {
       return lists[ownerUUID].deletedLists;
     },
+    getModifiedLists: function(ownerUUID) {
+      return ArrayService.getModifiedItems(lists[ownerUUID].activeLists,
+                                            lists[ownerUUID].deletedLists,
+                                            getOtherArrays(ownerUUID))
+    },
     getListInfo: function(uuid, ownerUUID) {
       var list = lists[ownerUUID].activeLists.findFirstObjectByKeyValue('uuid', uuid, 'trans');
       if (list){

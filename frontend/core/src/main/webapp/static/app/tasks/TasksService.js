@@ -256,6 +256,11 @@
     getDeletedTasks: function(ownerUUID) {
       return tasks[ownerUUID].deletedTasks;
     },
+    getModifiedTasks: function(ownerUUID) {
+      return ArrayService.getModifiedItems(tasks[ownerUUID].activeTasks,
+                                         tasks[ownerUUID].deletedTasks,
+                                         getOtherArrays(ownerUUID));
+    },
     getTaskInfo: function(uuid, ownerUUID) {
       var task = tasks[ownerUUID].activeTasks.findFirstObjectByKeyValue('uuid', uuid, 'trans');
       if (task){

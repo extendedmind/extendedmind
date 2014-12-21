@@ -101,6 +101,10 @@
     getItems: function(ownerUUID) {
       return items[ownerUUID].activeItems;
     },
+    getModifiedItems: function(ownerUUID) {
+      return ArrayService.getModifiedItems(items[ownerUUID].activeItems,
+                                         items[ownerUUID].deletedItems);
+    },
     getItemInfo: function(uuid, ownerUUID) {
       var item = items[ownerUUID].activeItems.findFirstObjectByKeyValue('uuid', uuid, 'trans');
       if (item){

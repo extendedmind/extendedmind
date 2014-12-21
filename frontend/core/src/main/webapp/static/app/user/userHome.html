@@ -2,6 +2,29 @@
   <section class="container-content">
     <h2 class="group-heading justified row" ng-bind="online ? 'online' : '*offline'"></h2>
 
+    <div ng-if="!online" class="group-details">
+      <div ng-if="getOfflineModifiedCount('item')" class="row">
+        <span class="text-details">modified items: </span>
+        <span class="text-details" ng-bind="getOfflineModifiedCount('item')"></span>
+      </div>
+      <div ng-if="getOfflineModifiedCount('task')" class="row">
+        <span class="text-details">modified tasks: </span>
+        <span class="text-details" ng-bind="getOfflineModifiedCount('task')"></span>
+      </div>
+      <div ng-if="getOfflineModifiedCount('note')" class="row">
+        <span class="text-details">modified notes: </span>
+        <span class="text-details" ng-bind="getOfflineModifiedCount('note')"></span>
+      </div>
+      <div ng-if="getOfflineModifiedCount('list')" class="row">
+        <span class="text-details">modified lists: </span>
+        <span class="text-details" ng-bind="getOfflineModifiedCount('list')"></span>
+      </div>
+      <div ng-if="getOfflineModifiedCount('tag')" class="row">
+        <span class="text-details">modified tags: </span>
+        <span class="text-details" ng-bind="getOfflineModifiedCount('tag')"></span>
+      </div>
+    </div>
+
     <div ng-if="useCollectives()">
       <h3 class="row-form">switch to</h3>
       <div ng-repeat="(key, value) in collectives">

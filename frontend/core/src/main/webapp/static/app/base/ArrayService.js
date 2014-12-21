@@ -223,6 +223,32 @@ function ArrayService() {
 
       // Sort combined array
       return combinedArray.sort(compareById);
+    },
+    getModifiedItems: function(activeArray, deletedArray, otherArrays) {
+      var i, len, modifiedItems;
+      for (i=0, len=activeArray.length; i<len; i++) {
+        if (activeArray[i].mod){
+          if (!modifiedItems) modifiedItems = [];
+          modifiedItems.push(activeArray[i]);
+        }
+      }
+      for (i=0, len=deletedArray.length; i<len; i++) {
+        if (deletedArray[i].mod){
+          if (!modifiedItems) modifiedItems = [];
+          modifiedItems.push(deletedArray[i]);
+        }
+      }
+      if (otherArrays) {
+        for (i=0, len=otherArrays.length; i<len; i++) {
+          for (var j=0, jlen=otherArrays[i].array; j<jlen; j++) {
+            if (otherArrays[i].array[j].mod) {
+              if (!modifiedItems) modifiedItems = [];
+              modifiedItems.push(otherArrays[i].array[j]);
+            }
+          }
+        }
+      }
+      return modifiedItems;
     }
   };
 }

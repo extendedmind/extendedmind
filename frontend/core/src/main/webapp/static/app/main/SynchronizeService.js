@@ -774,6 +774,25 @@
       }
       return deferred.promise;
     },
+    getModifiedItems: function(itemType, ownerUUID) {
+      switch(itemType) {
+      case 'item':
+        return ItemsService.getModifiedItems(ownerUUID);
+        break;
+      case 'task':
+        return TasksService.getModifiedTasks(ownerUUID);
+        break;
+      case 'note':
+        return NotesService.getModifiedNotes(ownerUUID);
+        break;
+      case 'list':
+        return ListsService.getModifiedLists(ownerUUID);
+        break;
+      case 'tag':
+        return TagsService.getModifiedTags(ownerUUID);
+        break;
+      }
+    },
     clearData: function(){
       if (UserSessionService.isOfflineEnabled()){
         PersistentStorageService.destroyAll();

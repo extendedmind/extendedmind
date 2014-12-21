@@ -206,6 +206,10 @@
     getDeletedNotes: function(ownerUUID) {
       return notes[ownerUUID].deletedNotes;
     },
+    getModifiedNotes: function(ownerUUID) {
+      return ArrayService.getModifiedItems(notes[ownerUUID].activeNotes,
+                                            notes[ownerUUID].deletedNotes, getOtherArrays(ownerUUID))
+    },
     getNoteInfo: function(uuid, ownerUUID) {
       var note = notes[ownerUUID].activeNotes.findFirstObjectByKeyValue('uuid', uuid, 'trans');
       if (note){

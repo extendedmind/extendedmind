@@ -16,7 +16,7 @@
 
  function UserController($http, $location, $q, $rootScope, $scope, $templateCache, $window,
                          AnalyticsService, AuthenticationService, SwiperService,
-                         UISessionService, UserService, UserSessionService, version) {
+                         SynchronizeService, UISessionService, UserService, UserSessionService, version) {
 
   $scope.extendedMindVersion = version;
 
@@ -124,8 +124,17 @@
       $scope.openEditor('user', user, 'privacy');
     });
   }
+
+  // OFFLINE MODIFICATIONS
+  $scope.getOfflineModifiedCount = function(itemType) {
+    var modifiedItems = SynchronizeService.getModifiedItems(itemType, UISessionService.getActiveUUID());
+    if (modifiedItems && modifiedItems.length){
+      return modifiedItems.length;
+    }
+  }
 }
 UserController['$inject'] = ['$http', '$location', '$q', '$rootScope', '$scope', '$templateCache', '$window',
                              'AnalyticsService', 'AuthenticationService', 'SwiperService',
-                             'UISessionService', 'UserService', 'UserSessionService', 'version'];
+                             'SynchronizeService', 'UISessionService', 'UserService', 'UserSessionService',
+                             'version'];
 angular.module('em.user').controller('UserController', UserController);
