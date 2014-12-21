@@ -130,11 +130,11 @@
     redirectAuthenticatedUser();
   }
 
-  function logInFailed(authenticateResponse) {
-    if (BackendClientService.isOffline(authenticateResponse.status)) {
+  function logInFailed(failure) {
+    if (BackendClientService.isOffline(failure.value.status)) {
       AnalyticsService.error('login', 'offline');
       $scope.entryOffline = true;
-    } else if (authenticateResponse.status === 403) {
+    } else if (failure.value.status === 403) {
       AnalyticsService.error('login', 'failed');
       $scope.loginFailed = true;
     }
@@ -165,19 +165,19 @@
     AnalyticsService.doWithUuid('signUp', undefined, signupResponse.data.uuid);
     AuthenticationService.login($scope.user).then
     (redirectAuthenticatedUser,
-     function(authenticateResponse) {
-      if (BackendClientService.isOffline(authenticateResponse.status)) {
+     function(failure) {
+      if (BackendClientService.isOffline(failure.value.status)) {
         $scope.entryOffline = true;
-      } else if (authenticateResponse.status === 403) {
+      } else if (failure.value.status === 403) {
         $scope.loginFailed = true;
       }
     });
   }
 
-  function signUpFailed(error) {
-    if (BackendClientService.isOffline(error.status)) {
+  function signUpFailed(failure) {
+    if (BackendClientService.isOffline(failure.value.status)) {
       $scope.entryOffline = true;
-    } else if (error.status === 400) {
+    } else if (failure.value.status === 400) {
       $scope.signupFailed = true;
     }
   }
@@ -223,7 +223,7 @@
         }
       },
       function(errorResponse){
-        if (BackendClientService.isOffline(errorResponse.status)) {
+        if (BackendClientService.isOffline(errorResponse.value.status)) {
           $scope.entryOffline = true;
         } else {
           $scope.sendFailed = true;

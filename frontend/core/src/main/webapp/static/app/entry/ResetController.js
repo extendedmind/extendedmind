@@ -44,7 +44,7 @@
                   $location.url($location.path());
                   $location.path('/');
                 }, function(error) {
-                  if (BackendClientService.isOffline(error.status)) {
+                  if (BackendClientService.isOffline(error.value.status)) {
                     $scope.resetOffline = true;
                   } else {
                     $scope.loginFailed = true;
@@ -59,7 +59,7 @@
           }
         },
         function(errorResponse){
-          if (BackendClientService.isOffline(errorResponse.status)) {
+          if (BackendClientService.isOffline(errorResponse.value.status)) {
             $scope.resetOffline = true;
           } else {
             $scope.resetFailed = true;

@@ -159,13 +159,13 @@
             },function(error) {
               // Error branch, emit onlineRequired
               var rejection, emitType;
-              if (BackendClientService.isOffline(error.status)) {
+              if (BackendClientService.isOffline(error.value.status)) {
                 emitType = 'emInteraction';
                 rejection = {
                   type: 'onlineRequired',
                   value: {
-                    status: error.status,
-                    data: error.data,
+                    status: error.value.status,
+                    data: error.value.data,
                     retry: swapTokenAndAuthenticate,
                     redirectUrl: '/',
                     promise: deferredAuthentication
@@ -176,8 +176,8 @@
                 rejection = {
                   type: 'http',
                   value: {
-                    status: error.status,
-                    data: error.data,
+                    status: error.value.status,
+                    data: error.value.data,
                     url: error.config.url
                   }
                 };

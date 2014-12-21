@@ -33,9 +33,9 @@
         $scope.closeEditor();
       });
     }, function(error){
-      if (BackendClientService.isOffline(error.status)) {
+      if (BackendClientService.isOffline(error.value.status)) {
         $scope.userEditOffline = true;
-      } else if (error.status !== 200) {
+      } else if (error.value.status !== 200) {
         $scope.changePasswordFailed = true;
       }
     });
