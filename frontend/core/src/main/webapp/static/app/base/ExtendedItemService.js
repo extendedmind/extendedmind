@@ -272,10 +272,10 @@
     validateRelationships: function(/*extendedItem, ownerUUID*/){
       // TODO: Actually validate this
     },
-    copyRelationshipsTransToMod: function(extendedItem /*, ownerUUID*/){
+    copyRelationshipsTransToMod: function(extendedItem, ownerUUID){
       copyListToParent(extendedItem.trans, extendedItem.mod);
-      copyKeywordsToTags(extendedItem.trans, extendedItem.mod);
-      copyContextToTags(extendedItem.trans, extendedItem.mod);
+      copyKeywordsToTags(extendedItem.trans, extendedItem.mod, ownerUUID);
+      copyContextToTags(extendedItem.trans, extendedItem.mod, ownerUUID);
     },
     resetRelationshipsTrans: function(extendedItem, ownerUUID){
       if (extendedItem.mod && extendedItem.mod.parent !== undefined){
