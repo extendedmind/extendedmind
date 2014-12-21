@@ -35,7 +35,8 @@
     } else {
       var currentHeading = $scope.getActiveFeature();
       if (currentHeading === 'list'){
-        currentHeading = UISessionService.getFeatureData(currentHeading).title;
+        // Get list's title from trans object stored into feature data.
+        currentHeading = UISessionService.getFeatureData(currentHeading).trans.title;
       }else if (currentHeading === 'user'){
         currentHeading = $scope.getActiveDisplayName();
       }
