@@ -49,21 +49,7 @@
       };
 
       scope.listSelected = function(list) {
-        var listToSave = {};
-        if (scope.prefix) {
-          if (list.trans.title && list.trans.title.length <= 1) return; // Title has only prefix. Do not save.
-
-          for (var listProperty in list) {
-            if (list.hasOwnProperty(listProperty)) {
-              listToSave[listProperty] = list[listProperty];
-            }
-          }
-          listToSave.trans.title = listToSave.trans.title.substring(1);
-        } else {
-          listToSave = list;
-        }
-
-        scope.closeAndSave({list: listToSave});
+        scope.closeAndSave({list: list});
       };
 
       scope.listCleared = function(list) {
@@ -74,44 +60,53 @@
         if (event.keyCode === 13) { // RETURN button
           // Enter in add item saves, no line breaks allowed
           if (scope.newList.trans.title && scope.newList.trans.title.length > 0) {
-           scope.listSelected(scope.newList);
-         }
-         event.preventDefault();
-         event.stopPropagation();
-       }
-     };
-
-     var watch;
-     function bindWatcher() {
-      var preventWatch;
-      if (watch) return;  // no rebind
-
-      watch = scope.$watch('newList.trans.title', function(newTitle) {
-        if (preventWatch) {
-          preventWatch = false;
-          return;
-        }
-
-        if (!newTitle) {
-          // Title cleared. Add prefix.
-          preventWatch = true;
-          scope.newList.trans.title = scope.prefix;
-          return;
-        } else if (newTitle) {
-          // New title.
-          if (newTitle.charAt(0) !== scope.prefix) {
-            // Add prefix to first character of title.
-            scope.newList.trans.title = scope.prefix + newTitle;
+            if (scope.prefix) {
+              if (scope.newList.trans.title.length === 1) {
+                // Title has only prefix. Do not save.
+                return;
+              } else {
+                // Trim prefix from the title.
+                scope.newList.trans.title = scope.newList.trans.title.substring(1);
+              }
+            }
+            scope.listSelected(scope.newList);
           }
+          event.preventDefault();
+          event.stopPropagation();
         }
-      });
-    }
+      };
 
-    scope.watchForTitleChange = function() {
-      if (scope.prefix) bindWatcher();
-    };
-  }
-};
+      var watch;
+      function bindWatcher() {
+        var preventWatch;
+        if (watch) return;  // no rebind
+
+        watch = scope.$watch('newList.trans.title', function(newTitle) {
+          if (preventWatch) {
+            preventWatch = false;
+            return;
+          }
+
+          if (!newTitle) {
+            // Title cleared. Add prefix.
+            preventWatch = true;
+            scope.newList.trans.title = scope.prefix;
+            return;
+          } else if (newTitle) {
+            // New title.
+            if (newTitle.charAt(0) !== scope.prefix) {
+              // Add prefix to first character of title.
+              scope.newList.trans.title = scope.prefix + newTitle;
+            }
+          }
+        });
+      }
+
+      scope.watchForTitleChange = function() {
+        if (scope.prefix) bindWatcher();
+      };
+    }
+  };
 }
 listPickerDirective['$inject'] = ['$rootScope'];
 angular.module('em.base').directive('listPicker', listPickerDirective);
