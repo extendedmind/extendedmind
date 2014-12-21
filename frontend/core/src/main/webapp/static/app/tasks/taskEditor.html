@@ -15,8 +15,8 @@
 
       <form role="form" class="group-mixed with-checkbox" autocapitalize="none" autocorrect="off">
         <div class="group-mixed--left">
-          <input type="checkbox" ng-click="clickCompleteTaskInEdit()" ng-checked="task.trans.completed"
-            ng-model="task.trans.completed" icon-checkbox="editorTitlebarCheckbox" />
+          <input type="checkbox" ng-click="clickCompleteTaskInEdit()" ng-model="task.trans.optimisticComplete"
+            ng-model-options="{getterSetter: true}" icon-checkbox="editorTitlebarCheckbox" />
         </div>
         <div class="group-mixed--middle">
           <textarea ng-hide="isTaskTitleClamped()" ng-model="task.trans.title" input-model-validator

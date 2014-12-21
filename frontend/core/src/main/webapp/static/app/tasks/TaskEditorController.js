@@ -72,7 +72,17 @@
 
   function taskEditorAboutToClose() {
     if ($scope.isTaskEdited() && !$scope.task.deleted) saveTaskInEdit();
-    else TasksService.resetTask($scope.task, UISessionService.getActiveUUID());
+    else {
+      if (completeReadyDeferred){
+        $scope.deferEdit().then(function(){
+          UISessionService.allow('leaveAnimation', 200);
+          completeReadyDeferred.resolve($scope.task);
+          completeReadyDeferred = undefined;
+        });
+      } else {
+        TasksService.resetTask($scope.task, UISessionService.getActiveUUID());
+      }
+    }
   }
 
   // TITLEBAR
