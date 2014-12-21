@@ -31,8 +31,9 @@
   var ownerPrefix = 'my'; // default owner
 
   var deferredActions = [];
-
   var allowedActions = {};
+
+  var persistentDataLoaded = false;
 
   function removeDeferredAction(type) {
     var deferredActionIndex = deferredActions.findFirstIndexByKeyValue('type', type);

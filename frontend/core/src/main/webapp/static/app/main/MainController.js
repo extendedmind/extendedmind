@@ -625,17 +625,25 @@ function MainController(
   // Synchronize items if not already synchronizing and interval reached.
 
   function synchronizeItems() {
+    function isItemSynchronizeValid(sinceLastItemsSynchronized){
+      if (!sinceLastItemsSynchronized) return true;
+      else if (sinceLastItemsSynchronized > itemsSynchronizedThreshold) return true;
+
+      // Also sync if offline is enabled and data has not yet been read to memory
+      if (UserSessionService.isOfflineEnabled() && !UserSessionService.isPersistentDataLoaded())
+        return true;
+    }
     $scope.registerActivity();
     var activeUUID = UISessionService.getActiveUUID();
     // First check that the user has login
     if ((!$rootScope.syncState || $rootScope.syncState === 'ready' ||
         $rootScope.syncState === 'error') && activeUUID)
     {
-
       // User has logged in, now set when user was last synchronized
       $rootScope.synced = UserSessionService.getItemsSynchronized(activeUUID);
       var sinceLastItemsSynchronized = Date.now() - UserSessionService.getItemsSynchronized(activeUUID);
-      if (isNaN(sinceLastItemsSynchronized) || sinceLastItemsSynchronized > itemsSynchronizedThreshold) {
+
+      if (isItemSynchronizeValid(sinceLastItemsSynchronized)) {
         $scope.$evalAsync(function() {
           if (!$rootScope.synced){
             // This is the first load for the user
@@ -650,7 +658,13 @@ function MainController(
             // Also immediately after first sync add completed and archived to the mix
             $rootScope.syncState = 'completedAndArchived';
             SynchronizeService.addCompletedAndArchived(activeUUID).then(function(){
-              updateItemsSyncronized(activeUUID);
+              $rootScope.syncState = 'deleted';
+              // Also after this, get deleted items as well
+              SynchronizeService.addDeleted(activeUUID).then(function(){
+                updateItemsSyncronized(activeUUID);
+              }, function(){
+                $rootScope.syncState = 'error';
+              });
             }, function(){
               $rootScope.syncState = 'error';
             });

@@ -56,8 +56,12 @@
     getNewItem: function(initialValues, ownerUUID) {
       return ItemLikeService.getNew(initialValues, 'item', ownerUUID, itemFieldInfos);
     },
-    setItems: function(itemsResponse, ownerUUID) {
-      ItemLikeService.persistAndReset(itemsResponse, 'item', ownerUUID, itemFieldInfos);
+    setItems: function(itemsResponse, ownerUUID, skipPersist) {
+      if (skipPersist){
+        ItemLikeService.resetTrans(itemsResponse, 'item', ownerUUID, itemFieldInfos);
+      }else{
+        ItemLikeService.persistAndReset(itemsResponse, 'item', ownerUUID, itemFieldInfos);
+      }
       return ArrayService.setArrays(itemsResponse,
                                     items[ownerUUID].activeItems,
                                     items[ownerUUID].deletedItems);
@@ -234,6 +238,9 @@
         });
       }
       return deferred.promise;
+    },
+    clearItems: function() {
+      items = {};
     },
     // Regular expressions for item requests
     putNewItemRegex: ItemLikeService.getPutNewRegex('item'),

@@ -109,6 +109,7 @@ function PersistentStorageService($q) {
     },
     getAll: function(){
       var deferred = $q.defer();
+      if (!database) database = Lawnchair({name:'items'});
       if (database){
         database.all(function(persistedItems) {
           var itemInfos = [];

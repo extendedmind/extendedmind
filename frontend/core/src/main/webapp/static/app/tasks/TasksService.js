@@ -203,8 +203,12 @@
     getNewTask: function(initialValues, ownerUUID) {
       return ItemLikeService.getNew(initialValues, 'task', ownerUUID, taskFieldInfos);
     },
-    setTasks: function(tasksResponse, ownerUUID) {
-      ItemLikeService.persistAndReset(tasksResponse, 'task', ownerUUID, taskFieldInfos);
+    setTasks: function(tasksResponse, ownerUUID, skipPersist) {
+      if (skipPersist){
+        ItemLikeService.resetTrans(tasksResponse, 'task', ownerUUID, taskFieldInfos);
+      }else{
+        ItemLikeService.persistAndReset(tasksResponse, 'task', ownerUUID, taskFieldInfos);
+      }
       return ArrayService.setArrays(tasksResponse,
                                     tasks[ownerUUID].activeTasks,
                                     tasks[ownerUUID].deletedTasks,
@@ -432,7 +436,9 @@
       }
       return deferred.promise;
     },
-
+    clearTasks: function() {
+      tasks = {};
+    },
     // Regular expressions for task requests
     putNewTaskRegex: ItemLikeService.getPutNewRegex('task'),
     putExistingTaskRegex: ItemLikeService.getPutExistingRegex('task'),

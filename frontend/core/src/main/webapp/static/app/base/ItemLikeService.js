@@ -244,8 +244,15 @@
       }
       return newItem;
     },
-    resetTrans: function(item, itemType, ownerUUID, fieldInfos){
-      return resetTrans(item, itemType, ownerUUID, fieldInfos);
+    resetTrans: function(data, itemType, ownerUUID, fieldInfos){
+      if (angular.isArray(data)){
+        for (var i=0, len=data.length; i<len; i++){
+          resetTrans(data[i], itemType, ownerUUID, fieldInfos);
+        }
+      }else if (data){
+        resetTrans(data, itemType, ownerUUID, fieldInfos);
+      }
+      return data;
     },
     evaluateMod: function(databaseItem, item, itemType, ownerUUID, fieldInfos){
       if (isEdited(item, itemType, ownerUUID, fieldInfos, databaseItem)){

@@ -14,13 +14,8 @@
  */
  'use strict';
 
- function TrashController($scope, $timeout, AnalyticsService, SynchronizeService, UISessionService) {
-
+ function TrashController(AnalyticsService) {
   AnalyticsService.visit('trash');
-
-  // Synchronize immediately
-  SynchronizeService.addDeleted(UISessionService.getActiveUUID());
 }
-
-TrashController['$inject'] = ['$scope', '$timeout', 'AnalyticsService', 'SynchronizeService', 'UISessionService'];
+TrashController['$inject'] = ['AnalyticsService'];
 angular.module('em.main').controller('TrashController', TrashController);

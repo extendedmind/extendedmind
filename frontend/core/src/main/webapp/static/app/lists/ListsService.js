@@ -73,8 +73,12 @@
     getNewList: function(initialValues, ownerUUID) {
       return ItemLikeService.getNew(initialValues, 'list', ownerUUID, listFieldInfos);
     },
-    setLists: function(listsResponse, ownerUUID) {
-      ItemLikeService.persistAndReset(listsResponse, 'list', ownerUUID, listFieldInfos);
+    setLists: function(listsResponse, ownerUUID, skipPersist) {
+      if (skipPersist){
+        ItemLikeService.resetTrans(listsResponse, 'list', ownerUUID, listFieldInfos);
+      }else{
+        ItemLikeService.persistAndReset(listsResponse, 'list', ownerUUID, listFieldInfos);
+      }
       return ArrayService.setArrays(listsResponse,
                                     lists[ownerUUID].activeLists,
                                     lists[ownerUUID].deletedLists,
@@ -280,6 +284,9 @@
         });
       }
       return deferred.promise;
+    },
+    clearLists: function() {
+      lists = {};
     },
 
     // Regular expressions for list requests

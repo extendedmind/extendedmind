@@ -76,6 +76,20 @@
         localStorage.setItem('modified', JSON.stringify(latestModified));
       }
     },
+    setItemsSynchronized: function(value, ownerUUID) {
+      if (angular.isObject(value)) {
+        localStorage.setItem('synced', JSON.stringify(value));
+      }else if (value && ownerUUID){
+        var synced = this.getItemsSynchronized();
+        if (synced){
+          synced[ownerUUID] = value;
+        }else{
+          synced = {};
+          synced[ownerUUID] = value;
+        }
+        localStorage.setItem('synced', JSON.stringify(synced));
+      }
+    },
     setOffline: function(value){
       if (value !== undefined){
         localStorage.setItem('offline', value);
@@ -132,6 +146,14 @@
         else return latestModified;
       }
     },
+    getItemsSynchronized: function(ownerUUID) {
+      var syncedString = localStorage.getItem('synced');
+      if (syncedString){
+        var synced = JSON.parse(syncedString);
+        if (ownerUUID) return synced[ownerUUID];
+        else return synced;
+      }
+    },
     getOffline: function(){
       return localStorage.getItem('offline');
     },
@@ -150,6 +172,7 @@
       localStorage.removeItem('state');
       localStorage.removeItem('modified');
       localStorage.removeItem('offline');
+      localStorage.removeItem('synced');
 
       // Also clear offline queue
       if (localStorage.getItem('primaryRequest')) {

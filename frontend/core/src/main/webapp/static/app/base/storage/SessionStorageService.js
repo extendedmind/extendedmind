@@ -109,6 +109,20 @@
         sessionStorage.setItem('modified', JSON.stringify(latestModified));
       }
     },
+    setItemsSynchronized: function(value, ownerUUID) {
+      if (angular.isObject(value)) {
+        sessionStorage.setItem('synced', JSON.stringify(value));
+      }else if (ownerUUID && value){
+        var synced = this.getItemsSynchronized();
+        if (synced){
+          synced[ownerUUID] = value;
+        }else{
+          synced = {};
+          synced[ownerUUID] = value;
+        }
+        sessionStorage.setItem('synced', JSON.stringify(synced));
+      }
+    },
     setOffline: function(value){
       if (value !== undefined){
         cachedOffline = value;
@@ -181,6 +195,14 @@
         else return latestModified;
       }
     },
+    getItemsSynchronized: function(ownerUUID) {
+      var syncedString = sessionStorage.getItem('synced');
+      if (syncedString){
+        var synced = JSON.parse(syncedString);
+        if (ownerUUID) return synced[ownerUUID];
+        else return synced;
+      }
+    },
     getOffline: function(){
       if (cachedOffline === undefined){
         var storedOffline = localStorage.getItem('offline');
@@ -203,6 +225,7 @@
       sessionStorage.removeItem('state');
       sessionStorage.removeItem('modified');
       sessionStorage.removeItem('offline');
+      sessionStorage.removeItem('synced');
 
       cachedBackendDelta = cachedActiveUUID = cachedUserUUID = cachedEmail =
       cachedPreferences = cachedCollectives = cachedOffline = undefined;

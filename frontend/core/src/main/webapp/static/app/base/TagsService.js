@@ -60,8 +60,12 @@
     getNewTag: function(initialValues, ownerUUID) {
       return ItemLikeService.getNew(initialValues, 'tag', ownerUUID, tagFieldInfos);
     },
-    setTags: function(tagsResponse, ownerUUID) {
-      ItemLikeService.persistAndReset(tagsResponse, 'tag', ownerUUID, tagFieldInfos);
+    setTags: function(tagsResponse, ownerUUID, skipPersist) {
+      if (skipPersist){
+        ItemLikeService.resetTrans(tagsResponse, 'tag', ownerUUID, tagFieldInfos);
+      }else{
+        ItemLikeService.persistAndReset(tagsResponse, 'tag', ownerUUID, tagFieldInfos);
+      }
       return ArrayService.setArrays(tagsResponse,
                                     tags[ownerUUID].activeTags,
                                     tags[ownerUUID].deletedTags);
@@ -181,6 +185,9 @@
         );
       }
       return deferred.promise;
+    },
+    clearTags: function() {
+      tags = {};
     },
     // Regular expressions for tag requests
     putNewTagRegex: ItemLikeService.getPutNewRegex('tag'),

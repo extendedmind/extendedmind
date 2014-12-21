@@ -15,8 +15,8 @@
  'use strict';
 
  function rootViewDirective($injector, $rootScope, $templateCache, $window,
-                            AnalyticsService, BackendClientService, UISessionService, UUIDService,
-                            UserSessionService, packaging) {
+                            AnalyticsService, BackendClientService, SynchronizeService, UISessionService,
+                            UUIDService, UserSessionService, packaging) {
 
   return {
     restrict: 'A',
@@ -72,6 +72,7 @@
       $rootScope.redirectToEntry = function() {
         exiting = true;
         UISessionService.reset();
+        SynchronizeService.clearData();
         UserSessionService.clearUser();
         $rootScope.synced = $rootScope.syncState = undefined;
         // $location can not be injected directly presumably because this directive
@@ -278,6 +279,6 @@
 }
 
 rootViewDirective['$inject'] = ['$injector', '$rootScope', '$templateCache', '$window',
-'AnalyticsService', 'BackendClientService', 'UISessionService', 'UUIDService', 'UserSessionService',
-'packaging'];
+'AnalyticsService', 'BackendClientService', 'SynchronizeService', 'UISessionService', 'UUIDService',
+'UserSessionService', 'packaging'];
 angular.module('em.root').directive('rootView', rootViewDirective);

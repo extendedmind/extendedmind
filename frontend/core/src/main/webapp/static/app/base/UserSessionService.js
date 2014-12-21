@@ -16,13 +16,14 @@
  /* global angular, useOfflineBuffer */
  'use strict';
 
- function UserSessionService(base64, LocalStorageService, PersistentStorageService, SessionStorageService) {
+ function UserSessionService(base64, LocalStorageService, SessionStorageService) {
   var swapTokenBufferTime = 10*60*1000; // 10 minutes in milliseconds
   // When offline isn't enabled, use transient value for latest modified
   var latestModified = {};
   var itemsSynchronized = {};
   var offlineEnabled = false;
   var notifyOwnerCallbacks = {};
+  var persistentDataLoaded = false;
 
   // Sync session storage with local storage.
   function syncWebStorages() {
@@ -44,6 +45,7 @@
     SessionStorageService.setUserModified(LocalStorageService.getUserModified());
     SessionStorageService.setState(LocalStorageService.getState());
     SessionStorageService.setLatestModified(LocalStorageService.getLatestModified());
+    SessionStorageService.setItemsSynchronized(LocalStorageService.getItemsSynchronized());
     SessionStorageService.setOffline(LocalStorageService.getOffline());
   }
 
@@ -127,15 +129,11 @@
       return offlineEnabled;
     },
     clearUser: function() {
-      if (offlineEnabled){
-        PersistentStorageService.destroyAll();
-      }
-      if (SessionStorageService.getOffline() === true){
-        offlineEnabled = false;
-      }
+      offlineEnabled = false;
       SessionStorageService.clearUser();
       LocalStorageService.clearUser();
       itemsSynchronized = {};
+      persistentDataLoaded = false;
     },
 
     // Web storage setters
@@ -199,7 +197,7 @@
     },
     setPreferences: function(preferences) {
       SessionStorageService.setPreferences(preferences);
-      if (offlineEnabled || LocalStorageService.getReplaceable() !== null) {
+      if (this.isOfflineEnabled() || LocalStorageService.getReplaceable() !== null) {
         LocalStorageService.setPreferences(preferences);
       }
     },
@@ -210,11 +208,9 @@
       // Only set if given value is larger than set value
       var currentLatestModified = this.getLatestModified(ownerUUID);
       if (!currentLatestModified || (modified && currentLatestModified < modified)) {
-        if (offlineEnabled){
+        if (this.isOfflineEnabled()){
           SessionStorageService.setLatestModified(modified, ownerUUID);
-          if (offlineEnabled) {
-            LocalStorageService.setLatestModified(modified, ownerUUID);
-          }
+          LocalStorageService.setLatestModified(modified, ownerUUID);
         }else{
           latestModified[ownerUUID] = modified;
         }
@@ -222,12 +218,17 @@
     },
     setUserModified: function(modified) {
       SessionStorageService.setUserModified(modified);
-      if (offlineEnabled || LocalStorageService.getReplaceable() !== null) {
+      if (this.isOfflineEnabled() || LocalStorageService.getReplaceable() !== null) {
         LocalStorageService.setUserModified(modified);
       }
     },
     setItemsSynchronized: function(timestamp, ownerUUID) {
-      itemsSynchronized[ownerUUID] = timestamp;
+      if (this.isOfflineEnabled()){
+        SessionStorageService.setItemsSynchronized(timestamp, ownerUUID);
+        LocalStorageService.setItemsSynchronized(timestamp, ownerUUID);
+      }else{
+        itemsSynchronized[ownerUUID] = timestamp;
+      }
     },
     // Web storage getters
     getCollectives: function() {
@@ -259,18 +260,31 @@
       return SessionStorageService.getCohort();
     },
     getLatestModified: function(ownerUUID) {
-      if (offlineEnabled){
+      if (this.isOfflineEnabled()){
         var currentLatestModified = SessionStorageService.getLatestModified(ownerUUID);
-        if (currentLatestModified) return parseInt(currentLatestModified);
+        if (angular.isNumber(currentLatestModified)) return parseInt(currentLatestModified);
+        else return currentLatestModified;
       }else{
         return latestModified[ownerUUID];
       }
     },
     getItemsSynchronized: function(ownerUUID) {
-      return itemsSynchronized[ownerUUID];
+      if (this.isOfflineEnabled()){
+        var currentItemsSynchronized = SessionStorageService.getItemsSynchronized(ownerUUID);
+        if (angular.isNumber(currentItemsSynchronized)) return parseInt(currentItemsSynchronized);
+        else return currentItemsSynchronized;
+      }else{
+        return itemsSynchronized[ownerUUID];
+      }
     },
     isItemsSynchronized: function(ownerUUID) {
-      return itemsSynchronized[ownerUUID] !== undefined;
+      return this.getItemsSynchronized(ownerUUID) !== undefined;
+    },
+    setPersistentDataLoaded: function(value) {
+      persistentDataLoaded = value;
+    },
+    isPersistentDataLoaded: function() {
+      return persistentDataLoaded;
     },
     getTransportPreferences: function() {
       syncWebStorages();
@@ -299,7 +313,7 @@
       }
     },
     getRememberByDefault: function() {
-      return offlineEnabled;
+      return this.isOfflineEnabled();
     },
     getUser: function() {
       syncWebStorages();
@@ -340,6 +354,5 @@
     }
   };
 }
-UserSessionService['$inject'] = ['base64', 'LocalStorageService', 'PersistentStorageService',
-'SessionStorageService'];
+UserSessionService['$inject'] = ['base64', 'LocalStorageService', 'SessionStorageService'];
 angular.module('em.base').factory('UserSessionService', UserSessionService);

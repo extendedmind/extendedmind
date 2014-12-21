@@ -52,7 +52,8 @@ describe('SynchronizeService', function() {
     authenticateValid: true,
     authenticateReplaceable: true,
     latestModified: undefined,
-    offlineEnabled: false,
+    persistentDataLoaded: false,
+    callbacks: {},
     isAuthenticated: function() {
       return this.authenticated;
     },
@@ -84,10 +85,16 @@ describe('SynchronizeService', function() {
       this.latestModified = modified;
     },
     isOfflineEnabled: function () {
-      return this.offlineEnabled;
+      return true;
     },
-    registerNofifyOwnerCallback: function(callback){
-      callback(testOwnerUUID);
+    isPersistentDataLoaded: function() {
+      return this.persistentDataLoaded;
+    },
+    setPersistentDataLoaded: function(value) {
+      this.persistentDataLoaded = value;
+    },
+    registerNofifyOwnerCallback: function(callback, id){
+      this.callbacks[id] = callback;
     }
   };
 
@@ -127,7 +134,7 @@ describe('SynchronizeService', function() {
               'modified': 1391278509640,
               'title': 'remember the milk'
             }, {
-              'uuid': '7a612ca2-7de0-45ad-a758-d949df37f51e',
+              'uuid': '9a612ca2-7de0-45ad-a758-d949df37f51e',
               'created': 1391278509745,
               'modified': 1391278509745,
               'title': 'buy new shoes'
@@ -255,7 +262,11 @@ describe('SynchronizeService', function() {
               'tagType': 'keyword'
             }]
         };
-
+      // Clear previous data
+      SynchronizeService.clearData();
+      for (var id in MockUserSessionService.callbacks){
+        MockUserSessionService.callbacks[id](testOwnerUUID);
+      }
       // Syncronize with test data
       $httpBackend.expectGET('/api/' + testOwnerUUID + '/items')
        .respond(200, testItemData);
@@ -284,16 +295,49 @@ describe('SynchronizeService', function() {
   afterEach(function() {
     // User Session Mock
     MockUserSessionService.setLatestModified(undefined);
-    MockUserSessionService.offlineEnabled = false;
     MockUserSessionService.authenticated = true;
     MockUserSessionService.authenticateValid = true;
     MockUserSessionService.authenticateReplaceable = true;
+    MockUserSessionService.persistentDataLoaded = false;
+    MockUserSessionService.callbacks = {};
 
     $httpBackend.verifyNoOutstandingExpectation();
     $httpBackend.verifyNoOutstandingRequest();
   });
 
   // TESTS
+
+  it('should load persistent data on sync', function () {
+    MockUserSessionService.persistentDataLoaded = false;
+
+    // Start from a clean slate
+    ItemsService.clearItems();
+    TasksService.clearTasks();
+    NotesService.clearNotes();
+    ListsService.clearLists();
+    TagsService.clearTags();
+    for (var id in MockUserSessionService.callbacks){
+      MockUserSessionService.callbacks[id](testOwnerUUID);
+    }
+
+    // Expect to get data from the persistent storage
+    $httpBackend.expectGET('/api/' + testOwnerUUID +
+                           '/items?modified=' + MockUserSessionService.latestModified +
+                           '&deleted=true&archived=true&completed=true').respond(
+                           200, {});
+    SynchronizeService.synchronize(testOwnerUUID);
+    $httpBackend.flush();
+    expect(ItemsService.getItems(testOwnerUUID).length)
+      .toBe(3);
+    expect(TagsService.getTags(testOwnerUUID).length)
+      .toBe(3);
+    expect(ListsService.getLists(testOwnerUUID).length)
+      .toBe(4);
+    expect(TasksService.getTasks(testOwnerUUID).length)
+      .toBe(4);
+    expect(NotesService.getNotes(testOwnerUUID).length)
+      .toBe(4);
+  });
 
   it('should syncronize new item', function () {
     var newLatestModified = now.getTime();
@@ -350,7 +394,6 @@ describe('SynchronizeService', function() {
   });
 
   it('should handle item offline create, update, delete', function () {
-    MockUserSessionService.offlineEnabled = true;
 
     // 1. save new item
 
@@ -476,7 +519,6 @@ describe('SynchronizeService', function() {
   });
 
   it('should handle item offline update with conflicting sync from server', function () {
-    MockUserSessionService.offlineEnabled = true;
 
     // 1. save existing item
     var yoga = ItemsService.getItemInfo('f7724771-4469-488c-aabd-9db188672a9b', testOwnerUUID).item;
@@ -551,7 +593,6 @@ describe('SynchronizeService', function() {
   });
 
   it('should handle task offline create, update, delete', function () {
-    MockUserSessionService.offlineEnabled = true;
 
     // 1. save new item
     var testItemValues = {
@@ -684,7 +725,6 @@ describe('SynchronizeService', function() {
   });
 
   it('should handle task offline complete, uncomplete', function () {
-    MockUserSessionService.offlineEnabled = true;
 
     // 1. save new task
     var testTaskValues = {
@@ -786,7 +826,6 @@ describe('SynchronizeService', function() {
   });
 
   it('should handle task offline update with conflicting sync from server', function () {
-    MockUserSessionService.offlineEnabled = true;
 
     // 1. save existing task
     var tasks = TasksService.getTasks(testOwnerUUID);
@@ -876,7 +915,6 @@ describe('SynchronizeService', function() {
   });
 
   it('should handle note offline create, update, delete', function () {
-    MockUserSessionService.offlineEnabled = true;
 
     // 1. save new item
     var testItemValues = {
@@ -1005,7 +1043,6 @@ describe('SynchronizeService', function() {
 
 
   it('should handle note offline update with conflicting sync from server', function () {
-    MockUserSessionService.offlineEnabled = true;
 
     // 1. save existing note
     var aboutContexts = NotesService.getNoteInfo('a1cd149a-a287-40a0-86d9-0a14462f22d6', testOwnerUUID).note;
@@ -1090,7 +1127,6 @@ describe('SynchronizeService', function() {
   });
 
   it('should handle list offline create, update', function () {
-    MockUserSessionService.offlineEnabled = true;
 
     // 1. save new item
     var testItemValues = {
@@ -1206,7 +1242,6 @@ describe('SynchronizeService', function() {
   });
 
   it('should handle wait for offline update to finish before doing list delete and undelete', function () {
-    MockUserSessionService.offlineEnabled = true;
 
     var lists = ListsService.getLists(testOwnerUUID);
 
@@ -1309,7 +1344,6 @@ describe('SynchronizeService', function() {
   });
 
   it('should handle tag offline create, update', function () {
-    MockUserSessionService.offlineEnabled = true;
 
     var tags = TagsService.getTags(testOwnerUUID);
     expect(tags.length)
@@ -1418,7 +1452,6 @@ describe('SynchronizeService', function() {
 
 
   it('should handle sync with deleted list and tag that are used in put', function () {
-    MockUserSessionService.offlineEnabled = true;
 
     // 1. save new task with shopping list uuid
     var tasks = TasksService.getTasks(testOwnerUUID);
@@ -1512,7 +1545,6 @@ describe('SynchronizeService', function() {
 
 
   it('should handle sync with converted list that is used in put', function () {
-    MockUserSessionService.offlineEnabled = true;
 
     // 1. save existing task with shopping list uuid
     var tasks = TasksService.getTasks(testOwnerUUID);
@@ -1597,18 +1629,19 @@ describe('SynchronizeService', function() {
         }
       ]
     };
-    SynchronizeService.synchronize(testOwnerUUID).then(function(){
-      expect(ItemsService.getItems(testOwnerUUID).length)
-        .toBe(2);
-      expect(TasksService.getTasks(testOwnerUUID).length)
-        .toBe(5);
-    });
     $httpBackend.expectGET('/api/' + testOwnerUUID +
                            '/items?modified=' + latestModified +
                            '&deleted=true&archived=true&completed=true').respond(
                            200, itemsResponseWithItemToTask);
-    latestModified = itemsResponseWithItemToTask.tasks[0].modified;
+    SynchronizeService.synchronize(testOwnerUUID);
     $httpBackend.flush();
+    latestModified = itemsResponseWithItemToTask.tasks[0].modified;
+
+    expect(ItemsService.getItems(testOwnerUUID).length)
+      .toBe(2);
+    expect(TasksService.getTasks(testOwnerUUID).length)
+      .toBe(5);
+
 
     var itemsResponseWithNoteToTask = {
       tasks: [
@@ -1623,18 +1656,17 @@ describe('SynchronizeService', function() {
         }
       ]
     };
-    SynchronizeService.synchronize(testOwnerUUID).then(function(){
-      expect(NotesService.getNotes(testOwnerUUID).length)
-        .toBe(3);
-      expect(TasksService.getTasks(testOwnerUUID).length)
-        .toBe(6);
-    });
     $httpBackend.expectGET('/api/' + testOwnerUUID +
                            '/items?modified=' + latestModified +
                            '&deleted=true&archived=true&completed=true').respond(
                            200, itemsResponseWithNoteToTask);
-    latestModified = itemsResponseWithNoteToTask.tasks[0].modified;
+    SynchronizeService.synchronize(testOwnerUUID);
     $httpBackend.flush();
+    latestModified = itemsResponseWithNoteToTask.tasks[0].modified;
+    expect(NotesService.getNotes(testOwnerUUID).length)
+      .toBe(3);
+    expect(TasksService.getTasks(testOwnerUUID).length)
+      .toBe(6);
 
     var itemsResponseWithListToTask = {
       tasks: [
@@ -1646,17 +1678,18 @@ describe('SynchronizeService', function() {
         }
       ]
     };
-    SynchronizeService.synchronize(testOwnerUUID).then(function(){
-      expect(ListsService.getLists(testOwnerUUID).length)
-        .toBe(3);
-      expect(TasksService.getTasks(testOwnerUUID).length)
-        .toBe(7);
-    });
     $httpBackend.expectGET('/api/' + testOwnerUUID +
                            '/items?modified=' + latestModified +
                            '&deleted=true&archived=true&completed=true').respond(
                            200, itemsResponseWithListToTask);
+    SynchronizeService.synchronize(testOwnerUUID);
     $httpBackend.flush();
+
+    expect(ListsService.getLists(testOwnerUUID).length)
+      .toBe(3);
+    expect(TasksService.getTasks(testOwnerUUID).length)
+      .toBe(7);
+
   });
 
   it('should handle item, task and list converted to note in different client', function () {
@@ -1675,18 +1708,18 @@ describe('SynchronizeService', function() {
         }
       ]
     };
-    SynchronizeService.synchronize(testOwnerUUID).then(function(){
-      expect(ItemsService.getItems(testOwnerUUID).length)
-        .toBe(2);
-      expect(NotesService.getNotes(testOwnerUUID).length)
-        .toBe(5);
-    });
     $httpBackend.expectGET('/api/' + testOwnerUUID +
                            '/items?modified=' + latestModified +
                            '&deleted=true&archived=true&completed=true').respond(
                            200, itemsResponseWithItemToNote);
-    latestModified = itemsResponseWithItemToNote.notes[0].modified;
+    SynchronizeService.synchronize(testOwnerUUID);
     $httpBackend.flush();
+    latestModified = itemsResponseWithItemToNote.notes[0].modified;
+
+    expect(ItemsService.getItems(testOwnerUUID).length)
+      .toBe(2);
+    expect(NotesService.getNotes(testOwnerUUID).length)
+      .toBe(5);
 
     var itemsResponseWithTaskToNote = {
       notes: [
@@ -1699,18 +1732,17 @@ describe('SynchronizeService', function() {
         }
       ]
     };
-    SynchronizeService.synchronize(testOwnerUUID).then(function(){
-      expect(TasksService.getTasks(testOwnerUUID).length)
-        .toBe(3);
-      expect(NotesService.getNotes(testOwnerUUID).length)
-        .toBe(6);
-    });
     $httpBackend.expectGET('/api/' + testOwnerUUID +
                            '/items?modified=' + latestModified +
                            '&deleted=true&archived=true&completed=true').respond(
                            200, itemsResponseWithTaskToNote);
-    latestModified = itemsResponseWithTaskToNote.notes[0].modified;
+    SynchronizeService.synchronize(testOwnerUUID);
     $httpBackend.flush();
+    latestModified = itemsResponseWithTaskToNote.notes[0].modified;
+    expect(TasksService.getTasks(testOwnerUUID).length)
+      .toBe(3);
+    expect(NotesService.getNotes(testOwnerUUID).length)
+      .toBe(6);
 
     var itemsResponseWithListToNote = {
       notes: [
@@ -1722,17 +1754,16 @@ describe('SynchronizeService', function() {
         }
       ]
     };
-    SynchronizeService.synchronize(testOwnerUUID).then(function(){
-      expect(ListsService.getLists(testOwnerUUID).length)
-        .toBe(3);
-      expect(NotesService.getNotes(testOwnerUUID).length)
-        .toBe(7);
-    });
     $httpBackend.expectGET('/api/' + testOwnerUUID +
                            '/items?modified=' + latestModified +
                            '&deleted=true&archived=true&completed=true').respond(
                            200, itemsResponseWithListToNote);
+    SynchronizeService.synchronize(testOwnerUUID);
     $httpBackend.flush();
+    expect(ListsService.getLists(testOwnerUUID).length)
+      .toBe(3);
+    expect(NotesService.getNotes(testOwnerUUID).length)
+      .toBe(7);
   });
 
   it('should handle item, task and note converted to list in different client', function () {
@@ -1751,18 +1782,17 @@ describe('SynchronizeService', function() {
         }
       ]
     };
-    SynchronizeService.synchronize(testOwnerUUID).then(function(){
-      expect(ItemsService.getItems(testOwnerUUID).length)
-        .toBe(2);
-      expect(ListsService.getLists(testOwnerUUID).length)
-        .toBe(5);
-    });
     $httpBackend.expectGET('/api/' + testOwnerUUID +
                            '/items?modified=' + latestModified +
                            '&deleted=true&archived=true&completed=true').respond(
                            200, itemsResponseWithItemToList);
-    latestModified = itemsResponseWithItemToList.lists[0].modified;
+    SynchronizeService.synchronize(testOwnerUUID);
     $httpBackend.flush();
+    latestModified = itemsResponseWithItemToList.lists[0].modified;
+    expect(ItemsService.getItems(testOwnerUUID).length)
+      .toBe(2);
+    expect(ListsService.getLists(testOwnerUUID).length)
+      .toBe(5);
 
     var itemsResponseWithTaskToList = {
       lists: [
@@ -1774,18 +1804,17 @@ describe('SynchronizeService', function() {
         }
       ]
     };
-    SynchronizeService.synchronize(testOwnerUUID).then(function(){
-      expect(TasksService.getTasks(testOwnerUUID).length)
-        .toBe(3);
-      expect(ListsService.getLists(testOwnerUUID).length)
-        .toBe(6);
-    });
     $httpBackend.expectGET('/api/' + testOwnerUUID +
                            '/items?modified=' + latestModified +
                            '&deleted=true&archived=true&completed=true').respond(
                            200, itemsResponseWithTaskToList);
-    latestModified = itemsResponseWithTaskToList.lists[0].modified;
+    SynchronizeService.synchronize(testOwnerUUID);
     $httpBackend.flush();
+    latestModified = itemsResponseWithTaskToList.lists[0].modified;
+    expect(TasksService.getTasks(testOwnerUUID).length)
+      .toBe(3);
+    expect(ListsService.getLists(testOwnerUUID).length)
+      .toBe(6);
 
     var itemsResponseWithNoteToList = {
       lists: [
@@ -1800,22 +1829,20 @@ describe('SynchronizeService', function() {
         }
       ]
     };
-    SynchronizeService.synchronize(testOwnerUUID).then(function(){
-      expect(NotesService.getNotes(testOwnerUUID).length)
-        .toBe(3);
-      expect(ListsService.getLists(testOwnerUUID).length)
-        .toBe(7);
-    });
     $httpBackend.expectGET('/api/' + testOwnerUUID +
                            '/items?modified=' + latestModified +
                            '&deleted=true&archived=true&completed=true').respond(
                            200, itemsResponseWithNoteToList);
-    latestModified = itemsResponseWithNoteToList.lists[0].modified;
+    SynchronizeService.synchronize(testOwnerUUID);
     $httpBackend.flush();
+    latestModified = itemsResponseWithNoteToList.lists[0].modified;
+    expect(NotesService.getNotes(testOwnerUUID).length)
+      .toBe(3);
+    expect(ListsService.getLists(testOwnerUUID).length)
+      .toBe(7);
   });
 
   it('should handle swap token when offline', function () {
-    MockUserSessionService.offlineEnabled = true;
     MockUserSessionService.authenticated = true;
     MockUserSessionService.authenticateValid = false;
     MockUserSessionService.authenticateReplaceable = true;
@@ -1840,6 +1867,5 @@ describe('SynchronizeService', function() {
     expect(items.length)
       .toBe(4);
   });
-
 
 });

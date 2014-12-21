@@ -17,7 +17,8 @@
  'use strict';
 
  function SynchronizeService($q, $rootScope, BackendClientService, ItemsService, ListsService,
-                             NotesService, TagsService, TasksService, UserService, UserSessionService) {
+                             NotesService, PersistentStorageService, TagsService, TasksService,
+                             UserService, UserSessionService) {
 
   var itemsRegex = /\/items/;
   // NOTE: Do not set start/end of string anchors into getItemsRegex!
@@ -108,8 +109,8 @@
     if (latestTag || latestList || latestTask || latestNote || latestItem) {
       // Set latest modified
       latestModified = getLatestModified(latestTag, latestList, latestTask, latestNote, latestItem);
+      UserSessionService.setLatestModified(latestModified, ownerUUID);
     }
-    UserSessionService.setLatestModified(latestModified, ownerUUID);
   }
 
   function updateModProperties(itemUUID, probableItemType, properties, ownerUUID){
@@ -599,35 +600,53 @@
       });
   }
 
+  function setItemArrays(itemsByType, ownerUUID, skipPersist){
+    var latestTag, latestList, latestTask, latestItem, latestNote;
+    // Reset all arrays
+    latestTag = TagsService.setTags(itemsByType.tags, ownerUUID, skipPersist);
+    latestList = ListsService.setLists(itemsByType.lists, ownerUUID, skipPersist);
+    latestTask = TasksService.setTasks(itemsByType.tasks, ownerUUID, skipPersist);
+    latestNote = NotesService.setNotes(itemsByType.notes, ownerUUID, skipPersist);
+    latestItem = ItemsService.setItems(itemsByType.items, ownerUUID, skipPersist);
+    var latestModified = null;
+    if (latestTag || latestList || latestTask || latestNote || latestItem) {
+      // Set latest modified
+      latestModified = getLatestModified(latestTag, latestList, latestTask, latestNote, latestItem);
+    }
+    UserSessionService.setLatestModified(latestModified, ownerUUID);
+  }
+
+  function updateItemArrays(result, ownerUUID){
+    // Update all arrays with archived values
+    var latestTag, latestList, latestTask, latestItem, latestNote;
+    latestTag = TagsService.updateTags(result.data.tags, ownerUUID);
+    latestList = ListsService.updateLists(result.data.lists, ownerUUID);
+    latestTask = TasksService.updateTasks(result.data.tasks, ownerUUID);
+    latestNote = NotesService.updateNotes(result.data.notes, ownerUUID);
+    latestItem = ItemsService.updateItems(result.data.items, ownerUUID);
+    var latestModified;
+    if (latestTag || latestList || latestTask || latestNote || latestItem) {
+      // Set latest modified
+      latestModified = getLatestModified(latestTag, latestList, latestTask, latestNote, latestItem);
+      UserSessionService.setLatestModified(latestModified, ownerUUID);
+    }
+  }
+
   function getAllItemsOnline(ownerUUID) {
     return BackendClientService.getSecondary('/api/' +
                                              ownerUUID +
                                              '/items', getItemsRegex,
                                              undefined, true).then(function(result) {
       if (result.data) {
-        var latestTag, latestList, latestTask, latestItem, latestNote;
-        // Reset all arrays
-        latestTag = TagsService.setTags(result.data.tags, ownerUUID);
-        latestList = ListsService.setLists(result.data.lists, ownerUUID);
-        latestTask = TasksService.setTasks(result.data.tasks, ownerUUID);
-        latestNote = NotesService.setNotes(result.data.notes, ownerUUID);
-        latestItem = ItemsService.setItems(result.data.items, ownerUUID);
-        var latestModified = null;
-        if (latestTag || latestList || latestTask || latestNote || latestItem) {
-          // Set latest modified
-          latestModified = getLatestModified(latestTag, latestList, latestTask, latestNote, latestItem);
-        }
-        UserSessionService.setLatestModified(latestModified, ownerUUID);
+        setItemArrays(result.data, ownerUUID);
       }
+      if (UserSessionService.isOfflineEnabled()) UserSessionService.setPersistentDataLoaded(true);
       return result;
     });
   }
 
   function synchronize(ownerUUID) {
-    var deferred = $q.defer();
-    var latestModified = UserSessionService.getLatestModified(ownerUUID);
-    var url = '/api/' + ownerUUID + '/items';
-    if (latestModified !== undefined) {
+    function doSynchronizeDelta(url, latestModified, deferred){
       if (latestModified) {
         url += '?modified=' + latestModified + '&deleted=true&archived=true&completed=true';
       }
@@ -654,6 +673,44 @@
           }
         });
       }
+    }
+
+    var deferred = $q.defer();
+    var latestModified = UserSessionService.getLatestModified(ownerUUID);
+    var url = '/api/' + ownerUUID + '/items';
+
+    if (latestModified !== undefined) {
+
+      if (UserSessionService.isOfflineEnabled() && !UserSessionService.isPersistentDataLoaded()){
+        // Load items from the database
+        PersistentStorageService.getAll().then(function(itemInfos){
+          // Sort items by owner and type
+          if (itemInfos && itemInfos.length){
+
+            var itemsByOwner = {};
+            for (var i=0, len=itemInfos.length; i<len; i++){
+              var arrayType = itemInfos[i].itemType + 's';
+              if (!itemsByOwner[itemInfos[i].ownerUUID]) itemsByOwner[itemInfos[i].ownerUUID] = {};
+              if (!itemsByOwner[itemInfos[i].ownerUUID][arrayType])
+                itemsByOwner[itemInfos[i].ownerUUID][arrayType] = [];
+              itemsByOwner[itemInfos[i].ownerUUID][arrayType].push(itemInfos[i].item);
+            }
+            for (var ownerUUID in itemsByOwner){
+              if (itemsByOwner.hasOwnProperty(ownerUUID)){
+                // set but don't persist as these already are persisted
+                setItemArrays(itemsByOwner[ownerUUID], ownerUUID, true);
+              }
+            }
+          }
+          $rootScope.syncState = 'persistent';
+
+          // After that, synchronize
+          doSynchronizeDelta(url, latestModified, deferred);
+        });
+        UserSessionService.setPersistentDataLoaded(true);
+      }else{
+        doSynchronizeDelta(url, latestModified, deferred);
+      }
     } else {
       getAllOnline(ownerUUID, getAllItemsOnline, deferred);
     }
@@ -666,12 +723,7 @@
                                              '/items?archived=true&completed=true&active=false',
                                              getItemsRegex, undefined, true).then(function(result) {
       if (result.data) {
-        // Update all arrays with archived values
-        TagsService.updateTags(result.data.tags, ownerUUID);
-        ListsService.updateLists(result.data.lists, ownerUUID);
-        TasksService.updateTasks(result.data.tasks, ownerUUID);
-        NotesService.updateNotes(result.data.notes, ownerUUID);
-        ItemsService.updateItems(result.data.items, ownerUUID);
+        updateItemArrays(result, ownerUUID);
       }
       return result;
     });
@@ -683,12 +735,7 @@
                                              '/items?deleted=true&active=false',
                                              getItemsRegex, undefined, true).then(function(result) {
       if (result.data) {
-        // Update all arrays with archived values
-        TagsService.updateTags(result.data.tags, ownerUUID);
-        ListsService.updateLists(result.data.lists, ownerUUID);
-        TasksService.updateTasks(result.data.tasks, ownerUUID);
-        NotesService.updateNotes(result.data.notes, ownerUUID);
-        ItemsService.updateItems(result.data.items, ownerUUID);
+        updateItemArrays(result, ownerUUID);
       }
       return result;
     });
@@ -727,11 +774,22 @@
       }
       return deferred.promise;
     },
+    clearData: function(){
+      if (UserSessionService.isOfflineEnabled()){
+        PersistentStorageService.destroyAll();
+      }
+      ItemsService.clearItems();
+      TasksService.clearTasks();
+      NotesService.clearNotes();
+      ListsService.clearLists();
+      TagsService.clearTags();
+    },
     // Regular expressions for item requests
     getItemsRegex: getItemsRegex
   };
 }
 
 SynchronizeService['$inject'] = ['$q', '$rootScope', 'BackendClientService', 'ItemsService',
-'ListsService', 'NotesService', 'TagsService', 'TasksService', 'UserService', 'UserSessionService'];
+'ListsService', 'NotesService', 'PersistentStorageService', 'TagsService', 'TasksService',
+'UserService', 'UserSessionService'];
 angular.module('em.main').factory('SynchronizeService', SynchronizeService);

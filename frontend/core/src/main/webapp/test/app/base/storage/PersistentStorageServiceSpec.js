@@ -377,11 +377,9 @@ describe('PersistentStorageService', function() {
 
     runs(function() {
       flag = false;
-      PersistentStorageService.getAll().then(function(){},
-        function(){
-          flag = true;
-        }
-      );
+      PersistentStorageService.getAll().then(function(itemInfos){
+        if (itemInfos.length === 0) flag = true
+      });
       $rootScope.$digest();
     });
     waitsFor(function(){

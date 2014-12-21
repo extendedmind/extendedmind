@@ -155,8 +155,12 @@
     getNewNote: function(initialValues, ownerUUID) {
       return ItemLikeService.getNew(initialValues, 'note', ownerUUID, noteFieldInfos);
     },
-    setNotes: function(notesResponse, ownerUUID) {
-      ItemLikeService.persistAndReset(notesResponse, 'note', ownerUUID, noteFieldInfos);
+    setNotes: function(notesResponse, ownerUUID, skipPersist) {
+      if (skipPersist){
+        ItemLikeService.resetTrans(notesResponse, 'note', ownerUUID, noteFieldInfos);
+      }else{
+        ItemLikeService.persistAndReset(notesResponse, 'note', ownerUUID, noteFieldInfos);
+      }
       return ArrayService.setArrays(notesResponse,
                                     notes[ownerUUID].activeNotes,
                                     notes[ownerUUID].deletedNotes, getOtherArrays(ownerUUID));
@@ -381,6 +385,9 @@
         }
       }
       return deferred.promise;
+    },
+    clearNotes: function() {
+      notes = {};
     },
 
     // Regular expressions for note requests
