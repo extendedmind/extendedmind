@@ -8,6 +8,9 @@
     <js>/src/main/webapp/static/lib/angularjs/angular-route.min.js</js>
     <js>/src/main/webapp/static/lib/angularjs/angular-messages.min.js</js>
     <js>/src/main/webapp/static/lib/angularjs/angular-sanitize.min.js</js>
+    <js>/src/main/webapp/static/lib/lawnchair/lawnchair.js</js>
+    <js>/src/main/webapp/static/lib/lawnchair/lawnchair-webkit-sqlite.js</js>
+    <js>/src/main/webapp/static/lib/lawnchair/lawnchair-indexeddb.js</js>
   	<js>/src/main/webapp/static/lib/base64.js</js>
     <js>/src/main/webapp/static/lib/elastic.js</js>
     <js>/src/main/webapp/static/lib/clamp.min.js</js>

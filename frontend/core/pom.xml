@@ -159,6 +159,18 @@
                 <exclude>lib/**</exclude>
               </excludes>
             </resource>
+            <resource>
+              <directory>src/main/webapp/static/lib/lawnchair</directory>
+              <targetPath>static/${project.version}</targetPath>
+              <excludes>
+                <exclude>**/*.jshintrc</exclude>
+                <exclude>app/**/*.js</exclude>
+                <exclude>common/**/*.js</exclude>
+                <exclude>less/**</exclude>
+                <exclude>js/**</exclude>
+                <exclude>lib/**</exclude>
+              </excludes>
+            </resource>
           </webResources>
           <packagingIncludes>
             WEB-INF/**,
