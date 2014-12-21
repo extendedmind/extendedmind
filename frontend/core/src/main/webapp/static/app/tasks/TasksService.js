@@ -365,6 +365,7 @@
       return deferred.promise;
     },
     completeTask: function(task, ownerUUID) {
+      // FIXME: trans properties are reseted on complete
       var deferred = $q.defer();
       if (tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue('uuid', task.trans.uuid, 'trans')) {
         deferred.reject({type: 'deleted'});
