@@ -2,7 +2,7 @@
   <section class="container-content" list="lists" list-locked="disableDragging()" swiper-prevent
     ng-init="setListOnboarding('lists', listOnboarding)">
     <div ng-show="isOnboarded('lists') || isListOnboardingLockedOrReleased('lists')">
-      <h2 class="group-heading justified row">active</h2>
+      <h2 class="group-heading justified row">active lists</h2>
       <div list-item-add="{trans: {itemType: 'list'}}" list-item-add-save="saveList(newItem)"
         ng-include="urlBase + 'app/lists/listListItemAdd.html'"></div>
       <div class="animate-list-item-leave"
