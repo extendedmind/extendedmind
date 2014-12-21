@@ -143,8 +143,8 @@
       }
     }
 
-    var keywordToAdd = $scope.keywords.findFirstObjectByKeyValue('title', newKeyword.trans.title
-                                                                 ) || newKeyword;
+    var keywordToAdd = $scope.keywords.findFirstObjectByKeyValue('title', newKeyword.trans.title,
+                                                                 'trans') || newKeyword;
     // Add already existing keyword or newly created keyword.
     $scope.addKeywordToNote(note, keywordToAdd);
   };

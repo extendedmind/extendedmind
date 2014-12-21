@@ -237,11 +237,11 @@
     $scope.listPickerOpen = false;
   };
   $scope.getListFromUUID = function(uuid) {
-    var list = $scope.allLists.findFirstObjectByKeyValue('uuid', uuid);
+    var list = $scope.allLists.findFirstObjectByKeyValue('uuid', uuid, 'trans');
     if (list) return list;
   };
   $scope.getListTitleFromUUID = function(uuid) {
-    var list = $scope.allLists.findFirstObjectByKeyValue('uuid', uuid);
+    var list = $scope.allLists.findFirstObjectByKeyValue('uuid', uuid, 'trans');
     if (list) return list.trans.title;
   };
 

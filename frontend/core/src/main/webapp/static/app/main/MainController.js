@@ -472,7 +472,8 @@ function MainController(
         var len = favoriteListUuids.length;
         var deleted = false;
         while (len--) {
-          var favoriteList = $scope.allLists.findFirstObjectByKeyValue('uuid', favoriteListUuids[len]);
+          var favoriteList = $scope.allLists.findFirstObjectByKeyValue('uuid', favoriteListUuids[len],
+                                                                       'trans');
           if (favoriteList){
             $scope.favoriteLists.unshift(favoriteList);
           }else{
