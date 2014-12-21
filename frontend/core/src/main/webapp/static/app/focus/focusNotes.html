@@ -2,7 +2,7 @@
   <section ng-show="isOnboarded('focusNotes')" class="container-content"
     list="allNotes | itemsFilter:{name:'favorited'}"
     list-open="openEditor('note', getNewFavoriteNote())" swiper-prevent>
-    <h2 class="group-heading justified row">favorite</h2>
+    <h2 class="group-heading justified row">starred</h2>
     <div class="animate-list-item-leave tall"
       ng-repeat="note in listInfos.array = (getFullArray()) | orderBy:'trans.favorited':true
       | limitTo: currentListLimitTo" list-item ng-include="urlBase + 'app/notes/noteListItem.html'"></div>
