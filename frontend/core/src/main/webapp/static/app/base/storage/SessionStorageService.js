@@ -205,7 +205,7 @@
     },
     getOffline: function(){
       if (cachedOffline === undefined){
-        var storedOffline = localStorage.getItem('offline');
+        var storedOffline = sessionStorage.getItem('offline');
         if (storedOffline !== null) cachedOffline = storedOffline;
       }
       return cachedOffline;

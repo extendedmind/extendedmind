@@ -155,7 +155,9 @@
       }
     },
     getOffline: function(){
-      return localStorage.getItem('offline');
+      var storedOffline = localStorage.getItem('offline');
+      if (storedOffline !== null)
+        return storedOffline;
     },
     clearUser: function() {
       localStorage.removeItem('backendDelta');

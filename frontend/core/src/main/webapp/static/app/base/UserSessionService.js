@@ -16,12 +16,13 @@
  /* global angular, useOfflineBuffer */
  'use strict';
 
- function UserSessionService(base64, LocalStorageService, SessionStorageService) {
+ function UserSessionService(base64, LocalStorageService, SessionStorageService, offline) {
   var swapTokenBufferTime = 10*60*1000; // 10 minutes in milliseconds
   // When offline isn't enabled, use transient value for latest modified
   var latestModified = {};
   var itemsSynchronized = {};
-  var offlineEnabled = false;
+  var offlineEnabled = offline;
+  var offlineEnabledBypass = false;
   var notifyOwnerCallbacks = {};
   var persistentDataLoaded = false;
 
@@ -88,13 +89,12 @@
   }
 
   return {
-    enableOffline: function(bypass) {
+    enableOffline: function() {
       offlineEnabled = true;
-      if (bypass){
-        // when bypassing store the value to stores
-        LocalStorageService.setOffline(true);
-        SessionStorageService.setOffline(true);
-      }
+      offlineEnabledBypass = true;
+      // when bypassing store the value to stores
+      LocalStorageService.setOffline(true);
+      SessionStorageService.setOffline(true);
     },
     isAuthenticated: function() {
       return SessionStorageService.getExpires() || LocalStorageService.getExpires();
@@ -129,7 +129,7 @@
       return offlineEnabled;
     },
     clearUser: function() {
-      offlineEnabled = false;
+      offlineEnabled = offline;
       SessionStorageService.clearUser();
       LocalStorageService.clearUser();
       itemsSynchronized = {};
@@ -262,7 +262,7 @@
     getLatestModified: function(ownerUUID) {
       if (this.isOfflineEnabled()){
         var currentLatestModified = SessionStorageService.getLatestModified(ownerUUID);
-        if (angular.isNumber(currentLatestModified)) return parseInt(currentLatestModified);
+        if (!isNaN(currentLatestModified)) return parseInt(currentLatestModified);
         else return currentLatestModified;
       }else{
         return latestModified[ownerUUID];
@@ -271,7 +271,7 @@
     getItemsSynchronized: function(ownerUUID) {
       if (this.isOfflineEnabled()){
         var currentItemsSynchronized = SessionStorageService.getItemsSynchronized(ownerUUID);
-        if (angular.isNumber(currentItemsSynchronized)) return parseInt(currentItemsSynchronized);
+        if (!isNaN(currentItemsSynchronized)) return parseInt(currentItemsSynchronized);
         else return currentItemsSynchronized;
       }else{
         return itemsSynchronized[ownerUUID];
@@ -354,5 +354,5 @@
     }
   };
 }
-UserSessionService['$inject'] = ['base64', 'LocalStorageService', 'SessionStorageService'];
+UserSessionService['$inject'] = ['base64', 'LocalStorageService', 'SessionStorageService', 'offline'];
 angular.module('em.base').factory('UserSessionService', UserSessionService);

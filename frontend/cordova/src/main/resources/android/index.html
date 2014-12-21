@@ -33,6 +33,7 @@
     var html5Mode = false;
     var bindToFocusEvent = false;
     var bindToResumeEvent = true;
+    var enableOffline = true;
 
     // Wait for device API libraries to load
     //
@@ -49,7 +50,7 @@
   </script>
 </head>
 <body onload="onLoad()">
-  <div class="android" root-view="offline"></div>
+  <div class="android" root-view></div>
   <script src="static/${project.version}/em.min.js"></script>
 </body>
 </html>

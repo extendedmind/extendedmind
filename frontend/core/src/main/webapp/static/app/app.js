@@ -59,10 +59,13 @@
  angular.module('em.base', ['common']);
 
  // Global variable "packaging" is defined in index.html
- angular.module('em.app').constant('packaging', (typeof packaging !== 'undefined') ? packaging: 'devel');
+ angular.module('em.app').constant('packaging', (typeof packaging !== 'undefined') ? packaging : 'devel');
 
  // Global variable "version" is defined in index.html
- angular.module('em.app').constant('version', (typeof version !== 'undefined') ? version: 'devel');
+ angular.module('em.app').constant('version', (typeof version !== 'undefined') ? version : 'devel');
+
+ // Global variable "enableOffline" can be defined in index.html
+ angular.module('em.app').constant('offline', (typeof enableOffline !== 'undefined') ? enableOffline : false);
 
  angular.module('em.app').config(['$animateProvider', '$compileProvider', '$locationProvider',
                                  '$routeProvider', 'packaging', 'version',

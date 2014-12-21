@@ -24,10 +24,6 @@
     templateUrl: $rootScope.urlBase + 'app/root/root.html',
     controller: function($scope, $attrs) {
 
-      if ($attrs.rootView === 'offline'){
-        UserSessionService.enableOffline();
-      }
-
       // BASIC DIMENSIONS TO ROOT SCOPE
       // NOTE: For some reason this had to be 567 before,
       // because editor disappeared after animation was ready.
