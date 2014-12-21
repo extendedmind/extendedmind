@@ -90,7 +90,7 @@
           if (validationError) validationErrors.push(validationError);
         }
       }else if (fieldInfos[i] === 'title'){
-        if (item.trans['title'] === undefined || item.trans['title'].length === 0){
+        if (item.trans['title'] === undefined || item.trans['title'].length === 0){
           validationErrors.push('title is mandatory');
         }else if (item.trans['title'].length > 128){
           validationErrors.push('title can not be more than 128 characters');
@@ -148,19 +148,22 @@
     if (item.trans.itemType !== itemType) item.trans.itemType = itemType;
 
     for (var i=0, len=fieldInfos.length; i<len; i++){
-      if (angular.isObject(fieldInfos[i])){
+      var fieldName = fieldInfos[i];
+      if (angular.isObject(fieldName)){
         // Custom reset method overrides
-        fieldInfos[i].resetTrans(item, ownerUUID);
-      }else if (item.mod && item.mod[fieldInfos[i]] !== undefined){
+        fieldName.resetTrans(item, ownerUUID);
+      }else if (item.mod && item.mod.hasOwnProperty(fieldName)) {
         // Priorize value from modified object
-        item.trans[fieldInfos[i]] = item.mod[fieldInfos[i]];
-      }else if (item[fieldInfos[i]] !== undefined){
+        if (item.mod[fieldName] !== undefined) {
+          item.trans[fieldName] = item.mod[fieldName];
+        }
+      }else if (item[fieldName] !== undefined){
         // If no modified value found, use persistent value
-        item.trans[fieldInfos[i]] = item[fieldInfos[i]];
-      }else if (item.trans[fieldInfos[i]] !== undefined){
+        item.trans[fieldName] = item[fieldName];
+      }else if (item.trans[fieldName] !== undefined){
         // There are no modified nor persistent value for this field, but it is in trans,
         // delete it from trans
-        delete item.trans[fieldInfos[i]];
+        delete item.trans[fieldName];
       }
     }
     return item;
@@ -173,10 +176,10 @@
           !(angular.isObject(fieldInfos[i]) && fieldInfos[i].skipTransport))
       {
         var fieldName = angular.isObject(fieldInfos[i]) ? fieldInfos[i].name : fieldInfos[i];
-        if (item.mod && item.mod.hasOwnProperty(fieldName) &&
-            item.mod[fieldName] !== undefined)
-        {
-          transportItem[fieldName] = item.mod[fieldName];
+        if (item.mod && item.mod.hasOwnProperty(fieldName)) {
+          if (item.mod[fieldName] !== undefined) {
+            transportItem[fieldName] = item.mod[fieldName];
+          }
         }else if (item[fieldName] !== undefined) {
           transportItem[fieldName] = item[fieldName];
         }
