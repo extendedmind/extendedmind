@@ -21,8 +21,9 @@
 // the arrays because everything is needed anyway to get home and inbox to work,
 // which are part of every main slide collection.
 function MainController(
-                        $controller, $filter, $rootScope, $scope, $timeout, $window,
-                        UserService, AnalyticsService, ArrayService, DrawerService, ItemsService,
+                        $controller, $filter, $q, $rootScope, $scope, $timeout, $window,
+                        UserService, AnalyticsService, ArrayService,
+                        BackendClientService, DrawerService, ItemsService,
                         ListsService, NotesService, SwiperService, SynchronizeService, TagsService,
                         TasksService, UISessionService, UserSessionService, packaging) {
 
@@ -621,6 +622,7 @@ function MainController(
     $rootScope.synced = timestamp;
     $rootScope.syncState = 'ready';
     $scope.refreshFavoriteLists();
+    itemsSynchronizeCounter++;
   }
 
   // Synchronize items if not already synchronizing and interval reached.
@@ -682,7 +684,6 @@ function MainController(
               $scope.refreshFavoriteLists();
             });
           }
-          itemsSynchronizeCounter++;
         }, function(){
           $rootScope.syncState = 'error';
         });
@@ -690,6 +691,19 @@ function MainController(
     }
     executeSynchronizeCallbacks();
   }
+
+  // Execute synchronize immediately when queue is empty to be fully synced right after data has been
+  // modified without having to wait for next tick.
+  function queueEmptiedCallback() {
+    var activeUUID = UISessionService.getActiveUUID();
+    return SynchronizeService.synchronize(activeUUID).then(function() {
+      updateItemsSyncronized(activeUUID);
+    }, function(){
+      $rootScope.syncState = 'error';
+      $q.reject();
+    });
+  }
+  BackendClientService.registerQueueEmptiedCallback(queueEmptiedCallback)
 
   // CLEANUP
 
@@ -862,9 +876,9 @@ function MainController(
 }
 
 MainController['$inject'] = [
-'$controller', '$filter', '$rootScope', '$scope', '$timeout', '$window',
-'UserService', 'AnalyticsService', 'ArrayService', 'DrawerService', 'ItemsService', 'ListsService',
-'NotesService', 'SwiperService', 'SynchronizeService','TagsService', 'TasksService',
+'$controller', '$filter', '$q', '$rootScope', '$scope', '$timeout', '$window',
+'UserService', 'AnalyticsService', 'ArrayService', 'BackendClientService', 'DrawerService', 'ItemsService',
+'ListsService', 'NotesService', 'SwiperService', 'SynchronizeService','TagsService', 'TasksService',
 'UISessionService', 'UserSessionService', 'packaging'
 ];
 angular.module('em.main').controller('MainController', MainController);

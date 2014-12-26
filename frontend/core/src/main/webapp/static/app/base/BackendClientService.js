@@ -239,6 +239,9 @@
   methods.registerOnlineStatusCallback = function(callback) {
     HttpClientService.registerCallback('online', callback);
   };
+  methods.registerQueueEmptiedCallback = function(callback) {
+    HttpClientService.registerCallback('queueEmptied', callback);
+  };
 
   return methods;
 }

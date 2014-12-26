@@ -269,6 +269,9 @@ function HttpRequestQueueService() {
     isProcessing: function() {
       return processing;
     },
+    isQueueEmpty: function() {
+      return !queue.length;
+    },
     isEmpty: function() {
       return !primary && !secondary && !queue.length && !beforeLast;
     }
