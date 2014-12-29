@@ -17,17 +17,65 @@
 'use strict';
 
 function MockItemsBackendService($httpBackend, ItemsService, PersistentStorageService, SynchronizeService,
-                                 UserSessionService, UUIDService) {
+                                 UISessionService, UserSessionService, UUIDService) {
+
+  function convertModifiedItemsIntoPersistent(modifiedItems){
+    var persistentItems = [];
+    for (var i=0; i<modifiedItems.length; i++){
+      var persistentItem = {
+        uuid: UUIDService.isFakeUUID(modifiedItems[i].trans.uuid) ? UUIDService.randomUUID() :
+                                                              modifiedItems[i].trans.uuid,
+        title: modifiedItems[i].trans.title,
+        created: modifiedItems[i].trans.created,
+        modified: modifiedItems[i].trans.modified
+      };
+      if (modifiedItems[i].trans.description) persistentItem.description = modifiedItems[i].trans.description;
+      if (modifiedItems[i].trans.deleted) persistentItem.deleted = modifiedItems[i].trans.deleted;
+      if (modifiedItems[i].trans.due) persistentItem.due = modifiedItems[i].trans.due;
+      if (modifiedItems[i].trans.completed) persistentItem.completed = modifiedItems[i].trans.completed;
+      if (modifiedItems[i].trans.repeating) persistentItem.repeating = modifiedItems[i].trans.repeating;
+      if (modifiedItems[i].trans.reminder) persistentItem.reminder = modifiedItems[i].trans.reminder;
+      if (modifiedItems[i].trans.content) persistentItem.content = modifiedItems[i].trans.content;
+
+      if (modifiedItems[i].mod.relationships)
+        persistentItem.relationships = modifiedItems[i].mod.relationships;
+      else if (modifiedItems[i].relationships)
+        persistentItem.relationships = modifiedItems[i].relationships;
+      persistentItems.push(persistentItem);
+    }
+    return persistentItems;
+  }
 
   function mockGetItems(expectResponse){
     $httpBackend.whenGET(SynchronizeService.getItemsRegex)
       .respond(function(method, url, data, headers) {
         if (url.indexOf('?modified=') != -1){
+          var modifiedResponse = {};
           if (UserSessionService.isOfflineEnabled()){
+            var activeUUID = UISessionService.getActiveUUID();
             // Search values that contain mod from the PersistentStorageService and return them
-            // TODO
+            var modifiedItems = SynchronizeService.getModifiedItems('item', activeUUID);
+            if (modifiedItems && modifiedItems.length){
+              modifiedResponse.items = convertModifiedItemsIntoPersistent(modifiedItems);
+            }
+            var modifiedTasks = SynchronizeService.getModifiedItems('task', activeUUID);
+            if (modifiedTasks && modifiedTasks.length){
+              modifiedResponse.tasks = convertModifiedItemsIntoPersistent(modifiedTasks);
+            }
+            var modifiedNotes = SynchronizeService.getModifiedItems('note', activeUUID);
+            if (modifiedNotes && modifiedNotes.length){
+              modifiedResponse.notes = convertModifiedItemsIntoPersistent(modifiedNotes);
+            }
+            var modifiedLists = SynchronizeService.getModifiedItems('list', activeUUID);
+            if (modifiedLists && modifiedLists.length){
+              modifiedResponse.lists = convertModifiedItemsIntoPersistent(modifiedLists);
+            }
+            var modifiedTags = SynchronizeService.getModifiedItems('tag', activeUUID);
+            if (modifiedTags && modifiedTags.length){
+              modifiedResponse.tags = convertModifiedItemsIntoPersistent(modifiedTags);
+            }
           }
-          return expectResponse(method, url, data, headers, {});
+          return expectResponse(method, url, data, headers, modifiedResponse);
         }else if (url.indexOf('?completed=true') != -1){
           var response = {
             'tasks': []
@@ -142,5 +190,5 @@ function MockItemsBackendService($httpBackend, ItemsService, PersistentStorageSe
 }
 
 MockItemsBackendService.$inject = ['$httpBackend', 'ItemsService', 'PersistentStorageService',
-'SynchronizeService', 'UserSessionService', 'UUIDService'];
+'SynchronizeService', 'UISessionService', 'UserSessionService', 'UUIDService'];
 angular.module('em.appTest').factory('MockItemsBackendService', MockItemsBackendService);
