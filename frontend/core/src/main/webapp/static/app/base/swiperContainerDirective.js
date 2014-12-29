@@ -306,7 +306,7 @@
 
         // http://www.javascriptkit.com/javatutors/touchevents2.shtml
         if (Math.abs(swipeDistanceX) >= swipeRestraintX &&
-            Math.abs(swipeDistanceY) <= swipeRestraintX)
+            Math.abs(swipeDistanceY) <= swipeRestraintY)
         {
           // Horizontal swipe.
           if (swipeDistanceX < 0) {
@@ -319,7 +319,7 @@
             swipeRight = true;
           }
         } else if (Math.abs(swipeDistanceY) >= swipeRestraintY &&
-                   Math.abs(swipeDistanceX) <= swipeRestraintY)
+                   Math.abs(swipeDistanceX) <= swipeRestraintX)
         {
           // Vertical swipe.
           if (swipeDistanceY < 0) {
@@ -435,10 +435,10 @@
             Math.abs(swipePageSlideDistY) <= swipeRestraintY)
         {
           // Horizontal swipe.
-        } else if (Math.abs(swipePageSlideDistY) >= swipeRestraintY &&
-                   Math.abs(swipePageSlideDistX) <= swipeRestraintX)
-        {
-          // Vertical swipe.
+        } else {
+          // Non-horizontal swipe.
+          // NOTE:  Threshold comparison can not be used here because we need to prevent event bubbling into
+          //        swiper to make scroll working.
           if (swipePageSlideDistY < 0) {
             swipePageSlideDown = true;
             swipePageSlideUp = false;
@@ -540,8 +540,8 @@
         }
         SwiperService.deleteSwiper($scope.swiperPath);
       });
-    },
-    link: function (scope, element, attrs, drawerAisleController){
+},
+link: function (scope, element, attrs, drawerAisleController){
 
       // Hide previous and/or next slide with this for the duration of a resize animation
       // to prevent flickering.
@@ -677,5 +677,5 @@
   };
 }
 swiperContainerDirective['$inject'] = ['$rootScope', '$window', 'DetectBrowserService', 'DrawerService',
-  'SwiperService'];
+'SwiperService'];
 angular.module('em.base').directive('swiperContainer', swiperContainerDirective);
