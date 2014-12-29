@@ -230,6 +230,12 @@
           $rootScope.smallDeviceHeight = false;
         }
 
+        if (width <= 365){
+          $rootScope.smallDeviceWidth = true;
+        }else{
+          $rootScope.smallDeviceWidth = false;
+        }
+
         // Execute callbacks
         for (var id in windowResizedCallbacks) {
           windowResizedCallbacks[id]();
