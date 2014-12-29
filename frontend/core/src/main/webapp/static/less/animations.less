@@ -350,7 +350,7 @@ input[type="checkbox"]:checked + label:before {
   background-color: @color-background-editor-inactive;  // [1]
 }
 
-.editor-visible .editor-animating.animate-container-master {
+.editor-open.editor-animating.animate-container-master {
   -webkit-transition: background-color @speed-animation-editor @timing-animate; // [1]
   -moz-transition: background-color @speed-animation-editor @timing-animate;    // [1]
   -o-transition: background-color @speed-animation-editor @timing-animate;      // [1]
@@ -359,7 +359,7 @@ input[type="checkbox"]:checked + label:before {
   background-color: white;
 }
 
-.editor-hidden .editor-animating.animate-container-master {
+.editor-animating.animate-container-master {
   -webkit-transition: background-color @speed-animation-editor @timing-animate; // [1]
   -moz-transition: background-color @speed-animation-editor @timing-animate;    // [1]
   -o-transition: background-color @speed-animation-editor @timing-animate;      // [1]

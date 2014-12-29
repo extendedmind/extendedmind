@@ -20,8 +20,7 @@
 // Holds a reference to all the item arrays. There is no sense in limiting
 // the arrays because everything is needed anyway to get home and inbox to work,
 // which are part of every main slide collection.
-function MainController(
-                        $controller, $filter, $q, $rootScope, $scope, $timeout, $window,
+function MainController($element, $controller, $filter, $q, $rootScope, $scope, $timeout, $window,
                         UserService, AnalyticsService, ArrayService,
                         BackendClientService, DrawerService, ItemsService,
                         ListsService, NotesService, SwiperService, SynchronizeService, TagsService,
@@ -170,11 +169,11 @@ function MainController(
     DrawerService.disableDragging('left');
   };
 
-  $scope.isEditorVisible = function isEditorVisible() {
+  $scope.isEditorVisible = function() {
     return DrawerService.isOpen('right');
   };
 
-  $scope.isMenuVisible = function isMenuVisible() {
+  $scope.isMenuVisible = function() {
     return DrawerService.isOpen('left');
   };
 
@@ -779,6 +778,7 @@ function MainController(
     for (var id in editorOpenedCallbacks) {
       editorOpenedCallbacks[id]();
     }
+    $element[0].classList.toggle('editor-visible', true);
   }
 
   function executeAboutToCloseCallbacks() {
@@ -804,6 +804,7 @@ function MainController(
     // Don't remove list items from list before editor has been closed.
     // See: listItemLeaveAnimation in listItemDirective.
     UISessionService.resolveDeferredActions('editorClose');
+    $element[0].classList.toggle('editor-visible', false);
   }
 
   DrawerService.registerOpenedCallback('left', menuOpened, 'MainController');
@@ -815,6 +816,7 @@ function MainController(
                            true);
       featurePendingOpen = undefined;
     }
+    $element[0].classList.toggle('menu-visible', true);
   }
 
   DrawerService.registerClosedCallback('left', menuClosed, 'MainController');
@@ -831,6 +833,7 @@ function MainController(
         DrawerService.open('right');
       });
     }
+    $element[0].classList.toggle('menu-visible', false);
   }
 
   // UI FUNCTIONS
@@ -876,7 +879,7 @@ function MainController(
 }
 
 MainController['$inject'] = [
-'$controller', '$filter', '$q', '$rootScope', '$scope', '$timeout', '$window',
+'$element', '$controller', '$filter', '$q', '$rootScope', '$scope', '$timeout', '$window',
 'UserService', 'AnalyticsService', 'ArrayService', 'BackendClientService', 'DrawerService', 'ItemsService',
 'ListsService', 'NotesService', 'SwiperService', 'SynchronizeService','TagsService', 'TasksService',
 'UISessionService', 'UserSessionService', 'packaging'
