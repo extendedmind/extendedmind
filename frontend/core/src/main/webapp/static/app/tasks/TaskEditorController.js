@@ -146,20 +146,11 @@
   $scope.closeContextPicker = function() {
     $scope.contextPickerOpen = false;
   };
-  $scope.getContextFromUUID = function(uuid) {
-    var context = $scope.contexts.findFirstObjectByKeyValue('uuid', uuid);
-    if (context) return context;
-  };
-  $scope.getContextTitleFromUUID = function(uuid) {
-    var context = $scope.contexts.findFirstObjectByKeyValue('uuid', uuid);
-    if (context) return context.trans.title;
-  };
-
   $scope.closeContextPickerAndSetContextToTask = function(task, context) {
 
     function doCloseAndSave() {
       $scope.closeContextPicker();
-      task.trans.context = context.trans.uuid;
+      task.trans.context = context;
     }
 
     if (!context.trans.uuid) {
@@ -173,8 +164,9 @@
 
   $scope.closeContextPickerAndClearContextFromTask = function(task, context) {
     $scope.closeContextPicker();
-    if (task.trans.context === context.trans.uuid)
-      delete task.trans.context;
+    if (task.trans.context === context){
+      task.trans.context = undefined;
+    }
   };
 
   // REPEATING PICKER

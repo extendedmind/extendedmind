@@ -18,26 +18,27 @@
 
  function ExtendedItemService(TagsService) {
 
-  function copyParentToList(origin, extendedItem) {
+  var getListInfoCallback;
+  function copyParentToList(origin, extendedItem, ownerUUID) {
     if (origin && origin.parent) {
-      if (!extendedItem.trans) extendedItem.trans = {};
-      extendedItem.trans.list = origin.parent;
+      var listInfo = getListInfoCallback(origin.parent, ownerUUID);
+      if (listInfo){
+        if (!extendedItem.trans) extendedItem.trans = {};
+        extendedItem.trans.list = listInfo.list;
+      }
     }
   }
 
-  function copyListToParent(origin, destination) {
-    if (origin.list) {
-      if (!destination.relationships) destination.relationships = {};
-      if (!destination.relationships.parent) destination.relationships.parent = {};
-      destination.relationships.parent = origin.list;
+  function copyTransListToModParent(extendedItem) {
+    if (extendedItem.trans.hasOwnProperty('list')){
+      if (!extendedItem.trans.list){
+        if (!extendedItem.mod.relationships) extendedItem.mod.relationships = undefined;
+        else extendedItem.mod.relationships.parent = undefined;
+      } else{
+        if (!extendedItem.mod.relationships) extendedItem.mod.relationships = {};
+        extendedItem.mod.relationships.parent = extendedItem.trans.list.trans.uuid;
+      }
     }
-    // List has been removed, delete value
-    else if (destination.relationships && destination.relationships.parent) {
-      delete destination.relationships.parent;
-    }
-    // AngularJS sets transient property to 'null' if it is used in ng-model data-binding and no value is set.
-    if (origin.list === null)
-      delete origin.list;
   }
 
   function copyTagsToTrans(origin, extendedItem, ownerUUID) {
@@ -47,7 +48,7 @@
         if (tagInfo) {
           if (!extendedItem.trans) extendedItem.trans = {};
           if (tagInfo.tag.tagType === 'context') {
-            extendedItem.trans.context = tagInfo.tag.uuid;
+            extendedItem.trans.context = tagInfo.tag;
             break;
           } else if (tagInfo.tag.tagType === 'keyword') {
             if (!extendedItem.trans.keywords) extendedItem.trans.keywords = [];
@@ -138,43 +139,56 @@
     }
   }
 
-  function copyContextToTags(origin, destination, ownerUUID) {
+  function copyTransContextToModTags(extendedItem, ownerUUID) {
     var previousContextIndex;
 
-    // Transient context exists
-    if (origin.context) {
-      var foundCurrentTag = false;
-      var context = origin.context;
+    if (extendedItem.trans.hasOwnProperty('context')) {
 
-      if (destination.relationships) {
-        if (destination.relationships.tags) {
-          for (var i = 0, len = destination.relationships.tags.length; i < len; i++) {
-            var tagInfo = TagsService.getTagInfo(destination.relationships.tags[i], ownerUUID);
-            if (tagInfo && tagInfo.tag.tagType === 'context') {
-              if (tagInfo.tag.uuid === context) foundCurrentTag = true;
-              else previousContextIndex = i;
+      // Transient context exists
+      if (extendedItem.trans.context){
+
+        var foundCurrentTag = false;
+        var contextUUID = extendedItem.trans.context.trans.uuid;
+
+        if (extendedItem.mod.relationships) {
+          if (extendedItem.mod.relationships.tags) {
+            for (var i = 0, len = extendedItem.mod.relationships.tags.length; i < len; i++) {
+              var tagInfo = TagsService.getTagInfo(extendedItem.mod.relationships.tags[i], ownerUUID);
+              if (tagInfo && tagInfo.tag.tagType === 'context') {
+                if (tagInfo.tag.uuid === contextUUID) foundCurrentTag = true;
+                else previousContextIndex = i;
+              }
             }
+            // remove old tag
+            if (previousContextIndex !== undefined)
+              extendedItem.mod.relationships.tags.splice(previousContextIndex, 1);
           }
-          // remove old tag
-          if (previousContextIndex !== undefined)
-            destination.relationships.tags.splice(previousContextIndex, 1);
+        }
+        // copy new context to tag
+        if (!foundCurrentTag) {
+          if (!extendedItem.mod.relationships) extendedItem.mod.relationships = {};
+          if (!extendedItem.mod.relationships.tags) extendedItem.mod.relationships.tags = [contextUUID];
+          else extendedItem.mod.relationships.tags.push(contextUUID);
         }
       }
-      // copy new context to tag
-      if (!foundCurrentTag) {
-        if (!destination.relationships) destination.relationships = {};
-        if (!destination.relationships.tags) destination.relationships.tags = [context];
-        else destination.relationships.tags.push(context);
+      // context has been removed from item, delete persistent value.
+      else {
+        if (extendedItem.mod.relationships){
+          if (extendedItem.mod.relationships.tags) {
+            previousContextIndex = undefined;
+            for (var j = 0; j < extendedItem.mod.relationships.tags.length; j++) {
+              var jTagInfo = TagsService.getTagInfo(extendedItem.mod.relationships.tags[j], ownerUUID);
+              if (jTagInfo && jTagInfo.tag.tagType === 'context') previousContextIndex = j;
+            }
+            if (previousContextIndex !== undefined)
+              extendedItem.mod.relationships.tags.splice(previousContextIndex, 1);
+          }else{
+            extendedItem.mod.tags = undefined;
+          }
+        }else{
+          extendedItem.mod.relationships = undefined;
+        }
       }
-    }
-    // Tag has been removed from item, delete persistent value.
-    else if (destination.relationships && destination.relationships.tags) {
-      previousContextIndex = undefined;
-      for (var j = 0, jLen = destination.relationships.tags.length; j < jLen; j++) {
-        var jTagInfo = TagsService.getTagInfo(destination.relationships.tags[j], ownerUUID);
-        if (jTagInfo && jTagInfo.tag.tagType === 'context') previousContextIndex = j;
-      }
-      if (previousContextIndex !== undefined) destination.relationships.tags.splice(previousContextIndex, 1);
     }
   }
 
@@ -199,10 +213,10 @@
         // Check list
         if (extendedItem.trans.list){
           if (extendedItem.mod && extendedItem.mod.relationships){
-            if (extendedItem.mod.relationships.parent !== extendedItem.trans.list)
+            if (extendedItem.mod.relationships.parent !== extendedItem.trans.list.trans.uuid)
               return true;
           }else if (extendedItem.relationships &&
-                    (extendedItem.relationships.parent !== extendedItem.trans.list)){
+                    (extendedItem.relationships.parent !== extendedItem.trans.list.trans.uuid)){
             return true;
           }
         }else if ((extendedItem.relationships && extendedItem.relationships.parent) ||
@@ -216,12 +230,12 @@
         if (extendedItem.trans.context){
           if (extendedItem.mod && extendedItem.mod.relationships){
             if (!extendedItem.mod.relationships.tags ||
-                extendedItem.mod.relationships.tags.indexOf(extendedItem.trans.context) === -1){
+                extendedItem.mod.relationships.tags.indexOf(extendedItem.trans.context.trans.uuid) === -1){
               return true;
             }
           }else if (extendedItem.relationships){
             if (!extendedItem.relationships.tags || 
-                extendedItem.relationships.tags.indexOf(extendedItem.trans.context) === -1){
+                extendedItem.relationships.tags.indexOf(extendedItem.trans.context.trans.uuid) === -1){
               return true;
             }
           }
@@ -273,15 +287,15 @@
       // TODO: Actually validate this
     },
     copyRelationshipsTransToMod: function(extendedItem, ownerUUID){
-      copyListToParent(extendedItem.trans, extendedItem.mod);
+      copyTransListToModParent(extendedItem);
       copyKeywordsToTags(extendedItem.trans, extendedItem.mod, ownerUUID);
-      copyContextToTags(extendedItem.trans, extendedItem.mod, ownerUUID);
+      copyTransContextToModTags(extendedItem, ownerUUID);
     },
     resetRelationshipsTrans: function(extendedItem, ownerUUID){
       if (extendedItem.mod && extendedItem.mod.parent !== undefined){
-        copyParentToList(extendedItem.mod, extendedItem);
+        copyParentToList(extendedItem.mod, extendedItem, ownerUUID);
       }else if (extendedItem.relationships && extendedItem.relationships.parent !== undefined){
-        copyParentToList(extendedItem.relationships, extendedItem);
+        copyParentToList(extendedItem.relationships, extendedItem, ownerUUID);
       }else if (extendedItem.trans.list !== undefined){
         delete extendedItem.trans.list;
       }
@@ -294,6 +308,9 @@
         delete extendedItem.trans.keywords;
       }
     },
+    registerGetListInfoCallback: function(callback){
+      getListInfoCallback = callback;
+    }
   };
 }
 

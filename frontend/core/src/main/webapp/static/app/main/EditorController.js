@@ -236,20 +236,12 @@
   $scope.closeListPicker = function() {
     $scope.listPickerOpen = false;
   };
-  $scope.getListFromUUID = function(uuid) {
-    var list = $scope.allLists.findFirstObjectByKeyValue('uuid', uuid, 'trans');
-    if (list) return list;
-  };
-  $scope.getListTitleFromUUID = function(uuid) {
-    var list = $scope.allLists.findFirstObjectByKeyValue('uuid', uuid, 'trans');
-    if (list) return list.trans.title;
-  };
 
   $scope.closeListPickerAndSetListToItem = function(item, list) {
 
     function doCloseAndSave() {
       $scope.closeListPicker();
-      item.trans.list = list.trans.uuid;
+      item.trans.list = list;
     }
 
     if (!list.trans.uuid) {// List is new, save it first. Close list picker on error saving new list.
@@ -261,8 +253,9 @@
 
   $scope.closeListPickerAndClearListFromItem = function(item, list) {
     $scope.closeListPicker();
-    if (item.trans.list === list.trans.uuid)
-      delete item.trans.list;
+    if (item.trans.list === list){
+      item.trans.list = undefined;
+    }
   };
 
   var editorFooterCloseCallback;

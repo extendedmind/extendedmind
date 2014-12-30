@@ -59,13 +59,13 @@
               list-picker-archived-lists="archivedLists"
               list-picker-save="closeListPickerAndSetListToItem(note, list)"
               list-picker-clear="closeListPickerAndClearListFromItem(note, list)"
-              list-picker-get-selected="getListFromUUID(note.trans.list)"></div>
+              list-picker-selected="note.trans.list"></div>
           </div>
 
           <div ng-if="!listPickerOpen">
             <div ng-hide="mode === 'fullScreen'" class="row-vertically-centered">
               <a href ng-class="note.trans.list ? 'link' : 'downplayed'" ng-click="openListPicker()">
-                <span class="text-link" ng-bind="note.trans.list ? getListTitleFromUUID(note.trans.list) : 'select list\u2026'"></span>
+                <span class="text-link" ng-bind="note.trans.list ? note.trans.list.trans.title : 'select list\u2026'"></span>
               </a>
             </div>
 

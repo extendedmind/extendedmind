@@ -373,7 +373,7 @@ describe('SynchronizeService', function() {
     // Check that task got the right context
 
     expect(TasksService.getTaskInfo('9a1ce3aa-f476-43c4-845e-af59a9a33760',testOwnerUUID).task
-            .trans.context).toBe('1208d45b-3b8c-463e-88f3-f7ef19ce87cd');
+            .trans.context.trans.uuid).toBe('1208d45b-3b8c-463e-88f3-f7ef19ce87cd');
   });
 
   it('should syncronize with empty result', function () {
@@ -1457,6 +1457,8 @@ describe('SynchronizeService', function() {
     var tasks = TasksService.getTasks(testOwnerUUID);
     var shoppingListUUID = 'cf726d03-8fee-4614-8b68-f9f885938a53';
     var homeUUID = '1208d45b-3b8c-463e-88f3-f7ef19ce87cd';
+    var shoppingList = ListsService.getListInfo(shoppingListUUID, testOwnerUUID).list;
+    var homeContext = TagsService.getTagInfo(homeUUID, testOwnerUUID).tag;
     var orangesTransport = {
       title: 'buy oranges',
       relationships: {
@@ -1464,8 +1466,10 @@ describe('SynchronizeService', function() {
         tags: [homeUUID]
       }
     };
-    var oranges = TasksService.getNewTask({title: 'buy oranges', list: shoppingListUUID,
-                                           context: homeUUID}, testOwnerUUID);
+    var oranges = TasksService.getNewTask(
+                    {title: 'buy oranges',
+                     list: shoppingList,
+                     context: homeContext}, testOwnerUUID);
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task',
                            orangesTransport)
        .respond(404);
@@ -1482,8 +1486,8 @@ describe('SynchronizeService', function() {
 
     // 2. save existing task with shopping list uuid
     var cleanCloset = TasksService.getTaskInfo('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID).task;
-    cleanCloset.trans.list = shoppingListUUID;
-    cleanCloset.trans.context = homeUUID;
+    cleanCloset.trans.list = shoppingList;
+    cleanCloset.trans.context = homeContext;
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task',
                            orangesTransport)
        .respond(404);
@@ -1498,9 +1502,6 @@ describe('SynchronizeService', function() {
 
     var latestModified = now.getTime();
     MockUserSessionService.setLatestModified(latestModified);
-
-    var shoppingList = ListsService.getListInfo(shoppingListUUID, testOwnerUUID).list;
-    var homeContext = TagsService.getTagInfo(homeUUID, testOwnerUUID).tag;
 
     delete orangesTransport.relationships;
     $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
@@ -1550,9 +1551,10 @@ describe('SynchronizeService', function() {
     var tasks = TasksService.getTasks(testOwnerUUID);
     var lists = ListsService.getLists(testOwnerUUID);
     var shoppingListUUID = 'cf726d03-8fee-4614-8b68-f9f885938a53';
+    var shoppingList = ListsService.getListInfo(shoppingListUUID, testOwnerUUID).list;
 
     var cleanCloset = TasksService.getTaskInfo('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID).task;
-    cleanCloset.trans.list = shoppingListUUID;
+    cleanCloset.trans.list = shoppingList;
     var cleanClosetTransport = {
       title: cleanCloset.title,
       relationships: {

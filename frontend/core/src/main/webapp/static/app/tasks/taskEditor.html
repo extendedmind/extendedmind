@@ -51,7 +51,7 @@
               list-picker-archived-lists="archivedLists"
               list-picker-save="closeListPickerAndSetListToItem(task, list)"
               list-picker-clear="closeListPickerAndClearListFromItem(task, list)"
-              list-picker-get-selected="getListFromUUID(task.trans.list)"></div>
+              list-picker-selected="task.trans.list"></div>
           </div>
 
           <div ng-if="!listPickerOpen">
@@ -80,7 +80,7 @@
 
             <div ng-hide="descriptionFocused || calendarOpen" class="row-vertically-centered">
               <a href ng-class="task.trans.list ? 'link' : 'downplayed'" ng-click="openListPicker()">
-                <span class="text-link" ng-bind="task.trans.list ? getListTitleFromUUID(task.trans.list) : 'select list\u2026'"></span>
+                <span class="text-link" ng-bind="task.trans.list ? task.trans.list.trans.title : 'select list\u2026'"></span>
               </a>
             </div>
 
@@ -124,7 +124,7 @@
             <div list-picker="contexts" list-picker-new-item="getNewContext()"
               list-picker-save="closeContextPickerAndSetContextToTask(task, list)"
               list-picker-clear="closeContextPickerAndClearContextFromTask(task, list)"
-              list-picker-get-selected="getContextFromUUID(task.trans.context)" list-picker-type="context"
+              list-picker-selected="task.trans.context" list-picker-type="context"
               list-picker-prefix="@"></div>
           </div>
 
@@ -142,7 +142,7 @@
 
             <div ng-hide="urlFocused" class="row-vertically-centered">
               <a href ng-class="task.trans.context ? 'link' : 'downplayed'" ng-click="openContextPicker()">
-                <span class="text-link" ng-bind="task.trans.context ? '@' + getContextTitleFromUUID(task.trans.context) : 'select context\u2026'"></span>
+                <span class="text-link" ng-bind="task.trans.context ? '@' + task.trans.context.trans.title : 'select context\u2026'"></span>
               </a>
             </div>
 

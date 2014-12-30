@@ -122,6 +122,7 @@
   function copyModToPersistent(item, ownerUUID, fieldInfos) {
     for (var i=0, len=fieldInfos.length; i<len; i++){
       var fieldName = angular.isObject(fieldInfos[i]) ? fieldInfos[i].name : fieldInfos[i];
+
       if (item.mod && item.mod.hasOwnProperty(fieldName)) {
         // OBJECT
         if (angular.isObject(item.mod[fieldName])) {
@@ -135,7 +136,7 @@
         // SINGLE VALUE
         else if (item.mod[fieldName] !== item[fieldName]) {
           // This field has been modified, and the modification does not match
-          item[fieldInfos[i]] = item.mod[fieldInfos[i]];
+          item[fieldName] = item.mod[fieldName];
         }
       }
     }

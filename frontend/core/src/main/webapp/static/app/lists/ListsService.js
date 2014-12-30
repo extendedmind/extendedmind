@@ -49,6 +49,32 @@
   }
   UserSessionService.registerNofifyOwnerCallback(initializeArrays, 'ListsService');
 
+
+  function getListInfo(uuid, ownerUUID){
+    var list = lists[ownerUUID].activeLists.findFirstObjectByKeyValue('uuid', uuid, 'trans');
+    if (list){
+      return {
+        type: 'active',
+        list: list
+      };
+    }
+    list = lists[ownerUUID].deletedLists.findFirstObjectByKeyValue('uuid', uuid, 'trans');
+    if (list){
+      return {
+        type: 'deleted',
+        list: list
+      };
+    }
+    list = lists[ownerUUID].archivedLists.findFirstObjectByKeyValue('uuid', uuid, 'trans');
+    if (list){
+      return {
+        type: 'archived',
+        list: list
+      };
+    }
+  }
+  ExtendedItemService.registerGetListInfoCallback(getListInfo);
+
   function getOtherArrays(ownerUUID) {
     return [{array: lists[ownerUUID].archivedLists, id: 'archived'}];
   }
@@ -134,27 +160,7 @@
                                             getOtherArrays(ownerUUID))
     },
     getListInfo: function(uuid, ownerUUID) {
-      var list = lists[ownerUUID].activeLists.findFirstObjectByKeyValue('uuid', uuid, 'trans');
-      if (list){
-        return {
-          type: 'active',
-          list: list
-        };
-      }
-      list = lists[ownerUUID].deletedLists.findFirstObjectByKeyValue('uuid', uuid, 'trans');
-      if (list){
-        return {
-          type: 'deleted',
-          list: list
-        };
-      }
-      list = lists[ownerUUID].archivedLists.findFirstObjectByKeyValue('uuid', uuid, 'trans');
-      if (list){
-        return {
-          type: 'archived',
-          list: list
-        };
-      }
+      return getListInfo(uuid, ownerUUID);
     },
     saveList: function(list, ownerUUID) {
       var deferred = $q.defer();

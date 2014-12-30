@@ -24,13 +24,12 @@
       prefix: '@listPickerPrefix',
       archivedLists: '=listPickerArchivedLists',
       getNewList: '&?listPickerNewItem',
-      getSelectedList: '&listPickerGetSelected',
+      selectedList: '=listPickerSelected',
       closeAndSave: '&listPickerSave',
       closeAndClearList: '&listPickerClear'
     },
     link: function(scope) {
       scope.newList = scope.getNewList();
-      scope.selectedList = scope.getSelectedList();
       scope.type = scope.type || 'list';
 
       /*
