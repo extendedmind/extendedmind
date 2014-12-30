@@ -111,23 +111,36 @@
                                     getOtherArrays(ownerUUID));
     },
     updateLists: function(listsResponse, ownerUUID) {
-      ItemLikeService.persistAndReset(listsResponse, 'list', ownerUUID, listFieldInfos);
-      var latestModified = ArrayService.updateArrays(listsResponse,
-                                                     lists[ownerUUID].activeLists,
-                                                     lists[ownerUUID].deletedLists,
-                                                     getOtherArrays(ownerUUID));
-
-      if (latestModified) {
-        // Go through response to see if something was deleted
-        for (var i=0, len=listsResponse.length; i<len; i++) {
-          if (listsResponse[i].deleted) {
-            for (var id in listDeletedCallbacks) {
-              listDeletedCallbacks[id](listsResponse[i], ownerUUID);
+      if (listsResponse && listsResponse.length){
+        // Go through listsResponse, and add .mod values if the fields in the current .mod do not match
+        // the values in the persistent response
+        var updatedLists = [];
+        for (var i=0, len=listsResponse.length; i<len; i++){
+          var listInfo = this.getListInfo(listsResponse[i].uuid, ownerUUID);
+          if (listInfo){
+            updatedLists.push(ItemLikeService.evaluateMod(
+                                listsResponse[i], listInfo.list, 'list', ownerUUID, listFieldInfos));
+          }else{
+            updatedLists.push(listsResponse[i]);
+          }
+        }
+        ItemLikeService.persistAndReset(updatedLists, 'list', ownerUUID, listFieldInfos);
+        var latestModified = ArrayService.updateArrays(updatedLists,
+                                                       lists[ownerUUID].activeLists,
+                                                       lists[ownerUUID].deletedLists,
+                                                       getOtherArrays(ownerUUID));
+        if (latestModified) {
+          // Go through response to see if something was deleted
+          for (var i=0, len=updatedLists.length; i<len; i++) {
+            if (updatedLists[i].deleted) {
+              for (var id in listDeletedCallbacks) {
+                listDeletedCallbacks[id](updatedLists[i], ownerUUID);
+              }
             }
           }
         }
+        return latestModified;
       }
-      return latestModified;
     },
     updateListModProperties: function(uuid, properties, ownerUUID) {
       var listInfo = this.getListInfo(uuid, ownerUUID);

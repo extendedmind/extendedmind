@@ -218,14 +218,18 @@
       if (tasksResponse && tasksResponse.length){
         // Go through tasksResponse, and add .mod values if the fields in the current .mod do not match
         // the values in the persistent response
+        var updatedTasks = [];
         for (var i=0, len=tasksResponse.length; i<len; i++){
           var taskInfo = this.getTaskInfo(tasksResponse[i].uuid, ownerUUID);
           if (taskInfo){
-            ItemLikeService.evaluateMod(tasksResponse[i], taskInfo.task, 'task', ownerUUID, taskFieldInfos);
+            updatedTasks.push(ItemLikeService.evaluateMod(
+                                tasksResponse[i], taskInfo.task, 'task', ownerUUID, taskFieldInfos));
+          }else{
+            updatedTasks.push(tasksResponse[i]);
           }
         }
-        ItemLikeService.persistAndReset(tasksResponse, 'task', ownerUUID, taskFieldInfos);
-        return ArrayService.updateArrays(tasksResponse,
+        ItemLikeService.persistAndReset(updatedTasks, 'task', ownerUUID, taskFieldInfos);
+        return ArrayService.updateArrays(updatedTasks,
                                          tasks[ownerUUID].activeTasks,
                                          tasks[ownerUUID].deletedTasks,
                                          getOtherArrays(ownerUUID));

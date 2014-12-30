@@ -169,14 +169,18 @@
       if (notesResponse && notesResponse.length){
         // Go through notesResponse, and add .mod values if the fields in the current .mod do not match
         // the values in the persistent response
+        var updatedNotes = [];
         for (var i=0, len=notesResponse.length; i<len; i++){
           var noteInfo = this.getNoteInfo(notesResponse[i].uuid, ownerUUID);
           if (noteInfo){
-            ItemLikeService.evaluateMod(notesResponse[i], noteInfo.note, 'note', ownerUUID, noteFieldInfos);
+            updatedNotes.push(ItemLikeService.evaluateMod(
+                                notesResponse[i], noteInfo.note, 'note', ownerUUID, noteFieldInfos));
+          }else{
+            updatedNotes.push(notesResponse[i]);
           }
         }
-        ItemLikeService.persistAndReset(notesResponse, 'note', ownerUUID, noteFieldInfos);
-        return ArrayService.updateArrays(notesResponse,
+        ItemLikeService.persistAndReset(updatedNotes, 'note', ownerUUID, noteFieldInfos);
+        return ArrayService.updateArrays(updatedNotes,
                                          notes[ownerUUID].activeNotes,
                                          notes[ownerUUID].deletedNotes, getOtherArrays(ownerUUID));
       }

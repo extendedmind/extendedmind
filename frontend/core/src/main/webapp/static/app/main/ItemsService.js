@@ -70,14 +70,19 @@
       if (itemsResponse && itemsResponse.length){
         // Go through itemsResponse, and add .mod values if the fields in the current .mod do not match
         // the values in the persistent response
-        for (var i=0, len=itemsResponse.length; i<len; i++){
+        var updatedItems = [];
+        for (var i=0; i<itemsResponse.length; i++){
           var itemInfo = this.getItemInfo(itemsResponse[i].uuid, ownerUUID);
           if (itemInfo){
-            ItemLikeService.evaluateMod(itemsResponse[i], itemInfo.item, 'item', ownerUUID, itemFieldInfos);
+            updatedItems.push(ItemLikeService.evaluateMod(
+                                itemsResponse[i], itemInfo.item, 'item', ownerUUID,
+                                itemFieldInfos));
+          }else{
+            updatedItems.push(itemsResponse[i]);
           }
         }
-        ItemLikeService.persistAndReset(itemsResponse, 'item', ownerUUID, itemFieldInfos);
-        return ArrayService.updateArrays(itemsResponse,
+        ItemLikeService.persistAndReset(updatedItems, 'item', ownerUUID, itemFieldInfos);
+        return ArrayService.updateArrays(updatedItems,
                                          items[ownerUUID].activeItems,
                                          items[ownerUUID].deletedItems);
       }

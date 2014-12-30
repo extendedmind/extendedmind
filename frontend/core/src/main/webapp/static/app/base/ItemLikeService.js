@@ -119,27 +119,31 @@
     }
   }
 
-  function copyModToPersistent(item, ownerUUID, fieldInfos) {
+  function copyToPersistent(origin, item, ownerUUID, fieldInfos){
     for (var i=0, len=fieldInfos.length; i<len; i++){
       var fieldName = angular.isObject(fieldInfos[i]) ? fieldInfos[i].name : fieldInfos[i];
 
-      if (item.mod && item.mod.hasOwnProperty(fieldName)) {
+      if (origin && origin.hasOwnProperty(fieldName)) {
         // OBJECT
-        if (angular.isObject(item.mod[fieldName])) {
+        if (angular.isObject(origin[fieldName])) {
           // NOTE: Should this fail, there is something wrong with the data model
           // From http://stackoverflow.com/a/1144249
-          if (JSON.stringify(item[fieldName]) !== JSON.stringify(item.mod[fieldName])) {
+          if (JSON.stringify(item[fieldName]) !== JSON.stringify(origin[fieldName])) {
             // This field has been modified, and the modification does not match
-            item[fieldName] = item.mod[fieldName];
+            item[fieldName] = origin[fieldName];
           }
         }
         // SINGLE VALUE
-        else if (item.mod[fieldName] !== item[fieldName]) {
+        else if (item[fieldName] !== origin[fieldName]) {
           // This field has been modified, and the modification does not match
-          item[fieldName] = item.mod[fieldName];
+          item[fieldName] = origin[fieldName];
         }
       }
     }
+  }
+
+  function copyModToPersistent(item, ownerUUID, fieldInfos) {
+    copyToPersistent(item.mod, item, ownerUUID, fieldInfos);
     // Finally delete mod as all modifications have been persisted
     delete item.mod;
   }
@@ -259,10 +263,15 @@
       return data;
     },
     evaluateMod: function(databaseItem, item, itemType, ownerUUID, fieldInfos){
-      if (isEdited(item, itemType, ownerUUID, fieldInfos, databaseItem)){
-        // Modified value, add mod to database item as it is about to get persisted
-        databaseItem.mod = item.mod;
+      if (!isEdited(item, itemType, ownerUUID, fieldInfos, databaseItem)){
+        // Not modified value, remove mod from item
+        copyModToPersistent(item, ownerUUID, fieldInfos);
+      }else{
+        // Item has been modified which means there is another request in the queue still
+        // not executed, just remove
+        copyToPersistent(databaseItem, item, ownerUUID, fieldInfos);
       }
+      return item;
     },
     persistAndReset: function(data, itemType, ownerUUID, fieldInfos, oldUUID){
       function doResetAndPersist(item, itemType, ownerUUID, fieldInfos){

@@ -71,21 +71,36 @@
                                     tags[ownerUUID].deletedTags);
     },
     updateTags: function(tagsResponse, ownerUUID) {
-      ItemLikeService.persistAndReset(tagsResponse, 'tag', ownerUUID, tagFieldInfos);
-      var latestModified = ArrayService.updateArrays(tagsResponse,
-                                                     tags[ownerUUID].activeTags,
-                                                     tags[ownerUUID].deletedTags);
-      if (latestModified) {
-        // Go through response to see if something was deleted
-        for (var i=0, len=tagsResponse.length; i<len; i++) {
-          if (tagsResponse[i].deleted) {
-            for (var id in tagDeletedCallbacks) {
-              tagDeletedCallbacks[id](tagsResponse[i], ownerUUID);
+      if (tagsResponse && tagsResponse.length){
+        // Go through tagsResponse, and add .mod values if the fields in the current .mod do not match
+        // the values in the persistent response
+        var updatedTags = [];
+        for (var i=0, len=tagsResponse.length; i<len; i++){
+          var tagInfo = this.getTagInfo(tagsResponse[i].uuid, ownerUUID);
+          if (tagInfo){
+            updatedTags.push(ItemLikeService.evaluateMod(
+                                tagsResponse[i], tagInfo.tag, 'tag', ownerUUID, tagFieldInfos));
+          }else{
+            updatedTags.push(tagsResponse[i]);
+          }
+        }
+
+        ItemLikeService.persistAndReset(updatedTags, 'tag', ownerUUID, tagFieldInfos);
+        var latestModified = ArrayService.updateArrays(updatedTags,
+                                                       tags[ownerUUID].activeTags,
+                                                       tags[ownerUUID].deletedTags);
+        if (latestModified) {
+          // Go through response to see if something was deleted
+          for (var i=0, len=updatedTags.length; i<len; i++) {
+            if (updatedTags[i].deleted) {
+              for (var id in tagDeletedCallbacks) {
+                tagDeletedCallbacks[id](updatedTags[i], ownerUUID);
+              }
             }
           }
         }
+        return latestModified;
       }
-      return latestModified;
     },
     updateTagModProperties: function(uuid, properties, ownerUUID) {
       var tagInfo = this.getTagInfo(uuid, ownerUUID);
