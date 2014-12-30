@@ -341,7 +341,12 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
   };
 
   $scope.isOnboarded = function(feature){
-    if (feature === 'tasks'){
+    if (feature === 'focusTasks' || feature === 'focusNotes' || feature === 'inbox'){
+      return UserSessionService.getUIPreference(feature + 'Onboarded') !== undefined;
+    }else if (!$scope.onboardingInProgress){
+      // Everything else except the above, are onboarded when onboardingInProgress is no longer true
+      return true;
+    }else if (feature === 'tasks'){
       // Tasks onboarding is not ready if there are no tasks
       if ($scope.allActiveTasks && $scope.allActiveTasks.length === 1){
         return true;
@@ -356,8 +361,6 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
       if ($scope.allLists && $scope.allLists.length === 1){
         return true;
       }
-    } else if (feature === 'focusTasks' || feature === 'focusNotes' || feature === 'inbox'){
-      return UserSessionService.getUIPreference(feature + 'Onboarded') !== undefined;
     }
     return false;
   };
