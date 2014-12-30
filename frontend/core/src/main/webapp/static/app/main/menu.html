@@ -2,28 +2,28 @@
   <div class="container-menu--top">
 
     <a href class="link-menu row" ng-click="gotoFeature('user')"
-      ng-class="{'highlighted': isFeatureActive('user'), 'hidden': onboardingInProgress}">
+      ng-class="[isFeatureActive('user') && 'highlighted', onboardingInProgress && 'hidden']">
       <span class="text-navigation-menu-small" clamp=1 ng-bind="getActiveDisplayName()"></span>
     </a>
 
     <a href class="link-menu separate row" ng-click="gotoFeature('focus')"
-      ng-class="{'highlighted': isFeatureActive('focus'), 'hidden': onboardingInProgress}">
+      ng-class="[isFeatureActive('focus') && 'highlighted', onboardingInProgress && 'hidden']">
       <span class="text-navigation-menu">focus</span>
     </a>
     <a href class="link-menu row" ng-click="gotoFeature('inbox')"
-      ng-class="{'highlighted': isFeatureActive('inbox'), 'hidden': onboardingInProgress}">
+      ng-class="[isFeatureActive('inbox') && 'highlighted', onboardingInProgress && 'hidden']">
       <span class="text-navigation-menu">inbox</span>
     </a>
     <a href class="link-menu row" ng-click="gotoFeature('tasks')"
-      ng-class="{'highlighted': isFeatureActive('tasks')}">
+      ng-class="isFeatureActive('tasks') && 'highlighted'">
       <span class="text-navigation-menu">tasks</span>
     </a>
     <a href class="link-menu row" ng-click="gotoFeature('notes')"
-      ng-class="{'highlighted': isFeatureActive('notes'), 'hidden': isOnboardingNotReady('tasks')}">
+      ng-class="[isFeatureActive('notes') && 'highlighted', !isOnboarded('tasks') && 'hidden']">
       <span class="text-navigation-menu">notes</span>
     </a>
     <a href class="link-menu row" ng-click="gotoFeature('lists')"
-      ng-class="{'highlighted': isFeatureActive('lists'), 'hidden': isOnboardingNotReady('notes')}">
+      ng-class="[isFeatureActive('lists') && 'highlighted', !isOnboarded('notes') && 'hidden']">
       <span class="text-navigation-menu">lists</span>
     </a>
 
@@ -40,7 +40,7 @@
       </div>
     </div>
     <div ng-if="favoriteLists.length > 0" class="group-mixed small with-checkbox" ng-repeat="favoriteList in favoriteLists"
-    ng-hide="favoriteList === getActiveList()">
+      ng-hide="favoriteList === getActiveList()">
       <div class="group-mixed--middle">
         <a href class="link-menu-small" ng-click="gotoFeature('list', favoriteList)">
           <span class="text-navigation-menu-small" clamp=2 ng-bind="favoriteList.title"></span>

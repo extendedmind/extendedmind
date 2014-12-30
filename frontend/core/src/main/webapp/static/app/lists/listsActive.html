@@ -1,7 +1,7 @@
 <div class="container-content--outer" ng-if="isFeatureActive('lists')" list-container drawer-handle="left">
-  <section class="container-content" list="lists" list-locked="disableDragging()" swiper-prevent
-    ng-init="setListOnboarding('lists', listOnboarding)">
-    <div ng-show="isOnboarded('lists') || isListOnboardingLockedOrReleased('lists')">
+  <section class="container-content" list="lists" list-locked="disableDragging()" swiper-prevent>
+
+    <div ng-show="!onboardingInProgress || isOnboardingListItemAddActive()">
       <h2 class="group-heading justified row">active lists</h2>
       <div list-item-add="getNewList()" list-item-add-save="saveList(newItem)"
         ng-include="urlBase + 'app/lists/listListItemAdd.html'"></div>
@@ -14,7 +14,8 @@
     </div>
 
     <!-- ONBOARDING -->
-    <div ng-if="!isOnboarded('lists') && checkListOnboardingLock('lists', undefined)" class="group-instruction">
+    <div ng-if="onboardingInProgress && !isOnboarded('lists') && !isOnboardingListItemAddActive()"
+      class="group-instruction">
       <h2 class="group-heading instruction row">use
         <span class="highlighted">lists</span> to group tasks and notes
       </h2>
@@ -22,7 +23,9 @@
       <span class="text-highlighted">project</span> or
       <span class="text-highlighted">responsibility</span> &ndash; by hitting the plus sign</div>
     </div>
-    <div ng-if="!isOnboarded('lists') && checkListOnboardingLock('lists', 'off')" class="group-instruction">
+
+    <div ng-if="onboardingInProgress && isOnboarded('lists') && !isOnboardingListItemAddActive()"
+      class="group-instruction">
       <h2 class="group-heading instruction row">
         tutorial <span class="highlighted">complete</span>!
       </h2>
@@ -32,9 +35,11 @@
     </div>
 
   </section>
-  <footer ng-if="isOnboarded('lists') || !checkListOnboardingLock('lists', 'off')"
+
+  <footer ng-if="!onboardingInProgress || (!isOnboarded('lists') && !isOnboardingListItemAddActive())"
     class="container-content--after" list-footer="getFeatureMap('lists')"></footer>
-  <footer ng-if="!isOnboarded('lists') && checkListOnboardingLock('lists', 'off')"
+
+  <footer ng-if="onboardingInProgress && isOnboarded('lists') && !isOnboardingListItemAddActive()"
     class="container-content--after group-btn">
     <button type="submit" class="btn-action" ng-click="completeOnboarding()">
       <span class="text-btn">got it</span>

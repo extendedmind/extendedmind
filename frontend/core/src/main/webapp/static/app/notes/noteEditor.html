@@ -4,23 +4,26 @@
       <div class="group-symmetrical height-large">
         <a href class="group-symmetrical--left link-navigation highlighted active" ng-click="endNoteEdit()" >
           <span class="text-navigation-back" ng-class="!isFirstSlide() && 'not-swipeable'"
-            ng-bind="isNoteEdited() && !note.deleted ? 'save' : 'back'"></span>
+            ng-bind="isNoteEdited() && !note.deleted ? 'save' : 'back'">
+          </span>
         </a>
-        <div ng-hide="onboardingInProgress" ng-if="mode === 'fullScreen'"
+        <div ng-if="mode === 'fullScreen' && !onboardingInProgress"
           class="group-symmetrical--middle width-large animate-fade-in-out">
           <a href class="link-navigation downplayed" ng-click="toggleNoteEditMode()">
             <span class="text-navigation">note settings</span>
           </a>
         </div>
         <a href ng-if="!note.deleted && !onboardingInProgress" class="group-symmetrical--right"
-          ng-click="deleteNoteInEdit()"><span class="icon-trash"></span></a>
+          ng-click="deleteNoteInEdit()"><span class="icon-trash"></span>
+        </a>
         <a href ng-if="note.deleted && !onboardingInProgress"
           class="group-symmetrical--right link-navigation highlighted active"
-          ng-click="undeleteNote(note)"><span class="text-navigation">restore</span></a>
+          ng-click="undeleteNote(note)"><span class="text-navigation">restore</span>
+        </a>
       </div>
 
       <!-- NOTE TITLE -->
-      <div ng-hide="hideNoteTitle && isOnboarded('notes')" class="row-vertically-centered with-textarea">
+      <div ng-hide="hideNoteTitle && !onboardingInProgress" class="row-vertically-centered with-textarea">
         <textarea ng-hide="isTitleClamped()" class="text-heading-primary" ng-model="note.trans.title"
           input-model-validator ng-trim="false"
           ng-keydown="noteTitlebarTextKeyDown($event)" ng-focus="noteTitleFocused()" editable-field
@@ -31,18 +34,21 @@
 
         <div ng-if="isTitleClamped()">
           <span class="text-heading-primary" ng-class="{'text-downplayed': !note.trans.title}"
-            ng-bind="note.trans.title ? note.trans.title : 'enter note title&#8230;'" clamp=2></span>
+            ng-bind="note.trans.title ? note.trans.title : 'enter note title&#8230;'" clamp=2>
+          </span>
         </div>
       </div>
 
-      <div ng-if="!isOnboarded('notes') && checkListOnboardingLock('notes', 'on')">
-        <div ng-show="!noteTitlebarHasText()" class="text-details row">
+      <div ng-if="onboardingInProgress" class="row">
+        <span ng-show="!noteTitlebarHasText()" class="text-details">
           e.g. reading suggestions, budget meeting minutes, summer plans
-        </div>
-        <div ng-show="noteTitlebarHasText() && !hideNoteTitle" class="text-details row">when done, hit return</div>
-       </div>
-     </div>
-   </header>
+        </span>
+        <span ng-show="noteTitlebarHasText() && !hideNoteTitle" class="text-details">
+          when done, hit return
+        </span>
+      </div>
+    </div>
+  </header>
 
    <div class="swiper-container container-fluid--inner" swiper-container="noteEditor" swiper-type="main"
     expected-slides="2" swiper-container-slide-changed="editorSwiperSlideChanged()">
@@ -54,7 +60,7 @@
           <!-- LIST PICKER -->
           <div ng-if="listPickerOpen" ng-hide="onboardingInProgress" class="swiper-no-swiping animate-fade-in"
             editable-field-container="auto" editable-field-container-scrollable="true"
-              editable-field-container-clicked-elsewhere="closeListPicker()" data-snap-ignore="true">
+            editable-field-container-clicked-elsewhere="closeListPicker()" data-snap-ignore="true">
             <div list-picker="lists" list-picker-new-item="getNewList()"
               list-picker-archived-lists="archivedLists"
               list-picker-save="closeListPickerAndSetListToItem(note, list)"
@@ -78,7 +84,7 @@
 
             <!-- CONTENT -->
             <div class="row-vertically-centered with-textarea">
-              <textarea ng-class="(!isOnboarded('notes') && checkListOnboardingLock('notes', 'on') && !hideNoteTitle) && 'input-separate'"
+              <textarea ng-class="onboardingInProgress && !hideNoteTitle && 'input-separate'"
                 ng-model="note.trans.content" input-model-validator ng-focus="noteContentFocused()"
                 msd-elastic editable-field ng-trim="false"
                 editable-field-register-callbacks="registerNoteContentInputCallbacks(focus, blur)"
@@ -86,10 +92,10 @@
               </textarea>
             </div>
 
-            <div ng-if="!isOnboarded('notes') && checkListOnboardingLock('notes', 'on')">
-              <div ng-if="note.trans.content.length" class="text-details row">when done, save your note by
-                clicking 'save' in the top-left corner or swipe left
-              </div>
+            <div ng-if="onboardingInProgress && note.trans.content.length" class="row">
+              <span class="text-details">
+                when done, save your note by clicking 'save' in the top-left corner or swipe left
+              </span>
             </div>
           </div>
         </div>

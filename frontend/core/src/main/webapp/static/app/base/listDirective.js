@@ -23,7 +23,6 @@
     controller: function($scope, $element, $attrs) {
       $scope.listInfos = {};
       var arrayVisible;
-      $scope.listOnboarding = {};
 
       var listArrayFn = $parse($attrs.list);
       $scope.getFullArray = function(){
@@ -66,8 +65,8 @@
       };
 
       this.notifyListItemAdd = function(){
-        if ($scope.onboardingInProgress && $scope.listOnboarding.lock === 'on'){
-          $scope.turnOffListOnboardingLock($scope.listOnboarding);
+        if ($scope.onboardingInProgress) {
+          $scope.setOnboardingListItemAddActive(false);
           return true;
         }
       };
@@ -129,17 +128,11 @@
       }
 
       function activateListAdd() {
-        if (scope.onboardingInProgress){
-          if (scope.listOnboarding.lock === undefined) {
-            scope.listOnboarding.lock = 'on';
-            if (typeof listLockedCallback === 'function') listLockedCallback();
-          }
-          else if (scope.listOnboarding.lock === 'off') scope.listOnboarding.lock = 'released';
-        }
         if (listOpenOnAddFn){
           // Execute open function
           listOpenOnAddFn();
-        }else if (scope.activateAddItem){
+        } else if (scope.activateAddItem) {
+          if (scope.onboardingInProgress) scope.setOnboardingListItemAddActive(true);
           scope.activateAddItem();
         }
       }

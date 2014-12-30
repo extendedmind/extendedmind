@@ -49,19 +49,16 @@
 
   $scope.isToolbarMenuHidden = function() {
     if ($scope.onboardingInProgress) {
-      if (!$scope.isOnboarded('tasks') &&
-          ($scope.checkListOnboardingLock('tasks', undefined) ||
-           $scope.checkListOnboardingLock('tasks', 'on')) &&
-          $scope.getActiveFeature() === 'tasks')
-      {
+      var activeFeature = $scope.getActiveFeature();
+      if (!$scope.isOnboarded('tasks')) {
         return true;
       }
-      else if (!$scope.isOnboarded('lists') &&
-               ($scope.checkListOnboardingLock('lists', 'off') ||
-                $scope.checkListOnboardingLock('lists', 'on')) &&
-               $scope.getActiveFeature() === 'lists')
-      {
-        return true;
+      else if (activeFeature === 'lists') {
+        if ((!$scope.isOnboarded('lists') && $scope.isOnboardingListItemAddActive()) ||
+            $scope.isOnboarded('lists'))
+        {
+          return true;
+        }
       }
     }
   };

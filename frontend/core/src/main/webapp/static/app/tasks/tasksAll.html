@@ -1,7 +1,7 @@
 <div class="container-content--outer" ng-if="isFeatureActive('tasks')" list-container drawer-handle="left">
-  <section class="container-content" list="allTasks" list-recent
-    ng-init="setListOnboarding('tasks', listOnboarding)" swiper-prevent>
-    <div ng-show="isOnboarded('tasks') || isListOnboardingLockedOrReleased('tasks')">
+  <section class="container-content" list="allTasks" list-recent swiper-prevent>
+
+    <div ng-show="!onboardingInProgress || isOnboardingListItemAddActive()">
       <div class="group-mixed heading">
         <div class="group-mixed--middle">
           <h2 class="group-heading justified">all tasks</h2>
@@ -20,17 +20,19 @@
     </div>
 
     <!-- ONBOARDING -->
-    <div ng-if="!isOnboarded('tasks') && checkListOnboardingLock('tasks', undefined)" class="group-instruction">
+    <div ng-if="onboardingInProgress && !isOnboarded('tasks') && !isOnboardingListItemAddActive()"
+      class="group-instruction">
       <h2 class="group-heading instruction row">what do you want to
         <span class="highlighted">get done</span>?
       </h2>
       <div class="textgroup-ingress row">add a <span class="text-highlighted">task</span> by clicking the
       plus sign below</div>
     </div>
-    <div ng-if="!isOnboarded('tasks') && checkListOnboardingLock('tasks', 'off')" class="group-instruction">
+
+    <div ng-if="onboardingInProgress && isOnboarded('tasks') && !isOnboardingListItemAddActive()"
+      class="group-instruction">
       <h2 class="group-heading instruction row">
-        <span ng-if="isOneOnboardingItemCreated('tasks')">first </span><span class="highlighted">task</span>
-        created!
+        <span>first </span><span class="highlighted">task </span><span>created!</span>
       </h2>
       <div class="textgroup-ingress row">go to
         <a href class="highlighted" ng-click="changeFeature('notes', undefined, true)">

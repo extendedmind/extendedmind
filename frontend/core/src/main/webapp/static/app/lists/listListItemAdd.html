@@ -21,7 +21,7 @@
 </form>
 
 <!-- ONBOARDING -->
-<div ng-if="!isOnboarded('lists') && checkListOnboardingLock('lists', 'on')" class="group-instruction-input">
+<div ng-if="onboardingInProgress && !isOnboarded('lists')" class="group-instruction-input">
   <div ng-show="!newItem.trans.title || newItem.trans.title.length === 0" class="text-details row">
     e.g. groceries, studies, company retreat
   </div>

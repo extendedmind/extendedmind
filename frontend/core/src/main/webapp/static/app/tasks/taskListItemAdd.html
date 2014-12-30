@@ -5,7 +5,7 @@
   <div class="group-mixed--left">
     <input type="checkbox" ng-model="newItem.trans.completed"
       swiper-click="toggleLeftCheckbox(toggleCompleteTask)" icon-checkbox="getListItemAddId()"
-      ng-disabled="!newItem.trans.title">
+      ng-disabled="!newItem.trans.title || onboardingInProgress">
   </div>
   <div class="group-mixed--middle">
     <textarea ng-model="newItem.trans.title" msd-elastic ng-keydown="textareaKeyDown($event)"
@@ -22,7 +22,7 @@
 </form>
 
 <!-- ONBOARDING -->
-<div ng-if="!isOnboarded('tasks') && checkListOnboardingLock('tasks', 'on')" class="group-instruction-input">
+<div ng-if="onboardingInProgress && !isOnboarded('tasks')" class="group-instruction-input">
   <div ng-show="!newItem.trans.title || newItem.trans.title.length === 0" class="text-details row">
     e.g. call mom, email boss, buy milk
   </div>

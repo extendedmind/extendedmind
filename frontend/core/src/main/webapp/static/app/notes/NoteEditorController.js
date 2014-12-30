@@ -25,8 +25,6 @@
   // SAVING, DELETING
 
   function saveNoteInEdit() {
-    if ($scope.onboardingInProgress) $scope.turnOffListOnboardingLock('notes');
-
     // TODO: Keywords
     $scope.deferEdit().then(function() {
       $scope.saveNote($scope.note);

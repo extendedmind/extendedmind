@@ -184,22 +184,22 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
 
   $scope.isFooterAddItemHidden = function() {
     if ($scope.onboardingInProgress) {
-      if (!$scope.isOnboarded('tasks') &&
-          ($scope.checkListOnboardingLock('tasks', 'off') ||
-           $scope.checkListOnboardingLock('tasks', 'on')) &&
-          $scope.getActiveFeature() === 'tasks')
-      {
-        return true;
-      } else if (!$scope.isOnboarded('notes') &&
-                 $scope.checkListOnboardingLock('notes', 'off') &&
-                 $scope.getActiveFeature() === 'notes')
-      {
-        return true;
-      } else if (!$scope.isOnboarded('lists') &&
-                 ($scope.checkListOnboardingLock('lists', 'off') ||
-                  $scope.checkListOnboardingLock('lists', 'on')) &&
-                 $scope.getActiveFeature() === 'lists') {
-        return true;
+      var activeFeature = $scope.getActiveFeature();
+
+      if (activeFeature === 'tasks') {
+        if (!$scope.isOnboarded('tasks') && $scope.isOnboardingListItemAddActive())
+          return true;
+        else if ($scope.isOnboarded('tasks'))
+          return true;
+      }
+      else if (activeFeature === 'notes') {
+        return $scope.isOnboarded('notes');
+      }
+      else if (activeFeature === 'lists') {
+        if (!$scope.isOnboarded('lists') && $scope.isOnboardingListItemAddActive())
+          return true;
+        else if ($scope.isOnboarded('list'))
+          return true;
       }
     }
   };
@@ -297,13 +297,12 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
   // ONBOARDING
 
   $scope.onboardingInProgress = false;
-  var onboardingPhase;
   var userPreferences = UserSessionService.getPreferences();
   if (!userPreferences || (userPreferences && !userPreferences.onboarded)) {
     $scope.onboardingInProgress = true;
-    onboardingPhase = 'new';
     DrawerService.disableDragging('left');
     // Disable dragging in the beginning of the tutorial and enable it later.
+    // TODO: Disable swiping as well?
   }
 
   /*
@@ -313,83 +312,54 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
   */
   $scope.getTutorialPhase = function() {
     var phase;
-    if (UISessionService.getCurrentFeatureName() === 'tasks') {
+    var activeFeature = $scope.getActiveFeature();
+    if (activeFeature === 'tasks') {
       phase = 1;
       return 'tutorial ' + phase + '/3';
     }
-    else if (UISessionService.getCurrentFeatureName() === 'notes') {
+    else if (activeFeature === 'notes') {
       phase = 2;
       return 'tutorial ' + phase + '/3';
-    } else if ($scope.isOnboardingNotReady('lists')) {
+    } else if (activeFeature === 'lists') {
       phase = 3;
       return 'tutorial ' + phase + '/3';
     }
   };
 
-  $scope.isOneOnboardingItemCreated = function(feature){
+  var onboardingListItemAddActive;
+  $scope.setOnboardingListItemAddActive = function(active) {
+    onboardingListItemAddActive = active;
+    if (!onboardingListItemAddActive && $scope.getActiveFeature() === 'tasks') {
+      DrawerService.enableDragging('left');
+    } else if (onboardingListItemAddActive && $scope.getActiveFeature() === 'lists') {
+      DrawerService.disableDragging('left');
+    }
+  };
+
+  $scope.isOnboardingListItemAddActive = function() {
+    return onboardingListItemAddActive;
+  };
+
+  $scope.isOnboarded = function(feature){
     if (feature === 'tasks'){
       // Tasks onboarding is not ready if there are no tasks
       if ($scope.allActiveTasks && $scope.allActiveTasks.length === 1){
         return true;
       }
-    }else if (feature === 'notes'){
+    } else if (feature === 'notes'){
       // Notes onboarding is not ready if there are no notes
       if ($scope.allNotes && $scope.allNotes.length === 1){
         return true;
       }
-    }else if (feature === 'lists'){
+    } else if (feature === 'lists'){
       // Lists onboarding is not ready if there are no lists
       if ($scope.allLists && $scope.allLists.length === 1){
         return true;
       }
+    } else if (feature === 'focusTasks' || feature === 'focusNotes' || feature === 'inbox'){
+      return UserSessionService.getUIPreference(feature + 'Onboarded') !== undefined;
     }
     return false;
-  };
-
-  var listOnboardingMap = {};
-  $scope.checkListOnboardingLock = function(feature, status){
-    return listOnboardingMap[feature] && listOnboardingMap[feature].lock === status;
-  };
-
-  $scope.turnOffListOnboardingLock = function(param){
-    var feature = param;
-
-    if (angular.isObject(param)){
-      for (var featureKey in listOnboardingMap){
-        if (listOnboardingMap[featureKey] === param){
-          feature = featureKey;
-          break;
-        }
-      }
-    }
-    if (listOnboardingMap[feature] && listOnboardingMap[feature].lock === 'on'){
-      listOnboardingMap[feature].lock = 'off';
-      AnalyticsService.do(feature + 'Onboarded');
-      if (feature === 'tasks') {
-        // Tasks onboarded. Menu is shown and dragging enabled at this point of tutorial.
-        DrawerService.enableDragging('left');
-      }
-    }
-  };
-
-  $scope.isOnboardingNotReady = function(feature){
-    if (!$scope.onboardingInProgress) return false;
-    return !listOnboardingMap[feature] ||
-    !listOnboardingMap[feature].lock ||
-    listOnboardingMap[feature].lock === 'on';
-  };
-
-  $scope.isListOnboardingLockedOrReleased = function(feature){
-    return listOnboardingMap[feature] && (listOnboardingMap[feature].lock === 'on' ||
-                                          listOnboardingMap[feature].lock === 'released');
-  };
-
-  $scope.isOnboarded = function(feature){
-    if (feature === 'focusTasks' || feature === 'focusNotes' || feature === 'inbox'){
-      return UserSessionService.getUIPreference(feature + 'Onboarded') !== undefined;
-    }else if (!$scope.onboardingInProgress){
-      return true;
-    }
   };
 
   $scope.completeOnboarding = function(feature){
@@ -403,16 +373,6 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
       AnalyticsService.do('onboarded');
     }
     UserService.saveAccountPreferences();
-  };
-
-  $scope.setListOnboarding = function (feature, listOnboarding) {
-    if (listOnboardingMap[feature]){
-      var oldLockValue = listOnboardingMap[feature].lock;
-      listOnboardingMap[feature] = listOnboarding;
-      listOnboardingMap[feature].lock = oldLockValue;
-    }else{
-      listOnboardingMap[feature] = listOnboarding;
-    }
   };
 
   // Start from tasks on onboarding, or later on, from focus
@@ -702,7 +662,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
       $q.reject();
     });
   }
-  BackendClientService.registerQueueEmptiedCallback(queueEmptiedCallback)
+  BackendClientService.registerQueueEmptiedCallback(queueEmptiedCallback);
 
   // CLEANUP
 

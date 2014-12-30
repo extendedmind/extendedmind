@@ -1,8 +1,7 @@
 <div class="container-fluid--inner" list-container drawer-handle="left">
-  <section class="container-content" list="allNotes" list-recent
-    list-open="openEditor('note', getNewNote())"
-    ng-init="setListOnboarding('notes', listOnboarding)">
-    <div ng-show="isOnboarded('notes')">
+  <section class="container-content" list="allNotes" list-recent list-open="openEditor('note', getNewNote())">
+
+    <div ng-show="!onboardingInProgress">
       <h2 class="group-heading justified row">all notes</h2>
       <div class="animate-list-item-leave tall"
         ng-repeat="note in listInfos.array = (getFullArray()) | orderBy:'trans.modified':true
@@ -11,8 +10,7 @@
     </div>
 
     <!-- ONBOARDING -->
-    <div ng-if="!isOnboarded('notes') && (checkListOnboardingLock('notes', undefined) ||
-      checkListOnboardingLock('notes', 'on'))" class="group-instruction">
+    <div ng-if="onboardingInProgress && !isOnboarded('notes')" class="group-instruction">
       <h2 class="group-heading instruction long row">what do you want to
         <span class="highlighted">remember</span>?
       </h2>
@@ -20,7 +18,8 @@
         by clicking the plus sign below
       </div>
     </div>
-    <div ng-if="!isOnboarded('notes') && checkListOnboardingLock('notes', 'off')" class="group-instruction">
+
+    <div ng-if="onboardingInProgress && isOnboarded('notes')" class="group-instruction">
       <h2 class="group-heading instruction row">
         <span class="highlighted">note</span> created!
       </h2>
