@@ -120,32 +120,36 @@
   }
 
   function copyToPersistent(origin, item, ownerUUID, fieldInfos){
-    for (var i=0, len=fieldInfos.length; i<len; i++){
-      var fieldName = angular.isObject(fieldInfos[i]) ? fieldInfos[i].name : fieldInfos[i];
+    if (origin){
+      for (var i=0, len=fieldInfos.length; i<len; i++){
+        var fieldName = angular.isObject(fieldInfos[i]) ? fieldInfos[i].name : fieldInfos[i];
 
-      if (origin && origin.hasOwnProperty(fieldName)) {
-        // OBJECT
-        if (angular.isObject(origin[fieldName])) {
-          // NOTE: Should this fail, there is something wrong with the data model
-          // From http://stackoverflow.com/a/1144249
-          if (JSON.stringify(item[fieldName]) !== JSON.stringify(origin[fieldName])) {
+        if (origin.hasOwnProperty(fieldName)) {
+          // OBJECT
+          if (angular.isObject(origin[fieldName])) {
+            // NOTE: Should this fail, there is something wrong with the data model
+            // From http://stackoverflow.com/a/1144249
+            if (JSON.stringify(item[fieldName]) !== JSON.stringify(origin[fieldName])) {
+              // This field has been modified, and the modification does not match
+              item[fieldName] = origin[fieldName];
+            }
+          }
+          // SINGLE VALUE
+          else if (item[fieldName] !== origin[fieldName]) {
             // This field has been modified, and the modification does not match
             item[fieldName] = origin[fieldName];
           }
-        }
-        // SINGLE VALUE
-        else if (item[fieldName] !== origin[fieldName]) {
-          // This field has been modified, and the modification does not match
-          item[fieldName] = origin[fieldName];
         }
       }
     }
   }
 
   function copyModToPersistent(item, ownerUUID, fieldInfos) {
-    copyToPersistent(item.mod, item, ownerUUID, fieldInfos);
-    // Finally delete mod as all modifications have been persisted
-    delete item.mod;
+    if (item.hasOwnProperty('mod')){
+      copyToPersistent(item.mod, item, ownerUUID, fieldInfos);
+      // Finally delete mod as all modifications have been persisted
+      delete item.mod;
+    }
   }
 
   function resetTrans(item, itemType, ownerUUID, fieldInfos){
