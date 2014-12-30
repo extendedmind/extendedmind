@@ -36,22 +36,24 @@
       return true;
     }
     for (var i=0, len=fieldInfos.length; i<len; i++){
+      var fieldName = angular.isObject(fieldInfos[i]) ? fieldInfos[i].name : fieldInfos[i];
+
       if (angular.isObject(fieldInfos[i])){
         if (fieldInfos[i].isEdited(item, ownerUUID, compareValues)){
           return true;
         }
       }else if (!compareValues){
         if (item.mod && item.mod.hasOwnProperty(fieldInfos[i])){
-          if (item.mod[fieldInfos[i]] !== item.trans[fieldInfos[i]]){
+          if (item.mod[fieldName] !== item.trans[fieldName]){
             return true;
           }
-        }else if (item[fieldInfos[i]] !== item.trans[fieldInfos[i]]){
+        }else if (item[fieldName] !== item.trans[fieldName]){
           return true;
         }
       }else{
         // Use compare values to do the isEdited comparison
-        if (item.mod && item.mod.hasOwnProperty(fieldInfos[i]) &&
-            item.mod[fieldInfos[i]] !== compareValues[fieldInfos[i]])
+        if (item.mod && item.mod.hasOwnProperty(fieldName) &&
+            item.mod[fieldName] !== compareValues[fieldName])
         {
           return true;
         }
@@ -62,17 +64,19 @@
   function getEditedFieldInfos(item, itemType, ownerUUID, fieldInfos){
     var editedFieldInfos = [];
     for (var i=0, len=fieldInfos.length; i<len; i++){
+      var fieldName = angular.isObject(fieldInfos[i]) ? fieldInfos[i].name : fieldInfos[i];
+
       if (angular.isObject(fieldInfos[i])){
         // Custom field overrides all
         if (fieldInfos[i].isEdited(item, ownerUUID)){
           editedFieldInfos.push(fieldInfos[i]);
         }
-      }else if (item.mod && item.mod.hasOwnProperty(fieldInfos[i])) {
-        if (item.mod[fieldInfos[i]] !== item.trans[fieldInfos[i]]){
+      }else if (item.mod && item.mod.hasOwnProperty(fieldName)) {
+        if (item.mod[fieldName] !== item.trans[fieldName]){
           // This field has been modified, and the modification does not match
           editedFieldInfos.push(fieldInfos[i]);
         }
-      }else if (item[fieldInfos[i]] !== item.trans[fieldInfos[i]]){
+      }else if (item[fieldName] !== item.trans[fieldName]){
         // Persistent value does not match
         editedFieldInfos.push(fieldInfos[i]);
       }
@@ -267,12 +271,13 @@
       return data;
     },
     evaluateMod: function(databaseItem, item, itemType, ownerUUID, fieldInfos){
-      if (!isEdited(item, itemType, ownerUUID, fieldInfos, databaseItem)){
-        // Not modified value, remove mod from item
+      if (item.mod && !isEdited(item, itemType, ownerUUID, fieldInfos, databaseItem)){
+        // .mod matches the database, copy values over to persistent and delete mod
         copyModToPersistent(item, ownerUUID, fieldInfos);
       }else{
-        // Item has been modified which means there is another request in the queue still
-        // not executed, just remove
+        // Either there is no modifications or item modifications haven't reached the backend,
+        // make persistent values match the database but leave .mod as it is: we're hoping the
+        // next update will bring values that match
         copyToPersistent(databaseItem, item, ownerUUID, fieldInfos);
       }
       return item;
