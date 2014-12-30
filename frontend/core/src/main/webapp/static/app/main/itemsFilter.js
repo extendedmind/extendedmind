@@ -17,26 +17,26 @@
  function itemsFilter() {
   var itemsFilters = {};
 
-  itemsFilters.byListUUID = function(items, uuid) {
+  itemsFilters.byList = function(items, list) {
     var filteredItems = [];
     for (var i = 0, len = items.length; i < len; i++) {
       var item = items[i];
 
-      if (item.trans.list && item.trans.list === uuid) {
+      if (item.trans.list && item.trans.list === list) {
         filteredItems.push(item);
       }
     }
     return filteredItems;
   };
 
-  itemsFilters.byTagUUID = function(items, uuid) {
+  itemsFilters.byContext = function(items, context) {
     var filteredItems = [];
     for (var i = 0, len = items.length; i < len; i++) {
       var item = items[i];
-      if (uuid && item.trans.context && item.trans.context === uuid) {
+      if (context && item.trans.context && item.trans.context === context) {
         // Context exists and item is in the context.
         filteredItems.push(item);
-      } else if (!uuid && !item.trans.context) {
+      } else if (!context && !item.trans.context) {
         // No context and item has no context.
         filteredItems.push(item);
       }

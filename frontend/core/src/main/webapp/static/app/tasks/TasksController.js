@@ -203,19 +203,8 @@
   // UI
 
   $scope.getNewTaskWithContext = function(context){
-    if (context) {
-      return {
-        trans: {
-          context: context.trans.uuid,
-          itemType: 'task'
-        }
-      };
-    }
-    else return {
-      trans: {
-        itemType: 'task'
-      }
-    };
+    if (context) return $scope.getNewTask({context: context});
+    else return $scope.getNewTask();
   };
 
   // NAVIGATION
