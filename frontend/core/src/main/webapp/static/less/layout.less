@@ -1078,7 +1078,9 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
   .row {
     line-height: @grid-vertical-small;
   }
-  padding-bottom: @grid-vertical-half;
+  .row:last-child{
+    padding-bottom: @grid-vertical-half;
+  }
 }
 
 // FIXME: comments

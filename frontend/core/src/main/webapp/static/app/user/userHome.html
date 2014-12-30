@@ -2,7 +2,7 @@
   <section class="container-content">
     <h2 class="group-heading justified row" ng-bind="online ? 'online' : '*offline'"></h2>
 
-    <div ng-if="!online" class="group-details">
+    <div class="group-details">
       <div ng-if="getOfflineModifiedCount('item')" class="row">
         <span class="text-details">modified items: </span>
         <span class="text-details" ng-bind="getOfflineModifiedCount('item')"></span>

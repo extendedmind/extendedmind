@@ -105,12 +105,12 @@
     updateTagModProperties: function(uuid, properties, ownerUUID) {
       var tagInfo = this.getTagInfo(uuid, ownerUUID);
       if (tagInfo){
-        if (properties === null){
+        if (!properties){
           if (tagInfo.tag.mod){
             delete tagInfo.tag.mod;
             updateTag(tagInfo.tag, ownerUUID);
           }
-        }else if (properties !== undefined){
+        }else{
           if (!tagInfo.tag.mod) tagInfo.tag.mod = {};
           ItemLikeService.updateObjectProperties(tagInfo.tag.mod, properties);
           updateTag(tagInfo.tag, ownerUUID, properties.uuid ? uuid : undefined);

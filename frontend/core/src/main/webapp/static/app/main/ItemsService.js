@@ -90,12 +90,12 @@
     updateItemModProperties: function(uuid, properties, ownerUUID) {
       var itemInfo = this.getItemInfo(uuid, ownerUUID);
       if (itemInfo){
-        if (properties === null){
+        if (!properties){
           if (itemInfo.item.mod){
             delete itemInfo.item.mod;
             updateItem(itemInfo.item, ownerUUID);
           }
-        }else if (properties !== undefined){
+        }else{
           if (!itemInfo.item.mod) itemInfo.item.mod = {};
           ItemLikeService.updateObjectProperties(itemInfo.item.mod, properties);
           updateItem(itemInfo.item, ownerUUID, properties.uuid ? uuid : undefined);

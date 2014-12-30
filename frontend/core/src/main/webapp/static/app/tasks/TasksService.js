@@ -27,18 +27,14 @@
         name: 'completed',
         skipTransport: true,
         isEdited: function(task, ownerUUID, compareValues){
-          var compareCompleted = compareValues ? compareValues.completed : task.trans.completed;
-          if (task.mod && task.mod.completed !== undefined){
-            if (task.mod.completed !== compareCompleted){
-              return true;
-            }
-          }
-          else if (task.completed !== compareCompleted){
-            return true;
-          }
+          // Changing completed should not save task. Completing is done with separate functions.
+          return false;
         },
         resetTrans: function(task){
-          if (task.mod && task.mod.completed !== undefined) task.trans.completed = task.mod.completed;
+          if (task.mod && task.mod.hasOwnProperty('completed')){
+            if (!task.mod.completed && task.trans.completed !== undefined) delete task.trans.completed;
+            else task.trans.completed = task.mod.completed;
+          }
           else if (task.completed !== undefined) task.trans.completed = task.completed;
           else if (task.trans.completed !== undefined) delete task.trans.completed;
           // Create a separate 'optimisticComplete' getter/setter which can be used by checkbox ng-bind
@@ -238,12 +234,12 @@
     updateTaskModProperties: function(uuid, properties, ownerUUID) {
       var taskInfo = this.getTaskInfo(uuid, ownerUUID);
       if (taskInfo){
-        if (properties === null){
+        if (!properties){
           if (taskInfo.task.mod){
             delete taskInfo.task.mod;
             updateTask(taskInfo.task, ownerUUID);
           }
-        }else if (properties !== undefined){
+        }else{
           if (!taskInfo.task.mod) taskInfo.task.mod = {};
           ItemLikeService.updateObjectProperties(taskInfo.task.mod, properties);
           updateTask(taskInfo.task, ownerUUID, properties.uuid ? uuid : undefined);

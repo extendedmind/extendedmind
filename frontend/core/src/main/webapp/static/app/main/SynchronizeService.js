@@ -277,7 +277,7 @@
                     // We now removed the latest PUT from the queue, so we sould also remove the local
                     // modifications on the item
                     updateModProperties(conflictingItem.uuid, queue[i].params.type,
-                                        null, request.params.owner);
+                                        undefined, request.params.owner);
                     // Database item is newer, remove the PUT from the queue
                     queue.splice(i, 1);
                     continue;
@@ -358,7 +358,7 @@
                     delete queue[i].content.data.relationships.parent;
                     if (!queue[i].content.data.relationships.tags){
                       delete queue[i].content.data.relationships;
-                      listDeleteProperties = {relationships: null};
+                      listDeleteProperties = {relationships: undefined};
                     }else{
                       listDeleteProperties = {relationships: queue[i].content.data.relationships};
                     }
@@ -393,7 +393,7 @@
                 if (queue[i].content.data.relationships.tags.length === 0 &&
                     !queue[i].content.data.relationships.parent){
                   delete queue[i].content.data.relationships;
-                  tagRemoveProperties = {relationships: null};
+                  tagRemoveProperties = {relationships: undefined};
                 }else{
                   tagRemoveProperties = {relationships: {}};
                   if (queue[i].content.data.relationships.parent){
@@ -435,7 +435,7 @@
             // Remove mod from the item and then remove the entire item
             var mismatchItemInfo = updateModProperties(queue[queueSpliceInfos[i].index].params.uuid,
                                                queue[queueSpliceInfos[i].index].params.type,
-                                               null, request.params.owner);
+                                               undefined, request.params.owner);
             if (mismatchItemInfo){
               removeItemFromArray(request.params.owner, mismatchItemInfo.item, mismatchItemInfo.type);
             }
@@ -480,17 +480,20 @@
           updateModProperties(request.params.uuid, request.params.type, properties, request.params.owner);
         }
       } else if (request.params.type === 'task') {
-        if (request.content.url.endsWith('/undelete') || request.content.url.endsWith('/uncomplete')) {
-          // Undelete or uncomplete: only modified changes
-          properties = {modified: response.modified};
+        if (request.content.url.endsWith('/undelete')){
+          properties = {modified: response.modified, deleted: undefined};
+        } else if(request.content.url.endsWith('/uncomplete')) {
+          properties = {modified: response.modified, completed: undefined};
         } else if (request.content.url.endsWith('/complete')) {
           // Complete
           properties = {completed: response.completed, modified: response.result.modified};
         }
         updateModProperties(request.params.uuid, request.params.type, properties, request.params.owner);
       } else if (request.params.type === 'note') {
-        if (request.content.url.endsWith('/undelete')  || request.content.url.endsWith('/unfavorite')) {
-          properties = {modified: response.modified};
+        if (request.content.url.endsWith('/undelete')){
+          properties = {modified: response.modified, deleted: undefined};
+        }else if (request.content.url.endsWith('/unfavorite')) {
+          properties = {modified: response.modified, favorited: undefined};
         }else if (request.content.url.endsWith('/favorite')) {
           // Favorite
           properties = {favorited: response.favorited, modified: response.result.modified};

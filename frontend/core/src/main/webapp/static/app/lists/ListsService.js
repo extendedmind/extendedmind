@@ -145,12 +145,12 @@
     updateListModProperties: function(uuid, properties, ownerUUID) {
       var listInfo = this.getListInfo(uuid, ownerUUID);
       if (listInfo){
-        if (properties === null){
+        if (!properties){
           if (listInfo.list.mod){
             delete listInfo.list.mod;
             updateList(listInfo.list, ownerUUID);
           }
-        }else if (properties !== undefined){
+        }else{
           if (!listInfo.list.mod) listInfo.list.mod = {};
           ItemLikeService.updateObjectProperties(listInfo.list.mod, properties);
           updateList(listInfo.list, ownerUUID, properties.uuid ? uuid : undefined);

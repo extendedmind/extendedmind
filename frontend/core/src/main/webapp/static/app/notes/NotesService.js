@@ -29,7 +29,10 @@
           return false;
         },
         resetTrans: function(note){
-          if (note.mod && note.mod.favorited !== undefined) note.trans.favorited = note.mod.favorited;
+          if (note.mod && note.mod.hasOwnProperty('completed')){
+            if (!note.mod.favorited && note.trans.favorited !== undefined) delete note.trans.favorited;
+            else note.trans.favorited = note.mod.favorited;
+          }
           else if (note.favorited !== undefined) note.trans.favorited = note.favorited;
           else if (note.trans.favorited !== undefined) delete note.trans.favorited;
         },
@@ -188,12 +191,12 @@
     updateNoteModProperties: function(uuid, properties, ownerUUID) {
       var noteInfo = this.getNoteInfo(uuid, ownerUUID);
       if (noteInfo){
-        if (properties === null){
+        if (!properties){
           if (noteInfo.note.mod){
             delete noteInfo.note.mod;
             updateNote(noteInfo.note, ownerUUID);
           }
-        }else if (properties !== undefined){
+        }else{
           if (!noteInfo.note.mod) noteInfo.note.mod = {};
           ItemLikeService.updateObjectProperties(noteInfo.note.mod, properties);
           updateNote(noteInfo.note, ownerUUID, properties.uuid ? uuid : undefined);

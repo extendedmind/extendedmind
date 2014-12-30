@@ -167,9 +167,7 @@
         fieldName.resetTrans(item, ownerUUID);
       }else if (item.mod && item.mod.hasOwnProperty(fieldName)) {
         // Priorize value from modified object
-        if (item.mod[fieldName] !== undefined) {
-          item.trans[fieldName] = item.mod[fieldName];
-        }
+        item.trans[fieldName] = item.mod[fieldName];
       }else if (item[fieldName] !== undefined){
         // If no modified value found, use persistent value
         item.trans[fieldName] = item[fieldName];
@@ -216,10 +214,7 @@
     if (properties && object){
       for (var property in properties){
         if (properties.hasOwnProperty(property)){
-          if (properties[property] === null && object[property])
-            delete object[property];
-          else
-            object[property] = properties[property];
+          object[property] = properties[property];
         }
       }
     }
@@ -446,8 +441,7 @@
         BackendClientService.post('/api/' + ownerUUID + '/' + itemType +'/' + item.trans.uuid + '/undelete',
                                   this.getUndeleteRegex(itemType), params, undefined, fakeTimestamp);
         if (!item.mod) item.mod = {};
-        if (item.mod.deleted) delete item.mod.deleted;
-        updateObjectProperties(item.mod, {modified: fakeTimestamp});
+        updateObjectProperties(item.mod, {modified: fakeTimestamp, deleted: undefined});
         PersistentStorageService.persist(createPersistableItem(item), itemType, ownerUUID);
         resetTrans(item, itemType, ownerUUID, fieldInfos);
         deferred.resolve();
