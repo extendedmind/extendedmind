@@ -54,6 +54,16 @@
     return filteredItems;
   };
 
+  itemsFilters.byTagType = function(items, tagType) {
+    var filteredItems = [];
+    for (var i = 0, len = items.length; i < len; i++) {
+      if (items[i].trans.tagType === tagType) {
+        filteredItems.push(items[i]);
+      }
+    }
+    return filteredItems;
+  };
+
   return function(items, filterValue) {
     if (filterValue) return itemsFilters[filterValue.name](items, filterValue.filterBy);
   };

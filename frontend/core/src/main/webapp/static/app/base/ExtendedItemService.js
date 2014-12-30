@@ -23,7 +23,6 @@
     if (origin && origin.parent) {
       var listInfo = getListInfoCallback(origin.parent, ownerUUID);
       if (listInfo){
-        if (!extendedItem.trans) extendedItem.trans = {};
         extendedItem.trans.list = listInfo.list;
       }
     }
@@ -46,7 +45,6 @@
       for (var i = 0, len = origin.tags.length; i < len; i++) {
         var tagInfo = TagsService.getTagInfo(origin.tags[i], ownerUUID);
         if (tagInfo) {
-          if (!extendedItem.trans) extendedItem.trans = {};
           if (tagInfo.tag.tagType === 'context') {
             extendedItem.trans.context = tagInfo.tag;
             break;

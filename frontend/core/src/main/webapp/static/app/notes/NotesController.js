@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function NotesController($filter, $q, $rootScope, $scope, $timeout,
+ function NotesController($q, $rootScope, $scope, $timeout,
                           AnalyticsService, BackendClientService, ItemsService, ListsService, NotesService,
                           TagsService, SwiperService, UISessionService) {
 
@@ -159,8 +159,7 @@
 
 }
 
-NotesController['$inject'] = [
-'$filter', '$q', '$rootScope', '$scope', '$timeout',
+NotesController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout',
 'AnalyticsService', 'BackendClientService', 'ItemsService', 'ListsService', 'NotesService', 'TagsService',
 'SwiperService', 'UISessionService'
 ];

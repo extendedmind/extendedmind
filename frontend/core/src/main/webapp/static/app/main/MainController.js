@@ -439,8 +439,8 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
   $scope.deletedTags = TagsService.getDeletedTags(UISessionService.getActiveUUID());
 
   $scope.$watch('tags.length', function(/*newValue, oldValue*/) {
-    $scope.contexts = $filter('filter')($scope.tags, {tagType: 'context'});
-    $scope.keywords = $filter('filter')($scope.tags, {tagType: 'keyword'});
+    $scope.contexts = $filter('itemsFilter')($scope.tags, {name: 'byTagType', filterBy: 'context'});
+    $scope.keywords = $filter('itemsFilter')($scope.tags, {name: 'byTagType', filterBy: 'keyword'});
   });
 
   function combineListsArrays() {
@@ -521,7 +521,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     var activeArchivedTasks = [];
     var i = 0;
     while ($scope.archivedTasks[i]) {
-      if ($scope.tasks[i].trans && !$scope.tasks[i].trans.completed) {
+      if (!$scope.tasks[i].trans.completed) {
         activeArchivedTasks.push($scope.archivedTasks[i]);
       }
       i++;
@@ -530,7 +530,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     var activeTasks = [];
     i = 0;
     while ($scope.tasks[i]) {
-      if ($scope.tasks[i].trans && !$scope.tasks[i].trans.completed) {
+      if (!$scope.tasks[i].trans.completed) {
         activeTasks.push($scope.tasks[i]);
       }
       i++;
