@@ -156,25 +156,28 @@
     }
   }
 
-  function resetTrans(item, itemType, ownerUUID, fieldInfos){
+  function resetTrans(item, itemType, ownerUUID, fieldInfos, propertiesToReset){
     if (!item.trans) item.trans = {};
     if (item.trans.itemType !== itemType) item.trans.itemType = itemType;
 
     for (var i=0, len=fieldInfos.length; i<len; i++){
-      var fieldName = fieldInfos[i];
-      if (angular.isObject(fieldName)){
-        // Custom reset method overrides
-        fieldName.resetTrans(item, ownerUUID);
-      }else if (item.mod && item.mod.hasOwnProperty(fieldName)) {
-        // Priorize value from modified object
-        item.trans[fieldName] = item.mod[fieldName];
-      }else if (item[fieldName] !== undefined){
-        // If no modified value found, use persistent value
-        item.trans[fieldName] = item[fieldName];
-      }else if (item.trans[fieldName] !== undefined){
-        // There are no modified nor persistent value for this field, but it is in trans,
-        // delete it from trans
-        delete item.trans[fieldName];
+      var fieldName = angular.isObject(fieldInfos[i]) ? fieldInfos[i].name : fieldInfos[i];
+
+      if (!propertiesToReset || propertiesToReset.hasOwnProperty(fieldName)){
+        if (angular.isObject(fieldInfos[i])){
+          // Custom reset method overrides
+          fieldInfos[i].resetTrans(item, ownerUUID);
+        }else if (item.mod && item.mod.hasOwnProperty(fieldName)) {
+          // Priorize value from modified object
+          item.trans[fieldName] = item.mod[fieldName];
+        }else if (item[fieldName] !== undefined){
+          // If no modified value found, use persistent value
+          item.trans[fieldName] = item[fieldName];
+        }else if (item.trans[fieldName] !== undefined){
+          // There are no modified nor persistent value for this field, but it is in trans,
+          // delete it from trans
+          delete item.trans[fieldName];
+        }
       }
     }
     return item;
@@ -277,8 +280,8 @@
       }
       return item;
     },
-    persistAndReset: function(data, itemType, ownerUUID, fieldInfos, oldUUID){
-      function doResetAndPersist(item, itemType, ownerUUID, fieldInfos){
+    persistAndReset: function(data, itemType, ownerUUID, fieldInfos, oldUUID, propertiesToReset){
+      function doResetAndPersist(item, itemType, ownerUUID, fieldInfos, propertiesToReset){
         if (UserSessionService.isOfflineEnabled()){
           if (oldUUID){
             PersistentStorageService.persistWithNewUUID(oldUUID, createPersistableItem(item), itemType,
@@ -287,14 +290,14 @@
             PersistentStorageService.persist(createPersistableItem(item), itemType, ownerUUID);
           }
         }
-        resetTrans(item, itemType, ownerUUID, fieldInfos);
+        resetTrans(item, itemType, ownerUUID, fieldInfos, propertiesToReset);
       }
       if (angular.isArray(data)){
         for (var i=0, len=data.length; i<len; i++){
-          doResetAndPersist(data[i], itemType, ownerUUID, fieldInfos);
+          doResetAndPersist(data[i], itemType, ownerUUID, fieldInfos, propertiesToReset);
         }
       }else if (data){
-        doResetAndPersist(data, itemType, ownerUUID, fieldInfos);
+        doResetAndPersist(data, itemType, ownerUUID, fieldInfos, propertiesToReset);
       }
       return data;
     },

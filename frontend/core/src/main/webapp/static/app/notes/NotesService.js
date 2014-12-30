@@ -64,8 +64,8 @@
     return [{array: notes[ownerUUID].archivedNotes, id: 'archived'}];
   }
 
-  function updateNote(note, ownerUUID, oldUUID) {
-    ItemLikeService.persistAndReset(note, 'note', ownerUUID, noteFieldInfos, oldUUID);
+  function updateNote(note, ownerUUID, oldUUID, propertiesToReset) {
+    ItemLikeService.persistAndReset(note, 'note', ownerUUID, noteFieldInfos, oldUUID, propertiesToReset);
     return ArrayService.updateItem(note,
                                    notes[ownerUUID].activeNotes,
                                    notes[ownerUUID].deletedNotes,
@@ -176,13 +176,16 @@
         for (var i=0, len=notesResponse.length; i<len; i++){
           var noteInfo = this.getNoteInfo(notesResponse[i].uuid, ownerUUID);
           if (noteInfo){
+            var oldMod = noteInfo.note.mod;
             updatedNotes.push(ItemLikeService.evaluateMod(
                                 notesResponse[i], noteInfo.note, 'note', ownerUUID, noteFieldInfos));
+            ItemLikeService.persistAndReset(updatedNotes, 'note', ownerUUID,
+                                            noteFieldInfos, undefined, oldMod);
           }else{
             updatedNotes.push(notesResponse[i]);
+            ItemLikeService.persistAndReset(updatedNotes, 'note', ownerUUID, noteFieldInfos);
           }
         }
-        ItemLikeService.persistAndReset(updatedNotes, 'note', ownerUUID, noteFieldInfos);
         return ArrayService.updateArrays(updatedNotes,
                                          notes[ownerUUID].activeNotes,
                                          notes[ownerUUID].deletedNotes, getOtherArrays(ownerUUID));
@@ -199,7 +202,7 @@
         }else{
           if (!noteInfo.note.mod) noteInfo.note.mod = {};
           ItemLikeService.updateObjectProperties(noteInfo.note.mod, properties);
-          updateNote(noteInfo.note, ownerUUID, properties.uuid ? uuid : undefined);
+          updateNote(noteInfo.note, ownerUUID, properties.uuid ? uuid : undefined, properties);
         }
         return noteInfo.note;
       }
@@ -222,21 +225,21 @@
       if (note){
         return {
           type: 'active',
-          note: ItemLikeService.resetTrans(note, 'note', ownerUUID, noteFieldInfos)
+          note: note
         };
       }
       note = notes[ownerUUID].deletedNotes.findFirstObjectByKeyValue('uuid', uuid, 'trans');
       if (note){
         return {
           type: 'deleted',
-          note: ItemLikeService.resetTrans(note, 'note', ownerUUID, noteFieldInfos)
+          note: note
         };
       }
       note = notes[ownerUUID].archivedNotes.findFirstObjectByKeyValue('uuid', uuid, 'trans');
       if (note){
         return {
           type: 'archived',
-          note: ItemLikeService.resetTrans(note, 'note', ownerUUID, noteFieldInfos)
+          note: note
         };
       }
     },
@@ -345,19 +348,21 @@
           BackendClientService.post('/api/' + ownerUUID + '/note/' + note.trans.uuid + '/favorite',
                                     this.favoriteNoteRegex, params, undefined, fakeTimestamp);
           if (!note.mod) note.mod = {};
+          var propertiesToReset = {modified: fakeTimestamp,
+                                   favorited: BackendClientService.generateFakeTimestamp()};
           ItemLikeService.updateObjectProperties(note.mod,
-                                                 {modified: fakeTimestamp,
-                                                  favorited: BackendClientService.generateFakeTimestamp()});
-          updateNote(note, ownerUUID);
+                                                 propertiesToReset);
+          updateNote(note, ownerUUID, undefined, propertiesToReset);
           deferred.resolve(note);
         } else {
           // Online
           BackendClientService.postOnline('/api/' + ownerUUID + '/note/' + note.trans.uuid + '/favorite',
                                         this.favoriteNoteRegex)
           .then(function(result) {
-            note.favorited = result.data.favorited;
-            ItemLikeService.updateObjectProperties(note, result.data.result);
-            updateNote(note, ownerUUID);
+            var propertiesToReset = {modified: result.data.result.modified,
+                                     favorited: result.data.favorited};
+            ItemLikeService.updateObjectProperties(note, propertiesToReset);
+            updateNote(note, ownerUUID, undefined, propertiesToReset);
             deferred.resolve(note);
           });
         }
@@ -378,19 +383,22 @@
           BackendClientService.post('/api/' + ownerUUID + '/note/' + note.trans.uuid + '/unfavorite',
                                     this.unfavoriteNoteRegex, params, undefined, fakeTimestamp);
           if (!note.mod) note.mod = {};
-          ItemLikeService.updateObjectProperties(note.mod,
-                                                 {modified: fakeTimestamp,
-                                                  favorited: undefined});
-          updateNote(note, ownerUUID);
+          var propertiesToReset = {modified: fakeTimestamp,
+                                   favorited: undefined}
+          ItemLikeService.updateObjectProperties(note.mod, propertiesToReset);
+          updateNote(note, ownerUUID, undefined, propertiesToReset);
           deferred.resolve(note);
         } else {
           // Online
           BackendClientService.postOnline('/api/' + ownerUUID + '/note/' + note.trans.uuid + '/unfavorite',
                                           this.unfavoriteNoteRegex)
           .then(function(result) {
+            var propertiesToReset = {modified: result.data.modified,
+                                     favorited: undefined}
+            ItemLikeService.updateObjectProperties(note, propertiesToReset);
+            // the above doesn't actually remove the property, which is what we want to do here
             delete note.favorited;
-            ItemLikeService.updateObjectProperties(note, result.data.result);
-            updateNote(note, ownerUUID);
+            updateNote(note, ownerUUID, undefined, propertiesToReset);
             deferred.resolve(note);
           });
         }

@@ -103,8 +103,8 @@
     return [{array: tasks[ownerUUID].archivedTasks, id: 'archived'}];
   }
 
-  function updateTask(task, ownerUUID, oldUUID) {
-    ItemLikeService.persistAndReset(task, 'task', ownerUUID, taskFieldInfos, oldUUID);
+  function updateTask(task, ownerUUID, oldUUID, propertiesToReset) {
+    ItemLikeService.persistAndReset(task, 'task', ownerUUID, taskFieldInfos, oldUUID, propertiesToReset);
     return ArrayService.updateItem(task,
                                    tasks[ownerUUID].activeTasks,
                                    tasks[ownerUUID].deletedTasks,
@@ -218,13 +218,16 @@
         for (var i=0, len=tasksResponse.length; i<len; i++){
           var taskInfo = this.getTaskInfo(tasksResponse[i].uuid, ownerUUID);
           if (taskInfo){
+            var oldMod = taskInfo.task.mod;
             updatedTasks.push(ItemLikeService.evaluateMod(
                                 tasksResponse[i], taskInfo.task, 'task', ownerUUID, taskFieldInfos));
+            ItemLikeService.persistAndReset(taskInfo.task, 'task', ownerUUID,
+                                            taskFieldInfos, undefined, oldMod);
           }else{
             updatedTasks.push(tasksResponse[i]);
+            ItemLikeService.persistAndReset(tasksResponse[i], 'task', ownerUUID, taskFieldInfos);
           }
         }
-        ItemLikeService.persistAndReset(updatedTasks, 'task', ownerUUID, taskFieldInfos);
         return ArrayService.updateArrays(updatedTasks,
                                          tasks[ownerUUID].activeTasks,
                                          tasks[ownerUUID].deletedTasks,
@@ -242,7 +245,7 @@
         }else{
           if (!taskInfo.task.mod) taskInfo.task.mod = {};
           ItemLikeService.updateObjectProperties(taskInfo.task.mod, properties);
-          updateTask(taskInfo.task, ownerUUID, properties.uuid ? uuid : undefined);
+          updateTask(taskInfo.task, ownerUUID, properties.uuid ? uuid : undefined, properties);
         }
         return taskInfo.task;
       }
@@ -266,21 +269,21 @@
       if (task){
         return {
           type: 'active',
-          task: ItemLikeService.resetTrans(task, 'task', ownerUUID, taskFieldInfos)
+          task: task
         };
       }
       task = tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue('uuid', uuid, 'trans');
       if (task){
         return {
           type: 'deleted',
-          task: ItemLikeService.resetTrans(task, 'task', ownerUUID, taskFieldInfos)
+          task: task
         };
       }
       task = tasks[ownerUUID].archivedTasks.findFirstObjectByKeyValue('uuid', uuid, 'trans');
       if (task){
         return {
           type: 'archived',
-          task: ItemLikeService.resetTrans(task, 'task', ownerUUID, taskFieldInfos)
+          task: task
         };
       }
     },
@@ -370,7 +373,6 @@
       return deferred.promise;
     },
     completeTask: function(task, ownerUUID) {
-      // FIXME: trans properties are reseted on complete
       var deferred = $q.defer();
       if (tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue('uuid', task.trans.uuid, 'trans')) {
         deferred.reject({type: 'deleted'});
@@ -390,10 +392,10 @@
           BackendClientService.post('/api/' + ownerUUID + '/task/' + task.trans.uuid + '/complete',
                                     this.completeTaskRegex, params, undefined, fakeTimestamp);
           if (!task.mod) task.mod = {};
-          ItemLikeService.updateObjectProperties(task.mod,
-                                                 {modified: fakeTimestamp,
-                                                  completed: BackendClientService.generateFakeTimestamp()});
-          updateTask(task, ownerUUID);
+          var propertiesToReset = {modified: fakeTimestamp,
+                                  completed: BackendClientService.generateFakeTimestamp()};
+          ItemLikeService.updateObjectProperties(task.mod, propertiesToReset);
+          updateTask(task, ownerUUID, undefined, propertiesToReset);
           deferred.resolve(task);
         } else {
           // Online
@@ -401,8 +403,10 @@
                                           this.completeTaskRegex)
           .then(function(result) {
             task.completed = result.data.completed;
-            ItemLikeService.updateObjectProperties(task, result.data.result);
-            updateTask(task, ownerUUID);
+            var propertiesToReset = {modified: result.data.result.modified,
+                                     completed: result.data.completed};
+            ItemLikeService.updateObjectProperties(task, propertiesToReset);
+            updateTask(task, ownerUUID, undefined, propertiesToReset);
             deferred.resolve(task);
           });
         }
@@ -423,19 +427,20 @@
           BackendClientService.post('/api/' + ownerUUID + '/task/' + task.trans.uuid + '/uncomplete',
                                     this.uncompleteTaskRegex, params, undefined, fakeTimestamp);
           if (!task.mod) task.mod = {};
-          ItemLikeService.updateObjectProperties(task.mod,
-                                                 {modified: fakeTimestamp,
-                                                  completed: undefined});
-          updateTask(task, ownerUUID);
+          var propertiesToReset = {modified: fakeTimestamp, completed: undefined}
+          ItemLikeService.updateObjectProperties(task.mod, propertiesToReset);
+          updateTask(task, ownerUUID, undefined, propertiesToReset);
           deferred.resolve(task);
         } else {
           // Online
           BackendClientService.postOnline('/api/' + ownerUUID + '/task/' + task.trans.uuid + '/uncomplete',
                                           this.uncompleteTaskRegex)
           .then(function(result) {
+            var propertiesToReset = {modified: result.data.modified, completed: undefined}
+            ItemLikeService.updateObjectProperties(task, propertiesToReset);
+            // the above doesn't actually remove the property, which is what we want to do here
             delete task.completed;
-            ItemLikeService.updateObjectProperties(task, result.data.result);
-            updateTask(task, ownerUUID);
+            updateTask(task, ownerUUID, undefined, propertiesToReset);
             deferred.resolve(task);
           });
         }

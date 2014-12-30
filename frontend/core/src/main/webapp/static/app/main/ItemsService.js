@@ -115,14 +115,14 @@
       if (item){
         return {
           type: 'active',
-          item: ItemLikeService.resetTrans(item, 'item', ownerUUID, itemFieldInfos)
+          item: item
         };
       }
       item = items[ownerUUID].deletedItems.findFirstObjectByKeyValue('uuid', uuid, 'trans');
       if (item){
         return {
           type: 'deleted',
-          item: ItemLikeService.resetTrans(item, 'item', ownerUUID, itemFieldInfos)
+          item: item
         };
       }
     },
