@@ -101,35 +101,35 @@
   }
 
   function processTaskToNoteResponse(task, note, ownerUUID) {
-    var convert = copyTaskPersistentPropertiesToConvert(task);
-    if (convert) copyConvertToItemTransientProperties(note, convert, 'task', 'note');
-
     NotesService.addNote(note, ownerUUID);
     TasksService.removeTask(task.trans.uuid, ownerUUID);
+
+    var convert = copyTaskPersistentPropertiesToConvert(task);
+    if (convert) copyConvertToItemTransientProperties(note, convert, 'task', 'note');
   }
 
   function processTaskToListResponse(task, list, ownerUUID) {
-    var convert = copyTaskPersistentPropertiesToConvert(task);
-    if (convert) copyConvertToItemTransientProperties(list, convert, 'task', 'list');
-
     ListsService.addList(list, ownerUUID);
     TasksService.removeTask(task.trans.uuid, ownerUUID);
+
+    var convert = copyTaskPersistentPropertiesToConvert(task);
+    if (convert) copyConvertToItemTransientProperties(list, convert, 'task', 'list');
   }
 
   function processNoteToTaskResponse(note, task, ownerUUID) {
-    var convert = copyNotePersistentPropertiesToConvert(note);
-    if (convert) copyConvertToItemTransientProperties(task, convert, 'note', 'task');
-
     TasksService.addTask(task, ownerUUID);
     NotesService.removeNote(note.trans.uuid, ownerUUID);
+
+    var convert = copyNotePersistentPropertiesToConvert(note);
+    if (convert) copyConvertToItemTransientProperties(task, convert, 'note', 'task');
   }
 
   function processNoteToListResponse(note, list, ownerUUID) {
-    var convert = copyNotePersistentPropertiesToConvert(note);
-    if (convert) copyConvertToItemTransientProperties(list, convert, 'note', 'list');
-
     ListsService.addList(list, ownerUUID);
     NotesService.removeNote(note.trans.uuid, ownerUUID);
+
+    var convert = copyNotePersistentPropertiesToConvert(note);
+    if (convert) copyConvertToItemTransientProperties(list, convert, 'note', 'list');
   }
 
   function processListToTaskResponse(list, task, ownerUUID) {
