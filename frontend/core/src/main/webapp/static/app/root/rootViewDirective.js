@@ -102,7 +102,7 @@
       var unbindEmInteraction = $rootScope.$on('emInteraction', function(name, interaction) {
         if (interaction.type === 'onlineRequired') {
           var params = {
-            messageHeading: 'no online connection',
+            messageHeading: 'not online',
             messageText: 'please connect to the internet and press retry to access your information',
             confirmText: 'retry',
             confirmTextDeferred: 'retrying\u2026',
