@@ -378,6 +378,7 @@ TODO: working example needed!
 
 // 1. Center vertically. See http://css-tricks.com/centering-css-complete-guide/#vertical-block-known
 .container-modal {
+  padding-bottom: 44px;
   position: absolute;                   // [1]
   top: 50%;                             // [1]
   -webkit-transform: translateY(-50%);  // [1]
@@ -387,9 +388,30 @@ TODO: working example needed!
   transform: translateY(-50%);          // [1]
   width: 100%;
   max-width: 400px;
+  height: auto;
+  max-height: 80%;
   .center-horizontally-absolute();
   background: white;
   box-shadow: 0 1px 2px @color-text-downplayed-light, 0 -1px 2px @color-text-downplayed-light;
+  .container-content {
+    overflow-y: hidden;
+  }
+  .group-instruction {
+    // position: relative;
+    padding-bottom: 30px;
+    // max-width: 300px;
+    height: 100%;
+    overflow-y:auto;
+    // overflow-x:hidden;
+
+  // position: absolute;                   // [1]
+  // top: 50%;                             // [1]
+  // -webkit-transform: translateY(-50%);  // [1]
+  // -moz-transform: translateY(-50%);     // [1]
+  // -o-transform: translateY(-50%);       // [1]
+  // -ms-transform: translateY(-50%);      // [1]
+  // transform: translateY(-50%);          // [1]
+  }
 }
 
 // 1. Blur backdrop. See http://tympanus.net/codrops/2011/12/14/item-blur-effect-with-css3-and-jquery/

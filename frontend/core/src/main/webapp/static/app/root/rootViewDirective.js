@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function rootViewDirective($injector, $rootScope, $templateCache, $window,
+ function rootViewDirective($injector, $rootScope, $templateCache, $window, $timeout,
                             AnalyticsService, BackendClientService, SynchronizeService, UISessionService,
                             UUIDService, UserSessionService, packaging) {
 
@@ -22,7 +22,7 @@
     restrict: 'A',
     replace: 'true',
     templateUrl: $rootScope.urlBase + 'app/root/root.html',
-    controller: function($scope, $attrs) {
+    controller: function($scope) {
 
       // BASIC DIMENSIONS TO ROOT SCOPE
       // NOTE: For some reason this had to be 567 before,
@@ -96,6 +96,27 @@
         $templateCache.removeAll();
       };
 
+      // MODAL
+      $scope.modal = {
+        visible: false
+      };
+
+      $scope.showModal = function(type, params) {
+        $scope.modal.visible = true;
+        $scope.modal.type = type;
+        if (params) {
+          $scope.modal.params = params;
+        }
+      };
+
+      $scope.hideModal = function() {
+        $scope.modal.visible = false;
+        $scope.modal.type = undefined;
+        if ($scope.modal.params) {
+          delete $scope.modal.params;
+        }
+      };
+
       // EVENTS - user interactions, exceptions
 
       // Listen to interactions emitted to $rootScope.
@@ -129,41 +150,38 @@
             AnalyticsService.error('session', exception.value);
             $rootScope.redirectToEntry();
           }
-        // TODO: Type 'response' for offline responses!
-      } else if (exception.type === 'redirectToEntry') {
-        $rootScope.redirectToEntry();
-      } else {
-        AnalyticsService.error('unexpected', JSON.stringify(exception));
+          // TODO: Type 'response' for offline responses!
+        } else if (exception.type === 'redirectToEntry') {
+          $rootScope.redirectToEntry();
+        } else {
+          AnalyticsService.error('unexpected', JSON.stringify(exception));
 
-        var params = {
-          messageHeading: 'something unexpected happened, sorry!',
-          messageText: JSON.stringify(exception, null, 4),
-          confirmText: 'close'
-        };
-        $scope.showModal(undefined, params);
-      }
-    });
-
-      // MODAL
-      $scope.modal = {
-        visible: false
-      };
-
-      $scope.showModal = function(type, params) {
-        $scope.modal.visible = true;
-        $scope.modal.type = type;
-        if (params) {
-          $scope.modal.params = params;
+          var params = {
+            messageHeading: 'oops',
+            messageIngress: 'something unexpected happened, sorry!',
+            messageText: JSON.stringify(exception, null, 2),
+            confirmText: 'close'
+          };
+          $scope.showModal(undefined, params);
         }
-      };
+      });
 
-      $scope.hideModal = function() {
-        $scope.modal.visible = false;
-        $scope.modal.type = undefined;
-        if ($scope.modal.params) {
-          delete $scope.modal.params;
-        }
-      };
+$timeout(function() {
+  $rootScope.$emit('emException', {
+    type: undefined,
+    value: {
+      status: 'error.value.statuasdasds',
+      data: 'error.value.data',
+      url: 'error.config.url',
+      sstatus: 'error.value.statuasdasds',
+      dsata: 'error.value.data',
+      ursl: 'error.config.url',
+      stgatus: 'error.value.statuasdasds',
+      dgata: 'error.value.data',
+      gurl: 'error.config.url'
+    }
+  });
+}, 1000);
 
       // Clean up listening by executing the variable
       $scope.$on('$destroy', function() {
@@ -280,7 +298,7 @@
   };
 }
 
-rootViewDirective['$inject'] = ['$injector', '$rootScope', '$templateCache', '$window',
+rootViewDirective['$inject'] = ['$injector', '$rootScope', '$templateCache', '$window', '$timeout',
 'AnalyticsService', 'BackendClientService', 'SynchronizeService', 'UISessionService', 'UUIDService',
 'UserSessionService', 'packaging'];
 angular.module('em.root').directive('rootView', rootViewDirective);

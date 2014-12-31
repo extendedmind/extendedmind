@@ -23,8 +23,10 @@
     },
     templateUrl: $rootScope.urlBase + 'app/base/modal.html',
     link: function(scope) {
-      scope.closeText = scope.modalInfos.closeText || 'close';
+      scope.messageHeading = scope.modalInfos.messageHeading;
+      scope.messageIngress = scope.modalInfos.messageIngress;
       scope.messageText = scope.modalInfos.messageText;
+      scope.closeText = scope.modalInfos.closeText/* || 'close'*/;
       scope.confirmText = scope.modalInfos.confirmText || 'ok';
 
       scope.confirmAction = function() {
