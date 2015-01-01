@@ -22,11 +22,12 @@
       closeModal: '&modalClose'
     },
     templateUrl: $rootScope.urlBase + 'app/base/modal.html',
+    // NOTE: URL could be passed as a directive attribute for different kind of modals, e.g. list picker.
     link: function(scope) {
       scope.messageHeading = scope.modalInfos.messageHeading;
       scope.messageIngress = scope.modalInfos.messageIngress;
       scope.messageText = scope.modalInfos.messageText;
-      scope.closeText = scope.modalInfos.closeText/* || 'close'*/;
+      scope.closeText = scope.modalInfos.closeText;
       scope.confirmText = scope.modalInfos.confirmText || 'ok';
 
       scope.confirmAction = function() {

@@ -179,6 +179,18 @@ Use `.text-details` to separate details from body text.
 }
 
 /*
+Used with JSON.stringify function and HTML <pre> tag.
+*/
+.text-preformatted {
+  margin-top: 0;
+  margin-bottom: 0;
+  font-size: @size-font-small;
+  line-height: normal;
+  overflow-x: auto;
+  .dont-break-words();
+}
+
+/*
 Navigation texts
 */
 

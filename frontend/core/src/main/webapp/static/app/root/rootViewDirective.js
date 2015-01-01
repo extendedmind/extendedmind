@@ -166,23 +166,6 @@
         }
       });
 
-$timeout(function() {
-  $rootScope.$emit('emException', {
-    type: undefined,
-    value: {
-      status: 'error.value.statuasdasds',
-      data: 'error.value.data',
-      url: 'error.config.url',
-      sstatus: 'error.value.statuasdasds',
-      dsata: 'error.value.data',
-      ursl: 'error.config.url',
-      stgatus: 'error.value.statuasdasds',
-      dgata: 'error.value.data',
-      gurl: 'error.config.url'
-    }
-  });
-}, 1000);
-
       // Clean up listening by executing the variable
       $scope.$on('$destroy', function() {
         unbindEmInteraction();
