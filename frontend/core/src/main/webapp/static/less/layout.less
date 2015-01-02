@@ -147,10 +147,18 @@ Menu
   -ms-transform: translateY(-50%);      // [1]
   transform: translateY(-50%);          // [1]
   width: 100%;
-  height: inherit;
-  max-height: 80%;  // [2]
   .center-horizontally-absolute();
   background-color: white;  // [3]
+
+  .container-content {
+    height: auto;
+    max-height: 60vh; // [2]
+  }
+  // FIXME
+  .container-content--after {
+    position: absolute;
+    width: 100%;
+  }
 }
 
 @large-screen-width-modal: 350px;
