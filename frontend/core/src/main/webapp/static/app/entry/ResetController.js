@@ -31,48 +31,43 @@
     resetErrors();
     if ($scope.user.password) {
       $scope.resetting = true;
-      AuthenticationService.postResetPassword(passwordResetCode, $scope.user.username, $scope.user.password).then(
-        function(resetPasswordResponse) {
-          if (resetPasswordResponse.data && resetPasswordResponse.data.count) {
-            if (packaging === 'web' && DetectBrowserService.isMobile()){
-              $location.url($location.path());
-              $location.path('/');
-            }else{
-              // Authenticate using the new password
-              AuthenticationService.login($scope.user).then(
-                function(/*authenticationResponse*/) {
-                  $location.url($location.path());
-                  $location.path('/');
-                }, function(error) {
-                  if (BackendClientService.isOffline(error.value.status)) {
-                    $scope.resetOffline = true;
-                  } else {
-                    $scope.loginFailed = true;
-                  }
-                }
-              );
+      AuthenticationService.postResetPassword(passwordResetCode, $scope.user.username, $scope.user.password)
+      .then(function() {
+        if (packaging === 'web' && DetectBrowserService.isMobile()){
+          $location.url($location.path());
+          $location.path('/');
+        }else{
+          // Authenticate using the new password
+          AuthenticationService.login($scope.user)
+          .then(function(/*authenticationResponse*/) {
+            $location.url($location.path());
+            $location.path('/');
+          }, function(error) {
+            if (BackendClientService.isOffline(error.value.status)) {
+              $scope.resetOffline = true;
+            } else {
+              $scope.loginFailed = true;
             }
-            UISessionService.pushNotification({
-              type: 'fyi',
-              text: 'password reset successful'
-            });
-          }
-        },
-        function(errorResponse){
-          if (BackendClientService.isOffline(errorResponse.value.status)) {
-            $scope.resetOffline = true;
-          } else {
-            $scope.resetFailed = true;
-          }
-          $scope.resetting = false;
+          });
         }
-      );
+        UISessionService.pushNotification({
+          type: 'fyi',
+          text: 'password reset successful'
+        });
+      }, function(error) {
+        if (error.type === 'offline') {
+          $scope.resetOffline = true;
+        } else {
+          $scope.resetFailed = true;
+        }
+        $scope.resetting = false;
+      });
     }
   };
 
   $scope.typePassword = function(){
     resetErrors();
-  }
+  };
 
   function resetErrors(){
     $scope.resetOffline = false;

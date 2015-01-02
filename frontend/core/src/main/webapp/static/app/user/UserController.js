@@ -54,35 +54,36 @@
 
   $scope.isCollectiveActive = function(uuid) {
     if (UISessionService.getActiveUUID() === uuid) return true;
-  }
+  };
 
   $scope.isMyActive = function() {
     if (UISessionService.getActiveUUID() === UserSessionService.getUserUUID()) return true;
-  }
+  };
 
   $scope.getUserEmail = function(){
     return UserSessionService.getEmail();
-  }
+  };
 
   // NAVIGATION
 
-  $scope.activeDetails;
+  $scope.activeDetails = undefined;
   $scope.swipeToDetails = function(detailsType){
     $scope.activeDetails = detailsType;
     if (detailsType === 'settings'){
       initializeSettings();
     }
     SwiperService.swipeTo('user/details');
-  }
-  $scope.swipeToHome = function(detailsType){
+  };
+
+  $scope.swipeToHome = function(){
     SwiperService.swipeTo('user/home');
-  }
+  };
 
   // LOGOUT
 
   $scope.logOut = function logOut() {
     UserService.logout().then(function() {
-      $rootScope.redirectToEntry();
+      $rootScope.$emit('emException', {type: 'redirectToEntry'});
     });
   };
 
@@ -115,7 +116,7 @@
       user.terms = termsResponse.data;
       $scope.openEditor('user', user, 'terms');
     });
-  }
+  };
 
   $scope.openPrivacyInEditor = function(){
     var user  = UserSessionService.getUser();
@@ -123,7 +124,7 @@
       user.privacy = privacyResponse.data;
       $scope.openEditor('user', user, 'privacy');
     });
-  }
+  };
 
   // OFFLINE MODIFICATIONS
   $scope.getOfflineModifiedCount = function(itemType) {
@@ -131,10 +132,10 @@
     if (modifiedItems && modifiedItems.length){
       return modifiedItems.length;
     }
-  }
+  };
 }
 UserController['$inject'] = ['$http', '$location', '$q', '$rootScope', '$scope', '$templateCache', '$window',
-                             'AnalyticsService', 'AuthenticationService', 'SwiperService',
-                             'SynchronizeService', 'UISessionService', 'UserService', 'UserSessionService',
-                             'version'];
+'AnalyticsService', 'AuthenticationService', 'SwiperService',
+'SynchronizeService', 'UISessionService', 'UserService', 'UserSessionService',
+'version'];
 angular.module('em.user').controller('UserController', UserController);

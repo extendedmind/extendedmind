@@ -389,7 +389,7 @@
             }, lastReplaceable: true
           };
           var fakeTimestamp = BackendClientService.generateFakeTimestamp();
-          BackendClientService.post('/api/' + ownerUUID + '/task/' + task.trans.uuid + '/complete',
+          BackendClientService.postOffline('/api/' + ownerUUID + '/task/' + task.trans.uuid + '/complete',
                                     this.completeTaskRegex, params, undefined, fakeTimestamp);
           if (!task.mod) task.mod = {};
           var propertiesToReset = {modified: fakeTimestamp,
@@ -401,10 +401,10 @@
           // Online
           BackendClientService.postOnline('/api/' + ownerUUID + '/task/' + task.trans.uuid + '/complete',
                                           this.completeTaskRegex)
-          .then(function(result) {
-            task.completed = result.data.completed;
-            var propertiesToReset = {modified: result.data.result.modified,
-                                     completed: result.data.completed};
+          .then(function(response) {
+            task.completed = response.completed;
+            var propertiesToReset = {modified: response.result.modified,
+                                     completed: response.completed};
             ItemLikeService.updateObjectProperties(task, propertiesToReset);
             updateTask(task, ownerUUID, undefined, propertiesToReset);
             deferred.resolve(task);
@@ -424,7 +424,7 @@
           // Offline
           var params = {type: 'task', owner: ownerUUID, uuid: task.trans.uuid, lastReplaceable: true};
           var fakeTimestamp = BackendClientService.generateFakeTimestamp();
-          BackendClientService.post('/api/' + ownerUUID + '/task/' + task.trans.uuid + '/uncomplete',
+          BackendClientService.postOffline('/api/' + ownerUUID + '/task/' + task.trans.uuid + '/uncomplete',
                                     this.uncompleteTaskRegex, params, undefined, fakeTimestamp);
           if (!task.mod) task.mod = {};
           var propertiesToReset = {modified: fakeTimestamp, completed: undefined}
@@ -435,8 +435,8 @@
           // Online
           BackendClientService.postOnline('/api/' + ownerUUID + '/task/' + task.trans.uuid + '/uncomplete',
                                           this.uncompleteTaskRegex)
-          .then(function(result) {
-            var propertiesToReset = {modified: result.data.modified, completed: undefined}
+          .then(function(response) {
+            var propertiesToReset = {modified: response.modified, completed: undefined}
             ItemLikeService.updateObjectProperties(task, propertiesToReset);
             // the above doesn't actually remove the property, which is what we want to do here
             delete task.completed;

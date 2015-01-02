@@ -289,17 +289,17 @@
                                             prefix: '/api/' + ownerUUID + '/list/',
                                             list: list }},
                                         this.archiveListRegex)
-        .then(function(result) {
-          list.archived = result.data.archived;
-          ItemLikeService.updateObjectProperties(list, result.data.result);
+        .then(function(response) {
+          list.archived = response.archived;
+          ItemLikeService.updateObjectProperties(list, response.result);
           updateList(list, ownerUUID);
 
           // Add generated tag to the tag array
-          TagsService.setGeneratedTag(result.data.history, ownerUUID);
+          TagsService.setGeneratedTag(response.history, ownerUUID);
           // Call child callbacks
-          if (result.data.children) {
+          if (response.children) {
             for (var id in itemArchiveCallbacks) {
-              itemArchiveCallbacks[id](result.data.children, result.data.archived, ownerUUID);
+              itemArchiveCallbacks[id](response.children, response.archived, ownerUUID);
             }
           }
           deferred.resolve();

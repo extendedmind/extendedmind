@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
- /* global angular, html5Mode, FastClick, packaging, version */
+ /* global angular, enableOffline, FastClick, html5Mode, packaging, version */
  'use strict';
 
  angular.module('em.app', ['em.root', 'em.entry', 'em.main', 'em.focus', 'em.lists',
@@ -65,7 +65,8 @@
  angular.module('em.app').constant('version', (typeof version !== 'undefined') ? version : 'devel');
 
  // Global variable "enableOffline" can be defined in index.html
- angular.module('em.app').constant('enableOffline', (typeof enableOffline !== 'undefined') ? enableOffline : false);
+ angular.module('em.app').constant('enableOffline', (typeof enableOffline !== 'undefined') ? enableOffline :
+                                   false);
 
  angular.module('em.app').config(['$animateProvider', '$compileProvider', '$locationProvider',
                                  '$routeProvider', 'packaging', 'version',
@@ -133,20 +134,21 @@
     $routeProvider.when('/reset/:hex_code', {
       templateUrl: urlBase + 'app/entry/reset.html',
       resolve: {
-        routes: ['$location', '$route', 'AuthenticationService',
-        function($location, $route, AuthenticationService) {
+        routes: ['$location', '$route', 'AuthenticationService', 'UISessionService',
+        function($location, $route, AuthenticationService, UISessionService) {
           if (!$route.current.params.hex_code || !$route.current.params.email) {
             $location.path('/');
           }else{
             // make sure code is valid
             AuthenticationService.getPasswordResetExpires($route.current.params.hex_code,
-                                                          $route.current.params.email).then(
-              function(passwordResetExpiresResponse){
-                if (!passwordResetExpiresResponse.data ||
-                    !passwordResetExpiresResponse.data.resetCodeExpires){
-                  $location.url($location.path());
-                  $location.path('/');
-                }
+                                                          $route.current.params.email).then(undefined,
+              function(){
+                $location.url($location.path());
+                $location.path('/');
+                UISessionService.pushNotification({
+                  type: 'fyi',
+                  text: 'password reset failed'
+                });
               }
             );
           }
@@ -166,14 +168,14 @@
           if (verifyCode && email) {
             // verify email directly
             AuthenticationService.postVerifyEmail(verifyCode, email).then(
-              function(/*success*/){
+              function(){
                 $location.url($location.path());
                 $location.path('/');
                 UISessionService.pushNotification({
                   type: 'fyi',
                   text: 'email verified'
                 });
-              }, function(/*failure*/){
+              }, function(){
                 $location.url($location.path());
                 $location.path('/');
                 UISessionService.pushNotification({

@@ -18,47 +18,37 @@
 
   AnalyticsService.visit('admin');
 
-  AdminService.getStatistics().then(function(statisticsResponse) {
-    if (statisticsResponse.data) {
-      $scope.userCount = statisticsResponse.data.users;
-      $scope.inviteCount = statisticsResponse.data.invites;
-      $scope.inviteRequestCount = statisticsResponse.data.inviteRequests;
-      $scope.itemCount = statisticsResponse.data.items;
-    }
+  AdminService.getStatistics().then(function(response) {
+    $scope.userCount = response.users;
+    $scope.inviteCount = response.invites;
+    $scope.inviteRequestCount = response.inviteRequests;
+    $scope.itemCount = response.items;
   });
 
   $scope.gotoUsers = function gotoUsers() {
-    AdminService.getUsers().then(function(usersResponse) {
-      if (usersResponse.data) {
-        $scope.users = usersResponse.data.users;
-        $scope.adminMode = 'users';
-      }
+    AdminService.getUsers().then(function(response) {
+      $scope.users = response.users;
+      $scope.adminMode = 'users';
     });
   };
 
   $scope.gotoInvites = function gotoInvites() {
-    AdminService.getInvites().then(function(invitesResponse) {
-      if (invitesResponse.data) {
-        $scope.invites = invitesResponse.data.invites;
-        $scope.adminMode = 'invites';
-      }
+    AdminService.getInvites().then(function(response) {
+      $scope.invites = response.invites;
+      $scope.adminMode = 'invites';
     });
   };
 
   $scope.resendInvite = function resendInvite(invite) {
-    AuthenticationService.resendInvite(invite.uuid, invite.email).then(function(resendResponse) {
-      if (resendResponse.data) {
-        invite.resent = true;
-      }
+    AuthenticationService.resendInvite(invite.uuid, invite.email).then(function() {
+      invite.resent = true;
     });
   };
 
   $scope.gotoInviteRequests = function gotoInviteRequests() {
-    AdminService.getInviteRequests().then(function(inviteRequestsResponse) {
-      if (inviteRequestsResponse.data) {
-        $scope.inviteRequests = inviteRequestsResponse.data.inviteRequests;
-        $scope.adminMode = 'inviteRequests';
-      }
+    AdminService.getInviteRequests().then(function(response) {
+      $scope.inviteRequests = response.inviteRequests;
+      $scope.adminMode = 'inviteRequests';
     });
   };
 
@@ -115,7 +105,7 @@
         removeUser(user);
       });
     }
-  }
+  };
 
   function removeUser(user) {
     var index = $scope.users.indexOf(user);
@@ -127,5 +117,7 @@
   }
 }
 
-AdminController['$inject'] = ['$scope', 'AdminService', 'AuthenticationService', 'AnalyticsService', 'DateService'];
+AdminController['$inject'] = [
+'$scope', 'AdminService', 'AuthenticationService', 'AnalyticsService', 'DateService'
+];
 angular.module('em.admin').controller('AdminController', AdminController);

@@ -193,9 +193,9 @@
     */
     finishTaskToNoteConvert: function(task, ownerUUID) {
       if (TasksService.getTaskStatus(task, ownerUUID) === 'deleted') return;
-      return postConvertTaskToNote(task, ownerUUID).then(function(result) {
-        processTaskToNoteResponse(task, result.data, ownerUUID);
-        return result.data;
+      return postConvertTaskToNote(task, ownerUUID).then(function(response) {
+        processTaskToNoteResponse(task, response, ownerUUID);
+        return response;
       });
     },
     finishTaskToListConvert: function(task, ownerUUID) {
@@ -205,18 +205,18 @@
       // Remove pre-existing list before converting to list.
       removeList(task);
 
-      return postConvertTaskToList(task, ownerUUID).then(function(result) {
-        processTaskToListResponse(task, result.data, ownerUUID);
-        return result.data;
+      return postConvertTaskToList(task, ownerUUID).then(function(response) {
+        processTaskToListResponse(task, response, ownerUUID);
+        return response;
       });
     },
     finishNoteToTaskConvert: function(note, ownerUUID) {
       if (note.uuid) {
         if (NotesService.getNoteStatus(note, ownerUUID) === 'deleted') return;
 
-        return postConvertNoteToTask(note, ownerUUID).then(function(result) {
-          processNoteToTaskResponse(note, result.data, ownerUUID);
-          return result.data;
+        return postConvertNoteToTask(note, ownerUUID).then(function(response) {
+          processNoteToTaskResponse(note, response, ownerUUID);
+          return response;
         });
       } else {
         // TODO: Convert new note to task.
@@ -227,24 +227,24 @@
       // NOTE: Currently only one-level lists are supported.
       // Remove pre-existing list before convertin to list.
       removeList(note);
-      return postConvertNoteToList(note, ownerUUID).then(function(result) {
-        processNoteToListResponse(note, result.data, ownerUUID);
-        return result.data;
+      return postConvertNoteToList(note, ownerUUID).then(function(response) {
+        processNoteToListResponse(note, response, ownerUUID);
+        return response;
       });
     },
     finishListToTaskConvert: function(list, ownerUUID) {
       if (ListsService.getListStatus(list, ownerUUID) === 'deleted') return;
-      return postConvertListToTask(list, ownerUUID).then(function(result) {
-        processListToTaskResponse(list, result.data, ownerUUID);
-        return result.data;
+      return postConvertListToTask(list, ownerUUID).then(function(response) {
+        processListToTaskResponse(list, response, ownerUUID);
+        return response;
       });
     },
     finishListToNoteConvert: function(list, ownerUUID) {
       if (ListsService.getListStatus(list, ownerUUID) === 'deleted') return;
 
-      return postConvertListToNote(list, ownerUUID).then(function(result) {
-        processListToNoteResponse(list, result.data, ownerUUID);
-        return result.data;
+      return postConvertListToNote(list, ownerUUID).then(function(response) {
+        processListToNoteResponse(list, response, ownerUUID);
+        return response;
       });
     },
 

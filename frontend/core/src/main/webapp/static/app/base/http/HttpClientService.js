@@ -20,7 +20,6 @@
 
   var methods = {};
   var credentials;
-  var online = true;
 
   // Offline checker for the entire application
   function isOffline(status) {
@@ -29,19 +28,14 @@
     }
   }
 
-  function emitException(error, skipLogStatuses) {
-    var exceptionType = 'http';
-    var emitType = 'emException';
-    if (error && isOffline(error.status)) {
-      online = false;
-      if (onlineCallback) {
-        onlineCallback(online);
+  function handleOnlineCallback(value) {
+    if (onlineCallback) {
+      if (value === true) {
+        onlineCallback(true);
       }
-      emitType = 'emInteraction';
-      exceptionType = 'onlineRequired';
-    }
-    if (!skipLogStatuses || skipLogStatuses.indexOf(error.status) === -1) {
-      $rootScope.$emit(emitType, {type: exceptionType, value: {status: error.status, data: error.data}});
+      else if (value === false || (value && isOffline(value.status))) {
+        onlineCallback(false);
+      }
     }
   }
 
@@ -110,10 +104,7 @@
           HttpRequestQueueService.remove(headRequest);
 
           // Execute online callback
-          online = true;
-          if (onlineCallback) {
-            onlineCallback(online);
-          }
+          handleOnlineCallback(true);
 
           // Execute queue emptied callback if queue was not empty before this request but is empty now
           if (queueEmptiedCallback && !queueEmptyBeforeRemove && HttpRequestQueueService.isQueueEmpty()){
@@ -126,17 +117,14 @@
             executeRequests(headRequest);
           }
         })
-        .error(function(data, status, headers, config) {
-          delete headRequest.executing;
-          if (isOffline(status)) {
-            retryingExecution = false;
+.error(function(data, status, headers, config) {
+  delete headRequest.executing;
+  if (isOffline(status)) {
+    retryingExecution = false;
             // Seems to be offline, stop processing
             HttpRequestQueueService.setOffline(headRequest);
-            online = false;
             // Execute callback
-            if (onlineCallback) {
-              onlineCallback(online);
-            }
+            handleOnlineCallback(false);
           } else {
             // Add retrying to 403 Forbidden which may have to do with
             // an old request being run on refocus to app after 12 hours
@@ -162,7 +150,7 @@
                 HttpRequestQueueService.saveQueue();
                 HttpRequestQueueService.releaseLock();
                 $rootScope.$emit('emException', {type: 'http', value: {status: status, data: data,
-                                                                       url: config.url}});
+                 url: config.url}});
               }
             }
           }
@@ -200,8 +188,7 @@
   function checkRequestExecuting(deferred){
     if (!HttpRequestQueueService.isProcessing() && !HttpRequestQueueService.isEmpty()){
       deferred.reject();
-    }
-    if (HttpRequestQueueService.isEmpty()){
+    } else if (HttpRequestQueueService.isEmpty()){
       deferred.resolve();
     }
   }
@@ -212,39 +199,34 @@
     var deferred = $q.defer();
     if (HttpRequestQueueService.isProcessing()){
       periodicChecker = checkRequestsPeriodic(deferred);
-      deferred.promise.then(
-        function(){
-          clearTimeout(periodicChecker);
-        },
-        function(){
-          clearTimeout(periodicChecker);
-          return $q.reject();
-        }
-      );
+      deferred.promise.then(function(){
+        clearTimeout(periodicChecker);
+      },
+      function(){
+        clearTimeout(periodicChecker);
+        return $q.reject();
+      });
     }else{
       deferred.reject();
     }
     return deferred.promise;
   }
 
-  function executeRequestsAndPoll(doFn, urlPrefix, url, data, skipLogStatuses){
+  function executeRequestsAndPoll(doFn, urlPrefix, url, data){
     var deferred = $q.defer();
     executeRequests();
     var exectionReadyPromise = waitForRequestsExecution();
-    exectionReadyPromise.then(
-      function(){
-        doFn(urlPrefix, url, data, skipLogStatuses).then(
-          function (success){
-            deferred.resolve(success);
-          },function(failure){
-            deferred.reject(failure);
-          }
-        );
-      },
-      function(failure){
+    exectionReadyPromise.then(function(){
+      doFn(urlPrefix, url, data)
+      .then(function (success){
+        deferred.resolve(success);
+      },function(failure){
         deferred.reject(failure);
-      }
-    );
+      });
+    },
+    function(failure){
+      deferred.reject(failure);
+    });
     return deferred.promise;
   }
 
@@ -268,18 +250,10 @@
   angular.forEach(['get', 'head', 'jsonp'], function(name) {
     methods[name] = function(url) {
       return $http({method: name, url: url}).then(function(success) {
-        online = true;
-        if (onlineCallback) {
-          onlineCallback(online);
-        }
+        handleOnlineCallback(true);
         return success;
       }, function(error) {
-        if (error && isOffline(error.status)) {
-          online = false;
-          if (onlineCallback) {
-            onlineCallback(online);
-          }
-        }
+        handleOnlineCallback(error);
         return $q.reject({type:'http', value: error});
       });
     };
@@ -294,36 +268,35 @@
   }
 
   // Online alternatives for POST, PUT and DELETE
-  methods.postOnline = function(urlPrefix, url, data, skipLogStatuses) {
-    function doPostOnline(urlPrefix, url, data, skipLogStatuses){
-      return $http({method: 'post', url: getRefreshedUrlString(urlPrefix, url), data: data}).then(function(success) {
-        online = true;
-        if (onlineCallback) {
-          onlineCallback(online);
-        }
+  methods.postOnline = function(urlPrefix, url, data) {
+    function doPostOnline(urlPrefix, url, data){
+      return $http({method: 'post', url: getRefreshedUrlString(urlPrefix, url), data: data})
+      .then(function(success) {
+        handleOnlineCallback(true);
         return success;
       }, function(error) {
-        emitException(error, skipLogStatuses);
+        handleOnlineCallback(error);
         return $q.reject({type:'http', value: error});
       });
     }
     if (HttpRequestQueueService.isEmpty()){
-      return doPostOnline(urlPrefix, url, data, skipLogStatuses);
+      return doPostOnline(urlPrefix, url, data);
     }else{
-      return executeRequestsAndPoll(doPostOnline, urlPrefix, url, data, skipLogStatuses)
+      return executeRequestsAndPoll(doPostOnline, urlPrefix, url, data);
     }
   };
 
   methods.putOnline = function(url, data) {
     return $http({method: 'put', url: url, data: data}).then(function(success) {
+      handleOnlineCallback(true);
       return success;
     }, function(error) {
-      emitException(error);
+      handleOnlineCallback(error);
       return $q.reject({type:'http', value: error});
     });
   };
 
-  methods.putOnlineWithCredentials = function(url, data, overrideCredentials, skipLogStatuses) {
+  methods.putOnlineWithCredentials = function(url, data, overrideCredentials) {
     return $http({
       method: 'put',
       url: url,
@@ -331,26 +304,29 @@
       headers: {'Authorization': 'Basic ' + overrideCredentials}
     })
     .then(function(success) {
+      handleOnlineCallback(true);
       return success;
     }, function(error) {
-      emitException(error, skipLogStatuses);
+      handleOnlineCallback(error);
       return $q.reject({type:'http', value: error});
     });
   };
 
   methods.deleteOnline = function(urlPrefix, url, data) {
     function doDeleteOnline(urlPrefix, url, data){
-      return $http({method: 'delete', url: getRefreshedUrlString(urlPrefix, url), data: data}).then(function(success) {
+      return $http({method: 'delete', url: getRefreshedUrlString(urlPrefix, url), data: data})
+      .then(function(success) {
+        handleOnlineCallback(true);
         return success;
       }, function(error) {
-        emitException(error);
+        handleOnlineCallback(error);
         return $q.reject({type:'http', value: error});
       });
     }
     if (HttpRequestQueueService.isEmpty()){
       return doDeleteOnline(urlPrefix, url, data);
     }else{
-      return executeRequestsAndPoll(doDeleteOnline, urlPrefix, url, data)
+      return executeRequestsAndPoll(doDeleteOnline, urlPrefix, url, data);
     }
   };
 
@@ -413,14 +389,14 @@
     executeRequests();
   };
 
-  methods.post = function(url, params, data, timestamp) {
+  methods.postOffline = function(url, params, data, timestamp) {
     var request = getRequest('post', url, params, data, timestamp);
     var pushed = HttpRequestQueueService.push(request);
     executeRequests();
     return pushed;
   };
 
-  methods.put = function(url, params, data, timestamp) {
+  methods.putOffline = function(url, params, data, timestamp) {
     var request = getRequest('put', url, params, data, timestamp);
     HttpRequestQueueService.push(request);
     executeRequests();

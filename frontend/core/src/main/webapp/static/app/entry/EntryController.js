@@ -119,7 +119,7 @@
     }
     $scope.loginFailed = false;
     $scope.entryOffline = false;
-    AuthenticationService.login($scope.user).then(logInSuccess, logInFailed);
+    AuthenticationService.login($scope.user).then(logInSuccess, logInError);
   };
 
   function logInSuccess() {
@@ -130,11 +130,11 @@
     redirectAuthenticatedUser();
   }
 
-  function logInFailed(failure) {
-    if (BackendClientService.isOffline(failure.value.status)) {
+  function logInError(error) {
+    if (error.type === 'offline') {
       AnalyticsService.error('login', 'offline');
       $scope.entryOffline = true;
-    } else if (failure.value.status === 403) {
+    } else if (error.type === 'forbidden') {
       AnalyticsService.error('login', 'failed');
       $scope.loginFailed = true;
     }
@@ -161,14 +161,14 @@
      AuthenticationService.signUp(payload).then(signUpSuccess, signUpFailed);
    };
 
-   function signUpSuccess(signupResponse) {
-    AnalyticsService.doWithUuid('signUp', undefined, signupResponse.data.uuid);
+   function signUpSuccess(response) {
+    AnalyticsService.doWithUuid('signUp', undefined, response.uuid);
     AuthenticationService.login($scope.user).then
     (redirectAuthenticatedUser,
-     function(failure) {
-      if (BackendClientService.isOffline(failure.value.status)) {
+     function(error) {
+      if (error.type === 'offline') {
         $scope.entryOffline = true;
-      } else if (failure.value.status === 403) {
+      } else if (error.type === 'forbidden') {
         $scope.loginFailed = true;
       }
     });
@@ -212,30 +212,27 @@
     $scope.entryOffline = false;
     if ($scope.user.username) {
       AuthenticationService.postForgotPassword($scope.user.username)
-      .then(function(forgotPasswordResponse) {
-        if (forgotPasswordResponse.data) {
-          $scope.resetCodeExpires = forgotPasswordResponse.data.resetCodeExpires;
-          UISessionService.pushNotification({
-            type: 'fyi',
-            text: 'instructions sent'
-          });
-          $scope.forgotActive = false;
-        }
+      .then(function(response) {
+        $scope.resetCodeExpires = response.resetCodeExpires;
+        UISessionService.pushNotification({
+          type: 'fyi',
+          text: 'instructions sent'
+        });
+        $scope.forgotActive = false;
       },
-      function(errorResponse){
-        if (BackendClientService.isOffline(errorResponse.value.status)) {
+      function(error){
+        if (error.type === 'offline') {
           $scope.entryOffline = true;
         } else {
           $scope.sendFailed = true;
         }
-      }
-      );
+      });
     }
   };
 }
 
 EntryController['$inject'] = ['$http', '$location', '$rootScope', '$routeParams', '$scope', '$timeout',
-                              '$window', 'AnalyticsService', 'AuthenticationService',
-                              'BackendClientService', 'DetectBrowserService', 'SwiperService',
-                              'UISessionService', 'UserService', 'UserSessionService', 'packaging'];
+'$window', 'AnalyticsService', 'AuthenticationService',
+'BackendClientService', 'DetectBrowserService', 'SwiperService',
+'UISessionService', 'UserService', 'UserSessionService', 'packaging'];
 angular.module('em.entry').controller('EntryController', EntryController);

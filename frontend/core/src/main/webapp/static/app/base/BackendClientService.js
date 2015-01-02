@@ -58,6 +58,31 @@
     return $q.reject(regexError);
   }
 
+  /**
+   * @param {Object} Http result.
+   * @returns {Object} Result data.
+   */
+   function handleHttpSuccess(httpResult) {
+    return httpResult.data;
+  }
+
+  function handleHttpError(httpError) {
+    if (httpError.value.status === 400) {
+      return $q.reject({type: 'badRequest', value: httpError.value});
+    } else if (httpError.value.status === 403) {
+      return $q.reject({type: 'forbidden', value: httpError.value});
+    } else if (HttpClientService.isOffline(httpError.status)) {
+      return $q.reject({type: 'offline', value: httpError.value});
+    } else {
+      return emitHttpException(httpError);
+    }
+  }
+
+  function emitHttpException(httpError) {
+    $rootScope.$emit('emException', httpError);
+    return $q.reject(httpError);
+  }
+
   // Method for setting credentials to all subsequent http calls
   methods.setCredentials = function(credentials) {
     return HttpClientService.setCredentials(credentials);
@@ -69,7 +94,7 @@
   methods.get = function(url, regex, skipRefresh) {
     function doGet() {
       if (regex.test(url)) {
-        return HttpClientService.get(getUrlPrefix() + url);
+        return HttpClientService.get(getUrlPrefix() + url).then(handleHttpSuccess, handleHttpError);
       } else {
         return emitRegexException(regex, 'get', url);
       }
@@ -87,7 +112,7 @@
     return refreshCredentials(online).then(function() {
       if (regex.test(url)) {
         if (online) {
-          return HttpClientService.get(getUrlPrefix() + url);
+          return HttpClientService.get(getUrlPrefix() + url).then(handleHttpSuccess, handleHttpError);
         } else {
           return HttpClientService.getSecondary(getUrlPrefix() + url, params);
         }
@@ -101,7 +126,7 @@
     return refreshCredentials(online).then(function() {
       if (regex.test(url)) {
         if (online) {
-          return HttpClientService.get(getUrlPrefix() + url);
+          return HttpClientService.get(getUrlPrefix() + url).then(handleHttpSuccess, handleHttpError);
         } else {
           return HttpClientService.getBeforeLast(getUrlPrefix() + url, params);
         }
@@ -125,17 +150,18 @@
   methods.deleteOnline = function(url, regex, data) {
     return refreshCredentials(true).then(function() {
       if (regex.test(angular.isObject(url) ? url.value : url)) {
-        return HttpClientService.deleteOnline(getUrlPrefix(), url, data);
+        return HttpClientService.deleteOnline(getUrlPrefix(), url, data).then(handleHttpSuccess,
+                                                                              handleHttpError);
       } else {
         return emitRegexException(regex, 'delete', url);
       }
     });
   };
 
-  methods.put = function(url, regex, params, data, timestamp) {
+  methods.putOffline = function(url, regex, params, data, timestamp) {
     return refreshCredentials().then(function() {
       if (regex.test(url)) {
-        return HttpClientService.put(getUrlPrefix() + url, params, data, timestamp);
+        return HttpClientService.putOffline(getUrlPrefix() + url, params, data, timestamp);
       } else {
         return emitRegexException(regex, 'put', url);
       }
@@ -145,19 +171,20 @@
   methods.putOnline = function(url, regex, data) {
     return refreshCredentials(true).then(function() {
       if (regex.test(url)) {
-        return HttpClientService.putOnline(getUrlPrefix() + url, data);
+        return HttpClientService.putOnline(getUrlPrefix() + url, data).then(handleHttpSuccess,
+                                                                            handleHttpError);
       } else {
         return emitRegexException(regex, 'put', url);
       }
     });
   };
 
-  methods.putOnlineWithUsernamePassword = function(url, regex, data, username, password, skipLogStatuses) {
+  methods.putOnlineWithUsernamePassword = function(url, regex, data, username, password) {
     if (regex.test(url)) {
       var usernamePasswordCredentials = base64.encode(username + ':' + password);
       return HttpClientService.putOnlineWithCredentials(getUrlPrefix() + url, data,
-                                                        usernamePasswordCredentials,
-                                                        skipLogStatuses);
+                                                        usernamePasswordCredentials)
+      .then(handleHttpSuccess, handleHttpError);
     } else {
       return emitRegexException(regex, 'put', data);
     }
@@ -175,27 +202,28 @@
     HttpClientService.clearPrimary();
   };
 
-  methods.postOnline = function(url, regex, data, skipRefresh, skipLogStatuses) {
-    function doPostOnline(url, regex, data, skipLogStatuses) {
+  methods.postOnline = function(url, regex, data, skipRefresh) {
+    function doPostOnline(url, regex, data) {
       if (regex.test(angular.isObject(url) ? url.value : url)) {
-        return HttpClientService.postOnline(getUrlPrefix(), url, data, skipLogStatuses);
+        return HttpClientService.postOnline(getUrlPrefix(), url, data).then(handleHttpSuccess,
+                                                                            handleHttpError);
       } else {
         return emitRegexException(regex, 'post', url);
       }
     }
     if (!skipRefresh) {
       return refreshCredentials(true).then(function() {
-        return doPostOnline(url, regex, data, skipLogStatuses);
+        return doPostOnline(url, regex, data);
       });
     } else {
-      return doPostOnline(url, regex, data, skipLogStatuses);
+      return doPostOnline(url, regex, data);
     }
   };
 
-  methods.post = function(url, regex, params, data, timestamp) {
+  methods.postOffline = function(url, regex, params, data, timestamp) {
     return refreshCredentials().then(function() {
       if (regex.test(url)) {
-        return HttpClientService.post(getUrlPrefix() + url, params, data, timestamp);
+        return HttpClientService.postOffline(getUrlPrefix() + url, params, data, timestamp);
       } else {
         return emitRegexException(regex, 'post', url);
       }
@@ -215,7 +243,7 @@
     var backendDelta = UserSessionService.getBackendDelta();
     if (!backendDelta) backendDelta = 0;
     return Date.now() + backendDelta;
-  },
+  };
 
   // Callback registration
   methods.registerRefreshCredentialsCallback = function(callback) {

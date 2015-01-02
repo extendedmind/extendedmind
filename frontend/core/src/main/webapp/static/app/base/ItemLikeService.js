@@ -335,7 +335,7 @@
             // Push to offline buffer
             params = {type: itemType, owner: ownerUUID, uuid: item.trans.uuid, lastReplaceable: true};
             fakeTimestamp = BackendClientService.generateFakeTimestamp();
-            BackendClientService.put('/api/' + params.owner + '/'+ itemType + '/' + item.trans.uuid,
+            BackendClientService.putOffline('/api/' + params.owner + '/'+ itemType + '/' + item.trans.uuid,
                                      this.getPutExistingRegex(itemType), params, transportItem,
                                      fakeTimestamp);
             updateObjectProperties(item.mod, {modified: fakeTimestamp});
@@ -344,8 +344,8 @@
             // Online
             BackendClientService.putOnline('/api/' + ownerUUID + '/'+ itemType + '/' + item.trans.uuid,
                                            this.getPutExistingRegex(itemType), transportItem)
-            .then(function(result) {
-              updateObjectProperties(item, result.data);
+            .then(function(response) {
+              updateObjectProperties(item, response);
               copyModToPersistent(item, ownerUUID, fieldInfos);
               deferred.resolve('existing');
             },function(error){
@@ -363,7 +363,7 @@
             var fakeUUID = UUIDService.generateFakeUUID();
             fakeTimestamp = BackendClientService.generateFakeTimestamp();
             params = {type: itemType, owner: ownerUUID, fakeUUID: fakeUUID};
-            BackendClientService.put('/api/' + params.owner + '/'+ itemType,
+            BackendClientService.putOffline('/api/' + params.owner + '/'+ itemType,
                                      this.getPutNewRegex(itemType), params, transportItem, fakeTimestamp);
             updateObjectProperties(item.mod, {uuid: fakeUUID, modified: fakeTimestamp,
               created: fakeTimestamp});
@@ -372,8 +372,8 @@
             // Online
             BackendClientService.putOnline('/api/' + ownerUUID + '/'+ itemType,
                                            this.getPutNewRegex(itemType), transportItem)
-            .then(function(result) {
-              updateObjectProperties(item, result.data);
+            .then(function(response) {
+              updateObjectProperties(item, response);
               copyModToPersistent(item, ownerUUID, fieldInfos);
 
               deferred.resolve('new');
@@ -417,9 +417,9 @@
                                               prefix: '/api/' + ownerUUID + '/' + itemType +'/',
                                               item: item }},
                                           this.getDeleteRegex(itemType))
-        .then(function(result) {
-          item.deleted = result.data.deleted;
-          updateObjectProperties(item, result.data.result);
+        .then(function(response) {
+          item.deleted = response.deleted;
+          updateObjectProperties(item, response.result);
           if (UserSessionService.isOfflineEnabled()){
             PersistentStorageService.persist(createPersistableItem(item), itemType, ownerUUID);
           }
@@ -441,8 +441,9 @@
         // Offline
         var params = {type: itemType, owner: ownerUUID, uuid: item.trans.uuid, lastReplaceable: true};
         var fakeTimestamp = BackendClientService.generateFakeTimestamp();
-        BackendClientService.post('/api/' + ownerUUID + '/' + itemType +'/' + item.trans.uuid + '/undelete',
-                                  this.getUndeleteRegex(itemType), params, undefined, fakeTimestamp);
+        BackendClientService.postOffline('/api/' + ownerUUID + '/' + itemType +'/' + item.trans.uuid +
+                                         '/undelete',
+                                         this.getUndeleteRegex(itemType), params, undefined, fakeTimestamp);
         if (!item.mod) item.mod = {};
         updateObjectProperties(item.mod, {modified: fakeTimestamp, deleted: undefined});
         PersistentStorageService.persist(createPersistableItem(item), itemType, ownerUUID);
@@ -457,9 +458,9 @@
                                             prefix: '/api/' + ownerUUID + '/' + itemType +'/',
                                             item: item }},
                                         this.getUndeleteRegex(itemType))
-        .then(function(result) {
+        .then(function(response) {
           delete item.deleted;
-          updateObjectProperties(item, result.data);
+          updateObjectProperties(item, response);
           if (UserSessionService.isOfflineEnabled()){
             PersistentStorageService.persist(createPersistableItem(item), itemType, ownerUUID);
           }

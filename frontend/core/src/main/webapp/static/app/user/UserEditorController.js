@@ -22,25 +22,25 @@
   $scope.changePassword = function (oldPassword, newPassword) {
     $scope.userEditOffline = false;
     $scope.changePasswordFailed = false;
-    AuthenticationService.putChangePassword(UserSessionService.getEmail(),
-                                            oldPassword,
-                                            newPassword).then(function(changePasswordResponse){
+    AuthenticationService.putChangePassword(UserSessionService.getEmail(), oldPassword, newPassword)
+    .then(function(){
       // Need to relogin with new password
       AuthenticationService.login({username: UserSessionService.getEmail(),
-                                  password: newPassword,
-                                  remember: UserSessionService.isAuthenticateReplaceable()})
-      .then(function(authenticationResponse){
+        password: newPassword,
+        remember: UserSessionService.isAuthenticateReplaceable()})
+      .then(function(){
         $scope.closeEditor();
       });
     }, function(error){
-      if (BackendClientService.isOffline(error.value.status)) {
+      if (error.type === 'offline') {
         $scope.userEditOffline = true;
-      } else if (error.value.status !== 200) {
+      } else if (error.type === 'forbidden') {
         $scope.changePasswordFailed = true;
       }
     });
-  }
+  };
 }
+
 UserEditorController['$inject'] = ['$scope', 'AnalyticsService', 'AuthenticationService',
 'BackendClientService', 'UserService', 'UserSessionService'];
 angular.module('em.user').controller('UserEditorController', UserEditorController);

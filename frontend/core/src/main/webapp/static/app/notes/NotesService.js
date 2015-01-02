@@ -218,7 +218,7 @@
     },
     getModifiedNotes: function(ownerUUID) {
       return ArrayService.getModifiedItems(notes[ownerUUID].activeNotes,
-                                            notes[ownerUUID].deletedNotes, getOtherArrays(ownerUUID))
+                                            notes[ownerUUID].deletedNotes, getOtherArrays(ownerUUID));
     },
     getNoteInfo: function(uuid, ownerUUID) {
       var note = notes[ownerUUID].activeNotes.findFirstObjectByKeyValue('uuid', uuid, 'trans');
@@ -345,7 +345,7 @@
             }, lastReplaceable: true
           };
           var fakeTimestamp = BackendClientService.generateFakeTimestamp();
-          BackendClientService.post('/api/' + ownerUUID + '/note/' + note.trans.uuid + '/favorite',
+          BackendClientService.postOffline('/api/' + ownerUUID + '/note/' + note.trans.uuid + '/favorite',
                                     this.favoriteNoteRegex, params, undefined, fakeTimestamp);
           if (!note.mod) note.mod = {};
           var propertiesToReset = {modified: fakeTimestamp,
@@ -358,9 +358,9 @@
           // Online
           BackendClientService.postOnline('/api/' + ownerUUID + '/note/' + note.trans.uuid + '/favorite',
                                         this.favoriteNoteRegex)
-          .then(function(result) {
-            var propertiesToReset = {modified: result.data.result.modified,
-                                     favorited: result.data.favorited};
+          .then(function(response) {
+            var propertiesToReset = {modified: response.result.modified,
+                                     favorited: response.favorited};
             ItemLikeService.updateObjectProperties(note, propertiesToReset);
             updateNote(note, ownerUUID, undefined, propertiesToReset);
             deferred.resolve(note);
@@ -380,11 +380,11 @@
           // Offline
           var params = {type: 'note', owner: ownerUUID, uuid: note.trans.uuid, lastReplaceable: true};
           var fakeTimestamp = BackendClientService.generateFakeTimestamp();
-          BackendClientService.post('/api/' + ownerUUID + '/note/' + note.trans.uuid + '/unfavorite',
+          BackendClientService.postOffline('/api/' + ownerUUID + '/note/' + note.trans.uuid + '/unfavorite',
                                     this.unfavoriteNoteRegex, params, undefined, fakeTimestamp);
           if (!note.mod) note.mod = {};
           var propertiesToReset = {modified: fakeTimestamp,
-                                   favorited: undefined}
+                                   favorited: undefined};
           ItemLikeService.updateObjectProperties(note.mod, propertiesToReset);
           updateNote(note, ownerUUID, undefined, propertiesToReset);
           deferred.resolve(note);
@@ -392,9 +392,9 @@
           // Online
           BackendClientService.postOnline('/api/' + ownerUUID + '/note/' + note.trans.uuid + '/unfavorite',
                                           this.unfavoriteNoteRegex)
-          .then(function(result) {
-            var propertiesToReset = {modified: result.data.modified,
-                                     favorited: undefined}
+          .then(function(response) {
+            var propertiesToReset = {modified: response.modified,
+                                     favorited: undefined};
             ItemLikeService.updateObjectProperties(note, propertiesToReset);
             // the above doesn't actually remove the property, which is what we want to do here
             delete note.favorited;

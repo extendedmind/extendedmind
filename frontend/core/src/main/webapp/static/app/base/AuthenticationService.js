@@ -107,8 +107,8 @@
 
   function swapTokenAndAuthenticate() {
     var remember = true;
-    return authenticate(remember).then(function(authenticateResponse) {
-      var encodedCredentials = UserSessionService.setAuthenticateInformation(authenticateResponse.data);
+    return authenticate(remember).then(function(response) {
+      var encodedCredentials = UserSessionService.setAuthenticateInformation(response);
       // Update backend client with new token
       BackendClientService.setCredentials(encodedCredentials);
       if (UserSessionService.isOfflineEnabled()) {
@@ -116,7 +116,7 @@
         // calls from the backend client
         BackendClientService.clearPrimary();
       }
-      return authenticateResponse;
+      return response;
     });
   }
 
@@ -129,7 +129,7 @@
   function authenticate(remember) {
     return BackendClientService.postOnline('/api/authenticate', postAuthenticateRegexp,
       getAuthenticatePayload(remember),
-      true, [0, 403, 404, 502]);
+      true);
   }
 
   function verifyAndUpdateAuthentication(online) {
@@ -214,23 +214,21 @@
     login: function(user) {
       var remember = user.remember || false;
       BackendClientService.setUsernamePassword(user.username, user.password);
-      return authenticate(remember).then(function(authenticateResponse) {
-        var encodedCredentials = UserSessionService.setAuthenticateInformation(authenticateResponse.data,
-                                                                               user.username);
+      return authenticate(remember).then(function(response) {
+        var encodedCredentials = UserSessionService.setAuthenticateInformation(response, user.username);
         // Update backend client to use token authentication instead of username/password
         BackendClientService.setCredentials(encodedCredentials);
-        return authenticateResponse;
+        return response;
       });
     },
     signUp: function(data) {
-      return BackendClientService.postOnline('/api/signup',
-        signUpRegexp, data, true, [0, 400, 404, 502]);
+      return BackendClientService.postOnline('/api/signup', signUpRegexp, data, true);
     },
     postForgotPassword: function(email) {
       return BackendClientService.postOnline(
         '/api/password/forgot',
         postForgotPasswordRegexp,
-        {email: sanitizeEmail(email)}, true, [0, 400, 404, 502]);
+        {email: sanitizeEmail(email)}, true);
     },
     getPasswordResetExpires: function(resetCode, email) {
       return BackendClientService.get(
@@ -243,7 +241,7 @@
         '/api/password/' + resetCode + '/reset',
         postResetPasswordRegexp,
         {email: sanitizeEmail(email),
-         password: password}, true, [0, 400, 404, 502]);
+         password: password}, true);
     },
     postVerifyEmail: function(resetCode, email) {
       return BackendClientService.postOnline(
@@ -257,8 +255,7 @@
         this.putChangePasswordRegex,
         {password: newPassword},
         sanitizeEmail(email),
-        currentPassword,
-        [0, 403, 404, 502]);
+        currentPassword);
     },
     // Regular expressions for account requests
     postAuthenticateRegex: postAuthenticateRegexp,

@@ -65,8 +65,8 @@ function HttpRequestQueueService() {
   function findReverseRequestIndex(request) {
     for (var i=queue.length-1; i>=0; i--) {
       if (queue[i].params && queue[i].params.reverse &&
-        request.content.url === queue[i].params.reverse.url &&
-        request.content.method === queue[i].params.reverse.method) {
+          request.content.url === queue[i].params.reverse.url &&
+          request.content.method === queue[i].params.reverse.method) {
           // Found a reverse of the request in the queue
         return i;
       }
@@ -82,10 +82,10 @@ function HttpRequestQueueService() {
           request.content.url === queue[i].content.url &&
           request.content.method === queue[i].content.method) {
         // Found a replaceable request from the queue
-        return i;
-      }
+      return i;
     }
   }
+}
 
   // Find index of request with same uuid as given request
   function findRequestIndex(request) {
@@ -132,12 +132,12 @@ function HttpRequestQueueService() {
     var reverseRequestIndex = findReverseRequestIndex(request);
     if (reverseRequestIndex !== undefined && !queue[reverseRequestIndex].executing) {
         // Found reverse method that is not currently executing
-      removeFromQueue(reverseRequestIndex);
-      return false;
-    }
-    var replaceableIndex = findReplaceableRequestIndex(request);
-    if (replaceableIndex !== undefined){
-      if (queue[replaceableIndex].content.data === undefined && request.content.data === undefined){
+        removeFromQueue(reverseRequestIndex);
+        return false;
+      }
+      var replaceableIndex = findReplaceableRequestIndex(request);
+      if (replaceableIndex !== undefined){
+        if (queue[replaceableIndex].content.data === undefined && request.content.data === undefined){
         // The method does not have a payload, we just stop here. This happens e.g. for
         // delete, where second identical call will fail with "already deleted" if this is not done.
         return false;

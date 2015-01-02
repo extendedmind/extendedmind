@@ -28,12 +28,10 @@
     getAccount: function() {
       return BackendClientService.get('/api/account',
         this.getAccountRegex)
-      .then(function(accountResponse) {
-        if (accountResponse.status === 200 && accountResponse.data.email) {
-          UserSessionService.setEmail(accountResponse.data.email);
-          UserSessionService.setTransportPreferences(accountResponse.data.preferences);
-        }
-        return accountResponse.data;
+      .then(function(response) {
+        UserSessionService.setEmail(response.email);
+        UserSessionService.setTransportPreferences(response.preferences);
+        return response;
       });
     },
     saveAccountPreferences: function() {
@@ -48,8 +46,8 @@
           uuid: UserSessionService.getUserUUID(),
           replaceable: true,
           type: 'user'
-        }
-        BackendClientService.put('/api/account', this.putAccountRegex, params, payload,
+        };
+        BackendClientService.putOffline('/api/account', this.putAccountRegex, params, payload,
                                  BackendClientService.generateFakeTimestamp());
       }else{
         // Online
@@ -57,9 +55,7 @@
       }
     },
     logout: function() {
-      return BackendClientService.postOnline('/api/logout', postLogoutRegexp).then(function(logoutResponse) {
-        return logoutResponse.data;
-      });
+      return BackendClientService.postOnline('/api/logout', postLogoutRegexp);
     },
     // Regular expressions for account requests
     getAccountRegex: new RegExp(/api\/account/.source),

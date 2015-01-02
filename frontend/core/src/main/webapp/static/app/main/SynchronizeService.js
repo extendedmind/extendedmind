@@ -457,12 +457,10 @@
     storeUserAccountResponse(response);
   }
 
-  function storeUserAccountResponse(accountResponse){
-    if (!jQuery.isEmptyObject(accountResponse) && accountResponse && accountResponse.data){
-      UserSessionService.setEmail(accountResponse.data.email);
-      UserSessionService.setUserModified(accountResponse.data.modified);
-      UserSessionService.setTransportPreferences(accountResponse.data.preferences);
-    }
+  function storeUserAccountResponse(response){
+    UserSessionService.setEmail(response.email);
+    UserSessionService.setUserModified(response.modified);
+    UserSessionService.setTransportPreferences(response.preferences);
   }
 
   // Handles response from backend where offline buffer has been used
@@ -619,14 +617,14 @@
     UserSessionService.setLatestModified(latestModified, ownerUUID);
   }
 
-  function updateItemArrays(result, ownerUUID){
+  function updateItemArrays(response, ownerUUID){
     // Update all arrays with archived values
     var latestTag, latestList, latestTask, latestItem, latestNote;
-    latestTag = TagsService.updateTags(result.data.tags, ownerUUID);
-    latestList = ListsService.updateLists(result.data.lists, ownerUUID);
-    latestTask = TasksService.updateTasks(result.data.tasks, ownerUUID);
-    latestNote = NotesService.updateNotes(result.data.notes, ownerUUID);
-    latestItem = ItemsService.updateItems(result.data.items, ownerUUID);
+    latestTag = TagsService.updateTags(response.tags, ownerUUID);
+    latestList = ListsService.updateLists(response.lists, ownerUUID);
+    latestTask = TasksService.updateTasks(response.tasks, ownerUUID);
+    latestNote = NotesService.updateNotes(response.notes, ownerUUID);
+    latestItem = ItemsService.updateItems(response.items, ownerUUID);
     var latestModified;
     if (latestTag || latestList || latestTask || latestNote || latestItem) {
       // Set latest modified
@@ -639,12 +637,10 @@
     return BackendClientService.getSecondary('/api/' +
                                              ownerUUID +
                                              '/items', getItemsRegex,
-                                             undefined, true).then(function(result) {
-      if (result.data) {
-        setItemArrays(result.data, ownerUUID);
-      }
+                                             undefined, true).then(function(response) {
+      setItemArrays(response, ownerUUID);
       if (UserSessionService.isOfflineEnabled()) UserSessionService.setPersistentDataLoaded(true);
-      return result;
+      return response;
     });
   }
 
@@ -658,14 +654,12 @@
         BackendClientService.getSecondary(url, getItemsRegex, {owner: ownerUUID});
         deferred.resolve();
       } else {
-        BackendClientService.get(url, getItemsRegex).then(function(result) {
-          if (result.data) {
-            processSynchronizeUpdateResult(ownerUUID, result.data);
-          }
+        BackendClientService.getSecondary(url, getItemsRegex, undefined, true).then(function(response) {
+          processSynchronizeUpdateResult(ownerUUID, response);
           deferred.resolve(false);
         }, function(error) {
-          if (error && error.status === 403) {
-            // Got 403, need to go to login
+          if (error.type === 'forbidden') {
+            // Go to login
             var rejection = {type: 'http', value: {
               status: error.status, data: error.data, url: error.config.url}};
             $rootScope.$emit('emException', rejection);
@@ -724,11 +718,9 @@
     return BackendClientService.getSecondary('/api/' +
                                              ownerUUID +
                                              '/items?archived=true&completed=true&active=false',
-                                             getItemsRegex, undefined, true).then(function(result) {
-      if (result.data) {
-        updateItemArrays(result, ownerUUID);
-      }
-      return result;
+                                             getItemsRegex, undefined, true).then(function(response) {
+      updateItemArrays(response, ownerUUID);
+      return response;
     });
   }
 
@@ -736,11 +728,9 @@
     return BackendClientService.getSecondary('/api/' +
                                              ownerUUID +
                                              '/items?deleted=true&active=false',
-                                             getItemsRegex, undefined, true).then(function(result) {
-      if (result.data) {
-        updateItemArrays(result, ownerUUID);
-      }
-      return result;
+                                             getItemsRegex, undefined, true).then(function(response) {
+      updateItemArrays(response, ownerUUID);
+      return response;
     });
   }
 
@@ -770,8 +760,8 @@
       } else {
         // Online
         BackendClientService.getBeforeLast('/api/account',
-         UserService.getAccountRegex, undefined, true).then(function(accountResponse) {
-          storeUserAccountResponse(accountResponse);
+         UserService.getAccountRegex, undefined, true).then(function(response) {
+          storeUserAccountResponse(response);
           deferred.resolve();
         });
       }
@@ -781,19 +771,14 @@
       switch(itemType) {
       case 'item':
         return ItemsService.getModifiedItems(ownerUUID);
-        break;
       case 'task':
         return TasksService.getModifiedTasks(ownerUUID);
-        break;
       case 'note':
         return NotesService.getModifiedNotes(ownerUUID);
-        break;
       case 'list':
         return ListsService.getModifiedLists(ownerUUID);
-        break;
       case 'tag':
         return TagsService.getModifiedTags(ownerUUID);
-        break;
       }
     },
     clearData: function(){
