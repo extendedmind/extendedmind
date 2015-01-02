@@ -74,16 +74,17 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
 
   def archiveList(owner: Owner, listUUID: UUID): Response[ArchiveListResult] = {
     for {
-      listNode <- validateListArchivable(owner, listUUID).right
-      tagResult <- putNewTag(owner, Tag(listUUID.toString(), None, None, HISTORY, None)).right
-      archivedChildren <- archiveListNode(listNode, owner, tagResult.uuid.get).right
+      listResult <- validateListArchivable(owner, listUUID).right
+      tagResult <- putNewTag(owner, Tag(listResult._2,
+                             None, None, HISTORY, None)).right
+      archivedChildren <- archiveListNode(listResult._1, owner, tagResult.uuid.get).right
       setResults <- Right(updateItemsIndex(archivedChildren)).right
       tag <- getTag(owner, tagResult.uuid.get).right
-      result <- Right(getArchiveListResult(listNode, tag, setResults)).right
-      unit <- Right(updateItemsIndex(listNode, result.result)).right
+      result <- Right(getArchiveListResult(listResult._1, tag, setResults)).right
+      unit <- Right(updateItemsIndex(listResult._1, result.result)).right
     } yield result
   }
-  
+
   def listToTask(owner: Owner, listUUID: UUID, list: List): Response[Task] = {
     for {
       convertResult <- convertListToTask(owner, listUUID, list).right
@@ -100,7 +101,7 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
     } yield convertResult._2
   }
 
-  
+
   // PRIVATE
 
   override def toList(listNode: Node, owner: Owner)(implicit neo4j: DatabaseService): Response[List] = {
@@ -125,13 +126,14 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
     } yield task
   }
 
-  protected def validateListArchivable(owner: Owner, listUUID: UUID): Response[Node] = {
+  protected def validateListArchivable(owner: Owner, listUUID: UUID): Response[(Node, String)] = {
     withTx {
       implicit neo =>
         for {
           listNode <- getItemNode(owner, listUUID, Some(ItemLabel.LIST)).right
           listNode <- validateListArchivable(listNode).right
-        } yield listNode
+          listTitle <- Right(listNode.getProperty("title").asInstanceOf[String]).right
+        } yield (listNode, listTitle)
     }
   }
 
@@ -210,7 +212,7 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
       }
     }
   }
-  
+
   protected def convertListToTask(owner: Owner, listUUID: UUID, list: List): Response[(Node, Task)] = {
     withTx {
       implicit neo4j =>
@@ -222,7 +224,7 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
         } yield (taskNode, task)
     }
   }
-  
+
   protected def convertListToNote(owner: Owner, listUUID: UUID, list: List): Response[(Node, Note)] = {
     withTx {
       implicit neo4j =>
@@ -235,7 +237,7 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
         } yield (noteNode, note)
     }
   }
-  
+
   protected def validateListConvertable(listNode: Node)(implicit neo4j: DatabaseService): Response[Unit] = {
     // Can't convert a list that has children
     if (hasChildren(listNode, None))
@@ -243,5 +245,5 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
     else
       Right()
   }
-  
+
 }
