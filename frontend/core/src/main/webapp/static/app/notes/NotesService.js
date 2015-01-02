@@ -207,6 +207,15 @@
         return noteInfo.note;
       }
     },
+    updateNoteHistProperties: function(uuid, properties, ownerUUID) {
+      var noteInfo = this.getNoteInfo(uuid, ownerUUID);
+      if (noteInfo && properties){
+        if (!noteInfo.note.hist) noteInfo.note.hist = {};
+        ItemLikeService.updateObjectProperties(noteInfo.note.hist, properties);
+        updateNote(noteInfo.note, ownerUUID, properties.uuid ? uuid : undefined, properties);
+        return noteInfo.note;
+      }
+    },
     getNotes: function(ownerUUID) {
       return notes[ownerUUID].activeNotes;
     },

@@ -113,28 +113,7 @@
     }
   }
 
-  function updateModProperties(itemUUID, probableItemType, properties, ownerUUID){
-    function updateItemModProperties (itemUUID, properties, ownerUUID){
-      return {type: 'item', item: ItemsService.updateItemModProperties(itemUUID, properties, ownerUUID)};
-    }
-    function updateTaskModProperties (itemUUID, properties, ownerUUID){
-      return {type: 'task', item: TasksService.updateTaskModProperties(itemUUID, properties, ownerUUID)};
-    }
-    function updateNoteModProperties (itemUUID, properties, ownerUUID){
-      return {type: 'note', item: NotesService.updateNoteModProperties(itemUUID, properties, ownerUUID)};
-    }
-    function updateListModProperties (itemUUID, properties, ownerUUID){
-      return {type: 'list', item: ListsService.updateListModProperties(itemUUID, properties, ownerUUID)};
-    }
-    function updateTagModProperties (itemUUID, properties, ownerUUID){
-      return {type: 'tag', item: TagsService.updateTagModProperties(itemUUID, properties, ownerUUID)};
-    }
-
-    var updateFns = [updateItemModProperties,
-                     updateTaskModProperties,
-                     updateNoteModProperties,
-                     updateListModProperties,
-                     updateTagModProperties];
+  function executeUpdateFns(updateFns, itemUUID, probableItemType, properties, ownerUUID){
     switch(probableItemType) {
     case 'item':
       // Already right order
@@ -157,6 +136,49 @@
       var itemInfo = updateFns[i](itemUUID, properties, ownerUUID);
       if (itemInfo.item) return itemInfo;
     }
+  }
+
+  function updateHistProperties(itemUUID, probableItemType, properties, ownerUUID){
+    function updateTaskHistProperties (itemUUID, properties, ownerUUID){
+      return {type: 'task', item: TasksService.updateTaskHistProperties(itemUUID, properties, ownerUUID)};
+    }
+    function updateNoteHistProperties (itemUUID, properties, ownerUUID){
+      return {type: 'note', item: NotesService.updateNoteHistProperties(itemUUID, properties, ownerUUID)};
+    }
+    function updateListHistProperties (itemUUID, properties, ownerUUID){
+      return {type: 'list', item: ListsService.updateListHistProperties(itemUUID, properties, ownerUUID)};
+    }
+
+    var updateFns = [updateTaskHistProperties,
+                     updateNoteHistProperties,
+                     updateListHistProperties];
+    return executeUpdateFns(updateFns, itemUUID, probableItemType, properties, ownerUUID);
+  }
+
+
+  function updateModProperties(itemUUID, probableItemType, properties, ownerUUID){
+    function updateItemModProperties (itemUUID, properties, ownerUUID){
+      return {type: 'item', item: ItemsService.updateItemModProperties(itemUUID, properties, ownerUUID)};
+    }
+    function updateTaskModProperties (itemUUID, properties, ownerUUID){
+      return {type: 'task', item: TasksService.updateTaskModProperties(itemUUID, properties, ownerUUID)};
+    }
+    function updateNoteModProperties (itemUUID, properties, ownerUUID){
+      return {type: 'note', item: NotesService.updateNoteModProperties(itemUUID, properties, ownerUUID)};
+    }
+    function updateListModProperties (itemUUID, properties, ownerUUID){
+      return {type: 'list', item: ListsService.updateListModProperties(itemUUID, properties, ownerUUID)};
+    }
+    function updateTagModProperties (itemUUID, properties, ownerUUID){
+      return {type: 'tag', item: TagsService.updateTagModProperties(itemUUID, properties, ownerUUID)};
+    }
+
+    var updateFns = [updateItemModProperties,
+                     updateTaskModProperties,
+                     updateNoteModProperties,
+                     updateListModProperties,
+                     updateTagModProperties];
+    return executeUpdateFns(updateFns, itemUUID, probableItemType, properties, ownerUUID);
   }
 
 
@@ -485,6 +507,18 @@
         } else if (request.content.url.endsWith('/complete')) {
           // Complete
           properties = {completed: response.completed, modified: response.result.modified};
+          // Handle repeating task
+          if (response.generated){
+            // Update generated item properties
+            updateModProperties(request.params.generatedFakeUUID, request.params.type,
+                                {uuid: response.generated.uuid,
+                                 created: response.generated.created,
+                                 modified: response.generated.modified},
+                                 request.params.owner);
+            // Also update the UUID in the task's history
+            updateHistProperties(request.params.uuid, request.params.type,
+                                 {generatedUUID: response.generated.uuid}, request.params.owner);
+          }
         }
         updateModProperties(request.params.uuid, request.params.type, properties, request.params.owner);
       } else if (request.params.type === 'note') {

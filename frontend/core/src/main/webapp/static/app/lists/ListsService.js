@@ -158,6 +158,15 @@
         return listInfo.list;
       }
     },
+    updateListHistProperties: function(uuid, properties, ownerUUID) {
+      var listInfo = this.getListInfo(uuid, ownerUUID);
+      if (listInfo && properties){
+        if (!listInfo.list.hist) listInfo.list.hist = {};
+        ItemLikeService.updateObjectProperties(listInfo.list.hist, properties);
+        updateList(listInfo.list, ownerUUID, properties.uuid ? uuid : undefined);
+        return listInfo.list;
+      }
+    },
     getLists: function(ownerUUID) {
       return lists[ownerUUID].activeLists;
     },

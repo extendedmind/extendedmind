@@ -38,6 +38,8 @@ describe('SynchronizeService', function() {
   undeleteItemResponse.modified = now.getTime();
   var completeTaskResponse = getJSONFixture('completeTaskResponse.json');
   completeTaskResponse.result.modified = now.getTime();
+  var completeRepeatingTaskResponse = getJSONFixture('completeRepeatingTaskResponse.json');
+  completeRepeatingTaskResponse.result.modified = now.getTime();
   var uncompleteTaskResponse = getJSONFixture('uncompleteTaskResponse.json');
   uncompleteTaskResponse.modified = now.getTime();
   var authenticateResponse = getJSONFixture('authenticateResponse.json');
@@ -912,6 +914,101 @@ describe('SynchronizeService', function() {
       .toBeUndefined();
     expect(tasks[0].trans.modified)
       .toBe(veryLatestModified);
+  });
+
+  it('should handle task offline update to repeating and complete', function () {
+
+    // 1. save existing task with repeating
+    var tasks = TasksService.getTasks(testOwnerUUID);
+    var cleanCloset = TasksService.getTaskInfo('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID).task;
+    var cleanClosetOriginalModified = cleanCloset.modified;
+    cleanCloset.trans.due = '2015-01-01';
+    cleanCloset.trans.repeating = 'daily';
+    var cleanClosetTransport = {title: cleanCloset.trans.title,
+                                due: cleanCloset.trans.due,
+                                repeating: cleanCloset.trans.repeating,
+                                modified: cleanCloset.trans.modified};
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' + cleanCloset.trans.uuid, cleanClosetTransport)
+       .respond(404);
+    TasksService.saveTask(cleanCloset, testOwnerUUID);
+    $httpBackend.flush();
+    expect(tasks.length)
+      .toBe(4);
+
+    // 2. uncomplete task
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' + cleanCloset.trans.uuid, cleanClosetTransport)
+       .respond(404);
+    TasksService.uncompleteTask(cleanCloset, testOwnerUUID);
+    $httpBackend.flush();
+    expect(tasks.length)
+      .toBe(4);
+    expect(cleanCloset.mod.completed).toBeUndefined();
+
+    // 3. complete task, expect new task to be created
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' + cleanCloset.trans.uuid, cleanClosetTransport)
+       .respond(404);
+    TasksService.completeTask(cleanCloset, testOwnerUUID);
+    $httpBackend.flush();
+    var generatedTask = TasksService.getTaskInfo(cleanCloset.hist.generatedUUID, testOwnerUUID).task;
+    expect(tasks.length)
+      .toBe(5);
+    expect(cleanCloset.mod.completed).toBeDefined();
+    expect(cleanCloset.hist.generatedUUID).toBeDefined();
+    expect(UUIDService.isFakeUUID(cleanCloset.hist.generatedUUID)).toBeTruthy();
+
+    expect(generatedTask).toBeDefined();
+    expect(generatedTask.trans.due)
+      .toBe('2015-01-02');
+
+    // 4. uncomplete and get back online
+    var latestModified = now.getTime()-100000;
+    completeRepeatingTaskResponse.generated = {
+      uuid: UUIDService.randomUUID(),
+      title: generatedTask.trans.title,
+      due: generatedTask.trans.due,
+      repeating: generatedTask.trans.repeating,
+      modified: latestModified + 100,
+      created: latestModified + 100
+    };
+
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' + cleanCloset.trans.uuid, cleanClosetTransport)
+       .respond(200, putExistingItemResponse);
+    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + cleanCloset.trans.uuid + '/uncomplete')
+       .respond(200, uncompleteTaskResponse);
+    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + cleanCloset.trans.uuid + '/complete')
+       .respond(200, completeRepeatingTaskResponse);
+    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + cleanCloset.trans.uuid + '/uncomplete')
+       .respond(200, uncompleteTaskResponse);
+    TasksService.uncompleteTask(cleanCloset, testOwnerUUID);
+    $httpBackend.flush();
+    expect(cleanCloset.mod.modified).toBe(uncompleteTaskResponse.modified);
+    expect(cleanCloset.hist.generatedUUID).toBe(completeRepeatingTaskResponse.generated.uuid);
+    expect(generatedTask.mod.uuid).toBe(completeRepeatingTaskResponse.generated.uuid);
+    expect(generatedTask.mod.modified).toBe(completeRepeatingTaskResponse.generated.modified);
+
+    // 5. synchronize with generated task
+    MockUserSessionService.setLatestModified(latestModified);
+    var newLatestModified = latestModified + 1000;
+    var backendTaskResponse = {
+      tasks: [{
+        'uuid': cleanCloset.trans.uuid,
+        'created': cleanCloset.trans.created,
+        'modified': uncompleteTaskResponse.modified,
+        'due': cleanCloset.trans.due,
+        'repeating': cleanCloset.trans.repeating,
+        'title': cleanCloset.trans.title
+      }, completeRepeatingTaskResponse.generated]
+    };
+    $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
+                            latestModified + '&deleted=true&archived=true&completed=true')
+        .respond(200, backendTaskResponse);
+    SynchronizeService.synchronize(testOwnerUUID);
+    $httpBackend.flush();
+    expect(tasks.length)
+      .toBe(5);
+    expect(cleanCloset.mod).toBeUndefined();
+    expect(generatedTask.mod).toBeUndefined();
+    expect(generatedTask.uuid).toBe(completeRepeatingTaskResponse.generated.uuid);
   });
 
   it('should handle note offline create, update, delete', function () {

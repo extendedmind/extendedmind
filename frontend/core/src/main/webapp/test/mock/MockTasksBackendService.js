@@ -59,8 +59,29 @@ function MockTasksBackendService($httpBackend, TasksService, UUIDService) {
     $httpBackend.whenPOST(TasksService.completeTaskRegex)
     .respond(function(method, url, data, headers) {
       var completeTaskResponse = getJSONFixture('completeTaskResponse.json');
-      completeTaskResponse.result.modified = (new Date()).getTime();
+      completeTaskResponse.result.modified = Date.now();
       completeTaskResponse.completed = Date.now();
+
+      // Add generated to repeating task to better test task repeat logic
+      var ownerUUID = url.substr(5, 36);
+      var taskUUID = url.substr(47, 36);
+      var task = TasksService.getTaskInfo(taskUUID, ownerUUID).task;
+      if (task.hist && task.hist.generatedUUID){
+        var modifiedTasks = TasksService.getModifiedTasks(ownerUUID);
+        if (modifiedTasks){
+          for (var i=0; i<modifiedTasks.length; i++){
+            if (!modifiedTasks[i].uuid && modifiedTasks[i].mod &&
+                modifiedTasks[i].mod.title === task.trans.title){
+              completeTaskResponse.generated = modifiedTasks[i].mod;
+              completeTaskResponse.generated.uuid = UUIDService.randomUUID();
+              completeTaskResponse.generated.modified = Date.now();
+              completeTaskResponse.generated.created = Date.now();
+              break;
+            }
+          }
+        }
+      }
+
       return expectResponse(method, url, data, headers, completeTaskResponse);
     });
   }

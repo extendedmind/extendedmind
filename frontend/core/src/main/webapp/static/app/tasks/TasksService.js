@@ -17,8 +17,8 @@
  'use strict';
 
  function TasksService($q, $rootScope,
-                       ArrayService, BackendClientService, ExtendedItemService, ItemLikeService,
-                       ListsService, TagsService, UISessionService, UserSessionService) {
+                       ArrayService, BackendClientService, DateService, ExtendedItemService, ItemLikeService,
+                       ListsService, TagsService, UISessionService, UserSessionService, UUIDService) {
   var taskFieldInfos = ItemLikeService.getFieldInfos(
     [ 'due',
       'reminder',
@@ -26,7 +26,7 @@
       {
         name: 'completed',
         skipTransport: true,
-        isEdited: function(task, ownerUUID, compareValues){
+        isEdited: function(){
           // Changing completed should not save task. Completing is done with separate functions.
           return false;
         },
@@ -75,13 +75,42 @@
           };
         },
       },
-      // TODO:
+      // TODO (when implementing this, update the method below for repeating task cloning!:
       // assignee,
       // assigner,
       // visibility,
       ExtendedItemService.getRelationshipsFieldInfo()
     ]
   );
+
+  function getRepeatingTaskInitialValues(task) {
+    var initialValues = {
+      title: task.trans.title,
+      repeating: task.trans.repeating
+    };
+    var dueDate = new Date(task.trans.due);
+    switch(task.trans.repeating){
+    case 'daily':
+      dueDate.setDate(dueDate.getDate()+1);
+      break;
+    case 'weekly':
+      dueDate.setDate(dueDate.getDate()+7);
+      break;
+    case 'monthly':
+      dueDate.setMonth(dueDate.getMonth()+1);
+      break;
+    case 'yearly':
+      dueDate.setFullYear(dueDate.getFullYear()+1);
+      break;
+    }
+    initialValues.due = DateService.getYYYYMMDD(dueDate);
+    if (task.trans.description) initialValues.description = task.trans.description;
+    if (task.trans.reminder) initialValues.reminder = task.trans.reminder;
+    if (task.trans.list) initialValues.list = task.trans.list;
+    if (task.trans.context) initialValues.context = task.trans.context;
+    if (task.trans.keywords) initialValues.keywords = task.trans.keywords;
+    return initialValues;
+  }
 
   var tasks = {};
   var taskSlashRegex = /\/task\//;
@@ -250,6 +279,15 @@
         return taskInfo.task;
       }
     },
+    updateTaskHistProperties: function(uuid, properties, ownerUUID) {
+      var taskInfo = this.getTaskInfo(uuid, ownerUUID);
+      if (taskInfo && properties){
+        if (!taskInfo.task.hist) taskInfo.task.hist = {};
+        ItemLikeService.updateObjectProperties(taskInfo.task.hist, properties);
+        updateTask(taskInfo.task, ownerUUID, properties.uuid ? uuid : undefined, properties);
+        return taskInfo.task;
+      }
+    },
     getTasks: function(ownerUUID) {
       return tasks[ownerUUID].activeTasks;
     },
@@ -383,12 +421,31 @@
           // Offline
           var params = {
             type: 'task', owner: ownerUUID, uuid: task.trans.uuid,
-            reverse: {
-              method: 'post',
-              url: '/api/' + ownerUUID + '/task/' + task.trans.uuid + '/uncomplete'
-            }, lastReplaceable: true
+            lastReplaceable: true
           };
           var fakeTimestamp = BackendClientService.generateFakeTimestamp();
+
+          // Handle repeating task when a repeating task has not already been generated
+          if (task.trans.repeating && !(task.hist && task.hist.generatedUUID)){
+            var fakeRepeatingUUID = UUIDService.generateFakeUUID();
+            var repeatingTask = this.getNewTask(getRepeatingTaskInitialValues(task));
+            ItemLikeService.copyEditedFieldsToMod(repeatingTask, 'task', ownerUUID, taskFieldInfos);
+            ItemLikeService.updateObjectProperties(repeatingTask.mod,
+              {uuid: fakeRepeatingUUID,
+               modified: fakeTimestamp,
+               created: fakeTimestamp});
+            setTask(repeatingTask, ownerUUID);
+            // store information that task has been repeated to the task itself and to the POST call
+            if (!task.hist) task.hist = {};
+            task.hist.generatedUUID = fakeRepeatingUUID;
+            params.generatedFakeUUID = fakeRepeatingUUID;
+          }else {
+            // completing can be reversed only if a new task has not been generated
+            params.reverse = {
+              method: 'post',
+              url: '/api/' + ownerUUID + '/task/' + task.trans.uuid + '/uncomplete'
+            };
+          }
           BackendClientService.postOffline('/api/' + ownerUUID + '/task/' + task.trans.uuid + '/complete',
                                     this.completeTaskRegex, params, undefined, fakeTimestamp);
           if (!task.mod) task.mod = {};
@@ -427,7 +484,7 @@
           BackendClientService.postOffline('/api/' + ownerUUID + '/task/' + task.trans.uuid + '/uncomplete',
                                     this.uncompleteTaskRegex, params, undefined, fakeTimestamp);
           if (!task.mod) task.mod = {};
-          var propertiesToReset = {modified: fakeTimestamp, completed: undefined}
+          var propertiesToReset = {modified: fakeTimestamp, completed: undefined};
           ItemLikeService.updateObjectProperties(task.mod, propertiesToReset);
           updateTask(task, ownerUUID, undefined, propertiesToReset);
           deferred.resolve(task);
@@ -473,6 +530,6 @@
 }
 
 TasksService['$inject'] = ['$q', '$rootScope',
-  'ArrayService', 'BackendClientService', 'ExtendedItemService', 'ItemLikeService',
-  'ListsService', 'TagsService', 'UISessionService', 'UserSessionService'];
+  'ArrayService', 'BackendClientService', 'DateService', 'ExtendedItemService', 'ItemLikeService',
+  'ListsService', 'TagsService', 'UISessionService', 'UserSessionService', 'UUIDService'];
 angular.module('em.tasks').factory('TasksService', TasksService);

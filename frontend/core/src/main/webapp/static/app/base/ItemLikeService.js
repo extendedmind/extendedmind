@@ -247,6 +247,9 @@
     updateObjectProperties: function(object, properties){
       updateObjectProperties(object, properties);
     },
+    copyEditedFieldsToMod: function(item, itemType, ownerUUID, fieldInfos){
+      return copyEditedFieldsToMod(item, itemType, ownerUUID, fieldInfos);
+    },
     getNew: function(trans, itemType, ownerUUID, fieldInfos) {
       var newItem = resetTrans({}, itemType, ownerUUID, fieldInfos);
       if (trans){
