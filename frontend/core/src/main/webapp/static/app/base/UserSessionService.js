@@ -16,12 +16,12 @@
  /* global angular, useOfflineBuffer */
  'use strict';
 
- function UserSessionService(base64, LocalStorageService, SessionStorageService, offline) {
+ function UserSessionService(base64, LocalStorageService, SessionStorageService, enableOffline) {
   var swapTokenBufferTime = 10*60*1000; // 10 minutes in milliseconds
   // When offline isn't enabled, use transient value for latest modified
   var latestModified = {};
   var itemsSynchronized = {};
-  var offlineEnabled = offline;
+  var offlineEnabled = enableOffline;
   var offlineEnabledBypass = false;
   var notifyOwnerCallbacks = {};
   var persistentDataLoaded = false;
@@ -129,7 +129,7 @@
       return offlineEnabled;
     },
     clearUser: function() {
-      offlineEnabled = offline;
+      offlineEnabled = enableOffline;
       SessionStorageService.clearUser();
       LocalStorageService.clearUser();
       itemsSynchronized = {};
@@ -354,5 +354,5 @@
     }
   };
 }
-UserSessionService['$inject'] = ['base64', 'LocalStorageService', 'SessionStorageService', 'offline'];
+UserSessionService['$inject'] = ['base64', 'LocalStorageService', 'SessionStorageService', 'enableOffline'];
 angular.module('em.base').factory('UserSessionService', UserSessionService);

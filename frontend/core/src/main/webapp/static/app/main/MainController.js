@@ -555,11 +555,18 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
 
   // Global variable bindToFocusEvent specifies if focus event should be listened to. Variable is true
   // by default for browsers, where hidden tab should not poll continuously, false in Cordova where
-  // javascript execution is paused anyway when app is not in focus.
+  // in iOS javascript execution is paused anyway when app is not in focus.
   var bindToFocus = (typeof bindToFocusEvent !== 'undefined') ? bindToFocusEvent: true;
   if (bindToFocus) {
     angular.element($window).bind('focus', synchronizeItemsAndSynchronizeItemsDelayed);
     angular.element($window).bind('blur', cancelSynchronizeItemsDelayed);
+  }
+  // Global variable bindToResumeEvent is used in Android where polling does not stop when app is in
+  // the background.
+  var bindToResume = (typeof bindToResumeEvent !== 'undefined') ? bindToResumeEvent: true;
+  if (bindToResume) {
+    document.addEventListener('resume', synchronizeItemsAndSynchronizeItemsDelayed, false);
+    document.addEventListener('pause', cancelSynchronizeItemsDelayed, false);
   }
 
   function synchronizeItemsAndSynchronizeItemsDelayed() {
@@ -675,6 +682,10 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     if (bindToFocus) {
       angular.element($window).unbind('focus', synchronizeItemsAndSynchronizeItemsDelayed);
       angular.element($window).unbind('blur', cancelSynchronizeItemsDelayed);
+    }
+    if (bindToResume) {
+      document.removeEventListener('resume', synchronizeItemsAndSynchronizeItemsDelayed, false);
+      document.removeEventListener('pause', cancelSynchronizeItemsDelayed, false);
     }
   });
 
