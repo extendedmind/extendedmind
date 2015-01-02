@@ -187,7 +187,12 @@
 
   function checkRequestExecuting(deferred){
     if (!HttpRequestQueueService.isProcessing() && !HttpRequestQueueService.isEmpty()){
-      deferred.reject();
+      var headErrorValue = HttpRequestQueueService.getHeadError();
+      if (headErrorValue){
+        deferred.reject({type:'http', value: headErrorValue});
+      }else{
+        deferred.reject({type:'internal'});
+      }
     } else if (HttpRequestQueueService.isEmpty()){
       deferred.resolve();
     }
@@ -202,12 +207,12 @@
       deferred.promise.then(function(){
         clearTimeout(periodicChecker);
       },
-      function(){
+      function(error){
         clearTimeout(periodicChecker);
-        return $q.reject();
+        return $q.reject(error);
       });
     }else{
-      deferred.reject();
+      deferred.reject({type:'internal'});
     }
     return deferred.promise;
   }

@@ -274,6 +274,16 @@ function HttpRequestQueueService() {
     },
     isEmpty: function() {
       return !primary && !secondary && !queue.length && !beforeLast;
+    },
+    getHeadError: function() {
+      var headRequest = getHead();
+      if (headRequest){
+        if (headRequest.errorStatus){
+          return {status: headRequest.errorStatus};
+        }else if (headRequest.offline){
+          return {status: 0};
+        }
+      }
     }
   };
   return service;
