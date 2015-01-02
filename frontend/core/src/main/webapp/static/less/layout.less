@@ -149,15 +149,9 @@ Menu
   width: 100%;
   .center-horizontally-absolute();
   background-color: white;  // [3]
-
   .container-content {
     height: auto;
     max-height: 60vh; // [2]
-  }
-  // FIXME
-  .container-content--after {
-    position: absolute;
-    width: 100%;
   }
 }
 
@@ -175,8 +169,13 @@ Vertically center .container-master and .container-editor in large screens
     top: 50%;
   }
   .container-modal {
-    max-width: @large-screen-width-modal;   // [1]
     max-height: @large-screen-height-modal; // [1]
+  }
+}
+
+@media (min-width: @width-column-max) {
+  .container-modal {
+    max-width: @large-screen-width-modal;   // [1]
   }
 }
 
@@ -240,7 +239,8 @@ Vertically center .container-master and .container-editor in large screens
 }
 
 // 1. Use same positioning as in swiper to make .container-content scrollable
-//    Set left and right properties as well because .container-master and .container-editor are absolutely positioned.
+//    Set left and right properties as well because .container-master, .container-editor and .container-modal
+//    are absolutely positioned.
 //    Set position to absolute to make .container-content--after visible.
 //    See: http://www.smashingmagazine.com/2013/08/09/absolute-horizontal-vertical-centering-css/
 .container-editor {
@@ -258,6 +258,12 @@ Vertically center .container-master and .container-editor in large screens
     left: 0;            // [1]
     right: 0;           // [1]
   }
+}
+
+.container-modal .container-content--after {
+    position: absolute; // [1]
+    left: 0;            // [1]
+    right: 0;           // [1]
 }
 
 // 1. .container-content--after inside swiper is absolutely positioned
