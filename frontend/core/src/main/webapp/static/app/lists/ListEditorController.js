@@ -61,12 +61,28 @@
   $scope.archiveListInEdit = function() {
     var deferredSaveAndArchive = $scope.saveAndArchiveList($scope.list);
     if (deferredSaveAndArchive){
-      return deferredSaveAndArchive.then(function(){
-        $scope.closeEditor();
-        $scope.changeFeature('lists', $scope.list);
-      });
+      return deferredSaveAndArchive.then(archiveListSuccess, archiveListError);
     }
   };
+
+  function archiveListSuccess() {
+    $scope.closeEditor();
+    $scope.changeFeature('lists', $scope.list);
+  }
+
+  function archiveListError(error) {
+    if (error.type === 'offline') {
+      var rejection = {
+        type: 'onlineRequired',
+        value: {
+          retry: $scope.archiveList,
+          retryParam: $scope.list,
+          promise: archiveListSuccess
+        }
+      };
+      $rootScope.$emit('emInteraction', rejection);
+    }
+  }
 
   $scope.clickFavorite = function() {
     if (!$scope.isFavoriteList($scope.list)){
