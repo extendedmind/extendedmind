@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function modalDirective($rootScope) {
+ function modalDirective($rootScope, $timeout) {
   return {
     restrict: 'A',
     scope: {
@@ -48,7 +48,10 @@
         scope.confirmDisabled = false;
         scope.closeModal();
         if (scope.modalInfos.confirmActionPromiseFn) {
-          scope.modalInfos.confirmActionPromiseFn(scope.modalInfos.confirmActionPromiseParam);
+          // Delay executing callback so that close animation has finished before it.
+          $timeout(function() {
+            scope.modalInfos.confirmActionPromiseFn(scope.modalInfos.confirmActionPromiseParam);
+          }, 300);
         }
       }
       function confirmActionPromiseError() {
@@ -58,5 +61,5 @@
     }
   };
 }
-modalDirective['$inject'] = ['$rootScope'];
+modalDirective['$inject'] = ['$rootScope', '$timeout'];
 angular.module('em.base').directive('modal', modalDirective);
