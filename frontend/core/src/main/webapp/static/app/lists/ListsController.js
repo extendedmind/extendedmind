@@ -83,8 +83,8 @@
   $scope.saveAndArchiveList = function(list){
     var saveListDeferred = $scope.saveList(list);
     if (saveListDeferred){
-      return saveListDeferred.then(function(savedList){
-        return $scope.archiveList(savedList);
+      return saveListDeferred.then(function(){
+        return $scope.archiveList(list);
       });
     }
   };
@@ -131,6 +131,6 @@
 }
 
 ListsController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout',
-  'AnalyticsService', 'ListsService', 'SwiperService', 'UISessionService', 'UserService', 'UserSessionService'
+'AnalyticsService', 'ListsService', 'SwiperService', 'UISessionService', 'UserService', 'UserSessionService'
 ];
 angular.module('em.base').controller('ListsController', ListsController);
