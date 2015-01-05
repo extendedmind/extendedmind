@@ -4,6 +4,6 @@
 
   <div ng-if="modal.visible" class="container-modal animate-modal" modal="modal.params"
     modal-close="hideModal()" editable-field-container="auto" editable-field-container-blur
-    editable-field-container-clicked-elsewhere="hideModal()">
+    editable-field-container-clicked-elsewhere="!modal.params.cancelDisabled && hideModal()">
   </div>
 </div>

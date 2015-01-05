@@ -29,6 +29,7 @@
       scope.messageText = scope.modalInfos.messageText;
       scope.closeText = scope.modalInfos.closeText;
       scope.confirmText = scope.modalInfos.confirmText || 'ok';
+      scope.hideCloseText = scope.modalInfos.cancelDisabled;
 
       scope.confirmAction = function() {
         if (typeof scope.modalInfos.confirmActionDeferredFn === 'function') {

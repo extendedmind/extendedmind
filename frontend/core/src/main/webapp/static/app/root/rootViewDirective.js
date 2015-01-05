@@ -124,13 +124,14 @@
         if (interaction.type === 'onlineRequired') {
           var params = {
             messageHeading: 'not online',
-            messageText: 'please connect to the internet and press retry to access your information',
+            messageIngress: 'please connect to the internet and press retry to access your information',
             confirmText: 'retry',
             confirmTextDeferred: 'retrying\u2026',
             confirmActionDeferredFn: interaction.value.retry,
             confirmActionDeferredParam: interaction.value.retryParam,
             confirmActionPromiseFn: interaction.value.promise,
-            confirmActionPromiseParam: interaction.value.promiseParam
+            confirmActionPromiseParam: interaction.value.promiseParam,
+            cancelDisabled: true
           };
 
           $scope.showModal(undefined, params);
@@ -204,8 +205,7 @@
       // WINDOW RESIZING
 
       var windowResizedCallbacks = {};
-      scope.registerWindowResizedCallback = function registerWindowResizedCallback(windowResizedCallback,
-                                                                                   id) {
+      scope.registerWindowResizedCallback = function registerWindowResizedCallback(windowResizedCallback, id){
         windowResizedCallbacks[id] = windowResizedCallback;
       };
 
