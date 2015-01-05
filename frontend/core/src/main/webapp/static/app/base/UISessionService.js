@@ -217,7 +217,7 @@
     },
     unregisterNotificationsActiveCallback: function(type) {
       var callbackIndex = notificationsActiveCallbacks.findFirstIndexByKeyValue('type', type);
-      if (callbackIndex) notificationsActiveCallbacks.splice(callbackIndex, 1);
+      if (callbackIndex !== undefined) notificationsActiveCallbacks.splice(callbackIndex, 1);
     },
     pushNotification: function(notification) {
       var uuid = this.getActiveUUID();
