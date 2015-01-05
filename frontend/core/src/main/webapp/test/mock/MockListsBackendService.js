@@ -14,9 +14,11 @@
  */
 
  /*global angular, getJSONFixture */
-'use strict';
+ 'use strict';
 
-function MockListsBackendService($httpBackend, ListsService, UUIDService) {
+ function MockListsBackendService($httpBackend, ListsService, UUIDService) {
+
+  var listArchiveFirstRun = true;
 
   function mockPutNewList(expectResponse){
     $httpBackend.whenPUT(ListsService.putNewListRegex)
@@ -61,7 +63,20 @@ function MockListsBackendService($httpBackend, ListsService, UUIDService) {
       var archiveListResponse = getJSONFixture('archiveListResponse.json');
       archiveListResponse.result.modified = (new Date()).getTime();
       archiveListResponse.archived = Date.now();
-      return expectResponse(method, url, data, headers, archiveListResponse);
+
+      if (!listArchiveFirstRun) {
+        var randomlyOffline = Math.floor((Math.random() * 10) + 1) < 8;
+        // There is a 70% change we are offline.
+        if (!randomlyOffline) {
+          return expectResponse(method, url, data, headers, archiveListResponse);
+        } else {
+          return [404];
+        }
+      } else {
+        // Simulate offline on first run.
+        listArchiveFirstRun = false;
+        return [404];
+      }
     });
   }
 
