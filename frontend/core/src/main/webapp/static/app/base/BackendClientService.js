@@ -234,10 +234,6 @@
     return getUrlPrefix();
   };
 
-  methods.isOffline = function(status) {
-    return HttpClientService.isOffline(status);
-  };
-
   methods.generateFakeTimestamp = function() {
     // Use the backend delta that's received from authentication, or 0 if backend delta is not found
     var backendDelta = UserSessionService.getBackendDelta();

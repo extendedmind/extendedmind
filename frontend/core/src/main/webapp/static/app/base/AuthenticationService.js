@@ -159,7 +159,7 @@
             },function(error) {
               // Error branch, emit onlineRequired
               var rejection, emitType;
-              if (BackendClientService.isOffline(error.value.status)) {
+              if (error.type === 'offline') {
                 emitType = 'emInteraction';
                 rejection = {
                   type: 'onlineRequired',

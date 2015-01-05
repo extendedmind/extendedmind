@@ -14,8 +14,9 @@
  */
  'use strict';
 
- function ResetController($location, $routeParams, $scope, $window, AnalyticsService, AuthenticationService,
-                          BackendClientService, DetectBrowserService, UISessionService, packaging) {
+ function ResetController($location, $routeParams, $scope,
+                          AnalyticsService, AuthenticationService, DetectBrowserService, UISessionService,
+                          packaging) {
 
   AnalyticsService.visitEntry('reset');
 
@@ -43,7 +44,7 @@
             $location.url($location.path());
             $location.path('/');
           }, function(error) {
-            if (BackendClientService.isOffline(error.value.status)) {
+            if (error.type === 'offline') {
               $scope.resetOffline = true;
             } else {
               $scope.loginFailed = true;
@@ -76,6 +77,6 @@
   }
 
 }
-ResetController['$inject'] = ['$location', '$routeParams', '$scope', '$window', 'AnalyticsService',
-'AuthenticationService', 'BackendClientService', 'DetectBrowserService', 'UISessionService', 'packaging'];
+ResetController['$inject'] = ['$location', '$routeParams', '$scope',
+'AnalyticsService', 'AuthenticationService', 'DetectBrowserService', 'UISessionService', 'packaging'];
 angular.module('em.entry').controller('ResetController', ResetController);

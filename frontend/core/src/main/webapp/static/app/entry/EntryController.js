@@ -14,9 +14,8 @@
  */
  'use strict';
 
- function EntryController($http, $location, $rootScope, $routeParams, $scope, $timeout, $window,
-                          AnalyticsService, AuthenticationService,
-                          BackendClientService, DetectBrowserService, SwiperService,
+ function EntryController($http, $location, $routeParams, $scope,
+                          AnalyticsService, AuthenticationService, DetectBrowserService, SwiperService,
                           UISessionService, UserService, UserSessionService, packaging) {
 
   AnalyticsService.visitEntry('entry');
@@ -174,10 +173,10 @@
     });
   }
 
-  function signUpFailed(failure) {
-    if (BackendClientService.isOffline(failure.value.status)) {
+  function signUpFailed(error) {
+    if (error.type === 'offline') {
       $scope.entryOffline = true;
-    } else if (failure.value.status === 400) {
+    } else if (error.type === 'badRequest') {
       $scope.signupFailed = true;
     }
   }
@@ -231,8 +230,7 @@
   };
 }
 
-EntryController['$inject'] = ['$http', '$location', '$rootScope', '$routeParams', '$scope', '$timeout',
-'$window', 'AnalyticsService', 'AuthenticationService',
-'BackendClientService', 'DetectBrowserService', 'SwiperService',
-'UISessionService', 'UserService', 'UserSessionService', 'packaging'];
+EntryController['$inject'] = ['$http', '$location', '$routeParams', '$scope',
+  'AnalyticsService', 'AuthenticationService', 'DetectBrowserService', 'SwiperService',
+  'UISessionService', 'UserService', 'UserSessionService', 'packaging'];
 angular.module('em.entry').controller('EntryController', EntryController);
