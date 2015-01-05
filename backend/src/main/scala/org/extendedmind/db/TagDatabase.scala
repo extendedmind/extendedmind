@@ -74,6 +74,16 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
       deletedTagNode <- deleteTagNode(owner, tagUUID).right
       result <- Right(getDeleteItemResult(deletedTagNode._1, deletedTagNode._2)).right
       unit <- Right(updateItemsIndex(deletedTagNode._1, result.result)).right
+      unit <- Right(updateItemsIndex(deletedTagNode._3, result.result)).right      
+    } yield result
+  }
+  
+  def undeleteTag(owner: Owner, tagUUID: UUID): Response[SetResult] = {
+    for {
+      undeleteTagResult <- undeleteTagNode(owner, tagUUID).right
+      result <- Right(getSetResult(undeleteTagResult._1, false)).right
+      unit <- Right(updateItemsIndex(undeleteTagResult._1, result)).right
+      unit <- Right(updateItemsIndex(undeleteTagResult._2, result)).right
     } yield result
   }
   
@@ -146,15 +156,34 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
     } yield completeTag
   }
  
-  protected def deleteTagNode(owner: Owner, tagUUID: UUID): Response[Tuple2[Node, Long]] = {
+  protected def deleteTagNode(owner: Owner, tagUUID: UUID): Response[(Node, Long, scala.List[Node])] = {
     withTx {
       implicit neo =>
         for {
           tagNode <- getItemNode(owner, tagUUID, Some(ItemLabel.TAG)).right
           deleted <- Right(deleteItem(tagNode)).right
-        } yield (tagNode, deleted)
+          childrenAndTagged <- getChildrenAndTagged(owner, tagNode).right
+        } yield (tagNode, deleted, childrenAndTagged)
     }
   }
-
   
+  protected def undeleteTagNode(owner: Owner, tagUUID: UUID): Response[(Node, scala.List[Node])] = {
+    withTx {
+      implicit neo =>
+        for {
+          tagNode <- getItemNode(owner, tagUUID, Some(ItemLabel.TAG), acceptDeleted = true).right
+          success <- Right(undeleteItem(tagNode)).right
+          childrenAndTagged <- getChildrenAndTagged(owner, tagNode).right
+        } yield (tagNode, childrenAndTagged)
+    }
+  }
+  
+  protected def getChildrenAndTagged(owner: Owner, tagNode: Node)
+            (implicit neo4j: DatabaseService): Response[scala.List[Node]] = {
+    for {
+      childNodes <- Right(getChildren(tagNode, None, true)).right
+      taggedItems <- Right(getTaggedItems(tagNode, true)).right
+      childrenAndTagged <- Right(scala.List.concat(childNodes, taggedItems)).right
+    } yield childrenAndTagged
+  }
 }

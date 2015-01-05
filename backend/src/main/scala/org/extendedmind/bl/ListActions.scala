@@ -54,7 +54,7 @@ trait ListActions {
   
   def undeleteList(owner: Owner, listUUID: UUID)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("undeleteList")
-    db.undeleteItem(owner: Owner, listUUID, Some(ItemLabel.LIST))
+    db.undeleteList(owner: Owner, listUUID)
   }
 
   def archiveList(owner: Owner, listUUID: UUID)(implicit log: LoggingAdapter): Response[ArchiveListResult] = {

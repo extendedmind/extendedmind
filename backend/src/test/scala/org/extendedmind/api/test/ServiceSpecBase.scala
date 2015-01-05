@@ -117,8 +117,15 @@ abstract class ServiceSpecBase extends ImpermanentGraphDatabaseSpecBase {
         responseAs[SetResult]
       }
   }
-  
-  
+
+  def putNewTag(newTag: Tag, authenticateResponse: SecurityContext, collectiveUUID: Option[UUID] = None): SetResult = {
+    val ownerUUID = if (collectiveUUID.isDefined) collectiveUUID.get else authenticateResponse.userUUID
+    Put("/" + ownerUUID + "/tag",
+      marshal(newTag).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        responseAs[SetResult]
+      }
+  }
+
   def getItem(itemUUID: UUID, authenticateResponse: SecurityContext): Item = {
     Get("/" + authenticateResponse.userUUID + "/item/" + itemUUID) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
       responseAs[Item]

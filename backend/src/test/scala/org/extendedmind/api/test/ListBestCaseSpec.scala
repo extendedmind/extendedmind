@@ -202,6 +202,32 @@ class ListBestCaseSpec extends ServiceSpecBase {
           taskFromList.title should be ("learn Spanish")
         } 
       }
+          
+      // Delete list and expect child task and list to have a new modified timestamp
+      Delete("/" + authenticateResponse.userUUID + "/list/" + putListResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        val deleteListResult = responseAs[DeleteItemResult]
+        Get("/" + authenticateResponse.userUUID + "/items?modified=" + (deleteListResult.result.modified - 1) + "&deleted=true") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+          val itemsResponse = responseAs[Items]
+          itemsResponse.tasks.get.size should be (1)
+          itemsResponse.tasks.get(0).modified.get should be (deleteListResult.result.modified)
+          itemsResponse.lists.get.size should be (2)
+          itemsResponse.lists.get(0).modified.get should be (deleteListResult.result.modified)
+          itemsResponse.lists.get(1).modified.get should be (deleteListResult.result.modified)
+        }
+      }
+      
+      // Undelete list and expect child task and list to have a new modified timestamp
+      Post("/" + authenticateResponse.userUUID + "/list/" + putListResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        val undeleteListResult = responseAs[SetResult]
+        Get("/" + authenticateResponse.userUUID + "/items?modified=" + (undeleteListResult.modified - 1)) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+          val itemsResponse = responseAs[Items]
+          itemsResponse.tasks.get.size should be (1)
+          itemsResponse.tasks.get(0).modified.get should be (undeleteListResult.modified)
+          itemsResponse.lists.get.size should be (2)
+          itemsResponse.lists.get(0).modified.get should be (undeleteListResult.modified)
+          itemsResponse.lists.get(1).modified.get should be (undeleteListResult.modified)
+        }
+      }
     }
     it("should successfully archive list with POST to /[userUUID]/list/[listUUID]/archive") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)

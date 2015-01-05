@@ -49,6 +49,7 @@ import java.lang.Boolean
 import org.neo4j.cypher.javacompat.ExecutionEngine
 import akka.event.LoggingAdapter
 import org.neo4j.index.lucene.QueryContext
+import org.neo4j.extension.timestamp.TimestampCustomPropertyHandler
 
 case class OwnerNodes(user: Node, collective: Option[Node])
 
@@ -84,10 +85,17 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     val extensions = new java.util.ArrayList[KernelExtensionFactory[_]](2);
     extensions.add(new UUIDKernelExtensionFactory(false, false, setupAutoindexing));
 
-    if (settings.disableTimestamps)
+    if (settings.disableTimestamps){
       println("WARNING: Automatic timestamps disabled!")
-    else
-      extensions.add(new TimestampKernelExtensionFactory(setupAutoindexing, true));
+    }else{
+      val customPropertyHandlers = new java.util.ArrayList[TimestampCustomPropertyHandler](2)
+      val deletedModificationTags = new java.util.ArrayList[RelationshipType](2)
+      deletedModificationTags.add(ItemRelationship.HAS_TAG)
+      deletedModificationTags.add(ItemRelationship.HAS_PARENT)
+      val deletedHandler = new TimestampCustomPropertyHandler("deleted", deletedModificationTags, Direction.INCOMING)
+      customPropertyHandlers.add(deletedHandler)
+      extensions.add(new TimestampKernelExtensionFactory(setupAutoindexing, true, customPropertyHandlers));
+    }
     extensions
   }
 

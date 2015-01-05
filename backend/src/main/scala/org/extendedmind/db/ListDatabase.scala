@@ -69,6 +69,16 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
       deletedListNode <- deleteListNode(owner, listUUID).right
       result <- Right(getDeleteItemResult(deletedListNode._1, deletedListNode._2)).right
       unit <- Right(updateItemsIndex(deletedListNode._1, result.result)).right
+      unit <- Right(updateItemsIndex(deletedListNode._3, result.result)).right
+    } yield result
+  }
+  
+  def undeleteList(owner: Owner, listUUID: UUID): Response[SetResult] = {
+    for {
+      undeleteListResult <- undeleteListNode(owner, listUUID).right
+      result <- Right(getSetResult(undeleteListResult._1, false)).right
+      unit <- Right(updateItemsIndex(undeleteListResult._1, result)).right
+      unit <- Right(updateItemsIndex(undeleteListResult._2, result)).right
     } yield result
   }
 
@@ -175,14 +185,27 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
     }
   }
 
-  protected def deleteListNode(owner: Owner, listUUID: UUID): Response[Tuple2[Node, Long]] = {
+  
+  protected def deleteListNode(owner: Owner, listUUID: UUID): Response[(Node, Long, scala.List[Node])] = {
     withTx {
       implicit neo =>
         for {
           itemNode <- getItemNode(owner, listUUID, Some(ItemLabel.LIST)).right
           deletable <- validateListDeletable(itemNode).right
           deleted <- Right(deleteItem(itemNode)).right
-        } yield (itemNode, deleted)
+          childNodes <- Right(getChildren(itemNode, None, true)).right
+        } yield (itemNode, deleted, childNodes)
+    }
+  }
+  
+  protected def undeleteListNode(owner: Owner, itemUUID: UUID): Response[(Node, scala.List[Node])] = {
+    withTx {
+      implicit neo =>
+        for {
+          itemNode <- getItemNode(owner, itemUUID, Some(ItemLabel.LIST), acceptDeleted = true).right
+          success <- Right(undeleteItem(itemNode)).right
+          childNodes <- Right(getChildren(itemNode, None, true)).right          
+        } yield (itemNode, childNodes)
     }
   }
 

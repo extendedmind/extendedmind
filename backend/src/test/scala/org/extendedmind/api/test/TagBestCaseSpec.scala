@@ -135,6 +135,47 @@ class TagBestCaseSpec extends ServiceSpecBase {
             }
         }
     }
+    
+    it("should successfully add tag with PUT to /[userUUID]/[task or note]/[itemUUID] "
+       + "and update modified values when deleting and undeleting tag") {
+      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+
+      // Create new tag and new note
+      val newTag = Tag("studies", None, None, KEYWORD, None)
+      val putTagResponse = putNewTag(newTag, authenticateResponse)
+      val newChildTag = Tag("spanish studies", None, None, KEYWORD, Some(putTagResponse.uuid.get))
+      val putChildTagResponse = putNewTag(newChildTag, authenticateResponse)
+
+      val newNote = Note("Spanish 101", None, None, Some("lecture notes for Spanish 101 class"), None,
+                  Some(ExtendedItemRelationships(None, None, Some(scala.List(putTagResponse.uuid.get)))))
+      val putNoteResponse = putNewNote(newNote, authenticateResponse)
+
+      // Delete tag and expect child tag and note to have a new modified timestamp
+      Delete("/" + authenticateResponse.userUUID + "/tag/" + putTagResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        val deleteTagResult = responseAs[DeleteItemResult]
+        Get("/" + authenticateResponse.userUUID + "/items?modified=" + (deleteTagResult.result.modified - 1) + "&deleted=true") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+          val itemsResponse = responseAs[Items]
+          itemsResponse.tags.get.size should be (2)
+          itemsResponse.tags.get(0).modified.get should be (deleteTagResult.result.modified)
+          itemsResponse.tags.get(1).modified.get should be (deleteTagResult.result.modified)
+          itemsResponse.notes.get.size should be (1)
+          itemsResponse.notes.get(0).modified.get should be (deleteTagResult.result.modified)
+        }
+      }
+      
+      // Undelete tag and expect child tag and note to have a new modified timestamp
+      Post("/" + authenticateResponse.userUUID + "/tag/" + putTagResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        val undeleteTagResult = responseAs[SetResult]
+        Get("/" + authenticateResponse.userUUID + "/items?modified=" + (undeleteTagResult.modified - 1)) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+          val itemsResponse = responseAs[Items]
+          itemsResponse.tags.get.size should be (2)
+          itemsResponse.tags.get(0).modified.get should be (undeleteTagResult.modified)
+          itemsResponse.tags.get(1).modified.get should be (undeleteTagResult.modified)
+          itemsResponse.notes.get.size should be (1)
+          itemsResponse.notes.get(0).modified.get should be (undeleteTagResult.modified)
+        }
+      }
+    }
   }
 
 }

@@ -437,6 +437,28 @@ trait ItemDatabase extends UserDatabase {
     if (label.isDefined) itemsFromParent.evaluator(LabelEvaluator(scala.List(label.get))).traverse(itemNode).nodes().toList
     else itemsFromParent.traverse(itemNode).nodes().toList
   }
+  
+  protected def getTaggedItems(tagNode: Node, includeDeleted: Boolean = false)(implicit neo4j: DatabaseService): scala.List[Node] = {
+    val itemsFromTagSkeleton: TraversalDescription =
+      neo4j.gds.traversalDescription()
+        .depthFirst()
+        .relationships(DynamicRelationshipType.withName(ItemRelationship.HAS_TAG.name), Direction.INCOMING)
+        .evaluator(Evaluators.excludeStartPosition())
+        .depthFirst()
+        .evaluator(Evaluators.toDepth(1))
+
+    val itemsFromTag = {
+      if (includeDeleted) {
+        itemsFromTagSkeleton
+      } else {
+        itemsFromTagSkeleton.evaluator(PropertyEvaluator(
+          MainLabel.ITEM, "deleted",
+          Evaluation.EXCLUDE_AND_PRUNE,
+          Evaluation.INCLUDE_AND_CONTINUE))
+      }
+    }
+    itemsFromTag.traverse(tagNode).nodes().toList
+  }
 
   protected def createParentRelationship(itemNode: Node, owner: Owner, parentNode: Node)(implicit neo4j: DatabaseService): Response[Relationship] = {
     val relationship = itemNode --> ItemRelationship.HAS_PARENT --> parentNode <;
@@ -751,6 +773,14 @@ trait ItemDatabase extends UserDatabase {
       implicit neo4j =>
         val itemsIndex = neo4j.gds.index().forNodes("items")
         updateModifiedIndex(itemsIndex, itemNode, setResult.modified)
+    }
+  }
+  
+  protected def updateItemsIndex(itemNodeList: scala.List[Node], setResult: SetResult): Unit = {
+    withTx {
+      implicit neo4j =>
+        val itemsIndex = neo4j.gds.index().forNodes("items")
+        itemNodeList.foreach { itemNode => updateModifiedIndex(itemsIndex, itemNode, setResult.modified) }
     }
   }
 

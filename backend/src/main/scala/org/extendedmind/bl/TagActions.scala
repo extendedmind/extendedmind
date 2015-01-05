@@ -54,7 +54,7 @@ trait TagActions {
   
   def undeleteTag(owner: Owner, tagUUID: UUID)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("undeleteTag")
-    db.undeleteItem(owner: Owner, tagUUID, Some(ItemLabel.TAG))
+    db.undeleteTag(owner: Owner, tagUUID)
   }
 }
 
