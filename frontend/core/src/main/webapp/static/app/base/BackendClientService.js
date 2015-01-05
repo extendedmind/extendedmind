@@ -71,7 +71,7 @@
       return $q.reject({type: 'badRequest', value: httpError.value});
     } else if (httpError.value.status === 403) {
       return $q.reject({type: 'forbidden', value: httpError.value});
-    } else if (HttpClientService.isOffline(httpError.status)) {
+    } else if (HttpClientService.isOffline(httpError.value.status)) {
       return $q.reject({type: 'offline', value: httpError.value});
     } else {
       return emitHttpException(httpError);
