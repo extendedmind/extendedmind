@@ -48,8 +48,8 @@
       function backdropClicked() {
 
         if (preventBackdropBubbleClick) {
-          if (preventBackdropBubbleClick > Date.now() - 200){
-            // Event bubbled from undesired click less than 200ms ago. Do nothing.
+          if (preventBackdropBubbleClick > Date.now() - 400){
+            // Event bubbled from undesired click less than 400ms ago. Do nothing.
             preventBackdropBubbleClick = false;
             return;
           }
@@ -87,10 +87,12 @@
       }
 
       this.activateContainer = function (id, blurBackdrop) {
-        // Function called in the middle of a click event. It may be unsafe to stop event bubbling,
-        // so prevent bubbling locally to backdrop click event.
         if (event && (event.type === 'click' || event.type === 'focus')){
-          preventBackdropBubbleClick = Date.now();
+          // Function called in the middle of a click event.
+          // NOTE:  It may be unsafe to stop event bubbling, so prevent bubbling locally to backdrop click
+          //        event. event.stopPropagation() would be more reliable though if we were sure this
+          //        function is not and will not be depended on click.
+          preventBackdropBubbleClick = event.timeStamp;
         }
 
         // activate container
