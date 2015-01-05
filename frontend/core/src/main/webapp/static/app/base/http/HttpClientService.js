@@ -81,8 +81,8 @@
     if (headRequest) {
       if (!headRequest.last) {
         headRequest.executing = true;
-        $http(headRequest.content).
-        success(function(data /*, status, headers, config*/) {
+        $http(headRequest.content)
+        .success(function(data /*, status, headers, config*/) {
           delete headRequest.executing;
           retryingExecution = false;
           // First, execute callback
@@ -94,7 +94,7 @@
           } else if (headRequest.beforeLast && beforeLastCallback) {
             beforeLastCallback(headRequest, data, HttpRequestQueueService.getQueue());
             HttpRequestQueueService.saveQueue();
-          }  else if (defaultCallback) {
+          } else if (defaultCallback) {
             defaultCallback(headRequest, data, HttpRequestQueueService.getQueue());
             HttpRequestQueueService.saveQueue();
           }
@@ -116,11 +116,10 @@
             // Try to execute the next request in the queue
             executeRequests(headRequest);
           }
-        })
-.error(function(data, status, headers, config) {
-  delete headRequest.executing;
-  if (isOffline(status)) {
-    retryingExecution = false;
+        }).error(function(data, status, headers, config) {
+          delete headRequest.executing;
+          if (isOffline(status)) {
+            retryingExecution = false;
             // Seems to be offline, stop processing
             HttpRequestQueueService.setOffline(headRequest);
             // Execute callback
