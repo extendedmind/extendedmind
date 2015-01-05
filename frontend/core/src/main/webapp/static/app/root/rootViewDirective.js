@@ -124,14 +124,15 @@
         if (interaction.type === 'onlineRequired') {
           var params = {
             messageHeading: 'not online',
-            messageIngress: 'please connect to the internet and press retry to access your information',
+            messageIngress: 'please connect to the internet and press retry',
             confirmText: 'retry',
             confirmTextDeferred: 'retrying\u2026',
             confirmActionDeferredFn: interaction.value.retry,
             confirmActionDeferredParam: interaction.value.retryParam,
             confirmActionPromiseFn: interaction.value.promise,
             confirmActionPromiseParam: interaction.value.promiseParam,
-            cancelDisabled: true
+            cancelDisabled: !interaction.value.allowCancel
+            // Cancel is disabled by default and overridden with allowCancel.
           };
 
           $scope.showModal(undefined, params);

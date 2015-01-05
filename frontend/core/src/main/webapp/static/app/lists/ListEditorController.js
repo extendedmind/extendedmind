@@ -77,7 +77,8 @@
         value: {
           retry: $scope.archiveList,
           retryParam: $scope.list,
-          promise: archiveListSuccess
+          promise: archiveListSuccess,
+          allowCancel: true
         }
       };
       $rootScope.$emit('emInteraction', rejection);
