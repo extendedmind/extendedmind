@@ -1,7 +1,7 @@
 <div ng-if="toasterNotifications" ng-switch on="notification.type" class="container-toaster animate-toaster group-mixed">
 
   <!-- DELETED -->
-  <div class="group-mixed--middle textgroup-toaster" ng-switch-when="deleted">
+  <div ng-switch-when="deleted" class="group-mixed--middle textgroup-toaster">
     <span ng-bind="notification.itemType + ' deleted,'"></span>
     <a href class="highlighted" ng-click="closeNotificationAndCall(notification, notification.item, notification.undoFn)">
       <span>undo</span><span>?</span>
@@ -9,12 +9,12 @@
   </div>
 
   <!-- FYI -->
-  <div class="group-mixed--middle" ng-switch-when="fyi">
+  <div ng-switch-when="fyi" class="group-mixed--middle">
     <span class="textgroup-toaster" ng-bind="notification.text"></span>
   </div>
 
   <!-- INBOX -->
-  <div class="group-mixed--middle textgroup-toaster" ng-switch-when="inbox">
+  <div ng-switch-when="inbox" class="group-mixed--middle textgroup-toaster">
     <a href class="highlighted" ng-click="closeNotificationAndCall(notification, notification.item, notification.openFn)">
       <span>item</span>
     </a>
