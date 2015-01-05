@@ -55,6 +55,8 @@
           </div>
 
           <div ng-if="!listPickerOpen">
+
+            <!-- DUE DATE -->
             <div ng-hide="descriptionFocused" class="group-mixed vertically-centered animate-fade-in">
               <a href ng-class="task.trans.due ? 'link' : 'downplayed'" class="group-mixed--middle"
                 ng-click="openCalendar()">
@@ -78,12 +80,14 @@
               </div>
             </div>
 
+            <!-- LIST -->
             <div ng-hide="descriptionFocused || calendarOpen" class="row-vertically-centered">
               <a href ng-class="task.trans.list ? 'link' : 'downplayed'" ng-click="openListPicker()">
                 <span class="text-link" ng-bind="task.trans.list ? task.trans.list.trans.title : 'select list\u2026'"></span>
               </a>
             </div>
 
+            <!-- DESCRIPTION -->
             <div ng-hide="calendarOpen" class="row-vertically-centered with-textarea">
               <textarea ng-model="task.trans.description" input-model-validator ng-trim="false"
                 ng-focus="setDescriptionFocus(true)" ng-blur="setDescriptionFocus(false)" msd-elastic
@@ -93,7 +97,6 @@
             </div>
 
           </div>
-
         </div>
 
         <footer ng-hide="isTaskFooterHidden(editorFooterHiddenCallback)"
