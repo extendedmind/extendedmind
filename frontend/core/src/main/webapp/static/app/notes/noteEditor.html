@@ -2,7 +2,7 @@
   <header class="container-titlebar">
     <div class="container-titlebar--inner">
       <div class="group-symmetrical height-large">
-        <a href ng-hide="listPickerOpen || keywordsPickerOpen" class="group-symmetrical--left link-navigation highlighted active" ng-click="endNoteEdit()" >
+        <a href ng-hide="listPickerOpen || keywordsPickerOpen" class="group-symmetrical--left link-navigation active" ng-class="isNoteEdited() && !note.deleted ? 'highlighted' : 'downplayed'" ng-click="endNoteEdit()" >
           <span class="text-navigation-back" ng-class="!isFirstSlide() && 'not-swipeable'" ng-bind="isNoteEdited() && !note.deleted ? 'save' : 'back'">
           </span>
         </a>
