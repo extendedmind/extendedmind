@@ -57,7 +57,7 @@
   // Callback from Snap.js, outside of AngularJS event loop
   function editorOpened() {
     if ((!itemInEdit || !itemInEdit.deleted) && typeof titleBarInputFocusCallbackFunction === 'function' &&
-        $scope.editorType !== 'task')
+        $scope.editorType !== 'task' && $scope.editorType !== 'note')
     {
       // Focus on found and not deleted item
       setFocusOnTitlebarInput();
