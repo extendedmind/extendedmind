@@ -8,7 +8,7 @@
         </a>
         <div ng-hide="!isNoteTitleHidden() && isFirstSlide()" class="group-symmetrical--middle width-large">
           <a href class="link" ng-click="openNoteTitleEdit()">
-            <div><span class="text-heading-primary" clamp=2 ng-bind="(note.trans.title ? note.trans.title : 'untitled note')"></span></div>
+            <div><span class="text-heading-primary" clamp=2 ng-bind="note.trans.title ? note.trans.title : 'untitled note'"></span></div>
           </a>
         </div>
 
@@ -42,20 +42,77 @@
                 </a>
               </div>
             </div>
+
+            <div ng-if="onboardingInProgress" class="row">
+              <span ng-show="!noteTitlebarHasText()" class="text-details">
+                e.g. reading suggestions, budget meeting minutes, summer plans
+              </span>
+              <span ng-show="noteTitlebarHasText() && !hideNoteTitle" class="text-details">
+                when done, hit return
+              </span>
+            </div>
+
           </div>
 
-          <div ng-if="onboardingInProgress" class="row">
-            <span ng-show="!noteTitlebarHasText()" class="text-details">
-              e.g. reading suggestions, budget meeting minutes, summer plans
-            </span>
-            <span ng-show="noteTitlebarHasText() && !hideNoteTitle" class="text-details">
-              when done, hit return
-            </span>
+          <div ng-if="!listPickerOpen && !keywordsPickerOpen">
+
+            <!-- COLLAPSIBLE-->
+            <div ng-if="collapsibleOpen">
+              <div ng-if="!note.trans.list" class="row-vertically-centered">
+                <a href class="downplayed" ng-click="openListPicker()">
+                  <span class="text-search-result">add list&#8230;</span>
+                </a>
+              </div>
+              <div ng-if="!note.trans.keywords" class="row-vertically-centered">
+                <a href class="downplayed" ng-click="openKeywordsPicker()">
+                  <span class="text-search-result">add keywords&#8230;</span>
+                </a>
+              </div>
+            </div>
+            <div ng-if="!note.trans.list || !note.trans.keywords" style="text-align: center;" class="row">
+              <a href class="downplayed" ng-click="toggleCollapsible()">
+                <span ng-bind="collapsibleOpen ? 'less &and;' : 'more &or;'"></span>
+              </a>
+            </div>
+
+            <!-- LIST -->
+            <div ng-if="note.trans.list" class="group-mixed with-checkbox">
+              <a href class="group-mixed--middle link-search-result" ng-click="openListPicker()">
+                <span style="display: block;" class="text-search-result" ng-bind="note.trans.list.trans.title">
+                </span>
+              </a>
+              <div class="group-mixed--right">
+                <span class="text-search-type">list</span>
+              </div>
+            </div>
+
+            <!-- KEYWORDS -->
+            <div ng-if="note.trans.keywords" class="group-mixed with-checkbox">
+              <a href class="group-mixed--middle link-search-result" ng-click="openKeywordsPicker()">
+                <span style="display: block;" class="text-search-result" ng-bind="getKeywordsListString(note)"></span>
+              </a>
+              <div class="group-mixed--right">
+                <span class="text-search-type">keywords</span>
+              </div>
+            </div>
+
+            <!-- CONTENT -->
+            <div class="row-vertically-centered with-textarea">
+              <textarea ng-class="onboardingInProgress && !hideNoteTitle && 'input-separate'" ng-model="note.trans.content" input-model-validator ng-focus="noteContentFocused()" msd-elastic editable-field ng-trim="false" editable-field-register-callbacks="registerNoteContentInputCallbacks(focus, blur)" placeholder="enter content&#8230;" autocapitalize="none" autocorrect="off">
+              </textarea>
+            </div>
+
+            <div ng-if="onboardingInProgress && note.trans.content.length" class="row">
+              <span class="text-details">
+                when done, save your note by clicking 'save' in the top-left corner or swipe left
+              </span>
+            </div>
+
           </div>
 
           <!-- LIST PICKER -->
           <div ng-if="listPickerOpen" class="swiper-no-swiping animate-fade-in" editable-field-container="auto" editable-field-container-scrollable="true" editable-field-container-clicked-elsewhere="closeListPicker()" data-snap-ignore="true">
-            <div list-picker="lists" list-picker-new-item="getNewList()" list-picker-archived-lists="archivedLists" list-picker-save="closeListPickerAndSetListToItem(note, list)" list-picker-clear="closeListPickerAndClearListFromItem(note, list)" list-picker-selected="note.trans.list">
+            <div list-picker="lists" list-picker-new-item="getNewList()" list-picker-archived-lists="archivedLists" list-picker-save="closeListPickerAndSetListToItem(note, list)" list-picker-clear="closeListPickerAndClearListFromItem(note, list)" list-picker-get-selected="note.trans.list">
             </div>
           </div>
 
@@ -83,55 +140,6 @@
                 </a>
               </div>
             </div>
-          </div>
-
-          <div ng-if="!listPickerOpen && !keywordsPickerOpen">
-
-            <!-- COLLAPSIBLE -->
-            <div ng-if="collapsibleOpen">
-
-              <!-- LIST -->
-              <div class="row-vertically-centered">
-                <a href ng-class="note.trans.list ? 'link' : 'downplayed'" ng-click="openListPicker()">
-                  <span class="text-link" ng-bind="note.trans.list ? note.trans.list.trans.title : 'select list\u2026'">
-                  </span>
-                </a>
-              </div>
-
-              <!-- KEYWORDS -->
-              <div ng-if="note.trans.keywords" class="group-mixed with-checkbox">
-                <a href class="group-mixed--middle link-search-result" ng-click="openKeywordsPicker()">
-                  <span style="display: block;" class="text-search-result" ng-bind="getKeywordsListString(note)"></span>
-                </a>
-                <div class="group-mixed--right">
-                  <span class="text-search-type">keywords</span>
-                </div>
-              </div>
-
-              <a href class="downplayed row" ng-click="openKeywordsPicker()">
-                <span ng-if="!note.trans.keywords" class="text-link">add keywords&#8230;</span>
-              </a>
-
-            </div>
-
-            <div style="text-align: center;" class="row">
-              <a href class="downplayed" ng-click="toggleCollapsible()">
-                <span ng-bind="collapsibleOpen ? 'less &and;' : 'more &or;'"></span>
-              </a>
-            </div>
-
-            <!-- CONTENT -->
-            <div class="row-vertically-centered with-textarea">
-              <textarea ng-class="onboardingInProgress && !hideNoteTitle && 'input-separate'" ng-model="note.trans.content" input-model-validator ng-focus="noteContentFocused()" msd-elastic editable-field ng-trim="false" editable-field-register-callbacks="registerNoteContentInputCallbacks(focus, blur)" placeholder="enter content&#8230;" autocapitalize="none" autocorrect="off">
-              </textarea>
-            </div>
-
-            <div ng-if="onboardingInProgress && note.trans.content.length" class="row">
-              <span class="text-details">
-                when done, save your note by clicking 'save' in the top-left corner or swipe left
-              </span>
-            </div>
-
           </div>
         </div>
 
