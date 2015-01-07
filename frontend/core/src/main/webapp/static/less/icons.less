@@ -16,6 +16,7 @@ TODO: Icons are not working yet with Phytoplankton
 @size-icon-arrow-small: 11px;
 @size-icon-arrow-large: 16px;
 @size-icon-arrow-move: 20px;
+@size-icon-star-large: 25px;
 @size-icon-star: 16px;
 @size-icon-star-small: 8px;
 @size-icon-trash: 18px;
@@ -189,9 +190,13 @@ Icon classes
   color: @color-text-inverse;
 }
 
-// 1. Make star align vertically inside parent.
+// 1. Set dimensions for .icon-star.large.
 .icon-star.large {
-  display: initial; // [1]
+  line-height: @size-icon-star-large; // [1]
+  height: @size-icon-star-large;      // [1]
+  &:after {
+    font-size: @size-icon-star-large;
+  }
 }
 
 .icon-star.small {

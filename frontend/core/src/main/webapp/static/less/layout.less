@@ -261,9 +261,9 @@ Vertically center .container-master and .container-editor in large screens
 }
 
 .container-modal .container-content--after {
-    position: absolute; // [1]
-    left: 0;            // [1]
-    right: 0;           // [1]
+  position: absolute; // [1]
+  left: 0;            // [1]
+  right: 0;           // [1]
 }
 
 // 1. .container-content--after inside swiper is absolutely positioned
@@ -814,6 +814,9 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 //    Star icon wrapper is 24px, .group-mixed default height is 44px, use remaining 20px for padding.
 //    NOTE: Star icon height is a combination of @size-icon-star-small and line-height: @grid-vertical-half.
 // 10.  Increase click area and clear padding from .group-mixed--left
+// 11.  Increase click area of .link-navigation, and clear padding from .group-mixed--right.
+// 12.  Use same display value as in parent, but set height and line-height to stick vertically in the middle
+//      of first row inside .group-mixed--middle.
 .group-mixed.with-checkbox {
   .group-mixed--left, .group-mixed--right {
     vertical-align: baseline;  // [1]
@@ -855,6 +858,16 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   .group-mixed--right span.icon-star.small {
     padding-top: @padding-vertically-centered - 1;    // [9]
     padding-bottom: @padding-vertically-centered + 1; // [9]
+  }
+  &.large .group-mixed--right {
+    padding-left: 0;                            // [11]
+    & > a.link-navigation {
+      padding-left: @padding-inner-group-mixed; // [11]
+      display: table-cell;                // [12]
+      vertical-align: middle;             // [12]
+      height: @grid-vertical * 1.5;       // [12]
+      line-height: @grid-vertical * 1.5;  // [12]
+    }
   }
 }
 

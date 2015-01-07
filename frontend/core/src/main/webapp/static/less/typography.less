@@ -23,6 +23,7 @@ Fonts in use:
 @size-font-jumbotron: 59px;
 @size-font-large: 48px;
 @size-font-not-so-large: 40px;
+@size-font-medium-large: 35px;
 @size-font-btn: 25px;
 @size-font-ingress: 21px;
 @size-font-content: 18px;
@@ -162,10 +163,16 @@ Use `.text-details` to separate details from body text.
   color: @color-text-downplayed;
 }
 
-// TODO: Use .text-heading-primare and .emphasis which defines .set-font-bold().
+// TODO: Use .text-heading-primary and .emphasis which defines .set-font-bold().
 .text-heading-primary {
   line-height: @grid-vertical-half;
   font-size: @size-font-topheading;
+  .set-font-bold();
+}
+
+.text-heading-primary.large {
+  line-height: @grid-vertical;
+  font-size: @size-font-medium-large;
   .set-font-bold();
 }
 

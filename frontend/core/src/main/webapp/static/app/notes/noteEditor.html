@@ -2,20 +2,21 @@
   <header class="container-titlebar">
     <div class="container-titlebar--inner">
       <div class="group-symmetrical height-large">
-        <a href class="group-symmetrical--left link-navigation highlighted active" ng-click="endNoteEdit()" >
+        <a href ng-hide="listPickerOpen || keywordsPickerOpen" class="group-symmetrical--left link-navigation highlighted active" ng-click="endNoteEdit()" >
           <span class="text-navigation-back" ng-class="!isFirstSlide() && 'not-swipeable'" ng-bind="isNoteEdited() && !note.deleted ? 'save' : 'back'">
           </span>
         </a>
+
         <div ng-hide="!isNoteTitleHidden() && isFirstSlide()" class="group-symmetrical--middle width-large">
           <a href class="link" ng-click="openNoteTitleEdit()">
             <div><span class="text-heading-primary" clamp=2 ng-bind="note.trans.title ? note.trans.title : 'untitled note'"></span></div>
           </a>
         </div>
 
-        <a href ng-if="!note.deleted && !onboardingInProgress" class="group-symmetrical--right" ng-click="deleteNoteInEdit()">
+        <a href ng-if="!note.deleted && !onboardingInProgress" ng-hide="listPickerOpen || keywordsPickerOpen" class="group-symmetrical--right" ng-click="deleteNoteInEdit()">
           <span class="icon-trash"></span>
         </a>
-        <a href ng-if="note.deleted && !onboardingInProgress" class="group-symmetrical--right link-navigation highlighted active" ng-click="undeleteNote(note)">
+        <a href ng-if="note.deleted && !onboardingInProgress" ng-hide="listPickerOpen || keywordsPickerOpen" class="group-symmetrical--right link-navigation highlighted active" ng-click="undeleteNote(note)">
           <span class="text-navigation">restore</span>
         </a>
 
@@ -30,9 +31,9 @@
 
           <!-- NOTE TITLE -->
           <div ng-hide="isNoteTitleHidden()">
-            <div class="group-mixed with-checkbox">
+            <div class="group-mixed with-checkbox large">
               <div class="group-mixed--middle">
-                <textarea class="text-heading-primary" ng-model="note.trans.title" input-model-validator ng-trim="false" ng-keydown="noteTitlebarTextKeyDown($event)" ng-focus="noteTitleFocused()" editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)" msd-elastic placeholder="enter note title&#8230;" maxlength="128" autocapitalize="none" autocorrect="off">
+                <textarea class="text-heading-primary large" ng-model="note.trans.title" input-model-validator ng-trim="false" ng-keydown="noteTitlebarTextKeyDown($event)" ng-focus="noteTitleFocused()" editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)" msd-elastic placeholder="enter title&#8230;" maxlength="128" autocapitalize="none" autocorrect="off">
                 </textarea>
               </div>
 
@@ -60,7 +61,7 @@
             <div ng-if="collapsibleOpen">
               <div ng-if="!note.trans.list" class="row-vertically-centered">
                 <a href class="downplayed" ng-click="openListPicker()">
-                  <span class="text-search-result">add list&#8230;</span>
+                  <span class="text-search-result">select list&#8230;</span>
                 </a>
               </div>
               <div ng-if="!note.trans.keywords || !note.trans.keywords.length" class="row-vertically-centered">
@@ -82,7 +83,7 @@
                 </span>
               </a>
               <div class="group-mixed--right">
-                <span class="text-search-type">list</span>
+                <span style="font-weight: 300;" class="text-search-type">list</span>
               </div>
             </div>
 
@@ -92,7 +93,7 @@
                 <span style="display: block;" class="text-search-result" ng-bind="getKeywordsListString(note)"></span>
               </a>
               <div class="group-mixed--right">
-                <span class="text-search-type">keywords</span>
+                <span style="font-weight: 300;" class="text-search-type">keywords</span>
               </div>
             </div>
 
