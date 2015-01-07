@@ -227,7 +227,7 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
           Some(itemNodes map (itemNode => {
             val setResult = SetResult(
                 Some(getUUID(itemNode)),
-                Some(itemNode.getProperty("created").asInstanceOf[Long]),
+                None,
                 itemNode.getProperty("modified").asInstanceOf[Long])
             updateModifiedIndex(itemsIndex, itemNode, setResult.modified)
             setResult
