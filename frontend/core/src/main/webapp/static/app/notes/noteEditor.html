@@ -104,28 +104,34 @@
 
           <div ng-if="!listPickerOpen && !keywordsPickerOpen">
 
-            <!-- LIST -->
-            <div ng-hide="mode === 'fullScreen'" class="row-vertically-centered">
-              <a href ng-class="note.trans.list ? 'link' : 'downplayed'" ng-click="openListPicker()">
-                <span class="text-link"
-                  ng-bind="note.trans.list ? note.trans.list.trans.title : 'select list\u2026'">
-                </span>
-              </a>
-            </div>
+            <div ng-if="collapsibleOpen">
 
-            <!-- KEYWORDS -->
-            <div ng-if="note.trans.keywords" class="group-mixed with-checkbox">
-              <a href class="group-mixed--middle link-search-result" ng-click="openKeywordsPicker()">
-                <span style="display: block;" class="text-search-result" ng-bind="getKeywordsListString(note)"></span>
-              </a>
-              <div class="group-mixed--right">
-                <span class="text-search-type">keywords</span>
+              <!-- LIST -->
+              <div ng-hide="mode === 'fullScreen'" class="row-vertically-centered">
+                <a href ng-class="note.trans.list ? 'link' : 'downplayed'" ng-click="openListPicker()">
+                  <span class="text-link"
+                    ng-bind="note.trans.list ? note.trans.list.trans.title : 'select list\u2026'">
+                  </span>
+                </a>
               </div>
+
+              <!-- KEYWORDS -->
+              <div ng-if="note.trans.keywords" class="group-mixed with-checkbox">
+                <a href class="group-mixed--middle link-search-result" ng-click="openKeywordsPicker()">
+                  <span style="display: block;" class="text-search-result" ng-bind="getKeywordsListString(note)"></span>
+                </a>
+                <div class="group-mixed--right">
+                  <span class="text-search-type">keywords</span>
+                </div>
+              </div>
+
+              <a href class="downplayed" ng-click="openKeywordsPicker()">
+                <span ng-if="!note.trans.keywords" class="text-link">add keywords&#8230;</span>
+              </a>
+
             </div>
 
-            <a href class="downplayed" ng-click="openKeywordsPicker()">
-              <span ng-if="!note.trans.keywords" class="text-link">add keywords&#8230;</span>
-            </a>
+            <div style="text-align: center;" class="row" ng-click="toggleCollapsible()" ng-bind="collapsibleOpen ? 'less &and;' : 'more &or;'"></div>
 
             <!-- CONTENT -->
             <div class="row-vertically-centered with-textarea">

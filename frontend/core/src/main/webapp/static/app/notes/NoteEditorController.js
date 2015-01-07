@@ -181,6 +181,11 @@
     $scope.keywordsPickerOpen = false;
   };
 
+  $scope.collapsibleOpen = false;
+  $scope.toggleCollapsible = function() {
+    $scope.collapsibleOpen = !$scope.collapsibleOpen;
+  };
+
 }
 
 NoteEditorController['$inject'] = ['$scope', 'NotesService', 'TagsService', 'UISessionService'];
