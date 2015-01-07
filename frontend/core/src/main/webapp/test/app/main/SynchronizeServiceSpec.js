@@ -42,6 +42,9 @@ describe('SynchronizeService', function() {
   completeRepeatingTaskResponse.result.modified = now.getTime();
   var uncompleteTaskResponse = getJSONFixture('uncompleteTaskResponse.json');
   uncompleteTaskResponse.modified = now.getTime();
+  var archiveListResponse = getJSONFixture('archiveListResponse.json');
+  archiveListResponse.result.modified = now.getTime();
+
   var authenticateResponse = getJSONFixture('authenticateResponse.json');
   authenticateResponse.authenticated = now.getTime();
   authenticateResponse.expires = now.getTime() + 1000*60*60*12;
@@ -1338,7 +1341,7 @@ describe('SynchronizeService', function() {
       .toBe(undeleteItemResponse.modified);
   });
 
-  it('should handle wait for offline update to finish before doing list delete and undelete', function () {
+  it('should handle wait for offline update to finish before doing list archive', function () {
 
     var lists = ListsService.getLists(testOwnerUUID);
 
@@ -1378,59 +1381,21 @@ describe('SynchronizeService', function() {
                             description: updatedTestList.trans.description,
                             modified: putNewItemResponse.modified})
         .respond(200, putExistingItemResponse);
-    ListsService.deleteList(updatedTestList, testOwnerUUID);
+    ListsService.archiveList(updatedTestList, testOwnerUUID);
     $httpBackend.flush();
 
     runs(function() {
       flag = false;
-      $httpBackend.expectDELETE('/api/' + testOwnerUUID + '/list/' + updatedTestList.mod.uuid)
-         .respond(200, deleteItemResponse);
+      $httpBackend.expectPOST('/api/' + testOwnerUUID + '/list/' + updatedTestList.mod.uuid  + '/archive')
+         .respond(200, archiveListResponse);
       setTimeout(function(){
         $httpBackend.flush();
         expect(lists.length)
           .toBe(4);
-        expect(updatedTestList.deleted)
-          .toBe(deleteItemResponse.deleted);
+        expect(updatedTestList.archived)
+          .toBe(archiveListResponse.archived);
         expect(updatedTestList.modified)
-          .toBe(deleteItemResponse.result.modified);
-        flag = true;
-      }, 100);
-    });
-    waitsFor(function(){
-      return flag;
-    }, 1000);
-
-    runs(function() {
-      flag = false;
-
-      // 5. Create item to the offline queue
-      var testItemValues2 = {
-        'title': 'test item 2'
-      };
-      var testItem2 = ItemsService.getNewItem(testItemValues2, testOwnerUUID);
-      $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues2)
-         .respond(404);
-      ItemsService.saveItem(testItem2, testOwnerUUID);
-      $httpBackend.flush();
-
-      // 6. undelete online, expect queue to empty
-      var latestModified = now.getTime();
-      MockUserSessionService.setLatestModified(latestModified);
-      $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues2)
-          .respond(200, putNewItemResponse);
-      ListsService.undeleteList(updatedTestList, testOwnerUUID);
-      $httpBackend.flush();
-
-      $httpBackend.expectPOST('/api/' + testOwnerUUID + '/list/' + updatedTestList.mod.uuid + '/undelete')
-         .respond(200, undeleteItemResponse);
-      setTimeout(function(){
-        $httpBackend.flush();
-        expect(lists.length)
-          .toBe(5);
-        expect(updatedTestList.deleted)
-          .toBeUndefined();
-        expect(updatedTestList.modified)
-          .toBe(undeleteItemResponse.modified);
+          .toBe(archiveListResponse.result.modified);
         flag = true;
       }, 100);
     });
