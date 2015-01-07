@@ -79,7 +79,7 @@
   $scope.noteContentFocused = function(){
     if ($scope.isFirstSlide()){
       $scope.mode = 'fullScreen';
-      $scope.hideNoteTitle = true;
+      // $scope.hideNoteTitle = true;
     }
   };
 
@@ -94,8 +94,16 @@
     $scope.hideNoteTitle = false;
   };
 
+  $scope.openNoteTitleEdit = function() {
+    $scope.hideNoteTitle = false;
+  };
+
+  $scope.isNoteTitleHidden = function() {
+    return $scope.hideNoteTitle || $scope.listPickerOpen || $scope.keywordsPickerOpen;
+  };
+
   $scope.isNoteFooterHidden = function() {
-    return $scope.mode === 'fullScreen' || $scope.isTitleClamped();
+    return $scope.isTitleClamped();
   };
 
   // CONTENT
