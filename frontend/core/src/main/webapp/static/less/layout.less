@@ -817,6 +817,8 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 // 11.  Increase click area of .link-navigation, and clear padding from .group-mixed--right.
 // 12.  Use same display value as in parent, but set height and line-height to stick vertically in the middle
 //      of first row inside .group-mixed--middle.
+// 13.  Nudge .icon-star.large to be horizontally aligned with .icon-trash:
+//      (WIDTH_icon-star.large - WIDTH_icon.trash) / 2
 .group-mixed.with-checkbox {
   .group-mixed--left, .group-mixed--right {
     vertical-align: baseline;  // [1]
@@ -867,6 +869,9 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
       vertical-align: middle;             // [12]
       height: @grid-vertical * 1.5;       // [12]
       line-height: @grid-vertical * 1.5;  // [12]
+      & > span.icon-star.large {
+        margin-right: -7px;  // [13]
+      }
     }
   }
 }
