@@ -189,6 +189,11 @@ Icon classes
   color: @color-text-inverse;
 }
 
+// 1. Make star align vertically inside parent.
+.icon-star.large {
+  display: initial; // [1]
+}
+
 .icon-star.small {
   line-height: @grid-vertical-half;
 }
