@@ -51,14 +51,14 @@
   </header>
 
    <div class="swiper-container container-fluid--inner" swiper-container="noteEditor" swiper-type="main"
-    expected-slides="2" swiper-container-slide-changed="editorSwiperSlideChanged()">
+      expected-slides="2" swiper-container-slide-changed="editorSwiperSlideChanged()">
     <div class="swiper-wrapper" ng-class="onboardingInProgress && 'swiper-no-swiping'">
       <div class="swiper-slide" swiper-slide="noteEditor/basic" slide-index="0">
         <div ng-style="{'padding-bottom': mode === 'fullScreen' ? 0 : EDITOR_FOOTER_HEIGHT}"
-        class="container-content" drawer-override-aisle="right" swiper-prevent>
+          class="container-content" drawer-override-aisle="right" swiper-prevent>
 
           <!-- LIST PICKER -->
-          <div ng-if="listPickerOpen" ng-hide="onboardingInProgress" class="swiper-no-swiping animate-fade-in"
+          <div ng-if="listPickerOpen" class="swiper-no-swiping animate-fade-in"
             editable-field-container="auto" editable-field-container-scrollable="true"
             editable-field-container-clicked-elsewhere="closeListPicker()" data-snap-ignore="true">
             <div list-picker="lists" list-picker-new-item="getNewList()"
@@ -68,19 +68,64 @@
               list-picker-selected="note.trans.list"></div>
           </div>
 
-          <div ng-if="!listPickerOpen">
+          <!-- KEYWORDS PICKER -->
+          <div ng-if="keywordsPickerOpen" class="swiper-no-swiping animate-fade-in"
+            editable-field-container="auto" editable-field-container-scrollable="true"
+            editable-field-container-clicked-elsewhere="closeKeywordsPicker()" data-snap-ignore="true">
+
+            <form role="form" class="row-form" ng-submit="addNewKeywordToNote(note, newKeyword)"
+              autocapitalize="none" autocorrect="off">
+              <input type="text" ng-model="newKeyword.trans.title" placeholder="add keyword&#8230;" maxlength="128">
+            </form>
+            <span class="text-details row" ng-if="newKeyword.trans.title"
+              ng-bind="'hit enter to create #' + newKeyword.trans.title" clamp=2>
+            </span>
+
+            <div ng-if="noteHasKeywords(note)" class="keywords-container row">
+              <div class="keyword-wrapper" ng-repeat="keyword in note.trans.keywords | orderBy:'trans.title'">
+                <a href class="keyword highlighted" ng-click="removeKeywordFromNote(note, keyword)">
+                  <span class="text-keyword" ng-bind="'#' + keyword.trans.title" clamp=1></span>
+                </a>
+              </div>
+            </div>
+
+            <div ng-if="keywords" class="keywords-container row">
+              <div class="keyword-wrapper"
+                ng-repeat="keyword in keywords
+                | keywordsFilter:{name:'byOtherThanNoteKeywords', item: note}
+                | filter:newKeyword.trans.title
+                | orderBy:'trans.title'">
+                <a href class="keyword link" ng-click="addKeywordToNote(note, keyword)">
+                  <span class="text-keyword" ng-bind="'#' + keyword.trans.title" clamp=1></span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div ng-if="!listPickerOpen && !keywordsPickerOpen">
+
+            <!-- LIST -->
             <div ng-hide="mode === 'fullScreen'" class="row-vertically-centered">
               <a href ng-class="note.trans.list ? 'link' : 'downplayed'" ng-click="openListPicker()">
-                <span class="text-link" ng-bind="note.trans.list ? note.trans.list.trans.title : 'select list\u2026'"></span>
+                <span class="text-link"
+                  ng-bind="note.trans.list ? note.trans.list.trans.title : 'select list\u2026'">
+                </span>
               </a>
             </div>
 
-            <!-- URL -->
-            <div ng-hide="mode === 'fullScreen'" class="row-vertically-centered with-textarea">
-              <textarea ng-model="note.trans.link" input-model-validator ng-trim="false" msd-elastic
-                maxlength="128" placeholder="enter url&#8230;" autocapitalize="none" autocorrect="off">
-              </textarea>
+            <!-- KEYWORDS -->
+            <div ng-if="note.trans.keywords" class="group-mixed with-checkbox">
+              <a href class="group-mixed--middle link-search-result" ng-click="openKeywordsPicker()">
+                <span style="display: block;" class="text-search-result" ng-bind="getKeywordsListString(note)"></span>
+              </a>
+              <div class="group-mixed--right">
+                <span class="text-search-type">keywords</span>
+              </div>
             </div>
+
+            <a href class="downplayed" ng-click="openKeywordsPicker()">
+              <span ng-if="!note.trans.keywords" class="text-link">add keywords&#8230;</span>
+            </a>
 
             <!-- CONTENT -->
             <div class="row-vertically-centered with-textarea">
@@ -97,6 +142,7 @@
                 when done, save your note by clicking 'save' in the top-left corner or swipe left
               </span>
             </div>
+
           </div>
         </div>
 
@@ -117,33 +163,11 @@
         <div ng-style="{'padding-bottom': advancedSlideInfo.footerHeight}" class="container-content"
         swiper-prevent>
 
-          <!-- KEYWORDS -->
-          <form role="form" class="row-form" ng-submit="addNewKeywordToNote(note, newKeyword)"
-            autocapitalize="none" autocorrect="off">
-            <input type="text" ng-model="newKeyword.trans.title" placeholder="add keyword&#8230;" maxlength="128">
-          </form>
-          <span class="text-details row" ng-if="newKeyword.trans.title"
-            ng-bind="'hit enter to create #' + newKeyword.trans.title" clamp=2>
-          </span>
-
-          <div ng-if="noteHasKeywords(note)" class="keywords-container row">
-            <div class="keyword-wrapper" ng-repeat="keyword in note.trans.keywords | orderBy:'trans.title'">
-              <a href class="keyword highlighted" ng-click="removeKeywordFromNote(note, keyword)">
-                <span class="text-keyword" ng-bind="'#' + keyword.trans.title" clamp=1></span>
-              </a>
-            </div>
-          </div>
-
-          <div ng-if="keywords" class="keywords-container row">
-            <div class="keyword-wrapper"
-              ng-repeat="keyword in keywords
-              | keywordsFilter:{name:'byOtherThanNoteKeywords', item: note}
-              | filter:newKeyword.trans.title
-              | orderBy:'trans.title'">
-              <a href class="keyword link" ng-click="addKeywordToNote(note, keyword)">
-                <span class="text-keyword" ng-bind="'#' + keyword.trans.title" clamp=1></span>
-              </a>
-            </div>
+          <!-- URL -->
+          <div ng-hide="mode === 'fullScreen'" class="row-vertically-centered with-textarea">
+            <textarea ng-model="note.trans.link" input-model-validator ng-trim="false" msd-elastic
+              maxlength="128" placeholder="enter url&#8230;" autocapitalize="none" autocorrect="off">
+            </textarea>
           </div>
 
         </div>

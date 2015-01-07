@@ -157,6 +157,30 @@
     note.trans.keywords.splice(note.trans.keywords.indexOf(keyword), 1);
   };
 
+  $scope.getKeywordsListString = function(note) {
+    var keywordsList = '';
+
+    for (var i = 0; i < note.trans.keywords.length; i++) {
+      keywordsList += '#' + note.trans.keywords[i].trans.title; // Add hash character into keyword
+      if (i !== note.trans.keywords.length - 1) {
+        // Separate keywords with comma and non-breaking space.
+        // NOTE:  Non-breaking space is used to make Clamp.js (when used) work better - with regular space it
+        //        would remove word following the space leaving trailing comma + ellipsis in the end.
+        //        With nbsp, last keyword is split.
+        keywordsList += ',\xA0';
+      }
+    }
+    return keywordsList;
+  };
+
+  $scope.openKeywordsPicker = function() {
+    $scope.keywordsPickerOpen = true;
+  };
+
+  $scope.closeKeywordsPicker = function() {
+    $scope.keywordsPickerOpen = false;
+  };
+
 }
 
 NoteEditorController['$inject'] = ['$scope', 'NotesService', 'TagsService', 'UISessionService'];
