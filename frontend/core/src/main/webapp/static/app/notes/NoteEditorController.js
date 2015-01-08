@@ -71,16 +71,16 @@
   // MODES
 
   $scope.noteTitleFocused = function(){
-    if ($scope.isFirstSlide()){
-      $scope.mode = 'fullScreen';
-    }
+    // if ($scope.isFirstSlide()){
+      // $scope.mode = 'fullScreen';
+    // }
   };
 
   $scope.noteContentFocused = function(){
-    if ($scope.isFirstSlide()){
-      $scope.mode = 'fullScreen';
+    // if ($scope.isFirstSlide()){
+      // $scope.mode = 'fullScreen';
       // $scope.hideNoteTitle = true;
-    }
+    // }
   };
 
   $scope.toggleNoteEditMode = function(){
