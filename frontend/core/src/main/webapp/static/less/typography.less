@@ -17,7 +17,7 @@ Fonts in use:
 */
 
 @font-family: 'HelveticaNeue-Light', 'Helvetica Neue Light', 'HelveticaNeue',
-              'Helvetica Neue',  'Segoe UI Light', 'Segoe UI', 'sans-serif-light', 'sans-serif';
+'Helvetica Neue',  'Segoe UI Light', 'Segoe UI', 'sans-serif-light', 'sans-serif';
 @font-family-bold: 'HelveticaNeue', 'Helvetica Neue',  'Segoe UI Bold', 'Segoe UI', 'sans-serif';
 
 @size-font-jumbotron: 59px;
@@ -30,6 +30,7 @@ Fonts in use:
 @size-font-medium: 15px;
 @size-font-topheading: 15px;
 @size-font-small: 13px;
+@line-height-size-font-medium: 18px;
 
 * {
   font-family: @font-family;
@@ -142,7 +143,7 @@ Use `.text-details` to separate details from body text.
   color: @color-text-error;
 }
 
-.text-teaser, .text-link {
+.text-link {
   display: inline-block;
   line-height: @grid-vertical-half;
 }
@@ -159,14 +160,15 @@ Use `.text-details` to separate details from body text.
 }
 
 .text-teaser {
+  display: inline-block;
   font-size: @size-font-medium;
   color: @color-text-downplayed;
+  line-height: @line-height-size-font-medium;
 }
 
 // TODO: Use .text-heading-primary and .emphasis which defines .set-font-bold().
 .text-heading-primary {
-  line-height: 18px;
-  // line-height: @grid-vertical-half;
+  line-height: @line-height-size-font-medium;
   font-size: @size-font-topheading;
   .set-font-bold();
 }
@@ -202,7 +204,11 @@ Used with JSON.stringify function and HTML <pre> tag.
 Navigation texts
 */
 
-.text-navigation-back, .text-navigation-forward, .text-navigation {
+.text-navigation-back,
+.text-navigation-forward,
+.text-expand-up,
+.text-expand-down,
+.text-navigation {
   color: @color-text-downplayed;
   font-size: @size-font-small;
   .set-font-bold();
@@ -214,6 +220,7 @@ Navigation texts
 }
 
 @width-arrow-text-gap: 5px;
+@width-arrow-text-gap-rotated: 15px;
 .text-navigation-back:not(.not-swipeable):before {
   .set-icon-font;
   content: @icon-arrow-left;
@@ -223,13 +230,42 @@ Navigation texts
   vertical-align: middle;
 }
 
-.text-navigation-forward:after {
+.text-navigation-forward:after,
+.text-expand-down:after,
+.text-expand-up:after {
   .set-icon-font;
   content: @icon-arrow-right;
   color: @color-text-downplayed;
   font-size: @size-icon-arrow-small;
   padding-left: @width-arrow-text-gap;
   vertical-align: middle;
+}
+
+// 1. Clear padding-left, which would otherwise rotate up/down.
+// 2. Inline elements can't be transformed, and pseudo elements are inline by default, so must apply
+//    display: block or display: inline-block to transform it.
+.text-expand-down:after,
+.text-expand-up:after {
+  padding-left: 0;        // [1]
+  display: inline-block;  // [2]
+}
+
+.text-expand-down:after {
+  padding-bottom: @width-arrow-text-gap-rotated;
+  -webkit-transform: rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -o-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  transform: rotate(90deg);
+}
+
+.text-expand-up:after {
+  padding-top: @width-arrow-text-gap-rotated;
+  -webkit-transform: rotate(-90deg);
+  -moz-transform: rotate(-90deg);
+  -o-transform: rotate(-90deg);
+  -ms-transform: rotate(-90deg);
+  transform: rotate(-90deg);
 }
 
 .text-navigation-menu {
