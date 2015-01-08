@@ -30,6 +30,10 @@ describe('SynchronizeService', function() {
   var now = new Date();
   var putNewItemResponse = getJSONFixture('putItemResponse.json');
   putNewItemResponse.created = putNewItemResponse.modified = now.getTime();
+  var putNewTaskResponse = getJSONFixture('putTaskResponse.json');
+  putNewTaskResponse.created = putNewTaskResponse.modified = now.getTime();
+  var putNewNoteResponse = getJSONFixture('putNoteResponse.json');
+  putNewNoteResponse.created = putNewNoteResponse.modified = now.getTime();
   var putExistingItemResponse = getJSONFixture('putExistingItemResponse.json');
   putExistingItemResponse.modified = now.getTime();
   var deleteItemResponse = getJSONFixture('deleteItemResponse.json');
@@ -1226,7 +1230,7 @@ describe('SynchronizeService', function() {
       .toBe(veryLatestModified);
   });
 
-  it('should handle list offline create, update', function () {
+  it('should handle list offline create, update, delete, undelete', function () {
 
     // 1. save new item
     var testItemValues = {
@@ -1266,7 +1270,53 @@ describe('SynchronizeService', function() {
     expect(lists.length)
       .toBe(5);
 
-    // 4. synchronize items and get back online
+    // 4. add new task to the list
+    var testTaskValues = {
+      title: 'test task',
+      relationships: {
+        parent: lists[4].trans.uuid
+      }
+    };
+    var testTask = TasksService.getNewTask({title: testTaskValues.title, list: lists[4]}, testOwnerUUID);
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
+       .respond(404);
+    TasksService.saveTask(testTask, testOwnerUUID);
+    $httpBackend.flush();
+
+    // 5. delete list offline
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
+       .respond(404);
+    ListsService.deleteList(updatedTestList, testOwnerUUID);
+    $httpBackend.flush();
+
+    expect(lists.length)
+      .toBe(4);
+    expect(updatedTestList.mod.deleted)
+      .toBeDefined();
+    expect(updatedTestList.mod.modified)
+      .toBeDefined();
+    expect(testTask.hist.deletedList)
+      .toBe(updatedTestList.trans.uuid);
+    expect(testTask.mod.relationships.parent)
+      .toBeUndefined();
+
+    // 6. undelete list offline
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
+       .respond(404);
+    ListsService.undeleteList(updatedTestList, testOwnerUUID);
+    $httpBackend.flush();
+    expect(lists.length)
+      .toBe(5);
+    expect(lists[4].mod.deleted)
+      .toBeUndefined();
+    expect(lists[4].mod.modified)
+      .toBeDefined();
+    expect(testTask.hist)
+      .toBeUndefined();
+    expect(testTask.mod.relationships.parent)
+      .toBe(updatedTestList.trans.uuid);
+
+    // 7. synchronize items and get back online
     var latestModified = now.getTime();
     MockUserSessionService.setLatestModified(latestModified);
     $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
@@ -1280,6 +1330,10 @@ describe('SynchronizeService', function() {
                             description: updatedTestList.trans.description,
                             modified: putNewItemResponse.modified})
         .respond(200, putExistingItemResponse);
+    testTaskValues.relationships.parent = putNewItemResponse.uuid;
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task',
+                           testTaskValues)
+        .respond(200, putNewTaskResponse);
     SynchronizeService.synchronize(testOwnerUUID);
     $httpBackend.flush();
 
@@ -1294,8 +1348,10 @@ describe('SynchronizeService', function() {
       .toBe('test description');
     expect(lists[4].description)
       .toBeUndefined();
+    expect(testTask.mod.relationships.parent)
+      .toBe(lists[4].mod.uuid);
 
-    // 5. delete online
+    // 8. delete online
     $httpBackend.expectDELETE('/api/' + testOwnerUUID + '/list/' + updatedTestList.mod.uuid)
        .respond(200, deleteItemResponse);
     ListsService.deleteList(updatedTestList, testOwnerUUID);
@@ -1303,24 +1359,24 @@ describe('SynchronizeService', function() {
 
     expect(lists.length)
       .toBe(4);
-    expect(updatedTestList.deleted)
+    expect(updatedTestList.mod.deleted)
       .toBe(deleteItemResponse.deleted);
-    expect(updatedTestList.modified)
+    expect(updatedTestList.mod.modified)
       .toBe(deleteItemResponse.result.modified);
 
-    // 6. undelete online
+    // 9. undelete online
     $httpBackend.expectPOST('/api/' + testOwnerUUID + '/list/' + updatedTestList.mod.uuid + '/undelete')
        .respond(200, undeleteItemResponse);
     ListsService.undeleteList(updatedTestList, testOwnerUUID);
     $httpBackend.flush();
     expect(lists.length)
       .toBe(5);
-    expect(lists[4].deleted)
+    expect(lists[4].mod.deleted)
       .toBeUndefined();
-    expect(lists[4].modified)
+    expect(lists[4].mod.modified)
       .toBe(undeleteItemResponse.modified);
 
-    // 7. synchronize and get new list as it is back,
+    // 10. synchronize and get new list as it is back,
     $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
                             latestModified + '&deleted=true&archived=true&completed=true')
         .respond(200, {
@@ -1329,8 +1385,16 @@ describe('SynchronizeService', function() {
              title: lists[4].mod.title,
              description: lists[4].mod.description,
              created: lists[4].mod.created,
-             modified: lists[4].mod.modified}]
-          });
+             modified: lists[4].mod.modified}],
+          tasks: [
+            {uuid: testTask.mod.uuid,
+             title: testTask.mod.title,
+             relationships: {
+              parent: lists[4].mod.uuid,
+             },
+             created: testTask.mod.created,
+             modified: testTask.mod.modified}]
+            });
     SynchronizeService.synchronize(testOwnerUUID);
     $httpBackend.flush();
     expect(lists.length)
@@ -1339,6 +1403,10 @@ describe('SynchronizeService', function() {
       .toBeUndefined();
     expect(lists[4].modified)
       .toBe(undeleteItemResponse.modified);
+    expect(testTask.mod)
+      .toBeUndefined();
+    expect(testTask.relationships.parent)
+      .toBe(lists[4].uuid);
   });
 
   it('should handle wait for offline update to finish before doing list archive', function () {
@@ -1405,7 +1473,7 @@ describe('SynchronizeService', function() {
 
   });
 
-  it('should handle tag offline create, update', function () {
+  it('should handle tag offline create, update, delete, undelete', function () {
 
     var tags = TagsService.getTags(testOwnerUUID);
     expect(tags.length)
@@ -1437,7 +1505,51 @@ describe('SynchronizeService', function() {
     expect(tags.length)
       .toBe(4);
 
-    // 3. synchronize items and get back online
+    // 3. create note using tag
+    var testNoteValues = {
+      title: 'test note',
+      relationships: {
+        tags: [testTag.trans.uuid]
+      }
+    };
+    var testNote = NotesService.getNewNote({title: testNoteValues.title, keywords: [testTag]}, testOwnerUUID);
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/tag', testTagValues)
+       .respond(404);
+    NotesService.saveNote(testNote, testOwnerUUID);
+    $httpBackend.flush();
+
+    // 4. delete offline
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/tag', testTagValues)
+       .respond(404);
+    TagsService.deleteTag(testTag, testOwnerUUID);
+    $httpBackend.flush();
+
+    expect(tags.length)
+      .toBe(3);
+    expect(testTag.mod.deleted)
+      .toBeDefined();
+    expect(testTag.mod.modified)
+      .toBeDefined();
+    expect(testNote.mod.relationships.tags)
+      .toBeUndefined();
+
+    // 5. undelete offline
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/tag', testTagValues)
+       .respond(404);
+    TagsService.undeleteTag(testTag, testOwnerUUID);
+    $httpBackend.flush();
+    expect(tags.length)
+      .toBe(4);
+    expect(tags[3].mod.deleted)
+      .toBeUndefined();
+    expect(tags[3].mod.modified)
+      .toBe(undeleteItemResponse.modified);
+    expect(testNote.hist.deletedTags[0])
+      .toBe(testTag.trans.uuid);
+    expect(testNote.mod.relationships.tags)
+      .toBeUndefined();
+
+    // 6. synchronize items and get back online
     var latestModified = now.getTime();
     MockUserSessionService.setLatestModified(latestModified);
     $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
@@ -1452,6 +1564,10 @@ describe('SynchronizeService', function() {
                             tagType: testTag.trans.tagType,
                             modified: putNewItemResponse.modified})
         .respond(200, putExistingItemResponse);
+    testNoteValues.relationships.tags[0] = putNewItemResponse.uuid;
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/note',
+                           testNoteValues)
+        .respond(200, putNewNoteResponse);
     SynchronizeService.synchronize(testOwnerUUID);
     $httpBackend.flush();
 
@@ -1465,7 +1581,7 @@ describe('SynchronizeService', function() {
     expect(tags[3].description)
       .toBeUndefined();
 
-    // 4. delete online
+    // 5. delete online
     $httpBackend.expectDELETE('/api/' + testOwnerUUID + '/tag/' + testTag.mod.uuid)
        .respond(200, deleteItemResponse);
     TagsService.deleteTag(testTag, testOwnerUUID);
@@ -1478,7 +1594,7 @@ describe('SynchronizeService', function() {
     expect(testTag.modified)
       .toBe(deleteItemResponse.result.modified);
 
-    // 5. undelete online
+    // 6. undelete online
     $httpBackend.expectPOST('/api/' + testOwnerUUID + '/tag/' + testTag.mod.uuid + '/undelete')
        .respond(200, undeleteItemResponse);
     TagsService.undeleteTag(testTag, testOwnerUUID);
@@ -1490,7 +1606,7 @@ describe('SynchronizeService', function() {
     expect(tags[3].modified)
       .toBe(undeleteItemResponse.modified);
 
-    // 6. synchronize and get new tag as it is back,
+    // 7. synchronize and get new tag as it is back,
     $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
                             latestModified + '&deleted=true&archived=true&completed=true')
         .respond(200, {

@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
- /*global angular */
+ /*global angular, jQuery */
  'use strict';
 
  function ListsService($q, ArrayService, BackendClientService, ExtendedItemService, ItemLikeService,
@@ -37,6 +37,7 @@
 
   var itemArchiveCallbacks = {};
   var listDeletedCallbacks = {};
+  var listUUIDChangedCallbacks = {};
 
   function initializeArrays(ownerUUID) {
     if (!lists[ownerUUID]) {
@@ -79,8 +80,8 @@
     return [{array: lists[ownerUUID].archivedLists, id: 'archived'}];
   }
 
-  function updateList(list, ownerUUID, oldUUID) {
-    ItemLikeService.persistAndReset(list, 'list', ownerUUID, listFieldInfos, oldUUID);
+  function updateList(list, ownerUUID, oldItemUUID, propertiesToReset) {
+    ItemLikeService.persistAndReset(list, 'list', ownerUUID, listFieldInfos, oldItemUUID, propertiesToReset);
     return ArrayService.updateItem(list,
                                    lists[ownerUUID].activeLists,
                                    lists[ownerUUID].deletedLists,
@@ -114,8 +115,8 @@
       if (listsResponse && listsResponse.length){
         // Go through listsResponse, and add .mod values if the fields in the current .mod do not match
         // the values in the persistent response
-        var updatedLists = [];
-        for (var i=0, len=listsResponse.length; i<len; i++){
+        var updatedLists = [], i, len;
+        for (i=0, len=listsResponse.length; i<len; i++){
           var listInfo = this.getListInfo(listsResponse[i].uuid, ownerUUID);
           if (listInfo){
             updatedLists.push(ItemLikeService.evaluateMod(
@@ -131,7 +132,7 @@
                                                        getOtherArrays(ownerUUID));
         if (latestModified) {
           // Go through response to see if something was deleted
-          for (var i=0, len=updatedLists.length; i<len; i++) {
+          for (i=0, len=updatedLists.length; i<len; i++) {
             if (updatedLists[i].deleted) {
               for (var id in listDeletedCallbacks) {
                 listDeletedCallbacks[id](updatedLists[i], ownerUUID);
@@ -153,7 +154,14 @@
         }else{
           if (!listInfo.list.mod) listInfo.list.mod = {};
           ItemLikeService.updateObjectProperties(listInfo.list.mod, properties);
-          updateList(listInfo.list, ownerUUID, properties.uuid ? uuid : undefined);
+          if (properties.uuid){
+            updateList(listInfo.list, ownerUUID, uuid, properties);
+            for (var id in listUUIDChangedCallbacks) {
+              listUUIDChangedCallbacks[id](uuid, properties.uuid, ownerUUID);
+            }
+          }else{
+            updateList(listInfo.list, ownerUUID, undefined, properties);
+          }
         }
         return listInfo.list;
       }
@@ -179,7 +187,7 @@
     getModifiedLists: function(ownerUUID) {
       return ArrayService.getModifiedItems(lists[ownerUUID].activeLists,
                                             lists[ownerUUID].deletedLists,
-                                            getOtherArrays(ownerUUID))
+                                            getOtherArrays(ownerUUID));
     },
     getListInfo: function(uuid, ownerUUID) {
       return getListInfo(uuid, ownerUUID);
@@ -345,15 +353,45 @@
     registerListDeletedCallback: function(listDeletedCallback, id) {
       listDeletedCallbacks[id] = listDeletedCallback;
     },
+    registerListUUIDChangedCallback: function(listUUIDChangedCallback, id) {
+      listUUIDChangedCallbacks[id] = listUUIDChangedCallback;
+    },
     removeDeletedListFromItems: function(items, deletedList) {
       var modifiedItems = [];
       for (var i = 0, len = items.length; i < len; i++) {
-        if (items[i].relationships) {
-          if (items[i].relationships.parent === deletedList.trans.uuid) {
-            delete items[i].relationships.parent;
-            if (!items[i].relationships.tags) delete items[i].relationships;
-            modifiedItems.push(items[i]);
+        var found = false;
+        if (items[i].relationships && items[i].relationships.parent === deletedList.trans.uuid) {
+          found = true;
+          delete items[i].relationships.parent;
+          if (jQuery.isEmptyObject(items[i].relationships)){
+            delete items[i].relationships;
           }
+
+        }
+        if (items[i].mod && items[i].mod.relationships &&
+                  items[i].mod.relationships.parent === deletedList.trans.uuid){
+          found = true;
+          items[i].mod.relationships.parent = undefined;
+        }
+        if (found){
+          // Add deleted list to item history
+          if (!items[i].hist) items[i].hist = {};
+          items[i].hist.deletedList = deletedList.trans.uuid;
+          modifiedItems.push(items[i]);
+        }
+      }
+      return modifiedItems;
+    },
+    addUndeletedListToItems: function(items, deletedList) {
+      var modifiedItems = [];
+      for (var i = 0, len = items.length; i < len; i++) {
+        if (items[i].hist && items[i].hist.deletedList === deletedList.trans.uuid) {
+          if (!items[i].mod) items[i].mod = {};
+          if (!items[i].mod.relationships) items[i].mod.relationships = {};
+          items[i].mod.relationships.parent = deletedList.trans.uuid;
+          delete items[i].hist.deletedList;
+          if (jQuery.isEmptyObject(items[i].hist)) delete items[i].hist;
+          modifiedItems.push(items[i]);
         }
       }
       return modifiedItems;

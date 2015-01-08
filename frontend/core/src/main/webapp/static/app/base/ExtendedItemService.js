@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
- /*global angular */
+ /*global angular, jQuery */
  'use strict';
 
  function ExtendedItemService(TagsService) {
@@ -36,6 +36,13 @@
       } else{
         if (!extendedItem.mod.relationships) extendedItem.mod.relationships = {};
         extendedItem.mod.relationships.parent = extendedItem.trans.list.trans.uuid;
+        // Remove deletedList from history history
+        if (extendedItem.hist && extendedItem.hist.deletedList !== extendedItem.trans.list.trans.uuid){
+          delete extendedItem.hist.deletedList;
+          if (jQuery.isEmptyObject(extendedItem.hist)){
+            delete extendedItem.hist;
+          }
+        }
       }
     }
   }

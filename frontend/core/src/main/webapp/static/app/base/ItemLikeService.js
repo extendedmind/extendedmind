@@ -395,8 +395,7 @@
       }
       var deferred = $q.defer();
 
-      // TODO: implement offline for lists and tags and remove the two latter conditions!
-      if (UserSessionService.isOfflineEnabled() && itemType !== 'list' && itemType !== 'tag') {
+      if (UserSessionService.isOfflineEnabled()) {
         // Offline
         var params = {
           type: itemType, owner: ownerUUID, uuid: item.trans.uuid,
@@ -439,8 +438,7 @@
         return params.prefix + params.item.trans.uuid + '/undelete';
       }
       var deferred = $q.defer();
-      // TODO: implement offline for lists and tags and remove the two latter conditions!
-      if (UserSessionService.isOfflineEnabled() && itemType !== 'list' && itemType !== 'tag') {
+      if (UserSessionService.isOfflineEnabled()) {
         // Offline
         var params = {type: itemType, owner: ownerUUID, uuid: item.trans.uuid, lastReplaceable: true};
         var fakeTimestamp = BackendClientService.generateFakeTimestamp();

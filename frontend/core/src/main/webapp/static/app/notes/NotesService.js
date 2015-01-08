@@ -113,9 +113,10 @@
   // Setup callback for tag deletion
   var tagDeletedCallback = function(deletedTag, ownerUUID, undelete) {
     if (notes[ownerUUID] && deletedTag) {
+      var modifiedItems;
       if (!undelete){
         // Remove deleted tags from notes
-        var modifiedItems = TagsService.removeDeletedTagFromItems(notes[ownerUUID].activeNotes,
+        modifiedItems = TagsService.removeDeletedTagFromItems(notes[ownerUUID].activeNotes,
                                                                   deletedTag);
         modifiedItems.concat(TagsService.removeDeletedTagFromItems(notes[ownerUUID].deletedNotes,
                                                                    deletedTag));
@@ -125,9 +126,16 @@
           updateNote(modifiedItems[i], ownerUUID);
         }
       }else{
-        // Undelete
-        // TODO: Deleted keywords should not be removed completely but instead put to a note.history
-        // object so that here it would be possible to undo a keyword deletion easily!
+        // Add undeleted tag back to notes
+        modifiedItems = TagsService.addUndeletedTagToItems(notes[ownerUUID].activeNotes,
+                                                                  deletedTag);
+        modifiedItems.concat(TagsService.addUndeletedTagToItems(notes[ownerUUID].deletedNotes,
+                                                                   deletedTag));
+        modifiedItems.concat(TagsService.addUndeletedTagToItems(notes[ownerUUID].archivedNotes,
+                                                                   deletedTag));
+        for (var i=0,len=modifiedItems.length;i<len;i++){
+          updateNote(modifiedItems[i], ownerUUID);
+        }
       }
     }
   };
@@ -136,9 +144,10 @@
   // Setup callback for list deletion
   var listDeletedCallback = function(deletedList, ownerUUID, undelete) {
     if (notes[ownerUUID] && deletedList) {
+      var modifiedItems;
       if (!undelete){
         // Remove deleted list from notes
-        var modifiedItems = ListsService.removeDeletedListFromItems(notes[ownerUUID].activeNotes,
+        modifiedItems = ListsService.removeDeletedListFromItems(notes[ownerUUID].activeNotes,
                                                                     deletedList);
         modifiedItems.concat(ListsService.removeDeletedListFromItems(notes[ownerUUID].deletedNotes,
                                                                      deletedList));
@@ -148,7 +157,17 @@
           updateNote(modifiedItems[i], ownerUUID);
         }
       }else{
-        // TODO: Undelete
+        // Add undeleted list back to notes
+        modifiedItems = ListsService.addUndeletedListToItems(notes[ownerUUID].activeNotes,
+                                                                    deletedList);
+        modifiedItems.concat(ListsService.addUndeletedListToItems(notes[ownerUUID].deletedNotes,
+                                                                     deletedList));
+        modifiedItems.concat(ListsService.addUndeletedListToItems(notes[ownerUUID].archivedNotes,
+                                                                     deletedList));
+        for (var i=0,len=modifiedItems.length;i<len;i++){
+          updateNote(modifiedItems[i], ownerUUID);
+        }
+        return modifiedItems;
       }
     }
   };
@@ -202,7 +221,12 @@
         }else{
           if (!noteInfo.note.mod) noteInfo.note.mod = {};
           ItemLikeService.updateObjectProperties(noteInfo.note.mod, properties);
-          updateNote(noteInfo.note, ownerUUID, properties.uuid ? uuid : undefined, properties);
+          if (properties.uuid){
+            // UUID has changed
+            updateNote(noteInfo.note, ownerUUID, uuid, properties);
+          }else{
+            updateNote(noteInfo.note, ownerUUID, undefined, properties);
+          }
         }
         return noteInfo.note;
       }

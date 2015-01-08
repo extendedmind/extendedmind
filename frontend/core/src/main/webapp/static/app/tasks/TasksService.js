@@ -183,21 +183,29 @@
   // Setup callback for tags
   var tagDeletedCallback = function(deletedTag, ownerUUID, undelete) {
     if (tasks[ownerUUID] && deletedTag) {
+      var modifiedItems, i;
       if (!undelete){
         // Remove tags from existing parents
-        var modifiedItems = TagsService.removeDeletedTagFromItems(tasks[ownerUUID].activeTasks,
+        modifiedItems = TagsService.removeDeletedTagFromItems(tasks[ownerUUID].activeTasks,
                                                                   deletedTag);
         modifiedItems.concat(TagsService.removeDeletedTagFromItems(tasks[ownerUUID].deletedTasks,
                                                                    deletedTag));
         modifiedItems.concat(TagsService.removeDeletedTagFromItems(tasks[ownerUUID].archivedTasks,
                                                                    deletedTag));
-        for (var i=0,len=modifiedItems.length;i<len;i++){
+        for (i=0;i<modifiedItems.length;i++){
           updateTask(modifiedItems[i], ownerUUID);
         }
       }else{
-        // Undelete
-        // TODO: Deleted context should not be removed completely but instead put to a task.history
-        // object so that here it would be possible to undo a context deletion easily!
+        // Add tag back to items on undelete
+        modifiedItems = TagsService.addUndeletedTagToItems(tasks[ownerUUID].activeTasks,
+                                                                    deletedTag);
+        modifiedItems.concat(TagsService.addUndeletedTagToItems(tasks[ownerUUID].deletedTasks,
+                                                                     deletedTag));
+        modifiedItems.concat(TagsService.addUndeletedTagToItems(tasks[ownerUUID].archivedTasks,
+                                                                     deletedTag));
+        for (i=0;i<modifiedItems.length;i++){
+          updateTask(modifiedItems[i], ownerUUID);
+        }
       }
     }
   };
@@ -206,23 +214,65 @@
   // Setup callback for lists
   var listDeletedCallback = function(deletedList, ownerUUID, undelete) {
     if (tasks[ownerUUID] && deletedList){
+      var modifiedItems, i;
       if (!undelete){
         // Remove list from existing parents
-        var modifiedItems = ListsService.removeDeletedListFromItems(tasks[ownerUUID].activeTasks,
+        modifiedItems = ListsService.removeDeletedListFromItems(tasks[ownerUUID].activeTasks,
                                                                     deletedList);
         modifiedItems.concat(ListsService.removeDeletedListFromItems(tasks[ownerUUID].deletedTasks,
                                                                      deletedList));
         modifiedItems.concat(ListsService.removeDeletedListFromItems(tasks[ownerUUID].archivedTasks,
                                                                      deletedList));
-        for (var i=0,len=modifiedItems.length;i<len;i++){
+        for (i=0;i<modifiedItems.length;i++){
           updateTask(modifiedItems[i], ownerUUID);
         }
       }else{
-        // TODO: Undelete
+        // Add list back to items on undelete
+        modifiedItems = ListsService.addUndeletedListToItems(tasks[ownerUUID].activeTasks,
+                                                                    deletedList);
+        modifiedItems.concat(ListsService.addUndeletedListToItems(tasks[ownerUUID].deletedTasks,
+                                                                     deletedList));
+        modifiedItems.concat(ListsService.addUndeletedListToItems(tasks[ownerUUID].archivedTasks,
+                                                                     deletedList));
+        for (i=0;i<modifiedItems.length;i++){
+          updateTask(modifiedItems[i], ownerUUID);
+        }
       }
     }
   };
   ListsService.registerListDeletedCallback(listDeletedCallback, 'TasksService');
+
+  var listUUIDChangedCallback = function(oldListUUID, newListUUID, ownerUUID) {
+    function compareChangedListUUID(task, oldListUUID, newListUUID, ownerUUID) {
+      var found = false;
+      if (task.mod && task.mod.relationships && task.mod.relationships.parent === oldListUUID){
+        task.mod.relationships.parent = newListUUID;
+        found = true;
+      }
+      if (task.relationships && task.relationships.parent === oldListUUID){
+        task.relationships.parent = newListUUID;
+        found = true;
+      }
+      if (tasks.hist && task.hist.deletedList === oldListUUID){
+        tasks.hist.deletedList = newListUUID;
+        found = true;
+      }
+      if (found){
+        updateTask(task, ownerUUID);
+      }
+    }
+    var i;
+    for(i=0; i<tasks[ownerUUID].activeTasks.length; i++){
+      compareChangedListUUID(tasks[ownerUUID].activeTasks[i], oldListUUID, newListUUID, ownerUUID);
+    }
+    for(i=0; i<tasks[ownerUUID].deletedTasks.length; i++){
+      compareChangedListUUID(tasks[ownerUUID].deletedTasks[i], oldListUUID, newListUUID, ownerUUID);
+    }
+    for(i=0; i<tasks[ownerUUID].archivedTasks.length; i++){
+      compareChangedListUUID(tasks[ownerUUID].archivedTasks[i], oldListUUID, newListUUID, ownerUUID);
+    }
+  };
+  ListsService.registerListUUIDChangedCallback(listUUIDChangedCallback, 'TasksService');
 
   return {
     getNewTask: function(initialValues, ownerUUID) {
@@ -274,7 +324,12 @@
         }else{
           if (!taskInfo.task.mod) taskInfo.task.mod = {};
           ItemLikeService.updateObjectProperties(taskInfo.task.mod, properties);
-          updateTask(taskInfo.task, ownerUUID, properties.uuid ? uuid : undefined, properties);
+          if (properties.uuid){
+            // UUID has changed
+            updateTask(taskInfo.task, ownerUUID, uuid, properties);
+          }else{
+            updateTask(taskInfo.task, ownerUUID, undefined, properties);
+          }
         }
         return taskInfo.task;
       }
@@ -493,7 +548,7 @@
           BackendClientService.postOnline('/api/' + ownerUUID + '/task/' + task.trans.uuid + '/uncomplete',
                                           this.uncompleteTaskRegex)
           .then(function(response) {
-            var propertiesToReset = {modified: response.modified, completed: undefined}
+            var propertiesToReset = {modified: response.modified, completed: undefined};
             ItemLikeService.updateObjectProperties(task, propertiesToReset);
             // the above doesn't actually remove the property, which is what we want to do here
             delete task.completed;

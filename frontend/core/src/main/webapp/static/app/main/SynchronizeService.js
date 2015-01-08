@@ -531,6 +531,16 @@
           properties = {favorited: response.favorited, modified: response.result.modified};
         }
         updateModProperties(request.params.uuid, request.params.type, properties, request.params.owner);
+      } else if (request.params.type === 'list') {
+        if (request.content.url.endsWith('/undelete')){
+          properties = {modified: response.modified, deleted: undefined};
+        }
+        updateModProperties(request.params.uuid, request.params.type, properties, request.params.owner);
+      } else if (request.params.type === 'tag') {
+        if (request.content.url.endsWith('/undelete')){
+          properties = {modified: response.modified, deleted: undefined};
+        }
+        updateModProperties(request.params.uuid, request.params.type, properties, request.params.owner);
       }
     // ***
     // PUT
