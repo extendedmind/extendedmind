@@ -103,7 +103,7 @@
   };
 
   $scope.isNoteFooterHidden = function() {
-    return $scope.isTitleClamped();
+    return $scope.isTitleClamped() || $scope.keywordsPickerOpen;
   };
 
   // CONTENT
