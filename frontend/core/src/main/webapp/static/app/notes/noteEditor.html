@@ -165,18 +165,38 @@
             <textarea ng-model="note.trans.link" input-model-validator ng-trim="false" msd-elastic maxlength="128" placeholder="enter url&#8230;" autocapitalize="none" autocorrect="off">
             </textarea>
           </div>
+
+          <div ng-if="note.trans.uuid" class="group-mixed vertically-centered" style="color: #919191; font-size: 13px; line-height: 22px;">
+            <div class="group-mixed--middle">
+              <span>{{::note.trans.created | date:'EEE d MMMM y'}}</span>
+            </div>
+            <div class="group-mixed--right">
+              <span>created</span>
+            </div>
+          </div>
+
+          <div ng-if="note.trans.uuid && note.trans.created !== note.trans.modified" class="group-mixed vertically-centered" style="color: #919191; font-size: 13px; line-height: 22px;">
+            <div class="group-mixed--middle">
+              <span>{{note.trans.modified | date:'EEE d MMMM y'}}</span>
+            </div>
+            <div class="group-mixed--right">
+              <span>modified</span>
+            </div>
+          </div>
+
         </div>
 
         <footer ng-hide="isNoteFooterHidden()" class="container-content--after editor-footer" editor-footer="advancedSlideInfo">
 
-          <div class="table">
-            <div class="table-row">
-              <a href class="table-cell link" ng-click="convertToTask(note)">
-                <span class="text-convert">task</span>
-              </a>
-              <a href class="table-cell link" ng-click="convertToList(note)">
-                <span class="text-convert">list</span>
-              </a>
+          <div class="group-symmetrical">
+            <a href class="group-symmetrical--left" ng-click="convertToTask(note)">
+              <span style="font-size: 13px;" class="text-convert">task</span>
+            </a>
+            <a href style="text-align:center;" class="group-symmetrical--middle" ng-click="convertToNote(note)">
+              <span style="font-size: 13px;" class="text-convert">note</span>
+            </a>
+            <div class="group-symmetrical--right">
+              <span style="font-weight: 300;" class="text-search-type">convert</span>
             </div>
           </div>
 
