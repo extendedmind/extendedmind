@@ -7,7 +7,7 @@
           </span>
         </a>
 
-        <div ng-hide="!isNoteTitleHidden() && isFirstSlide()" class="group-symmetrical--middle width-large">
+        <div ng-hide="!isNoteTitleHidden() && isFirstSlide()" id="noteEditorTitlebarTitle" class="scroll-then-toggle group-symmetrical--middle width-large">
           <a href class="link" ng-click="openNoteTitleEdit()">
             <div><span class="text-heading-primary" clamp=2 ng-bind="note.trans.title ? note.trans.title : 'untitled note'"></span></div>
           </a>
@@ -27,13 +27,13 @@
   <div class="swiper-container container-fluid--inner" swiper-container="noteEditor" swiper-type="main" expected-slides="2" swiper-container-slide-changed="editorSwiperSlideChanged()">
     <div class="swiper-wrapper" ng-class="onboardingInProgress && 'swiper-no-swiping'">
       <div class="swiper-slide" swiper-slide="noteEditor/basic" slide-index="0">
-        <div ng-style="{'padding-bottom': mode === 'fullScreen' ? 0 : EDITOR_FOOTER_HEIGHT}" class="container-content" drawer-override-aisle="right" swiper-prevent>
+        <div ng-style="{'padding-bottom': mode === 'fullScreen' ? 0 : EDITOR_FOOTER_HEIGHT}" class="container-content" drawer-override-aisle="right" swiper-prevent scroll-then-toggle="noteEditorTitlebarTitle" scroll-then-toggle-top="noteEditorTitle" scroll-then-toggle-resizeable="noteEditorTitleInput">
 
           <!-- NOTE TITLE -->
-          <div ng-hide="isNoteTitleHidden()">
+          <div ng-hide="isNoteTitleHidden()" id="noteEditorTitle">
             <div class="group-mixed with-checkbox large">
               <div class="group-mixed--middle">
-                <textarea class="text-heading-primary large" ng-model="note.trans.title" input-model-validator ng-trim="false" ng-keydown="noteTitlebarTextKeyDown($event)" ng-focus="noteTitleFocused()" editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)" msd-elastic placeholder="enter title&#8230;" maxlength="128" autocapitalize="none" autocorrect="off">
+                <textarea id="noteEditorTitleInput" class="text-heading-primary large" ng-model="note.trans.title" input-model-validator ng-trim="false" ng-keydown="noteTitlebarTextKeyDown($event)" ng-focus="noteTitleFocused()" editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)" msd-elastic placeholder="enter title&#8230;" maxlength="128" autocapitalize="none" autocorrect="off">
                 </textarea>
               </div>
 
@@ -55,7 +55,7 @@
 
           </div>
 
-          <div ng-if="!listPickerOpen && !keywordsPickerOpen">
+          <div ng-hide="listPickerOpen || keywordsPickerOpen">
 
             <!-- COLLAPSIBLE-->
             <div ng-if="collapsibleOpen">
@@ -161,7 +161,7 @@
         <div ng-style="{'padding-bottom': advancedSlideInfo.footerHeight}" class="container-content" swiper-prevent>
 
           <!-- URL -->
-          <div ng-hide="mode === 'fullScreen'" class="row-vertically-centered with-textarea">
+          <div class="row-vertically-centered with-textarea">
             <textarea ng-model="note.trans.link" input-model-validator ng-trim="false" msd-elastic maxlength="128" placeholder="enter url&#8230;" autocapitalize="none" autocorrect="off">
             </textarea>
           </div>
