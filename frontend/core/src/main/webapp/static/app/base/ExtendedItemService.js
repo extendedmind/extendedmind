@@ -80,7 +80,7 @@
         if (!destination.relationships) destination.relationships = {};
         destination.relationships.tags = [];
         for (var i = 0, len = origin.keywords.length; i < len; i++) {
-          destination.relationships.tags.push(origin.keywords[i].uuid);
+          destination.relationships.tags.push(origin.keywords[i].trans.uuid);
         }
       }
     }
@@ -122,8 +122,8 @@
       var filteredTags = [];
       for (var i = 0, len = origin.keywords.length; i < len; i++) {
         var transientKeyword = origin.keywords[i];
-        if (destination.relationships.tags.indexOf(transientKeyword.uuid) === -1) {
-          filteredTags.push(transientKeyword.uuid);
+        if (destination.relationships.tags.indexOf(transientKeyword.trans.uuid) === -1) {
+          filteredTags.push(transientKeyword.trans.uuid);
         }
       }
       return filteredTags;
@@ -160,7 +160,7 @@
             for (var i = 0, len = extendedItem.mod.relationships.tags.length; i < len; i++) {
               var tagInfo = TagsService.getTagInfo(extendedItem.mod.relationships.tags[i], ownerUUID);
               if (tagInfo && tagInfo.tag.tagType === 'context') {
-                if (tagInfo.tag.uuid === contextUUID) foundCurrentTag = true;
+                if (tagInfo.tag.trans.uuid === contextUUID) foundCurrentTag = true;
                 else previousContextIndex = i;
               }
             }
@@ -258,7 +258,7 @@
             }
             // Check that every keyword is found in mod.relationship.tags array
             for (var i=0, len=extendedItem.trans.keywords.length; i<len; i++){
-              if (extendedItem.mod.relationships.tags.indexOf(extendedItem.trans.keywords[i].uuid) === -1)
+              if (extendedItem.mod.relationships.tags.indexOf(extendedItem.trans.keywords[i].trans.uuid) === -1)
                 return true;
             }
           }else if (extendedItem.relationships){
@@ -268,7 +268,7 @@
             }
             // Check that every keyword is found in relationship.tags array
             for (var i=0, len=extendedItem.trans.keywords.length; i<len; i++){
-              if (extendedItem.relationships.tags.indexOf(extendedItem.trans.keywords[i].uuid) === -1)
+              if (extendedItem.relationships.tags.indexOf(extendedItem.trans.keywords[i].trans.uuid) === -1)
                 return true;
             }
           }

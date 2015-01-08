@@ -74,10 +74,11 @@
       if (tagsResponse && tagsResponse.length){
         // Go through tagsResponse, and add .mod values if the fields in the current .mod do not match
         // the values in the persistent response
-        var updatedTags = [], i;
+        var updatedTags = [], locallyDeletedTags = [], i;
         for (i=0; i<tagsResponse.length; i++){
           var tagInfo = this.getTagInfo(tagsResponse[i].uuid, ownerUUID);
           if (tagInfo){
+            if (tagInfo.tag.trans.deleted) locallyDeletedTags.push(tagInfo.tag);
             updatedTags.push(ItemLikeService.evaluateMod(
                                 tagsResponse[i], tagInfo.tag, 'tag', ownerUUID, tagFieldInfos));
           }else{
@@ -90,11 +91,16 @@
                                                        tags[ownerUUID].activeTags,
                                                        tags[ownerUUID].deletedTags);
         if (latestModified) {
-          // Go through response to see if something was deleted
+          // Go through response to see if something was deleted or undeleted
           for (i=0; i<updatedTags.length; i++) {
             if (updatedTags[i].deleted) {
               for (var id in tagDeletedCallbacks) {
                 tagDeletedCallbacks[id](updatedTags[i], ownerUUID);
+              }
+            }else if (locallyDeletedTags.indexOf(updatedTags[i]) !== -1){
+              // Undeleted in another client
+              for (var id in tagDeletedCallbacks) {
+                tagDeletedCallbacks[id](updatedTags[i], ownerUUID, true);
               }
             }
           }
@@ -242,13 +248,7 @@
             items[i].mod.relationships.tags){
 
           deletedTagIndex = items[i].mod.relationships.tags.indexOf(deletedTag.trans.uuid);
-          console.log(deletedTag)
-          console.log(items[i])
-
-
           if (deletedTagIndex !== -1) {
-            console.log("HERE")
-
             found = true;
             items[i].mod.relationships.tags.splice(deletedTagIndex, 1);
             if (items[i].mod.relationships.tags.length === 0){
@@ -262,6 +262,31 @@
           if (!items[i].hist.deletedTags) items[i].hist.deletedTags = [];
           items[i].hist.deletedTags.push(deletedTag.trans.uuid);
           modifiedItems.push(items[i]);
+        }
+      }
+      return modifiedItems;
+    },
+    addUndeletedTagToItems: function(items, deletedTag) {
+      var modifiedItems = [];
+      for (var i = 0, len = items.length; i < len; i++) {
+        if (items[i].hist && items[i].hist.deletedTags){
+          var deletedTagIndex = items[i].hist.deletedTags.indexOf(deletedTag.trans.uuid);
+          if (deletedTagIndex !== -1){
+            // Only add to mod if not already in persistent fields
+            if (!items[i].relationships || !items[i].relationships.tags ||
+                items[i].relationships.tags.indexOf(deletedTag.trans.uuid) === -1){
+              if (!items[i].mod) items[i].mod = {};
+              if (!items[i].mod.relationships) items[i].mod.relationships = {};
+              if (!items[i].mod.relationships.tags) items[i].mod.relationships.tags = [];
+              items[i].mod.relationships.tags.push(deletedTag.trans.uuid);
+            }
+            items[i].hist.deletedTags.splice(deletedTagIndex, 1);
+            if (items[i].hist.deletedTags.length === 0){
+              delete items[i].hist.deletedTags;
+              if (jQuery.isEmptyObject(items[i].hist)) delete items[i].hist;
+            }
+            modifiedItems.push(items[i]);
+          }
         }
       }
       return modifiedItems;

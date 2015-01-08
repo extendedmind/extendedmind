@@ -1530,6 +1530,8 @@ describe('SynchronizeService', function() {
       .toBeDefined();
     expect(testTag.mod.modified)
       .toBeDefined();
+    expect(testNote.hist.deletedTags[0])
+      .toBe(testTag.mod.uuid);
     expect(testNote.mod.relationships.tags)
       .toBeUndefined();
 
@@ -1543,11 +1545,11 @@ describe('SynchronizeService', function() {
     expect(tags[3].mod.deleted)
       .toBeUndefined();
     expect(tags[3].mod.modified)
-      .toBe(undeleteItemResponse.modified);
-    expect(testNote.hist.deletedTags[0])
-      .toBe(testTag.trans.uuid);
-    expect(testNote.mod.relationships.tags)
+      .toBeDefined();
+    expect(testNote.hist)
       .toBeUndefined();
+    expect(testNote.mod.relationships.tags[0])
+      .toBe(testTag.mod.uuid);
 
     // 6. synchronize items and get back online
     var latestModified = now.getTime();
@@ -1589,9 +1591,9 @@ describe('SynchronizeService', function() {
 
     expect(tags.length)
       .toBe(3);
-    expect(testTag.deleted)
+    expect(testTag.mod.deleted)
       .toBe(deleteItemResponse.deleted);
-    expect(testTag.modified)
+    expect(testTag.mod.modified)
       .toBe(deleteItemResponse.result.modified);
 
     // 6. undelete online
@@ -1599,11 +1601,9 @@ describe('SynchronizeService', function() {
        .respond(200, undeleteItemResponse);
     TagsService.undeleteTag(testTag, testOwnerUUID);
     $httpBackend.flush();
-    expect(tags.length)
-      .toBe(4);
-    expect(tags[3].deleted)
+    expect(tags[3].mod.deleted)
       .toBeUndefined();
-    expect(tags[3].modified)
+    expect(tags[3].mod.modified)
       .toBe(undeleteItemResponse.modified);
 
     // 7. synchronize and get new tag as it is back,
@@ -1616,8 +1616,16 @@ describe('SynchronizeService', function() {
              tagType: tags[3].mod.tagType,
              description: tags[3].mod.description,
              created: tags[3].mod.created,
-             modified: tags[3].mod.modified}]
-          });
+             modified: tags[3].mod.modified}],
+          notes: [
+            {uuid: testNote.mod.uuid,
+             title: testNote.mod.title,
+             relationships: {
+              parent: tags[3].mod.uuid,
+             },
+             created: testNote.mod.created,
+             modified: testNote.mod.modified}]
+            });
     SynchronizeService.synchronize(testOwnerUUID);
     $httpBackend.flush();
     expect(tags.length)
@@ -1626,6 +1634,11 @@ describe('SynchronizeService', function() {
       .toBeUndefined();
     expect(tags[3].modified)
       .toBe(undeleteItemResponse.modified);
+    expect(testNote.mod)
+      .toBeUndefined();
+    expect(testNote.hist)
+      .toBeUndefined();
+
   });
 
 

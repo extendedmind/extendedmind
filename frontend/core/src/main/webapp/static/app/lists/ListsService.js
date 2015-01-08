@@ -115,10 +115,11 @@
       if (listsResponse && listsResponse.length){
         // Go through listsResponse, and add .mod values if the fields in the current .mod do not match
         // the values in the persistent response
-        var updatedLists = [], i, len;
-        for (i=0, len=listsResponse.length; i<len; i++){
+        var updatedLists = [], locallyDeletedLists = [], i;
+        for (i=0; i<listsResponse.length; i++){
           var listInfo = this.getListInfo(listsResponse[i].uuid, ownerUUID);
           if (listInfo){
+            if (listInfo.list.trans.deleted) locallyDeletedLists.push(listInfo.list);
             updatedLists.push(ItemLikeService.evaluateMod(
                                 listsResponse[i], listInfo.list, 'list', ownerUUID, listFieldInfos));
           }else{
@@ -132,10 +133,15 @@
                                                        getOtherArrays(ownerUUID));
         if (latestModified) {
           // Go through response to see if something was deleted
-          for (i=0, len=updatedLists.length; i<len; i++) {
+          for (i=0; i<updatedLists.length; i++) {
             if (updatedLists[i].deleted) {
               for (var id in listDeletedCallbacks) {
                 listDeletedCallbacks[id](updatedLists[i], ownerUUID);
+              }
+            }else if (locallyDeletedLists.indexOf(updatedLists[i]) !== -1){
+              // Undeleted in another client
+              for (var id in listDeletedCallbacks) {
+                listDeletedCallbacks[id](updatedLists[i], ownerUUID, true);
               }
             }
           }
@@ -386,9 +392,12 @@
       var modifiedItems = [];
       for (var i = 0, len = items.length; i < len; i++) {
         if (items[i].hist && items[i].hist.deletedList === deletedList.trans.uuid) {
-          if (!items[i].mod) items[i].mod = {};
-          if (!items[i].mod.relationships) items[i].mod.relationships = {};
-          items[i].mod.relationships.parent = deletedList.trans.uuid;
+          // Only add to mod if not already in persistent fields
+          if (!items[i].relationships || items[i].relationships.parent !== deletedTag.trans.uuid){
+            if (!items[i].mod) items[i].mod = {};
+            if (!items[i].mod.relationships) items[i].mod.relationships = {};
+            items[i].mod.relationships.parent = deletedList.trans.uuid;
+          }
           delete items[i].hist.deletedList;
           if (jQuery.isEmptyObject(items[i].hist)) delete items[i].hist;
           modifiedItems.push(items[i]);
