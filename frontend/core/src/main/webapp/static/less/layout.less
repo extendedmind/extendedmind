@@ -796,6 +796,7 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 
 // FIXME: rename move (overrides.less)
 @padding-vertically-centered: 11px;
+@padding-vertically-centered-small-content: 13px;
 @group-mixed--left-vertical-padding: 8px;
 
 // 1. Set vertical-align: baseline so that checkbox and navigation arrow icon is aligned to the first row of
@@ -807,6 +808,7 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 // 4. Clear line-height (for multiline text as well).
 // 5. Align vertically.
 //    textarea is 22px, .group-mixed default height is 44px, use remaining 22px for padding.
+//    NOTE: Small textarea is 18px.
 // 6. Increase click area by inheriting padding-top and -bottom from .group-mixed--middle.
 // 7. Add space between first and last link inside.
 // 8. Align search type vertically with first row of search result text inside .group-mixed--middle.
@@ -843,6 +845,10 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
       margin-top: -@padding-vertically-centered;    // [6]
       padding-bottom: inherit; // [6]
       margin-bottom: -@padding-vertically-centered; // [6]
+      &.link-list-item {
+        padding-top: @padding-vertically-centered-small-content;    // [5]
+        padding-bottom: @padding-vertically-centered-small-content; // [5]
+      }
     }
     & > a:first-of-type:not(:only-of-type) {
       margin-bottom: -@padding-vertically-centered / 2; // [7]
