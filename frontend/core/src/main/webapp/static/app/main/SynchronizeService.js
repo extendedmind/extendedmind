@@ -16,8 +16,8 @@
  /* global angular, jQuery */
  'use strict';
 
- function SynchronizeService($q, $rootScope, BackendClientService, ItemsService, ListsService,
-                             NotesService, PersistentStorageService, TagsService, TasksService,
+ function SynchronizeService($q, $rootScope, BackendClientService, ItemLikeService, ItemsService,
+                             ListsService, NotesService, PersistentStorageService, TagsService, TasksService,
                              UserService, UserSessionService) {
 
   var itemsRegex = /\/items/;
@@ -206,6 +206,28 @@
     }
   }
 
+  function isListAsParentInResponse(response, listUUID){
+    var i;
+    if (response.tasks && response.tasks.length){
+      for (i=0; i<response.tasks.length; i++){
+        if (response.tasks[i].relationships && response.tasks[i].relationships.parent === listUUID)
+          return true;
+      }
+    }
+    if (response.notes && response.notes.length){
+      for (i=0; i<response.notes.length; i++){
+        if (response.notes[i].relationships && response.notes[i].relationships.parent === listUUID)
+          return true;
+      }
+    }
+    if (response.lists && response.lists.length){
+      for (i=0; i<response.lists.length; i++){
+        if (response.lists[i].relationships && response.lists[i].relationships.parent === listUUID)
+          return true;
+      }
+    }
+  }
+
   function removeItemFromResponse(response, uuid, itemType){
     var index;
     switch(itemType) {
@@ -349,6 +371,44 @@
               }else if (queue[i].content.url.endsWith('/unfavorite') && !conflictingItem.favorited){
                 queue.splice(i, 1);
                 continue;
+              }else if (queue[i].params.type === 'task' &&
+                        queue[i].content.url.endsWith('/note') ||
+                        queue[i].content.url.endsWith('/list')){
+                if (!(queue[i].content.url.endsWith('/list') && conflictingItem.relationships &&
+                      conflictingItem.relationships.parent)){
+                  // Converting task: do the convert, but replace payload to server version
+                  queue[i].content.data = ItemLikeService.createTransportItem(conflictingItem,
+                                                                            TasksService.taskFieldInfos);
+                }else{
+                  // Has list already, ignore convert to list
+                  queue.splice(i, 1);
+                  continue;
+                }
+              }else if (queue[i].params.type === 'note' &&
+                        queue[i].content.url.endsWith('/task') ||
+                        queue[i].content.url.endsWith('/list')){
+                if (!(queue[i].content.url.endsWith('/list') && conflictingItem.relationships &&
+                    conflictingItem.relationships.parent)){
+                  // Converting note: do the convert, but replace payload to server version
+                  queue[i].content.data = ItemLikeService.createTransportItem(conflictingItem,
+                                                                              NotesService.noteFieldInfos);
+                }else{
+                  // Has list already, ignore convert to list
+                  queue.splice(i, 1);
+                  continue;
+                }
+              }else if (queue[i].params.type === 'list' &&
+                        queue[i].content.url.endsWith('/note') ||
+                        queue[i].content.url.endsWith('/list')){
+                if (!isListAsParentInResponse(response, queue[i].params.uuid)){
+                  // Converting list: do the convert, but replace payload to server version
+                  queue[i].content.data = ItemLikeService.createTransportItem(conflictingItem,
+                                                                              ListsService.listFieldInfos);
+                }else{
+                  // don't do the convert as the list has children now
+                  queue.splice(i, 1);
+                  continue;
+                }
               }
             }
           }else if (conflictingItemInfo && conflictingItemInfo.type !== queue[i].params.type){
@@ -842,7 +902,7 @@
   };
 }
 
-SynchronizeService['$inject'] = ['$q', '$rootScope', 'BackendClientService', 'ItemsService',
-'ListsService', 'NotesService', 'PersistentStorageService', 'TagsService', 'TasksService',
+SynchronizeService['$inject'] = ['$q', '$rootScope', 'BackendClientService', 'ItemLikeService',
+'ItemsService', 'ListsService', 'NotesService', 'PersistentStorageService', 'TagsService', 'TasksService',
 'UserService', 'UserSessionService'];
 angular.module('em.main').factory('SynchronizeService', SynchronizeService);
