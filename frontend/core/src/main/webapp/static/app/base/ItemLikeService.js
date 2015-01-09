@@ -123,12 +123,12 @@
     }
   }
 
-  function copyToPersistent(origin, item, ownerUUID, fieldInfos){
+  function copyToPersistent(origin, item, ownerUUID, fieldInfos, includeNonExistent){
     if (origin){
       for (var i=0, len=fieldInfos.length; i<len; i++){
         var fieldName = angular.isObject(fieldInfos[i]) ? fieldInfos[i].name : fieldInfos[i];
 
-        if (origin.hasOwnProperty(fieldName)) {
+        if (includeNonExistent || origin.hasOwnProperty(fieldName)) {
           // OBJECT
           if (angular.isObject(origin[fieldName])) {
             // NOTE: Should this fail, there is something wrong with the data model
@@ -275,7 +275,7 @@
         // Either there is no modifications or item modifications haven't reached the backend,
         // make persistent values match the database but leave .mod as it is: we're hoping the
         // next update will bring values that match
-        copyToPersistent(databaseItem, item, ownerUUID, fieldInfos);
+        copyToPersistent(databaseItem, item, ownerUUID, fieldInfos, true);
       }
       return item;
     },
