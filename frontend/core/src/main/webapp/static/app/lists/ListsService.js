@@ -393,7 +393,7 @@
       for (var i = 0, len = items.length; i < len; i++) {
         if (items[i].hist && items[i].hist.deletedList === deletedList.trans.uuid) {
           // Only add to mod if not already in persistent fields
-          if (!items[i].relationships || items[i].relationships.parent !== deletedTag.trans.uuid){
+          if (!items[i].relationships || items[i].relationships.parent !== deletedList.trans.uuid){
             if (!items[i].mod) items[i].mod = {};
             if (!items[i].mod.relationships) items[i].mod.relationships = {};
             items[i].mod.relationships.parent = deletedList.trans.uuid;
