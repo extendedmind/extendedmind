@@ -945,9 +945,16 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 }
 
 // 1. Apply vertical center directly into container when used as a textarea wrapper.
+// 2. Divide horintal padding evenly between container and textarea to improve text editing in touch devices.
 .row-vertically-centered.with-textarea {
   padding-top: @padding-vertically-centered;    // [1]
   padding-bottom: @padding-vertically-centered; // [1]
+  padding-left: @grid-horizontal / 2;     // [2]
+  padding-right: @grid-horizontal / 2;    // [2]
+  & > textarea {
+    padding-left: @grid-horizontal / 2;   // [2]
+    padding-right: @grid-horizontal / 2;  // [2]
+  }
 }
 
 // Heading is long, multiple lines need smaller spacing, so the method above does not work
