@@ -129,8 +129,12 @@
         var fieldName = angular.isObject(fieldInfos[i]) ? fieldInfos[i].name : fieldInfos[i];
 
         if (includeNonExistent || origin.hasOwnProperty(fieldName)) {
+          // When non existent values are to be seen as deleted, delete the value if it is missing
+          if (includeNonExistent && !origin.hasOwnProperty(fieldName) && item.hasOwnProperty(fieldName)){
+            delete item[fieldName];
+          }
           // OBJECT
-          if (angular.isObject(origin[fieldName])) {
+          else if (angular.isObject(origin[fieldName])) {
             // NOTE: Should this fail, there is something wrong with the data model
             // From http://stackoverflow.com/a/1144249
             if (JSON.stringify(item[fieldName]) !== JSON.stringify(origin[fieldName])) {
@@ -140,8 +144,12 @@
           }
           // SINGLE VALUE
           else if (item[fieldName] !== origin[fieldName]) {
-            // This field has been modified, and the modification does not match
-            item[fieldName] = origin[fieldName];
+            if (includeNonExistent && !origin.hasOwnProperty(fieldName) && item.hasOwnProperty(fieldName)){
+              delete item[fieldName];
+            }else {
+              // This field has been modified, and the modification does not match
+              item[fieldName] = origin[fieldName];
+            }
           }
         }
       }
