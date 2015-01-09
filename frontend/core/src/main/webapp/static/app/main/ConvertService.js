@@ -201,7 +201,7 @@
         if (UserSessionService.isOfflineEnabled()) {
           // Offline
           var params = {
-            type: 'task', owner: ownerUUID, uuid: task.trans.uuid, lastReplaceable: false
+            type: 'note', owner: ownerUUID, uuid: task.trans.uuid, lastReplaceable: false
           };
           var fakeTimestamp = BackendClientService.generateFakeTimestamp();
           BackendClientService.postOffline(path, this.convertTaskToNoteRegex,
@@ -235,7 +235,7 @@
         if (UserSessionService.isOfflineEnabled()) {
           // Offline
           var params = {
-            type: 'task', owner: ownerUUID, uuid: task.trans.uuid, lastReplaceable: false
+            type: 'list', owner: ownerUUID, uuid: task.trans.uuid, lastReplaceable: false
           };
           var fakeTimestamp = BackendClientService.generateFakeTimestamp();
           BackendClientService.postOffline(path, this.convertTaskToListRegex,
@@ -266,7 +266,7 @@
         if (UserSessionService.isOfflineEnabled()) {
           // Offline
           var params = {
-            type: 'note', owner: ownerUUID, uuid: note.trans.uuid, lastReplaceable: false
+            type: 'task', owner: ownerUUID, uuid: note.trans.uuid, lastReplaceable: false
           };
           var fakeTimestamp = BackendClientService.generateFakeTimestamp();
           BackendClientService.postOffline(path, this.convertNoteToTaskRegex,
@@ -300,7 +300,7 @@
         if (UserSessionService.isOfflineEnabled()) {
           // Offline
           var params = {
-            type: 'note', owner: ownerUUID, uuid: note.trans.uuid, lastReplaceable: false
+            type: 'list', owner: ownerUUID, uuid: note.trans.uuid, lastReplaceable: false
           };
           var fakeTimestamp = BackendClientService.generateFakeTimestamp();
           BackendClientService.postOffline(path, this.convertNoteToListRegex,
@@ -330,7 +330,7 @@
         if (UserSessionService.isOfflineEnabled()) {
           // Offline
           var params = {
-            type: 'list', owner: ownerUUID, uuid: list.trans.uuid, lastReplaceable: false
+            type: 'task', owner: ownerUUID, uuid: list.trans.uuid, lastReplaceable: false
           };
           var fakeTimestamp = BackendClientService.generateFakeTimestamp();
           BackendClientService.postOffline(path, this.convertListToTaskRegex,
@@ -360,7 +360,7 @@
         if (UserSessionService.isOfflineEnabled()) {
           // Offline
           var params = {
-            type: 'list', owner: ownerUUID, uuid: list.trans.uuid, lastReplaceable: false
+            type: 'note', owner: ownerUUID, uuid: list.trans.uuid, lastReplaceable: false
           };
           var fakeTimestamp = BackendClientService.generateFakeTimestamp();
           BackendClientService.postOffline(path, this.convertListToNoteRegex,
