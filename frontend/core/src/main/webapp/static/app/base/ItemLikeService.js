@@ -307,6 +307,7 @@
     },
     copyModToPersistent: copyModToPersistent,
     createTransportItem: createTransportItem,
+    prepareTransport: prepareTransport,
     // Returns promise which returns 'new', 'existing', 'unmodified', or failure on failed save because
     // data is invalid
     save: function(item, itemType, ownerUUID, fieldInfos){

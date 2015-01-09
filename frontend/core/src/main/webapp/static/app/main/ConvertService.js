@@ -197,7 +197,8 @@
         deferred.reject({type: 'deleted'});
       } else {
         var path = '/api/' + ownerUUID + '/task/' + task.trans.uuid + '/note';
-        var transportTask = ItemLikeService.createTransportItem(task, TasksService.taskFieldInfos);
+        var transportTask = ItemLikeService.prepareTransport(task, 'task',
+                                                             ownerUUID, TasksService.taskFieldInfos);
         if (UserSessionService.isOfflineEnabled()) {
           // Offline
           var params = {
@@ -231,7 +232,8 @@
         // Remove pre-existing list before converting to list.
         removeList(task);
         var path = '/api/' + ownerUUID + '/task/' + task.uuid + '/list';
-        var transportTask = ItemLikeService.createTransportItem(task, TasksService.taskFieldInfos);
+        var transportTask = ItemLikeService.prepareTransport(task, 'task',
+                                                             ownerUUID, TasksService.taskFieldInfos);
         if (UserSessionService.isOfflineEnabled()) {
           // Offline
           var params = {
@@ -262,7 +264,8 @@
         deferred.reject({type: 'deleted'});
       } else {
         var path = '/api/' + ownerUUID + '/note/' + note.uuid + '/task';
-        var transportNote = ItemLikeService.createTransportItem(note, NotesService.noteFieldInfos);
+        var transportNote = ItemLikeService.prepareTransport(note, 'note',
+                                                             ownerUUID, NotesService.noteFieldInfos);
         if (UserSessionService.isOfflineEnabled()) {
           // Offline
           var params = {
@@ -296,7 +299,8 @@
         removeList(note);
 
         var path = '/api/' + ownerUUID + '/note/' + note.uuid + '/list';
-        var transportNote = ItemLikeService.createTransportItem(note, NotesService.noteFieldInfos);
+        var transportNote = ItemLikeService.prepareTransport(note, 'note',
+                                                             ownerUUID, NotesService.noteFieldInfos);
         if (UserSessionService.isOfflineEnabled()) {
           // Offline
           var params = {
@@ -326,7 +330,8 @@
         deferred.reject({type: 'deleted'});
       } else {
         var path = '/api/' + ownerUUID + '/list/' + list.uuid + '/task';
-        var transportList = ItemLikeService.createTransportItem(list, ListsService.listFieldInfos);
+        var transportList = ItemLikeService.prepareTransport(list, 'list',
+                                                             ownerUUID, ListsService.listFieldInfos);
         if (UserSessionService.isOfflineEnabled()) {
           // Offline
           var params = {
@@ -356,7 +361,8 @@
         deferred.reject({type: 'deleted'});
       } else {
         var path = '/api/' + ownerUUID + '/list/' + list.uuid + '/note';
-        var transportList = ItemLikeService.createTransportItem(list, ListsService.listFieldInfos);
+        var transportList = ItemLikeService.prepareTransport(list, 'list',
+                                                             ownerUUID, ListsService.listFieldInfos);
         if (UserSessionService.isOfflineEnabled()) {
           // Offline
           var params = {
