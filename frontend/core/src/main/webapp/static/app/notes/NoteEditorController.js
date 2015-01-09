@@ -70,17 +70,7 @@
 
   // MODES
 
-  $scope.noteTitleFocused = function(){
-    // if ($scope.isFirstSlide()){
-      // $scope.mode = 'fullScreen';
-    // }
-  };
-
   $scope.noteContentFocused = function(){
-    // if ($scope.isFirstSlide()){
-      // $scope.mode = 'fullScreen';
-      // $scope.hideNoteTitle = true;
-    // }
     $scope.contentFocused = true;
   };
 
@@ -88,28 +78,12 @@
     $scope.contentFocused = false;
   };
 
-  $scope.toggleNoteEditMode = function(){
-    if ($scope.mode === 'fullScreen'){
-      $scope.mode = undefined;
-    }else if ($scope.mode === 'view'){
-      $scope.mode = undefined;
-    }else {
-      $scope.mode = 'view';
-    }
-    $scope.hideNoteTitle = false;
-  };
-
   $scope.openNoteTitleEdit = function() {
-    $scope.hideNoteTitle = false;
+    // TODO: Scroll and swipe
   };
 
-  $scope.isNoteTitleHidden = function() {
-    return $scope.hideNoteTitle || $scope.listPickerOpen || $scope.keywordsPickerOpen ||
-    $scope.contentFocused;
-  };
-
-  $scope.isNoteFooterHidden = function() {
-    return $scope.isTitleClamped() || $scope.keywordsPickerOpen || $scope.contentFocused;
+  $scope.isNotePropertyInEdit = function() {
+    return $scope.contentFocused || $scope.listPickerOpen || $scope.keywordsPickerOpen;
   };
 
   // CONTENT

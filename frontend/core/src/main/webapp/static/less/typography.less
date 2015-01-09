@@ -319,18 +319,26 @@ Convert texts.
 }
 
 /*
+Keywords
+*/
+
+.text-keyword {
+  font-size: @size-font-small;
+}
+
+/*
 Search results (omnibar, deleted)
 */
 
 @line-height-text-search: @grid-vertical-half;
 
+// FIXME: merge with .text-search-result
 // 1. Align vertically with .text-search-type, which has different font-size, using same line-height in both
 //    classes.
 .text-search-result {
   line-height: @line-height-text-search; // [1]
   font-size: @size-font-medium;
 }
-
 // 1. Align vertically with .text-search-result, which has different font-size, using same line-height in both
 //    classes.
 .text-search-type {
@@ -341,11 +349,37 @@ Search results (omnibar, deleted)
   // Undo break words
   .dont-break-words();
 }
-
-/*
-Keywords
-*/
-
-.text-keyword {
+// FIXME: merge with .text-search-result
+.text-field {
+  line-height: @line-height-text-search; // [1]
+  font-size: @size-font-medium;
+}
+.text-field-label {
+  vertical-align: top;
   font-size: @size-font-small;
+  display: block;
+  color: @color-text-downplayed;
+  font-size: @size-font-small;
+  .dont-break-words();
+  padding-top: 11px;
+  padding-bottom: 11px;
+  line-height: 22px;
+
+}
+// FIXME: .text-field-label-multi-row == .group-symmetrical--middle > a > div
+.text-field-label-multi-row {
+  text-align: center;
+  height: inherit;
+  display: table-cell;
+  vertical-align: middle;
+  .text-field-label {
+    white-space: pre;
+    padding-top: 0;
+    padding-bottom: 0;
+    line-height: @size-font-small;
+    margin-top: 3px;
+  }
+}
+header .text-field-label {
+  .set-font-bold();
 }

@@ -2,30 +2,30 @@
   <header class="container-titlebar">
     <div class="container-titlebar--inner">
       <div class="group-symmetrical height-large">
-        <a href ng-hide="listPickerOpen || keywordsPickerOpen || contentFocused" class="group-symmetrical--left link-navigation active" ng-class="isNoteEdited() && !note.deleted ? 'highlighted' : 'downplayed'" ng-click="endNoteEdit()" >
-          <span class="text-navigation-back" ng-class="!isFirstSlide() && 'not-swipeable'" ng-bind="isNoteEdited() && !note.deleted ? 'save' : 'back'">
-          </span>
+
+        <a href ng-hide="isNotePropertyInEdit()" class="group-symmetrical--left link-navigation active" ng-class="isNoteEdited() && !note.deleted ? 'highlighted' : 'downplayed'" ng-click="endNoteEdit()">
+          <span class="text-navigation-back" ng-class="!isFirstSlide() && 'not-swipeable'" ng-bind="isNoteEdited() && !note.deleted ? 'save' : 'back'"></span>
         </a>
 
-        <div ng-hide="!isNoteTitleHidden() && isFirstSlide()" id="noteEditorTitlebarTitle" ng-style="{maxWidth: calculateTitleWidth()}" class="scroll-then-toggle group-symmetrical--middle width-large">
+        <div ng-hide="!isNotePropertyInEdit() && isFirstSlide()" id="noteEditorTitlebarTitle" ng-style="{maxWidth: calculateTitleWidth()}" class="scroll-then-toggle group-symmetrical--middle width-large">
           <a href class="link" ng-click="openNoteTitleEdit()">
             <div><span class="text-heading-primary" clamp=2 ng-class="!note.trans.title && 'text-downplayed'" ng-bind="note.trans.title ? note.trans.title : 'new note'"></span></div>
           </a>
         </div>
 
-        <a href ng-if="!note.deleted && !onboardingInProgress" ng-hide="listPickerOpen || keywordsPickerOpen || contentFocused" class="group-symmetrical--right" ng-click="deleteNoteInEdit()">
+        <a href ng-if="!note.deleted && !onboardingInProgress" ng-hide="isNotePropertyInEdit()" class="group-symmetrical--right" ng-click="deleteNoteInEdit()">
           <span class="icon-trash"></span>
         </a>
-        <a href ng-if="note.deleted && !onboardingInProgress" ng-hide="listPickerOpen || keywordsPickerOpen || contentFocused" class="group-symmetrical--right link-navigation highlighted active" ng-click="undeleteNote(note)">
+        <a href ng-if="note.deleted && !onboardingInProgress" ng-hide="isNotePropertyInEdit()" class="group-symmetrical--right link-navigation highlighted active" ng-click="undeleteNote(note)">
           <span class="text-navigation">restore</span>
         </a>
-        <div ng-if="listPickerOpen || contentFocused" class="group-symmetrical--right">
-          <span style="line-height: 44px; vertical-align: top; font-size: 13px; font-weight: 700;" class="text-normal text-downplayed" ng-bind="listPickerOpen && 'list' || contentFocused && 'content' || keywordsPickerOpen && 'keywords'"></span>
-        </div>
 
+        <div ng-if="contentFocused || listPickerOpen " class="group-symmetrical--right">
+          <span class="text-field-label" ng-bind="contentFocused ? 'content' : 'list'"></span>
+        </div>
         <div ng-if="keywordsPickerOpen" class="group-symmetrical--right">
-          <div style="text-align: center; height: inherit; display: table-cell; vertical-align: middle;">
-            <span ng-bind="'key' + (columns === 1 ? '-\n' : '') + 'words'" style="white-space: pre; font-size: 13px; line-height: 13px; font-weight: 700; display: block; margin-top: 3px;" class="text-downplayed"></span>
+          <div class="text-field-label-multi-row">
+            <span ng-bind="'key' + (columns === 1 ? '-\n' : '') + 'words'" class="text-field-label"></span>
           </div>
         </div>
 
@@ -36,13 +36,13 @@
   <div class="swiper-container container-fluid--inner" swiper-container="noteEditor" swiper-type="main" expected-slides="2" swiper-container-slide-changed="editorSwiperSlideChanged()">
     <div class="swiper-wrapper" ng-class="onboardingInProgress && 'swiper-no-swiping'">
       <div class="swiper-slide" swiper-slide="noteEditor/basic" slide-index="0">
-        <div ng-style="{'padding-bottom': mode === 'fullScreen' ? 0 : EDITOR_FOOTER_HEIGHT}" class="container-content" drawer-override-aisle="right" swiper-prevent scroll-then-toggle="noteEditorTitlebarTitle" scroll-then-toggle-top="noteEditorTitle" scroll-then-toggle-resizeable="noteEditorTitleInput">
+        <div ng-style="{'padding-bottom': isNotePropertyInEdit() ? '22px' : EDITOR_FOOTER_HEIGHT}" class="container-content" drawer-override-aisle="right" swiper-prevent scroll-then-toggle="noteEditorTitlebarTitle" scroll-then-toggle-top="noteEditorTitle" scroll-then-toggle-resizeable="noteEditorTitleInput">
 
           <!-- NOTE TITLE -->
-          <div ng-hide="isNoteTitleHidden()" id="noteEditorTitle">
+          <div ng-hide="isNotePropertyInEdit()" id="noteEditorTitle">
             <div class="group-mixed with-checkbox large">
               <div class="group-mixed--middle">
-                <textarea id="noteEditorTitleInput" class="text-heading-primary large" ng-model="note.trans.title" input-model-validator ng-trim="false" ng-keydown="noteTitlebarTextKeyDown($event)" ng-focus="noteTitleFocused()" editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)" msd-elastic placeholder="enter title&#8230;" maxlength="128" autocapitalize="none" autocorrect="off">
+                <textarea id="noteEditorTitleInput" class="text-heading-primary large" ng-model="note.trans.title" input-model-validator ng-trim="false" ng-keydown="noteTitlebarTextKeyDown($event)" editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)" msd-elastic placeholder="enter title&#8230;" maxlength="128" autocapitalize="none" autocorrect="off">
                 </textarea>
               </div>
 
@@ -57,7 +57,7 @@
               <span ng-show="!noteTitlebarHasText()" class="text-details">
                 e.g. reading suggestions, budget meeting minutes, summer plans
               </span>
-              <span ng-show="noteTitlebarHasText() && !hideNoteTitle" class="text-details">
+              <span ng-show="noteTitlebarHasText()" class="text-details">
                 when done, hit return
               </span>
             </div>
@@ -79,7 +79,7 @@
                 </a>
               </div>
             </div>
-            <div ng-if="!note.trans.list || (!note.trans.keywords || !note.trans.keywords.length)" ng-hide="contentFocused" style="text-align: center;" class="row">
+            <div ng-if="!note.trans.list || (!note.trans.keywords || !note.trans.keywords.length)" ng-hide="contentFocused" class="row collapsible">
               <a href class="downplayed" ng-click="toggleCollapsible()">
                 <span ng-class="collapsibleOpen ? 'text-expand-up' : 'text-expand-down'" ng-bind="collapsibleOpen ? 'less' : 'more'"></span>
               </a>
@@ -88,8 +88,7 @@
             <!-- LIST -->
             <div ng-if="note.trans.list" ng-hide="contentFocused" class="group-mixed with-checkbox">
               <a href class="group-mixed--middle link-search-result" ng-click="openListPicker()">
-                <span style="display: block;" class="text-search-result" ng-bind="note.trans.list.trans.title">
-                </span>
+                <span style="display: block;" class="text-search-result" ng-bind="note.trans.list.trans.title"></span>
               </a>
               <div class="group-mixed--right">
                 <span style="font-weight: 300;" class="text-search-type">list</span>
@@ -108,7 +107,7 @@
 
             <!-- CONTENT -->
             <div class="row-vertically-centered with-textarea">
-              <textarea ng-class="onboardingInProgress && !hideNoteTitle && 'input-separate'" ng-model="note.trans.content" input-model-validator ng-focus="noteContentFocused()" ng-blur="noteContentBlurred()" msd-elastic editable-field ng-trim="false" editable-field-register-callbacks="registerNoteContentInputCallbacks(focus, blur)" placeholder="enter content&#8230;" autocapitalize="none" autocorrect="off">
+              <textarea ng-class="onboardingInProgress && 'input-separate'" ng-model="note.trans.content" input-model-validator ng-focus="noteContentFocused()" ng-blur="noteContentBlurred()" msd-elastic editable-field ng-trim="false" editable-field-register-callbacks="registerNoteContentInputCallbacks(focus, blur)" placeholder="enter content&#8230;" autocapitalize="none" autocorrect="off">
               </textarea>
             </div>
 
@@ -157,7 +156,7 @@
           </div>
         </div>
 
-        <footer ng-hide="isNoteFooterHidden()" class="container-content--after editor-footer">
+        <footer ng-hide="isNotePropertyInEdit()" class="container-content--after editor-footer">
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
             <a href ng-click="swipeToAdvanced()" ng-hide="isFooterNavigationHidden()" class="group-symmetrical--right link-navigation">
               <span class="text-navigation-forward">advanced</span>
@@ -195,7 +194,7 @@
 
         </div>
 
-        <footer ng-hide="isNoteFooterHidden()" class="container-content--after editor-footer" editor-footer="advancedSlideInfo">
+        <footer ng-hide="isNotePropertyInEdit()" class="container-content--after editor-footer" editor-footer="advancedSlideInfo">
 
           <div class="group-symmetrical">
             <a href class="group-symmetrical--left" ng-click="convertToTask(note)">
