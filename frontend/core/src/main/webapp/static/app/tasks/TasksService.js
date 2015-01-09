@@ -336,12 +336,19 @@
     },
     updateTaskHistProperties: function(uuid, properties, ownerUUID) {
       var taskInfo = this.getTaskInfo(uuid, ownerUUID);
-      if (taskInfo && properties){
-        if (!taskInfo.task.hist) taskInfo.task.hist = {};
-        ItemLikeService.updateObjectProperties(taskInfo.task.hist, properties);
-        // Last parameter is to prevent unnecessary resetting of trans
-        updateTask(taskInfo.task, ownerUUID, undefined, {});
-        return taskInfo.task;
+      if (taskInfo){
+        if (!properties){
+          if (taskInfo.task.hist){
+            delete taskInfo.task.hist;
+            updateTask(taskInfo.task, ownerUUID);
+          }
+        }else{
+          if (!taskInfo.task.hist) taskInfo.task.hist = {};
+          ItemLikeService.updateObjectProperties(taskInfo.task.hist, properties);
+          // Last parameter is to prevent unnecessary resetting of trans
+          updateTask(taskInfo.task, ownerUUID, undefined, {});
+          return taskInfo.task;
+        }
       }
     },
     getTasks: function(ownerUUID) {
@@ -563,6 +570,7 @@
     clearTasks: function() {
       tasks = {};
     },
+    taskFieldInfos: taskFieldInfos,
     // Regular expressions for task requests
     putNewTaskRegex: ItemLikeService.getPutNewRegex('task'),
     putExistingTaskRegex: ItemLikeService.getPutExistingRegex('task'),

@@ -174,12 +174,19 @@
     },
     updateListHistProperties: function(uuid, properties, ownerUUID) {
       var listInfo = this.getListInfo(uuid, ownerUUID);
-      if (listInfo && properties){
-        if (!listInfo.list.hist) listInfo.list.hist = {};
-        ItemLikeService.updateObjectProperties(listInfo.list.hist, properties);
-        // Last parameter is to prevent unnecessary resetting of trans
-        updateList(listInfo.list, ownerUUID, undefined, {});
-        return listInfo.list;
+      if (listInfo){
+        if (!properties){
+          if (listInfo.list.hist){
+            delete listInfo.list.hist;
+            updateList(listInfo.list, ownerUUID);
+          }
+        }else{
+          if (!listInfo.list.hist) listInfo.list.hist = {};
+          ItemLikeService.updateObjectProperties(listInfo.list.hist, properties);
+          // Last parameter is to prevent unnecessary resetting of trans
+          updateList(listInfo.list, ownerUUID, undefined, {});
+          return listInfo.list;
+        }
       }
     },
     getLists: function(ownerUUID) {
@@ -336,9 +343,8 @@
     clearLists: function() {
       lists = {};
     },
-
+    listFieldInfos: listFieldInfos,
     // Regular expressions for list requests
-
     putNewListRegex: ItemLikeService.getPutNewRegex('list'),
     putExistingListRegex: ItemLikeService.getPutExistingRegex('list'),
     deleteListRegex: ItemLikeService.getDeleteRegex('list'),

@@ -13,13 +13,12 @@
  * limitations under the License.
  */
 
- /* global angular */
+ /* global angular, jQuery */
  'use strict';
 
- function ConvertService(BackendClientService, ExtendedItemService, ListsService, NotesService,
-                         TasksService, UserSessionService) {
+ function ConvertService($q, BackendClientService, ExtendedItemService, ItemLikeService,
+                         ListsService, NotesService, TasksService, UserSessionService) {
 
-  // TODO: Should these be public getter functions in corresponding services?
   var listSlashRegex = /\/list\//;
   var noteSlashRegex = /\/note\//;
   var taskSlashRegex = /\/task\//;
@@ -27,119 +26,53 @@
   var noteRegex = /\/note/;
   var taskRegex = /\/task/;
 
-  var convertTaskToNoteRegexp = new RegExp('^' +
-                                           BackendClientService.apiPrefixRegex.source +
-                                           BackendClientService.uuidRegex.source +
-                                           taskSlashRegex.source +
-                                           BackendClientService.uuidRegex.source +
-                                           noteRegex.source +
-                                           '$'),
-
-  convertTaskToListRegexp = new RegExp('^' +
-                                       BackendClientService.apiPrefixRegex.source +
-                                       BackendClientService.uuidRegex.source +
-                                       taskSlashRegex.source +
-                                       BackendClientService.uuidRegex.source +
-                                       listRegex.source +
-                                       '$'),
-
-  convertNoteToTaskRegexp = new RegExp('^' +
-                                       BackendClientService.apiPrefixRegex.source +
-                                       BackendClientService.uuidRegex.source +
-                                       noteSlashRegex.source +
-                                       BackendClientService.uuidRegex.source +
-                                       taskRegex.source +
-                                       '$'),
-
-  convertNoteToListRegexp = new RegExp('^' +
-                                       BackendClientService.apiPrefixRegex.source +
-                                       BackendClientService.uuidRegex.source +
-                                       noteSlashRegex.source +
-                                       BackendClientService.uuidRegex.source +
-                                       listRegex.source +
-                                       '$'),
-
-  convertListToTaskRegexp = new RegExp('^' +
-                                       BackendClientService.apiPrefixRegex.source +
-                                       BackendClientService.uuidRegex.source +
-                                       listSlashRegex.source +
-                                       BackendClientService.uuidRegex.source +
-                                       taskRegex.source +
-                                       '$'),
-
-  convertListToNoteRegexp = new RegExp('^' +
-                                       BackendClientService.apiPrefixRegex.source +
-                                       BackendClientService.uuidRegex.source +
-                                       listSlashRegex.source +
-                                       BackendClientService.uuidRegex.source +
-                                       noteRegex.source +
-                                       '$');
-
-  function postConvertTaskToNote(task, ownerUUID) {
-    var path = '/api/' + ownerUUID + '/task/' + task.uuid + '/note';
-    return BackendClientService.postOnline(path, convertTaskToNoteRegexp, task);
-  }
-  function postConvertTaskToList(task, ownerUUID) {
-    var path = '/api/' + ownerUUID + '/task/' + task.uuid + '/list';
-    return BackendClientService.postOnline(path, convertTaskToListRegexp, task);
-  }
-  function postConvertNoteToTask(note, ownerUUID) {
-    var path = '/api/' + ownerUUID + '/note/' + note.uuid + '/task';
-    return BackendClientService.postOnline(path, convertNoteToTaskRegexp, note);
-  }
-  function postConvertNoteToList(note, ownerUUID) {
-    var path = '/api/' + ownerUUID + '/note/' + note.uuid + '/list';
-    return BackendClientService.postOnline(path, convertNoteToListRegexp, note);
-  }
-  function postConvertListToTask(list, ownerUUID) {
-    var path = '/api/' + ownerUUID + '/list/' + list.uuid + '/task';
-    return BackendClientService.postOnline(path, convertListToTaskRegexp, list);
-  }
-  function postConvertListToNote(list, ownerUUID) {
-    var path = '/api/' + ownerUUID + '/list/' + list.uuid + '/note';
-    return BackendClientService.postOnline(path, convertListToNoteRegexp, list);
-  }
-
   function processTaskToNoteResponse(task, note, ownerUUID) {
+    if (task.hist) note.hist = task.hist;
     NotesService.addNote(note, ownerUUID);
     TasksService.removeTask(task.trans.uuid, ownerUUID);
-
     var taskHistory = getTaskHistory(task);
-    if (taskHistory) updateItemHistConvert(note, taskHistory, 'task', 'note', ownerUUID);
+    updateItemHistConvert(note, taskHistory, 'task', 'note', ownerUUID);
   }
 
   function processTaskToListResponse(task, list, ownerUUID) {
+    if (task.hist) list.hist = task.hist;
     ListsService.addList(list, ownerUUID);
     TasksService.removeTask(task.trans.uuid, ownerUUID);
 
     var taskHistory = getTaskHistory(task);
-    if (taskHistory) updateItemHistConvert(list, taskHistory, 'task', 'list', ownerUUID);
+    updateItemHistConvert(list, taskHistory, 'task', 'list', ownerUUID);
   }
 
   function processNoteToTaskResponse(note, task, ownerUUID) {
+    if (note.hist) task.hist = note.hist;
     TasksService.addTask(task, ownerUUID);
     NotesService.removeNote(note.trans.uuid, ownerUUID);
 
     var noteHistory = getNoteHistory(note);
-    if (noteHistory) updateItemHistConvert(task, noteHistory, 'note', 'task', ownerUUID);
+    updateItemHistConvert(task, noteHistory, 'note', 'task', ownerUUID);
   }
 
   function processNoteToListResponse(note, list, ownerUUID) {
+    if (note.hist) list.hist = note.hist;
     ListsService.addList(list, ownerUUID);
     NotesService.removeNote(note.trans.uuid, ownerUUID);
 
     var noteHistory = getNoteHistory(note);
-    if (noteHistory) updateItemHistConvert(list, noteHistory, 'note', 'list', ownerUUID);
+    updateItemHistConvert(list, noteHistory, 'note', 'list', ownerUUID);
   }
 
   function processListToTaskResponse(list, task, ownerUUID) {
+    if (list.hist) task.hist = list.hist;
     TasksService.addTask(task, ownerUUID);
     ListsService.removeList(list.trans.uuid, ownerUUID);
+    updateItemHistConvert(task, undefined, 'list', 'task', ownerUUID);
   }
 
   function processListToNoteResponse(list, note, ownerUUID) {
+    if (list.hist) note.hist = list.hist;
     NotesService.addNote(note, ownerUUID);
     ListsService.removeList(list.trans.uuid, ownerUUID);
+    updateItemHistConvert(note, undefined, 'list', 'note', ownerUUID);
   }
 
   function removeList(item) {
@@ -147,12 +80,13 @@
   }
 
   function getTaskHistory(task) {
-    if (task.trans.due || task.trans.repeating || task.trans.reminder) {
-      var convert = {};
-      if (task.trans.due) convert.due = task.trans.due;
-      if (task.trans.repeating) convert.repeating = task.trans.repeating;
-      if (task.trans.reminder) convert.reminder = task.trans.reminder;
-      return convert;
+    if (task.trans.due || task.trans.repeating || task.trans.reminder || task.trans.completed) {
+      var taskHistory = {};
+      if (task.trans.completed) taskHistory.completed = task.trans.completed;
+      if (task.trans.due) taskHistory.due = task.trans.due;
+      if (task.trans.repeating) taskHistory.repeating = task.trans.repeating;
+      if (task.trans.reminder) taskHistory.reminder = task.trans.reminder;
+      return taskHistory;
     }
   }
 
@@ -171,30 +105,82 @@
    * @param {string}  toItemType    Type of the item converted to
    */
    function updateItemHistConvert(item, fromHistory, fromItemType, toItemType, ownerUUID) {
-    var convert = item.hist && item.hist.convert ? item.hist.convert : {};
+
+    var hist = item.hist ? item.hist : {};
     // Delete existing 'toItemType' convert object because it may be out of sync
     var updated = false;
-    if (convert[toItemType]){
-      delete convert[toItemType];
-      if (jQuery.isEmptyObject(convert)) convert = undefined;
+    if (hist.convert && hist.convert[toItemType]){
+      delete hist.convert[toItemType];
+      if (jQuery.isEmptyObject(hist.convert)){
+        delete hist.convert;
+        if (jQuery.isEmptyObject(hist)){
+          hist = undefined;
+        }else{
+          hist.convert = undefined;
+        }
+      }
+      updated = true;
+    }
+    // Check that history object is not empty
+    if (fromHistory && Object.getOwnPropertyNames(fromHistory).length > 0) {
+      if (!hist) hist = {};
+      if (!hist.convert) hist.convert = {};
+      hist.convert[fromItemType] = fromHistory;
       updated = true;
     }
 
-    // Check that history object is not empty
-    if (fromHistory && Object.getOwnPropertyNames(fromHistory).length > 0) {
-      if (!convert) convert = {};
-      convert[fromItemType] = fromHistory
-      updated = true;
-    }
     if (updated){
       if (toItemType === 'task'){
-        TasksService.updateTaskHistProperties(item.trans.uuid, {convert: convert}, ownerUUID);
+        TasksService.updateTaskHistProperties(item.trans.uuid, hist, ownerUUID);
       }else if (toItemType === 'note'){
-        NotesService.updateNoteHistProperties(item.trans.uuid, {convert: convert}, ownerUUID);
+        NotesService.updateNoteHistProperties(item.trans.uuid, hist, ownerUUID);
       }else if (toItemType === 'list'){
-        ListsService.updateListHistProperties(item.trans.uuid, {convert: convert}, ownerUUID);
+        ListsService.updateListHistProperties(item.trans.uuid, hist, ownerUUID);
       }
     }
+  }
+
+  function getNewItemSkeleton(item, timestamp){
+    var newItem = {
+      uuid: item.trans.uuid,
+      title: item.trans.title,
+      created: item.trans.created,
+      modified: timestamp
+    };
+    if (item.trans.link) newItem.link = item.trans.link;
+    if (item.mod && item.mod.relationships) newItem.relationships = item.mod.relationships;
+    else if (item.relationships) newItem.relationships = item.relationships;
+    return newItem;
+  }
+
+  function createNoteUsingHistConvert(item, timestamp){
+    var note = getNewItemSkeleton(item, timestamp);
+    if (item.trans.description) note.content = item.trans.description;
+    if (item.hist && item.hist.convert && item.hist.convert.note && item.hist.convert.note.favorited) {
+      note.favorited = item.hist.convert.note.favorited;
+    }
+    return note;
+  }
+
+  function createListUsingHistConvert(item, timestamp){
+    var list = getNewItemSkeleton(item, timestamp);
+    if (item.trans.content) list.description = item.trans.content;
+    else if (item.trans.description) list.description = item.trans.description;
+    return list;
+  }
+
+  function createTaskUsingHistConvert(item, timestamp){
+    var task = getNewItemSkeleton(item, timestamp);
+    if (item.trans.content) task.description = item.trans.content;
+    else if (item.trans.description) task.description = item.trans.description;
+
+    if (item.hist && item.hist.convert && item.hist.convert.task) {
+      if (item.hist.convert.task.completed) task.completed = item.hist.convert.task.completed;
+      if (item.hist.convert.task.due) task.due = item.hist.convert.task.due;
+      if (item.hist.convert.task.repeating) task.repeating = item.hist.convert.task.repeating;
+      if (item.hist.convert.task.reminder) task.reminder = item.hist.convert.task.reminder;
+    }
+    return task;
   }
 
   return {
@@ -206,70 +192,242 @@
     * iii.  remove old item from memory and add new item to memory
     */
     finishTaskToNoteConvert: function(task, ownerUUID) {
-      if (TasksService.getTaskStatus(task, ownerUUID) === 'deleted') return;
-      return postConvertTaskToNote(task, ownerUUID).then(function(response) {
-        processTaskToNoteResponse(task, response, ownerUUID);
-        return response;
-      });
+      var deferred = $q.defer();
+      if (TasksService.getTaskStatus(task, ownerUUID) === 'deleted') {
+        deferred.reject({type: 'deleted'});
+      } else {
+        var path = '/api/' + ownerUUID + '/task/' + task.trans.uuid + '/note';
+        var transportTask = ItemLikeService.createTransportItem(task, TasksService.taskFieldInfos);
+        if (UserSessionService.isOfflineEnabled()) {
+          // Offline
+          var params = {
+            type: 'task', owner: ownerUUID, uuid: task.trans.uuid, lastReplaceable: false
+          };
+          var fakeTimestamp = BackendClientService.generateFakeTimestamp();
+          BackendClientService.postOffline(path, this.convertTaskToNoteRegex,
+                                           params, transportTask, fakeTimestamp);
+          var note = createNoteUsingHistConvert(task, fakeTimestamp);
+          processTaskToNoteResponse(task, note, ownerUUID);
+          deferred.resolve(note);
+        }else{
+          // Online
+          BackendClientService.postOnline(path,
+                                          this.convertTaskToNoteRegex,
+                                          transportTask).then(function(response) {
+            processTaskToNoteResponse(task, response, ownerUUID);
+            deferred.resolve(response);
+          });
+        }
+      }
+      return deferred.promise;
     },
     finishTaskToListConvert: function(task, ownerUUID) {
-      // TODO: should cleanRecentlyCompletedTasks(ownerUUID) be called first?
-      if (TasksService.getTaskStatus(task, ownerUUID) === 'deleted') return;
-      // NOTE: Currently only one-level lists are supported.
-      // Remove pre-existing list before converting to list.
-      removeList(task);
+      var deferred = $q.defer();
 
-      return postConvertTaskToList(task, ownerUUID).then(function(response) {
-        processTaskToListResponse(task, response, ownerUUID);
-        return response;
-      });
+      if (TasksService.getTaskStatus(task, ownerUUID) === 'deleted') {
+        deferred.reject({type: 'deleted'});
+      } else {
+        // NOTE: Currently only one-level lists are supported.
+        // Remove pre-existing list before converting to list.
+        removeList(task);
+        var path = '/api/' + ownerUUID + '/task/' + task.uuid + '/list';
+        var transportTask = ItemLikeService.createTransportItem(task, TasksService.taskFieldInfos);
+        if (UserSessionService.isOfflineEnabled()) {
+          // Offline
+          var params = {
+            type: 'task', owner: ownerUUID, uuid: task.trans.uuid, lastReplaceable: false
+          };
+          var fakeTimestamp = BackendClientService.generateFakeTimestamp();
+          BackendClientService.postOffline(path, this.convertTaskToListRegex,
+                                           params, transportTask, fakeTimestamp);
+          var list = createListUsingHistConvert(task, fakeTimestamp);
+          processTaskToListResponse(task, list, ownerUUID);
+          deferred.resolve(list);
+        }else{
+          // Online
+          BackendClientService.postOnline(path,
+                                          this.convertTaskToListRegex,
+                                          transportTask).then(function(response) {
+            processTaskToListResponse(task, response, ownerUUID);
+            deferred.resolve(response);
+          });
+        }
+      }
+      return deferred.promise;
     },
     finishNoteToTaskConvert: function(note, ownerUUID) {
-      if (note.uuid) {
-        if (NotesService.getNoteStatus(note, ownerUUID) === 'deleted') return;
+      var deferred = $q.defer();
 
-        return postConvertNoteToTask(note, ownerUUID).then(function(response) {
-          processNoteToTaskResponse(note, response, ownerUUID);
-          return response;
-        });
+      if (NotesService.getNoteStatus(note, ownerUUID) === 'deleted') {
+        deferred.reject({type: 'deleted'});
       } else {
-        // TODO: Convert new note to task.
+        var path = '/api/' + ownerUUID + '/note/' + note.uuid + '/task';
+        var transportNote = ItemLikeService.createTransportItem(note, NotesService.noteFieldInfos);
+        if (UserSessionService.isOfflineEnabled()) {
+          // Offline
+          var params = {
+            type: 'note', owner: ownerUUID, uuid: note.trans.uuid, lastReplaceable: false
+          };
+          var fakeTimestamp = BackendClientService.generateFakeTimestamp();
+          BackendClientService.postOffline(path, this.convertNoteToTaskRegex,
+                                           params, transportNote, fakeTimestamp);
+          var task = createTaskUsingHistConvert(note, fakeTimestamp);
+          processNoteToTaskResponse(note, task, ownerUUID);
+          deferred.resolve(task);
+        }else{
+          // Online
+          BackendClientService.postOnline(path,
+                                          this.convertNoteToTaskRegex,
+                                          transportNote).then(function(response) {
+            processNoteToTaskResponse(note, response, ownerUUID);
+            deferred.resolve(response);
+          });
+        }
       }
+      return deferred.promise;
     },
     finishNoteToListConvert: function(note, ownerUUID) {
-      if (NotesService.getNoteStatus(note, ownerUUID) === 'deleted') return;
-      // NOTE: Currently only one-level lists are supported.
-      // Remove pre-existing list before convertin to list.
-      removeList(note);
-      return postConvertNoteToList(note, ownerUUID).then(function(response) {
-        processNoteToListResponse(note, response, ownerUUID);
-        return response;
-      });
+      var deferred = $q.defer();
+      if (NotesService.getNoteStatus(note, ownerUUID) === 'deleted') {
+        deferred.reject({type: 'deleted'});
+      } else {
+        // NOTE: Currently only one-level lists are supported.
+        // Remove pre-existing list before convertin to list.
+        removeList(note);
+
+        var path = '/api/' + ownerUUID + '/note/' + note.uuid + '/list';
+        var transportNote = ItemLikeService.createTransportItem(note, NotesService.noteFieldInfos);
+        if (UserSessionService.isOfflineEnabled()) {
+          // Offline
+          var params = {
+            type: 'note', owner: ownerUUID, uuid: note.trans.uuid, lastReplaceable: false
+          };
+          var fakeTimestamp = BackendClientService.generateFakeTimestamp();
+          BackendClientService.postOffline(path, this.convertNoteToListRegex,
+                                           params, transportNote, fakeTimestamp);
+          var list = createListUsingHistConvert(note, fakeTimestamp);
+          processNoteToListResponse(note, list, ownerUUID);
+          deferred.resolve(list);
+        }else{
+          // Online
+          BackendClientService.postOnline(path,
+                                          this.convertNoteToListRegex,
+                                          transportNote).then(function(response) {
+            processNoteToListResponse(note, response, ownerUUID);
+            deferred.resolve(response);
+          });
+        }
+      }
+      return deferred.promise;
     },
     finishListToTaskConvert: function(list, ownerUUID) {
-      if (ListsService.getListStatus(list, ownerUUID) === 'deleted') return;
-      return postConvertListToTask(list, ownerUUID).then(function(response) {
-        processListToTaskResponse(list, response, ownerUUID);
-        return response;
-      });
+      var deferred = $q.defer();
+      if (ListsService.getListStatus(list, ownerUUID) === 'deleted') {
+        deferred.reject({type: 'deleted'});
+      } else {
+        var path = '/api/' + ownerUUID + '/list/' + list.uuid + '/task';
+        var transportList = ItemLikeService.createTransportItem(list, ListsService.listFieldInfos);
+        if (UserSessionService.isOfflineEnabled()) {
+          // Offline
+          var params = {
+            type: 'list', owner: ownerUUID, uuid: list.trans.uuid, lastReplaceable: false
+          };
+          var fakeTimestamp = BackendClientService.generateFakeTimestamp();
+          BackendClientService.postOffline(path, this.convertListToTaskRegex,
+                                           params, transportList, fakeTimestamp);
+          var task = createTaskUsingHistConvert(list, fakeTimestamp);
+          processListToTaskResponse(list, task, ownerUUID);
+          deferred.resolve(task);
+        }else{
+          // Online
+          BackendClientService.postOnline(path,
+                                          this.convertListToTaskRegex,
+                                          transportList).then(function(response) {
+            processListToTaskResponse(list, response, ownerUUID);
+            deferred.resolve(response);
+          });
+        }
+      }
+      return deferred.promise;
     },
     finishListToNoteConvert: function(list, ownerUUID) {
-      if (ListsService.getListStatus(list, ownerUUID) === 'deleted') return;
-
-      return postConvertListToNote(list, ownerUUID).then(function(response) {
-        processListToNoteResponse(list, response, ownerUUID);
-        return response;
-      });
+      var deferred = $q.defer();
+      if (ListsService.getListStatus(list, ownerUUID) === 'deleted') {
+        deferred.reject({type: 'deleted'});
+      } else {
+        var path = '/api/' + ownerUUID + '/list/' + list.uuid + '/note';
+        var transportList = ItemLikeService.createTransportItem(list, ListsService.listFieldInfos);
+        if (UserSessionService.isOfflineEnabled()) {
+          // Offline
+          var params = {
+            type: 'list', owner: ownerUUID, uuid: list.trans.uuid, lastReplaceable: false
+          };
+          var fakeTimestamp = BackendClientService.generateFakeTimestamp();
+          BackendClientService.postOffline(path, this.convertListToNoteRegex,
+                                           params, transportList, fakeTimestamp);
+          var note = createNoteUsingHistConvert(list, fakeTimestamp);
+          processListToNoteResponse(list, note, ownerUUID);
+          deferred.resolve(note);
+        }else{
+          // Online
+          BackendClientService.postOnline(path,
+                                          this.convertListToNoteRegex,
+                                          transportList).then(function(response) {
+            processListToNoteResponse(list, response, ownerUUID);
+            deferred.resolve(response);
+          });
+        }
+      }
+      return deferred.promise;
     },
+    convertTaskToNoteRegex: new RegExp('^' +
+                                             BackendClientService.apiPrefixRegex.source +
+                                             BackendClientService.uuidRegex.source +
+                                             taskSlashRegex.source +
+                                             BackendClientService.uuidRegex.source +
+                                             noteRegex.source +
+                                             '$'),
 
-    convertTaskToNoteRegex: convertTaskToNoteRegexp,
-    convertTaskToListRegex: convertTaskToListRegexp,
-    convertNoteToTaskRegex: convertNoteToTaskRegexp,
-    convertNoteToListRegex: convertNoteToListRegexp,
-    convertListToTaskRegex: convertListToTaskRegexp,
-    convertListToNoteRegex: convertListToNoteRegexp
+    convertTaskToListRegex: new RegExp('^' +
+                                         BackendClientService.apiPrefixRegex.source +
+                                         BackendClientService.uuidRegex.source +
+                                         taskSlashRegex.source +
+                                         BackendClientService.uuidRegex.source +
+                                         listRegex.source +
+                                         '$'),
+
+    convertNoteToTaskRegex: new RegExp('^' +
+                                         BackendClientService.apiPrefixRegex.source +
+                                         BackendClientService.uuidRegex.source +
+                                         noteSlashRegex.source +
+                                         BackendClientService.uuidRegex.source +
+                                         taskRegex.source +
+                                         '$'),
+
+    convertNoteToListRegex: new RegExp('^' +
+                                         BackendClientService.apiPrefixRegex.source +
+                                         BackendClientService.uuidRegex.source +
+                                         noteSlashRegex.source +
+                                         BackendClientService.uuidRegex.source +
+                                         listRegex.source +
+                                         '$'),
+
+    convertListToTaskRegex: new RegExp('^' +
+                                         BackendClientService.apiPrefixRegex.source +
+                                         BackendClientService.uuidRegex.source +
+                                         listSlashRegex.source +
+                                         BackendClientService.uuidRegex.source +
+                                         taskRegex.source +
+                                         '$'),
+    convertListToNoteRegex: new RegExp('^' +
+                                         BackendClientService.apiPrefixRegex.source +
+                                         BackendClientService.uuidRegex.source +
+                                         listSlashRegex.source +
+                                         BackendClientService.uuidRegex.source +
+                                         noteRegex.source +
+                                         '$'),
   };
 }
-ConvertService['$inject'] = ['BackendClientService', 'ExtendedItemService', 'ListsService', 'NotesService',
-'TasksService', 'UserSessionService'];
+ConvertService['$inject'] = ['$q', 'BackendClientService', 'ExtendedItemService', 'ItemLikeService',
+'ListsService', 'NotesService', 'TasksService', 'UserSessionService'];
 angular.module('em.main').factory('ConvertService', ConvertService);

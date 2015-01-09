@@ -183,7 +183,7 @@
     return item;
   }
 
-  function createTransportItem(item, ownerUUID, fieldInfos){
+  function createTransportItem(item, fieldInfos){
     var transportItem = {};
     for (var i=0, len=fieldInfos.length; i<len; i++){
       if (fieldInfos[i] !== 'uuid' && fieldInfos[i] !== 'created' && fieldInfos[i] !== 'deleted' &&
@@ -225,7 +225,7 @@
 
   function prepareTransport(item, itemType, ownerUUID, fieldInfos){
     copyEditedFieldsToMod(item, itemType, ownerUUID, fieldInfos);
-    return createTransportItem(item, ownerUUID, fieldInfos);
+    return createTransportItem(item, fieldInfos);
   }
 
   function destroyModAndReset(item, itemType, ownerUUID, fieldInfos){
@@ -244,12 +244,8 @@
       }
       return fieldInfos;
     },
-    updateObjectProperties: function(object, properties){
-      updateObjectProperties(object, properties);
-    },
-    copyEditedFieldsToMod: function(item, itemType, ownerUUID, fieldInfos){
-      return copyEditedFieldsToMod(item, itemType, ownerUUID, fieldInfos);
-    },
+    updateObjectProperties: updateObjectProperties,
+    copyEditedFieldsToMod: copyEditedFieldsToMod,
     getNew: function(trans, itemType, ownerUUID, fieldInfos) {
       var newItem = resetTrans({}, itemType, ownerUUID, fieldInfos);
       if (trans){
@@ -309,9 +305,8 @@
         return PersistentStorageService.destroy(uuid);
       }
     },
-    copyModToPersistent: function(item, ownerUUID, fieldInfos){
-      return copyModToPersistent(item, ownerUUID, fieldInfos);
-    },
+    copyModToPersistent: copyModToPersistent,
+    createTransportItem: createTransportItem,
     // Returns promise which returns 'new', 'existing', 'unmodified', or failure on failed save because
     // data is invalid
     save: function(item, itemType, ownerUUID, fieldInfos){

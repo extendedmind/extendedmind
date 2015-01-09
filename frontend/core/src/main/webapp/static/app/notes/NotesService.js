@@ -233,12 +233,19 @@
     },
     updateNoteHistProperties: function(uuid, properties, ownerUUID) {
       var noteInfo = this.getNoteInfo(uuid, ownerUUID);
-      if (noteInfo && properties){
-        if (!noteInfo.note.hist) noteInfo.note.hist = {};
-        ItemLikeService.updateObjectProperties(noteInfo.note.hist, properties);
-        // Last parameter is to prevent unnecessary resetting of trans
-        updateNote(noteInfo.note, ownerUUID, undefined, {});
-        return noteInfo.note;
+      if (noteInfo){
+        if (!properties){
+          if (noteInfo.note.hist){
+            delete noteInfo.note.hist;
+            updateNote(noteInfo.note, ownerUUID);
+          }
+        }else{
+          if (!noteInfo.note.hist) noteInfo.note.hist = {};
+          ItemLikeService.updateObjectProperties(noteInfo.note.hist, properties);
+          // Last parameter is to prevent unnecessary resetting of trans
+          updateNote(noteInfo.note, ownerUUID, undefined, {});
+          return noteInfo.note;
+        }
       }
     },
     getNotes: function(ownerUUID) {
@@ -442,7 +449,7 @@
     clearNotes: function() {
       notes = {};
     },
-
+    noteFieldInfos: noteFieldInfos,
     // Regular expressions for note requests
     putNewNoteRegex: ItemLikeService.getPutNewRegex('note'),
     putExistingNoteRegex: ItemLikeService.getPutExistingRegex('note'),

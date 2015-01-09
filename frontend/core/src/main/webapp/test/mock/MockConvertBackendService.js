@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
- /*global angular, getJSONFixture */
+ /*global angular */
  'use strict';
 
  function MockConvertBackendService($httpBackend, ConvertService, TasksService, NotesService, ListsService) {
@@ -23,7 +23,9 @@
     .respond(function(method, url, data, headers) {
       var ownerUUID = url.substr(5, 36);
       var taskUUID = url.substr(47, 36);
-      var task = TasksService.getTaskInfo(taskUUID, ownerUUID).task;
+      var task = TasksService.getTaskInfo(taskUUID, ownerUUID) ?
+                    TasksService.getTaskInfo(taskUUID, ownerUUID).task :
+                    NotesService.getNoteInfo(taskUUID, ownerUUID).note;
       var note = {
         uuid: task.trans.uuid,
         title: task.trans.title,
@@ -42,7 +44,9 @@
     .respond(function(method, url, data, headers) {
       var ownerUUID = url.substr(5, 36);
       var taskUUID = url.substr(47, 36);
-      var task = TasksService.getTaskInfo(taskUUID, ownerUUID).task;
+      var task = TasksService.getTaskInfo(taskUUID, ownerUUID) ?
+                    TasksService.getTaskInfo(taskUUID, ownerUUID).task :
+                    ListsService.getListInfo(taskUUID, ownerUUID).list;
       var list = {
         uuid: task.trans.uuid,
         title: task.trans.title,
@@ -61,7 +65,9 @@
     .respond(function(method, url, data, headers) {
       var ownerUUID = url.substr(5, 36);
       var noteUUID = url.substr(47, 36);
-      var note = NotesService.getNoteInfo(noteUUID, ownerUUID).note;
+      var note = NotesService.getNoteInfo(noteUUID, ownerUUID) ?
+                    NotesService.getNoteInfo(noteUUID, ownerUUID).task :
+                    TasksService.getTaskInfo(noteUUID, ownerUUID).task;
       var task = {
         uuid: note.trans.uuid,
         title: note.trans.title,
@@ -80,7 +86,9 @@
     .respond(function(method, url, data, headers) {
       var ownerUUID = url.substr(5, 36);
       var noteUUID = url.substr(47, 36);
-      var note = NotesService.getNoteInfo(noteUUID, ownerUUID).note;
+      var note = NotesService.getNoteInfo(noteUUID, ownerUUID) ?
+                    NotesService.getNoteInfo(noteUUID, ownerUUID).note :
+                    ListsService.getListInfo(noteUUID, ownerUUID).list;
       var list = {
         uuid: note.trans.uuid,
         title: note.trans.title,
@@ -99,7 +107,9 @@
     .respond(function(method, url, data, headers) {
       var ownerUUID = url.substr(5, 36);
       var listUUID = url.substr(47, 36);
-      var list = ListsService.getListInfo(listUUID, ownerUUID).list;
+      var list = ListsService.getListInfo(listUUID, ownerUUID) ?
+                    ListsService.getListInfo(listUUID, ownerUUID).list :
+                    TasksService.getTaskInfo(listUUID, ownerUUID).task;
       var task = {
         uuid: list.trans.uuid,
         title: list.trans.title,
@@ -118,7 +128,9 @@
     .respond(function(method, url, data, headers) {
       var ownerUUID = url.substr(5, 36);
       var listUUID = url.substr(47, 36);
-      var list = ListsService.getListInfo(listUUID, ownerUUID).list;
+      var list = ListsService.getListInfo(listUUID, ownerUUID) ?
+                    ListsService.getListInfo(listUUID, ownerUUID).list :
+                    NotesService.getNoteInfo(listUUID, ownerUUID).note;
       var note = {
         uuid: list.trans.uuid,
         title: list.trans.title,

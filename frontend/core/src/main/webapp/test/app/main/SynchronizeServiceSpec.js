@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
- /* global module, describe, inject, beforeEach, afterEach, it, expect, spyOn, getJSONFixture */
+ /* global module, describe, inject, beforeEach, afterEach, it, expect, spyOn, getJSONFixture, runs, waitsFor */
 'use strict';
 
 describe('SynchronizeService', function() {
@@ -23,7 +23,8 @@ describe('SynchronizeService', function() {
 
   var $httpBackend;
   var SynchronizeService, ItemsService, BackendClientService, HttpClientService,
-      ListsService, TagsService, TasksService, NotesService, UUIDService, AuthenticationService;
+      ListsService, TagsService, TasksService, NotesService, UUIDService, AuthenticationService,
+      ConvertService;
 
   // MOCKS
 
@@ -118,7 +119,8 @@ describe('SynchronizeService', function() {
 
     inject(function (_$httpBackend_, _SynchronizeService_, _ItemsService_, _BackendClientService_,
                      _HttpClientService_, _ListsService_, _TagsService_,
-                     _TasksService_, _NotesService_, _UUIDService_, _AuthenticationService_) {
+                     _TasksService_, _NotesService_, _UUIDService_, _AuthenticationService_,
+                     _ConvertService_) {
       $httpBackend = _$httpBackend_;
       SynchronizeService = _SynchronizeService_;
       ItemsService = _ItemsService_;
@@ -130,6 +132,7 @@ describe('SynchronizeService', function() {
       NotesService = _NotesService_;
       UUIDService = _UUIDService_;
       AuthenticationService = _AuthenticationService_;
+      ConvertService = _ConvertService_;
 
       var testItemData = {
           'items': [{
@@ -928,7 +931,6 @@ describe('SynchronizeService', function() {
     // 1. save existing task with repeating
     var tasks = TasksService.getTasks(testOwnerUUID);
     var cleanCloset = TasksService.getTaskInfo('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID).task;
-    var cleanClosetOriginalModified = cleanCloset.modified;
     cleanCloset.trans.due = '2015-01-01';
     cleanCloset.trans.repeating = 'daily';
     var cleanClosetTransport = {title: cleanCloset.trans.title,
@@ -995,7 +997,6 @@ describe('SynchronizeService', function() {
 
     // 5. synchronize with generated task
     MockUserSessionService.setLatestModified(latestModified);
-    var newLatestModified = latestModified + 1000;
     var backendTaskResponse = {
       tasks: [{
         'uuid': cleanCloset.trans.uuid,
@@ -1752,7 +1753,7 @@ describe('SynchronizeService', function() {
         parent: shoppingListUUID
       },
       modified: cleanCloset.modified
-    }
+    };
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid,
                            cleanClosetTransport)
        .respond(404);
@@ -1764,7 +1765,7 @@ describe('SynchronizeService', function() {
       .toBe(shoppingListUUID);
 
     // 2. Update the list as well
-    var shoppingList = ListsService.getListInfo(shoppingListUUID, testOwnerUUID).list;
+    shoppingList = ListsService.getListInfo(shoppingListUUID, testOwnerUUID).list;
     shoppingList.trans.description = 'test description';
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid,
        cleanClosetTransport)
@@ -2059,6 +2060,109 @@ describe('SynchronizeService', function() {
     var items = ItemsService.getItems(testOwnerUUID);
     expect(items.length)
       .toBe(4);
+  });
+
+  it('should convert task, note and list offline to each other', function () {
+    var tasks = TasksService.getTasks(testOwnerUUID);
+    var notes = NotesService.getNotes(testOwnerUUID);
+    var lists = ListsService.getLists(testOwnerUUID);
+
+    var cleanClosetUUID = '7b53d509-853a-47de-992c-c572a6952629';
+    var cleanCloset = TasksService.getTaskInfo(cleanClosetUUID, testOwnerUUID).task;
+    var cleanClosetTransport = {title: cleanCloset.trans.title,
+                                modified: cleanCloset.trans.modified};
+    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + cleanCloset.trans.uuid + '/note',
+                            cleanClosetTransport)
+       .respond(404);
+    ConvertService.finishTaskToNoteConvert(cleanCloset, testOwnerUUID);
+    $httpBackend.flush();
+    cleanCloset = NotesService.getNoteInfo(cleanClosetUUID, testOwnerUUID).note;
+    expect(tasks.length)
+      .toBe(3);
+    expect(notes.length)
+      .toBe(5);
+    expect(lists.length)
+      .toBe(4);
+    expect(cleanCloset.hist.convert.task.completed)
+      .toBeDefined();
+
+    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + cleanCloset.trans.uuid + '/note',
+                            cleanClosetTransport)
+       .respond(404);
+    ConvertService.finishNoteToListConvert(cleanCloset, testOwnerUUID);
+    $httpBackend.flush();
+    cleanCloset = ListsService.getListInfo(cleanClosetUUID, testOwnerUUID).list;
+    expect(tasks.length)
+      .toBe(3);
+    expect(notes.length)
+      .toBe(4);
+    expect(lists.length)
+      .toBe(5);
+    expect(cleanCloset.hist.convert.task.completed)
+      .toBeDefined();
+
+    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + cleanCloset.trans.uuid + '/note',
+                            cleanClosetTransport)
+       .respond(404);
+    ConvertService.finishListToTaskConvert(cleanCloset, testOwnerUUID);
+    $httpBackend.flush();
+    cleanCloset = TasksService.getTaskInfo(cleanClosetUUID, testOwnerUUID).task;
+    expect(tasks.length)
+      .toBe(4);
+    expect(notes.length)
+      .toBe(4);
+    expect(lists.length)
+      .toBe(4);
+    expect(cleanCloset.hist)
+      .toBeUndefined();
+
+    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + cleanCloset.trans.uuid + '/note',
+                            cleanClosetTransport)
+       .respond(404);
+    ConvertService.finishTaskToListConvert(cleanCloset, testOwnerUUID);
+    $httpBackend.flush();
+    cleanCloset = ListsService.getListInfo(cleanClosetUUID, testOwnerUUID).list;
+    expect(tasks.length)
+      .toBe(3);
+    expect(notes.length)
+      .toBe(4);
+    expect(lists.length)
+      .toBe(5);
+    expect(cleanCloset.hist.convert.task.completed)
+      .toBeDefined();
+
+    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + cleanCloset.trans.uuid + '/note',
+                            cleanClosetTransport)
+       .respond(404);
+    ConvertService.finishListToNoteConvert(cleanCloset, testOwnerUUID);
+    $httpBackend.flush();
+    cleanCloset = NotesService.getNoteInfo(cleanClosetUUID, testOwnerUUID).note;
+    expect(tasks.length)
+      .toBe(3);
+    expect(notes.length)
+      .toBe(5);
+    expect(lists.length)
+      .toBe(4);
+    expect(cleanCloset.hist.convert.task.completed)
+      .toBeDefined();
+
+    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + cleanCloset.trans.uuid + '/note',
+                            cleanClosetTransport)
+       .respond(404);
+    ConvertService.finishNoteToTaskConvert(cleanCloset, testOwnerUUID);
+    $httpBackend.flush();
+    cleanCloset = TasksService.getTaskInfo(cleanClosetUUID, testOwnerUUID).task;
+    expect(tasks.length)
+      .toBe(4);
+    expect(notes.length)
+      .toBe(4);
+    expect(lists.length)
+      .toBe(4);
+
+    expect(cleanCloset.mod)
+      .toBeUndefined();
+    expect(cleanCloset.hist)
+      .toBeUndefined();
   });
 
 });
