@@ -49,6 +49,9 @@
   var deleteTaskResponse = getJSONFixture('deleteTaskResponse.json');
   deleteTaskResponse.result.modified = now.getTime();
 
+  var favoriteNoteResponse = getJSONFixture('favoriteNoteResponse.json');
+  favoriteNoteResponse.result.modified = now.getTime();
+
   // SETUP / TEARDOWN
 
   beforeEach(function() {
@@ -403,11 +406,11 @@ it('should set convert object with \'task\' property in transient properties ' +
   // TESTS
   var convertedList = ListsService.getListInfo(taskToListResponse.uuid, testOwnerUUID).list;
 
-  expect(convertedList.trans.convert.task)
+  expect(convertedList.hist.convert.task)
   .toBeDefined();
 
-  expect(convertedList.trans.convert.task.due).toEqual('2014-01-02');
-  expect(convertedList.trans.convert.task.reminder).toEqual('10:00');
+  expect(convertedList.hist.convert.task.due).toEqual('2014-01-02');
+  expect(convertedList.hist.convert.task.reminder).toEqual('10:00');
 });
 
 it('should set convert object with \'note\' property in transient properties ' +
@@ -415,9 +418,11 @@ it('should set convert object with \'note\' property in transient properties ' +
   // SETUP
   var notesOnProductivity = NotesService.getNoteInfo('848cda60-d725-40cc-b756-0b1e9fa5b7d8', testOwnerUUID).note;
 
-  // add persistent property to note
-  var favoritedTimestamp = Date.now();
-  notesOnProductivity.favorited = favoritedTimestamp;
+  // favorite note
+  $httpBackend.expectPOST('/api/' + testOwnerUUID + '/note/' + notesOnProductivity.uuid + '/favorite')
+    .respond(200, favoriteNoteResponse);
+  NotesService.favoriteNote(notesOnProductivity, testOwnerUUID);
+  $httpBackend.flush();
 
   var noteToTaskPath = '/api/' + testOwnerUUID + '/note/' + notesOnProductivity.uuid + '/task';
   $httpBackend.expectPOST(noteToTaskPath).respond(200, noteToTaskResponse);
@@ -429,10 +434,10 @@ it('should set convert object with \'note\' property in transient properties ' +
   // TESTS
   var convertedTask = TasksService.getTaskInfo(noteToTaskResponse.uuid, testOwnerUUID).task;
 
-  expect(convertedTask.trans.convert.note)
+  expect(convertedTask.hist.convert.note)
   .toBeDefined();
 
-  expect(convertedTask.trans.convert.note.favorited).toBe(favoritedTimestamp);
+  expect(convertedTask.hist.convert.note.favorited).toBe(favoriteNoteResponse.favorited);
 });
 
 it('should set transient properties object with \'date\' property to task ' +

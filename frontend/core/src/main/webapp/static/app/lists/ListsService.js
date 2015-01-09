@@ -177,7 +177,8 @@
       if (listInfo && properties){
         if (!listInfo.list.hist) listInfo.list.hist = {};
         ItemLikeService.updateObjectProperties(listInfo.list.hist, properties);
-        updateList(listInfo.list, ownerUUID, properties.uuid ? uuid : undefined);
+        // Last parameter is to prevent unnecessary resetting of trans
+        updateList(listInfo.list, ownerUUID, undefined, {});
         return listInfo.list;
       }
     },

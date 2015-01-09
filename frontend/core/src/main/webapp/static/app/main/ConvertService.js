@@ -17,7 +17,7 @@
  'use strict';
 
  function ConvertService(BackendClientService, ExtendedItemService, ListsService, NotesService,
-                         TasksService) {
+                         TasksService, UserSessionService) {
 
   // TODO: Should these be public getter functions in corresponding services?
   var listSlashRegex = /\/list\//;
@@ -104,32 +104,32 @@
     NotesService.addNote(note, ownerUUID);
     TasksService.removeTask(task.trans.uuid, ownerUUID);
 
-    var convert = copyTaskPersistentPropertiesToConvert(task);
-    if (convert) copyConvertToItemTransientProperties(note, convert, 'task', 'note');
+    var taskHistory = getTaskHistory(task);
+    if (taskHistory) updateItemHistConvert(note, taskHistory, 'task', 'note', ownerUUID);
   }
 
   function processTaskToListResponse(task, list, ownerUUID) {
     ListsService.addList(list, ownerUUID);
     TasksService.removeTask(task.trans.uuid, ownerUUID);
 
-    var convert = copyTaskPersistentPropertiesToConvert(task);
-    if (convert) copyConvertToItemTransientProperties(list, convert, 'task', 'list');
+    var taskHistory = getTaskHistory(task);
+    if (taskHistory) updateItemHistConvert(list, taskHistory, 'task', 'list', ownerUUID);
   }
 
   function processNoteToTaskResponse(note, task, ownerUUID) {
     TasksService.addTask(task, ownerUUID);
     NotesService.removeNote(note.trans.uuid, ownerUUID);
 
-    var convert = copyNotePersistentPropertiesToConvert(note);
-    if (convert) copyConvertToItemTransientProperties(task, convert, 'note', 'task');
+    var noteHistory = getNoteHistory(note);
+    if (noteHistory) updateItemHistConvert(task, noteHistory, 'note', 'task', ownerUUID);
   }
 
   function processNoteToListResponse(note, list, ownerUUID) {
     ListsService.addList(list, ownerUUID);
     NotesService.removeNote(note.trans.uuid, ownerUUID);
 
-    var convert = copyNotePersistentPropertiesToConvert(note);
-    if (convert) copyConvertToItemTransientProperties(list, convert, 'note', 'list');
+    var noteHistory = getNoteHistory(note);
+    if (noteHistory) updateItemHistConvert(list, noteHistory, 'note', 'list', ownerUUID);
   }
 
   function processListToTaskResponse(list, task, ownerUUID) {
@@ -146,22 +146,22 @@
     if (item.trans.list) delete item.trans.list;
   }
 
-  function copyTaskPersistentPropertiesToConvert(task) {
-    if (task.due || task.repeating || task.reminder) {
+  function getTaskHistory(task) {
+    if (task.trans.due || task.trans.repeating || task.trans.reminder) {
       var convert = {};
-      if (task.due) convert.due = task.due;
-      if (task.repeating) convert.repeating = task.repeating;
-      if (task.reminder) convert.reminder = task.reminder;
+      if (task.trans.due) convert.due = task.trans.due;
+      if (task.trans.repeating) convert.repeating = task.trans.repeating;
+      if (task.trans.reminder) convert.reminder = task.trans.reminder;
       return convert;
     }
   }
 
-  function copyNotePersistentPropertiesToConvert(note) {
-    if (note.favorited) return {favorited: note.favorited};
+  function getNoteHistory(note) {
+    if (note.trans.favorited) return {favorited: note.trans.favorited};
   }
 
   /**
-   * @description Copy convert object to item's transient properties object.
+   * @description Update convert object to item's history.
    *
    * Convert object stores item's history during session.
    *
@@ -170,16 +170,30 @@
    * @param {string}  fromItemType  Type of the item converted from
    * @param {string}  toItemType    Type of the item converted to
    */
-   function copyConvertToItemTransientProperties(item, convert, fromItemType, toItemType) {
-    // NOTE:  Delete existing 'toItemType' convert object
-    //        because it may be out of sync before full offline implementation.
-    if (item.trans.convert) {
-      if (item.trans.convert[toItemType]) delete item.trans.convert[toItemType];
+   function updateItemHistConvert(item, fromHistory, fromItemType, toItemType, ownerUUID) {
+    var convert = item.hist && item.hist.convert ? item.hist.convert : {};
+    // Delete existing 'toItemType' convert object because it may be out of sync
+    var updated = false;
+    if (convert[toItemType]){
+      delete convert[toItemType];
+      if (jQuery.isEmptyObject(convert)) convert = undefined;
+      updated = true;
     }
-    // Check that convert object is not empty
-    if (convert && Object.getOwnPropertyNames(convert).length > 0) {
-      if (!item.trans.convert) item.trans.convert = {};
-      item.trans.convert[fromItemType] = convert;
+
+    // Check that history object is not empty
+    if (fromHistory && Object.getOwnPropertyNames(fromHistory).length > 0) {
+      if (!convert) convert = {};
+      convert[fromItemType] = fromHistory
+      updated = true;
+    }
+    if (updated){
+      if (toItemType === 'task'){
+        TasksService.updateTaskHistProperties(item.trans.uuid, {convert: convert}, ownerUUID);
+      }else if (toItemType === 'note'){
+        NotesService.updateNoteHistProperties(item.trans.uuid, {convert: convert}, ownerUUID);
+      }else if (toItemType === 'list'){
+        ListsService.updateListHistProperties(item.trans.uuid, {convert: convert}, ownerUUID);
+      }
     }
   }
 
@@ -257,5 +271,5 @@
   };
 }
 ConvertService['$inject'] = ['BackendClientService', 'ExtendedItemService', 'ListsService', 'NotesService',
-'TasksService'];
+'TasksService', 'UserSessionService'];
 angular.module('em.main').factory('ConvertService', ConvertService);

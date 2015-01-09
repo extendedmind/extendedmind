@@ -339,7 +339,8 @@
       if (taskInfo && properties){
         if (!taskInfo.task.hist) taskInfo.task.hist = {};
         ItemLikeService.updateObjectProperties(taskInfo.task.hist, properties);
-        updateTask(taskInfo.task, ownerUUID, properties.uuid ? uuid : undefined, properties);
+        // Last parameter is to prevent unnecessary resetting of trans
+        updateTask(taskInfo.task, ownerUUID, undefined, {});
         return taskInfo.task;
       }
     },

@@ -236,7 +236,8 @@
       if (noteInfo && properties){
         if (!noteInfo.note.hist) noteInfo.note.hist = {};
         ItemLikeService.updateObjectProperties(noteInfo.note.hist, properties);
-        updateNote(noteInfo.note, ownerUUID, properties.uuid ? uuid : undefined, properties);
+        // Last parameter is to prevent unnecessary resetting of trans
+        updateNote(noteInfo.note, ownerUUID, undefined, {});
         return noteInfo.note;
       }
     },
