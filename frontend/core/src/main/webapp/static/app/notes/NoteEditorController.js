@@ -81,6 +81,11 @@
       // $scope.mode = 'fullScreen';
       // $scope.hideNoteTitle = true;
     // }
+    $scope.contentFocused = true;
+  };
+
+  $scope.noteContentBlurred = function() {
+    $scope.contentFocused = false;
   };
 
   $scope.toggleNoteEditMode = function(){
@@ -99,11 +104,12 @@
   };
 
   $scope.isNoteTitleHidden = function() {
-    return $scope.hideNoteTitle || $scope.listPickerOpen || $scope.keywordsPickerOpen;
+    return $scope.hideNoteTitle || $scope.listPickerOpen || $scope.keywordsPickerOpen ||
+    $scope.contentFocused;
   };
 
   $scope.isNoteFooterHidden = function() {
-    return $scope.isTitleClamped() || $scope.keywordsPickerOpen;
+    return $scope.isTitleClamped() || $scope.keywordsPickerOpen || $scope.contentFocused;
   };
 
   // CONTENT

@@ -205,6 +205,16 @@
     }
   };
 
+  $scope.calculateTitleWidth = function() {
+    if ($rootScope.currentWidth >= $rootScope.EDITOR_MAX_WIDTH) {
+      // Maximum width for column
+      return $rootScope.TITLEBAR_HEADING_MAX_WIDTH;
+    } else {
+      // Smaller, leave
+      return $rootScope.currentWidth - $rootScope.TITLEBAR_BUTTON_WIDTH*2;
+    }
+  };
+
   $scope.isTitleClamped = function() {
     return $scope.descriptionFocused || $scope.listPickerOpen;
   };
