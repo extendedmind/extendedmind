@@ -46,7 +46,7 @@
                 </textarea>
               </div>
 
-              <div class="group-mixed--right">
+              <div ng-if="!onboardingInProgress" class="group-mixed--right">
                 <a href class="link-navigation" ng-click="clickFavorite()">
                   <span class="icon-star large" ng-class="!note.trans.favorited && 'inactive'"></span>
                 </a>
@@ -79,7 +79,7 @@
                 </a>
               </div>
             </div>
-            <div ng-if="!note.trans.list || (!note.trans.keywords || !note.trans.keywords.length)" ng-hide="contentFocused" class="row collapsible">
+            <div ng-if="(!note.trans.list || (!note.trans.keywords || !note.trans.keywords.length)) && !onboardingInProgress" ng-hide="contentFocused" class="row collapsible">
               <a href class="downplayed" ng-click="toggleCollapsible()">
                 <span ng-class="collapsibleOpen ? 'text-expand-up' : 'text-expand-down'" ng-bind="collapsibleOpen ? 'less' : 'more'"></span>
               </a>
