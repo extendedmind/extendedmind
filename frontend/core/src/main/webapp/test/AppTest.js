@@ -40,11 +40,13 @@ angular.module('em.appTest')
                 var _this = this,
                     _arguments = arguments;
 
+
                 // Delay every API call except login, logout and the first items call
-                if (url.startsWith('/api')
-                    && url !=='/api/authenticate'
-                    && url !=='/api/logout'
-                    && !url.endsWith('/items')){
+                if (typeof delayMockAPIResponse !== 'undefined' && delayMockAPIResponse === true &&
+                    url.startsWith('/api') &&
+                    url !=='/api/authenticate' &&
+                    url !=='/api/logout' &&
+                    !url.endsWith('/items')){
                   setTimeout(function() {
                       callback.apply(_this, _arguments);
                   }, 500);
