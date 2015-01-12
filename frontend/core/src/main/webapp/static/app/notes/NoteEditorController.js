@@ -129,13 +129,11 @@
   $scope.noteTitlebarTextKeyDown = function (keydownEvent) {
     $scope.handleBasicTitlebarKeydown(keydownEvent, $scope.note);
     // Return
-    if (event.keyCode === 13 && $scope.noteTitlebarHasText()) {
-      // TODO: Move focus to content field on enter!
+    if (event.keyCode === 13){
       noteContentFocusCallback();
       event.preventDefault();
       event.stopPropagation();
-    }
-    if (event.keyCode === 8 && $scope.note.trans.title === 'untitled'){
+    } else if (event.keyCode === 8 && $scope.note.trans.title === 'untitled'){
       // When pressing backspace on 'untitled', remove the entire title
       $scope.note.trans.title = undefined;
     }
