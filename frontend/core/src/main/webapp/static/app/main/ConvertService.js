@@ -142,43 +142,45 @@
 
   function getNewItemSkeleton(item, timestamp){
     var newItem = {
-      uuid: item.trans.uuid,
-      title: item.trans.title,
-      created: item.trans.created,
-      modified: timestamp
+      mod: {
+        uuid: item.trans.uuid,
+        title: item.trans.title,
+        created: item.trans.created,
+        modified: timestamp
+      }
     };
-    if (item.trans.link) newItem.link = item.trans.link;
-    if (item.mod && item.mod.relationships) newItem.relationships = item.mod.relationships;
-    else if (item.relationships) newItem.relationships = item.relationships;
+    if (item.trans.link) newItem.mod.link = item.trans.link;
+    if (item.mod && item.mod.relationships) newItem.mod.relationships = item.mod.relationships;
+    else if (item.relationships) newItem.mod.relationships = item.relationships;
     return newItem;
   }
 
   function createNoteUsingHistConvert(item, timestamp){
     var note = getNewItemSkeleton(item, timestamp);
-    if (item.trans.description) note.content = item.trans.description;
+    if (item.trans.description) note.mod.content = item.trans.description;
     if (item.hist && item.hist.convert && item.hist.convert.note && item.hist.convert.note.favorited) {
-      note.favorited = item.hist.convert.note.favorited;
+      note.mod.favorited = item.hist.convert.note.favorited;
     }
     return note;
   }
 
   function createListUsingHistConvert(item, timestamp){
     var list = getNewItemSkeleton(item, timestamp);
-    if (item.trans.content) list.description = item.trans.content;
-    else if (item.trans.description) list.description = item.trans.description;
+    if (item.trans.content) list.mod.description = item.trans.content;
+    else if (item.trans.description) list.mod.description = item.trans.description;
     return list;
   }
 
   function createTaskUsingHistConvert(item, timestamp){
     var task = getNewItemSkeleton(item, timestamp);
-    if (item.trans.content) task.description = item.trans.content;
-    else if (item.trans.description) task.description = item.trans.description;
+    if (item.trans.content) task.mod.description = item.trans.content;
+    else if (item.trans.description) task.mod.description = item.trans.description;
 
     if (item.hist && item.hist.convert && item.hist.convert.task) {
-      if (item.hist.convert.task.completed) task.completed = item.hist.convert.task.completed;
-      if (item.hist.convert.task.due) task.due = item.hist.convert.task.due;
-      if (item.hist.convert.task.repeating) task.repeating = item.hist.convert.task.repeating;
-      if (item.hist.convert.task.reminder) task.reminder = item.hist.convert.task.reminder;
+      if (item.hist.convert.task.completed) task.mod.completed = item.hist.convert.task.completed;
+      if (item.hist.convert.task.due) task.mod.due = item.hist.convert.task.due;
+      if (item.hist.convert.task.repeating) task.mod.repeating = item.hist.convert.task.repeating;
+      if (item.hist.convert.task.reminder) task.mod.reminder = item.hist.convert.task.reminder;
     }
     return task;
   }
@@ -231,7 +233,7 @@
         // NOTE: Currently only one-level lists are supported.
         // Remove pre-existing list before converting to list.
         removeList(task);
-        var path = '/api/' + ownerUUID + '/task/' + task.uuid + '/list';
+        var path = '/api/' + ownerUUID + '/task/' + task.trans.uuid + '/list';
         var transportTask = ItemLikeService.prepareTransport(task, 'task',
                                                              ownerUUID, TasksService.taskFieldInfos);
         if (UserSessionService.isOfflineEnabled()) {
@@ -263,7 +265,7 @@
       if (NotesService.getNoteStatus(note, ownerUUID) === 'deleted') {
         deferred.reject({type: 'deleted'});
       } else {
-        var path = '/api/' + ownerUUID + '/note/' + note.uuid + '/task';
+        var path = '/api/' + ownerUUID + '/note/' + note.trans.uuid + '/task';
         var transportNote = ItemLikeService.prepareTransport(note, 'note',
                                                              ownerUUID, NotesService.noteFieldInfos);
         if (UserSessionService.isOfflineEnabled()) {
@@ -298,7 +300,7 @@
         // Remove pre-existing list before convertin to list.
         removeList(note);
 
-        var path = '/api/' + ownerUUID + '/note/' + note.uuid + '/list';
+        var path = '/api/' + ownerUUID + '/note/' + note.trans.uuid + '/list';
         var transportNote = ItemLikeService.prepareTransport(note, 'note',
                                                              ownerUUID, NotesService.noteFieldInfos);
         if (UserSessionService.isOfflineEnabled()) {
@@ -329,7 +331,7 @@
       if (ListsService.getListStatus(list, ownerUUID) === 'deleted') {
         deferred.reject({type: 'deleted'});
       } else {
-        var path = '/api/' + ownerUUID + '/list/' + list.uuid + '/task';
+        var path = '/api/' + ownerUUID + '/list/' + list.trans.uuid + '/task';
         var transportList = ItemLikeService.prepareTransport(list, 'list',
                                                              ownerUUID, ListsService.listFieldInfos);
         if (UserSessionService.isOfflineEnabled()) {
@@ -360,7 +362,7 @@
       if (ListsService.getListStatus(list, ownerUUID) === 'deleted') {
         deferred.reject({type: 'deleted'});
       } else {
-        var path = '/api/' + ownerUUID + '/list/' + list.uuid + '/note';
+        var path = '/api/' + ownerUUID + '/list/' + list.trans.uuid + '/note';
         var transportList = ItemLikeService.prepareTransport(list, 'list',
                                                              ownerUUID, ListsService.listFieldInfos);
         if (UserSessionService.isOfflineEnabled()) {

@@ -579,6 +579,12 @@
             updateHistProperties(request.params.uuid, request.params.type,
                                  {generatedUUID: response.generated.uuid}, request.params.owner);
           }
+        } else if (request.content.url.endsWith('/note')){
+          // Convert to note
+          updateModProperties(request.params.uuid, 'note', response, request.params.owner);
+        } else if ( request.content.url.endsWith('/list')){
+          // Convert to list
+          updateModProperties(request.params.uuid, 'list', response, request.params.owner);
         }
         if (properties)
           updateModProperties(request.params.uuid, request.params.type, properties, request.params.owner);
@@ -590,6 +596,12 @@
         }else if (request.content.url.endsWith('/favorite')) {
           // Favorite
           properties = {favorited: response.favorited, modified: response.result.modified};
+        } else if (request.content.url.endsWith('/task')){
+          // Convert to task
+          updateModProperties(request.params.uuid, 'task', response, request.params.owner);
+        } else if ( request.content.url.endsWith('/list')){
+          // Convert to list
+          updateModProperties(request.params.uuid, 'list', response, request.params.owner);
         }
         if (properties)
           updateModProperties(request.params.uuid, request.params.type, properties, request.params.owner);
@@ -597,6 +609,12 @@
         if (request.content.url.endsWith('/undelete')){
           properties = {modified: response.modified, deleted: undefined};
           updateModProperties(request.params.uuid, request.params.type, properties, request.params.owner);
+        } else if (request.content.url.endsWith('/note')){
+          // Convert to note
+          updateModProperties(request.params.uuid, 'note', response, request.params.owner);
+        } else if ( request.content.url.endsWith('/task')){
+          // Convert to task
+          updateModProperties(request.params.uuid, 'task', response, request.params.owner);
         }
       } else if (request.params.type === 'tag') {
         if (request.content.url.endsWith('/undelete')){

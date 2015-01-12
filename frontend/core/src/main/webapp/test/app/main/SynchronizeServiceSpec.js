@@ -2160,7 +2160,7 @@ describe('SynchronizeService', function() {
       .toBe(4);
 
     expect(cleanCloset.mod)
-      .toBeUndefined();
+      .toBeDefined();
     expect(cleanCloset.hist)
       .toBeUndefined();
   });
