@@ -33,6 +33,33 @@ angular.module('em.appTest')
       };
 
   }])
+  .config(function($provide) {
+    $provide.decorator('$httpBackend', function($delegate) {
+        var proxy = function(method, url, data, callback, headers) {
+            var interceptor = function() {
+                var _this = this,
+                    _arguments = arguments;
+
+                // Delay every API call except login, logout and the first items call
+                if (url.startsWith('/api')
+                    && url !=='/api/authenticate'
+                    && url !=='/api/logout'
+                    && !url.endsWith('/items')){
+                  setTimeout(function() {
+                      callback.apply(_this, _arguments);
+                  }, 500);
+                }else{
+                  callback.apply(_this, _arguments);
+                }
+            };
+            return $delegate.call(this, method, url, data, interceptor, headers);
+        };
+        for(var key in $delegate) {
+            proxy[key] = $delegate[key];
+        }
+        return proxy;
+    });
+  })
   .run(['$httpBackend',
     function($httpBackend) {
       $httpBackend.whenGET(/^static\//).passThrough();
