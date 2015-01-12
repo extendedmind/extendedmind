@@ -70,12 +70,14 @@
 
           if (newHeight) {
             if ($attrs.verticalResizeHideFooter){
+              // Resize after timeout to make focus working when caret position is under keyboard.
               setTimeout(function() {
                 resizeElement[0].style.maxHeight = (maxHeightWithoutKeyboard + $rootScope.LIST_FOOTER_HEIGHT -
                                                     newHeight) + 'px';
               }, 0);
             }else {
               setTimeout(function() {
+              // Resize after timeout to make focus working when caret position is under keyboard.
                 resizeElement[0].style.maxHeight = (maxHeightWithoutKeyboard  - newHeight) + 'px';
               }, 0);
             }
