@@ -1,10 +1,10 @@
 <div class="group-mixed vertically-centered">
   <div class="group-mixed--left">
-    <a href ng-class="onboardingInProgress && 'link-disable'" ng-click="changeFeature('list', list, true)">
+    <a href class="onboarding-link-disable" ng-click="changeFeature('list', list, true)">
       <span class="text-navigation-back large"></span>
     </a>
   </div>
-  <a href ng-class="onboardingInProgress && 'link-disable'" class="group-mixed--middle link-list-item"
+  <a href class="group-mixed--middle link-list-item onboarding-link-disable"
     swiper-click="changeFeature('list', list, true)">
     <span class="text-link" clamp=2 ng-bind="list.trans.title"></span>
   </a>

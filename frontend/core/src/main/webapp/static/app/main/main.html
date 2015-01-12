@@ -1,4 +1,5 @@
-<div class="container-main" ng-controller="MainController">
+<div class="container-main" ng-controller="MainController"
+     ng-class="onboardingInProgress && 'onboarding-in-progress'">
   <div ng-include="urlBase + 'app/main/menu.html'" include-replace></div>
   <div ng-include="urlBase + 'app/main/editor.html'" include-replace></div>
   <div drawer-aisle class="container-drawer-aisle">
