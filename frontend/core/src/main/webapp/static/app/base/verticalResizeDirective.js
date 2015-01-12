@@ -65,17 +65,20 @@
             resizeElement = overrideElement;
 
           if (newHeight && !isPrevented()) {
+            var newMaxHeight;
             if ($attrs.verticalResizeHideFooter){
+              newMaxHeight = (maxHeightWithoutKeyboard + $rootScope.LIST_FOOTER_HEIGHT -
+                                                      newHeight) + 'px';
+            }else {
+              newMaxHeight = (maxHeightWithoutKeyboard  - newHeight) + 'px';
+            }
+            if ($attrs.verticalResizeDelay !== undefined){
               // Resize after timeout to make focus working when caret position is under keyboard.
               setTimeout(function() {
-                resizeElement[0].style.maxHeight = (maxHeightWithoutKeyboard + $rootScope.LIST_FOOTER_HEIGHT -
-                                                    newHeight) + 'px';
+                resizeElement[0].style.maxHeight = newMaxHeight;
               }, 0);
-            }else {
-              setTimeout(function() {
-                // Resize after timeout to make focus working when caret position is under keyboard.
-                resizeElement[0].style.maxHeight = (maxHeightWithoutKeyboard  - newHeight) + 'px';
-              }, 0);
+            }else{
+              resizeElement[0].style.maxHeight = newMaxHeight;
             }
           }
           else{
