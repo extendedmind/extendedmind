@@ -36,7 +36,7 @@
 
         if (overrideElement){
           maxHeightWithoutKeyboard =
-            referenceMaxHeight - $rootScope.TOOLBAR_HEIGHT - $rootScope.LIST_FOOTER_HEIGHT;
+          referenceMaxHeight - $rootScope.TOOLBAR_HEIGHT - $rootScope.LIST_FOOTER_HEIGHT;
           overrideElement[0].style.maxHeight = maxHeightWithoutKeyboard;
         }
       }
@@ -52,7 +52,7 @@
 
       if (angular.isFunction($scope.registerWindowResizedCallback)) {
         $scope.registerWindowResizedCallback(setMaxHeight, 'verticalResizeDirective' + '-' +
-                                            $attrs.verticalResize);
+                                             $attrs.verticalResize);
       }
       setMaxHeight();
 
@@ -70,10 +70,14 @@
 
           if (newHeight) {
             if ($attrs.verticalResizeHideFooter){
-              resizeElement[0].style.maxHeight = (maxHeightWithoutKeyboard + $rootScope.LIST_FOOTER_HEIGHT -
-                                                newHeight) + 'px';
+              setTimeout(function() {
+                resizeElement[0].style.maxHeight = (maxHeightWithoutKeyboard + $rootScope.LIST_FOOTER_HEIGHT -
+                                                    newHeight) + 'px';
+              }, 0);
             }else {
-              resizeElement[0].style.maxHeight = (maxHeightWithoutKeyboard  - newHeight) + 'px';
+              setTimeout(function() {
+                resizeElement[0].style.maxHeight = (maxHeightWithoutKeyboard  - newHeight) + 'px';
+              }, 0);
             }
           }
           else{
