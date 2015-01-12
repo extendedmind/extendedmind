@@ -7,7 +7,8 @@
     </h2>
     <div class="animate-list-item-leave tall"
       ng-repeat="note in listInfos.array = (getFullArray()) | orderBy:'trans.favorited':true
-      | limitTo: currentListLimitTo" list-item ng-include="urlBase + 'app/notes/noteListItem.html'"></div>
+      | limitTo: currentListLimitTo track by note.trans.uuid"
+      list-item ng-include="urlBase + 'app/notes/noteListItem.html'"></div>
     <div list-prompt="notes" list-prompt-infos="listInfos" list-prompt-hide="[onboardingInProgress]"></div>
   </section>
   <footer ng-show="isOnboarded('focusNotes')" class="container-content--after"

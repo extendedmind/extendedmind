@@ -27,7 +27,8 @@
       class="container-content with-expandable-footer" drawer-override-aisle="right">
 
       <!-- SEARCH / FILTERED RESULTS -->
-      <div ng-repeat="searchResult in filteredItems.searchResults = (searchItems | filter: itemsFilter)"
+      <div ng-repeat="searchResult in filteredItems.searchResults = (searchItems | filter: itemsFilter)
+        track by searchResult.trans.uuid"
         class="group-mixed with-checkbox">
         <a href class="group-mixed--middle link-search-result"
           ng-click="initializeEditor(searchResult.trans.itemType, searchResult)">
@@ -77,7 +78,7 @@
         </div>
 
         <div ng-if="selectedKeywords && selectedKeywords.length" class="keywords-container row">
-          <div class="keyword-wrapper" ng-repeat="keyword in selectedKeywords">
+          <div class="keyword-wrapper" ng-repeat="keyword in selectedKeywords track by keyword.trans.uuid">
             <a href class="keyword highlighted" ng-click="unselectKeyword(keyword)">
               <span class="text-keyword" ng-bind="'#' + keyword.trans.title" clamp=1></span>
             </a>
@@ -88,7 +89,7 @@
         <div ng-if="!footerExpandedToMaxHeight" class="keywords-container row">
           <div class="keyword-wrapper"
             ng-repeat="keyword in filteredItems.unselectedKeywords = (keywords | filter:keywordsFilter)
-            | filter:{title:keywordsSearch.text} | orderBy:'trans.title'">
+            | filter:{title:keywordsSearch.text} | orderBy:'trans.title' track by keyword.trans.uuid">
             <a href class="keyword link" ng-click="selectKeyword(keyword)">
               <span class="text-keyword" ng-bind="'#' + keyword.trans.title" clamp=1></span>
             </a>
@@ -97,7 +98,8 @@
 
         <!-- EDIT MODE -->
         <div ng-if="footerExpandedToMaxHeight" class="keywords-container row">
-          <div class="keyword-wrapper" ng-repeat="keyword in keywords | orderBy:'title'">
+          <div class="keyword-wrapper" ng-repeat="keyword in keywords | orderBy:'title'
+            track by keyword.trans.uuid">
             <a href class="keyword link" ng-click="initializeEditor('tag', keyword)">
               <span class="text-keyword" ng-bind="'#' + keyword.trans.title" clamp=1></span>
             </a>

@@ -7,7 +7,7 @@
       ng-include="urlBase + 'app/lists/listListItemAdd.html'"></div>
     <div class="animate-list-item-leave"
       ng-repeat="list in listInfos.array = (getFullArray()) | orderBy:'trans.created':true
-      | limitTo: currentListLimitTo"
+      | limitTo: currentListLimitTo track by list.trans.uuid"
       list-item ng-include="urlBase + 'app/lists/listListItem.html'"></div>
     <div list-prompt="lists" list-prompt-infos="listInfos" list-prompt-hide="[listItemAddActive]"></div>
   </section>

@@ -340,7 +340,7 @@
                 ng-repeat="task in listInfos.array = (getFullArray()
                 | paramFilter:isListItemVisible:daySlides[2].pastDate)
                 | orderBy:'trans.created':true
-                | limitTo: currentListLimitTo"
+                | limitTo: currentListLimitTo track by task.trans.uuid"
                 list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
               <div list-prompt="tasks" list-prompt-infos="listInfos"
                 list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
@@ -366,7 +366,7 @@
                 ng-repeat="task in listInfos.array = (getFullArray()
                 | paramFilter:isListItemVisible:daySlides[0].pastDate)
                 | orderBy:'trans.created':true
-                | limitTo: currentListLimitTo"
+                | limitTo: currentListLimitTo track by task.trans.uuid"
                 list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
               <div list-prompt="tasks" list-prompt-infos="listInfos"
                 list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
@@ -392,7 +392,7 @@
                 ng-repeat="task in listInfos.array = (getFullArray()
                 | paramFilter:isListItemVisible:daySlides[1].pastDate)
                 | orderBy:'trans.created':true
-                | limitTo: currentListLimitTo"
+                | limitTo: currentListLimitTo track by task.trans.uuid"
                 list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
               <div list-prompt="tasks" list-prompt-infos="listInfos"
                 list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
@@ -418,7 +418,7 @@
                 ng-repeat="task in listInfos.array = (getFullArray()
                 | paramFilter:isListItemVisible:daySlides[2].pastDate)
                 | orderBy:'trans.created':true
-                | limitTo: currentListLimitTo"
+                | limitTo: currentListLimitTo track by task.trans.uuid"
                 list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
               <div list-prompt="tasks" list-prompt-infos="listInfos"
                 list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
@@ -444,7 +444,7 @@
                 ng-repeat="task in listInfos.array = (getFullArray()
                 | paramFilter:isListItemVisible:daySlides[0].pastDate)
                 | orderBy:'trans.created':true
-                | limitTo: currentListLimitTo"
+                | limitTo: currentListLimitTo track by task.trans.uuid"
                 list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
               <div list-prompt="tasks" list-prompt-infos="listInfos"
                 list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
