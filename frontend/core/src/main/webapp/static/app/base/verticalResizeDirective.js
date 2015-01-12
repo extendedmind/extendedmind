@@ -57,10 +57,6 @@
       setMaxHeight();
 
       function doVerticalResize(newHeight, oldHeight) {
-        if (isPrevented()) {
-          // do nothing in attrs.verticalResize
-          return;
-        }
         if (newHeight || oldHeight) {
 
           var resizeElement = $element;
@@ -68,7 +64,7 @@
           if (overrideElement)
             resizeElement = overrideElement;
 
-          if (newHeight) {
+          if (newHeight && !isPrevented()) {
             if ($attrs.verticalResizeHideFooter){
               // Resize after timeout to make focus working when caret position is under keyboard.
               setTimeout(function() {
@@ -77,7 +73,7 @@
               }, 0);
             }else {
               setTimeout(function() {
-              // Resize after timeout to make focus working when caret position is under keyboard.
+                // Resize after timeout to make focus working when caret position is under keyboard.
                 resizeElement[0].style.maxHeight = (maxHeightWithoutKeyboard  - newHeight) + 'px';
               }, 0);
             }
