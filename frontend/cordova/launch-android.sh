@@ -4,7 +4,7 @@ cd ../cordova
 mvn -o clean install
 cd app
 
-if test "$1" == "tuomas"
+if test "$1" == "jp"
 then
   cordova run android --target=1299e503
 else
