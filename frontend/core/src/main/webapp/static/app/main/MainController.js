@@ -126,7 +126,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
   *
   * TODO: analytics visit omnibar
   */
-  $scope.openEditor = function openEditor(type, item, mode) {
+  $scope.openEditor = function (type, item, mode) {
 
     // Check for existing edit locks and resolve them first.
     var deferredEditorClose = UISessionService.getDeferredAction('editorClose');
