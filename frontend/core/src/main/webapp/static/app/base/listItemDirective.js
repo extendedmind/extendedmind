@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function listItemDirective($parse) {
+ function listItemDirective($parse, $rootScope) {
   return {
     restrict: 'A',
     require: '^list',
@@ -36,18 +36,32 @@
         },
         post: function(scope, element, attrs, listController) {
           if (scope.$last) listController.notifyArrayVisible();
-
           scope.toggleLeftCheckbox = function (item, toggleFn) {
             // Add class for animation when item is not completed, remove when item is completed.
-            element[0].firstElementChild.classList.toggle('checkbox-checked-active', item.trans.optimisticComplete());
+            if (!element[0].firstElementChild.classList.contains('checkbox-checked-active') &&
+               item.trans.optimisticComplete()){
+              // Completing
+              element[0].firstElementChild.classList.add('checkbox-checked-active');
+              scope.checkedActiveAdded = Date.now();
+              setTimeout(function(){
+                // Remove the class anyway if there hasn't been another add in the near history
+                if (Date.now() - scope.checkedActiveAdded >= $rootScope.CHECKBOX_CHECKING_ANIMATION_TIME){
+                  element[0].firstElementChild.classList.remove('checkbox-checked-active');
+                }
+              }, $rootScope.CHECKBOX_CHECKING_ANIMATION_TIME);
+            }else if (element[0].firstElementChild.classList.contains('checkbox-checked-active') &&
+                     !item.trans.optimisticComplete()){
+              // Uncompleting
+              element[0].firstElementChild.classList.remove('checkbox-checked-active');
+            }
             listController.toggleLeftCheckbox(item, toggleFn, angular.element(element[0].firstElementChild));
-          };
+         };
         }
       };
     }
   };
 }
-listItemDirective['$inject'] = ['$parse'];
+listItemDirective['$inject'] = ['$parse', '$rootScope'];
 angular.module('em.base').directive('listItem', listItemDirective);
 
 /*
