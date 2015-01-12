@@ -17,6 +17,12 @@
 
  function NoteEditorController($scope, NotesService, TagsService, UISessionService) {
 
+  if ($scope.mode === 'omnibar') {
+    // Dirtily set flag on to remove flicker when note editor is rendered.
+    $scope.contentFocused = true;
+  }
+
+
   // INITIALIZING
 
   if (angular.isFunction($scope.registerFeatureEditorAboutToCloseCallback))
@@ -99,15 +105,20 @@
   var noteContentFocusCallback;
   $scope.registerNoteContentInputCallbacks = function(focus){
     noteContentFocusCallback = focus;
+    if ($scope.mode === 'omnibar') {
+      // Execute focus right away.
+      noteContentFocusCallback();
+    }
   };
 
-  $scope.noteContentKeyDown = function(event){
+  $scope.noteContentKeyDown = function(/*event*/){
     if ($scope.note.trans.content && $scope.note.trans.content.length &&
-        (!$scope.note.trans.title || !$scope.note.trans.title.length)){
+        (!$scope.note.trans.title || !$scope.note.trans.title.length))
+    {
       // Set untitled as title when title is missing but there is content
       $scope.note.trans.title = 'untitled';
     }
-  }
+  };
 
   // TITLEBAR
 

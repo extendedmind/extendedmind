@@ -58,7 +58,7 @@
   // CONVERTING
 
   $scope.convertToNote = function(){
-    $scope.initializeEditor('note', $scope.getNewNote({title: $scope.titlebar.text}));
+    $scope.initializeEditor('note', $scope.getNewNote({title: $scope.titlebar.text}), 'omnibar');
   };
 
   $scope.convertToTask = function(){
