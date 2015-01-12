@@ -101,6 +101,14 @@
     noteContentFocusCallback = focus;
   };
 
+  $scope.noteContentKeyDown = function(event){
+    if ($scope.note.trans.content && $scope.note.trans.content.length &&
+        (!$scope.note.trans.title || !$scope.note.trans.title.length)){
+      // Set untitled as title when title is missing but there is content
+      $scope.note.trans.title = 'untitled';
+    }
+  }
+
   // TITLEBAR
 
   $scope.noteTitlebarHasText = function() {
