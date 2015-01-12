@@ -581,10 +581,12 @@
           }
         } else if (request.content.url.endsWith('/note')){
           // Convert to note
-          updateModProperties(request.params.uuid, 'note', response, request.params.owner);
+          properties = {modified: response.modified};
+          updateModProperties(request.params.uuid, 'note', properties, request.params.owner);
         } else if ( request.content.url.endsWith('/list')){
           // Convert to list
-          updateModProperties(request.params.uuid, 'list', response, request.params.owner);
+          properties = {modified: response.modified};
+          updateModProperties(request.params.uuid, 'list', properties, request.params.owner);
         }
         if (properties)
           updateModProperties(request.params.uuid, request.params.type, properties, request.params.owner);
@@ -598,10 +600,12 @@
           properties = {favorited: response.favorited, modified: response.result.modified};
         } else if (request.content.url.endsWith('/task')){
           // Convert to task
-          updateModProperties(request.params.uuid, 'task', response, request.params.owner);
+          properties = {modified: response.modified};
+          updateModProperties(request.params.uuid, 'task', properties, request.params.owner);
         } else if ( request.content.url.endsWith('/list')){
           // Convert to list
-          updateModProperties(request.params.uuid, 'list', response, request.params.owner);
+          properties = {modified: response.modified};
+          updateModProperties(request.params.uuid, 'list', properties, request.params.owner);
         }
         if (properties)
           updateModProperties(request.params.uuid, request.params.type, properties, request.params.owner);
@@ -611,10 +615,12 @@
           updateModProperties(request.params.uuid, request.params.type, properties, request.params.owner);
         } else if (request.content.url.endsWith('/note')){
           // Convert to note
-          updateModProperties(request.params.uuid, 'note', response, request.params.owner);
+          properties = {modified: response.modified};
+          updateModProperties(request.params.uuid, 'note', properties, request.params.owner);
         } else if ( request.content.url.endsWith('/task')){
           // Convert to task
-          updateModProperties(request.params.uuid, 'task', response, request.params.owner);
+          properties = {modified: response.modified};
+          updateModProperties(request.params.uuid, 'task', properties, request.params.owner);
         }
       } else if (request.params.type === 'tag') {
         if (request.content.url.endsWith('/undelete')){
