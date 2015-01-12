@@ -83,7 +83,15 @@
   };
 
   $scope.isNotePropertyInEdit = function() {
-    return $scope.contentFocused || $scope.listPickerOpen || $scope.keywordsPickerOpen;
+    return $scope.contentFocused || $scope.isPickerOpen();
+  };
+
+  $scope.isEndNoteEditActionHidden = function() {
+    return $scope.isPickerOpen();
+  };
+
+  $scope.isPickerOpen = function() {
+    return $scope.listPickerOpen || $scope.keywordsPickerOpen;
   };
 
   // CONTENT

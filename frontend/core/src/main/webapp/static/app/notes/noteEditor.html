@@ -3,8 +3,12 @@
     <div class="container-titlebar--inner">
       <div class="group-symmetrical height-large">
 
-        <a href ng-hide="isNotePropertyInEdit()" class="group-symmetrical--left link-navigation active" ng-class="isNoteEdited() && !note.deleted ? 'highlighted' : 'downplayed'" ng-click="endNoteEdit()">
+        <a href ng-hide="isEndNoteEditActionHidden()" class="group-symmetrical--left link-navigation active" ng-class="isNoteEdited() && !note.deleted ? 'highlighted' : 'downplayed'" ng-click="endNoteEdit()">
           <span class="text-navigation-back" ng-class="!isFirstSlide() && 'not-swipeable'" ng-bind="isNoteEdited() && !note.deleted ? 'save' : 'back'"></span>
+        </a>
+
+        <a href ng-if="isPickerOpen()" class="group-symmetrical--left highlighted">
+          <span class="text-edit">done</span>
         </a>
 
         <div ng-hide="!isNotePropertyInEdit() && isFirstSlide()" id="noteEditorTitlebarTitle" ng-style="{maxWidth: calculateTitleWidth()}" class="scroll-then-toggle group-symmetrical--middle width-large">
