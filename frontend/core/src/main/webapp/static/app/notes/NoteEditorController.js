@@ -124,6 +124,10 @@
       event.preventDefault();
       event.stopPropagation();
     }
+    if (event.keyCode === 8 && $scope.note.trans.title === 'untitled'){
+      // When pressing backspace on 'untitled', remove the entire title
+      $scope.note.trans.title = undefined;
+    }
   };
 
   // KEYWORDS
