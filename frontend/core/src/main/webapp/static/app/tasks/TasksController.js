@@ -63,7 +63,7 @@
   $scope.getTaskModified = function(task){
     var frozenTask = freezedTasksInLists.findFirstObjectByKeyValue('task', task);
     if (frozenTask !== undefined){
-      return frozenTask.modified;
+      return frozenTask.modified; // This is task.trans.modified
     }else {
       return task.trans.modified;
     }

@@ -98,8 +98,8 @@
 
         <!-- EDIT MODE -->
         <div ng-if="footerExpandedToMaxHeight" class="keywords-container row">
-          <div class="keyword-wrapper" ng-repeat="keyword in keywords | orderBy:'title'
-            track by keyword.trans.uuid">
+          <div class="keyword-wrapper"
+            ng-repeat="keyword in keywords | orderBy:'trans.title' track by keyword.trans.uuid">
             <a href class="keyword link" ng-click="initializeEditor('tag', keyword)">
               <span class="text-keyword" ng-bind="'#' + keyword.trans.title" clamp=1></span>
             </a>
