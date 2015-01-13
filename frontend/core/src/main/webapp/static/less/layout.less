@@ -468,6 +468,12 @@ margin.
   }
 }
 
+// 1. Raise first (not hidden) row type element of top row container by the amount of @margin-bottom-heading
+//    to align into grid.
+.row-top-parent:not(.ng-hide) >:first-child {
+  margin-top: -@margin-bottom-heading;  // [1]
+}
+
 // FIXME: unify vertical align with single- and multi-row items or move (overrides.less)
 // 1. Set padding-bottom to mimic height of .row-padded.
 //    43px + 21px is not the correct value but near.
@@ -1125,11 +1131,17 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
 }
 
 @margin-top-heading: 9px;
+@margin-bottom-heading: 9px;
 
-// 1. Set margin-top for large .group-symmetrical to add space on top of it.
+// 1. Set margin-top|bottom for large .group-symmetrical to add space on top|bottom of it.
 //    FIXME:  Only needed in @media (max-height: @height-landscape-max)
-.group-symmetrical.height-large {
-  margin-top: @margin-top-heading;  // [1]
+.group-symmetrical {
+  &.height-large--top {
+    margin-top: @margin-top-heading;  // [1]
+  }
+  &.height-large--bottom {
+    margin-bottom: @margin-bottom-heading;  // [1]
+  }
 }
 
 .group-symmetrical--middle.width-large {

@@ -1,7 +1,7 @@
-<div class="container-fluid" ng-controller="NoteEditorController" ng-class="note.trans.deleted && 'container-disabled'">
+<div class="container-fluid note-editor" ng-controller="NoteEditorController" ng-class="note.trans.deleted && 'container-disabled'">
   <header class="container-titlebar">
     <div class="container-titlebar--inner">
-      <div class="group-symmetrical height-large">
+      <div class="group-symmetrical height-large--top height-large--bottom">
 
         <a href ng-hide="isEndNoteEditActionHidden()" class="group-symmetrical--left link-navigation active" ng-class="isNoteEdited() && !note.deleted ? 'highlighted' : 'downplayed'" ng-click="endNoteEdit()">
           <span class="text-navigation-back" ng-class="!isFirstSlide() && 'not-swipeable'" ng-bind="isNoteEdited() && !note.deleted ? 'save' : 'back'"></span>
@@ -43,7 +43,7 @@
         <div ng-style="{'padding-bottom': isNotePropertyInEdit() ? '22px' : EDITOR_FOOTER_HEIGHT}" class="container-content" drawer-override-aisle="right" swiper-prevent scroll-then-toggle="noteEditorTitlebarTitle" scroll-then-toggle-top="noteEditorTitle" scroll-then-toggle-resizeable="noteEditorTitleInput">
 
           <!-- NOTE TITLE -->
-          <div ng-hide="isNotePropertyInEdit()" id="noteEditorTitle">
+          <div ng-hide="isNotePropertyInEdit()" id="noteEditorTitle" class="row-top-parent">
             <div class="group-mixed with-checkbox large">
               <div class="group-mixed--middle">
                 <textarea id="noteEditorTitleInput" class="text-heading-primary large" ng-model="note.trans.title" input-model-validator ng-trim="false" ng-keydown="noteTitlebarTextKeyDown($event)" editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)" msd-elastic placeholder="enter title&#8230;" maxlength="128" autocapitalize="none" autocorrect="off">
@@ -132,7 +132,7 @@
           <!-- KEYWORDS PICKER -->
           <div ng-if="keywordsPickerOpen" class="swiper-no-swiping animate-fade-in" editable-field-container="auto" editable-field-container-scrollable="true" editable-field-container-clicked-elsewhere="closeKeywordsPicker()" data-snap-ignore="true">
 
-            <div>
+            <div class="row-top-parent">
 
               <form role="form" class="row-form" ng-submit="addNewKeywordToNote(note, newKeyword)" autocapitalize="none" autocorrect="off">
                 <input type="text" ng-model="newKeyword.trans.title" placeholder="add keyword&#8230;" maxlength="128">
@@ -173,7 +173,7 @@
         <div ng-style="{'padding-bottom': advancedSlideInfo.footerHeight}" class="container-content" swiper-prevent>
 
           <!-- URL -->
-          <div class="row-vertically-centered with-textarea">
+          <div class="row-vertically-centered with-textarea row-top-parent">
             <textarea ng-model="note.trans.link" input-model-validator ng-trim="false" msd-elastic maxlength="128" placeholder="enter url&#8230;" autocapitalize="none" autocorrect="off">
             </textarea>
           </div>

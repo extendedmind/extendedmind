@@ -1,7 +1,7 @@
 <div class="container-fluid" ng-controller="TagEditorController" ng-class="tag.trans.deleted && 'container-disabled'">
   <header class="container-titlebar">
     <div class="container-titlebar--inner">
-      <div class="group-symmetrical height-large">
+      <div class="group-symmetrical height-large--top">
         <a href class="group-symmetrical--left link-navigation highlighted active" ng-click="endTagEdit()">
           <span class="text-navigation-back" ng-bind="isTagEdited() && !tag.deleted ? 'save' : 'back'"></span>
         </a>

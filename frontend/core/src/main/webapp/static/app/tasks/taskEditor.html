@@ -1,7 +1,7 @@
 <div class="container-fluid" ng-controller="TaskEditorController" ng-class="task.trans.deleted && 'container-disabled'">
   <header class="container-titlebar">
     <div class="container-titlebar--inner">
-      <div class="group-symmetrical height-large">
+      <div class="group-symmetrical height-large--top">
         <a href class="group-symmetrical--left link-navigation highlighted active" ng-click="endTaskEdit()" >
           <span class="text-navigation-back" ng-class="!isFirstSlide() && 'not-swipeable'"
             ng-bind="isTaskEdited() && !task.deleted ? 'save' : 'back'"></span>
