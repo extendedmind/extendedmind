@@ -12,7 +12,7 @@
         </a>
 
         <div ng-hide="!isNotePropertyInEdit() && isFirstSlide()" id="noteEditorTitlebarTitle" ng-style="{maxWidth: calculateTitleWidth()}" class="scroll-then-toggle group-symmetrical--middle width-large">
-          <a href class="link" ng-click="openNoteTitleEdit()">
+          <a href class="link" ng-click="gotoTitle()">
             <div><span class="text-heading-primary" clamp=2 ng-class="!note.trans.title && 'text-downplayed'" ng-bind="note.trans.title && note.trans.title.length ? note.trans.title : 'new note'"></span></div>
           </a>
         </div>
@@ -40,7 +40,7 @@
   <div class="swiper-container container-fluid--inner" swiper-container="noteEditor" swiper-type="main" expected-slides="2" swiper-container-slide-changed="editorSwiperSlideChanged()">
     <div class="swiper-wrapper" ng-class="onboardingInProgress && 'swiper-no-swiping'">
       <div class="swiper-slide" swiper-slide="noteEditor/basic" slide-index="0">
-        <div ng-style="{'padding-bottom': isNotePropertyInEdit() ? '22px' : EDITOR_FOOTER_HEIGHT}" class="container-content" drawer-override-aisle="right" swiper-prevent scroll-then-toggle="noteEditorTitlebarTitle" scroll-then-toggle-top="noteEditorTitle" scroll-then-toggle-resizeable="noteEditorTitleInput">
+        <div ng-style="{'padding-bottom': isNotePropertyInEdit() ? '22px' : EDITOR_FOOTER_HEIGHT}" class="container-content" drawer-override-aisle="right" swiper-prevent scroll-then-toggle="noteEditorTitlebarTitle" scroll-then-toggle-top="noteEditorTitle" scroll-then-toggle-resizeable="noteEditorTitleInput" scroll-then-toggle-reset="registerGotoTitleCallback">
 
           <!-- NOTE TITLE -->
           <div ng-hide="isNotePropertyInEdit()" id="noteEditorTitle" class="row-top-parent">

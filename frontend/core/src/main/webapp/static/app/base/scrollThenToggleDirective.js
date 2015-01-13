@@ -14,12 +14,14 @@
  */
  'use strict';
 
- function scrollThenToggleDirective() {
+ function scrollThenToggleDirective($parse) {
   return {
     restrict: 'A',
     link: function postLink(scope, element, attrs) {
       var topElement = document.getElementById(attrs.scrollThenToggleTop);
       var topElementHeight = topElement.offsetHeight;
+
+      if (attrs.scrollThenToggleReset) $parse(attrs.scrollThenToggleReset)(scope)(scrollToTop);
 
       if (attrs.scrollThenToggleResizeable) {
         scope.$on('elastic:resize', function(event, element) {
@@ -27,6 +29,10 @@
             topElementHeight = topElement.offsetHeight;
           }
         });
+      }
+
+      function scrollToTop() {
+        element[0].scrollTop = 0;
       }
 
       var toggleElement = document.getElementById(attrs.scrollThenToggle);
@@ -51,4 +57,5 @@
     }
   };
 }
+scrollThenToggleDirective['$inject'] = ['$parse'];
 angular.module('em.base').directive('scrollThenToggle', scrollThenToggleDirective);

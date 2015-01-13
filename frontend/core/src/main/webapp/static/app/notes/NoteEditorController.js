@@ -84,8 +84,14 @@
     $scope.contentFocused = false;
   };
 
-  $scope.openNoteTitleEdit = function() {
-    // TODO: Scroll and swipe
+  $scope.gotoTitle = function() {
+    if (typeof gotoTitleCallback === 'function') gotoTitleCallback();
+    if (!$scope.isFirstSlide()) $scope.swipeToBasic();
+  };
+
+  var gotoTitleCallback;
+  $scope.registerGotoTitleCallback = function(callback) {
+    gotoTitleCallback = callback;
   };
 
   $scope.isNotePropertyInEdit = function() {
