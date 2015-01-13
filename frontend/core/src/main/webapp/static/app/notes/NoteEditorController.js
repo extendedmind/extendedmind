@@ -62,7 +62,7 @@
   };
 
   function noteEditorAboutToClose() {
-    if ($scope.isNoteEdited() && !$scope.note.deleted) saveNoteInEdit();
+    if ($scope.isNoteEdited() && !$scope.note.trans.deleted) saveNoteInEdit();
     else NotesService.resetNote($scope.note, UISessionService.getActiveUUID());
   }
 

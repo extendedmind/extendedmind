@@ -4,12 +4,12 @@
       <div class="group-symmetrical height-large--top">
         <a href class="group-symmetrical--left link-navigation highlighted active" ng-click="endListEdit()" >
           <span class="text-navigation-back" ng-class="!isFirstSlide() && 'not-swipeable'"
-            ng-bind="isListEdited() && !list.deleted ? 'save' : 'back'"></span>
+            ng-bind="isListEdited() && !list.trans.deleted ? 'save' : 'back'"></span>
         </a>
-        <a href ng-if="!list.deleted" class="group-symmetrical--right" ng-click="deleteListInEdit()" >
+        <a href ng-if="!list.trans.deleted" class="group-symmetrical--right" ng-click="deleteListInEdit()" >
           <span class="icon-trash"></span>
         </a>
-        <a href ng-if="list.deleted" class="group-symmetrical--right link-navigation highlighted active"
+        <a href ng-if="list.trans.deleted" class="group-symmetrical--right link-navigation highlighted active"
           ng-click="undeleteList(list)"><span class="text-navigation">restore</span></a>
       </div>
 

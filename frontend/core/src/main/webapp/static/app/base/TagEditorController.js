@@ -66,7 +66,7 @@
   };
 
   function tagEditorAboutToClose() {
-    if ($scope.isTagEdited() && !$scope.tag.deleted){
+    if ($scope.isTagEdited() && !$scope.tag.trans.deleted){
       saveTagInEdit();
     } else if (deleting){
       $scope.swipeToContextsAndReset();

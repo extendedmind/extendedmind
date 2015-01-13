@@ -18,6 +18,7 @@
  function TaskEditorController($q, $rootScope, $scope, $timeout, DateService, TasksService,
                                UISessionService) {
 
+  console.log($scope.task)
   // INITIALIZING
 
   if (angular.isFunction($scope.registerFeatureEditorAboutToCloseCallback))
@@ -71,7 +72,7 @@
   };
 
   function taskEditorAboutToClose() {
-    if ($scope.isTaskEdited() && !$scope.task.deleted) saveTaskInEdit();
+    if ($scope.isTaskEdited() && !$scope.task.trans.deleted) saveTaskInEdit();
     else {
       if (completeReadyDeferred){
         $scope.deferEdit().then(function(){

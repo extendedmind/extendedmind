@@ -4,11 +4,13 @@
 
     <div class="group-mixed with-checkbox"
       ng-repeat="deletedItem in allDeleted | orderBy: 'trans.deleted':true track by deletedItem.trans.uuid">
-      <a href class="group-mixed--middle link-search-result" ng-click="openEditor(deletedItem.tagType ? 'tag' : deletedItem.trans.itemType, deletedItem)">
-        <span class="text-search-result" clamp=2 ng-bind="deletedItem.title"></span>
+      <a href class="group-mixed--middle link-search-result"
+      ng-click="openEditor(deletedItem.trans.tagType ? 'tag' : deletedItem.trans.itemType, deletedItem)">
+        <span class="text-search-result" clamp=2 ng-bind="deletedItem.trans.title"></span>
       </a>
       <div class="group-mixed--right">
-        <span class="text-search-type" ng-bind="deletedItem.tagType ? deletedItem.tagType : deletedItem.trans.itemType"></span>
+        <span class="text-search-type"
+        ng-bind="deletedItem.trans.tagType ? deletedItem.trans.tagType : deletedItem.trans.itemType"></span>
       </div>
     </div>
   </section>

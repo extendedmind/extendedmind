@@ -3,12 +3,12 @@
     <div class="container-titlebar--inner">
       <div class="group-symmetrical height-large--top">
         <a href class="group-symmetrical--left link-navigation highlighted" ng-click="endItemEdit()">
-          <span class="text-navigation-back" ng-bind="isItemEdited() && !item.deleted ? 'save' : 'back'"></span>
+          <span class="text-navigation-back" ng-bind="isItemEdited() && !item.trans.deleted ? 'save' : 'back'"></span>
         </a>
-        <a ng-if="!item.deleted" href class="group-symmetrical--right" ng-click="deleteItemInEdit()" >
+        <a ng-if="!item.trans.deleted" href class="group-symmetrical--right" ng-click="deleteItemInEdit()" >
           <span class="icon-trash"></span>
         </a>
-        <a ng-if="item.deleted" href class="group-symmetrical--right link-navigation highlighted active"
+        <a ng-if="item.trans.deleted" href class="group-symmetrical--right link-navigation highlighted active"
           ng-click="undeleteItem(item)"><span class="text-navigation">restore</span></a>
       </div>
 

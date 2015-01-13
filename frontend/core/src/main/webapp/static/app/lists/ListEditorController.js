@@ -54,7 +54,7 @@
   };
 
   function listEditorAboutToClose() {
-    if ($scope.isListEdited() && !$scope.list.deleted) saveListInEdit();
+    if ($scope.isListEdited() && !$scope.list.trans.deleted) saveListInEdit();
     else ListsService.resetList($scope.list, UISessionService.getActiveUUID());
   }
 

@@ -54,7 +54,7 @@
   };
 
   function itemEditorAboutToClose() {
-    if ($scope.isItemEdited() && !$scope.item.deleted) saveItemInEdit();
+    if ($scope.isItemEdited() && !$scope.item.trans.deleted) saveItemInEdit();
     else ItemsService.resetItem($scope.item, UISessionService.getActiveUUID());
   }
 
