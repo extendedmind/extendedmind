@@ -117,14 +117,12 @@
     }
   };
 
-  $scope.noteContentKeyDown = function(/*event*/){
-    if ($scope.note.trans.content && $scope.note.trans.content.length &&
-        (!$scope.note.trans.title || !$scope.note.trans.title.length))
-    {
+  $scope.$watch('note.trans.content', function(newValue, oldValue) {
+    if (newValue && !oldValue && (!$scope.note.trans.title || !$scope.note.trans.title.length)) {
       // Set untitled as title when title is missing but there is content
       $scope.note.trans.title = 'untitled';
     }
-  };
+  });
 
   // TITLEBAR
 
