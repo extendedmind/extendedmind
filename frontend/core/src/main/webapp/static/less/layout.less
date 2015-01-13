@@ -1288,15 +1288,19 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
   }
 }
 
+// 1. Set full height.
+// 2. Clear padding-bottom from container.
+// 3. Set new line with the value of line-height into padding-bottom.
+// 4. Override values from msd-elastic
 .inner-wrapper-full {
-  height: 100%;
+  height: 100%; // [1]
   .row-vertically-centered.with-textarea {
     padding-bottom: 0;
-    height: 100%;
+    height: 100%; // [1]
     textarea {
-      padding-bottom: 1em;
-      overflow: initial !important;
-      height: 100% !important;
+      padding-bottom: @grid-vertical-half;  // [3]
+      overflow: initial !important; // [4]
+      height: 100% !important;      // [1,4]
     }
   }
 }
