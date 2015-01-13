@@ -18,7 +18,7 @@
   return {
     restrict: 'A',
     require: 'ngModel', // get a hold of NgModelController
-    link: function(scope, element, _, ngModel) {
+    link: function(_, element, __, ngModel) {
 
       /*
       * Validate non-whitespace model value string.
