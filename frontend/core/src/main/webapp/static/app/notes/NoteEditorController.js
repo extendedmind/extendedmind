@@ -78,10 +78,14 @@
 
   $scope.noteContentFocused = function(){
     $scope.contentFocused = true;
+    var innerWrapperElement = document.getElementById('innerWrapper');
+    innerWrapperElement.classList.add('inner-wrapper-full');
   };
 
   $scope.noteContentBlurred = function() {
     $scope.contentFocused = false;
+    var innerWrapperElement = document.getElementById('innerWrapper');
+    innerWrapperElement.classList.remove('inner-wrapper-full');
   };
 
   $scope.gotoTitle = function() {

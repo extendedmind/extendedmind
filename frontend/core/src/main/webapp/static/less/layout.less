@@ -1287,3 +1287,16 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
     vertical-align: top;
   }
 }
+
+.inner-wrapper-full {
+  height: 100%;
+  .row-vertically-centered.with-textarea {
+    padding-bottom: 0;
+    height: 100%;
+    textarea {
+      padding-bottom: 1em;
+      overflow: initial !important;
+      height: 100% !important;
+    }
+  }
+}
