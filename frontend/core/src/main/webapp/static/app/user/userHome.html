@@ -1,5 +1,5 @@
 <div class="container-content--outer" ng-if="isFeatureActive('user')" drawer-handle="left">
-  <section class="container-content">
+  <section ng-if="!isFakeUser()" class="container-content">
     <h2 class="group-heading justified row" ng-bind="online ? 'online' : '*offline'"></h2>
 
     <div class="group-details">
@@ -76,9 +76,24 @@
     </div>
 
   </section>
+  <section ng-if="isFakeUser()">
+    <div class="group-instruction">
+      <h2 class="group-heading instruction row">synchronize your
+        <span class="highlighted">mind</span>
+      </h2>
+      <div class="textgroup-ingress row">your information is stored only locally</div>
+      <div class="textgroup-ingress last row">protect your data by signing up for an
+      <span class="text-highlighted">extended mind</span> account</div>
+    </div>
+  </section>
+
   <footer class="container-content--after group-btn">
-    <button class="btn-action" ng-click="logOut()">
+    <button ng-if="!isFakeUser()" class="btn-action" ng-click="logOut()">
       <span class="text-btn">log out</span>
+    </button>
+
+    <button ng-if="isFakeUser()" class="btn-action" ng-click="openEditor('user', undefined, 'signUp')">
+      <span class="text-btn">sign up</span>
     </button>
   </footer>
 </div>

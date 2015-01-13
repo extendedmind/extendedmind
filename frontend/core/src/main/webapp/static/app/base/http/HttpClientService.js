@@ -20,6 +20,7 @@
 
   var methods = {};
   var credentials;
+  var cacheOnly;
 
   // Offline checker for the entire application
   function isOffline(status) {
@@ -60,9 +61,38 @@
   var primaryResultCallback, primaryCreateCallback, secondaryCallback, beforeLastCallback,
   defaultCallback, onlineCallback, queueEmptiedCallback;
 
+
+  function executeLastRequest(lastRequest){
+    $.ajax({
+      type: lastRequest.content.method.toUpperCase(),
+      url: lastRequest.content.url,
+      data: JSON.stringify(lastRequest.content.data),
+      contentType: 'application/json',
+      dataType: 'json',
+      success: function() {
+        // Then remove the request and release lock
+        HttpRequestQueueService.remove(lastRequest);
+      },
+      error: function() {
+        HttpRequestQueueService.releaseLock();
+      }
+    });
+  }
+
   var retryingExecution = false;
   // Recursive method to empty the queue
   function executeRequests(previousRequest) {
+
+    // When cacheOnly is set to true, the only thing that needs to be done here
+    // is analytics
+    if (cacheOnly){
+      var lastRequest = HttpRequestQueueService.getLast();
+      if (lastRequest){
+        executeLastRequest(lastRequest);
+      }
+      return;
+    }
+
     // First always check if primary should be created first
     // to avoid errors with authentication
     if (!HttpRequestQueueService.isPrimaryHead() && primaryCreateCallback) {
@@ -156,20 +186,7 @@
         });
         // Last is executed without any expectations of a result
       } else {
-        $.ajax({
-          type: headRequest.content.method.toUpperCase(),
-          url: headRequest.content.url,
-          data: JSON.stringify(headRequest.content.data),
-          contentType: 'application/json',
-          dataType: 'json',
-          success: function() {
-            // Then remove the request and release lock
-            HttpRequestQueueService.remove(headRequest);
-          },
-          error: function() {
-            HttpRequestQueueService.releaseLock();
-          }
-        });
+        executeLastRequest(headRequest);
       }
     }
   }
@@ -428,6 +445,10 @@
       queueEmptiedCallback = callback;
     }
   };
+
+  methods.setCacheOnly = function(value) {
+    cacheOnly = value;
+  }
 
   return methods;
 }

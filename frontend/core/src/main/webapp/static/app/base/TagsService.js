@@ -16,8 +16,7 @@
  /*global angular */
  'use strict';
 
- function TagsService($q, ArrayService, BackendClientService, ItemLikeService, PersistentStorageService,
-                      UserSessionService) {
+ function TagsService($q, ArrayService, BackendClientService, ItemLikeService, UserSessionService) {
 
   var tagFieldInfos = ItemLikeService.getFieldInfos(
     ['tagType',
@@ -295,5 +294,5 @@
 }
 
 TagsService['$inject'] = ['$q', 'ArrayService', 'BackendClientService', 'ItemLikeService',
-                          'PersistentStorageService', 'UserSessionService'];
+'UserSessionService'];
 angular.module('em.base').factory('TagsService', TagsService);

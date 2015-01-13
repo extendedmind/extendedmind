@@ -1,5 +1,5 @@
-<form name="userForm" class="container-fluid" ng-controller="UserEditorController">
-  <header class="container-titlebar">
+<div class="container-fluid" ng-controller="UserEditorController">
+  <header ng-if="mode !== 'signUp'" class="container-titlebar">
     <div class="container-titlebar--inner">
       <div class="group-symmetrical height-large--top">
         <a href class="group-symmetrical--left link-navigation highlighted" ng-click="closeEditor()">
@@ -9,7 +9,7 @@
      </div>
   </header>
 
-  <div class="container-fluid--inner">
+  <form name="userForm" ng-if="mode !== 'signUp'" class="container-fluid--inner">
     <div ng-if="mode === 'password'" class="container-content" drawer-override-aisle="right">
       <h2 class="group-heading row-form">change password</h2>
       <div class="row-form">
@@ -21,10 +21,9 @@
         ng-minlength="7" placeholder="enter new password&#8230;" required />
       </div>
       <div class="group-error row-form">
-        <div ng-if="userForm.passwordNew.$touched" ng-messages="signupForm.password.$error">
+        <div ng-if="userForm.passwordNew.$touched" ng-messages="signUpForm.password.$error">
           <span class="text-error" ng-message="minlength">password must be 7 characters or more</span>
         </div>
-        <span ng-if="signupFailed" class="text-error">user with given email already registered</span>
         <span ng-if="userEditOffline" class="text-error">can't connect to server. are you online?</span>
         <span ng-if="changePasswordFailed" class="text-error">invalid old password</span>
       </div>
@@ -40,5 +39,78 @@
         <span class="text-btn">done</span>
       </button>
     </footer>
+  </form>
+
+  <div ng-if="mode === 'signUp'" class="swiper-container container-fluid--inner" swiper-container="signUp" swiper-type="main"
+    expected-slides="2" swiper-container-slide-changed="signUpSwiperSlideChanged(path, activeIndex)">
+    <div class="swiper-wrapper">
+      <form name="signUpForm" class="swiper-slide" swiper-slide="signUp/main" slide-index="0">
+        <section class="container-content" editable-field-container>
+          <header ng-hide="smallDeviceHeight && softKeyboard.height" class="group-symmetrical">
+            <a href ng-click="closeEditor()" class="group-symmetrical--left link-navigation" editable-field-deactivate>
+              <span class="text-navigation-back">back</span>
+            </a>
+          </header>
+          <h2 class="group-heading row-form" editable-field-deactivate>sign up</h2>
+          <div class="row-form">
+            <input type="email" name="email" ng-model="user.username"
+            placeholder="enter email&#8230;" editable-field="getEditableFieldSticky()"
+            editable-field-register-callbacks="registerUserEditorEmailInputCallbacks(focus, blur)" required />
+          </div>
+          <div class="group-error row-form">
+            <div ng-if="signUpForm.email.$touched" ng-messages="signUpForm.email.$error">
+              <span class="text-error" ng-message="email">invalid email address</span>
+            </div>
+          </div>
+          <div class="row-form">
+            <input type="password" name="password" id="password" ng-model="user.password"
+            ng-minlength="7" placeholder="enter password&#8230;" editable-field="getEditableFieldSticky()"
+            editable-field-register-callbacks="registerUserEditorPasswordInputCallbacks(focus, blur)" required />
+          </div>
+          <div class="group-error row-form">
+            <div ng-if="signUpForm.password.$touched" ng-messages="signUpForm.password.$error">
+              <span class="text-error" ng-message="minlength">password must be 7 characters or more</span>
+            </div>
+          </div>
+          <div class="group-mixed details height-large">
+            <div class="group-mixed--left">
+              <input type="checkbox" ng-model="user.agree" ng-true-value="true" icon-checkbox="'signUpFormAgree'" />
+            </div>
+            <div class="group-mixed--middle">
+              <span class="text-details">i have read and agree to the</span>
+              <a href class="highlighted" ng-click="swipeToDetails('terms')" editable-field-deactivate>
+                <span class="text-details">terms of service</span>
+              </a>
+              <span class="text-details">and</span>
+              <a href class="highlighted" ng-click="swipeToDetails('privacy')" editable-field-deactivate>
+                <span class="text-details">privacy policy</span>
+              </a>
+            </div>
+          </div>
+          <div class="group-error height-large row-form">
+            <span ng-if="signupFailed" class="text-error">user with given email already registered</span>
+            <span ng-if="userEditOffline" class="text-error">can't connect to server. are you online?</span>
+            <span ng-if="loginFailed" class="text-error">could not login with new credentials</span>
+          </div>
+        </section>
+        <footer class="container-content--after editor-footer group-btn" editable-field-container="auto">
+          <button type="submit" class="btn-action" ng-disabled="!signUpForm.$valid || !user.agree" ng-click="signUp()">
+            <span class="text-btn">done</span>
+          </button>
+        </footer>
+      </form>
+      <div class="swiper-slide" swiper-slide="signUp/details" slide-index="1">
+        <section class="container-content">
+          <header class="group-symmetrical">
+            <a href class="group-symmetrical--left link-navigation" ng-click="swipeToMain()">
+              <span class="text-navigation-back downplayed">back</span>
+            </a>
+          </header>
+          <div ng-if="details.html" class="container-content">
+            <div class="group-html-external row" ng-bind-html="details.html"></div>
+          </div>
+        </section>
+      </div>
+    </div>
   </div>
-</form>
+</div>

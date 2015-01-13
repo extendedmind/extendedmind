@@ -806,9 +806,10 @@
     var latestModified = UserSessionService.getLatestModified(ownerUUID);
     var url = '/api/' + ownerUUID + '/items';
 
-    if (latestModified !== undefined) {
-
-      if (UserSessionService.isOfflineEnabled() && !UserSessionService.isPersistentDataLoaded()){
+    if (UserSessionService.isFakeUser()){
+      deferred.resolve();
+    }else if (latestModified !== undefined) {
+      if (UserSessionService.isPersistentStorageEnabled() && !UserSessionService.isPersistentDataLoaded()){
         // Load items from the database
         PersistentStorageService.getAll().then(function(itemInfos){
           // Sort items by owner and type
@@ -912,7 +913,7 @@
       }
     },
     clearData: function(){
-      if (UserSessionService.isOfflineEnabled()){
+      if (UserSessionService.isPersistentStorageEnabled()){
         PersistentStorageService.destroyAll();
       }
       ItemsService.clearItems();

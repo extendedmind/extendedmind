@@ -19,7 +19,7 @@
 /*
 * Stores all requests into local storage
 */
-function HttpRequestQueueService() {
+function HttpRequestQueueService(enableOffline) {
 
   // Primary is the first every time, secondary the second
   var primary, secondary;
@@ -35,26 +35,30 @@ function HttpRequestQueueService() {
   //       multiple threads are used.
   var processing = false;
 
+  // Set storage to either localStorage or sessionStorage depending on
+  // if offline is enabled or not
+  var storage = enableOffline ? localStorage : sessionStorage;
+
   // Initialize variables from local storage when service
   // is created
   function initialize(){
-    var stored = localStorage.getItem('primaryRequest');
+    var stored = storage.getItem('primaryRequest');
     if (stored) {
       primary = JSON.parse(stored);
     }
-    stored = localStorage.getItem('secondaryRequest');
+    stored = storage.getItem('secondaryRequest');
     if (stored) {
       secondary = JSON.parse(stored);
     }
-    stored = localStorage.getItem('requestQueue');
+    stored = storage.getItem('requestQueue');
     if (stored) {
       queue = JSON.parse(stored);
     }
-    stored = localStorage.getItem('beforeLastRequest');
+    stored = storage.getItem('beforeLastRequest');
     if (stored) {
       beforeLast = JSON.parse(stored);
     }
-    stored = localStorage.getItem('lastRequest');
+    stored = storage.getItem('lastRequest');
     if (stored) {
       last = JSON.parse(stored);
     }
@@ -108,9 +112,9 @@ function HttpRequestQueueService() {
 
   function persistQueue() {
     if (queue.length === 0) {
-      localStorage.removeItem('requestQueue');
+      storage.removeItem('requestQueue');
     } else {
-      localStorage.setItem('requestQueue', JSON.stringify(queue));
+      storage.setItem('requestQueue', JSON.stringify(queue));
     }
   }
 
@@ -157,17 +161,17 @@ function HttpRequestQueueService() {
       if (request.primary) {
         if (!primary || primary.offline) {
           primary = request;
-          localStorage.setItem('primaryRequest', JSON.stringify(primary));
+          storage.setItem('primaryRequest', JSON.stringify(primary));
         }
       } else if (request.secondary) {
         if (!secondary || secondary.offline) {
           secondary = request;
-          localStorage.setItem('secondaryRequest', JSON.stringify(secondary));
+          storage.setItem('secondaryRequest', JSON.stringify(secondary));
         }
       } else if (request.beforeLast) {
         if (!beforeLast || beforeLast.offline) {
           beforeLast = request;
-          localStorage.setItem('beforeLastRequest', JSON.stringify(beforeLast));
+          storage.setItem('beforeLastRequest', JSON.stringify(beforeLast));
         }
       } else {
         if (pruneQueue(request)){
@@ -186,21 +190,21 @@ function HttpRequestQueueService() {
         // the end of the data array in the last request
         last.content.data = last.content.data.concat(request.content.data);
       }
-      localStorage.setItem('lastRequest', JSON.stringify(last));
+      storage.setItem('lastRequest', JSON.stringify(last));
     },
     remove: function(request) {
       if (request.primary) {
         primary = undefined;
-        localStorage.removeItem('primaryRequest');
+        storage.removeItem('primaryRequest');
       } else if (request.secondary) {
         secondary = undefined;
-        localStorage.removeItem('secondaryRequest');
+        storage.removeItem('secondaryRequest');
       } else if (request.beforeLast) {
         beforeLast = undefined;
-        localStorage.removeItem('beforeLastRequest');
+        storage.removeItem('beforeLastRequest');
       } else if (request.last) {
         last = undefined;
-        localStorage.removeItem('lastRequest');
+        storage.removeItem('lastRequest');
       } else {
         var requestIndex = findRequestIndex(request);
         if (requestIndex !== undefined) {
@@ -213,13 +217,13 @@ function HttpRequestQueueService() {
     setOffline: function(request) {
       if (request.primary) {
         primary.offline = true;
-        localStorage.setItem('primaryRequest', JSON.stringify(primary));
+        storage.setItem('primaryRequest', JSON.stringify(primary));
       } else if (request.secondary) {
         secondary.offline = true;
-        localStorage.setItem('secondaryRequest', JSON.stringify(secondary));
+        storage.setItem('secondaryRequest', JSON.stringify(secondary));
       } else if (request.beforeLast) {
         beforeLast.offline = true;
-        localStorage.setItem('beforeLastRequest', JSON.stringify(beforeLast));
+        storage.setItem('beforeLastRequest', JSON.stringify(beforeLast));
       } else {
         var requestIndex = findRequestIndex(request);
         if (requestIndex !== undefined) {
@@ -251,6 +255,14 @@ function HttpRequestQueueService() {
         }
       }
     },
+    getLast: function() {
+      if (!processing) {
+        if (last){
+          processing = true;
+          return last;
+        }
+      }
+    },
     isPrimaryHead: function() {
       if (primary) return true;
     },
@@ -263,7 +275,7 @@ function HttpRequestQueueService() {
     clearPrimary: function() {
       if (!processing && primary) {
         primary = undefined;
-        localStorage.removeItem('primaryRequest');
+        storage.removeItem('primaryRequest');
       }
     },
     isProcessing: function() {
@@ -288,4 +300,5 @@ function HttpRequestQueueService() {
   };
   return service;
 }
+HttpRequestQueueService['$inject'] = ['enableOffline'];
 angular.module('em.base').factory('HttpRequestQueueService', HttpRequestQueueService);

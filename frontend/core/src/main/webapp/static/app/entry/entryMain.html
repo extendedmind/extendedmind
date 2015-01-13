@@ -1,59 +1,3 @@
-<!-- SIGNUP -->
-<form ng-if="entryState === 'signup'" name="signupForm">
-  <section class="container-content" editable-field-container>
-    <header ng-hide="smallDeviceHeight && softKeyboard.height" class="group-symmetrical">
-      <a href ng-click="swipeToHome()" class="group-symmetrical--left link-navigation" editable-field-deactivate>
-        <span class="text-navigation-back">back</span>
-      </a>
-    </header>
-    <h2 class="group-heading row-form" editable-field-deactivate>sign up</h2>
-    <div class="row-form">
-      <input type="email" name="email" ng-model="user.username"
-      placeholder="enter email&#8230;" editable-field="getEditableFieldSticky()"
-      editable-field-register-callbacks="registerEntryMainEmailInputCallbacks(focus, blur)" required />
-    </div>
-    <div class="group-error row-form">
-      <div ng-if="signupForm.email.$touched" ng-messages="signupForm.email.$error">
-        <span class="text-error" ng-message="email">invalid email address</span>
-      </div>
-    </div>
-    <div class="row-form">
-      <input type="password" name="password" id="password" ng-model="user.password"
-      ng-minlength="7" placeholder="enter password&#8230;" editable-field="getEditableFieldSticky()"
-      editable-field-register-callbacks="registerEntryMainPasswordInputCallbacks(focus, blur)" required />
-    </div>
-    <div class="group-error row-form">
-      <div ng-if="signupForm.password.$touched" ng-messages="signupForm.password.$error">
-        <span class="text-error" ng-message="minlength">password must be 7 characters or more</span>
-      </div>
-    </div>
-    <div class="group-mixed details height-large">
-      <div class="group-mixed--left">
-        <input type="checkbox" ng-model="user.agree" ng-true-value="true" icon-checkbox="'signupFormAgree'" />
-      </div>
-      <div class="group-mixed--middle">
-        <span class="text-details">i have read and agree to the</span>
-        <a href class="highlighted" ng-click="swipeToDetails('terms')" editable-field-deactivate>
-          <span class="text-details">terms of service</span>
-        </a>
-        <span class="text-details">and</span>
-        <a href class="highlighted" ng-click="swipeToDetails('privacy')" editable-field-deactivate>
-          <span class="text-details">privacy policy</span>
-        </a>
-      </div>
-    </div>
-    <div class="group-error height-large row-form">
-      <span ng-if="signupFailed" class="text-error">user with given email already registered</span>
-      <span ng-if="entryOffline" class="text-error">can't connect to server. are you online?</span>
-      <span ng-if="loginFailed" class="text-error">could not login with new credentials</span>
-    </div>
-  </section>
-  <footer class="container-content--after group-btn" editable-field-container="auto">
-    <button type="submit" class="btn-action" ng-disabled="!signupForm.$valid || !user.agree" ng-click="signUp()">
-      <span class="text-btn">done</span>
-    </button>
-  </footer>
-</form>
 <!-- LOGIN -->
 <form ng-if="entryState === 'login'" name="loginForm">
   <section class="container-content" editable-field-container>
@@ -97,3 +41,26 @@
     </button>
   </footer>
 </form>
+<div ng-if="entryState === 'newUser'">
+  <section class="container-content">
+    <header class="group-symmetrical">
+      <a href ng-click="swipeToHome()" class="group-symmetrical--left link-navigation">
+        <span class="text-navigation-back">back</span>
+      </a>
+      <a href class="group-symmetrical--right link-navigation downplayed" ng-click="skipTutorial()">
+        <span class="text-navigation-inline">skip tutorial</span><span class="text-navigation-forward-double"></span>
+      </a>
+    </header>
+    <div class="group-instruction">
+      <h2 class="group-heading instruction row">let's get started with
+        <span class="highlighted">extended<br />mind</span>
+      </h2>
+      <div class="textgroup-ingress row">it takes less than three minutes</div>
+    </div>
+  </section>
+  <footer class="container-content--after group-btn">
+    <button type="submit" class="btn-action" ng-click="startTutorial()">
+      <span class="text-btn">start tutorial</span>
+    </button>
+  </footer>
+</div>

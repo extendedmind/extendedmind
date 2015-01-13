@@ -295,6 +295,10 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     focusActiveCallbacks[id] = activateFn;
   };
 
+  $scope.isFakeUser = function(){
+    return UserSessionService.isFakeUser();
+  };
+
   // ONBOARDING
 
   $scope.onboardingInProgress = false;
@@ -826,19 +830,23 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
   };
 
   $scope.getActiveDisplayName = function() {
-    var activeUUID = UISessionService.getActiveUUID();
-    if (activeUUID){
-      var ownerName;
-      if (activeUUID === UserSessionService.getUserUUID()) {
-        ownerName = UserSessionService.getEmail();
-      } else {
-        angular.forEach($scope.collectives, function(collective, uuid) {
-          if (activeUUID === uuid) {
-            ownerName = collective[0];
-          }
-        });
+    if ($scope.isFakeUser()){
+      return 'get my free account';
+    }else{
+      var activeUUID = UISessionService.getActiveUUID();
+      if (activeUUID){
+        var ownerName;
+        if (activeUUID === UserSessionService.getUserUUID()) {
+          ownerName = UserSessionService.getEmail();
+        } else {
+          angular.forEach($scope.collectives, function(collective, uuid) {
+            if (activeUUID === uuid) {
+              ownerName = collective[0];
+            }
+          });
+        }
+        return ownerName;
       }
-      return ownerName;
     }
   };
 

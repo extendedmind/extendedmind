@@ -16,12 +16,12 @@
  /* global angular, useOfflineBuffer */
  'use strict';
 
- function UserSessionService(base64, LocalStorageService, SessionStorageService, enableOffline) {
+ function UserSessionService(base64, LocalStorageService, SessionStorageService, enableOffline, UUIDService) {
   var swapTokenBufferTime = 10*60*1000; // 10 minutes in milliseconds
   // When offline isn't enabled, use transient value for latest modified
   var latestModified = {};
   var itemsSynchronized = {};
-  var offlineEnabled = enableOffline;
+  var persistentStorageEnabled = enableOffline;
   var offlineEnabledBypass = false;
   var notifyOwnerCallbacks = {};
   var persistentDataLoaded = false;
@@ -57,7 +57,7 @@
   function setEmail(email) {
     if (email) {
       SessionStorageService.setEmail(email);
-      if (offlineEnabled || LocalStorageService.getReplaceable() !== null) {
+      if (persistentStorageEnabled || LocalStorageService.getReplaceable() !== null) {
         LocalStorageService.setEmail(email);
       }
     }
@@ -90,7 +90,7 @@
 
   return {
     enableOffline: function() {
-      offlineEnabled = true;
+      persistentStorageEnabled = true;
       offlineEnabledBypass = true;
       // when bypassing store the value to stores
       LocalStorageService.setOffline(true);
@@ -120,16 +120,28 @@
         }
       }
     },
-    isOfflineEnabled: function() {
+    isPersistentStorageEnabled: function() {
       syncWebStorages();
       var storedOffline = SessionStorageService.getOffline();
       if (storedOffline !== undefined){
-        offlineEnabled = storedOffline;
+        persistentStorageEnabled = storedOffline;
       }
-      return offlineEnabled;
+      return persistentStorageEnabled;
+    },
+    isOfflineEnabled: function() {
+      if (!this.isPersistentStorageEnabled()){
+        var userUUID = this.getUserUUID();
+        if (UUIDService.isFakeUUID(userUUID)){
+          // When user UUID is fake, this means that offline needs to be enabled
+          // because the user is using the app in tutorial mode
+          return true;
+        }
+      }else{
+        return true;
+      }
     },
     clearUser: function() {
-      offlineEnabled = enableOffline;
+      persistentStorageEnabled = enableOffline;
       SessionStorageService.clearUser();
       LocalStorageService.clearUser();
       itemsSynchronized = {};
@@ -197,7 +209,7 @@
     },
     setPreferences: function(preferences) {
       SessionStorageService.setPreferences(preferences);
-      if (this.isOfflineEnabled() || LocalStorageService.getReplaceable() !== null) {
+      if (this.isPersistentStorageEnabled() || LocalStorageService.getReplaceable() !== null) {
         LocalStorageService.setPreferences(preferences);
       }
     },
@@ -208,7 +220,7 @@
       // Only set if given value is larger than set value
       var currentLatestModified = this.getLatestModified(ownerUUID);
       if (!currentLatestModified || (modified && currentLatestModified < modified)) {
-        if (this.isOfflineEnabled()){
+        if (this.isPersistentStorageEnabled()){
           SessionStorageService.setLatestModified(modified, ownerUUID);
           LocalStorageService.setLatestModified(modified, ownerUUID);
         }else{
@@ -218,17 +230,26 @@
     },
     setUserModified: function(modified) {
       SessionStorageService.setUserModified(modified);
-      if (this.isOfflineEnabled() || LocalStorageService.getReplaceable() !== null) {
+      if (this.isPersistentStorageEnabled() || LocalStorageService.getReplaceable() !== null) {
         LocalStorageService.setUserModified(modified);
       }
     },
     setItemsSynchronized: function(timestamp, ownerUUID) {
-      if (this.isOfflineEnabled()){
+      if (this.isPersistentStorageEnabled()){
         SessionStorageService.setItemsSynchronized(timestamp, ownerUUID);
         LocalStorageService.setItemsSynchronized(timestamp, ownerUUID);
       }else{
         itemsSynchronized[ownerUUID] = timestamp;
       }
+    },
+    createFakeUserUUID: function(){
+      var fakeUserUUID = UUIDService.generateFakeUUID();
+      SessionStorageService.setUserUUID(fakeUserUUID);
+      if (this.isPersistentStorageEnabled()){
+        LocalStorageService.setUserUUID(fakeUserUUID);
+      }
+      executeNotifyOwnerCallbacks(fakeUserUUID);
+      return fakeUserUUID;
     },
     // Web storage getters
     getCollectives: function() {
@@ -260,7 +281,7 @@
       return SessionStorageService.getCohort();
     },
     getLatestModified: function(ownerUUID) {
-      if (this.isOfflineEnabled()){
+      if (this.isPersistentStorageEnabled()){
         var currentLatestModified = SessionStorageService.getLatestModified(ownerUUID);
         if (!isNaN(currentLatestModified)) return parseInt(currentLatestModified);
         else return currentLatestModified;
@@ -269,7 +290,7 @@
       }
     },
     getItemsSynchronized: function(ownerUUID) {
-      if (this.isOfflineEnabled()){
+      if (this.isPersistentStorageEnabled()){
         var currentItemsSynchronized = SessionStorageService.getItemsSynchronized(ownerUUID);
         if (!isNaN(currentItemsSynchronized)) return parseInt(currentItemsSynchronized);
         else return currentItemsSynchronized;
@@ -313,7 +334,7 @@
       }
     },
     getRememberByDefault: function() {
-      return this.isOfflineEnabled();
+      return this.isPersistentStorageEnabled();
     },
     getUser: function() {
       syncWebStorages();
@@ -331,6 +352,9 @@
     },
     getUserType: function() {
       return parseInt(SessionStorageService.getUserType());
+    },
+    isFakeUser: function() {
+      return UUIDService.isFakeUUID(this.getUserUUID());
     },
     registerNofifyOwnerCallback: function(callback, id){
       notifyOwnerCallbacks[id] = callback;
@@ -354,5 +378,6 @@
     }
   };
 }
-UserSessionService['$inject'] = ['base64', 'LocalStorageService', 'SessionStorageService', 'enableOffline'];
+UserSessionService['$inject'] = ['base64', 'LocalStorageService', 'SessionStorageService', 'enableOffline',
+'UUIDService'];
 angular.module('em.base').factory('UserSessionService', UserSessionService);

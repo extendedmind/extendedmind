@@ -36,12 +36,12 @@
     UserSessionService.enableOffline(true);
   }
 
-  $scope.swipeToSignup = function() {
-    $scope.entryState = 'signup';
+  $scope.swipeToNewUser = function() {
+    $scope.entryState = 'newUser';
     $scope.user = {};
     SwiperService.swipeTo('entry/main');
     SwiperService.setEnableSwipeToNext('entry', false);
-    AnalyticsService.visitEntry('signup');
+    AnalyticsService.visitEntry('newUser');
   };
 
   $scope.swipeToLogin = function() {
@@ -63,24 +63,7 @@
   };
 
   $scope.swipeToDetails = function(mode) {
-    $scope.detailsMode = mode;
-    if (!mode){
-      $scope.forgotActive = true;
-      SwiperService.swipeTo('entry/details');
-      AnalyticsService.visitEntry('forgot');
-    }else if (mode === 'privacy'){
-      $http.get('http://ext.md/privacy.html').then(function(privacyResponse){
-        $scope.details = {html: privacyResponse.data};
-        SwiperService.swipeTo('entry/details');
-        AnalyticsService.visitEntry('privacy');
-      });
-    }else if (mode === 'terms') {
-      $http.get('http://ext.md/terms.html').then(function(termsResponse){
-        $scope.details = {html: termsResponse.data};
-        SwiperService.swipeTo('entry/details');
-        AnalyticsService.visitEntry('terms');
-      });
-    }
+    SwiperService.swipeTo('entry/details');
   };
 
   var entryEmailMainInputFocusCallbackFunction;
@@ -126,7 +109,7 @@
     // blur all inputs to prevent swiper from breaking
     if (entryEmailMainInputBlurCallbackFunction) entryEmailMainInputBlurCallbackFunction();
     if (entryPasswordMainInputBlurCallbackFunction) entryPasswordMainInputBlurCallbackFunction();
-    redirectAuthenticatedUser();
+    $location.path('/my');
   }
 
   function logInError(error) {
@@ -143,64 +126,18 @@
     return UserSessionService.getRememberByDefault();
   };
 
-  // SIGN UP
-
-  $scope.signUp = function() {
-    $scope.signupFailed = false;
-    $scope.entryOffline = false;
-    $scope.loginFailed = false;
-
-    // Cohort is a random number between 1 and 128
-    var randomCohort = Math.floor(Math.random() * 128) + 1;
-
-    var payload = {email: $scope.user.username,
-     password: $scope.user.password,
-     cohort: randomCohort};
-
-     AuthenticationService.signUp(payload).then(signUpSuccess, signUpFailed);
-   };
-
-   function signUpSuccess(response) {
-    AnalyticsService.doWithUuid('signUp', undefined, response.uuid);
-    AuthenticationService.login($scope.user).then
-    (redirectAuthenticatedUser,
-     function(error) {
-      if (error.type === 'offline') {
-        $scope.entryOffline = true;
-      } else if (error.type === 'forbidden') {
-        $scope.loginFailed = true;
-      }
-    });
-  }
-
-  function signUpFailed(error) {
-    if (error.type === 'offline') {
-      $scope.entryOffline = true;
-    } else if (error.type === 'badRequest') {
-      $scope.signupFailed = true;
-    }
-  }
-
-  /*
-  * Go to tutorial or into the app.
-  */
-  function redirectAuthenticatedUser() {
-    $scope.userAuthenticated = true;
-    var userPreferences = UserSessionService.getPreferences();
-    if (!userPreferences || !userPreferences.onboarded) {
-      $scope.showTutorial = true;
-    } else {
-      $location.path('/my');
-    }
-  }
-
   // TUTORIAL
+
   $scope.skipTutorial = function() {
+    var userUUID = UserSessionService.createFakeUserUUID()
     UserSessionService.setPreference('onboarded', packaging);
     UserService.saveAccountPreferences();
+    AnalyticsService.doWithUuid('skipTutorial', undefined, userUUID);
     $location.path('/my');
   };
   $scope.startTutorial = function() {
+    var userUUID = UserSessionService.createFakeUserUUID()
+    AnalyticsService.doWithUuid('startTutorial', undefined, userUUID);
     $location.path('/my');
   };
 

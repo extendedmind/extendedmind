@@ -38,6 +38,15 @@
         HttpClientService.setCredentials(credentials);
       }
     }
+    if (UserSessionService.isFakeUser()){
+      var deferred = $q.defer();
+      deferred.resolve();
+      HttpClientService.setCacheOnly(true);
+      return deferred.promise;
+    }else{
+      HttpClientService.setCacheOnly(false);
+    }
+
     if (refreshCredentialsCallback) {
       return refreshCredentialsCallback(online).then(function() {
         return doRefreshCredentials();

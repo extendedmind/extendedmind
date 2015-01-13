@@ -289,7 +289,7 @@
     },
     persistAndReset: function(data, itemType, ownerUUID, fieldInfos, oldUUID, propertiesToReset){
       function doResetAndPersist(item, itemType, ownerUUID, fieldInfos, propertiesToReset){
-        if (UserSessionService.isOfflineEnabled()){
+        if (UserSessionService.isPersistentStorageEnabled()){
           if (oldUUID){
             PersistentStorageService.persistWithNewUUID(oldUUID, createPersistableItem(item), itemType,
                                                         ownerUUID);
@@ -309,7 +309,7 @@
       return data;
     },
     remove: function(uuid){
-      if (UserSessionService.isOfflineEnabled()){
+      if (UserSessionService.isPersistentStorageEnabled()){
         return PersistentStorageService.destroy(uuid);
       }
     },
@@ -426,7 +426,7 @@
         .then(function(response) {
           item.deleted = response.deleted;
           updateObjectProperties(item, response.result);
-          if (UserSessionService.isOfflineEnabled()){
+          if (UserSessionService.isPersistentStorageEnabled()){
             PersistentStorageService.persist(createPersistableItem(item), itemType, ownerUUID);
           }
           resetTrans(item, itemType, ownerUUID, fieldInfos);
@@ -451,7 +451,9 @@
                                          this.getUndeleteRegex(itemType), params, undefined, fakeTimestamp);
         if (!item.mod) item.mod = {};
         updateObjectProperties(item.mod, {modified: fakeTimestamp, deleted: undefined});
-        PersistentStorageService.persist(createPersistableItem(item), itemType, ownerUUID);
+        if (UserSessionService.isPersistentStorageEnabled()){
+          PersistentStorageService.persist(createPersistableItem(item), itemType, ownerUUID);
+        }
         resetTrans(item, itemType, ownerUUID, fieldInfos);
         deferred.resolve();
       } else {
@@ -466,7 +468,7 @@
         .then(function(response) {
           delete item.deleted;
           updateObjectProperties(item, response);
-          if (UserSessionService.isOfflineEnabled()){
+          if (UserSessionService.isPersistentStorageEnabled()){
             PersistentStorageService.persist(createPersistableItem(item), itemType, ownerUUID);
           }
           resetTrans(item, itemType, ownerUUID, fieldInfos);

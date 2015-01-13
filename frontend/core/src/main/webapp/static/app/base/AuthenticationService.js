@@ -138,7 +138,9 @@
       deferredAuthentication.resolve();
     }
 
-    if (UserSessionService.isAuthenticated()) {
+    if (UserSessionService.isFakeUser()){
+      deferredAuthentication.resolve();
+    }else if (UserSessionService.isAuthenticated()) {
       if (UserSessionService.isAuthenticateValid()) {
         validateAuthentication();
       } else {
