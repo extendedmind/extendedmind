@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function swiperContainerDirective($rootScope, $window, DetectBrowserService, DrawerService, SwiperService) {
+ function swiperContainerDirective($rootScope, DetectBrowserService, DrawerService, SwiperService) {
 
   return {
     restrict: 'A',
@@ -38,7 +38,7 @@
       $element[0].addEventListener('touchend', mainSwiperTouchEnd, false);
 
       // http://blogs.windows.com/windows_phone/b/wpdev/archive/2012/11/15/adapting-your-webkit-optimized-site-for-internet-explorer-10.aspx#step4
-      if ($window.navigator.msPointerEnabled) {
+      if (window.navigator.msPointerEnabled) {
         $element[0].addEventListener('MSPointerDown', mainSwiperTouchStart, false);
         $element[0].addEventListener('MSPointerMove', mainSwiperTouchMove, false);
         $element[0].addEventListener('MSPointerUp', mainSwiperTouchEnd, false);
@@ -156,7 +156,7 @@
           slideChildElement.addEventListener('scroll', pageSwiperSlideScroll, false);
 
           // http://blogs.windows.com/windows_phone/b/wpdev/archive/2012/11/15/adapting-your-webkit-optimized-site-for-internet-explorer-10.aspx#step4
-          if ($window.navigator.msPointerEnabled) {
+          if (window.navigator.msPointerEnabled) {
             slideChildElement.addEventListener('MSPointerDown', pageSwiperSlideTouchStart, false);
             slideChildElement.addEventListener('MSPointerMove', pageSwiperSlideTouchMove, false);
             slideChildElement.addEventListener('MSPointerUp', pageSwiperSlideTouchEnd, false);
@@ -349,6 +349,10 @@
         // Main swiper is swiping to some direction.
         if (swipeUp || swipeDown || swipeLeft || swipeRight) {
           $rootScope.outerSwiping = true;
+          setTimeout(function() {
+            // Clear flag.
+            $rootScope.outerSwiping = false;
+          }, 100);
         }
       }
 
@@ -476,8 +480,10 @@
         // Page swiper (vertical) slide is swiping up or down.
         if (swipePageSlideDown || swipePageSlideUp) {
           $rootScope.innerSwiping = true;
-          // FIXME: innerswiping isn't set back to false anywhere, might cause problems,
-          //        Using setTimeout as below in scrolling might do the trick!
+          setTimeout(function() {
+            // Clear flag.
+            $rootScope.innerSwiping = false;
+          }, 100);
         }
       }
 
@@ -502,7 +508,7 @@
         $element[0].removeEventListener('touchend', mainSwiperTouchEnd, false);
 
         // http://blogs.windows.com/windows_phone/b/wpdev/archive/2012/11/15/adapting-your-webkit-optimized-site-for-internet-explorer-10.aspx#step4
-        if ($window.navigator.msPointerEnabled) {
+        if (window.navigator.msPointerEnabled) {
           $element[0].removeEventListener('MSPointerDown', mainSwiperTouchStart, false);
           $element[0].removeEventListener('MSPointerMove', mainSwiperTouchMove, false);
           $element[0].removeEventListener('MSPointerUp', mainSwiperTouchEnd, false);
@@ -523,7 +529,7 @@
             removeEventListener('scroll', pageSwiperSlideScroll, false);
           }
           // http://blogs.windows.com/windows_phone/b/wpdev/archive/2012/11/15/adapting-your-webkit-optimized-site-for-internet-explorer-10.aspx#step4
-          if ($window.navigator.msPointerEnabled) {
+          if (window.navigator.msPointerEnabled) {
             for (var j = 0, swiperSlideInfosLength = swiperSlideInfos.length;
                  j < swiperSlideInfosLength; j++)
             {
@@ -540,8 +546,8 @@
         }
         SwiperService.deleteSwiper($scope.swiperPath);
       });
-},
-link: function (scope, element, attrs, drawerAisleController){
+    },
+    link: function (scope, element, attrs, drawerAisleController){
 
       // Hide previous and/or next slide with this for the duration of a resize animation
       // to prevent flickering.
@@ -676,6 +682,6 @@ link: function (scope, element, attrs, drawerAisleController){
     }
   };
 }
-swiperContainerDirective['$inject'] = ['$rootScope', '$window', 'DetectBrowserService', 'DrawerService',
+swiperContainerDirective['$inject'] = ['$rootScope', 'DetectBrowserService', 'DrawerService',
 'SwiperService'];
 angular.module('em.base').directive('swiperContainer', swiperContainerDirective);
