@@ -24,7 +24,6 @@
   var weekdays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
   var weekdaysShort = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 
-  var activeWeek;
   var daysFromActiveWeekToNext = 7;
   var daysFromActiveWeekToPrevious = -daysFromActiveWeekToNext;
 
@@ -53,39 +52,24 @@
    *
    * Constructs a week with date objects in a following format:
    *  date:             '18'
-   *  weekday:          'tuesday'
-   *  weekdayIndex:     '1'
-   *  month.name:       'mar'
-   *  year:             '2014'
+   *  weekday:          'tue'
    *  yyyyymmdd:        '2014-03-18'
-   *  displayDate:      'mar 18' or 'today'
-   *  displayDateShort  '18'
+   *  displayDate       '18'
    *  type:             'past', 'today' or 'future'
    *
    * @param {Date} date Day of the week.
    * @returns {Array} Weekdays.
    */
-   function weekDaysStartingFrom(date) {
-    var day;
+   function weekDaysStartingFrom(referenceDate) {
     var week = [];
     var today = new Date();
 
-    for (var i = 0, len = weekdaysShort.length; i < len; i++) {
-      var dayIndex = (date.getDay() === 0) ? 6 : date.getDay() - 1;
-      day = {};
-      day.date = date.getDate();
-      day.weekday = weekdaysShort[date.getDay()];
-      day.weekdayIndex = dayIndex;
-      day.month = {};
-      day.month.name = monthNames[date.getMonth()];
-      day.year = date.getFullYear();
-      day.yyyymmdd = yyyymmdd(date);
-
-      // show today or month + date
-      // http://stackoverflow.com/a/9300653
-      day.referenceDate = day.displayDate =
-      (date.toDateString() === today.toDateString() ? 'today' : day.month.name + ' ' + day.date);
-      day.displayDateShort = day.date;
+    for (var i = 0; i < weekdaysShort.length; i++) {
+      var day = {
+        weekday: weekdaysShort[referenceDate.getDay()],
+        displayDate: referenceDate.getDate(),
+        yyyymmdd: yyyymmdd(referenceDate)
+      };
 
       // Set date type for easy reference
       var todayYYYYMMDD = yyyymmdd(today);
@@ -94,7 +78,7 @@
       else day.type = 'future';
 
       week.push(day);
-      date.setDate(date.getDate() + 1);
+      referenceDate.setDate(referenceDate.getDate() + 1); // Set to next day.
     }
 
     return week;
@@ -122,26 +106,11 @@
       return weekDaysStartingFrom(date);
     },
 
-    // getters
-    getMondayDate: function() {
-      return (activeWeek) ? activeWeek[0] : (function() {
-        var date = getFirstDateOfTheWeek(new Date());
-        activeWeek = weekDaysStartingFrom(date);
-        return activeWeek[0];
-      })();
-    },
+    // GETTERS
     getYesterdayDate: function() {
       var yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
       return yesterday;
-    },
-    getTodayDate: function(currentWeek) {
-      var today = new Date();
-      for (var i = 0, len = currentWeek.length; i < len; i++) {
-        if (currentWeek[i].yyyymmdd === yyyymmdd(today)) {
-          return currentWeek[i];
-        }
-      }
     },
     getTodayDateWithoutTime: function() {
       return new Date().setHours(0, 0, 0, 0);

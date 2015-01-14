@@ -358,8 +358,7 @@
     setDayActive(undefined);  // Clear active day.
     for (var i = 0, len = $scope.datepickerWeeks.length; i < len; i++) {
       for (var j = 0, jLen = $scope.datepickerWeeks[i].length; j < jLen; j++) {
-        // FIXME: use displayDate instead of displayDateShort when display format is decided!
-        $scope.datepickerWeeks[i][j].displayDateShort = '\u2026';
+        $scope.datepickerWeeks[i][j].displayDate = '\u2026';
       }
     }
   }
@@ -434,7 +433,8 @@
   }
 
   function setDayActive(dateYYYYMMDD) {
-    if (dateYYYYMMDD !== null) {
+    if (dateYYYYMMDD && dateYYYYMMDD !== null) {
+      // Make sure dateYYYYMMDD is set. Rapid week changing will sometimes cause it to be undefined.
       // Not 'no date'. Set date active.
       activeDateYYYYMMDD = dateYYYYMMDD;
     }
