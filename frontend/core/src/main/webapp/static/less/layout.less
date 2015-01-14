@@ -34,6 +34,17 @@ TODO: em grid structure explained in plain English (when new grid structure deci
 
 // FIXME:
 //   i. move
+// 1. Hide - but do not collapse - menu when editor is open.
+// 2. Hide editor when it is not open.
+.container-main {
+  &.editor-show .container-menu {
+    visibility: hidden; // [1]
+  }
+  &:not(.editor-show) .container-editor {
+    display: none;  // [2]
+  }
+}
+// FIXME
 //  ii. overflow: hidden causes flicker in vertical swiper (focus/tasks)
 // 1. Minimize paint when editor is open and .container-master and .container-menu are stacked beneath.
 //    At least absolutely positioned elements inside these classes would repaint and slow down swiping in

@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
- /* global bindToFocusEvent */
+ /* global bindToFocusEvent, bindToResumeEvent */
  'use strict';
 
 // Controller for all main slides
@@ -141,6 +141,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     } else {
       DrawerService.open('right');
       executeEditorAboutToOpenCallbacks(type, item, mode);
+      $element[0].classList.add('editor-show');
     }
 
     return promise;
@@ -752,7 +753,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     for (var id in editorOpenedCallbacks) {
       editorOpenedCallbacks[id]();
     }
-    $element[0].classList.toggle('editor-visible', true);
+    $element[0].classList.add('editor-visible');
   }
 
   function executeAboutToCloseCallbacks() {
@@ -778,7 +779,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     // Don't remove list items from list before editor has been closed.
     // See: listItemLeaveAnimation in listItemDirective.
     UISessionService.resolveDeferredActions('editorClose');
-    $element[0].classList.toggle('editor-visible', false);
+    $element[0].classList.remove('editor-show', 'editor-visible');
   }
 
   DrawerService.registerOpenedCallback('left', menuOpened, 'MainController');
@@ -790,7 +791,6 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
                            true);
       featurePendingOpen = undefined;
     }
-    $element[0].classList.toggle('menu-visible', true);
   }
 
   DrawerService.registerClosedCallback('left', menuClosed, 'MainController');
@@ -800,14 +800,14 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
       // Wait until DOM manipulation is ready before opening editor
       // to have correct transition style in drawer aisle element.
       $scope.$evalAsync(function() {
+        DrawerService.open('right');
         executeEditorAboutToOpenCallbacks(openEditorAfterMenuClosed.type,
                                           openEditorAfterMenuClosed.item,
                                           openEditorAfterMenuClosed.mode);
         openEditorAfterMenuClosed = undefined;
-        DrawerService.open('right');
+        $element[0].classList.add('editor-show');
       });
     }
-    $element[0].classList.toggle('menu-visible', false);
   }
 
   // UI FUNCTIONS

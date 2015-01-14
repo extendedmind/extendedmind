@@ -20,28 +20,6 @@
 
   // CALLBACKS
 
-  function snapperClose(drawerSide){
-    executeSnapperCloseCallbacks(drawerSide);
-  }
-
-  function snapperOpen(drawerSide){
-    if (drawerSide === 'left'){
-      hideRightAndShowLeft();
-    }else{
-      hideLeftAndShowRight();
-    }
-    executeSnapperOpenCallbacks(drawerSide);
-  }
-
-  function snapperStartDrag(snapperSide) {
-    if (snapperSide === 'left') {
-      hideRightAndShowLeft();
-    }
-    else if (snapperSide === 'right') {
-      hideLeftAndShowRight();
-    }
-  }
-
   function executeSnapperAnimatedCallbacks(snapperSide) {
     // drawer is open when state is left or right
     if (snappers[snapperSide].snapper.state().state === snapperSide) {
@@ -102,7 +80,7 @@
     }
   }
 
-  function executeSnapperinitializedCallbacks(snapperSide) {
+  function executeSnapperInitializedCallbacks(snapperSide) {
     var initializedCallbacks = snappers[snapperSide].initializedCallbacks;
     if (initializedCallbacks) {
       for (var i = 0, len = initializedCallbacks.length; i < len; i++) {
@@ -112,26 +90,6 @@
   }
 
   // PRIVATE METHODS
-
-  function hideRightAndShowLeft() {
-    if (snapperExists('left') && snapperExists('right')){
-      if (snappers['right'].drawerElement.style.display !== 'none')
-        snappers['right'].drawerElement.style.display = 'none';
-
-      if (snappers['left'].drawerElement.style.display !== 'initial')
-        snappers['left'].drawerElement.style.display = 'initial';
-    }
-  }
-
-  function hideLeftAndShowRight() {
-    if (snapperExists('left') && snapperExists('right')){
-      if (snappers['left'].drawerElement.style.display !== 'none')
-        snappers['left'].drawerElement.style.display = 'none';
-
-      if (snappers['right'].drawerElement.style.display !== 'initial')
-        snappers['right'].drawerElement.style.display = 'initial';
-    }
-  }
 
   function snapperExists(snapperSide) {
     if (snappers[snapperSide] && snappers[snapperSide].snapper) return true;
@@ -164,9 +122,6 @@
         snappers[drawerSide].isDraggable = settings.touchToDrag ? true : false;
 
         if (snappers[drawerSide].isDraggable) {
-          snappers[drawerSide].snapper.on('start', function() {
-            snapperStartDrag(drawerSide);
-          });
           snappers[drawerSide].snapper.enable();
         }
         else{
@@ -181,11 +136,11 @@
         });
 
         snappers[drawerSide].snapper.on('close', function(){
-          snapperClose(drawerSide);
+          executeSnapperCloseCallbacks(drawerSide);
         });
 
         snappers[drawerSide].snapper.on('open', function(){
-          snapperOpen(drawerSide);
+          executeSnapperOpenCallbacks(drawerSide);
         });
 
       } else {
@@ -196,7 +151,7 @@
         if (settings.touchToDrag) this.enableDragging(drawerSide);
         else this.disableDragging(drawerSide);
       }
-      executeSnapperinitializedCallbacks(drawerSide);
+      executeSnapperInitializedCallbacks(drawerSide);
     },
     deleteDrawer: function(drawerSide) {
       if (snapperExists(drawerSide))
