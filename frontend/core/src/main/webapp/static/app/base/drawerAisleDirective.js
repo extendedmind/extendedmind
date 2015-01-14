@@ -135,6 +135,20 @@ function drawerAisleDirective($rootScope, DrawerService) {
 
       // MENU DRAWER CALLBACKS
 
+      var partiallyVisibleTouchTimer;
+      function attachAndFailsafeRemovePartiallyVisibleTouch() {
+        $element[0].addEventListener('touchstart', partiallyVisibleDrawerAisleClicked, false);
+
+        if (partiallyVisibleTouchTimer) {
+          clearTimeout(partiallyVisibleTouchTimer);
+          partiallyVisibleTouchTimer = undefined;
+        }
+
+        partiallyVisibleTouchTimer = setTimeout(function() {
+          $element[0].removeEventListener('touchstart', partiallyVisibleDrawerAisleClicked, false);
+        }, 1000);
+      }
+
       // Prevent clicks to elements etc. when menu is open.
       function partiallyVisibleDrawerAisleClicked() {
         event.preventDefault();
@@ -152,7 +166,7 @@ function drawerAisleDirective($rootScope, DrawerService) {
             areaAboutToMoveToNewPositionCallbacks[activeFeature]();
           // There is only one column,
           // so we need to prevent any touching from getting to the partially visible aisle.
-          $element[0].addEventListener('touchstart', partiallyVisibleDrawerAisleClicked);
+          $element[0].addEventListener('touchstart', partiallyVisibleDrawerAisleClicked, false);
         }
         else if (areaAboutToShrinkCallbacks[activeFeature]) {
           // There are more than one column, this means the aisle area is about to shrink the
@@ -176,7 +190,7 @@ function drawerAisleDirective($rootScope, DrawerService) {
             areaMovedToNewPositionCallbacks[activeFeature]();
           // There is only one column,
           // so we need to prevent any touching from getting to the partially visible aisle.
-          $element[0].addEventListener('touchstart', partiallyVisibleDrawerAisleClicked);
+          $element[0].addEventListener('touchstart', partiallyVisibleDrawerAisleClicked, false);
         }
         else if (areaResizeReadyCallbacks[activeFeature]) {
           // Execute callbacks to resize ready
@@ -219,7 +233,7 @@ function drawerAisleDirective($rootScope, DrawerService) {
           // Re-enable dragging
           DrawerService.enableDragging('left');
           // Re-enable touching in fully visible aisle.
-          $element[0].removeEventListener('touchstart', partiallyVisibleDrawerAisleClicked);
+          $element[0].removeEventListener('touchstart', partiallyVisibleDrawerAisleClicked, false);
         }
         else if (areaResizeReadyCallbacks[activeFeature]) {
           // Execute callbacks to resize ready
@@ -233,8 +247,10 @@ function drawerAisleDirective($rootScope, DrawerService) {
       function menuDrawerAboutToOpen() {
         var activeFeature = $scope.getActiveFeature();
         if ($rootScope.columns === 1) {
-          if (areaAboutToMoveToNewPositionCallbacks[activeFeature])
+          if (areaAboutToMoveToNewPositionCallbacks[activeFeature]) {
             areaAboutToMoveToNewPositionCallbacks[activeFeature]();
+          }
+          attachAndFailsafeRemovePartiallyVisibleTouch();
         }
       }
 
@@ -264,6 +280,7 @@ function drawerAisleDirective($rootScope, DrawerService) {
           // Animation done. Remove .editor-animating and remove .editor-open.
           $element[0].firstElementChild.classList.toggle('editor-animating', false);
           $element[0].firstElementChild.classList.toggle('editor-open', false);
+          $element[0].removeEventListener('touchstart', partiallyVisibleDrawerAisleClicked, false);
         }
       }
 
@@ -278,6 +295,7 @@ function drawerAisleDirective($rootScope, DrawerService) {
           $element[0].firstElementChild.classList.toggle('editor-animating', true);
           // Editor drawer is closing, enable swiping for underlying swiper.
           if (areaAboutToShowCallbacks[activeFeature]) areaAboutToShowCallbacks[activeFeature]();
+          $element[0].removeEventListener('touchstart', partiallyVisibleDrawerAisleClicked, false);
         }
       }
 
@@ -290,6 +308,7 @@ function drawerAisleDirective($rootScope, DrawerService) {
           // Animation starts. Add .editor-animating.
           $element[0].firstElementChild.classList.toggle('editor-animating', true);
           if (areaAboutToHideCallbacks[activeFeature]) areaAboutToHideCallbacks[activeFeature]();
+          $element[0].addEventListener('touchstart', partiallyVisibleDrawerAisleClicked, false);
         }
       }
 
@@ -303,11 +322,12 @@ function drawerAisleDirective($rootScope, DrawerService) {
           // Animation starts. Add .editor-animating.
           $element[0].firstElementChild.classList.toggle('editor-animating', true);
           if (areaAboutToShowCallbacks[activeFeature]) areaAboutToShowCallbacks[activeFeature]();
+          attachAndFailsafeRemovePartiallyVisibleTouch();
         }
       }
 
       $scope.$on('$destroy', function() {
-        $element[0].removeEventListener('touchstart', partiallyVisibleDrawerAisleClicked);
+        $element[0].removeEventListener('touchstart', partiallyVisibleDrawerAisleClicked, false);
       });
 
     },

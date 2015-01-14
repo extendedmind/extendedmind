@@ -489,6 +489,29 @@
                             if ((cache.simpleStates.halfway || cache.simpleStates.hyperExtending || cache.simpleStates.flick)) {
                                 if (cache.simpleStates.flick && cache.simpleStates.towards === 'right') { // Flicking Closed
                                     action.translate.easeTo(0);
+
+                                    /*
+                                    * FORK
+                                    *
+                                    * Drawer aisle sometimes becomes unresponsive for touch probably because
+                                    * state variables have not been cleared.
+                                    *
+                                    * Try to clear simpleStates from elsewhere after easeTo(0) calls if
+                                    * problem persists.
+                                    */
+                                    cache.simpleStates = {
+                                        opening: null,
+                                        towards: null,
+                                        hyperExtending: null,
+                                        halfway: null,
+                                        flick: null,
+                                        translation: {
+                                            absolute: 0,
+                                            relative: 0,
+                                            sinceDirectionChange: 0,
+                                            percentage: 0
+                                        }
+                                    };
                                 } else if (
                                     (cache.simpleStates.flick && cache.simpleStates.towards === 'left') || // Flicking Open OR
                                     (cache.simpleStates.halfway || cache.simpleStates.hyperExtending) // At least halfway open OR hyperextending
