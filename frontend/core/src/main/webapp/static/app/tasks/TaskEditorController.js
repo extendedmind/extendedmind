@@ -18,7 +18,6 @@
  function TaskEditorController($q, $rootScope, $scope, $timeout, DateService, TasksService,
                                UISessionService) {
 
-  console.log($scope.task)
   // INITIALIZING
 
   if (angular.isFunction($scope.registerFeatureEditorAboutToCloseCallback))
