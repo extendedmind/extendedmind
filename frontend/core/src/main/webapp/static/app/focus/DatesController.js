@@ -66,19 +66,23 @@
   if (angular.isFunction($scope.registerSynchronizeCallback))
     $scope.registerSynchronizeCallback(detectDayChange, 'DatesController');
 
-  var today = new Date().setHours(0, 0, 0, 0);  // Today for reference.
+  var today = DateService.getTodayDateWithoutTime();  // Today (date only, without time) for reference.
+
   function detectDayChange() {
-    if (today === new Date().setHours(0, 0, 0, 0)) {
-      // Date has changed.
-      today = new Date();
+    var newToday = DateService.getTodayDateWithoutTime();
+
+    if (today !== newToday) {
+      // Day has changed.
+      today = newToday;
       var activeDaySlideIndex = SwiperService.getActiveSlideIndex('focus/tasks');
       var activeDaySlide;
       if (activeDaySlideIndex !== undefined) {
         activeDaySlide = $scope.daySlides[activeDaySlideIndex];
       }
       if (activeDaySlide && activeDaySlide.heading === 'today') {
-        // Swipe from old today to new today slide.
-        $scope.changeDaySlide(DateService.getTodayYYYYMMDD());
+        // Try to change from old today to new today slide.
+        // NOTE: See focusActive abowe if this is not working.
+        $scope.changeDaySlide(DateService.getTomorrowYYYYMMDD(), 0);
       }
     }
   }

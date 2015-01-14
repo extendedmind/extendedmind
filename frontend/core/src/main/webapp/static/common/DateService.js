@@ -143,6 +143,9 @@
         }
       }
     },
+    getTodayDateWithoutTime: function() {
+      return new Date().setHours(0, 0, 0, 0);
+    },
     getTomorrowDate: function() {
       var tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
