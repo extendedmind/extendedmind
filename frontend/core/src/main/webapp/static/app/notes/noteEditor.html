@@ -113,7 +113,7 @@
 
             <!-- CONTENT -->
             <div class="row-vertically-centered with-textarea">
-              <textarea ng-class="(onboardingInProgress && !contentFocused) 'input-separate'" ng-model="note.trans.content" input-model-validator ng-trim="false" ng-focus="noteContentFocused()" ng-blur="noteContentBlurred()" msd-elastic editable-field editable-field-register-callbacks="registerNoteContentInputCallbacks(focus, blur)" placeholder="enter content&#8230;" autocapitalize="none" autocorrect="off">
+              <textarea ng-class="(onboardingInProgress && !contentFocused) && 'input-separate'" ng-model="note.trans.content" input-model-validator ng-trim="false" ng-focus="noteContentFocused()" ng-blur="noteContentBlurred()" msd-elastic editable-field editable-field-register-callbacks="registerNoteContentInputCallbacks(focus, blur)" placeholder="enter content&#8230;" autocapitalize="none" autocorrect="off">
               </textarea>
             </div>
 
