@@ -370,11 +370,11 @@ Search results (omnibar, deleted)
   .dont-break-words();
 }
 // FIXME: merge with .text-search-result
-.text-field {
+.text-field--title {
   line-height: @line-height-text-search; // [1]
   font-size: @size-font-medium;
 }
-.text-field-label {
+.text-field--label {
   vertical-align: top;
   font-size: @size-font-small;
   display: block;
@@ -386,13 +386,13 @@ Search results (omnibar, deleted)
   line-height: 22px;
 
 }
-// FIXME: .text-field-label-multi-row == .group-symmetrical--middle > a > div
-.text-field-label-multi-row {
+// FIXME: .text-field--label-multi-row == .group-symmetrical--middle > a > div
+.text-field--label-multi-row {
   text-align: center;
   height: inherit;
   display: table-cell;
   vertical-align: middle;
-  .text-field-label {
+  .text-field--label {
     white-space: pre;
     padding-top: 0;
     padding-bottom: 0;
@@ -400,6 +400,6 @@ Search results (omnibar, deleted)
     margin-top: 3px;
   }
 }
-header .text-field-label {
+header .text-field--label {
   .set-font-bold();
 }
