@@ -1288,3 +1288,21 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
     }
   }
 }
+
+// NOTE: Maybe use @media (min-width: @width-column-max) here
+// TODO: Comments
+.row-vertically-centered.with-textarea.expanded {
+  height: 100%;
+  padding: 0;
+  textarea#ignoreSnap {
+    padding-top: @padding-vertically-centered;
+    padding-bottom: @padding-vertically-centered;
+    padding-left: @grid-horizontal;
+    padding-right: @grid-horizontal;
+    &:focus {
+      padding-bottom: @grid-vertical-half;
+      overflow: initial !important;
+      height: 100% !important;
+    }
+  }
+}

@@ -15,7 +15,7 @@
 
  'use strict';
 
- function TaskEditorController($q, $rootScope, $scope, $timeout, DateService, TasksService,
+ function TaskEditorController($q, $rootScope, $scope, $timeout, DateService, SwiperService, TasksService,
                                UISessionService) {
 
   // INITIALIZING
@@ -105,10 +105,16 @@
     }
   };
 
+  $scope.setTaskDescriptionFocus = function(focus) {
+    $scope.taskDescriptionFocused = focus;
+    // FIXME: Maybe some directive with focus, blur event listeners, swiper and drawer.
+    SwiperService.setOnlyExternal('taskEditor', focus);
+  };
+
   // UI
 
   $scope.isTaskPropertyInEdit = function() {
-    return $scope.descriptionFocused || $scope.isPickerOpen();
+    return $scope.taskDescriptionFocused || $scope.isPickerOpen();
   };
 
   $scope.isPickerOpen = function() {
@@ -121,12 +127,12 @@
       return 'date';
     else if ($scope.contextPickerOpen)
       return 'context';
-    else if ($scope.descriptionFocused)
-      return 'description';
     else if ($scope.listPickerOpen)
       return 'list';
     else if ($scope.repeatingPickerOpen)
       return 'repeating';
+    else if ($scope.taskDescriptionFocused)
+      return 'description';
   };
 
   // CALENDAR
@@ -212,13 +218,8 @@
       delete task.trans.repeating;
   };
 
-  $scope.isTaskTitleClamped = function () {
-    return $scope.isTitleClamped() ||
-    $scope.calendarOpen || $scope.contextPickerOpen || $scope.repeatingPickerOpen;
-  };
-
   $scope.isTaskFooterHidden = function(footerHiddenCallback) {
-    var footerHidden = $scope.isTaskTitleClamped();
+    var footerHidden = $scope.isTaskPropertyInEdit();
     if (typeof footerHiddenCallback === 'function') footerHiddenCallback(footerHidden);
     return footerHidden;
   };
@@ -226,6 +227,6 @@
 }
 
 TaskEditorController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout',
-'DateService', 'TasksService', 'UISessionService'
+'DateService', 'SwiperService', 'TasksService', 'UISessionService'
 ];
 angular.module('em.main').controller('TaskEditorController', TaskEditorController);

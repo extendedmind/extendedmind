@@ -218,10 +218,6 @@
     }
   };
 
-  $scope.isTitleClamped = function() {
-    return $scope.descriptionFocused || $scope.listPickerOpen;
-  };
-
   // NAVIGATION
 
   $scope.isFirstSlide = function(){
