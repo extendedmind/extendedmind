@@ -82,7 +82,7 @@
       if (activeDaySlide && activeDaySlide.heading === 'today') {
         // Try to change from old today to new today slide.
         // NOTE: See focusActive abowe if this is not working.
-        $scope.changeDaySlide(DateService.getTomorrowYYYYMMDD(), 0);
+        $scope.changeDaySlide(DateService.getTodayYYYYMMDD(), 0);
       }
     }
   }
