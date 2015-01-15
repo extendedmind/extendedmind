@@ -42,8 +42,14 @@
         // NEW USER
         else if (userNamePass === 'jp@ext.md:jiipeepwd') {
           responseData.userType = 2;
-          if (responseData.preferences) delete responseData.preferences;
           if (responseData.token) responseData.token = 'TEST';
+          var preferences = sessionStorage.getItem('preferences');
+
+          if (preferences){
+            responseData.preferences = JSON.parse(preferences);
+            if (responseData.preferences.ui)
+              responseData.preferences.ui = JSON.stringify(responseData.preferences.ui);
+          }
           if (responseData.collectives){
             for (var uuid in responseData.collectives){
               if (responseData.collectives[uuid][2] === false){
