@@ -34,6 +34,9 @@
       if (attrs.editableFieldFocus) {
         var focusCallback = $parse(attrs.editableFieldFocus).bind(undefined, scope);
       }
+      if (attrs.editableFieldBlur) {
+        var blurCallback = $parse(attrs.editableFieldBlur).bind(undefined, scope);
+      }
 
       function focusElement() {
         function doFocusElement(){
@@ -113,6 +116,7 @@
             cordova.plugins.Keyboard.close();
           }
         }
+        if (typeof blurCallback === 'function') blurCallback();
       };
 
       function executeFocusCallback(callback) {
