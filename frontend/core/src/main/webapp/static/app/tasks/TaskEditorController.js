@@ -105,6 +105,17 @@
     }
   };
 
+  // UI
+
+
+  $scope.isTaskPropertyInEdit = function() {
+    return $scope.descriptionFocused || $scope.isPickerOpen();
+  };
+
+  $scope.isPickerOpen = function() {
+    return $scope.calendarOpen || $scope.contextPickerOpen || $scope.listPickerOpen;
+  };
+
   // CALENDAR
 
   $scope.openCalendar = function() {

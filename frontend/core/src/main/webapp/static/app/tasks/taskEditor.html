@@ -3,19 +3,20 @@
     <div class="container-titlebar--inner">
       <div class="group-symmetrical height-large--top">
 
-        <a href ng-hide="calendarOpen || listPickerOpen" class="group-symmetrical--left link-navigation highlighted active"
-          ng-click="endTaskEdit()" >
+        <a href ng-hide="isTaskPropertyInEdit()"
+          class="group-symmetrical--left link-navigation highlighted active" ng-click="endTaskEdit()">
           <span class="text-navigation-back" ng-class="!isFirstSlide() && 'not-swipeable'"
             ng-bind="isTaskEdited() && !task.trans.deleted ? 'save' : 'back'">
           </span>
         </a>
 
-        <a href ng-if="calendarOpen || listPickerOpen" class="group-symmetrical--left highlighted">
+        <a href ng-if="isTaskPropertyInEdit()"
+          class="group-symmetrical--left highlighted">
           <span class="text-edit">done</span>
         </a>
 
-        <div ng-hide="!(calendarOpen || listPickerOpen) && isFirstSlide()" ng-style="{maxWidth: calculateTitleWidth()}"
-          class="group-symmetrical--middle width-large">
+        <div ng-hide="!isTaskPropertyInEdit() && isFirstSlide()"
+          ng-style="{maxWidth: calculateTitleWidth()}" class="group-symmetrical--middle width-large">
           <div style="display: table; width: 100%; height: 100%;">
             <div style="text-align: center; height: inherit; display: table-cell; vertical-align: middle;">
               <span class="text-heading-primary" ng-class="!task.trans.title && 'text-downplayed'"
@@ -25,21 +26,26 @@
           </div>
         </div>
 
-        <a href ng-if="!task.trans.deleted" ng-hide="calendarOpen || listPickerOpen" class="group-symmetrical--right" ng-click="deleteTaskInEdit()" >
+        <a href ng-if="!task.trans.deleted" ng-hide="isTaskPropertyInEdit()"
+          class="group-symmetrical--right" ng-click="deleteTaskInEdit()">
           <span class="icon-trash"></span>
         </a>
-        <a href ng-if="task.trans.deleted" ng-hide="calendarOpen || listPickerOpen" class="group-symmetrical--right link-navigation highlighted active"
+        <a href ng-if="task.trans.deleted" ng-hide="isTaskPropertyInEdit()"
+          class="group-symmetrical--right link-navigation highlighted active"
           ng-click="undeleteTask(task)">
           <span class="text-navigation">restore</span>
         </a>
 
-        <div ng-if="calendarOpen || listPickerOpen" class="group-symmetrical--right">
-          <span class="text-field--label-bold" ng-bind="(calendarOpen && 'date') || (listPickerOpen && 'list')"></span>
+        <div ng-if="isTaskPropertyInEdit()" class="group-symmetrical--right">
+          <span class="text-field--label-bold"
+            ng-bind="(calendarOpen && 'date') || (contextPickerOpen && 'context') || (listPickerOpen && 'list')">
+          </span>
         </div>
 
       </div>
 
-      <form role="form" ng-hide="calendarOpen || listPickerOpen" class="group-mixed with-checkbox" autocapitalize="none" autocorrect="off">
+      <form role="form" ng-hide="isTaskPropertyInEdit()"
+        class="group-mixed with-checkbox" autocapitalize="none" autocorrect="off">
         <div class="group-mixed--left">
           <input type="checkbox" ng-click="clickCompleteTaskInEdit()" ng-model="task.trans.optimisticComplete"
             ng-model-options="{getterSetter: true}" icon-checkbox="editorTitlebarCheckbox" />
@@ -189,10 +195,16 @@
 
           <div ng-if="!contextPickerOpen && !repeatingPickerOpen">
 
-            <div ng-hide="urlFocused" class="row-vertically-centered">
-              <a href ng-class="task.trans.context ? 'link' : 'downplayed'" ng-click="openContextPicker()">
-                <span class="text-link" ng-bind="task.trans.context ? '@' + task.trans.context.trans.title : 'select context\u2026'"></span>
+            <div ng-hide="urlFocused" class="group-mixed with-checkbox">
+              <a href class="group-mixed--middle link-search-result" ng-class="!task.trans.context && 'downplayed'"
+                ng-click="openContextPicker()">
+                <span class="text-field--title"
+                  ng-bind="task.trans.context ? '@' + task.trans.context.trans.title : 'select context\u2026'">
+                </span>
               </a>
+              <div ng-if="task.trans.context" class="group-mixed--right">
+                <span class="text-field--label">context</span>
+              </div>
             </div>
 
             <div ng-hide="urlFocused || !task.trans.due" class="row-vertically-centered">
