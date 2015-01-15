@@ -55,6 +55,7 @@
         <div ng-style="{'padding-bottom': basicSlideInfo.footerHeight}" class="container-content"
           drawer-override-aisle="right" swiper-prevent>
 
+          <!-- TASK TITLE -->
           <form role="form" ng-hide="calendarOpen || descriptionFocused || listPickerOpen"
             class="group-mixed with-checkbox" autocapitalize="none" autocorrect="off">
             <div class="group-mixed--left">
@@ -75,6 +76,57 @@
             </div>
           </form>
 
+          <!-- DATE -->
+          <div ng-hide="calendarOpen || descriptionFocused || listPickerOpen" class="group-mixed with-checkbox">
+            <a href class="group-mixed--middle link-search-result" ng-class="!task.trans.due && 'downplayed'"
+              ng-click="openCalendar()">
+              <span class="text-field--title"
+                ng-bind="task.trans.due ? (task.trans.due | date:'EEE MMM d y' | lowercase) : 'select date\u2026'">
+              </span>
+            </a>
+            <div ng-if="task.trans.due" class="group-mixed--right">
+              <span class="text-field--label">date</span>
+            </div>
+          </div>
+
+          <!-- CALENDAR -->
+          <div ng-if="calendarOpen" class="swiper-no-swiping animate-fade-in"
+            editable-field-container="auto" editable-field-container-clicked-elsewhere="closeCalendar()"
+            data-snap-ignore="true">
+
+            <div ng-if="task.trans.due" class="group-mixed with-checkbox">
+              <a href class="group-mixed--middle link-search-result">
+                <span class="text-field--title" ng-bind="task.trans.due | date:'EEE MMM d y' | lowercase"></span>
+              </a>
+              <div class="group-mixed--right">
+                <button type="button" class="btn-clear"
+                  ng-click="closeCalendarAndCall(clearTransientDate, task)">
+                </button>
+              </div>
+            </div>
+
+            <div class="row" calendar="getCalendarStartingDate(task)"
+              calendar-return-date="closeCalendarAndCall(setTaskDate, task, date)"
+              calendar-set-default-date="true" calendar-bound="false">
+              <a href class="pikaday-today highlighted" ng-click="gotoCurrentMonth()">
+                <span>today</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- LIST -->
+          <div ng-hide="calendarOpen || descriptionFocused || listPickerOpen" class="group-mixed with-checkbox">
+            <a href class="group-mixed--middle link-search-result" ng-class="!task.trans.list && 'downplayed'"
+              ng-click="openListPicker()">
+              <span class="text-field--title"
+                ng-bind="task.trans.list ? task.trans.list.trans.title : 'select list\u2026'">
+              </span>
+            </a>
+            <div ng-if="task.trans.list" class="group-mixed--right">
+              <span class="text-field--label">list</span>
+            </div>
+          </div>
+
           <!-- LIST PICKER -->
           <div ng-if="listPickerOpen" class="swiper-no-swiping animate-fade-in" editable-field-container="auto"
             editable-field-container-scrollable="true"
@@ -86,69 +138,15 @@
               list-picker-get-selected="task.trans.list"></div>
           </div>
 
-          <div ng-if="!listPickerOpen">
-
-            <!-- CALENDAR -->
-            <div ng-if="calendarOpen" class="swiper-no-swiping animate-fade-in"
-              editable-field-container="auto" editable-field-container-clicked-elsewhere="closeCalendar()"
-              data-snap-ignore="true">
-
-              <div ng-if="task.trans.due" class="group-mixed with-checkbox">
-                <a href class="group-mixed--middle link-search-result">
-                  <span class="text-field--title" ng-bind="task.trans.due | date:'EEE MMM d y' | lowercase"></span>
-                </a>
-                <div class="group-mixed--right">
-                  <button type="button" class="btn-clear"
-                    ng-click="closeCalendarAndCall(clearTransientDate, task)">
-                  </button>
-                </div>
-              </div>
-
-              <div class="row" calendar="getCalendarStartingDate(task)"
-                calendar-return-date="closeCalendarAndCall(setTaskDate, task, date)"
-                calendar-set-default-date="true" calendar-bound="false">
-                <a href class="pikaday-today highlighted" ng-click="gotoCurrentMonth()">
-                  <span>today</span>
-                </a>
-              </div>
-            </div>
-
-            <!-- DATE -->
-            <div ng-hide="descriptionFocused || calendarOpen" class="group-mixed with-checkbox">
-              <a href class="group-mixed--middle link-search-result" ng-class="!task.trans.due && 'downplayed'"
-                ng-click="openCalendar()">
-                <span class="text-field--title"
-                  ng-bind="task.trans.due ? (task.trans.due | date:'EEE MMM d y' | lowercase) : 'select date\u2026'">
-                </span>
-              </a>
-              <div ng-if="task.trans.due" class="group-mixed--right">
-                <span class="text-field--label">date</span>
-              </div>
-            </div>
-
-            <!-- LIST -->
-            <div ng-hide="descriptionFocused || calendarOpen" class="group-mixed with-checkbox">
-              <a href class="group-mixed--middle link-search-result" ng-class="!task.trans.list && 'downplayed'"
-                ng-click="openListPicker()">
-                <span class="text-field--title"
-                  ng-bind="task.trans.list ? task.trans.list.trans.title : 'select list\u2026'">
-                </span>
-              </a>
-              <div ng-if="task.trans.list" class="group-mixed--right">
-                <span class="text-field--label">list</span>
-              </div>
-            </div>
-
-            <!-- DESCRIPTION -->
-            <div ng-hide="calendarOpen" class="row-vertically-centered with-textarea">
-              <textarea id="ignoreSnap" ng-model="task.trans.description" input-model-validator ng-trim="false"
-                ng-focus="setDescriptionFocus(true)" ng-blur="setDescriptionFocus(false)" msd-elastic
-                placeholder="enter description&#8230;"
-                maxlength="1024" autocapitalize="none" autocorrect="off">
-              </textarea>
-            </div>
-
+          <!-- DESCRIPTION -->
+          <div ng-hide="calendarOpen || listPickerOpen" class="row-vertically-centered with-textarea">
+            <textarea id="ignoreSnap" ng-model="task.trans.description" input-model-validator ng-trim="false"
+              ng-focus="setDescriptionFocus(true)" ng-blur="setDescriptionFocus(false)" msd-elastic
+              placeholder="enter description&#8230;"
+              maxlength="1024" autocapitalize="none" autocorrect="off">
+            </textarea>
           </div>
+
         </div>
 
         <footer ng-hide="isTaskFooterHidden(editorFooterHiddenCallback)"
@@ -172,6 +170,19 @@
       <div class="swiper-slide" swiper-slide="taskEditor/advanced" slide-index="1" ng-init="advancedSlideInfo = {}">
         <div class="container-content" ng-style="{'padding-bottom': advancedSlideInfo.footerHeight}" swiper-prevent>
 
+          <!-- CONTEXT -->
+          <div ng-hide="contextPickerOpen || repeatingPickerOpen || urlFocused" class="group-mixed with-checkbox">
+            <a href class="group-mixed--middle link-search-result"
+              ng-class="!task.trans.context && 'downplayed'" ng-click="openContextPicker()">
+              <span class="text-field--title"
+                ng-bind="task.trans.context ? '@' + task.trans.context.trans.title : 'select context\u2026'">
+              </span>
+            </a>
+            <div ng-if="task.trans.context" class="group-mixed--right">
+              <span class="text-field--label">context</span>
+            </div>
+          </div>
+
           <!-- CONTEXT PICKER -->
           <div ng-if="contextPickerOpen" class="swiper-no-swiping animate-fade-in"
             editable-field-container="auto" editable-field-container-scrollable="true"
@@ -181,6 +192,20 @@
               list-picker-clear="closeContextPickerAndClearContextFromTask(task, list)"
               list-picker-get-selected="task.trans.context" list-picker-type="context"
               list-picker-prefix="@"></div>
+          </div>
+
+          <!-- REPEATING -->
+          <div ng-if="task.trans.due" ng-hide="contextPickerOpen || repeatingPickerOpen || urlFocused"
+            class="group-mixed with-checkbox">
+            <a href class="group-mixed--middle link-search-result"
+              ng-class="!task.trans.repeating && 'downplayed'" ng-click="openRepeatingPicker()">
+              <span class="text-field--title"
+                ng-bind="task.trans.repeating ? task.trans.repeating : 'select repeating\u2026'">
+              </span>
+            </a>
+            <div ng-if="task.trans.repeating" class="group-mixed--right">
+              <span class="text-field--label">repeating</span>
+            </div>
           </div>
 
           <!-- REPEATING PICKER -->
@@ -193,40 +218,13 @@
               list-picker-type="repeating"></div>
           </div>
 
-          <div ng-if="!contextPickerOpen && !repeatingPickerOpen">
-
-            <div ng-hide="urlFocused" class="group-mixed with-checkbox">
-              <a href class="group-mixed--middle link-search-result"
-                ng-class="!task.trans.context && 'downplayed'" ng-click="openContextPicker()">
-                <span class="text-field--title"
-                  ng-bind="task.trans.context ? '@' + task.trans.context.trans.title : 'select context\u2026'">
-                </span>
-              </a>
-              <div ng-if="task.trans.context" class="group-mixed--right">
-                <span class="text-field--label">context</span>
-              </div>
-            </div>
-
-            <div ng-if="task.trans.due" ng-hide="urlFocused" class="group-mixed with-checkbox">
-              <a href class="group-mixed--middle link-search-result"
-                ng-class="!task.trans.repeating && 'downplayed'" ng-click="openRepeatingPicker()">
-                <span class="text-field--title"
-                  ng-bind="task.trans.repeating ? task.trans.repeating : 'select repeating\u2026'">
-                </span>
-              </a>
-              <div ng-if="task.trans.repeating" class="group-mixed--right">
-                <span class="text-field--label">repeating</span>
-              </div>
-            </div>
-
-            <div class="row-vertically-centered with-textarea">
-              <textarea ng-model="task.trans.link" input-model-validator ng-trim="false"
-                ng-focus="setUrlFocus(true)" ng-blur="setUrlFocus(false)" msd-elastic maxlength="128"
-                placeholder="enter url&#8230;" autocapitalize="none" autocorrect="off">
-              </textarea>
-            </div>
-
+          <div ng-hide="contextPickerOpen || repeatingPickerOpen" class="row-vertically-centered with-textarea">
+            <textarea ng-model="task.trans.link" input-model-validator ng-trim="false"
+              ng-focus="setUrlFocus(true)" ng-blur="setUrlFocus(false)" msd-elastic maxlength="128"
+              placeholder="enter url&#8230;" autocapitalize="none" autocorrect="off">
+            </textarea>
           </div>
+
         </div>
         <footer ng-hide="isTaskFooterHidden(editorFooterHiddenCallback)"
           class="container-content--after editor-footer" editor-footer="advancedSlideInfo">
