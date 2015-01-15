@@ -3,18 +3,18 @@
     <div class="container-titlebar--inner">
       <div class="group-symmetrical height-large--top">
 
-        <a href ng-hide="listPickerOpen" class="group-symmetrical--left link-navigation highlighted active"
+        <a href ng-hide="calendarOpen || listPickerOpen" class="group-symmetrical--left link-navigation highlighted active"
           ng-click="endTaskEdit()" >
           <span class="text-navigation-back" ng-class="!isFirstSlide() && 'not-swipeable'"
             ng-bind="isTaskEdited() && !task.trans.deleted ? 'save' : 'back'">
           </span>
         </a>
 
-        <a href ng-if="listPickerOpen" class="group-symmetrical--left highlighted">
+        <a href ng-if="calendarOpen || listPickerOpen" class="group-symmetrical--left highlighted">
           <span class="text-edit">done</span>
         </a>
 
-        <div ng-hide="!listPickerOpen && isFirstSlide()" ng-style="{maxWidth: calculateTitleWidth()}"
+        <div ng-hide="!(calendarOpen || listPickerOpen) && isFirstSlide()" ng-style="{maxWidth: calculateTitleWidth()}"
           class="group-symmetrical--middle width-large">
           <div style="display: table; width: 100%; height: 100%;">
             <div style="text-align: center; height: inherit; display: table-cell; vertical-align: middle;">
@@ -25,21 +25,21 @@
           </div>
         </div>
 
-        <a href ng-if="!task.trans.deleted" ng-hide="listPickerOpen" class="group-symmetrical--right" ng-click="deleteTaskInEdit()" >
+        <a href ng-if="!task.trans.deleted" ng-hide="calendarOpen || listPickerOpen" class="group-symmetrical--right" ng-click="deleteTaskInEdit()" >
           <span class="icon-trash"></span>
         </a>
-        <a href ng-if="task.trans.deleted" ng-hide="listPickerOpen" class="group-symmetrical--right link-navigation highlighted active"
+        <a href ng-if="task.trans.deleted" ng-hide="calendarOpen || listPickerOpen" class="group-symmetrical--right link-navigation highlighted active"
           ng-click="undeleteTask(task)">
           <span class="text-navigation">restore</span>
         </a>
 
-        <div ng-if="listPickerOpen" class="group-symmetrical--right">
-          <span class="text-field--label-bold">list</span>
+        <div ng-if="calendarOpen || listPickerOpen" class="group-symmetrical--right">
+          <span class="text-field--label-bold" ng-bind="(calendarOpen && 'date') || (listPickerOpen && 'list')"></span>
         </div>
 
       </div>
 
-      <form role="form" ng-hide="listPickerOpen" class="group-mixed with-checkbox" autocapitalize="none" autocorrect="off">
+      <form role="form" ng-hide="calendarOpen || listPickerOpen" class="group-mixed with-checkbox" autocapitalize="none" autocorrect="off">
         <div class="group-mixed--left">
           <input type="checkbox" ng-click="clickCompleteTaskInEdit()" ng-model="task.trans.optimisticComplete"
             ng-model-options="{getterSetter: true}" icon-checkbox="editorTitlebarCheckbox" />
@@ -82,22 +82,23 @@
 
           <div ng-if="!listPickerOpen">
 
-            <!-- DUE DATE -->
-            <div ng-hide="descriptionFocused" class="group-mixed vertically-centered animate-fade-in">
-              <a href ng-class="task.trans.due ? 'link' : 'downplayed'" class="group-mixed--middle"
-                ng-click="openCalendar()">
-                <span class="text-link" ng-bind="task.trans.due ? (task.trans.due | date:'EEE MMM d y' | lowercase) : 'select date\u2026'"></span>
-              </a>
-              <div ng-if="task.trans.due" class="group-mixed--right">
-                <button type="button" class="btn-clear" ng-click="clearTransientDate(task)"></button>
-              </div>
-            </div>
-
             <!-- CALENDAR -->
-            <div ng-if="calendarOpen" class="row swiper-no-swiping animate-fade-in"
+            <div ng-if="calendarOpen" class="swiper-no-swiping animate-fade-in"
               editable-field-container="auto" editable-field-container-clicked-elsewhere="closeCalendar()"
               data-snap-ignore="true">
-              <div calendar="getCalendarStartingDate(task)"
+
+              <div ng-if="task.trans.due" class="group-mixed with-checkbox">
+                <a href class="group-mixed--middle link-search-result">
+                  <span class="text-field--title" ng-bind="task.trans.due | date:'EEE MMM d y' | lowercase"></span>
+                </a>
+                <div class="group-mixed--right">
+                  <button type="button" class="btn-clear"
+                    ng-click="closeCalendarAndCall(clearTransientDate, task)">
+                  </button>
+                </div>
+              </div>
+
+              <div class="row" calendar="getCalendarStartingDate(task)"
                 calendar-return-date="closeCalendarAndCall(setTaskDate, task, date)"
                 calendar-set-default-date="true" calendar-bound="false">
                 <a href class="pikaday-today highlighted" ng-click="gotoCurrentMonth()">
@@ -106,8 +107,21 @@
               </div>
             </div>
 
+            <!-- DATE -->
+            <div ng-hide="descriptionFocused || calendarOpen" class="group-mixed with-checkbox">
+              <a href class="group-mixed--middle link-search-result" ng-class="!task.trans.due && 'downplayed'"
+                ng-click="openCalendar()">
+                <span class="text-field--title"
+                  ng-bind="task.trans.due ? (task.trans.due | date:'EEE MMM d y' | lowercase) : 'select date\u2026'">
+                </span>
+              </a>
+              <div ng-if="task.trans.due" class="group-mixed--right">
+                <span class="text-field--label">date</span>
+              </div>
+            </div>
+
             <!-- LIST -->
-            <div ng-if="task.trans.list" ng-hide="descriptionFocused || calendarOpen || listPickerOpen"
+            <div ng-if="task.trans.list" ng-hide="descriptionFocused || calendarOpen"
               class="group-mixed with-checkbox">
               <a href class="group-mixed--middle link-search-result" ng-click="openListPicker()">
                 <span class="text-field--title" ng-bind="task.trans.list.trans.title"></span>
