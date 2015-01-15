@@ -16,7 +16,7 @@
 
  function UserEditorController($http, $rootScope, $scope, $timeout, AnalyticsService, AuthenticationService,
                                BackendClientService, SwiperService, SynchronizeService, UISessionService,
-                               UserService, UserSessionService) {
+                               UserSessionService) {
 
   if ($scope.mode === 'signUp'){
     $scope.user = {};
@@ -143,5 +143,5 @@
 
 UserEditorController['$inject'] = ['$http', '$rootScope', '$scope', '$timeout', 'AnalyticsService',
 'AuthenticationService', 'BackendClientService', 'SwiperService', 'SynchronizeService', 'UISessionService',
-'UserService', 'UserSessionService'];
+'UserSessionService'];
 angular.module('em.user').controller('UserEditorController', UserEditorController);

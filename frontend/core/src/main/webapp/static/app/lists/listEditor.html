@@ -79,7 +79,7 @@
               class="group-symmetrical--left link-navigation">
               <span class="text-navigation-back">basic</span>
             </a>
-            <a href ng-click="archiveListInEdit(list)"
+            <a ng-if="!isFakeUser()" href ng-click="archiveListInEdit(list)"
             class="group-symmetrical--right link-navigation highlighted">
               <span class="text-navigation">archive</span>
             </a>

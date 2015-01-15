@@ -36,7 +36,6 @@
     },
     saveAccountPreferences: function() {
       var payload = {
-        email: UserSessionService.getEmail(),
         preferences: UserSessionService.getTransportPreferences()
       };
 

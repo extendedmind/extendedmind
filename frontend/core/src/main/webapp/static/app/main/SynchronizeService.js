@@ -791,7 +791,7 @@
           if (error.type === 'forbidden') {
             // Go to login
             var rejection = {type: 'http', value: {
-              status: error.status, data: error.data, url: error.config.url}};
+              status: error.status, data: error.data, url: error.value.config.url}};
             $rootScope.$emit('emException', rejection);
             deferred.reject(rejection);
           } else {

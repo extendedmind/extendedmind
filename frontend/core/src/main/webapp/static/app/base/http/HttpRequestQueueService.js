@@ -299,8 +299,9 @@ function HttpRequestQueueService(enableOffline) {
     },
     changeOwnerUUID: function(oldUUID, newUUID){
       function doChangeOwnerUUID(request, oldUUID, newUUID){
-        if (request.params && request.params.owner === oldUUID){
-          request.params.owner = newUUID;
+        if (request.params){
+          if (request.params.owner === oldUUID) request.params.owner = newUUID;
+          if (request.params.uuid === oldUUID) request.params.uuid = newUUID;
         }
         if (request.content && request.content.url.indexOf(oldUUID) !== -1){
           request.content.url = request.content.url.replaceAll(oldUUID, newUUID);

@@ -180,7 +180,7 @@
                   value: {
                     status: error.value.status,
                     data: error.value.data,
-                    url: error.config.url
+                    url: error.value.config.url
                   }
                 };
                 deferredAuthentication.reject(rejection);
