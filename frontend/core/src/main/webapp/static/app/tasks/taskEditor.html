@@ -3,14 +3,14 @@
     <div class="container-titlebar--inner">
       <div class="group-symmetrical height-large--top">
 
-        <a href ng-hide="isTaskPropertyInEdit()"
+        <a href ng-hide="isPickerOpen()"
           class="group-symmetrical--left link-navigation highlighted active" ng-click="endTaskEdit()">
           <span class="text-navigation-back" ng-class="!isFirstSlide() && 'not-swipeable'"
             ng-bind="isTaskEdited() && !task.trans.deleted ? 'save' : 'back'">
           </span>
         </a>
 
-        <a href ng-if="isTaskPropertyInEdit()"
+        <a href ng-if="isPickerOpen()"
           class="group-symmetrical--left highlighted">
           <span class="text-edit">done</span>
         </a>
@@ -141,7 +141,7 @@
 
             <!-- DESCRIPTION -->
             <div ng-hide="calendarOpen" class="row-vertically-centered with-textarea">
-              <textarea ng-model="task.trans.description" input-model-validator ng-trim="false"
+              <textarea id="ignoreSnap" ng-model="task.trans.description" input-model-validator ng-trim="false"
                 ng-focus="setDescriptionFocus(true)" ng-blur="setDescriptionFocus(false)" msd-elastic
                 placeholder="enter description&#8230;"
                 maxlength="1024" autocapitalize="none" autocorrect="off">

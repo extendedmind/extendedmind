@@ -308,7 +308,7 @@
                     }
 
                     // FORK: ii
-                    if (document.activeElement === target && target.id === 'noteContent') {
+                    if (document.activeElement === target && target.id === 'ignoreSnap') {
                         if (utils.page('X', e) > 27) return;
                     }
 
