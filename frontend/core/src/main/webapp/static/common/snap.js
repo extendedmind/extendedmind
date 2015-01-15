@@ -11,6 +11,8 @@
  * FORKS
  *  i.  Drawer aisle sometimes becomes unresponsive for touch probably because cache.translation is not
  *      cleared. Try to clear cache.translation from elsewhere after easeTo(0) calls if problem persists.
+ *  ii. Prevent dragging when content is focused in note editor and pageX in touchstart is greater than or
+ *      equal to 28 pixels. 28 pixels is the size of the padding-left for content's textarea.
  */
 /*jslint browser: true*/
 /*global define, module, ender*/
@@ -304,6 +306,12 @@
                             return;
                         }
                     }
+
+                    // FORK: ii
+                    if (document.activeElement === target && target.id === 'noteContent') {
+                        if (utils.page('X', e) > 27) return;
+                    }
+
 
                     utils.dispatchEvent('start');
                     settings.element.style[cache.vendor+'Transition'] = '';

@@ -83,7 +83,6 @@
     innerWrapperElement.classList.add('inner-wrapper-full');
     var contentElement = event.target;
     contentElement.classList.add('swiper-no-swiping');
-    contentElement.setAttribute('data-snap-ignore', true);
   };
 
   $scope.noteContentBlurred = function() {
@@ -93,7 +92,6 @@
     innerWrapperElement.classList.remove('inner-wrapper-full');
     var contentElement = event.target;
     contentElement.classList.remove('swiper-no-swiping');
-    contentElement.removeAttribute('data-snap-ignore');
   };
 
   $scope.gotoTitle = function() {
