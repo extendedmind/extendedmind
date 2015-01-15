@@ -27,11 +27,11 @@
         </a>
 
         <div ng-if="contentFocused || listPickerOpen " class="group-symmetrical--right">
-          <span class="text-field--label" ng-bind="contentFocused ? 'content' : 'list'"></span>
+          <span class="text-field--label-bold" ng-bind="contentFocused ? 'content' : 'list'"></span>
         </div>
         <div ng-if="keywordsPickerOpen" class="group-symmetrical--right">
           <div class="text-field--label-multi-row">
-            <span ng-bind="'key' + (columns === 1 ? '-\n' : '') + 'words'" class="text-field--label"></span>
+            <span ng-bind="'key' + (columns === 1 ? '-\n' : '') + 'words'" class="text-field--label-bold"></span>
           </div>
         </div>
 
@@ -94,20 +94,20 @@
             <!-- LIST -->
             <div ng-if="note.trans.list" ng-hide="contentFocused" class="group-mixed with-checkbox">
               <a href class="group-mixed--middle link-search-result" ng-click="openListPicker()">
-                <span style="display: block;" class="text-search-result" ng-bind="note.trans.list.trans.title"></span>
+                <span class="text-field--title" ng-bind="note.trans.list.trans.title"></span>
               </a>
               <div class="group-mixed--right">
-                <span style="font-weight: 300;" class="text-search-type">list</span>
+                <span class="text-field--label">list</span>
               </div>
             </div>
 
             <!-- KEYWORDS -->
             <div ng-if="note.trans.keywords && note.trans.keywords.length" ng-hide="contentFocused" class="group-mixed with-checkbox">
               <a href class="group-mixed--middle link-search-result" ng-click="openKeywordsPicker()">
-                <span style="display: block;" class="text-search-result" ng-bind="getKeywordsListString(note)"></span>
+                <span class="text-field--title" ng-bind="getKeywordsListString(note)"></span>
               </a>
               <div class="group-mixed--right">
-                <span style="font-weight: 300;" class="text-search-type">keywords</span>
+                <span class="text-field--label">keywords</span>
               </div>
             </div>
 

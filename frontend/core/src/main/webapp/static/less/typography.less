@@ -373,17 +373,26 @@ Search results (omnibar, deleted)
 .text-field--title {
   line-height: @line-height-text-search; // [1]
   font-size: @size-font-medium;
+  display: block;
 }
-.text-field--label {
-  vertical-align: top;
+.text-field--label,
+.text-field--label-bold {
   font-size: @size-font-small;
   display: block;
   color: @color-text-downplayed;
   font-size: @size-font-small;
   .dont-break-words();
+  line-height: 22px;
+}
+.text-field--label {
+  padding-top: 12px;
+  padding-bottom: 10px;
+}
+.text-field--label-bold {
+  vertical-align: top;
+  .set-font-bold();
   padding-top: 11px;
   padding-bottom: 11px;
-  line-height: 22px;
 
 }
 // FIXME: .text-field--label-multi-row == .group-symmetrical--middle > a > div
@@ -392,14 +401,11 @@ Search results (omnibar, deleted)
   height: inherit;
   display: table-cell;
   vertical-align: middle;
-  .text-field--label {
+  .text-field--label-bold {
     white-space: pre;
     padding-top: 0;
     padding-bottom: 0;
     line-height: @size-font-small;
     margin-top: 3px;
   }
-}
-header .text-field--label {
-  .set-font-bold();
 }
