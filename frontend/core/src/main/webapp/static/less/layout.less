@@ -1268,37 +1268,6 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
   visibility: hidden;
 }
 
-
-// FIXME: lost&found - not in use
-// 1. Override vertical-align: middle because it will brake layout with multiline text. Set padding-top and
-//    margin-bottom to align textarea vertically.
-//    Value is probably (grid-vertical - 22px[=line-height of textarea]) / 2. Then adjust it between
-//    paddin-top and margin-bottom to truly align text in the vertical center.
-// 2. Default line-height and min-height for .content-text.
-// 3. Remove inconsistent bottom margin.
-.content-text {
-  padding-top: 11px;  //[1]
-  padding-bottom: 11px;
-  line-height: @grid-vertical-half;  // [2]
-  min-height: @grid-vertical;   // [2]
-  vertical-align: top;
-  textarea {
-    line-height: inherit;
-    vertical-align: baseline; // [1]
-    display: block; // [3]
-  }
-}
-
-.area-text {
-  height: @grid-vertical;
-  textarea {
-    display: block;
-    min-height: 22px;
-    height: 22px;
-    vertical-align: top;
-  }
-}
-
 // 1. Set full height.
 // 2. Set full width.
 // 3. Clear horizontal and bottom padding from container.
