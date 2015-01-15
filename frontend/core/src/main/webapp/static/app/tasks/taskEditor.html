@@ -229,14 +229,17 @@
         <footer ng-hide="isTaskFooterHidden(editorFooterHiddenCallback)"
           class="container-content--after editor-footer" editor-footer="advancedSlideInfo">
 
-          <div class="table">
-            <div class="table-row">
-              <a href class="table-cell link" ng-click="convertToNote(task)">
-                <span class="text-convert">note</span>
-              </a>
-              <a href class="table-cell link" ng-click="convertToList(task)">
-                <span class="text-convert">list</span>
-              </a>
+          <!-- CONVERT -->
+          <div class="group-symmetrical">
+            <a href class="group-symmetrical--left" ng-click="convertToNote(task)">
+              <span style="font-size: 13px;" class="text-convert">note</span>
+            </a>
+            <a href style="text-align:center;" class="group-symmetrical--middle"
+              ng-click="convertToList(task)">
+              <span style="font-size: 13px;" class="text-convert">list</span>
+            </a>
+            <div class="group-symmetrical--right">
+              <span style="font-weight: 300;" class="text-search-type">convert</span>
             </div>
           </div>
 
