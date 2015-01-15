@@ -121,20 +121,16 @@
             </div>
 
             <!-- LIST -->
-            <div ng-if="task.trans.list" ng-hide="descriptionFocused || calendarOpen"
-              class="group-mixed with-checkbox">
-              <a href class="group-mixed--middle link-search-result" ng-click="openListPicker()">
-                <span class="text-field--title" ng-bind="task.trans.list.trans.title"></span>
+            <div ng-hide="descriptionFocused || calendarOpen" class="group-mixed with-checkbox">
+              <a href class="group-mixed--middle link-search-result" ng-class="!task.trans.list && 'downplayed'"
+                ng-click="openListPicker()">
+                <span class="text-field--title"
+                  ng-bind="task.trans.list ? task.trans.list.trans.title : 'select list\u2026'">
+                </span>
               </a>
-              <div class="group-mixed--right">
+              <div ng-if="task.trans.list" class="group-mixed--right">
                 <span class="text-field--label">list</span>
               </div>
-            </div>
-
-            <div ng-if="!task.trans.list" class="row-vertically-centered">
-              <a href class="downplayed" ng-click="openListPicker()">
-                <span class="text-search-result">select list&#8230;</span>
-              </a>
             </div>
 
             <!-- DESCRIPTION -->
