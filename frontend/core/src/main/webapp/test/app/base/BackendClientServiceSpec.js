@@ -27,6 +27,9 @@ describe('BackendClientService', function() {
   var MockUserSessionService = {
     getCredentials: function() {
       return '123456789';
+    },
+    isFakeUser: function() {
+      return false;
     }
   };
 

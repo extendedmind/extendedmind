@@ -82,6 +82,9 @@ describe('SynchronizeService', function() {
     getActiveUUID: function () {
       return testOwnerUUID;
     },
+    isFakeUser: function () {
+      return false;
+    },
     setAuthenticateInformation: function (/*authenticateResponse*/) {
       return;
     },
@@ -95,6 +98,9 @@ describe('SynchronizeService', function() {
       this.latestModified = modified;
     },
     isOfflineEnabled: function () {
+      return true;
+    },
+    isPersistentStorageEnabled: function(){
       return true;
     },
     isPersistentDataLoaded: function() {
@@ -301,8 +307,21 @@ describe('SynchronizeService', function() {
     spyOn(localStorage, 'clear').andCallFake(function() {
       localStore = {};
     });
-  });
 
+    var sessionStore = {};
+    spyOn(sessionStorage, 'getItem').andCallFake(function(key) {
+      return sessionStore[key];
+    });
+    spyOn(sessionStorage, 'setItem').andCallFake(function(key, value) {
+      sessionStore[key] = value + '';
+    });
+    spyOn(sessionStorage, 'removeItem').andCallFake(function(key) {
+      delete sessionStore[key];
+    });
+    spyOn(sessionStorage, 'clear').andCallFake(function() {
+      sessionStore = {};
+    });
+  });
 
   afterEach(function() {
     // User Session Mock

@@ -155,35 +155,49 @@
           }
         }], testOwnerUUID);
 
-TasksService.setTasks(
-  [{
-    'uuid': '7a612ca2-7de0-45ad-a758-d949df37f51e',
-    'created': 1391278509745,
-    'modified': 1391278509745,
-    'title': 'write essay body',
-    'due': '2014-03-09',
-    'relationships': {
-      'parent': '0a9a7ba1-3f1c-4541-842d-cff4d226628e'
-    }
-  }, {
-    'uuid': '7b53d509-853a-47de-992c-c572a6952629',
-    'created': 1391278509698,
-    'modified': 1391278509698,
-    'title': 'clean closet'
-  }, {
-    'uuid': '9a1ce3aa-f476-43c4-845e-af59a9a33760',
-    'created': 1391278509717,
-    'modified': 1391278509717,
-    'title': 'print tickets',
-    'link': 'http://www.finnair.fi',
-    'due': '2014-01-02',
-    'reminder': '10:00',
-    'relationships': {
-      'parent': 'dbff4507-927d-4f99-940a-ee0cfcf6e84c',
-      'tags': ['1208d45b-3b8c-463e-88f3-f7ef19ce87cd']
-    }
-  }], testOwnerUUID);
-});
+      TasksService.setTasks(
+        [{
+          'uuid': '7a612ca2-7de0-45ad-a758-d949df37f51e',
+          'created': 1391278509745,
+          'modified': 1391278509745,
+          'title': 'write essay body',
+          'due': '2014-03-09',
+          'relationships': {
+            'parent': '0a9a7ba1-3f1c-4541-842d-cff4d226628e'
+          }
+        }, {
+          'uuid': '7b53d509-853a-47de-992c-c572a6952629',
+          'created': 1391278509698,
+          'modified': 1391278509698,
+          'title': 'clean closet'
+        }, {
+          'uuid': '9a1ce3aa-f476-43c4-845e-af59a9a33760',
+          'created': 1391278509717,
+          'modified': 1391278509717,
+          'title': 'print tickets',
+          'link': 'http://www.finnair.fi',
+          'due': '2014-01-02',
+          'reminder': '10:00',
+          'relationships': {
+            'parent': 'dbff4507-927d-4f99-940a-ee0cfcf6e84c',
+            'tags': ['1208d45b-3b8c-463e-88f3-f7ef19ce87cd']
+          }
+        }], testOwnerUUID);
+
+        var sessionStore = {};
+        spyOn(sessionStorage, 'getItem').andCallFake(function(key) {
+          return sessionStore[key];
+        });
+        spyOn(sessionStorage, 'setItem').andCallFake(function(key, value) {
+          sessionStore[key] = value + '';
+        });
+        spyOn(sessionStorage, 'removeItem').andCallFake(function(key) {
+          delete sessionStore[key];
+        });
+        spyOn(sessionStorage, 'clear').andCallFake(function() {
+          sessionStore = {};
+        });
+    });
 });
 
 afterEach(function() {

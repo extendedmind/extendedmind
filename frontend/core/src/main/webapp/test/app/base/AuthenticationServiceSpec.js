@@ -48,6 +48,9 @@ describe('AuthenticationService', function() {
     isItemsSynchronized: function() {
       return true;
     },
+    isFakeUser: function() {
+      return false;
+    },
     getActiveUUID: function() {
       return testOwnerUUID;
     },
