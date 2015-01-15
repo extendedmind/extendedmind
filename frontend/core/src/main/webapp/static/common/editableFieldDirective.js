@@ -20,7 +20,6 @@
     require: '^?editableFieldContainer',
     restrict: 'A',
     link: function(scope, element, attrs, editableFieldContainerController) {
-      element.addClass('editable-field');
 
       var editableFieldType;
       if (attrs.editableField.length > 0){
@@ -98,7 +97,6 @@
       var editableFieldFocus = function() {
         if (!refocusInProgress){
           if (editableFieldContainerController) editableFieldContainerController.notifyFocus();
-          element.addClass('active');
           if (typeof focusCallback === 'function') executeFocusCallback(focusCallback);
         }
         refocusInProgress = false;
@@ -109,7 +107,6 @@
           reFocusEditableField();
           if (editableFieldContainerController) editableFieldContainerController.notifyReFocus(blurElement);
         }else{
-          element.removeClass('active');
           unfocusInProgress = false;
           if (packaging === 'android-cordova'){
             // In Android we need to force the keyboard down
