@@ -42,7 +42,7 @@
   <div class="swiper-container container-fluid--inner" swiper-container="noteEditor" swiper-type="main" expected-slides="2" swiper-container-slide-changed="editorSwiperSlideChanged()">
     <div class="swiper-wrapper" ng-class="onboardingInProgress && 'swiper-no-swiping'">
       <div class="swiper-slide" swiper-slide="noteEditor/basic" slide-index="0">
-        <div ng-style="{'padding-bottom': isNotePropertyInEdit() ? 0 : EDITOR_FOOTER_HEIGHT}" class="container-content" drawer-override-aisle="right" swiper-prevent scroll-then-toggle="noteEditorTitlebarTitle" scroll-then-toggle-top="noteEditorTitle" scroll-then-toggle-resizeable="noteEditorTitleInput" scroll-then-toggle-reset="registerGotoTitleCallback">
+        <div ng-style="{'padding-bottom': isNotePropertyInEdit() ? 0 : EDITOR_FOOTER_HEIGHT}" ng-init="drawerAisleInitialized = true" class="container-content" drawer-override-aisle="right" swiper-prevent scroll-then-toggle="noteEditorTitlebarTitle" scroll-then-toggle-top="noteEditorTitle" scroll-then-toggle-resizeable="noteEditorTitleInput" scroll-then-toggle-reset="registerGotoTitleCallback">
 
           <!-- NOTE TITLE -->
           <div ng-hide="isNotePropertyInEdit()" id="noteEditorTitle" class="row-top-parent">
@@ -112,7 +112,7 @@
             </div>
 
             <!-- CONTENT -->
-            <div class="row-vertically-centered with-textarea">
+            <div ng-if="drawerAisleInitialized" class="row-vertically-centered with-textarea">
               <textarea ng-class="(onboardingInProgress && !contentFocused) && 'input-separate'" ng-model="note.trans.content" input-model-validator ng-trim="false" msd-elastic editable-field editable-field-register-callbacks="registerNoteContentInputCallbacks(focus, blur)" editable-field-focus="noteContentFocused()" editable-field-blur="noteContentBlurred()" placeholder="enter content&#8230;" autocapitalize="none" autocorrect="off">
               </textarea>
             </div>
