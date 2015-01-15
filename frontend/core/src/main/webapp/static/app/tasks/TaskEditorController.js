@@ -107,13 +107,26 @@
 
   // UI
 
-
   $scope.isTaskPropertyInEdit = function() {
     return $scope.descriptionFocused || $scope.isPickerOpen();
   };
 
   $scope.isPickerOpen = function() {
-    return $scope.calendarOpen || $scope.contextPickerOpen || $scope.listPickerOpen;
+    return $scope.calendarOpen || $scope.contextPickerOpen || $scope.listPickerOpen ||
+    $scope.repeatingPickerOpen;
+  };
+
+  $scope.getPropertyNameInEdit = function() {
+    if ($scope.calendarOpen)
+      return 'date';
+    else if ($scope.contextPickerOpen)
+      return 'context';
+    else if ($scope.descriptionFocused)
+      return 'description';
+    else if ($scope.listPickerOpen)
+      return 'list';
+    else if ($scope.repeatingPickerOpen)
+      return 'repeating';
   };
 
   // CALENDAR

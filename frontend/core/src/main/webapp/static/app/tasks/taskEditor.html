@@ -38,7 +38,7 @@
 
         <div ng-if="isTaskPropertyInEdit()" class="group-symmetrical--right">
           <span class="text-field--label-bold"
-            ng-bind="(calendarOpen && 'date') || (contextPickerOpen && 'context') || (listPickerOpen && 'list')">
+            ng-bind="getPropertyNameInEdit()">
           </span>
         </div>
 
@@ -196,8 +196,8 @@
           <div ng-if="!contextPickerOpen && !repeatingPickerOpen">
 
             <div ng-hide="urlFocused" class="group-mixed with-checkbox">
-              <a href class="group-mixed--middle link-search-result" ng-class="!task.trans.context && 'downplayed'"
-                ng-click="openContextPicker()">
+              <a href class="group-mixed--middle link-search-result"
+                ng-class="!task.trans.context && 'downplayed'" ng-click="openContextPicker()">
                 <span class="text-field--title"
                   ng-bind="task.trans.context ? '@' + task.trans.context.trans.title : 'select context\u2026'">
                 </span>
@@ -207,10 +207,16 @@
               </div>
             </div>
 
-            <div ng-hide="urlFocused || !task.trans.due" class="row-vertically-centered">
-              <a href ng-class="task.trans.repeating ? 'link' : 'downplayed'" ng-click="openRepeatingPicker()">
-                <span class="text-link" ng-bind="task.trans.repeating ? task.trans.repeating : 'select repeating\u2026'"></span>
+            <div ng-if="task.trans.due" ng-hide="urlFocused" class="group-mixed with-checkbox">
+              <a href class="group-mixed--middle link-search-result"
+                ng-class="!task.trans.repeating && 'downplayed'" ng-click="openRepeatingPicker()">
+                <span class="text-field--title"
+                  ng-bind="task.trans.repeating ? task.trans.repeating : 'select repeating\u2026'">
+                </span>
               </a>
+              <div ng-if="task.trans.repeating" class="group-mixed--right">
+                <span class="text-field--label">repeating</span>
+              </div>
             </div>
 
             <div class="row-vertically-centered with-textarea">
