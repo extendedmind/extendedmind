@@ -86,10 +86,10 @@ function HttpRequestQueueService(enableOffline) {
           request.content.url === queue[i].content.url &&
           request.content.method === queue[i].content.method) {
         // Found a replaceable request from the queue
-      return i;
+        return i;
+      }
     }
   }
-}
 
   // Find index of request with same uuid as given request
   function findRequestIndex(request) {
@@ -295,6 +295,34 @@ function HttpRequestQueueService(enableOffline) {
         }else if (headRequest.offline){
           return {status: 0};
         }
+      }
+    },
+    changeOwnerUUID: function(oldUUID, newUUID){
+      function doChangeOwnerUUID(request, oldUUID, newUUID){
+        if (request.params && request.params.owner === oldUUID){
+          request.params.owner = newUUID;
+        }
+        if (request.content && request.content.url.indexOf(oldUUID) !== -1){
+          request.content.url = request.content.url.replaceAll(oldUUID, newUUID);
+        }
+      }
+      if (primary){
+        doChangeOwnerUUID(primary, oldUUID, newUUID);
+        storage.setItem('primaryRequest', JSON.stringify(primary));
+      }
+      if (secondary) {
+        doChangeOwnerUUID(primary, oldUUID, newUUID);
+        storage.setItem('secondaryRequest', JSON.stringify(secondary));
+      }
+      if (queue && queue.length){
+        for (var i=0; i<queue.length; i++){
+          doChangeOwnerUUID(queue[i], oldUUID, newUUID);
+        }
+        persistQueue();
+      }
+      if (beforeLast) {
+        doChangeOwnerUUID(beforeLast, oldUUID, newUUID);
+        storage.setItem('beforeLastRequest', JSON.stringify(beforeLast));
       }
     }
   };

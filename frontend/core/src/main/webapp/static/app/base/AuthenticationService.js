@@ -129,7 +129,7 @@
   function authenticate(remember) {
     return BackendClientService.postOnline('/api/authenticate', postAuthenticateRegexp,
       getAuthenticatePayload(remember),
-      true);
+      true, true);
   }
 
   function verifyAndUpdateAuthentication(online) {
@@ -224,7 +224,7 @@
       });
     },
     signUp: function(data) {
-      return BackendClientService.postOnline('/api/signup', signUpRegexp, data, true);
+      return BackendClientService.postOnline('/api/signup', signUpRegexp, data, true, true);
     },
     postForgotPassword: function(email) {
       return BackendClientService.postOnline(

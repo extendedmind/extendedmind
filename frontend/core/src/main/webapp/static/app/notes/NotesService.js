@@ -449,6 +449,15 @@
     clearNotes: function() {
       notes = {};
     },
+    changeOwnerUUID: function(oldUUID, newUUID){
+      if (notes[oldUUID]){
+        notes[newUUID] = notes[oldUUID];
+        delete notes[oldUUID];
+        ItemLikeService.persistAndReset(notes[newUUID].activeNotes, 'note', newUUID, noteFieldInfos);
+        ItemLikeService.persistAndReset(notes[newUUID].archivedNotes, 'note', newUUID, noteFieldInfos);
+        ItemLikeService.persistAndReset(notes[newUUID].deletedNotes, 'note', newUUID, noteFieldInfos);
+      }
+    },
     noteFieldInfos: noteFieldInfos,
     // Regular expressions for note requests
     putNewNoteRegex: ItemLikeService.getPutNewRegex('note'),

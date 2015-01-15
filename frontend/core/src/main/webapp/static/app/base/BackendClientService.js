@@ -211,21 +211,22 @@
     HttpClientService.clearPrimary();
   };
 
-  methods.postOnline = function(url, regex, data, skipRefresh) {
-    function doPostOnline(url, regex, data) {
+  methods.postOnline = function(url, regex, data, skipRefresh, bypassQueue) {
+    function doPostOnline(url, regex, data, bypassQueue) {
       if (regex.test(angular.isObject(url) ? url.value : url)) {
-        return HttpClientService.postOnline(getUrlPrefix(), url, data).then(handleHttpSuccess,
-                                                                            handleHttpError);
+        return HttpClientService.postOnline(getUrlPrefix(),
+                                            url, data, bypassQueue).then(handleHttpSuccess,
+                                                                         handleHttpError);
       } else {
         return emitRegexException(regex, 'post', url);
       }
     }
     if (!skipRefresh) {
       return refreshCredentials(true).then(function() {
-        return doPostOnline(url, regex, data);
+        return doPostOnline(url, regex, data, bypassQueue);
       });
     } else {
-      return doPostOnline(url, regex, data);
+      return doPostOnline(url, regex, data, bypassQueue);
     }
   };
 
@@ -248,6 +249,16 @@
     var backendDelta = UserSessionService.getBackendDelta();
     if (!backendDelta) backendDelta = 0;
     return Date.now() + backendDelta;
+  };
+
+  methods.notifyOwnerUUIDChange = function(oldUUID, newUUID){
+    HttpClientService.notifyOwnerUUIDChange(oldUUID, newUUID);
+  };
+
+  methods.executeRequests = function(){
+    return refreshCredentials().then(function() {
+      HttpClientService.executeRequests();
+    });
   };
 
   // Callback registration

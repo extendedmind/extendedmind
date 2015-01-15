@@ -289,7 +289,7 @@
   }
 
   // Online alternatives for POST, PUT and DELETE
-  methods.postOnline = function(urlPrefix, url, data) {
+  methods.postOnline = function(urlPrefix, url, data, bypassQueue) {
     function doPostOnline(urlPrefix, url, data){
       return $http({method: 'post', url: getRefreshedUrlString(urlPrefix, url), data: data})
       .then(function(success) {
@@ -300,7 +300,7 @@
         return $q.reject({type:'http', value: error});
       });
     }
-    if (HttpRequestQueueService.isEmpty()){
+    if (bypassQueue || HttpRequestQueueService.isEmpty()){
       return doPostOnline(urlPrefix, url, data);
     }else{
       return executeRequestsAndPoll(doPostOnline, urlPrefix, url, data);
@@ -448,7 +448,13 @@
 
   methods.setCacheOnly = function(value) {
     cacheOnly = value;
-  }
+  };
+
+  methods.notifyOwnerUUIDChange = function(oldUUID, newUUID){
+    HttpRequestQueueService.changeOwnerUUID(oldUUID, newUUID);
+  };
+
+  methods.executeRequests = executeRequests;
 
   return methods;
 }

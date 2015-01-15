@@ -570,6 +570,15 @@
     clearTasks: function() {
       tasks = {};
     },
+    changeOwnerUUID: function(oldUUID, newUUID){
+      if (tasks[oldUUID]){
+        tasks[newUUID] = tasks[oldUUID];
+        delete tasks[oldUUID];
+        ItemLikeService.persistAndReset(tasks[newUUID].activeTasks, 'task', newUUID, taskFieldInfos);
+        ItemLikeService.persistAndReset(tasks[newUUID].archivedTasks, 'task', newUUID, taskFieldInfos);
+        ItemLikeService.persistAndReset(tasks[newUUID].deletedTasks, 'task', newUUID, taskFieldInfos);
+      }
+    },
     taskFieldInfos: taskFieldInfos,
     // Regular expressions for task requests
     putNewTaskRegex: ItemLikeService.getPutNewRegex('task'),

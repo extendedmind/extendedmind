@@ -343,6 +343,15 @@
     clearLists: function() {
       lists = {};
     },
+    changeOwnerUUID: function(oldUUID, newUUID){
+      if (lists[oldUUID]){
+        lists[newUUID] = lists[oldUUID];
+        delete lists[oldUUID];
+        ItemLikeService.persistAndReset(lists[newUUID].activeLists, 'list', newUUID, listFieldInfos);
+        ItemLikeService.persistAndReset(lists[newUUID].archivedLists, 'list', newUUID, listFieldInfos);
+        ItemLikeService.persistAndReset(lists[newUUID].deletedLists, 'list', newUUID, listFieldInfos);
+      }
+    },
     listFieldInfos: listFieldInfos,
     // Regular expressions for list requests
     putNewListRegex: ItemLikeService.getPutNewRegex('list'),

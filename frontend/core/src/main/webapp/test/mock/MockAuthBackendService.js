@@ -23,7 +23,6 @@ function MockAuthBackendService($httpBackend, AuthenticationService, UUIDService
       var authenticateResponse = getJSONFixture('authenticateResponse.json');
       var now = new Date();
       authenticateResponse.authenticated = now.getTime();
-      authenticateResponse.userUUID = UUIDService.randomUUID();
       authenticateResponse.expires = now.getTime() + 1000*60*60*12;
       if (data.indexOf('true') != -1){
         authenticateResponse.replaceable = now.getTime() + 1000*60*60*24*7;
@@ -65,10 +64,12 @@ function MockAuthBackendService($httpBackend, AuthenticationService, UUIDService
     });
   }
 
-  // FIXME: Remove if not needed: Timo?
   function mockPostSignUp() {
     $httpBackend.whenPOST(AuthenticationService.postSignUpRegex).respond(function(method, url, data, headers) {
       var signUpResponse = getJSONFixture('signUpResponse.json');
+      var authenticateResponse = getJSONFixture('authenticateResponse.json');
+      signUpResponse.uuid = authenticateResponse.userUUID;
+      signUpResponse.modified = authenticateResponse.modified;
       return [200, signUpResponse];
     });
   }

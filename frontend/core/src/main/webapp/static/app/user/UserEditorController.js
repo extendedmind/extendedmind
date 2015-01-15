@@ -15,8 +15,12 @@
  'use strict';
 
  function UserEditorController($http, $rootScope, $scope, $timeout, AnalyticsService, AuthenticationService,
-                               BackendClientService, SwiperService, UISessionService, UserService,
-                               UserSessionService) {
+                               BackendClientService, SwiperService, SynchronizeService, UISessionService,
+                               UserService, UserSessionService) {
+
+  if ($scope.mode === 'signUp'){
+    $scope.user = {};
+  }
 
   $scope.changePassword = function (oldPassword, newPassword) {
     $scope.userEditOffline = false;
@@ -100,25 +104,32 @@
   };
 
   function signUpSuccess(response) {
-    AnalyticsService.doWithUuid('signUp', undefined, response.uuid);
-    AuthenticationService.login($scope.user).then
-    (function() {
-      $scope.closeEditor();
-      UISessionService.pushDelayedNotification({
-        type: 'fyi',
-        text: 'sign up successful'
-      });
-      $timeout(function() {
-        UISessionService.activateDelayedNotifications();
-      }, $rootScope.EDITOR_CLOSED_FAILSAFE_TIME);
-    },
-     function(error) {
-      if (error.type === 'offline') {
-        $scope.userEditOffline = true;
-      } else if (error.type === 'forbidden') {
-        $scope.loginFailed = true;
+    // Register uuid change
+    var oldUUID = UserSessionService.getUserUUID();
+    SynchronizeService.notifyOwnerUUIDChange(oldUUID, response.uuid);
+    UISessionService.notifyOwnerUUIDChange(oldUUID, response.uuid);
+    AnalyticsService.doWithUuid('signUp', oldUUID, response.uuid);
+    AuthenticationService.login($scope.user).then(
+      function(response) {
+        // Start executing all pending requests now
+        BackendClientService.executeRequests();
+        $scope.closeEditor();
+        UISessionService.pushDelayedNotification({
+          type: 'fyi',
+          text: 'sign up successful'
+        });
+        $timeout(function() {
+          UISessionService.activateDelayedNotifications();
+        }, $rootScope.EDITOR_CLOSED_FAILSAFE_TIME);
+      },
+      function(error) {
+        if (error.type === 'offline') {
+          $scope.userEditOffline = true;
+        } else if (error.type === 'forbidden') {
+          $scope.loginFailed = true;
+        }
       }
-    });
+    );
   }
 
   function signUpFailed(error) {
@@ -131,6 +142,6 @@
 }
 
 UserEditorController['$inject'] = ['$http', '$rootScope', '$scope', '$timeout', 'AnalyticsService',
-'AuthenticationService', 'BackendClientService', 'SwiperService', 'UISessionService', 'UserService',
-'UserSessionService'];
+'AuthenticationService', 'BackendClientService', 'SwiperService', 'SynchronizeService', 'UISessionService',
+'UserService', 'UserSessionService'];
 angular.module('em.user').controller('UserEditorController', UserEditorController);

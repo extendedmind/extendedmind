@@ -322,6 +322,19 @@
       deferredActions = [];
       ownerPrefix = 'my';
       allowedActions = {};
+    },
+    notifyOwnerUUIDChange: function(oldUUID, newUUID){
+      if (featureMap[oldUUID]){
+        featureMap[newUUID] = featureMap[oldUUID];
+        delete featureMap[oldUUID];
+        if (this.getActiveUUID() === oldUUID){
+          SessionStorageService.setActiveUUID(newUUID);
+        }
+      }
+      if (featureHistory[oldUUID]){
+        featureHistory[newUUID] = featureHistory[oldUUID];
+        delete featureHistory[oldUUID];
+      }
     }
   };
 }

@@ -27,6 +27,16 @@
     };
   }
 
+  if (typeof String.prototype.replaceAll != 'function') {
+    String.prototype.replaceAll = function(search, replace){
+      //if replace is null, return original string otherwise it will
+      //replace search string with 'undefined'.
+      if(!replace)
+          return this;
+      return this.replace(new RegExp(search, 'g'), replace);
+    };
+  }
+
   /*
   * Adds timezone offset in ISO 8601 format.
   *

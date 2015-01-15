@@ -251,6 +251,14 @@
     clearItems: function() {
       items = {};
     },
+    changeOwnerUUID: function(oldUUID, newUUID){
+      if (items[oldUUID]){
+        items[newUUID] = items[oldUUID];
+        delete items[oldUUID];
+        ItemLikeService.persistAndReset(items[newUUID].activeItems, 'item', newUUID, itemFieldInfos);
+        ItemLikeService.persistAndReset(items[newUUID].deletedItems, 'item', newUUID, itemFieldInfos);
+      }
+    },
     // Regular expressions for item requests
     putNewItemRegex: ItemLikeService.getPutNewRegex('item'),
     putExistingItemRegex: ItemLikeService.getPutExistingRegex('item'),

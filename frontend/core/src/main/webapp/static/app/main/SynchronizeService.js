@@ -922,6 +922,15 @@
       ListsService.clearLists();
       TagsService.clearTags();
     },
+    notifyOwnerUUIDChange: function(oldUUID, newUUID){
+      BackendClientService.notifyOwnerUUIDChange(oldUUID, newUUID);
+      // Change UUID to the service layer as well
+      ItemsService.changeOwnerUUID(oldUUID, newUUID);
+      ListsService.changeOwnerUUID(oldUUID, newUUID);
+      TagsService.changeOwnerUUID(oldUUID, newUUID);
+      TasksService.changeOwnerUUID(oldUUID, newUUID);
+      NotesService.changeOwnerUUID(oldUUID, newUUID);
+    },
     // Regular expressions for item requests
     getItemsRegex: getItemsRegex
   };

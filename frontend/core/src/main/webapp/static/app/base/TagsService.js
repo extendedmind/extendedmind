@@ -213,6 +213,14 @@
     clearTags: function() {
       tags = {};
     },
+    changeOwnerUUID: function(oldUUID, newUUID){
+      if (tags[oldUUID]){
+        tags[newUUID] = tags[oldUUID];
+        delete tags[oldUUID];
+        ItemLikeService.persistAndReset(tags[newUUID].activeTags, 'tag', newUUID, tagFieldInfos);
+        ItemLikeService.persistAndReset(tags[newUUID].deletedTags, 'tag', newUUID, tagFieldInfos);
+      }
+    },
     // Regular expressions for tag requests
     putNewTagRegex: ItemLikeService.getPutNewRegex('tag'),
     putExistingTagRegex: ItemLikeService.getPutExistingRegex('tag'),
