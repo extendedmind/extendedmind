@@ -2,18 +2,44 @@
   <header class="container-titlebar">
     <div class="container-titlebar--inner">
       <div class="group-symmetrical height-large--top">
-        <a href class="group-symmetrical--left link-navigation highlighted active" ng-click="endTaskEdit()" >
+
+        <a href ng-hide="listPickerOpen" class="group-symmetrical--left link-navigation highlighted active"
+          ng-click="endTaskEdit()" >
           <span class="text-navigation-back" ng-class="!isFirstSlide() && 'not-swipeable'"
-            ng-bind="isTaskEdited() && !task.trans.deleted ? 'save' : 'back'"></span>
+            ng-bind="isTaskEdited() && !task.trans.deleted ? 'save' : 'back'">
+          </span>
         </a>
-        <a href ng-if="!task.trans.deleted" class="group-symmetrical--right" ng-click="deleteTaskInEdit()" >
+
+        <a href ng-if="listPickerOpen" class="group-symmetrical--left highlighted">
+          <span class="text-edit">done</span>
+        </a>
+
+        <div ng-hide="!listPickerOpen && isFirstSlide()" ng-style="{maxWidth: calculateTitleWidth()}"
+          class="group-symmetrical--middle width-large">
+          <div style="display: table; width: 100%; height: 100%;">
+            <div style="text-align: center; height: inherit; display: table-cell; vertical-align: middle;">
+              <span class="text-heading-primary" ng-class="!task.trans.title && 'text-downplayed'"
+                ng-bind="task.trans.title && task.trans.title.length ? task.trans.title : 'new task'" clamp=2>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <a href ng-if="!task.trans.deleted" ng-hide="listPickerOpen" class="group-symmetrical--right" ng-click="deleteTaskInEdit()" >
           <span class="icon-trash"></span>
         </a>
-        <a href ng-if="task.trans.deleted" class="group-symmetrical--right link-navigation highlighted active"
-          ng-click="undeleteTask(task)"><span class="text-navigation">restore</span></a>
+        <a href ng-if="task.trans.deleted" ng-hide="listPickerOpen" class="group-symmetrical--right link-navigation highlighted active"
+          ng-click="undeleteTask(task)">
+          <span class="text-navigation">restore</span>
+        </a>
+
+        <div ng-if="listPickerOpen" class="group-symmetrical--right">
+          <span class="text-field--label-bold">list</span>
+        </div>
+
       </div>
 
-      <form role="form" class="group-mixed with-checkbox" autocapitalize="none" autocorrect="off">
+      <form role="form" ng-hide="listPickerOpen" class="group-mixed with-checkbox" autocapitalize="none" autocorrect="off">
         <div class="group-mixed--left">
           <input type="checkbox" ng-click="clickCompleteTaskInEdit()" ng-model="task.trans.optimisticComplete"
             ng-model-options="{getterSetter: true}" icon-checkbox="editorTitlebarCheckbox" />
@@ -81,9 +107,19 @@
             </div>
 
             <!-- LIST -->
-            <div ng-hide="descriptionFocused || calendarOpen" class="row-vertically-centered">
-              <a href ng-class="task.trans.list ? 'link' : 'downplayed'" ng-click="openListPicker()">
-                <span class="text-link" ng-bind="task.trans.list ? task.trans.list.trans.title : 'select list\u2026'"></span>
+            <div ng-if="task.trans.list" ng-hide="descriptionFocused || calendarOpen || listPickerOpen"
+              class="group-mixed with-checkbox">
+              <a href class="group-mixed--middle link-search-result" ng-click="openListPicker()">
+                <span class="text-field--title" ng-bind="task.trans.list.trans.title"></span>
+              </a>
+              <div class="group-mixed--right">
+                <span class="text-field--label">list</span>
+              </div>
+            </div>
+
+            <div ng-if="!task.trans.list" class="row-vertically-centered">
+              <a href class="downplayed" ng-click="openListPicker()">
+                <span class="text-search-result">select list&#8230;</span>
               </a>
             </div>
 
