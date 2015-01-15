@@ -95,18 +95,18 @@ trait SecurityActions {
     val currentTime = System.currentTimeMillis
     val resetCodeValid = currentTime + db.PASSWORD_RESET_DURATION
 
-    val futureMailResponse = mailgun.sendPasswordResetLink(user.email, resetCode)
+    val futureMailResponse = mailgun.sendPasswordResetLink(user.email.get, resetCode)
     futureMailResponse onSuccess {
       case SendEmailResponse(message, id) => {
         val saveResponse = db.savePasswordResetInformation(user.uuid.get, resetCode, resetCodeValid, id)
         if (saveResponse.isLeft)
           log.error("Error saving password reset code for email {} with emailId {}, error: {}",
-            user.email, id, saveResponse.left.get.head)
+            user.email.get, id, saveResponse.left.get.head)
         else log.info("Saved reset code for email {} with emailId: {}",
-          user.email, id)
+          user.email.get, id)
       }
       case _ =>
-        log.error("Could not send password reset email to {}", user.email)
+        log.error("Could not send password reset email to {}", user.email.get)
     }
     Right(ForgotPasswordResult(resetCodeValid))
   }

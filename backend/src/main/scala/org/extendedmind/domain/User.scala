@@ -28,15 +28,15 @@ case class UserPreferences(onboarded: Option[String], ui: Option[String]){
 }
 
 case class User(uuid: Option[UUID], created: Option[Long], modified: Option[Long], deleted: Option[Long],
-                email: String, emailVerified: Option[Long], cohort: Option[Int],
+                email: Option[String], emailVerified: Option[Long], cohort: Option[Int],
                 preferences: Option[UserPreferences])
            extends Container{
-  require(validateEmailAddress(email), "Not a valid email address")
+  if (email.isDefined) require(validateEmailAddress(email.get), "Not a valid email address")
   if (cohort.isDefined) require(cohort.get > 0 && cohort.get <= 128, "Cohort needs to be a number between 1 and 128")
 }
 
 object User{
-  def apply(email:String, cohort: Option[Int], preferences: Option[UserPreferences]) = new User(None, None, None, None, email, None, cohort, preferences)
+  def apply(email:String, cohort: Option[Int], preferences: Option[UserPreferences]) = new User(None, None, None, None, Some(email), None, cohort, preferences)
 }
 
 case class SignUp(email: String, password: String, cohort: Option[Int], bypass: Option[Boolean]){

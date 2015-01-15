@@ -42,7 +42,7 @@ class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
     it("should getUser"){
       val testEmail = TIMO_EMAIL
     	db.getUser(testEmail) match {
-				case Right(user) => assert(user.email === testEmail)
+				case Right(user) => assert(user.email.get === testEmail)
 				case Left(e) => {
 				  e foreach (resp => {
 				      println(resp)

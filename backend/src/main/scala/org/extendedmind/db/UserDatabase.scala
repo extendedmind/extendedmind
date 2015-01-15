@@ -156,13 +156,13 @@ trait UserDatabase extends AbstractGraphDatabase {
     userLabel: Option[Label] = None, emailVerified: Option[Long] = None): Response[(Node, Option[Long])] = {
     withTx {
       implicit neo4j =>
-        if (findNodesByLabelAndProperty(OwnerLabel.USER, "email", user.email).toList.size > 0) {
-          fail(INVALID_PARAMETER, "User already exists with given email " + user.email)
+        if (findNodesByLabelAndProperty(OwnerLabel.USER, "email", user.email.get).toList.size > 0) {
+          fail(INVALID_PARAMETER, "User already exists with given email " + user.email.get)
         } else {
           val userNode = createNode(user, MainLabel.OWNER, OwnerLabel.USER)
           if (userLabel.isDefined) userNode.addLabel(userLabel.get)
           setUserPassword(userNode, plainPassword)
-          userNode.setProperty("email", user.email)
+          userNode.setProperty("email", user.email.get)
           if (user.cohort.isDefined) userNode.setProperty("cohort", user.cohort.get)
 
           val emailVerificationCode = if (emailVerified.isDefined) {

@@ -111,7 +111,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
         // Remove onboarded and add more UI preferences
         val newUIPreferences = "{hideFooter: true, hidePlus: true}"
         Put("/account",
-          marshal(accountResponse.copy(
+          marshal(accountResponse.copy(email = None,
               preferences = Some(UserPreferences(None, Some(newUIPreferences))))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", newEmailAuthenticateResponse.token.get)) ~> route ~> check {
             val putAccountResponse = responseAs[SetResult]
             putAccountResponse.modified should not be None
@@ -131,7 +131,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
         writeJsonOutput("accountResponse", responseAs[String])
         val accountResponse = responseAs[User]
         accountResponse.uuid.get should equal(authenticateResponse.userUUID)
-        accountResponse.email should equal(LAURI_EMAIL)
+        accountResponse.email.get should equal(LAURI_EMAIL)
       }
       val newEmail = UserEmail("lauri.jarvilehto@filosofianakatemia.fi")
       Put("/email",
@@ -142,7 +142,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
       }
       Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val accountResponse = responseAs[User]
-        accountResponse.email should equal(newEmail.email)
+        accountResponse.email.get should equal(newEmail.email)
       }
       val newEmailAuthenticateResponse = emailPasswordAuthenticate(newEmail.email, LAURI_PASSWORD)
       newEmailAuthenticateResponse.userUUID should not be None
@@ -174,7 +174,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
       Get("/admin/users") ~> addCredentials(BasicHttpCredentials("token", adminAuthenticateResponse.token.get)) ~> route ~> check {
         val users = responseAs[Users]
         val lauri = users.users.filter(user => {
-          if (user.email == LAURI_EMAIL) true
+          if (user.email.get == LAURI_EMAIL) true
           else false
         })
         lauri(0).deleted should not be None
@@ -185,7 +185,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
       Get("/admin/users") ~> addCredentials(BasicHttpCredentials("token", adminAuthenticateResponse.token.get)) ~> route ~> check {
         val users = responseAs[Users]
         val lauri = users.users.filter(user => {
-          if (user.email == LAURI_EMAIL) true
+          if (user.email.get == LAURI_EMAIL) true
           else false
         })
         lauri(0).deleted should be(None)
