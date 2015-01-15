@@ -104,22 +104,6 @@
             'tags': ['6350affa-1acf-4969-851a-9bf2b17806d6']
           }
         }], testOwnerUUID);
-
-        var sessionStore = {};
-
-        spyOn(sessionStorage, 'getItem').andCallFake(function(key) {
-          return sessionStore[key];
-        });
-        spyOn(sessionStorage, 'setItem').andCallFake(function(key, value) {
-          sessionStore[key] = value + '';
-        });
-        spyOn(sessionStorage, 'removeItem').andCallFake(function(key) {
-          delete sessionStore[key];
-        });
-        spyOn(sessionStorage, 'clear').andCallFake(function() {
-          sessionStore = {};
-        });
-
     });
   });
 

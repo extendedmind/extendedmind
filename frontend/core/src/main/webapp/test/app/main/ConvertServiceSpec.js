@@ -183,20 +183,6 @@
             'tags': ['1208d45b-3b8c-463e-88f3-f7ef19ce87cd']
           }
         }], testOwnerUUID);
-
-        var sessionStore = {};
-        spyOn(sessionStorage, 'getItem').andCallFake(function(key) {
-          return sessionStore[key];
-        });
-        spyOn(sessionStorage, 'setItem').andCallFake(function(key, value) {
-          sessionStore[key] = value + '';
-        });
-        spyOn(sessionStorage, 'removeItem').andCallFake(function(key) {
-          delete sessionStore[key];
-        });
-        spyOn(sessionStorage, 'clear').andCallFake(function() {
-          sessionStore = {};
-        });
     });
 });
 

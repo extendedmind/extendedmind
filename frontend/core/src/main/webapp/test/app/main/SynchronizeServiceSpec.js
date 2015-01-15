@@ -123,6 +123,10 @@ describe('SynchronizeService', function() {
       $provide.value('UserSessionService', MockUserSessionService);
     });
 
+    module('em.app', function ($provide){
+      $provide.constant('enableOffline', true);
+    });
+
     inject(function (_$httpBackend_, _SynchronizeService_, _ItemsService_, _BackendClientService_,
                      _HttpClientService_, _ListsService_, _TagsService_,
                      _TasksService_, _NotesService_, _UUIDService_, _AuthenticationService_,
@@ -306,20 +310,6 @@ describe('SynchronizeService', function() {
     });
     spyOn(localStorage, 'clear').andCallFake(function() {
       localStore = {};
-    });
-
-    var sessionStore = {};
-    spyOn(sessionStorage, 'getItem').andCallFake(function(key) {
-      return sessionStore[key];
-    });
-    spyOn(sessionStorage, 'setItem').andCallFake(function(key, value) {
-      sessionStore[key] = value + '';
-    });
-    spyOn(sessionStorage, 'removeItem').andCallFake(function(key) {
-      delete sessionStore[key];
-    });
-    spyOn(sessionStorage, 'clear').andCallFake(function() {
-      sessionStore = {};
     });
   });
 
