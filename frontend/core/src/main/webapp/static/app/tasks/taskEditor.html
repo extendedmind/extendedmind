@@ -43,26 +43,6 @@
         </div>
 
       </div>
-
-      <form role="form" ng-hide="isTaskPropertyInEdit()"
-        class="group-mixed with-checkbox" autocapitalize="none" autocorrect="off">
-        <div class="group-mixed--left">
-          <input type="checkbox" ng-click="clickCompleteTaskInEdit()" ng-model="task.trans.optimisticComplete"
-            ng-model-options="{getterSetter: true}" icon-checkbox="editorTitlebarCheckbox" />
-        </div>
-        <div class="group-mixed--middle">
-          <textarea ng-hide="isTaskTitleClamped()" ng-model="task.trans.title" input-model-validator
-            ng-trim="false" ng-keydown="taskTitlebarTextKeyDown($event)"
-            editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
-            editable-field-focus="setTitleBarFocus()"
-            msd-elastic placeholder="enter task title&#8230;" maxlength="128">
-          </textarea>
-          <div ng-if="isTaskTitleClamped()">
-            <span ng-class="{'text-downplayed': !task.trans.title}" class="text-clamped"
-              ng-bind="task.trans.title ? task.trans.title : 'enter task title&#8230;'" clamp=2></span>
-          </div>
-        </div>
-      </form>
     </div>
   </header>
 
@@ -74,6 +54,26 @@
 
         <div ng-style="{'padding-bottom': basicSlideInfo.footerHeight}" class="container-content"
           drawer-override-aisle="right" swiper-prevent>
+
+          <form role="form" ng-hide="calendarOpen || descriptionFocused || listPickerOpen"
+            class="group-mixed with-checkbox" autocapitalize="none" autocorrect="off">
+            <div class="group-mixed--left">
+              <input type="checkbox" ng-click="clickCompleteTaskInEdit()" ng-model="task.trans.optimisticComplete"
+                ng-model-options="{getterSetter: true}" icon-checkbox="editorTitlebarCheckbox" />
+            </div>
+            <div class="group-mixed--middle">
+              <textarea ng-hide="isTaskTitleClamped()" ng-model="task.trans.title" input-model-validator
+                ng-trim="false" ng-keydown="taskTitlebarTextKeyDown($event)"
+                editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
+                editable-field-focus="setTitleBarFocus()"
+                msd-elastic placeholder="enter task title&#8230;" maxlength="128">
+              </textarea>
+              <div ng-if="isTaskTitleClamped()">
+                <span ng-class="{'text-downplayed': !task.trans.title}" class="text-clamped"
+                  ng-bind="task.trans.title ? task.trans.title : 'enter task title&#8230;'" clamp=2></span>
+              </div>
+            </div>
+          </form>
 
           <!-- LIST PICKER -->
           <div ng-if="listPickerOpen" class="swiper-no-swiping animate-fade-in" editable-field-container="auto"
