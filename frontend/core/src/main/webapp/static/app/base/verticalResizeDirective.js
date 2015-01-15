@@ -23,6 +23,11 @@
       var overrideElement;
       var isPrevented = $parse($attrs.verticalResizePrevent).bind(undefined, $scope);
 
+      var delayResize;
+      this.setResizeDelay = function(value){
+        delayResize = value;
+      };
+
       function setMaxHeight(){
         var referenceMaxHeight = $rootScope.MAX_HEIGHT;
         if ($rootScope.currentHeight < $rootScope.MAX_HEIGHT) {
@@ -72,7 +77,7 @@
             }else {
               newMaxHeight = (maxHeightWithoutKeyboard  - newHeight) + 'px';
             }
-            if ($attrs.verticalResizeDelay !== undefined){
+            if (delayResize){
               // Resize after timeout to make focus working when caret position is under keyboard.
               setTimeout(function() {
                 resizeElement[0].style.maxHeight = newMaxHeight;

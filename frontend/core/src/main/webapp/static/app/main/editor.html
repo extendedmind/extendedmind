@@ -1,10 +1,9 @@
 <div id="editor" class="container-editor" ng-controller="EditorController" drawer="right"
-  vertical-resize="editor" vertical-resize-prevent="!isEditorVisible()"
-  vertical-resize-delay ng-switch="editorType">
+  vertical-resize="editor" vertical-resize-prevent="!isEditorVisible()" ng-switch="editorType">
   <div ng-if="editorVisible" ng-switch-when="task" class="container-editor--inner">
     <div ng-include="urlBase + 'app/tasks/taskEditor.html'" include-replace></div>
   </div>
-  <div ng-if="editorVisible" ng-switch-when="note" class="container-editor--inner">
+  <div ng-if="editorVisible" ng-switch-when="note" class="container-editor--inner" vertical-resize-delay>
     <div ng-include="urlBase + 'app/notes/noteEditor.html'" include-replace></div>
   </div>
   <div ng-if="editorVisible" ng-switch-when="list" class="container-editor--inner">
