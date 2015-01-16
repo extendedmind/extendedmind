@@ -47,7 +47,8 @@
       <a href ng-click="swipeToHome()" class="group-symmetrical--left link-navigation">
         <span class="text-navigation-back">back</span>
       </a>
-      <a href class="group-symmetrical--right link-navigation downplayed" ng-click="skipTutorial()">
+      <a href ng-hide="disableSkipTutorial()" class="group-symmetrical--right link-navigation downplayed"
+      ng-click="skipTutorial()">
         <span class="text-navigation-inline">skip tutorial</span><span class="text-navigation-forward-double"></span>
       </a>
     </header>

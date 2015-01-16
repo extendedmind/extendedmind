@@ -140,6 +140,13 @@
     AnalyticsService.doWithUuid('startTutorial', undefined, userUUID);
     $location.path('/my');
   };
+  $scope.disableSkipTutorial = function(){
+    // In the web version, disable skipping the tutorial as it is vital
+    // that we inform the user that her data is stored only on current
+    // browser tab
+    console.log(packaging)
+    if (packaging === 'web') return true;
+  };
 
   // FORGOT
 
