@@ -47,14 +47,14 @@
       <form name="signUpForm" class="swiper-slide" swiper-slide="signUp/main" slide-index="0">
         <section class="container-content" editable-field-container>
           <header ng-hide="smallDeviceHeight && softKeyboard.height" class="group-symmetrical">
-            <a href ng-click="closeEditor()" class="group-symmetrical--left link-navigation" editable-field-deactivate>
+            <a href ng-click="closeEditor()" class="group-symmetrical--left link-navigation">
               <span class="text-navigation-back">back</span>
             </a>
           </header>
           <h2 class="group-heading row-form" editable-field-deactivate>sign up</h2>
           <div class="row-form">
             <input type="email" name="email" ng-model="user.username"
-            placeholder="enter email&#8230;" editable-field="getEditableFieldSticky()"
+            placeholder="enter email&#8230;" editable-field
             editable-field-register-callbacks="registerUserEditorEmailInputCallbacks(focus, blur)" required />
           </div>
           <div class="group-error row-form">
@@ -64,8 +64,7 @@
           </div>
           <div class="row-form">
             <input type="password" name="password" id="password" ng-model="user.password"
-            ng-minlength="7" placeholder="enter password&#8230;" editable-field="getEditableFieldSticky()"
-            editable-field-register-callbacks="registerUserEditorPasswordInputCallbacks(focus, blur)" required />
+            ng-minlength="7" placeholder="enter password&#8230;" required />
           </div>
           <div class="group-error row-form">
             <div ng-if="signUpForm.password.$touched" ng-messages="signUpForm.password.$error">
@@ -78,11 +77,11 @@
             </div>
             <div class="group-mixed--middle">
               <span class="text-details">i have read and agree to the</span>
-              <a href class="highlighted" ng-click="swipeToDetails('terms')" editable-field-deactivate>
+              <a href class="highlighted" ng-click="swipeToDetails('terms')">
                 <span class="text-details">terms of service</span>
               </a>
               <span class="text-details">and</span>
-              <a href class="highlighted" ng-click="swipeToDetails('privacy')" editable-field-deactivate>
+              <a href class="highlighted" ng-click="swipeToDetails('privacy')">
                 <span class="text-details">privacy policy</span>
               </a>
             </div>
@@ -93,7 +92,7 @@
             <span ng-if="loginFailed" class="text-error">could not login with new credentials</span>
           </div>
         </section>
-        <footer class="container-content--after editor-footer group-btn" editable-field-container="auto">
+        <footer class="container-content--after editor-footer group-btn">
           <button type="submit" class="btn-action" ng-disabled="!signUpForm.$valid || !user.agree" ng-click="signUp()">
             <span class="text-btn">done</span>
           </button>

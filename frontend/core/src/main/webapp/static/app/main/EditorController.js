@@ -57,6 +57,8 @@
   // Callback from Snap.js, outside of AngularJS event loop
   function editorOpened() {
 
+    if (featureEditorOpenedCallback) featureEditorOpenedCallback();
+
     if ($scope.mode !== 'new' && ($scope.editorType === 'task' || $scope.editorType === 'note')) {
       return;
     }
@@ -108,12 +110,15 @@
 
   // HELPER METHODS
 
-  var featureEditorAboutToCloseCallback;
+  var featureEditorAboutToCloseCallback, featureEditorOpenedCallback;
   $scope.registerFeatureEditorAboutToCloseCallback = function(callback) {
     featureEditorAboutToCloseCallback = callback;
   };
   $scope.unregisterEditorAboutToCloseCallback = function() {
     featureEditorAboutToCloseCallback = undefined;
+  };
+  $scope.registerFeatureEditorOpenedCallback = function(callback) {
+    featureEditorOpenedCallback = callback;
   };
 
   $scope.deferEdit = function(){

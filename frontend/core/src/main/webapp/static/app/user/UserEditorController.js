@@ -46,21 +46,16 @@
   // SIGN UP
 
   var userEditorEmailInputFocusCallbackFunction;
-  var userEditorEmailInputBlurCallbackFunction;
-  $scope.registerUserEditorEmailInputCallbacks = function(focus, blur){
+  $scope.registerUserEditorEmailInputCallbacks = function(focus){
     userEditorEmailInputFocusCallbackFunction = focus;
-    userEditorEmailInputBlurCallbackFunction = blur;
+  };
 
-    if ($scope.mode === 'signUp') {
-      // Execute focus right away for sign up
+  function userEditorOpened(){
+    if ($scope.mode === 'signUp' && userEditorEmailInputFocusCallbackFunction){
       userEditorEmailInputFocusCallbackFunction();
     }
-  };
-
-  var userEditorPasswordInputBlurCallbackFunction;
-  $scope.registerUserEditorPasswordInputCallbacks = function(focus, blur){
-    userEditorPasswordInputBlurCallbackFunction = blur;
-  };
+  }
+  $scope.registerFeatureEditorOpenedCallback(userEditorOpened);
 
   $scope.signUpSwiperSlideChanged = function(slidePath/*, activeIndex*/){
     if (userEditorEmailInputFocusCallbackFunction && slidePath === 'signUp/main'){
