@@ -1270,33 +1270,16 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
 
 // 1. Set full height.
 // 2. Set full width.
-// 3. Clear padding from container.
-// 4. Set new line with the value of line-height into padding-bottom.
-// 5. Override values from msd-elastic
-.inner-wrapper-full {
-  height: 100%; // [1]
-  .row-vertically-centered.with-textarea {
-    height: 100%; // [1]
-    padding: 0;  // [3]
-    textarea {
-      padding-top: @padding-vertically-centered;    // [1]
-      padding-left: @grid-horizontal;     // [2]
-      padding-right: @grid-horizontal;    // [2]
-      padding-bottom: @grid-vertical-half;  // [4]
-      overflow: initial !important; // [5]
-      height: 100% !important;      // [1,5]
-    }
-  }
-}
-
+// 3. Set new line with the value of line-height into padding-bottom.
+// 4. Override values from msd-elastic
 textarea#ignoreSnap {
-  padding-top: @padding-vertically-centered;
-  padding-bottom: @padding-vertically-centered;
-  padding-left: @grid-horizontal;
-  padding-right: @grid-horizontal;
+  padding-top: @padding-vertically-centered;    // [1]
+  padding-bottom: @padding-vertically-centered; // [1]
+  padding-left: @grid-horizontal;   // [2]
+  padding-right: @grid-horizontal;  // [2]
   &:focus {
-    padding-bottom: @grid-vertical-half;
-    overflow: initial !important;
-    height: 100% !important;
+    padding-bottom: @grid-vertical-half;  // [3]
+    overflow: initial !important; // [4]
+    height: 100% !important;      // [1,4]
   }
 }

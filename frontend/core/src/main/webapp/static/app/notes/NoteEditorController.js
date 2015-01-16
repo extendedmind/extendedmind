@@ -15,7 +15,7 @@
 
  'use strict';
 
- function NoteEditorController($scope, NotesService, TagsService, UISessionService) {
+ function NoteEditorController($scope, NotesService, SwiperService, TagsService, UISessionService) {
 
   if ($scope.mode === 'omnibar') {
     // Dirtily set flag on to remove flicker when note editor is rendered.
@@ -76,22 +76,10 @@
 
   // MODES
 
-  $scope.noteContentFocused = function(){
-    $scope.contentFocused = true;
-    // FIXME
-    var innerWrapperElement = document.getElementById('innerWrapper');
-    innerWrapperElement.classList.add('inner-wrapper-full');
-    var contentElement = event.target;
-    contentElement.classList.add('swiper-no-swiping');
-  };
-
-  $scope.noteContentBlurred = function() {
-    $scope.contentFocused = false;
-    // FIXME
-    var innerWrapperElement = document.getElementById('innerWrapper');
-    innerWrapperElement.classList.remove('inner-wrapper-full');
-    var contentElement = event.target;
-    contentElement.classList.remove('swiper-no-swiping');
+  $scope.setNoteContentFocus = function(focus) {
+    $scope.contentFocused = focus;
+    // FIXME: Maybe some directive with focus, blur event listeners, swiper and drawer.
+    SwiperService.setOnlyExternal('noteEditor', focus);
   };
 
   $scope.gotoTitle = function() {
@@ -219,5 +207,6 @@
 
 }
 
-NoteEditorController['$inject'] = ['$scope', 'NotesService', 'TagsService', 'UISessionService'];
+NoteEditorController['$inject'] = ['$scope', 'NotesService', 'SwiperService', 'TagsService',
+'UISessionService'];
 angular.module('em.main').controller('NoteEditorController', NoteEditorController);
