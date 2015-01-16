@@ -135,14 +135,12 @@
           </div>
 
           <!-- DESCRIPTION -->
-          <div ng-if="drawerAisleInitialized" ng-hide="calendarOpen || listPickerOpen"
-            class="row-vertically-centered with-textarea expanded">
-            <textarea id="ignoreSnap" ng-model="task.trans.description" input-model-validator ng-trim="false"
-              ng-focus="setTaskDescriptionFocus(true)" ng-blur="setTaskDescriptionFocus(false)" msd-elastic
-              placeholder="enter description&#8230;"
-              maxlength="1024" autocapitalize="none" autocorrect="off">
-            </textarea>
-          </div>
+          <textarea ng-if="drawerAisleInitialized" ng-hide="calendarOpen || listPickerOpen" id="ignoreSnap"
+            ng-model="task.trans.description" input-model-validator ng-trim="false"
+            ng-focus="setTaskDescriptionFocus(true)" ng-blur="setTaskDescriptionFocus(false)" msd-elastic
+            placeholder="enter description&#8230;"
+            maxlength="1024" autocapitalize="none" autocorrect="off">
+          </textarea>
 
         </div>
 
