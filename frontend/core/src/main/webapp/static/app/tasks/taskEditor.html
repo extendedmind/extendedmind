@@ -2,7 +2,7 @@
   ng-controller="TaskEditorController" >
   <header class="container-titlebar">
     <div class="container-titlebar--inner">
-      <div class="group-symmetrical height-large--top">
+      <div class="group-symmetrical height-large--top height-large--bottom">
 
         <a href ng-hide="isPickerOpen()" class="group-symmetrical--left link-navigation highlighted active"
           ng-click="endTaskEdit()">
@@ -88,7 +88,7 @@
           </div>
 
           <!-- CALENDAR -->
-          <div ng-if="calendarOpen" class="swiper-no-swiping animate-fade-in" editable-field-container="auto"
+          <div ng-if="calendarOpen" class="swiper-no-swiping animate-fade-in row-top-parent" editable-field-container="auto"
             editable-field-container-clicked-elsewhere="closeCalendar()" data-snap-ignore="true">
 
             <div ng-if="task.trans.due" class="group-mixed with-checkbox">
@@ -169,7 +169,7 @@
 
           <!-- CONTEXT -->
           <div ng-hide="contextPickerOpen || repeatingPickerOpen || urlFocused"
-            class="group-mixed with-checkbox">
+            class="group-mixed with-checkbox row-top-parent">
             <a href class="group-mixed--middle link-search-result"
               ng-class="!task.trans.context && 'downplayed'" ng-click="openContextPicker()">
               <span class="text-field--title"
