@@ -2,16 +2,16 @@
   <div class="container-menu--top">
 
     <a href class="link-menu row onboarding-invisible" ng-click="gotoFeature('user')"
-      ng-class="isFeatureActive('user') && highlighted">
+      ng-class="isFeatureActive('user') && 'highlighted'">
       <span class="text-navigation-menu-small" clamp=1 ng-bind="getActiveDisplayName()"></span>
     </a>
 
     <a href class="link-menu separate row onboarding-invisible" ng-click="gotoFeature('focus')"
-      ng-class="isFeatureActive('focus') && highlighted">
+      ng-class="isFeatureActive('focus') && 'highlighted'">
       <span class="text-navigation-menu">focus</span>
     </a>
     <a href class="link-menu row onboarding-invisible" ng-click="gotoFeature('inbox')"
-      ng-class="isFeatureActive('inbox') && highlighted">
+      ng-class="isFeatureActive('inbox') && 'highlighted'">
       <span class="text-navigation-menu">inbox</span>
     </a>
     <a href class="link-menu row" ng-click="gotoFeature('tasks')"
