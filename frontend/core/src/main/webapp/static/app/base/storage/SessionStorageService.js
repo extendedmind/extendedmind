@@ -227,6 +227,12 @@
       sessionStorage.removeItem('offline');
       sessionStorage.removeItem('synced');
 
+      // Also clear offline queue
+      sessionStorage.removeItem('primaryRequest');
+      sessionStorage.removeItem('secondaryRequest');
+      sessionStorage.removeItem('beforeLastRequest');
+      sessionStorage.removeItem('requestQueue');
+
       cachedBackendDelta = cachedActiveUUID = cachedUserUUID = cachedEmail =
       cachedPreferences = cachedCollectives = cachedOffline = undefined;
     }

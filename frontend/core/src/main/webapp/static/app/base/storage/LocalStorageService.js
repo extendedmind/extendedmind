@@ -177,18 +177,10 @@
       localStorage.removeItem('synced');
 
       // Also clear offline queue
-      if (localStorage.getItem('primaryRequest')) {
-        localStorage.removeItem('primaryRequest');
-      }
-      if (localStorage.getItem('secondaryRequest')) {
-        localStorage.removeItem('secondaryRequest');
-      }
-      if (localStorage.getItem('beforeLastRequest')) {
-        localStorage.removeItem('beforeLastRequest');
-      }
-      if (localStorage.getItem('requestQueue')) {
-        localStorage.removeItem('requestQueue');
-      }
+      localStorage.removeItem('primaryRequest');
+      localStorage.removeItem('secondaryRequest');
+      localStorage.removeItem('beforeLastRequest');
+      localStorage.removeItem('requestQueue');
     }
   };
 }
