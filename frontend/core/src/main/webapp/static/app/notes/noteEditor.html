@@ -187,7 +187,8 @@
           <textarea ng-if="drawerAisleInitialized" ng-hide="listPickerOpen || keywordsPickerOpen"
             id="ignoreSnap" ng-class="(onboardingInProgress && !contentFocused) && 'input-separate'"
             ng-model="note.trans.content" input-model-validator ng-trim="false" msd-elastic
-            ng-focus="setNoteContentFocus(true)" ng-blur="setNoteContentFocus(false)"
+            editable-field editable-field-register-callbacks="registerNoteContentInputCallbacks(focus, blur)"
+            editable-field-focus="setNoteContentFocus(true)" editable-field-blur="setNoteContentFocus(false)"
             placeholder="enter content&#8230;" autocapitalize="none" autocorrect="off">
           </textarea>
 
