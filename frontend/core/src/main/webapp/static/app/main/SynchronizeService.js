@@ -803,42 +803,37 @@
     }
 
     var deferred = $q.defer();
+    if (UserSessionService.isPersistentStorageEnabled() && !UserSessionService.isPersistentDataLoaded()){
+      // Load items from the database
+      PersistentStorageService.getAll().then(function(itemInfos){
+        // Sort items by owner and type
+        if (itemInfos && itemInfos.length){
+
+          var itemsByOwner = {};
+          for (var i=0, len=itemInfos.length; i<len; i++){
+            var arrayType = itemInfos[i].itemType + 's';
+            if (!itemsByOwner[itemInfos[i].ownerUUID]) itemsByOwner[itemInfos[i].ownerUUID] = {};
+            if (!itemsByOwner[itemInfos[i].ownerUUID][arrayType])
+              itemsByOwner[itemInfos[i].ownerUUID][arrayType] = [];
+            itemsByOwner[itemInfos[i].ownerUUID][arrayType].push(itemInfos[i].item);
+          }
+          for (var ownerUUID in itemsByOwner){
+            if (itemsByOwner.hasOwnProperty(ownerUUID)){
+              // set but don't persist as these already are persisted
+              setItemArrays(itemsByOwner[ownerUUID], ownerUUID, true);
+            }
+          }
+        }
+        $rootScope.syncState = 'persistent';
+      });
+      UserSessionService.setPersistentDataLoaded(true);
+    }
     var latestModified = UserSessionService.getLatestModified(ownerUUID);
     var url = '/api/' + ownerUUID + '/items';
-
     if (UserSessionService.isFakeUser()){
       deferred.resolve();
     }else if (latestModified !== undefined) {
-      if (UserSessionService.isPersistentStorageEnabled() && !UserSessionService.isPersistentDataLoaded()){
-        // Load items from the database
-        PersistentStorageService.getAll().then(function(itemInfos){
-          // Sort items by owner and type
-          if (itemInfos && itemInfos.length){
-
-            var itemsByOwner = {};
-            for (var i=0, len=itemInfos.length; i<len; i++){
-              var arrayType = itemInfos[i].itemType + 's';
-              if (!itemsByOwner[itemInfos[i].ownerUUID]) itemsByOwner[itemInfos[i].ownerUUID] = {};
-              if (!itemsByOwner[itemInfos[i].ownerUUID][arrayType])
-                itemsByOwner[itemInfos[i].ownerUUID][arrayType] = [];
-              itemsByOwner[itemInfos[i].ownerUUID][arrayType].push(itemInfos[i].item);
-            }
-            for (var ownerUUID in itemsByOwner){
-              if (itemsByOwner.hasOwnProperty(ownerUUID)){
-                // set but don't persist as these already are persisted
-                setItemArrays(itemsByOwner[ownerUUID], ownerUUID, true);
-              }
-            }
-          }
-          $rootScope.syncState = 'persistent';
-
-          // After that, synchronize
-          doSynchronizeDelta(url, latestModified, deferred);
-        });
-        UserSessionService.setPersistentDataLoaded(true);
-      }else{
-        doSynchronizeDelta(url, latestModified, deferred);
-      }
+      doSynchronizeDelta(url, latestModified, deferred);
     } else {
       getAllOnline(ownerUUID, getAllItemsOnline, deferred);
     }
