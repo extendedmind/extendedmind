@@ -136,7 +136,7 @@
             placeholder="enter content&#8230;" autocapitalize="none" autocorrect="off">
           </textarea>
 
-          <div ng-if="onboardingInProgress && note.trans.content.length" class="row">
+          <div ng-if="onboardingInProgress" ng-show="note.trans.content.length" class="row">
             <span class="text-details">
               when done, save your note by clicking 'save' in the top-left corner or swipe left
             </span>

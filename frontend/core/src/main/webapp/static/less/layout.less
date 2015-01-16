@@ -1277,9 +1277,9 @@ textarea#ignoreSnap {
   padding-bottom: @padding-vertically-centered; // [1]
   padding-left: @grid-horizontal;   // [2]
   padding-right: @grid-horizontal;  // [2]
-  &:focus {
-    padding-bottom: @grid-vertical-half;  // [3]
-    overflow: initial !important; // [4]
-    height: 100% !important;      // [1,4]
-  }
+}
+.container-main:not(.onboarding-in-progress) textarea#ignoreSnap:focus {
+  padding-bottom: @grid-vertical-half;  // [3]
+  overflow: initial !important; // [4]
+  height: 100% !important;      // [1,4]
 }
