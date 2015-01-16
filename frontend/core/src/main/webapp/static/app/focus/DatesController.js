@@ -424,9 +424,9 @@
   }
 
   var activeDateYYYYMMDD;
-  $scope.isDayActive = function(dateYYYYMMDD) {
-    return activeDateYYYYMMDD === dateYYYYMMDD;
-  };
+  $scope.getIsDayActiveClass = function(dateYYYYMMDD) {
+    if (activeDateYYYYMMDD === dateYYYYMMDD) return 'active';
+  }
 
   function getActiveDay() {
     return activeDateYYYYMMDD;

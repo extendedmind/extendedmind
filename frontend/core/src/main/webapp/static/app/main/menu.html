@@ -2,16 +2,16 @@
   <div class="container-menu--top">
 
     <a href class="link-menu row" ng-click="gotoFeature('user')"
-      ng-class="[isFeatureActive('user') && 'highlighted', onboardingInProgress && 'hidden']">
+      ng-class="{highlighted: isFeatureActive('user'), hidden: onboardingInProgress}">
       <span class="text-navigation-menu-small" clamp=1 ng-bind="getActiveDisplayName()"></span>
     </a>
 
     <a href class="link-menu separate row" ng-click="gotoFeature('focus')"
-      ng-class="[isFeatureActive('focus') && 'highlighted', onboardingInProgress && 'hidden']">
+      ng-class="{highlighted: isFeatureActive('focus'), hidden: onboardingInProgress}">
       <span class="text-navigation-menu">focus</span>
     </a>
     <a href class="link-menu row" ng-click="gotoFeature('inbox')"
-      ng-class="[isFeatureActive('inbox') && 'highlighted', onboardingInProgress && 'hidden']">
+      ng-class="{highlighted: isFeatureActive('inbox'), hidden: onboardingInProgress}">
       <span class="text-navigation-menu">inbox</span>
     </a>
     <a href class="link-menu row" ng-click="gotoFeature('tasks')"
@@ -19,11 +19,11 @@
       <span class="text-navigation-menu">tasks</span>
     </a>
     <a href class="link-menu row" ng-click="gotoFeature('notes')"
-      ng-class="[isFeatureActive('notes') && 'highlighted', !isOnboarded('tasks') && 'hidden']">
+      ng-class="{highlighted: isFeatureActive('notes'), hidden: !isOnboarded('tasks')}">
       <span class="text-navigation-menu">notes</span>
     </a>
     <a href class="link-menu row" ng-click="gotoFeature('lists')"
-      ng-class="[isFeatureActive('lists') && 'highlighted', !isOnboarded('notes') && 'hidden']">
+      ng-class="{highlighted: isFeatureActive('lists'), hidden: !isOnboarded('notes')}">
       <span class="text-navigation-menu">lists</span>
     </a>
 
