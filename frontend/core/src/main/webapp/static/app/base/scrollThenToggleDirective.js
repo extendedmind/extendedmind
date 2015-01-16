@@ -18,15 +18,20 @@
   return {
     restrict: 'A',
     link: function postLink(scope, element, attrs) {
+
+      function getTopElementBottomPosition() {
+        return topElement.offsetHeight + topElement.offsetTop;
+      }
+
       var topElement = document.getElementById(attrs.scrollThenToggleTop);
-      var topElementHeight = topElement.offsetHeight;
+      var topElementBottomPosition = getTopElementBottomPosition();
 
       if (attrs.scrollThenToggleReset) $parse(attrs.scrollThenToggleReset)(scope)(scrollToTop);
 
       if (attrs.scrollThenToggleResizeable) {
         scope.$on('elastic:resize', function(event, element) {
           if (element[0].id === attrs.scrollThenToggleResizeable) {
-            topElementHeight = topElement.offsetHeight;
+            topElementBottomPosition = getTopElementBottomPosition();
           }
         });
       }
@@ -42,13 +47,13 @@
         /* jshint validthis: true */
 
         // Element.scrollTop does not cause reflow.
-        if (this.scrollTop < topElementHeight && toggleElementVisible) {
+        if (this.scrollTop <= topElementBottomPosition && toggleElementVisible) {
           // Top element is visible, hide toggle element.
-          toggleElement.classList.toggle('show-sticky', false);
+          toggleElement.classList.remove('show-sticky');
           toggleElementVisible = false;
-        } else if (this.scrollTop >= topElementHeight && !toggleElementVisible) {
+        } else if (this.scrollTop > topElementBottomPosition && !toggleElementVisible) {
           // Top element hidden, show toggle element.
-          toggleElement.classList.toggle('show-sticky', true);
+          toggleElement.classList.add('show-sticky');
           toggleElementVisible = true;
         }
       }

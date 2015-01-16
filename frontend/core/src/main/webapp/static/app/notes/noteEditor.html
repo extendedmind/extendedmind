@@ -55,12 +55,12 @@
       <div class="swiper-slide" swiper-slide="noteEditor/basic" slide-index="0">
         <div ng-style="{'padding-bottom': isNotePropertyInEdit() ? 0 : EDITOR_FOOTER_HEIGHT}"
           class="container-content" drawer-override-aisle="right" ng-init="drawerAisleInitialized = true"
-          swiper-prevent scroll-then-toggle="noteEditorTitlebarTitle" scroll-then-toggle-top="noteEditorTitle"
-          scroll-then-toggle-resizeable="noteEditorTitleInput"
+          swiper-prevent scroll-then-toggle="noteEditorTitlebarTitle"
+          scroll-then-toggle-top="noteEditorTitleInput" scroll-then-toggle-resizeable="noteEditorTitleInput"
           scroll-then-toggle-reset="registerGotoTitleCallback">
 
           <!-- NOTE TITLE -->
-          <div ng-hide="isNotePropertyInEdit()" id="noteEditorTitle" class="row-top-parent">
+          <div ng-hide="isNotePropertyInEdit()" class="row-top-parent">
             <div class="group-mixed with-checkbox large">
               <div class="group-mixed--middle">
                 <textarea id="noteEditorTitleInput" class="text-heading-primary large"
