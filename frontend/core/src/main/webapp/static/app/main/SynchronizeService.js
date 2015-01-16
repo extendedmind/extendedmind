@@ -667,8 +667,16 @@
                   // Need to also replace list and tag UUID from relationships array
                   if (queue[i].content.data && queue[i].content.data.relationships){
                     var stringRelationships = JSON.stringify(queue[i].content.data.relationships);
-                    queue[i].content.data.relationships =
-                      JSON.parse(stringRelationships.replace(oldUuid,uuid));
+                    if (stringRelationships.indexOf(oldUuid) !== -1){
+                      // Replace values in the queue
+                      queue[i].content.data.relationships =
+                        JSON.parse(stringRelationships.replace(oldUuid,uuid));
+                      // Also replace relationships in the mod of the the item in question
+                      updateModProperties(queue[i].params.uuid ? queue[i].params.uuid : queue[i].params.fakeUUID,
+                                          queue[i].params.type,
+                                          {relationships: queue[i].content.data.relationships},
+                                          queue[i].params.owner);
+                    }
                   }
                 }
               }

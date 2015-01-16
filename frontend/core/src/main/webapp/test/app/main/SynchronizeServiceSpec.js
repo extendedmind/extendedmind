@@ -1630,14 +1630,14 @@ describe('SynchronizeService', function() {
              description: tags[3].mod.description,
              created: tags[3].mod.created,
              modified: tags[3].mod.modified}],
-          notes: [
-            {uuid: testNote.mod.uuid,
-             title: testNote.mod.title,
-             relationships: {
-              parent: tags[3].mod.uuid,
-             },
-             created: testNote.mod.created,
-             modified: testNote.mod.modified}]
+          notes: [{
+              uuid: testNote.mod.uuid,
+              title: testNote.mod.title,
+              relationships: {
+                tags: [tags[3].mod.uuid]
+              },
+              created: testNote.mod.created,
+              modified: testNote.mod.modified}]
             });
     SynchronizeService.synchronize(testOwnerUUID);
     $httpBackend.flush();
