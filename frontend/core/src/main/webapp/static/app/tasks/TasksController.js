@@ -164,11 +164,11 @@
       }
     }
 
-    return TasksService.saveTask(task, UISessionService.getActiveUUID()).then(function(savedTask) {
-      if (completeOnSave){
-        $scope.toggleCompleteTask(savedTask);
+    return TasksService.saveTask(task, UISessionService.getActiveUUID()).then(function(result) {
+      if (result === 'new' && completeOnSave){
+        $scope.toggleCompleteTask(task);
       }
-      return savedTask;
+      return task;
     });
   };
 

@@ -52,10 +52,10 @@
       for (var i = 0, len = origin.tags.length; i < len; i++) {
         var tagInfo = TagsService.getTagInfo(origin.tags[i], ownerUUID);
         if (tagInfo) {
-          if (tagInfo.tag.tagType === 'context') {
+          if (tagInfo.tag.trans.tagType === 'context') {
             extendedItem.trans.context = tagInfo.tag;
             break;
-          } else if (tagInfo.tag.tagType === 'keyword') {
+          } else if (tagInfo.tag.trans.tagType === 'keyword') {
             if (!extendedItem.trans.keywords) extendedItem.trans.keywords = [];
             if (extendedItem.trans.keywords.indexOf(tagInfo.tag) === -1) {
               // Push keyword if it does not exist in transient keywords.
@@ -101,8 +101,8 @@
         // Find tag
         var tagInfo = TagsService.getTagInfo(destination.relationships.tags[i], ownerUUID);
         if (tagInfo) {
-          if (tagInfo.tag.tagType === 'context') filteredTags.push(destination.relationships.tags[i]);
-          else if (tagInfo.tag.tagType === 'keyword') {
+          if (tagInfo.tag.trans.tagType === 'context') filteredTags.push(destination.relationships.tags[i]);
+          else if (tagInfo.tag.trans.tagType === 'keyword') {
             // Find persistent keyword from transient keywords
             var persistentKeyword = origin.keywords
             .findFirstObjectByKeyValue('uuid', destination.relationships.tags[i]);
@@ -137,7 +137,7 @@
         // Find tag
         var tagInfo = TagsService.getTagInfo(destination.relationships.tags[i], ownerUUID);
         if (tagInfo) {
-          if (tagInfo.tag.tagType === 'context') filteredTags.push(destination.relationships.tags[i]);
+          if (tagInfo.tag.trans.tagType === 'context') filteredTags.push(destination.relationships.tags[i]);
         }
       }
       return filteredTags;
@@ -159,7 +159,7 @@
           if (extendedItem.mod.relationships.tags) {
             for (var i = 0, len = extendedItem.mod.relationships.tags.length; i < len; i++) {
               var tagInfo = TagsService.getTagInfo(extendedItem.mod.relationships.tags[i], ownerUUID);
-              if (tagInfo && tagInfo.tag.tagType === 'context') {
+              if (tagInfo && tagInfo.tag.trans.tagType === 'context') {
                 if (tagInfo.tag.trans.uuid === contextUUID) foundCurrentTag = true;
                 else previousContextIndex = i;
               }
@@ -183,12 +183,12 @@
             previousContextIndex = undefined;
             for (var j = 0; j < extendedItem.mod.relationships.tags.length; j++) {
               var jTagInfo = TagsService.getTagInfo(extendedItem.mod.relationships.tags[j], ownerUUID);
-              if (jTagInfo && jTagInfo.tag.tagType === 'context') previousContextIndex = j;
+              if (jTagInfo && jTagInfo.tag.trans.tagType === 'context') previousContextIndex = j;
             }
             if (previousContextIndex !== undefined)
               extendedItem.mod.relationships.tags.splice(previousContextIndex, 1);
           }else{
-            extendedItem.mod.tags = undefined;
+            extendedItem.mod.relationships.tags = undefined;
           }
         }else{
           extendedItem.mod.relationships = undefined;
@@ -297,16 +297,17 @@
       copyTransContextToModTags(extendedItem, ownerUUID);
     },
     resetRelationshipsTrans: function(extendedItem, ownerUUID){
-      if (extendedItem.mod && extendedItem.mod.parent !== undefined){
-        copyParentToList(extendedItem.mod, extendedItem, ownerUUID);
+      if (extendedItem.mod && extendedItem.mod.relationships &&
+          extendedItem.mod.relationships.parent !== undefined){
+        copyParentToList(extendedItem.mod.relationships, extendedItem, ownerUUID);
       }else if (extendedItem.relationships && extendedItem.relationships.parent !== undefined){
         copyParentToList(extendedItem.relationships, extendedItem, ownerUUID);
       }else if (extendedItem.trans.list !== undefined){
         delete extendedItem.trans.list;
       }
-
-      if (extendedItem.mod && extendedItem.mod.tags !== undefined){
-        copyTagsToTrans(extendedItem.mod, extendedItem, ownerUUID);
+      if (extendedItem.mod && extendedItem.mod.relationships &&
+          extendedItem.mod.relationships.tags !== undefined){
+        copyTagsToTrans(extendedItem.mod.relationships, extendedItem, ownerUUID);
       }else if (extendedItem.relationships && extendedItem.relationships.tags !== undefined){
         copyTagsToTrans(extendedItem.relationships, extendedItem, ownerUUID);
       }else if (extendedItem.trans.keywords !== undefined){
