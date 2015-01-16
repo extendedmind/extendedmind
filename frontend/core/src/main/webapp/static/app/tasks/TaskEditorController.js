@@ -109,12 +109,19 @@
     $scope.taskDescriptionFocused = focus;
     // FIXME: Maybe some directive with focus, blur event listeners, swiper and drawer.
     SwiperService.setOnlyExternal('taskEditor', focus);
+    if (!focus && typeof contentBlurCallback === 'function') contentBlurCallback();
   };
 
   // UI
 
   $scope.isTaskPropertyInEdit = function() {
-    return $scope.taskDescriptionFocused || $scope.isPickerOpen();
+    if ($scope.taskDescriptionFocused) {
+      if (typeof hideCallback === 'function') hideCallback(true);
+      return true;
+    }
+    var pickerOpen = $scope.isPickerOpen();
+    if (typeof hideCallback === 'function') hideCallback(pickerOpen);
+    return pickerOpen;
   };
 
   $scope.isPickerOpen = function() {
@@ -220,6 +227,18 @@
     var footerHidden = $scope.isTaskPropertyInEdit();
     if (typeof footerHiddenCallback === 'function') footerHiddenCallback(footerHidden);
     return footerHidden;
+  };
+
+  var hideCallback;
+  $scope.registerHideCallback = function(callback) {
+    if (!hideCallback)
+      hideCallback = callback;
+  };
+
+  var contentBlurCallback;
+  $scope.registerContentBlurCallback = function(callback) {
+    if (!contentBlurCallback)
+      contentBlurCallback = callback;
   };
 
 }

@@ -26,16 +26,22 @@
       var expandPromise, shrinkPromise;   // Animation promises.
       var expandedHeightChangeWatcher;    // Attach watcher into variable to be able to unregister it.
 
+      var contentElement = element[0].previousElementSibling;
+
       scope.editorFooterHiddenCallback = function(hidden) {
         if (hidden && containerInfos.footerHeight !== 0) {
           // Store old footer height and set footer height temporarily to zero.
+          element[0].style.display = 'none';
           containerInfos.oldFooterHeight = containerInfos.footerHeight;
           containerInfos.footerHeight = 0;
+          contentElement.style.paddingBottom = containerInfos.footerHeight;
         } else if (!hidden && containerInfos.oldFooterHeight !== undefined &&
                    containerInfos.footerHeight !== containerInfos.oldFooterHeight)
         {
-          // Reset footer height.
           containerInfos.footerHeight = containerInfos.oldFooterHeight;
+          contentElement.style.paddingBottom = containerInfos.footerHeight + 'px';
+          element[0].style.display = 'initial';
+          // Reset footer height.
         }
       };
 
@@ -43,6 +49,7 @@
         // Delegate footer height info.
         var containerInfos = $parse(attrs.editorFooter)(scope);
         containerInfos.footerHeight = element[0].offsetHeight;
+        contentElement.style.paddingBottom = containerInfos.footerHeight + 'px';
       }
 
       if (attrs.editorFooterExpandHeightChange) {
@@ -55,10 +62,29 @@
         var editorFooterToggledCallbackFn = $parse(attrs.editorFooterToggledCallback)(scope);
       }
 
+      if (angular.isFunction(scope.registerHideCallback))
+        scope.registerHideCallback(scope.editorFooterHiddenCallback);
+
+      if (angular.isFunction(scope.registerContentBlurCallback))
+        scope.registerContentBlurCallback(showFooterDelayed);
+
+      /*
+      * Wait for the resize animation to end.
+      */
+      function showFooterDelayed() {
+        setTimeout(function() {
+          containerInfos.footerHeight = containerInfos.oldFooterHeight;
+          contentElement.style.paddingBottom = containerInfos.footerHeight + 'px';
+          element[0].style.display = 'initial';
+          // Reset footer height.
+        }, 150);
+      }
+
       scope.closeExpand = function() {
         // Reset container's padding-bottom to default footer height before animation so that the backside
         // of expanded footer is not blank.
         containerInfos.footerHeight = containerInfos.oldFooterHeight = footerHeight;
+        contentElement.style.paddingBottom = containerInfos.footerHeight + 'px';
 
         // Set footer height and bottom to default values.
         element[0].style.height = footerHeight + 'px';
@@ -126,6 +152,7 @@
             scope.$apply(function() {
               // Set padding-bottom for container to make content scrollable.
               containerInfos.footerHeight = containerInfos.oldFooterHeight = expandedHeight + footerHeight;
+              contentElement.style.paddingBottom = containerInfos.footerHeight + 'px';
               scope.footerExpandOpen = true;  // Footer is now opened.
             });
           }
@@ -291,7 +318,8 @@
         if ($rootScope.$$phase || scope.$$phase){
           $timeout(function(){
             // FIXME: $timeout should not be needed since AngularJS version 1.2.24
-            //        See: https://github.com/angular/angular.js/commit/54f0bc0fe0c6b6d974d23f2c5ef07359dd93eb99
+            //        See:
+            //        https://github.com/angular/angular.js/commit/54f0bc0fe0c6b6d974d23f2c5ef07359dd93eb99
             doProcessTouchEnd(event);
           });
         }else {

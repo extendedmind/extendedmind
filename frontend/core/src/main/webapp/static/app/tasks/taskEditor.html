@@ -53,7 +53,7 @@
     <div class="swiper-wrapper">
       <div class="swiper-slide" swiper-slide="taskEditor/basic" slide-index="0" ng-init="basicSlideInfo = {}">
 
-        <div ng-style="{'padding-bottom': basicSlideInfo.footerHeight}" class="container-content"
+        <div class="container-content"
           drawer-override-aisle="right" ng-init="drawerAisleInitialized = true" swiper-prevent>
 
           <!-- TASK TITLE -->
@@ -145,8 +145,7 @@
 
         </div>
 
-        <footer ng-hide="isTaskFooterHidden(editorFooterHiddenCallback)"
-          class="container-content--after editor-footer" editor-footer="basicSlideInfo"
+        <footer class="container-content--after editor-footer" editor-footer="basicSlideInfo"
           editor-footer-ios-click editor-footer-start-expanded>
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
             <div class="group-symmetrical--middle">
