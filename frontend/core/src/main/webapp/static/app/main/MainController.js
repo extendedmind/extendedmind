@@ -379,6 +379,9 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
       DrawerService.enableDragging('left'); // Enable dragging when tutorial completed.
       UserSessionService.setPreference('onboarded', packaging);
       AnalyticsService.do('onboarded');
+      if (feature === 'user'){
+        $scope.changeFeature('user', undefined, true)
+      }
     }
     UserService.saveAccountPreferences();
   };
