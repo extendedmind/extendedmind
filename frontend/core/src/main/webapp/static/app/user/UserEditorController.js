@@ -104,6 +104,9 @@
     SynchronizeService.notifyOwnerUUIDChange(oldUUID, response.uuid);
     UISessionService.notifyOwnerUUIDChange(oldUUID, response.uuid);
     AnalyticsService.doWithUuid('signUp', oldUUID, response.uuid);
+    if (UserSessionService.isPersistentStorageEnabled()){
+      $scope.user.remember = true;
+    }
     AuthenticationService.login($scope.user).then(
       function(response) {
         // Start executing all pending requests now
