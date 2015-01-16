@@ -845,6 +845,9 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
             }
           });
         }
+        if (!$scope.online) {
+          ownerName = '*' + ownerName;
+        }
         return ownerName;
       }
     }
