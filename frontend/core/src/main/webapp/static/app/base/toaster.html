@@ -13,6 +13,14 @@
     <span class="textgroup-toaster" ng-bind="notification.text"></span>
   </div>
 
+  <!-- SIGN UP -->
+  <div ng-switch-when="signUp" class="group-mixed--middle textgroup-toaster">
+    <span>to back up your data,</span>
+    <a href class="highlighted" ng-click="closeNotificationAndCall(notification, undefined, notification.gotoFn)">
+      <span>sign up now</span>
+    </a>
+  </div>
+
   <!-- INBOX -->
   <div ng-switch-when="inbox" class="group-mixed--middle textgroup-toaster">
     <a href class="highlighted" ng-click="closeNotificationAndCall(notification, notification.item, notification.openFn)">

@@ -235,6 +235,23 @@
   $scope.getContextId = function() {
     return $scope.context ? $scope.context.trans.uuid : 'no';
   };
+
+  // ONBOARDING
+
+  function gotoSignUp(){
+    $scope.changeFeature('user', undefined, true)
+  }
+
+  if (!$scope.onboardingInProgress && $scope.isOnboarded('focusTasks') && $scope.isFakeUser()){
+    // Show modal immediately on cold boot
+    UISessionService.pushDelayedNotification({
+      type: 'signUp',
+      gotoFn: gotoSignUp
+    });
+    $timeout(function() {
+      UISessionService.activateDelayedNotifications();
+    }, 1000);
+  }
 }
 
 TasksController['$inject'] = [
