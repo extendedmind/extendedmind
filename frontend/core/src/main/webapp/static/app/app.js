@@ -93,11 +93,8 @@
         userStatus: ['$location', 'UserSessionService',
         function($location, UserSessionService) {
           if (UserSessionService.getUserUUID()){
-            var userPreferences = UserSessionService.getPreferences();
-            if (userPreferences && userPreferences.onboarded) {
-              // Existing, onboarded user. Go to app.
-              $location.path('/my');
-            }
+            // Existing user. Go to app.
+            $location.path('/my');
           }
         }]
       }

@@ -28,7 +28,12 @@
 
   // Sync session storage with local storage.
   function syncWebStorages() {
-    if (LocalStorageService.getExpires() && SessionStorageService.getExpires() !== LocalStorageService.getExpires()) {
+    // Fake user
+    if (UUIDService.isFakeUUID(LocalStorageService.getUserUUID()) && !SessionStorageService.getUserUUID()){
+      setUserSessionStorageData();
+    // Synced user
+    } else if (LocalStorageService.getExpires() &&
+               SessionStorageService.getExpires() !== LocalStorageService.getExpires()) {
       setUserSessionStorageData();
     }
   }
