@@ -99,9 +99,14 @@
   };
 
   function signUpSuccess(response) {
+    // Add sync user to the request queue to prevent problems authenticate response overriding
+    // changes in offline queue
+    SynchronizeService.synchronizeUser();
+
     // Register uuid change
     var oldUUID = UserSessionService.getUserUUID();
     SynchronizeService.notifyOwnerUUIDChange(oldUUID, response.uuid);
+    UserSessionService.notifyOwnerUUIDChange(oldUUID, response.uuid);
     UISessionService.notifyOwnerUUIDChange(oldUUID, response.uuid);
     AnalyticsService.doWithUuid('signUp', oldUUID, response.uuid);
     if (UserSessionService.isPersistentStorageEnabled()){

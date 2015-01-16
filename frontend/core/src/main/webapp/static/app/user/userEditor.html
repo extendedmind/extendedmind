@@ -45,13 +45,13 @@
     expected-slides="2" swiper-container-slide-changed="signUpSwiperSlideChanged(path, activeIndex)">
     <div class="swiper-wrapper">
       <form name="signUpForm" class="swiper-slide" swiper-slide="signUp/main" slide-index="0">
-        <section class="container-content" editable-field-container>
+        <section class="container-content">
           <header ng-hide="smallDeviceHeight && softKeyboard.height" class="group-symmetrical">
             <a href ng-click="closeEditor()" class="group-symmetrical--left link-navigation">
               <span class="text-navigation-back">back</span>
             </a>
           </header>
-          <h2 class="group-heading row-form" editable-field-deactivate>sign up</h2>
+          <h2 class="group-heading row-form">sign up</h2>
           <div class="row-form">
             <input type="email" name="email" ng-model="user.username"
             placeholder="enter email&#8230;" editable-field

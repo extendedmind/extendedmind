@@ -361,6 +361,33 @@
     isFakeUser: function() {
       return UUIDService.isFakeUUID(this.getUserUUID());
     },
+    notifyOwnerUUIDChange: function(oldUUID, newUUID){
+      if (this.isPersistentStorageEnabled()){
+        var currentItemsSynchronized = SessionStorageService.getItemsSynchronized();
+        if (currentItemsSynchronized && currentItemsSynchronized[oldUUID]){
+          currentItemsSynchronized[newUUID] = currentItemsSynchronized[oldUUID];
+          delete currentItemsSynchronized[oldUUID];
+          SessionStorageService.setItemsSynchronized(currentItemsSynchronized);
+          LocalStorageService.setItemsSynchronized(currentItemsSynchronized);
+        }
+        var currentLatestModified = SessionStorageService.getLatestModified();
+        if (currentLatestModified && currentLatestModified[oldUUID]){
+          currentLatestModified[newUUID] = currentLatestModified[oldUUID];
+          delete currentLatestModified[oldUUID];
+          SessionStorageService.setLatestModified(currentLatestModified);
+          LocalStorageService.setLatestModified(currentLatestModified);
+        }
+      }else{
+        if (itemsSynchronized[oldUUID]){
+          itemsSynchronized[newUUID] = itemsSynchronized[oldUUID];
+          delete itemsSynchronized[oldUUID];
+        }
+        if (latestModified[oldUUID]){
+          latestModified[newUUID] = latestModified[oldUUID];
+          delete latestModified[oldUUID];
+        }
+      }
+    },
     registerNofifyOwnerCallback: function(callback, id){
       notifyOwnerCallbacks[id] = callback;
 
@@ -380,7 +407,7 @@
     // NOTE: Here for easier testing!
     executeNotifyOwnerCallbacks: function(userUUID, collectives){
       executeNotifyOwnerCallbacks(userUUID, collectives);
-    }
+    },
   };
 }
 UserSessionService['$inject'] = ['base64', 'LocalStorageService', 'SessionStorageService', 'enableOffline',
