@@ -24,7 +24,7 @@ describe('SynchronizeService', function() {
   var $httpBackend;
   var SynchronizeService, ItemsService, BackendClientService, HttpClientService,
       ListsService, TagsService, TasksService, NotesService, UUIDService, AuthenticationService,
-      ConvertService;
+      ConvertService, PersistentStorageService;
 
   // MOCKS
 
@@ -130,7 +130,7 @@ describe('SynchronizeService', function() {
     inject(function (_$httpBackend_, _SynchronizeService_, _ItemsService_, _BackendClientService_,
                      _HttpClientService_, _ListsService_, _TagsService_,
                      _TasksService_, _NotesService_, _UUIDService_, _AuthenticationService_,
-                     _ConvertService_) {
+                     _ConvertService_, _PersistentStorageService_) {
       $httpBackend = _$httpBackend_;
       SynchronizeService = _SynchronizeService_;
       ItemsService = _ItemsService_;
@@ -143,6 +143,7 @@ describe('SynchronizeService', function() {
       UUIDService = _UUIDService_;
       AuthenticationService = _AuthenticationService_;
       ConvertService = _ConvertService_;
+      PersistentStorageService = _PersistentStorageService_;
 
       var testItemData = {
           'items': [{
@@ -321,6 +322,8 @@ describe('SynchronizeService', function() {
     MockUserSessionService.authenticateReplaceable = true;
     MockUserSessionService.persistentDataLoaded = false;
     MockUserSessionService.callbacks = {};
+
+    PersistentStorageService.destroyAll();
 
     $httpBackend.verifyNoOutstandingExpectation();
     $httpBackend.verifyNoOutstandingRequest();
