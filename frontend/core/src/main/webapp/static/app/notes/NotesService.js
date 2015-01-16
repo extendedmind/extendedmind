@@ -29,7 +29,7 @@
           return false;
         },
         resetTrans: function(note){
-          if (note.mod && note.mod.hasOwnProperty('completed')){
+          if (note.mod && note.mod.hasOwnProperty('favorited')){
             if (!note.mod.favorited && note.trans.favorited !== undefined) delete note.trans.favorited;
             else note.trans.favorited = note.mod.favorited;
           }
