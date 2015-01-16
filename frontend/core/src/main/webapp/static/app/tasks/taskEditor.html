@@ -10,8 +10,7 @@
           </span>
         </a>
 
-        <a href ng-if="isPickerOpen()"
-          class="group-symmetrical--left highlighted">
+        <a href ng-if="isPickerOpen()" class="group-symmetrical--left highlighted">
           <span class="text-edit">done</span>
         </a>
 
@@ -37,9 +36,11 @@
         </a>
 
         <div ng-if="isTaskPropertyInEdit()" class="group-symmetrical--right">
-          <span class="text-field--label-bold"
-            ng-bind="getPropertyNameInEdit()">
+          <span ng-if="isPickerOpen()" class="text-field--label-bold" ng-bind="getPropertyNameInEdit()">
           </span>
+          <div ng-if="taskDescriptionFocused" class="text-field--label-multi-row">
+            <span ng-bind="'de' + (columns === 1 ? '-\n' : '') + 'scription'" class="text-field--label-bold"></span>
+          </div>
         </div>
 
       </div>
@@ -195,11 +196,11 @@
             <a href class="group-mixed--middle link-search-result"
               ng-class="!task.trans.repeating && 'downplayed'" ng-click="openRepeatingPicker()">
               <span class="text-field--title"
-                ng-bind="task.trans.repeating ? task.trans.repeating : 'select repeating\u2026'">
+                ng-bind="task.trans.repeating ? task.trans.repeating : 'select repeat\u2026'">
               </span>
             </a>
             <div ng-if="task.trans.repeating" class="group-mixed--right">
-              <span class="text-field--label">repeating</span>
+              <span class="text-field--label">repeat</span>
             </div>
           </div>
 

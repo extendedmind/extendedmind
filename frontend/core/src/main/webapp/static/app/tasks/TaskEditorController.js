@@ -130,9 +130,7 @@
     else if ($scope.listPickerOpen)
       return 'list';
     else if ($scope.repeatingPickerOpen)
-      return 'repeating';
-    else if ($scope.taskDescriptionFocused)
-      return 'description';
+      return 'repeat';
   };
 
   // CALENDAR
