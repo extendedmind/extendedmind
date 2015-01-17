@@ -284,13 +284,6 @@
       function mainSwiperTouchMove(event) {
         /*jshint validthis: true */
 
-        // If backdrop is active, stop propagation to any swipers
-        if ($rootScope.backdropActive) {
-          event.stopPropagation();
-          event.stopImmediatePropagation();
-          return;
-        }
-
         if (event.type === 'touchmove') {
           swipeDistanceX = event.targetTouches[0].pageX - swipeStartX;
           swipeDistanceY = event.targetTouches[0].pageY - swipeStartY;
@@ -408,13 +401,6 @@
       // Otherwise do a regular scroll inside the slide.
       function pageSwiperSlideTouchMove(event) {
         /*jshint validthis: true */
-
-        // If backdrop is active, stop propagation to any swipers
-        if ($rootScope.backdropActive) {
-          event.stopPropagation();
-          event.stopImmediatePropagation();
-          return;
-        }
 
         if (event.type === 'touchmove') {
           swipePageSlideDistX = event.targetTouches[0].pageX - swipePageSlideStartX;
@@ -551,8 +537,8 @@
         }
         SwiperService.deleteSwiper($scope.swiperPath);
       });
-},
-link: function (scope, element, attrs, drawerAisleController){
+    },
+    link: function (scope, element, attrs, drawerAisleController){
 
       // Hide previous and/or next slide with this for the duration of a resize animation
       // to prevent flickering.

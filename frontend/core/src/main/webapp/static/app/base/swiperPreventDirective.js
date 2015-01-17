@@ -45,11 +45,6 @@
 
       function slideTouchMove(event) {
         /*jshint validthis: true */
-        if ($rootScope.backdropActive) {
-          event.stopPropagation();
-          event.stopImmediatePropagation();
-          return;
-        }
 
         if (event.type === 'touchmove') {
           swipeDistX = event.targetTouches[0].pageX - swipeStartX;
@@ -75,7 +70,7 @@
         }
         scrollTimeout = setTimeout(function() {
           $rootScope.scrolling = false;
-        }, 500);
+        }, 100);
         return false;
       }
 

@@ -22,6 +22,7 @@
 
       var containerInfos = [];
       var preventBackdropBubbleClick;
+      var backdropActive;
 
       this.registerContainer = function(id, deactivateFn, callback){
         var containerInfo = containerInfos.findFirstObjectByKeyValue('id', id);
@@ -101,7 +102,7 @@
 
         // activate backdrop
         $element[0].addEventListener('click', backdropClicked, false);
-        $rootScope.backdropActive = true;
+        backdropActive = true;
         $element.addClass('active');
 
         if (blurBackdrop) {
@@ -118,9 +119,9 @@
         if (containerInfo) containerInfo.active = false;
 
         // deactivate backdrop
-        if ($rootScope.backdropActive){
+        if (backdropActive){
           $element[0].removeEventListener('click', backdropClicked, false);
-          $rootScope.backdropActive = false;
+          backdropActive = false;
           $element.removeClass('active');
           $element[0].firstElementChild.classList.remove('blur');
         }
@@ -136,12 +137,6 @@
         if (containerInfo)
           containerInfo.clicked = true;
       };
-
-      // Listen to transition end callbacks
-
-      $scope.$on('$destroy', function() {
-        $rootScope.backdropActive = false;
-      });
     }
   };
 }
