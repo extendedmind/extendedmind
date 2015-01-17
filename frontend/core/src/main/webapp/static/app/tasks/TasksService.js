@@ -40,6 +40,13 @@
           // Create a separate 'optimisticComplete' getter/setter which can be used by checkbox ng-bind
           task.trans.optimisticComplete = function(value) {
             if (value !== undefined){
+              if ($rootScope.outerSwiping  || $rootScope.innerSwiping || $rootScope.scrolling) {
+                // Make sure we are not in the middle of swiper swipe and/or scroll.
+                // NOTE:  Better place for this check would be for example in iconCheckboxDirective with
+                //        ngModelController.$validators.validNotMoved. See inputModelValidatorDirective for
+                //        reference.
+                return;
+              }
               // setter
               if (value === true)
                 task.trans._complete = Date.now();

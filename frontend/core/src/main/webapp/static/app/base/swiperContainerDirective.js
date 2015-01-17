@@ -479,11 +479,16 @@
       function pageSwiperSlideTouchEnd() {
         // Page swiper (vertical) slide is swiping up or down.
         if (swipePageSlideDown || swipePageSlideUp) {
-          $rootScope.innerSwiping = true;
-          setTimeout(function() {
-            // Clear flag.
-            $rootScope.innerSwiping = false;
-          }, 100);
+
+          if (Math.abs(swipePageSlideDistY) >= swipeRestraintY) {
+            // NOTE:  Since threshold comparison can not be used in pageSwiperTouchMove, compare it here and
+            //        set innerSwiping flag on only when passed the threshold.
+            $rootScope.innerSwiping = true;
+            setTimeout(function() {
+              // Clear flag.
+              $rootScope.innerSwiping = false;
+            }, 100);
+          }
         }
       }
 
@@ -546,8 +551,8 @@
         }
         SwiperService.deleteSwiper($scope.swiperPath);
       });
-    },
-    link: function (scope, element, attrs, drawerAisleController){
+},
+link: function (scope, element, attrs, drawerAisleController){
 
       // Hide previous and/or next slide with this for the duration of a resize animation
       // to prevent flickering.

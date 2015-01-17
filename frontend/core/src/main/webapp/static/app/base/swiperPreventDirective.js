@@ -22,14 +22,12 @@
       // Prevent horizontal when going up/down to prevent flickering
       element[0].addEventListener('touchstart', slideTouchStart, false);
       element[0].addEventListener('touchmove', slideTouchMove, false);
-      element[0].addEventListener('touchend', slideTouchEnd, false);
       element[0].addEventListener('scroll', slideScroll, false);
 
       // http://blogs.windows.com/windows_phone/b/wpdev/archive/2012/11/15/adapting-your-webkit-optimized-site-for-internet-explorer-10.aspx#step4
       if (window.navigator.msPointerEnabled) {
         element[0].addEventListener('MSPointerDown', slideTouchStart, false);
         element[0].addEventListener('MSPointerMove', slideTouchMove, false);
-        element[0].addEventListener('MSPointerUp', slideTouchEnd, false);
       }
 
       var swipeStartX, swipeStartY, swipeDistX, swipeDistY;
@@ -66,16 +64,6 @@
           // Swiping up or down, prevent event from reaching Swiper
           event.stopPropagation();
           event.stopImmediatePropagation();
-          $rootScope.innerSwiping = true;
-        }
-      }
-
-      function slideTouchEnd() {
-        if ($rootScope.innerswiping) {
-          setTimeout(function() {
-            // Clear flag.
-            $rootScope.innerSwiping = false;
-          }, 100);
         }
       }
 
@@ -93,7 +81,6 @@
 
       scope.$on('$destroy', function() {
         $rootScope.scrolling = false;
-        $rootScope.innerSwiping = false;
         element[0].removeEventListener('touchstart', slideTouchStart, false);
         element[0].removeEventListener('touchmove', slideTouchMove, false);
         element[0].removeEventListener('scroll', slideScroll, false);
