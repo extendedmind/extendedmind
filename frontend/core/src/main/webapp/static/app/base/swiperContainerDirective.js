@@ -292,11 +292,6 @@
           swipeDistanceY = event.pageY - swipeStartY;
         }
 
-        swipeLeft = false;
-        swipeRight = false;
-        swipeDown = false;
-        swipeUp = false;
-
         // http://www.javascriptkit.com/javatutors/touchevents2.shtml
         if (Math.abs(swipeDistanceX) >= swipeRestraintX &&
             Math.abs(swipeDistanceY) <= swipeRestraintY)
@@ -323,21 +318,8 @@
             swipeUp = false;
           }
         }
-
-        if (event.type === 'touchmove') {
-          // swipeStartX = event.targetTouches[0].pageX;
-          // FIXME: Uncommented so that initial swipeStartX is preserved.
-
-          // TODO: Evaluate need to do this here touchstart event.
-          swipeStartY = event.targetTouches[0].pageY;
-        } else {
-          // swipeStartX = event.pageX;
-          // FIXME: Uncommented so that initial swipeStartX is preserved.
-
-          // TODO: Evaluate need to do this here touchstart event.
-          swipeStartY = event.pageY;
-        }
       }
+
       function mainSwiperTouchEnd() {
         // Main swiper is swiping to some direction.
         if (swipeUp || swipeDown || swipeLeft || swipeRight) {
