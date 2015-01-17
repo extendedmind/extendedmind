@@ -82,8 +82,20 @@
   // LOGOUT
 
   $scope.logOut = function logOut() {
+    $scope.loggingOut = true;
+    $scope.logoutFailed = false;
+    $scope.logoutOffline = false;
     UserService.logout().then(function() {
       $rootScope.$emit('emException', {type: 'redirectToEntry'});
+    },function(error){
+      if (error.type === 'offline') {
+        AnalyticsService.error('logout', 'offline');
+        $scope.logoutOffline = true;
+      } else if (error.type === 'forbidden') {
+        AnalyticsService.error('logout', 'failed');
+        $scope.logoutFailed = true;
+      }
+      $scope.loggingOut = false;
     });
   };
 
@@ -133,6 +145,32 @@
       return modifiedItems.length;
     }
   };
+
+  $scope.getLastSyncedText = function(){
+    var lastSyncedText;
+    var itemsSynced = UserSessionService.getItemsSynchronized(UISessionService.getActiveUUID());
+    if (itemsSynced){
+      lastSyncedText = 'last synced: ';
+      if (Date.now() - itemsSynced < 3000){
+        lastSyncedText = lastSyncedText + 'just now';
+      }else if (Date.now() - itemsSynced < 10000){
+        lastSyncedText = lastSyncedText + 'less than 10 seconds ago';
+      }else if (Date.now() - itemsSynced < 20000){
+        lastSyncedText = lastSyncedText + 'less than 20 seconds ago';
+      }else if (Date.now() - itemsSynced < 60000){
+        lastSyncedText = lastSyncedText + 'less than a minute ago';
+      }else if (Date.now() - itemsSynced < 600000){
+        lastSyncedText = lastSyncedText + 'less than 10 minutes ago';
+      }else if (Date.now() - itemsSynced < 3600000){
+        lastSyncedText = lastSyncedText + 'in the past hour';
+      }else if (Date.now() - itemsSynced >= 3600000){
+        lastSyncedText = lastSyncedText + 'over an hour ago';
+      }
+    }else{
+      lastSyncedText = 'backing up data';
+    }
+    return lastSyncedText;
+  }
 }
 UserController['$inject'] = ['$http', '$location', '$q', '$rootScope', '$scope', '$templateCache', '$window',
 'AnalyticsService', 'AuthenticationService', 'SwiperService',

@@ -93,8 +93,9 @@
           </div>
         </section>
         <footer class="container-content--after editor-footer group-btn">
-          <button type="submit" class="btn-action" ng-disabled="!signUpForm.$valid || !user.agree" ng-click="signUp()">
-            <span class="text-btn">done</span>
+          <button type="submit" class="btn-action"
+          ng-disabled="!signUpForm.$valid || !user.agree || signingUp" ng-click="signUp()">
+            <span class="text-btn" ng-bind="signingUp && 'signing up' || 'done'"></span>
           </button>
         </footer>
       </form>

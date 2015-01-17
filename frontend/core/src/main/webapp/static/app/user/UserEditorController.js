@@ -87,6 +87,7 @@
     $scope.signupFailed = false;
     $scope.userEditOffline = false;
     $scope.loginFailed = false;
+    $scope.signingUp = true;
 
     // Cohort is a random number between 1 and 128
     var randomCohort = Math.floor(Math.random() * 128) + 1;
@@ -131,6 +132,7 @@
         } else if (error.type === 'forbidden') {
           $scope.loginFailed = true;
         }
+        $scope.signingUp = false;
       }
     );
   }
@@ -141,6 +143,7 @@
     } else if (error.type === 'badRequest') {
       $scope.signupFailed = true;
     }
+    $scope.signingUp = false;
   }
 }
 

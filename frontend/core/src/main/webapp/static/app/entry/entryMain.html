@@ -36,8 +36,8 @@
     </div>
   </section>
   <footer class="container-content--after group-btn" editable-field-container="auto">
-    <button type="submit" class="btn-action" ng-disabled="!loginForm.$valid" ng-click="logIn()">
-      <span class="text-btn">done</span>
+    <button type="submit" class="btn-action" ng-disabled="!loginForm.$valid || loggingIn" ng-click="logIn()">
+      <span class="text-btn" ng-bind="loggingIn && 'logging in' || 'done'"></span>
     </button>
   </footer>
 </form>

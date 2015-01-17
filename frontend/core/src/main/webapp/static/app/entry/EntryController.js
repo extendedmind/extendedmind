@@ -101,6 +101,7 @@
     }
     $scope.loginFailed = false;
     $scope.entryOffline = false;
+    $scope.loggingIn = true;
     AuthenticationService.login($scope.user).then(logInSuccess, logInError);
   };
 
@@ -120,6 +121,7 @@
       AnalyticsService.error('login', 'failed');
       $scope.loginFailed = true;
     }
+    $scope.loggingIn = false;
   }
 
   $scope.rememberByDefault = function() {

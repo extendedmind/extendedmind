@@ -3,6 +3,9 @@
     <h2 class="group-heading justified row" ng-bind="online ? 'online' : '*offline'"></h2>
 
     <div class="group-details">
+     <div class="row">
+        <span class="text-details" ng-bind="getLastSyncedText()"></span>
+      </div>
       <div ng-if="getOfflineModifiedCount('item')" class="row">
         <span class="text-details">unsynced items: </span>
         <span class="text-details" ng-bind="getOfflineModifiedCount('item')"></span>
@@ -74,6 +77,10 @@
         <span class="text-link">admin</span>
       </a>
     </div>
+    <div class="group-error height-large row-form">
+      <span ng-if="logoutFailed" class="text-error">log out failed</span>
+      <span ng-if="logoutOffline" class="text-error">can't connect to server. are you online?</span>
+    </div>
 
   </section>
   <section ng-if="isFakeUser()" class="container-content">
@@ -88,8 +95,8 @@
   </section>
 
   <footer class="container-content--after group-btn">
-    <button ng-if="!isFakeUser()" class="btn-action" ng-click="logOut()">
-      <span class="text-btn">log out</span>
+    <button ng-if="!isFakeUser()" class="btn-action" ng-disabled="loggingOut" ng-click="logOut()">
+      <span class="text-btn" ng-bind="loggingOut && 'logging out' || 'log out'"></span>
     </button>
 
     <button ng-if="isFakeUser()" class="btn-action" ng-click="openEditor('user', undefined, 'signUp')">
