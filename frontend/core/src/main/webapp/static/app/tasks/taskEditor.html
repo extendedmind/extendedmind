@@ -4,7 +4,7 @@
     <div class="container-titlebar--inner">
       <div class="group-symmetrical height-large--top height-large--bottom" swiper-prevent>
 
-        <a href ng-hide="isPickerOpen()" class="group-symmetrical--left link-navigation highlighted active"
+        <a href ng-hide="isPickerOpen()" class="group-symmetrical--left link-navigation active highlighted"
           swiper-click="endTaskEdit()">
           <span class="text-navigation-back" ng-class="!isFirstSlide() && 'not-swipeable'"
             ng-bind="isTaskEdited() && !task.trans.deleted ? 'save' : 'back'">
