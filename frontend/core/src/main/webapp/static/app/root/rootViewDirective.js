@@ -200,9 +200,6 @@
         currentSessionLatestActivity = undefined;
       }
 
-      // Collectives are globally visible
-      scope.collectives = UserSessionService.getCollectives();
-
       // WINDOW RESIZING
 
       var windowResizedCallbacks = {};

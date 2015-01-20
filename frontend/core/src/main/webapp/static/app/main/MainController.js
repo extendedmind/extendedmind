@@ -26,6 +26,11 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
                         ListsService, NotesService, SwiperService, SynchronizeService, TagsService,
                         TasksService, UISessionService, UserSessionService, packaging) {
 
+
+  // COLLECTIVES
+
+  $scope.collectives = UserSessionService.getCollectives();
+
   // MAP OF ALL FEATURES
 
   $scope.features = {
