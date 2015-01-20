@@ -217,63 +217,63 @@
           if (SwiperService.getActiveSlideIndex($scope.swiperPath) === 0) {
             // FIXME: Listen touch events only on first slide(?)
             drawerDisabled = false;
-          // FIXME: Remove DrawerService dependency and use drawerAisleController.
-          DrawerService.enableDragging('right');
+            // FIXME: Remove DrawerService dependency and use drawerAisleController.
+            DrawerService.enableDragging('right');
+          }
         }
       }
-    }
 
-    function swiperSlideChangeReset(path, index) {
-      if (index === 0) enableDrawer();
-    }
-    function swiperSlideChangeEnd(path, index) {
-      if (index === 0) enableDrawer();
-      else disableDrawer();
-    }
-
-    function onSlideResetCallback(swiper) {
-      SwiperService.onSlideReset($scope, $scope.swiperPath);
-      var slideInfo = swiperSlideInfos.findFirstObjectByKeyValue('slideIndex', swiper.activeIndex);
-      if (slideInfo && slideInfo.verticalMovementCallback) {
-        slideInfo.verticalMovementCallback(0);
+      function swiperSlideChangeReset(path, index) {
+        if (index === 0) enableDrawer();
       }
-    }
-
-    function onSlideChangeStartCallback(swiper, direction) {
-      SwiperService.onSlideChangeStart($scope, $scope.swiperPath, direction);
-    }
-
-    function onSlideChangeEndCallback(swiper, direction) {
-      SwiperService.onSlideChangeEnd($scope, $scope.swiperPath, direction);
-    }
-
-    function notifyVerticalMovement(movement, slideChildElement) {
-      var slideInfo = swiperSlideInfos.findFirstObjectByKeyValue('slideChildElement', slideChildElement);
-      if (slideInfo && slideInfo.verticalMovementCallback) {
-        slideInfo.verticalMovementCallback(movement);
+      function swiperSlideChangeEnd(path, index) {
+        if (index === 0) enableDrawer();
+        else disableDrawer();
       }
-    }
 
-    var swipeUp = false;
-    var swipeDown = false;
-    var swipeLeft = false;
-    var swipeRight = false;
-    var swipeStartX, swipeStartY, swipeDistanceX, swipeDistanceY;
+      function onSlideResetCallback(swiper) {
+        SwiperService.onSlideReset($scope, $scope.swiperPath);
+        var slideInfo = swiperSlideInfos.findFirstObjectByKeyValue('slideIndex', swiper.activeIndex);
+        if (slideInfo && slideInfo.verticalMovementCallback) {
+          slideInfo.verticalMovementCallback(0);
+        }
+      }
 
-    // Set swipe restraints into same amoumt than Swiper.params.moveStartThreshold.
-    var swipeRestraintX = 10;
-    var swipeRestraintY = 10;
+      function onSlideChangeStartCallback(swiper, direction) {
+        SwiperService.onSlideChangeStart($scope, $scope.swiperPath, direction);
+      }
 
-    function mainSwiperTouchStart(event) {
-      swipeStartX = event.targetTouches[0].pageX || event.pageX;
-      swipeStartY = event.targetTouches[0].pageY || event.pageY;
+      function onSlideChangeEndCallback(swiper, direction) {
+        SwiperService.onSlideChangeEnd($scope, $scope.swiperPath, direction);
+      }
 
-      $rootScope.outerSwiping = false;
-      swipeLeft = false;
-      swipeRight = false;
-      swipeDown = false;
-      swipeUp = false;
-    }
+      function notifyVerticalMovement(movement, slideChildElement) {
+        var slideInfo = swiperSlideInfos.findFirstObjectByKeyValue('slideChildElement', slideChildElement);
+        if (slideInfo && slideInfo.verticalMovementCallback) {
+          slideInfo.verticalMovementCallback(movement);
+        }
+      }
+
+      var swipeUp = false;
+      var swipeDown = false;
+      var swipeLeft = false;
+      var swipeRight = false;
+      var swipeStartX, swipeStartY, swipeDistanceX, swipeDistanceY;
+
+      // Set swipe restraints into same amoumt than Swiper.params.moveStartThreshold.
+      var swipeRestraintX = 10;
+      var swipeRestraintY = 10;
+
+      function mainSwiperTouchStart(event) {
+        swipeStartX = event.targetTouches[0].pageX || event.pageX;
+        swipeStartY = event.targetTouches[0].pageY || event.pageY;
+
+        $rootScope.outerSwiping = false;
+        swipeLeft = false;
+        swipeRight = false;
+        swipeDown = false;
+        swipeUp = false;
+      }
 
       // Main swiper swiping detection.
       function mainSwiperTouchMove(event) {
@@ -321,12 +321,14 @@
         }
       }
 
-      // Overlapping swipers, should stopPropagation be called?
+      // TODO: Overlapping swipers, should stopPropagation be called?
 
       var swipePageSlideUp = false;
       var swipePageSlideDown = false;
       var swipePageSlideTop = false;
       var swipePageSlideBottom = false;
+      var preventPageSlideSwipe = false;
+
       var swipePageSlideStartX, swipePageSlideStartY, swipePageSlideDistX, swipePageSlideDistY;
       var swipePageSlideYSpeedStart, swipePageSlideYSpeed;
       var pageSwiperSlideScrollTimeout;
@@ -339,6 +341,7 @@
         swipePageSlideUp = false;
         swipePageSlideTop = false;
         swipePageSlideBottom = false;
+        preventPageSlideSwipe = false;
 
         swipePageSlideStartX = event.targetTouches[0].pageX || event.pageX;
         swipePageSlideStartY = event.targetTouches[0].pageY || event.pageY;
@@ -363,9 +366,11 @@
         swipePageSlideYSpeed = swipePageSlideYSpeedStart = undefined;
       }
 
-      // This function checks swiping direction and slide scrolling position.
-      // Slide swiping is allowed if we are swiping up and on top of a slide or down and bottom.
-      // Otherwise do a regular scroll inside the slide.
+      /*
+      * This function checks swiping direction and slide scrolling position.
+      * Slide swiping is allowed if we are swiping up and on top of a slide or down and bottom.
+      * Otherwise do a regular scroll inside the slide.
+      */
       function pageSwiperSlideTouchMove(event) {
         /*jshint validthis: true */
 
@@ -413,13 +418,14 @@
             notifyVerticalMovement(-1, this);
 
           } else {
-            // Middle of a slide. Do a regular scroll and stop the event bubbling to swiper.
+            // Middle of a slide. Do a regular scroll and prevent swipe.
+            if (!preventPageSlideSwipe) {
+              SwiperService.setOnlyExternal($scope.swiperPath, true);
+              preventPageSlideSwipe = true;
+            }
 
             // Notify scrolling in the middle of a slide (direction = 0).
             notifyVerticalMovement(0, this);
-
-            event.stopPropagation();
-            event.stopImmediatePropagation();
           }
         }
       }
@@ -436,6 +442,11 @@
               $rootScope.innerSwiping = false;
             }, 100);
           }
+        }
+        if (preventPageSlideSwipe) {
+          // Re-enable swipe.
+          SwiperService.setOnlyExternal($scope.swiperPath, false);
+          preventPageSlideSwipe = false;
         }
       }
 
