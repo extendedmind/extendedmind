@@ -73,11 +73,6 @@
         } else if (Math.abs(touchDistanceY) >= touchBoundaryY &&
                    Math.abs(touchDistanceX) <= touchBoundaryX)
         {
-          if (this.offsetHeight < this.scrollHeight) {
-            // Element is overflowed - scroll prevents clicks.
-            // http://stackoverflow.com/a/7668692
-            return true;
-          }
           // Vertical move.
           if (touchDistanceY < 0) {
             moveDown = false;
