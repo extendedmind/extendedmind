@@ -19,70 +19,98 @@
     restrict: 'A',
     link: function postLink(scope, element) {
 
-      // Prevent horizontal when going up/down to prevent flickering
-      element[0].addEventListener('touchstart', slideTouchStart, false);
-      element[0].addEventListener('touchmove', slideTouchMove, false);
-      element[0].addEventListener('scroll', slideScroll, false);
+      element[0].addEventListener('touchstart', onTouchStart, false);
+      element[0].addEventListener('touchmove', onTouchMove, false);
+      element[0].addEventListener('touchend', onTouchEnd, false);
 
       // http://blogs.windows.com/windows_phone/b/wpdev/archive/2012/11/15/adapting-your-webkit-optimized-site-for-internet-explorer-10.aspx#step4
       if (window.navigator.msPointerEnabled) {
-        element[0].addEventListener('MSPointerDown', slideTouchStart, false);
-        element[0].addEventListener('MSPointerMove', slideTouchMove, false);
+        element[0].addEventListener('MSPointerDown', onTouchStart, false);
+        element[0].addEventListener('MSPointerMove', onTouchMove, false);
+        element[0].addEventListener('MSPointerUp', onTouchEnd, false);
       }
 
-      var swipeStartX, swipeStartY, swipeDistX, swipeDistY;
+      var touchStartX, touchStartY, touchDistanceX, touchDistanceY;
 
-      function slideTouchStart(event) {
-        $rootScope.innerSwiping = false;
-        if (event.type === 'touchstart') {
-          swipeStartX = event.targetTouches[0].pageX;
-          swipeStartY = event.targetTouches[0].pageY;
-        } else {
-          swipeStartX = event.pageX;
-          swipeStartY = event.pageY;
-        }
+      // Touchmove boundary, beyond which a click will be cancelled. Same as FastClick.touchBoundary
+      var touchBoundaryX = 10;
+      var touchBoundaryY = 10;
+
+      var moveUp = false;
+      var moveDown = false;
+      var moveLeft = false;
+      var moveRight = false;
+
+      function onTouchStart(event) {
+        touchStartX = event.targetTouches[0].pageX || event.pageX;
+        touchStartY = event.targetTouches[0].pageY || event.pageY;
+
+        $rootScope.contentTouchMoved = false;
+        moveLeft = false;
+        moveRight = false;
+        moveDown = false;
+        moveUp = false;
       }
 
-      function slideTouchMove(event) {
+      function onTouchMove(event) {
         /*jshint validthis: true */
 
-        if (event.type === 'touchmove') {
-          swipeDistX = event.targetTouches[0].pageX - swipeStartX;
-          swipeDistY = event.targetTouches[0].pageY - swipeStartY;
-        } else {
-          swipeDistX = event.pageX - swipeStartX;
-          swipeDistY = event.pageY - swipeStartY;
-        }
+        touchDistanceX = (event.targetTouches[0].pageX || event.pageX) - touchStartX;
+        touchDistanceY = (event.targetTouches[0].pageY || event.pageY) - touchStartY;
 
-        // Determine swipe direction.
-        if (Math.abs(swipeDistX) < Math.abs(swipeDistY)) { // vertical
-          // Swiping up or down, prevent event from reaching Swiper
-          event.stopPropagation();
-          event.stopImmediatePropagation();
+        // http://www.javascriptkit.com/javatutors/touchevents2.shtml
+        if (Math.abs(touchDistanceX) >= touchBoundaryX &&
+            Math.abs(touchDistanceY) <= touchBoundaryY)
+        {
+          // Horizontal move.
+          if (touchDistanceX < 0) {
+            moveLeft = true;
+            moveRight = false;
+          } else {
+            moveLeft = false;
+            moveRight = true;
+          }
+        } else if (Math.abs(touchDistanceY) >= touchBoundaryY &&
+                   Math.abs(touchDistanceX) <= touchBoundaryX)
+        {
+          if (this.offsetHeight < this.scrollHeight) {
+            // Element is overflowed - scroll prevents clicks.
+            // http://stackoverflow.com/a/7668692
+            return true;
+          }
+          // Vertical move.
+          if (touchDistanceY < 0) {
+            moveDown = false;
+            moveUp = true;
+          } else {
+            moveDown = true;
+            moveUp = false;
+          }
         }
       }
 
-      var scrollTimeout;
-      function slideScroll() {
-        $rootScope.scrolling = true;
-        if (scrollTimeout) {
-          clearTimeout(scrollTimeout);
+      function onTouchEnd() {
+        if (moveUp || moveDown || moveLeft || moveRight) {
+          // Moving in some direction.
+          $rootScope.contentTouchMoved = true;
+          setTimeout(function() {
+            // Clear flag.
+            $rootScope.contentTouchMoved = false;
+          }, 100);
         }
-        scrollTimeout = setTimeout(function() {
-          $rootScope.scrolling = false;
-        }, 100);
-        return false;
       }
 
       scope.$on('$destroy', function() {
-        $rootScope.scrolling = false;
-        element[0].removeEventListener('touchstart', slideTouchStart, false);
-        element[0].removeEventListener('touchmove', slideTouchMove, false);
-        element[0].removeEventListener('scroll', slideScroll, false);
+        $rootScope.contentTouchMoved = false;
+
+        element[0].removeEventListener('touchstart', onTouchStart, false);
+        element[0].removeEventListener('touchmove', onTouchMove, false);
+        element[0].removeEventListener('touchend', onTouchEnd, false);
 
         if (window.navigator.msPointerEnabled) {
-          element[0].removeEventListener('MSPointerDown', slideTouchStart, false);
-          element[0].removeEventListener('MSPointerMove', slideTouchMove, false);
+          element[0].removeEventListener('MSPointerDown', onTouchStart, false);
+          element[0].removeEventListener('MSPointerMove', onTouchMove, false);
+          element[0].removeEventListener('MSPointerUp', onTouchEnd, false);
         }
       });
     }

@@ -1,17 +1,17 @@
 <nav role="navigation" class="swiper-no-swiping group-symmetrical">
   <a href ng-if="leftNavigationText" ng-hide="isFooterNavigationHidden()"
-    class="group-symmetrical--left link-navigation" ng-click="navigationAction(leftNavigationActionParameter)">
+    class="group-symmetrical--left link-navigation" swiper-click="navigationAction(leftNavigationActionParameter)">
     <span class="text-navigation-back" ng-bind="leftNavigationText"></span>
   </a>
 
   <div class="group-symmetrical--middle">
-    <a href ng-hide="isFooterAddItemHidden()" ng-click="addItem()">
+    <a href ng-hide="isFooterAddItemHidden()" swiper-click="addItem()">
       <span class="icon-plus"></span>
     </a>
   </div>
 
   <a href ng-if="rightNavigationText" ng-hide="isFooterNavigationHidden()"
-    class="group-symmetrical--right link-navigation" ng-click="navigationAction(rightNavigationActionParameter)">
+    class="group-symmetrical--right link-navigation" swiper-click="navigationAction(rightNavigationActionParameter)">
     <span class="text-navigation-forward" ng-bind="rightNavigationText"></span>
   </a>
 </nav>

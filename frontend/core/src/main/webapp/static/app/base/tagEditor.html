@@ -1,15 +1,16 @@
-<div class="container-fluid" ng-controller="TagEditorController" ng-class="tag.trans.deleted && 'container-disabled'">
+<div class="container-fluid" ng-controller="TagEditorController"
+  ng-class="tag.trans.deleted && 'container-disabled'" swiper-prevent>
   <header class="container-titlebar">
     <div class="container-titlebar--inner">
       <div class="group-symmetrical height-large--top">
-        <a href class="group-symmetrical--left link-navigation highlighted active" ng-click="endTagEdit()">
+        <a href class="group-symmetrical--left link-navigation highlighted active" swiper-click="endTagEdit()">
           <span class="text-navigation-back" ng-bind="isTagEdited() && !tag.trans.deleted ? 'save' : 'back'"></span>
         </a>
-        <a href ng-if="!tag.trans.deleted" class="group-symmetrical--right" ng-click="deleteTagInEdit()" >
+        <a href ng-if="!tag.trans.deleted" class="group-symmetrical--right" swiper-click="deleteTagInEdit()" >
           <span class="icon-trash"></span>
         </a>
         <a ng-if="tag.trans.deleted" href class="group-symmetrical--right link-navigation highlighted active"
-        ng-click="undeleteTagInEdit()"><span class="text-navigation">restore</span></a>
+          swiper-click="undeleteTagInEdit()"><span class="text-navigation">restore</span></a>
       </div>
 
       <div class="row-vertically-centered with-textarea">

@@ -38,18 +38,19 @@
     compile: function(element, attr) {
       var fn = $parse(attr.swiperClick);
       return function(scope, element) {
-        element.on('click', function(event) {
-          if (!$rootScope.outerSwiping && !$rootScope.innerSwiping && !$rootScope.scrolling) {
+
+        element.on('click', validateClick);
+        function validateClick(event) {
+          if ($rootScope.outerSwiping || $rootScope.innerSwiping  || $rootScope.scrolling ||
+              $rootScope.contentTouchMoved)
+          {
+            event.preventDefault();
+          } else {
             scope.$apply(function() {
               fn(scope, {$event: event});
             });
-          } else {
-            event.preventDefault();
-            $rootScope.outerSwiping = false;
-            $rootScope.innerSwiping = false;
-            $rootScope.scrolling = false;
           }
-        });
+        }
       };
     }
   };

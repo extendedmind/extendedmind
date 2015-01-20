@@ -1,4 +1,4 @@
-<div class="container-fluid--inner" list-container drawer-handle="left">
+<div class="container-fluid--inner" list-container drawer-handle="left" swiper-prevent>
   <section ng-show="isOnboarded('inbox')" class="container-content" list="items">
     <h2 class="group-heading justified row" ng-bind="items.length + ' items'"></h2>
 
@@ -14,7 +14,7 @@
           </textarea>
         </div>
         <div class="group-mixed--right">
-          <a href editable-field-deactivate ng-click="openEditor('item', newItem)">
+          <a href editable-field-deactivate swiper-click="openEditor('item', newItem)">
             <span class="text-navigation-forward"></span>
           </a>
         </div>
@@ -24,7 +24,7 @@
     <div class="animate-list-item-leave row-vertically-centered"
       ng-repeat="item in listInfos.array = (getFullArray()) | orderBy:'trans.created':true
       | limitTo: currentListLimitTo track by item.trans.uuid" list-item>
-      <a href class="link-list-item" ng-click="openItemEditor(item)">
+      <a href class="link-list-item" swiper-click="openItemEditor(item)">
         <span class="text-link" clamp=2 ng-bind="item.trans.title"></span>
       </a>
     </div>

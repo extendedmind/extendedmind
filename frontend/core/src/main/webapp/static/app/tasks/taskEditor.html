@@ -1,11 +1,11 @@
 <div class="container-fluid" ng-class="task.trans.deleted && 'container-disabled'"
-  ng-controller="TaskEditorController" >
+  ng-controller="TaskEditorController">
   <header class="container-titlebar">
     <div class="container-titlebar--inner">
-      <div class="group-symmetrical height-large--top height-large--bottom">
+      <div class="group-symmetrical height-large--top height-large--bottom" swiper-prevent>
 
         <a href ng-hide="isPickerOpen()" class="group-symmetrical--left link-navigation highlighted active"
-          ng-click="endTaskEdit()">
+          swiper-click="endTaskEdit()">
           <span class="text-navigation-back" ng-class="!isFirstSlide() && 'not-swipeable'"
             ng-bind="isTaskEdited() && !task.trans.deleted ? 'save' : 'back'">
           </span>
@@ -27,11 +27,11 @@
         </div>
 
         <a href ng-if="!task.trans.deleted" ng-hide="isTaskPropertyInEdit()" class="group-symmetrical--right"
-          ng-click="deleteTaskInEdit()">
+          swiper-click="deleteTaskInEdit()">
           <span class="icon-trash"></span>
         </a>
         <a href ng-if="task.trans.deleted" ng-hide="isTaskPropertyInEdit()"
-          class="group-symmetrical--right link-navigation highlighted active" ng-click="undeleteTask(task)">
+          class="group-symmetrical--right link-navigation highlighted active" swiper-click="undeleteTask(task)">
           <span class="text-navigation">restore</span>
         </a>
 
@@ -53,14 +53,13 @@
     <div class="swiper-wrapper">
       <div class="swiper-slide" swiper-slide="taskEditor/basic" slide-index="0" ng-init="basicSlideInfo = {}">
 
-        <div class="container-content"
-          drawer-override-aisle="right" ng-init="drawerAisleInitialized = true" swiper-prevent>
+        <div class="container-content" drawer-override-aisle="right" ng-init="drawerAisleInitialized = true">
 
           <!-- TASK TITLE -->
           <form role="form" ng-hide="calendarOpen || taskDescriptionFocused || listPickerOpen"
             class="group-mixed with-checkbox" autocapitalize="none" autocorrect="off">
             <div class="group-mixed--left">
-              <input type="checkbox" ng-click="clickCompleteTaskInEdit()" ng-model="task.trans.optimisticComplete"
+              <input type="checkbox" swiper-click="clickCompleteTaskInEdit()" ng-model="task.trans.optimisticComplete"
                 ng-model-options="{getterSetter: true}" icon-checkbox="editorTitlebarCheckbox" />
             </div>
             <div class="group-mixed--middle">
@@ -77,7 +76,7 @@
           <div ng-hide="calendarOpen || taskDescriptionFocused || listPickerOpen"
             class="group-mixed with-checkbox">
             <a href class="group-mixed--middle link-search-result" ng-class="!task.trans.due && 'downplayed'"
-              ng-click="openCalendar()">
+              swiper-click="openCalendar()">
               <span class="text-field--title"
                 ng-bind="task.trans.due ? (task.trans.due | date:'EEE MMM d y' | lowercase) : 'select date\u2026'">
               </span>
@@ -115,7 +114,7 @@
           <div ng-hide="calendarOpen || taskDescriptionFocused || listPickerOpen"
             class="group-mixed with-checkbox">
             <a href class="group-mixed--middle link-search-result" ng-class="!task.trans.list && 'downplayed'"
-              ng-click="openListPicker()">
+              swiper-click="openListPicker()">
               <span class="text-field--title"
                 ng-bind="task.trans.list ? task.trans.list.trans.title : 'select list\u2026'">
               </span>
@@ -164,14 +163,13 @@
 
       <div class="swiper-slide" swiper-slide="taskEditor/advanced" slide-index="1"
         ng-init="advancedSlideInfo = {}">
-        <div class="container-content" ng-style="{'padding-bottom': advancedSlideInfo.footerHeight}"
-          swiper-prevent>
+        <div class="container-content" ng-style="{'padding-bottom': advancedSlideInfo.footerHeight}">
 
           <!-- CONTEXT -->
           <div ng-hide="contextPickerOpen || repeatingPickerOpen || urlFocused"
             class="group-mixed with-checkbox row-top-parent">
             <a href class="group-mixed--middle link-search-result"
-              ng-class="!task.trans.context && 'downplayed'" ng-click="openContextPicker()">
+              ng-class="!task.trans.context && 'downplayed'" swiper-click="openContextPicker()">
               <span class="text-field--title"
                 ng-bind="task.trans.context ? '@' + task.trans.context.trans.title : 'select context\u2026'">
               </span>
@@ -196,7 +194,7 @@
           <div ng-if="task.trans.due" ng-hide="contextPickerOpen || repeatingPickerOpen || urlFocused"
             class="group-mixed with-checkbox">
             <a href class="group-mixed--middle link-search-result"
-              ng-class="!task.trans.repeating && 'downplayed'" ng-click="openRepeatingPicker()">
+              ng-class="!task.trans.repeating && 'downplayed'" swiper-click="openRepeatingPicker()">
               <span class="text-field--title"
                 ng-bind="task.trans.repeating ? task.trans.repeating : 'select repeat\u2026'">
               </span>
@@ -231,11 +229,11 @@
 
           <!-- CONVERT -->
           <div class="group-symmetrical">
-            <a href class="group-symmetrical--left" ng-click="convertToNote(task)">
+            <a href class="group-symmetrical--left" swiper-click="convertToNote(task)">
               <span style="font-size: 13px;" class="text-convert">note</span>
             </a>
             <a href style="text-align:center;" class="group-symmetrical--middle"
-              ng-click="convertToList(task)">
+              swiper-click="convertToList(task)">
               <span style="font-size: 13px;" class="text-convert">list</span>
             </a>
             <div class="group-symmetrical--right">
@@ -244,7 +242,7 @@
           </div>
 
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
-            <a href ng-hide="isFooterNavigationHidden()" ng-click="swipeToBasic()"
+            <a href ng-hide="isFooterNavigationHidden()" swiper-click="swipeToBasic()"
               class="group-symmetrical--left link-navigation">
               <span class="text-navigation-back">basic</span>
             </a>

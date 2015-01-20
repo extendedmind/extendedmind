@@ -1,16 +1,16 @@
 <div class="container-fluid" ng-controller="ListEditorController" ng-class="list.trans.deleted && 'container-disabled'">
   <header class="container-titlebar">
     <div class="container-titlebar--inner">
-      <div class="group-symmetrical height-large--top">
-        <a href class="group-symmetrical--left link-navigation highlighted active" ng-click="endListEdit()" >
+      <div class="group-symmetrical height-large--top" swiper-prevent>
+        <a href class="group-symmetrical--left link-navigation highlighted active" swiper-click="endListEdit()" >
           <span class="text-navigation-back" ng-class="!isFirstSlide() && 'not-swipeable'"
             ng-bind="isListEdited() && !list.trans.deleted ? 'save' : 'back'"></span>
         </a>
-        <a href ng-if="!list.trans.deleted" class="group-symmetrical--right" ng-click="deleteListInEdit()" >
+        <a href ng-if="!list.trans.deleted" class="group-symmetrical--right" swiper-click="deleteListInEdit()" >
           <span class="icon-trash"></span>
         </a>
         <a href ng-if="list.trans.deleted" class="group-symmetrical--right link-navigation highlighted active"
-          ng-click="undeleteList(list)"><span class="text-navigation">restore</span></a>
+          swiper-click="undeleteList(list)"><span class="text-navigation">restore</span></a>
       </div>
 
       <div class="row-vertically-centered with-textarea">
@@ -28,7 +28,7 @@
     <div class="swiper-wrapper">
       <div class="swiper-slide" swiper-slide="listEditor/basic" slide-index="0">
         <div ng-style="{'padding-bottom': EDITOR_FOOTER_HEIGHT}" class="container-content"
-        drawer-override-aisle="right" swiper-prevent>
+          drawer-override-aisle="right">
           <div class="row-vertically-centered with-textarea" editable-field-container>
             <textarea ng-model="list.trans.description" input-model-validator ng-trim="false"
               ng-focus="setDescriptionFocus(true)" ng-blur="setDescriptionFocus(false)"
@@ -39,10 +39,10 @@
         </div>
         <footer ng-hide="descriptionFocused" class="container-content--after editor-footer">
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
-            <a href ng-click="clickFavorite()" class="group-symmetrical--left">
+            <a href swiper-click="clickFavorite()" class="group-symmetrical--left">
               <span class="icon-star" ng-class="!isFavoriteList(list) && 'inactive'"></span>
             </a>
-            <a href ng-click="swipeToAdvanced()" ng-hide="isFooterNavigationHidden()"
+            <a href swiper-click="swipeToAdvanced()" ng-hide="isFooterNavigationHidden()"
               class="group-symmetrical--right link-navigation">
               <span class="text-navigation-forward">advanced</span>
             </a>
@@ -51,8 +51,7 @@
       </div>
 
       <div class="swiper-slide" swiper-slide="listEditor/advanced" slide-index="1" ng-init="advancedSlideInfo = {}">
-        <div ng-style="{'padding-bottom': advancedSlideInfo.footerHeight}" class="container-content"
-        swiper-prevent>
+        <div ng-style="{'padding-bottom': advancedSlideInfo.footerHeight}" class="container-content">
 
           <div class="row-vertically-centered with-textarea">
             <textarea ng-model="list.trans.link" input-model-validator ng-trim="false" msd-elastic
@@ -65,21 +64,21 @@
 
           <div class="table">
             <div class="table-row">
-              <a href class="table-cell link" ng-click="convertToTask(list)">
+              <a href class="table-cell link" swiper-click="convertToTask(list)">
                 <span class="text-convert">task</span>
               </a>
-              <a href class="table-cell link" ng-click="convertToNote(list)">
+              <a href class="table-cell link" swiper-click="convertToNote(list)">
                 <span class="text-convert">note</span>
               </a>
             </div>
           </div>
 
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
-            <a href ng-click="swipeToBasic()" ng-hide="isFooterNavigationHidden()"
+            <a href swiper-click="swipeToBasic()" ng-hide="isFooterNavigationHidden()"
               class="group-symmetrical--left link-navigation">
               <span class="text-navigation-back">basic</span>
             </a>
-            <a ng-if="!isFakeUser()" href ng-click="archiveListInEdit(list)"
+            <a ng-if="!isFakeUser()" href swiper-click="archiveListInEdit(list)"
             class="group-symmetrical--right link-navigation highlighted">
               <span class="text-navigation">archive</span>
             </a>

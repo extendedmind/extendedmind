@@ -265,13 +265,8 @@
     var swipeRestraintY = 10;
 
     function mainSwiperTouchStart(event) {
-      if (event.type === 'touchstart') {
-        swipeStartX = event.targetTouches[0].pageX;
-        swipeStartY = event.targetTouches[0].pageY;
-      } else {
-        swipeStartX = event.pageX;
-        swipeStartY = event.pageY;
-      }
+      swipeStartX = event.targetTouches[0].pageX || event.pageX;
+      swipeStartY = event.targetTouches[0].pageY || event.pageY;
 
       $rootScope.outerSwiping = false;
       swipeLeft = false;
@@ -284,13 +279,8 @@
       function mainSwiperTouchMove(event) {
         /*jshint validthis: true */
 
-        if (event.type === 'touchmove') {
-          swipeDistanceX = event.targetTouches[0].pageX - swipeStartX;
-          swipeDistanceY = event.targetTouches[0].pageY - swipeStartY;
-        } else {
-          swipeDistanceX = event.pageX - swipeStartX;
-          swipeDistanceY = event.pageY - swipeStartY;
-        }
+        swipeDistanceX = (event.targetTouches[0].pageX || event.pageX) - swipeStartX;
+        swipeDistanceY = (event.targetTouches[0].pageY || event.pageY) - swipeStartY;
 
         // http://www.javascriptkit.com/javatutors/touchevents2.shtml
         if (Math.abs(swipeDistanceX) >= swipeRestraintX &&
@@ -350,13 +340,8 @@
         swipePageSlideTop = false;
         swipePageSlideBottom = false;
 
-        if (event.type === 'touchstart') {
-          swipePageSlideStartX = event.targetTouches[0].pageX;
-          swipePageSlideStartY = event.targetTouches[0].pageY;
-        } else {
-          swipePageSlideStartX = event.pageX;
-          swipePageSlideStartY = event.pageY;
-        }
+        swipePageSlideStartX = event.targetTouches[0].pageX || event.pageX;
+        swipePageSlideStartY = event.targetTouches[0].pageY || event.pageY;
 
         // Evaluate top and bottom of scroll
 
@@ -384,14 +369,8 @@
       function pageSwiperSlideTouchMove(event) {
         /*jshint validthis: true */
 
-        if (event.type === 'touchmove') {
-          swipePageSlideDistX = event.targetTouches[0].pageX - swipePageSlideStartX;
-          swipePageSlideDistY = event.targetTouches[0].pageY - swipePageSlideStartY;
-        } else {
-          swipePageSlideDistX = event.pageX - swipePageSlideStartX;
-          swipePageSlideDistY = event.pageY - swipePageSlideStartY;
-        }
-
+        swipePageSlideDistX = (event.targetTouches[0].pageX || event.pageX) - swipePageSlideStartX;
+        swipePageSlideDistY = (event.targetTouches[0].pageY || event.pageY) - swipePageSlideStartY;
 
         if (swipePageSlideYSpeedStart !== undefined) {
           swipePageSlideYSpeed = swipePageSlideYSpeedStart - this.scrollTop;
@@ -488,7 +467,7 @@
         }
 
         if ($scope.swiperType === 'page') {
-          for (var i = 0, len = swiperSlideInfos.length; i < len; i++) {
+          for (var i = 0; i < swiperSlideInfos.length; i++) {
             swiperSlideInfos[i].slideChildElement.
             removeEventListener('touchstart', pageSwiperSlideTouchStart, false);
 
@@ -503,8 +482,7 @@
           }
           // http://blogs.windows.com/windows_phone/b/wpdev/archive/2012/11/15/adapting-your-webkit-optimized-site-for-internet-explorer-10.aspx#step4
           if (window.navigator.msPointerEnabled) {
-            for (var j = 0, swiperSlideInfosLength = swiperSlideInfos.length;
-                 j < swiperSlideInfosLength; j++)
+            for (var j = 0; j < swiperSlideInfos.length; j++)
             {
               swiperSlideInfos[j].slideChildElement.
               removeEventListener('MSPointerDown', pageSwiperSlideTouchStart, false);

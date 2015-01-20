@@ -1,8 +1,8 @@
-<div class="container-fluid" ng-controller="OmnibarEditorController">
+<div class="container-fluid" ng-controller="OmnibarEditorController" swiper-prevent>
   <header class="container-titlebar">
     <div class="container-titlebar--inner">
       <div class="group-symmetrical height-large--top">
-        <a href class="group-symmetrical--left link-navigation" ng-click="closeEditor()">
+        <a href class="group-symmetrical--left link-navigation" swiper-click="closeEditor()">
           <span class="text-navigation-back">back</span>
         </a>
       </div>
@@ -31,7 +31,7 @@
         track by searchResult.trans.uuid"
         class="group-mixed with-checkbox">
         <a href class="group-mixed--middle link-search-result"
-          ng-click="initializeEditor(searchResult.trans.itemType, searchResult)">
+          swiper-click="initializeEditor(searchResult.trans.itemType, searchResult)">
           <span class="text-search-result" clamp=2 ng-bind="searchResult.trans.title"></span>
         </a>
         <div class="group-mixed--right">
@@ -48,19 +48,19 @@
 
       <div class="group-symmetrical">
         <a href ng-hide="footerExpandOpen" class="group-symmetrical--left animate-fade-in-out link"
-          ng-click="convertToTask()">
+          swiper-click="convertToTask()">
           <span class="text-convert">task</span>
         </a>
         <div ng-if="keywords && keywords.length" class="group-symmetrical--middle">
-          <a href class="link" ng-click="toggleExpand()">
+          <a href class="link" swiper-click="toggleExpand()">
             <span>#</span>
           </a>
         </div>
-        <a href ng-hide="footerExpanded" class="group-symmetrical--right link" ng-click="convertToNote()">
+        <a href ng-hide="footerExpanded" class="group-symmetrical--right link" swiper-click="convertToNote()">
           <span class="text-convert">note</span>
         </a>
         <a href ng-if="footerExpanded && (!selectedKeywords || !selectedKeywords.length)"
-          class="group-symmetrical--right highlighted" ng-click="toggleExpandFooterToMaxHeight()">
+          class="group-symmetrical--right highlighted" swiper-click="toggleExpandFooterToMaxHeight()">
           <span class="text-edit" ng-bind="footerExpandedToMaxHeight ? 'done' : 'edit'"></span>
         </a>
       </div>
@@ -79,7 +79,7 @@
 
         <div ng-if="selectedKeywords && selectedKeywords.length" class="keywords-container row">
           <div class="keyword-wrapper" ng-repeat="keyword in selectedKeywords track by keyword.trans.uuid">
-            <a href class="keyword highlighted" ng-click="unselectKeyword(keyword)">
+            <a href class="keyword highlighted" swiper-click="unselectKeyword(keyword)">
               <span class="text-keyword" ng-bind="'#' + keyword.trans.title" clamp=1></span>
             </a>
           </div>
@@ -90,7 +90,7 @@
           <div class="keyword-wrapper"
             ng-repeat="keyword in filteredItems.unselectedKeywords = (keywords | filter:keywordsFilter)
             | filter:{trans:{title:keywordsSearch.text}} | orderBy:'trans.title' track by keyword.trans.uuid">
-            <a href class="keyword link" ng-click="selectKeyword(keyword)">
+            <a href class="keyword link" swiper-click="selectKeyword(keyword)">
               <span class="text-keyword" ng-bind="'#' + keyword.trans.title" clamp=1></span>
             </a>
           </div>
@@ -100,7 +100,7 @@
         <div ng-if="footerExpandedToMaxHeight" class="keywords-container row">
           <div class="keyword-wrapper"
             ng-repeat="keyword in keywords | orderBy:'trans.title' track by keyword.trans.uuid">
-            <a href class="keyword link" ng-click="initializeEditor('tag', keyword)">
+            <a href class="keyword link" swiper-click="initializeEditor('tag', keyword)">
               <span class="text-keyword" ng-bind="'#' + keyword.trans.title" clamp=1></span>
             </a>
           </div>

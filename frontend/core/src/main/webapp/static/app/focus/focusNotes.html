@@ -1,7 +1,7 @@
 <div ng-if="isFeatureActive('focus')" class="container-content--outer" list-container>
   <section ng-show="isOnboarded('focusNotes')" class="container-content"
     list="allNotes | itemsFilter:{name:'favorited'}"
-    list-open="openEditor('note', getNewFavoriteNote(), 'new')" swiper-prevent>
+    list-open="openEditor('note', getNewFavoriteNote(), 'new')">
     <h2 class="group-heading justified row">
       <span class="text-heading" ng-class="smallDeviceWidth && 'long'">starred notes</span>
     </h2>

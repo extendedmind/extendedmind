@@ -3,7 +3,7 @@
   editable-field-container-clicked-elsewhere="clickedElsewhere({clickedElsewhereDisabled: onboardingInProgress})"
   autocapitalize="none" autocorrect="off">
   <div class="group-mixed--left">
-    <a href ng-click="!onboardingInProgress ? callAndExit(saveListAndChangeFeature, newItem) : undefined">
+    <a href swiper-click="!onboardingInProgress ? callAndExit(saveListAndChangeFeature, newItem) : undefined">
       <span class="text-navigation-back large"></span>
     </a>
   </div>
@@ -14,7 +14,7 @@
     </textarea>
   </div>
   <div class="group-mixed--right">
-    <a href class="onboarding-hide" editable-field-deactivate ng-click="openEditor('list', newItem)">
+    <a href class="onboarding-hide" editable-field-deactivate swiper-click="openEditor('list', newItem)">
       <span class="text-navigation-forward"></span>
     </a>
   </div>

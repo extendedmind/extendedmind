@@ -1,15 +1,16 @@
-<div class="container-fluid" ng-controller="ItemEditorController" ng-class="item.trans.deleted && 'container-disabled'">
+<div class="container-fluid" ng-controller="ItemEditorController"
+  ng-class="item.trans.deleted && 'container-disabled'" swiper-prevent>
   <header class="container-titlebar">
     <div class="container-titlebar--inner">
       <div class="group-symmetrical height-large--top">
-        <a href class="group-symmetrical--left link-navigation highlighted" ng-click="endItemEdit()">
+        <a href class="group-symmetrical--left link-navigation highlighted" swiper-click="endItemEdit()">
           <span class="text-navigation-back" ng-bind="isItemEdited() && !item.trans.deleted ? 'save' : 'back'"></span>
         </a>
-        <a ng-if="!item.trans.deleted" href class="group-symmetrical--right" ng-click="deleteItemInEdit()" >
+        <a ng-if="!item.trans.deleted" href class="group-symmetrical--right" swiper-click="deleteItemInEdit()" >
           <span class="icon-trash"></span>
         </a>
         <a ng-if="item.trans.deleted" href class="group-symmetrical--right link-navigation highlighted active"
-          ng-click="undeleteItem(item)"><span class="text-navigation">restore</span></a>
+          swiper-click="undeleteItem(item)"><span class="text-navigation">restore</span></a>
       </div>
 
       <div class="row-vertically-centered with-textarea">
@@ -32,15 +33,15 @@
     </div>
     <footer class="container-content--after editor-footer">
       <div class="group-symmetrical">
-        <a href class="group-symmetrical--left link" ng-click="convertToTask(item)">
+        <a href class="group-symmetrical--left link" swiper-click="convertToTask(item)">
           <span class="text-convert">task</span>
         </a>
         <div class="group-symmetrical--middle width-large">
-          <a href class="link" ng-click="convertToNote(item)">
+          <a href class="link" swiper-click="convertToNote(item)">
             <span class="text-convert">note</span>
           </a>
         </div>
-        <a href class="group-symmetrical--right link" ng-click="convertToList(item)">
+        <a href class="group-symmetrical--right link" swiper-click="convertToList(item)">
           <span class="text-convert">list</span>
         </a>
       </div>

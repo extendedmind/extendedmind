@@ -1,10 +1,9 @@
 <div class="container-content--outer" ng-if="isFeatureActive('tasks')" list-container>
-  <section class="container-content"
-    list="tasks | itemsFilter:{name:'byContext', filterBy: context}" swiper-prevent>
+  <section class="container-content" list="tasks | itemsFilter:{name:'byContext', filterBy: context}">
     <div class="group-mixed heading vertically-centered">
       <div class="group-mixed--middle">
         <h2 class="group-heading justified">
-          <a href ng-if="context" class="link" ng-click="openEditor('tag', context)">
+          <a href ng-if="context" class="link" swiper-click="openEditor('tag', context)">
             <span class="text-heading" ng-bind="'@' + context.trans.title"
               ng-class="context.trans.title.length > 6 && 'long'" clamp=2></span>
           </a>

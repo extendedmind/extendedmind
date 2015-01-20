@@ -2,11 +2,11 @@
   ng-controller="NoteEditorController">
   <header class="container-titlebar">
     <div class="container-titlebar--inner">
-      <div class="group-symmetrical height-large--top height-large--bottom">
+      <div class="group-symmetrical height-large--top height-large--bottom" swiper-prevent>
 
         <a href ng-hide="isEndNoteEditActionHidden()" class="group-symmetrical--left link-navigation active"
           ng-class="isNoteEdited() && !note.trans.deleted ? 'highlighted' : 'downplayed'"
-          ng-click="endNoteEdit()">
+          swiper-click="endNoteEdit()">
           <span class="text-navigation-back" ng-class="!isFirstSlide() && 'not-swipeable'"
             ng-bind="isNoteEdited() && !note.trans.deleted ? 'save' : 'back'"></span>
         </a>
@@ -18,7 +18,7 @@
         <div ng-hide="!isNotePropertyInEdit() && isFirstSlide()" id="noteEditorTitlebarTitle"
           ng-style="{maxWidth: calculateTitleWidth()}"
           class="scroll-then-toggle group-symmetrical--middle width-large">
-          <a href class="link" ng-click="gotoTitle()">
+          <a href class="link" swiper-click="gotoTitle()">
             <div>
               <span class="text-heading-primary" ng-class="!note.trans.title && 'text-downplayed'"
                 ng-bind="note.trans.title && note.trans.title.length ? note.trans.title : 'new note'" clamp=2>
@@ -28,11 +28,11 @@
         </div>
 
         <a href ng-if="!note.trans.deleted && !onboardingInProgress" ng-hide="isNotePropertyInEdit()"
-          class="group-symmetrical--right" ng-click="deleteNoteInEdit()">
+          class="group-symmetrical--right" swiper-click="deleteNoteInEdit()">
           <span class="icon-trash"></span>
         </a>
         <a href ng-if="note.trans.deleted && !onboardingInProgress" ng-hide="isNotePropertyInEdit()"
-          class="group-symmetrical--right link-navigation highlighted active" ng-click="undeleteNote(note)">
+          class="group-symmetrical--right link-navigation highlighted active" swiper-click="undeleteNote(note)">
           <span class="text-navigation">restore</span>
         </a>
 
@@ -55,8 +55,8 @@
       <div class="swiper-slide" swiper-slide="noteEditor/basic" slide-index="0">
         <div ng-style="{'padding-bottom': isNotePropertyInEdit() ? 0 : EDITOR_FOOTER_HEIGHT}"
           class="container-content" drawer-override-aisle="right" ng-init="drawerAisleInitialized = true"
-          swiper-prevent scroll-then-toggle="noteEditorTitlebarTitle"
-          scroll-then-toggle-top="noteEditorTitleInput" scroll-then-toggle-resizeable="noteEditorTitleInput"
+          scroll-then-toggle="noteEditorTitlebarTitle" scroll-then-toggle-top="noteEditorTitleInput"
+          scroll-then-toggle-resizeable="noteEditorTitleInput"
           scroll-then-toggle-reset="registerGotoTitleCallback">
 
           <!-- NOTE TITLE -->
@@ -73,7 +73,7 @@
               </div>
 
               <div class="group-mixed--right onboarding-hide">
-                <a href class="link-navigation" ng-click="clickFavorite()">
+                <a href class="link-navigation" swiper-click="clickFavorite()">
                   <span class="icon-star large" ng-class="!note.trans.favorited && 'inactive'"></span>
                 </a>
               </div>
@@ -96,7 +96,7 @@
             <!-- LIST -->
             <div class="group-mixed with-checkbox">
               <a href class="group-mixed--middle link-search-result" ng-class="!note.trans.list && 'downplayed'"
-                ng-click="openListPicker()">
+                swiper-click="openListPicker()">
                 <span class="text-field--title"
                   ng-bind="note.trans.list ? note.trans.list.trans.title : 'select list\u2026'">
                 </span>
@@ -110,7 +110,7 @@
             <div class="group-mixed with-checkbox">
               <a href class="group-mixed--middle link-search-result"
                 ng-class="(!note.trans.keywords || !note.trans.keywords.length) && 'downplayed'"
-                ng-click="openKeywordsPicker()">
+                swiper-click="openKeywordsPicker()">
                 <span class="text-field--title"
                   ng-bind="(note.trans.keywords && note.trans.keywords.length) ? getKeywordsListString(note) : 'add keywords\u2026'">
                 </span>
@@ -121,7 +121,7 @@
             </div>
           </div>
           <div ng-if="!onboardingInProgress" ng-hide="isNotePropertyInEdit()" class="row collapsible">
-            <a href class="downplayed" ng-click="toggleCollapsible()">
+            <a href class="downplayed" swiper-click="toggleCollapsible()">
               <span ng-class="collapsibleOpen ? 'text-expand-up' : 'text-expand-down'"
                 ng-bind="collapsibleOpen ? 'less' : 'more'"></span>
             </a>
@@ -173,7 +173,7 @@
               <div ng-if="noteHasKeywords(note)" class="keywords-container row">
                 <div class="keyword-wrapper"
                   ng-repeat="keyword in note.trans.keywords | orderBy:'trans.title' track by keyword.trans.uuid">
-                  <a href class="keyword highlighted" ng-click="removeKeywordFromNote(note, keyword)">
+                  <a href class="keyword highlighted" swiper-click="removeKeywordFromNote(note, keyword)">
                     <span class="text-keyword" ng-bind="'#' + keyword.trans.title" clamp=1></span>
                   </a>
                 </div>
@@ -185,7 +185,7 @@
                   | keywordsFilter:{name:'byOtherThanNoteKeywords', item: note}
                   | filter:newKeyword.trans.title
                   | orderBy:'trans.title' track by keyword.trans.uuid">
-                  <a href class="keyword link" ng-click="addKeywordToNote(note, keyword)">
+                  <a href class="keyword link" swiper-click="addKeywordToNote(note, keyword)">
                     <span class="text-keyword" ng-bind="'#' + keyword.trans.title" clamp=1></span>
                   </a>
                 </div>
@@ -197,7 +197,7 @@
 
         <footer ng-hide="isNotePropertyInEdit()" class="container-content--after editor-footer">
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
-            <a href ng-click="swipeToAdvanced()" ng-hide="isFooterNavigationHidden()"
+            <a href swiper-click="swipeToAdvanced()" ng-hide="isFooterNavigationHidden()"
               class="group-symmetrical--right link-navigation">
               <span class="text-navigation-forward">advanced</span>
             </a>
@@ -207,8 +207,7 @@
 
       <div class="swiper-slide" swiper-slide="noteEditor/advanced" slide-index="1"
         ng-init="advancedSlideInfo = {}">
-        <div ng-style="{'padding-bottom': advancedSlideInfo.footerHeight}" class="container-content"
-          swiper-prevent>
+        <div ng-style="{'padding-bottom': advancedSlideInfo.footerHeight}" class="container-content">
 
           <!-- URL -->
           <div class="row-vertically-centered with-textarea row-top-parent">
@@ -244,12 +243,12 @@
           editor-footer="advancedSlideInfo">
 
           <div class="group-symmetrical">
-            <a href class="group-symmetrical--left" ng-click="convertToTask(note)">
+            <a href class="group-symmetrical--left" swiper-click="convertToTask(note)">
               <span style="font-size: 13px;" class="text-convert">task</span>
             </a>
             <a href style="text-align:center;" class="group-symmetrical--middle"
-              ng-click="convertToNote(note)">
-              <span style="font-size: 13px;" class="text-convert">note</span>
+              swiper-click="convertToList(note)">
+              <span style="font-size: 13px;" class="text-convert">list</span>
             </a>
             <div class="group-symmetrical--right">
               <span style="font-weight: 300;" class="text-search-type">convert</span>
@@ -257,7 +256,7 @@
           </div>
 
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
-            <a href ng-click="swipeToBasic()" ng-hide="isFooterNavigationHidden()"
+            <a href swiper-click="swipeToBasic()" ng-hide="isFooterNavigationHidden()"
               class="group-symmetrical--left link-navigation">
               <span class="text-navigation-back">basic</span>
             </a>

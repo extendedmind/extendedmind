@@ -1,9 +1,11 @@
-<div ng-if="toasterNotifications" ng-switch on="notification.type" class="container-toaster animate-toaster group-mixed">
+<div ng-if="toasterNotifications" ng-switch on="notification.type"
+  class="container-toaster animate-toaster group-mixed">
 
   <!-- DELETED -->
   <div ng-switch-when="deleted" class="group-mixed--middle textgroup-toaster">
     <span ng-bind="notification.itemType + ' deleted,'"></span>
-    <a href class="highlighted" ng-click="closeNotificationAndCall(notification, notification.item, notification.undoFn)">
+    <a href class="highlighted"
+      swiper-click="closeNotificationAndCall(notification, notification.item, notification.undoFn)">
       <span>undo</span><span>?</span>
     </a>
   </div>
@@ -16,23 +18,26 @@
   <!-- SIGN UP -->
   <div ng-switch-when="signUp" class="group-mixed--middle textgroup-toaster">
     <span>to back up your data,</span>
-    <a href class="highlighted" ng-click="closeNotificationAndCall(notification, undefined, notification.gotoFn)">
+    <a href class="highlighted"
+      swiper-click="closeNotificationAndCall(notification, undefined, notification.gotoFn)">
       <span>sign up now</span>
     </a>
   </div>
 
   <!-- INBOX -->
   <div ng-switch-when="inbox" class="group-mixed--middle textgroup-toaster">
-    <a href class="highlighted" ng-click="closeNotificationAndCall(notification, notification.item, notification.openFn)">
+    <a href class="highlighted"
+      swiper-click="closeNotificationAndCall(notification, notification.item, notification.openFn)">
       <span>item</span>
     </a>
     <span>saved to</span>
-    <a href class="highlighted" ng-click="closeNotificationAndCall(notification, notification.item, notification.gotoFn)">
+    <a href class="highlighted"
+      swiper-click="closeNotificationAndCall(notification, notification.item, notification.gotoFn)">
       <span>inbox</span>
     </a>
   </div>
 
-  <a href class="group-mixed--right icon-downplayed" ng-click="closeNotificationAndCall(notification)">
+  <a href class="group-mixed--right icon-downplayed" swiper-click="closeNotificationAndCall(notification)">
     <span class="icon-x"></span>
   </a>
 </div>
