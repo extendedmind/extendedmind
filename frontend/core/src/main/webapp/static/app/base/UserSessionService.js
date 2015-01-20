@@ -149,8 +149,11 @@
       persistentStorageEnabled = enableOffline;
       SessionStorageService.clearUser();
       LocalStorageService.clearUser();
+      latestModified = {};
       itemsSynchronized = {};
       persistentDataLoaded = false;
+      persistentStorageEnabled = enableOffline;
+      offlineEnabledBypass = false;
     },
 
     // Web storage setters
