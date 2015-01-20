@@ -30,9 +30,10 @@
     </div>
   </section>
 
-  <footer ng-if="forgotActive" class="container-content--after group-btn" editable-field-container="auto">
-    <button type="submit" class="btn-action" ng-disabled="!forgotForm.$valid" ng-click="sendInstructions()">
-      <span class="text-btn">send instructions</span>
+  <footer ng-if="!resetCodeExpires" class="container-content--after group-btn" editable-field-container="auto">
+    <button type="submit" class="btn-action" ng-disabled="!forgotForm.$valid || sendingInstructions"
+    ng-click="sendInstructions()">
+      <span class="text-btn" ng-bind="sendingInstructions && 'sending' || 'send instructions'"></span>
     </button>
   </footer>
 </form>

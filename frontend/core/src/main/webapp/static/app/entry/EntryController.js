@@ -57,7 +57,6 @@
   };
 
   $scope.swipeToMain = function() {
-    $scope.forgotActive = false;
     $scope.resetCodeExpires = undefined;
     SwiperService.swipeTo('entry/main');
   };
@@ -154,6 +153,7 @@
   $scope.sendInstructions = function() {
     $scope.sendFailed = false;
     $scope.entryOffline = false;
+    $scope.sendingInstructions = true;
     if ($scope.user.username) {
       AuthenticationService.postForgotPassword($scope.user.username)
       .then(function(response) {
@@ -162,7 +162,6 @@
           type: 'fyi',
           text: 'instructions sent'
         });
-        $scope.forgotActive = false;
       },
       function(error){
         if (error.type === 'offline') {
@@ -170,6 +169,7 @@
         } else {
           $scope.sendFailed = true;
         }
+        $scope.sendingInstructions = false;
       });
     }
   };
