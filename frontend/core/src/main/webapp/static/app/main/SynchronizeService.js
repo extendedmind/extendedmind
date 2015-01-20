@@ -832,7 +832,6 @@
             }
           }
         }
-        $rootScope.syncState = 'persistent';
       });
       UserSessionService.setPersistentDataLoaded(true);
     }
