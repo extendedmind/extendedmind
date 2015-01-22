@@ -14,6 +14,11 @@
  */
  'use strict';
 
+ /*
+ * WHAT'S NOT WORKING:
+ *  - enter omnibar text, enter keywords search, unfocus, clear omnibar text, focus keywords search
+ */
+
  function editorFooterDirective($animate, $document, $parse, $rootScope, $timeout, packaging) {
   var footerHeight = 44;  // NOTE: Match with @grid-vertical in LESS.
   return {
@@ -21,10 +26,13 @@
     scope: true,
     link: function(scope, element, attrs) {
       var expandedFooterMaxHeight = 156;  // Default expanded height. Used in task editor.
+                                          // TODO: Rename to expandedFooterDefaultHeight
       var oldTranslateYPosition = 0;      // Default and previous translateY position.
       var currentExpandedFooterHeight;    // Current expanded footer height.
       var expandPromise, shrinkPromise;   // Animation promises.
       var expandedHeightChangeWatcher;    // Attach watcher into variable to be able to unregister it.
+      var cachedContentHeight;
+      // var customMaxHeight;  // TODO: rename to expandedFooterMaxHeight
 
       var contentElement = element[0].previousElementSibling;
 
@@ -60,6 +68,94 @@
       if (attrs.editorFooterToggledCallback) {
         // Toggled callback function.
         var editorFooterToggledCallbackFn = $parse(attrs.editorFooterToggledCallback)(scope);
+      }
+
+      if (attrs.editorFooterRegisterResetCallback) {
+        // Reset callback.
+        var registerResetCallback = $parse(attrs.editorFooterRegisterResetCallback)(scope);
+        registerResetCallback(toggleBetween);
+      }
+
+      // TODO: register on footerexpanded callback
+      if (attrs.editorFooterRegisterOkToReset) {
+        var isHeightChangeAllowed = $parse(attrs.editorFooterRegisterOkToReset)(scope);
+      }
+
+      var resetStates = {};
+      function toggleBetween(setToMaxHeight, id/*, preventToggleTemporarily*/) {
+
+        function setCustomHeight() {
+          function doSetCustomHeight() {
+            // Ok to set to custom height
+            // NOTE:  Something like: resetStates['toggle'] = true; could be done to prevent expanding
+            //        to wrong custom height in setNewExpandHeightAndStartAnimation when keyboard hide
+            //        and vertical resize is in progress.
+            setTimeout(function() {
+              // Footer may have been closed meanwhile.
+              if (scope.footerExpanded) {
+                // TODO: Wrong when no overflow - or not?.
+                var a = element[0].parentNode.offsetHeight - 44;  // TODO: Use expandedFooterMaxHeight
+                if (cachedContentHeight < a) {
+                  startFooterExpand(cachedContentHeight);
+                } else {
+                  startFooterExpand(a);
+                }
+              }
+              // resetStates['toggle'] = false;
+            }, 700);
+          }
+
+          setTimeout(function() {
+            // Wait for additional 100ms to make sure setting custom height is not prevent in that time.
+            var preventCustomHeightSet;
+            for (var resetStateId in resetStates) {
+              if (resetStates.hasOwnProperty(resetStateId)) {
+                if (resetStateId !== id) {
+                  if (resetStates[resetStateId]) {
+                    preventCustomHeightSet = true;
+                  }
+                }
+              }
+            }
+            if (!preventCustomHeightSet) {
+              // Setting custom height is not prevented.
+              if (isHeightChangeAllowed()) {
+                // Height change is generally allowed as well.
+                doSetCustomHeight();
+              } else {
+                if ($rootScope.smallDeviceHeight) {
+                  // Set cached height for small device.
+                  startFooterExpand(cachedContentHeight);
+                }
+              }
+            }
+          }, 100);
+          // end custom height
+        }
+
+        resetStates[id] = setToMaxHeight;
+        if (scope.footerExpanded) {
+          if (setToMaxHeight) {
+            // Ok to set to max height.
+            if ($rootScope.smallDeviceHeight) {
+              setTimeout(function() {
+                // Setting small in toggle.
+                if (cachedContentHeight > 60) {
+                  startFooterExpand(60);  // Leave room for other elements.
+                }
+              }, 200);
+            } else {
+              if (isHeightChangeAllowed()) {
+                if (currentExpandedFooterHeight > expandedFooterMaxHeight) {
+                  // Setting max in toggle.
+                  startFooterExpand(expandedFooterMaxHeight);
+                }
+              }
+            }
+          } else {
+            setCustomHeight();
+          }
+        }
       }
 
       if (angular.isFunction(scope.registerHideCallback))
@@ -113,6 +209,7 @@
             scope.footerExpandedToMaxHeight = false;  // Reset variable.
           }
           shrinkPromise = undefined;
+          resetStates = {}; // Clear reset states
         });
 
         if (expandedHeightChangeWatcher) expandedHeightChangeWatcher(); // unregister watcher
@@ -171,7 +268,7 @@
 
       scope.openExpand = function(noAnimation) {
         if (!scope.footerExpanded){
-          scope.footerExpanded = true;  // Create element in the DOM.
+          scope.footerExpanded = true;  // Create element into the DOM.
 
           if (typeof registerExpandedHeightChangeCallbackFn === 'function') {
             // Set new expand height.
@@ -236,7 +333,9 @@
       *
       * Second row is always present, so default it to one row.
       */
-      function setNewExpandHeightAndStartAnimation(elementsInFirstContainer, elementsInSecondContainer) {
+      function setNewExpandHeightAndStartAnimation(elementsInFirstContainer, elementsInSecondContainer,
+                                                   customExpand) {
+
         var rowsInFirstContainer = Math.ceil(elementsInFirstContainer / 3);
         var firstContainerHeight = footerHeight * rowsInFirstContainer;
 
@@ -244,11 +343,35 @@
         var secondContainerHeight = footerHeight * rowsInSecondContainer;
 
         var expandedHeight = firstContainerHeight + secondContainerHeight;
+        cachedContentHeight = expandedHeight; // Cache the height of the content.
 
-        if (expandedHeight > expandedFooterMaxHeight) {
+        if ($rootScope.smallDeviceHeight) {
+          for (var state in resetStates) {
+            if (resetStates.hasOwnProperty(state)) {
+              if (resetStates[state]) {
+                if (expandedHeight > 60) {
+                  // TODO: This should be something different.
+                  expandedHeight = 60;
+                }
+                break;
+              }
+            }
+          }
+        }
+
+        if (customExpand) {
+          // TODO: Use expandedFooterMaxHeight
+          var customExpandMaxHeight = element[0].parentNode.offsetHeight - 44;
+          if (expandedHeight > customExpandMaxHeight) {
+            expandedHeight = customExpandMaxHeight; // Set custom expanded height.
+          }
+        }
+
+        else if (expandedHeight > expandedFooterMaxHeight) {
           // Do not expand beyond max height.
           expandedHeight = expandedFooterMaxHeight;
         }
+
         startFooterExpand(expandedHeight);
 
         // Toggle padding-bottom with this class. When expanded only one row, area would have undesired scroll
@@ -269,7 +392,7 @@
       }
 
       function iOSEditorFooterTouchEnd(){
-        function doProcessTouchEnd(touchEndEvent){
+        function doProcessTouchEnd(touchEndEvent) {
           // First, blur active element
           var blurredActiveElement = false;
           if ($document[0].activeElement &&
@@ -281,48 +404,55 @@
           }
 
           // After that, do the action where the click hit
-          if (!scope.footerExpanded && touchEndEvent.target.id.startsWith('editorFooterExpand')){
+          if (!scope.footerExpanded && touchEndEvent.target.id.startsWith('editorFooterExpand')) {
             // If the touch hit the expand icon while keyboard was up,
             // first wait for the resize animation to end
             if (blurredActiveElement){
               $timeout(function(){
-                scope.openExpand();
+                // scope.openExpand();
+                angular.element(touchEndEvent.target).click();
               }, 150);
-            }else{
-              scope.openExpand();
+            } else {
+              // scope.openExpand();
+              angular.element(touchEndEvent.target).click();
             }
             touchEndEvent.preventDefault();
             touchEndEvent.stopPropagation();
-          }else if (touchEndEvent.target.nodeName === 'A'){
+          } else if (touchEndEvent.target.nodeName === 'A') {
             // Execute the action of the touchend link target.
             // NOTE:  Vanilla JS click() is not working for the first time.
             //        Wrapping click into angular $digest cycle printed error message:
             //          'Can only call HTMLElement.click on instances of HTMLElement'
             //        So wrap element into angular element first and use jqLite click()
             angular.element(touchEndEvent.target).click();
-          }else if (touchEndEvent.target.nodeName === 'SPAN' &&
-                    touchEndEvent.target.parentElement.nodeName === 'A'){
+          } else if (touchEndEvent.target.nodeName === 'SPAN' &&
+                     touchEndEvent.target.parentElement.nodeName === 'A') {
             // Execute the action of the touchend target parent link.
+            // console.log('span click');
             angular.element(touchEndEvent.target.parentElement).click();
-          }else if (touchEndEvent.target.nodeName === 'SPAN' &&
-                    touchEndEvent.target.parentElement.nodeName === 'SPAN' &&
-                    touchEndEvent.target.parentElement.parentElement.nodeName === 'A'){
+            touchEndEvent.preventDefault();
+            touchEndEvent.stopPropagation();
+          } else if (touchEndEvent.target.nodeName === 'SPAN' &&
+                     touchEndEvent.target.parentElement.nodeName === 'SPAN' &&
+                     touchEndEvent.target.parentElement.parentElement.nodeName === 'A') {
             // Execute the action of the touchend target grandparent link.
             angular.element(touchEndEvent.target.parentElement.parentElement).click();
-          }else {
+          } else if (touchEndEvent.target.nodeName === 'INPUT') {
+            touchEndEvent.target.focus();
+          } else {
             // Touch hit somewhere else in the footer
             touchEndEvent.preventDefault();
             touchEndEvent.stopPropagation();
           }
         }
-        if ($rootScope.$$phase || scope.$$phase){
+        if ($rootScope.$$phase || scope.$$phase) {
           $timeout(function(){
             // FIXME: $timeout should not be needed since AngularJS version 1.2.24
             //        See:
             //        https://github.com/angular/angular.js/commit/54f0bc0fe0c6b6d974d23f2c5ef07359dd93eb99
             doProcessTouchEnd(event);
           });
-        }else {
+        } else {
           doProcessTouchEnd(event);
         }
       }
@@ -330,6 +460,9 @@
       if (attrs.editorFooterIosClick !== undefined && packaging === 'ios-cordova'){
         element[0].addEventListener('touchstart', iOSEditorFooterTouchStart);
         element[0].addEventListener('touchend', iOSEditorFooterTouchEnd);
+      } else if (attrs.editorFooterIosClickTop !== undefined && packaging === 'ios-cordova') {
+        element[0].firstElementChild.addEventListener('touchstart', iOSEditorFooterTouchStart);
+        element[0].firstElementChild.addEventListener('touchend', iOSEditorFooterTouchEnd);
       }
       scope.$on('$destroy', function() {
         if (attrs.editorFooterIosClick !== undefined && packaging === 'ios-cordova'){

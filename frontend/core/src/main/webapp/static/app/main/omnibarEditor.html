@@ -11,6 +11,8 @@
         <div class="group-mixed--middle">
           <textarea ng-model="titlebar.text" ng-keydown="omnibarTitlebarTextKeyDown($event)" msd-elastic
             editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
+            editable-field-focus="inputFocus(true, 'title', titlebar.text)"
+            editable-field-blur="inputFocus(false, 'title', titlebar.text)"
             placeholder="save to inbox / search&#8230;"
             maxlength="128" autocapitalize="none" autocorrect="off">
           </textarea>
@@ -44,16 +46,19 @@
     <!-- FOOTER -->
     <footer class="container-content--after editor-footer" editor-footer="containerInfo"
       editor-footer-toggled-callback="setKeywordsAndItemsFilters"
-      editor-footer-expand-height-change="notifyFilteredKeywordsLengthChange">
+      editor-footer-expand-height-change="notifyFilteredKeywordsLengthChange"
+      editor-footer-register-ok-to-reset="isKeywordsPristineAndOmnibarTextEmpty"
+      editor-footer-ios-click-top
+      editor-footer-register-reset-callback="registerInputFocusCallback">
 
       <div class="group-symmetrical">
-        <a href ng-hide="footerExpandOpen" class="group-symmetrical--left animate-fade-in-out link"
+        <a href ng-hide="footerExpanded" class="group-symmetrical--left link"
           swiper-click="convertToTask()">
           <span class="text-convert">task</span>
         </a>
         <div ng-if="keywords && keywords.length" class="group-symmetrical--middle">
-          <a href class="link" swiper-click="toggleExpand()">
-            <span>#</span>
+          <a href id="editorFooterExpandLink" class="link" swiper-click="toggleExpand()">
+            <span id="editorFooterExpandText">#</span>
           </a>
         </div>
         <a href ng-hide="footerExpanded" class="group-symmetrical--right link" swiper-click="convertToNote()">
@@ -66,7 +71,7 @@
       </div>
 
       <!-- EXPANDABLE FOOTER CONTENT -->
-      <div ng-if="footerExpanded" class="keywords-footer"
+      <div id="expandable" ng-if="footerExpanded" class="keywords-footer"
         ng-class="{'keywords-select-active': selectedKeywords && selectedKeywords.length}"
         ng-init="clearSelectedKeywords()">
 
@@ -74,7 +79,9 @@
         <div ng-hide="(selectedKeywords && selectedKeywords.length) || footerExpandedToMaxHeight"
           class="keywords-search row">
           <input type="search" class="text-keyword" ng-model="keywordsSearch.text"
-            placeholder="search keywords&#8230;" maxlength="128" autocapitalize="none" autocorrect="off">
+            placeholder="search keywords&#8230;" maxlength="128" autocapitalize="none" autocorrect="off"
+            ng-focus="inputFocus(true, 'keywords', keywordsSearch.text)"
+            ng-blur="inputFocus(false, 'keywords', keywordsSearch.text)">
         </div>
 
         <div ng-if="selectedKeywords && selectedKeywords.length" class="keywords-container row">

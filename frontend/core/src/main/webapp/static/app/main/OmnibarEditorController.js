@@ -203,6 +203,26 @@
     searchResults: undefined
   };
 
+  $scope.isKeywordsPristineAndOmnibarTextEmpty = function() {
+    return (!$scope.keywordsSearch.text || !$scope.keywordsSearch.text.length) &&
+    (!$scope.selectedKeywords || !$scope.selectedKeywords.length) &&
+    ((!$scope.titlebar || !$scope.titlebar.text));
+  };
+
+  $scope.isKeywordsPristine = function() {
+    return !$scope.selectedKeywords || !$scope.selectedKeywords.length;
+  };
+
+  $scope.inputFocus = function(focus, id, inputText) {
+    if (typeof inputFocusCallback === 'function') inputFocusCallback(focus, id, inputText);
+  };
+
+
+  var inputFocusCallback;
+  $scope.registerInputFocusCallback = function(callback) {
+    inputFocusCallback = callback;
+  };
+
   /*
   * Watch and notify length change of filtered keywords arrays.
   *
@@ -219,8 +239,8 @@
         // Do nothing when first run is prevented.
         preventFirstRun = false;
       } else {
-        // Execute callback with new length infos.
-        callback(newLength, $scope.selectedKeywords.length);
+        // Execute callback with new length and title infos.
+        callback(newLength, $scope.selectedKeywords.length, (!$scope.titlebar || !$scope.titlebar.text));
       }
     });
   };
