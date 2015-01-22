@@ -840,7 +840,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
       // Snap.js clears transition style from drawer aisle element and executes closed (animated) callback.
       // Wait until DOM manipulation is ready before opening editor
       // to have correct transition style in drawer aisle element.
-      $scope.$evalAsync(function() {
+      $timeout(function() {
         DrawerService.open('right');
         executeEditorAboutToOpenCallbacks(openEditorAfterMenuClosed.type,
                                           openEditorAfterMenuClosed.item,
