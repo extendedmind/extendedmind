@@ -113,6 +113,7 @@ function drawerAisleDirective($rootScope, DrawerService) {
         DrawerService.setupDrawer('right', settings);
       }
 
+      // http://davidwalsh.name/javascript-debounce-function
       function debounce(func, wait, immediate) {
         var timeout;
         return function() {
