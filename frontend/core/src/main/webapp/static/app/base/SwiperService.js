@@ -117,6 +117,7 @@ function SwiperService($q, $timeout) {
       loop: loop ? true : false,
       loopDuplicateSlidesIncluded: loop ? true : false,
       cssWidthAndHeight: 'height',
+      roundLengths: swiperType === 'main',
       queueStartCallbacks: queueStartCallbacks,
       queueEndCallbacks: true,
       simulateTouch: simulateTouch,

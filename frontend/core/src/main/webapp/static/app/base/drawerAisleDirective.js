@@ -29,6 +29,7 @@ function drawerAisleDirective($rootScope, DrawerService) {
       var areaAboutToShrinkCallbacks = {};
       var areaAboutToGrowCallbacks = {};
       var areaResizeReadyCallbacks = {};
+      var areaResizeCallbacks = {};
       var areaMovedToNewPositionCallbacks = {};
       var areaMovedToInitialPositionCallbacks = {};
 
@@ -52,6 +53,10 @@ function drawerAisleDirective($rootScope, DrawerService) {
 
       this.registerAreaResizeReady = function(callback, feature) {
         areaResizeReadyCallbacks[feature] = callback;
+      };
+
+      this.registerAreaResizeCallback = function(callback, feature) {
+        areaResizeCallbacks[feature] = {callback: callback};
       };
 
       this.registerAreaAboutToMoveToNewPosition = function(callback, feature) {
@@ -108,13 +113,56 @@ function drawerAisleDirective($rootScope, DrawerService) {
         DrawerService.setupDrawer('right', settings);
       }
 
+      function debounce(func, wait, immediate) {
+        var timeout;
+        return function() {
+          var context = this, args = arguments;
+          var later = function() {
+            timeout = null;
+            if (!immediate) func.apply(context, args);
+          };
+          var callNow = immediate && !timeout;
+          clearTimeout(timeout);
+          timeout = setTimeout(later, wait);
+          if (callNow) func.apply(context, args);
+        };
+      }
+
+      var myEfficientFn = debounce(function() {
+        // All the taxing stuff you do
+        for (var area in areaResizeCallbacks) {
+          if (areaResizeCallbacks.hasOwnProperty(area)) {
+            var areaResize = areaResizeCallbacks[area];
+            areaResize.resize = true;
+          }
+        }
+      }, 250);
+
+      // var resizeArea;
       function setupDrawers() {
-        setupMenuDrawer();
-        setupEditorDrawer();
+        var drawerWidth = 0;
+        if (DrawerService.isOpen('left')) {
+          drawerWidth = DrawerService.getDrawerElement('left').offsetWidth;
+        }
+        $element[0].firstElementChild.style.maxWidth = $rootScope.currentWidth - drawerWidth + 'px';
+        // setupMenuDrawer();
+        if (!DrawerService.isOpen('right')) {
+          setupEditorDrawer();
+        }
+
+        myEfficientFn();
+      }
+
+      function isAreaResizeNeeded(feature) {
+        if (areaResizeCallbacks[feature] && areaResizeCallbacks[feature].resize) {
+          areaResizeCallbacks[feature].callback();
+          areaResizeCallbacks[feature].resize = false;
+        }
       }
 
       // Setup drawers again on every window resize event
       $scope.registerWindowResizedCallback(setupDrawers, 'drawerAisleDirective');
+      $scope.registerResizeSwiperCallback(isAreaResizeNeeded);
 
       // Initialize everyting
       setupMenuDrawer();
@@ -168,14 +216,16 @@ function drawerAisleDirective($rootScope, DrawerService) {
           // so we need to prevent any touching from getting to the partially visible aisle.
           $element[0].addEventListener('touchstart', partiallyVisibleDrawerAisleClicked, false);
         } else {
+          var drawerAisleContent = $element[0].firstElementChild;
+          drawerAisleContent.classList.add('animate-container-master');
           // There are more than one column, this means the aisle area is about to shrink the
           // same time as the menu opens.
 
-          var amount = DrawerService.getDrawerElement('left').offsetWidth;
-          $element[0].firstElementChild.style.maxWidth = $rootScope.currentWidth - amount + 'px';
+          var drawerWidth = DrawerService.getDrawerElement('left').offsetWidth;
+          drawerAisleContent.style.maxWidth = $rootScope.currentWidth - drawerWidth + 'px';
 
           if (areaAboutToShrinkCallbacks[activeFeature]) {
-            areaAboutToShrinkCallbacks[activeFeature](amount, 'left', $rootScope.MENU_ANIMATION_SPEED);
+            areaAboutToShrinkCallbacks[activeFeature](drawerWidth, 'left', $rootScope.MENU_ANIMATION_SPEED);
           }
         }
       }
@@ -195,9 +245,13 @@ function drawerAisleDirective($rootScope, DrawerService) {
           // so we need to prevent any touching from getting to the partially visible aisle.
           $element[0].addEventListener('touchstart', partiallyVisibleDrawerAisleClicked, false);
         }
-        else if (areaResizeReadyCallbacks[activeFeature]) {
-          // Execute callbacks to resize ready
-          areaResizeReadyCallbacks[activeFeature]();
+        else {
+          $element[0].firstElementChild.classList.remove('animate-container-master');
+
+          if (areaResizeReadyCallbacks[activeFeature]) {
+            // Execute callbacks to resize ready
+            areaResizeReadyCallbacks[activeFeature]();
+          }
         }
       }
 
@@ -217,12 +271,14 @@ function drawerAisleDirective($rootScope, DrawerService) {
         } else {
           // There are more than one column, this means the aisle area is about to grow the
           // same time as the menu closes
+          var drawerAisleContent = $element[0].firstElementChild;
+          drawerAisleContent.classList.add('animate-container-master');
 
-          var amount = DrawerService.getDrawerElement('left').offsetWidth;
-          $element[0].firstElementChild.style.maxWidth = $rootScope.currentWidth + 'px';
+          var drawerWidth = DrawerService.getDrawerElement('left').offsetWidth;
+          drawerAisleContent.style.maxWidth = $rootScope.currentWidth + 'px';
 
           if (areaAboutToGrowCallbacks[activeFeature]) {
-            areaAboutToGrowCallbacks[activeFeature](amount, 'left', $rootScope.MENU_ANIMATION_SPEED);
+            areaAboutToGrowCallbacks[activeFeature](drawerWidth, 'left', $rootScope.MENU_ANIMATION_SPEED);
           }
         }
       }
@@ -241,9 +297,13 @@ function drawerAisleDirective($rootScope, DrawerService) {
           // Re-enable touching in fully visible aisle.
           $element[0].removeEventListener('touchstart', partiallyVisibleDrawerAisleClicked, false);
         }
-        else if (areaResizeReadyCallbacks[activeFeature]) {
-          // Execute callbacks to resize ready
-          areaResizeReadyCallbacks[activeFeature]();
+        else {
+          $element[0].firstElementChild.classList.remove('animate-container-master');
+
+          if (areaResizeReadyCallbacks[activeFeature]) {
+            // Execute callbacks to resize ready
+            areaResizeReadyCallbacks[activeFeature]();
+          }
         }
       }
 

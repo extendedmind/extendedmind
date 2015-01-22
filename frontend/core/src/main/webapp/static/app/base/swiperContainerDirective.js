@@ -566,6 +566,10 @@
         SwiperService.resizeFixSwiperAndChildSwipers(scope.swiperPath);
       }
 
+      function resizeSwiper() {
+        SwiperService.resizeFixSwiperAndChildSwipers(scope.swiperPath);
+      }
+
       function swiperAboutToMoveToNewPosition() {
         // Disable swiping during move.
         SwiperService.setOnlyExternal(scope.swiperPath, true);
@@ -636,6 +640,8 @@
                                                                scope.swiperPath);
           drawerAisleController.registerAreaMovedToInitialPosition(swiperMovedToInitialPosition,
                                                                    scope.swiperPath);
+
+          drawerAisleController.registerAreaResizeCallback(resizeSwiper, scope.swiperPath);
         }
         // Register hide and show callbacks to swipers whose ancestor is drawerAisleController.
         drawerAisleController.registerAreaAboutToHide(disableSwiping, scope.swiperPath);

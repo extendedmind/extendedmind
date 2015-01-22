@@ -248,11 +248,11 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
         }
       }
 
-      if (featureInfos.loaded) setInitialSlideActive(true, featureInfos.slides);
+      if (featureInfos.loaded) setInitialSlideActive(true, featureInfos);
       AnalyticsService.visit(feature);
     } else {
       // Feature not changed
-      setInitialSlideActive(false, featureInfos.slides);
+      setInitialSlideActive(false, featureInfos);
     }
 
     // Run special case focus callbacks because drawer-handle directive does not re-register itself when
@@ -263,18 +263,30 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     }
   };
 
-  function setInitialSlideActive(featureChanged, featureSlides) {
-    if (featureSlides && featureSlides.left) {
+  var resizeSwiperCallback;
+  $scope.registerResizeSwiperCallback = function(callback) {
+    resizeSwiperCallback = callback;
+  };
+
+  function setInitialSlideActive(featureChanged, featureInfos) {
+    if (featureInfos.slides && featureInfos.slides.left) {
       if (featureChanged) {
         // Swipe to initial slide before the next repaint when feature changes,
         // ng-show is evaluated and the DOM is rendered.
         // NOTE: use setTimeout(callback, 0) if requestAnimationFrame is not working.
         window.requestAnimationFrame(function() {
-          SwiperService.swipeToWithoutAnimation(featureSlides.left.path);
+          if (typeof resizeSwiperCallback === 'function') {
+            resizeSwiperCallback(featureInfos.heading);
+            // NOTE:  Better would be to achieve this from swiper.js or someplace else because featureChange
+            //        needs to do as little things as possible. However, ng-show sets display: none to
+            //        inactive swipers so they have no width which swiper.js depends on when it calculates
+            //        width for resized swiper (height is calculated in CSS with cssWidthAndHeight: 'height').
+          }
+          SwiperService.swipeToWithoutAnimation(featureInfos.slides.left.path);
         });
       } else {
         // Swipe to initial slide immediately.
-        SwiperService.swipeToWithoutAnimation(featureSlides.left.path);
+        SwiperService.swipeToWithoutAnimation(featureInfos.slides.left.path);
       }
     }
   }
@@ -385,7 +397,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
       UserSessionService.setPreference('onboarded', packaging);
       AnalyticsService.do('onboarded');
       if (feature === 'user'){
-        $scope.changeFeature('user', undefined, true)
+        $scope.changeFeature('user', undefined, true);
       }
     }
     UserService.saveAccountPreferences();
