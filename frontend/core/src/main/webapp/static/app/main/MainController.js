@@ -765,6 +765,16 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     if (editorClosedCallbacks[id]) delete editorClosedCallbacks[id];
   };
 
+  var menuOpenedCallbacks = {}, menuClosedCallbacks = {};
+
+  // Register menu callbacks
+  $scope.registerMenuOpenedCallbacks = function(callback, id) {
+    menuOpenedCallbacks[id] = callback;
+  };
+  $scope.registerMenuClosedCallbacks = function(callback, id) {
+    menuClosedCallbacks[id] = callback;
+  };
+
   // register drawer callbacks to DrawerService
 
   function executeEditorAboutToOpenCallbacks(editorType, item, mode) {
@@ -815,6 +825,13 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
                            true);
       featurePendingOpen = undefined;
     }
+    executeMenuOpenedCallbacks();
+  }
+
+  function executeMenuOpenedCallbacks() {
+    for (var id in menuOpenedCallbacks) {
+      menuOpenedCallbacks[id]();
+    }
   }
 
   DrawerService.registerClosedCallback('left', menuClosed, 'MainController');
@@ -831,6 +848,13 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
         openEditorAfterMenuClosed = undefined;
         $element[0].classList.add('editor-show');
       });
+    }
+    executeMenuClosedCallbacks();
+  }
+
+  function executeMenuClosedCallbacks() {
+    for (var id in menuClosedCallbacks) {
+      menuClosedCallbacks[id]();
     }
   }
 

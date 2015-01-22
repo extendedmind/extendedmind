@@ -14,15 +14,35 @@
  */
  'use strict';
 
- function ToolbarController($scope, $rootScope, UISessionService) {
+ function ToolbarController($scope, $rootScope, DrawerService, UISessionService) {
+
+  function refreshHeadingWidth() {
+    // Heading width is calculated with ng-style and updates on $digest() so toggling menu may be unnoticed
+    // for a while and the width will be wrong.
+    if (!$rootScope.$$phase && !$scope.$$phase) {
+      // Digest changes.
+      $scope.$digest();
+    }
+  }
+
+  $scope.registerMenuOpenedCallbacks(refreshHeadingWidth, 'ToolbarController');
+
+  $scope.registerMenuClosedCallbacks(refreshHeadingWidth, 'ToolbarController');
 
   $scope.calculateHeadingWidth = function() {
-    if ($rootScope.currentWidth >= $rootScope.CONTAINER_MASTER_MAX_WIDTH) {
+    var menuWidth = 0;
+    if ($rootScope.colums > 1 && DrawerService.isOpen('left')) {
+      menuWidth = DrawerService.getDrawerElement('left').offsetWidth;
+    }
+
+    var columnWidth = $rootScope.currentWidth - menuWidth;
+
+    if (columnWidth >= $rootScope.CONTAINER_MASTER_MAX_WIDTH) {
       // Maximum width for column
       return $rootScope.TOOLBAR_HEADING_MAX_WIDTH;
     } else {
       // Smaller, leave
-      return $rootScope.currentWidth - $rootScope.TOOLBAR_BUTTON_WIDTH*2;
+      return columnWidth - $rootScope.TOOLBAR_BUTTON_WIDTH*2;
     }
   };
 
@@ -81,5 +101,5 @@
     }
   };
 }
-ToolbarController['$inject'] = ['$scope', '$rootScope', 'UISessionService'];
+ToolbarController['$inject'] = ['$scope', '$rootScope', 'DrawerService', 'UISessionService'];
 angular.module('em.main').controller('ToolbarController', ToolbarController);
