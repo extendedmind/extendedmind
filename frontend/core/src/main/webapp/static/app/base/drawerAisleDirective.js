@@ -167,13 +167,16 @@ function drawerAisleDirective($rootScope, DrawerService) {
           // There is only one column,
           // so we need to prevent any touching from getting to the partially visible aisle.
           $element[0].addEventListener('touchstart', partiallyVisibleDrawerAisleClicked, false);
-        }
-        else if (areaAboutToShrinkCallbacks[activeFeature]) {
+        } else {
           // There are more than one column, this means the aisle area is about to shrink the
           // same time as the menu opens.
+
           var amount = DrawerService.getDrawerElement('left').offsetWidth;
-          areaAboutToShrinkCallbacks[activeFeature](amount, 'left', $rootScope.MENU_ANIMATION_SPEED);
           $element[0].firstElementChild.style.maxWidth = $rootScope.currentWidth - amount + 'px';
+
+          if (areaAboutToShrinkCallbacks[activeFeature]) {
+            areaAboutToShrinkCallbacks[activeFeature](amount, 'left', $rootScope.MENU_ANIMATION_SPEED);
+          }
         }
       }
 
@@ -211,13 +214,16 @@ function drawerAisleDirective($rootScope, DrawerService) {
           DrawerService.disableDragging('left');
           if (areaAboutToMoveToInitialPositionCallbacks[activeFeature])
             areaAboutToMoveToInitialPositionCallbacks[activeFeature]();
-        }
-        else if (areaAboutToGrowCallbacks[activeFeature]) {
+        } else {
           // There are more than one column, this means the aisle area is about to grow the
           // same time as the menu closes
+
           var amount = DrawerService.getDrawerElement('left').offsetWidth;
-          areaAboutToGrowCallbacks[activeFeature](amount, 'left', $rootScope.MENU_ANIMATION_SPEED);
           $element[0].firstElementChild.style.maxWidth = $rootScope.currentWidth + 'px';
+
+          if (areaAboutToGrowCallbacks[activeFeature]) {
+            areaAboutToGrowCallbacks[activeFeature](amount, 'left', $rootScope.MENU_ANIMATION_SPEED);
+          }
         }
       }
 
