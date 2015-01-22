@@ -346,11 +346,11 @@ input[type="checkbox"]:checked + label:before {
 
 // 1. Darken container background with animation when editor is opening.
 //    Reset container backgroung with animation when editor is closing.
-.editor-open.animate-container-master {
+.editor-open.container-master {
   background-color: @color-background-editor-inactive;  // [1]
 }
 
-.editor-open.editor-animating.animate-container-master {
+.editor-open.editor-animating.container-master {
   -webkit-transition: background-color @speed-animation-editor @timing-animate; // [1]
   -moz-transition: background-color @speed-animation-editor @timing-animate;    // [1]
   -o-transition: background-color @speed-animation-editor @timing-animate;      // [1]
@@ -359,7 +359,7 @@ input[type="checkbox"]:checked + label:before {
   background-color: white;
 }
 
-.editor-animating.animate-container-master {
+.editor-animating.container-master {
   -webkit-transition: background-color @speed-animation-editor @timing-animate; // [1]
   -moz-transition: background-color @speed-animation-editor @timing-animate;    // [1]
   -o-transition: background-color @speed-animation-editor @timing-animate;      // [1]
