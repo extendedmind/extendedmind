@@ -32,7 +32,7 @@
       //if replace is null, return original string otherwise it will
       //replace search string with 'undefined'.
       if(!replace)
-          return this;
+        return this;
       return this.replace(new RegExp(search, 'g'), replace);
     };
   }
@@ -92,18 +92,37 @@
   // From: http://stackoverflow.com/a/5306832
   Array.prototype.move = function (old_index, new_index) {
     while (old_index < 0) {
-        old_index += this.length;
+      old_index += this.length;
     }
     while (new_index < 0) {
-        new_index += this.length;
+      new_index += this.length;
     }
     if (new_index >= this.length) {
-        var k = new_index - this.length;
-        while ((k--) + 1) {
-            this.push(undefined);
-        }
+      var k = new_index - this.length;
+      while ((k--) + 1) {
+        this.push(undefined);
+      }
     }
     this.splice(new_index, 0, this.splice(old_index, 1)[0]);
     return this; // for testing purposes
+  };
+
+  /*
+  * See:  http://davidwalsh.name/javascript-debounce-function
+  *       http://unscriptable.com/2009/03/20/debouncing-javascript-methods/
+  */
+  Function.prototype.debounce = function(wait, immediate) {
+    var func = this, timeout;
+    return function() {
+      var context = this, args = arguments;
+      var later = function() {
+        timeout = null;
+        if (!immediate) func.apply(context, args);
+      };
+      var callNow = immediate && !timeout;
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+      if (callNow) func.apply(context, args);
+    };
   };
 });

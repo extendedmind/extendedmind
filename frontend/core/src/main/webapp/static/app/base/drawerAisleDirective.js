@@ -91,7 +91,7 @@ function drawerAisleDirective($rootScope, DrawerService) {
           easing: 'ease-out',
           minDragDistance: 10,
           addBodyClasses: false,
-          tapToClose: true, // default value for reference
+          tapToClose: $rootScope.columns === 1 ? true : false,
           maxPosition: $rootScope.MENU_WIDTH
         };
         DrawerService.setupDrawer('left', settings);
@@ -101,7 +101,7 @@ function drawerAisleDirective($rootScope, DrawerService) {
         var settings = {
           element: $element[0],
           overrideListeningElement: true,
-          touchToDrag: true,
+          touchToDrag: $rootScope.columns === 1 ? true : false,
           tapToClose: false,
           disable: 'left', // use right only
           transitionSpeed: $rootScope.EDITOR_ANIMATION_SPEED / 1000,
@@ -113,45 +113,29 @@ function drawerAisleDirective($rootScope, DrawerService) {
         DrawerService.setupDrawer('right', settings);
       }
 
-      // http://davidwalsh.name/javascript-debounce-function
-      function debounce(func, wait, immediate) {
-        var timeout;
-        return function() {
-          var context = this, args = arguments;
-          var later = function() {
-            timeout = null;
-            if (!immediate) func.apply(context, args);
-          };
-          var callNow = immediate && !timeout;
-          clearTimeout(timeout);
-          timeout = setTimeout(later, wait);
-          if (callNow) func.apply(context, args);
-        };
-      }
-
-      var myEfficientFn = debounce(function() {
-        // All the taxing stuff you do
+      var setAreaResizeNeeded = function() {
         for (var area in areaResizeCallbacks) {
           if (areaResizeCallbacks.hasOwnProperty(area)) {
             var areaResize = areaResizeCallbacks[area];
             areaResize.resize = true;
           }
         }
-      }, 250);
+      }.debounce(250);  // Fire once every quarter of a second.
 
-      // var resizeArea;
-      function setupDrawers() {
+      function resizeAisleAndSetupDrawers() {
         var drawerWidth = 0;
         if (DrawerService.isOpen('left')) {
           drawerWidth = DrawerService.getDrawerElement('left').offsetWidth;
         }
         $element[0].firstElementChild.style.maxWidth = $rootScope.currentWidth - drawerWidth + 'px';
-        // setupMenuDrawer();
+
+        // Setup drawers again on every window resize event
+        // TODO: Can these be set when $rootScope.columns changes, or at least debounced?
+        setupMenuDrawer();
         if (!DrawerService.isOpen('right')) {
           setupEditorDrawer();
         }
-
-        myEfficientFn();
+        setAreaResizeNeeded();
       }
 
       function isAreaResizeNeeded(feature) {
@@ -161,8 +145,7 @@ function drawerAisleDirective($rootScope, DrawerService) {
         }
       }
 
-      // Setup drawers again on every window resize event
-      $scope.registerWindowResizedCallback(setupDrawers, 'drawerAisleDirective');
+      $scope.registerWindowResizedCallback(resizeAisleAndSetupDrawers, 'drawerAisleDirective');
       $scope.registerResizeSwiperCallback(isAreaResizeNeeded);
 
       // Initialize everyting
@@ -198,7 +181,9 @@ function drawerAisleDirective($rootScope, DrawerService) {
         }, 1000);
       }
 
-      // Prevent clicks to elements etc. when menu is open.
+      /*
+      * Prevent clicks to elements etc. when menu is open.
+      */
       function partiallyVisibleDrawerAisleClicked() {
         event.preventDefault();
         event.stopPropagation();
