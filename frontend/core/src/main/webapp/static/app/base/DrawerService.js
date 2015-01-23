@@ -14,9 +14,10 @@
  */
  'use strict';
 
- function DrawerService() {
+ function DrawerService($q) {
 
   var snappers = {};
+  var executeOpenedCallbacksDeferred;
 
   // CALLBACKS
 
@@ -28,10 +29,13 @@
       // on every swipe to handle!
       if (!snappers[snapperSide].isOpen){
         snappers[snapperSide].isOpen = true;
+        executeOpenedCallbacksDeferred = $q.defer();
         for (var openId in snappers[snapperSide].openedCallbacks) {
           if (snappers[snapperSide].openedCallbacks.hasOwnProperty(openId))
             snappers[snapperSide].openedCallbacks[openId]();
         }
+        executeOpenedCallbacksDeferred.resolve();
+        executeOpenedCallbacksDeferred = undefined;
       }
     }
     if (snappers[snapperSide].snapper.state().state === 'closed') {
@@ -265,6 +269,10 @@
         snappers[drawerSide] = createDrawerSkeleton();
       }
       snappers[drawerSide].openCallbacks[id] = callback;
+    },
+    getExecuteOpenedCallbacksPromise: function() {
+      if (executeOpenedCallbacksDeferred)
+        return executeOpenedCallbacksDeferred.promise;
     }
   };
 }

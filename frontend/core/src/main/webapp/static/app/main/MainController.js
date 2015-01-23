@@ -819,11 +819,19 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
   DrawerService.registerOpenedCallback('left', menuOpened, 'MainController');
   function menuOpened() {
     if (featurePendingOpen){
-      $scope.changeFeature(featurePendingOpen.feature,
-                           featurePendingOpen.data,
-                           true,
-                           true);
-      featurePendingOpen = undefined;
+      var doChangeFeature = function() {
+        $scope.changeFeature(featurePendingOpen.feature,
+                             featurePendingOpen.data,
+                             true,
+                             true);
+        featurePendingOpen = undefined;
+      };
+
+      var callbacksExecutedPromise = DrawerService.getExecuteOpenedCallbacksPromise();
+      if (callbacksExecutedPromise) // Change feature when all callbacks are executed.
+        callbacksExecutedPromise.then(doChangeFeature);
+      else
+        doChangeFeature();
     }
     executeMenuOpenedCallbacks();
   }
