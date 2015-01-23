@@ -14,7 +14,8 @@
  */
  'use strict';
 
- function MenuController($rootScope, $scope, ListsService, UISessionService) {
+ function MenuController($location, $rootScope, $scope, AnalyticsService, AuthenticationService,
+                         ListsService, UISessionService, UserSessionService) {
 
   $scope.gotoFeature = function (feature, data) {
     $scope.changeFeature(feature,data);
@@ -25,12 +26,13 @@
 
   $scope.lists = ListsService.getLists(UISessionService.getActiveUUID());
 
-  $scope.getActiveList = function() {
+  $scope.getActiveList = function() {
     if ($scope.isFeatureActive('list')){
       return UISessionService.getFeatureData(UISessionService.getCurrentFeatureName());
     }
-  };
+  }
 }
 
-MenuController['$inject'] = ['$rootScope', '$scope', 'AnalyticsService', 'ListsService', 'UISessionService'];
+MenuController['$inject'] = ['$location', '$rootScope', '$scope', 'AnalyticsService',
+'AuthenticationService', 'ListsService', 'UISessionService', 'UserSessionService'];
 angular.module('em.main').controller('MenuController', MenuController);
