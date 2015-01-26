@@ -3,28 +3,64 @@
     <h2 class="group-heading justified row" ng-bind="online ? 'online' : '*offline'"></h2>
 
     <div class="group-details">
-     <div class="row">
-        <span class="text-details" ng-bind="getLastSyncedText()"></span>
+      <div class="row" >
+        <a href ng-click="toggleStats()">
+          <span class="text-details" ng-bind="getLastSyncedText()"></span>
+        </a>
       </div>
-      <div ng-if="getOfflineModifiedCount('item')" class="row">
-        <span class="text-details">unsynced items: </span>
-        <span class="text-details" ng-bind="getOfflineModifiedCount('item')"></span>
+      <div ng-if="getOfflineModified('item')" class="row">
+        <a href ng-click="toggleModifiedItems('item')">
+          <span class="text-details">unsynced items: </span>
+          <span class="text-details" ng-bind="modifiedItems['item'].length"></span>
+        </a>
       </div>
-      <div ng-if="getOfflineModifiedCount('task')" class="row">
-        <span class="text-details">unsynced tasks: </span>
-        <span class="text-details" ng-bind="getOfflineModifiedCount('task')"></span>
+      <div ng-if="getOfflineModified('task')" class="row">
+        <a href ng-click="toggleModifiedItems('task')">
+          <span class="text-details">unsynced tasks: </span>
+          <span class="text-details" ng-bind="modifiedItems['task'].length"></span>
+        </a>
       </div>
-      <div ng-if="getOfflineModifiedCount('note')" class="row">
-        <span class="text-details">unsynced notes: </span>
-        <span class="text-details" ng-bind="getOfflineModifiedCount('note')"></span>
+      <div ng-if="getOfflineModified('note')" class="row">
+        <a href ng-click="toggleModifiedItems('note')">
+          <span class="text-details">unsynced notes: </span>
+          <span class="text-details" ng-bind="modifiedItems['note'].length"></span>
+        </a>
       </div>
-      <div ng-if="getOfflineModifiedCount('list')" class="row">
-        <span class="text-details">unsynced lists: </span>
-        <span class="text-details" ng-bind="getOfflineModifiedCount('list')"></span>
+      <div ng-if="getOfflineModified('list')" class="row">
+        <a href ng-click="toggleModifiedItems('list')">
+          <span class="text-details">unsynced lists: </span>
+          <span class="text-details" ng-bind="modifiedItems['list'].length"></span>
+        </a>
       </div>
-      <div ng-if="getOfflineModifiedCount('tag')" class="row">
-        <span class="text-details">unsynced tags: </span>
-        <span class="text-details" ng-bind="getOfflineModifiedCount('tag')"></span>
+      <div ng-if="getOfflineModified('tag')" class="row">
+        <a href ng-click="showModifiedItems('tag')">
+          <span class="text-details">unsynced tags: </span>
+          <span class="text-details" ng-bind="modifiedItems['tag'].length"></span>
+        </a>
+      </div>
+      <div ng-if="showStats" class="row">
+        <a href ng-click="toggleStats()">
+          <br/><span class="text-details">total items: </span>
+          <span class="text-details" ng-bind="getCount('item')"></span><br/>
+          <span class="text-details">total tasks: </span>
+          <span class="text-details" ng-bind="getCount('task')"></span><br/>
+          <span class="text-details">total notes: </span>
+          <span class="text-details" ng-bind="getCount('note')"></span><br/>
+          <span class="text-details">total lists: </span>
+          <span class="text-details" ng-bind="getCount('list')"></span><br/>
+          <span class="text-details">total tags: </span>
+          <span class="text-details" ng-bind="getCount('tag')"></span><br/>
+          <span class="text-details">total deleted: </span>
+          <span class="text-details" ng-bind="getCount('deleted')"></span>
+        </a>
+      </div>
+      <div ng-if="visibleModifiedItemsType" class="row">
+        <a href ng-click="toggleModifiedItems()">
+          <br/>
+          <div ng-repeat="modifiedItem in modifiedItems[visibleModifiedItemsType]">
+            <span class="text-details" ng-bind="modifiedItem.trans.title"></span><br/>
+          </div>
+        </a>
       </div>
     </div>
 

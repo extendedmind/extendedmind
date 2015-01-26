@@ -139,13 +139,17 @@
   };
 
   // OFFLINE MODIFICATIONS
-  $scope.getOfflineModifiedCount = function(itemType) {
+
+  $scope.modifiedItems = {};
+  $scope.getOfflineModified = function(itemType) {
     var modifiedItems = SynchronizeService.getModifiedItems(itemType, UISessionService.getActiveUUID());
     if (modifiedItems && modifiedItems.length){
-      return modifiedItems.length;
+      $scope.modifiedItems[itemType] = modifiedItems;
+      return true;
     }
   };
 
+  $scope.showUnsynced = undefined;
   $scope.getLastSyncedText = function(){
     var lastSyncedText;
     var itemsSynced = UserSessionService.getItemsSynchronized(UISessionService.getActiveUUID());
@@ -170,7 +174,44 @@
       lastSyncedText = 'backing up data';
     }
     return lastSyncedText;
-  }
+  };
+
+  $scope.visibleModifiedItemsType = undefined;
+  $scope.toggleModifiedItems = function(itemType){
+    if ($scope.visibleModifiedItemsType !== itemType){
+      $scope.visibleModifiedItemsType = itemType;
+      if ($scope.showStats) $scope.showStats = false;
+    }
+    else{
+      $scope.visibleModifiedItemsType = undefined;
+    }
+  };
+
+  // STATISTICS
+
+  $scope.showStats = false;
+  $scope.toggleStats = function(){
+    $scope.showStats = !$scope.showStats;
+    if ($scope.showStats && $scope.visibleModifiedItemsType) $scope.visibleModifiedItemsType = undefined;
+
+  };
+
+  $scope.getCount = function(itemType) {
+    if (itemType === 'item'){
+      return $scope.items.length;
+    }else if (itemType === 'task'){
+      return $scope.allTasks.length;
+    }else if (itemType === 'note'){
+      return $scope.allNotes.length;
+    }else if (itemType === 'list'){
+      return $scope.allLists.length;
+    }else if (itemType === 'tag'){
+      return $scope.tags.length;
+    }else if (itemType === 'deleted'){
+      return $scope.allDeleted.length;
+    }
+  };
+
 }
 UserController['$inject'] = ['$http', '$location', '$q', '$rootScope', '$scope', '$templateCache', '$window',
 'AnalyticsService', 'AuthenticationService', 'SwiperService',
