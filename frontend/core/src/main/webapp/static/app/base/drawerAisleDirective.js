@@ -170,6 +170,7 @@ function drawerAisleDirective($rootScope, DrawerService) {
       var partiallyVisibleTouchTimer;
       function attachAndFailsafeRemovePartiallyVisibleTouch() {
         $element[0].addEventListener('touchstart', partiallyVisibleDrawerAisleClicked, false);
+        $rootScope.contentPartiallyVisible = true;
 
         if (partiallyVisibleTouchTimer) {
           clearTimeout(partiallyVisibleTouchTimer);
@@ -178,6 +179,7 @@ function drawerAisleDirective($rootScope, DrawerService) {
 
         partiallyVisibleTouchTimer = setTimeout(function() {
           $element[0].removeEventListener('touchstart', partiallyVisibleDrawerAisleClicked, false);
+          $rootScope.contentPartiallyVisible = false;
         }, 1000);
       }
 
@@ -201,6 +203,7 @@ function drawerAisleDirective($rootScope, DrawerService) {
           // There is only one column,
           // so we need to prevent any touching from getting to the partially visible aisle.
           $element[0].addEventListener('touchstart', partiallyVisibleDrawerAisleClicked, false);
+          $rootScope.contentPartiallyVisible = true;
         } else {
           var drawerAisleContent = $element[0].firstElementChild;
           drawerAisleContent.classList.add('animate-container-master');
@@ -230,6 +233,7 @@ function drawerAisleDirective($rootScope, DrawerService) {
           // There is only one column,
           // so we need to prevent any touching from getting to the partially visible aisle.
           $element[0].addEventListener('touchstart', partiallyVisibleDrawerAisleClicked, false);
+          $rootScope.contentPartiallyVisible = true;
         }
         else {
           $element[0].firstElementChild.classList.remove('animate-container-master');
@@ -282,6 +286,7 @@ function drawerAisleDirective($rootScope, DrawerService) {
           DrawerService.enableDragging('left');
           // Re-enable touching in fully visible aisle.
           $element[0].removeEventListener('touchstart', partiallyVisibleDrawerAisleClicked, false);
+          $rootScope.contentPartiallyVisible = false;
         }
         else {
           $element[0].firstElementChild.classList.remove('animate-container-master');

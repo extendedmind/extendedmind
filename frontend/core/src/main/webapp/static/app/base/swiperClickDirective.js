@@ -42,7 +42,7 @@
         element.on('click', validateClick);
         function validateClick(event) {
           if ($rootScope.outerSwiping || $rootScope.innerSwiping  || $rootScope.scrolling ||
-              $rootScope.contentTouchMoved)
+              $rootScope.contentTouchMoved || $rootScope.contentPartiallyVisible)
           {
             event.preventDefault();
           } else {
