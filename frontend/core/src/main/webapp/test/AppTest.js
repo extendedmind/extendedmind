@@ -33,8 +33,8 @@ angular.module('em.appTest')
       };
 
   }])
-  .config(function($provide) {
-    $provide.decorator('$httpBackend', function($delegate) {
+  .config(['$provide', function($provide) {
+    $provide.decorator('$httpBackend', ['$delegate', function($delegate) {
         var proxy = function(method, url, data, callback, headers) {
             var interceptor = function() {
                 var _this = this,
@@ -60,8 +60,8 @@ angular.module('em.appTest')
             proxy[key] = $delegate[key];
         }
         return proxy;
-    });
-  })
+    }]);
+  }])
   .run(['$httpBackend',
     function($httpBackend) {
       $httpBackend.whenGET(/^static\//).passThrough();

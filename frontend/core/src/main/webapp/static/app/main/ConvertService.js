@@ -433,7 +433,7 @@
                                          listSlashRegex.source +
                                          BackendClientService.uuidRegex.source +
                                          noteRegex.source +
-                                         '$'),
+                                         '$')
   };
 }
 ConvertService['$inject'] = ['$q', 'BackendClientService', 'ExtendedItemService', 'ItemLikeService',

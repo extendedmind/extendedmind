@@ -107,5 +107,5 @@ function MockTasksBackendService($httpBackend, TasksService, UUIDService) {
   };
 }
 
-MockTasksBackendService.$inject = ['$httpBackend', 'TasksService', 'UUIDService'];
+MockTasksBackendService['$inject'] = ['$httpBackend', 'TasksService', 'UUIDService'];
 angular.module('em.appTest').factory('MockTasksBackendService', MockTasksBackendService);

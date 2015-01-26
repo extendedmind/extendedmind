@@ -18,7 +18,7 @@
   return {
     restrict: 'A',
     scope: {
-      checkboxId: '=iconCheckbox',
+      checkboxId: '=iconCheckbox'
     },
     link: function (scope, element) {
       element.addClass('icon-checkbox-input');

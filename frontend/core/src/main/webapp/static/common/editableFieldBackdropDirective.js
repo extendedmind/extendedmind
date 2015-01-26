@@ -17,7 +17,7 @@
  function editableFieldBackdropDirective($rootScope) {
   return {
     restrict: 'A',
-    controller: function($scope, $element) {
+    controller: ['$scope', '$element', function($scope, $element) {
       $element.addClass('editable-field-backdrop');
 
       var containerInfos = [];
@@ -137,7 +137,7 @@
         if (containerInfo)
           containerInfo.clicked = true;
       };
-    }
+    }]
   };
 }
 editableFieldBackdropDirective['$inject'] = ['$rootScope'];

@@ -104,7 +104,7 @@
   function initializeSettings(){
     $scope.settings = {
       hideFooter: UserSessionService.getUIPreference('hideFooter'),
-      disableVibration: UserSessionService.getUIPreference('disableVibration'),
+      disableVibration: UserSessionService.getUIPreference('disableVibration')
     };
   }
 

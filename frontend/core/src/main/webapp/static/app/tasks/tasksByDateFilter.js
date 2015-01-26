@@ -58,4 +58,5 @@
     return filteredItems;
   };
 }
+tasksByDate['$inject'] = ['DateService'];
 angular.module('em.tasks').filter('tasksByDate', tasksByDate);

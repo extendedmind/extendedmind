@@ -19,7 +19,7 @@
  function TagsService($q, ArrayService, BackendClientService, ItemLikeService, UserSessionService) {
 
   var tagFieldInfos = ItemLikeService.getFieldInfos(
-    ['tagType',
+    ['tagType'
     // TODO
     //'parent',
     //'visibility'

@@ -18,7 +18,7 @@
   return {
     restrict: 'A',
     require: ['^verticalResize', '?^swiperSlide'],
-    controller: function($scope, $element, $attrs) {
+    controller: ['$scope', '$element', '$attrs', function($scope, $element, $attrs) {
       var activateAddListItemCallback;
 
       this.registerActivateAddListItemCallback = function(callback, element){
@@ -35,7 +35,7 @@
 
         if (activateAddListItemCallback) activateAddListItemCallback();
       };
-    },
+    }],
     compile: function compile() {
       return {
         pre: function preLink(scope, element, attrs, controllers) {

@@ -19,16 +19,16 @@
   return {
     require: '^editableFieldContainer',
     restrict: 'A',
-    link: function($scope, $element, $attrs, editableFieldContainerController) {
+    link: function(scope, element, attrs, editableFieldContainerController) {
       var clicked = function() {
         editableFieldContainerController.deactivateContainer();
       };
 
       // Defaults to deactivating 'click' event
-      angular.element($element).bind('click', clicked);
+      angular.element(element).bind('click', clicked);
 
-      $scope.$on('$destroy', function() {
-        angular.element($element).unbind('click', clicked);
+      scope.$on('$destroy', function() {
+        angular.element(element).unbind('click', clicked);
       });
     }
   };

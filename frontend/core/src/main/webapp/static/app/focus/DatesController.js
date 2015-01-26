@@ -26,13 +26,13 @@
   */
   $scope.daySlides = [
   {
-    referenceDate: DateService.getTodayYYYYMMDD(),
+    referenceDate: DateService.getTodayYYYYMMDD()
   },
   {
-    referenceDate: DateService.getTomorrowYYYYMMDD(),
+    referenceDate: DateService.getTomorrowYYYYMMDD()
   },
   {
-    referenceDate: DateService.getYesterdayYYYYMMDD(),
+    referenceDate: DateService.getYesterdayYYYYMMDD()
   }
   ];
   $scope.daySlides[0].info = $scope.daySlides[0].referenceDate;

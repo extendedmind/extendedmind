@@ -94,5 +94,5 @@ function MockAuthBackendService($httpBackend, AuthenticationService, UUIDService
   };
 }
 
-MockAuthBackendService.$inject = ['$httpBackend', 'AuthenticationService', 'UUIDService'];
+MockAuthBackendService['$inject'] = ['$httpBackend', 'AuthenticationService', 'UUIDService'];
 angular.module('em.appTest').factory('MockAuthBackendService', MockAuthBackendService);

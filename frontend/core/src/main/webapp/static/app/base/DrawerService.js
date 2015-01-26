@@ -276,4 +276,5 @@
     }
   };
 }
+DrawerService['$inject'] = ['$q'];
 angular.module('em.base').factory('DrawerService', DrawerService);

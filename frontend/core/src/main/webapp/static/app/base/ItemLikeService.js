@@ -511,7 +511,7 @@
                         BackendClientService.uuidRegex.source +
                         BackendClientService.undeleteRegex.source +
                         '$');
-    },
+    }
   };
 }
 ItemLikeService['$inject'] = ['$q', 'BackendClientService', 'PersistentStorageService', 'UserSessionService',

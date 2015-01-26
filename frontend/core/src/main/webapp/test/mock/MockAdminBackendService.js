@@ -92,5 +92,5 @@ function MockAdminBackendService($httpBackend, AdminService) {
   };
 }
 
-MockAdminBackendService.$inject = ['$httpBackend', 'AdminService'];
+MockAdminBackendService['$inject'] = ['$httpBackend', 'AdminService'];
 angular.module('em.appTest').factory('MockAdminBackendService', MockAdminBackendService);

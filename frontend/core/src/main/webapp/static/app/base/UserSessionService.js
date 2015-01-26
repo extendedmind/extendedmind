@@ -410,7 +410,7 @@
     // NOTE: Here for easier testing!
     executeNotifyOwnerCallbacks: function(userUUID, collectives){
       executeNotifyOwnerCallbacks(userUUID, collectives);
-    },
+    }
   };
 }
 UserSessionService['$inject'] = ['base64', 'LocalStorageService', 'SessionStorageService', 'enableOffline',

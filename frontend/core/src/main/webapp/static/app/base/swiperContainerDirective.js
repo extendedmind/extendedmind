@@ -26,7 +26,7 @@
       toggleDrawerSlidingEvents: '@swiperContainerToggleDrawerSlidingEvents',
       slideChangedCallbackFn: '&swiperContainerSlideChanged'
     },
-    controller: function($scope, $element, $attrs) {
+    controller: ['$scope', '$element', '$attrs', function($scope, $element, $attrs) {
       var swiperSlideInfos = [];
       var initializeSwiperCalled = false;
 
@@ -508,7 +508,7 @@
         }
         SwiperService.deleteSwiper($scope.swiperPath);
       });
-    },
+    }],
     link: function (scope, element, attrs, drawerAisleController){
 
       // Hide previous and/or next slide with this for the duration of a resize animation

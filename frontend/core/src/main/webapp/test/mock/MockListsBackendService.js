@@ -91,5 +91,5 @@
   };
 }
 
-MockListsBackendService.$inject = ['$httpBackend', 'ListsService', 'UUIDService'];
+MockListsBackendService['$inject'] = ['$httpBackend', 'ListsService', 'UUIDService'];
 angular.module('em.appTest').factory('MockListsBackendService', MockListsBackendService);

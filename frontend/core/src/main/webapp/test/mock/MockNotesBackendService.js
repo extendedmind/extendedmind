@@ -85,5 +85,5 @@
   };
 }
 
-MockNotesBackendService.$inject = ['$httpBackend', 'NotesService', 'UUIDService'];
+MockNotesBackendService['$inject'] = ['$httpBackend', 'NotesService', 'UUIDService'];
 angular.module('em.appTest').factory('MockNotesBackendService', MockNotesBackendService);

@@ -19,7 +19,7 @@
     restrict: 'A',
     scope: true,
     require: '^editableFieldBackdrop',
-    controller: function($scope) {
+    controller: ['$scope', function($scope) {
 
       this.notifyFocus = function() {
         if (!$scope.containerActive){
@@ -37,7 +37,7 @@
         // deactivate and call click elsewhere
         $scope.deactivateContainer(true);
       };
-    },
+    }],
     link: function (scope, element, attrs, backdropController) {
       element.addClass('editable-field-container');
 

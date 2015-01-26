@@ -204,7 +204,7 @@
         isEdited: this.isRelationshipsEdited,
         validate: this.validateRelatioships,
         copyTransToMod: this.copyRelationshipsTransToMod,
-        resetTrans: this.resetRelationshipsTrans,
+        resetTrans: this.resetRelationshipsTrans
       };
     },
     isRelationshipsEdited: function(extendedItem /*, ownerUUID*/){

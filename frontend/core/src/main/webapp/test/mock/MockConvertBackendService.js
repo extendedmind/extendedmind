@@ -156,6 +156,6 @@
   };
 }
 
-MockConvertBackendService.$inject = ['$httpBackend', 'ConvertService', 'TasksService', 'NotesService',
+MockConvertBackendService['$inject'] = ['$httpBackend', 'ConvertService', 'TasksService', 'NotesService',
 'ListsService'];
 angular.module('em.appTest').factory('MockConvertBackendService', MockConvertBackendService);

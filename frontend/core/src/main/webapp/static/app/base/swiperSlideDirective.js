@@ -27,7 +27,7 @@
       duplicateSlide: '=?swiperSlideDuplicate',
       loopStart: '=?swiperSlideLoopStart'
     },
-    controller: function($scope){
+    controller: ['$scope', function($scope){
       this.isSlideActiveByDefault = function(){
         if ($scope.slideIndex === 0 && !$scope.duplicateSlide) return true;
         if ($scope.slideIndex === 1 && $scope.loopStart) return true;
@@ -56,7 +56,7 @@
       $scope.getSlideMovementCallbackFn = function() {
         return slideMovementCallback;
       };
-    },
+    }],
     link: function(scope, element, attrs, swiperContainerDirectiveController) {
       swiperContainerDirectiveController.registerSlide(scope.slidePath,
                                                        element,

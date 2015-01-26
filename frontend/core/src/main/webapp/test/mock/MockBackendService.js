@@ -114,7 +114,7 @@
   };
 }
 
-MockBackendService.$inject = [
+MockBackendService['$inject'] = [
 'MockListsBackendService', 'MockTagsBackendService', 'MockTasksBackendService', 'MockNotesBackendService',
 'MockItemsBackendService', 'MockConvertBackendService', 'MockUserBackendService', 'MockAuthBackendService', 'MockAdminBackendService', 'base64'
 ];

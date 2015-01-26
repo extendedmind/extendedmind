@@ -80,7 +80,7 @@
               return task.trans.completed !== undefined;
             }
           };
-        },
+        }
       },
       // TODO (when implementing this, update the method below for repeating task cloning!:
       // assignee,
@@ -605,7 +605,7 @@
                                     taskSlashRegex.source +
                                     BackendClientService.uuidRegex.source +
                                     uncompleteRegex.source +
-                                    '$'),
+                                    '$')
   };
 }
 

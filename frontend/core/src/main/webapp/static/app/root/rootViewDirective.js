@@ -22,7 +22,7 @@
     restrict: 'A',
     replace: 'true',
     templateUrl: $rootScope.urlBase + 'app/root/root.html',
-    controller: function($scope) {
+    controller: ['$scope', function ($scope) {
 
       // BASIC DIMENSIONS TO ROOT SCOPE
       // NOTE: For some reason this had to be 567 before,
@@ -173,7 +173,7 @@
         unbindEmInteraction();
         unbindEmException();
       });
-    },
+    }],
     link: function (scope) {
 
       // SESSION MANAGEMENT

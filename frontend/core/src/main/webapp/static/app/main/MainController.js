@@ -72,11 +72,11 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
         },
         middle: {
           path: 'tasks/contexts',
-          heading: 'contexts',
+          heading: 'contexts'
         },
         right: {
           path: 'tasks/context',
-          heading: 'no context',
+          heading: 'no context'
         }
       }
     },

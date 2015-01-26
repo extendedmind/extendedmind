@@ -11,7 +11,7 @@ frontend/core/*.sublime-workspace
 # Ignore Maven builds
 target/
 frontend/core/src/main/webapp/test/json/
-frontend/core/src/main/webapp/static/em.min.js
+frontend/core/src/main/webapp/static/*.min.js
 frontend/core/src/main/webapp/static/css
 frontend/core/src/main/webapp/static/favicon/
 frontend/core/src/main/webapp/static/img/

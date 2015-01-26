@@ -20,7 +20,7 @@
     require: ['^listContainer', '?^swiperSlide'],
     restrict: 'A',
     scope: true,
-    controller: function($scope, $element, $attrs) {
+    controller: ['$scope', '$element', '$attrs', function($scope, $element, $attrs) {
       $scope.listInfos = {};
       var arrayVisible;
 
@@ -114,8 +114,7 @@
           checkboxCheckingReadyDeferred.resolve(item);
         }
       };
-
-    },
+    }],
     link: function(scope, element, attrs, controllers) {
       var listOpenOnAddFn;
       if (attrs.listOpen){

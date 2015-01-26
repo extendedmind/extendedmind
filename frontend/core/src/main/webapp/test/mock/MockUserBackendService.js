@@ -106,5 +106,5 @@ function MockUserBackendService($httpBackend, UserService, UserSessionService) {
   };
 }
 
-MockUserBackendService.$inject = ['$httpBackend', 'UserService', 'UserSessionService'];
+MockUserBackendService['$inject'] = ['$httpBackend', 'UserService', 'UserSessionService'];
 angular.module('em.appTest').factory('MockUserBackendService', MockUserBackendService);

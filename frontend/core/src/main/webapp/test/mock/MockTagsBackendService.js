@@ -65,5 +65,5 @@ function MockTagsBackendService($httpBackend, TagsService, UUIDService) {
   };
 };
 
-MockTagsBackendService.$inject = ['$httpBackend', 'TagsService', 'UUIDService'];
+MockTagsBackendService['$inject'] = ['$httpBackend', 'TagsService', 'UUIDService'];
 angular.module('em.appTest').factory('MockTagsBackendService', MockTagsBackendService);

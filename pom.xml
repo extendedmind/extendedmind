@@ -236,7 +236,7 @@
         <plugin>
           <groupId>ro.isdc.wro4j</groupId>
           <artifactId>wro4j-maven-plugin</artifactId>
-          <version>1.7.1</version>
+          <version>1.7.7</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>

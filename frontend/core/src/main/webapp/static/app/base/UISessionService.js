@@ -255,7 +255,7 @@
 
       deferredActions.push({
         type: type,
-        deferred: deferredAction,
+        deferred: deferredAction
       });
 
       if (failsafeDeferTime) {  // Make sure promise gets resolved eventually.

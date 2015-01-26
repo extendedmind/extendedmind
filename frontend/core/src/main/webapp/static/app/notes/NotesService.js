@@ -35,7 +35,7 @@
           }
           else if (note.favorited !== undefined) note.trans.favorited = note.favorited;
           else if (note.trans.favorited !== undefined) delete note.trans.favorited;
-        },
+        }
       },
       // TODO:
       // visibility,
@@ -477,7 +477,7 @@
                                     noteSlashRegex.source +
                                     BackendClientService.uuidRegex.source +
                                     unfavoriteRegex.source +
-                                    '$'),
+                                    '$')
   };
 }
 

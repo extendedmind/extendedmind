@@ -22,7 +22,7 @@
 function drawerAisleDirective($rootScope, DrawerService) {
   return {
     restrict: 'A',
-    controller: function($scope, $element) {
+    controller: ['$scope', '$element', function($scope, $element) {
 
       // CALLBACK REGISTRATION
 
@@ -382,7 +382,7 @@ function drawerAisleDirective($rootScope, DrawerService) {
         $element[0].removeEventListener('touchstart', partiallyVisibleDrawerAisleClicked, false);
       });
 
-    },
+    }],
     link: function postLink(scope) {
 
       scope.$on('$destroy', function() {

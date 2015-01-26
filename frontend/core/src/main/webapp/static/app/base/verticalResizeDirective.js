@@ -17,7 +17,7 @@
  function verticalResizeDirective($parse, $rootScope) {
   return {
     restrict: 'A',
-    controller: function($scope, $element, $attrs) {
+    controller: ['$scope', '$element', '$attrs', function($scope, $element, $attrs) {
 
       var maxHeightWithoutKeyboard;
       var overrideElement;
@@ -95,7 +95,7 @@
         }
       }
       $scope.$watch('softKeyboard.height', doVerticalResize);
-    }
+    }]
   };
 }
 verticalResizeDirective['$inject'] = ['$parse', '$rootScope'];

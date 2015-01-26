@@ -189,6 +189,6 @@ function MockItemsBackendService($httpBackend, ItemsService, PersistentStorageSe
   };
 }
 
-MockItemsBackendService.$inject = ['$httpBackend', 'ItemsService', 'PersistentStorageService',
+MockItemsBackendService['$inject'] = ['$httpBackend', 'ItemsService', 'PersistentStorageService',
 'SynchronizeService', 'UISessionService', 'UserSessionService', 'UUIDService'];
 angular.module('em.appTest').factory('MockItemsBackendService', MockItemsBackendService);
