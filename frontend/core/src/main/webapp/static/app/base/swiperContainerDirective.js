@@ -14,7 +14,8 @@
  */
  'use strict';
 
- function swiperContainerDirective($rootScope, DetectBrowserService, DrawerService, SwiperService) {
+ function swiperContainerDirective($rootScope, DetectBrowserService, DrawerService, SwiperService,
+                                   packaging) {
 
   return {
     restrict: 'A',
@@ -153,6 +154,12 @@
           slideChildElement.addEventListener('touchstart', pageSwiperSlideTouchStart, false);
           slideChildElement.addEventListener('touchmove', pageSwiperSlideTouchMove, false);
           slideChildElement.addEventListener('touchend', pageSwiperSlideTouchEnd, false);
+
+          if (packaging === 'android-cordova') {
+            // See http://developer.android.com/guide/webapps/migrating.html#TouchCancel
+            slideChildElement.addEventListener('touchcancel', pageSwiperSlideTouchCancel, false);
+          }
+
           slideChildElement.addEventListener('scroll', pageSwiperSlideScroll, false);
 
           // http://blogs.windows.com/windows_phone/b/wpdev/archive/2012/11/15/adapting-your-webkit-optimized-site-for-internet-explorer-10.aspx#step4
@@ -450,6 +457,14 @@
         }
       }
 
+      function pageSwiperSlideTouchCancel() {
+        if (preventPageSlideSwipe) {
+          // Re-enable swipe.
+          SwiperService.setOnlyExternal($scope.swiperPath, false);
+          preventPageSlideSwipe = false;
+        }
+      }
+
       function pageSwiperSlideScroll() {
         $rootScope.scrolling = true;
         if (pageSwiperSlideScrollTimeout) {
@@ -651,5 +666,5 @@
   };
 }
 swiperContainerDirective['$inject'] = ['$rootScope', 'DetectBrowserService', 'DrawerService',
-'SwiperService'];
+'SwiperService', 'packaging'];
 angular.module('em.base').directive('swiperContainer', swiperContainerDirective);
