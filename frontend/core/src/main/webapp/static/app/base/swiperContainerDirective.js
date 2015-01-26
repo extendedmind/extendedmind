@@ -572,12 +572,12 @@
 
       function swiperAboutToMoveToNewPosition() {
         // Disable swiping during move.
-        SwiperService.setOnlyExternal(scope.swiperPath, true);
+        SwiperService.setOnlyExternalSwiperAndChildSwipers(scope.swiperPath, true);
       }
 
       function swiperAboutToMoveToInitialPosition() {
         // Disable swiping during move.
-        SwiperService.setOnlyExternal(scope.swiperPath, false);
+        SwiperService.setOnlyExternalSwiperAndChildSwipers(scope.swiperPath, false);
       }
 
       // TODO: update cordova and uncomment: https://issues.apache.org/jira/browse/CB-7043
@@ -618,10 +618,10 @@
       }
 
       function enableSwiping() {
-        SwiperService.setOnlyExternal(scope.swiperPath, false);
+        SwiperService.setOnlyExternalSwiperAndChildSwipers(scope.swiperPath, false);
       }
       function disableSwiping() {
-        SwiperService.setOnlyExternal(scope.swiperPath, true);
+        SwiperService.setOnlyExternalSwiperAndChildSwipers(scope.swiperPath, true);
       }
 
       if (drawerAisleController){

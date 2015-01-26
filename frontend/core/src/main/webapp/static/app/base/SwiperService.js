@@ -424,6 +424,18 @@ function SwiperService($q, $timeout) {
         swipers[swiperPath].swiper.params.onlyExternal = swipe;
       }
     },
+    setOnlyExternalSwiperAndChildSwipers: function(swiperPath, onlyExternal) {
+      if (swipers[swiperPath] && swipers[swiperPath].swiper) {
+        swipers[swiperPath].swiper.params.onlyExternal = onlyExternal;
+
+        for (var i = 0; i < swipers[swiperPath].slidesPaths.length; i++) {
+          var slidePath = swipers[swiperPath].slidesPaths[i];
+          if (swipers[slidePath]) {
+            swipers[slidePath].swiper.params.onlyExternal = onlyExternal;
+          }
+        }
+      }
+    },
     registerSlideResetCallback: function(callback, swiperPath, id) {
       if (!slideResetCallbacks[swiperPath]) slideResetCallbacks[swiperPath] = [];
       else {
