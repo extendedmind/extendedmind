@@ -9,10 +9,11 @@
  * Version: 1.9.3
  *
  * FORKS
- *  i.  Drawer aisle sometimes becomes unresponsive for touch probably because cache.translation is not
- *      cleared. Try to clear cache.translation from elsewhere after easeTo(0) calls if problem persists.
- *  ii. Prevent dragging when content is focused in note editor and pageX in touchstart is greater than or
- *      equal to 28 pixels. 28 pixels is the size of the padding-left for content's textarea.
+ *  i.      Drawer aisle sometimes becomes unresponsive for touch probably because cache.translation is not
+ *          cleared. Try to clear cache.translation from elsewhere after easeTo(0) calls if problem persists.
+ *  ii.     Prevent dragging when content is focused in note editor and pageX in touchstart is greater than or
+ *          equal to 28 pixels. 28 pixels is the size of the padding-left for content's textarea.
+ *  iii.    Tap to close when minDragDistance is set.
  */
 /*jslint browser: true*/
 /*global define, module, ender*/
@@ -34,7 +35,8 @@
             tapToClose: true,
             touchToDrag: true,
             slideIntent: 40, // degrees
-            minDragDistance: 5
+            minDragDistance: 5,
+            maxTapToCloseDistance: 5
         },
         cache = {
             simpleStates: {
@@ -470,14 +472,32 @@
                         utils.dispatchEvent('end');
                         var translated = action.translate.get.matrix(4);
 
-                        // Tap Close
-                        if (cache.dragWatchers.current === 0 && translated !== 0 && settings.tapToClose) {
-                            utils.dispatchEvent('close');
-                            utils.events.prevent(e);
-                            action.translate.easeTo(0);
-                            cache.isDragging = false;
-                            cache.startDragX = 0;
-                            return;
+                        if (settings.tapToClose) {
+                            var allowTapToClose;
+                            if (cache.dragWatchers.current === 0 && translated !== 0) {
+                                allowTapToClose = true;
+                            }
+
+                            // FORK iii
+                            if (!allowTapToClose && settings.minDragDistance && settings.maxPosition) {
+                                var leftOpenTranslated = settings.maxPosition - translated;
+                                if (leftOpenTranslated >= 0 &&
+                                    leftOpenTranslated <= settings.maxTapToCloseDistance &&
+                                    cache.simpleStates.translation.sinceDirectionChange <= 0)
+                                {
+                                    allowTapToClose = true;
+                                }
+                            }
+                            if (allowTapToClose) {
+                                // Tap Close.
+                                utils.dispatchEvent('close');
+                                utils.events.prevent(e);
+                                action.translate.easeTo(0);
+                                cache.isDragging = false;
+                                cache.startDragX = 0;
+                                return;
+                            }
+
                         }
 
                         // Revealing Left
