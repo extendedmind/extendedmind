@@ -21,32 +21,35 @@
 
   // OPENING, INITIALIZING, CLOSING
 
-  var itemInEdit;
-  $scope.initializeEditor = function(editorType, item, mode){
+  var dataInEdit;
+  $scope.initializeEditor = function(editorType, data, mode){
     // Reset $scope variables. These may exist from previous editor.
     $scope.task = undefined;
     $scope.note = undefined;
     $scope.list = undefined;
     $scope.item = undefined;
     $scope.tag = undefined;
-    itemInEdit = item;
+    dataInEdit = data;
 
     $scope.editorType = editorType;
     $scope.editorVisible = true;
     $scope.mode = mode;
 
     if (editorType === 'task'){
-      $scope.task = itemInEdit;
+      $scope.task = dataInEdit;
     }else if (editorType === 'note'){
-      $scope.note = itemInEdit;
+      $scope.note = dataInEdit;
     }else if (editorType === 'list'){
-      $scope.list = itemInEdit;
+      $scope.list = dataInEdit;
     }else if (editorType === 'item'){
-      $scope.item = itemInEdit;
+      $scope.item = dataInEdit;
     }else if (editorType === 'tag'){
-      $scope.tag = itemInEdit;
+      $scope.tag = dataInEdit;
     }else if (editorType === 'user'){
-      $scope.user = itemInEdit ? itemInEdit : UserSessionService.getUser();
+      $scope.user = dataInEdit ? dataInEdit : UserSessionService.getUser();
+    }else if (editorType === 'recurring') {
+      $scope.iterableItems = data;
+      $scope.item = data[0];
     }
   };
 
@@ -59,11 +62,17 @@
 
     if (featureEditorOpenedCallback) featureEditorOpenedCallback();
 
-    if ($scope.mode !== 'new' && ($scope.editorType === 'task' || $scope.editorType === 'note')) {
-      return;
+    var preventFocus;
+
+    if ($scope.mode === 'recurring' ||
+        ($scope.mode !== 'new' &&  ($scope.editorType === 'task' || $scope.editorType === 'note')))
+    {
+      preventFocus = true;
     }
 
-    if ((!itemInEdit || !itemInEdit.deleted) && typeof titleBarInputFocusCallbackFunction === 'function') {
+    if (!preventFocus && (!dataInEdit || !dataInEdit.deleted) &&
+        typeof titleBarInputFocusCallbackFunction === 'function')
+    {
       // Focus on found and not deleted item
       setFocusOnTitlebarInput();
     }
@@ -127,18 +136,17 @@
 
   // CONVERTING
 
-  $scope.convertToNote = function(itemInEdit){
+  $scope.convertToNote = function(dataInEdit){
     var convertToNotePromise;
-    if (itemInEdit.trans.itemType === 'item') {
-      convertToNotePromise = ItemsService.itemToNote(itemInEdit,
-                                                     UISessionService.getActiveUUID());
+    if (dataInEdit.trans.itemType === 'item') {
+      convertToNotePromise = ItemsService.itemToNote(dataInEdit, UISessionService.getActiveUUID());
     }
-    else if (itemInEdit.trans.itemType === 'task') {
-      convertToNotePromise = ConvertService.finishTaskToNoteConvert(itemInEdit,
+    else if (dataInEdit.trans.itemType === 'task') {
+      convertToNotePromise = ConvertService.finishTaskToNoteConvert(dataInEdit,
                                                                     UISessionService.getActiveUUID());
     }
-    else if (itemInEdit.trans.itemType === 'list') {
-      convertToNotePromise = ConvertService.finishListToNoteConvert(itemInEdit,
+    else if (dataInEdit.trans.itemType === 'list') {
+      convertToNotePromise = ConvertService.finishListToNoteConvert(dataInEdit,
                                                                     UISessionService.getActiveUUID());
     }
     if (convertToNotePromise){
@@ -148,17 +156,16 @@
     }
   };
 
-  $scope.convertToTask = function(itemInEdit){
+  $scope.convertToTask = function(dataInEdit){
     var convertToTaskPromise;
-    if (itemInEdit.trans.itemType === 'item') {
-      convertToTaskPromise = ItemsService.itemToTask(itemInEdit,
-                                                     UISessionService.getActiveUUID());
+    if (dataInEdit.trans.itemType === 'item') {
+      convertToTaskPromise = ItemsService.itemToTask(dataInEdit, UISessionService.getActiveUUID());
     }
-    else if (itemInEdit.trans.itemType === 'note') {
-      convertToTaskPromise = ConvertService.finishNoteToTaskConvert(itemInEdit,
+    else if (dataInEdit.trans.itemType === 'note') {
+      convertToTaskPromise = ConvertService.finishNoteToTaskConvert(dataInEdit,
                                                                     UISessionService.getActiveUUID());
-    } else if (itemInEdit.trans.itemType === 'list') {
-      convertToTaskPromise = ConvertService.finishListToTaskConvert(itemInEdit,
+    } else if (dataInEdit.trans.itemType === 'list') {
+      convertToTaskPromise = ConvertService.finishListToTaskConvert(dataInEdit,
                                                                     UISessionService.getActiveUUID());
     }
     if (convertToTaskPromise){
@@ -168,18 +175,17 @@
     }
   };
 
-  $scope.convertToList = function(itemInEdit){
+  $scope.convertToList = function(dataInEdit){
     var convertToListPromise;
-    if (itemInEdit.trans.itemType === 'item'){
-      convertToListPromise = ItemsService.itemToList(itemInEdit,
-                                                     UISessionService.getActiveUUID());
+    if (dataInEdit.trans.itemType === 'item'){
+      convertToListPromise = ItemsService.itemToList(dataInEdit, UISessionService.getActiveUUID());
     }
-    else if (itemInEdit.trans.itemType === 'task') {
-      convertToListPromise = ConvertService.finishTaskToListConvert(itemInEdit,
+    else if (dataInEdit.trans.itemType === 'task') {
+      convertToListPromise = ConvertService.finishTaskToListConvert(dataInEdit,
                                                                     UISessionService.getActiveUUID());
     }
-    else if (itemInEdit.trans.itemType === 'note') {
-      convertToListPromise = ConvertService.finishNoteToListConvert(itemInEdit,
+    else if (dataInEdit.trans.itemType === 'note') {
+      convertToListPromise = ConvertService.finishNoteToListConvert(dataInEdit,
                                                                     UISessionService.getActiveUUID());
     }
     if (convertToListPromise){

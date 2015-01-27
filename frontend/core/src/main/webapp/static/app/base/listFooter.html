@@ -4,6 +4,10 @@
     <span class="text-navigation-back" ng-bind="leftNavigationText"></span>
   </a>
 
+  <a href ng-if="isLeftActionActive()" class="group-symmetrical--left" swiper-click="leftAction()">
+    <span ng-bind="leftActionText"></span>
+  </a>
+
   <div class="group-symmetrical--middle">
     <a href ng-hide="isFooterAddItemHidden()" swiper-click="addItem()">
       <span class="icon-plus"></span>

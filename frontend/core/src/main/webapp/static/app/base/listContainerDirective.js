@@ -35,6 +35,10 @@
 
         if (activateAddListItemCallback) activateAddListItemCallback();
       };
+
+      this.registerGetFullArrayFn = function(getArrayFn) {
+        this.getFullArrayFn = getArrayFn;
+      };
     }],
     compile: function compile() {
       return {

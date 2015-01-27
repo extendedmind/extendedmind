@@ -61,7 +61,12 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
       }
     },
     inbox: {
-      heading: 'inbox'
+      heading: 'inbox',
+      sortable: {
+        heading: 'sort',
+        action: openRecurringEditor,
+        actionParam: 'item'
+      }
     },
     tasks: {
       heading: 'tasks',
@@ -151,6 +156,13 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
 
     return promise;
   };
+
+  /*
+  * Recurring editor.
+  */
+  function openRecurringEditor(items, mode) {
+    $scope.openEditor('recurring', items, mode);
+  }
 
   $scope.closeEditor = function closeEditor() {
     DrawerService.close('right');

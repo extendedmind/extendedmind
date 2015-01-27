@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function listFooterDirective($parse, $rootScope) {
+ function listFooterDirective($filter, $parse, $rootScope) {
   return {
     require: ['^listContainer', '?^swiperSlide'],
     restrict: 'A',
@@ -25,7 +25,7 @@
 
       scope.addItem = function(){
         controllers[0].activateAddListItem();
-      }
+      };
 
       function trimNavigationText(text){
         if (text.length > 12){
@@ -46,8 +46,8 @@
             scope.rightNavigationText = scope.featureInfo.slides.right.heading;
             scope.rightNavigationActionParameter = scope.featureInfo.slides.right.path;
           }
-        }else if (scope.featureInfo.slides.middle
-                  && scope.featureInfo.slides.middle.path === currentSlidePath){
+        }else if (scope.featureInfo.slides.middle &&
+                  scope.featureInfo.slides.middle.path === currentSlidePath){
           // Middle slide
           scope.leftNavigationText = scope.featureInfo.slides.left.heading;
           scope.leftNavigationActionParameter = scope.featureInfo.slides.left.path;
@@ -69,8 +69,23 @@
           }
         }
       }
+
+      // FOOTER ACTIONS
+      if (scope.featureInfo.sortable) {
+        var sortableArray = controllers[0].getFullArrayFn();
+        scope.leftActionText = scope.featureInfo.sortable.heading;
+
+        scope.leftAction = function() {
+          var param = $filter('orderBy')(sortableArray, 'trans.created', true);
+          scope.featureInfo.sortable.action(param, scope.featureInfo.sortable.actionParam);
+        };
+      }
+
+      scope.isLeftActionActive = function() {
+        return scope.featureInfo.sortable && sortableArray && sortableArray.length;
+      };
     }
   };
 }
-listFooterDirective['$inject'] = ['$parse', '$rootScope'];
+listFooterDirective['$inject'] = ['$filter', '$parse', '$rootScope'];
 angular.module('em.base').directive('listFooter', listFooterDirective);

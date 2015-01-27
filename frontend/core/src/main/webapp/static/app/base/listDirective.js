@@ -35,10 +35,6 @@
         }
       };
 
-      this.getVisibleArray = function() {
-        return $scope.listInfos;
-      };
-
       this.notifyArrayVisible = function(/*array*/) {
         arrayVisible = true;
         if (arrayVisibleCallback) {
@@ -125,6 +121,8 @@
       if (attrs.listLocked) {
         listLockedCallback = $parse(attrs.listLocked).bind(undefined, scope);
       }
+
+      controllers[0].registerGetFullArrayFn(scope.getFullArray);
 
       function activateListAdd() {
         if (listOpenOnAddFn){

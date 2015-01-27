@@ -90,6 +90,7 @@ TODO: em grid structure explained in plain English (when new grid structure deci
 }
 
 // 1. Intermediate div needs height to work
+.container-editor--inner__outer,
 .container-editor--inner {
   height: inherit;    // [1]
 }
@@ -247,6 +248,23 @@ Vertically center .container-master and .container-editor in large screens
 // 1. Inherit width from parent. Elements inside swiper would otherwise be as wide as `.swiper-wrapper`.
 .swiper-slide .container-content {
   width: inherit; /* [1] */
+}
+
+// 1. Make room for outer footer.
+.container-editor--inner__outer {
+  padding-bottom: @height-footer-short; // [1]
+  .container-content--after.editor-footer {
+    bottom: @height-footer-short; // [1]
+  }
+}
+
+// 1. Define height.
+// 2. Align horizontally.
+.container-editor--inner__after {
+  height: @height-footer-short; // [1]
+  background-color: @color-background-btn-active;
+  max-width: @width-column-max;     // [2]
+  .center-horizontally-absolute();  // [2]
 }
 
 // 1. Use same positioning as in swiper to make .container-content scrollable
