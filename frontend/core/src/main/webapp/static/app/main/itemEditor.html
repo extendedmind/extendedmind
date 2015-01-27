@@ -12,19 +12,21 @@
         <a ng-if="item.trans.deleted" href class="group-symmetrical--right link-navigation highlighted active"
           swiper-click="undeleteItem(item)"><span class="text-navigation">restore</span></a>
       </div>
-
-      <div class="row-vertically-centered with-textarea">
-        <textarea ng-model="item.trans.title" input-model-validator ng-trim="false" msd-elastic
-          ng-keydown="itemTitlebarTextKeyDown($event)"
-          editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
-          placeholder="enter item title&#8230;" maxlength="128" autocapitalize="none" autocorrect="off">
-        </textarea>
-      </div>
     </div>
   </header>
 
   <div ng-style="{'padding-bottom': EDITOR_FOOTER_HEIGHT}" class="container-fluid--inner">
     <div class="container-content" drawer-override-aisle="right">
+
+      <!-- ITEM TITLE -->
+      <div class="row-vertically-centered with-textarea">
+        <textarea class="text-heading-primary large" ng-model="item.trans.title"
+          input-model-validator ng-trim="false" msd-elastic ng-keydown="itemTitlebarTextKeyDown($event)"
+          editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
+          placeholder="enter item title&#8230;" maxlength="128" autocapitalize="none" autocorrect="off">
+        </textarea>
+      </div>
+
       <div class="row-vertically-centered with-textarea">
         <textarea ng-model="item.trans.description" input-model-validator ng-trim="false" msd-elastic
           placeholder="enter description&#8230;" maxlength="1024" autocapitalize="none" autocorrect="off">
