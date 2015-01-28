@@ -23,7 +23,7 @@
   </div>
 
   <div ng-if="editorVisible" ng-switch-when="recurring" ng-switch="recurringType"
-    class="container-editor--inner__outer" ng-controller="RecurringEditorController">
+    class="container-editor--inner__outer sorting-in-progress" ng-controller="RecurringEditorController">
     <div ng-switch-when="item" class="container-editor--inner">
       <div ng-include="urlBase + 'app/main/itemEditor.html'" include-replace></div>
 

@@ -3,7 +3,7 @@
   <header class="container-titlebar">
     <div class="container-titlebar--inner">
       <div class="group-symmetrical height-large--top">
-        <a href class="group-symmetrical--left link-navigation active highlighted" swiper-click="endItemEdit()">
+        <a href class="group-symmetrical--left link-navigation active highlighted sorting-hide" swiper-click="endItemEdit()">
           <span class="text-navigation-back" ng-bind="isItemEdited() && !item.trans.deleted ? 'save' : 'back'"></span>
         </a>
         <a ng-if="!item.trans.deleted" href class="group-symmetrical--right" swiper-click="deleteItemInEdit()" >
