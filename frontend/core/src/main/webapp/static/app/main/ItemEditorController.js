@@ -72,6 +72,10 @@
       event.stopPropagation();
     }
   };
+
+  $scope.setItemDescriptionFocus = function(focus) {
+    $scope.itemDescriptionFocused = focus;
+  };
 }
 
 ItemEditorController['$inject'] = ['$q', '$rootScope', '$scope', 'ItemsService', 'UISessionService'];

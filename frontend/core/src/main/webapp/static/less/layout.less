@@ -1153,6 +1153,17 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
   }
 }
 
+.text-heading-primary--outer {
+  display: table;
+  width: 100%;
+  .text-heading-primary--inner {
+    text-align: center;
+    height: inherit;
+    display: table-cell;
+    vertical-align: middle;
+  }
+}
+
 // 1. Inherit varying container height.
 .group-symmetrical--right {
   height: inherit;  // [1]

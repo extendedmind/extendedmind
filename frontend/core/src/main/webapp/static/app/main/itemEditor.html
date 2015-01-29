@@ -3,9 +3,26 @@
   <header class="container-titlebar">
     <div class="container-titlebar--inner">
       <div class="group-symmetrical height-large--top">
-        <a href class="group-symmetrical--left link-navigation active highlighted sorting-hide" swiper-click="endItemEdit()">
+
+        <a href ng-hide="itemDescriptionFocused"
+          class="group-symmetrical--left link-navigation active highlighted sorting-hide"
+          swiper-click="endItemEdit()">
           <span class="text-navigation-back" ng-bind="isItemEdited() && !item.trans.deleted ? 'save' : 'back'"></span>
         </a>
+
+        <a href ng-if="itemDescriptionFocused" class="group-symmetrical--left highlighted">
+          <span class="text-edit">done</span>
+        </a>
+
+        <div ng-hide="!itemDescriptionFocused" ng-style="{maxWidth: calculateTitleWidth()}"
+          class="group-symmetrical--middle width-large text-heading-primary--outer">
+          <div class="text-heading-primary--inner">
+            <span class="text-heading-primary" ng-class="!item.trans.title && 'text-downplayed'"
+              ng-bind="item.trans.title && item.trans.title.length ? item.trans.title : 'new item'" clamp=2>
+            </span>
+          </div>
+        </div>
+
         <a ng-if="!item.trans.deleted" href class="group-symmetrical--right" swiper-click="deleteItemInEdit()" >
           <span class="icon-trash"></span>
         </a>
@@ -16,10 +33,10 @@
   </header>
 
   <div ng-style="{'padding-bottom': EDITOR_FOOTER_HEIGHT}" class="container-fluid--inner">
-    <div class="container-content" drawer-override-aisle="right">
+    <div class="container-content" drawer-override-aisle="right" ng-init="drawerAisleInitialized = true">
 
       <!-- ITEM TITLE -->
-      <div class="row-vertically-centered with-textarea">
+      <div ng-hide="itemDescriptionFocused" class="row-vertically-centered with-textarea">
         <textarea class="text-heading-primary large" ng-model="item.trans.title"
           input-model-validator ng-trim="false" msd-elastic ng-keydown="itemTitlebarTextKeyDown($event)"
           editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
@@ -27,11 +44,13 @@
         </textarea>
       </div>
 
-      <div class="row-vertically-centered with-textarea">
-        <textarea ng-model="item.trans.description" input-model-validator ng-trim="false" msd-elastic
-          placeholder="enter description&#8230;" maxlength="1024" autocapitalize="none" autocorrect="off">
-        </textarea>
-      </div>
+      <!-- DESCRIPTION -->
+      <textarea ng-if="drawerAisleInitialized" id="ignoreSnap" ng-model="item.trans.description"
+        input-model-validator ng-trim="false" ng-focus="setItemDescriptionFocus(true)"
+        ng-blur="setItemDescriptionFocus(false)" msd-elastic
+        placeholder="enter description&#8230;" maxlength="1024" autocapitalize="none" autocorrect="off">
+      </textarea>
+
     </div>
     <footer class="container-content--after editor-footer">
       <div class="group-symmetrical">
