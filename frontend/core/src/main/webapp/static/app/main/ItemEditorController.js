@@ -63,11 +63,10 @@
   $scope.itemTitlebarTextKeyDown = function (keydownEvent) {
     $scope.handleBasicTitlebarKeydown(keydownEvent, $scope.item);
     // Return
-    if (event.keyCode === 13) {
+    if (event.keyCode === 13) {
       if ($scope.itemTitlebarHasText()) {
         // Enter in editor saves, no line breaks allowed
-        $scope.closeEditor();
-        saveItemInEdit();
+        $scope.handleTitlebarEnterAction(saveItemInEdit);
       }
       event.preventDefault();
       event.stopPropagation();

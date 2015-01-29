@@ -59,7 +59,7 @@
 
   $scope.endSorting = $scope.closeEditor;
 
-  function gotoNextItemOrEndSortingOnLast() {
+  function initializeAndGotoNextItemOrEndSortingOnLast() {
     var iterableItemIndex = $scope.getIterableItemIndex();
     if (iterableItemIndex < $scope.iterableItems.length - 1) {
       // Still more items.
@@ -77,6 +77,14 @@
     }
 
   }
+  var aboutToCloseCallbackRegistered;
+  var interceptedRegisterAboutToCloseCallback = $scope.registerFeatureEditorAboutToCloseCallback;
+  $scope.registerFeatureEditorAboutToCloseCallback = function() {
+    if (!aboutToCloseCallbackRegistered) {
+      aboutToCloseCallbackRegistered = true;
+      interceptedRegisterAboutToCloseCallback();
+    }
+  };
 
   $scope.saveItemAndGotoNextItem = function() {
     var itemType = $scope.getItemType();
@@ -84,10 +92,12 @@
     if ($scope.mode === 'item') {
       if (itemType === 'task') {
         ItemsService.itemToTask($scope.task, UISessionService.getActiveUUID())
-        .then(gotoNextItemOrEndSortingOnLast);
+        .then(initializeAndGotoNextItemOrEndSortingOnLast);
       }
     }
   };
+
+  $scope.skipItem = initializeAndGotoNextItemOrEndSortingOnLast;
 
   $scope.undoSorting = function() {
     $scope.initializeEditor('recurring', $scope.iterableItems, $scope.mode);
@@ -112,7 +122,13 @@
 
   $scope.processDelete = function() {
     if ($scope.mode === 'item') $scope.deleteItem($scope.item);
-    gotoNextItemOrEndSortingOnLast();
+    initializeAndGotoNextItemOrEndSortingOnLast();
+  };
+
+  $scope.processClose = $scope.saveItemAndGotoNextItem;
+
+  $scope.handleTitlebarEnterAction = function() {
+    return undefined;
   };
 }
 

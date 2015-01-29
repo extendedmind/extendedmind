@@ -46,7 +46,8 @@
         </a>
       </div>
 
-      <a href ng-if="!isIterableItemDirty()" class="group-symmetrical--right" swiper-click="skipItemAndGotoNextItem()">
+      <a href ng-if="!isIterableItemDirty() && getIterableItemIndex() !== iterableItems.length - 1"
+        class="group-symmetrical--right" swiper-click="skipItem()">
         <span style="color: white;">skip</span>
       </a>
       <a href ng-if="isIterableItemDirty()" class="group-symmetrical--right" swiper-click="saveItemAndGotoNextItem()">

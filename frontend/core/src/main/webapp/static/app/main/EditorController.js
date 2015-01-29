@@ -117,6 +117,11 @@
       $scope.unregisterEditorClosedCallback('EditorController');
   });
 
+  $scope.processClose = function(callback) {
+    $scope.closeEditor();
+    if (typeof callback === 'function') callback();
+  };
+
   // HELPER METHODS
 
   var featureEditorAboutToCloseCallback, featureEditorOpenedCallback;
@@ -246,6 +251,11 @@
     if (keydownEvent.keyCode === 27){
       blurTitlebarInput();
     }
+  };
+
+  $scope.handleTitlebarEnterAction = function(callback) {
+    $scope.closeEditor();
+    if (typeof callback === 'function') callback();
   };
 
   $scope.calculateTitleWidth = function() {

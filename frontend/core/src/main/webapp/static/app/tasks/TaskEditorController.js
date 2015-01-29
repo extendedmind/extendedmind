@@ -91,8 +91,7 @@
     if (event.keyCode === 13) {
       if ($scope.taskTitlebarHasText()) {
         // Enter in editor saves, no line breaks allowed
-        $scope.closeEditor();
-        saveTaskInEdit();
+        $scope.handleTitlebarEnterAction(saveTaskInEdit);
       }
       event.preventDefault();
       event.stopPropagation();
@@ -163,7 +162,7 @@
     // FIXME: This is not the place to do this! Better would be at saveTaskInEdit but that would require
     //        that we know if the task will actually leave or not!
     UISessionService.allow('leaveAnimation', 1000);
-    $scope.endTaskEdit();
+    $scope.processClose();
   };
 
   $scope.clearTransientDate = function(task) {
