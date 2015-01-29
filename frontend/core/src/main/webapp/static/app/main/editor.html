@@ -22,20 +22,36 @@
     <div ng-include="urlBase + 'app/user/userEditor.html'" include-replace></div>
   </div>
 
-  <div ng-if="editorVisible" ng-switch-when="recurring" ng-switch="recurringType"
+  <div ng-if="editorVisible" ng-switch-when="recurring" ng-switch="getItemType()"
     class="container-editor--inner__outer sorting-in-progress" ng-controller="RecurringEditorController">
     <div ng-switch-when="item" class="container-editor--inner">
       <div ng-include="urlBase + 'app/main/itemEditor.html'" include-replace></div>
+    </div>
+    <div ng-switch-when="task" class="container-editor--inner">
+      <div ng-include="urlBase + 'app/tasks/taskEditor.html'" include-replace></div>
+    </div>
 
-      <div class="container-editor--inner__after group-symmetrical">
-        <a href class="group-symmetrical--left" swiper-click="endSorting()">
-          <span>done sorting</span>
+    <div class="container-editor--inner__after group-symmetrical">
+
+      <a href ng-if="!isIterableItemDirty()" class="group-symmetrical--left" swiper-click="endSorting()">
+        <span style="color: white;">done</span>
+      </a>
+      <a href ng-if="isIterableItemDirty()" class="group-symmetrical--left" swiper-click="undoSorting()">
+        <span style="color: white;">undo</span>
+      </a>
+
+      <div class="group-symmetrical--middle">
+        <a href>
+          <span style="color: white;" ng-bind="getIterableItemIndex() + 1 + '/' + iterableItems.length"></span>
         </a>
-        <div class="group-symmetrical--right">
-          <span ng-bind="iterableItems.indexOf(item) + 1 + '/' + iterableItems.length"></span>
-        </div>
       </div>
 
+      <a href ng-if="!isIterableItemDirty()" class="group-symmetrical--right" swiper-click="skipItemAndGotoNextItem()">
+        <span style="color: white;">skip</span>
+      </a>
+      <a href ng-if="isIterableItemDirty()" class="group-symmetrical--right" swiper-click="saveItemAndGotoNextItem()">
+        <span style="color: white;" ng-bind="getIterableItemIndex() !== iterableItems.length - 1 ? 'next' : 'finish'"></span>
+      </a>
     </div>
   </div>
 

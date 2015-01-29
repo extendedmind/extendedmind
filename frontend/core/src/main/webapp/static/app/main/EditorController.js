@@ -29,6 +29,7 @@
     $scope.list = undefined;
     $scope.item = undefined;
     $scope.tag = undefined;
+    $scope.iterableItems = undefined;
     dataInEdit = data;
 
     $scope.editorType = editorType;
@@ -48,8 +49,7 @@
     }else if (editorType === 'user'){
       $scope.user = dataInEdit ? dataInEdit : UserSessionService.getUser();
     }else if (editorType === 'recurring') {
-      $scope.iterableItems = data;
-      $scope.item = data[0];
+      $scope.iterableItems = dataInEdit;
     }
   };
 
@@ -231,16 +231,16 @@
 
   // NAVIGATION
 
-  $scope.isFirstSlide = function(){
-    return SwiperService.isSlideActive($scope.editorType + 'Editor/basic');
+  $scope.isFirstSlide = function(swiper){
+    return SwiperService.isSlideActive(swiper + '/basic');
   };
 
-  $scope.swipeToAdvanced = function() {
-    SwiperService.swipeTo($scope.editorType + 'Editor/advanced');
+  $scope.swipeToAdvanced = function(swiper) {
+    SwiperService.swipeTo(swiper + '/advanced');
   };
 
-  $scope.swipeToBasic = function() {
-    SwiperService.swipeTo($scope.editorType + 'Editor/basic');
+  $scope.swipeToBasic = function(swiper) {
+    SwiperService.swipeTo(swiper + '/basic');
   };
 
   $scope.editorSwiperSlideChanged = function(){

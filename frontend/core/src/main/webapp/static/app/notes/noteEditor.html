@@ -6,7 +6,7 @@
 
         <a href ng-hide="isEndNoteEditActionHidden()"
           class="group-symmetrical--left link-navigation active highlighted" swiper-click="endNoteEdit()">
-          <span class="text-navigation-back" ng-class="!isFirstSlide() && 'not-swipeable'"
+          <span class="text-navigation-back" ng-class="!isFirstSlide('noteEditor') && 'not-swipeable'"
             ng-bind="isNoteEdited() && !note.trans.deleted ? 'save' : 'back'"></span>
         </a>
 
@@ -14,7 +14,7 @@
           <span class="text-edit">done</span>
         </a>
 
-        <div ng-hide="!isNotePropertyInEdit() && isFirstSlide()" id="noteEditorTitlebarTitle"
+        <div ng-hide="!isNotePropertyInEdit() && isFirstSlide('noteEditor')" id="noteEditorTitlebarTitle"
           ng-style="{maxWidth: calculateTitleWidth()}"
           class="scroll-then-toggle group-symmetrical--middle width-large">
           <a href class="link" swiper-click="gotoTitle()">
@@ -196,7 +196,7 @@
 
         <footer ng-hide="isNotePropertyInEdit()" class="container-content--after editor-footer">
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
-            <a href swiper-click="swipeToAdvanced()" ng-hide="isFooterNavigationHidden()"
+            <a href swiper-click="swipeToAdvanced('noteEditor')" ng-hide="isFooterNavigationHidden()"
               class="group-symmetrical--right link-navigation">
               <span class="text-navigation-forward">advanced</span>
             </a>
@@ -255,7 +255,7 @@
           </div>
 
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
-            <a href swiper-click="swipeToBasic()" ng-hide="isFooterNavigationHidden()"
+            <a href swiper-click="swipeToBasic('noteEditor')" ng-hide="isFooterNavigationHidden()"
               class="group-symmetrical--left link-navigation">
               <span class="text-navigation-back">basic</span>
             </a>

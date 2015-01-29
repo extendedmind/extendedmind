@@ -84,7 +84,7 @@
 
   $scope.gotoTitle = function() {
     if (typeof gotoTitleCallback === 'function') gotoTitleCallback();
-    if (!$scope.isFirstSlide()) $scope.swipeToBasic();
+    if (!$scope.isFirstSlide('noteEditor')) $scope.swipeToBasic('noteEditor');
   };
 
   var gotoTitleCallback;

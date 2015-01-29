@@ -4,9 +4,10 @@
     <div class="container-titlebar--inner">
       <div class="group-symmetrical height-large--top height-large--bottom" swiper-prevent>
 
-        <a href ng-hide="isPickerOpen()" class="group-symmetrical--left link-navigation active highlighted"
+        <a href ng-hide="isPickerOpen()"
+          class="group-symmetrical--left link-navigation active highlighted sorting-hide"
           swiper-click="endTaskEdit()">
-          <span class="text-navigation-back" ng-class="!isFirstSlide() && 'not-swipeable'"
+          <span class="text-navigation-back" ng-class="!isFirstSlide('taskEditor') && 'not-swipeable'"
             ng-bind="isTaskEdited() && !task.trans.deleted ? 'save' : 'back'">
           </span>
         </a>
@@ -15,8 +16,8 @@
           <span class="text-edit">done</span>
         </a>
 
-        <div ng-hide="!isTaskPropertyInEdit() && isFirstSlide()" ng-style="{maxWidth: calculateTitleWidth()}"
-          class="group-symmetrical--middle width-large">
+        <div ng-hide="!isTaskPropertyInEdit() && isFirstSlide('taskEditor')"
+          ng-style="{maxWidth: calculateTitleWidth()}" class="group-symmetrical--middle width-large">
           <div style="display: table; width: 100%; height: 100%;">
             <div style="text-align: center; height: inherit; display: table-cell; vertical-align: middle;">
               <span class="text-heading-primary" ng-class="!task.trans.title && 'text-downplayed'"
@@ -152,7 +153,7 @@
                 <span class="icon-calendar"></span>
               </a>
             </div>
-            <a href ng-click="swipeToAdvanced()" ng-hide="isFooterNavigationHidden()"
+            <a href swiper-click="swipeToAdvanced('taskEditor')" ng-hide="isFooterNavigationHidden()"
               class="group-symmetrical--right link-navigation animate-fade-in-out">
               <span class="text-navigation-forward">advanced</span>
             </a>
@@ -242,7 +243,7 @@
           </div>
 
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
-            <a href ng-hide="isFooterNavigationHidden()" swiper-click="swipeToBasic()"
+            <a href ng-hide="isFooterNavigationHidden()" swiper-click="swipeToBasic('taskEditor')"
               class="group-symmetrical--left link-navigation">
               <span class="text-navigation-back">basic</span>
             </a>
