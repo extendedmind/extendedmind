@@ -36,11 +36,7 @@
     if (angular.isFunction($scope.unregisterEditorAboutToCloseCallback))
       $scope.unregisterEditorAboutToCloseCallback();
 
-    $scope.closeEditor();
-    $scope.deferEdit().then(function(){
-      UISessionService.allow('leaveAnimation', 200);
-      $scope.deleteItem($scope.item);
-    });
+    $scope.processDelete($scope.item, $scope.deleteItem, $scope.undeleteItem);
   };
 
   $scope.isItemEdited = function() {

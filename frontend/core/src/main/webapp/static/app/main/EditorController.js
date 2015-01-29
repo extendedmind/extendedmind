@@ -15,7 +15,7 @@
 
  'use strict';
 
- function EditorController($rootScope, $scope,
+ function EditorController($rootScope, $scope, $timeout,
                            ConvertService, ItemsService, SwiperService, UISessionService,
                            UserSessionService) {
 
@@ -132,6 +132,35 @@
 
   $scope.deferEdit = function(){
     return UISessionService.deferAction('edit', $rootScope.EDITOR_CLOSED_FAILSAFE_TIME);
+  };
+
+  function generateItemDeletedDelayedNotification(item, undeleteFn) {
+    UISessionService.pushDelayedNotification({
+      type: 'deleted',
+      itemType: item.trans.itemType,
+      item: item,
+      undoFn: undeleteFn
+    });
+
+    $timeout(function() {
+      UISessionService.activateDelayedNotifications();
+    }, $rootScope.LIST_ITEM_LEAVE_ANIMATION_SPEED);
+  }
+
+  // DELETING
+  $scope.processDelete = function(dataInEdit, deleteCallback, undeleteFn) {
+    $scope.closeEditor();
+    $scope.deferEdit().then(function() {
+      UISessionService.allow('leaveAnimation', 200);
+      var deletePromise = deleteCallback(dataInEdit);
+      if (deletePromise) {
+        deletePromise.then(function() {
+          generateItemDeletedDelayedNotification(dataInEdit, undeleteFn);
+        });
+      } else {
+        generateItemDeletedDelayedNotification(dataInEdit, undeleteFn);
+      }
+    });
   };
 
   // CONVERTING
@@ -299,6 +328,6 @@
 
 }
 
-EditorController['$inject'] = ['$rootScope', '$scope',
+EditorController['$inject'] = ['$rootScope', '$scope', '$timeout',
 'ConvertService', 'ItemsService', 'SwiperService', 'UISessionService', 'UserSessionService'];
 angular.module('em.main').controller('EditorController', EditorController);

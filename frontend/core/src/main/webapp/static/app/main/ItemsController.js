@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function ItemsController($rootScope, $scope, $timeout, AnalyticsService, ItemsService, UISessionService) {
+ function ItemsController($rootScope, $scope, AnalyticsService, ItemsService, UISessionService) {
 
   // NAVIGATING
 
@@ -40,18 +40,6 @@
 
   $scope.deleteItem = function(item) {
     if (item.trans.uuid) {
-
-      UISessionService.pushDelayedNotification({
-        type: 'deleted',
-        itemType: 'item', // NOTE: Same as item.trans.itemType
-        item: item,
-        undoFn: $scope.undeleteItem
-      });
-
-      $timeout(function() {
-        UISessionService.activateDelayedNotifications();
-      }, $rootScope.LIST_ITEM_LEAVE_ANIMATION_SPEED);
-
       AnalyticsService.do('deleteItem');
       return ItemsService.deleteItem(item, UISessionService.getActiveUUID());
     }
@@ -65,7 +53,6 @@
   };
 }
 
-ItemsController['$inject'] = ['$rootScope', '$scope', '$timeout',
-  'AnalyticsService', 'ItemsService', 'UISessionService'
+ItemsController['$inject'] = ['$rootScope', '$scope', 'AnalyticsService', 'ItemsService', 'UISessionService'
 ];
 angular.module('em.main').controller('ItemsController', ItemsController);

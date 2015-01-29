@@ -59,30 +59,32 @@
 
   $scope.endSorting = $scope.closeEditor;
 
+  function gotoNextItemOrEndSortingOnLast() {
+    var iterableItemIndex = $scope.getIterableItemIndex();
+    if (iterableItemIndex < $scope.iterableItems.length - 1) {
+      // Still more items.
+      $scope.initializeEditor('recurring', $scope.iterableItems, $scope.mode);
+      resetLeftOverVariables();
+
+      iterableItem = $scope.iterableItems[iterableItemIndex + 1];
+      $scope.item = iterableItem;
+      setIterableItemDirty(false);
+      setItemType($scope.mode);
+
+    } else {
+      // End.
+      $scope.closeEditor();
+    }
+
+  }
+
   $scope.saveItemAndGotoNextItem = function() {
     var itemType = $scope.getItemType();
 
     if ($scope.mode === 'item') {
       if (itemType === 'task') {
-        ItemsService.itemToTask($scope.task, UISessionService.getActiveUUID()).then(function() {
-
-          // Go to next item or end sorting if last.
-          var iterableItemIndex = $scope.getIterableItemIndex();
-          if (iterableItemIndex < $scope.iterableItems.length - 1) {
-            // Still more items.
-            $scope.initializeEditor('recurring', $scope.iterableItems, $scope.mode);
-            resetLeftOverVariables();
-
-            iterableItem = $scope.iterableItems[iterableItemIndex + 1];
-            $scope.item = iterableItem;
-            setIterableItemDirty(false);
-            setItemType('item');
-
-          } else {
-            // End.
-            $scope.closeEditor();
-          }
-        });
+        ItemsService.itemToTask($scope.task, UISessionService.getActiveUUID())
+        .then(gotoNextItemOrEndSortingOnLast);
       }
     }
   };
@@ -99,11 +101,18 @@
     setIterableItemDirty(false);
   };
 
+  // OVERRIDDEN METHODS
+
   $scope.convertToTask = function(){
     $scope.initializeEditor('recurring', $scope.iterableItems, $scope.mode);
     $scope.task = iterableItem;
     setItemType('task');
     setIterableItemDirty(true);
+  };
+
+  $scope.processDelete = function(dataInEdit, callback) {
+    if (typeof callback === 'function') callback(dataInEdit);
+    gotoNextItemOrEndSortingOnLast();
   };
 }
 
