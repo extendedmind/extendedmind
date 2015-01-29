@@ -53,11 +53,7 @@
     if (angular.isFunction($scope.unregisterEditorAboutToCloseCallback))
       $scope.unregisterEditorAboutToCloseCallback();
 
-    $scope.closeTaskEditor();
-    $scope.deferEdit().then(function(){
-      UISessionService.allow('leaveAnimation', 200);
-      $scope.deleteTask($scope.task);
-    });
+    $scope.processDelete($scope.task, $scope.deleteTask, $scope.undeleteTask);
   };
 
   $scope.isTaskEdited = function() {
@@ -66,9 +62,7 @@
     }
   };
 
-  $scope.endTaskEdit = function() {
-    $scope.closeTaskEditor();
-  };
+  $scope.endTaskEdit = $scope.closeEditor;
 
   function taskEditorAboutToClose() {
     if ($scope.isTaskEdited() && !$scope.task.trans.deleted) saveTaskInEdit();
@@ -97,7 +91,7 @@
     if (event.keyCode === 13) {
       if ($scope.taskTitlebarHasText()) {
         // Enter in editor saves, no line breaks allowed
-        $scope.closeTaskEditor();
+        $scope.closeEditor();
         saveTaskInEdit();
       }
       event.preventDefault();

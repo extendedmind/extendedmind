@@ -42,10 +42,6 @@
     return $scope.openEditor('task', task);
   };
 
-  $scope.closeTaskEditor = function closeTaskEditor() {
-    $scope.closeEditor();
-  };
-
   /*
   * Every task in this list will not change in lists using ng-repeat.
   * Relates to isTaskVisible filter filter function,
@@ -176,20 +172,8 @@
 
   $scope.deleteTask = function(task) {
     if (task.trans.uuid){
-
-      UISessionService.pushDelayedNotification({
-        type: 'deleted',
-        itemType: 'task', // NOTE: Same as task.trans.itemType
-        item: task,
-        undoFn: $scope.undeleteTask
-      });
-
-      $timeout(function() {
-        UISessionService.activateDelayedNotifications();
-      }, $rootScope.LIST_ITEM_LEAVE_ANIMATION_SPEED);
-
       AnalyticsService.do('deleteTask');
-      TasksService.deleteTask(task, UISessionService.getActiveUUID());
+      return TasksService.deleteTask(task, UISessionService.getActiveUUID());
     }
   };
 

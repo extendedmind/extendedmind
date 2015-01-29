@@ -110,8 +110,8 @@
     setIterableItemDirty(true);
   };
 
-  $scope.processDelete = function(dataInEdit, callback) {
-    if (typeof callback === 'function') callback(dataInEdit);
+  $scope.processDelete = function() {
+    if ($scope.mode === 'item') $scope.deleteItem($scope.item);
     gotoNextItemOrEndSortingOnLast();
   };
 }
