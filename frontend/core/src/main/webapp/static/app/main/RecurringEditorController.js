@@ -90,14 +90,16 @@
     var itemType = $scope.getItemType();
 
     if ($scope.mode === 'item') {
-      if (itemType === 'task') {
+      if (itemType === 'item') {
+        $scope.saveItem($scope.item);
+        initializeAndGotoNextItemOrEndSortingOnLast();
+      }
+      else if (itemType === 'task') {
         ItemsService.itemToTask($scope.task, UISessionService.getActiveUUID())
         .then(initializeAndGotoNextItemOrEndSortingOnLast);
       }
     }
   };
-
-  $scope.skipItem = initializeAndGotoNextItemOrEndSortingOnLast;
 
   $scope.undoSorting = function() {
     $scope.initializeEditor('recurring', $scope.iterableItems, $scope.mode);
