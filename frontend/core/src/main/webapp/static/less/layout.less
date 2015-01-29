@@ -260,11 +260,13 @@ Vertically center .container-master and .container-editor in large screens
 
 // 1. Define height.
 // 2. Align horizontally.
+// 3. Use same position as in .container-editor.
 .container-editor--inner__after {
   height: @height-footer-short; // [1]
   background-color: @color-background-btn-active;
   max-width: @width-column-max;     // [2]
   .center-horizontally-absolute();  // [2]
+  position: absolute; // [3]
 }
 
 // 1. Use same positioning as in swiper to make .container-content scrollable
