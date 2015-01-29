@@ -127,9 +127,7 @@
 
   $scope.processClose = $scope.saveItemAndGotoNextItem;
 
-  $scope.handleTitlebarEnterAction = function() {
-    return undefined;
-  };
+  $scope.handleTitlebarEnterAction = angular.noop;
 }
 
 RecurringEditorController['$inject'] = ['$scope', 'ItemsService', 'UISessionService'];
