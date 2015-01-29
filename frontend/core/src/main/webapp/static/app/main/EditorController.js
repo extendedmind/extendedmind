@@ -64,7 +64,7 @@
 
     var preventFocus;
 
-    if ($scope.mode === 'recurring' ||
+    if ($scope.editorType === 'recurring' ||
         ($scope.mode !== 'new' &&  ($scope.editorType === 'task' || $scope.editorType === 'note')))
     {
       preventFocus = true;
