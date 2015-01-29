@@ -15,7 +15,7 @@
 
  'use strict';
 
- function RecurringEditorController($scope, ItemsService, UISessionService) {
+ function RecurringEditorController($scope, DrawerService, ItemsService, UISessionService) {
 
   // Start from the first item.
   var iterableItem = $scope.iterableItems[0];
@@ -70,6 +70,7 @@
       $scope.item = iterableItem;
       setIterableItemDirty(false);
       setItemType($scope.mode);
+      DrawerService.enableDragging('right');
 
     } else {
       // End.
@@ -111,6 +112,7 @@
     }
 
     setIterableItemDirty(false);
+    DrawerService.enableDragging('right');
   };
 
   // OVERRIDDEN METHODS
@@ -120,6 +122,7 @@
     $scope.task = iterableItem;
     setItemType('task');
     setIterableItemDirty(true);
+    DrawerService.disableDragging('right');
   };
 
   $scope.processDelete = function() {
@@ -132,5 +135,5 @@
   $scope.handleTitlebarEnterAction = angular.noop;
 }
 
-RecurringEditorController['$inject'] = ['$scope', 'ItemsService', 'UISessionService'];
+RecurringEditorController['$inject'] = ['$scope', 'DrawerService', 'ItemsService', 'UISessionService'];
 angular.module('em.main').controller('RecurringEditorController', RecurringEditorController);

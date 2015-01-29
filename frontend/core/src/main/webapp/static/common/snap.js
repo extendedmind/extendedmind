@@ -256,8 +256,8 @@
                 listen: function() {
                     // FORK
                     if (!settings.overrideListeningElement) {
-                    cache.translation = 0;
-                    cache.easing = false;
+                        cache.translation = 0;
+                        cache.easing = false;
                         utils.events.addEvent(settings.element, utils.eventType('down'), action.drag.startDrag);
                         utils.events.addEvent(settings.element, utils.eventType('move'), action.drag.dragging);
                         utils.events.addEvent(settings.element, utils.eventType('up'), action.drag.endDrag);
