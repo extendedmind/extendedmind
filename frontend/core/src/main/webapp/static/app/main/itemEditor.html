@@ -14,7 +14,7 @@
           <span class="text-edit">done</span>
         </a>
 
-        <div ng-hide="!itemDescriptionFocused" ng-style="{maxWidth: calculateTitleWidth()}"
+        <div ng-show="itemDescriptionFocused" ng-style="{maxWidth: calculateTitleWidth()}"
           class="group-symmetrical--middle width-large text-heading-primary--outer">
           <div class="text-heading-primary--inner">
             <span class="text-heading-primary" ng-class="!item.trans.title && 'text-downplayed'"
@@ -23,11 +23,22 @@
           </div>
         </div>
 
-        <a ng-if="!item.trans.deleted" href class="group-symmetrical--right" swiper-click="deleteItemInEdit()" >
+        <a href ng-if="!item.trans.deleted" ng-hide="itemDescriptionFocused" class="group-symmetrical--right"
+          swiper-click="deleteItemInEdit()">
           <span class="icon-trash"></span>
         </a>
-        <a ng-if="item.trans.deleted" href class="group-symmetrical--right link-navigation highlighted active"
-          swiper-click="undeleteItem(item)"><span class="text-navigation">restore</span></a>
+        <a href ng-if="item.trans.deleted" ng-hide="itemDescriptionFocused"
+          class="group-symmetrical--right link-navigation highlighted active"
+          swiper-click="undeleteItem(item)"><span class="text-navigation">restore</span>
+        </a>
+
+        <div ng-if="itemDescriptionFocused" class="group-symmetrical--right">
+          <div class="text-field--label-multi-row">
+            <span ng-bind="'de' + (columns === 1 ? '-\n' : '') + 'scription'"
+              class="text-field--label-bold"></span>
+          </div>
+        </div>
+
       </div>
     </div>
   </header>
