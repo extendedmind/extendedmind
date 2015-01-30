@@ -18,11 +18,11 @@
  function RecurringEditorController($scope, DrawerService, ItemsService, TasksService, UISessionService) {
 
   // Start from the first item.
-  var iterableItem = $scope.iterableItems[0];
+  $scope.iterableItem = $scope.iterableItems[0];
 
   // Set initial $scope variable.
   if ($scope.mode === 'item') {
-    $scope.item = iterableItem;
+    $scope.item = $scope.iterableItem;
     itemType = 'item';
   }
 
@@ -35,8 +35,8 @@
     return itemType;
   };
 
-  $scope.getIterableItemIndex = function() {
-    return $scope.iterableItems.indexOf(iterableItem);
+  $scope.getIterableItemIndex = function(dataInEdit) {
+    return $scope.iterableItems.indexOf(dataInEdit);
   };
 
   var iterableItemDirty;
@@ -58,14 +58,14 @@
 
   $scope.endSorting = $scope.closeEditor;
 
-  function initializeAndGotoNextItemOrEndSortingOnLast() {
-    var iterableItemIndex = $scope.getIterableItemIndex();
+  function initializeAndGotoNextItemOrEndSortingOnLast(dataInEdit) {
+    var iterableItemIndex = $scope.getIterableItemIndex(dataInEdit);
     if (iterableItemIndex < $scope.iterableItems.length - 1) {
       // Still more items.
       resetLeftOverVariables();
 
-      iterableItem = $scope.iterableItems[iterableItemIndex + 1];
-      $scope.item = iterableItem;
+      $scope.iterableItem = $scope.iterableItems[iterableItemIndex + 1];
+      $scope.item = $scope.iterableItem;
       setIterableItemDirty(false);
       setItemType($scope.mode);
       DrawerService.enableDragging('right');
@@ -85,40 +85,42 @@
     }
   };
 
-  $scope.saveItemAndGotoNextItem = function() {
+  $scope.saveItemAndGotoNextItem = function(dataInEdit) {
     var itemType = $scope.getItemType();
 
     if ($scope.mode === 'item') {
       if (itemType === 'item') {
-        $scope.saveItem($scope.item);
-        initializeAndGotoNextItemOrEndSortingOnLast();
+        $scope.saveItem(dataInEdit);
+        initializeAndGotoNextItemOrEndSortingOnLast(dataInEdit);
       }
       else if (itemType === 'task') {
-        var task = $scope.task;
-        initializeAndGotoNextItemOrEndSortingOnLast();
+        var task = dataInEdit;
+        initializeAndGotoNextItemOrEndSortingOnLast(dataInEdit);
 
         ItemsService.itemToTask(task, UISessionService.getActiveUUID()).then(function() {
           if (task.trans.optimisticComplete()) $scope.toggleCompleteTask(task);
         });
       } else if (itemType === 'note') {
-        ItemsService.itemToNote($scope.note, UISessionService.getActiveUUID())
-        .then(initializeAndGotoNextItemOrEndSortingOnLast);
+        ItemsService.itemToNote(dataInEdit, UISessionService.getActiveUUID())
+        .then(function() {
+          initializeAndGotoNextItemOrEndSortingOnLast(dataInEdit);
+        });
       }
     }
   };
 
-  $scope.undoSorting = function() {
+  $scope.undoSorting = function(dataInEdit) {
     resetLeftOverVariables();
 
     if ($scope.getItemType() === 'note') {
-      if (iterableItem.trans.content) {
-        iterableItem.trans.description = iterableItem.trans.content;
-        delete iterableItem.trans.content;
+      if (dataInEdit.trans.content) {
+        dataInEdit.trans.description = dataInEdit.trans.content;
+        delete dataInEdit.trans.content;
       }
     }
 
     if ($scope.mode === 'item') {
-      $scope.item = iterableItem;
+      $scope.item = dataInEdit;
       setItemType('item');
     }
 
@@ -128,30 +130,32 @@
 
   // OVERRIDDEN METHODS
 
-  $scope.convertToTask = function(){
-    $scope.task = TasksService.prepareConvertTask(iterableItem);
+  $scope.convertToTask = function(dataInEdit){
+    $scope.task = TasksService.prepareConvertTask(dataInEdit);
     setItemType('task');
     setIterableItemDirty(true);
     DrawerService.disableDragging('right');
   };
 
-  $scope.convertToNote = function() {
-    if (iterableItem.trans.description) {
-      iterableItem.trans.content = iterableItem.trans.description;
-      delete iterableItem.trans.description;
+  $scope.convertToNote = function(dataInEdit) {
+    if (dataInEdit.trans.description) {
+      dataInEdit.trans.content = dataInEdit.trans.description;
+      delete dataInEdit.trans.description;
     }
-    $scope.note = iterableItem;
+    $scope.note = dataInEdit;
     setItemType('note');
     setIterableItemDirty(true);
     DrawerService.disableDragging('right');
   };
 
-  $scope.processDelete = function() {
-    if ($scope.mode === 'item') $scope.deleteItem($scope.item);
-    initializeAndGotoNextItemOrEndSortingOnLast();
+  $scope.processDelete = function(dataInEdit) {
+    if ($scope.mode === 'item') $scope.deleteItem(dataInEdit);
+    initializeAndGotoNextItemOrEndSortingOnLast(dataInEdit);
   };
 
-  $scope.processClose = $scope.saveItemAndGotoNextItem;
+  $scope.processClose = function(dataInEdit) {
+    $scope.saveItemAndGotoNextItem(dataInEdit);
+  };
 
   $scope.handleTitlebarEnterAction = angular.noop;
 }
