@@ -1969,7 +1969,7 @@ var Swiper = function (selector, params) {
             // It's probably safe to use timeout since we are relying on callbacks that are run in
             // wrapperTransitionEnd callback.
             setTimeout(function() {
-                _this.updateActiveSlide(newPosition);
+                if (_this && _this.updateActiveSlide) _this.updateActiveSlide(newPosition);
             }, 0)
         } else {
             // Update immediately to make sure slideChangeStart callback (and others) are run afterwards.
