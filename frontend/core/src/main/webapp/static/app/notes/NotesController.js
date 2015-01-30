@@ -112,7 +112,7 @@
   * Favorite note.
   */
   $scope.favoriteNote = function(note) {
-    if (note.trans.uuid) {
+    if (note.trans.uuid && note.trans.itemType === 'note') {
       AnalyticsService.do('favoriteNote');
       return NotesService.favoriteNote(note, UISessionService.getActiveUUID());
     } else {
@@ -124,7 +124,7 @@
   * Unfavorite note.
   */
   $scope.unfavoriteNote = function(note) {
-    if (note.trans.uuid) {
+    if (note.trans.uuid && note.trans.itemType === 'note') {
       AnalyticsService.do('unfavoriteNote');
       return NotesService.unfavoriteNote(note, UISessionService.getActiveUUID());
     } else {

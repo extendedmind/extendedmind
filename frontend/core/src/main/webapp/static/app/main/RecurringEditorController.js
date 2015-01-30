@@ -102,7 +102,10 @@
         });
       } else if (itemType === 'note') {
         initializeAndGotoNextItemOrEndSortingOnLast(dataInEdit);
-        ItemsService.itemToNote(dataInEdit, UISessionService.getActiveUUID());
+        var favoriteAfterConvert = dataInEdit.trans.favorited;
+        ItemsService.itemToNote(dataInEdit, UISessionService.getActiveUUID()).then(function() {
+          if (favoriteAfterConvert) $scope.favoriteNote(dataInEdit);
+        });
       }
     }
   };
