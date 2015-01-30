@@ -63,7 +63,6 @@
     var iterableItemIndex = $scope.getIterableItemIndex();
     if (iterableItemIndex < $scope.iterableItems.length - 1) {
       // Still more items.
-      $scope.initializeEditor('recurring', $scope.iterableItems, $scope.mode);
       resetLeftOverVariables();
 
       iterableItem = $scope.iterableItems[iterableItemIndex + 1];
@@ -103,7 +102,6 @@
   };
 
   $scope.undoSorting = function() {
-    $scope.initializeEditor('recurring', $scope.iterableItems, $scope.mode);
     resetLeftOverVariables();
 
     if ($scope.mode === 'item') {
@@ -118,7 +116,6 @@
   // OVERRIDDEN METHODS
 
   $scope.convertToTask = function(){
-    $scope.initializeEditor('recurring', $scope.iterableItems, $scope.mode);
     $scope.task = iterableItem;
     setItemType('task');
     setIterableItemDirty(true);
