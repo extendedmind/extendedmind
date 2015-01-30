@@ -104,8 +104,9 @@
 
     // Don't try to complete a task that hasn't been saved, saveTask will call this again
     // after the task has a uuid
-    if (!task.trans.uuid){
-      return !task.trans.completed;
+    if (!task.trans.uuid || task.trans.itemType !== 'task') {
+      // optimisticComplete already reflects the end value.
+      return task.trans.optimisticComplete();
     }
 
     if (taskCompletingReadyDeferred) {
@@ -150,14 +151,12 @@
   // SAVING
 
   $scope.saveTask = function(task) {
-    var completeOnSave = false;
+    var completeOnSave;
     if (task.trans.uuid){
       AnalyticsService.do('saveTask');
     }else{
       AnalyticsService.do('addTask');
-      if (task.trans.completed){
-        completeOnSave = true;
-      }
+      completeOnSave = task.trans.optimisticComplete();
     }
 
     return TasksService.saveTask(task, UISessionService.getActiveUUID()).then(function(result) {
@@ -223,7 +222,7 @@
   // ONBOARDING
 
   function gotoSignUp(){
-    $scope.changeFeature('user', undefined, true)
+    $scope.changeFeature('user', undefined, true);
   }
 
   if (!$scope.onboardingInProgress && $scope.isOnboarded('focusTasks') && $scope.isFakeUser()){

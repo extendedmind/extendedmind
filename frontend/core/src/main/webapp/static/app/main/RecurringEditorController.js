@@ -15,7 +15,7 @@
 
  'use strict';
 
- function RecurringEditorController($scope, DrawerService, ItemsService, UISessionService) {
+ function RecurringEditorController($scope, DrawerService, ItemsService, TasksService, UISessionService) {
 
   // Start from the first item.
   var iterableItem = $scope.iterableItems[0];
@@ -94,8 +94,12 @@
         initializeAndGotoNextItemOrEndSortingOnLast();
       }
       else if (itemType === 'task') {
-        ItemsService.itemToTask($scope.task, UISessionService.getActiveUUID())
-        .then(initializeAndGotoNextItemOrEndSortingOnLast);
+        var task = $scope.task;
+        initializeAndGotoNextItemOrEndSortingOnLast();
+
+        ItemsService.itemToTask(task, UISessionService.getActiveUUID()).then(function() {
+          if (task.trans.optimisticComplete()) $scope.toggleCompleteTask(task);
+        });
       } else if (itemType === 'note') {
         ItemsService.itemToNote($scope.note, UISessionService.getActiveUUID())
         .then(initializeAndGotoNextItemOrEndSortingOnLast);
@@ -125,7 +129,7 @@
   // OVERRIDDEN METHODS
 
   $scope.convertToTask = function(){
-    $scope.task = iterableItem;
+    $scope.task = TasksService.prepareConvertTask(iterableItem);
     setItemType('task');
     setIterableItemDirty(true);
     DrawerService.disableDragging('right');
@@ -152,5 +156,6 @@
   $scope.handleTitlebarEnterAction = angular.noop;
 }
 
-RecurringEditorController['$inject'] = ['$scope', 'DrawerService', 'ItemsService', 'UISessionService'];
+RecurringEditorController['$inject'] = ['$scope', 'DrawerService', 'ItemsService', 'TasksService',
+'UISessionService'];
 angular.module('em.main').controller('RecurringEditorController', RecurringEditorController);

@@ -19,6 +19,46 @@
  function TasksService($q, $rootScope,
                        ArrayService, BackendClientService, DateService, ExtendedItemService, ItemLikeService,
                        ListsService, TagsService, UISessionService, UserSessionService, UUIDService) {
+
+  /*
+  * Create a separate 'optimisticComplete' getter/setter which can be used by checkbox ng-bind.
+  *
+  * this = task.trans
+  */
+  function optimisticComplete(value) {
+    /* jshint validthis: true */
+    if (value !== undefined){
+      // setter
+      if ($rootScope.outerSwiping || $rootScope.innerSwiping || $rootScope.scrolling ||
+          $rootScope.contentPartiallyVisible)
+      {
+        // Make sure we are not in the middle of swiper swipe and/or scroll or that the content is not
+        // only partially visible.
+        // NOTE:  Better place for this check would be for example in iconCheckboxDirective with
+        //        ngModelController.$validators.validNotMoved. See inputModelValidatorDirective for
+        //        reference.
+        return;
+      }
+      if (value === true)
+        this._complete = Date.now();
+      else
+        this._complete = Date.now() * -1;
+    }else{
+      // getter
+      if (this._complete > 0 && this.completed === undefined) {
+        // Complete action fired less than half a second ago - we are propably in a $digest() loop
+        // caused by it.
+        return true;
+      } else if (this._complete < 0 && this.completed !== undefined) {
+        // Task is uncompleted in the UI and its internal status is completed.
+        return false;
+      }
+
+      // Get value from internal status.
+      return this.completed !== undefined;
+    }
+  }
+
   var taskFieldInfos = ItemLikeService.getFieldInfos(
     [ 'due',
       'reminder',
@@ -37,52 +77,8 @@
           }
           else if (task.completed !== undefined) task.trans.completed = task.completed;
           else if (task.trans.completed !== undefined) delete task.trans.completed;
-          // Create a separate 'optimisticComplete' getter/setter which can be used by checkbox ng-bind
-          task.trans.optimisticComplete = function(value) {
-            if (value !== undefined){
-              if ($rootScope.outerSwiping || $rootScope.innerSwiping || $rootScope.scrolling ||
-                  $rootScope.contentPartiallyVisible)
-              {
-                // Make sure we are not in the middle of swiper swipe and/or scroll or that the content is not
-                // only partially visible.
-                // NOTE:  Better place for this check would be for example in iconCheckboxDirective with
-                //        ngModelController.$validators.validNotMoved. See inputModelValidatorDirective for
-                //        reference.
-                return;
-              }
-              // setter
-              if (value === true)
-                task.trans._complete = Date.now();
-              else
-                task.trans._complete = Date.now() * -1;
-            }else{
-              // getter
-              if (task.trans._complete > 0 && task.trans.completed === undefined) {
-                // Task is completed in the UI and its internal status is uncompleted.
-                if (Date.now() - task.trans._complete < 500) {
-                  // Complete action fired less than half a second ago - we are propably in a $digest() loop
-                  // caused by it.
-                  return true;
-                } else {
-                  // Reset status so that comparison is not run again.
-                  task.trans._complete = 0;
-                }
-              } else if (task.trans._complete < 0 && task.trans.completed !== undefined) {
-                // Task is uncompleted in the UI and its internal status is completed.
-                if (Date.now() + task.trans._complete < 500) {
-                  // Uncomplete action fired less than half a second ago - we are propably in a $digest() loop
-                  // caused by it.
-                  return false;
-                } else {
-                  // Reset status so that comparison is not run again.
-                  task.trans._complete = 0;
-                }
-              }
-
-              // No UI complete/uncomplete actions in last 500ms. Get value from internal status.
-              return task.trans.completed !== undefined;
-            }
-          };
+          task.trans._complete = 0;
+          task.trans.optimisticComplete = optimisticComplete;
         }
       },
       // TODO (when implementing this, update the method below for repeating task cloning!:
@@ -286,7 +282,13 @@
 
   return {
     getNewTask: function(initialValues, ownerUUID) {
-      return ItemLikeService.getNew(initialValues, 'task', ownerUUID, taskFieldInfos);
+      var newTask = ItemLikeService.getNew(initialValues, 'task', ownerUUID, taskFieldInfos);
+      newTask.trans.optimisticComplete = optimisticComplete;
+      return newTask;
+    },
+    prepareConvertTask: function(item) {
+      item.trans.optimisticComplete = optimisticComplete;
+      return item;
     },
     setTasks: function(tasksResponse, ownerUUID, skipPersist) {
       if (skipPersist){
