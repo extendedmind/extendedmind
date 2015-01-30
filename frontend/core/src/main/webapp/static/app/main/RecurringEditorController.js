@@ -94,11 +94,11 @@
         initializeAndGotoNextItemOrEndSortingOnLast(dataInEdit);
       }
       else if (itemType === 'task') {
-        var task = dataInEdit;
         initializeAndGotoNextItemOrEndSortingOnLast(dataInEdit);
+        var completeAfterConvert = dataInEdit.trans.optimisticComplete();
 
-        ItemsService.itemToTask(task, UISessionService.getActiveUUID()).then(function() {
-          if (task.trans.optimisticComplete()) $scope.toggleCompleteTask(task);
+        ItemsService.itemToTask(dataInEdit, UISessionService.getActiveUUID()).then(function() {
+          if (completeAfterConvert) $scope.toggleCompleteTask(dataInEdit);
         });
       } else if (itemType === 'note') {
         ItemsService.itemToNote(dataInEdit, UISessionService.getActiveUUID())
