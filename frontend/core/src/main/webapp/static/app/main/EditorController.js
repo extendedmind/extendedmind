@@ -117,10 +117,7 @@
       $scope.unregisterEditorClosedCallback('EditorController');
   });
 
-  $scope.processClose = function(callback) {
-    $scope.closeEditor();
-    if (typeof callback === 'function') callback();
-  };
+  $scope.processClose = $scope.closeEditor;
 
   // HELPER METHODS
 

@@ -162,7 +162,7 @@
     // FIXME: This is not the place to do this! Better would be at saveTaskInEdit but that would require
     //        that we know if the task will actually leave or not!
     UISessionService.allow('leaveAnimation', 1000);
-    $scope.processClose();
+    $scope.processClose($scope.task);
   };
 
   $scope.clearTransientDate = function(task) {
