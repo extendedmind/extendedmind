@@ -110,15 +110,16 @@
     }
   };
 
+  function moveNoteContentToDescription(dataInEdit) {
+    if ($scope.getItemType() === 'note' && dataInEdit.trans.content && dataInEdit.trans.content.length) {
+      dataInEdit.trans.description = dataInEdit.trans.content;
+      delete dataInEdit.trans.content;
+    }
+  }
+
   $scope.undoSorting = function(dataInEdit) {
     resetLeftOverVariables();
-
-    if ($scope.getItemType() === 'note') {
-      if (dataInEdit.trans.content) {
-        dataInEdit.trans.description = dataInEdit.trans.content;
-        delete dataInEdit.trans.content;
-      }
-    }
+    moveNoteContentToDescription(dataInEdit);
 
     if ($scope.mode === 'item') {
       $scope.item = dataInEdit;
@@ -132,6 +133,7 @@
   // OVERRIDDEN METHODS
 
   $scope.convertToTask = function(dataInEdit){
+    moveNoteContentToDescription(dataInEdit);
     $scope.task = TasksService.prepareConvertTask(dataInEdit);
     setItemType('task');
     setIterableItemDirty(true);
