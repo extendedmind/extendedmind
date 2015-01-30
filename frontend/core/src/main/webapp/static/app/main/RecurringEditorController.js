@@ -90,8 +90,8 @@
 
     if ($scope.mode === 'item') {
       if (itemType === 'item') {
-        $scope.saveItem(dataInEdit);
         initializeAndGotoNextItemOrEndSortingOnLast(dataInEdit);
+        $scope.saveItem(dataInEdit);
       }
       else if (itemType === 'task') {
         initializeAndGotoNextItemOrEndSortingOnLast(dataInEdit);
@@ -101,10 +101,8 @@
           if (completeAfterConvert) $scope.toggleCompleteTask(dataInEdit);
         });
       } else if (itemType === 'note') {
-        ItemsService.itemToNote(dataInEdit, UISessionService.getActiveUUID())
-        .then(function() {
-          initializeAndGotoNextItemOrEndSortingOnLast(dataInEdit);
-        });
+        initializeAndGotoNextItemOrEndSortingOnLast(dataInEdit);
+        ItemsService.itemToNote(dataInEdit, UISessionService.getActiveUUID());
       }
     }
   };
@@ -149,8 +147,8 @@
   };
 
   $scope.processDelete = function(dataInEdit) {
-    if ($scope.mode === 'item') $scope.deleteItem(dataInEdit);
     initializeAndGotoNextItemOrEndSortingOnLast(dataInEdit);
+    if ($scope.mode === 'item') $scope.deleteItem(dataInEdit);
   };
 
   $scope.processClose = function(dataInEdit) {
