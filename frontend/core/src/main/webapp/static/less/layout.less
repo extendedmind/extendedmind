@@ -250,12 +250,9 @@ Vertically center .container-master and .container-editor in large screens
   width: inherit; /* [1] */
 }
 
-// 1. Make room for outer footer.
+// 1. Make room for outer footer (.container-editor--inner__after).
 .container-editor--inner__outer {
   padding-bottom: @height-footer-short; // [1]
-  .container-content--after.editor-footer {
-    bottom: @height-footer-short; // [1]
-  }
 }
 
 // 1. Define height.
@@ -284,7 +281,8 @@ Vertically center .container-master and .container-editor in large screens
 }
 
 .container-master .swiper-slide {
-  .container-content, .container-content--after {
+  .container-content,
+  .container-content--after {
     position: absolute; // [1]
     left: 0;            // [1]
     right: 0;           // [1]
@@ -356,12 +354,15 @@ Vertically center .container-master and .container-editor in large screens
 */
 
 // 1. Set white background to hide stuff below.
-// 2. Editor footer is at the bottom.
-// 3. Varying height.
+// 2. Varying height.
 .container-content--after.editor-footer {
   background-color: white;  // [1]
-  bottom: 0;    // [2]
-  height: auto; // [3]
+  height: auto; // [2]
+}
+
+// 1. Set bottom position when inside .swiper-slide.
+.swiper-slide .container-content--after.editor-footer {
+  bottom: 0;  // [1]
 }
 
 /*
