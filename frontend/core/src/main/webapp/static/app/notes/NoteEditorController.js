@@ -43,11 +43,7 @@
     if (angular.isFunction($scope.unregisterEditorAboutToCloseCallback))
       $scope.unregisterEditorAboutToCloseCallback();
 
-    $scope.closeNoteEditor();
-    $scope.deferEdit().then(function() {
-      UISessionService.allow('leaveAnimation', 200);
-      $scope.deleteNote($scope.note);
-    });
+    $scope.processDelete($scope.note, $scope.deleteNote, $scope.undeleteNote);
   };
 
   $scope.isNoteEdited = function() {
@@ -57,9 +53,7 @@
     }
   };
 
-  $scope.endNoteEdit = function() {
-    $scope.closeNoteEditor();
-  };
+  $scope.endNoteEdit = $scope.closeEditor;
 
   function noteEditorAboutToClose() {
     if ($scope.isNoteEdited() && !$scope.note.trans.deleted) saveNoteInEdit();

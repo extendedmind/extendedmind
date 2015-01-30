@@ -84,19 +84,7 @@
   // (UN)DELETING
 
   $scope.deleteNote = function deleteNote(note) {
-    if (note.trans.uuid){
-
-      UISessionService.pushDelayedNotification({
-        type: 'deleted',
-        itemType: 'note', // NOTE: Same as note.trans.itemType
-        item: note,
-        undoFn: $scope.undeleteNote
-      });
-
-      $timeout(function() {
-        UISessionService.activateDelayedNotifications();
-      }, $rootScope.LIST_ITEM_LEAVE_ANIMATION_SPEED);
-
+    if (note.trans.uuid) {
       AnalyticsService.do('deleteNote');
       NotesService.deleteNote(note, UISessionService.getActiveUUID());
     }
@@ -151,10 +139,6 @@
   $scope.openNoteEditorView = function(note){
     // TODO: Use mode 'view' here when view mode is implemented!
     return $scope.openEditor('note', note/*, 'fullScreen'*/);
-  };
-
-  $scope.closeNoteEditor = function() {
-    $scope.closeEditor();
   };
 
 }

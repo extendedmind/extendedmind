@@ -54,7 +54,6 @@
     $scope.note = undefined;
     $scope.list = undefined;
     $scope.item = undefined;
-    $scope.tag = undefined;
   }
 
   $scope.endSorting = $scope.closeEditor;
@@ -97,12 +96,22 @@
       else if (itemType === 'task') {
         ItemsService.itemToTask($scope.task, UISessionService.getActiveUUID())
         .then(initializeAndGotoNextItemOrEndSortingOnLast);
+      } else if (itemType === 'note') {
+        ItemsService.itemToNote($scope.note, UISessionService.getActiveUUID())
+        .then(initializeAndGotoNextItemOrEndSortingOnLast);
       }
     }
   };
 
   $scope.undoSorting = function() {
     resetLeftOverVariables();
+
+    if ($scope.getItemType() === 'note') {
+      if (iterableItem.trans.content) {
+        iterableItem.trans.description = iterableItem.trans.content;
+        delete iterableItem.trans.content;
+      }
+    }
 
     if ($scope.mode === 'item') {
       $scope.item = iterableItem;
@@ -118,6 +127,17 @@
   $scope.convertToTask = function(){
     $scope.task = iterableItem;
     setItemType('task');
+    setIterableItemDirty(true);
+    DrawerService.disableDragging('right');
+  };
+
+  $scope.convertToNote = function() {
+    if (iterableItem.trans.description) {
+      iterableItem.trans.content = iterableItem.trans.description;
+      delete iterableItem.trans.description;
+    }
+    $scope.note = iterableItem;
+    setItemType('note');
     setIterableItemDirty(true);
     DrawerService.disableDragging('right');
   };

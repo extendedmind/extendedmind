@@ -5,7 +5,8 @@
       <div class="group-symmetrical height-large--top height-large--bottom" swiper-prevent>
 
         <a href ng-hide="isEndNoteEditActionHidden()"
-          class="group-symmetrical--left link-navigation active highlighted" swiper-click="endNoteEdit()">
+          class="group-symmetrical--left link-navigation active highlighted sorting-hide"
+          swiper-click="endNoteEdit()">
           <span class="text-navigation-back" ng-class="!isFirstSlide('noteEditor') && 'not-swipeable'"
             ng-bind="isNoteEdited() && !note.trans.deleted ? 'save' : 'back'"></span>
         </a>
