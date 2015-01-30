@@ -28,7 +28,8 @@ angular.module('em.appTest')
 
       $rootScope.DEBUG_toggleSoftKeyboard = function() {
         if ($rootScope.softKeyboard) {
-          $rootScope.softKeyboard.height = $rootScope.softKeyboard.height === 0 ? 350 : 0;
+          // Mimic iOS's keyboard height.
+          $rootScope.softKeyboard.height = !$rootScope.softKeyboard.height ? 224 : 0;
         }
       };
 
