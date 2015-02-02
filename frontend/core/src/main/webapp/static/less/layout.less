@@ -354,15 +354,12 @@ Vertically center .container-master and .container-editor in large screens
 */
 
 // 1. Set white background to hide stuff below.
-// 2. Varying height.
+// 2. Editor footer is at the bottom.
+// 3. Varying height.
 .container-content--after.editor-footer {
   background-color: white;  // [1]
-  height: auto; // [2]
-}
-
-// 1. Set bottom position when inside .swiper-slide.
-.swiper-slide .container-content--after.editor-footer {
-  bottom: 0;  // [1]
+  bottom: 0;    // [2]
+  height: auto; // [3]
 }
 
 /*
