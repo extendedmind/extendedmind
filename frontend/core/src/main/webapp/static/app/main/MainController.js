@@ -417,7 +417,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
 
   // Start from tasks on onboarding, or later on, from focus
   if (!$scope.onboardingInProgress){
-    $scope.changeFeature('inbox');
+    $scope.changeFeature('focus');
   }else{
     $scope.changeFeature('tasks');
   }
