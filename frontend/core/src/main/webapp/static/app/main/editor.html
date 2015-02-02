@@ -33,6 +33,9 @@
     <div ng-switch-when="note" class="container-editor--inner" vertical-resize-delay>
       <div ng-include="urlBase + 'app/notes/noteEditor.html'" include-replace></div>
     </div>
+    <div ng-switch-when="list" class="container-editor--inner">
+      <div ng-include="urlBase + 'app/lists/listEditor.html'" include-replace></div>
+    </div>
 
     <div class="container-editor--inner__after group-symmetrical">
 

@@ -3,23 +3,44 @@
   <header class="container-titlebar">
     <div class="container-titlebar--inner">
       <div class="group-symmetrical height-large--top" swiper-prevent>
-        <a href class="group-symmetrical--left link-navigation active highlighted" swiper-click="endListEdit()">
+
+        <a href class="group-symmetrical--left link-navigation active highlighted sorting-hide"
+          swiper-click="endListEdit()">
           <span class="text-navigation-back" ng-class="!isFirstSlide('listEditor') && 'not-swipeable'"
             ng-bind="isListEdited() && !list.trans.deleted ? 'save' : 'back'"></span>
         </a>
-        <a href ng-if="!list.trans.deleted" class="group-symmetrical--right" swiper-click="deleteListInEdit()">
+
+        <a href ng-if="descriptionFocused" class="group-symmetrical--left highlighted">
+          <span class="text-edit">done</span>
+        </a>
+
+        <div ng-show="descriptionFocused || !isFirstSlide('listEditor')"
+          ng-style="{maxWidth: calculateTitleWidth()}"
+          class="group-symmetrical--middle width-large text-heading-primary--outer">
+          <div class="text-heading-primary--inner">
+            <span class="text-heading-primary" ng-class="!list.trans.title && 'text-downplayed'"
+              ng-bind="list.trans.title && list.trans.title.length ? list.trans.title : 'new list'" clamp=2>
+            </span>
+          </div>
+        </div>
+
+        <a href ng-if="!list.trans.deleted" ng-hide="descriptionFocused" class="group-symmetrical--right"
+          swiper-click="deleteListInEdit()">
           <span class="icon-trash"></span>
         </a>
-        <a href ng-if="list.trans.deleted" class="group-symmetrical--right link-navigation highlighted active"
-          swiper-click="undeleteList(list)"><span class="text-navigation">restore</span></a>
-      </div>
+        <a href ng-if="list.trans.deleted" ng-hide="descriptionFocused"
+          class="group-symmetrical--right link-navigation highlighted active" swiper-click="undeleteList(list)">
+          <span class="text-navigation">restore</span>
+        </a>
 
-      <div class="row-vertically-centered with-textarea">
-        <textarea ng-model="list.trans.title" input-model-validator ng-trim="false" msd-elastic
-          ng-keydown="listTitlebarTextKeyDown($event)"
-          editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
-          placeholder="enter list title&#8230;" maxlength="128" autocapitalize="none" autocorrect="off">
-        </textarea>
+        <div ng-if="descriptionFocused" class="group-symmetrical--right">
+          <div class="text-field--label-multi-row">
+            <span ng-bind="'de' + (columns === 1 ? '-\n' : '') + 'scription'"
+              class="text-field--label-bold">
+            </span>
+          </div>
+        </div>
+
       </div>
     </div>
   </header>
@@ -29,14 +50,23 @@
     <div class="swiper-wrapper">
       <div class="swiper-slide" swiper-slide="listEditor/basic" slide-index="0">
         <div ng-style="{'padding-bottom': EDITOR_FOOTER_HEIGHT}" class="container-content"
-          drawer-override-aisle="right">
-          <div class="row-vertically-centered with-textarea" editable-field-container>
-            <textarea ng-model="list.trans.description" input-model-validator ng-trim="false"
-              ng-focus="setDescriptionFocus(true)" ng-blur="setDescriptionFocus(false)"
-              editable-field msd-elastic
-              placeholder="enter description&#8230;" maxlength="1024" autocapitalize="none" autocorrect="off">
-           </textarea>
+          drawer-override-aisle="right" ng-init="drawerAisleInitialized = true">
+
+          <!-- LIST TITLE -->
+          <div ng-hide="descriptionFocused" class="row-vertically-centered with-textarea">
+            <textarea class="text-heading-primary large" ng-model="list.trans.title"
+              input-model-validator ng-trim="false" msd-elastic ng-keydown="listTitlebarTextKeyDown($event)"
+              editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
+              placeholder="enter list title&#8230;" maxlength="128" autocapitalize="none" autocorrect="off">
+            </textarea>
           </div>
+
+          <textarea ng-if="drawerAisleInitialized" id="ignoreSnap" ng-model="list.trans.description"
+            input-model-validator ng-trim="false" ng-focus="setDescriptionFocus(true)"
+            ng-blur="setDescriptionFocus(false)" editable-field msd-elastic
+            placeholder="enter description&#8230;" maxlength="1024" autocapitalize="none" autocorrect="off">
+         </textarea>
+
         </div>
         <footer ng-hide="descriptionFocused" class="container-content--after editor-footer">
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
@@ -63,14 +93,16 @@
 
         <footer class="container-content--after editor-footer" editor-footer="advancedSlideInfo">
 
-          <div class="table">
-            <div class="table-row">
-              <a href class="table-cell link" swiper-click="convertToTask(list)">
-                <span class="text-convert">task</span>
-              </a>
-              <a href class="table-cell link" swiper-click="convertToNote(list)">
-                <span class="text-convert">note</span>
-              </a>
+          <!-- CONVERT -->
+          <div class="group-symmetrical">
+            <a href class="group-symmetrical--left link" swiper-click="convertToTask(list)">
+              <span class="text-convert small">task</span>
+            </a>
+            <a href class="group-symmetrical--middle group-centered link" swiper-click="convertToNote(list)">
+              <span class="text-convert small">note</span>
+            </a>
+            <div class="group-symmetrical--right">
+              <span class="text-field--label">convert</span>
             </div>
           </div>
 
@@ -79,8 +111,8 @@
               class="group-symmetrical--left link-navigation">
               <span class="text-navigation-back">basic</span>
             </a>
-            <a ng-if="!isFakeUser()" href swiper-click="archiveListInEdit(list)"
-            class="group-symmetrical--right link-navigation highlighted">
+            <a ng-if="!hideArchive()" href swiper-click="archiveListInEdit(list)"
+              class="group-symmetrical--right link-navigation highlighted">
               <span class="text-navigation">archive</span>
             </a>
           </nav>

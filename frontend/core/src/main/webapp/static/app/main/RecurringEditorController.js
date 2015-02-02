@@ -56,7 +56,9 @@
     $scope.item = undefined;
   }
 
-  $scope.endSorting = $scope.closeEditor;
+  $scope.endSorting = function() {
+    $scope.closeEditor();
+  };
 
   function initializeAndGotoNextItemOrEndSortingOnLast(dataInEdit) {
     var iterableItemIndex = $scope.getIterableItemIndex(dataInEdit);
@@ -102,15 +104,23 @@
         });
       } else if (itemType === 'note') {
         initializeAndGotoNextItemOrEndSortingOnLast(dataInEdit);
-        var favoriteAfterConvert = dataInEdit.trans.favorited;
+        var favoriteNoteAfterConvert = dataInEdit.trans.favorited;
+
         ItemsService.itemToNote(dataInEdit, UISessionService.getActiveUUID()).then(function() {
-          if (favoriteAfterConvert) $scope.favoriteNote(dataInEdit);
+          if (favoriteNoteAfterConvert) $scope.favoriteNote(dataInEdit);
+        });
+      } else if (itemType === 'list') {
+        initializeAndGotoNextItemOrEndSortingOnLast(dataInEdit);
+        var favoriteListAfterConvert = dataInEdit.trans.favorited;
+
+        ItemsService.itemToList(dataInEdit, UISessionService.getActiveUUID()).then(function() {
+          if (favoriteListAfterConvert) $scope.favoriteList(dataInEdit);
         });
       }
     }
   };
 
-  function moveNoteContentToDescription(dataInEdit) {
+  function moveContentToDescription(dataInEdit) {
     if ($scope.getItemType() === 'note' && dataInEdit.trans.content && dataInEdit.trans.content.length) {
       dataInEdit.trans.description = dataInEdit.trans.content;
       delete dataInEdit.trans.content;
@@ -119,7 +129,7 @@
 
   $scope.undoSorting = function(dataInEdit) {
     resetLeftOverVariables();
-    moveNoteContentToDescription(dataInEdit);
+    moveContentToDescription(dataInEdit);
 
     if ($scope.mode === 'item') {
       $scope.item = dataInEdit;
@@ -133,7 +143,7 @@
   // OVERRIDDEN METHODS
 
   $scope.convertToTask = function(dataInEdit){
-    moveNoteContentToDescription(dataInEdit);
+    moveContentToDescription(dataInEdit);
     $scope.task = TasksService.prepareConvertTask(dataInEdit);
     setItemType('task');
     setIterableItemDirty(true);
@@ -151,6 +161,14 @@
     DrawerService.disableDragging('right');
   };
 
+  $scope.convertToList = function(dataInEdit) {
+    moveContentToDescription(dataInEdit);
+    $scope.list = dataInEdit;
+    setItemType('list');
+    setIterableItemDirty(true);
+    DrawerService.disableDragging('right');
+  };
+
   $scope.processDelete = function(dataInEdit) {
     initializeAndGotoNextItemOrEndSortingOnLast(dataInEdit);
     if ($scope.mode === 'item') $scope.deleteItem(dataInEdit);
@@ -160,7 +178,13 @@
     $scope.saveItemAndGotoNextItem(dataInEdit);
   };
 
-  $scope.handleTitlebarEnterAction = angular.noop;
+  $scope.isFavoriteList = function(list) {
+    return list.trans.favorited;
+  };
+
+  $scope.handleTitlebarEnterAction = function() {
+    angular.noop();
+  };
 }
 
 RecurringEditorController['$inject'] = ['$scope', 'DrawerService', 'ItemsService', 'TasksService',

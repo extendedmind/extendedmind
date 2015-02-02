@@ -16,14 +16,13 @@
           <span class="text-edit">done</span>
         </a>
 
-        <div ng-hide="!isTaskPropertyInEdit() && isFirstSlide('taskEditor')"
-          ng-style="{maxWidth: calculateTitleWidth()}" class="group-symmetrical--middle width-large">
-          <div style="display: table; width: 100%; height: 100%;">
-            <div style="text-align: center; height: inherit; display: table-cell; vertical-align: middle;">
-              <span class="text-heading-primary" ng-class="!task.trans.title && 'text-downplayed'"
-                ng-bind="task.trans.title && task.trans.title.length ? task.trans.title : 'new task'" clamp=2>
-              </span>
-            </div>
+        <div ng-show="isTaskPropertyInEdit() || !isFirstSlide('taskEditor')"
+          ng-style="{maxWidth: calculateTitleWidth()}"
+          class="group-symmetrical--middle width-large text-heading-primary--outer">
+          <div class="text-heading-primary--inner">
+            <span class="text-heading-primary" ng-class="!task.trans.title && 'text-downplayed'"
+              ng-bind="task.trans.title && task.trans.title.length ? task.trans.title : 'new task'" clamp=2>
+            </span>
           </div>
         </div>
 
@@ -230,15 +229,14 @@
 
           <!-- CONVERT -->
           <div class="group-symmetrical">
-            <a href class="group-symmetrical--left" swiper-click="convertToNote(task)">
-              <span style="font-size: 13px;" class="text-convert">note</span>
+            <a href class="group-symmetrical--left link" swiper-click="convertToNote(task)">
+              <span class="text-convert small">note</span>
             </a>
-            <a href style="text-align:center;" class="group-symmetrical--middle"
-              swiper-click="convertToList(task)">
-              <span style="font-size: 13px;" class="text-convert">list</span>
+            <a href class="group-symmetrical--middle group-centered link" swiper-click="convertToList(task)">
+              <span class="text-convert small">list</span>
             </a>
             <div class="group-symmetrical--right">
-              <span style="font-weight: 300;" class="text-search-type">convert</span>
+              <span class="text-field--label">convert</span>
             </div>
           </div>
 

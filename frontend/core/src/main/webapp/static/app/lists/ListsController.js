@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function ListsController($q, $rootScope, $scope, $timeout,
+ function ListsController($scope,
                           AnalyticsService, ListsService, SwiperService, UISessionService, UserService,
                           UserSessionService) {
 
@@ -41,22 +41,30 @@
   }
 
   $scope.favoriteList = function(list) {
-    var favoriteListUuids = UserSessionService.getUIPreference('favoriteLists');
-    if (!favoriteListUuids) favoriteListUuids = [];
-    if (favoriteListUuids.indexOf(list.trans.uuid) === -1){
-      favoriteListUuids.push(list.trans.uuid);
-      updateFavoriteLists(favoriteListUuids);
+    if (list.trans.itemType === 'list') {
+      var favoriteListUuids = UserSessionService.getUIPreference('favoriteLists');
+      if (!favoriteListUuids) favoriteListUuids = [];
+      if (favoriteListUuids.indexOf(list.trans.uuid) === -1){
+        favoriteListUuids.push(list.trans.uuid);
+        updateFavoriteLists(favoriteListUuids);
+      }
+    } else {
+      list.trans.favorited = true;
     }
   };
 
   $scope.unfavoriteList = function(list) {
-    var favoriteListUuids = UserSessionService.getUIPreference('favoriteLists');
-    if (favoriteListUuids){
-      var favoriteIndex = favoriteListUuids.indexOf(list.trans.uuid);
-      if (favoriteIndex !== -1){
-        favoriteListUuids.splice(favoriteIndex, 1);
-        updateFavoriteLists(favoriteListUuids);
+    if (list.trans.itemType === 'list') {
+      var favoriteListUuids = UserSessionService.getUIPreference('favoriteLists');
+      if (favoriteListUuids){
+        var favoriteIndex = favoriteListUuids.indexOf(list.trans.uuid);
+        if (favoriteIndex !== -1){
+          favoriteListUuids.splice(favoriteIndex, 1);
+          updateFavoriteLists(favoriteListUuids);
+        }
       }
+    } else {
+      delete list.trans.favorited;
     }
   };
 
@@ -101,17 +109,7 @@
   $scope.deleteList = function(list) {
     if (list.trans.uuid){
       AnalyticsService.do('deleteList');
-      return ListsService.deleteList(list, UISessionService.getActiveUUID()).then(function(){
-        UISessionService.pushDelayedNotification({
-          type: 'deleted',
-          itemType: 'list', // NOTE: Same as list.trans.itemType.
-          item: list,
-          undoFn: $scope.undeleteList
-        });
-        $timeout(function() {
-          UISessionService.activateDelayedNotifications();
-        }, $rootScope.EDITOR_CLOSED_FAILSAFE_TIME);
-      });
+      return ListsService.deleteList(list, UISessionService.getActiveUUID());
     }
   };
 
@@ -130,7 +128,7 @@
   };
 }
 
-ListsController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout',
+ListsController['$inject'] = ['$scope',
 'AnalyticsService', 'ListsService', 'SwiperService', 'UISessionService', 'UserService', 'UserSessionService'
 ];
 angular.module('em.base').controller('ListsController', ListsController);

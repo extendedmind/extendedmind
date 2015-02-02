@@ -62,7 +62,9 @@
     }
   };
 
-  $scope.endTaskEdit = $scope.closeEditor;
+  $scope.endTaskEdit = function() {
+    $scope.closeEditor();
+  };
 
   function taskEditorAboutToClose() {
     if ($scope.isTaskEdited() && !$scope.task.trans.deleted) saveTaskInEdit();

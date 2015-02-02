@@ -36,11 +36,15 @@
     if (angular.isFunction($scope.unregisterEditorAboutToCloseCallback))
       $scope.unregisterEditorAboutToCloseCallback();
 
-    $scope.deleteList($scope.list).then(function(){
-      $scope.closeEditor();
-      // TODO:  Change only when editor opened from deleted list.
-      $scope.changeFeature('lists', undefined, false);
-    });
+    var activeFeature = $scope.getActiveFeature();
+    if (activeFeature === 'list') {
+      var currentData = UISessionService.getFeatureData(activeFeature);
+      if (currentData === $scope.list) {
+        $scope.changeFeature('lists', undefined, false);
+      }
+    }
+
+    $scope.processDelete($scope.list, $scope.deleteList, $scope.undeleteList);
   };
 
   $scope.isListEdited = function() {
@@ -105,12 +109,15 @@
     if (event.keyCode === 13) {
       if ($scope.listTitlebarHasText()) {
         // Enter in editor saves, no line breaks allowed
-        $scope.closeEditor();
-        saveListInEdit();
+        $scope.handleTitlebarEnterAction(saveListInEdit);
       }
       event.preventDefault();
       event.stopPropagation();
     }
+  };
+
+  $scope.hideArchive = function() {
+    return $scope.isFakeUser() || $scope.editorType === 'recurring';
   };
 }
 
