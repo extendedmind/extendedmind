@@ -22,6 +22,7 @@ TODO: Icons are not working yet with Phytoplankton
 @size-icon-star-small: 8px;
 @size-icon-trash: 18px;
 @size-icon-x: 10px;
+@size-icon-sort: 33px;
 
 // Icon character codes
 @icon-show-completed: "\e60e";
@@ -140,8 +141,40 @@ Icon classes
     color: @color-text-highlighted;
     content: @icon-plus;
   }
+}
+
+// 1. Set dimensions.
+// 2. Override default vertical-align and ertically align with text.
+//    NOTE: This has to be AFTER .set-icon-font().
+.icon-sort,
+.icon-sort-stop {
+  font-size: @size-icon-sort; // [1]
+  &:after {
+    .set-icon-font();
+    vertical-align: baseline; // [2]
+  }
+}
+
+.icon-sort:after {
+  content: @icon-sort;
+  color: @color-text-highlighted;
+}
+
+.icon-sort-stop {
+  &:after {
+    content: @icon-sort-stop;
+    color: white;
+  }
   &:active:after {
-    color: @color-text-highlighted-pressed;
+    color: @color-text-inverse-pressed;
+  }
+}
+
+// 1. Change color for active icons colored with @color-text.
+.icon-plus,
+.icon-sort {
+  &:active:after {
+    color: @color-text-pressed; // [1]
   }
 }
 

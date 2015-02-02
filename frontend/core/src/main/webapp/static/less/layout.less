@@ -327,15 +327,19 @@ Vertically center .container-master and .container-editor in large screens
   height: @height-footer;
   line-height: @height-footer;
 
-  // 1. Align plus icon vertically.
-  // 2. plus-icon element is taller than icon itself and since it's a font, its baseline is somewhere.
-  //    Set vertical-align to adjust icon inside element.
+  // 1. Plus icon element is taller than icon itself and since it's a font, its baseline is somewhere.
+  //    Set vertical-align to adjust icon inside element, and set same for sort icon.
+  .group-symmetrical--left > .icon-sort,
   .group-symmetrical--middle > a > .icon-plus {
-    display: block;               // [1]
     line-height: @height-footer;
     &:after {
-      vertical-align: -5%;      // [2]
+      vertical-align: -5%;      // [1]
     }
+  }
+
+  // 1. Align plus icon vertically.
+  .group-symmetrical--middle > a > .icon-plus {
+    display: block;
   }
 
   // 1. Set height, and also to ensure icons in .text-navigation-back:before and
