@@ -231,7 +231,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
   var featurePendingOpen;
   $scope.changeFeature = function(feature, data, toggleMenu, pending){
     var currentFeature = UISessionService.getCurrentFeatureName();
-    var currentData = UISessionService.getFeatureData();
+    var currentData = UISessionService.getFeatureData(currentFeature);
     var featureChanged = !(currentFeature === feature && currentData === data);
     var featureInfos = $scope.features[feature];
 
@@ -417,7 +417,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
 
   // Start from tasks on onboarding, or later on, from focus
   if (!$scope.onboardingInProgress){
-    $scope.changeFeature('focus');
+    $scope.changeFeature('inbox');
   }else{
     $scope.changeFeature('tasks');
   }
