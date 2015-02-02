@@ -10,10 +10,6 @@
             ng-bind="isListEdited() && !list.trans.deleted ? 'save' : 'back'"></span>
         </a>
 
-        <a href ng-if="descriptionFocused" class="group-symmetrical--left highlighted">
-          <span class="text-edit">done</span>
-        </a>
-
         <div ng-show="descriptionFocused || !isFirstSlide('listEditor')"
           ng-style="{maxWidth: calculateTitleWidth()}"
           class="group-symmetrical--middle width-large text-heading-primary--outer">

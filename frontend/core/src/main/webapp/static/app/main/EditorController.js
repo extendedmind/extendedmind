@@ -324,8 +324,9 @@
   };
 
   // DESCRIPTION
-  $scope.setDescriptionFocus = function(value){
-    $scope.descriptionFocused = value;
+  $scope.setDescriptionFocus = function(focus, editor){
+    $scope.descriptionFocused = focus;
+    SwiperService.setOnlyExternal(editor, focus);
   };
 
   // URL
