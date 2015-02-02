@@ -399,12 +399,7 @@
   // UI
 
   $scope.getNewDayTask = function(daySlidesIndex){
-    return {
-      trans: {
-        due: $scope.daySlides[daySlidesIndex].info,
-        itemType: 'task'
-      }
-    };
+    return $scope.getNewTask({due: $scope.daySlides[daySlidesIndex].info});
   };
 
   /*
@@ -426,7 +421,7 @@
   var activeDateYYYYMMDD;
   $scope.getIsDayActiveClass = function(dateYYYYMMDD) {
     if (activeDateYYYYMMDD === dateYYYYMMDD) return 'active';
-  }
+  };
 
   function getActiveDay() {
     return activeDateYYYYMMDD;
