@@ -95,6 +95,15 @@
       event.stopPropagation();
     }
   };
+
+  $scope.getPrefix = function(tag) {
+    if (tag.trans.title && tag.trans.title.length) {
+      if (tag.trans.tagType === 'context')
+        return '\u0040';  // @ (commercial at)
+      else if (tag.trans.tagType === 'keyword')
+        return '\u0023';  // # (number sign)
+    }
+  }
 }
 
 TagEditorController['$inject'] = ['$q', '$rootScope', '$scope', 'TagsService', 'UISessionService'];

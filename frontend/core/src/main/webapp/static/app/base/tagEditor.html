@@ -3,14 +3,37 @@
   <header class="container-titlebar">
     <div class="container-titlebar--inner">
       <div class="group-symmetrical height-large--top">
+
         <a href class="group-symmetrical--left link-navigation highlighted active" swiper-click="endTagEdit()">
           <span class="text-navigation-back" ng-bind="isTagEdited() && !tag.trans.deleted ? 'save' : 'back'"></span>
         </a>
-        <a href ng-if="!tag.trans.deleted" class="group-symmetrical--right" swiper-click="deleteTagInEdit()" >
+
+        <div ng-show="descriptionFocused" ng-style="{maxWidth: calculateTitleWidth()}"
+          class="group-symmetrical--middle width-large text-heading-primary--outer primary">
+          <div class="text-heading-primary--inner">
+            <span class="text-heading-primary" data-prefix="{{getPrefix(tag)}}"
+              ng-class="{'text-downplayed': !tag.trans.title, 'text-prefix': tag.trans.title}"
+              ng-bind="tag.trans.title && tag.trans.title.length ? tag.trans.title : 'new tag'" clamp=2>
+            </span>
+          </div>
+        </div>
+
+        <a href ng-if="!tag.trans.deleted" ng-hide="descriptionFocused" class="group-symmetrical--right" swiper-click="deleteTagInEdit()" >
           <span class="icon-trash"></span>
         </a>
-        <a ng-if="tag.trans.deleted" href class="group-symmetrical--right link-navigation highlighted active"
-          swiper-click="undeleteTagInEdit()"><span class="text-navigation">restore</span></a>
+        <a href ng-if="tag.trans.deleted" ng-hide="descriptionFocused" class="group-symmetrical--right link-navigation highlighted active"
+          swiper-click="undeleteTagInEdit()">
+          <span class="text-navigation">restore</span>
+        </a>
+
+        <div ng-if="descriptionFocused" class="group-symmetrical--right">
+          <div class="text-field--label-multi-row">
+            <span ng-bind="'de' + (columns === 1 ? '-\n' : '') + 'scription'"
+              class="text-field--label-bold">
+            </span>
+          </div>
+        </div>
+
       </div>
     </div>
   </header>
@@ -32,15 +55,16 @@
         </div>
       </div>
 
+      <!-- DESCRIPTION -->
+      <textarea ng-if="drawerAisleInitialized" id="ignoreSnap" ng-model="tag.trans.description"
+        input-model-validator ng-trim="false" ng-focus="setDescriptionFocus(true, 'tagEditor')"
+        ng-blur="setDescriptionFocus(false, 'tagEditor')" msd-elastic
+        placeholder="enter description&#8230;" maxlength="1024" autocapitalize="none" autocorrect="off">
+      </textarea>
+
       <div class="row-vertically-centered with-textarea">
         <textarea ng-model="tag.trans.link" input-model-validator ng-trim="false" msd-elastic
           maxlength="128" placeholder="enter url&#8230;" autocapitalize="none" autocorrect="off">
-        </textarea>
-      </div>
-
-      <div class="row-vertically-centered with-textarea">
-        <textarea ng-model="tag.trans.description" input-model-validator ng-trim="false" msd-elastic
-          placeholder="enter description&#8230;" maxlength="1024" autocapitalize="none" autocorrect="off">
         </textarea>
       </div>
 

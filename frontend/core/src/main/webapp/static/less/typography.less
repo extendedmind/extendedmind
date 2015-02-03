@@ -303,7 +303,7 @@ Navigation texts
 }
 
 .text-navigation-forward-double:before, .text-navigation-forward-double:after {
-   .set-icon-font;
+  .set-icon-font();
   content: @icon-arrow-right;
   color: @color-text-downplayed;
   font-size: @size-icon-arrow-small;
@@ -429,4 +429,15 @@ Search results (omnibar, deleted)
     line-height: @grid-vertical;
     font-size: @size-font-medium-large;
   }
+}
+
+/*
+******************************************************************
+# Prefix.
+*/
+
+// 1. Set content from data-prefix.
+.text-prefix:before {
+  content: attr(data-prefix); // [1]
+  color: @color-text-downplayed;
 }
