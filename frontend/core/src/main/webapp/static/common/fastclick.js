@@ -12,6 +12,14 @@
 	/*jslint browser:true, node:true*/
 	/*global define, Event, Node*/
 
+	/*
+	* FORKS
+	*		i: 		Request focus when textarea has no content.
+	*   ii:		Request click when textarea has content.
+	*		iii:	Cancel the event so that additional blur and focus will not happen in iOS.
+	*					NOTE: Not needed if no i & ii
+	*/
+
 
 	/**
 	 * Instantiate fast-clicking listeners on the specified layer.
@@ -232,7 +240,7 @@
 		case 'select':
 		case 'textarea':
 			if (target.disabled || target.value.length) {
-      	// FORK: Request click when textarea has content.
+      	// FORK: ii
 				return true;
 			}
 
@@ -264,7 +272,7 @@
 	FastClick.prototype.needsFocus = function(target) {
 		switch (target.nodeName.toLowerCase()) {
 		case 'textarea':
-			return !target.value.length;	// FORK: Request focus when textarea has no content.
+			return !target.value.length;	// FORK: i
 		case 'select':
 			return !deviceIsAndroid;
 		case 'input':
@@ -332,6 +340,10 @@
 			targetElement.setSelectionRange(length, length);
 		} else {
 			targetElement.focus();
+  		// FORK: iii
+			if (deviceIsIOS && targetElement.tagName.toLowerCase() === 'label') {
+				event.preventDefault();
+			}
 		}
 	};
 
