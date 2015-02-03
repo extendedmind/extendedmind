@@ -48,6 +48,8 @@
     return iterableItemDirty;
   };
 
+  $scope.showEditorType = true;
+
   function resetLeftOverVariables() {
     // Reset $scope variables. These may exist from previous editor.
     $scope.task = undefined;

@@ -17,7 +17,7 @@
 
         <div ng-hide="!isNotePropertyInEdit() && isFirstSlide('noteEditor')" id="noteEditorTitlebarTitle"
           ng-style="{maxWidth: calculateTitleWidth()}"
-          class="scroll-then-toggle group-symmetrical--middle width-large">
+          class="scroll-then-toggle group-symmetrical--middle width-large primary">
           <a href class="link" swiper-click="gotoTitle()">
             <div>
               <span class="text-heading-primary" ng-class="!note.trans.title && 'text-downplayed'"
@@ -25,6 +25,10 @@
               </span>
             </div>
           </a>
+        </div>
+
+        <div ng-if="showEditorType" class="group-symmetrical--middle group-centered substitute">
+          <span class="text-heading-primary text-downplayed">note</span>
         </div>
 
         <a href ng-if="!note.trans.deleted && !onboardingInProgress" ng-hide="isNotePropertyInEdit()"

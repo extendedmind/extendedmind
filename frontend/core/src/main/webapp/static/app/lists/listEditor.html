@@ -12,12 +12,16 @@
 
         <div ng-show="descriptionFocused || !isFirstSlide('listEditor')"
           ng-style="{maxWidth: calculateTitleWidth()}"
-          class="group-symmetrical--middle width-large text-heading-primary--outer">
+          class="group-symmetrical--middle width-large text-heading-primary--outer primary">
           <div class="text-heading-primary--inner">
             <span class="text-heading-primary" ng-class="!list.trans.title && 'text-downplayed'"
               ng-bind="list.trans.title && list.trans.title.length ? list.trans.title : 'new list'" clamp=2>
             </span>
           </div>
+        </div>
+
+        <div ng-if="showEditorType" class="group-symmetrical--middle group-centered substitute">
+          <span class="text-heading-primary text-downplayed">list</span>
         </div>
 
         <a href ng-if="!list.trans.deleted" ng-hide="descriptionFocused" class="group-symmetrical--right"

@@ -676,6 +676,19 @@ TODO: Example needed
 
 /*
 *************************************************************
+# Initially hidden substitute elements.
+*/
+.substitute {
+  display: none;
+}
+
+// 1. Show substitute element when primary element is hidden.
+.primary.ng-hide:not(.show-sticky) + .substitute {
+  display: initial; // [1]
+}
+
+/*
+*************************************************************
 # Collapsible (more/less) widget
 */
 .collapsible {

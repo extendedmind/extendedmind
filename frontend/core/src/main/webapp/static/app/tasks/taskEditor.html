@@ -18,12 +18,16 @@
 
         <div ng-show="isTaskPropertyInEdit() || !isFirstSlide('taskEditor')"
           ng-style="{maxWidth: calculateTitleWidth()}"
-          class="group-symmetrical--middle width-large text-heading-primary--outer">
+          class="group-symmetrical--middle width-large text-heading-primary--outer primary">
           <div class="text-heading-primary--inner">
             <span class="text-heading-primary" ng-class="!task.trans.title && 'text-downplayed'"
               ng-bind="task.trans.title && task.trans.title.length ? task.trans.title : 'new task'" clamp=2>
             </span>
           </div>
+        </div>
+
+        <div ng-if="showEditorType" class="group-symmetrical--middle group-centered substitute">
+          <span class="text-heading-primary text-downplayed">task</span>
         </div>
 
         <a href ng-if="!task.trans.deleted" ng-hide="isTaskPropertyInEdit()" class="group-symmetrical--right"
