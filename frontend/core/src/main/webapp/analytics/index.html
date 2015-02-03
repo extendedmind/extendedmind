@@ -118,18 +118,28 @@
     <code id="dauOmniCode"></code>
     <div id="chart5"></div>
 
-    <h3>Visiting sign up</h3>
-    <code id="visitSignUpCode"></code>
+    <h3>Visiting new user</h3>
+    <code id="visitNewUserCode"></code>
     <div id="chart6"></div>
 
-    <h3>Sign up</h3>
-    <code id="signUpCode"></code>
+    <h3>Start tutorial</h3>
+    <p>Does not include admin or alpha users.</p>
+    <code id="startTutorialCode"></code>
     <div id="chart7"></div>
+
+    <h3>Skip tutorial</h3>
+    <p>Does not include admin or alpha users.</p>
+    <code id="skipTutorialCode"></code>
+    <div id="chart8"></div>
 
     <h3>Complete tutorial</h3>
     <p>Does not include admin or alpha users.</p>
     <code id="tutorialCompleteCode"></code>
-    <div id="chart8"></div>
+    <div id="chart9"></div>
+
+    <h3>Sign up</h3>
+    <code id="signUpCode"></code>
+    <div id="chart10"></div>
 
     <hr>
 
@@ -179,9 +189,11 @@
     var dauTasksQuery = baseUrl + "distinct(addTask(user.uuid).eq(user.type,2))&step=864e5&start=" + startDay + "&stop=" + endDay;
     var dauNotesQuery = baseUrl + "distinct(addNote(user.uuid).eq(user.type,2))&step=864e5&start=" + startDay + "&stop=" + endDay;
     var dauOmnibarQuery = baseUrl + "distinct(visit_omnibar(user.uuid).eq(user.type,2))&step=864e5&start=" + startDay + "&stop=" + endDay;
-    var visitSignUpQuery = baseUrl + "sum(visit_signup)&step=864e5&start=" + startDay + "&stop=" + endDay;
+    var visitNewUserQuery = baseUrl + "sum(visit_newUser)&step=864e5&start=" + startDay + "&stop=" + endDay;
+    var startTutorialQuery = baseUrl + "sum(startTutorial)&step=864e5&start=" + startDay + "&stop=" + endDay;
+    var skipTutorialQuery = baseUrl + "sum(skipTutorial)&step=864e5&start=" + startDay + "&stop=" + endDay;
+    var tutorialCompleteQuery = baseUrl + "sum(onboarded)&step=864e5&start=" + startDay + "&stop=" + endDay;
     var signUpQuery = baseUrl + "sum(signUp)&step=864e5&start=" + startDay + "&stop=" + endDay;
-    var tutorialCompleteQuery = baseUrl + "sum(onboarded.eq(user.type,2))&step=864e5&start=" + startDay + "&stop=" + endDay;
     var mauStartDate = new Date();
     mauStartDate.setMonth(mauStartDate.getMonth() - 1);
     var mauEventQuery = "https://ext.md/evaluate/1.0/event?expression=session(user.uuid).eq(user.type,2)&step=864e5&start=" + dateToString(mauStartDate) + "&stop=" + endDay;
@@ -193,18 +205,22 @@
     $('#dauTasksCode').text(dauTasksQuery);
     $('#dauNotesCode').text(dauNotesQuery);
     $('#dauOmniCode').text(dauOmnibarQuery);
-    $('#visitSignUpCode').text(visitSignUpQuery);
-    $('#signUpCode').text(signUpQuery);
+    $('#visitNewUserCode').text(visitNewUserQuery);
+    $('#startTutorialCode').text(startTutorialQuery);
+    $('#skipTutorialCode').text(skipTutorialQuery);
     $('#tutorialCompleteCode').text(tutorialCompleteQuery);
+    $('#signUpCode').text(signUpQuery);
 
     initChartToElement("#chart1",dauQuery);         //"data/unique_users_sessions.json"
     initChartToElement("#chart2",sessionsQuery);    //"data/sessions.json"
     initChartToElement("#chart3",dauTasksQuery);    //"data/unique_users_addtask.json"
     initChartToElement("#chart4",dauNotesQuery);    //"data/unique_users_addnote.json"
     initChartToElement("#chart5",dauOmnibarQuery);  // "data/unique_users_omnibar.json"
-    initChartToElement("#chart6",visitSignUpQuery);     // "data/unique_visit_entry.json"
-    initChartToElement("#chart7",signUpQuery);            // "data/sign_up.json"
-    initChartToElement("#chart8",tutorialCompleteQuery);  // "data/onboarded.json"
+    initChartToElement("#chart6",visitNewUserQuery);
+    initChartToElement("#chart7",startTutorialQuery);
+    initChartToElement("#chart8",skipTutorialQuery);
+    initChartToElement("#chart9",tutorialCompleteQuery);  // "data/onboarded.json"
+    initChartToElement("#chart10",signUpQuery);            // "data/sign_up.json"
 
     var dauStartDate = new Date();
     dauStartDate.setMonth(dauStartDate.getMonth() - 1);
