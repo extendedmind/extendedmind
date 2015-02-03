@@ -43,6 +43,32 @@
     </developer>
   </developers>
 
+
+  <profiles>
+    <profile>
+      <id>debug-minified</id>
+      <activation>
+        <property>
+          <name>debug</name>
+        </property>
+      </activation>
+      <properties>
+        <angular.minifier>ro.isdc.wro.maven.plugin.manager.factory.ConfigurableWroManagerFactory</angular.minifier>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>closure-minified</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <angular.minifier>ro.isdc.wro.extensions.manager.standalone.GoogleStandaloneManagerFactory</angular.minifier>
+      </properties>
+    </profile>
+  </profiles>
+
+
   <dependencies>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
@@ -104,6 +130,7 @@
             <fileset>
               <directory>${basedir}/src/main/webapp/static/</directory>
               <includes>
+                <include>em.angularjs.min.js</include>
                 <include>em.min.js</include>
               </includes>
             </fileset>
@@ -258,7 +285,7 @@
             </goals>
             <configuration>
               <targetGroups>em.angularjs.min</targetGroups>
-              <wroManagerFactory>ro.isdc.wro.extensions.manager.standalone.GoogleStandaloneManagerFactory</wroManagerFactory>
+              <wroManagerFactory>${angular.minifier}</wroManagerFactory>
             </configuration>
           </execution>
           <execution>
