@@ -1316,3 +1316,19 @@ textarea#ignoreSnap {
   overflow: initial !important; // [4]
   height: 100% !important;      // [1,4]
 }
+
+// From http://stackoverflow.com/a/6471713
+.text-prefixed--label {
+  float: left;
+  padding-top: @padding-vertically-centered;
+  padding-bottom: @padding-vertically-centered;
+  padding-left: @grid-horizontal;
+}
+.text-prefixed--outer {
+  overflow: hidden;
+  .text-prefixed {
+    padding-top: @padding-vertically-centered;
+    padding-bottom: @padding-vertically-centered;
+    padding-right: @grid-horizontal;
+  }
+}

@@ -12,21 +12,25 @@
         <a ng-if="tag.trans.deleted" href class="group-symmetrical--right link-navigation highlighted active"
           swiper-click="undeleteTagInEdit()"><span class="text-navigation">restore</span></a>
       </div>
-
-      <div class="row-vertically-centered with-textarea">
-        <!-- TODO: @ or # symbol! -->
-        <textarea ng-model="tag.trans.title" input-model-validator ng-trim="false"
-          ng-keydown="tagTitlebarTextKeyDown($event)" msd-elastic
-          editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
-          dynamic-placeholder="enter {{tag.trans.tagType}} title&#8230;"
-          maxlength="128" autocapitalize="none" autocorrect="off">
-        </textarea>
-      </div>
     </div>
   </header>
 
   <div class="container-fluid--inner">
-    <div class="container-content" drawer-override-aisle="right">
+    <div class="container-content" drawer-override-aisle="right" ng-init="drawerAisleInitialized = true">
+
+      <!-- TITLE -->
+      <div ng-hide="descriptionFocused">
+        <label for="tagEditorTitlebarTitle" class="text-prefixed--label large"
+          ng-bind="tag.trans.tagType === 'context' ? '@' : '#'"></label>
+        <div class="text-prefixed--outer">
+          <textarea id="tagEditorTitlebarTitle" class="text-heading-primary large text-prefixed"
+            ng-model="tag.trans.title" input-model-validator ng-trim="false"
+            ng-keydown="tagTitlebarTextKeyDown($event)" msd-elastic editable-field
+            editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
+            placeholder="enter title&#8230;" maxlength="128" autocapitalize="none" autocorrect="off">
+          </textarea>
+        </div>
+      </div>
 
       <div class="row-vertically-centered with-textarea">
         <textarea ng-model="tag.trans.link" input-model-validator ng-trim="false" msd-elastic
