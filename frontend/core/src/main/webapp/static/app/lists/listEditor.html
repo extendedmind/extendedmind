@@ -62,8 +62,8 @@
           </div>
 
           <textarea ng-if="drawerAisleInitialized" id="ignoreSnap" ng-model="list.trans.description"
-            input-model-validator ng-trim="false" ng-focus="setDescriptionFocus(true)"
-            ng-blur="setDescriptionFocus(false)" editable-field msd-elastic
+            input-model-validator ng-trim="false" ng-focus="setDescriptionFocus(true, 'listEditor')"
+            ng-blur="setDescriptionFocus(false, 'listEditor')" editable-field msd-elastic
             placeholder="enter description&#8230;" maxlength="1024" autocapitalize="none" autocorrect="off">
          </textarea>
 
