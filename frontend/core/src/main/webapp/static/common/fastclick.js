@@ -340,10 +340,6 @@
 			targetElement.setSelectionRange(length, length);
 		} else {
 			targetElement.focus();
-  		// FORK: iii
-			if (deviceIsIOS && targetElement.tagName.toLowerCase() === 'label') {
-				event.preventDefault();
-			}
 		}
 	};
 
@@ -576,6 +572,10 @@
 				this.focus(targetElement);
 				if (deviceIsAndroid) {
 					return false;
+				}
+	  		// FORK: iii
+				else if (deviceIsIOS && forElement.tagName.toLowerCase() === 'textarea') {
+					event.preventDefault();
 				}
 
 				targetElement = forElement;
