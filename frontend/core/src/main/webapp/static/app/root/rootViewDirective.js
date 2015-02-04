@@ -128,9 +128,7 @@
             confirmText: 'retry',
             confirmTextDeferred: 'retrying\u2026',
             confirmActionDeferredFn: interaction.value.retry,
-            confirmActionDeferredParam: interaction.value.retryParam,
             confirmActionPromiseFn: interaction.value.promise,
-            confirmActionPromiseParam: interaction.value.promiseParam,
             cancelDisabled: !interaction.value.allowCancel
             // Cancel is disabled by default and overridden with allowCancel.
           };

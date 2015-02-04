@@ -721,10 +721,12 @@
             value: {
               status: error.value.status,
               data: error.value.data,
-              retry: getAllMethod,
-              retryParam: ownerUUID,
-              promise: deferred,
-              promiseParam: true
+              retry: function() {
+                return getAllMethod(ownerUUID);
+              },
+              promise: function() {
+                deferred.resolve(true);
+              }
           }};
         } else {
           emitType = 'emException';

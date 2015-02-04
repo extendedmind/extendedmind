@@ -37,24 +37,24 @@
           scope.confirmText = scope.modalInfos.confirmTextDeferred;
           scope.confirmDisabled = true;
 
-          scope.modalInfos.confirmActionDeferredFn(scope.modalInfos.confirmActionDeferredParam)
-          .then(confirmActionPromiseSuccess, confirmActionPromiseError);
+          var confirmActionDeferred = scope.modalInfos.confirmActionDeferredFn();
+          if (confirmActionDeferred)
+            confirmActionDeferred.then(confirmActionDeferredSuccess, confirmActionDeferredError);
+
         } else {
           scope.closeModal();
         }
       };
 
-      function confirmActionPromiseSuccess() {
+      function confirmActionDeferredSuccess() {
         scope.confirmDisabled = false;
         scope.closeModal();
-        if (scope.modalInfos.confirmActionPromiseFn) {
+        if (typeof scope.modalInfos.confirmActionPromiseFn === 'function') {
           // Delay executing callback so that close animation has finished before it.
-          $timeout(function() {
-            scope.modalInfos.confirmActionPromiseFn(scope.modalInfos.confirmActionPromiseParam);
-          }, 300);
+          $timeout(scope.modalInfos.confirmActionPromiseFn, 300);
         }
       }
-      function confirmActionPromiseError() {
+      function confirmActionDeferredError() {
         scope.confirmText = scope.modalInfos.confirmText;
         scope.confirmDisabled = false;
       }

@@ -79,9 +79,12 @@
       var rejection = {
         type: 'onlineRequired',
         value: {
-          retry: $scope.archiveList,
-          retryParam: $scope.list,
-          promise: archiveListSuccess,
+          retry: function() {
+            var archiveListDeferred = $scope.archiveList($scope.list);
+            if (archiveListDeferred) {
+              return archiveListDeferred.then(archiveListSuccess);
+            }
+          },
           allowCancel: true
         }
       };

@@ -170,7 +170,7 @@
                     data: error.value.data,
                     retry: swapTokenAndAuthenticate,
                     redirectUrl: '/',
-                    promise: deferredAuthentication
+                    promise: deferredAuthentication.resolve
                   }
                 };
               }else {
