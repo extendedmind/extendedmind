@@ -14,9 +14,10 @@
  *  ii.     Prevent dragging when content is focused in note editor and pageX in touchstart is greater than or
  *          equal to 28 pixels. 28 pixels is the size of the padding-left for content's textarea.
  *  iii.    Tap to close when minDragDistance is set.
+ *  iv.     Do not fire touchcancel event on android.
  */
 /*jslint browser: true*/
-/*global define, module, ender*/
+/*global define, module, ender, packaging*/
 (function(win, doc) {
     'use strict';
     var Snap = Snap || function(userOpts) {
@@ -387,9 +388,20 @@
                         * When minDragDistance is set and drawer is not open, return.
                         * When drawer is open, ignore minDragDistance and react to touch immediately.
                         */
-                        if (((settings.minDragDistance>=Math.abs(thePageX-cache.startDragX)) || // Has user met minimum drag distance?
-                            (cache.hasIntent === false)) &&
-                            (settings.maxPosition !== translated)) {
+                        var drawerOpen = settings.maxPosition === translated;
+                        var insideMinDragDistance = settings.minDragDistance >= Math.abs(thePageX -
+                                                                                      cache.startDragX);
+
+                        if ((insideMinDragDistance || cache.hasIntent === false) && !drawerOpen) {
+                            if (typeof packaging !== 'undefined' && packaging === 'android-cordova') {
+                                // FORK: iv
+                                var distX = Math.abs(thePageX - cache.startDragX);
+                                var distY = Math.abs(thePageY - cache.startDragY);
+
+                                if (distX > distY) {
+                                    event.preventDefault();
+                                }
+                            }
                             return;
                         }
 
