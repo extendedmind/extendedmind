@@ -54,7 +54,8 @@
   </header>
 
   <div class="swiper-container container-fluid--inner" swiper-container="noteEditor" swiper-type="main"
-    expected-slides="2" swiper-container-slide-changed="editorSwiperSlideChanged()">
+    expected-slides="2" swiper-container-toggle-drawer-sliding-events="hasSwipeToClose('note')"
+    swiper-container-slide-changed="editorSwiperSlideChanged()">
     <div class="swiper-wrapper" ng-class="onboardingInProgress && 'swiper-no-swiping'">
       <div class="swiper-slide" swiper-slide="noteEditor/basic" slide-index="0">
         <div ng-style="{'padding-bottom': isNotePropertyInEdit() ? 0 : EDITOR_FOOTER_HEIGHT}"

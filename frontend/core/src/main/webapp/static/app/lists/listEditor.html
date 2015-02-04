@@ -46,7 +46,8 @@
   </header>
 
   <div class="swiper-container container-fluid--inner" swiper-container="listEditor" swiper-type="main"
-    expected-slides="2" swiper-container-slide-changed="editorSwiperSlideChanged()">
+    expected-slides="2" swiper-container-toggle-drawer-sliding-events="hasSwipeToClose('list')"
+    swiper-container-slide-changed="editorSwiperSlideChanged()">
     <div class="swiper-wrapper">
       <div class="swiper-slide" swiper-slide="listEditor/basic" slide-index="0">
         <div ng-style="{'padding-bottom': EDITOR_FOOTER_HEIGHT}" class="container-content"

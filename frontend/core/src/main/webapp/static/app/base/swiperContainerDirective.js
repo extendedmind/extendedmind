@@ -24,12 +24,13 @@
       swiperPath: '@swiperContainer',
       swiperType: '@swiperType',
       expectedSlidesFn: '&expectedSlides',
-      toggleDrawerSlidingEvents: '@swiperContainerToggleDrawerSlidingEvents',
+      toggleDrawerSlidingEvents: '&swiperContainerToggleDrawerSlidingEvents',
       slideChangedCallbackFn: '&swiperContainerSlideChanged'
     },
     controller: ['$scope', '$element', '$attrs', function($scope, $element, $attrs) {
       var swiperSlideInfos = [];
       var initializeSwiperCalled = false;
+      var toggleDrawerSlidingEvents = $scope.toggleDrawerSlidingEvents();
 
       $scope.expectedSlides = $scope.expectedSlidesFn();
 
@@ -91,7 +92,7 @@
             var queueStartCallbacks = true; // Queue slide change start callbacks.
             var slideChangeStartCallback, slideResetCallback;
 
-            if ($scope.toggleDrawerSlidingEvents) {
+            if (toggleDrawerSlidingEvents) {
               queueStartCallbacks = false;
               slideResetCallback = swiperSlideChangeReset;  // Add custom callback.
             }
@@ -115,7 +116,7 @@
                                                         'swiperContainer');
             }
 
-            if ($scope.toggleDrawerSlidingEvents) {
+            if (toggleDrawerSlidingEvents) {
               // Add custom callback.
               SwiperService.registerSlideChangeCallback(swiperSlideChangeEnd, $scope.swiperPath,
                                                         'swiperContainer' + $scope.swiperPath);
@@ -213,14 +214,14 @@
 
       var drawerDisabled; // FIXME: use isDraggable from DrawerService
       function disableDrawer() {
-        if (!drawerDisabled && $scope.toggleDrawerSlidingEvents) {
+        if (!drawerDisabled && toggleDrawerSlidingEvents) {
           drawerDisabled = true;
           // FIXME: Remove DrawerService dependency and use drawerAisleController.
           DrawerService.disableDragging('right');
         }
       }
       function enableDrawer() {
-        if (drawerDisabled && $scope.toggleDrawerSlidingEvents) {
+        if (drawerDisabled && toggleDrawerSlidingEvents) {
           if (SwiperService.getActiveSlideIndex($scope.swiperPath) === 0) {
             // FIXME: Listen touch events only on first slide(?)
             drawerDisabled = false;
