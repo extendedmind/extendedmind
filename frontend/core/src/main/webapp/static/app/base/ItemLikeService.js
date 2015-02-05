@@ -242,9 +242,7 @@
   }
 
   return {
-    isEdited: function(item, itemType, ownerUUID, fieldInfos, compareValues) {
-      return isEdited(item, itemType, ownerUUID, fieldInfos, compareValues);
-    },
+    isEdited: isEdited,
     getFieldInfos: function(additionalFieldInfos){
       var fieldInfos = getDefaultFieldInfos();
       if (additionalFieldInfos){
@@ -279,13 +277,14 @@
       if (item.mod && !isEdited(item, itemType, ownerUUID, fieldInfos, databaseItem)){
         // .mod matches the database, copy values over to persistent and delete mod
         copyModToPersistent(item, ownerUUID, fieldInfos);
+        return true;
       }else{
         // Either there is no modifications or item modifications haven't reached the backend,
         // make persistent values match the database but leave .mod as it is: we're hoping the
         // next update will bring values that match
         copyToPersistent(databaseItem, item, ownerUUID, fieldInfos, true);
+        return false;
       }
-      return item;
     },
     persistAndReset: function(data, itemType, ownerUUID, fieldInfos, oldUUID, propertiesToReset){
       function doResetAndPersist(item, itemType, ownerUUID, fieldInfos, propertiesToReset){

@@ -310,8 +310,8 @@
           var taskInfo = this.getTaskInfo(tasksResponse[i].uuid, ownerUUID);
           if (taskInfo){
             var oldMod = taskInfo.task.mod;
-            updatedTasks.push(ItemLikeService.evaluateMod(
-                                tasksResponse[i], taskInfo.task, 'task', ownerUUID, taskFieldInfos));
+            updatedTasks.push(taskInfo.task);
+            ItemLikeService.evaluateMod(tasksResponse[i], taskInfo.task, 'task', ownerUUID, taskFieldInfos);
             ItemLikeService.persistAndReset(taskInfo.task, 'task', ownerUUID,
                                             taskFieldInfos, undefined, oldMod);
           }else{

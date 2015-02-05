@@ -115,13 +115,13 @@
       if (listsResponse && listsResponse.length){
         // Go through listsResponse, and add .mod values if the fields in the current .mod do not match
         // the values in the persistent response
-        var updatedLists = [], locallyDeletedLists = [], i;
+        var updatedLists = [], locallyDeletedLists = [], i, id;
         for (i=0; i<listsResponse.length; i++){
           var listInfo = this.getListInfo(listsResponse[i].uuid, ownerUUID);
           if (listInfo){
             if (listInfo.list.trans.deleted) locallyDeletedLists.push(listInfo.list);
-            updatedLists.push(ItemLikeService.evaluateMod(
-                                listsResponse[i], listInfo.list, 'list', ownerUUID, listFieldInfos));
+            ItemLikeService.evaluateMod(listsResponse[i], listInfo.list, 'list', ownerUUID, listFieldInfos);
+            updatedLists.push(listInfo.list);
           }else{
             updatedLists.push(listsResponse[i]);
           }
@@ -135,12 +135,12 @@
           // Go through response to see if something was deleted
           for (i=0; i<updatedLists.length; i++) {
             if (updatedLists[i].deleted) {
-              for (var id in listDeletedCallbacks) {
+              for (id in listDeletedCallbacks) {
                 listDeletedCallbacks[id](updatedLists[i], ownerUUID);
               }
             }else if (locallyDeletedLists.indexOf(updatedLists[i]) !== -1){
               // Undeleted in another client
-              for (var id in listDeletedCallbacks) {
+              for (id in listDeletedCallbacks) {
                 listDeletedCallbacks[id](updatedLists[i], ownerUUID, true);
               }
             }

@@ -74,9 +74,8 @@
         for (var i=0; i<itemsResponse.length; i++){
           var itemInfo = this.getItemInfo(itemsResponse[i].uuid, ownerUUID);
           if (itemInfo){
-            updatedItems.push(ItemLikeService.evaluateMod(
-                                itemsResponse[i], itemInfo.item, 'item', ownerUUID,
-                                itemFieldInfos));
+            ItemLikeService.evaluateMod(itemsResponse[i], itemInfo.item, 'item', ownerUUID, itemFieldInfos);
+            updatedItems.push(itemInfo.item);
           }else{
             updatedItems.push(itemsResponse[i]);
           }

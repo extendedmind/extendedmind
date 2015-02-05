@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
- /*global angular */
+ /*global angular, jQuery */
  'use strict';
 
  function TagsService($q, ArrayService, BackendClientService, ItemLikeService, UserSessionService) {
@@ -73,13 +73,14 @@
       if (tagsResponse && tagsResponse.length){
         // Go through tagsResponse, and add .mod values if the fields in the current .mod do not match
         // the values in the persistent response
-        var updatedTags = [], locallyDeletedTags = [], i;
+        var updatedTags = [], locallyDeletedTags = [], i, id;
         for (i=0; i<tagsResponse.length; i++){
           var tagInfo = this.getTagInfo(tagsResponse[i].uuid, ownerUUID);
           if (tagInfo){
             if (tagInfo.tag.trans.deleted) locallyDeletedTags.push(tagInfo.tag);
-            updatedTags.push(ItemLikeService.evaluateMod(
-                                tagsResponse[i], tagInfo.tag, 'tag', ownerUUID, tagFieldInfos));
+            ItemLikeService.evaluateMod(tagsResponse[i], tagInfo.tag, 'tag', ownerUUID, tagFieldInfos);
+
+            updatedTags.push(tagInfo.tag);
           }else{
             updatedTags.push(tagsResponse[i]);
           }
@@ -93,12 +94,12 @@
           // Go through response to see if something was deleted or undeleted
           for (i=0; i<updatedTags.length; i++) {
             if (updatedTags[i].deleted) {
-              for (var id in tagDeletedCallbacks) {
+              for (id in tagDeletedCallbacks) {
                 tagDeletedCallbacks[id](updatedTags[i], ownerUUID);
               }
             }else if (locallyDeletedTags.indexOf(updatedTags[i]) !== -1){
               // Undeleted in another client
-              for (var id in tagDeletedCallbacks) {
+              for (id in tagDeletedCallbacks) {
                 tagDeletedCallbacks[id](updatedTags[i], ownerUUID, true);
               }
             }

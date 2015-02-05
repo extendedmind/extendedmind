@@ -113,7 +113,7 @@
   // Setup callback for tag deletion
   var tagDeletedCallback = function(deletedTag, ownerUUID, undelete) {
     if (notes[ownerUUID] && deletedTag) {
-      var modifiedItems;
+      var modifiedItems, i;
       if (!undelete){
         // Remove deleted tags from notes
         modifiedItems = TagsService.removeDeletedTagFromItems(notes[ownerUUID].activeNotes,
@@ -122,7 +122,7 @@
                                                                    deletedTag));
         modifiedItems.concat(TagsService.removeDeletedTagFromItems(notes[ownerUUID].archivedNotes,
                                                                    deletedTag));
-        for (var i=0,len=modifiedItems.length;i<len;i++){
+        for (i=0;i<modifiedItems.length;i++){
           updateNote(modifiedItems[i], ownerUUID);
         }
       }else{
@@ -133,7 +133,7 @@
                                                                    deletedTag));
         modifiedItems.concat(TagsService.addUndeletedTagToItems(notes[ownerUUID].archivedNotes,
                                                                    deletedTag));
-        for (var i=0,len=modifiedItems.length;i<len;i++){
+        for (i=0;i<modifiedItems.length;i++){
           updateNote(modifiedItems[i], ownerUUID);
         }
       }
@@ -144,7 +144,7 @@
   // Setup callback for list deletion
   var listDeletedCallback = function(deletedList, ownerUUID, undelete) {
     if (notes[ownerUUID] && deletedList) {
-      var modifiedItems;
+      var modifiedItems, i, len;
       if (!undelete){
         // Remove deleted list from notes
         modifiedItems = ListsService.removeDeletedListFromItems(notes[ownerUUID].activeNotes,
@@ -153,7 +153,7 @@
                                                                      deletedList));
         modifiedItems.concat(ListsService.removeDeletedListFromItems(notes[ownerUUID].archivedNotes,
                                                                      deletedList));
-        for (var i=0,len=modifiedItems.length;i<len;i++){
+        for (i=0,len=modifiedItems.length;i<len;i++){
           updateNote(modifiedItems[i], ownerUUID);
         }
       }else{
@@ -164,7 +164,7 @@
                                                                      deletedList));
         modifiedItems.concat(ListsService.addUndeletedListToItems(notes[ownerUUID].archivedNotes,
                                                                      deletedList));
-        for (var i=0,len=modifiedItems.length;i<len;i++){
+        for (i=0,len=modifiedItems.length;i<len;i++){
           updateNote(modifiedItems[i], ownerUUID);
         }
         return modifiedItems;
@@ -195,11 +195,17 @@
         for (var i=0, len=notesResponse.length; i<len; i++){
           var noteInfo = this.getNoteInfo(notesResponse[i].uuid, ownerUUID);
           if (noteInfo){
-            var oldMod = noteInfo.note.mod;
-            updatedNotes.push(ItemLikeService.evaluateMod(
-                                notesResponse[i], noteInfo.note, 'note', ownerUUID, noteFieldInfos));
-            ItemLikeService.persistAndReset(noteInfo.note, 'note', ownerUUID,
-                                            noteFieldInfos, undefined, oldMod);
+            updatedNotes.push(noteInfo.note);
+            if (ItemLikeService.evaluateMod(notesResponse[i],
+                                            noteInfo.note,
+                                            'note', ownerUUID, noteFieldInfos)){
+              // Don't reset trans when mod matches database values to prevent problems with autosave
+              ItemLikeService.persistAndReset(noteInfo.note, 'note', ownerUUID,
+                                              noteFieldInfos, undefined, {});
+            }else{
+              // Mod not deleted, reset all trans values
+              ItemLikeService.persistAndReset(noteInfo.note, 'note', ownerUUID, noteFieldInfos);
+            }
           }else{
             updatedNotes.push(notesResponse[i]);
             ItemLikeService.persistAndReset(notesResponse[i], 'note', ownerUUID, noteFieldInfos);
