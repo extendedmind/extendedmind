@@ -198,11 +198,11 @@
             var oldMod = noteInfo.note.mod;
             updatedNotes.push(ItemLikeService.evaluateMod(
                                 notesResponse[i], noteInfo.note, 'note', ownerUUID, noteFieldInfos));
-            ItemLikeService.persistAndReset(updatedNotes, 'note', ownerUUID,
+            ItemLikeService.persistAndReset(noteInfo.note, 'note', ownerUUID,
                                             noteFieldInfos, undefined, oldMod);
           }else{
             updatedNotes.push(notesResponse[i]);
-            ItemLikeService.persistAndReset(updatedNotes, 'note', ownerUUID, noteFieldInfos);
+            ItemLikeService.persistAndReset(notesResponse[i], 'note', ownerUUID, noteFieldInfos);
           }
         }
         return ArrayService.updateArrays(updatedNotes,
