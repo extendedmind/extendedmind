@@ -27,11 +27,13 @@
     // setters
     setBackendDelta: function(delta) {
       cachedBackendDelta = delta;
-      sessionStorage.setItem('backendDelta', delta);
+      if (delta !== undefined) sessionStorage.setItem('backendDelta', delta);
+      else sessionStorage.removeItem('backendDelta');
     },
     setActiveUUID: function(uuid) {
       cachedActiveUUID = uuid;
-      sessionStorage.setItem('activeUUID', uuid);
+      if (uuid !== undefined) sessionStorage.setItem('activeUUID', uuid);
+      else sessionStorage.removeItem('activeUUID');
     },
     setCollectives: function(collectives) {
       if (collectives){
@@ -55,45 +57,47 @@
         sessionStorage.setItem('collectives', JSON.stringify(collectives));
       }else{
         cachedCollectives = collectives;
+        sessionStorage.removeItem('collectives');
       }
     },
     setEmail: function(email) {
       cachedEmail = email;
-      sessionStorage.setItem('email', email);
+      if (email !== undefined) sessionStorage.setItem('email', email);
+      else sessionStorage.removeItem('email');
     },
     setExpires: function(expires) {
-      sessionStorage.setItem('expires', expires);
+      if (expires !== undefined) sessionStorage.setItem('expires', expires);
+      else sessionStorage.removeItem('expires');
     },
     setCredentials: function(credentials) {
-      sessionStorage.setItem('credentials', credentials);
+      if (credentials !== undefined) sessionStorage.setItem('credentials', credentials);
+      else sessionStorage.removeItem('credentials');
     },
     setUserType: function(userType) {
-      sessionStorage.setItem('userType', userType);
+      if (userType !== undefined) sessionStorage.setItem('userType', userType);
+      else sessionStorage.removeItem('userType');
     },
     setUserUUID: function(userUUID) {
       cachedUserUUID = userUUID;
-      sessionStorage.setItem('userUUID', userUUID);
+      if (userUUID !== undefined) sessionStorage.setItem('userUUID', userUUID);
+      else sessionStorage.removeItem('userUUID');
     },
     setCohort: function(cohort) {
-      if (cohort) {
-        sessionStorage.setItem('cohort', cohort);
-      }
+      if (cohort !== undefined) sessionStorage.setItem('cohort', cohort);
+      else sessionStorage.removeItem('cohort');
     },
     setPreferences: function(preferences) {
       cachedPreferences = preferences;
-      if (preferences) {
-        sessionStorage.setItem('preferences', JSON.stringify(preferences));
-      }
+      if (preferences) sessionStorage.setItem('preferences', JSON.stringify(preferences));
+      else sessionStorage.removeItem('preferences');
     },
     setUserModified: function(modified) {
-      if (modified) {
-        sessionStorage.setItem('userModified', modified);
-      }
+      if (modified) sessionStorage.setItem('userModified', modified);
+      else sessionStorage.removeItem('userModified');
     },
     setState: function(state) {
-      if (state) {
-        sessionStorage.setItem('state', JSON.stringify(state));
-      }
+      if (state) sessionStorage.setItem('state', JSON.stringify(state));
+      else sessionStorage.removeItem('state');
     },
     setLatestModified: function(modified, ownerUUID) {
       if (angular.isObject(modified)) {
@@ -107,6 +111,8 @@
           latestModified[ownerUUID] = modified;
         }
         sessionStorage.setItem('modified', JSON.stringify(latestModified));
+      }else{
+        sessionStorage.removeItem('modified');
       }
     },
     setItemsSynchronized: function(value, ownerUUID) {
@@ -121,13 +127,14 @@
           synced[ownerUUID] = value;
         }
         sessionStorage.setItem('synced', JSON.stringify(synced));
+      }else{
+        sessionStorage.removeItem('synced');
       }
     },
     setOffline: function(value){
-      if (value !== undefined){
-        cachedOffline = value;
-        sessionStorage.setItem('offline', cachedOffline);
-      }
+      cachedOffline = value;
+      if (value !== undefined) sessionStorage.setItem('offline', cachedOffline);
+      else sessionStorage.removeItem('offline');
     },
     // getters
     getBackendDelta: function() {

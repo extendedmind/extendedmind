@@ -19,48 +19,52 @@
 
     // setters
     setBackendDelta: function(delta) {
-      localStorage.setItem('backendDelta', delta);
+      if (delta !== undefined) localStorage.setItem('backendDelta', delta);
+      else localStorage.removeItem('backendDelta');
     },
     setCollectives: function(collectives) {
-      localStorage.setItem('collectives', JSON.stringify(collectives));
+      if (collectives !== undefined) localStorage.setItem('collectives', JSON.stringify(collectives));
+      else localStorage.removeItem('collectives');
     },
     setEmail: function(email) {
-      localStorage.setItem('email', email);
+      if (email !== undefined) localStorage.setItem('email', email);
+      else localStorage.removeItem('email');
     },
     setExpires: function(expires) {
-      localStorage.setItem('expires', parseInt(expires));
+      if (expires !== undefined) localStorage.setItem('expires', parseInt(expires));
+      else localStorage.removeItem('expires');
     },
     setCredentials: function(credentials) {
-      localStorage.setItem('credentials', credentials);
+      if (credentials !== undefined) localStorage.setItem('credentials', credentials);
+      else localStorage.removeItem('credentials');
     },
     setReplaceable: function(replaceable) {
-      localStorage.setItem('replaceable', replaceable);
+      if (replaceable !== undefined) localStorage.setItem('replaceable', replaceable);
+      else localStorage.removeItem('replaceable');
     },
     setUserType: function(userType) {
-      localStorage.setItem('userType', userType);
+      if (userType !== undefined) localStorage.setItem('userType', userType);
+      else localStorage.removeItem('userType');
     },
     setUserUUID: function(uuid) {
-      localStorage.setItem('userUUID', uuid);
+      if (uuid !== undefined) localStorage.setItem('userUUID', uuid);
+      else localStorage.removeItem('userUUID');
     },
     setCohort: function(cohort) {
-      if (cohort) {
-        localStorage.setItem('cohort', cohort);
-      }
+      if (cohort !== undefined) localStorage.setItem('cohort', cohort);
+      else localStorage.removeItem('cohort');
     },
     setPreferences: function(preferences) {
-      if (preferences) {
-        localStorage.setItem('preferences', JSON.stringify(preferences));
-      }
+      if (preferences) localStorage.setItem('preferences', JSON.stringify(preferences));
+      else localStorage.removeItem('preferences');
     },
     setUserModified: function(modified) {
-      if (modified) {
-        localStorage.setItem('userModified', modified);
-      }
+      if (modified) localStorage.setItem('userModified', modified);
+      else localStorage.removeItem('userModified');
     },
     setState: function(state) {
-      if (state) {
-        localStorage.setItem('state', JSON.stringify(state));
-      }
+      if (state) localStorage.setItem('state', JSON.stringify(state));
+      else localStorage.removeItem('state');
     },
     setLatestModified: function(modified, ownerUUID) {
       if (angular.isObject(modified)) {
@@ -74,6 +78,8 @@
           latestModified[ownerUUID] = modified;
         }
         localStorage.setItem('modified', JSON.stringify(latestModified));
+      }else{
+        localStorage.removeItem('modified');
       }
     },
     setItemsSynchronized: function(value, ownerUUID) {
@@ -88,12 +94,13 @@
           synced[ownerUUID] = value;
         }
         localStorage.setItem('synced', JSON.stringify(synced));
+      }else{
+        localStorage.removeItem('synced');
       }
     },
     setOffline: function(value){
-      if (value !== undefined){
-        localStorage.setItem('offline', value);
-      }
+      if (value !== undefined) localStorage.setItem('offline', value);
+      else localStorage.removeItem('offline');
     },
     // getters
     getBackendDelta: function() {
