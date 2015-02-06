@@ -78,12 +78,55 @@
     else NotesService.resetNote($scope.note, UISessionService.getActiveUUID());
   }
 
+  function setSaving() {
+    if (!$scope.isAutoSavingPrevented() && $scope.noteTitlebarHasText()) {
+      $scope.noteStatus = 'saving';
+      return Date.now();
+    }
+  }
+
+  var setSavedTimer, resetNoteStatusTimer;
+  function setSaved(savingSetTime) {
+    if (!$scope.noteTitlebarHasText()) return;
+
+    function doSetSaved() {
+      $scope.noteStatus = 'saved';
+      resetNoteStatusTimer = $timeout(function() {
+        $scope.noteStatus = 'back';
+      }, 1000);
+    }
+
+    if (setSavedTimer) {
+      $timeout.cancel(setSavedTimer);
+      if (resetNoteStatusTimer) {
+        $timeout.cancel(resetNoteStatusTimer);
+      }
+    }
+
+    if (backTimer) $timeout.cancel(backTimer);
+
+    var saving = Date.now() - savingSetTime;
+    if (saving < 1000)
+      setSavedTimer = $timeout(doSetSaved, 1000 - saving);
+    else
+      doSetSaved();
+  }
+
   $scope.clickFavorite = function() {
-    if (!$scope.isAutoSavingPrevented()) noteEdited();
-    if (!$scope.note.trans.favorited){
-      $scope.favoriteNote($scope.note);
-    }else{
-      $scope.unfavoriteNote($scope.note);
+    var savingSetTime = setSaving();
+
+    var favoritePromise;
+    if (!$scope.note.trans.favorited)
+      favoritePromise = $scope.favoriteNote($scope.note);
+    else
+      favoritePromise = $scope.unfavoriteNote($scope.note);
+
+    if (favoritePromise) {
+      favoritePromise.then(function() {
+        setSaved(savingSetTime);
+      });
+    } else {
+      setSaved(savingSetTime);
     }
   };
 
@@ -146,11 +189,15 @@
     value: true
   };
 
-  var noteSavingInProgress;
+  var noteSavingInProgress, backTimer;
   var saveNoteDebounced = function() {
     if (!noteSavingInProgress) {
       noteSavingInProgress = true;
       $scope.saveNote($scope.note, pollForSaveReady).then(function() {
+        $scope.noteStatus = 'saved';
+        backTimer = $timeout(function() {
+          $scope.noteStatus = 'back';
+        }, 1000);
         noteSavingInProgress = false;
       }, function() {
         noteSavingInProgress = false;
@@ -159,15 +206,26 @@
   }.debounce(1000);
 
   $scope.autoSaveNote = function() {
-    if (!$scope.isAutoSavingPrevented()) {
-      noteEdited();
-      $scope.saveNote($scope.note);
+    if (!$scope.isAutoSavingPrevented() && $scope.noteTitlebarHasText()) {
+      var savingSetTime = setSaving();
+      $scope.saveNote($scope.note).then(function() {
+        setSaved(savingSetTime);
+      });
     }
   };
 
   $scope.inputChanged = function() {
     if (!$scope.isAutoSavingPrevented()) {
-      noteEdited();
+
+      if (setSavedTimer) {
+        $timeout.cancel(setSavedTimer);
+        if (resetNoteStatusTimer) {
+          $timeout.cancel(resetNoteStatusTimer);
+        }
+      }
+
+      if (backTimer) $timeout.cancel(backTimer);
+      $scope.noteStatus = 'saving';
       saveNoteDebounced();
     }
   };
@@ -211,12 +269,14 @@
   };
 
   $scope.addKeywordToNote = function(note, keyword) {
-    if (!$scope.isAutoSavingPrevented()) noteEdited();
+    var savingSetTime = setSaving();
 
     if (!$scope.note.trans.keywords) $scope.note.trans.keywords = [];
     $scope.note.trans.keywords.push(keyword);
     clearKeyword();
-    if (!$scope.isAutoSavingPrevented()) $scope.saveNote($scope.note);
+    if (!$scope.isAutoSavingPrevented()) $scope.saveNote($scope.note).then(function() {
+      setSaved(savingSetTime);
+    });
   };
 
   $scope.removeKeywordFromNote = function(note, keyword) {
