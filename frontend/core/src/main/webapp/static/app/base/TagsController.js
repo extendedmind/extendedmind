@@ -24,7 +24,7 @@
     if (keyword.trans.uuid) AnalyticsService.do('saveKeyword');
     else AnalyticsService.do('addKeyword');
 
-    TagsService.saveTag(keyword, UISessionService.getActiveUUID());
+    return TagsService.saveTag(keyword, UISessionService.getActiveUUID());
   };
 
   // DELETING

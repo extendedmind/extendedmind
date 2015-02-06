@@ -269,14 +269,24 @@
   };
 
   $scope.addKeywordToNote = function(note, keyword) {
+    function doAddKeywordToNote(note, keyword){
+      if (!$scope.note.trans.keywords) $scope.note.trans.keywords = [];
+      $scope.note.trans.keywords.push(keyword);
+      clearKeyword();
+      if (!$scope.isAutoSavingPrevented()) $scope.saveNote($scope.note).then(function() {
+        setSaved(savingSetTime);
+      });
+    }
     var savingSetTime = setSaving();
 
-    if (!$scope.note.trans.keywords) $scope.note.trans.keywords = [];
-    $scope.note.trans.keywords.push(keyword);
-    clearKeyword();
-    if (!$scope.isAutoSavingPrevented()) $scope.saveNote($scope.note).then(function() {
-      setSaved(savingSetTime);
-    });
+    if (!keyword.trans.uuid){
+      // Save new keyword immediately to prevent problems with sorting
+      $scope.saveKeyword(keyword).then(function(){
+        doAddKeywordToNote(note, keyword);
+      });
+    }else {
+      doAddKeywordToNote(note, keyword);
+    }
   };
 
   $scope.removeKeywordFromNote = function(note, keyword) {
