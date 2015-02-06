@@ -79,7 +79,7 @@
   }
 
   $scope.clickFavorite = function() {
-    noteEdited();
+    if (!$scope.isAutoSavingPrevented()) noteEdited();
     if (!$scope.note.trans.favorited){
       $scope.favoriteNote($scope.note);
     }else{
@@ -158,10 +158,18 @@
     }
   }.debounce(1000);
 
+  $scope.autoSaveNote = function() {
+    if (!$scope.isAutoSavingPrevented()) {
+      noteEdited();
+      $scope.saveNote($scope.note);
+    }
+  };
 
   $scope.inputChanged = function() {
-    noteEdited();
-    saveNoteDebounced();
+    if (!$scope.isAutoSavingPrevented()) {
+      noteEdited();
+      saveNoteDebounced();
+    }
   };
 
   $scope.noteTitlebarTextKeyDown = function (keydownEvent) {
@@ -203,9 +211,12 @@
   };
 
   $scope.addKeywordToNote = function(note, keyword) {
+    if (!$scope.isAutoSavingPrevented()) noteEdited();
+
     if (!$scope.note.trans.keywords) $scope.note.trans.keywords = [];
     $scope.note.trans.keywords.push(keyword);
     clearKeyword();
+    if (!$scope.isAutoSavingPrevented()) $scope.saveNote($scope.note);
   };
 
   $scope.removeKeywordFromNote = function(note, keyword) {

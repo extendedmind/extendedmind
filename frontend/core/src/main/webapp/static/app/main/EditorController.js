@@ -293,11 +293,12 @@
     $scope.listPickerOpen = false;
   };
 
-  $scope.closeListPickerAndSetListToItem = function(item, list) {
+  $scope.closeListPickerAndSetListToItem = function(item, list, callback) {
 
     function doCloseAndSave() {
       $scope.closeListPicker();
       item.trans.list = list;
+      if (typeof callback === 'function') callback();
     }
 
     if (!list.trans.uuid) {// List is new, save it first. Close list picker on error saving new list.
@@ -307,11 +308,12 @@
       doCloseAndSave();
   };
 
-  $scope.closeListPickerAndClearListFromItem = function(item, list) {
+  $scope.closeListPickerAndClearListFromItem = function(item, list, callback) {
     $scope.closeListPicker();
     if (item.trans.list === list){
       item.trans.list = undefined;
     }
+    if (typeof callback === 'function') callback();
   };
 
   var editorFooterCloseCallback;
@@ -340,6 +342,10 @@
       return false;
     }
     return true;
+  };
+
+  $scope.isAutoSavingPrevented = function() {
+    return $scope.editorType === 'recurring' || $scope.onboardingInProgress;
   };
 
 }

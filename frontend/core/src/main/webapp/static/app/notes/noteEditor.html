@@ -8,7 +8,7 @@
           class="group-symmetrical--left link-navigation active highlighted sorting-hide"
           swiper-click="endNoteEdit()">
           <span class="text-navigation-back" ng-class="!isFirstSlide('noteEditor') && 'not-swipeable'"
-            ng-bind="noteStatus">
+            ng-bind="isAutoSavingPrevented() ? (isNoteEdited() && !note.trans.deleted ? 'save' : 'back') : noteStatus">
           </span>
         </a>
 
@@ -154,8 +154,8 @@
             editable-field-container-clicked-elsewhere="closeListPicker()" data-snap-ignore="true">
             <div list-picker="lists" list-picker-new-item="getNewList()"
               list-picker-archived-lists="archivedLists"
-              list-picker-save="closeListPickerAndSetListToItem(note, list)"
-              list-picker-clear="closeListPickerAndClearListFromItem(note, list)"
+              list-picker-save="closeListPickerAndSetListToItem(note, list, autoSaveNote)"
+              list-picker-clear="closeListPickerAndClearListFromItem(note, list, autoSaveNote)"
               list-picker-get-selected="note.trans.list">
             </div>
           </div>
