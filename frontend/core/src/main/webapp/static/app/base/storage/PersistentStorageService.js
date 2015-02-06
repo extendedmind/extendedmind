@@ -76,8 +76,8 @@ function PersistentStorageService($q) {
             function(){
               thisService.persist(item, itemType, ownerUUID).then(
                 // Success
-                function(){
-                  deferred.resolve();
+                function(result){
+                  deferred.resolve(result);
                 },
                 // Failure
                 function(){
@@ -97,14 +97,27 @@ function PersistentStorageService($q) {
       });
       return deferred.promise;
     },
-    persist: function(item, itemType, ownerUUID) {
+    persist: function(data, itemType, ownerUUID) {
       var deferred = $q.defer();
       if (!database) database = Lawnchair({name:'items'});
-      var uuid = itemToPersistedItem(item, itemType, ownerUUID);
-      database.save({key:uuid, value:item}, function(){
-        deferred.resolve();
-      });
 
+      var uuid;
+      if (angular.isArray(data)){
+        // Save arrays in a big batch
+        var i, dataToBatchSave = [];
+        for (i=0; i<data.length; i++) {
+          uuid = itemToPersistedItem(data[i], itemType, ownerUUID);
+          dataToBatchSave.push({key:uuid, value:data[i]});
+        }
+        database.batch(dataToBatchSave, function(result){
+          deferred.resolve(result);
+        });
+      }else{
+        uuid = itemToPersistedItem(data, itemType, ownerUUID);
+        database.save({key:uuid, value:data}, function(result){
+          deferred.resolve(result);
+        });
+      }
       return deferred.promise;
     },
     getAll: function(){

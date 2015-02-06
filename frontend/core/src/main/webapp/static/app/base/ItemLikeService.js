@@ -287,23 +287,30 @@
       }
     },
     persistAndReset: function(data, itemType, ownerUUID, fieldInfos, oldUUID, propertiesToReset){
-      function doResetAndPersist(item, itemType, ownerUUID, fieldInfos, propertiesToReset){
+      if (angular.isArray(data) && !oldUUID){
+        var i;
         if (UserSessionService.isPersistentStorageEnabled()){
-          if (oldUUID){
-            PersistentStorageService.persistWithNewUUID(oldUUID, createPersistableItem(item), itemType,
-                                                        ownerUUID);
-          }else{
-            PersistentStorageService.persist(createPersistableItem(item), itemType, ownerUUID);
+          // First create persistable items in an array and then batch persist
+          var itemsToPersist = [];
+          for (i=0; i<data.length; i++){
+            itemsToPersist.push(createPersistableItem(data[i]));
           }
+          PersistentStorageService.persist(itemsToPersist, itemType, ownerUUID);
         }
-        resetTrans(item, itemType, ownerUUID, fieldInfos, propertiesToReset);
-      }
-      if (angular.isArray(data)){
-        for (var i=0, len=data.length; i<len; i++){
-          doResetAndPersist(data[i], itemType, ownerUUID, fieldInfos, propertiesToReset);
+        for (i=0; i<data.length; i++){
+          resetTrans(data[i], itemType, ownerUUID, fieldInfos, propertiesToReset);
         }
       }else if (data){
-        doResetAndPersist(data, itemType, ownerUUID, fieldInfos, propertiesToReset);
+        if (UserSessionService.isPersistentStorageEnabled()){
+          var itemToPersist = createPersistableItem(data);
+          if (oldUUID){
+            PersistentStorageService.persistWithNewUUID(oldUUID, itemToPersist, itemType,
+                                                        ownerUUID);
+          }else{
+            PersistentStorageService.persist(itemToPersist, itemType, ownerUUID);
+          }
+        }
+        resetTrans(data, itemType, ownerUUID, fieldInfos, propertiesToReset);
       }
       return data;
     },
