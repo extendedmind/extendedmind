@@ -18,7 +18,7 @@
 * TODO: Loading prompt is not shown when it is initially hidden and then items are added passing the limit:
 *        -list has to become inactive and active again
 */
-function listPromptDirective($animate, $rootScope, UISessionService) {
+function listPromptDirective($animate, $rootScope, UISessionService, UserSessionService) {
   return {
     restrict: 'A',
     require: '^list',
@@ -56,6 +56,7 @@ function listPromptDirective($animate, $rootScope, UISessionService) {
             //        listInfos watcher for lists with an actual zero-length array.
             //
             //        Initially empty lists executes init() here and also in array visible callback
+            console.log(1);
             init();
           }
           listInfosWatcher(); // Unbind list infos watcher.
@@ -63,6 +64,7 @@ function listPromptDirective($animate, $rootScope, UISessionService) {
         listController.registerArrayVisibleCallback(arrayVisible);
       } else {
         // Array initially ready.
+        console.log(2);
         init();
       }
 
@@ -70,6 +72,7 @@ function listPromptDirective($animate, $rootScope, UISessionService) {
       * Array is visible and rendered into DOM, initialize.
       */
       function arrayVisible() {
+        console.log(3);
         init();
         listController.unregisterArrayVisibleCallback();
       }
@@ -109,7 +112,9 @@ function listPromptDirective($animate, $rootScope, UISessionService) {
             element[0].classList.remove('animate-no-items-prompt');
           });
         }
-        return true;
+
+        return UserSessionService.isPersistentStorageEnabled() ? UserSessionService.isPersistentDataLoaded() :
+        true;
       };
 
       function isNearListBottom(nearBottom) {
@@ -129,5 +134,5 @@ function listPromptDirective($animate, $rootScope, UISessionService) {
     }
   };
 }
-listPromptDirective['$inject'] = ['$animate', '$rootScope', 'UISessionService'];
+listPromptDirective['$inject'] = ['$animate', '$rootScope', 'UISessionService', 'UserSessionService'];
 angular.module('em.base').directive('listPrompt', listPromptDirective);
