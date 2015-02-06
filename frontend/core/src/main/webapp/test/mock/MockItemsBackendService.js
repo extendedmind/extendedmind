@@ -25,17 +25,30 @@ function MockItemsBackendService($httpBackend, ItemsService, PersistentStorageSe
       var persistentItem = {
         uuid: UUIDService.isFakeUUID(modifiedItems[i].trans.uuid) ? UUIDService.randomUUID() :
                                                               modifiedItems[i].trans.uuid,
-        title: modifiedItems[i].trans.title,
+        title: modifiedItems[i].mod.title || modifiedItems[i].trans.title,
         created: modifiedItems[i].trans.created,
-        modified: modifiedItems[i].trans.modified
+        modified: modifiedItems[i].mod.modified || modifiedItems[i].trans.modified
       };
-      if (modifiedItems[i].trans.description) persistentItem.description = modifiedItems[i].trans.description;
-      if (modifiedItems[i].trans.deleted) persistentItem.deleted = modifiedItems[i].trans.deleted;
-      if (modifiedItems[i].trans.due) persistentItem.due = modifiedItems[i].trans.due;
-      if (modifiedItems[i].trans.completed) persistentItem.completed = modifiedItems[i].trans.completed;
-      if (modifiedItems[i].trans.repeating) persistentItem.repeating = modifiedItems[i].trans.repeating;
-      if (modifiedItems[i].trans.reminder) persistentItem.reminder = modifiedItems[i].trans.reminder;
-      if (modifiedItems[i].trans.content) persistentItem.content = modifiedItems[i].trans.content;
+      if (modifiedItems[i].mod.description) persistentItem.description = modifiedItems[i].mod.description;
+      else if (modifiedItems[i].trans.description) persistentItem.description = modifiedItems[i].trans.description;
+
+      if (modifiedItems[i].mod.deleted) persistentItem.deleted = modifiedItems[i].mod.deleted;
+      else if (modifiedItems[i].trans.deleted) persistentItem.deleted = modifiedItems[i].trans.deleted;
+
+      if (modifiedItems[i].mod.due) persistentItem.due = modifiedItems[i].mod.due;
+      else if (modifiedItems[i].trans.due) persistentItem.due = modifiedItems[i].trans.due;
+
+      if (modifiedItems[i].mod.completed) persistentItem.completed = modifiedItems[i].mod.completed;
+      else if (modifiedItems[i].trans.completed) persistentItem.completed = modifiedItems[i].trans.completed;
+
+      if (modifiedItems[i].mod.repeating) persistentItem.repeating = modifiedItems[i].mod.repeating;
+      else if (modifiedItems[i].trans.repeating) persistentItem.repeating = modifiedItems[i].trans.repeating;
+
+      if (modifiedItems[i].mod.reminder) persistentItem.reminder = modifiedItems[i].mod.reminder;
+      else if (modifiedItems[i].trans.reminder) persistentItem.reminder = modifiedItems[i].trans.reminder;
+
+      if (modifiedItems[i].mod.content) persistentItem.content = modifiedItems[i].mod.content;
+      else if (modifiedItems[i].trans.content) persistentItem.content = modifiedItems[i].trans.content;
 
       if (modifiedItems[i].mod.relationships)
         persistentItem.relationships = modifiedItems[i].mod.relationships;

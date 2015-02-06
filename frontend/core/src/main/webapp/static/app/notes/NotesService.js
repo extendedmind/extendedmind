@@ -72,8 +72,8 @@
                                    getOtherArrays(ownerUUID));
   }
 
-  function setNote(note, ownerUUID) {
-    ItemLikeService.persistAndReset(note, 'note', ownerUUID, noteFieldInfos);
+  function setNote(note, ownerUUID, propertiesToReset) {
+    ItemLikeService.persistAndReset(note, 'note', ownerUUID, noteFieldInfos, undefined, propertiesToReset);
     ArrayService.setItem(note,
                          notes[ownerUUID].activeNotes,
                          notes[ownerUUID].deletedNotes,
@@ -290,16 +290,24 @@
         };
       }
     },
-    saveNote: function(note, ownerUUID) {
+    saveNote: function(note, ownerUUID, pollForSaveReady) {
       var deferred = $q.defer();
       if (notes[ownerUUID].deletedNotes.findFirstObjectByKeyValue('uuid', note.trans.uuid, 'trans')) {
         deferred.reject({type: 'deleted'});
       } else {
         ItemLikeService.save(note, 'note', ownerUUID, noteFieldInfos).then(
           function(result){
-            if (result === 'new') setNote(note, ownerUUID);
-            else if (result === 'existing') updateNote(note, ownerUUID);
-            deferred.resolve(result);
+
+            if (result === 'new') setNote(note, ownerUUID, ['uuid', 'created', 'modified']);
+            else if (result === 'existing') updateNote(note, ownerUUID, undefined, {});
+
+            if (pollForSaveReady) {
+              UISessionService.resolveWhenTrue(BackendClientService.isProcessing, pollForSaveReady, deferred,
+                                               result);
+            } else {
+              deferred.resolve(result);
+            }
+
           }, function(failure){
             deferred.reject(failure);
           }

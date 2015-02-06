@@ -427,6 +427,10 @@
     return isOffline(status);
   };
 
+  methods.isProcessing = function() {
+    return HttpRequestQueueService.isProcessing();
+  };
+
   // Methods to register callbacks when
   methods.registerCallback = function(type, callback) {
     if (type === 'primaryResult') {

@@ -164,6 +164,18 @@
     }
   }
 
+  /*
+   * @description
+   *
+   * Resets transient values of the item.
+   *
+   * @param {Object} item Item whose trans will be resetted
+   * @param {string} itemType The type of the `item`.
+   * @param {ownerUUID} ownerUUID
+   * @param {Array} fieldInfos Field infos of item to iterate over.
+   * @param {Object|Array} propertiesToReset Properties to iterate over.
+   * @returns {Object} Reference to `item`.
+   */
   function resetTrans(item, itemType, ownerUUID, fieldInfos, propertiesToReset){
     if (!item.trans) item.trans = {};
     if (item.trans.itemType !== itemType) item.trans.itemType = itemType;
@@ -171,7 +183,9 @@
     for (var i=0, len=fieldInfos.length; i<len; i++){
       var fieldName = angular.isObject(fieldInfos[i]) ? fieldInfos[i].name : fieldInfos[i];
 
-      if (!propertiesToReset || propertiesToReset.hasOwnProperty(fieldName)){
+      if (!propertiesToReset ||
+          (angular.isObject(propertiesToReset) && propertiesToReset.hasOwnProperty(fieldName)) ||
+          (angular.isArray(propertiesToReset) && propertiesToReset.indexOf(fieldName) !== -1)) {
         if (angular.isObject(fieldInfos[i])){
           // Custom reset method overrides
           fieldInfos[i].resetTrans(item, ownerUUID);
@@ -350,9 +364,11 @@
             fakeTimestamp = BackendClientService.generateFakeTimestamp();
             BackendClientService.putOffline('/api/' + params.owner + '/'+ itemType + '/' + item.trans.uuid,
                                      this.getPutExistingRegex(itemType), params, transportItem,
-                                     fakeTimestamp);
-            updateObjectProperties(item.mod, {modified: fakeTimestamp});
-            deferred.resolve('existing');
+                                     fakeTimestamp)
+            .then(function() {
+              updateObjectProperties(item.mod, {modified: fakeTimestamp});
+              deferred.resolve('existing');
+            });
           } else {
             // Online
             BackendClientService.putOnline('/api/' + ownerUUID + '/'+ itemType + '/' + item.trans.uuid,
@@ -377,10 +393,12 @@
             fakeTimestamp = BackendClientService.generateFakeTimestamp();
             params = {type: itemType, owner: ownerUUID, fakeUUID: fakeUUID};
             BackendClientService.putOffline('/api/' + params.owner + '/'+ itemType,
-                                     this.getPutNewRegex(itemType), params, transportItem, fakeTimestamp);
-            updateObjectProperties(item.mod, {uuid: fakeUUID, modified: fakeTimestamp,
-              created: fakeTimestamp});
-            deferred.resolve('new');
+                                     this.getPutNewRegex(itemType), params, transportItem, fakeTimestamp)
+            .then(function() {
+              updateObjectProperties(item.mod, {uuid: fakeUUID, modified: fakeTimestamp,
+                created: fakeTimestamp});
+              deferred.resolve('new');
+            });
           } else {
             // Online
             BackendClientService.putOnline('/api/' + ownerUUID + '/'+ itemType,
@@ -416,10 +434,12 @@
         };
         var fakeTimestamp = BackendClientService.generateFakeTimestamp();
         BackendClientService.deleteOffline('/api/' + ownerUUID + '/' + itemType +'/' + item.trans.uuid,
-                                           this.getDeleteRegex(itemType), params, undefined, fakeTimestamp);
-        if (!item.mod) item.mod = {};
-        updateObjectProperties(item.mod, {modified: fakeTimestamp, deleted: fakeTimestamp});
-        deferred.resolve();
+                                           this.getDeleteRegex(itemType), params, undefined, fakeTimestamp)
+        .then(function() {
+          if (!item.mod) item.mod = {};
+          updateObjectProperties(item.mod, {modified: fakeTimestamp, deleted: fakeTimestamp});
+          deferred.resolve();
+        });
       } else {
         // Online
         BackendClientService.deleteOnline({ value: '/api/' + ownerUUID + '/' + itemType +'/' +
@@ -454,14 +474,16 @@
         var fakeTimestamp = BackendClientService.generateFakeTimestamp();
         BackendClientService.postOffline('/api/' + ownerUUID + '/' + itemType +'/' + item.trans.uuid +
                                          '/undelete',
-                                         this.getUndeleteRegex(itemType), params, undefined, fakeTimestamp);
-        if (!item.mod) item.mod = {};
-        updateObjectProperties(item.mod, {modified: fakeTimestamp, deleted: undefined});
-        if (UserSessionService.isPersistentStorageEnabled()){
-          PersistentStorageService.persist(createPersistableItem(item), itemType, ownerUUID);
-        }
-        resetTrans(item, itemType, ownerUUID, fieldInfos);
-        deferred.resolve();
+                                         this.getUndeleteRegex(itemType), params, undefined, fakeTimestamp)
+        .then(function() {
+          if (!item.mod) item.mod = {};
+          updateObjectProperties(item.mod, {modified: fakeTimestamp, deleted: undefined});
+          if (UserSessionService.isPersistentStorageEnabled()){
+            PersistentStorageService.persist(createPersistableItem(item), itemType, ownerUUID);
+          }
+          resetTrans(item, itemType, ownerUUID, fieldInfos);
+          deferred.resolve();
+        });
       } else {
         // Online
         BackendClientService.postOnline({ value: '/api/' + ownerUUID + '/' + itemType +'/' +

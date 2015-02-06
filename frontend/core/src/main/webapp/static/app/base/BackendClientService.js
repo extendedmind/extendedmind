@@ -251,6 +251,10 @@
     return Date.now() + backendDelta;
   };
 
+  methods.isProcessing = function() {
+    return HttpClientService.isProcessing();
+  };
+
   methods.notifyOwnerUUIDChange = function(oldUUID, newUUID){
     HttpClientService.notifyOwnerUUIDChange(oldUUID, newUUID);
   };

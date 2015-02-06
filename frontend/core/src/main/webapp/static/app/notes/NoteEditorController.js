@@ -15,7 +15,8 @@
 
  'use strict';
 
- function NoteEditorController($scope, NotesService, SwiperService, TagsService, UISessionService) {
+ function NoteEditorController($scope, $timeout, BackendClientService, NotesService, SwiperService,
+                               TagsService, UISessionService) {
 
   if ($scope.mode === 'omnibar') {
     // Dirtily set flag on to remove flicker when note editor is rendered.
@@ -27,6 +28,23 @@
 
   if (angular.isFunction($scope.registerFeatureEditorAboutToCloseCallback))
     $scope.registerFeatureEditorAboutToCloseCallback(noteEditorAboutToClose, 'NoteEditorController');
+
+  $scope.noteStatus = 'back';
+  var savedTimer, savedTimerInner;
+  function noteEdited() {
+    $scope.noteStatus = 'saving';
+    if (savedTimer) {
+      $timeout.cancel(savedTimer);
+      if (savedTimerInner) $timeout.cancel(savedTimerInner);
+    }
+
+    savedTimer = $timeout(function() {
+      $scope.noteStatus = 'saved';
+      savedTimerInner = $timeout(function() {
+        $scope.noteStatus = 'back';
+      }, 1000);
+    }, 1000);
+  }
 
   // SAVING, DELETING
 
@@ -61,6 +79,7 @@
   }
 
   $scope.clickFavorite = function() {
+    noteEdited();
     if (!$scope.note.trans.favorited){
       $scope.favoriteNote($scope.note);
     }else{
@@ -114,12 +133,35 @@
       // Set untitled as title when title is missing but there is content
       $scope.note.trans.title = 'untitled';
     }
+    if (newValue !== oldValue) $scope.inputChanged();
   });
 
   // TITLEBAR
 
   $scope.noteTitlebarHasText = function() {
     return $scope.note.trans.title && $scope.note.trans.title.length !== 0;
+  };
+
+  var pollForSaveReady = {
+    value: true
+  };
+
+  var noteSavingInProgress;
+  var saveNoteDebounced = function() {
+    if (!noteSavingInProgress) {
+      noteSavingInProgress = true;
+      $scope.saveNote($scope.note, pollForSaveReady).then(function() {
+        noteSavingInProgress = false;
+      }, function() {
+        noteSavingInProgress = false;
+      });
+    }
+  }.debounce(1000);
+
+
+  $scope.inputChanged = function() {
+    noteEdited();
+    saveNoteDebounced();
   };
 
   $scope.noteTitlebarTextKeyDown = function (keydownEvent) {
@@ -199,8 +241,11 @@
     $scope.collapsibleOpen = !$scope.collapsibleOpen;
   };
 
+  $scope.$on('$destroy', function() {
+    if (pollForSaveReady) pollForSaveReady.value = false;
+  });
 }
 
-NoteEditorController['$inject'] = ['$scope', 'NotesService', 'SwiperService', 'TagsService',
-'UISessionService'];
+NoteEditorController['$inject'] = ['$scope', '$timeout',
+'BackendClientService', 'NotesService', 'SwiperService', 'TagsService', 'UISessionService'];
 angular.module('em.main').controller('NoteEditorController', NoteEditorController);
