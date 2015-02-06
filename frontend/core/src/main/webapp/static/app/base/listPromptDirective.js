@@ -56,7 +56,6 @@ function listPromptDirective($animate, $rootScope, UISessionService, UserSession
             //        listInfos watcher for lists with an actual zero-length array.
             //
             //        Initially empty lists executes init() here and also in array visible callback
-            console.log(1);
             init();
           }
           listInfosWatcher(); // Unbind list infos watcher.
@@ -64,7 +63,6 @@ function listPromptDirective($animate, $rootScope, UISessionService, UserSession
         listController.registerArrayVisibleCallback(arrayVisible);
       } else {
         // Array initially ready.
-        console.log(2);
         init();
       }
 
@@ -72,7 +70,6 @@ function listPromptDirective($animate, $rootScope, UISessionService, UserSession
       * Array is visible and rendered into DOM, initialize.
       */
       function arrayVisible() {
-        console.log(3);
         init();
         listController.unregisterArrayVisibleCallback();
       }
