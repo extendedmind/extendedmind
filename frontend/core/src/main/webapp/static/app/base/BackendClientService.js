@@ -255,6 +255,10 @@
     return HttpClientService.isProcessing();
   };
 
+  methods.isUUIDInQueue = function(uuid) {
+    return HttpClientService.isUUIDInQueue(uuid);
+  };
+
   methods.notifyOwnerUUIDChange = function(oldUUID, newUUID){
     HttpClientService.notifyOwnerUUIDChange(oldUUID, newUUID);
   };

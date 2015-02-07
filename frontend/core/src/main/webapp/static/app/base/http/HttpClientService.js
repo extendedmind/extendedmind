@@ -431,6 +431,17 @@
     return HttpRequestQueueService.isProcessing();
   };
 
+  methods.isUUIDInQueue = function(uuid) {
+    var queue = HttpRequestQueueService.getQueue();
+    if (queue && queue.length){
+      for (var i=0; i<queue.length; i++){
+        if (queue.params.uuid === uuid){
+          return true;
+        }
+      }
+    }
+  };
+
   // Methods to register callbacks when
   methods.registerCallback = function(type, callback) {
     if (type === 'primaryResult') {

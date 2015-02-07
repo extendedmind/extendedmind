@@ -33,7 +33,7 @@
         </a>
       </div>
       <div ng-if="getOfflineModified('tag')" class="row">
-        <a href ng-click="showModifiedItems('tag')">
+        <a href ng-click="toggleModifiedItems('tag')">
           <span class="text-details">unsynced tags: </span>
           <span class="text-details" ng-bind="modifiedItems['tag'].length"></span>
         </a>

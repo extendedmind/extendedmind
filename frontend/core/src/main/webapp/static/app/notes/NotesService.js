@@ -203,7 +203,7 @@
               ItemLikeService.persistAndReset(noteInfo.note, 'note', ownerUUID,
                                               noteFieldInfos, undefined, {});
             }else{
-              // Mod not deleted, reset all trans values
+              // Mod does not exist or it does/did not match database, reset all trans values
               ItemLikeService.persistAndReset(noteInfo.note, 'note', ownerUUID, noteFieldInfos);
             }
           }else{

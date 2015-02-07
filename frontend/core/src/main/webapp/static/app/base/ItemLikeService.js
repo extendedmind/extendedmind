@@ -294,9 +294,13 @@
         return true;
       }else{
         // Either there is no modifications or item modifications haven't reached the backend,
-        // make persistent values match the database but leave .mod as it is: we're hoping the
-        // next update will bring values that match
+        // make persistent values match the database
         copyToPersistent(databaseItem, item, ownerUUID, fieldInfos, true);
+
+        if (item.mod && !BackendClientService.isUUIDInQueue(databaseItem.uuid)){
+          // item UUID is not in queue, so we just remove mod as otherwise it would be unsycned forever
+          delete item.mod;
+        }
         return false;
       }
     },
