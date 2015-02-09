@@ -348,6 +348,18 @@
     return $scope.editorType === 'recurring' || $scope.onboardingInProgress;
   };
 
+  var propertyEditDoneCallback;
+  $scope.registerPropertyEditDoneCallback = function(callback) {
+    propertyEditDoneCallback = callback;
+  };
+  $scope.unregisterPropertyEditDoneCallback = function() {
+    propertyEditDoneCallback = undefined;
+  };
+
+  $scope.propertyEditDone = function() {
+    if (typeof propertyEditDoneCallback === 'function') propertyEditDoneCallback();
+  };
+
 }
 
 EditorController['$inject'] = ['$rootScope', '$scope', '$timeout',

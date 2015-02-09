@@ -26,12 +26,34 @@
       getNewList: '&?listPickerNewItem',
       getSelectedList: '&listPickerGetSelected',
       closeAndSave: '&listPickerSave',
-      closeAndClearList: '&listPickerClear'
+      closeAndClearList: '&listPickerClear',
+      registerSaveNewListCallback: '&listPickerRegisterSaveNewListCallback',
+      unregisterSaveNewListCallback: '&listPickerUnregisterSaveNewListCallback'
     },
     link: function(scope) {
       scope.newList = scope.getNewList();
       scope.selectedList = scope.getSelectedList();
       scope.type = scope.type || 'list';
+
+      scope.registerSaveNewListCallback({saveNewList: saveNewList});
+      function saveNewList() {
+        if (scope.newList.trans.title && scope.newList.trans.title.length > 0) {
+          if (scope.prefix) {
+            // TODO: css
+            if (scope.newList.trans.title.length === 1) {
+              // Title has only prefix. Do not save.
+              scope.listCleared(scope.newList);
+              return;
+            } else {
+              // Trim prefix from the title.
+              scope.newList.trans.title = scope.newList.trans.title.substring(1);
+            }
+          }
+          scope.listSelected(scope.newList);
+        } else {
+          scope.listCleared(scope.newList);
+        }
+      }
 
       /*
       * Filter selected list from lists.
@@ -61,8 +83,11 @@
           // Enter in add item saves, no line breaks allowed
           if (scope.newList.trans.title && scope.newList.trans.title.length > 0) {
             if (scope.prefix) {
+              // TODO: css
               if (scope.newList.trans.title.length === 1) {
                 // Title has only prefix. Do not save.
+                event.preventDefault();
+                event.stopPropagation();
                 return;
               } else {
                 // Trim prefix from the title.
@@ -78,6 +103,7 @@
 
       var watch;
       function bindWatcher() {
+        // TODO: css
         var preventWatch;
         if (watch) return;  // no rebind
 
@@ -105,6 +131,8 @@
       scope.watchForTitleChange = function() {
         if (scope.prefix) bindWatcher();
       };
+
+      scope.$on('$destroy', scope.unregisterSaveNewListCallback);
     }
   };
 }

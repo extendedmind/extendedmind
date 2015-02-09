@@ -12,7 +12,8 @@
           </span>
         </a>
 
-        <a href ng-if="isPickerOpen()" class="group-symmetrical--left highlighted">
+        <a href ng-if="isPickerOpen()" ng-click="propertyEditDone()" class="group-symmetrical--left highlighted"
+          editable-field-container="auto">
           <span class="text-edit">done</span>
         </a>
 
@@ -166,7 +167,9 @@
               list-picker-archived-lists="archivedLists"
               list-picker-save="closeListPickerAndSetListToItem(note, list, autoSaveNote)"
               list-picker-clear="closeListPickerAndClearListFromItem(note, list, autoSaveNote)"
-              list-picker-get-selected="note.trans.list">
+              list-picker-get-selected="note.trans.list"
+              list-picker-register-save-new-list-callback="registerPropertyEditDoneCallback(saveNewList)"
+              list-picker-unregister-save-new-list-callback="unregisterPropertyEditDoneCallback()">
             </div>
           </div>
 

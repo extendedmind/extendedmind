@@ -139,6 +139,8 @@
 
   $scope.openCalendar = function() {
     $scope.calendarOpen = true;
+    if (angular.isFunction($scope.registerPropertyEditDoneCallback))
+      $scope.registerPropertyEditDoneCallback($scope.closeCalendar);
   };
 
   $scope.getCalendarStartingDate = function(task) {
@@ -204,6 +206,8 @@
   // REPEATING PICKER
   $scope.openRepeatingPicker = function() {
     $scope.repeatingPickerOpen = true;
+    if (angular.isFunction($scope.registerPropertyEditDoneCallback))
+      $scope.registerPropertyEditDoneCallback($scope.closeRepeatingPicker);
   };
   $scope.closeRepeatingPicker = function() {
     $scope.repeatingPickerOpen = false;
@@ -235,6 +239,13 @@
     if (!contentBlurCallback)
       contentBlurCallback = callback;
   };
+
+  $scope.$on('$destroy', function() {
+    if (angular.isFunction($scope.unregisterPropertyEditDoneCallback)) {
+      // Unregister any leftover callback.
+      $scope.unregisterPropertyEditDoneCallback();
+    }
+  });
 
 }
 
