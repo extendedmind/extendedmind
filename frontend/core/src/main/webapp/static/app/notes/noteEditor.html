@@ -14,7 +14,7 @@
 
         <a href ng-if="isPickerOpen()" ng-click="propertyEditDone()" class="group-symmetrical--left highlighted"
           editable-field-container="auto">
-          <span class="text-edit">done</span>
+          <span class="text-edit" ng-bind="isPropertyEdited() ? 'save' : 'done'"></span>
         </a>
 
         <div ng-hide="!isNotePropertyInEdit() && isFirstSlide('noteEditor')" id="noteEditorTitlebarTitle"
@@ -169,7 +169,9 @@
               list-picker-clear="closeListPickerAndClearListFromItem(note, list, autoSaveNote)"
               list-picker-get-selected="note.trans.list"
               list-picker-register-save-new-list-callback="registerPropertyEditDoneCallback(saveNewList)"
-              list-picker-unregister-save-new-list-callback="unregisterPropertyEditDoneCallback()">
+              list-picker-unregister-save-new-list-callback="unregisterPropertyEditDoneCallback()"
+              list-picker-register-is-edited-callback="registerIsPropertyEdited(isEdited)"
+              list-picker-unregister-is-edited-callback="unregisterIsPropertyEdited()">
             </div>
           </div>
 

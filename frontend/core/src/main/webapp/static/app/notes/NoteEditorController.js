@@ -319,11 +319,17 @@
         }
       });
     }
+    if (angular.isFunction($scope.registerIsPropertyEdited)) {
+      $scope.registerIsPropertyEdited(function() {
+        return $scope.newKeyword && $scope.newKeyword.trans.title;
+      });
+    }
   };
 
   $scope.closeKeywordsPicker = function() {
     $scope.keywordsPickerOpen = false;
     clearKeyword();
+    if (angular.isFunction($scope.unregisterIsPropertyEdited)) $scope.unregisterIsPropertyEdited();
   };
 
   // Set collapsible open when

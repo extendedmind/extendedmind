@@ -28,7 +28,9 @@
       closeAndSave: '&listPickerSave',
       closeAndClearList: '&listPickerClear',
       registerSaveNewListCallback: '&listPickerRegisterSaveNewListCallback',
-      unregisterSaveNewListCallback: '&listPickerUnregisterSaveNewListCallback'
+      unregisterSaveNewListCallback: '&listPickerUnregisterSaveNewListCallback',
+      registerIsEditedCallback: '&listPickerRegisterIsEditedCallback',
+      unregisterIsEditedCallback: '&listPickerUnregisterIsEditedCallback',
     },
     link: function(scope) {
       scope.newList = scope.getNewList();
@@ -53,6 +55,11 @@
         } else {
           scope.listCleared(scope.newList);
         }
+      }
+
+      scope.registerIsEditedCallback({isEdited: isEdited});
+      function isEdited() {
+        return scope.newList && scope.newList.trans.title && scope.newList.trans.title.length;
       }
 
       /*
@@ -132,7 +139,10 @@
         if (scope.prefix) bindWatcher();
       };
 
-      scope.$on('$destroy', scope.unregisterSaveNewListCallback);
+      scope.$on('$destroy', function() {
+        scope.unregisterSaveNewListCallback();
+        scope.unregisterIsEditedCallback();
+      });
     }
   };
 }

@@ -360,6 +360,18 @@
     if (typeof propertyEditDoneCallback === 'function') propertyEditDoneCallback();
   };
 
+  var isPropertyEdited;
+  $scope.registerIsPropertyEdited = function(callback) {
+    isPropertyEdited = callback;
+  };
+  $scope.unregisterIsPropertyEdited = function() {
+    isPropertyEdited = undefined;
+  };
+
+  $scope.isPropertyEdited = function() {
+    if (typeof isPropertyEdited === 'function') return isPropertyEdited();
+  };
+
 }
 
 EditorController['$inject'] = ['$rootScope', '$scope', '$timeout',
