@@ -311,10 +311,19 @@
 
   $scope.openKeywordsPicker = function() {
     $scope.keywordsPickerOpen = true;
+    if (angular.isFunction($scope.registerPropertyEditDoneCallback)) {
+      $scope.registerPropertyEditDoneCallback(function() {
+        if ($scope.newKeyword.trans.title) {
+          $scope.addKeywordToNote($scope.note, $scope.newKeyword);
+          $scope.closeKeywordsPicker();
+        }
+      });
+    }
   };
 
   $scope.closeKeywordsPicker = function() {
     $scope.keywordsPickerOpen = false;
+    clearKeyword();
   };
 
   // Set collapsible open when
