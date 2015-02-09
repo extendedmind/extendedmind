@@ -317,9 +317,14 @@
     $scope.keywordsPickerOpen = false;
   };
 
-  $scope.collapsibleOpen = false;
+  // Set collapsible open when
+  $scope.collapsibleOpen = $scope.editorType === 'recurring';
   $scope.toggleCollapsible = function() {
     $scope.collapsibleOpen = !$scope.collapsibleOpen;
+  };
+
+  $scope.hasUnsetCollapsableProperty = function() {
+    return !$scope.note.trans.list || (!$scope.note.trans.keywords || !$scope.note.trans.keywords.length);
   };
 
   $scope.$on('$destroy', function() {
