@@ -34,7 +34,7 @@ object RepeatingType extends Enumeration {
   val YEARLY = Value("yearly")
 }
 
-case class Task(uuid: Option[UUID], created: Option[Long], modified: Option[Long], deleted: Option[Long], archived: Option[Long],
+case class Task(uuid: Option[UUID], id: Option[String], created: Option[Long], modified: Option[Long], deleted: Option[Long], archived: Option[Long],
                 title: String, description: Option[String], 
                 link: Option[String],
                 due: Option[String],
@@ -69,7 +69,7 @@ object Task{
             reminder: Option[String],
             repeating: Option[RepeatingType.RepeatingType],
             relationships: Option[ExtendedItemRelationships]) 
-        = new Task(None, None, None, None, None, title, description, 
+        = new Task(None, None, None, None, None, None, title, description, 
                    link, due, reminder, if (repeating.isDefined) Some(repeating.get.toString()) else None, None, None, None, 
                    None, relationships)
 }

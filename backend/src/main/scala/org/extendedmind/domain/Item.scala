@@ -23,7 +23,7 @@ import java.util.UUID
 import Validators._
 import org.extendedmind.SetResult
 
-case class Item(uuid: Option[UUID], created: Option[Long], modified: Option[Long], deleted: Option[Long], 
+case class Item(uuid: Option[UUID], id: Option[String], created: Option[Long], modified: Option[Long], deleted: Option[Long], 
                 title: String, description: Option[String], link: Option[String]) extends ItemLike{
   require(validateTitle(title), "Title can not be more than " + TITLE_MAX_LENGTH + " characters")
   if (description.isDefined) require(validateDescription(description.get), 
@@ -33,7 +33,7 @@ case class Item(uuid: Option[UUID], created: Option[Long], modified: Option[Long
 object Item{
   def apply(title: String, description: Option[String], 
             link: Option[String]) 
-        = new Item(None, None, None, None, title, description, link)
+        = new Item(None, None, None, None, None, title, description, link)
 }
 
 case class Items(items: Option[scala.List[Item]], 
@@ -52,6 +52,7 @@ trait ItemLike extends Container {
   val created: Option[Long]
   val modified: Option[Long]
   val deleted: Option[Long]
+  val id: Option[String]
   val title: String
   val description: Option[String]
   val link: Option[String]

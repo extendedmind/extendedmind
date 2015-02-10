@@ -23,7 +23,7 @@ import java.util.UUID
 import Validators._
 import org.extendedmind.SetResult
 
-case class Note(uuid: Option[UUID], created: Option[Long], modified: Option[Long], deleted: Option[Long], archived: Option[Long],
+case class Note(uuid: Option[UUID], id: Option[String], created: Option[Long], modified: Option[Long], deleted: Option[Long], archived: Option[Long],
                 title: String, description: Option[String], 
                 link: Option[String],
                 content: Option[String],
@@ -43,7 +43,7 @@ object Note{
             content: Option[String],
             favorited: Option[Long],
             relationships: Option[ExtendedItemRelationships]) 
-        = new Note(None, None, None, None, None, title, description, link, content, favorited, 
+        = new Note(None, None, None, None, None, None, title, description, link, content, favorited, 
                    None, relationships)
 }
 case class FavoriteNoteResult(favorited: Long, result: SetResult)
