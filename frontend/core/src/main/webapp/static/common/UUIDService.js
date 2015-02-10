@@ -37,6 +37,9 @@
     isFakeUUID: function(uuid) {
       if (uuid && uuid.startsWith('00000000-0000-'))
         return true;
+    },
+    getShortIdFromFakeUUID: function(fakeUUID) {
+      return fakeUUID.substr(14, 4) + fakeUUID.substr(19, 4) + fakeUUID.substr(24, 12);
     }
   };
 }
