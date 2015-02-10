@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function AuthenticationService($location, $q, $rootScope, BackendClientService,
+ function AuthenticationService($q, $rootScope, BackendClientService,
                                 UserSessionService, packaging) {
 
   var authenticateRegex = /authenticate/;
@@ -268,6 +268,6 @@
     postVerifyEmailRegex: postVerifyEmailRegexp
   };
 }
-AuthenticationService['$inject'] = ['$location', '$q', '$rootScope', 'BackendClientService',
+AuthenticationService['$inject'] = ['$q', '$rootScope', 'BackendClientService',
                                     'UserSessionService', 'packaging'];
 angular.module('em.base').factory('AuthenticationService', AuthenticationService);
