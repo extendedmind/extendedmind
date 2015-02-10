@@ -23,7 +23,7 @@ describe('SynchronizeService', function() {
 
   var $httpBackend;
   var SynchronizeService, ItemsService, BackendClientService, HttpClientService,
-      ListsService, TagsService, TasksService, NotesService, UUIDService, AuthenticationService,
+      ListsService, TagsService, TasksService, NotesService, AuthenticationService,
       ConvertService, PersistentStorageService;
 
   // MOCKS
@@ -114,6 +114,35 @@ describe('SynchronizeService', function() {
     }
   };
 
+  var MockUUIDService = {
+    mockIndex: 0,
+    mockFakeUUIDs: ['00000000-0000-4629-8552-96671b730000',
+                    '00000000-0000-4629-8552-96671b730001',
+                    '00000000-0000-4629-8552-96671b730002',
+                    '00000000-0000-4629-8552-96671b730003'],
+    s4: function(){
+      return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
+    },
+    randomUUID: function() {
+      return this.s4() + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' +
+      this.s4() + '-' + this.s4() + this.s4() + this.s4();
+    },
+    generateFakeUUID: function() {
+      var mockFakeUUID = this.mockFakeUUIDs[this.mockIndex];
+      this.mockIndex++;
+      return mockFakeUUID;
+    },
+    isFakeUUID: function(uuid) {
+      if (uuid && uuid.startsWith('00000000-0000-'))
+        return true;
+    },
+    getShortIdFromFakeUUID: function(fakeUUID) {
+      return fakeUUID.substr(14, 4) + fakeUUID.substr(19, 4) + fakeUUID.substr(24, 12);
+    },
+  };
+
   // SETUP / TEARDOWN
 
   beforeEach(function() {
@@ -127,9 +156,13 @@ describe('SynchronizeService', function() {
       $provide.constant('enableOffline', true);
     });
 
+    module('common', function($provide){
+      $provide.constant('UUIDService', MockUUIDService);
+    });
+
     inject(function (_$httpBackend_, _SynchronizeService_, _ItemsService_, _BackendClientService_,
                      _HttpClientService_, _ListsService_, _TagsService_,
-                     _TasksService_, _NotesService_, _UUIDService_, _AuthenticationService_,
+                     _TasksService_, _NotesService_, _AuthenticationService_,
                      _ConvertService_, _PersistentStorageService_) {
       $httpBackend = _$httpBackend_;
       SynchronizeService = _SynchronizeService_;
@@ -140,7 +173,6 @@ describe('SynchronizeService', function() {
       TagsService = _TagsService_;
       TasksService = _TasksService_;
       NotesService = _NotesService_;
-      UUIDService = _UUIDService_;
       AuthenticationService = _AuthenticationService_;
       ConvertService = _ConvertService_;
       PersistentStorageService = _PersistentStorageService_;
@@ -322,6 +354,7 @@ describe('SynchronizeService', function() {
     MockUserSessionService.authenticateReplaceable = true;
     MockUserSessionService.persistentDataLoaded = false;
     MockUserSessionService.callbacks = {};
+    MockUUIDService.mockIndex = 0;
 
     PersistentStorageService.destroyAll();
 
@@ -422,7 +455,8 @@ describe('SynchronizeService', function() {
     // 1. save new item
 
     var testItemValues = {
-      'title': 'test item'
+      'id': MockUUIDService.getShortIdFromFakeUUID(MockUUIDService.mockFakeUUIDs[0]),
+      'title': 'test item',
     };
     var testItem = ItemsService.getNewItem(testItemValues, testOwnerUUID);
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
@@ -434,7 +468,7 @@ describe('SynchronizeService', function() {
     var items = ItemsService.getItems(testOwnerUUID);
     expect(items.length)
       .toBe(4);
-    expect(UUIDService.isFakeUUID(items[3].trans.uuid))
+    expect(MockUUIDService.isFakeUUID(items[3].trans.uuid))
       .toBeTruthy();
 
     // 2. update item
@@ -448,7 +482,7 @@ describe('SynchronizeService', function() {
     $httpBackend.flush();
     expect(items.length)
       .toBe(4);
-    expect(UUIDService.isFakeUUID(items[3].mod.uuid))
+    expect(MockUUIDService.isFakeUUID(items[3].mod.uuid))
       .toBeTruthy();
 
     // 3. delete item
@@ -479,7 +513,8 @@ describe('SynchronizeService', function() {
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
         .respond(200, putNewItemResponse);
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item/' + putNewItemResponse.uuid,
-                           {title: testItem.trans.title,
+                           {id: testItem.trans.id,
+                            title: testItem.trans.title,
                             description: testItem.trans.description,
                             modified: putNewItemResponse.modified})
         .respond(200, putExistingItemResponse);
@@ -489,7 +524,7 @@ describe('SynchronizeService', function() {
     // Verify that everything is right with the created item
     expect(items.length)
       .toBe(4);
-    expect(UUIDService.isFakeUUID(items[3].mod.uuid))
+    expect(MockUUIDService.isFakeUUID(items[3].mod.uuid))
       .toBeFalsy();
     expect(items[3].mod.description)
       .toBe('test description');
@@ -620,6 +655,7 @@ describe('SynchronizeService', function() {
 
     // 1. save new item
     var testItemValues = {
+      'id': MockUUIDService.getShortIdFromFakeUUID(MockUUIDService.mockFakeUUIDs[0]),
       'title': 'test task'
     };
     var testItem = ItemsService.getNewItem(testItemValues, testOwnerUUID);
@@ -682,7 +718,8 @@ describe('SynchronizeService', function() {
         .respond(200, putNewItemResponse);
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' +
                            putNewItemResponse.uuid,
-                           {title: updatedTestTask.trans.title,
+                           {id: updatedTestTask.trans.id,
+                            title: updatedTestTask.trans.title,
                             description: updatedTestTask.trans.description,
                             modified: putNewItemResponse.modified})
         .respond(200, putExistingItemResponse);
@@ -694,7 +731,7 @@ describe('SynchronizeService', function() {
       .toBe(3);
     expect(tasks.length)
       .toBe(5);
-    expect(UUIDService.isFakeUUID(tasks[4].mod.uuid))
+    expect(MockUUIDService.isFakeUUID(tasks[4].mod.uuid))
       .toBeFalsy();
     expect(tasks[4].mod.description)
       .toBe('test description');
@@ -752,6 +789,7 @@ describe('SynchronizeService', function() {
 
     // 1. save new task
     var testTaskValues = {
+      'id': MockUUIDService.getShortIdFromFakeUUID(MockUUIDService.mockFakeUUIDs[0]),
       'title': 'test task'
     };
     var testTask = TasksService.getNewTask(testTaskValues, testOwnerUUID);
@@ -975,7 +1013,7 @@ describe('SynchronizeService', function() {
       .toBe(5);
     expect(cleanCloset.mod.completed).toBeDefined();
     expect(cleanCloset.hist.generatedUUID).toBeDefined();
-    expect(UUIDService.isFakeUUID(cleanCloset.hist.generatedUUID)).toBeTruthy();
+    expect(MockUUIDService.isFakeUUID(cleanCloset.hist.generatedUUID)).toBeTruthy();
 
     expect(generatedTask).toBeDefined();
     expect(generatedTask.trans.due)
@@ -984,7 +1022,7 @@ describe('SynchronizeService', function() {
     // 4. uncomplete and get back online
     var latestModified = now.getTime()-100000;
     completeRepeatingTaskResponse.generated = {
-      uuid: UUIDService.randomUUID(),
+      uuid: MockUUIDService.randomUUID(),
       title: generatedTask.trans.title,
       due: generatedTask.trans.due,
       repeating: generatedTask.trans.repeating,
@@ -1035,6 +1073,7 @@ describe('SynchronizeService', function() {
 
     // 1. save new item
     var testItemValues = {
+      'id': MockUUIDService.getShortIdFromFakeUUID(MockUUIDService.mockFakeUUIDs[0]),
       'title': 'test note'
     };
     var testItem = ItemsService.getNewItem(testItemValues, testOwnerUUID);
@@ -1096,7 +1135,8 @@ describe('SynchronizeService', function() {
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
         .respond(200, putNewItemResponse);
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/note/' + putNewItemResponse.uuid,
-                           {title: updatedTestNote.trans.title,
+                           {id: updatedTestNote.trans.id,
+                            title: updatedTestNote.trans.title,
                             description: updatedTestNote.trans.description,
                             modified: putNewItemResponse.modified})
         .respond(200, putExistingItemResponse);
@@ -1108,7 +1148,7 @@ describe('SynchronizeService', function() {
       .toBe(3);
     expect(notes.length)
       .toBe(5);
-    expect(UUIDService.isFakeUUID(notes[4].uuid))
+    expect(MockUUIDService.isFakeUUID(notes[4].uuid))
       .toBeFalsy();
     expect(notes[4].mod.description)
       .toBeDefined();
@@ -1247,6 +1287,7 @@ describe('SynchronizeService', function() {
 
     // 1. save new item
     var testItemValues = {
+      'id': MockUUIDService.getShortIdFromFakeUUID(MockUUIDService.mockFakeUUIDs[0]),
       'title': 'test list'
     };
     var testItem = ItemsService.getNewItem(testItemValues, testOwnerUUID);
@@ -1285,6 +1326,7 @@ describe('SynchronizeService', function() {
 
     // 4. add new task to the list
     var testTaskValues = {
+      id: MockUUIDService.getShortIdFromFakeUUID(MockUUIDService.mockFakeUUIDs[1]),
       title: 'test task',
       relationships: {
         parent: lists[4].trans.uuid
@@ -1339,7 +1381,8 @@ describe('SynchronizeService', function() {
         .respond(200, putNewItemResponse);
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/list/' +
                            putNewItemResponse.uuid,
-                           {title: updatedTestList.trans.title,
+                           {id: updatedTestList.trans.id,
+                            title: updatedTestList.trans.title,
                             description: updatedTestList.trans.description,
                             modified: putNewItemResponse.modified})
         .respond(200, putExistingItemResponse);
@@ -1355,7 +1398,7 @@ describe('SynchronizeService', function() {
       .toBe(3);
     expect(lists.length)
       .toBe(5);
-    expect(UUIDService.isFakeUUID(lists[4].mod.uuid))
+    expect(MockUUIDService.isFakeUUID(lists[4].mod.uuid))
       .toBeFalsy();
     expect(lists[4].mod.description)
       .toBe('test description');
@@ -1428,6 +1471,7 @@ describe('SynchronizeService', function() {
 
     // 1. Create three items to the offline queue
     var testItemValues = {
+      'id': MockUUIDService.getShortIdFromFakeUUID(MockUUIDService.mockFakeUUIDs[0]),
       'title': 'test list'
     };
     var testItem = ItemsService.getNewItem(testItemValues, testOwnerUUID);
@@ -1458,7 +1502,8 @@ describe('SynchronizeService', function() {
         .respond(200, putNewItemResponse);
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/list/' +
                            putNewItemResponse.uuid,
-                           {title: updatedTestList.trans.title,
+                           {id: updatedTestList.trans.id,
+                            title: updatedTestList.trans.title,
                             description: updatedTestList.trans.description,
                             modified: putNewItemResponse.modified})
         .respond(200, putExistingItemResponse);
@@ -1494,6 +1539,7 @@ describe('SynchronizeService', function() {
 
     // 1. create tag
     var testTagValues = {
+      id: MockUUIDService.getShortIdFromFakeUUID(MockUUIDService.mockFakeUUIDs[0]),
       title: 'test tag',
       tagType: 'keyword'
     };
@@ -1506,7 +1552,7 @@ describe('SynchronizeService', function() {
       .toBe(4);
     expect(tags[3].mod.title)
       .toBe(testTagValues.title);
-    expect(UUIDService.isFakeUUID(tags[3].mod.uuid))
+    expect(MockUUIDService.isFakeUUID(tags[3].mod.uuid))
       .toBeTruthy();
 
     // 2. update tag
@@ -1520,6 +1566,7 @@ describe('SynchronizeService', function() {
 
     // 3. create note using tag
     var testNoteValues = {
+      id: MockUUIDService.getShortIdFromFakeUUID(MockUUIDService.mockFakeUUIDs[1]),
       title: 'test note',
       relationships: {
         tags: [testTag.trans.uuid]
@@ -1574,7 +1621,8 @@ describe('SynchronizeService', function() {
         .respond(200, putNewItemResponse);
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/tag/' +
                            putNewItemResponse.uuid,
-                           {title: testTag.trans.title,
+                           {id: testTag.trans.id,
+                            title: testTag.trans.title,
                             description: testTag.trans.description,
                             tagType: testTag.trans.tagType,
                             modified: putNewItemResponse.modified})
@@ -1589,7 +1637,7 @@ describe('SynchronizeService', function() {
     // Verify that everything is right with the created item
     expect(tags.length)
       .toBe(4);
-    expect(UUIDService.isFakeUUID(tags[3].mod.uuid))
+    expect(MockUUIDService.isFakeUUID(tags[3].mod.uuid))
       .toBeFalsy();
     expect(tags[3].mod.description)
       .toBe('test description');
@@ -1655,6 +1703,79 @@ describe('SynchronizeService', function() {
   });
 
 
+
+  it('should handle tag offline create with no/empty response from server, and then sync', function () {
+
+    var tags = TagsService.getTags(testOwnerUUID);
+    expect(tags.length)
+      .toBe(3);
+
+    // 1. create tag and respond with an empty response
+    var testTagValues = {
+      id: MockUUIDService.getShortIdFromFakeUUID(MockUUIDService.mockFakeUUIDs[0]),
+      title: 'test tag',
+      tagType: 'keyword'
+    };
+    var testTag = TagsService.getNewTag(testTagValues, testOwnerUUID);
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/tag', testTagValues)
+       .respond(200, {});
+    TagsService.saveTag(testTag, testOwnerUUID);
+    $httpBackend.flush();
+    expect(tags.length)
+      .toBe(4);
+    expect(tags[3].mod.title)
+      .toBe(testTagValues.title);
+    expect(MockUUIDService.isFakeUUID(tags[3].mod.uuid))
+      .toBeTruthy();
+
+    // 2. create note using tag
+    var testNoteValues = {
+      id: MockUUIDService.getShortIdFromFakeUUID(MockUUIDService.mockFakeUUIDs[1]),
+      title: 'test note',
+      relationships: {
+        tags: [testTag.trans.uuid]
+      }
+    };
+    var testNote = NotesService.getNewNote({title: testNoteValues.title, keywords: [testTag]}, testOwnerUUID);
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/note', testNoteValues)
+       .respond(404);
+    NotesService.saveNote(testNote, testOwnerUUID);
+    $httpBackend.flush();
+
+    // 3. synchronize items with tag in the response, even though the response in the original PUT
+    //    was invalid
+    var latestModified = now.getTime();
+    MockUserSessionService.setLatestModified(latestModified);
+    var testTagUUID = 'a2724771-4469-488c-aabd-9db188672a00';
+    $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
+                            latestModified + '&deleted=true&archived=true&completed=true')
+        .respond(200,
+        {
+          tags: [
+          { uuid: testTagUUID,
+            id: testTagValues.id,
+            title: testTagValues.title,
+            tagType: testTagValues.tagType,
+            created: latestModified-1,
+            modified: latestModified-1}
+          ]
+        });
+    testNoteValues.relationships.tags[0] = testTagUUID;
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/note',
+                           testNoteValues)
+        .respond(200, putNewNoteResponse);
+    SynchronizeService.synchronize(testOwnerUUID);
+    $httpBackend.flush();
+
+    // Verify that everything is right with the created item
+    expect(tags.length)
+      .toBe(4);
+    expect(tags[3].mod)
+      .toBeUndefined();
+    expect(tags[3].description)
+      .toBeUndefined();
+  });
+
   it('should handle sync with deleted list and tag that are used in put', function () {
 
     // 1. save new task with shopping list uuid
@@ -1664,6 +1785,7 @@ describe('SynchronizeService', function() {
     var shoppingList = ListsService.getListInfo(shoppingListUUID, testOwnerUUID).list;
     var homeContext = TagsService.getTagInfo(homeUUID, testOwnerUUID).tag;
     var orangesTransport = {
+      id: MockUUIDService.getShortIdFromFakeUUID(MockUUIDService.mockFakeUUIDs[0]),
       title: 'buy oranges',
       relationships: {
         parent: shoppingListUUID,
@@ -1731,7 +1853,8 @@ describe('SynchronizeService', function() {
         .respond(200, putNewItemResponse);
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' +
                            cleanCloset.trans.uuid,
-                           {title: cleanCloset.trans.title,
+                           {id: cleanCloset.trans.id,
+                            title: cleanCloset.trans.title,
                             modified: cleanCloset.modified})
         .respond(200, putExistingItemResponse);
     SynchronizeService.synchronize(testOwnerUUID);
@@ -2060,6 +2183,7 @@ describe('SynchronizeService', function() {
     BackendClientService.registerPrimaryPostResultCallback(authenticateCallback);
 
     var testItemValues = {
+      'id': MockUUIDService.getShortIdFromFakeUUID(MockUUIDService.mockFakeUUIDs[0]),
       'title': 'test note'
     };
     var testItem = ItemsService.getNewItem(testItemValues, testOwnerUUID);

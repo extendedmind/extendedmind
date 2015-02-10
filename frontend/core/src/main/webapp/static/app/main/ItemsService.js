@@ -109,15 +109,16 @@
       return ArrayService.getModifiedItems(items[ownerUUID].activeItems,
                                          items[ownerUUID].deletedItems);
     },
-    getItemInfo: function(uuid, ownerUUID) {
-      var item = items[ownerUUID].activeItems.findFirstObjectByKeyValue('uuid', uuid, 'trans');
+    getItemInfo: function(value, ownerUUID, searchField) {
+      var field = searchField ? searchField : 'uuid';
+      var item = items[ownerUUID].activeItems.findFirstObjectByKeyValue(field, value, 'trans');
       if (item){
         return {
           type: 'active',
           item: item
         };
       }
-      item = items[ownerUUID].deletedItems.findFirstObjectByKeyValue('uuid', uuid, 'trans');
+      item = items[ownerUUID].deletedItems.findFirstObjectByKeyValue(field, value, 'trans');
       if (item){
         return {
           type: 'deleted',

@@ -377,22 +377,23 @@
                                          tasks[ownerUUID].deletedTasks,
                                          getOtherArrays(ownerUUID));
     },
-    getTaskInfo: function(uuid, ownerUUID) {
-      var task = tasks[ownerUUID].activeTasks.findFirstObjectByKeyValue('uuid', uuid, 'trans');
+    getTaskInfo: function(value, ownerUUID, searchField) {
+      var field = searchField ? searchField : 'uuid';
+      var task = tasks[ownerUUID].activeTasks.findFirstObjectByKeyValue(field, value, 'trans');
       if (task){
         return {
           type: 'active',
           task: task
         };
       }
-      task = tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue('uuid', uuid, 'trans');
+      task = tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue(field, value, 'trans');
       if (task){
         return {
           type: 'deleted',
           task: task
         };
       }
-      task = tasks[ownerUUID].archivedTasks.findFirstObjectByKeyValue('uuid', uuid, 'trans');
+      task = tasks[ownerUUID].archivedTasks.findFirstObjectByKeyValue(field, value, 'trans');
       if (task){
         return {
           type: 'archived',

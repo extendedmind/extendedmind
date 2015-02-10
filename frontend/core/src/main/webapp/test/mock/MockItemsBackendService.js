@@ -29,6 +29,9 @@ function MockItemsBackendService($httpBackend, ItemsService, PersistentStorageSe
         created: modifiedItems[i].trans.created,
         modified: modifiedItems[i].mod.modified || modifiedItems[i].trans.modified
       };
+      if (modifiedItems[i].mod.id) persistentItem.id = modifiedItems[i].mod.id;
+      else if (modifiedItems[i].trans.id) persistentItem.id = modifiedItems[i].trans.id;
+
       if (modifiedItems[i].mod.description) persistentItem.description = modifiedItems[i].mod.description;
       else if (modifiedItems[i].trans.description) persistentItem.description = modifiedItems[i].trans.description;
 

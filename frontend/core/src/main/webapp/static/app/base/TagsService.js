@@ -134,15 +134,16 @@
       return ArrayService.getModifiedItems(tags[ownerUUID].activeTags,
                                            tags[ownerUUID].deletedTags);
     },
-    getTagInfo: function(uuid, ownerUUID) {
-      var tag = tags[ownerUUID].activeTags.findFirstObjectByKeyValue('uuid', uuid, 'trans');
+    getTagInfo: function(value, ownerUUID, searchField) {
+      var field = searchField ? searchField : 'uuid';
+      var tag = tags[ownerUUID].activeTags.findFirstObjectByKeyValue(field, value, 'trans');
       if (tag){
         return {
           type: 'active',
           tag: tag
         };
       }
-      tag = tags[ownerUUID].deletedTags.findFirstObjectByKeyValue('uuid', uuid, 'trans');
+      tag = tags[ownerUUID].deletedTags.findFirstObjectByKeyValue(field, value, 'trans');
       if (tag){
         return {
           type: 'deleted',

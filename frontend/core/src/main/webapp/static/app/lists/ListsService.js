@@ -51,22 +51,23 @@
   UserSessionService.registerNofifyOwnerCallback(initializeArrays, 'ListsService');
 
 
-  function getListInfo(uuid, ownerUUID){
-    var list = lists[ownerUUID].activeLists.findFirstObjectByKeyValue('uuid', uuid, 'trans');
+  function getListInfo(value, ownerUUID, searchField){
+    var field = searchField ? searchField : 'uuid';
+    var list = lists[ownerUUID].activeLists.findFirstObjectByKeyValue(field, value, 'trans');
     if (list){
       return {
         type: 'active',
         list: list
       };
     }
-    list = lists[ownerUUID].deletedLists.findFirstObjectByKeyValue('uuid', uuid, 'trans');
+    list = lists[ownerUUID].deletedLists.findFirstObjectByKeyValue(field, value, 'trans');
     if (list){
       return {
         type: 'deleted',
         list: list
       };
     }
-    list = lists[ownerUUID].archivedLists.findFirstObjectByKeyValue('uuid', uuid, 'trans');
+    list = lists[ownerUUID].archivedLists.findFirstObjectByKeyValue(field, value, 'trans');
     if (list){
       return {
         type: 'archived',
@@ -203,8 +204,8 @@
                                             lists[ownerUUID].deletedLists,
                                             getOtherArrays(ownerUUID));
     },
-    getListInfo: function(uuid, ownerUUID) {
-      return getListInfo(uuid, ownerUUID);
+    getListInfo: function(value, ownerUUID, searchField) {
+      return getListInfo(value, ownerUUID, searchField);
     },
     saveList: function(list, ownerUUID) {
       var deferred = $q.defer();

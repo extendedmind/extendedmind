@@ -18,7 +18,7 @@
 
  function SynchronizeService($q, $rootScope, BackendClientService, ItemLikeService, ItemsService,
                              ListsService, NotesService, PersistentStorageService, TagsService, TasksService,
-                             UserService, UserSessionService) {
+                             UserService, UserSessionService, UUIDService) {
 
   var itemsRegex = /\/items/;
   // NOTE: Do not set start/end of string anchors into getItemsRegex!
@@ -181,27 +181,130 @@
     return executeUpdateFns(updateFns, itemUUID, probableItemType, properties, ownerUUID);
   }
 
+  function processUUIDChange(oldUUID, newUUID, created, modified, type, ownerUUID, queue,
+                             removeFakeUUIDRequest) {
+    // Also update queue to replace all calls with the old fake uuid with the new one
+    // and at the same time swap the modified value
+    if (queue && queue.length > 0) {
+      for (var i=queue.length-1; i>=0; i--) {
+        if (queue[i].params.uuid === oldUUID) {
+          queue[i].params.uuid = newUUID;
+          queue[i].content.url = queue[i].content.url.replace(oldUUID, newUUID);
+          if (queue[i].content.data && queue[i].content.data.modified){
+            queue[i].content.data.modified = modified;
+          }
+        }
+        if (queue[i].content.method  === 'put'){
+          // Need to also replace list and tag UUID from relationships array
+          if (queue[i].content.data && queue[i].content.data.relationships){
+            var stringRelationships = JSON.stringify(queue[i].content.data.relationships);
+            if (stringRelationships.indexOf(oldUUID) !== -1){
+              // Replace values in the queue
+              queue[i].content.data.relationships =
+                JSON.parse(stringRelationships.replace(oldUUID, newUUID));
+              // Also replace relationships in the mod of the the item in question
+              updateModProperties(queue[i].params.uuid ? queue[i].params.uuid : queue[i].params.fakeUUID,
+                                  queue[i].params.type,
+                                  {relationships: queue[i].content.data.relationships},
+                                  queue[i].params.owner);
+            }
+          }
+        }
+        if (removeFakeUUIDRequest && queue[i].params.fakeUUID === oldUUID){
+          // Also splice the request from the queue to prevent double item creation
+          queue.splice(i, 1);
+        }
+      }
+    }
+    updateModProperties(oldUUID, type, {uuid: newUUID, created: created, modified: modified}, ownerUUID);
+  }
 
-  function getItemInfoFromResponse(response, uuid){
+  function validateSynchronizeResultIdFields(request, response, queue){
+    var i;
+    if (response.tags && response.tags.length){
+      for (i=0; i<response.tags.length; i++){
+        if (response.tags[i].id){
+          var tagInfo = TagsService.getTagInfo(response.tags[i].id, request.params.owner, 'id');
+          if (tagInfo && tagInfo.tag.trans.uuid !== response.tags[i].uuid){
+            processUUIDChange(tagInfo.tag.trans.uuid, response.tags[i].uuid,
+                              response.tags[i].created, response.tags[i].modified,
+                              'tag', request.params.owner, queue, true);
+          }
+        }
+      }
+    }
+    if (response.lists && response.lists.length){
+      for (i=0; i<response.lists.length; i++){
+        if (response.lists[i].id){
+          var listInfo = ListsService.getListInfo(response.lists[i].id, request.params.owner, 'id');
+          if (listInfo && listInfo.list.trans.uuid !== response.lists[i].uuid){
+            processUUIDChange(listInfo.list.trans.uuid, response.lists[i].uuid,
+                              response.lists[i].created, response.lists[i].modified,
+                              'list', request.params.owner, queue, true);
+          }
+        }
+      }
+    }
+    if (response.tasks && response.tasks.length){
+      for (i=0; i<response.tasks.length; i++){
+        if (response.tasks[i].id){
+          var taskInfo = TasksService.getTaskInfo(response.tasks[i].id, request.params.owner, 'id');
+          if (taskInfo && taskInfo.task.trans.uuid !== response.tasks[i].uuid){
+            processUUIDChange(taskInfo.task.trans.uuid, response.tasks[i].uuid,
+                              response.tasks[i].created, response.tasks[i].modified,
+                              'task', request.params.owner, queue, true);
+          }
+        }
+      }
+    }
+    if (response.notes && response.notes.length){
+      for (i=0; i<response.notes.length; i++){
+        if (response.notes[i].id){
+          var noteInfo = NotesService.getNoteInfo(response.notes[i].id, request.params.owner, 'id');
+          if (noteInfo && noteInfo.note.trans.uuid !== response.notes[i].uuid){
+            processUUIDChange(noteInfo.note.trans.uuid, response.notes[i].uuid,
+                              response.notes[i].created, response.notes[i].modified,
+                              'note', request.params.owner, queue, true);
+          }
+        }
+      }
+    }
+    if (response.items && response.items.length){
+      for (i=0; i<response.items.length; i++){
+        if (response.items[i].id){
+          var itemInfo = ItemsService.getItemInfo(response.items[i].id, request.params.owner, 'id');
+          if (itemInfo && itemInfo.item.trans.uuid !== response.items[i].uuid){
+            processUUIDChange(itemInfo.item.trans.uuid, response.items[i].uuid,
+                              response.items[i].created, response.items[i].modified,
+                              'item', request.params.owner, queue, true);
+          }
+        }
+      }
+    }
+  }
+
+
+  function getItemInfoFromResponse(response, value, searchField){
+    var field = searchField ? searchField : 'uuid';
     var item;
     if (response.items && response.items.length){
-      item = response.items.findFirstObjectByKeyValue('uuid', uuid);
+      item = response.items.findFirstObjectByKeyValue(field, value);
       if (item) return {type: 'item', item: item};
     }
     if (response.tasks && response.tasks.length){
-      item = response.tasks.findFirstObjectByKeyValue('uuid', uuid);
+      item = response.tasks.findFirstObjectByKeyValue(field, value);
       if (item) return {type: 'task', item: item};
     }
     if (response.notes && response.notes.length){
-      item = response.notes.findFirstObjectByKeyValue('uuid', uuid);
+      item = response.notes.findFirstObjectByKeyValue(field, value);
       if (item) return {type: 'note', item: item};
     }
     if (response.lists && response.lists.length){
-      item = response.lists.findFirstObjectByKeyValue('uuid', uuid);
+      item = response.lists.findFirstObjectByKeyValue(field, value);
       if (item) return {type: 'list', item: item};
     }
     if (response.tags && response.tags.length){
-      item = response.tags.findFirstObjectByKeyValue('uuid', uuid);
+      item = response.tags.findFirstObjectByKeyValue(field, value);
       if (item) return {type: 'tag', item: item};
     }
   }
@@ -271,10 +374,31 @@
         var updatedPutUUIDs = [];
         var mismatchTypeConflictInfos = [];
         var i, len;
+
+        // First make sure that there aren't any items in the response that were PUT to the backend
+        // but whose result was never processed - i.e. locally the fake UUID is still present,
+        // but there is a new UUID in the backend. To do this, we use the id field we set in
+        // ItemLikeService.save -> new item.
+        validateSynchronizeResultIdFields(request, response, queue);
+
+        // Loop over the queue to see if there are any conflicting requests there
         for (i = queue.length-1; i >= 0; i--){
           var conflictingItemInfo =
             getItemInfoFromResponse(response,
                                 queue[i].params.uuid);
+          if (!conflictingItemInfo && queue[i].params.fakeUUID){
+            // Try to find with fake UUID stored as 'id' field
+            conflictingItemInfo = getItemInfoFromResponse(response,
+                                      UUIDService.getShortIdFromFakeUUID(queue[i].params.fakeUUID), 'id');
+            if (conflictingItemInfo){
+              // This means that new item response never reached the client, process UUID change here
+              processUUIDChange(queue[i].params.fakeUUID, conflictingItemInfo.item.uuid,
+                                conflictingItemInfo.item.created, conflictingItemInfo.item.modified,
+                                queue[i].params.type, request.params.owner,
+                                queue);
+            }
+          }
+
           if (conflictingItemInfo && conflictingItemInfo.type === queue[i].params.type){
 
             // *******************************************************************************
@@ -632,70 +756,33 @@
     // PUT
     // ***
     } else if (request.content.method === 'put') {
-        var uuid, oldUuid;
-        if (request.params.uuid) {
-          // Put existing
-          oldUuid = request.params.uuid;
-          uuid = oldUuid;
-          properties = {};
-        } else {
-          // New, there should be an uuid in the response and a fake one in the request
-          if (!response.uuid) {
-            $rootScope.$emit('emException',
-                             {type: 'response',
-                             value: {
-                              response: response,
-                              description: 'No uuid from server'
-                            }});
-            return;
-          } else {
-            oldUuid = request.params.fakeUUID;
-            uuid = response.uuid;
-            properties = {uuid: uuid};
-            // Also update queue to replace all calls with the old fake uuid with the new one
-            // and at the same time swap the modified value
-            if (queue && queue.length > 0) {
-              for (var i=0, len=queue.length; i<len; i++) {
-                if (queue[i].params.uuid === oldUuid) {
-                  queue[i].params.uuid = uuid;
-                  queue[i].content.url = queue[i].content.url.replace(oldUuid,uuid);
-                  if (queue[i].content.data && queue[i].content.data.modified){
-                    queue[i].content.data.modified = response.modified;
-                  }
-                }
-                if (queue[i].content.method  === 'put'){
-                  // Need to also replace list and tag UUID from relationships array
-                  if (queue[i].content.data && queue[i].content.data.relationships){
-                    var stringRelationships = JSON.stringify(queue[i].content.data.relationships);
-                    if (stringRelationships.indexOf(oldUuid) !== -1){
-                      // Replace values in the queue
-                      queue[i].content.data.relationships =
-                        JSON.parse(stringRelationships.replace(oldUuid,uuid));
-                      // Also replace relationships in the mod of the the item in question
-                      updateModProperties(queue[i].params.uuid ? queue[i].params.uuid : queue[i].params.fakeUUID,
-                                          queue[i].params.type,
-                                          {relationships: queue[i].content.data.relationships},
-                                          queue[i].params.owner);
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-        properties.modified = response.modified;
-        if (response.created){
-          properties.created = response.created;
-        }
-
+      if (request.params.uuid) {
+        // Put existing
+        properties = {modified: response.modified};
         if (request.params.type === 'user') {
           UserSessionService.setUserModified(properties.modified);
         } else {
-          updateModProperties(oldUuid, request.params.type, properties, request.params.owner);
+          updateModProperties(request.params.uuid, request.params.type, properties, request.params.owner);
         }
-      // ******
-      // DELETE
-      // ******
+      } else {
+        // New, there should be an uuid in the response and a fake one in the request
+        if (!response.uuid) {
+          $rootScope.$emit('emException',
+                           {type: 'response',
+                           value: {
+                            response: response,
+                            description: 'No uuid from server'
+                          }});
+          return;
+        } else {
+          processUUIDChange(request.params.fakeUUID, response.uuid,
+                            response.created, response.modified,
+                            request.params.type, request.params.owner, queue);
+        }
+      }
+    // ******
+    // DELETE
+    // ******
     } else if (request.content.method === 'delete') {
       properties = {deleted: response.deleted, modified: response.result.modified};
       updateModProperties(request.params.uuid, request.params.type, properties, request.params.owner);
@@ -944,5 +1031,5 @@
 
 SynchronizeService['$inject'] = ['$q', '$rootScope', 'BackendClientService', 'ItemLikeService',
 'ItemsService', 'ListsService', 'NotesService', 'PersistentStorageService', 'TagsService', 'TasksService',
-'UserService', 'UserSessionService'];
+'UserService', 'UserSessionService', 'UUIDService'];
 angular.module('em.main').factory('SynchronizeService', SynchronizeService);

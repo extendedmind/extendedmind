@@ -22,6 +22,7 @@
   function getDefaultFieldInfos(){
     return [
     'uuid',
+    'id',
     'title',
     'description',
     'link',
@@ -353,10 +354,10 @@
         // nothing was actually saved
         deferred.resolve('unmodified');
       } else {
-        var transportItem = prepareTransport(item, itemType, ownerUUID, fieldInfos);
-        var params, fakeTimestamp;
+        var params, fakeTimestamp, transportItem;
 
         if (item.trans.uuid) {
+          transportItem = prepareTransport(item, itemType, ownerUUID, fieldInfos);
 
           /////////////////////////
           // Existing item
@@ -392,8 +393,11 @@
           /////////////////////////
 
           if (UserSessionService.isOfflineEnabled()) {
-            // Push to offline queue with fake UUID
+            // Push to offline queue with fake UUID, set meaningful part of fakeUUID as item id
             var fakeUUID = UUIDService.generateFakeUUID();
+            item.trans.id = UUIDService.getShortIdFromFakeUUID(fakeUUID);
+            transportItem = prepareTransport(item, itemType, ownerUUID, fieldInfos);
+
             fakeTimestamp = BackendClientService.generateFakeTimestamp();
             params = {type: itemType, owner: ownerUUID, fakeUUID: fakeUUID};
             BackendClientService.putOffline('/api/' + params.owner + '/'+ itemType,
@@ -405,6 +409,7 @@
             });
           } else {
             // Online
+            transportItem = prepareTransport(item, itemType, ownerUUID, fieldInfos);
             BackendClientService.putOnline('/api/' + ownerUUID + '/'+ itemType,
                                            this.getPutNewRegex(itemType), transportItem)
             .then(function(response) {

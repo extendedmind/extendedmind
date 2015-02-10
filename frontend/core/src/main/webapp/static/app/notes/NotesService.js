@@ -267,22 +267,23 @@
       return ArrayService.getModifiedItems(notes[ownerUUID].activeNotes,
                                             notes[ownerUUID].deletedNotes, getOtherArrays(ownerUUID));
     },
-    getNoteInfo: function(uuid, ownerUUID) {
-      var note = notes[ownerUUID].activeNotes.findFirstObjectByKeyValue('uuid', uuid, 'trans');
+    getNoteInfo: function(value, ownerUUID, searchField) {
+      var field = searchField ? searchField : 'uuid';
+      var note = notes[ownerUUID].activeNotes.findFirstObjectByKeyValue(field, value, 'trans');
       if (note){
         return {
           type: 'active',
           note: note
         };
       }
-      note = notes[ownerUUID].deletedNotes.findFirstObjectByKeyValue('uuid', uuid, 'trans');
+      note = notes[ownerUUID].deletedNotes.findFirstObjectByKeyValue(field, value, 'trans');
       if (note){
         return {
           type: 'deleted',
           note: note
         };
       }
-      note = notes[ownerUUID].archivedNotes.findFirstObjectByKeyValue('uuid', uuid, 'trans');
+      note = notes[ownerUUID].archivedNotes.findFirstObjectByKeyValue(field, value, 'trans');
       if (note){
         return {
           type: 'archived',
