@@ -30,7 +30,7 @@
       registerSaveNewListCallback: '&listPickerRegisterSaveNewListCallback',
       unregisterSaveNewListCallback: '&listPickerUnregisterSaveNewListCallback',
       registerIsEditedCallback: '&listPickerRegisterIsEditedCallback',
-      unregisterIsEditedCallback: '&listPickerUnregisterIsEditedCallback',
+      unregisterIsEditedCallback: '&listPickerUnregisterIsEditedCallback'
     },
     link: function(scope) {
       scope.newList = scope.getNewList();
