@@ -315,8 +315,8 @@
       $scope.registerPropertyEditDoneCallback(function() {
         if ($scope.newKeyword.trans.title) {
           $scope.addKeywordToNote($scope.note, $scope.newKeyword);
-          $scope.closeKeywordsPicker();
         }
+        $scope.closeKeywordsPicker();
       });
     }
     if (angular.isFunction($scope.registerIsPropertyEdited)) {
