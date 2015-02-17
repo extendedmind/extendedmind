@@ -34,7 +34,7 @@ angular.module('em.appTest')
       };
 
   }])
-  .config(['$provide', function($provide) {
+  .config(['$provide', '$routeProvider', function($provide, $routeProvider) {
     $provide.decorator('$httpBackend', ['$delegate', function($delegate) {
         var proxy = function(method, url, data, callback, headers) {
             var interceptor = function() {
@@ -62,6 +62,25 @@ angular.module('em.appTest')
         }
         return proxy;
     }]);
+
+    $routeProvider.when('/new', {
+      resolve: {
+        auth: ['$location', '$route', 'AuthenticationService', 'UserSessionService',
+        function($location, $route, AuthenticationService, UserSessionService) {
+          localStorage.clear();
+          sessionStorage.clear();
+          if ($route.current.params.offline)
+            UserSessionService.enableOffline(true);
+
+          AuthenticationService.login({username: 'timo@ext.md', password: 'timopwd'}).then(function() {
+            UserSessionService.setUIPreference('focusTasksOnboarded', 'devel');
+            UserSessionService.setUIPreference('focusNotesOnboarded', 'devel');
+            UserSessionService.setUIPreference('inboxOnboarded', 'devel');
+            $location.path('/my');
+          });
+        }]
+      }
+    });
   }])
   .run(['$httpBackend',
     function($httpBackend) {
