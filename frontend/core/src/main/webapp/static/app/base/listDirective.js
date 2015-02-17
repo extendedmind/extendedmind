@@ -29,10 +29,21 @@
         return listArrayFn($scope);
       };
 
-      $scope.getVisibleArrayLength = function() {
-        if ($scope.listInfos && $scope.listInfos.array) {
-          return $scope.listInfos.array.length;
+      $scope.getVisibleArray = function(getFullArrayFn, limitTo) {
+        var fullArray = getFullArrayFn();
+
+        if (customFilterItemVisible) {
+          $scope.listInfos.array = customFilterItemVisible(fullArray);  // Cache filtered full array
+          return $scope.listInfos.array.slice(0, limitTo);
         }
+
+        $scope.listInfos.array = fullArray; // Cache filtered full array
+        return $scope.listInfos.array.slice(0, limitTo);
+      };
+
+      $scope.getFilteredFullArrayLength = function() {
+        if ($scope.listInfos.array)
+          return $scope.listInfos.array.length;
       };
 
       this.notifyArrayVisible = function(/*array*/) {
@@ -86,7 +97,7 @@
         $scope.isNearListBottomCallback = callback;
         if ($scope.listInfos && $scope.listInfos.array) {
           // Return initial status to caller.
-          return $scope.currentListLimitTo < $scope.listInfos.array.length;
+          return $scope.currentListLimitTo < $scope.getFilteredFullArrayLength();
         }
       };
 
@@ -305,26 +316,26 @@
       function addMoreItemsToBottom(){
 
         function doAddMoreItemsToBottom(){
-          if (scope.maximumNumberOfItems + scope.itemIncreaseAmount >= visibleArrayLength) {
-            setLimits(visibleArrayLength - scope.maximumNumberOfItems);
+          if (scope.maximumNumberOfItems + scope.itemIncreaseAmount >= filteredFullArrayLength) {
+            setLimits(filteredFullArrayLength - scope.maximumNumberOfItems);
           } else {
             setLimits(scope.currentListStartIndex + scope.itemIncreaseAmount);
           }
         }
 
-        var visibleArrayLength = scope.getVisibleArrayLength();
-        if ((visibleArrayLength - scope.currentListStartIndex) > scope.maximumNumberOfItems) {
+        var filteredFullArrayLength = scope.getFilteredFullArrayLength();
+        if ((filteredFullArrayLength - scope.currentListStartIndex) > scope.maximumNumberOfItems) {
           if (preventListModify) {
             // List modifying is prevented.
             allowListModifyDeferred = $q.defer();
             allowListModifyDeferred.promise.then(function() {
               // List modifying is allowed again.
-              doAddMoreItemsToBottom(visibleArrayLength);
+              doAddMoreItemsToBottom(filteredFullArrayLength);
               allowListModifyDeferred = undefined;
             });
           } else {
             // Ok to to add more items.
-            doAddMoreItemsToBottom(visibleArrayLength);
+            doAddMoreItemsToBottom(filteredFullArrayLength);
             if (!$rootScope.$$phase && !scope.$$phase) scope.$digest(); // Update UI.
           }
         }
@@ -364,9 +375,9 @@
       }
 
       function setIsNearListBottom() {
-        if (scope.currentListLimitTo >= scope.getVisibleArrayLength()) {
+        if (scope.currentListLimitTo >= scope.getFilteredFullArrayLength()) {
           if (angular.isFunction(scope.isNearListBottomCallback)) scope.isNearListBottomCallback(false);
-        } else if (scope.getVisibleArrayLength()) {
+        } else if (scope.getFilteredFullArrayLength()) {
           if (angular.isFunction(scope.isNearListBottomCallback)) scope.isNearListBottomCallback(true);
         }
       }

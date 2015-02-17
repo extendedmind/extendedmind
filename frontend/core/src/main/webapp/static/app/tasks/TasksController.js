@@ -15,9 +15,194 @@
  'use strict';
 
  function TasksController($rootScope, $scope, $timeout,
-                          AnalyticsService, DateService, ItemsService, SwiperService, TasksService,
-                          UISessionService) {
+                          AnalyticsService, ArrayService, DateService, ItemsService, SwiperService,
+                          TasksService, UISessionService) {
 
+  // INITIALIZING
+  if (angular.isFunction($scope.registerArrayChangeCallback))
+    $scope.registerArrayChangeCallback('tasks', 'active', invalidateTasksArraysWithActiveTasks,
+                                       'TasksController');
+
+  var cachedTasksArrays = {};
+
+  /*
+  * Invalidate cached active tasks arrays.
+  *
+  * @param {Object} task Changed task.
+  */
+  function invalidateTasksArraysWithActiveTasks(tasks, modifiedTask, ownerUUID) {
+    if (cachedTasksArrays[ownerUUID]) {
+      for (var arrayType in cachedTasksArrays[ownerUUID]) {
+        if (cachedTasksArrays[ownerUUID].hasOwnProperty(arrayType)) {
+          // Every cached tasks array has cached tasks.
+          if (arrayType === 'all') updateAllTasks(cachedTasksArrays[ownerUUID], ownerUUID);
+          else if (arrayType === 'date') {
+
+            if (!cachedTasksArrays[ownerUUID]['date']['all'])
+              updateAllTasksWithDate(cachedTasksArrays[ownerUUID]['date'], ownerUUID);
+
+            for (var date in cachedTasksArrays[ownerUUID]['date']) {
+              if (cachedTasksArrays[ownerUUID]['date'].hasOwnProperty(date)) {
+                updateDateTasks(ownerUUID, cachedTasksArrays[ownerUUID]['date'], {date: date});
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  function updateAllTasks(cachedTasks, ownerUUID) {
+
+    function compareWithFrozenModified(a, b) {
+      return $scope.getTaskModified(a) - $scope.getTaskModified(b);
+    }
+
+    // Get tasks.
+    var allActiveTasks = TasksService.getTasks(ownerUUID);
+    cachedTasks['all'] = [];
+    // Sort and cache array.
+    for (var i = 0; i < allActiveTasks.length; i++) {
+      ArrayService.insertItemToArray(allActiveTasks[i],
+                                     cachedTasks['all'],
+                                     compareWithFrozenModified,
+                                     true);
+    }
+
+  }
+
+  function updateAllTasksWithDate(cachedDateTasks, ownerUUID) {
+    // Get tasks
+    var allActiveTasks = TasksService.getTasks(ownerUUID);
+    cachedDateTasks['all'] = [];
+
+    // Cache tasks with date.
+    for (var i = 0; i < allActiveTasks.length; i++) {
+      if (allActiveTasks[i].trans.due) cachedDateTasks['all'].push(allActiveTasks[i]);
+    }
+  }
+
+  /*
+  * Show completed on a past date.
+  */
+  function updatePastDateTasks(allActiveTasks, pastDateTasksArray, pastDateYYYYMMDD) {
+    var pastDateMidnight = pastDateYYYYMMDD.yyyymmddToNoonDate().setHours(0, 0, 0, 0);
+
+    for (var i = allActiveTasks.length - 1; i >= 0; i--) {
+      var task = allActiveTasks[i];
+      if (task.trans.completed && new Date(task.trans.completed).setHours(0, 0, 0, 0) === pastDateMidnight)
+        pastDateTasksArray.push(task);
+    }
+  }
+
+  /*
+  * Show tasks without a date.
+  */
+  function updateNoDateTasks(allActiveTasks, noDateTasksArray) {
+    for (var i = 0; i < allActiveTasks.length; i++) {
+      if (!allActiveTasks[i].trans.due) noDateTasksArray.push(allActiveTasks[i]);
+    }
+  }
+
+  /*
+  * Show overdue and due tasks and completed on date.
+  */
+  function updateTodayTasks(allActiveTasks, todayTasks, todayYYYYMMDD) {
+    var todayMidnight = DateService.getTodayDateWithoutTime();
+
+    for (var i = allActiveTasks.length - 1; i >= 0; i--) {
+      var task = allActiveTasks[i];
+      if (task.trans.due && task.trans.due <= todayYYYYMMDD &&
+          !(task.trans.completed && task.trans.completed < todayMidnight))
+      {
+        todayTasks.push(task);
+      }
+      else if (task.trans.completed && task.trans.completed > todayMidnight) {
+        todayTasks.push(task);
+      }
+    }
+  }
+
+  /*
+  * Show due tasks and completed on date.
+  */
+  function updateFutureDateTasks(allActiveTasks, futureDateTasks, futureYYYYMMDD) {
+    var futureDateMidnight = futureYYYYMMDD.yyyymmddToNoonDate().setHours(0, 0, 0, 0);
+
+    for (var i = allActiveTasks.length - 1; i >= 0; i--) {
+      var task = allActiveTasks[i];
+      if (task.trans.due && task.trans.due === futureYYYYMMDD) {
+        futureDateTasks.push(task);
+      } else if (task.trans.completed &&
+                 new Date(task.trans.completed).setHours(0, 0, 0, 0) === futureDateMidnight)
+      {
+        futureDateTasks.push(task);
+      }
+    }
+  }
+
+  function updateDateTasks(ownerUUID, cachedDates, info) {
+    var pastDate;
+
+    if (cachedDates[info.date])
+      pastDate = cachedDates[info.date].pastDate;
+    else if (info.pastDate)
+      pastDate = info.pastDate;
+
+    cachedDates[info.date] = {
+      array: [],
+      pastDate: pastDate
+    };
+
+    if (pastDate) {
+      updatePastDateTasks(TasksService.getTasks(ownerUUID), cachedDates[info.date].array, pastDate);
+    } else if (info.date === null) {
+      updateNoDateTasks(TasksService.getTasks(ownerUUID), cachedDates[info.date].array);
+    } else {
+      if (info.date === DateService.getTodayYYYYMMDD()) {
+        updateTodayTasks(TasksService.getTasks(ownerUUID), cachedDates[info.date].array, info.date);
+      } else {
+        updateFutureDateTasks(TasksService.getTasks(ownerUUID), cachedDates[info.date].array, info.date);
+      }
+    }
+  }
+
+  function removeDistantDates(ownerUUID, cachedDates, info) {
+    if (info.date !== null) {
+      for (var date in cachedDates) {
+        if (cachedDates.hasOwnProperty(date) && date !== 'all' && date !== null) {
+          var difference = DateService.numberOfDaysBetweenYYYYMMDDs(date, info.date);
+          if (difference > 2) {
+            // Clear distant dates array from cache.
+            cachedDates[date] = undefined;
+          }
+        }
+      }
+    }
+  }
+
+  $scope.getTasksArray = function(arrayType, info) {
+    var ownerUUID = UISessionService.getActiveUUID();
+    if (!cachedTasksArrays[ownerUUID]) cachedTasksArrays[ownerUUID] = {};
+
+    if (arrayType === 'all') {
+      if (!cachedTasksArrays[ownerUUID]['all']) updateAllTasks(cachedTasksArrays[ownerUUID], ownerUUID);
+      return cachedTasksArrays[ownerUUID]['all'];
+    } else if (arrayType === 'date') {
+      if (!cachedTasksArrays[ownerUUID]['date'])
+        cachedTasksArrays[ownerUUID]['date'] = {};
+
+      if (!cachedTasksArrays[ownerUUID]['date']['all'])
+        updateAllTasksWithDate(cachedTasksArrays[ownerUUID]['date'], ownerUUID);
+
+      if (!cachedTasksArrays[ownerUUID]['date'][info.date]) {
+        updateDateTasks(ownerUUID, cachedTasksArrays[ownerUUID]['date'], info);
+        removeDistantDates(ownerUUID, cachedTasksArrays[ownerUUID]['date'], info);
+      }
+
+      return cachedTasksArrays[ownerUUID]['date'][info.date].array;
+    }
+  };
 
   $scope.getNewTask = function(initialValues){
     return TasksService.getNewTask(initialValues, UISessionService.getActiveUUID());
@@ -239,6 +424,7 @@
 
 TasksController['$inject'] = [
 '$rootScope', '$scope', '$timeout',
-'AnalyticsService', 'DateService', 'ItemsService', 'SwiperService', 'TasksService', 'UISessionService'
+'AnalyticsService', 'ArrayService', 'DateService', 'ItemsService', 'SwiperService', 'TasksService',
+'UISessionService'
 ];
 angular.module('em.tasks').controller('TasksController', TasksController);

@@ -35,14 +35,14 @@
 
   function updateItem(item, ownerUUID, oldUUID) {
     ItemLikeService.persistAndReset(item, 'item', ownerUUID, itemFieldInfos, oldUUID);
-    return ArrayService.updateItem(item,
+    return ArrayService.updateItem('items', item,
                                    items[ownerUUID].activeItems,
                                    items[ownerUUID].deletedItems);
   }
 
   function setItem(item, ownerUUID) {
     ItemLikeService.persistAndReset(item, 'item', ownerUUID, itemFieldInfos);
-    return ArrayService.setItem(item,
+    return ArrayService.setItem('items', item,
                                 items[ownerUUID].activeItems,
                                 items[ownerUUID].deletedItems);
   }
@@ -62,7 +62,7 @@
       }else{
         ItemLikeService.persistAndReset(itemsResponse, 'item', ownerUUID, itemFieldInfos);
       }
-      return ArrayService.setArrays(itemsResponse,
+      return ArrayService.setArrays('items', itemsResponse,
                                     items[ownerUUID].activeItems,
                                     items[ownerUUID].deletedItems);
     },
@@ -81,7 +81,7 @@
           }
         }
         ItemLikeService.persistAndReset(updatedItems, 'item', ownerUUID, itemFieldInfos);
-        return ArrayService.updateArrays(updatedItems,
+        return ArrayService.updateArrays('items', updatedItems,
                                          items[ownerUUID].activeItems,
                                          items[ownerUUID].deletedItems);
       }

@@ -83,7 +83,7 @@
 
   function updateList(list, ownerUUID, oldItemUUID, propertiesToReset) {
     ItemLikeService.persistAndReset(list, 'list', ownerUUID, listFieldInfos, oldItemUUID, propertiesToReset);
-    return ArrayService.updateItem(list,
+    return ArrayService.updateItem('lists', list,
                                    lists[ownerUUID].activeLists,
                                    lists[ownerUUID].deletedLists,
                                    getOtherArrays(ownerUUID));
@@ -91,7 +91,7 @@
 
   function setList(list, ownerUUID) {
     ItemLikeService.persistAndReset(list, 'list', ownerUUID, listFieldInfos);
-    ArrayService.setItem(list,
+    ArrayService.setItem('lists', list,
                          lists[ownerUUID].activeLists,
                          lists[ownerUUID].deletedLists,
                          getOtherArrays(ownerUUID));
@@ -107,7 +107,7 @@
       }else{
         ItemLikeService.persistAndReset(listsResponse, 'list', ownerUUID, listFieldInfos);
       }
-      return ArrayService.setArrays(listsResponse,
+      return ArrayService.setArrays('lists', listsResponse,
                                     lists[ownerUUID].activeLists,
                                     lists[ownerUUID].deletedLists,
                                     getOtherArrays(ownerUUID));
@@ -128,7 +128,7 @@
           }
         }
         ItemLikeService.persistAndReset(updatedLists, 'list', ownerUUID, listFieldInfos);
-        var latestModified = ArrayService.updateArrays(updatedLists,
+        var latestModified = ArrayService.updateArrays('lists', updatedLists,
                                                        lists[ownerUUID].activeLists,
                                                        lists[ownerUUID].deletedLists,
                                                        getOtherArrays(ownerUUID));

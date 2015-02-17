@@ -510,6 +510,61 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     }
   }
 
+  /*
+  * tasks: {
+  *   active: [cb1, cb2...],
+  *   deleted: [cb2, cb3...]
+  * }
+  */
+  var arrayChangedCallbacks = {};
+  $scope.registerArrayChangeCallback = function(itemType, arrayType, callback, id) {
+    if (!arrayChangedCallbacks[itemType]) arrayChangedCallbacks[itemType] = [];
+
+    if (!arrayChangedCallbacks[itemType][arrayType]) arrayChangedCallbacks[itemType][arrayType] = [];
+    else {
+      for (var i = 0; i < arrayChangedCallbacks[itemType][arrayType].length; i++) {
+        var changeCallback = arrayChangedCallbacks[itemType][arrayType][i];
+        if (changeCallback.id === id) {
+          changeCallback.callback = callback;
+          return;
+        }
+      }
+    }
+    arrayChangedCallbacks[itemType][arrayType].push({
+      callback: callback,
+      id: id
+    });
+  };
+
+  $rootScope.$on('arrayChanged', function(name, arrayInfo) {
+
+    function executeArrayChangedCallbacks(itemType, arrayType, array, item, ownerUUID) {
+      // Execute ownerUUID arrayType callbacks for itemType.
+      if (arrayChangedCallbacks[itemType] && arrayChangedCallbacks[itemType][arrayType]) {
+        var changeCallbacks = arrayChangedCallbacks[itemType][arrayType];
+        for (var i = 0; i < changeCallbacks.length; i++) {
+          changeCallbacks[i].callback(array, item, ownerUUID);
+        }
+      }
+    }
+
+    if (angular.isArray(arrayInfo.data)) {
+      for (var i = 0; i < arrayInfo.data.length; i++) {
+        executeArrayChangedCallbacks(arrayInfo.type,
+                                     arrayInfo.data[i].type,
+                                     arrayInfo.data[i].array,
+                                     arrayInfo.item,
+                                     arrayInfo.ownerUUID);
+      }
+    } else if (angular.isObject(arrayInfo.data)) {
+      executeArrayChangedCallbacks(arrayInfo.type,
+                                   arrayInfo.data.type,
+                                   arrayInfo.data.array,
+                                   arrayInfo.item,
+                                   arrayInfo.ownerUUID);
+    }
+  });
+
   $scope.$watch('notes.length', function(/*newValue, oldValue*/) {
     combineNotesArrays();
   });

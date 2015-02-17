@@ -105,6 +105,10 @@
       date.setDate(date.getDate() + offsetDays);
       return weekDaysStartingFrom(date);
     },
+    numberOfDaysBetweenYYYYMMDDs: function(a, b) {
+      var aDate = a.yyyymmddToNoonDate(), bDate = b.yyyymmddToNoonDate();
+      return Math.abs((aDate - bDate)  / (1000*60*60*24));
+    },
 
     // GETTERS
     getYesterdayDate: function() {

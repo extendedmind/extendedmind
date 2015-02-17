@@ -66,7 +66,7 @@
 
   function updateNote(note, ownerUUID, oldUUID, propertiesToReset) {
     ItemLikeService.persistAndReset(note, 'note', ownerUUID, noteFieldInfos, oldUUID, propertiesToReset);
-    return ArrayService.updateItem(note,
+    return ArrayService.updateItem('notes', note,
                                    notes[ownerUUID].activeNotes,
                                    notes[ownerUUID].deletedNotes,
                                    getOtherArrays(ownerUUID));
@@ -74,7 +74,7 @@
 
   function setNote(note, ownerUUID, propertiesToReset) {
     ItemLikeService.persistAndReset(note, 'note', ownerUUID, noteFieldInfos, undefined, propertiesToReset);
-    ArrayService.setItem(note,
+    ArrayService.setItem('notes', note,
                          notes[ownerUUID].activeNotes,
                          notes[ownerUUID].deletedNotes,
                          getOtherArrays(ownerUUID));
@@ -183,7 +183,7 @@
       }else{
         ItemLikeService.persistAndReset(notesResponse, 'note', ownerUUID, noteFieldInfos);
       }
-      return ArrayService.setArrays(notesResponse,
+      return ArrayService.setArrays('notes', notesResponse,
                                     notes[ownerUUID].activeNotes,
                                     notes[ownerUUID].deletedNotes, getOtherArrays(ownerUUID));
     },
@@ -211,7 +211,7 @@
             ItemLikeService.persistAndReset(notesResponse[i], 'note', ownerUUID, noteFieldInfos);
           }
         }
-        return ArrayService.updateArrays(updatedNotes,
+        return ArrayService.updateArrays('notes', updatedNotes,
                                          notes[ownerUUID].activeNotes,
                                          notes[ownerUUID].deletedNotes, getOtherArrays(ownerUUID));
       }

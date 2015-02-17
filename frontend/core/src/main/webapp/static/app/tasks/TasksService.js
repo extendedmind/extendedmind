@@ -140,7 +140,7 @@
 
   function updateTask(task, ownerUUID, oldUUID, propertiesToReset) {
     ItemLikeService.persistAndReset(task, 'task', ownerUUID, taskFieldInfos, oldUUID, propertiesToReset);
-    return ArrayService.updateItem(task,
+    return ArrayService.updateItem('tasks', task,
                                    tasks[ownerUUID].activeTasks,
                                    tasks[ownerUUID].deletedTasks,
                                    getOtherArrays(ownerUUID));
@@ -148,7 +148,7 @@
 
   function setTask(task, ownerUUID) {
     ItemLikeService.persistAndReset(task, 'task', ownerUUID, taskFieldInfos);
-    ArrayService.setItem(task,
+    ArrayService.setItem('tasks', task,
                          tasks[ownerUUID].activeTasks,
                          tasks[ownerUUID].deletedTasks,
                          getOtherArrays(ownerUUID));
@@ -296,7 +296,7 @@
       }else{
         ItemLikeService.persistAndReset(tasksResponse, 'task', ownerUUID, taskFieldInfos);
       }
-      return ArrayService.setArrays(tasksResponse,
+      return ArrayService.setArrays('tasks', tasksResponse,
                                     tasks[ownerUUID].activeTasks,
                                     tasks[ownerUUID].deletedTasks,
                                     getOtherArrays(ownerUUID));
@@ -319,7 +319,7 @@
             ItemLikeService.persistAndReset(tasksResponse[i], 'task', ownerUUID, taskFieldInfos);
           }
         }
-        return ArrayService.updateArrays(updatedTasks,
+        return ArrayService.updateArrays('tasks', updatedTasks,
                                          tasks[ownerUUID].activeTasks,
                                          tasks[ownerUUID].deletedTasks,
                                          getOtherArrays(ownerUUID));

@@ -1,5 +1,5 @@
 <div class="container-content--outer" ng-if="isFeatureActive('tasks')" list-container drawer-handle="left">
-  <section class="container-content" list="allTasks" list-recent>
+  <section class="container-content" list="getTasksArray('all')" list-recent>
 
     <div ng-show="!onboardingInProgress || isOnboardingListItemAddActive()">
       <div class="group-mixed heading">
@@ -12,7 +12,7 @@
         list-item-add-save="saveTask(newItem)" ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
       <div class="animate-list-item-leave"
         ng-repeat="task in listInfos.array = (getFullArray() | paramFilter:isListItemVisible)
-        | orderBy:getTaskModified:true | limitTo: currentListLimitTo track by task.trans.uuid"
+        | limitTo: currentListLimitTo track by task.trans.uuid"
         list-item ng-include="urlBase + 'app/tasks/taskListItem.html'">
       </div>
       <div list-prompt="tasks" list-prompt-infos="listInfos"

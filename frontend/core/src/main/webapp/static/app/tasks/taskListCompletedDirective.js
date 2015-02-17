@@ -24,13 +24,18 @@
       return {
         post: function(scope, element, attrs, listController) {
 
-          scope.showCompletedTasks = false;
+          scope.showCompletedTasks = attrs.taskListCompleted;
           scope.toggleShowCompletedTasks = function () {
             scope.showCompletedTasks = !scope.showCompletedTasks;
           };
 
           var disableCompleted;
           scope.isCompletedDisabled = function() {
+            if (attrs.taskListCompleted) {
+              // Button is disabled when the flag is on.
+              return true;
+            }
+
             tryToChangeElementActivityStatus();
             return disableCompleted;
           };
@@ -71,23 +76,20 @@
             tryToChangeElementActivityStatus();
           };
 
-          function filterCompletedTasks(task, pastDate){
-            if (pastDate) {
-              disableCompleted = true;
-              if (task.trans.completed) {
-                // Match task completed on past date.
-                return (new Date(task.trans.completed).setHours(0, 0, 0, 0) ===
-                        pastDate.yyyymmddToNoonDate().setHours(0, 0, 0, 0));
+          function filterCompletedTasks(tasks){
+            if (tasks) {
+              if (!scope.showCompletedTasks) {
+                var visibleTasks = [];
+                for (var i = 0; i < tasks.length; i++) {
+                  var task = tasks[i];
+                  if (!task.trans.completed || scope.isTaskFrozen(task)) visibleTasks.push(task);
+                }
+                return visibleTasks;
               }
-              return false;
+              return tasks;
             }
-            disableCompleted = false;
-
-            if (!scope.showCompletedTasks && task.trans.completed && !scope.isTaskFrozen(task)) {
-              return false;
-            }
-            return true;
           }
+
           listController.setCustomFilterItemVisible(filterCompletedTasks);
         }
       };
