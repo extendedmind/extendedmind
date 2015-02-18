@@ -174,9 +174,13 @@
           var difference = DateService.numberOfDaysBetweenYYYYMMDDs(date, info.date);
           if (difference > 2) {
             // Clear distant dates array from cache.
-            cachedDates[date] = undefined;
+            delete cachedDates[date];
           }
         }
+      }
+      if (cachedDates[null]) {
+        // Clear 'no date' tasks from cache.
+        delete cachedDates[null];
       }
     }
   }
