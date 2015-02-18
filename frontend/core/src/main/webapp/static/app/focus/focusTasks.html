@@ -322,7 +322,8 @@
     <div class="swiper-container" swiper-container="focus/tasks" swiper-type="page" expected-slides="5">
       <div class="swiper-wrapper">
 
-        <div class="swiper-slide" swiper-slide="focus/tasks/rightDuplicate" slide-index="0" swiper-slide-duplicate="true">
+        <div class="swiper-slide" swiper-slide="focus/tasks/rightDuplicate" slide-index="0"
+        swiper-slide-duplicate="true">
           <div class="container-content" ng-class="daySlides[2].pastDate && 'past-date'"
             list="getTasksArray('date', {date: daySlides[2].info, pastDate: daySlides[2].pastDate})">
             <div ng-if="isFeatureActive('focus')">
@@ -337,8 +338,7 @@
               <div list-item-add="getNewDayTask(2)" list-item-add-save="saveTask(newItem)"
                 ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
               <div class="animate-list-item-leave"
-                ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo)
-                track by task.trans.uuid"
+                ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
                 list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
               <div list-prompt="tasks" list-prompt-infos="listInfos"
                 list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
@@ -361,8 +361,7 @@
               <div list-item-add="getNewDayTask(0)" list-item-add-save="saveTask(newItem)"
                 ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
               <div class="animate-list-item-leave"
-                ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo)
-                track by task.trans.uuid"
+                ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
                 list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
               <div list-prompt="tasks" list-prompt-infos="listInfos"
                 list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
@@ -385,8 +384,7 @@
               <div list-item-add="getNewDayTask(1)" list-item-add-save="saveTask(newItem)"
                 ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
               <div class="animate-list-item-leave"
-                ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo)
-                track by task.trans.uuid"
+                ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
                 list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
               <div list-prompt="tasks" list-prompt-infos="listInfos"
                 list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
@@ -409,8 +407,7 @@
               <div list-item-add="getNewDayTask(2)" list-item-add-save="saveTask(newItem)"
                 ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
               <div class="animate-list-item-leave"
-                ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo)
-                track by task.trans.uuid"
+                ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
                 list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
               <div list-prompt="tasks" list-prompt-infos="listInfos"
                 list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
@@ -433,8 +430,7 @@
               <div list-item-add="getNewDayTask(0)" list-item-add-save="saveTask(newItem)"
                 ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
               <div class="animate-list-item-leave"
-                ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo)
-                track by task.trans.uuid"
+                ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
                 list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
               <div list-prompt="tasks" list-prompt-infos="listInfos"
                 list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
