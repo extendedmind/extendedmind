@@ -150,7 +150,7 @@
 
     if (pastDate) {
       updatePastDateTasks(TasksService.getTasks(ownerUUID), cachedDates[info.date].array, pastDate);
-    } else if (info.date === null) {
+    } else if (info.date === 'noDate') {
       updateNoDateTasks(TasksService.getTasks(ownerUUID), cachedDates[info.date].array);
     } else {
       if (info.date === DateService.getTodayYYYYMMDD()) {
@@ -161,20 +161,22 @@
     }
   }
 
-  function removeDistantDates(ownerUUID, cachedDates, info) {
-    if (info.date !== null) {
+  function removeDistantDates(cachedDates, info) {
+    if (info.date !== 'noDate') {
+
+      if (cachedDates['noDate']) {
+        // Clear 'no date' tasks from cache.
+        delete cachedDates['noDate'];
+      }
+
       for (var date in cachedDates) {
-        if (cachedDates.hasOwnProperty(date) && date !== 'all' && date !== null) {
+        if (cachedDates.hasOwnProperty(date)) {
           var difference = DateService.numberOfDaysBetweenYYYYMMDDs(date, info.date);
           if (difference > 2) {
             // Clear distant dates array from cache.
             delete cachedDates[date];
           }
         }
-      }
-      if (cachedDates[null]) {
-        // Clear 'no date' tasks from cache.
-        delete cachedDates[null];
       }
     }
   }
@@ -190,9 +192,14 @@
       if (!cachedTasksArrays[ownerUUID]['date'])
         cachedTasksArrays[ownerUUID]['date'] = {};
 
+      if (info.date === null) {
+        // Use 'noDate' to identify cached tasks without date instead of null.
+        info.date = 'noDate';
+      }
+
       if (!cachedTasksArrays[ownerUUID]['date'][info.date]) {
         updateDateTasks(ownerUUID, cachedTasksArrays[ownerUUID]['date'], info);
-        removeDistantDates(ownerUUID, cachedTasksArrays[ownerUUID]['date'], info);
+        removeDistantDates(cachedTasksArrays[ownerUUID]['date'], info);
       }
 
       return cachedTasksArrays[ownerUUID]['date'][info.date].array;
