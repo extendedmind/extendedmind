@@ -60,7 +60,7 @@ function listPromptDirective($animate, $rootScope, UISessionService, UserSession
           }
           listInfosWatcher(); // Unbind list infos watcher.
         });
-        listController.registerArrayVisibleCallback(arrayVisible);
+        listController.registerArrayVisibleCallback(arrayVisible, 'listPromptDirective');
       } else {
         // Array initially ready.
         init();
@@ -71,7 +71,7 @@ function listPromptDirective($animate, $rootScope, UISessionService, UserSession
       */
       function arrayVisible() {
         init();
-        listController.unregisterArrayVisibleCallback();
+        listController.unregisterArrayVisibleCallback('listPromptDirective');
       }
 
       function listHasItems() {

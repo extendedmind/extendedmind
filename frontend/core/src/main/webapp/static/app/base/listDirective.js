@@ -46,18 +46,25 @@
       };
 
       this.notifyArrayVisible = function(/*array*/) {
-        if (arrayVisibleCallback) arrayVisibleCallback();
+        if (arrayVisibleCallbacks) {
+          for (var id in arrayVisibleCallbacks) {
+            if (arrayVisibleCallbacks.hasOwnProperty(id)) arrayVisibleCallbacks[id]();
+          }
+        }
+        $scope.arrayVisible = true;
       };
 
-      var arrayVisibleCallback;
-      this.registerArrayVisibleCallback = function(callback) {
-        arrayVisibleCallback = callback;
+      var arrayVisibleCallbacks = {};
+      this.registerArrayVisibleCallback = function(callback, id) {
+        arrayVisibleCallbacks[id] = callback;
       };
-      this.unregisterArrayVisibleCallback = function() {
-        if (arrayVisibleCallback) {
-          arrayVisibleCallback = undefined;
-        }
+      $scope.registerArrayVisibleCallback = this.registerArrayVisibleCallback;
+
+      this.unregisterArrayVisibleCallback = function(id) {
+        if (arrayVisibleCallbacks[id])
+          delete arrayVisibleCallbacks[id];
       };
+      $scope.unregisterArrayVisibleCallback = this.unregisterArrayVisibleCallback;
 
       this.registerAddActiveCallback = function(callback){
         $scope.activateAddItem = callback;
@@ -137,8 +144,33 @@
         }
       }
 
+      function getWatcher() {
+        return scope.$watch('listInfos.array.length', function(newLength, oldLength) {
+          if (newLength !== oldLength) {
+            if (oldLength <= scope.currentListLimitTo && newLength > scope.currentListLimitTo) {
+              // Went above limit. Reset limit.
+              setLimits(0);
+            } else if (oldLength >= scope.currentListLimitTo && newLength < scope.currentListLimitTo) {
+              // Went below limit. Reset limit.
+              setLimits(0);
+            }
+          }
+        });
+      }
+
       function listActive(){
         controllers[0].registerActivateAddListItemCallback(activateListAdd, element);
+
+        if (scope.arrayVisible) {
+          controllers[0].registerLengthChangeWatcher(getWatcher);
+        } else {
+          // Wait for array to become visible, unregister array visible callback
+          // and register length change watcher.
+          scope.registerArrayVisibleCallback(function() {
+            scope.unregisterArrayVisibleCallback('listDirective');
+            controllers[0].registerLengthChangeWatcher(getWatcher);
+          }, 'listDirective');
+        }
 
         var elementHeight = element[0].offsetHeight;
         var elementScrollHeight = element[0].scrollHeight;

@@ -39,6 +39,16 @@
       this.registerGetFullArrayFn = function(getArrayFn) {
         this.getFullArrayFn = getArrayFn;
       };
+
+      var lengthChangeWatcher;
+      this.registerLengthChangeWatcher = function(getWatcherFn) {
+        if (lengthChangeWatcher) {
+          // Unbind existing watcher.
+          lengthChangeWatcher();
+        }
+        lengthChangeWatcher = getWatcherFn();
+      };
+
     }],
     compile: function compile() {
       return {

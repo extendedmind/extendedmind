@@ -36,6 +36,7 @@
         },
         post: function(scope, element, attrs, listController) {
           if (scope.$last) listController.notifyArrayVisible();
+
           scope.toggleLeftCheckbox = function (item, toggleFn) {
             // Add class for animation when item is not completed, remove when item is completed.
             if (!element[0].firstElementChild.classList.contains('checkbox-checked-active') &&
