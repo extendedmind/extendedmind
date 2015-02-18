@@ -35,15 +35,21 @@
       for (var arrayType in cachedTasksArrays[ownerUUID]) {
         if (cachedTasksArrays[ownerUUID].hasOwnProperty(arrayType)) {
           // Every cached tasks array has cached tasks.
-          if (arrayType === 'all') updateAllTasks(cachedTasksArrays[ownerUUID], ownerUUID);
+          if (arrayType === 'all') {
+            if ($scope.getActiveFeature() === 'tasks')
+              updateAllTasks(cachedTasksArrays[ownerUUID], ownerUUID);
+            else
+              cachedTasksArrays[ownerUUID]['all'] = undefined;
+          }
           else if (arrayType === 'date') {
-
-            if (!cachedTasksArrays[ownerUUID]['date']['all'])
-              updateAllTasksWithDate(cachedTasksArrays[ownerUUID]['date'], ownerUUID);
+            var focusActive = $scope.getActiveFeature() === 'focus';
 
             for (var date in cachedTasksArrays[ownerUUID]['date']) {
               if (cachedTasksArrays[ownerUUID]['date'].hasOwnProperty(date)) {
-                updateDateTasks(ownerUUID, cachedTasksArrays[ownerUUID]['date'], {date: date});
+                if (focusActive)
+                  updateDateTasks(ownerUUID, cachedTasksArrays[ownerUUID]['date'], {date: date});
+                else
+                  delete cachedTasksArrays[ownerUUID]['date'][date];
               }
             }
           }
@@ -67,18 +73,6 @@
                                      cachedTasks['all'],
                                      compareWithFrozenModified,
                                      true);
-    }
-
-  }
-
-  function updateAllTasksWithDate(cachedDateTasks, ownerUUID) {
-    // Get tasks
-    var allActiveTasks = TasksService.getTasks(ownerUUID);
-    cachedDateTasks['all'] = [];
-
-    // Cache tasks with date.
-    for (var i = 0; i < allActiveTasks.length; i++) {
-      if (allActiveTasks[i].trans.due) cachedDateTasks['all'].push(allActiveTasks[i]);
     }
   }
 
@@ -195,9 +189,6 @@
     } else if (arrayType === 'date') {
       if (!cachedTasksArrays[ownerUUID]['date'])
         cachedTasksArrays[ownerUUID]['date'] = {};
-
-      if (!cachedTasksArrays[ownerUUID]['date']['all'])
-        updateAllTasksWithDate(cachedTasksArrays[ownerUUID]['date'], ownerUUID);
 
       if (!cachedTasksArrays[ownerUUID]['date'][info.date]) {
         updateDateTasks(ownerUUID, cachedTasksArrays[ownerUUID]['date'], info);
