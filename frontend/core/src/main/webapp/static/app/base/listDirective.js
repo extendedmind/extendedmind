@@ -85,12 +85,8 @@
       $scope.isListItemVisible = function(item, param){
         if (customFilterItemVisible){
           return customFilterItemVisible(item, param);
-        }else{
-          if ($attrs.listHideItemDefault !== undefined) {
-            return false;
-          }
-          return true;
         }
+        return true;
       };
 
       this.registerIsNearListBottomCallback = function(callback) {
