@@ -98,9 +98,6 @@
     }
   }
 
-  /*
-  * Show overdue and due tasks and completed on date.
-  */
   function updateTodayTasks(allActiveTasks, todayTasks, todayYYYYMMDD) {
     var todayMidnight = DateService.getTodayDateWithoutTime();
 
@@ -109,9 +106,11 @@
       if (task.trans.due && task.trans.due <= todayYYYYMMDD &&
           !(task.trans.completed && task.trans.completed < todayMidnight))
       {
+        // Match overdue and today's tasks, but don't add tasks that were completed before today.
         todayTasks.push(task);
       }
       else if (task.trans.completed && task.trans.completed > todayMidnight) {
+        // Add all tasks that were completed today.
         todayTasks.push(task);
       }
     }
