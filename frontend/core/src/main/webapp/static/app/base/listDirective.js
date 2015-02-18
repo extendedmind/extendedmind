@@ -22,7 +22,6 @@
     scope: true,
     controller: ['$scope', '$element', '$attrs', function($scope, $element, $attrs) {
       $scope.listInfos = {};
-      var arrayVisible;
 
       var listArrayFn = $parse($attrs.list);
       $scope.getFullArray = function(){
@@ -47,10 +46,7 @@
       };
 
       this.notifyArrayVisible = function(/*array*/) {
-        arrayVisible = true;
-        if (arrayVisibleCallback) {
-          arrayVisibleCallback();
-        }
+        if (arrayVisibleCallback) arrayVisibleCallback();
       };
 
       var arrayVisibleCallback;
