@@ -68,7 +68,7 @@
               for (var date in cachedTasksArrays[ownerUUID]['date']) {
                 if (cachedTasksArrays[ownerUUID]['date'].hasOwnProperty(date)) {
                   if (focusActive)
-                    updateDateTasks(ownerUUID, cachedTasksArrays[ownerUUID]['date'], {date: date});
+                    updateDateTasks(cachedTasksArrays[ownerUUID]['date'], {date: date}, ownerUUID);
                   else
                     delete cachedTasksArrays[ownerUUID]['date'][date];
                 }
@@ -76,6 +76,15 @@
             } else if (arrayType === 'list') {
               invalidateListTasks(cachedTasksArrays[ownerUUID], cachedTasksArrays[ownerUUID]['list'].uuid,
                                   ownerUUID);
+            } else if (arrayType === 'context') {
+              // TODO
+              if ($scope.getActiveFeature() === 'tasks' && SwiperService.isSlideActive('tasks/context')) {
+                updateContextTasks(cachedTasksArrays[ownerUUID]['context'],
+                                   cachedTasksArrays[ownerUUID]['context'].id,
+                                   ownerUUID);
+              } else {
+                delete cachedTasksArrays[ownerUUID]['context'];
+              }
             }
           }
         }
@@ -129,6 +138,27 @@
     for (var i = activeAndArchivedTasks.length - 1; i >= 0; i--) {
       var task = activeAndArchivedTasks[i];
       if (task.trans.list && task.trans.list.uuid === listUUID) cachedTasks['list'].array.push(task);
+    }
+  }
+
+  function updateContextTasks(cachedTasks, contextId, ownerUUID) {
+    var activeTasks = TasksService.getTasks(ownerUUID), i;
+
+    cachedTasks['context'] = {
+      array: [],
+      id: contextId
+    };
+
+    if (contextId === 'noContext') {
+      for (i = activeTasks.length - 1; i >= 0; i--) {
+        if (!activeTasks[i].trans.context) cachedTasks['context'].array.push(activeTasks[i]);
+      }
+    } else {
+      for (i = activeTasks.length - 1; i >= 0; i--) {
+        var task = activeTasks[i];
+        if (task.trans.context && task.trans.context.uuid === contextId)
+          cachedTasks['context'].array.push(task);
+      }
     }
   }
 
@@ -190,7 +220,7 @@
     }
   }
 
-  function updateDateTasks(ownerUUID, cachedDates, info) {
+  function updateDateTasks(cachedDates, info, ownerUUID) {
     var pastDate;
 
     if (cachedDates[info.date])
@@ -240,36 +270,50 @@
     var ownerUUID = UISessionService.getActiveUUID();
     if (!cachedTasksArrays[ownerUUID]) cachedTasksArrays[ownerUUID] = {};
 
-    if (arrayType === 'all') {
+    switch (arrayType) {
+
+      case 'all':
       if (!cachedTasksArrays[ownerUUID]['activeAndArchived'])
         updateActiveAndArchivedTasks(cachedTasksArrays[ownerUUID], ownerUUID);
       if (!cachedTasksArrays[ownerUUID]['all'])
         updateAllTasks(cachedTasksArrays[ownerUUID], ownerUUID);
       return cachedTasksArrays[ownerUUID]['all'];
-    } else if (arrayType === 'date') {
+
+      case 'date':
       if (!cachedTasksArrays[ownerUUID]['date'])
         cachedTasksArrays[ownerUUID]['date'] = {};
-
       if (info.date === null) {
         // Use 'noDate' to identify cached tasks without date instead of null.
         info.date = 'noDate';
       }
-
       if (!cachedTasksArrays[ownerUUID]['date'][info.date]) {
-        updateDateTasks(ownerUUID, cachedTasksArrays[ownerUUID]['date'], info);
+        updateDateTasks(cachedTasksArrays[ownerUUID]['date'], info, ownerUUID);
         removeDistantDates(cachedTasksArrays[ownerUUID]['date'], info);
       }
-
       return cachedTasksArrays[ownerUUID]['date'][info.date].array;
-    } else if (arrayType === 'list') {
+
+      case 'list':
       if (!cachedTasksArrays[ownerUUID]['activeAndArchived'])
         updateActiveAndArchivedTasks(cachedTasksArrays[ownerUUID], ownerUUID);
       if (!cachedTasksArrays[ownerUUID]['list'] ||
-          cachedTasksArrays[ownerUUID]['list'] && cachedTasksArrays[ownerUUID]['list'].uuid !== info.uuid)
+          (cachedTasksArrays[ownerUUID]['list'] && cachedTasksArrays[ownerUUID]['list'].uuid !== info.uuid))
       {
         updateListTasks(cachedTasksArrays[ownerUUID], info.uuid, ownerUUID);
       }
       return cachedTasksArrays[ownerUUID]['list'].array;
+
+      case 'context':
+      if (!info.id) {
+        // Use 'noContext' to identify cached tasks without context instead of undefined.
+        info.id = 'noContext';
+      }
+      if (!cachedTasksArrays[ownerUUID]['context'] ||
+          (cachedTasksArrays[ownerUUID]['context'] &&
+           cachedTasksArrays[ownerUUID]['context'].id !== info.id))
+      {
+        updateContextTasks(cachedTasksArrays[ownerUUID], info.id, ownerUUID);
+      }
+      return cachedTasksArrays[ownerUUID]['context'].array;
     }
   };
 

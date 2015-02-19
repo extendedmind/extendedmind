@@ -1,5 +1,5 @@
 <div class="container-content--outer" ng-if="isFeatureActive('tasks')" list-container>
-  <section class="container-content" list="tasks | itemsFilter:{name:'byContext', filterBy: context}">
+  <section class="container-content" list="getTasksArray('context', {id: context && context.trans.uuid})">
     <div class="group-mixed heading vertically-centered">
       <div class="group-mixed--middle">
         <h2 class="group-heading justified">
@@ -17,8 +17,7 @@
     <div list-item-add="getNewTaskWithContext(context)" list-item-add-save="saveTask(newItem)"
       ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
     <div class="animate-list-item-leave"
-      ng-repeat="task in listInfos.array = (getFullArray() | paramFilter:isListItemVisible)
-      | orderBy:'trans.created':true | limitTo: currentListLimitTo track by task.trans.uuid"
+      ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
       list-item="getContextId()" ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
     <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-hide="[listItemAddActive]"></div>
   </section>
