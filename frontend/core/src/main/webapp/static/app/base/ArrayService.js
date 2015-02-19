@@ -132,8 +132,10 @@ function ArrayService($rootScope, UISessionService) {
       if (response) {
         var i = 0;
         var latestModified;
+        var skipEmit = response.length > 1;
         while (response[i]) {
-          var modified = this.updateItem(itemType, response[i], activeArray, deletedArray, otherArrays);
+          var modified = this.updateItem(itemType, response[i], activeArray, deletedArray, otherArrays,
+                                         skipEmit);
           if (!latestModified || latestModified < response[i].modified) {
             latestModified = modified;
           }
@@ -191,7 +193,7 @@ function ArrayService($rootScope, UISessionService) {
     /*
     * itemType, item and activeArray are mandatory, rest are optional
     */
-    updateItem: function(itemType, item, activeArray, deletedArray, otherArrays) {
+    updateItem: function(itemType, item, activeArray, deletedArray, otherArrays, skipChangeEvent) {
       var activeItemId, deletedItemId, otherArrayItemId;
       var otherArrayInfo = getFirstMatchingArrayInfoByProperty(item, otherArrays);
       var otherArrayWithItemInfo = getFirstMatchingArrayInfoByUUID(item.trans.uuid, otherArrays);
@@ -209,67 +211,82 @@ function ArrayService($rootScope, UISessionService) {
         activeArray.splice(activeItemId, 1);
         if (item.trans.deleted) {
           insertItemToArray(item, deletedArray, 'deleted');
-          emitChangeEvent([{type: 'active', array: activeArray},
-                          {type: 'deleted', array: deletedArray}],
-                          itemType, item);
-
+          if (!skipChangeEvent) {
+            emitChangeEvent([{type: 'active', array: activeArray},
+                            {type: 'deleted', array: deletedArray}],
+                            itemType, item);
+          }
         } else if (otherArrayInfo && item[otherArrayInfo.id]) {
           insertItemToArray(item, otherArrayInfo.array, otherArrayInfo.id, otherArrayInfo.reverse);
-          emitChangeEvent([{type: 'active', array: activeArray},
-                          {type: otherArrayInfo.id, array: otherArrayInfo.array}],
-                          itemType, item);
+          if (!skipChangeEvent) {
+            emitChangeEvent([{type: 'active', array: activeArray},
+                            {type: otherArrayInfo.id, array: otherArrayInfo.array}],
+                            itemType, item);
+          }
         } else {
           insertItemToArray(item, activeArray, 'created');
-          emitChangeEvent({type: 'active', array: activeArray}, itemType, item);
+          if (!skipChangeEvent) emitChangeEvent({type: 'active', array: activeArray}, itemType, item);
         }
       } else if (deletedItemId !== undefined) {
         deletedArray.splice(deletedItemId, 1);
         if (!item.trans.deleted) {
           if (otherArrayInfo && item[otherArrayInfo.id]) {
             insertItemToArray(item, otherArrayInfo.array, otherArrayInfo.id, otherArrayInfo.reverse);
-            emitChangeEvent([{type: otherArrayInfo.id, array: otherArrayInfo.array},
-                            {type: 'deleted', array: deletedArray}],
-                            itemType, item);
+            if (!skipChangeEvent) {
+              emitChangeEvent([{type: otherArrayInfo.id, array: otherArrayInfo.array},
+                              {type: 'deleted', array: deletedArray}],
+                              itemType, item);
+            }
           } else {
             insertItemToArray(item, activeArray, 'created');
-            emitChangeEvent([{type: 'active', array: activeArray},
-                            {type: 'deleted', array: deletedArray}],
-                            itemType, item);
+            if (!skipChangeEvent) {
+              emitChangeEvent([{type: 'active', array: activeArray},
+                              {type: 'deleted', array: deletedArray}],
+                              itemType, item);
+            }
           }
         } else {
           insertItemToArray(item, deletedArray, 'deleted');
-          emitChangeEvent({type: 'deleted', array: deletedArray}, itemType, item);
+          if (!skipChangeEvent) emitChangeEvent({type: 'deleted', array: deletedArray}, itemType, item);
         }
       } else if (otherArrayItemId !== undefined) {
         otherArrayWithItemInfo.array.splice(otherArrayItemId, 1);
         if (item.trans.deleted) {
           insertItemToArray(item, deletedArray, 'deleted');
-          emitChangeEvent([{type: otherArrayWithItemInfo.id, array: otherArrayWithItemInfo.array},
-                          {type: 'deleted', array: deletedArray}],
-                          itemType, item);
+          if (!skipChangeEvent) {
+            emitChangeEvent([{type: otherArrayWithItemInfo.id, array: otherArrayWithItemInfo.array},
+                            {type: 'deleted', array: deletedArray}],
+                            itemType, item);
+          }
         } else if (!otherArrayInfo &&
          (!otherArrayWithItemInfo || !item[otherArrayWithItemInfo.id])) {
           // Item does not belong to a new other array, nor anymore to the other array
           // it used to belong to => it is active again.
           insertItemToArray(item, activeArray, 'created');
-          emitChangeEvent([{type: 'active', array: activeArray},
-                          {type: otherArrayWithItemInfo.id, array: otherArrayWithItemInfo.array}],
-                          itemType, item);
+          if (!skipChangeEvent) {
+            emitChangeEvent([{type: 'active', array: activeArray},
+                            {type: otherArrayWithItemInfo.id, array: otherArrayWithItemInfo.array}],
+                            itemType, item);
+          }
         } else if (otherArrayInfo && (otherArrayInfo.id !== otherArrayWithItemInfo.id)) {
           // Should be placed in another other array
           insertItemToArray(item, otherArrayInfo.array, otherArrayInfo.id, otherArrayInfo.reverse);
-          emitChangeEvent([{type: otherArrayInfo.id, array: otherArrayInfo.array},
-                          {type: otherArrayWithItemInfo.id, array: otherArrayWithItemInfo.array}],
-                          itemType, item);
+          if (!skipChangeEvent) {
+            emitChangeEvent([{type: otherArrayInfo.id, array: otherArrayInfo.array},
+                            {type: otherArrayWithItemInfo.id, array: otherArrayWithItemInfo.array}],
+                            itemType, item);
+          }
         } else {
           // Just updating modified in current other array
           insertItemToArray(item, otherArrayWithItemInfo.array, otherArrayWithItemInfo.id,
                             otherArrayInfo.reverse);
-          emitChangeEvent({type: otherArrayWithItemInfo.id, array: otherArrayWithItemInfo.array},
-                          itemType, item);
+          if (!skipChangeEvent) {
+            emitChangeEvent({type: otherArrayWithItemInfo.id, array: otherArrayWithItemInfo.array},
+                            itemType, item);
+          }
         }
       } else {
-        this.setItem(itemType, item, activeArray, deletedArray, otherArrays);
+        this.setItem(itemType, item, activeArray, deletedArray, otherArrays, skipChangeEvent);
       }
 
       return item.modified;
