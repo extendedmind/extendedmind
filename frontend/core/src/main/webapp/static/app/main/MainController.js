@@ -517,23 +517,34 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
   * }
   */
   var arrayChangedCallbacks = {};
-  $scope.registerArrayChangeCallback = function(itemType, arrayType, callback, id) {
-    if (!arrayChangedCallbacks[itemType]) arrayChangedCallbacks[itemType] = [];
+  $scope.registerArrayChangeCallback = function(itemType, arrayTypes, callback, id) {
 
-    if (!arrayChangedCallbacks[itemType][arrayType]) arrayChangedCallbacks[itemType][arrayType] = [];
-    else {
-      for (var i = 0; i < arrayChangedCallbacks[itemType][arrayType].length; i++) {
-        var changeCallback = arrayChangedCallbacks[itemType][arrayType][i];
-        if (changeCallback.id === id) {
-          changeCallback.callback = callback;
-          return;
+    function doRegisterArrayChangeCallback(itemType, arrayType, callback, id) {
+      if (!arrayChangedCallbacks[itemType][arrayType]) arrayChangedCallbacks[itemType][arrayType] = [];
+      else {
+        for (var i = 0; i < arrayChangedCallbacks[itemType][arrayType].length; i++) {
+          var changeCallback = arrayChangedCallbacks[itemType][arrayType][i];
+          if (changeCallback.id === id) {
+            changeCallback.callback = callback;
+            return;
+          }
         }
       }
+      arrayChangedCallbacks[itemType][arrayType].push({
+        callback: callback,
+        id: id
+      });
     }
-    arrayChangedCallbacks[itemType][arrayType].push({
-      callback: callback,
-      id: id
-    });
+
+    if (!arrayChangedCallbacks[itemType]) arrayChangedCallbacks[itemType] = [];
+
+    if (angular.isArray(arrayTypes)) {
+      for (var i = 0; i < arrayTypes.length; i++) {
+        doRegisterArrayChangeCallback(itemType, arrayTypes[i], callback, id);
+      }
+    } else {
+      doRegisterArrayChangeCallback(itemType, arrayTypes, callback, id);
+    }
   };
 
   $rootScope.$on('arrayChanged', function(name, arrayInfo) {
@@ -543,7 +554,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
       if (arrayChangedCallbacks[itemType] && arrayChangedCallbacks[itemType][arrayType]) {
         var changeCallbacks = arrayChangedCallbacks[itemType][arrayType];
         for (var i = 0; i < changeCallbacks.length; i++) {
-          changeCallbacks[i].callback(array, item, ownerUUID);
+          changeCallbacks[i].callback(array, item, arrayType, ownerUUID);
         }
       }
     }
