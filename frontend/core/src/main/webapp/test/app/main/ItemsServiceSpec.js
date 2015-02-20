@@ -147,8 +147,6 @@ describe('ItemsService', function() {
       .toBe(putNewItemResponse.uuid);
     expect(items[3].title)
       .toBe('test item');
-    expect(items[3].mod)
-      .toBeUndefined();
   });
 
   it('should update existing item', function () {
@@ -171,8 +169,6 @@ describe('ItemsService', function() {
       .toBe(rememberTheMilk.uuid);
     expect(items[1].title)
       .toBe('remember the milk!');
-    expect(items[1].mod)
-      .toBeUndefined();
   });
 
   it('should delete and undelete item', function () {

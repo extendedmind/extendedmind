@@ -119,7 +119,7 @@ afterEach(function() {
     expect(tags[3].title)
       .toBe('test tag');
     expect(tags[3].mod)
-      .toBeUndefined();
+      .toBeDefined();
   });
 
   it('should update existing tag', function () {
@@ -144,8 +144,7 @@ afterEach(function() {
     expect(tags[1].title)
       .toBe('top secret');
     expect(tags[1].mod)
-      .toBeUndefined();
-
+      .toBeDefined();
   });
 
   it('should delete and undelete tag', function () {

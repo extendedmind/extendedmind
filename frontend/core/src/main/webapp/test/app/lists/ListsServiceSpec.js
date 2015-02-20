@@ -148,7 +148,7 @@ describe('ListsService', function() {
     expect(lists[3].title)
       .toBe('test list');
     expect(lists[3].mod)
-      .toBeUndefined();
+      .toBeDefined();
   });
 
   it('should update existing list', function () {
@@ -174,7 +174,7 @@ describe('ListsService', function() {
     expect(lists[0].title)
       .toBe('another trip to Dublin');
     expect(lists[0].mod)
-      .toBeUndefined();
+      .toBeDefined();
   });
 
   it('should delete and undelete list', function () {

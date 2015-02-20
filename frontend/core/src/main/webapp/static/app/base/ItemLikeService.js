@@ -160,8 +160,6 @@
   function copyModToPersistent(item, ownerUUID, fieldInfos) {
     if (item.hasOwnProperty('mod')){
       copyToPersistent(item.mod, item, ownerUUID, fieldInfos);
-      // Finally delete mod as all modifications have been persisted
-      delete item.mod;
     }
   }
 
@@ -292,6 +290,7 @@
       if (item.mod && !isEdited(item, itemType, ownerUUID, fieldInfos, databaseItem)){
         // .mod matches the database, copy values over to persistent and delete mod
         copyModToPersistent(item, ownerUUID, fieldInfos);
+        delete item.mod;
         return true;
       }else{
         // Either there is no modifications or item modifications haven't reached the backend,
@@ -338,7 +337,6 @@
         return PersistentStorageService.destroy(uuid);
       }
     },
-    copyModToPersistent: copyModToPersistent,
     createTransportItem: createTransportItem,
     prepareTransport: prepareTransport,
     // Returns promise which returns 'new', 'existing', 'unmodified', or failure on failed save because
@@ -415,7 +413,6 @@
             .then(function(response) {
               updateObjectProperties(item, response);
               copyModToPersistent(item, ownerUUID, fieldInfos);
-
               deferred.resolve('new');
             },function(error){
               destroyModAndReset(item, itemType, ownerUUID, fieldInfos);
