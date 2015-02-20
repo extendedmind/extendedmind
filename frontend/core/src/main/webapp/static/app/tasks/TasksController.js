@@ -19,9 +19,10 @@
                           TasksService, UISessionService) {
 
   // INITIALIZING
-  if (angular.isFunction($scope.registerArrayChangeCallback))
+  if (angular.isFunction($scope.registerArrayChangeCallback)) {
     $scope.registerArrayChangeCallback('tasks', ['active', 'archived'], invalidateTasksArrays,
                                        'TasksController');
+  }
 
   var cachedTasksArrays = {};
 

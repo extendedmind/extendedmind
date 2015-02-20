@@ -1,9 +1,9 @@
 <div class="container-fluid--inner" drawer-handle="left" ng-controller="TrashController">
   <section class="container-content">
-    <h2 class="group-heading justified row" ng-bind="allDeleted.length + ' deleted'"></h2>
+    <h2 class="group-heading justified row" ng-bind="getDeletedArray().length + ' deleted'"></h2>
 
     <div class="group-mixed with-checkbox"
-      ng-repeat="deletedItem in allDeleted | orderBy: 'trans.deleted':true track by deletedItem.trans.uuid">
+      ng-repeat="deletedItem in getDeletedArray() track by deletedItem.trans.uuid">
       <a href class="group-mixed--middle link-search-result"
       ng-click="openEditor(deletedItem.trans.tagType ? 'tag' : deletedItem.trans.itemType, deletedItem)">
         <span class="text-search-result" clamp=2 ng-bind="deletedItem.trans.title"></span>

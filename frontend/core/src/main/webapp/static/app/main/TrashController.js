@@ -14,8 +14,56 @@
  */
  'use strict';
 
- function TrashController(AnalyticsService) {
+ function TrashController($scope, AnalyticsService, ItemsService, ListsService, NotesService, TagsService,
+                          TasksService, UISessionService) {
   AnalyticsService.visit('trash');
+
+  // INITIALIZING
+  if (angular.isFunction($scope.registerArrayChangeCallback)) {
+    $scope.registerArrayChangeCallback('items', ['deleted'], invalidateDeleted,
+                                       'TrashController');
+    $scope.registerArrayChangeCallback('lists', ['deleted'], invalidateDeleted,
+                                       'TrashController');
+    $scope.registerArrayChangeCallback('notes', ['deleted'], invalidateDeleted,
+                                       'TrashController');
+    $scope.registerArrayChangeCallback('tags', ['deleted'], invalidateDeleted,
+                                       'TrashController');
+    $scope.registerArrayChangeCallback('tasks', ['deleted'], invalidateDeleted,
+                                       'TrashController');
+  }
+
+  var cachedDeletedItems = {};
+  function invalidateDeleted(data, modifiedData, dataType, ownerUUID) {
+    if (cachedDeletedItems[ownerUUID]) {
+      if ($scope.getActiveFeature() === 'trash') {
+        // invalidate
+        cachedDeletedItems[ownerUUID] = updateDeleted(ownerUUID);
+      } else {
+        // clear
+        delete cachedDeletedItems[ownerUUID];
+      }
+    }
+  }
+
+  $scope.getDeletedArray = function() {
+    var ownerUUID = UISessionService.getActiveUUID();
+    if (!cachedDeletedItems[ownerUUID]) cachedDeletedItems[ownerUUID] = updateDeleted(ownerUUID);
+    return cachedDeletedItems[ownerUUID];
+  };
+
+  function updateDeleted(ownerUUID) {
+    var deletedArray = ItemsService.getDeletedItems(ownerUUID).concat(ListsService.getDeletedLists(ownerUUID),
+                                                                      NotesService.getDeletedNotes(ownerUUID),
+                                                                      TagsService.getDeletedTags(ownerUUID),
+                                                                      TasksService.getDeletedTasks(ownerUUID)
+                                                                      );
+
+    return deletedArray.sort(function(a, b) {
+      return b.trans.deleted - a.trans.deleted;
+    });
+  }
+
 }
-TrashController['$inject'] = ['AnalyticsService'];
+TrashController['$inject'] = ['$scope', 'AnalyticsService', 'ItemsService', 'ListsService', 'NotesService',
+'TagsService', 'TasksService', 'UISessionService'];
 angular.module('em.main').controller('TrashController', TrashController);
