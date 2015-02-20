@@ -134,7 +134,7 @@ afterEach(function() {
     expect(tasks[3].title)
       .toBe('test task');
     expect(tasks[3].mod)
-      .toBeUndefined();
+      .toBeDefined();
   });
 
   it('should update existing task', function () {
@@ -158,7 +158,7 @@ afterEach(function() {
     expect(tasks[0].title)
       .toBe('clean closet now');
     expect(tasks[0].mod)
-      .toBeUndefined();
+      .toBeDefined();
   });
 
   it('should delete and undelete task', function () {
