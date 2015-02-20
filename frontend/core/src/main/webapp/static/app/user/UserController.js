@@ -15,8 +15,9 @@
  'use strict';
 
  function UserController($http, $location, $q, $rootScope, $scope, $templateCache, $window,
-                         AnalyticsService, AuthenticationService, SwiperService,
-                         SynchronizeService, UISessionService, UserService, UserSessionService, version) {
+                         AnalyticsService, AuthenticationService, ItemsService, ListsService, NotesService,
+                         SwiperService, SynchronizeService, TagsService, TasksService, UISessionService,
+                         UserService, UserSessionService, version) {
 
   $scope.extendedMindVersion = version;
 
@@ -193,14 +194,38 @@
   $scope.toggleStats = function(){
     $scope.showStats = !$scope.showStats;
     if ($scope.showStats && $scope.visibleModifiedItemsType) $scope.visibleModifiedItemsType = undefined;
-
   };
+
+  function getDeletedItemsLength() {
+    var ownerUUID = UISessionService.getActiveUUID();
+    var deletedLength = 0;
+    var deletedItems = ItemsService.getDeletedItems(ownerUUID);
+    var deletedLists = ListsService.getDeletedLists(ownerUUID);
+    var deletedNotes = NotesService.getDeletedNotes(ownerUUID);
+    var deletedTags = TagsService.getDeletedTags(ownerUUID);
+    var deletedTasks = TasksService.getDeletedTasks(ownerUUID);
+
+    if (deletedItems)
+      deletedLength += deletedItems.length;
+    if (deletedLists)
+      deletedLength += deletedLists.length;
+    if (deletedNotes)
+      deletedLength += deletedNotes.length;
+    if (deletedTags)
+      deletedLength += deletedTags.length;
+    if (deletedTasks)
+      deletedLength += deletedTasks.length;
+
+    return deletedLength;
+  }
 
   $scope.getCount = function(itemType) {
     if (itemType === 'item'){
       return $scope.items.length;
     }else if (itemType === 'task'){
-      return $scope.allTasks.length;
+      var tasks = TasksService.getTasks(UISessionService.getActiveUUID());
+      if (tasks)
+        return tasks.length;
     }else if (itemType === 'note'){
       return $scope.allNotes.length;
     }else if (itemType === 'list'){
@@ -208,13 +233,13 @@
     }else if (itemType === 'tag'){
       return $scope.tags.length;
     }else if (itemType === 'deleted'){
-      return $scope.allDeleted.length;
+      return getDeletedItemsLength();
     }
   };
 
 }
 UserController['$inject'] = ['$http', '$location', '$q', '$rootScope', '$scope', '$templateCache', '$window',
-'AnalyticsService', 'AuthenticationService', 'SwiperService',
-'SynchronizeService', 'UISessionService', 'UserService', 'UserSessionService',
+'AnalyticsService', 'AuthenticationService', 'ItemsService', 'ListsService', 'NotesService', 'SwiperService',
+'SynchronizeService', 'TagsService', 'TasksService', 'UISessionService', 'UserService', 'UserSessionService',
 'version'];
 angular.module('em.user').controller('UserController', UserController);
