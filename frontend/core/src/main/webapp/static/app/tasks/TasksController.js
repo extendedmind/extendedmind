@@ -107,7 +107,8 @@
   function updateActiveAndArchivedTasks(cachedTasks, ownerUUID) {
     var activeTasks = TasksService.getTasks(ownerUUID);
     var archivedTasks = TasksService.getArchivedTasks(ownerUUID);
-    cachedTasks['activeAndArchived'] = ArrayService.combineArrays(activeTasks, archivedTasks, 'created');
+    cachedTasks['activeAndArchived'] = ArrayService.combineAndSortArrays(activeTasks, archivedTasks,
+                                                                         'created');
   }
 
   function updateAllTasks(cachedTasks, ownerUUID) {

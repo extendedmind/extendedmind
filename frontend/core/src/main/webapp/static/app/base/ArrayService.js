@@ -317,6 +317,15 @@ function ArrayService($rootScope, UISessionService) {
       // Sort combined array
       return combinedArray.sort(compareById);
     },
+    combineAndSortArrays: function(firstArray, secondArray, id, reverse) {
+      var combinedArray = firstArray.concat(secondArray);
+      var combinedAndSortedArray = [];
+      // Sort combined array
+      for (var i = 0; i < combinedArray.length; i++) {
+        insertItemToArray(combinedArray[i], combinedAndSortedArray, id, reverse);
+      }
+      return combinedAndSortedArray;
+    },
     getModifiedItems: function(activeArray, deletedArray, otherArrays) {
       var i, len, modifiedItems;
       for (i=0, len=activeArray.length; i<len; i++) {

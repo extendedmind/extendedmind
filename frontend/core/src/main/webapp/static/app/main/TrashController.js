@@ -14,8 +14,8 @@
  */
  'use strict';
 
- function TrashController($scope, AnalyticsService, ItemsService, ListsService, NotesService, TagsService,
-                          TasksService, UISessionService) {
+ function TrashController($scope, AnalyticsService, ArrayService, ItemsService, ListsService, NotesService,
+                          TagsService, TasksService, UISessionService) {
   AnalyticsService.visit('trash');
 
   // INITIALIZING
@@ -52,18 +52,19 @@
   };
 
   function updateDeleted(ownerUUID) {
-    var deletedArray = ItemsService.getDeletedItems(ownerUUID).concat(ListsService.getDeletedLists(ownerUUID),
-                                                                      NotesService.getDeletedNotes(ownerUUID),
-                                                                      TagsService.getDeletedTags(ownerUUID),
-                                                                      TasksService.getDeletedTasks(ownerUUID)
-                                                                      );
+    var allDeleted = ItemsService.getDeletedItems(ownerUUID).concat(ListsService.getDeletedLists(ownerUUID),
+                                                                    NotesService.getDeletedNotes(ownerUUID),
+                                                                    TagsService.getDeletedTags(ownerUUID),
+                                                                    TasksService.getDeletedTasks(ownerUUID));
 
-    return deletedArray.sort(function(a, b) {
-      return b.trans.deleted - a.trans.deleted;
-    });
+    cachedDeletedItems[ownerUUID] = [];
+    for (var i = 0; i < allDeleted.length; i++) {
+      ArrayService.insertItemToArray(allDeleted[i], cachedDeletedItems[ownerUUID], 'deleted', true);
+    }
+    return cachedDeletedItems[ownerUUID];
   }
 
 }
-TrashController['$inject'] = ['$scope', 'AnalyticsService', 'ItemsService', 'ListsService', 'NotesService',
-'TagsService', 'TasksService', 'UISessionService'];
+TrashController['$inject'] = ['$scope', 'AnalyticsService', 'ArrayService', 'ItemsService', 'ListsService',
+'NotesService', 'TagsService', 'TasksService', 'UISessionService'];
 angular.module('em.main').controller('TrashController', TrashController);
