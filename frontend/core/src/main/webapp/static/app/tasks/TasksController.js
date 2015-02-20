@@ -275,47 +275,59 @@
     switch (arrayType) {
 
       case 'all':
-      if (!cachedTasksArrays[ownerUUID]['activeAndArchived'])
-        updateActiveAndArchivedTasks(cachedTasksArrays[ownerUUID], ownerUUID);
-      if (!cachedTasksArrays[ownerUUID]['all'])
-        updateAllTasks(cachedTasksArrays[ownerUUID], ownerUUID);
-      return cachedTasksArrays[ownerUUID]['all'];
+      if ($scope.getActiveFeature() === 'tasks') {
+        if (!cachedTasksArrays[ownerUUID]['activeAndArchived'])
+          updateActiveAndArchivedTasks(cachedTasksArrays[ownerUUID], ownerUUID);
+        if (!cachedTasksArrays[ownerUUID]['all'])
+          updateAllTasks(cachedTasksArrays[ownerUUID], ownerUUID);
+        return cachedTasksArrays[ownerUUID]['all'];
+      }
+      break;
 
       case 'date':
-      if (!cachedTasksArrays[ownerUUID]['date'])
-        cachedTasksArrays[ownerUUID]['date'] = {};
-      if (info.date === null) {
-        // Use 'noDate' to identify cached tasks without date instead of null.
-        info.date = 'noDate';
+      if ($scope.getActiveFeature() === 'focus') {
+        if (!cachedTasksArrays[ownerUUID]['date'])
+          cachedTasksArrays[ownerUUID]['date'] = {};
+        if (info.date === null) {
+          // Use 'noDate' to identify cached tasks without date instead of null.
+          info.date = 'noDate';
+        }
+        if (!cachedTasksArrays[ownerUUID]['date'][info.date]) {
+          updateDateTasks(cachedTasksArrays[ownerUUID]['date'], info, ownerUUID);
+          removeDistantDates(cachedTasksArrays[ownerUUID]['date'], info);
+        }
+        return cachedTasksArrays[ownerUUID]['date'][info.date].array;
       }
-      if (!cachedTasksArrays[ownerUUID]['date'][info.date]) {
-        updateDateTasks(cachedTasksArrays[ownerUUID]['date'], info, ownerUUID);
-        removeDistantDates(cachedTasksArrays[ownerUUID]['date'], info);
-      }
-      return cachedTasksArrays[ownerUUID]['date'][info.date].array;
+      break;
 
       case 'list':
-      if (!cachedTasksArrays[ownerUUID]['activeAndArchived'])
-        updateActiveAndArchivedTasks(cachedTasksArrays[ownerUUID], ownerUUID);
-      if (!cachedTasksArrays[ownerUUID]['list'] ||
-          (cachedTasksArrays[ownerUUID]['list'] && cachedTasksArrays[ownerUUID]['list'].uuid !== info.uuid))
-      {
-        updateListTasks(cachedTasksArrays[ownerUUID], info.uuid, ownerUUID);
+      if ($scope.getActiveFeature() === 'list') {
+        if (!cachedTasksArrays[ownerUUID]['activeAndArchived'])
+          updateActiveAndArchivedTasks(cachedTasksArrays[ownerUUID], ownerUUID);
+        if (!cachedTasksArrays[ownerUUID]['list'] ||
+            (cachedTasksArrays[ownerUUID]['list'] && cachedTasksArrays[ownerUUID]['list'].uuid !== info.uuid))
+        {
+          updateListTasks(cachedTasksArrays[ownerUUID], info.uuid, ownerUUID);
+        }
+        return cachedTasksArrays[ownerUUID]['list'].array;
       }
-      return cachedTasksArrays[ownerUUID]['list'].array;
+      break;
 
       case 'context':
-      if (!info.id) {
-        // Use 'noContext' to identify cached tasks without context instead of undefined.
-        info.id = 'noContext';
+      if ($scope.getActiveFeature() === 'tasks') {
+        if (!info.id) {
+          // Use 'noContext' to identify cached tasks without context instead of undefined.
+          info.id = 'noContext';
+        }
+        if (!cachedTasksArrays[ownerUUID]['context'] ||
+            (cachedTasksArrays[ownerUUID]['context'] &&
+             cachedTasksArrays[ownerUUID]['context'].id !== info.id))
+        {
+          updateContextTasks(cachedTasksArrays[ownerUUID], info.id, ownerUUID);
+        }
+        return cachedTasksArrays[ownerUUID]['context'].array;
       }
-      if (!cachedTasksArrays[ownerUUID]['context'] ||
-          (cachedTasksArrays[ownerUUID]['context'] &&
-           cachedTasksArrays[ownerUUID]['context'].id !== info.id))
-      {
-        updateContextTasks(cachedTasksArrays[ownerUUID], info.id, ownerUUID);
-      }
-      return cachedTasksArrays[ownerUUID]['context'].array;
+      break;
     }
   };
 

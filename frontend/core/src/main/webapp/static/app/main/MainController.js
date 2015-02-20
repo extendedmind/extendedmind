@@ -269,9 +269,10 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
 
     // Run special case focus callbacks because drawer-handle directive does not re-register itself when
     // feature changes to focus.
-    if (feature === 'focus' && focusActiveCallbacks) {
-      for (var id in focusActiveCallbacks)
-        focusActiveCallbacks[id](featureChanged);
+    if (featureActiveCallbacks) {
+      for (var id in featureActiveCallbacks) {
+        if (featureActiveCallbacks[id].feature === feature) featureActiveCallbacks[id].callback();
+      }
     }
   };
 
@@ -319,9 +320,12 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     return $scope.features[feature];
   };
 
-  var focusActiveCallbacks = {};
-  $scope.registerFocusActivateCallback = function(activateFn, id) {
-    focusActiveCallbacks[id] = activateFn;
+  var featureActiveCallbacks = {};
+  $scope.registerFeatureActivateCallback = function(activateFn, feature, id) {
+    featureActiveCallbacks[id] = {
+      callback: activateFn,
+      feature: feature
+    };
   };
 
   $scope.isFakeUser = function(){

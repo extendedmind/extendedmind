@@ -45,8 +45,8 @@
   $scope.daySlides[2].pastDate = $scope.daySlides[2].referenceDate;
   $scope.daySlides[2].heading = daySlideHeading($scope.daySlides[2].referenceDate);
 
-  if (angular.isFunction($scope.registerFocusActivateCallback))
-    $scope.registerFocusActivateCallback(focusActive, 'DatesController');
+  if (angular.isFunction($scope.registerFeatureActivateCallback))
+    $scope.registerFeatureActivateCallback(focusActive, 'focus', 'DatesController');
 
   function focusActive(featureChanged) {
     if (featureChanged) {

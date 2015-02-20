@@ -1,6 +1,6 @@
 <div class="container-content--outer" list-container list-container-override-vertical-resize="true"
   drawer-handle="left"
-  drawer-handle-register-activate="registerFocusActivateCallback(activate, 'drawerHandleDirective')">
+  drawer-handle-register-activate="registerFeatureActivateCallback(activate, 'focus', 'focusTasks')">
   <section ng-show="isOnboarded('focusTasks')" class="container-content" ng-controller="DatesController">
 
     <div ng-if="datepickerVisible && columns > 1" editable-field-container="auto">
@@ -326,115 +326,105 @@
         swiper-slide-duplicate="true">
           <div class="container-content" ng-class="daySlides[2].pastDate && 'past-date'"
             list="getTasksArray('date', {date: daySlides[2].info, pastDate: daySlides[2].pastDate})">
-            <div ng-if="isFeatureActive('focus')">
 
-              <div ng-hide="datepickerVisible" class="group-mixed heading">
-                <div class="group-mixed--middle" swiper-click="openDatepicker(daySlides[2].info)">
-                  <h2 class="group-heading justified" ng-bind="daySlides[2].heading"></h2>
-                </div>
-                <div class="group-mixed--right" task-list-completed="{{daySlides[2].pastDate}}"></div>
+            <div ng-hide="datepickerVisible" class="group-mixed heading">
+              <div class="group-mixed--middle" swiper-click="openDatepicker(daySlides[2].info)">
+                <h2 class="group-heading justified" ng-bind="daySlides[2].heading"></h2>
               </div>
-
-              <div list-item-add="getNewDayTask(2)" list-item-add-save="saveTask(newItem)"
-                ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
-              <div class="animate-list-item-leave"
-                ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
-                list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
-              <div list-prompt="tasks" list-prompt-infos="listInfos"
-                list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
+              <div class="group-mixed--right" task-list-completed="{{daySlides[2].pastDate}}"></div>
             </div>
+
+            <div list-item-add="getNewDayTask(2)" list-item-add-save="saveTask(newItem)"
+              ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
+            <div class="animate-list-item-leave"
+              ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
+              list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
+            <div list-prompt="tasks" list-prompt-infos="listInfos"
+              list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
           </div>
         </div>
 
         <div class="swiper-slide" swiper-slide="focus/tasks/left" slide-index="1" swiper-slide-loop-start="true">
           <div class="container-content" ng-class="daySlides[0].pastDate && 'past-date'"
             list="getTasksArray('date', {date: daySlides[0].info, pastDate: daySlides[0].pastDate})">
-            <div ng-if="isFeatureActive('focus')">
 
-              <div ng-hide="datepickerVisible" class="group-mixed heading">
-                <div class="group-mixed--middle" swiper-click="openDatepicker(daySlides[0].info)">
-                  <h2 class="group-heading justified" ng-bind="daySlides[0].heading"></h2>
-                </div>
-                <div class="group-mixed--right" task-list-completed="{{daySlides[0].pastDate}}"></div>
+            <div ng-hide="datepickerVisible" class="group-mixed heading">
+              <div class="group-mixed--middle" swiper-click="openDatepicker(daySlides[0].info)">
+                <h2 class="group-heading justified" ng-bind="daySlides[0].heading"></h2>
               </div>
-
-              <div list-item-add="getNewDayTask(0)" list-item-add-save="saveTask(newItem)"
-                ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
-              <div class="animate-list-item-leave"
-                ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
-                list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
-              <div list-prompt="tasks" list-prompt-infos="listInfos"
-                list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
+              <div class="group-mixed--right" task-list-completed="{{daySlides[0].pastDate}}"></div>
             </div>
+
+            <div list-item-add="getNewDayTask(0)" list-item-add-save="saveTask(newItem)"
+              ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
+            <div class="animate-list-item-leave"
+              ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
+              list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
+            <div list-prompt="tasks" list-prompt-infos="listInfos"
+              list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
           </div>
         </div>
 
         <div class="swiper-slide" swiper-slide="focus/tasks/middle" slide-index="2">
           <div class="container-content" ng-class="daySlides[1].pastDate && 'past-date'"
             list="getTasksArray('date', {date: daySlides[1].info, pastDate: daySlides[1].pastDate}, daySlides[1].info)">
-            <div ng-if="isFeatureActive('focus')">
 
-              <div ng-hide="datepickerVisible" class="group-mixed heading">
-                <div class="group-mixed--middle" swiper-click="openDatepicker(daySlides[1].info)">
-                  <h2 class="group-heading justified" ng-bind="daySlides[1].heading"></h2>
-                </div>
-                <div class="group-mixed--right" task-list-completed="{{daySlides[1].pastDate}}"></div>
+            <div ng-hide="datepickerVisible" class="group-mixed heading">
+              <div class="group-mixed--middle" swiper-click="openDatepicker(daySlides[1].info)">
+                <h2 class="group-heading justified" ng-bind="daySlides[1].heading"></h2>
               </div>
-
-              <div list-item-add="getNewDayTask(1)" list-item-add-save="saveTask(newItem)"
-                ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
-              <div class="animate-list-item-leave"
-                ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
-                list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
-              <div list-prompt="tasks" list-prompt-infos="listInfos"
-                list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
+              <div class="group-mixed--right" task-list-completed="{{daySlides[1].pastDate}}"></div>
             </div>
+
+            <div list-item-add="getNewDayTask(1)" list-item-add-save="saveTask(newItem)"
+              ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
+            <div class="animate-list-item-leave"
+              ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
+              list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
+            <div list-prompt="tasks" list-prompt-infos="listInfos"
+              list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
           </div>
         </div>
 
         <div class="swiper-slide" swiper-slide="focus/tasks/right" slide-index="3">
           <div class="container-content" ng-class="daySlides[2].pastDate && 'past-date'"
             list="getTasksArray('date', {date: daySlides[2].info, pastDate: daySlides[2].pastDate})">
-            <div ng-if="isFeatureActive('focus')">
 
-              <div ng-hide="datepickerVisible" class="group-mixed heading">
-                <div class="group-mixed--middle" swiper-click="openDatepicker(daySlides[2].info)">
-                  <h2 class="group-heading justified" ng-bind="daySlides[2].heading"></h2>
-                </div>
-                <div class="group-mixed--right" task-list-completed="{{daySlides[2].pastDate}}"></div>
+            <div ng-hide="datepickerVisible" class="group-mixed heading">
+              <div class="group-mixed--middle" swiper-click="openDatepicker(daySlides[2].info)">
+                <h2 class="group-heading justified" ng-bind="daySlides[2].heading"></h2>
               </div>
-
-              <div list-item-add="getNewDayTask(2)" list-item-add-save="saveTask(newItem)"
-                ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
-              <div class="animate-list-item-leave"
-                ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
-                list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
-              <div list-prompt="tasks" list-prompt-infos="listInfos"
-                list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
+              <div class="group-mixed--right" task-list-completed="{{daySlides[2].pastDate}}"></div>
             </div>
+
+            <div list-item-add="getNewDayTask(2)" list-item-add-save="saveTask(newItem)"
+              ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
+            <div class="animate-list-item-leave"
+              ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
+              list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
+            <div list-prompt="tasks" list-prompt-infos="listInfos"
+              list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
           </div>
         </div>
 
         <div class="swiper-slide" swiper-slide="focus/tasks/leftDuplicate" slide-index="4" swiper-slide-duplicate="true">
           <div class="container-content" ng-class="daySlides[0].pastDate && 'past-date'"
             list="getTasksArray('date', {date: daySlides[0].info, pastDate: daySlides[0].pastDate})">
-            <div ng-if="isFeatureActive('focus')">
 
-              <div ng-hide="datepickerVisible" class="group-mixed heading">
-                <div class="group-mixed--middle" swiper-click="openDatepicker(daySlides[0].info)">
-                  <h2 class="group-heading justified" ng-bind="daySlides[0].heading"></h2>
-                </div>
-                <div class="group-mixed--right" task-list-completed="{{daySlides[0].pastDate}}"></div>
+            <div ng-hide="datepickerVisible" class="group-mixed heading">
+              <div class="group-mixed--middle" swiper-click="openDatepicker(daySlides[0].info)">
+                <h2 class="group-heading justified" ng-bind="daySlides[0].heading"></h2>
               </div>
-
-              <div list-item-add="getNewDayTask(0)" list-item-add-save="saveTask(newItem)"
-                ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
-              <div class="animate-list-item-leave"
-                ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
-                list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
-              <div list-prompt="tasks" list-prompt-infos="listInfos"
-                list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
+              <div class="group-mixed--right" task-list-completed="{{daySlides[0].pastDate}}"></div>
             </div>
+
+            <div list-item-add="getNewDayTask(0)" list-item-add-save="saveTask(newItem)"
+              ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
+            <div class="animate-list-item-leave"
+              ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
+              list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
+            <div list-prompt="tasks" list-prompt-infos="listInfos"
+              list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
           </div>
         </div>
 

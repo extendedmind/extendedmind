@@ -30,14 +30,15 @@
 
       $scope.getVisibleArray = function(getFullArrayFn, limitTo) {
         var fullArray = getFullArrayFn();
+        if (fullArray) {
+          if (customFilterItemVisible) {
+            $scope.listInfos.array = customFilterItemVisible(fullArray);  // Cache filtered full array
+            return $scope.listInfos.array.slice(0, limitTo);
+          }
 
-        if (customFilterItemVisible) {
-          $scope.listInfos.array = customFilterItemVisible(fullArray);  // Cache filtered full array
+          $scope.listInfos.array = fullArray; // Cache filtered full array
           return $scope.listInfos.array.slice(0, limitTo);
         }
-
-        $scope.listInfos.array = fullArray; // Cache filtered full array
-        return $scope.listInfos.array.slice(0, limitTo);
       };
 
       $scope.getFilteredFullArrayLength = function() {

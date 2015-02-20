@@ -1,4 +1,5 @@
-<div class="container-content--outer" ng-if="isFeatureActive('tasks')" list-container drawer-handle="left">
+<div class="container-content--outer" list-container drawer-handle="left"
+  drawer-handle-register-activate="registerFeatureActivateCallback(activate, 'tasks', 'tasksAll')">
   <section class="container-content" list="getTasksArray('all')" list-recent>
 
     <div ng-show="!onboardingInProgress || isOnboardingListItemAddActive()">
