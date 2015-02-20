@@ -412,8 +412,7 @@
     if (taskCompletingReadyDeferred) {
       taskCompletingReadyDeferred.promise.then(function(task) {
         unfreezeTask(task);
-        // Need to delay combining task arrays to prevent immediate disapper
-        $scope.combineTasksArrays();
+        // Need to delay unfreezin task to prevent immediate disapper
       });
     }
 
@@ -426,7 +425,6 @@
       AnalyticsService.do('uncompleteTask');
       TasksService.uncompleteTask(task, UISessionService.getActiveUUID()).then(function(task) {
         unfreezeTask(task, true);
-        $scope.combineTasksArrays();
       }, function() {
         unfreezeTask(task, true);
       });
@@ -436,12 +434,10 @@
       TasksService.completeTask(task, UISessionService.getActiveUUID()).then(function(){
         if (!taskCompletingReadyDeferred){
           unfreezeTask(task, true);
-          $scope.combineTasksArrays();
         }
       }, function() {
         if (!taskCompletingReadyDeferred){
           unfreezeTask(task, true);
-          $scope.combineTasksArrays();
         }
       });
       return true;

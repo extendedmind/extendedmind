@@ -382,7 +382,8 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
       return true;
     }else if (feature === 'tasks'){
       // Tasks onboarding is not ready if there are no tasks
-      if ($scope.allActiveTasks && $scope.allActiveTasks.length === 1){
+      var tasks = TasksService.getTasks(UISessionService.getActiveUUID());
+      if (tasks && tasks.length === 1){
         return true;
       }
     } else if (feature === 'notes'){
@@ -425,18 +426,11 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
   // DATA ARRAYS
 
   $scope.items = ItemsService.getItems(UISessionService.getActiveUUID());
-  $scope.tasks = TasksService.getTasks(UISessionService.getActiveUUID());
-  $scope.archivedTasks = TasksService.getArchivedTasks(UISessionService.getActiveUUID());
   $scope.notes = NotesService.getNotes(UISessionService.getActiveUUID());
   $scope.archivedNotes = NotesService.getArchivedNotes(UISessionService.getActiveUUID());
   $scope.lists = ListsService.getLists(UISessionService.getActiveUUID());
   $scope.archivedLists = ListsService.getArchivedLists(UISessionService.getActiveUUID());
   $scope.tags = TagsService.getTags(UISessionService.getActiveUUID());
-  $scope.deletedItems = ItemsService.getDeletedItems(UISessionService.getActiveUUID());
-  $scope.deletedTasks = TasksService.getDeletedTasks(UISessionService.getActiveUUID());
-  $scope.deletedNotes = NotesService.getDeletedNotes(UISessionService.getActiveUUID());
-  $scope.deletedLists = ListsService.getDeletedLists(UISessionService.getActiveUUID());
-  $scope.deletedTags = TagsService.getDeletedTags(UISessionService.getActiveUUID());
 
   $scope.$watch('tags.length', function(/*newValue, oldValue*/) {
     $scope.contexts = $filter('itemsFilter')($scope.tags, {name: 'byTagType', filterBy: 'context'});
@@ -581,66 +575,6 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
   });
   $scope.$watch('archivedNotes.length', function(/*newValue, oldValue*/) {
     combineNotesArrays();
-  });
-
-  $scope.combineTasksArrays = function() {
-    var activeArchivedTasks = [];
-    var i = 0;
-    while ($scope.archivedTasks[i]) {
-      if (!$scope.tasks[i].trans.completed) {
-        activeArchivedTasks.push($scope.archivedTasks[i]);
-      }
-      i++;
-    }
-
-    var activeTasks = [];
-    i = 0;
-    while ($scope.tasks[i]) {
-      if (!$scope.tasks[i].trans.completed) {
-        activeTasks.push($scope.tasks[i]);
-      }
-      i++;
-    }
-
-    $scope.allActiveTasks = ArrayService.combineArrays(activeArchivedTasks,
-                                                       activeTasks, 'created', true);
-
-    $scope.allTasks = ArrayService.combineArrays($scope.tasks,
-                                                 $scope.archivedTasks);
-  };
-
-  $scope.$watchCollection('tasks', function(/*newValue, oldValue*/) {
-    $scope.combineTasksArrays();
-  });
-  $scope.$watchCollection('archivedTasks', function(/*newValue, oldValue*/) {
-    $scope.combineTasksArrays();
-  });
-
-  // Deleted items
-  function combineDeletedArrays(/*changedArray*/) {
-    var allNotesAndTasks = ArrayService.combineArrays($scope.deletedNotes,
-                                                      $scope.deletedTasks, 'deleted', true);
-    var allNotesAndTasksAndLists = ArrayService.combineArrays(allNotesAndTasks,
-                                                              $scope.deletedLists, 'deleted', true);
-    var allNotesAndTasksAndListsAndItems = ArrayService.combineArrays(allNotesAndTasksAndLists,
-                                                                      $scope.deletedItems, 'deleted', true);
-    $scope.allDeleted = ArrayService.combineArrays(allNotesAndTasksAndListsAndItems,
-                                                   $scope.deletedTags, 'deleted', true);
-  }
-  $scope.$watch('deletedItems.length', function(/*newValue, oldValue*/) {
-    combineDeletedArrays($scope.deletedItems);
-  });
-  $scope.$watch('deletedTasks.length', function(/*newValue, oldValue*/) {
-    combineDeletedArrays($scope.deletedTasks);
-  });
-  $scope.$watch('deletedNotes.length', function(/*newValue, oldValue*/) {
-    combineDeletedArrays($scope.deletedNotes);
-  });
-  $scope.$watch('deletedLists.length', function(/*newValue, oldValue*/) {
-    combineDeletedArrays($scope.deletedLists);
-  });
-  $scope.$watch('deletedTags.length', function(/*newValue, oldValue*/) {
-    combineDeletedArrays($scope.deletedTags);
   });
 
   // BACKEND POLLING
