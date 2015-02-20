@@ -17,7 +17,7 @@
  'use strict';
 
  function OmnibarEditorController($q, $rootScope, $scope, $timeout,
-                                  AnalyticsService, ArrayService, packaging, UISessionService) {
+                                  AnalyticsService, ArrayService, TasksService, packaging, UISessionService) {
 
   // INITIALIZING
 
@@ -108,12 +108,30 @@
   });
 
   function createSearchItems() {
-    var allNotesAndTasks = ArrayService.combineArrays($scope.allActiveTasks,
-                                                      $scope.allNotes, 'created', true);
-    var allNotesAndTasksAndLists = ArrayService.combineArrays(allNotesAndTasks,
-                                                              $scope.allLists, 'created', true);
-    $scope.searchItems = ArrayService.combineArrays(allNotesAndTasksAndLists,
-                                                    $scope.items, 'created', true);
+    var i;
+    var ownerUUID = UISessionService.getActiveUUID();
+    var unsortedSearchItems = [];
+    $scope.searchItems = [];
+
+    // Filter completed tasks to search items.
+    var tasks = TasksService.getTasks(ownerUUID);
+    for (i = 0; i < tasks.length; i++) {
+      if (!tasks[i].trans.completed) unsortedSearchItems.push(tasks[i]);
+    }
+
+    // Filter completed archived tasks to search items.
+    var archivedTasks = TasksService.getArchivedTasks(ownerUUID);
+    for (i = 0; i < archivedTasks.length; i++) {
+      if (!archivedTasks[i].trans.completed) unsortedSearchItems.push(archivedTasks[i]);
+    }
+
+    // Join rest of the arrays to search items.
+    unsortedSearchItems = unsortedSearchItems.concat($scope.allNotes, $scope.allLists, $scope.items);
+
+    // Sort search items.
+    for (i = 0; i < unsortedSearchItems.length; i ++) {
+      ArrayService.insertItemToArray(unsortedSearchItems[i], $scope.searchItems, 'created', true);
+    }
   }
 
   $scope.$watch('synced', function(newValue){
@@ -286,5 +304,5 @@
 }
 
 OmnibarEditorController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout',
-'AnalyticsService', 'ArrayService', 'packaging', 'UISessionService'];
+'AnalyticsService', 'ArrayService', 'TasksService', 'packaging', 'UISessionService'];
 angular.module('em.main').controller('OmnibarEditorController', OmnibarEditorController);
