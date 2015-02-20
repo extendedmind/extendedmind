@@ -95,7 +95,9 @@
 
     // First always check if primary should be created first
     // to avoid errors with authentication
-    if (!HttpRequestQueueService.isPrimaryHead() && primaryCreateCallback) {
+    if (!(previousRequest && previousRequest.primary) &&
+        !HttpRequestQueueService.isPrimaryHead() &&
+        primaryCreateCallback) {
       var primaryRequestInfo = primaryCreateCallback();
       if (primaryRequestInfo) {
         processPrimaryRequest(primaryRequestInfo.url, primaryRequestInfo.data);

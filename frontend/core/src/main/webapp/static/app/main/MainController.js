@@ -638,9 +638,8 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
       if (!sinceLastItemsSynchronized) return true;
       else if (sinceLastItemsSynchronized > itemsSynchronizedThreshold) return true;
 
-      // Also sync if offline is enabled and data has not yet been read to memory
-      if (UserSessionService.isOfflineEnabled() && !UserSessionService.isPersistentDataLoaded())
-        return true;
+      // Also sync if data has not yet been read to memory
+      if (!UserSessionService.isPersistentDataLoaded()) return true;
     }
     $scope.registerActivity();
     var activeUUID = UISessionService.getActiveUUID();

@@ -42,9 +42,6 @@ describe('AuthenticationService', function() {
     isAuthenticateReplaceable: function() {
       return this.authenticateReplaceable;
     },
-    isOfflineEnabled: function() {
-      return false;
-    },
     isItemsSynchronized: function() {
       return true;
     },
@@ -119,6 +116,21 @@ describe('AuthenticationService', function() {
 
     spyOn($location, 'path');
     spyOn($location, 'search');
+
+    var sessionStore = {};
+    spyOn(sessionStorage, 'getItem').andCallFake(function(key) {
+      return sessionStore[key];
+    });
+    spyOn(sessionStorage, 'setItem').andCallFake(function(key, value) {
+      sessionStore[key] = value + '';
+    });
+    spyOn(sessionStorage, 'removeItem').andCallFake(function(key) {
+      delete sessionStore[key];
+    });
+    spyOn(sessionStorage, 'clear').andCallFake(function() {
+      sessionStore = {};
+    });
+
   });
 
   afterEach(function() {
@@ -190,9 +202,7 @@ describe('AuthenticationService', function() {
     spyOn(MockUserSessionService, 'setAuthenticateInformation');
 
     $httpBackend.expectPOST('/api/authenticate').respond(200, authenticateResponse);
-    verifyAndUpdateAuthenticationPromise().then(function(promise) {
-      expect(promise).toEqual(true);
-    });
+    AuthenticationService.verifyAndUpdateAuthentication();
     $httpBackend.flush();
 
     expect(MockUserSessionService.setAuthenticateInformation).toHaveBeenCalledWith(authenticateResponse);

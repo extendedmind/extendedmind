@@ -133,18 +133,6 @@
       }
       return persistentStorageEnabled;
     },
-    isOfflineEnabled: function() {
-      if (!this.isPersistentStorageEnabled()){
-        var userUUID = this.getUserUUID();
-        if (UUIDService.isFakeUUID(userUUID)){
-          // When user UUID is fake, this means that offline needs to be enabled
-          // because the user is using the app in tutorial mode
-          return true;
-        }
-      }else{
-        return true;
-      }
-    },
     clearUser: function() {
       persistentStorageEnabled = enableOffline;
       SessionStorageService.clearUser();

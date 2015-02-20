@@ -67,29 +67,27 @@ function MockItemsBackendService($httpBackend, ItemsService, PersistentStorageSe
       .respond(function(method, url, data, headers) {
         if (url.indexOf('?modified=') != -1){
           var modifiedResponse = {};
-          if (UserSessionService.isOfflineEnabled()){
-            var activeUUID = UISessionService.getActiveUUID();
-            // Search values that contain mod from the PersistentStorageService and return them
-            var modifiedItems = SynchronizeService.getModifiedItems('item', activeUUID);
-            if (modifiedItems && modifiedItems.length){
-              modifiedResponse.items = convertModifiedItemsIntoPersistent(modifiedItems);
-            }
-            var modifiedTasks = SynchronizeService.getModifiedItems('task', activeUUID);
-            if (modifiedTasks && modifiedTasks.length){
-              modifiedResponse.tasks = convertModifiedItemsIntoPersistent(modifiedTasks);
-            }
-            var modifiedNotes = SynchronizeService.getModifiedItems('note', activeUUID);
-            if (modifiedNotes && modifiedNotes.length){
-              modifiedResponse.notes = convertModifiedItemsIntoPersistent(modifiedNotes);
-            }
-            var modifiedLists = SynchronizeService.getModifiedItems('list', activeUUID);
-            if (modifiedLists && modifiedLists.length){
-              modifiedResponse.lists = convertModifiedItemsIntoPersistent(modifiedLists);
-            }
-            var modifiedTags = SynchronizeService.getModifiedItems('tag', activeUUID);
-            if (modifiedTags && modifiedTags.length){
-              modifiedResponse.tags = convertModifiedItemsIntoPersistent(modifiedTags);
-            }
+          var activeUUID = UISessionService.getActiveUUID();
+          // Search values that contain mod from the PersistentStorageService and return them
+          var modifiedItems = SynchronizeService.getModifiedItems('item', activeUUID);
+          if (modifiedItems && modifiedItems.length){
+            modifiedResponse.items = convertModifiedItemsIntoPersistent(modifiedItems);
+          }
+          var modifiedTasks = SynchronizeService.getModifiedItems('task', activeUUID);
+          if (modifiedTasks && modifiedTasks.length){
+            modifiedResponse.tasks = convertModifiedItemsIntoPersistent(modifiedTasks);
+          }
+          var modifiedNotes = SynchronizeService.getModifiedItems('note', activeUUID);
+          if (modifiedNotes && modifiedNotes.length){
+            modifiedResponse.notes = convertModifiedItemsIntoPersistent(modifiedNotes);
+          }
+          var modifiedLists = SynchronizeService.getModifiedItems('list', activeUUID);
+          if (modifiedLists && modifiedLists.length){
+            modifiedResponse.lists = convertModifiedItemsIntoPersistent(modifiedLists);
+          }
+          var modifiedTags = SynchronizeService.getModifiedItems('tag', activeUUID);
+          if (modifiedTags && modifiedTags.length){
+            modifiedResponse.tags = convertModifiedItemsIntoPersistent(modifiedTags);
           }
           return expectResponse(method, url, data, headers, modifiedResponse);
         }else if (url.indexOf('?completed=true') != -1){

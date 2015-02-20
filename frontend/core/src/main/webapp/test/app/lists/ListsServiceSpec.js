@@ -47,10 +47,44 @@ describe('ListsService', function() {
 
   var testOwnerUUID = '6be16f46-7b35-4b2d-b875-e13d19681e77';
 
+  var MockUUIDService = {
+    mockIndex: 0,
+    mockFakeUUIDs: ['00000000-0000-4629-8552-96671b730000',
+                    '00000000-0000-4629-8552-96671b730001',
+                    '00000000-0000-4629-8552-96671b730002',
+                    '00000000-0000-4629-8552-96671b730003'],
+    s4: function(){
+      return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
+    },
+    randomUUID: function() {
+      return this.s4() + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' +
+      this.s4() + '-' + this.s4() + this.s4() + this.s4();
+    },
+    generateFakeUUID: function() {
+      var mockFakeUUID = this.mockFakeUUIDs[this.mockIndex];
+      this.mockIndex++;
+      return mockFakeUUID;
+    },
+    isFakeUUID: function(uuid) {
+      if (uuid && uuid.startsWith('00000000-0000-'))
+        return true;
+    },
+    getShortIdFromFakeUUID: function(fakeUUID) {
+      return fakeUUID.substr(14, 4) + fakeUUID.substr(19, 4) + fakeUUID.substr(24, 12);
+    },
+  };
+
   // SETUP / TEARDOWN
 
   beforeEach(function() {
     module('em.appTest');
+
+
+    module('common', function($provide){
+      $provide.constant('UUIDService', MockUUIDService);
+    });
 
     inject(function (_$httpBackend_, _ListsService_, _ArrayService_, _TagsService_, _TasksService_,
                      _BackendClientService_, _HttpClientService_, _UserSessionService_) {
@@ -97,6 +131,20 @@ describe('ListsService', function() {
           }
         }], testOwnerUUID);
     });
+
+    var sessionStore = {};
+    spyOn(sessionStorage, 'getItem').andCallFake(function(key) {
+      return sessionStore[key];
+    });
+    spyOn(sessionStorage, 'setItem').andCallFake(function(key, value) {
+      sessionStore[key] = value + '';
+    });
+    spyOn(sessionStorage, 'removeItem').andCallFake(function(key) {
+      delete sessionStore[key];
+    });
+    spyOn(sessionStorage, 'clear').andCallFake(function() {
+      sessionStore = {};
+    });
   });
 
 
@@ -129,6 +177,7 @@ describe('ListsService', function() {
 
   it('should save new list', function () {
     var testListValues = {
+      'id': MockUUIDService.getShortIdFromFakeUUID(MockUUIDService.mockFakeUUIDs[0]),
       'title': 'test list'
     };
     var testList = ListsService.getNewList(testListValues, testOwnerUUID);
@@ -137,15 +186,15 @@ describe('ListsService', function() {
        .respond(200, putNewListResponse);
     ListsService.saveList(testList, testOwnerUUID);
     $httpBackend.flush();
-    expect(ListsService.getListInfo(putNewListResponse.uuid, testOwnerUUID))
+    expect(ListsService.getListInfo(MockUUIDService.mockFakeUUIDs[0], testOwnerUUID))
       .toBeDefined();
     // Should go to the end of the array
     var lists = ListsService.getLists(testOwnerUUID);
     expect(lists.length)
       .toBe(4);
-    expect(lists[3].uuid)
-      .toBe(putNewListResponse.uuid);
-    expect(lists[3].title)
+    expect(lists[3].mod.uuid)
+      .toBe(MockUUIDService.mockFakeUUIDs[0]);
+    expect(lists[3].mod.title)
       .toBe('test list');
     expect(lists[3].mod)
       .toBeDefined();
@@ -162,8 +211,8 @@ describe('ListsService', function() {
     ListsService.saveList(tripToDublin, testOwnerUUID);
     $httpBackend.flush();
 
-    expect(ListsService.getListInfo(tripToDublin.uuid, testOwnerUUID).list.modified)
-      .toBe(putExistingListResponse.modified);
+    expect(ListsService.getListInfo(tripToDublin.uuid, testOwnerUUID).list.mod.modified)
+      .toBeGreaterThan(tripToDublin.modified);
 
     // Should not change place
     var lists = ListsService.getLists(testOwnerUUID, testOwnerUUID);
@@ -171,7 +220,7 @@ describe('ListsService', function() {
       .toBe(3);
     expect(lists[0].uuid)
       .toBe(tripToDublin.uuid);
-    expect(lists[0].title)
+    expect(lists[0].mod.title)
       .toBe('another trip to Dublin');
     expect(lists[0].mod)
       .toBeDefined();
@@ -196,8 +245,8 @@ describe('ListsService', function() {
        .respond(200, undeleteListResponse);
     ListsService.undeleteList(tripToDublin, testOwnerUUID);
     $httpBackend.flush();
-    expect(ListsService.getListInfo(tripToDublin.uuid, testOwnerUUID).list.modified)
-      .toBe(undeleteListResponse.modified);
+    expect(ListsService.getListInfo(tripToDublin.uuid, testOwnerUUID).list.mod.modified)
+      .toBeGreaterThan(tripToDublin.modified);
 
     // There should be three left with trip to dublin in the same place
     lists = ListsService.getLists(testOwnerUUID);
@@ -280,7 +329,7 @@ describe('ListsService', function() {
     $httpBackend.flush();
 
     // The task should be completed task
-    expect(printTickets.completed).toBeDefined();
+    expect(printTickets.mod.completed).toBeDefined();
 
     // Archive list
     var tripToDublin = ListsService.getListInfo('bf726d03-8fee-4614-8b68-f9f885938a51', testOwnerUUID).list;

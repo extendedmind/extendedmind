@@ -39,19 +39,13 @@
         preferences: UserSessionService.getTransportPreferences()
       };
 
-      if (UserSessionService.isOfflineEnabled()) {
-        // Offline
-        var params = {
-          uuid: UserSessionService.getUserUUID(),
-          replaceable: true,
-          type: 'user'
-        };
-        BackendClientService.putOffline('/api/account', this.putAccountRegex, params, payload,
-                                 BackendClientService.generateFakeTimestamp());
-      }else{
-        // Online
-        BackendClientService.putOnline('/api/account', this.putAccountRegex, payload);
-      }
+      var params = {
+        uuid: UserSessionService.getUserUUID(),
+        replaceable: true,
+        type: 'user'
+      };
+      BackendClientService.putOffline('/api/account', this.putAccountRegex, params, payload,
+                               BackendClientService.generateFakeTimestamp());
     },
     logout: function() {
       return BackendClientService.postOnline('/api/logout', postLogoutRegexp);

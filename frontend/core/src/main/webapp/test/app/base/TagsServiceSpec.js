@@ -35,10 +35,43 @@ describe('TagsService', function() {
 
   var testOwnerUUID = '6be16f46-7b35-4b2d-b875-e13d19681e77';
 
+  var MockUUIDService = {
+    mockIndex: 0,
+    mockFakeUUIDs: ['00000000-0000-4629-8552-96671b730000',
+                    '00000000-0000-4629-8552-96671b730001',
+                    '00000000-0000-4629-8552-96671b730002',
+                    '00000000-0000-4629-8552-96671b730003'],
+    s4: function(){
+      return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
+    },
+    randomUUID: function() {
+      return this.s4() + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' +
+      this.s4() + '-' + this.s4() + this.s4() + this.s4();
+    },
+    generateFakeUUID: function() {
+      var mockFakeUUID = this.mockFakeUUIDs[this.mockIndex];
+      this.mockIndex++;
+      return mockFakeUUID;
+    },
+    isFakeUUID: function(uuid) {
+      if (uuid && uuid.startsWith('00000000-0000-'))
+        return true;
+    },
+    getShortIdFromFakeUUID: function(fakeUUID) {
+      return fakeUUID.substr(14, 4) + fakeUUID.substr(19, 4) + fakeUUID.substr(24, 12);
+    },
+  };
+
   // SETUP / TEARDOWN
 
   beforeEach(function() {
     module('em.appTest');
+
+    module('common', function($provide){
+      $provide.constant('UUIDService', MockUUIDService);
+    });
 
     inject(function (_$httpBackend_, _TagsService_, _BackendClientService_, _HttpClientService_,
                      _UserSessionService_) {
@@ -71,6 +104,20 @@ describe('TagsService', function() {
           'tagType': 'keyword'
         }], testOwnerUUID);
     });
+
+    var sessionStore = {};
+    spyOn(sessionStorage, 'getItem').andCallFake(function(key) {
+      return sessionStore[key];
+    });
+    spyOn(sessionStorage, 'setItem').andCallFake(function(key, value) {
+      sessionStore[key] = value + '';
+    });
+    spyOn(sessionStorage, 'removeItem').andCallFake(function(key) {
+      delete sessionStore[key];
+    });
+    spyOn(sessionStorage, 'clear').andCallFake(function() {
+      sessionStore = {};
+    });
   });
 
 afterEach(function() {
@@ -101,22 +148,22 @@ afterEach(function() {
   });
 
   it('should save new tag', function () {
-    var testTagValues = {title: 'test tag', tagType: 'keyword'};
+    var testTagValues = {id: MockUUIDService.getShortIdFromFakeUUID(MockUUIDService.mockFakeUUIDs[0]),
+                         title: 'test tag', tagType: 'keyword'};
     var testTag = TagsService.getNewTag(testTagValues, testOwnerUUID);
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/tag', testTagValues)
       .respond(200, putNewTagResponse);
     TagsService.saveTag(testTag, testOwnerUUID);
     $httpBackend.flush();
-    expect(TagsService.getTagInfo(putNewTagResponse.uuid, testOwnerUUID))
-    .toBeDefined();
+    expect(TagsService.getTagInfo(MockUUIDService.mockFakeUUIDs[0], testOwnerUUID)).toBeDefined();
 
     // Should go to the end of the array
     var tags = TagsService.getTags(testOwnerUUID);
     expect(tags.length)
-    .toBe(4);
-    expect(tags[3].uuid)
-    .toBe(putNewTagResponse.uuid);
-    expect(tags[3].title)
+      .toBe(4);
+    expect(tags[3].trans.uuid)
+      .toBe(MockUUIDService.mockFakeUUIDs[0]);
+    expect(tags[3].trans.title)
       .toBe('test tag');
     expect(tags[3].mod)
       .toBeDefined();
@@ -132,8 +179,8 @@ afterEach(function() {
     .respond(200, putExistingTagResponse);
     TagsService.saveTag(secret, testOwnerUUID);
     $httpBackend.flush();
-    expect(TagsService.getTagInfo(secret.uuid, testOwnerUUID).tag.modified)
-    .toBe(putExistingTagResponse.modified);
+    expect(TagsService.getTagInfo(secret.uuid, testOwnerUUID).tag.mod.modified)
+      .toBeGreaterThan(secret.modified);
 
     // Should not change places
     var tags = TagsService.getTags(testOwnerUUID);
@@ -141,7 +188,7 @@ afterEach(function() {
     .toBe(3);
     expect(tags[1].uuid)
     .toBe(secret.uuid);
-    expect(tags[1].title)
+    expect(tags[1].mod.title)
       .toBe('top secret');
     expect(tags[1].mod)
       .toBeDefined();
@@ -166,8 +213,8 @@ afterEach(function() {
     .respond(200, undeleteTagResponse);
     TagsService.undeleteTag(secret, testOwnerUUID);
     $httpBackend.flush();
-    expect(TagsService.getTagInfo(secret.uuid, testOwnerUUID).tag.modified)
-    .toBe(undeleteTagResponse.modified);
+    expect(TagsService.getTagInfo(secret.uuid, testOwnerUUID).tag.mod.modified)
+      .toBeGreaterThan(secret.modified);
 
     // There should be three left with the undeleted secret in its old place
     tags = TagsService.getTags(testOwnerUUID);

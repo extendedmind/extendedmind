@@ -111,11 +111,8 @@
       var encodedCredentials = UserSessionService.setAuthenticateInformation(response);
       // Update backend client with new token
       BackendClientService.setCredentials(encodedCredentials);
-      if (UserSessionService.isOfflineEnabled()) {
-        // As offline is still enabled, we want to remove possible duplicate swap token
-        // calls from the backend client
-        BackendClientService.clearPrimary();
-      }
+      // We want to remove possible duplicate swap token calls from the backend client
+      BackendClientService.clearPrimary();
       return response;
     });
   }
@@ -147,7 +144,7 @@
         if (UserSessionService.isAuthenticateReplaceable()) {
           // Make sure the latest credentials are in use
           BackendClientService.setCredentials(UserSessionService.getCredentials());
-          if (UserSessionService.isOfflineEnabled() && !online) {
+          if (!online) {
             // Push token swap to be the first thing that is done
             // when online connection is up
             BackendClientService.postPrimary('/api/authenticate',

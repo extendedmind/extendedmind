@@ -391,37 +391,23 @@
       } else if (note.trans.favorited === true){
         deferred.resolve(note);
       } else {
-        if (UserSessionService.isOfflineEnabled()) {
-          // Offline
-          var params = {
-            type: 'note', owner: ownerUUID, uuid: note.trans.uuid,
-            reverse: {
-              method: 'post',
-              url: '/api/' + ownerUUID + '/note/' + note.trans.uuid + '/unfavorite'
-            }, lastReplaceable: true
-          };
-          var fakeTimestamp = BackendClientService.generateFakeTimestamp();
-          BackendClientService.postOffline('/api/' + ownerUUID + '/note/' + note.trans.uuid + '/favorite',
-                                    this.favoriteNoteRegex, params, undefined, fakeTimestamp);
-          if (!note.mod) note.mod = {};
-          var propertiesToReset = {modified: fakeTimestamp,
-                                   favorited: BackendClientService.generateFakeTimestamp()};
-          ItemLikeService.updateObjectProperties(note.mod,
-                                                 propertiesToReset);
-          updateNote(note, ownerUUID, undefined, propertiesToReset);
-          deferred.resolve(note);
-        } else {
-          // Online
-          BackendClientService.postOnline('/api/' + ownerUUID + '/note/' + note.trans.uuid + '/favorite',
-                                        this.favoriteNoteRegex)
-          .then(function(response) {
-            var propertiesToReset = {modified: response.result.modified,
-                                     favorited: response.favorited};
-            ItemLikeService.updateObjectProperties(note, propertiesToReset);
-            updateNote(note, ownerUUID, undefined, propertiesToReset);
-            deferred.resolve(note);
-          });
-        }
+        var params = {
+          type: 'note', owner: ownerUUID, uuid: note.trans.uuid,
+          reverse: {
+            method: 'post',
+            url: '/api/' + ownerUUID + '/note/' + note.trans.uuid + '/unfavorite'
+          }, lastReplaceable: true
+        };
+        var fakeTimestamp = BackendClientService.generateFakeTimestamp();
+        BackendClientService.postOffline('/api/' + ownerUUID + '/note/' + note.trans.uuid + '/favorite',
+                                  this.favoriteNoteRegex, params, undefined, fakeTimestamp);
+        if (!note.mod) note.mod = {};
+        var propertiesToReset = {modified: fakeTimestamp,
+                                 favorited: BackendClientService.generateFakeTimestamp()};
+        ItemLikeService.updateObjectProperties(note.mod,
+                                               propertiesToReset);
+        updateNote(note, ownerUUID, undefined, propertiesToReset);
+        deferred.resolve(note);
       }
       return deferred.promise;
     },
@@ -432,32 +418,16 @@
       } else if (!note.trans.favorited){
         deferred.resolve(note);
       } else {
-        if (UserSessionService.isOfflineEnabled()) {
-          // Offline
-          var params = {type: 'note', owner: ownerUUID, uuid: note.trans.uuid, lastReplaceable: true};
-          var fakeTimestamp = BackendClientService.generateFakeTimestamp();
-          BackendClientService.postOffline('/api/' + ownerUUID + '/note/' + note.trans.uuid + '/unfavorite',
-                                    this.unfavoriteNoteRegex, params, undefined, fakeTimestamp);
-          if (!note.mod) note.mod = {};
-          var propertiesToReset = {modified: fakeTimestamp,
-                                   favorited: undefined};
-          ItemLikeService.updateObjectProperties(note.mod, propertiesToReset);
-          updateNote(note, ownerUUID, undefined, propertiesToReset);
-          deferred.resolve(note);
-        } else {
-          // Online
-          BackendClientService.postOnline('/api/' + ownerUUID + '/note/' + note.trans.uuid + '/unfavorite',
-                                          this.unfavoriteNoteRegex)
-          .then(function(response) {
-            var propertiesToReset = {modified: response.modified,
-                                     favorited: undefined};
-            ItemLikeService.updateObjectProperties(note, propertiesToReset);
-            // the above doesn't actually remove the property, which is what we want to do here
-            delete note.favorited;
-            updateNote(note, ownerUUID, undefined, propertiesToReset);
-            deferred.resolve(note);
-          });
-        }
+        var params = {type: 'note', owner: ownerUUID, uuid: note.trans.uuid, lastReplaceable: true};
+        var fakeTimestamp = BackendClientService.generateFakeTimestamp();
+        BackendClientService.postOffline('/api/' + ownerUUID + '/note/' + note.trans.uuid + '/unfavorite',
+                                  this.unfavoriteNoteRegex, params, undefined, fakeTimestamp);
+        if (!note.mod) note.mod = {};
+        var propertiesToReset = {modified: fakeTimestamp,
+                                 favorited: undefined};
+        ItemLikeService.updateObjectProperties(note.mod, propertiesToReset);
+        updateNote(note, ownerUUID, undefined, propertiesToReset);
+        deferred.resolve(note);
       }
       return deferred.promise;
     },

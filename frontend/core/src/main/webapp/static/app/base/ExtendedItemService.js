@@ -36,7 +36,7 @@
       } else{
         if (!extendedItem.mod.relationships) extendedItem.mod.relationships = {};
         extendedItem.mod.relationships.parent = extendedItem.trans.list.trans.uuid;
-        // Remove deletedList from history history
+        // Remove deletedList from history
         if (extendedItem.hist && extendedItem.hist.deletedList !== extendedItem.trans.list.trans.uuid){
           delete extendedItem.hist.deletedList;
           if (jQuery.isEmptyObject(extendedItem.hist)){

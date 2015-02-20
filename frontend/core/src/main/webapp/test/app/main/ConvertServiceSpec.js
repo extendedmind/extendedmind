@@ -163,7 +163,7 @@
           'title': 'write essay body',
           'due': '2014-03-09',
           'relationships': {
-            'parent': '0a9a7ba1-3f1c-4541-842d-cff4d226628e'
+            'parent': '07bc96d1-e8b2-49a9-9d35-1eece6263f98'
           }
         }, {
           'uuid': '7b53d509-853a-47de-992c-c572a6952629',
@@ -197,6 +197,7 @@ it('should convert existing task to note', function() {
   // SETUP
   var cleanCloset = TasksService.getTaskInfo('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID).task;
   var taskToNotePath = '/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid + '/note';
+  taskToNoteResponse.uuid = cleanCloset.uuid;
   $httpBackend.expectPOST(taskToNotePath).respond(200, taskToNoteResponse);
 
   // EXECUTE
@@ -222,6 +223,7 @@ it('should convert existing task to list', function() {
   // SETUP
   var cleanCloset = TasksService.getTaskInfo('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID).task;
   var taskToListPath = '/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid + '/list';
+  taskToListResponse.uuid = cleanCloset.uuid;
   $httpBackend.expectPOST(taskToListPath).respond(200, taskToListResponse);
 
   // EXECUTE
@@ -247,6 +249,7 @@ it('should convert existing note to task', function() {
   // SETUP
   var notesOnProductivity = NotesService.getNoteInfo('848cda60-d725-40cc-b756-0b1e9fa5b7d8', testOwnerUUID).note;
   var noteToTaskPath = '/api/' + testOwnerUUID + '/note/' + notesOnProductivity.uuid + '/task';
+  noteToTaskResponse.uuid = notesOnProductivity.uuid;
   $httpBackend.expectPOST(noteToTaskPath).respond(200, noteToTaskResponse);
 
   // EXECUTE
@@ -275,6 +278,7 @@ it('should convert existing note to list', function() {
   // SETUP
   var notesOnProductivity = NotesService.getNoteInfo('848cda60-d725-40cc-b756-0b1e9fa5b7d8', testOwnerUUID).note;
   var noteToListPath = '/api/' + testOwnerUUID + '/note/' + notesOnProductivity.uuid + '/list';
+  noteToListResponse.uuid = notesOnProductivity.uuid;
   $httpBackend.expectPOST(noteToListPath).respond(200, noteToListResponse);
 
   // EXECUTE
@@ -303,6 +307,7 @@ it('should convert existing list to task', function() {
   // SETUP
   var tripToDublin = ListsService.getListInfo('bf726d03-8fee-4614-8b68-f9f885938a51', testOwnerUUID).list;
   var listToTaskPath = '/api/' + testOwnerUUID + '/list/' + tripToDublin.uuid + '/task';
+  listToTaskResponse.uuid = tripToDublin.uuid;
   $httpBackend.expectPOST(listToTaskPath).respond(200, listToTaskResponse);
 
   // EXECUTE
@@ -329,6 +334,7 @@ it('should convert existing list to note', function() {
   var extendedMindTechnologies = ListsService.getListInfo('0da0bff6-3bd7-4884-adba-f47fab9f270d',
                                                           testOwnerUUID).list;
   var listToNotePath = '/api/' + testOwnerUUID + '/list/' + extendedMindTechnologies.uuid + '/note';
+  listToNoteResponse.uuid = extendedMindTechnologies.uuid;
   $httpBackend.expectPOST(listToNotePath).respond(200, listToNoteResponse);
 
   // EXECUTE
@@ -379,17 +385,16 @@ it('should remove pre-existing parent from task when converting existing task to
   var writeEssayBody = TasksService.getTaskInfo('7a612ca2-7de0-45ad-a758-d949df37f51e', testOwnerUUID).task;
   var taskToListPath = '/api/' + testOwnerUUID + '/task/' + writeEssayBody.uuid + '/list';
   delete taskToListResponse.relationships.parent;
+  taskToListResponse.uuid = writeEssayBody.uuid;
   $httpBackend.expectPOST(taskToListPath).respond(200, taskToListResponse);
-
   // EXECUTE
   ConvertService.finishTaskToListConvert(writeEssayBody, testOwnerUUID);
   $httpBackend.flush();
 
   // TESTS
   var convertedList = ListsService.getListInfo(taskToListResponse.uuid, testOwnerUUID).list;
-
-  expect(convertedList.relationships.parent).
-  toBeUndefined();
+  expect(convertedList.trans.list).
+    toBeUndefined();
 });
 
 it('should set convert object with \'task\' property in transient properties ' +
@@ -397,6 +402,7 @@ it('should set convert object with \'task\' property in transient properties ' +
   // SETUP
   var printTickets = TasksService.getTaskInfo('9a1ce3aa-f476-43c4-845e-af59a9a33760', testOwnerUUID).task;
   var taskToListPath = '/api/' + testOwnerUUID + '/task/' + printTickets.uuid + '/list';
+  taskToListResponse.uuid = printTickets.uuid;
   $httpBackend.expectPOST(taskToListPath).respond(200, taskToListResponse);
 
   // EXECUTE
@@ -425,6 +431,7 @@ it('should set convert object with \'note\' property in transient properties ' +
   $httpBackend.flush();
 
   var noteToTaskPath = '/api/' + testOwnerUUID + '/note/' + notesOnProductivity.uuid + '/task';
+  noteToTaskResponse.uuid = notesOnProductivity.uuid;
   $httpBackend.expectPOST(noteToTaskPath).respond(200, noteToTaskResponse);
 
   // EXECUTE
@@ -437,7 +444,7 @@ it('should set convert object with \'note\' property in transient properties ' +
   expect(convertedTask.hist.convert.note)
   .toBeDefined();
 
-  expect(convertedTask.hist.convert.note.favorited).toBe(favoriteNoteResponse.favorited);
+  expect(convertedTask.hist.convert.note.favorited).toBeGreaterThan(favoriteNoteResponse.favorited);
 });
 
 it('should set transient properties object with \'date\' property to task ' +
@@ -445,9 +452,11 @@ it('should set transient properties object with \'date\' property to task ' +
   // SETUP
   var writeEssayOnCognitiveBiases = ListsService.getListInfo('07bc96d1-e8b2-49a9-9d35-1eece6263f98',
                                                              testOwnerUUID).list;
-  // add persistent property to task
+  // add history property to task
+  writeEssayOnCognitiveBiases.hist = {convert: {task: {due: '2014-08-29'}}};
   listToTaskResponse.due = '2014-08-29';
   var listToTaskPath = '/api/' + testOwnerUUID + '/list/' + writeEssayOnCognitiveBiases.uuid + '/task';
+  listToTaskResponse.uuid = writeEssayOnCognitiveBiases.uuid;
   $httpBackend.expectPOST(listToTaskPath).respond(200, listToTaskResponse);
 
   // EXECUTE
@@ -458,34 +467,7 @@ it('should set transient properties object with \'date\' property to task ' +
   var convertedTask = TasksService.getTaskInfo(listToTaskResponse.uuid, testOwnerUUID).task;
 
   expect(convertedTask.trans.due)
-  .toEqual('2014-08-29');
-});
-
-it('should convert new task to note and move description to content', function() {
-  /*
-  // SETUP
-  var newTaskToNote = {
-    title: 'print tickets',
-    link: 'http://www.ext.md',
-    due: '2014-01-02',
-    description: 'to oxygen accelerator',
-    reminder: '10:00',
-    relationships: {
-      parent: 'dbff4507-927d-4f99-940a-ee0cfcf6e84c',
-      tags: ['1208d45b-3b8c-463e-88f3-f7ef19ce87cd']
-    }
-  };
-
-  // EXECUTE
-  ConvertService.finishTaskToNoteConvert(newTaskToNote, testOwnerUUID);
-
-  // TESTS
-  expect(newTaskToNote.description)
-  .toBeUndefined();
-
-  expect(newTaskToNote.content)
-  .toEqual('to oxygen accelerator');
-  */
+    .toEqual('2014-08-29');
 });
 
 });

@@ -97,9 +97,6 @@ describe('SynchronizeService', function() {
     setLatestModified: function (modified) {
       this.latestModified = modified;
     },
-    isOfflineEnabled: function () {
-      return true;
-    },
     isPersistentStorageEnabled: function(){
       return true;
     },

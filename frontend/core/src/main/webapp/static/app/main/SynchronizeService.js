@@ -866,7 +866,7 @@
                                              '/items', getItemsRegex,
                                              undefined, true).then(function(response) {
       setItemArrays(response, ownerUUID);
-      if (UserSessionService.isOfflineEnabled()) UserSessionService.setPersistentDataLoaded(true);
+      UserSessionService.setPersistentDataLoaded(true);
       return response;
     });
   }
@@ -877,27 +877,9 @@
         deferred.resolve();
       }else if (latestModified !== undefined) {
         url += '?modified=' + latestModified + '&deleted=true&archived=true&completed=true';
-        if (UserSessionService.isOfflineEnabled()) {
-          // Push request to offline buffer
-          BackendClientService.getSecondary(url, getItemsRegex, {owner: ownerUUID});
-          deferred.resolve();
-        } else {
-          BackendClientService.getSecondary(url, getItemsRegex, undefined, true).then(function(response) {
-            processSynchronizeUpdateResult(ownerUUID, response);
-            deferred.resolve(false);
-          }, function(error) {
-            if (error.type === 'forbidden') {
-              // Go to login
-              var rejection = {type: 'http', value: {
-                status: error.status, data: error.data, url: error.value.config.url}};
-              $rootScope.$emit('emException', rejection);
-              deferred.reject(rejection);
-            } else {
-              // just resolve, because this command does not need to always succeed
-              deferred.resolve(false);
-            }
-          });
-        }
+        // Push request to offline buffer
+        BackendClientService.getSecondary(url, getItemsRegex, {owner: ownerUUID});
+        deferred.resolve();
       } else {
         getAllOnline(ownerUUID, getAllItemsOnline, deferred);
       }
@@ -975,20 +957,9 @@
     },
     synchronizeUser: function() {
       var deferred = $q.defer();
-
-      if (UserSessionService.isOfflineEnabled()) {
-        // Offline
-        BackendClientService.getBeforeLast('/api/account',
-         UserService.getAccountRegex);
-        deferred.resolve();
-      } else {
-        // Online
-        BackendClientService.getBeforeLast('/api/account',
-         UserService.getAccountRegex, undefined, true).then(function(response) {
-          storeUserAccountResponse(response);
-          deferred.resolve();
-        });
-      }
+      BackendClientService.getBeforeLast('/api/account',
+       UserService.getAccountRegex);
+      deferred.resolve();
       return deferred.promise;
     },
     getModifiedItems: function(itemType, ownerUUID) {

@@ -43,10 +43,43 @@
 
   var testOwnerUUID = '6be16f46-7b35-4b2d-b875-e13d19681e77';
 
+  var MockUUIDService = {
+    mockIndex: 0,
+    mockFakeUUIDs: ['00000000-0000-4629-8552-96671b730000',
+                    '00000000-0000-4629-8552-96671b730001',
+                    '00000000-0000-4629-8552-96671b730002',
+                    '00000000-0000-4629-8552-96671b730003'],
+    s4: function(){
+      return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
+    },
+    randomUUID: function() {
+      return this.s4() + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' +
+      this.s4() + '-' + this.s4() + this.s4() + this.s4();
+    },
+    generateFakeUUID: function() {
+      var mockFakeUUID = this.mockFakeUUIDs[this.mockIndex];
+      this.mockIndex++;
+      return mockFakeUUID;
+    },
+    isFakeUUID: function(uuid) {
+      if (uuid && uuid.startsWith('00000000-0000-'))
+        return true;
+    },
+    getShortIdFromFakeUUID: function(fakeUUID) {
+      return fakeUUID.substr(14, 4) + fakeUUID.substr(19, 4) + fakeUUID.substr(24, 12);
+    },
+  };
+
   // SETUP / TEARDOWN
 
   beforeEach(function() {
     module('em.appTest');
+
+    module('common', function($provide){
+      $provide.constant('UUIDService', MockUUIDService);
+    });
 
     inject(function(_$httpBackend_, _NotesService_, _BackendClientService_, _HttpClientService_,
                     _ListsService_, _TagsService_, _UserSessionService_) {
@@ -105,6 +138,21 @@
           }
         }], testOwnerUUID);
     });
+
+    var sessionStore = {};
+    spyOn(sessionStorage, 'getItem').andCallFake(function(key) {
+      return sessionStore[key];
+    });
+    spyOn(sessionStorage, 'setItem').andCallFake(function(key, value) {
+      sessionStore[key] = value + '';
+    });
+    spyOn(sessionStorage, 'removeItem').andCallFake(function(key) {
+      delete sessionStore[key];
+    });
+    spyOn(sessionStorage, 'clear').andCallFake(function() {
+      sessionStore = {};
+    });
+
   });
 
   afterEach(function() {
@@ -136,6 +184,7 @@
 
   it('should save new note', function() {
     var testNoteValues = {
+      'id': MockUUIDService.getShortIdFromFakeUUID(MockUUIDService.mockFakeUUIDs[0]),
       'title': 'test note'
     };
     var testNote = NotesService.getNewNote(testNoteValues, testOwnerUUID);
@@ -143,16 +192,16 @@
     .respond(200, putNewNoteResponse);
     NotesService.saveNote(testNote, testOwnerUUID);
     $httpBackend.flush();
-    expect(NotesService.getNoteInfo(putNewNoteResponse.uuid, testOwnerUUID))
-    .toBeDefined();
+    expect(NotesService.getNoteInfo(MockUUIDService.mockFakeUUIDs[0], testOwnerUUID))
+      .toBeDefined();
 
     // Should move to the end of the array
     var notes = NotesService.getNotes(testOwnerUUID);
     expect(notes.length)
     .toBe(4);
-    expect(notes[3].uuid)
-    .toBe(putNewNoteResponse.uuid);
-    expect(notes[3].title)
+    expect(notes[3].mod.uuid)
+    .toBe(MockUUIDService.mockFakeUUIDs[0]);
+    expect(notes[3].mod.title)
       .toBe('test note');
     expect(notes[3].mod)
       .toBeDefined();
@@ -169,8 +218,8 @@
     .respond(200, putExistingNoteResponse);
     NotesService.saveNote(officeDoorCode, testOwnerUUID);
     $httpBackend.flush();
-    expect(NotesService.getNoteInfo(officeDoorCode.uuid, testOwnerUUID).note.modified)
-    .toBe(putExistingNoteResponse.modified);
+    expect(NotesService.getNoteInfo(officeDoorCode.uuid, testOwnerUUID).note.mod.modified)
+      .toBeGreaterThan(officeDoorCode.modified);
 
     // Should stay in its old place
     var notes = NotesService.getNotes(testOwnerUUID);
@@ -178,10 +227,8 @@
     .toBe(3);
     expect(notes[0].uuid)
     .toBe(officeDoorCode.uuid);
-    expect(notes[0].content)
+    expect(notes[0].mod.content)
       .toBe('1234');
-    expect(notes[0].mod)
-      .toBeDefined();
   });
 
   it('should delete and undelete note', function() {
@@ -203,8 +250,8 @@
     .respond(200, undeleteNoteResponse);
     NotesService.undeleteNote(officeDoorCode, testOwnerUUID);
     $httpBackend.flush();
-    expect(NotesService.getNoteInfo(officeDoorCode.uuid, testOwnerUUID).note.modified)
-    .toBe(undeleteNoteResponse.modified);
+    expect(NotesService.getNoteInfo(officeDoorCode.uuid, testOwnerUUID).note.mod.modified)
+      .toBeGreaterThan(officeDoorCode.modified);
 
     // There should be three left with the undeleted officeDoorCode in its old place
     notes = NotesService.getNotes(testOwnerUUID);
@@ -225,7 +272,7 @@
     $httpBackend.flush();
 
     var notes = NotesService.getNotes(testOwnerUUID);
-    expect(NotesService.getNoteInfo(officeDoorCode.uuid, testOwnerUUID).note.favorited)
+    expect(NotesService.getNoteInfo(officeDoorCode.uuid, testOwnerUUID).note.mod.favorited)
         .toBeDefined();
     expect(notes.length)
     .toBe(3);
@@ -234,7 +281,7 @@
     expect(notes[0].trans.favorited)
     .toBeDefined()
     expect(notes[0].trans.favorited)
-    .toBe(notes[0].favorited)
+    .toBe(notes[0].mod.favorited)
 
     // Unfavorite
     $httpBackend.expectPOST('/api/' + testOwnerUUID + '/note/' + officeDoorCode.uuid + '/unfavorite')

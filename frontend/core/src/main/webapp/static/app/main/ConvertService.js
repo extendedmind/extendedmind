@@ -76,7 +76,7 @@
   }
 
   function removeList(item) {
-    if (item.trans.list) delete item.trans.list;
+    if (item.trans.list) item.trans.list = undefined;
   }
 
   function getTaskHistory(task) {
@@ -150,7 +150,7 @@
       }
     };
     if (item.trans.link) newItem.mod.link = item.trans.link;
-    if (item.mod && item.mod.relationships) newItem.mod.relationships = item.mod.relationships;
+    if (item.mod && item.mod.hasOwnProperty('relationships')) newItem.mod.relationships = item.mod.relationships;
     else if (item.relationships) newItem.mod.relationships = item.relationships;
     return newItem;
   }
@@ -201,26 +201,15 @@
         var path = '/api/' + ownerUUID + '/task/' + task.trans.uuid + '/note';
         var transportTask = ItemLikeService.prepareTransport(task, 'task',
                                                              ownerUUID, TasksService.taskFieldInfos);
-        if (UserSessionService.isOfflineEnabled()) {
-          // Offline
-          var params = {
-            type: 'task', owner: ownerUUID, uuid: task.trans.uuid, lastReplaceable: false
-          };
-          var fakeTimestamp = BackendClientService.generateFakeTimestamp();
-          BackendClientService.postOffline(path, this.convertTaskToNoteRegex,
-                                           params, transportTask, fakeTimestamp);
-          var note = createNoteUsingHistConvert(task, fakeTimestamp);
-          processTaskToNoteResponse(task, note, ownerUUID);
-          deferred.resolve(note);
-        }else{
-          // Online
-          BackendClientService.postOnline(path,
-                                          this.convertTaskToNoteRegex,
-                                          transportTask).then(function(response) {
-            processTaskToNoteResponse(task, response, ownerUUID);
-            deferred.resolve(response);
-          });
-        }
+        var params = {
+          type: 'task', owner: ownerUUID, uuid: task.trans.uuid, lastReplaceable: false
+        };
+        var fakeTimestamp = BackendClientService.generateFakeTimestamp();
+        BackendClientService.postOffline(path, this.convertTaskToNoteRegex,
+                                         params, transportTask, fakeTimestamp);
+        var note = createNoteUsingHistConvert(task, fakeTimestamp);
+        processTaskToNoteResponse(task, note, ownerUUID);
+        deferred.resolve(note);
       }
       return deferred.promise;
     },
@@ -236,26 +225,15 @@
         var path = '/api/' + ownerUUID + '/task/' + task.trans.uuid + '/list';
         var transportTask = ItemLikeService.prepareTransport(task, 'task',
                                                              ownerUUID, TasksService.taskFieldInfos);
-        if (UserSessionService.isOfflineEnabled()) {
-          // Offline
-          var params = {
-            type: 'task', owner: ownerUUID, uuid: task.trans.uuid, lastReplaceable: false
-          };
-          var fakeTimestamp = BackendClientService.generateFakeTimestamp();
-          BackendClientService.postOffline(path, this.convertTaskToListRegex,
-                                           params, transportTask, fakeTimestamp);
-          var list = createListUsingHistConvert(task, fakeTimestamp);
-          processTaskToListResponse(task, list, ownerUUID);
-          deferred.resolve(list);
-        }else{
-          // Online
-          BackendClientService.postOnline(path,
-                                          this.convertTaskToListRegex,
-                                          transportTask).then(function(response) {
-            processTaskToListResponse(task, response, ownerUUID);
-            deferred.resolve(response);
-          });
-        }
+        var params = {
+          type: 'task', owner: ownerUUID, uuid: task.trans.uuid, lastReplaceable: false
+        };
+        var fakeTimestamp = BackendClientService.generateFakeTimestamp();
+        BackendClientService.postOffline(path, this.convertTaskToListRegex,
+                                         params, transportTask, fakeTimestamp);
+        var list = createListUsingHistConvert(task, fakeTimestamp);
+        processTaskToListResponse(task, list, ownerUUID);
+        deferred.resolve(list);
       }
       return deferred.promise;
     },
@@ -268,26 +246,15 @@
         var path = '/api/' + ownerUUID + '/note/' + note.trans.uuid + '/task';
         var transportNote = ItemLikeService.prepareTransport(note, 'note',
                                                              ownerUUID, NotesService.noteFieldInfos);
-        if (UserSessionService.isOfflineEnabled()) {
-          // Offline
-          var params = {
-            type: 'note', owner: ownerUUID, uuid: note.trans.uuid, lastReplaceable: false
-          };
-          var fakeTimestamp = BackendClientService.generateFakeTimestamp();
-          BackendClientService.postOffline(path, this.convertNoteToTaskRegex,
-                                           params, transportNote, fakeTimestamp);
-          var task = createTaskUsingHistConvert(note, fakeTimestamp);
-          processNoteToTaskResponse(note, task, ownerUUID);
-          deferred.resolve(task);
-        }else{
-          // Online
-          BackendClientService.postOnline(path,
-                                          this.convertNoteToTaskRegex,
-                                          transportNote).then(function(response) {
-            processNoteToTaskResponse(note, response, ownerUUID);
-            deferred.resolve(response);
-          });
-        }
+        var params = {
+          type: 'note', owner: ownerUUID, uuid: note.trans.uuid, lastReplaceable: false
+        };
+        var fakeTimestamp = BackendClientService.generateFakeTimestamp();
+        BackendClientService.postOffline(path, this.convertNoteToTaskRegex,
+                                         params, transportNote, fakeTimestamp);
+        var task = createTaskUsingHistConvert(note, fakeTimestamp);
+        processNoteToTaskResponse(note, task, ownerUUID);
+        deferred.resolve(task);
       }
       return deferred.promise;
     },
@@ -303,26 +270,15 @@
         var path = '/api/' + ownerUUID + '/note/' + note.trans.uuid + '/list';
         var transportNote = ItemLikeService.prepareTransport(note, 'note',
                                                              ownerUUID, NotesService.noteFieldInfos);
-        if (UserSessionService.isOfflineEnabled()) {
-          // Offline
-          var params = {
-            type: 'note', owner: ownerUUID, uuid: note.trans.uuid, lastReplaceable: false
-          };
-          var fakeTimestamp = BackendClientService.generateFakeTimestamp();
-          BackendClientService.postOffline(path, this.convertNoteToListRegex,
-                                           params, transportNote, fakeTimestamp);
-          var list = createListUsingHistConvert(note, fakeTimestamp);
-          processNoteToListResponse(note, list, ownerUUID);
-          deferred.resolve(list);
-        }else{
-          // Online
-          BackendClientService.postOnline(path,
-                                          this.convertNoteToListRegex,
-                                          transportNote).then(function(response) {
-            processNoteToListResponse(note, response, ownerUUID);
-            deferred.resolve(response);
-          });
-        }
+        var params = {
+          type: 'note', owner: ownerUUID, uuid: note.trans.uuid, lastReplaceable: false
+        };
+        var fakeTimestamp = BackendClientService.generateFakeTimestamp();
+        BackendClientService.postOffline(path, this.convertNoteToListRegex,
+                                         params, transportNote, fakeTimestamp);
+        var list = createListUsingHistConvert(note, fakeTimestamp);
+        processNoteToListResponse(note, list, ownerUUID);
+        deferred.resolve(list);
       }
       return deferred.promise;
     },
@@ -334,26 +290,15 @@
         var path = '/api/' + ownerUUID + '/list/' + list.trans.uuid + '/task';
         var transportList = ItemLikeService.prepareTransport(list, 'list',
                                                              ownerUUID, ListsService.listFieldInfos);
-        if (UserSessionService.isOfflineEnabled()) {
-          // Offline
-          var params = {
-            type: 'list', owner: ownerUUID, uuid: list.trans.uuid, lastReplaceable: false
-          };
-          var fakeTimestamp = BackendClientService.generateFakeTimestamp();
-          BackendClientService.postOffline(path, this.convertListToTaskRegex,
-                                           params, transportList, fakeTimestamp);
-          var task = createTaskUsingHistConvert(list, fakeTimestamp);
-          processListToTaskResponse(list, task, ownerUUID);
-          deferred.resolve(task);
-        }else{
-          // Online
-          BackendClientService.postOnline(path,
-                                          this.convertListToTaskRegex,
-                                          transportList).then(function(response) {
-            processListToTaskResponse(list, response, ownerUUID);
-            deferred.resolve(response);
-          });
-        }
+        var params = {
+          type: 'list', owner: ownerUUID, uuid: list.trans.uuid, lastReplaceable: false
+        };
+        var fakeTimestamp = BackendClientService.generateFakeTimestamp();
+        BackendClientService.postOffline(path, this.convertListToTaskRegex,
+                                         params, transportList, fakeTimestamp);
+        var task = createTaskUsingHistConvert(list, fakeTimestamp);
+        processListToTaskResponse(list, task, ownerUUID);
+        deferred.resolve(task);
       }
       return deferred.promise;
     },
@@ -365,26 +310,15 @@
         var path = '/api/' + ownerUUID + '/list/' + list.trans.uuid + '/note';
         var transportList = ItemLikeService.prepareTransport(list, 'list',
                                                              ownerUUID, ListsService.listFieldInfos);
-        if (UserSessionService.isOfflineEnabled()) {
-          // Offline
-          var params = {
-            type: 'list', owner: ownerUUID, uuid: list.trans.uuid, lastReplaceable: false
-          };
-          var fakeTimestamp = BackendClientService.generateFakeTimestamp();
-          BackendClientService.postOffline(path, this.convertListToNoteRegex,
-                                           params, transportList, fakeTimestamp);
-          var note = createNoteUsingHistConvert(list, fakeTimestamp);
-          processListToNoteResponse(list, note, ownerUUID);
-          deferred.resolve(note);
-        }else{
-          // Online
-          BackendClientService.postOnline(path,
-                                          this.convertListToNoteRegex,
-                                          transportList).then(function(response) {
-            processListToNoteResponse(list, response, ownerUUID);
-            deferred.resolve(response);
-          });
-        }
+        var params = {
+          type: 'list', owner: ownerUUID, uuid: list.trans.uuid, lastReplaceable: false
+        };
+        var fakeTimestamp = BackendClientService.generateFakeTimestamp();
+        BackendClientService.postOffline(path, this.convertListToNoteRegex,
+                                         params, transportList, fakeTimestamp);
+        var note = createNoteUsingHistConvert(list, fakeTimestamp);
+        processListToNoteResponse(list, note, ownerUUID);
+        deferred.resolve(note);
       }
       return deferred.promise;
     },

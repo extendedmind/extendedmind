@@ -40,10 +40,43 @@
 
   var testOwnerUUID = '6be16f46-7b35-4b2d-b875-e13d19681e77';
 
+  var MockUUIDService = {
+    mockIndex: 0,
+    mockFakeUUIDs: ['00000000-0000-4629-8552-96671b730000',
+                    '00000000-0000-4629-8552-96671b730001',
+                    '00000000-0000-4629-8552-96671b730002',
+                    '00000000-0000-4629-8552-96671b730003'],
+    s4: function(){
+      return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
+    },
+    randomUUID: function() {
+      return this.s4() + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' +
+      this.s4() + '-' + this.s4() + this.s4() + this.s4();
+    },
+    generateFakeUUID: function() {
+      var mockFakeUUID = this.mockFakeUUIDs[this.mockIndex];
+      this.mockIndex++;
+      return mockFakeUUID;
+    },
+    isFakeUUID: function(uuid) {
+      if (uuid && uuid.startsWith('00000000-0000-'))
+        return true;
+    },
+    getShortIdFromFakeUUID: function(fakeUUID) {
+      return fakeUUID.substr(14, 4) + fakeUUID.substr(19, 4) + fakeUUID.substr(24, 12);
+    },
+  };
+
   // SETUP / TEARDOWN
 
   beforeEach(function() {
     module('em.appTest');
+
+    module('common', function($provide){
+      $provide.constant('UUIDService', MockUUIDService);
+    });
 
     inject(function (_$httpBackend_, _TasksService_, _BackendClientService_, _HttpClientService_,
                      _ListsService_, _UserSessionService_) {
@@ -84,6 +117,21 @@
           }
         }], testOwnerUUID);
     });
+
+    var sessionStore = {};
+    spyOn(sessionStorage, 'getItem').andCallFake(function(key) {
+      return sessionStore[key];
+    });
+    spyOn(sessionStorage, 'setItem').andCallFake(function(key, value) {
+      sessionStore[key] = value + '';
+    });
+    spyOn(sessionStorage, 'removeItem').andCallFake(function(key) {
+      delete sessionStore[key];
+    });
+    spyOn(sessionStorage, 'clear').andCallFake(function() {
+      sessionStore = {};
+    });
+
 });
 
 afterEach(function() {
@@ -115,6 +163,7 @@ afterEach(function() {
 
   it('should save new task', function () {
     var testTaskValues = {
+      'id': MockUUIDService.getShortIdFromFakeUUID(MockUUIDService.mockFakeUUIDs[0]),
       'title': 'test task'
     };
     var testTask = TasksService.getNewTask(testTaskValues, testOwnerUUID);
@@ -122,19 +171,17 @@ afterEach(function() {
     .respond(200, putNewTaskResponse);
     TasksService.saveTask(testTask, testOwnerUUID);
     $httpBackend.flush();
-    expect(TasksService.getTaskInfo(putNewTaskResponse.uuid, testOwnerUUID).task)
+    expect(TasksService.getTaskInfo(MockUUIDService.mockFakeUUIDs[0], testOwnerUUID).task)
     .toBeDefined();
 
     // Should go to the end of the array
     var tasks = TasksService.getTasks(testOwnerUUID);
     expect(tasks.length)
     .toBe(4);
-    expect(tasks[3].uuid)
-    .toBe(putNewTaskResponse.uuid);
-    expect(tasks[3].title)
+    expect(tasks[3].mod.uuid)
+    .toBe(MockUUIDService.mockFakeUUIDs[0]);
+    expect(tasks[3].mod.title)
       .toBe('test task');
-    expect(tasks[3].mod)
-      .toBeDefined();
   });
 
   it('should update existing task', function () {
@@ -146,8 +193,8 @@ afterEach(function() {
     .respond(200, putExistingTaskResponse);
     TasksService.saveTask(cleanCloset, testOwnerUUID);
     $httpBackend.flush();
-    expect(TasksService.getTaskInfo(cleanCloset.uuid, testOwnerUUID).task.modified)
-    .toBe(putExistingTaskResponse.modified);
+    expect(TasksService.getTaskInfo(cleanCloset.uuid, testOwnerUUID).task.mod.modified)
+      .toBeGreaterThan(cleanCloset.modified);
 
     // Should stay iin its old place
     var tasks = TasksService.getTasks(testOwnerUUID);
@@ -155,10 +202,8 @@ afterEach(function() {
     .toBe(3);
     expect(tasks[0].uuid)
     .toBe(cleanCloset.uuid);
-    expect(tasks[0].title)
+    expect(tasks[0].mod.title)
       .toBe('clean closet now');
-    expect(tasks[0].mod)
-      .toBeDefined();
   });
 
   it('should delete and undelete task', function () {
@@ -180,8 +225,8 @@ afterEach(function() {
     .respond(200, undeleteTaskResponse);
     TasksService.undeleteTask(cleanCloset, testOwnerUUID);
     $httpBackend.flush();
-    expect(TasksService.getTaskInfo(cleanCloset.uuid, testOwnerUUID).task.modified)
-    .toBe(undeleteTaskResponse.modified);
+    expect(TasksService.getTaskInfo(cleanCloset.uuid, testOwnerUUID).task.mod.modified)
+    .toBeGreaterThan(cleanCloset.modified);
 
     // There should be three left with the undeleted cleanCloset in its old place
     tasks = TasksService.getTasks(testOwnerUUID);
@@ -206,7 +251,7 @@ it('should complete and uncomplete task', function () {
 
     // The task should be active and in its old place, but with the complete flag set
     var tasks = TasksService.getTasks(testOwnerUUID);
-    expect(TasksService.getTaskInfo(cleanCloset.uuid, testOwnerUUID).task.completed)
+    expect(TasksService.getTaskInfo(cleanCloset.uuid, testOwnerUUID).task.mod.completed)
     .toBeDefined();
     expect(tasks[0].uuid)
     .toBe(cleanCloset.uuid);
@@ -219,7 +264,7 @@ it('should complete and uncomplete task', function () {
     expect(tasks[0].trans.completed)
     .toBeDefined();
     expect(tasks[0].trans.completed)
-    .toBe(tasks[0].completed);
+    .toBe(tasks[0].mod.completed);
 
     // Uncomplete
     $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid + '/uncomplete')

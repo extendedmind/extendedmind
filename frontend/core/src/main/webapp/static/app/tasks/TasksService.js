@@ -493,56 +493,41 @@
       } else if (task.trans.completed){
         deferred.resolve(task);
       } else {
-        if (UserSessionService.isOfflineEnabled()) {
-          // Offline
-          var params = {
-            type: 'task', owner: ownerUUID, uuid: task.trans.uuid,
-            lastReplaceable: true
-          };
-          var fakeTimestamp = BackendClientService.generateFakeTimestamp();
+        var params = {
+          type: 'task', owner: ownerUUID, uuid: task.trans.uuid,
+          lastReplaceable: true
+        };
+        var fakeTimestamp = BackendClientService.generateFakeTimestamp();
 
-          // Handle repeating task when a repeating task has not already been generated
-          if (task.trans.repeating && !(task.hist && task.hist.generatedUUID)){
-            var fakeRepeatingUUID = UUIDService.generateFakeUUID();
-            var repeatingTask = this.getNewTask(getRepeatingTaskInitialValues(task));
-            ItemLikeService.copyEditedFieldsToMod(repeatingTask, 'task', ownerUUID, taskFieldInfos);
-            ItemLikeService.updateObjectProperties(repeatingTask.mod,
-              {uuid: fakeRepeatingUUID,
-               modified: fakeTimestamp,
-               created: fakeTimestamp});
-            setTask(repeatingTask, ownerUUID);
-            // store information that task has been repeated to the task itself and to the POST call
-            if (!task.hist) task.hist = {};
-            task.hist.generatedUUID = fakeRepeatingUUID;
-            params.generatedFakeUUID = fakeRepeatingUUID;
-          }else {
-            // completing can be reversed only if a new task has not been generated
-            params.reverse = {
-              method: 'post',
-              url: '/api/' + ownerUUID + '/task/' + task.trans.uuid + '/uncomplete'
-            };
-          }
-          BackendClientService.postOffline('/api/' + ownerUUID + '/task/' + task.trans.uuid + '/complete',
-                                    this.completeTaskRegex, params, undefined, fakeTimestamp);
-          if (!task.mod) task.mod = {};
-          var propertiesToReset = {modified: fakeTimestamp,
-                                  completed: BackendClientService.generateFakeTimestamp()};
-          ItemLikeService.updateObjectProperties(task.mod, propertiesToReset);
-          updateTask(task, ownerUUID, undefined, propertiesToReset);
-          deferred.resolve(task);
-        } else {
-          // Online
-          BackendClientService.postOnline('/api/' + ownerUUID + '/task/' + task.trans.uuid + '/complete',
-                                          this.completeTaskRegex)
-          .then(function(response) {
-            task.completed = response.completed;
-            var propertiesToReset = {modified: response.result.modified,
-                                     completed: response.completed};
-            ItemLikeService.updateObjectProperties(task, propertiesToReset);
-            updateTask(task, ownerUUID, undefined, propertiesToReset);
-            deferred.resolve(task);
-          });
+        // Handle repeating task when a repeating task has not already been generated
+        if (task.trans.repeating && !(task.hist && task.hist.generatedUUID)){
+          var fakeRepeatingUUID = UUIDService.generateFakeUUID();
+          var repeatingTask = this.getNewTask(getRepeatingTaskInitialValues(task));
+          ItemLikeService.copyEditedFieldsToMod(repeatingTask, 'task', ownerUUID, taskFieldInfos);
+          ItemLikeService.updateObjectProperties(repeatingTask.mod,
+            {uuid: fakeRepeatingUUID,
+             modified: fakeTimestamp,
+             created: fakeTimestamp});
+          setTask(repeatingTask, ownerUUID);
+          // store information that task has been repeated to the task itself and to the POST call
+          if (!task.hist) task.hist = {};
+          task.hist.generatedUUID = fakeRepeatingUUID;
+          params.generatedFakeUUID = fakeRepeatingUUID;
+        }else {
+          // completing can be reversed only if a new task has not been generated
+          params.reverse = {
+            method: 'post',
+            url: '/api/' + ownerUUID + '/task/' + task.trans.uuid + '/uncomplete'
+          };
         }
+        BackendClientService.postOffline('/api/' + ownerUUID + '/task/' + task.trans.uuid + '/complete',
+                                  this.completeTaskRegex, params, undefined, fakeTimestamp);
+        if (!task.mod) task.mod = {};
+        var propertiesToReset = {modified: fakeTimestamp,
+                                completed: BackendClientService.generateFakeTimestamp()};
+        ItemLikeService.updateObjectProperties(task.mod, propertiesToReset);
+        updateTask(task, ownerUUID, undefined, propertiesToReset);
+        deferred.resolve(task);
       }
       return deferred.promise;
     },
@@ -553,30 +538,15 @@
       } else if (!task.trans.completed){
         deferred.resolve(task);
       } else {
-        if (UserSessionService.isOfflineEnabled()) {
-          // Offline
-          var params = {type: 'task', owner: ownerUUID, uuid: task.trans.uuid, lastReplaceable: true};
-          var fakeTimestamp = BackendClientService.generateFakeTimestamp();
-          BackendClientService.postOffline('/api/' + ownerUUID + '/task/' + task.trans.uuid + '/uncomplete',
-                                    this.uncompleteTaskRegex, params, undefined, fakeTimestamp);
-          if (!task.mod) task.mod = {};
-          var propertiesToReset = {modified: fakeTimestamp, completed: undefined};
-          ItemLikeService.updateObjectProperties(task.mod, propertiesToReset);
-          updateTask(task, ownerUUID, undefined, propertiesToReset);
-          deferred.resolve(task);
-        } else {
-          // Online
-          BackendClientService.postOnline('/api/' + ownerUUID + '/task/' + task.trans.uuid + '/uncomplete',
-                                          this.uncompleteTaskRegex)
-          .then(function(response) {
-            var propertiesToReset = {modified: response.modified, completed: undefined};
-            ItemLikeService.updateObjectProperties(task, propertiesToReset);
-            // the above doesn't actually remove the property, which is what we want to do here
-            delete task.completed;
-            updateTask(task, ownerUUID, undefined, propertiesToReset);
-            deferred.resolve(task);
-          });
-        }
+        var params = {type: 'task', owner: ownerUUID, uuid: task.trans.uuid, lastReplaceable: true};
+        var fakeTimestamp = BackendClientService.generateFakeTimestamp();
+        BackendClientService.postOffline('/api/' + ownerUUID + '/task/' + task.trans.uuid + '/uncomplete',
+                                  this.uncompleteTaskRegex, params, undefined, fakeTimestamp);
+        if (!task.mod) task.mod = {};
+        var propertiesToReset = {modified: fakeTimestamp, completed: undefined};
+        ItemLikeService.updateObjectProperties(task.mod, propertiesToReset);
+        updateTask(task, ownerUUID, undefined, propertiesToReset);
+        deferred.resolve(task);
       }
       return deferred.promise;
     },

@@ -45,10 +45,43 @@ describe('ItemsService', function() {
 
   var testOwnerUUID = '6be16f46-7b35-4b2d-b875-e13d19681e77';
 
+  var MockUUIDService = {
+    mockIndex: 0,
+    mockFakeUUIDs: ['00000000-0000-4629-8552-96671b730000',
+                    '00000000-0000-4629-8552-96671b730001',
+                    '00000000-0000-4629-8552-96671b730002',
+                    '00000000-0000-4629-8552-96671b730003'],
+    s4: function(){
+      return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
+    },
+    randomUUID: function() {
+      return this.s4() + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' +
+      this.s4() + '-' + this.s4() + this.s4() + this.s4();
+    },
+    generateFakeUUID: function() {
+      var mockFakeUUID = this.mockFakeUUIDs[this.mockIndex];
+      this.mockIndex++;
+      return mockFakeUUID;
+    },
+    isFakeUUID: function(uuid) {
+      if (uuid && uuid.startsWith('00000000-0000-'))
+        return true;
+    },
+    getShortIdFromFakeUUID: function(fakeUUID) {
+      return fakeUUID.substr(14, 4) + fakeUUID.substr(19, 4) + fakeUUID.substr(24, 12);
+    },
+  };
+
   // SETUP / TEARDOWN
 
   beforeEach(function() {
     module('em.appTest');
+
+    module('common', function($provide){
+      $provide.constant('UUIDService', MockUUIDService);
+    });
 
     inject(function (_$httpBackend_, _ItemsService_, _BackendClientService_, _HttpClientService_,
                     _ListsService_, _TagsService_, _TasksService_, _NotesService_, _ItemLikeService_,
@@ -84,21 +117,20 @@ describe('ItemsService', function() {
         }], testOwnerUUID);
     });
 
-    // http://stackoverflow.com/a/14381941
-    var localStore = {};
+    var sessionStore = {};
+    spyOn(sessionStorage, 'getItem').andCallFake(function(key) {
+      return sessionStore[key];
+    });
+    spyOn(sessionStorage, 'setItem').andCallFake(function(key, value) {
+      sessionStore[key] = value + '';
+    });
+    spyOn(sessionStorage, 'removeItem').andCallFake(function(key) {
+      delete sessionStore[key];
+    });
+    spyOn(sessionStorage, 'clear').andCallFake(function() {
+      sessionStore = {};
+    });
 
-    spyOn(localStorage, 'getItem').andCallFake(function(key) {
-      return localStore[key];
-    });
-    spyOn(localStorage, 'setItem').andCallFake(function(key, value) {
-      localStore[key] = value + '';
-    });
-    spyOn(localStorage, 'removeItem').andCallFake(function(key) {
-      delete localStore[key];
-    });
-    spyOn(localStorage, 'clear').andCallFake(function() {
-      localStore = {};
-    });
   });
 
 
@@ -130,22 +162,25 @@ describe('ItemsService', function() {
   });
 
   it('should save new item', function () {
-    var testItemValues = {title: 'test item'};
+    var testItemValues = {
+      id: MockUUIDService.getShortIdFromFakeUUID(MockUUIDService.mockFakeUUIDs[0]),
+      title: 'test item'
+    };
     var testItem = ItemsService.getNewItem(testItemValues);
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
        .respond(200, putNewItemResponse);
     ItemsService.saveItem(testItem, testOwnerUUID);
     $httpBackend.flush();
-    expect(ItemsService.getItemInfo(putNewItemResponse.uuid, testOwnerUUID))
+    expect(ItemsService.getItemInfo(MockUUIDService.mockFakeUUIDs[0], testOwnerUUID))
       .toBeDefined();
 
     // Should go to the end of the array
     var items = ItemsService.getItems(testOwnerUUID);
     expect(items.length)
       .toBe(4);
-    expect(items[3].uuid)
-      .toBe(putNewItemResponse.uuid);
-    expect(items[3].title)
+    expect(items[3].mod.uuid)
+      .toBe(MockUUIDService.mockFakeUUIDs[0]);
+    expect(items[3].mod.title)
       .toBe('test item');
   });
 
@@ -158,8 +193,8 @@ describe('ItemsService', function() {
        .respond(200, putExistingItemResponse);
     ItemsService.saveItem(rememberTheMilk, testOwnerUUID);
     $httpBackend.flush();
-    expect(ItemsService.getItemInfo(rememberTheMilk.uuid, testOwnerUUID).item.modified)
-      .toBe(putExistingItemResponse.modified);
+    expect(ItemsService.getItemInfo(rememberTheMilk.uuid, testOwnerUUID).item.mod.modified)
+       .toBeGreaterThan(rememberTheMilk.modified);;
 
     // Should not change places
     var items = ItemsService.getItems(testOwnerUUID);
@@ -167,7 +202,7 @@ describe('ItemsService', function() {
       .toBe(3);
     expect(items[1].uuid)
       .toBe(rememberTheMilk.uuid);
-    expect(items[1].title)
+    expect(items[1].mod.title)
       .toBe('remember the milk!');
   });
 
@@ -190,8 +225,8 @@ describe('ItemsService', function() {
        .respond(200, undeleteItemResponse);
     ItemsService.undeleteItem(rememberTheMilk, testOwnerUUID);
     $httpBackend.flush();
-    expect(ItemsService.getItemInfo(rememberTheMilk.uuid, testOwnerUUID).item.modified)
-      .toBe(undeleteItemResponse.modified);
+    expect(ItemsService.getItemInfo(rememberTheMilk.uuid, testOwnerUUID).item.mod.modified)
+      .toBeGreaterThan(rememberTheMilk.modified);
 
     // There should be three left with the undeleted rememberTheMilk in its old place
     items = ItemsService.getItems(testOwnerUUID);

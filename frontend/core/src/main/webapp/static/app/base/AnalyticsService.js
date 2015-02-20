@@ -542,7 +542,7 @@ function AnalyticsService($q, $rootScope, $timeout, BackendClientService, HttpCl
 
   function postAnalytics(payload, forceOnline){
     function postAnalyticsOnlineOffline(payload, forceOnline){
-      if (UserSessionService.isOfflineEnabled() && !forceOnline){
+      if (!forceOnline){
         HttpClientService.postLast(analyticsUrl, payload);
       }else{
         HttpClientService.postLastOnline(analyticsUrl, payload);
