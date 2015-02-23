@@ -5,7 +5,8 @@
 var pluginlist = [
     "https://github.com/driftyco/ionic-plugins-keyboard.git",
     "org.apache.cordova.vibration",
-    "https://github.com/apache/cordova-plugin-splashscreen.git"
+    "https://github.com/apache/cordova-plugin-splashscreen.git",
+    "https://github.com/EddyVerbruggen/Calendar-PhoneGap-Plugin.git"
 ];
 
 // no need to configure below
