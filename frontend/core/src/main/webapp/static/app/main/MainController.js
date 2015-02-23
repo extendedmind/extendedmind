@@ -271,7 +271,9 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     // feature changes to focus.
     if (featureActiveCallbacks) {
       for (var id in featureActiveCallbacks) {
-        if (featureActiveCallbacks[id].feature === feature) featureActiveCallbacks[id].callback();
+        if (featureActiveCallbacks[id].feature === feature) {
+          featureActiveCallbacks[id].callback(featureChanged);
+        }
       }
     }
   };
