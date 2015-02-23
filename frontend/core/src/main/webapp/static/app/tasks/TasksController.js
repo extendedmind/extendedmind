@@ -78,7 +78,6 @@
               invalidateListTasks(cachedTasksArrays[ownerUUID], cachedTasksArrays[ownerUUID]['list'].uuid,
                                   ownerUUID);
             } else if (arrayType === 'context') {
-              // TODO
               if ($scope.getActiveFeature() === 'tasks' && SwiperService.isSlideActive('tasks/context')) {
                 updateContextTasks(cachedTasksArrays[ownerUUID]['context'],
                                    cachedTasksArrays[ownerUUID]['context'].id,
