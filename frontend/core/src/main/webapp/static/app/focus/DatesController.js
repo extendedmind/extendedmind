@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function DatesController($filter, $rootScope, $scope, DateService, SwiperService) {
+ function DatesController($filter, $rootScope, $scope, DateService, SwiperService, UISessionService) {
   var slidePath = 'focus/tasks';
 
   // DAY SLIDES CONSTRUCTOR
@@ -80,6 +80,14 @@
         activeDaySlide = $scope.daySlides[activeDaySlideIndex];
       }
       if (activeDaySlide && activeDaySlide.heading === 'today') {
+        if (angular.isFunction($scope.getCachedTasks)) {
+          var ownerUUID = UISessionService.getActiveUUID();
+          var cachedTasks = $scope.getCachedTasks(ownerUUID);
+          if (cachedTasks && angular.isFunction($scope.invalidateDateTasks)) {
+            // Tasks needs to be invalidated so that they will be updated into new today slide.
+            $scope.invalidateDateTasks(cachedTasks, ownerUUID);
+          }
+        }
         // Try to change from old today to new today slide.
         // NOTE: See focusActive above if this is not working.
         $scope.changeDaySlide(DateService.getTodayYYYYMMDD(), 0);
@@ -547,5 +555,6 @@
   });
 }
 
-DatesController['$inject'] = ['$filter', '$rootScope', '$scope', 'DateService', 'SwiperService'];
+DatesController['$inject'] = ['$filter', '$rootScope', '$scope',
+'DateService', 'SwiperService', 'UISessionService'];
 angular.module('em.focus').controller('DatesController', DatesController);

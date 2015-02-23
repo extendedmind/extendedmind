@@ -26,6 +26,11 @@
 
   var cachedTasksArrays = {};
 
+  $scope.getCachedTasks = function(ownerUUID) {
+    if (cachedTasksArrays[ownerUUID])
+      return cachedTasksArrays[ownerUUID];
+  };
+
   function invalidateAllTasks(cachedTasks, ownerUUID) {
     if ($scope.getActiveFeature() === 'tasks') {
       updateActiveAndArchivedTasks(cachedTasks, ownerUUID);
@@ -47,6 +52,19 @@
     }
   }
 
+  $scope.invalidateDateTasks = function(cachedTasks, ownerUUID) {
+    var focusActive = $scope.getActiveFeature() === 'focus';
+
+    for (var date in cachedTasks['date']) {
+      if (cachedTasks['date'].hasOwnProperty(date)) {
+        if (focusActive)
+          updateDateTasks(cachedTasks['date'], {date: date}, ownerUUID);
+        else
+          delete cachedTasks['date'][date];
+      }
+    }
+  };
+
   /*
   * Invalidate cached active tasks arrays.
   *
@@ -64,16 +82,7 @@
               invalidateAllTasks(cachedTasksArrays[ownerUUID], ownerUUID);
             }
             else if (arrayType === 'date') {
-              var focusActive = $scope.getActiveFeature() === 'focus';
-
-              for (var date in cachedTasksArrays[ownerUUID]['date']) {
-                if (cachedTasksArrays[ownerUUID]['date'].hasOwnProperty(date)) {
-                  if (focusActive)
-                    updateDateTasks(cachedTasksArrays[ownerUUID]['date'], {date: date}, ownerUUID);
-                  else
-                    delete cachedTasksArrays[ownerUUID]['date'][date];
-                }
-              }
+              $scope.invalidateDateTasks(cachedTasksArrays[ownerUUID], ownerUUID);
             } else if (arrayType === 'list') {
               invalidateListTasks(cachedTasksArrays[ownerUUID], cachedTasksArrays[ownerUUID]['list'].uuid,
                                   ownerUUID);
