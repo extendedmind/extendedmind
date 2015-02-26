@@ -14,7 +14,8 @@
  */
  'use strict';
 
- function DatesController($filter, $rootScope, $scope, DateService, SwiperService, UISessionService) {
+ function DatesController($filter, $rootScope, $scope, $timeout,
+                          DateService, SwiperService, UISessionService, UserSessionService, packaging) {
   var slidePath = 'focus/tasks';
 
   // DAY SLIDES CONSTRUCTOR
@@ -549,12 +550,185 @@
     SwiperService.swipeNext('datepicker');
   };
 
+  var cachedEventInstances = {};
+  function listEventInstancesSuccess(eventInstances) {
+    if (eventInstances && eventInstances.length) {
+      console.log(eventInstances.length + ' event instances found');
+      for (var i = 0; i < eventInstances.length; i++) {
+        console.log(eventInstances[i]);
+      }
+      cachedEventInstances['all'] = eventInstances;
+    } else {
+      console.log('no event instances');
+    }
+  }
+
+  function listEventInstancesError(error) {
+    console.log(error);
+  }
+
+  function processEnabledCalendars(calendarsList, savedCalendars) {
+    if (calendarsList && calendarsList.length) {
+      console.log(calendarsList.length + ' calendars found');
+      var calendarIds = [], savedCalendar;
+      for (var i = 0; i < calendarsList.length; i++) {
+
+        savedCalendar = savedCalendars.findFirstObjectByKeyValue('id', calendarsList[i].id);
+        if (savedCalendar && savedCalendar.enabled) {
+          calendarIds.push(savedCalendar.id);
+        }
+      }
+
+      var startDate = new Date();
+      startDate.setDate(startDate.getDate() - 1);
+      var endDate = new Date();
+      endDate.setDate(endDate.getDate() + 21);
+
+      console.log('listing events for ' + calendarIds);
+
+      window.plugins.calendar.listEventInstances(calendarIds, startDate, endDate,
+                                                 listEventInstancesSuccess, listEventInstancesError);
+    } else {
+      console.log('no calendars');
+    }
+  }
+
+  function listCalendarsError(error) {
+    console.log(error);
+  }
+
+  $scope.getEventInstances = function(yyyymmdd) {
+    if (!cachedEventInstances['all']) {
+      console.log('get and cache instances');
+      return;
+    }
+    if (!cachedEventInstances[yyyymmdd]) {
+      cachedEventInstances[yyyymmdd] = [];
+      var noonDate = yyyymmdd.yyyymmddToNoonDate();
+      var startTimeStamp = new Date(noonDate).setHours(0, 0, 0, 0);
+      var endTimeStamp = new Date(noonDate);
+      endTimeStamp.setDate(endTimeStamp.getDate() + 1);
+      endTimeStamp.setHours(0, 0, 0, 0);
+      endTimeStamp = endTimeStamp.getTime();
+      console.log(startTimeStamp);
+      console.log(endTimeStamp);
+
+      var allEventInstances = cachedEventInstances['all'];
+      for (var i = 0; i < allEventInstances.length; i++) {
+        var eventInstance = allEventInstances[i];
+        if (eventInstance.begin < endTimeStamp && eventInstance.end > startTimeStamp) {
+          console.log('add ' + eventInstance.title);
+          cachedEventInstances[yyyymmdd].push(eventInstance);
+        }
+      }
+    }
+    return cachedEventInstances[yyyymmdd];
+  };
+
+
+  // function processEnabledCalendars(calendars) {
+  //   console.log('process');
+  //   if (calendars && calendars.length) {
+  //     console.log('has calendars');
+  //     var i, savedCalendar;
+
+  //     /* DEBUG */
+  //     var startDate = new Date();
+  //     startDate.setDate(startDate.getDate() - 180);
+  //     startDate.setHours(0, 0, 0, 0);
+  //     var endDate = new Date();
+  //     endDate.setDate(endDate.getDate() + 180);
+  //     /* DEBUG */
+
+  //     if (packaging === 'ios-cordova') {
+  //       for (i = 0; i < calendars.length; i++) {
+  //         savedCalendar = savedCalendars.findFirstObjectByKeyValue('id', calendars[i].id);
+  //         if (savedCalendar && savedCalendar.enabled) {
+  //           findAllEventsInNamedCalendarAndFilterByDate(calendars[i].name, startDate, endDate);
+  //         }
+  //       }
+  //     } else if (packaging === 'android-cordova') {
+  //       var enabledCalendars = [];
+  //       for (i = 0; i < calendars.length; i++) {
+  //         savedCalendar = savedCalendars.findFirstObjectByKeyValue('id', calendars[i].id);
+  //         if (savedCalendar && savedCalendar.enabled) {
+  //           enabledCalendars.push({id: calendars[i].id, name: calendars[i].name});
+  //         }
+  //       }
+  //       if (enabledCalendars.length)
+  //         listEventsInRangeAndFilterByIdAndDate(enabledCalendars, startDate, endDate);
+  //     }
+  //   }
+  // }
+
+  // function listEventsInRangeAndFilterByIdAndDate(calendars, startDate, endDate) {
+
+  //   function doFilterByIdAndDate(events, calendars) {
+  //     console.log('has events');
+  //     for (var i = 0; i < events.length; i++) {
+  //       var ev = events[i];
+  //       if (calendars.findFirstIndexByKeyValue('id', ev.calendar_id) !== undefined) {
+  //         if (ev.dtstart && ev.dtend && ev.dtstart >= startDate && ev.dtend <= endDate) {
+  //           console.log(JSON.stringify(ev, null, 2));
+  //         } else if (ev.dtstart && ev.dtstart >= startDate && !ev.dtend) {
+  //           console.log('repeat');
+  //           console.log(JSON.stringify(ev, null, 2));
+  //         }
+  //       }
+  //     }
+  //   }
+
+  //   window.plugins.calendar.listEventsInRange(startDate, endDate, function(events) {
+  //     if (events && events.length) doFilterByIdAndDate(events, calendars);
+  //   }, null);
+  // }
+
+  // http://stackoverflow.com/questions/650022/how-do-i-split-a-string-with-multiple-separators-in-javascript
+  // http://stackoverflow.com/questions/2587345/javascript-date-parse
+  // function parseDate(input) {
+  //   var parts = input.split(/[\s-:]+/);
+  //   // new Date(year, month [, day [, hours[, minutes[, seconds[, ms]]]]])
+  //   return new Date(parts[0], parts[1] - 1, parts[2], parts[3], parts[4]);
+  // }
+
+  // function findAllEventsInNamedCalendarAndFilterByDate(name, startDate, endDate) {
+
+  //   function doFilterByDate(events, startDate, endDate) {
+  //     console.log('has events');
+  //     for (var i = 0; i < events.length; i++) {
+  //       var ev = events[i];
+  //       if (ev.startDate && ev.endDate &&
+  //           parseDate(ev.startDate) >= startDate && parseDate(ev.endDate) <= endDate)
+  //       {
+  //         console.log('match');
+  //         console.log(ev);
+  //       }
+  //     }
+  //   }
+  //
+  //   window.plugins.calendar.findAllEventsInNamedCalendar(name, function(events) {
+  //     if (events && events.length) doFilterByDate(events, startDate, endDate);
+  //   }, null);
+  // }
+
+  if (UserSessionService.getUIPreference('showAgendaCalendar')) {
+    var savedCalendars = UserSessionService.getUIPreference('calendars');
+    if (savedCalendars && window.plugins && window.plugins.calendar) {
+      // window.plugins.calendar.listCalendars(processEnabledCalendars, function(error) {
+      //   console.log(error);
+      // });
+      window.plugins.calendar.listCalendars(function(calendarsList) {
+        processEnabledCalendars(calendarsList, savedCalendars);
+      }, listCalendarsError);
+    }
+  }
+
   $scope.$on('$destroy', function() {
     if (angular.isFunction($scope.unregisterSynchronizeCallback))
       $scope.unregisterSynchronizeCallback('DatesController');
   });
 }
 
-DatesController['$inject'] = ['$filter', '$rootScope', '$scope',
-'DateService', 'SwiperService', 'UISessionService'];
+DatesController['$inject'] = ['$filter', '$rootScope', '$scope', '$timeout',
+'DateService', 'SwiperService', 'UISessionService', 'UserSessionService', 'packaging'];
 angular.module('em.focus').controller('DatesController', DatesController);

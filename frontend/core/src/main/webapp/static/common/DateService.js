@@ -118,6 +118,17 @@
     },
     getTodayDateWithoutTime: function() {
       return new Date().setHours(0, 0, 0, 0);
+      /*
+      TODO
+      var todayWithoutTime = new Date();
+      todayWithoutTime.setHours(0, 0, 0, 0);
+      return todayWithoutTime;
+      */
+    },
+    getDateWithoutTime: function(date) {
+      var dateWithoutTime = date;
+      dateWithoutTime.setHours(0, 0, 0, 0);
+      return dateWithoutTime;
     },
     getTomorrowDate: function() {
       var tomorrow = new Date();
