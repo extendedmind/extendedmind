@@ -110,6 +110,16 @@
       return Math.abs((aDate - bDate)  / (1000*60*60*24));
     },
 
+    dateToUTCyyyymmdd: function(date) {
+      var yyyy, mm, dd;
+
+      yyyy = date.getUTCFullYear().toString();
+      mm = (date.getUTCMonth() + 1).toString(); // getMonth() is zero-based
+      dd = date.getUTCDate().toString();
+
+      return yyyy + '-' + (mm[1] ? mm : '0' + mm[0]) + '-' + (dd[1] ? dd : '0' + dd[0]); // padding
+    },
+
     // GETTERS
     getYesterdayDate: function() {
       var yesterday = new Date();
@@ -185,6 +195,10 @@
     },
     setOffsetDate: function(offsetDays, date) {
       date.setDate(date.getDate() + offsetDays);
+      return this;
+    },
+    setUTCOffsetDate: function(offsetDays, date) {
+      date.setUTCDate(date.getUTCDate() + offsetDays);
       return this;
     },
     setDateToFirstDayOfFortNight: function(referenceDate) {

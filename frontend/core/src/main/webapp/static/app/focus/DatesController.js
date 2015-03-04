@@ -580,7 +580,7 @@
       }
 
       var startDate = new Date();
-      startDate.setDate(startDate.getDate() - 1);
+      startDate.setDate(startDate.getDate() - 21);
       var endDate = new Date();
       endDate.setDate(endDate.getDate() + 21);
 
@@ -616,7 +616,35 @@
       var allEventInstances = cachedEventInstances['all'];
       for (var i = 0; i < allEventInstances.length; i++) {
         var eventInstance = allEventInstances[i];
-        if (eventInstance.begin < endTimeStamp && eventInstance.end > startTimeStamp) {
+
+        if (eventInstance.allDay) {
+
+          var eventInstaceStartYYYYMMDD = DateService.dateToUTCyyyymmdd(new Date(eventInstance.begin));
+
+          // All-day calendar events suffer from timezone issue turning 1-day events into 2-day events
+          // https://code.google.com/p/android/issues/detail?id=14051
+          var eventInstanceEndDate = new Date(eventInstance.end);
+          DateService.setUTCOffsetDate(-1, eventInstanceEndDate);
+
+          var eventInstaceEndYYYYMMDD = DateService.dateToUTCyyyymmdd(eventInstanceEndDate);
+
+          if (eventInstaceStartYYYYMMDD <= yyyymmdd && eventInstaceEndYYYYMMDD >= yyyymmdd) {
+            console.log('add all day event ' + eventInstance.title);
+            cachedEventInstances[yyyymmdd].push(eventInstance);
+          }
+
+          // eventInstance.begin = UTC
+          // eventInstance.end
+
+          // mikä päivä lontoossa (GMT 0)
+          // new Date(eventInstance.begin)
+          // getUTCDate()
+          // getUTCMonth()
+          // getUTCYear()
+          // compare with yyyymmdd
+        }
+
+        else if (eventInstance.begin < endTimeStamp && eventInstance.end > startTimeStamp) {
           console.log('add ' + eventInstance.title);
           cachedEventInstances[yyyymmdd].push(eventInstance);
         }
