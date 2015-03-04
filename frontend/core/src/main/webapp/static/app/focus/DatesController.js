@@ -550,21 +550,16 @@
     SwiperService.swipeNext('datepicker');
   };
 
-  var cachedEventInstances = {};
-  function listEventInstancesSuccess(eventInstances) {
-    if (eventInstances && eventInstances.length) {
-      console.log(eventInstances.length + ' event instances found');
-      for (var i = 0; i < eventInstances.length; i++) {
-        console.log(eventInstances[i]);
-      }
-      cachedEventInstances['all'] = eventInstances;
-    } else {
-      console.log('no event instances');
+  if (UserSessionService.getUIPreference('showAgendaCalendar')) {
+    var savedCalendars = UserSessionService.getUIPreference('calendars');
+    if (savedCalendars && window.plugins && window.plugins.calendar) {
+      // window.plugins.calendar.listCalendars(processEnabledCalendars, function(error) {
+      //   console.log(error);
+      // });
+      window.plugins.calendar.listCalendars(function(calendarsList) {
+        processEnabledCalendars(calendarsList, savedCalendars);
+      }, listCalendarsError);
     }
-  }
-
-  function listEventInstancesError(error) {
-    console.log(error);
   }
 
   function processEnabledCalendars(calendarsList, savedCalendars) {
@@ -594,6 +589,23 @@
   }
 
   function listCalendarsError(error) {
+    console.log(error);
+  }
+
+  var cachedEventInstances = {};
+  function listEventInstancesSuccess(eventInstances) {
+    if (eventInstances && eventInstances.length) {
+      console.log(eventInstances.length + ' event instances found');
+      for (var i = 0; i < eventInstances.length; i++) {
+        console.log(eventInstances[i]);
+      }
+      cachedEventInstances['all'] = eventInstances;
+    } else {
+      console.log('no event instances');
+    }
+  }
+
+  function listEventInstancesError(error) {
     console.log(error);
   }
 
@@ -738,18 +750,6 @@
   //     if (events && events.length) doFilterByDate(events, startDate, endDate);
   //   }, null);
   // }
-
-  if (UserSessionService.getUIPreference('showAgendaCalendar')) {
-    var savedCalendars = UserSessionService.getUIPreference('calendars');
-    if (savedCalendars && window.plugins && window.plugins.calendar) {
-      // window.plugins.calendar.listCalendars(processEnabledCalendars, function(error) {
-      //   console.log(error);
-      // });
-      window.plugins.calendar.listCalendars(function(calendarsList) {
-        processEnabledCalendars(calendarsList, savedCalendars);
-      }, listCalendarsError);
-    }
-  }
 
   $scope.$on('$destroy', function() {
     if (angular.isFunction($scope.unregisterSynchronizeCallback))
