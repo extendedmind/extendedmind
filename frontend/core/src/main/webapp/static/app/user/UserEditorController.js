@@ -31,23 +31,26 @@
 
       var listCalendarsSuccess = function(calendars) {
         $timeout(function() {
-          $scope.calendars = calendars;
-          if ($scope.calendars && $scope.calendars.length) {
+          if (calendars && calendars.length) {
             var i;
             var calendarStates = UserSessionService.getUIPreference('calendars');
+            $scope.calendars = calendars;
+
             if (calendarStates) {
-              for (i = 0; i < $scope.calendars.length; i++) {
-                var savedCalendar = calendarStates.findFirstObjectByKeyValue('id', $scope.calendars[i].id);
+              // Previous states exists.
+              for (i = 0; i < calendars.length; i++) {
+                var savedCalendar = calendarStates.findFirstObjectByKeyValue('id', calendars[i].id);
                 if (savedCalendar) {
                   $scope.calendars[i].enabled = savedCalendar.enabled;
                 } else {
-                  calendarStates.push({id: $scope.calendars[i].id});
+                  calendarStates.push({id: calendars[i].id});
                 }
               }
             } else {
+              // New states.
               calendarStates = [];
-              for (i = 0; i < $scope.calendars.length; i++) {
-                calendarStates.push({id: $scope.calendars.id});
+              for (i = 0; i < calendars.length; i++) {
+                calendarStates.push({id: calendars[i].id});
               }
             }
             updateCalendars(calendarStates);
