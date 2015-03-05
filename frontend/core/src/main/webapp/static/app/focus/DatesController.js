@@ -655,7 +655,10 @@
     for (var i = 0; i < allEventInstances.length; i++) {
       var eventInstance = allEventInstances[i];
       if (eventInstance.begin < endTimeStamp && eventInstance.end > startTimeStamp) {
-        generateNonRecurringAgendaEvent(yyyymmddEventInstances, eventInstance);
+        if (eventInstance.allday)
+          yyyymmddEventInstances.push({title: eventInstance.title});
+        else
+          generateNonRecurringAgendaEvent(yyyymmddEventInstances, eventInstance);
       }
     }
   }
