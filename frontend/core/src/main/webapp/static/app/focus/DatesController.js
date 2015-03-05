@@ -629,14 +629,14 @@
       for (var i = 0; i < allEventInstances.length; i++) {
         var eventInstance = allEventInstances[i];
 
-        if (eventInstance.allDay) {
+        if (eventInstance.allDay && packaging === 'android-cordova') {
 
           var eventInstaceStartYYYYMMDD = DateService.dateToUTCyyyymmdd(new Date(eventInstance.begin));
 
+          var eventInstanceEndDate = new Date(eventInstance.end);
           // All-day calendar events suffer from timezone issue turning 1-day events into 2-day events
           // https://code.google.com/p/android/issues/detail?id=14051
-          var eventInstanceEndDate = new Date(eventInstance.end);
-          DateService.setUTCOffsetDate(-1, eventInstanceEndDate);
+          /*if (packaging === 'android-cordova') */DateService.setUTCOffsetDate(-1, eventInstanceEndDate);
 
           var eventInstaceEndYYYYMMDD = DateService.dateToUTCyyyymmdd(eventInstanceEndDate);
 
@@ -660,7 +660,7 @@
           console.log('add ' + eventInstance.title);
           cachedEventInstances[yyyymmdd].push({
             title: eventInstance.title,
-            info: $filter('date')(eventInstance.begin, 'h:mm') // e.g. 10:00
+            info: $filter('date')(eventInstance.begin, 'H:mm') // e.g. 10:00
           });
         }
       }
