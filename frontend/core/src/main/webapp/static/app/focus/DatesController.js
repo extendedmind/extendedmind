@@ -600,7 +600,8 @@
   }
 
   $scope.getEventInstances = function(yyyymmdd) {
-    if (!cachedEventInstances || !cachedEventInstances['all']) {
+    if (!cachedEventInstances || !cachedEventInstances['all'] || yyyymmdd === null) {
+      // Agenda events not loaded or 'no date' slide.
       return;
     }
     if (!cachedEventInstances[yyyymmdd]) {
@@ -666,7 +667,8 @@
   function generateNonRecurringAgendaEvent(eventInstances, eventInstance) {
     eventInstances.push({
       title: eventInstance.title,
-      info: $filter('date')(eventInstance.begin, 'H:mm') // e.g. 10:00
+      info: $filter('date')(eventInstance.begin, 'H:mm') + ' - '  + $filter('date')(eventInstance.end, 'H:mm')
+      // e.g. 9:00 - 12:45
     });
   }
 
