@@ -653,7 +653,7 @@
                                    endTimeStamp) {
     for (var i = 0; i < eventInstances.length; i++) {
       var eventInstance = eventInstances[i];
-      if (eventInstance.allday) {
+      if (eventInstance.allDay) {
         if (eventInstance.begin < endTimeStamp && eventInstance.end > startTimeStamp) {
           yyyymmddEventInstances.push({title: eventInstance.title});
         }
