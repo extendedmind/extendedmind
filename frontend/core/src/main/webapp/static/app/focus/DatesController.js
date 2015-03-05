@@ -624,10 +624,10 @@
     return cachedEventInstances[yyyymmdd];
   };
 
-  function generateAgendaEventsAndroid(allEventInstances, yyyymmddEventInstances, yyyymmdd, startTimeStamp,
+  function generateAgendaEventsAndroid(eventInstances, yyyymmddEventInstances, yyyymmdd, startTimeStamp,
                                        endTimeStamp) {
-    for (var i = 0; i < allEventInstances.length; i++) {
-      var eventInstance = allEventInstances[i];
+    for (var i = 0; i < eventInstances.length; i++) {
+      var eventInstance = eventInstances[i];
 
       if (eventInstance.allDay) {
         // All-day calendar events are in UTC time
@@ -651,10 +651,10 @@
     }
   }
 
-  function generateAgendaEventsIOS(allEventInstances, yyyymmddEventInstances, yyyymmdd, startTimeStamp,
+  function generateAgendaEventsIOS(eventInstances, yyyymmddEventInstances, yyyymmdd, startTimeStamp,
                                    endTimeStamp) {
-    for (var i = 0; i < allEventInstances.length; i++) {
-      var eventInstance = allEventInstances[i];
+    for (var i = 0; i < eventInstances.length; i++) {
+      var eventInstance = eventInstances[i];
       if (eventInstance.begin < endTimeStamp && eventInstance.end > startTimeStamp) {
         if (eventInstance.allday)
           yyyymmddEventInstances.push({title: eventInstance.title});
