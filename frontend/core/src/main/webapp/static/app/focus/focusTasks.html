@@ -342,7 +342,9 @@
             <div list-prompt="tasks" list-prompt-infos="listInfos"
               list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
 
-            <div ng-repeat="eventInstance in getEventInstances(daySlides[2].info)" ng-bind="eventInstance | json"></div>
+            <div ng-repeat="agendaEvent in getEventInstances(daySlides[2].info)">
+              <span ng-bind="agendaEvent.title + ' ' + agendaEvent.info"></span>
+            </div>
           </div>
         </div>
 
@@ -365,7 +367,9 @@
             <div list-prompt="tasks" list-prompt-infos="listInfos"
               list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
 
-            <div ng-repeat="eventInstance in getEventInstances(daySlides[0].info)" ng-bind="eventInstance | json"></div>
+            <div ng-repeat="agendaEvent in getEventInstances(daySlides[0].info)">
+              <span ng-bind="agendaEvent.title + ' ' + agendaEvent.info"></span>
+            </div>
           </div>
         </div>
 
@@ -388,7 +392,9 @@
             <div list-prompt="tasks" list-prompt-infos="listInfos"
               list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
 
-            <div ng-repeat="eventInstance in getEventInstances(daySlides[1].info)" ng-bind="eventInstance | json"></div>
+            <div ng-repeat="agendaEvent in getEventInstances(daySlides[1].info)">
+              <span ng-bind="agendaEvent.title + ' ' + agendaEvent.info"></span>
+            </div>
           </div>
         </div>
 
@@ -411,7 +417,9 @@
             <div list-prompt="tasks" list-prompt-infos="listInfos"
               list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
 
-            <div ng-repeat="eventInstance in getEventInstances(daySlides[2].info)" ng-bind="eventInstance | json"></div>
+            <div ng-repeat="agendaEvent in getEventInstances(daySlides[2].info)">
+              <span ng-bind="agendaEvent.title + ' ' + agendaEvent.info"></span>
+            </div>
           </div>
         </div>
 
@@ -434,7 +442,9 @@
             <div list-prompt="tasks" list-prompt-infos="listInfos"
               list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
 
-            <div ng-repeat="eventInstance in getEventInstances(daySlides[0].info)" ng-bind="eventInstance | json"></div>
+            <div ng-repeat="agendaEvent in getEventInstances(daySlides[0].info)">
+              <span ng-bind="agendaEvent.title + ' ' + agendaEvent.info"></span>
+            </div>
           </div>
         </div>
 

@@ -642,7 +642,7 @@
 
           if (eventInstaceStartYYYYMMDD <= yyyymmdd && eventInstaceEndYYYYMMDD >= yyyymmdd) {
             console.log('add all day event ' + eventInstance.title);
-            cachedEventInstances[yyyymmdd].push(eventInstance);
+            cachedEventInstances[yyyymmdd].push({title: eventInstance.title});
           }
 
           // eventInstance.begin = UTC
@@ -658,7 +658,10 @@
 
         else if (eventInstance.begin < endTimeStamp && eventInstance.end > startTimeStamp) {
           console.log('add ' + eventInstance.title);
-          cachedEventInstances[yyyymmdd].push(eventInstance);
+          cachedEventInstances[yyyymmdd].push({
+            title: eventInstance.title,
+            info: $filter('date')(eventInstance.begin, 'h:mm') // e.g. 10:00
+          });
         }
       }
     }
