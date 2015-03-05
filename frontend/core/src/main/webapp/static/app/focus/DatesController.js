@@ -641,7 +641,7 @@
         var eventInstaceEndYYYYMMDD = DateService.dateToUTCyyyymmdd(eventInstanceEndDate);
 
         if (eventInstaceStartYYYYMMDD <= yyyymmdd && eventInstaceEndYYYYMMDD >= yyyymmdd) {
-          yyyymmddEventInstances.push({title: eventInstance.title});
+          yyyymmddEventInstances.push({title: eventInstance.title || 'untitled'});
         }
       } else {
         generateAgendaEvent(yyyymmddEventInstances, startTimeStamp, endTimeStamp, eventInstance);
@@ -655,7 +655,7 @@
       var eventInstance = eventInstances[i];
       if (eventInstance.allDay) {
         if (eventInstance.begin < endTimeStamp && eventInstance.end > startTimeStamp) {
-          yyyymmddEventInstances.push({title: eventInstance.title});
+          yyyymmddEventInstances.push({title: eventInstance.title || 'untitled'});
         }
       }
       else {
@@ -668,7 +668,7 @@
     if (eventInstance.begin < startTimeStamp && eventInstance.end >= endTimeStamp) {
       // Start of the event is before start time.
       // End of the event equals or is after end time.
-      yyyymmddEventInstances.push({title: eventInstance.title});
+      yyyymmddEventInstances.push({title: eventInstance.title || 'untitled'});
     }
 
     else if (eventInstance.begin > startTimeStamp && eventInstance.begin < endTimeStamp &&
@@ -677,7 +677,7 @@
       // Start of the event is between start time and end time.
       // End of the event is after the end time.
       yyyymmddEventInstances.push({
-        title: eventInstance.title,
+        title: eventInstance.title || 'untitled',
         info: $filter('date')(eventInstance.begin, 'H:mm') + ' - ' +
         $filter('date')(eventInstance.end, 'EEE d MMM H:mm').toLowerCase()
         // TODO: example
@@ -690,7 +690,7 @@
       // Start of the event is before the start time.
       // End of the event is between start time and end time.
       yyyymmddEventInstances.push({
-        title: eventInstance.title,
+        title: eventInstance.title || 'untitled',
         info: $filter('date')(eventInstance.begin, 'EEE d MMM H:mm').toLowerCase() + ' - ' +
         $filter('date')(eventInstance.end, 'H:mm')
         // TODO: example
@@ -700,7 +700,7 @@
     else if (eventInstance.begin < endTimeStamp && eventInstance.end > startTimeStamp) {
       // Event is between start and end time.
       yyyymmddEventInstances.push({
-        title: eventInstance.title,
+        title: eventInstance.title || 'untitled',
         info: $filter('date')(eventInstance.begin, 'H:mm') + ' - ' +
         $filter('date')(eventInstance.end, 'H:mm')
         // e.g. 9:00 - 12:45
