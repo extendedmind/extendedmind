@@ -116,9 +116,8 @@
     }
   };
 
-  var DEBUG_agendaCalendarSettingVisible = true;
-  $scope.agendaCalendarSettingVisible = (packaging.endsWith('cordova') && window.plugins &&
-                                         window.plugins.calendar) || DEBUG_agendaCalendarSettingVisible;
+  $scope.agendaCalendarSettingVisible = packaging.endsWith('cordova') && (window.plugins &&
+                                                                          window.plugins.calendar);
 
   // TODO: reset onboarding!
   $scope.showOnboardingCheckbox = function showOnboardingCheckbox() {
