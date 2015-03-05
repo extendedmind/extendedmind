@@ -553,9 +553,6 @@
   if (UserSessionService.getUIPreference('showAgendaCalendar')) {
     var savedCalendars = UserSessionService.getUIPreference('calendars');
     if (savedCalendars && window.plugins && window.plugins.calendar) {
-      // window.plugins.calendar.listCalendars(processEnabledCalendars, function(error) {
-      //   console.log(error);
-      // });
       window.plugins.calendar.listCalendars(function(calendarsList) {
         processEnabledCalendars(calendarsList, savedCalendars);
       }, listCalendarsError);
@@ -564,7 +561,6 @@
 
   function processEnabledCalendars(calendarsList, savedCalendars) {
     if (calendarsList && calendarsList.length) {
-      console.log(calendarsList.length + ' calendars found');
       var calendarIds = [], savedCalendar;
       for (var i = 0; i < calendarsList.length; i++) {
 
@@ -579,39 +575,32 @@
       var endDate = new Date();
       endDate.setDate(endDate.getDate() + 21);
 
-      console.log('listing events for ' + calendarIds);
-
       window.plugins.calendar.listEventInstances(calendarIds, startDate, endDate,
                                                  listEventInstancesSuccess, listEventInstancesError);
     } else {
-      console.log('no calendars');
+      // No calendars.
     }
   }
 
-  function listCalendarsError(error) {
-    console.log(error);
+  function listCalendarsError(/*error*/) {
   }
 
-  var cachedEventInstances = {};
+  var cachedEventInstances;
   function listEventInstancesSuccess(eventInstances) {
     if (eventInstances && eventInstances.length) {
-      console.log(eventInstances.length + ' event instances found');
-      for (var i = 0; i < eventInstances.length; i++) {
-        console.log(eventInstances[i]);
-      }
-      cachedEventInstances['all'] = eventInstances;
+      cachedEventInstances = {
+        all: eventInstances
+      };
     } else {
-      console.log('no event instances');
+      // No event instances.
     }
   }
 
-  function listEventInstancesError(error) {
-    console.log(error);
+  function listEventInstancesError(/*error*/) {
   }
 
   $scope.getEventInstances = function(yyyymmdd) {
-    if (!cachedEventInstances['all']) {
-      console.log('get and cache instances');
+    if (!cachedEventInstances || !cachedEventInstances['all']) {
       return;
     }
     if (!cachedEventInstances[yyyymmdd]) {
@@ -622,137 +611,61 @@
       endTimeStamp.setDate(endTimeStamp.getDate() + 1);
       endTimeStamp.setHours(0, 0, 0, 0);
       endTimeStamp = endTimeStamp.getTime();
-      console.log(startTimeStamp);
-      console.log(endTimeStamp);
 
-      var allEventInstances = cachedEventInstances['all'];
-      for (var i = 0; i < allEventInstances.length; i++) {
-        var eventInstance = allEventInstances[i];
-
-        if (eventInstance.allDay && packaging === 'android-cordova') {
-
-          var eventInstaceStartYYYYMMDD = DateService.dateToUTCyyyymmdd(new Date(eventInstance.begin));
-
-          var eventInstanceEndDate = new Date(eventInstance.end);
-          // All-day calendar events suffer from timezone issue turning 1-day events into 2-day events
-          // https://code.google.com/p/android/issues/detail?id=14051
-          /*if (packaging === 'android-cordova') */DateService.setUTCOffsetDate(-1, eventInstanceEndDate);
-
-          var eventInstaceEndYYYYMMDD = DateService.dateToUTCyyyymmdd(eventInstanceEndDate);
-
-          if (eventInstaceStartYYYYMMDD <= yyyymmdd && eventInstaceEndYYYYMMDD >= yyyymmdd) {
-            console.log('add all day event ' + eventInstance.title);
-            cachedEventInstances[yyyymmdd].push({title: eventInstance.title});
-          }
-
-          // eventInstance.begin = UTC
-          // eventInstance.end
-
-          // mikä päivä lontoossa (GMT 0)
-          // new Date(eventInstance.begin)
-          // getUTCDate()
-          // getUTCMonth()
-          // getUTCYear()
-          // compare with yyyymmdd
-        }
-
-        else if (eventInstance.begin < endTimeStamp && eventInstance.end > startTimeStamp) {
-          console.log('add ' + eventInstance.title);
-          cachedEventInstances[yyyymmdd].push({
-            title: eventInstance.title,
-            info: $filter('date')(eventInstance.begin, 'H:mm') // e.g. 10:00
-          });
-        }
+      if (packaging === 'android-cordova') {
+        generateAgendaEventsAndroid(cachedEventInstances['all'], cachedEventInstances[yyyymmdd], yyyymmdd,
+                                    startTimeStamp, endTimeStamp);
+      } else if (packaging === 'ios-cordova') {
+        generateAgendaEventsIOS(cachedEventInstances['all'], cachedEventInstances[yyyymmdd], yyyymmdd,
+                                startTimeStamp, endTimeStamp);
       }
     }
     return cachedEventInstances[yyyymmdd];
   };
 
+  function generateAgendaEventsAndroid(allEventInstances, yyyymmddEventInstances, yyyymmdd, startTimeStamp,
+                                       endTimeStamp) {
+    for (var i = 0; i < allEventInstances.length; i++) {
+      var eventInstance = allEventInstances[i];
 
-  // function processEnabledCalendars(calendars) {
-  //   console.log('process');
-  //   if (calendars && calendars.length) {
-  //     console.log('has calendars');
-  //     var i, savedCalendar;
+      if (eventInstance.allDay) {
+        // All-day calendar events are in UTC time
 
-  //     /* DEBUG */
-  //     var startDate = new Date();
-  //     startDate.setDate(startDate.getDate() - 180);
-  //     startDate.setHours(0, 0, 0, 0);
-  //     var endDate = new Date();
-  //     endDate.setDate(endDate.getDate() + 180);
-  //     /* DEBUG */
+        var eventInstaceStartYYYYMMDD = DateService.dateToUTCyyyymmdd(new Date(eventInstance.begin));
 
-  //     if (packaging === 'ios-cordova') {
-  //       for (i = 0; i < calendars.length; i++) {
-  //         savedCalendar = savedCalendars.findFirstObjectByKeyValue('id', calendars[i].id);
-  //         if (savedCalendar && savedCalendar.enabled) {
-  //           findAllEventsInNamedCalendarAndFilterByDate(calendars[i].name, startDate, endDate);
-  //         }
-  //       }
-  //     } else if (packaging === 'android-cordova') {
-  //       var enabledCalendars = [];
-  //       for (i = 0; i < calendars.length; i++) {
-  //         savedCalendar = savedCalendars.findFirstObjectByKeyValue('id', calendars[i].id);
-  //         if (savedCalendar && savedCalendar.enabled) {
-  //           enabledCalendars.push({id: calendars[i].id, name: calendars[i].name});
-  //         }
-  //       }
-  //       if (enabledCalendars.length)
-  //         listEventsInRangeAndFilterByIdAndDate(enabledCalendars, startDate, endDate);
-  //     }
-  //   }
-  // }
+        var eventInstanceEndDate = new Date(eventInstance.end);
+        // All-day calendar events suffer from timezone issue turning 1-day events into 2-day events
+        // https://code.google.com/p/android/issues/detail?id=14051
+        DateService.setUTCOffsetDate(-1, eventInstanceEndDate);
+        var eventInstaceEndYYYYMMDD = DateService.dateToUTCyyyymmdd(eventInstanceEndDate);
 
-  // function listEventsInRangeAndFilterByIdAndDate(calendars, startDate, endDate) {
+        if (eventInstaceStartYYYYMMDD <= yyyymmdd && eventInstaceEndYYYYMMDD >= yyyymmdd) {
+          yyyymmddEventInstances.push({title: eventInstance.title});
+        }
+      }
 
-  //   function doFilterByIdAndDate(events, calendars) {
-  //     console.log('has events');
-  //     for (var i = 0; i < events.length; i++) {
-  //       var ev = events[i];
-  //       if (calendars.findFirstIndexByKeyValue('id', ev.calendar_id) !== undefined) {
-  //         if (ev.dtstart && ev.dtend && ev.dtstart >= startDate && ev.dtend <= endDate) {
-  //           console.log(JSON.stringify(ev, null, 2));
-  //         } else if (ev.dtstart && ev.dtstart >= startDate && !ev.dtend) {
-  //           console.log('repeat');
-  //           console.log(JSON.stringify(ev, null, 2));
-  //         }
-  //       }
-  //     }
-  //   }
+      else if (eventInstance.begin < endTimeStamp && eventInstance.end > startTimeStamp) {
+        generateNonRecurringAgendaEvent(yyyymmddEventInstances, eventInstance);
+      }
+    }
+  }
 
-  //   window.plugins.calendar.listEventsInRange(startDate, endDate, function(events) {
-  //     if (events && events.length) doFilterByIdAndDate(events, calendars);
-  //   }, null);
-  // }
+  function generateAgendaEventsIOS(allEventInstances, yyyymmddEventInstances, yyyymmdd, startTimeStamp,
+                                   endTimeStamp) {
+    for (var i = 0; i < allEventInstances.length; i++) {
+      var eventInstance = allEventInstances[i];
+      if (eventInstance.begin < endTimeStamp && eventInstance.end > startTimeStamp) {
+        generateNonRecurringAgendaEvent(yyyymmddEventInstances, eventInstance);
+      }
+    }
+  }
 
-  // http://stackoverflow.com/questions/650022/how-do-i-split-a-string-with-multiple-separators-in-javascript
-  // http://stackoverflow.com/questions/2587345/javascript-date-parse
-  // function parseDate(input) {
-  //   var parts = input.split(/[\s-:]+/);
-  //   // new Date(year, month [, day [, hours[, minutes[, seconds[, ms]]]]])
-  //   return new Date(parts[0], parts[1] - 1, parts[2], parts[3], parts[4]);
-  // }
-
-  // function findAllEventsInNamedCalendarAndFilterByDate(name, startDate, endDate) {
-
-  //   function doFilterByDate(events, startDate, endDate) {
-  //     console.log('has events');
-  //     for (var i = 0; i < events.length; i++) {
-  //       var ev = events[i];
-  //       if (ev.startDate && ev.endDate &&
-  //           parseDate(ev.startDate) >= startDate && parseDate(ev.endDate) <= endDate)
-  //       {
-  //         console.log('match');
-  //         console.log(ev);
-  //       }
-  //     }
-  //   }
-  //
-  //   window.plugins.calendar.findAllEventsInNamedCalendar(name, function(events) {
-  //     if (events && events.length) doFilterByDate(events, startDate, endDate);
-  //   }, null);
-  // }
+  function generateNonRecurringAgendaEvent(eventInstances, eventInstance) {
+    eventInstances.push({
+      title: eventInstance.title,
+      info: $filter('date')(eventInstance.begin, 'H:mm') // e.g. 10:00
+    });
+  }
 
   $scope.$on('$destroy', function() {
     if (angular.isFunction($scope.unregisterSynchronizeCallback))
