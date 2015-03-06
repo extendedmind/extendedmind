@@ -594,6 +594,7 @@
     } else {
       // No event instances.
     }
+    $scope.eventInstancesLoaded = true;
   }
 
   function listEventInstancesError(/*error*/) {
@@ -617,6 +618,11 @@
                            startTimeStamp, endTimeStamp);
     }
     return cachedEventInstances[yyyymmdd];
+  };
+
+  $scope.openCalendar = function(yyyymmdd) {
+    if (window.plugins && window.plugins.calendar)
+      window.plugins.calendar.openCalendar(yyyymmdd.yyyymmddToNoonDate(), null, null);
   };
 
   function generateAgendaEvents(eventInstances, yyyymmddEventInstances, yyyymmdd, startTimeStamp,

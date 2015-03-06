@@ -342,16 +342,19 @@
             <div list-prompt="tasks" list-prompt-infos="listInfos"
               list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
 
-            <div ng-repeat="agendaEvent in getEventInstances(daySlides[2].info)">
-              <div ng-bind="agendaEvent.title"></div>
-              <div style="white-space:pre-wrap; line-height: normal;"
-                ng-bind="agendaEvent.allDay ? 'all day' : agendaEvent.begin + '\n' + agendaEvent.end">
+            <a href ng-if="eventInstancesLoaded" class="link"
+              ng-click="openCalendar(daySlides[2].info)">
+              <span ng-if="agendaEvents && agendaEvents.length">agenda</span>
+              <div ng-repeat="agendaEvent in getEventInstances(daySlides[2].info) as agendaEvents">
+                <span ng-bind="agendaEvent.title"></span>
+                <span style="white-space:pre-wrap; line-height: normal;"
+                  ng-bind="agendaEvent.allDay ? 'all day' : agendaEvent.begin + '\n' + agendaEvent.end">
+                </span>
+                <span ng-if="agendaEvent.eventLocation" ng-bind="agendaEvent.eventLocation"></span>
+                <span ng-if="agendaEvent.rrule" class="icon-sort"></span>
               </div>
-              <div ng-if="agendaEvent.eventLocation" ng-bind="agendaEvent.eventLocation"></div>
-              <div ng-if="agendaEvent.rrule">
-                <span class="icon-sort"></span>
-              </div>
-            </div>
+              <span ng-if="!agendaEvents || !agendaEvents.length">no events</span>
+            </a>
           </div>
         </div>
 
@@ -374,16 +377,19 @@
             <div list-prompt="tasks" list-prompt-infos="listInfos"
               list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
 
-            <div ng-repeat="agendaEvent in getEventInstances(daySlides[0].info)">
-              <div ng-bind="agendaEvent.title"></div>
-              <div style="white-space:pre-wrap; line-height: normal;"
-                ng-bind="agendaEvent.allDay ? 'all day' : agendaEvent.begin + '\n' + agendaEvent.end">
+            <a href ng-if="eventInstancesLoaded" class="link"
+              ng-click="openCalendar(daySlides[0].info)">
+              <span ng-if="agendaEvents && agendaEvents.length">agenda</span>
+              <div ng-repeat="agendaEvent in getEventInstances(daySlides[0].info) as agendaEvents">
+                <span ng-bind="agendaEvent.title"></span>
+                <span style="white-space:pre-wrap; line-height: normal;"
+                  ng-bind="agendaEvent.allDay ? 'all day' : agendaEvent.begin + '\n' + agendaEvent.end">
+                </span>
+                <span ng-if="agendaEvent.eventLocation" ng-bind="agendaEvent.eventLocation"></span>
+                <span ng-if="agendaEvent.rrule" class="icon-sort"></span>
               </div>
-              <div ng-if="agendaEvent.eventLocation" ng-bind="agendaEvent.eventLocation"></div>
-              <div ng-if="agendaEvent.rrule">
-                <span class="icon-sort"></span>
-              </div>
-            </div>
+              <span ng-if="!agendaEvents || !agendaEvents.length">no events</span>
+            </a>
           </div>
         </div>
 
@@ -406,16 +412,19 @@
             <div list-prompt="tasks" list-prompt-infos="listInfos"
               list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
 
-            <div ng-repeat="agendaEvent in getEventInstances(daySlides[1].info)">
-              <div ng-bind="agendaEvent.title"></div>
-              <div style="white-space:pre-wrap; line-height: normal;"
-                ng-bind="agendaEvent.allDay ? 'all day' : agendaEvent.begin + '\n' + agendaEvent.end">
+            <a href ng-if="eventInstancesLoaded" class="link"
+              ng-click="openCalendar(daySlides[1].info)">
+              <span ng-if="agendaEvents && agendaEvents.length">agenda</span>
+              <div ng-repeat="agendaEvent in getEventInstances(daySlides[1].info) as agendaEvents">
+                <span ng-bind="agendaEvent.title"></span>
+                <span style="white-space:pre-wrap; line-height: normal;"
+                  ng-bind="agendaEvent.allDay ? 'all day' : agendaEvent.begin + '\n' + agendaEvent.end">
+                </span>
+                <span ng-if="agendaEvent.eventLocation" ng-bind="agendaEvent.eventLocation"></span>
+                <span ng-if="agendaEvent.rrule" class="icon-sort"></span>
               </div>
-              <div ng-if="agendaEvent.eventLocation" ng-bind="agendaEvent.eventLocation"></div>
-              <div ng-if="agendaEvent.rrule">
-                <span class="icon-sort"></span>
-              </div>
-            </div>
+              <span ng-if="!agendaEvents || !agendaEvents.length">no events</span>
+            </a>
           </div>
         </div>
 
@@ -438,16 +447,19 @@
             <div list-prompt="tasks" list-prompt-infos="listInfos"
               list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
 
-            <div ng-repeat="agendaEvent in getEventInstances(daySlides[2].info)">
-              <div ng-bind="agendaEvent.title"></div>
-              <div style="white-space:pre-wrap; line-height: normal;"
-                ng-bind="agendaEvent.allDay ? 'all day' : agendaEvent.begin + '\n' + agendaEvent.end">
+            <a href ng-if="eventInstancesLoaded" class="link"
+              ng-click="openCalendar(daySlides[2].info)">
+              <span ng-if="agendaEvents && agendaEvents.length">agenda</span>
+              <div ng-repeat="agendaEvent in getEventInstances(daySlides[2].info) as agendaEvents">
+                <span ng-bind="agendaEvent.title"></span>
+                <span style="white-space:pre-wrap; line-height: normal;"
+                  ng-bind="agendaEvent.allDay ? 'all day' : agendaEvent.begin + '\n' + agendaEvent.end">
+                </span>
+                <span ng-if="agendaEvent.eventLocation" ng-bind="agendaEvent.eventLocation"></span>
+                <span ng-if="agendaEvent.rrule" class="icon-sort"></span>
               </div>
-              <div ng-if="agendaEvent.eventLocation" ng-bind="agendaEvent.eventLocation"></div>
-              <div ng-if="agendaEvent.rrule">
-                <span class="icon-sort"></span>
-              </div>
-            </div>
+              <span ng-if="!agendaEvents || !agendaEvents.length">no events</span>
+            </a>
           </div>
         </div>
 
@@ -470,16 +482,19 @@
             <div list-prompt="tasks" list-prompt-infos="listInfos"
               list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
 
-            <div ng-repeat="agendaEvent in getEventInstances(daySlides[0].info)">
-              <div ng-bind="agendaEvent.title"></div>
-              <div style="white-space:pre-wrap; line-height: normal;"
-                ng-bind="agendaEvent.allDay ? 'all day' : agendaEvent.begin + '\n' + agendaEvent.end">
+            <a href ng-if="eventInstancesLoaded" class="link"
+              ng-click="openCalendar(daySlides[0].info)">
+              <span ng-if="agendaEvents && agendaEvents.length">agenda</span>
+              <div ng-repeat="agendaEvent in getEventInstances(daySlides[0].info) as agendaEvents">
+                <span ng-bind="agendaEvent.title"></span>
+                <span style="white-space:pre-wrap; line-height: normal;"
+                  ng-bind="agendaEvent.allDay ? 'all day' : agendaEvent.begin + '\n' + agendaEvent.end">
+                </span>
+                <span ng-if="agendaEvent.eventLocation" ng-bind="agendaEvent.eventLocation"></span>
+                <span ng-if="agendaEvent.rrule" class="icon-sort"></span>
               </div>
-              <div ng-if="agendaEvent.eventLocation" ng-bind="agendaEvent.eventLocation"></div>
-              <div ng-if="agendaEvent.rrule">
-                <span class="icon-sort"></span>
-              </div>
-            </div>
+              <span ng-if="!agendaEvents || !agendaEvents.length">no events</span>
+            </a>
           </div>
         </div>
 
