@@ -613,23 +613,18 @@
       endTimeStamp.setHours(0, 0, 0, 0);
       endTimeStamp = endTimeStamp.getTime();
 
-      if (packaging === 'android-cordova') {
-        generateAgendaEventsAndroid(cachedEventInstances['all'], cachedEventInstances[yyyymmdd], yyyymmdd,
-                                    startTimeStamp, endTimeStamp);
-      } else if (packaging === 'ios-cordova') {
-        generateAgendaEventsIOS(cachedEventInstances['all'], cachedEventInstances[yyyymmdd], yyyymmdd,
-                                startTimeStamp, endTimeStamp);
-      }
+      generateAgendaEvents(cachedEventInstances['all'], cachedEventInstances[yyyymmdd], yyyymmdd,
+                           startTimeStamp, endTimeStamp);
     }
     return cachedEventInstances[yyyymmdd];
   };
 
-  function generateAgendaEventsAndroid(eventInstances, yyyymmddEventInstances, yyyymmdd, startTimeStamp,
-                                       endTimeStamp) {
-    for (var i = 0; i < eventInstances.length; i++) {
-      var eventInstance = eventInstances[i];
+  function generateAgendaEvents(eventInstances, yyyymmddEventInstances, yyyymmdd, startTimeStamp,
+                                endTimeStamp) {
+    var isAllDayEventInRangeFn;
 
-      if (eventInstance.allDay) {
+    if (packaging === 'android-cordova') {
+      isAllDayEventInRangeFn = function(yyyymmdd, startTimeStamp, endTimeStamp, eventInstance) {
         // All-day calendar events are in UTC time
 
         var eventInstaceStartYYYYMMDD = DateService.dateToUTCyyyymmdd(new Date(eventInstance.begin));
@@ -640,32 +635,35 @@
         DateService.setUTCOffsetDate(-1, eventInstanceEndDate);
         var eventInstaceEndYYYYMMDD = DateService.dateToUTCyyyymmdd(eventInstanceEndDate);
 
-        if (eventInstaceStartYYYYMMDD <= yyyymmdd && eventInstaceEndYYYYMMDD >= yyyymmdd) {
-          yyyymmddEventInstances.push({title: eventInstance.title || 'untitled'});
-        }
-      } else {
-        generateAgendaEvent(yyyymmddEventInstances, startTimeStamp, endTimeStamp, eventInstance);
-      }
+        return eventInstaceStartYYYYMMDD <= yyyymmdd && eventInstaceEndYYYYMMDD >= yyyymmdd;
+      };
+    } else if (packaging === 'ios-cordova') {
+      isAllDayEventInRangeFn = function(yyyymmdd, startTimeStamp, endTimeStamp, eventInstance) {
+        return eventInstance.begin < endTimeStamp && eventInstance.end > startTimeStamp;
+      };
     }
-  }
 
-  function generateAgendaEventsIOS(eventInstances, yyyymmddEventInstances, yyyymmdd, startTimeStamp,
-                                   endTimeStamp) {
     for (var i = 0; i < eventInstances.length; i++) {
-      var eventInstance = eventInstances[i];
-      if (eventInstance.allDay) {
-        if (eventInstance.begin < endTimeStamp && eventInstance.end > startTimeStamp) {
-          yyyymmddEventInstances.push({title: eventInstance.title || 'untitled'});
-        }
-      }
-      else {
-        generateAgendaEvent(yyyymmddEventInstances, startTimeStamp, endTimeStamp, eventInstance);
-      }
+      generateAgendaEvent(yyyymmddEventInstances, yyyymmdd, startTimeStamp, endTimeStamp, eventInstances[i],
+                          isAllDayEventInRangeFn);
     }
   }
 
-  function generateAgendaEvent(yyyymmddEventInstances, startTimeStamp, endTimeStamp, eventInstance) {
-    if (eventInstance.begin < startTimeStamp && eventInstance.end >= endTimeStamp) {
+  /*
+  * title or 'untitled'
+  * start time, end time or all day
+  * location
+  * calendar name
+  */
+  function generateAgendaEvent(yyyymmddEventInstances, yyyymmdd, startTimeStamp, endTimeStamp, eventInstance,
+                               isAllDayEventInRangeFn) {
+    if (eventInstance.allDay) {
+      if (isAllDayEventInRangeFn(yyyymmdd, startTimeStamp, endTimeStamp, eventInstance)) {
+        yyyymmddEventInstances.push({title: eventInstance.title || 'untitled'});
+      }
+    }
+
+    else if (eventInstance.begin < startTimeStamp && eventInstance.end >= endTimeStamp) {
       // Start of the event is before start time.
       // End of the event equals or is after end time.
       yyyymmddEventInstances.push({title: eventInstance.title || 'untitled'});
