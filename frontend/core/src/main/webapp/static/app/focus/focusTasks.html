@@ -343,7 +343,14 @@
               list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
 
             <div ng-repeat="agendaEvent in getEventInstances(daySlides[2].info)">
-              <span ng-bind="agendaEvent.title + ' ' + agendaEvent.info"></span>
+              <div ng-bind="agendaEvent.title"></div>
+              <div style="white-space:pre-wrap; line-height: normal;"
+                ng-bind="agendaEvent.allDay ? 'all day' : agendaEvent.begin + '\n' + agendaEvent.end">
+              </div>
+              <div ng-if="agendaEvent.eventLocation" ng-bind="agendaEvent.eventLocation"></div>
+              <div ng-if="agendaEvent.rrule">
+                <span class="icon-sort"></span>
+              </div>
             </div>
           </div>
         </div>
@@ -368,7 +375,14 @@
               list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
 
             <div ng-repeat="agendaEvent in getEventInstances(daySlides[0].info)">
-              <span ng-bind="agendaEvent.title + ' ' + agendaEvent.info"></span>
+              <div ng-bind="agendaEvent.title"></div>
+              <div style="white-space:pre-wrap; line-height: normal;"
+                ng-bind="agendaEvent.allDay ? 'all day' : agendaEvent.begin + '\n' + agendaEvent.end">
+              </div>
+              <div ng-if="agendaEvent.eventLocation" ng-bind="agendaEvent.eventLocation"></div>
+              <div ng-if="agendaEvent.rrule">
+                <span class="icon-sort"></span>
+              </div>
             </div>
           </div>
         </div>
@@ -393,7 +407,14 @@
               list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
 
             <div ng-repeat="agendaEvent in getEventInstances(daySlides[1].info)">
-              <span ng-bind="agendaEvent.title + ' ' + agendaEvent.info"></span>
+              <div ng-bind="agendaEvent.title"></div>
+              <div style="white-space:pre-wrap; line-height: normal;"
+                ng-bind="agendaEvent.allDay ? 'all day' : agendaEvent.begin + '\n' + agendaEvent.end">
+              </div>
+              <div ng-if="agendaEvent.eventLocation" ng-bind="agendaEvent.eventLocation"></div>
+              <div ng-if="agendaEvent.rrule">
+                <span class="icon-sort"></span>
+              </div>
             </div>
           </div>
         </div>
@@ -418,7 +439,14 @@
               list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
 
             <div ng-repeat="agendaEvent in getEventInstances(daySlides[2].info)">
-              <span ng-bind="agendaEvent.title + ' ' + agendaEvent.info"></span>
+              <div ng-bind="agendaEvent.title"></div>
+              <div style="white-space:pre-wrap; line-height: normal;"
+                ng-bind="agendaEvent.allDay ? 'all day' : agendaEvent.begin + '\n' + agendaEvent.end">
+              </div>
+              <div ng-if="agendaEvent.eventLocation" ng-bind="agendaEvent.eventLocation"></div>
+              <div ng-if="agendaEvent.rrule">
+                <span class="icon-sort"></span>
+              </div>
             </div>
           </div>
         </div>
@@ -443,7 +471,14 @@
               list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
 
             <div ng-repeat="agendaEvent in getEventInstances(daySlides[0].info)">
-              <span ng-bind="agendaEvent.title + ' ' + agendaEvent.info"></span>
+              <div ng-bind="agendaEvent.title"></div>
+              <div style="white-space:pre-wrap; line-height: normal;"
+                ng-bind="agendaEvent.allDay ? 'all day' : agendaEvent.begin + '\n' + agendaEvent.end">
+              </div>
+              <div ng-if="agendaEvent.eventLocation" ng-bind="agendaEvent.eventLocation"></div>
+              <div ng-if="agendaEvent.rrule">
+                <span class="icon-sort"></span>
+              </div>
             </div>
           </div>
         </div>

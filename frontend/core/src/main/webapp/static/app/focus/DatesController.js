@@ -657,16 +657,23 @@
   */
   function generateAgendaEvent(yyyymmddEventInstances, yyyymmdd, startTimeStamp, endTimeStamp, eventInstance,
                                isAllDayEventInRangeFn) {
+
+    var agendaEvent;
+
     if (eventInstance.allDay) {
       if (isAllDayEventInRangeFn(yyyymmdd, startTimeStamp, endTimeStamp, eventInstance)) {
-        yyyymmddEventInstances.push({title: eventInstance.title || 'untitled'});
+        agendaEvent = {
+          allDay: true
+        };
       }
     }
 
     else if (eventInstance.begin < startTimeStamp && eventInstance.end >= endTimeStamp) {
       // Start of the event is before start time.
       // End of the event equals or is after end time.
-      yyyymmddEventInstances.push({title: eventInstance.title || 'untitled'});
+      agendaEvent = {
+        allDay: true
+      };
     }
 
     else if (eventInstance.begin > startTimeStamp && eventInstance.begin < endTimeStamp &&
@@ -674,12 +681,11 @@
     {
       // Start of the event is between start time and end time.
       // End of the event is after the end time.
-      yyyymmddEventInstances.push({
-        title: eventInstance.title || 'untitled',
-        info: $filter('date')(eventInstance.begin, 'H:mm') + ' - ' +
-        $filter('date')(eventInstance.end, 'EEE d MMM H:mm').toLowerCase()
-        // TODO: example
-      });
+      agendaEvent = {
+        begin: $filter('date')(eventInstance.begin, 'H:mm'),
+        end: $filter('date')(eventInstance.end, 'EEE d MMM H:mm').toLowerCase()
+        // e.g. 9:00 - fri 6 mar
+      };
     }
 
     else if (eventInstance.begin < startTimeStamp && eventInstance.end > startTimeStamp &&
@@ -687,22 +693,32 @@
     {
       // Start of the event is before the start time.
       // End of the event is between start time and end time.
-      yyyymmddEventInstances.push({
-        title: eventInstance.title || 'untitled',
-        info: $filter('date')(eventInstance.begin, 'EEE d MMM H:mm').toLowerCase() + ' - ' +
-        $filter('date')(eventInstance.end, 'H:mm')
-        // TODO: example
-      });
+      agendaEvent = {
+        begin: $filter('date')(eventInstance.begin, 'EEE d MMM H:mm').toLowerCase(),
+        end: $filter('date')(eventInstance.end, 'H:mm')
+        // e.g. fri 6 mar - 9:00
+      };
     }
 
     else if (eventInstance.begin < endTimeStamp && eventInstance.end > startTimeStamp) {
       // Event is between start and end time.
-      yyyymmddEventInstances.push({
-        title: eventInstance.title || 'untitled',
-        info: $filter('date')(eventInstance.begin, 'H:mm') + ' - ' +
-        $filter('date')(eventInstance.end, 'H:mm')
+      agendaEvent = {
+        begin: $filter('date')(eventInstance.begin, 'H:mm'),
+        end: $filter('date')(eventInstance.end, 'H:mm')
         // e.g. 9:00 - 12:45
-      });
+      };
+    }
+
+    if (agendaEvent) {
+      agendaEvent.title = eventInstance.title || 'untitled';
+      if (eventInstance.eventLocation) {
+        agendaEvent.eventLocation = eventInstance.eventLocation;
+      }
+      if (eventInstance.rrule) {
+        agendaEvent.rrule = true;
+      }
+
+      yyyymmddEventInstances.push(agendaEvent);
     }
   }
 
