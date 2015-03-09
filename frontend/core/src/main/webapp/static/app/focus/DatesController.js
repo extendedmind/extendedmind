@@ -60,10 +60,7 @@
 
       if (UserSessionService.getUIPreference('showAgendaCalendar')) {
         var savedCalendars = UserSessionService.getUIPreference('calendars');
-        if (savedCalendars) {
-          console.log('focus active');
-          listCalendars(savedCalendars);
-        }
+        if (savedCalendars) listCalendars(savedCalendars);
       }
     }
     else {
@@ -105,10 +102,7 @@
 
     if ($scope.getActiveFeature() === 'focus' && UserSessionService.getUIPreference('showAgendaCalendar')) {
       var savedCalendars = UserSessionService.getUIPreference('calendars');
-      if (savedCalendars) {
-        console.log('sync');
-        listCalendars(savedCalendars);
-      }
+      if (savedCalendars) listCalendars(savedCalendars);
     }
   }
 
@@ -379,10 +373,7 @@
     preventDaySlideChange = false;
     if (UserSessionService.getUIPreference('showAgendaCalendar')) {
       var savedCalendars = UserSessionService.getUIPreference('calendars');
-      if (savedCalendars) {
-        console.log('picker change');
-        listCalendars(savedCalendars);
-      }
+      if (savedCalendars) listCalendars(savedCalendars);
     }
   }
 
@@ -580,12 +571,10 @@
       if (!window.plugins || !window.plugins.calendar) {
         document.addEventListener('deviceready', function() {
           if (window.plugins && window.plugins.calendar) {
-            console.log('device ready');
             listCalendars(savedCalendars);
           }
         });
       } else {
-        console.log('init');
         listCalendars(savedCalendars);
       }
     }
@@ -600,10 +589,7 @@
     if (UserSessionService.getUIPreference('showAgendaCalendar')) {
       $scope.showAgenda = true;
       var savedCalendars = UserSessionService.getUIPreference('calendars');
-      if (savedCalendars) {
-        console.log('agenda visibility');
-        listCalendars(savedCalendars);
-      }
+      if (savedCalendars) listCalendars(savedCalendars);
     } else {
       // clear
       $scope.showAgenda = false;
@@ -612,10 +598,7 @@
 
   function agendaCalendarsChangedCallback() {
     var savedCalendars = UserSessionService.getUIPreference('calendars');
-    if (savedCalendars) {
-      console.log('calendar change');
-      listCalendars(savedCalendars);
-    }
+    if (savedCalendars) listCalendars(savedCalendars);
   }
 
   function listCalendars(savedCalendars) {
@@ -700,6 +683,8 @@
       // No event instances.
     }
     $scope.eventInstancesLoaded = true;
+    // Update UI.
+    if (!$scope.$$phase && !$rootScope.$$phase) $scope.$digest();
   }
 
   function listEventInstancesError(/*error*/) {
