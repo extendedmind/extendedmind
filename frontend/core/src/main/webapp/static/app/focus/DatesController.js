@@ -554,7 +554,7 @@
     $scope.showAgenda = true;
     var savedCalendars = UserSessionService.getUIPreference('calendars');
     if (savedCalendars) {
-      if (!window.plugins && !window.plugins.calendar) {
+      if (!window.plugins || !window.plugins.calendar) {
         document.addEventListener('deviceready', function() {
           console.log('device ready');
           if (window.plugins && window.plugins.calendar) listCalendars(savedCalendars);
@@ -620,7 +620,9 @@
       endDate.setDate(endDate.getDate() + 21);
 
       window.plugins.calendar.listEventInstances(calendarIds, startDate, endDate,
-                                                 listEventInstancesSuccess, listEventInstancesError);
+                                                 function(eventInstances) {
+                                                  listEventInstancesSuccess(eventInstances, savedCalendars);
+                                                }, listEventInstancesError);
     } else {
       // No calendars.
     }
@@ -630,11 +632,31 @@
   }
 
   var cachedEventInstances;
-  function listEventInstancesSuccess(eventInstances) {
+  function listEventInstancesSuccess(eventInstances, savedCalendars) {
     if (eventInstances && eventInstances.length) {
-      cachedEventInstances = {
-        all: eventInstances
+      // cachedEventInstances = {
+      //   all: eventInstances
+      // };
+
+      var attachGetCalendarNameByIdFn = function(eventInstance, savedCalendars) {
+        eventInstance.getCalendarName = function() {
+          console.log(eventInstance.calendar_id);
+          var calendar = savedCalendars.findFirstObjectByKeyValue('id', eventInstance.calendar_id);
+          /*FIXME*/
+          if (calendar) {
+            console.log(calendar);
+            return calendar.name;
+          }
+        };
       };
+
+      cachedEventInstances = {
+        all: []
+      };
+      for (var i = 0; i < eventInstances.length; i++) {
+        attachGetCalendarNameByIdFn(eventInstances[i], savedCalendars);
+        cachedEventInstances['all'].push(eventInstances[i]);
+      }
     } else {
       // No event instances.
     }
@@ -761,6 +783,7 @@
 
     if (agendaEvent) {
       agendaEvent.title = eventInstance.title || 'untitled';
+      agendaEvent.calendarName = eventInstance.getCalendarName();
       if (eventInstance.eventLocation) {
         agendaEvent.eventLocation = eventInstance.eventLocation;
       }

@@ -48,7 +48,6 @@
                     id: calendars[i].id,
                     name: calendars[i].name
                   });
-                  console.log('state changed');
                   calendarStatesChanged = true;
                 }
               }
@@ -61,10 +60,8 @@
                   name: calendars[i].name
                 });
               }
-              console.log('state changed');
               calendarStatesChanged = true;
             }
-            console.log('');
 
             if (calendarStatesChanged) updateCalendars(calendarStates);
           }
