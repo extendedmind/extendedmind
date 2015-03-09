@@ -266,6 +266,9 @@
 
       for (var date in cachedDates) {
         if (cachedDates.hasOwnProperty(date)) {
+          if (!info.date) {
+            return;
+          }
           var difference = DateService.numberOfDaysBetweenYYYYMMDDs(date, info.date);
           if (difference > 2) {
             // Clear distant dates array from cache.
@@ -296,6 +299,10 @@
       if ($scope.getActiveFeature() === 'focus') {
         if (!cachedTasksArrays[ownerUUID]['date'])
           cachedTasksArrays[ownerUUID]['date'] = {};
+        if (info.date === undefined) {
+          // info.date is set to undefined after two consecutive slideChangeStart callbacks. Do nothing.
+          return;
+        }
         if (info.date === null) {
           // Use 'noDate' to identify cached tasks without date instead of null.
           info.date = 'noDate';

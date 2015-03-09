@@ -690,8 +690,9 @@
   }
 
   $scope.getEventInstances = function(yyyymmdd) {
-    if (!cachedEventInstances || !cachedEventInstances['all'] || yyyymmdd === null) {
-      // Agenda events not loaded or 'no date' slide.
+    if (!cachedEventInstances || !cachedEventInstances['all'] || yyyymmdd === null || yyyymmdd === undefined)
+    {
+      // Agenda events not loaded, in the middle of fast slide changing or in 'no date' slide.
       return;
     }
     if (!cachedEventInstances[yyyymmdd]) {
