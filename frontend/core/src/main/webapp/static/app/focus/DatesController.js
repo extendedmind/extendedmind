@@ -556,14 +556,11 @@
     if (savedCalendars) {
       if (!window.plugins || !window.plugins.calendar) {
         document.addEventListener('deviceready', function() {
-          console.log('device ready');
           if (window.plugins && window.plugins.calendar) listCalendars(savedCalendars);
         });
       } else {
-        console.log('init');
         listCalendars(savedCalendars);
       }
-      console.log('');
     }
   }
 
@@ -573,28 +570,21 @@
                                                          'DatesController');
 
   function agendaVisibilityChanged() {
-    console.log('visibility changed');
     if (UserSessionService.getUIPreference('showAgendaCalendar')) {
-      console.log('set visible');
       $scope.showAgenda = true;
       var savedCalendars = UserSessionService.getUIPreference('calendars');
       if (savedCalendars) listCalendars(savedCalendars);
     } else {
       // clear
-      console.log('clear');
       $scope.showAgenda = false;
     }
-    console.log('');
   }
 
   function agendaCalendarsChangedCallback() {
-    console.log('calendars changed');
     var savedCalendars = UserSessionService.getUIPreference('calendars');
     if (savedCalendars) {
-      console.log('list calendars');
       listCalendars(savedCalendars);
     }
-    console.log('');
   }
 
   function listCalendars(savedCalendars) {
@@ -640,13 +630,8 @@
 
       var attachGetCalendarNameByIdFn = function(eventInstance, savedCalendars) {
         eventInstance.getCalendarName = function() {
-          console.log(eventInstance.calendar_id);
           var calendar = savedCalendars.findFirstObjectByKeyValue('id', eventInstance.calendar_id);
-          /*FIXME*/
-          if (calendar) {
-            console.log(calendar);
-            return calendar.name;
-          }
+          if (calendar) return calendar.name;
         };
       };
 
