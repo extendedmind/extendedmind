@@ -345,7 +345,7 @@
             <a href ng-if="showAgenda && eventInstancesLoaded" class="link"
               ng-click="openCalendar(daySlides[2].info)">
               <span ng-if="agendaEvents && agendaEvents.length">agenda</span>
-              <div ng-repeat="agendaEvent in getEventInstances(daySlides[2].info) as agendaEvents">
+              <div ng-repeat="agendaEvent in getEventInstances(daySlides[2].info) as agendaEvents track by agendaEvent.event_id">
                 <span style="white-space:pre-wrap; line-height: normal;"
                   ng-bind="agendaEvent.allDay ? 'all day' : agendaEvent.begin + '\n' + agendaEvent.end">
                 </span>
@@ -381,7 +381,7 @@
             <a href ng-if="showAgenda && eventInstancesLoaded" class="link"
               ng-click="openCalendar(daySlides[0].info)">
               <span ng-if="agendaEvents && agendaEvents.length">agenda</span>
-              <div ng-repeat="agendaEvent in getEventInstances(daySlides[0].info) as agendaEvents">
+              <div ng-repeat="agendaEvent in getEventInstances(daySlides[0].info) as agendaEvents track by agendaEvent.event_id">
                 <span style="white-space:pre-wrap; line-height: normal;"
                   ng-bind="agendaEvent.allDay ? 'all day' : agendaEvent.begin + '\n' + agendaEvent.end">
                 </span>
@@ -417,7 +417,7 @@
             <a href ng-if="showAgenda && eventInstancesLoaded" class="link"
               ng-click="openCalendar(daySlides[1].info)">
               <span ng-if="agendaEvents && agendaEvents.length">agenda</span>
-              <div ng-repeat="agendaEvent in getEventInstances(daySlides[1].info) as agendaEvents">
+              <div ng-repeat="agendaEvent in getEventInstances(daySlides[1].info) as agendaEvents track by agendaEvent.event_id">
                 <span style="white-space:pre-wrap; line-height: normal;"
                   ng-bind="agendaEvent.allDay ? 'all day' : agendaEvent.begin + '\n' + agendaEvent.end">
                 </span>
@@ -453,7 +453,7 @@
             <a href ng-if="showAgenda && eventInstancesLoaded" class="link"
               ng-click="openCalendar(daySlides[2].info)">
               <span ng-if="agendaEvents && agendaEvents.length">agenda</span>
-              <div ng-repeat="agendaEvent in getEventInstances(daySlides[2].info) as agendaEvents">
+              <div ng-repeat="agendaEvent in getEventInstances(daySlides[2].info) as agendaEvents track by agendaEvent.event_id">
                 <span style="white-space:pre-wrap; line-height: normal;"
                   ng-bind="agendaEvent.allDay ? 'all day' : agendaEvent.begin + '\n' + agendaEvent.end">
                 </span>
@@ -489,7 +489,7 @@
             <a href ng-if="showAgenda && eventInstancesLoaded" class="link"
               ng-click="openCalendar(daySlides[0].info)">
               <span ng-if="agendaEvents && agendaEvents.length">agenda</span>
-              <div ng-repeat="agendaEvent in getEventInstances(daySlides[0].info) as agendaEvents">
+              <div ng-repeat="agendaEvent in getEventInstances(daySlides[0].info) as agendaEvents track by agendaEvent.event_id">
                 <span style="white-space:pre-wrap; line-height: normal;"
                   ng-bind="agendaEvent.allDay ? 'all day' : agendaEvent.begin + '\n' + agendaEvent.end">
                 </span>
