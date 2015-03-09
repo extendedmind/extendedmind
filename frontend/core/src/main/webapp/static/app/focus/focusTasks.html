@@ -346,12 +346,16 @@
               ng-click="openCalendar(daySlides[2].info)">
               <span ng-if="agendaEvents && agendaEvents.length">agenda</span>
               <div ng-repeat="agendaEvent in getEventInstances(daySlides[2].info) as agendaEvents track by agendaEvent.event_id">
-                <span style="white-space:pre-wrap; line-height: normal;"
-                  ng-bind="agendaEvent.allDay ? 'all day' : agendaEvent.begin + '\n' + agendaEvent.end">
-                </span>
-                <span ng-bind="agendaEvent.title"></span>
-                <span ng-if="agendaEvent.eventLocation" ng-bind="agendaEvent.eventLocation"></span>
-                <span ng-bind="agendaEvent.calendarName"></span>
+                <div class="group-mixed">
+                  <span style="white-space:pre-wrap; line-height: normal;" class="group-mixed--left"
+                    ng-bind="agendaEvent.allDay ? 'all day' : agendaEvent.begin + '\n' + agendaEvent.end">
+                  </span>
+                  <span ng-bind="agendaEvent.title" class="group-mixed--middle"></span>
+                </div>
+                <div class="group-symmetrical">
+                  <span ng-if="agendaEvent.eventLocation" class="group-symmetrical--left" ng-bind="agendaEvent.eventLocation"></span>
+                  <span ng-bind="agendaEvent.calendarName" class="group-symmetrical--right"></span>
+                </div>
                 <span ng-if="agendaEvent.rrule" class="icon-sort"></span>
               </div>
               <span ng-if="!agendaEvents || !agendaEvents.length">no events</span>
@@ -382,12 +386,16 @@
               ng-click="openCalendar(daySlides[0].info)">
               <span ng-if="agendaEvents && agendaEvents.length">agenda</span>
               <div ng-repeat="agendaEvent in getEventInstances(daySlides[0].info) as agendaEvents track by agendaEvent.event_id">
-                <span style="white-space:pre-wrap; line-height: normal;"
-                  ng-bind="agendaEvent.allDay ? 'all day' : agendaEvent.begin + '\n' + agendaEvent.end">
-                </span>
-                <span ng-bind="agendaEvent.title"></span>
-                <span ng-if="agendaEvent.eventLocation" ng-bind="agendaEvent.eventLocation"></span>
-                <span ng-bind="agendaEvent.calendarName"></span>
+                <div class="group-mixed">
+                  <span style="white-space:pre-wrap; line-height: normal;" class="group-mixed--left"
+                    ng-bind="agendaEvent.allDay ? 'all day' : agendaEvent.begin + '\n' + agendaEvent.end">
+                  </span>
+                  <span ng-bind="agendaEvent.title" class="group-mixed--middle"></span>
+                </div>
+                <div class="group-symmetrical">
+                  <span ng-if="agendaEvent.eventLocation" class="group-symmetrical--left" ng-bind="agendaEvent.eventLocation"></span>
+                  <span ng-bind="agendaEvent.calendarName" class="group-symmetrical--right"></span>
+                </div>
                 <span ng-if="agendaEvent.rrule" class="icon-sort"></span>
               </div>
               <span ng-if="!agendaEvents || !agendaEvents.length">no events</span>
@@ -418,12 +426,16 @@
               ng-click="openCalendar(daySlides[1].info)">
               <span ng-if="agendaEvents && agendaEvents.length">agenda</span>
               <div ng-repeat="agendaEvent in getEventInstances(daySlides[1].info) as agendaEvents track by agendaEvent.event_id">
-                <span style="white-space:pre-wrap; line-height: normal;"
-                  ng-bind="agendaEvent.allDay ? 'all day' : agendaEvent.begin + '\n' + agendaEvent.end">
-                </span>
-                <span ng-bind="agendaEvent.title"></span>
-                <span ng-if="agendaEvent.eventLocation" ng-bind="agendaEvent.eventLocation"></span>
-                <span ng-bind="agendaEvent.calendarName"></span>
+                <div class="group-mixed">
+                  <span style="white-space:pre-wrap; line-height: normal;" class="group-mixed--left"
+                    ng-bind="agendaEvent.allDay ? 'all day' : agendaEvent.begin + '\n' + agendaEvent.end">
+                  </span>
+                  <span ng-bind="agendaEvent.title" class="group-mixed--middle"></span>
+                </div>
+                <div class="group-symmetrical">
+                  <span ng-if="agendaEvent.eventLocation" class="group-symmetrical--left" ng-bind="agendaEvent.eventLocation"></span>
+                  <span ng-bind="agendaEvent.calendarName" class="group-symmetrical--right"></span>
+                </div>
                 <span ng-if="agendaEvent.rrule" class="icon-sort"></span>
               </div>
               <span ng-if="!agendaEvents || !agendaEvents.length">no events</span>
@@ -454,12 +466,16 @@
               ng-click="openCalendar(daySlides[2].info)">
               <span ng-if="agendaEvents && agendaEvents.length">agenda</span>
               <div ng-repeat="agendaEvent in getEventInstances(daySlides[2].info) as agendaEvents track by agendaEvent.event_id">
-                <span style="white-space:pre-wrap; line-height: normal;"
-                  ng-bind="agendaEvent.allDay ? 'all day' : agendaEvent.begin + '\n' + agendaEvent.end">
-                </span>
-                <span ng-bind="agendaEvent.title"></span>
-                <span ng-if="agendaEvent.eventLocation" ng-bind="agendaEvent.eventLocation"></span>
-                <span ng-bind="agendaEvent.calendarName"></span>
+                <div class="group-mixed">
+                  <span style="white-space:pre-wrap; line-height: normal;" class="group-mixed--left"
+                    ng-bind="agendaEvent.allDay ? 'all day' : agendaEvent.begin + '\n' + agendaEvent.end">
+                  </span>
+                  <span ng-bind="agendaEvent.title" class="group-mixed--middle"></span>
+                </div>
+                <div class="group-symmetrical">
+                  <span ng-if="agendaEvent.eventLocation" class="group-symmetrical--left" ng-bind="agendaEvent.eventLocation"></span>
+                  <span ng-bind="agendaEvent.calendarName" class="group-symmetrical--right"></span>
+                </div>
                 <span ng-if="agendaEvent.rrule" class="icon-sort"></span>
               </div>
               <span ng-if="!agendaEvents || !agendaEvents.length">no events</span>
@@ -490,12 +506,16 @@
               ng-click="openCalendar(daySlides[0].info)">
               <span ng-if="agendaEvents && agendaEvents.length">agenda</span>
               <div ng-repeat="agendaEvent in getEventInstances(daySlides[0].info) as agendaEvents track by agendaEvent.event_id">
-                <span style="white-space:pre-wrap; line-height: normal;"
-                  ng-bind="agendaEvent.allDay ? 'all day' : agendaEvent.begin + '\n' + agendaEvent.end">
-                </span>
-                <span ng-bind="agendaEvent.title"></span>
-                <span ng-if="agendaEvent.eventLocation" ng-bind="agendaEvent.eventLocation"></span>
-                <span ng-bind="agendaEvent.calendarName"></span>
+                <div class="group-mixed">
+                  <span style="white-space:pre-wrap; line-height: normal;" class="group-mixed--left"
+                    ng-bind="agendaEvent.allDay ? 'all day' : agendaEvent.begin + '\n' + agendaEvent.end">
+                  </span>
+                  <span ng-bind="agendaEvent.title" class="group-mixed--middle"></span>
+                </div>
+                <div class="group-symmetrical">
+                  <span ng-if="agendaEvent.eventLocation" class="group-symmetrical--left" ng-bind="agendaEvent.eventLocation"></span>
+                  <span ng-bind="agendaEvent.calendarName" class="group-symmetrical--right"></span>
+                </div>
                 <span ng-if="agendaEvent.rrule" class="icon-sort"></span>
               </div>
               <span ng-if="!agendaEvents || !agendaEvents.length">no events</span>
