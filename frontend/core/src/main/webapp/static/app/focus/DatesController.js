@@ -60,7 +60,10 @@
 
       if (UserSessionService.getUIPreference('showAgendaCalendar')) {
         var savedCalendars = UserSessionService.getUIPreference('calendars');
-        if (savedCalendars) listCalendars(savedCalendars);
+        if (savedCalendars) {
+          console.log('focus active');
+          listCalendars(savedCalendars);
+        }
       }
     }
     else {
@@ -102,7 +105,10 @@
 
     if ($scope.getActiveFeature() === 'focus' && UserSessionService.getUIPreference('showAgendaCalendar')) {
       var savedCalendars = UserSessionService.getUIPreference('calendars');
-      if (savedCalendars) listCalendars(savedCalendars);
+      if (savedCalendars) {
+        console.log('sync');
+        listCalendars(savedCalendars);
+      }
     }
   }
 
@@ -373,7 +379,10 @@
     preventDaySlideChange = false;
     if (UserSessionService.getUIPreference('showAgendaCalendar')) {
       var savedCalendars = UserSessionService.getUIPreference('calendars');
-      if (savedCalendars) listCalendars(savedCalendars);
+      if (savedCalendars) {
+        console.log('picker change');
+        listCalendars(savedCalendars);
+      }
     }
   }
 
@@ -570,9 +579,13 @@
     if (savedCalendars) {
       if (!window.plugins || !window.plugins.calendar) {
         document.addEventListener('deviceready', function() {
-          if (window.plugins && window.plugins.calendar) listCalendars(savedCalendars);
+          if (window.plugins && window.plugins.calendar) {
+            console.log('device ready');
+            listCalendars(savedCalendars);
+          }
         });
       } else {
+        console.log('init');
         listCalendars(savedCalendars);
       }
     }
@@ -587,7 +600,10 @@
     if (UserSessionService.getUIPreference('showAgendaCalendar')) {
       $scope.showAgenda = true;
       var savedCalendars = UserSessionService.getUIPreference('calendars');
-      if (savedCalendars) listCalendars(savedCalendars);
+      if (savedCalendars) {
+        console.log('agenda visibility');
+        listCalendars(savedCalendars);
+      }
     } else {
       // clear
       $scope.showAgenda = false;
@@ -596,7 +612,10 @@
 
   function agendaCalendarsChangedCallback() {
     var savedCalendars = UserSessionService.getUIPreference('calendars');
-    if (savedCalendars) listCalendars(savedCalendars);
+    if (savedCalendars) {
+      console.log('calendar change');
+      listCalendars(savedCalendars);
+    }
   }
 
   function listCalendars(savedCalendars) {
@@ -643,11 +662,8 @@
       startDate.setHours(0, 0, 0, 0);
       endDate.setHours(0, 0, 0, 0);
 
-      DateService.setOffsetDate(-7, startDate).setReferenceDate('monday', startDate);
+      DateService.setFirstDateOfTheWeek(startDate).setOffsetDate(-7, startDate);
       DateService.setDateToFirstDayOfFortNight(endDate);
-
-      console.log(startDate);
-      console.log(endDate);
 
       window.plugins.calendar.listEventInstances(calendarIds, startDate, endDate,
                                                  function(eventInstances) {

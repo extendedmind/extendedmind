@@ -185,10 +185,8 @@
     },
 
     // setters
-    setReferenceDate: function(weekday, referenceDate) {
-      // http://stackoverflow.com/a/1579109
-      var offsetToWeekday = (weekdays.indexOf(weekday) + (7 - referenceDate.getDay())) % 7;
-      referenceDate.setDate(referenceDate.getDate() + offsetToWeekday);
+    setFirstDateOfTheWeek: function(date) {
+      getFirstDateOfTheWeek(date);
       return this;
     },
     setReferenceDateToNext: function(weekday, referenceDate) {
