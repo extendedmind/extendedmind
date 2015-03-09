@@ -24,7 +24,7 @@
         <div class="group-mixed with-checkbox" ng-repeat="calendar in calendars">
           <div class="group-mixed--left">
             <input type="checkbox" ng-model="calendar.enabled" icon-checkbox="calendar.id"
-              ng-click="toggleCalendarEnabled(calendar.id, calendar.enabled)">
+              ng-click="toggleCalendarEnabled(calendar.id, calendar.name, calendar.enabled)">
           </div>
           <div href class="group-mixed--middle">
             <span class="text-link" clamp=2 ng-bind="calendar.name"></span>

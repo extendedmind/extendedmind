@@ -34,6 +34,7 @@
           if (calendars && calendars.length) {
             var i;
             var calendarStates = UserSessionService.getUIPreference('calendars');
+            var calendarStatesChanged;
             $scope.calendars = calendars;
 
             if (calendarStates) {
@@ -43,17 +44,29 @@
                 if (savedCalendar) {
                   $scope.calendars[i].enabled = savedCalendar.enabled;
                 } else {
-                  calendarStates.push({id: calendars[i].id});
+                  calendarStates.push({
+                    id: calendars[i].id,
+                    name: calendars[i].name
+                  });
+                  console.log('state changed');
+                  calendarStatesChanged = true;
                 }
               }
             } else {
               // New states.
               calendarStates = [];
               for (i = 0; i < calendars.length; i++) {
-                calendarStates.push({id: calendars[i].id});
+                calendarStates.push({
+                  id: calendars[i].id,
+                  name: calendars[i].name
+                });
               }
+              console.log('state changed');
+              calendarStatesChanged = true;
             }
-            updateCalendars(calendarStates);
+            console.log('');
+
+            if (calendarStatesChanged) updateCalendars(calendarStates);
           }
           $scope.calendarsLoaded = true;
         }, 0);
@@ -78,7 +91,7 @@
     UserService.saveAccountPreferences();
   }
 
-  $scope.toggleCalendarEnabled = function(id, enabled) {
+  $scope.toggleCalendarEnabled = function(id, name, enabled) {
     var calendarStates = UserSessionService.getUIPreference('calendars');
     if (!calendarStates) calendarStates = [];
       var calendarFound;
@@ -88,7 +101,13 @@
           calendarStates[i].enabled = enabled;
         }
       }
-    if (!calendarFound) calendarStates.push({id: id, enabled: enabled});
+    if (!calendarFound) {
+      calendarStates.push({
+        id: id,
+        name: name,
+        enabled: enabled
+      });
+    }
 
     updateCalendars(calendarStates);
   };
