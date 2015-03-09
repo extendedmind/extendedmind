@@ -48,12 +48,12 @@
 
       scope.setDateNextWeekend = function() {
         var date = new Date();
-        setDateAndClose(date, DateService.setReferenceDate.bind(DateService, 'saturday'));
+        setDateAndClose(date, DateService.setReferenceDateToNext.bind(DateService, 'saturday'));
       };
 
       scope.setDateFirstDayOfNextWeek = function() {
         var date = new Date();
-        setDateAndClose(date, DateService.setReferenceDate.bind(DateService, 'monday'));
+        setDateAndClose(date, DateService.setReferenceDateToNext.bind(DateService, 'monday'));
       };
 
       scope.setDateToSecondMonday = function() {

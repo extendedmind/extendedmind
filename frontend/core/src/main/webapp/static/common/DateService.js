@@ -188,6 +188,12 @@
     setReferenceDate: function(weekday, referenceDate) {
       // http://stackoverflow.com/a/1579109
       var offsetToWeekday = (weekdays.indexOf(weekday) + (7 - referenceDate.getDay())) % 7;
+      referenceDate.setDate(referenceDate.getDate() + offsetToWeekday);
+      return this;
+    },
+    setReferenceDateToNext: function(weekday, referenceDate) {
+      // http://stackoverflow.com/a/1579109
+      var offsetToWeekday = (weekdays.indexOf(weekday) + (7 - referenceDate.getDay())) % 7;
       // jump seven days if reference day is same day as weekday
       if (offsetToWeekday === 0) offsetToWeekday = 7;
       referenceDate.setDate(referenceDate.getDate() + offsetToWeekday);

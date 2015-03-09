@@ -57,6 +57,11 @@
       window.requestAnimationFrame(function() {
         $scope.changeDaySlide(DateService.getTodayYYYYMMDD(), 0);
       });
+
+      if (UserSessionService.getUIPreference('showAgendaCalendar')) {
+        var savedCalendars = UserSessionService.getUIPreference('calendars');
+        if (savedCalendars) listCalendars(savedCalendars);
+      }
     }
     else {
       // Swipe to today slide immediately.
@@ -93,6 +98,11 @@
         // NOTE: See focusActive above if this is not working.
         $scope.changeDaySlide(DateService.getTodayYYYYMMDD(), 0);
       }
+    }
+
+    if ($scope.getActiveFeature() === 'focus' && UserSessionService.getUIPreference('showAgendaCalendar')) {
+      var savedCalendars = UserSessionService.getUIPreference('calendars');
+      if (savedCalendars) listCalendars(savedCalendars);
     }
   }
 
@@ -361,6 +371,10 @@
     datepickerWeeksInfosCleared = false;
     previousActiveIndex = undefined;
     preventDaySlideChange = false;
+    if (UserSessionService.getUIPreference('showAgendaCalendar')) {
+      var savedCalendars = UserSessionService.getUIPreference('calendars');
+      if (savedCalendars) listCalendars(savedCalendars);
+    }
   }
 
   function clearDatepickerSlidesInfos() {
@@ -582,9 +596,7 @@
 
   function agendaCalendarsChangedCallback() {
     var savedCalendars = UserSessionService.getUIPreference('calendars');
-    if (savedCalendars) {
-      listCalendars(savedCalendars);
-    }
+    if (savedCalendars) listCalendars(savedCalendars);
   }
 
   function listCalendars(savedCalendars) {
@@ -604,10 +616,38 @@
         }
       }
 
-      var startDate = new Date();
-      startDate.setDate(startDate.getDate() - 21);
-      var endDate = new Date();
-      endDate.setDate(endDate.getDate() + 21);
+      var startDate, endDate;
+
+      var activeDaySlideIndex = SwiperService.getActiveSlideIndex('focus/tasks');
+      if (activeDaySlideIndex !== undefined) {
+        var activeDaySlide = $scope.daySlides[activeDaySlideIndex];
+        if (activeDaySlide) {
+          var referenceDate = activeDaySlide.referenceDate;
+          if (referenceDate === null) {
+            // 'no date'. Get active date from the next index.
+            var nextDaySlideIndex = (activeDaySlideIndex + 1 + $scope.daySlides.length
+                                     ) % $scope.daySlides.length;
+
+            referenceDate = $scope.daySlides[nextDaySlideIndex].referenceDate;
+          }
+          startDate = referenceDate.yyyymmddToNoonDate();
+          endDate = referenceDate.yyyymmddToNoonDate();
+        }
+      }
+
+      if (!startDate && !endDate) {
+        startDate = new Date();
+        endDate = new Date();
+      }
+
+      startDate.setHours(0, 0, 0, 0);
+      endDate.setHours(0, 0, 0, 0);
+
+      DateService.setOffsetDate(-7, startDate).setReferenceDate('monday', startDate);
+      DateService.setDateToFirstDayOfFortNight(endDate);
+
+      console.log(startDate);
+      console.log(endDate);
 
       window.plugins.calendar.listEventInstances(calendarIds, startDate, endDate,
                                                  function(eventInstances) {
@@ -624,9 +664,6 @@
   var cachedEventInstances;
   function listEventInstancesSuccess(eventInstances, savedCalendars) {
     if (eventInstances && eventInstances.length) {
-      // cachedEventInstances = {
-      //   all: eventInstances
-      // };
 
       var attachGetCalendarNameByIdFn = function(eventInstance, savedCalendars) {
         eventInstance.getCalendarName = function() {
@@ -638,6 +675,7 @@
       cachedEventInstances = {
         all: []
       };
+
       for (var i = 0; i < eventInstances.length; i++) {
         attachGetCalendarNameByIdFn(eventInstances[i], savedCalendars);
         cachedEventInstances['all'].push(eventInstances[i]);
@@ -775,6 +813,7 @@
       if (eventInstance.rrule) {
         agendaEvent.rrule = true;
       }
+      agendaEvent.event_id = eventInstance.event_id;
 
       yyyymmddEventInstances.push(agendaEvent);
     }
