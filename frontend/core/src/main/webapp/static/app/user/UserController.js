@@ -116,8 +116,15 @@
     }
   };
 
-  $scope.agendaCalendarSettingVisible = packaging.endsWith('cordova') && (window.plugins &&
-                                                                          window.plugins.calendar);
+  if (packaging.endsWith('cordova')) {
+    if (!window.plugins || !window.plugins.calendar) {
+      document.addEventListener('deviceready', function() {
+        $scope.agendaCalendarSettingVisible = window.plugins && window.plugins.calendar;
+      });
+    } else {
+      $scope.agendaCalendarSettingVisible = true;
+    }
+  }
 
   // TODO: reset onboarding!
   $scope.showOnboardingCheckbox = function showOnboardingCheckbox() {
