@@ -325,7 +325,7 @@
         <div class="swiper-slide" swiper-slide="focus/tasks/rightDuplicate" slide-index="0"
         swiper-slide-duplicate="true">
           <div class="container-content" ng-class="daySlides[2].pastDate && 'past-date'"
-            list="getTasksArray('date', {date: daySlides[2].info, pastDate: daySlides[2].pastDate})">
+            list="getTasksArray('date', {date: daySlides[2].referenceDate, pastDate: daySlides[2].pastDate})">
 
             <div ng-hide="datepickerVisible" class="group-mixed heading">
               <div class="group-mixed--middle" swiper-click="openDatepicker(daySlides[2].info)">
@@ -361,7 +361,7 @@
 
         <div class="swiper-slide" swiper-slide="focus/tasks/left" slide-index="1" swiper-slide-loop-start="true">
           <div class="container-content" ng-class="daySlides[0].pastDate && 'past-date'"
-            list="getTasksArray('date', {date: daySlides[0].info, pastDate: daySlides[0].pastDate})">
+            list="getTasksArray('date', {date: daySlides[0].referenceDate, pastDate: daySlides[0].pastDate})">
 
             <div ng-hide="datepickerVisible" class="group-mixed heading">
               <div class="group-mixed--middle" swiper-click="openDatepicker(daySlides[0].info)">
@@ -397,7 +397,7 @@
 
         <div class="swiper-slide" swiper-slide="focus/tasks/middle" slide-index="2">
           <div class="container-content" ng-class="daySlides[1].pastDate && 'past-date'"
-            list="getTasksArray('date', {date: daySlides[1].info, pastDate: daySlides[1].pastDate}, daySlides[1].info)">
+            list="getTasksArray('date', {date: daySlides[1].referenceDate, pastDate: daySlides[1].pastDate}, daySlides[1].info)">
 
             <div ng-hide="datepickerVisible" class="group-mixed heading">
               <div class="group-mixed--middle" swiper-click="openDatepicker(daySlides[1].info)">
@@ -433,7 +433,7 @@
 
         <div class="swiper-slide" swiper-slide="focus/tasks/right" slide-index="3">
           <div class="container-content" ng-class="daySlides[2].pastDate && 'past-date'"
-            list="getTasksArray('date', {date: daySlides[2].info, pastDate: daySlides[2].pastDate})">
+            list="getTasksArray('date', {date: daySlides[2].referenceDate, pastDate: daySlides[2].pastDate})">
 
             <div ng-hide="datepickerVisible" class="group-mixed heading">
               <div class="group-mixed--middle" swiper-click="openDatepicker(daySlides[2].info)">
@@ -469,7 +469,7 @@
 
         <div class="swiper-slide" swiper-slide="focus/tasks/leftDuplicate" slide-index="4" swiper-slide-duplicate="true">
           <div class="container-content" ng-class="daySlides[0].pastDate && 'past-date'"
-            list="getTasksArray('date', {date: daySlides[0].info, pastDate: daySlides[0].pastDate})">
+            list="getTasksArray('date', {date: daySlides[0].referenceDate, pastDate: daySlides[0].pastDate})">
 
             <div ng-hide="datepickerVisible" class="group-mixed heading">
               <div class="group-mixed--middle" swiper-click="openDatepicker(daySlides[0].info)">
