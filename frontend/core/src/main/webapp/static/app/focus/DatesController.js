@@ -567,8 +567,10 @@
     }
   }
 
-  UserSessionService.registerUIPreferenceChangedCallback(agendaVisibilityChanged, 'DatesController');
-  UserSessionService.registerUIPreferenceChangedCallback(agendaCalendarsChangedCallback, 'DatesController');
+  UserSessionService.registerUIPreferenceChangedCallback(agendaVisibilityChanged, 'showAgendaCalendar',
+                                                         'DatesController');
+  UserSessionService.registerUIPreferenceChangedCallback(agendaCalendarsChangedCallback, 'calendars',
+                                                         'DatesController');
 
   function agendaVisibilityChanged() {
     console.log('visibility changed');
