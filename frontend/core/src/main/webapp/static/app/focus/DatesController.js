@@ -829,7 +829,7 @@
       $scope.unregisterSynchronizeCallback('DatesController');
   });
 
-  $scope.showAgenda = true;
+  /*$scope.showAgenda = true;
   $scope.eventInstancesLoaded = true;
   packaging = 'ios-cordova';
 
@@ -1460,7 +1460,7 @@
       end: 1426759200000,
       begin: 1426744800000
     }, ]
-  };
+  };*/
 }
 
 DatesController['$inject'] = ['$filter', '$rootScope', '$scope', '$timeout',
