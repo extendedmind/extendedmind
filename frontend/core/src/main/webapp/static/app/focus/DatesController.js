@@ -487,6 +487,10 @@
   function gotoToday() {
     $scope.changeDaySlide(DateService.getTodayYYYYMMDD());
     $scope.closeDatepicker();
+    if (UserSessionService.getUIPreference('showAgendaCalendar')) {
+      var savedCalendars = UserSessionService.getUIPreference('calendars');
+      if (savedCalendars) listCalendars(savedCalendars);
+    }
   }
   function gotoNoDate() {
     $scope.changeDaySlide(null);
