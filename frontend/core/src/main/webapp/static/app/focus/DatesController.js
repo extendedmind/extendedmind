@@ -780,7 +780,7 @@
       // End of the event is after the end time.
       agendaEvent = {
         begin: $filter('date')(eventInstance.begin, 'HH:mm'),
-        end: 'start'
+        end: 'starts'
         // 9:00
         // start
       };
@@ -792,7 +792,7 @@
       // Start of the event is before the start time.
       // End of the event is between start time and end time.
       agendaEvent = {
-        begin: 'end',
+        begin: 'ends',
         end: $filter('date')(eventInstance.end, 'HH:mm')
         // end
         // 9:00
@@ -829,638 +829,638 @@
       $scope.unregisterSynchronizeCallback('DatesController');
   });
 
-  $scope.showAgenda = true;
+  /*$scope.showAgenda = true;
   $scope.eventInstancesLoaded = true;
   packaging = 'ios-cordova';
 
-  // cachedEventInstances = {
-  //   all: [{
-  //     event_id: '644',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     calendar_id: '6',
-  //     eventLocation: '',
-  //     title: 'JP Portugalissa',
-  //     allDay: 1,
-  //     end: 1425427200000,
-  //     begin: 1424995200000
-  //   },
-  //   {
-  //     event_id: '514',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     calendar_id: '5',
-  //     eventLocation: 'Kulttuuritehdas Korjaamo, Töölonkatu 51 a-b, 00250 Helsinki, Suomi',
-  //     title: 'Sisun päivän juhla',
-  //     allDay: 0,
-  //     end: 1425159000000,
-  //     begin: 1425135600000
-  //   },
-  //   {
-  //     calendar_id: '5',
-  //     eventLocation: 'Bulevardi',
-  //     title: 'FA viikon kickoff',
-  //     allDay: 0,
-  //     rrule: 'FREQ=WEEKLY;UNTIL=20150628T235959Z;INTERVAL=1;WKST=MO',
-  //     event_id: '346',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     end: 1425290400000,
-  //     begin: 1425286800000
-  //   },
-  //   {
-  //     calendar_id: '5',
-  //     eventLocation: '',
-  //     title: 'SKYPE',
-  //     allDay: 0,
-  //     rrule: 'FREQ=WEEKLY;UNTIL=20150628T235959Z;INTERVAL=1;WKST=MO',
-  //     event_id: '538',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     end: 1425287700000,
-  //     begin: 1425286800000
-  //   },
-  //   {
-  //     calendar_id: '6',
-  //     eventLocation: '',
-  //     title: 'EM Kickoff',
-  //     allDay: 0,
-  //     rrule: 'FREQ=WEEKLY;WKST=MO;BYDAY=MO',
-  //     event_id: '403',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     end: 1425288600000,
-  //     begin: 1425286800000
-  //   },
-  //   {
-  //     calendar_id: '5',
-  //     eventLocation: '',
-  //     title: 'FA yhteislounas',
-  //     allDay: 0,
-  //     rrule: 'FREQ=WEEKLY;UNTIL=20150628T235959Z;INTERVAL=1;WKST=MO;BYDAY=MO',
-  //     event_id: '347',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     end: 1425294000000,
-  //     begin: 1425290400000
-  //   },
-  //   {
-  //     calendar_id: '5',
-  //     eventLocation: '',
-  //     title: 'Myynnin Kick-Off',
-  //     allDay: 0,
-  //     rrule: 'FREQ=WEEKLY;WKST=MO;BYDAY=MO',
-  //     event_id: '544',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     end: 1425297600000,
-  //     begin: 1425294000000
-  //   },
-  //   {
-  //     event_id: '642',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     calendar_id: '2',
-  //     eventLocation: '',
-  //     title: 'Ideointi muutosvoima -hanke',
-  //     allDay: 0,
-  //     end: 1425304800000,
-  //     begin: 1425297600000
-  //   },
-  //   {
-  //     event_id: '555',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     calendar_id: '3',
-  //     eventLocation: 'Toimistolla',
-  //     title: 'Myynnin seurannan järkevöittäminen Sonjan kanssa',
-  //     allDay: 0,
-  //     end: 1425301200000,
-  //     begin: 1425297600000
-  //   },
-  //   {
-  //     event_id: '575',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     calendar_id: '5',
-  //     eventLocation: '',
-  //     title: 'Ideointisessio Muutosvoima -hanke',
-  //     allDay: 0,
-  //     end: 1425304800000,
-  //     begin: 1425297600000
-  //   },
-  //   {
-  //     calendar_id: '3',
-  //     eventLocation: 'Byroo',
-  //     title: 'Soittoaamu',
-  //     allDay: 0,
-  //     rrule: 'FREQ=WEEKLY;COUNT=10;WKST=MO;BYDAY=TU',
-  //     event_id: '84',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     end: 1425366600000,
-  //     begin: 1425363000000
-  //   },
-  //   {
-  //     calendar_id: '2',
-  //     eventLocation: '',
-  //     title: 'FA myyntisessiot',
-  //     allDay: 0,
-  //     rrule: 'FREQ=WEEKLY;INTERVAL=1;WKST=MO',
-  //     event_id: '599',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     end: 1425380400000,
-  //     begin: 1425366000000
-  //   },
-  //   {
-  //     calendar_id: '3',
-  //     eventLocation: 'Bulsa/joku lähiravintola',
-  //     title: 'hallitusten kokous',
-  //     allDay: 0,
-  //     rrule: 'FREQ=MONTHLY;UNTIL=20160802T130000Z;WKST=MO;BYDAY=1TU',
-  //     event_id: '69',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     end: 1425394800000,
-  //     begin: 1425391200000
-  //   },
-  //   {
-  //     event_id: '676',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     calendar_id: '1',
-  //     eventLocation: '',
-  //     title: '',
-  //     allDay: 0,
-  //     end: 1425461400000,
-  //     begin: 1425420000000
-  //   },
-  //   {
-  //     event_id: '658',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     calendar_id: '2',
-  //     eventLocation: '',
-  //     title: 'Siivous',
-  //     allDay: 0,
-  //     end: 1425488400000,
-  //     begin: 1425477600000
-  //   },
-  //   {
-  //     calendar_id: '3',
-  //     eventLocation: 'Byroo',
-  //     title: 'Soittoaamu',
-  //     allDay: 0,
-  //     rrule: 'FREQ=WEEKLY;COUNT=10;WKST=MO;BYDAY=TH',
-  //     event_id: '85',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     end: 1425539400000,
-  //     begin: 1425535800000
-  //   },
-  //   {
-  //     event_id: '344',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     calendar_id: '5',
-  //     eventLocation: '',
-  //     title: 'FA:n mökkiviikonloppu',
-  //     allDay: 0,
-  //     end: 1425823200000,
-  //     begin: 1425636000000
-  //   },
-  //   {
-  //     event_id: '522',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     calendar_id: '6',
-  //     eventLocation: '',
-  //     title: 'FA mökkiviikonloppu',
-  //     allDay: 0,
-  //     end: 1425816000000,
-  //     begin: 1425639600000
-  //   },
-  //   {
-  //     event_id: '420',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     calendar_id: '8',
-  //     eventLocation: '',
-  //     title: 'Tuomas Saarelas birthday',
-  //     allDay: 1,
-  //     end: 1425945600000,
-  //     begin: 1425859200000
-  //   },
-  //   {
-  //     event_id: '261',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     calendar_id: '5',
-  //     eventLocation: '',
-  //     title: 'Strategia/TUKE: TARJOUSPOHJATALKOOT',
-  //     allDay: 0,
-  //     end: 1425891600000,
-  //     begin: 1425886200000
-  //   },
-  //   {
-  //     calendar_id: '5',
-  //     eventLocation: 'Bulevardi',
-  //     title: 'FA viikon kickoff',
-  //     allDay: 0,
-  //     rrule: 'FREQ=WEEKLY;UNTIL=20150628T235959Z;INTERVAL=1;WKST=MO',
-  //     event_id: '346',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     end: 1425895200000,
-  //     begin: 1425891600000
-  //   },
-  //   {
-  //     calendar_id: '5',
-  //     eventLocation: '',
-  //     title: 'SKYPE',
-  //     allDay: 0,
-  //     rrule: 'FREQ=WEEKLY;UNTIL=20150628T235959Z;INTERVAL=1;WKST=MO',
-  //     event_id: '538',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     end: 1425892500000,
-  //     begin: 1425891600000
-  //   },
-  //   {
-  //     calendar_id: '6',
-  //     eventLocation: '',
-  //     title: 'EM Kickoff',
-  //     allDay: 0,
-  //     rrule: 'FREQ=WEEKLY;WKST=MO;BYDAY=MO',
-  //     event_id: '403',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     end: 1425893400000,
-  //     begin: 1425891600000
-  //   },
-  //   {
-  //     calendar_id: '5',
-  //     eventLocation: '',
-  //     title: 'FA yhteislounas',
-  //     allDay: 0,
-  //     rrule: 'FREQ=WEEKLY;UNTIL=20150628T235959Z;INTERVAL=1;WKST=MO;BYDAY=MO',
-  //     event_id: '347',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     end: 1425898800000,
-  //     begin: 1425895200000
-  //   },
-  //   {
-  //     calendar_id: '5',
-  //     eventLocation: '',
-  //     title: 'Myynnin Kick-Off',
-  //     allDay: 0,
-  //     rrule: 'FREQ=WEEKLY;WKST=MO;BYDAY=MO',
-  //     event_id: '544',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     end: 1425902400000,
-  //     begin: 1425898800000
-  //   },
-  //   {
-  //     event_id: '662',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     calendar_id: '5',
-  //     eventLocation: 'Toimistolla',
-  //     title: 'FA:n ulkoisen viestinnän kehittäminen',
-  //     allDay: 0,
-  //     end: 1425906000000,
-  //     begin: 1425902400000
-  //   },
-  //   {
-  //     event_id: '688',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     calendar_id: '1',
-  //     eventLocation: '',
-  //     title: 'Asd',
-  //     allDay: 0,
-  //     end: 1425924000000,
-  //     begin: 1425920400000
-  //   },
-  //   {
-  //     calendar_id: '2',
-  //     eventLocation: '',
-  //     title: 'FA myyntisessiot',
-  //     allDay: 0,
-  //     rrule: 'FREQ=WEEKLY;INTERVAL=1;WKST=MO',
-  //     event_id: '599',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     end: 1425985200000,
-  //     begin: 1425970800000
-  //   },
-  //   {
-  //     event_id: '670',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     calendar_id: '3',
-  //     eventLocation: '',
-  //     title: 'Lounas /w markus',
-  //     allDay: 0,
-  //     end: 1425985200000,
-  //     begin: 1425981600000
-  //   },
-  //   {
-  //     event_id: '689',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     calendar_id: '1',
-  //     eventLocation: '',
-  //     title: 'Keskeisiä suora  Dkdkdjdjkdk ekeie djdjdjdj ekeie ekeie ejkee e-kirjat rikkeen djdjdjdj',
-  //     allDay: 0,
-  //     end: 1426010400000,
-  //     begin: 1426006800000
-  //   },
-  //   {
-  //     event_id: '666',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     calendar_id: '3',
-  //     eventLocation: '',
-  //     title: 'Parturi',
-  //     allDay: 0,
-  //     end: 1426060800000,
-  //     begin: 1426057200000
-  //   },
-  //   {
-  //     event_id: '570',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     calendar_id: '3',
-  //     eventLocation: '',
-  //     title: 'Leading Passion tapaaminen FA toimistolla',
-  //     allDay: 0,
-  //     end: 1426082400000,
-  //     begin: 1426075200000
-  //   },
-  //   {
-  //     event_id: '657',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     calendar_id: '1',
-  //     eventLocation: 'täälläpäsks',
-  //     title: 'neljä kertaa',
-  //     allDay: 0,
-  //     end: 1426082400000,
-  //     begin: 1426078800000
-  //   },
-  //   {
-  //     calendar_id: '2',
-  //     eventLocation: '',
-  //     title: 'Siivous',
-  //     allDay: 0,
-  //     rrule: 'FREQ=WEEKLY;WKST=MO',
-  //     event_id: '619',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     end: 1426093200000,
-  //     begin: 1426082400000
-  //   },
-  //   {
-  //     calendar_id: '3',
-  //     eventLocation: '',
-  //     title: 'Soittoaamupäivä',
-  //     allDay: 0,
-  //     rrule: 'FREQ=WEEKLY;WKST=MO;BYDAY=TH',
-  //     event_id: '682',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     end: 1426154400000,
-  //     begin: 1426140000000
-  //   },
-  //   {
-  //     event_id: '528',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     calendar_id: '5',
-  //     eventLocation: 'Käytännön järjestelyt (Sonja)',
-  //     title: 'Fasilitointitaitojen sisäinen valmennus',
-  //     allDay: 0,
-  //     end: 1426255200000,
-  //     begin: 1426251600000
-  //   },
-  //   {
-  //     event_id: '638',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     calendar_id: '2',
-  //     eventLocation: '',
-  //     title: 'Puhujakoulu',
-  //     allDay: 0,
-  //     end: 1426432200000,
-  //     begin: 1426316400000
-  //   },
-  //   {
-  //     event_id: '687',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     calendar_id: '1',
-  //     eventLocation: '',
-  //     title: 'Se',
-  //     allDay: 0,
-  //     end: 1426352400000,
-  //     begin: 1426348800000
-  //   },
-  //   {
-  //     calendar_id: '5',
-  //     eventLocation: 'Bulevardi',
-  //     title: 'FA viikon kickoff',
-  //     allDay: 0,
-  //     rrule: 'FREQ=WEEKLY;UNTIL=20150628T235959Z;INTERVAL=1;WKST=MO',
-  //     event_id: '346',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     end: 1426500000000,
-  //     begin: 1426496400000
-  //   },
-  //   {
-  //     calendar_id: '5',
-  //     eventLocation: '',
-  //     title: 'SKYPE',
-  //     allDay: 0,
-  //     rrule: 'FREQ=WEEKLY;UNTIL=20150628T235959Z;INTERVAL=1;WKST=MO',
-  //     event_id: '538',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     end: 1426497300000,
-  //     begin: 1426496400000
-  //   },
-  //   {
-  //     calendar_id: '6',
-  //     eventLocation: '',
-  //     title: 'EM Kickoff',
-  //     allDay: 0,
-  //     rrule: 'FREQ=WEEKLY;WKST=MO;BYDAY=MO',
-  //     event_id: '403',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     end: 1426498200000,
-  //     begin: 1426496400000
-  //   },
-  //   {
-  //     calendar_id: '5',
-  //     eventLocation: '',
-  //     title: 'FA yhteislounas',
-  //     allDay: 0,
-  //     rrule: 'FREQ=WEEKLY;UNTIL=20150628T235959Z;INTERVAL=1;WKST=MO;BYDAY=MO',
-  //     event_id: '347',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     end: 1426503600000,
-  //     begin: 1426500000000
-  //   },
-  //   {
-  //     calendar_id: '5',
-  //     eventLocation: '',
-  //     title: 'Myynnin Kick-Off',
-  //     allDay: 0,
-  //     rrule: 'FREQ=WEEKLY;WKST=MO;BYDAY=MO',
-  //     event_id: '544',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     end: 1426507200000,
-  //     begin: 1426503600000
-  //   },
-  //   {
-  //     event_id: '660',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     calendar_id: '5',
-  //     eventLocation: 'Lönnrotinkatu 5, 00120 Helsinki, Suomi',
-  //     title: 'Excu Fondialla',
-  //     allDay: 0,
-  //     end: 1426510800000,
-  //     begin: 1426507200000
-  //   },
-  //   {
-  //     event_id: '311',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     calendar_id: '5',
-  //     eventLocation: '',
-  //     title: 'Tutkijasemma:  Lauri Järvilehto',
-  //     allDay: 0,
-  //     end: 1426521600000,
-  //     begin: 1426514400000
-  //   },
-  //   {
-  //     calendar_id: '2',
-  //     eventLocation: '',
-  //     title: 'FA myyntisessiot',
-  //     allDay: 0,
-  //     rrule: 'FREQ=WEEKLY;INTERVAL=1;WKST=MO',
-  //     event_id: '599',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     end: 1426590000000,
-  //     begin: 1426575600000
-  //   },
-  //   {
-  //     event_id: '546',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     calendar_id: '3',
-  //     eventLocation: 'Luoteisrinne 4, 02270 Espoo, Suomi',
-  //     title: 'Tapaaminen / Alfa Laval Vantaa Oy / Benny Lillqvist',
-  //     allDay: 0,
-  //     end: 1426593600000,
-  //     begin: 1426590000000
-  //   },
-  //   {
-  //     calendar_id: '1',
-  //     eventLocation: 'täälläpäsks',
-  //     title: 'neljä kertaa',
-  //     allDay: 0,
-  //     rrule: 'FREQ=WEEKLY;COUNT=4;WKST=MO;BYDAY=WE',
-  //     event_id: '643',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     end: 1426685400000,
-  //     begin: 1426681800000
-  //   },
-  //   {
-  //     calendar_id: '2',
-  //     eventLocation: '',
-  //     title: 'Siivous',
-  //     allDay: 0,
-  //     rrule: 'FREQ=WEEKLY;WKST=MO',
-  //     event_id: '619',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     end: 1426698000000,
-  //     begin: 1426687200000
-  //   },
-  //   {
-  //     calendar_id: '3',
-  //     eventLocation: '',
-  //     title: 'Soittoaamupäivä',
-  //     allDay: 0,
-  //     rrule: 'FREQ=WEEKLY;WKST=MO;BYDAY=TH',
-  //     event_id: '682',
-  //     getCalendarName: function() {
-  //       return 'calendar';
-  //     },
-  //     end: 1426759200000,
-  //     begin: 1426744800000
-  //   }, ]
-  // };
+  cachedEventInstances = {
+    all: [{
+      event_id: '644',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      calendar_id: '6',
+      eventLocation: '',
+      title: 'JP Portugalissa',
+      allDay: 1,
+      end: 1425427200000,
+      begin: 1424995200000
+    },
+    {
+      event_id: '514',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      calendar_id: '5',
+      eventLocation: 'Kulttuuritehdas Korjaamo, Töölonkatu 51 a-b, 00250 Helsinki, Suomi',
+      title: 'Sisun päivän juhla',
+      allDay: 0,
+      end: 1425159000000,
+      begin: 1425135600000
+    },
+    {
+      calendar_id: '5',
+      eventLocation: 'Bulevardi',
+      title: 'FA viikon kickoff',
+      allDay: 0,
+      rrule: 'FREQ=WEEKLY;UNTIL=20150628T235959Z;INTERVAL=1;WKST=MO',
+      event_id: '346',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      end: 1425290400000,
+      begin: 1425286800000
+    },
+    {
+      calendar_id: '5',
+      eventLocation: '',
+      title: 'SKYPE',
+      allDay: 0,
+      rrule: 'FREQ=WEEKLY;UNTIL=20150628T235959Z;INTERVAL=1;WKST=MO',
+      event_id: '538',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      end: 1425287700000,
+      begin: 1425286800000
+    },
+    {
+      calendar_id: '6',
+      eventLocation: '',
+      title: 'EM Kickoff',
+      allDay: 0,
+      rrule: 'FREQ=WEEKLY;WKST=MO;BYDAY=MO',
+      event_id: '403',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      end: 1425288600000,
+      begin: 1425286800000
+    },
+    {
+      calendar_id: '5',
+      eventLocation: '',
+      title: 'FA yhteislounas',
+      allDay: 0,
+      rrule: 'FREQ=WEEKLY;UNTIL=20150628T235959Z;INTERVAL=1;WKST=MO;BYDAY=MO',
+      event_id: '347',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      end: 1425294000000,
+      begin: 1425290400000
+    },
+    {
+      calendar_id: '5',
+      eventLocation: '',
+      title: 'Myynnin Kick-Off',
+      allDay: 0,
+      rrule: 'FREQ=WEEKLY;WKST=MO;BYDAY=MO',
+      event_id: '544',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      end: 1425297600000,
+      begin: 1425294000000
+    },
+    {
+      event_id: '642',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      calendar_id: '2',
+      eventLocation: '',
+      title: 'Ideointi muutosvoima -hanke',
+      allDay: 0,
+      end: 1425304800000,
+      begin: 1425297600000
+    },
+    {
+      event_id: '555',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      calendar_id: '3',
+      eventLocation: 'Toimistolla',
+      title: 'Myynnin seurannan järkevöittäminen Sonjan kanssa',
+      allDay: 0,
+      end: 1425301200000,
+      begin: 1425297600000
+    },
+    {
+      event_id: '575',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      calendar_id: '5',
+      eventLocation: '',
+      title: 'Ideointisessio Muutosvoima -hanke',
+      allDay: 0,
+      end: 1425304800000,
+      begin: 1425297600000
+    },
+    {
+      calendar_id: '3',
+      eventLocation: 'Byroo',
+      title: 'Soittoaamu',
+      allDay: 0,
+      rrule: 'FREQ=WEEKLY;COUNT=10;WKST=MO;BYDAY=TU',
+      event_id: '84',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      end: 1425366600000,
+      begin: 1425363000000
+    },
+    {
+      calendar_id: '2',
+      eventLocation: '',
+      title: 'FA myyntisessiot',
+      allDay: 0,
+      rrule: 'FREQ=WEEKLY;INTERVAL=1;WKST=MO',
+      event_id: '599',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      end: 1425380400000,
+      begin: 1425366000000
+    },
+    {
+      calendar_id: '3',
+      eventLocation: 'Bulsa/joku lähiravintola',
+      title: 'hallitusten kokous',
+      allDay: 0,
+      rrule: 'FREQ=MONTHLY;UNTIL=20160802T130000Z;WKST=MO;BYDAY=1TU',
+      event_id: '69',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      end: 1425394800000,
+      begin: 1425391200000
+    },
+    {
+      event_id: '676',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      calendar_id: '1',
+      eventLocation: '',
+      title: '',
+      allDay: 0,
+      end: 1425461400000,
+      begin: 1425420000000
+    },
+    {
+      event_id: '658',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      calendar_id: '2',
+      eventLocation: '',
+      title: 'Siivous',
+      allDay: 0,
+      end: 1425488400000,
+      begin: 1425477600000
+    },
+    {
+      calendar_id: '3',
+      eventLocation: 'Byroo',
+      title: 'Soittoaamu',
+      allDay: 0,
+      rrule: 'FREQ=WEEKLY;COUNT=10;WKST=MO;BYDAY=TH',
+      event_id: '85',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      end: 1425539400000,
+      begin: 1425535800000
+    },
+    {
+      event_id: '344',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      calendar_id: '5',
+      eventLocation: '',
+      title: 'FA:n mökkiviikonloppu',
+      allDay: 0,
+      end: 1425823200000,
+      begin: 1425636000000
+    },
+    {
+      event_id: '522',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      calendar_id: '6',
+      eventLocation: '',
+      title: 'FA mökkiviikonloppu',
+      allDay: 0,
+      end: 1425816000000,
+      begin: 1425639600000
+    },
+    {
+      event_id: '420',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      calendar_id: '8',
+      eventLocation: '',
+      title: 'Tuomas Saarelas birthday',
+      allDay: 1,
+      end: 1425945600000,
+      begin: 1425859200000
+    },
+    {
+      event_id: '261',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      calendar_id: '5',
+      eventLocation: '',
+      title: 'Strategia/TUKE: TARJOUSPOHJATALKOOT',
+      allDay: 0,
+      end: 1425891600000,
+      begin: 1425886200000
+    },
+    {
+      calendar_id: '5',
+      eventLocation: 'Bulevardi',
+      title: 'FA viikon kickoff',
+      allDay: 0,
+      rrule: 'FREQ=WEEKLY;UNTIL=20150628T235959Z;INTERVAL=1;WKST=MO',
+      event_id: '346',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      end: 1425895200000,
+      begin: 1425891600000
+    },
+    {
+      calendar_id: '5',
+      eventLocation: '',
+      title: 'SKYPE',
+      allDay: 0,
+      rrule: 'FREQ=WEEKLY;UNTIL=20150628T235959Z;INTERVAL=1;WKST=MO',
+      event_id: '538',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      end: 1425892500000,
+      begin: 1425891600000
+    },
+    {
+      calendar_id: '6',
+      eventLocation: '',
+      title: 'EM Kickoff',
+      allDay: 0,
+      rrule: 'FREQ=WEEKLY;WKST=MO;BYDAY=MO',
+      event_id: '403',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      end: 1425893400000,
+      begin: 1425891600000
+    },
+    {
+      calendar_id: '5',
+      eventLocation: '',
+      title: 'FA yhteislounas',
+      allDay: 0,
+      rrule: 'FREQ=WEEKLY;UNTIL=20150628T235959Z;INTERVAL=1;WKST=MO;BYDAY=MO',
+      event_id: '347',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      end: 1425898800000,
+      begin: 1425895200000
+    },
+    {
+      calendar_id: '5',
+      eventLocation: '',
+      title: 'Myynnin Kick-Off',
+      allDay: 0,
+      rrule: 'FREQ=WEEKLY;WKST=MO;BYDAY=MO',
+      event_id: '544',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      end: 1425902400000,
+      begin: 1425898800000
+    },
+    {
+      event_id: '662',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      calendar_id: '5',
+      eventLocation: 'Toimistolla',
+      title: 'FA:n ulkoisen viestinnän kehittäminen',
+      allDay: 0,
+      end: 1425906000000,
+      begin: 1425902400000
+    },
+    {
+      event_id: '688',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      calendar_id: '1',
+      eventLocation: '',
+      title: 'Asd',
+      allDay: 0,
+      end: 1425924000000,
+      begin: 1425920400000
+    },
+    {
+      calendar_id: '2',
+      eventLocation: '',
+      title: 'FA myyntisessiot',
+      allDay: 0,
+      rrule: 'FREQ=WEEKLY;INTERVAL=1;WKST=MO',
+      event_id: '599',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      end: 1425985200000,
+      begin: 1425970800000
+    },
+    {
+      event_id: '670',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      calendar_id: '3',
+      eventLocation: '',
+      title: 'Lounas /w markus',
+      allDay: 0,
+      end: 1425985200000,
+      begin: 1425981600000
+    },
+    {
+      event_id: '689',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      calendar_id: '1',
+      eventLocation: '',
+      title: 'Keskeisiä suora  Dkdkdjdjkdk ekeie djdjdjdj ekeie ekeie ejkee e-kirjat rikkeen djdjdjdj',
+      allDay: 0,
+      end: 1426010400000,
+      begin: 1426006800000
+    },
+    {
+      event_id: '666',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      calendar_id: '3',
+      eventLocation: '',
+      title: 'Parturi',
+      allDay: 0,
+      end: 1426060800000,
+      begin: 1426057200000
+    },
+    {
+      event_id: '570',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      calendar_id: '3',
+      eventLocation: '',
+      title: 'Leading Passion tapaaminen FA toimistolla',
+      allDay: 0,
+      end: 1426082400000,
+      begin: 1426075200000
+    },
+    {
+      event_id: '657',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      calendar_id: '1',
+      eventLocation: 'täälläpäsks',
+      title: 'neljä kertaa',
+      allDay: 0,
+      end: 1426082400000,
+      begin: 1426078800000
+    },
+    {
+      calendar_id: '2',
+      eventLocation: '',
+      title: 'Siivous',
+      allDay: 0,
+      rrule: 'FREQ=WEEKLY;WKST=MO',
+      event_id: '619',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      end: 1426093200000,
+      begin: 1426082400000
+    },
+    {
+      calendar_id: '3',
+      eventLocation: '',
+      title: 'Soittoaamupäivä',
+      allDay: 0,
+      rrule: 'FREQ=WEEKLY;WKST=MO;BYDAY=TH',
+      event_id: '682',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      end: 1426154400000,
+      begin: 1426140000000
+    },
+    {
+      event_id: '528',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      calendar_id: '5',
+      eventLocation: 'Käytännön järjestelyt (Sonja)',
+      title: 'Fasilitointitaitojen sisäinen valmennus',
+      allDay: 0,
+      end: 1426255200000,
+      begin: 1426251600000
+    },
+    {
+      event_id: '638',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      calendar_id: '2',
+      eventLocation: '',
+      title: 'Puhujakoulu',
+      allDay: 0,
+      end: 1426432200000,
+      begin: 1426316400000
+    },
+    {
+      event_id: '687',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      calendar_id: '1',
+      eventLocation: '',
+      title: 'Se',
+      allDay: 0,
+      end: 1426352400000,
+      begin: 1426348800000
+    },
+    {
+      calendar_id: '5',
+      eventLocation: 'Bulevardi',
+      title: 'FA viikon kickoff',
+      allDay: 0,
+      rrule: 'FREQ=WEEKLY;UNTIL=20150628T235959Z;INTERVAL=1;WKST=MO',
+      event_id: '346',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      end: 1426500000000,
+      begin: 1426496400000
+    },
+    {
+      calendar_id: '5',
+      eventLocation: '',
+      title: 'SKYPE',
+      allDay: 0,
+      rrule: 'FREQ=WEEKLY;UNTIL=20150628T235959Z;INTERVAL=1;WKST=MO',
+      event_id: '538',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      end: 1426497300000,
+      begin: 1426496400000
+    },
+    {
+      calendar_id: '6',
+      eventLocation: '',
+      title: 'EM Kickoff',
+      allDay: 0,
+      rrule: 'FREQ=WEEKLY;WKST=MO;BYDAY=MO',
+      event_id: '403',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      end: 1426498200000,
+      begin: 1426496400000
+    },
+    {
+      calendar_id: '5',
+      eventLocation: '',
+      title: 'FA yhteislounas',
+      allDay: 0,
+      rrule: 'FREQ=WEEKLY;UNTIL=20150628T235959Z;INTERVAL=1;WKST=MO;BYDAY=MO',
+      event_id: '347',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      end: 1426503600000,
+      begin: 1426500000000
+    },
+    {
+      calendar_id: '5',
+      eventLocation: '',
+      title: 'Myynnin Kick-Off',
+      allDay: 0,
+      rrule: 'FREQ=WEEKLY;WKST=MO;BYDAY=MO',
+      event_id: '544',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      end: 1426507200000,
+      begin: 1426503600000
+    },
+    {
+      event_id: '660',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      calendar_id: '5',
+      eventLocation: 'Lönnrotinkatu 5, 00120 Helsinki, Suomi',
+      title: 'Excu Fondialla',
+      allDay: 0,
+      end: 1426510800000,
+      begin: 1426507200000
+    },
+    {
+      event_id: '311',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      calendar_id: '5',
+      eventLocation: '',
+      title: 'Tutkijasemma:  Lauri Järvilehto',
+      allDay: 0,
+      end: 1426521600000,
+      begin: 1426514400000
+    },
+    {
+      calendar_id: '2',
+      eventLocation: '',
+      title: 'FA myyntisessiot',
+      allDay: 0,
+      rrule: 'FREQ=WEEKLY;INTERVAL=1;WKST=MO',
+      event_id: '599',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      end: 1426590000000,
+      begin: 1426575600000
+    },
+    {
+      event_id: '546',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      calendar_id: '3',
+      eventLocation: 'Luoteisrinne 4, 02270 Espoo, Suomi',
+      title: 'Tapaaminen / Alfa Laval Vantaa Oy / Benny Lillqvist',
+      allDay: 0,
+      end: 1426593600000,
+      begin: 1426590000000
+    },
+    {
+      calendar_id: '1',
+      eventLocation: 'täälläpäsks',
+      title: 'neljä kertaa',
+      allDay: 0,
+      rrule: 'FREQ=WEEKLY;COUNT=4;WKST=MO;BYDAY=WE',
+      event_id: '643',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      end: 1426685400000,
+      begin: 1426681800000
+    },
+    {
+      calendar_id: '2',
+      eventLocation: '',
+      title: 'Siivous',
+      allDay: 0,
+      rrule: 'FREQ=WEEKLY;WKST=MO',
+      event_id: '619',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      end: 1426698000000,
+      begin: 1426687200000
+    },
+    {
+      calendar_id: '3',
+      eventLocation: '',
+      title: 'Soittoaamupäivä',
+      allDay: 0,
+      rrule: 'FREQ=WEEKLY;WKST=MO;BYDAY=TH',
+      event_id: '682',
+      getCalendarName: function() {
+        return 'calendar';
+      },
+      end: 1426759200000,
+      begin: 1426744800000
+    }, ]
+  };*/
 }
 
 DatesController['$inject'] = ['$filter', '$rootScope', '$scope', '$timeout',
