@@ -78,7 +78,7 @@
 
           function filterCompletedTasks(tasks){
             if (tasks) {
-              if (!scope.showCompletedTasks) {
+              if (isCompletedTasksHidden()) {
                 var visibleTasks = [];
                 for (var i = 0; i < tasks.length; i++) {
                   var task = tasks[i];
@@ -88,6 +88,10 @@
               }
               return tasks;
             }
+          }
+
+          function isCompletedTasksHidden() {
+            return !scope.showCompletedTasks && !attrs.taskListCompleted;
           }
 
           listController.setCustomFilterItemVisible(filterCompletedTasks);
