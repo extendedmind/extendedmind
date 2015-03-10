@@ -784,7 +784,7 @@
         begin: $filter('date')(eventInstance.begin, 'HH:mm'),
         end: 'starts'
         // 9:00
-        // start
+        // starts
       };
     }
 
@@ -796,7 +796,7 @@
       agendaEvent = {
         begin: 'ends',
         end: $filter('date')(eventInstance.end, 'HH:mm')
-        // end
+        // ends
         // 9:00
       };
     }
