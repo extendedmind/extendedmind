@@ -624,6 +624,11 @@
         }
       }
 
+      if (calendarIds.length === 0) {
+        // No enabled calendars.
+        return;
+      }
+
       var startDate, endDate;
 
       var activeDaySlideIndex = SwiperService.getActiveSlideIndex('focus/tasks');
