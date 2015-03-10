@@ -602,9 +602,11 @@
   }
 
   function listCalendars(savedCalendars) {
-    window.plugins.calendar.listCalendars(function(calendarsList) {
-      processEnabledCalendars(calendarsList, savedCalendars);
-    }, listCalendarsError);
+    if (window.plugins && window.plugins.calendar) {
+      window.plugins.calendar.listCalendars(function(calendarsList) {
+        processEnabledCalendars(calendarsList, savedCalendars);
+      }, listCalendarsError);
+    }
   }
 
   function processEnabledCalendars(calendarsList, savedCalendars) {

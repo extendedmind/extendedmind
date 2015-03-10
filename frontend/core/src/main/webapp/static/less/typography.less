@@ -190,12 +190,6 @@ Use `.text-details` to separate details from body text.
   color: @color-text-downplayed;
 }
 
-.asd:first-line {
-  // line-height: 20px;
-  // font-size: 18px;
-  color: black;
-}
-
 /*
 Used with JSON.stringify function and HTML <pre> tag.
 */
@@ -446,4 +440,18 @@ Search results (omnibar, deleted)
 .text-prefix:before {
   content: attr(data-prefix); // [1]
   color: @color-text-downplayed;
+}
+
+.text-agenda--time {
+  color: @color-text-downplayed;
+  font-size: @size-font-medium;
+  // line-height: @size-font-content;
+  &.emphasize:first-line {
+    color: black;
+  }
+}
+
+.text-agenda--title {
+  line-height: @size-font-content;
+  font-size: @size-font-medium;
 }
