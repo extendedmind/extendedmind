@@ -780,8 +780,9 @@
       // End of the event is after the end time.
       agendaEvent = {
         begin: $filter('date')(eventInstance.begin, 'HH:mm'),
-        end: 'end'
-        // e.g. 9:00 - fri 6 mar
+        end: 'start'
+        // 9:00
+        // start
       };
     }
 
@@ -791,9 +792,10 @@
       // Start of the event is before the start time.
       // End of the event is between start time and end time.
       agendaEvent = {
-        begin: 'start',
+        begin: 'end',
         end: $filter('date')(eventInstance.end, 'HH:mm')
-        // e.g. fri 6 mar - 9:00
+        // end
+        // 9:00
       };
     }
 
@@ -802,7 +804,8 @@
       agendaEvent = {
         begin: $filter('date')(eventInstance.begin, 'HH:mm'),
         end: $filter('date')(eventInstance.end, 'HH:mm')
-        // e.g. 9:00 - 12:45
+        // 9:00
+        // 12:45
       };
     }
 
@@ -826,9 +829,9 @@
       $scope.unregisterSynchronizeCallback('DatesController');
   });
 
-  // $scope.showAgenda = true;
-  // $scope.eventInstancesLoaded = true;
-  // packaging = 'ios-cordova';
+  $scope.showAgenda = true;
+  $scope.eventInstancesLoaded = true;
+  packaging = 'ios-cordova';
 
   // cachedEventInstances = {
   //   all: [{
