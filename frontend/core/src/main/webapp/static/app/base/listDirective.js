@@ -228,7 +228,15 @@
 
       // INFINITE SCROLL
 
-      element[0].addEventListener('scroll', listScroll, false);
+      if (attrs.listInfinite) {
+        element[0].addEventListener('scroll', listScroll, false);
+      } else {
+        element[0].addEventListener('scroll', listScrollUp, false);
+
+        scope.addMoreItems = function() {
+          addMoreItemsToBottom();
+        };
+      }
 
       // Coefficient of container height, which specifies when add more is called.
       var removeCoefficientToEdge = 3;
@@ -333,6 +341,25 @@
             clearTimeout(bottomVerificationTimer);
             bottomVerificationTimer = undefined;
           }
+        }
+      }
+      function listScrollUp(/*event*/){
+
+        // get scroll position
+        var elementHeight = element[0].offsetHeight;
+        var elementScrollHeight = element[0].scrollHeight;
+        var elementScrollPosition = element[0].scrollTop;
+        var remainingToBottom = elementScrollHeight - elementScrollPosition - elementHeight;
+
+        var scrollingDown = lastScrollPosition < elementScrollPosition; // evaluate direction
+
+        // FIXME: not needed
+        lastScrollPosition = elementScrollPosition; // Store last scroll position for reference.
+
+        if (!scrollingDown && (remainingToBottom >= elementHeight * removeCoefficientToEdge)) {
+          // Call remove method when distance to edge is smaller than the safe zone
+          // and when scroll direction is up.
+          removeItemsFromBottom();
         }
       }
 

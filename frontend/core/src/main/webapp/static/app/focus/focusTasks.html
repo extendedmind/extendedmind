@@ -389,6 +389,10 @@
               list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]">
             </div>
 
+            <div ng-if="currentListLimitTo < getFilteredFullArrayLength()" style="text-align: center;" class="row">
+              <a href ng-click="addMoreItems()"><span class="text-details">load more</span></a>
+            </div>
+
             <a href ng-if="showAgenda && daySlides[0].info !== null" ng-hide="daySlidesInfosCleared"
               class="link agenda" ng-click="openCalendar(daySlides[0].info)">
               <div ng-repeat="agendaEvent in getEventInstances(daySlides[0].info) as agendaEvents track by agendaEvent.event_id">

@@ -34,7 +34,8 @@ function listPromptDirective($animate, $rootScope, UISessionService, UserSession
       var animateNoItemsPromptWhenEmpty = false;
 
       function init() {
-        loadingAnimationElementVisible = listController.registerIsNearListBottomCallback(isNearListBottom);
+        if (attrs.listPromptInfinite)
+          loadingAnimationElementVisible = listController.registerIsNearListBottomCallback(isNearListBottom);
 
         loadingAnimationElement = element[0].firstElementChild.lastElementChild;
         if (loadingAnimationElement && loadingAnimationElementVisible) {
