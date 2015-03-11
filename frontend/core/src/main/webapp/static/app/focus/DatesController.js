@@ -569,7 +569,6 @@
   };
 
   if (UserSessionService.getUIPreference('showAgendaCalendar')) {
-    $scope.showAgenda = true;
     var savedCalendars = UserSessionService.getUIPreference('calendars');
     if (savedCalendars) {
       if (!window.plugins || !window.plugins.calendar) {
@@ -591,12 +590,12 @@
 
   function agendaVisibilityChanged() {
     if (UserSessionService.getUIPreference('showAgendaCalendar')) {
-      $scope.showAgenda = true;
       var savedCalendars = UserSessionService.getUIPreference('calendars');
       if (savedCalendars) listCalendars(savedCalendars);
     } else {
-      // clear
-      $scope.showAgenda = false;
+      // Agenda disabled.
+      $scope.showAgenda = false;        // Remove agenda from DOM.
+      cachedEventInstances = undefined; // Clear cache.
     }
   }
 
@@ -625,46 +624,50 @@
       }
 
       if (calendarIds.length === 0) {
-        // No enabled calendars.
-        return;
-      }
+        // No enabled calendars in app.
+        cachedEventInstances = undefined;
+        $scope.showAgenda = true;
+      } else {
+        // Process enabled calendars.
+        var startDate, endDate;
 
-      var startDate, endDate;
+        var activeDaySlideIndex = SwiperService.getActiveSlideIndex('focus/tasks');
+        if (activeDaySlideIndex !== undefined) {
+          var activeDaySlide = $scope.daySlides[activeDaySlideIndex];
+          if (activeDaySlide) {
+            var referenceDate = activeDaySlide.referenceDate;
+            if (referenceDate === null) {
+              // 'no date'. Get active date from the next index.
+              var nextDaySlideIndex = (activeDaySlideIndex + 1 + $scope.daySlides.length
+                                       ) % $scope.daySlides.length;
 
-      var activeDaySlideIndex = SwiperService.getActiveSlideIndex('focus/tasks');
-      if (activeDaySlideIndex !== undefined) {
-        var activeDaySlide = $scope.daySlides[activeDaySlideIndex];
-        if (activeDaySlide) {
-          var referenceDate = activeDaySlide.referenceDate;
-          if (referenceDate === null) {
-            // 'no date'. Get active date from the next index.
-            var nextDaySlideIndex = (activeDaySlideIndex + 1 + $scope.daySlides.length
-                                     ) % $scope.daySlides.length;
-
-            referenceDate = $scope.daySlides[nextDaySlideIndex].referenceDate;
+              referenceDate = $scope.daySlides[nextDaySlideIndex].referenceDate;
+            }
+            startDate = referenceDate.yyyymmddToNoonDate();
+            endDate = referenceDate.yyyymmddToNoonDate();
           }
-          startDate = referenceDate.yyyymmddToNoonDate();
-          endDate = referenceDate.yyyymmddToNoonDate();
         }
+
+        if (!startDate && !endDate) {
+          startDate = new Date();
+          endDate = new Date();
+        }
+
+        startDate.setHours(0, 0, 0, 0);
+        endDate.setHours(0, 0, 0, 0);
+
+        DateService.setFirstDateOfTheWeek(startDate).setOffsetDate(-7, startDate);
+        DateService.setDateToFirstDayOfFortNight(endDate);
+
+        window.plugins.calendar.listEventInstances(calendarIds, startDate, endDate,
+                                                   function(eventInstances) {
+                                                    listEventInstancesSuccess(eventInstances, savedCalendars);
+                                                  }, listEventInstancesError);
       }
-
-      if (!startDate && !endDate) {
-        startDate = new Date();
-        endDate = new Date();
-      }
-
-      startDate.setHours(0, 0, 0, 0);
-      endDate.setHours(0, 0, 0, 0);
-
-      DateService.setFirstDateOfTheWeek(startDate).setOffsetDate(-7, startDate);
-      DateService.setDateToFirstDayOfFortNight(endDate);
-
-      window.plugins.calendar.listEventInstances(calendarIds, startDate, endDate,
-                                                 function(eventInstances) {
-                                                  listEventInstancesSuccess(eventInstances, savedCalendars);
-                                                }, listEventInstancesError);
     } else {
-      // No calendars.
+      // No enabled calendars in device's calendar app.
+      cachedEventInstances = undefined;
+      $scope.showAgenda = true;
     }
   }
 
@@ -673,8 +676,11 @@
 
   var cachedEventInstances;
   function listEventInstancesSuccess(eventInstances, savedCalendars) {
-    if (eventInstances && eventInstances.length) {
+    cachedEventInstances = {
+      all: []
+    };
 
+    if (eventInstances && eventInstances.length) {
       var attachGetCalendarNameByIdFn = function(eventInstance, savedCalendars) {
         eventInstance.getCalendarName = function() {
           var calendar = savedCalendars.findFirstObjectByKeyValue('id', eventInstance.calendar_id);
@@ -682,19 +688,13 @@
         };
       };
 
-      cachedEventInstances = {
-        all: []
-      };
-
       for (var i = 0; i < eventInstances.length; i++) {
         attachGetCalendarNameByIdFn(eventInstances[i], savedCalendars);
         cachedEventInstances['all'].push(eventInstances[i]);
       }
-    } else {
-      // No event instances.
     }
-    $scope.eventInstancesLoaded = true;
-    // Update UI.
+    // Show agenda and update UI.
+    $scope.showAgenda = true;
     if (!$scope.$$phase && !$rootScope.$$phase) $scope.$digest();
   }
 
@@ -841,7 +841,7 @@
   });
 
   /*$scope.showAgenda = true;
-  $scope.eventInstancesLoaded = true;
+  $scope.showAgenda = true;
   packaging = 'ios-cordova';
 
   cachedEventInstances = {
