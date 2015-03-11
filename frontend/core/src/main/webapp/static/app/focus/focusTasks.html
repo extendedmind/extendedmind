@@ -340,11 +340,11 @@
               ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
               list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
             <div list-prompt="tasks" list-prompt-infos="listInfos"
-              list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
+              list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]">
+            </div>
 
             <a href ng-if="showAgenda && daySlides[2].info !== null" ng-hide="daySlidesInfosCleared"
-              class="link agenda"
-              ng-click="openCalendar(daySlides[2].info)">
+              class="link agenda" ng-click="openCalendar(daySlides[2].info)">
               <div ng-repeat="agendaEvent in getEventInstances(daySlides[2].info) as agendaEvents track by agendaEvent.event_id">
                 <div class="group-mixed with-checkbox">
                   <div class="group-mixed--left">
@@ -386,11 +386,11 @@
               ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
               list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
             <div list-prompt="tasks" list-prompt-infos="listInfos"
-              list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
+              list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]">
+            </div>
 
             <a href ng-if="showAgenda && daySlides[0].info !== null" ng-hide="daySlidesInfosCleared"
-              class="link agenda"
-              ng-click="openCalendar(daySlides[0].info)">
+              class="link agenda" ng-click="openCalendar(daySlides[0].info)">
               <div ng-repeat="agendaEvent in getEventInstances(daySlides[0].info) as agendaEvents track by agendaEvent.event_id">
                 <div class="group-mixed with-checkbox">
                   <div class="group-mixed--left">
@@ -432,11 +432,11 @@
               ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
               list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
             <div list-prompt="tasks" list-prompt-infos="listInfos"
-              list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
+              list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]">
+            </div>
 
             <a href ng-if="showAgenda && daySlides[1].info !== null" ng-hide="daySlidesInfosCleared"
-              class="link agenda"
-              ng-click="openCalendar(daySlides[1].info)">
+              class="link agenda" ng-click="openCalendar(daySlides[1].info)">
               <div ng-repeat="agendaEvent in getEventInstances(daySlides[1].info) as agendaEvents track by agendaEvent.event_id">
                 <div class="group-mixed with-checkbox">
                   <div class="group-mixed--left">
@@ -478,11 +478,11 @@
               ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
               list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
             <div list-prompt="tasks" list-prompt-infos="listInfos"
-              list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
+              list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]">
+            </div>
 
             <a href ng-if="showAgenda && daySlides[2].info !== null" ng-hide="daySlidesInfosCleared"
-              class="link agenda"
-              ng-click="openCalendar(daySlides[2].info)">
+              class="link agenda" ng-click="openCalendar(daySlides[2].info)">
               <div ng-repeat="agendaEvent in getEventInstances(daySlides[2].info) as agendaEvents track by agendaEvent.event_id">
                 <div class="group-mixed with-checkbox">
                   <div class="group-mixed--left">
@@ -524,11 +524,11 @@
               ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
               list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
             <div list-prompt="tasks" list-prompt-infos="listInfos"
-              list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
+              list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]">
+            </div>
 
             <a href ng-if="showAgenda && daySlides[0].info !== null" ng-hide="daySlidesInfosCleared"
-              class="link agenda"
-              ng-click="openCalendar(daySlides[0].info)">
+              class="link agenda" ng-click="openCalendar(daySlides[0].info)">
               <div ng-repeat="agendaEvent in getEventInstances(daySlides[0].info) as agendaEvents track by agendaEvent.event_id">
                 <div class="group-mixed with-checkbox">
                   <div class="group-mixed--left">
