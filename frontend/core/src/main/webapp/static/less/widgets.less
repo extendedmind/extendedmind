@@ -752,10 +752,6 @@ TODO: Example needed
         padding-left: @grid-horizontal;
       }
     }
-    .group-mixed--middle > div {
-      display: inline-block;
-      // vertical-align: -5%;
-    }
   }
 }
 
@@ -765,4 +761,9 @@ TODO: Example needed
 .android .agenda .group-mixed.with-checkbox .group-mixed--left {
   min-width: 81px;  // [1]
   width: 81px;      // [1]
+}
+
+// 1. Nudge .text-agenda--details to align it horizontally with the second row of .text-agenda--time.
+.ios .text-agenda--details {
+  margin-top: -1px; // [1]
 }
