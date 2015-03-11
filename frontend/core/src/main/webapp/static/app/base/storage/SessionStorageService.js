@@ -22,6 +22,7 @@
   var cachedPreferences;
   var cachedCollectives;
   var cachedOffline;
+  var cachedExpires;
   return {
 
     // setters
@@ -66,8 +67,13 @@
       else sessionStorage.removeItem('email');
     },
     setExpires: function(expires) {
-      if (expires !== undefined) sessionStorage.setItem('expires', expires);
-      else sessionStorage.removeItem('expires');
+      if (expires !== undefined){
+        sessionStorage.setItem('expires', expires);
+        cachedExpires = expires;
+      } else{
+        sessionStorage.removeItem('expires');
+        cachedExpires = null;
+      }
     },
     setCredentials: function(credentials) {
       if (credentials !== undefined) sessionStorage.setItem('credentials', credentials);
@@ -163,7 +169,8 @@
       return cachedEmail;
     },
     getExpires: function() {
-      return sessionStorage.getItem('expires');
+      if (cachedExpires === undefined) cachedExpires = sessionStorage.getItem('expires');
+      return cachedExpires;
     },
     getCredentials: function() {
       return sessionStorage.getItem('credentials');
@@ -241,7 +248,7 @@
       sessionStorage.removeItem('requestQueue');
 
       cachedBackendDelta = cachedActiveUUID = cachedUserUUID = cachedEmail =
-      cachedPreferences = cachedCollectives = cachedOffline = undefined;
+      cachedPreferences = cachedCollectives = cachedOffline = cachedExpires = undefined;
     }
   };
 }

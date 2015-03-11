@@ -15,6 +15,7 @@
  'use strict';
 
  function LocalStorageService() {
+  var cachedExpires;
   return {
 
     // setters
@@ -31,8 +32,13 @@
       else localStorage.removeItem('email');
     },
     setExpires: function(expires) {
-      if (expires !== undefined) localStorage.setItem('expires', parseInt(expires));
-      else localStorage.removeItem('expires');
+      if (expires !== undefined){
+        localStorage.setItem('expires', expires);
+        cachedExpires = expires;
+      } else{
+        localStorage.removeItem('expires');
+        cachedExpires = null;
+      }
     },
     setCredentials: function(credentials) {
       if (credentials !== undefined) localStorage.setItem('credentials', credentials);
@@ -115,7 +121,8 @@
       return localStorage.getItem('email');
     },
     getExpires: function() {
-      return localStorage.getItem('expires');
+      if (cachedExpires === undefined) cachedExpires = localStorage.getItem('expires');
+      return cachedExpires;
     },
     getCredentials: function() {
       return localStorage.getItem('credentials');
@@ -188,6 +195,9 @@
       localStorage.removeItem('secondaryRequest');
       localStorage.removeItem('beforeLastRequest');
       localStorage.removeItem('requestQueue');
+
+      // Clear cached values
+      cachedExpires = undefined;
     }
   };
 }
