@@ -342,7 +342,8 @@
             <div list-prompt="tasks" list-prompt-infos="listInfos"
               list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
 
-            <a href ng-if="showAgenda" class="link agenda" ng-click="openCalendar(daySlides[2].info)">
+            <a href ng-if="showAgenda" ng-hide="daySlidesInfosCleared" class="link agenda"
+              ng-click="openCalendar(daySlides[2].info)">
               <div ng-repeat="agendaEvent in getEventInstances(daySlides[2].info) as agendaEvents track by agendaEvent.event_id">
                 <div class="group-mixed with-checkbox">
                   <div class="group-mixed--left">
@@ -386,7 +387,8 @@
             <div list-prompt="tasks" list-prompt-infos="listInfos"
               list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
 
-            <a href ng-if="showAgenda" class="link agenda" ng-click="openCalendar(daySlides[0].info)">
+            <a href ng-if="showAgenda" ng-hide="daySlidesInfosCleared" class="link agenda"
+              ng-click="openCalendar(daySlides[0].info)">
               <div ng-repeat="agendaEvent in getEventInstances(daySlides[0].info) as agendaEvents track by agendaEvent.event_id">
                 <div class="group-mixed with-checkbox">
                   <div class="group-mixed--left">
@@ -430,7 +432,8 @@
             <div list-prompt="tasks" list-prompt-infos="listInfos"
               list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
 
-            <a href ng-if="showAgenda" class="link agenda" ng-click="openCalendar(daySlides[1].info)">
+            <a href ng-if="showAgenda" ng-hide="daySlidesInfosCleared" class="link agenda"
+              ng-click="openCalendar(daySlides[1].info)">
               <div ng-repeat="agendaEvent in getEventInstances(daySlides[1].info) as agendaEvents track by agendaEvent.event_id">
                 <div class="group-mixed with-checkbox">
                   <div class="group-mixed--left">
@@ -474,7 +477,8 @@
             <div list-prompt="tasks" list-prompt-infos="listInfos"
               list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
 
-            <a href ng-if="showAgenda" class="link agenda" ng-click="openCalendar(daySlides[2].info)">
+            <a href ng-if="showAgenda" ng-hide="daySlidesInfosCleared" class="link agenda"
+              ng-click="openCalendar(daySlides[2].info)">
               <div ng-repeat="agendaEvent in getEventInstances(daySlides[2].info) as agendaEvents track by agendaEvent.event_id">
                 <div class="group-mixed with-checkbox">
                   <div class="group-mixed--left">
@@ -518,7 +522,8 @@
             <div list-prompt="tasks" list-prompt-infos="listInfos"
               list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]"></div>
 
-            <a href ng-if="showAgenda" class="link agenda" ng-click="openCalendar(daySlides[0].info)">
+            <a href ng-if="showAgenda" ng-hide="daySlidesInfosCleared" class="link agenda"
+              ng-click="openCalendar(daySlides[0].info)">
               <div ng-repeat="agendaEvent in getEventInstances(daySlides[0].info) as agendaEvents track by agendaEvent.event_id">
                 <div class="group-mixed with-checkbox">
                   <div class="group-mixed--left">
