@@ -146,6 +146,9 @@
             <fileset>
               <directory>${basedir}/src/main/webapp/static/img</directory>
             </fileset>
+            <fileset>
+              <directory>${basedir}/src/main/webapp/static/fonts</directory>
+            </fileset>
           </filesets>
         </configuration>
       </plugin>
@@ -341,6 +344,22 @@
                               <includes>
                                   <include>download*@2x.png</include>
                               </includes>
+                          </resource>
+                      </resources>
+                  </configuration>
+              </execution>
+              <execution>
+                  <id>copy-fonts</id>
+                  <phase>generate-resources</phase>
+                  <goals>
+                      <goal>copy-resources</goal>
+                  </goals>
+                  <configuration>
+                      <outputDirectory>${project.basedir}/src/main/webapp/static/fonts</outputDirectory>
+                      <overwrite>true</overwrite>
+                      <resources>
+                          <resource>
+                              <directory>${project.basedir}/src/main/webapp/landing/fonts</directory>
                           </resource>
                       </resources>
                   </configuration>

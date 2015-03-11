@@ -15,6 +15,7 @@ frontend/core/src/main/webapp/static/*.min.js
 frontend/core/src/main/webapp/static/css
 frontend/core/src/main/webapp/static/favicon/
 frontend/core/src/main/webapp/static/img/
+frontend/core/src/main/webapp/static/fonts/
 
 # Ignore PhantomJS logs
 phantomjsdriver.log

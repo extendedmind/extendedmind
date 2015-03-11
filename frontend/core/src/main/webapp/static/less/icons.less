@@ -11,18 +11,20 @@ TODO: Icons are not working yet with Phytoplankton
 
 @size-icon-logo: 19px;
 @size-icon-menu: 17px;
-@size-icon-plus: 33px;
-@size-icon-toggle-completed: 20px;
+@size-icon-plus: 25px;
+@size-icon-toggle-completed: 11px;
 @size-icon-arrow-small: 11px;
 @size-icon-arrow-large: 16px;
-@size-icon-arrow-move: 15px;
-@size-icon-arrow-move-large: 20px;
+@size-icon-convert: 11px;
+@size-icon-convert-large: 15px;
 @size-icon-star-large: 25px;
 @size-icon-star: 16px;
 @size-icon-star-small: 8px;
 @size-icon-trash: 18px;
 @size-icon-x: 10px;
-@size-icon-sort: 33px;
+@size-icon-sort: 22px;
+@size-icon-calendar: 17px;
+@size-icon-tag: 19px;
 
 // Icon character codes
 @icon-show-completed: "\e60e";
@@ -37,23 +39,21 @@ TODO: Icons are not working yet with Phytoplankton
 @icon-arrow-right: "\e60c";
 @icon-arrow-left-narrow: "\e612";
 @icon-arrow-right-narrow: "\e606";
-@icon-arrow-move: "\e60d";
-@icon-triangle-down: "\e600";
-@icon-triangle-right: "\e601";
-@icon-logo-only: "\e60a";
-@icon-logo-with-text: "\e60b";
-@icon-selection-checked: "\e60f";
-@icon-selection-empty: "\e610";
+@icon-convert: "\e60d";
+@icon-logo: "\e60a";
+@icon-logo-text: "\e60b";
+@icon-circle-checked: "\e60f";
+@icon-circle: "\e610";
 @icon-sort: "\e611";
 @icon-sort-stop: "\e614";
 
 @font-face {
-	font-family: 'icomoon';
-	src: url('../fonts/icomoon.eot');
-	src: url('../fonts/icomoon.eot') format('embedded-opentype'),
-  url('../fonts/icomoon.woff') format('woff'),
-  url('../fonts/icomoon.ttf') format('truetype'),
-  url('../fonts/icomoon.svg?') format('svg');
+  font-family: 'icomoon';
+  src:url('../fonts/icomoon.eot?-hzs7jb');
+  src:url('../fonts/icomoon.eot?#iefix-hzs7jb') format('embedded-opentype'),
+    url('../fonts/icomoon.woff?-hzs7jb') format('woff'),
+    url('../fonts/icomoon.ttf?-hzs7jb') format('truetype'),
+    url('../fonts/icomoon.svg?-hzs7jb#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -89,7 +89,7 @@ Icon classes
     .set-icon-font();
     vertical-align: baseline; // [2]
     color: @color-text;
-    content: @icon-logo-only;
+    content: @icon-logo;
   }
 }
 
@@ -201,7 +201,17 @@ Icon classes
     vertical-align: baseline;
     color: @color-icon-deactivated;
     content: @icon-calendar;
-    font-size: 23px;
+    font-size: @size-icon-calendar;
+  }
+}
+
+.icon-tag {
+  display: block;
+  &:after {
+    .set-icon-font;
+    vertical-align: -5%;
+    content: @icon-tag;
+    font-size: @size-icon-tag;
   }
 }
 

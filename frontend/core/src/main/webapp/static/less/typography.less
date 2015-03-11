@@ -250,6 +250,10 @@ Navigation texts
   vertical-align: middle;
 }
 
+.text-navigation-forward.without-text:after, .text-navigation-forward.large:after{
+  padding-left: 0;
+}
+
 // 1. Clear padding-left, which would otherwise rotate up/down.
 // 2. Inline elements can't be transformed, and pseudo elements are inline by default, so must apply
 //    display: block or display: inline-block to transform it.
@@ -320,13 +324,13 @@ Convert texts.
 
 .text-convert{
   line-height: @grid-vertical;
-  min-height: @size-icon-arrow-move;
+  min-height: @size-icon-convert;
   height: @grid-vertical;
   display: inline-block;  // for height
   &:before {
     .set-icon-font();
-    content: @icon-arrow-move;
-    font-size: @size-icon-arrow-move;
+    content: @icon-convert;
+    font-size: @size-icon-convert;
     padding-right: @width-arrow-text-gap;
     vertical-align: middle;
   }
@@ -337,9 +341,9 @@ Convert texts.
 }
 
 .text-convert.large {
-  min-height: @size-icon-arrow-move-large;
+  min-height: @size-icon-convert-large;
   &:before {
-    font-size: @size-icon-arrow-move-large;
+    font-size: @size-icon-convert-large;
   }
 }
 
