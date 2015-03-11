@@ -702,9 +702,9 @@
   }
 
   $scope.getEventInstances = function(yyyymmdd) {
-    if (!cachedEventInstances || !cachedEventInstances['all'] || yyyymmdd === null || yyyymmdd === undefined)
+    if (!cachedEventInstances || !cachedEventInstances['all'] || yyyymmdd === undefined)
     {
-      // Agenda events not loaded, in the middle of fast slide changing or in 'no date' slide.
+      // Agenda events not loaded, in the middle of fast slide changing.
       return;
     }
     if (!cachedEventInstances[yyyymmdd]) {
@@ -840,8 +840,7 @@
       $scope.unregisterSynchronizeCallback('DatesController');
   });
 
-  $scope.showAgenda = true;
-  $scope.showAgenda = true;
+  /*$scope.showAgenda = true;
   packaging = 'ios-cordova';
 
   cachedEventInstances = {
@@ -1471,7 +1470,7 @@
       end: 1426759200000,
       begin: 1426744800000
     }, ]
-  };
+  };*/
 }
 
 DatesController['$inject'] = ['$filter', '$rootScope', '$scope', '$timeout',
