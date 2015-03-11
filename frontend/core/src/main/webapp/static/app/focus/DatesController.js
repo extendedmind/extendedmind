@@ -758,7 +758,7 @@
   }
 
   /*
-  * title or 'untitled'
+  * title or '(no title)'
   * start time, end time or all day
   * location
   * calendar name
@@ -821,7 +821,7 @@
     }
 
     if (agendaEvent) {
-      agendaEvent.title = eventInstance.title || 'untitled';
+      agendaEvent.title = eventInstance.title || '(no title)';
       agendaEvent.calendarName = eventInstance.getCalendarName();
       if (eventInstance.eventLocation) {
         agendaEvent.eventLocation = eventInstance.eventLocation;
