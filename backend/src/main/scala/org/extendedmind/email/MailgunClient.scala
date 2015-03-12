@@ -87,7 +87,7 @@ trait MailgunClient {
           + settings.requestInviteOrderNumberURI.replaceAll(
             "uuidValue", inviteRequestUUID.toString()))
         .replaceAll("logoLink",
-          settings.emailUrlPrefix + "logoname.png"))
+          settings.emailUrlPrefix + "img/logo-text.png"))
 
     sendEmail(sendEmailRequest)
   }
@@ -102,10 +102,10 @@ trait MailgunClient {
             + settings.acceptInviteURI
             .replaceAll("inviteValue", invite.code.toLong.toHexString)
             .replaceAll("emailValue", invite.email))
-        .replaceAll("logoLink", settings.emailUrlPrefix + "logoname.png"))
+        .replaceAll("logoLink", settings.emailUrlPrefix + "img/logo-text.png"))
     sendEmail(sendEmailRequest)
   }
-  
+
   def sendPasswordResetLink(email: String, resetCode: Long): Future[SendEmailResponse] = {
     val sendEmailRequest = SendEmailRequest(settings.emailFrom, email,
       settings.resetPasswordTitle,
@@ -116,10 +116,10 @@ trait MailgunClient {
             + settings.resetPasswordURI
             .replaceAll("resetCodeValue", resetCode.toHexString)
             .replaceAll("emailValue", email))
-        .replaceAll("logoLink", settings.emailUrlPrefix + "logoname.png"))
+        .replaceAll("logoLink", settings.emailUrlPrefix + "img/logo-text.png"))
     sendEmail(sendEmailRequest)
   }
-  
+
   def sendEmailVerificationLink(email: String, emailVerificationCode: Long): Future[SendEmailResponse] = {
     val sendEmailRequest = SendEmailRequest(settings.emailFrom, email,
       settings.verifyEmailTitle,
@@ -130,7 +130,7 @@ trait MailgunClient {
             + settings.verifyEmailURI
             .replaceAll("verifyCodeValue", emailVerificationCode.toHexString)
             .replaceAll("emailValue", email))
-        .replaceAll("logoLink", settings.emailUrlPrefix + "logoname.png"))
+        .replaceAll("logoLink", settings.emailUrlPrefix + "img/logo-text.png"))
     sendEmail(sendEmailRequest)
   }
 
@@ -140,7 +140,7 @@ trait MailgunClient {
     sendEmailPipeline {
       Post(address,
           marshal(sendEmailRequest).right.get
-              ) ~> addCredentials(BasicHttpCredentials("api", settings.mailgunApiKey))  
+              ) ~> addCredentials(BasicHttpCredentials("api", settings.mailgunApiKey))
     }
   }
 
