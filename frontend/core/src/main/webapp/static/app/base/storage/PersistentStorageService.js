@@ -63,63 +63,157 @@ function PersistentStorageService($q) {
     };
   }
 
-  return {
-    persistWithNewUUID: function(oldUUID, item, itemType, ownerUUID) {
-      var deferred = $q.defer();
-      if (!database) database = Lawnchair({name:'items'});
+  var persistQueue = [];
+  function executePersistQueue(newInfoToPersist){
+    // Push new value to queue
+    if (newInfoToPersist) persistQueue.push(newInfoToPersist);
 
-      var thisService = this;
-      database.get(trimUUID(oldUUID), function(persisted){
-        if (persisted){
-          thisService.destroy(untrimUUID(persisted.key), ownerUUID).then(
-            // Success
-            function(){
-              thisService.persist(item, itemType, ownerUUID).then(
-                // Success
-                function(result){
-                  deferred.resolve(result);
-                },
-                // Failure
-                function(){
-                  deferred.reject();
-                }
-              );
-            },
-            // Failure
-            function(){
-              deferred.reject();
-            }
-          );
-        }else{
-          // Old UUID not found
+    if (persistQueue.length > 0 && !persistQueue[0].executing){
+      persistQueue[0].executing = true;
+      if (persistQueue[0].oldUUID){
+        persistWithNewUUIDDeferred(persistQueue[0].oldUUID,
+                                   persistQueue[0].data,
+                                   persistQueue[0].itemType,
+                                   persistQueue[0].ownerUUID,
+                                   persistQueue[0].deferred).then(
+          function(result){
+            persistQueue.shift();
+            executePersistQueue();
+            return result;
+          },
+          function(error){
+            persistQueue.shift();
+            executePersistQueue();
+            $q.reject(error);
+          }
+        );
+      }else{
+        persistDeferred(persistQueue[0].data,
+                        persistQueue[0].itemType,
+                        persistQueue[0].ownerUUID,
+                        persistQueue[0].deferred).then(
+          function(result){
+            persistQueue.shift();
+            executePersistQueue();
+            return result;
+          },
+          function(error){
+            persistQueue.shift();
+            executePersistQueue();
+            $q.reject(error);
+          }
+        );
+      }
+    }
+  }
+
+  function persist(data, itemType, ownerUUID, internalCall) {
+    var deferred = $q.defer();
+    if (!database) database = Lawnchair({name:'items'});
+    if (!internalCall){
+      executePersistQueue({deferred: deferred, data:data, itemType: itemType, ownerUUID: ownerUUID});
+    }else {
+      persistDeferred(data, itemType, ownerUUID, deferred);
+    }
+    return deferred.promise;
+  }
+
+  function persistDeferred(data, itemType, ownerUUID, deferred){
+    var uuid;
+    if (angular.isArray(data)){
+      // Save arrays in a big batch
+      var i, dataToBatchSave = [];
+      for (i=0; i<data.length; i++) {
+        uuid = itemToPersistedItem(data[i], itemType, ownerUUID);
+        dataToBatchSave.push({key:uuid, value:data[i]});
+      }
+      database.batch(dataToBatchSave,
+        function(result){
+          // Success
+          deferred.resolve(result);
+        },
+        function(){
+          // Failure
           deferred.reject();
         }
-      });
-      return deferred.promise;
-    },
-    persist: function(data, itemType, ownerUUID) {
-      var deferred = $q.defer();
-      if (!database) database = Lawnchair({name:'items'});
-
-      var uuid;
-      if (angular.isArray(data)){
-        // Save arrays in a big batch
-        var i, dataToBatchSave = [];
-        for (i=0; i<data.length; i++) {
-          uuid = itemToPersistedItem(data[i], itemType, ownerUUID);
-          dataToBatchSave.push({key:uuid, value:data[i]});
+      );
+    }else{
+      uuid = itemToPersistedItem(data, itemType, ownerUUID);
+      database.save({key:uuid, value:data},
+        function(result){
+          // Success
+          deferred.resolve(result);
+        },
+        function(){
+          // Failure
+          deferred.reject();
         }
-        database.batch(dataToBatchSave, function(result){
-          deferred.resolve(result);
-        });
+      );
+    }
+    return deferred.promise;
+  }
+
+  function persistWithNewUUID(oldUUID, item, itemType, ownerUUID) {
+    var deferred = $q.defer();
+    if (!database) database = Lawnchair({name:'items'});
+
+    if (persistQueue.length === 0){
+      persistWithNewUUIDDeferred(oldUUID, item, itemType, ownerUUID, deferred);
+    }else {
+      executePersistQueue({deferred: deferred,
+                           oldUUID: oldUUID,
+                           data: item,
+                           itemType: itemType,
+                           ownerUUID: ownerUUID});
+    }
+    return deferred.promise;
+  }
+
+  function persistWithNewUUIDDeferred(oldUUID, item, itemType, ownerUUID, deferred) {
+    database.get(trimUUID(oldUUID), function(persisted){
+      if (persisted){
+        destroy(untrimUUID(persisted.key), ownerUUID).then(
+          // Success
+          function(){
+            persist(item, itemType, ownerUUID, true).then(
+              // Success
+              function(result){
+                deferred.resolve(result);
+              },
+              // Failure
+              function(){
+                deferred.reject();
+              }
+            );
+          },
+          // Failure
+          function(){
+            deferred.reject();
+          }
+        );
       }else{
-        uuid = itemToPersistedItem(data, itemType, ownerUUID);
-        database.save({key:uuid, value:data}, function(result){
-          deferred.resolve(result);
-        });
+        // Old UUID not found
+        deferred.reject();
       }
-      return deferred.promise;
-    },
+    });
+    return deferred.promise;
+  }
+
+  function destroy(uuid){
+    var deferred = $q.defer();
+    if (database){
+      database.remove(trimUUID(uuid), function(){
+        deferred.resolve();
+      });
+    }else {
+      deferred.reject();
+    }
+    return deferred.promise;
+  }
+
+  return {
+    persistWithNewUUID: persistWithNewUUID,
+    persist: persist,
     getAll: function(){
       var deferred = $q.defer();
       if (!database) database = Lawnchair({name:'items'});
@@ -138,17 +232,7 @@ function PersistentStorageService($q) {
       }
       return deferred.promise;
     },
-    destroy: function(uuid){
-      var deferred = $q.defer();
-      if (database){
-        database.remove(trimUUID(uuid), function(){
-          deferred.resolve();
-        });
-      }else {
-        deferred.reject();
-      }
-      return deferred.promise;
-    },
+    destroy: destroy,
     destroyAll: function(){
       var deferred = $q.defer();
       if (database){
