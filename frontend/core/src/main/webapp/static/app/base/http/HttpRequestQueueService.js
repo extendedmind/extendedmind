@@ -284,10 +284,10 @@ function HttpRequestQueueService(enableOffline) {
     isQueueEmpty: function() {
       return !queue.length;
     },
-    isEmpty: function() {
+    isEmpty: function() {
       return !primary && !secondary && !queue.length && !beforeLast;
     },
-    getHeadError: function() {
+    getHeadError: function() {
       var headRequest = getHead();
       if (headRequest){
         if (headRequest.errorStatus){
