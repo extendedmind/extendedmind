@@ -325,7 +325,8 @@
         <div class="swiper-slide" swiper-slide="focus/tasks/rightDuplicate" slide-index="0"
         swiper-slide-duplicate="true">
           <div class="container-content" ng-class="daySlides[2].pastDate && 'past-date'"
-            list="getTasksArray('date', {date: daySlides[2].info, pastDate: daySlides[2].pastDate})">
+            list="getTasksArray('date', {date: daySlides[2].info, pastDate: daySlides[2].pastDate})"
+            list-bounded="true">
 
             <div ng-hide="datepickerVisible" class="group-mixed heading">
               <div class="group-mixed--middle" swiper-click="openDatepicker(daySlides[2].info)">
@@ -339,12 +340,16 @@
             <div class="animate-list-item-leave"
               ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
               list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
-            <div list-prompt="tasks" list-prompt-infos="listInfos"
+            <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-no-loading="true"
               list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]">
             </div>
 
+            <div ng-if="currentListLimitTo < getFilteredFullArrayLength()" style="text-align: center;" class="row">
+              <a href style="display: block;" ng-click="addMoreItems()"><span class="text-details">load more</span></a>
+            </div>
+
             <a href ng-if="showAgenda && daySlides[2].info !== null" ng-hide="daySlidesInfosCleared"
-              class="link agenda" ng-click="openCalendar(daySlides[2].info)">
+              class="link agenda" ng-click="openCalendar(daySlides[2].info)" list-bottom>
               <div ng-repeat="agendaEvent in getEventInstances(daySlides[2].info) as agendaEvents track by agendaEvent.event_id">
                 <div class="group-mixed with-checkbox">
                   <div class="group-mixed--left">
@@ -371,7 +376,8 @@
 
         <div class="swiper-slide" swiper-slide="focus/tasks/left" slide-index="1" swiper-slide-loop-start="true">
           <div class="container-content" ng-class="daySlides[0].pastDate && 'past-date'"
-            list="getTasksArray('date', {date: daySlides[0].info, pastDate: daySlides[0].pastDate})">
+            list="getTasksArray('date', {date: daySlides[0].info, pastDate: daySlides[0].pastDate})"
+            list-bounded="true">
 
             <div ng-hide="datepickerVisible" class="group-mixed heading">
               <div class="group-mixed--middle" swiper-click="openDatepicker(daySlides[0].info)">
@@ -385,16 +391,16 @@
             <div class="animate-list-item-leave"
               ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
               list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
-            <div list-prompt="tasks" list-prompt-infos="listInfos"
+            <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-no-loading="true"
               list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]">
             </div>
 
             <div ng-if="currentListLimitTo < getFilteredFullArrayLength()" style="text-align: center;" class="row">
-              <a href ng-click="addMoreItems()"><span class="text-details">load more</span></a>
+              <a href style="display: block;" ng-click="addMoreItems()"><span class="text-details">load more</span></a>
             </div>
 
             <a href ng-if="showAgenda && daySlides[0].info !== null" ng-hide="daySlidesInfosCleared"
-              class="link agenda" ng-click="openCalendar(daySlides[0].info)">
+              class="link agenda" ng-click="openCalendar(daySlides[0].info)" list-bottom>
               <div ng-repeat="agendaEvent in getEventInstances(daySlides[0].info) as agendaEvents track by agendaEvent.event_id">
                 <div class="group-mixed with-checkbox">
                   <div class="group-mixed--left">
@@ -421,7 +427,8 @@
 
         <div class="swiper-slide" swiper-slide="focus/tasks/middle" slide-index="2">
           <div class="container-content" ng-class="daySlides[1].pastDate && 'past-date'"
-            list="getTasksArray('date', {date: daySlides[1].info, pastDate: daySlides[1].pastDate})">
+            list="getTasksArray('date', {date: daySlides[1].info, pastDate: daySlides[1].pastDate})"
+            list-bounded="true">
 
             <div ng-hide="datepickerVisible" class="group-mixed heading">
               <div class="group-mixed--middle" swiper-click="openDatepicker(daySlides[1].info)">
@@ -435,12 +442,16 @@
             <div class="animate-list-item-leave"
               ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
               list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
-            <div list-prompt="tasks" list-prompt-infos="listInfos"
+            <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-no-loading="true"
               list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]">
             </div>
 
+            <div ng-if="currentListLimitTo < getFilteredFullArrayLength()" style="text-align: center;" class="row">
+              <a href style="display: block;" ng-click="addMoreItems()"><span class="text-details">load more</span></a>
+            </div>
+
             <a href ng-if="showAgenda && daySlides[1].info !== null" ng-hide="daySlidesInfosCleared"
-              class="link agenda" ng-click="openCalendar(daySlides[1].info)">
+              class="link agenda" ng-click="openCalendar(daySlides[1].info)" list-bottom>
               <div ng-repeat="agendaEvent in getEventInstances(daySlides[1].info) as agendaEvents track by agendaEvent.event_id">
                 <div class="group-mixed with-checkbox">
                   <div class="group-mixed--left">
@@ -467,7 +478,8 @@
 
         <div class="swiper-slide" swiper-slide="focus/tasks/right" slide-index="3">
           <div class="container-content" ng-class="daySlides[2].pastDate && 'past-date'"
-            list="getTasksArray('date', {date: daySlides[2].info, pastDate: daySlides[2].pastDate})">
+            list="getTasksArray('date', {date: daySlides[2].info, pastDate: daySlides[2].pastDate})"
+            list-bounded="true">
 
             <div ng-hide="datepickerVisible" class="group-mixed heading">
               <div class="group-mixed--middle" swiper-click="openDatepicker(daySlides[2].info)">
@@ -481,12 +493,16 @@
             <div class="animate-list-item-leave"
               ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
               list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
-            <div list-prompt="tasks" list-prompt-infos="listInfos"
+            <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-no-loading="true"
               list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]">
             </div>
 
+            <div ng-if="currentListLimitTo < getFilteredFullArrayLength()" style="text-align: center;" class="row">
+              <a href style="display: block;" ng-click="addMoreItems()"><span class="text-details">load more</span></a>
+            </div>
+
             <a href ng-if="showAgenda && daySlides[2].info !== null" ng-hide="daySlidesInfosCleared"
-              class="link agenda" ng-click="openCalendar(daySlides[2].info)">
+              class="link agenda" ng-click="openCalendar(daySlides[2].info)" list-bottom>
               <div ng-repeat="agendaEvent in getEventInstances(daySlides[2].info) as agendaEvents track by agendaEvent.event_id">
                 <div class="group-mixed with-checkbox">
                   <div class="group-mixed--left">
@@ -513,7 +529,8 @@
 
         <div class="swiper-slide" swiper-slide="focus/tasks/leftDuplicate" slide-index="4" swiper-slide-duplicate="true">
           <div class="container-content" ng-class="daySlides[0].pastDate && 'past-date'"
-            list="getTasksArray('date', {date: daySlides[0].info, pastDate: daySlides[0].pastDate})">
+            list="getTasksArray('date', {date: daySlides[0].info, pastDate: daySlides[0].pastDate})"
+            list-bounded="true">
 
             <div ng-hide="datepickerVisible" class="group-mixed heading">
               <div class="group-mixed--middle" swiper-click="openDatepicker(daySlides[0].info)">
@@ -527,12 +544,16 @@
             <div class="animate-list-item-leave"
               ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
               list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
-            <div list-prompt="tasks" list-prompt-infos="listInfos"
+            <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-no-loading="true"
               list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]">
             </div>
 
+            <div ng-if="currentListLimitTo < getFilteredFullArrayLength()" style="text-align: center;" class="row">
+              <a href style="display: block;" ng-click="addMoreItems()"><span class="text-details">load more</span></a>
+            </div>
+
             <a href ng-if="showAgenda && daySlides[0].info !== null" ng-hide="daySlidesInfosCleared"
-              class="link agenda" ng-click="openCalendar(daySlides[0].info)">
+              class="link agenda" ng-click="openCalendar(daySlides[0].info)" list-bottom>
               <div ng-repeat="agendaEvent in getEventInstances(daySlides[0].info) as agendaEvents track by agendaEvent.event_id">
                 <div class="group-mixed with-checkbox">
                   <div class="group-mixed--left">

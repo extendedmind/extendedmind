@@ -101,6 +101,10 @@
         }
       };
 
+      this.registerGetBottomElementHeight = function(callback) {
+        $scope.getBottomElementHeight = callback;
+      };
+
       var checkingTimeout;
       this.toggleLeftCheckbox = function(item, toggleFn) {
 
@@ -173,23 +177,25 @@
           }, 'listDirective');
         }
 
-        var elementHeight = element[0].offsetHeight;
-        var elementScrollHeight = element[0].scrollHeight;
-        var elementScrollPosition, remainingToBottom;
+        if (!attrs.listBounded) {
+          var elementHeight = element[0].offsetHeight;
+          var elementScrollHeight = element[0].scrollHeight;
+          var elementScrollPosition, remainingToBottom;
 
-        if (elementHeight !== elementScrollHeight) {
-          // Item has scrollable content
-          elementScrollPosition = element[0].scrollTop;
-          remainingToBottom = elementScrollHeight - elementScrollPosition - elementHeight;
+          if (elementHeight !== elementScrollHeight) {
+            // Item has scrollable content
+            elementScrollPosition = element[0].scrollTop;
+            remainingToBottom = elementScrollHeight - elementScrollPosition - elementHeight;
 
-          if (remainingToBottom === 0) {
-            // At the bottom, load more.
-            preventListModify = false;  // Clear state variable when returning to bottom of the list.
-            addMoreItemsToBottom();
+            if (remainingToBottom === 0) {
+              // At the bottom, load more.
+              preventListModify = false;  // Clear state variable when returning to bottom of the list.
+              addMoreItemsToBottom();
+            }
           }
+          // Did we return into list that has been scrolled near the bottom.
+          setIsNearListBottom();
         }
-        // Did we return into list that has been scrolled near the bottom.
-        setIsNearListBottom();
       }
 
       /*
@@ -209,7 +215,9 @@
         if (controllers[1].isSlideActiveByDefault()){
           listActive();
         }
-        controllers[1].registerSlideMovementCallback(listMoved, 'listDirective');
+        if (!attrs.listBounded) {
+          controllers[1].registerSlideMovementCallback(listMoved, 'listDirective');
+        }
       }else {
         // List is active as it doesn't have a swiper to begin with
         listActive();
@@ -228,14 +236,14 @@
 
       // INFINITE SCROLL
 
-      if (attrs.listInfinite) {
-        element[0].addEventListener('scroll', listScroll, false);
-      } else {
+      if (attrs.listBounded) {
         element[0].addEventListener('scroll', listScrollUp, false);
 
         scope.addMoreItems = function() {
           addMoreItemsToBottom();
         };
+      } else {
+        element[0].addEventListener('scroll', listScroll, false);
       }
 
       // Coefficient of container height, which specifies when add more is called.
@@ -301,8 +309,6 @@
         var remainingToBottom = elementScrollHeight - elementScrollPosition - elementHeight;
 
         var scrollingDown = lastScrollPosition < elementScrollPosition; // evaluate direction
-
-        // FIXME: not needed
         lastScrollPosition = elementScrollPosition; // Store last scroll position for reference.
 
         if (remainingToBottom >= 0 && remainingToBottom <= elementHeight * nearingCoefficientToEdge) {
@@ -343,20 +349,22 @@
           }
         }
       }
-      function listScrollUp(/*event*/){
 
+      function listScrollUp(/*event*/){
         // get scroll position
         var elementHeight = element[0].offsetHeight;
         var elementScrollHeight = element[0].scrollHeight;
         var elementScrollPosition = element[0].scrollTop;
         var remainingToBottom = elementScrollHeight - elementScrollPosition - elementHeight;
 
+        if (angular.isFunction(scope.getBottomElementHeight)) {
+          // Subtract bottom element height from remainingToBottom.
+          remainingToBottom -= scope.getBottomElementHeight();
+        }
         var scrollingDown = lastScrollPosition < elementScrollPosition; // evaluate direction
-
-        // FIXME: not needed
         lastScrollPosition = elementScrollPosition; // Store last scroll position for reference.
 
-        if (!scrollingDown && (remainingToBottom >= elementHeight * removeCoefficientToEdge)) {
+        if (!scrollingDown && (remainingToBottom >= elementHeight * 1.5)) {
           // Call remove method when distance to edge is smaller than the safe zone
           // and when scroll direction is up.
           removeItemsFromBottom();
@@ -411,8 +419,8 @@
 
       // TODO:  Max number and increase amount should be calculated based on the height of the
       //        container and the height of individual elements in the list.
-      scope.maximumNumberOfItems = 25;
-      scope.itemIncreaseAmount = 25;
+      scope.maximumNumberOfItems = attrs.listBounded ? 10 : 25;
+      scope.itemIncreaseAmount = attrs.listBounded ? 10 : 25;
       setLimits(0);
       function setLimits(startIndex){
         scope.currentListStartIndex = startIndex;
