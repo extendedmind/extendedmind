@@ -26,133 +26,111 @@ function listPromptDirective($animate, $compile, $rootScope, UISessionService, U
       promptType: '@listPrompt',
       listInfos: '=listPromptInfos',
       noItemsVisible: '=listPromptHide',
-      loadMore: '&?listPromptLoadMore'
+      loadMore: '=listPromptLoadMore',
+      loadMoreFn: '&?listPromptLoadMoreFn'
     },
     templateUrl: $rootScope.urlBase + 'app/base/listPrompt.html',
-    compile: function(element) {
-      var loadingAnimationElement = element[0].firstElementChild.lastElementChild;
-      return {
-        pre: function(scope, element, attrs) {
-          if (loadingAnimationElement) {
-            if (attrs.listPromptLoadMore) {
-              // NOTE: Check attribute instead of the scope.
-              // Since Angular 1.4.0-beta.3: "Previously, '&' expressions would always set up a function
-              // in the isolate scope. Now, if the binding is marked as optional and the attribute is not
-              // specified, no function will be added to the isolate scope."
-              // See https://github.com/angular/angular.js/commit/6a38dbfd3c34c8f9efff503d17eb3cbeb666d422
-              loadingAnimationElement.innerHTML = '<a href style="display: block;" ng-click="loadMore()">' +
-              '<span>load more</span>' +
-              '</a>';
+    link: function(scope, element, attrs, listController) {
+      var loadingAnimationElementVisible;
+      var animateNoItemsPromptWhenEmpty = false;
+      var loadingAnimationElement;
 
-              $compile(loadingAnimationElement)(scope);
-            } else {
-              loadingAnimationElement.innerHTML = '<span>loading</span>' +
-              '<span class="one">.</span><span class="two">.</span><span class="three">.</span>';
-            }
-          }
-        },
-        post: function(scope, element, attrs, listController) {
-          var loadingAnimationElementVisible;
-          var animateNoItemsPromptWhenEmpty = false;
+      function init() {
+        loadingAnimationElementVisible =
+        listController.registerIsNearListBottomCallback(isNearListBottom);
 
-          function init() {
-            loadingAnimationElementVisible =
-            listController.registerIsNearListBottomCallback(isNearListBottom);
+        loadingAnimationElement = element[0].firstElementChild.lastElementChild;
+        if (loadingAnimationElement && loadingAnimationElementVisible) {
+          // Set loading animation element initially visible.
+          loadingAnimationElement.style.display = 'block';
+        }
+      }
 
-            // loadingAnimationElement = element[0].firstElementChild.lastElementChild;
-            if (loadingAnimationElement && loadingAnimationElementVisible) {
-              // Set loading animation element initially visible.
-              loadingAnimationElement.style.display = 'block';
-            }
-          }
-
-          if (!scope.listInfos.array) {
-            // Wait for array.
-            var listInfosWatcher = scope.$watch('listInfos', function(newListInfos) {
-              if (newListInfos && newListInfos.array) {
-                // Array arrived, initialize.
-                // NOTE:  Returns zero length when changing feature even though array has items,
-                //        because filter has not yet rendered items into DOM.
-                //
-                //        Register array visible callback into listController to get the correct info,
-                //        but that callback is only executed when list has an array with items,
-                //        so we need to keep listInfos watcher for lists with an actual zero-length array.
-                //
-                //        Initially empty lists executes init() here and also in array visible callback
-                init();
-              }
-              listInfosWatcher(); // Unbind list infos watcher.
-            });
-            listController.registerArrayVisibleCallback(arrayVisible, 'listPromptDirective');
-          } else {
-            // Array initially ready.
+      if (!scope.listInfos.array) {
+        // Wait for array.
+        var listInfosWatcher = scope.$watch('listInfos', function(newListInfos) {
+          if (newListInfos && newListInfos.array) {
+            // Array arrived, initialize.
+            // NOTE:  Returns zero length when changing feature even though array has items,
+            //        because filter has not yet rendered items into DOM.
+            //
+            //        Register array visible callback into listController to get the correct info,
+            //        but that callback is only executed when list has an array with items,
+            //        so we need to keep listInfos watcher for lists with an actual zero-length array.
+            //
+            //        Initially empty lists executes init() here and also in array visible callback
             init();
           }
+          listInfosWatcher(); // Unbind list infos watcher.
+        });
+        listController.registerArrayVisibleCallback(arrayVisible, 'listPromptDirective');
+      } else {
+        // Array initially ready.
+        init();
+      }
 
-          /*
-          * Array is visible and rendered into DOM, initialize.
-          */
-          function arrayVisible() {
-            init();
-            listController.unregisterArrayVisibleCallback('listPromptDirective');
-          }
+      /*
+      * Array is visible and rendered into DOM, initialize.
+      */
+      function arrayVisible() {
+        init();
+        listController.unregisterArrayVisibleCallback('listPromptDirective');
+      }
 
-          function listHasItems() {
-            if (scope.listInfos && scope.listInfos.array && scope.listInfos.array.length) {
-              // List has items. Animate prompt when it becomes visible.
-              animateNoItemsPromptWhenEmpty = true;
-              return true;
-            }
-            if (loadingAnimationElement && loadingAnimationElementVisible) {
-              loadingAnimationElement.style.display = 'none';
-              loadingAnimationElementVisible = false;
-            }
-          }
+      function listHasItems() {
+        if (scope.listInfos && scope.listInfos.array && scope.listInfos.array.length) {
+          // List has items. Animate prompt when it becomes visible.
+          animateNoItemsPromptWhenEmpty = true;
+          return true;
+        }
+        if (loadingAnimationElement && loadingAnimationElementVisible) {
+          loadingAnimationElement.style.display = 'none';
+          loadingAnimationElementVisible = false;
+        }
+      }
 
-          scope.isNoItemsPromptVisible = function() {
-            if (!scope.promptType || listHasItems()) {
-              // Has no prompt or has items.
+      scope.isNoItemsPromptVisible = function() {
+        if (!scope.promptType || listHasItems()) {
+          // Has no prompt or has items.
+          return false;
+        }
+
+        if (scope.noItemsVisible) {
+          // Check additional hiders.
+          for (var i = 0, len = scope.noItemsVisible.length; i < len; i++) {
+            if (scope.noItemsVisible[i]) {
+              // At least one additional hider is on.
               return false;
-            }
-
-            if (scope.noItemsVisible) {
-              // Check additional hiders.
-              for (var i = 0, len = scope.noItemsVisible.length; i < len; i++) {
-                if (scope.noItemsVisible[i]) {
-                  // At least one additional hider is on.
-                  return false;
-                }
-              }
-            }
-            // No items and no additional hiders.
-            if (animateNoItemsPromptWhenEmpty && UISessionService.isAllowed('leaveAnimation')) {
-              animateNoItemsPromptWhenEmpty = false;
-              $animate.addClass(element, 'animate-no-items-prompt').then(function() {
-                // Animate prompt visible.
-                element[0].classList.remove('animate-no-items-prompt');
-              });
-            }
-
-            return UserSessionService.isPersistentStorageEnabled() ?
-            UserSessionService.isPersistentDataLoaded() :
-            true;
-          };
-
-          function isNearListBottom(nearBottom) {
-            if (nearBottom) {
-              if (loadingAnimationElement && !loadingAnimationElementVisible) {
-                loadingAnimationElement.style.display = 'block';
-                loadingAnimationElementVisible = true;
-              }
-            } else {
-              if (loadingAnimationElement && loadingAnimationElementVisible) {
-                loadingAnimationElement.style.display = 'none';
-                loadingAnimationElementVisible = false;
-              }
             }
           }
         }
+        // No items and no additional hiders.
+        if (animateNoItemsPromptWhenEmpty && UISessionService.isAllowed('leaveAnimation')) {
+          animateNoItemsPromptWhenEmpty = false;
+          $animate.addClass(element, 'animate-no-items-prompt').then(function() {
+            // Animate prompt visible.
+            element[0].classList.remove('animate-no-items-prompt');
+          });
+        }
+
+        return UserSessionService.isPersistentStorageEnabled() ?
+        UserSessionService.isPersistentDataLoaded() :
+        true;
       };
+
+      function isNearListBottom(nearBottom) {
+        if (nearBottom) {
+          if (loadingAnimationElement && !loadingAnimationElementVisible) {
+            loadingAnimationElement.style.display = 'block';
+            loadingAnimationElementVisible = true;
+          }
+        } else {
+          if (loadingAnimationElement && loadingAnimationElementVisible) {
+            loadingAnimationElement.style.display = 'none';
+            loadingAnimationElementVisible = false;
+          }
+        }
+      }
     }
   };
 }

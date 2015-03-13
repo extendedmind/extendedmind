@@ -236,21 +236,57 @@
 
       // INFINITE SCROLL
 
-      if (attrs.listBounded) {
-        element[0].addEventListener('scroll', listScrollUp, false);
-
-        scope.addMoreItems = function() {
-          addMoreItemsToBottom();
-        };
-      } else {
-        element[0].addEventListener('scroll', listScroll, false);
+      if (attrs.listOptions) {
+        var opts = $parse(attrs.listOptions)(scope);
+        if (opts.registerModeChanged && typeof opts.registerModeChanged === 'function') {
+          opts.registerModeChanged(modeChanged, opts.id);
+        }
       }
 
+      function modeChanged() {
+        if (opts && opts.isBounded && typeof opts.isBounded === 'function' && opts.isBounded()) {
+          console.log('do the boundango');
+        } else {
+          console.log('be typical');
+        }
+        init();
+      }
+
+      scope.addMoreItems = function() {
+        addMoreItemsToBottom();
+      };
+
       // Coefficient of container height, which specifies when add more is called.
-      var removeCoefficientToEdge = attrs.listBounded ? 1.5 : 3;
+      var removeCoefficientToEdge;
       var nearingCoefficientToEdge = .5;
       var lastScrollPosition = 0;
       var bottomVerificationTimer;
+
+      function init() {
+        if (opts && opts.isBounded && typeof opts.isBounded === 'function' && opts.isBounded()) {
+          removeCoefficientToEdge = 1.5;
+
+          // TODO:  Max number and increase amount should be calculated based on the height of the
+          //        container and the height of individual elements in the list.
+          scope.maximumNumberOfItems = 5;
+          scope.itemIncreaseAmount = 5;
+
+          element[0].removeEventListener('scroll', listScroll, false);
+          element[0].addEventListener('scroll', listScrollUp, false);
+          removeItemsFromBottom();
+        } else {
+          element[0].removeEventListener('scroll', listScrollUp, false);
+          element[0].addEventListener('scroll', listScroll, false);
+          removeCoefficientToEdge = 3;
+
+          // TODO:  Max number and increase amount should be calculated based on the height of the
+          //        container and the height of individual elements in the list.
+          scope.maximumNumberOfItems = 25;
+          scope.itemIncreaseAmount = 25;
+          addMoreItemsToBottom();
+        }
+      }
+      init();
 
       function startBottomVerificationTimer() {
         bottomVerificationTimer = setTimeout(function() {
@@ -416,11 +452,6 @@
           if (!scope.$$phase && !$rootScope.$$phase) scope.$digest(); // Update UI.
         }
       }
-
-      // TODO:  Max number and increase amount should be calculated based on the height of the
-      //        container and the height of individual elements in the list.
-      scope.maximumNumberOfItems = attrs.listBounded ? 10 : 25;
-      scope.itemIncreaseAmount = attrs.listBounded ? 10 : 25;
       setLimits(0);
       function setLimits(startIndex){
         scope.currentListStartIndex = startIndex;

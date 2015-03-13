@@ -583,19 +583,40 @@
     }
   }
 
+  $scope.isAgendaVisible = function() {
+    return $scope.showAgenda;
+  };
+
   UserSessionService.registerUIPreferenceChangedCallback(agendaVisibilityChanged, 'showAgendaCalendar',
                                                          'DatesController');
   UserSessionService.registerUIPreferenceChangedCallback(agendaCalendarsChangedCallback, 'calendars',
                                                          'DatesController');
 
+  var agendaVisibilityChangedCallbacks = {};
+  $scope.registerAgendaVisibilityChangedCallback = function(callback, id) {
+    agendaVisibilityChangedCallbacks[id] = callback;
+  };
+
+  function executeAgendaVisibilityChangedCallbacks(visible) {
+    if (agendaVisibilityChangedCallbacks) {
+      for (var id in agendaVisibilityChangedCallbacks) {
+        if (agendaVisibilityChangedCallbacks.hasOwnProperty(id)) {
+          agendaVisibilityChangedCallbacks[id](visible);
+        }
+      }
+    }
+  }
+
   function agendaVisibilityChanged() {
     if (UserSessionService.getUIPreference('showAgendaCalendar')) {
       var savedCalendars = UserSessionService.getUIPreference('calendars');
       if (savedCalendars) listCalendars(savedCalendars);
+      executeAgendaVisibilityChangedCallbacks(true);
     } else {
       // Agenda disabled.
       $scope.showAgenda = false;        // Remove agenda from DOM.
       cachedEventInstances = undefined; // Clear cache.
+      executeAgendaVisibilityChangedCallbacks(false);
     }
   }
 
@@ -1470,6 +1491,11 @@
       end: 1426759200000,
       begin: 1426744800000
     }, ]
+  };
+
+  $scope.clear = function() {
+    $scope.showAgenda = !$scope.showAgenda;
+    executeAgendaVisibilityChangedCallbacks($scope.showAgenda);
   };*/
 }
 
