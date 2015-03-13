@@ -441,7 +441,7 @@
     var queue = HttpRequestQueueService.getQueue();
     if (queue && queue.length){
       for (var i=0; i<queue.length; i++){
-        if (queue.params.uuid === uuid){
+        if (queue[i].params.uuid === uuid){
           return true;
         }
       }
