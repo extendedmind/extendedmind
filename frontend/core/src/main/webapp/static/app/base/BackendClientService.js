@@ -259,6 +259,10 @@
     return HttpClientService.isUUIDInQueue(uuid);
   };
 
+  methods.getQueueLength = function() {
+    return HttpClientService.getQueueLength();
+  };
+
   methods.notifyOwnerUUIDChange = function(oldUUID, newUUID){
     HttpClientService.notifyOwnerUUIDChange(oldUUID, newUUID);
   };

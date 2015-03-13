@@ -15,7 +15,7 @@
 
  'use strict';
 
- function NoteEditorController($scope, $timeout, BackendClientService, NotesService, SwiperService,
+ function NoteEditorController($scope, $timeout, NotesService, SwiperService,
                                TagsService, UISessionService) {
 
   if ($scope.mode === 'omnibar') {
@@ -348,5 +348,5 @@
 }
 
 NoteEditorController['$inject'] = ['$scope', '$timeout',
-'BackendClientService', 'NotesService', 'SwiperService', 'TagsService', 'UISessionService'];
+'NotesService', 'SwiperService', 'TagsService', 'UISessionService'];
 angular.module('em.main').controller('NoteEditorController', NoteEditorController);

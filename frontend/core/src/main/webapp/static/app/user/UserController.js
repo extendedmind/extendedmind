@@ -15,9 +15,9 @@
  'use strict';
 
  function UserController($http, $location, $q, $rootScope, $scope, $templateCache, $window,
-                         AnalyticsService, AuthenticationService, ItemsService, ListsService, NotesService,
-                         SwiperService, SynchronizeService, TagsService, TasksService, UISessionService,
-                         UserService, UserSessionService, version) {
+                         AnalyticsService, AuthenticationService, BackendClientService, ItemsService,
+                         ListsService, NotesService, SwiperService, SynchronizeService, TagsService,
+                         TasksService, UISessionService, UserService, UserSessionService, version) {
 
   $scope.extendedMindVersion = version;
 
@@ -253,9 +253,13 @@
     }
   };
 
+  $scope.getQueueLength = function(){
+    return BackendClientService.getQueueLength();
+  }
+
 }
 UserController['$inject'] = ['$http', '$location', '$q', '$rootScope', '$scope', '$templateCache', '$window',
-'AnalyticsService', 'AuthenticationService', 'ItemsService', 'ListsService', 'NotesService', 'SwiperService',
-'SynchronizeService', 'TagsService', 'TasksService', 'UISessionService', 'UserService', 'UserSessionService',
-'version'];
+'AnalyticsService', 'AuthenticationService', 'BackendClientService', 'ItemsService', 'ListsService',
+'NotesService', 'SwiperService', 'SynchronizeService', 'TagsService', 'TasksService', 'UISessionService',
+'UserService', 'UserSessionService', 'version'];
 angular.module('em.user').controller('UserController', UserController);

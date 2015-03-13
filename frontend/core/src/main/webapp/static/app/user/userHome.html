@@ -43,7 +43,9 @@
       </div>
       <div ng-if="showStats" class="row">
         <a href ng-click="toggleStats()">
-          <br/><span class="text-details">total items: </span>
+          <br/><span class="text-details">actions in queue: </span>
+          <span class="text-details" ng-bind="getQueueLength()"></span><br/>
+          <span class="text-details">total items: </span>
           <span class="text-details" ng-bind="getCount('item')"></span><br/>
           <span class="text-details">total tasks: </span>
           <span class="text-details" ng-bind="getCount('task')"></span><br/>

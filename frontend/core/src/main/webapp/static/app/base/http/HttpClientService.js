@@ -448,6 +448,10 @@
     }
   };
 
+  methods.getQueueLength = function() {
+    return HttpRequestQueueService.getQueue().length;
+  };
+
   // Methods to register callbacks when
   methods.registerCallback = function(type, callback) {
     if (type === 'primaryResult') {
