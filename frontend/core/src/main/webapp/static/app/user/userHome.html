@@ -8,6 +8,9 @@
           <span class="text-details" ng-bind="getLastSyncedText()"></span>
         </a>
       </div>
+      <div ng-if="getSyncAttemptedText()" class="row">
+        <span class="text-details" ng-bind="getSyncAttemptedText()"></span>
+      </div>
       <div ng-if="getOfflineModified('item')" class="row">
         <a href ng-click="toggleModifiedItems('item')">
           <span class="text-details">unsynced items: </span>

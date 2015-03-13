@@ -21,6 +21,7 @@
   // When offline isn't enabled, use transient value for latest modified
   var latestModified = {};
   var itemsSynchronized = {};
+  var itemsSynchronizeAttempted = {};
   var persistentStorageEnabled = enableOffline;
   var offlineEnabledBypass = false;
   var notifyOwnerCallbacks = {};
@@ -139,6 +140,7 @@
       LocalStorageService.clearUser();
       latestModified = {};
       itemsSynchronized = {};
+      itemsSynchronizeAttempted = {};
       persistentDataLoaded = false;
       persistentStorageEnabled = enableOffline;
       offlineEnabledBypass = false;
@@ -238,6 +240,9 @@
         itemsSynchronized[ownerUUID] = timestamp;
       }
     },
+    setItemsSynchronizeAttempted: function(timestamp, ownerUUID) {
+      itemsSynchronizeAttempted[ownerUUID] = timestamp;
+    },
     createFakeUserUUID: function(){
       var fakeUserUUID = UUIDService.generateFakeUUID();
       SessionStorageService.setUserUUID(fakeUserUUID);
@@ -293,6 +298,9 @@
       }else{
         return itemsSynchronized[ownerUUID];
       }
+    },
+    getItemsSynchronizeAttempted: function(ownerUUID) {
+      return itemsSynchronizeAttempted[ownerUUID];
     },
     isItemsSynchronized: function(ownerUUID) {
       return this.getItemsSynchronized(ownerUUID) !== undefined;

@@ -150,31 +150,47 @@
     }
   };
 
+  function getAgoText(timestamp){
+    if (Date.now() - timestamp < 3000){
+      return 'just now';
+    }else if (Date.now() - timestamp < 10000){
+      return 'less than 10 seconds ago';
+    }else if (Date.now() - timestamp < 20000){
+      return 'less than 20 seconds ago';
+    }else if (Date.now() - timestamp < 60000){
+      return 'less than a minute ago';
+    }else if (Date.now() - timestamp < 600000){
+      return 'less than 10 minutes ago';
+    }else if (Date.now() - timestamp < 3600000){
+      return 'in the past hour';
+    }else if (Date.now() - timestamp < 86400000){
+      return 'in the past 24 hours';
+    }else if (Date.now() - timestamp < 604800000){
+      return 'in the past week';
+    }else if (Date.now() - timestamp >= 604800000){
+      return 'over an week ago';
+    }
+  }
+
   $scope.showUnsynced = undefined;
   $scope.getLastSyncedText = function(){
     var lastSyncedText;
     var itemsSynced = UserSessionService.getItemsSynchronized(UISessionService.getActiveUUID());
     if (itemsSynced){
-      lastSyncedText = 'last synced: ';
-      if (Date.now() - itemsSynced < 3000){
-        lastSyncedText = lastSyncedText + 'just now';
-      }else if (Date.now() - itemsSynced < 10000){
-        lastSyncedText = lastSyncedText + 'less than 10 seconds ago';
-      }else if (Date.now() - itemsSynced < 20000){
-        lastSyncedText = lastSyncedText + 'less than 20 seconds ago';
-      }else if (Date.now() - itemsSynced < 60000){
-        lastSyncedText = lastSyncedText + 'less than a minute ago';
-      }else if (Date.now() - itemsSynced < 600000){
-        lastSyncedText = lastSyncedText + 'less than 10 minutes ago';
-      }else if (Date.now() - itemsSynced < 3600000){
-        lastSyncedText = lastSyncedText + 'in the past hour';
-      }else if (Date.now() - itemsSynced >= 3600000){
-        lastSyncedText = lastSyncedText + 'over an hour ago';
-      }
+      lastSyncedText = 'last synced: ' + getAgoText(itemsSynced);
     }else{
-      lastSyncedText = 'backing up data';
+      lastSyncedText = 'synchronizing';
     }
     return lastSyncedText;
+  };
+
+  $scope.getSyncAttemptedText = function(){
+    var itemsSynced = UserSessionService.getItemsSynchronized(UISessionService.getActiveUUID());
+    var syncAttempted = UserSessionService.getItemsSynchronizeAttempted(UISessionService.getActiveUUID());
+
+    if (itemsSynced && syncAttempted && (syncAttempted > itemsSynced+20000)){
+      return 'sync attempted: ' + getAgoText(syncAttempted);
+    }
   };
 
   $scope.visibleModifiedItemsType = undefined;

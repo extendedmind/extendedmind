@@ -628,13 +628,20 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     }, synchronizeItemsDelay);
   }
 
-  function updateItemsSyncronized(activeUUID){
+  function itemsSynchronizedCallback(ownerUUID){
     var timestamp = Date.now();
-    UserSessionService.setItemsSynchronized(timestamp, activeUUID);
+    UserSessionService.setItemsSynchronized(timestamp, ownerUUID);
     $rootScope.synced = timestamp;
     $rootScope.syncState = 'ready';
     $scope.refreshFavoriteLists();
     itemsSynchronizeCounter++;
+  }
+  SynchronizeService.registerItemsSynchronizedCallback(itemsSynchronizedCallback);
+
+  function updateItemsSyncronizeAttempted(activeUUID){
+    var timestamp = Date.now();
+    UserSessionService.setItemsSynchronizeAttempted(timestamp, activeUUID);
+    $rootScope.syncAttempted = timestamp;
   }
 
   // Synchronize items if not already synchronizing and interval reached.
@@ -649,10 +656,10 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     }
     $scope.registerActivity();
     var activeUUID = UISessionService.getActiveUUID();
-    // First check that the user has login
-    if ((!$rootScope.syncState || $rootScope.syncState === 'ready' ||
-        $rootScope.syncState === 'error') && activeUUID)
-    {
+
+    // Check that user exists
+    if (activeUUID){
+
       // User has logged in, now set when user was last synchronized
       $rootScope.synced = UserSessionService.getItemsSynchronized(activeUUID);
       var sinceLastItemsSynchronized = Date.now() - UserSessionService.getItemsSynchronized(activeUUID);
@@ -675,7 +682,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
               $rootScope.syncState = 'deleted';
               // Also after this, get deleted items as well
               SynchronizeService.addDeleted(activeUUID).then(function(){
-                updateItemsSyncronized(activeUUID);
+                updateItemsSyncronizeAttempted(activeUUID);
               }, function(){
                 $rootScope.syncState = 'error';
               });
@@ -683,7 +690,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
               $rootScope.syncState = 'error';
             });
           }else{
-            updateItemsSyncronized(activeUUID);
+            updateItemsSyncronizeAttempted(activeUUID);
           }
 
           // If there has been a long enough time from last sync, update account preferences as well
@@ -708,7 +715,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
   function queueEmptiedCallback() {
     var activeUUID = UISessionService.getActiveUUID();
     return SynchronizeService.synchronize(activeUUID).then(function() {
-      updateItemsSyncronized(activeUUID);
+      updateItemsSyncronizeAttempted(activeUUID);
     }, function(){
       $rootScope.syncState = 'error';
       $q.reject();

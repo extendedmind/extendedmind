@@ -98,7 +98,8 @@
       !UserSessionService.isAuthenticateValid() &&
       UserSessionService.isAuthenticateReplaceable()) {
       // Make sure the latest credentials are in use
-    BackendClientService.setCredentials(UserSessionService.getCredentials());
+      BackendClientService.setCredentials(UserSessionService.getCredentials());
+
       // Create new primary request
       return {url: '/api/authenticate', data: getAuthenticatePayload(true)};
     }

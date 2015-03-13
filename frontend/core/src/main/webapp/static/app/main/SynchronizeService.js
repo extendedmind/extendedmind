@@ -25,6 +25,7 @@
   var getItemsRegex = new RegExp(BackendClientService.apiPrefixRegex.source +
                                  BackendClientService.uuidRegex.source +
                                  itemsRegex.source);
+  var itemsSynchronizedCallback;
 
   function getLatestModified(latestTag, latestList, latestTask, latestNote, latestItem) {
     return Math.max(
@@ -369,6 +370,7 @@
 
   // Register callbacks to BackendClientService
   function synchronizeCallback(request, response, queue) {
+    var ownerUUID = request.params.owner;
     if (!jQuery.isEmptyObject(response)) {
       if (queue && queue.length){
         var updatedPutUUIDs = [];
@@ -652,9 +654,10 @@
         }
 
       }
-      var ownerUUID = request.params.owner;
       processSynchronizeUpdateResult(ownerUUID, response);
     }
+    // Execute items synchronized callback
+    if (angular.isFunction(itemsSynchronizedCallback)) itemsSynchronizedCallback(ownerUUID);
   }
 
   function synchronizeUserAccountCallback(request, response /*, queue*/) {
@@ -842,6 +845,9 @@
       latestModified = getLatestModified(latestTag, latestList, latestTask, latestNote, latestItem);
     }
     UserSessionService.setLatestModified(latestModified, ownerUUID);
+
+    // Execute items synchronized callback
+    if (angular.isFunction(itemsSynchronizedCallback)) itemsSynchronizedCallback(ownerUUID);
   }
 
   function updateItemArrays(response, ownerUUID){
@@ -994,6 +1000,9 @@
       TagsService.changeOwnerUUID(oldUUID, newUUID);
       TasksService.changeOwnerUUID(oldUUID, newUUID);
       NotesService.changeOwnerUUID(oldUUID, newUUID);
+    },
+    registerItemsSynchronizedCallback: function(callback){
+      itemsSynchronizedCallback = callback;
     },
     // Regular expressions for item requests
     getItemsRegex: getItemsRegex
