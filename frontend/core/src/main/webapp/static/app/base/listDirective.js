@@ -193,9 +193,9 @@
               addMoreItemsToBottom();
             }
           }
-          // Did we return into list that has been scrolled near the bottom.
-          setIsNearListBottom();
         }
+        // Did we return into list that has been scrolled near the bottom.
+        setIsNearListBottom();
       }
 
       /*
@@ -247,7 +247,7 @@
       }
 
       // Coefficient of container height, which specifies when add more is called.
-      var removeCoefficientToEdge = 3;
+      var removeCoefficientToEdge = attrs.listBounded ? 1.5 : 3;
       var nearingCoefficientToEdge = .5;
       var lastScrollPosition = 0;
       var bottomVerificationTimer;
@@ -364,7 +364,7 @@
         var scrollingDown = lastScrollPosition < elementScrollPosition; // evaluate direction
         lastScrollPosition = elementScrollPosition; // Store last scroll position for reference.
 
-        if (!scrollingDown && (remainingToBottom >= elementHeight * 1.5)) {
+        if (!scrollingDown && (remainingToBottom >= elementHeight * removeCoefficientToEdge)) {
           // Call remove method when distance to edge is smaller than the safe zone
           // and when scroll direction is up.
           removeItemsFromBottom();

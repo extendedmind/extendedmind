@@ -340,12 +340,8 @@
             <div class="animate-list-item-leave"
               ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
               list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
-            <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-no-loading="true"
+            <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-load-more="addMoreItems()"
               list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]">
-            </div>
-
-            <div ng-if="currentListLimitTo < getFilteredFullArrayLength()" style="text-align: center;" class="row">
-              <a href style="display: block;" ng-click="addMoreItems()"><span class="text-details">load more</span></a>
             </div>
 
             <a href ng-if="showAgenda && daySlides[2].info !== null" ng-hide="daySlidesInfosCleared"
@@ -391,12 +387,8 @@
             <div class="animate-list-item-leave"
               ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
               list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
-            <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-no-loading="true"
+            <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-load-more="addMoreItems()"
               list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]">
-            </div>
-
-            <div ng-if="currentListLimitTo < getFilteredFullArrayLength()" style="text-align: center;" class="row">
-              <a href style="display: block;" ng-click="addMoreItems()"><span class="text-details">load more</span></a>
             </div>
 
             <a href ng-if="showAgenda && daySlides[0].info !== null" ng-hide="daySlidesInfosCleared"
@@ -442,12 +434,8 @@
             <div class="animate-list-item-leave"
               ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
               list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
-            <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-no-loading="true"
+            <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-load-more="addMoreItems()"
               list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]">
-            </div>
-
-            <div ng-if="currentListLimitTo < getFilteredFullArrayLength()" style="text-align: center;" class="row">
-              <a href style="display: block;" ng-click="addMoreItems()"><span class="text-details">load more</span></a>
             </div>
 
             <a href ng-if="showAgenda && daySlides[1].info !== null" ng-hide="daySlidesInfosCleared"
@@ -493,12 +481,8 @@
             <div class="animate-list-item-leave"
               ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
               list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
-            <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-no-loading="true"
+            <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-load-more="addMoreItems()"
               list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]">
-            </div>
-
-            <div ng-if="currentListLimitTo < getFilteredFullArrayLength()" style="text-align: center;" class="row">
-              <a href style="display: block;" ng-click="addMoreItems()"><span class="text-details">load more</span></a>
             </div>
 
             <a href ng-if="showAgenda && daySlides[2].info !== null" ng-hide="daySlidesInfosCleared"
@@ -544,12 +528,8 @@
             <div class="animate-list-item-leave"
               ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
               list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
-            <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-no-loading="true"
+            <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-load-more="addMoreItems()"
               list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]">
-            </div>
-
-            <div ng-if="currentListLimitTo < getFilteredFullArrayLength()" style="text-align: center;" class="row">
-              <a href style="display: block;" ng-click="addMoreItems()"><span class="text-details">load more</span></a>
             </div>
 
             <a href ng-if="showAgenda && daySlides[0].info !== null" ng-hide="daySlidesInfosCleared"
