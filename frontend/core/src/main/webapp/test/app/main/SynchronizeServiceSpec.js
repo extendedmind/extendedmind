@@ -648,6 +648,58 @@ describe('SynchronizeService', function() {
 
   });
 
+  it('should handle item offline create with no/empty response from server, and then sync', function () {
+
+    var items = ItemsService.getItems(testOwnerUUID);
+    expect(items.length)
+      .toBe(3);
+
+    // 1. create item and respond with an empty response
+    var testItemValues = {
+      id: MockUUIDService.getShortIdFromFakeUUID(MockUUIDService.mockFakeUUIDs[0]),
+      title: 'test item'
+    };
+    var testItem = ItemsService.getNewItem(testItemValues, testOwnerUUID);
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
+       .respond(200, {testing: true});
+    ItemsService.saveItem(testItem, testOwnerUUID);
+    $httpBackend.flush();
+    expect(items.length)
+      .toBe(4);
+    expect(items[3].mod.title)
+      .toBe(testItemValues.title);
+    expect(MockUUIDService.isFakeUUID(items[3].mod.uuid))
+      .toBeTruthy();
+
+    // 2. synchronize items with item in the response, even though the response in the original PUT
+    //    was invalid
+    var latestModified = now.getTime();
+    MockUserSessionService.setLatestModified(latestModified);
+    var testItemUUID = 'c2724771-4469-488c-aabd-9db188672a00';
+    $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
+                            latestModified + '&deleted=true&archived=true&completed=true')
+        .respond(200,
+        {
+          items: [
+          { uuid: testItemUUID,
+            id: testItemValues.id,
+            title: testItemValues.title,
+            created: latestModified-1,
+            modified: latestModified-1}
+          ]
+        });
+    SynchronizeService.synchronize(testOwnerUUID);
+    $httpBackend.flush();
+
+    // Verify that everything is right with the created item
+    expect(items.length)
+      .toBe(4);
+    expect(items[3].mod)
+      .toBeUndefined();
+    expect(items[3].uuid)
+      .toBe(testItemUUID);
+  });
+
   it('should handle task offline create, update, delete', function () {
 
     // 1. save new item
@@ -1066,6 +1118,58 @@ describe('SynchronizeService', function() {
     expect(generatedTask.uuid).toBe(completeRepeatingTaskResponse.generated.uuid);
   });
 
+ it('should handle task offline create with no/empty response from server, and then sync', function () {
+
+    var tasks = TasksService.getTasks(testOwnerUUID);
+    expect(tasks.length)
+      .toBe(4);
+
+    // 1. create task and respond with an empty response
+    var testTaskValues = {
+      id: MockUUIDService.getShortIdFromFakeUUID(MockUUIDService.mockFakeUUIDs[0]),
+      title: 'test task'
+    };
+    var testTask = TasksService.getNewTask(testTaskValues, testOwnerUUID);
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task', testTaskValues)
+       .respond(200, {testing: true});
+    TasksService.saveTask(testTask, testOwnerUUID);
+    $httpBackend.flush();
+    expect(tasks.length)
+      .toBe(5);
+    expect(tasks[4].mod.title)
+      .toBe(testTaskValues.title);
+    expect(MockUUIDService.isFakeUUID(tasks[4].mod.uuid))
+      .toBeTruthy();
+
+    // 2. synchronize items with task in the response, even though the response in the original PUT
+    //    was invalid
+    var latestModified = now.getTime();
+    MockUserSessionService.setLatestModified(latestModified);
+    var testTaskUUID = 'b2724771-4469-488c-aabd-9db188672a00';
+    $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
+                            latestModified + '&deleted=true&archived=true&completed=true')
+        .respond(200,
+        {
+          tasks: [
+          { uuid: testTaskUUID,
+            id: testTaskValues.id,
+            title: testTaskValues.title,
+            created: latestModified-1,
+            modified: latestModified-1}
+          ]
+        });
+    SynchronizeService.synchronize(testOwnerUUID);
+    $httpBackend.flush();
+
+    // Verify that everything is right with the created task
+    expect(tasks.length)
+      .toBe(5);
+    expect(tasks[4].mod)
+      .toBeUndefined();
+    expect(tasks[4].uuid)
+      .toBe(testTaskUUID);
+  });
+
   it('should handle note offline create, update, delete', function () {
 
     // 1. save new item
@@ -1280,6 +1384,58 @@ describe('SynchronizeService', function() {
       .toBe(veryLatestModified);
   });
 
+  it('should handle note offline create with no/empty response from server, and then sync', function () {
+
+    var notes = NotesService.getNotes(testOwnerUUID);
+    expect(notes.length)
+      .toBe(4);
+
+    // 1. create note and respond with an empty response
+    var testNoteValues = {
+      id: MockUUIDService.getShortIdFromFakeUUID(MockUUIDService.mockFakeUUIDs[0]),
+      title: 'test note'
+    };
+    var testNote = NotesService.getNewNote(testNoteValues, testOwnerUUID);
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/note', testNoteValues)
+       .respond(200, {testing: true});
+    NotesService.saveNote(testNote, testOwnerUUID);
+    $httpBackend.flush();
+    expect(notes.length)
+      .toBe(5);
+    expect(notes[4].mod.title)
+      .toBe(testNoteValues.title);
+    expect(MockUUIDService.isFakeUUID(notes[4].mod.uuid))
+      .toBeTruthy();
+
+    // 2. synchronize items with note in the response, even though the response in the original PUT
+    //    was invalid
+    var latestModified = now.getTime();
+    MockUserSessionService.setLatestModified(latestModified);
+    var testNoteUUID = 'd2724771-4469-488c-aabd-9db188672a00';
+    $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
+                            latestModified + '&deleted=true&archived=true&completed=true')
+        .respond(200,
+        {
+          notes: [
+          { uuid: testNoteUUID,
+            id: testNoteValues.id,
+            title: testNoteValues.title,
+            created: latestModified-1,
+            modified: latestModified-1}
+          ]
+        });
+    SynchronizeService.synchronize(testOwnerUUID);
+    $httpBackend.flush();
+
+    // Verify that everything is right with the created note
+    expect(notes.length)
+      .toBe(5);
+    expect(notes[4].mod)
+      .toBeUndefined();
+    expect(notes[4].uuid)
+      .toBe(testNoteUUID);
+  });
+
   it('should handle list offline create, update, delete, undelete', function () {
 
     // 1. save new item
@@ -1460,6 +1616,58 @@ describe('SynchronizeService', function() {
       .toBeUndefined();
     expect(testTask.relationships.parent)
       .toBe(lists[4].uuid);
+  });
+
+  it('should handle list offline create with no/empty response from server, and then sync', function () {
+
+    var lists = ListsService.getLists(testOwnerUUID);
+    expect(lists.length)
+      .toBe(4);
+
+    // 1. create list and respond with an empty response
+    var testListValues = {
+      id: MockUUIDService.getShortIdFromFakeUUID(MockUUIDService.mockFakeUUIDs[0]),
+      title: 'test list'
+    };
+    var testList = ListsService.getNewList(testListValues, testOwnerUUID);
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/list', testListValues)
+       .respond(200, {testing: true});
+    ListsService.saveList(testList, testOwnerUUID);
+    $httpBackend.flush();
+    expect(lists.length)
+      .toBe(5);
+    expect(lists[4].mod.title)
+      .toBe(testListValues.title);
+    expect(MockUUIDService.isFakeUUID(lists[4].mod.uuid))
+      .toBeTruthy();
+
+    // 2. synchronize items with list in the response, even though the response in the original PUT
+    //    was invalid
+    var latestModified = now.getTime();
+    MockUserSessionService.setLatestModified(latestModified);
+    var testNoteUUID = 'd2724771-4469-488c-aabd-9db188672a00';
+    $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
+                            latestModified + '&deleted=true&archived=true&completed=true')
+        .respond(200,
+        {
+          lists: [
+          { uuid: testNoteUUID,
+            id: testListValues.id,
+            title: testListValues.title,
+            created: latestModified-1,
+            modified: latestModified-1}
+          ]
+        });
+    SynchronizeService.synchronize(testOwnerUUID);
+    $httpBackend.flush();
+
+    // Verify that everything is right with the created list
+    expect(lists.length)
+      .toBe(5);
+    expect(lists[4].mod)
+      .toBeUndefined();
+    expect(lists[4].uuid)
+      .toBe(testNoteUUID);
   });
 
   it('should handle wait for offline update to finish before doing list archive', function () {
@@ -1699,8 +1907,6 @@ describe('SynchronizeService', function() {
 
   });
 
-
-
   it('should handle tag offline create with no/empty response from server, and then sync', function () {
 
     var tags = TagsService.getTags(testOwnerUUID);
@@ -1764,7 +1970,7 @@ describe('SynchronizeService', function() {
     SynchronizeService.synchronize(testOwnerUUID);
     $httpBackend.flush();
 
-    // Verify that everything is right with the created item
+    // Verify that everything is right with the created tag
     expect(tags.length)
       .toBe(4);
     expect(tags[3].mod)

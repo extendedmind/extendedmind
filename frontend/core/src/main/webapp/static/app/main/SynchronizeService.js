@@ -773,7 +773,7 @@
                             response: response,
                             description: 'No uuid from server'
                           }});
-          return;
+          if (response.testing === true) return 'testing';
         } else {
           processUUIDChange(request.params.fakeUUID, response.uuid,
                             response.created, response.modified,

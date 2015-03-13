@@ -127,7 +127,11 @@
             beforeLastCallback(headRequest, data, HttpRequestQueueService.getQueue());
             HttpRequestQueueService.saveQueue();
           } else if (defaultCallback) {
-            defaultCallback(headRequest, data, HttpRequestQueueService.getQueue());
+            if (defaultCallback(headRequest, data, HttpRequestQueueService.getQueue()) === 'testing'){
+              // This is needed to emulate in tests a situation where the response is never handled properly
+              HttpRequestQueueService.releaseLock();
+              return;
+            }
             HttpRequestQueueService.saveQueue();
           }
 
