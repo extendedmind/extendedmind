@@ -25,6 +25,7 @@
   var persistentStorageEnabled = enableOffline;
   var offlineEnabledBypass = false;
   var notifyOwnerCallbacks = {};
+  var UIPreferenceChangedCallbacks = {};
   var persistentDataLoaded = false;
 
   // Sync session storage with local storage.
@@ -89,6 +90,16 @@
       if (collectives){
         for (var uuid in collectives){
           notifyOwnerCallbacks[id](uuid, true);
+        }
+      }
+    }
+  }
+
+  function executeUIPreferenceChangedCallbacks(name) {
+    if (UIPreferenceChangedCallbacks[name]) {
+      for (var id in UIPreferenceChangedCallbacks[name]) {
+        if (UIPreferenceChangedCallbacks[name].hasOwnProperty(id)) {
+          UIPreferenceChangedCallbacks[name][id]();
         }
       }
     }
@@ -204,6 +215,7 @@
         delete preferences.ui[name];
       }
       this.setPreferences(preferences);
+      executeUIPreferenceChangedCallbacks(name);
     },
     setPreferences: function(preferences) {
       SessionStorageService.setPreferences(preferences);
@@ -386,6 +398,12 @@
           delete latestModified[oldUUID];
         }
       }
+    },
+    registerUIPreferenceChangedCallback: function(callback, preference, id) {
+      if (!UIPreferenceChangedCallbacks[preference])
+        UIPreferenceChangedCallbacks[preference] = {};
+
+      UIPreferenceChangedCallbacks[preference][id] = callback;
     },
     registerNofifyOwnerCallback: function(callback, id){
       notifyOwnerCallbacks[id] = callback;

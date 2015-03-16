@@ -428,7 +428,6 @@
           } else if (touchEndEvent.target.nodeName === 'SPAN' &&
                      touchEndEvent.target.parentElement.nodeName === 'A') {
             // Execute the action of the touchend target parent link.
-            // console.log('span click');
             angular.element(touchEndEvent.target.parentElement).click();
             touchEndEvent.preventDefault();
             touchEndEvent.stopPropagation();

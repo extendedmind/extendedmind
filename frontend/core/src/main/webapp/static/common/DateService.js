@@ -110,6 +110,16 @@
       return Math.abs((aDate - bDate)  / (1000*60*60*24));
     },
 
+    dateToUTCyyyymmdd: function(date) {
+      var yyyy, mm, dd;
+
+      yyyy = date.getUTCFullYear().toString();
+      mm = (date.getUTCMonth() + 1).toString(); // getMonth() is zero-based
+      dd = date.getUTCDate().toString();
+
+      return yyyy + '-' + (mm[1] ? mm : '0' + mm[0]) + '-' + (dd[1] ? dd : '0' + dd[0]); // padding
+    },
+
     // GETTERS
     getYesterdayDate: function() {
       var yesterday = new Date();
@@ -118,6 +128,17 @@
     },
     getTodayDateWithoutTime: function() {
       return new Date().setHours(0, 0, 0, 0);
+      /*
+      TODO
+      var todayWithoutTime = new Date();
+      todayWithoutTime.setHours(0, 0, 0, 0);
+      return todayWithoutTime;
+      */
+    },
+    getDateWithoutTime: function(date) {
+      var dateWithoutTime = date;
+      dateWithoutTime.setHours(0, 0, 0, 0);
+      return dateWithoutTime;
     },
     getTomorrowDate: function() {
       var tomorrow = new Date();
@@ -164,7 +185,11 @@
     },
 
     // setters
-    setReferenceDate: function(weekday, referenceDate) {
+    setFirstDateOfTheWeek: function(date) {
+      getFirstDateOfTheWeek(date);
+      return this;
+    },
+    setReferenceDateToNext: function(weekday, referenceDate) {
       // http://stackoverflow.com/a/1579109
       var offsetToWeekday = (weekdays.indexOf(weekday) + (7 - referenceDate.getDay())) % 7;
       // jump seven days if reference day is same day as weekday
@@ -174,6 +199,10 @@
     },
     setOffsetDate: function(offsetDays, date) {
       date.setDate(date.getDate() + offsetDays);
+      return this;
+    },
+    setUTCOffsetDate: function(offsetDays, date) {
+      date.setUTCDate(date.getUTCDate() + offsetDays);
       return this;
     },
     setDateToFirstDayOfFortNight: function(referenceDate) {

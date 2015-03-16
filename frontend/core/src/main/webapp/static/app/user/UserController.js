@@ -17,7 +17,8 @@
  function UserController($http, $location, $q, $rootScope, $scope, $templateCache, $window,
                          AnalyticsService, AuthenticationService, BackendClientService, ItemsService,
                          ListsService, NotesService, SwiperService, SynchronizeService, TagsService,
-                         TasksService, UISessionService, UserService, UserSessionService, version) {
+                         TasksService, UISessionService, UserService, UserSessionService,
+                         packaging, version) {
 
   $scope.extendedMindVersion = version;
 
@@ -115,6 +116,16 @@
       UserService.saveAccountPreferences();
     }
   };
+
+  if (packaging.endsWith('cordova')) {
+    if (!window.plugins || !window.plugins.calendar) {
+      document.addEventListener('deviceready', function() {
+        $scope.agendaCalendarSettingVisible = window.plugins && window.plugins.calendar;
+      });
+    } else {
+      $scope.agendaCalendarSettingVisible = true;
+    }
+  }
 
   // TODO: reset onboarding!
   $scope.showOnboardingCheckbox = function showOnboardingCheckbox() {
@@ -261,5 +272,5 @@
 UserController['$inject'] = ['$http', '$location', '$q', '$rootScope', '$scope', '$templateCache', '$window',
 'AnalyticsService', 'AuthenticationService', 'BackendClientService', 'ItemsService', 'ListsService',
 'NotesService', 'SwiperService', 'SynchronizeService', 'TagsService', 'TasksService', 'UISessionService',
-'UserService', 'UserSessionService', 'version'];
+'UserService', 'UserSessionService', 'packaging', 'version'];
 angular.module('em.user').controller('UserController', UserController);

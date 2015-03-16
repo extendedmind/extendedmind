@@ -16,10 +16,102 @@
 
  function UserEditorController($http, $rootScope, $scope, $timeout, AnalyticsService, AuthenticationService,
                                BackendClientService, SwiperService, SynchronizeService, UISessionService,
-                               UserSessionService) {
+                               UserService, UserSessionService) {
 
   if ($scope.mode === 'signUp'){
     $scope.user = {};
+  }
+
+  // AGENDA CALENDAR
+
+  function listCalendars() {
+    // TODO: get list from cache
+
+    if (window.plugins && window.plugins.calendar) {
+
+      var listCalendarsSuccess = function(calendars) {
+        $timeout(function() {
+          if (calendars && calendars.length) {
+            var i;
+            var calendarStates = UserSessionService.getUIPreference('calendars');
+            var calendarStatesChanged;
+            $scope.calendars = calendars;
+
+            if (calendarStates) {
+              // Previous states exists.
+              for (i = 0; i < calendars.length; i++) {
+                var savedCalendar = calendarStates.findFirstObjectByKeyValue('id', calendars[i].id);
+                if (savedCalendar) {
+                  $scope.calendars[i].enabled = savedCalendar.enabled;
+                } else {
+                  calendarStates.push({
+                    id: calendars[i].id,
+                    name: calendars[i].name
+                  });
+                  calendarStatesChanged = true;
+                }
+              }
+            } else {
+              // New states.
+              calendarStates = [];
+              for (i = 0; i < calendars.length; i++) {
+                calendarStates.push({
+                  id: calendars[i].id,
+                  name: calendars[i].name
+                });
+              }
+              calendarStatesChanged = true;
+            }
+
+            if (calendarStatesChanged) updateCalendars(calendarStates);
+          }
+          $scope.calendarsLoaded = true;
+        }, 0);
+      };
+      var listCalendarsError = function(/*message*/) {
+        // TODO
+      };
+
+      window.plugins.calendar.listCalendars(listCalendarsSuccess, listCalendarsError);
+    }
+  }
+
+  $scope.toggleAgendaCalendar = function() {
+    $scope.agendaCalendarEnabled = !$scope.agendaCalendarEnabled;
+    UserSessionService.setUIPreference('showAgendaCalendar', $scope.agendaCalendarEnabled);
+    UserService.saveAccountPreferences();
+    if ($scope.agendaCalendarEnabled) listCalendars();
+  };
+
+  function updateCalendars(calendars){
+    UserSessionService.setUIPreference('calendars', calendars);
+    UserService.saveAccountPreferences();
+  }
+
+  $scope.toggleCalendarEnabled = function(id, name, enabled) {
+    var calendarStates = UserSessionService.getUIPreference('calendars');
+    if (!calendarStates) calendarStates = [];
+      var calendarFound;
+      for (var i = 0; i < calendarStates.length; i++) {
+        if (calendarStates[i].id === id) {
+          calendarFound = true;
+          calendarStates[i].enabled = enabled;
+        }
+      }
+    if (!calendarFound) {
+      calendarStates.push({
+        id: id,
+        name: name,
+        enabled: enabled
+      });
+    }
+
+    updateCalendars(calendarStates);
+  };
+
+  if ($scope.mode === 'agendaCalendar') {
+    $scope.agendaCalendarEnabled = UserSessionService.getUIPreference('showAgendaCalendar');
+    if ($scope.agendaCalendarEnabled) listCalendars();
   }
 
   $scope.changePassword = function (oldPassword, newPassword) {
@@ -149,5 +241,5 @@
 
 UserEditorController['$inject'] = ['$http', '$rootScope', '$scope', '$timeout', 'AnalyticsService',
 'AuthenticationService', 'BackendClientService', 'SwiperService', 'SynchronizeService', 'UISessionService',
-'UserSessionService'];
+'UserService', 'UserSessionService'];
 angular.module('em.user').controller('UserEditorController', UserEditorController);

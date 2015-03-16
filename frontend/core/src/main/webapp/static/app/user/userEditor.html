@@ -10,7 +10,43 @@
      </div>
   </header>
 
-  <form name="userForm" ng-if="mode !== 'signUp'" class="container-fluid--inner">
+  <div ng-if="mode === 'agendaCalendar'" ng-style="{'padding-bottom': EDITOR_FOOTER_HEIGHT}"
+    class="container-fluid--inner">
+
+    <div class="container-content" drawer-override-aisle="right">
+      <h2 class="group-heading row">agenda calendars</h2>
+
+      <div class="row" ng-if="!agendaCalendarEnabled">
+        <span class="text-details">press enable to see your calendars here</span>
+      </div>
+
+      <div ng-if="agendaCalendarEnabled && calendars">
+        <div class="group-mixed with-checkbox" ng-repeat="calendar in calendars">
+          <div class="group-mixed--left">
+            <input type="checkbox" ng-model="calendar.enabled" icon-checkbox="calendar.id"
+              ng-click="toggleCalendarEnabled(calendar.id, calendar.name, calendar.enabled)">
+          </div>
+          <div href class="group-mixed--middle">
+            <span class="text-link" clamp=2 ng-bind="calendar.name"></span>
+          </div>
+        </div>
+      </div>
+
+      <div ng-if="agendaCalendarEnabled && calendarsLoaded && (!calendars || !calendars.length)" class="row">
+        <span class="text-details">have you allowed access to your calendar?</span>
+      </div>
+
+    </div>
+
+    <footer class="container-content--after group-btn editor-footer">
+      <button type="submit" class="btn-action" ng-click="toggleAgendaCalendar()">
+        <span class="text-btn" ng-bind="agendaCalendarEnabled ? 'disable' : 'enable'"></span>
+      </button>
+    </footer>
+  </div>
+
+  <form name="userForm" ng-if="mode === 'password' || mode === 'terms' || mode === 'privacy'"
+    class="container-fluid--inner">
     <div ng-if="mode === 'password'" class="container-content" drawer-override-aisle="right">
       <h2 class="group-heading row-form">change password</h2>
       <div class="row-form">

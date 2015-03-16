@@ -725,3 +725,48 @@ TODO: Example needed
     visibility: hidden;
   }
 }
+
+// 1. Justify, like heading.
+//    FIXME: .group-mixed:first-child
+// 2. Decrease space between agenda events.
+//    FIXME: .group-mixed.small-spacing
+// 3. Make room for text inside .group-mixed--left.
+//    NOTE: 'starts' is the longest word in content which needs to fit inside.
+//          Adjust if changed.
+// 4. Match with .text-agenda--title.
+//    NOTE: Here for specificity reasons.
+// 5. Vertical align.
+//    FIXME: .some_general_class_with_text, move to layouts.less
+.agenda {
+  display: block;
+  padding-top: 12px;  // [1]
+  .group-mixed.with-checkbox {
+    margin-bottom: -11px; // [2]
+    .group-mixed--left {
+      min-width: 78px;  // [3]
+      width: 78px;      // [3]
+      & > .text-agenda--time {
+        line-height: @size-font-content;  // [4]
+        padding-top: @padding-vertically-centered;    // [5]
+        padding-bottom: @padding-vertically-centered; // [5]
+        padding-left: @grid-horizontal;
+      }
+    }
+  }
+}
+
+// 1. Make room for text inside .group-mixed--left
+//    NOTE: 'starts' is the longest word in content which needs to fit inside.
+//          Adjust if changed.
+.android .agenda .group-mixed.with-checkbox .group-mixed--left {
+  min-width: 81px;  // [1]
+  width: 81px;      // [1]
+}
+
+// 1. Nudge .text-agenda--details to align it horizontally with the second row of .text-agenda--time.
+.android,
+.ios {
+  .agenda .text-agenda--details {
+    margin-top: 1px; // [1]
+  }
+}

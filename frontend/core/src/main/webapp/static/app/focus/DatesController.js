@@ -14,7 +14,8 @@
  */
  'use strict';
 
- function DatesController($filter, $rootScope, $scope, DateService, SwiperService, UISessionService) {
+ function DatesController($filter, $rootScope, $scope, $timeout,
+                          DateService, SwiperService, UISessionService, UserSessionService, packaging) {
   var slidePath = 'focus/tasks';
 
   // DAY SLIDES CONSTRUCTOR
@@ -56,6 +57,11 @@
       window.requestAnimationFrame(function() {
         $scope.changeDaySlide(DateService.getTodayYYYYMMDD(), 0);
       });
+
+      if (UserSessionService.getUIPreference('showAgendaCalendar')) {
+        var savedCalendars = UserSessionService.getUIPreference('calendars');
+        if (savedCalendars) listCalendars(savedCalendars);
+      }
     }
     else {
       // Swipe to today slide immediately.
@@ -92,6 +98,11 @@
         // NOTE: See focusActive above if this is not working.
         $scope.changeDaySlide(DateService.getTodayYYYYMMDD(), 0);
       }
+    }
+
+    if ($scope.getActiveFeature() === 'focus' && UserSessionService.getUIPreference('showAgendaCalendar')) {
+      var savedCalendars = UserSessionService.getUIPreference('calendars');
+      if (savedCalendars) listCalendars(savedCalendars);
     }
   }
 
@@ -360,6 +371,10 @@
     datepickerWeeksInfosCleared = false;
     previousActiveIndex = undefined;
     preventDaySlideChange = false;
+    if (UserSessionService.getUIPreference('showAgendaCalendar')) {
+      var savedCalendars = UserSessionService.getUIPreference('calendars');
+      if (savedCalendars) listCalendars(savedCalendars);
+    }
   }
 
   function clearDatepickerSlidesInfos() {
@@ -472,6 +487,10 @@
   function gotoToday() {
     $scope.changeDaySlide(DateService.getTodayYYYYMMDD());
     $scope.closeDatepicker();
+    if (UserSessionService.getUIPreference('showAgendaCalendar')) {
+      var savedCalendars = UserSessionService.getUIPreference('calendars');
+      if (savedCalendars) listCalendars(savedCalendars);
+    }
   }
   function gotoNoDate() {
     $scope.changeDaySlide(null);
@@ -549,12 +568,301 @@
     SwiperService.swipeNext('datepicker');
   };
 
+  if (UserSessionService.getUIPreference('showAgendaCalendar')) {
+    var savedCalendars = UserSessionService.getUIPreference('calendars');
+    if (savedCalendars) {
+      if (!window.plugins || !window.plugins.calendar) {
+        document.addEventListener('deviceready', function() {
+          if (window.plugins && window.plugins.calendar) {
+            listCalendars(savedCalendars);
+          }
+        });
+      } else {
+        listCalendars(savedCalendars);
+      }
+    }
+  }
+
+  $scope.isAgendaVisible = function() {
+    return $scope.agendaVisible || UserSessionService.getUIPreference('showAgendaCalendar');
+  };
+
+  UserSessionService.registerUIPreferenceChangedCallback(agendaVisibilityChanged, 'showAgendaCalendar',
+                                                         'DatesController');
+  UserSessionService.registerUIPreferenceChangedCallback(agendaCalendarsChangedCallback, 'calendars',
+                                                         'DatesController');
+
+  var agendaVisibilityChangedCallbacks = {};
+  $scope.registerAgendaVisibilityChangedCallback = function(callback, id) {
+    agendaVisibilityChangedCallbacks[id] = callback;
+  };
+
+  function executeAgendaVisibilityChangedCallbacks() {
+    if (agendaVisibilityChangedCallbacks) {
+      for (var id in agendaVisibilityChangedCallbacks) {
+        if (agendaVisibilityChangedCallbacks.hasOwnProperty(id)) {
+          agendaVisibilityChangedCallbacks[id]();
+        }
+      }
+    }
+  }
+
+  function agendaVisibilityChanged() {
+    if (UserSessionService.getUIPreference('showAgendaCalendar')) {
+      var savedCalendars = UserSessionService.getUIPreference('calendars');
+      if (savedCalendars) listCalendars(savedCalendars);
+      $scope.agendaVisible = true;
+    } else {
+      // Agenda disabled.
+      $scope.showAgenda = false;        // Remove agenda from DOM.
+      cachedEventInstances = undefined; // Clear cache.
+      $scope.agendaVisible = false;
+    }
+    executeAgendaVisibilityChangedCallbacks();
+  }
+
+  function agendaCalendarsChangedCallback() {
+    var savedCalendars = UserSessionService.getUIPreference('calendars');
+    if (savedCalendars) listCalendars(savedCalendars);
+  }
+
+  function listCalendars(savedCalendars) {
+    if (window.plugins && window.plugins.calendar) {
+      window.plugins.calendar.listCalendars(function(calendarsList) {
+        processEnabledCalendars(calendarsList, savedCalendars);
+      }, listCalendarsError);
+    }
+  }
+
+  function processEnabledCalendars(calendarsList, savedCalendars) {
+    if (calendarsList && calendarsList.length) {
+      var calendarIds = [], savedCalendar;
+      for (var i = 0; i < calendarsList.length; i++) {
+
+        savedCalendar = savedCalendars.findFirstObjectByKeyValue('id', calendarsList[i].id);
+        if (savedCalendar && savedCalendar.enabled) {
+          calendarIds.push(savedCalendar.id);
+        }
+      }
+
+      if (calendarIds.length === 0) {
+        // No enabled calendars in app.
+        cachedEventInstances = undefined;
+        $scope.showAgenda = true;
+      } else {
+        // Process enabled calendars.
+        var startDate, endDate;
+
+        var activeDaySlideIndex = SwiperService.getActiveSlideIndex('focus/tasks');
+        if (activeDaySlideIndex !== undefined) {
+          var activeDaySlide = $scope.daySlides[activeDaySlideIndex];
+          if (activeDaySlide) {
+            var referenceDate = activeDaySlide.referenceDate;
+            if (referenceDate === null) {
+              // 'no date'. Get active date from the next index.
+              var nextDaySlideIndex = (activeDaySlideIndex + 1 + $scope.daySlides.length
+                                       ) % $scope.daySlides.length;
+
+              referenceDate = $scope.daySlides[nextDaySlideIndex].referenceDate;
+            }
+            startDate = referenceDate.yyyymmddToNoonDate();
+            endDate = referenceDate.yyyymmddToNoonDate();
+          }
+        }
+
+        if (!startDate && !endDate) {
+          startDate = new Date();
+          endDate = new Date();
+        }
+
+        startDate.setHours(0, 0, 0, 0);
+        endDate.setHours(0, 0, 0, 0);
+
+        DateService.setFirstDateOfTheWeek(startDate).setOffsetDate(-7, startDate);
+        DateService.setDateToFirstDayOfFortNight(endDate);
+
+        window.plugins.calendar.listEventInstances(calendarIds, startDate, endDate,
+                                                   function(eventInstances) {
+                                                    listEventInstancesSuccess(eventInstances, savedCalendars);
+                                                  }, listEventInstancesError);
+      }
+    } else {
+      // No enabled calendars in device's calendar app.
+      cachedEventInstances = undefined;
+      $scope.showAgenda = true;
+    }
+  }
+
+  function listCalendarsError(/*error*/) {
+  }
+
+  var cachedEventInstances;
+  function listEventInstancesSuccess(eventInstances, savedCalendars) {
+    cachedEventInstances = {
+      all: []
+    };
+
+    if (eventInstances && eventInstances.length) {
+      var attachGetCalendarNameByIdFn = function(eventInstance, savedCalendars) {
+        eventInstance.getCalendarName = function() {
+          var calendar = savedCalendars.findFirstObjectByKeyValue('id', eventInstance.calendar_id);
+          if (calendar) return calendar.name;
+        };
+      };
+
+      for (var i = 0; i < eventInstances.length; i++) {
+        attachGetCalendarNameByIdFn(eventInstances[i], savedCalendars);
+        cachedEventInstances['all'].push(eventInstances[i]);
+      }
+    }
+    // Show agenda and update UI.
+    $scope.showAgenda = true;
+    if (!$scope.$$phase && !$rootScope.$$phase) $scope.$digest();
+  }
+
+  function listEventInstancesError(/*error*/) {
+  }
+
+  $scope.getEventInstances = function(yyyymmdd) {
+    if (!cachedEventInstances || !cachedEventInstances['all'] || yyyymmdd === undefined)
+    {
+      // Agenda events not loaded, in the middle of fast slide changing.
+      return;
+    }
+    if (!cachedEventInstances[yyyymmdd]) {
+      cachedEventInstances[yyyymmdd] = [];
+      var noonDate = yyyymmdd.yyyymmddToNoonDate();
+      var startTimeStamp = new Date(noonDate).setHours(0, 0, 0, 0);
+      var endTimeStamp = new Date(noonDate);
+      endTimeStamp.setDate(endTimeStamp.getDate() + 1);
+      endTimeStamp.setHours(0, 0, 0, 0);
+      endTimeStamp = endTimeStamp.getTime();
+
+      generateAgendaEvents(cachedEventInstances['all'], cachedEventInstances[yyyymmdd], yyyymmdd,
+                           startTimeStamp, endTimeStamp);
+    }
+    return cachedEventInstances[yyyymmdd];
+  };
+
+  $scope.openCalendar = function(yyyymmdd) {
+    if (window.plugins && window.plugins.calendar)
+      window.plugins.calendar.openCalendar(yyyymmdd.yyyymmddToNoonDate(), null, null);
+  };
+
+  function generateAgendaEvents(eventInstances, yyyymmddEventInstances, yyyymmdd, startTimeStamp,
+                                endTimeStamp) {
+    var isAllDayEventInRangeFn;
+
+    if (packaging === 'android-cordova') {
+      isAllDayEventInRangeFn = function(yyyymmdd, startTimeStamp, endTimeStamp, eventInstance) {
+        // All-day calendar events are in UTC time
+
+        var eventInstaceStartYYYYMMDD = DateService.dateToUTCyyyymmdd(new Date(eventInstance.begin));
+
+        var eventInstanceEndDate = new Date(eventInstance.end);
+        // All-day calendar events suffer from timezone issue turning 1-day events into 2-day events
+        // https://code.google.com/p/android/issues/detail?id=14051
+        DateService.setUTCOffsetDate(-1, eventInstanceEndDate);
+        var eventInstaceEndYYYYMMDD = DateService.dateToUTCyyyymmdd(eventInstanceEndDate);
+
+        return eventInstaceStartYYYYMMDD <= yyyymmdd && eventInstaceEndYYYYMMDD >= yyyymmdd;
+      };
+    } else if (packaging === 'ios-cordova') {
+      isAllDayEventInRangeFn = function(yyyymmdd, startTimeStamp, endTimeStamp, eventInstance) {
+        return eventInstance.begin < endTimeStamp && eventInstance.end > startTimeStamp;
+      };
+    }
+
+    for (var i = 0; i < eventInstances.length; i++) {
+      generateAgendaEvent(yyyymmddEventInstances, yyyymmdd, startTimeStamp, endTimeStamp, eventInstances[i],
+                          isAllDayEventInRangeFn);
+    }
+  }
+
+  /*
+  * title or '(no title)'
+  * start time, end time or all day
+  * location
+  * calendar name
+  */
+  function generateAgendaEvent(yyyymmddEventInstances, yyyymmdd, startTimeStamp, endTimeStamp, eventInstance,
+                               isAllDayEventInRangeFn) {
+
+    var agendaEvent;
+
+    if (eventInstance.allDay) {
+      if (isAllDayEventInRangeFn(yyyymmdd, startTimeStamp, endTimeStamp, eventInstance)) {
+        agendaEvent = {
+          allDay: true
+        };
+      }
+    }
+
+    else if (eventInstance.begin < startTimeStamp && eventInstance.end >= endTimeStamp) {
+      // Start of the event is before start time.
+      // End of the event equals or is after end time.
+      agendaEvent = {
+        allDay: true
+      };
+    }
+
+    else if (eventInstance.begin > startTimeStamp && eventInstance.begin < endTimeStamp &&
+             eventInstance.end > endTimeStamp)
+    {
+      // Start of the event is between start time and end time.
+      // End of the event is after the end time.
+      agendaEvent = {
+        begin: $filter('date')(eventInstance.begin, 'HH:mm'),
+        end: 'starts'
+        // 9:00
+        // starts
+      };
+    }
+
+    else if (eventInstance.begin < startTimeStamp && eventInstance.end > startTimeStamp &&
+             eventInstance.end < endTimeStamp)
+    {
+      // Start of the event is before the start time.
+      // End of the event is between start time and end time.
+      agendaEvent = {
+        begin: 'ends',
+        end: $filter('date')(eventInstance.end, 'HH:mm')
+        // ends
+        // 9:00
+      };
+    }
+
+    else if (eventInstance.begin < endTimeStamp && eventInstance.end > startTimeStamp) {
+      // Event is between start and end time.
+      agendaEvent = {
+        begin: $filter('date')(eventInstance.begin, 'HH:mm'),
+        end: $filter('date')(eventInstance.end, 'HH:mm')
+        // 9:00
+        // 12:45
+      };
+    }
+
+    if (agendaEvent) {
+      agendaEvent.title = eventInstance.title || '(no title)';
+      agendaEvent.calendarName = eventInstance.getCalendarName();
+      if (eventInstance.eventLocation) {
+        agendaEvent.eventLocation = eventInstance.eventLocation;
+      }
+      if (eventInstance.rrule) {
+        agendaEvent.rrule = true;
+      }
+      agendaEvent.event_id = eventInstance.event_id;
+
+      yyyymmddEventInstances.push(agendaEvent);
+    }
+  }
+
   $scope.$on('$destroy', function() {
     if (angular.isFunction($scope.unregisterSynchronizeCallback))
       $scope.unregisterSynchronizeCallback('DatesController');
   });
 }
 
-DatesController['$inject'] = ['$filter', '$rootScope', '$scope',
-'DateService', 'SwiperService', 'UISessionService'];
+DatesController['$inject'] = ['$filter', '$rootScope', '$scope', '$timeout',
+'DateService', 'SwiperService', 'UISessionService', 'UserSessionService', 'packaging'];
 angular.module('em.focus').controller('DatesController', DatesController);

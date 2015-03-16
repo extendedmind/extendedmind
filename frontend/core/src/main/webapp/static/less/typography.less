@@ -445,3 +445,22 @@ Search results (omnibar, deleted)
   content: attr(data-prefix); // [1]
   color: @color-text-downplayed;
 }
+
+// 1. Match font-size with .text-agenda--title.
+// 2. Match line-height with .text-agenda--title.
+//    NOTE: In widgets.less for specificity reasons.
+.text-agenda--time {
+  color: @color-text-downplayed;
+  font-size: @size-font-medium; // [1]
+  // line-height: @size-font-content; // [2]
+  &.emphasize:first-line {
+    color: black;
+  }
+}
+
+// 1. Match font-size with .text-agenda--time.
+// 2. Match line-height with .text-agenda--time.
+.text-agenda--title {
+  line-height: @size-font-content;  // [1]
+  font-size: @size-font-medium;     // [2]
+}

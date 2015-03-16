@@ -159,6 +159,16 @@
         });
       }
 
+      var listOptions;
+      if (attrs.listOptions) {
+        listOptions = $parse(attrs.listOptions)(scope);
+      }
+      initList(listOptions);
+
+      function isListBounded() {
+        return listOptions && typeof listOptions.isBounded === 'function' && listOptions.isBounded();
+      }
+
       function listActive(){
         controllers[0].registerActivateAddListItemCallback(activateListAdd, element);
 
@@ -173,19 +183,21 @@
           }, 'listDirective');
         }
 
-        var elementHeight = element[0].offsetHeight;
-        var elementScrollHeight = element[0].scrollHeight;
-        var elementScrollPosition, remainingToBottom;
+        if (!isListBounded()) {
+          var elementHeight = element[0].offsetHeight;
+          var elementScrollHeight = element[0].scrollHeight;
+          var elementScrollPosition, remainingToBottom;
 
-        if (elementHeight !== elementScrollHeight) {
-          // Item has scrollable content
-          elementScrollPosition = element[0].scrollTop;
-          remainingToBottom = elementScrollHeight - elementScrollPosition - elementHeight;
+          if (elementHeight !== elementScrollHeight) {
+            // Item has scrollable content
+            elementScrollPosition = element[0].scrollTop;
+            remainingToBottom = elementScrollHeight - elementScrollPosition - elementHeight;
 
-          if (remainingToBottom === 0) {
-            // At the bottom, load more.
-            preventListModify = false;  // Clear state variable when returning to bottom of the list.
-            addMoreItemsToBottom();
+            if (remainingToBottom === 0) {
+              // At the bottom, load more.
+              preventListModify = false;  // Clear state variable when returning to bottom of the list.
+              addMoreItemsToBottom();
+            }
           }
         }
         // Did we return into list that has been scrolled near the bottom.
@@ -209,7 +221,6 @@
         if (controllers[1].isSlideActiveByDefault()){
           listActive();
         }
-        controllers[1].registerSlideMovementCallback(listMoved, 'listDirective');
       }else {
         // List is active as it doesn't have a swiper to begin with
         listActive();
@@ -228,13 +239,79 @@
 
       // INFINITE SCROLL
 
-      element[0].addEventListener('scroll', listScroll, false);
-
       // Coefficient of container height, which specifies when add more is called.
-      var removeCoefficientToEdge = 3;
+      var removeCoefficientToEdge;
       var nearingCoefficientToEdge = .5;
       var lastScrollPosition = 0;
       var bottomVerificationTimer;
+
+      function initList(options) {
+        var bounded;
+
+        if (options) {
+          if (options.registerModeChanged && typeof options.registerModeChanged === 'function') {
+            options.registerModeChanged(modeChanged, options.id);
+          }
+          if (options.isBounded && typeof options.isBounded === 'function') {
+            bounded = options.isBounded();
+          }
+        }
+
+        if (bounded) {
+          // TODO:  Max number and increase amount should be calculated based on the height of the
+          //        container and the height of individual elements in the list.
+          scope.maximumNumberOfItems = 5;
+        } else {
+          element[0].addEventListener('scroll', listScroll, false);
+          removeCoefficientToEdge = 3;
+
+          // TODO:  Max number and increase amount should be calculated based on the height of the
+          //        container and the height of individual elements in the list.
+          scope.maximumNumberOfItems = 25;
+          scope.itemIncreaseAmount = 25;
+
+          if (controllers[1]) {
+            controllers[1].registerSlideMovementCallback(listMoved, 'listDirective');
+          }
+        }
+        setLimits(0);
+      }
+
+      function reInitList(options) {
+        var bounded;
+        if (options && options.isBounded && typeof options.isBounded === 'function')
+          bounded = options.isBounded();
+
+        if (bounded) {
+
+          // TODO:  Max number and increase amount should be calculated based on the height of the
+          //        container and the height of individual elements in the list.
+          scope.maximumNumberOfItems = 5;
+
+          element[0].removeEventListener('scroll', listScroll, false);
+        } else {
+          element[0].addEventListener('scroll', listScroll, false);
+          removeCoefficientToEdge = 3;
+
+          // TODO:  Max number and increase amount should be calculated based on the height of the
+          //        container and the height of individual elements in the list.
+          scope.maximumNumberOfItems = 25;
+          scope.itemIncreaseAmount = 25;
+
+          if (controllers[1]) {
+            controllers[1].registerSlideMovementCallback(listMoved, 'listDirective');
+          }
+        }
+        setLimits(0);
+      }
+
+      function modeChanged() {
+        reInitList(listOptions);
+      }
+
+      scope.addMoreItems = function() {
+        setLimits(scope.getFilteredFullArrayLength());
+      };
 
       function startBottomVerificationTimer() {
         bottomVerificationTimer = setTimeout(function() {
@@ -293,8 +370,6 @@
         var remainingToBottom = elementScrollHeight - elementScrollPosition - elementHeight;
 
         var scrollingDown = lastScrollPosition < elementScrollPosition; // evaluate direction
-
-        // FIXME: not needed
         lastScrollPosition = elementScrollPosition; // Store last scroll position for reference.
 
         if (remainingToBottom >= 0 && remainingToBottom <= elementHeight * nearingCoefficientToEdge) {
@@ -382,11 +457,6 @@
         }
       }
 
-      // TODO:  Max number and increase amount should be calculated based on the height of the
-      //        container and the height of individual elements in the list.
-      scope.maximumNumberOfItems = 25;
-      scope.itemIncreaseAmount = 25;
-      setLimits(0);
       function setLimits(startIndex){
         scope.currentListStartIndex = startIndex;
         scope.currentListLimitTo = scope.maximumNumberOfItems + scope.currentListStartIndex;

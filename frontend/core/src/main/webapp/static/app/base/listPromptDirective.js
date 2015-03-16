@@ -14,27 +14,27 @@
  */
  'use strict';
 
-/*
-* TODO: Loading prompt is not shown when it is initially hidden and then items are added passing the limit:
-*        -list has to become inactive and active again
-*/
-function listPromptDirective($animate, $rootScope, UISessionService, UserSessionService) {
+ function listPromptDirective($animate, $compile, $rootScope, UISessionService, UserSessionService) {
   return {
     restrict: 'A',
     require: '^list',
     scope: {
       promptType: '@listPrompt',
       listInfos: '=listPromptInfos',
-      noItemsVisible: '=listPromptHide'
+      noItemsVisible: '=listPromptHide',
+      hideLoadingPrompt: '=?listPromptHideLoad',
+      loadMore: '=listPromptLoadMore',
+      loadMoreFn: '&?listPromptLoadMoreFn'
     },
     templateUrl: $rootScope.urlBase + 'app/base/listPrompt.html',
     link: function(scope, element, attrs, listController) {
       var loadingAnimationElementVisible;
-      var loadingAnimationElement;
       var animateNoItemsPromptWhenEmpty = false;
+      var loadingAnimationElement;
 
       function init() {
-        loadingAnimationElementVisible = listController.registerIsNearListBottomCallback(isNearListBottom);
+        loadingAnimationElementVisible =
+        listController.registerIsNearListBottomCallback(isNearListBottom);
 
         loadingAnimationElement = element[0].firstElementChild.lastElementChild;
         if (loadingAnimationElement && loadingAnimationElementVisible) {
@@ -45,20 +45,26 @@ function listPromptDirective($animate, $rootScope, UISessionService, UserSession
 
       if (!scope.listInfos.array) {
         // Wait for array.
-        var listInfosWatcher = scope.$watch('listInfos', function(newListInfos) {
-          if (newListInfos && newListInfos.array) {
+        var listInfosArrayWatcher = scope.$watch('listInfos.array', function(newArray) {
+          if (newArray) {
             // Array arrived, initialize.
-            // NOTE:  Returns zero length when changing feature even though array has items, because filter
-            //        has not yet rendered items into DOM.
+            // NOTE:  Returns zero length when changing feature even though array has items,
+            //        because filter has not yet rendered items into DOM.
             //
-            //        Register array visible callback into listController to get the correct info, but that
-            //        callback is only executed when list has an array with items, so we need to keep
-            //        listInfos watcher for lists with an actual zero-length array.
+            //        Register array visible callback into listController to get the correct info,
+            //        but that callback is only executed when list has an array with items,
+            //        so we need to keep listInfos watcher for lists with an actual zero-length array.
             //
             //        Initially empty lists executes init() here and also in array visible callback
             init();
           }
-          listInfosWatcher(); // Unbind list infos watcher.
+          listInfosArrayWatcher(); // Unbind list infos watcher.
+        });
+        listController.registerArrayVisibleCallback(arrayVisible, 'listPromptDirective');
+      } else if (!scope.listInfos.array.length) {
+        var listInfosArrayLengthWatcher = scope.$watch('listInfos.array.length', function(/*newLength*/) {
+          init();
+          listInfosArrayLengthWatcher();
         });
         listController.registerArrayVisibleCallback(arrayVisible, 'listPromptDirective');
       } else {
@@ -75,15 +81,20 @@ function listPromptDirective($animate, $rootScope, UISessionService, UserSession
       }
 
       function listHasItems() {
+        var hasItems;
         if (scope.listInfos && scope.listInfos.array && scope.listInfos.array.length) {
           // List has items. Animate prompt when it becomes visible.
           animateNoItemsPromptWhenEmpty = true;
-          return true;
+          hasItems = true;
         }
-        if (loadingAnimationElement && loadingAnimationElementVisible) {
+        if ((!hasItems || scope.hideLoadingPrompt) &&
+            loadingAnimationElement && loadingAnimationElementVisible)
+        {
+          // List does not have items or loading prompt hider is on.
           loadingAnimationElement.style.display = 'none';
           loadingAnimationElementVisible = false;
         }
+        return hasItems;
       }
 
       scope.isNoItemsPromptVisible = function() {
@@ -110,7 +121,8 @@ function listPromptDirective($animate, $rootScope, UISessionService, UserSession
           });
         }
 
-        return UserSessionService.isPersistentStorageEnabled() ? UserSessionService.isPersistentDataLoaded() :
+        return UserSessionService.isPersistentStorageEnabled() ?
+        UserSessionService.isPersistentDataLoaded() :
         true;
       };
 
@@ -127,9 +139,9 @@ function listPromptDirective($animate, $rootScope, UISessionService, UserSession
           }
         }
       }
-
     }
   };
 }
-listPromptDirective['$inject'] = ['$animate', '$rootScope', 'UISessionService', 'UserSessionService'];
+listPromptDirective['$inject'] = ['$animate', '$compile', '$rootScope',
+'UISessionService', 'UserSessionService'];
 angular.module('em.base').directive('listPrompt', listPromptDirective);
