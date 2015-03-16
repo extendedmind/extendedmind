@@ -15,6 +15,7 @@
 
 // FORKS:
 //  1.  Include duplicate slides in loop mode and do not create them to preserve AngularJS data-binding.
+//  2.  Synchronize scroll position for duplicate slides.
 var Swiper = function (selector, params) {
     'use strict';
 
@@ -2418,11 +2419,25 @@ var Swiper = function (selector, params) {
         //Fix For Negative Oversliding
         if (_this.activeIndex < _this.loopedSlides) {
             newIndex = _this.slides.length - _this.loopedSlides * 3 + _this.activeIndex;
+            // FORK [2]
+            var activeSlideScrollTop = _this.getSlide(_this.activeIndex).firstElementChild.scrollTop;
+            if (activeSlideScrollTop) {
+                var newActiveSlideFirstElementChild = _this.getSlide(newIndex - _this.loopedSlides).firstElementChild;
+                newActiveSlideFirstElementChild.scrollTop = activeSlideScrollTop;
+            }
+            // FORK [2]
             _this.swipeTo(newIndex, 0, false);
         }
         //Fix For Positive Oversliding
         else if ((params.slidesPerView === 'auto' && _this.activeIndex >= _this.loopedSlides * 2) || (_this.activeIndex > _this.slides.length - params.slidesPerView * 2)) {
             newIndex = -_this.slides.length + _this.activeIndex + _this.loopedSlides;
+            // FORK [2]
+            var activeSlideScrollTop = _this.getSlide(_this.activeIndex).firstElementChild.scrollTop;
+            if (activeSlideScrollTop) {
+                var newActiveSlideFirstElementChild = _this.getSlide(newIndex + _this.loopedSlides).firstElementChild;
+                newActiveSlideFirstElementChild.scrollTop = activeSlideScrollTop;
+            }
+            // FORK [2]
             _this.swipeTo(newIndex, 0, false);
         }
     };

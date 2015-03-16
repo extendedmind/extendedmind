@@ -169,7 +169,7 @@
         return listOptions && typeof listOptions.isBounded === 'function' && listOptions.isBounded();
       }
 
-      function listActive(){
+      function listActive(previousActiveIndex, previousDuplicateIndex){
         controllers[0].registerActivateAddListItemCallback(activateListAdd, element);
 
         if (scope.arrayVisible) {
@@ -202,6 +202,22 @@
         }
         // Did we return into list that has been scrolled near the bottom.
         setIsNearListBottom();
+
+        if (previousActiveIndex !== undefined &&
+            listOptions && listOptions.scrollInactiveTop && controllers[1])
+        {
+          // Scroll inactive slide (and duplicate inactive) slide to top.
+          var previousActiveElements = controllers[1].getChildElementsFromIndexes(previousActiveIndex,
+                                                                                  previousDuplicateIndex);
+          if (previousActiveElements) {
+            if (previousActiveElements[0]) {
+              previousActiveElements[0].scrollTop = 0;
+            }
+            if (previousActiveElements[1]) {
+              previousActiveElements[1].scrollTop = 0;
+            }
+          }
+        }
       }
 
       /*

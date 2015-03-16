@@ -38,7 +38,7 @@ function SwiperService($q, $timeout) {
 
     // Slide path's root equals the swiper path it is associated to.
     var slidePathStart = slidePath;
-    var slidePathStartEndIndex = slidePathStart.indexOf('/');
+    var slidePathStartEndIndex = slidePathStart.lastIndexOf('/');
 
     if (slidePathStartEndIndex !== -1) {
       // Slide path has sub path(s). Get root path.
@@ -168,8 +168,21 @@ function SwiperService($q, $timeout) {
     }
     // Execute slide active callbacks
     if (slideActiveCallbacks && slideActiveCallbacks[path]) {
+      var swiper = swipers[swiperPath].swiper;
+      var previousIndex = swiper.previousIndex;
+      var previousDuplicateIndex;
+
+      if (swiper && swiper.params.loop) {
+        if (previousIndex === 1) {
+          previousDuplicateIndex = swiper.slides.length - 1;
+        }
+        else if (previousIndex === swiper.slides.length - 2) {
+          previousDuplicateIndex = 0;
+        }
+      }
+
       for (var j = 0; j < slideActiveCallbacks[path].length; j++) {
-        slideActiveCallbacks[path][j].callback();
+        slideActiveCallbacks[path][j].callback(previousIndex, previousDuplicateIndex);
       }
     }
   };
@@ -402,6 +415,11 @@ function SwiperService($q, $timeout) {
         }
       }
     },
+    getSlideByIndex: function(swiperPath, slideIndex) {
+      if (swipers[swiperPath] && swipers[swiperPath].swiper) {
+        return swipers[swiperPath].swiper.getSlide(slideIndex);
+      }
+    },
     isSlideActive: function(slidePath) {
       var swiperInfos = getSwiperInfosBySlidePath(slidePath);
       if (!swiperInfos || !swiperInfos.main){
@@ -503,6 +521,16 @@ function SwiperService($q, $timeout) {
         var index = slideActiveCallbacks[slidePath].findFirstIndexByKeyValue('id', id);
         if (index !== undefined){
           slideActiveCallbacks[slidePath].splice(index, 1);
+        }
+      }
+    },
+    getSwiperBySlidePath: function(slidePath) {
+      var swiper = getSwiperInfosBySlidePath(slidePath);
+      if (swiper) {
+        if (swiper.main) {
+          return swiper.mainPath;
+        } else if (swiper.page) {
+          return swiper.pagePath;
         }
       }
     },

@@ -38,6 +38,24 @@
       this.swipeToSibling = function(siblingSlidePath){
         return SwiperService.swipeTo(siblingSlidePath);
       };
+      this.getChildElementsFromIndexes = function(slideIndex, duplicateSlideIndex) {
+        var swiperPath = SwiperService.getSwiperBySlidePath($scope.slidePath);
+        if (swiperPath) {
+          var childElements = [];
+          var slide = SwiperService.getSlideByIndex(swiperPath, slideIndex);
+          var duplicateSlide;
+          if (slide) {
+            childElements.push(slide.firstElementChild);
+          }
+          if (duplicateSlideIndex) {
+            duplicateSlide = SwiperService.getSlideByIndex(swiperPath, duplicateSlideIndex);
+            if (duplicateSlide) {
+              childElements.push(duplicateSlide.firstElementChild);
+            }
+          }
+          return childElements;
+        }
+      };
 
       // CALLBACKS
 
