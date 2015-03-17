@@ -799,7 +799,7 @@
   function getAllOnline(ownerUUID, getAllMethod, deferred) {
     getAllMethod(ownerUUID).then(
       function(result) {
-        deferred.resolve(true);
+        deferred.resolve('firstSync');
         return result;
       },
       function(error) {
@@ -815,7 +815,7 @@
                 return getAllMethod(ownerUUID);
               },
               promise: function() {
-                deferred.resolve(true);
+                deferred.resolve('firstSync');
               }
           }};
         } else {
@@ -880,12 +880,12 @@
   function synchronize(ownerUUID) {
     function doSynchronize(url, latestModified, deferred){
       if (UserSessionService.isFakeUser()){
-        deferred.resolve();
+        deferred.resolve('fakeUser');
       }else if (latestModified !== undefined) {
         url += '?modified=' + latestModified + '&deleted=true&archived=true&completed=true';
         // Push request to offline buffer
         BackendClientService.getSecondary(url, getItemsRegex, {owner: ownerUUID});
-        deferred.resolve();
+        deferred.resolve('delta');
       } else {
         getAllOnline(ownerUUID, getAllItemsOnline, deferred);
       }

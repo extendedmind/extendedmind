@@ -674,8 +674,21 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
           }
         });
 
-        SynchronizeService.synchronize(activeUUID).then(function(firstSync) {
-          if (firstSync){
+        SynchronizeService.synchronize(activeUUID).then(function(status) {
+
+          function doSynchronizeUser() {
+            // If there has been a long enough time from last sync, update account preferences as well
+            if (itemsSynchronizeCounter === 0 ||
+                itemsSynchronizeCounter%userSyncCounterTreshold === 0 ||
+                sinceLastItemsSynchronized > userSyncTimeTreshold)
+            {
+              SynchronizeService.synchronizeUser().then(function(){
+                $scope.refreshFavoriteLists();
+              });
+            }
+          }
+
+          if (status === 'firstSync'){
             // Also immediately after first sync add completed and archived to the mix
             $rootScope.syncState = 'completedAndArchived';
             SynchronizeService.addCompletedAndArchived(activeUUID).then(function(){
@@ -683,25 +696,20 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
               // Also after this, get deleted items as well
               SynchronizeService.addDeleted(activeUUID).then(function(){
                 updateItemsSyncronizeAttempted(activeUUID);
+                doSynchronizeUser();
               }, function(){
                 $rootScope.syncState = 'error';
               });
             }, function(){
               $rootScope.syncState = 'error';
             });
-          }else{
+          } else if (status === 'delta') {
             updateItemsSyncronizeAttempted(activeUUID);
+            doSynchronizeUser();
+          } else if (status === 'fakeUser') {
+            $rootScope.syncState = 'local';
           }
 
-          // If there has been a long enough time from last sync, update account preferences as well
-          if (itemsSynchronizeCounter === 0 ||
-              itemsSynchronizeCounter%userSyncCounterTreshold === 0 ||
-              sinceLastItemsSynchronized > userSyncTimeTreshold)
-          {
-            SynchronizeService.synchronizeUser().then(function(){
-              $scope.refreshFavoriteLists();
-            });
-          }
         }, function(){
           $rootScope.syncState = 'error';
         });
