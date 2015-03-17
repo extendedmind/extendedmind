@@ -1,0 +1,271 @@
+/************************/
+/* FOUNDATION OVERRIDES */
+/************************/
+
+body, button, .button, .top-bar-section ul li > a {
+  font-family: 'HelveticaNeue-Light', 'Helvetica Neue Light', 'HelveticaNeue',
+'Helvetica Neue',  'Segoe UI Light', 'Segoe UI', 'sans-serif-light', 'sans-serif';
+  font-weight: 100;
+}
+
+body {
+  height: 100%;
+}
+
+html {
+  /* Disable overflow-y in mobile to get momentum scrolling to work */
+  overflow-y: hidden;
+}
+
+body {
+  overflow-y: scroll;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  font-size: 15px;
+  color: #000000;
+}
+
+/* LARGE */
+@media only screen and (min-width: 64.063em){
+  html {
+    /* Set overflow-y to initial to get animated scroll to work in desktop */
+    overflow-y: initial;
+  }
+  body {
+    font-size: 16px;
+  }
+}
+
+/* EXTRA LARGE */
+@media only screen and (min-width: 90.063em){
+  body {
+    font-size: 20px;
+  }
+}
+
+.row {
+  max-width: none;
+}
+
+button, .button {
+  background-color: #0f82fe;
+}
+
+
+button:hover, button:focus, .button:hover, .button:focus {
+  background-color: #0171ea;
+}
+
+/************************/
+/* FONTS                */
+/************************/
+
+@font-face {
+  font-family: 'icomoon';
+  src:url('../fonts/icomoon.eot?r234sh');
+  src:url('../fonts/icomoon.eot?#iefixr234sh') format('embedded-opentype'),
+    url('../fonts/icomoon.woff?r234sh') format('woff'),
+    url('../fonts/icomoon.ttf?r234sh') format('truetype'),
+    url('../fonts/icomoon.svg?r234sh#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+  font-family: 'icomoon';
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+.icon-logo:before {
+  content: "\e60a";
+}
+
+.icon-logo-text:before {
+  content: "\e60b";
+}
+
+.icon-volume-mute:before {
+  content: "\e600";
+}
+
+.icon-volume-up:before {
+  content: "\e601";
+}
+
+.icon-play:before {
+  content: "\e615";
+}
+
+/******************/
+/* NAVIGATION BAR */
+/******************/
+
+.top-bar{
+  position: absolute;
+  width: 100%;
+  min-height: 50px;
+  z-index: 1;
+  background-color: transparent;
+}
+
+.top-bar.expanded .title-area{
+  background-color: #000000;
+}
+
+.top-bar .title-area{
+  min-height: 50px;
+  padding-left: 0;
+}
+
+.top-bar .toggle-topbar.menu-icon > a > span:after {
+  box-shadow: 0 0 0 1px #027180, 0 7px 0 1px #027180, 0 14px 0 1px #027180;
+}
+
+.top-bar a {
+  color: #000000 !important;
+  text-decoration: none;
+}
+
+.top-bar .logo a{
+  color: #027180;
+}
+
+.top-bar .logo {
+  padding-top: 2px;
+  padding-left: 10px;
+}
+
+.top-bar .logo span:before {
+  font-size: 25px;
+}
+
+/* MEDIUM */
+@media only screen and (min-width: 40.063em){
+  .top-bar{
+    padding-top: 50px;
+    min-height: 150px;
+  }
+  .top-bar .title-area {
+    min-height: 150px;
+  }
+  .top-bar .logo a {
+    color: #000000;
+  }
+  .top-bar .logo {
+    padding-left: 5vw;
+  }
+
+  .top-bar > .top-bar-section li, .top-bar > .top-bar-section li a {
+    background-color: transparent !important;
+  }
+
+  .top-bar > .top-bar-section li a {
+    font-size: 14px;
+  }
+
+  .top-bar-section li.active, .top-bar-section li:hover, .top-bar-section li:focus{
+    border-bottom: 6px solid #000000;
+  }
+
+  .top-bar > .top-bar-section li {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+
+  .top-bar > .top-bar-section li:last-child {
+    margin-right: 0;
+  }
+}
+
+/* LARGE */
+@media only screen and (min-width: 64.063em){
+  .top-bar .logo span:before {
+    font-size: 30px;
+  }
+  .top-bar .top-bar-section {
+    padding-right: 5vw;
+  }
+  .top-bar > .top-bar-section li a {
+    font-size: 20px;
+  }
+}
+
+/* EXTRA LARGE */
+@media only screen and (min-width: 90.063em){
+  .top-bar .logo span:before {
+    font-size: 40px;
+  }
+  .top-bar > .top-bar-section li a {
+    font-size: 24px;
+  }
+}
+
+/******************/
+/* MAIN           */
+/******************/
+
+div.main {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  display: table;
+}
+
+/******************/
+/* FOOTER         */
+/******************/
+
+footer {
+  position: relative;
+  top: 85%;
+  left: 0;
+  right: 0;
+}
+
+footer div {
+  display: block;
+  text-align: center;
+}
+
+footer div.centered .button {
+  width: 100%;
+  max-width: 400px;
+  font-family: 'HelveticaNeue', 'Helvetica Neue', 'Segoe UI Bold', 'Segoe UI', 'sans-serif';
+  font-weight: 700;
+  font-size: 25px;
+  height: 44px;
+  line-height: 44px;
+  padding: 0;
+}
+
+footer div.right {
+  position: absolute;
+  right: 5%;
+  top: 0%;
+  cursor: pointer;
+}
+
+footer div.right .icon-volume-mute:before, footer div.right .icon-volume-up:before {
+  height: 44px;
+  line-height: 44px;
+  color: #000000;
+}
+
+footer div.right .icon-volume-mute:before{
+  font-size: 30px;
+}
+
+footer div.right .icon-volume-up:before{
+  margin-right: -6px;
+  font-size: 35px;
+}

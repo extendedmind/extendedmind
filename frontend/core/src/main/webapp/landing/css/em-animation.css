@@ -1,0 +1,43 @@
+/***************************/
+/* EXTENDED MIND ANIMATION */
+/***************************/
+
+.paused{
+  -webkit-animation-play-state:paused !important;
+  -moz-animation-play-state:paused !important;
+  -o-animation-play-state:paused !important;
+  animation-play-state:paused !important;
+}
+
+.hidden{
+  visibility: hidden;
+}
+
+#em-animation {
+  display: table-cell;
+  vertical-align: middle;
+  background-color: #F1F1F1;
+  text-align: center;
+  font-size: 1.5vw;
+  -webkit-transition: background-color 200ms linear;
+  -moz-transition: background-color 200ms linear;
+  -o-transition: background-color 200ms linear;
+  -ms-transition: background-color 200ms linear;
+  transition: background-color 200ms linear;
+}
+
+#em-animation .icon-logo-text{
+  font-size: 8vw;
+}
+
+#em-animation .icon-play{
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  right: 0;
+  top: 19%;
+  color: #000000;
+  opacity: 0.03;
+  font-size: 60vh;
+  cursor: pointer;
+}

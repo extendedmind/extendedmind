@@ -149,6 +149,12 @@
             <fileset>
               <directory>${basedir}/src/main/webapp/static/fonts</directory>
             </fileset>
+            <fileset>
+              <directory>${basedir}/src/main/webapp/static/audio</directory>
+            </fileset>
+            <fileset>
+              <directory>${basedir}/src/main/webapp/landing/audio</directory>
+            </fileset>
           </filesets>
         </configuration>
       </plugin>
@@ -310,9 +316,44 @@
         </configuration>
       </plugin>
       <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-resources-plugin</artifactId>
-          <version>2.6</version>
           <executions>
+              <execution>
+                  <id>import-audio</id>
+                  <phase>generate-resources</phase>
+                  <goals>
+                      <goal>copy-resources</goal>
+                  </goals>
+                  <configuration>
+                      <outputDirectory>${project.basedir}/src/main/webapp/landing/audio</outputDirectory>
+                      <overwrite>true</overwrite>
+                      <resources>
+                          <resource>
+                              <directory>${user.home}/.extendedmind</directory>
+                              <includes>
+                                  <include>theme.*</include>
+                              </includes>
+                          </resource>
+                      </resources>
+                  </configuration>
+              </execution>
+              <execution>
+                  <id>copy-audio</id>
+                  <phase>generate-resources</phase>
+                  <goals>
+                      <goal>copy-resources</goal>
+                  </goals>
+                  <configuration>
+                      <outputDirectory>${project.basedir}/src/main/webapp/static/audio</outputDirectory>
+                      <overwrite>true</overwrite>
+                      <resources>
+                          <resource>
+                              <directory>${project.basedir}/src/main/webapp/landing/audio</directory>
+                          </resource>
+                      </resources>
+                  </configuration>
+              </execution>
               <execution>
                   <id>copy-favicons</id>
                   <phase>generate-resources</phase>
