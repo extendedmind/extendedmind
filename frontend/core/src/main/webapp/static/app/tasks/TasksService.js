@@ -436,15 +436,19 @@
         if (taskInfo.type === 'active') {
           taskIndex = tasks[ownerUUID].activeTasks.indexOf(taskInfo.task);
           ItemLikeService.remove(taskInfo.task.trans.uuid);
-          tasks[ownerUUID].activeTasks.splice(taskIndex, 1);
+          ArrayService.removeFromArrays(taskInfo.task, 'tasks', tasks[ownerUUID].activeTasks);
         } else if (taskInfo.type === 'deleted') {
           taskIndex = tasks[ownerUUID].deletedTasks.indexOf(taskInfo.task);
           ItemLikeService.remove(taskInfo.task.trans.uuid);
-          tasks[ownerUUID].deletedTasks.splice(taskIndex, 1);
+          ArrayService.removeFromArrays(taskInfo.task, 'tasks',
+                                        tasks[ownerUUID].activeTasks, tasks[ownerUUID].deletedTasks);
         } else if (taskInfo.type === 'archived') {
           taskIndex = tasks[ownerUUID].archivedTasks.indexOf(taskInfo.task);
           ItemLikeService.remove(taskInfo.task.trans.uuid);
-          tasks[ownerUUID].archivedTasks.splice(taskIndex, 1);
+          ArrayService.removeFromArrays(taskInfo.task, 'tasks',
+                                        tasks[ownerUUID].activeTasks,
+                                        tasks[ownerUUID].deletedTasks,
+                                        getOtherArrays(ownerUUID));
         }
       }
     },

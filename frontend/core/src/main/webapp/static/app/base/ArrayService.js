@@ -162,9 +162,12 @@ function ArrayService($rootScope, UISessionService) {
       }
     },
     // item and activeArray are mandatory, rest are optional
-    removeFromArrays: function(item, activeArray, deletedArray, otherArrays) {
+    removeFromArrays: function(item, itemType, activeArray, deletedArray, otherArrays) {
       var arrayInfo = this.getActiveArrayInfo(item, activeArray, deletedArray, otherArrays);
-      if (arrayInfo) arrayInfo.array.splice(arrayInfo.array.indexOf(item), 1);
+      if (arrayInfo) {
+        arrayInfo.array.splice(arrayInfo.array.indexOf(item), 1);
+        emitChangeEvent({type: arrayInfo.type, array: arrayInfo.array}, itemType, item);
+      }
       return arrayInfo;
     },
     /*
