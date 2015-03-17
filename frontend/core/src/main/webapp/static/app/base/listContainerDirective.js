@@ -49,6 +49,16 @@
         lengthChangeWatcher = getWatcherFn();
       };
 
+      var getDuplicateListData = {};
+      this.registerGetDuplicateListData = function(getterFn, duplicateOfListPath) {
+        getDuplicateListData[duplicateOfListPath] = getterFn;
+      };
+
+      this.getDuplicateListData = function(listPath) {
+        if (getDuplicateListData && getDuplicateListData[listPath])
+          return getDuplicateListData[listPath]();
+      };
+
     }],
     compile: function compile() {
       return {

@@ -60,8 +60,10 @@
       // CALLBACKS
 
       this.registerSlideActiveCallback = function(callback, id) {
-        SwiperService.registerSlideActiveCallback(callback,
-                                                  $scope.slidePath, id);
+        SwiperService.registerSlideActiveCallback(callback, $scope.slidePath, id);
+      };
+      this.registerSlideInActiveCallback = function(callback, id) {
+        SwiperService.registerSlideInActiveCallback(callback, $scope.slidePath, id);
       };
       this.unregisterSlideActiveCallback = function(id){
         SwiperService.unregisterSlideActiveCallback($scope.slidePath, id);

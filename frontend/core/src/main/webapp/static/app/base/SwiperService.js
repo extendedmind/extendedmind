@@ -25,6 +25,7 @@ function SwiperService($q, $timeout) {
   var slideChangeStartCallbacks = {};
   var slideChangeCallbacks = {};
   var slideActiveCallbacks = {};
+  var slideInActiveCallbacks = {};
 
   var simulateTouch = false;
 
@@ -168,21 +169,21 @@ function SwiperService($q, $timeout) {
     }
     // Execute slide active callbacks
     if (slideActiveCallbacks && slideActiveCallbacks[path]) {
-      var swiper = swipers[swiperPath].swiper;
-      var previousIndex = swiper.previousIndex;
-      var previousDuplicateIndex;
-
-      if (swiper && swiper.params.loop) {
-        if (previousIndex === 1) {
-          previousDuplicateIndex = swiper.slides.length - 1;
-        }
-        else if (previousIndex === swiper.slides.length - 2) {
-          previousDuplicateIndex = 0;
-        }
-      }
-
       for (var j = 0; j < slideActiveCallbacks[path].length; j++) {
-        slideActiveCallbacks[path][j].callback(previousIndex, previousDuplicateIndex);
+        slideActiveCallbacks[path][j].callback();
+      }
+    }
+    if (slideInActiveCallbacks) {
+      var swiperInfos = swipers[swiperPath];
+      if (swiperInfos) {
+        var previousIndex = swiperInfos.swiper.previousIndex;
+        var previousPath = swiperInfos.slidesPaths[previousIndex];
+
+        if (slideInActiveCallbacks[previousPath]) {
+          for (var k = 0; k < slideInActiveCallbacks[previousPath].length; k++) {
+            slideInActiveCallbacks[previousPath][k].callback();
+          }
+        }
       }
     }
   };
@@ -515,6 +516,23 @@ function SwiperService($q, $timeout) {
       slideActiveCallbacks[slidePath].push({
         callback: slideActiveCallback,
         id: id});
+    },
+    registerSlideInActiveCallback: function(slideInActiveCallback, slidePath, id) {
+      if (!slideInActiveCallbacks[slidePath]) {
+        slideInActiveCallbacks[slidePath] = [];
+      } else {
+        for (var i = 0; i < slideInActiveCallbacks[slidePath].length; i++) {
+          if (slideInActiveCallbacks[slidePath][i].id === id) {
+            // Already registered, replace callback
+            slideInActiveCallbacks[slidePath][i].callback = slideInActiveCallback;
+            return;
+          }
+        }
+      }
+      slideInActiveCallbacks[slidePath].push({
+        callback: slideInActiveCallback,
+        id: id
+      });
     },
     unregisterSlideActiveCallback: function(slidePath, id) {
       if (slideActiveCallbacks[slidePath]){

@@ -327,7 +327,7 @@
           <div class="container-content" ng-class="daySlides[2].pastDate && 'past-date'"
             list="getTasksArray('date', {date: daySlides[2].info, pastDate: daySlides[2].pastDate})"
             list-options="{isBounded: isAgendaVisible, registerModeChanged: registerAgendaVisibilityChangedCallback,
-            id: 'focus/tasks/rightDuplicate', scrollInactiveTop: true}">
+            id: 'focus/tasks/rightDuplicate', scrollInactiveTop: true, duplicate: 'focus/tasks/right'}">
 
             <div ng-hide="datepickerVisible" class="group-mixed heading">
               <div class="group-mixed--middle" swiper-click="openDatepicker(daySlides[2].info)">
@@ -376,7 +376,7 @@
           <div class="container-content" ng-class="daySlides[0].pastDate && 'past-date'"
             list="getTasksArray('date', {date: daySlides[0].info, pastDate: daySlides[0].pastDate})"
             list-options="{isBounded: isAgendaVisible, registerModeChanged: registerAgendaVisibilityChangedCallback,
-            id: 'focus/tasks/left', scrollInactiveTop: true}">
+            id: 'focus/tasks/left', scrollInactiveTop: true, duplicate: 'focus/tasks/leftDuplicate'}">
 
             <div ng-hide="datepickerVisible" class="group-mixed heading">
               <div class="group-mixed--middle" swiper-click="openDatepicker(daySlides[0].info)">
@@ -474,7 +474,7 @@
           <div class="container-content" ng-class="daySlides[2].pastDate && 'past-date'"
             list="getTasksArray('date', {date: daySlides[2].info, pastDate: daySlides[2].pastDate})"
             list-options="{isBounded: isAgendaVisible, registerModeChanged: registerAgendaVisibilityChangedCallback,
-            id: 'focus/tasks/right', scrollInactiveTop: true}">
+            id: 'focus/tasks/right', scrollInactiveTop: true, duplicate: 'focus/tasks/rightDuplicate'}">
 
             <div ng-hide="datepickerVisible" class="group-mixed heading">
               <div class="group-mixed--middle" swiper-click="openDatepicker(daySlides[2].info)">
@@ -523,7 +523,7 @@
           <div class="container-content" ng-class="daySlides[0].pastDate && 'past-date'"
             list="getTasksArray('date', {date: daySlides[0].info, pastDate: daySlides[0].pastDate})"
             list-options="{isBounded: isAgendaVisible, registerModeChanged: registerAgendaVisibilityChangedCallback,
-            id: 'focus/tasks/leftDuplicate', scrollInactiveTop: true}">
+            id: 'focus/tasks/leftDuplicate', scrollInactiveTop: true, duplicate: 'focus/tasks/left'}">
 
             <div ng-hide="datepickerVisible" class="group-mixed heading">
               <div class="group-mixed--middle" swiper-click="openDatepicker(daySlides[0].info)">

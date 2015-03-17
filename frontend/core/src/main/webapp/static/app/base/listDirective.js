@@ -123,6 +123,7 @@
       };
     }],
     link: function(scope, element, attrs, controllers) {
+
       var listOpenOnAddFn;
       if (attrs.listOpen){
         listOpenOnAddFn = $parse(attrs.listOpen).bind(undefined, scope);
@@ -159,6 +160,21 @@
         });
       }
 
+      var listData = {
+        element: element[0],
+        setLimits: setLimits,
+        getCurrentListStartIndex: function() {
+          return scope.currentListStartIndex;
+        },
+        updateUI: function() {
+          if (!scope.$$phase && !$rootScope.$$phase) scope.$digest(); // Update UI.
+        }
+      };
+
+      function getListData() {
+        return listData;
+      }
+
       var listOptions;
       if (attrs.listOptions) {
         listOptions = $parse(attrs.listOptions)(scope);
@@ -169,7 +185,7 @@
         return listOptions && typeof listOptions.isBounded === 'function' && listOptions.isBounded();
       }
 
-      function listActive(previousActiveIndex, previousDuplicateIndex){
+      function listActive(){
         controllers[0].registerActivateAddListItemCallback(activateListAdd, element);
 
         if (scope.arrayVisible) {
@@ -202,20 +218,27 @@
         }
         // Did we return into list that has been scrolled near the bottom.
         setIsNearListBottom();
+      }
 
-        if (previousActiveIndex !== undefined &&
-            listOptions && listOptions.scrollInactiveTop && controllers[1])
-        {
-          // Scroll inactive slide (and duplicate inactive) slide to top.
-          var previousActiveElements = controllers[1].getChildElementsFromIndexes(previousActiveIndex,
-                                                                                  previousDuplicateIndex);
-          if (previousActiveElements) {
-            if (previousActiveElements[0]) {
-              previousActiveElements[0].scrollTop = 0;
-            }
-            if (previousActiveElements[1]) {
-              previousActiveElements[1].scrollTop = 0;
-            }
+      function listInActive() {
+        if (element[0].scrollTop) {
+          element[0].scrollTop = 0;
+        }
+
+        if (scope.currentListStartIndex !== 0) {
+          setLimits(0);
+          if (!scope.$$phase && !$rootScope.$$phase) scope.$digest(); // Update UI.
+        }
+
+        var duplicateListData = controllers[0].getDuplicateListData(listOptions.id);
+        if (duplicateListData) {
+          if (duplicateListData.element.scrollTop) {
+            duplicateListData.element.scrollTop = 0;
+          }
+
+          if (duplicateListData.getCurrentListStartIndex()) {  // !undefined && !0
+            duplicateListData.setLimits(0);
+            duplicateListData.updateUI();
           }
         }
       }
@@ -270,6 +293,12 @@
           }
           if (options.isBounded && typeof options.isBounded === 'function') {
             bounded = options.isBounded();
+          }
+          if (options.scrollInactiveTop && controllers[1]) {
+            controllers[1].registerSlideInActiveCallback(listInActive, 'listDirective');
+          }
+          if (options.duplicate) {
+            controllers[0].registerGetDuplicateListData(getListData, options.duplicate);
           }
         }
 
@@ -326,7 +355,14 @@
       }
 
       scope.addMoreItems = function() {
-        setLimits(scope.getFilteredFullArrayLength());
+        var limit = scope.getFilteredFullArrayLength();
+        setLimits(limit);
+        if (listOptions && listOptions.duplicate) {
+          var duplicateListData = controllers[0].getDuplicateListData(listOptions.id);
+          if (duplicateListData) {
+            duplicateListData.setLimits(limit);
+          }
+        }
       };
 
       function startBottomVerificationTimer() {
@@ -432,10 +468,21 @@
       function addMoreItemsToBottom(){
 
         function doAddMoreItemsToBottom(){
-          if (scope.maximumNumberOfItems + scope.itemIncreaseAmount >= filteredFullArrayLength) {
-            setLimits(filteredFullArrayLength - scope.maximumNumberOfItems);
-          } else {
-            setLimits(scope.currentListStartIndex + scope.itemIncreaseAmount);
+          var limit, duplicateListData;
+
+          if (scope.maximumNumberOfItems + scope.itemIncreaseAmount >= filteredFullArrayLength)
+            limit = filteredFullArrayLength - scope.maximumNumberOfItems;
+          else
+            limit = scope.currentListStartIndex + scope.itemIncreaseAmount;
+
+          setLimits(limit);
+
+          if (listOptions && listOptions.duplicate) {
+            duplicateListData = controllers[0].getDuplicateListData(listOptions.id);
+            if (duplicateListData) {
+              duplicateListData.setLimits(limit);
+              duplicateListData.updateUI();
+            }
           }
         }
 
