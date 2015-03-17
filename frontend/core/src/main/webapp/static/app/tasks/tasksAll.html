@@ -1,6 +1,7 @@
 <div class="container-content--outer" list-container drawer-handle="left"
   drawer-handle-register-activate="registerFeatureActivateCallback(activate, 'tasks', 'tasksAll')">
-  <section class="container-content" list="getTasksArray('all')" list-recent>
+  <section class="container-content" list="getTasksArray('all')" list-recent
+    list-options="{hideItemDefault: true}">
 
     <div ng-show="!onboardingInProgress || isOnboardingListItemAddActive()">
       <div class="group-mixed heading">

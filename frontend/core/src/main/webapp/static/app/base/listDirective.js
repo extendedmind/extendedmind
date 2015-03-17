@@ -23,6 +23,11 @@
     controller: ['$scope', '$element', '$attrs', function($scope, $element, $attrs) {
       $scope.listInfos = {};
 
+      $scope.listOptions = {};
+      if ($attrs.listOptions) {
+        $scope.listOptions = $parse($attrs.listOptions)($scope);
+      }
+
       var listArrayFn = $parse($attrs.list);
       $scope.getFullArray = function(){
         return listArrayFn($scope);
@@ -33,10 +38,15 @@
         if (fullArray) {
           if (customFilterItemVisible) {
             $scope.listInfos.array = customFilterItemVisible(fullArray);  // Cache filtered full array
-            return $scope.listInfos.array.slice(0, limitTo);
+          } else if ($scope.listOptions.hideItemDefault) {
+            // Return empty array.
+            // NOTE:  This is intended to be working together with custom filter. While it is not visible,
+            //        but will be later, use this to avoid Angular error "Controller 'list', required by
+            //        directive 'listItem', can't be found!"
+            $scope.listInfos.array = [];
+          } else {
+            $scope.listInfos.array = fullArray; // Cache filtered full array
           }
-
-          $scope.listInfos.array = fullArray; // Cache filtered full array
           return $scope.listInfos.array.slice(0, limitTo);
         }
       };
@@ -175,14 +185,10 @@
         return listData;
       }
 
-      var listOptions;
-      if (attrs.listOptions) {
-        listOptions = $parse(attrs.listOptions)(scope);
-      }
-      initList(listOptions);
+      initList(scope.listOptions);
 
       function isListBounded() {
-        return listOptions && typeof listOptions.isBounded === 'function' && listOptions.isBounded();
+        return scope.listOptions.isBounded === 'function' && scope.listOptions.isBounded();
       }
 
       function listActive(){
@@ -230,7 +236,7 @@
           if (!scope.$$phase && !$rootScope.$$phase) scope.$digest(); // Update UI.
         }
 
-        var duplicateListData = controllers[0].getDuplicateListData(listOptions.id);
+        var duplicateListData = controllers[0].getDuplicateListData(scope.listOptions.id);
         if (duplicateListData) {
           if (duplicateListData.element.scrollTop) {
             duplicateListData.element.scrollTop = 0;
@@ -351,14 +357,14 @@
       }
 
       function modeChanged() {
-        reInitList(listOptions);
+        reInitList(scope.listOptions);
       }
 
       scope.addMoreItems = function() {
         var limit = scope.getFilteredFullArrayLength();
         setLimits(limit);
-        if (listOptions && listOptions.duplicate) {
-          var duplicateListData = controllers[0].getDuplicateListData(listOptions.id);
+        if (scope.listOptions.duplicate) {
+          var duplicateListData = controllers[0].getDuplicateListData(scope.listOptions.id);
           if (duplicateListData) {
             duplicateListData.setLimits(limit);
           }
@@ -477,8 +483,8 @@
 
           setLimits(limit);
 
-          if (listOptions && listOptions.duplicate) {
-            duplicateListData = controllers[0].getDuplicateListData(listOptions.id);
+          if (scope.listOptions.duplicate) {
+            duplicateListData = controllers[0].getDuplicateListData(scope.listOptions.id);
             if (duplicateListData) {
               duplicateListData.setLimits(limit);
               duplicateListData.updateUI();

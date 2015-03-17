@@ -1,6 +1,7 @@
 <div class="container-content--outer" list-container drawer-handle="left"
   drawer-handle-register-activate="registerFeatureActivateCallback(activate, 'list', 'listTasks')">
-  <section class="container-content" list="getTasksArray('list', {uuid: list.trans.uuid})">
+  <section class="container-content" list="getTasksArray('list', {uuid: list.trans.uuid})"
+    list-options="{hideItemDefault: true}">
     <div class="group-mixed heading">
       <div class="group-mixed--middle">
         <h2 class="group-heading justified">
