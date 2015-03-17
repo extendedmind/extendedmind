@@ -88,7 +88,7 @@
                                   ownerUUID);
             } else if (arrayType === 'context') {
               if ($scope.getActiveFeature() === 'tasks' && SwiperService.isSlideActive('tasks/context')) {
-                updateContextTasks(cachedTasksArrays[ownerUUID]['context'],
+                updateContextTasks(cachedTasksArrays[ownerUUID],
                                    cachedTasksArrays[ownerUUID]['context'].id,
                                    ownerUUID);
               } else {
@@ -166,8 +166,9 @@
     } else {
       for (i = activeTasks.length - 1; i >= 0; i--) {
         var task = activeTasks[i];
-        if (task.trans.context && task.trans.context.uuid === contextId)
+        if (task.trans.context && task.trans.context.uuid === contextId) {
           cachedTasks['context'].array.push(task);
+        }
       }
     }
   }
