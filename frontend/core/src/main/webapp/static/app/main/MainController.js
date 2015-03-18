@@ -117,6 +117,9 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     trash: {
       heading: 'trash'
     },
+    settings: {
+      heading: 'settings'
+    },
     admin: {
       heading: 'admin'
     }

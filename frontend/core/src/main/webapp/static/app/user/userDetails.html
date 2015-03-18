@@ -14,10 +14,6 @@
   </section>
   <section ng-if="activeDetails === 'about'" class="container-content">
     <h2 class="group-heading justified row">about</h2>
-    <p class="row">
-      <span class="text-heading-primary">version</span></br>
-      <span class="text-teaser" ng-bind="extendedMindVersion"></span>
-    </p>
     <div class="group-mixed">
       <a href class="group-mixed--middle link" ng-click="openTermsInEditor()">
         <span class="text-link">terms of service</span>
@@ -40,44 +36,6 @@
     </div>
   </section>
 
-  <section ng-if="activeDetails === 'settings'" class="container-content">
-    <h2 class="group-heading justified row">settings</h2>
-
-    <div class="group-mixed with-checkbox">
-      <div class="group-mixed--left">
-        <input type="checkbox" ng-model="settings.hideFooter" ng-true-value="true" icon-checkbox="'hideFooter'"
-        ng-click="settingsCheckboxClicked('hideFooter')" />
-      </div>
-      <div href class="group-mixed--middle">
-        <span class="text-link">hide footer navigation on mobile devices</span>
-      </div>
-    </div>
-
-    <div class="group-mixed with-checkbox">
-      <div class="group-mixed--left">
-        <input type="checkbox" ng-model="settings.disableVibration" ng-true-value="true"
-        icon-checkbox="'disableVibration'" ng-click="settingsCheckboxClicked('disableVibration')" />
-      </div>
-      <div class="group-mixed--middle">
-        <span class="text-link">disable vibration on complete and uncomplete</span>
-      </div>
-    </div>
-
-    <p ng-if="agendaCalendarSettingVisible" class="row">
-      <span class="text-heading-primary">this device</span></br>
-    </p>
-    <div ng-if="agendaCalendarSettingVisible" class="group-mixed">
-      <a href class="group-mixed--middle link" swiper-click="openEditor('user', undefined, 'agendaCalendar')">
-        <span class="text-link">agenda calendar</span>
-      </a>
-      <div class="group-mixed--right">
-        <a href ng-click="openEditor('user', undefined, 'agendaCalendar')">
-          <span class="text-navigation-forward large"></span>
-        </a>
-      </div>
-    </div>
-
-  </section>
   <footer class="container-content--after">
     <nav role="navigation" class="swiper-no-swiping group-symmetrical">
       <a href ng-click="swipeToHome()" class="group-symmetrical--left link-navigation">

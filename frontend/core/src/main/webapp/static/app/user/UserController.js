@@ -17,10 +17,7 @@
  function UserController($http, $location, $q, $rootScope, $scope, $templateCache, $window,
                          AnalyticsService, AuthenticationService, BackendClientService, ItemsService,
                          ListsService, NotesService, SwiperService, SynchronizeService, TagsService,
-                         TasksService, UISessionService, UserService, UserSessionService,
-                         packaging, version) {
-
-  $scope.extendedMindVersion = version;
+                         TasksService, UISessionService, UserService, UserSessionService) {
 
   $scope.isAdmin = function isAdmin() {
     return UserSessionService.getUserType() === 0;
@@ -71,9 +68,6 @@
   $scope.activeDetails = undefined;
   $scope.swipeToDetails = function(detailsType){
     $scope.activeDetails = detailsType;
-    if (detailsType === 'settings'){
-      initializeSettings();
-    }
     SwiperService.swipeTo('user/details');
   };
 
@@ -100,32 +94,6 @@
       $scope.loggingOut = false;
     });
   };
-
-  // SETTINGS
-
-  function initializeSettings(){
-    $scope.settings = {
-      hideFooter: UserSessionService.getUIPreference('hideFooter'),
-      disableVibration: UserSessionService.getUIPreference('disableVibration')
-    };
-  }
-
-  $scope.settingsCheckboxClicked = function(preference) {
-    if ($scope.settings[preference] !== undefined){
-      UserSessionService.setUIPreference(preference, $scope.settings[preference]);
-      UserService.saveAccountPreferences();
-    }
-  };
-
-  if (packaging.endsWith('cordova')) {
-    if (!window.plugins || !window.plugins.calendar) {
-      document.addEventListener('deviceready', function() {
-        $scope.agendaCalendarSettingVisible = window.plugins && window.plugins.calendar;
-      });
-    } else {
-      $scope.agendaCalendarSettingVisible = true;
-    }
-  }
 
   // TODO: reset onboarding!
   $scope.showOnboardingCheckbox = function showOnboardingCheckbox() {
@@ -266,11 +234,11 @@
 
   $scope.getQueueLength = function(){
     return BackendClientService.getQueueLength();
-  }
+  };
 
 }
 UserController['$inject'] = ['$http', '$location', '$q', '$rootScope', '$scope', '$templateCache', '$window',
 'AnalyticsService', 'AuthenticationService', 'BackendClientService', 'ItemsService', 'ListsService',
 'NotesService', 'SwiperService', 'SynchronizeService', 'TagsService', 'TasksService', 'UISessionService',
-'UserService', 'UserSessionService', 'packaging', 'version'];
+'UserService', 'UserSessionService'];
 angular.module('em.user').controller('UserController', UserController);

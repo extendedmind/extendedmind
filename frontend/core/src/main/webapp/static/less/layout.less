@@ -105,7 +105,7 @@ TODO: em grid structure explained in plain English (when new grid structure deci
 Menu
 */
 
-@height-menu-footer: @grid-vertical * 2;
+@height-menu-footer: @grid-vertical-medium * 2 + @margin-bottom-heading + @padding-vertically-centered;
 // 1. Use native-style scrolling in WebKit browsers
 .container-menu {
   -webkit-overflow-scrolling: touch;  // [1]
@@ -145,6 +145,16 @@ Menu
 
 .container-menu--bottom, .container-menu--push {
   height: @height-menu-footer;
+}
+
+.container-menu--bottom {
+  .link-menu {
+    line-height: @grid-vertical-medium;
+  }
+  .link-menu:last-child {
+    margin-bottom: @margin-bottom-heading;
+    padding-bottom: @padding-vertically-centered;  // [3]
+  }
 }
 
 // 1. Center vertically. See http://css-tricks.com/centering-css-complete-guide/#vertical-block-known
