@@ -30,9 +30,13 @@
   display: table-cell;
   vertical-align: middle;
   text-align: center;
-  font-size: 15px;
+  font-size: 14px;
   padding-left: 28px;
   padding-right: 28px;
+}
+
+#em-animation b {
+  font-family: 'HelveticaNeue','Helvetica Neue','Segoe UI Bold','Segoe UI','sans-serif';
 }
 
 #em-animation-0 {
