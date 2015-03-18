@@ -17,6 +17,7 @@ frontend/core/src/main/webapp/static/favicon/
 frontend/core/src/main/webapp/static/img/
 frontend/core/src/main/webapp/static/fonts/
 frontend/core/src/main/webapp/static/audio/
+frontend/core/src/main/webapp/static/js/
 frontend/core/src/main/webapp/landing/audio/
 
 # Ignore PhantomJS logs

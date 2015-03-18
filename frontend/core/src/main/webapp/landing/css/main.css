@@ -18,9 +18,6 @@ html {
 }
 
 body {
-  overflow-y: scroll;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
   font-size: 15px;
   color: #000000;
 }
@@ -215,10 +212,22 @@ button:hover, button:focus, .button:hover, .button:focus {
 /******************/
 
 div.main {
-  position: absolute;
   height: 100%;
   width: 100%;
+  margin-left: auto;
+  margin-right: auto;
   display: table;
+  max-width: 568px;
+}
+
+.text-jumbotron {
+  font-family: 'HelveticaNeue','Helvetica Neue','Segoe UI Bold','Segoe UI','sans-serif';
+  font-size: 59px;
+  font-weight: 700;
+}
+
+.highlighted {
+  color: #0f82fe;
 }
 
 /******************/
@@ -226,8 +235,8 @@ div.main {
 /******************/
 
 footer {
-  position: relative;
-  top: 85%;
+  position: absolute;
+  bottom: 5%;
   left: 0;
   right: 0;
 }
@@ -239,7 +248,7 @@ footer div {
 
 footer div.centered .button {
   width: 100%;
-  max-width: 400px;
+  max-width: 568px;
   font-family: 'HelveticaNeue', 'Helvetica Neue', 'Segoe UI Bold', 'Segoe UI', 'sans-serif';
   font-weight: 700;
   font-size: 25px;

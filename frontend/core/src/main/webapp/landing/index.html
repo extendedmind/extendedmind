@@ -56,13 +56,11 @@
       var trackBegin = function() {
         console.log("trackBegin");
       };
-      //<a href="https://ext.md" class="button" onclick="trackBegin(); return false;"><span>sign up for beta now</span></a>
-      //<a href="http://www.extendedmind.org" target="_blank">blog</a> | <a href="https://www.facebook.com/extmd" target="_blank">facebook</a> | <a href="https://twitter.com/extmd" target="_blank">twitter</a> | <a href="mailto:info@ext.md">contact</a> | <a href="https://ext.md"><b>log in</b></a>
     }
   </script>
 </head>
 
-<body>
+<body class="em-animation-background">
 
   <header>
     <nav class="top-bar" data-topbar role="navigation">
@@ -88,8 +86,11 @@
       <audio id="theme">
         <source src="audio/theme.ogg" type="audio/ogg">
         <source src="audio/theme.m4a" type="audio/mp4">
+        <source src="audio/theme.mp3" type="audio/mpeg">
       </audio>
-      <span id="em-animation-play" onclick="playExtendedMindAnimation()" class="icon-play"></span>
+      <div id="em-animation-play" onclick="playExtendedMindAnimation()">
+        <span class="icon-play"></span>
+      </div>
       <div id="em-animation-0">
         <span class="icon-logo-text"></span></br></br>
         <span>task and note organizer that keeps you zen</span>
@@ -107,10 +108,11 @@
         <span>but it is limited</span>
       </div>
       <div id="em-animation-5" class="hide">
-        <span>you can subconsciously process <b>11.2 million</b> bits of information in a second</span>
+        <span>your subconscious mind can process over<br/>
+        <b>11.2 million</b> bits of information in a second</span>
       </div>
       <div id="em-animation-6" class="hide">
-        <span>consciously: only <b>40</b></span>
+        <span>your conscious mind: only <b>40</b></span>
       </div>
       <div id="em-animation-7" class="hide">
         <span>we know how the <b>mind</b> works</span>
@@ -125,17 +127,17 @@
         <span>it's time to let the biological mind do what it does best:</span>
       </div>
       <div id="em-animation-11" class="hide">
-        <span id="em-animation-11-create" class="hidden">create</span>
-        <span id="em-animation-11-connect" class="hidden">connect</span>
-        <span id="em-animation-11-care" class="hidden">care</span>
+        <span id="em-animation-11-create" class="hidden animation-word">create</span>
+        <span id="em-animation-11-connect" class="hidden animation-word">connect</span>
+        <span id="em-animation-11-care" class="hidden animation-word">care</span>
       </div>
       <div id="em-animation-12" class="hide">
         <span>it's time for the digital mind to do what it does best:</span>
       </div>
       <div id="em-animation-13" class="hide">
-        <span id="em-animation-13-focus" class="hidden">focus</span>
-        <span id="em-animation-13-organize" class="hidden">organize</span>
-        <span id="em-animation-13-store" class="hidden">store</span>
+        <span id="em-animation-13-focus" class="hidden animation-word">focus</span>
+        <span id="em-animation-13-organize" class="hidden animation-word">organize</span>
+        <span id="em-animation-13-store" class="hidden animation-word">store</span>
       </div>
       <div id="em-animation-14" class="hide">
         <span>this is not a piece of software</span>
@@ -144,10 +146,10 @@
         <span>this is an <b>extension</b> to your <b>mind</b></span>
       </div>
       <div id="em-animation-16" class="hide">
-        <span id="em-animation-16-change" class="hidden">change</span><br/>
-        <span id="em-animation-16-way" class="hidden">the way</span><br/>
-        <span id="em-animation-16-you" class="hidden">you</span><br/>
-        <span id="em-animation-16-think" class="hidden">think</span>
+        <span id="em-animation-16-change" class="hidden text-jumbotron">change</span><br/>
+        <span id="em-animation-16-way" class="hidden text-jumbotron">the way</span><br/>
+        <span id="em-animation-16-you" class="hidden text-jumbotron">you</span><br/>
+        <span id="em-animation-16-think" class="hidden text-jumbotron highlighted">think</span>
       </div>
     </div>
   </div>
@@ -178,6 +180,7 @@
   <script type="text/javascript" src="js/em-animation.js"></script>
   <script>
     $(document).foundation();
+    setupHTML5Audio();
   </script>
 
 </body>

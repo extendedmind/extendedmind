@@ -13,12 +13,12 @@
   visibility: hidden;
 }
 
-#em-animation {
-  display: table-cell;
-  vertical-align: middle;
+.hide{
+  display: none;
+}
+
+.em-animation-background {
   background-color: #F1F1F1;
-  text-align: center;
-  font-size: 1.5vw;
   -webkit-transition: background-color 200ms linear;
   -moz-transition: background-color 200ms linear;
   -o-transition: background-color 200ms linear;
@@ -26,18 +26,109 @@
   transition: background-color 200ms linear;
 }
 
-#em-animation .icon-logo-text{
-  font-size: 8vw;
+#em-animation {
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+  font-size: 15px;
+  padding-left: 28px;
+  padding-right: 28px;
 }
 
-#em-animation .icon-play{
+#em-animation-0 {
+  font-size: 14px;
+}
+
+#em-animation .icon-logo-text{
+  font-size: 70px;
+  line-height: 75px;
+}
+
+/* Not iPhone 4/4s/5/5s */
+@media only screen and (min-width: 321px){
+  #em-animation, #em-animation-0{
+    font-size: 16px;
+  }
+}
+
+/* MEDIUM */
+@media only screen and (min-width: 40.063em){
+  #em-animation, #em-animation-0{
+    font-size: 19px;
+  }
+  #em-animation .icon-logo-text{
+    font-size: 100px;
+    line-height: 110px;
+  }
+}
+
+/* LARGE */
+@media only screen and (min-width: 66.063em){
+  #em-animation, #em-animation-0{
+    font-size: 1.5vw;
+  }
+  #em-animation .icon-logo-text{
+    font-size: 9vw;
+    line-height: 9.2vw;
+  }
+}
+
+/* EXTRA LARGE */
+@media only screen and (min-width: 90.063em){
+  #em-animation, #em-animation-0{
+    font-size: 1.3vw;
+  }
+  #em-animation .icon-logo-text{
+    font-size: 8vw;
+  }
+}
+
+#em-animation-play{
   position: absolute;
   z-index: 1;
-  left: 0;
+  cursor: pointer;
+  height: 100%;
+  width: 100%;
+  display: table;
   right: 0;
-  top: 19%;
+  left: 0;
+  top:0;
+}
+
+#em-animation-play .icon-play {
   color: #000000;
   opacity: 0.03;
-  font-size: 60vh;
-  cursor: pointer;
+  font-size: 55vh;
+  display: table-cell;
+  vertical-align: middle;
+}
+
+#em-animation-play .icon-play:after {
+  display: block;
+}
+
+#em-animation-16{
+  text-align: left;
+  top: 10%;
+  line-height: 50px;
+}
+
+#em-animation-16-you {
+  line-height: 40px;
+  vertical-align: 5px;
+}
+
+#em-animation-logo {
+  position: absolute;
+  padding-left: 28px;
+  top: 0;
+  left: 0;
+  font-size: 19px;
+  line-height: 66px;
+  height: 66px;
+}
+
+.animation-word {
+  padding-left: 10px;
+  padding-right: 10px;
 }

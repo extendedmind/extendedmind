@@ -1,16 +1,82 @@
 <div ng-if="entryState !== 'download'">
-  <section class="container-content">
+  <section class="container-content em-animation-background">
     <div class="group-instruction-jumbotron row">
-      <p class="group-instruction--header"><span class="icon-logo"></span></p>
-      <p class="group-instruction--main">
-        <span class="text-jumbotron">change</span><br/>
-        <span class="text-jumbotron">the way</span><br/>
-        <span class="text-jumbotron">you</span><br/>
-        <span class="text-jumbotron highlighted">think</span>
-      </p>
+      <div class="group-instruction--animation" >
+        <div id="em-animation">
+          <audio ng-if="useHTML5Audio()" id="theme">
+            <source ng-src="{{urlBase + 'audio/theme.ogg'}}" type="audio/ogg">
+            <source ng-src="{{urlBase + 'audio/theme.m4a'}}" type="audio/mp4">
+            <source ng-src="{{urlBase + 'audio/theme.mp3'}}" type="audio/mpeg">
+          </audio>
+          <span id="em-animation-logo" class="icon-logo"></span>
+          <div id="em-animation-play" ng-click="playExtendedMindAnimation()">
+            <span class="icon-play"></span>
+          </div>
+          <div id="em-animation-0">
+            <span class="icon-logo-text"></span></br></br>
+            <span>task and note organizer that keeps you zen</span>
+          </div>
+          <div id="em-animation-1" class="hide">
+            <span>what if you never had to forget anything again?</span>
+          </div>
+          <div id="em-animation-2" class="hide">
+            <span>what if software was an extension of you?</span>
+          </div>
+          <div id="em-animation-3" class="hide">
+            <span>your <b>mind</b> is bigger than you think</span>
+          </div>
+          <div id="em-animation-4" class="hide">
+            <span>but it is limited</span>
+          </div>
+          <div id="em-animation-5" class="hide">
+            <span>your subconscious mind can process over<br/>
+            <b>11.2 million</b> bits of information in a second</span>
+          </div>
+          <div id="em-animation-6" class="hide">
+            <span>your conscious mind: only <b>40</b></span>
+          </div>
+          <div id="em-animation-7" class="hide">
+            <span>we know how the <b>mind</b> works</span>
+          </div>
+          <div id="em-animation-8" class="hide">
+            <span>yet we design our tools the way software works</span>
+          </div>
+          <div id="em-animation-9" class="hide">
+            <span>it's time for a new perspective</span>
+          </div>
+          <div id="em-animation-10" class="hide">
+            <span>it's time to let the biological mind do what it does best:</span>
+          </div>
+          <div id="em-animation-11" class="hide">
+            <span id="em-animation-11-create" class="hidden animation-word">create</span>
+            <span id="em-animation-11-connect" class="hidden animation-word">connect</span>
+            <span id="em-animation-11-care" class="hidden animation-word">care</span>
+          </div>
+          <div id="em-animation-12" class="hide">
+            <span>it's time for the digital mind to do what it does best:</span>
+          </div>
+          <div id="em-animation-13" class="hide">
+            <span id="em-animation-13-focus" class="hidden animation-word">focus</span>
+            <span id="em-animation-13-organize" class="hidden animation-word">organize</span>
+            <span id="em-animation-13-store" class="hidden animation-word">store</span>
+          </div>
+          <div id="em-animation-14" class="hide">
+            <span>this is not a piece of software</span>
+          </div>
+          <div id="em-animation-15" class="hide">
+            <span>this is an <b>extension</b> to your <b>mind</b></span>
+          </div>
+          <div id="em-animation-16" class="hide">
+            <span id="em-animation-16-change" class="hidden text-jumbotron">change</span><br/>
+            <span id="em-animation-16-way" class="hidden text-jumbotron">the way</span><br/>
+            <span id="em-animation-16-you" class="hidden text-jumbotron nudge">you</span><br/>
+            <span id="em-animation-16-think" class="hidden text-jumbotron highlighted">think</span>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
-  <footer class="container-content--after group-btn">
+  <footer class="container-content--after group-btn em-animation-background">
     <button class="btn-action" ng-click="swipeToNewUser()">
       <span class="text-btn">new user</span>
     </button>

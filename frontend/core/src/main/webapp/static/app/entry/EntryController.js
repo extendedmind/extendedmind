@@ -49,6 +49,7 @@
     $scope.user = {};
     SwiperService.swipeTo('entry/main');
     SwiperService.setEnableSwipeToNext('entry', true);
+    if (angular.isFunction(pauseExtendedMindAnimation)) pauseExtendedMindAnimation();
     AnalyticsService.visitEntry('login');
   };
 
@@ -173,6 +174,44 @@
       });
     }
   };
+
+  function getAudioUrl(){
+    if (packaging === 'android-cordova'){
+      return 'file:///android_asset/www/' + $scope.urlBase + 'audio/theme.mp3';
+    }else if (packaging === 'ios-cordova'){
+      return $scope.urlBase + 'audio/theme.mp3';
+    }
+  }
+
+  $scope.useHTML5Audio = function(){
+    if (!packaging.endsWith('-cordova')){
+      return true;
+    }
+  };
+
+  $scope.playExtendedMindAnimation = function(){
+    if (!extendedMindAudio){
+      if ($scope.useHTML5Audio()){
+        setupHTML5Audio();
+      }else if (Media){
+        var src = getAudioUrl();
+        $scope.theme = new Media(src, function(success){if (extendedMindAudio !== undefined) extendedMindAudio.ended = true;});
+        extendedMindAudio = {
+          ended: false,
+          play: function(){
+            $scope.theme.play();
+          },
+          pause: function(){
+            $scope.theme.pause();
+          },
+          readyState: 1,
+          HAVE_FUTURE_DATA: 1
+        }
+      }
+    }
+    if (packaging === 'android-cordova') extendedMindAnimationDelay = 0.1;
+    playExtendedMindAnimation();
+  }
 }
 
 EntryController['$inject'] = ['$http', '$location', '$routeParams', '$scope',

@@ -1,14 +1,22 @@
 
-var animationPhase = 0;
-var audio = document.getElementById('theme');
+var extendedMindAnimationPhase;
+var extendedMindAudio;
+var extendedMindAnimationDelay = 0;
+function setupHTML5Audio(){
+  extendedMindAudio = document.getElementById('theme');
+}
+
 function playExtendedMindAnimation(){
-  $('#em-animation-play').hide();
-  if (audio.readyState >= audio.HAVE_FUTURE_DATA) {
-    startAnimation();
-  } else {
-    audio.addEventListener('canplay', function () {
+  if (extendedMindAnimationPhase === undefined){
+    $('#em-animation-play').hide();
+
+    if (extendedMindAudio.readyState >= extendedMindAudio.HAVE_FUTURE_DATA) {
       startAnimation();
-    }, false);
+    } else {
+      extendedMindAudio.addEventListener('canplay', function () {
+        startAnimation();
+      }, false);
+    }
   }
 
   function startAnimation(){
@@ -18,19 +26,22 @@ function playExtendedMindAnimation(){
 }
 
 function pauseExtendedMindAnimation(){
-  audio.pause();
-  var elem = getCurrentAnimationElement();
-  elem.addClass('paused');
-  var playElem = $('#em-animation-play');
-  playElem.show();
-  playElem.click(resumeExtendedMindAnimation);
-  $('#em-animation').off('click');
+  if (!extendedMindAudio.ended){
+    extendedMindAudio.pause();
+    var elem = getCurrentAnimationElement();
+    elem.addClass('paused');
+    var playElem = $('#em-animation-play');
+    playElem.show();
+    playElem.click(resumeExtendedMindAnimation);
+    $('#em-animation').off('click');
+  }
 }
 
 function resumeExtendedMindAnimation(){
-  audio.play();
+  extendedMindAudio.play();
   var volume = $('#volume');
   volume.removeClass('hide');
+  $('#em-animation-play').hide();
   var elem = getCurrentAnimationElement();
   elem.removeClass('paused');
   setTimeout(function(){
@@ -39,20 +50,20 @@ function resumeExtendedMindAnimation(){
 }
 
 function getCurrentAnimationElement(){
-  var animationId = "#em-animation-" + animationPhase;
+  var animationId = "#em-animation-" + extendedMindAnimationPhase;
   return $(animationId);
 }
 
 function switchPhases(){
-  animationPhase = animationPhase + 1;
-  $('#em-animation-' + (animationPhase-1)).hide();
+  extendedMindAnimationPhase = extendedMindAnimationPhase + 1;
+  $('#em-animation-' + (extendedMindAnimationPhase-1)).hide();
   var elem = getCurrentAnimationElement();
   elem.removeClass('hide');
   return elem;
 }
 
 function skipToAnimationPhase(phase){
-  animationPhase = phase-1;
+  extendedMindAnimationPhase = phase-1;
   $('#em-animation-0').hide();
   $('#em-animation-play').hide();
   setTimeout(function(){
@@ -64,69 +75,73 @@ function skipToAnimationPhase(phase){
 }
 
 function animatePhase0(){
+  extendedMindAnimationPhase = 0;
   var elem = $('#em-animation-0');
-  elem.animo( { animation: 'fadeOut', duration: 4.5, keep: true }, animatePhase1);
+  elem.animo( { animation: 'fadeOut', duration: (4.5 - extendedMindAnimationDelay), keep: true }, animatePhase1);
 }
 
 function animatePhase1(){
   var elem = switchPhases();
-  elem.animo( { animation: 'fadeIn', duration: 2, keep: true }, function(){
-    elem.animo( { animation: 'fadeOut', duration: 2, keep: true }, animatePhase2);
+  elem.animo( { animation: 'fadeIn', duration: (2 - extendedMindAnimationDelay), keep: true }, function(){
+    elem.animo( { animation: 'fadeOut', duration: (2 - extendedMindAnimationDelay), keep: true }, animatePhase2);
   });
 }
 function animatePhase2(){
   var elem = switchPhases();
-  elem.animo( { animation: 'fadeIn', duration: 2, keep: true }, function(){
+  elem.animo( { animation: 'fadeIn', duration: (2 - extendedMindAnimationDelay), keep: true }, function(){
     elem.animo( { animation: 'fadeOut', duration: 2.5, keep: true }, animatePhase3);
   });
 }
+
 function animatePhase3(){
   var elem = switchPhases();
-  elem.animo( { animation: 'fadeIn', duration: 2, keep: true }, function(){
-    elem.animo( { animation: 'fadeOut', duration: 2.5, keep: true }, animatePhase4);
+  elem.animo( { animation: 'fadeIn', duration: (2 - extendedMindAnimationDelay), keep: true }, function(){
+    elem.animo( { animation: 'fadeOut', duration: (2.5 - extendedMindAnimationDelay), keep: true }, animatePhase4);
   });
 }
 function animatePhase4(){
   var elem = switchPhases();
-  elem.animo( { animation: 'fadeIn', duration: 2, keep: true }, function(){
-    elem.animo( { animation: 'fadeOut', duration: 2.5, keep: true }, animatePhase5);
+  elem.animo( { animation: 'fadeIn', duration: (2 - extendedMindAnimationDelay), keep: true }, function(){
+    elem.animo( { animation: 'fadeOut', duration: (2.5 - extendedMindAnimationDelay), keep: true }, animatePhase5);
   });
 }
 function animatePhase5(){
   var elem = switchPhases();
-  elem.animo( { animation: 'fadeIn', duration: 2, keep: true }, function(){
-    elem.animo( { animation: 'fadeOut', duration: 2.5, keep: true }, animatePhase6);
+  elem.animo( { animation: 'fadeIn', duration: (2 - extendedMindAnimationDelay), keep: true }, function(){
+    elem.animo( { animation: 'fadeOut', duration: (2.5 - extendedMindAnimationDelay), keep: true }, animatePhase6);
   });
 }
 function animatePhase6(){
   var elem = switchPhases();
-  elem.animo( { animation: 'fadeIn', duration: 2, keep: true }, function(){
-    elem.animo( { animation: 'fadeOut', duration: 2.5, keep: true }, animatePhase7);
+  elem.animo( { animation: 'fadeIn', duration: (2 - extendedMindAnimationDelay), keep: true }, function(){
+    elem.animo( { animation: 'fadeOut', duration: (2.5 - extendedMindAnimationDelay), keep: true }, animatePhase7);
   });
 }
 function animatePhase7(){
   var elem = switchPhases();
-  elem.animo( { animation: 'fadeIn', duration: 2, keep: true }, function(){
-    elem.animo( { animation: 'fadeOut', duration: 2.5, keep: true }, animatePhase8);
+  elem.animo( { animation: 'fadeIn', duration: (2 - extendedMindAnimationDelay), keep: true }, function(){
+    elem.animo( { animation: 'fadeOut', duration: (2.5 - extendedMindAnimationDelay), keep: true }, animatePhase8);
   });
 }
 function animatePhase8(){
   var elem = switchPhases();
-  elem.animo( { animation: 'fadeIn', duration: 2, keep: true }, function(){
-    elem.animo( { animation: 'fadeOut', duration: 2.5, keep: true }, animatePhase9);
+  elem.animo( { animation: 'fadeIn', duration: (2 - extendedMindAnimationDelay), keep: true }, function(){
+    elem.animo( { animation: 'fadeOut', duration: (2.5 - extendedMindAnimationDelay), keep: true }, animatePhase9);
   });
 }
 function animatePhase9(){
   var elem = switchPhases();
-  $('#em-animation').css("background-color", "#FFFFFF");
+  $('.em-animation-background').each(function(i, obj) {
+    $(obj).css("background-color", "#FFFFFF");
+  });
   elem.animo( { animation: 'fadeIn', duration: 0.5, keep: true }, function(){
-    elem.animo( { animation: 'fadeOut', duration: 3.5, keep: true }, animatePhase10);
+    elem.animo( { animation: 'fadeOut', duration: (3.5 - extendedMindAnimationDelay), keep: true }, animatePhase10);
   });
 }
 function animatePhase10(){
   var elem = switchPhases();
-  elem.animo( { animation: 'fadeIn', duration: 2, keep: true }, function(){
-    elem.animo( { animation: 'fadeOut', duration: 2.5, keep: true }, animatePhase11);
+  elem.animo( { animation: 'fadeIn', duration: (2 - extendedMindAnimationDelay), keep: true }, function(){
+    elem.animo( { animation: 'fadeOut', duration: (2.5 - extendedMindAnimationDelay), keep: true }, animatePhase11);
   });
 }
 function animatePhase11(){
@@ -150,8 +165,8 @@ function animatePhase11(){
 }
 function animatePhase12(){
   var elem = switchPhases();
-  elem.animo( { animation: 'fadeIn', duration: 2, keep: true }, function(){
-    elem.animo( { animation: 'fadeOut', duration: 2.5, keep: true }, animatePhase13);
+  elem.animo( { animation: 'fadeIn', duration: (2 - extendedMindAnimationDelay), keep: true }, function(){
+    elem.animo( { animation: 'fadeOut', duration: (2.5 - extendedMindAnimationDelay), keep: true }, animatePhase13);
   });
 }
 function animatePhase13(){
@@ -176,19 +191,19 @@ function animatePhase13(){
 }
 function animatePhase14(){
   var elem = switchPhases();
-  elem.animo( { animation: 'fadeIn', duration: 2, keep: true }, function(){
-    elem.animo( { animation: 'fadeOutDown', duration: 2.5, keep: true }, animatePhase15);
+  elem.animo( { animation: 'fadeIn', duration: (2 - extendedMindAnimationDelay), keep: true }, function(){
+    elem.animo( { animation: 'fadeOutDown', duration: (2.5 - extendedMindAnimationDelay), keep: true }, animatePhase15);
   });
 }
 function animatePhase15(){
   var elem = switchPhases();
-  elem.animo( { animation: 'fadeIn', duration: 2, keep: true }, function(){
-    elem.animo( { animation: 'fadeOut', duration: 2.5, keep: true }, animatePhase16);
+  elem.animo( { animation: 'fadeIn', duration: (2 - extendedMindAnimationDelay), keep: true }, function(){
+    elem.animo( { animation: 'fadeOut', duration: (2.5 - extendedMindAnimationDelay), keep: true }, animatePhase16);
   });
 }
 function animatePhase16(){
   var elem = switchPhases();
-  elem.animo( { animation: 'fadeIn', duration: 2, keep: true });
+  elem.animo( { animation: 'fadeIn', duration: (2 - extendedMindAnimationDelay), keep: true });
 
   var changeElem = $('#em-animation-16-change');
   var wayElem = $('#em-animation-16-way');
@@ -202,7 +217,11 @@ function animatePhase16(){
       youElem.removeClass('hidden');
       youElem.animo( { animation: 'fadeIn', duration: 0.8, keep: true }, function(){
         thinkElem.removeClass('hidden');
-        thinkElem.animo( { animation: 'fadeIn', duration: 0.8, keep: true })
+        thinkElem.animo( { animation: 'fadeIn', duration: 0.8, keep: true }, function(){
+          $('#volume').animo({ animation: 'fadeOut', duration: 0.5 }, function(){
+            $('#volume').addClass('hide');
+          });
+        })
       });
     });
   });

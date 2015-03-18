@@ -241,7 +241,8 @@ Vertically center .container-master and .container-editor in large screens
 }
 
 // 3. Modal's bottom padding to make room for footer.
-.container-modal .container-fluid--inner {
+.container-modal .container-fluid--inner,
+.container-fluid--inner.small-footer-height {
   padding-bottom: @height-footer-short;
 }
 
@@ -301,6 +302,10 @@ Vertically center .container-master and .container-editor in large screens
 //          See http://css-tricks.com/snippets/css/sticky-footer/
 .container-master .container-content--after {
   bottom: -@height-footer;  // [1]
+}
+
+.container-fluid--inner.small-footer-height .container-content--after {
+  bottom: -@height-footer-short;
 }
 
 // 1. Footer with buttons is shorter.
@@ -662,10 +667,12 @@ Use `.group-instruction-jumbtron` to create a very large instruction block in th
       vertical-align: middle; // [2]
     }
   }
-  .group-instruction--main {
-    span {
-      line-height: @grid-vertical * 1.5;
-    }
+  .group-instruction--animation {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    display: table;
+    left: 0;
   }
 }
 

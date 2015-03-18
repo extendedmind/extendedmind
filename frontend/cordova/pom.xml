@@ -155,7 +155,7 @@
                   <overWrite>true</overWrite>
                   <outputDirectory>${basedir}/app/www</outputDirectory>
                   <includes>index.html,static/**</includes>
-                  <excludes>static/fonts/2A**</excludes>
+                  <excludes>static/${project.version}/audio/theme.m4a,static/${project.version}/audio/theme.ogg</excludes>
                 </artifactItem>
               </artifactItems>
             </configuration>
