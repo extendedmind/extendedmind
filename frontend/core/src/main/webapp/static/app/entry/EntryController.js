@@ -184,7 +184,7 @@
   }
 
   $scope.useHTML5Audio = function(){
-    if (!packaging.endsWith('-cordova')){
+    if (!packaging.endsWith('cordova')){
       return true;
     }
   };
@@ -210,7 +210,24 @@
       }
     }
     if (packaging === 'android-cordova') extendedMindAnimationDelay = 0.1;
+    else if (packaging === 'ios-cordova') extendedMindAnimationDelay = 0.05;
+
     playExtendedMindAnimation();
+  }
+
+  // Pause animation when entering background, not really working on iOS
+  if (packaging.endsWith('cordova')){
+    function pauseCallback(){
+      console.log('got pause')
+      if (extendedMindAudio && extendedMindAnimationPhase !== undefined){
+        console.log('calling pause animation')
+        pauseExtendedMindAnimation();
+      }
+    }
+    document.addEventListener('pause', pauseCallback, false);
+    $scope.$on('$destroy', function() {
+      document.removeEventListener('pause', pauseCallback, false);
+    });
   }
 }
 
