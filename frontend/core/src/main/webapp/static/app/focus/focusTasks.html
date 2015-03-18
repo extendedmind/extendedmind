@@ -1,7 +1,8 @@
 <div class="container-content--outer" list-container list-container-override-vertical-resize="true"
   drawer-handle="left"
   drawer-handle-register-activate="registerFeatureActivateCallback(activate, 'focus', 'focusTasks')">
-  <section ng-show="isOnboarded('focusTasks')" class="container-content" ng-controller="DatesController">
+  <section ng-show="!onboardingInProgress || isOnboardingListItemAddActive()"
+    class="container-content" ng-controller="DatesController">
 
     <div ng-if="datepickerVisible && columns > 1" editable-field-container="auto">
       <a href class="datepicker-back" ng-click="swipeDatepickerLeft()" editable-field>
@@ -576,24 +577,57 @@
       </div>
     </div>
   </section>
-  <footer ng-show="isOnboarded('focusTasks')" class="container-content--after" list-footer="getFeatureMap('focus')"></footer>
 
   <!-- ONBOARDING -->
-  <section ng-if="!isOnboarded('focusTasks')" class="container-content">
-    <div class="group-instruction">
-      <h2 class="group-heading instruction row">what to do right
-        <span class="highlighted">now</span>?
+  <section ng-if="onboardingInProgress" ng-hide="isOnboardingListItemAddActive()" class="container-content">
+
+    <!-- PHASE 1 -->
+    <div ng-if="!isOnboarded('focusTasks')" class="group-instruction">
+      <h2 class="group-heading instruction row">
+        <span>what do you want to <span class="highlighted">get done</span>?</span>
       </h2>
-      <div class="textgroup-ingress row">on this focus view you can see tasks  sorted by
-        <span class="text-highlighted">date</span>
+      <div class="textgroup-ingress row">
+        <span>add a <span class="text-highlighted">task</span> by clicking the plus sign below</span>
       </div>
-      <div class="textgroup-ingress last row">to change dates, click the today heading or swipe down</div>
     </div>
+
+    <!-- PHASE 2 -->
+    <div ng-if="isOnboarded('focusTasks') && !isOnboarded('agendaCalendar')" class="group-instruction">
+      <h2 class="group-heading instruction row">
+        <span>first <span class="highlighted">task</span> created!</span>
+      </h2>
+      <div class="textgroup-ingress row">
+        <span>next let's set up your agenda</span>
+      </div>
+    </div>
+
+    <!-- PHASE 3 -->
+    <div ng-if="isOnboarded('agendaCalendar')" class="group-instruction">
+      <h2 class="group-heading instruction row">
+        <span>tutorial <span class="highlighted">complete</span>!</span>
+      </h2>
+      <div class="textgroup-ingress row">
+        <span>to back up your data
+          <a href class="highlighted" ng-click="completeOnboarding('user')"><span>sign up</span></a>
+          now for a free account
+        </span>
+      </div>
+    </div>
+
   </section>
-  <footer ng-if="!isOnboarded('focusTasks')" class="container-content--after group-btn">
-    <button type="submit" class="btn-action" ng-click="completeOnboarding('focusTasks')">
+
+  <footer ng-if="onboardingInProgress && isOnboarded('focusTasks')" class="container-content--after group-btn">
+    <button type="submit" ng-if="!isOnboarded('agendaCalendar')" class="btn-action"
+      ng-click="openEditor('user', undefined, 'agendaCalendar')">
+      <span class="text-btn">set up calendars</span>
+    </button>
+    <button type="submit" ng-if="isOnboarded('agendaCalendar')" class="btn-action" ng-click="completeOnboarding()">
       <span class="text-btn">got it</span>
     </button>
+  </footer>
+
+  <footer class="container-content--after" ng-hide="onboardingInProgress && isOnboarded('focusTasks')"
+    list-footer="getFeatureMap('focus')">
   </footer>
 
 </div>

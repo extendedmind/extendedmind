@@ -20,14 +20,6 @@
 
   AnalyticsService.visitEntry('entry');
 
-  if (UserSessionService.getUserUUID()) {
-    $scope.userAuthenticated = true;
-    var userPreferences = UserSessionService.getPreferences();
-    if (!userPreferences || !userPreferences.onboarded) {
-      $scope.showTutorial = true;
-    }
-  }
-
   if (packaging === 'web' && DetectBrowserService.isMobile()){
     $scope.entryState = 'download';
   }
@@ -35,14 +27,6 @@
   if ($routeParams.offline === 'true'){
     UserSessionService.enableOffline(true);
   }
-
-  $scope.swipeToNewUser = function() {
-    $scope.entryState = 'newUser';
-    $scope.user = {};
-    SwiperService.swipeTo('entry/main');
-    SwiperService.setEnableSwipeToNext('entry', false);
-    AnalyticsService.visitEntry('newUser');
-  };
 
   $scope.swipeToLogin = function() {
     $scope.entryState = 'login';
@@ -130,23 +114,10 @@
 
   // TUTORIAL
 
-  $scope.skipTutorial = function() {
-    var userUUID = UserSessionService.createFakeUserUUID()
-    UserSessionService.setPreference('onboarded', packaging);
-    UserService.saveAccountPreferences();
-    AnalyticsService.doWithUuid('skipTutorial', undefined, userUUID);
-    $location.path('/my');
-  };
   $scope.startTutorial = function() {
-    var userUUID = UserSessionService.createFakeUserUUID()
+    var userUUID = UserSessionService.createFakeUserUUID();
     AnalyticsService.doWithUuid('startTutorial', undefined, userUUID);
     $location.path('/my');
-  };
-  $scope.disableSkipTutorial = function(){
-    // In the web version, disable skipping the tutorial as it is vital
-    // that we inform the user that her data is stored only on current
-    // browser tab
-    if (packaging === 'web') return true;
   };
 
   // FORGOT

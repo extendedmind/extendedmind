@@ -112,6 +112,14 @@
   if ($scope.mode === 'agendaCalendar') {
     $scope.agendaCalendarEnabled = UserSessionService.getUIPreference('showAgendaCalendar');
     if ($scope.agendaCalendarEnabled) listCalendars();
+    if (!$scope.isOnboarded('agendaCalendar') && angular.isFunction($scope.registerEditorClosedCallback))
+      $scope.registerEditorClosedCallback(agendaEditorClosed, 'UserEditorController');
+  }
+  function agendaEditorClosed() {
+    $scope.setOnboarded('agenda', true);
+
+    if (angular.isFunction($scope.unregisterEditorClosedCallback))
+      $scope.unregisterEditorClosedCallback(agendaEditorClosed, 'UserEditorController');
   }
 
   $scope.changePassword = function (oldPassword, newPassword) {

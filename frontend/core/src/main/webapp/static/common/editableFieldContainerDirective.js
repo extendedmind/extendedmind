@@ -58,7 +58,7 @@
       scope.activateContainer = function() {
         if (!scope.containerActive){
           backdropController.activateContainer(element[0], attrs.editableFieldContainerBlur !== undefined);
-          element.bind('click', clickedContainer);
+          element[0].addEventListener('click', clickedContainer, false);
           element.addClass('active');
           scope.containerActive = true;
           if (attrs.editableFieldContainerScrollable) {

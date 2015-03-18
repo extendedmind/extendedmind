@@ -223,13 +223,6 @@ Navigation texts
   .dont-break-words();
 }
 
-.text-navigation-inline {
-  color: @color-text-downplayed;
-  font-size: @size-font-small;
-  .set-font-bold();
-  display:inline-block;
-}
-
 @width-arrow-text-gap: 5px;
 @width-arrow-text-gap-rotated: 15px;
 .text-navigation-back:not(.not-swipeable):before {
@@ -306,18 +299,6 @@ Navigation texts
   content: @icon-arrow-right-narrow;
   vertical-align: middle;
   vertical-align: -2%;
-}
-
-.text-navigation-forward-double:before, .text-navigation-forward-double:after {
-  .set-icon-font();
-  content: @icon-arrow-right;
-  color: @color-text-downplayed;
-  font-size: @size-icon-arrow-small;
-  vertical-align: middle;
-  vertical-align: -2%;
-}
-.text-navigation-forward-double:before {
-  padding-left: @width-arrow-text-gap;
 }
 
 /*

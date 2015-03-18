@@ -21,7 +21,7 @@
       $element.addClass('editable-field-backdrop');
 
       var containerInfos = [];
-      var preventBackdropBubbleClick;
+      var preventBackdropBubbleClick, preventContainerBubbleClick;
       var backdropActive;
 
       this.registerContainer = function(id, deactivateFn, callback){
@@ -80,7 +80,8 @@
                 // NOTE: use $apply because callback may not be inside scope.
                 if (!$scope.$$phase && !$rootScope.$$phase)
                   $scope.$apply(containerInfos[j].clickedElsewhere);
-                else containerInfos[j].clickedElsewhere();
+                else
+                  containerInfos[j].clickedElsewhere();
               }
             }
           }
@@ -94,6 +95,7 @@
           //        event. event.stopPropagation() would be more reliable though if we were sure this
           //        function is not and will not be depended on click.
           preventBackdropBubbleClick = event.timeStamp;
+          preventContainerBubbleClick = event.timeStamp;
         }
 
         // activate container
@@ -113,6 +115,7 @@
 
       this.deactivateContainer = function(id) {
         preventBackdropBubbleClick = false;
+        preventContainerBubbleClick = false;
 
         // mark container info deactivated
         var containerInfo = containerInfos.findFirstObjectByKeyValue('id', id);
@@ -133,9 +136,19 @@
       * Click event bubbles to backdrop where clicked information is used.
       */
       this.notifyContainerClicked = function(id) {
+        if (preventContainerBubbleClick) {
+          if (preventContainerBubbleClick > Date.now() - 400){
+            // Event bubbled from undesired click less than 400ms ago. Do nothing.
+            preventContainerBubbleClick = false;
+            return;
+          }
+          preventContainerBubbleClick = false;
+        }
+
         var containerInfo = containerInfos.findFirstObjectByKeyValue('id', id);
-        if (containerInfo)
+        if (containerInfo) {
           containerInfo.clicked = true;
+        }
       };
     }]
   };

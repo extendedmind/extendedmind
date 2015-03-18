@@ -82,6 +82,21 @@ angular.module('em.appTest')
       }
     });
 
+    $routeProvider.when('/tutorial', {
+      resolve: {
+        auth: ['$location', '$route', 'AuthenticationService', 'UserSessionService',
+        function($location, $route, AuthenticationService, UserSessionService) {
+          localStorage.clear();
+          sessionStorage.clear();
+          if ($route.current.params.offline)
+            UserSessionService.enableOffline(true);
+
+          UserSessionService.createFakeUserUUID();
+          $location.path('/');
+        }]
+      }
+    });
+
     $routeProvider.when('/login', {
       resolve: {
         auth: ['$location', '$route', 'AuthenticationService', 'UserSessionService',

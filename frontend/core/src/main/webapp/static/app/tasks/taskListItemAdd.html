@@ -1,6 +1,6 @@
 <form role="form" class="group-mixed with-checkbox with-textarea swiper-no-swiping"
   ng-submit="callAndExit(saveTask, newItem)" data-snap-ignore="true" editable-field-container
-  editable-field-container-clicked-elsewhere="clickedElsewhere({clickedElsewhereDisabled: onboardingInProgress})"
+  editable-field-container-clicked-elsewhere="clickedElsewhere({keepEmptyFieldActivated: onboardingInProgress})"
   autocapitalize="none" autocorrect="off">
   <div class="group-mixed--left">
     <input type="checkbox" ng-model="newItem.trans.optimisticComplete" ng-model-options="{getterSetter: true}"
@@ -22,7 +22,7 @@
 </form>
 
 <!-- ONBOARDING -->
-<div ng-if="onboardingInProgress && !isOnboarded('tasks')" class="group-instruction-input">
+<div ng-if="onboardingInProgress && !isOnboarded('focusTasks')" class="group-instruction-input">
   <div ng-show="!newItem.trans.title || newItem.trans.title.length === 0" class="text-details row">
     e.g. call mom, email boss, buy milk
   </div>

@@ -57,13 +57,15 @@
           }
 
           scope.clickedElsewhere = function(options){
-            if (!options || !options.clickedElsewhereDisabled) {
-              // Only execute when not disabled.
-              if (scope.newItem.trans.title && scope.newItem.trans.title.length > 0) {
-                saveNewItem(scope.newItem);
-              }
-              exit();
+            var itemHasTitle = scope.newItem.trans.title && scope.newItem.trans.title.length > 0;
+            if (itemHasTitle) {
+              saveNewItem(scope.newItem);
             }
+            if (!itemHasTitle && options && options.keepEmptyFieldActivated) {
+              // Do not execute exit when item does not have a title and empty field is kept activated.
+              return;
+            }
+            exit();
           };
 
           scope.getListItemAddId = function(){

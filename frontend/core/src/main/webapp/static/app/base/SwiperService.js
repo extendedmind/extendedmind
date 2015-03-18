@@ -110,10 +110,13 @@ function SwiperService($q, $timeout) {
     var rightEdgeTouchRatio = (overrideSwiperParams[swiperPath] ?
                                overrideSwiperParams[swiperPath].rightEdgeTouchRatio : undefined);
 
+    var onlyExternal = (overrideSwiperParams[swiperPath] ?
+                        overrideSwiperParams[swiperPath].onlyExternal : false);
+
     var swiperParams = {
       speed: 300, // set default speed for reference purposes only
       moveStartThreshold: 10, // same than touchBoundary FastClick and minDragDistance in Snap.js
-      onlyExternal: false,
+      onlyExternal: onlyExternal,
       noSwiping: true,
       loop: loop ? true : false,
       loopDuplicateSlidesIncluded: loop ? true : false,
@@ -438,9 +441,17 @@ function SwiperService($q, $timeout) {
       }
       return true;
     },
-    setOnlyExternal: function(swiperPath, swipe) {
+    setOnlyExternal: function(swiperPath, onlyExternal) {
       if (swipers[swiperPath] && swipers[swiperPath].swiper) {
-        swipers[swiperPath].swiper.params.onlyExternal = swipe;
+        swipers[swiperPath].swiper.params.onlyExternal = onlyExternal;
+      } else {
+        if (overrideSwiperParams[swiperPath]) {
+          overrideSwiperParams[swiperPath].onlyExternal = onlyExternal;
+        } else {
+          overrideSwiperParams[swiperPath] = {
+            onlyExternal: onlyExternal
+          };
+        }
       }
     },
     setOnlyExternalSwiperAndChildSwipers: function(swiperPath, onlyExternal) {

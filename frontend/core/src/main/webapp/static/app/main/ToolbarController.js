@@ -68,19 +68,7 @@
   };
 
   $scope.isToolbarMenuHidden = function() {
-    if ($scope.onboardingInProgress) {
-      var activeFeature = $scope.getActiveFeature();
-      if (!$scope.isOnboarded('tasks')) {
-        return true;
-      }
-      else if (activeFeature === 'lists') {
-        if ((!$scope.isOnboarded('lists') && $scope.isOnboardingListItemAddActive()) ||
-            $scope.isOnboarded('lists'))
-        {
-          return true;
-        }
-      }
-    }
+    return $scope.onboardingInProgress;
   };
 
   function switchFeature() {

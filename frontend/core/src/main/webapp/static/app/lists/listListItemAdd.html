@@ -1,6 +1,6 @@
 <form role="form" class="group-mixed vertically-centered swiper-no-swiping"
   ng-submit="callAndExit(saveList, newItem)" data-snap-ignore="true" editable-field-container
-  editable-field-container-clicked-elsewhere="clickedElsewhere({clickedElsewhereDisabled: onboardingInProgress})"
+  editable-field-container-clicked-elsewhere="clickedElsewhere({keepEmptyFieldActivated: onboardingInProgress})"
   autocapitalize="none" autocorrect="off">
   <div class="group-mixed--left">
     <a href swiper-click="!onboardingInProgress ? callAndExit(saveListAndChangeFeature, newItem) : undefined">
