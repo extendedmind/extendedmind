@@ -59,15 +59,21 @@
     getNewTag: function(initialValues, ownerUUID) {
       return ItemLikeService.getNew(initialValues, 'tag', ownerUUID, tagFieldInfos);
     },
-    setTags: function(tagsResponse, ownerUUID, skipPersist) {
+    setTags: function(tagsResponse, ownerUUID, skipPersist, addToExisting) {
       if (skipPersist){
         ItemLikeService.resetTrans(tagsResponse, 'tag', ownerUUID, tagFieldInfos);
       }else{
         ItemLikeService.persistAndReset(tagsResponse, 'tag', ownerUUID, tagFieldInfos);
       }
-      return ArrayService.setArrays('tags', tagsResponse,
+      if (addToExisting){
+        return ArrayService.updateArrays('tags', tagsResponse,
                                     tags[ownerUUID].activeTags,
                                     tags[ownerUUID].deletedTags);
+      }else{
+        return ArrayService.setArrays('tags', tagsResponse,
+                                    tags[ownerUUID].activeTags,
+                                    tags[ownerUUID].deletedTags);
+      }
     },
     updateTags: function(tagsResponse, ownerUUID) {
       if (tagsResponse && tagsResponse.length){

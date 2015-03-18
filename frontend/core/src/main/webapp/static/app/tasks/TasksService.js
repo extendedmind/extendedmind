@@ -290,16 +290,24 @@
       item.trans.optimisticComplete = optimisticComplete;
       return item;
     },
-    setTasks: function(tasksResponse, ownerUUID, skipPersist) {
+    setTasks: function(tasksResponse, ownerUUID, skipPersist, addToExisting) {
       if (skipPersist){
         ItemLikeService.resetTrans(tasksResponse, 'task', ownerUUID, taskFieldInfos);
       }else{
         ItemLikeService.persistAndReset(tasksResponse, 'task', ownerUUID, taskFieldInfos);
       }
-      return ArrayService.setArrays('tasks', tasksResponse,
+      if (addToExisting){
+        return ArrayService.updateArrays('tasks', tasksResponse,
+                                         tasks[ownerUUID].activeTasks,
+                                         tasks[ownerUUID].deletedTasks,
+                                         getOtherArrays(ownerUUID));
+      }else{
+
+        return ArrayService.setArrays('tasks', tasksResponse,
                                     tasks[ownerUUID].activeTasks,
                                     tasks[ownerUUID].deletedTasks,
                                     getOtherArrays(ownerUUID));
+      }
     },
     updateTasks: function(tasksResponse, ownerUUID) {
       if (tasksResponse && tasksResponse.length){

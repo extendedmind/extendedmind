@@ -831,14 +831,14 @@
       });
   }
 
-  function setItemArrays(itemsByType, ownerUUID, skipPersist){
+  function setItemArrays(itemsByType, ownerUUID, skipPersist, addToExisting){
     var latestTag, latestList, latestTask, latestItem, latestNote;
     // Reset all arrays
-    latestTag = TagsService.setTags(itemsByType.tags, ownerUUID, skipPersist);
-    latestList = ListsService.setLists(itemsByType.lists, ownerUUID, skipPersist);
-    latestTask = TasksService.setTasks(itemsByType.tasks, ownerUUID, skipPersist);
-    latestNote = NotesService.setNotes(itemsByType.notes, ownerUUID, skipPersist);
-    latestItem = ItemsService.setItems(itemsByType.items, ownerUUID, skipPersist);
+    latestTag = TagsService.setTags(itemsByType.tags, ownerUUID, skipPersist, addToExisting);
+    latestList = ListsService.setLists(itemsByType.lists, ownerUUID, skipPersist, addToExisting);
+    latestTask = TasksService.setTasks(itemsByType.tasks, ownerUUID, skipPersist, addToExisting);
+    latestNote = NotesService.setNotes(itemsByType.notes, ownerUUID, skipPersist, addToExisting);
+    latestItem = ItemsService.setItems(itemsByType.items, ownerUUID, skipPersist, addToExisting);
     var latestModified = null;
     if (latestTag || latestList || latestTask || latestNote || latestItem) {
       // Set latest modified
@@ -851,7 +851,7 @@
   }
 
   function updateItemArrays(response, ownerUUID){
-    // Update all arrays with archived values
+    // Update all arrays with values
     var latestTag, latestList, latestTask, latestItem, latestNote;
     latestTag = TagsService.updateTags(response.tags, ownerUUID);
     latestList = ListsService.updateLists(response.lists, ownerUUID);
@@ -931,7 +931,7 @@
                                              ownerUUID +
                                              '/items?archived=true&completed=true&active=false',
                                              getItemsRegex, undefined, true).then(function(response) {
-      updateItemArrays(response, ownerUUID);
+      setItemArrays(response, ownerUUID, false, true);
       return response;
     });
   }
@@ -941,7 +941,7 @@
                                              ownerUUID +
                                              '/items?deleted=true&active=false',
                                              getItemsRegex, undefined, true).then(function(response) {
-      updateItemArrays(response, ownerUUID);
+      setItemArrays(response, ownerUUID, false, true);
       return response;
     });
   }

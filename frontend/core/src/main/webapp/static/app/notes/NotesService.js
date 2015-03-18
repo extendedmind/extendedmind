@@ -177,15 +177,21 @@
     getNewNote: function(initialValues, ownerUUID) {
       return ItemLikeService.getNew(initialValues, 'note', ownerUUID, noteFieldInfos);
     },
-    setNotes: function(notesResponse, ownerUUID, skipPersist) {
+    setNotes: function(notesResponse, ownerUUID, skipPersist, addToExisting) {
       if (skipPersist){
         ItemLikeService.resetTrans(notesResponse, 'note', ownerUUID, noteFieldInfos);
       }else{
         ItemLikeService.persistAndReset(notesResponse, 'note', ownerUUID, noteFieldInfos);
       }
-      return ArrayService.setArrays('notes', notesResponse,
+      if (addToExisting){
+        return ArrayService.updateArrays('notes', notesResponse,
                                     notes[ownerUUID].activeNotes,
                                     notes[ownerUUID].deletedNotes, getOtherArrays(ownerUUID));
+      }else{
+        return ArrayService.setArrays('notes', notesResponse,
+                                    notes[ownerUUID].activeNotes,
+                                    notes[ownerUUID].deletedNotes, getOtherArrays(ownerUUID));
+      }
     },
     updateNotes: function(notesResponse, ownerUUID) {
       if (notesResponse && notesResponse.length){

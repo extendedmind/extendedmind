@@ -101,16 +101,25 @@
     getNewList: function(initialValues, ownerUUID) {
       return ItemLikeService.getNew(initialValues, 'list', ownerUUID, listFieldInfos);
     },
-    setLists: function(listsResponse, ownerUUID, skipPersist) {
+    setLists: function(listsResponse, ownerUUID, skipPersist, addToExisting) {
       if (skipPersist){
         ItemLikeService.resetTrans(listsResponse, 'list', ownerUUID, listFieldInfos);
       }else{
         ItemLikeService.persistAndReset(listsResponse, 'list', ownerUUID, listFieldInfos);
       }
-      return ArrayService.setArrays('lists', listsResponse,
+
+      if (addToExisting){
+        return ArrayService.updateArrays('lists', listsResponse,
+                                                       lists[ownerUUID].activeLists,
+                                                       lists[ownerUUID].deletedLists,
+                                                       getOtherArrays(ownerUUID));
+
+      }else{
+        return ArrayService.setArrays('lists', listsResponse,
                                     lists[ownerUUID].activeLists,
                                     lists[ownerUUID].deletedLists,
                                     getOtherArrays(ownerUUID));
+      }
     },
     updateLists: function(listsResponse, ownerUUID) {
       if (listsResponse && listsResponse.length){
