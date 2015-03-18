@@ -235,7 +235,12 @@ function PersistentStorageService($q) {
     destroy: destroy,
     destroyAll: function(){
       var deferred = $q.defer();
+      if (!database) database = Lawnchair({name:'items'});
       if (database){
+        if (persistQueue.length > 0){
+          // Empty all currently persisting actions before nuking
+          persistQueue = [];
+        }
         database.nuke(function(){
           database = undefined;
           deferred.resolve();
