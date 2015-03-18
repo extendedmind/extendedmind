@@ -216,14 +216,12 @@
   }
 
   // Pause animation when entering background, not really working on iOS
-  if (packaging.endsWith('cordova')){
-    function pauseCallback(){
-      console.log('got pause')
-      if (extendedMindAudio && extendedMindAnimationPhase !== undefined){
-        console.log('calling pause animation')
-        pauseExtendedMindAnimation();
-      }
+  function pauseCallback(){
+    if (extendedMindAudio && extendedMindAnimationPhase !== undefined){
+      pauseExtendedMindAnimation();
     }
+  }
+  if (packaging.endsWith('cordova')){
     document.addEventListener('pause', pauseCallback, false);
     $scope.$on('$destroy', function() {
       document.removeEventListener('pause', pauseCallback, false);
