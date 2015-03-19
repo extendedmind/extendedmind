@@ -166,7 +166,13 @@
         setupHTML5Audio();
       }else if (Media){
         var src = getAudioUrl();
-        $scope.theme = new Media(src, function(success){if (extendedMindAudio !== undefined) extendedMindAudio.ended = true;});
+        $scope.theme = new Media(src, function(success){
+          if (extendedMindAudio !== undefined) extendedMindAudio.ended = true;
+          if (packaging === 'android-cordova'){
+            // TODO: Fork and improve KeepScreenOnPlugin
+            cordova.exec(null, null, "KeepScreenOn", "CancelKeepScreenOn", [""]);
+          }
+        });
         extendedMindAudio = {
           ended: false,
           play: function(){
@@ -180,8 +186,14 @@
         }
       }
     }
-    if (packaging === 'android-cordova') extendedMindAnimationDelay = 0.1;
-    else if (packaging === 'ios-cordova') extendedMindAnimationDelay = 0.05;
+    if (packaging === 'android-cordova'){
+      extendedMindAnimationDelay = 0.1;
+      // TODO: Fork and improve KeepScreenOnPlugin
+      cordova.exec(null, null, "KeepScreenOn", "KeepScreenOn", [""]);
+    }
+    else if (packaging === 'ios-cordova'){
+      extendedMindAnimationDelay = 0.05;
+    }
 
     playExtendedMindAnimation();
   }

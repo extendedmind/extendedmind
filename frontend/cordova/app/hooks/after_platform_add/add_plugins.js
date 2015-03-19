@@ -7,7 +7,8 @@ var pluginlist = [
     "org.apache.cordova.vibration",
     "org.apache.cordova.media",
     "https://github.com/apache/cordova-plugin-splashscreen.git",
-    "https://github.com/extendedmind/Calendar-PhoneGap-Plugin.git"
+    "https://github.com/extendedmind/Calendar-PhoneGap-Plugin.git",
+    "https://github.com/leohenning/KeepScreenOnPlugin"
 ];
 
 // no need to configure below
