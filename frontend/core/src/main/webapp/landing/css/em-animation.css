@@ -105,6 +105,10 @@
   font-size: 55vh;
   display: table-cell;
   vertical-align: middle;
+  -webkit-animation: pulse-play ease-in-out 2.5s infinite;
+  -moz-animation:    pulse-play ease-in-out 2.5s infinite;
+  -o-animation:      pulse-play ease-in-out 2.5s infinite;
+  animation:         pulse-play ease-in-out 2.5s infinite;
 }
 
 #em-animation-play .icon-play:after {
@@ -135,4 +139,25 @@
 .animation-word {
   padding-left: 10px;
   padding-right: 10px;
+}
+
+@-webkit-keyframes pulse-play {
+  0%   { opacity: 0.01; }
+  50% { opacity: 0.08; }
+  100%   { opacity: 0.01; }
+}
+@-moz-keyframes pulse-play {
+  0%   { opacity: 0.01; }
+  50% { opacity: 0.08; }
+  100%   { opacity: 0.01; }
+}
+@-o-keyframes pulse-play {
+  0%   { opacity: 0.01; }
+  50% { opacity: 0.08; }
+  100%   { opacity: 0.01; }
+}
+@keyframes pulse-play {
+  0%   { opacity: 0.01; }
+  50% { opacity: 0.08; }
+  100%   { opacity: 0.01; }
 }
