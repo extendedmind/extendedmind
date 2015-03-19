@@ -173,6 +173,7 @@
       var listData = {
         element: element[0],
         setLimits: setLimits,
+        setIsNearListBottom: setIsNearListBottom,
         getCurrentListStartIndex: function() {
           return scope.currentListStartIndex;
         },
@@ -224,6 +225,12 @@
         }
         // Did we return into list that has been scrolled near the bottom.
         setIsNearListBottom();
+        if (scope.listOptions.duplicate) {
+          var duplicateListData = controllers[0].getDuplicateListData(scope.listOptions.id);
+          if (duplicateListData) {
+            duplicateListData.setIsNearListBottom();
+          }
+        }
       }
 
       function listInActive() {
@@ -540,9 +547,13 @@
 
       function setIsNearListBottom() {
         if (scope.currentListLimitTo >= scope.getFilteredFullArrayLength()) {
-          if (angular.isFunction(scope.isNearListBottomCallback)) scope.isNearListBottomCallback(false);
+          if (angular.isFunction(scope.isNearListBottomCallback)) {
+            scope.isNearListBottomCallback(false);
+          }
         } else if (scope.getFilteredFullArrayLength()) {
-          if (angular.isFunction(scope.isNearListBottomCallback)) scope.isNearListBottomCallback(true);
+          if (angular.isFunction(scope.isNearListBottomCallback)) {
+            scope.isNearListBottomCallback(true);
+          }
         }
       }
 

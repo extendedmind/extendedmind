@@ -25,48 +25,63 @@
   // AGENDA CALENDAR
 
   function listCalendars() {
-    // TODO: get list from cache
 
     if (window.plugins && window.plugins.calendar) {
 
       var listCalendarsSuccess = function(calendars) {
-        $timeout(function() {
-          if (calendars && calendars.length) {
-            var i;
-            var calendarStates = UserSessionService.getUIPreference('calendars');
-            var calendarStatesChanged;
-            $scope.calendars = calendars;
+        // Wrap inside timeout to see changes in the UI.
+        if (calendars && calendars.length) {
+          var i;
+          var calendarStates = UserSessionService.getUIPreference('calendars');
+          var calendarStatesChanged;
+          $scope.calendars = calendars;
 
-            if (calendarStates) {
-              // Previous states exists.
-              for (i = 0; i < calendars.length; i++) {
-                var savedCalendar = calendarStates.findFirstObjectByKeyValue('id', calendars[i].id);
-                if (savedCalendar) {
-                  $scope.calendars[i].enabled = savedCalendar.enabled;
-                } else {
-                  calendarStates.push({
-                    id: calendars[i].id,
-                    name: calendars[i].name
-                  });
-                  calendarStatesChanged = true;
-                }
+          if (calendarStates && calendarStates.length) {
+            // Previous states exists.
+
+            i = calendarStates.length;
+            while (i--) {
+              var calendarExists = calendars.findFirstObjectByKeyValue('id', calendarStates[i].id);
+              if (!calendarExists) {
+                // Remove non-existing calendar.
+                calendarStates.splice(i, 1);
+                calendarStatesChanged = true;
               }
-            } else {
-              // New states.
-              calendarStates = [];
-              for (i = 0; i < calendars.length; i++) {
+            }
+
+            for (i = 0; i < calendars.length; i++) {
+              var savedCalendar = calendarStates.findFirstObjectByKeyValue('id', calendars[i].id);
+              if (savedCalendar) {
+                // Update saved calendar.
+                $scope.calendars[i].enabled = savedCalendar.enabled;
+              } else {
+                // Add new calendar.
                 calendarStates.push({
                   id: calendars[i].id,
                   name: calendars[i].name
                 });
+                calendarStatesChanged = true;
               }
-              calendarStatesChanged = true;
             }
-
-            if (calendarStatesChanged) updateCalendars(calendarStates);
+          } else {
+            // New states.
+            calendarStates = [];
+            for (i = 0; i < calendars.length; i++) {
+              calendarStates.push({
+                id: calendars[i].id,
+                name: calendars[i].name
+              });
+            }
+            calendarStatesChanged = true;
           }
-          $scope.calendarsLoaded = true;
-        }, 0);
+
+          if (calendarStatesChanged) updateCalendars(calendarStates);
+        }
+        $scope.calendarsLoaded = true;
+        if (!$scope.$$phase && !$rootScope.$$phase) {
+          // Update UI
+          $scope.$digest();
+        }
       };
       var listCalendarsError = function(/*message*/) {
         // TODO
@@ -75,13 +90,6 @@
       window.plugins.calendar.listCalendars(listCalendarsSuccess, listCalendarsError);
     }
   }
-
-  $scope.toggleAgendaCalendar = function() {
-    $scope.agendaCalendarEnabled = !$scope.agendaCalendarEnabled;
-    UserSessionService.setUIPreference('showAgendaCalendar', $scope.agendaCalendarEnabled);
-    UserService.saveAccountPreferences();
-    if ($scope.agendaCalendarEnabled) listCalendars();
-  };
 
   function updateCalendars(calendars){
     UserSessionService.setUIPreference('calendars', calendars);
@@ -110,8 +118,7 @@
   };
 
   if ($scope.mode === 'agendaCalendar') {
-    $scope.agendaCalendarEnabled = UserSessionService.getUIPreference('showAgendaCalendar');
-    if ($scope.agendaCalendarEnabled) listCalendars();
+    listCalendars();
     if (!$scope.isOnboarded('agendaCalendar') && angular.isFunction($scope.registerEditorClosedCallback))
       $scope.registerEditorClosedCallback(agendaEditorClosed, 'UserEditorController');
   }

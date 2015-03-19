@@ -51,17 +51,14 @@
 
   function focusActive(featureChanged) {
     if (featureChanged) {
-      // Swipe to today without animation before next repaint when feature changes,
-      // ng-show is evaluated and the DOM is rendered.
+      // Swipe to today without animation and refresh agenda events and visibility before next repaint
+      // when feature changes, ng-show is evaluated and the DOM is rendered.
       // NOTE: use setTimeout(callback, 0) if requestAnimationFrame is not working.
       window.requestAnimationFrame(function() {
         $scope.changeDaySlide(DateService.getTodayYYYYMMDD(), 0);
+        refreshAgendaEventsAndVisibility();
       });
 
-      if (UserSessionService.getUIPreference('showAgendaCalendar')) {
-        var savedCalendars = UserSessionService.getUIPreference('calendars');
-        if (savedCalendars) listCalendars(savedCalendars);
-      }
     }
     else {
       // Swipe to today slide immediately.
@@ -70,11 +67,12 @@
   }
 
   if (angular.isFunction($scope.registerSynchronizeCallback))
-    $scope.registerSynchronizeCallback(detectDayChange, 'DatesController');
+    $scope.registerSynchronizeCallback(detectDayChangeAndRefreshAgenda, 'DatesController');
 
   var today = DateService.getTodayDateWithoutTime();  // Today (date only, without time) for reference.
 
-  function detectDayChange() {
+  function detectDayChangeAndRefreshAgenda() {
+    // Detect day change
     var newToday = DateService.getTodayDateWithoutTime();
 
     if (today !== newToday) {
@@ -100,10 +98,8 @@
       }
     }
 
-    if ($scope.getActiveFeature() === 'focus' && UserSessionService.getUIPreference('showAgendaCalendar')) {
-      var savedCalendars = UserSessionService.getUIPreference('calendars');
-      if (savedCalendars) listCalendars(savedCalendars);
-    }
+    // Refresh agenda.
+    if ($scope.getActiveFeature() === 'focus') refreshAgenda();
   }
 
 
@@ -371,10 +367,8 @@
     datepickerWeeksInfosCleared = false;
     previousActiveIndex = undefined;
     preventDaySlideChange = false;
-    if (UserSessionService.getUIPreference('showAgendaCalendar')) {
-      var savedCalendars = UserSessionService.getUIPreference('calendars');
-      if (savedCalendars) listCalendars(savedCalendars);
-    }
+
+    refreshAgenda();
   }
 
   function clearDatepickerSlidesInfos() {
@@ -487,10 +481,7 @@
   function gotoToday() {
     $scope.changeDaySlide(DateService.getTodayYYYYMMDD());
     $scope.closeDatepicker();
-    if (UserSessionService.getUIPreference('showAgendaCalendar')) {
-      var savedCalendars = UserSessionService.getUIPreference('calendars');
-      if (savedCalendars) listCalendars(savedCalendars);
-    }
+    refreshAgenda();
   }
   function gotoNoDate() {
     $scope.changeDaySlide(null);
@@ -568,29 +559,49 @@
     SwiperService.swipeNext('datepicker');
   };
 
-  if (UserSessionService.getUIPreference('showAgendaCalendar')) {
-    var savedCalendars = UserSessionService.getUIPreference('calendars');
-    if (savedCalendars) {
+  // AGENDA
+
+  // Initialisation
+  var savedCalendars = UserSessionService.getUIPreference('calendars');
+  if (savedCalendars) {
+    var enabledCalendars = filterEnabledCalendars(savedCalendars);
+    if (enabledCalendars && enabledCalendars.length) {
+      var agendaCalendarsEnabled = true;
       if (!window.plugins || !window.plugins.calendar) {
         document.addEventListener('deviceready', function() {
           if (window.plugins && window.plugins.calendar) {
-            listCalendars(savedCalendars);
+            listCalendars(enabledCalendars);
           }
         });
       } else {
-        listCalendars(savedCalendars);
+        listCalendars(enabledCalendars);
       }
     }
   }
 
-  $scope.isAgendaVisible = function() {
-    return $scope.agendaVisible || UserSessionService.getUIPreference('showAgendaCalendar');
-  };
+  function refreshAgenda() {
+    var savedCalendars = UserSessionService.getUIPreference('calendars');
+    if (savedCalendars) {
+      var enabledCalendars = filterEnabledCalendars(savedCalendars);
+      if (enabledCalendars && enabledCalendars.length) {
+        listCalendars(enabledCalendars);
+      }
+    }
+  }
 
-  UserSessionService.registerUIPreferenceChangedCallback(agendaVisibilityChanged, 'showAgendaCalendar',
-                                                         'DatesController');
-  UserSessionService.registerUIPreferenceChangedCallback(agendaCalendarsChangedCallback, 'calendars',
-                                                         'DatesController');
+  function filterEnabledCalendars(savedCalendars) {
+    var enabledCalendars = [];
+    for (var calendar in savedCalendars) {
+      if (savedCalendars.hasOwnProperty(calendar) && savedCalendars[calendar].enabled) {
+        enabledCalendars.push(savedCalendars[calendar]);
+      }
+    }
+    return enabledCalendars;
+  }
+
+  $scope.isAgendaVisible = function() {
+    return agendaCalendarsEnabled;
+  };
 
   var agendaVisibilityChangedCallbacks = {};
   $scope.registerAgendaVisibilityChangedCallback = function(callback, id) {
@@ -607,48 +618,47 @@
     }
   }
 
-  function agendaVisibilityChanged() {
-    if (UserSessionService.getUIPreference('showAgendaCalendar')) {
-      var savedCalendars = UserSessionService.getUIPreference('calendars');
-      if (savedCalendars) listCalendars(savedCalendars);
-      $scope.agendaVisible = true;
-    } else {
-      // Agenda disabled.
-      $scope.showAgenda = false;        // Remove agenda from DOM.
-      cachedEventInstances = undefined; // Clear cache.
-      $scope.agendaVisible = false;
-    }
-    executeAgendaVisibilityChangedCallbacks();
-  }
-
-  function agendaCalendarsChangedCallback() {
+  function refreshAgendaEventsAndVisibility() {
     var savedCalendars = UserSessionService.getUIPreference('calendars');
-    if (savedCalendars) listCalendars(savedCalendars);
+    var newAgendaCalendarsEnabled;
+    if (savedCalendars) {
+      var enabledCalendars = filterEnabledCalendars(savedCalendars);
+      if (enabledCalendars && enabledCalendars.length) {
+        newAgendaCalendarsEnabled = true;
+        listCalendars(enabledCalendars);
+      } else {
+        cachedEventInstances = undefined; // Clear cache.
+      }
+    }
+    if (agendaCalendarsEnabled !== newAgendaCalendarsEnabled) {
+      agendaCalendarsEnabled = newAgendaCalendarsEnabled;
+      executeAgendaVisibilityChangedCallbacks();
+    }
   }
 
-  function listCalendars(savedCalendars) {
+  function listCalendars(enabledCalendars) {
     if (window.plugins && window.plugins.calendar) {
       window.plugins.calendar.listCalendars(function(calendarsList) {
-        processEnabledCalendars(calendarsList, savedCalendars);
+        processEnabledCalendars(calendarsList, enabledCalendars);
       }, listCalendarsError);
     }
   }
 
-  function processEnabledCalendars(calendarsList, savedCalendars) {
+  function processEnabledCalendars(calendarsList, enabledCalendars) {
     if (calendarsList && calendarsList.length) {
-      var calendarIds = [], savedCalendar;
+      var calendarIds = [], calendar;
       for (var i = 0; i < calendarsList.length; i++) {
 
-        savedCalendar = savedCalendars.findFirstObjectByKeyValue('id', calendarsList[i].id);
-        if (savedCalendar && savedCalendar.enabled) {
-          calendarIds.push(savedCalendar.id);
+        calendar = enabledCalendars.findFirstObjectByKeyValue('id', calendarsList[i].id);
+        if (calendar && calendar.enabled) {
+          calendarIds.push(calendar.id);
         }
       }
 
       if (calendarIds.length === 0) {
-        // No enabled calendars in app.
+        // Calendars enabled in app are disabled in device settings.
         cachedEventInstances = undefined;
-        $scope.showAgenda = true;
+        // TODO:  disable, and save calendar preferences
       } else {
         // Process enabled calendars.
         var startDate, endDate;
@@ -683,13 +693,14 @@
 
         window.plugins.calendar.listEventInstances(calendarIds, startDate, endDate,
                                                    function(eventInstances) {
-                                                    listEventInstancesSuccess(eventInstances, savedCalendars);
+                                                    listEventInstancesSuccess(eventInstances,
+                                                                              enabledCalendars);
                                                   }, listEventInstancesError);
       }
     } else {
-      // No enabled calendars in device's calendar app.
+      // No enabled calendars in device's calendar.
       cachedEventInstances = undefined;
-      $scope.showAgenda = true;
+      // TODO:  disable, and save calendar preferences
     }
   }
 
@@ -697,27 +708,26 @@
   }
 
   var cachedEventInstances;
-  function listEventInstancesSuccess(eventInstances, savedCalendars) {
+  function listEventInstancesSuccess(eventInstances, enabledCalendars) {
     cachedEventInstances = {
       all: []
     };
 
     if (eventInstances && eventInstances.length) {
-      var attachGetCalendarNameByIdFn = function(eventInstance, savedCalendars) {
+      var attachGetCalendarNameByIdFn = function(eventInstance, enabledCalendars) {
         eventInstance.getCalendarName = function() {
-          var calendar = savedCalendars.findFirstObjectByKeyValue('id', eventInstance.calendar_id);
+          var calendar = enabledCalendars.findFirstObjectByKeyValue('id', eventInstance.calendar_id);
           if (calendar) return calendar.name;
         };
       };
 
       for (var i = 0; i < eventInstances.length; i++) {
-        attachGetCalendarNameByIdFn(eventInstances[i], savedCalendars);
+        attachGetCalendarNameByIdFn(eventInstances[i], enabledCalendars);
         cachedEventInstances['all'].push(eventInstances[i]);
       }
+      // Show agenda and update UI.
+      if (!$scope.$$phase && !$rootScope.$$phase) $scope.$digest();
     }
-    // Show agenda and update UI.
-    $scope.showAgenda = true;
-    if (!$scope.$$phase && !$rootScope.$$phase) $scope.$digest();
   }
 
   function listEventInstancesError(/*error*/) {

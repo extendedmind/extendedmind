@@ -20,9 +20,15 @@
 
 angular.module('em.appTest', ['em.app', 'common', 'ngMockE2E']);
 
+var path = location.pathname.substring(1);
+if (path && path === 'ios') {
+  var packaging = 'ios-cordova';
+}
+angular.module('em.appTest').constant('packaging', (typeof packaging !== 'undefined') ? packaging : 'devel');
+
 angular.module('em.appTest')
-  .controller('MockController', ['$rootScope', 'MockBackendService', 'SwiperService',
-    function($rootScope, MockBackendService, SwiperService){
+  .controller('MockController', ['$rootScope', 'MockBackendService', 'SwiperService', 'packaging',
+    function($rootScope, MockBackendService, SwiperService, packaging){
       MockBackendService.mockBackend();
       SwiperService.setTouchSimulation(true);
 
@@ -32,6 +38,10 @@ angular.module('em.appTest')
           $rootScope.softKeyboard.height = !$rootScope.softKeyboard.height ? 224 : 0;
         }
       };
+
+      if (packaging.endsWith('cordova')) {
+        $rootScope.agendaCalendarSettingVisible = true;
+      }
 
   }])
   .config(['$provide', '$routeProvider', function($provide, $routeProvider) {
@@ -110,6 +120,36 @@ angular.module('em.appTest')
         }]
       }
     });
+
+    $routeProvider.when('/ios', {
+      resolve: {
+        auth: ['$location', '$route', 'AuthenticationService', 'UserSessionService', 'packaging',
+        function($location, $route, AuthenticationService, UserSessionService, packaging) {
+          localStorage.clear();
+          sessionStorage.clear();
+          if ($route.current.params.offline)
+            UserSessionService.enableOffline(true);
+
+          AuthenticationService.login({username: 'timo@ext.md', password: 'timopwd'}).then(function() {
+            UserSessionService.setUIPreference('focusTasksOnboarded', packaging);
+            UserSessionService.setUIPreference('focusNotesOnboarded', packaging);
+            UserSessionService.setUIPreference('inboxOnboarded', packaging);
+            UserSessionService.setUIPreference('calendars', [{id:1, name: 'first', enabled: true}]);
+            $location.path('/my');
+          });
+
+          if (!window.plugins)
+            window.plugins = {};
+
+          window.plugins.calendar = {
+            listCalendars: function(success) {
+              return success([{id:1, name:'first'}]);
+            }
+          };
+        }]
+      }
+    });
+
   }])
   .run(['$httpBackend',
     function($httpBackend) {

@@ -16,15 +16,7 @@
     <div class="container-content" drawer-override-aisle="right">
       <h2 class="group-heading row">agenda calendars</h2>
 
-      <div class="row" ng-if="!agendaCalendarEnabled">
-        <span class="text-details">press enable to see your calendars here</span>
-        <!-- ONBOARDING -->
-        <span ng-if="onboardingInProgress && !isOnboarded('agendaCalendar')" class="text-details">
-          </br>or press back to skip this step
-        </span>
-      </div>
-
-      <div ng-if="agendaCalendarEnabled && calendars">
+      <div ng-if="calendars">
         <div class="group-mixed with-checkbox" ng-repeat="calendar in calendars">
           <div class="group-mixed--left">
             <input type="checkbox" ng-model="calendar.enabled" icon-checkbox="calendar.id"
@@ -36,17 +28,11 @@
         </div>
       </div>
 
-      <div ng-if="agendaCalendarEnabled && calendarsLoaded && (!calendars || !calendars.length)" class="row">
+      <div ng-if="calendarsLoaded && (!calendars || !calendars.length)" class="row">
         <span class="text-details">have you allowed access to your calendar?</span>
       </div>
 
     </div>
-
-    <footer class="container-content--after group-btn editor-footer">
-      <button type="submit" class="btn-action" ng-click="toggleAgendaCalendar()">
-        <span class="text-btn" ng-bind="agendaCalendarEnabled ? 'disable' : 'enable'"></span>
-      </button>
-    </footer>
   </div>
 
   <form name="userForm" ng-if="mode === 'password' || mode === 'terms' || mode === 'privacy'"
