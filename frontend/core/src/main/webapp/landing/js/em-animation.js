@@ -174,17 +174,17 @@ function animatePhase13(){
 
   var focusElem = $('#em-animation-13-focus');
   var organizeElem = $('#em-animation-13-organize');
-  var storeElem = $('#em-animation-13-store');
+  var keepElem = $('#em-animation-13-keep');
 
   focusElem.removeClass('hidden');
   focusElem.animo( { animation: 'fadeIn', duration: 1.2, keep: true }, function(){
     organizeElem.removeClass('hidden');
     organizeElem.animo( { animation: 'fadeIn', duration: 1.2, keep: true }, function(){
-      storeElem.removeClass('hidden');
-      storeElem.animo( { animation: 'fadeIn', duration: 1.2, keep: true }, function(){
+      keepElem.removeClass('hidden');
+      keepElem.animo( { animation: 'fadeIn', duration: 1.2, keep: true }, function(){
         focusElem.animo( { animation: 'fadeOut', duration: 1, keep: true });
         organizeElem.animo( { animation: 'fadeOut', duration: 1, keep: true });
-        storeElem.animo( { animation: 'fadeOut', duration: 1, keep: true }, animatePhase14);
+        keepElem.animo( { animation: 'fadeOut', duration: 1, keep: true }, animatePhase14);
       });
     });
   });
