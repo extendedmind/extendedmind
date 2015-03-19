@@ -107,6 +107,10 @@
         function(AuthenticationService) {
           return AuthenticationService.verifyAndUpdateAuthentication();
         }],
+        migrate: ['UserService',
+        function(UserService) {
+          return UserService.migrateUser();
+        }],
         owner: ['UISessionService',
         function(UISessionService) {
           return UISessionService.setMyActive();

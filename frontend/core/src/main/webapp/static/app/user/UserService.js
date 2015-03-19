@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function UserService(BackendClientService, UserSessionService) {
+ function UserService(BackendClientService, UISessionService, UserSessionService) {
 
   var logoutRegex = /logout/;
   var postLogoutRegexp = new RegExp(
@@ -50,6 +50,26 @@
     logout: function() {
       return BackendClientService.postOnline('/api/logout', postLogoutRegexp);
     },
+    migrateUser: function(){
+      /* migrate old onboarded value to 1.8-> values */
+      var preferences = UserSessionService.getPreferences();
+      if (preferences && preferences.onboarded && !angular.isObject(preferences.onboarded)){
+        // Old prefeerences value, migrate to new one
+        var value = UISessionService.getOnboardedValue();
+        preferences.onboarded = {
+          user:value,
+          focus:value,
+          tasks:value,
+          notes:value,
+          lists:value,
+          list:value,
+          trash:value,
+          settings:value
+        };
+        UserSessionService.setPreferences(preferences);
+        this.saveAccountPreferences();
+      }
+    },
     // Regular expressions for account requests
     getAccountRegex: new RegExp(/api\/account/.source),
     putAccountRegex: new RegExp(/api\/account/.source),
@@ -60,5 +80,5 @@
       /password$/.source)
   };
 }
-UserService['$inject'] = ['BackendClientService', 'UserSessionService'];
+UserService['$inject'] = ['BackendClientService', 'UISessionService', 'UserSessionService'];
 angular.module('em.user').factory('UserService', UserService);

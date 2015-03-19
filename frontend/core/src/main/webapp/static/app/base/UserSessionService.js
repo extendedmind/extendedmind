@@ -217,6 +217,41 @@
       this.setPreferences(preferences);
       executeUIPreferenceChangedCallbacks(name);
     },
+    setFeaturePreferences: function(feature, value) {
+      // Feature preferences are in the "onboarded" field which is an object
+      // of the following format:
+      // {
+      //   FEATURE_NAME: FEATURE_VALUE,
+      //   ...
+      // }
+      // FEATURE_NAME is defined in the MainController feature map, i.e. "user", "focus", "inbox", "tasks"...
+      // FEATURE_VALUE: is one of four values:
+      //    1. Integer: 0 means that the feature has been disabled missing value defaults to this,
+      //                values N > 0, mean that the onboarding in currently in progress at phase N.
+      //    2. String: this defines that the entire feature is fully onboarded
+      //       at the given timestamp, version, platform (and device id) delimited with ':'.
+      //    3. Object: contains onboarding inforamation about a subsections within the feature, e.g. for
+      //       "tasks" feature, when the user has not yet visited the section, it could be:
+      //         {
+      //           tasks: {
+      //              all: 1
+      //           }
+      //         };
+      //       (where implicitly also contexts and context subsections have the value 0).
+      //    4. Array containing onboarding status objects, one per platform. For example:
+      //          [{'ios-cordova': FEATURE_VALUE}, {'osx-nwjs': FEATURE_VALUE}]
+      //       This is reserved for future use.
+      //
+      //    Missing value for a feature to integer 0: feature is disabled
+      var preferences = this.getPreferences() || {};
+      if (!preferences.onboarded) preferences.onboarded = {};
+      if (value !== undefined){
+        preferences.onboarded[feature] = value;
+      }else if (preferences.onboarded[feature] !== undefined) {
+        delete preferences.onboarded[feature];
+      }
+      this.setPreferences(preferences);
+    },
     setPreferences: function(preferences) {
       SessionStorageService.setPreferences(preferences);
       if (this.isPersistentStorageEnabled() || LocalStorageService.getReplaceable() !== null) {
@@ -336,6 +371,9 @@
       if (transportPreferences.ui) {
         transportPreferences.ui = JSON.stringify(preferences.ui);
       }
+      if (transportPreferences.onboarded) {
+        transportPreferences.onboarded = JSON.stringify(preferences.onboarded);
+      }
       return transportPreferences;
     },
     getPreferences: function() {
@@ -347,6 +385,13 @@
       var preferences = SessionStorageService.getPreferences();
       if (preferences && preferences.ui) {
         return preferences.ui[key];
+      }
+    },
+    getFeaturePreferences: function(feature) {
+      syncWebStorages();
+      var preferences = SessionStorageService.getPreferences();
+      if (preferences && preferences.onboarded) {
+        return preferences.onboarded[feature];
       }
     },
     getRememberByDefault: function() {

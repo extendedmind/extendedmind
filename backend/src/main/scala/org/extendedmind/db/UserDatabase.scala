@@ -202,19 +202,14 @@ trait UserDatabase extends AbstractGraphDatabase {
 
   protected def updateUser(userNode: Node, user: User)(implicit neo4j: DatabaseService): Unit = {
     // Onboarding status
-    if (user.preferences.isDefined && user.preferences.get.onboarded.isDefined && !userNode.hasProperty("onboarded")) {
+    if (user.preferences.isDefined && user.preferences.get.onboarded.isDefined) {
       userNode.setProperty("onboarded", user.preferences.get.onboarded.get);
-    } else if ((user.preferences.isEmpty || user.preferences.get.onboarded.isEmpty) && userNode.hasProperty("onboarded")) {
-      userNode.removeProperty("onboarded");
     }
 
     // UI Preferences
     if (user.preferences.isDefined && user.preferences.get.ui.isDefined) {
       userNode.setProperty("ui", user.preferences.get.ui.get);
-    } else if ((user.preferences.isEmpty || user.preferences.get.ui.isEmpty) && userNode.hasProperty("ui")) {
-      userNode.removeProperty("ui");
     }
-
   }
 
   protected def updateUserEmail(userUUID: UUID, email: String): Response[(Node, Boolean)] = {

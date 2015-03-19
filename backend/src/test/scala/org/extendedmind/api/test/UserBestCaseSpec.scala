@@ -108,18 +108,24 @@ class UserBestCaseSpec extends ServiceSpecBase {
         newEmailAuthenticateResponse.userUUID should not be None
         newEmailAuthenticateResponse.preferences.get.onboarded.get should be("web")
         
-        // Remove onboarded and add more UI preferences
+        // Add more UI preferences, make sure onboarded isn't removed
         val newUIPreferences = "{hideFooter: true, hidePlus: true}"
-        Put("/account",
-          marshal(accountResponse.copy(email = None,
-              preferences = Some(UserPreferences(None, Some(newUIPreferences))))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", newEmailAuthenticateResponse.token.get)) ~> route ~> check {
-            val putAccountResponse = responseAs[SetResult]
-            putAccountResponse.modified should not be None
+        Put("/account", marshal(accountResponse.copy(email = None, preferences = Some(UserPreferences(None, Some(newUIPreferences))))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", newEmailAuthenticateResponse.token.get)) ~> route ~> check {
+          val putAccountResponse = responseAs[SetResult]
+          putAccountResponse.modified should not be None
+          Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", newEmailAuthenticateResponse.token.get)) ~> route ~> check {
+            val accountResponse = responseAs[User]
+            accountResponse.preferences.get.onboarded.get should be("web")
+            accountResponse.preferences.get.ui.get should be(newUIPreferences)
+            // Add more onboarded values, make sure UI preferences isn't removed
+            Put("/account", marshal(accountResponse.copy(email = None, preferences = Some(UserPreferences(Some("{web}"), None)))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+              Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", newEmailAuthenticateResponse.token.get)) ~> route ~> check {
+                val accountResponse2 = responseAs[User]
+                accountResponse2.preferences.get.onboarded.get should be("{web}")
+                accountResponse2.preferences.get.ui.get should be(newUIPreferences)                  
+              }
+            }
           }
-        Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", newEmailAuthenticateResponse.token.get)) ~> route ~> check {
-          val accountResponse = responseAs[User]
-          accountResponse.preferences.get.onboarded should be(None)
-          accountResponse.preferences.get.ui.get should be(newUIPreferences)
         }
       }
         

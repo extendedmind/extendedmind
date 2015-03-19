@@ -16,7 +16,8 @@
  /* global angular */
  'use strict';
 
- function UISessionService($q, $rootScope, $timeout, LocalStorageService, SessionStorageService) {
+ function UISessionService($q, $rootScope, $timeout, LocalStorageService, SessionStorageService,
+                           packaging, version) {
 
   // Map containing states and datas of features per owner
   var featureMap = {};
@@ -323,6 +324,16 @@
         id: id});
     },
 
+    // ONBOARDING
+
+    getOnboardedValue: function(){
+      var onboardedString = Date.now() + ':' + version + ':' + packaging;
+      if (typeof device !== 'undefined' && device && device.uuid){
+        onboardedString += ':' + device.uuid;
+      }
+      return onboardedString;
+    },
+
     // CLEANUP
 
     reset: function() {
@@ -352,5 +363,5 @@
   };
 }
 UISessionService['$inject'] = ['$q', '$rootScope', '$timeout', 'LocalStorageService',
-'SessionStorageService'];
+'SessionStorageService', 'packaging', 'version'];
 angular.module('em.base').factory('UISessionService', UISessionService);
