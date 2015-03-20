@@ -87,14 +87,17 @@
 
   if ($scope.mode === 'agendaCalendar') {
     listCalendars();
-    if (!$scope.isOnboarded('agendaCalendar') && angular.isFunction($scope.registerEditorClosedCallback))
-      $scope.registerEditorClosedCallback(agendaEditorClosed, 'UserEditorController');
+    if ($scope.isOnboarding('focus', 'tasks') &&
+        angular.isFunction($scope.registerFeatureEditorAboutToCloseCallback)){
+      $scope.registerFeatureEditorAboutToCloseCallback(agendaEditorAboutToCloseWhileOnboardingFocusTasks,
+                                                       'UserEditorController');
+    }
   }
-  function agendaEditorClosed() {
-    $scope.setOnboarded('agenda', true);
 
-    if (angular.isFunction($scope.unregisterEditorClosedCallback))
-      $scope.unregisterEditorClosedCallback(agendaEditorClosed, 'UserEditorController');
+  function agendaEditorAboutToCloseWhileOnboardingFocusTasks() {
+    if (angular.isFunction($scope.unregisterEditorAboutToCloseCallback))
+      $scope.unregisterEditorAboutToCloseCallback('UserEditorController');
+    $scope.increaseOnboardingPhase('focus', 'tasks');
   }
 
   $scope.changePassword = function (oldPassword, newPassword) {

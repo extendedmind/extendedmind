@@ -1,6 +1,6 @@
 <div class="container-toolbar--inner" ng-controller="ToolbarController">
   <div ng-hide="isCustomToolbar()" class="swiper-no-swiping group-symmetrical">
-    <button ng-hide="isToolbarMenuHidden()" type="button" class="group-symmetrical--left btn animate-fade-in"
+    <button ng-show="isMoreThanOneFeatureActive()" type="button" class="group-symmetrical--left btn animate-fade-in"
       ng-click="toggleMenu()" alt="menu">
       <span class="icon-menu"></span>
     </button>
@@ -9,7 +9,7 @@
         <div><span class="text-heading-primary" clamp=2 ng-bind="getCurrentHeading()"></span></div>
       </a>
     </div>
-    <button ng-hide="onboardingInProgress" class="group-symmetrical--right btn animate-fade-in"
+    <button ng-show="isMoreThanOneFeatureActive()" class="group-symmetrical--right btn animate-fade-in"
       ng-click="openEditor('omnibar')">
       <span class="icon-logo"></span>
     </button>

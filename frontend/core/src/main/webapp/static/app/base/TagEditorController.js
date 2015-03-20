@@ -66,6 +66,9 @@
   };
 
   function tagEditorAboutToClose() {
+    if (angular.isFunction($scope.unregisterEditorAboutToCloseCallback))
+      $scope.unregisterEditorAboutToCloseCallback('TagEditorController');
+
     if ($scope.isTagEdited() && !$scope.tag.trans.deleted){
       saveTagInEdit();
     } else if (deleting){

@@ -176,6 +176,26 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     }
   };
 
+  $scope.isMoreThanOneFeatureActive = function(){
+    var preferences = UserSessionService.getPreferences();
+    if (preferences && preferences.onboarded){
+      var numberOfActiveFeatures = 0;
+      for (var key in preferences.onboarded) {
+        console.log(key)
+        if (preferences.onboarded.hasOwnProperty(key)) {
+          numberOfActiveFeatures++;
+          if (numberOfActiveFeatures > 1) return true;
+        }
+      }
+    }
+  };
+
+  // Check to see if menu should be enabled
+  if (!$scope.isMoreThanOneFeatureActive()) {
+    // Only one feature active, no need to show menu so disable dragging
+    DrawerService.disableDragging('left');
+  }
+
   // returns if main content is visible for given feature (and subfeature if applicable)
   $scope.isContentVisible = function(feature, subfeature){
     var status = getFeatureStatus(UserSessionService.getFeaturePreferences(feature), subfeature);
@@ -204,15 +224,16 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     }
   };
 
-  function increaseOnboardingPhase(featurePreferences, subfeature){
+  function increaseOnboardingPhase(feature, featurePreferences, subfeature){
     if (subfeature) featurePreferences[subfeature] += 1;
     else featurePreferences += 1;
+    UserSessionService.setFeaturePreferences(feature, featurePreferences);
     UserService.saveAccountPreferences();
   }
 
   $scope.increaseOnboardingPhase = function(feature, subfeature){
     var focusPreferences = UserSessionService.getFeaturePreferences(feature);
-    increaseOnboardingPhase(focusPreferences, subfeature)
+    increaseOnboardingPhase(feature, focusPreferences, subfeature)
   };
 
   // Plus button is pressed or new item is added, this function figures out what to do then
@@ -223,7 +244,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
       var focusPreferences = UserSessionService.getFeaturePreferences('focus');
       if (getFeatureStatus(focusPreferences, subfeature).startsWith('onboarding')){
         // Focus tasks is the current feature and it is onboarding: we update the onboarding status
-        increaseOnboardingPhase(focusPreferences, subfeature);
+        increaseOnboardingPhase('focus', focusPreferences, subfeature);
         return true;
       };
     }else if (featureInfo === $scope.features.inbox){
@@ -241,6 +262,32 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     }else if (featureInfo === $scope.features.settings){
 
     }
+  };
+
+  $scope.completeOnboarding = function(feature, subfeature){
+    var featurePreferences = UserSessionService.getFeaturePreferences('focus');
+
+    var onboardedValue = UISessionService.getOnboardedValue();
+    if (subfeature){
+      if (!angular.isObject(featurePreferences)) featurePreferences = {};
+      featurePreferences[subfeature] = onboardedValue;
+      AnalyticsService.do(feature + subfeature.capitalizeFirstLetter() + 'Onboarded');
+    }else{
+      featurePreferences = onboardedValue;
+      AnalyticsService.do(feature + 'Onboarded');
+    }
+
+    if (feature === 'focus' && subfeature === 'tasks'){
+      // First is now ready, open up other avenues
+      UserSessionService.setFeaturePreferences('user', onboardedValue);
+      UserSessionService.setFeaturePreferences('tasks', onboardedValue);
+      UserSessionService.setFeaturePreferences('trash', onboardedValue);
+      UserSessionService.setFeaturePreferences('settings', onboardedValue);
+      // Open up menu
+      DrawerService.enableDragging('left');
+    }
+    UserSessionService.setFeaturePreferences(feature, featurePreferences);
+    UserService.saveAccountPreferences();
   };
 
   // NAVIGATION
@@ -455,93 +502,9 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     return UserSessionService.isFakeUser();
   };
 
-  // ONBOARDING
 
-  $scope.onboardingInProgress = false;
-  var userPreferences = UserSessionService.getPreferences();
-  if (!userPreferences || (userPreferences && !userPreferences.onboarded)) {
-    $scope.onboardingInProgress = true;
-    DrawerService.disableDragging('left');
-    SwiperService.setOnlyExternal('focus', true);
-    SwiperService.setOnlyExternal('focus/tasks', true);
-    // Disable dragging and swiping in the beginning of the tutorial and enable it later.
-  }
+  // START FROM FOCUS
 
-  /*
-  * 1/3 - focus tasks
-  * 2/3 - agenda calendar
-  * 3/3 - tutorial complete
-  */
-  $scope.getTutorialPhase = function() {
-    var phase;
-    if (!$scope.isOnboarded('focusTasks'))
-      phase = 1;
-    else if (!$scope.isOnboarded('agendaCalendar'))
-      phase = 2;
-    else if ($scope.isOnboarded('agendaCalendar'))
-      phase = 3;
-
-    return 'tutorial ' + phase + '/3';
-  };
-
-  var onboardingListItemAddActive;
-  $scope.setOnboardingListItemAddActive = function(active) {
-    onboardingListItemAddActive = active;
-    if (!onboardingListItemAddActive && $scope.getActiveFeature() === 'tasks') {
-      DrawerService.enableDragging('left');
-    } else if (onboardingListItemAddActive && $scope.getActiveFeature() === 'lists') {
-      DrawerService.disableDragging('left');
-    }
-  };
-
-  $scope.isOnboardingListItemAddActive = function() {
-    return onboardingListItemAddActive;
-  };
-
-  $scope.isOnboarded = function(feature){
-    if (feature === 'focusTasks') {
-      // Tasks onboarding is not ready if there are no tasks
-      var tasks = TasksService.getTasks(UISessionService.getActiveUUID());
-      if (tasks && tasks.length === 1){
-        return true;
-      }
-    } else if (feature === 'agendaCalendar') {
-      return $scope.agendaOnboarded;
-    }else if (feature === 'focusNotes' || feature === 'inbox'){
-      return UserSessionService.getUIPreference(feature + 'Onboarded') !== undefined;
-    } else if (!$scope.onboardingInProgress){
-      // Everything else except the above, are onboarded when onboardingInProgress is no longer true
-      return true;
-    }
-  };
-
-  $scope.setOnboarded = function(feature, onboarded) {
-    if (feature === 'agenda') {
-      $scope.agendaOnboarded = onboarded;
-    }
-  };
-
-  $scope.completeOnboarding = function(feature){
-    $scope.onboardingInProgress = false;
-
-    if (feature === 'focusNotes' || feature === 'inbox'){
-      UserSessionService.setUIPreference(feature + 'Onboarded', packaging);
-      AnalyticsService.do(feature + 'Onboarded');
-    } else {
-      // Enable dragging and swiping when tutorial completed.
-      DrawerService.enableDragging('left');
-      SwiperService.setOnlyExternal('focus', false);
-      SwiperService.setOnlyExternal('focus/tasks', false);
-      UserSessionService.setPreference('onboarded', packaging);
-      AnalyticsService.do('onboarded');
-      if (feature === 'user'){
-        $scope.changeFeature('user', undefined, true);
-      }
-    }
-    UserService.saveAccountPreferences();
-  };
-
-  // Start from focus
   $scope.changeFeature('focus');
 
   // DATA ARRAYS

@@ -48,11 +48,6 @@
   }
 
   $scope.deleteTaskInEdit = function() {
-    // Unregister about to close callback, because delete is run after editor is closed
-    // and about to close callback would try to save item in between close and delete.
-    if (angular.isFunction($scope.unregisterEditorAboutToCloseCallback))
-      $scope.unregisterEditorAboutToCloseCallback();
-
     $scope.processDelete($scope.task, $scope.deleteTask, $scope.undeleteTask);
   };
 
@@ -67,6 +62,9 @@
   };
 
   function taskEditorAboutToClose() {
+    if (angular.isFunction($scope.unregisterEditorAboutToCloseCallback))
+      $scope.unregisterEditorAboutToCloseCallback('TaskEditorController');
+
     if ($scope.isTaskEdited() && !$scope.task.trans.deleted) saveTaskInEdit();
     else {
       if (completeReadyDeferred){

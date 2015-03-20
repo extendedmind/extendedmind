@@ -31,11 +31,6 @@
   }
 
   $scope.deleteItemInEdit = function() {
-    // Unregister about to close callback, because delete is run after editor is closed
-    // and about to close callback would try to save item in between close and delete.
-    if (angular.isFunction($scope.unregisterEditorAboutToCloseCallback))
-      $scope.unregisterEditorAboutToCloseCallback();
-
     $scope.processDelete($scope.item, $scope.deleteItem, $scope.undeleteItem);
   };
 
@@ -50,6 +45,9 @@
   };
 
   function itemEditorAboutToClose() {
+    if (angular.isFunction($scope.unregisterEditorAboutToCloseCallback))
+      $scope.unregisterEditorAboutToCloseCallback('ItemEditorController');
+
     if ($scope.isItemEdited() && !$scope.item.trans.deleted) saveItemInEdit();
     else ItemsService.resetItem($scope.item, UISessionService.getActiveUUID());
   }

@@ -122,11 +122,7 @@
     // Start tutorial from focus/tasks
     var onboardedValue = UISessionService.getOnboardedValue();
     var newUserFeatureValues = {
-      user: onboardedValue,
-      focus: { tasks: 1 },
-      tasks: onboardedValue,
-      trash: onboardedValue,
-      settings: onboardedValue
+      focus: { tasks: 1 }
     };
     UserSessionService.setPreference('onboarded', newUserFeatureValues);
     UserService.saveAccountPreferences();

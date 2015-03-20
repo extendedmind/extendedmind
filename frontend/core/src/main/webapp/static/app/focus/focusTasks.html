@@ -627,7 +627,9 @@
     </button>
   </footer>
 
-  <footer class="container-content--after" ng-hide="isOnboarding('focus', 'tasks') && isOnboarded('focusTasks')"
+  <footer class="container-content--after"
+    ng-show="isContentVisible('focus', 'tasks') ||
+             getOnboardingPhase('focus', 'tasks') === 1"
     list-footer="getFeatureMap('focus')" list-footer-subfeature="tasks">
   </footer>
 

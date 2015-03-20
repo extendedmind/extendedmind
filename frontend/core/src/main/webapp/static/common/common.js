@@ -37,6 +37,12 @@
     };
   }
 
+  if (typeof String.prototype.capitalizeFirstLetter != 'function') {
+    String.prototype.capitalizeFirstLetter = function() {
+      return this.charAt(0).toUpperCase() + this.slice(1);
+    };
+  }
+
   /*
   * Adds timezone offset in ISO 8601 format.
   *

@@ -67,10 +67,6 @@
     }
   };
 
-  $scope.isToolbarMenuHidden = function() {
-    return $scope.onboardingInProgress;
-  };
-
   function switchFeature() {
     var activeFeature = $scope.getActiveFeature();
     if (activeFeature === 'focus') {

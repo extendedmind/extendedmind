@@ -56,11 +56,6 @@
   }
 
   $scope.deleteNoteInEdit = function() {
-    // Unregister about to close callback, because delete is run after editor is closed
-    // and about to close callback would try to save item in between close and delete.
-    if (angular.isFunction($scope.unregisterEditorAboutToCloseCallback))
-      $scope.unregisterEditorAboutToCloseCallback();
-
     $scope.processDelete($scope.note, $scope.deleteNote, $scope.undeleteNote);
   };
 
@@ -74,6 +69,9 @@
   $scope.endNoteEdit = $scope.closeEditor;
 
   function noteEditorAboutToClose() {
+    if (angular.isFunction($scope.unregisterEditorAboutToCloseCallback))
+      $scope.unregisterEditorAboutToCloseCallback('NoteEditorController');
+
     if ($scope.isNoteEdited() && !$scope.note.trans.deleted) saveNoteInEdit();
     else NotesService.resetNote($scope.note, UISessionService.getActiveUUID());
   }

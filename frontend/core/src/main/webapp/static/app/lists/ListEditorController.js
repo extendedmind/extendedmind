@@ -31,11 +31,6 @@
   }
 
   $scope.deleteListInEdit = function() {
-    // Unregister about to close callback, because delete is run after editor is closed
-    // and about to close callback would try to save item in between close and delete.
-    if (angular.isFunction($scope.unregisterEditorAboutToCloseCallback))
-      $scope.unregisterEditorAboutToCloseCallback();
-
     var activeFeature = $scope.getActiveFeature();
     if (activeFeature === 'list') {
       var currentData = UISessionService.getFeatureData(activeFeature);
@@ -58,6 +53,9 @@
   };
 
   function listEditorAboutToClose() {
+    if (angular.isFunction($scope.unregisterEditorAboutToCloseCallback))
+      $scope.unregisterEditorAboutToCloseCallback('ListEditorController');
+
     if ($scope.isListEdited() && !$scope.list.trans.deleted) saveListInEdit();
     else ListsService.resetList($scope.list, UISessionService.getActiveUUID());
   }
