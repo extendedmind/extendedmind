@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
- /* global angular, useOfflineBuffer */
+ /* global angular */
  'use strict';
 
  function UserSessionService(base64, LocalStorageService, SessionStorageService, enableOffline, UUIDService) {
@@ -71,9 +71,16 @@
 
   function migrateTransportPreferences(transportPreferences) {
     if (transportPreferences) {
-      var preferences = {
-        onboarded: transportPreferences.onboarded
-      };
+      var preferences = {};
+      if (transportPreferences.onboarded){
+        if (transportPreferences.onboarded.startsWith('{')) {
+          // new format
+          preferences.onboarded = JSON.parse(transportPreferences.onboarded);
+        }else{
+          // old format
+          preferences.onboarded = transportPreferences.onboarded;
+        }
+      }
       if (transportPreferences.ui) {
         preferences.ui = JSON.parse(transportPreferences.ui);
       }
@@ -108,7 +115,8 @@
     isAuthenticateValid: function() {
       var authenticateCurrentReferenceTime, authenticateValidTime;
 
-      authenticateValidTime = parseInt(SessionStorageService.getExpires() || LocalStorageService.getExpires());
+      authenticateValidTime = parseInt(SessionStorageService.getExpires() ||
+                                       LocalStorageService.getExpires());
       authenticateCurrentReferenceTime = Date.now() + swapTokenBufferTime;
 
       if (authenticateValidTime && (authenticateValidTime > authenticateCurrentReferenceTime)) {
