@@ -632,9 +632,7 @@
       for (var i = 0; i < calendarsList.length; i++) {
 
         calendar = enabledCalendars.findFirstObjectByKeyValue('id', calendarsList[i].id);
-        if (calendar && calendar.enabled) {
-          calendarIds.push(calendar.id);
-        }
+        if (calendar) calendarIds.push(calendar.id);
       }
 
       if (calendarIds.length === 0) {
