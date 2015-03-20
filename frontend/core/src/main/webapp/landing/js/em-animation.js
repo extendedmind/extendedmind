@@ -26,7 +26,7 @@ function playExtendedMindAnimation(){
 }
 
 function pauseExtendedMindAnimation(){
-  if (!extendedMindAudio.ended){
+  if (extendedMindAudio && !extendedMindAudio.ended){
     extendedMindAudio.pause();
     var elem = getCurrentAnimationElement();
     elem.addClass('paused');
