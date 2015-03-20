@@ -61,6 +61,7 @@
           preferences.onboarded = {
             user:value,
             focus:value,
+            inbox:value,
             tasks:value,
             notes:value,
             lists:value,
