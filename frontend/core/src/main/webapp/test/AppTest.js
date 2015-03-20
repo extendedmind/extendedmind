@@ -130,22 +130,55 @@ angular.module('em.appTest')
           if ($route.current.params.offline)
             UserSessionService.enableOffline(true);
 
+          var calendars = {
+            iPhone: [{
+              id: 1,
+              name: 'first'
+            }]
+          };
+
           AuthenticationService.login({username: 'timo@ext.md', password: 'timopwd'}).then(function() {
-            UserSessionService.setUIPreference('focusTasksOnboarded', packaging);
-            UserSessionService.setUIPreference('focusNotesOnboarded', packaging);
-            UserSessionService.setUIPreference('inboxOnboarded', packaging);
-            UserSessionService.setUIPreference('calendars', [{id:1, name: 'first', enabled: true}]);
+            UserSessionService.setUIPreference('calendars', calendars);
             $location.path('/my');
           });
 
           if (!window.plugins)
             window.plugins = {};
 
+          var listCalendars = [
+          {
+            id:1,
+            name: 'first'
+          },
+          {
+            id: 2,
+            name: 'second'
+          }];
+
+          var eventInstances = [{
+            calendar_id: 1,
+            event_id: 100,
+            title: 'first event',
+            begin: Date.now(),
+            end: Date.now(),
+            allDay: true,
+            location: 'location location location',
+            rrule: true
+          }];
+
           window.plugins.calendar = {
             listCalendars: function(success) {
-              return success([{id:1, name:'first'}]);
+              return success(listCalendars);
+            },
+            listEventInstances: function(calendarIds, startDate, endDate, success) {
+              return success(eventInstances);
             }
           };
+
+          if (!window.device)
+            window.device = {};
+
+          window.device.model = 'iPhone';
         }]
       }
     });
