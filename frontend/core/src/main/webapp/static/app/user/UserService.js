@@ -53,21 +53,49 @@
     migrateUser: function(){
       /* migrate old onboarded value to 1.8-> values */
       var preferences = UserSessionService.getPreferences();
-      if (preferences && preferences.onboarded && !angular.isObject(preferences.onboarded)){
-        // Old prefeerences value, migrate to new one
-        var value = UISessionService.getOnboardedValue();
-        preferences.onboarded = {
-          user:value,
-          focus:value,
-          tasks:value,
-          notes:value,
-          lists:value,
-          list:value,
-          trash:value,
-          settings:value
-        };
-        UserSessionService.setPreferences(preferences);
-        this.saveAccountPreferences();
+      if (preferences){
+        var needToPersist = false;
+        if (preferences.onboarded && !angular.isObject(preferences.onboarded)){
+          // Old preferences value, migrate to new one
+          var value = UISessionService.getOnboardedValue();
+          preferences.onboarded = {
+            user:value,
+            focus:value,
+            tasks:value,
+            notes:value,
+            lists:value,
+            list:value,
+            trash:value,
+            settings:value
+          };
+          needToPersist = true;
+        }
+        if (preferences.ui){
+          if (preferences.ui.hidePlus){
+            delete preferences.ui.hidePlus;
+            needToPersist = true;
+          }
+          if (preferences.ui.focusTasksOnboarded){
+            delete preferences.ui.focusTasksOnboarded;
+            needToPersist = true;
+          }
+          if (preferences.ui.focusNotesOnboarded){
+            delete preferences.ui.focusNotesOnboarded;
+            needToPersist = true;
+          }
+          if (preferences.ui.showAgendaCalendar){
+            delete preferences.ui.showAgendaCalendar;
+            needToPersist = true;
+          }
+          if (preferences.ui.calendar && angular.isArray(preferences.ui.calendar)){
+            delete preferences.ui.calendar;
+            needToPersist = true;
+          }
+        }
+        if (needToPersist){
+          UserSessionService.setPreferences(preferences);
+          this.saveAccountPreferences();
+        }
       }
     },
     // Regular expressions for account requests

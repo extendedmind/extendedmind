@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
- /* global angular */
+ /* global angular, device */
  'use strict';
 
  function UISessionService($q, $rootScope, $timeout, LocalStorageService, SessionStorageService,
@@ -33,8 +33,6 @@
 
   var deferredActions = [];
   var allowedActions = {};
-
-  var persistentDataLoaded = false;
 
   function removeDeferredAction(type) {
     var deferredActionIndex = deferredActions.findFirstIndexByKeyValue('type', type);
@@ -324,12 +322,19 @@
         id: id});
     },
 
-    // ONBOARDING
+    // DEVICE VALUES
+
+    getDeviceId: function(){
+      if (typeof device !== 'undefined' && device && device.uuid){
+        return device.uuid;
+      }
+    },
 
     getOnboardedValue: function(){
       var onboardedString = Date.now() + ':' + version + ':' + packaging;
-      if (typeof device !== 'undefined' && device && device.uuid){
-        onboardedString += ':' + device.uuid;
+      var deviceId = this.getDeviceId();
+      if (deviceId){
+        onboardedString += ':' + deviceId;
       }
       return onboardedString;
     },
