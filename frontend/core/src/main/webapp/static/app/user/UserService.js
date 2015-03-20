@@ -75,6 +75,10 @@
             delete preferences.ui.hidePlus;
             needToPersist = true;
           }
+          if (preferences.ui.inboxOnboarded){
+            delete preferences.ui.inboxOnboarded;
+            needToPersist = true;
+          }
           if (preferences.ui.focusTasksOnboarded){
             delete preferences.ui.focusTasksOnboarded;
             needToPersist = true;
@@ -87,16 +91,10 @@
             delete preferences.ui.showAgendaCalendar;
             needToPersist = true;
           }
-          if (preferences.ui.calendar && angular.isArray(preferences.ui.calendar)){
+          if (preferences.ui.calendars && angular.isArray(preferences.ui.calendars)){
             // Old calendar preferences value, migrate to new one.
-            var deviceId = UISessionService.getDeviceId();
-            if (deviceId){
-              preferences.calendar = {
-                deviceId: preferences.ui.calendar
-              };
-              delete preferences.ui.calendar;
-              needToPersist = true;
-            }
+            delete preferences.ui.calendars;
+            needToPersist = true;
           }
         }
         if (needToPersist){
