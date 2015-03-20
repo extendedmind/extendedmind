@@ -144,12 +144,9 @@ trait ItemDatabase extends UserDatabase {
     val noteBuffer = new ListBuffer[Note]
     val listBuffer = new ListBuffer[List]
     val tagBuffer = new ListBuffer[Tag]
-    
-    var previousId: Option[Long] = None;
-    itemNodes foreach (itemNode => {
-      if (previousId.isDefined && itemNode.getId() == previousId.get){
-        log.warning("Owner " + getOwnerUUID(owner) + " has duplicate id " + itemNode.getId())
-      } else if (itemNode.hasLabel(ItemLabel.NOTE)) {
+
+    itemNodes foreach (itemNode =>
+      if (itemNode.hasLabel(ItemLabel.NOTE)) {
         val note = toNote(itemNode, owner)
         if (note.isLeft) {
           return fail(INTERNAL_SERVER_ERROR, note.left.get.toString)
@@ -186,9 +183,7 @@ trait ItemDatabase extends UserDatabase {
         }
         log.warning("Owner " + getOwnerUUID(owner) + " has node " + itemNode.getId() + " with labels " + labels +
           " that was found in the items index")
-      }
-      previousId = Some(itemNode.getId());
-    })
+      })
     Right(Items(
       if (itemBuffer.isEmpty) None else Some(itemBuffer.toList),
       if (taskBuffer.isEmpty) None else Some(taskBuffer.toList),
