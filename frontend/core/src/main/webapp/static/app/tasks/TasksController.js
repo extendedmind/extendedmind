@@ -18,6 +18,19 @@
                           AnalyticsService, ArrayService, DateService, ItemsService, SwiperService,
                           TasksService, UISessionService) {
 
+  if (angular.isFunction($scope.registerFeatureActivateCallback))
+    $scope.registerFeatureActivateCallback(tasksActivated, 'tasks', 'TasksController');
+
+  function tasksActivated(featureChanged) {
+    if (featureChanged) {
+      if ($scope.features.tasks.getStatus('contexts') === 'disabled'){
+        SwiperService.setOnlyExternal('tasks', true);
+      }else{
+        SwiperService.setOnlyExternal('tasks', false);
+      }
+    }
+  }
+
   // INITIALIZING
   if (angular.isFunction($scope.registerArrayChangeCallback)) {
     $scope.registerArrayChangeCallback('tasks', ['active', 'archived'], invalidateTasksArrays,
