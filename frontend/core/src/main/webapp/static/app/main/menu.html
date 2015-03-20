@@ -1,17 +1,17 @@
 <div class="container-menu swiper-no-swiping" ng-controller="MenuController" drawer="left">
   <div class="container-menu--top">
 
-    <a href class="link-menu row onboarding-invisible" ng-click="gotoFeature('user')"
+    <a href class="link-menu row" ng-click="gotoFeature('user')"
       ng-class="isFeatureActive('user') && 'highlighted'">
       <span class="text-navigation-menu-small" clamp=1 ng-bind="getActiveDisplayName()"></span>
     </a>
 
-    <a href class="link-menu separate row onboarding-invisible" ng-click="gotoFeature('focus')"
+    <a href class="link-menu separate row" ng-click="gotoFeature('focus')"
       ng-class="isFeatureActive('focus') && 'highlighted'">
       <span class="text-navigation-menu">focus</span>
     </a>
-    <a href class="link-menu row onboarding-invisible" ng-click="gotoFeature('inbox')"
-      ng-class="isFeatureActive('inbox') && 'highlighted'">
+    <a href class="link-menu row" ng-click="gotoFeature('inbox')"
+      ng-class="{'highlighted': isFeatureActive('inbox'), 'invisible': features.inbox.getStatus() === 'disabled'}">
       <span class="text-navigation-menu">inbox</span>
     </a>
     <a href class="link-menu row" ng-click="gotoFeature('tasks')"
@@ -19,7 +19,7 @@
       <span class="text-navigation-menu">tasks</span>
     </a>
     <a href class="link-menu row" ng-click="gotoFeature('notes')"
-      ng-class="{highlighted: isFeatureActive('notes'), hidden: !isOnboarded('tasks')}">
+      ng-class="{highlighted: isFeatureActive('notes'), 'invisible': features.notes.getStatus() === 'disabled'}">
       <span class="text-navigation-menu">notes</span>
     </a>
     <a href class="link-menu row" ng-click="gotoFeature('lists')"

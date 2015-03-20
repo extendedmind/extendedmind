@@ -1328,10 +1328,15 @@ textarea#ignoreSnap {
   padding-left: @grid-horizontal;   // [2]
   padding-right: @grid-horizontal;  // [2]
 }
-.container-main:not(.onboarding-in-progress) textarea#ignoreSnap:focus {
+
+textarea#ignoreSnap:not(.disable-full-height):focus {
   padding-bottom: @grid-vertical-half;  // [3]
   overflow: initial !important; // [4]
   height: 100% !important;      // [1,4]
+}
+
+textarea#ignoreSnap.disable-full-height.input-separate {
+  margin-top: @grid-vertical-half;
 }
 
 // From http://stackoverflow.com/a/6471713

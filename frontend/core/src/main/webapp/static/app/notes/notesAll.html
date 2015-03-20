@@ -1,7 +1,7 @@
 <div class="container-fluid--inner" list-container drawer-handle="left" swiper-prevent>
   <section class="container-content" list="allNotes" list-recent list-open="openEditor('note', getNewNote(), 'new')">
 
-    <div ng-show="!onboardingInProgress">
+    <div ng-show="isContentVisible('notes')">
       <h2 class="group-heading justified row">all notes</h2>
       <div class="animate-list-item-leave tall"
         ng-repeat="note in listInfos.array = (getFullArray()) | orderBy:'trans.modified':true
@@ -11,7 +11,7 @@
     </div>
 
     <!-- ONBOARDING -->
-    <div ng-if="onboardingInProgress && !isOnboarded('notes')" class="group-instruction">
+    <div ng-if="getOnboardingPhase('notes') === 1" class="group-instruction">
       <h2 class="group-heading instruction long row">what do you want to
         <span class="highlighted">remember</span>?
       </h2>
@@ -20,7 +20,7 @@
       </div>
     </div>
 
-    <div ng-if="onboardingInProgress && isOnboarded('notes')" class="group-instruction">
+    <div ng-if="getOnboardingPhase('notes') === 3" class="group-instruction">
       <h2 class="group-heading instruction row">
         <span class="highlighted">note</span> created!
       </h2>

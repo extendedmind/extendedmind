@@ -1,5 +1,5 @@
 <div class="container-fluid--inner" list-container drawer-handle="left" swiper-prevent>
-  <section ng-show="isOnboarded('inbox')" class="container-content" list="items">
+  <section ng-show="isContentVisible('inbox')" class="container-content" list="items">
     <h2 class="group-heading justified row" ng-bind="items.length + ' items'"></h2>
 
     <div list-item-add="getNewItem()" list-item-add-save="saveItem(newItem)">
@@ -34,7 +34,7 @@
   <footer ng-show="isOnboarded('inbox')" class="container-content--after" list-footer="getFeatureMap('inbox')"></footer>
 
   <!-- ONBOARDING -->
-  <section ng-if="!isOnboarded('inbox')" class="container-content">
+  <section ng-if="isOnboarding('inbox')" class="container-content">
     <div class="group-instruction">
       <h2 class="group-heading instruction row">never lose an
         <span class="highlighted">idea</span>
@@ -45,7 +45,7 @@
       <div class="textgroup-ingress last row">add items by hitting the logo that's always in the top-right corner</div>
     </div>
   </section>
-  <footer ng-if="!isOnboarded('inbox')" class="container-content--after group-btn">
+  <footer ng-if="isOnboarding('inbox')" class="container-content--after group-btn">
     <button type="submit" class="btn-action" ng-click="completeOnboarding('inbox')">
       <span class="text-btn">got it</span>
     </button>
