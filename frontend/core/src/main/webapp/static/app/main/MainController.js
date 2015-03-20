@@ -33,9 +33,35 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
 
   // MAP OF ALL FEATURES
 
+  function getFeatureStatus(featurePreferences, subfeature){
+    if (!featurePreferences){
+      return 'disabled';
+    }else{
+      if (angular.isString(featurePreferences)){
+        if (featurePreferences.endsWith(':d')){
+          return 'disabled';
+        }else{
+          return 'active';
+        }
+      }else if (angular.isNumber(featurePreferences)){
+        if (featurePreferences === 0){
+          return 'disabled';
+        }else{
+          return 'onboarding_' + featurePreferences;
+        }
+      }else if (subfeature && angular.isObject(featurePreferences)){
+        // recursively call return status for subfeature
+        return getFeatureStatus(featurePreferences[subfeature]);
+      }
+    }
+  }
+
   $scope.features = {
     user: {
       heading: undefined,
+      getStatus: function(subfeature){
+        return getFeatureStatus(UserSessionService.getFeaturePreferences('user'), subfeature);
+      },
       slides: {
         left: {
           path: 'user/home',
@@ -49,6 +75,9 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     },
     focus: {
       heading: 'focus',
+      getStatus: function(subfeature){
+        return getFeatureStatus(UserSessionService.getFeaturePreferences('focus'), subfeature);
+      },
       slides: {
         left: {
           path: 'focus/tasks',
@@ -62,6 +91,9 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     },
     inbox: {
       heading: 'inbox',
+      getStatus: function(subfeature){
+        return getFeatureStatus(UserSessionService.getFeaturePreferences('inbox'), subfeature);
+      },
       sortable: {
         heading: 'sort',
         action: openRecurringEditor,
@@ -70,6 +102,9 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     },
     tasks: {
       heading: 'tasks',
+      getStatus: function(subfeature){
+        return getFeatureStatus(UserSessionService.getFeaturePreferences('tasks'), subfeature);
+      },
       slides: {
         left: {
           path: 'tasks/all',
@@ -86,10 +121,16 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
       }
     },
     notes: {
-      heading: 'notes'
+      heading: 'notes',
+      getStatus: function(subfeature){
+        return getFeatureStatus(UserSessionService.getFeaturePreferences('notes'), subfeature);
+      }
     },
     lists: {
       heading: 'lists',
+      getStatus: function(subfeature){
+        return getFeatureStatus(UserSessionService.getFeaturePreferences('lists'), subfeature);
+      },
       slides: {
         left: {
           path: 'lists/active',
@@ -103,6 +144,9 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     },
     list: {
       heading: undefined,
+      getStatus: function(subfeature){
+        return getFeatureStatus(UserSessionService.getFeaturePreferences('list'), subfeature);
+      },
       slides: {
         left: {
           path: 'list/tasks',
@@ -115,10 +159,16 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
       }
     },
     trash: {
-      heading: 'trash'
+      heading: 'trash',
+      getStatus: function(subfeature){
+        return getFeatureStatus(UserSessionService.getFeaturePreferences('trash'), subfeature);
+      }
     },
     settings: {
-      heading: 'settings'
+      heading: 'settings',
+      getStatus: function(subfeature){
+        return getFeatureStatus(UserSessionService.getFeaturePreferences('settings'), subfeature);
+      }
     },
     admin: {
       heading: 'admin'
