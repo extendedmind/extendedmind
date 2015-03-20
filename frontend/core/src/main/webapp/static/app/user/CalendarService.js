@@ -44,25 +44,31 @@ function CalendarService(UISessionService, UserService, UserSessionService) {
     setActiveCalendars: setActiveCalendars,
     activateCalendar: function(id, name){
       var activeCalendars = getActiveCalendars();
-      for (var i = 0; i < activeCalendars.length; i++) {
-        if (activeCalendars[i].id === id) {
-          return;
+      if (activeCalendars){
+        for (var i = 0; i < activeCalendars.length; i++) {
+          if (activeCalendars[i].id === id) {
+            return;
+          }
         }
+        activeCalendars.push({
+          id: id,
+          name: name
+        });
+        setActiveCalendars(activeCalendars);
+        return true;
       }
-      activeCalendars.push({
-        id: id,
-        name: name
-      });
-      setActiveCalendars(activeCalendars);
     },
     deactivateCalendar: function(id){
       var activeCalendars = getActiveCalendars();
-      for (var i = activeCalendars.length-1; i >= 0; i--) {
-        if (activeCalendars[i].id === id) {
-          activeCalendars.splice(i, 1);
-          setActiveCalendars(activeCalendars);
-          return;
+      if (activeCalendars){
+        for (var i = activeCalendars.length-1; i >= 0; i--) {
+          if (activeCalendars[i].id === id) {
+            activeCalendars.splice(i, 1);
+            setActiveCalendars(activeCalendars);
+            return;
+          }
         }
+        return true;
       }
     }
   };
