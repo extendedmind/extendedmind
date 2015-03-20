@@ -29,7 +29,6 @@
     if (window.plugins && window.plugins.calendar) {
 
       var listCalendarsSuccess = function(calendars) {
-        // Wrap inside timeout to see changes in the UI.
         if (calendars && calendars.length) {
 
           var activeCalendars = CalendarService.getActiveCalendars();
