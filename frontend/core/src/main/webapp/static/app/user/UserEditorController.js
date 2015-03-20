@@ -15,8 +15,8 @@
  'use strict';
 
  function UserEditorController($http, $rootScope, $scope, $timeout, AnalyticsService, AuthenticationService,
-                               BackendClientService, SwiperService, SynchronizeService, UISessionService,
-                               UserService, UserSessionService) {
+                               BackendClientService, CalendarService, SwiperService, SynchronizeService,
+                               UISessionService, UserService, UserSessionService) {
 
   if ($scope.mode === 'signUp'){
     $scope.user = {};
@@ -31,51 +31,38 @@
       var listCalendarsSuccess = function(calendars) {
         // Wrap inside timeout to see changes in the UI.
         if (calendars && calendars.length) {
-          var i;
-          var calendarStates = UserSessionService.getUIPreference('calendars');
-          var calendarStatesChanged;
+
+          var activeCalendars = CalendarService.getActiveCalendars();
+          var activeCalendarsUpdated = false;
           $scope.calendars = calendars;
 
-          if (calendarStates && calendarStates.length) {
-            // Previous states exists.
-
-            i = calendarStates.length;
+          if (activeCalendars && activeCalendars.length) {
+            // Previous active calendars exists.
+            var i = activeCalendars.length;
             while (i--) {
-              var calendarExists = calendars.findFirstObjectByKeyValue('id', calendarStates[i].id);
+              var calendarExists = calendars.findFirstObjectByKeyValue('id', activeCalendars[i].id);
               if (!calendarExists) {
                 // Remove non-existing calendar.
-                calendarStates.splice(i, 1);
-                calendarStatesChanged = true;
+                activeCalendars.splice(i, 1);
+                activeCalendarsUpdated = true;
               }
             }
 
             for (i = 0; i < calendars.length; i++) {
-              var savedCalendar = calendarStates.findFirstObjectByKeyValue('id', calendars[i].id);
-              if (savedCalendar) {
-                // Update saved calendar.
-                $scope.calendars[i].enabled = savedCalendar.enabled;
-              } else {
-                // Add new calendar.
-                calendarStates.push({
-                  id: calendars[i].id,
-                  name: calendars[i].name
-                });
-                calendarStatesChanged = true;
+              var savedActiveCalendar = activeCalendars.findFirstObjectByKeyValue('id', calendars[i].id);
+
+              if (savedActiveCalendar) {
+                $scope.calendars[i].enabled = true;
+                if (savedActiveCalendar.name !== calendars[i].name) {
+                  // Update saved calendar as it has changed
+                  savedActiveCalendar.name = calendars[i].name;
+                  activeCalendarsUpdated = true;
+                }
               }
             }
-          } else {
-            // New states.
-            calendarStates = [];
-            for (i = 0; i < calendars.length; i++) {
-              calendarStates.push({
-                id: calendars[i].id,
-                name: calendars[i].name
-              });
-            }
-            calendarStatesChanged = true;
           }
 
-          if (calendarStatesChanged) updateCalendars(calendarStates);
+          if (activeCalendarsUpdated) CalendarService.setActiveCalendars(activeCalendars);
         }
         $scope.calendarsLoaded = true;
         if (!$scope.$$phase && !$rootScope.$$phase) {
@@ -91,30 +78,12 @@
     }
   }
 
-  function updateCalendars(calendars){
-    UserSessionService.setUIPreference('calendars', calendars);
-    UserService.saveAccountPreferences();
-  }
-
   $scope.toggleCalendarEnabled = function(id, name, enabled) {
-    var calendarStates = UserSessionService.getUIPreference('calendars');
-    if (!calendarStates) calendarStates = [];
-      var calendarFound;
-      for (var i = 0; i < calendarStates.length; i++) {
-        if (calendarStates[i].id === id) {
-          calendarFound = true;
-          calendarStates[i].enabled = enabled;
-        }
-      }
-    if (!calendarFound) {
-      calendarStates.push({
-        id: id,
-        name: name,
-        enabled: enabled
-      });
+    if (enabled){
+      CalendarService.activateCalendar(id, name);
+    }else{
+      CalendarService.deactivateCalendar(id);
     }
-
-    updateCalendars(calendarStates);
   };
 
   if ($scope.mode === 'agendaCalendar') {
@@ -221,7 +190,7 @@
       $scope.user.remember = true;
     }
     AuthenticationService.login($scope.user).then(
-      function(response) {
+      function(/*response*/) {
         // Start executing all pending requests now
         BackendClientService.executeRequests();
         $scope.closeEditor();
@@ -255,6 +224,6 @@
 }
 
 UserEditorController['$inject'] = ['$http', '$rootScope', '$scope', '$timeout', 'AnalyticsService',
-'AuthenticationService', 'BackendClientService', 'SwiperService', 'SynchronizeService', 'UISessionService',
-'UserService', 'UserSessionService'];
+'AuthenticationService', 'BackendClientService', 'CalendarService', 'SwiperService', 'SynchronizeService',
+'UISessionService', 'UserService', 'UserSessionService'];
 angular.module('em.user').controller('UserEditorController', UserEditorController);

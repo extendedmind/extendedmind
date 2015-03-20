@@ -18,7 +18,7 @@
 
 function CalendarService(UISessionService, UserService, UserSessionService) {
 
-  function updateActiveCalendars(calendars){
+  function setActiveCalendars(calendars){
     var deviceId = UISessionService.getDeviceId();
     if (deviceId){
       var calendarPreferences = UserSessionService.getUIPreference('calendars');
@@ -41,6 +41,7 @@ function CalendarService(UISessionService, UserService, UserSessionService) {
 
   return {
     getActiveCalendars: getActiveCalendars,
+    setActiveCalendars: setActiveCalendars,
     activateCalendar: function(id, name){
       var activeCalendars = getActiveCalendars();
       for (var i = 0; i < activeCalendars.length; i++) {
@@ -52,14 +53,14 @@ function CalendarService(UISessionService, UserService, UserSessionService) {
         id: id,
         name: name,
       });
-      updateActiveCalendars(activeCalendars);
+      setActiveCalendars(activeCalendars);
     },
     deactivateCalendar: function(id){
       var activeCalendars = getActiveCalendars();
       for (var i = activeCalendars.length-1; i >= 0; i--) {
         if (activeCalendars[i].id === id) {
           activeCalendars.splice(i, 1);
-          updateActiveCalendars(activeCalendars);
+          setActiveCalendars(activeCalendars);
           return;
         }
       }

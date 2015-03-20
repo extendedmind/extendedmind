@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function DatesController($filter, $rootScope, $scope, $timeout,
+ function DatesController($filter, $rootScope, $scope, $timeout, CalendarService,
                           DateService, SwiperService, UISessionService, UserSessionService, packaging) {
   var slidePath = 'focus/tasks';
 
@@ -562,41 +562,25 @@
   // AGENDA
 
   // Initialisation
-  var savedCalendars = UserSessionService.getUIPreference('calendars');
-  if (savedCalendars) {
-    var enabledCalendars = filterEnabledCalendars(savedCalendars);
-    if (enabledCalendars && enabledCalendars.length) {
-      var agendaCalendarsEnabled = true;
-      if (!window.plugins || !window.plugins.calendar) {
-        document.addEventListener('deviceready', function() {
-          if (window.plugins && window.plugins.calendar) {
-            listCalendars(enabledCalendars);
-          }
-        });
-      } else {
-        listCalendars(enabledCalendars);
-      }
+  var enabledCalendars = CalendarService.getActiveCalendars();
+  if (enabledCalendars && enabledCalendars.length) {
+    var agendaCalendarsEnabled = true;
+    if (!window.plugins || !window.plugins.calendar) {
+      document.addEventListener('deviceready', function() {
+        if (window.plugins && window.plugins.calendar) {
+          listCalendars(enabledCalendars);
+        }
+      });
+    } else {
+      listCalendars(enabledCalendars);
     }
   }
 
   function refreshAgenda() {
-    var savedCalendars = UserSessionService.getUIPreference('calendars');
-    if (savedCalendars) {
-      var enabledCalendars = filterEnabledCalendars(savedCalendars);
-      if (enabledCalendars && enabledCalendars.length) {
-        listCalendars(enabledCalendars);
-      }
+    var enabledCalendars = CalendarService.getActiveCalendars();
+    if (enabledCalendars && enabledCalendars.length) {
+      listCalendars(enabledCalendars);
     }
-  }
-
-  function filterEnabledCalendars(savedCalendars) {
-    var enabledCalendars = [];
-    for (var calendar in savedCalendars) {
-      if (savedCalendars.hasOwnProperty(calendar) && savedCalendars[calendar].enabled) {
-        enabledCalendars.push(savedCalendars[calendar]);
-      }
-    }
-    return enabledCalendars;
   }
 
   $scope.isAgendaVisible = function() {
@@ -619,17 +603,15 @@
   }
 
   function refreshAgendaEventsAndVisibility() {
-    var savedCalendars = UserSessionService.getUIPreference('calendars');
     var newAgendaCalendarsEnabled;
-    if (savedCalendars) {
-      var enabledCalendars = filterEnabledCalendars(savedCalendars);
-      if (enabledCalendars && enabledCalendars.length) {
-        newAgendaCalendarsEnabled = true;
-        listCalendars(enabledCalendars);
-      } else {
-        cachedEventInstances = undefined; // Clear cache.
-      }
+    var enabledCalendars = CalendarService.getActiveCalendars();
+    if (enabledCalendars && enabledCalendars.length) {
+      newAgendaCalendarsEnabled = true;
+      listCalendars(enabledCalendars);
+    } else {
+      cachedEventInstances = undefined; // Clear cache.
     }
+
     if (agendaCalendarsEnabled !== newAgendaCalendarsEnabled) {
       agendaCalendarsEnabled = newAgendaCalendarsEnabled;
       executeAgendaVisibilityChangedCallbacks();
@@ -873,6 +855,6 @@
   });
 }
 
-DatesController['$inject'] = ['$filter', '$rootScope', '$scope', '$timeout',
+DatesController['$inject'] = ['$filter', '$rootScope', '$scope', '$timeout', 'CalendarService',
 'DateService', 'SwiperService', 'UISessionService', 'UserSessionService', 'packaging'];
 angular.module('em.focus').controller('DatesController', DatesController);
