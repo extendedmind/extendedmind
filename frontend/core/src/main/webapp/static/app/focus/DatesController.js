@@ -608,16 +608,18 @@
     if (enabledCalendars && enabledCalendars.length) {
       newAgendaCalendarsEnabled = true;
       listCalendars(enabledCalendars);
-    } else {
-      cachedEventInstances = undefined; // Clear cache.
-      if (!$scope.$$phase && !$rootScope.$$phase) {
-        // Update UI.
-        $scope.$digest();
-      }
     }
 
     if (agendaCalendarsEnabled !== newAgendaCalendarsEnabled) {
       agendaCalendarsEnabled = newAgendaCalendarsEnabled;
+      if (!agendaCalendarsEnabled) {
+        // Agenda calendar changed from enabled to disabled.
+        cachedEventInstances = undefined; // Clear cache.
+        if (!$scope.$$phase && !$rootScope.$$phase) {
+          // Update UI.
+          $scope.$digest();
+        }
+      }
       executeAgendaVisibilityChangedCallbacks();
     }
   }
