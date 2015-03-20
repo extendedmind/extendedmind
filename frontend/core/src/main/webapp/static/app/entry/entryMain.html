@@ -12,7 +12,7 @@
     <h2 class="group-heading row-form" editable-field-deactivate>log in</h2>
     <div class="row-form">
       <input type="email" name="email" ng-model="user.username"
-      placeholder="enter email&#8230;" editable-field="getEditableFieldSticky()"
+      placeholder="enter email&#8230;" maxlength="254" editable-field="getEditableFieldSticky()"
       editable-field-register-callbacks="registerEntryMainEmailInputCallbacks(focus, blur)" required />
     </div>
     <div class="group-error row-form">
@@ -21,7 +21,8 @@
       </div>
     </div>
     <div class="row-form">
-      <input type="password" name="password" id="password" ng-model="user.password" ng-minlength="7" placeholder="enter password&#8230;" editable-field="getEditableFieldSticky()"
+      <input type="password" name="password" id="password" ng-model="user.password" ng-minlength="7"
+      placeholder="enter password&#8230;" editable-field="getEditableFieldSticky()" ng-maxlength="100"
       editable-field-register-callbacks="registerEntryMainPasswordInputCallbacks(focus, blur)" required />
     </div>
     <div ng-if="!rememberByDefault()" class="group-mixed details height-large with-checkbox">

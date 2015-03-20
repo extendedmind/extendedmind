@@ -46,9 +46,11 @@ case class Task(uuid: Option[UUID], id: Option[String], created: Option[Long], m
                 visibility: Option[SharedItemVisibility],
                 relationships: Option[ExtendedItemRelationships])
             extends ExtendedItem{
+  if (id.isDefined) require(validateLength(id.get, 100), "Id can not be more than 100 characters")
   require(validateTitle(title), "Title can not be more than " + TITLE_MAX_LENGTH + " characters")
   if (description.isDefined) require(validateDescription(description.get), 
       "Description can not be more than " + DESCRIPTION_MAX_LENGTH + " characters")
+  if (link.isDefined) require(validateLength(link.get, 2000), "Link can not be more than 2000 characters")
   if (due.isDefined) require(validateDateString(due.get), "Due date does not match pattern yyyy-MM-dd")
   if (reminder.isDefined) require(validateTimeString(reminder.get), "Reminder time does not match pattern hh:mm")
   if (repeating.isDefined) require(due.isDefined, "Repeating requires due date")

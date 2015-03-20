@@ -24,7 +24,8 @@ import Validators._
 import org.extendedmind.security.SecurityContext
 
 case class UserPreferences(onboarded: Option[String], ui: Option[String]){
-  if (ui.isDefined) require(validateLength(ui.get, 2048), "UI preferences max length is 2048")
+  if (onboarded.isDefined) require(validateLength(onboarded.get, 10000), "Onboarded preferences max length is 10000")
+  if (ui.isDefined) require(validateLength(ui.get, 10000), "UI preferences max length is 10000")
 }
 
 case class User(uuid: Option[UUID], created: Option[Long], modified: Option[Long], deleted: Option[Long],

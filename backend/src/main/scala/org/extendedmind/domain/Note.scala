@@ -31,10 +31,12 @@ case class Note(uuid: Option[UUID], id: Option[String], created: Option[Long], m
                 visibility: Option[SharedItemVisibility],
                 relationships: Option[ExtendedItemRelationships])
            extends ExtendedItem{
+  if (id.isDefined) require(validateLength(id.get, 100), "id can not be more than 100 characters")
   require(validateTitle(title), "Title can not be more than " + TITLE_MAX_LENGTH + " characters")
   if (description.isDefined) require(validateDescription(description.get), 
       "Description can not be more than " + DESCRIPTION_MAX_LENGTH + " characters")
-  if (description.isDefined) require(validateLength(description.get, 256), "Note description can not be more than 256 characters")
+  if (link.isDefined) require(validateLength(link.get, 2000), "Link can not be more than 2000 characters")
+  if (content.isDefined) require(validateLength(content.get, 1000000), "Content can not be more than 1000000 characters")
 }
 
 object Note{

@@ -41,11 +41,11 @@
       <h2 class="group-heading row-form">change password</h2>
       <div class="row-form">
         <input type="password" name="password" id="password" ng-model="user.passwordOld"
-        ng-minlength="7" placeholder="enter old password&#8230;" required />
+        ng-minlength="7" ng-maxlength="100" placeholder="enter old password&#8230;" required />
       </div>
       <div class="row-form">
         <input type="password" name="passwordNew" id="passwordNew" ng-model="user.passwordNew"
-        ng-minlength="7" placeholder="enter new password&#8230;" required />
+        ng-minlength="7" ng-maxlength="100" placeholder="enter new password&#8230;" required />
       </div>
       <div class="group-error row-form">
         <div ng-if="userForm.passwordNew.$touched" ng-messages="signUpForm.password.$error">
@@ -81,7 +81,7 @@
           <h2 class="group-heading row-form">sign up</h2>
           <div class="row-form">
             <input type="email" name="email" ng-model="user.username"
-            placeholder="enter email&#8230;" editable-field
+            placeholder="enter email&#8230;" maxlength="254" editable-field
             editable-field-register-callbacks="registerUserEditorEmailInputCallbacks(focus, blur)" required />
           </div>
           <div class="group-error row-form">
@@ -91,7 +91,7 @@
           </div>
           <div class="row-form">
             <input type="password" name="password" id="password" ng-model="user.password"
-            ng-minlength="7" placeholder="enter password&#8230;" required />
+            ng-minlength="7" ng-maxlength="100" placeholder="enter password&#8230;" required />
           </div>
           <div class="group-error row-form">
             <div ng-if="signUpForm.password.$touched" ng-messages="signUpForm.password.$error">

@@ -9,7 +9,7 @@
       <h2 class="group-heading row-form" editable-field-deactivate>forgot password?</h2>
       <div class="row-form">
         <input type="email" name="email" ng-model="user.username"
-        placeholder="enter email&#8230;" editable-field="getEditableFieldSticky()"
+        placeholder="enter email&#8230;" maxlength="254" editable-field="getEditableFieldSticky()"
         editable-field-register-callbacks="registerEntryForgotEmailInputCallbacks(focus, blur)" required />
       </div>
       <div class="group-error row-form">

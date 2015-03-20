@@ -38,7 +38,7 @@ object Validators {
   timeFormat.setLenient(false)
   
   def validateEmailAddress(email: String): Boolean = {
-    if (email.length() > 100) false
+    if (email.length() > 254) false
     else emailPattern.pattern.matcher(email).matches()
   }
   

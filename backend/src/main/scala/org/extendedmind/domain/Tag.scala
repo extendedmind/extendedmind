@@ -37,9 +37,11 @@ case class Tag(
       visibility: Option[SharedItemVisibility],
       parent: Option[UUID])
       extends ShareableItem{
+  if (id.isDefined) require(validateLength(id.get, 100), "Id can not be more than 100 characters")
   require(validateTitle(title), "Title can not be more than " + TITLE_MAX_LENGTH + " characters")
   if (description.isDefined) require(validateDescription(description.get), 
       "Description can not be more than " + DESCRIPTION_MAX_LENGTH + " characters")
+  if (link.isDefined) require(validateLength(link.get, 2000), "Link can not be more than 2000 characters")
 }
 
 object Tag{
