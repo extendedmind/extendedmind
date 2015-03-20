@@ -51,7 +51,7 @@ function CalendarService(UISessionService, UserService, UserSessionService) {
       }
       activeCalendars.push({
         id: id,
-        name: name,
+        name: name
       });
       setActiveCalendars(activeCalendars);
     },
