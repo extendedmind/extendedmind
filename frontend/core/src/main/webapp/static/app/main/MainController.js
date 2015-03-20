@@ -181,7 +181,6 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     if (preferences && preferences.onboarded){
       var numberOfActiveFeatures = 0;
       for (var key in preferences.onboarded) {
-        console.log(key)
         if (preferences.onboarded.hasOwnProperty(key)) {
           numberOfActiveFeatures++;
           if (numberOfActiveFeatures > 1) return true;
