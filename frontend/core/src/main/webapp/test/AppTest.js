@@ -171,7 +171,13 @@ angular.module('em.appTest')
               return success(listCalendars);
             },
             listEventInstances: function(calendarIds, startDate, endDate, success) {
-              return success(eventInstances);
+              var filteredEventInstancesByCalendarIds = [];
+              for (var i = 0; i < eventInstances.length; i++) {
+                if (calendarIds.indexOf(eventInstances[i].calendar_id) !== -1) {
+                  filteredEventInstancesByCalendarIds.push(eventInstances[i]);
+                }
+              }
+              return success(filteredEventInstancesByCalendarIds);
             }
           };
 

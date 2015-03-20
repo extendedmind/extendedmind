@@ -56,8 +56,8 @@
       // NOTE: use setTimeout(callback, 0) if requestAnimationFrame is not working.
       window.requestAnimationFrame(function() {
         $scope.changeDaySlide(DateService.getTodayYYYYMMDD(), 0);
-        refreshAgendaEventsAndVisibility();
       });
+      refreshAgendaEventsAndVisibility();
 
     }
     else {
@@ -610,6 +610,10 @@
       listCalendars(enabledCalendars);
     } else {
       cachedEventInstances = undefined; // Clear cache.
+      if (!$scope.$$phase && !$rootScope.$$phase) {
+        // Update UI.
+        $scope.$digest();
+      }
     }
 
     if (agendaCalendarsEnabled !== newAgendaCalendarsEnabled) {
@@ -705,8 +709,10 @@
         attachGetCalendarNameByIdFn(eventInstances[i], enabledCalendars);
         cachedEventInstances['all'].push(eventInstances[i]);
       }
-      // Show agenda and update UI.
-      if (!$scope.$$phase && !$rootScope.$$phase) $scope.$digest();
+      if (!$scope.$$phase && !$rootScope.$$phase) {
+        // Uupdate UI
+        $scope.$digest();
+      }
     }
   }
 
