@@ -12,6 +12,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/* global angular, pauseExtendedMindAnimation, extendedMindAudio, setupHTML5Audio, extendedMindAnimationDelay,
+   playExtendedMindAnimation, extendedMindAnimationPhase, Media, cordova */
  'use strict';
 
  function EntryController($http, $location, $routeParams, $scope,
@@ -46,7 +49,7 @@
     SwiperService.swipeTo('entry/main');
   };
 
-  $scope.swipeToDetails = function(mode) {
+  $scope.swipeToDetails = function() {
     SwiperService.swipeTo('entry/details');
   };
 
@@ -116,6 +119,17 @@
 
   $scope.startTutorial = function() {
     var userUUID = UserSessionService.createFakeUserUUID();
+    // Start tutorial from focus/tasks
+    var onboardedValue = UISessionService.getOnboardedValue();
+    var newUserFeatureValues = {
+      user: onboardedValue,
+      focus: { tasks: 1 },
+      tasks: onboardedValue,
+      trash: onboardedValue,
+      settings: onboardedValue
+    };
+    UserSessionService.setPreference('onboarded', newUserFeatureValues);
+    UserService.saveAccountPreferences();
     AnalyticsService.doWithUuid('startTutorial', undefined, userUUID);
     $location.path('/my');
   };
@@ -166,11 +180,11 @@
         setupHTML5Audio();
       }else if (Media){
         var src = getAudioUrl();
-        $scope.theme = new Media(src, function(success){
+        $scope.theme = new Media(src, function(){
           if (extendedMindAudio !== undefined) extendedMindAudio.ended = true;
           if (packaging === 'android-cordova'){
             // TODO: Fork and improve KeepScreenOnPlugin
-            cordova.exec(null, null, "KeepScreenOn", "CancelKeepScreenOn", [""]);
+            cordova.exec(null, null, 'KeepScreenOn', 'CancelKeepScreenOn', ['']);
           }
         });
         extendedMindAudio = {
@@ -183,20 +197,20 @@
           },
           readyState: 1,
           HAVE_FUTURE_DATA: 1
-        }
+        };
       }
     }
     if (packaging === 'android-cordova'){
       extendedMindAnimationDelay = 0.1;
       // TODO: Fork and improve KeepScreenOnPlugin
-      cordova.exec(null, null, "KeepScreenOn", "KeepScreenOn", [""]);
+      cordova.exec(null, null, 'KeepScreenOn', 'KeepScreenOn', ['']);
     }
     else if (packaging === 'ios-cordova'){
       extendedMindAnimationDelay = 0.05;
     }
 
     playExtendedMindAnimation();
-  }
+  };
 
   // Pause animation when entering background, not really working on iOS
   function pauseCallback(){

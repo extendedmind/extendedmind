@@ -78,6 +78,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
       getStatus: function(subfeature){
         return getFeatureStatus(UserSessionService.getFeaturePreferences('focus'), subfeature);
       },
+      additionalContentVisibleStatuses: ['onboarding_2'],
       slides: {
         left: {
           path: 'focus/tasks',
@@ -172,6 +173,73 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     },
     admin: {
       heading: 'admin'
+    }
+  };
+
+  // returns if main content is visible for given feature (and subfeature if applicable)
+  $scope.isContentVisible = function(feature, subfeature){
+    var status = getFeatureStatus(UserSessionService.getFeaturePreferences(feature), subfeature);
+    if (status === 'active'){
+      return true;
+    }
+    if ($scope.features[feature].additionalContentVisibleStatuses &&
+        $scope.features[feature].additionalContentVisibleStatuses.indexOf(status) !== -1){
+      return true;
+    }
+  };
+
+  $scope.isOnboarding = function(feature, subfeature){
+    var status = getFeatureStatus(UserSessionService.getFeaturePreferences(feature), subfeature);
+    if (status.startsWith('onboarding')){
+      return true;
+    }
+  };
+
+  $scope.getOnboardingPhase = function(feature, subfeature){
+    var featurePreferences = UserSessionService.getFeaturePreferences(feature);
+    if (angular.isNumber(featurePreferences) && featurePreferences > 0) return featurePreferences;
+    else if (subfeature && angular.isObject(featurePreferences)){
+      if (angular.isNumber(featurePreferences[subfeature]) && featurePreferences[subfeature] > 0)
+        return featurePreferences[subfeature];
+    }
+  };
+
+  function increaseOnboardingPhase(featurePreferences, subfeature){
+    if (subfeature) featurePreferences[subfeature] += 1;
+    else featurePreferences += 1;
+    UserService.saveAccountPreferences();
+  }
+
+  $scope.increaseOnboardingPhase = function(feature, subfeature){
+    var focusPreferences = UserSessionService.getFeaturePreferences(feature);
+    increaseOnboardingPhase(focusPreferences, subfeature)
+  };
+
+  // Plus button is pressed or new item is added, this function figures out what to do then
+  $scope.notifyAddAction = function(type, featureInfo, subfeature){
+    if (featureInfo === $scope.features.user){
+
+    }else if (featureInfo === $scope.features.focus){
+      var focusPreferences = UserSessionService.getFeaturePreferences('focus');
+      if (getFeatureStatus(focusPreferences, subfeature).startsWith('onboarding')){
+        // Focus tasks is the current feature and it is onboarding: we update the onboarding status
+        increaseOnboardingPhase(focusPreferences, subfeature);
+        return true;
+      };
+    }else if (featureInfo === $scope.features.inbox){
+
+    }else if (featureInfo === $scope.features.tasks){
+
+    }else if (featureInfo === $scope.features.notes){
+
+    }else if (featureInfo === $scope.features.lists){
+
+    }else if (featureInfo === $scope.features.list){
+
+    }else if (featureInfo === $scope.features.trash){
+
+    }else if (featureInfo === $scope.features.settings){
+
     }
   };
 

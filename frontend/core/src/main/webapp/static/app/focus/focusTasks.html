@@ -1,7 +1,7 @@
 <div class="container-content--outer" list-container list-container-override-vertical-resize="true"
   drawer-handle="left"
   drawer-handle-register-activate="registerFeatureActivateCallback(activate, 'focus', 'focusTasks')">
-  <section ng-show="!onboardingInProgress || isOnboardingListItemAddActive()"
+  <section ng-show="isContentVisible('focus', 'tasks')"
     class="container-content" ng-controller="DatesController">
 
     <div ng-if="datepickerVisible && columns > 1" editable-field-container="auto">
@@ -345,7 +345,7 @@
               list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
             <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-load-more="isAgendaVisible()"
               list-prompt-hide-load="daySlidesInfosCleared" list-prompt-load-more-fn="addMoreItems()"
-              list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]">
+              list-prompt-hide="[listItemAddActive, isOnboarding('focus', 'tasks'), daySlidesInfosCleared]">
             </div>
 
             <a href ng-if="isAgendaVisible() && daySlides[2].info !== null" ng-hide="daySlidesInfosCleared"
@@ -395,7 +395,7 @@
               list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
             <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-load-more="isAgendaVisible()"
               list-prompt-hide-load="daySlidesInfosCleared" list-prompt-load-more-fn="addMoreItems()"
-              list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]">
+              list-prompt-hide="[listItemAddActive, isOnboarding('focus', 'tasks'), daySlidesInfosCleared]">
             </div>
 
             <a href ng-if="isAgendaVisible() && daySlides[0].info !== null" ng-hide="daySlidesInfosCleared"
@@ -445,7 +445,7 @@
               list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
             <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-load-more="isAgendaVisible()"
               list-prompt-hide-load="daySlidesInfosCleared" list-prompt-load-more-fn="addMoreItems()"
-              list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]">
+              list-prompt-hide="[listItemAddActive, isOnboarding('focus', 'tasks'), daySlidesInfosCleared]">
             </div>
 
             <a href ng-if="isAgendaVisible() && daySlides[1].info !== null" ng-hide="daySlidesInfosCleared"
@@ -495,7 +495,7 @@
               list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
             <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-load-more="isAgendaVisible()"
               list-prompt-hide-load="daySlidesInfosCleared" list-prompt-load-more-fn="addMoreItems()"
-              list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]">
+              list-prompt-hide="[listItemAddActive, isOnboarding('focus', 'tasks'), daySlidesInfosCleared]">
             </div>
 
             <a href ng-if="isAgendaVisible() && daySlides[2].info !== null" ng-hide="daySlidesInfosCleared"
@@ -545,7 +545,7 @@
               list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
             <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-load-more="isAgendaVisible()"
               list-prompt-hide-load="daySlidesInfosCleared" list-prompt-load-more-fn="addMoreItems()"
-              list-prompt-hide="[listItemAddActive, onboardingInProgress, daySlidesInfosCleared]">
+              list-prompt-hide="[listItemAddActive, isOnboarding('focus', 'tasks'), daySlidesInfosCleared]">
             </div>
 
             <a href ng-if="isAgendaVisible() && daySlides[0].info !== null" ng-hide="daySlidesInfosCleared"
@@ -579,10 +579,10 @@
   </section>
 
   <!-- ONBOARDING -->
-  <section ng-if="onboardingInProgress" ng-hide="isOnboardingListItemAddActive()" class="container-content">
+  <section ng-if="isOnboarding('focus', 'tasks')" ng-hide="isContentVisible('focus', 'tasks')" class="container-content">
 
     <!-- PHASE 1 -->
-    <div ng-if="!isOnboarded('focusTasks')" class="group-instruction">
+    <div ng-if="getOnboardingPhase('focus', 'tasks') === 1" class="group-instruction">
       <h2 class="group-heading instruction row">
         <span>what do you want to <span class="highlighted">get done</span>?</span>
       </h2>
@@ -591,8 +591,8 @@
       </div>
     </div>
 
-    <!-- PHASE 2 -->
-    <div ng-if="isOnboarded('focusTasks') && !isOnboarded('agendaCalendar')" class="group-instruction">
+    <!-- PHASE 3 -->
+    <div ng-if="getOnboardingPhase('focus', 'tasks') === 3" class="group-instruction">
       <h2 class="group-heading instruction row">
         <span>first <span class="highlighted">task</span> created!</span>
       </h2>
@@ -601,8 +601,8 @@
       </div>
     </div>
 
-    <!-- PHASE 3 -->
-    <div ng-if="isOnboarded('agendaCalendar')" class="group-instruction">
+    <!-- PHASE 5 -->
+    <div ng-if="getOnboardingPhase('focus', 'tasks') === 5" class="group-instruction">
       <h2 class="group-heading instruction row">
         <span>tutorial <span class="highlighted">complete</span>!</span>
       </h2>
@@ -616,18 +616,19 @@
 
   </section>
 
-  <footer ng-if="onboardingInProgress && isOnboarded('focusTasks')" class="container-content--after group-btn">
-    <button type="submit" ng-if="!isOnboarded('agendaCalendar')" class="btn-action"
-      ng-click="openEditor('user', undefined, 'agendaCalendar')">
+  <footer ng-if="isOnboarding('focus', 'tasks')" class="container-content--after group-btn">
+    <button type="submit" ng-if="getOnboardingPhase('focus', 'tasks') === 3" class="btn-action"
+      ng-click="openCalendarSettingsAndIncreaseOnboarding()">
       <span class="text-btn">set up calendars</span>
     </button>
-    <button type="submit" ng-if="isOnboarded('agendaCalendar')" class="btn-action" ng-click="completeOnboarding()">
+    <button type="submit" ng-if="getOnboardingPhase('focus', 'tasks') === 5" class="btn-action"
+      ng-click="completeOnboarding('focus', 'tasks')">
       <span class="text-btn">got it</span>
     </button>
   </footer>
 
-  <footer class="container-content--after" ng-hide="onboardingInProgress && isOnboarded('focusTasks')"
-    list-footer="getFeatureMap('focus')">
+  <footer class="container-content--after" ng-hide="isOnboarding('focus', 'tasks') && isOnboarded('focusTasks')"
+    list-footer="getFeatureMap('focus')" list-footer-subfeature="tasks">
   </footer>
 
 </div>

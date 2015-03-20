@@ -27,13 +27,13 @@
           $scope.registerOverrideElement(element);
       };
 
-      this.activateAddListItem = function(){
+      this.activateAddListItem = function(featureInfo, subfeature){
         if ($attrs.listContainerOverrideVerticalResize){
           // Re-register just in case list container active has not fired
           $scope.registerOverrideElement();
         }
 
-        if (activateAddListItemCallback) activateAddListItemCallback();
+        if (activateAddListItemCallback) activateAddListItemCallback(featureInfo, subfeature);
       };
 
       this.registerGetFullArrayFn = function(getArrayFn) {

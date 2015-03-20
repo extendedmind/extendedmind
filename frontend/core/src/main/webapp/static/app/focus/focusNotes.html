@@ -12,7 +12,7 @@
     <div list-prompt="notes" list-prompt-infos="listInfos" list-prompt-hide="[onboardingInProgress]"></div>
   </section>
   <footer ng-show="isOnboarded('focusNotes')" class="container-content--after"
-    list-footer="getFeatureMap('focus')"></footer>
+    list-footer="getFeatureMap('focus')" list-footer-subfeature="notes"></footer>
 
   <!-- ONBOARDING -->
   <section ng-if="!isOnboarded('focusNotes')" class="container-content">

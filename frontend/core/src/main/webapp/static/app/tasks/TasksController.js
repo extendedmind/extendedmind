@@ -549,8 +549,8 @@
     $scope.changeFeature('user', undefined, true);
   }
 
-  if (!$scope.onboardingInProgress && $scope.isOnboarded('focusTasks') && $scope.isFakeUser()){
-    // Show modal immediately on cold boot
+  if (!$scope.isOnboarding('focus', 'tasks') && $scope.isFakeUser()){
+    // Show modal immediately on cold boot on other than first onboarding
     UISessionService.pushDelayedNotification({
       type: 'signUp',
       gotoFn: gotoSignUp
@@ -559,6 +559,12 @@
       UISessionService.activateDelayedNotifications();
     }, 1000);
   }
+
+  $scope.openCalendarSettingsAndIncreaseOnboarding = function(){
+    $scope.openEditor('user', undefined, 'agendaCalendar').then(function(){
+      $scope.increaseOnboardingPhase('focus', 'tasks')
+    });
+  };
 }
 
 TasksController['$inject'] = [

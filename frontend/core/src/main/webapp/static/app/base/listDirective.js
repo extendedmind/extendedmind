@@ -22,8 +22,8 @@
     scope: true,
     controller: ['$scope', '$element', '$attrs', function($scope, $element, $attrs) {
       $scope.listInfos = {};
-
       $scope.listOptions = {};
+      $scope.listAddState = {};
       if ($attrs.listOptions) {
         $scope.listOptions = $parse($attrs.listOptions)($scope);
       }
@@ -86,9 +86,11 @@
       };
 
       this.notifyListItemAdd = function(){
-        if ($scope.onboardingInProgress) {
-          $scope.setOnboardingListItemAddActive(false);
-          return true;
+        if ($scope.notifyAddAction){
+          var returnValue = $scope.notifyAddAction('add', $scope.listAddState.featureInfo,
+                                                  $scope.listAddState.subfeature);
+          $scope.listAddState = {};
+          return returnValue;
         }
       };
 
@@ -146,12 +148,16 @@
 
       controllers[0].registerGetFullArrayFn(scope.getFullArray);
 
-      function activateListAdd() {
+      function activateListAdd(featureInfo, subfeature) {
         if (listOpenOnAddFn){
           // Execute open function
           listOpenOnAddFn();
         } else if (scope.activateAddItem) {
-          if (scope.onboardingInProgress) scope.setOnboardingListItemAddActive(true);
+          if (scope.notifyAddAction){
+            scope.listAddState.featureInfo = featureInfo;
+            scope.listAddState.subfeature = subfeature;
+            scope.notifyAddAction('activate', scope.listAddState.featureInfo, scope.listAddState.subfeature);
+          }
           scope.activateAddItem();
         }
       }
