@@ -88,8 +88,15 @@
             needToPersist = true;
           }
           if (preferences.ui.calendar && angular.isArray(preferences.ui.calendar)){
-            delete preferences.ui.calendar;
-            needToPersist = true;
+            // Old calendar preferences value, migrate to new one.
+            var deviceId = UISessionService.getDeviceId();
+            if (deviceId){
+              preferences.calendar = {
+                deviceId: preferences.ui.calendar
+              };
+              delete preferences.ui.calendar;
+              needToPersist = true;
+            }
           }
         }
         if (needToPersist){
