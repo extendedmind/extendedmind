@@ -37,6 +37,13 @@
             controllers[0].registerAddActiveCallback(enter);
           };
 
+          scope.isOnboardingInProgress = function() {
+            if (scope.listAddState && scope.listAddState.featureInfo) {
+              return scope.listAddState.featureInfo.getStatus(scope.listAddState.subfeature)
+              .startsWith('onboarding');
+            }
+          };
+
           scope.toggleLeftCheckbox = function (toggleFn) {
             controllers[0].toggleLeftCheckbox(scope.newItem, toggleFn,
                                               angular.element(element[0].firstElementChild));
@@ -61,7 +68,9 @@
             if (itemHasTitle) {
               saveNewItem(scope.newItem);
             }
-            if (!itemHasTitle && options && options.keepEmptyFieldActivated) {
+            if (!itemHasTitle && options && typeof options.keepEmptyFieldActivatedFn === 'function' &&
+                options.keepEmptyFieldActivatedFn())
+            {
               // Do not execute exit when item does not have a title and empty field is kept activated.
               return;
             }

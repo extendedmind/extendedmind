@@ -1,9 +1,9 @@
 <form role="form" class="group-mixed vertically-centered swiper-no-swiping"
   ng-submit="callAndExit(saveList, newItem)" data-snap-ignore="true" editable-field-container
-  editable-field-container-clicked-elsewhere="clickedElsewhere({keepEmptyFieldActivated: onboardingInProgress})"
+  editable-field-container-clicked-elsewhere="clickedElsewhere({keepEmptyFieldActivatedFn: isOnboardingInProgress()})"
   autocapitalize="none" autocorrect="off">
   <div class="group-mixed--left">
-    <a href swiper-click="!onboardingInProgress ? callAndExit(saveListAndChangeFeature, newItem) : undefined">
+    <a href swiper-click="callAndExit(saveListAndChangeFeature, newItem)" ng-disabled="isOnboardingInProgress()">
       <span class="text-navigation-back large"></span>
     </a>
   </div>
@@ -21,7 +21,7 @@
 </form>
 
 <!-- ONBOARDING -->
-<div ng-if="onboardingInProgress && !isOnboarded('lists')" class="group-instruction-input">
+<div ng-if="isOnboardingInProgress()" class="group-instruction-input">
   <div ng-show="!newItem.trans.title || newItem.trans.title.length === 0" class="text-details row">
     e.g. groceries, studies, company retreat
   </div>
