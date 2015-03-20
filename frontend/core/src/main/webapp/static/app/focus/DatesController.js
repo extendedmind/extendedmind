@@ -51,7 +51,7 @@
 
   function focusActive(featureChanged) {
     if (featureChanged) {
-      // Swipe to today without animation and refresh agenda events and visibility before next repaint
+      // Swipe to today without animation before next repaint
       // when feature changes, ng-show is evaluated and the DOM is rendered.
       // NOTE: use setTimeout(callback, 0) if requestAnimationFrame is not working.
       window.requestAnimationFrame(function() {
