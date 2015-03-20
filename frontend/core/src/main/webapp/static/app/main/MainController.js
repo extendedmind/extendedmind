@@ -718,13 +718,21 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
   // Execute synchronize immediately when queue is empty to be fully synced right after data has been
   // modified without having to wait for next tick.
   function queueEmptiedCallback() {
-    var activeUUID = UISessionService.getActiveUUID();
-    return SynchronizeService.synchronize(activeUUID).then(function() {
-      updateItemsSyncronizeAttempted(activeUUID);
-    }, function(){
-      $rootScope.syncState = 'error';
-      $q.reject();
-    });
+    // Only execute sync if the previous sync is ready or error happened the previous time
+    if ($rootScope.syncState === 'ready' || $rootScope.syncState === 'error'){
+      var activeUUID = UISessionService.getActiveUUID();
+      return SynchronizeService.synchronize(activeUUID).then(function() {
+        updateItemsSyncronizeAttempted(activeUUID);
+      }, function(){
+        $rootScope.syncState = 'error';
+        $q.reject();
+      });
+    }else{
+      // Else immediately return
+      var deferred = $q.defer();
+      deferred.resolve();
+      return deferred.promise;
+    }
   }
   BackendClientService.registerQueueEmptiedCallback(queueEmptiedCallback);
 
