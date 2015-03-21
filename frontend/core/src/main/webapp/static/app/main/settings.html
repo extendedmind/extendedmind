@@ -5,10 +5,74 @@
     <!-- VERSION -->
     <p class="row">
       <span class="text-heading-primary">version</span></br>
+    </p>
+    <p class="row">
       <span class="text-teaser" ng-bind="extendedMindVersion"></span>
     </p>
 
     <!-- FEATURES -->
+    <p class="row">
+      <span class="text-heading-primary">features</span></br>
+    </p>
+
+    <div class="group-mixed with-checkbox">
+      <div class="group-mixed--left">
+        <input type="checkbox" class="downplayed" checked="true" ng-true-value="true" icon-checkbox="'tasks'" disabled/>
+      </div>
+      <div href class="group-mixed--middle">
+        <span class="text-link">tasks</span>
+      </div>
+    </div>
+
+    <div class="group-mixed with-checkbox">
+      <div class="group-mixed--left">
+        <input type="checkbox" ng-model="settings.notes" ng-true-value="true"
+          icon-checkbox="'notes'" ng-click="featureCheckboxClicked('notes')"/>
+      </div>
+      <div class="group-mixed--middle">
+        <span class="text-link">notes</span>
+      </div>
+    </div>
+
+    <div class="group-mixed with-checkbox">
+      <div class="group-mixed--left">
+        <input type="checkbox" ng-model="settings.lists" ng-true-value="true"
+          icon-checkbox="'lists'" ng-click="featureCheckboxClicked('lists')"/>
+      </div>
+      <div class="group-mixed--middle">
+        <span class="text-link">lists</span>
+      </div>
+    </div>
+
+    <div class="group-mixed with-checkbox">
+      <div class="group-mixed--left">
+        <input type="checkbox" ng-model="settings.inbox" ng-true-value="true"
+          icon-checkbox="'inbox'" ng-click="featureCheckboxClicked('inbox')"/>
+      </div>
+      <div class="group-mixed--middle">
+        <span class="text-link">inbox</span>
+      </div>
+    </div>
+
+    <div class="group-mixed with-checkbox">
+      <div class="group-mixed--left">
+        <input type="checkbox" ng-model="settings.contexts" ng-true-value="true"
+          icon-checkbox="'contexts'" ng-click="featureCheckboxClicked('contexts')"/>
+      </div>
+      <div class="group-mixed--middle">
+        <span class="text-link">contexts</span>
+      </div>
+    </div>
+
+    <div class="group-mixed with-checkbox">
+      <div class="group-mixed--left">
+        <input type="checkbox" ng-model="settings.archive" ng-true-value="true"
+          icon-checkbox="'archive'" ng-click="featureCheckboxClicked('archive')"/>
+      </div>
+      <div class="group-mixed--middle">
+        <span class="text-link">archive</span>
+      </div>
+    </div>
 
     <!-- GENERAL -->
     <p class="row">
