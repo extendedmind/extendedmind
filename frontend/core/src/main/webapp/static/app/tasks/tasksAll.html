@@ -3,7 +3,7 @@
   <section class="container-content" list="getTasksArray('all')" list-recent
     list-options="{hideItemDefault: true}">
 
-    <div ng-show="!onboardingInProgress || isOnboardingListItemAddActive()">
+    <div ng-if="isFeatureActive('tasks') && isContentVisible('tasks', 'all')">
       <div class="group-mixed heading">
         <div class="group-mixed--middle">
           <h2 class="group-heading justified">all tasks</h2>
@@ -21,27 +21,24 @@
     </div>
 
     <!-- ONBOARDING -->
-    <div ng-if="onboardingInProgress && !isOnboarded('tasks') && !isOnboardingListItemAddActive()"
+    <div ng-if="isOnboarding('tasks', 'all')"
       class="group-instruction">
-      <h2 class="group-heading instruction row">what do you want to
-        <span class="highlighted">get done</span>?
+      <h2 class="group-heading instruction row">find all your
+        <span class="highlighted">tasks</span> here
       </h2>
-      <div class="textgroup-ingress row">add a <span class="text-highlighted">task</span> by clicking the
-      plus sign below</div>
-    </div>
-
-    <div ng-if="onboardingInProgress && isOnboarded('tasks') && !isOnboardingListItemAddActive()"
-      class="group-instruction">
-      <h2 class="group-heading instruction row">
-        <span>first </span><span class="highlighted">task </span><span>created!</span>
-      </h2>
-      <div class="textgroup-ingress row">go to
-        <a href class="highlighted" ng-click="changeFeature('notes', undefined, true)">
-          <span>notes</span>
-        </a> by clicking the menu icon in the top-left corner
-      </div>
+      <div class="textgroup-ingress row">tasks are sorted in modified order so that the task you most recently
+      modified is at the top of the list</div>
     </div>
 
   </section>
-  <footer class="container-content--after" list-footer="getFeatureMap('tasks')"></footer>
+  <footer ng-if="isFeatureActive('tasks') && isContentVisible('tasks', 'all')" class="container-content--after" list-footer="getFeatureMap('tasks')"
+  list-footer-subfeature="all"></footer>
+
+  <footer ng-if="isOnboarding('tasks', 'all')"
+    class="container-content--after group-btn onboarding">
+    <button type="submit" class="btn-action" ng-click="completeOnboarding('tasks', 'all')">
+      <span class="text-btn">got it</span>
+    </button>
+  </footer>
+
 </div>

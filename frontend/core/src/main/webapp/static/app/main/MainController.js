@@ -270,7 +270,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
   };
 
   $scope.completeOnboarding = function(feature, subfeature){
-    var featurePreferences = UserSessionService.getFeaturePreferences('focus');
+    var featurePreferences = UserSessionService.getFeaturePreferences(feature);
 
     var onboardedValue = UISessionService.getOnboardedValue();
     if (subfeature){
@@ -285,7 +285,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     if (feature === 'focus' && subfeature === 'tasks'){
       // First is now ready, open up other avenues
       UserSessionService.setFeaturePreferences('user', onboardedValue);
-      UserSessionService.setFeaturePreferences('tasks', {all: onboardedValue});
+      UserSessionService.setFeaturePreferences('tasks', {all: 1});
       UserSessionService.setFeaturePreferences('trash', onboardedValue);
       UserSessionService.setFeaturePreferences('settings', onboardedValue);
       // Open up menu

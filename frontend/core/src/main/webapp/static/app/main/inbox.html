@@ -31,7 +31,7 @@
     <div list-prompt list-prompt-infos="listInfos"
       list-prompt-hide="[listItemAddActive, onboardingInProgress]"></div>
   </section>
-  <footer ng-show="isOnboarded('inbox')" class="container-content--after" list-footer="getFeatureMap('inbox')"></footer>
+  <footer ng-show="isContentVisible('inbox')" class="container-content--after" list-footer="getFeatureMap('inbox')"></footer>
 
   <!-- ONBOARDING -->
   <section ng-if="isOnboarding('inbox')" class="container-content">
