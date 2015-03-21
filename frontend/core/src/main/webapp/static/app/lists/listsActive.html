@@ -35,10 +35,11 @@
 
   <footer ng-if="isContentVisible('lists', 'active') ||
              getOnboardingPhase('lists', 'active') === 1"
-    class="container-content--after" list-footer="getFeatureMap('lists')" list-footer-subfeature="active"></footer>
+    class="container-content--after" list-footer="getFeatureMap('lists')" list-footer-subfeature="active"
+    ng-class="getOnboardingPhase('lists', 'active') === 1 && 'onboarding'"></footer>
 
   <footer ng-if="getOnboardingPhase('lists', 'active') === 3"
-    class="container-content--after group-btn">
+    class="container-content--after group-btn onboarding">
     <button type="submit" class="btn-action" ng-click="completeOnboarding('lists', 'active')">
       <span class="text-btn">got it</span>
     </button>

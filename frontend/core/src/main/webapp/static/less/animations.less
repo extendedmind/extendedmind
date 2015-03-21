@@ -558,3 +558,64 @@ input[type="checkbox"]:checked + label:before {
     color: rgba(51, 51, 51, 0) !important;
   }
 }
+
+/*
+*************************************************************
+# Onboarding
+*/
+
+@-webkit-keyframes onboarding-highlighed-pulse {
+  0%   { color: @color-text-highlighted; }
+  50% { color: lighten(@color-text-highlighted, 25%); }
+  100%   { color: @color-text-highlighted; }
+}
+@-moz-keyframes onboarding-highlighed-pulse {
+  0%   { color: @color-text-highlighted; }
+  50% { color: lighten(@color-text-highlighted, 25%); }
+  100%   { color: @color-text-highlighted; }
+}
+@-o-keyframes onboarding-highlighed-pulse {
+  0%   { color: @color-text-highlighted; }
+  50% { color: lighten(@color-text-highlighted, 25%); }
+  100%   { color: @color-text-highlighted; }
+}
+@keyframes onboarding-highlighed-pulse {
+  0%   { color: @color-text-highlighted; }
+  50% { color: lighten(@color-text-highlighted, 25%); }
+  100%   { color: @color-text-highlighted; }
+}
+
+.onboarding .icon-plus:after {
+  -webkit-animation: onboarding-highlighed-pulse ease-in-out 1.5s infinite;
+  -moz-animation:    onboarding-highlighed-pulse ease-in-out 1.5s infinite;
+  -o-animation:      onboarding-highlighed-pulse ease-in-out 1.5s infinite;
+  animation:         onboarding-highlighed-pulse ease-in-out 1.5s infinite;
+}
+
+@-webkit-keyframes onboarding-btn-pulse {
+  0%   { background-color: @color-background-btn-active; }
+  50% { background-color: darken(@color-background-btn-active, 10%); }
+  100%   { background-color: @color-background-btn-active;; }
+}
+@-moz-keyframes onboarding-btn-pulse {
+  0%   { background-color: @color-background-btn-active; }
+  50% { background-color: darken(@color-background-btn-active, 10%); }
+  100%   { background-color: @color-background-btn-active;; }
+}
+@-o-keyframes onboarding-btn-pulse {
+  0%   { background-color: @color-background-btn-active; }
+  50% { background-color: darken(@color-background-btn-active, 10%); }
+  100%   { background-color: @color-background-btn-active;; }
+}
+@keyframes onboarding-btn-pulse {
+  0%   { background-color: @color-background-btn-active; }
+  50% { background-color: darken(@color-background-btn-active, 10%); }
+  100%   { background-color: @color-background-btn-active;; }
+}
+
+.onboarding .btn-action .text-btn {
+  -webkit-animation: onboarding-btn-pulse ease-in-out 1.5s infinite;
+  -moz-animation:    onboarding-btn-pulse ease-in-out 1.5s infinite;
+  -o-animation:      onboarding-btn-pulse ease-in-out 1.5s infinite;
+  animation:         onboarding-btn-pulse ease-in-out 1.5s infinite;
+}

@@ -616,7 +616,7 @@
 
   </section>
 
-  <footer ng-if="isOnboarding('focus', 'tasks')" class="container-content--after group-btn">
+  <footer ng-if="isOnboarding('focus', 'tasks')" class="container-content--after group-btn onboarding">
     <button type="submit" ng-if="getOnboardingPhase('focus', 'tasks') === 3" class="btn-action"
       ng-click="openCalendarSettingsAndIncreaseOnboarding()">
       <span class="text-btn">set up calendars</span>
@@ -630,7 +630,8 @@
   <footer class="container-content--after"
     ng-show="isContentVisible('focus', 'tasks') ||
              getOnboardingPhase('focus', 'tasks') === 1"
-    list-footer="getFeatureMap('focus')" list-footer-subfeature="tasks">
+    list-footer="getFeatureMap('focus')" list-footer-subfeature="tasks"
+    ng-class="getOnboardingPhase('focus', 'tasks') === 1 && 'onboarding'">
   </footer>
 
 </div>

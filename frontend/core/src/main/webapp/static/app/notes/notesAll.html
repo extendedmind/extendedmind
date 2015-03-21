@@ -28,9 +28,10 @@
     </div>
   </section>
   <footer ng-if="isContentVisible('notes') || getOnboardingPhase('notes') === 1"
-          class="container-content--after" list-footer="getFeatureMap('notes')"></footer>
+          class="container-content--after" list-footer="getFeatureMap('notes')"
+          ng-class="getOnboardingPhase('notes') === 1 && 'onboarding'"></footer>
   <footer ng-if="getOnboardingPhase('notes') === 2"
-    class="container-content--after group-btn">
+    class="container-content--after group-btn onboarding">
     <button type="submit" class="btn-action" ng-click="completeOnboarding('notes')">
       <span class="text-btn">got it</span>
     </button>
