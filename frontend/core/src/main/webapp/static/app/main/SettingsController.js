@@ -89,6 +89,25 @@
     return 0;
   }
 
+  $scope.isToggleDisabled = function(feature, overrideEnabled){
+    var enabled = overrideEnabled !== undefined ? overrideEnabled : $scope.settings[feature];
+    if (feature === 'lists'){
+      if (enabled){
+        var listsPrefs = UserSessionService.getFeaturePreferences('lists');
+        if (angular.isString(listsPrefs) ||
+            (angular.isObject(listsPrefs) && listsPrefs.archived &&
+            (angular.isNumber(listsPrefs.archived) ||
+            (angular.isString(listsPrefs.archived) && !listsPrefs.archived.endsWith(':d'))))){
+          return true;
+        }
+      }else{
+        if ($scope.features.notes.getStatus() === 'disabled'){
+          return true;
+        }
+      }
+    }
+  };
+
   $scope.featureCheckboxClicked = function(feature) {
     if ($scope.settings[feature] !== undefined){
       var enable = $scope.settings[feature];
@@ -108,12 +127,19 @@
         var listsPrefs = UserSessionService.getFeaturePreferences('lists');
         var listPrefs = UserSessionService.getFeaturePreferences('list');
         if (enable) {
+          if ($scope.isToggleDisabled('lists', !enable)){
+            // Can't enable lists if notes and tasks are not both enabled
+            $scope.settings[feature] = false;
+            UISessionService.pushNotification({
+              type: 'fyi',
+              text: 'lists can not be enabled before notes'
+            });
+            return;
+          }
           listsPrefs = activateFeatureOnboarding(listsPrefs, 'active');
           listPrefs = activateFeatureOnboarding(listPrefs);
         }else {
-          if (angular.isObject(listsPrefs) && listsPrefs.archived &&
-              (angular.isNumber(listsPrefs.archived) ||
-               (angular.isString(listsPrefs.archived) && !listsPrefs.archived.endsWith(':d')))){
+          if ($scope.isToggleDisabled('lists', !enable)){
             // Can't disable lists if archive is enabled or currently onboarding
             $scope.settings[feature] = true;
             UISessionService.pushNotification({

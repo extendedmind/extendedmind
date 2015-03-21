@@ -20,7 +20,7 @@
         <input type="checkbox" class="downplayed" checked="true" ng-true-value="true" icon-checkbox="'tasks'" disabled/>
       </div>
       <div href class="group-mixed--middle">
-        <span class="text-link">tasks</span>
+        <span class="text-link downplayed">tasks</span>
       </div>
     </div>
 
@@ -36,11 +36,12 @@
 
     <div class="group-mixed with-checkbox">
       <div class="group-mixed--left">
-        <input type="checkbox" ng-model="settings.lists" ng-true-value="true"
-          icon-checkbox="'lists'" ng-click="featureCheckboxClicked('lists')"/>
+        <input type="checkbox" ng-class="isToggleDisabled('lists') && 'downplayed'"
+         ng-model="settings.lists" ng-true-value="true"
+         icon-checkbox="'lists'" ng-click="featureCheckboxClicked('lists')"/>
       </div>
       <div class="group-mixed--middle">
-        <span class="text-link">lists</span>
+        <span class="text-link" ng-class="isToggleDisabled('lists') && 'downplayed'">lists</span>
       </div>
     </div>
 
