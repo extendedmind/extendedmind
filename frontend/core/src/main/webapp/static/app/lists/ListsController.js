@@ -26,6 +26,11 @@
     if (name === 'list') {
       $scope.list = data;
     } else if (name === 'lists') {
+      if ($scope.features.lists.getStatus('archived') === 'disabled'){
+        SwiperService.setOnlyExternal('lists', true);
+      }else{
+        SwiperService.setOnlyExternal('lists', false);
+      }
       if (data && data.archived) {
         // List was archived, swipe to archived lists slide.
         SwiperService.swipeTo('lists/archived');

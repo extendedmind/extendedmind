@@ -34,14 +34,13 @@
     if ($scope.features.inbox.getStatus() !== 'disabled'){
       $scope.settings.inbox = true;
     }
-    if ($scope.features.lists.getStatus() !== 'disabled'){
-      $scope.settings.archive = true;
+    if ($scope.features.lists.getStatus('active') !== 'disabled'){
       $scope.settings.lists = true;
-    }else if ($scope.features.lists.getStatus('archived') !== 'disabled'){
+    }
+    if ($scope.features.lists.getStatus('archived') !== 'disabled'){
       $scope.settings.archive = true;
     }
-    if ($scope.features.tasks.getStatus() === 'active' ||
-        $scope.features.tasks.getStatus('contexts') === 'active'){
+    if ($scope.features.tasks.getStatus('contexts') !== 'disabled'){
       $scope.settings.contexts = true;
     }
   }
@@ -63,6 +62,10 @@
     }else if (angular.isObject(featurePreferences) && subfeature){
       featurePreferences[subfeature] = activateFeatureOnboarding(featurePreferences[subfeature]);
       return featurePreferences;
+    }else if (!featurePreferences && subfeature){
+      var newPreferences = {};
+      newPreferences[subfeature] = 1;
+      return newPreferences;
     }
     return 1;
   }

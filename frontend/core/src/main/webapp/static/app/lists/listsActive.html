@@ -1,7 +1,7 @@
 <div class="container-content--outer" ng-if="isFeatureActive('lists')" list-container drawer-handle="left">
   <section class="container-content" list="lists" list-locked="disableDragging()">
 
-    <div ng-show="!onboardingInProgress || isOnboardingListItemAddActive()">
+    <div ng-show="isContentVisible('lists', 'active')">
       <h2 class="group-heading justified row">active lists</h2>
       <div list-item-add="getNewList()" list-item-add-save="saveList(newItem)"
         ng-include="urlBase + 'app/lists/listListItemAdd.html'"></div>
@@ -14,8 +14,7 @@
     </div>
 
     <!-- ONBOARDING -->
-    <div ng-if="onboardingInProgress && !isOnboarded('lists') && !isOnboardingListItemAddActive()"
-      class="group-instruction">
+    <div ng-if="getOnboardingPhase('lists', 'active') === 1" class="group-instruction">
       <h2 class="group-heading instruction row">use
         <span class="highlighted">lists</span> to group tasks and notes
       </h2>
@@ -24,25 +23,23 @@
       <span class="text-highlighted">responsibility</span> &ndash; by hitting the plus sign</div>
     </div>
 
-    <div ng-if="onboardingInProgress && isOnboarded('lists') && !isOnboardingListItemAddActive()"
+    <div ng-if="getOnboardingPhase('lists', 'active') === 3"
       class="group-instruction">
       <h2 class="group-heading instruction row">
-        tutorial <span class="highlighted">complete</span>!
+        <span>first </span><span class="highlighted">list </span><span>created!</span>
       </h2>
-      <div class="textgroup-ingress row">to back up your data
-        <a href class="highlighted" ng-click="completeOnboarding('user')"><span>sign up</span></a>
-        now for a free account
-      </div>
+      <div class="textgroup-ingress row">click on the the list to open its content</div>
     </div>
 
   </section>
 
-  <footer ng-if="!onboardingInProgress || (!isOnboarded('lists') && !isOnboardingListItemAddActive())"
-    class="container-content--after" list-footer="getFeatureMap('lists')"></footer>
+  <footer ng-if="isContentVisible('lists', 'active') ||
+             getOnboardingPhase('lists', 'active') === 1"
+    class="container-content--after" list-footer="getFeatureMap('lists')" list-footer-subfeature="active"></footer>
 
-  <footer ng-if="onboardingInProgress && isOnboarded('lists') && !isOnboardingListItemAddActive()"
+  <footer ng-if="getOnboardingPhase('lists', 'active') === 3"
     class="container-content--after group-btn">
-    <button type="submit" class="btn-action" ng-click="completeOnboarding()">
+    <button type="submit" class="btn-action" ng-click="completeOnboarding('lists', 'active')">
       <span class="text-btn">got it</span>
     </button>
   </footer>

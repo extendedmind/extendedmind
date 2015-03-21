@@ -20,17 +20,20 @@
       </div>
     </div>
 
-    <div ng-if="getOnboardingPhase('notes') === 3" class="group-instruction">
+    <div ng-if="getOnboardingPhase('notes') === 2" class="group-instruction">
       <h2 class="group-heading instruction row">
         <span class="highlighted">note</span> created!
       </h2>
-      <div class="textgroup-ingress row">make your way to
-        <a href class="highlighted" ng-click="changeFeature('lists', undefined, true)">
-          <span>lists</span>
-        </a> by using the menu
-      </div>
+      <div class="textgroup-ingress row">click on the title to view and edit your note</div>
     </div>
-
   </section>
-  <footer class="container-content--after" list-footer="getFeatureMap('notes')"></footer>
+  <footer ng-if="isContentVisible('notes') || getOnboardingPhase('notes') === 1"
+          class="container-content--after" list-footer="getFeatureMap('notes')"></footer>
+  <footer ng-if="getOnboardingPhase('notes') === 2"
+    class="container-content--after group-btn">
+    <button type="submit" class="btn-action" ng-click="completeOnboarding('notes')">
+      <span class="text-btn">got it</span>
+    </button>
+  </footer>
+
 </div>

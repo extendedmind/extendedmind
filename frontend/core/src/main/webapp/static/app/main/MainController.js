@@ -132,6 +132,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
       getStatus: function(subfeature){
         return getFeatureStatus(UserSessionService.getFeaturePreferences('lists'), subfeature);
       },
+      additionalContentVisibleStatuses: ['onboarding_2'],
       slides: {
         left: {
           path: 'lists/active',
@@ -253,7 +254,12 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     }else if (featureInfo === $scope.features.notes){
 
     }else if (featureInfo === $scope.features.lists){
-
+      var listsPreferences = UserSessionService.getFeaturePreferences('lists');
+      if (getFeatureStatus(listsPreferences, subfeature).startsWith('onboarding')){
+        // Lists is the current feature and it is onboarding: we update the onboarding status
+        increaseOnboardingPhase('lists', listsPreferences, subfeature);
+        return true;
+      };
     }else if (featureInfo === $scope.features.list){
 
     }else if (featureInfo === $scope.features.trash){

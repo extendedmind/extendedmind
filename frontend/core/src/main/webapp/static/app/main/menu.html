@@ -23,7 +23,7 @@
       <span class="text-navigation-menu">notes</span>
     </a>
     <a href class="link-menu row" ng-click="gotoFeature('lists')"
-      ng-class="{highlighted: isFeatureActive('lists'), hidden: !isOnboarded('notes')}">
+      ng-class="{highlighted: isFeatureActive('lists'), 'invisible': features.lists.getStatus('active') === 'disabled'}">
       <span class="text-navigation-menu">lists</span>
     </a>
 
