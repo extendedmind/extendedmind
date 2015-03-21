@@ -36,8 +36,9 @@
       function isSlideDisabled(slidePath){
         var tokenizedPath = slidePath.split('/');
         if (tokenizedPath.length > 0){
-          if (scope.featureInfo.getStatus(tokenizedPath[0], tokenizedPath[1]) === 'disabled')
+          if (scope.featureInfo.getStatus(tokenizedPath[1]) === 'disabled'){
             return true;
+          }
         }
       }
 

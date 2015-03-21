@@ -1,5 +1,5 @@
 <div ng-if="isFeatureActive('focus')" class="container-content--outer" list-container>
-  <section ng-show="isOnboarded('focusNotes')" class="container-content"
+  <section ng-show="isContentVisible('focus', 'notes')" class="container-content"
     list="allNotes | itemsFilter:{name:'favorited'}"
     list-open="openEditor('note', getNewFavoriteNote(), 'new')">
     <h2 class="group-heading justified row">
@@ -11,11 +11,11 @@
       list-item ng-include="urlBase + 'app/notes/noteListItem.html'"></div>
     <div list-prompt="notes" list-prompt-infos="listInfos" list-prompt-hide="[onboardingInProgress]"></div>
   </section>
-  <footer ng-show="isOnboarded('focusNotes')" class="container-content--after"
+  <footer ng-if="isContentVisible('focus', 'notes')" class="container-content--after"
     list-footer="getFeatureMap('focus')" list-footer-subfeature="notes"></footer>
 
   <!-- ONBOARDING -->
-  <section ng-if="!isOnboarded('focusNotes')" class="container-content">
+  <section ng-if="isOnboarding('focus', 'notes')" class="container-content">
     <div class="group-instruction">
       <h2 class="group-heading instruction row">what notes are
         <span class="highlighted">in use</span>?
@@ -26,8 +26,8 @@
       <div class="textgroup-ingress last row">add starred notes here or by clicking star in note editor</div>
     </div>
   </section>
-  <footer ng-if="!isOnboarded('focusNotes')" class="container-content--after group-btn">
-    <button type="submit" class="btn-action" ng-click="completeOnboarding('focusNotes')">
+  <footer ng-if="isOnboarding('focus', 'notes')" class="container-content--after group-btn onboarding">
+    <button type="submit" class="btn-action" ng-click="completeOnboarding('focus', 'notes')">
       <span class="text-btn">got it</span>
     </button>
   </footer>
