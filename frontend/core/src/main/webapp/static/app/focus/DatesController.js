@@ -465,6 +465,11 @@
   };
 
   $scope.openDatepicker = function(startingDateYYYYMMDD) {
+
+    if ($scope.getOnboardingPhase('focus', 'tasks') === 6){
+      $scope.completeOnboarding('focus', 'tasks');
+    }
+
     initializeDatepickerWeeks(startingDateYYYYMMDD);
     setDayActive(startingDateYYYYMMDD);
     $scope.datepickerVisible = true;

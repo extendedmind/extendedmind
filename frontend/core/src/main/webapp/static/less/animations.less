@@ -619,3 +619,31 @@ input[type="checkbox"]:checked + label:before {
   -o-animation:      onboarding-btn-pulse ease-in-out 1.5s infinite;
   animation:         onboarding-btn-pulse ease-in-out 1.5s infinite;
 }
+
+@-webkit-keyframes onboarding-text-pulse {
+  0%   { color: @color-text; }
+  50% { color: lighten(@color-text, 45%); }
+  100%   { color: @color-text; }
+}
+@-moz-keyframes onboarding-text-pulse {
+  0%   { color: @color-text; }
+  50% { color: lighten(@color-text, 45%); }
+  100%   { color: @color-text; }
+}
+@-o-keyframes onboarding-text-pulse {
+  0%   { color: @color-text; }
+  50% { color: lighten(@color-text, 45%); }
+  100%   { color: @color-text; }
+}
+@keyframes onboarding-text-pulse {
+  0%   { color: @color-text; }
+  50% { color: lighten(@color-text, 45%); }
+  100%   { color: @color-text; }
+}
+
+.onboarding h2 {
+  -webkit-animation: onboarding-text-pulse ease-in-out 1.5s infinite;
+  -moz-animation:    onboarding-text-pulse ease-in-out 1.5s infinite;
+  -o-animation:      onboarding-text-pulse ease-in-out 1.5s infinite;
+  animation:         onboarding-text-pulse ease-in-out 1.5s infinite;
+}

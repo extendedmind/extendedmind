@@ -321,7 +321,7 @@
     </div>
 
     <div class="swiper-container" swiper-container="focus/tasks" swiper-type="page" expected-slides="5">
-      <div class="swiper-wrapper">
+      <div class="swiper-wrapper" ng-class="getOnboardingPhase('focus', 'tasks') === 6 && 'onboarding'">
 
         <div class="swiper-slide" swiper-slide="focus/tasks/rightDuplicate" slide-index="0"
         swiper-slide-duplicate="true">
@@ -345,7 +345,7 @@
               list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
             <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-load-more="isAgendaVisible()"
               list-prompt-hide-load="daySlidesInfosCleared" list-prompt-load-more-fn="addMoreItems()"
-              list-prompt-hide="[listItemAddActive, isOnboarding('focus', 'tasks'), daySlidesInfosCleared]">
+              list-prompt-hide="[listItemAddActive, isTutorialInProgress(), daySlidesInfosCleared]">
             </div>
 
             <a href ng-if="isAgendaVisible() && daySlides[2].info !== null" ng-hide="daySlidesInfosCleared"
@@ -382,7 +382,7 @@
             id: 'focus/tasks/left', scrollInactiveTop: true, duplicate: 'focus/tasks/leftDuplicate'}">
 
             <div ng-hide="datepickerVisible" class="group-mixed heading">
-              <div class="group-mixed--middle" swiper-click="openDatepicker(daySlides[0].info)">
+              <div class="group-mixed--middle" ng-class="getOnboardingPhase('focus', 'tasks') === 6 && 'onboarding'" swiper-click="openDatepicker(daySlides[0].info)">
                 <h2 class="group-heading justified" ng-bind="daySlides[0].heading"></h2>
               </div>
               <div class="group-mixed--right" task-list-completed="{{daySlides[0].pastDate}}"></div>
@@ -395,7 +395,7 @@
               list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
             <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-load-more="isAgendaVisible()"
               list-prompt-hide-load="daySlidesInfosCleared" list-prompt-load-more-fn="addMoreItems()"
-              list-prompt-hide="[listItemAddActive, isOnboarding('focus', 'tasks'), daySlidesInfosCleared]">
+              list-prompt-hide="[listItemAddActive, isTutorialInProgress(), daySlidesInfosCleared]">
             </div>
 
             <a href ng-if="isAgendaVisible() && daySlides[0].info !== null" ng-hide="daySlidesInfosCleared"
@@ -432,7 +432,7 @@
             id: 'focus/tasks/middle', scrollInactiveTop: true}">
 
             <div ng-hide="datepickerVisible" class="group-mixed heading">
-              <div class="group-mixed--middle" swiper-click="openDatepicker(daySlides[1].info)">
+              <div class="group-mixed--middle" ng-class="getOnboardingPhase('focus', 'tasks') === 6 && 'onboarding'" swiper-click="openDatepicker(daySlides[1].info)">
                 <h2 class="group-heading justified" ng-bind="daySlides[1].heading"></h2>
               </div>
               <div class="group-mixed--right" task-list-completed="{{daySlides[1].pastDate}}"></div>
@@ -445,7 +445,7 @@
               list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
             <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-load-more="isAgendaVisible()"
               list-prompt-hide-load="daySlidesInfosCleared" list-prompt-load-more-fn="addMoreItems()"
-              list-prompt-hide="[listItemAddActive, isOnboarding('focus', 'tasks'), daySlidesInfosCleared]">
+              list-prompt-hide="[listItemAddActive, isTutorialInProgress(), daySlidesInfosCleared]">
             </div>
 
             <a href ng-if="isAgendaVisible() && daySlides[1].info !== null" ng-hide="daySlidesInfosCleared"
@@ -482,7 +482,7 @@
             id: 'focus/tasks/right', scrollInactiveTop: true, duplicate: 'focus/tasks/rightDuplicate'}">
 
             <div ng-hide="datepickerVisible" class="group-mixed heading">
-              <div class="group-mixed--middle" swiper-click="openDatepicker(daySlides[2].info)">
+              <div class="group-mixed--middle" ng-class="getOnboardingPhase('focus', 'tasks') === 6 && 'onboarding'" swiper-click="openDatepicker(daySlides[2].info)">
                 <h2 class="group-heading justified" ng-bind="daySlides[2].heading"></h2>
               </div>
               <div class="group-mixed--right" task-list-completed="{{daySlides[2].pastDate}}"></div>
@@ -495,7 +495,7 @@
               list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
             <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-load-more="isAgendaVisible()"
               list-prompt-hide-load="daySlidesInfosCleared" list-prompt-load-more-fn="addMoreItems()"
-              list-prompt-hide="[listItemAddActive, isOnboarding('focus', 'tasks'), daySlidesInfosCleared]">
+              list-prompt-hide="[listItemAddActive, isTutorialInProgress(), daySlidesInfosCleared]">
             </div>
 
             <a href ng-if="isAgendaVisible() && daySlides[2].info !== null" ng-hide="daySlidesInfosCleared"
@@ -532,7 +532,7 @@
             id: 'focus/tasks/leftDuplicate', scrollInactiveTop: true, duplicate: 'focus/tasks/left'}">
 
             <div ng-hide="datepickerVisible" class="group-mixed heading">
-              <div class="group-mixed--middle" swiper-click="openDatepicker(daySlides[0].info)">
+              <div class="group-mixed--middle" ng-class="getOnboardingPhase('focus', 'tasks') === 6 && 'onboarding'" swiper-click="openDatepicker(daySlides[0].info)">
                 <h2 class="group-heading justified" ng-bind="daySlides[0].heading"></h2>
               </div>
               <div class="group-mixed--right" task-list-completed="{{daySlides[0].pastDate}}"></div>
@@ -545,7 +545,7 @@
               list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
             <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-load-more="isAgendaVisible()"
               list-prompt-hide-load="daySlidesInfosCleared" list-prompt-load-more-fn="addMoreItems()"
-              list-prompt-hide="[listItemAddActive, isOnboarding('focus', 'tasks'), daySlidesInfosCleared]">
+              list-prompt-hide="[listItemAddActive, isTutorialInProgress(), daySlidesInfosCleared]">
             </div>
 
             <a href ng-if="isAgendaVisible() && daySlides[0].info !== null" ng-hide="daySlidesInfosCleared"
@@ -622,7 +622,7 @@
       <span class="text-btn">set up calendars</span>
     </button>
     <button type="submit" ng-if="getOnboardingPhase('focus', 'tasks') === 5" class="btn-action"
-      ng-click="completeOnboarding('focus', 'tasks')">
+      ng-click="completeTutorial()">
       <span class="text-btn">got it</span>
     </button>
   </footer>

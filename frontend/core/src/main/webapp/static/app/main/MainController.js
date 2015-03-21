@@ -78,7 +78,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
       getStatus: function(subfeature){
         return getFeatureStatus(UserSessionService.getFeaturePreferences('focus'), subfeature);
       },
-      additionalContentVisibleStatuses: ['onboarding_2'],
+      additionalContentVisibleStatuses: ['onboarding_2', 'onboarding_6'],
       slides: {
         left: {
           path: 'focus/tasks',
@@ -269,6 +269,26 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     }
   };
 
+  $scope.completeTutorial = function(){
+    // Tutorial is now ready, open up other avenues
+    var onboardedValue = UISessionService.getOnboardedValue();
+
+    UserSessionService.setFeaturePreferences('user', onboardedValue);
+    UserSessionService.setFeaturePreferences('tasks', {all: 1});
+    UserSessionService.setFeaturePreferences('trash', onboardedValue);
+    UserSessionService.setFeaturePreferences('settings', onboardedValue);
+    // Open up menu
+    DrawerService.enableDragging('left');
+    $scope.increaseOnboardingPhase('focus', 'tasks');
+  };
+
+  $scope.isTutorialInProgress = function(){
+    var phase = $scope.getOnboardingPhase('focus', 'tasks');
+    if (phase !== undefined && phase < 6){
+      return true;
+    }
+  };
+
   $scope.completeOnboarding = function(feature, subfeature){
     var featurePreferences = UserSessionService.getFeaturePreferences(feature);
 
@@ -280,16 +300,6 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     }else{
       featurePreferences = onboardedValue;
       AnalyticsService.do(feature + 'Onboarded');
-    }
-
-    if (feature === 'focus' && subfeature === 'tasks'){
-      // First is now ready, open up other avenues
-      UserSessionService.setFeaturePreferences('user', onboardedValue);
-      UserSessionService.setFeaturePreferences('tasks', {all: 1});
-      UserSessionService.setFeaturePreferences('trash', onboardedValue);
-      UserSessionService.setFeaturePreferences('settings', onboardedValue);
-      // Open up menu
-      DrawerService.enableDragging('left');
     }
     UserSessionService.setFeaturePreferences(feature, featurePreferences);
     UserService.saveAccountPreferences();
