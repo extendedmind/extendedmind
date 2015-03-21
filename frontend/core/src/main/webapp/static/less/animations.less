@@ -647,3 +647,59 @@ input[type="checkbox"]:checked + label:before {
   -o-animation:      onboarding-text-pulse ease-in-out 1.5s infinite;
   animation:         onboarding-text-pulse ease-in-out 1.5s infinite;
 }
+
+// From https://coveloping.com/tools/css-animation-generator
+.onboarding .swiper-slide {
+  -webkit-animation:  onboarding-slide-bounce ease-in-out 2s infinite both;
+  -moz-animation:     onboarding-slide-bounce ease-in-out 2s infinite both;
+  -o-animation:       onboarding-slide-bounce ease-in-out 2s infinite both;
+  animation:          onboarding-slide-bounce ease-in-out 2s infinite both;
+}
+
+@-webkit-keyframes onboarding-slide-bounce {
+  0% {-webkit-transform: translateY(0);}
+  20% {-webkit-transform: translateY(0);}
+  40% {-webkit-transform: translateY(-50px);}
+  45% {-webkit-transform: translateY(0);}
+  50% {-webkit-transform: translateY(-25px);}
+  55% {-webkit-transform: translateY(0);}
+  60% {-webkit-transform: translateY(-5px);}
+  65% {-webkit-transform: translateY(0);}
+  100% {-webkit-transform: translateY(0);}
+}
+
+@-moz-keyframes onboarding-slide-bounce {
+  0% {-moz-transform: translateY(0);}
+  20% {-moz-transform: translateY(0);}
+  40% {-moz-transform: translateY(-50px);}
+  45% {-moz-transform: translateY(0);}
+  50% {-moz-transform: translateY(-25px);}
+  55% {-moz-transform: translateY(0);}
+  60% {-moz-transform: translateY(-5px);}
+  65% {-moz-transform: translateY(0);}
+  100% {-moz-transform: translateY(0);}
+}
+
+@-o-keyframes onboarding-slide-bounce {
+  0% {-o-transform: translateY(0);}
+  20% {-o-transform: translateY(0);}
+  40% {-o-transform: translateY(-50px);}
+  45% {-o-transform: translateY(0);}
+  50% {-o-transform: translateY(-25px);}
+  55% {-o-transform: translateY(0);}
+  60% {-o-transform: translateY(-5px);}
+  65% {-o-transform: translateY(0);}
+  100% {-o-transform: translateY(0);}
+}
+
+@keyframes onboarding-slide-bounce {
+  0% {-transform: translateY(0);}
+  20% {-transform: translateY(0);}
+  40% {-transform: translateY(-50px);}
+  45% {-transform: translateY(0);}
+  50% {-transform: translateY(-25px);}
+  55% {-transform: translateY(0);}
+  60% {-transform: translateY(-5px);}
+  65% {-transform: translateY(0);}
+  100% {-transform: translateY(0);}
+}
