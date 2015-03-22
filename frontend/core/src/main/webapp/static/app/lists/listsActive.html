@@ -10,7 +10,7 @@
         | limitTo: currentListLimitTo track by list.trans.uuid"
         list-item ng-include="urlBase + 'app/lists/listListItem.html'"></div>
       <div list-prompt="lists" list-prompt-infos="listInfos"
-        list-prompt-hide="[listItemAddActive, onboardingInProgress]"></div>
+        list-prompt-hide="[listItemAddActive]"></div>
     </div>
 
     <!-- ONBOARDING -->
@@ -33,7 +33,7 @@
 
   </section>
 
-  <footer ng-if="isContentVisible('lists', 'active') ||
+  <footer ng-if="(isContentVisible('lists', 'active') && !(getOnboardingPhase('lists', 'active') === 2)) ||
              getOnboardingPhase('lists', 'active') === 1"
     class="container-content--after" list-footer="getFeatureMap('lists')" list-footer-subfeature="active"
     ng-class="getOnboardingPhase('lists', 'active') === 1 && 'onboarding'"></footer>

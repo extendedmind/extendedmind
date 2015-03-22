@@ -50,8 +50,8 @@
   * Show feature name, list title or onboarding phase in heading.
   */
   $scope.getCurrentHeading = function getCurrentHeading() {
-    if ($scope.onboardingInProgress) {
-      return $scope.getTutorialPhase();
+    if ($scope.isTutorialInProgress()) {
+      return 'tutorial ' + $scope.getTutorialPhase() + '/3';
     } else {
       var currentHeading = $scope.getActiveFeature();
       if (currentHeading === 'list'){

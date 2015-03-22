@@ -345,7 +345,7 @@
   };
 
   $scope.isAutoSavingPrevented = function() {
-    return $scope.editorType === 'recurring' || $scope.onboardingInProgress;
+    return $scope.editorType === 'recurring' || $scope.isOnboarding('notes');
   };
 
   var propertyEditDoneCallback;

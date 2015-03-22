@@ -7,7 +7,7 @@
         ng-repeat="note in listInfos.array = (getFullArray()) | orderBy:'trans.modified':true
         | limitTo: currentListLimitTo track by note.trans.uuid"
         list-item ng-include="urlBase + 'app/notes/noteListItem.html'"></div>
-      <div list-prompt="notes" list-prompt-infos="listInfos" list-prompt-hide="[onboardingInProgress]"></div>
+      <div list-prompt="notes" list-prompt-infos="listInfos"></div>
     </div>
 
     <!-- ONBOARDING -->

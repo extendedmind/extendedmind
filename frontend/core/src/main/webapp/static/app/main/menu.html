@@ -11,19 +11,25 @@
       <span class="text-navigation-menu">focus</span>
     </a>
     <a href class="link-menu row" ng-click="gotoFeature('inbox')"
-      ng-class="{'highlighted': isFeatureActive('inbox'), 'invisible': features.inbox.getStatus() === 'disabled'}">
+      ng-class="{'highlighted': isFeatureActive('inbox'),
+                 'invisible': features.inbox.getStatus() === 'disabled',
+                 'onboarding': isOnboarding('inbox')}">
       <span class="text-navigation-menu">inbox</span>
     </a>
     <a href class="link-menu row" ng-click="gotoFeature('tasks')"
-      ng-class="isFeatureActive('tasks') && 'highlighted'">
+      ng-class="{'highlighted': isFeatureActive('tasks'), 'onboarding': isOnboarding('tasks', 'all')}">
       <span class="text-navigation-menu">tasks</span>
     </a>
     <a href class="link-menu row" ng-click="gotoFeature('notes')"
-      ng-class="{highlighted: isFeatureActive('notes'), 'invisible': features.notes.getStatus() === 'disabled'}">
+      ng-class="{'highlighted': isFeatureActive('notes'),
+                 'invisible': features.notes.getStatus() === 'disabled',
+                 'onboarding': isOnboarding('notes')}">
       <span class="text-navigation-menu">notes</span>
     </a>
     <a href class="link-menu row" ng-click="gotoFeature('lists')"
-      ng-class="{highlighted: isFeatureActive('lists'), 'invisible': features.lists.getStatus('active') === 'disabled'}">
+      ng-class="{'highlighted': isFeatureActive('lists'),
+                'invisible': features.lists.getStatus('active') === 'disabled',
+                'onboarding': isOnboarding('lists', 'active')}">
       <span class="text-navigation-menu">lists</span>
     </a>
 

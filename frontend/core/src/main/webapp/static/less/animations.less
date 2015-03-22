@@ -648,6 +648,35 @@ input[type="checkbox"]:checked + label:before {
   animation:         onboarding-text-pulse ease-in-out 1.5s infinite;
 }
 
+
+@-webkit-keyframes onboarding-menu-pulse {
+  0%   { color: @color-text-inverse }
+  50% { color: darken(@color-text-inverse, 45%); }
+  100%   { color: @color-text-inverse; }
+}
+@-moz-keyframes onboarding-menu-pulse {
+  0%   { color: @color-text-inverse; }
+  50% { color: darken(@color-text-inverse, 45%); }
+  100%   { color: @color-text-inverse; }
+}
+@-o-keyframes onboarding-menu-pulse {
+  0%   { color: @color-text-inverse; }
+  50% { color: darken(@color-text-inverse, 45%); }
+  100%   { color: @color-text-inverse; }
+}
+@keyframes onboarding-menu-pulse {
+  0%   { color: @color-text-inverse; }
+  50% { color: darken(@color-text-inverse, 45%); }
+  100%   { color: @color-text-inverse; }
+}
+
+a.link-menu.onboarding:not(.highlighted) span {
+  -webkit-animation: onboarding-menu-pulse ease-in-out 1.5s infinite;
+  -moz-animation:    onboarding-menu-pulse ease-in-out 1.5s infinite;
+  -o-animation:      onboarding-menu-pulse ease-in-out 1.5s infinite;
+  animation:         onboarding-menu-pulse ease-in-out 1.5s infinite;
+}
+
 // From https://coveloping.com/tools/css-animation-generator
 .onboarding .swiper-slide {
   -webkit-animation:  onboarding-slide-bounce ease-in-out 3s 1 both;

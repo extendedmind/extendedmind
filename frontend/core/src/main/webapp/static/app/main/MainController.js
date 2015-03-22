@@ -242,7 +242,8 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
 
     }else if (featureInfo === $scope.features.focus){
       var focusPreferences = UserSessionService.getFeaturePreferences('focus');
-      if (getFeatureStatus(focusPreferences, subfeature).startsWith('onboarding')){
+      var phase = $scope.getOnboardingPhase('focus', 'tasks');
+      if (phase && (phase === 1 || phase === 2)){
         // Focus tasks is the current feature and it is onboarding: we update the onboarding status
         increaseOnboardingPhase('focus', focusPreferences, subfeature);
         return true;
@@ -269,6 +270,22 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     }
   };
 
+  $scope.isTutorialInProgress = function(){
+    var phase = $scope.getOnboardingPhase('focus', 'tasks');
+    if (phase !== undefined && phase < 6){
+      return true;
+    }
+  };
+
+  $scope.getTutorialPhase = function(){
+    var phase = $scope.getOnboardingPhase('focus', 'tasks');
+    if (phase !== undefined){
+      if (phase < 3 ) return 1;
+      if (phase < 5) return 2;
+      if (phase === 5) return 3;
+    }
+  };
+
   $scope.completeTutorial = function(){
     // Tutorial is now ready, open up other avenues
     var onboardedValue = UISessionService.getOnboardedValue();
@@ -280,13 +297,6 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     // Open up menu
     DrawerService.enableDragging('left');
     $scope.increaseOnboardingPhase('focus', 'tasks');
-  };
-
-  $scope.isTutorialInProgress = function(){
-    var phase = $scope.getOnboardingPhase('focus', 'tasks');
-    if (phase !== undefined && phase < 6){
-      return true;
-    }
   };
 
   $scope.completeOnboarding = function(feature, subfeature){
@@ -379,30 +389,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
   };
 
   $scope.isFooterNavigationHidden = function(){
-    return $scope.onboardingInProgress || (packaging.endsWith('cordova') &&
-                                           UserSessionService.getUIPreference('hideFooter'));
-  };
-
-  $scope.isFooterAddItemHidden = function() {
-    if ($scope.onboardingInProgress) {
-      var activeFeature = $scope.getActiveFeature();
-
-      if (activeFeature === 'tasks') {
-        if (!$scope.isOnboarded('tasks') && $scope.isOnboardingListItemAddActive())
-          return true;
-        else if ($scope.isOnboarded('tasks'))
-          return true;
-      }
-      else if (activeFeature === 'notes') {
-        return $scope.isOnboarded('notes');
-      }
-      else if (activeFeature === 'lists') {
-        if (!$scope.isOnboarded('lists') && $scope.isOnboardingListItemAddActive())
-          return true;
-        else if ($scope.isOnboarded('list'))
-          return true;
-      }
-    }
+    return (packaging.endsWith('cordova') && UserSessionService.getUIPreference('hideFooter'));
   };
 
   $scope.isVibrationDisabled = function(){

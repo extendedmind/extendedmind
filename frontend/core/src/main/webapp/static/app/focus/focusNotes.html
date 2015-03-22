@@ -9,7 +9,7 @@
       ng-repeat="note in listInfos.array = (getFullArray()) | orderBy:'trans.favorited':true
       | limitTo: currentListLimitTo track by note.trans.uuid"
       list-item ng-include="urlBase + 'app/notes/noteListItem.html'"></div>
-    <div list-prompt="notes" list-prompt-infos="listInfos" list-prompt-hide="[onboardingInProgress]"></div>
+    <div list-prompt="notes" list-prompt-infos="listInfos"></div>
   </section>
   <footer ng-if="isContentVisible('focus', 'notes')" class="container-content--after"
     list-footer="getFeatureMap('focus')" list-footer-subfeature="notes"></footer>
