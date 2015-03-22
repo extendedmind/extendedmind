@@ -311,6 +311,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     UserSessionService.setFeaturePreferences('settings', 1);
     // Open up menu
     DrawerService.enableDragging('left');
+    AnalyticsService.do('completeTutorial');
     $scope.increaseOnboardingPhase('focus', 'tasks');
   };
 

@@ -120,9 +120,14 @@
         if (enable){
           notesPrefs = activateFeatureOnboarding(notesPrefs);
           focusPrefs = activateFeatureOnboarding(focusPrefs, 'notes');
+          if (notesPrefs === 1)
+            AnalyticsService.do('notesOnboarding');
+          else
+            AnalyticsService.do('enableNotes');
         }else {
           notesPrefs = deactivateFeature(notesPrefs);
           focusPrefs = deactivateFeature(focusPrefs, 'notes', 'tasks');
+          AnalyticsService.do('disableNotes');
         }
         $scope.features.focus.resizeFix = true;
         UserSessionService.setFeaturePreferences('notes', notesPrefs);
@@ -142,6 +147,10 @@
           }
           listsPrefs = activateFeatureOnboarding(listsPrefs, 'active');
           listPrefs = activateFeatureOnboarding(listPrefs);
+          if (angular.isObject(listsPrefs) && listsPrefs.active === 1)
+            AnalyticsService.do('listsActiveOnboarding');
+          else
+            AnalyticsService.do('enableLists');
         }else {
           if ($scope.isToggleDisabled('lists', !enable)){
             // Can't disable lists if archive is enabled or currently onboarding
@@ -154,6 +163,7 @@
           }
           listsPrefs = deactivateFeature(listsPrefs, 'active');
           listPrefs = deactivateFeature(listPrefs);
+          AnalyticsService.do('disableLists');
         }
         UserSessionService.setFeaturePreferences('lists', listsPrefs);
         UserSessionService.setFeaturePreferences('list', listPrefs);
@@ -161,8 +171,13 @@
         var inboxPrefs = UserSessionService.getFeaturePreferences('inbox');
         if (enable){
           inboxPrefs = activateFeatureOnboarding(inboxPrefs);
+          if (inboxPrefs === 1)
+            AnalyticsService.do('inboxOnboarding');
+          else
+            AnalyticsService.do('enableInbox');
         }else {
           inboxPrefs = deactivateFeature(inboxPrefs);
+          AnalyticsService.do('disableInbox');
         }
         UserSessionService.setFeaturePreferences('inbox', inboxPrefs);
       }else if (feature === 'contexts'){
@@ -170,9 +185,14 @@
         if (enable){
           tasksPrefs = activateFeatureOnboarding(tasksPrefs, 'contexts');
           tasksPrefs = activateFeatureOnboarding(tasksPrefs, 'context');
+          if (angular.isObject(tasksPrefs) && tasksPrefs.contexts === 1)
+            AnalyticsService.do('tasksContextsOnboarding');
+          else
+            AnalyticsService.do('enableContexts');
         }else {
           tasksPrefs = deactivateFeature(tasksPrefs, 'contexts', 'all');
           tasksPrefs = deactivateFeature(tasksPrefs, 'context', 'all');
+          AnalyticsService.do('disableContexts');
         }
         $scope.features.tasks.resizeFix = true;
         UserSessionService.setFeaturePreferences('tasks', tasksPrefs);
@@ -180,8 +200,13 @@
         var listsPrefs = UserSessionService.getFeaturePreferences('lists');
         if (enable){
           listsPrefs = activateFeatureOnboarding(listsPrefs, 'archived');
+          if (angular.isObject(listsPrefs) && listsPrefs.archived === 1)
+            AnalyticsService.do('listsArchivedOnboarding');
+          else
+            AnalyticsService.do('enableArchive');
         }else {
           listsPrefs = deactivateFeature(listsPrefs, 'archived', 'active');
+          AnalyticsService.do('disableArchive');
         }
         $scope.features.lists.resizeFix = true;
         UserSessionService.setFeaturePreferences('lists', listsPrefs);
