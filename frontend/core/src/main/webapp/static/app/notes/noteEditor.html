@@ -32,12 +32,11 @@
         <div ng-if="showEditorType" class="group-symmetrical--middle group-centered substitute">
           <span class="text-heading-primary text-downplayed">note</span>
         </div>
-
-        <a href ng-if="!note.trans.deleted && !onboardingInProgress" ng-hide="isNotePropertyInEdit()"
+        <a href ng-if="!note.trans.deleted && !isOnboarding('notes')" ng-hide="isNotePropertyInEdit()"
           class="group-symmetrical--right" swiper-click="deleteNoteInEdit()">
           <span class="icon-trash"></span>
         </a>
-        <a href ng-if="note.trans.deleted && !onboardingInProgress" ng-hide="isNotePropertyInEdit()"
+        <a href ng-if="note.trans.deleted && !isOnboarding('notes')" ng-hide="isNotePropertyInEdit()"
           class="group-symmetrical--right link-navigation highlighted active" swiper-click="undeleteNote(note)">
           <span class="text-navigation">restore</span>
         </a>
@@ -58,7 +57,7 @@
   <div class="swiper-container container-fluid--inner" swiper-container="noteEditor" swiper-type="main"
     expected-slides="2" swiper-container-toggle-drawer-sliding-events="hasSwipeToClose('note')"
     swiper-container-slide-changed="editorSwiperSlideChanged()">
-    <div class="swiper-wrapper" ng-class="onboardingInProgress && 'swiper-no-swiping'">
+    <div class="swiper-wrapper" ng-class="isOnboarding('notes') && 'swiper-no-swiping'">
       <div class="swiper-slide" swiper-slide="noteEditor/basic" slide-index="0">
         <div ng-style="{'padding-bottom': isNotePropertyInEdit() ? 0 : EDITOR_FOOTER_HEIGHT}"
           class="container-content" drawer-override-aisle="right" ng-init="drawerAisleInitialized = true"
@@ -79,14 +78,14 @@
                 </textarea>
               </div>
 
-              <div class="group-mixed--right onboarding-hide">
+              <div class="group-mixed--right" ng-if="!isOnboarding('notes')">
                 <a href class="link-navigation" swiper-click="clickFavorite()">
                   <span class="icon-star large" ng-class="!note.trans.favorited && 'inactive'"></span>
                 </a>
               </div>
             </div>
 
-            <div ng-if="onboardingInProgress" class="row">
+            <div ng-if="isOnboarding('notes')" class="row">
               <span ng-show="!noteTitlebarHasText()" class="text-details">
                 e.g. reading suggestions, budget meeting minutes, summer plans
               </span>
@@ -136,7 +135,7 @@
               </a>
             </div>
           </div>
-          <div ng-if="!onboardingInProgress && hasUnsetCollapsableProperty()" ng-hide="isNotePropertyInEdit()"
+          <div ng-if="!isOnboarding('notes') && hasUnsetCollapsableProperty()" ng-hide="isNotePropertyInEdit()"
             class="row collapsible">
             <a href class="downplayed" swiper-click="toggleCollapsible()">
               <span ng-class="collapsibleOpen ? 'text-expand-up' : 'text-expand-down'"
@@ -154,7 +153,7 @@
             placeholder="enter content&#8230;" maxlength="1000000" autocapitalize="none" autocorrect="off">
           </textarea>
 
-          <div ng-if="onboardingInProgress" ng-show="note.trans.content.length" class="row">
+          <div ng-if="isOnboarding('notes')" ng-show="note.trans.content.length" class="row">
             <span class="text-details">
               when done, save your note by clicking 'save' in the top-left corner or swipe left
             </span>
