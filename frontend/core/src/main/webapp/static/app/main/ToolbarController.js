@@ -81,7 +81,11 @@
   $scope.clickToolbarHeading = function(){
     var activeFeature = $scope.getActiveFeature();
     if (activeFeature === 'list'){
-      $scope.openEditor('list', UISessionService.getFeatureData(activeFeature));
+      $scope.openEditor('list', UISessionService.getFeatureData(activeFeature)).then(function(){
+        if ($scope.isOnboarding('list')){
+          $scope.completeOnboarding('list');
+        }
+      });
     }else{
       switchFeature();
     }
