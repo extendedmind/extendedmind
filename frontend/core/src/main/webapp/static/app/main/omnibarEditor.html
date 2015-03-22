@@ -13,7 +13,7 @@
             editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
             editable-field-focus="inputFocus(true, 'title', titlebar.text)"
             editable-field-blur="inputFocus(false, 'title', titlebar.text)"
-            placeholder="save to inbox / search&#8230;"
+            dynamic-placeholder="{{getOmnibarPlaceholderText()}}&#8230;"
             maxlength="128" autocapitalize="none" autocorrect="off">
           </textarea>
         </div>
@@ -61,7 +61,9 @@
             <span id="editorFooterExpandText" class="icon-tag"></span>
           </a>
         </div>
-        <a href ng-hide="footerExpanded" class="group-symmetrical--right link" swiper-click="convertToNote()">
+        <a href ng-hide="footerExpanded" class="group-symmetrical--right link"
+          ng-class="(features.notes.getStatus() === 'disabled') && 'invisible'"
+          swiper-click="convertToNote()">
           <span class="text-convert">note</span>
         </a>
         <a href ng-if="footerExpanded && (!selectedKeywords || !selectedKeywords.length)"

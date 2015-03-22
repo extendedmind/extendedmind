@@ -36,6 +36,14 @@
     }
   }
 
+  $scope.getOmnibarPlaceholderText = function(){
+    if ($scope.features.inbox.getStatus() === 'disabled'){
+     return 'type to search';
+    }else{
+      return 'save to inbox / search';
+    }
+  };
+
   // SAVING
 
   $scope.saveOmnibarToItem = function() {
@@ -78,7 +86,8 @@
     }
     // Return
     else if (event.keyCode === 13){
-      if ($rootScope.syncState !== 'active' && $scope.titlebarHasText()) {
+      if ($rootScope.syncState !== 'active' && $scope.titlebarHasText() &&
+          $scope.features.inbox.getStatus() !== 'disabled') {
         // Enter in editor saves to new item
         $scope.closeEditor();
         $scope.saveOmnibarToItem();

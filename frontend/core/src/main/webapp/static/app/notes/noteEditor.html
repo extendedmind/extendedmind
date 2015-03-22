@@ -97,7 +97,8 @@
           </div>
 
           <!-- LIST -->
-          <div ng-if="note.trans.list" ng-hide="isNotePropertyInEdit()" class="group-mixed with-checkbox">
+          <div ng-if="note.trans.list && (features.lists.getStatus('active') !== 'disabled')"
+          ng-hide="isNotePropertyInEdit()" class="group-mixed with-checkbox">
             <a href class="group-mixed--middle link-search-result" swiper-click="openListPicker()">
               <span class="text-field--title" ng-bind="note.trans.list.trans.title"></span>
             </a>
@@ -121,7 +122,8 @@
           <div ng-if="collapsibleOpen" ng-hide="isNotePropertyInEdit()">
 
             <!-- LIST -->
-            <div ng-if="!note.trans.list" class="group-mixed with-checkbox">
+            <div ng-if="!note.trans.list && (features.lists.getStatus('active') !== 'disabled')"
+                 class="group-mixed with-checkbox">
               <a href class="group-mixed--middle link-search-result downplayed" swiper-click="openListPicker()">
                 <span class="text-field--title">select list&#8230;</span>
               </a>
@@ -269,6 +271,7 @@
               <span style="font-size: 13px;" class="text-convert">task</span>
             </a>
             <a href style="text-align:center;" class="group-symmetrical--middle"
+              ng-class="(features.lists.getStatus('active') === 'disabled') && 'invisible'"
               swiper-click="convertToList(note)">
               <span style="font-size: 13px;" class="text-convert">list</span>
             </a>

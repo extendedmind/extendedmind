@@ -70,11 +70,14 @@
           <span class="text-convert">task</span>
         </a>
         <div class="group-symmetrical--middle width-large">
-          <a href class="link" swiper-click="convertToNote(item)">
+          <a href class="link" swiper-click="convertToNote(item)"
+          ng-class="(features.notes.getStatus() === 'disabled') && 'invisible'">
             <span class="text-convert">note</span>
           </a>
         </div>
-        <a href class="group-symmetrical--right link" swiper-click="convertToList(item)">
+        <a href class="group-symmetrical--right link"
+          ng-class="(features.lists.getStatus('active') === 'disabled') && 'invisible'"
+          swiper-click="convertToList(item)">
           <span class="text-convert">list</span>
         </a>
       </div>

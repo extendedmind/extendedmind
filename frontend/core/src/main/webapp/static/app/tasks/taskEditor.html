@@ -116,7 +116,8 @@
           </div>
 
           <!-- LIST -->
-          <div ng-hide="calendarOpen || taskDescriptionFocused || listPickerOpen"
+          <div ng-hide="calendarOpen || taskDescriptionFocused || listPickerOpen ||
+                        features.lists.getStatus('active') === 'disabled'"
             class="group-mixed with-checkbox">
             <a href class="group-mixed--middle link-search-result" ng-class="!task.trans.list && 'downplayed'"
               swiper-click="openListPicker()">
@@ -176,7 +177,8 @@
         <div class="container-content" ng-style="{'padding-bottom': advancedSlideInfo.footerHeight}">
 
           <!-- CONTEXT -->
-          <div ng-hide="contextPickerOpen || repeatingPickerOpen || urlFocused"
+          <div ng-hide="contextPickerOpen || repeatingPickerOpen || urlFocused ||
+                       (features.tasks.getStatus('contexts') === 'disabled')"
             class="group-mixed with-checkbox row-top-parent">
             <a href class="group-mixed--middle link-search-result"
               ng-class="!task.trans.context && 'downplayed'" swiper-click="openContextPicker()">
@@ -243,11 +245,17 @@
           class="container-content--after editor-footer" editor-footer="advancedSlideInfo">
 
           <!-- CONVERT -->
-          <div class="group-symmetrical">
-            <a href class="group-symmetrical--left link" swiper-click="convertToNote(task)">
+          <div class="group-symmetrical"
+            ng-class="(features.notes.getStatus() === 'disabled' &&
+            features.lists.getStatus('active') === 'disabled') && 'invisible'">
+            <a href class="group-symmetrical--left link"
+            ng-class="(features.notes.getStatus() === 'disabled') && 'invisible'"
+            swiper-click="convertToNote(task)">
               <span class="text-convert small">note</span>
             </a>
-            <a href class="group-symmetrical--middle group-centered link" swiper-click="convertToList(task)">
+            <a href class="group-symmetrical--middle group-centered link"
+            ng-class="(features.lists.getStatus('active') === 'disabled') && 'invisible'"
+            swiper-click="convertToList(task)">
               <span class="text-convert small">list</span>
             </a>
             <div class="group-symmetrical--right">

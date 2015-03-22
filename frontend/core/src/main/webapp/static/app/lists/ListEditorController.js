@@ -118,7 +118,9 @@
   };
 
   $scope.hideArchive = function() {
-    return $scope.isFakeUser() || $scope.editorType === 'recurring';
+    return $scope.isFakeUser() ||
+        $scope.editorType === 'recurring' ||
+        $scope.features.lists.getStatus('archived') === 'disabled';
   };
 }
 
