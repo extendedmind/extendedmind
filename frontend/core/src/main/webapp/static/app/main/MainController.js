@@ -232,8 +232,8 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
   }
 
   $scope.increaseOnboardingPhase = function(feature, subfeature){
-    var focusPreferences = UserSessionService.getFeaturePreferences(feature);
-    increaseOnboardingPhase(feature, focusPreferences, subfeature)
+    var featurePreferences = UserSessionService.getFeaturePreferences(feature);
+    increaseOnboardingPhase(feature, featurePreferences, subfeature)
   };
 
   function decreaseOnboardingPhase(feature, featurePreferences, subfeature){
@@ -435,6 +435,13 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
         var state = UISessionService.getFeatureState(feature);
 
         UISessionService.changeFeature(feature, data, state);
+
+        if ($scope.features[feature].resizeFix){
+          $timeout(function(){
+            SwiperService.resizeFixSwiperAndChildSwipers(feature);
+            $scope.features[feature].resizeFix = false;
+          });
+        }
         if (!$scope.$$phase && !$rootScope.$$phase){
           $scope.$digest();
         }

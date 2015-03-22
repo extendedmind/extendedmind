@@ -72,12 +72,14 @@
     if (angular.isFunction($scope.unregisterEditorAboutToCloseCallback))
       $scope.unregisterEditorAboutToCloseCallback('NoteEditorController');
 
-    if ($scope.features.notes.getStatus() === 'onboarding_1'){
-      $scope.increaseOnboardingPhase('notes');
+    if ($scope.isNoteEdited() && !$scope.note.trans.deleted){
+      if ($scope.features.notes.getStatus() === 'onboarding_1'){
+        $scope.increaseOnboardingPhase('notes');
+      }
+      saveNoteInEdit();
+    }else{
+      NotesService.resetNote($scope.note, UISessionService.getActiveUUID());
     }
-
-    if ($scope.isNoteEdited() && !$scope.note.trans.deleted) saveNoteInEdit();
-    else NotesService.resetNote($scope.note, UISessionService.getActiveUUID());
   }
 
   function setSaving() {

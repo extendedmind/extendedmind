@@ -14,8 +14,8 @@
  */
  'use strict';
 
- function SettingsController($scope, AnalyticsService, UISessionService, UserService, UserSessionService,
-                             packaging, version) {
+ function SettingsController($timeout, $scope, AnalyticsService, ListsService, SwiperService, UISessionService,
+                             UserService, UserSessionService, packaging, version) {
 
   // VERSION
   $scope.extendedMindVersion = version;
@@ -124,6 +124,7 @@
           notesPrefs = deactivateFeature(notesPrefs);
           focusPrefs = deactivateFeature(focusPrefs, 'notes', 'tasks');
         }
+        $scope.features.focus.resizeFix = true;
         UserSessionService.setFeaturePreferences('notes', notesPrefs);
         UserSessionService.setFeaturePreferences('focus', focusPrefs);
       }else if (feature === 'lists'){
@@ -173,6 +174,7 @@
           tasksPrefs = deactivateFeature(tasksPrefs, 'contexts', 'all');
           tasksPrefs = deactivateFeature(tasksPrefs, 'context', 'all');
         }
+        $scope.features.tasks.resizeFix = true;
         UserSessionService.setFeaturePreferences('tasks', tasksPrefs);
       }else if (feature === 'archive'){
         var listsPrefs = UserSessionService.getFeaturePreferences('lists');
@@ -181,9 +183,21 @@
         }else {
           listsPrefs = deactivateFeature(listsPrefs, 'archived', 'active');
         }
+        $scope.features.lists.resizeFix = true;
         UserSessionService.setFeaturePreferences('lists', listsPrefs);
       }
       UserService.saveAccountPreferences();
+    }
+  };
+
+  $scope.showArchiveFeature = function(){
+    if (!UserSessionService.isFakeUser() && (UserSessionService.getUserType() < 2)){
+      return true;
+    }
+
+    // Also show archive if the user has already archived lists
+    if (ListsService.getArchivedLists(UISessionService.getActiveUUID()).length > 0){
+      return true;
     }
   };
 
@@ -202,6 +216,6 @@
 
 }
 
-SettingsController['$inject'] = ['$scope', 'AnalyticsService', 'UISessionService', 'UserService',
-'UserSessionService', 'packaging', 'version'];
+SettingsController['$inject'] = ['$timeout', '$scope', 'AnalyticsService', 'ListsService', 'SwiperService',
+'UISessionService', 'UserService', 'UserSessionService', 'packaging', 'version'];
 angular.module('em.main').controller('SettingsController', SettingsController);

@@ -1,9 +1,10 @@
 <div ng-show="isFeatureActive('lists')" class="swiper-container container-fluid--inner"
-  swiper-container="lists" swiper-type="main" expected-slides=2>
+  swiper-container="lists" swiper-type="main"
+  expected-slides="(features.lists.getStatus('archived') === 'disabled') ? 1 : 2">
   <div class="swiper-wrapper">
     <div class="swiper-slide" swiper-slide="lists/active" slide-index=0
     ng-include="urlBase + 'app/lists/listsActive.html'"></div>
-    <div class="swiper-slide" swiper-slide="lists/archived" slide-index=1
-    ng-include="urlBase + 'app/lists/listsArchived.html'"></div>
+    <div ng-if="features.lists.getStatus('archived') !== 'disabled'" class="swiper-slide"
+    swiper-slide="lists/archived" slide-index=1 ng-include="urlBase + 'app/lists/listsArchived.html'"></div>
   </div>
 </div>

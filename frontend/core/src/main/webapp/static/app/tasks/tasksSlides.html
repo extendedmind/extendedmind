@@ -1,11 +1,12 @@
 <div ng-show="isFeatureActive('tasks')" class="swiper-container container-fluid--inner"
-  swiper-container="tasks" swiper-type="main" expected-slides=3>
+  swiper-container="tasks" swiper-type="main"
+  expected-slides="(features.tasks.getStatus('contexts') === 'disabled') ? 1 : 3">
   <div class="swiper-wrapper">
     <div class="swiper-slide" swiper-slide="tasks/all" slide-index=0
-      ng-include="urlBase + 'app/tasks/tasksAll.html'"></div>
-    <div class="swiper-slide" swiper-slide="tasks/contexts" slide-index=1
-      ng-include="urlBase + 'app/tasks/tasksContexts.html'"></div>
-    <div class="swiper-slide" swiper-slide="tasks/context" slide-index=2
-      ng-include="urlBase + 'app/tasks/tasksContext.html'"></div>
+         ng-include="urlBase + 'app/tasks/tasksAll.html'"></div>
+    <div ng-if="features.tasks.getStatus('contexts') !== 'disabled'" class="swiper-slide" swiper-slide="tasks/contexts" slide-index=1
+         ng-include="urlBase + 'app/tasks/tasksContexts.html'"></div>
+    <div ng-if="features.tasks.getStatus('context') !== 'disabled'" class="swiper-slide"
+         swiper-slide="tasks/context" slide-index=2 ng-include="urlBase + 'app/tasks/tasksContext.html'"></div>
   </div>
 </div>

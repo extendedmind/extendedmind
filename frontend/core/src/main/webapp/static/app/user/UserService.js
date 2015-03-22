@@ -64,7 +64,7 @@
             inbox:value,
             tasks:value,
             notes:value,
-            lists:value,
+            lists:{active: value},
             list:value,
             trash:value,
             settings:value

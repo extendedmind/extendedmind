@@ -862,12 +862,6 @@
 
   // ONBOARDING
 
-  if ($scope.features.focus.getStatus('notes') === 'disabled'){
-    SwiperService.setOnlyExternal('focus', true);
-  }else{
-    SwiperService.setOnlyExternal('focus', false);
-  }
-
   $scope.$on('$destroy', function() {
     if (angular.isFunction($scope.unregisterSynchronizeCallback))
       $scope.unregisterSynchronizeCallback('DatesController');
