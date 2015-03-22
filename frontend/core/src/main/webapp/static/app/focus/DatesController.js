@@ -581,6 +581,15 @@
     }
   }
 
+  if ($scope.isOnboarding('focus', 'tasks')) {
+    // Register callback during onboarding to get the changes.
+    // Normally, callbacks at least from synchronize and feature activation would take care of the refresh,
+    // but the synchronize callback is not run during onboarding and feature is not changed because settings
+    // editor is opened directly from focus tasks.s
+    CalendarService.registerCalendarActivationChangedCallback(refreshAgendaEventsAndVisibility,
+                                                              'DatesController');
+  }
+
   function refreshAgenda() {
     var enabledCalendars = CalendarService.getActiveCalendars();
     if (enabledCalendars && enabledCalendars.length) {

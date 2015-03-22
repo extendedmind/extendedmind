@@ -17,6 +17,7 @@
  'use strict';
 
 function CalendarService(UISessionService, UserService, UserSessionService) {
+  var calendarActivationChangedCallbacks = {};
 
   function setActiveCalendars(calendars){
     var deviceId = UISessionService.getDeviceId();
@@ -39,6 +40,14 @@ function CalendarService(UISessionService, UserService, UserSessionService) {
     }
   }
 
+  function executeCalendarActivationChangedCallbacks() {
+    for (var id in calendarActivationChangedCallbacks) {
+      if (calendarActivationChangedCallbacks.hasOwnProperty(id)) {
+        calendarActivationChangedCallbacks[id]();
+      }
+    }
+  }
+
   return {
     getActiveCalendars: getActiveCalendars,
     setActiveCalendars: setActiveCalendars,
@@ -55,6 +64,7 @@ function CalendarService(UISessionService, UserService, UserSessionService) {
           name: name
         });
         setActiveCalendars(activeCalendars);
+        executeCalendarActivationChangedCallbacks();
         return true;
       }
     },
@@ -65,11 +75,15 @@ function CalendarService(UISessionService, UserService, UserSessionService) {
           if (activeCalendars[i].id === id) {
             activeCalendars.splice(i, 1);
             setActiveCalendars(activeCalendars);
+            executeCalendarActivationChangedCallbacks();
             return;
           }
         }
         return true;
       }
+    },
+    registerCalendarActivationChangedCallback: function(callback, id) {
+      calendarActivationChangedCallbacks[id] = callback;
     }
   };
 }
