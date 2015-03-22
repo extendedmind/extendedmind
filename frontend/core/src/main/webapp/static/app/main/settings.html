@@ -1,5 +1,5 @@
 <div class="container-fluid--inner" drawer-handle="left" ng-controller="SettingsController">
-  <section class="container-content">
+  <section class="container-content" ng-show="isContentVisible('settings')">
     <h2 class="group-heading justified row">settings</h2>
 
     <!-- VERSION -->
@@ -115,4 +115,20 @@
     </div>
 
   </section>
+
+  <!-- ONBOARDING -->
+  <section ng-if="isOnboarding('settings')" class="container-content">
+    <div class="group-instruction">
+      <h2 class="group-heading instruction row">customize your <span class="highlighted">mind</span></h2>
+      <div class="textgroup-ingress row">only the core features are currently active</div>
+      <div class="textgroup-ingress last row">open new features here as your <span class="text-highlighted">extended mind</span> grows</div>
+    </div>
+  </section>
+  <footer ng-if="isOnboarding('settings')"
+    class="container-content--after group-btn onboarding">
+    <button type="submit" class="btn-action" ng-click="completeOnboarding('settings')">
+      <span class="text-btn">got it</span>
+    </button>
+  </footer>
+
 </div>

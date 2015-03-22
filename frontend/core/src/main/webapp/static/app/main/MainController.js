@@ -308,7 +308,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     UserSessionService.setFeaturePreferences('user', onboardedValue);
     UserSessionService.setFeaturePreferences('tasks', {all: 1});
     UserSessionService.setFeaturePreferences('trash', onboardedValue);
-    UserSessionService.setFeaturePreferences('settings', onboardedValue);
+    UserSessionService.setFeaturePreferences('settings', 1);
     // Open up menu
     DrawerService.enableDragging('left');
     $scope.increaseOnboardingPhase('focus', 'tasks');

@@ -70,7 +70,9 @@
   function switchFeature() {
     var activeFeature = $scope.getActiveFeature();
     if (activeFeature === 'focus') {
-      $scope.changeFeature('inbox', undefined, true);
+      if ($scope.features.inbox.getStatus() !== 'disabled'){
+        $scope.changeFeature('inbox', undefined, true);
+      }
     } else {
       $scope.changeFeature('focus', undefined, true);
     }
