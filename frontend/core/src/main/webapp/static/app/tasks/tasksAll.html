@@ -1,37 +1,37 @@
 <div class="container-content--outer" list-container drawer-handle="left"
   drawer-handle-register-activate="registerFeatureActivateCallback(activate, 'tasks', 'tasksAll')">
-  <section class="container-content" list="getTasksArray('all')" list-recent
-    list-options="{hideItemDefault: true}">
+  <section class="container-content" ng-show="isContentVisible('tasks', 'all')"
+    list="getTasksArray('all')" list-recent list-options="{hideItemDefault: true}" >
 
-    <div ng-show="isContentVisible('tasks', 'all')">
-      <div class="group-mixed heading">
-        <div class="group-mixed--middle">
-          <h2 class="group-heading justified">all tasks</h2>
-        </div>
-        <div class="group-mixed--right" task-list-completed></div>
+    <div class="group-mixed heading">
+      <div class="group-mixed--middle">
+        <h2 class="group-heading justified">all tasks</h2>
       </div>
-      <div list-item-add="getNewTask()"
-        list-item-add-save="saveTask(newItem)" ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
-      <div class="animate-list-item-leave"
-        ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
-        list-item ng-include="urlBase + 'app/tasks/taskListItem.html'">
-      </div>
-      <div list-prompt="tasks" list-prompt-infos="listInfos"
-        list-prompt-hide="[listItemAddActive]"></div>
+      <div class="group-mixed--right" task-list-completed></div>
     </div>
+    <div list-item-add="getNewTask()"
+      list-item-add-save="saveTask(newItem)" ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
+    <div class="animate-list-item-leave"
+      ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
+      list-item ng-include="urlBase + 'app/tasks/taskListItem.html'">
+    </div>
+    <div list-prompt="tasks" list-prompt-infos="listInfos"
+      list-prompt-hide="[listItemAddActive]"></div>
+  </section>
 
-    <!-- ONBOARDING -->
-    <div ng-if="isOnboarding('tasks', 'all')"
-      class="group-instruction">
+  <!-- ONBOARDING -->
+  <section ng-if="isOnboarding('tasks', 'all')" class="container-content">
+    <div class="group-instruction">
       <h2 class="group-heading instruction row">find all your
         <span class="highlighted">tasks</span> here
       </h2>
       <div class="textgroup-ingress row">tasks are sorted in modified order so that the task you most recently
       modified is at the top of the list</div>
     </div>
-
   </section>
-  <footer ng-if="isFeatureActive('tasks') && isContentVisible('tasks', 'all')" class="container-content--after" list-footer="getFeatureMap('tasks')"
+
+  <footer ng-if="isFeatureActive('tasks') && isContentVisible('tasks', 'all')"
+  class="container-content--after" list-footer="getFeatureMap('tasks')"
   list-footer-subfeature="all"></footer>
 
   <footer ng-if="isOnboarding('tasks', 'all')"

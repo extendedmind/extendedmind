@@ -1,5 +1,5 @@
 <div class="container-content--outer" ng-if="isFeatureActive('tasks')" list-container>
-  <section class="container-content" list="contexts">
+  <section ng-show="isContentVisible('tasks', 'contexts')" class="container-content" list="contexts">
     <h2 class="group-heading justified row">contexts</h2>
     <div list-item-add="getNewContext()" list-item-add-save="saveContext(newItem)">
       <form role="form" class="group-mixed swiper-no-swiping"
@@ -45,5 +45,25 @@
       </div>
     </div>
   </section>
-  <footer class="container-content--after" list-footer="getFeatureMap('tasks')"></footer>
+
+  <!-- ONBOARDING -->
+  <section ng-if="isOnboarding('tasks', 'contexts')" class="container-content">
+    <div class="group-instruction">
+      <h2 class="group-heading instruction row">group tasks with
+        <span class="highlighted">contexts</span>
+      </h2>
+      <div class="textgroup-ingress row">good contexts are task
+      <span class="text-highlighted">environments</span> &ndash; for example @home and @phone</div>
+    </div>
+  </section>
+
+  <footer ng-if="isFeatureActive('tasks') && isContentVisible('tasks', 'contexts')"
+  class="container-content--after" list-footer="getFeatureMap('tasks')" list-footer-subfeature="contexts">
+  </footer>
+  <footer ng-if="isOnboarding('tasks', 'contexts')"
+    class="container-content--after group-btn onboarding">
+    <button type="submit" class="btn-action" ng-click="completeOnboarding('tasks', 'contexts')">
+      <span class="text-btn">got it</span>
+    </button>
+  </footer>
 </div>
