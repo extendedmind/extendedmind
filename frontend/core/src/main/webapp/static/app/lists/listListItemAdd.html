@@ -1,10 +1,12 @@
 <form role="form" class="group-mixed vertically-centered swiper-no-swiping"
   ng-submit="callAndExit(saveList, newItem)" data-snap-ignore="true" editable-field-container
-  editable-field-container-clicked-elsewhere="clickedElsewhere({keepEmptyFieldActivatedFn: isOnboardingInProgress()})"
+  editable-field-container-clicked-elsewhere="clickedElsewhere()"
   autocapitalize="none" autocorrect="off">
   <div class="group-mixed--left">
-    <a href swiper-click="callAndExit(saveListAndChangeFeature, newItem)" ng-disabled="isOnboardingInProgress()">
-      <span class="text-navigation-back large"></span>
+    <a href swiper-click="callAndExit(saveListAndChangeFeature, newItem)"
+      ng-class="isOnboardingInProgress('lists', 'active') && 'link-disable'">
+      <span class="text-navigation-back large"
+      ng-class="isOnboardingInProgress('lists', 'active') && 'link-disable'"></span>
     </a>
   </div>
   <div class="group-mixed--middle">
@@ -14,14 +16,15 @@
     </textarea>
   </div>
   <div class="group-mixed--right">
-    <a href class="onboarding-hide" editable-field-deactivate swiper-click="openEditor('list', newItem)">
+    <a href ng-hide="isOnboardingInProgress('lists', 'active')"
+      editable-field-deactivate swiper-click="openEditor('list', newItem)">
       <span class="text-navigation-forward without-text"></span>
     </a>
   </div>
 </form>
 
 <!-- ONBOARDING -->
-<div ng-if="isOnboardingInProgress()" class="group-instruction-input">
+<div ng-if="isOnboardingInProgress('lists', 'active')" class="group-instruction-input">
   <div ng-show="!newItem.trans.title || newItem.trans.title.length === 0" class="text-details row">
     e.g. groceries, studies, company retreat
   </div>

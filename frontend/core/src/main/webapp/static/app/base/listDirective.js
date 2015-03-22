@@ -94,6 +94,15 @@
         }
       };
 
+      this.notifyListItemExitNoAdd = function(){
+        if ($scope.notifyAddAction){
+          var returnValue = $scope.notifyAddAction('noAdd', $scope.listAddState.featureInfo,
+                                                  $scope.listAddState.subfeature);
+          $scope.listAddState = {};
+          return returnValue;
+        }
+      };
+
       var customFilterItemVisible;
       this.setCustomFilterItemVisible = function(filter){
         customFilterItemVisible = filter;

@@ -67,12 +67,8 @@
             var itemHasTitle = scope.newItem.trans.title && scope.newItem.trans.title.length > 0;
             if (itemHasTitle) {
               saveNewItem(scope.newItem);
-            }
-            if (!itemHasTitle && options && typeof options.keepEmptyFieldActivatedFn === 'function' &&
-                options.keepEmptyFieldActivatedFn())
-            {
-              // Do not execute exit when item does not have a title and empty field is kept activated.
-              return;
+            }else{
+              controllers[0].notifyListItemExitNoAdd();
             }
             exit();
           };

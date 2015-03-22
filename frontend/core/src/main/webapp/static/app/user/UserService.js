@@ -70,6 +70,22 @@
             settings:value
           };
           needToPersist = true;
+        }else {
+          // prevent invalid states in onboarding
+          if (angular.isObject(preferences.onboarded.focus) &&
+              preferences.onboarded.focus.tasks === 2){
+            preferences.onboarded.focus.tasks = 1;
+            needToPersist = true;
+          }
+          if (preferences.onboarded.notes === 2){
+            preferences.onboarded.notes = 1;
+            needToPersist = true;
+          }
+          if (angular.isObject(preferences.onboarded.lists) &&
+              preferences.onboarded.lists.active === 2){
+            preferences.onboarded.lists.active = 1;
+            needToPersist = true;
+          }
         }
         if (preferences.ui){
           if (preferences.ui.hidePlus){

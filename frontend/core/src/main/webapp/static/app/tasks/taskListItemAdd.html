@@ -1,11 +1,11 @@
 <form role="form" class="group-mixed with-checkbox with-textarea swiper-no-swiping"
   ng-submit="callAndExit(saveTask, newItem)" data-snap-ignore="true" editable-field-container
-  editable-field-container-clicked-elsewhere="clickedElsewhere({keepEmptyFieldActivatedFn: isOnboardingInProgress})"
+  editable-field-container-clicked-elsewhere="clickedElsewhere()"
   autocapitalize="none" autocorrect="off">
   <div class="group-mixed--left">
     <input type="checkbox" ng-model="newItem.trans.optimisticComplete" ng-model-options="{getterSetter: true}"
       swiper-click="toggleLeftCheckbox(toggleCompleteTask)" icon-checkbox="getListItemAddId()"
-      ng-disabled="!newItem.trans.title || isOnboardingInProgress()">
+      ng-disabled="!newItem.trans.title || isTutorialInProgress()">
   </div>
   <div class="group-mixed--middle">
     <textarea ng-model="newItem.trans.title" msd-elastic ng-keydown="textareaKeyDown($event)"
@@ -14,7 +14,7 @@
     </textarea>
   </div>
   <div class="group-mixed--right">
-    <a href class="link-navigation onboarding-hide" editable-field-deactivate
+    <a href class="link-navigation" ng-hide="isTutorialInProgress()" editable-field-deactivate
       swiper-click="openTaskEditor(newItem)">
       <span class="text-navigation-forward without-text"></span>
     </a>

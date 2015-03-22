@@ -236,6 +236,13 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     increaseOnboardingPhase(feature, focusPreferences, subfeature)
   };
 
+  function decreaseOnboardingPhase(feature, featurePreferences, subfeature){
+    if (subfeature) featurePreferences[subfeature] -= 1;
+    else featurePreferences -= 1;
+    UserSessionService.setFeaturePreferences(feature, featurePreferences);
+    UserService.saveAccountPreferences();
+  }
+
   // Plus button is pressed or new item is added, this function figures out what to do then
   $scope.notifyAddAction = function(type, featureInfo, subfeature){
     if (featureInfo === $scope.features.user){
@@ -244,9 +251,13 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
       var focusPreferences = UserSessionService.getFeaturePreferences('focus');
       var phase = $scope.getOnboardingPhase('focus', 'tasks');
       if (phase && (phase === 1 || phase === 2)){
-        // Focus tasks is the current feature and it is onboarding: we update the onboarding status
-        increaseOnboardingPhase('focus', focusPreferences, subfeature);
-        return true;
+        if (type === 'noAdd'){
+          decreaseOnboardingPhase('focus', focusPreferences, subfeature);
+        }else{
+          // Focus tasks is the current feature and it is onboarding: we update the onboarding status
+          increaseOnboardingPhase('focus', focusPreferences, subfeature);
+          return true;
+        }
       };
     }else if (featureInfo === $scope.features.inbox){
 
@@ -257,9 +268,13 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     }else if (featureInfo === $scope.features.lists){
       var listsPreferences = UserSessionService.getFeaturePreferences('lists');
       if (getFeatureStatus(listsPreferences, subfeature).startsWith('onboarding')){
-        // Lists is the current feature and it is onboarding: we update the onboarding status
-        increaseOnboardingPhase('lists', listsPreferences, subfeature);
-        return true;
+        if (type === 'noAdd'){
+          decreaseOnboardingPhase('lists', listsPreferences, subfeature);
+        }else{
+          // Lists is the current feature and it is onboarding: we update the onboarding status
+          increaseOnboardingPhase('lists', listsPreferences, subfeature);
+          return true;
+        }
       };
     }else if (featureInfo === $scope.features.list){
 
