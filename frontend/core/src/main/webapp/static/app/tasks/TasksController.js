@@ -578,6 +578,14 @@
       $scope.increaseOnboardingPhase('focus', 'tasks')
     });
   };
+
+  $scope.openContextEditor = function(context){
+    $scope.openEditor('tag', context).then(function(){
+      if ($scope.isOnboarding('tasks', 'context')){
+        $scope.completeOnboarding('tasks', 'context');
+      }
+    });
+  };
 }
 
 TasksController['$inject'] = [
