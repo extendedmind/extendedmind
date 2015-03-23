@@ -100,6 +100,10 @@
       }
     });
 
+    $routeProvider.when('/login', {
+      templateUrl: urlBase + 'app/entry/entrySlides.html'
+    });
+
     $routeProvider.when('/my', {
       templateUrl: urlBase + 'app/main/main.html',
       resolve: {

@@ -2,7 +2,8 @@
 <form ng-if="entryState === 'login'" name="loginForm">
   <section class="container-content" editable-field-container>
     <header class="group-symmetrical">
-      <a href ng-click="swipeToHome()" class="group-symmetrical--left link-navigation" editable-field-deactivate>
+      <a href ng-if="isHomeSlideEnabled()" ng-click="swipeToHome()"
+        class="group-symmetrical--left link-navigation" editable-field-deactivate>
         <span class="text-navigation-back">back</span>
       </a>
       <a href ng-click="swipeToDetails()" class="group-symmetrical--right link-navigation" editable-field-deactivate>
@@ -36,7 +37,8 @@
       <span ng-if="entryOffline" class="text-error">can't connect to server. are you online?</span>
     </div>
   </section>
-  <footer class="container-content--after group-btn" editable-field-container="auto">
+  <footer class="container-content--after group-btn"
+    editable-field-container="{{isEntryInputAutoFocusDisabled() ? '' : 'auto'}}">
     <button type="submit" class="btn-action" ng-disabled="!loginForm.$valid || loggingIn" ng-click="logIn()">
       <span class="text-btn" ng-bind="loggingIn && 'logging in' || 'done'"></span>
     </button>

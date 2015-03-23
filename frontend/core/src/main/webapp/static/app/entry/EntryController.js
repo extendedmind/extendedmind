@@ -14,12 +14,12 @@
  */
 
 /* global angular, pauseExtendedMindAnimation, extendedMindAudio, setupHTML5Audio, extendedMindAnimationDelay,
-   playExtendedMindAnimation, extendedMindAnimationPhase, Media, cordova */
- 'use strict';
+playExtendedMindAnimation, extendedMindAnimationPhase, Media, cordova */
+'use strict';
 
- function EntryController($http, $location, $routeParams, $scope,
-                          AnalyticsService, AuthenticationService, DetectBrowserService, SwiperService,
-                          UISessionService, UserService, UserSessionService, packaging) {
+function EntryController($http, $location, $routeParams, $scope,
+                         AnalyticsService, AuthenticationService, DetectBrowserService, SwiperService,
+                         UISessionService, UserService, UserSessionService, packaging) {
 
   AnalyticsService.visitEntry('entry');
 
@@ -29,6 +29,16 @@
 
   if ($routeParams.offline === 'true'){
     UserSessionService.enableOffline(true);
+  }
+
+  // Initialize login path.
+  if ($location.path() === '/login') {
+    var entryInputAutoFocusDisabled = true;
+    $scope.entryState = 'login';
+    $scope.user = {};
+    SwiperService.setInitialSlidePath('entry', 'entry/main');
+
+    AnalyticsService.visitEntry('login');
   }
 
   $scope.swipeToLogin = function() {
@@ -51,6 +61,14 @@
 
   $scope.swipeToDetails = function() {
     SwiperService.swipeTo('entry/details');
+  };
+
+  $scope.isHomeSlideEnabled = function() {
+    return $location.path() !== '/login';
+  };
+
+  $scope.isEntryInputAutoFocusDisabled = function() {
+    return entryInputAutoFocusDisabled;
   };
 
   var entryEmailMainInputFocusCallbackFunction;
@@ -223,6 +241,6 @@
 }
 
 EntryController['$inject'] = ['$http', '$location', '$routeParams', '$scope',
-  'AnalyticsService', 'AuthenticationService', 'DetectBrowserService', 'SwiperService',
-  'UISessionService', 'UserService', 'UserSessionService', 'packaging'];
+'AnalyticsService', 'AuthenticationService', 'DetectBrowserService', 'SwiperService',
+'UISessionService', 'UserService', 'UserSessionService', 'packaging'];
 angular.module('em.entry').controller('EntryController', EntryController);

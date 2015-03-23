@@ -30,7 +30,8 @@
     </div>
   </section>
 
-  <footer ng-if="!resetCodeExpires" class="container-content--after group-btn" editable-field-container="auto">
+  <footer ng-if="!resetCodeExpires" class="container-content--after group-btn"
+    editable-field-container="{{isEntryInputAutoFocusDisabled() ? '' : 'auto'}}">
     <button type="submit" class="btn-action" ng-disabled="!forgotForm.$valid || sendingInstructions"
     ng-click="sendInstructions()">
       <span class="text-btn" ng-bind="sendingInstructions && 'sending' || 'send instructions'"></span>
