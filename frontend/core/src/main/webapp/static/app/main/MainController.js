@@ -22,7 +22,7 @@
 // which are part of every main slide collection.
 function MainController($element, $controller, $filter, $q, $rootScope, $scope, $timeout, $window,
                         UserService, AnalyticsService, ArrayService,
-                        BackendClientService, DrawerService, ItemsService,
+                        BackendClientService, CalendarService, DrawerService, ItemsService,
                         ListsService, NotesService, SwiperService, SynchronizeService, TagsService,
                         TasksService, UISessionService, UserSessionService, packaging) {
 
@@ -224,9 +224,21 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     }
   };
 
-  function increaseOnboardingPhase(feature, featurePreferences, subfeature){
-    if (subfeature) featurePreferences[subfeature] += 1;
-    else featurePreferences += 1;
+  function increaseOnboardingPhase(feature, featurePreferences, subfeature, warpIntoPhase){
+    if (subfeature) {
+      if (warpIntoPhase) {
+        featurePreferences[subfeature] = warpIntoPhase;
+      } else {
+        featurePreferences[subfeature] += 1;
+      }
+    }
+    else {
+      if (warpIntoPhase) {
+        featurePreferences = warpIntoPhase;
+      } else {
+        featurePreferences += 1;
+      }
+    }
     UserSessionService.setFeaturePreferences(feature, featurePreferences);
     UserService.saveAccountPreferences();
   }
@@ -255,7 +267,11 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
           decreaseOnboardingPhase('focus', focusPreferences, subfeature);
         }else{
           // Focus tasks is the current feature and it is onboarding: we update the onboarding status
-          increaseOnboardingPhase('focus', focusPreferences, subfeature);
+          var warpIntoPhase;
+          if (phase === 2 && !CalendarService.isCalendarEnabled()) {
+            warpIntoPhase = 5;
+          }
+          increaseOnboardingPhase('focus', focusPreferences, subfeature, warpIntoPhase);
           return true;
         }
       };
@@ -297,8 +313,12 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     if (phase !== undefined){
       if (phase < 3 ) return 1;
       if (phase < 5) return 2;
-      if (phase === 5) return 3;
+      if (phase === 5) return $scope.getTutorialLength();
     }
+  };
+
+  $scope.getTutorialLength = function() {
+    return CalendarService.isCalendarEnabled() ? 3 : 2;
   };
 
   $scope.completeTutorial = function(){
@@ -1060,8 +1080,8 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
 
 MainController['$inject'] = [
 '$element', '$controller', '$filter', '$q', '$rootScope', '$scope', '$timeout', '$window',
-'UserService', 'AnalyticsService', 'ArrayService', 'BackendClientService', 'DrawerService', 'ItemsService',
-'ListsService', 'NotesService', 'SwiperService', 'SynchronizeService','TagsService', 'TasksService',
-'UISessionService', 'UserSessionService', 'packaging'
+'UserService', 'AnalyticsService', 'ArrayService', 'BackendClientService', 'CalendarService', 'DrawerService',
+'ItemsService', 'ListsService', 'NotesService', 'SwiperService', 'SynchronizeService','TagsService',
+'TasksService', 'UISessionService', 'UserSessionService', 'packaging'
 ];
 angular.module('em.main').controller('MainController', MainController);

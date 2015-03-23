@@ -16,7 +16,7 @@
  /* global angular */
  'use strict';
 
-function CalendarService(UISessionService, UserService, UserSessionService) {
+function CalendarService(UISessionService, UserService, UserSessionService, packaging) {
   var calendarActivationChangedCallbacks = {};
 
   function setActiveCalendars(calendars){
@@ -84,8 +84,11 @@ function CalendarService(UISessionService, UserService, UserSessionService) {
     },
     registerCalendarActivationChangedCallback: function(callback, id) {
       calendarActivationChangedCallbacks[id] = callback;
+    },
+    isCalendarEnabled: function() {
+      return packaging.endsWith('cordova');
     }
   };
 }
-CalendarService['$inject'] = ['UISessionService', 'UserService', 'UserSessionService'];
+CalendarService['$inject'] = ['UISessionService', 'UserService', 'UserSessionService', 'packaging'];
 angular.module('em.user').factory('CalendarService', CalendarService);

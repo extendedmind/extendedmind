@@ -51,7 +51,7 @@
   */
   $scope.getCurrentHeading = function getCurrentHeading() {
     if ($scope.isTutorialInProgress()) {
-      return 'tutorial ' + $scope.getTutorialPhase() + '/3';
+      return 'tutorial ' + $scope.getTutorialPhase() + '/' + $scope.getTutorialLength();
     } else {
       var currentHeading = $scope.getActiveFeature();
       if (currentHeading === 'list'){
