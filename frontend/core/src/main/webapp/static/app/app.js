@@ -104,6 +104,24 @@
       templateUrl: urlBase + 'app/entry/entrySlides.html'
     });
 
+    $routeProvider.when('/new', {
+      resolve: {
+        initializeNewUserWithOnboarding: ['$location', 'AnalyticsService', 'UserService',
+        'UserSessionService',
+        function($location, AnalyticsService, UserService, UserSessionService) {
+          var userUUID = UserSessionService.createFakeUserUUID();
+          // Start tutorial from focus/tasks
+          var newUserFeatureValues = {
+            focus: { tasks: 1 }
+          };
+          UserSessionService.setPreference('onboarded', newUserFeatureValues);
+          UserService.saveAccountPreferences();
+          AnalyticsService.doWithUuid('startTutorial', undefined, userUUID);
+          $location.path('/my');
+        }]
+      }
+    });
+
     $routeProvider.when('/my', {
       templateUrl: urlBase + 'app/main/main.html',
       resolve: {
