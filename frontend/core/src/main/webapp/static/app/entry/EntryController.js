@@ -23,8 +23,13 @@ function EntryController($http, $location, $routeParams, $scope,
 
   AnalyticsService.visitEntry('entry');
 
-  if (packaging === 'web' && DetectBrowserService.isMobile()){
-    $scope.entryState = 'download';
+  if (packaging === 'web') {
+    if (DetectBrowserService.isMobile()) {
+      $scope.entryState = 'download';
+      $scope.mobilePlatform = true;
+    } else if (!DetectBrowserService.isChrome()) {
+      $scope.entryState = 'download';
+    }
   }
 
   if ($routeParams.offline === 'true'){

@@ -15,8 +15,8 @@
  'use strict';
 
  function DetectBrowserService() {
-  // http://stackoverflow.com/a/14223920
   return {
+    // http://stackoverflow.com/a/14223920
     getIosVersion: function() {
       if (this.isIos()) {
         // supports iOS 2.0 and later: <http://bit.ly/TJjs1V>
@@ -32,6 +32,15 @@
     },
     isMobile: function() {
       return this.isAndroid() || this.isIos();
+    },
+    /*
+    * It's generally better to use feature/object detection instead of a browser detection. This somewhat
+    * works even though it detects other WebKit browsers as well, e.g. Safari and Opera, but the app it
+    * optimized primary for Chrome/Chromium and secondary for WebKit.
+    * http://stackoverflow.com/a/13348618
+    */
+    isChrome: function() {
+      return window.chrome !== undefined;
     }
   };
 }
