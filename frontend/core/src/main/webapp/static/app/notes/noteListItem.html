@@ -1,4 +1,4 @@
-<div class="group-mixed with-checkbox">
+<div class="group-mixed with-checkbox" ng-class="getListItemClasses(note)">
   <div class="group-mixed--middle">
     <a href class="link-list-item" swiper-click="callAndWaitThenScroll(openNoteEditor, note)">
       <span class="text-heading-primary" ng-bind="note.trans.title" clamp=2></span>
@@ -8,9 +8,10 @@
       <span class="text-teaser" clamp=3 ng-bind="getNoteContentTeaser(note)"></span>
     </a>
   </div>
-  <div ng-if="note.trans.favorited" class="group-mixed--right">
-    <a href swiper-click="unfavoriteNote(note)">
+  <div class="group-mixed--right">
+    <a href class="favorited" swiper-click="unfavoriteNote(note)">
       <span class="icon-star small"></span>
     </a>
+    <span class="syncing"></span>
   </div>
 </div>

@@ -75,6 +75,9 @@
             if (item.trans.optimisticComplete && item.trans.optimisticComplete()) {
               classes.push('checkbox-checked');
             }
+            if (item.trans.favorited) {
+              classes.push('favorited');
+            }
             if (!classes.length) {
               classes.push('no-additional-data');
             }

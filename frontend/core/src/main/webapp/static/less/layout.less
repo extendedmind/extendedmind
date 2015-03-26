@@ -1362,6 +1362,12 @@ textarea#ignoreSnap.disable-full-height.input-separate {
   .syncing {
     display: none;  // [1]
   }
+  .favorited {
+      display: none;
+    &.icon-star {
+      display: none;
+    }
+  }
 }
 
 // 1. Remove element from flow when it has no additional data.
@@ -1376,14 +1382,25 @@ textarea#ignoreSnap.disable-full-height.input-separate {
   display: initial; // [1]
 }
 
+.group-mixed.with-checkbox.favorited > .group-mixed--right > .favorited {
+  display: block;
+  .icon-star {
+    display: block;
+  }
+}
+
 // 1. Set syncing icon.
 .group-mixed.with-checkbox.syncing:not(.offline) > .group-mixed--right > .syncing {
   .icon-syncing();  // [1]
 }
 
 // 1. Set syncing offline icon.
-.group-mixed.with-checkbox.syncing.offline > .group-mixed--right > .syncing {
-  .icon-offline();  // [1]
+.group-mixed.with-checkbox.syncing.offline {
+  &> .group-mixed--right {
+    &> .syncing {
+      .icon-offline();  // [1]
+    }
+  }
 }
 
 // 1. Align to top when repeating and syncing visible.
@@ -1392,5 +1409,19 @@ textarea#ignoreSnap.disable-full-height.input-separate {
   vertical-align: top;  // [1]
   .syncing {
     display: block; // [2]
+  }
+}
+
+.group-mixed.with-checkbox.favorited.syncing > .group-mixed--right > .favorited {
+  // display: inline;
+  height: auto;
+  line-height: initial;
+  text-align: center;
+  &>.icon-star {
+  line-height: initial;
+   padding-top: 0;
+   padding-bottom: 0;
+
+    // display: inline;
   }
 }
