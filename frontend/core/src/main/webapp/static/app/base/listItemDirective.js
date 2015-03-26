@@ -40,7 +40,8 @@
           scope.toggleLeftCheckbox = function (item, toggleFn) {
             // Add class for animation when item is not completed, remove when item is completed.
             if (!element[0].firstElementChild.classList.contains('checkbox-checked-active') &&
-               item.trans.optimisticComplete()){
+                item.trans.optimisticComplete())
+            {
               // Completing
               element[0].firstElementChild.classList.add('checkbox-checked-active');
               scope.checkedActiveAdded = Date.now();
@@ -51,12 +52,34 @@
                 }
               }, $rootScope.CHECKBOX_CHECKING_ANIMATION_TIME);
             }else if (element[0].firstElementChild.classList.contains('checkbox-checked-active') &&
-                     !item.trans.optimisticComplete()){
+                      !item.trans.optimisticComplete())
+            {
               // Uncompleting
               element[0].firstElementChild.classList.remove('checkbox-checked-active');
             }
             listController.toggleLeftCheckbox(item, toggleFn, angular.element(element[0].firstElementChild));
-         };
+          };
+
+          scope.getListItemClasses = function(item) {
+            var classes = [];
+
+            if (item.mod) {
+              classes.push('syncing');
+              if (!scope.online) {
+                classes.push('offline');
+              }
+            }
+            if (item.trans.repeating) {
+              classes.push('repeating');
+            }
+            if (item.trans.optimisticComplete && item.trans.optimisticComplete()) {
+              classes.push('checkbox-checked');
+            }
+            if (!classes.length) {
+              classes.push('no-additional-data');
+            }
+            return classes;
+          };
         }
       };
     }

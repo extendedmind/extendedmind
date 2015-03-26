@@ -1,5 +1,4 @@
-<div class="group-mixed with-checkbox" ng-class="{'checkbox-checked': task.trans.optimisticComplete()}">
-
+<div class="group-mixed with-checkbox" ng-class="getListItemClasses(task)">
   <div class="group-mixed--left">
     <input type="checkbox" ng-model="task.trans.optimisticComplete" ng-model-options="{getterSetter: true}"
       swiper-click="toggleLeftCheckbox(task, toggleCompleteTask)"
@@ -10,4 +9,9 @@
     swiper-click="callAndWaitThenScroll(openTaskEditor, task)">
     <span class="text-link" clamp=2 ng-bind="task.trans.title"></span>
   </a>
+
+  <div class="group-mixed--right">
+    <span class="icon-repeating"></span>
+    <span class="syncing"></span>
+  </div>
 </div>

@@ -817,7 +817,8 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 .group-mixed--middle:first-child {
   padding-left: @grid-horizontal;   /* [1] */
 }
-.group-mixed--middle:last-child {
+.group-mixed--middle:last-child,
+.group-mixed.no-additional-data .group-mixed--middle {
   padding-right: @grid-horizontal;  /* [1] */
 }
 
@@ -1352,5 +1353,44 @@ textarea#ignoreSnap.disable-full-height.input-separate {
     padding-top: @padding-vertically-centered;
     padding-bottom: @padding-vertically-centered;
     padding-right: @grid-horizontal;
+  }
+}
+
+// 1. Keep content hidden by default.
+.group-mixed.with-checkbox > .group-mixed--right {
+  .icon-repeating,
+  .syncing {
+    display: none;  // [1]
+  }
+}
+
+// 1. Remove element from flow when it has no additional data.
+.group-mixed.with-checkbox.no-additional-data > .group-mixed--right {
+  display: none;  // [1]
+}
+
+// 1. Show.
+.group-mixed.with-checkbox.repeating > .group-mixed--right > .icon-repeating,
+.group-mixed.with-checkbox.syncing:not(.offline) > .group-mixed--right > .syncing,
+.group-mixed.with-checkbox.syncing.offline > .group-mixed--right > .syncing {
+  display: initial; // [1]
+}
+
+// 1. Set syncing icon.
+.group-mixed.with-checkbox.syncing:not(.offline) > .group-mixed--right > .syncing {
+  .icon-syncing();  // [1]
+}
+
+// 1. Set syncing offline icon.
+.group-mixed.with-checkbox.syncing.offline > .group-mixed--right > .syncing {
+  .icon-offline();  // [1]
+}
+
+// 1. Align to top when repeating and syncing visible.
+// 2. Set display to fix the height of a syncing element.
+.group-mixed.with-checkbox.repeating.syncing > .group-mixed--right {
+  vertical-align: top;  // [1]
+  .syncing {
+    display: block; // [2]
   }
 }

@@ -23,6 +23,9 @@ TODO: Icons are not working yet with Phytoplankton
 @size-icon-trash: 18px;
 @size-icon-x: 10px;
 @size-icon-sort: 22px;
+@size-icon-sort-small: 10px;
+@size-icon-syncing: 10px;
+@size-icon-offline: 10px;
 @size-icon-calendar: 17px;
 @size-icon-tag: 19px;
 
@@ -200,11 +203,49 @@ Icon classes
   height: @size-font-medium;
   line-height: @size-font-medium;
   display: inline-block;
+  &:after {
+    font-size: @size-font-medium;
+  }
 }
 
-.icon-sort.small:after{
-  // display: block;
-  font-size: @size-font-medium;
+.icon-repeating {
+  font-size: @size-icon-sort-small;
+  height: @size-icon-sort-small;
+  line-height: @size-icon-sort-small;
+  display: inline-block;
+  &:after {
+    .set-icon-font();
+    vertical-align: baseline;
+    font-size: @size-icon-sort-small;
+    color: @color-text-downplayed;
+    content: @icon-sort;
+  }
+}
+
+.icon-syncing() {
+  font-size: @size-icon-syncing;
+  height: @size-icon-syncing;
+  line-height: @size-icon-syncing;
+  display: inline-block;
+  &:after {
+    .set-icon-font();
+    vertical-align: baseline;
+    font-size: @size-icon-syncing;
+    content: @icon-syncing;
+  }
+}
+
+.icon-offline() {
+  font-size: @size-icon-offline;
+  height: @size-icon-offline;
+  line-height: @size-icon-offline;
+  display: inline-block;
+  &:after {
+    .set-icon-font();
+    vertical-align: baseline;
+    font-size: @size-icon-offline;
+    content: @icon-offline;
+  }
 }
 
 // 1. Set dimensions for .icon-trash.
