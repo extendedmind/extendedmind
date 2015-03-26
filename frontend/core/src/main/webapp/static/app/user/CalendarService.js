@@ -96,9 +96,6 @@ function CalendarService(UISessionService, UserService, UserSessionService, pack
     },
     registerCalendarActivationChangedCallback: function(callback, id) {
       calendarActivationChangedCallbacks[id] = callback;
-    },
-    isCalendarEnabled: function() {
-      return packaging.endsWith('cordova');
     }
   };
 }
