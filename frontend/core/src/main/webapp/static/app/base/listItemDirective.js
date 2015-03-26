@@ -80,7 +80,7 @@
               classes.push('favorited');
             }
             if (!classes.length) {
-              classes.push('no-additional-data');
+              classes.push('no-additional-status');
             }
             return classes;
           };

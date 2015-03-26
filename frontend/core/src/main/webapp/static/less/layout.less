@@ -818,7 +818,7 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   padding-left: @grid-horizontal;   /* [1] */
 }
 .group-mixed--middle:last-child,
-.group-mixed.no-additional-data .group-mixed--middle {
+.group-mixed.no-additional-status .group-mixed--middle {
   padding-right: @grid-horizontal;  /* [1] */
 }
 
@@ -1370,8 +1370,8 @@ textarea#ignoreSnap.disable-full-height.input-separate {
   }
 }
 
-// 1. Remove element from flow when it has no additional data.
-.group-mixed.with-checkbox.no-additional-data > .group-mixed--right {
+// 1. Remove element from flow when it has no additional status.
+.group-mixed.with-checkbox.no-additional-status > .group-mixed--right {
   display: none;  // [1]
 }
 

@@ -550,7 +550,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
 
   // START FROM FOCUS
 
-  $scope.changeFeature('notes');
+  $scope.changeFeature('focus');
 
   // DATA ARRAYS
 
