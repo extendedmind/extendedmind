@@ -577,7 +577,7 @@
         listCalendars(enabledCalendars);
         if (type !== 'direct') executeAgendaVisibilityChangedCallbacks();
       }
-      CalendarService.unregisterCalendarLoadedCallback(doInitializeAgenda);
+      if (type !== 'direct') CalendarService.unregisterCalendarLoadedCallback(doInitializeAgenda);
     }
 
     if (CalendarService.isCalendarEnabled()) {
