@@ -49,6 +49,18 @@ function CalendarService(UISessionService, UserService, UserSessionService, pack
   }
 
   return {
+    isCalendarEnabled: function(){
+      return packaging.endsWith('cordova');
+    },
+    isCalendarLoaded: function(){
+      return !window.plugins || !window.plugins.calendar;
+    },
+    registerCalendarLoadedCallback: function(callback){
+      document.addEventListener('deviceready', callback);
+    },
+    unregisterCalendarLoadedCallback: function(callback){
+      document.removeEventListener('deviceready', callback);
+    },
     getActiveCalendars: getActiveCalendars,
     setActiveCalendars: setActiveCalendars,
     activateCalendar: function(id, name){

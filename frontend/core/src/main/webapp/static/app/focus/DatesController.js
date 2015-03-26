@@ -567,19 +567,28 @@
   // AGENDA
 
   // Initialisation
-  var enabledCalendars = CalendarService.getActiveCalendars();
-  if (enabledCalendars && enabledCalendars.length) {
-    var agendaCalendarsEnabled = true;
-    if (!window.plugins || !window.plugins.calendar) {
-      document.addEventListener('deviceready', function() {
-        if (window.plugins && window.plugins.calendar) {
-          listCalendars(enabledCalendars);
-        }
-      });
-    } else {
-      listCalendars(enabledCalendars);
+  var agendaCalendarsEnabled = false;
+  var eventInstancesLoaded = false;
+  function initializeAgenda() {
+    function doInitializeAgenda(type) {
+      var enabledCalendars = CalendarService.getActiveCalendars();
+      if (enabledCalendars && enabledCalendars.length) {
+        agendaCalendarsEnabled = true;
+        listCalendars(enabledCalendars);
+        if (type !== 'direct') executeAgendaVisibilityChangedCallbacks();
+      }
+      CalendarService.unregisterCalendarLoadedCallback(doInitializeAgenda);
+    }
+
+    if (CalendarService.isCalendarEnabled()) {
+      if (!CalendarService.isCalendarLoaded()) {
+        CalendarService.registerCalendarLoadedCallback(doInitializeAgenda);
+      } else {
+        doInitializeAgenda('direct');
+      }
     }
   }
+  initializeAgenda();
 
   if ($scope.isOnboarding('focus', 'tasks')) {
     // Register callback during onboarding to get the changes.
@@ -600,6 +609,10 @@
   $scope.isAgendaVisible = function() {
     return agendaCalendarsEnabled;
   };
+
+  $scope.isEventInstancesLoaded = function() {
+    return eventInstancesLoaded;
+  }
 
   var agendaVisibilityChangedCallbacks = {};
   $scope.registerAgendaVisibilityChangedCallback = function(callback, id) {
@@ -712,7 +725,7 @@
     cachedEventInstances = {
       all: []
     };
-
+    eventInstancesLoaded = true;
     if (eventInstances && eventInstances.length) {
       var attachGetCalendarNameByIdFn = function(eventInstance, enabledCalendars) {
         eventInstance.getCalendarName = function() {
