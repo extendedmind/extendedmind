@@ -59,11 +59,11 @@ button:hover, button:focus, .button:hover, .button:focus {
 
 @font-face {
   font-family: 'icomoon';
-  src:url('../fonts/icomoon.eot?r234sh');
-  src:url('../fonts/icomoon.eot?#iefixr234sh') format('embedded-opentype'),
-    url('../fonts/icomoon.woff?r234sh') format('woff'),
-    url('../fonts/icomoon.ttf?r234sh') format('truetype'),
-    url('../fonts/icomoon.svg?r234sh#icomoon') format('svg');
+  src:url('../fonts/icomoon.eot?-7ri332');
+  src:url('../fonts/icomoon.eot?#iefix-7ri332') format('embedded-opentype'),
+    url('../fonts/icomoon.woff?-7ri332') format('woff'),
+    url('../fonts/icomoon.ttf?-7ri332') format('truetype'),
+    url('../fonts/icomoon.svg?-7ri332#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
