@@ -1363,7 +1363,7 @@ textarea#ignoreSnap.disable-full-height.input-separate {
     display: none;  // [1]
   }
   .favorited {
-      display: none;
+    display: none;
     &.icon-star {
       display: none;
     }
@@ -1412,16 +1412,19 @@ textarea#ignoreSnap.disable-full-height.input-separate {
   }
 }
 
+// 1. Clear dimensions set for favorite link, when syncing is visible.
 .group-mixed.with-checkbox.favorited.syncing > .group-mixed--right > .favorited {
-  // display: inline;
-  height: auto;
-  line-height: initial;
-  text-align: center;
+  height: auto;           // [1]
+  line-height: initial;   // [1]
+  text-align: center;     // [1]
   &>.icon-star {
-  line-height: initial;
-   padding-top: 0;
-   padding-bottom: 0;
-
-    // display: inline;
+    line-height: initial; // [1]
+    padding-top: 0;       // [1]
+    padding-bottom: 0;    // [1]
   }
+}
+
+// 2. Align vertically with textarea in .group-mixed---middle.
+.group-mixed.with-checkbox.syncing > .group-mixed--right.justified {
+  padding-top: @group-mixed--left-vertical-padding + 1px; // [1]
 }

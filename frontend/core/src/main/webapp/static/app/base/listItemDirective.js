@@ -62,6 +62,7 @@
 
           scope.getListItemClasses = function(item) {
             var classes = [];
+              classes.push('syncing');
 
             if (item.mod) {
               classes.push('syncing');

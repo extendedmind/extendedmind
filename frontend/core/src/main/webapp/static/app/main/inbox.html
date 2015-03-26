@@ -21,12 +21,18 @@
       </form>
     </div>
 
-    <div class="animate-list-item-leave row-vertically-centered"
+    <div class="animate-list-item-leave"
       ng-repeat="item in listInfos.array = getFullArray() | orderBy:'trans.created':true
       | limitTo: currentListLimitTo track by item.trans.uuid" list-item>
-      <a href class="link-list-item" swiper-click="openItemEditor(item)">
-        <span class="text-link" clamp=2 ng-bind="item.trans.title"></span>
-      </a>
+      <div class="group-mixed with-checkbox" ng-class="getListItemClasses(item)">
+        <a href class="group-mixed--middle link-list-item"
+          swiper-click="openItemEditor(item)">
+          <span class="text-link" clamp=2 ng-bind="item.trans.title"></span>
+        </a>
+        <div class="group-mixed--right justified">
+          <span class="syncing"></span>
+        </div>
+      </div>
     </div>
     <div list-prompt list-prompt-infos="listInfos"
       list-prompt-hide="[listItemAddActive]"></div>
