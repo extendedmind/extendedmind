@@ -48,15 +48,28 @@
   line-height: 75px;
 }
 
+.icon-logo-text:after {
+  font-size: 10px;
+  position: absolute;
+  margin-left: -26px;
+}
+
 /* Not iPhone 4/4s/5/5s */
 @media only screen and (min-width: 321px){
   #em-animation, #em-animation-0{
     font-size: 16px;
   }
+  .icon-logo-text:after {
+    font-size: 12px;
+  }
 }
 
 /* MEDIUM */
 @media only screen and (min-width: 40.063em){
+  .icon-logo-text:after {
+    margin-left: -33px;
+    font-size: 15px;
+  }
   #em-animation, #em-animation-0{
     font-size: 19px;
   }
@@ -68,6 +81,10 @@
 
 /* LARGE */
 @media only screen and (min-width: 66.063em){
+  .icon-logo-text:after {
+    margin-left: -43px;
+    font-size: 20px;
+  }
   #em-animation, #em-animation-0{
     font-size: 1.5vw;
   }
@@ -79,6 +96,10 @@
 
 /* EXTRA LARGE */
 @media only screen and (min-width: 90.063em){
+  .icon-logo-text:after {
+    margin-left: -54px;
+    font-size: 25px;
+  }
   #em-animation, #em-animation-0{
     font-size: 1.3vw;
   }

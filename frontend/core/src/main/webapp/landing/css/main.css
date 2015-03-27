@@ -91,6 +91,10 @@ button:hover, button:focus, .button:hover, .button:focus {
   content: "\e60b";
 }
 
+.icon-logo-text:after {
+  content: "beta";
+}
+
 .icon-volume-mute:before {
   content: "\e600";
 }
