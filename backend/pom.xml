@@ -213,7 +213,7 @@
       <artifactId>junit</artifactId>
       <type>jar</type>
       <scope>test</scope>
-    </dependency>    
+    </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-all</artifactId>
@@ -248,7 +248,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>        
+        <configuration>
           <skipTests>${skipJUnitTests}</skipTests>
           <includes>
             <include>**/*Spec.*</include>
@@ -278,7 +278,7 @@
             </goals>
           </execution>
         </executions>
-        <configuration>        
+        <configuration>
           <skipTests>${skipScalaTestTests}</skipTests>
         </configuration>
       </plugin>
@@ -296,7 +296,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.4</version>
         <configuration>
           <descriptors>
             <descriptor>src/main/assembly/dist.xml</descriptor>

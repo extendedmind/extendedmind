@@ -1,0 +1,12 @@
+<assembly>
+  <id>landing</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <fileSets>
+    <fileSet>
+      <directory>src/main/webapp/landing</directory>
+      <outputDirectory>.</outputDirectory>
+    </fileSet>
+  </fileSets>
+</assembly>
