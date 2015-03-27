@@ -310,9 +310,9 @@ div.main {
 }
 
 
-/******************/
-/* MANIFEST PAGE  */
-/******************/
+/*******************/
+/* MANIFESTO PAGE  */
+/*******************/
 
 /* Always disable scrollbars*/
 *:not(pre)::-webkit-scrollbar {
@@ -334,7 +334,7 @@ div.main {
 }
 
 #manifesto .text-normal{
-  font-size: 19px;
+  font-size: 18px;
 }
 #manifesto .text-large{
   font-family: 'HelveticaNeue','Helvetica Neue','Segoe UI Bold','Segoe UI','sans-serif';
@@ -350,12 +350,43 @@ div.main {
 /* LARGE */
 @media only screen and (min-width: 64.063em){
   #manifesto .text-normal{
-    font-size: 21px;
+    font-size: 19px;
   }
   #manifesto .text-large{
-    font-size: 40px;
+    font-size: 35px;
   }
 }
+
+/* EXTRA LARGE */
+@media only screen and (min-width: 90.063em){
+  #manifesto .text-normal{
+    font-size: 23px;
+  }
+  #manifesto .text-large{
+    font-size: 42px;
+  }
+}
+
+
+/* WIDE BUT SHORT */
+@media only screen and (min-width: 64.063em) and (max-height: 700px){
+  #manifesto-container{
+    margin-top: 6.5vh;
+    max-height: 72vh;
+  }
+}
+@media only screen and (min-width: 64.063em) and (max-height: 600px){
+  #manifesto-container{
+    margin-top: 8vh;
+    max-height: 65vh;
+  }
+}
+@media only screen and (min-width: 64.063em) and (max-height: 500px){
+  #manifesto-container{
+    max-height: 50vh;
+  }
+}
+
 
 /******************/
 /* FOOTER         */
