@@ -73,6 +73,9 @@
       this.registerSlideMovementCallback = function(callback) {
         slideMovementCallback = callback;
       };
+      this.unregisterSlideMovementCallback = function() {
+        slideMovementCallback = undefined;
+      };
       $scope.getSlideMovementCallbackFn = function() {
         return slideMovementCallback;
       };

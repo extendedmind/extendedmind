@@ -60,9 +60,6 @@
       }else if (currentHeading === 'user'){
         currentHeading = $scope.getActiveDisplayName();
       }
-      if (!$scope.online && !currentHeading.startsWith('*')) {
-        currentHeading = '*' + currentHeading;
-      }
       return currentHeading;
     }
   };

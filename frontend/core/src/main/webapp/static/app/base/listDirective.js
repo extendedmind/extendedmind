@@ -362,6 +362,9 @@
           scope.maximumNumberOfItems = 5;
 
           element[0].removeEventListener('scroll', listScroll, false);
+          if (controllers[1]) {
+            controllers[1].unregisterSlideMovementCallback('listDirective');
+          }
         } else {
           element[0].addEventListener('scroll', listScroll, false);
           removeCoefficientToEdge = 3;

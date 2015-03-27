@@ -47,7 +47,8 @@
     // device APIs are available
     //
     function onDeviceReady() {
-      navigator.splashscreen.hide();
+      if (navigator && navigator.splashscreen && navigator.splashscreen.hide)
+        navigator.splashscreen.hide();
     }
 
   </script>
