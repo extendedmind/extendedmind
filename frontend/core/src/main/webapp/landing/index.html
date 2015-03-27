@@ -41,20 +41,20 @@
       ga('create', 'UA-44203690-1', 'auto');
       ga('send', 'pageview');
 
-      var trackBegin = function() {
+      var trackBegin = function(url) {
         ga('send', 'event', {
             'category': 'begin',
             'action': 'click',
-            'label': 'manifesto',
+            'label': 'home',
             'hitCallback': function() {
-              document.location = 'https://ext.md/begin';
+              document.location = url;
             }
           }
         );
       };
     }else{
-      var trackBegin = function() {
-        console.log("trackBegin");
+      var trackBegin = function(url) {
+        console.log("trackBegin: " + url);
       };
     }
   </script>
@@ -170,7 +170,7 @@
       </div>
     </div>
     <div class="centered">
-      <a href="https://ext.md/new" class="button" onclick="trackBegin();return false;">begin</a>
+      <a href="https://ext.md/new" class="button" onclick="trackBegin(this.href);return false;">begin</a>
     </div>
     <div class="right">
       <div onclick="var audio = document.getElementById('theme');
