@@ -231,6 +231,38 @@ div.main {
   color: #0f82fe;
 }
 
+
+/******************/
+/* DOWNLOAD PAGE  */
+/******************/
+
+#download {
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+  font-size: 14px;
+  padding-left: 28px;
+  padding-right: 28px;
+}
+
+#download .jumbotron{
+  text-align: left;
+  top: 10%;
+  line-height: 50px;
+}
+
+#download .download-buttons {
+  padding-top: 10vh;
+}
+
+#download .download-buttons .pull-left {
+  float: left;
+}
+
+#download .download-buttons .pull-right {
+  float: right;
+}
+
 /******************/
 /* FOOTER         */
 /******************/
