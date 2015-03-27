@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function listItemDirective($parse, $rootScope) {
+ function listItemDirective($parse, $rootScope, UserSessionService) {
   return {
     restrict: 'A',
     require: '^list',
@@ -63,7 +63,7 @@
           scope.getListItemClasses = function(item) {
             var classes = [];
 
-            if (item.mod) {
+            if (item.mod && !UserSessionService.isFakeUser()) {
               classes.push('syncing');
               if (!scope.online) {
                 classes.push('offline');
@@ -88,7 +88,7 @@
     }
   };
 }
-listItemDirective['$inject'] = ['$parse', '$rootScope'];
+listItemDirective['$inject'] = ['$parse', '$rootScope', 'UserSessionService'];
 angular.module('em.base').directive('listItem', listItemDirective);
 
 /*
