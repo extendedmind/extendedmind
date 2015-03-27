@@ -23,27 +23,29 @@ function EntryController($http, $location, $routeParams, $scope,
 
   AnalyticsService.visitEntry('entry');
 
-  if (packaging === 'web') {
-    if (DetectBrowserService.isMobile()) {
-      $scope.entryState = 'download';
-      $scope.mobilePlatform = true;
-    } else if (!DetectBrowserService.isChrome()) {
-      $scope.entryState = 'download';
-    }
+  var directToLogin = false;
+  function initializeLogin(){
+    directToLogin = true;
+    $scope.entryState = 'login';
+    $scope.user = {};
+    SwiperService.setInitialSlidePath('entry', 'entry/main');
+    AnalyticsService.visitEntry('login');
+  }
+
+  // Initialize login path.
+
+  if (packaging === 'web' && DetectBrowserService.isMobile()) {
+    $scope.entryState = 'download';
+    $scope.mobilePlatform = true;
+  }else if (packaging === 'web' && !DetectBrowserService.isChrome()) {
+    $scope.entryState = 'download';
+  }else if ($location.path() === '/login' ||
+            (($location.path() === '/' || $location.path() === '') && packaging === 'web')){
+    initializeLogin();
   }
 
   if ($routeParams.offline === 'true'){
     UserSessionService.enableOffline(true);
-  }
-
-  // Initialize login path.
-  if ($location.path() === '/login') {
-    var entryInputAutoFocusDisabled = true;
-    $scope.entryState = 'login';
-    $scope.user = {};
-    SwiperService.setInitialSlidePath('entry', 'entry/main');
-
-    AnalyticsService.visitEntry('login');
   }
 
   $scope.swipeToLogin = function() {
@@ -69,11 +71,11 @@ function EntryController($http, $location, $routeParams, $scope,
   };
 
   $scope.isHomeSlideEnabled = function() {
-    return $location.path() !== '/login';
+    return !directToLogin;
   };
 
   $scope.isEntryInputAutoFocusDisabled = function() {
-    return entryInputAutoFocusDisabled;
+    return directToLogin;
   };
 
   var entryEmailMainInputFocusCallbackFunction;
@@ -143,7 +145,6 @@ function EntryController($http, $location, $routeParams, $scope,
   $scope.startTutorial = function() {
     var userUUID = UserSessionService.createFakeUserUUID();
     // Start tutorial from focus/tasks
-    var onboardedValue = UISessionService.getOnboardedValue();
     var newUserFeatureValues = {
       focus: { tasks: 1 }
     };
