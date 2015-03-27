@@ -1357,16 +1357,24 @@ textarea#ignoreSnap.disable-full-height.input-separate {
 }
 
 // 1. Keep content hidden by default.
-.group-mixed.with-checkbox > .group-mixed--right {
+.group-mixed > .group-mixed--right {
   .icon-repeating,
   .syncing {
     display: none;  // [1]
   }
   .favorited {
-    display: none;
+    display: none;  // [1]
     &.icon-star {
-      display: none;
+      display: none;  // [1]
     }
+  }
+}
+
+// 1. Align text.
+.group-mixed.syncing,
+.group-mixed.repeating {
+  & > .group-mixed--right {
+    text-align: center; // [1]
   }
 }
 
@@ -1382,10 +1390,11 @@ textarea#ignoreSnap.disable-full-height.input-separate {
   display: initial; // [1]
 }
 
+// 1. Set display block because "initial" does not work as expected.
 .group-mixed.favorited > .group-mixed--right > .favorited {
-  display: block;
+  display: block; // [1]
   .icon-star {
-    display: block;
+    display: block; // [1]
   }
 }
 
@@ -1395,37 +1404,57 @@ textarea#ignoreSnap.disable-full-height.input-separate {
 }
 
 // 1. Set syncing offline icon.
-.group-mixed.syncing.offline {
-  &> .group-mixed--right {
-    &> .syncing {
-      .icon-offline();  // [1]
+.group-mixed.syncing.offline > .group-mixed--right > .syncing {
+  .icon-offline();  // [1]
+}
+
+// 1. Align to top when repeating and syncing visible.
+// 2. Align with the top of a checkbox inside .group-mixed--left
+// 3. Align with the bottom of a checkbox inside .group-mixed--left
+.group-mixed.with-checkbox.repeating.syncing {
+  & > .group-mixed--right {
+    vertical-align: top;  // [1]
+  }
+  & > .group-mixed--left ~ .group-mixed--right {
+    & > .icon-repeating {
+      vertical-align: initial;  // [2]
+    }
+    & > .syncing {
+      vertical-align: @group-mixed--left-vertical-padding;  // [3]
     }
   }
 }
 
-// 1. Align to top when repeating and syncing visible.
-// 2. Set display to fix the height of a syncing element.
-.group-mixed.repeating.syncing > .group-mixed--right {
-  vertical-align: top;  // [1]
-  .syncing {
-    display: block; // [2]
-  }
-}
-
+// 1. Clear padding-top set to vertically align single syncing.
 // 1. Clear dimensions set for favorite link, when syncing is visible.
-.group-mixed.favorited.syncing > .group-mixed--right > .favorited {
-  height: auto;           // [1]
-  line-height: initial;   // [1]
-  text-align: center;     // [1]
-  &>.icon-star {
-    line-height: initial; // [1]
-    padding-top: 0;       // [1]
-    padding-bottom: 0;    // [1]
+.group-mixed.favorited.syncing > .group-mixed--middle:first-child + .group-mixed--right {
+  padding-top: 0; // [1]
+  & > .favorited {
+    height: auto;           // [2]
+    line-height: initial;   // [2]
+    text-align: center;     // [2]
+    & >.icon-star {
+      line-height: initial; // [2]
+      padding-top: 0;       // [2]
+      padding-bottom: 0;    // [2]
+    }
   }
 }
 
-// 1. Align vertically with the first of of a textarea in .group-mixed---middle.
-.group-mixed.syncing > .group-mixed--right.justified {
+// 1. Align vertically with checkbox inside .group-mixed--left.
+.group-mixed.with-checkbox.syncing,
+.group-mixed.with-checkbox.repeating {
+  & > .group-mixed--left ~ .group-mixed--right {
+    & > .syncing,
+    & > .icon-repeating {
+      vertical-align: 1px;
+    }
+  }
+}
+
+// 1. Align vertically with the first line of text inside .group-mixed---middle.
+.group-mixed.syncing > .group-mixed--middle:first-child + .group-mixed--right,
+.group-mixed.syncing.vertically-centered > .group-mixed--right {
   vertical-align: top;  // [1]
   padding-top: @group-mixed--left-vertical-padding + 1px; // [1]
 }
