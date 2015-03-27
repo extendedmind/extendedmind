@@ -281,10 +281,11 @@ div.main {
 
 footer {
   position: absolute;
-  bottom: 5%;
+  bottom: 0;
   left: 0;
   right: 0;
   z-index: 2;
+  height: 44px;
 }
 
 footer div {
@@ -346,6 +347,13 @@ footer .icon-twitter:before, footer .icon-facebook:before{
   height: 44px;
   line-height: 44px;
   font-size: 35px;
+}
+
+/* BEGIN BUTTON DOESN'T FILL WHOLE WIDTH */
+@media only screen and (min-width: 569px){
+  footer {
+    bottom: 5%;
+  }
 }
 
 /* SHOW LEFT AND RIGHT BUTTONS WHEN THERE IS ENOUGH ROOM */
