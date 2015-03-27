@@ -581,10 +581,10 @@
     }
 
     if (CalendarService.isCalendarEnabled()) {
-      if (!CalendarService.isCalendarLoaded()) {
-        CalendarService.registerCalendarLoadedCallback(doInitializeAgenda);
-      } else {
+      if (CalendarService.isCalendarLoaded()) {
         doInitializeAgenda('direct');
+      } else {
+        CalendarService.registerCalendarLoadedCallback(doInitializeAgenda);
       }
     }
   }

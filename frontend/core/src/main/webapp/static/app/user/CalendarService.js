@@ -53,7 +53,7 @@ function CalendarService(UISessionService, UserService, UserSessionService, pack
       return packaging.endsWith('cordova');
     },
     isCalendarLoaded: function(){
-      return !window.plugins || !window.plugins.calendar;
+      return window.plugins && window.plugins.calendar;
     },
     registerCalendarLoadedCallback: function(callback){
       document.addEventListener('deviceready', callback);
