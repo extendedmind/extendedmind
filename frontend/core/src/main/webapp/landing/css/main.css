@@ -111,7 +111,7 @@ button:hover, button:focus, .button:hover, .button:focus {
   position: absolute;
   width: 100%;
   min-height: 50px;
-  z-index: 1;
+  z-index: 2;
   background-color: transparent;
 }
 
@@ -162,12 +162,16 @@ button:hover, button:focus, .button:hover, .button:focus {
     padding-left: 5vw;
   }
 
+  .top-bar .top-bar-section {
+    padding-right: 5vw;
+  }
+
   .top-bar > .top-bar-section li, .top-bar > .top-bar-section li a {
     background-color: transparent !important;
   }
 
   .top-bar > .top-bar-section li a {
-    font-size: 14px;
+    font-size: 18px;
   }
 
   .top-bar-section li.active, .top-bar-section li:hover, .top-bar-section li:focus{
@@ -188,9 +192,6 @@ button:hover, button:focus, .button:hover, .button:focus {
 @media only screen and (min-width: 64.063em){
   .top-bar .logo span:before {
     font-size: 30px;
-  }
-  .top-bar .top-bar-section {
-    padding-right: 5vw;
   }
   .top-bar > .top-bar-section li a {
     font-size: 20px;
