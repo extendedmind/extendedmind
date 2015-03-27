@@ -220,7 +220,7 @@ button:hover, button:focus, .button:hover, .button:focus {
     margin-right: 0;
   }
 
-  .top-bar li#manifesto {
+  .top-bar li#manifesto-link {
     margin-left: 20px;
   }
 }
@@ -275,8 +275,6 @@ div.main {
   }
 }
 
-
-
 /******************/
 /* DOWNLOAD PAGE  */
 /******************/
@@ -306,6 +304,54 @@ div.main {
 
 #download .download-buttons .pull-right {
   float: right;
+}
+
+
+/******************/
+/* MANIFEST PAGE  */
+/******************/
+
+/* Always disable scrollbars*/
+*:not(pre)::-webkit-scrollbar {
+  display: none;
+}
+
+#manifesto {
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+  padding-left: 28px;
+  padding-right: 28px;
+}
+#manifesto-container{
+  display: inline-block;
+  overflow-y: auto;
+  max-height: 82vh;
+  -webkit-overflow-scrolling: touch;
+}
+
+#manifesto .text-normal{
+  font-size: 19px;
+}
+#manifesto .text-large{
+  font-family: 'HelveticaNeue','Helvetica Neue','Segoe UI Bold','Segoe UI','sans-serif';
+  font-size: 30px;
+  font-weight: 700;
+}
+
+#manifesto p {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+/* LARGE */
+@media only screen and (min-width: 64.063em){
+  #manifesto .text-normal{
+    font-size: 21px;
+  }
+  #manifesto .text-large{
+    font-size: 40px;
+  }
 }
 
 /******************/
