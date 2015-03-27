@@ -59,11 +59,11 @@ button:hover, button:focus, .button:hover, .button:focus {
 
 @font-face {
   font-family: 'icomoon';
-  src:url('../fonts/icomoon.eot?xbggpv');
-  src:url('../fonts/icomoon.eot?#iefixxbggpv') format('embedded-opentype'),
-    url('../fonts/icomoon.woff?xbggpv') format('woff'),
-    url('../fonts/icomoon.ttf?xbggpv') format('truetype'),
-    url('../fonts/icomoon.svg?xbggpv#icomoon') format('svg');
+  src:url('../fonts/icomoon.eot?m5bl0u');
+  src:url('../fonts/icomoon.eot?#iefixm5bl0u') format('embedded-opentype'),
+    url('../fonts/icomoon.woff?m5bl0u') format('woff'),
+    url('../fonts/icomoon.ttf?m5bl0u') format('truetype'),
+    url('../fonts/icomoon.svg?m5bl0u#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -398,15 +398,7 @@ footer div.right .icon-volume-mute:before, footer div.right .icon-volume-up:befo
   height: 44px;
   line-height: 44px;
   color: #000000;
-}
-
-footer div.right .icon-volume-mute:before{
   font-size: 30px;
-}
-
-footer div.right .icon-volume-up:before{
-  margin-right: -6px;
-  font-size: 35px;
 }
 
 footer div.left {
