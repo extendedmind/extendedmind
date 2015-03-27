@@ -16,7 +16,7 @@
         <div ng-if="isFeatureActive('trash')" ng-include="urlBase + 'app/main/trash.html'" include-replace></div>
         <div ng-if="isFeatureActive('settings')" ng-include="urlBase + 'app/main/settings.html'" include-replace></div>
         <div ng-if="isFeatureLoaded('admin')" ng-include="urlBase + 'app/admin/admin.html'" include-replace></div>
-        <div ng-if="syncState === 'active'" class="container-fluid--inner">
+        <div ng-if="showLoadingAnimation()" class="container-fluid--inner">
           <div class="loading-animation" loading-animation></div>
         </div>
       </div>

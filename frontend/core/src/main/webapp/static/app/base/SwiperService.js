@@ -235,8 +235,10 @@ function SwiperService($q, $timeout) {
         if (swiperSlidesPaths.length !== swipers[swiperPath].slidesPaths){
           // The number of slides has changed, reinit won't in scope, has to be done outside
           $timeout(function(){
-            swipers[swiperPath].swiper.reInit();
-            doRefresh(swipers[swiperPath], swiperSlidesPaths, overrideSlideIndex);
+            if (swipers[swiperPath] && swipers[swiperPath].swiper){
+              swipers[swiperPath].swiper.reInit();
+              doRefresh(swipers[swiperPath], swiperSlidesPaths, overrideSlideIndex);
+            }
           }, 0);
         }else {
           $q.when(swipers[swiperPath].swiper.reInit()).then(function(){

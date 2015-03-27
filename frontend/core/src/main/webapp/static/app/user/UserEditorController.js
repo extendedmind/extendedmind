@@ -162,6 +162,7 @@
   };
 
   $scope.signUp = function() {
+    $rootScope.signUpInProgress = true;
     $scope.signupFailed = false;
     $scope.userEditOffline = false;
     $scope.loginFailed = false;

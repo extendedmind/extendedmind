@@ -520,7 +520,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
   }
 
   $scope.isFeatureLoaded = function(feature){
-    return $rootScope.syncState !== 'active' && $scope.features[feature].loaded;
+    return ($rootScope.syncState !== 'active' || $rootScope.signUpInProgress) && $scope.features[feature].loaded;
   };
 
   $scope.getActiveFeature = function getActiveFeature() {
@@ -758,6 +758,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     $rootScope.syncState = 'ready';
     $scope.refreshFavoriteLists();
     itemsSynchronizeCounter++;
+    if ($rootScope.signUpInProgress) $rootScope.signUpInProgress = false;
   }
   SynchronizeService.registerItemsSynchronizedCallback(itemsSynchronizedCallback);
 
@@ -839,6 +840,10 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
       }
     }
     executeSynchronizeCallbacks();
+  }
+
+  $scope.showLoadingAnimation = function(){
+    return $rootScope.syncState === 'active' && !$rootScope.signUpInProgress;
   }
 
   // Execute synchronize immediately when queue is empty to be fully synced right after data has been
