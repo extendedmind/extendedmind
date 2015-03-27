@@ -59,11 +59,11 @@ button:hover, button:focus, .button:hover, .button:focus {
 
 @font-face {
   font-family: 'icomoon';
-  src:url('../fonts/icomoon.eot?-7ri332');
-  src:url('../fonts/icomoon.eot?#iefix-7ri332') format('embedded-opentype'),
-    url('../fonts/icomoon.woff?-7ri332') format('woff'),
-    url('../fonts/icomoon.ttf?-7ri332') format('truetype'),
-    url('../fonts/icomoon.svg?-7ri332#icomoon') format('svg');
+  src:url('../fonts/icomoon.eot?-9ta6ta');
+  src:url('../fonts/icomoon.eot?#iefix-9ta6ta') format('embedded-opentype'),
+    url('../fonts/icomoon.woff?-9ta6ta') format('woff'),
+    url('../fonts/icomoon.ttf?-9ta6ta') format('truetype'),
+    url('../fonts/icomoon.svg?-9ta6ta#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -105,6 +105,14 @@ button:hover, button:focus, .button:hover, .button:focus {
 
 .icon-play:before {
   content: "\e615";
+}
+
+.icon-facebook:before {
+  content: "\e619";
+}
+
+.icon-twitter:before {
+  content: "\e61a";
 }
 
 /******************/
@@ -276,6 +284,7 @@ footer {
   bottom: 5%;
   left: 0;
   right: 0;
+  z-index: 2;
 }
 
 footer div {
@@ -295,6 +304,7 @@ footer div.centered .button {
 }
 
 footer div.right {
+  display: none; /* Don't show on mobile */
   position: absolute;
   right: 5%;
   top: 0%;
@@ -314,4 +324,33 @@ footer div.right .icon-volume-mute:before{
 footer div.right .icon-volume-up:before{
   margin-right: -6px;
   font-size: 35px;
+}
+
+footer div.left {
+  display: none; /* Don't show on mobile */
+  position: absolute;
+  left: 5%;
+  top: 0%;
+  cursor: pointer;
+}
+
+footer a.some {
+  color: #000000;
+  text-decoration: none;
+  vertical-align: middle;
+  padding: 0 5px 0 5px;
+  text-align: center;
+}
+
+footer .icon-twitter:before, footer .icon-facebook:before{
+  height: 44px;
+  line-height: 44px;
+  font-size: 35px;
+}
+
+/* SHOW LEFT AND RIGHT BUTTONS WHEN THERE IS ENOUGH ROOM */
+@media only screen and (min-width: 60em){
+  footer div.left, footer div.right {
+    display: inherit;
+  }
 }
