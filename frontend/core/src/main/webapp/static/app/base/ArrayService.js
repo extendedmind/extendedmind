@@ -141,6 +141,18 @@ function ArrayService($rootScope, UISessionService) {
           }
           i++;
         }
+        if (skipEmit){
+          // Emit change event for all arrays just in case when there are more than one item updated
+          var changedArrays = [];
+          changedArrays.push({type: 'active', array: activeArray});
+          changedArrays.push({type: 'deleted', array: deletedArray});
+          if (otherArrays) {
+            for (var i=0, len=otherArrays.length; i<len; i++) {
+              changedArrays.push({type: otherArrays[i].id, array: otherArrays[i].array});
+            }
+          }
+          emitChangeEvent(changedArrays, itemType);
+        }
         return latestModified;
       }
     },
