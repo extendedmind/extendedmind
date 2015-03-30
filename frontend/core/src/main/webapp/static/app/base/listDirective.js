@@ -77,6 +77,23 @@
       };
       $scope.unregisterArrayVisibleCallback = this.unregisterArrayVisibleCallback;
 
+      var listOpenOnAddFn;
+      if ($attrs.listOpen){
+        listOpenOnAddFn = $parse($attrs.listOpen).bind(undefined, $scope);
+      }
+      $scope.activateListAdd = function() {
+        if (listOpenOnAddFn){
+          // Execute open function
+          listOpenOnAddFn();
+        } else if ($scope.activateAddItem) {
+          $scope.activateAddItem();
+          if ($scope.notifyAddAction){
+            $scope.notifyAddAction('activate', $scope.listAddState.featureInfo, $scope.listAddState.subfeature);
+          }
+        }
+      };
+      this.activateListAdd = $scope.activateListAdd;
+
       this.registerAddActiveCallback = function(callback){
         $scope.activateAddItem = callback;
       };
@@ -144,12 +161,6 @@
       };
     }],
     link: function(scope, element, attrs, controllers) {
-
-      var listOpenOnAddFn;
-      if (attrs.listOpen){
-        listOpenOnAddFn = $parse(attrs.listOpen).bind(undefined, scope);
-      }
-
       var listLockedCallback;
       if (attrs.listLocked) {
         listLockedCallback = $parse(attrs.listLocked).bind(undefined, scope);
@@ -157,18 +168,13 @@
 
       controllers[0].registerGetFullArrayFn(scope.getFullArray);
 
-      function activateListAdd(featureInfo, subfeature) {
-        if (listOpenOnAddFn){
-          // Execute open function
-          listOpenOnAddFn();
-        } else if (scope.activateAddItem) {
-          if (scope.notifyAddAction){
-            scope.listAddState.featureInfo = featureInfo;
-            scope.listAddState.subfeature = subfeature;
-            scope.notifyAddAction('activate', scope.listAddState.featureInfo, scope.listAddState.subfeature);
-          }
-          scope.activateAddItem();
-        }
+      function notifyListAddFeature(featureInfo, subfeature){
+        scope.listAddState.featureInfo = featureInfo;
+        scope.listAddState.subfeature = subfeature;
+      }
+
+      function activateListAdd() {
+        scope.activateListAdd();
       }
 
       function getWatcher() {
@@ -209,6 +215,7 @@
 
       function listActive(){
         controllers[0].registerActivateAddListItemCallback(activateListAdd, element);
+        controllers[0].registerNotifyListAddFeatureCallback(notifyListAddFeature, element);
 
         if (scope.arrayVisible) {
           controllers[0].registerLengthChangeWatcher(getWatcher);

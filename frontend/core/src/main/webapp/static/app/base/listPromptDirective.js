@@ -126,6 +126,10 @@
         true;
       };
 
+      scope.activateAddNew = function(){
+        listController.activateListAdd();
+      };
+
       function isNearListBottom(nearBottom) {
         if (nearBottom) {
           if (loadingAnimationElement && !loadingAnimationElementVisible) {

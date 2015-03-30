@@ -20,6 +20,7 @@
     require: ['^verticalResize', '?^swiperSlide'],
     controller: ['$scope', '$element', '$attrs', function($scope, $element, $attrs) {
       var activateAddListItemCallback;
+      var notifyListAddFeatureCallback;
 
       this.registerActivateAddListItemCallback = function(callback, element){
         activateAddListItemCallback = callback;
@@ -27,13 +28,20 @@
           $scope.registerOverrideElement(element);
       };
 
-      this.activateAddListItem = function(featureInfo, subfeature){
+      this.registerNotifyListAddFeatureCallback = function(callback){
+        notifyListAddFeatureCallback = callback;
+      };
+
+      this.notifyListAddFeature = function(featureInfo, subfeature){
+        if (notifyListAddFeatureCallback) notifyListAddFeatureCallback(featureInfo, subfeature);
+      };
+
+      this.activateAddListItem = function(){
         if ($attrs.listContainerOverrideVerticalResize){
           // Re-register just in case list container active has not fired
           $scope.registerOverrideElement();
         }
-
-        if (activateAddListItemCallback) activateAddListItemCallback(featureInfo, subfeature);
+        if (activateAddListItemCallback) activateAddListItemCallback();
       };
 
       this.registerGetFullArrayFn = function(getArrayFn) {

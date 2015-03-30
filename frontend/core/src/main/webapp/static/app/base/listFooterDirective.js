@@ -23,8 +23,10 @@
     link: function(scope, element, attrs, controllers){
       scope.featureInfo = $parse(attrs.listFooter)(scope);
       var subfeature = attrs.listFooterSubfeature;
+      controllers[0].notifyListAddFeature(scope.featureInfo, subfeature);
+
       scope.addItem = function(){
-        controllers[0].activateAddListItem(scope.featureInfo, subfeature);
+        controllers[0].activateAddListItem();
       };
 
       function trimNavigationText(text){
