@@ -1,5 +1,5 @@
 <div class="row list-prompt">
-  <div ng-if="isNoItemsPromptVisible()" swiper-click="activateAddNew()" class="text-downplayed text-details">no {{::promptType}}</div>
+  <a href ng-if="isNoItemsPromptVisible()" swiper-click="activateAddNew()" class="text-downplayed text-details">no {{::promptType}}</a>
   <div class="loading-prompt text-downplayed text-details">
     <div ng-if="!loadMore">
       <span>loading</span><span class="one">.</span><span class="two">.</span><span class="three">.</span>
