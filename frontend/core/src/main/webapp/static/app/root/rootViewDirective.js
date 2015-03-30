@@ -70,7 +70,13 @@
         UISessionService.reset();
         SynchronizeService.clearData();
         UserSessionService.clearUser();
-        $rootScope.synced = $rootScope.syncState = undefined;
+
+        // Clear all rootScope variables just in case
+        $rootScope.synced = $rootScope.syncState =
+        $rootScope.signingUp = $rootScope.contentPartiallyVisible =
+        $rootScope.outerSwiping = $rootScope.innerSwiping = $rootScope.scrolling =
+        $rootScope.contentTouchMoved = $rootScope.signUpInProgress = undefined;
+
         // $location can not be injected directly presumably because this directive
         // is defined above ng-view
         var $location = $injector.get('$location');
