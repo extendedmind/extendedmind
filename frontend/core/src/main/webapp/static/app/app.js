@@ -247,7 +247,7 @@
 
   }]);
 
-angular.module('em.app').run(['$location', '$rootScope', 'version', function($location, $rootScope, version) {
+angular.module('em.app').run(['$injector', '$rootScope', 'version', function($injector, $rootScope, version) {
 
   // SETUP VERSIONING
 
@@ -260,6 +260,7 @@ angular.module('em.app').run(['$location', '$rootScope', 'version', function($lo
   $rootScope.$on('$routeChangeError', function(event, next, current, rejection) {
     if (rejection === 'clearAll') {
       $rootScope.$emit('emException', {type: 'clearAll'});
+      var $location = $injector.get('$location');
       $location.path('/download');
     }
   });
