@@ -456,13 +456,6 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
         var state = UISessionService.getFeatureState(feature);
 
         UISessionService.changeFeature(feature, data, state);
-
-        if (featureInfos.resizeFix){
-          window.requestAnimationFrame(function(){
-            SwiperService.resizeFixSwiperAndChildSwipers(feature);
-            featureInfos.resizeFix = false;
-          });
-        }
         if (!$scope.$$phase && !$rootScope.$$phase){
           $scope.$digest();
         }
@@ -473,11 +466,11 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
         }
       }
 
-      if (featureInfos.loaded) setInitialSlideActive(true, featureInfos);
+      if (featureInfos.loaded) resizeFixAndSetInitialSlideActive(true, featureInfos, feature);
       AnalyticsService.visit(feature);
     } else {
       // Feature not changed
-      setInitialSlideActive(false, featureInfos);
+      resizeFixAndSetInitialSlideActive(false, featureInfos, feature);
     }
 
     // Run special case focus callbacks because drawer-handle directive does not re-register itself when
@@ -496,7 +489,15 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     resizeSwiperCallback = callback;
   };
 
-  function setInitialSlideActive(featureChanged, featureInfos) {
+  function resizeFixAndSetInitialSlideActive(featureChanged, featureInfos, feature) {
+
+    if (featureInfos.resizeFix){
+      window.requestAnimationFrame(function(){
+        SwiperService.resizeFixSwiperAndChildSwipers(feature);
+        featureInfos.resizeFix = false;
+      });
+    }
+
     if (featureInfos.slides && featureInfos.slides.left) {
       if (featureChanged) {
         // Swipe to initial slide before the next repaint when feature changes,
