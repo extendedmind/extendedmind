@@ -1,4 +1,4 @@
-<div ng-if="entryState !== 'download' && isWeb()">
+<div ng-if="entryState !== 'download' && !isWeb()">
   <section class="container-content em-animation-background">
     <div class="group-instruction-jumbotron row">
       <div class="group-instruction--animation" >
@@ -93,21 +93,16 @@
       </li>
     </ul>
 
-    <h2 ng-if="mobilePlatform" class="group-heading instruction row" style="padding-top: 15vh;">
+    <h2 class="group-heading instruction row" style="padding-top: 15vh;">
       download<br/>
       the <span class="text-highlighted">app</span>
-    </h2>
-
-    <h2 ng-if="!mobilePlatform" class="group-heading instruction row" style="padding-top: 15vh;">
-      unsupported<br/>
-      <span class="text-highlighted">browser</span>
     </h2>
     <div ng-if="!mobilePlatform" class="textgroup-ingress row">currently only the
       <span class="text-highlighted">google chrome</span> browser is supported
     </div>
 
   </section>
-  <footer ng-if="mobilePlatform" class="container-content--after" style="height: 122px;">
+  <footer class="container-content--after" style="height: 122px;">
     <div class="table row">
       <div class="table-row" style="vertical-align: middle;">
         <a class="table-cell" style="text-align: left;" href="itms://itunes.com/apps/extendedmind">

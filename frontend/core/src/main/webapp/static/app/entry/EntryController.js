@@ -37,7 +37,7 @@ function EntryController($http, $location, $routeParams, $scope,
   if (packaging === 'web' && DetectBrowserService.isMobile()) {
     $scope.entryState = 'download';
     $scope.mobilePlatform = true;
-  }else if (packaging === 'web' && !DetectBrowserService.isChrome()) {
+  }else if (packaging === 'web' && (!DetectBrowserService.isChrome() || $location.path() === '/download')) {
     $scope.entryState = 'download';
   }else if ($location.path() === '/login' ||
             (($location.path() === '/' || $location.path() === '') && packaging === 'web')){
