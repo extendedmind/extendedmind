@@ -35,6 +35,8 @@
     if (activeFeature === 'list') {
       var currentData = UISessionService.getFeatureData(activeFeature);
       if (currentData === $scope.list) {
+        $scope.features.lists.resizeFix = true;
+        $scope.features.list.resizeFix = true;
         $scope.changeFeature('lists', undefined, false);
       }
     }
