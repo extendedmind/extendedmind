@@ -504,7 +504,12 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
         // NOTE: use setTimeout(callback, 0) if requestAnimationFrame is not working.
         window.requestAnimationFrame(function() {
           if (typeof resizeSwiperCallback === 'function') {
-            resizeSwiperCallback(featureInfos.heading);
+            var swiperPath = featureInfos.heading;
+            if (!swiperPath) {
+              // When path is not set, get swiper from the left slide.
+              swiperPath = SwiperService.getSwiperBySlidePath(featureInfos.slides.left.path);
+            }
+            resizeSwiperCallback(swiperPath);
             // NOTE:  Better would be to achieve this from swiper.js or someplace else because featureChange
             //        needs to do as little things as possible. However, ng-show sets display: none to
             //        inactive swipers so they have no width which swiper.js depends on when it calculates
