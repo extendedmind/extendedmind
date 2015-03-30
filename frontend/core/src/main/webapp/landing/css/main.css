@@ -330,7 +330,8 @@ div.main {
 #manifesto-container{
   display: inline-block;
   overflow-y: auto;
-  max-height: 82vh;
+  margin-top: 30px;
+  max-height: 86vh;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -360,6 +361,11 @@ div.main {
 
 /* LARGE */
 @media only screen and (min-width: 64.063em){
+  #manifesto-container{
+    margin-top: 0;
+    max-height: 82vh;
+  }
+
   #manifesto .text-normal{
     font-size: 19px;
   }
@@ -401,28 +407,29 @@ div.main {
 /* iPhone 6 */
 @media screen and (device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2){
   #manifesto-container{
-    max-height: 450px;
+    margin-top: 50px;
   }
 }
 
 /* iPhone 6 Plus */
 @media screen and (device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3){
   #manifesto-container{
-    max-height: 500px;
+    margin-top: 50px;
   }
 }
 
 /* iPhone 5 */
 @media screen and (device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2){
   #manifesto-container{
-    max-height: 350px;
+    margin-top: 35px;
   }
 }
 
 /* iPhone 4 */
 @media screen and (device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 2){
   #manifesto-container{
-    max-height: 280px;
+    margin-top: 50px;
+    padding-bottom: 50px;
   }
 }
 
