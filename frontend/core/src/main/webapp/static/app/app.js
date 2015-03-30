@@ -87,9 +87,17 @@
 
     $compileProvider.debugInfoEnabled(packaging === 'devel');
 
+    function isSupportedPlatformAndBrowser($q, DetectBrowserService) {
+      var deferred = $q.defer();
+      if (packaging === 'web' && !DetectBrowserService.isChrome()) deferred.resolve();
+      else deferred.reject('entry');
+      return deferred.promise;
+    }
+
     $routeProvider.when('/', {
       templateUrl: urlBase + 'app/entry/entrySlides.html',
       resolve: {
+        supportedPlatformAndBrowser: ['$q', 'DetectBrowserService', isSupportedPlatformAndBrowser],
         userStatus: ['$location', 'UserSessionService',
         function($location, UserSessionService) {
           if (UserSessionService.getUserUUID()){
@@ -101,11 +109,15 @@
     });
 
     $routeProvider.when('/login', {
-      templateUrl: urlBase + 'app/entry/entrySlides.html'
+      templateUrl: urlBase + 'app/entry/entrySlides.html',
+      resolve: {
+        supportedPlatformAndBrowser: ['$q', 'DetectBrowserService', isSupportedPlatformAndBrowser]
+      }
     });
 
     $routeProvider.when('/new', {
       resolve: {
+        supportedPlatformAndBrowser: ['$q', 'DetectBrowserService', isSupportedPlatformAndBrowser],
         initializeNewUserWithOnboarding: ['$location', 'AnalyticsService', 'UserService',
         'UserSessionService',
         function($location, AnalyticsService, UserService, UserSessionService) {
@@ -240,6 +252,10 @@ angular.module('em.app').run(['$rootScope', 'version', function($rootScope, vers
   }else{
     $rootScope.urlBase = 'static/';
   }
+
+  $rootScope.$on('$routeChangeError', function(event, next, current, rejection) {
+    if (rejection === 'entry') $rootScope.$emit('emException', {type: 'redirectToEntry'});
+  });
 
   // http://stackoverflow.com/a/21113518
   // http://www.youtube.com/watch?v=xOAG7Ab_Oz0#t=2314
