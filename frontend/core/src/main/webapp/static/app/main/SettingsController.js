@@ -108,6 +108,12 @@
           return true;
         }
       }
+    }else if (feature === 'notes'){
+      if (enabled){
+        if ($scope.features.lists.getStatus('active') !== 'disabled'){
+          return true;
+        }
+      }
     }
   };
 
@@ -125,6 +131,15 @@
           else
             AnalyticsService.do('enableNotes');
         }else {
+          if ($scope.isToggleDisabled('notes', !enable)){
+            // Can't disable notes if lists is enabled
+            $scope.settings[feature] = true;
+            UISessionService.pushNotification({
+              type: 'fyi',
+              text: 'can not disable notes when lists is enabled'
+            });
+            return;
+          }
           notesPrefs = deactivateFeature(notesPrefs);
           focusPrefs = deactivateFeature(focusPrefs, 'notes', 'tasks');
           AnalyticsService.do('disableNotes');
