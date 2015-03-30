@@ -457,10 +457,10 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
 
         UISessionService.changeFeature(feature, data, state);
 
-        if ($scope.features[feature].resizeFix){
-          $timeout(function(){
+        if (featureInfos.resizeFix){
+          window.requestAnimationFrame(function(){
             SwiperService.resizeFixSwiperAndChildSwipers(feature);
-            $scope.features[feature].resizeFix = false;
+            featureInfos.resizeFix = false;
           });
         }
         if (!$scope.$$phase && !$rootScope.$$phase){
