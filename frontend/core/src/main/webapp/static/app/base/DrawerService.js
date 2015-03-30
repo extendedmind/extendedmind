@@ -158,8 +158,11 @@
       executeSnapperInitializedCallbacks(drawerSide);
     },
     deleteDrawer: function(drawerSide) {
-      if (snapperExists(drawerSide))
+      if (snapperExists(drawerSide)) {
+        // Delete Snap.js instance and then delete the whole object.
         delete snappers[drawerSide].snapper;
+        delete snappers[drawerSide];
+      }
     },
     setDrawerElement: function(drawerSide, drawerElement) {
       if (!snappers[drawerSide]){
