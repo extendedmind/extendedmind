@@ -64,9 +64,7 @@
       };
       BackendClientService.registerOnlineStatusCallback(onlineStatusCallback);
 
-      var exiting = false;
-      $rootScope.redirectToEntry = function() {
-        exiting = true;
+      function clearAll() {
         UISessionService.reset();
         SynchronizeService.clearData();
         UserSessionService.clearUser();
@@ -76,6 +74,12 @@
         $rootScope.signingUp = $rootScope.contentPartiallyVisible =
         $rootScope.outerSwiping = $rootScope.innerSwiping = $rootScope.scrolling =
         $rootScope.contentTouchMoved = $rootScope.signUpInProgress = undefined;
+      }
+
+      var exiting = false;
+      function redirectToEntry() {
+        exiting = true;
+        clearAll();
 
         // $location can not be injected directly presumably because this directive
         // is defined above ng-view
@@ -149,16 +153,18 @@
         if (exception.type === 'http' && exception.value.status === 403) {
           // Redirect thrown 403 Forbidden exception to the login page
           AnalyticsService.error('forbidden', JSON.stringify(exception));
-          $rootScope.redirectToEntry();
+          redirectToEntry();
         } else if (exception.type === 'session') {
           if (!exiting) {
             // Redirect session errors to the login page
             AnalyticsService.error('session', exception.value);
-            $rootScope.redirectToEntry();
+            redirectToEntry();
           }
           // TODO: Type 'response' for offline responses!
         } else if (exception.type === 'redirectToEntry') {
-          $rootScope.redirectToEntry();
+          redirectToEntry();
+        } else if (exception.type === 'clearAll') {
+          clearAll();
         } else {
           AnalyticsService.error('unexpected', JSON.stringify(exception));
 

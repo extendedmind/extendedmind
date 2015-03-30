@@ -90,7 +90,7 @@
     function isSupportedPlatformAndBrowser($q, DetectBrowserService) {
       var deferred = $q.defer();
       if (packaging === 'web' && DetectBrowserService.isChrome()) deferred.resolve();
-      else deferred.reject('entry');
+      else deferred.reject('clearAll');
       return deferred.promise;
     }
 
@@ -106,6 +106,10 @@
           }
         }]
       }
+    });
+
+    $routeProvider.when('/download', {
+      templateUrl: urlBase + 'app/entry/entrySlides.html'
     });
 
     $routeProvider.when('/login', {
@@ -243,7 +247,7 @@
 
   }]);
 
-angular.module('em.app').run(['$rootScope', 'version', function($rootScope, version) {
+angular.module('em.app').run(['$location', '$rootScope', 'version', function($location, $rootScope, version) {
 
   // SETUP VERSIONING
 
@@ -254,7 +258,10 @@ angular.module('em.app').run(['$rootScope', 'version', function($rootScope, vers
   }
 
   $rootScope.$on('$routeChangeError', function(event, next, current, rejection) {
-    if (rejection === 'entry') $rootScope.$emit('emException', {type: 'redirectToEntry'});
+    if (rejection === 'clearAll') {
+      $rootScope.$emit('emException', {type: 'clearAll'});
+      $location.path('/download');
+    }
   });
 
   // http://stackoverflow.com/a/21113518

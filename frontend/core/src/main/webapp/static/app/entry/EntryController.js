@@ -48,6 +48,10 @@ function EntryController($http, $location, $routeParams, $scope,
     UserSessionService.enableOffline(true);
   }
 
+  $scope.isWeb = function() {
+    return packaging === 'web';
+  };
+
   $scope.swipeToLogin = function() {
     $scope.entryState = 'login';
     $scope.user = {};
