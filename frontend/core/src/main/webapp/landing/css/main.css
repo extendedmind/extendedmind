@@ -10,6 +10,7 @@ body, button, .button, .top-bar-section ul li > a {
 
 body {
   height: 100%;
+  overflow: hidden;
 }
 
 html {
@@ -261,6 +262,11 @@ div.main {
   max-width: 568px;
 }
 
+/* Always disable scrollbars*/
+::-webkit-scrollbar {
+  display: none;
+}
+
 .text-jumbotron {
   font-family: 'HelveticaNeue','Helvetica Neue','Segoe UI Bold','Segoe UI','sans-serif';
   font-size: 56px;
@@ -314,11 +320,6 @@ div.main {
 /* MANIFESTO PAGE  */
 /*******************/
 
-/* Always disable scrollbars*/
-*:not(pre)::-webkit-scrollbar {
-  display: none;
-}
-
 #manifesto {
   display: table-cell;
   vertical-align: middle;
@@ -336,6 +337,7 @@ div.main {
 #manifesto .text-normal{
   font-size: 18px;
 }
+
 #manifesto .text-large{
   font-family: 'HelveticaNeue','Helvetica Neue','Segoe UI Bold','Segoe UI','sans-serif';
   font-size: 30px;
@@ -345,6 +347,15 @@ div.main {
 #manifesto p {
   margin-top: 20px;
   margin-bottom: 20px;
+}
+
+#manifesto-heading-bottom, #manifesto-heading-top {
+  line-height: 30px;
+  padding-bottom: 10px;
+}
+
+#manifesto-heading-bottom {
+  padding-top: 10px;
 }
 
 /* LARGE */
@@ -367,7 +378,6 @@ div.main {
   }
 }
 
-
 /* WIDE BUT SHORT */
 @media only screen and (min-width: 64.063em) and (max-height: 700px){
   #manifesto-container{
@@ -387,6 +397,34 @@ div.main {
   }
 }
 
+/* TARGET IPHONES THAT DON'T SUPPORT vh */
+/* iPhone 6 */
+@media screen and (device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2){
+  #manifesto-container{
+    max-height: 450px;
+  }
+}
+
+/* iPhone 6 Plus */
+@media screen and (device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3){
+  #manifesto-container{
+    max-height: 500px;
+  }
+}
+
+/* iPhone 5 */
+@media screen and (device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2){
+  #manifesto-container{
+    max-height: 350px;
+  }
+}
+
+/* iPhone 4 */
+@media screen and (device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 2){
+  #manifesto-container{
+    max-height: 280px;
+  }
+}
 
 /******************/
 /* FOOTER         */
