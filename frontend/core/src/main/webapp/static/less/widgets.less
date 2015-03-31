@@ -756,3 +756,15 @@ TODO: Example needed
     margin-top: 1px; // [1]
   }
 }
+
+/*
+*************************************************************
+# Extended mind animation overrides.
+*/
+
+// 1. Override background that would not expand to full width.
+@media (min-width: (@width-column-max + 1px)) {
+  .em-animation-background {
+    background-color: white !important; // [1]
+  }
+}

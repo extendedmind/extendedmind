@@ -6,12 +6,10 @@
 
 TODO: em grid structure explained in plain English (when new grid structure decided!)
 */
+@height-column-max: 1025px;
+@width-column-max: 768px; // iPhone 5 landscape is still one column
 
 @height-heading: 70px;
-@height-landscape-max: 769px;
-@t-max: 1025px;
-@width-max: 1025px;
-@width-column-max: 568px; // iPhone 5 landscape is still one column
 @width-menu: 260px;
 
 /*
@@ -98,7 +96,7 @@ TODO: em grid structure explained in plain English (when new grid structure deci
 // 1. Maximum height is set programmatically - set default maximum height here as well for reference.
 .container-master,
 .container-editor {
-  max-height: @height-landscape-max;  // [1]
+  max-height: @height-column-max;  // [1]
 }
 
 /*
@@ -118,7 +116,7 @@ Menu
 // FIXME: comment and refactor
 // 1. Sticky footer, margin-bottom is the negative value of the footer's height.
 // 2. Set margin-top for first-child of .container-menu to align vertically with toolbar.
-//    FIXME:  Only needed in @media (max-height: @height-landscape-max)
+//    FIXME:  Only needed in @media (max-height: @height-column-max)
 // 3. Center vertically.
 // 4. Increase click area with padding-bottom.
 //    FIXME: Can not be more than 5px because vertical position of .separate depends on this.
@@ -184,10 +182,10 @@ Menu
 Vertically center .container-master and .container-editor in large screens
 */
 // 1. Set maximum dimensions for modal.
-@media (min-height: @height-landscape-max) {
+@media (min-height: @height-column-max) {
   .container-master,
   .container-editor {
-    margin-top: -@height-landscape-max / 2;
+    margin-top: -@height-column-max / 2;
     top: 50%;
   }
   .container-modal {
@@ -1196,7 +1194,7 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
 @margin-bottom-heading: 9px;
 
 // 1. Set margin-top|bottom for large .group-symmetrical to add space on top|bottom of it.
-//    FIXME:  Only needed in @media (max-height: @height-landscape-max)
+//    FIXME:  Only needed in @media (max-height: @height-column-max)
 .group-symmetrical {
   &.height-large--top {
     margin-top: @margin-top-heading;  // [1]

@@ -27,9 +27,9 @@
       // BASIC DIMENSIONS TO ROOT SCOPE
       // NOTE: For some reason this had to be 567 before,
       // because editor disappeared after animation was ready.
-      $rootScope.CONTAINER_MASTER_MAX_WIDTH = $rootScope.EDITOR_MAX_WIDTH = 568;
-      $rootScope.CONTAINER_MASTER_MAX_HEIGHT = 769;
-      $rootScope.MAX_HEIGHT = 769;
+      $rootScope.CONTAINER_MASTER_MAX_WIDTH = $rootScope.EDITOR_MAX_WIDTH = 768;
+      $rootScope.CONTAINER_MASTER_MAX_HEIGHT = 1025;
+      $rootScope.MAX_HEIGHT = 1025;
       $rootScope.MENU_WIDTH = 260;
       $rootScope.EDITOR_FOOTER_HEIGHT = 44;
       $rootScope.TOOLBAR_BUTTON_WIDTH = $rootScope.TITLEBAR_BUTTON_WIDTH = 80;
