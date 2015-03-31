@@ -238,6 +238,11 @@
     isOpen: function(drawerSide) {
       if (snapperExists(drawerSide)) return snappers[drawerSide].isOpen;
     },
+    setDrawerTranslate: function(drawerSide, x) {
+      if (snapperExists(drawerSide)) {
+        snappers[drawerSide].snapper.translate(x);
+      }
+    },
 
     // CALLBACK REGISTRATION
 

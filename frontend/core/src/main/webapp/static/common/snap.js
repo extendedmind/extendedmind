@@ -15,6 +15,7 @@
  *          equal to 28 pixels. 28 pixels is the size of the padding-left for content's textarea.
  *  iii.    Tap to close when minDragDistance is set.
  *  iv.     Do not fire touchcancel event on android.
+ *  v.      Add public interface for the translate function.
  */
 /*jslint browser: true*/
 /*global define, module, ender, packaging*/
@@ -652,6 +653,12 @@
             action.drag.listen();
         }
         // FORK
+        // FORK v
+        this.translate = function(n) {
+            cache.translation = n;
+            action.translate.x(n);
+        }
+        // FORK v
 
         init(userOpts);
     };

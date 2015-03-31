@@ -127,14 +127,18 @@ function drawerAisleDirective($rootScope, DrawerService) {
         if (DrawerService.isOpen('left')) {
           drawerWidth = DrawerService.getDrawerElement('left').offsetWidth;
         }
-        $element[0].firstElementChild.style.maxWidth = $rootScope.currentWidth - drawerWidth + 'px';
+        var newAisleWidth = $rootScope.currentWidth - drawerWidth;
+        $element[0].firstElementChild.style.maxWidth = newAisleWidth + 'px';
+
+        if (DrawerService.isOpen('right')) {
+          // Editor drawer needs to be moved into correct position.
+          DrawerService.setDrawerTranslate('right', -newAisleWidth);
+        }
 
         // Setup drawers again on every window resize event
         // TODO: Can these be set when $rootScope.columns changes, or at least debounced?
         setupMenuDrawer();
-        if (!DrawerService.isOpen('right')) {
-          setupEditorDrawer();
-        }
+        setupEditorDrawer();
         setAreaResizeNeeded();
       }
 
