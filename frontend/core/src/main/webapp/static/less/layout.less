@@ -815,8 +815,7 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 .group-mixed--middle:first-child {
   padding-left: @grid-horizontal;   /* [1] */
 }
-.group-mixed--middle:last-child,
-.group-mixed.no-additional-status .group-mixed--middle {
+.group-mixed--middle:last-child {
   padding-right: @grid-horizontal;  /* [1] */
 }
 
@@ -1376,9 +1375,19 @@ textarea#ignoreSnap.disable-full-height.input-separate {
   }
 }
 
-// 1. Remove element from flow when it has no additional status.
-.group-mixed.no-additional-status > .group-mixed--right {
-  display: none;  // [1]
+// 1. Expand .group-mixed--middle:first-child to full width.
+// 2. Add default padding.
+// 3. Remove element from flow when it has no additional status.
+.group-mixed.no-additional-status {
+  & > .group-mixed--middle {
+    &:first-child {
+      display: block; // [1]
+    }
+    padding-right: @grid-horizontal;  // [2]
+  }
+  & > .group-mixed--right {
+    display: none;  // [3]
+  }
 }
 
 // 1. Show.
