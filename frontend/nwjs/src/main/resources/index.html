@@ -36,6 +36,16 @@
     var bindToFocusEvent = true;
     var bindToResumeEvent = false;
     var enableOffline = true;
+
+    var gui = require('nw.gui');
+    win = gui.Window.get();
+    var nativeMenuBar = new gui.Menu({ type: "menubar" });
+    try {
+      nativeMenuBar.createMacBuiltin("extended mind");
+      win.menu = nativeMenuBar;
+    } catch (ex) {
+      console.log(ex.message);
+    }
   </script>
 </head>
 <body>
@@ -43,5 +53,6 @@
   <script src="static/${project.version}/em.min.js"></script>
   <script src="static/${project.version}/js/animo.min.js"></script>
   <script src="static/${project.version}/js/em-animation.js"></script>
+
 </body>
 </html>

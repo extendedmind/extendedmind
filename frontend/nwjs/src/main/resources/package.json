@@ -12,26 +12,26 @@
         "title": "extended mind",
         "icon": "icon.png",
         "toolbar": false,
-        "frame": false,
+        "frame": true,
         "resizable": true,
         "position": "mouse",
         "width": 1280,
         "height": 720,
         "min_width": 320,
-        "min_height": 568,
+        "min_height": 568
     },
     "maintainers": [{
        "name": "Timo Tiuraniemi",
        "email": "timo.tiuraniemi@iki.fi",
-       "web": "http://ext.md",
+       "web": "http://ext.md"
     }],
     "contributors": [{
        "name": "Timo Tiuraniemi",
        "email": "timo.tiuraniemi@iki.fi",
-       "web": "http://ext.md",
+       "web": "http://ext.md"
     }],
     "licenses": [{
        "type": "ALv2",
-       "url": "http://www.apache.org/licenses/LICENSE-2.0.txt",
+       "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
     }]
 }
