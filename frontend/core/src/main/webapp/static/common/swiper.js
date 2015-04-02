@@ -16,6 +16,7 @@
 // FORKS:
 //  1.  Include duplicate slides in loop mode and do not create them to preserve AngularJS data-binding.
 //  2.  Synchronize scroll position for duplicate slides.
+//  3.  Pass resize event - 'resize' or 'orientationchange' - as a parameter
 var Swiper = function (selector, params) {
     'use strict';
 
@@ -918,7 +919,7 @@ var Swiper = function (selector, params) {
 
         //Resize Event
         if (params.autoResize) {
-            bind(window, 'resize', _this.resizeFix);
+            bind(window, params.resizeEvent, _this.resizeFix);  // FORK [3]
         }
         //Slide Events
         addSlideEvents();
@@ -993,7 +994,7 @@ var Swiper = function (selector, params) {
 
         //Resize Event
         if (params.autoResize) {
-            unbind(window, 'resize', _this.resizeFix);
+            unbind(window, params.resizeEvent, _this.resizeFix);    // FORK [2]
         }
 
         //Init Slide Events

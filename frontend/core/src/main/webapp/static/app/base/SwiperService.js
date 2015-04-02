@@ -16,7 +16,7 @@
 
 // iDangero.us Swiper Service
 // http://www.idangero.us/sliders/swiper/api.php
-function SwiperService($q, $timeout) {
+function SwiperService($q, $timeout, packaging) {
 
   // Holds reference to all the swipers and their respective paths
   var swipers = {};
@@ -121,6 +121,7 @@ function SwiperService($q, $timeout) {
       loop: loop ? true : false,
       loopDuplicateSlidesIncluded: loop ? true : false,
       cssWidthAndHeight: swiperType === 'page' ? true : 'height',
+      resizeEvent: packaging.endsWith('cordova') ? 'orientationchange' : 'resize',
       roundLengths: swiperType === 'main',
       queueStartCallbacks: queueStartCallbacks,
       queueEndCallbacks: true,
@@ -597,5 +598,5 @@ function SwiperService($q, $timeout) {
     }
   };
 }
-SwiperService['$inject'] = ['$q', '$timeout'];
+SwiperService['$inject'] = ['$q', '$timeout', 'packaging'];
 angular.module('em.base').factory('SwiperService', SwiperService);

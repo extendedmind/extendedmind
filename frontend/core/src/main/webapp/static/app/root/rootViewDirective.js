@@ -12,6 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ /* global cordova */
  'use strict';
 
  function rootViewDirective($injector, $rootScope, $templateCache, $window, $timeout,
@@ -251,15 +252,25 @@
         }
 
       }
-      setDimensions($window.innerWidth, $window.innerHeight);
+      setDimensions(window.innerWidth, window.innerHeight);
 
       function windowResized() {
         scope.$apply(function() {
-          setDimensions($window.innerWidth, $window.innerHeight);
+          setDimensions(window.innerWidth, window.innerHeight);
         });
       }
 
-      angular.element($window).bind('resize', windowResized);
+      function orientationChanged() {
+        var height = window.innerHeight;
+
+        if (cordova && cordova.plugins && cordova.plugins.Keyboard && cordova.plugins.Keyboard.isVisible) {
+          // Height of the open cordova.plugins.Keyboard is not included in window.innerHeight.
+          height += $rootScope.softKeyboard.height;
+        }
+        scope.$apply(function() {
+          setDimensions(window.innerWidth, height);
+        });
+      }
 
       // CORDOVA SPECIFIC EVENTS
       $rootScope.softKeyboard = {};
@@ -274,12 +285,20 @@
       if (packaging.endsWith('cordova')) {
         window.addEventListener('native.keyboardshow', cordovaKeyboardShow);
         window.addEventListener('native.keyboardhide', cordovaKeyboardHide);
+        window.addEventListener('orientationchange', orientationChanged, false);
+      } else {
+        window.addEventListener('resize', windowResized, false);
       }
 
       // CLEANUP
 
       scope.$on('$destroy', function() {
-        angular.element($window).unbind('resize', windowResized);
+        if (packaging.endsWith('cordova')) {
+          window.removeEventListener('orientationchange', orientationChanged, false);
+        } else {
+          window.removeEventListener('resize', windowResized, false);
+        }
+
         if (packaging === 'ios-cordova') {
           window.removeEventListener('native.keyboardshow', cordovaKeyboardShow);
           window.removeEventListener('native.keyboardhide', cordovaKeyboardHide);
