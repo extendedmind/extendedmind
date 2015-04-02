@@ -126,9 +126,10 @@
         snappers[drawerSide].isDraggable = settings.touchToDrag ? true : false;
 
         if (snappers[drawerSide].isDraggable) {
+          snappers[drawerSide].preventDrag = false;
           snappers[drawerSide].snapper.enable();
-        }
-        else{
+        } else{
+          snappers[drawerSide].preventDrag = true;
           snappers[drawerSide].snapper.disable();
         }
 
@@ -152,8 +153,14 @@
         snappers[drawerSide].snapper.settings(settings);
 
         // touchToDrag can not be updated with the settings method above
-        if (settings.touchToDrag) this.enableDragging(drawerSide);
-        else this.disableDragging(drawerSide);
+        if (settings.touchToDrag) {
+          snappers[drawerSide].preventDrag = false;
+          this.enableDragging(drawerSide);
+        }
+        else {
+          snappers[drawerSide].preventDrag = true;
+          this.disableDragging(drawerSide);
+        }
       }
       executeSnapperInitializedCallbacks(drawerSide);
     },
@@ -225,7 +232,9 @@
       }
     },
     enableDragging: function(drawerSide) {
-      if (snapperExists(drawerSide) && !snappers[drawerSide].isDraggable) {
+      if (snapperExists(drawerSide) &&
+          !snappers[drawerSide].preventDrag && !snappers[drawerSide].isDraggable)
+      {
         snappers[drawerSide].snapper.enable();
         snappers[drawerSide].isDraggable = true;
       }
