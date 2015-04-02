@@ -16,6 +16,7 @@
  *  iii.    Tap to close when minDragDistance is set.
  *  iv.     Do not fire touchcancel event on android.
  *  v.      Add public interface for the translate function.
+ *  vi      Reset to minPosition.
  */
 /*jslint browser: true*/
 /*global define, module, ender, packaging*/
@@ -277,11 +278,6 @@
                         utils.events.removeEvent(settings.element, utils.eventType('move'), action.drag.dragging);
                         utils.events.removeEvent(settings.element, utils.eventType('up'), action.drag.endDrag);
                     } else if (settings.overrideElement) {
-                        // Make sure drawer returns correct position.
-                        // We are using override element on 'right' drawer side, so translate to min position
-                        // without animation.
-                        // FIXME: Use drawerAisleController.
-                        action.translate.x(settings.minPosition);
                         utils.events.removeEvent(settings.overrideElement, utils.eventType('down'), action.drag.startDrag);
                         utils.events.removeEvent(settings.overrideElement, utils.eventType('move'), action.drag.dragging);
                         utils.events.removeEvent(settings.overrideElement, utils.eventType('up'), action.drag.endDrag);
@@ -651,14 +647,21 @@
         // FORK
         this.addOverrideListeningElementEvents = function() {
             action.drag.listen();
-        }
+        };
         // FORK
         // FORK v
         this.translate = function(n) {
             cache.translation = n;
             action.translate.x(n);
-        }
+        };
         // FORK v
+        // FORK vi
+        this.resetToMinPosition = function() {
+            if (settings.minPosition !== undefined) {
+                action.translate.x(settings.minPosition);
+            }
+        };
+        // FORK vi
 
         init(userOpts);
     };

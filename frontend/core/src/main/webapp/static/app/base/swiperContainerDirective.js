@@ -213,11 +213,12 @@
       };
 
       var drawerDisabled; // FIXME: use isDraggable from DrawerService
-      function disableDrawer() {
+      function disableDrawerAndResetPosition() {
         if (!drawerDisabled && toggleDrawerSlidingEvents) {
           drawerDisabled = true;
           // FIXME: Remove DrawerService dependency and use drawerAisleController.
           DrawerService.disableDragging('right');
+          DrawerService.resetPosition('right');
         }
       }
       function enableDrawer() {
@@ -236,7 +237,7 @@
       }
       function swiperSlideChangeEnd(path, index) {
         if (index === 0) enableDrawer();
-        else disableDrawer();
+        else disableDrawerAndResetPosition();
       }
 
       function onSlideResetCallback(swiper) {
@@ -296,7 +297,7 @@
         {
           // Horizontal swipe.
           if (swipeDistanceX < 0) {
-            disableDrawer();  // FIXME: Listen touch events only on first slide(?)
+            disableDrawerAndResetPosition();  // FIXME: Listen touch events only on first slide(?)
             swipeLeft = true;
             swipeRight = false;
           } else {

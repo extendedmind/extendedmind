@@ -247,6 +247,11 @@
     isOpen: function(drawerSide) {
       if (snapperExists(drawerSide)) return snappers[drawerSide].isOpen;
     },
+    resetPosition: function(drawerSide) {
+      if (snapperExists(drawerSide) && drawerSide === 'right') {
+        snappers[drawerSide].snapper.resetMinPosition();
+      }
+    },
     setDrawerTranslate: function(drawerSide, x) {
       if (snapperExists(drawerSide)) {
         snappers[drawerSide].snapper.translate(x);
