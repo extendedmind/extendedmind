@@ -249,7 +249,7 @@
     },
     resetPosition: function(drawerSide) {
       if (snapperExists(drawerSide) && drawerSide === 'right') {
-        snappers[drawerSide].snapper.resetMinPosition();
+        snappers[drawerSide].snapper.resetToMinPosition();
       }
     },
     setDrawerTranslate: function(drawerSide, x) {
