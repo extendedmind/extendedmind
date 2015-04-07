@@ -44,89 +44,10 @@ trait InviteActions {
   def actorRefFactory: ActorRefFactory
   implicit val implicitActorRefFactory = actorRefFactory
   implicit val implicitExecutionContext = actorRefFactory.dispatcher 
-    
-  def requestInvite(inviteRequest: InviteRequest)(implicit log: LoggingAdapter): Response[InviteRequestResult] = {
-    log.info("requestInvite: email {}", inviteRequest.email)
-    val inviteRequestResult = db.postInviteRequest(inviteRequest)
-    if (inviteRequestResult.isRight) {
-      // Send invite request email for new invites, if not automatic signup and requesting bypass
-      if (inviteRequestResult.right.get.resultType == NEW_INVITE_REQUEST_RESULT
-        && (settings.signUpMethod != SIGNUP_INVITE_AUTOMATIC
-          && (inviteRequest.bypass.isEmpty || (inviteRequest.bypass.isDefined && !inviteRequest.bypass.get)))) {
-        val futureMailResponse = mailgun.sendRequestInviteConfirmation(inviteRequest.email, inviteRequestResult.right.get.result.get.uuid.get)
-        futureMailResponse onSuccess {
-          case SendEmailResponse(message, id) => {
-            val saveResponse = for {
-              putExistingResponse <- db.putExistingInviteRequest(inviteRequestResult.right.get.result.get.uuid.get,
-                inviteRequest.copy(emailId = Some(id))).right
-              updateResponse <- Right(db.updateInviteRequestModifiedIndex(putExistingResponse._2,
-                putExistingResponse._3)).right
-            } yield putExistingResponse._1
-            if (saveResponse.isLeft)
-              log.error("Error updating invite request for email {} with id {}, error: {}",
-                inviteRequest.email, id, saveResponse.left.get.head)
-            else log.info("Saved invite request with email: {} and UUID: {} to emailId: {}",
-              inviteRequest.email, inviteRequestResult.right.get.result.get.uuid.get, id)
-          } case _ =>
-            log.error("Could not send invite request confirmation email to {}", inviteRequest.email)
-        }
-      }
-      
-      if (inviteRequest.bypass.isDefined && inviteRequest.bypass.get && 
-          (inviteRequestResult.right.get.resultType == NEW_INVITE_REQUEST_RESULT 
-           || inviteRequestResult.right.get.resultType == INVITE_REQUEST_RESULT)) {
-        // Bypass logic
-        if (settings.signUpMethod == SIGNUP_INVITE_AUTOMATIC) {
-          return Right(inviteRequestResult.right.get.copy(resultType = INVITE_AUTOMATIC_RESULT))
-        } else if (settings.signUpMethod == SIGNUP_INVITE_COUPON) {
-          return Right(inviteRequestResult.right.get.copy(resultType = INVITE_COUPON_RESULT))
-        }
-      }
-    }
-    inviteRequestResult
-  }
-
-  def bypassInvite(inviteRequestUUID: UUID, coupon: Option[String])(implicit log: LoggingAdapter): Response[(SetResult, Invite)] = {
-    // Bypass logic
-    if (settings.signUpMethod == SIGNUP_INVITE_AUTOMATIC) {
-      // Create new invite, skip sending email
-	  this.acceptInviteRequest(None, inviteRequestUUID, None, true)
-    } else if (settings.signUpMethod == SIGNUP_INVITE_COUPON && settings.signUpCoupon.isDefined) {
-      if (coupon.isEmpty) {
-        fail(INVALID_PARAMETER, "coupon required")
-      }else if (coupon.get != settings.signUpCoupon.get){
-        fail(INVALID_PARAMETER, "invalid coupon")
-      }else{
-        // Create new invite without email
-        this.acceptInviteRequest(None, inviteRequestUUID, None, true)
-      }
-    } else {
-      fail(INVALID_PARAMETER, "bypassing invite not enabled")
-    }
-  }
-
-  def putNewInviteRequest(inviteRequest: InviteRequest)(implicit log: LoggingAdapter): Response[SetResult] = {
-    log.info("putNewInviteRequest: {}", inviteRequest)
-    for {
-      isUnique <- db.validateEmailUniqueness(inviteRequest.email).right
-      setResult <- db.putNewInviteRequest(inviteRequest).right
-      uuidResult <- db.forceUUID(setResult, inviteRequest.uuid, MainLabel.REQUEST).right
-    } yield uuidResult
-  }
-
-  def getInviteRequests()(implicit log: LoggingAdapter): Response[InviteRequests] = {
-    log.info("getInviteRequests")
-    db.getInviteRequests
-  }
 
   def getInvites()(implicit log: LoggingAdapter): Response[Invites] = {
     log.info("getInvites")
     db.getInvites
-  }
-
-  def getInviteRequestQueueNumber(inviteRequestUUID: UUID)(implicit log: LoggingAdapter): Response[InviteRequestQueueNumber] = {
-    log.info("getInviteRequestQueueNumber for UUID {}", inviteRequestUUID)
-    db.getInviteRequestQueueNumber(inviteRequestUUID)
   }
 
   def getInvite(code: Long, email: String)(implicit log: LoggingAdapter): Response[Invite] = {
@@ -134,39 +55,12 @@ trait InviteActions {
     db.getInvite(code, email)
   }
 
-  def acceptInviteRequest(userUUID: Option[UUID], inviteRequestUUID: UUID, details: Option[InviteRequestAcceptDetails],
-    skipEmail: Boolean = false)(implicit log: LoggingAdapter): Response[(SetResult, Invite)] = {
-    log.info("acceptInviteRequest: request {}", inviteRequestUUID)
-
-    val acceptResult = db.acceptInviteRequest(userUUID, inviteRequestUUID,
-      if (details.isDefined) details.get.message else None)
-
-    if (acceptResult.isRight && !skipEmail) {
-      val invite = acceptResult.right.get._2
-      val futureMailResponse = mailgun.sendInvite(invite)
-      futureMailResponse onSuccess {
-        case SendEmailResponse(message, id) => {
-          val saveResponse = db.putExistingInvite(acceptResult.right.get._1.uuid.get,
-            invite.copy(emailId = Some(id)))
-          if (saveResponse.isLeft)
-            log.error("Error updating invite for email {} with id {}, error: {}",
-              invite.email, id, saveResponse.left.get.head)
-          else log.info("Accepted invite request with email: {} and UUID: {} with emailId: {}",
-            invite.email, acceptResult.right.get._1.uuid.get, id)
-        }
-        case _ =>
-          log.error("Could not send invite email to {}", invite.email)
-      }
-    }
-    acceptResult
-  }
-  
   def resendInviteEmail(inviteUUID: UUID, email: String)(implicit log: LoggingAdapter): Response[CountResult] = {
     log.info("resendInviteEmail: invite {} email {}", inviteUUID, email)
     
     val invite = db.getInvite(inviteUUID, email)
     if (invite.isRight){
-      val futureMailResponse = mailgun.sendInvite(invite.right.get)
+      val futureMailResponse = mailgun.sendListInvite(invite.right.get)
       futureMailResponse onSuccess {
         case SendEmailResponse(message, id) => {
           val saveResponse = db.putExistingInvite(inviteUUID,
@@ -207,11 +101,6 @@ trait InviteActions {
     }
   }
 
-  def destroyInviteRequest(inviteRequstUUID: UUID)(implicit log: LoggingAdapter): Response[DestroyResult] = {
-    log.info("destroyInviteRequest: request {}", inviteRequstUUID)
-    db.destroyInviteRequest(inviteRequstUUID)
-  }
-  
   def destroyInvite(inviteUUID: UUID)(implicit log: LoggingAdapter): Response[DestroyResult] = {
     log.info("destroyInvite: invite {}", inviteUUID)
     db.destroyInvite(inviteUUID)

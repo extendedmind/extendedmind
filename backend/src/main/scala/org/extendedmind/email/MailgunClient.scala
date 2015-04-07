@@ -68,8 +68,7 @@ trait MailgunClient {
   def settings: Settings
   def actorRefFactory: ActorRefFactory
 
-  val requestInviteConfirmationHtmlTemplate = getTemplate("requestInviteConfirmation.html", settings.emailTemplateDir)
-  val acceptInviteRequestHtmlTemplate = getTemplate("acceptInviteRequest.html", settings.emailTemplateDir)
+  val inviteHtmlTemplate = getTemplate("invite.html", settings.emailTemplateDir)
   val resetPasswordHtmlTemplate = getTemplate("resetPassword.html", settings.emailTemplateDir)
   val verifyEmailHtmlTemplate = getTemplate("verifyEmail.html", settings.emailTemplateDir)
 
@@ -78,31 +77,22 @@ trait MailgunClient {
   implicit val implicitContext = actorRefFactory.dispatcher
   val sendEmailPipeline = sendReceive ~> unmarshal[SendEmailResponse]
 
-  def sendRequestInviteConfirmation(email: String, inviteRequestUUID: UUID): Future[SendEmailResponse] = {
-    val sendEmailRequest = SendEmailRequest(settings.emailFrom, email,
-      settings.requestInviteConfirmationTitle,
-      requestInviteConfirmationHtmlTemplate.replaceAll(
-        "queueNumberLink",
-        settings.emailUrlPrefix
-          + settings.requestInviteOrderNumberURI.replaceAll(
-            "uuidValue", inviteRequestUUID.toString()))
-        .replaceAll("logoLink",
-          settings.emailUrlPrefix + "img/logo-text.png"))
-
-    sendEmail(sendEmailRequest)
-  }
-
-  def sendInvite(invite: Invite): Future[SendEmailResponse] = {
+  def sendListInvite(invite: Invite): Future[SendEmailResponse] = {
     val sendEmailRequest = SendEmailRequest(settings.emailFrom, invite.email,
-      settings.acceptInviteRequestTitle,
-      acceptInviteRequestHtmlTemplate
+      settings.listInviteTitle.replaceAll(
+          "inviterEmail",
+          invite.email), // FIXME
+      inviteHtmlTemplate
         .replaceAll(
-          "acceptInviteLink",
+          "inviteLink",
           settings.emailSecureUrlPrefix
-            + settings.acceptInviteURI
+            + settings.inviteURI
             .replaceAll("inviteValue", invite.code.toLong.toHexString)
             .replaceAll("emailValue", invite.email))
-        .replaceAll("logoLink", settings.emailUrlPrefix + "img/logo-text.png"))
+        .replaceAll("logoLink", settings.emailUrlPrefix + "img/logo-text.png")
+        .replaceAll("inviterEmail", invite.email) // FIXME
+        .replaceAll("sharedList", invite.email) // FIXME
+        )
     sendEmail(sendEmailRequest)
   }
 

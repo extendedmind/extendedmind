@@ -127,72 +127,6 @@ trait AdminService extends ServiceBase {
           }
         }
       } ~
-      putInviteRequest { url =>
-        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
-          // Only admins can put invite requests
-          authorize(adminAccess(securityContext) && settings.signUpMethod != SIGNUP_OFF) {
-            entity(as[InviteRequest]) { inviteRequest =>
-              complete {
-                Future[SetResult] {
-                  setLogContext(securityContext)
-                  inviteActions.putNewInviteRequest(inviteRequest) match {
-                    case Right(sr) => processResult(sr)
-                    case Left(e) => processErrors(e)
-                  }
-                }
-              }
-            }
-          }
-        }
-      } ~
-      deleteInviteRequest { inviteRequestUUID =>
-        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
-          authorize(adminAccess(securityContext)) {
-            complete {
-              Future[DestroyResult] {
-                setLogContext(securityContext)
-                inviteActions.destroyInviteRequest(inviteRequestUUID) match {
-                  case Right(result) => processResult(result)
-                  case Left(e) => processErrors(e)
-                }
-              }
-            }
-          }
-        }
-      } ~
-      getInviteRequests { path =>
-        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
-          authorize(adminAccess(securityContext)) {
-            complete {
-              Future[InviteRequests] {
-                setLogContext(securityContext)
-                inviteActions.getInviteRequests match {
-                  case Right(inviteRequests) => processResult(inviteRequests)
-                  case Left(e) => processErrors(e)
-                }
-              }
-            }
-          }
-        }
-      } ~
-      postInviteRequestAccept { inviteRequestUUID =>
-        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
-          // Only admins can accept invite requests
-          authorize(adminAccess(securityContext) && settings.signUpMethod != SIGNUP_OFF) {
-            entity(as[Option[InviteRequestAcceptDetails]]) { details =>
-              complete {
-                Future[SetResult] {
-                  setLogContext(securityContext)
-                  inviteActions.acceptInviteRequest(Some(securityContext.userUUID), inviteRequestUUID, details) match {
-                    case Right(result) => processResult(result._1)
-                    case Left(e) => processErrors(e)
-                  }
-                }
-              }
-            }
-          }
-        }
-      } ~
       getInvites { path =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           authorize(adminAccess(securityContext)) {
@@ -390,36 +324,6 @@ trait AdminService extends ServiceBase {
               Future[CountResult] {
                 setLogContext(securityContext)
                 adminActions.upgradeItems match {
-                  case Right(result) => processResult(result)
-                  case Left(e) => processErrors(e)
-                }
-              }
-            }
-          }
-        }
-      } ~
-      upgradeInvites { url =>
-        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
-          authorize(adminAccess(securityContext)) {
-            complete {
-              Future[CountResult] {
-                setLogContext(securityContext)
-                adminActions.upgradeInvites match {
-                  case Right(result) => processResult(result)
-                  case Left(e) => processErrors(e)
-                }
-              }
-            }
-          }
-        }
-      } ~
-      rebuildInviteRequestsIndex { url =>
-        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
-          authorize(adminAccess(securityContext)) {
-            complete {
-              Future[CountResult] {
-                setLogContext(securityContext)
-                adminActions.rebuildInviteRequestsIndex match {
                   case Right(result) => processResult(result)
                   case Left(e) => processErrors(e)
                 }

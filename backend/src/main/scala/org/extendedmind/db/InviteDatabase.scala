@@ -43,114 +43,13 @@ trait InviteDatabase extends UserDatabase {
 
   // PUBLICs
 
-  def postInviteRequest(inviteRequest: InviteRequest): Response[InviteRequestResult] = {
-    for {
-      info <- createInviteRequestInformation(inviteRequest).right
-      queueNumber <- updateInviteRequestIndex(info._1, info._2).right
-      setResult <- Right(
-          if (info._1 == USER_RESULT || info._1 == SIGNUP_RESULT) None 
-          else Some(getSetResult(info._2.get, true))).right
-      inviteRequestResult <- Right(
-          InviteRequestResult(
-              info._1,
-              setResult,
-              queueNumber,
-              if (info._3.isDefined && settings.signUpMethod == SIGNUP_ON) 
-                Some(info._3.get.toHexString) 
-              else None
-          )).right
-    } yield inviteRequestResult
-  }
-
-  def putNewInviteRequest(inviteRequest: InviteRequest): Response[SetResult] = {
-    for {
-      ir <- createInviteRequest(inviteRequest).right
-      createResponse <- Right(createInviteRequestModifiedIndex(ir)).right
-      result <- Right(getSetResult(ir, true)).right
-    } yield result
-  }
-
-  def putExistingInviteRequest(inviteRequestUUID: UUID, inviteRequest: InviteRequest): Response[Tuple3[SetResult, Node, Long]] = {
-    for {
-      updatedInviteRequest <- updateInviteRequest(inviteRequestUUID, inviteRequest).right
-      result <- Right(getSetResult(updatedInviteRequest._1, false)).right
-    } yield (result, updatedInviteRequest._1, updatedInviteRequest._2)
-  }
-
-  def createInviteRequestModifiedIndex(inviteRequestNode: Node): Unit = {
-    withTx {
-      implicit neo =>
-        val inviteRequests = neo.gds.index().forNodes("inviteRequests")
-        inviteRequests.add(inviteRequestNode, "modified",
-          new ValueContext(inviteRequestNode.getProperty("modified").asInstanceOf[Long]).indexNumeric())
-    }
-  }
-
-  def updateInviteRequestModifiedIndex(inviteRequestNode: Node, oldModified: Long): Unit = {
-    withTx {
-      implicit neo =>
-        val inviteRequests = neo.gds.index().forNodes("inviteRequests")
-        inviteRequests.remove(inviteRequestNode, "modified", oldModified)
-        inviteRequests.add(inviteRequestNode, "modified",
-          new ValueContext(inviteRequestNode.getProperty("modified").asInstanceOf[Long]).indexNumeric())
-    }
-  }
-
-  def getInviteRequests(): Response[InviteRequests] = {
-    withTx {
-      implicit neo =>
-        val inviteRequests = neo.gds.index().forNodes("inviteRequests")
-        val inviteRequestNodeList = inviteRequests.query("modified",
-          QueryContext.numericRange("modified", 0, Long.MaxValue).sort("modified")).toList
-        if (inviteRequestNodeList.isEmpty) {
-          Right(InviteRequests(scala.List()))
-        } else {
-          Right(InviteRequests(inviteRequestNodeList map (inviteRequestNode => {
-            val response = toCaseClass[InviteRequest](inviteRequestNode)
-            if (response.isLeft) return Left(response.left.get)
-            else response.right.get
-          })))
-        }
-    }
-  }
-
-  def getInviteRequestQueueNumber(inviteRequestUUID: UUID): Response[InviteRequestQueueNumber] = {
-    withTx {
-      implicit neo =>
-        for {
-          inviteRequestNode <- getNode(inviteRequestUUID, MainLabel.REQUEST).right
-          inviteRequestQueueNumber <- getInviteRequestQueueNumber(inviteRequestNode).right
-        } yield inviteRequestQueueNumber
-    }
-  }
-
-  def acceptInviteRequest(userUUID: Option[UUID], inviteRequestUUID: UUID, message: Option[String]): Response[(SetResult, Invite)] = {
-    // First get user node result, hard to do in for comprehension
-    val userNodeResult: Option[Response[Node]] = 
-      if (userUUID.isDefined) Some(getNode(userUUID.get, OwnerLabel.USER))
-      else None
-    // Handle errors
-    if (userNodeResult.isDefined && userNodeResult.get.isLeft){
-      return Left(userNodeResult.get.left.get)
-    }
-    // Get node value
-    val userNode: Option[Node] = 
-      if (userNodeResult.isDefined) Some(userNodeResult.get.right.get)
-      else None
-
-    for {
-      ir <- createInvite(userNode, inviteRequestUUID, message).right
-      result <- Right(getSetResult(ir._1, true)).right
-    } yield (result, ir._2)
-  }
-
   def putExistingInvite(inviteUUID: UUID, invite: Invite): Response[SetResult] = {
     for {
       updatedInvite <- updateInvite(inviteUUID, invite).right
       result <- Right(getSetResult(updatedInvite, false)).right
     } yield result
   }
-
+  
   def getInvite(code: Long, email: String): Response[Invite] = {
     withTx {
       implicit neo =>
@@ -224,114 +123,7 @@ trait InviteDatabase extends UserDatabase {
     }
   }
 
-  def rebuildInviteRequestsIndex: Response[CountResult] = {
-    withTx {
-      implicit neo4j =>
-        val inviteRequests = neo4j.gds.index().forNodes("inviteRequests")
-        val oldInvitesInIndex = inviteRequests.query("*:*").toList
-        oldInvitesInIndex.foreach(inviteRequestNode => {
-          inviteRequests.remove(inviteRequestNode)
-        })
-
-        // Add all back to index
-        val inviteRequestNodes = findNodesByLabel(MainLabel.REQUEST)
-        var count = 0
-
-        inviteRequestNodes.foreach(inviteRequestNode => {
-	      if (inviteRequestNode.getRelationships().toList.isEmpty) {
-	        createInviteRequestModifiedIndex(inviteRequestNode)
-	        count += 1
-	      }
-        })
-        Right(CountResult(count))
-    }
-  }
-  
-  def upgradeInvites: Response[CountResult] = {
-    for {
-      inviteRequestUUIDs <- getInviteUUIDs(MainLabel.REQUEST).right
-      inviteUUIDs <- getInviteUUIDs(MainLabel.INVITE).right
-      count <- upgradeInvites(inviteRequestUUIDs, inviteUUIDs).right
-    } yield count
-  }
-
   // PRIVATE
-
-  protected def createInviteRequestInformation(inviteRequest: InviteRequest): Response[(InviteRequestResultType, Option[Node], Option[Long])] = {
-    withTx {
-      implicit neo =>
-        // First check if user
-        val userNodeList = findNodesByLabelAndProperty(OwnerLabel.USER, "email", inviteRequest.email).toList
-        if (!userNodeList.isEmpty) {
-          return Right(USER_RESULT, Some(userNodeList(0)), None)
-        }
-        val inviteNodeList = findNodesByLabelAndProperty(MainLabel.INVITE, "email", inviteRequest.email).toList
-        if (!inviteNodeList.isEmpty) {
-          return Right(INVITE_RESULT, Some(inviteNodeList(0)), Some(inviteNodeList(0).getProperty("code").asInstanceOf[Long]))
-        }
-        val requestNodeList = findNodesByLabelAndProperty(MainLabel.REQUEST, "email", inviteRequest.email).toList
-        if (!requestNodeList.isEmpty) {
-          return Right(INVITE_REQUEST_RESULT, Some(requestNodeList(0)), None)
-        }
-        if (inviteRequest.bypass.isDefined && inviteRequest.bypass.get && settings.signUpMethod == SIGNUP_ON){
-          return Right(SIGNUP_RESULT, None, None)
-        }
-
-        // Need to create a new invite request
-        val inviteRequestResponse = createInviteRequest(inviteRequest)
-        if (inviteRequestResponse.isLeft) Left(inviteRequestResponse.left.get)
-        else {
-          val inviteRequestQueueNumberResponse = getInviteRequestQueueNumber(inviteRequestResponse.right.get)
-          if (inviteRequestQueueNumberResponse.isLeft) Left(inviteRequestQueueNumberResponse.left.get)
-          else Right(NEW_INVITE_REQUEST_RESULT,
-            Some(inviteRequestResponse.right.get), None)
-        }
-    }
-  }
-  
-  protected def updateInviteRequestIndex(resultType: InviteRequestResultType, node: Option[Node]): Response[Option[Int]] = {
-    withTx {
-      implicit neo =>
-        val queueNumber: Option[Int] = resultType match {
-          case USER_RESULT => None
-          case SIGNUP_RESULT => None
-          case INVITE_RESULT => None
-          case INVITE_REQUEST_RESULT => {
-            val result = getInviteRequestQueueNumber(node.get)
-            if (result.isLeft) return Left(result.left.get)
-            else Some(result.right.get.queueNumber)
-          }
-          case NEW_INVITE_REQUEST_RESULT => {
-            createInviteRequestModifiedIndex(node.get)
-            val result = getInviteRequestQueueNumber(node.get)
-            if (result.isLeft) return Left(result.left.get)
-            else Some(result.right.get.queueNumber)
-          }
-          case _ => {
-            return fail(INTERNAL_SERVER_ERROR, "Unexpected invite request result type")
-          }
-        }
-        Right(queueNumber)
-    }
-  }
-
-  protected def createInviteRequest(inviteRequest: InviteRequest): Response[Node] = {
-    withTx {
-      implicit neo =>
-
-        Right(createNode(inviteRequest, MainLabel.REQUEST))
-    }
-  }
-
-  protected def updateInviteRequest(inviteRequestUUID: UUID, inviteRequest: InviteRequest): Response[(Node, Long)] = {
-    withTx {
-      implicit neo4j =>
-        for {
-          inviteRequestNode <- getNode(inviteRequestUUID, MainLabel.REQUEST).right
-          updatedNode <- updateNode(inviteRequestNode, inviteRequest).right
-        } yield (updatedNode, updatedNode.getProperty("modified").asInstanceOf[Long])
-    }
-  }
 
   protected def updateInvite(inviteUUID: UUID, invite: Invite): Response[Node] = {
     withTx {
@@ -362,18 +154,6 @@ trait InviteDatabase extends UserDatabase {
           inviteRequests.remove(inviteRequestNode.right.get)
           Right(inviteNode, invite)
         }
-    }
-  }
-
-  protected def getInviteRequestQueueNumber(inviteRequestNode: Node)(implicit neo4j: DatabaseService): Response[InviteRequestQueueNumber] = {
-    val inviteRequests = neo4j.gds.index().forNodes("inviteRequests")
-    val inviteRequestNodeList = inviteRequests.query("modified",
-      QueryContext.numericRange("modified", 0, Long.MaxValue).sort("modified")).toList
-    val queueNumber = inviteRequestNodeList.indexOf(inviteRequestNode)
-    if (queueNumber < -1) {
-      fail(INTERNAL_SERVER_ERROR, "Invite request could not be found from invite request index with id: " + inviteRequestNode.getId())
-    } else {
-      return Right(InviteRequestQueueNumber(queueNumber + 1))
     }
   }
 
@@ -493,46 +273,5 @@ trait InviteDatabase extends UserDatabase {
         Right(DestroyResult(destroyedUuids))
       }
     }
-  } 
-  
-  protected def upgradeInvites(inviteRequestUUIDs: scala.List[UUID], inviteUUIDs: scala.List[UUID]): Response[CountResult] = {
-    var count = 0;
-    inviteRequestUUIDs.foreach(inviteRequestUUID => {
-      val upgradeResult = upgradeInviteNode(inviteRequestUUID, MainLabel.REQUEST)
-      if (upgradeResult.isLeft) {
-        return Left(upgradeResult.left.get)
-      }else if (upgradeResult.right.get){
-        count += 1;
-      }
-    })
-    
-    inviteUUIDs.foreach(inviteUUID => {
-      val upgradeResult = upgradeInviteNode(inviteUUID, MainLabel.INVITE)
-      if (upgradeResult.isLeft) {
-        return Left(upgradeResult.left.get)
-      }else if (upgradeResult.right.get){
-        count += 1;
-      }
-    })
-    Right(CountResult(count))
   }
-
-  protected def upgradeInviteNode(uuid: UUID, label: Label): Response[Boolean] = {
-    withTx {
-      implicit neo4j =>
-        val nodeResponse = getNode(uuid, label)
-        if (nodeResponse.isLeft)
-          Left(nodeResponse.left.get)
-        else {
-          val node = nodeResponse.right.get
-          if (node.hasProperty("created")) {
-            Right(false)
-          } else {
-            node.setProperty("created", node.getProperty("modified").asInstanceOf[Long])
-            Right(true)
-          }
-        }
-    }
-  }
-
 }

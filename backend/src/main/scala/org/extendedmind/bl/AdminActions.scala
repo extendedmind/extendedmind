@@ -61,17 +61,7 @@ trait AdminActions {
     }
     countResult
   }
-  
-  def upgradeInvites()(implicit log: LoggingAdapter): Response[CountResult] = {
-    log.info("upgradeInvites")
-    db.upgradeInvites
-  }
-  
-  def rebuildInviteRequestsIndex()(implicit log: LoggingAdapter): Response[CountResult] = {
-    log.info("rebuildInvitesIndex")
-    db.rebuildInviteRequestsIndex
-  }
-  
+    
   def resetTokens()(implicit log: LoggingAdapter): Response[CountResult] = {
     log.info("resetTokens")
     db.destroyAllTokens

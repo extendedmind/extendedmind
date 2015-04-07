@@ -69,33 +69,6 @@ class AdminBestCaseSpec extends ServiceSpecBase {
   }
 
   describe("In the best case, AdminService") {
-    it("should successfully put invite request with PUT to /admin/invite/request "
-      + "and get it back with forced UUID from GET to /invite/request/[UUID]") {
-      val uuid = "f107899f-dd00-4754-bd7e-7ffa5399d604"
-      val newInviteRequest = InviteRequest(
-        Some(UUID.fromString(uuid)),
-        "test@example.com",
-        Some("messageId"),
-        None,
-        None)
-      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-      Put("/admin/invite/request",
-        marshal(newInviteRequest).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-          writeJsonOutput("inviteRequestResponse", responseAs[String])
-          val inviteRequestResponse = responseAs[SetResult]
-          inviteRequestResponse.uuid.get.toString should equal(uuid)
-          inviteRequestResponse.modified should not be None
-
-          Get("/invite/request/" + uuid) ~> route ~> check {
-            responseAs[InviteRequestQueueNumber].queueNumber should be(1)
-          }
-          Get("/admin/invite/requests") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-            val inviteRequests = responseAs[InviteRequests]
-            inviteRequests.inviteRequests(0).uuid.get.toString() should equal(uuid)
-            inviteRequests.inviteRequests(0).emailId.get should equal("messageId")
-          }
-        }
-    }
     it("should successfully create new collective with PUT to /collective"
       + "update it with PUT to /collective/[collectiveUUID] "
       + "and get it back with GET to /collective/[collectiveUUID]") {

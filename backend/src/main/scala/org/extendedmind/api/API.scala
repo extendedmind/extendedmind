@@ -32,10 +32,6 @@ trait API extends HttpService {
   val getRoot = get & path("")
 
   // INVITE
-  val postInvite = post & path(JavaUUID / "invite")
-  val postInviteRequest = post & path("invite" / "request".r)
-  val getInviteRequestQueueNumber = get & path("invite" / "request" / JavaUUID)
-  val postInviteRequestBypass = post & path("invite" / "request" / JavaUUID / "bypass")
   val getInvite = get & path("invite" / HexLongNumber)
   val postInviteResend = post & path("invite" / JavaUUID / "resend")
   val postInviteAccept = post & path("invite" / HexLongNumber / "accept")
@@ -118,7 +114,6 @@ trait API extends HttpService {
 
   // ADMIN
   val getStatistics = get & path("admin".r)
-  // Users
   val deleteUser = delete & path("admin" / "user" / JavaUUID)
   val getUsers = get & path("admin" / "users".r)
   val postChangeUserType = post & path("admin" / "user" / JavaUUID / "type" / IntNumber)
@@ -128,17 +123,8 @@ trait API extends HttpService {
   val upgradeOwners = post & path("admin" / "owners" / "upgrade".r)
   val upgradeOwner = post & path("admin" / "owner" / JavaUUID / "upgrade")
   val upgradeItems = post & path("admin" / "items" / "upgrade".r)
-  val upgradeInvites = post & path("admin" / "invites" / "upgrade".r)
-
-  // Invites
-  val rebuildInviteRequestsIndex = post & path("admin" / "invite" / "requests" / "rebuild".r)
-  val putInviteRequest = put & path("admin" / "invite" / "request".r)
-  val getInviteRequests = get & path("admin" / "invite" / "requests".r)
-  val deleteInviteRequest = delete & path("admin" / "invite" / "request" / JavaUUID)
-  val postInviteRequestAccept = post & path("admin" / "invite" / "request" / JavaUUID / "accept")
   val getInvites = get & path("admin" / "invites".r)
   val deleteInvite = delete & path("admin" / "invite" / JavaUUID)
-  // Security
   val resetTokens = post & path("admin" / "tokens" / "reset".r)
 
   // SYSTEM
