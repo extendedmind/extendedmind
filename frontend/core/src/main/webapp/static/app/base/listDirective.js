@@ -341,12 +341,12 @@
         var filteredFullArrayLength = scope.getFilteredFullArrayLength();
         scope.maximumNumberOfItems = calculateMaximumNumberOfBoundedItems();
 
-        if (scope.currentListLimitTo < scope.getFilteredFullArrayLength()) {
+        if (scope.currentListLimitTo < filteredFullArrayLength) {
           // List is limited. Set new limits.
           setLimits(0);
         }
 
-        else if (scope.currentListStartIndex === 0 && scope.currentListLimitTo === filteredFullArrayLength &&
+        else if (scope.currentListStartIndex === 0 && scope.currentListLimitTo >= filteredFullArrayLength &&
                  scope.maximumNumberOfItems < scope.currentListLimitTo)
         {
           // List is limited, but whole list is visible with the previous height and new maximum number of
