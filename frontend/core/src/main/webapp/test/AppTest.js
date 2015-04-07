@@ -73,7 +73,7 @@ angular.module('em.appTest')
         return proxy;
     }]);
 
-    $routeProvider.when('/new', {
+    $routeProvider.when('/fresh', {
       resolve: {
         auth: ['$location', '$route', 'AuthenticationService', 'UserSessionService',
         function($location, $route, AuthenticationService, UserSessionService) {

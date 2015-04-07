@@ -122,9 +122,11 @@
     $routeProvider.when('/new', {
       resolve: {
         supportedPlatformAndBrowser: ['$q', 'DetectBrowserService', isSupportedPlatformAndBrowser],
-        initializeNewUserWithOnboarding: ['$location', 'AnalyticsService', 'UserService',
+        initializeNewUserWithOnboarding: ['$location', '$rootScope', 'AnalyticsService', 'UserService',
         'UserSessionService',
-        function($location, AnalyticsService, UserService, UserSessionService) {
+        function($location, $rootScope, AnalyticsService, UserService, UserSessionService) {
+          // Clear all previous data to prevent problems with tutorial starting again after login
+          $rootScope.$emit('emException', {type: 'clearAll'});
           var userUUID = UserSessionService.createFakeUserUUID();
           // Start tutorial from focus/tasks
           var newUserFeatureValues = {

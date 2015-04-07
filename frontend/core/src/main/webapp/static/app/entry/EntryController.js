@@ -17,7 +17,7 @@
 playExtendedMindAnimation, extendedMindAnimationPhase, Media, cordova */
 'use strict';
 
-function EntryController($http, $location, $routeParams, $scope,
+function EntryController($http, $location, $rootScope, $routeParams, $scope,
                          AnalyticsService, AuthenticationService, DetectBrowserService, SwiperService,
                          UISessionService, UserService, UserSessionService, packaging) {
 
@@ -29,6 +29,8 @@ function EntryController($http, $location, $routeParams, $scope,
     $scope.entryState = 'login';
     $scope.user = {};
     SwiperService.setInitialSlidePath('entry', 'entry/main');
+    // Clear all previous data to prevent problems with tutorial starting again after login
+    $rootScope.$emit('emException', {type: 'clearAll'});
     AnalyticsService.visitEntry('login');
   }
 
@@ -250,7 +252,7 @@ function EntryController($http, $location, $routeParams, $scope,
   }
 }
 
-EntryController['$inject'] = ['$http', '$location', '$routeParams', '$scope',
+EntryController['$inject'] = ['$http', '$location', '$rootScope', '$routeParams', '$scope',
 'AnalyticsService', 'AuthenticationService', 'DetectBrowserService', 'SwiperService',
 'UISessionService', 'UserService', 'UserSessionService', 'packaging'];
 angular.module('em.entry').controller('EntryController', EntryController);
