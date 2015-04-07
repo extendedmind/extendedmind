@@ -43,7 +43,7 @@
     <maven.compiler.target>1.7</maven.compiler.target>
     <encoding>UTF-8</encoding>
     <scala.version.short>2.10</scala.version.short>
-    <scala.version>${scala.version.short}.3</scala.version>
+    <scala.version>${scala.version.short}.5</scala.version>
     <skipScalaTestTests>false</skipScalaTestTests>
     <skipJUnitTests>true</skipJUnitTests>
     <phantomjs.version>1.9.7</phantomjs.version>
