@@ -319,6 +319,42 @@
       var lastScrollPosition = 0;
       var bottomVerificationTimer;
 
+      /**
+       * @description Returns appropriate number of items relative to current height.
+       *
+       * Five items in iPhone 5 (height is 568 pixels in portrait mode) is the baseline.
+       * It has a moderate exponential growth when the height increases.
+       * TODO:  Max number and increase amount should be calculated based on the height of individual elements
+       *        in the list.
+       */
+       function calculateMaximumNumberOfBoundedItems() {
+        return Math.floor(($rootScope.currentHeight - ($rootScope.TOOLBAR_HEIGHT * 2)) / 73);
+      }
+
+      /**
+       * @description Calculates the limits of a bounded list.
+       *
+       * TODO:  Debounce the execution when bounded lists are used in desktop (when agenda is enabled) because
+       *        the callback is fired from resize event.
+       */
+      function calculateBoundedItemsAndLimits() {
+        var filteredFullArrayLength = scope.getFilteredFullArrayLength();
+        scope.maximumNumberOfItems = calculateMaximumNumberOfBoundedItems();
+
+        if (scope.currentListLimitTo < scope.getFilteredFullArrayLength()) {
+          // List is limited. Set new limits.
+          setLimits(0);
+        }
+
+        else if (scope.currentListStartIndex === 0 && scope.currentListLimitTo === filteredFullArrayLength &&
+                 scope.maximumNumberOfItems < scope.currentListLimitTo)
+        {
+          // List is limited, but whole list is visible with the previous height and new maximum number of
+          // items is below the current limit. Set new limits.
+          setLimits(0);
+        }
+      }
+
       function initList(options) {
         var bounded;
 
@@ -338,9 +374,8 @@
         }
 
         if (bounded) {
-          // TODO:  Max number and increase amount should be calculated based on the height of the
-          //        container and the height of individual elements in the list.
-          scope.maximumNumberOfItems = 5;
+          scope.maximumNumberOfItems = calculateMaximumNumberOfBoundedItems();
+          if (options.id) scope.registerWindowResizedCallback(calculateBoundedItemsAndLimits, options.id);
         } else {
           element[0].addEventListener('scroll', listScroll, false);
           removeCoefficientToEdge = 3;
@@ -363,10 +398,8 @@
           bounded = options.isBounded();
 
         if (bounded) {
-
-          // TODO:  Max number and increase amount should be calculated based on the height of the
-          //        container and the height of individual elements in the list.
-          scope.maximumNumberOfItems = 5;
+          scope.maximumNumberOfItems = calculateMaximumNumberOfBoundedItems();
+          if (options.id) scope.registerWindowResizedCallback(calculateBoundedItemsAndLimits, options.id);
 
           element[0].removeEventListener('scroll', listScroll, false);
           if (controllers[1]) {
@@ -384,6 +417,7 @@
           if (controllers[1]) {
             controllers[1].registerSlideMovementCallback(listMoved, 'listDirective');
           }
+          if (options.id) scope.unregisterWindowResizedCallback(calculateBoundedItemsAndLimits, options.id);
         }
         setLimits(0);
       }
