@@ -54,6 +54,11 @@ trait SecurityActions {
     }
   }
   
+  def clear(userUUID: UUID)(implicit log: LoggingAdapter): Response[CountResult] = {
+    log.info("clear")
+    db.destroyTokens(userUUID)
+  }
+  
   def changePassword(userUUID: UUID, newPassword: String)(implicit log: LoggingAdapter): Response[CountResult] = {
     log.info("changePassword")
     db.changePassword(userUUID, newPassword)

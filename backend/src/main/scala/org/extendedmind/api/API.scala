@@ -50,6 +50,7 @@ trait API extends HttpService {
   // SECURITY
   val postAuthenticate = post & path("authenticate".r)
   val postLogout = post & path("logout".r)
+  val postClear = post & path("clear".r)
   val putChangePassword = put & path("password".r)
   val putEmail = put & path("email".r)
   val postForgotPassword = post & path("password" / "forgot".r)

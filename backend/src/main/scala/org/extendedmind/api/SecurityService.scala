@@ -71,6 +71,19 @@ trait SecurityService extends ServiceBase {
           }
         }
       } ~
+      postClear { url =>
+        authenticate(ExtendedAuth(authenticator, "secure", None)) { securityContext =>
+          complete {
+            Future[CountResult] {
+              setLogContext(securityContext)
+              securityActions.clear(securityContext.userUUID) match {
+                case Right(deleteCount) => processResult(deleteCount)
+                case Left(e) => processErrors(e)
+              }
+            }
+          }
+        }
+      } ~
       putChangePassword { url =>
         authenticate(ExtendedAuth(authenticator, "secure", None)) { securityContext =>
           entity(as[NewPassword]) { newPassword =>

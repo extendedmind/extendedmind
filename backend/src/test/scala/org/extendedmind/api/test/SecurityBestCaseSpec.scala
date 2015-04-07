@@ -139,6 +139,14 @@ class SecurityBestCaseSpec extends ServiceSpecBase {
           logoutResponse.count should equal(2)
         }
     }
+    it("should successfully clear all logins with POST to /clear") {
+      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+      Post("/clear") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials(TIMO_EMAIL, TIMO_PASSWORD)) ~> route ~> check {
+        writeJsonOutput("clearResponse", responseAs[String])
+        val clearResponse = responseAs[CountResult]
+        clearResponse.count should equal(6)
+      }
+    }
     it("should successfully change password with PUT to /password") {
       val authenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
       val newPassword = "newTestPassword"
