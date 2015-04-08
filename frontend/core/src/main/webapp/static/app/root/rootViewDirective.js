@@ -26,9 +26,11 @@
     controller: ['$scope', function ($scope) {
 
       // BASIC DIMENSIONS TO ROOT SCOPE
-      // NOTE: For some reason this had to be 567 before,
+      // NOTE: For some reason this had to be 767 before,
       // because editor disappeared after animation was ready.
       $rootScope.CONTAINER_MASTER_MAX_WIDTH = $rootScope.EDITOR_MAX_WIDTH = 768;
+      $rootScope.TWO_COLUMN_MIN_WIDTH = 768;
+      $rootScope.THREE_COLUMN_MIN_WIDTH = 1088; // Menu width + 2*iPhone 6 Plus width
       $rootScope.CONTAINER_MASTER_MAX_HEIGHT = 1025;
       $rootScope.MAX_HEIGHT = 1025;
       $rootScope.MENU_WIDTH = 260;
@@ -228,13 +230,13 @@
         $rootScope.currentHeight = height;
 
         // UI for small screens, one column
-        if (width <= 568) {
+        if (width < $rootScope.TWO_COLUMN_MIN_WIDTH) {
           $rootScope.columns = 1;
           // UI for medium screens, two columns
-        } else if (width > 568 && width <= 1024) {
+        } else if (width >= $rootScope.TWO_COLUMN_MIN_WIDTH && width < $rootScope.THREE_COLUMN_MIN_WIDTH) {
           $rootScope.columns = 2;
           // UI for large screens, three columns
-        } else if (width > 1024) {
+        } else if (width >= $rootScope.THREE_COLUMN_MIN_WIDTH) {
           $rootScope.columns = 3;
         }
 
