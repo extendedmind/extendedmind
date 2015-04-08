@@ -32,7 +32,7 @@
   $scope.calculateHeadingWidth = function() {
     var menuWidth = 0;
     if ($rootScope.columns > 1 && DrawerService.isOpen('left')) {
-      menuWidth = DrawerService.getDrawerElement('left').offsetWidth;
+      menuWidth = $rootScope.MENU_WIDTH;
     }
 
     var columnWidth = $rootScope.currentWidth - menuWidth;

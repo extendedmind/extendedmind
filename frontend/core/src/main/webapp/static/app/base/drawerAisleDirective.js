@@ -125,7 +125,7 @@ function drawerAisleDirective($rootScope, DrawerService) {
       function resizeAisleAndSetupDrawers() {
         var drawerWidth = 0;
         if (DrawerService.isOpen('left')) {
-          drawerWidth = DrawerService.getDrawerElement('left').offsetWidth;
+          drawerWidth = $rootScope.MENU_WIDTH;
         }
         var newAisleWidth = $rootScope.currentWidth - drawerWidth;
         $element[0].firstElementChild.style.maxWidth = newAisleWidth + 'px';
@@ -214,7 +214,7 @@ function drawerAisleDirective($rootScope, DrawerService) {
           // There are more than one column, this means the aisle area is about to shrink the
           // same time as the menu opens.
 
-          var drawerWidth = DrawerService.getDrawerElement('left').offsetWidth;
+          var drawerWidth = $rootScope.MENU_WIDTH;
           drawerAisleContent.style.maxWidth = $rootScope.currentWidth - drawerWidth + 'px';
 
           if (areaAboutToShrinkCallbacks[activeFeature]) {
@@ -268,7 +268,7 @@ function drawerAisleDirective($rootScope, DrawerService) {
           var drawerAisleContent = $element[0].firstElementChild;
           drawerAisleContent.classList.add('animate-container-master');
 
-          var drawerWidth = DrawerService.getDrawerElement('left').offsetWidth;
+          var drawerWidth = $rootScope.MENU_WIDTH;
           drawerAisleContent.style.maxWidth = $rootScope.currentWidth + 'px';
 
           if (areaAboutToGrowCallbacks[activeFeature]) {
