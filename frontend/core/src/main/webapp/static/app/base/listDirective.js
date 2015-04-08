@@ -88,7 +88,8 @@
         } else if ($scope.activateAddItem) {
           $scope.activateAddItem();
           if ($scope.notifyAddAction){
-            $scope.notifyAddAction('activate', $scope.listAddState.featureInfo, $scope.listAddState.subfeature);
+            $scope.notifyAddAction('activate', $scope.listAddState.featureInfo,
+                                   $scope.listAddState.subfeature);
           }
         }
       };
@@ -105,7 +106,7 @@
       this.notifyListItemAdd = function(){
         if ($scope.notifyAddAction){
           var returnValue = $scope.notifyAddAction('add', $scope.listAddState.featureInfo,
-                                                  $scope.listAddState.subfeature);
+                                                   $scope.listAddState.subfeature);
           $scope.listAddState = {};
           return returnValue;
         }
@@ -114,7 +115,7 @@
       this.notifyListItemExitNoAdd = function(){
         if ($scope.notifyAddAction){
           var returnValue = $scope.notifyAddAction('noAdd', $scope.listAddState.featureInfo,
-                                                  $scope.listAddState.subfeature);
+                                                   $scope.listAddState.subfeature);
           $scope.listAddState = {};
           return returnValue;
         }
@@ -337,7 +338,7 @@
        * TODO:  Debounce the execution when bounded lists are used in desktop (when agenda is enabled) because
        *        the callback is fired from resize event.
        */
-      function calculateBoundedItemsAndLimits() {
+       function calculateBoundedItemsAndLimits() {
         var filteredFullArrayLength = scope.getFilteredFullArrayLength();
         scope.maximumNumberOfItems = calculateMaximumNumberOfBoundedItems();
 
