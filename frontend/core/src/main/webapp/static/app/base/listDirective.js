@@ -328,7 +328,7 @@
        *        in the list.
        */
        function calculateMaximumNumberOfBoundedItems() {
-        return Math.floor(($rootScope.currentHeight - ($rootScope.TOOLBAR_HEIGHT * 2)) / 73);
+        return Math.floor(($rootScope.currentHeight - ($rootScope.TOOLBAR_HEIGHT * 2)) / 76.5);
       }
 
       /**
