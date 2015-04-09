@@ -218,6 +218,10 @@
         windowResizedCallbacks[id] = windowResizedCallback;
       };
 
+      scope.unregisterWindowResizedCallback = function(id) {
+        if (windowResizedCallbacks[id]) delete windowResizedCallbacks[id];
+      };
+
       function setDimensions(width, height) {
 
         $rootScope.currentWidth = width;
