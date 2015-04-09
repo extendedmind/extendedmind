@@ -42,6 +42,11 @@ object UserLabel {
   val ADMIN = Label("ADMIN")
   val ALFA = Label("ALFA")
   val BETA = Label("BETA")
+  val NORMAL = Label("NORMAL")
+}
+
+object SubscriptionLabel {
+  val PREMIUM = Label("PREMIUM")
 }
 
 object ItemLabel {

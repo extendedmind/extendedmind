@@ -85,6 +85,7 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
           userNode <- getUserNode(tokenNode).right
           sc <- Right(getSecurityContext(userNode)).right
           sc <- Right(createNewAccessKey(tokenNode, sc, payload)).right
+          result <- Right(clearExtraLogins(userNode, tokenNode)).right
         } yield sc
     }
   }
@@ -154,7 +155,7 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
       implicit neo4j => 
         for {
           userNode <- getNode(userUUID, OwnerLabel.USER).right
-          result <- destroyTokens(userNode).right
+          result <- destroyTokens(userNode, None).right
         } yield result
     }
   }
@@ -254,6 +255,32 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     } else fail(INVALID_PARAMETER, ERR_BASE_TOKEN_NOT_REPLACEABLE, "Token not replaceable")
   }
   
+  protected def clearExtraLogins(userNode: Node, tokenNode: Node)(implicit neo4j: DatabaseService): Response[CountResult] = {
+    if ((userNode.hasLabel(UserLabel.NORMAL) || userNode.hasLabel(UserLabel.BETA)) && !userNode.hasLabel(SubscriptionLabel.PREMIUM)){
+      // When a normal or beta user who does not have a valid subscription swaps token, all other tokens are deleted
+      destroyTokens(userNode, Some(iterTokenNode => {
+        if (tokenNode != iterTokenNode) true
+        else false
+      })) 
+    }else{
+      // Only destroy extra tokens that have expired and are not replaceable
+      destroyTokens(userNode, Some(iterTokenNode => {
+        if (tokenNode == iterTokenNode){
+          false
+        }else{
+          val currentTime = System.currentTimeMillis
+          val authInfo = getAuthenticationInfo(tokenNode)
+          // Delete only if expired and not replaceable
+          if (authInfo._2 < currentTime && (authInfo._3.isEmpty || authInfo._3.get < currentTime)){
+            true
+          }else{
+            false
+          }
+        }
+      })) 
+    }
+  }
+  
   protected def createNewAccessKey(tokenNode: Node, sc: SecurityContext, payload: Option[AuthenticatePayload])(implicit neo4j: DatabaseService): SecurityContext = {
     // Make new token and set properties to the token node
     val token = Token(sc.userUUID)
@@ -279,6 +306,10 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
   }
   
   protected def destroyTokens(userNode: Node)(implicit neo4j: DatabaseService): Response[CountResult] = {
+    destroyTokens(userNode, None)
+  }
+  
+  protected def destroyTokens(userNode: Node, destroyCondition: Option[(Node => Boolean)])(implicit neo4j: DatabaseService): Response[CountResult] = {
     val tokenTraversal = neo4j.gds.traversalDescription()
       .breadthFirst()
       .relationships(DynamicRelationshipType.withName(SecurityRelationship.IDS.name), Direction.INCOMING)
@@ -287,9 +318,12 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
       .evaluator(Evaluators.toDepth(1))
       .traverse(userNode)
     val tokenList = tokenTraversal.nodes().toList
-    val deleteCount = tokenList.size
+    var deleteCount: Long = 0;
     tokenList.foreach(tokenNode => {
-      destroyToken(tokenNode)
+      if (destroyCondition.isEmpty || destroyCondition.get(tokenNode)){
+        destroyToken(tokenNode)
+        deleteCount = deleteCount + 1;
+      }
     })
     Right(CountResult(deleteCount))
   }
