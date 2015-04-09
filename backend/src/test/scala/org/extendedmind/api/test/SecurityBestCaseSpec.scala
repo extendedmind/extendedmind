@@ -117,9 +117,9 @@ class SecurityBestCaseSpec extends ServiceSpecBase {
           
           // Shouldn't be able to swap it again because rememberMe was missing the last time
           Post("/authenticate") ~> addCredentials(BasicHttpCredentials("token", tokenReAuthenticateResponse.token.get)) ~> route ~> check {
-        	val failure = responseAs[String]        
+        	val failure = responseAs[ErrorResult]        
         	status should be (Forbidden)
-            failure should startWith("Authentication failed")
+            failure.description should startWith("Authentication failed")
           }
         }
       }
@@ -183,9 +183,9 @@ class SecurityBestCaseSpec extends ServiceSpecBase {
           val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, testPassword)
           // Make sure that reset password again with the same code fails
           Post("/password/" + resetCodeCaptor.getValue.toHexString + "/reset", marshal(SignUp(TIMO_EMAIL, testPassword, Some(1),None)).right.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
-            val failure = responseAs[String]
+            val failure = responseAs[ErrorResult]
             status should be(BadRequest)
-            failure should startWith("Password not resetable anymore")
+            failure.description should startWith("Password not resetable anymore")
           }
         }
       }

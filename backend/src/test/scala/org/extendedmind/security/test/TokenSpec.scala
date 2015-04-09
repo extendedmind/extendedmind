@@ -53,14 +53,14 @@ class TokenSpec extends SpraySpecBase{
       val decryptedToken = Token.decryptToken("ejsoP4lbqEwn2J+gabrKMeWBwQOxYR4QyujwFBNhOR4=")
       decryptedToken match{
         case Right(token) => fail("Should have failed with CRC check")
-        case Left(e) => assert(e(0) === ResponseContent(INVALID_PARAMETER, "Token CRC Check failed"))
+        case Left(e) => assert(e(0) === ResponseContent(INVALID_PARAMETER, ERR_BASE_INVALID_CRC, "Token CRC Check failed"))
       }
     }
     it("should fail to decode too short token"){
       val decryptedToken = Token.decryptToken("MjsoP4lbqEwn2J+gabrKMeWBwQOxYR4QyujwFBNhOR4")
       decryptedToken match{
         case Right(token) => fail("Should have failed with invalid lenght token")
-        case Left(e) => assert(e(0) === ResponseContent(INVALID_PARAMETER, "Invalid string token length, should be 44"))
+        case Left(e) => assert(e(0) === ResponseContent(INVALID_PARAMETER, ERR_BASE_INVALID_TOKEN_LENGTH, "Invalid string token length, should be 44"))
       }
     }
   }

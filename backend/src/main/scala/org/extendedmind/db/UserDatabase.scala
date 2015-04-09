@@ -157,7 +157,7 @@ trait UserDatabase extends AbstractGraphDatabase {
     withTx {
       implicit neo4j =>
         if (findNodesByLabelAndProperty(OwnerLabel.USER, "email", user.email.get).toList.size > 0) {
-          fail(INVALID_PARAMETER, "User already exists with given email " + user.email.get)
+          fail(INVALID_PARAMETER, ERR_USER_ALREADY_EXISTS, "User already exists with given email " + user.email.get)
         } else {
           val userNode = createNode(user, MainLabel.OWNER, OwnerLabel.USER)
           if (userLabel.isDefined) userNode.addLabel(userLabel.get)
@@ -246,7 +246,7 @@ trait UserDatabase extends AbstractGraphDatabase {
       implicit neo =>
         val nodeIter = findNodesByLabelAndProperty(OwnerLabel.USER, "email", email)
         if (nodeIter.toList.isEmpty) {
-          fail(INVALID_PARAMETER, "No users found with given email " + email)
+          fail(INVALID_PARAMETER, ERR_USER_NO_USERS, "No users found with given email " + email)
         } else if (nodeIter.toList.size > 1) {
 
           nodeIter.toList.foreach(node => {
@@ -256,7 +256,7 @@ trait UserDatabase extends AbstractGraphDatabase {
               + " with id " + node.getId())
           })
 
-          fail(INTERNAL_SERVER_ERROR, "Ḿore than one user found with given email " + email)
+          fail(INTERNAL_SERVER_ERROR, ERR_USER_MORE_THAN_1_USERS, "Ḿore than one user found with given email " + email)
         } else
           Right(nodeIter.toList(0))
     }
@@ -275,9 +275,9 @@ trait UserDatabase extends AbstractGraphDatabase {
     val userNodeList = traverser.nodes().toArray
 
     if (userNodeList.length == 0) {
-      fail(INTERNAL_SERVER_ERROR, "Token attached to no users")
+      fail(INTERNAL_SERVER_ERROR, ERR_USER_TOKEN_NO_USERS, "Token attached to no users")
     } else if (userNodeList.length > 1) {
-      fail(INTERNAL_SERVER_ERROR, "Token attached to more than one user")
+      fail(INTERNAL_SERVER_ERROR, ERR_USER_TOKEN_MORE_THAN_1_USERS, "Token attached to more than one user")
     } else {
       Right(userNodeList.head)
     }
@@ -396,9 +396,9 @@ trait UserDatabase extends AbstractGraphDatabase {
   protected def validateUserDeletable(userNode: Node)(implicit neo4j: DatabaseService): Response[Boolean] = {
     userNode.getRelationships().foreach(relationship => {
       if (relationship.getType().name == SecurityRelationship.IS_FOUNDER.name()) {
-        return fail(INVALID_PARAMETER, "Can't delete a user that has founded collections")
+        return fail(INVALID_PARAMETER, ERR_USER_DELETE_WITH_COLLECTIVES, "Can't delete a user that has founded collections")
       }else if (relationship.getType().name == SecurityRelationship.IS_ACCEPTER.name()){
-        return fail(INVALID_PARAMETER, "Can't delete a user that has accepted invites")        
+        return fail(INVALID_PARAMETER, ERR_USER_DELETE_ACCEPTED_INVITES, "Can't delete a user that has accepted invites")        
       }
     })
     Right(true)

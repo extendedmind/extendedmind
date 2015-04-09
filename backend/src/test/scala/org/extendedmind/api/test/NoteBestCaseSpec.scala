@@ -100,9 +100,9 @@ class NoteBestCaseSpec extends ServiceSpecBase {
                   writeJsonOutput("deleteNoteResponse", deleteNoteResponse)
                   deleteNoteResponse should include("deleted")
                   Get("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                	val failure = responseAs[String]        
+                	val failure = responseAs[ErrorResult]        
                 	status should be (BadRequest)
-                    failure should startWith("Item " + putNoteResponse.uuid.get + " is deleted")
+                    failure.description should startWith("Item " + putNoteResponse.uuid.get + " is deleted")
                   }
                   Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                     val undeleteNoteResponse = responseAs[String]

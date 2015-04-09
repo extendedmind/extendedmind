@@ -30,9 +30,6 @@ abstract class ExtendedMindException(description: String, throwable: Option[Thro
     super.setStackTrace(throwable.get.getStackTrace())
   }
 }
-case class InvalidParameterException(description: String, throwable: Option[Throwable] = None) extends ExtendedMindException(description, throwable)
-case class InvalidAuthenticationException(description: String) extends ExtendedMindException(description)
-case class InternalServerErrorException(description: String, throwable: Option[Throwable] = None) extends ExtendedMindException(description, throwable)
 
 // List of ResponseTypes
 sealed abstract class ResponseType
@@ -40,19 +37,23 @@ case object INVALID_PARAMETER extends ResponseType
 case object INVALID_AUTHENTICATION extends ResponseType
 case object INTERNAL_SERVER_ERROR extends ResponseType
 
+case class InvalidParameterException(code: ErrorCode, description: String, throwable: Option[Throwable] = None) extends ExtendedMindException(description, throwable)
+case class InvalidAuthenticationException(code: ErrorCode, description: String) extends ExtendedMindException(description)
+case class InternalServerErrorException(code: ErrorCode, description: String, throwable: Option[Throwable] = None) extends ExtendedMindException(description, throwable)
+
 // Generic response
 object Response{
-  case class ResponseContent(responseType: ResponseType, description: String, throwable: Option[Throwable] = None){
+  case class ResponseContent(responseType: ResponseType, code: ErrorCode, description: String, throwable: Option[Throwable] = None){
     def throwRejectionError() = {
       responseType match {
         case INVALID_PARAMETER => {
-          throw new InvalidParameterException(description, throwable)
+          throw new InvalidParameterException(code, description, throwable)
         }
         case INTERNAL_SERVER_ERROR => {
-          throw new InternalServerErrorException(description, throwable)
+          throw new InternalServerErrorException(code, description, throwable)
         }
         case INVALID_AUTHENTICATION => {
-          throw new InvalidAuthenticationException(description)
+          throw new InvalidAuthenticationException(code, description)
         }
       }
     }
@@ -60,14 +61,13 @@ object Response{
   type Response[T] = Either[List[ResponseContent], T]
   
   // Convenience methods to use when failing
-  def fail(responseType: ResponseType, description: String) = {
-    Left(List(ResponseContent(responseType, description)))
+  def fail(responseType: ResponseType, code: ErrorCode, description: String) = {
+    Left(List(ResponseContent(responseType, code, description)))
   }
-  def fail(responseType: ResponseType, description: String, throwable: Throwable) = {
-    Left(List(ResponseContent(responseType, description, Some(throwable))))
+  def fail(responseType: ResponseType, code: ErrorCode, description: String, throwable: Throwable) = {
+    Left(List(ResponseContent(responseType, code, description, Some(throwable))))
   }
   
-    
   def processErrors(errors: List[ResponseContent])(implicit logErrors: List[ResponseContent] => Unit) = {
     // First log all errors
     logErrors(errors)
@@ -75,14 +75,23 @@ object Response{
       // Reject based on the first exception
       errors(0).throwRejectionError
     }else {
-      throw new InternalServerErrorException("Unknown error")
+      throw new InternalServerErrorException(ERR_BASE_UNKNOWN, "Unknown error")
     }
   }
 }
 
+
 /**
- * Result that is returned from every PUT/POST method
+ * Result that is returned from every successful PUT method and various other places
  */
 case class SetResult(uuid: Option[UUID], created: Option[Long], modified: Long)
 
+/**
+ * Result that is returned from every error response
+ */
+case class ErrorResult(code: Int, description: String, timestamp: Long)
+
+/**
+ * Result that is returned from successful POST where a count is returned
+ */
 case class CountResult(count: Long)

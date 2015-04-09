@@ -108,9 +108,9 @@ class ListBestCaseSpec extends ServiceSpecBase {
 	                  writeJsonOutput("deleteListResponse", deleteListResponse)
 	                  deleteListResponse should include("deleted")
 	                  Get("/" + authenticateResponse.userUUID + "/list/" + putListResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-	                	val failure = responseAs[String]        
+	                	val failure = responseAs[ErrorResult]        
 	                	status should be (BadRequest)
-	                    failure should startWith("Item " + putListResponse.uuid.get + " is deleted")
+	                    failure.description should startWith("Item " + putListResponse.uuid.get + " is deleted")
 	                  }
 	                  
 	                  // Change note list to new value and verify that change works

@@ -100,7 +100,7 @@ trait InviteDatabase extends UserDatabase {
         if (inviteRequest.isLeft) Left(inviteRequest.left.get)
         else {
           if (!inviteRequest.right.get.getRelationships().toList.isEmpty) {
-            fail(INVALID_PARAMETER, "Can't delete accepted invite request")
+            fail(INVALID_PARAMETER, ERR_INVITE_DELETE_ACCEPTED, "Can't delete accepted invite request")
           } else {
             // First delete it from the index
             val inviteRequests = neo4j.gds.index().forNodes("inviteRequests")
@@ -163,13 +163,13 @@ trait InviteDatabase extends UserDatabase {
         val nodeIter = findNodesByLabelAndProperty(MainLabel.INVITE, "code", code: java.lang.Long)
         val invalidParameterDescription = "No invite found with given code " + code
         if (nodeIter.toList.isEmpty) {
-          fail(INVALID_PARAMETER, invalidParameterDescription)
+          fail(INVALID_PARAMETER, ERR_INVITE_NOT_FOUND, invalidParameterDescription)
         } else if (nodeIter.toList.size > 1) {
-          fail(INTERNAL_SERVER_ERROR, "Ḿore than one user found with given code " + code)
+          fail(INTERNAL_SERVER_ERROR, ERR_INVITE_MORE_THAN_1, "Ḿore than one user found with given code " + code)
         } else {
           val inviteNode = nodeIter.toList(0)
           if (inviteNode.getProperty("email").asInstanceOf[String] != email) {
-            fail(INVALID_PARAMETER, invalidParameterDescription)
+            fail(INVALID_PARAMETER, ERR_INVITE_NOT_FOUND_EMAIL, invalidParameterDescription)
           } else {
             Right(inviteNode)
           }
@@ -186,7 +186,7 @@ trait InviteDatabase extends UserDatabase {
           if(inviteNode.right.get.getProperty("email").asInstanceOf[String] == email){
             Right(inviteNode.right.get)          
           }else{
-            fail(INVALID_PARAMETER, "invite not found with given UUID " + uuid + " and email " + email)
+            fail(INVALID_PARAMETER, ERR_INVITE_NOT_FOUND_UUID, "invite not found with given UUID " + uuid + " and email " + email)
           }
         }
     }
@@ -224,7 +224,7 @@ trait InviteDatabase extends UserDatabase {
   
   protected def destroyInviteNode(inviteNode: Node)(implicit neo4j: DatabaseService): Response[DestroyResult] = {
     if (inviteNode.hasProperty("accepted")){
-      fail(INVALID_PARAMETER, "Can't delete accepted invite")
+      fail(INVALID_PARAMETER, ERR_INVITE_DESTROY_ACCEPTED, "Can't delete accepted invite")
     }else{
       val inviteRelationshipList = inviteNode.getRelationships().toList
       val acceptRelationships = inviteRelationshipList.filter(relationship => {
@@ -237,9 +237,9 @@ trait InviteDatabase extends UserDatabase {
       })
 
       if (acceptRelationships.size > 1){
-        fail(INTERNAL_SERVER_ERROR, "Invalid number of accept relationships for invite " + getUUID(inviteNode))
+        fail(INTERNAL_SERVER_ERROR, ERR_INVITE_REL_ACCEPTED, "Invalid number of accept relationships for invite " + getUUID(inviteNode))
       }else if (originRelationships.size > 1){
-        fail(INTERNAL_SERVER_ERROR, "Invalid number of origin relationships for invite " + getUUID(inviteNode))
+        fail(INTERNAL_SERVER_ERROR, ERR_INVITE_REL_ORIGIN, "Invalid number of origin relationships for invite " + getUUID(inviteNode))
       }else{
         if (acceptRelationships.size == 1)
           acceptRelationships(0).delete()

@@ -110,9 +110,9 @@ class TagBestCaseSpec extends ServiceSpecBase {
                       writeJsonOutput("deleteTagResponse", deleteTagResponse)
                       deleteTagResponse should include("deleted")
                       Get("/" + authenticateResponse.userUUID + "/tag/" + putTagResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                        val failure = responseAs[String]
+                        val failure = responseAs[ErrorResult]
                         status should be(BadRequest)
-                        failure should startWith("Item " + putTagResponse.uuid.get + " is deleted")
+                        failure.description should startWith("Item " + putTagResponse.uuid.get + " is deleted")
                       }
                       // Change note context to new value and verify that change works
                       Put("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get,

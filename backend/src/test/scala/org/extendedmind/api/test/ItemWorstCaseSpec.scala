@@ -71,9 +71,9 @@ class ItemWorstCaseSpec extends ServiceSpecBase{
       val randomUUID = UUID.randomUUID().toString()
       Get("/" + authenticateResponse.userUUID + "/item/" + randomUUID
           ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-        val failure = responseAs[String]        
+        val failure = responseAs[ErrorResult]        
         status should be (BadRequest)
-        failure should startWith("Could not find item " + randomUUID + " for owner " + authenticateResponse.userUUID)
+        failure.description should startWith("Could not find item " + randomUUID + " for owner " + authenticateResponse.userUUID)
       }
     }
   }

@@ -149,31 +149,31 @@ trait ItemDatabase extends UserDatabase {
       if (itemNode.hasLabel(ItemLabel.NOTE)) {
         val note = toNote(itemNode, owner)
         if (note.isLeft) {
-          return fail(INTERNAL_SERVER_ERROR, note.left.get.toString)
+          return fail(INTERNAL_SERVER_ERROR, ERR_ITEM_TO_NOTE, note.left.get.toString)
         }
         noteBuffer.append(note.right.get)
       } else if (itemNode.hasLabel(ItemLabel.TASK)) {
         val task = toTask(itemNode, owner)
         if (task.isLeft) {
-          return fail(INTERNAL_SERVER_ERROR, task.left.get.toString)
+          return fail(INTERNAL_SERVER_ERROR, ERR_ITEM_TO_TASK, task.left.get.toString)
         }
         taskBuffer.append(task.right.get)
       } else if (itemNode.hasLabel(ItemLabel.LIST)) {
         val list = toList(itemNode, owner)
         if (list.isLeft) {
-          return fail(INTERNAL_SERVER_ERROR, list.left.get.toString)
+          return fail(INTERNAL_SERVER_ERROR, ERR_ITEM_TO_LIST, list.left.get.toString)
         }
         listBuffer.append(list.right.get)
       } else if (itemNode.hasLabel(ItemLabel.TAG)) {
         val tag = toTag(itemNode, owner)
         if (tag.isLeft) {
-          return fail(INTERNAL_SERVER_ERROR, tag.left.get.toString)
+          return fail(INTERNAL_SERVER_ERROR, ERR_ITEM_TO_TAG, tag.left.get.toString)
         }
         tagBuffer.append(tag.right.get)
       } else if (itemNode.hasLabel(MainLabel.ITEM)) {
         val item = toCaseClass[Item](itemNode)
         if (item.isLeft) {
-          return fail(INTERNAL_SERVER_ERROR, "Could not convert node to Item with error: " + item.left.get)
+          return fail(INTERNAL_SERVER_ERROR, ERR_ITEM_TO_ITEM,  "Could not convert node to Item with error: " + item.left.get)
         }
         itemBuffer.append(item.right.get)
       } else {
@@ -322,7 +322,7 @@ trait ItemDatabase extends UserDatabase {
         || itemNode.right.get.hasLabel(ItemLabel.TASK)
         || itemNode.right.get.hasLabel(ItemLabel.LIST)
         || itemNode.right.get.hasLabel(ItemLabel.TAG))) {
-      return fail(INVALID_PARAMETER, "item already either note, task, list or tag with UUID " + itemUUID)
+      return fail(INVALID_PARAMETER, ERR_ITEM_ALREADY_EXTENDED, "item already either note, task, list or tag with UUID " + itemUUID)
     }
     itemNode
   }
@@ -332,15 +332,15 @@ trait ItemDatabase extends UserDatabase {
     val itemNodeList = itemsIndex.query("owner:\"" + UUIDUtils.getTrimmedBase64UUID(ownerUUID)
       + "\" AND item:\"" + UUIDUtils.getTrimmedBase64UUID(itemUUID) + "\"").toList
     if (itemNodeList.length == 0) {
-      fail(INVALID_PARAMETER, "Could not find item " + itemUUID + " for owner " + ownerUUID)
+      fail(INVALID_PARAMETER, ERR_ITEM_NOT_FOUND, "Could not find item " + itemUUID + " for owner " + ownerUUID)
     } else if (itemNodeList.length == 0) {
-      fail(INTERNAL_SERVER_ERROR, "More than one item found with item " + itemUUID + " and owner + " + ownerUUID)
+      fail(INTERNAL_SERVER_ERROR, ERR_ITEM_MORE_THAN_1, "More than one item found with item " + itemUUID + " and owner + " + ownerUUID)
     } else {
       val itemNode = itemNodeList(0)
       if (!itemNode.hasLabel(label)) {
-        fail(INVALID_PARAMETER, "Item " + itemUUID + " does not have label " + label.labelName)
+        fail(INVALID_PARAMETER, ERR_ITEM_NO_LABEL, "Item " + itemUUID + " does not have label " + label.labelName)
       } else if (!acceptDeleted && itemNode.hasProperty("deleted")) {
-        fail(INVALID_PARAMETER, "Item " + itemUUID + " is deleted")
+        fail(INVALID_PARAMETER, ERR_ITEM_DELETED, "Item " + itemUUID + " is deleted")
       } else {
         Right(itemNode)
       }
@@ -580,14 +580,14 @@ trait ItemDatabase extends UserDatabase {
       val traverser = ownerFromTag.traverse(tagNodes.right.get: _*)
       val ownerNodeList = traverser.nodes().toArray
       if (ownerNodeList.length < tagNodes.right.get.length) {
-        fail(INTERNAL_SERVER_ERROR, "Some of the tags does not have an owner")
+        fail(INTERNAL_SERVER_ERROR, ERR_ITEM_TAG_NO_OWNER, "Some of the tags does not have an owner")
       } else if (ownerNodeList.length > tagNodes.right.get.length) {
-        fail(INTERNAL_SERVER_ERROR, "Some of the tags has more than one owner")
+        fail(INTERNAL_SERVER_ERROR, ERR_ITEM_TAG_MORE_THAN_1_OWNER, "Some of the tags has more than one owner")
       } else {
         val ownerNode = { if (ownerNodes.collective.isDefined) ownerNodes.collective.get else ownerNodes.user }
         ownerNodeList foreach (tagOwner => {
           if (tagOwner != ownerNode) {
-            fail(INVALID_PARAMETER, "Some of the tags does not belong to the owner "
+            fail(INVALID_PARAMETER, ERR_ITEM_TAG_WRONG_OWNER, "Some of the tags does not belong to the owner "
               + getUUID(ownerNode))
           }
         })
@@ -665,7 +665,7 @@ trait ItemDatabase extends UserDatabase {
     })
 
     if (relationshipList.size != tagNodes.size) {
-      fail(INVALID_PARAMETER, "Every given tag UUID is not attached to the item " + getUUID(itemNode))
+      fail(INVALID_PARAMETER, ERR_ITEM_DOES_NOT_HAVE_TAG, "Every given tag UUID is not attached to the item " + getUUID(itemNode))
     } else {
       Right(Some(relationshipList))
     }
@@ -683,11 +683,11 @@ trait ItemDatabase extends UserDatabase {
   
   protected def moveContentToDescription(node: Node)(implicit neo4j: DatabaseService): Response[Unit] = {
     if (node.hasProperty("description")){
-      fail(INVALID_PARAMETER, "Can't move content to description: item already has a description field.")
+      fail(INVALID_PARAMETER, ERR_ITEM_CONTENT_ALREADY_DESCRIPTION, "Can't move content to description: item already has a description field.")
     }else if (node.hasProperty("content")){
       val content = node.getProperty("content").asInstanceOf[String]
       if (!Validators.validateDescription(content)){
-        fail(INVALID_PARAMETER, "Can't move content to description: content too long to fit to a description field.")        
+        fail(INVALID_PARAMETER, ERR_ITEM_CONTENT_TOO_LONG, "Can't move content to description: content too long to fit to a description field.")        
       }else{
         node.setProperty("description", content)
         node.removeProperty("content")

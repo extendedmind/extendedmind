@@ -158,13 +158,13 @@ trait CollectiveDatabase extends AbstractGraphDatabase {
     val traverser = founderFromCollective.traverse(collectiveNode.right.get)
     val collectiveNodeList = traverser.nodes().toList
     if (collectiveNodeList.length == 0) {
-      fail(INTERNAL_SERVER_ERROR, "Collective " + collectiveUUID + " has no founder")
+      fail(INTERNAL_SERVER_ERROR, ERR_COLLECTIVE_NO_FOUNDER, "Collective " + collectiveUUID + " has no founder")
     } else if (collectiveNodeList.length > 1) {
-      fail(INTERNAL_SERVER_ERROR, "More than one founder found for collective with UUID " + collectiveUUID)
+      fail(INTERNAL_SERVER_ERROR, ERR_COLLECTIVE_MORE_THAN_1_FOUNDER, "More than one founder found for collective with UUID " + collectiveUUID)
     } else {
       val founder = collectiveNodeList.head
       if (getUUID(founder) != founderUUID){
-        fail(INVALID_PARAMETER, "Collective " + collectiveUUID + " is not founded by user " 
+        fail(INVALID_PARAMETER, ERR_COLLECTIVE_WRONG_FOUNDER, "Collective " + collectiveUUID + " is not founded by user " 
             + founderUUID)
       }else{
         Right(collectiveNode.right.get)
@@ -181,7 +181,7 @@ trait CollectiveDatabase extends AbstractGraphDatabase {
       else{
         if (result.right.get.isDefined && 
             result.right.get.get.getType.name() == SecurityRelationship.IS_FOUNDER.relationshipName){
-          return fail(INVALID_PARAMETER, "Can not change permissions for collective founder")
+          return fail(INVALID_PARAMETER, ERR_COLLECTIVE_FOUNDER_PERMISSION, "Can not change permissions for collective founder")
         }
         result.right.get
       }
@@ -211,7 +211,7 @@ trait CollectiveDatabase extends AbstractGraphDatabase {
         Right(None)
       }
       case _ => 
-        fail(INVALID_PARAMETER, "Invalid access value: " + access)
+        fail(INVALID_PARAMETER, ERR_COLLECTIVE_INVALID_ACCESS_VALUE, "Invalid access value: " + access)
     }
   }
   

@@ -171,7 +171,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     try {
       Right(Neo4jWrapper.serialize[Node](caseClass, node))
     } catch {
-      case e: Exception => fail(INTERNAL_SERVER_ERROR, "Exception while updating node", e)
+      case e: Exception => fail(INTERNAL_SERVER_ERROR, ERR_BASE_UPDATE_NODE, "Exception while updating node", e)
     }
   }
 
@@ -179,7 +179,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     try {
       Right(Neo4jWrapper.deSerialize[T](node))
     } catch {
-      case e: Exception => fail(INTERNAL_SERVER_ERROR, "Exception while converting node " + node.getId(), e)
+      case e: Exception => fail(INTERNAL_SERVER_ERROR, ERR_BASE_CONVERT_NODE, "Exception while converting node " + node.getId(), e)
     }
   }
 
@@ -252,7 +252,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
       implicit neo =>
         val nodeList = findNodesByLabelAndProperty(label, nodeProperty, nodeValue).toList
         if (nodeList.isEmpty)
-          fail(INVALID_PARAMETER, label.labelName.toLowerCase() + " not found with given " + nodeProperty +
+          fail(INVALID_PARAMETER, ERR_BASE_NODE_LABEL_NOT_FOUND, label.labelName.toLowerCase() + " not found with given " + nodeProperty +
             (if (nodeStringValue.isDefined) ": " + nodeStringValue.get else ""))
         else if (nodeList.size > 1) {
           // Check if nodeList contains the same node multiple times
@@ -266,7 +266,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
                   + " with id " + node.getId())
               })
             }
-            fail(INTERNAL_SERVER_ERROR, "Ḿore than one " + label.labelName.toLowerCase() + " found with given " + nodeProperty +
+            fail(INTERNAL_SERVER_ERROR, ERR_BASE_NODE_LABEL_MORE_THAN_1, "Ḿore than one " + label.labelName.toLowerCase() + " found with given " + nodeProperty +
               (if (nodeStringValue.isDefined) ": " + nodeStringValue.get else ""))
           } else {
             log.warning("Found " + nodeList.size + " duplicate values in index for " + label.labelName + ":" + nodeProperty)
@@ -274,7 +274,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
           }
         } else {
           if (!acceptDeleted && nodeList(0).hasProperty("deleted")) {
-            fail(INVALID_PARAMETER, label.labelName.toLowerCase() + " deleted with given " + nodeProperty +
+            fail(INVALID_PARAMETER, ERR_BASE_NODE_LABEL_DELETED, label.labelName.toLowerCase() + " deleted with given " + nodeProperty +
               (if (nodeStringValue.isDefined) ": " + nodeStringValue.get else ""))
           } else {
             Right(nodeList(0))
@@ -289,7 +289,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     relationshipList.foreach(relationship => {
       if (relationship.getEndNode() == second || relationship.getStartNode() == second) {
         if (returnValue.isDefined) {
-          return fail(INTERNAL_SERVER_ERROR, "More than one relationship of types " + relationshipType
+          return fail(INTERNAL_SERVER_ERROR, ERR_BASE_NODE_REL_MORE_THAN_1, "More than one relationship of types " + relationshipType
             + " found between nodes " + getUUID(first)
             + " and " + getUUID(second))
         }

@@ -58,7 +58,7 @@ object Token{
   def decryptToken(stringToken: String)(implicit settings: Settings): Response[Token] =
     try {
       if (stringToken.length() != 44){
-      	return fail(INVALID_PARAMETER, "Invalid string token length, should be 44")
+      	return fail(INVALID_PARAMETER, ERR_BASE_INVALID_TOKEN_LENGTH, "Invalid string token length, should be 44")
       }
       
       // Decrypt Token
@@ -70,13 +70,13 @@ object Token{
       crc.end
       
       if (crc.getBytes.deep != decryptedToken.slice(24, 26).deep){
-        return fail(INVALID_PARAMETER, "Token CRC Check failed")
+        return fail(INVALID_PARAMETER, ERR_BASE_INVALID_CRC, "Token CRC Check failed")
       }
       
       // Create Token
       val userUUID = UUIDUtils.getUUID(decryptedToken.slice(0, 16))
       Right(Token(userUUID, ByteBuffer.wrap(decryptedToken.slice(16, 24)).getLong()))
     } catch {
-      case e: Throwable => fail(INTERNAL_SERVER_ERROR, "Could not decrypt token", e)
+      case e: Throwable => fail(INTERNAL_SERVER_ERROR, ERR_BASE_DECRYPT_FAILED, "Could not decrypt token", e)
     }
 }

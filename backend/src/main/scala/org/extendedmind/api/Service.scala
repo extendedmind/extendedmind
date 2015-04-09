@@ -58,26 +58,28 @@ object Service {
   }
 
   def exceptionHandler(implicit log: LoggingAdapter): ExceptionHandler = {
+
+    import JsonImplicits.implErrorResult
     ExceptionHandler {
       case e: InvalidAuthenticationException => ctx => {
         val currentTime = System.currentTimeMillis()
-        log.error("Status code: " + Forbidden + ": " + e.description + " @" + currentTime)
-        ctx.complete(Forbidden, e.description)
+        log.error("Status code: " + Forbidden + ", Error code: " + e.code.number + ", Description: " + e.description + " @" + currentTime)
+        ctx.complete(Forbidden, ErrorResult(e.code.number, e.description, currentTime))
       }
       case e: InvalidParameterException => ctx => {
         val currentTime = System.currentTimeMillis()
-        log.error("Status code: " + BadRequest + ": " + e.description + " @" + currentTime)
-        ctx.complete(BadRequest, e.description + " @" + currentTime)
+        log.error("Status code: " + BadRequest + ", Error code: " + e.code.number + ", Description: " + e.description + " @" + currentTime)
+        ctx.complete(BadRequest, ErrorResult(e.code.number, e.description, currentTime))
       }
       case e: InternalServerErrorException => ctx => {
         val currentTime = System.currentTimeMillis()
-        log.error("Status code: " + InternalServerError + ": " + e.description + " @" + currentTime)
-        ctx.complete(InternalServerError, e.description + " @" + currentTime)
+        log.error("Status code: " + InternalServerError + ", Error code: " + e.code.number + ", Description: " + e.description + " @" + currentTime)
+        ctx.complete(InternalServerError, ErrorResult(e.code.number, e.description, currentTime))
       }
       case t: Throwable => ctx => {
         val currentTime = System.currentTimeMillis()
         log.error(t, "Status code: " + InternalServerError + ": " + t.getMessage() + " @" + currentTime)
-        ctx.complete(InternalServerError, "Unknown error occured @" + currentTime)
+        ctx.complete(InternalServerError, ErrorResult(ERR_BASE_INTERNAL_UNKNOWN.number, "Unknown error occured", currentTime))
       }
     }
   }

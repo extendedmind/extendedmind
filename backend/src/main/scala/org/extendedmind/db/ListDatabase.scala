@@ -149,7 +149,7 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
 
   protected def validateListArchivable(listNode: Node)(implicit neo4j: DatabaseService): Response[Node] = {
     if (hasChildren(listNode, Some(ItemLabel.LIST)))
-      fail(INVALID_PARAMETER, "List " + getUUID(listNode) + " has child lists, can not archive")
+      fail(INVALID_PARAMETER, ERR_LIST_ARCHIVE_CHILDREN, "List " + getUUID(listNode) + " has child lists, can not archive")
     else
       Right(listNode)
   }
@@ -158,7 +158,7 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
     withTx {
       implicit neo =>
         val tagNodeResult = getItemNode(owner, tagUUID, Some(ItemLabel.TAG))
-        if (tagNodeResult.isLeft) fail(INTERNAL_SERVER_ERROR, "Failed to find newly created history tag for list " + getUUID(listNode))
+        if (tagNodeResult.isLeft) fail(INTERNAL_SERVER_ERROR, ERR_LIST_MISSING_HISTORY_TAG, "Failed to find newly created history tag for list " + getUUID(listNode))
         else {
           val tagNode = tagNodeResult.right.get
           val childNodes = getChildren(listNode, None, true)
@@ -212,7 +212,7 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
   protected def validateListDeletable(listNode: Node)(implicit neo4j: DatabaseService): Response[Boolean] = {
     // Can't delete if list has child lists
     if (hasChildren(listNode, Some(ItemLabel.LIST)))
-      fail(INVALID_PARAMETER, "can not delete list with child lists")
+      fail(INVALID_PARAMETER, ERR_LIST_DELETE_CHILDREN, "can not delete list with child lists")
     else
       Right(true)
   }
@@ -264,7 +264,7 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
   protected def validateListConvertable(listNode: Node)(implicit neo4j: DatabaseService): Response[Unit] = {
     // Can't convert a list that has children
     if (hasChildren(listNode, None))
-      fail(INVALID_PARAMETER, "can not convert a list that has child items")
+      fail(INVALID_PARAMETER, ERR_LIST_CONVERT_CHILDREN, "can not convert a list that has child items")
     else
       Right()
   }

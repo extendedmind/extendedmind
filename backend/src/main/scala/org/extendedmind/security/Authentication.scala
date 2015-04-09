@@ -62,7 +62,12 @@ object Authentication{
       case Left(e) => {
         // Don't expose the internals of what went wrong for security reasons
         logErrors(e)
-        throw new InvalidAuthenticationException("Authentication failed")
+       
+        if (e.exists{ rc => rc.code == ERR_BASE_ALREADY_LOGGED_IN.number}){
+          throw new InvalidAuthenticationException(ERR_BASE_ALREADY_LOGGED_IN, "Authentication failed: user already logged in")          
+        }else{
+          throw new InvalidAuthenticationException(ERR_BASE_AUTHENTICATION_FAILED, "Authentication failed")
+        }
       }
     }
   }

@@ -166,13 +166,13 @@ class UserBestCaseSpec extends ServiceSpecBase {
         // Should not be able to do anything else with any previous login
         Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           status should be (Forbidden)
-          val failure = responseAs[String]
-          failure should startWith("Authentication failed")
+          val failure = responseAs[ErrorResult]
+          failure.code should be(ERR_BASE_AUTHENTICATION_FAILED.number)
         }
         Get("/" + authenticateResponse2.userUUID + "/items") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse2.token.get)) ~> route ~> check {
           status should be (Forbidden)
-          val failure = responseAs[String]
-          failure should startWith("Authentication failed")
+          val failure = responseAs[ErrorResult]
+          failure.code should be(ERR_BASE_AUTHENTICATION_FAILED.number)
         }
       }
       val adminAuthenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
