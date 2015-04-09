@@ -87,16 +87,17 @@
 
   if ($scope.mode === 'agendaCalendar') {
     listCalendars();
-    if ($scope.isOnboarding('focus', 'tasks') &&
-        angular.isFunction($scope.registerFeatureEditorAboutToCloseCallback)){
+    if ($scope.isTutorialInProgress() && angular.isFunction($scope.registerFeatureEditorAboutToCloseCallback))
+    {
       $scope.registerFeatureEditorAboutToCloseCallback(agendaEditorAboutToCloseWhileOnboardingFocusTasks,
                                                        'UserEditorController');
     }
   }
 
   function agendaEditorAboutToCloseWhileOnboardingFocusTasks() {
-    if (angular.isFunction($scope.unregisterEditorAboutToCloseCallback))
+    if (angular.isFunction($scope.unregisterEditorAboutToCloseCallback)) {
       $scope.unregisterEditorAboutToCloseCallback('UserEditorController');
+    }
     $scope.increaseOnboardingPhase('focus', 'tasks');
   }
 
