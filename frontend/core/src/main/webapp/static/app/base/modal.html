@@ -25,8 +25,18 @@
 
         <!-- CONTENT -->
         <div class="textgroup-ingress first last row" ng-bind="messageIngress"></div>
-        <div class="row">
-          <pre class="text-preformatted" ng-bind="messageText"></pre>
+
+        <div ng-if="messageText" class="textgroup-message row">
+          <span ng-repeat="textNode in messageText" ng-switch="textNode.type" class="text-normal">
+            <span ng-switch-when="text" ng-bind="textNode.data"></span>
+            <a href ng-switch-when="link" class="highlighted" ng-click="textNode.action()">
+              <span ng-bind="textNode.data"></span>
+            </a>
+          </span>
+        </div>
+
+        <div ng-if="messageDetails" class="row">
+          <pre class="text-preformatted" ng-bind="messageDetails"></pre>
         </div>
       </div>
 

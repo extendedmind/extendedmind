@@ -313,6 +313,22 @@
     }
   };
 
+  methods.postOnlineWithCredentials = function(url, data, overrideCredentials) {
+    return $http({
+      method: 'post',
+      url: url,
+      data: data,
+      headers: {'Authorization': 'Basic ' + overrideCredentials}
+    })
+    .then(function(success) {
+      handleOnlineCallback(true);
+      return success;
+    }, function(error) {
+      handleOnlineCallback(error);
+      return $q.reject({type:'http', value: error});
+    });
+  };
+
   methods.putOnline = function(url, data) {
     return $http({method: 'put', url: url, data: data}).then(function(success) {
       handleOnlineCallback(true);

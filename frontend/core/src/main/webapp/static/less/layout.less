@@ -610,13 +610,17 @@ Class `.group-link` groups automatically a elements horizontally. Works for 7 an
 /*
 Use `.group-instruction` to create an instruction block in the middle of a section.
 */
+
+// 1. If there are more than one paragraph, create padding between them.
+// 2. Normalize line height for the message.
+// 3. Add padding-bottom to the last child when it is not .textgroup-ingress, which has padding-bottom set
+//    with .first class.
 .group-instruction {
   display: block;
   line-height: @grid-vertical;
 
-  // If there are more than one paragraph, create padding between them
   p:not(:first-child) {
-    padding-top: @grid-vertical;
+    padding-top: @grid-vertical;  // [1]
   }
 
   .textgroup-ingress {
@@ -630,8 +634,11 @@ Use `.group-instruction` to create an instruction block in the middle of a secti
   .textgroup-ingress.last {
     padding-top: @grid-vertical-half;
   }
-  .text-normal {
-    padding-top: @grid-vertical;
+  .textgroup-message {
+    line-height: normal;  // [2]
+  }
+  & >:last-child:not(.textgroup-ingress) {
+    padding-bottom: @grid-vertical;  // [3]
   }
 }
 
@@ -1019,7 +1026,7 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   padding-bottom: @grid-vertical-half + 3px; // [1]
 }
 
-.height-small .group-heading:not(.justified):not(.instruction){
+.height-small .group-heading:not([class^="justified"]):not([class*=" justified"]):not(.instruction){
   padding-top: 5px;
   padding-bottom: 10px;
   font-size: @size-font-not-so-large;
@@ -1028,7 +1035,8 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 // FIXME: refactor or move (overrides.less)
 @margin-top-heading-justified: -20px;
 // 1. Justify whitespace between toolbar and content
-.group-heading.justified {
+.group-heading.justified,
+.container-toolbar + .container-fluid--inner .group-heading.justified-under-toolbar {
   margin-top: @margin-top-heading-justified; // [1]
 }
 

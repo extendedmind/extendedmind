@@ -35,6 +35,9 @@
       </div>
     </div>
   </section>
+  <section ng-if="activeDetails === 'premium'" class="container-content">
+    <div ng-include="urlBase + 'app/user/userPremium.html'" include-replace></div>
+  </section>
 
   <footer class="container-content--after">
     <nav role="navigation" class="swiper-no-swiping group-symmetrical">

@@ -3,7 +3,8 @@
     ng-class="{'height-small': smallDeviceHeight, 'width-small': smallDeviceWidth}"></div>
 
   <div ng-if="modal.visible" class="container-modal animate-modal" modal="modal.params"
-    modal-close="hideModal()" editable-field-container="auto" editable-field-container-blur
+    modal-close="hideModal()" modal-reinit="{register: registerModalReinit, unregister: unregisterModalReinit}"
+    editable-field-container="auto" editable-field-container-blur
     editable-field-container-clicked-elsewhere="!modal.params.cancelDisabled && hideModal()">
   </div>
 </div>

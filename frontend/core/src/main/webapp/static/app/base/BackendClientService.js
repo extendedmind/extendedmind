@@ -230,6 +230,17 @@
     }
   };
 
+  methods.postOnlineWithUsernamePassword = function(url, regex, data, username, password) {
+    if (regex.test(url)) {
+      var usernamePasswordCredentials = base64.encode(username + ':' + password);
+      return HttpClientService.postOnlineWithCredentials(getUrlPrefix() + url, data,
+                                                        usernamePasswordCredentials)
+      .then(handleHttpSuccess, handleHttpError);
+    } else {
+      return emitRegexException(regex, 'post', data);
+    }
+  };
+
   methods.postOffline = function(url, regex, params, data, timestamp) {
     return refreshCredentials().then(function() {
       if (regex.test(url)) {

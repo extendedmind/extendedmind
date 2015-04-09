@@ -510,6 +510,74 @@ input[type="checkbox"]:checked + label:before {
   opacity: 1;
 }
 
+.modal-fade-scale {
+  -webkit-animation: modal-fade-scale ease-in-out .25s;
+  -moz-animation:    modal-fade-scale ease-in-out .25s;
+  -o-animation:      modal-fade-scale ease-in-out .25s;
+  animation:         modal-fade-scale ease-in-out .25s;
+}
+
+@-webkit-keyframes modal-fade-scale {
+  0%   {
+    opacity: 1;
+  }
+  25% {
+    opacity: 0.5;
+  }
+  50%   {
+    opacity: 1;
+    -webkit-transform: scale(.9) translateY(-50%);
+  }
+  100%   {
+    -webkit-transform: scale(1) translateY(-50%);
+  }
+}
+@-moz-keyframes modal-fade-scale {
+  0%   {
+    opacity: 1;
+  }
+  25% {
+    opacity: 0.5;
+  }
+  50%   {
+    opacity: 1;
+    -moz-transform: scale(.9) translateY(-50%);
+  }
+  100%   {
+    -moz-transform: scale(1) translateY(-50%);
+  }
+}
+@-o-keyframes modal-fade-scale {
+  0%   {
+    opacity: 1;
+  }
+  25% {
+    opacity: 0.5;
+  }
+  50%   {
+    opacity: 1;
+    -o-transform: scale(.9) translateY(-50%);
+  }
+  100%   {
+    -o-transform: scale(1) translateY(-50%);
+  }
+}
+@keyframes modal-fade-scale {
+  0%   {
+    opacity: 1;
+  }
+  25% {
+    opacity: 0.5;
+  }
+  50%   {
+    opacity: 1;
+    transform: scale(.9) translateY(-50%);
+  }
+  100%   {
+    transform: scale(1) translateY(-50%);
+  }
+}
+
 // Fade out end.
 // Fade in end.
 .animate-modal.ng-leave.ng-leave-active,

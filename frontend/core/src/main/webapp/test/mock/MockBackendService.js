@@ -65,6 +65,9 @@
         else if (userNamePass === 'example@example.com:examplePass') {
           response = [200, responseData];
         }
+        else if (userNamePass === 'premium@ext.md:premium') {
+          response = [403, {code: 24}]; // Backend error code for premium.
+        }
         else {
           response = [403, 'Forbidden'];
         }

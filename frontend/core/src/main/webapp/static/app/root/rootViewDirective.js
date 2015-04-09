@@ -130,6 +130,14 @@
         }
       };
 
+      var reinitModal;
+      $scope.registerModalReinit = function(reinitFn) {
+        reinitModal = reinitFn;
+      };
+      $scope.unregisterModalReinit = function() {
+        reinitModal = undefined;
+      };
+
       // EVENTS - user interactions, exceptions
 
       // Listen to interactions emitted to $rootScope.
@@ -157,24 +165,79 @@
           // Redirect thrown 403 Forbidden exception to the login page
           AnalyticsService.error('forbidden', JSON.stringify(exception));
           redirectToEntry();
-        } else if (exception.type === 'session') {
+        }
+        else if (exception.type === 'session') {
           if (!exiting) {
             // Redirect session errors to the login page
             AnalyticsService.error('session', exception.value);
             redirectToEntry();
           }
           // TODO: Type 'response' for offline responses!
-        } else if (exception.type === 'redirectToEntry') {
+        }
+        else if (exception.type === 'redirectToEntry') {
           redirectToEntry();
-        } else if (exception.type === 'clearAll') {
+        }
+        else if (exception.type === 'clearAll') {
           clearAll();
-        } else {
+        }
+        else if (exception.type === 'premium') {
+          var primaryMessageTextNodes = [
+          {
+            type: 'text',
+            data: 'log out from the other device, or'
+          },
+          {
+            type: 'link',
+            data: 'click here',
+            action: function() {
+              reinitModal(secondaryParams);
+            }
+          },
+          {
+            type: 'text',
+            data: 'to log out remotely'
+          }];
+
+          var secondaryMessageTextNodes = [
+          {
+            type: 'text',
+            data: 'are you sure you want to log out from the other device?'
+          },
+          {
+            type: 'link',
+            data: 'take me back',
+            action: function() {
+              reinitModal(primaryParams);
+            }
+          }];
+
+          var primaryParams = {
+            messageHeading: 'already logged in',
+            messageIngress: 'with the free account you can only sync one device at a time',
+            messageText: primaryMessageTextNodes,
+            confirmText: 'get premium',
+            confirmAction: exception.value.confirm
+          };
+
+          var secondaryParams = {
+            messageHeading: 'warning',
+            messageIngress: 'you will lose any unsynced data',
+            messageText: secondaryMessageTextNodes,
+            confirmText: 'log out',
+            confirmTextDeferred: 'logging out\u2026',
+            confirmActionDeferredFn: exception.value.secondaryConfirmDeferred,
+            confirmActionPromiseFn: exception.value.secondaryConfirmPromise
+          };
+
+          $scope.showModal(undefined, primaryParams);
+        }
+        else {
           AnalyticsService.error('unexpected', JSON.stringify(exception));
 
           var params = {
             messageHeading: 'oops',
             messageIngress: 'something unexpected happened, sorry!',
-            messageText: JSON.stringify(exception, null, 2),
+            messageDetails: JSON.stringify(exception, null, 2),
             confirmText: 'close'
           };
           $scope.showModal(undefined, params);

@@ -257,6 +257,9 @@
         sanitizeEmail(email),
         currentPassword);
     },
+    sanitizeEmail: function(email) {
+      return sanitizeEmail(email);
+    },
     // Regular expressions for account requests
     postAuthenticateRegex: postAuthenticateRegexp,
     postForgotPasswordRegex: postForgotPasswordRegexp,

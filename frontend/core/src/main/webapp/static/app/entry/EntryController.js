@@ -54,6 +54,14 @@ function EntryController($http, $location, $rootScope, $routeParams, $scope,
     return packaging === 'web';
   };
 
+  // NAVIGATION
+
+  $scope.activeDetails = undefined;
+  $scope.swipeToDetails = function(detailsType){
+    $scope.activeDetails = detailsType;
+    SwiperService.swipeTo('entry/details');
+  };
+
   $scope.swipeToLogin = function() {
     $scope.entryState = 'login';
     $scope.user = {};
@@ -72,9 +80,11 @@ function EntryController($http, $location, $rootScope, $routeParams, $scope,
     SwiperService.swipeTo('entry/main');
   };
 
-  $scope.swipeToDetails = function() {
-    SwiperService.swipeTo('entry/details');
-  };
+  // PREMIUM
+
+  function swipeToPremium() {
+    $scope.swipeToDetails('premium');
+  }
 
   $scope.isHomeSlideEnabled = function() {
     return !directToLogin;
@@ -111,7 +121,7 @@ function EntryController($http, $location, $rootScope, $routeParams, $scope,
     }
   };
 
-  // LOG IN
+  // LOG IN / LOG OUT
 
   $scope.logIn = function() {
     if ($scope.rememberByDefault()) {
@@ -136,10 +146,35 @@ function EntryController($http, $location, $rootScope, $routeParams, $scope,
       AnalyticsService.error('login', 'offline');
       $scope.entryOffline = true;
     } else if (error.type === 'forbidden') {
-      AnalyticsService.error('login', 'failed');
-      $scope.loginFailed = true;
+       if (error.value.data && error.value.data.code === 24) {
+        // Premium
+        var rejection = {
+          type: 'premium',
+          value: {
+            confirm: swipeToPremium,
+            secondaryConfirmDeferred: clearAllLogins,
+            secondaryConfirmPromise: clearAllLoginsSuccess
+          }
+        };
+        $rootScope.$emit('emException', rejection);
+        AnalyticsService.error('login', 'already logged in');
+      } else {
+        AnalyticsService.error('login', 'failed');
+        $scope.loginFailed = true;
+      }
     }
     $scope.loggingIn = false;
+  }
+
+  function clearAllLogins() {
+    return UserService.clear();
+  }
+
+  function clearAllLoginsSuccess() {
+    UISessionService.pushNotification({
+      type: 'fyi',
+      text: 'you are now logged out'
+    });
   }
 
   $scope.rememberByDefault = function() {

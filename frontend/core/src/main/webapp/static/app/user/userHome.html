@@ -69,6 +69,7 @@
       </div>
     </div>
 
+    <!-- ACTIVE USER -->
     <div ng-if="useCollectives()">
       <h3 class="row-form">switch to</h3>
       <div ng-repeat="(key, value) in collectives">
@@ -83,6 +84,7 @@
       </a>
     </div>
 
+    <!-- ACCOUNT -->
     <div class="group-mixed">
       <a href class="group-mixed--middle link" swiper-click="swipeToDetails('account')">
         <span class="text-link">account</span>
@@ -93,6 +95,8 @@
         </a>
       </div>
     </div>
+
+    <!-- ABOUT -->
     <div class="group-mixed">
       <a href class="group-mixed--middle link" swiper-click="swipeToDetails('about')">
         <span class="text-link">about</span>
@@ -103,11 +107,26 @@
         </a>
       </div>
     </div>
+
+    <!-- ADMIN -->
     <div ng-if="isAdmin()" class="group-mixed">
       <a href class="group-mixed--middle link" swiper-click="changeFeature('admin')">
         <span class="text-link">admin</span>
       </a>
     </div>
+
+    <!-- PREMIUM -->
+    <div ng-if="isAdmin()" class="group-mixed">
+      <a href class="group-mixed--middle link" swiper-click="swipeToDetails('premium')">
+        <span class="text-link">get premium</span>
+      </a>
+      <div class="group-mixed--right">
+        <a href swiper-click="swipeToDetails('premium')">
+          <span class="text-navigation-forward large"></span>
+        </a>
+      </div>
+    </div>
+
     <div class="group-error height-large row-form">
       <span ng-if="logoutFailed" class="text-error">log out failed</span>
       <span ng-if="logoutOffline" class="text-error">can't connect to server. are you online?</span>

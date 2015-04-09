@@ -14,25 +14,51 @@
  */
  'use strict';
 
- function modalDirective($rootScope, $timeout) {
+ function modalDirective($animate, $rootScope, $timeout) {
   return {
     restrict: 'A',
     scope: {
       modalInfos: '=modal',
-      closeModal: '&modalClose'
+      closeModal: '&modalClose',
+      reinit: '=modalReinit'
     },
     templateUrl: $rootScope.urlBase + 'app/base/modal.html',
     // NOTE: URL could be passed as a directive attribute for different kind of modals, e.g. list picker.
-    link: function(scope) {
-      scope.messageHeading = scope.modalInfos.messageHeading;
-      scope.messageIngress = scope.modalInfos.messageIngress;
-      scope.messageText = scope.modalInfos.messageText;
-      scope.closeText = scope.modalInfos.closeText;
-      scope.confirmText = scope.modalInfos.confirmText || 'ok';
-      scope.hideCloseText = scope.modalInfos.cancelDisabled;
+    link: function(scope, element) {
+
+      function init(params) {
+        scope.messageHeading = params.messageHeading;
+        scope.messageIngress = params.messageIngress;
+        scope.messageText = params.messageText;
+        scope.messageDetails = params.messageDetails;
+        scope.closeText = params.closeText;
+        scope.confirmText = params.confirmText || 'ok';
+        scope.hideCloseText = params.cancelDisabled;
+      }
+
+      init(scope.modalInfos);
+
+      document.addEventListener('keyup', keyReleased, false);
+      function keyReleased(event) {
+        if (event.keyCode === 27) {
+          // ESC button. Close modal.
+          if (!$rootScope.$$phase && !scope.$$phase) {
+            // Need to apply to propagate to parent (closeModal is in rootViewDirective).
+            scope.$apply(scope.closeModal);
+          }
+          else {
+            scope.closeModal();
+          }
+        }
+      }
 
       scope.confirmAction = function() {
-        if (typeof scope.modalInfos.confirmActionDeferredFn === 'function') {
+        if (typeof scope.modalInfos.confirmAction === 'function') {
+          scope.closeModal();
+          // Delay executing callback so that close animation has finished before it.
+          $timeout(scope.modalInfos.confirmAction, 300);
+        }
+        else if (typeof scope.modalInfos.confirmActionDeferredFn === 'function') {
           // Confirm action is a promise.
           scope.confirmText = scope.modalInfos.confirmTextDeferred;
           scope.confirmDisabled = true;
@@ -58,8 +84,23 @@
         scope.confirmText = scope.modalInfos.confirmText;
         scope.confirmDisabled = false;
       }
+
+      if (scope.reinit && typeof scope.reinit.register === 'function') scope.reinit.register(reinit);
+
+      function reinit(params) {
+        $animate.addClass(element, 'modal-fade-scale').then(function() {
+          element[0].classList.remove('modal-fade-scale');
+        });
+        scope.modalInfos = params;
+        init(scope.modalInfos);
+      }
+
+      scope.$on('$destroy', function() {
+        if (scope.reinit && typeof scope.reinit.unregister === 'function') scope.reinit.unregister();
+        document.removeEventListener('keyup', keyReleased, false);
+      });
     }
   };
 }
-modalDirective['$inject'] = ['$rootScope', '$timeout'];
+modalDirective['$inject'] = ['$animate', '$rootScope', '$timeout'];
 angular.module('em.base').directive('modal', modalDirective);

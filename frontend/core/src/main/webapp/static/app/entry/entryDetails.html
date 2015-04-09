@@ -1,4 +1,5 @@
-<form ng-if="entryState === 'login'" name="forgotForm">
+<!-- FORGOT -->
+<form ng-if="activeDetails === 'forgot'" name="forgotForm">
   <section class="container-content" editable-field-container>
     <header class="group-symmetrical">
       <a href class="group-symmetrical--left link-navigation" ng-click="swipeToMain()" editable-field-deactivate>
@@ -38,3 +39,13 @@
     </button>
   </footer>
 </form>
+
+<!-- PREMIUM -->
+<section ng-if="activeDetails === 'premium'" class="container-content">
+  <header class="group-symmetrical">
+    <a href class="group-symmetrical--left link-navigation" ng-click="swipeToMain()">
+      <span class="text-navigation-back downplayed">back</span>
+    </a>
+  </header>
+  <div ng-include="urlBase + 'app/user/userPremium.html'" include-replace></div>
+</section>

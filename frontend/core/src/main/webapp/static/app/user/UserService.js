@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function UserService(BackendClientService, UISessionService, UserSessionService) {
+ function UserService(AuthenticationService, BackendClientService, UISessionService, UserSessionService) {
 
   var logoutRegex = /logout/;
   var postLogoutRegexp = new RegExp(
@@ -22,6 +22,11 @@
     BackendClientService.apiPrefixRegex.source +
     logoutRegex.source +
     /$/.source
+    ),
+  postClearRegexp = new RegExp(
+    /^/.source +
+    BackendClientService.apiPrefixRegex.source +
+    /clear$/.source
     );
 
   return {
@@ -49,6 +54,14 @@
     },
     logout: function() {
       return BackendClientService.postOnline('/api/logout', postLogoutRegexp);
+    },
+    clear: function(email, password) {
+      return BackendClientService.postOnlineWithUsernamePassword(
+        '/api/clear',
+        this.postClearRegex,
+        undefined,
+        AuthenticationService.sanitizeEmail(email),
+        password);
     },
     migrateUser: function(){
       /* migrate old onboarded value to 1.8-> values */
@@ -127,8 +140,10 @@
     putChangePasswordRegex: new RegExp(
       /^/.source +
       BackendClientService.apiPrefixRegex.source +
-      /password$/.source)
+      /password$/.source),
+    postClearRegex: postClearRegexp
   };
 }
-UserService['$inject'] = ['BackendClientService', 'UISessionService', 'UserSessionService'];
+UserService['$inject'] = ['AuthenticationService', 'BackendClientService', 'UISessionService',
+'UserSessionService'];
 angular.module('em.user').factory('UserService', UserService);
