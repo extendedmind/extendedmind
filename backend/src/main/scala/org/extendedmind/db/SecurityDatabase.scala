@@ -62,6 +62,7 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
         for {
           scWithoutToken <- authenticate(email, attemptedPassword).right
           unit <- Right(undeleteItem(scWithoutToken.user)).right // Resurrect deleted user with authenticate
+          unit <- validateSubscription(scWithoutToken).right
           token <- Right(Token(scWithoutToken.userUUID)).right
           tokenInfo <- Right(saveToken(scWithoutToken.user, token, payload)).right
           sc <- Right(scWithoutToken.copy(
@@ -255,13 +256,27 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     } else fail(INVALID_PARAMETER, ERR_BASE_TOKEN_NOT_REPLACEABLE, "Token not replaceable")
   }
   
+  protected def validateSubscription(sc: SecurityContext)(implicit neo4j: DatabaseService): Response[Unit] = {      
+    if (settings.signUpMode == MODE_NORMAL
+        && (sc.user.hasLabel(UserLabel.NORMAL) || sc.user.hasLabel(UserLabel.BETA))
+        && !sc.user.hasLabel(SubscriptionLabel.PREMIUM)
+        && hasValidOrReplaceableToken(sc.user)){
+      fail(INVALID_PARAMETER, ERR_BASE_ALREADY_LOGGED_IN, "Already logged in and not premium user")
+    }else{
+      Right(Unit)
+    }
+  }
+  
   protected def clearExtraLogins(userNode: Node, tokenNode: Node)(implicit neo4j: DatabaseService): Response[CountResult] = {
-    if ((userNode.hasLabel(UserLabel.NORMAL) || userNode.hasLabel(UserLabel.BETA)) && !userNode.hasLabel(SubscriptionLabel.PREMIUM)){
-      // When a normal or beta user who does not have a valid subscription swaps token, all other tokens are deleted
+    if (settings.signUpMode == MODE_NORMAL
+        && (userNode.hasLabel(UserLabel.NORMAL) || userNode.hasLabel(UserLabel.BETA)) 
+        && !userNode.hasLabel(SubscriptionLabel.PREMIUM)){
+      // When a normal or beta user who does not have a valid subscription swaps token,
+      // all other tokens are deleted
       destroyTokens(userNode, Some(iterTokenNode => {
         if (tokenNode != iterTokenNode) true
         else false
-      })) 
+      }))
     }else{
       // Only destroy extra tokens that have expired and are not replaceable
       destroyTokens(userNode, Some(iterTokenNode => {
@@ -279,6 +294,26 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
         }
       })) 
     }
+  }
+  
+  protected def hasValidOrReplaceableToken(userNode: Node)(implicit neo4j: DatabaseService): Boolean = {
+    val tokenTraversal = neo4j.gds.traversalDescription()
+      .breadthFirst()
+      .relationships(DynamicRelationshipType.withName(SecurityRelationship.IDS.name), Direction.INCOMING)
+      .evaluator(Evaluators.excludeStartPosition())
+      .evaluator(LabelEvaluator(List(MainLabel.TOKEN)))
+      .evaluator(Evaluators.toDepth(1))
+      .traverse(userNode)
+    val tokenList = tokenTraversal.nodes().toList
+    val currentTime = System.currentTimeMillis
+    tokenList.forall(tokenNode => {
+      val authInfo = getAuthenticationInfo(tokenNode)
+      if (authInfo._2 >= currentTime || (authInfo._3.isDefined && authInfo._3.get >= currentTime)){
+        true
+      }else{
+        false
+      }
+    })
   }
   
   protected def createNewAccessKey(tokenNode: Node, sc: SecurityContext, payload: Option[AuthenticatePayload])(implicit neo4j: DatabaseService): SecurityContext = {
