@@ -34,7 +34,8 @@
       $scope.resetting = true;
       AuthenticationService.postResetPassword(passwordResetCode, $scope.user.username, $scope.user.password)
       .then(function() {
-        if (packaging === 'web' && DetectBrowserService.isMobile() || !DetectBrowserService.isChrome()){
+        if (packaging === 'web' && (DetectBrowserService.isMobile() ||
+              (!DetectBrowserService.isChrome() && !DetectBrowserService.isWindowsPhone()))){
           $location.url($location.path());
           $location.path('/');
         }else{
