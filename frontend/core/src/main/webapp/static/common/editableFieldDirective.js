@@ -37,9 +37,6 @@
       if (attrs.editableFieldBlur) {
         var blurCallback = $parse(attrs.editableFieldBlur).bind(undefined, scope);
       }
-      if (attrs.editableFieldAutofocus) {
-        focusElement();
-      }
 
       function focusElement() {
         function doFocusElement(){

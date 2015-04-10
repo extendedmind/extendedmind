@@ -23,9 +23,9 @@ function EntryController($http, $location, $routeParams, $scope,
 
   AnalyticsService.visitEntry('entry');
 
-  $scope.directToLogin = false;
+  var directToLogin = false;
   function initializeLogin(){
-    $scope.directToLogin = true;
+    directToLogin = true;
     $scope.entryState = 'login';
     $scope.user = {};
     SwiperService.setInitialSlidePath('entry', 'entry/main');
@@ -77,11 +77,11 @@ function EntryController($http, $location, $routeParams, $scope,
   };
 
   $scope.isHomeSlideEnabled = function() {
-    return !$scope.directToLogin;
+    return !directToLogin;
   };
 
   $scope.isEntryInputAutoFocusDisabled = function() {
-    return $scope.directToLogin;
+    return directToLogin;
   };
 
   var entryEmailMainInputFocusCallbackFunction;
