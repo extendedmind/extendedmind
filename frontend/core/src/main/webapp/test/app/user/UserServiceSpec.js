@@ -17,8 +17,8 @@
 describe('UserService', function() {
 
   // INJECTS
-  var $httpBackend;
-  var UserService, UserSessionService;
+  var $httpBackend, $q;
+  var BackendClientService, UserService, UserSessionService;
 
   // MOCKS
   var accountResponse = getJSONFixture('accountResponse.json');
@@ -39,8 +39,10 @@ describe('UserService', function() {
         sessionStore = {};
     });
 
-    inject(function (_$httpBackend_, _UserService_, _UserSessionService_) {
+    inject(function (_$httpBackend_, _$q_, _BackendClientService_, _UserService_, _UserSessionService_) {
       $httpBackend = _$httpBackend_;
+      $q = _$q_;
+      BackendClientService = _BackendClientService_;
       UserService = _UserService_;
       UserSessionService = _UserSessionService_;
     });
@@ -53,6 +55,13 @@ describe('UserService', function() {
 
   // TESTS
   it('should get account', function () {
+
+    function testRefreshCallback() {
+      return $q.when();
+    }
+
+    BackendClientService.registerRefreshCredentialsCallback(testRefreshCallback);
+
     spyOn(UserSessionService, 'setEmail');
     $httpBackend.expectGET('/api/account').respond(200, accountResponse);
     UserService.getAccount().then(function(authenticateResponse) {
@@ -62,6 +71,13 @@ describe('UserService', function() {
   });
 
   it('should log out', function() {
+
+    function testRefreshCallback() {
+      return $q.when();
+    }
+
+    BackendClientService.registerRefreshCredentialsCallback(testRefreshCallback);
+
     var loggedOut;
     $httpBackend.expectPOST('/api/logout').respond(200, logoutResponse);
     UserService.logout().then(function(response) {
