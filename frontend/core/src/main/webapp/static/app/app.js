@@ -89,8 +89,10 @@
 
     function isSupportedPlatformAndBrowser($q, DetectBrowserService) {
       var deferred = $q.defer();
-      if (packaging === 'web' && !DetectBrowserService.isChrome()) deferred.reject('clearAll');
-      else deferred.resolve();
+      if (packaging === 'web' && (!DetectBrowserService.isChrome() && !DetectBrowserService.isWindowsPhone()))
+        deferred.reject('clearAll');
+      else
+        deferred.resolve();
       return deferred.promise;
     }
 

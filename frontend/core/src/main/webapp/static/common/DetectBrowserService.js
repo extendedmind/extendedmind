@@ -30,6 +30,9 @@
     isIos: function() {
       return /iP(hone|od|ad)/.test(navigator.platform);
     },
+    isWindowsPhone: function(){
+      return /Windows Phone/i.test(navigator.userAgent);
+    },
     isMobile: function() {
       return this.isAndroid() || this.isIos();
     },
