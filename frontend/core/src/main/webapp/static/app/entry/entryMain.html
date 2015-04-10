@@ -14,7 +14,8 @@
     <div class="row-form">
       <input type="email" name="email" ng-model="user.username"
       placeholder="enter email&#8230;" maxlength="254" editable-field="getEditableFieldSticky()"
-      editable-field-register-callbacks="registerEntryMainEmailInputCallbacks(focus, blur)" required />
+      editable-field-autofocus="{{directToLogin}}"
+      editable-field-register-callbacks="registerEntryMainEmailInputCallbacks(focus, blur)" required/>
     </div>
     <div class="group-error row-form">
       <div ng-if="loginForm.email.$touched" ng-messages="loginForm.email.$error">
@@ -37,8 +38,7 @@
       <span ng-if="entryOffline" class="text-error">can't connect to server. are you online?</span>
     </div>
   </section>
-  <footer class="container-content--after group-btn"
-    editable-field-container="{{isEntryInputAutoFocusDisabled() ? '' : 'auto'}}">
+  <footer class="container-content--after group-btn" editable-field-container="auto">
     <button type="submit" class="btn-action" ng-disabled="!loginForm.$valid || loggingIn" ng-click="logIn()">
       <span class="text-btn" ng-bind="loggingIn && 'logging in' || 'done'"></span>
     </button>
