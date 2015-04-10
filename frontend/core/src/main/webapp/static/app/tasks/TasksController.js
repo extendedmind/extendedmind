@@ -147,7 +147,7 @@
 
     for (var i = activeAndArchivedTasks.length - 1; i >= 0; i--) {
       var task = activeAndArchivedTasks[i];
-      if (task.trans.list && task.trans.list.uuid === listUUID) cachedTasks['list'].array.push(task);
+      if (task.trans.list && task.trans.list.trans.uuid === listUUID) cachedTasks['list'].array.push(task);
     }
   }
 
@@ -166,7 +166,7 @@
     } else {
       for (i = activeTasks.length - 1; i >= 0; i--) {
         var task = activeTasks[i];
-        if (task.trans.context && task.trans.context.uuid === contextId) {
+        if (task.trans.context && task.trans.context.trans.uuid === contextId) {
           cachedTasks['context'].array.push(task);
         }
       }
