@@ -92,10 +92,6 @@ function EntryController($http, $location, $rootScope, $routeParams, $scope,
     return !$scope.directToLogin;
   };
 
-  $scope.isEntryInputAutoFocusDisabled = function() {
-    return $scope.directToLogin;
-  };
-
   var entryEmailMainInputFocusCallbackFunction;
   var entryEmailMainInputBlurCallbackFunction;
   $scope.registerEntryMainEmailInputCallbacks = function(focus, blur){
