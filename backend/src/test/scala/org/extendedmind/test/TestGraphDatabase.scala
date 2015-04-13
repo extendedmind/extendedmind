@@ -160,7 +160,8 @@ trait TestGraphDatabase extends GraphDatabase {
       Task("book flight", None, None, Some("2014-01-01"), None, None,
         Some(ExtendedItemRelationships(Some(tripList.uuid.get), None, Some(scala.List(browserTag.right.get.uuid.get)))))).right.get
     putNewTask(Owner(timoUUID, None),
-      Task("print tickets", None, Some("http://www.finnair.fi"), Some("2014-01-02"), Some("10:00"), None,
+      Task("print tickets", None, Some("http://www.finnair.fi"), Some("2014-01-02"), None,
+          Some(scala.List(Reminder("12345678901234567", "ln", "ios-cordova", "iPhone6", System.currentTimeMillis + 60000))),
         Some(ExtendedItemRelationships(Some(tripList.uuid.get), None, Some(scala.List(officeTag.right.get.uuid.get)))))).right.get
     val completedTask = putNewTask(Owner(timoUUID, None),
       Task("get ext.md domain", None, None, Some("2013-05-01"), None, None,

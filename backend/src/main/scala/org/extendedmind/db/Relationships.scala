@@ -40,4 +40,5 @@ object ItemRelationship {
   val HAS_PARENT = ExtendedMindRelationship("HAS_PARENT")
   val HAS_TAG = ExtendedMindRelationship("HAS_TAG")
   val HAS_ORIGIN = ExtendedMindRelationship("HAS_ORIGIN")
+  val HAS_REMINDER = ExtendedMindRelationship("HAS_REMINDER")
 }

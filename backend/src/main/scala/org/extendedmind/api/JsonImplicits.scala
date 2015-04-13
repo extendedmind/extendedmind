@@ -99,6 +99,7 @@ object JsonImplicits extends DefaultJsonProtocol {
   implicit val implVisibility = jsonFormat2(SharedItemVisibility.apply)
   implicit val implRelationships = jsonFormat3(ExtendedItemRelationships.apply)
   implicit val implItem = jsonFormat8(Item.apply)
+  implicit val implReminder = jsonFormat9(Reminder.apply)
   implicit val implTask = jsonFormat17(Task.apply)
   implicit val implNote = jsonFormat13(Note.apply)
   implicit val implList = jsonFormat14(List.apply)  

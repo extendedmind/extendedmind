@@ -154,7 +154,7 @@ class TaskBestCaseSpec extends ServiceSpecBase {
       + "and create a new task with first complete with POST to /[userUUID]/task/[itemUUID]/complete"
       + "and stop the repeating by deleting the created task with DELETE to /[userUUID]/task/[itemUUID]/complete") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-      val newTask = Task("review inbox", None, None, Some("2013-12-31"), None, Some(RepeatingType.WEEKLY), None)
+      val newTask = Task("review inbox", None, None, Some("2013-12-31"), Some(RepeatingType.WEEKLY), None, None)
       val putTaskResponse = putNewTask(newTask, authenticateResponse)
 
       Post("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get + "/complete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
@@ -249,5 +249,40 @@ class TaskBestCaseSpec extends ServiceSpecBase {
         }
       }
     }
+    
+    it("should successfully put new task with reminder on PUT to /[userUUID]/task, "
+      + "add new reminders with PUT to /[userUUID]/task/[taskUUID], "
+      + "remove one reminders with PUT to /[userUUID]/task/[taskUUID], "
+      + "remove all reminders with PUT to /[userUUID]/task/[taskUUID]") {
+      val reminderTime = System.currentTimeMillis + 60000
+      val reminderId1 = "1"
+      val reminder1 = Reminder(reminderId1, "ln", "ios-cordova", "iPhone6", reminderTime)
+      val reminderId2 = "2"
+      val reminder2 = Reminder(reminderId2, "ln", "ios-cordova", "iPhone6", reminderTime+1)
+      val reminderId3 = "3"
+      val reminder3 = Reminder(reminderId3, "ln", "ios-cordova", "iPhone6", reminderTime+2)
+      val reminderId4 = "4"
+      val reminder4 = Reminder(reminderId4, "ln", "ios-cordova", "iPhone6", reminderTime+3)
+      val newTask = Task("learn Spanish", None, None, None, None, 
+                          Some(scala.List(reminder1)), None)                          
+      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+      val putTaskResponse = putNewTask(newTask, authenticateResponse)
+      getTask(putTaskResponse.uuid.get, authenticateResponse).reminders.get(0).id should be (reminderId1)
+      
+      // Add two reminders
+      val updatedTask = newTask.copy(reminders = Some(newTask.reminders.get :+ reminder2 :+ reminder3))
+      putExistingTask(updatedTask, putTaskResponse.uuid.get, authenticateResponse)
+      val threeReminders = getTask(putTaskResponse.uuid.get, authenticateResponse).reminders.get
+      threeReminders.length should be (3)
+      
+      // Add fourth and remove first and third
+      val twoReminders = threeReminders.filter { reminder => reminder.id == reminderId2 } :+ reminder4
+      putExistingTask(updatedTask.copy(reminders = Some(twoReminders)), putTaskResponse.uuid.get, authenticateResponse)
+      getTask(putTaskResponse.uuid.get, authenticateResponse).reminders.get.length should be (2)
+      
+      // Delete every reminder
+      putExistingTask(updatedTask.copy(reminders = None), putTaskResponse.uuid.get, authenticateResponse)
+      getTask(putTaskResponse.uuid.get, authenticateResponse).reminders should be (None)
+    }    
   }
 }

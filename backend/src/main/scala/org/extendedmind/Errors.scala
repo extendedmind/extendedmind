@@ -74,4 +74,6 @@ case object ERR_USER_TOKEN_MORE_THAN_1_USERS extends ErrorCode(5005)
 case object ERR_USER_DELETE_WITH_COLLECTIVES extends ErrorCode(5006)
 case object ERR_USER_DELETE_ACCEPTED_INVITES extends ErrorCode(5007)
 
+case object ERR_TASK_INVALID_REMINDER_UUID extends ErrorCode(6001)
+
 

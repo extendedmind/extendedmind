@@ -38,11 +38,11 @@ case class Task(uuid: Option[UUID], id: Option[String], created: Option[Long], m
                 title: String, description: Option[String], 
                 link: Option[String],
                 due: Option[String],
-                reminder: Option[String],
                 repeating: Option[String],
                 completed: Option[Long],
                 assignee: Option[UUID],
                 assigner: Option[UUID],
+                reminders: Option[scala.List[Reminder]],
                 visibility: Option[SharedItemVisibility],
                 relationships: Option[ExtendedItemRelationships])
             extends ExtendedItem{
@@ -52,7 +52,6 @@ case class Task(uuid: Option[UUID], id: Option[String], created: Option[Long], m
       "Description can not be more than " + DESCRIPTION_MAX_LENGTH + " characters")
   if (link.isDefined) require(validateLength(link.get, 2000), "Link can not be more than 2000 characters")
   if (due.isDefined) require(validateDateString(due.get), "Due date does not match pattern yyyy-MM-dd")
-  if (reminder.isDefined) require(validateTimeString(reminder.get), "Reminder time does not match pattern hh:mm")
   if (repeating.isDefined) require(due.isDefined, "Repeating requires due date")
   if (repeating.isDefined) require(
       try {
@@ -68,12 +67,41 @@ object Task{
   def apply(title: String, description: Option[String], 
             link: Option[String],
             due: Option[String],
-            reminder: Option[String],
             repeating: Option[RepeatingType.RepeatingType],
+            reminders: Option[scala.List[Reminder]],
             relationships: Option[ExtendedItemRelationships]) 
         = new Task(None, None, None, None, None, None, title, description, 
-                   link, due, reminder, if (repeating.isDefined) Some(repeating.get.toString()) else None, None, None, None, 
-                   None, relationships)
+                   link, due, if (repeating.isDefined) Some(repeating.get.toString()) else None, None, None, None,
+                   reminders, None, relationships)
+}
+
+// List of Reminder types
+object ReminderType extends Enumeration {
+  type ReminderType = Value
+  val LOCAL_NOTIFICATION = Value("ln")
+}
+
+case class Reminder(uuid: Option[UUID], created: Option[Long], modified: Option[Long],
+                    id: String, reminderType: String, packaging: String, device: String,
+                    notification: Long,
+                    remove: Option[Long] // i.e. mark for removal
+  ){ 
+  require(
+      try {
+        val rt = ReminderType.withName(reminderType)
+        true
+      }catch {
+        case _:Throwable => false
+      }, 
+      "Expected 'ln' but got " + reminderType)
+  require(validateLength(id, 64), "Reminder id can not be more than 64 characters")
+  require(validateLength(packaging, 32), "Packaging can not be more than 32 characters")
+  require(validateLength(device, 64), "Device can not be more than 64 characters")    
+}
+
+object Reminder{
+  def apply(id: String, reminderType: String, packaging: String, device: String, notification: Long) 
+        = new Reminder(None, None, None, id, reminderType, packaging, device, notification, None)
 }
 
 case class CompleteTaskResult(completed: Long, result: SetResult, generated: Option[Task])
