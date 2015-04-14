@@ -119,7 +119,7 @@
 
   $scope.isPickerOpen = function() {
     return $scope.calendarOpen || $scope.contextPickerOpen || $scope.listPickerOpen ||
-    $scope.repeatingPickerOpen;
+    $scope.reminderPickerOpen || $scope.repeatingPickerOpen;
   };
 
   $scope.getPropertyNameInEdit = function() {
@@ -129,6 +129,8 @@
       return 'context';
     else if ($scope.listPickerOpen)
       return 'list';
+    else if ($scope.reminderPickerOpen)
+      return 'reminder';
     else if ($scope.repeatingPickerOpen)
       return 'repeat';
   };
@@ -169,6 +171,31 @@
 
   $scope.clearTransientDate = function(task) {
     if (task.trans.due) delete task.trans.due;
+  };
+
+  // REMINDER
+  $scope.openReminderPicker = function(task) {
+    var hours, minutes;
+    if (task.trans.reminder) {
+      var reminderDate = new Date(task.trans.reminder);
+      var reminderHours = reminderDate.getHours().toString();
+      var reminderMinutes = reminderDate.getMinutes().toString();
+      hours = reminderHours[1] ? reminderHours : '0' + reminderHours[0];
+      minutes = reminderMinutes[1] ? reminderMinutes : '0' + reminderMinutes[0];
+    } else {
+      hours = 12;
+      minutes = '00';
+    }
+    $scope.reminder = {
+      hours: hours,
+      minutes: minutes
+    };
+    console.log($scope.reminder);
+    $scope.reminderPickerOpen = true;
+  };
+
+  $scope.closeReminderPicker = function() {
+    $scope.reminderPickerOpen = false;
   };
 
   // CONTEXT PICKER

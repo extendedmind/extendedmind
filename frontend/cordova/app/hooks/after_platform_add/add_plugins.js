@@ -8,6 +8,7 @@ var pluginlist = [
     "org.apache.cordova.media",
     "https://github.com/apache/cordova-plugin-splashscreen.git",
     "https://github.com/extendedmind/Calendar-PhoneGap-Plugin.git",
+    "https://github.com/katzer/cordova-plugin-local-notifications",
     "https://github.com/leohenning/KeepScreenOnPlugin",
     "org.apache.cordova.device"
 ];

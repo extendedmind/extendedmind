@@ -61,7 +61,7 @@
         <div class="container-content" drawer-override-aisle="right" ng-init="drawerAisleInitialized = true">
 
           <!-- TASK TITLE -->
-          <form role="form" ng-hide="calendarOpen || taskDescriptionFocused || listPickerOpen"
+          <form role="form" ng-hide="calendarOpen || taskDescriptionFocused || listPickerOpen || reminderPickerOpen"
             class="group-mixed with-checkbox" autocapitalize="none" autocorrect="off">
             <div class="group-mixed--left">
               <input type="checkbox" swiper-click="clickCompleteTaskInEdit()" ng-model="task.trans.optimisticComplete"
@@ -78,7 +78,7 @@
           </form>
 
           <!-- DATE -->
-          <div ng-hide="calendarOpen || taskDescriptionFocused || listPickerOpen"
+          <div ng-hide="calendarOpen || taskDescriptionFocused || listPickerOpen || reminderPickerOpen"
             class="group-mixed with-checkbox">
             <a href class="group-mixed--middle link-search-result" ng-class="!task.trans.due && 'downplayed'"
               swiper-click="openCalendar()">
@@ -115,8 +115,35 @@
             </div>
           </div>
 
+          <!-- REMINDER -->
+          <div ng-if="task.trans.due"
+            ng-hide="calendarOpen || taskDescriptionFocused || listPickerOpen || reminderPickerOpen"
+            class="group-mixed with-checkbox">
+            <a href class="group-mixed--middle link-search-result" ng-class="!task.trans.reminder && 'downplayed'"
+              swiper-click="openReminderPicker(task)">
+              <span class="text-field--title"
+                ng-bind="task.trans.reminder ? task.trans.reminder : 'add reminder\u2026'">
+              </span>
+            </a>
+            <div ng-if="task.trans.reminder" class="group-mixed--right">
+              <span class="text-field--label">reminder</span>
+            </div>
+          </div>
+
+          <!-- REMINDER PICKER -->
+          <div ng-if="reminderPickerOpen" class="swiper-no-swiping animate-fade-in row-top-parent"
+            editable-field-container="auto" editable-field-container-clicked-elsewhere="closeReminderPicker()"
+            data-snap-ignore="true" style="">
+            <!-- <input type="number" leading-zero="{{reminder.hours}}" pattern="\d*" ng-trim="false" /> -->
+            <!-- <span style="">:</span> -->
+            <input type="number" leading-zero ng-model="reminder.minutes" pattern="\d*" />
+            <!-- <input type="number" pattern="\d+(\.\d{2})?" min="0" max="23" /> -->
+            <!-- <input type="text" pattern="[0-9]*" maxlength="2" ng-model="reminder.hours" style="" /> -->
+            <!-- <input type="text" pattern="[0-9]*" maxlength="2" ng-model="reminder.minutes" style="" /> -->
+          </div>
+
           <!-- LIST -->
-          <div ng-hide="calendarOpen || taskDescriptionFocused || listPickerOpen ||
+          <div ng-hide="calendarOpen || taskDescriptionFocused || listPickerOpen || reminderPickerOpen ||
                         features.lists.getStatus('active') === 'disabled'"
             class="group-mixed with-checkbox">
             <a href class="group-mixed--middle link-search-result" ng-class="!task.trans.list && 'downplayed'"
@@ -147,7 +174,8 @@
           </div>
 
           <!-- DESCRIPTION -->
-          <textarea ng-if="drawerAisleInitialized" ng-hide="calendarOpen || listPickerOpen" id="ignoreSnap"
+          <textarea ng-if="drawerAisleInitialized"
+            ng-hide="calendarOpen || listPickerOpen || reminderPickerOpen" id="ignoreSnap"
             ng-model="task.trans.description" input-model-validator ng-trim="false"
             ng-focus="setTaskDescriptionFocus(true)" ng-blur="setTaskDescriptionFocus(false)" msd-elastic
             placeholder="enter description&#8230;" maxlength="1024" autocapitalize="none" autocorrect="off">
