@@ -340,7 +340,10 @@ Icon classes
   }
 }
 
-.icon-arrow-left, .icon-arrow-right {
+.icon-arrow-left,
+.icon-arrow-right,
+.icon-arrow-down,
+.icon-arrow-up {
   &:after {
     .set-icon-font;
     color: @color-text-downplayed;
@@ -353,6 +356,35 @@ Icon classes
   content: @icon-arrow-left;
 }
 
-.icon-arrow-right:after {
+.icon-arrow-right:after,
+.icon-arrow-down:after,
+.icon-arrow-up:after {
   content: @icon-arrow-right;
+}
+
+// 1. Clear padding-left, which would otherwise rotate up/down.
+// 2. Inline elements can't be transformed, and pseudo elements are inline by default, so must apply
+//    display: block or display: inline-block to transform it.
+.icon-arrow-down:after,
+.icon-arrow-up:after {
+  padding-left: 0;        // [1]
+  display: inline-block;  // [2]
+}
+
+.icon-arrow-down:after {
+  // padding-bottom: @width-arrow-text-gap-rotated;
+  -webkit-transform: rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -o-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  transform: rotate(90deg);
+}
+
+.icon-arrow-up:after {
+  // padding-top: @width-arrow-text-gap-rotated;
+  -webkit-transform: rotate(-90deg);
+  -moz-transform: rotate(-90deg);
+  -o-transform: rotate(-90deg);
+  -ms-transform: rotate(-90deg);
+  transform: rotate(-90deg);
 }

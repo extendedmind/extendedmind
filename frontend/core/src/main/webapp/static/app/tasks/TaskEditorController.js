@@ -186,16 +186,61 @@
       hours = 12;
       minutes = '00';
     }
+
     $scope.reminder = {
-      hours: hours,
-      minutes: minutes
+      hours: {
+        limit: 12,
+        value: hours
+      },
+      minutes: {
+        limit: 59,
+        value: minutes
+      }
     };
-    console.log($scope.reminder);
     $scope.reminderPickerOpen = true;
   };
 
   $scope.closeReminderPicker = function() {
     $scope.reminderPickerOpen = false;
+  };
+
+  $scope.loopTime = function(time, direction) {
+    if (direction === 'up') {
+      if (time.value === time.limit) {
+        time.value = 0;
+      } else {
+        time.value++;
+      }
+    } else if (direction === 'down') {
+      if (time.value.toString() === '00') {
+        time.value = time.limit;
+      } else {
+        time.value--;
+      }
+    }
+    if (time.value < 10) {
+      time.value = 0 + time.value.toString();
+    }
+  };
+
+  $scope.reminderHourKeyDown = function(e) {
+    if(e.which === 9) {
+      // TAB, 'Next' in Android numeric keyboard
+      e.preventDefault();
+      e.target.blur();
+    } else if (e.which === 32) {
+      // Space
+      e.preventDefault();
+    } else if (e.which === 188) {
+      // Comma
+      e.preventDefault();
+    } else if (e.which === 189) {
+      // Dash
+      e.preventDefault();
+    } else if (e.which === 190) {
+      // Period
+      e.preventDefault();
+    }
   };
 
   // CONTEXT PICKER

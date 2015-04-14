@@ -134,12 +134,18 @@
           <div ng-if="reminderPickerOpen" class="swiper-no-swiping animate-fade-in row-top-parent"
             editable-field-container="auto" editable-field-container-clicked-elsewhere="closeReminderPicker()"
             data-snap-ignore="true" style="">
-            <!-- <input type="number" leading-zero="{{reminder.hours}}" pattern="\d*" ng-trim="false" /> -->
-            <!-- <span style="">:</span> -->
-            <input type="number" leading-zero ng-model="reminder.minutes" pattern="\d*" />
-            <!-- <input type="number" pattern="\d+(\.\d{2})?" min="0" max="23" /> -->
-            <!-- <input type="text" pattern="[0-9]*" maxlength="2" ng-model="reminder.hours" style="" /> -->
-            <!-- <input type="text" pattern="[0-9]*" maxlength="2" ng-model="reminder.minutes" style="" /> -->
+
+            <a href swiper-click="loopTime(reminder.hours, 'up')">
+              <span class="icon-arrow-up"></span>
+            </a>
+            <input type="number" leading-zero="reminder.hours.limit" ng-model="reminder.hours.value" pattern="\d*"
+              ng-keydown="reminderHourKeyDown($event)"/>
+            <a href ng-click="loopTime(reminder.hours, 'down')">
+              <span class="icon-arrow-down"></span>
+            </a>
+
+            <span style="">:</span>
+            <input type="number" leading-zero="59" ng-model="reminder.minutes" pattern="\d*" ng-keydown="reminderHourKeyDown($event)"/>
           </div>
 
           <!-- LIST -->
