@@ -96,6 +96,25 @@ trait AdminActions {
     db.shutdownServer
   }
   
+  def tick(priority: Int)(implicit log: LoggingAdapter): Boolean = {
+    if (priority == 1){
+      // Minute
+      log.info("tick minute")
+      true
+    }else if (priority == 2){
+      // Hourly
+      log.info("tick hourly")
+      true
+    }else if (priority == 3){
+      // Daily
+      log.info("tick daily")
+      true
+    }else{
+      log.error("invalid tick priority: " + priority)
+      false
+    }
+  }
+  
 }
 
 class AdminActionsImpl(implicit val settings: Settings, implicit val inj: Injector)

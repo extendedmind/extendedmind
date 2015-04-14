@@ -129,5 +129,5 @@ trait API extends HttpService {
 
   // SYSTEM
   val shutdown = post & path("shutdown")
-
+  val tick = post & path("tick")
 }

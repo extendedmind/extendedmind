@@ -158,7 +158,8 @@ trait Service extends AdminService
 			  with TagService {
 
   import JsonImplicits._
-    
+  implicit val implTick = jsonFormat1(Tick.apply)
+
   val route = {
     getRoot {
       complete {
@@ -175,6 +176,13 @@ trait Service extends AdminService
           adminActions.shutdown
         }
         "Shutting down in 1 second..."
+      }
+    } ~
+    tick {
+      entity(as[Tick]) { payload =>
+        complete {
+          "{\"status\":" + adminActions.tick(payload.priority).toString + "}"
+        }
       }
     } ~ adminRoutes ~ securityRoutes ~ userRoutes ~ inviteRoutes ~ itemRoutes ~ taskRoutes ~ noteRoutes ~ listRoutes ~ tagRoutes
   }

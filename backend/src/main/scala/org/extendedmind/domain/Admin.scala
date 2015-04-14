@@ -27,3 +27,5 @@ case class Users(users: scala.List[User])
 case class Invites(invites: scala.List[Invite])
 
 case class Statistics(users: Long, invites: Long, inviteRequests: Long, items: Long)
+
+case class Tick(priority: Int)

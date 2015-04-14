@@ -80,7 +80,7 @@ object JsonImplicits extends DefaultJsonProtocol {
       case x => deserializationError("Expected TagType as JsString, but got " + x)
     }
   }
-
+  
   implicit val implSetResult = jsonFormat3(SetResult.apply)
   implicit val implErrorResult = jsonFormat3(ErrorResult.apply)
   implicit val implDeleteItemResult = jsonFormat2(DeleteItemResult.apply)
