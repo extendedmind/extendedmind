@@ -125,6 +125,11 @@ trait UserActions {
     log.info("destroyUser: {}", userUUID)
     db.destroyUser(userUUID)
   }
+  
+  def subscribe(userUUID: UUID, subscription: Subscription)(implicit log: LoggingAdapter): Response[SetResult] = {
+    log.info("subscribe: {}", userUUID)
+    Right(SetResult(None, None, 1))
+  }
 }
 
 class UserActionsImpl(implicit val implSettings: Settings, implicit val inj: Injector, 

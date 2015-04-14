@@ -101,6 +101,24 @@ trait UserService extends ServiceBase {
           }
         }
       } ~
+      postSubscribe { url =>
+        authenticate(ExtendedAuth(authenticator, "secure", None)) { securityContext =>
+          authorize(settings.signUpMode == MODE_NORMAL &&
+                    (securityContext.userType == Token.BETA || securityContext.userType == Token.NORMAL)) {
+            entity(as[Subscription]) { subscription =>
+              complete {
+                Future[SetResult] {
+                  setLogContext(securityContext)
+                  userActions.subscribe(securityContext.userUUID, subscription) match {
+                    case Right(sr) => processResult(sr)
+                    case Left(e) => processErrors(e)
+                  }
+                }
+              }
+            }
+          }
+        }
+      } ~
       putEmail { url =>
         authenticate(ExtendedAuth(authenticator, "secure", None)) { securityContext =>
           entity(as[UserEmail]) { email =>

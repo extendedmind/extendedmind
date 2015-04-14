@@ -22,6 +22,8 @@ package org.extendedmind.domain
 import java.util.UUID
 import Validators._
 import org.extendedmind.security.SecurityContext
+import org.extendedmind.security.Token
+import org.extendedmind._
 
 case class UserPreferences(onboarded: Option[String], ui: Option[String]){
   if (onboarded.isDefined) require(validateLength(onboarded.get, 10000), "Onboarded preferences max length is 10000")
@@ -50,19 +52,63 @@ case class UserEmail(email: String){
   require(validateEmailAddress(email), "Not a valid email address")
 }
 
+// List of subscription types
+object SubscriptionType extends Enumeration {
+  type SubscriptionType = Value
+  val MONTHLY_SUBSCRIPTION = Value("monthly")
+  val YEARLY_SUBSCRIPTION = Value("yearly")
+}
+
+// List of payment methods
+object PaymentMethod extends Enumeration {
+  type PaymentMethod = Value
+  val GOOGLE_PLAY_STORE = Value("google")
+  val APPLE_APP_STORE = Value("apple")
+  val PAYPAL = Value("paypal")
+}
+
+case class Subscription(uuid: Option[UUID], created: Option[Long], modified: Option[Long],
+                        subscriptionType: String, paymentMethod: String,
+                        start: Long, end: Long, rejected: Option[Long], data: Option[String]){
+  require(
+      try {
+        val rt = SubscriptionType.withName(subscriptionType)
+        true
+      }catch {
+        case _:Throwable => false
+      }, 
+      "Expected 'monthly' or 'yearly' but got " + subscriptionType)  
+  require(
+      try {
+        val rt = PaymentMethod.withName(paymentMethod)
+        true
+      }catch {
+        case _:Throwable => false
+      }, 
+      "Expected 'google', 'apple' or 'paypal' but got " + paymentMethod)  
+  if (data.isDefined) require(validateLength(data.get, 1000), "Subscription data max length is 1000")
+}
+
 case class UserAccessRight(access: Option[Byte]){
   if (access.isDefined) require(access == Some(1) || access == Some(2), "Not a valid access right, permitted values: 1 = read, 2 = read/write")
 }
 
 case class PublicUser(uuid: UUID)
 
-case class Owner(userUUID: UUID, collectiveUUID: Option[UUID])
+case class Owner(userUUID: UUID, collectiveUUID: Option[UUID], hasPremium: Boolean)
 
 object Owner{
-  def getOwner(ownerUUID: UUID, securityContext: SecurityContext): Owner = {
-    if (securityContext.userUUID == ownerUUID) new Owner(securityContext.userUUID, None) 
-    else new Owner(securityContext.userUUID, Some(ownerUUID))
+  def getOwner(ownerUUID: UUID, securityContext: SecurityContext)(implicit settings: Settings): Owner = {
+    val hasPremium = securityContext.userType == Token.ADMIN || securityContext.userType == Token.ALFA ||
+                     (settings.signUpMode == MODE_NORMAL && securityContext.subscription.isDefined
+                      && securityContext.subscription.get == "premium")
+                     
+    if (securityContext.userUUID == ownerUUID) new Owner(securityContext.userUUID, None, hasPremium) 
+    else new Owner(securityContext.userUUID, Some(ownerUUID), hasPremium)
   }
+  
+  def apply(ownerUUID: UUID, collectiveUUID: Option[UUID]) 
+        = new Owner(ownerUUID, collectiveUUID, false)
 }
 
 case class ForgotPasswordResult(resetCodeExpires: Long)

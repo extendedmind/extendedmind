@@ -54,32 +54,6 @@ object JsonImplicits extends DefaultJsonProtocol {
       case x => deserializationError("Expected TagType as JsString, but got " + x)
     }
   }
-  implicit object InviteRequestResultTypeJsonFormat extends JsonFormat[InviteRequestResultType] {
-    def write(x: InviteRequestResultType) = JsString(
-        x match {
-          case NEW_INVITE_REQUEST_RESULT => "newInviteRequest"
-          case INVITE_REQUEST_RESULT => "inviteRequest"
-          case INVITE_RESULT => "invite"
-          case INVITE_COUPON_RESULT => "inviteCoupon"
-          case INVITE_AUTOMATIC_RESULT => "inviteAutomatic"
-          case SIGNUP_RESULT => "signUp"
-          case USER_RESULT => "user"
-        })
-    def read(value: JsValue) = value match {
-      case JsString(x) => {
-        if (x == "newInviteRequest") NEW_INVITE_REQUEST_RESULT
-        else if (x == "inviteRequest") INVITE_REQUEST_RESULT 
-        else if (x == "invite") INVITE_RESULT 
-        else if (x == "inviteCoupon") INVITE_COUPON_RESULT 
-        else if (x == "inviteAutomatic") INVITE_AUTOMATIC_RESULT 
-        else if (x == "signUp") SIGNUP_RESULT
-        else if (x == "user") USER_RESULT 
-
-        else deserializationError("Expected 'newInviteRequest', 'inviteRequest', 'invite', 'inviteCoupon', 'inviteAutomatic', 'signUp' or 'user' but got " + x)
-      }
-      case x => deserializationError("Expected TagType as JsString, but got " + x)
-    }
-  }
   
   implicit val implSetResult = jsonFormat3(SetResult.apply)
   implicit val implErrorResult = jsonFormat3(ErrorResult.apply)
@@ -109,8 +83,9 @@ object JsonImplicits extends DefaultJsonProtocol {
   implicit val implUserPreferences = jsonFormat2(UserPreferences.apply)
   implicit val implUser = jsonFormat8(User.apply)
   implicit val implUsers = jsonFormat1(Users.apply)
+  implicit val implSubscription = jsonFormat9(Subscription.apply)
   implicit val implStatistics = jsonFormat4(Statistics.apply)
-  implicit val implSecurityContext = jsonFormat10(SecurityContext.apply)
+  implicit val implSecurityContext = jsonFormat11(SecurityContext.apply)
   implicit val implAuthenticatePayload = jsonFormat2(AuthenticatePayload.apply)
   implicit val implCompleteTaskResult = jsonFormat3(CompleteTaskResult.apply)
   implicit val implFavoriteNoteResult = jsonFormat2(FavoriteNoteResult.apply)

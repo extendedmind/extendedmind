@@ -25,6 +25,7 @@ import org.extendedmind.domain.UserPreferences
 
 case class SecurityContext(userUUID: UUID, 
 						   userType: Byte,
+               subscription: Option[String],
 						   modified: Long,
 						   cohort: Option[Int],
 						   token: Option[String],

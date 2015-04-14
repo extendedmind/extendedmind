@@ -271,18 +271,21 @@ class TaskBestCaseSpec extends ServiceSpecBase {
       
       // Add two reminders
       val updatedTask = newTask.copy(reminders = Some(newTask.reminders.get :+ reminder2 :+ reminder3))
-      putExistingTask(updatedTask, putTaskResponse.uuid.get, authenticateResponse)
+      val putExistingTaskResponse = putExistingTask(updatedTask, putTaskResponse.uuid.get, authenticateResponse)
       val threeReminders = getTask(putTaskResponse.uuid.get, authenticateResponse).reminders.get
       threeReminders.length should be (3)
+      putExistingTaskResponse.modified should not be (putTaskResponse.modified)
       
       // Add fourth and remove first and third
       val twoReminders = threeReminders.filter { reminder => reminder.id == reminderId2 } :+ reminder4
-      putExistingTask(updatedTask.copy(reminders = Some(twoReminders)), putTaskResponse.uuid.get, authenticateResponse)
+      val putAgainExistingTaskResponse = putExistingTask(updatedTask.copy(reminders = Some(twoReminders)), putTaskResponse.uuid.get, authenticateResponse)
       getTask(putTaskResponse.uuid.get, authenticateResponse).reminders.get.length should be (2)
+      putAgainExistingTaskResponse.modified should not be (putExistingTaskResponse.modified)
       
       // Delete every reminder
-      putExistingTask(updatedTask.copy(reminders = None), putTaskResponse.uuid.get, authenticateResponse)
+      val putOnceMoreExistingTaskResponse = putExistingTask(updatedTask.copy(reminders = None), putTaskResponse.uuid.get, authenticateResponse)
       getTask(putTaskResponse.uuid.get, authenticateResponse).reminders should be (None)
+      putOnceMoreExistingTaskResponse.modified should not be (putAgainExistingTaskResponse.modified)
     }    
   }
 }

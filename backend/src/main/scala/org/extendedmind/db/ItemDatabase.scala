@@ -464,6 +464,9 @@ trait ItemDatabase extends UserDatabase {
     val relationship = itemNode --> ItemRelationship.HAS_PARENT --> parentNode <;
     // When adding a relationship to a parent list, item needs to match the archived status of the parent
     if (parentNode.hasProperty("archived")) {
+      if (!owner.hasPremium){
+        return fail(INVALID_PARAMETER, ERR_ITEM_ARCHIVE_NOT_PREMIUM, "Archive is only available for premium users")
+      }
       if (!itemNode.hasProperty("archived")) {
         itemNode.setProperty("archived", System.currentTimeMillis)
       }

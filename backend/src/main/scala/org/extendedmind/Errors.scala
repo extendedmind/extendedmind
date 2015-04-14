@@ -60,11 +60,13 @@ case object ERR_ITEM_TAG_WRONG_OWNER extends ErrorCode(3013)
 case object ERR_ITEM_DOES_NOT_HAVE_TAG extends ErrorCode(3014)
 case object ERR_ITEM_CONTENT_ALREADY_DESCRIPTION extends ErrorCode(3015)
 case object ERR_ITEM_CONTENT_TOO_LONG extends ErrorCode(3016)
+case object ERR_ITEM_ARCHIVE_NOT_PREMIUM extends ErrorCode(3017)
 
 case object ERR_LIST_ARCHIVE_CHILDREN extends ErrorCode(4001)
 case object ERR_LIST_MISSING_HISTORY_TAG extends ErrorCode(4002)
 case object ERR_LIST_DELETE_CHILDREN extends ErrorCode(4003)
 case object ERR_LIST_CONVERT_CHILDREN extends ErrorCode(4004)
+case object ERR_LIST_ARCHIVE_NOT_PREMIUM extends ErrorCode(4005)
 
 case object ERR_USER_NO_USERS extends ErrorCode(5001)
 case object ERR_USER_ALREADY_EXISTS extends ErrorCode(5002)
