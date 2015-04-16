@@ -18,6 +18,11 @@
 	*   ii:		Request click when textarea has content.
 	*		iii:	Cancel the event so that additional blur and focus will not happen in iOS.
 	*					NOTE: Not needed if no i & ii
+	*		iv:		https://github.com/ftlabs/fastclick/pull/266
+	*					https://github.com/ftlabs/fastclick/pull/328
+	*					https://github.com/ftlabs/fastclick/issues/160
+	*					https://github.com/ftlabs/fastclick/issues/358
+	*					https://github.com/ftlabs/fastclick/issues/388
 	*/
 
 
@@ -335,7 +340,9 @@
 		var length;
 
 		// Issue #160: on iOS 7, some input elements (e.g. date datetime month) throw a vague TypeError on setSelectionRange. These elements don't have an integer value for the selectionStart and selectionEnd properties, but unfortunately that can't be used for detection because accessing the properties also throws a TypeError. Just check the type instead. Filed as Apple bug #15122724.
-		if (deviceIsIOS && targetElement.setSelectionRange && targetElement.type.indexOf('date') !== 0 && targetElement.type !== 'time' && targetElement.type !== 'month') {
+		if (deviceIsIOS && targetElement.setSelectionRange && targetElement.type.indexOf('date') !== 0 &&
+		    targetElement.type !== 'time' && targetElement.type !== 'month' && targetElement.type !== 'number')	// FORK: iv
+		{
 			length = targetElement.value.length;
 			targetElement.setSelectionRange(length, length);
 		} else {
