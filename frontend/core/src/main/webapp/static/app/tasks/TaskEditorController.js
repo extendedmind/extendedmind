@@ -15,8 +15,8 @@
 
  'use strict';
 
- function TaskEditorController($q, $rootScope, $scope, $timeout, DateService, SwiperService, TasksService,
-                               UISessionService) {
+ function TaskEditorController($filter, $q, $rootScope, $scope, $timeout, ArrayService, DateService,
+                               SwiperService, TasksService, UISessionService, packaging) {
 
   // INITIALIZING
 
@@ -173,36 +173,121 @@
     if (task.trans.due) delete task.trans.due;
   };
 
-  // REMINDER
+  // REMINDERS
+
+  function isReminderInThisDevice(reminder) {
+    if (reminder.packaging === packaging) {
+      if (reminder.packaging === 'ios-cordova') {
+        var deviceModel = UISessionService.getDeviceId();
+        return reminder.device === deviceModel;
+      } else if (reminder.packaging === 'android-cordova') {
+        var deviceId = UISessionService.getDeviceId();
+        return reminder === deviceId;
+      }
+    }
+  }
+
+  function findReminderForThisDevice(reminders) {
+    for (var i = 0; i < reminders.length; i++) {
+      if (isReminderInThisDevice(reminders[i])) {
+        return reminders[i];
+      }
+    }
+  }
+
   $scope.openReminderPicker = function(task) {
-    var hours, minutes;
-    if (task.trans.reminder) {
-      var reminderDate = new Date(task.trans.reminder);
-      var reminderHours = reminderDate.getHours().toString();
-      var reminderMinutes = reminderDate.getMinutes().toString();
-      hours = reminderHours[1] ? reminderHours : '0' + reminderHours[0];
-      minutes = reminderMinutes[1] ? reminderMinutes : '0' + reminderMinutes[0];
-    } else {
-      hours = 12;
-      minutes = '00';
+    if ($scope.deviceSupportsReminders) {
+      // Adding and editing reminders is only allowed in Android and iOS.
+      var hours, minutes, reminder;
+
+      if (task.trans.reminders) {
+        reminder = findReminderForThisDevice(task.trans.reminders);
+      }
+
+      if (reminder !== undefined) {
+        var reminderDate = new Date(reminder.notification);
+        var reminderHours = reminderDate.getHours().toString();
+        var reminderMinutes = reminderDate.getMinutes().toString();
+        hours = reminderHours[1] ? reminderHours : '0' + reminderHours[0];
+        minutes = reminderMinutes[1] ? reminderMinutes : '0' + reminderMinutes[0];
+      } else {
+        hours = '12';
+        minutes = '00';
+      }
+
+      $scope.reminder = {
+        hours: {
+          limit: 23,
+          value: hours
+        },
+        minutes: {
+          limit: 59,
+          value: minutes
+        }
+      };
+
+      $scope.reminderPickerOpen = true;
+      if (angular.isFunction($scope.registerPropertyEditDoneCallback))
+        $scope.registerPropertyEditDoneCallback(closeReminderPicker);
+    }
+  };
+
+  function compareWithNotificationTime(a, b) {
+    return a.notification - b.notification;
+  }
+
+  $scope.thisDeviceFirstThenByTime = function(reminders) {
+    if (!reminders) {
+      return;
+    }
+    // i: No need to sort array containing only one reminder.
+    if (reminders.length === 1) {
+      return reminders;
     }
 
-    $scope.reminder = {
-      hours: {
-        limit: 12,
-        value: hours
-      },
-      minutes: {
-        limit: 59,
-        value: minutes
+    // ii.a Order by notification time.
+    var sortedReminders = [];
+    for (var i = 0; i < reminders.length; i++) {
+      ArrayService.insertItemToArray(reminders[i], sortedReminders, compareWithNotificationTime);
+    }
+
+    // ii.b Move reminder of this device to first.
+    if (packaging.endsWith('cordova')) {
+      var indexOfReminderInThisDevice;
+      for (var j = 0; j < sortedReminders.length; j++) {
+        if (isReminderInThisDevice(sortedReminders[j])) {
+          indexOfReminderInThisDevice = j;
+          break;
+        }
       }
-    };
-    $scope.reminderPickerOpen = true;
+
+      if (indexOfReminderInThisDevice !== undefined) {
+        sortedReminders.move(indexOfReminderInThisDevice, 0);
+      }
+    }
+
+    return sortedReminders;
   };
 
-  $scope.closeReminderPicker = function() {
-    $scope.reminderPickerOpen = false;
+  $scope.isInThisDevice = function(reminder) {
+    return isReminderInThisDevice(reminder);
   };
+
+  $scope.getDeviceName = function(reminder) {
+    if (isReminderInThisDevice(reminder)) {
+      return 'this device';
+    } else if (reminder.packaging === 'ios-cordova') {
+      return 'apple'; // TODO
+    } else if (reminder.packaging === 'android-cordova') {
+      return 'android'; // TODO
+    }
+  };
+
+  $scope.deviceSupportsReminders = packaging.endsWith('cordova') || packaging === 'devel';
+
+  function closeReminderPicker() {
+    $scope.reminderPickerOpen = false;
+  }
 
   $scope.loopTime = function(time, direction) {
     if (direction === 'up') {
@@ -212,7 +297,9 @@
         time.value++;
       }
     } else if (direction === 'down') {
-      if (time.value.toString() === '00') {
+      if (time.value === undefined || time.value === null || time.value === 0 ||
+          (time.value && time.value.toString() === '00'))
+      {
         time.value = time.limit;
       } else {
         time.value--;
@@ -319,7 +406,7 @@
 
 }
 
-TaskEditorController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout',
-'DateService', 'SwiperService', 'TasksService', 'UISessionService'
+TaskEditorController['$inject'] = ['$filter', '$q', '$rootScope', '$scope', '$timeout', 'ArrayService',
+'DateService', 'SwiperService', 'TasksService', 'UISessionService', 'packaging'
 ];
 angular.module('em.main').controller('TaskEditorController', TaskEditorController);

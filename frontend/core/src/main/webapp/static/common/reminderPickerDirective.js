@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function leadingZeroDirective() {
+ function reminderPickerDirective() {
   return {
     restrict: 'A',
     require: 'ngModel', // get a hold of NgModelController
@@ -25,7 +25,7 @@
         ngModel.$formatters = [];
       }
 
-      var maxValue = parseInt(attrs.leadingZero);
+      var maxValue = parseInt(attrs.reminderPicker);
 
       function isNull(viewValue) {
         if (viewValue === null) {
@@ -77,8 +77,40 @@
         return viewValue;
       }
 
-      ngModel.$parsers.unshift(isNull, isInteger, isTooLong, isTooBig);
+      function hasOneDigit(viewValue) {
+        if (viewValue.length === 1) {
+          padOneDigitInput();
+        }
+        return viewValue;
+      }
+
+      /*
+      * Pad one digit to two digits debounced.
+      */
+      var padOneDigitInput = function() {
+        if (document.activeElement === element[0]) {
+          var currentValue = ngModel.$modelValue;
+          if (currentValue !== undefined && currentValue !== null && currentValue.toString().length === 1) {
+            var newValue = '0' + currentValue.toString();
+            ngModel.$setViewValue(newValue);
+            ngModel.$render();
+            return newValue;
+          }
+        }
+      }.debounce(3000);
+
+      ngModel.$parsers.unshift(isNull, isInteger, isTooLong, isTooBig, hasOneDigit);
+
+      element[0].addEventListener('blur', function() {
+        var value = element[0].value;
+        if (value === '') {
+          element[0].value = '00';
+        }
+        else if (value && value.length === 1) {
+          element[0].value = '0' + value.toString();
+        }
+      });
     }
   };
 }
-angular.module('common').directive('leadingZero', leadingZeroDirective);
+angular.module('common').directive('reminderPicker', reminderPickerDirective);

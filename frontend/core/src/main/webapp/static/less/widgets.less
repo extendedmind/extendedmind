@@ -768,3 +768,73 @@ TODO: Example needed
     background-color: white !important; // [1]
   }
 }
+
+// 1. Center widget inside container.
+// 2. This is the minimun height the widget will use.
+.reminder-container {
+  text-align: center; // [1]
+  height: 102px;  // [2]
+}
+
+// 1. Nudge hour input right and minute input left, so it looks more like 09:00 and not 09 : 00
+// 2. Align hour input right and minute input left.
+// 3. Align .reminder--up and .reminder--down horizontally with .remider--time
+.reminder-wrapper {
+  width: @grid-horizontal * 1.5;
+  display: inline-block;
+  &> * {
+    display: inline-block;
+    width: 100%;
+  }
+  &:first-child {
+    text-align: right;  // [2]
+    margin-right: -5px; // [1]
+    > .reminder--up,
+    > .reminder--down {
+      padding-right: 16px;  // [3]
+    }
+    > .reminder--time {
+      text-align: right;  // [2]
+    }
+  }
+  &:last-child {
+    text-align: left; // [2]
+    margin-left: -5px;  // [1]
+    > .reminder--up,
+    > .reminder--down {
+      padding-left: 16px; // [3]
+    }
+    > .reminder--time {
+      text-align: left; // [2]
+    }
+  }
+}
+
+// 1. Adjust height
+.reminder--up,
+.reminder--down {
+  height: @grid-vertical-medium;      // [1]
+  line-height: @grid-vertical-medium; // [1]
+}
+
+// 1. Turn Off Number Input Spinners
+//    https://css-tricks.com/snippets/css/turn-off-number-input-spinners/
+.reminder--time {
+  font-size: @size-font-medium-large;
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+
+// 1. Align vertically with padding-top and padding-bottom:
+//    30 * 2 + .reminder--separator_HEIGHT = .reminder-container_HEIGHT
+//    NOTE: Changing font-size will change .reminder--separator_HEIGHT.
+.reminder--separator {
+  display: inline-block;  // [1]
+  vertical-align: top;    // [1]
+  padding-top: 30px;      // [1]
+  padding-bottom: 30px;   // [1]
+  font-size: @size-font-medium-large;
+}
