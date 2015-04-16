@@ -20,15 +20,16 @@
 
 angular.module('em.appTest', ['em.app', 'common', 'ngMockE2E']);
 
-var path = location.pathname.substring(1);
-if (path && path === 'ios') {
+if (/iP(hone|od|ad)/.test(navigator.userAgent)) {
   var packaging = 'ios-cordova';
 }
 angular.module('em.appTest').constant('packaging', (typeof packaging !== 'undefined') ? packaging : 'devel');
 
 angular.module('em.appTest')
-  .controller('MockController', ['$rootScope', 'MockBackendService', 'SwiperService', 'packaging',
-    function($rootScope, MockBackendService, SwiperService, packaging){
+  .controller('MockController', ['$rootScope', 'MockBackendService', 'MockPlatformService', 'SwiperService',
+              'packaging',
+    function($rootScope, MockBackendService, MockPlatformService, SwiperService, packaging){
+
       MockBackendService.mockBackend();
       SwiperService.setTouchSimulation(true);
 
@@ -43,11 +44,17 @@ angular.module('em.appTest')
         $rootScope.agendaCalendarSettingVisible = true;
       }
 
+      if (packaging === 'ios-cordova') {
+        MockPlatformService.mockIOS();
+        MockPlatformService.setPlatformUIPreferences();
+      }
+
   }])
   .config(['$provide', '$routeProvider', function($provide, $routeProvider) {
     $provide.decorator('$httpBackend', ['$delegate', function($delegate) {
         var proxy = function(method, url, data, callback, headers) {
             var interceptor = function() {
+              /* global delayMockAPIResponse */
                 var _this = this,
                     _arguments = arguments;
 
@@ -75,8 +82,8 @@ angular.module('em.appTest')
 
     $routeProvider.when('/fresh', {
       resolve: {
-        auth: ['$location', '$route', 'AuthenticationService', 'UserSessionService',
-        function($location, $route, AuthenticationService, UserSessionService) {
+        auth: ['$location', '$route', 'AuthenticationService', 'MockPlatformService', 'UserSessionService',
+        function($location, $route, AuthenticationService, MockPlatformService, UserSessionService) {
           localStorage.clear();
           sessionStorage.clear();
           if ($route.current.params.offline)
@@ -86,6 +93,7 @@ angular.module('em.appTest')
             UserSessionService.setUIPreference('focusTasksOnboarded', 'devel');
             UserSessionService.setUIPreference('focusNotesOnboarded', 'devel');
             UserSessionService.setUIPreference('inboxOnboarded', 'devel');
+            MockPlatformService.setPlatformUIPreferences();
             $location.path('/my');
           });
         }]
@@ -103,74 +111,6 @@ angular.module('em.appTest')
 
           UserSessionService.createFakeUserUUID();
           $location.path('/');
-        }]
-      }
-    });
-
-    $routeProvider.when('/ios', {
-      resolve: {
-        auth: ['$location', '$route', 'AuthenticationService', 'UserSessionService', 'packaging',
-        function($location, $route, AuthenticationService, UserSessionService, packaging) {
-          localStorage.clear();
-          sessionStorage.clear();
-          if ($route.current.params.offline)
-            UserSessionService.enableOffline(true);
-
-          var calendars = {
-            iPhone: [{
-              id: 1,
-              name: 'first'
-            }]
-          };
-
-          AuthenticationService.login({username: 'timo@ext.md', password: 'timopwd'}).then(function() {
-            UserSessionService.setUIPreference('calendars', calendars);
-            $location.path('/my');
-          });
-
-          if (!window.plugins)
-            window.plugins = {};
-
-          var listCalendars = [
-          {
-            id:1,
-            name: 'first'
-          },
-          {
-            id: 2,
-            name: 'second'
-          }];
-
-          var eventInstances = [{
-            calendar_id: 1,
-            event_id: 100,
-            title: 'first event',
-            begin: Date.now(),
-            end: Date.now(),
-            allDay: true,
-            location: 'location location location',
-            rrule: true
-          }];
-
-          window.plugins.calendar = {
-            listCalendars: function(success) {
-              return success(listCalendars);
-            },
-            listEventInstances: function(calendarIds, startDate, endDate, success) {
-              var filteredEventInstancesByCalendarIds = [];
-              for (var i = 0; i < eventInstances.length; i++) {
-                if (calendarIds.indexOf(eventInstances[i].calendar_id) !== -1) {
-                  filteredEventInstancesByCalendarIds.push(eventInstances[i]);
-                }
-              }
-              return success(filteredEventInstancesByCalendarIds);
-            }
-          };
-
-          if (!window.device)
-            window.device = {};
-
-          window.device.model = 'iPhone';
         }]
       }
     });
