@@ -80,12 +80,12 @@
   }
 
   function getTaskHistory(task) {
-    if (task.trans.due || task.trans.repeating || task.trans.reminder || task.trans.completed) {
+    if (task.trans.due || task.trans.repeating || task.trans.reminders || task.trans.completed) {
       var taskHistory = {};
       if (task.trans.completed) taskHistory.completed = task.trans.completed;
       if (task.trans.due) taskHistory.due = task.trans.due;
       if (task.trans.repeating) taskHistory.repeating = task.trans.repeating;
-      if (task.trans.reminder) taskHistory.reminder = task.trans.reminder;
+      if (task.trans.reminders) taskHistory.reminders = task.trans.reminders;
       return taskHistory;
     }
   }
@@ -180,7 +180,7 @@
       if (item.hist.convert.task.completed) task.mod.completed = item.hist.convert.task.completed;
       if (item.hist.convert.task.due) task.mod.due = item.hist.convert.task.due;
       if (item.hist.convert.task.repeating) task.mod.repeating = item.hist.convert.task.repeating;
-      if (item.hist.convert.task.reminder) task.mod.reminder = item.hist.convert.task.reminder;
+      if (item.hist.convert.task.reminders) task.mod.reminders = item.hist.convert.task.reminders;
     }
     return task;
   }

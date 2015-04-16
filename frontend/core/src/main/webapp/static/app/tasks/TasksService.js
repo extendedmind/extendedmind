@@ -61,7 +61,7 @@
 
   var taskFieldInfos = ItemLikeService.getFieldInfos(
     [ 'due',
-      'reminder',
+      'reminders',
       'repeating',
       {
         name: 'completed',
@@ -111,7 +111,7 @@
     }
     initialValues.due = DateService.getYYYYMMDD(dueDate);
     if (task.trans.description) initialValues.description = task.trans.description;
-    if (task.trans.reminder) initialValues.reminder = task.trans.reminder;
+    if (task.trans.reminders) initialValues.reminders = task.trans.reminders;
     if (task.trans.list) initialValues.list = task.trans.list;
     if (task.trans.context) initialValues.context = task.trans.context;
     if (task.trans.keywords) initialValues.keywords = task.trans.keywords;
