@@ -309,7 +309,7 @@
   }
 
   function closeReminderPickerAndSave() {
-    if ($scope.reminder.hours.value && $scope.reminder.minutes.value) {
+    if ($scope.reminder.hours.value !== undefined && $scope.reminder.minutes.value !== undefined ) {
       $scope.reminder.date.setHours($scope.reminder.hours.value, $scope.reminder.minutes.value);
       if ($scope.reminder.date >= new Date().setSeconds(0, 0)) {
         $scope.reminderPickerOpen = false;
