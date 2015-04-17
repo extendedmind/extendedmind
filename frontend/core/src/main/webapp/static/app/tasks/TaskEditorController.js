@@ -175,7 +175,9 @@
 
   // REMINDERS
 
-  function isReminderInThisDevice(reminder) {
+  $scope.deviceSupportsReminders = packaging.endsWith('cordova');
+
+  $scope.isReminderInThisDevice = function(reminder) {
     if (reminder.packaging === packaging) {
       if (reminder.packaging === 'ios-cordova') {
         var deviceModel = UISessionService.getDeviceId();
@@ -185,51 +187,62 @@
         return reminder === deviceId;
       }
     }
-  }
+  };
 
-  function findReminderForThisDevice(reminders) {
+  $scope.findReminderForThisDevice = function(reminders) {
     for (var i = 0; i < reminders.length; i++) {
-      if (isReminderInThisDevice(reminders[i])) {
+      if ($scope.isReminderInThisDevice(reminders[i])) {
         return reminders[i];
       }
     }
-  }
+  };
 
-  $scope.openReminderPicker = function(task) {
-    if ($scope.deviceSupportsReminders) {
-      // Adding and editing reminders is only allowed in Android and iOS.
-      var hours, minutes, reminder;
+  $scope.openReminderPicker = function(task, reminder) {
+    var reminderDate, hours, minutes;
 
-      if (task.trans.reminders) {
-        reminder = findReminderForThisDevice(task.trans.reminders);
-      }
-
-      if (reminder !== undefined) {
-        var reminderDate = new Date(reminder.notification);
-        var reminderHours = reminderDate.getHours().toString();
-        var reminderMinutes = reminderDate.getMinutes().toString();
-        hours = reminderHours[1] ? reminderHours : '0' + reminderHours[0];
-        minutes = reminderMinutes[1] ? reminderMinutes : '0' + reminderMinutes[0];
-      } else {
-        hours = '12';
-        minutes = '00';
-      }
-
-      $scope.reminder = {
-        hours: {
-          limit: 23,
-          value: hours
-        },
-        minutes: {
-          limit: 59,
-          value: minutes
-        }
-      };
-
-      $scope.reminderPickerOpen = true;
-      if (angular.isFunction($scope.registerPropertyEditDoneCallback))
-        $scope.registerPropertyEditDoneCallback(closeReminderPicker);
+    if (reminder !== undefined) {
+      // Get date from the reminder in this device.
+      reminderDate = new Date(reminder.notification);
     }
+    else {
+      if (task.trans.due &&
+          new Date(task.trans.due).setHours(0, 0, 0, 0) >= new Date().setHours(0, 0, 0, 0))
+      {
+        // Get date from task due date when it is present or future.
+        reminderDate = new Date(task.trans.due);
+      }
+      else {
+        // Get today date.
+        reminderDate = new Date();
+      }
+      // Set hours and minutes to current time.
+      reminderDate.setHours(reminderDate.getHours(), reminderDate.getMinutes(), 0, 0);
+    }
+
+    // TODO:
+    //  hours = DateService.padTimeValue(hours)
+    //  minutes = DateService.padTimeValue(minutes)
+    var reminderHours = reminderDate.getHours().toString();
+    var reminderMinutes = reminderDate.getMinutes().toString();
+    hours = reminderHours[1] ? reminderHours : '0' + reminderHours[0];
+    minutes = reminderMinutes[1] ? reminderMinutes : '0' + reminderMinutes[0];
+
+    $scope.reminder = {
+      date: reminderDate,
+      hours: {
+        limit: 23,
+        value: hours
+      },
+      minutes: {
+        limit: 59,
+        value: minutes
+      },
+      error: {}
+    };
+
+    $scope.reminderPickerOpen = true;
+    if (angular.isFunction($scope.registerPropertyEditDoneCallback))
+      $scope.registerPropertyEditDoneCallback(closeReminderPickerAndSave);
   };
 
   function compareWithNotificationTime(a, b) {
@@ -255,7 +268,7 @@
     if (packaging.endsWith('cordova')) {
       var indexOfReminderInThisDevice;
       for (var j = 0; j < sortedReminders.length; j++) {
-        if (isReminderInThisDevice(sortedReminders[j])) {
+        if ($scope.isReminderInThisDevice(sortedReminders[j])) {
           indexOfReminderInThisDevice = j;
           break;
         }
@@ -269,12 +282,8 @@
     return sortedReminders;
   };
 
-  $scope.isInThisDevice = function(reminder) {
-    return isReminderInThisDevice(reminder);
-  };
-
   $scope.getDeviceName = function(reminder) {
-    if (isReminderInThisDevice(reminder)) {
+    if ($scope.isReminderInThisDevice(reminder)) {
       return 'this device';
     } else if (reminder.packaging === 'ios-cordova') {
       return 'apple'; // TODO
@@ -283,30 +292,81 @@
     }
   };
 
-  $scope.deviceSupportsReminders = packaging.endsWith('cordova') || packaging === 'devel';
+  function setReminderError(reminder, type) {
+    if (reminder.error.timer) {
+      $timeout.cancel(reminder.error.timer);
+    }
+    if (type === 'past')
+      reminder.error.message = 'date is in the past';
+    else if (type === 'invalid')
+      reminder.error.message = 'invalid time';
 
-  function closeReminderPicker() {
-    $scope.reminderPickerOpen = false;
+    reminder.error.active = true;
+
+    reminder.error.timer = $timeout(function() {
+      reminder.error.active = false;
+    }, 2000);
   }
 
-  $scope.loopTime = function(time, direction) {
-    if (direction === 'up') {
-      if (time.value === time.limit) {
-        time.value = 0;
+  function closeReminderPickerAndSave() {
+    if ($scope.reminder.hours.value && $scope.reminder.minutes.value) {
+      $scope.reminder.date.setHours($scope.reminder.hours.value, $scope.reminder.minutes.value);
+      if ($scope.reminder.date >= new Date().setSeconds(0, 0)) {
+        $scope.reminderPickerOpen = false;
       } else {
-        time.value++;
+        setReminderError($scope.reminder, 'past');
       }
-    } else if (direction === 'down') {
-      if (time.value === undefined || time.value === null || time.value === 0 ||
-          (time.value && time.value.toString() === '00'))
-      {
-        time.value = time.limit;
-      } else {
-        time.value--;
+    } else {
+      setReminderError($scope.reminder, 'invalid');
+    }
+  }
+
+  $scope.clearReminderAndClose = function() {
+    $scope.reminderPickerOpen = false;
+    $scope.reminder = undefined;
+    if ($scope.task.trans.reminders) {
+      var reminder = $scope.findReminderForThisDevice($scope.task.trans.reminders);
+      if (reminder !== undefined) {
+        $scope.task.reminders.splice($scope.task.reminders.indexOf(reminder), 1);
+      }
+    }
+  };
+
+  $scope.loopTime = function(time, direction) {
+    if (time.value === undefined) {
+      time.value = 0;
+    } else {
+      if (direction === 'up') {
+        if (time.value === time.limit) {
+          time.value = 0;
+        } else {
+          time.value++;
+        }
+      } else if (direction === 'down') {
+        if (time.value === null || time.value === 0 || (time.value && time.value.toString() === '00')) {
+          time.value = time.limit;
+        } else {
+          time.value--;
+        }
       }
     }
     if (time.value < 10) {
+      // Pad
       time.value = 0 + time.value.toString();
+    }
+  };
+
+  $scope.moveDate = function(date, precision, direction) {
+    switch (precision) {
+      case 'day':
+      date.setDate(date.getDate() + (direction === 'up' ? 1 : -1));
+      break;
+      case 'month':
+      date.setMonth(date.getMonth() + (direction === 'up' ? 1 : -1));
+      break;
+      case 'year':
+      date.setFullYear(date.getFullYear() + (direction === 'up' ? 1 : -1));
+      break;
     }
   };
 
@@ -327,6 +387,20 @@
     } else if (e.which === 190) {
       // Period
       e.preventDefault();
+    }
+  };
+
+  $scope.isPastDate = function(reminderDate, precision) {
+    // NOTE: Should this take time (hours and minutes) into consideration or not
+    var date = new Date(reminderDate);
+    if (date.setHours(0, 0, 0, 0) < new Date().setHours(0, 0, 0, 0)) {
+      if (precision === 'day') {
+        return true;
+      } else if (precision === 'month') {
+        return date.getFullYear() < new Date().getFullYear() || date.getMonth() < new Date().getMonth();
+      } else if (precision === 'year') {
+        return date.getFullYear() < new Date().getFullYear();
+      }
     }
   };
 

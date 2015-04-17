@@ -101,15 +101,19 @@
 
       ngModel.$parsers.unshift(isNull, isInteger, isTooLong, isTooBig, hasOneDigit);
 
-      element[0].addEventListener('blur', function() {
-        var value = element[0].value;
-        if (value === '') {
-          element[0].value = '00';
+      function padValidInput() {
+        if (ngModel.$valid) {
+          var value = element[0].value;
+          if (value === '') {
+            element[0].value = '00';
+          }
+          else if (value && value.length === 1) {
+            element[0].value = '0' + value.toString();
+          }
         }
-        else if (value && value.length === 1) {
-          element[0].value = '0' + value.toString();
-        }
-      });
+      }
+
+      element[0].addEventListener('blur', padValidInput);
     }
   };
 }

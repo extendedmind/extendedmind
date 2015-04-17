@@ -116,58 +116,51 @@
           </div>
 
           <!-- REMINDERS -->
-          <div ng-if="task.trans.due"
-            ng-hide="calendarOpen || taskDescriptionFocused || listPickerOpen || reminderPickerOpen">
-            <div class="group-mixed with-checkbox"
-              ng-repeat="reminder in task.trans.reminders | paramFilter:thisDeviceFirstThenByTime">
-              <a href class="group-mixed--middle link-search-result"
-                swiper-click="openReminderPicker(task)">
-                <span class="text-field--title"
-                  ng-bind="(reminder.notification | date:'HH:mm') + ' ' + getDeviceName(reminder)">
-                </span>
-              </a>
-              <div class="group-mixed--right">
-                <span class="text-field--label">reminder</span>
-              </div>
-            </div>
+          <div ng-hide="calendarOpen || taskDescriptionFocused || listPickerOpen || reminderPickerOpen">
 
-            <div ng-if="!task.trans.reminders && deviceSupportsReminders" class="group-mixed with-checkbox">
+            <div ng-if="deviceSupportsReminders &&
+              (!task.trans.reminders || !findReminderForThisDevice(task.trans.reminders))"
+              class="group-mixed with-checkbox">
               <a href ng-click="openReminderPicker(task)"
                 class="group-mixed--middle link-search-result downplayed">
                 <span class="text-field--title">add reminder&hellip;</span>
               </a>
             </div>
-          </div>
 
-          <!-- REMINDER PICKER -->
-          <div ng-if="reminderPickerOpen" class="swiper-no-swiping animate-fade-in"
-            editable-field-container="auto" data-snap-ignore="true">
+            <div ng-repeat="reminder in task.trans.reminders | paramFilter:thisDeviceFirstThenByTime"
+              ng-switch on="isReminderInThisDevice(reminder)" class="group-mixed with-checkbox">
 
-            <div class="group-mixed with-checkbox">
-              <a href class="group-mixed--middle link-search-result">
-                <span class="text-field--title" ng-bind="task.trans.due | date:'EEE MMM d y' | lowercase"></span>
-              </a>
-            </div>
-
-            <div ng-if="task.trans.reminders" class="group-mixed with-checkbox"
-              ng-repeat="reminder in task.trans.reminders | paramFilter:thisDeviceFirstThenByTime">
-              <a href class="group-mixed--middle link-search-result">
+              <a href ng-switch-when="true" class="group-mixed--middle link-search-result"
+                swiper-click="openReminderPicker(task, reminder)">
                 <span class="text-field--title"
                   ng-bind="(reminder.notification | date:'HH:mm') + ' ' + getDeviceName(reminder)">
                 </span>
               </a>
-              <div ng-if="isInThisDevice(reminder)" class="group-mixed--right">
-                <button type="button" class="btn-clear" ng-click="">
-                </button>
-              </div>
-            </div>
 
-            <div class="reminder-container">
-              <div class="reminder-wrapper">
+              <span ng-switch-default class="group-mixed--middle text-downplayed text-field--title"
+                ng-bind="(reminder.notification | date:'HH:mm') + ' ' + getDeviceName(reminder)">
+              </span>
+
+              <div class="group-mixed--right">
+                <span class="text-field--label">reminder</span>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- REMINDER PICKER -->
+          <div ng-if="reminderPickerOpen" class="swiper-no-swiping animate-fade-in group-mixed"
+            editable-field-container="auto" data-snap-ignore="true">
+
+            <div class="reminder-container group-mixed--middle">
+
+              <!-- HOURS -->
+              <div class="reminder--time-wrapper">
                 <a href class="reminder--up" swiper-click="loopTime(reminder.hours, 'up')">
                   <span class="icon-arrow-up"></span>
                 </a>
-                <input type="number" pattern="\d*" class="reminder--time" ng-model="reminder.hours.value"
+                <input type="number" pattern="\d*" class="reminder--time"
+                  ng-class="isPastDate(reminder.date, 'hour') && 'past-date'" ng-model="reminder.hours.value"
                   ng-keydown="reminderHourKeyDown($event)" reminder-picker="{{reminder.hours.limit}}" />
                 <a href class="reminder--down" ng-click="loopTime(reminder.hours, 'down')">
                   <span class="icon-arrow-down"></span>
@@ -176,17 +169,68 @@
 
               <span class="reminder--separator">:</span>
 
-              <div class="reminder-wrapper">
+              <!-- MINUTES -->
+              <div class="reminder--time-wrapper">
                 <a href class="reminder--up" swiper-click="loopTime(reminder.minutes, 'up')">
                   <span class="icon-arrow-up"></span>
                 </a>
-                <input type="number" pattern="\d*" class="reminder--time" ng-model="reminder.minutes.value"
+                <input type="number" pattern="\d*" class="reminder--time"
+                  ng-class="isPastDate(reminder.date, 'minute') && 'past-date'" ng-model="reminder.minutes.value"
                   ng-keydown="reminderHourKeyDown($event)" reminder-picker="{{reminder.minutes.limit}}" />
                 <a href class="reminder--down" ng-click="loopTime(reminder.minutes, 'down')">
                   <span class="icon-arrow-down"></span>
                 </a>
               </div>
+
+              <!-- WEEKDAY & DATE -->
+              <div class="reminder--date-wrapper">
+                <a href class="reminder--up" swiper-click="moveDate(reminder.date, 'day', 'up')">
+                  <span class="icon-arrow-up"></span>
+                </a>
+                  <span class="reminder--date" ng-class="isPastDate(reminder.date, 'day') && 'past-date'"
+                    ng-bind="reminder.date | date:'EEE d' | lowercase">
+                  </span>
+                <a href class="reminder--down" ng-click="moveDate(reminder.date, 'day', 'down')">
+                  <span class="icon-arrow-down"></span>
+                </a>
+              </div>
+
+              <!-- MONTH -->
+              <div class="reminder--date-wrapper">
+                <a href class="reminder--up" swiper-click="moveDate(reminder.date, 'month', 'up')">
+                  <span class="icon-arrow-up"></span>
+                </a>
+                  <span class="reminder--date" ng-class="isPastDate(reminder.date, 'month') && 'past-date'"
+                    ng-bind="reminder.date | date:'MMM' | lowercase">
+                  </span>
+                <a href class="reminder--down" ng-click="moveDate(reminder.date, 'month', 'down')">
+                  <span class="icon-arrow-down"></span>
+                </a>
+              </div>
+
+              <!-- YEAR -->
+              <div class="reminder--date-wrapper">
+                <a href class="reminder--up" swiper-click="moveDate(reminder.date, 'year', 'up')">
+                  <span class="icon-arrow-up"></span>
+                </a>
+                  <span class="reminder--date" ng-class="isPastDate(reminder.date, 'year') && 'past-date'"
+                    ng-bind="reminder.date | date:'yy'">
+                  </span>
+                <a href class="reminder--down" ng-click="moveDate(reminder.date, 'year', 'down')">
+                  <span class="icon-arrow-down"></span>
+                </a>
+              </div>
+
             </div>
+
+            <div class="group-mixed--right">
+              <button type="button" class="btn-clear" ng-click="clearReminderAndClose()"></button>
+            </div>
+
+            <span ng-if="reminder.error.active" class="row animate-fade-in-out text-error"
+              ng-bind="reminder.error.message">
+            </span>
+
           </div>
 
           <!-- LIST -->
