@@ -32,6 +32,7 @@
 
     window.device.model = 'iPhone';
 
+    // http://www.darianshimy.com/blog/2013/01/18/javascript-iphone-4-slash-5-detection/
     var iPhone4 = (window.screen.height == (960 / 2));
     var iPhone5 = (window.screen.height == (1136 / 2));
     var iPhone6 = (window.screen.height == (1334 / 2));
