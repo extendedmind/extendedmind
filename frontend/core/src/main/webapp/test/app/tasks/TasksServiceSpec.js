@@ -110,7 +110,16 @@
           'title': 'print tickets',
           'link': 'http://www.finnair.fi',
           'due': '2014-01-02',
-          'reminder': '10:00',
+          'reminders': [{
+            'packaging': 'ios-cordova',
+            'notification': 1429255890410,
+            'uuid': '51ff61b2-2a07-4b69-b149-d58b0510a1cd',
+            'reminderType': 'ln',
+            'modified': 1391278509717,
+            'id': '12345678901234567',
+            'device': 'iPhone6',
+            'created': 1391278509717
+          }],
           'relationships': {
             'parent': 'dbff4507-927d-4f99-940a-ee0cfcf6e84c',
             'tags': ['8bd8376c-6257-4623-9c8f-7ca8641d2cf5']

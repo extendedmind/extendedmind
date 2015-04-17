@@ -177,7 +177,16 @@
           'title': 'print tickets',
           'link': 'http://www.finnair.fi',
           'due': '2014-01-02',
-          'reminder': '10:00',
+          "reminders": [{
+            "packaging": "ios-cordova",
+            "notification": 1429255890410,
+            "uuid": "51ff61b2-2a07-4b69-b149-d58b0510a1cd",
+            "reminderType": "ln",
+            "modified": 1391278509717,
+            "id": "12345678901234567",
+            "device": "iPhone6",
+            "created": 1391278509717
+          }],
           'relationships': {
             'parent': 'dbff4507-927d-4f99-940a-ee0cfcf6e84c',
             'tags': ['1208d45b-3b8c-463e-88f3-f7ef19ce87cd']
@@ -412,11 +421,8 @@ it('should set convert object with \'task\' property in transient properties ' +
   // TESTS
   var convertedList = ListsService.getListInfo(taskToListResponse.uuid, testOwnerUUID).list;
 
-  expect(convertedList.hist.convert.task)
-  .toBeDefined();
-
   expect(convertedList.hist.convert.task.due).toEqual('2014-01-02');
-  expect(convertedList.hist.convert.task.reminder).toEqual('10:00');
+  expect(angular.isArray(convertedList.hist.convert.task.reminders)).toBeTruthy();
 });
 
 it('should set convert object with \'note\' property in transient properties ' +

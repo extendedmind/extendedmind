@@ -125,7 +125,16 @@ describe('ListsService', function() {
           'title': 'print tickets',
           'link': 'http://www.finnair.fi',
           'due': '2014-01-02',
-          'reminder': '10:00',
+          'reminders': [{
+            'packaging': 'ios-cordova',
+            'notification': 1429255890410,
+            'uuid': '51ff61b2-2a07-4b69-b149-d58b0510a1cd',
+            'reminderType': 'ln',
+            'modified': 1391278509717,
+            'id': '12345678901234567',
+            'device': 'iPhone6',
+            'created': 1391278509717
+          }],
           'relationships': {
             'parent': 'bf726d03-8fee-4614-8b68-f9f885938a51'
           }
