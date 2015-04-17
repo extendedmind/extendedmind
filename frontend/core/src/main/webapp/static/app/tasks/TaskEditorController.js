@@ -394,11 +394,12 @@
     // NOTE: Should this take time (hours and minutes) into consideration or not
     var date = new Date(reminderDate);
     if (date.setHours(0, 0, 0, 0) < new Date().setHours(0, 0, 0, 0)) {
-      if (precision === 'day') {
+      switch (precision) {
+        case 'day':
         return true;
-      } else if (precision === 'month') {
+        case 'month':
         return date.getFullYear() < new Date().getFullYear() || date.getMonth() < new Date().getMonth();
-      } else if (precision === 'year') {
+        case 'year':
         return date.getFullYear() < new Date().getFullYear();
       }
     }
