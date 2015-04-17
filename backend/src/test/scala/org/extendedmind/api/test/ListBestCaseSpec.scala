@@ -229,7 +229,8 @@ class ListBestCaseSpec extends ServiceSpecBase {
         }
       }
     }
-    it("should successfully archive list with POST to /[userUUID]/list/[listUUID]/archive") {
+    it("should successfully archive list with POST to /[userUUID]/list/[listUUID]/archive "
+        + "and turn it back active with POST to /[userUUID]/list/[listUUID]/unarchive") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       
       // Create list and put task and note on it
@@ -269,6 +270,36 @@ class ListBestCaseSpec extends ServiceSpecBase {
           val note = getNote(putNoteResponse.uuid.get, authenticateResponse)
           note.archived should be(None)
           note.relationships.get.tags.get(0) should be(archiveListResponse.history.uuid.get)
+          
+          // Add note back to list and make sure it is again archived with history tag
+          putExistingNote(note.copy(
+            relationships = Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, itemsResponse.notes.get(0).relationships.get.tags))), putNoteResponse.uuid.get, authenticateResponse)
+          val noteAgain = getNote(putNoteResponse.uuid.get, authenticateResponse)
+          noteAgain.archived should not be(None)
+          note.relationships.get.tags.get(0) should be(archiveListResponse.history.uuid.get)
+          
+          // Unarchive list and make sure everything is unarchived
+          Post("/" + authenticateResponse.userUUID + "/list/" + putListResponse.uuid.get + "/unarchive"
+          ) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+            val unarchiveListResponse = responseAs[UnarchiveListResult]
+            writeJsonOutput("unarchiveListResponse", responseAs[String])
+            unarchiveListResponse.children.get.size should be (2)
+            unarchiveListResponse.history.deleted should not be (None)
+            
+            val unarchivedNote = getNote(putNoteResponse.uuid.get, authenticateResponse)
+            unarchivedNote.archived should be(None)
+            val unarchivedTask = getTask(putTaskResponse.uuid.get, authenticateResponse)
+            unarchivedTask.archived should be(None)
+            val unarchivedList = getList(putListResponse.uuid.get, authenticateResponse)
+            unarchivedList.archived should be(None)
+            
+            // The deleted history tag should still be there
+            unarchivedList.relationships.get.tags.get.size should be (1)
+            Get("/" + authenticateResponse.userUUID + "/items" + "?archived=false&active=false&deleted=true") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+              val deletedItemsResponse = responseAs[Items]
+              deletedItemsResponse.tags.get(0).uuid.get should be (unarchivedList.relationships.get.tags.get(0))
+            }
+          }
         }
       }
     }

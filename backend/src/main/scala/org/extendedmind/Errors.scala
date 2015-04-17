@@ -67,6 +67,11 @@ case object ERR_LIST_MISSING_HISTORY_TAG extends ErrorCode(4002)
 case object ERR_LIST_DELETE_CHILDREN extends ErrorCode(4003)
 case object ERR_LIST_CONVERT_CHILDREN extends ErrorCode(4004)
 case object ERR_LIST_ARCHIVE_NOT_PREMIUM extends ErrorCode(4005)
+case object ERR_LIST_ALREADY_ARCHIVED extends ErrorCode(4006)
+case object ERR_LIST_UNARCHIVE_CHILDREN extends ErrorCode(4007)
+case object ERR_LIST_NOT_ARCHIVED extends ErrorCode(4008)
+case object ERR_LIST_MORE_THAN_ONE_ACTIVE_HISTORY extends ErrorCode(4009)
+case object ERR_LIST_NO_ACTIVE_HISTORY extends ErrorCode(4010)
 
 case object ERR_USER_NO_USERS extends ErrorCode(5001)
 case object ERR_USER_ALREADY_EXISTS extends ErrorCode(5002)
@@ -78,4 +83,5 @@ case object ERR_USER_DELETE_ACCEPTED_INVITES extends ErrorCode(5007)
 
 case object ERR_TASK_INVALID_REMINDER_UUID extends ErrorCode(6001)
 
+case object ERR_TAG_UNDELETE_HISTORY extends ErrorCode(7001)
 

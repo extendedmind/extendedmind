@@ -141,6 +141,21 @@ trait ListService extends ServiceBase {
           }
         }
       } ~
+      unarchiveList { (ownerUUID, listUUID) =>
+        authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
+          authorize(writeAccess(ownerUUID, securityContext)) {
+            complete {
+              Future[UnarchiveListResult] {
+                setLogContext(securityContext, ownerUUID, listUUID)
+                listActions.unarchiveList(getOwner(ownerUUID, securityContext), listUUID) match {
+                  case Right(result) => processResult(result)
+                  case Left(e) => processErrors(e)
+                }
+              }
+            }
+          }
+        }
+      } ~
       listToTask { (ownerUUID, listUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
@@ -175,8 +190,5 @@ trait ListService extends ServiceBase {
           }
         }
       }
-      
-      
-      
     }
 }

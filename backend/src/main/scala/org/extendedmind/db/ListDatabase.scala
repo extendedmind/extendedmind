@@ -32,6 +32,7 @@ import org.neo4j.graphdb.traversal.TraversalDescription
 import org.neo4j.kernel.Traversal
 import org.neo4j.scala.DatabaseService
 import scala.collection.mutable.ListBuffer
+import org.neo4j.graphdb.traversal.Evaluation
 
 trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
 
@@ -94,6 +95,18 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
       unit <- Right(updateItemsIndex(listResult._1, result.result)).right
     } yield result
   }
+  
+  def unarchiveList(owner: Owner, listUUID: UUID): Response[UnarchiveListResult] = {
+    for {
+      listResult <- validateListUnarchivable(owner, listUUID).right
+      unarchiveResult <- unarchiveListNode(listResult._1, owner, listResult._2).right
+      tagDeleteResult <- Right(getDeleteItemResult(listResult._2, unarchiveResult._2)).right
+      unit <- Right(updateItemsIndex(listResult._2, tagDeleteResult.result)).right
+      setResults <- Right(updateItemsIndex(unarchiveResult._1)).right
+      result <- Right(UnarchiveListResult(setResults, tagDeleteResult, getSetResult(listResult._1, false))).right
+      unit <- Right(updateItemsIndex(listResult._1, result.result)).right
+    } yield result
+  }
 
   def listToTask(owner: Owner, listUUID: UUID, list: List): Response[Task] = {
     for {
@@ -148,10 +161,62 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
   }
 
   protected def validateListArchivable(listNode: Node)(implicit neo4j: DatabaseService): Response[Node] = {
-    if (hasChildren(listNode, Some(ItemLabel.LIST)))
+    if (hasChildren(listNode, Some(ItemLabel.LIST))){
       fail(INVALID_PARAMETER, ERR_LIST_ARCHIVE_CHILDREN, "List " + getUUID(listNode) + " has child lists, can not archive")
-    else
+    }else if (listNode.hasProperty("archived")){
+      fail(INVALID_PARAMETER, ERR_LIST_ALREADY_ARCHIVED, "List " + getUUID(listNode) + " is already archived")
+    }else{
+      Right(listNode)      
+    }
+  }
+  
+  protected def validateListUnarchivable(owner: Owner, listUUID: UUID): Response[(Node, Node)] = {
+    withTx {
+      implicit neo =>
+        for {
+          listNode <- getItemNode(owner, listUUID, Some(ItemLabel.LIST)).right
+          listNode <- validateListUnarchivable(listNode).right
+          historyTag <- getArchivedListHistoryTag(listNode).right
+        } yield (listNode, historyTag)
+    }
+  }
+  
+  protected def validateListUnarchivable(listNode: Node)(implicit neo4j: DatabaseService): Response[Node] = {
+    if (hasChildren(listNode, Some(ItemLabel.LIST))){
+      fail(INVALID_PARAMETER, ERR_LIST_UNARCHIVE_CHILDREN, "List " + getUUID(listNode) + " has child lists, can not unarchive")
+    }else if (!listNode.hasProperty("archived")){
+      fail(INVALID_PARAMETER, ERR_LIST_NOT_ARCHIVED, "List " + getUUID(listNode) + " is not archived")
+    }else{
       Right(listNode)
+    }
+  }
+  
+  protected def getArchivedListHistoryTag(listNode: Node)(implicit neo4j: DatabaseService): Response[Node] = {
+    val historyTagTraversal = neo4j.gds.traversalDescription()
+        .depthFirst()
+        .relationships(DynamicRelationshipType.withName(ItemRelationship.HAS_TAG.name), Direction.OUTGOING)
+        .evaluator(Evaluators.excludeStartPosition())
+        .evaluator(PropertyEvaluator(
+          MainLabel.ITEM, "deleted",
+          Evaluation.EXCLUDE_AND_PRUNE,
+          Evaluation.INCLUDE_AND_CONTINUE))
+        .depthFirst()
+        .evaluator(Evaluators.toDepth(1))
+        .traverse(listNode)
+     
+    val historyTagList = historyTagTraversal.nodes().toList
+    val activeHistoryTags = historyTagList.filter(historyTag => {
+      !historyTag.hasProperty("deleted")
+    })
+    if (activeHistoryTags.isEmpty || activeHistoryTags.length == 0){
+      fail(INTERNAL_SERVER_ERROR, ERR_LIST_NO_ACTIVE_HISTORY, "Archived list does not have an active history tag")
+    } else if (activeHistoryTags.length > 1){
+      fail(INTERNAL_SERVER_ERROR, ERR_LIST_MORE_THAN_ONE_ACTIVE_HISTORY, "Archived list has more than one active history tag")
+    }else if (activeHistoryTags.length == 0){
+      fail(INTERNAL_SERVER_ERROR, ERR_LIST_NO_ACTIVE_HISTORY, "Archived list does not have an active history tag")
+    }else{
+      Right(activeHistoryTags(0))
+    }
   }
 
   protected def archiveListNode(listNode: Node, owner: Owner, tagUUID: UUID): Response[scala.List[Node]] = {
@@ -174,6 +239,20 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
         }
     }
   }
+  
+  protected def unarchiveListNode(listNode: Node, owner: Owner, historyTag: Node): Response[(scala.List[Node], Long)] = {
+    withTx {
+      implicit neo4j =>
+        val childNodes = getChildren(listNode, None, true)
+        // Remove archived from all children and list node
+        childNodes foreach (childNode => {
+          childNode.removeProperty("archived")
+        })
+        listNode.removeProperty("archived")
+        // Mar the tag as deleted
+        Right(childNodes, deleteItem(historyTag))
+    }
+  }
 
   protected def getArchiveListResult(listNode: Node, tag: Tag, setResults: Option[scala.List[SetResult]]): ArchiveListResult = {
     withTx {
@@ -185,7 +264,6 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
     }
   }
 
-  
   protected def deleteListNode(owner: Owner, listUUID: UUID): Response[(Node, Long, scala.List[Node])] = {
     withTx {
       implicit neo =>

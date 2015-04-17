@@ -90,5 +90,6 @@ object JsonImplicits extends DefaultJsonProtocol {
   implicit val implCompleteTaskResult = jsonFormat3(CompleteTaskResult.apply)
   implicit val implFavoriteNoteResult = jsonFormat2(FavoriteNoteResult.apply)
   implicit val implArchiveListResult = jsonFormat4(ArchiveListResult.apply)
+  implicit val implUnarchiveListResult = jsonFormat3(UnarchiveListResult.apply)
 
 }

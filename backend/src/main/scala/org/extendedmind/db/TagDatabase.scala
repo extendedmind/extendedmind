@@ -172,6 +172,7 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
       implicit neo =>
         for {
           tagNode <- getItemNode(owner, tagUUID, Some(ItemLabel.TAG), acceptDeleted = true).right
+          unit <- validateTagUndeletable(tagNode).right
           success <- Right(undeleteItem(tagNode)).right
           childrenAndTagged <- getChildrenAndTagged(owner, tagNode).right
         } yield (tagNode, childrenAndTagged)
@@ -185,5 +186,11 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
       taggedItems <- Right(getTaggedItems(tagNode, true)).right
       childrenAndTagged <- Right(scala.List.concat(childNodes, taggedItems)).right
     } yield childrenAndTagged
+  }
+  
+  protected def validateTagUndeletable(tagNode: Node)(implicit neo4j: DatabaseService): Response[Unit] = {
+    if (tagNode.hasLabel(TagLabel.HISTORY))
+      fail(INVALID_PARAMETER, ERR_TAG_UNDELETE_HISTORY, "Can't undelete history tag")
+    else Right()
   }
 }

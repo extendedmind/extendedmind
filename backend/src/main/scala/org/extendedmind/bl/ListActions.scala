@@ -54,13 +54,18 @@ trait ListActions {
   
   def undeleteList(owner: Owner, listUUID: UUID)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("undeleteList")
-    db.undeleteList(owner: Owner, listUUID)
+    db.undeleteList(owner, listUUID)
   }
 
   def archiveList(owner: Owner, listUUID: UUID)(implicit log: LoggingAdapter): Response[ArchiveListResult] = {
     log.info("archiveList")
     if (!owner.hasPremium) fail(INVALID_PARAMETER, ERR_LIST_ARCHIVE_NOT_PREMIUM, "List archiving requires premium subscription")
     else db.archiveList(owner, listUUID)
+  }
+  
+  def unarchiveList(owner: Owner, listUUID: UUID)(implicit log: LoggingAdapter): Response[UnarchiveListResult] = {
+    log.info("unarchiveList")
+    db.unarchiveList(owner, listUUID)
   }
   
   def listToTask(owner: Owner, listUUID: UUID, list: List)(implicit log: LoggingAdapter): Response[Task] = {
