@@ -47,8 +47,8 @@ function MockItemsBackendService($httpBackend, ItemsService, PersistentStorageSe
       if (modifiedItems[i].mod.repeating) persistentItem.repeating = modifiedItems[i].mod.repeating;
       else if (modifiedItems[i].trans.repeating) persistentItem.repeating = modifiedItems[i].trans.repeating;
 
-      if (modifiedItems[i].mod.reminder) persistentItem.reminder = modifiedItems[i].mod.reminder;
-      else if (modifiedItems[i].trans.reminder) persistentItem.reminder = modifiedItems[i].trans.reminder;
+      if (modifiedItems[i].mod.reminders) persistentItem.reminders = modifiedItems[i].mod.reminders;
+      else if (modifiedItems[i].trans.reminders) persistentItem.reminders = modifiedItems[i].trans.reminders;
 
       if (modifiedItems[i].mod.content) persistentItem.content = modifiedItems[i].mod.content;
       else if (modifiedItems[i].trans.content) persistentItem.content = modifiedItems[i].trans.content;
