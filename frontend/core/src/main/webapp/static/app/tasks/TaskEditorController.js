@@ -16,7 +16,8 @@
  'use strict';
 
  function TaskEditorController($filter, $q, $rootScope, $scope, $timeout, ArrayService, DateService,
-                               SwiperService, TasksService, UISessionService, packaging) {
+                               ReminderService, SwiperService, TasksService, UISessionService,
+                               packaging) {
 
   // INITIALIZING
 
@@ -175,26 +176,16 @@
 
   // REMINDERS
 
-  $scope.deviceSupportsReminders = packaging.endsWith('cordova');
+  $scope.isRemindersSupported = function() {
+    return ReminderService.isRemindersSupported();
+  };
 
   $scope.isReminderInThisDevice = function(reminder) {
-    if (reminder.packaging === packaging) {
-      if (reminder.packaging === 'ios-cordova') {
-        var deviceModel = UISessionService.getDeviceId();
-        return reminder.device === deviceModel;
-      } else if (reminder.packaging === 'android-cordova') {
-        var deviceId = UISessionService.getDeviceId();
-        return reminder === deviceId;
-      }
-    }
+    return ReminderService.isReminderInThisDevice(reminder);
   };
 
   $scope.findReminderForThisDevice = function(reminders) {
-    for (var i = 0; i < reminders.length; i++) {
-      if ($scope.isReminderInThisDevice(reminders[i])) {
-        return reminders[i];
-      }
-    }
+    return ReminderService.findReminderForThisDevice(reminders);
   };
 
   $scope.openReminderPicker = function(task, reminder) {
@@ -283,7 +274,7 @@
   };
 
   $scope.getDeviceName = function(reminder) {
-    if ($scope.isReminderInThisDevice(reminder)) {
+    if (ReminderService.isReminderInThisDevice(reminder)) {
       return 'this device';
     } else if (reminder.packaging === 'ios-cordova') {
       return 'apple'; // TODO
@@ -313,6 +304,8 @@
       $scope.reminder.date.setHours($scope.reminder.hours.value, $scope.reminder.minutes.value);
       if ($scope.reminder.date >= new Date().setSeconds(0, 0)) {
         $scope.reminderPickerOpen = false;
+        // TODO
+        // ReminderService.addReminder();
       } else {
         setReminderError($scope.reminder, 'past');
       }
@@ -328,6 +321,8 @@
       var reminder = $scope.findReminderForThisDevice($scope.task.trans.reminders);
       if (reminder !== undefined) {
         $scope.task.reminders.splice($scope.task.reminders.indexOf(reminder), 1);
+        // TODO
+        // ReminderService.removeReminder();
       }
     }
   };
@@ -482,6 +477,6 @@
 }
 
 TaskEditorController['$inject'] = ['$filter', '$q', '$rootScope', '$scope', '$timeout', 'ArrayService',
-'DateService', 'SwiperService', 'TasksService', 'UISessionService', 'packaging'
+'DateService', 'ReminderService', 'SwiperService', 'TasksService', 'UISessionService', 'packaging'
 ];
 angular.module('em.main').controller('TaskEditorController', TaskEditorController);

@@ -118,7 +118,7 @@
           <!-- REMINDERS -->
           <div ng-hide="calendarOpen || taskDescriptionFocused || listPickerOpen || reminderPickerOpen">
 
-            <div ng-if="deviceSupportsReminders &&
+            <div ng-if="isRemindersSupported() &&
               (!task.trans.reminders || !findReminderForThisDevice(task.trans.reminders))"
               class="group-mixed with-checkbox">
               <a href ng-click="openReminderPicker(task)"
