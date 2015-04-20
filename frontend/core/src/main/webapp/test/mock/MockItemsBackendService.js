@@ -65,6 +65,7 @@ function MockItemsBackendService($httpBackend, ItemsService, PersistentStorageSe
   function mockGetItems(expectResponse){
     $httpBackend.whenGET(SynchronizeService.getItemsRegex)
       .respond(function(method, url, data, headers) {
+        var i;
         if (url.indexOf('?modified=') != -1){
           var modifiedResponse = {};
           var activeUUID = UISessionService.getActiveUUID();
@@ -94,7 +95,7 @@ function MockItemsBackendService($httpBackend, ItemsService, PersistentStorageSe
           var response = {
             'tasks': []
           };
-          for(var i = 0; i < 100; i++) {
+          for(i = 0; i < 100; i++) {
             var referenceDate = new Date();
             if (i < 10 ){
               // First ten are today
@@ -149,7 +150,18 @@ function MockItemsBackendService($httpBackend, ItemsService, PersistentStorageSe
           } else if (headers.Authorization === 'Basic dG9rZW46T0ZGTElORQ==') {
             return [404, 'Not found'];
           }
-          return expectResponse(method, url, data, headers, getJSONFixture('itemsResponse.json'));
+          var itemsResponseData = getJSONFixture('itemsResponse.json');
+          if (itemsResponseData.tasks) {
+            for (i = 0; i < itemsResponseData.tasks.length; i++) {
+              if (itemsResponseData.tasks[i].reminders) {
+                for (var j = 0; j < itemsResponseData.tasks[i].reminders.length; j++) {
+                  // Set notification 2 hours into future.
+                  itemsResponseData.tasks[i].reminders[j].notification = Date.now() + 7200000;
+                }
+              }
+            }
+          }
+          return expectResponse(method, url, data, headers, itemsResponseData);
         }
       });
   }
