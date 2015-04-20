@@ -80,6 +80,27 @@
     });
   }
 
+  function mockUnarchiveList(expectResponse){
+    $httpBackend.whenPOST(ListsService.unarchiveListRegex)
+    .respond(function(method, url, data, headers) {
+      var unarchiveListResponse = getJSONFixture('unarchiveListResponse.json');
+      unarchiveListResponse.result.modified = (new Date()).getTime();
+      if (!listArchiveFirstRun) {
+        var randomlyOffline = Math.floor((Math.random() * 10) + 1) < 8;
+        // There is a 70% change we are offline.
+        if (!randomlyOffline) {
+          return expectResponse(method, url, data, headers, unarchiveListResponse);
+        } else {
+          return [404];
+        }
+      } else {
+        // Simulate offline on first run.
+        listArchiveFirstRun = false;
+        return [404];
+      }
+    });
+  }
+
   return {
     mockListsBackend: function(expectResponse) {
       mockPutNewList(expectResponse);
@@ -87,6 +108,7 @@
       mockDeleteList(expectResponse);
       mockUndeleteList(expectResponse);
       mockArchiveList(expectResponse);
+      mockUnarchiveList(expectResponse);
     }
   };
 }

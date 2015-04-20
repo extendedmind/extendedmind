@@ -190,12 +190,6 @@
       localStorage.removeItem('offline');
       localStorage.removeItem('synced');
 
-      // Also clear offline queue
-      localStorage.removeItem('primaryRequest');
-      localStorage.removeItem('secondaryRequest');
-      localStorage.removeItem('beforeLastRequest');
-      localStorage.removeItem('requestQueue');
-
       // Clear cached values
       cachedExpires = undefined;
     }

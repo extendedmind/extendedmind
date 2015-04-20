@@ -84,7 +84,12 @@ object Response{
 /**
  * Result that is returned from every successful PUT method and various other places
  */
-case class SetResult(uuid: Option[UUID], created: Option[Long], modified: Long)
+case class SetResult(uuid: Option[UUID], created: Option[Long], modified: Long, archived: Option[Long])
+
+object SetResult{
+  def apply(uuid: Option[UUID], created: Option[Long], modified: Long) 
+        = new SetResult(uuid, created, modified, None)
+}
 
 /**
  * Result that is returned from every error response

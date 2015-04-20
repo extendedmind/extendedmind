@@ -40,17 +40,17 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
 
   def putNewList(owner: Owner, list: List): Response[SetResult] = {
     for {
-      listNode <- putNewExtendedItem(owner, list, ItemLabel.LIST).right
-      result <- Right(getSetResult(listNode, true)).right
-      unit <- Right(addToItemsIndex(owner, listNode, result)).right
+      listResult <- putNewExtendedItem(owner, list, ItemLabel.LIST).right
+      result <- Right(getSetResult(listResult._1, true, listResult._2)).right
+      unit <- Right(addToItemsIndex(owner, listResult._1, result)).right
     } yield result
   }
 
   def putExistingList(owner: Owner, listUUID: UUID, list: List): Response[SetResult] = {
     for {
-      listNode <- putExistingExtendedItem(owner, listUUID, list, ItemLabel.LIST).right
-      result <- Right(getSetResult(listNode, false)).right
-      unit <- Right(updateItemsIndex(listNode, result)).right
+      listResult <- putExistingExtendedItem(owner, listUUID, list, ItemLabel.LIST).right
+      result <- Right(getSetResult(listResult._1, false, listResult._2)).right
+      unit <- Right(updateItemsIndex(listResult._1, result)).right
     } yield result
   }
 
@@ -100,7 +100,7 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
     for {
       listResult <- validateListUnarchivable(owner, listUUID).right
       unarchiveResult <- unarchiveListNode(listResult._1, owner, listResult._2).right
-      tagDeleteResult <- Right(getDeleteItemResult(listResult._2, unarchiveResult._2)).right
+      tagDeleteResult <- Right(getDeleteItemResult(listResult._2, unarchiveResult._2, true)).right
       unit <- Right(updateItemsIndex(listResult._2, tagDeleteResult.result)).right
       setResults <- Right(updateItemsIndex(unarchiveResult._1)).right
       result <- Right(UnarchiveListResult(setResults, tagDeleteResult, getSetResult(listResult._1, false))).right
@@ -136,13 +136,13 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
 
   protected def addTransientListProperties(listNode: Node, owner: Owner, list: List)(implicit neo4j: DatabaseService): Response[List] = {
     for {
-      parent <- getItemRelationship(listNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.LIST).right
+      parentRelatioship <- Right(getItemRelationship(listNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.LIST)).right
       tags <- getTagRelationships(listNode, owner).right
       task <- Right(list.copy(
         relationships =
-          (if (parent.isDefined || tags.isDefined)
+          (if (parentRelatioship.isDefined || tags.isDefined)
             Some(ExtendedItemRelationships(
-            parent = (if (parent.isEmpty) None else (Some(getUUID(parent.get.getEndNode())))),
+            parent = (if (parentRelatioship.isEmpty) None else (Some(getUUID(parentRelatioship.get.getEndNode())))),
             None,
             tags = (if (tags.isEmpty) None else (Some(getEndNodeUUIDList(tags.get))))))
           else None))).right
@@ -205,17 +205,12 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
         .traverse(listNode)
      
     val historyTagList = historyTagTraversal.nodes().toList
-    val activeHistoryTags = historyTagList.filter(historyTag => {
-      !historyTag.hasProperty("deleted")
-    })
-    if (activeHistoryTags.isEmpty || activeHistoryTags.length == 0){
+    if (historyTagList.isEmpty || historyTagList.length == 0){
       fail(INTERNAL_SERVER_ERROR, ERR_LIST_NO_ACTIVE_HISTORY, "Archived list does not have an active history tag")
-    } else if (activeHistoryTags.length > 1){
+    } else if (historyTagList.length > 1){
       fail(INTERNAL_SERVER_ERROR, ERR_LIST_MORE_THAN_ONE_ACTIVE_HISTORY, "Archived list has more than one active history tag")
-    }else if (activeHistoryTags.length == 0){
-      fail(INTERNAL_SERVER_ERROR, ERR_LIST_NO_ACTIVE_HISTORY, "Archived list does not have an active history tag")
     }else{
-      Right(activeHistoryTags(0))
+      Right(historyTagList(0))
     }
   }
 
@@ -249,7 +244,7 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
           childNode.removeProperty("archived")
         })
         listNode.removeProperty("archived")
-        // Mar the tag as deleted
+        // Mark the tag as deleted
         Right(childNodes, deleteItem(historyTag))
     }
   }
@@ -318,9 +313,9 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
     withTx {
       implicit neo4j =>
         for {
-          listNode <- putExistingExtendedItem(owner, listUUID, list, ItemLabel.LIST).right
-          result <- validateListConvertable(listNode).right
-          taskNode <- Right(setLabel(listNode, Some(MainLabel.ITEM), Some(ItemLabel.TASK), Some(scala.List(ItemLabel.LIST)))).right
+          listResult <- putExistingExtendedItem(owner, listUUID, list, ItemLabel.LIST).right
+          result <- validateListConvertable(listResult._1).right
+          taskNode <- Right(setLabel(listResult._1, Some(MainLabel.ITEM), Some(ItemLabel.TASK), Some(scala.List(ItemLabel.LIST)))).right
           task <- toTask(taskNode, owner).right
         } yield (taskNode, task)
     }
@@ -330,9 +325,9 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
     withTx {
       implicit neo4j =>
         for {
-          listNode <- putExistingExtendedItem(owner, listUUID, list, ItemLabel.LIST).right
-          result <- validateListConvertable(listNode).right
-          noteNode <- Right(setLabel(listNode, Some(MainLabel.ITEM), Some(ItemLabel.NOTE), Some(scala.List(ItemLabel.LIST)))).right
+          listResult <- putExistingExtendedItem(owner, listUUID, list, ItemLabel.LIST).right
+          result <- validateListConvertable(listResult._1).right
+          noteNode <- Right(setLabel(listResult._1, Some(MainLabel.ITEM), Some(ItemLabel.NOTE), Some(scala.List(ItemLabel.LIST)))).right
           result <- Right(moveDescriptionToContent(noteNode)).right
           note <- toNote(noteNode, owner).right
         } yield (noteNode, note)

@@ -182,8 +182,8 @@
     return executeUpdateFns(updateFns, itemUUID, probableItemType, properties, ownerUUID);
   }
 
-  function processUUIDChange(oldUUID, newUUID, created, modified, type, ownerUUID, queue,
-                             removeFakeUUIDRequest) {
+  function processUUIDChange(oldUUID, newUUID, created, modified, archived, type, ownerUUID, queue,
+                             removeFakeUUIDRequest) {
     // Also update queue to replace all calls with the old fake uuid with the new one
     // and at the same time swap the modified value
     if (queue && queue.length > 0) {
@@ -217,7 +217,8 @@
         }
       }
     }
-    updateModProperties(oldUUID, type, {uuid: newUUID, created: created, modified: modified}, ownerUUID);
+    var propertiesToUpdate = {uuid: newUUID, created: created, modified: modified, archived: archived};
+    updateModProperties(oldUUID, type, propertiesToUpdate, ownerUUID);
   }
 
   function validateSynchronizeResultIdFields(request, response, queue){
@@ -229,7 +230,7 @@
           if (tagInfo && tagInfo.tag.trans.uuid !== response.tags[i].uuid){
             processUUIDChange(tagInfo.tag.trans.uuid, response.tags[i].uuid,
                               response.tags[i].created, response.tags[i].modified,
-                              'tag', request.params.owner, queue, true);
+                              undefined, 'tag', request.params.owner, queue, true);
           }
         }
       }
@@ -241,7 +242,7 @@
           if (listInfo && listInfo.list.trans.uuid !== response.lists[i].uuid){
             processUUIDChange(listInfo.list.trans.uuid, response.lists[i].uuid,
                               response.lists[i].created, response.lists[i].modified,
-                              'list', request.params.owner, queue, true);
+                              response.lists[i].archived, 'list', request.params.owner, queue, true);
           }
         }
       }
@@ -253,7 +254,7 @@
           if (taskInfo && taskInfo.task.trans.uuid !== response.tasks[i].uuid){
             processUUIDChange(taskInfo.task.trans.uuid, response.tasks[i].uuid,
                               response.tasks[i].created, response.tasks[i].modified,
-                              'task', request.params.owner, queue, true);
+                              response.tasks[i].archived, 'task', request.params.owner, queue, true);
           }
         }
       }
@@ -265,7 +266,7 @@
           if (noteInfo && noteInfo.note.trans.uuid !== response.notes[i].uuid){
             processUUIDChange(noteInfo.note.trans.uuid, response.notes[i].uuid,
                               response.notes[i].created, response.notes[i].modified,
-                              'note', request.params.owner, queue, true);
+                              response.notes[i].archived, 'note', request.params.owner, queue, true);
           }
         }
       }
@@ -277,7 +278,7 @@
           if (itemInfo && itemInfo.item.trans.uuid !== response.items[i].uuid){
             processUUIDChange(itemInfo.item.trans.uuid, response.items[i].uuid,
                               response.items[i].created, response.items[i].modified,
-                              'item', request.params.owner, queue, true);
+                              undefined, 'item', request.params.owner, queue, true);
           }
         }
       }
@@ -396,7 +397,7 @@
               // This means that new item response never reached the client, process UUID change here
               processUUIDChange(queue[i].params.fakeUUID, conflictingItemInfo.item.uuid,
                                 conflictingItemInfo.item.created, conflictingItemInfo.item.modified,
-                                queue[i].params.type, request.params.owner,
+                                conflictingItemInfo.item.archived, queue[i].params.type, request.params.owner,
                                 queue);
             }
           }
@@ -762,6 +763,7 @@
       if (request.params.uuid) {
         // Put existing
         properties = {modified: response.modified};
+        if (response.archived) properties.archived = response.archived;
         if (request.params.type === 'user') {
           UserSessionService.setUserModified(properties.modified);
         } else {
@@ -779,7 +781,7 @@
           if (response.testing === true) return 'testing';
         } else {
           processUUIDChange(request.params.fakeUUID, response.uuid,
-                            response.created, response.modified,
+                            response.created, response.modified, response.archived,
                             request.params.type, request.params.owner, queue);
         }
       }

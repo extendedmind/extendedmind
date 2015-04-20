@@ -65,11 +65,11 @@
   $scope.archiveListInEdit = function() {
     var deferredSaveAndArchive = $scope.saveAndArchiveList($scope.list);
     if (deferredSaveAndArchive){
-      return deferredSaveAndArchive.then(archiveListSuccess, archiveListError);
+      return deferredSaveAndArchive.then(archiveOrUnarchiveListSuccess, archiveListError);
     }
   };
 
-  function archiveListSuccess() {
+  function archiveOrUnarchiveListSuccess() {
     $scope.closeEditor();
     $scope.changeFeature('lists', $scope.list);
   }
@@ -82,7 +82,32 @@
           retry: function() {
             var archiveListDeferred = $scope.archiveList($scope.list);
             if (archiveListDeferred) {
-              return archiveListDeferred.then(archiveListSuccess);
+              return archiveListDeferred.then(archiveOrUnarchiveListSuccess);
+            }
+          },
+          allowCancel: true
+        }
+      };
+      $rootScope.$emit('emInteraction', rejection);
+    }
+  }
+
+  $scope.unarchiveListInEdit = function() {
+    var deferredSaveAndUnarchive = $scope.saveAndUnarchiveList($scope.list);
+    if (deferredSaveAndUnarchive){
+      return deferredSaveAndUnarchive.then(archiveOrUnarchiveListSuccess, unarchiveListError);
+    }
+  };
+
+  function unarchiveListError(error) {
+    if (error.type === 'offline') {
+      var rejection = {
+        type: 'onlineRequired',
+        value: {
+          retry: function() {
+            var unarchiveListDeferred = $scope.unarchiveList($scope.list);
+            if (unarchiveListDeferred) {
+              return unarchiveListDeferred.then(archiveOrUnarchiveListSuccess);
             }
           },
           allowCancel: true
@@ -119,10 +144,18 @@
     }
   };
 
-  $scope.hideArchive = function() {
-    return $scope.isFakeUser() ||
-        $scope.editorType === 'recurring' ||
-        $scope.features.lists.getStatus('archived') === 'disabled';
+  $scope.showArchive = function() {
+    return !$scope.isFakeUser() &&
+        $scope.list.trans.archived === undefined &&
+        $scope.editorType !== 'recurring' &&
+        $scope.features.lists.getStatus('archived') !== 'disabled';
+  };
+
+  $scope.showUnarchive = function() {
+    return !$scope.isFakeUser() &&
+        $scope.list.trans.archived !== undefined &&
+        $scope.editorType !== 'recurring' &&
+        $scope.features.lists.getStatus('archived') !== 'disabled';
   };
 }
 

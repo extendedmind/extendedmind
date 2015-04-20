@@ -40,17 +40,17 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
 
   def putNewTask(owner: Owner, task: Task, originTaskNode: Option[Node] = None): Response[SetResult] = {
     for {
-      taskNode <- putNewTaskNode(owner, task, originTaskNode).right
-      result <- Right(getSetResult(taskNode, true)).right
-      unit <- Right(addToItemsIndex(owner, taskNode, result)).right
+      taskResult <- putNewTaskNode(owner, task, originTaskNode).right
+      result <- Right(getSetResult(taskResult._1, true, taskResult._2)).right
+      unit <- Right(addToItemsIndex(owner, taskResult._1, result)).right
     } yield result
   }
 
   def putExistingTask(owner: Owner, taskUUID: UUID, task: Task): Response[SetResult] = {
     for {
-      taskNode <- putExistingTaskNode(owner, taskUUID, task).right
-      result <- Right(getSetResult(taskNode, false)).right
-      unit <- Right(updateItemsIndex(taskNode, result)).right
+      taskResult <- putExistingTaskNode(owner, taskUUID, task).right
+      result <- Right(getSetResult(taskResult._1, false, taskResult._2)).right
+      unit <- Right(updateItemsIndex(taskResult._1, result)).right
     } yield result
   }
 
@@ -107,27 +107,27 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
 
   // PRIVATE
 
-  protected def putNewTaskNode(owner: Owner, task: Task, originTaskNode: Option[Node] = None): Response[Node] = {
+  protected def putNewTaskNode(owner: Owner, task: Task, originTaskNode: Option[Node] = None): Response[(Node, Option[Long])] = {
     withTx {
       implicit neo4j =>
         for {
-          taskNode <- putNewExtendedItem(owner, task, ItemLabel.TASK).right
-          relationship <- setTaskOriginRelationship(taskNode, originTaskNode).right
-          unit <- updateReminders(taskNode, task.reminders).right
-        } yield taskNode
+          taskResult <- putNewExtendedItem(owner, task, ItemLabel.TASK).right
+          relationship <- setTaskOriginRelationship(taskResult._1, originTaskNode).right
+          unit <- updateReminders(taskResult._1, task.reminders).right
+        } yield taskResult 
     }
   }
 
-  protected def putExistingTaskNode(owner: Owner, taskUUID: UUID, task: Task): Response[Node] = {
+  protected def putExistingTaskNode(owner: Owner, taskUUID: UUID, task: Task): Response[(Node, Option[Long])] = {
     withTx {
       implicit neo4j =>
         for {
-          taskNode <- putExistingExtendedItem(owner, taskUUID, task, ItemLabel.TASK).right
-          unit <- updateReminders(taskNode, task.reminders).right
-        } yield taskNode
+          taskResult <- putExistingExtendedItem(owner, taskUUID, task, ItemLabel.TASK).right
+          unit <- updateReminders(taskResult._1, task.reminders).right
+        } yield taskResult
     }
   }
-
+  
   override def toTask(taskNode: Node, owner: Owner)(implicit neo4j: DatabaseService): Response[Task] = {
     for {
       task <- toCaseClass[Task](taskNode).right
@@ -137,8 +137,8 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
 
   protected def addTransientTaskProperties(taskNode: Node, owner: Owner, task: Task)(implicit neo4j: DatabaseService): Response[Task] = {
     for {
-      parent <- getItemRelationship(taskNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.LIST).right
-      origin <- getItemRelationship(taskNode, owner, ItemRelationship.HAS_ORIGIN, ItemLabel.TASK).right
+      parent <- Right(getItemRelationship(taskNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.LIST)).right
+      origin <- Right(getItemRelationship(taskNode, owner, ItemRelationship.HAS_ORIGIN, ItemLabel.TASK)).right
       tags <- getTagRelationships(taskNode, owner).right
       reminderNodes <- Right(getReminderNodes(taskNode)).right
       reminders <- getReminders(reminderNodes).right
@@ -188,8 +188,7 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
         if (taskNode.hasProperty("repeating")) {
           // Generate new task on complete if a new task has not already been created
           val originRelationshipResponse = getItemRelationship(taskNode, owner, ItemRelationship.HAS_ORIGIN, ItemLabel.TASK, Direction.INCOMING)
-          if (originRelationshipResponse.isLeft) Left(originRelationshipResponse.left.get)
-          else if (originRelationshipResponse.right.get.isEmpty){
+          if (originRelationshipResponse.isEmpty){
 	          // First, get new due string
 	          val repeatingType = RepeatingType.withName(taskNode.getProperty("repeating").asInstanceOf[String])
 	          val oldDue: java.util.Calendar = java.util.Calendar.getInstance();
@@ -359,9 +358,9 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
       implicit neo4j =>
         for {
           taskNode <- putExistingExtendedItem(owner, taskUUID, task, ItemLabel.TASK).right
-          listNode <- Right(setLabel(taskNode, Some(MainLabel.ITEM), Some(ItemLabel.LIST), Some(scala.List(ItemLabel.TASK)))).right
+          listNode <- Right(setLabel(taskNode._1, Some(MainLabel.ITEM), Some(ItemLabel.LIST), Some(scala.List(ItemLabel.TASK)))).right
           list <- toList(listNode, owner).right
-        } yield (taskNode, list)
+        } yield (taskNode._1, list)
     }
   }
   
@@ -370,10 +369,10 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
       implicit neo4j =>
         for {
           taskNode <- putExistingExtendedItem(owner, taskUUID, task, ItemLabel.TASK).right
-          noteNode <- Right(setLabel(taskNode, Some(MainLabel.ITEM), Some(ItemLabel.NOTE), Some(scala.List(ItemLabel.TASK)))).right
+          noteNode <- Right(setLabel(taskNode._1, Some(MainLabel.ITEM), Some(ItemLabel.NOTE), Some(scala.List(ItemLabel.TASK)))).right
           result <- Right(moveDescriptionToContent(noteNode)).right
           note <- toNote(noteNode, owner).right
-        } yield (taskNode, note)
+        } yield (taskNode._1, note)
     }
   }
 

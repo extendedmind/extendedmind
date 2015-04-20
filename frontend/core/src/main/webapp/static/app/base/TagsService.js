@@ -114,6 +114,7 @@
         return latestModified;
       }
     },
+    updateTag: updateTag,
     updateTagModProperties: function(uuid, properties, ownerUUID) {
       var tagInfo = this.getTagInfo(uuid, ownerUUID);
       if (tagInfo){

@@ -106,7 +106,7 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
       implicit neo4j =>
         for {
           tagNode <- updateItem(owner, tagUUID, tag, Some(ItemLabel.TAG), subLabel, subLabelAlternative).right
-          parentNode <- setTagParentNodes(tagNode, owner, tag).right
+          result <- setTagParentNodes(tagNode, owner, tag).right
         } yield tagNode
     }
   }
@@ -121,19 +121,17 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
                           else if (tag.tagType.get == KEYWORD) Some(TagLabel.KEYWORD)
                           else Some(TagLabel.HISTORY))
                          ).right
-          parentNodes <- setTagParentNodes(tagNode, owner, tag).right
+          result <- setTagParentNodes(tagNode, owner, tag).right
         } yield tagNode
     }
   }
   
   protected def setTagParentNodes(tagNode: Node,  owner: Owner, tag: Tag)(implicit neo4j: DatabaseService): 
-          Response[Option[Relationship]] = {
+          Response[Option[Long]] = {
     for {
-      oldParentRelationship <- getItemRelationship(tagNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.TAG).right
-      newParentRelationship <- setParentRelationship(tagNode, owner, tag.parent, 
-          oldParentRelationship, ItemLabel.TAG).right
-      parentRelationship <- Right(newParentRelationship).right
-    }yield parentRelationship
+      oldParentRelationship <- Right(getItemRelationship(tagNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.TAG)).right
+      result <- setParentRelationship(tagNode, owner, tag.parent, oldParentRelationship, ItemLabel.TAG).right
+    }yield result
   }
   
   override def toTag(tagNode: Node, owner: Owner)
@@ -147,7 +145,7 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
   protected def addTransientTagProperties(tagNode: Node, owner: Owner, tag: Tag)
             (implicit neo4j: DatabaseService): Response[Tag] = {
     for {
-      parent <- getItemRelationship(tagNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.TAG).right
+      parent <- Right(getItemRelationship(tagNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.TAG)).right
       completeTag <- Right(tag.copy(
         tagType = (if (tagNode.hasLabel(TagLabel.CONTEXT)) Some(CONTEXT) 
                    else if (tagNode.hasLabel(TagLabel.KEYWORD)) Some(KEYWORD)

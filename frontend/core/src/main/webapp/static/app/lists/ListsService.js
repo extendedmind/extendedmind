@@ -21,6 +21,22 @@
 
   var listFieldInfos = ItemLikeService.getFieldInfos(
     [ 'due',
+      {
+        name: 'archived',
+        skipTransport: true,
+        isEdited: function(){
+          // Changing archived should not save list. Archiving is done with separate functions.
+          return false;
+        },
+        resetTrans: function(list){
+          if (list.mod && list.mod.hasOwnProperty('archived')){
+            if (!list.mod.archived && list.trans.archived !== undefined) delete list.trans.archived;
+            else list.trans.archived = list.mod.archived;
+          }
+          else if (list.archived !== undefined) list.trans.archived = list.archived;
+          else if (list.trans.archived !== undefined) delete list.trans.archived;
+        }
+      },
       // TODO
       // 'assignee',
       // 'assigner',
@@ -34,6 +50,7 @@
 
   var listSlashRegex = /\/list\//;
   var archiveRegex = /\/archive/;
+  var unarchiveRegex = /\/unarchive/;
 
   var itemArchiveCallbacks = {};
   var listDeletedCallbacks = {};
@@ -333,14 +350,66 @@
         .then(function(response) {
           list.archived = response.archived;
           ItemLikeService.updateObjectProperties(list, response.result);
-          updateList(list, ownerUUID);
 
           // Add generated tag to the tag array
           TagsService.setGeneratedTag(response.history, ownerUUID);
+
+          // Add generated tag to list tags array
+          if (!list.relationships) list.relationships = {};
+          if (!list.relationships.tags) list.relationships.tags = [];
+          list.relationships.tags.push(response.history.uuid)
+
+          // Update list
+          updateList(list, ownerUUID);
+
           // Call child callbacks
           if (response.children) {
             for (var id in itemArchiveCallbacks) {
               itemArchiveCallbacks[id](response.children, response.archived, ownerUUID);
+            }
+          }
+          deferred.resolve();
+        },function(error){
+          deferred.reject(error);
+        });
+      }
+      return deferred.promise;
+    },
+    unarchiveList: function(list, ownerUUID) {
+      function getUnarchiveUrl(params){
+        return params.prefix + params.list.trans.uuid + '/unarchive';
+      }
+      // Check that list is archived before trying to unarchive
+      var deferred = $q.defer();
+      if (lists[ownerUUID].deletedLists.findFirstObjectByKeyValue('uuid', list.trans.uuid, 'trans')) {
+        deferred.reject({type: 'deleted'});
+      }else if (lists[ownerUUID].activeLists.findFirstObjectByKeyValue('uuid', list.trans.uuid, 'trans')) {
+        deferred.resolve('unmodified');
+      } else {
+        BackendClientService.postOnline({ value: '/api/' + ownerUUID + '/list/' +
+                                                 list.trans.uuid + '/unarchive',
+                                          refresh: getUnarchiveUrl,
+                                          params: {
+                                            prefix: '/api/' + ownerUUID + '/list/',
+                                            list: list }},
+                                        this.unarchiveListRegex)
+        .then(function(response) {
+          if (list.archived) delete list.archived;
+          ItemLikeService.updateObjectProperties(list, response.result);
+          updateList(list, ownerUUID);
+
+          // Update the history tag
+          var historyTag = TagsService.getTagInfo(response.history.result.uuid, ownerUUID);
+          if (historyTag){
+            historyTag.tag.deleted = response.history.deleted;
+            historyTag.tag.modified = response.history.result.modified;
+            TagsService.updateTag(historyTag.tag, ownerUUID);
+          }
+
+          // Call child callbacks with unarchive=true
+          if (response.children) {
+            for (var id in itemArchiveCallbacks) {
+              itemArchiveCallbacks[id](response.children, undefined, ownerUUID, true);
             }
           }
           deferred.resolve();
@@ -374,6 +443,13 @@
                                  listSlashRegex.source +
                                  BackendClientService.uuidRegex.source +
                                  archiveRegex.source +
+                                 '$'),
+    unarchiveListRegex: new RegExp('^' +
+                                 BackendClientService.apiPrefixRegex.source +
+                                 BackendClientService.uuidRegex.source +
+                                 listSlashRegex.source +
+                                 BackendClientService.uuidRegex.source +
+                                 unarchiveRegex.source +
                                  '$'),
 
     // Register callbacks that are fired for implicit archiving of

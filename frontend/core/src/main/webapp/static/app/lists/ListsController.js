@@ -109,6 +109,22 @@
     }
   };
 
+  $scope.saveAndUnarchiveList = function(list){
+    var saveListDeferred = $scope.saveList(list);
+    if (saveListDeferred){
+      return saveListDeferred.then(function(){
+        return $scope.unarchiveList(list);
+      });
+    }
+  };
+
+  $scope.unarchiveList = function(list) {
+    if (list.trans.uuid){
+      AnalyticsService.do('unarchiveList');
+      return ListsService.unarchiveList(list, UISessionService.getActiveUUID());
+    }
+  };
+
   // (UN)DELETING
 
   $scope.deleteList = function(list) {

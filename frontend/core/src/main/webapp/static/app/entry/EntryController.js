@@ -29,8 +29,6 @@ function EntryController($http, $location, $rootScope, $routeParams, $scope,
     $scope.entryState = 'login';
     $scope.user = {};
     SwiperService.setInitialSlidePath('entry', 'entry/main');
-    // Clear all previous data to prevent problems with tutorial starting again after login
-    $rootScope.$emit('emException', {type: 'clearAll'});
     AnalyticsService.visitEntry('login');
   }
 
@@ -128,6 +126,10 @@ function EntryController($http, $location, $rootScope, $routeParams, $scope,
     $scope.loginFailed = false;
     $scope.entryOffline = false;
     $scope.loggingIn = true;
+
+    // Clear all previous data to prevent problems with tutorial starting again after login
+    $rootScope.$emit('emException', {type: 'clearAll'});
+
     AuthenticationService.login($scope.user).then(logInSuccess, logInError);
   };
 

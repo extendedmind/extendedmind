@@ -71,6 +71,7 @@
         UISessionService.reset();
         SynchronizeService.clearData();
         UserSessionService.clearUser();
+        BackendClientService.clearAll();
 
         // Clear all rootScope variables just in case
         $rootScope.synced = $rootScope.syncState =

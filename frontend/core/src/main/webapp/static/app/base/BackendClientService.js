@@ -38,8 +38,9 @@
         HttpClientService.setCredentials(credentials);
       }
     }
+    var deferred;
     if (UserSessionService.isFakeUser()){
-      var deferred = $q.defer();
+      deferred = $q.defer();
       deferred.resolve();
       HttpClientService.setCacheOnly(true);
       return deferred.promise;
@@ -54,7 +55,7 @@
         return $q.reject(error);
       });
     } else {
-      var deferred = $q.defer();
+      deferred = $q.defer();
       doRefreshCredentials();
       deferred.resolve();
       return deferred.promise;
@@ -282,6 +283,10 @@
     return refreshCredentials().then(function() {
       HttpClientService.executeRequests();
     });
+  };
+
+  methods.clearAll = function(){
+    HttpClientService.clearAll();
   };
 
   // Callback registration

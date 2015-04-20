@@ -37,6 +37,22 @@
           else if (note.trans.favorited !== undefined) delete note.trans.favorited;
         }
       },
+      {
+        name: 'archived',
+        skipTransport: true,
+        isEdited: function(){
+          // Changing archived should not save note. Archiving is done with separate functions.
+          return false;
+        },
+        resetTrans: function(note){
+          if (note.mod && note.mod.hasOwnProperty('archived')){
+            if (!note.mod.archived && note.trans.archived !== undefined) delete note.trans.archived;
+            else note.trans.archived = note.mod.archived;
+          }
+          else if (note.archived !== undefined) note.trans.archived = note.archived;
+          else if (note.trans.archived !== undefined) delete note.trans.archived;
+        }
+      },
       // TODO:
       // visibility,
       ExtendedItemService.getRelationshipsFieldInfo()
@@ -81,25 +97,33 @@
   }
 
   // Setup callback to ListsService
-  var itemArchiveCallback = function(children, archived, ownerUUID) {
+  var itemArchiveCallback = function(children, archived, ownerUUID, unarchive) {
     if (notes[ownerUUID] && children) {
       for (var i=0, len=children.length; i<len; i++) {
         var activeNote = notes[ownerUUID].activeNotes.findFirstObjectByKeyValue('uuid', children[i].uuid);
         if (activeNote) {
-          activeNote.archived = archived;
+          if (!unarchive){
+            activeNote.archived = archived;
+          }
           activeNote.modified = children[i].modified;
           updateNote(activeNote, ownerUUID);
         } else {
           var deletedNote = notes[ownerUUID].deletedNotes.findFirstObjectByKeyValue('uuid', children[i].uuid);
           if (deletedNote) {
-            deletedNote.archived = archived;
+            if (!unarchive){
+              deletedNote.archived = archived;
+            }
             deletedNote.modified = children[i].modified;
             updateNote(deletedNote, ownerUUID);
           } else {
             var archivedNote = notes[ownerUUID].archivedNotes.findFirstObjectByKeyValue('uuid',
                                                                                         children[i].uuid);
             if (archivedNote) {
-              archivedNote.archived = archived;
+              if (!unarchive){
+                archivedNote.archived = archived;
+              }else{
+                delete archivedNote.archived;
+              }
               archivedNote.modified = children[i].modified;
               updateNote(archivedNote, ownerUUID);
             }

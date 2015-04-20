@@ -347,51 +347,51 @@ trait ItemDatabase extends UserDatabase {
     }
   }
 
-  protected def putExistingExtendedItem(owner: Owner, itemUUID: UUID, extItem: ExtendedItem, label: Label): Response[Node] = {
+  protected def putExistingExtendedItem(owner: Owner, itemUUID: UUID, extItem: ExtendedItem, label: Label): Response[(Node, Option[Long])] = {
     withTx {
       implicit neo4j =>
         for {
           itemNode <- updateItem(owner, itemUUID, extItem, Some(label), None, None).right
-          parentNode <- setParentNode(itemNode, owner, extItem).right
+          archived <- setParentNode(itemNode, owner, extItem).right
           tagNodes <- setTagNodes(itemNode, owner, extItem).right
-        } yield itemNode
+        } yield (itemNode, archived)
     }
   }
 
-  protected def putNewExtendedItem(owner: Owner, extItem: ExtendedItem, label: Label, subLabel: Option[Label] = None): Response[Node] = {
+  protected def putNewExtendedItem(owner: Owner, extItem: ExtendedItem, label: Label, subLabel: Option[Label] = None): Response[(Node, Option[Long])] = {
     withTx {
       implicit neo4j =>
         for {
           itemNode <- createItem(owner, extItem, Some(label), subLabel).right
-          parentNode <- setParentNode(itemNode, owner, extItem).right
+          archived <- setParentNode(itemNode, owner, extItem).right
           tagNodes <- setTagNodes(itemNode, owner, extItem).right
-        } yield itemNode
+        } yield (itemNode, archived)
     }
   }
 
-  protected def setParentNode(itemNode: Node, owner: Owner, extItem: ExtendedItem)(implicit neo4j: DatabaseService): Response[Option[Relationship]] = {
+  protected def setParentNode(itemNode: Node, owner: Owner, extItem: ExtendedItem)(implicit neo4j: DatabaseService): Response[Option[Long]] = {
     for {
-      oldParentRelationship <- getItemRelationship(itemNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.LIST).right
-      newParentRelationship <- setParentRelationship(itemNode, owner, extItem.parent,
+      oldParentRelationship <- Right(getItemRelationship(itemNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.LIST)).right
+      archived <- setParentRelationship(itemNode, owner, extItem.parent,
         oldParentRelationship, ItemLabel.LIST).right
-    } yield newParentRelationship
+    } yield archived
   }
 
   protected def setParentRelationship(itemNode: Node, owner: Owner, parentUUID: Option[UUID], oldParentRelationship: Option[Relationship],
-    parentLabel: Label)(implicit neo4j: DatabaseService): Response[Option[Relationship]] = {
+    parentLabel: Label)(implicit neo4j: DatabaseService): Response[Option[Long]] = {
     if (parentUUID.isDefined) {
       if (oldParentRelationship.isDefined) {
         if (getUUID(oldParentRelationship.get.getEndNode())
           == parentUUID.get) {
-          return Right(oldParentRelationship)
+          return Right(None)
         } else {
           deleteParentRelationship(oldParentRelationship.get)
         }
       }
       for {
         parentNode <- getItemNode(owner, parentUUID.get, Some(parentLabel)).right
-        parentRelationship <- createParentRelationship(itemNode, owner, parentNode).right
-      } yield Some(parentRelationship)
+        archived <- createParentRelationship(itemNode, owner, parentNode).right
+      } yield archived
     } else {
       if (oldParentRelationship.isDefined) {
         deleteParentRelationship(oldParentRelationship.get)
@@ -460,21 +460,25 @@ trait ItemDatabase extends UserDatabase {
     itemsFromTag.traverse(tagNode).nodes().toList
   }
 
-  protected def createParentRelationship(itemNode: Node, owner: Owner, parentNode: Node)(implicit neo4j: DatabaseService): Response[Relationship] = {
+  protected def createParentRelationship(itemNode: Node, owner: Owner, parentNode: Node)(implicit neo4j: DatabaseService): Response[Option[Long]] = {
     val relationship = itemNode --> ItemRelationship.HAS_PARENT --> parentNode <;
     // When adding a relationship to a parent list, item needs to match the archived status of the parent
     if (parentNode.hasProperty("archived")) {
       if (!owner.hasPremium){
         return fail(INVALID_PARAMETER, ERR_ITEM_ARCHIVE_NOT_PREMIUM, "Archive is only available for premium users")
       }
-      if (!itemNode.hasProperty("archived")) {
-        itemNode.setProperty("archived", System.currentTimeMillis)
-      }
+      val archived =
+        if (!itemNode.hasProperty("archived")) {
+          val archived = System.currentTimeMillis
+          itemNode.setProperty("archived", archived)
+          Some(archived)
+        }else{
+          None
+        }
       // Get the history tag of the parent and add it to the child
       val historyTagRelationship = getItemRelationship(parentNode, owner, ItemRelationship.HAS_TAG, TagLabel.HISTORY)
-      if (historyTagRelationship.isLeft) return Left(historyTagRelationship.left.get)
-      if (historyTagRelationship.right.get.isDefined) {
-        val historyTagNode = historyTagRelationship.right.get.get.getEndNode()
+      if (historyTagRelationship.isDefined) {
+        val historyTagNode = historyTagRelationship.get.getEndNode()
 
         // Need to make sure the child does not already have this tag
         val tagRelationshipsResult = getTagRelationships(itemNode, owner)
@@ -483,21 +487,23 @@ trait ItemDatabase extends UserDatabase {
           tagRelationshipsResult.right.get.get foreach (tagRelationship => {
             if (tagRelationship.getEndNode() == historyTagNode) {
               // Already has this history tag, return
-              return Right(relationship)
+              return Right(archived)
             }
           })
         }
         // Does not have the tag, add it
         createTagRelationships(itemNode, scala.List(historyTagNode))
       }
+      Right(archived)
+    }else{
+      Right(None)
     }
-    Right(relationship)
   }
 
   protected def getItemRelationship(itemNode: Node, owner: Owner,
     relationshipType: RelationshipType,
     endNodeLabel: Label,
-    direction: Direction = Direction.OUTGOING)(implicit neo4j: DatabaseService): Response[Option[Relationship]] = {
+    direction: Direction = Direction.OUTGOING)(implicit neo4j: DatabaseService): Option[Relationship] = {
     val relatedNodeFromItem: TraversalDescription =
       neo4j.gds.traversalDescription()
         .depthFirst()
@@ -531,7 +537,7 @@ trait ItemDatabase extends UserDatabase {
       }
       previousRelationship = relationship
     })
-    Right(itemRelationship)
+    itemRelationship
   }
 
   protected def setTagNodes(itemNode: Node, owner: Owner, extItem: ExtendedItem)(implicit neo4j: DatabaseService): Response[Option[scala.List[Relationship]]] = {
@@ -552,10 +558,11 @@ trait ItemDatabase extends UserDatabase {
       // Get all removed UUIDs
       val removedUUIDList = oldTagUUIDList.diff(tagUUIDList.get)
 
+      // It is not possible to use this method to add or remove HISTORY tags, that happens only via archive/unarchive
       for {
-        newTagNodes <- getTagNodes(newUUIDList, ownerNodes).right
+        newTagNodes <- getTagNodes(newUUIDList, ownerNodes, false, Some(TagLabel.HISTORY)).right
         newTagRelationships <- Right(createTagRelationships(itemNode, newTagNodes)).right
-        removedTagNodes <- getTagNodes(removedUUIDList, ownerNodes, true).right
+        removedTagNodes <- getTagNodes(removedUUIDList, ownerNodes, true, Some(TagLabel.HISTORY)).right
         removedTagRelationships <- getTagRelationships(itemNode, removedTagNodes).right
         result <- Right(deleteTagRelationships(removedTagRelationships)).right
       } yield newTagRelationships
@@ -565,8 +572,8 @@ trait ItemDatabase extends UserDatabase {
     }
   }
 
-  protected def getTagNodes(tagUUIDList: scala.List[UUID], ownerNodes: OwnerNodes, acceptDeleted: Boolean = false)(implicit neo4j: DatabaseService): Response[scala.List[Node]] = {
-    val tagNodes = getNodes(tagUUIDList, ItemLabel.TAG, acceptDeleted)
+  protected def getTagNodes(tagUUIDList: scala.List[UUID], ownerNodes: OwnerNodes, acceptDeleted: Boolean = false, skipLabel: Option[Label] = None)(implicit neo4j: DatabaseService): Response[scala.List[Node]] = {
+    val tagNodes = getNodes(tagUUIDList, ItemLabel.TAG, acceptDeleted, skipLabel)
     if (tagNodes.isRight) {
       // Check that owner has access to all tags
       val ownerFromTag: TraversalDescription =

@@ -81,6 +81,22 @@
           task.trans.optimisticComplete = optimisticComplete;
         }
       },
+      {
+        name: 'archived',
+        skipTransport: true,
+        isEdited: function(){
+          // Changing archived should not save task. Archiving is done with separate functions.
+          return false;
+        },
+        resetTrans: function(task){
+          if (task.mod && task.mod.hasOwnProperty('archived')){
+            if (!task.mod.archived && task.trans.archived !== undefined) delete task.trans.archived;
+            else task.trans.archived = task.mod.archived;
+          }
+          else if (task.archived !== undefined) task.trans.archived = task.archived;
+          else if (task.trans.archived !== undefined) delete task.trans.archived;
+        }
+      },
       // TODO (when implementing this, update the method below for repeating task cloning!:
       // assignee,
       // assigner,
@@ -155,27 +171,35 @@
   }
 
   // Setup callback to ListsService
-  var itemArchiveCallback = function(children, archived, ownerUUID) {
+  var itemArchiveCallback = function(children, archived, ownerUUID, unarchive) {
     if (tasks[ownerUUID] && children) {
       for (var i=0, len=children.length; i<len; i++) {
         var activeTask =
           tasks[ownerUUID].activeTasks.findFirstObjectByKeyValue('uuid', children[i].uuid);
         if (activeTask) {
-          activeTask.archived = archived;
+          if (!unarchive){
+            activeTask.archived = archived;
+          }
           activeTask.modified = children[i].modified;
           updateTask(activeTask, ownerUUID);
         } else {
           var deletedTask =
             tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue('uuid', children[i].uuid);
           if (deletedTask) {
-            deletedTask.archived = archived;
+            if (!unarchive){
+              deletedTask.archived = archived;
+            }
             deletedTask.modified = children[i].modified;
             updateTask(deletedTask, ownerUUID);
           } else {
             var archivedTask =
               tasks[ownerUUID].archivedTasks.findFirstObjectByKeyValue('uuid', children[i].uuid);
             if (archivedTask) {
-              archivedTask.archived = archived;
+              if (!unarchive){
+                archivedTask.archived = archived;
+              }else{
+                delete archivedTask.archived;
+              }
               archivedTask.modified = children[i].modified;
               updateTask(archivedTask, ownerUUID);
             }

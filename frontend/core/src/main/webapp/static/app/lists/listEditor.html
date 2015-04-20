@@ -112,9 +112,13 @@
               class="group-symmetrical--left link-navigation">
               <span class="text-navigation-back">basic</span>
             </a>
-            <a ng-if="!hideArchive()" href swiper-click="archiveListInEdit(list)"
+            <a ng-if="showArchive()" href swiper-click="archiveListInEdit(list)"
               class="group-symmetrical--right link-navigation highlighted">
               <span class="text-navigation">archive</span>
+            </a>
+            <a ng-if="showUnarchive()" href swiper-click="unarchiveListInEdit(list)"
+              class="group-symmetrical--right link-navigation highlighted">
+              <span class="text-navigation">unarchive</span>
             </a>
           </nav>
         </footer>

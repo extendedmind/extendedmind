@@ -298,6 +298,26 @@ class ListBestCaseSpec extends ServiceSpecBase {
             Get("/" + authenticateResponse.userUUID + "/items" + "?archived=false&active=false&deleted=true") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
               val deletedItemsResponse = responseAs[Items]
               deletedItemsResponse.tags.get(0).uuid.get should be (unarchivedList.relationships.get.tags.get(0))
+              
+              val newNote2 = Note("Spanish 102", None, None, Some("lecture notes for Spanish 102 class"), None,
+              Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None)))
+              putNewNote(newNote2, authenticateResponse)
+
+              // Archive list
+              Post("/" + authenticateResponse.userUUID + "/list/" + putListResponse.uuid.get + "/archive"
+                ) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                val archive2ListResponse = responseAs[ArchiveListResult]
+
+                val newNote3 = Note("Spanish 103", None, None, Some("lecture notes for Spanish 103 class"), None,
+                Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None)))
+                putNewNote(newNote3, authenticateResponse)
+
+                // Unarchive list and make sure everything is unarchived
+                Post("/" + authenticateResponse.userUUID + "/list/" + putListResponse.uuid.get + "/unarchive"
+                ) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                  val unarchive2ListResponse = responseAs[UnarchiveListResult]
+                }
+              }
             }
           }
         }

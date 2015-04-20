@@ -25,6 +25,7 @@ describe('ListsService', function() {
       ArrayService,
       TagsService,
       TasksService,
+      NotesService,
       BackendClientService,
       HttpClientService,
       UserSessionService;
@@ -87,12 +88,13 @@ describe('ListsService', function() {
     });
 
     inject(function (_$httpBackend_, _ListsService_, _ArrayService_, _TagsService_, _TasksService_,
-                     _BackendClientService_, _HttpClientService_, _UserSessionService_) {
+                     _BackendClientService_, _HttpClientService_, _UserSessionService_, _NotesService_) {
       $httpBackend = _$httpBackend_;
       ListsService = _ListsService_;
       ArrayService = _ArrayService_;
       TagsService = _TagsService_;
       TasksService = _TasksService_;
+      NotesService = _NotesService_;
       BackendClientService = _BackendClientService_;
       HttpClientService = _HttpClientService_;
       UserSessionService = _UserSessionService_;
@@ -135,6 +137,15 @@ describe('ListsService', function() {
             'device': 'iPhone6',
             'created': 1391278509717
           }],
+          'relationships': {
+            'parent': 'bf726d03-8fee-4614-8b68-f9f885938a51'
+          }
+        }], testOwnerUUID);
+      NotesService.setNotes(
+        [{'uuid': 'b2cd149a-a287-40a0-86d9-0a14462f22d8',
+          'created': 1391627811075,
+          'modified': 1391627811075,
+          'title': 'booth number A23',
           'relationships': {
             'parent': 'bf726d03-8fee-4614-8b68-f9f885938a51'
           }
@@ -303,7 +314,7 @@ describe('ListsService', function() {
       .toBeDefined();
   });
 
-  it('should archive tasks alongside list', function () {
+  it('should archive tasks and notes alongside list, then unarchive them', function () {
     var modified = now.getTime();
     var archiveTripToDublinResponse = {
       'archived': modified,
@@ -311,26 +322,33 @@ describe('ListsService', function() {
         'uuid': '9a1ce3aa-f476-43c4-845e-af59a9a33760',
         'modified': modified
       }, {
-        'uuid': '1a1ce3aa-f476-43c4-845e-af59a9a33760',
+        'uuid': 'b2cd149a-a287-40a0-86d9-0a14462f22d8',
         'modified': modified
       }],
       'history': {
         'uuid': '3fab3a32-3933-4b00-bf7e-9f2f516fae5f',
         'modified': modified,
         'title': 'bf726d03-8fee-4614-8b68-f9f885938a51',
-        'tagType': 'history'
+        'tagType': 'history',
+        'created': modified
       },
       'result': {
         'modified': modified
       }
     };
+
     // Initial situation
     expect(TasksService.getTasks(testOwnerUUID).length)
       .toBe(1);
     expect(TasksService.getArchivedTasks(testOwnerUUID).length)
       .toBe(0);
 
-    // First complete one of the tasks, but not the other
+    expect(NotesService.getNotes(testOwnerUUID).length)
+      .toBe(1);
+    expect(NotesService.getArchivedNotes(testOwnerUUID).length)
+      .toBe(0);
+
+    // First complete the task
     var printTickets = TasksService.getTaskInfo('9a1ce3aa-f476-43c4-845e-af59a9a33760', testOwnerUUID).task;
     $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + printTickets.uuid + '/complete')
        .respond(200, completeTaskResponse);
@@ -359,10 +377,70 @@ describe('ListsService', function() {
     expect(TagsService.getTagInfo(archiveTripToDublinResponse.history.uuid, testOwnerUUID))
       .toBeDefined();
 
-    // There should be two new archived task
+    // There should be one new archived task
     expect(TasksService.getArchivedTasks(testOwnerUUID).length)
       .toBe(1);
+    expect(TasksService.getArchivedTasks(testOwnerUUID)[0].trans.archived).toBeDefined();
     expect(TasksService.getTasks(testOwnerUUID).length)
       .toBe(0);
+
+    // There should be one new archived note
+    expect(NotesService.getArchivedNotes(testOwnerUUID).length)
+      .toBe(1);
+    expect(NotesService.getArchivedNotes(testOwnerUUID)[0].trans.archived).toBeDefined();
+    expect(NotesService.getNotes(testOwnerUUID).length)
+      .toBe(0);
+
+    // Unarchive archived list
+    var newModified = Date.now();
+    var unarchiveTripToDublinResponse = {
+      'children': [{
+        'uuid': '9a1ce3aa-f476-43c4-845e-af59a9a33760',
+        'modified': newModified
+      }, {
+        'uuid': 'b2cd149a-a287-40a0-86d9-0a14462f22d8',
+        'modified': newModified
+      }],
+      'history': {
+        'deleted': newModified,
+        'result':{
+          'uuid': '3fab3a32-3933-4b00-bf7e-9f2f516fae5f',
+          'created': modified,
+          'modified': newModified
+        }
+      },
+      'result': {
+        'modified': modified
+      }
+    };
+
+    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/list/' + tripToDublin.uuid + '/unarchive')
+       .respond(200, unarchiveTripToDublinResponse);
+    ListsService.unarchiveList(tripToDublin, testOwnerUUID);
+    $httpBackend.flush();
+
+    // The list should be active again
+    expect(ListsService.getListInfo(tripToDublin.uuid, testOwnerUUID).type)
+      .toBe('active');
+    expect(ListsService.getLists(testOwnerUUID).length)
+      .toBe(3);
+    expect(ListsService.getArchivedLists(testOwnerUUID).length)
+      .toBe(0);
+
+    // TagsService should have a deleted history tag
+    expect(TagsService.getTagInfo(archiveTripToDublinResponse.history.uuid, testOwnerUUID).type)
+      .toBe('deleted');
+
+    // There should be no archived tasks
+    expect(TasksService.getArchivedTasks(testOwnerUUID).length)
+      .toBe(0);
+    expect(TasksService.getTasks(testOwnerUUID).length)
+      .toBe(1);
+
+    // There should be no archived notes
+    expect(NotesService.getArchivedNotes(testOwnerUUID).length)
+      .toBe(0);
+    expect(NotesService.getNotes(testOwnerUUID).length)
+      .toBe(1);
   });
 });

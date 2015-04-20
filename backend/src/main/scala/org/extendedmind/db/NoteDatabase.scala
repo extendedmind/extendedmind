@@ -39,17 +39,17 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
 
   def putNewNote(owner: Owner, note: Note): Response[SetResult] = {
     for {
-      noteNode <- putNewExtendedItem(owner, note, ItemLabel.NOTE).right
-      result <- Right(getSetResult(noteNode, true)).right
-      unit <- Right(addToItemsIndex(owner, noteNode, result)).right
+      noteResult <- putNewExtendedItem(owner, note, ItemLabel.NOTE).right
+      result <- Right(getSetResult(noteResult._1, true, noteResult._2)).right
+      unit <- Right(addToItemsIndex(owner, noteResult._1, result)).right
     } yield result
   }
 
   def putExistingNote(owner: Owner, noteUUID: UUID, note: Note): Response[SetResult] = {
     for {
-      noteNode <- putExistingExtendedItem(owner, noteUUID, note, ItemLabel.NOTE).right
-      result <- Right(getSetResult(noteNode, false)).right
-      unit <- Right(updateItemsIndex(noteNode, result)).right
+      noteResult <- putExistingExtendedItem(owner, noteUUID, note, ItemLabel.NOTE).right
+      result <- Right(getSetResult(noteResult._1, false, noteResult._2)).right
+      unit <- Right(updateItemsIndex(noteResult._1, result)).right
     } yield result
   }
 
@@ -116,7 +116,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
   protected def addTransientNoteProperties(noteNode: Node, owner: Owner, note: Note)
                 (implicit neo4j: DatabaseService): Response[Note] = {
     for {
-      parent <- getItemRelationship(noteNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.LIST).right
+      parent <- Right(getItemRelationship(noteNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.LIST)).right
       tags <- getTagRelationships(noteNode, owner).right
       note <- Right(note.copy(
         relationships = 
@@ -175,8 +175,8 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     withTx {
       implicit neo4j =>
         for {
-          noteNode <- putExistingExtendedItem(owner, noteUUID, note, ItemLabel.NOTE).right
-          taskNode <- Right(setLabel(noteNode, Some(MainLabel.ITEM), Some(ItemLabel.TASK), Some(scala.List(ItemLabel.NOTE)))).right
+          noteResult <- putExistingExtendedItem(owner, noteUUID, note, ItemLabel.NOTE).right
+          taskNode <- Right(setLabel(noteResult._1, Some(MainLabel.ITEM), Some(ItemLabel.TASK), Some(scala.List(ItemLabel.NOTE)))).right
           result <- moveContentToDescription(taskNode).right
           task <- toTask(taskNode, owner).right
         } yield (taskNode, task)
@@ -187,8 +187,8 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     withTx {
       implicit neo4j =>
         for {
-          noteNode <- putExistingExtendedItem(owner, noteUUID, note, ItemLabel.NOTE).right
-          listNode <- Right(setLabel(noteNode, Some(MainLabel.ITEM), Some(ItemLabel.LIST), Some(scala.List(ItemLabel.NOTE)))).right
+          noteResult <- putExistingExtendedItem(owner, noteUUID, note, ItemLabel.NOTE).right
+          listNode <- Right(setLabel(noteResult._1, Some(MainLabel.ITEM), Some(ItemLabel.LIST), Some(scala.List(ItemLabel.NOTE)))).right
           result <- moveContentToDescription(listNode).right
           list <- toList(listNode, owner).right
         } yield (listNode, list)

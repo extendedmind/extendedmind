@@ -325,6 +325,17 @@ function HttpRequestQueueService(enableOffline) {
         doChangeOwnerUUID(beforeLast, oldUUID, newUUID);
         storage.setItem('beforeLastRequest', JSON.stringify(beforeLast));
       }
+    },
+    clearAll: function(){
+      primary = secondary = beforeLast = last = undefined;
+      queue = [];
+      processing = false;
+      // Also clear everything from session/localstorage
+      storage.removeItem('primaryRequest');
+      storage.removeItem('secondaryRequest');
+      storage.removeItem('beforeLastRequest');
+      storage.removeItem('requestQueue');
+      storage.removeItem('lastRequest');
     }
   };
   return service;

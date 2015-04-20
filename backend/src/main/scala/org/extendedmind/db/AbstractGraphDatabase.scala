@@ -183,7 +183,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     }
   }
 
-  protected def getSetResult(node: Node, newNode: Boolean): SetResult = {
+  protected def getSetResult(node: Node, newNode: Boolean, archived: Option[Long] = None): SetResult = {
     withTx {
       implicit neo4j =>
         val uuid =
@@ -225,12 +225,20 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
 
   // GENERAL
 
-  protected def getNodes(nodeUUIDList: scala.List[UUID], label: Label, acceptDeleted: Boolean = false): Response[scala.List[Node]] = {
-    Right(nodeUUIDList map (uuid => {
+  protected def getNodes(nodeUUIDList: scala.List[UUID], label: Label, acceptDeleted: Boolean = false, skipLabel: Option[Label] = None): Response[scala.List[Node]] = {
+    val nodeList = nodeUUIDList map (uuid => {
       val nodeResponse = getNode(uuid, label, acceptDeleted)
       if (nodeResponse.isLeft) return Left(nodeResponse.left.get)
       else nodeResponse.right.get
-    }))
+    })
+    
+    if (skipLabel.isDefined){
+      Right(nodeList filter (node => {
+        !node.hasLabel(skipLabel.get)
+      }))
+    }else{
+      Right(nodeList)
+    }
   }
 
   protected def getNodeOption(nodeUUID: Option[UUID], label: Label, acceptDeleted: Boolean = false): Response[Option[Node]] = {
@@ -321,10 +329,10 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     }
   }
 
-  protected def getDeleteItemResult(item: Node, deleted: Long): DeleteItemResult = {
+  protected def getDeleteItemResult(item: Node, deleted: Long, addUUID: Boolean = false): DeleteItemResult = {
     withTx {
       implicit neo4j =>
-        DeleteItemResult(deleted, getSetResult(item, false))
+        DeleteItemResult(deleted, getSetResult(item, addUUID))
     }
   }
   

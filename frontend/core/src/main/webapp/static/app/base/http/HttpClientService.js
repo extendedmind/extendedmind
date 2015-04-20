@@ -495,6 +495,10 @@
     HttpRequestQueueService.changeOwnerUUID(oldUUID, newUUID);
   };
 
+  methods.clearAll = function(){
+    HttpRequestQueueService.clearAll();
+  };
+
   methods.executeRequests = executeRequests;
 
   return methods;
