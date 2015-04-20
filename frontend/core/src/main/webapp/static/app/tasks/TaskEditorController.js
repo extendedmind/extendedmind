@@ -233,33 +233,31 @@
 
     $scope.reminderPickerOpen = true;
     if (angular.isFunction($scope.registerPropertyEditDoneCallback))
-      $scope.registerPropertyEditDoneCallback(closeReminderPickerAndSave);
+      $scope.registerPropertyEditDoneCallback(closeReminderPickerAndSave, [reminder]);
   };
 
   function compareWithNotificationTime(a, b) {
     return a.notification - b.notification;
   }
 
-  $scope.thisDeviceFirstThenByTime = function(reminders) {
+  $scope.activeThisDeviceFirstThenByTime = function(reminders) {
     if (!reminders) {
       return;
     }
-    // i: No need to sort array containing only one reminder.
-    if (reminders.length === 1) {
-      return reminders;
-    }
 
-    // ii.a Order by notification time.
+    // i Order by notification time. Do not add past reminders.
     var sortedReminders = [];
     for (var i = 0; i < reminders.length; i++) {
-      ArrayService.insertItemToArray(reminders[i], sortedReminders, compareWithNotificationTime);
+      if (reminders[i].notification >= Date.now()) {
+        ArrayService.insertItemToArray(reminders[i], sortedReminders, compareWithNotificationTime);
+      }
     }
 
-    // ii.b Move reminder of this device to first.
+    // ii Move reminder of this device to first.
     if (packaging.endsWith('cordova')) {
       var indexOfReminderInThisDevice;
       for (var j = 0; j < sortedReminders.length; j++) {
-        if ($scope.isReminderInThisDevice(sortedReminders[j])) {
+        if (ReminderService.isReminderInThisDevice(sortedReminders[j])) {
           indexOfReminderInThisDevice = j;
           break;
         }
@@ -273,13 +271,29 @@
     return sortedReminders;
   };
 
+  $scope.getReminderTime = function(reminder, task) {
+    var time;
+    if (task.trans.due) {
+      if (new Date(reminder.notification).setHours(0, 0, 0, 0) !==
+          new Date(task.trans.due).setHours(0, 0, 0, 0))
+      {
+        // Show date of the reminder when task has different due date.
+        time = $filter('date')(reminder.notification, 'HH:mm EEE d MMM').toLowerCase();
+      }
+    }
+    if (!time) {
+      time = $filter('date')(reminder.notification, 'HH:mm');
+    }
+    return time;
+  };
+
   $scope.getDeviceName = function(reminder) {
     if (ReminderService.isReminderInThisDevice(reminder)) {
       return 'this device';
     } else if (reminder.packaging === 'ios-cordova') {
-      return 'apple'; // TODO
+      return 'ios';
     } else if (reminder.packaging === 'android-cordova') {
-      return 'android'; // TODO
+      return 'android';
     }
   };
 
@@ -299,13 +313,18 @@
     }, 2000);
   }
 
-  function closeReminderPickerAndSave() {
-    if ($scope.reminder.hours.value !== undefined && $scope.reminder.minutes.value !== undefined ) {
+  function closeReminderPickerAndSave(reminder) {
+    if ($scope.reminder.hours.value !== undefined && $scope.reminder.minutes.value !== undefined) {
       $scope.reminder.date.setHours($scope.reminder.hours.value, $scope.reminder.minutes.value);
       if ($scope.reminder.date >= new Date().setSeconds(0, 0)) {
         $scope.reminderPickerOpen = false;
-        // TODO
-        // ReminderService.addReminder();
+
+        if (reminder !== undefined) {
+          ReminderService.updateReminder(reminder, $scope.reminder.date);
+        } else {
+          ReminderService.addReminder($scope.reminder.date);
+        }
+
       } else {
         setReminderError($scope.reminder, 'past');
       }

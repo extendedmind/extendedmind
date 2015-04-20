@@ -127,18 +127,18 @@
               </a>
             </div>
 
-            <div ng-repeat="reminder in task.trans.reminders | paramFilter:thisDeviceFirstThenByTime"
+            <div ng-repeat="reminder in task.trans.reminders | paramFilter:activeThisDeviceFirstThenByTime"
               ng-switch on="isReminderInThisDevice(reminder)" class="group-mixed with-checkbox">
 
               <a href ng-switch-when="true" class="group-mixed--middle link-search-result"
                 swiper-click="openReminderPicker(task, reminder)">
                 <span class="text-field--title"
-                  ng-bind="(reminder.notification | date:'HH:mm') + ' ' + getDeviceName(reminder)">
+                  ng-bind="getReminderTime(reminder, task) + ' ' + getDeviceName(reminder)">
                 </span>
               </a>
 
               <span ng-switch-default class="group-mixed--middle text-downplayed text-field--title"
-                ng-bind="(reminder.notification | date:'HH:mm') + ' ' + getDeviceName(reminder)">
+                ng-bind="getReminderTime(reminder, task) + ' ' + getDeviceName(reminder)">
               </span>
 
               <div class="group-mixed--right">

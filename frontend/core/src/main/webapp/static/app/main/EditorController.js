@@ -348,16 +348,21 @@
     return $scope.editorType === 'recurring' || $scope.isOnboarding('notes');
   };
 
-  var propertyEditDoneCallback;
-  $scope.registerPropertyEditDoneCallback = function(callback) {
-    propertyEditDoneCallback = callback;
+  var propertyEditDoneCallbackData;
+  $scope.registerPropertyEditDoneCallback = function(callback, parameters) {
+    propertyEditDoneCallbackData = {
+      fn: callback,
+      parameters: parameters
+    };
   };
-  $scope.unregisterPropertyEditDoneCallback = function() {
-    propertyEditDoneCallback = undefined;
+  $scope.unregisterPropertyEditDoneCallbackData = function() {
+    propertyEditDoneCallbackData = undefined;
   };
 
   $scope.propertyEditDone = function() {
-    if (typeof propertyEditDoneCallback === 'function') propertyEditDoneCallback();
+    if (propertyEditDoneCallbackData && typeof propertyEditDoneCallbackData.fn === 'function') {
+      propertyEditDoneCallbackData.fn.apply(undefined, propertyEditDoneCallbackData.parameters);
+    }
   };
 
   var isPropertyEdited;

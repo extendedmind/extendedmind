@@ -18,6 +18,28 @@
 
  function MockPlatformService($location, $rootScope, $routeParams, AuthenticationService, DetectBrowserService,
                               UserSessionService, packaging) {
+
+  function setCalendar() {
+    var calendars = {};
+
+    calendars[window.device.model] = [{
+      id: 1,
+      name: 'first'
+    }];
+
+    UserSessionService.setUIPreference('calendars', calendars);
+  }
+
+  function setNotification() {
+    if (!window.cordova) {
+      window.cordova = {};
+    }
+    if (!window.cordova.plugins) {
+      window.cordova.plugins = {};
+    }
+    window.cordova.plugins.notification = {};
+  }
+
   function mockIOS() {
 
     /*
@@ -86,17 +108,11 @@
   return {
     mockIOS: function() {
       mockIOS();
+      setNotification();
     },
     setPlatformUIPreferences: function() {
       if (packaging === 'ios-cordova') {
-        var calendars = {};
-
-        calendars[window.device.model] = [{
-          id: 1,
-          name: 'first'
-        }];
-
-        UserSessionService.setUIPreference('calendars', calendars);
+        setCalendar();
       }
     },
   };
