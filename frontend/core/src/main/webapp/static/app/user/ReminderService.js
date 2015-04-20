@@ -20,9 +20,10 @@
 
   return {
     addReminder: function(date) {
-      console.log(date);
+      // TODO
     },
     updateReminder: function(reminder, timestamp) {
+      // TODO
       reminder.notification = timestamp;
     },
     removeReminder: function() {
@@ -42,9 +43,14 @@
     isRemindersSupported: function() {
       return packaging.endsWith('cordova') && cordova.plugins && cordova.plugins.notification;
     },
-    findReminderForThisDevice: function(reminders) {
+    /*
+    * Return not removed future reminder.
+    */
+    findActiveReminderForThisDevice: function(reminders) {
       for (var i = 0; i < reminders.length; i++) {
-        if (this.isReminderInThisDevice(reminders[i])) {
+        if (this.isReminderInThisDevice(reminders[i]) && !reminders[i].DEBUG_markForRemoved &&
+            reminders[i].notification > Date.now())
+        {
           return reminders[i];
         }
       }

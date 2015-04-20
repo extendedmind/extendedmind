@@ -180,12 +180,16 @@
     return ReminderService.isRemindersSupported();
   };
 
+  $scope.isRemindersVisible = function(task) {
+    return !task.trans.completed;
+  };
+
   $scope.isReminderInThisDevice = function(reminder) {
     return ReminderService.isReminderInThisDevice(reminder);
   };
 
-  $scope.findReminderForThisDevice = function(reminders) {
-    return ReminderService.findReminderForThisDevice(reminders);
+  $scope.findActiveReminderForThisDevice = function(reminders) {
+    return ReminderService.findActiveReminderForThisDevice(reminders);
   };
 
   $scope.openReminderPicker = function(task, reminder) {
@@ -337,8 +341,9 @@
     $scope.reminderPickerOpen = false;
     $scope.reminder = undefined;
     if ($scope.task.trans.reminders) {
-      var reminder = $scope.findReminderForThisDevice($scope.task.trans.reminders);
+      var reminder = ReminderService.findActiveReminderForThisDevice($scope.task.trans.reminders);
       if (reminder !== undefined) {
+        // When task is no completed and reminder is in the future, remove reminder from the task
         $scope.task.reminders.splice($scope.task.reminders.indexOf(reminder), 1);
         // TODO
         // ReminderService.removeReminder();

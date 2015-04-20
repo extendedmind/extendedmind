@@ -116,10 +116,11 @@
           </div>
 
           <!-- REMINDERS -->
-          <div ng-hide="calendarOpen || taskDescriptionFocused || listPickerOpen || reminderPickerOpen">
+          <div ng-if="isRemindersVisible(task)"
+            ng-hide="calendarOpen || taskDescriptionFocused || listPickerOpen || reminderPickerOpen">
 
             <div ng-if="isRemindersSupported() &&
-              (!task.trans.reminders || !findReminderForThisDevice(task.trans.reminders))"
+              (!task.trans.reminders || !findActiveReminderForThisDevice(task.trans.reminders))"
               class="group-mixed with-checkbox">
               <a href ng-click="openReminderPicker(task)"
                 class="group-mixed--middle link-search-result downplayed">
