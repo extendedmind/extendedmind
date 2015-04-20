@@ -30,7 +30,7 @@
     UserSessionService.setUIPreference('calendars', calendars);
   }
 
-  function setNotification() {
+  function setReminders() {
     if (!window.cordova) {
       window.cordova = {};
     }
@@ -108,7 +108,7 @@
   return {
     mockIOS: function() {
       mockIOS();
-      setNotification();
+      setReminders();
     },
     setPlatformUIPreferences: function() {
       if (packaging === 'ios-cordova') {
