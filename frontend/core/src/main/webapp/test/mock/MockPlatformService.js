@@ -19,7 +19,9 @@
  function MockPlatformService($location, $rootScope, $routeParams, AuthenticationService, DetectBrowserService,
                               UserSessionService, packaging) {
 
-  function setCalendar() {
+  var reminders = [];
+
+  function mockCalendar() {
     var calendars = {};
 
     calendars[window.device.model] = [{
@@ -30,17 +32,53 @@
     UserSessionService.setUIPreference('calendars', calendars);
   }
 
-  function setReminders() {
+  function mockReminders() {
+
+    window.cordova.plugins.notification = {
+      local: {
+        schedule: function(reminder) {
+          reminders.push(reminder);
+          localStorage.setItem('reminders', JSON.stringify(reminders));
+        },
+        update: function(reminder) {
+          var reminderIndex = reminders.findFirstIndexByKeyValue('id', reminder.id);
+          if (reminderIndex !== undefined) {
+            reminders[reminderIndex].at = reminder.at;
+            localStorage.setItem('reminders', JSON.stringify(reminders));
+          }
+        }
+      }
+    };
+
+    var storedReminders = localStorage.getItem('reminders');
+    if (storedReminders !== null) {
+      reminders = JSON.parse(storedReminders);
+    } else {
+      var itemsResponseData = getJSONFixture('itemsResponse.json');
+      if (itemsResponseData.tasks) {
+        for (var i = 0; i < itemsResponseData.tasks.length; i++) {
+          if (itemsResponseData.tasks[i].reminders) {
+            for (var j = 0; j < itemsResponseData.tasks[i].reminders.length; j++) {
+              // Set notification 2 hours into future.
+              itemsResponseData.tasks[i].reminders[j].notification = Date.now() + 7200000;
+              reminders.push(itemsResponseData.tasks[i].reminders[j]);
+            }
+          }
+        }
+      }
+      if (reminders !== undefined) {
+        localStorage.setItem('reminders', JSON.stringify(reminders));
+      }
+    }
+  }
+
+  function mockIOS() {
     if (!window.cordova) {
       window.cordova = {};
     }
     if (!window.cordova.plugins) {
       window.cordova.plugins = {};
     }
-    window.cordova.plugins.notification = {};
-  }
-
-  function mockIOS() {
 
     /*
     * When Chrome DevTools emulator is on, testing user agent spoofing is enough to detect the device.
@@ -108,11 +146,11 @@
   return {
     mockIOS: function() {
       mockIOS();
-      setReminders();
     },
     setPlatformUIPreferences: function() {
       if (packaging === 'ios-cordova') {
-        setCalendar();
+        mockCalendar();
+        mockReminders();
       }
     },
   };

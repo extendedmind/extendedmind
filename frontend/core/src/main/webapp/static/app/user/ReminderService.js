@@ -19,12 +19,32 @@
  function ReminderService(UISessionService, packaging) {
 
   return {
-    addReminder: function(date) {
-      // TODO
+    addReminder: function(date, item) {
+      var reminder = {
+        id: Math.floor(100000000 + Math.random() * 900000000),  // http://stackoverflow.com/a/3437139
+        title: item.trans.title,
+        at: date.getTime(),
+        data: {
+          itemUUID: item.trans.uuid
+        }
+      };
+
+      // Add reminder to plugin
+      cordova.plugins.notification.local.schedule(reminder);
+      reminder.packaging = packaging;
+      reminder.notification = date.getTime();
+      reminder.device = UISessionService.getDeviceId();
+
+      return reminder;
     },
-    updateReminder: function(reminder, timestamp) {
-      // TODO
-      reminder.notification = timestamp;
+    updateReminder: function(reminder, date) {
+      cordova.plugins.notification.local.update({
+        id: reminder.id,
+        at: date.getTime()
+      });
+      reminder.notification = date.getTime();
+
+      return reminder;
     },
     removeReminder: function() {
       // TODO
