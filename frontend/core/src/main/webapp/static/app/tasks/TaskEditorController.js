@@ -332,7 +332,8 @@
           }
           $scope.task.trans.reminders.push(reminderToAdd);
         }
-        $scope.saveTask($scope.task);
+        // TODO: Fix saving reminder to backend.
+        // $scope.saveTask($scope.task);
 
       } else {
         setReminderError($scope.reminder, 'past');
@@ -348,10 +349,10 @@
     if ($scope.task.trans.reminders) {
       var reminder = ReminderService.findActiveReminderForThisDevice($scope.task.trans.reminders);
       if (reminder !== undefined) {
-        // When task is no completed and reminder is in the future, remove reminder from the task
+        // When task is not completed and reminder is in the future, remove reminder from the task
         $scope.task.reminders.splice($scope.task.reminders.indexOf(reminder), 1);
-        // TODO
-        // ReminderService.removeReminder();
+        ReminderService.removeReminder(reminder);
+        // TODO: Delete reminder from backend when saving reminder to backend is fixed.
       }
     }
   };

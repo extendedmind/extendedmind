@@ -51,8 +51,8 @@
 
       return reminder;
     },
-    removeReminder: function() {
-      // TODO
+    removeReminder: function(reminder) {
+      cordova.plugins.notification.local.cancel(reminder.id);
     },
     isReminderInThisDevice: function(reminder) {
       if (reminder.packaging === packaging) {
