@@ -770,6 +770,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
           }
         }
       });
+      ReminderService.clearTriggeredReminders();
     };
 
     var doInitialize = function() {
