@@ -128,7 +128,7 @@
               </a>
             </div>
 
-            <div ng-repeat="reminder in task.trans.reminders | paramFilter:activeThisDeviceFirstThenByTime"
+            <div ng-repeat="reminder in task.trans.reminders | paramFilter:activeThisDeviceFirstThenByTime track by reminder.uuid"
               ng-switch on="isReminderInThisDevice(reminder)" class="group-mixed with-checkbox">
 
               <a href ng-switch-when="true" class="group-mixed--middle link-search-result"
