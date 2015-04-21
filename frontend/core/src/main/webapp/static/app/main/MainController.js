@@ -748,7 +748,6 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
       document.addEventListener('pause', cancelSynchronizeItemsDelayed, false);
     } else if (packaging === 'ios-cordova') {
       resumeCallback = function() {
-        console.log('resume');
         ReminderService.clearTriggeredReminders();
       };
       document.addEventListener('resume', resumeCallback, false);
