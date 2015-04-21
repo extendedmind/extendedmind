@@ -31,11 +31,16 @@
 
       // Add reminder to plugin
       cordova.plugins.notification.local.schedule(reminder);
-      reminder.packaging = packaging;
-      reminder.notification = date.getTime();
-      reminder.device = UISessionService.getDeviceId();
 
-      return reminder;
+      // Generate reminder for backend.
+      var reminderToSave = {
+        packaging: packaging,
+        notification: date.getTime(),
+        id: reminder.id,
+        device: UISessionService.getDeviceId()
+      };
+
+      return reminderToSave;
     },
     updateReminder: function(reminder, date) {
       cordova.plugins.notification.local.update({
