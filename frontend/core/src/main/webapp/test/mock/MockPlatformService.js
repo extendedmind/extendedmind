@@ -46,6 +46,9 @@
             reminders[reminderIndex].at = reminder.at;
             localStorage.setItem('reminders', JSON.stringify(reminders));
           }
+        },
+        on: function(/*callback*/) {
+          return;
         }
       }
     };

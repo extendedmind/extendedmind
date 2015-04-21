@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
- /* global bindToFocusEvent, bindToResumeEvent */
+ /* global bindToFocusEvent, bindToResumeEvent, cordova */
  'use strict';
 
 // Controller for all main slides
@@ -751,6 +751,42 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
         ReminderService.clearTriggeredReminders();
       };
       document.addEventListener('resume', resumeCallback, false);
+    }
+  }
+
+  if (packaging.endsWith('cordova')) {
+    var doListenNotificationClick = function() {
+      cordova.plugins.notification.local.on('click', function(notification/*, state*/) {
+        if (notification.data) {
+          // https://github.com/katzer/cordova-plugin-local-notifications/issues/489
+          var notificationData = JSON.parse(notification.data);
+          if (notificationData.itemType === 'task') {
+            // NOTE: items may not be loaded yet! add callback to itemsLoaded event
+            var taskInfo = TasksService.getTaskInfo(notificationData.itemUUID,
+                                                UISessionService.getActiveUUID());
+            if (taskInfo !== undefined) {
+              $scope.openEditor('task', taskInfo.task);
+            }
+          }
+        }
+      });
+    };
+
+    var doInitialize = function() {
+      if (cordova.plugins && cordova.plugins.notification) {
+        doListenNotificationClick();
+      } else {
+        setTimeout(function() {
+          if (cordova.plugins && cordova.plugins.notification) {
+            doListenNotificationClick();
+          }
+        }, 1000);
+      }
+    };
+    if (cordova) {
+      doInitialize();
+    } else {
+      document.addEventListener('deviceready', doInitialize, false);
     }
   }
 

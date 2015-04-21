@@ -25,6 +25,7 @@
         title: item.trans.title,
         at: date.getTime(),
         data: {
+          itemType: item.trans.itemType,
           itemUUID: item.trans.uuid
         }
       };
