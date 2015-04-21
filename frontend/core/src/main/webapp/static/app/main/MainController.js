@@ -23,8 +23,8 @@
 function MainController($element, $controller, $filter, $q, $rootScope, $scope, $timeout, $window,
                         UserService, AnalyticsService, ArrayService,
                         BackendClientService, CalendarService, DrawerService, ItemsService,
-                        ListsService, NotesService, SwiperService, SynchronizeService, TagsService,
-                        TasksService, UISessionService, UserSessionService, packaging) {
+                        ListsService, NotesService, ReminderService, SwiperService, SynchronizeService,
+                        TagsService, TasksService, UISessionService, UserSessionService, packaging) {
 
 
   // COLLECTIVES
@@ -733,12 +733,26 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     angular.element($window).bind('focus', synchronizeItemsAndSynchronizeItemsDelayed);
     angular.element($window).bind('blur', cancelSynchronizeItemsDelayed);
   }
-  // Global variable bindToResumeEvent is used in Android where polling does not stop when app is in
-  // the background.
+  // Global variable bindToResumeEvent is used:
+  //  * in Android and iOS to clear triggered reminders on resume.
+  //  * in Android where polling does not stop when app is in the background.
   var bindToResume = (typeof bindToResumeEvent !== 'undefined') ? bindToResumeEvent: true;
   if (bindToResume) {
-    document.addEventListener('resume', synchronizeItemsAndSynchronizeItemsDelayed, false);
-    document.addEventListener('pause', cancelSynchronizeItemsDelayed, false);
+    var resumeCallback;
+    if (packaging === 'android-cordova') {
+      resumeCallback = function() {
+        synchronizeItemsAndSynchronizeItemsDelayed();
+        ReminderService.clearTriggeredReminders();
+      };
+      document.addEventListener('resume', resumeCallback, false);
+      document.addEventListener('pause', cancelSynchronizeItemsDelayed, false);
+    } else if (packaging === 'ios-cordova') {
+      resumeCallback = function() {
+        console.log('resume');
+        ReminderService.clearTriggeredReminders();
+      };
+      document.addEventListener('resume', resumeCallback, false);
+    }
   }
 
   function synchronizeItemsAndSynchronizeItemsDelayed() {
@@ -1089,7 +1103,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
 MainController['$inject'] = [
 '$element', '$controller', '$filter', '$q', '$rootScope', '$scope', '$timeout', '$window',
 'UserService', 'AnalyticsService', 'ArrayService', 'BackendClientService', 'CalendarService', 'DrawerService',
-'ItemsService', 'ListsService', 'NotesService', 'SwiperService', 'SynchronizeService','TagsService',
-'TasksService', 'UISessionService', 'UserSessionService', 'packaging'
+'ItemsService', 'ListsService', 'NotesService', 'ReminderService', 'SwiperService', 'SynchronizeService',
+'TagsService', 'TasksService', 'UISessionService', 'UserSessionService', 'packaging'
 ];
 angular.module('em.main').controller('MainController', MainController);

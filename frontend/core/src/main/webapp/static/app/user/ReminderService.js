@@ -54,6 +54,9 @@
     removeReminder: function(reminder) {
       cordova.plugins.notification.local.cancel(reminder.id);
     },
+    clearTriggeredReminders: function() {
+      cordova.plugins.notification.local.clearAll();
+    },
     isReminderInThisDevice: function(reminder) {
       if (reminder.packaging === packaging) {
         if (reminder.packaging === 'ios-cordova') {
