@@ -171,43 +171,47 @@
   }
 
   // Setup callback to ListsService
-  var itemArchiveCallback = function(children, archived, ownerUUID, unarchive) {
+  var itemArchiveCallback = function(children, archived, historyTag, ownerUUID, unarchive) {
     if (tasks[ownerUUID] && children) {
       for (var i=0, len=children.length; i<len; i++) {
         var activeTask =
           tasks[ownerUUID].activeTasks.findFirstObjectByKeyValue('uuid', children[i].uuid);
         if (activeTask) {
-          if (!unarchive){
-            activeTask.archived = archived;
-          }
-          activeTask.modified = children[i].modified;
-          updateTask(activeTask, ownerUUID);
+          setArchiveFields(activeTask, children[i].modified, archived, historyTag, ownerUUID, unarchive);
         } else {
           var deletedTask =
             tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue('uuid', children[i].uuid);
           if (deletedTask) {
-            if (!unarchive){
-              deletedTask.archived = archived;
-            }
-            deletedTask.modified = children[i].modified;
-            updateTask(deletedTask, ownerUUID);
+            setArchiveFields(deletedTask, children[i].modified, archived, historyTag, ownerUUID, unarchive);
           } else {
             var archivedTask =
               tasks[ownerUUID].archivedTasks.findFirstObjectByKeyValue('uuid', children[i].uuid);
             if (archivedTask) {
-              if (!unarchive){
-                archivedTask.archived = archived;
-              }else{
-                delete archivedTask.archived;
-              }
-              archivedTask.modified = children[i].modified;
-              updateTask(archivedTask, ownerUUID);
+              setArchiveFields(archivedTask, children[i].modified, archived, historyTag,
+                               ownerUUID, unarchive);
             }
           }
         }
       }
     }
   };
+  function setArchiveFields(task, modified, archived, historyTag, ownerUUID, unarchive){
+    if (!unarchive){
+      task.archived = archived;
+    }else if (task.archived){
+      delete task.archived;
+    }
+    task.modified = modified;
+
+    // Also set history tag on the task
+    if (!unarchive){
+      if (!task.relationships) task.relationships = {};
+      if (!task.relationships.tags) task.relationships.tags = [];
+      var historyTagIndex = task.relationships.tags.indexOf(historyTag.uuid);
+      if (historyTagIndex === -1) task.relationships.tags.push(historyTag.uuid);
+    }
+    updateTask(task, ownerUUID);
+  }
   ListsService.registerItemArchiveCallback(itemArchiveCallback, 'TasksService');
 
   // Setup callback for tags

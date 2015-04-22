@@ -365,7 +365,7 @@
           // Call child callbacks
           if (response.children) {
             for (var id in itemArchiveCallbacks) {
-              itemArchiveCallbacks[id](response.children, response.archived, ownerUUID);
+              itemArchiveCallbacks[id](response.children, response.archived, response.history, ownerUUID);
             }
           }
           deferred.resolve();
@@ -409,7 +409,8 @@
           // Call child callbacks with unarchive=true
           if (response.children) {
             for (var id in itemArchiveCallbacks) {
-              itemArchiveCallbacks[id](response.children, undefined, ownerUUID, true);
+              itemArchiveCallbacks[id](response.children, undefined,
+                                       historyTag.tag ? historyTag.tag : undefined, ownerUUID, true);
             }
           }
           deferred.resolve();

@@ -49,21 +49,35 @@
 
   function copyTagsToTrans(origin, extendedItem, ownerUUID) {
     if (origin && origin.tags) {
+      var hasContext = false;
+      var hasKeywords = false;
+      var hasHistory = false;
       for (var i = 0, len = origin.tags.length; i < len; i++) {
         var tagInfo = TagsService.getTagInfo(origin.tags[i], ownerUUID);
         if (tagInfo) {
           if (tagInfo.tag.trans.tagType === 'context') {
             extendedItem.trans.context = tagInfo.tag;
-            break;
+            hasContext = true;
           } else if (tagInfo.tag.trans.tagType === 'keyword') {
             if (!extendedItem.trans.keywords) extendedItem.trans.keywords = [];
             if (extendedItem.trans.keywords.indexOf(tagInfo.tag) === -1) {
               // Push keyword if it does not exist in transient keywords.
               extendedItem.trans.keywords.push(tagInfo.tag);
             }
+            hasKeywords = true;
+          } else if (tagInfo.tag.trans.tagType === 'history') {
+            if (!extendedItem.trans.history) extendedItem.trans.history = [];
+            if (extendedItem.trans.history.indexOf(tagInfo.tag) === -1) {
+              // Push history tag if it does not exist in transient history.
+              extendedItem.trans.history.push(tagInfo.tag);
+            }
+            hasHistory = true;
           }
         }
       }
+      if (!hasContext && extendedItem.trans.context !== undefined) delete extendedItem.trans.context;
+      if (!hasKeywords && extendedItem.trans.keywords !== undefined) delete extendedItem.trans.keywords;
+      if (!hasHistory && extendedItem.trans.history !== undefined) delete extendedItem.trans.history;
     }
   }
 
@@ -310,8 +324,10 @@
         copyTagsToTrans(extendedItem.mod.relationships, extendedItem, ownerUUID);
       }else if (extendedItem.relationships && extendedItem.relationships.tags !== undefined){
         copyTagsToTrans(extendedItem.relationships, extendedItem, ownerUUID);
-      }else if (extendedItem.trans.keywords !== undefined){
-        delete extendedItem.trans.keywords;
+      }else{
+        if (extendedItem.trans.context !== undefined) delete extendedItem.trans.context;
+        if (extendedItem.trans.keywords !== undefined) delete extendedItem.trans.keywords;
+        if (extendedItem.trans.history !== undefined) delete extendedItem.trans.history;
       }
     },
     registerGetListInfoCallback: function(callback){

@@ -279,7 +279,7 @@ describe('ListsService', function() {
   it('should archive list', function () {
     // First register callback to list service
     var childItems, archivedTimestamp, callBackUUID;
-    var testArchiveItemCallback = function(children, archived, uuid){
+    var testArchiveItemCallback = function(children, archived, modified, uuid){
       childItems = children;
       archivedTimestamp = archived;
       callBackUUID = uuid;
