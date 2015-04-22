@@ -83,9 +83,7 @@ object ReminderType extends Enumeration {
 
 case class Reminder(uuid: Option[UUID], created: Option[Long], modified: Option[Long],
                     id: String, reminderType: String, packaging: String, device: String,
-                    notification: Long,
-                    remove: Option[Long] // i.e. mark for removal
-  ){ 
+                    notification: Long, removed: Option[Long]){ 
   require(
       try {
         val rt = ReminderType.withName(reminderType)
