@@ -17,6 +17,7 @@
  *  iv.     Do not fire touchcancel event on android.
  *  v.      Add public interface for the translate function.
  *  vi      Reset to minPosition.
+ *  vii.    Possibility to run open without animation.
  */
 /*jslint browser: true*/
 /*global define, module, ender, packaging*/
@@ -204,12 +205,12 @@
                     utils.dispatchEvent('animated');
                     utils.events.removeEvent(settings.element, utils.transitionCallback(), action.translate.easeCallback);
                 },
-                easeTo: function(n, speed) {
+                easeTo: function(n, speed) {    // FORK: vii
 
                     if( !utils.canTransform()){
                         cache.translation = n;
                         action.translate.x(n);
-                    } else if (speed === 0) {
+                    } else if (speed === 0) {   // FORK: vii
                         cache.translation = n;
                         action.translate.x(n);
                         window.requestAnimationFrame(function() {
@@ -219,6 +220,7 @@
                         cache.easing = true;
                         cache.easingTo = n;
 
+                        // FORK: vii
                         settings.element.style[cache.vendor+'Transition'] = 'all ' + (speed !== undefined ? speed : settings.transitionSpeed) + 's ' + settings.easing;
 
                         cache.animatingInterval = setInterval(function() {
@@ -564,7 +566,7 @@
         /*
          * Public
          */
-        this.open = function(side, speed) {
+        this.open = function(side, speed) { // FORK: vii
             utils.dispatchEvent('open');
             utils.klass.remove(doc.body, 'snapjs-expand-left');
             utils.klass.remove(doc.body, 'snapjs-expand-right');
@@ -574,13 +576,13 @@
                 cache.simpleStates.towards = 'right';
                 utils.klass.add(doc.body, 'snapjs-left');
                 utils.klass.remove(doc.body, 'snapjs-right');
-                action.translate.easeTo(settings.maxPosition, speed);
+                action.translate.easeTo(settings.maxPosition, speed);   // FORK: vii
             } else if (side === 'right') {
                 cache.simpleStates.opening = 'right';
                 cache.simpleStates.towards = 'left';
                 utils.klass.remove(doc.body, 'snapjs-left');
                 utils.klass.add(doc.body, 'snapjs-right');
-                action.translate.easeTo(settings.minPosition, speed);
+                action.translate.easeTo(settings.minPosition, speed);   // FORK: vii
             }
         };
         this.close = function() {
