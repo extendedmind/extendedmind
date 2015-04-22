@@ -301,13 +301,15 @@
     var keywordsList = '';
 
     for (var i = 0; i < note.trans.keywords.length; i++) {
-      keywordsList += '#' + note.trans.keywords[i].trans.title; // Add hash character into keyword
-      if (i !== note.trans.keywords.length - 1) {
-        // Separate keywords with comma and non-breaking space.
-        // NOTE:  Non-breaking space is used to make Clamp.js (when used) work better - with regular space it
-        //        would remove word following the space leaving trailing comma + ellipsis in the end.
-        //        With nbsp, last keyword is split.
-        keywordsList += ',\xA0';
+      if (!note.trans.keywords[i].trans.deleted){
+        if (keywordsList !== ''){
+          // Separate keywords with comma and non-breaking space.
+          // NOTE:  Non-breaking space is used to make Clamp.js (when used) work better - with regular space it
+          //        would remove word following the space leaving trailing comma + ellipsis in the end.
+          //        With nbsp, last keyword is split.
+          keywordsList += ',\xA0';
+        }
+        keywordsList += '#' + note.trans.keywords[i].trans.title; // Add hash character into keyword
       }
     }
     return keywordsList;
@@ -334,6 +336,24 @@
     $scope.keywordsPickerOpen = false;
     clearKeyword();
     if (angular.isFunction($scope.unregisterIsPropertyEdited)) $scope.unregisterIsPropertyEdited();
+  };
+
+  $scope.hasActiveKeywords = function(note){
+    if (note.trans.keywords && note.trans.keywords.length){
+      for (var i=0; i<note.trans.keywords.length; i++){
+        if (!note.trans.keywords[i].trans.deleted) return true;
+      }
+    }
+  };
+
+  $scope.getActiveKeywords = function(note){
+    var activeKeywords = [];
+    if (note.trans.keywords && note.trans.keywords.length){
+      for (var i=0; i<note.trans.keywords.length; i++){
+        if (!note.trans.keywords[i].trans.deleted) activeKeywords.push(note.trans.keywords[i]);
+      }
+    }
+    return activeKeywords;
   };
 
   // Set collapsible open when

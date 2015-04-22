@@ -97,7 +97,7 @@
           </div>
 
           <!-- LIST -->
-          <div ng-if="note.trans.list && (features.lists.getStatus('active') !== 'disabled')"
+          <div ng-if="(note.trans.list && !note.trans.list.trans.deleted) && (features.lists.getStatus('active') !== 'disabled')"
           ng-hide="isNotePropertyInEdit()" class="group-mixed with-checkbox">
             <a href class="group-mixed--middle link-search-result" swiper-click="openListPicker()">
               <span class="text-field--title" ng-bind="note.trans.list.trans.title"></span>
@@ -108,7 +108,7 @@
           </div>
 
           <!-- KEYWORDS -->
-          <div ng-if="note.trans.keywords && note.trans.keywords.length" ng-hide="isNotePropertyInEdit()"
+          <div ng-if="hasActiveKeywords(note)" ng-hide="isNotePropertyInEdit()"
             class="group-mixed with-checkbox">
             <a href class="group-mixed--middle link-search-result" swiper-click="openKeywordsPicker()">
               <span class="text-field--title" ng-bind="getKeywordsListString(note)"></span>
@@ -122,7 +122,7 @@
           <div ng-if="collapsibleOpen" ng-hide="isNotePropertyInEdit()">
 
             <!-- LIST -->
-            <div ng-if="!note.trans.list && (features.lists.getStatus('active') !== 'disabled')"
+            <div ng-if="(!note.trans.list || note.trans.list.trans.deleted) && (features.lists.getStatus('active') !== 'disabled')"
                  class="group-mixed with-checkbox">
               <a href class="group-mixed--middle link-search-result downplayed" swiper-click="openListPicker()">
                 <span class="text-field--title">select list&#8230;</span>
@@ -130,7 +130,7 @@
             </div>
 
             <!-- KEYWORDS -->
-            <div ng-if="!note.trans.keywords || !note.trans.keywords.length" class="group-mixed with-checkbox">
+            <div ng-if="!hasActiveKeywords(note)" class="group-mixed with-checkbox">
               <a href class="group-mixed--middle link-search-result downplayed"
                 swiper-click="openKeywordsPicker()">
                 <span class="text-field--title">add keywords&#8230;</span>
@@ -195,7 +195,7 @@
 
               <div ng-if="noteHasKeywords(note)" class="keywords-container row">
                 <div class="keyword-wrapper"
-                  ng-repeat="keyword in note.trans.keywords | orderBy:'trans.title' track by keyword.trans.uuid">
+                  ng-repeat="keyword in getActiveKeywords(note) | orderBy:'trans.title' track by keyword.trans.uuid">
                   <a href class="keyword highlighted" swiper-click="removeKeywordFromNote(note, keyword)">
                     <span class="text-keyword" ng-bind="'#' + keyword.trans.title" clamp=1></span>
                   </a>

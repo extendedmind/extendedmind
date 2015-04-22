@@ -241,7 +241,7 @@
             <a href class="group-mixed--middle link-search-result" ng-class="!task.trans.list && 'downplayed'"
               swiper-click="openListPicker()">
               <span class="text-field--title"
-                ng-bind="task.trans.list ? task.trans.list.trans.title : 'select list\u2026'">
+                ng-bind="(task.trans.list && !task.trans.list.trans.deleted) ? task.trans.list.trans.title : 'select list\u2026'">
               </span>
             </a>
             <div ng-if="task.trans.list" class="group-mixed--right">
@@ -303,7 +303,7 @@
             <a href class="group-mixed--middle link-search-result"
               ng-class="!task.trans.context && 'downplayed'" swiper-click="openContextPicker()">
               <span class="text-field--title"
-                ng-bind="task.trans.context ? '@' + task.trans.context.trans.title : 'select context\u2026'">
+                ng-bind="(task.trans.context && !task.trans.context.trans.deleted) ? '@' + task.trans.context.trans.title : 'select context\u2026'">
               </span>
             </a>
             <div ng-if="task.trans.context" class="group-mixed--right">
