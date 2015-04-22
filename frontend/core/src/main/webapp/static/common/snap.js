@@ -204,16 +204,22 @@
                     utils.dispatchEvent('animated');
                     utils.events.removeEvent(settings.element, utils.transitionCallback(), action.translate.easeCallback);
                 },
-                easeTo: function(n) {
+                easeTo: function(n, speed) {
 
-                    if( !utils.canTransform() ){
+                    if( !utils.canTransform()){
                         cache.translation = n;
                         action.translate.x(n);
+                    } else if (speed === 0) {
+                        cache.translation = n;
+                        action.translate.x(n);
+                        window.requestAnimationFrame(function() {
+                            utils.dispatchEvent('animated');
+                        });
                     } else {
                         cache.easing = true;
                         cache.easingTo = n;
 
-                        settings.element.style[cache.vendor+'Transition'] = 'all ' + settings.transitionSpeed + 's ' + settings.easing;
+                        settings.element.style[cache.vendor+'Transition'] = 'all ' + (speed !== undefined ? speed : settings.transitionSpeed) + 's ' + settings.easing;
 
                         cache.animatingInterval = setInterval(function() {
                             utils.dispatchEvent('animating');
@@ -558,7 +564,7 @@
         /*
          * Public
          */
-        this.open = function(side) {
+        this.open = function(side, speed) {
             utils.dispatchEvent('open');
             utils.klass.remove(doc.body, 'snapjs-expand-left');
             utils.klass.remove(doc.body, 'snapjs-expand-right');
@@ -568,13 +574,13 @@
                 cache.simpleStates.towards = 'right';
                 utils.klass.add(doc.body, 'snapjs-left');
                 utils.klass.remove(doc.body, 'snapjs-right');
-                action.translate.easeTo(settings.maxPosition);
+                action.translate.easeTo(settings.maxPosition, speed);
             } else if (side === 'right') {
                 cache.simpleStates.opening = 'right';
                 cache.simpleStates.towards = 'left';
                 utils.klass.remove(doc.body, 'snapjs-left');
                 utils.klass.add(doc.body, 'snapjs-right');
-                action.translate.easeTo(settings.minPosition);
+                action.translate.easeTo(settings.minPosition, speed);
             }
         };
         this.close = function() {

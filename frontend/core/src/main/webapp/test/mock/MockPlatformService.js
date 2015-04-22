@@ -49,6 +49,10 @@
         },
         on: function(/*callback*/) {
           return;
+        },
+        clearAll: function() {
+          reminders = [];
+          localStorage.removeItem('reminders');
         }
       }
     };

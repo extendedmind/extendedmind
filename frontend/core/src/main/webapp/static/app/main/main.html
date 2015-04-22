@@ -1,6 +1,6 @@
 <div class="container-main" ng-controller="MainController">
   <div ng-include="urlBase + 'app/main/menu.html'" include-replace></div>
-  <div ng-include="urlBase + 'app/main/editor.html'" include-replace></div>
+  <div ng-include="urlBase + 'app/main/editor.html'" include-replace onload="editorReady()"></div>
   <div drawer-aisle class="container-drawer-aisle">
     <div class="container-master" vertical-resize="master"
     vertical-resize-prevent="isEditorVisible()" vertical-resize-hide-footer="true">

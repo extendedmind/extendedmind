@@ -365,7 +365,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
   *
   * TODO: analytics visit omnibar
   */
-  $scope.openEditor = function (type, item, mode) {
+  $scope.openEditor = function (type, item, mode, speed) {
 
     // Check for existing edit locks and resolve them first.
     var deferredEditorClose = UISessionService.getDeferredAction('editorClose');
@@ -374,11 +374,11 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     var promise = UISessionService.deferAction('editorClose');
 
     if (DrawerService.isOpen('left')) {
-      DrawerService.close('left');
-      openEditorAfterMenuClosed = {type: type, item: item, mode: mode};
+      DrawerService.close('left', speed);
+      openEditorAfterMenuClosed = {type: type, item: item, mode: mode, speed: speed};
       openMenuAfterEditorClosed = true;
     } else {
-      DrawerService.open('right');
+      DrawerService.open('right', speed);
       executeEditorAboutToOpenCallbacks(type, item, mode);
       $element[0].classList.add('editor-show');
     }
@@ -555,8 +555,65 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
 
 
   // START FROM FOCUS
-
   $scope.changeFeature('focus');
+
+  var editorReady, editorReadyCallback = {};
+  $scope.editorReady = function() {
+    editorReady = true;
+    if (editorReadyCallback.fn === 'function') {
+      editorReadyCallback.fn.apply(this, editorReadyCallback.parameters);
+    }
+  };
+
+  // REMINDERS
+
+  if (packaging.endsWith('cordova')) {
+    var doOpenTaskInEditor = function(notificationData) {
+      var taskInfo = TasksService.getTaskInfo(notificationData.itemUUID, UISessionService.getActiveUUID());
+      if (taskInfo !== undefined) {
+        if (editorReady) {
+          $scope.openEditor('task', taskInfo.task, undefined, 0);
+        } else {
+          editorReadyCallback.fn = $scope.openEditor;
+          editorReadyCallback.parameters = ['task', taskInfo.task, undefined, 0];
+        }
+      }
+    };
+
+    var doListenNotificationClick = function() {
+      cordova.plugins.notification.local.on('click', function(notification/*, state*/) {
+        if (notification.data) {
+          // https://github.com/katzer/cordova-plugin-local-notifications/issues/489
+          var notificationData = JSON.parse(notification.data);
+          if (notificationData.itemType === 'task') {
+            if (UserSessionService.isPersistentDataLoaded()) {
+              doOpenTaskInEditor(notificationData);
+            } else {
+              // Items are not loaded yet. Register callback to persistendDataLoaded.
+              UserSessionService.registerPersistentDataLoadedCallback(function() {
+                doOpenTaskInEditor(notificationData);
+              }, 'MainController');
+            }
+          }
+        }
+      });
+    };
+
+    var onDeviceReady = function() {
+      if (cordova.plugins && cordova.plugins.notification) {
+        doListenNotificationClick();
+      }
+    };
+    if (cordova) {
+      if (cordova.plugins && cordova.plugins.notification) {
+        doListenNotificationClick();
+      } else {
+        document.addEventListener('deviceready', onDeviceReady, false);
+      }
+    } else {
+      document.addEventListener('deviceready', onDeviceReady, false);
+    }
+  }
 
   // DATA ARRAYS
 
@@ -751,43 +808,6 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
         ReminderService.clearTriggeredReminders();
       };
       document.addEventListener('resume', resumeCallback, false);
-    }
-  }
-
-  if (packaging.endsWith('cordova')) {
-    var doListenNotificationClick = function() {
-      cordova.plugins.notification.local.on('click', function(notification/*, state*/) {
-        if (notification.data) {
-          // https://github.com/katzer/cordova-plugin-local-notifications/issues/489
-          var notificationData = JSON.parse(notification.data);
-          if (notificationData.itemType === 'task') {
-            // NOTE: items may not be loaded yet! add callback to itemsLoaded event
-            var taskInfo = TasksService.getTaskInfo(notificationData.itemUUID,
-                                                UISessionService.getActiveUUID());
-            if (taskInfo !== undefined) {
-              $scope.openEditor('task', taskInfo.task);
-            }
-          }
-        }
-      });
-      ReminderService.clearTriggeredReminders();
-    };
-
-    var doInitialize = function() {
-      if (cordova.plugins && cordova.plugins.notification) {
-        doListenNotificationClick();
-      } else {
-        setTimeout(function() {
-          if (cordova.plugins && cordova.plugins.notification) {
-            doListenNotificationClick();
-          }
-        }, 1000);
-      }
-    };
-    if (cordova) {
-      doInitialize();
-    } else {
-      document.addEventListener('deviceready', doInitialize, false);
     }
   }
 
@@ -1073,7 +1093,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
       // Wait until DOM manipulation is ready before opening editor
       // to have correct transition style in drawer aisle element.
       $timeout(function() {
-        DrawerService.open('right');
+        DrawerService.open('right', openEditorAfterMenuClosed.speed);
         executeEditorAboutToOpenCallbacks(openEditorAfterMenuClosed.type,
                                           openEditorAfterMenuClosed.item,
                                           openEditorAfterMenuClosed.mode);

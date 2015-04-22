@@ -25,6 +25,7 @@
   var persistentStorageEnabled = enableOffline;
   var offlineEnabledBypass = false;
   var notifyOwnerCallbacks = {};
+  var persistentDataLoadedCallbacks = {};
   var persistentDataLoaded = false;
 
   // Sync session storage with local storage.
@@ -350,6 +351,11 @@
     },
     setPersistentDataLoaded: function(value) {
       persistentDataLoaded = value;
+      if (persistentDataLoadedCallbacks) {
+        for (var id in persistentDataLoadedCallbacks) {
+          if (persistentDataLoadedCallbacks.hasOwnProperty(id)) persistentDataLoadedCallbacks[id]();
+        }
+      }
     },
     isPersistentDataLoaded: function() {
       return persistentDataLoaded;
@@ -438,6 +444,14 @@
           latestModified[newUUID] = latestModified[oldUUID];
           delete latestModified[oldUUID];
         }
+      }
+    },
+    registerPersistentDataLoadedCallback: function(callback, id){
+      if (persistentDataLoaded) {
+        // In case the registration comes after persistent data is loaded, notify caller immediately.
+        callback();
+      } else {
+        persistentDataLoadedCallbacks[id] = callback;
       }
     },
     registerNofifyOwnerCallback: function(callback, id){

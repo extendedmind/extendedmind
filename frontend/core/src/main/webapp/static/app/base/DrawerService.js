@@ -194,12 +194,12 @@
 
     // MANIPULATION
 
-    open: function(drawerSide) {
+    open: function(drawerSide, speed) {
       if (snapperExists(drawerSide)){
         if (drawerSide === 'left' && snappers[drawerSide].snapper.state().state !== 'left'){
-          snappers[drawerSide].snapper.open('left');
+          snappers[drawerSide].snapper.open('left', speed);
         } else if (drawerSide === 'right' && snappers[drawerSide].snapper.state().state !== 'right'){
-          snappers[drawerSide].snapper.open('right');
+          snappers[drawerSide].snapper.open('right', speed);
         }
       }
     },
