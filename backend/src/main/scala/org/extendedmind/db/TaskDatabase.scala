@@ -33,6 +33,7 @@ import org.neo4j.kernel.Traversal
 import org.neo4j.scala.DatabaseService
 import scala.collection.mutable.ListBuffer
 import org.neo4j.graphdb.Relationship
+import java.time.temporal.ChronoUnit
 
 trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
 
@@ -192,16 +193,19 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
 	          // First, get new due string
 	          val repeatingType = RepeatingType.withName(taskNode.getProperty("repeating").asInstanceOf[String])
 	          val oldDue: java.util.Calendar = java.util.Calendar.getInstance();
-	          oldDue.setTime(Validators.dateFormat.parse(taskNode.getProperty("due").asInstanceOf[String]))
+            
+            Validators.dateFormat.parse(taskNode.getProperty("due").asInstanceOf[String])
+            
+            val dueDate = java.time.LocalDate.parse(taskNode.getProperty("due").asInstanceOf[String], Validators.dateFormat)
 	          val newDue = repeatingType match {
-	            case RepeatingType.DAILY => oldDue.add(java.util.Calendar.DATE, 1)
-	            case RepeatingType.WEEKLY => oldDue.add(java.util.Calendar.DATE, 7)
-	            case RepeatingType.BIWEEKLY => oldDue.add(java.util.Calendar.DATE, 14)
-	            case RepeatingType.MONTHLY => oldDue.add(java.util.Calendar.MONTH, 1)
-	            case RepeatingType.BIMONTHLY => oldDue.add(java.util.Calendar.MONTH, 2)
-	            case RepeatingType.YEARLY => oldDue.add(java.util.Calendar.YEAR, 1)
+	            case RepeatingType.DAILY => dueDate.plus(1, ChronoUnit.DAYS)
+	            case RepeatingType.WEEKLY => dueDate.plus(7, ChronoUnit.DAYS)
+	            case RepeatingType.BIWEEKLY => dueDate.plus(14, ChronoUnit.DAYS)
+	            case RepeatingType.MONTHLY => dueDate.plus(1, ChronoUnit.MONTHS)
+	            case RepeatingType.BIMONTHLY => dueDate.plus(2, ChronoUnit.MONTHS)
+	            case RepeatingType.YEARLY => dueDate.plus(1, ChronoUnit.YEARS)
 	          }
-	          val newDueString = Validators.dateFormat.format(oldDue.getTime())
+	          val newDueString = Validators.dateFormat.format(newDue)
 	
 	          // Second, duplicate old task
 	          val oldTask = for {

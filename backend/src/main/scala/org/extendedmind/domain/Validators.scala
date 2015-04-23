@@ -19,7 +19,8 @@
 
 package org.extendedmind.domain
 
-import java.text.ParseException
+import java.time.format.DateTimeParseException
+import java.time.format.DateTimeFormatter
 
 object Validators {
   
@@ -30,12 +31,9 @@ object Validators {
   // removed uppercase to make sure no duplicates exist
   val emailPattern = ("^[_a-z0-9-\\+]+(\\.[_a-z0-9-]+)*@"
                     + "[a-z0-9-]+(\\.[a-z0-9]+)*(\\.[a-z]{2,})$").r
-
-  val dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd")
-  dateFormat.setLenient(false)
-
-  val timeFormat = new java.text.SimpleDateFormat("hh:mm")
-  timeFormat.setLenient(false)
+               
+  val dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+  val timeFormat = DateTimeFormatter.ofPattern("hh:mm")
   
   def validateEmailAddress(email: String): Boolean = {
     if (email.length() > 254) false
@@ -64,16 +62,18 @@ object Validators {
     try {
       dateFormat.parse(dateString);
     } catch {
-      case e: ParseException => return false
+      case e: DateTimeParseException => return false
     }
     return true
   }
   
   def validateTimeString(timeString: String): Boolean = {
     try {
-      timeFormat.parse(timeString);
+      synchronized {
+        timeFormat.parse(timeString);
+      }
     } catch {
-      case e: ParseException => return false
+      case e: DateTimeParseException => return false
     }
     return true
   }
