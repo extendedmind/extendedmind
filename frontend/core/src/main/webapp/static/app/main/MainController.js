@@ -203,7 +203,8 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
       return true;
     }
     if ($scope.features[feature].additionalContentVisibleStatuses &&
-        $scope.features[feature].additionalContentVisibleStatuses.indexOf(status) !== -1){
+        $scope.features[feature].additionalContentVisibleStatuses.indexOf(status) !== -1)
+    {
       return true;
     }
   };
@@ -245,7 +246,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
 
   $scope.increaseOnboardingPhase = function(feature, subfeature){
     var featurePreferences = UserSessionService.getFeaturePreferences(feature);
-    increaseOnboardingPhase(feature, featurePreferences, subfeature)
+    increaseOnboardingPhase(feature, featurePreferences, subfeature);
   };
 
   function decreaseOnboardingPhase(feature, featurePreferences, subfeature){
@@ -274,7 +275,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
           increaseOnboardingPhase('focus', focusPreferences, subfeature, warpIntoPhase);
           return true;
         }
-      };
+      }
     }else if (featureInfo === $scope.features.inbox){
 
     }else if (featureInfo === $scope.features.tasks){
@@ -291,7 +292,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
           increaseOnboardingPhase('lists', listsPreferences, subfeature);
           return true;
         }
-      };
+      }
     }else if (featureInfo === $scope.features.list){
 
     }else if (featureInfo === $scope.features.trash){
@@ -526,7 +527,8 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
   }
 
   $scope.isFeatureLoaded = function(feature){
-    return ($rootScope.syncState !== 'active' || $rootScope.signUpInProgress) && $scope.features[feature].loaded;
+    return ($rootScope.syncState !== 'active' || $rootScope.signUpInProgress) &&
+    $scope.features[feature].loaded;
   };
 
   $scope.getActiveFeature = function getActiveFeature() {
@@ -933,7 +935,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
 
   $scope.showLoadingAnimation = function(){
     return $rootScope.syncState === 'active' && !$rootScope.signUpInProgress;
-  }
+  };
 
   // Execute synchronize immediately when queue is empty to be fully synced right after data has been
   // modified without having to wait for next tick.
