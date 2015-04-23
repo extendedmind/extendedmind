@@ -49,6 +49,12 @@
             localStorage.setItem('reminders', JSON.stringify(reminders));
           }
         },
+        cancel: function(id) {
+          var reminderIndex = reminders.findFirstIndexByKeyValue('id', id);
+          if (reminderIndex !== undefined) {
+            reminders.splice(reminderIndex, 1);
+          }
+        },
         on: function(type, callback) {
           if (!callbacks[type]) {
             callbacks[type] = [];

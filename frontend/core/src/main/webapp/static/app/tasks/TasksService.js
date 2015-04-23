@@ -61,7 +61,6 @@
 
   var taskFieldInfos = ItemLikeService.getFieldInfos(
     [ 'due',
-      'reminders',
       'repeating',
       {
         name: 'completed',
@@ -95,6 +94,73 @@
           }
           else if (task.archived !== undefined) task.trans.archived = task.archived;
           else if (task.trans.archived !== undefined) delete task.trans.archived;
+        }
+      },
+      {
+        name: 'reminders',
+        /*
+        * trans !== mod || persistent
+        */
+        isEdited: function(task) {
+          if (task.trans.reminders) {
+
+            if ((!task.mod || !task.mod.reminders) && !task.reminders) {
+              // Not in mod nor in database.
+              return true;
+            }
+
+            if (task.mod && task.mod.reminders) {
+              if (JSON.stringify(task.trans.reminders) !== JSON.stringify(task.mod.reminders)) {
+                // Trans does not match with mod.
+                return true;
+              }
+            } else if (task.reminders) {
+              if (JSON.stringify(task.trans.reminders) !== JSON.stringify(task.reminders)) {
+                // Trans does not match with database.
+                return true;
+              }
+            }
+          }
+
+          else {
+            if (task.mod && task.mod.reminders) {
+              // Not in trans but in mod.
+              return true;
+            } else if (task.reminders) {
+              // Not in trans but in database.
+              return true;
+            }
+          }
+        },
+        copyTransToMod: function(task) {
+          if (task.trans.reminders) {
+            // http://stackoverflow.com/a/23481096
+            task.mod.reminders = JSON.parse(JSON.stringify(task.trans.reminders));
+          } else {
+            task.mod.reminders = undefined;
+          }
+        },
+        /*
+        * mod || persistent !== trans
+        *
+        * mod > persistent
+        */
+        resetTrans: function(task) {
+          if (task.mod && task.mod.hasOwnProperty('reminders')) {
+            if (!task.mod.reminders && task.trans.reminders !== undefined) {
+              delete task.trans.reminders;
+            } else if (task.mod.reminders !== undefined) {
+              // Copy mod to trans.
+              // http://stackoverflow.com/a/23481096
+              task.trans.reminders = JSON.parse(JSON.stringify(task.mod.reminders));
+            }
+          } else if (task.reminders) {
+            // Copy persistent to mod.
+            // http://stackoverflow.com/a/23481096
+            task.trans.reminders = JSON.parse(JSON.stringify(task.reminders));
+          } else if (task.trans.reminders) {
+            delete task.trans.reminders;
+          }
         }
       },
       // TODO (when implementing this, update the method below for repeating task cloning!:
