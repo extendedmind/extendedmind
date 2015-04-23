@@ -33,6 +33,8 @@
   }
 
   function mockReminders() {
+    var callbacks = {};
+    var queuedClickCallback;
 
     window.cordova.plugins.notification = {
       local: {
@@ -47,12 +49,35 @@
             localStorage.setItem('reminders', JSON.stringify(reminders));
           }
         },
-        on: function(/*callback*/) {
-          return;
+        on: function(type, callback) {
+          if (!callbacks[type]) {
+            callbacks[type] = [];
+          }
+          callbacks[type].push(callback);
+
+          if (queuedClickCallback) {
+            this.runCallback('click');
+          }
         },
         clearAll: function() {
           reminders = [];
           localStorage.removeItem('reminders');
+        },
+        runCallback: function(type) {
+          if (callbacks[type]) {
+            if (reminders.length) {
+              var lastReminder = reminders.pop();
+              for (var i = 0; i < callbacks[type].length; i++) {
+                if (lastReminder.data) {
+                  // https://github.com/katzer/cordova-plugin-local-notifications/issues/489
+                  lastReminder.data = JSON.stringify(lastReminder.data);
+                }
+                callbacks[type][i](lastReminder);
+              }
+            }
+          } else if (type === 'click') {
+            queuedClickCallback = true;
+          }
         }
       }
     };
@@ -66,9 +91,15 @@
         for (var i = 0; i < itemsResponseData.tasks.length; i++) {
           if (itemsResponseData.tasks[i].reminders) {
             for (var j = 0; j < itemsResponseData.tasks[i].reminders.length; j++) {
-              // Set notification 2 hours into future.
-              itemsResponseData.tasks[i].reminders[j].notification = Date.now() + 7200000;
-              reminders.push(itemsResponseData.tasks[i].reminders[j]);
+              var reminder = {
+                id: itemsResponseData.tasks[i].reminders[j].id,
+                at: Date.now() + 7200000,
+                data: {
+                  itemType: 'task',
+                  itemUUID: itemsResponseData.tasks[i].uuid
+                }
+              };
+              reminders.push(reminder);
             }
           }
         }
@@ -77,6 +108,10 @@
         localStorage.setItem('reminders', JSON.stringify(reminders));
       }
     }
+    if ($routeParams.reminder) {
+      window.cordova.plugins.notification.local.runCallback('click');
+    }
+
   }
 
   function mockIOS() {

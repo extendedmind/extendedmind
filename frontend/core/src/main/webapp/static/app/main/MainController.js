@@ -560,53 +560,66 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
   var editorReady, editorReadyCallback = {};
   $scope.editorReady = function() {
     editorReady = true;
-    if (editorReadyCallback.fn === 'function') {
+    if (typeof editorReadyCallback.fn === 'function') {
       editorReadyCallback.fn.apply(this, editorReadyCallback.parameters);
+      if (!$rootScope.$$phase && !$scope.$$phase) {
+        // Programmatic open. Most likely does not cause digest.
+        $scope.$digest();
+      }
     }
   };
 
   // REMINDERS
 
   if (packaging.endsWith('cordova')) {
-    var doOpenTaskInEditor = function(notificationData) {
+    var openTaskInEditor = function(notificationData, directOpen) {
       var taskInfo = TasksService.getTaskInfo(notificationData.itemUUID, UISessionService.getActiveUUID());
       if (taskInfo !== undefined) {
+        // NOTE:  Speed is set to 0 in both cases. Set to undefined when directOpen === false to enable
+        //        editor open animation.
         if (editorReady) {
-          $scope.openEditor('task', taskInfo.task, undefined, 0);
+          $scope.openEditor('task', taskInfo.task, undefined, directOpen ? 0 : 0);
+          if (!$rootScope.$$phase && !$scope.$$phase) {
+            // Programmatic open. Most likely does not cause digest.
+            $scope.$digest();
+          }
         } else {
           editorReadyCallback.fn = $scope.openEditor;
-          editorReadyCallback.parameters = ['task', taskInfo.task, undefined, 0];
+          editorReadyCallback.parameters = ['task', taskInfo.task, undefined, directOpen ? 0 : 0];
         }
       }
     };
 
-    var doListenNotificationClick = function() {
-      cordova.plugins.notification.local.on('click', function(notification/*, state*/) {
-        if (notification.data) {
-          // https://github.com/katzer/cordova-plugin-local-notifications/issues/489
-          var notificationData = JSON.parse(notification.data);
-          if (notificationData.itemType === 'task') {
-            if (UserSessionService.isPersistentDataLoaded()) {
-              doOpenTaskInEditor(notificationData);
-            } else {
-              // Items are not loaded yet. Register callback to persistendDataLoaded.
-              UserSessionService.registerPersistentDataLoadedCallback(function() {
-                doOpenTaskInEditor(notificationData);
-              }, 'MainController');
-            }
+    var reminderClick = function(notification) {
+      var coldBootClick = !UserSessionService.isPersistentDataLoaded();
+      if (notification.data) {
+        // https://github.com/katzer/cordova-plugin-local-notifications/issues/489
+        var notificationData = JSON.parse(notification.data);
+        if (notificationData.itemType === 'task') {
+          if (UserSessionService.isPersistentDataLoaded()) {
+            openTaskInEditor(notificationData, coldBootClick);
+          } else {
+            // Items are not loaded yet. Register callback to persistendDataLoaded.
+            UserSessionService.registerPersistentDataLoadedCallback(function() {
+              openTaskInEditor(notificationData, coldBootClick);
+            }, 'MainController');
           }
         }
-      });
+      }
+    };
+
+    var listenReminderClick = function() {
+      cordova.plugins.notification.local.on('click', reminderClick);
     };
 
     var onDeviceReady = function() {
       if (cordova.plugins && cordova.plugins.notification) {
-        doListenNotificationClick();
+        listenReminderClick();
       }
     };
     if (cordova) {
       if (cordova.plugins && cordova.plugins.notification) {
-        doListenNotificationClick();
+        listenReminderClick();
       } else {
         document.addEventListener('deviceready', onDeviceReady, false);
       }
