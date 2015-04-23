@@ -61,6 +61,8 @@ case object ERR_ITEM_DOES_NOT_HAVE_TAG extends ErrorCode(3014)
 case object ERR_ITEM_CONTENT_ALREADY_DESCRIPTION extends ErrorCode(3015)
 case object ERR_ITEM_CONTENT_TOO_LONG extends ErrorCode(3016)
 case object ERR_ITEM_ARCHIVE_NOT_PREMIUM extends ErrorCode(3017)
+case object ERR_ITEM_OWN_PARENT extends ErrorCode(3018)
+case object ERR_ITEM_PARENT_INFINITE_LOOP extends ErrorCode(3019)
 
 case object ERR_LIST_ARCHIVE_CHILDREN extends ErrorCode(4001)
 case object ERR_LIST_MISSING_HISTORY_TAG extends ErrorCode(4002)

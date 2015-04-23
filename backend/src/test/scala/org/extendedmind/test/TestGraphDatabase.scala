@@ -78,7 +78,7 @@ trait TestGraphDatabase extends GraphDatabase {
       implicit neo =>
         setCollectiveUserPermission(getUUID(extendedMindTechnologies), getUUID(timoNode), getUUID(lauriNode),
           Some(SecurityContext.READ_WRITE))
-        setCollectiveUserPermission(getUUID(extendedMindTechnologies), getUUID(jpNode), getUUID(jpNode),
+        setCollectiveUserPermission(getUUID(extendedMindTechnologies), getUUID(timoNode), getUUID(jpNode),
           Some(SecurityContext.READ_WRITE))
         emtUUID = getUUID(extendedMindTechnologies)
     }

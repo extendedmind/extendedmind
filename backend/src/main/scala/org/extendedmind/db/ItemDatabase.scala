@@ -438,6 +438,25 @@ trait ItemDatabase extends UserDatabase {
     else itemsFromParent.traverse(itemNode).nodes().toList
   }
   
+  protected def isUniqueParent(itemNode: Node, itemsInPath: ListBuffer[Long])(implicit neo4j: DatabaseService): Boolean = {
+    val parentRelationship = itemNode.getRelationships.find { relationship => {
+      relationship.getEndNode.getId != itemNode.getId && relationship.getType.name == ItemRelationship.HAS_PARENT.name
+    }}
+    
+    if (parentRelationship.isDefined){
+      val parentNode = parentRelationship.get.getEndNode
+      if (itemsInPath.contains(parentNode.getId)){
+        return false;
+      }else{
+        itemsInPath.append(itemNode.getId)
+        if (!isUniqueParent(parentNode, itemsInPath)){
+          return false;
+        }
+      }
+    }
+    true
+  }
+  
   protected def getTaggedItems(tagNode: Node, includeDeleted: Boolean = false)(implicit neo4j: DatabaseService): scala.List[Node] = {
     val itemsFromTagSkeleton: TraversalDescription =
       neo4j.gds.traversalDescription()
@@ -461,6 +480,19 @@ trait ItemDatabase extends UserDatabase {
   }
 
   protected def createParentRelationship(itemNode: Node, owner: Owner, parentNode: Node)(implicit neo4j: DatabaseService): Response[Option[Long]] = {
+    
+    // First, make sure there isn't a infinite loop of parents, problem possible only for lists and tags
+    if (itemNode.hasLabel(ItemLabel.LIST) || itemNode.hasLabel(ItemLabel.TAG)){
+      if (itemNode.getId == parentNode.getId)
+        return fail(INVALID_PARAMETER, ERR_ITEM_OWN_PARENT, "Item can not be its own parent")
+      
+      val itemsInPath = new ListBuffer[Long]
+      itemsInPath.append(itemNode.getId)
+      if (!isUniqueParent(parentNode, itemsInPath)){
+        return fail(INVALID_PARAMETER, ERR_ITEM_PARENT_INFINITE_LOOP, "Infinite loop in item parents")      
+      }
+    }
+    
     val relationship = itemNode --> ItemRelationship.HAS_PARENT --> parentNode <;
     // When adding a relationship to a parent list, item needs to match the archived status of the parent
     if (parentNode.hasProperty("archived")) {

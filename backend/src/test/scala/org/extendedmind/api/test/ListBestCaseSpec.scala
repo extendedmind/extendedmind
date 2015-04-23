@@ -202,7 +202,7 @@ class ListBestCaseSpec extends ServiceSpecBase {
           taskFromList.title should be ("learn Spanish")
         } 
       }
-          
+
       // Delete list and expect child task and list to have a new modified timestamp
       Delete("/" + authenticateResponse.userUUID + "/list/" + putListResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val deleteListResult = responseAs[DeleteItemResult]
@@ -227,6 +227,26 @@ class ListBestCaseSpec extends ServiceSpecBase {
           itemsResponse.lists.get(0).modified.get should be (undeleteListResult.modified)
           itemsResponse.lists.get(1).modified.get should be (undeleteListResult.modified)
         }
+      }
+      
+      // Try to create a sublist that has as parent the same list
+      val itemItsOwnList = newSubList.copy(
+          relationships = Some(ExtendedItemRelationships(Some(putSubListResponse.uuid.get), None, None)))
+      
+      Put("/" + authenticateResponse.userUUID + "/list/" + putSubListResponse.uuid.get,
+          marshal(itemItsOwnList).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        val errorResult = responseAs[ErrorResult]
+        errorResult.code should be (3018)
+      }
+          
+      // Create an infinite loop between newList <-> subList
+      val infiniteLoopParent = newList.copy(
+          relationships = Some(ExtendedItemRelationships(Some(putSubListResponse.uuid.get), None, None)))
+      
+      Put("/" + authenticateResponse.userUUID + "/list/" + putListResponse.uuid.get,
+          marshal(infiniteLoopParent).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        val errorResult = responseAs[ErrorResult]
+        errorResult.code should be (3019)
       }
     }
     it("should successfully archive list with POST to /[userUUID]/list/[listUUID]/archive "

@@ -162,7 +162,7 @@ trait CollectiveDatabase extends AbstractGraphDatabase {
     } else if (collectiveNodeList.length > 1) {
       fail(INTERNAL_SERVER_ERROR, ERR_COLLECTIVE_MORE_THAN_1_FOUNDER, "More than one founder found for collective with UUID " + collectiveUUID)
     } else {
-      val founder = collectiveNodeList.head
+      val founder = collectiveNodeList.head      
       if (getUUID(founder) != founderUUID){
         fail(INVALID_PARAMETER, ERR_COLLECTIVE_WRONG_FOUNDER, "Collective " + collectiveUUID + " is not founded by user " 
             + founderUUID)
