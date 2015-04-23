@@ -77,9 +77,7 @@
     */
     findActiveReminderForThisDevice: function(reminders) {
       for (var i = 0; i < reminders.length; i++) {
-        if (this.isReminderInThisDevice(reminders[i]) && !reminders[i].DEBUG_markForRemoved &&
-            reminders[i].notification > Date.now())
-        {
+        if (this.isReminderInThisDevice(reminders[i]) && reminders[i].notification > Date.now()) {
           return reminders[i];
         }
       }
