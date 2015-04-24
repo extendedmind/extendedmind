@@ -47,24 +47,24 @@ trait TaskActions {
     db.getTask(owner, taskUUID)
   }
   
-  def deleteTask(owner: Owner, taskUUID: UUID)(implicit log: LoggingAdapter): Response[DeleteItemResult] = {
+  def deleteTask(owner: Owner, taskUUID: UUID, rm: Option[ReminderModification])(implicit log: LoggingAdapter): Response[DeleteItemResult] = {
     log.info("deleteTask")
-    db.deleteTask(owner, taskUUID)
+    db.deleteTask(owner, taskUUID, rm)
   }
   
-  def undeleteTask(owner: Owner, taskUUID: UUID)(implicit log: LoggingAdapter): Response[SetResult] = {
+  def undeleteTask(owner: Owner, taskUUID: UUID, rm: Option[ReminderModification])(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("undeleteTask")
-    db.undeleteItem(owner: Owner, taskUUID, Some(ItemLabel.TASK))
+    db.undeleteTask(owner: Owner, taskUUID, rm)
   }
 
-  def completeTask(owner: Owner, taskUUID: UUID)(implicit log: LoggingAdapter): Response[CompleteTaskResult] = {
+  def completeTask(owner: Owner, taskUUID: UUID, rm: Option[ReminderModification])(implicit log: LoggingAdapter): Response[CompleteTaskResult] = {
     log.info("completeTask")
-    db.completeTask(owner, taskUUID)
+    db.completeTask(owner, taskUUID, rm)
   }
   
-  def uncompleteTask(owner: Owner, taskUUID: UUID)(implicit log: LoggingAdapter): Response[SetResult] = {
+  def uncompleteTask(owner: Owner, taskUUID: UUID, rm: Option[ReminderModification])(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("uncompleteTask")
-    db.uncompleteTask(owner, taskUUID)
+    db.uncompleteTask(owner, taskUUID, rm)
   }
   
   def taskToList(owner: Owner, taskUUID: UUID, task: Task)(implicit log: LoggingAdapter): Response[List] = {

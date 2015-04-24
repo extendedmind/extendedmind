@@ -268,13 +268,47 @@ class TaskBestCaseSpec extends ServiceSpecBase {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       val putTaskResponse = putNewTask(newTask, authenticateResponse)
       getTask(putTaskResponse.uuid.get, authenticateResponse).reminders.get(0).id should be (reminderId1)
+
+      // Remove and unremove reminder with complete/uncomplete
+      val removed = System.currentTimeMillis
+      Post("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get + "/complete",
+        marshal(ReminderModification(reminderId1, Some(removed))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        val completeResult = responseAs[CompleteTaskResult]
+        val taskResponse = getTask(putTaskResponse.uuid.get, authenticateResponse)
+        taskResponse.reminders.get(0).id should be (reminderId1)
+        taskResponse.reminders.get(0).removed.get should be (removed)
+
+        Post("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get + "/uncomplete",
+            marshal(ReminderModification(reminderId1, None)).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+          val uncompleteResult = responseAs[SetResult]
+          val untaskResponse = getTask(putTaskResponse.uuid.get, authenticateResponse)
+          untaskResponse.reminders.get(0).id should be (reminderId1)
+          untaskResponse.reminders.get(0).removed should be (None)
+        }
+      }
       
+      // Change removed value in reminder with delete/undelete
+      Delete("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get,
+        marshal(ReminderModification(reminderId1, Some(removed))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        val deleteTaskResponse = responseAs[DeleteItemResult]
+
+        Post("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get + "/undelete",
+          marshal(ReminderModification(reminderId1, Some(removed + 1))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+          val undeleteTaskResponse = responseAs[SetResult]
+          val untaskResponse = getTask(putTaskResponse.uuid.get, authenticateResponse)
+          untaskResponse.reminders.get(0).id should be (reminderId1)
+          untaskResponse.reminders.get(0).removed.get should be (removed + 1)
+        }
+      }
+
       // Add two reminders
       val updatedTask = newTask.copy(reminders = Some(newTask.reminders.get :+ reminder2 :+ reminder3))
       val putExistingTaskResponse = putExistingTask(updatedTask, putTaskResponse.uuid.get, authenticateResponse)
       val threeReminders = getTask(putTaskResponse.uuid.get, authenticateResponse).reminders.get
       threeReminders.length should be (3)
       putExistingTaskResponse.modified should not be (putTaskResponse.modified)
+      
+      
       
       // Add fourth and remove first and third
       val twoReminders = threeReminders.filter { reminder => reminder.id == reminderId2 } :+ reminder4

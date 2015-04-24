@@ -99,12 +99,14 @@ trait TaskService extends ServiceBase {
       deleteTask { (ownerUUID, taskUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
-            complete {
-              Future[DeleteItemResult] {
-                setLogContext(securityContext, ownerUUID, taskUUID)
-                taskActions.deleteTask(getOwner(ownerUUID, securityContext), taskUUID) match {
-                  case Right(dir) => processResult(dir)
-                  case Left(e) => processErrors(e)
+            entity(as[Option[ReminderModification]]) { payload =>
+              complete {
+                Future[DeleteItemResult] {
+                  setLogContext(securityContext, ownerUUID, taskUUID)
+                  taskActions.deleteTask(getOwner(ownerUUID, securityContext), taskUUID, payload) match {
+                    case Right(dir) => processResult(dir)
+                    case Left(e) => processErrors(e)
+                  }
                 }
               }
             }
@@ -114,12 +116,14 @@ trait TaskService extends ServiceBase {
       undeleteTask { (ownerUUID, taskUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
-            complete {
-              Future[SetResult] {
-                setLogContext(securityContext, ownerUUID, taskUUID)
-                taskActions.undeleteTask(getOwner(ownerUUID, securityContext), taskUUID) match {
-                  case Right(sr) => processResult(sr)
-                  case Left(e) => processErrors(e)
+            entity(as[Option[ReminderModification]]) { payload =>
+              complete {
+                Future[SetResult] {
+                  setLogContext(securityContext, ownerUUID, taskUUID)
+                  taskActions.undeleteTask(getOwner(ownerUUID, securityContext), taskUUID, payload) match {
+                    case Right(sr) => processResult(sr)
+                    case Left(e) => processErrors(e)
+                  }
                 }
               }
             }
@@ -129,12 +133,14 @@ trait TaskService extends ServiceBase {
       completeTask { (ownerUUID, taskUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
-            complete {
-              Future[CompleteTaskResult] {
-                setLogContext(securityContext, ownerUUID, taskUUID)
-                taskActions.completeTask(getOwner(ownerUUID, securityContext), taskUUID) match {
-                  case Right(task) => processResult(task)
-                  case Left(e) => processErrors(e)
+            entity(as[Option[ReminderModification]]) { payload =>
+              complete {
+                Future[CompleteTaskResult] {
+                  setLogContext(securityContext, ownerUUID, taskUUID)
+                  taskActions.completeTask(getOwner(ownerUUID, securityContext), taskUUID, payload) match {
+                    case Right(task) => processResult(task)
+                    case Left(e) => processErrors(e)
+                  }
                 }
               }
             }
@@ -144,12 +150,14 @@ trait TaskService extends ServiceBase {
       uncompleteTask { (ownerUUID, taskUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
-            complete {
-              Future[SetResult] {
-                setLogContext(securityContext, ownerUUID, taskUUID)
-                taskActions.uncompleteTask(getOwner(ownerUUID, securityContext), taskUUID) match {
-                  case Right(sr) => processResult(sr)
-                  case Left(e) => processErrors(e)
+            entity(as[Option[ReminderModification]]) { payload =>
+              complete {
+                Future[SetResult] {
+                  setLogContext(securityContext, ownerUUID, taskUUID)
+                  taskActions.uncompleteTask(getOwner(ownerUUID, securityContext), taskUUID, payload) match {
+                    case Right(sr) => processResult(sr)
+                    case Left(e) => processErrors(e)
+                  }
                 }
               }
             }

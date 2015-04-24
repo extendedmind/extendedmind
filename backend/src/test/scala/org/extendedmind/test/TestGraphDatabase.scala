@@ -166,7 +166,7 @@ trait TestGraphDatabase extends GraphDatabase {
     val completedTask = putNewTask(Owner(timoUUID, None),
       Task("get ext.md domain", None, None, Some("2013-05-01"), None, None,
         Some(ExtendedItemRelationships(Some(extendedMindTechnologiesList.uuid.get), None, Some(scala.List(browserTag.right.get.uuid.get)))))).right.get
-    completeTask(Owner(timoUUID, None), completedTask.uuid.get)
+    completeTask(Owner(timoUUID, None), completedTask.uuid.get, None)
     putNewTask(Owner(timoUUID, None),
       Task("sketch outline for essay", None, None, Some("2014-03-08"), None, None,
         Some(ExtendedItemRelationships(Some(essayList.uuid.get), None, None)))).right.get

@@ -66,25 +66,33 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     }
   }
   
-  def deleteTask(owner: Owner, taskUUID: UUID): Response[DeleteItemResult] = {
+  def deleteTask(owner: Owner, taskUUID: UUID, rm: Option[ReminderModification]): Response[DeleteItemResult] = {
     for {
-      deletedTaskNode <- deleteTaskNode(owner, taskUUID).right
+      deletedTaskNode <- deleteTaskNode(owner, taskUUID, rm).right
       result <- Right(getDeleteItemResult(deletedTaskNode._1, deletedTaskNode._2)).right
       unit <- Right(updateItemsIndex(deletedTaskNode._1, result.result)).right
     } yield result
   }
   
-  def completeTask(owner: Owner, taskUUID: UUID): Response[CompleteTaskResult] = {
+  def undeleteTask(owner: Owner, taskUUID: UUID, rm: Option[ReminderModification]): Response[SetResult] = {
     for {
-      completeInfo <- completeTaskNode(owner, taskUUID).right
+      taskNode <- undeleteTaskNode(owner, taskUUID, rm).right
+      result <- Right(getSetResult(taskNode, false)).right
+      unit <- Right(updateItemsIndex(taskNode, result)).right
+    } yield result
+  }
+  
+  def completeTask(owner: Owner, taskUUID: UUID, rm: Option[ReminderModification]): Response[CompleteTaskResult] = {
+    for {
+      completeInfo <- completeTaskNode(owner, taskUUID, rm).right
       result <- Right(getCompleteTaskResult(completeInfo)).right
       unit <- Right(updateItemsIndex(completeInfo._1, result.result)).right
     } yield result
   }
   
-  def uncompleteTask(owner: Owner, taskUUID: UUID): Response[SetResult] = {
+  def uncompleteTask(owner: Owner, taskUUID: UUID, rm: Option[ReminderModification]): Response[SetResult] = {
     for {
-      taskNode <- uncompleteTaskNode(owner, taskUUID).right
+      taskNode <- uncompleteTaskNode(owner, taskUUID, rm).right
       result <- Right(getSetResult(taskNode, false)).right
       unit <- Right(updateItemsIndex(taskNode, result)).right
     } yield result
@@ -156,20 +164,21 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     } yield task
   }
 
-  protected def completeTaskNode(owner: Owner, taskUUID: UUID): Response[(Node, Long, Option[Task])] = {
+  protected def completeTaskNode(owner: Owner, taskUUID: UUID, rm: Option[ReminderModification]): Response[(Node, Long, Option[Task])] = {
     for {
-      completeInfo <- markTaskNodeComplete(owner, taskUUID).right
+      completeInfo <- markTaskNodeComplete(owner, taskUUID, rm).right
       generatedTask <- evaluateRepeating(owner, completeInfo._1).right
       fullGeneratedTask <- putGeneratedTask(owner, generatedTask, completeInfo._1).right
     } yield (completeInfo._1, completeInfo._2, fullGeneratedTask)
   }
   
-  protected def markTaskNodeComplete(owner: Owner, taskUUID: UUID): Response[(Node, Long)] = {
+  protected def markTaskNodeComplete(owner: Owner, taskUUID: UUID, rm: Option[ReminderModification]): Response[(Node, Long)] = {
     withTx {
       implicit neo =>
         for {
           taskNode <- getItemNode(owner, taskUUID, Some(ItemLabel.TASK)).right
           completed <- markTaskNodeComplete(owner, taskNode).right
+          unit <- modifyReminder(taskNode, rm).right
         } yield (taskNode, completed)
     }
   }    
@@ -333,12 +342,13 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
       completeInfo._3)
   }
   
-  protected def uncompleteTaskNode(owner: Owner, taskUUID: UUID): Response[Node] = {
+  protected def uncompleteTaskNode(owner: Owner, taskUUID: UUID, rm: Option[ReminderModification]): Response[Node] = {
     withTx {
       implicit neo =>
         for {
           taskNode <- getItemNode(owner, taskUUID, Some(ItemLabel.TASK)).right
           result <- Right(uncompleteTaskNode(taskNode)).right
+          unit <- modifyReminder(taskNode, rm).right
         } yield taskNode
     }
   }
@@ -347,13 +357,14 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     if (taskNode.hasProperty("completed")) taskNode.removeProperty("completed")
   }
 
-  protected def deleteTaskNode(owner: Owner, taskUUID: UUID): Response[Tuple2[Node, Long]] = {
+  protected def deleteTaskNode(owner: Owner, taskUUID: UUID, rm: Option[ReminderModification]): Response[Tuple2[Node, Long]] = {
     withTx {
       implicit neo =>
         for {
-          itemNode <- getItemNode(owner, taskUUID, Some(ItemLabel.TASK)).right
-          deleted <- Right(deleteItem(itemNode)).right
-        } yield (itemNode, deleted)
+          taskNode <- getItemNode(owner, taskUUID, Some(ItemLabel.TASK)).right
+          deleted <- Right(deleteItem(taskNode)).right
+          unit <- modifyReminder(taskNode, rm).right
+        } yield (taskNode, deleted)
     }
   }
   
@@ -379,5 +390,35 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
         } yield (taskNode._1, note)
     }
   }
-
+  
+  protected def undeleteTaskNode(owner: Owner, taskUUID: UUID, rm: Option[ReminderModification]): Response[Node] = {
+    withTx {
+      implicit neo =>
+        for {
+          taskNode <- getItemNode(owner, taskUUID, Some(ItemLabel.TASK), acceptDeleted = true).right
+          success <- Right(undeleteItem(taskNode)).right
+          unit <- modifyReminder(taskNode, rm).right
+        } yield taskNode
+    }
+  }
+  
+  protected def modifyReminder(taskNode: Node, rm: Option[ReminderModification])(implicit neo4j: DatabaseService): Response[Unit] = {
+    if (rm.isEmpty) Right()
+    else{
+      val reminderNodeList = getReminderNodes(taskNode)
+      val reminderNode = reminderNodeList.find(reminderNode => {
+        reminderNode.hasProperty("id") && reminderNode.getProperty("id").asInstanceOf[String] == rm.get.reminderId
+      })
+      if (reminderNode.isEmpty){
+        fail(INVALID_PARAMETER, ERR_TASK_INVALID_REMINDER_ID, "Task does not have reminder with id " + rm.get.reminderId)
+      }else{
+        if (rm.get.removed.isDefined){
+          reminderNode.get.setProperty("removed", rm.get.removed.get)
+        }else{
+          reminderNode.get.removeProperty("removed")
+        }
+        Right()
+      }
+    }
+  }
 }
