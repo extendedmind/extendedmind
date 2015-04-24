@@ -592,7 +592,7 @@
       }
       return deferred.promise;
     },
-    completeTask: function(task, ownerUUID) {
+    completeTask: function(task, ownerUUID, reminderIdToRemove) {
       var deferred = $q.defer();
       if (tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue('uuid', task.trans.uuid, 'trans')) {
         deferred.reject({type: 'deleted'});
@@ -626,18 +626,29 @@
             url: '/api/' + ownerUUID + '/task/' + task.trans.uuid + '/uncomplete'
           };
         }
+        var data, reminder;
+        if (reminderIdToRemove !== undefined) {
+          reminder = task.trans.reminders.findFirstObjectByKeyValue('id', reminderIdToRemove);
+          if (reminder !== undefined) {
+            reminder.removed = fakeTimestamp;
+            data = {reminderId: reminderIdToRemove, removed: fakeTimestamp};
+          }
+        }
         BackendClientService.postOffline('/api/' + ownerUUID + '/task/' + task.trans.uuid + '/complete',
-                                  this.completeTaskRegex, params, undefined, fakeTimestamp);
+                                  this.completeTaskRegex, params, data, fakeTimestamp);
         if (!task.mod) task.mod = {};
         var propertiesToReset = {modified: fakeTimestamp,
                                 completed: BackendClientService.generateFakeTimestamp()};
+        if (reminder !== undefined) {
+          propertiesToReset.reminders = task.trans.reminders;
+        }
         ItemLikeService.updateObjectProperties(task.mod, propertiesToReset);
         updateTask(task, ownerUUID, undefined, propertiesToReset);
         deferred.resolve(task);
       }
       return deferred.promise;
     },
-    uncompleteTask: function(task, ownerUUID) {
+    uncompleteTask: function(task, ownerUUID, reminderIdToAdd) {
       var deferred = $q.defer();
       if (tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue('uuid', task.trans.uuid, 'trans')) {
         deferred.reject({type: 'deleted'});
@@ -646,10 +657,21 @@
       } else {
         var params = {type: 'task', owner: ownerUUID, uuid: task.trans.uuid, lastReplaceable: true};
         var fakeTimestamp = BackendClientService.generateFakeTimestamp();
+        var data, reminder;
+        if (reminderIdToAdd !== undefined) {
+          reminder = task.trans.reminders.findFirstObjectByKeyValue('id', reminderIdToAdd);
+          if (reminder !== undefined) {
+            data = {reminderId: reminderIdToAdd};
+            delete reminder.removed;
+          }
+        }
         BackendClientService.postOffline('/api/' + ownerUUID + '/task/' + task.trans.uuid + '/uncomplete',
-                                  this.uncompleteTaskRegex, params, undefined, fakeTimestamp);
+                                  this.uncompleteTaskRegex, params, data, fakeTimestamp);
         if (!task.mod) task.mod = {};
         var propertiesToReset = {modified: fakeTimestamp, completed: undefined};
+        if (reminder !== undefined) {
+          propertiesToReset.reminders = task.trans.reminders;
+        }
         ItemLikeService.updateObjectProperties(task.mod, propertiesToReset);
         updateTask(task, ownerUUID, undefined, propertiesToReset);
         deferred.resolve(task);

@@ -27,6 +27,9 @@
       return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
       s4() + '-' + s4() + s4() + s4();
     },
+    randomId: function() {
+      return Math.floor(100000000 + Math.random() * 900000000);  // http://stackoverflow.com/a/3437139
+    },
     // Returns a fake UUID, that start with 6
     // bytes of zeros, e.g.:
     // 00000000-0000-4629-8552-96671b73e0f6

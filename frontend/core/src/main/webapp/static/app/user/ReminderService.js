@@ -16,12 +16,12 @@
  /* global angular, cordova */
  'use strict';
 
- function ReminderService(UISessionService, packaging) {
+ function ReminderService(UISessionService, UUIDService, packaging) {
 
   return {
     addReminder: function(date, item) {
       var reminder = {
-        id: Math.floor(100000000 + Math.random() * 900000000),  // http://stackoverflow.com/a/3437139
+        id: UUIDService.randomId(),
         title: item.trans.title,
         at: date.getTime(),
         data: {
@@ -37,15 +37,29 @@
       var reminderToSave = {
         packaging: packaging,
         notification: date.getTime(),
-        id: reminder.id,
+        reminderType: 'ln',
+        id: reminder.id.toString(),
         device: UISessionService.getDeviceId()
       };
 
       return reminderToSave;
     },
+    activateReminder: function(reminder, item) {
+      var reminderToActivate = {
+        id: parseInt(reminder.id),
+        title: reminder.title,
+        at: reminder.notification,
+        data: {
+          itemType: item.trans.itemType,
+          itemUUID: item.trans.itemUUID
+        }
+      };
+
+      cordova.plugins.notification.local.schedule(reminderToActivate);
+    },
     updateReminder: function(reminder, date) {
       cordova.plugins.notification.local.update({
-        id: reminder.id,
+        id: parseInt(reminder.id),
         at: date.getTime()
       });
       reminder.notification = date.getTime();
@@ -53,7 +67,7 @@
       return reminder;
     },
     removeReminder: function(reminder) {
-      cordova.plugins.notification.local.cancel(reminder.id);
+      cordova.plugins.notification.local.cancel(parseInt(reminder.id));
     },
     clearTriggeredReminders: function() {
       cordova.plugins.notification.local.clearAll();
@@ -84,5 +98,5 @@
     }
   };
 }
-ReminderService['$inject'] = ['UISessionService', 'packaging'];
+ReminderService['$inject'] = ['UISessionService', 'UUIDService', 'packaging'];
 angular.module('em.user').factory('ReminderService', ReminderService);
