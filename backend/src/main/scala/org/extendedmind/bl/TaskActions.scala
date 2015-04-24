@@ -29,41 +29,17 @@ import org.extendedmind._
 import org.extendedmind.Response._
 import akka.event.LoggingAdapter
 import org.extendedmind.security.SecurityContext
+import org.extendedmind.security.Authorization._
 
 trait TaskActions {
 
   def db: GraphDatabase;
-
-  private def getTaskAccessRight(owner: Owner, task: Task): Option[Byte] = {
-    // Need to use list access rights
-    if (owner.sharedLists.isDefined){    
-      if (task.relationships.isEmpty || task.relationships.get.parent.isEmpty){
-        None
-      }else{
-        val listAccessRight = owner.sharedLists.get.get(task.relationships.get.parent.get)
-        if (listAccessRight.isEmpty){
-          None
-        }else{
-          Some(listAccessRight.get._2)
-        }
-      }
-    }else{
-      Some(SecurityContext.FOUNDER)
-    }
-  }
-  
-  private def hasWriteAccess(accessRight: Option[Byte]): Boolean = {
-    accessRight.isDefined && (accessRight.get == SecurityContext.FOUNDER || accessRight.get == SecurityContext.READ_WRITE)
-  }
-  
-  private def hasReadAccess(accessRight: Option[Byte]): Boolean = {
-    accessRight.isDefined && (accessRight.get == SecurityContext.FOUNDER || accessRight.get == SecurityContext.READ_WRITE || accessRight.get == SecurityContext.READ)
-  }
   
   def putNewTask(owner: Owner, task: Task)(implicit log: LoggingAdapter): Response[SetResult] = {
-    val accessRight =  getTaskAccessRight(owner, task)   
-    if (!hasWriteAccess(accessRight)){
-      fail(INVALID_PARAMETER, ERR_BASE_NO_LIST_ACCESS, "No write access to task")
+    log.info("putNewTask")
+    val accessRight =  db.getTaskAccessRight(owner, task)   
+    if (!writeAccess(accessRight)){
+      fail(INVALID_PARAMETER, ERR_BASE_NO_LIST_ACCESS, "No write access to new task")
     }else{
       if (accessRight.get == SecurityContext.FOUNDER){
         db.putNewTask(owner, task)
@@ -77,7 +53,18 @@ trait TaskActions {
 
   def putExistingTask(owner: Owner, taskUUID: UUID, task: Task)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("putExistingTask")
-    db.putExistingTask(owner, taskUUID, task)
+    val accessRight =  db.getTaskAccessRight(owner, task)   
+    if (!writeAccess(accessRight)){
+      fail(INVALID_PARAMETER, ERR_BASE_NO_LIST_ACCESS, "No write access to existing task")
+    }else{
+      if (accessRight.get == SecurityContext.FOUNDER){
+    	db.putExistingTask(owner, taskUUID, task)
+      }else {
+        // Need to use limited task
+        val limitedTask = LimitedTask(task)
+        db.putExistingLimitedTask(owner, taskUUID, limitedTask)
+      }
+    }
   }
 
   def getTask(owner: Owner, taskUUID: UUID)(implicit log: LoggingAdapter): Response[Task] = {

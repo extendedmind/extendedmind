@@ -34,11 +34,21 @@ import org.neo4j.scala.DatabaseService
 import scala.collection.mutable.ListBuffer
 import org.neo4j.graphdb.Relationship
 import java.time.temporal.ChronoUnit
+import org.extendedmind.security.SecurityContext
 
 trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
 
   // PUBLIC
-
+  
+  def getTaskAccessRight(owner: Owner, task: Task): Option[Byte] = {
+    if (owner.sharedLists.isDefined){
+      // Need to use list access rights
+      getSharedListAccessRight(owner.sharedLists.get, task.relationships)
+    }else{
+      Some(SecurityContext.FOUNDER)
+    }
+  }
+  
   def putNewTask(owner: Owner, task: Task, originTaskNode: Option[Node] = None): Response[SetResult] = {
     for {
       taskResult <- putNewTaskNode(owner, task, originTaskNode).right
@@ -49,7 +59,7 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
   
   def putNewLimitedTask(owner: Owner, limitedTask: LimitedTask): Response[SetResult] = {
     for {
-      taskResult <- putNewLimitedExtendedItem(owner, limitedTask, ItemLabel.TASK).right
+      taskResult <- putNewLimitedExtendedItem(owner, limitedTask.copy(repeating = None), ItemLabel.TASK).right
       result <- Right(getSetResult(taskResult._1, true, taskResult._2)).right
       unit <- Right(addToItemsIndex(owner, taskResult._1, result)).right
     } yield result
@@ -59,6 +69,14 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     for {
       taskResult <- putExistingTaskNode(owner, taskUUID, task).right
       result <- Right(getSetResult(taskResult._1, false, taskResult._2, taskResult._3)).right
+      unit <- Right(updateItemsIndex(taskResult._1, result)).right
+    } yield result
+  }
+  
+  def putExistingLimitedTask(owner: Owner, taskUUID: UUID, limitedTask: LimitedTask): Response[SetResult] = {
+    for {
+      taskResult <- putExistingLimitedExtendedItem(owner, taskUUID, limitedTask, ItemLabel.TASK).right
+      result <- Right(getSetResult(taskResult._1, false, taskResult._2)).right
       unit <- Right(updateItemsIndex(taskResult._1, result)).right
     } yield result
   }
@@ -76,7 +94,8 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
   
   def deleteTask(owner: Owner, taskUUID: UUID, rm: Option[ReminderModification]): Response[DeleteItemResult] = {
     for {
-      deletedTaskNode <- deleteTaskNode(owner, taskUUID, rm).right
+      taskNode <- validateExtendedItemModifiable(owner, taskUUID, ItemLabel.TASK, rm.isDefined).right 
+      deletedTaskNode <- deleteTaskNode(owner, taskNode, rm).right
       result <- Right(getDeleteItemResult(deletedTaskNode._1, deletedTaskNode._2)).right
       unit <- Right(updateItemsIndex(deletedTaskNode._1, result.result)).right
     } yield result
@@ -84,15 +103,17 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
   
   def undeleteTask(owner: Owner, taskUUID: UUID, rm: Option[ReminderModification]): Response[SetResult] = {
     for {
-      taskNode <- undeleteTaskNode(owner, taskUUID, rm).right
-      result <- Right(getSetResult(taskNode, false)).right
-      unit <- Right(updateItemsIndex(taskNode, result)).right
+      taskNode <- validateExtendedItemModifiable(owner, taskUUID, ItemLabel.TASK, rm.isDefined).right 
+      undeletedTaskNode <- undeleteTaskNode(owner, taskNode, rm).right
+      result <- Right(getSetResult(undeletedTaskNode, false)).right
+      unit <- Right(updateItemsIndex(undeletedTaskNode, result)).right
     } yield result
   }
   
   def completeTask(owner: Owner, taskUUID: UUID, rm: Option[ReminderModification]): Response[CompleteTaskResult] = {
     for {
-      completeInfo <- completeTaskNode(owner, taskUUID, rm).right
+      taskNode <- validateExtendedItemModifiable(owner, taskUUID, ItemLabel.TASK, rm.isDefined).right 
+      completeInfo <- completeTaskNode(owner, taskNode, rm).right
       result <- Right(getCompleteTaskResult(completeInfo)).right
       unit <- Right(updateItemsIndex(completeInfo._1, result.result)).right
     } yield result
@@ -100,7 +121,8 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
   
   def uncompleteTask(owner: Owner, taskUUID: UUID, rm: Option[ReminderModification]): Response[SetResult] = {
     for {
-      taskNode <- uncompleteTaskNode(owner, taskUUID, rm).right
+      taskNode <- validateExtendedItemModifiable(owner, taskUUID, ItemLabel.TASK, rm.isDefined).right       
+      taskNode <- uncompleteTaskNode(owner, taskNode, rm).right
       result <- Right(getSetResult(taskNode, false)).right
       unit <- Right(updateItemsIndex(taskNode, result)).right
     } yield result
@@ -181,19 +203,18 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     } yield task
   }
 
-  protected def completeTaskNode(owner: Owner, taskUUID: UUID, rm: Option[ReminderModification]): Response[(Node, Long, Option[Task])] = {
+  protected def completeTaskNode(owner: Owner, taskNode: Node, rm: Option[ReminderModification]): Response[(Node, Long, Option[Task])] = {
     for {
-      completeInfo <- markTaskNodeComplete(owner, taskUUID, rm).right
+      completeInfo <- markTaskNodeComplete(owner, taskNode, rm).right
       generatedTask <- evaluateRepeating(owner, completeInfo._1).right
       fullGeneratedTask <- putGeneratedTask(owner, generatedTask, completeInfo._1).right
     } yield (completeInfo._1, completeInfo._2, fullGeneratedTask)
   }
   
-  protected def markTaskNodeComplete(owner: Owner, taskUUID: UUID, rm: Option[ReminderModification]): Response[(Node, Long)] = {
+  protected def markTaskNodeComplete(owner: Owner, taskNode: Node, rm: Option[ReminderModification]): Response[(Node, Long)] = {
     withTx {
       implicit neo =>
         for {
-          taskNode <- getItemNode(owner, taskUUID, Some(ItemLabel.TASK)).right
           completed <- markTaskNodeComplete(owner, taskNode).right
           unit <- modifyReminder(taskNode, rm).right
         } yield (taskNode, completed)
@@ -362,11 +383,10 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
       completeInfo._3)
   }
   
-  protected def uncompleteTaskNode(owner: Owner, taskUUID: UUID, rm: Option[ReminderModification]): Response[Node] = {
+  protected def uncompleteTaskNode(owner: Owner, taskNode: Node, rm: Option[ReminderModification]): Response[Node] = {
     withTx {
       implicit neo =>
         for {
-          taskNode <- getItemNode(owner, taskUUID, Some(ItemLabel.TASK)).right
           result <- Right(uncompleteTaskNode(taskNode)).right
           unit <- modifyReminder(taskNode, rm).right
         } yield taskNode
@@ -377,11 +397,10 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     if (taskNode.hasProperty("completed")) taskNode.removeProperty("completed")
   }
 
-  protected def deleteTaskNode(owner: Owner, taskUUID: UUID, rm: Option[ReminderModification]): Response[Tuple2[Node, Long]] = {
+  protected def deleteTaskNode(owner: Owner, taskNode: Node, rm: Option[ReminderModification]): Response[Tuple2[Node, Long]] = {
     withTx {
       implicit neo =>
         for {
-          taskNode <- getItemNode(owner, taskUUID, Some(ItemLabel.TASK)).right
           deleted <- Right(deleteItem(taskNode)).right
           unit <- modifyReminder(taskNode, rm).right
         } yield (taskNode, deleted)
@@ -413,11 +432,10 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     }
   }
   
-  protected def undeleteTaskNode(owner: Owner, taskUUID: UUID, rm: Option[ReminderModification]): Response[Node] = {
+  protected def undeleteTaskNode(owner: Owner, taskNode: Node, rm: Option[ReminderModification]): Response[Node] = {
     withTx {
       implicit neo =>
         for {
-          taskNode <- getItemNode(owner, taskUUID, Some(ItemLabel.TASK), acceptDeleted = true).right
           success <- Right(undeleteItem(taskNode)).right
           unit <- modifyReminder(taskNode, rm).right
         } yield taskNode

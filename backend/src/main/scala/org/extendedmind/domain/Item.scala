@@ -105,10 +105,7 @@ trait LimitedExtendedItem extends ShareableItem{
   val description: Option[String]
   val link: Option[String]
   val visibility: Option[SharedItemVisibility]
-  val relationships: Option[LimitedExtendedItemRelationships]
-  
-  def parent: Option[UUID] = {
-    if (relationships.isDefined) relationships.get.parent
-    else None
-  } 
+  val relationships: LimitedExtendedItemRelationships
+
+  def parent: Option[UUID] = relationships.parent
 }

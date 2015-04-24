@@ -55,6 +55,14 @@ object Authorization {
     }
   }
   
+  def writeAccess(accessRight: Option[Byte]): Boolean = {
+    accessRight.isDefined && (accessRight.get == SecurityContext.FOUNDER || accessRight.get == SecurityContext.READ_WRITE)
+  }
+  
+  def readAccess(accessRight: Option[Byte]): Boolean = {
+    accessRight.isDefined && (accessRight.get == SecurityContext.FOUNDER || accessRight.get == SecurityContext.READ_WRITE || accessRight.get == SecurityContext.READ)
+  }
+  
   private def getAccess(ownerUUID: UUID, sc: SecurityContext): Option[Byte] = {
     if (ownerUUID == sc.userUUID){
       Some(FOUNDER)

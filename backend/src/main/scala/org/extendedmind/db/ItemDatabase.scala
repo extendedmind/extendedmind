@@ -25,6 +25,7 @@ import org.extendedmind.Response._
 import org.extendedmind._
 import org.extendedmind.domain._
 import org.extendedmind.security._
+import org.extendedmind.security.Authorization._
 import org.neo4j.graphdb.Direction
 import org.neo4j.graphdb.DynamicRelationshipType
 import org.neo4j.graphdb.Node
@@ -138,6 +139,20 @@ trait ItemDatabase extends UserDatabase {
 
   // PRIVATE
 
+  protected def getSharedListAccessRight(sharedLists: Map[UUID,(String, Byte)], relationships: Option[ExtendedItemRelationships]): Option[Byte] = {
+    // Need to use list access rights
+    if (relationships.isEmpty || relationships.get.parent.isEmpty){
+      None
+    }else{
+      val listAccessRight = sharedLists.get(relationships.get.parent.get)
+      if (listAccessRight.isEmpty){
+        None
+      }else{
+        Some(listAccessRight.get._2)
+      }
+    }
+  }
+  
   protected def getItems(itemNodes: Iterable[Node], owner: Owner)(implicit neo4j: DatabaseService, log: LoggingContext): Response[Items] = {
     val itemBuffer = new ListBuffer[Item]
     val taskBuffer = new ListBuffer[Task]
@@ -368,17 +383,27 @@ trait ItemDatabase extends UserDatabase {
         } yield (itemNode, archived)
     }
   }
-
-  protected def putNewLimitedExtendedItem(owner: Owner, extItem: LimitedExtendedItem, label: Label, subLabel: Option[Label] = None): Response[(Node, Option[Long])] = {
+  
+  protected def putExistingLimitedExtendedItem(owner: Owner, itemUUID: UUID, extItem: LimitedExtendedItem, label: Label): Response[(Node, Option[Long])] = {
     withTx {
       implicit neo4j =>
         for {
-          itemNode <- createItem(owner, extItem, Some(label), subLabel).right
+          itemNode <- updateItem(owner, itemUUID, extItem, Some(label), None, None).right
           archived <- setParentNode(itemNode, owner, extItem.parent).right
         } yield (itemNode, archived)
     }
   }
 
+  protected def putNewLimitedExtendedItem(owner: Owner, extItem: LimitedExtendedItem, label: Label): Response[(Node, Option[Long])] = {
+    withTx {
+      implicit neo4j =>
+        for {
+          itemNode <- createItem(owner, extItem, Some(label)).right
+          archived <- setParentNode(itemNode, owner, extItem.parent).right
+        } yield (itemNode, archived)
+    }
+  }
+  
   protected def setParentNode(itemNode: Node, owner: Owner, parentUUID: Option[UUID])(implicit neo4j: DatabaseService): Response[Option[Long]] = {
     for {
       oldParentRelationship <- Right(getItemRelationship(itemNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.LIST)).right
@@ -448,11 +473,14 @@ trait ItemDatabase extends UserDatabase {
     else itemsFromParent.traverse(itemNode).nodes().toList
   }
   
-  protected def isUniqueParent(itemNode: Node, itemsInPath: ListBuffer[Long])(implicit neo4j: DatabaseService): Boolean = {
-    val parentRelationship = itemNode.getRelationships.find { relationship => {
+  protected def getParentRelationship(itemNode: Node)(implicit neo4j: DatabaseService): Option[Relationship] = {
+    itemNode.getRelationships.find { relationship => {
       relationship.getEndNode.getId != itemNode.getId && relationship.getType.name == ItemRelationship.HAS_PARENT.name
     }}
-    
+  }
+  
+  protected def isUniqueParent(itemNode: Node, itemsInPath: ListBuffer[Long])(implicit neo4j: DatabaseService): Boolean = {
+    val parentRelationship = getParentRelationship(itemNode)
     if (parentRelationship.isDefined){
       val parentNode = parentRelationship.get.getEndNode
       if (itemsInPath.contains(parentNode.getId)){
@@ -583,16 +611,11 @@ trait ItemDatabase extends UserDatabase {
   }
 
   protected def setTagNodes(itemNode: Node, owner: Owner, extItem: ExtendedItem)(implicit neo4j: DatabaseService): Response[Option[scala.List[Relationship]]] = {
-    if (owner.sharedList.isEmpty){
-      for {
-        ownerNodes <- getOwnerNodes(owner).right
-        oldTagRelationships <- getTagRelationships(itemNode, owner).right
-        newTagRelationships <- setTagRelationships(itemNode, ownerNodes, extItem.tags,
-          oldTagRelationships).right
-      } yield newTagRelationships
-    }else{
-      Right(None)
-    }
+	for {
+	  ownerNodes <- getOwnerNodes(owner).right
+	  oldTagRelationships <- getTagRelationships(itemNode, owner).right
+	  newTagRelationships <- setTagRelationships(itemNode, ownerNodes, extItem.tags, oldTagRelationships).right
+	} yield newTagRelationships
   }
 
   protected def setTagRelationships(itemNode: Node, ownerNodes: OwnerNodes, tagUUIDList: Option[scala.List[UUID]],
@@ -771,6 +794,30 @@ trait ItemDatabase extends UserDatabase {
           itemNode <- getItemNode(owner, itemUUID, mandatoryLabel, acceptDeleted = true).right
           success <- Right(undeleteItem(itemNode)).right
         } yield itemNode
+    }
+  }
+  
+    
+  protected def validateExtendedItemModifiable(owner: Owner, itemUUID: UUID, label: Label, requireFounder: Boolean): Response[Node] = {
+    withTx {
+      implicit neo4j =>
+        for {
+          taskNode <- getItemNode(owner, itemUUID, Some(label), acceptDeleted = true).right
+          parentRelationship <- (if(owner.sharedLists.isDefined) Right(getParentRelationship(taskNode)) else Right(None)).right
+          accessRight <- 
+          (if (owner.sharedLists.isDefined) Right(getSharedListAccessRight(owner.sharedLists.get,
+              if (parentRelationship.isDefined){
+                Some(ExtendedItemRelationships(Some(getUUID(parentRelationship.get.getEndNode)), None, None))
+              }else{
+                None
+              }))
+           else Right(Some(SecurityContext.FOUNDER))
+          ).right
+          unit <- (if (requireFounder && accessRight.isDefined && accessRight.get != SecurityContext.FOUNDER)
+        	  		fail(INVALID_PARAMETER, ERR_BASE_FOUNDER_ACCESS_RIGHT_REQUIRED, "Given parameters require founder access")
+        		   else if (writeAccess(accessRight)) Right() 
+        		   else fail(INVALID_PARAMETER, ERR_BASE_NO_LIST_ACCESS, "No write access to (un)delete task")).right
+        } yield taskNode
     }
   }
 
