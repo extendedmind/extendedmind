@@ -28,13 +28,35 @@ import java.util.UUID
 import org.extendedmind._
 import org.extendedmind.Response._
 import akka.event.LoggingAdapter
+import org.extendedmind.security.SecurityContext
 
 trait TaskActions {
 
   def db: GraphDatabase;
 
+  def prepareLimitedTask(task: Task, sharedListUUID: UUID): Option[LimitedTask] = {
+    if (task.relationships.isEmpty || task.relationships.get.parent.isEmpty 
+        || task.relationships.get.parent.get != sharedListUUID){
+      None
+    }else{
+      Some(LimitedTask(task.uuid, task.id, None, None, None, task.title, task.description, task.link,
+           task.due, task.repeating, Some(LimitedExtendedItemRelationships(task.relationships.get.parent,
+               task.relationships.get.origin))))
+    }
+  }
+  
   def putNewTask(owner: Owner, task: Task)(implicit log: LoggingAdapter): Response[SetResult] = {
-    db.putNewTask(owner, task)
+    if (owner.sharedList.isDefined){
+      if (owner.sharedList.get._2 != SecurityContext.READ_WRITE){
+        fail(INVALID_PARAMETER, ERR_BASE_NO_ACCESS_TO_LIST, "No write access to list")
+      }else{
+        val taskToStore = prepareLimitedTask(task, owner.sharedList.get._1)
+        if (taskToStore.isEmpty) fail(INVALID_PARAMETER, ERR_ITEM_INVALID_PARENT, "Invalid parent UUID")
+        else db.putNewTask(owner, task)
+      }
+    }else{
+      db.putNewTask(owner, task)
+    }
   }
 
   def putExistingTask(owner: Owner, taskUUID: UUID, task: Task)(implicit log: LoggingAdapter): Response[SetResult] = {

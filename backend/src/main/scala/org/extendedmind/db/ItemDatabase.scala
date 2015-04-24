@@ -255,8 +255,8 @@ trait ItemDatabase extends UserDatabase {
   protected def getOwnerNodes(owner: Owner)(implicit neo4j: DatabaseService): Response[OwnerNodes] = {
     for {
       userNode <- getNode(owner.userUUID, OwnerLabel.USER).right
-      collectiveNode <- getNodeOption(owner.collectiveUUID, OwnerLabel.COLLECTIVE).right
-    } yield OwnerNodes(userNode, collectiveNode)
+      foreignOwnerNode <- getNodeOption(owner.foreignOwnerUUID, OwnerLabel.COLLECTIVE).right
+    } yield OwnerNodes(userNode, foreignOwnerNode)
   }
 
   protected def createItem(ownerNodes: OwnerNodes, item: AnyRef, extraLabel: Option[Label], extraSubLabel: Option[Label])(implicit neo4j: DatabaseService): Response[Node] = {
@@ -267,9 +267,9 @@ trait ItemDatabase extends UserDatabase {
         itemNode.addLabel(extraSubLabel.get)
       }
     }
-    if (ownerNodes.collective.isDefined) {
-      // Collective is the owner, user the creator
-      ownerNodes.collective.get --> SecurityRelationship.OWNS --> itemNode
+    if (ownerNodes.foreignOwner.isDefined) {
+      // Foreign owner is the owner, user the creator
+      ownerNodes.foreignOwner.get --> SecurityRelationship.OWNS --> itemNode
       ownerNodes.user --> SecurityRelationship.IS_CREATOR --> itemNode
     } else {
       // User is the owner
@@ -573,12 +573,16 @@ trait ItemDatabase extends UserDatabase {
   }
 
   protected def setTagNodes(itemNode: Node, owner: Owner, extItem: ExtendedItem)(implicit neo4j: DatabaseService): Response[Option[scala.List[Relationship]]] = {
-    for {
-      ownerNodes <- getOwnerNodes(owner).right
-      oldTagRelationships <- getTagRelationships(itemNode, owner).right
-      newTagRelationships <- setTagRelationships(itemNode, ownerNodes, extItem.tags,
-        oldTagRelationships).right
-    } yield newTagRelationships
+    if (owner.sharedList.isEmpty){
+      for {
+        ownerNodes <- getOwnerNodes(owner).right
+        oldTagRelationships <- getTagRelationships(itemNode, owner).right
+        newTagRelationships <- setTagRelationships(itemNode, ownerNodes, extItem.tags,
+          oldTagRelationships).right
+      } yield newTagRelationships
+    }else{
+      Right(None)
+    }
   }
 
   protected def setTagRelationships(itemNode: Node, ownerNodes: OwnerNodes, tagUUIDList: Option[scala.List[UUID]],
@@ -626,7 +630,7 @@ trait ItemDatabase extends UserDatabase {
       } else if (ownerNodeList.length > tagNodes.right.get.length) {
         fail(INTERNAL_SERVER_ERROR, ERR_ITEM_TAG_MORE_THAN_1_OWNER, "Some of the tags has more than one owner")
       } else {
-        val ownerNode = { if (ownerNodes.collective.isDefined) ownerNodes.collective.get else ownerNodes.user }
+        val ownerNode = getOwnerNode(ownerNodes)
         ownerNodeList foreach (tagOwner => {
           if (tagOwner != ownerNode) {
             fail(INVALID_PARAMETER, ERR_ITEM_TAG_WRONG_OWNER, "Some of the tags does not belong to the owner "

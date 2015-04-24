@@ -33,6 +33,7 @@ case class SecurityContext(userUUID: UUID,
 						   expires: Option[Long],
 						   replaceable: Option[Long],
                collectives: Option[Map[UUID,(String, Byte, Boolean)]],
+               sharedLists: Option[Map[UUID,(String, Map[UUID, (String, Byte)])]],
                preferences: Option[UserPreferences]){
   // Tweak that helps skip one database call when creating a token
   @transient var user: Node = null

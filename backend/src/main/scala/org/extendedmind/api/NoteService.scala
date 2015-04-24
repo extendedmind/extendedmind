@@ -63,7 +63,7 @@ trait NoteService extends ServiceBase {
         }
       } ~
       putNewNote { ownerUUID =>
-        authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
+        authenticate(ExtendedAuth(authenticator, "shareable", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
             entity(as[Note]) { note =>
               complete {
@@ -80,7 +80,7 @@ trait NoteService extends ServiceBase {
         }
       } ~
       putExistingNote { (ownerUUID, noteUUID) =>
-        authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
+        authenticate(ExtendedAuth(authenticator, "shareable", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
             entity(as[Note]) { note =>
               complete {
@@ -97,7 +97,7 @@ trait NoteService extends ServiceBase {
         }
       } ~
       deleteNote { (ownerUUID, noteUUID) =>
-        authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
+        authenticate(ExtendedAuth(authenticator, "shareable", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
             complete {
               Future[DeleteItemResult] {
@@ -112,7 +112,7 @@ trait NoteService extends ServiceBase {
         }
       } ~
       undeleteNote { (ownerUUID, noteUUID) =>
-        authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
+        authenticate(ExtendedAuth(authenticator, "shareable", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
             complete {
               Future[SetResult] {

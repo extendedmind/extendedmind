@@ -75,6 +75,13 @@ object Task{
                    reminders, None, relationships)
 }
 
+case class LimitedTask(uuid: Option[UUID], id: Option[String], created: Option[Long], modified: Option[Long], deleted: Option[Long],
+                title: String, description: Option[String], 
+                link: Option[String],
+                repeating: Option[String],
+                completed: Option[Long],
+                relationships: Option[LimitedExtendedItemRelationships])
+
 // List of Reminder types
 object ReminderType extends Enumeration {
   type ReminderType = Value

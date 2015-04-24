@@ -95,7 +95,7 @@ case class UserAccessRight(access: Option[Byte]){
 
 case class PublicUser(uuid: UUID)
 
-case class Owner(userUUID: UUID, collectiveUUID: Option[UUID], hasPremium: Boolean)
+case class Owner(userUUID: UUID, foreignOwnerUUID: Option[UUID], sharedList: Option[(UUID, Byte)], hasPremium: Boolean)
 
 object Owner{
   def getOwner(ownerUUID: UUID, securityContext: SecurityContext)(implicit settings: Settings): Owner = {
@@ -103,12 +103,21 @@ object Owner{
                      (settings.signUpMode == MODE_NORMAL && securityContext.subscription.isDefined
                       && securityContext.subscription.get == "premium")
                      
-    if (securityContext.userUUID == ownerUUID) new Owner(securityContext.userUUID, None, hasPremium) 
-    else new Owner(securityContext.userUUID, Some(ownerUUID), hasPremium)
+    if (securityContext.userUUID == ownerUUID){
+      new Owner(ownerUUID, None, None, hasPremium) 
+    }else if (securityContext.collectives.isDefined){
+      new Owner(securityContext.userUUID, Some(ownerUUID), None, hasPremium)
+    }else if (securityContext.sharedLists.isDefined){
+      val sharedListAccess = securityContext.sharedLists.get(ownerUUID)
+      new Owner(securityContext.userUUID, Some(ownerUUID), Some((sharedListAccess._2, sharedListAccess._4)), hasPremium)
+    }else{
+      throw new InternalServerErrorException(ERR_BASE_OWNER_NOT_IN_SECURITY_CONTEXT,
+          "Security context with foreign owner UUID which can not be found in securityContext collectives nor shared lists")
+    }
   }
   
   def apply(ownerUUID: UUID, collectiveUUID: Option[UUID]) 
-        = new Owner(ownerUUID, collectiveUUID, false)
+        = new Owner(ownerUUID, collectiveUUID, None, false)
 }
 
 case class ForgotPasswordResult(resetCodeExpires: Long)

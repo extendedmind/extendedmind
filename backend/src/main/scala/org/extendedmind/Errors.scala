@@ -28,6 +28,9 @@ case object ERR_BASE_INVALID_CRC extends ErrorCode(22)
 case object ERR_BASE_DECRYPT_FAILED extends ErrorCode(23)
 case object ERR_BASE_ALREADY_LOGGED_IN extends ErrorCode(24)
 case object ERR_BASE_AUTHENTICATION_FAILED extends ErrorCode(25)
+case object ERR_BASE_OWNER_NOT_IN_SECURITY_CONTEXT extends ErrorCode(26)
+case object ERR_BASE_NO_ACCESS_TO_LIST extends ErrorCode(27)
+
 
 case object ERR_COLLECTIVE_NO_FOUNDER extends ErrorCode(1001)
 case object ERR_COLLECTIVE_MORE_THAN_1_FOUNDER extends ErrorCode(1002)
@@ -63,6 +66,7 @@ case object ERR_ITEM_CONTENT_TOO_LONG extends ErrorCode(3016)
 case object ERR_ITEM_ARCHIVE_NOT_PREMIUM extends ErrorCode(3017)
 case object ERR_ITEM_OWN_PARENT extends ErrorCode(3018)
 case object ERR_ITEM_PARENT_INFINITE_LOOP extends ErrorCode(3019)
+case object ERR_ITEM_INVALID_PARENT extends ErrorCode(3020)
 
 case object ERR_LIST_ARCHIVE_CHILDREN extends ErrorCode(4001)
 case object ERR_LIST_MISSING_HISTORY_TAG extends ErrorCode(4002)

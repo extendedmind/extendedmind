@@ -51,7 +51,7 @@ import akka.event.LoggingAdapter
 import org.neo4j.index.lucene.QueryContext
 import org.neo4j.extension.timestamp.TimestampCustomPropertyHandler
 
-case class OwnerNodes(user: Node, collective: Option[Node])
+case class OwnerNodes(user: Node, foreignOwner: Option[Node])
 
 abstract class AbstractGraphDatabase extends Neo4jWrapper {
 
@@ -316,12 +316,12 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
   }
 
   protected def getOwnerUUID(owner: Owner): UUID = {
-    if (owner.collectiveUUID.isDefined) owner.collectiveUUID.get
+    if (owner.foreignOwnerUUID.isDefined) owner.foreignOwnerUUID.get
     else owner.userUUID
   }
 
   protected def getOwnerNode(ownerNodes: OwnerNodes): Node = {
-    if (ownerNodes.collective.isDefined) ownerNodes.collective.get
+    if (ownerNodes.foreignOwner.isDefined) ownerNodes.foreignOwner.get
     else ownerNodes.user
   }
   

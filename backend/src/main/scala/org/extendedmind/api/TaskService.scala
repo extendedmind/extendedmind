@@ -63,7 +63,7 @@ trait TaskService extends ServiceBase {
         }
       } ~
       putNewTask { ownerUUID =>
-        authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
+        authenticate(ExtendedAuth(authenticator, "shareable", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
             entity(as[Task]) { task =>
               complete {
@@ -80,7 +80,7 @@ trait TaskService extends ServiceBase {
         }
       } ~
       putExistingTask { (ownerUUID, taskUUID) =>
-        authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
+        authenticate(ExtendedAuth(authenticator, "shareable", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
             entity(as[Task]) { task =>
               complete {
@@ -97,7 +97,7 @@ trait TaskService extends ServiceBase {
         }
       } ~
       deleteTask { (ownerUUID, taskUUID) =>
-        authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
+        authenticate(ExtendedAuth(authenticator, "shareable", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
             entity(as[Option[ReminderModification]]) { payload =>
               complete {
@@ -114,7 +114,7 @@ trait TaskService extends ServiceBase {
         }
       } ~
       undeleteTask { (ownerUUID, taskUUID) =>
-        authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
+        authenticate(ExtendedAuth(authenticator, "shareable", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
             entity(as[Option[ReminderModification]]) { payload =>
               complete {
@@ -131,7 +131,7 @@ trait TaskService extends ServiceBase {
         }
       } ~
       completeTask { (ownerUUID, taskUUID) =>
-        authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
+        authenticate(ExtendedAuth(authenticator, "shareable", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
             entity(as[Option[ReminderModification]]) { payload =>
               complete {
@@ -148,7 +148,7 @@ trait TaskService extends ServiceBase {
         }
       } ~
       uncompleteTask { (ownerUUID, taskUUID) =>
-        authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
+        authenticate(ExtendedAuth(authenticator, "shareable", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
             entity(as[Option[ReminderModification]]) { payload =>
               complete {

@@ -55,6 +55,8 @@ object Authorization {
       Some(FOUNDER)
     }else if (sc.collectives.isDefined && sc.collectives.get.contains(ownerUUID)){
       Some(sc.collectives.get.get(ownerUUID).get._2)
+    }else if (sc.sharedLists.isDefined && sc.sharedLists.get.contains(ownerUUID)){
+      Some(sc.sharedLists.get.get(ownerUUID).get._4)
     }else{
       None
     }

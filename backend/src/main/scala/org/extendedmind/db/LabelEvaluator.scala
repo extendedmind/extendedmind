@@ -33,8 +33,11 @@ case class LabelEvaluator(labels: List[Label],
   override def evaluate(path: Path): Evaluation = {
     if (length.isEmpty || path.length() == length.get){
       val currentNode: Node = path.endNode();
-      labels foreach(label => if (!currentNode.hasLabel(label)) return notFoundEvaluation) 
-      foundEvaluation
+      if (labels find(label => currentNode.hasLabel(label)) isDefined){
+        foundEvaluation
+      }else{
+        notFoundEvaluation  
+      }
     }else{
       notLenghtEvaluation
     }

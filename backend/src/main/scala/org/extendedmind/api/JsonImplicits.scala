@@ -86,7 +86,7 @@ object JsonImplicits extends DefaultJsonProtocol {
   implicit val implUsers = jsonFormat1(Users.apply)
   implicit val implSubscription = jsonFormat9(Subscription.apply)
   implicit val implStatistics = jsonFormat4(Statistics.apply)
-  implicit val implSecurityContext = jsonFormat11(SecurityContext.apply)
+  implicit val implSecurityContext = jsonFormat12(SecurityContext.apply)
   implicit val implAuthenticatePayload = jsonFormat2(AuthenticatePayload.apply)
   implicit val implCompleteTaskResult = jsonFormat3(CompleteTaskResult.apply)
   implicit val implReminderModification = jsonFormat2(ReminderModification.apply)

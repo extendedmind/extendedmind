@@ -106,13 +106,13 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
       implicit neo4j => 
         for {
           user <- getUserNode(email).right
-          collectiveUUID <- Right(getCollectiveUUID(user, ownerUUID)).right
-          sc <- validatePassword(user, attemptedPassword, collectiveUUID).right
+          foreignOwnerUUID <- Right(getForeignOwnerUUID(user, ownerUUID)).right
+          sc <- validatePassword(user, attemptedPassword, foreignOwnerUUID).right
         } yield sc
     }
   }
 
-  def authenticate(token: String, ownerUUID: Option[UUID])(implicit log: LoggingContext): Response[SecurityContext] = {
+  def authenticate(token: String, ownerUUID: Option[UUID], shareable: Boolean = false)(implicit log: LoggingContext): Response[SecurityContext] = {
     val currentTime = System.currentTimeMillis()
     withTx{
       implicit neo4j => 
@@ -121,8 +121,8 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
           tokenNode <- getTokenNode(token).right
           result <- validateToken(tokenNode, currentTime).right
           userNode <- getUserNode(tokenNode).right
-          collectiveUUID <- Right(getCollectiveUUID(userNode, ownerUUID)).right
-          sc <- getLimitedSecurityContext(userNode, collectiveUUID).right
+          foreignOwnerUUID <- Right(getForeignOwnerUUID(userNode, ownerUUID)).right
+          sc <- getLimitedSecurityContext(userNode, foreignOwnerUUID, shareable).right
         } yield sc
     }
   }
@@ -331,6 +331,7 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
       Some(tokenInfo._2),
       tokenInfo._3,
       sc.collectives,
+      sc.sharedLists,
       sc.preferences)
   }
 
@@ -423,7 +424,7 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     }
   }
     
-  private def getCollectiveUUID(user: Node, ownerUUID: Option[UUID]): Option[UUID] = {
+  private def getForeignOwnerUUID(user: Node, ownerUUID: Option[UUID]): Option[UUID] = {
     if (ownerUUID.isDefined && (getUUID(user) == ownerUUID.get)) None
     else ownerUUID
   }
@@ -432,42 +433,72 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     getCompleteSecurityContext(user, getUserType(user), getSubscription(user))
   }
   
-  private def getLimitedSecurityContext(user: Node, collectiveUUID: Option[UUID])(implicit neo4j: DatabaseService): Response[SecurityContext] = {
-    getLimitedSecurityContext(user, getUserType(user), getSubscription(user), collectiveUUID)
+  private def getLimitedSecurityContext(user: Node, foreignOwnerUUID: Option[UUID], shareable: Boolean = false)(implicit neo4j: DatabaseService): Response[SecurityContext] = {
+    getLimitedSecurityContextWithSubscription(user, getUserType(user), getSubscription(user), foreignOwnerUUID, shareable)
   }
 
   private def getCompleteSecurityContext(user: Node, userType: Byte, subscription: Option[String])(implicit neo4j: DatabaseService): SecurityContext = {
-    val collectivesTraverser = collectivesTraversalDescription.traverse(user)
-    val collectivesRelationshipList = collectivesTraverser.relationships().toList
+    val sharingRelationshipsList = sharingTraversalDescription.traverse(user).relationships().toList
+    val collectivesRelationshipList = sharingRelationshipsList filter {relationship => {
+      relationship.getEndNode.hasLabel(OwnerLabel.COLLECTIVE)
+    }}
+    val sharedListRelationshipList = sharingRelationshipsList filter {relationship => {
+      relationship.getEndNode.hasLabel(ItemLabel.LIST)
+    }}
     val sc = getSecurityContextSkeleton(user, userType, subscription).copy(
-    		   collectives = getCollectiveAccess(collectivesRelationshipList))
+    		   collectives = getCollectiveAccess(collectivesRelationshipList),
+           sharedLists = getSharedListAccess(sharedListRelationshipList))
     sc.user = user
     sc
   }
   
-  private def getLimitedSecurityContext(user: Node, userType: Byte, subscription: Option[String], collectiveUUID: Option[UUID])(implicit neo4j: DatabaseService): Response[SecurityContext] = {
-    val collectives: Option[Map[UUID,(String, Byte, Boolean)]] = {
-      if (collectiveUUID.isEmpty){
-        None
-      }else{
-        // Get access right for the collective
-        val traverser = collectivesTraversalDescription
-                        .evaluator(UUIDEvaluator(collectiveUUID.get))
-                        .traverse(user)
-        val relationshipList = traverser.relationships().toList
-        if (relationshipList.isEmpty){ 
-          return fail(INVALID_PARAMETER, ERR_BASE_NO_ACCESS,
-                                         "No access right to collective " + collectiveUUID.get + 
-                                         " or collective does not exist")
+  private def getLimitedSecurityContextWithSubscription(user: Node, userType: Byte, subscription: Option[String],
+                                        foreignOwnerUUID: Option[UUID], shareable: Boolean = false)
+                                       (implicit neo4j: DatabaseService): Response[SecurityContext] = {
+
+    if (foreignOwnerUUID.isEmpty){
+      val sc = getSecurityContextSkeleton(user, userType, subscription)
+      sc.user = user
+      Right(sc)      
+    }else{
+      val sharingRelationshipsList = sharingTraversalDescription.traverse(user).relationships().toList
+      val collectives = {
+        // See if one of the collectives the user has access to is the foreign UUID
+        val collectiveRelationshipList = sharingRelationshipsList filter {relationship => {
+          relationship.getEndNode.hasLabel(OwnerLabel.COLLECTIVE) && getUUID(relationship.getEndNode) == foreignOwnerUUID.get 
+        }}
+        if (collectiveRelationshipList.size > 0){
+          getCollectiveAccess(collectiveRelationshipList)
         }else{
-          getCollectiveAccess(relationshipList)
+          None
         }
       }
+      val sharedLists = {
+        if (!shareable || collectives.isDefined){
+          None
+        } else {
+          // Method call where access via sharing lists is possible, and a foreign has not
+          // yet been found
+          val sharedListRelationshipList = sharingRelationshipsList filter {relationship => {
+            if (relationship.getEndNode.hasLabel(ItemLabel.LIST)){
+              true
+            }else{
+              false
+            }
+          }}
+          if (sharedListRelationshipList.size > 0){
+            getSharedListAccess(sharedListRelationshipList, foreignOwnerUUID)
+          }else{
+            None
+          }
+        }
+      }
+      val sc = getSecurityContextSkeleton(user, userType, subscription).copy(
+        collectives = collectives,
+        sharedLists = sharedLists)
+      sc.user = user
+      Right(sc)
     }
-    val sc = getSecurityContextSkeleton(user, userType, subscription).copy(
-      collectives = collectives)
-    sc.user = user
-    Right(sc)
   }
   
   private def getCollectiveAccess(relationshipList: List[Relationship]): Option[Map[UUID,(String, Byte, Boolean)]] = {
@@ -498,6 +529,45 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     }
   }
   
+  private def getSharedListAccess(relationshipList: List[Relationship], foreignOwnerUUID: Option[UUID] = None)(implicit neo4j: DatabaseService): Option[Map[UUID,(String, Map[UUID, (String, Byte)])]] = {
+    if (relationshipList.isEmpty){
+      None
+    }else{
+      val sharedListAccessMap = new HashMap[UUID,(String, Map[UUID, (String, Byte)])]
+      relationshipList foreach (relationship => {
+        val sharedList = relationship.getEndNode()
+        val title = sharedList.getProperty("title").asInstanceOf[String]
+        
+        val ownerNodeList = neo4j.gds.traversalDescription()
+          .depthFirst()
+          .relationships(DynamicRelationshipType.withName(SecurityRelationship.OWNS.name), Direction.INCOMING)
+          .evaluator(Evaluators.excludeStartPosition())
+          .evaluator(Evaluators.toDepth(1))
+          .traverse(sharedList)
+          .nodes()
+          .toList
+        if (ownerNodeList.size == 1){
+          val ownerUUID = getUUID(ownerNodeList(0))
+          if (foreignOwnerUUID.isEmpty || (ownerUUID == foreignOwnerUUID.get)){
+            if (!sharedListAccessMap.contains(ownerUUID)){
+              sharedListAccessMap.put(ownerUUID, (ownerNodeList(0).getProperty("email"), new HashMap[UUID, (String, Byte)])
+            }
+
+            relationship.getType().name() match {
+              case SecurityRelationship.CAN_READ.relationshipName => {                
+                sharedListAccessMap.put(ownerUUID, (ownerNodeList(0).getProperty("email").asInstanceOf[String], getUUID(sharedList), title, SecurityContext.READ))
+              }
+              case SecurityRelationship.CAN_READ_WRITE.relationshipName => {
+                sharedListAccessMap.put(ownerUUID, (ownerNodeList(0).getProperty("email").asInstanceOf[String], getUUID(sharedList), title, SecurityContext.READ_WRITE))
+              }
+            }
+          }
+        }
+      })
+      Some(sharedListAccessMap.toMap)
+    }
+  }
+  
   private def getAuthenticationInfo(tokenNode: Node): (Long, Long, Option[Long]) = {
     val authenticated = tokenNode.getProperty("modified").asInstanceOf[Long]
     val expires = tokenNode.getProperty("expires").asInstanceOf[Long]
@@ -520,18 +590,19 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
       None,
       None,
       None,
+      None,
       getUserPreferences(user)
     )
   }
   
-  private def collectivesTraversalDescription(implicit neo4j: DatabaseService): TraversalDescription = {
+  private def sharingTraversalDescription(implicit neo4j: DatabaseService): TraversalDescription = {
     neo4j.gds.traversalDescription()
           .depthFirst()
           .relationships(DynamicRelationshipType.withName(SecurityRelationship.IS_FOUNDER.name), Direction.OUTGOING)
           .relationships(DynamicRelationshipType.withName(SecurityRelationship.CAN_READ.name), Direction.OUTGOING)
           .relationships(DynamicRelationshipType.withName(SecurityRelationship.CAN_READ_WRITE.name), Direction.OUTGOING)
           .evaluator(Evaluators.excludeStartPosition())
-          .evaluator(LabelEvaluator(List(OwnerLabel.COLLECTIVE)))
+          .evaluator(LabelEvaluator(List(ItemLabel.LIST, OwnerLabel.COLLECTIVE)))
           .evaluator(Evaluators.toDepth(1)) 
   }
   
