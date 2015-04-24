@@ -30,7 +30,7 @@ object Authorization {
     else false
   }
   
-  def readAccess(ownerUUID: UUID, sc: SecurityContext): Boolean = {
+  def readAccess(ownerUUID: UUID, sc: SecurityContext, shareable: Boolean = false): Boolean = {
     val access = getAccess(ownerUUID, sc)
     if (access.isDefined && 
        (access.get == FOUNDER || access.get == READ_WRITE || access.get == READ)){
@@ -40,11 +40,16 @@ object Authorization {
     }
   }
   
-  def writeAccess(ownerUUID: UUID, sc: SecurityContext): Boolean = {
+  def writeAccess(ownerUUID: UUID, sc: SecurityContext, shareable: Boolean = false): Boolean = {
     val access = getAccess(ownerUUID, sc)
-    if (access.isDefined && 
-       (access.get == FOUNDER || access.get == READ_WRITE)){
-      true
+    if (access.isDefined){
+      if (access.get == FOUNDER || access.get == READ_WRITE){
+        true
+      }else if (access.get == POSSIBLE_LIST && shareable){
+        true
+      }else{
+        false
+      }
     }else{
       false
     }
@@ -56,7 +61,7 @@ object Authorization {
     }else if (sc.collectives.isDefined && sc.collectives.get.contains(ownerUUID)){
       Some(sc.collectives.get.get(ownerUUID).get._2)
     }else if (sc.sharedLists.isDefined && sc.sharedLists.get.contains(ownerUUID)){
-      Some(sc.sharedLists.get.get(ownerUUID).get._4)
+      Some(POSSIBLE_LIST)
     }else{
       None
     }

@@ -43,4 +43,5 @@ object SecurityContext{
   val FOUNDER: Byte = 0
   val READ: Byte = 1
   val READ_WRITE: Byte = 2
+  val POSSIBLE_LIST: Byte = 3
 }

@@ -533,7 +533,8 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     if (relationshipList.isEmpty){
       None
     }else{
-      val sharedListAccessMap = new HashMap[UUID,(String, Map[UUID, (String, Byte)])]
+      val sharedListAccessMap = new HashMap[UUID,(String, HashMap[UUID, (String, Byte)])]
+      
       relationshipList foreach (relationship => {
         val sharedList = relationship.getEndNode()
         val title = sharedList.getProperty("title").asInstanceOf[String]
@@ -550,21 +551,27 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
           val ownerUUID = getUUID(ownerNodeList(0))
           if (foreignOwnerUUID.isEmpty || (ownerUUID == foreignOwnerUUID.get)){
             if (!sharedListAccessMap.contains(ownerUUID)){
-              sharedListAccessMap.put(ownerUUID, (ownerNodeList(0).getProperty("email"), new HashMap[UUID, (String, Byte)])
+              sharedListAccessMap.put(ownerUUID,
+                  (ownerNodeList(0).getProperty("email").asInstanceOf[String], new HashMap[UUID, (String, Byte)]))
             }
-
             relationship.getType().name() match {
               case SecurityRelationship.CAN_READ.relationshipName => {                
-                sharedListAccessMap.put(ownerUUID, (ownerNodeList(0).getProperty("email").asInstanceOf[String], getUUID(sharedList), title, SecurityContext.READ))
+                sharedListAccessMap.get(ownerUUID).get._2.put(getUUID(sharedList), (title, SecurityContext.READ))
               }
               case SecurityRelationship.CAN_READ_WRITE.relationshipName => {
-                sharedListAccessMap.put(ownerUUID, (ownerNodeList(0).getProperty("email").asInstanceOf[String], getUUID(sharedList), title, SecurityContext.READ_WRITE))
+                sharedListAccessMap.get(ownerUUID).get._2.put(getUUID(sharedList), (title, SecurityContext.READ_WRITE))
               }
             }
           }
         }
       })
-      Some(sharedListAccessMap.toMap)
+      if (sharedListAccessMap.isEmpty){
+        None
+      }else{
+        val immutableMainMap = sharedListAccessMap.toMap
+        val resultingMap = immutableMainMap.map(kv => (kv._1,(kv._2._1, kv._2._2.toMap))).toMap
+        Some(resultingMap)
+      }
     }
   }
   

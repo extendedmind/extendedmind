@@ -80,8 +80,29 @@ case class LimitedTask(uuid: Option[UUID], id: Option[String], created: Option[L
                 link: Option[String],
                 repeating: Option[String],
                 completed: Option[Long],
-                relationships: Option[LimitedExtendedItemRelationships])
+                relationships: LimitedExtendedItemRelationships)
+                extends LimitedExtendedItem {
+  if (id.isDefined) require(validateLength(id.get, 100), "Id can not be more than 100 characters")
+  require(validateTitle(title), "Title can not be more than " + TITLE_MAX_LENGTH + " characters")
+  if (description.isDefined) require(validateDescription(description.get), 
+      "Description can not be more than " + DESCRIPTION_MAX_LENGTH + " characters")
+  if (link.isDefined) require(validateLength(link.get, 2000), "Link can not be more than 2000 characters")
+  if (repeating.isDefined) require(
+      try {
+        val repeatingType = RepeatingType.withName(repeating.get)
+        true
+      }catch {
+        case _:Throwable => false
+      }, 
+      "Expected 'daily', 'weekly', 'biweekly', 'monthly', 'bimonthly', 'yearly' but got " + repeating.get)
+}
 
+object LimitedTask{
+  def apply(task: Task)
+        = new LimitedTask(task.uuid, task.id, task.created, task.modified, task.deleted,
+                          task.title, task.description, task.link, task.repeating, task.completed,
+                          LimitedExtendedItemRelationships(task.relationships.get.parent, task.relationships.get.origin))
+}
 // List of Reminder types
 object ReminderType extends Enumeration {
   type ReminderType = Value

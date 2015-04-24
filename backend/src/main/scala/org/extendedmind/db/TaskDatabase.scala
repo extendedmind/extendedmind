@@ -46,6 +46,14 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
       unit <- Right(addToItemsIndex(owner, taskResult._1, result)).right
     } yield result
   }
+  
+  def putNewLimitedTask(owner: Owner, limitedTask: LimitedTask): Response[SetResult] = {
+    for {
+      taskResult <- putNewLimitedExtendedItem(owner, limitedTask, ItemLabel.TASK).right
+      result <- Right(getSetResult(taskResult._1, true, taskResult._2)).right
+      unit <- Right(addToItemsIndex(owner, taskResult._1, result)).right
+    } yield result
+  }
 
   def putExistingTask(owner: Owner, taskUUID: UUID, task: Task): Response[SetResult] = {
     for {
@@ -124,6 +132,15 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
           relationship <- setTaskOriginRelationship(taskResult._1, originTaskNode).right
           newReminderNodes <- updateReminders(taskResult._1, task.reminders).right
         } yield (taskResult._1, taskResult._2, newReminderNodes)
+    }
+  }
+  
+  protected def putNewLimitedTaskNode(owner: Owner, limitedTask: LimitedTask): Response[(Node, Option[Long])] = {
+    withTx {
+      implicit neo4j =>
+        for {
+          taskResult <- putNewLimitedExtendedItem(owner, limitedTask, ItemLabel.TASK).right
+        } yield taskResult 
     }
   }
 

@@ -352,7 +352,7 @@ trait ItemDatabase extends UserDatabase {
       implicit neo4j =>
         for {
           itemNode <- updateItem(owner, itemUUID, extItem, Some(label), None, None).right
-          archived <- setParentNode(itemNode, owner, extItem).right
+          archived <- setParentNode(itemNode, owner, extItem.parent).right
           tagNodes <- setTagNodes(itemNode, owner, extItem).right
         } yield (itemNode, archived)
     }
@@ -363,16 +363,26 @@ trait ItemDatabase extends UserDatabase {
       implicit neo4j =>
         for {
           itemNode <- createItem(owner, extItem, Some(label), subLabel).right
-          archived <- setParentNode(itemNode, owner, extItem).right
+          archived <- setParentNode(itemNode, owner, extItem.parent).right
           tagNodes <- setTagNodes(itemNode, owner, extItem).right
         } yield (itemNode, archived)
     }
   }
 
-  protected def setParentNode(itemNode: Node, owner: Owner, extItem: ExtendedItem)(implicit neo4j: DatabaseService): Response[Option[Long]] = {
+  protected def putNewLimitedExtendedItem(owner: Owner, extItem: LimitedExtendedItem, label: Label, subLabel: Option[Label] = None): Response[(Node, Option[Long])] = {
+    withTx {
+      implicit neo4j =>
+        for {
+          itemNode <- createItem(owner, extItem, Some(label), subLabel).right
+          archived <- setParentNode(itemNode, owner, extItem.parent).right
+        } yield (itemNode, archived)
+    }
+  }
+
+  protected def setParentNode(itemNode: Node, owner: Owner, parentUUID: Option[UUID])(implicit neo4j: DatabaseService): Response[Option[Long]] = {
     for {
       oldParentRelationship <- Right(getItemRelationship(itemNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.LIST)).right
-      archived <- setParentRelationship(itemNode, owner, extItem.parent,
+      archived <- setParentRelationship(itemNode, owner, parentUUID,
         oldParentRelationship, ItemLabel.LIST).right
     } yield archived
   }

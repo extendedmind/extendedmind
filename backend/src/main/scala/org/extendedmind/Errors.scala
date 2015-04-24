@@ -29,8 +29,7 @@ case object ERR_BASE_DECRYPT_FAILED extends ErrorCode(23)
 case object ERR_BASE_ALREADY_LOGGED_IN extends ErrorCode(24)
 case object ERR_BASE_AUTHENTICATION_FAILED extends ErrorCode(25)
 case object ERR_BASE_OWNER_NOT_IN_SECURITY_CONTEXT extends ErrorCode(26)
-case object ERR_BASE_NO_ACCESS_TO_LIST extends ErrorCode(27)
-
+case object ERR_BASE_NO_LIST_ACCESS extends ErrorCode(27)
 
 case object ERR_COLLECTIVE_NO_FOUNDER extends ErrorCode(1001)
 case object ERR_COLLECTIVE_MORE_THAN_1_FOUNDER extends ErrorCode(1002)

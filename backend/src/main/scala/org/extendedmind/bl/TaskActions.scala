@@ -34,28 +34,44 @@ trait TaskActions {
 
   def db: GraphDatabase;
 
-  def prepareLimitedTask(task: Task, sharedListUUID: UUID): Option[LimitedTask] = {
-    if (task.relationships.isEmpty || task.relationships.get.parent.isEmpty 
-        || task.relationships.get.parent.get != sharedListUUID){
-      None
+  private def getTaskAccessRight(owner: Owner, task: Task): Option[Byte] = {
+    // Need to use list access rights
+    if (owner.sharedLists.isDefined){    
+      if (task.relationships.isEmpty || task.relationships.get.parent.isEmpty){
+        None
+      }else{
+        val listAccessRight = owner.sharedLists.get.get(task.relationships.get.parent.get)
+        if (listAccessRight.isEmpty){
+          None
+        }else{
+          Some(listAccessRight.get._2)
+        }
+      }
     }else{
-      Some(LimitedTask(task.uuid, task.id, None, None, None, task.title, task.description, task.link,
-           task.due, task.repeating, Some(LimitedExtendedItemRelationships(task.relationships.get.parent,
-               task.relationships.get.origin))))
+      Some(SecurityContext.FOUNDER)
     }
   }
   
+  private def hasWriteAccess(accessRight: Option[Byte]): Boolean = {
+    accessRight.isDefined && (accessRight.get == SecurityContext.FOUNDER || accessRight.get == SecurityContext.READ_WRITE)
+  }
+  
+  private def hasReadAccess(accessRight: Option[Byte]): Boolean = {
+    accessRight.isDefined && (accessRight.get == SecurityContext.FOUNDER || accessRight.get == SecurityContext.READ_WRITE || accessRight.get == SecurityContext.READ)
+  }
+  
   def putNewTask(owner: Owner, task: Task)(implicit log: LoggingAdapter): Response[SetResult] = {
-    if (owner.sharedList.isDefined){
-      if (owner.sharedList.get._2 != SecurityContext.READ_WRITE){
-        fail(INVALID_PARAMETER, ERR_BASE_NO_ACCESS_TO_LIST, "No write access to list")
-      }else{
-        val taskToStore = prepareLimitedTask(task, owner.sharedList.get._1)
-        if (taskToStore.isEmpty) fail(INVALID_PARAMETER, ERR_ITEM_INVALID_PARENT, "Invalid parent UUID")
-        else db.putNewTask(owner, task)
-      }
+    val accessRight =  getTaskAccessRight(owner, task)   
+    if (!hasWriteAccess(accessRight)){
+      fail(INVALID_PARAMETER, ERR_BASE_NO_LIST_ACCESS, "No write access to task")
     }else{
-      db.putNewTask(owner, task)
+      if (accessRight.get == SecurityContext.FOUNDER){
+        db.putNewTask(owner, task)
+      }else {
+        // Need to use limited task
+        val limitedTask = LimitedTask(task)
+        db.putNewLimitedTask(owner, limitedTask)
+      }
     }
   }
 
