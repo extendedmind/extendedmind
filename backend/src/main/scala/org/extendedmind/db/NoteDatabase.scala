@@ -24,6 +24,8 @@ import scala.collection.JavaConversions.iterableAsScalaIterable
 import org.extendedmind.Response._
 import org.extendedmind._
 import org.extendedmind.domain._
+import org.extendedmind.security._
+import org.extendedmind.security.Authorization._
 import org.neo4j.graphdb.Direction
 import org.neo4j.graphdb.DynamicRelationshipType
 import org.neo4j.graphdb.Node
@@ -37,9 +39,26 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
 
   // PUBLIC
 
+  def getNoteAccessRight(owner: Owner, note: Note): Option[Byte] = {
+    if (owner.sharedLists.isDefined){
+      // Need to use list access rights
+      getSharedListAccessRight(owner.sharedLists.get, note.relationships)
+    }else{
+      Some(SecurityContext.FOUNDER)
+    }
+  }
+  
   def putNewNote(owner: Owner, note: Note): Response[SetResult] = {
     for {
       noteResult <- putNewExtendedItem(owner, note, ItemLabel.NOTE).right
+      result <- Right(getSetResult(noteResult._1, true, noteResult._2)).right
+      unit <- Right(addToItemsIndex(owner, noteResult._1, result)).right
+    } yield result
+  }
+  
+  def putNewLimitedNote(owner: Owner, limitedNote: LimitedNote): Response[SetResult] = {
+    for {
+      noteResult <- putNewLimitedExtendedItem(owner, limitedNote, ItemLabel.NOTE).right
       result <- Right(getSetResult(noteResult._1, true, noteResult._2)).right
       unit <- Right(addToItemsIndex(owner, noteResult._1, result)).right
     } yield result
@@ -48,6 +67,14 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
   def putExistingNote(owner: Owner, noteUUID: UUID, note: Note): Response[SetResult] = {
     for {
       noteResult <- putExistingExtendedItem(owner, noteUUID, note, ItemLabel.NOTE).right
+      result <- Right(getSetResult(noteResult._1, false, noteResult._2)).right
+      unit <- Right(updateItemsIndex(noteResult._1, result)).right
+    } yield result
+  }
+  
+  def putExistingLimitedNote(owner: Owner, noteUUID: UUID, limitedNote: LimitedNote): Response[SetResult] = {
+    for {
+      noteResult <- putExistingLimitedExtendedItem(owner, noteUUID, limitedNote, ItemLabel.NOTE).right
       result <- Right(getSetResult(noteResult._1, false, noteResult._2)).right
       unit <- Right(updateItemsIndex(noteResult._1, result)).right
     } yield result
@@ -65,9 +92,19 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
   
   def deleteNote(owner: Owner, noteUUID: UUID): Response[DeleteItemResult] = {
     for {
-      deletedNoteNode <- deleteNoteNode(owner, noteUUID).right
+      noteNode <- validateExtendedItemModifiable(owner, noteUUID, ItemLabel.NOTE).right       
+      deletedNoteNode <- deleteNoteNode(owner, noteNode).right
       result <- Right(getDeleteItemResult(deletedNoteNode._1, deletedNoteNode._2)).right
       unit <- Right(updateItemsIndex(deletedNoteNode._1, result.result)).right
+    } yield result
+  }
+  
+  def undeleteNote(owner: Owner, noteUUID: UUID): Response[SetResult] = {
+    for {
+      noteNode <- validateExtendedItemModifiable(owner, noteUUID, ItemLabel.NOTE).right       
+      undeletedNoteNode <- undeleteNoteNode(owner, noteNode).right
+      result <- Right(getSetResult(undeletedNoteNode, false)).right
+      unit <- Right(updateItemsIndex(undeletedNoteNode, result)).right
     } yield result
   }
   
@@ -131,13 +168,21 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
   }
 
   
-  protected def deleteNoteNode(owner: Owner, noteUUID: UUID): Response[Tuple2[Node, Long]] = {
+  protected def deleteNoteNode(owner: Owner, noteNode: Node): Response[Tuple2[Node, Long]] = {
     withTx {
       implicit neo =>
         for {
-          itemNode <- getItemNode(owner, noteUUID, Some(ItemLabel.NOTE)).right
-          deleted <- Right(deleteItem(itemNode)).right
-        } yield (itemNode, deleted)
+          deleted <- Right(deleteItem(noteNode)).right
+        } yield (noteNode, deleted)
+    }
+  }
+  
+  protected def undeleteNoteNode(owner: Owner, noteNode: Node): Response[Node] = {
+    withTx {
+      implicit neo =>
+        for {
+          success <- Right(undeleteItem(noteNode)).right
+        } yield noteNode
     }
   }
   

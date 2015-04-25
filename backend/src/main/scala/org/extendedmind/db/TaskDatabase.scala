@@ -59,7 +59,7 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
   
   def putNewLimitedTask(owner: Owner, limitedTask: LimitedTask): Response[SetResult] = {
     for {
-      taskResult <- putNewLimitedExtendedItem(owner, limitedTask.copy(repeating = None), ItemLabel.TASK).right
+      taskResult <- putNewLimitedExtendedItem(owner, limitedTask, ItemLabel.TASK).right
       result <- Right(getSetResult(taskResult._1, true, taskResult._2)).right
       unit <- Right(addToItemsIndex(owner, taskResult._1, result)).right
     } yield result

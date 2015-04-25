@@ -27,6 +27,8 @@ import org.extendedmind.domain.Item
 import java.util.UUID
 import org.extendedmind._
 import org.extendedmind.Response._
+import org.extendedmind.security.Authorization._
+import org.extendedmind.security.SecurityContext
 import akka.event.LoggingAdapter
 
 trait NoteActions {
@@ -34,12 +36,35 @@ trait NoteActions {
   def db: GraphDatabase;
 
   def putNewNote(owner: Owner, note: Note)(implicit log: LoggingAdapter): Response[SetResult] = {
-    db.putNewNote(owner, note)
+    val accessRight =  db.getNoteAccessRight(owner, note)   
+    if (!writeAccess(accessRight)){
+      fail(INVALID_PARAMETER, ERR_BASE_NO_LIST_ACCESS, "No write access to new note")
+    }else{
+      if (accessRight.get == SecurityContext.FOUNDER){
+    	db.putNewNote(owner, note)
+      }else {
+        // Need to use limited note
+        val limitedNote = LimitedNote(note)
+        db.putNewLimitedNote(owner, limitedNote)
+      }
+    }
+  
   }
 
   def putExistingNote(owner: Owner, noteUUID: UUID, note: Note)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("putExistingNote")
-    db.putExistingNote(owner, noteUUID, note)
+    val accessRight =  db.getNoteAccessRight(owner, note)   
+    if (!writeAccess(accessRight)){
+      fail(INVALID_PARAMETER, ERR_BASE_NO_LIST_ACCESS, "No write access to existing note")
+    }else{
+      if (accessRight.get == SecurityContext.FOUNDER){
+    	db.putExistingNote(owner, noteUUID, note)
+      }else {
+        // Need to use limited note
+        val limitedNote = LimitedNote(note)
+        db.putExistingLimitedNote(owner, noteUUID, limitedNote)
+      }
+    }
   }
 
   def getNote(owner: Owner, noteUUID: UUID)(implicit log: LoggingAdapter): Response[Note] = {
@@ -54,7 +79,7 @@ trait NoteActions {
   
   def undeleteNote(owner: Owner, noteUUID: UUID)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("undeleteNote")
-    db.undeleteItem(owner, noteUUID, Some(ItemLabel.NOTE))
+    db.undeleteNote(owner, noteUUID)
   }
   
   def favoriteNote(owner: Owner, noteUUID: UUID)(implicit log: LoggingAdapter): Response[FavoriteNoteResult] = {

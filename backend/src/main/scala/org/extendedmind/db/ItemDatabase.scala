@@ -270,7 +270,7 @@ trait ItemDatabase extends UserDatabase {
   protected def getOwnerNodes(owner: Owner)(implicit neo4j: DatabaseService): Response[OwnerNodes] = {
     for {
       userNode <- getNode(owner.userUUID, OwnerLabel.USER).right
-      foreignOwnerNode <- getNodeOption(owner.foreignOwnerUUID, OwnerLabel.COLLECTIVE).right
+      foreignOwnerNode <- getNodeOption(owner.foreignOwnerUUID, MainLabel.OWNER).right
     } yield OwnerNodes(userNode, foreignOwnerNode)
   }
 
@@ -327,8 +327,9 @@ trait ItemDatabase extends UserDatabase {
 
   protected def getItemNode(owner: Owner, itemUUID: UUID, mandatoryLabel: Option[Label] = None,
     acceptDeleted: Boolean = false, exactLabelMatch: Boolean = true)(implicit neo4j: DatabaseService): Response[Node] = {
-    val itemNode = if (mandatoryLabel.isDefined) getItemNode(getOwnerUUID(owner), itemUUID, mandatoryLabel.get, acceptDeleted)
-    else getItemNode(getOwnerUUID(owner), itemUUID, MainLabel.ITEM, acceptDeleted)
+    val itemNode = 
+      if (mandatoryLabel.isDefined) getItemNode(getOwnerUUID(owner), itemUUID, mandatoryLabel.get, acceptDeleted)
+      else getItemNode(getOwnerUUID(owner), itemUUID, MainLabel.ITEM, acceptDeleted)
     if (itemNode.isLeft) return itemNode
 
     // If searching for just ITEM, needs to fail for tasks and notes
@@ -798,7 +799,7 @@ trait ItemDatabase extends UserDatabase {
   }
   
     
-  protected def validateExtendedItemModifiable(owner: Owner, itemUUID: UUID, label: Label, requireFounder: Boolean): Response[Node] = {
+  protected def validateExtendedItemModifiable(owner: Owner, itemUUID: UUID, label: Label, requireFounder: Boolean = false): Response[Node] = {
     withTx {
       implicit neo4j =>
         for {
