@@ -375,10 +375,11 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     withTx {
       implicit neo4j =>
         for {
-          taskNode <- putExistingExtendedItem(owner, taskUUID, task, ItemLabel.TASK).right
-          listNode <- Right(setLabel(taskNode._1, Some(MainLabel.ITEM), Some(ItemLabel.LIST), Some(scala.List(ItemLabel.TASK)))).right
+          taskResult <- putExistingExtendedItem(owner, taskUUID, task, ItemLabel.TASK).right
+          result <- validateTaskConvertable(taskResult._1).right
+          listNode <- Right(setLabel(taskResult._1, Some(MainLabel.ITEM), Some(ItemLabel.LIST), Some(scala.List(ItemLabel.TASK)))).right
           list <- toList(listNode, owner).right
-        } yield (taskNode._1, list)
+        } yield (taskResult._1, list)
     }
   }
   
@@ -386,11 +387,12 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     withTx {
       implicit neo4j =>
         for {
-          taskNode <- putExistingExtendedItem(owner, taskUUID, task, ItemLabel.TASK).right
-          noteNode <- Right(setLabel(taskNode._1, Some(MainLabel.ITEM), Some(ItemLabel.NOTE), Some(scala.List(ItemLabel.TASK)))).right
+          taskResult <- putExistingExtendedItem(owner, taskUUID, task, ItemLabel.TASK).right
+          result <- validateTaskConvertable(taskResult._1).right
+          noteNode <- Right(setLabel(taskResult._1, Some(MainLabel.ITEM), Some(ItemLabel.NOTE), Some(scala.List(ItemLabel.TASK)))).right
           result <- Right(moveDescriptionToContent(noteNode)).right
           note <- toNote(noteNode, owner).right
-        } yield (taskNode._1, note)
+        } yield (taskResult._1, note)
     }
   }
   
@@ -423,5 +425,14 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
         Right()
       }
     }
+  }
+  
+  protected def validateTaskConvertable(taskNode: Node)(implicit neo4j: DatabaseService): Response[Unit] = {
+    // Can't convert task that has reminders
+    val reminderNodeList = getReminderNodes(taskNode)
+    if (!reminderNodeList.isEmpty)
+      fail(INVALID_PARAMETER, ERR_TASK_CONVERT_REMINDERS, "Can not convert a task that has reminders")
+    else
+      Right()
   }
 }
