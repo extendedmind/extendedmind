@@ -55,7 +55,8 @@ object JsonImplicits extends DefaultJsonProtocol {
     }
   }
   
-  implicit val implSetResult = jsonFormat4(SetResult.apply)
+  implicit val implIdToUUID = jsonFormat2(IdToUUID.apply)
+  implicit val implSetResult = jsonFormat5(SetResult.apply)
   implicit val implErrorResult = jsonFormat3(ErrorResult.apply)
   implicit val implDeleteItemResult = jsonFormat2(DeleteItemResult.apply)
   implicit val implDestroyResult = jsonFormat1(DestroyResult.apply)

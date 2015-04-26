@@ -80,16 +80,18 @@ object Response{
   }
 }
 
-
 /**
  * Result that is returned from every successful PUT method and various other places
  */
-case class SetResult(uuid: Option[UUID], created: Option[Long], modified: Long, archived: Option[Long])
+case class SetResult(uuid: Option[UUID], created: Option[Long], modified: Long, archived: Option[Long], associated: Option[scala.List[IdToUUID]])
 
 object SetResult{
   def apply(uuid: Option[UUID], created: Option[Long], modified: Long) 
-        = new SetResult(uuid, created, modified, None)
+        = new SetResult(uuid, created, modified, None, None)
 }
+
+case class IdToUUID(uuid: UUID, id: String)
+
 
 /**
  * Result that is returned from every error response

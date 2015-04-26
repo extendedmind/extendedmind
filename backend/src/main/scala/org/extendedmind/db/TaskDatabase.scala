@@ -42,7 +42,7 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
   def putNewTask(owner: Owner, task: Task, originTaskNode: Option[Node] = None): Response[SetResult] = {
     for {
       taskResult <- putNewTaskNode(owner, task, originTaskNode).right
-      result <- Right(getSetResult(taskResult._1, true, taskResult._2)).right
+      result <- Right(getSetResult(taskResult._1, true, taskResult._2, taskResult._3)).right
       unit <- Right(addToItemsIndex(owner, taskResult._1, result)).right
     } yield result
   }
@@ -50,7 +50,7 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
   def putExistingTask(owner: Owner, taskUUID: UUID, task: Task): Response[SetResult] = {
     for {
       taskResult <- putExistingTaskNode(owner, taskUUID, task).right
-      result <- Right(getSetResult(taskResult._1, false, taskResult._2)).right
+      result <- Right(getSetResult(taskResult._1, false, taskResult._2, taskResult._3)).right
       unit <- Right(updateItemsIndex(taskResult._1, result)).right
     } yield result
   }
@@ -116,24 +116,24 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
 
   // PRIVATE
 
-  protected def putNewTaskNode(owner: Owner, task: Task, originTaskNode: Option[Node] = None): Response[(Node, Option[Long])] = {
+  protected def putNewTaskNode(owner: Owner, task: Task, originTaskNode: Option[Node] = None): Response[(Node, Option[Long], Option[scala.List[Node]])] = {
     withTx {
       implicit neo4j =>
         for {
           taskResult <- putNewExtendedItem(owner, task, ItemLabel.TASK).right
           relationship <- setTaskOriginRelationship(taskResult._1, originTaskNode).right
-          unit <- updateReminders(taskResult._1, task.reminders).right
-        } yield taskResult 
+          newReminderNodes <- updateReminders(taskResult._1, task.reminders).right
+        } yield (taskResult._1, taskResult._2, newReminderNodes)
     }
   }
 
-  protected def putExistingTaskNode(owner: Owner, taskUUID: UUID, task: Task): Response[(Node, Option[Long])] = {
+  protected def putExistingTaskNode(owner: Owner, taskUUID: UUID, task: Task): Response[(Node, Option[Long], Option[scala.List[Node]])] = {
     withTx {
       implicit neo4j =>
         for {
           taskResult <- putExistingExtendedItem(owner, taskUUID, task, ItemLabel.TASK).right
-          unit <- updateReminders(taskResult._1, task.reminders).right
-        } yield taskResult
+          newReminderNodes <- updateReminders(taskResult._1, task.reminders).right
+        } yield (taskResult._1, taskResult._2, newReminderNodes)
     }
   }
   
@@ -284,19 +284,21 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     }
   }
   
-  protected def updateReminders(taskNode: Node, reminders: Option[scala.List[Reminder]])(implicit neo4j: DatabaseService): Response[Unit] = {    
+  protected def updateReminders(taskNode: Node, reminders: Option[scala.List[Reminder]])(implicit neo4j: DatabaseService): Response[Option[scala.List[Node]]] = {    
     val reminderNodeList = getReminderNodes(taskNode)
     
     if (reminders.isEmpty || reminders.get.size == 0){
       reminderNodeList.foreach(reminderNode => {
         destroyReminder(reminderNode)
       })
+      Right(None)
     }else{
       // Loop over new list
+      val createdReminderNodes = new ListBuffer[Node]
       reminders.get.foreach(reminder => {
         if (reminder.uuid.isEmpty){
           // New reminder
-          createReminder(taskNode, reminder)
+          createdReminderNodes.append(createReminder(taskNode, reminder))
         }else{
           // existing reminder
           val existingReminder = reminderNodeList.find(reminderNode => {
@@ -317,8 +319,9 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
           destroyReminder(reminderNode)        
         }
       })
+      
+      Right(if (createdReminderNodes.size > 0) Some(createdReminderNodes.toList) else None)
     }
-    Right(Unit)
   }
 
   protected def createReminder(taskNode: Node, reminder: Reminder)(implicit neo4j: DatabaseService): Node = {

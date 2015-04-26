@@ -267,6 +267,7 @@ class TaskBestCaseSpec extends ServiceSpecBase {
                           Some(scala.List(reminder1)), None)                          
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       val putTaskResponse = putNewTask(newTask, authenticateResponse)
+      putTaskResponse.associated.get(0).id should be (reminderId1)
       getTask(putTaskResponse.uuid.get, authenticateResponse).reminders.get(0).id should be (reminderId1)
 
       // Remove and unremove reminder with complete/uncomplete

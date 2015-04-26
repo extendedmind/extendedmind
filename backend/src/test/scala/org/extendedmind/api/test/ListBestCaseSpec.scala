@@ -292,9 +292,10 @@ class ListBestCaseSpec extends ServiceSpecBase {
           note.relationships.get.tags.get(0) should be(archiveListResponse.history.uuid.get)
           
           // Add note back to list and make sure it is again archived with history tag
-          putExistingNote(note.copy(
+          val putNoteToArchivedList = putExistingNote(note.copy(
             relationships = Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, itemsResponse.notes.get(0).relationships.get.tags))), putNoteResponse.uuid.get, authenticateResponse)
-          val noteAgain = getNote(putNoteResponse.uuid.get, authenticateResponse)
+          putNoteToArchivedList.archived should not be (None)
+            val noteAgain = getNote(putNoteResponse.uuid.get, authenticateResponse)
           noteAgain.archived should not be(None)
           note.relationships.get.tags.get(0) should be(archiveListResponse.history.uuid.get)
           
