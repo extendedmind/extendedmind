@@ -110,12 +110,12 @@
             }
 
             if (task.mod && task.mod.reminders) {
-              if (JSON.stringify(task.trans.reminders) !== JSON.stringify(task.mod.reminders)) {
+              if (!angular.equals(task.trans.reminders, task.mod.reminders)) {
                 // Trans does not match with mod.
                 return true;
               }
             } else if (task.reminders) {
-              if (JSON.stringify(task.trans.reminders) !== JSON.stringify(task.reminders)) {
+              if (!angular.equals(task.trans.reminders, task.reminders)) {
                 // Trans does not match with database.
                 return true;
               }
