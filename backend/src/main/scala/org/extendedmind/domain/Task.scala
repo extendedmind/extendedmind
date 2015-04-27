@@ -81,7 +81,7 @@ object ReminderType extends Enumeration {
   val LOCAL_NOTIFICATION = Value("ln")
 }
 
-case class Reminder(uuid: Option[UUID], id: String, reminderType: String, packaging: String, device: String,
+case class Reminder(uuid: Option[UUID], id: Option[String], reminderType: String, packaging: String, device: String,
                     notification: Long, removed: Option[Long]){ 
   require(
       try {
@@ -91,14 +91,14 @@ case class Reminder(uuid: Option[UUID], id: String, reminderType: String, packag
         case _:Throwable => false
       }, 
       "Expected 'ln' but got " + reminderType)
-  require(validateLength(id, 64), "Reminder id can not be more than 64 characters")
+  if (id.isDefined) require(validateLength(id.get, 64), "Reminder id can not be more than 64 characters")
   require(validateLength(packaging, 32), "Packaging can not be more than 32 characters")
   require(validateLength(device, 64), "Device can not be more than 64 characters")    
 }
 
 object Reminder{
   def apply(id: String, reminderType: String, packaging: String, device: String, notification: Long) 
-        = new Reminder(None, id, reminderType, packaging, device, notification, None)
+        = new Reminder(None, Some(id), reminderType, packaging, device, notification, None)
 }
 
 case class ReminderModification(reminderId: String, removed: Option[Long]){
