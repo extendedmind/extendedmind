@@ -189,7 +189,7 @@
     SynchronizeService.notifyOwnerUUIDChange(oldUUID, response.uuid);
     UserSessionService.notifyOwnerUUIDChange(oldUUID, response.uuid);
     UISessionService.notifyOwnerUUIDChange(oldUUID, response.uuid);
-    AnalyticsService.doWithUuid('signUp', oldUUID, response.uuid);
+    AnalyticsService.doWithUuid('signUp', oldUUID, response.uuid, true);
     if (UserSessionService.isPersistentStorageEnabled()){
       $scope.user.remember = true;
     }

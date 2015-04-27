@@ -578,7 +578,7 @@ function AnalyticsService($q, $rootScope, $timeout, BackendClientService, HttpCl
         return sendAnalytics(action, description);
       }
     },
-    doWithUuid: function(action, description, uuid) {
+    doWithUuid: function(action, description, uuid, online) {
       if (collectAnalytics){
         var payload = getPayload(action, description)
         if (!payload[0].data.user){
@@ -586,7 +586,7 @@ function AnalyticsService($q, $rootScope, $timeout, BackendClientService, HttpCl
         }else{
           payload[0].data.user.uuid = uuid;
         }
-        return postAnalytics(payload);
+        return postAnalytics(payload, online);
       }
     },
     error: function(location, errorType) {
