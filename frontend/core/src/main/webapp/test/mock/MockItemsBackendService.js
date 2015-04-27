@@ -156,11 +156,16 @@ function MockItemsBackendService($httpBackend, ItemsService, PersistentStorageSe
           }
           var itemsResponseData = getJSONFixture('itemsResponse.json');
           if (itemsResponseData.tasks) {
+            var twoHoursInFuture = new Date();
+            twoHoursInFuture.setHours(twoHoursInFuture.getHours() + 2,
+                                      twoHoursInFuture.getMinutes() + 2,
+                                      0, 0);
+            twoHoursInFuture = twoHoursInFuture.getTime();
             for (i = 0; i < itemsResponseData.tasks.length; i++) {
               if (itemsResponseData.tasks[i].reminders) {
                 for (var j = 0; j < itemsResponseData.tasks[i].reminders.length; j++) {
                   // Set notification 2 hours into future.
-                  itemsResponseData.tasks[i].reminders[j].notification = Date.now() + 7200000;
+                  itemsResponseData.tasks[i].reminders[j].notification = twoHoursInFuture;
                 }
               }
             }
