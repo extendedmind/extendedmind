@@ -196,21 +196,23 @@
     var reminderDate, hours, minutes;
 
     if (reminder !== undefined) {
-      // Get date from the reminder in this device.
+      // Get date from the existing reminder in this device.
       reminderDate = new Date(reminder.notification);
     }
     else {
+      // New reminder.
       if (task.trans.due &&
           new Date(task.trans.due).setHours(0, 0, 0, 0) >= new Date().setHours(0, 0, 0, 0))
       {
         // Get date from task due date when it is present or future.
         reminderDate = new Date(task.trans.due);
-        // Set hours and minutes to current time.
+        // Set hours and minutes to current time and clear seconds.
         reminderDate.setHours(new Date().getHours(), reminderDate.getMinutes(), 0, 0);
       }
       else {
         // Get today date.
         reminderDate = new Date();
+        reminderDate.setSeconds(0, 0);  // Clear seconds.
       }
     }
 
@@ -320,7 +322,7 @@
   function closeReminderPicker(reminder, task) {
     if ($scope.reminder.hours.value !== undefined && $scope.reminder.minutes.value !== undefined) {
       $scope.reminder.date.setHours($scope.reminder.hours.value, $scope.reminder.minutes.value);
-      if ($scope.reminder.date.setSeconds(0, 0) > new Date().setSeconds(0, 0)) {
+      if ($scope.reminder.date > new Date().setSeconds(0, 0)) {
         // Make sure date is set to future.
         $scope.reminderPickerOpen = false;
 
