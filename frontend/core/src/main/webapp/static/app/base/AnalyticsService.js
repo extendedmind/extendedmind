@@ -578,7 +578,7 @@ function AnalyticsService($q, $rootScope, $timeout, BackendClientService, HttpCl
         return sendAnalytics(action, description);
       }
     },
-    doWithUuid: function(action, description, uuid) {
+    doWithUuid: function(action, description, uuid) {
       if (collectAnalytics){
         var payload = getPayload(action, description)
         if (!payload[0].data.user){
