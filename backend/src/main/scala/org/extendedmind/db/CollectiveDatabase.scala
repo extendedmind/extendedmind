@@ -39,7 +39,7 @@ import org.neo4j.index.lucene.QueryContext
 import org.neo4j.graphdb.traversal.Evaluation
 import org.neo4j.graphdb.Relationship
 
-trait CollectiveDatabase extends AbstractGraphDatabase {
+trait CollectiveDatabase extends UserDatabase {
 
   // PUBLIC
 
@@ -134,7 +134,7 @@ trait CollectiveDatabase extends AbstractGraphDatabase {
         for {
           collectiveNode <- getFoundedCollective(collectiveUUID, founderUUID).right
           userNode <- getNode(userUUID, OwnerLabel.USER).right
-          relationship <- setCollectiveUserPermission(collectiveNode, userNode, access).right
+          relationship <- setPermission(collectiveNode, userNode, access).right
         } yield collectiveNode
     }
   }
@@ -172,53 +172,6 @@ trait CollectiveDatabase extends AbstractGraphDatabase {
     }
   }
   
-  protected def setCollectiveUserPermission(collectiveNode: Node, userNode: Node, access: Option[Byte]) 
-       (implicit neo4j: DatabaseService): Response[Option[Relationship]] = {
-    // Get existing relationship
-    val existingRelationship = {
-      val result = getCollectiveSecurityRelationship(collectiveNode, userNode)
-      if (result.isLeft) return result
-      else{
-        if (result.right.get.isDefined && 
-            result.right.get.get.getType.name() == SecurityRelationship.IS_FOUNDER.relationshipName){
-          return fail(INVALID_PARAMETER, ERR_COLLECTIVE_FOUNDER_PERMISSION, "Can not change permissions for collective founder")
-        }
-        result.right.get
-      }
-    }
-    access match {
-      case Some(SecurityContext.READ) => {
-        if(existingRelationship.isDefined){
-          if(existingRelationship.get.getType().name() != SecurityRelationship.CAN_READ.relationshipName)
-            existingRelationship.get.delete()
-          else
-            return Right(existingRelationship)
-        }
-        Right(Some(userNode --> SecurityRelationship.CAN_READ --> collectiveNode <))
-      }
-      case Some(SecurityContext.READ_WRITE) => 
-        if(existingRelationship.isDefined){
-          if(existingRelationship.get.getType().name() != SecurityRelationship.CAN_READ_WRITE.relationshipName)
-            existingRelationship.get.delete()
-          else
-            return Right(existingRelationship)
-        }
-        Right(Some(userNode --> SecurityRelationship.CAN_READ_WRITE --> collectiveNode <))
-      case None => {
-        if(existingRelationship.isDefined){
-          existingRelationship.get.delete()
-        }
-        Right(None)
-      }
-      case _ => 
-        fail(INVALID_PARAMETER, ERR_COLLECTIVE_INVALID_ACCESS_VALUE, "Invalid access value: " + access)
-    }
-  }
   
-  protected def getCollectiveSecurityRelationship(collectiveNode: Node, userNode: Node)
-      (implicit neo4j: DatabaseService): Response[Option[Relationship]] = {
-    getRelationship(userNode, collectiveNode, SecurityRelationship.CAN_READ, SecurityRelationship.CAN_READ_WRITE, 
-            SecurityRelationship.IS_FOUNDER)
-  }
 
 }

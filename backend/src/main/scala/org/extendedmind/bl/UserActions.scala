@@ -130,6 +130,24 @@ trait UserActions {
     log.info("subscribe: {}", userUUID)
     Right(SetResult(None, None, 1))
   }
+  
+  def putNewAgreement(userUUID: UUID, agreement: Agreement)(implicit log: LoggingAdapter): Response[SetResult] = {
+    log.info("putNewAgreement")
+    if (agreement.proposedBy.uuid.isEmpty || userUUID != agreement.proposedBy.uuid.get){
+      fail(INVALID_PARAMETER, ERR_USER_INVALID_AGREEMENT_USER_UUID, "Agreement proposedBy.uuid must match user's own UUID")
+    }else {
+      val setResult = db.putNewAgreement(agreement)      
+
+      // TODO: Send email about agreement
+      
+      setResult
+    }
+  }
+  
+  def changeAgreementAccess(userUUID: UUID, agreementUUID: UUID, access: Byte)(implicit log: LoggingAdapter): Response[SetResult] = {
+    log.info("changeAgreementAccess")
+    db.changeAgreementAccess(userUUID, agreementUUID, access)      
+  }
 }
 
 class UserActionsImpl(implicit val implSettings: Settings, implicit val inj: Injector, 

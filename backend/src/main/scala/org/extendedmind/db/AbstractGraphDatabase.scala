@@ -50,6 +50,7 @@ import org.neo4j.cypher.javacompat.ExecutionEngine
 import akka.event.LoggingAdapter
 import org.neo4j.index.lucene.QueryContext
 import org.neo4j.extension.timestamp.TimestampCustomPropertyHandler
+import org.neo4j.graphdb.index.IndexHits
 
 case class OwnerNodes(user: Node, foreignOwner: Option[Node])
 
@@ -72,7 +73,8 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
       "completed", "assignee", "assigner", "reminders", // Task
       "favorited", // Note
       "archived", // List
-      "parent", "tagType" // Tag
+      "parent", "tagType", // Tag
+      "targetItem", "proposedBy", "proposedTo", "accepted" // Agreement
       ))
   // Implicit Neo4j Scala wrapper converters
   implicit val customConverters: Option[Map[String, AnyRef => AnyRef]] =
@@ -334,6 +336,44 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
   protected def undeleteItem(itemNode: Node)(implicit neo4j: DatabaseService): Unit = {
     if (itemNode.hasProperty("deleted")) {
       itemNode.removeProperty("deleted")
+    }
+  }
+  
+  protected def getItemNode(owner: Owner, itemUUID: UUID, mandatoryLabel: Option[Label] = None,
+    acceptDeleted: Boolean = false, exactLabelMatch: Boolean = true)(implicit neo4j: DatabaseService): Response[Node] = {
+    val itemNode = 
+      if (mandatoryLabel.isDefined) getItemNode(getOwnerUUID(owner), itemUUID, mandatoryLabel.get, acceptDeleted)
+      else getItemNode(getOwnerUUID(owner), itemUUID, MainLabel.ITEM, acceptDeleted)
+    if (itemNode.isLeft) return itemNode
+
+    // If searching for just ITEM, needs to fail for tasks and notes
+    if (exactLabelMatch && mandatoryLabel.isEmpty &&
+      (itemNode.right.get.hasLabel(ItemLabel.NOTE)
+        || itemNode.right.get.hasLabel(ItemLabel.TASK)
+        || itemNode.right.get.hasLabel(ItemLabel.LIST)
+        || itemNode.right.get.hasLabel(ItemLabel.TAG))) {
+      return fail(INVALID_PARAMETER, ERR_ITEM_ALREADY_EXTENDED, "item already either note, task, list or tag with UUID " + itemUUID)
+    }
+    itemNode
+  }
+
+  protected def getItemNode(ownerUUID: UUID, itemUUID: UUID, label: Label, acceptDeleted: Boolean)(implicit neo4j: DatabaseService): Response[Node] = {
+    val itemsIndex = neo4j.gds.index().forNodes("items")
+    val itemHits: IndexHits[Node] = itemsIndex.query("owner:\"" + UUIDUtils.getTrimmedBase64UUID(ownerUUID) + "\" AND item:\"" + UUIDUtils.getTrimmedBase64UUID(itemUUID) + "\"")
+    
+    if (itemHits.size == 0) {
+      fail(INVALID_PARAMETER, ERR_ITEM_NOT_FOUND, "Could not find item " + itemUUID + " for owner " + ownerUUID)
+    } else if (itemHits.size > 1) {
+      fail(INTERNAL_SERVER_ERROR, ERR_ITEM_MORE_THAN_1, "More than one item found with item " + itemUUID + " and owner + " + ownerUUID)
+    } else {
+      val itemNode = itemHits.next
+      if (!itemNode.hasLabel(label)) {
+        fail(INVALID_PARAMETER, ERR_ITEM_NO_LABEL, "Item " + itemUUID + " does not have label " + label.labelName)
+      } else if (!acceptDeleted && itemNode.hasProperty("deleted")) {
+        fail(INVALID_PARAMETER, ERR_ITEM_DELETED, "Item " + itemUUID + " is deleted")
+      } else {
+        Right(itemNode)
+      }
     }
   }
 

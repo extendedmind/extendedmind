@@ -133,6 +133,34 @@ trait UserService extends ServiceBase {
             }
           }
         }
+      } ~
+      putNewAgreement { url =>
+        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+          entity(as[Agreement]) { agreement =>
+            complete {
+              Future[SetResult] {
+                setLogContext(securityContext)
+                userActions.putNewAgreement(securityContext.userUUID, agreement) match {
+                  case Right(sr) => processResult(sr)
+                  case Left(e) => processErrors(e)
+                }
+              }
+            }
+          }
+        }
+      } ~
+      postAgreementAccess { (agreementUUID, access) =>
+        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+          complete {
+            Future[SetResult] {
+              setLogContext(securityContext)
+              userActions.changeAgreementAccess(securityContext.userUUID, agreementUUID, access.toByte) match {
+                case Right(sr) => processResult(sr)
+                case Left(e) => processErrors(e)
+              }
+            }
+          }
+        }
       }
   }
 }

@@ -121,3 +121,34 @@ object Owner{
 }
 
 case class ForgotPasswordResult(resetCodeExpires: Long)
+
+/* Agreement objects */
+
+case class AgreementUser(uuid: Option[UUID], email: String){
+  require(validateEmailAddress(email), "Not a valid email address")
+}
+
+case class AgreementTarget(uuid: UUID, title: Option[String]){
+  if(title.isDefined) require(validateTitle(title.get), "Title can not be more than " + TITLE_MAX_LENGTH + " characters")
+}
+
+// List of Reminder types
+object AgreementType extends Enumeration {
+  type AgreementType = Value
+  val LIST_AGREEMENT = Value("list")
+}
+
+case class Agreement(uuid: Option[UUID], created: Option[Long], modified: Option[Long],
+                     agreementType: String, access: Byte, accepted: Option[Long], targetItem: AgreementTarget,
+                     proposedBy: AgreementUser, proposedTo: AgreementUser){
+  require(
+      try {
+        val rt = AgreementType.withName(agreementType)
+        true
+      }catch {
+        case _:Throwable => false
+      }, 
+      "Expected 'list' but got " + agreementType)
+
+  require(access == 1 || access == 2, "Access needs to be either 1 for read or 2 for write")
+}

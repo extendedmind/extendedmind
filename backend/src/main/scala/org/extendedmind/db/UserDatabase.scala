@@ -31,7 +31,6 @@ import org.neo4j.graphdb.DynamicRelationshipType
 import org.neo4j.graphdb.Node
 import org.neo4j.graphdb.traversal.Evaluators
 import org.neo4j.graphdb.traversal.TraversalDescription
-import org.neo4j.kernel.Traversal
 import org.neo4j.scala.DatabaseService
 import scala.collection.mutable.ListBuffer
 import org.neo4j.index.lucene.ValueContext
@@ -148,6 +147,20 @@ trait UserDatabase extends AbstractGraphDatabase {
           result <- destroyUserNode(userNode).right
         } yield result
     }
+  }
+  
+  def putNewAgreement(agreement: Agreement): Response[SetResult] = {
+    for {
+      agreementNode <- createAgreementNode(agreement).right          
+      result <- Right(getSetResult(agreementNode, true)).right
+    } yield result
+  }
+  
+  def changeAgreementAccess(userUUID: UUID, agreementUUID: UUID, access: Byte): Response[SetResult] = {
+    for {
+      agreementNode <- changeAgreementAccessNode(userUUID, agreementUUID, access).right
+      result <- Right(getSetResult(agreementNode, true)).right
+    } yield result
   }
 
   // PRIVATE
@@ -492,4 +505,131 @@ trait UserDatabase extends AbstractGraphDatabase {
         }
     }
   }
+  
+  protected def createAgreementNode(agreement: Agreement): Response[Node] = {
+    withTx {
+      implicit neo4j =>
+        for {
+          proposedByUserNode <- getNode(agreement.proposedBy.uuid.get, OwnerLabel.USER).right
+          proposedToUserNode <- getUserNode(agreement.proposedTo.email).right
+          concerningNode <- getItemNode(agreement.proposedBy.uuid.get, agreement.targetItem.uuid, ItemLabel.LIST, false).right
+          agreementNode <- createAgreementNode(agreement, proposedByUserNode, proposedToUserNode, concerningNode).right
+        } yield agreementNode
+    }
+  }
+  
+  protected def createAgreementNode(agreement: Agreement, proposedByUserNode: Node, proposedToUserNode: Node, concerningNode: Node)(implicit neo4j: DatabaseService): Response[Node] = {
+    val agreementsFromProposedBy: TraversalDescription =
+    neo4j.gds.traversalDescription()
+      .relationships(DynamicRelationshipType.withName(AgreementRelationships.PROPOSES.name),
+        Direction.OUTGOING)
+      .depthFirst()
+      .evaluator(Evaluators.excludeStartPosition())
+      .evaluator(LabelEvaluator(scala.List(MainLabel.AGREEMENT)))
+    val previousAgreementToList = agreementsFromProposedBy.traverse(proposedByUserNode).nodes find (agreementNode => {
+      val concerningExists = agreementNode.getRelationships.find(relationship => {
+        relationship.getType.name == AgreementRelationships.CONCERNING.name && relationship.getEndNode.getId == concerningNode.getId
+      }).isDefined
+      val proposedToExists = agreementNode.getRelationships.find(relationship => {
+        relationship.getType.name == AgreementRelationships.IS_PROPOSED_TO.name && relationship.getEndNode.getId == proposedToUserNode.getId
+      }).isDefined
+      concerningExists && proposedToExists
+    })
+
+    if (previousAgreementToList.isDefined){
+      fail(INVALID_PARAMETER, ERR_USER_AGREEMENT_ALREADY_EXISTS, "There is already an agreement about this list to the given user")
+    }else{
+      val agreementNode = createNode(agreement, MainLabel.AGREEMENT, AgreementLabel.LIST_AGREEMENT)
+      Right(agreementNode)
+    }
+  }
+  
+  protected def changeAgreementAccessNode(userUUID: UUID, agreementUUID: UUID, access: Byte): Response[Node] = {
+    withTx {
+      implicit neo4j =>
+        for {
+          agreementNode <- getNode(agreementUUID, MainLabel.AGREEMENT).right
+          userNode <- getNode(userUUID, OwnerLabel.USER).right
+          relationship <- changeAgreementAccessNode(agreementNode, userNode, access).right
+        } yield agreementNode
+    }
+  }
+  
+  protected def changeAgreementAccessNode(agreementNode: Node, userNode: Node, access: Byte)(implicit neo4j: DatabaseService): Response[Option[Relationship]] = {
+    val proposeRelationship = agreementNode.getRelationships.find(relationship => {
+      relationship.getType.name == AgreementRelationships.PROPOSES && relationship.getEndNode.getId == userNode.getId
+    })
+    if (proposeRelationship.isEmpty){
+      fail(INVALID_PARAMETER, ERR_USER_INVALID_AGREEMENT_CREATOR, "Agreement was not proposed by user")
+    }else{
+      if (access != SecurityContext.READ && access != SecurityContext.READ){
+        fail(INVALID_PARAMETER, ERR_USER_INVALID_ACCESS_VALUE, "List access value needs to be either 1 for read or 2 for write")      
+      }else{
+        agreementNode.setProperty("access", access)
+        if (agreementNode.hasProperty("accepted")){
+          // Agreement has been accepted, need to change security relationships too
+          val targetNodeResult = agreementNode.getRelationships.find(relationship => {
+            relationship.getType.name == AgreementRelationships.IS_PROPOSED_TO
+          })
+          if (targetNodeResult.isEmpty){
+            fail(INTERNAL_SERVER_ERROR, ERR_USER_CANT_FIND_AGREEMENT_PARTY, "Can't find user agreement was proposed to")              
+          }else{
+            setPermission(targetNodeResult.get.getEndNode, userNode, Some(access))
+          }
+        }else{
+          Right(None)
+        }
+      }
+    }
+  }
+  
+  protected def setPermission(targetNode: Node, userNode: Node, access: Option[Byte]) 
+       (implicit neo4j: DatabaseService): Response[Option[Relationship]] = {
+    // Get existing relationship
+    val existingRelationship = {
+      val result = getSecurityRelationship(targetNode, userNode)
+      if (result.isLeft) return result
+      else{
+        if (result.right.get.isDefined && 
+            result.right.get.get.getType.name() == SecurityRelationship.IS_FOUNDER.relationshipName){
+          return fail(INVALID_PARAMETER, ERR_USER_FOUNDER_PERMISSION, "Can not change permissions for founder")
+        }
+        result.right.get
+      }
+    }
+    access match {
+      case Some(SecurityContext.READ) => {
+        if(existingRelationship.isDefined){
+          if(existingRelationship.get.getType().name() != SecurityRelationship.CAN_READ.relationshipName)
+            existingRelationship.get.delete()
+          else
+            return Right(existingRelationship)
+        }
+        Right(Some(userNode --> SecurityRelationship.CAN_READ --> targetNode <))
+      }
+      case Some(SecurityContext.READ_WRITE) => 
+        if(existingRelationship.isDefined){
+          if(existingRelationship.get.getType().name() != SecurityRelationship.CAN_READ_WRITE.relationshipName)
+            existingRelationship.get.delete()
+          else
+            return Right(existingRelationship)
+        }
+        Right(Some(userNode --> SecurityRelationship.CAN_READ_WRITE --> targetNode <))
+      case None => {
+        if(existingRelationship.isDefined){
+          existingRelationship.get.delete()
+        }
+        Right(None)
+      }
+      case _ => 
+        fail(INVALID_PARAMETER, ERR_USER_INVALID_ACCESS_VALUE, "Invalid access value: " + access)
+    }
+  }
+  
+  protected def getSecurityRelationship(targetNode: Node, userNode: Node)
+      (implicit neo4j: DatabaseService): Response[Option[Relationship]] = {
+    getRelationship(userNode, targetNode, SecurityRelationship.CAN_READ, SecurityRelationship.CAN_READ_WRITE, 
+            SecurityRelationship.IS_FOUNDER)
+  }
+
 }

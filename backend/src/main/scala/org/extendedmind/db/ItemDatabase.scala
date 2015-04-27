@@ -325,44 +325,6 @@ trait ItemDatabase extends UserDatabase {
     node
   }
 
-  protected def getItemNode(owner: Owner, itemUUID: UUID, mandatoryLabel: Option[Label] = None,
-    acceptDeleted: Boolean = false, exactLabelMatch: Boolean = true)(implicit neo4j: DatabaseService): Response[Node] = {
-    val itemNode = 
-      if (mandatoryLabel.isDefined) getItemNode(getOwnerUUID(owner), itemUUID, mandatoryLabel.get, acceptDeleted)
-      else getItemNode(getOwnerUUID(owner), itemUUID, MainLabel.ITEM, acceptDeleted)
-    if (itemNode.isLeft) return itemNode
-
-    // If searching for just ITEM, needs to fail for tasks and notes
-    if (exactLabelMatch && mandatoryLabel.isEmpty &&
-      (itemNode.right.get.hasLabel(ItemLabel.NOTE)
-        || itemNode.right.get.hasLabel(ItemLabel.TASK)
-        || itemNode.right.get.hasLabel(ItemLabel.LIST)
-        || itemNode.right.get.hasLabel(ItemLabel.TAG))) {
-      return fail(INVALID_PARAMETER, ERR_ITEM_ALREADY_EXTENDED, "item already either note, task, list or tag with UUID " + itemUUID)
-    }
-    itemNode
-  }
-
-  protected def getItemNode(ownerUUID: UUID, itemUUID: UUID, label: Label, acceptDeleted: Boolean)(implicit neo4j: DatabaseService): Response[Node] = {
-    val itemsIndex = neo4j.gds.index().forNodes("items")
-    val itemNodeList = itemsIndex.query("owner:\"" + UUIDUtils.getTrimmedBase64UUID(ownerUUID)
-      + "\" AND item:\"" + UUIDUtils.getTrimmedBase64UUID(itemUUID) + "\"").toList
-    if (itemNodeList.length == 0) {
-      fail(INVALID_PARAMETER, ERR_ITEM_NOT_FOUND, "Could not find item " + itemUUID + " for owner " + ownerUUID)
-    } else if (itemNodeList.length == 0) {
-      fail(INTERNAL_SERVER_ERROR, ERR_ITEM_MORE_THAN_1, "More than one item found with item " + itemUUID + " and owner + " + ownerUUID)
-    } else {
-      val itemNode = itemNodeList(0)
-      if (!itemNode.hasLabel(label)) {
-        fail(INVALID_PARAMETER, ERR_ITEM_NO_LABEL, "Item " + itemUUID + " does not have label " + label.labelName)
-      } else if (!acceptDeleted && itemNode.hasProperty("deleted")) {
-        fail(INVALID_PARAMETER, ERR_ITEM_DELETED, "Item " + itemUUID + " is deleted")
-      } else {
-        Right(itemNode)
-      }
-    }
-  }
-
   protected def putExistingExtendedItem(owner: Owner, itemUUID: UUID, extItem: ExtendedItem, label: Label): Response[(Node, Option[Long])] = {
     withTx {
       implicit neo4j =>

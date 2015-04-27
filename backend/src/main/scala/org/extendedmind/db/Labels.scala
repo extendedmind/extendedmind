@@ -32,6 +32,7 @@ object MainLabel {
   val REQUEST = Label("REQUEST")
   val INVITE = Label("INVITE")
   val REMINDER = Label("REMINDER")
+  val AGREEMENT = Label("AGREEMENT")  
 }
 
 object OwnerLabel {
@@ -67,4 +68,8 @@ object SecurityLabel {
   val PRIVATE = Label("PRIVATE")
   val EXCLUSIVE = Label("EXCLUSIVE") 
   val PUBLIC = Label("PUBLIC")
+}
+
+object AgreementLabel {
+  val LIST_AGREEMENT = Label("LIST_AGREEMENT")
 }
