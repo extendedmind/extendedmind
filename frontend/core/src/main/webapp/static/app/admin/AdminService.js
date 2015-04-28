@@ -31,47 +31,6 @@
     /users$/.source
     );
 
-  var invitesRegexp = new RegExp(
-    /^/.source +
-    BackendClientService.apiPrefixRegex.source +
-    adminRegex.source +
-    /invites$/.source
-    );
-
-  var inviteRequestsRegexp = new RegExp(
-    /^/.source +
-    BackendClientService.apiPrefixRegex.source +
-    adminRegex.source +
-    /invite\/requests$/.source
-    );
-
-  var acceptInviteRequestRegexp = new RegExp(
-    /^/.source +
-    BackendClientService.apiPrefixRegex.source +
-    adminRegex.source +
-    /invite\/request\//.source +
-    BackendClientService.uuidRegex.source +
-    /\/accept$/.source
-    );
-
-  var deleteInviteRequestRegexp = new RegExp(
-    /^/.source +
-    BackendClientService.apiPrefixRegex.source +
-    adminRegex.source +
-    /invite\/request\//.source +
-    BackendClientService.uuidRegex.source +
-    '$'
-    );
-
-  var deleteInviteRegexp = new RegExp(
-    /^/.source +
-    BackendClientService.apiPrefixRegex.source +
-    adminRegex.source +
-    /invite\//.source +
-    BackendClientService.uuidRegex.source +
-    '$'
-    );
-
   var destroyUserRegexp = new RegExp(
     /^/.source +
     BackendClientService.apiPrefixRegex.source +
@@ -90,26 +49,6 @@
       return BackendClientService.get('/api/admin/users',
         usersRegexp, true);
     },
-    getInvites: function() {
-      return BackendClientService.get('/api/admin/invites',
-        invitesRegexp, true);
-    },
-    getInviteRequests: function() {
-      return BackendClientService.get('/api/admin/invite/requests',
-        inviteRequestsRegexp, true);
-    },
-    acceptInviteRequest: function(inviteRequest) {
-      return BackendClientService.postOnline('/api/admin/invite/request/' + inviteRequest.uuid + '/accept',
-        acceptInviteRequestRegexp, {}, true);
-    },
-    deleteInviteRequest: function(inviteRequest) {
-      return BackendClientService.deleteOnline('/api/admin/invite/request/' + inviteRequest.uuid,
-        deleteInviteRequestRegexp, true);
-    },
-    deleteInvite: function(invite) {
-      return BackendClientService.deleteOnline('/api/admin/invite/' + invite.uuid,
-        deleteInviteRegexp, true);
-    },
     destroyUser: function(user){
       return BackendClientService.deleteOnline('/api/admin/user/' + user.uuid,
         destroyUserRegexp, true);
@@ -118,11 +57,6 @@
     // Regular expressions for admin requests
     statisticsRegex: statisticsRegexp,
     usersRegex: usersRegexp,
-    invitesRegex: invitesRegexp,
-    inviteRequestsRegex: inviteRequestsRegexp,
-    acceptInviteRequestRegex: acceptInviteRequestRegexp,
-    deleteInviteRequestRegex: deleteInviteRequestRegexp,
-    deleteInviteRegex: deleteInviteRegexp,
     destroyUserRegex: destroyUserRegexp
   };
 }

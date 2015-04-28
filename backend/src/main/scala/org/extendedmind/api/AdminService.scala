@@ -98,7 +98,7 @@ trait AdminService extends ServiceBase {
       } ~
       deleteUser { userUUID =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
-          // Only admins can destroy invite requests
+          // Only admins can destroy users
           authorize(adminAccess(securityContext)) {
             complete {
               Future[DestroyResult] {
@@ -120,36 +120,6 @@ trait AdminService extends ServiceBase {
                 setLogContext(securityContext)
                 userActions.getUsers match {
                   case Right(users) => processResult(users)
-                  case Left(e) => processErrors(e)
-                }
-              }
-            }
-          }
-        }
-      } ~
-      getInvites { path =>
-        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
-          authorize(adminAccess(securityContext)) {
-            complete {
-              Future[Invites] {
-                setLogContext(securityContext)
-                inviteActions.getInvites match {
-                  case Right(invites) => processResult(invites)
-                  case Left(e) => processErrors(e)
-                }
-              }
-            }
-          }
-        }
-      } ~
-      deleteInvite { inviteUUID =>
-        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
-          authorize(adminAccess(securityContext)) {
-            complete {
-              Future[DestroyResult] {
-                setLogContext(securityContext)
-                 inviteActions.destroyInvite(inviteUUID) match {
-                  case Right(result) => processResult(result)
                   case Left(e) => processErrors(e)
                 }
               }
@@ -279,51 +249,6 @@ trait AdminService extends ServiceBase {
               Future[CountResult] {
                 setLogContext(securityContext)
                 adminActions.rebuildUserIndexes match {
-                  case Right(result) => processResult(result)
-                  case Left(e) => processErrors(e)
-                }
-              }
-            }
-          }
-        }
-      } ~
-      upgradeOwners { url =>
-        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
-          authorize(adminAccess(securityContext)) {
-            complete {
-              Future[CountResult] {
-                setLogContext(securityContext)
-                adminActions.upgradeOwners match {
-                  case Right(result) => processResult(result)
-                  case Left(e) => processErrors(e)
-                }
-              }
-            }
-          }
-        }
-      } ~
-      upgradeOwner { ownerUUID =>
-        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
-          authorize(adminAccess(securityContext)) {
-            complete {
-              Future[SetResult] {
-                setLogContext(securityContext)
-                adminActions.upgradeOwner(ownerUUID) match {
-                  case Right(result) => processResult(result)
-                  case Left(e) => processErrors(e)
-                }
-              }
-            }
-          }
-        }
-      } ~
-      upgradeItems { url =>
-        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
-          authorize(adminAccess(securityContext)) {
-            complete {
-              Future[CountResult] {
-                setLogContext(securityContext)
-                adminActions.upgradeItems match {
                   case Right(result) => processResult(result)
                   case Left(e) => processErrors(e)
                 }

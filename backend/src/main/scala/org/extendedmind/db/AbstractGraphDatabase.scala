@@ -123,8 +123,6 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
         engine = new ExecutionEngine(ds.gds)
         val statistics = getStatisticsInTx
         log.info("users: " + statistics.users +
-          ", invites: " + statistics.invites +
-          ", inviteRequests: " + statistics.inviteRequests +
           ", items: " + statistics.items)
         available
     }
@@ -155,15 +153,10 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
   def getStatisticsInTx(implicit neo4j: DatabaseService): Statistics = {
     if (engine == null) engine = new ExecutionEngine(neo4j.gds)
     val userCountResult = engine.execute("start n=node(*) match (n:USER) return count(n) as userCount").iterator().next()
-    val inviteCountResult = engine.execute("start n=node(*) match (n:INVITE) return count(n) as inviteCount").iterator().next()
-
-    // Use indexes to get invite requests and items
-    val inviteRequestCount = neo4j.gds.index().forNodes("inviteRequests").query("*:*").size()
+    // Use index to get items
     val itemCount = neo4j.gds.index().forNodes("items").query("*:*").size()
 
     Statistics(userCountResult.get("userCount").asInstanceOf[Long],
-      inviteCountResult.get("inviteCount").asInstanceOf[Long],
-      inviteRequestCount,
       itemCount)
   }
 

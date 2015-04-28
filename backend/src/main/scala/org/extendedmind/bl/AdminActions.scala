@@ -42,26 +42,7 @@ trait AdminActions {
     log.info("rebuildUserIndexes")
     db.rebuildUserIndexes
   }
-  
-  def upgradeOwners()(implicit log: LoggingAdapter): Response[CountResult] = {
-    log.info("upgradeOwners")
-    db.upgradeOwners
-  }
-  
-  def upgradeOwner(ownerUUID: UUID)(implicit log: LoggingAdapter): Response[SetResult] = {
-    log.info("upgradeOwner: {}" + ownerUUID)
-    db.upgradeOwner(ownerUUID)
-  }
-  
-  def upgradeItems()(implicit log: LoggingAdapter): Response[CountResult] = {
-    log.info("upgradeItems")
-    val countResult = db.upgradeItems
-    if (countResult.isRight){    
-      log.info("upgraded " + countResult.right.get.count + " items")
-    }
-    countResult
-  }
-    
+      
   def resetTokens()(implicit log: LoggingAdapter): Response[CountResult] = {
     log.info("resetTokens")
     db.destroyAllTokens

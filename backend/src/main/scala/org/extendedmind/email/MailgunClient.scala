@@ -68,7 +68,7 @@ trait MailgunClient {
   def settings: Settings
   def actorRefFactory: ActorRefFactory
 
-  val inviteHtmlTemplate = getTemplate("invite.html", settings.emailTemplateDir)
+  val shareListHtmlTemplate = getTemplate("shareList.html", settings.emailTemplateDir)
   val resetPasswordHtmlTemplate = getTemplate("resetPassword.html", settings.emailTemplateDir)
   val verifyEmailHtmlTemplate = getTemplate("verifyEmail.html", settings.emailTemplateDir)
 
@@ -77,21 +77,21 @@ trait MailgunClient {
   implicit val implicitContext = actorRefFactory.dispatcher
   val sendEmailPipeline = sendReceive ~> unmarshal[SendEmailResponse]
 
-  def sendListInvite(invite: Invite): Future[SendEmailResponse] = {
-    val sendEmailRequest = SendEmailRequest(settings.emailFrom, invite.email,
-      settings.listInviteTitle.replaceAll(
+  def sendShareListAgreement(agreement: Agreement): Future[SendEmailResponse] = {
+    val sendEmailRequest = SendEmailRequest(settings.emailFrom, agreement.proposedTo.email,
+      settings.shareListTitle.replaceAll(
           "inviterEmail",
-          invite.email), // FIXME
-      inviteHtmlTemplate
+          agreement.proposedBy.email), // FIXME
+      shareListHtmlTemplate
         .replaceAll(
-          "inviteLink",
+          "acceptLink",
           settings.emailSecureUrlPrefix
-            + settings.inviteURI
-            .replaceAll("inviteValue", invite.code.toLong.toHexString)
-            .replaceAll("emailValue", invite.email))
+            + settings.acceptShareURI
+            //.replaceAll("acceptCodeValue", invite.code.toLong.toHexString)
+            .replaceAll("emailValue", agreement.proposedTo.email))
         .replaceAll("logoLink", settings.emailUrlPrefix + "img/logo-text.png")
-        .replaceAll("inviterEmail", invite.email) // FIXME
-        .replaceAll("sharedList", invite.email) // FIXME
+        //.replaceAll("inviterEmail", invite.email) // FIXME
+        //.replaceAll("sharedList", invite.email) // FIXME
         )
     sendEmail(sendEmailRequest)
   }

@@ -7,16 +7,6 @@ ng-switch on="adminMode">
       <a href class="highlighted" ng-click="gotoUsers()"><span ng-bind="userCount"></span></a>
     </div>
     <div class="row-form">
-      <h3>invites</h3>
-      <a href class="highlighted" ng-click="gotoInvites()"><span ng-bind="inviteCount"></span></a>
-    </div>
-    <div class="row-form">
-      <h3>invite requests</h3>
-      <a href class="highlighted" ng-click="gotoInviteRequests()">
-        <span ng-bind="inviteRequestCount"></span>
-      </a>
-    </div>
-    <div class="row-form">
       <h3>items</h3>
       <span ng-bind="itemCount"></span>
     </div>
@@ -33,38 +23,6 @@ ng-switch on="adminMode">
         <input type="text" class="text-details" ng-model="user.destroy"
           placeholder="write 'destroy [email]' to destroy the user&#8230;"/>
       </form>
-    </div>
-  </section>
-  <section ng-switch-when="invites" class="container-content">
-    <h2 class="group-heading row justified">invites</h2>
-    <div class="row-form">
-      <a href class="highlighted" ng-click="gotoStatistics()"><span>back</span></a>
-    </div>
-    <div class="row-form" ng-repeat="invite in invites | orderBy:'accepted':true">
-      <a ng-href="mailto:{{invite.email}}" ng-bind="invite.email"></a>
-      <span class="text-details">modified: {{getDateString(invite.modified)}}</span><br/>
-      <span ng-if="invite.accepted" class="text-details">accepted: {{getDateString(invite.accepted)}}</span>
-      <div ng-if="!invite.accepted && !invite.resent">
-        <a href class="highlighted" ng-click="resendInvite(invite)">
-          <span class="text-details">resend</span>
-        </a>
-        <a href ng-click="deleteInvite(invite)"><span class="text-error">delete</span></a>
-      </div>
-      <div ng-if="!invite.accepted && invite.resent">resent</div>
-    </div>
-  </section>
-  <section ng-switch-when="inviteRequests" class="container-content">
-    <h2 class="group-heading row justified">invite requests</h2>
-    <div class="row-form">
-      <a href class="highlighted" ng-click="gotoStatistics()"><span>back</span></a>
-    </div>
-    <div class="row-form" ng-repeat="inviteRequest in inviteRequests">
-      <a ng-href="mailto:{{inviteRequest.email}}" ng-bind="inviteRequest.email"></a>
-      <span class="text-details">modified: {{getDateString(inviteRequest.modified)}}</span><br/>
-      <a href class="highlighted" ng-click="acceptInviteRequest(inviteRequest)">
-        <span class="text-details">accept</span>
-      </a>
-      <a href ng-click="deleteInviteRequest(inviteRequest)"><span class="text-error">delete</span></a>
     </div>
   </section>
 </div>

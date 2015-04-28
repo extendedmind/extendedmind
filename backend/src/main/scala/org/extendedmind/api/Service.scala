@@ -150,7 +150,6 @@ class ServiceActor extends HttpServiceActor with Service {
 trait Service extends AdminService 
 			  with SecurityService 
 			  with UserService 
-			  with InviteService 
 			  with ItemService
 			  with TaskService
 			  with NoteService
@@ -184,6 +183,6 @@ trait Service extends AdminService
           "{\"status\":" + adminActions.tick(payload.priority).toString + "}"
         }
       }
-    } ~ adminRoutes ~ securityRoutes ~ userRoutes ~ inviteRoutes ~ itemRoutes ~ taskRoutes ~ noteRoutes ~ listRoutes ~ tagRoutes
+    } ~ adminRoutes ~ securityRoutes ~ userRoutes ~ itemRoutes ~ taskRoutes ~ noteRoutes ~ listRoutes ~ tagRoutes
   }
 }

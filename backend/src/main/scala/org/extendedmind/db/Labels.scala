@@ -29,8 +29,6 @@ object MainLabel {
   val OWNER = Label("OWNER")
   val ITEM = Label("ITEM")
   val TOKEN = Label("TOKEN")
-  val REQUEST = Label("REQUEST")
-  val INVITE = Label("INVITE")
   val REMINDER = Label("REMINDER")
   val AGREEMENT = Label("AGREEMENT")  
 }

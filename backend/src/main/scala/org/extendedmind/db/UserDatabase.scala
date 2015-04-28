@@ -110,27 +110,6 @@ trait UserDatabase extends AbstractGraphDatabase {
     Right(CountResult(3))
   }
 
-  def upgradeOwners: Response[CountResult] = {
-    for {
-      ownerUUIDs <- getOwnerUUIDs.right
-      count <- upgradeOwners(ownerUUIDs).right
-    } yield count
-  }
-
-  def upgradeOwner(ownerUUID: UUID): Response[SetResult] = {
-    for {
-      ownerNode <- upgradeOwnerNode(ownerUUID).right
-      result <- Right(getSetResult(ownerNode, false)).right
-    } yield result
-  }
-
-  def upgradeItems: Response[CountResult] = {
-    for {
-      ownerUUIDs <- getOwnerUUIDs.right
-      count <- upgradeItems(ownerUUIDs).right
-    } yield count
-  }
-
   def deleteUser(userUUID: UUID): Response[DeleteItemResult] = {
     for {
       deletedUserNode <- deleteUserNode(userUUID).right
@@ -347,7 +326,6 @@ trait UserDatabase extends AbstractGraphDatabase {
     }
   }
   
-  protected def destroyInviteNode(inviteNode: Node)(implicit neo4j: DatabaseService): Response[DestroyResult];
   protected def destroyItem(deletedItem: Node)(implicit neo4j: DatabaseService);
   protected def destroyTokens(userNode: Node)(implicit neo4j: DatabaseService): Response[CountResult];
   
@@ -362,9 +340,6 @@ trait UserDatabase extends AbstractGraphDatabase {
       if (relationship.getType.name == SecurityRelationship.IS_ORIGIN.name()) true
       else false
     })
-    val inviteNode = if (inviteRelationships.size == 1){
-      Some(inviteRelationships(0).getStartNode())
-    }else None
     val userUUID = getUUID(userNode)
     
     // Delete all relationships and also destroy items that the user owns
@@ -378,20 +353,7 @@ trait UserDatabase extends AbstractGraphDatabase {
     
     // Delete user
     userNode.delete()
-    val destroyResultList = scala.List(userUUID)
-    
-    // Delete invite as well
-    if (inviteNode.isDefined){
-      val destroyInviteResult = destroyInviteNode(inviteNode.get)
-      if (destroyInviteResult.isLeft){
-        Left(destroyInviteResult.left.get)
-      }else{
-        val joinedList = destroyResultList ++ destroyInviteResult.right.get.destroyed
-        Right(DestroyResult(joinedList))
-      }
-    }else{
-      Right(DestroyResult(destroyResultList))
-    }
+    Right(DestroyResult(scala.List(userUUID)))
   }
   
 
@@ -417,95 +379,6 @@ trait UserDatabase extends AbstractGraphDatabase {
     Right(true)
   }
 
-  protected def upgradeOwners(ownerUUIDs: scala.List[UUID]): Response[CountResult] = {
-    ownerUUIDs.foreach(ownerUUID => {
-      val upgradeResult = upgradeOwnerNode(ownerUUID)
-      if (upgradeResult.isLeft) {
-        return Left(upgradeResult.left.get)
-      }
-    })
-    Right(CountResult(ownerUUIDs.size))
-  }
-
-  protected def upgradeOwnerNode(ownerUUID: UUID): Response[Node] = {
-    withTx {
-      implicit neo4j =>
-        val ownerNodeResponse = getNode(ownerUUID, MainLabel.OWNER)
-        if (ownerNodeResponse.isLeft)
-          Left(ownerNodeResponse.left.get)
-        else {
-          val ownerNode = ownerNodeResponse.right.get
-          if (ownerNode.hasProperty("created")) {
-            println("owner has created: " + ownerNode.getProperty("created"))
-          } else {
-            println("setting created")
-            ownerNode.setProperty("created", ownerNode.getProperty("modified").asInstanceOf[Long])
-          }
-          ownerNode.getRelationships().foreach(relationship => {
-            if (relationship.getType().name == SecurityRelationship.IS_ORIGIN.name &&
-              relationship.getStartNode().hasLabel(MainLabel.INVITE)) {
-              println("found invite relationship")
-              if (!relationship.getStartNode().hasProperty("accepted")) {
-                // Give accepted
-                println("setting accepted")
-                relationship.getStartNode().setProperty("accepted", ownerNode.getProperty("modified").asInstanceOf[Long])
-              }
-            }
-          })
-          Right(ownerNode)
-        }
-    }
-  }
-
-  protected def upgradeItems(ownerUUIDs: scala.List[UUID]): Response[CountResult] = {
-    var count: Long = 0
-    ownerUUIDs.foreach(ownerUUID => {
-      val upgradeResult = upgradeItemsForOwner(ownerUUID)
-      if (upgradeResult.isLeft) {
-        return Left(upgradeResult.left.get)
-      } else {
-        count += upgradeResult.right.get
-      }
-    })
-    Right(CountResult(count))
-  }
-
-  protected def upgradeItemsForOwner(ownerUUID: UUID): Response[Long] = {
-    withTx {
-      implicit neo4j =>
-        val ownerNodeResponse = getNode(ownerUUID, MainLabel.OWNER)
-        if (ownerNodeResponse.isLeft)
-          Left(ownerNodeResponse.left.get)
-        else {
-          val ownerNode = ownerNodeResponse.right.get
-          var count: Long = 0
-          ownerNode.getRelationships().foreach(ownerRelationship => {
-            if (!ownerRelationship.hasProperty("created")) {
-              ownerRelationship.setProperty("created", ownerRelationship.getProperty("modified").asInstanceOf[Long])
-            }
-            if (ownerRelationship.getType().name == SecurityRelationship.OWNS.name) {
-
-              if (!ownerRelationship.getEndNode().hasProperty("created")) {
-                ownerRelationship.getEndNode().setProperty("created", ownerRelationship.getEndNode().getProperty("modified").asInstanceOf[Long])
-                count += 1
-              }
-              // Also update item relationships
-              ownerRelationship.getEndNode().getRelationships().foreach(itemRelationship => {
-                if (itemRelationship.getType().name == ItemRelationship.HAS_PARENT.name ||
-                  itemRelationship.getType().name == ItemRelationship.HAS_TAG.name ||
-                  itemRelationship.getType().name == ItemRelationship.HAS_ORIGIN.name) {
-                  if (!itemRelationship.hasProperty("created")) {
-                    itemRelationship.setProperty("created", itemRelationship.getProperty("modified").asInstanceOf[Long])
-                  }
-                }
-              })
-            }
-          })
-          Right(count)
-        }
-    }
-  }
-  
   protected def createAgreementNode(agreement: Agreement): Response[Node] = {
     withTx {
       implicit neo4j =>

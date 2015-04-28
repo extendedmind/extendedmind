@@ -42,9 +42,6 @@ import akka.actor.ActorRefFactory
 
 sealed abstract class SignUpMethod
 case object SIGNUP_ON extends SignUpMethod
-case object SIGNUP_INVITE extends SignUpMethod
-case object SIGNUP_INVITE_COUPON extends SignUpMethod
-case object SIGNUP_INVITE_AUTOMATIC extends SignUpMethod
 case object SIGNUP_OFF extends SignUpMethod
 
 sealed abstract class SignUpMode
@@ -75,9 +72,6 @@ class Settings(config: Config) extends Extension {
   val signUpMethod: SignUpMethod  = {
     config.getString("extendedmind.security.signUpMethod") match {
       case "OFF" => SIGNUP_OFF
-      case "INVITE" => SIGNUP_INVITE
-      case "INVITE_COUPON" => SIGNUP_INVITE_COUPON
-      case "INVITE_AUTOMATIC" => SIGNUP_INVITE_AUTOMATIC
       case "ON" => SIGNUP_ON
     }
   }
@@ -108,8 +102,8 @@ class Settings(config: Config) extends Extension {
     else
       None
   }
-  val listInviteTitle = config.getString("extendedmind.email.templates.listInviteTitle")
-  val inviteURI = config.getString("extendedmind.email.templates.inviteURI")
+  val shareListTitle = config.getString("extendedmind.email.templates.shareListTitle")
+  val acceptShareURI = config.getString("extendedmind.email.templates.acceptShareURI")
   val resetPasswordTitle = config.getString("extendedmind.email.templates.resetPasswordTitle")
   val resetPasswordURI = config.getString("extendedmind.email.templates.resetPasswordURI")
   val verifyEmailTitle = config.getString("extendedmind.email.templates.verifyEmailTitle")
@@ -130,7 +124,6 @@ class Configuration(settings: Settings, actorRefFactory: ActorRefFactory) extend
   bind [MailgunClient] to new MailgunClientImpl
   bind [SecurityActions] to new SecurityActionsImpl
   bind [UserActions] to new UserActionsImpl
-  bind [InviteActions] to new InviteActionsImpl
   bind [CollectiveActions] to new CollectiveActionsImpl
   bind [ItemActions] to new ItemActionsImpl
   bind [TaskActions] to new TaskActionsImpl

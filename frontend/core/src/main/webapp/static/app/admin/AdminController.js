@@ -20,8 +20,6 @@
 
   AdminService.getStatistics().then(function(response) {
     $scope.userCount = response.users;
-    $scope.inviteCount = response.invites;
-    $scope.inviteRequestCount = response.inviteRequests;
     $scope.itemCount = response.items;
   });
 
@@ -31,65 +29,6 @@
       $scope.adminMode = 'users';
     });
   };
-
-  $scope.gotoInvites = function gotoInvites() {
-    AdminService.getInvites().then(function(response) {
-      $scope.invites = response.invites;
-      $scope.adminMode = 'invites';
-    });
-  };
-
-  $scope.resendInvite = function resendInvite(invite) {
-    AuthenticationService.resendInvite(invite.uuid, invite.email).then(function() {
-      invite.resent = true;
-    });
-  };
-
-  $scope.gotoInviteRequests = function gotoInviteRequests() {
-    AdminService.getInviteRequests().then(function(response) {
-      $scope.inviteRequests = response.inviteRequests;
-      $scope.adminMode = 'inviteRequests';
-    });
-  };
-
-  $scope.acceptInviteRequest = function acceptInviteRequest(inviteRequest) {
-    AdminService.acceptInviteRequest(inviteRequest).then(function() {
-      if (removeInviteRequest(inviteRequest)) {
-        $scope.inviteCount += 1;
-      }
-    });
-  };
-
-  $scope.deleteInviteRequest = function deleteInviteRequest(inviteRequest) {
-    AdminService.deleteInviteRequest(inviteRequest).then(function() {
-      removeInviteRequest(inviteRequest);
-    });
-  };
-
-  $scope.deleteInvite = function deleteInvite(invite) {
-    AdminService.deleteInvite(invite).then(function() {
-      removeInvite(invite);
-    });
-  };
-
-  function removeInvite(invite) {
-    var index = $scope.invites.indexOf(invite);
-    if (index > -1) {
-      $scope.invites.splice(index, 1);
-      $scope.inviteCount -= 1;
-      return true;
-    }
-  }
-
-  function removeInviteRequest(inviteRequest) {
-    var index = $scope.inviteRequests.indexOf(inviteRequest);
-    if (index > -1) {
-      $scope.inviteRequests.splice(index, 1);
-      // Getting stats is not cheap so do this locally
-      $scope.inviteRequestCount -= 1;
-      return true;
-    }
-  }
 
   $scope.getDateString = function getDateString(date) {
     return DateService.getYYYYMMDD(new Date(date));
