@@ -239,7 +239,7 @@
 
     $scope.reminderPickerOpen = true;
     if (angular.isFunction($scope.registerPropertyEditDoneCallback))
-      $scope.registerPropertyEditDoneCallback(closeReminderPicker, [reminder, task]);
+      $scope.registerPropertyEditDoneCallback(closeReminderPickerAndSave, [reminder, task]);
   };
 
   function compareWithNotificationTime(a, b) {
@@ -319,7 +319,7 @@
     }, 2000);
   }
 
-  function closeReminderPicker(reminder, task) {
+  function closeReminderPickerAndSave(reminder, task) {
     if ($scope.reminder.hours.value !== undefined && $scope.reminder.minutes.value !== undefined) {
       $scope.reminder.date.setHours($scope.reminder.hours.value, $scope.reminder.minutes.value);
       if ($scope.reminder.date > new Date().setSeconds(0, 0)) {
@@ -335,6 +335,7 @@
           }
           $scope.task.trans.reminders.push(reminderToAdd);
         }
+        $scope.saveTask(task);
       } else {
         setReminderError($scope.reminder, 'past');
       }
