@@ -17,7 +17,7 @@
  'use strict';
 
  function ConvertService($q, BackendClientService, ExtendedItemService, ItemLikeService,
-                         ListsService, NotesService, TasksService, UserSessionService) {
+                         ListsService, NotesService, TasksService) {
 
   var listSlashRegex = /\/list\//;
   var noteSlashRegex = /\/note\//;
@@ -150,7 +150,9 @@
       }
     };
     if (item.trans.link) newItem.mod.link = item.trans.link;
-    if (item.mod && item.mod.hasOwnProperty('relationships')) newItem.mod.relationships = item.mod.relationships;
+    if (item.mod && item.mod.hasOwnProperty('relationships')) {
+      newItem.mod.relationships = item.mod.relationships;
+    }
     else if (item.relationships) newItem.mod.relationships = item.relationships;
     return newItem;
   }
@@ -197,6 +199,8 @@
       var deferred = $q.defer();
       if (TasksService.getTaskStatus(task, ownerUUID) === 'deleted') {
         deferred.reject({type: 'deleted'});
+      } else if (task.trans.reminders) {
+        deferred.reject({type: 'reminders'});
       } else {
         var path = '/api/' + ownerUUID + '/task/' + task.trans.uuid + '/note';
         var transportTask = ItemLikeService.prepareTransport(task, 'task',
@@ -218,6 +222,8 @@
 
       if (TasksService.getTaskStatus(task, ownerUUID) === 'deleted') {
         deferred.reject({type: 'deleted'});
+      } else if (task.trans.reminders) {
+        deferred.reject({type: 'reminders'});
       } else {
         // NOTE: Currently only one-level lists are supported.
         // Remove pre-existing list before converting to list.
@@ -286,6 +292,10 @@
       var deferred = $q.defer();
       if (ListsService.getListStatus(list, ownerUUID) === 'deleted') {
         deferred.reject({type: 'deleted'});
+      } else if (TasksService.isTasksWithList(list, ownerUUID) ||
+                 NotesService.isNotesWithList(list, ownerUUID))
+      {
+        deferred.reject({type: 'parent'});
       } else {
         var path = '/api/' + ownerUUID + '/list/' + list.trans.uuid + '/task';
         var transportList = ItemLikeService.prepareTransport(list, 'list',
@@ -306,6 +316,10 @@
       var deferred = $q.defer();
       if (ListsService.getListStatus(list, ownerUUID) === 'deleted') {
         deferred.reject({type: 'deleted'});
+      } else if (TasksService.isTasksWithList(list, ownerUUID) ||
+                 NotesService.isNotesWithList(list, ownerUUID))
+      {
+        deferred.reject({type: 'parent'});
       } else {
         var path = '/api/' + ownerUUID + '/list/' + list.trans.uuid + '/note';
         var transportList = ItemLikeService.prepareTransport(list, 'list',
@@ -323,53 +337,53 @@
       return deferred.promise;
     },
     convertTaskToNoteRegex: new RegExp('^' +
-                                             BackendClientService.apiPrefixRegex.source +
-                                             BackendClientService.uuidRegex.source +
-                                             taskSlashRegex.source +
-                                             BackendClientService.uuidRegex.source +
-                                             noteRegex.source +
-                                             '$'),
+                                       BackendClientService.apiPrefixRegex.source +
+                                       BackendClientService.uuidRegex.source +
+                                       taskSlashRegex.source +
+                                       BackendClientService.uuidRegex.source +
+                                       noteRegex.source +
+                                       '$'),
 
     convertTaskToListRegex: new RegExp('^' +
-                                         BackendClientService.apiPrefixRegex.source +
-                                         BackendClientService.uuidRegex.source +
-                                         taskSlashRegex.source +
-                                         BackendClientService.uuidRegex.source +
-                                         listRegex.source +
-                                         '$'),
+                                       BackendClientService.apiPrefixRegex.source +
+                                       BackendClientService.uuidRegex.source +
+                                       taskSlashRegex.source +
+                                       BackendClientService.uuidRegex.source +
+                                       listRegex.source +
+                                       '$'),
 
     convertNoteToTaskRegex: new RegExp('^' +
-                                         BackendClientService.apiPrefixRegex.source +
-                                         BackendClientService.uuidRegex.source +
-                                         noteSlashRegex.source +
-                                         BackendClientService.uuidRegex.source +
-                                         taskRegex.source +
-                                         '$'),
+                                       BackendClientService.apiPrefixRegex.source +
+                                       BackendClientService.uuidRegex.source +
+                                       noteSlashRegex.source +
+                                       BackendClientService.uuidRegex.source +
+                                       taskRegex.source +
+                                       '$'),
 
     convertNoteToListRegex: new RegExp('^' +
-                                         BackendClientService.apiPrefixRegex.source +
-                                         BackendClientService.uuidRegex.source +
-                                         noteSlashRegex.source +
-                                         BackendClientService.uuidRegex.source +
-                                         listRegex.source +
-                                         '$'),
+                                       BackendClientService.apiPrefixRegex.source +
+                                       BackendClientService.uuidRegex.source +
+                                       noteSlashRegex.source +
+                                       BackendClientService.uuidRegex.source +
+                                       listRegex.source +
+                                       '$'),
 
     convertListToTaskRegex: new RegExp('^' +
-                                         BackendClientService.apiPrefixRegex.source +
-                                         BackendClientService.uuidRegex.source +
-                                         listSlashRegex.source +
-                                         BackendClientService.uuidRegex.source +
-                                         taskRegex.source +
-                                         '$'),
+                                       BackendClientService.apiPrefixRegex.source +
+                                       BackendClientService.uuidRegex.source +
+                                       listSlashRegex.source +
+                                       BackendClientService.uuidRegex.source +
+                                       taskRegex.source +
+                                       '$'),
     convertListToNoteRegex: new RegExp('^' +
-                                         BackendClientService.apiPrefixRegex.source +
-                                         BackendClientService.uuidRegex.source +
-                                         listSlashRegex.source +
-                                         BackendClientService.uuidRegex.source +
-                                         noteRegex.source +
-                                         '$')
+                                       BackendClientService.apiPrefixRegex.source +
+                                       BackendClientService.uuidRegex.source +
+                                       listSlashRegex.source +
+                                       BackendClientService.uuidRegex.source +
+                                       noteRegex.source +
+                                       '$')
   };
 }
 ConvertService['$inject'] = ['$q', 'BackendClientService', 'ExtendedItemService', 'ItemLikeService',
-'ListsService', 'NotesService', 'TasksService', 'UserSessionService'];
+'ListsService', 'NotesService', 'TasksService'];
 angular.module('em.main').factory('ConvertService', ConvertService);

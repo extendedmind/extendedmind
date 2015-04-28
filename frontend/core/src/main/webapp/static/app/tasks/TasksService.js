@@ -712,6 +712,26 @@
         ItemLikeService.persistAndReset(tasks[newUUID].deletedTasks, 'task', newUUID, taskFieldInfos);
       }
     },
+    /*
+    * Check active and archived arrays for tasks with the list.
+    */
+    isTasksWithList: function(list, ownerUUID) {
+      var i;
+      for (i = 0; i < tasks[ownerUUID].activeTasks.length; i++) {
+        if (tasks[ownerUUID].activeTasks[i].trans.list &&
+            tasks[ownerUUID].activeTasks[i].trans.list.uuid === list.uuid)
+        {
+          return true;
+        }
+      }
+      for (i = 0; i < tasks[ownerUUID].archivedTasks.length; i++){
+        if (tasks[ownerUUID].archivedTasks[i].trans.list &&
+            tasks[ownerUUID].archivedTasks[i].trans.list.uuid === list.uuid)
+        {
+          return true;
+        }
+      }
+    },
     taskFieldInfos: taskFieldInfos,
     // Regular expressions for task requests
     putNewTaskRegex: ItemLikeService.getPutNewRegex('task'),

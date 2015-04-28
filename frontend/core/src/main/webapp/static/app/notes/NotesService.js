@@ -481,6 +481,26 @@
         ItemLikeService.persistAndReset(notes[newUUID].deletedNotes, 'note', newUUID, noteFieldInfos);
       }
     },
+    /*
+    * Check active and archived arrays for tasks with the list.
+    */
+    isNotesWithList: function(list, ownerUUID) {
+      var i;
+      for (i = 0; i < notes[ownerUUID].activeNotes.length; i++) {
+        if (notes[ownerUUID].activeNotes[i].trans.list &&
+            notes[ownerUUID].activeNotes[i].trans.list.uuid === list.uuid)
+        {
+          return true;
+        }
+      }
+      for (i = 0; i < notes[ownerUUID].archivedNotes.length; i++){
+        if (notes[ownerUUID].archivedNotes[i].trans.list &&
+            notes[ownerUUID].archivedNotes[i].trans.list.uuid === list.uuid)
+        {
+          return true;
+        }
+      }
+    },
     noteFieldInfos: noteFieldInfos,
     // Regular expressions for note requests
     putNewNoteRegex: ItemLikeService.getPutNewRegex('note'),

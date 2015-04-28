@@ -167,6 +167,19 @@
 
   // CONVERTING
 
+  function handleConvertError(error) {
+    var message;
+    if (error.type === 'parent') {
+      message = 'can\'t convert list with content';
+    } else if (error.type === 'reminders') {
+      message = 'can\'t convert task with reminders';
+    }
+    UISessionService.pushNotification({
+      type: 'fyi',
+      text: message
+    });
+  }
+
   $scope.convertToNote = function(dataInEdit){
     var convertToNotePromise;
     if (dataInEdit.trans.itemType === 'item') {
@@ -180,10 +193,11 @@
       convertToNotePromise = ConvertService.finishListToNoteConvert(dataInEdit,
                                                                     UISessionService.getActiveUUID());
     }
+
     if (convertToNotePromise){
       convertToNotePromise.then(function(note){
         $scope.initializeEditor('note', note);
-      });
+      }, handleConvertError);
     }
   };
 
@@ -202,7 +216,7 @@
     if (convertToTaskPromise){
       convertToTaskPromise.then(function(task){
         $scope.initializeEditor('task', task);
-      });
+      }, handleConvertError);
     }
   };
 
@@ -222,7 +236,7 @@
     if (convertToListPromise){
       convertToListPromise.then(function(list){
         $scope.initializeEditor('list', list);
-      });
+      }, handleConvertError);
     }
   };
 
