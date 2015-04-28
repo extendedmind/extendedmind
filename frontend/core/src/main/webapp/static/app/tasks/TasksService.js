@@ -18,7 +18,8 @@
 
  function TasksService($q, $rootScope,
                        ArrayService, BackendClientService, DateService, ExtendedItemService, ItemLikeService,
-                       ListsService, TagsService, UISessionService, UserSessionService, UUIDService) {
+                       ListsService, ReminderService, TagsService, UISessionService, UserSessionService,
+                       UUIDService) {
 
   /*
   * Create a separate 'optimisticComplete' getter/setter which can be used by checkbox ng-bind.
@@ -606,7 +607,7 @@
       }
       return deferred.promise;
     },
-    completeTask: function(task, ownerUUID, reminderIdToRemove) {
+    completeTask: function(task, ownerUUID) {
       var deferred = $q.defer();
       if (tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue('uuid', task.trans.uuid, 'trans')) {
         deferred.reject({type: 'deleted'});
@@ -641,14 +642,10 @@
           };
         }
         var data, reminder;
-        if (reminderIdToRemove !== undefined) {
-          reminder = task.trans.reminders.findFirstObjectByKeyValue('id', reminderIdToRemove);
+        if (task.trans.reminder) {
+          reminder = ReminderService.findActiveReminderForThisDevice(task.trans.reminders);
           if (reminder !== undefined) {
-            if (reminder.uuid) {
-              // Update persisted reminder
-              data = {reminderId: reminderIdToRemove, removed: fakeTimestamp};
-            }
-            reminder.removed = fakeTimestamp;
+            data = ReminderService.deactivateReminder(reminder, task, fakeTimestamp);
           }
         }
         BackendClientService.postOffline('/api/' + ownerUUID + '/task/' + task.trans.uuid + '/complete',
@@ -665,7 +662,7 @@
       }
       return deferred.promise;
     },
-    uncompleteTask: function(task, ownerUUID, reminderIdToAdd) {
+    uncompleteTask: function(task, ownerUUID) {
       var deferred = $q.defer();
       if (tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue('uuid', task.trans.uuid, 'trans')) {
         deferred.reject({type: 'deleted'});
@@ -674,17 +671,15 @@
       } else {
         var params = {type: 'task', owner: ownerUUID, uuid: task.trans.uuid, lastReplaceable: true};
         var fakeTimestamp = BackendClientService.generateFakeTimestamp();
+
         var data, reminder;
-        if (reminderIdToAdd !== undefined) {
-          reminder = task.trans.reminders.findFirstObjectByKeyValue('id', reminderIdToAdd);
+        if (task.trans.reminders) {
+          reminder = ReminderService.findActiveReminderForThisDevice(task.trans.reminders);
           if (reminder !== undefined) {
-            if (reminder.uuid) {
-              // Update persisted reminder.
-              data = {reminderId: reminderIdToAdd};
-            }
-            delete reminder.removed;
+            data = ReminderService.activateReminder(reminder, task);
           }
         }
+
         BackendClientService.postOffline('/api/' + ownerUUID + '/task/' + task.trans.uuid + '/uncomplete',
                                   this.uncompleteTaskRegex, params, data, fakeTimestamp);
         if (!task.mod) task.mod = {};
@@ -735,5 +730,5 @@
 
 TasksService['$inject'] = ['$q', '$rootScope',
   'ArrayService', 'BackendClientService', 'DateService', 'ExtendedItemService', 'ItemLikeService',
-  'ListsService', 'TagsService', 'UISessionService', 'UserSessionService', 'UUIDService'];
+  'ListsService', 'ReminderService', 'TagsService', 'UISessionService', 'UserSessionService', 'UUIDService'];
 angular.module('em.tasks').factory('TasksService', TasksService);

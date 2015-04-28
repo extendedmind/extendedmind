@@ -15,8 +15,8 @@
  'use strict';
 
  function TasksController($rootScope, $scope, $timeout,
-                          AnalyticsService, ArrayService, DateService, ItemsService, ReminderService,
-                          SwiperService, TasksService, UISessionService) {
+                          AnalyticsService, ArrayService, DateService, ItemsService, SwiperService,
+                          TasksService, UISessionService) {
 
   // INITIALIZING
   if (angular.isFunction($scope.registerArrayChangeCallback)) {
@@ -448,19 +448,10 @@
     if (navigator.vibrate && !$scope.isVibrationDisabled())
       navigator.vibrate(200);
 
-    var reminder;
-    if (task.trans.reminders) {
-      reminder = ReminderService.findActiveReminderForThisDevice(task.trans.reminders);
-    }
-
     freezeTask(task);
     if (task.trans.completed) {
       AnalyticsService.do('uncompleteTask');
-      if (reminder !== undefined) {
-        ReminderService.activateReminder(reminder, task);
-      }
-      TasksService.uncompleteTask(task, UISessionService.getActiveUUID(), reminder ? reminder.id : undefined)
-      .then(function(task) {
+      TasksService.uncompleteTask(task, UISessionService.getActiveUUID()).then(function(task) {
         unfreezeTask(task, true);
       }, function() {
         unfreezeTask(task, true);
@@ -468,11 +459,7 @@
       return false;
     } else {
       AnalyticsService.do('completeTask');
-      if (reminder !== undefined) {
-        ReminderService.removeReminder(reminder);
-      }
-      TasksService.completeTask(task, UISessionService.getActiveUUID(), reminder ? reminder.id : undefined)
-      .then(function(){
+      TasksService.completeTask(task, UISessionService.getActiveUUID()).then(function(){
         if (!taskCompletingReadyDeferred){
           unfreezeTask(task, true);
         }
@@ -590,7 +577,7 @@
 
 TasksController['$inject'] = [
 '$rootScope', '$scope', '$timeout',
-'AnalyticsService', 'ArrayService', 'DateService', 'ItemsService', 'ReminderService', 'SwiperService',
-'TasksService', 'UISessionService'
+'AnalyticsService', 'ArrayService', 'DateService', 'ItemsService', 'SwiperService', 'TasksService',
+'UISessionService'
 ];
 angular.module('em.tasks').controller('TasksController', TasksController);

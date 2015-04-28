@@ -56,6 +56,21 @@
       };
 
       cordova.plugins.notification.local.schedule(reminderToActivate);
+
+      delete reminder.removed;
+      if (reminder.uuid) {
+        // Update persisted reminder.
+        return {reminderId: reminder.id};
+      }
+    },
+    deactivateReminder: function(reminder, item, timestamp) {
+      this.removeReminder(reminder);
+      reminder.removed = timestamp;
+
+      if (reminder.uuid) {
+        // Update persisted reminder
+        return {reminderId: reminder.id, removed: timestamp};
+      }
     },
     updateReminder: function(reminder, date) {
       cordova.plugins.notification.local.update({
