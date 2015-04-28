@@ -437,6 +437,20 @@
           }
         }else{
           if (!taskInfo.task.mod) taskInfo.task.mod = {};
+          if (properties.associated) {
+            if (taskInfo.task.mod.reminders) {
+              // Update reminders with associated info.
+              for (var i = 0; i < properties.associated.length; i++) {
+                var reminder = taskInfo.task.mod.reminders.findFirstObjectByKeyValue('id',
+                                                                                properties.associated[i].id);
+                if (reminder !== undefined) {
+                  reminder.uuid = properties.associated[i].uuid;
+                }
+              }
+            }
+            // Delete associated array before update.
+            delete properties.associated;
+          }
           ItemLikeService.updateObjectProperties(taskInfo.task.mod, properties);
           if (properties.uuid){
             // UUID has changed

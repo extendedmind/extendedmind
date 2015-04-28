@@ -186,6 +186,10 @@
           }
         }else{
           if (!listInfo.list.mod) listInfo.list.mod = {};
+          if (properties.associated) {
+            // Delete associated array before update.
+            delete properties.associated;
+          }
           ItemLikeService.updateObjectProperties(listInfo.list.mod, properties);
           if (properties.uuid){
             updateList(listInfo.list, ownerUUID, uuid, properties);

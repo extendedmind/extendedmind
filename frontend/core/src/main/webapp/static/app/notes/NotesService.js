@@ -260,6 +260,10 @@
           }
         }else{
           if (!noteInfo.note.mod) noteInfo.note.mod = {};
+          if (properties.associated) {
+            // Delete associated array before update.
+            delete properties.associated;
+          }
           ItemLikeService.updateObjectProperties(noteInfo.note.mod, properties);
           if (properties.uuid){
             // UUID has changed
