@@ -44,34 +44,6 @@
 
       return reminderToSave;
     },
-    activateReminder: function(reminder, item) {
-      var reminderToActivate = {
-        id: parseInt(reminder.id),
-        title: reminder.title,
-        at: reminder.notification,
-        data: {
-          itemType: item.trans.itemType,
-          itemUUID: item.trans.itemUUID
-        }
-      };
-
-      cordova.plugins.notification.local.schedule(reminderToActivate);
-
-      delete reminder.removed;
-      if (reminder.uuid) {
-        // Update persisted reminder.
-        return {reminderId: reminder.id};
-      }
-    },
-    deactivateReminder: function(reminder, item, timestamp) {
-      this.removeReminder(reminder);
-      reminder.removed = timestamp;
-
-      if (reminder.uuid) {
-        // Update persisted reminder
-        return {reminderId: reminder.id, removed: timestamp};
-      }
-    },
     updateReminder: function(reminder, date) {
       cordova.plugins.notification.local.update({
         id: parseInt(reminder.id),
@@ -83,6 +55,45 @@
     },
     removeReminder: function(reminder) {
       cordova.plugins.notification.local.cancel(parseInt(reminder.id));
+    },
+    scheduleReminder: function(item) {
+      if (item.trans.reminders) {
+        var reminder = this.findActiveReminderForThisDevice(item.trans.reminders);
+        if (reminder !== undefined) {
+
+          var reminderToSchedule = {
+            id: parseInt(reminder.id),
+            title: reminder.title,
+            at: reminder.notification,
+            data: {
+              itemType: item.trans.itemType,
+              itemUUID: item.trans.itemUUID
+            }
+          };
+
+          cordova.plugins.notification.local.schedule(reminderToSchedule);
+          delete reminder.removed;
+          return reminder;
+        }
+      }
+    },
+    unscheduleReminder: function(item, timestamp) {
+      if (item.trans.reminders) {
+        var reminder = this.findActiveReminderForThisDevice(item.trans.reminders);
+        if (reminder !== undefined) {
+          this.removeReminder(reminder);
+          reminder.removed = timestamp;
+          return reminder;
+        }
+      }
+    },
+    removeScheduledReminder: function(item) {
+      if (item.trans.reminders) {
+        var reminder = this.findActiveReminderForThisDevice(item.trans.reminders);
+        if (reminder !== undefined) {
+          this.removeReminder(reminder);
+        }
+      }
     },
     clearTriggeredReminders: function() {
       cordova.plugins.notification.local.clearAll();

@@ -394,7 +394,7 @@
       }
       return deferred.promise;
     },
-    processDelete: function(item, itemType, ownerUUID, fieldInfos){
+    processDelete: function(item, itemType, ownerUUID, fieldInfos, data){
       function getDeleteUrl(params){
         return params.prefix + params.item.trans.uuid;
       }
@@ -408,7 +408,7 @@
       };
       var fakeTimestamp = BackendClientService.generateFakeTimestamp();
       BackendClientService.deleteOffline('/api/' + ownerUUID + '/' + itemType +'/' + item.trans.uuid,
-                                         this.getDeleteRegex(itemType), params, undefined, fakeTimestamp)
+                                         this.getDeleteRegex(itemType), params, data, fakeTimestamp)
       .then(function() {
         if (!item.mod) item.mod = {};
         updateObjectProperties(item.mod, {modified: fakeTimestamp, deleted: fakeTimestamp});
@@ -416,7 +416,7 @@
       });
       return deferred.promise;
     },
-    undelete: function(item, itemType, ownerUUID, fieldInfos){
+    undelete: function(item, itemType, ownerUUID, fieldInfos, data){
       function getUndeleteUrl(params){
         return params.prefix + params.item.trans.uuid + '/undelete';
       }
@@ -425,7 +425,7 @@
       var fakeTimestamp = BackendClientService.generateFakeTimestamp();
       BackendClientService.postOffline('/api/' + ownerUUID + '/' + itemType +'/' + item.trans.uuid +
                                        '/undelete',
-                                       this.getUndeleteRegex(itemType), params, undefined, fakeTimestamp)
+                                       this.getUndeleteRegex(itemType), params, data, fakeTimestamp)
       .then(function() {
         if (!item.mod) item.mod = {};
         updateObjectProperties(item.mod, {modified: fakeTimestamp, deleted: undefined});

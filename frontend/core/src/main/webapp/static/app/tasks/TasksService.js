@@ -549,6 +549,7 @@
     removeTask: function(uuid, ownerUUID) {
       var taskInfo = this.getTaskInfo(uuid, ownerUUID);
       if (taskInfo) {
+        ReminderService.removeScheduledReminder(taskInfo.task);
         var taskIndex;
         if (taskInfo.type === 'active') {
           taskIndex = tasks[ownerUUID].activeTasks.indexOf(taskInfo.task);
@@ -580,7 +581,12 @@
       if (tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue('uuid', task.trans.uuid, 'trans')) {
         deferred.resolve('unmodified');
       }else{
-        ItemLikeService.processDelete(task, 'task', ownerUUID, taskFieldInfos).then(
+        var data, reminder = ReminderService.unscheduleReminder(task);
+        if (reminder && reminder.uuid) {
+          // Update persisted reminder info.
+          data = {reminderId: reminder.id, removed: BackendClientService.generateFakeTimestamp()};
+        }
+        ItemLikeService.processDelete(task, 'task', ownerUUID, taskFieldInfos, data).then(
           function(){
             updateTask(task, ownerUUID);
             deferred.resolve(task);
@@ -596,7 +602,12 @@
       if (!tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue('uuid', task.trans.uuid, 'trans')) {
         deferred.resolve('unmodified');
       }else{
-        ItemLikeService.undelete(task, 'task', ownerUUID, taskFieldInfos).then(
+        var data, reminder = ReminderService.scheduleReminder(task);
+        if (reminder && reminder.uuid) {
+          // Update persisted reminder info.
+          data = {reminderId: reminder.id};
+        }
+        ItemLikeService.undelete(task, 'task', ownerUUID, taskFieldInfos, data).then(
           function(){
             updateTask(task, ownerUUID);
             deferred.resolve(task);
@@ -641,13 +652,12 @@
             url: '/api/' + ownerUUID + '/task/' + task.trans.uuid + '/uncomplete'
           };
         }
-        var data, reminder;
-        if (task.trans.reminder) {
-          reminder = ReminderService.findActiveReminderForThisDevice(task.trans.reminders);
-          if (reminder !== undefined) {
-            data = ReminderService.deactivateReminder(reminder, task, fakeTimestamp);
-          }
+        var data, reminder = ReminderService.unscheduleReminder(task);
+        if (reminder && reminder.uuid) {
+          // Update persisted reminder info.
+          data = {reminderId: reminder.id, removed: fakeTimestamp};
         }
+
         BackendClientService.postOffline('/api/' + ownerUUID + '/task/' + task.trans.uuid + '/complete',
                                   this.completeTaskRegex, params, data, fakeTimestamp);
         if (!task.mod) task.mod = {};
@@ -671,13 +681,10 @@
       } else {
         var params = {type: 'task', owner: ownerUUID, uuid: task.trans.uuid, lastReplaceable: true};
         var fakeTimestamp = BackendClientService.generateFakeTimestamp();
-
-        var data, reminder;
-        if (task.trans.reminders) {
-          reminder = ReminderService.findActiveReminderForThisDevice(task.trans.reminders);
-          if (reminder !== undefined) {
-            data = ReminderService.activateReminder(reminder, task);
-          }
+        var data, reminder = ReminderService.scheduleReminder(task);
+        if (reminder && reminder.uuid) {
+          // Update persisted reminder info.
+          data = {reminderId: reminder.id};
         }
 
         BackendClientService.postOffline('/api/' + ownerUUID + '/task/' + task.trans.uuid + '/uncomplete',
