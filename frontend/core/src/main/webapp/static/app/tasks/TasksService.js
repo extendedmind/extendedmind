@@ -644,8 +644,11 @@
         if (reminderIdToRemove !== undefined) {
           reminder = task.trans.reminders.findFirstObjectByKeyValue('id', reminderIdToRemove);
           if (reminder !== undefined) {
+            if (reminder.uuid) {
+              // Update persisted reminder
+              data = {reminderId: reminderIdToRemove, removed: fakeTimestamp};
+            }
             reminder.removed = fakeTimestamp;
-            data = {reminderId: reminderIdToRemove, removed: fakeTimestamp};
           }
         }
         BackendClientService.postOffline('/api/' + ownerUUID + '/task/' + task.trans.uuid + '/complete',
@@ -675,7 +678,10 @@
         if (reminderIdToAdd !== undefined) {
           reminder = task.trans.reminders.findFirstObjectByKeyValue('id', reminderIdToAdd);
           if (reminder !== undefined) {
-            data = {reminderId: reminderIdToAdd};
+            if (reminder.uuid) {
+              // Update persisted reminder.
+              data = {reminderId: reminderIdToAdd};
+            }
             delete reminder.removed;
           }
         }
