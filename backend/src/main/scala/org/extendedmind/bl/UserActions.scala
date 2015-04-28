@@ -126,10 +126,14 @@ trait UserActions {
     db.destroyUser(userUUID)
   }
   
+  /* Subscriptions */
+  
   def subscribe(userUUID: UUID, subscription: Subscription)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("subscribe: {}", userUUID)
     Right(SetResult(None, None, 1))
   }
+  
+  /* Agreements */
   
   def putNewAgreement(userUUID: UUID, agreement: Agreement)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("putNewAgreement")
@@ -137,9 +141,7 @@ trait UserActions {
       fail(INVALID_PARAMETER, ERR_USER_INVALID_AGREEMENT_USER_UUID, "Agreement proposedBy.uuid must match user's own UUID")
     }else {
       val setResult = db.putNewAgreement(agreement)      
-
-      // TODO: Send email about agreement
-      
+      sendAgreementEmail(agreement)
       setResult
     }
   }
@@ -147,6 +149,46 @@ trait UserActions {
   def changeAgreementAccess(userUUID: UUID, agreementUUID: UUID, access: Byte)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("changeAgreementAccess")
     db.changeAgreementAccess(userUUID, agreementUUID, access)      
+  }
+  
+  def destroyAgreement(userUUID: UUID, agreementUUID: UUID)(implicit log: LoggingAdapter): Response[DestroyResult] = {
+    log.info("destroyAgreement")
+    db.destroyAgreement(userUUID, agreementUUID)      
+  }
+  
+  def resendAgreement(userUUID: UUID, agreementUUID: UUID)(implicit log: LoggingAdapter): Response[CountResult] = {
+    log.info("resendAgreement")
+    for {
+      agreement <- db.getAgreement(userUUID, agreementUUID).right
+      result <- sendAgreementEmail(agreement).right
+    } yield result
+  }
+  
+  def acceptAgreement(code: Long, proposedToEmail: String)(implicit log: LoggingAdapter): Response[SetResult] = {
+    log.info("acceptAgreement: {}", proposedToEmail)
+    db.acceptAgreement(code, proposedToEmail)
+  }
+  
+  private def sendAgreementEmail(agreement: Agreement)(implicit log: LoggingAdapter): Response[CountResult] = {
+    if (agreement.accepted.isDefined){
+      fail(INVALID_PARAMETER, ERR_USER_AGREEMENT_ACCEPTED, "Agreeemnt has already been accepted, no need to send email")
+    }else{
+      val acceptCode = Random.generateRandomUnsignedLong
+      val futureMailResponse = mailgun.sendShareListAgreement(agreement, acceptCode)
+      futureMailResponse onSuccess {
+        case SendEmailResponse(message, id) => {
+          val saveResponse = db.saveAgreementAcceptInformation(agreement.uuid.get, acceptCode, id)
+          if (saveResponse.isLeft)
+            log.error("Error saving agreement details proposed to email {} with emailId {}, error: {}",
+              agreement.proposedTo.email, id, saveResponse.left.get.head)
+          else log.info("Saved agreement accept code proposed to email {} with emailId: {}",
+            agreement.proposedTo.email, id)
+        }
+        case _ =>
+          log.error("Could not send agreement email proposed to {}", agreement.proposedTo.email)
+      }
+      Right(CountResult(1))
+    }
   }
 }
 

@@ -41,8 +41,8 @@ trait API extends HttpService {
   val putNewAgreement = put & path("agreement".r)
   val postAgreementAccess = post & path("agreement" / JavaUUID / "access" / IntNumber)
   val postAgreementResend = post & path("agreement" / JavaUUID / "resend")  
-  val postAcceptAgreement = post & path("agreement" / HexLongNumber / "accept")
   val deleteAgreement = delete & path("agreement" / JavaUUID)
+  val postAgreementAccept = post & path("agreement" / HexLongNumber / "accept")
 
   // SECURITY
   val postAuthenticate = post & path("authenticate".r)

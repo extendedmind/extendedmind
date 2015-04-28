@@ -33,7 +33,6 @@ object SecurityRelationship {
   val CAN_READ = ExtendedMindRelationship("CAN_READ")
   val CAN_READ_WRITE = ExtendedMindRelationship("CAN_READ_WRITE")
   val IS_ORIGIN = ExtendedMindRelationship("IS_ORIGIN")
-  val IS_ACCEPTER = ExtendedMindRelationship("IS_ACCEPTER")
 }
 
 object ItemRelationship {
@@ -43,7 +42,7 @@ object ItemRelationship {
   val HAS_REMINDER = ExtendedMindRelationship("HAS_REMINDER")
 }
 
-object AgreementRelationships {
+object AgreementRelationship {
   val PROPOSES = ExtendedMindRelationship("PROPOSES")
   val IS_PROPOSED_TO = ExtendedMindRelationship("IS_PROPOSED_TO")
   val CONCERNING = ExtendedMindRelationship("CONCERNING")

@@ -77,7 +77,7 @@ trait MailgunClient {
   implicit val implicitContext = actorRefFactory.dispatcher
   val sendEmailPipeline = sendReceive ~> unmarshal[SendEmailResponse]
 
-  def sendShareListAgreement(agreement: Agreement): Future[SendEmailResponse] = {
+  def sendShareListAgreement(agreement: Agreement, acceptCode: Long): Future[SendEmailResponse] = {
     val sendEmailRequest = SendEmailRequest(settings.emailFrom, agreement.proposedTo.email,
       settings.shareListTitle.replaceAll(
           "inviterEmail",

@@ -161,6 +161,44 @@ trait UserService extends ServiceBase {
             }
           }
         }
+      } ~
+      deleteAgreement  { agreementUUID =>
+        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+          complete {
+            Future[DestroyResult] {
+              setLogContext(securityContext)
+              userActions.destroyAgreement(securityContext.userUUID, agreementUUID) match {
+                case Right(dr) => processResult(dr)
+                case Left(e) => processErrors(e)
+              }
+            }
+          }
+        }
+      } ~
+      postAgreementResend { agreementUUID =>
+        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+          complete {
+            Future[CountResult] {
+              setLogContext(securityContext)
+              userActions.resendAgreement(securityContext.userUUID, agreementUUID) match {
+                case Right(cr) => processResult(cr)
+                case Left(e) => processErrors(e)
+              }
+            }
+          }
+        }
+      } ~
+      postAgreementAccept { code =>
+        entity(as[UserEmail]) { email =>
+          complete {
+            Future[SetResult] {
+              userActions.acceptAgreement(code, email.email) match {
+                case Right(sr) => processResult(sr)
+                case Left(e) => processErrors(e)
+              }
+            }
+          }
+        }
       }
   }
 }
