@@ -99,4 +99,4 @@
   };
 }
 ReminderService['$inject'] = ['UISessionService', 'UUIDService', 'packaging'];
-angular.module('em.user').factory('ReminderService', ReminderService);
+angular.module('em.tasks').factory('ReminderService', ReminderService);
