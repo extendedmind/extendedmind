@@ -181,7 +181,7 @@
   };
 
   $scope.isRemindersVisible = function(task) {
-    return !task.trans.completed;
+    return !task.trans.completed && !task.trans.deleted && $scope.editorType !== 'recurring';
   };
 
   $scope.isReminderInThisDevice = function(reminder) {
