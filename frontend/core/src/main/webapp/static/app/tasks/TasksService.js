@@ -386,30 +386,43 @@
       return item;
     },
     setTasks: function(tasksResponse, ownerUUID, skipPersist, addToExisting) {
+      var taskArrays, modifiedTasks;
       if (skipPersist){
         ItemLikeService.resetTrans(tasksResponse, 'task', ownerUUID, taskFieldInfos);
       }else{
         ItemLikeService.persistAndReset(tasksResponse, 'task', ownerUUID, taskFieldInfos);
       }
       if (addToExisting){
-        return ArrayService.updateArrays('tasks', tasksResponse,
-                                         tasks[ownerUUID].activeTasks,
-                                         tasks[ownerUUID].deletedTasks,
-                                         getOtherArrays(ownerUUID));
+        taskArrays = ArrayService.updateArrays('tasks', tasksResponse,
+                                               tasks[ownerUUID].activeTasks,
+                                               tasks[ownerUUID].deletedTasks,
+                                               getOtherArrays(ownerUUID));
       }else{
-
-        return ArrayService.setArrays('tasks', tasksResponse,
-                                    tasks[ownerUUID].activeTasks,
-                                    tasks[ownerUUID].deletedTasks,
-                                    getOtherArrays(ownerUUID));
+        taskArrays = ArrayService.setArrays('tasks', tasksResponse,
+                                            tasks[ownerUUID].activeTasks,
+                                            tasks[ownerUUID].deletedTasks,
+                                            getOtherArrays(ownerUUID));
       }
+      if (tasksResponse) {
+        modifiedTasks = ReminderService.synchronizeReminders(tasksResponse);
+        if (modifiedTasks) {
+          for (var i = 0; i < modifiedTasks.length; i++) {
+            this.saveTask(modifiedTasks[i], ownerUUID);
+          }
+        }
+      }
+
+      return taskArrays;
     },
     updateTasks: function(tasksResponse, ownerUUID) {
       if (tasksResponse && tasksResponse.length){
         // Go through tasksResponse, and add .mod values if the fields in the current .mod do not match
         // the values in the persistent response
+        var i;
         var updatedTasks = [];
-        for (var i=0, len=tasksResponse.length; i<len; i++){
+        var updatedArrays;
+        var modifiedTasks;
+        for (i = 0; i < tasksResponse.length; i++){
           var taskInfo = this.getTaskInfo(tasksResponse[i].uuid, ownerUUID);
           if (taskInfo){
             var oldMod = taskInfo.task.mod;
@@ -422,10 +435,18 @@
             ItemLikeService.persistAndReset(tasksResponse[i], 'task', ownerUUID, taskFieldInfos);
           }
         }
-        return ArrayService.updateArrays('tasks', updatedTasks,
-                                         tasks[ownerUUID].activeTasks,
-                                         tasks[ownerUUID].deletedTasks,
-                                         getOtherArrays(ownerUUID));
+        updatedArrays = ArrayService.updateArrays('tasks', updatedTasks,
+                                                  tasks[ownerUUID].activeTasks,
+                                                  tasks[ownerUUID].deletedTasks,
+                                                  getOtherArrays(ownerUUID));
+
+        modifiedTasks = ReminderService.synchronizeReminders(updatedTasks);
+        if (modifiedTasks) {
+          for (i = 0; i < modifiedTasks.length; i++) {
+            this.saveTask(modifiedTasks[i], ownerUUID);
+          }
+        }
+        return updatedArrays;
       }
     },
     updateTaskModProperties: function(uuid, properties, ownerUUID) {
@@ -731,6 +752,21 @@
           return true;
         }
       }
+    },
+    unscheduleAllReminders: function(ownerUUID) {
+      var activeTasks = tasks[ownerUUID].activeTasks;
+      var saveTaskPromises = [];
+      if (tasks) {
+        var reminder;
+        for (var i = 0; i < activeTasks.length; i++) {
+          reminder = ReminderService.unscheduleReminder(activeTasks[i]);
+          if (reminder && reminder.uuid) {
+            // Update persisted reminder info.
+            saveTaskPromises.push(this.saveTask(activeTasks[i], ownerUUID));
+          }
+        }
+      }
+      return $q.all(saveTaskPromises);
     },
     taskFieldInfos: taskFieldInfos,
     // Regular expressions for task requests

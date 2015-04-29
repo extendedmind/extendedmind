@@ -16,8 +16,8 @@
 
  function UserController($http, $location, $q, $rootScope, $scope, $templateCache, $window,
                          AnalyticsService, AuthenticationService, BackendClientService, ItemsService,
-                         ListsService, NotesService, SwiperService, SynchronizeService, TagsService,
-                         TasksService, UISessionService, UserService, UserSessionService) {
+                         ListsService, NotesService, ReminderService, SwiperService, SynchronizeService,
+                         TagsService, TasksService, UISessionService, UserService, UserSessionService) {
 
   $scope.isAdmin = function isAdmin() {
     return UserSessionService.getUserType() === 0;
@@ -81,7 +81,8 @@
     $scope.loggingOut = true;
     $scope.logoutFailed = false;
     $scope.logoutOffline = false;
-    UserService.logout().then(function() {
+    TasksService.unscheduleAllReminders(UISessionService.getActiveUUID())
+    .then(UserService.logout).then(function() {
       $rootScope.$emit('emException', {type: 'redirectToEntry'});
     },function(error){
       if (error.type === 'offline') {
@@ -239,6 +240,6 @@
 }
 UserController['$inject'] = ['$http', '$location', '$q', '$rootScope', '$scope', '$templateCache', '$window',
 'AnalyticsService', 'AuthenticationService', 'BackendClientService', 'ItemsService', 'ListsService',
-'NotesService', 'SwiperService', 'SynchronizeService', 'TagsService', 'TasksService', 'UISessionService',
-'UserService', 'UserSessionService'];
+'NotesService', 'ReminderService', 'SwiperService', 'SynchronizeService', 'TagsService', 'TasksService',
+'UISessionService', 'UserService', 'UserSessionService'];
 angular.module('em.user').controller('UserController', UserController);
