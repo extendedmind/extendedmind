@@ -37,6 +37,7 @@ import org.neo4j.index.lucene.ValueContext
 import org.neo4j.index.lucene.QueryContext
 import org.neo4j.graphdb.Relationship
 import spray.util.LoggingContext
+import scala.collection.mutable.HashMap
 
 trait UserDatabase extends AbstractGraphDatabase {
 
@@ -132,8 +133,9 @@ trait UserDatabase extends AbstractGraphDatabase {
     withTx {
       implicit neo =>
         for {
-          agreementParties <- getAgreementParties(userUUID, agreementUUID).right
-          agreement <- toCaseClass[Agreement](agreementParties._2).right
+          agreementInfo <- getAgreementInformation(userUUID, agreementUUID).right
+          agreement <- toAgreement(agreementInfo).right
+          agreement <- toCaseClass[Agreement](agreementInfo.agreement).right
         } yield agreement
     }
   }
@@ -147,8 +149,8 @@ trait UserDatabase extends AbstractGraphDatabase {
   
   def changeAgreementAccess(userUUID: UUID, agreementUUID: UUID, access: Byte): Response[SetResult] = {
     for {
-      agreementNode <- changeAgreementAccessNode(userUUID, agreementUUID, access).right
-      result <- Right(getSetResult(agreementNode, true)).right
+      agreementInfo <- changeAgreementAccessNode(userUUID, agreementUUID, access).right
+      result <- Right(getSetResult(agreementInfo.agreement, false)).right
     } yield result
   }
   
@@ -156,8 +158,8 @@ trait UserDatabase extends AbstractGraphDatabase {
     withTx {
       implicit neo4j =>   
         for {
-          agreementParties <- getAgreementParties(userUUID, agreementUUID).right
-          destroyResult <- Right(destroyAgreementNode(agreementParties._1)).right          
+          agreementInfo <- getAgreementInformation(userUUID, agreementUUID).right
+          destroyResult <- Right(destroyAgreementNode(agreementInfo.agreement)).right          
         } yield destroyResult
     }
   }
@@ -339,7 +341,12 @@ trait UserDatabase extends AbstractGraphDatabase {
   }
 
   protected def addTransientUserProperties(userNode: Node, user: User)(implicit neo4j: DatabaseService): User = {
-    user.copy(preferences = getUserPreferences(userNode))
+    val sharingRelationshipsList = sharingTraversalDescription.traverse(userNode).relationships().toList
+    val sharedListRelationshipList = sharingRelationshipsList filter {relationship => {
+      relationship.getEndNode.hasLabel(ItemLabel.LIST)
+    }}
+    user.copy(preferences = getUserPreferences(userNode),
+              sharedLists = getSharedListAccess(sharedListRelationshipList))
   }
 
   protected def getUserPreferences(userNode: Node)(implicit neo4j: DatabaseService): Option[UserPreferences] = {
@@ -424,9 +431,9 @@ trait UserDatabase extends AbstractGraphDatabase {
     withTx {
       implicit neo4j =>
         for {
-          proposedByUserNode <- getNode(agreement.proposedBy.uuid.get, OwnerLabel.USER).right
-          proposedToUserNode <- getUserNode(agreement.proposedTo.email).right
-          concerningNode <- getItemNode(agreement.proposedBy.uuid.get, agreement.targetItem.uuid, ItemLabel.LIST, false).right
+          proposedByUserNode <- getNode(agreement.proposedBy.get.uuid.get, OwnerLabel.USER).right
+          proposedToUserNode <- getUserNode(agreement.proposedTo.email.get).right
+          concerningNode <- getItemNode(agreement.proposedBy.get.uuid.get, agreement.targetItem.uuid, ItemLabel.LIST, false).right
           agreementNode <- createAgreementNode(agreement, proposedByUserNode, proposedToUserNode, concerningNode).right
         } yield agreementNode
     }
@@ -458,55 +465,131 @@ trait UserDatabase extends AbstractGraphDatabase {
     }
   }
   
-  protected def changeAgreementAccessNode(userUUID: UUID, agreementUUID: UUID, access: Byte): Response[Node] = {
+  protected def changeAgreementAccessNode(userUUID: UUID, agreementUUID: UUID, access: Byte): Response[AgreementInformation] = {
     withTx {
       implicit neo4j =>
         for {
-          agreementParties <- getAgreementParties(userUUID, agreementUUID).right
-          relationship <- changeAgreementAccessNode(agreementParties._1, agreementParties._2, agreementParties._3, access).right
-        } yield agreementParties._1
+          agreementInfo <- getAgreementInformation(userUUID, agreementUUID).right
+          relationship <- changeAgreementAccessNode(agreementInfo, access).right
+        } yield agreementInfo
     }
   }
   
-  protected def getAgreementParties(userUUID: UUID, agreementUUID: UUID): Response[(Node, Node, Node)] = {
+  case class AgreementInformation(agreement: Node, proposedBy: Node, concerning: Node, proposedTo: Option[Node], userIsCreator: Boolean)
+  
+  protected def getAgreementInformation(userUUID: UUID, agreementUUID: UUID): Response[AgreementInformation] = {
     withTx {
       implicit neo4j =>
         for {
           agreementNode <- getNode(agreementUUID, MainLabel.AGREEMENT).right
           userNode <- getNode(userUUID, OwnerLabel.USER).right
-          result <- getAgreementParties(agreementNode, userNode).right
+          result <- getAgreementInformation(agreementNode, userNode).right
         } yield result
     }    
   }
   
-  protected def getAgreementParties(agreementNode: Node, userNode: Node)(implicit neo4j: DatabaseService): Response[(Node, Node, Node)] = {
-    val proposeRelationship = agreementNode.getRelationships.find(relationship => {
-      relationship.getType.name == AgreementRelationship.PROPOSES && relationship.getEndNode.getId == userNode.getId
+  protected def getAgreementInformation(agreementNode: Node, userNode: Node)(implicit neo4j: DatabaseService): Response[AgreementInformation] = {
+    val proposedByRelationship = agreementNode.getRelationships.find(relationship => {
+      relationship.getType.name == AgreementRelationship.PROPOSES.name
     })
-    if (proposeRelationship.isEmpty){
-      fail(INVALID_PARAMETER, ERR_USER_INVALID_AGREEMENT_CREATOR, "Agreement was not proposed by user")
-    }else{
-      val proposedToResult = agreementNode.getRelationships.find(relationship => {
-        relationship.getType.name == AgreementRelationship.IS_PROPOSED_TO
-      })
-      if (proposedToResult.isEmpty){
-        fail(INTERNAL_SERVER_ERROR, ERR_USER_CANT_FIND_AGREEMENT_PARTY, "Can't find user agreement was proposed to")              
-      }else{
-        Right(agreementNode, userNode, proposedToResult.get.getEndNode)
-      }
+    if (proposedByRelationship.isEmpty){
+      return fail(INTERNAL_SERVER_ERROR, ERR_USER_CANT_FIND_AGREEMENT_PARTY, "Can't find user agreement was proposed by")
+    }
+    val proposedByUser = proposedByRelationship.get.getStartNode
+    val userIsCreator = proposedByUser.getId == userNode.getId
+
+    val concerningRelationship = agreementNode.getRelationships.find(relationship => {
+      relationship.getType.name == AgreementRelationship.CONCERNING.name
+    })
+    if (concerningRelationship.isEmpty){
+      return fail(INTERNAL_SERVER_ERROR, ERR_USER_CANT_FIND_AGREEMENT_PARTY, "Can't find node the agreement concerns")
+    }
+    val concerningNode = concerningRelationship.get.getEndNode
+    
+    val proposedToRelationship = agreementNode.getRelationships.find(relationship => {
+      relationship.getType.name == AgreementRelationship.IS_PROPOSED_TO.name && relationship.getEndNode.getId == userNode.getId
+    })
+        
+    val proposedToUser = 
+      if (proposedToRelationship.isDefined) Some(proposedToRelationship.get.getEndNode)
+      else None
+      
+    if (!userIsCreator && (proposedToUser.isEmpty || proposedToUser.get.getId != userNode.getId)){
+      return fail(INVALID_PARAMETER, ERR_USER_INVALID_AGREEMENT_PARTY, "User is not a party in the agreement")
     }
     
+    Right(AgreementInformation(agreementNode, proposedByUser, concerningNode, proposedToUser, userIsCreator))
   }
-  protected def changeAgreementAccessNode(agreementNode: Node, userNode: Node, proposedToNode: Node, access: Byte)(implicit neo4j: DatabaseService): Response[Option[Relationship]] = {
+  
+  protected def changeAgreementAccessNode(agreementInfo: AgreementInformation, access: Byte)(implicit neo4j: DatabaseService): Response[Option[Relationship]] = {
     if (access != SecurityContext.READ && access != SecurityContext.READ){
       fail(INVALID_PARAMETER, ERR_USER_INVALID_ACCESS_VALUE, "List access value needs to be either 1 for read or 2 for write")      
+    }else if (!agreementInfo.userIsCreator){
+      fail(INVALID_PARAMETER, ERR_BASE_NO_ACCESS, "Only agreement creator can change agreement access")            
     }else{
-      agreementNode.setProperty("access", access)
-      if (agreementNode.hasProperty("accepted")){
+      agreementInfo.agreement.setProperty("access", access)
+      if (agreementInfo.agreement.hasProperty("accepted")){
         // Agreement has been accepted, need to change security relationships too
-        setPermission(proposedToNode, userNode, Some(access))
+        setPermission(agreementInfo.proposedTo.get, agreementInfo.concerning, Some(access))
       }else{
         Right(None)
+      }
+    }
+  }
+  
+  protected def sharingTraversalDescription(implicit neo4j: DatabaseService): TraversalDescription = {
+    neo4j.gds.traversalDescription()
+          .depthFirst()
+          .relationships(DynamicRelationshipType.withName(SecurityRelationship.IS_FOUNDER.name), Direction.OUTGOING)
+          .relationships(DynamicRelationshipType.withName(SecurityRelationship.CAN_READ.name), Direction.OUTGOING)
+          .relationships(DynamicRelationshipType.withName(SecurityRelationship.CAN_READ_WRITE.name), Direction.OUTGOING)
+          .evaluator(Evaluators.excludeStartPosition())
+          .evaluator(LabelEvaluator(scala.List(ItemLabel.LIST, OwnerLabel.COLLECTIVE)))
+          .evaluator(Evaluators.toDepth(1)) 
+  }
+  
+  protected def getSharedListAccess(relationshipList: scala.List[Relationship], foreignOwnerUUID: Option[UUID] = None)(implicit neo4j: DatabaseService): Option[Map[UUID,(String, Map[UUID, (String, Byte)])]] = {
+    if (relationshipList.isEmpty){
+      None
+    }else{
+      val sharedListAccessMap = new HashMap[UUID,(String, HashMap[UUID, (String, Byte)])]
+      
+      relationshipList foreach (relationship => {
+        val sharedList = relationship.getEndNode()
+        val title = sharedList.getProperty("title").asInstanceOf[String]
+        
+        val ownerNodeList = neo4j.gds.traversalDescription()
+          .depthFirst()
+          .relationships(DynamicRelationshipType.withName(SecurityRelationship.OWNS.name), Direction.INCOMING)
+          .evaluator(Evaluators.excludeStartPosition())
+          .evaluator(Evaluators.toDepth(1))
+          .traverse(sharedList)
+          .nodes()
+          .toList
+        if (ownerNodeList.size == 1){
+          val ownerUUID = getUUID(ownerNodeList(0))
+          if (foreignOwnerUUID.isEmpty || (ownerUUID == foreignOwnerUUID.get)){
+            if (!sharedListAccessMap.contains(ownerUUID)){
+              sharedListAccessMap.put(ownerUUID,
+                  (ownerNodeList(0).getProperty("email").asInstanceOf[String], new HashMap[UUID, (String, Byte)]))
+            }
+            relationship.getType().name() match {
+              case SecurityRelationship.CAN_READ.relationshipName => {                
+                sharedListAccessMap.get(ownerUUID).get._2.put(getUUID(sharedList), (title, SecurityContext.READ))
+              }
+              case SecurityRelationship.CAN_READ_WRITE.relationshipName => {
+                sharedListAccessMap.get(ownerUUID).get._2.put(getUUID(sharedList), (title, SecurityContext.READ_WRITE))
+              }
+            }
+          }
+        }
+      })
+      if (sharedListAccessMap.isEmpty){
+        None
+      }else{
+        val immutableMainMap = sharedListAccessMap.toMap
+        val resultingMap = immutableMainMap.map(kv => (kv._1,(kv._2._1, kv._2._2.toMap))).toMap
+        Some(resultingMap)
       }
     }
   }
@@ -624,4 +707,15 @@ trait UserDatabase extends AbstractGraphDatabase {
       setPermission(concerningResult.get.getEndNode, proposedToNode, Some(agreementNode.getProperty("access").asInstanceOf[Byte]))
     }
   }
+  
+  protected def toAgreement(agreementInfo: AgreementInformation)(implicit neo4j: DatabaseService): Response[Agreement] = {
+    for {
+      agreement <- toCaseClass[Agreement](agreementInfo.agreement).right
+      fullAgreement <- Right(agreement.copy(
+        proposedBy = Some(AgreementUser(None, Some(agreementInfo.proposedBy.getProperty("email").asInstanceOf[String]))),
+        proposedTo = AgreementUser(None, Some(agreementInfo.proposedTo.get.getProperty("email").asInstanceOf[String]))
+      )).right
+    } yield fullAgreement
+  }
+  
 }

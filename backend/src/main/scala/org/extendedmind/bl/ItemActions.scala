@@ -21,6 +21,7 @@ package org.extendedmind.bl
 
 import org.extendedmind.domain._
 import org.extendedmind.db._
+import org.extendedmind.security.Authorization._
 import scaldi.Injector
 import scaldi.Injectable
 import org.extendedmind.domain.Item
@@ -48,24 +49,67 @@ trait ItemActions {
   }
 
   def getItems(owner: Owner, modified: Option[Long], active: Boolean, deleted: Boolean, archived: Boolean, completed: Boolean)(implicit log: LoggingAdapter): Response[Items] = {
-    log.info("getItems")
-    val items = db.getItems(owner, modified, active, deleted, archived, completed)
+    log.info("getItems")    
+    val ownerItems = db.getItems(owner, modified, active, deleted, archived, completed)
 
-    // Destroy old deleted items
-    if (items.isRight) {
-      val futureDestroyResponse = Future[Response[CountResult]] {
-        db.destroyDeletedItems(owner)
+    if (ownerItems.isRight) {
+      if (owner.sharedLists.isDefined){
+        // Filter array to contain only tasks, notes and lists in shared lists
+        val fullListsTasksAndNotes = ownerItems.right.get.copy(tags = None, items = None,
+            lists =
+              if (ownerItems.right.get.lists.isDefined){
+                Some(ownerItems.right.get.lists.get.filter(list => {
+                  owner.sharedLists.get.find(sharedListInfo => {
+                    sharedListInfo._1 == list.uuid.get
+                  }).isDefined}))
+              }else{
+                None
+              },
+            tasks =
+              if (ownerItems.right.get.tasks.isDefined){
+                Some(ownerItems.right.get.tasks.get.filter(task => {
+                  task.relationships.isDefined &&  task.relationships.get.parent.isDefined && 
+                  owner.sharedLists.get.find(sharedListInfo => {
+                    sharedListInfo._1 == task.relationships.get.parent.get
+                  }).isDefined}))
+              }else{
+                None
+              },
+            notes =
+              if (ownerItems.right.get.notes.isDefined){
+                Some(ownerItems.right.get.notes.get.filter(note => {
+                  note.relationships.isDefined &&  note.relationships.get.parent.isDefined && 
+                  owner.sharedLists.get.find(sharedListInfo => {
+                    sharedListInfo._1 == note.relationships.get.parent.get
+                  }).isDefined}))
+              }else{
+                None
+              })
+        // Filter lists, tasks and notes to contain only limited fields
+        val limitedListsTasksAndNotes = fullListsTasksAndNotes.copy(
+          lists = stripLists(fullListsTasksAndNotes.lists),
+          tasks = stripTasks(fullListsTasksAndNotes.tasks),
+          notes = stripNotes(fullListsTasksAndNotes.notes))
+        
+        Right(limitedListsTasksAndNotes)
+      }else{
+        // Destroy old deleted items    
+        val futureDestroyResponse = Future[Response[CountResult]] {
+          db.destroyDeletedItems(owner)
+        }
+        futureDestroyResponse onSuccess {
+          case Right(CountResult(deleteCount)) => {
+            log.info("Destroyed {} deleted items for {}",
+              deleteCount, owner)
+          } case Left(errors) =>
+            log.error("Could not destroy deleted items for {} with the following errors", owner)
+            errors foreach (e => log.error(e.responseType + ": " + e.description, e.throwable))
+        }
+        ownerItems
       }
-      futureDestroyResponse onSuccess {
-        case Right(CountResult(deleteCount)) => {
-          log.info("Destroyed {} deleted items for {}",
-            deleteCount, owner)
-        } case Left(errors) =>
-          log.error("Could not destroy deleted items for {} with the following errors", owner)
-          errors foreach (e => log.error(e.responseType + ": " + e.description, e.throwable))
-      }
+    }else{
+      ownerItems
     }
-    items
   }
 
   def getItem(owner: Owner, itemUUID: UUID)(implicit log: LoggingAdapter): Response[Item] = {
@@ -81,6 +125,50 @@ trait ItemActions {
   def undeleteItem(owner: Owner, itemUUID: UUID)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("undeleteItem")
     db.undeleteItem(owner, itemUUID)
+  }
+  
+  private def stripLists(lists: Option[scala.List[List]]): Option[scala.List[List]] = {
+    if (lists.isDefined){
+      Some(lists.get.map(list => {
+        list.copy(
+          archived = None,
+          due = None,
+          assignee = None,
+          assigner = None,
+          relationships = None)
+      }))
+    }else{
+      None
+    }
+  }
+  
+  private def stripTasks(tasks: Option[scala.List[Task]]): Option[scala.List[Task]] = {
+    if (tasks.isDefined){
+      Some(tasks.get.map(task => {
+        task.copy(
+          archived = None,
+          due = None,
+          assignee = None,
+          assigner = None,
+          reminders = None,
+          relationships = Some(task.relationships.get.copy(origin=None, tags=None)))
+      }))
+    }else{
+      None
+    }
+  }
+  
+  private def stripNotes(notes: Option[scala.List[Note]]): Option[scala.List[Note]] = {
+    if (notes.isDefined){
+      Some(notes.get.map(note => {
+        note.copy(
+          archived = None,
+          favorited = None,
+          relationships = Some(note.relationships.get.copy(origin=None, tags=None)))
+      }))
+    }else{
+      None
+    }
   }
 }
 

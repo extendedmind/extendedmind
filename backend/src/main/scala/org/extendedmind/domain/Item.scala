@@ -44,7 +44,7 @@ case class Items(items: Option[scala.List[Item]],
 				 lists: Option[scala.List[List]],
 				 tags: Option[scala.List[Tag]])
 
-case class SharedItemVisibility(public: Option[Long], collective: Option[UUID])
+case class SharedItemVisibility(public: Option[Long], agreements: Option[scala.List[Agreement]])
 case class ExtendedItemRelationships(parent: Option[UUID], origin: Option[UUID], tags: Option[scala.List[UUID]])
 case class LimitedExtendedItemRelationships(parent: Option[UUID], origin: Option[UUID])
 
@@ -96,7 +96,7 @@ trait ExtendedItem extends ShareableItem{
   }
 }
 
-trait LimitedExtendedItem extends ShareableItem{
+trait LimitedExtendedItem extends ItemLike{
   val uuid: Option[UUID]
   val created: Option[Long]  
   val modified: Option[Long]
@@ -104,7 +104,6 @@ trait LimitedExtendedItem extends ShareableItem{
   val title: String
   val description: Option[String]
   val link: Option[String]
-  val visibility: Option[SharedItemVisibility]
   val relationships: LimitedExtendedItemRelationships
 
   def parent: Option[UUID] = relationships.parent

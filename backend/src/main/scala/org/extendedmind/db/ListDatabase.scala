@@ -34,7 +34,7 @@ import org.neo4j.scala.DatabaseService
 import scala.collection.mutable.ListBuffer
 import org.neo4j.graphdb.traversal.Evaluation
 
-trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
+trait ListDatabase extends UserDatabase with TagDatabase {
 
   // PUBLIC
 
@@ -138,6 +138,7 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
     for {
       parentRelatioship <- Right(getItemRelationship(listNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.LIST)).right
       tags <- getTagRelationships(listNode, owner).right
+      agreementInfos <- getListAgreementInformations(owner, listNode).right
       task <- Right(list.copy(
         relationships =
           (if (parentRelatioship.isDefined || tags.isDefined)
@@ -145,7 +146,13 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
             parent = (if (parentRelatioship.isEmpty) None else (Some(getUUID(parentRelatioship.get.getEndNode())))),
             None,
             tags = (if (tags.isEmpty) None else (Some(getEndNodeUUIDList(tags.get))))))
-          else None))).right
+          else None),
+        visibility = {
+          val listVisibilityResult = getListVisibility(agreementInfos)
+          if (listVisibilityResult.isLeft) return Left(listVisibilityResult.left.get)
+          else listVisibilityResult.right.get
+        }
+      )).right
     } yield task
   }
 
@@ -341,5 +348,55 @@ trait ListDatabase extends AbstractGraphDatabase with TagDatabase {
     else
       Right()
   }
+  
+  protected def getListAgreementInformations(owner: Owner, listNode: Node)(implicit neo4j: DatabaseService): Response[Option[scala.List[AgreementInformation]]] = {
+    for {
+      agreementNodes <- getListAgreementNodes(listNode).right
+      userNode <- (if (agreementNodes.isDefined) getNodeOption(Some(owner.userUUID), OwnerLabel.USER) 
+                   else Right(None)).right
+      agreementInformations <- getListAgreementInformations(agreementNodes, userNode).right
+    } yield agreementInformations
+  }
 
+  protected def getListAgreementNodes(listNode: Node)(implicit neo4j: DatabaseService): Response[Option[scala.List[Node]]] = {
+    val agreementNodes = neo4j.gds.traversalDescription()
+          .depthFirst()
+          .relationships(DynamicRelationshipType.withName(AgreementRelationship.CONCERNING.name), Direction.INCOMING)
+          .evaluator(Evaluators.excludeStartPosition())
+          .evaluator(LabelEvaluator(scala.List(MainLabel.AGREEMENT)))
+          .evaluator(Evaluators.toDepth(1))
+          .traverse(listNode)
+          .nodes.toList
+    if (agreementNodes.size > 0){
+      Right(Some(agreementNodes))
+    }else{
+      Right(None)
+    }
+  }
+
+  protected def getListAgreementInformations(agreementNodes: Option[scala.List[Node]], userNode: Option[Node])(implicit neo4j: DatabaseService): Response[Option[scala.List[AgreementInformation]]] = {    
+    if (userNode.isEmpty || agreementNodes.isEmpty){
+      Right(None)
+    }else{
+      val agreementInformations = agreementNodes.get.map(agreementNode => {
+        val agreementInfoResult = getAgreementInformation(agreementNode, userNode.get)
+        if (agreementInfoResult.isLeft) return Left(agreementInfoResult.left.get)
+        else agreementInfoResult.right.get
+      })
+      Right(Some(agreementInformations))
+    }
+  }
+
+  protected def getListVisibility(agreementInformations: Option[scala.List[AgreementInformation]])(implicit neo4j: DatabaseService): Response[Option[SharedItemVisibility]] = {
+    if (agreementInformations.isDefined){
+      val agreements = agreementInformations.get.map(agreementInformation => {
+        val agreement = toAgreement(agreementInformation)
+        if (agreement.isLeft) return Left(agreement.left.get)
+        else agreement.right.get
+      })
+      Right(Some(SharedItemVisibility(None, Some(agreements))))
+    }else{
+      Right(None)
+    }
+  }
 }

@@ -32,14 +32,15 @@ case class UserPreferences(onboarded: Option[String], ui: Option[String]){
 
 case class User(uuid: Option[UUID], created: Option[Long], modified: Option[Long], deleted: Option[Long],
                 email: Option[String], emailVerified: Option[Long], cohort: Option[Int],
-                preferences: Option[UserPreferences])
+                preferences: Option[UserPreferences],
+                sharedLists: Option[Map[UUID,(String, Map[UUID, (String, Byte)])]])
            extends Container{
   if (email.isDefined) require(validateEmailAddress(email.get), "Not a valid email address")
   if (cohort.isDefined) require(cohort.get > 0 && cohort.get <= 128, "Cohort needs to be a number between 1 and 128")
 }
 
 object User{
-  def apply(email:String, cohort: Option[Int], preferences: Option[UserPreferences]) = new User(None, None, None, None, Some(email), None, cohort, preferences)
+  def apply(email:String, cohort: Option[Int], preferences: Option[UserPreferences]) = new User(None, None, None, None, Some(email), None, cohort, preferences, None)
 }
 
 case class SignUp(email: String, password: String, cohort: Option[Int], bypass: Option[Boolean]){
@@ -124,8 +125,8 @@ case class ForgotPasswordResult(resetCodeExpires: Long)
 
 /* Agreement objects */
 
-case class AgreementUser(uuid: Option[UUID], email: String){
-  require(validateEmailAddress(email), "Not a valid email address")
+case class AgreementUser(uuid: Option[UUID], email: Option[String]){
+  if(email.isDefined) require(validateEmailAddress(email.get), "Not a valid email address")
 }
 
 case class AgreementTarget(uuid: UUID, title: Option[String]){
@@ -140,7 +141,7 @@ object AgreementType extends Enumeration {
 
 case class Agreement(uuid: Option[UUID], created: Option[Long], modified: Option[Long],
                      agreementType: String, access: Byte, accepted: Option[Long], targetItem: AgreementTarget,
-                     proposedBy: AgreementUser, proposedTo: AgreementUser){
+                     proposedBy: Option[AgreementUser], proposedTo: AgreementUser){
   require(
       try {
         val rt = AgreementType.withName(agreementType)
@@ -151,4 +152,11 @@ case class Agreement(uuid: Option[UUID], created: Option[Long], modified: Option
       "Expected 'list' but got " + agreementType)
 
   require(access == 1 || access == 2, "Access needs to be either 1 for read or 2 for write")
+}
+
+object Agreement{
+  import org.extendedmind.domain.AgreementType._  
+  def apply(agreementType: AgreementType, access: Byte, targetItem: AgreementTarget,
+            proposedBy: AgreementUser, proposedTo: AgreementUser) 
+        = new Agreement(None, None, None, agreementType.toString, access, None, targetItem, Some(proposedBy), proposedTo)
 }

@@ -53,7 +53,6 @@ case class LimitedNote(uuid: Option[UUID], id: Option[String], created: Option[L
                 title: String, description: Option[String], 
                 link: Option[String],
                 content: Option[String],
-                visibility: Option[SharedItemVisibility],
                 relationships: LimitedExtendedItemRelationships)
                 extends LimitedExtendedItem {
   if (id.isDefined) require(validateLength(id.get, 100), "Id can not be more than 100 characters")
@@ -67,8 +66,8 @@ case class LimitedNote(uuid: Option[UUID], id: Option[String], created: Option[L
 object LimitedNote{
   def apply(note: Note)
         = new LimitedNote(note.uuid, note.id, note.created, note.modified, note.deleted,
-                          note.title, note.description, note.link, note.content, note.visibility,
-                          LimitedExtendedItemRelationships(note.relationships.get.parent, note.relationships.get.origin))
+                          note.title, note.description, note.link, note.content,
+                          LimitedExtendedItemRelationships(note.relationships.get.parent,note.relationships.get.origin))
 }
 
 case class FavoriteNoteResult(favorited: Long, result: SetResult)

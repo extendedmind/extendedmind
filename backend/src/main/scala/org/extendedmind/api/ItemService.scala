@@ -50,8 +50,8 @@ trait ItemService extends ServiceBase {
   def itemRoutes = {
       getItems { ownerUUID =>
         parameters('modified.as[Long].?, 'active ? true, 'deleted ? false, 'archived ? false, 'completed ? false) { (modified, active, deleted, archived, completed) =>
-      	  authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
-            authorize(readAccess(ownerUUID, securityContext)) {
+      	  authenticate(ExtendedAuth(authenticator, "shareable", Some(ownerUUID))) { securityContext =>
+            authorize(readAccess(ownerUUID, securityContext, shareable = true)) {
               complete {
                 Future[Items] {
                   setLogContext(securityContext, ownerUUID)

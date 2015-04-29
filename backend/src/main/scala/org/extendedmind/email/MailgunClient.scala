@@ -78,17 +78,17 @@ trait MailgunClient {
   val sendEmailPipeline = sendReceive ~> unmarshal[SendEmailResponse]
 
   def sendShareListAgreement(agreement: Agreement, acceptCode: Long): Future[SendEmailResponse] = {
-    val sendEmailRequest = SendEmailRequest(settings.emailFrom, agreement.proposedTo.email,
+    val sendEmailRequest = SendEmailRequest(settings.emailFrom, agreement.proposedTo.email.get,
       settings.shareListTitle.replaceAll(
           "inviterEmail",
-          agreement.proposedBy.email), // FIXME
+          agreement.proposedBy.get.email.get), // FIXME
       shareListHtmlTemplate
         .replaceAll(
           "acceptLink",
           settings.emailSecureUrlPrefix
             + settings.acceptShareURI
             //.replaceAll("acceptCodeValue", invite.code.toLong.toHexString)
-            .replaceAll("emailValue", agreement.proposedTo.email))
+            .replaceAll("emailValue", agreement.proposedTo.email.get))
         .replaceAll("logoLink", settings.emailUrlPrefix + "img/logo-text.png")
         //.replaceAll("inviterEmail", invite.email) // FIXME
         //.replaceAll("sharedList", invite.email) // FIXME

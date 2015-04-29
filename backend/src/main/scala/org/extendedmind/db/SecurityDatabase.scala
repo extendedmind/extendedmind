@@ -529,52 +529,6 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     }
   }
   
-  private def getSharedListAccess(relationshipList: List[Relationship], foreignOwnerUUID: Option[UUID] = None)(implicit neo4j: DatabaseService): Option[Map[UUID,(String, Map[UUID, (String, Byte)])]] = {
-    if (relationshipList.isEmpty){
-      None
-    }else{
-      val sharedListAccessMap = new HashMap[UUID,(String, HashMap[UUID, (String, Byte)])]
-      
-      relationshipList foreach (relationship => {
-        val sharedList = relationship.getEndNode()
-        val title = sharedList.getProperty("title").asInstanceOf[String]
-        
-        val ownerNodeList = neo4j.gds.traversalDescription()
-          .depthFirst()
-          .relationships(DynamicRelationshipType.withName(SecurityRelationship.OWNS.name), Direction.INCOMING)
-          .evaluator(Evaluators.excludeStartPosition())
-          .evaluator(Evaluators.toDepth(1))
-          .traverse(sharedList)
-          .nodes()
-          .toList
-        if (ownerNodeList.size == 1){
-          val ownerUUID = getUUID(ownerNodeList(0))
-          if (foreignOwnerUUID.isEmpty || (ownerUUID == foreignOwnerUUID.get)){
-            if (!sharedListAccessMap.contains(ownerUUID)){
-              sharedListAccessMap.put(ownerUUID,
-                  (ownerNodeList(0).getProperty("email").asInstanceOf[String], new HashMap[UUID, (String, Byte)]))
-            }
-            relationship.getType().name() match {
-              case SecurityRelationship.CAN_READ.relationshipName => {                
-                sharedListAccessMap.get(ownerUUID).get._2.put(getUUID(sharedList), (title, SecurityContext.READ))
-              }
-              case SecurityRelationship.CAN_READ_WRITE.relationshipName => {
-                sharedListAccessMap.get(ownerUUID).get._2.put(getUUID(sharedList), (title, SecurityContext.READ_WRITE))
-              }
-            }
-          }
-        }
-      })
-      if (sharedListAccessMap.isEmpty){
-        None
-      }else{
-        val immutableMainMap = sharedListAccessMap.toMap
-        val resultingMap = immutableMainMap.map(kv => (kv._1,(kv._2._1, kv._2._2.toMap))).toMap
-        Some(resultingMap)
-      }
-    }
-  }
-  
   private def getAuthenticationInfo(tokenNode: Node): (Long, Long, Option[Long]) = {
     val authenticated = tokenNode.getProperty("modified").asInstanceOf[Long]
     val expires = tokenNode.getProperty("expires").asInstanceOf[Long]
@@ -600,17 +554,6 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
       None,
       getUserPreferences(user)
     )
-  }
-  
-  private def sharingTraversalDescription(implicit neo4j: DatabaseService): TraversalDescription = {
-    neo4j.gds.traversalDescription()
-          .depthFirst()
-          .relationships(DynamicRelationshipType.withName(SecurityRelationship.IS_FOUNDER.name), Direction.OUTGOING)
-          .relationships(DynamicRelationshipType.withName(SecurityRelationship.CAN_READ.name), Direction.OUTGOING)
-          .relationships(DynamicRelationshipType.withName(SecurityRelationship.CAN_READ_WRITE.name), Direction.OUTGOING)
-          .evaluator(Evaluators.excludeStartPosition())
-          .evaluator(LabelEvaluator(List(ItemLabel.LIST, OwnerLabel.COLLECTIVE)))
-          .evaluator(Evaluators.toDepth(1)) 
   }
   
   private def changeUserNodeType(userUUID: UUID, userType: Integer): Response[Node] = {

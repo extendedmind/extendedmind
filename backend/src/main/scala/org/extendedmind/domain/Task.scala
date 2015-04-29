@@ -79,7 +79,6 @@ case class LimitedTask(uuid: Option[UUID], id: Option[String], created: Option[L
                 title: String, description: Option[String], 
                 link: Option[String],
                 completed: Option[Long],
-                visibility: Option[SharedItemVisibility],
                 relationships: LimitedExtendedItemRelationships)
                 extends LimitedExtendedItem {
   if (id.isDefined) require(validateLength(id.get, 100), "Id can not be more than 100 characters")
@@ -92,7 +91,7 @@ case class LimitedTask(uuid: Option[UUID], id: Option[String], created: Option[L
 object LimitedTask{
   def apply(task: Task)
         = new LimitedTask(task.uuid, task.id, task.created, task.modified, task.deleted,
-                          task.title, task.description, task.link, task.completed, task.visibility,
+                          task.title, task.description, task.link, task.completed,
                           LimitedExtendedItemRelationships(task.relationships.get.parent, task.relationships.get.origin))
 }
 // List of Reminder types

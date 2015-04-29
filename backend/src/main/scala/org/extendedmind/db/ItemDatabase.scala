@@ -75,7 +75,7 @@ trait ItemDatabase extends UserDatabase {
 
   def getItem(owner: Owner, itemUUID: UUID): Response[Item] = {
     withTx {
-      implicit neo =>
+      implicit neo4j =>
         for {
           itemNode <- getItemNode(owner, itemUUID).right
           item <- toCaseClass[Item](itemNode).right
@@ -85,7 +85,7 @@ trait ItemDatabase extends UserDatabase {
 
   def getItems(owner: Owner, modified: Option[Long], active: Boolean, deleted: Boolean, archived: Boolean, completed: Boolean)(implicit log: LoggingContext): Response[Items] = {
     withTx {
-      implicit neo =>
+      implicit neo4j =>
         for {
           ownerUUID <- Right(getOwnerUUID(owner)).right
           itemNodes <- getItemNodes(ownerUUID, modified, active, deleted, archived, completed).right
@@ -199,6 +199,7 @@ trait ItemDatabase extends UserDatabase {
         log.warning("Owner " + getOwnerUUID(owner) + " has node " + itemNode.getId() + " with labels " + labels +
           " that was found in the items index")
       })
+    
     Right(Items(
       if (itemBuffer.isEmpty) None else Some(itemBuffer.toList),
       if (taskBuffer.isEmpty) None else Some(taskBuffer.toList),

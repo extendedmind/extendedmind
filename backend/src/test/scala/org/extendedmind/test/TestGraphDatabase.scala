@@ -200,6 +200,16 @@ trait TestGraphDatabase extends GraphDatabase {
         Some(ExtendedItemRelationships(Some(extendedMindTechnologiesList.uuid.get), None,
           Some(scala.List(productivityTag.right.get.uuid.get)))))).right.get
 
+          
+    // Timo shares essay list with Lauri
+
+    val shareAgreementResult = putNewAgreement(Agreement(AgreementType.LIST_AGREEMENT, SecurityContext.READ_WRITE, 
+                    AgreementTarget(essayList.uuid.get, None), AgreementUser(Some(timoUUID), None),
+                    AgreementUser(None, Some(LAURI_EMAIL)))).right.get
+    val agreementCode = 1234L
+    val saveResponse = saveAgreementAcceptInformation(shareAgreementResult.uuid.get, agreementCode, "1234")
+    acceptAgreement(agreementCode, LAURI_EMAIL)
+
     // Extended Mind Technologies
 
     // Store items for EMT

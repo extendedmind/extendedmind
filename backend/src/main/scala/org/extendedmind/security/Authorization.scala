@@ -32,9 +32,14 @@ object Authorization {
   
   def readAccess(ownerUUID: UUID, sc: SecurityContext, shareable: Boolean = false): Boolean = {
     val access = getAccess(ownerUUID, sc)
-    if (access.isDefined && 
-       (access.get == FOUNDER || access.get == READ_WRITE || access.get == READ)){
-      true
+    if (access.isDefined){
+      if (access.get == FOUNDER || access.get == READ_WRITE || access.get == READ){
+        true
+      }else if (access.get == POSSIBLE_LIST && shareable){
+        true
+      }else{
+        false
+      }
     }else{
       false
     }

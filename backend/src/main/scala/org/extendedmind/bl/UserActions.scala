@@ -137,10 +137,10 @@ trait UserActions {
   
   def putNewAgreement(userUUID: UUID, agreement: Agreement)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("putNewAgreement")
-    if (agreement.proposedBy.uuid.isEmpty || userUUID != agreement.proposedBy.uuid.get){
-      fail(INVALID_PARAMETER, ERR_USER_INVALID_AGREEMENT_USER_UUID, "Agreement proposedBy.uuid must match user's own UUID")
-    }else {
-      val setResult = db.putNewAgreement(agreement)      
+    if (agreement.proposedTo.email.isEmpty){
+      fail(INVALID_PARAMETER, ERR_USER_EMAIL_MISSING, "Missing proposedTo email field")
+    }else{
+      val setResult = db.putNewAgreement(agreement.copy(proposedBy = Some(AgreementUser(Some(userUUID), None))))
       sendAgreementEmail(agreement)
       setResult
     }
@@ -171,7 +171,7 @@ trait UserActions {
   
   private def sendAgreementEmail(agreement: Agreement)(implicit log: LoggingAdapter): Response[CountResult] = {
     if (agreement.accepted.isDefined){
-      fail(INVALID_PARAMETER, ERR_USER_AGREEMENT_ACCEPTED, "Agreeemnt has already been accepted, no need to send email")
+      fail(INVALID_PARAMETER, ERR_USER_AGREEMENT_ACCEPTED, "Agreeement has already been accepted, no need to send email")
     }else{
       val acceptCode = Random.generateRandomUnsignedLong
       val futureMailResponse = mailgun.sendShareListAgreement(agreement, acceptCode)
