@@ -602,10 +602,11 @@
       if (tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue('uuid', task.trans.uuid, 'trans')) {
         deferred.resolve('unmodified');
       }else{
-        var data, reminder = ReminderService.unscheduleReminder(task);
+        var fakeTimestamp = BackendClientService.generateFakeTimestamp();
+        var data, reminder = ReminderService.unscheduleReminder(task, fakeTimestamp);
         if (reminder && reminder.uuid) {
           // Update persisted reminder info.
-          data = {reminderId: reminder.id, removed: BackendClientService.generateFakeTimestamp()};
+          data = {reminderId: reminder.id, removed: fakeTimestamp};
         }
         ItemLikeService.processDelete(task, 'task', ownerUUID, taskFieldInfos, data).then(
           function(){
@@ -673,7 +674,7 @@
             url: '/api/' + ownerUUID + '/task/' + task.trans.uuid + '/uncomplete'
           };
         }
-        var data, reminder = ReminderService.unscheduleReminder(task);
+        var data, reminder = ReminderService.unscheduleReminder(task, fakeTimestamp);
         if (reminder && reminder.uuid) {
           // Update persisted reminder info.
           data = {reminderId: reminder.id, removed: fakeTimestamp};
@@ -757,9 +758,10 @@
       var activeTasks = tasks[ownerUUID].activeTasks;
       var saveTaskPromises = [];
       if (tasks) {
+        var fakeTimestamp = BackendClientService.generateFakeTimestamp();
         var reminder;
         for (var i = 0; i < activeTasks.length; i++) {
-          reminder = ReminderService.unscheduleReminder(activeTasks[i]);
+          reminder = ReminderService.unscheduleReminder(activeTasks[i], fakeTimestamp);
           if (reminder && reminder.uuid) {
             // Update persisted reminder info.
             saveTaskPromises.push(this.saveTask(activeTasks[i], ownerUUID));
