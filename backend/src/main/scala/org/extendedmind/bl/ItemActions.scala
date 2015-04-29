@@ -87,7 +87,7 @@ trait ItemActions {
               })
         // Filter lists, tasks and notes to contain only limited fields
         val limitedListsTasksAndNotes = fullListsTasksAndNotes.copy(
-          lists = stripLists(fullListsTasksAndNotes.lists),
+          lists = stripLists(owner, fullListsTasksAndNotes.lists),
           tasks = stripTasks(fullListsTasksAndNotes.tasks),
           notes = stripNotes(fullListsTasksAndNotes.notes))
         
@@ -127,14 +127,27 @@ trait ItemActions {
     db.undeleteItem(owner, itemUUID)
   }
   
-  private def stripLists(lists: Option[scala.List[List]]): Option[scala.List[List]] = {
-    if (lists.isDefined){
+  private def stripLists(owner: Owner, lists: Option[scala.List[List]]): Option[scala.List[List]] = {
+    if (lists.isDefined && lists.get.size > 0){
       Some(lists.get.map(list => {
         list.copy(
           archived = None,
           due = None,
           assignee = None,
           assigner = None,
+          visibility =
+            if (list.visibility.isDefined && list.visibility.get.agreements.isDefined){
+              val agreementForCurrentUser = list.visibility.get.agreements.get.filter(agreement => {
+                agreement.proposedTo.get.uuid.get == owner.userUUID
+              })
+              if (agreementForCurrentUser.isEmpty){
+                None
+              }else{
+                Some(SharedItemVisibility(None, Some(agreementForCurrentUser)))
+              }
+            }else{
+              None
+            },
           relationships = None)
       }))
     }else{
@@ -143,7 +156,7 @@ trait ItemActions {
   }
   
   private def stripTasks(tasks: Option[scala.List[Task]]): Option[scala.List[Task]] = {
-    if (tasks.isDefined){
+    if (tasks.isDefined && tasks.get.size > 0){
       Some(tasks.get.map(task => {
         task.copy(
           archived = None,
@@ -151,6 +164,7 @@ trait ItemActions {
           assignee = None,
           assigner = None,
           reminders = None,
+          visibility = None,
           relationships = Some(task.relationships.get.copy(origin=None, tags=None)))
       }))
     }else{
@@ -159,11 +173,12 @@ trait ItemActions {
   }
   
   private def stripNotes(notes: Option[scala.List[Note]]): Option[scala.List[Note]] = {
-    if (notes.isDefined){
+    if (notes.isDefined && notes.get.size > 0){
       Some(notes.get.map(note => {
         note.copy(
           archived = None,
           favorited = None,
+          visibility = None,
           relationships = Some(note.relationships.get.copy(origin=None, tags=None)))
       }))
     }else{

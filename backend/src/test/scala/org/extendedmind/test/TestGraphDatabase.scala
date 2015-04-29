@@ -208,6 +208,7 @@ trait TestGraphDatabase extends GraphDatabase {
                     AgreementUser(None, Some(LAURI_EMAIL)))).right.get                
     val agreementCode = 1234L
     val saveResponse = saveAgreementAcceptInformation(shareAgreementResult.uuid.get, agreementCode, "1234")
+    acceptAgreement(agreementCode, LAURI_EMAIL).right.get
     
     // Extended Mind Technologies
 

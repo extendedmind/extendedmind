@@ -83,8 +83,22 @@ class ItemBestCaseSpec extends ServiceSpecBase {
         itemsResponse.lists.get.find(
             list=>list.visibility.isDefined &&
             list.visibility.get.agreements.isDefined &&
-            list.visibility.get.agreements.get(0).proposedTo.get.email.get == LAURI_EMAIL) should not be (None) 
+            list.visibility.get.agreements.get(0).proposedTo.get.email.get == LAURI_EMAIL) should not be (None)
       }
+    }
+    it("should generate limited item list response on /[userUUID]/items to foreign user") {
+      val authenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
+      Get("/" + authenticateResponse.sharedLists.get.last._1 + "/items") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        val itemsResponse = responseAs[Items]
+        writeJsonOutput("limitedItemsResponse", responseAs[String])
+        itemsResponse.items should be (None)
+        itemsResponse.tasks should not be None
+        itemsResponse.tasks.get.length should equal(3)
+        itemsResponse.notes should be (None)
+        itemsResponse.lists should not be None
+        itemsResponse.lists.get.length should equal(1)
+        itemsResponse.lists.get(0).visibility.get.agreements.get(0).proposedTo.get.email.get should be (LAURI_EMAIL)
+       }
     }
     it("should successfully put new item on PUT to /[userUUID]/item "
       + "update it with PUT to /[userUUID]/item/[itemUUID] "

@@ -548,7 +548,7 @@ trait UserDatabase extends AbstractGraphDatabase {
           .relationships(DynamicRelationshipType.withName(SecurityRelationship.CAN_READ_WRITE.name), Direction.OUTGOING)
           .evaluator(Evaluators.excludeStartPosition())
           .evaluator(LabelEvaluator(scala.List(ItemLabel.LIST, OwnerLabel.COLLECTIVE)))
-          .evaluator(Evaluators.toDepth(1)) 
+          .evaluator(Evaluators.toDepth(1))
   }
   
   protected def getSharedListAccess(relationshipList: scala.List[Relationship], foreignOwnerUUID: Option[UUID] = None)(implicit neo4j: DatabaseService): Option[Map[UUID,(String, Map[UUID, (String, Byte)])]] = {
@@ -598,7 +598,7 @@ trait UserDatabase extends AbstractGraphDatabase {
   }
   
   protected def setPermission(targetNode: Node, userNode: Node, access: Option[Byte]) 
-       (implicit neo4j: DatabaseService): Response[Option[Relationship]] = {
+       (implicit neo4j: DatabaseService): Response[Option[Relationship]] = {    
     // Get existing relationship
     val existingRelationship = {
       val result = getSecurityRelationship(targetNode, userNode)
@@ -715,7 +715,8 @@ trait UserDatabase extends AbstractGraphDatabase {
     for {
       agreement <- toCaseClass[Agreement](agreementInfo.agreement).right
       fullAgreement <- Right(agreement.copy(
-        proposedTo = Some(AgreementUser(None, Some(agreementInfo.proposedTo.get.getProperty("email").asInstanceOf[String])))
+        proposedTo = Some(AgreementUser(Some(getUUID(agreementInfo.proposedTo.get)),
+                                        Some(agreementInfo.proposedTo.get.getProperty("email").asInstanceOf[String])))
       )).right
     } yield fullAgreement
   }
