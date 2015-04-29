@@ -79,6 +79,11 @@ class ItemBestCaseSpec extends ServiceSpecBase {
         itemsResponse.tasks should not be None
         itemsResponse.tasks.get.length should equal(6)
         itemsResponse.notes should not be None
+        itemsResponse.lists should not be None
+        itemsResponse.lists.get.find(
+            list=>list.visibility.isDefined &&
+            list.visibility.get.agreements.isDefined &&
+            list.visibility.get.agreements.get(0).proposedTo.get.email.get == LAURI_EMAIL) should not be (None) 
       }
     }
     it("should successfully put new item on PUT to /[userUUID]/item "

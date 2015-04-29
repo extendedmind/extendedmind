@@ -137,8 +137,10 @@ trait UserActions {
   
   def putNewAgreement(userUUID: UUID, agreement: Agreement)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("putNewAgreement")
-    if (agreement.proposedTo.email.isEmpty){
-      fail(INVALID_PARAMETER, ERR_USER_EMAIL_MISSING, "Missing proposedTo email field")
+    if (agreement.proposedTo.isEmpty || agreement.proposedTo.get.email.isEmpty){
+      fail(INVALID_PARAMETER, ERR_USER_INVALID_AGREEMENT, "Missing proposedTo with email field")
+    }else if (agreement.targetItem.isEmpty){
+      fail(INVALID_PARAMETER, ERR_USER_INVALID_AGREEMENT, "Missing targetItem with uuid field")
     }else{
       val setResult = db.putNewAgreement(agreement.copy(proposedBy = Some(AgreementUser(Some(userUUID), None))))
       sendAgreementEmail(agreement)
@@ -180,12 +182,12 @@ trait UserActions {
           val saveResponse = db.saveAgreementAcceptInformation(agreement.uuid.get, acceptCode, id)
           if (saveResponse.isLeft)
             log.error("Error saving agreement details proposed to email {} with emailId {}, error: {}",
-              agreement.proposedTo.email, id, saveResponse.left.get.head)
+              agreement.proposedTo.get.email, id, saveResponse.left.get.head)
           else log.info("Saved agreement accept code proposed to email {} with emailId: {}",
-            agreement.proposedTo.email, id)
+            agreement.proposedTo.get.email, id)
         }
         case _ =>
-          log.error("Could not send agreement email proposed to {}", agreement.proposedTo.email)
+          log.error("Could not send agreement email proposed to {}", agreement.proposedTo.get.email)
       }
       Right(CountResult(1))
     }

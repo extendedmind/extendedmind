@@ -140,8 +140,8 @@ object AgreementType extends Enumeration {
 }
 
 case class Agreement(uuid: Option[UUID], created: Option[Long], modified: Option[Long],
-                     agreementType: String, access: Byte, accepted: Option[Long], targetItem: AgreementTarget,
-                     proposedBy: Option[AgreementUser], proposedTo: AgreementUser){
+                     agreementType: String, access: Byte, accepted: Option[Long], targetItem: Option[AgreementTarget],
+                     proposedBy: Option[AgreementUser], proposedTo: Option[AgreementUser]){
   require(
       try {
         val rt = AgreementType.withName(agreementType)
@@ -158,5 +158,5 @@ object Agreement{
   import org.extendedmind.domain.AgreementType._  
   def apply(agreementType: AgreementType, access: Byte, targetItem: AgreementTarget,
             proposedBy: AgreementUser, proposedTo: AgreementUser) 
-        = new Agreement(None, None, None, agreementType.toString, access, None, targetItem, Some(proposedBy), proposedTo)
+        = new Agreement(None, None, None, agreementType.toString, access, None, Some(targetItem), Some(proposedBy), Some(proposedTo))
 }

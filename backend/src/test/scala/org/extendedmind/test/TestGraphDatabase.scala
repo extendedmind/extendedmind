@@ -205,11 +205,10 @@ trait TestGraphDatabase extends GraphDatabase {
 
     val shareAgreementResult = putNewAgreement(Agreement(AgreementType.LIST_AGREEMENT, SecurityContext.READ_WRITE, 
                     AgreementTarget(essayList.uuid.get, None), AgreementUser(Some(timoUUID), None),
-                    AgreementUser(None, Some(LAURI_EMAIL)))).right.get
+                    AgreementUser(None, Some(LAURI_EMAIL)))).right.get                
     val agreementCode = 1234L
     val saveResponse = saveAgreementAcceptInformation(shareAgreementResult.uuid.get, agreementCode, "1234")
-    acceptAgreement(agreementCode, LAURI_EMAIL)
-
+    
     // Extended Mind Technologies
 
     // Store items for EMT

@@ -432,8 +432,8 @@ trait UserDatabase extends AbstractGraphDatabase {
       implicit neo4j =>
         for {
           proposedByUserNode <- getNode(agreement.proposedBy.get.uuid.get, OwnerLabel.USER).right
-          proposedToUserNode <- getUserNode(agreement.proposedTo.email.get).right
-          concerningNode <- getItemNode(agreement.proposedBy.get.uuid.get, agreement.targetItem.uuid, ItemLabel.LIST, false).right
+          proposedToUserNode <- getUserNode(agreement.proposedTo.get.email.get).right
+          concerningNode <- getItemNode(agreement.proposedBy.get.uuid.get, agreement.targetItem.get.uuid, ItemLabel.LIST, false).right
           agreementNode <- createAgreementNode(agreement, proposedByUserNode, proposedToUserNode, concerningNode).right
         } yield agreementNode
     }
@@ -460,7 +460,10 @@ trait UserDatabase extends AbstractGraphDatabase {
     if (previousAgreementToList.isDefined){
       fail(INVALID_PARAMETER, ERR_USER_AGREEMENT_ALREADY_EXISTS, "There is already an agreement about this list to the given user")
     }else{
-      val agreementNode = createNode(agreement, MainLabel.AGREEMENT, AgreementLabel.LIST_AGREEMENT)
+      val agreementNode = createNode(agreement, MainLabel.AGREEMENT, AgreementLabel.LIST_AGREEMENT) 
+      proposedByUserNode --> AgreementRelationship.PROPOSES --> agreementNode 
+      agreementNode --> AgreementRelationship.IS_PROPOSED_TO --> proposedToUserNode
+      agreementNode --> AgreementRelationship.CONCERNING --> concerningNode
       Right(agreementNode)
     }
   }
@@ -507,10 +510,10 @@ trait UserDatabase extends AbstractGraphDatabase {
     val concerningNode = concerningRelationship.get.getEndNode
     
     val proposedToRelationship = agreementNode.getRelationships.find(relationship => {
-      relationship.getType.name == AgreementRelationship.IS_PROPOSED_TO.name && relationship.getEndNode.getId == userNode.getId
+      relationship.getType.name == AgreementRelationship.IS_PROPOSED_TO.name
     })
         
-    val proposedToUser = 
+    val proposedToUser =
       if (proposedToRelationship.isDefined) Some(proposedToRelationship.get.getEndNode)
       else None
       
@@ -681,7 +684,7 @@ trait UserDatabase extends AbstractGraphDatabase {
   
   private def getAgreementNodeForAcceptance(proposedToNode: Node, acceptCode: Long)(implicit neo4j: DatabaseService): Response[Node] = {
     val agreementNodeResult = proposedToNode.getRelationships.find(relationship => {
-      relationship.getType.name == AgreementRelationship.IS_PROPOSED_TO &&
+      relationship.getType.name == AgreementRelationship.IS_PROPOSED_TO.name &&
       relationship.getStartNode.hasProperty("acceptCode") &&
       relationship.getStartNode.getProperty("acceptCode").asInstanceOf[Long] == acceptCode
     })
@@ -712,8 +715,7 @@ trait UserDatabase extends AbstractGraphDatabase {
     for {
       agreement <- toCaseClass[Agreement](agreementInfo.agreement).right
       fullAgreement <- Right(agreement.copy(
-        proposedBy = Some(AgreementUser(None, Some(agreementInfo.proposedBy.getProperty("email").asInstanceOf[String]))),
-        proposedTo = AgreementUser(None, Some(agreementInfo.proposedTo.get.getProperty("email").asInstanceOf[String]))
+        proposedTo = Some(AgreementUser(None, Some(agreementInfo.proposedTo.get.getProperty("email").asInstanceOf[String])))
       )).right
     } yield fullAgreement
   }

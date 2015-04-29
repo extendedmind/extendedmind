@@ -344,5 +344,16 @@ class ListBestCaseSpec extends ServiceSpecBase {
         }
       }
     }
+    /* TODO
+    it("should successfully get agreements and shared list with GET to /[userUUID]/items") {
+      val timoAuthenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+      val lauriAuthenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
+ 
+    }
+    it("should successfully put new and existing tasks and notes to shared lists") {
+      val timoAuthenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+      val lauriAuthenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
+      
+    }*/
   }  
 }
