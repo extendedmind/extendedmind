@@ -344,16 +344,65 @@ class ListBestCaseSpec extends ServiceSpecBase {
         }
       }
     }
-    /* TODO
-    it("should successfully get agreements and shared list with GET to /[userUUID]/items") {
-      val timoAuthenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-      val lauriAuthenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
- 
-    }
     it("should successfully put new and existing tasks and notes to shared lists") {
       val timoAuthenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       val lauriAuthenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
       
-    }*/
+      val timoUUID = lauriAuthenticateResponse.sharedLists.get.last._1
+      Get("/" + timoUUID + "/items") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
+        val sharedItemsResponse = responseAs[Items]
+        sharedItemsResponse.tasks.get.length should equal(3)
+        sharedItemsResponse.notes should be(None)
+        sharedItemsResponse.lists.get.length should equal(1)
+        val essayListUUID = sharedItemsResponse.lists.get(0).uuid.get
+        essayListUUID should be (lauriAuthenticateResponse.sharedLists.get.last._2._2.last._1)
+
+        val newTask = Task("help with writing essay", None, None, Some("2015-10-10"), None, None, 
+        Some(ExtendedItemRelationships(Some(essayListUUID), None, None)))
+        val putTaskResponse = putNewTask(newTask, lauriAuthenticateResponse, Some(timoUUID))
+        val newNote = Note("tips for writing", None, None, Some("first just write, then edit"), None,
+                    Some(ExtendedItemRelationships(Some(essayListUUID), None, None)))
+        val putNoteResponse = putNewNote(newNote, lauriAuthenticateResponse, Some(timoUUID))
+        
+        Get("/" + timoUUID + "/items") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
+          val updatedSharedItemsResponse = responseAs[Items]
+          updatedSharedItemsResponse.tasks.get.length should equal(4)
+          updatedSharedItemsResponse.notes.get.length should equal(1)
+          // NOTE: due date should not stick
+          updatedSharedItemsResponse.tasks.get.find(task => task.due.isDefined) should be(None)
+          
+          putExistingNote(updatedSharedItemsResponse.notes.get(0).copy(
+            title = "updated note"), putNoteResponse.uuid.get, lauriAuthenticateResponse, Some(timoUUID))
+          putExistingTask(updatedSharedItemsResponse.tasks.get(0).copy(
+            title = "updated task"), putTaskResponse.uuid.get, lauriAuthenticateResponse, Some(timoUUID))
+          
+          Get("/" + timoUUID + "/items") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
+            val updatedSharedItemsResponse = responseAs[Items]
+            updatedSharedItemsResponse.tasks.get.length should equal(4)
+            updatedSharedItemsResponse.notes.get.length should equal(1)
+            val updatedTask = updatedSharedItemsResponse.tasks.get.find(task => task.title == "updated task").get
+            val updatedNote = updatedSharedItemsResponse.notes.get.find(note => note.title == "updated note").get
+            
+            // Delete shared notes and tasks
+            deleteTask(updatedTask.uuid.get, lauriAuthenticateResponse, Some(timoUUID))
+            deleteNote(updatedNote.uuid.get, lauriAuthenticateResponse, Some(timoUUID))
+            
+            Get("/" + timoUUID + "/items") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
+              val deletedSharedItemsResponse = responseAs[Items]
+              deletedSharedItemsResponse.tasks.get.length should equal(3)
+              deletedSharedItemsResponse.notes should be(None)
+              // Undelete shared notes and tasks
+              undeleteTask(updatedTask.uuid.get, lauriAuthenticateResponse, Some(timoUUID))
+              undeleteNote(updatedNote.uuid.get, lauriAuthenticateResponse, Some(timoUUID))
+              Get("/" + timoUUID + "/items") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
+                val undeletedSharedItemsResponse = responseAs[Items]
+                undeletedSharedItemsResponse.tasks.get.length should equal(4)
+                undeletedSharedItemsResponse.notes.get.length should equal(1)
+              }
+            }
+          }
+        }
+      }
+    }
   }  
 }

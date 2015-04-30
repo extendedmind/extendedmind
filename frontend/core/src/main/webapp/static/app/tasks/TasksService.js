@@ -178,7 +178,7 @@
     ]
   );
 
-  function getRepeatingTaskInitialValues(task) {
+  function getRepeatingTaskInitialValues(task) {
     var initialValues = {
       title: task.trans.title,
       repeating: task.trans.repeating

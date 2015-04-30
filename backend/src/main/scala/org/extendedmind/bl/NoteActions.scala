@@ -36,6 +36,7 @@ trait NoteActions {
   def db: GraphDatabase;
 
   def putNewNote(owner: Owner, note: Note)(implicit log: LoggingAdapter): Response[SetResult] = {
+    log.info("putNewNote")
     val accessRight =  db.getNoteAccessRight(owner, note)   
     if (!writeAccess(accessRight)){
       fail(INVALID_PARAMETER, ERR_BASE_NO_LIST_ACCESS, "No write access to new note")
