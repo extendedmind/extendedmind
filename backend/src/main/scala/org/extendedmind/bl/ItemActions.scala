@@ -49,8 +49,12 @@ trait ItemActions {
   }
 
   def getItems(owner: Owner, modified: Option[Long], active: Boolean, deleted: Boolean, archived: Boolean, completed: Boolean)(implicit log: LoggingAdapter): Response[Items] = {
-    log.info("getItems")    
-    val ownerItems = db.getItems(owner, modified, active, deleted, archived, completed)
+    log.info("getItems")
+    
+    // When using shared lists, archived needs to always be true to make sure archiving list
+    // does not break sharing
+    val overrideArchived = if (owner.sharedLists.isDefined) true else archived
+    val ownerItems = db.getItems(owner, modified, active, deleted, overrideArchived, completed)
 
     if (ownerItems.isRight) {
       if (owner.sharedLists.isDefined){
