@@ -103,38 +103,44 @@
         * trans !== mod || persistent
         */
         isEdited: function(task, ownerUUID, compareValues) {
-
-          if (compareValues){
-            console.log("FIXME: USE REMINDERS COMPARE VALUES:")
-            console.log(compareValues)
-          }
-
           if (task.trans.reminders) {
-
-            if ((!task.mod || !task.mod.reminders) && !task.reminders) {
-              // Not in mod nor in database.
-              return true;
-            }
-
-            if (task.mod && task.mod.reminders) {
-              if (!angular.equals(task.trans.reminders, task.mod.reminders)) {
-                // Trans does not match with mod.
+            if (!compareValues) {
+              if ((!task.mod || !task.mod.reminders) && !task.reminders) {
+                // Not in mod nor in database.
                 return true;
               }
-            } else if (task.reminders) {
-              if (!angular.equals(task.trans.reminders, task.reminders)) {
-                // Trans does not match with database.
+
+              if (task.mod && task.mod.reminders) {
+                if (!angular.equals(task.trans.reminders, task.mod.reminders)) {
+                  // Trans does not match with mod.
+                  return true;
+                }
+              } else if (task.reminders) {
+                if (!angular.equals(task.trans.reminders, task.reminders)) {
+                  // Trans does not match with database.
+                  return true;
+                }
+              }
+            } else {
+              if (!compareValues.reminders) {
                 return true;
+              } else {
+                if (!angular.equals(task.trans.reminders, compareValues.reminders)) {
+                  // Trans does not match with compare values.
+                  return true;
+                }
               }
             }
-          }
-
-          else {
-            if (task.mod && task.mod.reminders) {
-              // Not in trans but in mod.
-              return true;
-            } else if (task.reminders) {
-              // Not in trans but in database.
+          } else {
+            if (!compareValues) {
+              if (task.mod && task.mod.reminders) {
+                // Not in trans but in mod.
+                return true;
+              } else if (task.reminders) {
+                // Not in trans but in database.
+                return true;
+              }
+            } else if (compareValues.reminders) {
               return true;
             }
           }
