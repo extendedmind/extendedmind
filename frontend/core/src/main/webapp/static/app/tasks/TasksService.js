@@ -386,19 +386,19 @@
       return item;
     },
     setTasks: function(tasksResponse, ownerUUID, skipPersist, addToExisting) {
-      var taskArrays, modifiedTasks;
+      var latestModified, modifiedTasks;
       if (skipPersist){
         ItemLikeService.resetTrans(tasksResponse, 'task', ownerUUID, taskFieldInfos);
       }else{
         ItemLikeService.persistAndReset(tasksResponse, 'task', ownerUUID, taskFieldInfos);
       }
       if (addToExisting){
-        taskArrays = ArrayService.updateArrays('tasks', tasksResponse,
+        latestModified = ArrayService.updateArrays('tasks', tasksResponse,
                                                tasks[ownerUUID].activeTasks,
                                                tasks[ownerUUID].deletedTasks,
                                                getOtherArrays(ownerUUID));
       }else{
-        taskArrays = ArrayService.setArrays('tasks', tasksResponse,
+        latestModified = ArrayService.setArrays('tasks', tasksResponse,
                                             tasks[ownerUUID].activeTasks,
                                             tasks[ownerUUID].deletedTasks,
                                             getOtherArrays(ownerUUID));
@@ -412,7 +412,7 @@
         }
       }
 
-      return taskArrays;
+      return latestModified;
     },
     updateTasks: function(tasksResponse, ownerUUID) {
       if (tasksResponse && tasksResponse.length){
@@ -420,7 +420,6 @@
         // the values in the persistent response
         var i;
         var updatedTasks = [];
-        var updatedArrays;
         var modifiedTasks;
         for (i = 0; i < tasksResponse.length; i++){
           var taskInfo = this.getTaskInfo(tasksResponse[i].uuid, ownerUUID);
@@ -435,7 +434,7 @@
             ItemLikeService.persistAndReset(tasksResponse[i], 'task', ownerUUID, taskFieldInfos);
           }
         }
-        updatedArrays = ArrayService.updateArrays('tasks', updatedTasks,
+        var latestModified = ArrayService.updateArrays('tasks', updatedTasks,
                                                   tasks[ownerUUID].activeTasks,
                                                   tasks[ownerUUID].deletedTasks,
                                                   getOtherArrays(ownerUUID));
@@ -446,7 +445,7 @@
             this.saveTask(modifiedTasks[i], ownerUUID);
           }
         }
-        return updatedArrays;
+        return latestModified;
       }
     },
     updateTaskModProperties: function(uuid, properties, ownerUUID) {
