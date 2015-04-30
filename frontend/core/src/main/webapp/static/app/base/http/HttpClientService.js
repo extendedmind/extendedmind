@@ -18,6 +18,9 @@
 
  function HttpClientService($http, $q, $rootScope, HttpRequestQueueService) {
 
+  /* Override DELETE defaults */
+  $http.defaults.headers.delete = { 'Content-Type' : 'application/json' };
+
   var methods = {};
   var credentials;
   var cacheOnly;
