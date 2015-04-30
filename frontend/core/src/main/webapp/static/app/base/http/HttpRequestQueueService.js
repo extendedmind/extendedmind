@@ -183,10 +183,10 @@ function HttpRequestQueueService(enableOffline) {
       return true;
     },
     concatLastContentDataArray: function(request) {
-      if (!last) {
+      if (!last || last.executing) {
         last = request;
       } else {
-        // last already exists, concat the data from this request to
+        // last already exists and is not currently executing, concat the data from this request to
         // the end of the data array in the last request
         last.content.data = last.content.data.concat(request.content.data);
       }

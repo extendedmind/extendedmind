@@ -63,20 +63,28 @@
 
 
   function executeLastRequest(lastRequest){
-    $.ajax({
-      type: lastRequest.content.method.toUpperCase(),
-      url: lastRequest.content.url,
-      data: JSON.stringify(lastRequest.content.data),
-      contentType: 'application/json',
-      dataType: 'json',
-      success: function() {
-        // Then remove the request and release lock
-        HttpRequestQueueService.remove(lastRequest);
-      },
-      error: function() {
-        HttpRequestQueueService.releaseLock();
-      }
-    });
+    // As last request is insignificant, lock needs to be released before executing to prevent
+    // problems with subsequent calls failing
+    HttpRequestQueueService.releaseLock();
+
+    if (!lastRequest.executing){
+      lastRequest.executing = true;
+      $.ajax({
+        type: lastRequest.content.method.toUpperCase(),
+        url: lastRequest.content.url,
+        data: JSON.stringify(lastRequest.content.data),
+        contentType: 'application/json',
+        dataType: 'json',
+        success: function() {
+          // Then remove the request (lock was released before execution)
+          HttpRequestQueueService.remove(lastRequest);
+          delete lastRequest.executing;
+        },
+        error: function() {
+          delete lastRequest.executing;
+        }
+      });
+    }
   }
 
   var retryingExecution = false;
