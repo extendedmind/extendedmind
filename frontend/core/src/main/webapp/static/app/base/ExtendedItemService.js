@@ -98,12 +98,16 @@
         }
       }
     }
-    // Transient keywords has been removed from item, delete persistent values
-    else {
-      if (destination.relationships && destination.relationships.tags) {
+    else if (destination.relationships) {
+      // Transient keywords has been removed from item, delete persistent values
+      if (destination.relationships.tags) {
         destination.relationships.tags = filterKeywordsFromTags();
         // Remove tags array if the result yielded an empty array
         if (destination.relationships.tags.length === 0) delete destination.relationships.tags;
+      }
+
+      if (!destination.relationships.parent && !destination.relationships.tags){
+        destination.relationships = undefined;
       }
     }
 
@@ -199,10 +203,15 @@
               var jTagInfo = TagsService.getTagInfo(extendedItem.mod.relationships.tags[j], ownerUUID);
               if (jTagInfo && jTagInfo.tag.trans.tagType === 'context') previousContextIndex = j;
             }
-            if (previousContextIndex !== undefined)
+            if (previousContextIndex !== undefined){
               extendedItem.mod.relationships.tags.splice(previousContextIndex, 1);
-          }else{
-            extendedItem.mod.relationships.tags = undefined;
+            }
+            if (extendedItem.mod.relationships.tags.length === 0){
+              delete extendedItem.mod.relationships.tags;
+            }
+          }
+          if (!extendedItem.mod.relationships.tags && !extendedItem.mod.relationships.parent){
+            extendedItem.mod.relationships = undefined;
           }
         }else{
           extendedItem.mod.relationships = undefined;
@@ -223,46 +232,62 @@
     },
     isRelationshipsEdited: function(extendedItem, ownerUUID, compareValues){
 
-      if (compareValues){
-        console.log("FIXME: USE THESE RELATIONSHIPS COMPARE VALUES:")
-        console.log(compareValues)
-      }
-
       if (extendedItem.trans.list || extendedItem.trans.context || extendedItem.trans.keywords){
+        var i;
 
-        if (!extendedItem.relationships && (!extendedItem.mod || !extendedItem.mod.relationships)){
-          // Relationships are in trans but not in mod nor database
+        if (!compareValues){
+          if (!extendedItem.relationships && (!extendedItem.mod || !extendedItem.mod.relationships)){
+            // Relationships are in trans but not in mod nor database
+            return true;
+          }
+        }else if (!compareValues.relationships){
+          // Relationships are in trans but not in compare values
           return true;
         }
 
         // Check list
         if (extendedItem.trans.list){
-          if (extendedItem.mod && extendedItem.mod.relationships){
-            if (extendedItem.mod.relationships.parent !== extendedItem.trans.list.trans.uuid)
+          if (!compareValues){
+            if (extendedItem.mod && extendedItem.mod.relationships){
+              if (extendedItem.mod.relationships.parent !== extendedItem.trans.list.trans.uuid)
+                return true;
+            }else if (extendedItem.relationships &&
+                      (extendedItem.relationships.parent !== extendedItem.trans.list.trans.uuid)){
               return true;
-          }else if (extendedItem.relationships &&
-                    (extendedItem.relationships.parent !== extendedItem.trans.list.trans.uuid)){
+            }
+          }else if (compareValues.relationships.parent !== extendedItem.trans.list.trans.uuid){
             return true;
           }
-        }else if ((extendedItem.relationships && extendedItem.relationships.parent) ||
-                  (extendedItem.mod && extendedItem.mod.relationships
-                   && extendedItem.mod.relationships.parent)){
-          return true;
+        }else{
+          if (!compareValues){
+            if ((extendedItem.relationships && extendedItem.relationships.parent) ||
+                    (extendedItem.mod && extendedItem.mod.relationships &&
+                     extendedItem.mod.relationships.parent)){
+              return true;
+            }
+          }else if (compareValues.relationships.parent){
+            return true;
+          }
         }
 
         // Check context
         var hasContext = false;
         if (extendedItem.trans.context){
-          if (extendedItem.mod && extendedItem.mod.relationships){
-            if (!extendedItem.mod.relationships.tags ||
-                extendedItem.mod.relationships.tags.indexOf(extendedItem.trans.context.trans.uuid) === -1){
-              return true;
+          if (!compareValues){
+            if (extendedItem.mod && extendedItem.mod.relationships){
+              if (!extendedItem.mod.relationships.tags ||
+                  extendedItem.mod.relationships.tags.indexOf(extendedItem.trans.context.trans.uuid) === -1){
+                return true;
+              }
+            }else if (extendedItem.relationships){
+              if (!extendedItem.relationships.tags ||
+                  extendedItem.relationships.tags.indexOf(extendedItem.trans.context.trans.uuid) === -1){
+                return true;
+              }
             }
-          }else if (extendedItem.relationships){
-            if (!extendedItem.relationships.tags || 
-                extendedItem.relationships.tags.indexOf(extendedItem.trans.context.trans.uuid) === -1){
-              return true;
-            }
+          }else if (!compareValues.relationships.tags ||
+                    compareValues.relationships.tags.indexOf(extendedItem.trans.context.trans.uuid) === -1){
+            return true;
           }
           hasContext = true;
         }
@@ -271,41 +296,72 @@
         if (extendedItem.trans.keywords && extendedItem.trans.keywords.length){
           var expectedLength = hasContext ? extendedItem.trans.keywords.length + 1 :
                                             extendedItem.trans.keywords.length;
-          if (extendedItem.mod && extendedItem.mod.relationships){
-            if (!extendedItem.mod.relationships.tags ||
-                extendedItem.mod.relationships.tags.length !== expectedLength){
+          if (!compareValues){
+            if (extendedItem.mod && extendedItem.mod.relationships){
+              if (!extendedItem.mod.relationships.tags ||
+                  extendedItem.mod.relationships.tags.length !== expectedLength){
+                return true;
+              }
+              // Check that every keyword is found in mod.relationship.tags array
+              for (i=0; i<extendedItem.trans.keywords.length; i++){
+                if (extendedItem.mod.relationships.tags.
+                    indexOf(extendedItem.trans.keywords[i].trans.uuid) === -1)
+                  return true;
+              }
+            }else if (extendedItem.relationships){
+              if (!extendedItem.relationships.tags ||
+                  extendedItem.relationships.tags.length !== expectedLength){
+                return true;
+              }
+              // Check that every keyword is found in relationship.tags array
+              for (i=0; i<extendedItem.trans.keywords.length; i++){
+                if (extendedItem.relationships.tags.indexOf(extendedItem.trans.keywords[i].trans.uuid) === -1)
+                  return true;
+              }
+            }
+          }else {
+            // Use given compareValues
+            if (!compareValues.relationships.tags ||
+                compareValues.relationships.tags.length !== expectedLength){
               return true;
             }
-            // Check that every keyword is found in mod.relationship.tags array
-            for (var i=0, len=extendedItem.trans.keywords.length; i<len; i++){
-              if (extendedItem.mod.relationships.tags.indexOf(extendedItem.trans.keywords[i].trans.uuid) === -1)
+            // Check that every keyword is found in compareValues.relationships.tags array
+            for (i=0; i<extendedItem.trans.keywords.length; i++){
+              if (compareValues.relationships.tags.indexOf(extendedItem.trans.keywords[i].trans.uuid) === -1)
                 return true;
+            }
+          }
+        }else if (!compareValues){
+          if (extendedItem.mod && extendedItem.mod.relationships){
+            if (extendedItem.mod.relationships.tags){
+              // No keywords but still tags in mod
+              if (!hasContext) return true;
+              if (hasContext && extendedItem.mod.relationships.tags.length !== 1) return true;
+            }
+          }else if (extendedItem.relationships && extendedItem.relationships.tags){
+            // No keywords but still tags
+            if (!hasContext) return true;
+            if (hasContext && extendedItem.relationships.tags.length !== 1) return true;
+          }
+        }else if (compareValues.relationships.tags){
+          // No keywords but still tags in compareValues
+          if (!hasContext) return true;
+          if (hasContext && compareValues.relationships.tags.length !== 1) return true;
+        }
+      }else{
+        // No relationships in .trans
+        if (!compareValues){
+          if (extendedItem.mod && extendedItem.mod.hasOwnProperty('relationships')){
+            // undefined value in .mod is allowed as it means that all relationships have been deleted
+            if (extendedItem.mod.relationships){
+              return true;
             }
           }else if (extendedItem.relationships){
-            if (!extendedItem.relationships.tags ||
-                extendedItem.relationships.tags.length !== expectedLength){
-              return true;
-            }
-            // Check that every keyword is found in relationship.tags array
-            for (var i=0, len=extendedItem.trans.keywords.length; i<len; i++){
-              if (extendedItem.relationships.tags.indexOf(extendedItem.trans.keywords[i].trans.uuid) === -1)
-                return true;
-            }
+            return true;
           }
-        }else if (extendedItem.mod && extendedItem.mod.relationships){
-          if (extendedItem.mod.relationships.tags){
-            // No keywords but still tags in mod
-            if (!hasContext) return true;
-            if (hasContext && extendedItem.mod.relationships.tags.length !== 1) return true;
-          }
-        }else if (extendedItem.relationships && extendedItem.relationships.tags){
-          // No keywords but still tags
-          if (!hasContext) return true;
-          if (hasContext && extendedItem.relationships.tags.length !== 1) return true;
+        }else if (compareValues.relationships){
+          return true;
         }
-      }else if (extendedItem.relationships &&
-                (extendedItem.relationships.parent || extendedItem.relationships.tags)){
-        return true;
       }
     },
     validateRelationships: function(/*extendedItem, ownerUUID*/){
