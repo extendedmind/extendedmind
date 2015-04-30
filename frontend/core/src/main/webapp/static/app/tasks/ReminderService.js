@@ -125,10 +125,10 @@
             // Item has active reminder.
             if ((item.trans.completed || item.trans.deleted) && !reminder.removed) {        // i.
               unschedule(reminder, BackendClientService.generateFakeTimestamp());
-              modifiedItems.push(item);
+              modifiedItems.push({reminder: reminder, item: item});
             } else if (!item.trans.completed && !item.trans.deleted && reminder.removed) {  // ii.
               schedule(reminder, item);
-              modifiedItems.push(item);
+              modifiedItems.push({reminder: reminder, item: item});
             }
           }
         }

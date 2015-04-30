@@ -398,7 +398,7 @@
       return item;
     },
     setTasks: function(tasksResponse, ownerUUID, skipPersist, addToExisting) {
-      var latestModified, modifiedTasks;
+      var latestModified, modifiedTasksInfos;
       if (skipPersist){
         ItemLikeService.resetTrans(tasksResponse, 'task', ownerUUID, taskFieldInfos);
       }else{
@@ -416,10 +416,10 @@
                                             getOtherArrays(ownerUUID));
       }
       if (tasksResponse) {
-        modifiedTasks = ReminderService.synchronizeReminders(tasksResponse);
-        if (modifiedTasks) {
-          for (var i = 0; i < modifiedTasks.length; i++) {
-            this.saveTask(modifiedTasks[i], ownerUUID);
+        modifiedTasksInfos = ReminderService.synchronizeReminders(tasksResponse);
+        if (modifiedTasksInfos) {
+          for (var i = 0; i < modifiedTasksInfos.length; i++) {
+            this.saveTask(modifiedTasksInfos[i].item, ownerUUID);
           }
         }
       }
@@ -432,7 +432,7 @@
         // the values in the persistent response
         var i;
         var updatedTasks = [];
-        var modifiedTasks;
+        var modifiedTasksInfos;
         for (i = 0; i < tasksResponse.length; i++){
           var taskInfo = this.getTaskInfo(tasksResponse[i].uuid, ownerUUID);
           if (taskInfo){
@@ -451,10 +451,20 @@
                                                   tasks[ownerUUID].deletedTasks,
                                                   getOtherArrays(ownerUUID));
 
-        modifiedTasks = ReminderService.synchronizeReminders(updatedTasks);
-        if (modifiedTasks) {
-          for (i = 0; i < modifiedTasks.length; i++) {
-            this.saveTask(modifiedTasks[i], ownerUUID);
+        modifiedTasksInfos = ReminderService.synchronizeReminders(updatedTasks);
+        if (modifiedTasksInfos) {
+          var that = this;
+          var processModifiedDeletedTask = function(taskInfo, ownerUUID) {
+            that.undeleteTask(taskInfo.item, ownerUUID, true).then(function(){
+              that.deleteTask(taskInfo.item, ownerUUID, taskInfo.reminder);
+            });
+          };
+          for (i = 0; i < modifiedTasksInfos.length; i++) {
+            if (modifiedTasksInfos[i].item.trans.deleted) {
+              processModifiedDeletedTask(modifiedTasksInfos[i], ownerUUID);
+            }else{
+              this.saveTask(modifiedTasksInfos[i].item, ownerUUID);
+            }
           }
         }
         return latestModified;
@@ -608,19 +618,33 @@
     resetTask: function(task, ownerUUID) {
       return ItemLikeService.resetTrans(task, 'task', ownerUUID, taskFieldInfos);
     },
-    deleteTask: function(task, ownerUUID) {
+    deleteTask: function(task, ownerUUID, overrideReminder) {
       var deferred = $q.defer();
       if (tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue('uuid', task.trans.uuid, 'trans')) {
         deferred.resolve('unmodified');
       }else{
         var fakeTimestamp = BackendClientService.generateFakeTimestamp();
-        var data, reminder = ReminderService.unscheduleReminder(task, fakeTimestamp);
+        var data, reminder;
+        if (overrideReminder) {
+          reminder = overrideReminder;
+          reminder.removed = fakeTimestamp;
+        } else {
+          reminder = ReminderService.unscheduleReminder(task, fakeTimestamp);
+        }
         if (reminder && reminder.uuid) {
           // Update persisted reminder info.
           data = {reminderId: reminder.id, removed: fakeTimestamp};
+          // FIXME: Causes HTTP Error 415. Maybe something to do with the Content-Type in DELETE
+          //        being "text/plain;charset=UTF-8" and not e.g. "application/json;charset=UTF-8" as in
+          //        POST because complete/uncomplete works with identical payload.
+          //        See (google), http://stackoverflow.com/a/17471604, http://stackoverflow.com/a/22844303
         }
         ItemLikeService.processDelete(task, 'task', ownerUUID, taskFieldInfos, data).then(
           function(){
+            if (reminder !== undefined) {
+              if (!task.mod) task.mod = {};
+              task.mod.reminders = task.trans.reminders;
+            }
             updateTask(task, ownerUUID);
             deferred.resolve(task);
           }, function(failure){
@@ -630,18 +654,29 @@
       }
       return deferred.promise;
     },
-    undeleteTask: function(task, ownerUUID) {
+    undeleteTask: function(task, ownerUUID, skipReminderSync) {
       var deferred = $q.defer();
       if (!tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue('uuid', task.trans.uuid, 'trans')) {
         deferred.resolve('unmodified');
       }else{
-        var data, reminder = ReminderService.scheduleReminder(task);
-        if (reminder && reminder.uuid) {
-          // Update persisted reminder info.
-          data = {reminderId: reminder.id};
+        var data, reminder;
+        if (!skipReminderSync) {
+          reminder = ReminderService.scheduleReminder(task);
+          if (reminder && reminder.uuid) {
+            // Update persisted reminder info.
+            data = {reminderId: reminder.id};
+            // FIXME: Causes HTTP Error 415. Maybe something to do with the Content-Type in DELETE
+            //        being "text/plain;charset=UTF-8" and not e.g. "application/json;charset=UTF-8" as in
+            //        POST because complete/uncomplete works with identical payload.
+            //        See http://stackoverflow.com/a/17471604, http://stackoverflow.com/a/22844303
+          }
         }
         ItemLikeService.undelete(task, 'task', ownerUUID, taskFieldInfos, data).then(
           function(){
+            if (reminder !== undefined) {
+              if (!task.mod) task.mod = {};
+              task.mod.reminders = task.trans.reminders;
+            }
             updateTask(task, ownerUUID);
             deferred.resolve(task);
           }, function(failure){
