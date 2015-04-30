@@ -634,10 +634,6 @@
         if (reminder && reminder.uuid) {
           // Update persisted reminder info.
           data = {reminderId: reminder.id, removed: fakeTimestamp};
-          // FIXME: Causes HTTP Error 415. Maybe something to do with the Content-Type in DELETE
-          //        being "text/plain;charset=UTF-8" and not e.g. "application/json;charset=UTF-8" as in
-          //        POST because complete/uncomplete works with identical payload.
-          //        See (google), http://stackoverflow.com/a/17471604, http://stackoverflow.com/a/22844303
         }
         ItemLikeService.processDelete(task, 'task', ownerUUID, taskFieldInfos, data).then(
           function(){
