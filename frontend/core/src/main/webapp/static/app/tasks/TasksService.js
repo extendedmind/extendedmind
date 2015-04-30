@@ -102,7 +102,13 @@
         /*
         * trans !== mod || persistent
         */
-        isEdited: function(task) {
+        isEdited: function(task, ownerUUID, compareValues) {
+
+          if (compareValues){
+            console.log("FIXME: USE REMINDERS COMPARE VALUES:")
+            console.log(compareValues)
+          }
+
           if (task.trans.reminders) {
 
             if ((!task.mod || !task.mod.reminders) && !task.reminders) {

@@ -221,7 +221,13 @@
         resetTrans: this.resetRelationshipsTrans
       };
     },
-    isRelationshipsEdited: function(extendedItem /*, ownerUUID*/){
+    isRelationshipsEdited: function(extendedItem, ownerUUID, compareValues){
+
+      if (compareValues){
+        console.log("FIXME: USE THESE RELATIONSHIPS COMPARE VALUES:")
+        console.log(compareValues)
+      }
+
       if (extendedItem.trans.list || extendedItem.trans.context || extendedItem.trans.keywords){
 
         if (!extendedItem.relationships && (!extendedItem.mod || !extendedItem.mod.relationships)){
