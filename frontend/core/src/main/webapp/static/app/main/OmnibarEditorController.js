@@ -17,7 +17,8 @@
  'use strict';
 
  function OmnibarEditorController($q, $rootScope, $scope, $timeout,
-                                  AnalyticsService, ArrayService, TasksService, packaging, UISessionService) {
+                                  AnalyticsService, ArrayService, TasksService, packaging,
+                                  UISessionService, UserSessionService) {
 
   // INITIALIZING
 
@@ -147,7 +148,7 @@
     if (newValue) createSearchItems();
   });
 
-  if ($rootScope.synced){
+  if ($rootScope.synced || UserSessionService.isFakeUser()){
     createSearchItems();
   }
 
@@ -313,5 +314,5 @@
 }
 
 OmnibarEditorController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout',
-'AnalyticsService', 'ArrayService', 'TasksService', 'packaging', 'UISessionService'];
+'AnalyticsService', 'ArrayService', 'TasksService', 'packaging', 'UISessionService', 'UserSessionService'];
 angular.module('em.main').controller('OmnibarEditorController', OmnibarEditorController);
