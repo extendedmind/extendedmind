@@ -21,11 +21,11 @@
   function schedule(reminder, item) {
     var reminderToSchedule = {
       id: parseInt(reminder.id),
-      title: reminder.title,
+      title: item.trans.title,
       at: reminder.notification,
       data: {
         itemType: item.trans.itemType,
-        itemUUID: item.trans.itemUUID
+        itemUUID: item.trans.uuid
       }
     };
 
