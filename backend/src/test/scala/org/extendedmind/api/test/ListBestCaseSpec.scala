@@ -29,6 +29,7 @@ import org.extendedmind.security._
 import org.extendedmind.email._
 import org.extendedmind.test._
 import org.extendedmind.test.TestGraphDatabase._
+import org.mockito._
 import org.mockito.Mockito._
 import org.mockito.Matchers._
 import org.mockito.Matchers.{ eq => mockEq }
@@ -52,8 +53,11 @@ import spray.http.StatusCodes._
  */
 class ListBestCaseSpec extends ServiceSpecBase {
 
+  val mockMailgunClient = mock[MailgunClient]
+  
   object TestDataGeneratorConfiguration extends Module {
     bind[GraphDatabase] to db
+    bind[MailgunClient] to mockMailgunClient    
   }
 
   override def configurations = TestDataGeneratorConfiguration :: new Configuration(settings, actorRefFactory)
@@ -64,6 +68,7 @@ class ListBestCaseSpec extends ServiceSpecBase {
 
   after {
     cleanDb(db.ds.gds)
+    reset(mockMailgunClient)    
   }
 
   describe("In the best case, ListService") {
@@ -114,11 +119,11 @@ class ListBestCaseSpec extends ServiceSpecBase {
 	                  }
 	                  
 	                  // Change note list to new value and verify that change works
-                      Put("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get,
-                        marshal(newNote.copy(relationships = Some(ExtendedItemRelationships(Some(putList2Response.uuid.get), None, None)))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                          val reputExistingNoteResponse = responseAs[SetResult]
-                          reputExistingNoteResponse.modified should not be None
-                      }
+                    Put("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get,
+                      marshal(newNote.copy(relationships = Some(ExtendedItemRelationships(Some(putList2Response.uuid.get), None, None)))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                        val reputExistingNoteResponse = responseAs[SetResult]
+                        reputExistingNoteResponse.modified should not be None
+                    }
 	                  
 	                  Post("/" + authenticateResponse.userUUID + "/list/" + putListResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
 	                    val undeleteListResponse = responseAs[String]
@@ -402,6 +407,57 @@ class ListBestCaseSpec extends ServiceSpecBase {
             }
           }
         }
+      }
+    }
+    it("should successfully share new list") {
+      val lauriAuthenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
+      val newList = List("studies", None, None, None, None)
+      val putListResponse = putNewList(newList, lauriAuthenticateResponse)
+      
+      val sharingAgreement = Agreement(AgreementType.LIST_AGREEMENT, SecurityContext.READ, 
+                    AgreementTarget(putListResponse.uuid.get, None), None,
+                    AgreementUser(None, Some(TIMO_EMAIL)))
+      stub(mockMailgunClient.sendShareListAgreement(anyObject(), anyObject())).toReturn(Future { SendEmailResponse("OK", "1234") })
+      val agreementCodeCaptor: ArgumentCaptor[Long] = ArgumentCaptor.forClass(classOf[Long])      
+      Put("/agreement",
+          marshal(sharingAgreement).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
+        val agreementSetResult = responseAs[SetResult]
+        writeJsonOutput("putNewAgreementResponse", responseAs[String])        
+        verify(mockMailgunClient).sendShareListAgreement(anyObject(), agreementCodeCaptor.capture())
+        val agreementCode = agreementCodeCaptor.getValue
+        // Accept agreement
+        val timoAuthenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+        Post("/agreement/" + agreementCode.toHexString + "/accept",
+          marshal(UserEmail(TIMO_EMAIL)).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {            
+          val agreementAcceptSetResult = responseAs[SetResult]
+          writeJsonOutput("acceptAgreementResponse", responseAs[String])
+
+          Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
+            val accountResponse = responseAs[User]
+            val lauriUUID = accountResponse.sharedLists.get.last._1
+            Get("/" + lauriUUID + "/items") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
+              val sharedItemsResponse = responseAs[Items]
+              sharedItemsResponse.tasks should be(None)
+              sharedItemsResponse.notes should be(None)
+              sharedItemsResponse.lists.get.length should equal(1)
+              val studiesListUUID = sharedItemsResponse.lists.get(0).uuid.get
+              val newTask = Task("help with writing essay", None, None, Some("2015-10-10"), None, None, 
+                                 Some(ExtendedItemRelationships(Some(studiesListUUID), None, None)))
+              Put("/" + lauriUUID + "/task",
+                marshal(newTask).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
+                val errorResult = responseAs[ErrorResult]
+                Post("/agreement/" + agreementSetResult.uuid.get + "/access/2") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
+                  val accessResult = responseAs[SetResult]
+                  writeJsonOutput("changeAgreementAccessResponse", responseAs[String])
+                  Put("/" + lauriUUID + "/task",
+                    marshal(newTask).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
+                    val putTaskResponse = responseAs[SetResult]
+                  }
+                }
+              }
+            }
+          }
+        }   
       }
     }
   }  

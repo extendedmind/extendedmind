@@ -440,6 +440,10 @@ trait UserDatabase extends AbstractGraphDatabase {
   }
   
   protected def createAgreementNode(agreement: Agreement, proposedByUserNode: Node, proposedToUserNode: Node, concerningNode: Node)(implicit neo4j: DatabaseService): Response[Node] = {
+    if (proposedByUserNode.getId == proposedToUserNode.getId){
+      return fail(INVALID_PARAMETER, ERR_USER_AGREEMENT_TO_SELF, "Can't share list to the same user")
+    }
+    
     val agreementsFromProposedBy: TraversalDescription =
     neo4j.gds.traversalDescription()
       .relationships(DynamicRelationshipType.withName(AgreementRelationship.PROPOSES.name),
@@ -525,7 +529,7 @@ trait UserDatabase extends AbstractGraphDatabase {
   }
   
   protected def changeAgreementAccessNode(agreementInfo: AgreementInformation, access: Byte)(implicit neo4j: DatabaseService): Response[Option[Relationship]] = {
-    if (access != SecurityContext.READ && access != SecurityContext.READ){
+    if (access != SecurityContext.READ && access != SecurityContext.READ_WRITE){
       fail(INVALID_PARAMETER, ERR_USER_INVALID_ACCESS_VALUE, "List access value needs to be either 1 for read or 2 for write")      
     }else if (!agreementInfo.userIsCreator){
       fail(INVALID_PARAMETER, ERR_BASE_NO_ACCESS, "Only agreement creator can change agreement access")            
@@ -533,7 +537,7 @@ trait UserDatabase extends AbstractGraphDatabase {
       agreementInfo.agreement.setProperty("access", access)
       if (agreementInfo.agreement.hasProperty("accepted")){
         // Agreement has been accepted, need to change security relationships too
-        setPermission(agreementInfo.proposedTo.get, agreementInfo.concerning, Some(access))
+        setPermission(agreementInfo.concerning, agreementInfo.proposedTo.get, Some(access))
       }else{
         Right(None)
       }
@@ -614,7 +618,7 @@ trait UserDatabase extends AbstractGraphDatabase {
     access match {
       case Some(SecurityContext.READ) => {
         if(existingRelationship.isDefined){
-          if(existingRelationship.get.getType().name() != SecurityRelationship.CAN_READ.relationshipName)
+          if(existingRelationship.get.getType().name != SecurityRelationship.CAN_READ.name)
             existingRelationship.get.delete()
           else
             return Right(existingRelationship)
@@ -623,10 +627,10 @@ trait UserDatabase extends AbstractGraphDatabase {
       }
       case Some(SecurityContext.READ_WRITE) => 
         if(existingRelationship.isDefined){
-          if(existingRelationship.get.getType().name() != SecurityRelationship.CAN_READ_WRITE.relationshipName)
+          if(existingRelationship.get.getType().name != SecurityRelationship.CAN_READ_WRITE.name)
             existingRelationship.get.delete()
           else
-            return Right(existingRelationship)
+            return Right(existingRelationship)          
         }
         Right(Some(userNode --> SecurityRelationship.CAN_READ_WRITE --> targetNode <))
       case None => {

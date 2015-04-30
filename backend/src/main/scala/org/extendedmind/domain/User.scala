@@ -157,6 +157,6 @@ case class Agreement(uuid: Option[UUID], created: Option[Long], modified: Option
 object Agreement{
   import org.extendedmind.domain.AgreementType._  
   def apply(agreementType: AgreementType, access: Byte, targetItem: AgreementTarget,
-            proposedBy: AgreementUser, proposedTo: AgreementUser) 
-        = new Agreement(None, None, None, agreementType.toString, access, None, Some(targetItem), Some(proposedBy), Some(proposedTo))
+            proposedBy: Option[AgreementUser], proposedTo: AgreementUser) 
+        = new Agreement(None, None, None, agreementType.toString, access, None, Some(targetItem), proposedBy, Some(proposedTo))
 }

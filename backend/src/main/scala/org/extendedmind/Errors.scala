@@ -94,6 +94,7 @@ case object ERR_USER_AGREEMENT_ACCEPTED extends ErrorCode(5014)
 case object ERR_USER_AGREEMENT_NOT_FOUND extends ErrorCode(5015)
 case object ERR_USER_CANT_FIND_AGREEMENT_CONCERNING extends ErrorCode(5016)
 case object ERR_USER_INVALID_AGREEMENT extends ErrorCode(5017)
+case object ERR_USER_AGREEMENT_TO_SELF extends ErrorCode(5018)
 
 case object ERR_TASK_INVALID_REMINDER_UUID extends ErrorCode(6001)
 case object ERR_TASK_INVALID_REMINDER_ID extends ErrorCode(6002)

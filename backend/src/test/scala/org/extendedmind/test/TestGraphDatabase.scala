@@ -204,7 +204,7 @@ trait TestGraphDatabase extends GraphDatabase {
     // Timo shares essay list with Lauri
 
     val shareAgreementResult = putNewAgreement(Agreement(AgreementType.LIST_AGREEMENT, SecurityContext.READ_WRITE, 
-                    AgreementTarget(essayList.uuid.get, None), AgreementUser(Some(timoUUID), None),
+                    AgreementTarget(essayList.uuid.get, None), Some(AgreementUser(Some(timoUUID), None)),
                     AgreementUser(None, Some(LAURI_EMAIL)))).right.get                
     val agreementCode = 1234L
     val saveResponse = saveAgreementAcceptInformation(shareAgreementResult.uuid.get, agreementCode, "1234")
