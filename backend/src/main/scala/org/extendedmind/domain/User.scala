@@ -96,21 +96,20 @@ case class UserAccessRight(access: Option[Byte]){
 
 case class PublicUser(uuid: UUID)
 
-case class Owner(userUUID: UUID, foreignOwnerUUID: Option[UUID], sharedLists: Option[Map[UUID, (String, Byte)]], hasPremium: Boolean)
+case class Owner(userUUID: UUID, foreignOwnerUUID: Option[UUID], sharedLists: Option[Map[UUID, (String, Byte)]], hasPremium: Boolean, isLimitedAccess: Boolean)
 
 object Owner{
   def getOwner(ownerUUID: UUID, securityContext: SecurityContext)(implicit settings: Settings): Owner = {
     val hasPremium = securityContext.userType == Token.ADMIN || securityContext.userType == Token.ALFA ||
                      (settings.signUpMode == MODE_NORMAL && securityContext.subscription.isDefined
                       && securityContext.subscription.get == "premium")
-                     
     if (securityContext.userUUID == ownerUUID){
-      new Owner(ownerUUID, None, None, hasPremium) 
+      new Owner(ownerUUID, None, None, hasPremium, false)
     }else if (securityContext.collectives.isDefined){
-      new Owner(securityContext.userUUID, Some(ownerUUID), None, hasPremium)
+      new Owner(securityContext.userUUID, Some(ownerUUID), None, hasPremium, false)
     }else if (securityContext.sharedLists.isDefined){
       val sharedListAccess = securityContext.sharedLists.get(ownerUUID)
-      new Owner(securityContext.userUUID, Some(ownerUUID), Some(sharedListAccess._2), hasPremium)
+      new Owner(securityContext.userUUID, Some(ownerUUID), Some(sharedListAccess._2), hasPremium, true)
     }else{
       throw new InternalServerErrorException(ERR_BASE_OWNER_NOT_IN_SECURITY_CONTEXT,
           "Security context with foreign owner UUID which can not be found in securityContext collectives nor shared lists")
@@ -118,7 +117,7 @@ object Owner{
   }
   
   def apply(ownerUUID: UUID, collectiveUUID: Option[UUID]) 
-        = new Owner(ownerUUID, collectiveUUID, None, false)
+        = new Owner(ownerUUID, collectiveUUID, None, false, false)
 }
 
 case class ForgotPasswordResult(resetCodeExpires: Long)

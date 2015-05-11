@@ -41,7 +41,7 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
   // PUBLIC
   
   def getTaskAccessRight(owner: Owner, task: Task): Option[Byte] = {
-    if (owner.sharedLists.isDefined){
+    if (owner.isLimitedAccess){
       // Need to use list access rights
       getSharedListAccessRight(owner.sharedLists.get, task.relationships)
     }else{

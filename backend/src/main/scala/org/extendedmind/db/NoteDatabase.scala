@@ -40,7 +40,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
   // PUBLIC
 
   def getNoteAccessRight(owner: Owner, note: Note): Option[Byte] = {
-    if (owner.sharedLists.isDefined){
+    if (owner.isLimitedAccess){
       // Need to use list access rights
       getSharedListAccessRight(owner.sharedLists.get, note.relationships)
     }else{

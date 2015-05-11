@@ -767,9 +767,9 @@ trait ItemDatabase extends UserDatabase {
       implicit neo4j =>
         for {
           taskNode <- getItemNode(owner, itemUUID, Some(label), acceptDeleted = true).right
-          parentRelationship <- (if(owner.sharedLists.isDefined) Right(getParentRelationship(taskNode)) else Right(None)).right
+          parentRelationship <- (if(owner.isLimitedAccess) Right(getParentRelationship(taskNode)) else Right(None)).right
           accessRight <- 
-          (if (owner.sharedLists.isDefined) Right(getSharedListAccessRight(owner.sharedLists.get,
+          (if (owner.isLimitedAccess) Right(getSharedListAccessRight(owner.sharedLists.get,
               if (parentRelationship.isDefined){
                 Some(ExtendedItemRelationships(Some(getUUID(parentRelationship.get.getEndNode)), None, None))
               }else{

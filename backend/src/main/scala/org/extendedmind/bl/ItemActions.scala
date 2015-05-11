@@ -53,11 +53,11 @@ trait ItemActions {
     
     // When using shared lists, archived needs to always be true to make sure archiving list
     // does not break sharing
-    val overrideArchived = if (owner.sharedLists.isDefined) true else archived
+    val overrideArchived = if (owner.isLimitedAccess) true else archived
     val ownerItems = db.getItems(owner, modified, active, deleted, overrideArchived, completed)
 
     if (ownerItems.isRight) {
-      if (owner.sharedLists.isDefined){
+      if (owner.isLimitedAccess){
         // Filter array to contain only tasks, notes and lists in shared lists
         val fullListsTasksAndNotes = ownerItems.right.get.copy(tags = None, items = None,
             lists =
