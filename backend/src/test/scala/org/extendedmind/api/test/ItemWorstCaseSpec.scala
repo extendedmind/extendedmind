@@ -76,5 +76,19 @@ class ItemWorstCaseSpec extends ServiceSpecBase{
         failure.description should startWith("Could not find item " + randomUUID + " for owner " + authenticateResponse.userUUID)
       }
     }
+    it("should return 409 Conflict when trying to modify task with invalid modified timestamp") {
+      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+      val newItem = Item("learn how to fly", None, None)
+      Put("/" + authenticateResponse.userUUID + "/item",
+          marshal(newItem).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        val putItemResponse = responseAs[SetResult]
+        Put("/" + authenticateResponse.userUUID + "/item/" + putItemResponse.uuid.get,
+            marshal(newItem.copy(modified = Some(putItemResponse.modified + 1))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+          status should be (Conflict)
+          val failure = responseAs[ErrorResult]
+          failure.code should be (ERR_BASE_WRONG_EXPECTED_MODIFIED.number)
+        }
+      }
+    }
   }
 }

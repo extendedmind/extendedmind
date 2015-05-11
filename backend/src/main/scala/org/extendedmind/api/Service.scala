@@ -68,8 +68,13 @@ object Service {
       }
       case e: InvalidParameterException => ctx => {
         val currentTime = System.currentTimeMillis()
-        log.error("Status code: " + BadRequest + ", Error code: " + e.code.number + ", Description: " + e.description + " @" + currentTime)
-        ctx.complete(BadRequest, ErrorResult(e.code.number, e.description, currentTime))
+        if (e.code.number == ERR_BASE_WRONG_EXPECTED_MODIFIED.number){
+          log.error("Status code: " + Conflict + ", Error code: " + e.code.number + ", Description: " + e.description + " @" + currentTime)
+          ctx.complete(Conflict, ErrorResult(e.code.number, e.description, currentTime))          
+        }else{
+          log.error("Status code: " + BadRequest + ", Error code: " + e.code.number + ", Description: " + e.description + " @" + currentTime)
+          ctx.complete(BadRequest, ErrorResult(e.code.number, e.description, currentTime))
+        }
       }
       case e: InternalServerErrorException => ctx => {
         val currentTime = System.currentTimeMillis()

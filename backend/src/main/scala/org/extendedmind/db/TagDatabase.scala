@@ -105,7 +105,7 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
     withTx {
       implicit neo4j =>
         for {
-          tagNode <- updateItem(owner, tagUUID, tag, Some(ItemLabel.TAG), subLabel, subLabelAlternative).right
+          tagNode <- updateItem(owner, tagUUID, tag, Some(ItemLabel.TAG), subLabel, subLabelAlternative, tag.modified).right
           result <- setTagParentNodes(tagNode, owner, tag).right
         } yield tagNode
     }

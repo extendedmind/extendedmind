@@ -58,7 +58,7 @@ trait TaskActions {
       fail(INVALID_PARAMETER, ERR_BASE_NO_LIST_ACCESS, "No write access to existing task")
     }else{
       if (accessRight.get == SecurityContext.FOUNDER){
-    	db.putExistingTask(owner, taskUUID, task)
+    	  db.putExistingTask(owner, taskUUID, task)
       }else {
         // Need to use limited task
         val limitedTask = LimitedTask(task)

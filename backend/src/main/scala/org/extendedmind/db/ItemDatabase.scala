@@ -67,7 +67,7 @@ trait ItemDatabase extends UserDatabase {
 
   def putExistingItem(owner: Owner, itemUUID: UUID, item: Item): Response[SetResult] = {
     for {
-      itemNode <- updateItem(owner, itemUUID, item).right
+      itemNode <- updateItem(owner, itemUUID, item, None, None, None, item.modified).right
       result <- Right(getSetResult(itemNode, false)).right
       unit <- Right(updateItemsIndex(itemNode, result)).right
     } yield result
@@ -298,17 +298,26 @@ trait ItemDatabase extends UserDatabase {
   protected def updateItem(owner: Owner, itemUUID: UUID, item: AnyRef,
     additionalLabel: Option[Label] = None,
     additionalSubLabel: Option[Label] = None,
-    additionalSubLabelAlternatives: Option[scala.List[Label]] = None): Response[Node] = {
+    additionalSubLabelAlternatives: Option[scala.List[Label]] = None,
+    expectedModified: Option[Long] = None): Response[Node] = {
     withTx {
       implicit neo4j =>
         for {
           itemNode <- getItemNode(owner, itemUUID, exactLabelMatch = false).right
+          unit <- validateExpectedModified(itemNode, expectedModified).right
           itemNode <- Right(setLabel(itemNode, additionalLabel, additionalSubLabel, additionalSubLabelAlternatives)).right
           itemNode <- updateNode(itemNode, item).right
         } yield itemNode
     }
   }
 
+  protected def validateExpectedModified(node: Node, expectedModified: Option[Long])(implicit neo4j: DatabaseService): Response[Unit] = {
+    if (expectedModified.isDefined && node.hasProperty("modified") && node.getProperty("modified").asInstanceOf[Long] != expectedModified.get){
+      fail(INVALID_PARAMETER, ERR_BASE_WRONG_EXPECTED_MODIFIED, "Given modified value does not match stored modified value")
+    }else{
+      Right()
+    }
+  }
   protected def setLabel(node: Node, additionalLabel: Option[Label], additionalSubLabel: Option[Label], additionalSubLabelAlternatives: Option[scala.List[Label]])(implicit neo4j: DatabaseService): Node = {
     if (additionalLabel.isDefined && !node.hasLabel(additionalLabel.get)) {
       node.addLabel(additionalLabel.get)
@@ -330,7 +339,7 @@ trait ItemDatabase extends UserDatabase {
     withTx {
       implicit neo4j =>
         for {
-          itemNode <- updateItem(owner, itemUUID, extItem, Some(label), None, None).right
+          itemNode <- updateItem(owner, itemUUID, extItem, Some(label), None, None, extItem.modified).right
           archived <- setParentNode(itemNode, owner, extItem.parent).right
           tagNodes <- setTagNodes(itemNode, owner, extItem).right
         } yield (itemNode, archived)
@@ -352,7 +361,7 @@ trait ItemDatabase extends UserDatabase {
     withTx {
       implicit neo4j =>
         for {
-          itemNode <- updateItem(owner, itemUUID, extItem, Some(label), None, None).right
+          itemNode <- updateItem(owner, itemUUID, extItem, Some(label), None, None, extItem.modified).right
           archived <- setParentNode(itemNode, owner, extItem.parent).right
         } yield (itemNode, archived)
     }

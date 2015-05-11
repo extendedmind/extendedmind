@@ -133,7 +133,7 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
       convertResult <- convertTaskToList(owner, taskUUID, task).right
       result <- Right(getSetResult(convertResult._1, false)).right
       unit <- Right(updateItemsIndex(convertResult._1, result)).right
-    } yield convertResult._2
+    } yield (convertResult._2.copy(modified = Some(result.modified)))
   }
   
   def taskToNote(owner: Owner, taskUUID: UUID, task: Task): Response[Note] = {
@@ -141,7 +141,7 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
       convertResult <- convertTaskToNote(owner, taskUUID, task).right
       result <- Right(getSetResult(convertResult._1, false)).right
       unit <- Right(updateItemsIndex(convertResult._1, result)).right
-    } yield convertResult._2
+    } yield (convertResult._2.copy(modified = Some(result.modified)))
   }
 
   // PRIVATE

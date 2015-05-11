@@ -377,9 +377,10 @@ class ListBestCaseSpec extends ServiceSpecBase {
           updatedSharedItemsResponse.tasks.get.find(task => task.due.isDefined) should be(None)
           
           putExistingNote(updatedSharedItemsResponse.notes.get(0).copy(
-            title = "updated note"), putNoteResponse.uuid.get, lauriAuthenticateResponse, Some(timoUUID))
+            title = "updated note"), updatedSharedItemsResponse.notes.get(0).uuid.get, lauriAuthenticateResponse, Some(timoUUID))
+          
           putExistingTask(updatedSharedItemsResponse.tasks.get(0).copy(
-            title = "updated task"), putTaskResponse.uuid.get, lauriAuthenticateResponse, Some(timoUUID))
+            title = "updated task"), updatedSharedItemsResponse.tasks.get(0).uuid.get, lauriAuthenticateResponse, Some(timoUUID))
           
           Get("/" + timoUUID + "/items") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
             val updatedSharedItemsResponse = responseAs[Items]
