@@ -2,7 +2,7 @@ cd ../core
 mvn -o clean install -DskipTests=true -Ddebug=true
 cd ../cordova
 
-if [ -z "$1 ]
+if [ -z "$1" ]
   then
     mvn -o generate-resources
   else
