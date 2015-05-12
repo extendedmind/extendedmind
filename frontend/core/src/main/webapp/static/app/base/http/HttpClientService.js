@@ -62,8 +62,7 @@
 
   // Callbacks
   var primaryResultCallback, primaryCreateCallback, secondaryCallback, beforeLastCallback,
-  defaultCallback, onlineCallback, queueEmptiedCallback;
-
+  defaultCallback, onlineCallback, queueEmptiedCallback, conflictCallback;
 
   function executeLastRequest(lastRequest){
     // As last request is insignificant, lock needs to be released before executing to prevent
@@ -182,7 +181,7 @@
             } else {
               retryingExecution = false;
               if (headRequest.errorStatus !== undefined && headRequest.errorStatus === status) {
-                // This error was already thrown and error emitted, the best thing
+                // This error was already thrown and error handled, the best thing
                 // now is to remove the request and continue with the next request in the
                 // queue to prevent endless error loop. NOTE: This leaves the transient model
                 // unchanged, so it looks like something is stored even though it isn't. It
@@ -190,13 +189,19 @@
                 HttpRequestQueueService.remove(headRequest);
                 executeRequests(headRequest);
               } else {
-                // Emit error to root scope, so that
-                // it can be listened on at by the application
                 headRequest.errorStatus = status;
                 HttpRequestQueueService.saveQueue();
                 HttpRequestQueueService.releaseLock();
-                $rootScope.$emit('emException', {type: 'http', value: {status: status, data: data,
-                 url: config.url}});
+
+                if (status === 409 && conflictCallback){
+                  // Conflict response, don't emit exception but instead call conflict callback
+                  conflictCallback();
+                }else{
+                  // Emit error to root scope, so that
+                  // it can be listened on at by the application
+                  $rootScope.$emit('emException', {type: 'http', value: {status: status, data: data,
+                   url: config.url}});
+                }
               }
             }
           }
@@ -495,6 +500,8 @@
       onlineCallback = callback;
     } else if (type === 'queueEmptied') {
       queueEmptiedCallback = callback;
+    } else if (type === 'conflict') {
+      conflictCallback = callback;
     }
   };
 

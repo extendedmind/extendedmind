@@ -17,8 +17,8 @@
  'use strict';
 
  function SynchronizeService($q, $rootScope, BackendClientService, ItemLikeService, ItemsService,
-                             ListsService, NotesService, PersistentStorageService, TagsService, TasksService,
-                             UserService, UserSessionService, UUIDService) {
+                             ListsService, NotesService, PersistentStorageService, ReminderService,
+                             TagsService, TasksService, UserService, UserSessionService, UUIDService) {
 
   var itemsRegex = /\/items/;
   // NOTE: Do not set start/end of string anchors into getItemsRegex!
@@ -451,7 +451,38 @@
                                        request.params.owner);
                   // In both cases remove the item to prevent mixed data model
                   removeItemFromResponse(response, conflictingItem.uuid, queue[i].params.type);
-                }else{
+                } else if (queue[i].params.type === 'task' &&
+                           !angular.equals(queue[i].content.data.reminders, conflictingItem.reminders)){
+
+                  // Reminder conflict, merge reminders and change PUT in queue to reflect the change
+                  var mergedReminders = [];
+                  var correctReminderForThisDevice =
+                    ReminderService.findReminderForThisDevice(queue[i].content.data.reminders);
+                  if (correctReminderForThisDevice) {
+                    mergedReminders.push(correctReminderForThisDevice);
+                  }
+
+                  if (conflictingItem.reminders && conflictingItem.reminders.length){
+                    var invalidReminderForThisDevice =
+                      ReminderService.findReminderForThisDevice(conflictingItem.reminders);
+                    for(var k=0; k<conflictingItem.reminders.length; k++){
+                      if (conflictingItem.reminders[k] !== invalidReminderForThisDevice){
+                        mergedReminders.push(conflictingItem.reminders[k]);
+                      }
+                    }
+                  }
+
+                  queue[i].content.data.reminders = mergedReminders;
+                  queue[i].content.data.modified = conflictingItem.modified;
+
+                  // Also update the current task modifications to match the queue
+                  updateModProperties(conflictingItem.uuid,
+                                      queue[i].params.type,
+                                      {reminders: mergedReminders,
+                                       modified: conflictingItem.modified},
+                                       request.params.owner);
+                  removeItemFromResponse(response, conflictingItem.uuid, queue[i].params.type);
+                } else{
                   // Other types than note: no need to do a merge of content
                   if (conflictingItem.modified > queue[i].content.timestamp){
                     // We now removed the latest PUT from the queue, so we sould also remove the local
@@ -862,22 +893,6 @@
     if (angular.isFunction(itemsSynchronizedCallback)) itemsSynchronizedCallback(ownerUUID);
   }
 
-  function updateItemArrays(response, ownerUUID){
-    // Update all arrays with values
-    var latestTag, latestList, latestTask, latestItem, latestNote;
-    latestTag = TagsService.updateTags(response.tags, ownerUUID);
-    latestList = ListsService.updateLists(response.lists, ownerUUID);
-    latestTask = TasksService.updateTasks(response.tasks, ownerUUID);
-    latestNote = NotesService.updateNotes(response.notes, ownerUUID);
-    latestItem = ItemsService.updateItems(response.items, ownerUUID);
-    var latestModified;
-    if (latestTag || latestList || latestTask || latestNote || latestItem) {
-      // Set latest modified
-      latestModified = getLatestModified(latestTag, latestList, latestTask, latestNote, latestItem);
-      UserSessionService.setLatestModified(latestModified, ownerUUID);
-    }
-  }
-
   function getAllItemsOnline(ownerUUID) {
     return BackendClientService.getSecondary('/api/' +
                                              ownerUUID +
@@ -1022,6 +1037,6 @@
 }
 
 SynchronizeService['$inject'] = ['$q', '$rootScope', 'BackendClientService', 'ItemLikeService',
-'ItemsService', 'ListsService', 'NotesService', 'PersistentStorageService', 'TagsService', 'TasksService',
-'UserService', 'UserSessionService', 'UUIDService'];
+'ItemsService', 'ListsService', 'NotesService', 'PersistentStorageService', 'ReminderService',
+'TagsService', 'TasksService', 'UserService', 'UserSessionService', 'UUIDService'];
 angular.module('em.main').factory('SynchronizeService', SynchronizeService);

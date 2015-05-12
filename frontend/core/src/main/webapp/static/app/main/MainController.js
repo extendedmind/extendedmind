@@ -958,6 +958,18 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
   }
   BackendClientService.registerQueueEmptiedCallback(queueEmptiedCallback);
 
+  // Execute synchronize on conflict to get conflicted content and then try to empty the queue again
+  function conflictCallback() {
+    var activeUUID = UISessionService.getActiveUUID();
+    return SynchronizeService.synchronize(activeUUID).then(function() {
+      updateItemsSyncronizeAttempted(activeUUID);
+    }, function(){
+      $rootScope.syncState = 'error';
+      $q.reject();
+    });
+  }
+  BackendClientService.registerConflictCallback(conflictCallback);
+
   // CLEANUP
 
   $scope.$on('$destroy', function() {

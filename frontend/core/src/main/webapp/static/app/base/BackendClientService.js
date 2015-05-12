@@ -314,6 +314,9 @@
   methods.registerQueueEmptiedCallback = function(callback) {
     HttpClientService.registerCallback('queueEmptied', callback);
   };
+  methods.registerConflictCallback = function(callback) {
+    HttpClientService.registerCallback('conflict', callback);
+  };
 
   return methods;
 }

@@ -153,13 +153,24 @@
       return packaging.endsWith('cordova') && cordova.plugins && cordova.plugins.notification;
     },
     /*
-    * Return not removed future reminder.
+    * Return reminder for this device.
+    */
+    findReminderForThisDevice: function(reminders) {
+      if (reminders && reminders.length){
+        for (var i = 0; i < reminders.length; i++) {
+          if (this.isReminderInThisDevice(reminders[i])) {
+            return reminders[i];
+          }
+        }
+      }
+    },
+    /*
+    * Return not removed future reminder for this device.
     */
     findActiveReminderForThisDevice: function(reminders) {
-      for (var i = 0; i < reminders.length; i++) {
-        if (this.isReminderInThisDevice(reminders[i]) && reminders[i].notification > Date.now()) {
-          return reminders[i];
-        }
+      var reminderForThisDevice = this.findReminderForThisDevice(reminders);
+      if (reminderForThisDevice && reminderForThisDevice.notification > Date.now()){
+        return reminderForThisDevice;
       }
     }
   };
