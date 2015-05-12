@@ -6,7 +6,7 @@ if [ -z "$1" ]
   then
     mvn -o generate-resources
   else
-    mvn -o generate-resources -Dcordova.urlPrefix=$1
+    mvn -o process-resources -Dcordova.urlPrefix=$1
 fi
 
 # copy sources to iOS
