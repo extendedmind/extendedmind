@@ -570,22 +570,17 @@
   var agendaCalendarsEnabled = false;
   var eventInstancesLoaded = false;
   function initializeAgenda() {
-    function doInitializeAgenda(type) {
+    function doInitializeAgenda() {
       var enabledCalendars = CalendarService.getActiveCalendars();
       if (enabledCalendars && enabledCalendars.length) {
         agendaCalendarsEnabled = true;
         listCalendars(enabledCalendars);
-        if (type !== 'direct') executeAgendaVisibilityChangedCallbacks();
+        executeAgendaVisibilityChangedCallbacks();
       }
-      if (type !== 'direct') CalendarService.unregisterCalendarLoadedCallback(doInitializeAgenda);
     }
 
     if (CalendarService.isCalendarEnabled()) {
-      if (CalendarService.isCalendarLoaded()) {
-        doInitializeAgenda('direct');
-      } else {
-        CalendarService.registerCalendarLoadedCallback(doInitializeAgenda);
-      }
+      CalendarService.registerCalendarLoadedCallback(doInitializeAgenda);
     }
   }
   initializeAgenda();

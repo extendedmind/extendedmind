@@ -48,18 +48,41 @@ function CalendarService(UISessionService, UserService, UserSessionService, pack
     }
   }
 
+  // Calendar loading polling
+
+  var calendarLoadedCallback;
+  function beginCalendarLoadedPoll(callback){
+    calendarLoadedCallback = callback;
+    // Start both deviceready polling as well as direct polling as there is no guarantee that
+    // deviceready will always fire
+    document.addEventListener('deviceready', checkCalendarLoadedRepeated);
+    checkCalendarLoadedRepeated();
+  }
+  function checkCalendarLoadedRepeated(){
+    if (isCalendarLoaded()){
+      if (calendarLoadedCallback){
+        calendarLoadedCallback();
+        calendaLoadedCallback = undefined;
+        document.removeEventListener('deviceready', checkCalendarLoadedRepeated);
+      }
+    }else{
+      setTimeout(checkCalendarLoadedRepeated, 100);
+    }
+  }
+
+  function isCalendarLoaded(){
+    return window.plugins && window.plugins.calendar && device && device.model;
+  }
+
   return {
     isCalendarEnabled: function(){
       return packaging.endsWith('cordova');
     },
-    isCalendarLoaded: function(){
-      return window.plugins && window.plugins.calendar;
-    },
     registerCalendarLoadedCallback: function(callback){
-      document.addEventListener('deviceready', callback);
-    },
-    unregisterCalendarLoadedCallback: function(callback){
-      document.removeEventListener('deviceready', callback);
+      if (this.isCalendarEnabled()){
+        if (isCalendarLoaded()) callback();
+        else beginCalendarLoadedPoll(callback);
+      }
     },
     getActiveCalendars: getActiveCalendars,
     setActiveCalendars: setActiveCalendars,
