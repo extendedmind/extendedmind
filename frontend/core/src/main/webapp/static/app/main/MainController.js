@@ -614,10 +614,16 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
       cordova.plugins.notification.local.on('click', reminderClick);
     };
 
+    function onBackButton(e) {
+      DrawerService.close('right');
+      e.preventDefault();
+    }
+
     var onDeviceReady = function() {
       if (cordova.plugins && cordova.plugins.notification) {
         listenReminderClick();
       }
+      document.addEventListener("backbutton", onBackButton, false);
     };
     if (cordova) {
       if (cordova.plugins && cordova.plugins.notification) {
