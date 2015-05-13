@@ -327,6 +327,7 @@
                               <directory>${user.home}/.extendedmind</directory>
                               <includes>
                                   <include>theme.*</include>
+                                  <include>notification.*</include>
                               </includes>
                           </resource>
                       </resources>

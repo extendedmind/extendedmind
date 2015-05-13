@@ -16,77 +16,80 @@
  /* global angular, cordova */
  'use strict';
 
- function ReminderService(BackendClientService, UISessionService, UUIDService, packaging) {
+ function ReminderService($rootScope, BackendClientService, UISessionService, UUIDService, packaging) {
 
-  function schedule(reminder, item) {
-    var reminderToSchedule = {
-      id: parseInt(reminder.id),
+  // LOCAL NOTIFICATIONS
+
+  function scheduleLocalNotication(id, item, timestamp){
+    var notification = {
+      id: parseInt(id),
       title: item.trans.title,
-      at: reminder.notification,
+      at: timestamp,
+      sound: 'file://' + $rootScope.urlBase +'audio/notification.mp3',
       data: {
         itemType: item.trans.itemType,
         itemUUID: item.trans.uuid
       }
     };
+    cordova.plugins.notification.local.schedule(notification);
+  }
 
-    cordova.plugins.notification.local.schedule(reminderToSchedule);
-    delete reminder.removed;
+  function removeLocalNotification(id) {
+    cordova.plugins.notification.local.cancel(parseInt(id));
+  }
+
+  function updateLocalNotification(id, timestamp) {
+    cordova.plugins.notification.local.update({
+      id: parseInt(id),
+      at: timestamp
+    });
+  }
+
+  // HELPER METHODS
+
+  function scheduleReminder(reminder, item) {
+    scheduleLocalNotication(reminder.id, item, reminder.notification);
+    if (reminder.removed) delete reminder.removed;
     return reminder;
   }
 
-  function unschedule(reminder, timestamp) {
-    removeReminder(reminder);
+  function unscheduleReminder(reminder, timestamp) {
+    removeLocalNotification(reminder.id);
     reminder.removed = timestamp;
     return reminder;
   }
 
-  function removeReminder(reminder) {
-    cordova.plugins.notification.local.cancel(parseInt(reminder.id));
-  }
-
   return {
     addReminder: function(date, item) {
-      var reminder = {
-        id: UUIDService.randomId(),
-        title: item.trans.title,
-        at: date.getTime(),
-        data: {
-          itemType: item.trans.itemType,
-          itemUUID: item.trans.uuid
-        }
-      };
-
-      // Add reminder to plugin
-      cordova.plugins.notification.local.schedule(reminder);
+      var timestamp = date.getTime();
+      var id = UUIDService.randomId();
+      scheduleLocalNotication(id, item, timestamp);
 
       // Generate reminder for backend.
       var reminderToSave = {
         packaging: packaging,
-        notification: date.getTime(),
+        notification: timestamp,
         reminderType: 'ln',
-        id: reminder.id.toString(),
+        id: id.toString(),
         device: UISessionService.getDeviceId()
       };
 
       return reminderToSave;
     },
     updateReminder: function(reminder, date) {
-      cordova.plugins.notification.local.update({
-        id: parseInt(reminder.id),
-        at: date.getTime()
-      });
-      reminder.notification = date.getTime();
-
+      var timestamp = date.getTime();
+      updateLocalNotification(reminder.id, timestamp);
+      reminder.notification = timestamp;
       return reminder;
     },
     removeReminder: function(reminder) {
-      removeReminder(reminder);
+      removeLocalNotification(reminder.id);
     },
     scheduleReminder: function(item) {
       if (item.trans.reminders) {
         var reminder = this.findActiveReminderForThisDevice(item.trans.reminders);
         if (reminder !== undefined) {
-          return schedule(reminder, item);
+          return scheduleReminder(reminder, item);
         }
       }
     },
@@ -94,7 +97,7 @@
       if (item.trans.reminders) {
         var reminder = this.findActiveReminderForThisDevice(item.trans.reminders);
         if (reminder !== undefined) {
-          return unschedule(reminder, timestamp);
+          return unscheduleReminder(reminder, timestamp);
         }
       }
     },
@@ -124,10 +127,10 @@
           if (reminder !== undefined) {
             // Item has active reminder.
             if ((item.trans.completed || item.trans.deleted) && !reminder.removed) {        // i.
-              unschedule(reminder, BackendClientService.generateFakeTimestamp());
+              unscheduleReminder(reminder, BackendClientService.generateFakeTimestamp());
               modifiedItems.push({reminder: reminder, item: item});
             } else if (!item.trans.completed && !item.trans.deleted && reminder.removed) {  // ii.
-              schedule(reminder, item);
+              scheduleReminder(reminder, item);
               modifiedItems.push({reminder: reminder, item: item});
             }
           }
@@ -175,5 +178,6 @@
     }
   };
 }
-ReminderService['$inject'] = ['BackendClientService', 'UISessionService', 'UUIDService', 'packaging'];
+ReminderService['$inject'] = ['$rootScope', 'BackendClientService', 'UISessionService', 'UUIDService',
+'packaging'];
 angular.module('em.tasks').factory('ReminderService', ReminderService);
