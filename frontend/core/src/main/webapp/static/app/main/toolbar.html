@@ -6,7 +6,7 @@
     </button>
     <div class="group-symmetrical--middle" ng-style="{maxWidth: calculateHeadingWidth()}">
       <a href class="link" ng-click="clickToolbarHeading()"
-      ng-class="{'link-disable': isTutorialInProgress(), 'onboarding': isOnboarding('list')}">
+      ng-class="{'link-disable': isTutorialInProgress(), 'onboarding': isListOnboarding()}">
         <div><span class="text-heading-primary" clamp=2 ng-bind="getCurrentHeading()"></span></div>
       </a>
     </div>

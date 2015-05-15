@@ -87,6 +87,10 @@
       switchFeature();
     }
   };
+
+  $scope.isListOnboarding = function(){
+    return $scope.getActiveFeature() === 'list' && $scope.isOnboarding('list');
+  };
 }
 ToolbarController['$inject'] = ['$scope', '$rootScope', 'DrawerService', 'UISessionService'];
 angular.module('em.main').controller('ToolbarController', ToolbarController);
