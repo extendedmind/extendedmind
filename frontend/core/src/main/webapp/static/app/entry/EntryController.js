@@ -235,10 +235,14 @@ function EntryController($http, $location, $rootScope, $routeParams, $scope,
     }
   };
 
+  function animationEndCallback(){
+    AnalyticsService.do('endAnimation');
+  }
+
   $scope.playExtendedMindAnimation = function(){
     if (!extendedMindAudio){
       if ($scope.useHTML5Audio()){
-        setupHTML5Audio();
+        setupHTML5Audio(animationEndCallback);
       }else if (Media){
         var src = getAudioUrl();
         $scope.theme = new Media(src, function(){
@@ -257,7 +261,8 @@ function EntryController($http, $location, $rootScope, $routeParams, $scope,
             $scope.theme.pause();
           },
           readyState: 1,
-          HAVE_FUTURE_DATA: 1
+          HAVE_FUTURE_DATA: 1,
+          endCallback: animationEndCallback
         };
       }
     }
@@ -269,7 +274,7 @@ function EntryController($http, $location, $rootScope, $routeParams, $scope,
     else if (packaging === 'ios-cordova'){
       extendedMindAnimationDelay = 0.05;
     }
-
+    AnalyticsService.do('playAnimation');
     playExtendedMindAnimation();
   };
 

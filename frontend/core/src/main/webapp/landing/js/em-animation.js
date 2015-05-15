@@ -2,8 +2,9 @@
 var extendedMindAnimationPhase;
 var extendedMindAudio;
 var extendedMindAnimationDelay = 0;
-function setupHTML5Audio(){
+function setupHTML5Audio(animationEndCallback){
   extendedMindAudio = document.getElementById('theme');
+  if (animationEndCallback) extendedMindAudio.endCallback = animationEndCallback;
 }
 
 function playExtendedMindAnimation(){
@@ -218,6 +219,8 @@ function animatePhase16(){
       youElem.animo( { animation: 'fadeIn', duration: 0.8, keep: true }, function(){
         thinkElem.removeClass('hidden');
         thinkElem.animo( { animation: 'fadeIn', duration: 0.8, keep: true }, function(){
+          $('#em-animation').unbind('click');
+          if (extendedMindAudio.endCallback) extendedMindAudio.endCallback();
           $('#volume').animo({ animation: 'fadeOut', duration: 0.5 }, function(){
             $('#volume').addClass('hide');
           });
