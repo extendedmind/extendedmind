@@ -147,7 +147,12 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     list: {
       heading: undefined,
       getStatus: function(subfeature){
-        return getFeatureStatus(UserSessionService.getFeaturePreferences('list'), subfeature);
+        if (subfeature === 'notes'){
+          // List notes is active only if notes is active
+          return getFeatureStatus(UserSessionService.getFeaturePreferences('notes'));
+        }else{
+          return getFeatureStatus(UserSessionService.getFeaturePreferences('list'), subfeature);
+        }
       },
       slides: {
         left: {

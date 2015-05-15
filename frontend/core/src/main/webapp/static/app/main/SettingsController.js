@@ -103,16 +103,6 @@
             (angular.isString(listsPrefs.archived) && !listsPrefs.archived.endsWith(':d'))))){
           return true;
         }
-      }else{
-        if ($scope.features.notes.getStatus() === 'disabled'){
-          return true;
-        }
-      }
-    }else if (feature === 'notes'){
-      if (enabled){
-        if ($scope.features.lists.getStatus('active') !== 'disabled'){
-          return true;
-        }
       }
     }
   };
@@ -131,35 +121,18 @@
           else
             AnalyticsService.do('enableNotes');
         }else {
-          if ($scope.isToggleDisabled('notes', !enable)){
-            // Can't disable notes if lists is enabled
-            $scope.settings[feature] = true;
-            UISessionService.pushNotification({
-              type: 'fyi',
-              text: 'can not disable notes when lists is enabled'
-            });
-            return;
-          }
           notesPrefs = deactivateFeature(notesPrefs);
           focusPrefs = deactivateFeature(focusPrefs, 'notes', 'tasks');
           AnalyticsService.do('disableNotes');
         }
         $scope.features.focus.resizeFix = true;
+        $scope.features.list.resizeFix = true;
         UserSessionService.setFeaturePreferences('notes', notesPrefs);
         UserSessionService.setFeaturePreferences('focus', focusPrefs);
       }else if (feature === 'lists'){
         var listsPrefs = UserSessionService.getFeaturePreferences('lists');
         var listPrefs = UserSessionService.getFeaturePreferences('list');
         if (enable) {
-          if ($scope.isToggleDisabled('lists', !enable)){
-            // Can't enable lists if notes and tasks are not both enabled
-            $scope.settings[feature] = false;
-            UISessionService.pushNotification({
-              type: 'fyi',
-              text: 'lists can not be enabled before notes'
-            });
-            return;
-          }
           listsPrefs = activateFeatureOnboarding(listsPrefs, 'active');
           listPrefs = activateFeatureOnboarding(listPrefs);
           if (angular.isObject(listsPrefs) && listsPrefs.active === 1)

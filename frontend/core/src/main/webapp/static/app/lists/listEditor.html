@@ -99,7 +99,8 @@
             <a href class="group-symmetrical--left link" swiper-click="convertToTask(list)">
               <span class="text-convert small">task</span>
             </a>
-            <a href class="group-symmetrical--middle group-centered link" swiper-click="convertToNote(list)">
+            <a href ng-class="(features.notes.getStatus() === 'disabled') && 'invisible'"
+            class="group-symmetrical--middle group-centered link" swiper-click="convertToNote(list)">
               <span class="text-convert small">note</span>
             </a>
             <div class="group-symmetrical--right">

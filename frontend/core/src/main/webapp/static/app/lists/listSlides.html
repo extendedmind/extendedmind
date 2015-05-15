@@ -1,9 +1,10 @@
 <div ng-show="isFeatureActive('list')" class="swiper-container container-fluid--inner"
-swiper-container="list" swiper-type="main" expected-slides=2>
+swiper-container="list" swiper-type="main"
+expected-slides="(features.focus.getStatus('notes') === 'disabled') ? 1 : 2">
   <div class="swiper-wrapper">
     <div class="swiper-slide" swiper-slide="list/tasks" slide-index=0
     ng-include="urlBase + 'app/lists/listTasks.html'"></div>
-    <div class="swiper-slide" swiper-slide="list/notes" slide-index=1
-    ng-include="urlBase + 'app/lists/listNotes.html'"></div>
+    <div ng-if="features.focus.getStatus('notes') !== 'disabled'" class="swiper-slide"
+    swiper-slide="list/notes" slide-index=1 ng-include="urlBase + 'app/lists/listNotes.html'"></div>
   </div>
 </div>

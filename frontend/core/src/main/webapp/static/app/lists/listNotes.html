@@ -9,5 +9,6 @@
       list-item ng-include="urlBase + 'app/notes/noteListItem.html'"></div>
     <div list-prompt="notes" list-prompt-infos="listInfos"></div>
   </section>
-  <footer class="container-content--after" list-footer="getFeatureMap('list')"></footer>
+  <footer ng-if="isFeatureActive('list')" class="container-content--after" list-footer="getFeatureMap('list')"
+  list-footer-subfeature="notes"></footer>
 </div>

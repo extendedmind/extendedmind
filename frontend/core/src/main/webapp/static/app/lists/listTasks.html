@@ -17,5 +17,6 @@
       list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
     <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-hide="[listItemAddActive]"></div>
   </section>
-  <footer class="container-content--after" list-footer="getFeatureMap('list')"></footer>
+  <footer ng-if="isFeatureActive('list')" class="container-content--after" list-footer="getFeatureMap('list')"
+  list-footer-subfeature="tasks"></footer>
 </div>
