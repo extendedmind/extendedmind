@@ -619,16 +619,13 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
       cordova.plugins.notification.local.on('click', reminderClick);
     };
 
-    function onBackButton(e) {
-      DrawerService.close('right');
-      e.preventDefault();
-    }
-
     var onDeviceReady = function() {
       if (cordova.plugins && cordova.plugins.notification) {
         listenReminderClick();
       }
-      document.addEventListener("backbutton", onBackButton, false);
+      if (packaging === 'android-cordova'){
+        document.addEventListener("backbutton", onAndroidBackButton, false);
+      }
     };
     if (cordova) {
       if (cordova.plugins && cordova.plugins.notification) {
@@ -639,6 +636,11 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     } else {
       document.addEventListener('deviceready', onDeviceReady, false);
     }
+  }
+
+  function onAndroidBackButton(e) {
+    DrawerService.close('right');
+    e.preventDefault();
   }
 
   // DATA ARRAYS
