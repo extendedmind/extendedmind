@@ -22,6 +22,18 @@
   if (angular.isFunction($scope.registerFeatureEditorAboutToCloseCallback))
     $scope.registerFeatureEditorAboutToCloseCallback(listEditorAboutToClose, 'ListEditorController');
 
+  if ($scope.list.visibility && $scope.list.visibility.agreements &&
+      $scope.list.visibility.agreements.length > 0){
+    $scope.sharedToList = [];
+    for (var i=0; i<$scope.list.visibility.agreements.length; i++){
+      $scope.sharedToList.push({
+        email: $scope.list.visibility.agreements[i].proposedTo.email,
+        mode: ($scope.list.visibility.agreements[i].access === 2 ? 'read/write' : 'read'),
+        acceptStatus: ($scope.list.visibility.agreements[i].accepted ? 'accepted' : 'pending')
+      })
+    }
+  }
+
   // SAVING, DELETING
 
   function saveListInEdit () {

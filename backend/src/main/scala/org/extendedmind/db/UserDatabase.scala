@@ -129,22 +129,22 @@ trait UserDatabase extends AbstractGraphDatabase {
     }
   }
   
-  def getAgreement(userUUID: UUID, agreementUUID: UUID): Response[Agreement] = {
+  def getAgreement(userUUID: UUID, agreementUUID: UUID): Response[(Agreement, String)] = {
     withTx {
       implicit neo =>
         for {
           agreementInfo <- getAgreementInformation(userUUID, agreementUUID).right
           agreement <- toAgreement(agreementInfo).right
           agreement <- toCaseClass[Agreement](agreementInfo.agreement).right
-        } yield agreement
+        } yield (agreement, agreementInfo.concerningTitle)
     }
   }
   
-  def putNewAgreement(agreement: Agreement): Response[SetResult] = {
+  def putNewAgreement(agreement: Agreement): Response[(SetResult, String)] = {
     for {
-      agreementNode <- createAgreementNode(agreement).right          
-      result <- Right(getSetResult(agreementNode, true)).right
-    } yield result
+      agreementResult <- createAgreementNode(agreement).right       
+      result <- Right(getSetResult(agreementResult._1, true)).right
+    } yield (result, agreementResult._2)
   }
   
   def changeAgreementAccess(userUUID: UUID, agreementUUID: UUID, access: Byte): Response[SetResult] = {
@@ -427,7 +427,7 @@ trait UserDatabase extends AbstractGraphDatabase {
     Right(true)
   }
 
-  protected def createAgreementNode(agreement: Agreement): Response[Node] = {
+  protected def createAgreementNode(agreement: Agreement): Response[(Node, String)] = {
     withTx {
       implicit neo4j =>
         for {
@@ -435,7 +435,7 @@ trait UserDatabase extends AbstractGraphDatabase {
           proposedToUserNode <- getUserNode(agreement.proposedTo.get.email.get).right
           concerningNode <- getItemNode(agreement.proposedBy.get.uuid.get, agreement.targetItem.get.uuid, ItemLabel.LIST, false).right
           agreementNode <- createAgreementNode(agreement, proposedByUserNode, proposedToUserNode, concerningNode).right
-        } yield agreementNode
+        } yield (agreementNode, concerningNode.getProperty("title").asInstanceOf[String])
     }
   }
   
@@ -482,7 +482,7 @@ trait UserDatabase extends AbstractGraphDatabase {
     }
   }
   
-  case class AgreementInformation(agreement: Node, proposedBy: Node, concerning: Node, proposedTo: Option[Node], userIsCreator: Boolean)
+  case class AgreementInformation(agreement: Node, proposedBy: Node, concerning: Node, proposedTo: Option[Node], userIsCreator: Boolean, concerningTitle: String)
   
   protected def getAgreementInformation(userUUID: UUID, agreementUUID: UUID): Response[AgreementInformation] = {
     withTx {
@@ -525,7 +525,7 @@ trait UserDatabase extends AbstractGraphDatabase {
       return fail(INVALID_PARAMETER, ERR_USER_INVALID_AGREEMENT_PARTY, "User is not a party in the agreement")
     }
     
-    Right(AgreementInformation(agreementNode, proposedByUser, concerningNode, proposedToUser, userIsCreator))
+    Right(AgreementInformation(agreementNode, proposedByUser, concerningNode, proposedToUser, userIsCreator, concerningNode.getProperty("title").asInstanceOf[String]))
   }
   
   protected def changeAgreementAccessNode(agreementInfo: AgreementInformation, access: Byte)(implicit neo4j: DatabaseService): Response[Option[Relationship]] = {

@@ -77,21 +77,21 @@ trait MailgunClient {
   implicit val implicitContext = actorRefFactory.dispatcher
   val sendEmailPipeline = sendReceive ~> unmarshal[SendEmailResponse]
 
-  def sendShareListAgreement(agreement: Agreement, acceptCode: Long): Future[SendEmailResponse] = {
+  def sendShareListAgreement(agreement: Agreement, acceptCode: Long, sharedListTitle: String): Future[SendEmailResponse] = {
     val sendEmailRequest = SendEmailRequest(settings.emailFrom, agreement.proposedTo.get.email.get,
       settings.shareListTitle.replaceAll(
           "inviterEmail",
-          agreement.proposedBy.get.email.get), // FIXME
+          agreement.proposedBy.get.email.get),
       shareListHtmlTemplate
         .replaceAll(
           "acceptLink",
           settings.emailSecureUrlPrefix
             + settings.acceptShareURI
-            //.replaceAll("acceptCodeValue", invite.code.toLong.toHexString)
+            .replaceAll("shareValue", acceptCode.toHexString)
             .replaceAll("emailValue", agreement.proposedTo.get.email.get))
         .replaceAll("logoLink", settings.emailUrlPrefix + "img/logo-text.png")
-        //.replaceAll("inviterEmail", invite.email) // FIXME
-        //.replaceAll("sharedList", invite.email) // FIXME
+        .replaceAll("inviterEmail", agreement.proposedBy.get.email.get)
+        .replaceAll("sharedListTitle", xml.Utility.escape(sharedListTitle))
         )
     sendEmail(sendEmailRequest)
   }

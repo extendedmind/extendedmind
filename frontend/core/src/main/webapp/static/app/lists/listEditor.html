@@ -90,6 +90,16 @@
               maxlength="2000" placeholder="enter url&#8230;" autocapitalize="none" autocorrect="off">
             </textarea>
           </div>
+          <div ng-repeat="sharedTo in sharedToList">
+            <div class="group-mixed vertically-centered">
+              <div class="group-mixed--middle">
+                <span class="text-normal">{{sharedTo.email}}, {{sharedTo.mode}}, {{sharedTo.acceptStatus}}</span>
+              </div>
+              <div class="group-mixed--right">
+                <button type="button" class="btn-clear" swiper-click="destroyAgreement(sharedTo)"></button>
+              </div>
+            </div>
+          </div>
         </div>
 
         <footer class="container-content--after editor-footer" editor-footer="advancedSlideInfo">
