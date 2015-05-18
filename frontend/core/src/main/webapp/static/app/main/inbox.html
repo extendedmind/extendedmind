@@ -24,7 +24,7 @@
     <div class="animate-list-item-leave"
       ng-repeat="item in listInfos.array = getFullArray() | orderBy:'trans.created':true
       | limitTo: currentListLimitTo track by item.trans.uuid" list-item>
-      <div class="group-mixed vertically-centered" ng-class="getListItemClasses(item)">
+      <div class="group-mixed with-checkbox" ng-class="getListItemClasses(item)">
         <a href class="group-mixed--middle link-list-item"
           swiper-click="openItemEditor(item)">
           <span class="text-link" clamp=2 ng-bind="item.trans.title"></span>
