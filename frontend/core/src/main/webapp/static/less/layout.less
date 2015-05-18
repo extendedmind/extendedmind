@@ -445,7 +445,10 @@ Vertically center .container-master and .container-editor in large screens
 # LEVEL 6: row and groups
 */
 
-@width-button-gap: 10px;
+/*
+*************************************************************
+# Row
+*/
 
 /*
 `.row` is uses horizontal alignment. It specifies the left and right
@@ -457,8 +460,40 @@ margin.
   padding-right: @grid-horizontal;
 }
 
+// FIXME: rename and replace .row-form
+// 1. Center vertically. Supports single line, multiline and clamped text.
+// 2. Expand link element.
+// 3. Make sure clamped and unclamped span inside a tag has the same height with display: block.
+//    NOTE: Height of clamped span may vary depending on font, platform and browser. Tested with iPhone 5 and
+//          iOS 8.
+//          Use span[clamp="2"] if needed to target clamped span.
+.row-vertically-centered {
+  .row();
+  & > a {
+    padding-top: @padding-vertically-centered;    // [1]
+    padding-bottom: @padding-vertically-centered; // [1]
+    display: block; // [2]
+    & > span {
+      display: block; // [3]
+    }
+  }
+}
+
+// 1. Apply vertical center directly into container when used as a textarea wrapper.
+// 2. Divide horintal padding evenly between container and textarea to improve text editing in touch devices.
+.row-vertically-centered.with-textarea {
+  padding-top: @padding-vertically-centered;    // [1]
+  padding-bottom: @padding-vertically-centered; // [1]
+  padding-left: @grid-horizontal / 2;     // [2]
+  padding-right: @grid-horizontal / 2;    // [2]
+  & > textarea {
+    padding-left: @grid-horizontal / 2;   // [2]
+    padding-right: @grid-horizontal / 2;  // [2]
+  }
+}
+
 .row-form {
-  .row;
+  .row();
   line-height: @grid-vertical;
 }
 
@@ -469,164 +504,9 @@ margin.
 }
 
 /*
-Class `.group-btn` groups automatically button elements horizontally. Works for 1 and 2 buttons.
-
-```markup
-<div class="group-btn" style="width: 100%;">
-  <button style="background: gray;">&nbsp;</button>
-  <button style="background: red;">&nbsp;</button>
-</div>
-<div class="group-btn" style="width: 100%;">
-  <button style="background: gray;">&nbsp;</button>
-</div>
-```
+*************************************************************
+# Mixed group
 */
-.group-btn {
-  button:first-child:nth-last-child(1) {
-    width: 100%;
-  }
-  button:first-child:nth-last-child(2),
-  button:first-child:nth-last-child(2) ~ button {
-    width: 50%;
-    float: left;
-  }
-  button:first-child:nth-last-child(2) {
-    padding-right: @width-button-gap / 2;
-  }
-  button:first-child:nth-last-child(2) ~ button {
-    padding-left: @width-button-gap / 2;
-  }
-}
-
-/*
-Class `.group-link` groups automatically a elements horizontally. Works for 7 and 9 links.
-
-```markup
-<div class="group-link" style="width: 100%;">
-  <a href style="background: gray;">&nbsp;</a>
-  <a href style="background: red;">&nbsp;</a>
-  <a href style="background: gray;">&nbsp;</a>
-  <a href style="background: red;">&nbsp;</a>
-  <a href style="background: gray;">&nbsp;</a>
-  <a href style="background: red;">&nbsp;</a>
-  <a href style="background: gray;">&nbsp;</a>
-  <a href style="background: red;">&nbsp;</a>
-  <a href style="background: gray;">&nbsp;</a>
-</div>
-<div class="group-link" style="width: 100%;">
-  <a href style="background: gray;">&nbsp;</a>
-  <a href style="background: red;">&nbsp;</a>
-  <a href style="background: gray;">&nbsp;</a>
-  <a href style="background: red;">&nbsp;</a>
-  <a href style="background: gray;">&nbsp;</a>
-  <a href style="background: red;">&nbsp;</a>
-  <a href style="background: gray;">&nbsp;</a>
-</div>
-```
-*/
-.group-link {
-  text-align: center;
-  a:first-child:nth-last-child(7),
-  a:first-child:nth-last-child(7) ~ a {
-    width: 14.2857%;
-    float: left;
-  }
-  a:first-child:nth-last-child(9),
-  a:first-child:nth-last-child(9) ~ a {
-    width: 11.111%;
-    float: left;
-  }
-}
-
-/*
-Use `.group-instruction` to create an instruction block in the middle of a section.
-*/
-
-// 1. If there are more than one paragraph, create padding between them.
-// 2. Normalize line height for the message.
-// 3. Add padding-bottom to the last child when it is not .textgroup-ingress, which has padding-bottom set
-//    with .first class.
-.group-instruction {
-  display: block;
-  line-height: @grid-vertical;
-
-  p:not(:first-child) {
-    padding-top: @grid-vertical;  // [1]
-  }
-
-  .textgroup-ingress {
-    padding-top: @grid-vertical;
-    line-height: @grid-vertical-medium;
-  }
-
-  .textgroup-ingress.first {
-    padding-bottom: @grid-vertical-half;
-  }
-  .textgroup-ingress.last {
-    padding-top: @grid-vertical-half;
-  }
-  .textgroup-message {
-    line-height: normal;  // [2]
-  }
-  & >:last-child:not(.textgroup-ingress) {
-    padding-bottom: @grid-vertical;  // [3]
-  }
-}
-
-// Override .group-instruction for or iPhone 4s, where we need a much tighter layout
-.height-small .group-instruction {
-  .textgroup-ingress {
-    padding-top: @grid-vertical-small;
-  }
-  .textgroup-ingress.last {
-    padding-top: @grid-vertical-half;
-  }
-}
-
-/*
-Use `.group-instruction-input` to create an instruction block below an input field.
-*/
-.group-instruction-input {
-  padding-top: @grid-vertical-small;
-  padding-bottom: @grid-vertical-small;
-}
-
-/*
-Use `.group-instruction-jumbtron` to create a very large instruction block in the middle of a section.
-*/
-
-// 1. Reset margins of header to make it go to the top of the page
-// 2. Vertically center a span in the middle of the header
-.group-instruction-jumbotron {
-  p {
-    margin-top: @grid-vertical * 1.5;
-    margin-bottom: @grid-vertical * 1.5;
-  }
-  .group-instruction--header {
-    margin-top: 0; // [1]
-    margin-bottom: 0; // [1]
-    display: table; // [2]
-    height: @grid-vertical * 1.5; // [2]
-    span {
-      display: table-cell; // [2]
-      vertical-align: middle; // [2]
-    }
-  }
-  .group-instruction--animation {
-    position: absolute;
-    height: 100%;
-    width: 100%;
-    display: table;
-    left: 0;
-  }
-}
-
-// Override .group-instruction-jumbotron for iPhone 4s, less top margin
-.height-small .group-instruction-jumbotron {
-  .group-instruction--main {
-    margin-top: @grid-vertical-medium;
-  }
-}
 
 /*
 Use `.group-mixed` to create horizontal collections of different elements.
@@ -699,40 +579,6 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
     height: @grid-vertical;
     line-height: @grid-vertical;
   }
-}
-
-// 1. Simple table grid layout.
-.table {
-  display: table; // [1]
-  width: 100%;
-}
-
-.table-row {
-  display: table-row;
-  height: @grid-vertical;
-}
-
-// 1. Each cell has half the width.
-.table-cell {
-  display: table-cell;
-  vertical-align: middle;
-  width: 50%; // [1]
-  text-align: center;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-// Override for .table-cell: position both columns to the left
-.table.two-to-left .table-cell {
-  text-align: left;
-}
-
-.table.two-to-left .table-cell:nth-child(odd) {
-  padding-left: @grid-horizontal;
-}
-
-.table.two-to-left .table-cell:nth-child(even) {
-  padding-right: @grid-horizontal;
 }
 
 // 1. Set padding-left to default padding for inactive.
@@ -910,37 +756,371 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   }
 }
 
-// FIXME: rename and replace .row-form
-// 1. Center vertically. Supports single line, multiline and clamped text.
-// 2. Expand link element.
-// 3. Make sure clamped and unclamped span inside a tag has the same height with display: block.
-//    NOTE: Height of clamped span may vary depending on font, platform and browser. Tested with iPhone 5 and
-//          iOS 8.
-//          Use span[clamp="2"] if needed to target clamped span.
-.row-vertically-centered {
-  .row();
-  & > a {
-    padding-top: @padding-vertically-centered;    // [1]
-    padding-bottom: @padding-vertically-centered; // [1]
-    display: block; // [2]
-    & > span {
-      display: block; // [3]
+@padding-vertical-heading-text: 17px;
+@max-line-height-heading-text: 60px;
+@padding-vertical-not-so-large-heading-text: 6px;
+@max-line-height-not-so-large-heading-text: 48px;
+
+// 1. Remove padding-top and padding-bottom defined elsewhere.
+// 2. Add equal padding-top and padding-bottom to match, with line-height in .text-heading (=60px),
+//    height of .group-heading justified (=94px).
+// 3. Maximum line-height to make whole text visible.
+// 4. Add equal padding-top and padding-bottom to match, with line-height in .text-heading.long (=48px) and
+//    padding-top and padding-bottom in parent, height of .group-heading justified (=94px).
+// 5. Expand link element's width and height.
+.group-mixed.heading.vertically-centered {
+  .group-mixed--middle {
+    padding-top: 0;     // [1]
+    padding-bottom: 0;  // [1]
+    & > h2.group-heading.justified {
+      padding-top: 0;     // [1]
+      padding-bottom: 0;  // [1]
+      & > a,
+      & > div {
+        padding-top: @padding-vertical-heading-text;    // [2]
+        padding-bottom: @padding-vertical-heading-text; // [2]
+        & > span.text-heading {
+          line-height: @max-line-height-heading-text;  // [3]
+        }
+        & > span.text-heading.long {
+          line-height: @max-line-height-not-so-large-heading-text;    // [3]
+          padding-top: @padding-vertical-not-so-large-heading-text;     // [4]
+          padding-bottom: @padding-vertical-not-so-large-heading-text;  // [4]
+        }
+      }
+      & > a {
+        display: block; // [5]
+      }
     }
   }
 }
 
-// 1. Apply vertical center directly into container when used as a textarea wrapper.
-// 2. Divide horintal padding evenly between container and textarea to improve text editing in touch devices.
-.row-vertically-centered.with-textarea {
-  padding-top: @padding-vertically-centered;    // [1]
-  padding-bottom: @padding-vertically-centered; // [1]
-  padding-left: @grid-horizontal / 2;     // [2]
-  padding-right: @grid-horizontal / 2;    // [2]
-  & > textarea {
-    padding-left: @grid-horizontal / 2;   // [2]
-    padding-right: @grid-horizontal / 2;  // [2]
+// 1. Keep content hidden by default.
+.group-mixed > .group-mixed--right {
+  .icon-repeating,
+  .syncing {
+    display: none;  // [1]
+  }
+  .favorited {
+    display: none;  // [1]
+    &.icon-star {
+      display: none;  // [1]
+    }
   }
 }
+
+// 1. Align text.
+.group-mixed.syncing,
+.group-mixed.repeating {
+  & > .group-mixed--right {
+    text-align: center; // [1]
+  }
+}
+
+// 1. Expand .group-mixed--middle:first-child to full width.
+// 2. Add default padding.
+// 3. Remove element from flow when it has no additional status.
+.group-mixed.no-additional-status {
+  & > .group-mixed--middle {
+    &:first-child {
+      display: block; // [1]
+    }
+    padding-right: @grid-horizontal;  // [2]
+  }
+  & > .group-mixed--right {
+    display: none;  // [3]
+  }
+}
+
+// 1. Show.
+.group-mixed.repeating > .group-mixed--right > .icon-repeating,
+.group-mixed.syncing:not(.offline) > .group-mixed--right > .syncing,
+.group-mixed.syncing.offline > .group-mixed--right > .syncing {
+  display: initial; // [1]
+}
+
+// 1. Set display block because "initial" does not work as expected.
+.group-mixed.favorited > .group-mixed--right > .favorited {
+  display: block; // [1]
+  .icon-star {
+    display: block; // [1]
+  }
+}
+
+// 1. Set syncing icon.
+.group-mixed.syncing:not(.offline) > .group-mixed--right > .syncing {
+  .icon-syncing();  // [1]
+}
+
+// 1. Set syncing offline icon.
+.group-mixed.syncing.offline > .group-mixed--right > .syncing {
+  .icon-offline();  // [1]
+}
+
+// 1. Align to top when repeating and syncing visible.
+// 2. Align with the top of a checkbox inside .group-mixed--left
+// 3. Align with the bottom of a checkbox inside .group-mixed--left
+// 4. Align vertically with checkbox inside .group-mixed--left.
+.group-mixed.with-checkbox {
+  &.repeating.syncing {
+    & > .group-mixed--right {
+      vertical-align: top;  // [1]
+    }
+    & > .group-mixed--left ~ .group-mixed--right {
+      & > .icon-repeating {
+        vertical-align: initial;  // [2]
+      }
+      & > .syncing {
+        vertical-align: @group-mixed--left-vertical-padding;  // [3]
+      }
+    }
+  }
+  &.syncing,
+  &.repeating {
+    & > .group-mixed--left ~ .group-mixed--right {
+      & > .syncing,
+      & > .icon-repeating {
+        vertical-align: 1px;  // [4]
+      }
+    }
+  }
+}
+
+// 1. Clear padding-top set to vertically align single syncing.
+// 2. Clear dimensions set for favorite link, when syncing is visible.
+.group-mixed.favorited.syncing > .group-mixed--middle:first-child + .group-mixed--right {
+  padding-top: 0; // [1]
+  & > .favorited {
+    height: auto;           // [2]
+    line-height: initial;   // [2]
+    text-align: center;     // [2]
+    & >.icon-star {
+      line-height: initial; // [2]
+      padding-top: 0;       // [2]
+      padding-bottom: 0;    // [2]
+    }
+  }
+}
+
+// 1. Align vertically with the first line of text inside .group-mixed---middle.
+.group-mixed.syncing > .group-mixed--middle:first-child + .group-mixed--right,
+.group-mixed.syncing.vertically-centered > .group-mixed--right {
+  vertical-align: top;  // [1]
+  padding-top: @group-mixed--left-vertical-padding + 1px; // [1]
+}
+
+
+/*
+*************************************************************
+# Button group
+*/
+
+/*
+Class `.group-btn` groups automatically button elements horizontally. Works for 1 and 2 buttons.
+
+```markup
+<div class="group-btn" style="width: 100%;">
+  <button style="background: gray;">&nbsp;</button>
+  <button style="background: red;">&nbsp;</button>
+</div>
+<div class="group-btn" style="width: 100%;">
+  <button style="background: gray;">&nbsp;</button>
+</div>
+```
+*/
+
+@width-button-gap: 10px;
+
+.group-btn {
+  button:first-child:nth-last-child(1) {
+    width: 100%;
+  }
+  button:first-child:nth-last-child(2),
+  button:first-child:nth-last-child(2) ~ button {
+    width: 50%;
+    float: left;
+  }
+  button:first-child:nth-last-child(2) {
+    padding-right: @width-button-gap / 2;
+  }
+  button:first-child:nth-last-child(2) ~ button {
+    padding-left: @width-button-gap / 2;
+  }
+}
+
+/*
+Class `.group-link` groups automatically a elements horizontally. Works for 7 and 9 links.
+
+```markup
+<div class="group-link" style="width: 100%;">
+  <a href style="background: gray;">&nbsp;</a>
+  <a href style="background: red;">&nbsp;</a>
+  <a href style="background: gray;">&nbsp;</a>
+  <a href style="background: red;">&nbsp;</a>
+  <a href style="background: gray;">&nbsp;</a>
+  <a href style="background: red;">&nbsp;</a>
+  <a href style="background: gray;">&nbsp;</a>
+  <a href style="background: red;">&nbsp;</a>
+  <a href style="background: gray;">&nbsp;</a>
+</div>
+<div class="group-link" style="width: 100%;">
+  <a href style="background: gray;">&nbsp;</a>
+  <a href style="background: red;">&nbsp;</a>
+  <a href style="background: gray;">&nbsp;</a>
+  <a href style="background: red;">&nbsp;</a>
+  <a href style="background: gray;">&nbsp;</a>
+  <a href style="background: red;">&nbsp;</a>
+  <a href style="background: gray;">&nbsp;</a>
+</div>
+```
+*/
+.group-link {
+  text-align: center;
+  a:first-child:nth-last-child(7),
+  a:first-child:nth-last-child(7) ~ a {
+    width: 14.2857%;
+    float: left;
+  }
+  a:first-child:nth-last-child(9),
+  a:first-child:nth-last-child(9) ~ a {
+    width: 11.111%;
+    float: left;
+  }
+}
+
+/*
+Use `.group-instruction` to create an instruction block in the middle of a section.
+*/
+
+// 1. If there are more than one paragraph, create padding between them.
+// 2. Normalize line height for the message.
+// 3. Add padding-bottom to the last child when it is not .textgroup-ingress, which has padding-bottom set
+//    with .first class.
+.group-instruction {
+  display: block;
+  line-height: @grid-vertical;
+
+  p:not(:first-child) {
+    padding-top: @grid-vertical;  // [1]
+  }
+
+  .textgroup-ingress {
+    padding-top: @grid-vertical;
+    line-height: @grid-vertical-medium;
+  }
+
+  .textgroup-ingress.first {
+    padding-bottom: @grid-vertical-half;
+  }
+  .textgroup-ingress.last {
+    padding-top: @grid-vertical-half;
+  }
+  .textgroup-message {
+    line-height: normal;  // [2]
+  }
+  & >:last-child:not(.textgroup-ingress) {
+    padding-bottom: @grid-vertical;  // [3]
+  }
+}
+
+// Override .group-instruction for or iPhone 4s, where we need a much tighter layout
+.height-small .group-instruction {
+  .textgroup-ingress {
+    padding-top: @grid-vertical-small;
+  }
+  .textgroup-ingress.last {
+    padding-top: @grid-vertical-half;
+  }
+}
+
+/*
+Use `.group-instruction-input` to create an instruction block below an input field.
+*/
+.group-instruction-input {
+  padding-top: @grid-vertical-small;
+  padding-bottom: @grid-vertical-small;
+}
+
+/*
+Use `.group-instruction-jumbtron` to create a very large instruction block in the middle of a section.
+*/
+
+// 1. Reset margins of header to make it go to the top of the page
+// 2. Vertically center a span in the middle of the header
+.group-instruction-jumbotron {
+  p {
+    margin-top: @grid-vertical * 1.5;
+    margin-bottom: @grid-vertical * 1.5;
+  }
+  .group-instruction--header {
+    margin-top: 0; // [1]
+    margin-bottom: 0; // [1]
+    display: table; // [2]
+    height: @grid-vertical * 1.5; // [2]
+    span {
+      display: table-cell; // [2]
+      vertical-align: middle; // [2]
+    }
+  }
+  .group-instruction--animation {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    display: table;
+    left: 0;
+  }
+}
+
+// Override .group-instruction-jumbotron for iPhone 4s, less top margin
+.height-small .group-instruction-jumbotron {
+  .group-instruction--main {
+    margin-top: @grid-vertical-medium;
+  }
+}
+
+/*
+*************************************************************
+# Table
+*/
+
+// 1. Simple table grid layout.
+.table {
+  display: table; // [1]
+  width: 100%;
+}
+
+.table-row {
+  display: table-row;
+  height: @grid-vertical;
+}
+
+// 1. Each cell has half the width.
+.table-cell {
+  display: table-cell;
+  vertical-align: middle;
+  width: 50%; // [1]
+  text-align: center;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+// Override for .table-cell: position both columns to the left
+.table.two-to-left .table-cell {
+  text-align: left; // [1]
+}
+
+.table.two-to-left .table-cell:nth-child(odd) {
+  padding-left: @grid-horizontal;
+}
+
+.table.two-to-left .table-cell:nth-child(even) {
+  padding-right: @grid-horizontal;
+}
+
+/*
+*************************************************************
+# Heading
+*/
 
 // Heading is long, multiple lines need smaller spacing, so the method above does not work
 // 1. Match 88 pixels with this, to make this be the same as the above for consistent look and feel
@@ -986,45 +1166,6 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 
 .group-heading .highlighted {
   color: @color-text-highlighted;
-}
-
-@padding-vertical-heading-text: 17px;
-@max-line-height-heading-text: 60px;
-@padding-vertical-not-so-large-heading-text: 6px;
-@max-line-height-not-so-large-heading-text: 48px;
-
-// 1. Remove padding-top and padding-bottom defined elsewhere.
-// 2. Add equal padding-top and padding-bottom to match, with line-height in .text-heading (=60px),
-//    height of .group-heading justified (=94px).
-// 3. Maximum line-height to make whole text visible.
-// 4. Add equal padding-top and padding-bottom to match, with line-height in .text-heading.long (=48px) and
-//    padding-top and padding-bottom in parent, height of .group-heading justified (=94px).
-// 5. Expand link element's width and height.
-.group-mixed.heading.vertically-centered {
-  .group-mixed--middle {
-    padding-top: 0;     // [1]
-    padding-bottom: 0;  // [1]
-    & > h2.group-heading.justified {
-      padding-top: 0;     // [1]
-      padding-bottom: 0;  // [1]
-      & > a,
-      & > div {
-        padding-top: @padding-vertical-heading-text;    // [2]
-        padding-bottom: @padding-vertical-heading-text; // [2]
-        & > span.text-heading {
-          line-height: @max-line-height-heading-text;  // [3]
-        }
-        & > span.text-heading.long {
-          line-height: @max-line-height-not-so-large-heading-text;    // [3]
-          padding-top: @padding-vertical-not-so-large-heading-text;     // [4]
-          padding-bottom: @padding-vertical-not-so-large-heading-text;  // [4]
-        }
-      }
-      & > a {
-        display: block; // [5]
-      }
-    }
-  }
 }
 
 /*
@@ -1269,118 +1410,4 @@ textarea#ignoreSnap.disable-full-height.input-separate {
     padding-bottom: @padding-vertically-centered;
     padding-right: @grid-horizontal;
   }
-}
-
-// 1. Keep content hidden by default.
-.group-mixed > .group-mixed--right {
-  .icon-repeating,
-  .syncing {
-    display: none;  // [1]
-  }
-  .favorited {
-    display: none;  // [1]
-    &.icon-star {
-      display: none;  // [1]
-    }
-  }
-}
-
-// 1. Align text.
-.group-mixed.syncing,
-.group-mixed.repeating {
-  & > .group-mixed--right {
-    text-align: center; // [1]
-  }
-}
-
-// 1. Expand .group-mixed--middle:first-child to full width.
-// 2. Add default padding.
-// 3. Remove element from flow when it has no additional status.
-.group-mixed.no-additional-status {
-  & > .group-mixed--middle {
-    &:first-child {
-      display: block; // [1]
-    }
-    padding-right: @grid-horizontal;  // [2]
-  }
-  & > .group-mixed--right {
-    display: none;  // [3]
-  }
-}
-
-// 1. Show.
-.group-mixed.repeating > .group-mixed--right > .icon-repeating,
-.group-mixed.syncing:not(.offline) > .group-mixed--right > .syncing,
-.group-mixed.syncing.offline > .group-mixed--right > .syncing {
-  display: initial; // [1]
-}
-
-// 1. Set display block because "initial" does not work as expected.
-.group-mixed.favorited > .group-mixed--right > .favorited {
-  display: block; // [1]
-  .icon-star {
-    display: block; // [1]
-  }
-}
-
-// 1. Set syncing icon.
-.group-mixed.syncing:not(.offline) > .group-mixed--right > .syncing {
-  .icon-syncing();  // [1]
-}
-
-// 1. Set syncing offline icon.
-.group-mixed.syncing.offline > .group-mixed--right > .syncing {
-  .icon-offline();  // [1]
-}
-
-// 1. Align to top when repeating and syncing visible.
-// 2. Align with the top of a checkbox inside .group-mixed--left
-// 3. Align with the bottom of a checkbox inside .group-mixed--left
-// 4. Align vertically with checkbox inside .group-mixed--left.
-.group-mixed.with-checkbox {
-  &.repeating.syncing {
-    & > .group-mixed--right {
-      vertical-align: top;  // [1]
-    }
-    & > .group-mixed--left ~ .group-mixed--right {
-      & > .icon-repeating {
-        vertical-align: initial;  // [2]
-      }
-      & > .syncing {
-        vertical-align: @group-mixed--left-vertical-padding;  // [3]
-      }
-    }
-  }
-  &.syncing,
-  &.repeating {
-    & > .group-mixed--left ~ .group-mixed--right {
-      & > .syncing,
-      & > .icon-repeating {
-        vertical-align: 1px;  // [4]
-      }
-    }
-  }
-}
-
-// 1. Clear padding-top set to vertically align single syncing.
-// 2. Clear dimensions set for favorite link, when syncing is visible.
-.group-mixed.favorited.syncing > .group-mixed--middle:first-child + .group-mixed--right {
-  padding-top: 0; // [1]
-  & > .favorited {
-    height: auto;           // [2]
-    line-height: initial;   // [2]
-    text-align: center;     // [2]
-    & >.icon-star {
-      line-height: initial; // [2]
-      padding-top: 0;       // [2]
-      padding-bottom: 0;    // [2]
-    }
-  }
-}
-
-// 1. Align vertically with the first line of text inside .group-mixed---middle.
-.group-mixed.syncing > .group-mixed--middle:first-child + .group-mixed--right,
-.group-mixed.syncing.vertically-centered > .group-mixed--right {
-  vertical-align: top;  // [1]
-  padding-top: @group-mixed--left-vertical-padding + 1px; // [1]
 }
