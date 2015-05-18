@@ -197,7 +197,7 @@ Vertically center .container-master and .container-editor in large screens
 
 /*
 **************************************************************************
-# LEVEL 4: Fluid, toaster
+# LEVEL 4: Fluid
 */
 // 1. Match with .container-toolbar.
 @height-footer: 62px; // [1]
@@ -391,44 +391,6 @@ Vertically center .container-master and .container-editor in large screens
 // 1. When expanded only one row, .keywords-footer would have undesired scroll due to padding-bottom.
 .editor-footer.expanded-one-row .keywords-footer {
   padding-bottom: 0;  // [1]
-}
-
-/*
-*************************************************************
-# Toaster
-*/
-
-// 1. Center toaster
-// 2. Put toaster to the bottom of its parent, .container-master or .container-editor, with little space
-//    between borders.
-//    NOTE: Set left and right AFTER .center-horizontally-absolute.
-// 3. Set height and color
-// 4. By removing the margins from the max width =18px, text inside the toaster is inline with other text
-//    also for >1 column layout
-.container-toaster {
-  position: absolute; // [1]
-  .center-horizontally-absolute; // [1]
-  bottom: 9px;  // [2]
-  left: 9px;    // [2]
-  right: 9px;   // [2]
-  max-width: (@width-column-max - 18px); // [4]
-  height: @grid-vertical; // [3]
-  line-height: @grid-vertical; // [3]
-  background-color: @color-background-toaster; // [3]
-  &.group-mixed {
-    .group-mixed--middle {
-      padding-left: (@grid-horizontal - 9px);
-    }
-    .group-mixed--right {
-      padding-right: (@grid-horizontal - 9px);
-      & > .icon-x {
-        padding-right: 0;
-        height: 44px;
-        line-height: 44px;
-        display: block;
-      }
-    }
-  }
 }
 
 /*
