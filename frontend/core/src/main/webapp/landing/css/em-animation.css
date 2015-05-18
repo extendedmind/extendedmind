@@ -9,7 +9,7 @@
   animation-play-state:paused !important;
 }
 
-.hidden{
+.invisible{
   visibility: hidden;
 }
 

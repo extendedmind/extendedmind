@@ -30,31 +30,6 @@ TODO: em grid structure explained in plain English (when new grid structure deci
   position: relative; // [2]
 }
 
-// FIXME:
-//   i. move
-// 1. Hide - but do not collapse - menu when editor is open.
-// 2. Hide editor when it is not open.
-.container-main {
-  &.editor-show .container-menu {
-    visibility: hidden; // [1]
-  }
-  &:not(.editor-show) .container-editor {
-    display: none;  // [2]
-  }
-}
-// FIXME
-//  ii. overflow: hidden causes flicker in vertical swiper (focus/tasks)
-// 1. Minimize paint when editor is open and .container-master and .container-menu are stacked beneath.
-//    At least absolutely positioned elements inside these classes would repaint and slow down swiping in
-//    editor swiper.
-.editor-visible {
-  .container-master, .container-master *,
-  .container-menu, .container-menu * {
-    pointer-events: none; // [1]
-    overflow: hidden;     // [1]
-  }
-}
-
 /*
 **************************************************************************
 # LEVEL 2: Optional Intermediate Containers (main, drawer-aisle)
@@ -65,6 +40,29 @@ TODO: em grid structure explained in plain English (when new grid structure deci
 .container-drawer-aisle, .container-drawer-aisle--inner {
   width: inherit;   // [1]
   height: inherit;  // [1]
+}
+
+// 1. Hide - but do not collapse - menu when editor is open.
+// 2. Hide editor when it is not open.
+.container-main {
+  &.editor-show .container-menu {
+    visibility: hidden; // [1]
+  }
+  &:not(.editor-show) .container-editor {
+    display: none;  // [2]
+  }
+}
+
+// 1. Minimize paint when editor is open and .container-master and .container-menu are stacked beneath.
+//    At least absolutely positioned elements inside these classes would repaint and slow down swiping in
+//    editor swiper. NOTE: "overflow: hidden" causes flicker in vertical swiper (focus/tasks), but without
+//    it, performance is degraded noticably
+.editor-visible {
+  .container-master, .container-master *,
+  .container-menu, .container-menu * {
+    pointer-events: none; // [1]
+    overflow: hidden;     // [1]
+  }
 }
 
 // 1. .container-drawer-aisle must have a background in order to hide .container-menu and .container-editor.
@@ -113,13 +111,11 @@ Menu
   background-color: @color-background-menu;
 }
 
-// FIXME: comment and refactor
 // 1. Sticky footer, margin-bottom is the negative value of the footer's height.
 // 2. Set margin-top for first-child of .container-menu to align vertically with toolbar.
-//    FIXME:  Only needed in @media (max-height: @height-column-max)
 // 3. Center vertically.
 // 4. Increase click area with padding-bottom.
-//    FIXME: Can not be more than 5px because vertical position of .separate depends on this.
+//    NOTE: Can't be more than 5px because vertical position of .separate depends on this.
 .container-menu--top {
   min-height: 100%;
   margin: 0 auto -@height-menu-footer;  // [1]
@@ -206,15 +202,6 @@ Vertically center .container-master and .container-editor in large screens
 // 1. Match with .container-toolbar.
 @height-footer: 62px; // [1]
 @height-footer-short: @grid-vertical;
-
-/*
-`.container-fluid` sets the vertical positioning of the content area.
-*/
-.container-fluid {
-  // FIXME: is this needed?
-  .center-horizontally;
-  // FIXME: is this needed?
-}
 
 // Fluid container height.
 //
@@ -393,22 +380,24 @@ Vertically center .container-master and .container-editor in large screens
   height: @height-footer; // [1]
 }
 
-// FIXME: move
 // 1. Add padding-bottom to make area scrollable.
-.keywords-footer {
+.editor-footer .keywords-footer {
   height: 100%;
   -webkit-overflow-scrolling: touch;
   overflow-y: auto;
   padding-bottom: @grid-vertical; // [1]
 }
 
-// FIXME: move
 // 1. When expanded only one row, .keywords-footer would have undesired scroll due to padding-bottom.
 .editor-footer.expanded-one-row .keywords-footer {
   padding-bottom: 0;  // [1]
 }
 
-// FIXME: move?
+/*
+*************************************************************
+# Toaster
+*/
+
 // 1. Center toaster
 // 2. Put toaster to the bottom of its parent, .container-master or .container-editor, with little space
 //    between borders.
@@ -482,6 +471,12 @@ Vertically center .container-master and .container-editor in large screens
   overflow-y: auto;
 }
 
+// Override for .container-content
+// 1. Exclude padding from height with box-sizing.
+.container-content.with-expandable-footer {
+  box-sizing: content-box;  // [1]
+}
+
 /*
 **************************************************************************
 # LEVEL 6: row and groups
@@ -504,37 +499,10 @@ margin.
   line-height: @grid-vertical;
 }
 
-// FIXME: unify vertical align with single- and multi-row items or move (overrides.less)
-.row-padded {
-  .row();
-  height: auto;
-  & > textarea,
-  & > a > span {
-    margin-bottom: @grid-vertical-half;
-  }
-}
-
 // 1. Raise first (not hidden) row type element of top row container by the amount of @margin-bottom-heading
 //    to align into grid.
 .row-top-parent:not(.ng-hide) >:first-child {
   margin-top: -@margin-bottom-heading;  // [1]
-}
-
-// FIXME: unify vertical align with single- and multi-row items or move (overrides.less)
-// 1. Set padding-bottom to mimic height of .row-padded.
-//    43px + 21px is not the correct value but near.
-// 2. Adjust vertical alignment for button and make sure it does not increase .group-mixed.bottom-padded's height.
-.group-mixed.bottom-padded {
-  padding-bottom: 21px; // [1]
-  .group-mixed--middle {
-    vertical-align: baseline;
-  }
-  .group-mixed--right {
-    & > button {
-      height: inherit;      // [2]
-      line-height: inherit; // [2]
-    }
-  }
 }
 
 /*
@@ -642,8 +610,7 @@ Use `.group-instruction` to create an instruction block in the middle of a secti
   }
 }
 
-// FIXME: move (overrides.less)
-// For iPhone 4s, we need a much tighter layout
+// Override .group-instruction for or iPhone 4s, where we need a much tighter layout
 .height-small .group-instruction {
   .textgroup-ingress {
     padding-top: @grid-vertical-small;
@@ -691,8 +658,7 @@ Use `.group-instruction-jumbtron` to create a very large instruction block in th
   }
 }
 
-// FIXME: move (overrides.less)
-// iPhone 4s, less top margin
+// Override .group-instruction-jumbotron for iPhone 4s, less top margin
 .height-small .group-instruction-jumbotron {
   .group-instruction--main {
     margin-top: @grid-vertical-medium;
@@ -746,14 +712,12 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   width: 100%;
 }
 
-// FIXME: move (overrides.less)
 .group-mixed.details {
   .group-mixed--middle {
     line-height: @grid-vertical-small;
   }
 }
 
-// FIXME: move (overrides.less)
 .group-mixed.height-large {
   margin-top: 10px;
 }
@@ -795,22 +759,19 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   padding-right: 5px;
 }
 
-// FIXME: refactor or move (overrides.less)
+// Override for .table-cell: position both columns to the left
 .table.two-to-left .table-cell {
   text-align: left;
 }
 
-// FIXME: refactor or move (overrides.less)
 .table.two-to-left .table-cell:nth-child(odd) {
   padding-left: @grid-horizontal;
 }
 
-// FIXME: refactor or move (overrides.less)
 .table.two-to-left .table-cell:nth-child(even) {
   padding-right: @grid-horizontal;
 }
 
-// FIXME: move (overrides.less)
 // 1. Set padding-left to default padding for inactive.
 //    NOTE: It would be better to use :empty selector but it did not work with AngularJS 1.3.0 on element with
 //          ng-if so use .inactive instead.
@@ -1055,8 +1016,7 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   }
 }
 
-// FIXME: refactor or move (overrides.less)
-// iPhone 4s, less top margin for instruction headings
+// Override for .group-heading.instruction: iPhone 4s, less top margin for instruction headings
 .height-small .group-heading.instruction {
   margin-top: @grid-vertical-half;
 }
@@ -1113,11 +1073,9 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   line-height: @grid-vertical-small;
 }
 
-// FIXME: refactor or move (overrides.less)
 .group-error.height-large {
   margin-top: 0;
 }
-
 
 /*
 `.group-symmetrical` groups together up to three adjacent elements
@@ -1201,7 +1159,6 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
 @margin-bottom-heading: 9px;
 
 // 1. Set margin-top|bottom for large .group-symmetrical to add space on top|bottom of it.
-//    FIXME:  Only needed in @media (max-height: @height-column-max)
 .group-symmetrical {
   &.height-large--top {
     margin-top: @margin-top-heading;  // [1]
@@ -1237,7 +1194,7 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
   text-align: center;
 }
 
-// FIXME: comments
+// Disables every element inside the container
 .container-disabled {
   * {
     pointer-events: none;
@@ -1251,7 +1208,7 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
   }
 }
 
-// FIXME: Comments
+// Groups rows of detailed comments
 .group-details {
   .row {
     line-height: @grid-vertical-small;
@@ -1261,7 +1218,7 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
   }
 }
 
-// FIXME: comments
+// Groups external foreign html
 .group-html-external {
   h1 {
     font-size: 24px;
@@ -1312,16 +1269,6 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
 //    NOTE: This bug is fixed in VKWebView starting from iOS 8. At the moment, Cordova still uses UIWebView.
 .swiper-slide-under-element .container-content {
   -webkit-overflow-scrolling: auto; // [1]
-}
-
-// FIXME: refactor or move (overrides.less)
-// 1. Exclude padding from height with box-sizing.
-.container-content.with-expandable-footer {
-  box-sizing: content-box;  // [1]
-}
-
-.hidden {
-  visibility: hidden;
 }
 
 // 1. Set full height.
