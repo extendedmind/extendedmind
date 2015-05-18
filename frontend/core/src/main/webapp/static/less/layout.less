@@ -9,7 +9,6 @@ TODO: em grid structure explained in plain English (when new grid structure deci
 @height-column-max: 1025px;
 @width-column-max: 768px; // iPhone 5 landscape is still one column
 
-@height-heading: 70px;
 @width-menu: 260px;
 
 /*
@@ -610,22 +609,6 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   padding-right: 15px;  /* [1] */
 }
 
-// 1. Increase line-height for heading.
-// 2. Center vertically. We are using .group-mixed--middle and .group-mixed--right in .group-mixed heading
-//    or just .group-heading.
-.group-mixed.heading > .group-mixed--middle,
-.group-mixed.heading > .group-mixed--right {
-  line-height: @height-heading; // [1]
-  vertical-align: middle;       // [2]
-}
-
-// 1. Align show completed tasks button with heading.
-//    Font-size and line-height is different than heading so adjust position correctly.
-.group-mixed.heading > .group-mixed--right[task-list-completed] > button {
-  margin-top: @margin-top-heading-justified / 2 - 1px;  // [1]
-}
-
-// FIXME: rename move (overrides.less)
 @padding-vertically-centered: 11px;
 @padding-vertically-centered-small-content: 13px;
 @group-mixed--left-vertical-padding: 8px;
@@ -756,10 +739,26 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   }
 }
 
+@line-height-heading: 70px;
 @padding-vertical-heading-text: 17px;
 @max-line-height-heading-text: 60px;
 @padding-vertical-not-so-large-heading-text: 6px;
 @max-line-height-not-so-large-heading-text: 48px;
+
+// 1. Increase line-height for heading.
+// 2. Center vertically. We are using .group-mixed--middle and .group-mixed--right in .group-mixed heading
+//    or just .group-heading.
+.group-mixed.heading > .group-mixed--middle,
+.group-mixed.heading > .group-mixed--right {
+  line-height: @line-height-heading; // [1]
+  vertical-align: middle;       // [2]
+}
+
+// 1. Align show completed tasks button with heading.
+//    Font-size and line-height is different than heading so adjust position correctly.
+.group-mixed.heading > .group-mixed--right[task-list-completed] > button {
+  margin-top: @margin-top-heading-justified / 2 - 1px;  // [1]
+}
 
 // 1. Remove padding-top and padding-bottom defined elsewhere.
 // 2. Add equal padding-top and padding-bottom to match, with line-height in .text-heading (=60px),
