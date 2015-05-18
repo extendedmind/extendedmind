@@ -46,7 +46,7 @@ function AnalyticsService($q, $rootScope, $timeout, BackendClientService, HttpCl
         ipinfodb_key: false,
         // Leaving true allows for fallback for both
         // the HTML5 location and the IPInfoDB
-        gapi_location: true,
+        gapi_location: false,
         // Name of the location cookie (set blank to disable cookie)
         //   - WARNING: different providers use the same cookie
         //   - if switching providers, remember to use another cookie or provide checks for old cookies
