@@ -61,8 +61,10 @@ trait TestGraphDatabase extends GraphDatabase {
   def insertTestData(testDataLocation: Option[String] = None) {
     val timoUser = User(TIMO_EMAIL, Some(1), None)
     val timoNode = createUser(timoUser, TIMO_PASSWORD, Some(UserLabel.ADMIN)).right.get._1
-    val lauriNode = createUser(User(LAURI_EMAIL, None, None), LAURI_PASSWORD, Some(UserLabel.ADMIN)).right.get._1
-    val jpNode = createUser(User(JP_EMAIL, None, None), JP_PASSWORD, Some(UserLabel.ADMIN)).right.get._1
+    val lauriUser = User(LAURI_EMAIL, None, None)
+    val lauriNode = createUser(lauriUser, LAURI_PASSWORD, Some(UserLabel.ADMIN)).right.get._1
+    val jpUser = User(JP_EMAIL, None, None)
+    val jpNode = createUser(jpUser, JP_PASSWORD, Some(UserLabel.ADMIN)).right.get._1
 
     // Collectives
     val extendedMind = createCollective(timoNode, "extended mind", Some("common collective for all extended mind users"), true)
@@ -86,6 +88,12 @@ trait TestGraphDatabase extends GraphDatabase {
       implicit neo =>
         // Add preferences to timo node
         putExistingUser(getUUID(timoNode), timoUser.copy(preferences = Some(UserPreferences(Some("web"), None))))
+
+        // Add preferences to lauri node
+        putExistingUser(getUUID(lauriNode), lauriUser.copy(preferences = Some(UserPreferences(Some("web"), None))))
+
+        // Add preferences to JP node
+        putExistingUser(getUUID(jpNode), jpUser.copy(preferences = Some(UserPreferences(Some("web"), None))))
 
         // Valid, unreplaceable
         timoUUID = getUUID(timoNode)

@@ -909,7 +909,13 @@
       if (UserSessionService.isFakeUser()){
         deferred.resolve('fakeUser');
       }else if (latestModified !== undefined) {
-        url += '?modified=' + latestModified + '&deleted=true&archived=true&completed=true';
+        if (latestModified !== null){
+          url += '?modified=' + latestModified + '&';
+        }else{
+          url += '?';
+        }
+        url += 'deleted=true&archived=true&completed=true';
+
         // Push request to offline buffer
         BackendClientService.getSecondary(url, getItemsRegex, {owner: ownerUUID});
         deferred.resolve('delta');
