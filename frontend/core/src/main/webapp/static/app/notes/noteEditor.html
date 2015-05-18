@@ -240,24 +240,23 @@
             </textarea>
           </div>
 
-          <div ng-if="note.trans.uuid" class="group-mixed vertically-centered"
+          <div ng-if="note.trans.uuid" class="group-mixed with-checkbox"
             style="color: #919191; font-size: 13px; line-height: 22px;">
-            <div class="group-mixed--middle">
-              <span>{{::note.trans.created | date:'EEE d MMMM y' | lowercase}}</span>
+            <div class="group-mixed--middle link-search-result">
+              <span class="text-field--title">{{::note.trans.created | date:'EEE d MMMM y' | lowercase}}</span>
             </div>
             <div class="group-mixed--right">
-              <span>created</span>
+              <span class="text-field--label">created</span>
             </div>
           </div>
 
           <div ng-if="note.trans.uuid && note.trans.created !== note.trans.modified"
-            class="group-mixed vertically-centered"
-            style="color: #919191; font-size: 13px; line-height: 22px;">
-            <div class="group-mixed--middle">
-              <span>{{note.trans.modified | date:'EEE d MMMM y' | lowercase}}</span>
+            class="group-mixed with-checkbox" style="color: #919191; font-size: 13px; line-height: 22px;">
+            <div class="group-mixed--middle link-search-result">
+              <span class="text-field--title">{{note.trans.modified | date:'EEE d MMMM y' | lowercase}}</span>
             </div>
             <div class="group-mixed--right">
-              <span>modified</span>
+              <span class="text-field--label">modified</span>
             </div>
           </div>
 
