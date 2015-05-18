@@ -62,6 +62,10 @@ function MockItemsBackendService($httpBackend, ItemsService, PersistentStorageSe
       else if (modifiedItems[i].relationships)
         persistentItem.relationships = modifiedItems[i].relationships;
       persistentItems.push(persistentItem);
+
+      if (modifiedItems[i].mod.tagType) persistentItem.tagType = modifiedItems[i].mod.tagType;
+      else if (modifiedItems[i].trans.tagType) persistentItem.tagType = modifiedItems[i].trans.tagType;
+
     }
     return persistentItems;
   }
