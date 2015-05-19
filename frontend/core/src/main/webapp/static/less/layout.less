@@ -538,7 +538,13 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   }
 }
 
+@group-mixed--left-vertical-padding: 8px;
+
 // 1. Increase clicking area
+// 2. Increase click area and align vertically with textarea in .group-mixed---middle
+//    Checkbox icon is 28px, .group-mixed default height is 44px, use remaining 16px for padding.
+//    NOTE: Checkbox icon height is stored into @size-checkbox.
+// 3. Increase click area and clear padding from .group-mixed--left
 .group-mixed--left {
   padding-right: @padding-inner-group-mixed;
 
@@ -549,9 +555,14 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
     height: @grid-vertical;         /* [1] */
   }
   & > a,
-  & > input[type="checkbox"] + label:before,
   & > span {
     line-height: @grid-vertical;
+  }
+  & > input[type="checkbox"] + label {
+    padding-top: @group-mixed--left-vertical-padding + 1px;     // [2]
+    padding-bottom: @group-mixed--left-vertical-padding - 1px;  // [2]
+    padding-right: @padding-inner-group-mixed;  // [3]
+    margin-right: -@padding-inner-group-mixed;  // [3]
   }
 }
 
@@ -590,80 +601,62 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 
 @padding-vertically-centered: 11px;
 @padding-vertically-centered-small-content: 13px;
-@group-mixed--left-vertical-padding: 8px;
 
-// 1. Increase click area and align vertically with textarea in .group-mixed---middle
-//    Checkbox icon is 28px, .group-mixed default height is 44px, use remaining 16px for padding.
-//    NOTE: Checkbox icon height is stored into @size-checkbox.
-// 2. Checkbox icon determines height.
-// 3. Clear line-height (for multiline text as well).
-// 4. Align vertically.
+// 1. Align vertically.
 //    textarea is 22px, .group-mixed default height is 44px, use remaining 22px for padding.
 //    NOTE: Small textarea is 18px.
-// 5. Increase click area by inheriting padding-top and -bottom from .group-mixed--middle.
-// 6. Add space between first and last link inside.
-// 7. Align search type vertically with first row of search result text inside .group-mixed--middle.
-// 8. Increase click area and align vertically with textarea in .group-mixed---middle
+// 2. Increase click area by inheriting padding-top and -bottom from .group-mixed--middle.
+// 3. Add space between first and last link inside.
+// 4. Align search type vertically with first row of search result text inside .group-mixed--middle.
+// 5. Increase click area and align vertically with textarea in .group-mixed---middle
 //    Star icon wrapper is 24px, .group-mixed default height is 44px, use remaining 20px for padding.
 //    NOTE: Star icon height is a combination of @size-icon-star-small and line-height: @grid-vertical-half.
-// 9. Increase click area and clear padding from .group-mixed--left
-// 10.  Increase click area of .link-navigation, and clear padding from .group-mixed--right.
-// 11.  Use same display value as in parent, but set height and line-height to stick vertically in the middle
+// 6.  Increase click area of .link-navigation, and clear padding from .group-mixed--right.
+// 7.  Use same display value as in parent, but set height and line-height to stick vertically in the middle
 //      of first row inside .group-mixed--middle.
-// 12.  Nudge .icon-star.large to be horizontally aligned with .icon-trash:
+// 8.  Nudge .icon-star.large to be horizontally aligned with .icon-trash:
 //      (WIDTH_icon-star.large - WIDTH_icon.trash) / 2
 .group-mixed {
-  .group-mixed--left {
-    & > input[type="checkbox"] + label {
-      padding-top: @group-mixed--left-vertical-padding + 1px;     // [1]
-      padding-bottom: @group-mixed--left-vertical-padding - 1px;  // [1]
-      padding-right: @padding-inner-group-mixed;  // [9]
-      margin-right: -@padding-inner-group-mixed;  // [9]
-      &:before {
-        line-height: initial; // [3]
-      }
-    }
-  }
   .group-mixed--middle {
-    padding-top: @padding-vertically-centered;    // [4]
-    padding-bottom: @padding-vertically-centered; // [4]
+    padding-top: @padding-vertically-centered;    // [1]
+    padding-bottom: @padding-vertically-centered; // [1]
     & > a:not(.link-inline) {
-      display: block;                               // [5]
-      padding-top: inherit;    // [5]
-      margin-top: -@padding-vertically-centered;    // [5]
-      padding-bottom: inherit; // [5]
-      margin-bottom: -@padding-vertically-centered; // [5]
+      display: block;                               // [2]
+      padding-top: inherit;    // [2]
+      margin-top: -@padding-vertically-centered;    // [2]
+      padding-bottom: inherit; // [2]
+      margin-bottom: -@padding-vertically-centered; // [2]
       &.link-list-item {
-        padding-top: @padding-vertically-centered-small-content;    // [4]
-        padding-bottom: @padding-vertically-centered-small-content; // [4]
+        padding-top: @padding-vertically-centered-small-content;    // [1]
+        padding-bottom: @padding-vertically-centered-small-content; // [1]
       }
       &:first-of-type:not(:only-of-type) {
-        margin-bottom: -@padding-vertically-centered / 2; // [6]
+        margin-bottom: -@padding-vertically-centered / 2; // [3]
       }
       &:last-of-type:not(:only-of-type) {
-        padding-top: 0; // [6]
-        margin-top: 0;  // [6]
+        padding-top: 0; // [3]
+        margin-top: 0;  // [3]
       }
     }
   }
   .group-mixed--middle.link-search-result + .group-mixed--right > span.text-search-type {
-    padding-top: @padding-vertically-centered;    // [7]
-    padding-bottom: @padding-vertically-centered; // [7]
+    padding-top: @padding-vertically-centered;    // [4]
+    padding-bottom: @padding-vertically-centered; // [4]
   }
   .group-mixed--right span.icon-star.small {
-    padding-top: @padding-vertically-centered - 1;    // [8]
-    padding-bottom: @padding-vertically-centered + 1; // [8]
+    padding-top: @padding-vertically-centered - 1;    // [5]
+    padding-bottom: @padding-vertically-centered + 1; // [5]
   }
   &.large .group-mixed--right {
-    padding-left: 0;                            // [10]
+    padding-left: 0;                            // [6]
     & > a.link-navigation {
-      padding-left: @padding-inner-group-mixed; // [10]
-      display: table-cell;                // [11]
-      vertical-align: middle;             // [11]
-      height: @grid-vertical * 1.5;       // [11]
-      line-height: @grid-vertical * 1.5;  // [11]
+      padding-left: @padding-inner-group-mixed; // [6]
+      display: table-cell;                // [7]
+      vertical-align: middle;             // [7]
+      height: @grid-vertical * 1.5;       // [7]
+      line-height: @grid-vertical * 1.5;  // [7]
       & > span.icon-star.large {
-        margin-right: -7px;  // [12]
+        margin-right: -7px;  // [8]
       }
     }
   }
