@@ -662,7 +662,7 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   .group-mixed--middle {
     padding-top: @padding-vertically-centered;    // [5]
     padding-bottom: @padding-vertically-centered; // [5]
-    & > a {
+    & > a:not(.link-inline) {
       display: block;                               // [6]
       padding-top: inherit;    // [6]
       margin-top: -@padding-vertically-centered;    // [6]
@@ -672,13 +672,13 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
         padding-top: @padding-vertically-centered-small-content;    // [5]
         padding-bottom: @padding-vertically-centered-small-content; // [5]
       }
-    }
-    & > a:first-of-type:not(:only-of-type) {
-      margin-bottom: -@padding-vertically-centered / 2; // [7]
-    }
-    & > a:last-of-type:not(:only-of-type) {
-      padding-top: 0; // [7]
-      margin-top: 0;  // [7]
+      &:first-of-type:not(:only-of-type) {
+        margin-bottom: -@padding-vertically-centered / 2; // [7]
+      }
+      &:last-of-type:not(:only-of-type) {
+        padding-top: 0; // [7]
+        margin-top: 0;  // [7]
+      }
     }
   }
   .group-mixed--middle.link-search-result + .group-mixed--right > span.text-search-type {

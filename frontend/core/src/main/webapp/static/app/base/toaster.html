@@ -4,7 +4,7 @@
   <!-- DELETED -->
   <div ng-switch-when="deleted" class="group-mixed--middle textgroup-toaster">
     <span ng-bind="notification.itemType + ' deleted,'"></span>
-    <a href class="highlighted"
+    <a href class="highlighted link-inline"
       swiper-click="closeNotificationAndCall(notification, notification.item, notification.undoFn)">
       <span>undo</span><span>?</span>
     </a>
@@ -18,7 +18,7 @@
   <!-- SIGN UP -->
   <div ng-switch-when="signUp" class="group-mixed--middle textgroup-toaster">
     <span>to back up your data,</span>
-    <a href class="highlighted"
+    <a href class="highlighted link-inline"
       swiper-click="closeNotificationAndCall(notification, undefined, notification.gotoFn)">
       <span>sign up now</span>
     </a>
@@ -26,12 +26,12 @@
 
   <!-- INBOX -->
   <div ng-switch-when="inbox" class="group-mixed--middle textgroup-toaster">
-    <a href class="highlighted"
+    <a href class="highlighted link-inline"
       swiper-click="closeNotificationAndCall(notification, notification.item, notification.openFn)">
       <span>item</span>
     </a>
     <span>saved to</span>
-    <a href class="highlighted"
+    <a href class="highlighted link-inline"
       swiper-click="closeNotificationAndCall(notification, notification.item, notification.gotoFn)">
       <span>inbox</span>
     </a>

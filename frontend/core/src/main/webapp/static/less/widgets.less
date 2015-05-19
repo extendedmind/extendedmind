@@ -60,6 +60,7 @@ Extended Mind specific UI-components, e.g. welcome/landing page, timeline, sidem
 // 3. Set height and color
 // 4. By removing the margins from the max width =18px, text inside the toaster is inline with other text
 //    also for >1 column layout
+// 5. Override for .group-mixed.
 .container-toaster {
   position: absolute; // [1]
   .center-horizontally-absolute; // [1]
@@ -72,6 +73,8 @@ Extended Mind specific UI-components, e.g. welcome/landing page, timeline, sidem
   background-color: @color-background-toaster; // [3]
   &.group-mixed {
     .group-mixed--middle {
+      padding-top: 0;     // [5]
+      padding-bottom: 0;  // [5]
       padding-left: (@grid-horizontal - 9px);
     }
     .group-mixed--right {
