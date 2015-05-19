@@ -616,11 +616,6 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 // 5. Increase click area and align vertically with textarea in .group-mixed---middle
 //    Star icon wrapper is 24px, .group-mixed default height is 44px, use remaining 20px for padding.
 //    NOTE: Star icon height is a combination of @size-icon-star-small and line-height: @grid-vertical-half.
-// 6.  Increase click area of .link-navigation, and clear padding from .group-mixed--right.
-// 7.  Use same display value as in parent, but set height and line-height to stick vertically in the middle
-//      of first row inside .group-mixed--middle.
-// 8.  Nudge .icon-star.large to be horizontally aligned with .icon-trash:
-//      (WIDTH_icon-star.large - WIDTH_icon.trash) / 2
 .group-mixed {
   .group-mixed--middle {
     & > a:not(.link-inline) {
@@ -641,27 +636,14 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
         padding-bottom: @padding-vertically-centered-small-content; // [1]
       }
     }
-  }
-  .group-mixed--middle.link-search-result + .group-mixed--right > span.text-search-type {
-    padding-top: @padding-vertically-centered;    // [4]
-    padding-bottom: @padding-vertically-centered; // [4]
+    &.link-search-result + .group-mixed--right > span.text-search-type {
+      padding-top: @padding-vertically-centered;    // [4]
+      padding-bottom: @padding-vertically-centered; // [4]
+    }
   }
   .group-mixed--right span.icon-star.small {
     padding-top: @padding-vertically-centered - 1;    // [5]
     padding-bottom: @padding-vertically-centered + 1; // [5]
-  }
-  &.large .group-mixed--right {
-    padding-left: 0;                            // [6]
-    & > a.link-navigation {
-      padding-left: @padding-inner-group-mixed; // [6]
-      display: table-cell;                // [7]
-      vertical-align: middle;             // [7]
-      height: @grid-vertical * 1.5;       // [7]
-      line-height: @grid-vertical * 1.5;  // [7]
-      & > span.icon-star.large {
-        margin-right: -7px;  // [8]
-      }
-    }
   }
 }
 
@@ -746,6 +728,25 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
       & > a {
         display: block; // [5]
       }
+    }
+  }
+}
+
+// 1.  Increase click area of .link-navigation, and clear padding from .group-mixed--right.
+// 2.  Use same display value as in parent, but set height and line-height to stick vertically in the middle
+//      of first row inside .group-mixed--middle.
+// 3.  Nudge .icon-star.large to be horizontally aligned with .icon-trash:
+//      (WIDTH_icon-star.large - WIDTH_icon.trash) / 2
+.group-mixed.large > .group-mixed--right {
+  padding-left: 0;                            // [1]
+  & > a.link-navigation {
+    padding-left: @padding-inner-group-mixed; // [1]
+    display: table-cell;                // [2]
+    vertical-align: middle;             // [2]
+    height: @grid-vertical * 1.5;       // [2]
+    line-height: @grid-vertical * 1.5;  // [2]
+    & > span.icon-star.large {
+      margin-right: -7px;  // [3]
     }
   }
 }
