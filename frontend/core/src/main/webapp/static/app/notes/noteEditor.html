@@ -67,7 +67,7 @@
 
           <!-- NOTE TITLE -->
           <div ng-hide="isNotePropertyInEdit()" class="row-top-parent">
-            <div class="group-mixed with-checkbox large">
+            <div class="group-mixed large">
               <div class="group-mixed--middle">
                 <textarea id="noteEditorTitleInput" class="text-heading-primary large"
                   ng-model="note.trans.title" input-model-validator ng-trim="false"
@@ -98,7 +98,7 @@
 
           <!-- LIST -->
           <div ng-if="(note.trans.list && !note.trans.list.trans.deleted) && (features.lists.getStatus('active') !== 'disabled')"
-          ng-hide="isNotePropertyInEdit()" class="group-mixed with-checkbox">
+          ng-hide="isNotePropertyInEdit()" class="group-mixed">
             <a href class="group-mixed--middle link-search-result" swiper-click="openListPicker()">
               <span class="text-field--title" ng-bind="note.trans.list.trans.title"></span>
             </a>
@@ -109,7 +109,7 @@
 
           <!-- KEYWORDS -->
           <div ng-if="hasActiveKeywords(note)" ng-hide="isNotePropertyInEdit()"
-            class="group-mixed with-checkbox">
+            class="group-mixed">
             <a href class="group-mixed--middle link-search-result" swiper-click="openKeywordsPicker()">
               <span class="text-field--title" ng-bind="getKeywordsListString(note)"></span>
             </a>
@@ -123,14 +123,14 @@
 
             <!-- LIST -->
             <div ng-if="(!note.trans.list || note.trans.list.trans.deleted) && (features.lists.getStatus('active') !== 'disabled')"
-                 class="group-mixed with-checkbox">
+                 class="group-mixed">
               <a href class="group-mixed--middle link-search-result downplayed" swiper-click="openListPicker()">
                 <span class="text-field--title">select list&#8230;</span>
               </a>
             </div>
 
             <!-- KEYWORDS -->
-            <div ng-if="!hasActiveKeywords(note)" class="group-mixed with-checkbox">
+            <div ng-if="!hasActiveKeywords(note)" class="group-mixed">
               <a href class="group-mixed--middle link-search-result downplayed"
                 swiper-click="openKeywordsPicker()">
                 <span class="text-field--title">add keywords&#8230;</span>
@@ -240,7 +240,7 @@
             </textarea>
           </div>
 
-          <div ng-if="note.trans.uuid" class="group-mixed with-checkbox"
+          <div ng-if="note.trans.uuid" class="group-mixed"
             style="color: #919191; font-size: 13px; line-height: 22px;">
             <div class="group-mixed--middle link-search-result">
               <span class="text-field--title">{{::note.trans.created | date:'EEE d MMMM y' | lowercase}}</span>
@@ -251,7 +251,7 @@
           </div>
 
           <div ng-if="note.trans.uuid && note.trans.created !== note.trans.modified"
-            class="group-mixed with-checkbox" style="color: #919191; font-size: 13px; line-height: 22px;">
+            class="group-mixed" style="color: #919191; font-size: 13px; line-height: 22px;">
             <div class="group-mixed--middle link-search-result">
               <span class="text-field--title">{{note.trans.modified | date:'EEE d MMMM y' | lowercase}}</span>
             </div>
