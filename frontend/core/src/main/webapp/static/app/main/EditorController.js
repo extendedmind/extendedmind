@@ -418,11 +418,11 @@
   function onBackButton(){
     if ($scope.isPickerOpen()){
       $scope.propertyEditDone();
-      if (!$rootScope.$$phase && !$scope.$$phase){
-        $scope.$digest();
-      }
     }else{
       $scope.closeEditor();
+    }
+    if (!$rootScope.$$phase && !$scope.$$phase){
+      $scope.$digest();
     }
     return true;
   }
