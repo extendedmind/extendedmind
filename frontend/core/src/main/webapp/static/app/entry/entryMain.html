@@ -28,7 +28,7 @@
       placeholder="enter password&#8230;" editable-field="getEditableFieldSticky()" ng-maxlength="100"
       editable-field-register-callbacks="registerEntryMainPasswordInputCallbacks(focus, blur)" required />
     </div>
-    <div ng-if="!rememberByDefault()" class="group-mixed details height-large with-checkbox">
+    <div ng-if="!rememberByDefault()" class="group-mixed details height-large">
       <div class="group-mixed--left">
         <input type="checkbox" ng-model="user.remember" ng-true-value="true" icon-checkbox="'loginFormRemember'" />
       </div>
