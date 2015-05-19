@@ -60,7 +60,7 @@
     </footer>
   </div>
 
-  <div ng-if="isOmnibarEditorLoaded()" ng-hide="mode === 'search'" class="container-editor--inner">
+  <div ng-if="isOmnibarEditorLoaded()" ng-hide="mode === 'search' || mode === 'keywordEdit'" class="container-editor--inner">
     <div ng-include="urlBase + 'app/main/omnibarEditor.html'" include-replace></div>
   </div>
 

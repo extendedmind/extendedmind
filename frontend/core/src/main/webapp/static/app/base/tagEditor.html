@@ -5,7 +5,9 @@
       <div class="group-symmetrical height-large--top">
 
         <a href class="group-symmetrical--left link-navigation highlighted active" swiper-click="endTagEdit()">
-          <span class="text-navigation-back" ng-bind="isTagEdited() && !tag.trans.deleted ? 'save' : 'back'"></span>
+          <span class="text-navigation-back"
+          ng-class="mode === 'keywordEdit' && 'not-swipeable'"
+          ng-bind="isTagEdited() && !tag.trans.deleted ? 'save' : 'back'"></span>
         </a>
 
         <div ng-show="descriptionFocused" ng-style="{maxWidth: calculateTitleWidth()}"

@@ -121,7 +121,7 @@
   });
 
   $scope.closeEditor = function(){
-    if ($scope.mode === 'search'){
+    if ($scope.mode === 'search' || $scope.mode === 'keywordEdit'){
       $scope.editorType = 'omnibar';
       $scope.mode = undefined;
       $scope.closeEditorDrawer(true);
@@ -432,7 +432,7 @@
   // OMNIBAR
 
   $scope.isOmnibarEditorLoaded = function(){
-    return $scope.editorType === 'omnibar' || $scope.mode === 'search';
+    return $scope.editorType === 'omnibar' || $scope.mode === 'search' || $scope.mode === 'keywordEdit';
   };
 
 }
