@@ -732,7 +732,7 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 // FIXME: move (overrides.less)
 // 1. Set height for clickable icon inside .group-mixed--left.
 // 2. Center vertically. Supports single line, multiline and clamped text.
-// 3. Make sure clamped and unclamped span inside a tag has the same height with display: block.
+// 3. Make sure clamped and unclamped span with text inside "a" tag has the same height with display: block.
 .group-mixed.vertically-centered {
   .group-mixed--left {
     & > a > span {
@@ -742,7 +742,8 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   .group-mixed--middle {
     padding-top: @padding-vertically-centered;    // [2]
     padding-bottom: @padding-vertically-centered; // [2]
-    & > span {
+    & > [class^="text-"],
+    & > [class*=" text-"] {
       display: block; // [3]
     }
   }

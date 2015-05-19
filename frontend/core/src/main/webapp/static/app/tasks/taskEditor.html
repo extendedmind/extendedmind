@@ -62,7 +62,7 @@
 
           <!-- TASK TITLE -->
           <form role="form" ng-hide="calendarOpen || taskDescriptionFocused || listPickerOpen || reminderPickerOpen"
-            class="group-mixed with-checkbox" autocapitalize="none" autocorrect="off">
+            class="group-mixed" autocapitalize="none" autocorrect="off">
             <div class="group-mixed--left">
               <input type="checkbox" swiper-click="clickCompleteTaskInEdit()" ng-model="task.trans.optimisticComplete"
                 ng-model-options="{getterSetter: true}" icon-checkbox="editorTitlebarCheckbox" />
@@ -79,7 +79,7 @@
 
           <!-- DATE -->
           <div ng-hide="calendarOpen || taskDescriptionFocused || listPickerOpen || reminderPickerOpen"
-            class="group-mixed with-checkbox">
+            class="group-mixed">
             <a href class="group-mixed--middle link-search-result" ng-class="!task.trans.due && 'downplayed'"
               swiper-click="openCalendar()">
               <span class="text-field--title"
@@ -95,7 +95,7 @@
           <div ng-if="calendarOpen" class="swiper-no-swiping animate-fade-in row-top-parent" editable-field-container="auto"
             editable-field-container-clicked-elsewhere="closeCalendar()" data-snap-ignore="true">
 
-            <div ng-if="task.trans.due" class="group-mixed with-checkbox">
+            <div ng-if="task.trans.due" class="group-mixed vertically-centered">
               <a href class="group-mixed--middle link-search-result">
                 <span class="text-field--title" ng-bind="task.trans.due | date:'EEE MMM d y' | lowercase"></span>
               </a>
@@ -121,7 +121,7 @@
 
             <div ng-if="isRemindersSupported() &&
               (!task.trans.reminders || !findActiveReminderForThisDevice(task.trans.reminders))"
-              class="group-mixed with-checkbox">
+              class="group-mixed">
               <a href ng-click="openReminderPicker(task)"
                 class="group-mixed--middle link-search-result downplayed">
                 <span class="text-field--title">add reminder&hellip;</span>
@@ -129,7 +129,7 @@
             </div>
 
             <div ng-repeat="reminder in task.trans.reminders | paramFilter:activeThisDeviceFirstThenByTime track by reminder.uuid"
-              ng-switch on="isReminderInThisDevice(reminder)" class="group-mixed with-checkbox">
+              ng-switch on="isReminderInThisDevice(reminder)" class="group-mixed">
 
               <a href ng-switch-when="true" class="group-mixed--middle link-search-result"
                 swiper-click="openReminderPicker(task, reminder)">
@@ -150,7 +150,8 @@
           </div>
 
           <!-- REMINDER PICKER -->
-          <div ng-if="reminderPickerOpen" class="swiper-no-swiping animate-fade-in group-mixed"
+          <div ng-if="reminderPickerOpen"
+            class="swiper-no-swiping animate-fade-in group-mixed vertically-centered"
             editable-field-container="auto" data-snap-ignore="true">
 
             <div class="reminder-container group-mixed--middle">
@@ -237,7 +238,7 @@
           <!-- LIST -->
           <div ng-hide="calendarOpen || taskDescriptionFocused || listPickerOpen || reminderPickerOpen ||
                         features.lists.getStatus('active') === 'disabled'"
-            class="group-mixed with-checkbox">
+            class="group-mixed">
             <a href class="group-mixed--middle link-search-result" ng-class="!task.trans.list && 'downplayed'"
               swiper-click="openListPicker()">
               <span class="text-field--title"
@@ -299,7 +300,7 @@
           <!-- CONTEXT -->
           <div ng-hide="contextPickerOpen || repeatingPickerOpen || urlFocused ||
                        (features.tasks.getStatus('contexts') === 'disabled')"
-            class="group-mixed with-checkbox row-top-parent">
+            class="group-mixed row-top-parent">
             <a href class="group-mixed--middle link-search-result"
               ng-class="!task.trans.context && 'downplayed'" swiper-click="openContextPicker()">
               <span class="text-field--title"
@@ -329,7 +330,7 @@
 
           <!-- REPEATING -->
           <div ng-if="task.trans.due" ng-hide="contextPickerOpen || repeatingPickerOpen || urlFocused"
-            class="group-mixed with-checkbox">
+            class="group-mixed">
             <a href class="group-mixed--middle link-search-result"
               ng-class="!task.trans.repeating && 'downplayed'" swiper-click="openRepeatingPicker()">
               <span class="text-field--title"
