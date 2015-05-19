@@ -554,9 +554,18 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   width: 100%;
 }
 
+// 1. Override for .group-mixed.
 .group-mixed.details {
-  .group-mixed--middle {
+  & > .group-mixed--middle {
     line-height: @grid-vertical-small;
+    padding-top: 0;     // [1]
+    padding-bottom: 0;  // [1]
+    & > .text-details + .highlighted {
+      margin-bottom: 0; // [1]
+      display: initial; // [1]
+      margin-top: 0;    // [1]
+      margin-bottom: 0; // [1]
+    }
   }
 }
 

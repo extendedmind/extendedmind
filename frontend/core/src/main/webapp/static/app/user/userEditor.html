@@ -17,7 +17,7 @@
       <h2 class="group-heading row">agenda calendars</h2>
 
       <div ng-if="calendars">
-        <div class="group-mixed with-checkbox" ng-repeat="calendar in calendars">
+        <div class="group-mixed" ng-repeat="calendar in calendars">
           <div class="group-mixed--left">
             <input type="checkbox" ng-model="calendar.enabled" icon-checkbox="calendar.id"
               ng-click="toggleCalendarEnabled(calendar.id, calendar.name, calendar.enabled)">
