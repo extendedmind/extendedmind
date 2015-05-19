@@ -351,7 +351,7 @@
             <a href ng-if="isAgendaVisible() && daySlides[2].info !== null" ng-hide="daySlidesInfosCleared"
               class="link agenda" ng-click="openCalendar(daySlides[2].info)">
               <div ng-repeat="agendaEvent in getEventInstances(daySlides[2].info) as agendaEvents track by agendaEvent.event_id">
-                <div class="group-mixed with-checkbox">
+                <div class="group-mixed">
                   <div class="group-mixed--left">
                     <span ng-class="!agendaEvent.allDay && 'emphasize'" class="text-agenda--time"
                       ng-bind="agendaEvent.allDay ? 'all day' : agendaEvent.begin + '\n' + agendaEvent.end">
@@ -401,7 +401,7 @@
             <a href ng-if="isAgendaVisible() && daySlides[0].info !== null" ng-hide="daySlidesInfosCleared"
               class="link agenda" ng-click="openCalendar(daySlides[0].info)">
               <div ng-repeat="agendaEvent in getEventInstances(daySlides[0].info) as agendaEvents track by agendaEvent.event_id">
-                <div class="group-mixed with-checkbox">
+                <div class="group-mixed">
                   <div class="group-mixed--left">
                     <span ng-class="!agendaEvent.allDay && 'emphasize'" class="text-agenda--time"
                       ng-bind="agendaEvent.allDay ? 'all day' : agendaEvent.begin + '\n' + agendaEvent.end">
@@ -451,7 +451,7 @@
             <a href ng-if="isAgendaVisible() && daySlides[1].info !== null" ng-hide="daySlidesInfosCleared"
               class="link agenda" ng-click="openCalendar(daySlides[1].info)">
               <div ng-repeat="agendaEvent in getEventInstances(daySlides[1].info) as agendaEvents track by agendaEvent.event_id">
-                <div class="group-mixed with-checkbox">
+                <div class="group-mixed">
                   <div class="group-mixed--left">
                     <span ng-class="!agendaEvent.allDay && 'emphasize'" class="text-agenda--time"
                       ng-bind="agendaEvent.allDay ? 'all day' : agendaEvent.begin + '\n' + agendaEvent.end">
@@ -481,7 +481,7 @@
             registerModeChanged: registerAgendaVisibilityChangedCallback,
             id: 'focus/tasks/right', scrollInactiveTop: true, duplicate: 'focus/tasks/rightDuplicate'}">
 
-            <div ng-hide="datepickerVisible" class="group-mixed heading">
+            <div ng-hide="datepickerVisible" class="group-mixed">
               <div class="group-mixed--middle" ng-class="getOnboardingPhase('focus', 'tasks') === 6 && 'onboarding'" swiper-click="openDatepicker(daySlides[2].info)">
                 <h2 class="group-heading justified" ng-bind="daySlides[2].heading"></h2>
               </div>
@@ -501,7 +501,7 @@
             <a href ng-if="isAgendaVisible() && daySlides[2].info !== null" ng-hide="daySlidesInfosCleared"
               class="link agenda" ng-click="openCalendar(daySlides[2].info)">
               <div ng-repeat="agendaEvent in getEventInstances(daySlides[2].info) as agendaEvents track by agendaEvent.event_id">
-                <div class="group-mixed with-checkbox">
+                <div class="group-mixed">
                   <div class="group-mixed--left">
                     <span ng-class="!agendaEvent.allDay && 'emphasize'" class="text-agenda--time"
                       ng-bind="agendaEvent.allDay ? 'all day' : agendaEvent.begin + '\n' + agendaEvent.end">
@@ -551,7 +551,7 @@
             <a href ng-if="isAgendaVisible() && daySlides[0].info !== null" ng-hide="daySlidesInfosCleared"
               class="link agenda" ng-click="openCalendar(daySlides[0].info)">
               <div ng-repeat="agendaEvent in getEventInstances(daySlides[0].info) as agendaEvents track by agendaEvent.event_id">
-                <div class="group-mixed with-checkbox">
+                <div class="group-mixed">
                   <div class="group-mixed--left">
                     <span ng-class="!agendaEvent.allDay && 'emphasize'" class="text-agenda--time"
                       ng-bind="agendaEvent.allDay ? 'all day' : agendaEvent.begin + '\n' + agendaEvent.end">

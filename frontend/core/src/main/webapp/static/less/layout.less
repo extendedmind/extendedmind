@@ -763,10 +763,17 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 // 1. Increase line-height for heading.
 // 2. Center vertically. We are using .group-mixed--middle and .group-mixed--right in .group-mixed heading
 //    or just .group-heading.
-.group-mixed.heading > .group-mixed--middle,
-.group-mixed.heading > .group-mixed--right {
-  line-height: @line-height-heading; // [1]
-  vertical-align: middle;       // [2]
+// 3. Override for .group-mixed: remove padding-top and padding-bottom defined elsewhere.
+.group-mixed.heading {
+  & > .group-mixed--middle,
+  & > .group-mixed--right {
+    line-height: @line-height-heading;  // [1]
+    vertical-align: middle;             // [2]
+  }
+  & > .group-mixed--middle {
+    padding-top: 0;     // [3]
+    padding-bottom: 0;  // [3]
+  }
 }
 
 // 1. Align show completed tasks button with heading.
@@ -784,8 +791,6 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 // 5. Expand link element's width and height.
 .group-mixed.heading.vertically-centered {
   .group-mixed--middle {
-    padding-top: 0;     // [1]
-    padding-bottom: 0;  // [1]
     & > h2.group-heading.justified {
       padding-top: 0;     // [1]
       padding-bottom: 0;  // [1]
