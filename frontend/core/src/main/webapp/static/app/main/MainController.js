@@ -399,8 +399,8 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     $scope.openEditor('recurring', items, mode);
   }
 
-  $scope.closeEditor = function closeEditor() {
-    DrawerService.close('right');
+  $scope.closeEditorDrawer = function(skipDrawerClose) {
+    if (!skipDrawerClose) DrawerService.close('right');
     executeAboutToCloseCallbacks();
   };
 
@@ -664,8 +664,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
   }
   function onBack(e) {
     if (executeBackCallbacks() !== true){
-      // Back wasn't handled by a callback, try to close drawer
-      DrawerService.close('right');
+      // TODO: Back wasn't handled by a callback, navigate to previous feature
     }
     e.preventDefault();
   }

@@ -6,7 +6,8 @@
 
         <a href class="group-symmetrical--left link-navigation active highlighted sorting-hide"
           swiper-click="endListEdit()">
-          <span class="text-navigation-back" ng-class="!isFirstSlide('listEditor') && 'not-swipeable'"
+          <span class="text-navigation-back"
+            ng-class="(!isFirstSlide('listEditor') || mode === 'search') && 'not-swipeable'"
             ng-bind="isListEdited() && !list.trans.deleted ? 'save' : 'back'"></span>
         </a>
 

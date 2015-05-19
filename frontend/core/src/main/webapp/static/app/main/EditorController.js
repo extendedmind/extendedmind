@@ -120,6 +120,16 @@
       $scope.unregisterBackCallback('EditorController');
   });
 
+  $scope.closeEditor = function(){
+    if ($scope.mode === 'search'){
+      $scope.editorType = 'omnibar';
+      $scope.mode = undefined;
+      $scope.closeEditorDrawer(true);
+    }else{
+      $scope.closeEditorDrawer();
+    }
+  };
+
   $scope.processClose = $scope.closeEditor;
 
   // HELPER METHODS
@@ -398,23 +408,32 @@
   var isPickerOpenCondition;
   $scope.registerIsPickerOpenCondition = function(condition){
     isPickerOpenCondition = condition;
-  }
+  };
   $scope.isPickerOpen = function(){
     if (angular.isFunction(isPickerOpenCondition)) return isPickerOpenCondition();
-  }
+  };
 
   // BACK HANDLER
+
   function onBackButton(){
     if ($scope.isPickerOpen()){
       $scope.propertyEditDone();
       if (!$rootScope.$$phase && !$scope.$$phase){
         $scope.$digest();
       }
-      return true;
+    }else{
+      $scope.closeEditor();
     }
+    return true;
   }
   if (angular.isFunction($scope.registerBackCallback))
     $scope.registerBackCallback(onBackButton, 'EditorController');
+
+  // OMNIBAR
+
+  $scope.isOmnibarEditorLoaded = function(){
+    return $scope.editorType === 'omnibar' || $scope.mode === 'search';
+  };
 
 }
 

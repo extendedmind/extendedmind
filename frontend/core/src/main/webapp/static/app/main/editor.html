@@ -1,28 +1,25 @@
 <div id="editor" class="container-editor" ng-controller="EditorController" drawer="right"
   vertical-resize="editor" vertical-resize-prevent="!isEditorVisible()" ng-switch="editorType">
-  <div ng-if="editorVisible" ng-switch-when="task" class="container-editor--inner" vertical-resize-delay>
+  <div ng-switch-when="task" class="container-editor--inner" vertical-resize-delay>
     <div ng-include="urlBase + 'app/tasks/taskEditor.html'" include-replace></div>
   </div>
-  <div ng-if="editorVisible" ng-switch-when="note" class="container-editor--inner" vertical-resize-delay>
+  <div ng-switch-when="note" class="container-editor--inner" vertical-resize-delay>
     <div ng-include="urlBase + 'app/notes/noteEditor.html'" include-replace></div>
   </div>
-  <div ng-if="editorVisible" ng-switch-when="list" class="container-editor--inner">
+  <div ng-switch-when="list" class="container-editor--inner">
     <div ng-include="urlBase + 'app/lists/listEditor.html'" include-replace></div>
   </div>
-  <div ng-if="editorVisible" ng-switch-when="item" class="container-editor--inner">
+  <div ng-switch-when="item" class="container-editor--inner">
     <div ng-include="urlBase + 'app/main/itemEditor.html'" include-replace></div>
   </div>
-  <div ng-if="editorVisible" ng-switch-when="tag" class="container-editor--inner">
+  <div ng-switch-when="tag" class="container-editor--inner">
     <div ng-include="urlBase + 'app/base/tagEditor.html'" include-replace></div>
   </div>
-  <div ng-if="editorVisible" ng-switch-when="omnibar" class="container-editor--inner">
-    <div ng-include="urlBase + 'app/main/omnibarEditor.html'" include-replace></div>
-  </div>
-  <div ng-if="editorVisible" ng-switch-when="user" class="container-editor--inner">
+  <div ng-switch-when="user" class="container-editor--inner">
     <div ng-include="urlBase + 'app/user/userEditor.html'" include-replace></div>
   </div>
 
-  <div ng-if="editorVisible" ng-switch-when="recurring" ng-switch="getItemType()"
+  <div ng-switch-when="recurring" ng-switch="getItemType()"
     class="container-editor--inner__outer sorting-in-progress" ng-controller="RecurringEditorController">
     <div ng-switch-when="item" class="container-editor--inner">
       <div ng-include="urlBase + 'app/main/itemEditor.html'" include-replace></div>
@@ -61,6 +58,10 @@
           ng-bind="getIterableItemIndex(iterableItem) !== iterableItems.length - 1 ? 'next' : 'finish'"></span>
       </a>
     </footer>
+  </div>
+
+  <div ng-if="isOmnibarEditorLoaded()" ng-hide="mode === 'search'" class="container-editor--inner">
+    <div ng-include="urlBase + 'app/main/omnibarEditor.html'" include-replace></div>
   </div>
 
   <div ng-if="editorVisible" toaster="override"></div>
