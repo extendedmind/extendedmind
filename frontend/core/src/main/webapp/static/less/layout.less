@@ -521,13 +521,16 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   display: block;
 }
 
-.group-mixed--left, .group-mixed--middle, .group-mixed--right {
+.group-mixed--left,
+.group-mixed--middle,
+.group-mixed--right {
   display: table-cell;
   vertical-align: middle;
 }
 
 // 1. Force all child elements not to increase .group-mixed height
-.group-mixed--left, .group-mixed--right {
+.group-mixed--left,
+.group-mixed--right {
   * {
     display: block; /* [1] */
   }
@@ -550,8 +553,20 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   }
 }
 
+// 1. .group-mixed--middle can be used directly in <a> elements for increased clicking area.
+// 2. Expand width and line-height when there are no sibling elements in .group-mixed
 .group-mixed--middle {
   width: 100%;
+  &:first-child {
+    padding-left: @grid-horizontal;   /* [1] */
+  }
+  &:last-child {
+    padding-right: @grid-horizontal;  /* [1] */
+  }
+  &:only-child {
+    display: block;               /* [2] */
+    line-height: @grid-vertical;  /* [2] */
+  }
 }
 
 // 1. Increase clicking area
@@ -568,20 +583,6 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
     height: @grid-vertical;
     line-height: @grid-vertical;
   }
-}
-
-// 1. .group-mixed--middle can be used directly in <a> elements for increased clicking area.
-.group-mixed--middle:first-child {
-  padding-left: @grid-horizontal;   /* [1] */
-}
-.group-mixed--middle:last-child {
-  padding-right: @grid-horizontal;  /* [1] */
-}
-
-// 1. Expand width and line-height when there are no sibling elements in .group-mixed
-.group-mixed--middle:only-child {
-  display: block;               /* [1] */
-  line-height: @grid-vertical;  /* [1] */
 }
 
 @padding-vertically-centered: 11px;
@@ -611,7 +612,8 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 // 13.  Nudge .icon-star.large to be horizontally aligned with .icon-trash:
 //      (WIDTH_icon-star.large - WIDTH_icon.trash) / 2
 .group-mixed {
-  .group-mixed--left, .group-mixed--right {
+  .group-mixed--left,
+  .group-mixed--right {
     vertical-align: baseline;  // [1]
   }
   .group-mixed--left {
