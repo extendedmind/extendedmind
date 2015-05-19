@@ -31,7 +31,7 @@
       <!-- SEARCH / FILTERED RESULTS -->
       <div ng-repeat="searchResult in filteredItems.searchResults = (searchItems | filter: itemsFilter)
         track by searchResult.trans.uuid"
-        class="group-mixed with-checkbox">
+        class="group-mixed">
         <a href class="group-mixed--middle link-search-result"
           swiper-click="initializeEditor(searchResult.trans.itemType, searchResult)">
           <span class="text-search-result" clamp=2 ng-bind="searchResult.trans.title"></span>
