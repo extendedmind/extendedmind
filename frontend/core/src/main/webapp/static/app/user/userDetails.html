@@ -1,7 +1,7 @@
 <div class="container-content--outer" ng-if="isFeatureActive('user')">
   <section ng-if="activeDetails === 'account'" class="container-content">
     <h2 class="group-heading justified row">account</h2>
-    <div class="group-mixed">
+    <div class="group-mixed vertically-centered">
       <a href class="group-mixed--middle link" swiper-click="openEditor('user', undefined, 'password')">
         <span class="text-link">change password</span>
       </a>
@@ -14,7 +14,7 @@
   </section>
   <section ng-if="activeDetails === 'about'" class="container-content">
     <h2 class="group-heading justified row">about</h2>
-    <div class="group-mixed">
+    <div class="group-mixed vertically-centered">
       <a href class="group-mixed--middle link" ng-click="openTermsInEditor()">
         <span class="text-link">terms of service</span>
       </a>
@@ -24,7 +24,7 @@
         </a>
       </div>
     </div>
-    <div class="group-mixed">
+    <div class="group-mixed vertically-centered">
       <a href class="group-mixed--middle link" swiper-click="openPrivacyInEditor()">
         <span class="text-link">privacy policy</span>
       </a>
