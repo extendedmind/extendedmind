@@ -115,6 +115,9 @@
 
     if (angular.isFunction($scope.unregisterEditorClosedCallback))
       $scope.unregisterEditorClosedCallback('EditorController');
+
+    if (angular.isFunction($scope.unregisterBackCallback))
+      $scope.unregisterBackCallback('EditorController');
   });
 
   $scope.processClose = $scope.closeEditor;
@@ -300,6 +303,7 @@
   };
 
   // LIST PICKER WIDGET
+
   $scope.openListPicker = function() {
     $scope.listPickerOpen = true;
   };
@@ -390,6 +394,27 @@
   $scope.isPropertyEdited = function() {
     if (typeof isPropertyEdited === 'function') return isPropertyEdited();
   };
+
+  var isPickerOpenCondition;
+  $scope.registerIsPickerOpenCondition = function(condition){
+    isPickerOpenCondition = condition;
+  }
+  $scope.isPickerOpen = function(){
+    if (angular.isFunction(isPickerOpenCondition)) return isPickerOpenCondition();
+  }
+
+  // BACK HANDLER
+  function onBackButton(){
+    if ($scope.isPickerOpen()){
+      $scope.propertyEditDone();
+      if (!$rootScope.$$phase && !$scope.$$phase){
+        $scope.$digest();
+      }
+      return true;
+    }
+  }
+  if (angular.isFunction($scope.registerBackCallback))
+    $scope.registerBackCallback(onBackButton, 'EditorController');
 
 }
 

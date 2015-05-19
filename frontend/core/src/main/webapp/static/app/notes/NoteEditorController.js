@@ -160,9 +160,10 @@
     return $scope.isPickerOpen();
   };
 
-  $scope.isPickerOpen = function() {
+  function isPickerOpenInNoteEditor(){
     return $scope.listPickerOpen || $scope.keywordsPickerOpen;
-  };
+  }
+  $scope.registerIsPickerOpenCondition(isPickerOpenInNoteEditor);
 
   // CONTENT
 

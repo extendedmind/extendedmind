@@ -118,10 +118,11 @@
     return pickerOpen;
   };
 
-  $scope.isPickerOpen = function() {
+  function isPickerOpenInTaskEditor(){
     return $scope.calendarOpen || $scope.contextPickerOpen || $scope.listPickerOpen ||
     $scope.reminderPickerOpen || $scope.repeatingPickerOpen;
-  };
+  }
+  $scope.registerIsPickerOpenCondition(isPickerOpenInTaskEditor);
 
   $scope.getPropertyNameInEdit = function() {
     if ($scope.calendarOpen)
