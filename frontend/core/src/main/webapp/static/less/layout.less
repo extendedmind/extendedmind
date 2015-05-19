@@ -635,7 +635,7 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 //      of first row inside .group-mixed--middle.
 // 13.  Nudge .icon-star.large to be horizontally aligned with .icon-trash:
 //      (WIDTH_icon-star.large - WIDTH_icon.trash) / 2
-.group-mixed.with-checkbox {
+.group-mixed {
   .group-mixed--left, .group-mixed--right {
     vertical-align: baseline;  // [1]
   }
@@ -736,6 +736,9 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
     & > span {
       display: block; // [3]
     }
+  }
+  .group-mixed--right {
+    vertical-align: middle;
   }
 }
 
@@ -860,7 +863,7 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 // 2. Align with the top of a checkbox inside .group-mixed--left
 // 3. Align with the bottom of a checkbox inside .group-mixed--left
 // 4. Align vertically with checkbox inside .group-mixed--left.
-.group-mixed.with-checkbox {
+.group-mixed {
   &.repeating.syncing {
     & > .group-mixed--right {
       vertical-align: top;  // [1]
