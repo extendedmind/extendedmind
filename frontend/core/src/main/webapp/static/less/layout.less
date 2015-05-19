@@ -525,14 +525,16 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 .group-mixed--middle,
 .group-mixed--right {
   display: table-cell;
-  vertical-align: middle;
 }
 
-// 1. Force all child elements not to increase .group-mixed height
+// 1. Set vertical-align: baseline so that checkbox, navigation arrow icon etc. is aligned to the first row of
+//    text inside .group-mixed--middle.
+// 2. Force all child elements not to increase .group-mixed height
 .group-mixed--left,
 .group-mixed--right {
+  vertical-align: baseline;  // [1]
   * {
-    display: block; /* [1] */
+    display: block; /* [2] */
   }
 }
 
@@ -556,6 +558,7 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 // 1. .group-mixed--middle can be used directly in <a> elements for increased clicking area.
 // 2. Expand width and line-height when there are no sibling elements in .group-mixed
 .group-mixed--middle {
+  vertical-align: middle;
   width: 100%;
   &:first-child {
     padding-left: @grid-horizontal;   /* [1] */
@@ -589,84 +592,78 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 @padding-vertically-centered-small-content: 13px;
 @group-mixed--left-vertical-padding: 8px;
 
-// 1. Set vertical-align: baseline so that checkbox and navigation arrow icon is aligned to the first row of
-//    text inside .group-mixed--middle.
-// 2. Increase click area and align vertically with textarea in .group-mixed---middle
+// 1. Increase click area and align vertically with textarea in .group-mixed---middle
 //    Checkbox icon is 28px, .group-mixed default height is 44px, use remaining 16px for padding.
 //    NOTE: Checkbox icon height is stored into @size-checkbox.
-// 3. Checkbox icon determines height.
-// 4. Clear line-height (for multiline text as well).
-// 5. Align vertically.
+// 2. Checkbox icon determines height.
+// 3. Clear line-height (for multiline text as well).
+// 4. Align vertically.
 //    textarea is 22px, .group-mixed default height is 44px, use remaining 22px for padding.
 //    NOTE: Small textarea is 18px.
-// 6. Increase click area by inheriting padding-top and -bottom from .group-mixed--middle.
-// 7. Add space between first and last link inside.
-// 8. Align search type vertically with first row of search result text inside .group-mixed--middle.
-// 9. Increase click area and align vertically with textarea in .group-mixed---middle
+// 5. Increase click area by inheriting padding-top and -bottom from .group-mixed--middle.
+// 6. Add space between first and last link inside.
+// 7. Align search type vertically with first row of search result text inside .group-mixed--middle.
+// 8. Increase click area and align vertically with textarea in .group-mixed---middle
 //    Star icon wrapper is 24px, .group-mixed default height is 44px, use remaining 20px for padding.
 //    NOTE: Star icon height is a combination of @size-icon-star-small and line-height: @grid-vertical-half.
-// 10.  Increase click area and clear padding from .group-mixed--left
-// 11.  Increase click area of .link-navigation, and clear padding from .group-mixed--right.
-// 12.  Use same display value as in parent, but set height and line-height to stick vertically in the middle
+// 9. Increase click area and clear padding from .group-mixed--left
+// 10.  Increase click area of .link-navigation, and clear padding from .group-mixed--right.
+// 11.  Use same display value as in parent, but set height and line-height to stick vertically in the middle
 //      of first row inside .group-mixed--middle.
-// 13.  Nudge .icon-star.large to be horizontally aligned with .icon-trash:
+// 12.  Nudge .icon-star.large to be horizontally aligned with .icon-trash:
 //      (WIDTH_icon-star.large - WIDTH_icon.trash) / 2
 .group-mixed {
-  .group-mixed--left,
-  .group-mixed--right {
-    vertical-align: baseline;  // [1]
-  }
   .group-mixed--left {
     & > input[type="checkbox"] + label {
-      padding-top: @group-mixed--left-vertical-padding + 1px;     // [2]
-      padding-bottom: @group-mixed--left-vertical-padding - 1px;  // [2]
-      padding-right: @padding-inner-group-mixed;  // [10]
-      margin-right: -@padding-inner-group-mixed;  // [10]
+      padding-top: @group-mixed--left-vertical-padding + 1px;     // [1]
+      padding-bottom: @group-mixed--left-vertical-padding - 1px;  // [1]
+      padding-right: @padding-inner-group-mixed;  // [9]
+      margin-right: -@padding-inner-group-mixed;  // [9]
       &:before {
-        line-height: initial; // [4]
+        line-height: initial; // [3]
       }
     }
   }
   .group-mixed--middle {
-    padding-top: @padding-vertically-centered;    // [5]
-    padding-bottom: @padding-vertically-centered; // [5]
+    padding-top: @padding-vertically-centered;    // [4]
+    padding-bottom: @padding-vertically-centered; // [4]
     & > a:not(.link-inline) {
-      display: block;                               // [6]
-      padding-top: inherit;    // [6]
-      margin-top: -@padding-vertically-centered;    // [6]
-      padding-bottom: inherit; // [6]
-      margin-bottom: -@padding-vertically-centered; // [6]
+      display: block;                               // [5]
+      padding-top: inherit;    // [5]
+      margin-top: -@padding-vertically-centered;    // [5]
+      padding-bottom: inherit; // [5]
+      margin-bottom: -@padding-vertically-centered; // [5]
       &.link-list-item {
-        padding-top: @padding-vertically-centered-small-content;    // [5]
-        padding-bottom: @padding-vertically-centered-small-content; // [5]
+        padding-top: @padding-vertically-centered-small-content;    // [4]
+        padding-bottom: @padding-vertically-centered-small-content; // [4]
       }
       &:first-of-type:not(:only-of-type) {
-        margin-bottom: -@padding-vertically-centered / 2; // [7]
+        margin-bottom: -@padding-vertically-centered / 2; // [6]
       }
       &:last-of-type:not(:only-of-type) {
-        padding-top: 0; // [7]
-        margin-top: 0;  // [7]
+        padding-top: 0; // [6]
+        margin-top: 0;  // [6]
       }
     }
   }
   .group-mixed--middle.link-search-result + .group-mixed--right > span.text-search-type {
-    padding-top: @padding-vertically-centered;    // [8]
-    padding-bottom: @padding-vertically-centered; // [8]
+    padding-top: @padding-vertically-centered;    // [7]
+    padding-bottom: @padding-vertically-centered; // [7]
   }
   .group-mixed--right span.icon-star.small {
-    padding-top: @padding-vertically-centered - 1;    // [9]
-    padding-bottom: @padding-vertically-centered + 1; // [9]
+    padding-top: @padding-vertically-centered - 1;    // [8]
+    padding-bottom: @padding-vertically-centered + 1; // [8]
   }
   &.large .group-mixed--right {
-    padding-left: 0;                            // [11]
+    padding-left: 0;                            // [10]
     & > a.link-navigation {
-      padding-left: @padding-inner-group-mixed; // [11]
-      display: table-cell;                // [12]
-      vertical-align: middle;             // [12]
-      height: @grid-vertical * 1.5;       // [12]
-      line-height: @grid-vertical * 1.5;  // [12]
+      padding-left: @padding-inner-group-mixed; // [10]
+      display: table-cell;                // [11]
+      vertical-align: middle;             // [11]
+      height: @grid-vertical * 1.5;       // [11]
+      line-height: @grid-vertical * 1.5;  // [11]
       & > span.icon-star.large {
-        margin-right: -7px;  // [13]
+        margin-right: -7px;  // [12]
       }
     }
   }
