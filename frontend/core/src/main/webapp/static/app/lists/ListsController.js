@@ -18,6 +18,80 @@
                           AnalyticsService, ListsService, SwiperService, UISessionService, UserService,
                           UserSessionService) {
 
+  if (angular.isFunction($scope.registerArrayChangeCallback)) {
+    $scope.registerArrayChangeCallback('lists', ['active', 'archived'], invalidateListsArrays,
+                                       'ListsController');
+  }
+
+  var cachedListsArrays = {};
+
+  function invalidateAllLists(cachedLists, ownerUUID) {
+    updateActiveAndArchivedLists(cachedLists, ownerUUID);
+    updateAllLists(cachedLists, ownerUUID);
+  }
+  /*
+  * Invalidate cached active lists arrays.
+  */
+  function invalidateListsArrays(lists, modifiedList, listsType, ownerUUID) {
+    if (cachedListsArrays[ownerUUID]) {
+      var arrayType;
+      if (listsType === 'active') {
+        for (arrayType in cachedListsArrays[ownerUUID]) {
+          if (cachedListsArrays[ownerUUID].hasOwnProperty(arrayType)) {
+            if (arrayType === 'all') {
+              invalidateAllLists(cachedListsArrays[ownerUUID], ownerUUID);
+            } else if (arrayType === 'allParentless') {
+              // TODO
+            }
+          }
+        }
+      } else if (listsType === 'archived') {
+        for (arrayType in cachedListsArrays[ownerUUID]) {
+          if (cachedListsArrays[ownerUUID].hasOwnProperty(arrayType)) {
+            if (arrayType === 'all') {
+              invalidateAllLists(cachedListsArrays[ownerUUID], ownerUUID);
+            } else if (arrayType === 'allParentless') {
+              // TODO
+            }
+          }
+        }
+      }
+    }
+  }
+
+  function updateActiveAndArchivedLists(/*cachedLists, ownerUUID*/) {
+    // TODO
+  }
+
+  function updateAllLists(/*cachedLists, ownerUUID*/) {
+    // TODO
+  }
+
+  $scope.getListsArray = function(arrayType/*, info*/) {
+    var ownerUUID = UISessionService.getActiveUUID();
+    if (!cachedListsArrays[ownerUUID]) cachedListsArrays[ownerUUID] = {};
+
+    switch (arrayType) {
+
+      case 'all':
+        // Needed in task/note list picker
+      break;
+
+      case 'allParentless':
+        // Needed in parent list picker
+      break;
+
+      case 'active':
+        // lists/active
+      break;
+
+      case 'archived':
+        // lists/archived
+      break;
+
+    }
+  };
+
   $scope.getNewList = function(initialValues) {
     return ListsService.getNewList(initialValues, UISessionService.getActiveUUID());
   };
