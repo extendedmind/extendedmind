@@ -554,19 +554,6 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   width: 100%;
 }
 
-// 1. Override for .group-mixed.
-.group-mixed.details {
-  & > .group-mixed--middle {
-    line-height: @grid-vertical-small;
-    padding-top: 0;     // [1]
-    padding-bottom: 0;  // [1]
-  }
-}
-
-.group-mixed.height-large {
-  margin-top: 10px;
-}
-
 // 1. Increase clicking area
 .group-mixed--right {
   padding-left: @padding-inner-group-mixed;
@@ -583,13 +570,6 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   }
 }
 
-// 1. Set padding-left to default padding for inactive.
-//    NOTE: It would be better to use :empty selector but it did not work with AngularJS 1.3.0 on element with
-//          ng-if so use .inactive instead.
-.group-mixed--right.inactive {
-  padding-left: @grid-horizontal; // [1]
-}
-
 // 1. .group-mixed--middle can be used directly in <a> elements for increased clicking area.
 .group-mixed--middle:first-child {
   padding-left: @grid-horizontal;   /* [1] */
@@ -602,14 +582,6 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 .group-mixed--middle:only-child {
   display: block;               /* [1] */
   line-height: @grid-vertical;  /* [1] */
-}
-
-// 1. Android hack: 10px padding caused redraw problems on the checkbox while swiping,
-//    and no other CSS solution fixed the problem.
-//    Something like this: http://stackoverflow.com/a/16174338/2659424
-//    might be the only proper solution to the repaint problems with Android's WebKit.
-.android .group-mixed--left {
-  padding-right: 15px;  /* [1] */
 }
 
 @padding-vertically-centered: 11px;
@@ -698,31 +670,6 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   }
 }
 
-// 1. Text element inside .group-mixed--middle has line-height of 16px (@grid-vertical-small).
-//    Set padding-top and bottom to make .group-mixed.small 30px high.
-//    TODO: vertical padding in .group-mixed--middle + negative vertical margin in & > a
-// 2. Set smaller height for link inside .group-mixed--right.
-// 3. Align with text in .group-mixed--middle.
-//    TODO: vertical padding in .group-mixed--middle + negative vertical margin in & > a
-.group-mixed.small {
-  .group-mixed--middle > a.link-menu-small {
-    padding-top: 4px;     // [1]
-    padding-bottom: 4px;  // [1]
-    & > span.text-navigation-menu-small {
-      line-height: @grid-vertical-small;
-    }
-  }
-  .group-mixed--right > a {
-    height: @grid-vertical-medium;       // [1]
-    line-height: @grid-vertical-medium;  // [1]
-    & > span.icon-star.small {
-      line-height: @grid-vertical-small;
-      padding-top: 4px - 1px;
-      padding-bottom: 4px + 1px;
-    }
-  }
-}
-
 // FIXME: move (overrides.less)
 // 1. Set height for clickable icon inside .group-mixed--left.
 // 2. Center vertically. Supports single line, multiline and clamped text.
@@ -804,6 +751,59 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
       & > a {
         display: block; // [5]
       }
+    }
+  }
+}
+
+// 1. Override for .group-mixed.
+.group-mixed.details {
+  & > .group-mixed--middle {
+    line-height: @grid-vertical-small;
+    padding-top: 0;     // [1]
+    padding-bottom: 0;  // [1]
+  }
+}
+
+.group-mixed.height-large {
+  margin-top: 10px;
+}
+
+// 1. Set padding-left to default padding for inactive.
+//    NOTE: It would be better to use :empty selector but it did not work with AngularJS 1.3.0 on element with
+//          ng-if so use .inactive instead.
+.group-mixed--right.inactive {
+  padding-left: @grid-horizontal; // [1]
+}
+
+// 1. Android hack: 10px padding caused redraw problems on the checkbox while swiping,
+//    and no other CSS solution fixed the problem.
+//    Something like this: http://stackoverflow.com/a/16174338/2659424
+//    might be the only proper solution to the repaint problems with Android's WebKit.
+.android .group-mixed--left {
+  padding-right: 15px;  /* [1] */
+}
+
+// 1. Text element inside .group-mixed--middle has line-height of 16px (@grid-vertical-small).
+//    Set padding-top and bottom to make .group-mixed.small 30px high.
+//    TODO: vertical padding in .group-mixed--middle + negative vertical margin in & > a
+// 2. Set smaller height for link inside .group-mixed--right.
+// 3. Align with text in .group-mixed--middle.
+//    TODO: vertical padding in .group-mixed--middle + negative vertical margin in & > a
+.group-mixed.small {
+  .group-mixed--middle > a.link-menu-small {
+    padding-top: 4px;     // [1]
+    padding-bottom: 4px;  // [1]
+    & > span.text-navigation-menu-small {
+      line-height: @grid-vertical-small;
+    }
+  }
+  .group-mixed--right > a {
+    height: @grid-vertical-medium;       // [1]
+    line-height: @grid-vertical-medium;  // [1]
+    & > span.icon-star.small {
+      line-height: @grid-vertical-small;
+      padding-top: 4px - 1px;
+      padding-bottom: 4px + 1px;
     }
   }
 }
