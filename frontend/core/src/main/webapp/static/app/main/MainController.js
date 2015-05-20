@@ -21,10 +21,10 @@
 // the arrays because everything is needed anyway to get home and inbox to work,
 // which are part of every main slide collection.
 function MainController($element, $controller, $filter, $q, $rootScope, $scope, $timeout, $window,
-                        UserService, AnalyticsService, ArrayService,
-                        BackendClientService, CalendarService, DrawerService, ItemsService,
-                        ListsService, NotesService, ReminderService, SwiperService, SynchronizeService,
-                        TagsService, TasksService, UISessionService, UserSessionService, packaging) {
+                        AnalyticsService, CalendarService, DrawerService, ItemsService,
+                        ListsService, NotesService, ReminderService, SwiperService,
+                        TagsService, TasksService, UISessionService, UserService, UserSessionService,
+                        packaging) {
 
 
   // COLLECTIVES
@@ -1053,8 +1053,8 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
 
 MainController['$inject'] = [
 '$element', '$controller', '$filter', '$q', '$rootScope', '$scope', '$timeout', '$window',
-'UserService', 'AnalyticsService', 'ArrayService', 'BackendClientService', 'CalendarService', 'DrawerService',
-'ItemsService', 'ListsService', 'NotesService', 'ReminderService', 'SwiperService', 'SynchronizeService',
-'TagsService', 'TasksService', 'UISessionService', 'UserSessionService', 'packaging'
+'AnalyticsService', 'CalendarService', 'DrawerService',
+'ItemsService', 'ListsService', 'NotesService', 'ReminderService', 'SwiperService',
+'TagsService', 'TasksService', 'UISessionService', 'UserService', 'UserSessionService', 'packaging'
 ];
 angular.module('em.main').controller('MainController', MainController);
