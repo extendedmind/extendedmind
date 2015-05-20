@@ -63,8 +63,12 @@ function MockUserBackendService($httpBackend, UserService, UserSessionService) {
     .respond(function(method, url, data, headers) {
       var accountResponse = getJSONFixture('accountResponse.json');
       // Overwrite response with current preferences
-      accountResponse.email = UserSessionService.getEmail()
+      var userEmail = UserSessionService.getEmail();
+      accountResponse.email = userEmail;
       accountResponse.preferences = UserSessionService.getTransportPreferences();
+      if (userEmail !== 'lauri@ext.md'){
+        delete accountResponse.sharedLists;
+      }
       return expectResponse(method, url, data, headers, accountResponse);
     });
   }

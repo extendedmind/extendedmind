@@ -27,6 +27,10 @@
       if (collectives !== undefined) localStorage.setItem('collectives', JSON.stringify(collectives));
       else localStorage.removeItem('collectives');
     },
+    setSharedLists: function(sharedLists) {
+      if (sharedLists !== undefined) localStorage.setItem('sharedLists', JSON.stringify(sharedLists));
+      else localStorage.removeItem('sharedLists');
+    },
     setEmail: function(email) {
       if (email !== undefined) localStorage.setItem('email', email);
       else localStorage.removeItem('email');
@@ -176,6 +180,7 @@
     clearUser: function() {
       localStorage.removeItem('backendDelta');
       localStorage.removeItem('collectives');
+      localStorage.removeItem('sharedLists');
       localStorage.removeItem('email');
       localStorage.removeItem('expires');
       localStorage.removeItem('credentials');

@@ -17,7 +17,7 @@
 
 // Controller for synchronizing
 function SynchronizeController($q, $rootScope, $scope, $timeout,
-                        BackendClientService, ReminderService, SynchronizeService,
+                        BackendClientService, SynchronizeService,
                         UISessionService, UserSessionService, packaging) {
 
   var synchronizeTimer;
@@ -26,9 +26,6 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
   var itemsSynchronizeCounter = 0; // count the number of syncs in this session
   var userSyncCounterTreshold = 5; // sync user every fifth sync
   var userSyncTimeTreshold = 60000; // sync user if there has been a minute of non-syncing
-
-  // Start synchronize interval or just start synchronize interval.
-  synchronizeAndSynchronizeDelayed();
 
   // For iOS, javascript execution is paused anyway when app enters the background, so there is no need to
   // start/cancel polling
@@ -81,7 +78,11 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
   function synchronize() {
     var ownerUUID = UISessionService.getActiveUUID();
     if (ownerUUID){
-      synchronizeItems(ownerUUID);
+      synchronizeItems(ownerUUID).then(function(success){
+        if (success && (success.status !== 'fakeUser')){
+          doSynchronizeOwner(ownerUUID, success.since, success.status === 'firstSync');
+        }
+      });
     }
   }
 
@@ -101,50 +102,57 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
     $rootScope.synced = UserSessionService.getItemsSynchronized(ownerUUID);
     var sinceLastItemsSynchronized = Date.now() - UserSessionService.getItemsSynchronized(ownerUUID);
 
-    if (isItemSynchronizeValid(sinceLastItemsSynchronized)) {
-      $scope.$evalAsync(function() {
-        if (!$rootScope.synced){
-          // This is the first load for the user
-          $rootScope.syncState = 'active';
-        }else{
-          $rootScope.syncState = 'modified';
-        }
-      });
+    return $q(function(resolve, reject) {
+      if (isItemSynchronizeValid(sinceLastItemsSynchronized)) {
+        $scope.$evalAsync(function() {
+          if (!$rootScope.synced){
+            // This is the first load for the user
+            $rootScope.syncState = 'active';
+          }else{
+            $rootScope.syncState = 'modified';
+          }
+        });
 
-      SynchronizeService.synchronize(ownerUUID).then(function(status) {
-
-        if (status === 'firstSync'){
-          // Also immediately after first sync add completed and archived to the mix
-          $rootScope.syncState = 'completedAndArchived';
-          SynchronizeService.addCompletedAndArchived(ownerUUID).then(function(){
-            $rootScope.syncState = 'deleted';
-            // Also after this, get deleted items as well
-            SynchronizeService.addDeleted(ownerUUID).then(function(){
-              updateItemsSyncronizeAttempted(ownerUUID);
-              doSynchronizeOwner(ownerUUID, sinceLastItemsSynchronized);
-            }, function(){
+        SynchronizeService.synchronize(ownerUUID).then(function(status) {
+          if (status === 'firstSync'){
+            // Also immediately after first sync add completed and archived to the mix
+            $rootScope.syncState = 'completedAndArchived';
+            SynchronizeService.addCompletedAndArchived(ownerUUID).then(function(){
+              $rootScope.syncState = 'deleted';
+              // Also after this, get deleted items as well
+              SynchronizeService.addDeleted(ownerUUID).then(function(){
+                updateItemsSyncronizeAttempted(ownerUUID);
+                resolve({status: status, since: sinceLastItemsSynchronized});
+              }, function(error){
+                $rootScope.syncState = 'error';
+                reject(error);
+              });
+            }, function(error){
               $rootScope.syncState = 'error';
+              reject(error);
             });
-          }, function(){
-            $rootScope.syncState = 'error';
-          });
-        } else if (status === 'delta') {
-          updateItemsSyncronizeAttempted(ownerUUID);
-          doSynchronizeOwner(ownerUUID, sinceLastItemsSynchronized);
-        } else if (status === 'fakeUser') {
-          $rootScope.syncState = 'local';
-        }
-      }, function(){
-        $rootScope.syncState = 'error';
-      });
-    }
-    executeSynchronizeCallbacks();
+          } else if (status === 'delta') {
+            updateItemsSyncronizeAttempted(ownerUUID);
+            resolve({status: status, since: sinceLastItemsSynchronized});
+          } else if (status === 'fakeUser') {
+            $rootScope.syncState = 'local';
+            resolve({status: status, since: sinceLastItemsSynchronized});
+          }
+        }, function(error){
+          $rootScope.syncState = 'error';
+          reject(error);
+        });
+      }else{
+        resolve();
+      }
+      executeSynchronizeCallbacks();
+    });
   }
 
-
-  function doSynchronizeOwner(ownerUUID, sinceLastItemsSynchronized) {
+  function doSynchronizeOwner(ownerUUID, sinceLastItemsSynchronized, isFirstSync) {
     // If there has been a long enough time from last sync, update account preferences as well
-    if (itemsSynchronizeCounter === 0 ||
+    if (isFirstSync ||
+        itemsSynchronizeCounter === 0 ||
         itemsSynchronizeCounter%userSyncCounterTreshold === 0 ||
         sinceLastItemsSynchronized > userSyncTimeTreshold){
       SynchronizeService.synchronizeUser().then(function(){
@@ -214,9 +222,11 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
       synchronizeCallbacks[id]();
   }
 
+  // Start synchronize interval or just start synchronize interval.
+  synchronizeAndSynchronizeDelayed();
 }
 
 SynchronizeController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout',
-'BackendClientService', 'ReminderService', 'SynchronizeService', 'UISessionService', 'UserSessionService',
+'BackendClientService', 'SynchronizeService', 'UISessionService', 'UserSessionService',
 'packaging'];
 angular.module('em.main').controller('SynchronizeController', SynchronizeController);

@@ -163,6 +163,7 @@
 
       SessionStorageService.setBackendDelta(backendDelta);
       SessionStorageService.setCollectives(authenticateResponse.collectives);
+      SessionStorageService.setSharedLists(authenticateResponse.sharedLists);
       SessionStorageService.setExpires(authenticateResponse.expires + backendDelta);
       SessionStorageService.setCredentials(credentials);
       SessionStorageService.setUserType(authenticateResponse.userType);
@@ -175,6 +176,7 @@
         LocalStorageService.setBackendDelta(backendDelta);
         LocalStorageService.setExpires(authenticateResponse.expires + backendDelta);
         LocalStorageService.setCollectives(authenticateResponse.collectives);
+        LocalStorageService.setSharedLists(authenticateResponse.sharedLists);
         LocalStorageService.setCredentials(credentials);
         LocalStorageService.setReplaceable(authenticateResponse.replaceable + backendDelta);
         LocalStorageService.setUserType(authenticateResponse.userType);

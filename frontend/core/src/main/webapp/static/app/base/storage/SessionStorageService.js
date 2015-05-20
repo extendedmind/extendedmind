@@ -21,8 +21,36 @@
   var cachedEmail;
   var cachedPreferences;
   var cachedCollectives;
+  var cachedSharedLists;
   var cachedOffline;
   var cachedExpires;
+
+  function setAccessInformation(name, value, cachedValue){
+    if (value){
+      // To get two-way binding to work with cache, we want to replace the content
+      // of cachedValue with the new one
+      if (cachedValue){
+        // delete every old key, then add every key
+        for (var oldUuid in cachedValue){
+          if (cachedValue.hasOwnProperty(oldUuid)){
+            delete cachedValue[oldUuid];
+          }
+        }
+        for (var newUuid in value){
+          if (value.hasOwnProperty(newUuid)){
+            cachedValue[newUuid] = value[newUuid];
+          }
+        }
+      }else{
+        cachedValue = value;
+      }
+      sessionStorage.setItem(name, JSON.stringify(value));
+    }else{
+      cachedValue = value;
+      sessionStorage.removeItem(name);
+    }
+  }
+
   return {
 
     // setters
@@ -37,29 +65,10 @@
       else sessionStorage.removeItem('activeUUID');
     },
     setCollectives: function(collectives) {
-      if (collectives){
-        // To get two-way binding to work with cached collectives, we want to replace the content
-        // of cachedCollectives with the new one
-        if (cachedCollectives){
-          // delete every old key, then add every key
-          for (var oldUuid in cachedCollectives){
-            if (cachedCollectives.hasOwnProperty(oldUuid)){
-              delete cachedCollectives[oldUuid];
-            }
-          }
-          for (var newUuid in collectives){
-            if (collectives.hasOwnProperty(newUuid)){
-              cachedCollectives[newUuid] = collectives[newUuid];
-            }
-          }
-        }else{
-          cachedCollectives = collectives;
-        }
-        sessionStorage.setItem('collectives', JSON.stringify(collectives));
-      }else{
-        cachedCollectives = collectives;
-        sessionStorage.removeItem('collectives');
-      }
+      setAccessInformation('collectives', collectives, cachedCollectives);
+    },
+    setSharedLists: function(sharedLists) {
+      setAccessInformation('sharedLists', sharedLists, cachedSharedLists);
     },
     setEmail: function(email) {
       cachedEmail = email;
@@ -228,6 +237,7 @@
       sessionStorage.removeItem('backendDelta');
       sessionStorage.removeItem('activeUUID');
       sessionStorage.removeItem('collectives');
+      sessionStorage.removeItem('sharedLists');
       sessionStorage.removeItem('email');
       sessionStorage.removeItem('expires');
       sessionStorage.removeItem('credentials');
@@ -241,7 +251,7 @@
       sessionStorage.removeItem('offline');
       sessionStorage.removeItem('synced');
 
-      cachedBackendDelta = cachedActiveUUID = cachedUserUUID = cachedEmail =
+      cachedBackendDelta = cachedActiveUUID = cachedUserUUID = cachedEmail = cachedSharedLists =
       cachedPreferences = cachedCollectives = cachedOffline = cachedExpires = undefined;
     }
   };

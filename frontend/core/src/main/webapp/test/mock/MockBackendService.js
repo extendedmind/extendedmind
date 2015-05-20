@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
- /*global angular */
+ /*global angular, getJSONFixture */
  'use strict';
 
  function MockBackendService(MockListsBackendService, MockTagsBackendService, MockTasksBackendService,
@@ -63,6 +63,11 @@
           response = [200, responseData];
         }
         else if (userNamePass === 'example@example.com:examplePass') {
+          response = [200, responseData];
+        }
+        else if (userNamePass === 'lauri@ext.md:lauripwd') {
+          var accountResponse = getJSONFixture('accountResponse.json');
+          responseData.sharedLists = accountResponse.sharedLists;
           response = [200, responseData];
         }
         else if (userNamePass === 'premium@ext.md:premium') {
