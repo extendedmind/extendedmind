@@ -2,7 +2,7 @@
   ng-class="list.trans.deleted && 'container-disabled'">
   <header class="container-titlebar">
     <div class="container-titlebar--inner">
-      <div class="group-symmetrical height-large--top" swiper-prevent>
+      <div class="group-symmetrical height-large--top height-large--bottom" swiper-prevent>
 
         <a href class="group-symmetrical--left link-navigation active highlighted sorting-hide"
           swiper-click="endListEdit()">
@@ -55,14 +55,25 @@
           drawer-override-aisle="right" ng-init="drawerAisleInitialized = true">
 
           <!-- LIST TITLE -->
-          <div ng-hide="descriptionFocused" class="row-vertically-centered with-textarea">
-            <textarea class="text-heading-primary large" ng-model="list.trans.title"
-              input-model-validator ng-trim="false" msd-elastic ng-keydown="listTitlebarTextKeyDown($event)"
-              editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
-              placeholder="enter list title&#8230;" maxlength="128" autocapitalize="none" autocorrect="off">
-            </textarea>
+          <div ng-hide="descriptionFocused" class="row-top-parent">
+            <div class="group-mixed large">
+              <div class="group-mixed--middle">
+                <textarea class="text-heading-primary large" ng-model="list.trans.title"
+                  input-model-validator ng-trim="false" msd-elastic ng-keydown="listTitlebarTextKeyDown($event)"
+                  editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
+                  placeholder="enter list title&#8230;" maxlength="128" autocapitalize="none" autocorrect="off">
+                </textarea>
+              </div>
+
+              <div class="group-mixed--right">
+                <a href class="link-navigation" swiper-click="clickFavorite()">
+                  <span class="icon-star large" ng-class="!isFavoriteList(list) && 'inactive'"></span>
+                </a>
+              </div>
+            </div>
           </div>
 
+          <!-- DESCRIPTION -->
           <textarea ng-if="drawerAisleInitialized" id="ignoreSnap" ng-model="list.trans.description"
             input-model-validator ng-trim="false" ng-focus="setDescriptionFocus(true, 'listEditor')"
             ng-blur="setDescriptionFocus(false, 'listEditor')" editable-field msd-elastic
@@ -72,9 +83,6 @@
         </div>
         <footer ng-hide="descriptionFocused" class="container-content--after editor-footer">
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
-            <a href swiper-click="clickFavorite()" class="group-symmetrical--left">
-              <span class="icon-star" ng-class="!isFavoriteList(list) && 'inactive'"></span>
-            </a>
             <a href swiper-click="swipeToAdvanced('listEditor')" ng-hide="isFooterNavigationHidden()"
               class="group-symmetrical--right link-navigation">
               <span class="text-navigation-forward">advanced</span>
@@ -86,11 +94,13 @@
       <div class="swiper-slide" swiper-slide="listEditor/advanced" slide-index="1" ng-init="advancedSlideInfo = {}">
         <div ng-style="{'padding-bottom': advancedSlideInfo.footerHeight}" class="container-content">
 
-          <div class="row-vertically-centered with-textarea">
+          <!-- URL -->
+          <div class="row-vertically-centered with-textarea row-top-parent">
             <textarea ng-model="list.trans.link" input-model-validator ng-trim="false" msd-elastic
               maxlength="2000" placeholder="enter url&#8230;" autocapitalize="none" autocorrect="off">
             </textarea>
           </div>
+
           <div ng-repeat="sharedTo in sharedToList">
             <div class="group-mixed">
               <div class="group-mixed--middle">
