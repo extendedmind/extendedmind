@@ -27,9 +27,11 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
                         packaging) {
 
 
-  // COLLECTIVES
+  // SHARED ACCESS
 
   $scope.collectives = UserSessionService.getCollectives();
+  $scope.sharedLists = UserSessionService.getSharedLists();
+
 
   // MAP OF ALL FEATURES
 

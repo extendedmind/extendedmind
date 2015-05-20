@@ -23,6 +23,10 @@
                                        'ListsController');
   }
 
+  $scope.useSharedLists = function() {
+    return UserSessionService.getUserType() === 0 || UserSessionService.getUserType() === 1;
+  };
+
   var cachedListsArrays = {};
 
   /*

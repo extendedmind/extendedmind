@@ -173,6 +173,19 @@
       }
       return cachedCollectives;
     },
+    getSharedLists: function() {
+      if (!cachedSharedLists){
+        var sharedLists = sessionStorage.getItem('sharedLists');
+        if (sharedLists){
+          cachedSharedLists = JSON.parse(sharedLists);
+        }else{
+          // We need to have at least some array pointer to get two-way binding to work:
+          // shared lists are needed before authentication!
+          cachedSharedLists = {};
+        }
+      }
+      return cachedSharedLists;
+    },
     getEmail: function() {
       if (!cachedEmail) cachedEmail = sessionStorage.getItem('email');
       return cachedEmail;

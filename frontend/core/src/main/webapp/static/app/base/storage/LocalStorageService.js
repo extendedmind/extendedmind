@@ -121,6 +121,11 @@
         return JSON.parse(localStorage.getItem('collectives'));
       }
     },
+    getSharedLists: function() {
+      if (localStorage.getItem('sharedLists')) {
+        return JSON.parse(localStorage.getItem('sharedLists'));
+      }
+    },
     getEmail: function() {
       return localStorage.getItem('email');
     },

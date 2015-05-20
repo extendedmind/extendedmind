@@ -96,11 +96,6 @@
     });
   };
 
-  // TODO: reset onboarding!
-  $scope.showOnboardingCheckbox = function showOnboardingCheckbox() {
-    return UserSessionService.getUserType() === 0 || UserSessionService.getUserType() === 1;
-  };
-
   // TERMS AND PRIVACY
 
   $scope.openTermsInEditor = function(){

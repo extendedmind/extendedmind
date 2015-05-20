@@ -43,6 +43,7 @@
   function setUserSessionStorageData() {
     SessionStorageService.setBackendDelta(LocalStorageService.getBackendDelta());
     SessionStorageService.setCollectives(LocalStorageService.getCollectives());
+    SessionStorageService.setSharedLists(LocalStorageService.getSharedLists());
     SessionStorageService.setEmail(LocalStorageService.getEmail());
     SessionStorageService.setExpires(LocalStorageService.getExpires());
     SessionStorageService.setCredentials(LocalStorageService.getCredentials());
@@ -302,6 +303,10 @@
     getCollectives: function() {
       syncWebStorages();
       return SessionStorageService.getCollectives();
+    },
+    getSharedLists: function() {
+      syncWebStorages();
+      return SessionStorageService.getSharedLists();
     },
     getCredentials: function() {
       syncWebStorages();
