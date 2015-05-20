@@ -83,6 +83,16 @@
         </div>
         <footer ng-hide="descriptionFocused" class="container-content--after editor-footer">
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
+
+            <a ng-if="showArchive()" href swiper-click="archiveListInEdit(list)"
+              class="group-symmetrical--left link-navigation highlighted">
+              <span class="text-navigation">archive</span>
+            </a>
+            <a ng-if="showUnarchive()" href swiper-click="unarchiveListInEdit(list)"
+              class="group-symmetrical--left link-navigation highlighted">
+              <span class="text-navigation">unarchive</span>
+            </a>
+
             <a href swiper-click="swipeToAdvanced('listEditor')" ng-hide="isFooterNavigationHidden()"
               class="group-symmetrical--right link-navigation">
               <span class="text-navigation-forward">advanced</span>
@@ -133,14 +143,6 @@
             <a href swiper-click="swipeToBasic('listEditor')" ng-hide="isFooterNavigationHidden()"
               class="group-symmetrical--left link-navigation">
               <span class="text-navigation-back">basic</span>
-            </a>
-            <a ng-if="showArchive()" href swiper-click="archiveListInEdit(list)"
-              class="group-symmetrical--right link-navigation highlighted">
-              <span class="text-navigation">archive</span>
-            </a>
-            <a ng-if="showUnarchive()" href swiper-click="unarchiveListInEdit(list)"
-              class="group-symmetrical--right link-navigation highlighted">
-              <span class="text-navigation">unarchive</span>
             </a>
           </nav>
         </footer>
