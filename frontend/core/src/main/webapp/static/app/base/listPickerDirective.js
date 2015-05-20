@@ -22,7 +22,6 @@
       lists: '=listPicker',
       type: '@listPickerType',
       prefix: '@listPickerPrefix',
-      archivedLists: '=listPickerArchivedLists',
       getNewList: '&?listPickerNewItem',
       getSelectedList: '&listPickerGetSelected',
       closeAndSave: '&listPickerSave',

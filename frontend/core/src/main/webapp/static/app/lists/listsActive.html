@@ -1,5 +1,5 @@
 <div class="container-content--outer" ng-if="isFeatureActive('lists')" list-container drawer-handle="left">
-  <section class="container-content" list="lists" list-locked="disableDragging()">
+  <section class="container-content" list="getListsArray('active')" list-locked="disableDragging()">
 
     <div ng-show="isContentVisible('lists', 'active')">
       <h2 class="group-heading justified row">active lists</h2>

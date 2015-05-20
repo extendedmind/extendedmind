@@ -255,8 +255,7 @@
           <div ng-if="listPickerOpen" class="swiper-no-swiping animate-fade-in" editable-field-container="auto"
             editable-field-container-scrollable="true"
             editable-field-container-clicked-elsewhere="closeListPicker()" data-snap-ignore="true">
-            <div list-picker="lists" list-picker-new-item="getNewList()"
-              list-picker-archived-lists="archivedLists"
+            <div list-picker="getListsArray('all')" list-picker-new-item="getNewList()"
               list-picker-save="closeListPickerAndSetListToItem(task, list)"
               list-picker-clear="closeListPickerAndClearListFromItem(task, list)"
               list-picker-get-selected="task.trans.list"

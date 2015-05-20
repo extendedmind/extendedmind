@@ -18,18 +18,10 @@
   </div>
 
   <div class="row-vertically-centered"
-    ng-repeat="list in lists | filter:notSelectedList | orderBy:'trans.title' track by list.trans.uuid || $index"
+    ng-repeat="list in lists | filter:notSelectedList track by list.trans.uuid || $index"
     swiper-click="listSelected(list)">
     <a href class="link">
       <span class="text-link" clamp=2>{{::prefix}}{{list.trans.title}}</span>
-    </a>
-  </div>
-
-  <div ng-if="archivedLists" class="row-vertically-centered"
-    ng-repeat="archivedList in archivedLists | filter:notSelectedList track by archivedList.trans.uuid"
-    swiper-click="listSelected(archivedList)">
-    <a href class="link">
-      <span class="text-link" ng-bind="archivedList.trans.title" clamp=2></span>
     </a>
   </div>
 

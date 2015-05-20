@@ -160,7 +160,7 @@
     switch (arrayType) {
 
       case 'all':
-      // Needed in task/note list picker
+      // Needed in task/note list picker.
       if (!cachedListsArrays[ownerUUID]['all']) {
         updateAllLists(cachedListsArrays[ownerUUID], ownerUUID);
       }
@@ -181,14 +181,14 @@
       return cachedListsArrays[ownerUUID]['archived'];
 
       case 'activeParentless':
-      // Needed in parent list picker
+      // Needed in parent list picker.
       if (!cachedListsArrays[ownerUUID]['activeParentless']) {
         updateActiveParentlessLists(cachedListsArrays[ownerUUID], ownerUUID);
       }
       return cachedListsArrays[ownerUUID]['activeParentless'];
 
       case 'archivedParentless':
-      // Needed in parent list picker
+      // Needed in parent list picker.
       if (!cachedListsArrays[ownerUUID]['archivedParentless']) {
         updateArchivedParentlessLists(cachedListsArrays[ownerUUID], ownerUUID);
       }
