@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
- /* global bindToFocusEvent, bindToResumeEvent, cordova */
+ /* global cordova */
  'use strict';
 
 // Controller for all main slides
@@ -589,9 +589,9 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
         listenReminderClick();
       }
       if (packaging === 'android-cordova'){
-        document.addEventListener("backbutton", onBack, false);
+        document.addEventListener('backbutton', onBack, false);
       }
-    }
+    };
 
     if (cordova) {
       if (cordova.plugins && cordova.plugins.notification) {
@@ -622,7 +622,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
         editorReadyCallback.parameters = ['task', taskInfo.task, undefined, directOpen ? 0 : 0];
       }
     }
-  };
+  }
 
   function reminderClick(notification) {
     var coldBootClick = !UserSessionService.isPersistentDataLoaded();
@@ -640,11 +640,11 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
         }
       }
     }
-  };
+  }
 
   function listenReminderClick() {
     cordova.plugins.notification.local.on('click', reminderClick);
-  };
+  }
 
   // BACK HANDLER
 
@@ -823,228 +823,57 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     combineNotesArrays();
   });
 
-  // BACKEND POLLING
+  // ACTIVATE / DEACTIVATE
 
-  var synchronizeItemsTimer;
-  var synchronizeItemsDelay = 12 * 1000;
-  var itemsSynchronizedThreshold = 10 * 1000; // 10 seconds in milliseconds
-  var itemsSynchronizeCounter = 0; // count the number of syncs in this session
-  var userSyncCounterTreshold = 5; // sync user every fifth sync
-  var userSyncTimeTreshold = 60000; // sync user if there has been a minute of non-syncing
-
-
-  // Start synchronize interval or just start synchronize interval.
-  synchronizeItemsAndSynchronizeItemsDelayed();
-
-  // Global variable bindToFocusEvent specifies if focus event should be listened to. Variable is true
-  // by default for browsers, where hidden tab should not poll continuously, false in Cordova where
-  // in iOS javascript execution is paused anyway when app is not in focus.
-  var bindToFocus = (typeof bindToFocusEvent !== 'undefined') ? bindToFocusEvent: true;
-  if (bindToFocus) {
-    angular.element($window).bind('focus', synchronizeItemsAndSynchronizeItemsDelayed);
-    angular.element($window).bind('blur', cancelSynchronizeItemsDelayed);
-  }
-  // Global variable bindToResumeEvent is used:
+  // Focus event listening is on for browsers, where hidden tab should not poll continuously, false in
+  // Cordova where in iOS javascript execution is paused anyway when app is not in focus, and Android needs
+  // to be handled with pause event.
+  if (!packaging.endsWith('cordova')){
+    angular.element($window).bind('focus', executeActivateCallbacks);
+    angular.element($window).bind('blur', executeDeactivateCallbacks);
+  // Resume and pause listening in Cordova:
   //  * in Android and iOS to clear triggered reminders on resume.
-  //  * in Android where polling does not stop when app is in the background.
-  var bindToResume = (typeof bindToResumeEvent !== 'undefined') ? bindToResumeEvent: true;
-  if (bindToResume) {
-    var resumeCallback;
-    if (packaging === 'android-cordova') {
-      resumeCallback = function() {
-        synchronizeItemsAndSynchronizeItemsDelayed();
-        ReminderService.clearTriggeredReminders();
-      };
-      document.addEventListener('resume', resumeCallback, false);
-      document.addEventListener('pause', cancelSynchronizeItemsDelayed, false);
-    } else if (packaging === 'ios-cordova') {
-      resumeCallback = function() {
-        ReminderService.clearTriggeredReminders();
-      };
-      document.addEventListener('resume', resumeCallback, false);
-    }
+  }else{
+    document.addEventListener('resume', executeActivateCallbacks, false);
+    document.addEventListener('pause', executeDeactivateCallbacks, false);
   }
 
-  function synchronizeItemsAndSynchronizeItemsDelayed() {
-    synchronizeItems();
-    synchronizeItemsDelayed();
-  }
-  function cancelSynchronizeItemsDelayed() {
-    $timeout.cancel(synchronizeItemsTimer);
-  }
-
-  // https://developer.mozilla.org/en/docs/Web/API/window.setInterval
-  function synchronizeItemsDelayed() {
-    synchronizeItemsTimer = $timeout(function() {
-      synchronizeItems();
-      synchronizeItemsDelayed();
-    }, synchronizeItemsDelay);
-  }
-
-  function itemsSynchronizedCallback(ownerUUID){
-    var timestamp = Date.now();
-    UserSessionService.setItemsSynchronized(timestamp, ownerUUID);
-    $rootScope.synced = timestamp;
-    $rootScope.syncState = 'ready';
-    $scope.refreshFavoriteLists();
-    itemsSynchronizeCounter++;
-    if ($rootScope.signUpInProgress) $rootScope.signUpInProgress = false;
-  }
-  SynchronizeService.registerItemsSynchronizedCallback(itemsSynchronizedCallback);
-
-  function updateItemsSyncronizeAttempted(activeUUID){
-    var timestamp = Date.now();
-    UserSessionService.setItemsSynchronizeAttempted(timestamp, activeUUID);
-    $rootScope.syncAttempted = timestamp;
-  }
-
-  // Synchronize items if not already synchronizing and interval reached.
-
-  function synchronizeItems() {
-    function isItemSynchronizeValid(sinceLastItemsSynchronized){
-      if (!sinceLastItemsSynchronized) return true;
-      else if (sinceLastItemsSynchronized > itemsSynchronizedThreshold) return true;
-
-      // Also sync if data has not yet been read to memory
-      if (!UserSessionService.isPersistentDataLoaded()) return true;
-    }
-    $scope.registerActivity();
-    var activeUUID = UISessionService.getActiveUUID();
-
-    // Check that user exists
-    if (activeUUID){
-
-      // User has logged in, now set when user was last synchronized
-      $rootScope.synced = UserSessionService.getItemsSynchronized(activeUUID);
-      var sinceLastItemsSynchronized = Date.now() - UserSessionService.getItemsSynchronized(activeUUID);
-
-      if (isItemSynchronizeValid(sinceLastItemsSynchronized)) {
-        $scope.$evalAsync(function() {
-          if (!$rootScope.synced){
-            // This is the first load for the user
-            $rootScope.syncState = 'active';
-          }else{
-            $rootScope.syncState = 'modified';
-          }
-        });
-
-        SynchronizeService.synchronize(activeUUID).then(function(status) {
-
-          function doSynchronizeUser() {
-            // If there has been a long enough time from last sync, update account preferences as well
-            if (itemsSynchronizeCounter === 0 ||
-                itemsSynchronizeCounter%userSyncCounterTreshold === 0 ||
-                sinceLastItemsSynchronized > userSyncTimeTreshold)
-            {
-              SynchronizeService.synchronizeUser().then(function(){
-                $scope.refreshFavoriteLists();
-              });
-            }
-          }
-
-          if (status === 'firstSync'){
-            // Also immediately after first sync add completed and archived to the mix
-            $rootScope.syncState = 'completedAndArchived';
-            SynchronizeService.addCompletedAndArchived(activeUUID).then(function(){
-              $rootScope.syncState = 'deleted';
-              // Also after this, get deleted items as well
-              SynchronizeService.addDeleted(activeUUID).then(function(){
-                updateItemsSyncronizeAttempted(activeUUID);
-                doSynchronizeUser();
-              }, function(){
-                $rootScope.syncState = 'error';
-              });
-            }, function(){
-              $rootScope.syncState = 'error';
-            });
-          } else if (status === 'delta') {
-            updateItemsSyncronizeAttempted(activeUUID);
-            doSynchronizeUser();
-          } else if (status === 'fakeUser') {
-            $rootScope.syncState = 'local';
-          }
-
-        }, function(){
-          $rootScope.syncState = 'error';
-        });
-      }
-    }
-    executeSynchronizeCallbacks();
-  }
-
-  $scope.showLoadingAnimation = function(){
-    return $rootScope.syncState === 'active' && !$rootScope.signUpInProgress;
+  var activateDeactivateCallbacks = {};
+  $scope.registerActivateDeactivateCallbacks = function(activateCallback, deactivateCallback, id) {
+    activateDeactivateCallbacks[id] = {activate: activateCallback, deactivate: deactivateCallback};
   };
-
-  // Execute synchronize immediately when queue is empty to be fully synced right after data has been
-  // modified without having to wait for next tick.
-  function queueEmptiedCallback() {
-    // Only execute sync if the previous sync is ready or error happened the previous time
-    if ($rootScope.syncState === 'ready' || $rootScope.syncState === 'error'){
-      var activeUUID = UISessionService.getActiveUUID();
-      return SynchronizeService.synchronize(activeUUID).then(function() {
-        updateItemsSyncronizeAttempted(activeUUID);
-      }, function(){
-        $rootScope.syncState = 'error';
-        $q.reject();
-      });
-    }else{
-      // Else immediately return
-      var deferred = $q.defer();
-      deferred.resolve();
-      return deferred.promise;
+  $scope.unregisterActivateDeactivateCallbacks = function(id) {
+    if (activateDeactivateCallbacks[id]) delete activateDeactivateCallbacks[id];
+  };
+  function executeActivateCallbacks() {
+    if (packaging.endsWith('cordova')){
+      ReminderService.clearTriggeredReminders();
     }
+    for (var id in activateDeactivateCallbacks)
+      activateDeactivateCallbacks[id].activate();
   }
-  BackendClientService.registerQueueEmptiedCallback(queueEmptiedCallback);
-
-  // Execute synchronize on conflict to get conflicted content and then try to empty the queue again
-  function conflictCallback() {
-    var activeUUID = UISessionService.getActiveUUID();
-    return SynchronizeService.synchronize(activeUUID).then(function() {
-      updateItemsSyncronizeAttempted(activeUUID);
-    }, function(){
-      $rootScope.syncState = 'error';
-      $q.reject();
-    });
+  function executeDeactivateCallbacks() {
+    for (var id in activateDeactivateCallbacks)
+      activateDeactivateCallbacks[id].deactivate();
   }
-  BackendClientService.registerConflictCallback(conflictCallback);
-
-  // CLEANUP
 
   $scope.$on('$destroy', function() {
     // http://www.bennadel.com/blog/2548-Don-t-Forget-To-Cancel-timeout-Timers-In-Your-destroy-Events-In-AngularJS.htm
-    $timeout.cancel(synchronizeItemsTimer);
-    if (bindToFocus) {
-      angular.element($window).unbind('focus', synchronizeItemsAndSynchronizeItemsDelayed);
-      angular.element($window).unbind('blur', cancelSynchronizeItemsDelayed);
-    }
-    if (bindToResume) {
-      document.removeEventListener('resume', synchronizeItemsAndSynchronizeItemsDelayed, false);
-      document.removeEventListener('pause', cancelSynchronizeItemsDelayed, false);
+    if (!packaging.endsWith('cordova')){
+      angular.element($window).unbind('focus', executeActivateCallbacks);
+      angular.element($window).unbind('blur', executeDeactivateCallbacks);
+    }else{
+      document.removeEventListener('resume', executeActivateCallbacks, false);
+      document.removeEventListener('pause', executeDeactivateCallbacks, false);
     }
   });
 
-
-  // CALLBACKS
-
-  var synchronizeCallbacks = {};  // map of synchronize callbacks
+  // EDITOR CALLBACKS
 
   var editorAboutToOpenCallbacks = {};
   var editorOpenedCallbacks = {};
   var editorAboutToCloseCallbacks = {};
   var editorClosedCallbacks = {};
-
-  // Synchronize
-  $scope.registerSynchronizeCallback = function(callback, id) {
-    synchronizeCallbacks[id] = callback;
-  };
-  $scope.unregisterSynchronizeCallback = function(id) {
-    if (synchronizeCallbacks[id]) delete synchronizeCallbacks[id];
-  };
-  function executeSynchronizeCallbacks() {
-    for (var id in synchronizeCallbacks)
-      synchronizeCallbacks[id]();
-  }
 
   // register editor callbacks
   $scope.registerEditorAboutToOpenCallback = function (callback, id) {
@@ -1213,7 +1042,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
   };
 
   // INJECT OTHER CONTENT CONTROLLERS HERE
-
+  $controller('SynchronizeController',{$scope: $scope});
   $controller('TasksController',{$scope: $scope});
   $controller('ListsController',{$scope: $scope});
   $controller('TagsController',{$scope: $scope});
