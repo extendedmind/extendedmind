@@ -15,8 +15,8 @@
  'use strict';
 
  function ListsController($scope,
-                          AnalyticsService, ListsService, SwiperService, UISessionService, UserService,
-                          UserSessionService) {
+                          AnalyticsService, ArrayService, ListsService, SwiperService, UISessionService,
+                          UserService, UserSessionService) {
 
   if (angular.isFunction($scope.registerArrayChangeCallback)) {
     $scope.registerArrayChangeCallback('lists', ['active', 'archived'], invalidateListsArrays,
@@ -25,46 +25,132 @@
 
   var cachedListsArrays = {};
 
-  function invalidateAllLists(cachedLists, ownerUUID) {
-    updateActiveAndArchivedLists(cachedLists, ownerUUID);
-    updateAllLists(cachedLists, ownerUUID);
-  }
   /*
   * Invalidate cached active lists arrays.
   */
   function invalidateListsArrays(lists, modifiedList, listsType, ownerUUID) {
     if (cachedListsArrays[ownerUUID]) {
-      var arrayType;
-      if (listsType === 'active') {
-        for (arrayType in cachedListsArrays[ownerUUID]) {
-          if (cachedListsArrays[ownerUUID].hasOwnProperty(arrayType)) {
-            if (arrayType === 'all') {
-              invalidateAllLists(cachedListsArrays[ownerUUID], ownerUUID);
-            } else if (arrayType === 'allParentless') {
-              // TODO
-            }
-          }
-        }
-      } else if (listsType === 'archived') {
-        for (arrayType in cachedListsArrays[ownerUUID]) {
-          if (cachedListsArrays[ownerUUID].hasOwnProperty(arrayType)) {
-            if (arrayType === 'all') {
-              invalidateAllLists(cachedListsArrays[ownerUUID], ownerUUID);
-            } else if (arrayType === 'allParentless') {
-              // TODO
-            }
+      updateAllLists(cachedListsArrays[ownerUUID], ownerUUID);
+      cachedListsArrays[ownerUUID]['active'] = undefined;
+      cachedListsArrays[ownerUUID]['archived'] = undefined;
+      cachedListsArrays[ownerUUID]['activeParentless'] = undefined;
+      cachedListsArrays[ownerUUID]['archivedParentless'] = undefined;
+    }
+  }
+
+  function sortAndCacheSubsetOfAllLists(subset) {
+    var i;
+    var cachedLists = [];
+    var childLists = [];
+
+    for (i = 0; i < subset.length; i++) {
+      var list = subset[i];
+      if (list.trans.list) {
+        // Push children into temp.
+        childLists.push(list);
+      } else {
+        // Insert parentless lists alphabetically into cache.
+        ArrayService.insertItemToArray(list, cachedLists, 'title');
+      }
+    }
+
+    for (i = 0; i < childLists.length; i++) {
+      var childList = childLists[i];
+      var parentFoundButPositionAmongSiblingsNotFound = false;
+
+      for (var j = 0; j < cachedLists.length; j++) {
+        if (childList.trans.list.trans.uuid === cachedLists[j].trans.uuid ||
+            parentFoundButPositionAmongSiblingsNotFound)
+        {
+          // Parent found, insert alphabetically under parent.
+          if (j === cachedLists.length - 1) {
+            // End of array, push to the end of the cache.
+            cachedLists.push(childList);
+            parentFoundButPositionAmongSiblingsNotFound = false;
+            break;
+          } else if (!cachedLists[j + 1].trans.list) {
+            // Next is parentless, insert here.
+            cachedLists.splice(j + 1, 0, childList);
+            parentFoundButPositionAmongSiblingsNotFound = false;
+            break;
+          } else if (childList.trans.title < cachedLists[j + 1].trans.title) {
+            // Alphabetical position among siblings found, insert here.
+            cachedLists.splice(j + 1, 0, childList);
+            parentFoundButPositionAmongSiblingsNotFound = false;
+            break;
+          } else {
+            // Continue iterating until correct position for the child among siblings is found.
+            parentFoundButPositionAmongSiblingsNotFound = true;
+            continue;
           }
         }
       }
     }
+    return cachedLists;
   }
 
-  function updateActiveAndArchivedLists(/*cachedLists, ownerUUID*/) {
-    // TODO
+  /*
+  * Sorted alphabetically.
+  *
+  * ACTIVE LISTS
+  *   parentless1
+  *     child1-1
+  *     child1-2
+  *   parentless2
+  *   parentless3
+  *     child3-1
+  *
+  * ARCHIVED LISTS
+  *   ...
+  */
+  function updateAllLists(cachedLists, ownerUUID) {
+    var activeLists = ListsService.getLists(ownerUUID);
+    var archivedLists = ListsService.getArchivedLists(ownerUUID);
+    var cachedActiveLists = sortAndCacheSubsetOfAllLists(activeLists);
+    var cachedArchivedLists = sortAndCacheSubsetOfAllLists(archivedLists);
+    cachedLists['all'] = cachedActiveLists.concat(cachedArchivedLists);
   }
 
-  function updateAllLists(/*cachedLists, ownerUUID*/) {
-    // TODO
+  function updateActiveLists(cachedLists, ownerUUID) {
+    if (!cachedLists['all']) updateAllLists(cachedLists, ownerUUID);
+    cachedLists['active'] = [];
+    for (var i = 0; i < cachedLists['all'].length; i++) {
+      if (!cachedLists['all'][i].trans.archived) cachedLists['active'].push(cachedLists['all'][i]);
+      // NOTE: break could be executed when the first archived list is reached.
+    }
+    return cachedLists['active'];
+  }
+
+  function updateArchivedLists(cachedLists, ownerUUID) {
+    if (!cachedLists['all']) updateAllLists(cachedLists, ownerUUID);
+    cachedLists['archived'] = [];
+    for (var i = 0; i < cachedLists['all'].length; i++) {
+      if (cachedLists['all'][i].trans.archived) cachedLists['archived'].push(cachedLists['all'][i]);
+    }
+    return cachedLists['archived'];
+  }
+
+  function updateActiveParentlessLists(cachedLists, ownerUUID) {
+    if (!cachedLists['all']) updateAllLists(cachedLists, ownerUUID);
+    cachedLists['activeParentless'] = [];
+    for (var i = 0; i < cachedLists['all'].length; i++) {
+      if (!cachedLists['all'][i].trans.archived && !cachedLists['all'][i].trans.list) {
+        cachedLists['activeParentless'].push(cachedLists['all'][i]);
+        // NOTE: break could be executed when the first archived list is reached.
+      }
+    }
+    return cachedLists['activeParentless'];
+  }
+
+  function updateArchivedParentlessLists(cachedLists, ownerUUID) {
+    if (!cachedLists['all']) updateAllLists(cachedLists, ownerUUID);
+    cachedLists['archivedParentless'] = [];
+    for (var i = 0; i < cachedLists['all'].length; i++) {
+      if (cachedLists['all'][i].trans.archived && !cachedLists['all'][i].trans.list) {
+        cachedLists['archivedParentless'].push(cachedLists['all'][i]);
+      }
+    }
+    return cachedLists['archivedParentless'];
   }
 
   $scope.getListsArray = function(arrayType/*, info*/) {
@@ -74,21 +160,39 @@
     switch (arrayType) {
 
       case 'all':
-        // Needed in task/note list picker
-      break;
-
-      case 'allParentless':
-        // Needed in parent list picker
-      break;
+      // Needed in task/note list picker
+      if (!cachedListsArrays[ownerUUID]['all']) {
+        updateAllLists(cachedListsArrays[ownerUUID], ownerUUID);
+      }
+      return cachedListsArrays[ownerUUID]['all'];
 
       case 'active':
-        // lists/active
-      break;
+      // lists/active
+      if (!cachedListsArrays[ownerUUID]['active']) {
+        updateActiveLists(cachedListsArrays[ownerUUID], ownerUUID);
+      }
+      return cachedListsArrays[ownerUUID]['active'];
 
       case 'archived':
-        // lists/archived
-      break;
+      // lists/archived
+      if (!cachedListsArrays[ownerUUID]['archived']) {
+        updateArchivedLists(cachedListsArrays[ownerUUID], ownerUUID);
+      }
+      return cachedListsArrays[ownerUUID]['archived'];
 
+      case 'activeParentless':
+      // Needed in parent list picker
+      if (!cachedListsArrays[ownerUUID]['activeParentless']) {
+        updateActiveParentlessLists(cachedListsArrays[ownerUUID], ownerUUID);
+      }
+      return cachedListsArrays[ownerUUID]['activeParentless'];
+
+      case 'archivedParentless':
+      // Needed in parent list picker
+      if (!cachedListsArrays[ownerUUID]['archivedParentless']) {
+        updateArchivedParentlessLists(cachedListsArrays[ownerUUID], ownerUUID);
+      }
+      return cachedListsArrays[ownerUUID]['archivedParentless'];
     }
   };
 
@@ -224,6 +328,7 @@
 }
 
 ListsController['$inject'] = ['$scope',
-'AnalyticsService', 'ListsService', 'SwiperService', 'UISessionService', 'UserService', 'UserSessionService'
+'AnalyticsService', 'ArrayService', 'ListsService', 'SwiperService', 'UISessionService', 'UserService',
+'UserSessionService'
 ];
 angular.module('em.base').controller('ListsController', ListsController);
