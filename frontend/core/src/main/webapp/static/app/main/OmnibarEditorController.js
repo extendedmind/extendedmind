@@ -17,7 +17,7 @@
  'use strict';
 
  function OmnibarEditorController($q, $rootScope, $scope, $timeout,
-                                  AnalyticsService, ArrayService, TasksService, packaging,
+                                  AnalyticsService, ArrayService, ListsService, TasksService, packaging,
                                   UISessionService, UserSessionService) {
 
   // INITIALIZING
@@ -129,18 +129,21 @@
       if (!tasks[i].trans.completed) unsortedSearchItems.push(tasks[i]);
     }
 
-    // Filter completed archived tasks to search items.
+    // Filter completed archived tasks from search items.
     var archivedTasks = TasksService.getArchivedTasks(ownerUUID);
     for (i = 0; i < archivedTasks.length; i++) {
       if (!archivedTasks[i].trans.completed) unsortedSearchItems.push(archivedTasks[i]);
     }
 
     // Join rest of the arrays to search items.
-    unsortedSearchItems = unsortedSearchItems.concat($scope.allNotes, $scope.allLists, $scope.items);
+    unsortedSearchItems = unsortedSearchItems.concat($scope.allNotes,
+                                                     ListsService.getLists(ownerUUID),
+                                                     ListsService.getArchivedLists(ownerUUID),
+                                                     $scope.items);
 
     // Sort search items.
     for (i = 0; i < unsortedSearchItems.length; i ++) {
-      ArrayService.insertItemToArray(unsortedSearchItems[i], $scope.searchItems, 'created', true);
+      ArrayService.insertItemToArray(unsortedSearchItems[i], $scope.searchItems, 'modified', true);
     }
   }
 
@@ -314,5 +317,6 @@
 }
 
 OmnibarEditorController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout',
-'AnalyticsService', 'ArrayService', 'TasksService', 'packaging', 'UISessionService', 'UserSessionService'];
+'AnalyticsService', 'ArrayService', 'ListsService', 'TasksService', 'packaging', 'UISessionService',
+'UserSessionService'];
 angular.module('em.main').controller('OmnibarEditorController', OmnibarEditorController);
