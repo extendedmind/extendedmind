@@ -225,7 +225,10 @@
     }else if (itemType === 'note'){
       return $scope.allNotes.length;
     }else if (itemType === 'list'){
-      return $scope.allLists.length;
+      var activeUUID = UISessionService.getActiveUUID();
+      var activeLists = ListsService.getLists(activeUUID);
+      var archivedLists = ListsService.getArchivedLists(activeUUID);
+      return activeLists.length + archivedLists.length;
     }else if (itemType === 'tag'){
       return $scope.tags.length;
     }else if (itemType === 'deleted'){
