@@ -78,6 +78,9 @@
             if (item.trans.favorited) {
               classes.push('favorited');
             }
+            if (item.trans.itemType === 'list' && item.trans.list) {
+              classes.push('indent');
+            }
             if (!classes.length) {
               classes.push('no-additional-status');
             }
