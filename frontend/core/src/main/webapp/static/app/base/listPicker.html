@@ -18,7 +18,7 @@
   </div>
 
   <div class="row-vertically-centered"
-    ng-repeat="list in lists | filter:notSelectedList track by list.trans.uuid || $index"
+    ng-repeat="list in lists | filter:notSelectedListAndNotThisList track by list.trans.uuid || $index"
     swiper-click="listSelected(list)">
     <a href class="link" ng-class="list.trans.list && 'indent'">
       <span class="text-link" clamp=2>{{::prefix}}{{list.trans.title}}</span>

@@ -4,14 +4,21 @@
     <div class="container-titlebar--inner">
       <div class="group-symmetrical height-large--top height-large--bottom" swiper-prevent>
 
-        <a href class="group-symmetrical--left link-navigation active highlighted sorting-hide"
+        <a href ng-hide="isPickerOpen()"
+          class="group-symmetrical--left link-navigation active highlighted sorting-hide"
           swiper-click="endListEdit()">
           <span class="text-navigation-back"
             ng-class="(!isFirstSlide('listEditor') || mode === 'search') && 'not-swipeable'"
-            ng-bind="isListEdited() && !list.trans.deleted ? 'save' : 'back'"></span>
+            ng-bind="isListEdited() && !list.trans.deleted ? 'save' : 'back'">
+          </span>
         </a>
 
-        <div ng-show="descriptionFocused || !isFirstSlide('listEditor')"
+        <a href ng-if="isPickerOpen()" ng-click="propertyEditDone()" class="group-symmetrical--left highlighted"
+          editable-field-container="auto">
+          <span class="text-edit" ng-bind="isPropertyEdited() ? 'save' : 'done'"></span>
+        </a>
+
+        <div ng-show="isListPropertyInEdit() || !isFirstSlide('listEditor')"
           ng-style="{maxWidth: calculateTitleWidth()}"
           class="group-symmetrical--middle width-large text-heading-primary--outer primary">
           <div class="text-heading-primary--inner">
@@ -25,20 +32,19 @@
           <span class="text-heading-primary text-downplayed">list</span>
         </div>
 
-        <a href ng-if="!list.trans.deleted" ng-hide="descriptionFocused" class="group-symmetrical--right"
+        <a href ng-if="!list.trans.deleted" ng-hide="isListPropertyInEdit()" class="group-symmetrical--right"
           swiper-click="deleteListInEdit()">
           <span class="icon-trash"></span>
         </a>
-        <a href ng-if="list.trans.deleted" ng-hide="descriptionFocused"
+        <a href ng-if="list.trans.deleted" ng-hide="isListPropertyInEdit()"
           class="group-symmetrical--right link-navigation highlighted active" swiper-click="undeleteList(list)">
           <span class="text-navigation">restore</span>
         </a>
 
-        <div ng-if="descriptionFocused" class="group-symmetrical--right">
-          <div class="text-field--label-multi-row">
-            <span ng-bind="'de' + (columns === 1 ? '-\n' : '') + 'scription'"
-              class="text-field--label-bold">
-            </span>
+        <div ng-if="isListPropertyInEdit()" class="group-symmetrical--right">
+          <span ng-if="listPickerOpen" class="text-field--label-bold">list</span>
+          <div ng-if="descriptionFocused" class="text-field--label-multi-row">
+            <span ng-bind="'de' + (columns === 1 ? '-\n' : '') + 'scription'" class="text-field--label-bold"></span>
           </div>
         </div>
 
@@ -55,7 +61,7 @@
           drawer-override-aisle="right" ng-init="drawerAisleInitialized = true">
 
           <!-- LIST TITLE -->
-          <div ng-hide="descriptionFocused" class="row-top-parent">
+          <div ng-hide="isListPropertyInEdit()" class="row-top-parent">
             <div class="group-mixed large">
               <div class="group-mixed--middle">
                 <textarea class="text-heading-primary large" ng-model="list.trans.title"
@@ -73,15 +79,48 @@
             </div>
           </div>
 
+          <!-- LIST -->
+          <div ng-hide="listIsParent(list) || descriptionFocused || listPickerOpen || features.lists.getStatus('active') === 'disabled'"
+            class="group-mixed">
+            <a href class="group-mixed--middle link-search-result" ng-class="!list.trans.list && 'downplayed'"
+              swiper-click="openListPicker()">
+              <span class="text-field--title"
+                ng-bind="(list.trans.list && !list.trans.list.trans.deleted) ? list.trans.list.trans.title : 'select parent list\u2026'">
+              </span>
+            </a>
+            <div ng-if="list.trans.list" class="group-mixed--right">
+              <span class="text-field--label">list</span>
+            </div>
+          </div>
+
+          <!-- LIST PICKER -->
+          <div ng-if="listPickerOpen" class="swiper-no-swiping animate-fade-in"
+            ng-init="thisList = list"
+            editable-field-container="auto" editable-field-container-scrollable="true"
+            editable-field-container-clicked-elsewhere="closeListPicker()" data-snap-ignore="true">
+            <div list-picker="getListsArray(list.trans.archived ? 'archivedParentless' : 'activeParentless')"
+              list-picker-new-item="getNewList()"
+              list-picker-save="closeListPickerAndSetListToItem(thisList, list)"
+              list-picker-clear="closeListPickerAndClearListFromItem(thisList, list)"
+              list-picker-get-selected="list.trans.list"
+              list-picker-get-this-list="list"
+              list-picker-register-save-new-list-callback="registerPropertyEditDoneCallback(saveNewList)"
+              list-picker-unregister-save-new-list-callback="unregisterPropertyEditDoneCallback()"
+              list-picker-register-is-edited-callback="registerIsPropertyEdited(isEdited)"
+              list-picker-unregister-is-edited-callback="unregisterIsPropertyEdited()">
+            </div>
+          </div>
+
           <!-- DESCRIPTION -->
-          <textarea ng-if="drawerAisleInitialized" id="ignoreSnap" ng-model="list.trans.description"
-            input-model-validator ng-trim="false" ng-focus="setDescriptionFocus(true, 'listEditor')"
-            ng-blur="setDescriptionFocus(false, 'listEditor')" editable-field msd-elastic
-            placeholder="enter description&#8230;" maxlength="1024" autocapitalize="none" autocorrect="off">
+          <textarea ng-if="drawerAisleInitialized" ng-hide="listPickerOpen" id="ignoreSnap"
+            ng-model="list.trans.description" input-model-validator ng-trim="false"
+            ng-focus="setDescriptionFocus(true, 'listEditor')" ng-blur="setDescriptionFocus(false, 'listEditor')"
+            editable-field msd-elastic placeholder="enter description&#8230;" maxlength="1024"
+            autocapitalize="none" autocorrect="off">
          </textarea>
 
         </div>
-        <footer ng-hide="descriptionFocused" class="container-content--after editor-footer">
+        <footer ng-hide="isListPropertyInEdit()" class="container-content--after editor-footer">
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
 
             <a ng-if="showArchive()" href swiper-click="archiveListInEdit(list)"

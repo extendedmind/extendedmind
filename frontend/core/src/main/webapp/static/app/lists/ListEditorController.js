@@ -156,6 +156,29 @@
     }
   };
 
+  // UI
+
+  $scope.isListPropertyInEdit = function() {
+    return $scope.descriptionFocused || $scope.isPickerOpen();
+  };
+
+  function isPickerOpenInListEditor(){
+    return $scope.listPickerOpen;
+  }
+  $scope.registerIsPickerOpenCondition(isPickerOpenInListEditor);
+
+  // LIST PICKER
+  $scope.listIsParent = function(list) {
+    var lists = $scope.getListsArray('all');
+    for (var i = 0; i < lists.length; i++) {
+      if (lists[i].trans.list && lists[i].trans.list.trans.uuid === list.trans.uuid) {
+        console.log(list.trans.title + ' is parent');
+        return true;
+      }
+    }
+    return false;
+  };
+
   $scope.showArchive = function() {
     return !$scope.isFakeUser() &&
         $scope.list.trans.archived === undefined &&

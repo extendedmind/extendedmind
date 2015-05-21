@@ -24,6 +24,7 @@
       prefix: '@listPickerPrefix',
       getNewList: '&?listPickerNewItem',
       getSelectedList: '&listPickerGetSelected',
+      getThisList: '&listPickerGetThisList',
       closeAndSave: '&listPickerSave',
       closeAndClearList: '&listPickerClear',
       registerSaveNewListCallback: '&listPickerRegisterSaveNewListCallback',
@@ -34,6 +35,7 @@
     link: function(scope) {
       scope.newList = scope.getNewList();
       scope.selectedList = scope.getSelectedList();
+      scope.thisList = scope.getThisList();
       scope.type = scope.type || 'list';
 
       scope.registerSaveNewListCallback({saveNewList: saveNewList});
@@ -64,16 +66,27 @@
       /*
       * Filter selected list from lists.
       */
-      scope.notSelectedList = function(list) {
-        if (!scope.selectedList) return true;  // No list selected.
-
-        if (list.trans.uuid) {
-          // Compare with uuid.
-          return scope.selectedList.trans.uuid && list.trans.uuid !== scope.selectedList.trans.uuid;
-        } else {
-          // Compare with title.
-          return scope.selectedList.trans.title !== list.trans.title;
+      scope.notSelectedListAndNotThisList = function(list) {
+        if (scope.selectedList) {
+          if (list.trans.uuid) {
+            // Compare with uuid.
+            if (scope.selectedList.trans.uuid && list.trans.uuid === scope.selectedList.trans.uuid) {
+              return false;
+            }
+          } else {
+            // Compare with title.
+            if (scope.selectedList.trans.title === list.trans.title) {
+              return false;
+            }
+          }
         }
+        if (scope.thisList) {
+          if (list.trans.uuid === scope.thisList.trans.uuid) {
+            return false;
+          }
+        }
+
+        return true;
       };
 
       scope.listSelected = function(list) {
