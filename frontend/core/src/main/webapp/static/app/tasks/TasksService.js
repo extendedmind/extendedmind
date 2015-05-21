@@ -236,7 +236,7 @@
 
   function updateTask(task, ownerUUID, oldUUID, propertiesToReset) {
     ItemLikeService.persistAndReset(task, TASK_TYPE, ownerUUID, taskFieldInfos, oldUUID, propertiesToReset);
-    return ArrayService.updateItem(ownerUUID, 'tasks', task,
+    return ArrayService.updateItem(ownerUUID, TASK_TYPE, task,
                                    tasks[ownerUUID].activeTasks,
                                    tasks[ownerUUID].deletedTasks,
                                    getOtherArrays(ownerUUID));
@@ -244,7 +244,7 @@
 
   function setTask(task, ownerUUID) {
     ItemLikeService.persistAndReset(task, TASK_TYPE, ownerUUID, taskFieldInfos);
-    ArrayService.setItem(ownerUUID, 'tasks', task,
+    ArrayService.setItem(ownerUUID, TASK_TYPE, task,
                          tasks[ownerUUID].activeTasks,
                          tasks[ownerUUID].deletedTasks,
                          getOtherArrays(ownerUUID));
@@ -406,12 +406,12 @@
         ItemLikeService.persistAndReset(tasksResponse, TASK_TYPE, ownerUUID, taskFieldInfos);
       }
       if (addToExisting){
-        latestModified = ArrayService.updateArrays(ownerUUID, 'tasks', tasksResponse,
+        latestModified = ArrayService.updateArrays(ownerUUID, TASK_TYPE, tasksResponse,
                                                tasks[ownerUUID].activeTasks,
                                                tasks[ownerUUID].deletedTasks,
                                                getOtherArrays(ownerUUID));
       }else{
-        latestModified = ArrayService.setArrays(ownerUUID, 'tasks', tasksResponse,
+        latestModified = ArrayService.setArrays(ownerUUID, TASK_TYPE, tasksResponse,
                                             tasks[ownerUUID].activeTasks,
                                             tasks[ownerUUID].deletedTasks,
                                             getOtherArrays(ownerUUID));
@@ -448,7 +448,7 @@
             ItemLikeService.persistAndReset(tasksResponse[i], TASK_TYPE, ownerUUID, taskFieldInfos);
           }
         }
-        var latestModified = ArrayService.updateArrays(ownerUUID, 'tasks', updatedTasks,
+        var latestModified = ArrayService.updateArrays(ownerUUID, TASK_TYPE, updatedTasks,
                                                   tasks[ownerUUID].activeTasks,
                                                   tasks[ownerUUID].deletedTasks,
                                                   getOtherArrays(ownerUUID));
@@ -597,7 +597,7 @@
       if (taskInfo) {
         ReminderService.removeScheduledReminder(taskInfo.task);
         ItemLikeService.remove(taskInfo.task.trans.uuid);
-        ArrayService.removeFromArrays(ownerUUID, taskInfo.task, 'tasks',
+        ArrayService.removeFromArrays(ownerUUID, taskInfo.task, TASK_TYPE,
                                       tasks[ownerUUID].activeTasks,
                                       tasks[ownerUUID].deletedTasks,
                                       getOtherArrays(ownerUUID));

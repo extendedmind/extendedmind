@@ -102,7 +102,7 @@
   function updateList(list, ownerUUID, oldItemUUID, propertiesToReset) {
     ItemLikeService.persistAndReset(list, LIST_TYPE, ownerUUID,
                                     listFieldInfos, oldItemUUID, propertiesToReset);
-    return ArrayService.updateItem(ownerUUID, 'lists', list,
+    return ArrayService.updateItem(ownerUUID, LIST_TYPE, list,
                                    lists[ownerUUID].activeLists,
                                    lists[ownerUUID].deletedLists,
                                    getOtherArrays(ownerUUID));
@@ -110,7 +110,7 @@
 
   function setList(list, ownerUUID) {
     ItemLikeService.persistAndReset(list, LIST_TYPE, ownerUUID, listFieldInfos);
-    ArrayService.setItem(ownerUUID, 'lists', list,
+    ArrayService.setItem(ownerUUID, LIST_TYPE, list,
                          lists[ownerUUID].activeLists,
                          lists[ownerUUID].deletedLists,
                          getOtherArrays(ownerUUID));
@@ -128,13 +128,13 @@
       }
 
       if (addToExisting){
-        return ArrayService.updateArrays(ownerUUID, 'lists', listsResponse,
+        return ArrayService.updateArrays(ownerUUID, LIST_TYPE, listsResponse,
                                                        lists[ownerUUID].activeLists,
                                                        lists[ownerUUID].deletedLists,
                                                        getOtherArrays(ownerUUID));
 
       }else{
-        return ArrayService.setArrays(ownerUUID, 'lists', listsResponse,
+        return ArrayService.setArrays(ownerUUID, LIST_TYPE, listsResponse,
                                     lists[ownerUUID].activeLists,
                                     lists[ownerUUID].deletedLists,
                                     getOtherArrays(ownerUUID));
@@ -157,7 +157,7 @@
           }
         }
         ItemLikeService.persistAndReset(updatedLists, LIST_TYPE, ownerUUID, listFieldInfos);
-        var latestModified = ArrayService.updateArrays(ownerUUID, 'lists', updatedLists,
+        var latestModified = ArrayService.updateArrays(ownerUUID, LIST_TYPE, updatedLists,
                                                        lists[ownerUUID].activeLists,
                                                        lists[ownerUUID].deletedLists,
                                                        getOtherArrays(ownerUUID));
@@ -286,7 +286,7 @@
           listDeletedCallbacks[id](listInfo.list, ownerUUID);
         }
         ItemLikeService.remove(listInfo.list.trans.uuid);
-        ArrayService.removeFromArrays(ownerUUID, listInfo.list, 'lists',
+        ArrayService.removeFromArrays(ownerUUID, listInfo.list, LIST_TYPE,
                                       lists[ownerUUID].activeLists,
                                       lists[ownerUUID].deletedLists,
                                       getOtherArrays(ownerUUID));

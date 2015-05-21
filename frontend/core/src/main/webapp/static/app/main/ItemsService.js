@@ -36,21 +36,21 @@
 
   function updateItem(item, ownerUUID, oldUUID) {
     ItemLikeService.persistAndReset(item, ITEM_TYPE, ownerUUID, itemFieldInfos, oldUUID);
-    return ArrayService.updateItem(ownerUUID, 'items', item,
+    return ArrayService.updateItem(ownerUUID, ITEM_TYPE, item,
                                    items[ownerUUID].activeItems,
                                    items[ownerUUID].deletedItems);
   }
 
   function setItem(item, ownerUUID) {
     ItemLikeService.persistAndReset(item, ITEM_TYPE, ownerUUID, itemFieldInfos);
-    return ArrayService.setItem(ownerUUID, 'items', item,
+    return ArrayService.setItem(ownerUUID, ITEM_TYPE, item,
                                 items[ownerUUID].activeItems,
                                 items[ownerUUID].deletedItems);
   }
 
   function removeActiveItem(item, ownerUUID) {
     ItemLikeService.remove(item.trans.uuid);
-    ArrayService.removeFromArrays(ownerUUID, item, 'items',
+    ArrayService.removeFromArrays(ownerUUID, item, ITEM_TYPE,
                                         items[ownerUUID].activeItems);
   }
 
@@ -66,11 +66,11 @@
       }
 
       if (addToExisting){
-        return ArrayService.updateArrays(ownerUUID, 'items', itemsResponse,
+        return ArrayService.updateArrays(ownerUUID, ITEM_TYPE, itemsResponse,
                                     items[ownerUUID].activeItems,
                                     items[ownerUUID].deletedItems);
       }else{
-        return ArrayService.setArrays(ownerUUID, 'items', itemsResponse,
+        return ArrayService.setArrays(ownerUUID, ITEM_TYPE, itemsResponse,
                                     items[ownerUUID].activeItems,
                                     items[ownerUUID].deletedItems);
       }
@@ -91,7 +91,7 @@
           }
         }
         ItemLikeService.persistAndReset(updatedItems, ITEM_TYPE, ownerUUID, itemFieldInfos);
-        return ArrayService.updateArrays(ownerUUID, 'items', updatedItems,
+        return ArrayService.updateArrays(ownerUUID, ITEM_TYPE, updatedItems,
                                          items[ownerUUID].activeItems,
                                          items[ownerUUID].deletedItems);
       }
@@ -208,7 +208,7 @@
           removeActiveItem(itemInfo.item, ownerUUID);
         } else if (itemInfo.type === 'deleted') {
           ItemLikeService.remove(itemInfo.item.trans.uuid);
-          ArrayService.removeFromArrays(ownerUUID, itemInfo.item, 'items',
+          ArrayService.removeFromArrays(ownerUUID, itemInfo.item, ITEM_TYPE,
                                         items[ownerUUID].activeItems,
                                         items[ownerUUID].deletedItems);
         }

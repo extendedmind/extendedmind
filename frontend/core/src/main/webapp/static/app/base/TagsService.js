@@ -44,14 +44,14 @@
 
   function updateTag(tag, ownerUUID, oldUUID) {
     ItemLikeService.persistAndReset(tag, TAG_TYPE, ownerUUID, tagFieldInfos, oldUUID);
-    return ArrayService.updateItem(ownerUUID, 'tags', tag,
+    return ArrayService.updateItem(ownerUUID, TAG_TYPE, tag,
                                    tags[ownerUUID].activeTags,
                                    tags[ownerUUID].deletedTags);
   }
 
   function setTag(tag, ownerUUID) {
     ItemLikeService.persistAndReset(tag, TAG_TYPE, ownerUUID, tagFieldInfos);
-    return ArrayService.setItem(ownerUUID, 'tags', tag,
+    return ArrayService.setItem(ownerUUID, TAG_TYPE, tag,
                                 tags[ownerUUID].activeTags,
                                 tags[ownerUUID].deletedTags);
   }
@@ -67,11 +67,11 @@
         ItemLikeService.persistAndReset(tagsResponse, TAG_TYPE, ownerUUID, tagFieldInfos);
       }
       if (addToExisting){
-        return ArrayService.updateArrays(ownerUUID, 'tags', tagsResponse,
+        return ArrayService.updateArrays(ownerUUID, TAG_TYPE, tagsResponse,
                                     tags[ownerUUID].activeTags,
                                     tags[ownerUUID].deletedTags);
       }else{
-        return ArrayService.setArrays(ownerUUID, 'tags', tagsResponse,
+        return ArrayService.setArrays(ownerUUID, TAG_TYPE, tagsResponse,
                                     tags[ownerUUID].activeTags,
                                     tags[ownerUUID].deletedTags);
       }
@@ -94,7 +94,7 @@
         }
 
         ItemLikeService.persistAndReset(updatedTags, TAG_TYPE, ownerUUID, tagFieldInfos);
-        var latestModified = ArrayService.updateArrays(ownerUUID, 'tags', updatedTags,
+        var latestModified = ArrayService.updateArrays(ownerUUID, TAG_TYPE, updatedTags,
                                                        tags[ownerUUID].activeTags,
                                                        tags[ownerUUID].deletedTags);
         if (latestModified) {

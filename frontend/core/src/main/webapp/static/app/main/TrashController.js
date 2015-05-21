@@ -20,15 +20,15 @@
 
   // INITIALIZING
   if (angular.isFunction($scope.registerArrayChangeCallback)) {
-    $scope.registerArrayChangeCallback('items', ['deleted'], invalidateDeleted,
+    $scope.registerArrayChangeCallback('item', ['deleted'], invalidateDeleted,
                                        'TrashController');
-    $scope.registerArrayChangeCallback('lists', ['deleted'], invalidateDeleted,
+    $scope.registerArrayChangeCallback('list', ['deleted'], invalidateDeleted,
                                        'TrashController');
-    $scope.registerArrayChangeCallback('notes', ['deleted'], invalidateDeleted,
+    $scope.registerArrayChangeCallback('note', ['deleted'], invalidateDeleted,
                                        'TrashController');
-    $scope.registerArrayChangeCallback('tags', ['deleted'], invalidateDeleted,
+    $scope.registerArrayChangeCallback('tag', ['deleted'], invalidateDeleted,
                                        'TrashController');
-    $scope.registerArrayChangeCallback('tasks', ['deleted'], invalidateDeleted,
+    $scope.registerArrayChangeCallback('task', ['deleted'], invalidateDeleted,
                                        'TrashController');
   }
 

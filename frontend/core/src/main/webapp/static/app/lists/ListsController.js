@@ -19,7 +19,7 @@
                           UserService, UserSessionService) {
 
   if (angular.isFunction($scope.registerArrayChangeCallback)) {
-    $scope.registerArrayChangeCallback('lists', ['active', 'archived'], invalidateListsArrays,
+    $scope.registerArrayChangeCallback('list', ['active', 'archived'], invalidateListsArrays,
                                        'ListsController');
   }
 

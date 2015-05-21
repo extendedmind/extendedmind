@@ -83,7 +83,7 @@
 
   function updateNote(note, ownerUUID, oldUUID, propertiesToReset) {
     ItemLikeService.persistAndReset(note, NOTE_TYPE, ownerUUID, noteFieldInfos, oldUUID, propertiesToReset);
-    return ArrayService.updateItem(ownerUUID, 'notes', note,
+    return ArrayService.updateItem(ownerUUID, NOTE_TYPE, note,
                                    notes[ownerUUID].activeNotes,
                                    notes[ownerUUID].deletedNotes,
                                    getOtherArrays(ownerUUID));
@@ -91,7 +91,7 @@
 
   function setNote(note, ownerUUID, propertiesToReset) {
     ItemLikeService.persistAndReset(note, NOTE_TYPE, ownerUUID, noteFieldInfos, undefined, propertiesToReset);
-    ArrayService.setItem(ownerUUID, 'notes', note,
+    ArrayService.setItem(ownerUUID, NOTE_TYPE, note,
                          notes[ownerUUID].activeNotes,
                          notes[ownerUUID].deletedNotes,
                          getOtherArrays(ownerUUID));
@@ -213,11 +213,11 @@
         ItemLikeService.persistAndReset(notesResponse, NOTE_TYPE, ownerUUID, noteFieldInfos);
       }
       if (addToExisting){
-        return ArrayService.updateArrays(ownerUUID, 'notes', notesResponse,
+        return ArrayService.updateArrays(ownerUUID, NOTE_TYPE, notesResponse,
                                     notes[ownerUUID].activeNotes,
                                     notes[ownerUUID].deletedNotes, getOtherArrays(ownerUUID));
       }else{
-        return ArrayService.setArrays(ownerUUID, 'notes', notesResponse,
+        return ArrayService.setArrays(ownerUUID, NOTE_TYPE, notesResponse,
                                     notes[ownerUUID].activeNotes,
                                     notes[ownerUUID].deletedNotes, getOtherArrays(ownerUUID));
       }
@@ -246,7 +246,7 @@
             ItemLikeService.persistAndReset(notesResponse[i], NOTE_TYPE, ownerUUID, noteFieldInfos);
           }
         }
-        return ArrayService.updateArrays(ownerUUID, 'notes', updatedNotes,
+        return ArrayService.updateArrays(ownerUUID, NOTE_TYPE, updatedNotes,
                                          notes[ownerUUID].activeNotes,
                                          notes[ownerUUID].deletedNotes, getOtherArrays(ownerUUID));
       }
@@ -372,7 +372,7 @@
       var noteInfo = this.getNoteInfo(uuid, ownerUUID);
       if (noteInfo) {
         ItemLikeService.remove(noteInfo.note.trans.uuid);
-        ArrayService.removeFromArrays(ownerUUID, noteInfo.note, 'notes',
+        ArrayService.removeFromArrays(ownerUUID, noteInfo.note, NOTE_TYPE,
                                       notes[ownerUUID].activeNotes,
                                       notes[ownerUUID].deletedNotes,
                                       getOtherArrays(ownerUUID));

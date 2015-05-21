@@ -20,7 +20,7 @@
 
   // INITIALIZING
   if (angular.isFunction($scope.registerArrayChangeCallback)) {
-    $scope.registerArrayChangeCallback('tasks', ['active', 'archived'], invalidateTasksArrays,
+    $scope.registerArrayChangeCallback('task', ['active', 'archived'], invalidateTasksArrays,
                                        'TasksController');
   }
 
