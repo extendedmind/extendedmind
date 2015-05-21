@@ -6,8 +6,7 @@
       <div list-item-add="getNewList()" list-item-add-save="saveList(newItem)"
         ng-include="urlBase + 'app/lists/listListItemAdd.html'"></div>
       <div class="animate-list-item-leave"
-        ng-repeat="list in listInfos.array = (getFullArray())
-        | limitTo: currentListLimitTo track by list.trans.uuid"
+        ng-repeat="list in getVisibleArray(getFullArray, currentListLimitTo) track by list.trans.uuid"
         list-item ng-include="urlBase + 'app/lists/listListItem.html'"></div>
       <div list-prompt="lists" list-prompt-infos="listInfos"
         list-prompt-hide="[listItemAddActive]"></div>
