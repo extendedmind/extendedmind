@@ -54,7 +54,12 @@
   }
 
   function compareWithTitle(a, b) {
-    return a.trans.title < b.trans.title;
+    if (a.trans.title < b.trans.title) {
+      return -1;
+    } else if (a.trans.title > b.trans.title) {
+      return 1;
+    }
+    return 0;
   }
 
   function sortAndCacheSubsetOfAllLists(subset) {
@@ -69,7 +74,7 @@
         childLists.push(list);
       } else {
         // Insert parentless lists alphabetically into cache.
-        ArrayService.insertItemToArray(list, cachedLists, compareWithTitle, true);
+        ArrayService.insertItemToArray(list, cachedLists, compareWithTitle);
       }
     }
 
@@ -92,7 +97,7 @@
             cachedLists.splice(j + 1, 0, childList);
             parentFoundButPositionAmongSiblingsNotFound = false;
             break;
-          } else if (childList.trans.title < cachedLists[j + 1].trans.title) {
+          } else if (childList.trans.title <= cachedLists[j + 1].trans.title) {
             // Alphabetical position among siblings found, insert here.
             cachedLists.splice(j + 1, 0, childList);
             parentFoundButPositionAmongSiblingsNotFound = false;
