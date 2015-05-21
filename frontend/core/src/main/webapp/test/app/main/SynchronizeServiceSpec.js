@@ -744,7 +744,7 @@ describe('SynchronizeService', function() {
     updatedTestTask.trans.description = 'test description';
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
        .respond(404);
-    TasksService.saveTask(updatedTestTask, testOwnerUUID);
+    TasksService.saveTask(updatedTestTask);
     $httpBackend.flush();
 
     expect(tasks.length)
@@ -753,7 +753,7 @@ describe('SynchronizeService', function() {
     // 4. delete task
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
        .respond(404);
-    TasksService.deleteTask(updatedTestTask, testOwnerUUID);
+    TasksService.deleteTask(updatedTestTask);
     $httpBackend.flush();
     expect(tasks.length)
       .toBe(4);
@@ -761,7 +761,7 @@ describe('SynchronizeService', function() {
     // 5. undelete task
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
        .respond(404);
-    TasksService.undeleteTask(updatedTestTask, testOwnerUUID);
+    TasksService.undeleteTask(updatedTestTask);
     $httpBackend.flush();
     expect(tasks.length)
       .toBe(5);
@@ -799,7 +799,7 @@ describe('SynchronizeService', function() {
     // 7. delete online
     $httpBackend.expectDELETE('/api/' + testOwnerUUID + '/task/' + updatedTestTask.mod.uuid)
        .respond(200, deleteItemResponse);
-    TasksService.deleteTask(updatedTestTask, testOwnerUUID);
+    TasksService.deleteTask(updatedTestTask);
     $httpBackend.flush();
 
     expect(tasks.length)
@@ -812,7 +812,7 @@ describe('SynchronizeService', function() {
     // 8. undelete online
     $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + updatedTestTask.mod.uuid + '/undelete')
        .respond(200, undeleteItemResponse);
-    TasksService.undeleteTask(updatedTestTask, testOwnerUUID);
+    TasksService.undeleteTask(updatedTestTask);
     $httpBackend.flush();
     expect(tasks.length)
       .toBe(5);
@@ -853,7 +853,7 @@ describe('SynchronizeService', function() {
     var testTask = TasksService.getNewTask(testTaskValues, testOwnerUUID);
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task', testTaskValues)
        .respond(404);
-    TasksService.saveTask(testTask, testOwnerUUID);
+    TasksService.saveTask(testTask);
     $httpBackend.flush();
     var tasks = TasksService.getTasks(testOwnerUUID);
     expect(tasks.length)
@@ -863,7 +863,7 @@ describe('SynchronizeService', function() {
 
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task', testTaskValues)
        .respond(404);
-    TasksService.completeTask(testTask, testOwnerUUID);
+    TasksService.completeTask(testTask);
     $httpBackend.flush();
     expect(tasks.length)
       .toBe(5);
@@ -873,7 +873,7 @@ describe('SynchronizeService', function() {
 
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task', testTaskValues)
        .respond(404);
-    TasksService.uncompleteTask(testTask, testOwnerUUID);
+    TasksService.uncompleteTask(testTask);
     $httpBackend.flush();
 
     expect(tasks.length)
@@ -886,7 +886,7 @@ describe('SynchronizeService', function() {
        .respond(200, putNewItemResponse);
     $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + putNewItemResponse.uuid + '/complete')
        .respond(200, completeTaskResponse);
-    TasksService.completeTask(testTask, testOwnerUUID);
+    TasksService.completeTask(testTask);
     $httpBackend.flush();
     expect(tasks.length)
       .toBe(5);
@@ -899,7 +899,7 @@ describe('SynchronizeService', function() {
 
     $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + putNewItemResponse.uuid + '/uncomplete')
        .respond(200, uncompleteTaskResponse);
-    TasksService.uncompleteTask(testTask, testOwnerUUID);
+    TasksService.uncompleteTask(testTask);
     $httpBackend.flush();
     expect(tasks.length)
       .toBe(5);
@@ -911,7 +911,7 @@ describe('SynchronizeService', function() {
     var buyTickets = TasksService.getTaskInfo('1a1ce3aa-f476-43c4-845e-af59a9a33760', testOwnerUUID).task;
     $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + buyTickets.uuid + '/complete')
        .respond(404);
-    TasksService.completeTask(buyTickets, testOwnerUUID);
+    TasksService.completeTask(buyTickets);
     $httpBackend.flush();
     expect(tasks.length)
       .toBe(5);
@@ -958,7 +958,7 @@ describe('SynchronizeService', function() {
 
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' + cleanCloset.trans.uuid, cleanClosetTransport)
        .respond(404);
-    TasksService.saveTask(cleanCloset, testOwnerUUID);
+    TasksService.saveTask(cleanCloset);
     $httpBackend.flush();
     expect(tasks.length)
       .toBe(4);
@@ -1006,7 +1006,7 @@ describe('SynchronizeService', function() {
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' + cleanCloset.trans.uuid,
                            cleanClosetTransport)
        .respond(404);
-    TasksService.saveTask(cleanCloset, testOwnerUUID);
+    TasksService.saveTask(cleanCloset);
     $httpBackend.flush();
     expect(tasks.length)
       .toBe(4);
@@ -1047,7 +1047,7 @@ describe('SynchronizeService', function() {
                                 modified: cleanCloset.trans.modified};
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' + cleanCloset.trans.uuid, cleanClosetTransport)
        .respond(404);
-    TasksService.saveTask(cleanCloset, testOwnerUUID);
+    TasksService.saveTask(cleanCloset);
     $httpBackend.flush();
     expect(tasks.length)
       .toBe(4);
@@ -1055,7 +1055,7 @@ describe('SynchronizeService', function() {
     // 2. uncomplete task
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' + cleanCloset.trans.uuid, cleanClosetTransport)
        .respond(404);
-    TasksService.uncompleteTask(cleanCloset, testOwnerUUID);
+    TasksService.uncompleteTask(cleanCloset);
     $httpBackend.flush();
     expect(tasks.length)
       .toBe(4);
@@ -1064,7 +1064,7 @@ describe('SynchronizeService', function() {
     // 3. complete task, expect new task to be created
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' + cleanCloset.trans.uuid, cleanClosetTransport)
        .respond(404);
-    TasksService.completeTask(cleanCloset, testOwnerUUID);
+    TasksService.completeTask(cleanCloset);
     $httpBackend.flush();
     var generatedTask = TasksService.getTaskInfo(cleanCloset.hist.generatedUUID, testOwnerUUID).task;
     expect(tasks.length)
@@ -1096,7 +1096,7 @@ describe('SynchronizeService', function() {
        .respond(200, completeRepeatingTaskResponse);
     $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + cleanCloset.trans.uuid + '/uncomplete')
        .respond(200, uncompleteTaskResponse);
-    TasksService.uncompleteTask(cleanCloset, testOwnerUUID);
+    TasksService.uncompleteTask(cleanCloset);
     $httpBackend.flush();
     expect(cleanCloset.mod.modified).toBe(uncompleteTaskResponse.modified);
     expect(cleanCloset.hist.generatedUUID).toBe(completeRepeatingTaskResponse.generated.uuid);
@@ -1141,7 +1141,7 @@ describe('SynchronizeService', function() {
     var testTask = TasksService.getNewTask(testTaskValues, testOwnerUUID);
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task', testTaskValues)
        .respond(200, {testing: true});
-    TasksService.saveTask(testTask, testOwnerUUID);
+    TasksService.saveTask(testTask);
     $httpBackend.flush();
     expect(tasks.length)
       .toBe(5);
@@ -1497,7 +1497,7 @@ describe('SynchronizeService', function() {
     var testTask = TasksService.getNewTask({title: testTaskValues.title, list: lists[4]}, testOwnerUUID);
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
        .respond(404);
-    TasksService.saveTask(testTask, testOwnerUUID);
+    TasksService.saveTask(testTask);
     $httpBackend.flush();
 
     // 5. delete list offline
@@ -2011,7 +2011,7 @@ describe('SynchronizeService', function() {
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task',
                            orangesTransport)
        .respond(404);
-    TasksService.saveTask(oranges, testOwnerUUID);
+    TasksService.saveTask(oranges);
     $httpBackend.flush();
     expect(tasks.length)
       .toBe(5);
@@ -2029,7 +2029,7 @@ describe('SynchronizeService', function() {
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task',
                            orangesTransport)
        .respond(404);
-    TasksService.saveTask(cleanCloset, testOwnerUUID);
+    TasksService.saveTask(cleanCloset);
     $httpBackend.flush();
     expect(tasks.length)
       .toBe(5);
@@ -2104,7 +2104,7 @@ describe('SynchronizeService', function() {
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid,
                            cleanClosetTransport)
        .respond(404);
-    TasksService.saveTask(cleanCloset, testOwnerUUID);
+    TasksService.saveTask(cleanCloset);
     $httpBackend.flush();
     expect(tasks.length)
       .toBe(4);

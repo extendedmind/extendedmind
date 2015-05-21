@@ -54,7 +54,7 @@
 
   $scope.isTaskEdited = function() {
     if ($scope.taskTitlebarHasText()) {
-      return TasksService.isTaskEdited($scope.task, UISessionService.getActiveUUID());
+      return TasksService.isTaskEdited($scope.task);
     }
   };
 
@@ -75,7 +75,7 @@
           completeReadyDeferred = undefined;
         });
       } else {
-        TasksService.resetTask($scope.task, UISessionService.getActiveUUID());
+        TasksService.resetTask($scope.task);
       }
     }
   }

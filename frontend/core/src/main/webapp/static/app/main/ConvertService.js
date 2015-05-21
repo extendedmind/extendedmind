@@ -197,7 +197,7 @@
     */
     finishTaskToNoteConvert: function(task, ownerUUID) {
       var deferred = $q.defer();
-      if (TasksService.getTaskStatus(task, ownerUUID) === 'deleted') {
+      if (TasksService.getTaskStatus(task) === 'deleted') {
         deferred.reject({type: 'deleted'});
       } else if (task.trans.reminders) {
         deferred.reject({type: 'reminders'});
@@ -220,7 +220,7 @@
     finishTaskToListConvert: function(task, ownerUUID) {
       var deferred = $q.defer();
 
-      if (TasksService.getTaskStatus(task, ownerUUID) === 'deleted') {
+      if (TasksService.getTaskStatus(task) === 'deleted') {
         deferred.reject({type: 'deleted'});
       } else if (task.trans.reminders) {
         deferred.reject({type: 'reminders'});
@@ -292,7 +292,7 @@
       var deferred = $q.defer();
       if (ListsService.getListStatus(list) === 'deleted') {
         deferred.reject({type: 'deleted'});
-      } else if (TasksService.isTasksWithList(list, ownerUUID) ||
+      } else if (TasksService.isTasksWithList(list) ||
                  NotesService.isNotesWithList(list, ownerUUID))
       {
         deferred.reject({type: 'parent'});
@@ -316,7 +316,7 @@
       var deferred = $q.defer();
       if (ListsService.getListStatus(list) === 'deleted') {
         deferred.reject({type: 'deleted'});
-      } else if (TasksService.isTasksWithList(list, ownerUUID) ||
+      } else if (TasksService.isTasksWithList(list) ||
                  NotesService.isNotesWithList(list, ownerUUID))
       {
         deferred.reject({type: 'parent'});

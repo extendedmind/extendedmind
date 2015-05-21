@@ -455,8 +455,8 @@
         if (modifiedTasksInfos) {
           var that = this;
           var processModifiedDeletedTask = function(taskInfo, ownerUUID) {
-            that.undeleteTask(taskInfo.item, ownerUUID, true).then(function(){
-              that.deleteTask(taskInfo.item, ownerUUID, taskInfo.reminder);
+            that.undeleteTask(taskInfo.item, true).then(function(){
+              that.deleteTask(taskInfo.item, taskInfo.reminder);
             });
           };
           for (i = 0; i < modifiedTasksInfos.length; i++) {
@@ -560,8 +560,9 @@
         };
       }
     },
-    saveTask: function(task, ownerUUID) {
+    saveTask: function(task) {
       var deferred = $q.defer();
+      var ownerUUID = task.trans.owner;
       if (tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue('uuid', task.trans.uuid, 'trans')) {
         deferred.reject({type: 'deleted'});
       } else {
@@ -577,7 +578,8 @@
       }
       return deferred.promise;
     },
-    getTaskStatus: function(task, ownerUUID) {
+    getTaskStatus: function(task) {
+      var ownerUUID = task.trans.owner;
       var arrayInfo = ArrayService.getActiveArrayInfo(task,
                                                       tasks[ownerUUID].activeTasks,
                                                       tasks[ownerUUID].deletedTasks,
@@ -612,13 +614,16 @@
         }
       }
     },
-    isTaskEdited: function(task, ownerUUID) {
+    isTaskEdited: function(task) {
+      var ownerUUID = task.trans.owner;
       return ItemLikeService.isEdited(task, 'task', ownerUUID, taskFieldInfos);
     },
-    resetTask: function(task, ownerUUID) {
+    resetTask: function(task) {
+      var ownerUUID = task.trans.owner;
       return ItemLikeService.resetTrans(task, 'task', ownerUUID, taskFieldInfos);
     },
-    deleteTask: function(task, ownerUUID, overrideReminder) {
+    deleteTask: function(task, overrideReminder) {
+      var ownerUUID = task.trans.owner;
       var deferred = $q.defer();
       if (tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue('uuid', task.trans.uuid, 'trans')) {
         deferred.resolve('unmodified');
@@ -650,7 +655,8 @@
       }
       return deferred.promise;
     },
-    undeleteTask: function(task, ownerUUID, skipReminderSync) {
+    undeleteTask: function(task, skipReminderSync) {
+      var ownerUUID = task.trans.owner;
       var deferred = $q.defer();
       if (!tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue('uuid', task.trans.uuid, 'trans')) {
         deferred.resolve('unmodified');
@@ -682,7 +688,8 @@
       }
       return deferred.promise;
     },
-    completeTask: function(task, ownerUUID) {
+    completeTask: function(task) {
+      var ownerUUID = task.trans.owner;
       var deferred = $q.defer();
       if (tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue('uuid', task.trans.uuid, 'trans')) {
         deferred.reject({type: 'deleted'});
@@ -736,7 +743,8 @@
       }
       return deferred.promise;
     },
-    uncompleteTask: function(task, ownerUUID) {
+    uncompleteTask: function(task) {
+      var ownerUUID = task.trans.owner;
       var deferred = $q.defer();
       if (tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue('uuid', task.trans.uuid, 'trans')) {
         deferred.reject({type: 'deleted'});
@@ -779,7 +787,8 @@
     /*
     * Check active and archived arrays for tasks with the list.
     */
-    isTasksWithList: function(list, ownerUUID) {
+    isTasksWithList: function(list) {
+      var ownerUUID = list.trans.owner;
       var i;
       for (i = 0; i < tasks[ownerUUID].activeTasks.length; i++) {
         if (tasks[ownerUUID].activeTasks[i].trans.list &&

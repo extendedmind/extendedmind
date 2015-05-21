@@ -414,10 +414,10 @@ it('should not convert deleted task to list', function() {
   // SETUP
   var cleanCloset = TasksService.getTaskInfo('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID).task;
   // var taskToListPath = '/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid + '/list';
-  // TasksService.deleteTask(cleanCloset.uuid, testOwnerUUID);
+  // TasksService.deleteTask(cleanCloset.uuid);
   $httpBackend.expectDELETE('/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid)
   .respond(200, deleteTaskResponse);
-  TasksService.deleteTask(cleanCloset, testOwnerUUID);
+  TasksService.deleteTask(cleanCloset);
   $httpBackend.flush();
   expect(TasksService.getTaskInfo(cleanCloset.uuid, testOwnerUUID).type)
   .toBe('deleted');

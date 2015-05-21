@@ -352,7 +352,7 @@ describe('ListsService', function() {
     var printTickets = TasksService.getTaskInfo('9a1ce3aa-f476-43c4-845e-af59a9a33760', testOwnerUUID).task;
     $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + printTickets.uuid + '/complete')
        .respond(200, completeTaskResponse);
-    TasksService.completeTask(printTickets, testOwnerUUID);
+    TasksService.completeTask(printTickets);
     $httpBackend.flush();
 
     // The task should be completed task

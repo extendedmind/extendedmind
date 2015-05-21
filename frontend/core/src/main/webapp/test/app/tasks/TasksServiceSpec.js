@@ -178,7 +178,7 @@ afterEach(function() {
     var testTask = TasksService.getNewTask(testTaskValues, testOwnerUUID);
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task', testTaskValues)
     .respond(200, putNewTaskResponse);
-    TasksService.saveTask(testTask, testOwnerUUID);
+    TasksService.saveTask(testTask);
     $httpBackend.flush();
     expect(TasksService.getTaskInfo(MockUUIDService.mockFakeUUIDs[0], testOwnerUUID).task)
     .toBeDefined();
@@ -200,7 +200,7 @@ afterEach(function() {
                            {title: cleanCloset.trans.title,
                            modified: cleanCloset.modified})
     .respond(200, putExistingTaskResponse);
-    TasksService.saveTask(cleanCloset, testOwnerUUID);
+    TasksService.saveTask(cleanCloset);
     $httpBackend.flush();
     expect(TasksService.getTaskInfo(cleanCloset.uuid, testOwnerUUID).task.mod.modified)
       .toBeGreaterThan(cleanCloset.modified);
@@ -219,7 +219,7 @@ afterEach(function() {
     var cleanCloset = TasksService.getTaskInfo('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID).task;
     $httpBackend.expectDELETE('/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid)
     .respond(200, deleteTaskResponse);
-    TasksService.deleteTask(cleanCloset, testOwnerUUID);
+    TasksService.deleteTask(cleanCloset);
     $httpBackend.flush();
     expect(TasksService.getTaskInfo(cleanCloset.uuid, testOwnerUUID).type)
     .toBe('deleted');
@@ -232,7 +232,7 @@ afterEach(function() {
     // Undelete the task
     $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid + '/undelete')
     .respond(200, undeleteTaskResponse);
-    TasksService.undeleteTask(cleanCloset, testOwnerUUID);
+    TasksService.undeleteTask(cleanCloset);
     $httpBackend.flush();
     expect(TasksService.getTaskInfo(cleanCloset.uuid, testOwnerUUID).task.mod.modified)
     .toBeGreaterThan(cleanCloset.modified);
@@ -255,7 +255,7 @@ it('should complete and uncomplete task', function () {
 
     $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid + '/complete')
     .respond(200, completeTaskResponse);
-    TasksService.completeTask(cleanCloset, testOwnerUUID);
+    TasksService.completeTask(cleanCloset);
     $httpBackend.flush();
 
     // The task should be active and in its old place, but with the complete flag set
@@ -278,7 +278,7 @@ it('should complete and uncomplete task', function () {
     // Uncomplete
     $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid + '/uncomplete')
     .respond(200, uncompleteTaskResponse);
-    TasksService.uncompleteTask(cleanCloset, testOwnerUUID);
+    TasksService.uncompleteTask(cleanCloset);
     $httpBackend.flush();
 
     expect(TasksService.getTaskInfo(cleanCloset.uuid, testOwnerUUID).task.completed)

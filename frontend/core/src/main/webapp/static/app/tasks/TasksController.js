@@ -451,7 +451,7 @@
     freezeTask(task);
     if (task.trans.completed) {
       AnalyticsService.do('uncompleteTask');
-      TasksService.uncompleteTask(task, UISessionService.getActiveUUID()).then(function(task) {
+      TasksService.uncompleteTask(task).then(function(task) {
         unfreezeTask(task, true);
       }, function() {
         unfreezeTask(task, true);
@@ -459,7 +459,7 @@
       return false;
     } else {
       AnalyticsService.do('completeTask');
-      TasksService.completeTask(task, UISessionService.getActiveUUID()).then(function(){
+      TasksService.completeTask(task).then(function(){
         if (!taskCompletingReadyDeferred){
           unfreezeTask(task, true);
         }
@@ -483,7 +483,7 @@
       completeOnSave = task.trans.optimisticComplete();
     }
 
-    return TasksService.saveTask(task, UISessionService.getActiveUUID()).then(function(result) {
+    return TasksService.saveTask(task).then(function(result) {
       if (result === 'new' && completeOnSave){
         $scope.toggleCompleteTask(task);
       }
@@ -496,14 +496,14 @@
   $scope.deleteTask = function(task) {
     if (task.trans.uuid){
       AnalyticsService.do('deleteTask');
-      return TasksService.deleteTask(task, UISessionService.getActiveUUID());
+      return TasksService.deleteTask(task);
     }
   };
 
   $scope.undeleteTask = function(task) {
     if (task.trans.uuid){
       AnalyticsService.do('undeleteTask');
-      TasksService.undeleteTask(task, UISessionService.getActiveUUID());
+      TasksService.undeleteTask(task);
     }
   };
 
