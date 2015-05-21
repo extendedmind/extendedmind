@@ -27,6 +27,17 @@
     return UserSessionService.getUserType() === 0 || UserSessionService.getUserType() === 1;
   };
 
+  $scope.isListDataReady = function(listUUID, ownerUUID) {
+    var listInfo = ListsService.getListInfo(listUUID, ownerUUID);
+    if (listInfo){
+      return true;
+    }
+  };
+
+  $scope.getSharedListFeatureData = function(sharedListUUID, ownerUUID){
+    return {list: ListsService.getListInfo(sharedListUUID, ownerUUID).list, owner: ownerUUID};
+  };
+
   var cachedListsArrays = {};
 
   /*
@@ -206,7 +217,13 @@
 
   var featureChangedCallback = function featureChangedCallback(name, data/*, state*/) {
     if (name === 'list') {
-      $scope.list = data;
+      if (data.list){
+        // Shared/adopted list
+        $scope.list = data.list;
+        $scope.overrideOwnerUUID = data.owner;
+      }else{
+        $scope.list = data;
+      }
     } else if (name === 'lists') {
       if ($scope.features.lists.getStatus('archived') === 'disabled'){
         SwiperService.setOnlyExternal('lists', true);

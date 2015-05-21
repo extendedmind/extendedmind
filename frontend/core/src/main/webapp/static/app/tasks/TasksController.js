@@ -281,7 +281,7 @@
   }
 
   $scope.getTasksArray = function(arrayType, info) {
-    var ownerUUID = UISessionService.getActiveUUID();
+    var ownerUUID = info && info.owner ? info.owner : UISessionService.getActiveUUID();
     if (!cachedTasksArrays[ownerUUID]) cachedTasksArrays[ownerUUID] = {};
 
     switch (arrayType) {

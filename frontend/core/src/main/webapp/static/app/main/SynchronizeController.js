@@ -74,33 +74,43 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
     $rootScope.syncAttempted = timestamp;
   }
 
+  function getLastItemsSynchronized(itemsSynchronized){
+    // evaluates to NaN, when synced is undefined which it is on first sync or fake user:
+    return Date.now() - itemsSynchronized;
+  }
+
 
   function synchronize() {
     var ownerUUID = UISessionService.getActiveUUID();
     if (ownerUUID){
-      synchronizeItems(ownerUUID).then(function(success){
-        if (success && (success.status !== 'fakeUser')){
-          doSynchronizeOwner(ownerUUID, success.since, success.status === 'firstSync');
+      // User is present, register activity and set when user was last synchronized
+      $scope.registerActivity();
+      $rootScope.synced = UserSessionService.getItemsSynchronized(ownerUUID);
+      // evaluates to NaN, when synced is undefined which it is on first sync or fake user:
+      var sinceLastItemsSynchronized = getLastItemsSynchronized($rootScope.synced);
+      synchronizeItems(ownerUUID, sinceLastItemsSynchronized).then(function(status){
+        if (status && status !== 'fakeUser'){
+          doSynchronizeOwner(ownerUUID, sinceLastItemsSynchronized);
+          if (status === 'firstSync'){
+            // On first sync, most stale other owner syncing must be started manually, because it is done
+            // with online methods, not using the queue
+            synchronizeMostStaleOtherOwner(ownerUUID);
+          }
         }
       });
     }
   }
 
-  // Synchronize items for owner if not already synchronizing and interval reached.
+  // Synchronize items for given owner if interval reached.
 
-  function synchronizeItems(ownerUUID) {
+  function synchronizeItems(ownerUUID, sinceLastItemsSynchronized, skipDeleted) {
     function isItemSynchronizeValid(sinceLastItemsSynchronized){
-      if (!sinceLastItemsSynchronized) return true;
+      if (isNaN(sinceLastItemsSynchronized)) return true;
       else if (sinceLastItemsSynchronized > itemsSynchronizedThreshold) return true;
 
       // Also sync if data has not yet been read to memory
       if (!UserSessionService.isPersistentDataLoaded()) return true;
     }
-    $scope.registerActivity();
-
-    // User has logged in, now set when user was last synchronized
-    $rootScope.synced = UserSessionService.getItemsSynchronized(ownerUUID);
-    var sinceLastItemsSynchronized = Date.now() - UserSessionService.getItemsSynchronized(ownerUUID);
 
     return $q(function(resolve, reject) {
       if (isItemSynchronizeValid(sinceLastItemsSynchronized)) {
@@ -118,25 +128,30 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
             // Also immediately after first sync add completed and archived to the mix
             $rootScope.syncState = 'completedAndArchived';
             SynchronizeService.addCompletedAndArchived(ownerUUID).then(function(){
-              $rootScope.syncState = 'deleted';
-              // Also after this, get deleted items as well
-              SynchronizeService.addDeleted(ownerUUID).then(function(){
+              if (!skipDeleted){
+                $rootScope.syncState = 'deleted';
+                // Also after this, get deleted items as well
+                SynchronizeService.addDeleted(ownerUUID).then(function(){
+                  updateItemsSyncronizeAttempted(ownerUUID);
+                  resolve(status);
+                }, function(error){
+                  $rootScope.syncState = 'error';
+                  reject(error);
+                });
+              }else{
                 updateItemsSyncronizeAttempted(ownerUUID);
-                resolve({status: status, since: sinceLastItemsSynchronized});
-              }, function(error){
-                $rootScope.syncState = 'error';
-                reject(error);
-              });
+                resolve(status);
+              }
             }, function(error){
               $rootScope.syncState = 'error';
               reject(error);
             });
           } else if (status === 'delta') {
             updateItemsSyncronizeAttempted(ownerUUID);
-            resolve({status: status, since: sinceLastItemsSynchronized});
+            resolve(status);
           } else if (status === 'fakeUser') {
             $rootScope.syncState = 'local';
-            resolve({status: status, since: sinceLastItemsSynchronized});
+            resolve(status);
           }
         }, function(error){
           $rootScope.syncState = 'error';
@@ -149,15 +164,17 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
     });
   }
 
-  function doSynchronizeOwner(ownerUUID, sinceLastItemsSynchronized, isFirstSync) {
+  function doSynchronizeOwner(ownerUUID, sinceLastItemsSynchronized) {
     // If there has been a long enough time from last sync, update account preferences as well
-    if (isFirstSync ||
-        itemsSynchronizeCounter === 0 ||
-        itemsSynchronizeCounter%userSyncCounterTreshold === 0 ||
-        sinceLastItemsSynchronized > userSyncTimeTreshold){
-      SynchronizeService.synchronizeUser().then(function(){
-        $scope.refreshFavoriteLists();
-      });
+    var activeUUID = UISessionService.getActiveUUID();
+    if (activeUUID === ownerUUID){
+      if (itemsSynchronizeCounter === 0 ||
+          itemsSynchronizeCounter%userSyncCounterTreshold === 0 ||
+          sinceLastItemsSynchronized > userSyncTimeTreshold){
+        SynchronizeService.synchronizeUser().then(function(){
+          $scope.refreshFavoriteLists();
+        });
+      }
     }
   }
 
@@ -187,16 +204,57 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
   BackendClientService.registerQueueEmptiedCallback(queueEmptiedCallback);
 
   // Execute synchronize on conflict to get conflicted content and then try to empty the queue again
-  function conflictCallback() {
-    var activeUUID = UISessionService.getActiveUUID();
-    return SynchronizeService.synchronize(activeUUID).then(function() {
-      updateItemsSyncronizeAttempted(activeUUID);
+  function conflictCallback(conflictedRequest) {
+    var ownerUUID = conflictedRequest && conflictedRequest.params && conflictedRequest.params.owner ?
+                    conflictedRequest.params.owner : UISessionService.getActiveUUID();
+    return SynchronizeService.synchronize(ownerUUID).then(function() {
+      updateItemsSyncronizeAttempted(ownerUUID);
     }, function(){
       $rootScope.syncState = 'error';
       $q.reject();
     });
   }
   BackendClientService.registerConflictCallback(conflictCallback);
+
+  // Executes after secondary when there is nothing in the queue
+  function afterSecondaryWithEmptyQueueCallback(previousSecondary) {
+    var previousOwnerUUID = previousSecondary.params.owner;
+    return synchronizeMostStaleOtherOwner(previousOwnerUUID);
+  }
+  BackendClientService.registerAfterSecondaryWithEmptyQueueCallback(afterSecondaryWithEmptyQueueCallback);
+
+  // Synchronizes the other owner that has not been synced for the longest period
+  function synchronizeMostStaleOtherOwner(previousOwnerUUID){
+    var sharedLists = UserSessionService.getSharedLists();
+
+    return $q(function(resolve, reject) {
+      if (sharedLists){
+        var biggestSince;
+        var mostStaleOwnerUUID;
+        for (var ownerUUID in sharedLists) {
+          if (sharedLists.hasOwnProperty(ownerUUID)) {
+            var sinceLastItemsSynchronized =
+              getLastItemsSynchronized(UserSessionService.getItemsSynchronized(ownerUUID));
+            if (!biggestSince || biggestSince < sinceLastItemsSynchronized){
+              mostStaleOwnerUUID = ownerUUID;
+              biggestSince = sinceLastItemsSynchronized;
+            }
+          }
+        }
+        if (mostStaleOwnerUUID){
+          synchronizeItems(mostStaleOwnerUUID, biggestSince, true).then(function(success){
+            resolve(success);
+          }, function(error){
+            reject(error);
+          });
+        }else{
+          resolve();
+        }
+      }else{
+        resolve();
+      }
+    });
+  }
 
   // CLEANUP
 

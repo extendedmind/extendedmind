@@ -66,8 +66,10 @@
           response = [200, responseData];
         }
         else if (userNamePass === 'lauri@ext.md:lauripwd') {
-          var accountResponse = getJSONFixture('accountResponse.json');
-          responseData.sharedLists = accountResponse.sharedLists;
+          if (responseData.token){
+            responseData = getJSONFixture('sharedToAuthenticateResponse.json');
+            responseData.token = 'SHARED';
+          }
           response = [200, responseData];
         }
         else if (userNamePass === 'premium@ext.md:premium') {

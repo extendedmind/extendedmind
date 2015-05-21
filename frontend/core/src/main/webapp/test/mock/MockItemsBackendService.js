@@ -155,6 +155,14 @@ function MockItemsBackendService($httpBackend, ItemsService, PersistentStorageSe
           if (headers.Authorization === 'Basic dG9rZW46VEVTVA=='){
             // Token 'TEST' returned for jp@ext.md
             return expectResponse(method, url, data, headers, {});
+          } else if (headers.Authorization === 'Basic dG9rZW46U0hBUkVE'){
+            // Token 'SHARED' returned for lauri@ext.md
+            var activeUUID = sessionStorage.getItem('activeUUID');
+            if (activeUUID && url.indexOf(activeUUID) === -1){
+              return expectResponse(method, url, data, headers, getJSONFixture('sharedItemsResponse.json'));
+            }else{
+              return expectResponse(method, url, data, headers, {});
+            }
           } else if (headers.Authorization === 'Basic dG9rZW46T0ZGTElORQ==') {
             return [404, 'Not found'];
           }

@@ -92,12 +92,17 @@
     }
   }
 
-  function executeNotifyOwnerCallbacks(userUUID, collectives) {
+  function executeNotifyOwnerCallbacks(userUUID, collectives, sharedLists) {
     for (var id in notifyOwnerCallbacks) {
       notifyOwnerCallbacks[id](userUUID);
       if (collectives){
-        for (var uuid in collectives){
-          notifyOwnerCallbacks[id](uuid, true);
+        for (var collectiveUUID in collectives){
+          notifyOwnerCallbacks[id](collectiveUUID, true);
+        }
+      }
+      if (sharedLists){
+        for (var shareUUID in sharedLists){
+          notifyOwnerCallbacks[id](shareUUID, true);
         }
       }
     }
@@ -191,7 +196,9 @@
       }
 
       // Notify owner UUID's
-      executeNotifyOwnerCallbacks(authenticateResponse.userUUID, authenticateResponse.collectives);
+      executeNotifyOwnerCallbacks(authenticateResponse.userUUID,
+                                  authenticateResponse.collectives,
+                                  authenticateResponse.sharedLists);
       return credentials;
     },
     setEmail: function(email) {
@@ -467,19 +474,15 @@
       // In case the registration comes after UserSessionService has received owners,
       // notify caller immediately
       var userUUID = this.getUserUUID();
-      if (userUUID){
-        callback(userUUID);
-      }
       var collectives = this.getCollectives();
-      if (collectives){
-        for (var uuid in collectives){
-          callback(uuid, true);
-        }
+      var sharedLists = this.getSharedLists();
+      if (userUUID){
+        executeNotifyOwnerCallbacks(userUUID, collectives, sharedLists);
       }
     },
     // NOTE: Here for easier testing!
-    executeNotifyOwnerCallbacks: function(userUUID, collectives){
-      executeNotifyOwnerCallbacks(userUUID, collectives);
+    executeNotifyOwnerCallbacks: function(userUUID, collectives, sharedLists){
+      executeNotifyOwnerCallbacks(userUUID, collectives, sharedLists);
     }
   };
 }

@@ -86,14 +86,17 @@ trait TestGraphDatabase extends GraphDatabase {
     }
     withTx {
       implicit neo =>
+
+        val testOnboardingPreferences = "{\"user\":\"1432192930431:devel:devel\",\"focus\":\"1432192930431:devel:devel\",\"inbox\":\"1432192930431:devel:devel\",\"tasks\":\"1432192930431:devel:devel\",\"notes\":\"1432192930431:devel:devel\",\"lists\":{\"active\":\"1432192930431:devel:devel\"},\"list\":\"1432192930431:devel:devel\",\"trash\":\"1432192930431:devel:devel\",\"settings\":\"1432192930431:devel:devel\"}"
+
         // Add preferences to timo node
-        putExistingUser(getUUID(timoNode), timoUser.copy(preferences = Some(UserPreferences(Some("web"), None))))
+        putExistingUser(getUUID(timoNode), timoUser.copy(preferences = Some(UserPreferences(Some(testOnboardingPreferences), None))))
 
         // Add preferences to lauri node
-        putExistingUser(getUUID(lauriNode), lauriUser.copy(preferences = Some(UserPreferences(Some("web"), None))))
+        putExistingUser(getUUID(lauriNode), lauriUser.copy(preferences = Some(UserPreferences(Some(testOnboardingPreferences), None))))
 
         // Add preferences to JP node
-        putExistingUser(getUUID(jpNode), jpUser.copy(preferences = Some(UserPreferences(Some("web"), None))))
+        putExistingUser(getUUID(jpNode), jpUser.copy(preferences = Some(UserPreferences(Some(testOnboardingPreferences), None))))
 
         // Valid, unreplaceable
         timoUUID = getUUID(timoNode)
@@ -208,16 +211,16 @@ trait TestGraphDatabase extends GraphDatabase {
         Some(ExtendedItemRelationships(Some(extendedMindTechnologiesList.uuid.get), None,
           Some(scala.List(productivityTag.right.get.uuid.get)))))).right.get
 
-          
+
     // Timo shares essay list with Lauri
 
-    val shareAgreementResult = putNewAgreement(Agreement(AgreementType.LIST_AGREEMENT, SecurityContext.READ_WRITE, 
+    val shareAgreementResult = putNewAgreement(Agreement(AgreementType.LIST_AGREEMENT, SecurityContext.READ_WRITE,
                     AgreementTarget(essayList.uuid.get, None), Some(AgreementUser(Some(timoUUID), None)),
-                    AgreementUser(None, Some(LAURI_EMAIL)))).right.get                
+                    AgreementUser(None, Some(LAURI_EMAIL)))).right.get
     val agreementCode = 1234L
     val saveResponse = saveAgreementAcceptInformation(shareAgreementResult._1.uuid.get, agreementCode, "1234")
     acceptAgreement(agreementCode, LAURI_EMAIL).right.get
-    
+
     // Extended Mind Technologies
 
     // Store items for EMT

@@ -62,7 +62,8 @@
 
   // Callbacks
   var primaryResultCallback, primaryCreateCallback, secondaryCallback, beforeLastCallback,
-  defaultCallback, onlineCallback, queueEmptiedCallback, conflictCallback;
+  defaultCallback, onlineCallback, afterSecondaryWithEmptyQueueCallback, queueEmptiedCallback,
+  conflictCallback;
 
   function executeLastRequest(lastRequest){
     // As last request is insignificant, lock needs to be released before executing to prevent
@@ -159,8 +160,16 @@
               executeRequests();
             });
           }else {
-            // Try to execute the next request in the queue
-            executeRequests(headRequest);
+            if (afterSecondaryWithEmptyQueueCallback && headRequest.secondary &&
+                HttpRequestQueueService.isQueueEmpty()){
+              afterSecondaryWithEmptyQueueCallback(headRequest).then(function(){
+                // Execute requests again, but proceed normally from the start
+                executeRequests();
+              });
+            }else{
+              // Try to execute the next request in the queue
+              executeRequests(headRequest);
+            }
           }
         }).error(function(data, status, headers, config) {
           delete headRequest.executing;
@@ -195,7 +204,7 @@
 
                 if (status === 409 && conflictCallback){
                   // Conflict response, don't emit exception but instead call conflict callback
-                  conflictCallback();
+                  conflictCallback(headRequest);
                 }else{
                   // Emit error to root scope, so that
                   // it can be listened on at by the application
@@ -500,6 +509,8 @@
       onlineCallback = callback;
     } else if (type === 'queueEmptied') {
       queueEmptiedCallback = callback;
+    } else if (type === 'afterSecondaryWithEmptyQueue') {
+      afterSecondaryWithEmptyQueueCallback = callback;
     } else if (type === 'conflict') {
       conflictCallback = callback;
     }

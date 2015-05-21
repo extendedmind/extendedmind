@@ -27,7 +27,12 @@
 
   $scope.getActiveList = function() {
     if ($scope.isFeatureActive('list')){
-      return UISessionService.getFeatureData(UISessionService.getCurrentFeatureName());
+      //return UISessionService.getFeatureData(UISessionService.getCurrentFeatureName());
+      var listData = UISessionService.getFeatureData(UISessionService.getCurrentFeatureName());
+      if (listData.list)
+        return listData.list;
+      else
+        return listData;
     }
   };
 }
