@@ -204,7 +204,7 @@ describe('ListsService', function() {
 
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/list', testListValues)
        .respond(200, putNewListResponse);
-    ListsService.saveList(testList, testOwnerUUID);
+    ListsService.saveList(testList);
     $httpBackend.flush();
     expect(ListsService.getListInfo(MockUUIDService.mockFakeUUIDs[0], testOwnerUUID))
       .toBeDefined();
@@ -228,7 +228,7 @@ describe('ListsService', function() {
                            due: tripToDublin.due,
                            modified: tripToDublin.modified})
        .respond(200, putExistingListResponse);
-    ListsService.saveList(tripToDublin, testOwnerUUID);
+    ListsService.saveList(tripToDublin);
     $httpBackend.flush();
 
     expect(ListsService.getListInfo(tripToDublin.uuid, testOwnerUUID).list.mod.modified)
@@ -250,7 +250,7 @@ describe('ListsService', function() {
     var tripToDublin = ListsService.getListInfo('bf726d03-8fee-4614-8b68-f9f885938a51', testOwnerUUID).list;
     $httpBackend.expectDELETE('/api/' + testOwnerUUID + '/list/' + tripToDublin.uuid)
        .respond(200, deleteListResponse);
-    ListsService.deleteList(tripToDublin, testOwnerUUID);
+    ListsService.deleteList(tripToDublin);
     $httpBackend.flush();
     expect(ListsService.getListInfo(tripToDublin.uuid, testOwnerUUID).type)
       .toBe('deleted');
@@ -263,7 +263,7 @@ describe('ListsService', function() {
     // Undelete the list
     $httpBackend.expectPOST('/api/' + testOwnerUUID + '/list/' + tripToDublin.uuid + '/undelete')
        .respond(200, undeleteListResponse);
-    ListsService.undeleteList(tripToDublin, testOwnerUUID);
+    ListsService.undeleteList(tripToDublin);
     $httpBackend.flush();
     expect(ListsService.getListInfo(tripToDublin.uuid, testOwnerUUID).list.mod.modified)
       .toBeGreaterThan(tripToDublin.modified);
@@ -290,7 +290,7 @@ describe('ListsService', function() {
     var tripToDublin = ListsService.getListInfo('bf726d03-8fee-4614-8b68-f9f885938a51', testOwnerUUID).list;
     $httpBackend.expectPOST('/api/' + testOwnerUUID + '/list/' + tripToDublin.uuid + '/archive')
        .respond(200, archiveListResponse);
-    ListsService.archiveList(tripToDublin, testOwnerUUID);
+    ListsService.archiveList(tripToDublin);
     $httpBackend.flush();
 
     // Validate that callback was called
@@ -362,7 +362,7 @@ describe('ListsService', function() {
     var tripToDublin = ListsService.getListInfo('bf726d03-8fee-4614-8b68-f9f885938a51', testOwnerUUID).list;
     $httpBackend.expectPOST('/api/' + testOwnerUUID + '/list/' + tripToDublin.uuid + '/archive')
        .respond(200, archiveTripToDublinResponse);
-    ListsService.archiveList(tripToDublin, testOwnerUUID);
+    ListsService.archiveList(tripToDublin);
     $httpBackend.flush();
 
     // The list should not be active anymore
@@ -416,7 +416,7 @@ describe('ListsService', function() {
 
     $httpBackend.expectPOST('/api/' + testOwnerUUID + '/list/' + tripToDublin.uuid + '/unarchive')
        .respond(200, unarchiveTripToDublinResponse);
-    ListsService.unarchiveList(tripToDublin, testOwnerUUID);
+    ListsService.unarchiveList(tripToDublin);
     $httpBackend.flush();
 
     // The list should be active again

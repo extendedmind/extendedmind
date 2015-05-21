@@ -237,8 +237,9 @@
     getListInfo: function(value, ownerUUID, searchField) {
       return getListInfo(value, ownerUUID, searchField);
     },
-    saveList: function(list, ownerUUID) {
+    saveList: function(list) {
       var deferred = $q.defer();
+      var ownerUUID = list.trans.owner;
       if (lists[ownerUUID].deletedLists.findFirstObjectByKeyValue('uuid', list.trans.uuid, 'trans')) {
         deferred.reject({type: 'deleted'});
       } else {
@@ -254,13 +255,16 @@
       }
       return deferred.promise;
     },
-    isListEdited: function(list, ownerUUID) {
+    isListEdited: function(list) {
+      var ownerUUID = list.trans.owner;
       return ItemLikeService.isEdited(list, 'list', ownerUUID, listFieldInfos);
     },
-    resetList: function(list, ownerUUID) {
+    resetList: function(list) {
+      var ownerUUID = list.trans.owner;
       return ItemLikeService.resetTrans(list, 'list', ownerUUID, listFieldInfos);
     },
-    getListStatus: function(list, ownerUUID) {
+    getListStatus: function(list) {
+      var ownerUUID = list.trans.owner;
       var arrayInfo = ArrayService.getActiveArrayInfo(list,
                                                       lists[ownerUUID].activeLists,
                                                       lists[ownerUUID].deletedLists,
@@ -295,7 +299,8 @@
       }
 
     },
-    deleteList: function(list, ownerUUID) {
+    deleteList: function(list) {
+      var ownerUUID = list.trans.owner;
       var deferred = $q.defer();
       if (lists[ownerUUID].deletedLists.findFirstObjectByKeyValue('uuid', list.trans.uuid, 'trans')) {
         deferred.resolve('unmodified');
@@ -314,7 +319,8 @@
       }
       return deferred.promise;
     },
-    undeleteList: function(list, ownerUUID) {
+    undeleteList: function(list) {
+      var ownerUUID = list.trans.owner;
       var deferred = $q.defer();
       if (!lists[ownerUUID].deletedLists.findFirstObjectByKeyValue('uuid', list.trans.uuid, 'trans')) {
         deferred.resolve('unmodified');
@@ -333,10 +339,11 @@
       }
       return deferred.promise;
     },
-    archiveList: function(list, ownerUUID) {
+    archiveList: function(list) {
       function getArchiveUrl(params){
         return params.prefix + params.list.trans.uuid + '/archive';
       }
+      var ownerUUID = list.trans.owner;
       // Check that list is active before trying to archive
       var deferred = $q.defer();
       if (lists[ownerUUID].deletedLists.findFirstObjectByKeyValue('uuid', list.trans.uuid, 'trans')) {
@@ -379,10 +386,11 @@
       }
       return deferred.promise;
     },
-    unarchiveList: function(list, ownerUUID) {
+    unarchiveList: function(list) {
       function getUnarchiveUrl(params){
         return params.prefix + params.list.trans.uuid + '/unarchive';
       }
+      var ownerUUID = list.trans.owner;
       // Check that list is archived before trying to unarchive
       var deferred = $q.defer();
       if (lists[ownerUUID].deletedLists.findFirstObjectByKeyValue('uuid', list.trans.uuid, 'trans')) {

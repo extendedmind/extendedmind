@@ -1480,7 +1480,7 @@ describe('SynchronizeService', function() {
     updatedTestList.trans.description = 'test description';
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
        .respond(404);
-    ListsService.saveList(updatedTestList, testOwnerUUID);
+    ListsService.saveList(updatedTestList);
     $httpBackend.flush();
 
     expect(lists.length)
@@ -1503,7 +1503,7 @@ describe('SynchronizeService', function() {
     // 5. delete list offline
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
        .respond(404);
-    ListsService.deleteList(updatedTestList, testOwnerUUID);
+    ListsService.deleteList(updatedTestList);
     $httpBackend.flush();
 
     expect(lists.length)
@@ -1520,7 +1520,7 @@ describe('SynchronizeService', function() {
     // 6. undelete list offline
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
        .respond(404);
-    ListsService.undeleteList(updatedTestList, testOwnerUUID);
+    ListsService.undeleteList(updatedTestList);
     $httpBackend.flush();
     expect(lists.length)
       .toBe(5);
@@ -1572,7 +1572,7 @@ describe('SynchronizeService', function() {
     // 8. delete online
     $httpBackend.expectDELETE('/api/' + testOwnerUUID + '/list/' + updatedTestList.mod.uuid)
        .respond(200, deleteItemResponse);
-    ListsService.deleteList(updatedTestList, testOwnerUUID);
+    ListsService.deleteList(updatedTestList);
     $httpBackend.flush();
 
     expect(lists.length)
@@ -1585,7 +1585,7 @@ describe('SynchronizeService', function() {
     // 9. undelete online
     $httpBackend.expectPOST('/api/' + testOwnerUUID + '/list/' + updatedTestList.mod.uuid + '/undelete')
        .respond(200, undeleteItemResponse);
-    ListsService.undeleteList(updatedTestList, testOwnerUUID);
+    ListsService.undeleteList(updatedTestList);
     $httpBackend.flush();
     expect(lists.length)
       .toBe(5);
@@ -1641,7 +1641,7 @@ describe('SynchronizeService', function() {
     var testList = ListsService.getNewList(testListValues, testOwnerUUID);
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/list', testListValues)
        .respond(200, {testing: true});
-    ListsService.saveList(testList, testOwnerUUID);
+    ListsService.saveList(testList);
     $httpBackend.flush();
     expect(lists.length)
       .toBe(5);
@@ -1706,7 +1706,7 @@ describe('SynchronizeService', function() {
     updatedTestList.trans.description = 'test description';
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
        .respond(404);
-    ListsService.saveList(updatedTestList, testOwnerUUID);
+    ListsService.saveList(updatedTestList);
     $httpBackend.flush();
 
     // 4. delete online, expect queue to empty
@@ -1721,7 +1721,7 @@ describe('SynchronizeService', function() {
                             description: updatedTestList.trans.description,
                             modified: putNewItemResponse.modified})
         .respond(200, putExistingItemResponse);
-    ListsService.archiveList(updatedTestList, testOwnerUUID);
+    ListsService.archiveList(updatedTestList);
     $httpBackend.flush();
 
     runs(function() {
@@ -2117,7 +2117,7 @@ describe('SynchronizeService', function() {
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid,
        cleanClosetTransport)
        .respond(404);
-    ListsService.saveList(shoppingList, testOwnerUUID);
+    ListsService.saveList(shoppingList);
     $httpBackend.flush();
     expect(lists.length)
       .toBe(4);

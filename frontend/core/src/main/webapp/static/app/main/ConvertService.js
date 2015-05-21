@@ -290,7 +290,7 @@
     },
     finishListToTaskConvert: function(list, ownerUUID) {
       var deferred = $q.defer();
-      if (ListsService.getListStatus(list, ownerUUID) === 'deleted') {
+      if (ListsService.getListStatus(list) === 'deleted') {
         deferred.reject({type: 'deleted'});
       } else if (TasksService.isTasksWithList(list, ownerUUID) ||
                  NotesService.isNotesWithList(list, ownerUUID))
@@ -314,7 +314,7 @@
     },
     finishListToNoteConvert: function(list, ownerUUID) {
       var deferred = $q.defer();
-      if (ListsService.getListStatus(list, ownerUUID) === 'deleted') {
+      if (ListsService.getListStatus(list) === 'deleted') {
         deferred.reject({type: 'deleted'});
       } else if (TasksService.isTasksWithList(list, ownerUUID) ||
                  NotesService.isNotesWithList(list, ownerUUID))

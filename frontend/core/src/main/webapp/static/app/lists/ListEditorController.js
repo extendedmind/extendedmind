@@ -58,7 +58,7 @@
 
   $scope.isListEdited = function() {
     if ($scope.listTitlebarHasText()) {
-      return ListsService.isListEdited($scope.list, UISessionService.getActiveUUID());
+      return ListsService.isListEdited($scope.list);
     }
   };
 
@@ -71,7 +71,7 @@
       $scope.unregisterEditorAboutToCloseCallback('ListEditorController');
 
     if ($scope.isListEdited() && !$scope.list.trans.deleted) saveListInEdit();
-    else ListsService.resetList($scope.list, UISessionService.getActiveUUID());
+    else ListsService.resetList($scope.list);
   }
 
   $scope.archiveListInEdit = function() {

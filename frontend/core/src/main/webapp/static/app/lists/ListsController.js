@@ -280,7 +280,7 @@
     }else{
       AnalyticsService.do('addList');
     }
-    return ListsService.saveList(list, UISessionService.getActiveUUID());
+    return ListsService.saveList(list);
   };
 
   $scope.saveListAndChangeFeature = function(list) {
@@ -304,7 +304,7 @@
   $scope.archiveList = function(list) {
     if (list.trans.uuid){
       AnalyticsService.do('archiveList');
-      return ListsService.archiveList(list, UISessionService.getActiveUUID());
+      return ListsService.archiveList(list);
     }
   };
 
@@ -320,7 +320,7 @@
   $scope.unarchiveList = function(list) {
     if (list.trans.uuid){
       AnalyticsService.do('unarchiveList');
-      return ListsService.unarchiveList(list, UISessionService.getActiveUUID());
+      return ListsService.unarchiveList(list);
     }
   };
 
@@ -329,14 +329,14 @@
   $scope.deleteList = function(list) {
     if (list.trans.uuid){
       AnalyticsService.do('deleteList');
-      return ListsService.deleteList(list, UISessionService.getActiveUUID());
+      return ListsService.deleteList(list);
     }
   };
 
   $scope.undeleteList = function(list) {
     if (list.trans.uuid){
       AnalyticsService.do('undeleteList');
-      return ListsService.undeleteList(list, UISessionService.getActiveUUID());
+      return ListsService.undeleteList(list);
     }
   };
 

@@ -253,8 +253,7 @@
         deferred.reject({type: 'deleted'});
       } else {
         var index = items[ownerUUID].activeItems.findFirstIndexByKeyValue('uuid', item.trans.uuid, 'trans');
-        ListsService.saveList(items[ownerUUID].activeItems[index],
-                              ownerUUID).then(function(/*result*/){
+        ListsService.saveList(items[ownerUUID].activeItems[index]).then(function(/*result*/){
           removeActiveItem(index, ownerUUID);
           deferred.resolve(item);
         },function(failure){
