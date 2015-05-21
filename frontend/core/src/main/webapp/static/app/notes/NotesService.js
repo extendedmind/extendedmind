@@ -329,7 +329,8 @@
         };
       }
     },
-    saveNote: function(note, ownerUUID, pollForSaveReady) {
+    saveNote: function(note, pollForSaveReady) {
+      var ownerUUID = note.trans.owner;
       var deferred = $q.defer();
       if (notes[ownerUUID].deletedNotes.findFirstObjectByKeyValue('uuid', note.trans.uuid, 'trans')) {
         deferred.reject({type: 'deleted'});
@@ -354,7 +355,8 @@
       }
       return deferred.promise;
     },
-    getNoteStatus: function(note, ownerUUID) {
+    getNoteStatus: function(note) {
+      var ownerUUID = note.trans.owner;
       var arrayInfo = ArrayService.getActiveArrayInfo(note,
                                                       notes[ownerUUID].activeNotes,
                                                       notes[ownerUUID].deletedNotes,
@@ -384,13 +386,16 @@
         }
       }
     },
-    isNoteEdited: function(note, ownerUUID) {
+    isNoteEdited: function(note) {
+      var ownerUUID = note.trans.owner;
       return ItemLikeService.isEdited(note, 'note', ownerUUID, noteFieldInfos);
     },
-    resetNote: function(note, ownerUUID) {
+    resetNote: function(note) {
+      var ownerUUID = note.trans.owner;
       return ItemLikeService.resetTrans(note, 'note', ownerUUID, noteFieldInfos);
     },
-    deleteNote: function(note, ownerUUID) {
+    deleteNote: function(note) {
+      var ownerUUID = note.trans.owner;
       var deferred = $q.defer();
       if (notes[ownerUUID].deletedNotes.findFirstObjectByKeyValue('uuid', note.trans.uuid, 'trans')) {
         deferred.resolve('unmodified');
@@ -406,7 +411,8 @@
       }
       return deferred.promise;
     },
-    undeleteNote: function(note, ownerUUID) {
+    undeleteNote: function(note) {
+      var ownerUUID = note.trans.owner;
       var deferred = $q.defer();
       if (!notes[ownerUUID].deletedNotes.findFirstObjectByKeyValue('uuid', note.trans.uuid, 'trans')) {
         deferred.resolve('unmodified');
@@ -422,7 +428,8 @@
       }
       return deferred.promise;
     },
-    favoriteNote: function(note, ownerUUID) {
+    favoriteNote: function(note) {
+      var ownerUUID = note.trans.owner;
       var deferred = $q.defer();
       if (notes[ownerUUID].deletedNotes.findFirstObjectByKeyValue('uuid', note.trans.uuid, 'trans')) {
         deferred.reject({type: 'deleted'});
@@ -449,7 +456,8 @@
       }
       return deferred.promise;
     },
-    unfavoriteNote: function(note, ownerUUID) {
+    unfavoriteNote: function(note) {
+      var ownerUUID = note.trans.owner;
       var deferred = $q.defer();
       if (notes[ownerUUID].deletedNotes.findFirstObjectByKeyValue('uuid', note.trans.uuid, 'trans')) {
         deferred.reject({type: 'deleted'});
@@ -484,7 +492,8 @@
     /*
     * Check active and archived arrays for tasks with the list.
     */
-    isNotesWithList: function(list, ownerUUID) {
+    isNotesWithList: function(list) {
+      var ownerUUID = list.trans.owner;
       var i;
       for (i = 0; i < notes[ownerUUID].activeNotes.length; i++) {
         if (notes[ownerUUID].activeNotes[i].trans.list &&

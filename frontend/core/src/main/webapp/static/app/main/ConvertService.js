@@ -246,7 +246,7 @@
     finishNoteToTaskConvert: function(note, ownerUUID) {
       var deferred = $q.defer();
 
-      if (NotesService.getNoteStatus(note, ownerUUID) === 'deleted') {
+      if (NotesService.getNoteStatus(note) === 'deleted') {
         deferred.reject({type: 'deleted'});
       } else {
         var path = '/api/' + ownerUUID + '/note/' + note.trans.uuid + '/task';
@@ -266,7 +266,7 @@
     },
     finishNoteToListConvert: function(note, ownerUUID) {
       var deferred = $q.defer();
-      if (NotesService.getNoteStatus(note, ownerUUID) === 'deleted') {
+      if (NotesService.getNoteStatus(note) === 'deleted') {
         deferred.reject({type: 'deleted'});
       } else {
         // NOTE: Currently only one-level lists are supported.
@@ -293,7 +293,7 @@
       if (ListsService.getListStatus(list) === 'deleted') {
         deferred.reject({type: 'deleted'});
       } else if (TasksService.isTasksWithList(list) ||
-                 NotesService.isNotesWithList(list, ownerUUID))
+                 NotesService.isNotesWithList(list))
       {
         deferred.reject({type: 'parent'});
       } else {
@@ -317,7 +317,7 @@
       if (ListsService.getListStatus(list) === 'deleted') {
         deferred.reject({type: 'deleted'});
       } else if (TasksService.isTasksWithList(list) ||
-                 NotesService.isNotesWithList(list, ownerUUID))
+                 NotesService.isNotesWithList(list))
       {
         deferred.reject({type: 'parent'});
       } else {

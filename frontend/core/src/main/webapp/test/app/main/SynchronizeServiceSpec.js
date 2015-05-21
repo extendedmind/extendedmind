@@ -1214,7 +1214,7 @@ describe('SynchronizeService', function() {
 
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
        .respond(404);
-    NotesService.saveNote(updatedTestNote, testOwnerUUID);
+    NotesService.saveNote(updatedTestNote);
     $httpBackend.flush();
 
     expect(notes.length)
@@ -1223,7 +1223,7 @@ describe('SynchronizeService', function() {
     // 4. delete note
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
        .respond(404);
-    NotesService.deleteNote(updatedTestNote, testOwnerUUID);
+    NotesService.deleteNote(updatedTestNote);
     $httpBackend.flush();
     expect(notes.length)
       .toBe(4);
@@ -1231,7 +1231,7 @@ describe('SynchronizeService', function() {
     // 5. undelete note
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
        .respond(404);
-    NotesService.undeleteNote(updatedTestNote, testOwnerUUID);
+    NotesService.undeleteNote(updatedTestNote);
     $httpBackend.flush();
     expect(notes.length)
       .toBe(5);
@@ -1266,7 +1266,7 @@ describe('SynchronizeService', function() {
     // 7. delete online
     $httpBackend.expectDELETE('/api/' + testOwnerUUID + '/note/' + updatedTestNote.mod.uuid)
        .respond(200, deleteItemResponse);
-    NotesService.deleteNote(updatedTestNote, testOwnerUUID);
+    NotesService.deleteNote(updatedTestNote);
     $httpBackend.flush();
     expect(notes.length)
       .toBe(4);
@@ -1278,7 +1278,7 @@ describe('SynchronizeService', function() {
     // 8. undelete online
     $httpBackend.expectPOST('/api/' + testOwnerUUID + '/note/' + updatedTestNote.mod.uuid + '/undelete')
        .respond(200, undeleteItemResponse);
-    NotesService.undeleteNote(updatedTestNote, testOwnerUUID);
+    NotesService.undeleteNote(updatedTestNote);
     $httpBackend.flush();
     expect(notes.length)
       .toBe(5);
@@ -1320,7 +1320,7 @@ describe('SynchronizeService', function() {
                             content: aboutContexts.trans.content,
                             modified: aboutContexts.trans.modified})
        .respond(404);
-    NotesService.saveNote(aboutContexts, testOwnerUUID);
+    NotesService.saveNote(aboutContexts);
     $httpBackend.flush();
     var notes = NotesService.getNotes(testOwnerUUID);
     expect(notes.length)
@@ -1367,7 +1367,7 @@ describe('SynchronizeService', function() {
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/note/' + aboutContexts.uuid,
                            aboutContextsTransport)
        .respond(404);
-    NotesService.saveNote(aboutContextsConflictingContent, testOwnerUUID);
+    NotesService.saveNote(aboutContextsConflictingContent);
     $httpBackend.flush();
     expect(notes.length)
       .toBe(4);
@@ -1407,7 +1407,7 @@ describe('SynchronizeService', function() {
     var testNote = NotesService.getNewNote(testNoteValues, testOwnerUUID);
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/note', testNoteValues)
        .respond(200, {testing: true});
-    NotesService.saveNote(testNote, testOwnerUUID);
+    NotesService.saveNote(testNote);
     $httpBackend.flush();
     expect(notes.length)
       .toBe(5);
@@ -1789,7 +1789,7 @@ describe('SynchronizeService', function() {
     var testNote = NotesService.getNewNote({title: testNoteValues.title, keywords: [testTag]}, testOwnerUUID);
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/tag', testTagValues)
        .respond(404);
-    NotesService.saveNote(testNote, testOwnerUUID);
+    NotesService.saveNote(testNote);
     $httpBackend.flush();
 
     // 4. delete offline
@@ -1951,7 +1951,7 @@ describe('SynchronizeService', function() {
     var testNote = NotesService.getNewNote({title: testNoteValues.title, keywords: [testTag]}, testOwnerUUID);
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/note', testNoteValues)
        .respond(404);
-    NotesService.saveNote(testNote, testOwnerUUID);
+    NotesService.saveNote(testNote);
     $httpBackend.flush();
 
     // 3. synchronize items with tag in the response, even though the response in the original PUT

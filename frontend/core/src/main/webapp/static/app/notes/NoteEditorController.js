@@ -62,7 +62,7 @@
   $scope.isNoteEdited = function() {
     // Note without title is unedited
     if ($scope.noteTitlebarHasText()) {
-      return NotesService.isNoteEdited($scope.note, UISessionService.getActiveUUID());
+      return NotesService.isNoteEdited($scope.note);
     }
   };
 
@@ -78,7 +78,7 @@
       }
       saveNoteInEdit();
     }else{
-      NotesService.resetNote($scope.note, UISessionService.getActiveUUID());
+      NotesService.resetNote($scope.note);
     }
   }
 

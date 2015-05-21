@@ -73,7 +73,7 @@
     else AnalyticsService.do('addNote');
     return saveKeywords(note).then(function() {
       var favoriteBeforeSave = note.trans.favorited;
-      return NotesService.saveNote(note, UISessionService.getActiveUUID(), pollForSaveReady)
+      return NotesService.saveNote(note, pollForSaveReady)
       .then(function(result){
         if (result === 'new' && favoriteBeforeSave){
           return $scope.favoriteNote(note);
@@ -88,14 +88,14 @@
   $scope.deleteNote = function deleteNote(note) {
     if (note.trans.uuid) {
       AnalyticsService.do('deleteNote');
-      NotesService.deleteNote(note, UISessionService.getActiveUUID());
+      NotesService.deleteNote(note);
     }
   };
 
   $scope.undeleteNote = function(note) {
     if (note.trans.uuid){
       AnalyticsService.do('undeleteNote');
-      NotesService.undeleteNote(note, UISessionService.getActiveUUID());
+      NotesService.undeleteNote(note);
     }
   };
 
@@ -116,7 +116,7 @@
   $scope.favoriteNote = function(note) {
     if (note.trans.uuid && note.trans.itemType === 'note') {
       AnalyticsService.do('favoriteNote');
-      return NotesService.favoriteNote(note, UISessionService.getActiveUUID());
+      return NotesService.favoriteNote(note);
     } else {
       note.trans.favorited = BackendClientService.generateFakeTimestamp();
     }
@@ -128,7 +128,7 @@
   $scope.unfavoriteNote = function(note) {
     if (note.trans.uuid && note.trans.itemType === 'note') {
       AnalyticsService.do('unfavoriteNote');
-      return NotesService.unfavoriteNote(note, UISessionService.getActiveUUID());
+      return NotesService.unfavoriteNote(note);
     } else {
       delete note.trans.favorited;
     }

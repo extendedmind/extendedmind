@@ -477,7 +477,7 @@ it('should set convert object with \'note\' property in transient properties ' +
   // favorite note
   $httpBackend.expectPOST('/api/' + testOwnerUUID + '/note/' + notesOnProductivity.uuid + '/favorite')
     .respond(200, favoriteNoteResponse);
-  NotesService.favoriteNote(notesOnProductivity, testOwnerUUID);
+  NotesService.favoriteNote(notesOnProductivity);
   $httpBackend.flush();
 
   var noteToTaskPath = '/api/' + testOwnerUUID + '/note/' + notesOnProductivity.uuid + '/task';

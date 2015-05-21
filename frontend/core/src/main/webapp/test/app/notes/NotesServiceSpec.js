@@ -190,7 +190,7 @@
     var testNote = NotesService.getNewNote(testNoteValues, testOwnerUUID);
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/note', testNoteValues)
     .respond(200, putNewNoteResponse);
-    NotesService.saveNote(testNote, testOwnerUUID);
+    NotesService.saveNote(testNote);
     $httpBackend.flush();
     expect(NotesService.getNoteInfo(MockUUIDService.mockFakeUUIDs[0], testOwnerUUID))
       .toBeDefined();
@@ -216,7 +216,7 @@
                             relationships: officeDoorCode.relationships,
                             modified: officeDoorCode.modified})
     .respond(200, putExistingNoteResponse);
-    NotesService.saveNote(officeDoorCode, testOwnerUUID);
+    NotesService.saveNote(officeDoorCode);
     $httpBackend.flush();
     expect(NotesService.getNoteInfo(officeDoorCode.uuid, testOwnerUUID).note.mod.modified)
       .toBeGreaterThan(officeDoorCode.modified);
@@ -235,7 +235,7 @@
     var officeDoorCode = NotesService.getNoteInfo('c2cd149a-a287-40a0-86d9-0a14462f22d6', testOwnerUUID).note;
     $httpBackend.expectDELETE('/api/' + testOwnerUUID + '/note/' + officeDoorCode.uuid)
     .respond(200, deleteNoteResponse);
-    NotesService.deleteNote(officeDoorCode, testOwnerUUID);
+    NotesService.deleteNote(officeDoorCode);
     $httpBackend.flush();
     expect(NotesService.getNoteInfo(officeDoorCode.uuid, testOwnerUUID).type)
     .toBe('deleted');
@@ -248,7 +248,7 @@
     // Undelete the note
     $httpBackend.expectPOST('/api/' + testOwnerUUID + '/note/' + officeDoorCode.uuid + '/undelete')
     .respond(200, undeleteNoteResponse);
-    NotesService.undeleteNote(officeDoorCode, testOwnerUUID);
+    NotesService.undeleteNote(officeDoorCode);
     $httpBackend.flush();
     expect(NotesService.getNoteInfo(officeDoorCode.uuid, testOwnerUUID).note.mod.modified)
       .toBeGreaterThan(officeDoorCode.modified);
@@ -268,7 +268,7 @@
 
     $httpBackend.expectPOST('/api/' + testOwnerUUID + '/note/' + officeDoorCode.uuid + '/favorite')
     .respond(200, favoriteNoteResponse);
-    NotesService.favoriteNote(officeDoorCode, testOwnerUUID);
+    NotesService.favoriteNote(officeDoorCode);
     $httpBackend.flush();
 
     var notes = NotesService.getNotes(testOwnerUUID);
@@ -286,7 +286,7 @@
     // Unfavorite
     $httpBackend.expectPOST('/api/' + testOwnerUUID + '/note/' + officeDoorCode.uuid + '/unfavorite')
     .respond(200, unfavoriteNoteResponse);
-    NotesService.unfavoriteNote(officeDoorCode, testOwnerUUID);
+    NotesService.unfavoriteNote(officeDoorCode);
     $httpBackend.flush();
 
     expect(NotesService.getNoteInfo(officeDoorCode.uuid, testOwnerUUID).note.favorited)
