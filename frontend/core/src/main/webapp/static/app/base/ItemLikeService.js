@@ -177,7 +177,8 @@
    */
   function resetTrans(item, itemType, ownerUUID, fieldInfos, propertiesToReset){
     if (!item.trans) item.trans = {};
-    if (item.trans.itemType !== itemType) item.trans.itemType = itemType;
+    item.trans.itemType = itemType;
+    item.trans.owner = ownerUUID;
 
     for (var i=0, len=fieldInfos.length; i<len; i++){
       var fieldName = angular.isObject(fieldInfos[i]) ? fieldInfos[i].name : fieldInfos[i];

@@ -41,14 +41,14 @@
   $scope.deleteItem = function(item) {
     if (item.trans.uuid) {
       AnalyticsService.do('deleteItem');
-      return ItemsService.deleteItem(item, UISessionService.getActiveUUID());
+      return ItemsService.deleteItem(item);
     }
   };
 
   $scope.undeleteItem = function(item) {
     if (item.trans.uuid) {
       AnalyticsService.do('undeleteItem');
-      return ItemsService.undeleteItem(item, UISessionService.getActiveUUID());
+      return ItemsService.undeleteItem(item);
     }
   };
 }

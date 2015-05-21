@@ -467,7 +467,7 @@ describe('SynchronizeService', function() {
     var testItem = ItemsService.getNewItem(testItemValues, testOwnerUUID);
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
        .respond(404);
-    ItemsService.saveItem(testItem, testOwnerUUID);
+    ItemsService.saveItem(testItem);
     $httpBackend.flush();
 
     // Should go to the end of the array with a fake UUID
@@ -484,7 +484,7 @@ describe('SynchronizeService', function() {
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item',
                            testItemValues)
        .respond(404);
-    ItemsService.saveItem(testItem, testOwnerUUID);
+    ItemsService.saveItem(testItem);
     $httpBackend.flush();
     expect(items.length)
       .toBe(4);
@@ -495,7 +495,7 @@ describe('SynchronizeService', function() {
     // We're still expecting to get another try at creating the first
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
        .respond(404);
-    ItemsService.deleteItem(testItem, testOwnerUUID);
+    ItemsService.deleteItem(testItem);
     $httpBackend.flush();
     expect(items.length)
       .toBe(3);
@@ -504,7 +504,7 @@ describe('SynchronizeService', function() {
     // We're again, still expecting to get another try at creating the first
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
        .respond(404);
-    ItemsService.undeleteItem(testItem, testOwnerUUID);
+    ItemsService.undeleteItem(testItem);
     $httpBackend.flush();
     expect(items.length)
       .toBe(4);
@@ -539,7 +539,7 @@ describe('SynchronizeService', function() {
     $httpBackend.expectDELETE('/api/' + testOwnerUUID + '/item/' +
                               testItem.mod.uuid)
        .respond(200, deleteItemResponse);
-    ItemsService.deleteItem(testItem, testOwnerUUID);
+    ItemsService.deleteItem(testItem);
     $httpBackend.flush();
     expect(items.length)
       .toBe(3);
@@ -552,7 +552,7 @@ describe('SynchronizeService', function() {
     $httpBackend.expectPOST('/api/' + testOwnerUUID + '/item/' + testItem.mod.uuid +
                             '/undelete')
        .respond(200, undeleteItemResponse);
-    ItemsService.undeleteItem(testItem, testOwnerUUID);
+    ItemsService.undeleteItem(testItem);
     $httpBackend.flush();
     expect(items.length)
       .toBe(4);
@@ -595,7 +595,7 @@ describe('SynchronizeService', function() {
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item/' + yoga.trans.uuid,
                           yogaValues)
        .respond(404);
-    ItemsService.saveItem(yoga, testOwnerUUID);
+    ItemsService.saveItem(yoga);
     $httpBackend.flush();
     var items = ItemsService.getItems(testOwnerUUID);
     expect(items.length)
@@ -639,7 +639,7 @@ describe('SynchronizeService', function() {
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item/' + yoga.uuid,
                            yogaValues)
        .respond(404);
-    ItemsService.saveItem(yoga, testOwnerUUID);
+    ItemsService.saveItem(yoga);
     $httpBackend.flush();
     expect(items.length)
       .toBe(3);
@@ -671,7 +671,7 @@ describe('SynchronizeService', function() {
     var testItem = ItemsService.getNewItem(testItemValues, testOwnerUUID);
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
        .respond(200, {testing: true});
-    ItemsService.saveItem(testItem, testOwnerUUID);
+    ItemsService.saveItem(testItem);
     $httpBackend.flush();
     expect(items.length)
       .toBe(4);
@@ -719,7 +719,7 @@ describe('SynchronizeService', function() {
     var testItem = ItemsService.getNewItem(testItemValues, testOwnerUUID);
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
        .respond(404);
-    ItemsService.saveItem(testItem, testOwnerUUID);
+    ItemsService.saveItem(testItem);
     $httpBackend.flush();
     var items = ItemsService.getItems(testOwnerUUID);
     expect(items.length)
@@ -728,7 +728,7 @@ describe('SynchronizeService', function() {
     // 2. make item into task
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
        .respond(404);
-    ItemsService.itemToTask(testItem, testOwnerUUID);
+    ItemsService.itemToTask(testItem);
     $httpBackend.flush();
     expect(items.length)
       .toBe(3);
@@ -1189,7 +1189,7 @@ describe('SynchronizeService', function() {
     var testItem = ItemsService.getNewItem(testItemValues, testOwnerUUID);
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
        .respond(404);
-    ItemsService.saveItem(testItem, testOwnerUUID);
+    ItemsService.saveItem(testItem);
     $httpBackend.flush();
     var items = ItemsService.getItems(testOwnerUUID);
     expect(items.length)
@@ -1198,7 +1198,7 @@ describe('SynchronizeService', function() {
     // 2. make item into note
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
        .respond(404);
-    ItemsService.itemToNote(testItem, testOwnerUUID);
+    ItemsService.itemToNote(testItem);
     $httpBackend.flush();
     expect(items.length)
       .toBe(3);
@@ -1455,7 +1455,7 @@ describe('SynchronizeService', function() {
     var testItem = ItemsService.getNewItem(testItemValues, testOwnerUUID);
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
        .respond(404);
-    ItemsService.saveItem(testItem, testOwnerUUID);
+    ItemsService.saveItem(testItem);
     $httpBackend.flush();
     var items = ItemsService.getItems(testOwnerUUID);
     expect(items.length)
@@ -1464,7 +1464,7 @@ describe('SynchronizeService', function() {
     // 2. make item into list
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
        .respond(404);
-    ItemsService.itemToList(testItem, testOwnerUUID);
+    ItemsService.itemToList(testItem);
     $httpBackend.flush();
     expect(items.length)
       .toBe(3);
@@ -1691,13 +1691,13 @@ describe('SynchronizeService', function() {
     var testItem = ItemsService.getNewItem(testItemValues, testOwnerUUID);
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
        .respond(404);
-    ItemsService.saveItem(testItem, testOwnerUUID);
+    ItemsService.saveItem(testItem);
     $httpBackend.flush();
 
     // 2. make item into list
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
        .respond(404);
-    ItemsService.itemToList(testItem, testOwnerUUID);
+    ItemsService.itemToList(testItem);
     $httpBackend.flush();
 
     // 3. update list, this should just replace the previous call because itemToList
@@ -2403,7 +2403,7 @@ describe('SynchronizeService', function() {
        .respond(200, authenticateResponse);
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
         .respond(200, putNewItemResponse);
-    ItemsService.saveItem(testItem, testOwnerUUID);
+    ItemsService.saveItem(testItem);
     $httpBackend.flush();
     var items = ItemsService.getItems(testOwnerUUID);
     expect(items.length)

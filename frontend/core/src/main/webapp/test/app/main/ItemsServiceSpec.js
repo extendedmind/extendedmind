@@ -166,10 +166,10 @@ describe('ItemsService', function() {
       id: MockUUIDService.getShortIdFromFakeUUID(MockUUIDService.mockFakeUUIDs[0]),
       title: 'test item'
     };
-    var testItem = ItemsService.getNewItem(testItemValues);
+    var testItem = ItemsService.getNewItem(testItemValues, testOwnerUUID);
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
        .respond(200, putNewItemResponse);
-    ItemsService.saveItem(testItem, testOwnerUUID);
+    ItemsService.saveItem(testItem);
     $httpBackend.flush();
     expect(ItemsService.getItemInfo(MockUUIDService.mockFakeUUIDs[0], testOwnerUUID))
       .toBeDefined();
@@ -191,7 +191,7 @@ describe('ItemsService', function() {
                            {title: rememberTheMilk.trans.title,
                            modified: rememberTheMilk.modified})
        .respond(200, putExistingItemResponse);
-    ItemsService.saveItem(rememberTheMilk, testOwnerUUID);
+    ItemsService.saveItem(rememberTheMilk);
     $httpBackend.flush();
     expect(ItemsService.getItemInfo(rememberTheMilk.uuid, testOwnerUUID).item.mod.modified)
        .toBeGreaterThan(rememberTheMilk.modified);;
@@ -210,7 +210,7 @@ describe('ItemsService', function() {
     var rememberTheMilk = ItemsService.getItemInfo('d1e764e8-3be3-4e3f-8bec-8c3f9e7843e9', testOwnerUUID).item;
     $httpBackend.expectDELETE('/api/' + testOwnerUUID + '/item/' + rememberTheMilk.uuid)
        .respond(200, deleteItemResponse);
-    ItemsService.deleteItem(rememberTheMilk, testOwnerUUID);
+    ItemsService.deleteItem(rememberTheMilk);
     $httpBackend.flush();
     expect(ItemsService.getItemInfo(rememberTheMilk.uuid, testOwnerUUID).type)
       .toBe('deleted');
@@ -223,7 +223,7 @@ describe('ItemsService', function() {
     // Undelete the item
     $httpBackend.expectPOST('/api/' + testOwnerUUID + '/item/' + rememberTheMilk.uuid + '/undelete')
        .respond(200, undeleteItemResponse);
-    ItemsService.undeleteItem(rememberTheMilk, testOwnerUUID);
+    ItemsService.undeleteItem(rememberTheMilk);
     $httpBackend.flush();
     expect(ItemsService.getItemInfo(rememberTheMilk.uuid, testOwnerUUID).item.mod.modified)
       .toBeGreaterThan(rememberTheMilk.modified);
@@ -240,7 +240,7 @@ describe('ItemsService', function() {
     var rememberTheMilk = ItemsService.getItemInfo('d1e764e8-3be3-4e3f-8bec-8c3f9e7843e9', testOwnerUUID).item;
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' + rememberTheMilk.uuid)
        .respond(200, putExistingTaskResponse);
-    ItemsService.itemToTask(rememberTheMilk, testOwnerUUID);
+    ItemsService.itemToTask(rememberTheMilk);
     $httpBackend.flush();
 
     // There should be two left
@@ -260,7 +260,7 @@ describe('ItemsService', function() {
     var yoga = ItemsService.getItemInfo('f7724771-4469-488c-aabd-9db188672a9b', testOwnerUUID).item;
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/note/' + yoga.uuid)
        .respond(200, putExistingNoteResponse);
-    ItemsService.itemToNote(yoga, testOwnerUUID);
+    ItemsService.itemToNote(yoga);
     $httpBackend.flush();
 
     // There should be two left
@@ -280,7 +280,7 @@ describe('ItemsService', function() {
     var yoga = ItemsService.getItemInfo('f7724771-4469-488c-aabd-9db188672a9b', testOwnerUUID).item;
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/list/' + yoga.uuid)
        .respond(200, putExistingListResponse);
-    ItemsService.itemToList(yoga, testOwnerUUID);
+    ItemsService.itemToList(yoga);
     $httpBackend.flush();
 
     // There should be two left

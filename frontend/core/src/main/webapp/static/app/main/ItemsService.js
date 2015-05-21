@@ -136,7 +136,8 @@
     getDeletedItems: function(ownerUUID) {
       return items[ownerUUID].deletedItems;
     },
-    saveItem: function(item, ownerUUID) {
+    saveItem: function(item) {
+      var ownerUUID = item.trans.owner;
       var deferred = $q.defer();
       if (items[ownerUUID].deletedItems.findFirstObjectByKeyValue('uuid', item.trans.uuid, 'trans')) {
         deferred.reject({type: 'deleted'});
@@ -153,13 +154,16 @@
       }
       return deferred.promise;
     },
-    isItemEdited: function(item, ownerUUID) {
+    isItemEdited: function(item) {
+      var ownerUUID = item.trans.owner;
       return ItemLikeService.isEdited(item, 'item', ownerUUID, itemFieldInfos);
     },
-    resetItem: function(item, ownerUUID) {
+    resetItem: function(item) {
+      var ownerUUID = item.trans.owner;
       return ItemLikeService.resetTrans(item, 'item', ownerUUID, itemFieldInfos);
     },
-    deleteItem: function(item, ownerUUID) {
+    deleteItem: function(item) {
+      var ownerUUID = item.trans.owner;
       var deferred = $q.defer();
       // Check if item has already been deleted
       if (items[ownerUUID].deletedItems.findFirstObjectByKeyValue('uuid', item.trans.uuid, 'trans')) {
@@ -176,7 +180,8 @@
       }
       return deferred.promise;
     },
-    undeleteItem: function(item, ownerUUID) {
+    undeleteItem: function(item) {
+      var ownerUUID = item.trans.owner;
       var deferred = $q.defer();
       // Check that item is deleted before trying to undelete
       if (!items[ownerUUID].deletedItems.findFirstObjectByKeyValue('uuid', item.trans.uuid, 'trans')) {
@@ -207,7 +212,8 @@
         }
       }
     },
-    itemToTask: function(item, ownerUUID) {
+    itemToTask: function(item) {
+      var ownerUUID = item.trans.owner;
       var deferred = $q.defer();
       if (items[ownerUUID].deletedItems.findFirstObjectByKeyValue('uuid', item.trans.uuid, 'trans')) {
         deferred.reject({type: 'deleted'});
@@ -223,7 +229,8 @@
       }
       return deferred.promise;
     },
-    itemToNote: function(item, ownerUUID) {
+    itemToNote: function(item) {
+      var ownerUUID = item.trans.owner;
       var deferred = $q.defer();
       if (items[ownerUUID].deletedItems.findFirstObjectByKeyValue('uuid', item.trans.uuid, 'trans')) {
         deferred.reject({type: 'deleted'});
@@ -239,7 +246,8 @@
       }
       return deferred.promise;
     },
-    itemToList: function(item, ownerUUID) {
+    itemToList: function(item) {
+      var ownerUUID = item.trans.owner;
       var deferred = $q.defer();
       if (items[ownerUUID].deletedItems.findFirstObjectByKeyValue('uuid', item.trans.uuid, 'trans')) {
         deferred.reject({type: 'deleted'});

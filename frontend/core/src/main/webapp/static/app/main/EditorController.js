@@ -196,7 +196,7 @@
   $scope.convertToNote = function(dataInEdit){
     var convertToNotePromise;
     if (dataInEdit.trans.itemType === 'item') {
-      convertToNotePromise = ItemsService.itemToNote(dataInEdit, UISessionService.getActiveUUID());
+      convertToNotePromise = ItemsService.itemToNote(dataInEdit);
     }
     else if (dataInEdit.trans.itemType === 'task') {
       convertToNotePromise = ConvertService.finishTaskToNoteConvert(dataInEdit,
@@ -217,7 +217,7 @@
   $scope.convertToTask = function(dataInEdit){
     var convertToTaskPromise;
     if (dataInEdit.trans.itemType === 'item') {
-      convertToTaskPromise = ItemsService.itemToTask(dataInEdit, UISessionService.getActiveUUID());
+      convertToTaskPromise = ItemsService.itemToTask(dataInEdit);
     }
     else if (dataInEdit.trans.itemType === 'note') {
       convertToTaskPromise = ConvertService.finishNoteToTaskConvert(dataInEdit,
@@ -236,7 +236,7 @@
   $scope.convertToList = function(dataInEdit){
     var convertToListPromise;
     if (dataInEdit.trans.itemType === 'item'){
-      convertToListPromise = ItemsService.itemToList(dataInEdit, UISessionService.getActiveUUID());
+      convertToListPromise = ItemsService.itemToList(dataInEdit);
     }
     else if (dataInEdit.trans.itemType === 'task') {
       convertToListPromise = ConvertService.finishTaskToListConvert(dataInEdit,

@@ -159,7 +159,7 @@ function PersistentStorageService($q) {
 
     if (persistQueue.length === 0){
       persistWithNewUUIDDeferred(oldUUID, item, itemType, ownerUUID, deferred);
-    }else {
+    }else {
       executePersistQueue({deferred: deferred,
                            oldUUID: oldUUID,
                            data: item,

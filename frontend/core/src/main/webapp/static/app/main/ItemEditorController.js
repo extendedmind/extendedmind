@@ -36,7 +36,7 @@
 
   $scope.isItemEdited = function() {
     if ($scope.itemTitlebarHasText()) {
-      return ItemsService.isItemEdited($scope.item, UISessionService.getActiveUUID());
+      return ItemsService.isItemEdited($scope.item);
     }
   };
 
@@ -49,7 +49,7 @@
       $scope.unregisterEditorAboutToCloseCallback('ItemEditorController');
 
     if ($scope.isItemEdited() && !$scope.item.trans.deleted) saveItemInEdit();
-    else ItemsService.resetItem($scope.item, UISessionService.getActiveUUID());
+    else ItemsService.resetItem($scope.item);
   }
 
   // TITLEBAR

@@ -101,21 +101,21 @@
         initializeAndGotoNextItemOrEndSortingOnLast(dataInEdit);
         var completeAfterConvert = dataInEdit.trans.optimisticComplete();
 
-        ItemsService.itemToTask(dataInEdit, UISessionService.getActiveUUID()).then(function() {
+        ItemsService.itemToTask(dataInEdit).then(function() {
           if (completeAfterConvert) $scope.toggleCompleteTask(dataInEdit);
         });
       } else if (itemType === 'note') {
         initializeAndGotoNextItemOrEndSortingOnLast(dataInEdit);
         var favoriteNoteAfterConvert = dataInEdit.trans.favorited;
 
-        ItemsService.itemToNote(dataInEdit, UISessionService.getActiveUUID()).then(function() {
+        ItemsService.itemToNote(dataInEdit).then(function() {
           if (favoriteNoteAfterConvert) $scope.favoriteNote(dataInEdit);
         });
       } else if (itemType === 'list') {
         initializeAndGotoNextItemOrEndSortingOnLast(dataInEdit);
         var favoriteListAfterConvert = dataInEdit.trans.favorited;
 
-        ItemsService.itemToList(dataInEdit, UISessionService.getActiveUUID()).then(function() {
+        ItemsService.itemToList(dataInEdit).then(function() {
           if (favoriteListAfterConvert) $scope.favoriteList(dataInEdit);
         });
       }
