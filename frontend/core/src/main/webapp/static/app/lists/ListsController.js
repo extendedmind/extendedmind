@@ -53,6 +53,10 @@
     }
   }
 
+  function compareWithTitle(a, b) {
+    return a.trans.title < b.trans.title;
+  }
+
   function sortAndCacheSubsetOfAllLists(subset) {
     var i;
     var cachedLists = [];
@@ -65,7 +69,7 @@
         childLists.push(list);
       } else {
         // Insert parentless lists alphabetically into cache.
-        ArrayService.insertItemToArray(list, cachedLists, 'title');
+        ArrayService.insertItemToArray(list, cachedLists, compareWithTitle, true);
       }
     }
 
