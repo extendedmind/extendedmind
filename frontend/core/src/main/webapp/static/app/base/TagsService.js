@@ -17,6 +17,7 @@
  'use strict';
 
  function TagsService($q, ArrayService, BackendClientService, ItemLikeService, UserSessionService) {
+  var TAG_TYPE = 'tag';
 
   var tagFieldInfos = ItemLikeService.getFieldInfos(
     ['tagType'
@@ -42,35 +43,35 @@
   UserSessionService.registerNofifyOwnerCallback(initializeArrays, 'TagsService');
 
   function updateTag(tag, ownerUUID, oldUUID) {
-    ItemLikeService.persistAndReset(tag, 'tag', ownerUUID, tagFieldInfos, oldUUID);
-    return ArrayService.updateItem('tags', tag,
+    ItemLikeService.persistAndReset(tag, TAG_TYPE, ownerUUID, tagFieldInfos, oldUUID);
+    return ArrayService.updateItem(ownerUUID, 'tags', tag,
                                    tags[ownerUUID].activeTags,
                                    tags[ownerUUID].deletedTags);
   }
 
   function setTag(tag, ownerUUID) {
-    ItemLikeService.persistAndReset(tag, 'tag', ownerUUID, tagFieldInfos);
-    return ArrayService.setItem('tags', tag,
+    ItemLikeService.persistAndReset(tag, TAG_TYPE, ownerUUID, tagFieldInfos);
+    return ArrayService.setItem(ownerUUID, 'tags', tag,
                                 tags[ownerUUID].activeTags,
                                 tags[ownerUUID].deletedTags);
   }
 
   return {
     getNewTag: function(initialValues, ownerUUID) {
-      return ItemLikeService.getNew(initialValues, 'tag', ownerUUID, tagFieldInfos);
+      return ItemLikeService.getNew(initialValues, TAG_TYPE, ownerUUID, tagFieldInfos);
     },
     setTags: function(tagsResponse, ownerUUID, skipPersist, addToExisting) {
       if (skipPersist){
-        ItemLikeService.resetTrans(tagsResponse, 'tag', ownerUUID, tagFieldInfos);
+        ItemLikeService.resetTrans(tagsResponse, TAG_TYPE, ownerUUID, tagFieldInfos);
       }else{
-        ItemLikeService.persistAndReset(tagsResponse, 'tag', ownerUUID, tagFieldInfos);
+        ItemLikeService.persistAndReset(tagsResponse, TAG_TYPE, ownerUUID, tagFieldInfos);
       }
       if (addToExisting){
-        return ArrayService.updateArrays('tags', tagsResponse,
+        return ArrayService.updateArrays(ownerUUID, 'tags', tagsResponse,
                                     tags[ownerUUID].activeTags,
                                     tags[ownerUUID].deletedTags);
       }else{
-        return ArrayService.setArrays('tags', tagsResponse,
+        return ArrayService.setArrays(ownerUUID, 'tags', tagsResponse,
                                     tags[ownerUUID].activeTags,
                                     tags[ownerUUID].deletedTags);
       }
@@ -84,7 +85,7 @@
           var tagInfo = this.getTagInfo(tagsResponse[i].uuid, ownerUUID);
           if (tagInfo){
             if (tagInfo.tag.trans.deleted) locallyDeletedTags.push(tagInfo.tag);
-            ItemLikeService.evaluateMod(tagsResponse[i], tagInfo.tag, 'tag', ownerUUID, tagFieldInfos);
+            ItemLikeService.evaluateMod(tagsResponse[i], tagInfo.tag, TAG_TYPE, ownerUUID, tagFieldInfos);
 
             updatedTags.push(tagInfo.tag);
           }else{
@@ -92,8 +93,8 @@
           }
         }
 
-        ItemLikeService.persistAndReset(updatedTags, 'tag', ownerUUID, tagFieldInfos);
-        var latestModified = ArrayService.updateArrays('tags', updatedTags,
+        ItemLikeService.persistAndReset(updatedTags, TAG_TYPE, ownerUUID, tagFieldInfos);
+        var latestModified = ArrayService.updateArrays(ownerUUID, 'tags', updatedTags,
                                                        tags[ownerUUID].activeTags,
                                                        tags[ownerUUID].deletedTags);
         if (latestModified) {
@@ -164,7 +165,7 @@
       if (tags[ownerUUID].deletedTags.findFirstObjectByKeyValue('uuid', tag.trans.uuid, 'trans')) {
         deferred.reject({type: 'deleted'});
       } else {
-        ItemLikeService.save(tag, 'tag', ownerUUID, tagFieldInfos).then(
+        ItemLikeService.save(tag, TAG_TYPE, ownerUUID, tagFieldInfos).then(
           function(result){
             if (result === 'new') setTag(tag, ownerUUID);
             else if (result === 'existing') updateTag(tag, ownerUUID);
@@ -178,11 +179,11 @@
     },
     isTagEdited: function(tag) {
       var ownerUUID = tag.trans.owner;
-      return ItemLikeService.isEdited(tag, 'tag', ownerUUID, tagFieldInfos);
+      return ItemLikeService.isEdited(tag, TAG_TYPE, ownerUUID, tagFieldInfos);
     },
     resetTag: function(tag) {
       var ownerUUID = tag.trans.owner;
-      return ItemLikeService.resetTrans(tag, 'tag', ownerUUID, tagFieldInfos);
+      return ItemLikeService.resetTrans(tag, TAG_TYPE, ownerUUID, tagFieldInfos);
     },
     deleteTag: function(tag) {
       var ownerUUID = tag.trans.owner;
@@ -190,7 +191,7 @@
       if (tags[ownerUUID].deletedTags.findFirstObjectByKeyValue('uuid', tag.trans.uuid, 'trans')) {
         deferred.resolve('unmodified');
       }else{
-        ItemLikeService.processDelete(tag, 'tag', ownerUUID, tagFieldInfos).then(
+        ItemLikeService.processDelete(tag, TAG_TYPE, ownerUUID, tagFieldInfos).then(
           function(){
             updateTag(tag, ownerUUID);
             for (var id in tagDeletedCallbacks) {
@@ -210,7 +211,7 @@
       if (!tags[ownerUUID].deletedTags.findFirstObjectByKeyValue('uuid', tag.trans.uuid, 'trans')) {
         deferred.resolve('unmodified');
       }else{
-        ItemLikeService.undelete(tag, 'tag', ownerUUID, tagFieldInfos).then(
+        ItemLikeService.undelete(tag, TAG_TYPE, ownerUUID, tagFieldInfos).then(
           function(){
             updateTag(tag, ownerUUID);
             for (var id in tagDeletedCallbacks) {
@@ -231,15 +232,15 @@
       if (tags[oldUUID]){
         tags[newUUID] = tags[oldUUID];
         delete tags[oldUUID];
-        ItemLikeService.persistAndReset(tags[newUUID].activeTags, 'tag', newUUID, tagFieldInfos);
-        ItemLikeService.persistAndReset(tags[newUUID].deletedTags, 'tag', newUUID, tagFieldInfos);
+        ItemLikeService.persistAndReset(tags[newUUID].activeTags, TAG_TYPE, newUUID, tagFieldInfos);
+        ItemLikeService.persistAndReset(tags[newUUID].deletedTags, TAG_TYPE, newUUID, tagFieldInfos);
       }
     },
     // Regular expressions for tag requests
-    putNewTagRegex: ItemLikeService.getPutNewRegex('tag'),
-    putExistingTagRegex: ItemLikeService.getPutExistingRegex('tag'),
-    deleteTagRegex: ItemLikeService.getDeleteRegex('tag'),
-    undeleteTagRegex: ItemLikeService.getUndeleteRegex('tag'),
+    putNewTagRegex: ItemLikeService.getPutNewRegex(TAG_TYPE),
+    putExistingTagRegex: ItemLikeService.getPutExistingRegex(TAG_TYPE),
+    deleteTagRegex: ItemLikeService.getDeleteRegex(TAG_TYPE),
+    undeleteTagRegex: ItemLikeService.getUndeleteRegex(TAG_TYPE),
 
     // Special method used by ListsService to insert a generated
     // history tag to the tags array

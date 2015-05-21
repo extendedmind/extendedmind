@@ -18,6 +18,7 @@
 
  function ItemsService($q, ArrayService, BackendClientService, ItemLikeService, ListsService, NotesService,
                        TagsService, TasksService, UISessionService, UserSessionService) {
+  var ITEM_TYPE = 'item';
 
   var itemFieldInfos = ItemLikeService.getFieldInfos();
 
@@ -34,41 +35,42 @@
   UserSessionService.registerNofifyOwnerCallback(initializeArrays, 'ItemsService');
 
   function updateItem(item, ownerUUID, oldUUID) {
-    ItemLikeService.persistAndReset(item, 'item', ownerUUID, itemFieldInfos, oldUUID);
-    return ArrayService.updateItem('items', item,
+    ItemLikeService.persistAndReset(item, ITEM_TYPE, ownerUUID, itemFieldInfos, oldUUID);
+    return ArrayService.updateItem(ownerUUID, 'items', item,
                                    items[ownerUUID].activeItems,
                                    items[ownerUUID].deletedItems);
   }
 
   function setItem(item, ownerUUID) {
-    ItemLikeService.persistAndReset(item, 'item', ownerUUID, itemFieldInfos);
-    return ArrayService.setItem('items', item,
+    ItemLikeService.persistAndReset(item, ITEM_TYPE, ownerUUID, itemFieldInfos);
+    return ArrayService.setItem(ownerUUID, 'items', item,
                                 items[ownerUUID].activeItems,
                                 items[ownerUUID].deletedItems);
   }
 
-  function removeActiveItem(activeItemsIndex, ownerUUID) {
-    ItemLikeService.remove(items[ownerUUID].activeItems[activeItemsIndex].trans.uuid);
-    items[ownerUUID].activeItems.splice(activeItemsIndex, 1);
+  function removeActiveItem(item, ownerUUID) {
+    ItemLikeService.remove(item.trans.uuid);
+    ArrayService.removeFromArrays(ownerUUID, item, 'items',
+                                        items[ownerUUID].activeItems);
   }
 
   return {
     getNewItem: function(initialValues, ownerUUID) {
-      return ItemLikeService.getNew(initialValues, 'item', ownerUUID, itemFieldInfos);
+      return ItemLikeService.getNew(initialValues, ITEM_TYPE, ownerUUID, itemFieldInfos);
     },
     setItems: function(itemsResponse, ownerUUID, skipPersist, addToExisting) {
       if (skipPersist){
-        ItemLikeService.resetTrans(itemsResponse, 'item', ownerUUID, itemFieldInfos);
+        ItemLikeService.resetTrans(itemsResponse, ITEM_TYPE, ownerUUID, itemFieldInfos);
       }else{
-        ItemLikeService.persistAndReset(itemsResponse, 'item', ownerUUID, itemFieldInfos);
+        ItemLikeService.persistAndReset(itemsResponse, ITEM_TYPE, ownerUUID, itemFieldInfos);
       }
 
       if (addToExisting){
-        return ArrayService.updateArrays('items', itemsResponse,
+        return ArrayService.updateArrays(ownerUUID, 'items', itemsResponse,
                                     items[ownerUUID].activeItems,
                                     items[ownerUUID].deletedItems);
       }else{
-        return ArrayService.setArrays('items', itemsResponse,
+        return ArrayService.setArrays(ownerUUID, 'items', itemsResponse,
                                     items[ownerUUID].activeItems,
                                     items[ownerUUID].deletedItems);
       }
@@ -81,14 +83,15 @@
         for (var i=0; i<itemsResponse.length; i++){
           var itemInfo = this.getItemInfo(itemsResponse[i].uuid, ownerUUID);
           if (itemInfo){
-            ItemLikeService.evaluateMod(itemsResponse[i], itemInfo.item, 'item', ownerUUID, itemFieldInfos);
+            ItemLikeService.evaluateMod(itemsResponse[i], itemInfo.item,
+                                        ITEM_TYPE, ownerUUID, itemFieldInfos);
             updatedItems.push(itemInfo.item);
           }else{
             updatedItems.push(itemsResponse[i]);
           }
         }
-        ItemLikeService.persistAndReset(updatedItems, 'item', ownerUUID, itemFieldInfos);
-        return ArrayService.updateArrays('items', updatedItems,
+        ItemLikeService.persistAndReset(updatedItems, ITEM_TYPE, ownerUUID, itemFieldInfos);
+        return ArrayService.updateArrays(ownerUUID, 'items', updatedItems,
                                          items[ownerUUID].activeItems,
                                          items[ownerUUID].deletedItems);
       }
@@ -142,7 +145,7 @@
       if (items[ownerUUID].deletedItems.findFirstObjectByKeyValue('uuid', item.trans.uuid, 'trans')) {
         deferred.reject({type: 'deleted'});
       } else {
-        ItemLikeService.save(item, 'item', ownerUUID, itemFieldInfos).then(
+        ItemLikeService.save(item, ITEM_TYPE, ownerUUID, itemFieldInfos).then(
           function(result){
             if (result === 'new') setItem(item, ownerUUID);
             else if (result === 'existing') updateItem(item, ownerUUID);
@@ -156,11 +159,11 @@
     },
     isItemEdited: function(item) {
       var ownerUUID = item.trans.owner;
-      return ItemLikeService.isEdited(item, 'item', ownerUUID, itemFieldInfos);
+      return ItemLikeService.isEdited(item, ITEM_TYPE, ownerUUID, itemFieldInfos);
     },
     resetItem: function(item) {
       var ownerUUID = item.trans.owner;
-      return ItemLikeService.resetTrans(item, 'item', ownerUUID, itemFieldInfos);
+      return ItemLikeService.resetTrans(item, ITEM_TYPE, ownerUUID, itemFieldInfos);
     },
     deleteItem: function(item) {
       var ownerUUID = item.trans.owner;
@@ -169,7 +172,7 @@
       if (items[ownerUUID].deletedItems.findFirstObjectByKeyValue('uuid', item.trans.uuid, 'trans')) {
         deferred.resolve('unmodified');
       }else{
-        ItemLikeService.processDelete(item, 'item', ownerUUID, itemFieldInfos).then(
+        ItemLikeService.processDelete(item, ITEM_TYPE, ownerUUID, itemFieldInfos).then(
           function(){
             updateItem(item, ownerUUID);
             deferred.resolve(item);
@@ -187,7 +190,7 @@
       if (!items[ownerUUID].deletedItems.findFirstObjectByKeyValue('uuid', item.trans.uuid, 'trans')) {
         deferred.resolve('unmodified');
       }else{
-        ItemLikeService.undelete(item, 'item', ownerUUID, itemFieldInfos).then(
+        ItemLikeService.undelete(item, ITEM_TYPE, ownerUUID, itemFieldInfos).then(
           function(){
             updateItem(item, ownerUUID);
             deferred.resolve(item);
@@ -201,14 +204,13 @@
     removeItem: function(uuid, ownerUUID) {
       var itemInfo = this.getItemInfo(uuid, ownerUUID);
       if (itemInfo) {
-        var itemIndex;
         if (itemInfo.type === 'active') {
-          itemIndex = items[ownerUUID].activeItems.indexOf(itemInfo.item);
-          removeActiveItem(itemIndex, ownerUUID);
+          removeActiveItem(itemInfo.item, ownerUUID);
         } else if (itemInfo.type === 'deleted') {
-          itemIndex = items[ownerUUID].deletedItems.indexOf(itemInfo.item);
           ItemLikeService.remove(itemInfo.item.trans.uuid);
-          items[ownerUUID].deletedItems.splice(itemIndex, 1);
+          ArrayService.removeFromArrays(ownerUUID, itemInfo.item, 'items',
+                                        items[ownerUUID].activeItems,
+                                        items[ownerUUID].deletedItems);
         }
       }
     },
@@ -218,9 +220,8 @@
       if (items[ownerUUID].deletedItems.findFirstObjectByKeyValue('uuid', item.trans.uuid, 'trans')) {
         deferred.reject({type: 'deleted'});
       } else {
-        var index = items[ownerUUID].activeItems.findFirstIndexByKeyValue('uuid', item.trans.uuid, 'trans');
-        TasksService.saveTask(items[ownerUUID].activeItems[index]).then(function(/*result*/){
-          removeActiveItem(index, ownerUUID);
+        TasksService.saveTask(item).then(function(/*result*/){
+          removeActiveItem(item, ownerUUID);
           deferred.resolve(item);
         },function(failure){
           deferred.reject(failure);
@@ -234,9 +235,8 @@
       if (items[ownerUUID].deletedItems.findFirstObjectByKeyValue('uuid', item.trans.uuid, 'trans')) {
         deferred.reject({type: 'deleted'});
       } else {
-        var index = items[ownerUUID].activeItems.findFirstIndexByKeyValue('uuid', item.trans.uuid, 'trans');
-        NotesService.saveNote(items[ownerUUID].activeItems[index]).then(function(/*result*/){
-          removeActiveItem(index, ownerUUID);
+        NotesService.saveNote(item).then(function(/*result*/){
+          removeActiveItem(item, ownerUUID);
           deferred.resolve(item);
         },function(failure){
           deferred.reject(failure);
@@ -250,9 +250,8 @@
       if (items[ownerUUID].deletedItems.findFirstObjectByKeyValue('uuid', item.trans.uuid, 'trans')) {
         deferred.reject({type: 'deleted'});
       } else {
-        var index = items[ownerUUID].activeItems.findFirstIndexByKeyValue('uuid', item.trans.uuid, 'trans');
-        ListsService.saveList(items[ownerUUID].activeItems[index]).then(function(/*result*/){
-          removeActiveItem(index, ownerUUID);
+        ListsService.saveList(item).then(function(/*result*/){
+          removeActiveItem(item, ownerUUID);
           deferred.resolve(item);
         },function(failure){
           deferred.reject(failure);
@@ -267,15 +266,15 @@
       if (items[oldUUID]){
         items[newUUID] = items[oldUUID];
         delete items[oldUUID];
-        ItemLikeService.persistAndReset(items[newUUID].activeItems, 'item', newUUID, itemFieldInfos);
-        ItemLikeService.persistAndReset(items[newUUID].deletedItems, 'item', newUUID, itemFieldInfos);
+        ItemLikeService.persistAndReset(items[newUUID].activeItems, ITEM_TYPE, newUUID, itemFieldInfos);
+        ItemLikeService.persistAndReset(items[newUUID].deletedItems, ITEM_TYPE, newUUID, itemFieldInfos);
       }
     },
     // Regular expressions for item requests
-    putNewItemRegex: ItemLikeService.getPutNewRegex('item'),
-    putExistingItemRegex: ItemLikeService.getPutExistingRegex('item'),
-    deleteItemRegex: ItemLikeService.getDeleteRegex('item'),
-    undeleteItemRegex: ItemLikeService.getUndeleteRegex('item')
+    putNewItemRegex: ItemLikeService.getPutNewRegex(ITEM_TYPE),
+    putExistingItemRegex: ItemLikeService.getPutExistingRegex(ITEM_TYPE),
+    deleteItemRegex: ItemLikeService.getDeleteRegex(ITEM_TYPE),
+    undeleteItemRegex: ItemLikeService.getUndeleteRegex(ITEM_TYPE)
   };
 }
 

@@ -20,6 +20,7 @@
                        ArrayService, BackendClientService, DateService, ExtendedItemService, ItemLikeService,
                        ListsService, ReminderService, TagsService, UISessionService, UserSessionService,
                        UUIDService) {
+  var TASK_TYPE = 'task';
 
   /*
   * Create a separate 'optimisticComplete' getter/setter which can be used by checkbox ng-bind.
@@ -234,16 +235,16 @@
   }
 
   function updateTask(task, ownerUUID, oldUUID, propertiesToReset) {
-    ItemLikeService.persistAndReset(task, 'task', ownerUUID, taskFieldInfos, oldUUID, propertiesToReset);
-    return ArrayService.updateItem('tasks', task,
+    ItemLikeService.persistAndReset(task, TASK_TYPE, ownerUUID, taskFieldInfos, oldUUID, propertiesToReset);
+    return ArrayService.updateItem(ownerUUID, 'tasks', task,
                                    tasks[ownerUUID].activeTasks,
                                    tasks[ownerUUID].deletedTasks,
                                    getOtherArrays(ownerUUID));
   }
 
   function setTask(task, ownerUUID) {
-    ItemLikeService.persistAndReset(task, 'task', ownerUUID, taskFieldInfos);
-    ArrayService.setItem('tasks', task,
+    ItemLikeService.persistAndReset(task, TASK_TYPE, ownerUUID, taskFieldInfos);
+    ArrayService.setItem(ownerUUID, 'tasks', task,
                          tasks[ownerUUID].activeTasks,
                          tasks[ownerUUID].deletedTasks,
                          getOtherArrays(ownerUUID));
@@ -389,7 +390,7 @@
 
   return {
     getNewTask: function(initialValues, ownerUUID) {
-      var newTask = ItemLikeService.getNew(initialValues, 'task', ownerUUID, taskFieldInfos);
+      var newTask = ItemLikeService.getNew(initialValues, TASK_TYPE, ownerUUID, taskFieldInfos);
       newTask.trans.optimisticComplete = optimisticComplete;
       return newTask;
     },
@@ -400,17 +401,17 @@
     setTasks: function(tasksResponse, ownerUUID, skipPersist, addToExisting) {
       var latestModified, modifiedTasksInfos;
       if (skipPersist){
-        ItemLikeService.resetTrans(tasksResponse, 'task', ownerUUID, taskFieldInfos);
+        ItemLikeService.resetTrans(tasksResponse, TASK_TYPE, ownerUUID, taskFieldInfos);
       }else{
-        ItemLikeService.persistAndReset(tasksResponse, 'task', ownerUUID, taskFieldInfos);
+        ItemLikeService.persistAndReset(tasksResponse, TASK_TYPE, ownerUUID, taskFieldInfos);
       }
       if (addToExisting){
-        latestModified = ArrayService.updateArrays('tasks', tasksResponse,
+        latestModified = ArrayService.updateArrays(ownerUUID, 'tasks', tasksResponse,
                                                tasks[ownerUUID].activeTasks,
                                                tasks[ownerUUID].deletedTasks,
                                                getOtherArrays(ownerUUID));
       }else{
-        latestModified = ArrayService.setArrays('tasks', tasksResponse,
+        latestModified = ArrayService.setArrays(ownerUUID, 'tasks', tasksResponse,
                                             tasks[ownerUUID].activeTasks,
                                             tasks[ownerUUID].deletedTasks,
                                             getOtherArrays(ownerUUID));
@@ -438,15 +439,16 @@
           if (taskInfo){
             var oldMod = taskInfo.task.mod;
             updatedTasks.push(taskInfo.task);
-            ItemLikeService.evaluateMod(tasksResponse[i], taskInfo.task, 'task', ownerUUID, taskFieldInfos);
-            ItemLikeService.persistAndReset(taskInfo.task, 'task', ownerUUID,
+            ItemLikeService.evaluateMod(tasksResponse[i], taskInfo.task,
+                                        TASK_TYPE, ownerUUID, taskFieldInfos);
+            ItemLikeService.persistAndReset(taskInfo.task, TASK_TYPE, ownerUUID,
                                             taskFieldInfos, undefined, oldMod);
           }else{
             updatedTasks.push(tasksResponse[i]);
-            ItemLikeService.persistAndReset(tasksResponse[i], 'task', ownerUUID, taskFieldInfos);
+            ItemLikeService.persistAndReset(tasksResponse[i], TASK_TYPE, ownerUUID, taskFieldInfos);
           }
         }
-        var latestModified = ArrayService.updateArrays('tasks', updatedTasks,
+        var latestModified = ArrayService.updateArrays(ownerUUID, 'tasks', updatedTasks,
                                                   tasks[ownerUUID].activeTasks,
                                                   tasks[ownerUUID].deletedTasks,
                                                   getOtherArrays(ownerUUID));
@@ -454,14 +456,14 @@
         modifiedTasksInfos = ReminderService.synchronizeReminders(updatedTasks);
         if (modifiedTasksInfos) {
           var that = this;
-          var processModifiedDeletedTask = function(taskInfo, ownerUUID) {
+          var processModifiedDeletedTask = function(taskInfo) {
             that.undeleteTask(taskInfo.item, true).then(function(){
               that.deleteTask(taskInfo.item, taskInfo.reminder);
             });
           };
           for (i = 0; i < modifiedTasksInfos.length; i++) {
             if (modifiedTasksInfos[i].item.trans.deleted) {
-              processModifiedDeletedTask(modifiedTasksInfos[i], ownerUUID);
+              processModifiedDeletedTask(modifiedTasksInfos[i]);
             }else{
               this.saveTask(modifiedTasksInfos[i].item, ownerUUID);
             }
@@ -566,7 +568,7 @@
       if (tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue('uuid', task.trans.uuid, 'trans')) {
         deferred.reject({type: 'deleted'});
       } else {
-        ItemLikeService.save(task, 'task', ownerUUID, taskFieldInfos).then(
+        ItemLikeService.save(task, TASK_TYPE, ownerUUID, taskFieldInfos).then(
           function(result){
             if (result === 'new') setTask(task, ownerUUID);
             else if (result === 'existing') updateTask(task, ownerUUID);
@@ -594,33 +596,20 @@
       var taskInfo = this.getTaskInfo(uuid, ownerUUID);
       if (taskInfo) {
         ReminderService.removeScheduledReminder(taskInfo.task);
-        var taskIndex;
-        if (taskInfo.type === 'active') {
-          taskIndex = tasks[ownerUUID].activeTasks.indexOf(taskInfo.task);
-          ItemLikeService.remove(taskInfo.task.trans.uuid);
-          ArrayService.removeFromArrays(taskInfo.task, 'tasks', tasks[ownerUUID].activeTasks);
-        } else if (taskInfo.type === 'deleted') {
-          taskIndex = tasks[ownerUUID].deletedTasks.indexOf(taskInfo.task);
-          ItemLikeService.remove(taskInfo.task.trans.uuid);
-          ArrayService.removeFromArrays(taskInfo.task, 'tasks',
-                                        tasks[ownerUUID].activeTasks, tasks[ownerUUID].deletedTasks);
-        } else if (taskInfo.type === 'archived') {
-          taskIndex = tasks[ownerUUID].archivedTasks.indexOf(taskInfo.task);
-          ItemLikeService.remove(taskInfo.task.trans.uuid);
-          ArrayService.removeFromArrays(taskInfo.task, 'tasks',
-                                        tasks[ownerUUID].activeTasks,
-                                        tasks[ownerUUID].deletedTasks,
-                                        getOtherArrays(ownerUUID));
-        }
+        ItemLikeService.remove(taskInfo.task.trans.uuid);
+        ArrayService.removeFromArrays(ownerUUID, taskInfo.task, 'tasks',
+                                      tasks[ownerUUID].activeTasks,
+                                      tasks[ownerUUID].deletedTasks,
+                                      getOtherArrays(ownerUUID));
       }
     },
     isTaskEdited: function(task) {
       var ownerUUID = task.trans.owner;
-      return ItemLikeService.isEdited(task, 'task', ownerUUID, taskFieldInfos);
+      return ItemLikeService.isEdited(task, TASK_TYPE, ownerUUID, taskFieldInfos);
     },
     resetTask: function(task) {
       var ownerUUID = task.trans.owner;
-      return ItemLikeService.resetTrans(task, 'task', ownerUUID, taskFieldInfos);
+      return ItemLikeService.resetTrans(task, TASK_TYPE, ownerUUID, taskFieldInfos);
     },
     deleteTask: function(task, overrideReminder) {
       var ownerUUID = task.trans.owner;
@@ -640,7 +629,7 @@
           // Update persisted reminder info.
           data = {reminderId: reminder.id, removed: fakeTimestamp};
         }
-        ItemLikeService.processDelete(task, 'task', ownerUUID, taskFieldInfos, data).then(
+        ItemLikeService.processDelete(task, TASK_TYPE, ownerUUID, taskFieldInfos, data).then(
           function(){
             if (reminder !== undefined) {
               if (!task.mod) task.mod = {};
@@ -673,7 +662,7 @@
             //        See http://stackoverflow.com/a/17471604, http://stackoverflow.com/a/22844303
           }
         }
-        ItemLikeService.undelete(task, 'task', ownerUUID, taskFieldInfos, data).then(
+        ItemLikeService.undelete(task, TASK_TYPE, ownerUUID, taskFieldInfos, data).then(
           function(){
             if (reminder !== undefined) {
               if (!task.mod) task.mod = {};
@@ -697,7 +686,7 @@
         deferred.resolve(task);
       } else {
         var params = {
-          type: 'task', owner: ownerUUID, uuid: task.trans.uuid,
+          type: TASK_TYPE, owner: ownerUUID, uuid: task.trans.uuid,
           lastReplaceable: true
         };
         var fakeTimestamp = BackendClientService.generateFakeTimestamp();
@@ -706,7 +695,7 @@
         if (task.trans.repeating && !(task.hist && task.hist.generatedUUID)){
           var fakeRepeatingUUID = UUIDService.generateFakeUUID();
           var repeatingTask = this.getNewTask(getRepeatingTaskInitialValues(task));
-          ItemLikeService.copyEditedFieldsToMod(repeatingTask, 'task', ownerUUID, taskFieldInfos);
+          ItemLikeService.copyEditedFieldsToMod(repeatingTask, TASK_TYPE, ownerUUID, taskFieldInfos);
           ItemLikeService.updateObjectProperties(repeatingTask.mod,
             {uuid: fakeRepeatingUUID,
              modified: fakeTimestamp,
@@ -751,7 +740,7 @@
       } else if (!task.trans.completed){
         deferred.resolve(task);
       } else {
-        var params = {type: 'task', owner: ownerUUID, uuid: task.trans.uuid, lastReplaceable: true};
+        var params = {type: TASK_TYPE, owner: ownerUUID, uuid: task.trans.uuid, lastReplaceable: true};
         var fakeTimestamp = BackendClientService.generateFakeTimestamp();
         var data, reminder = ReminderService.scheduleReminder(task);
         if (reminder && reminder.uuid) {
@@ -779,9 +768,9 @@
       if (tasks[oldUUID]){
         tasks[newUUID] = tasks[oldUUID];
         delete tasks[oldUUID];
-        ItemLikeService.persistAndReset(tasks[newUUID].activeTasks, 'task', newUUID, taskFieldInfos);
-        ItemLikeService.persistAndReset(tasks[newUUID].archivedTasks, 'task', newUUID, taskFieldInfos);
-        ItemLikeService.persistAndReset(tasks[newUUID].deletedTasks, 'task', newUUID, taskFieldInfos);
+        ItemLikeService.persistAndReset(tasks[newUUID].activeTasks, TASK_TYPE, newUUID, taskFieldInfos);
+        ItemLikeService.persistAndReset(tasks[newUUID].archivedTasks, TASK_TYPE, newUUID, taskFieldInfos);
+        ItemLikeService.persistAndReset(tasks[newUUID].deletedTasks, TASK_TYPE, newUUID, taskFieldInfos);
       }
     },
     /*
@@ -823,10 +812,10 @@
     },
     taskFieldInfos: taskFieldInfos,
     // Regular expressions for task requests
-    putNewTaskRegex: ItemLikeService.getPutNewRegex('task'),
-    putExistingTaskRegex: ItemLikeService.getPutExistingRegex('task'),
-    deleteTaskRegex: ItemLikeService.getDeleteRegex('task'),
-    undeleteTaskRegex: ItemLikeService.getUndeleteRegex('task'),
+    putNewTaskRegex: ItemLikeService.getPutNewRegex(TASK_TYPE),
+    putExistingTaskRegex: ItemLikeService.getPutExistingRegex(TASK_TYPE),
+    deleteTaskRegex: ItemLikeService.getDeleteRegex(TASK_TYPE),
+    undeleteTaskRegex: ItemLikeService.getUndeleteRegex(TASK_TYPE),
     completeTaskRegex: new RegExp('^' +
                                   BackendClientService.apiPrefixRegex.source +
                                   BackendClientService.uuidRegex.source +

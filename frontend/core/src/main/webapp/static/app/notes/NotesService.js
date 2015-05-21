@@ -18,6 +18,7 @@
 
  function NotesService($q, ArrayService, BackendClientService, ExtendedItemService, ItemLikeService,
                        ListsService, TagsService, UISessionService, UserSessionService) {
+  var NOTE_TYPE = 'note';
 
   var noteFieldInfos = ItemLikeService.getFieldInfos(
     [ 'content',
@@ -81,16 +82,16 @@
   }
 
   function updateNote(note, ownerUUID, oldUUID, propertiesToReset) {
-    ItemLikeService.persistAndReset(note, 'note', ownerUUID, noteFieldInfos, oldUUID, propertiesToReset);
-    return ArrayService.updateItem('notes', note,
+    ItemLikeService.persistAndReset(note, NOTE_TYPE, ownerUUID, noteFieldInfos, oldUUID, propertiesToReset);
+    return ArrayService.updateItem(ownerUUID, 'notes', note,
                                    notes[ownerUUID].activeNotes,
                                    notes[ownerUUID].deletedNotes,
                                    getOtherArrays(ownerUUID));
   }
 
   function setNote(note, ownerUUID, propertiesToReset) {
-    ItemLikeService.persistAndReset(note, 'note', ownerUUID, noteFieldInfos, undefined, propertiesToReset);
-    ArrayService.setItem('notes', note,
+    ItemLikeService.persistAndReset(note, NOTE_TYPE, ownerUUID, noteFieldInfos, undefined, propertiesToReset);
+    ArrayService.setItem(ownerUUID, 'notes', note,
                          notes[ownerUUID].activeNotes,
                          notes[ownerUUID].deletedNotes,
                          getOtherArrays(ownerUUID));
@@ -203,20 +204,20 @@
 
   return {
     getNewNote: function(initialValues, ownerUUID) {
-      return ItemLikeService.getNew(initialValues, 'note', ownerUUID, noteFieldInfos);
+      return ItemLikeService.getNew(initialValues, NOTE_TYPE, ownerUUID, noteFieldInfos);
     },
     setNotes: function(notesResponse, ownerUUID, skipPersist, addToExisting) {
       if (skipPersist){
-        ItemLikeService.resetTrans(notesResponse, 'note', ownerUUID, noteFieldInfos);
+        ItemLikeService.resetTrans(notesResponse, NOTE_TYPE, ownerUUID, noteFieldInfos);
       }else{
-        ItemLikeService.persistAndReset(notesResponse, 'note', ownerUUID, noteFieldInfos);
+        ItemLikeService.persistAndReset(notesResponse, NOTE_TYPE, ownerUUID, noteFieldInfos);
       }
       if (addToExisting){
-        return ArrayService.updateArrays('notes', notesResponse,
+        return ArrayService.updateArrays(ownerUUID, 'notes', notesResponse,
                                     notes[ownerUUID].activeNotes,
                                     notes[ownerUUID].deletedNotes, getOtherArrays(ownerUUID));
       }else{
-        return ArrayService.setArrays('notes', notesResponse,
+        return ArrayService.setArrays(ownerUUID, 'notes', notesResponse,
                                     notes[ownerUUID].activeNotes,
                                     notes[ownerUUID].deletedNotes, getOtherArrays(ownerUUID));
       }
@@ -232,20 +233,20 @@
             updatedNotes.push(noteInfo.note);
             if (ItemLikeService.evaluateMod(notesResponse[i],
                                             noteInfo.note,
-                                            'note', ownerUUID, noteFieldInfos)){
+                                            NOTE_TYPE, ownerUUID, noteFieldInfos)){
               // Don't reset trans when mod matches database values to prevent problems with autosave
-              ItemLikeService.persistAndReset(noteInfo.note, 'note', ownerUUID,
+              ItemLikeService.persistAndReset(noteInfo.note, NOTE_TYPE, ownerUUID,
                                               noteFieldInfos, undefined, {});
             }else{
               // Mod does not exist or it does/did not match database, reset all trans values
-              ItemLikeService.persistAndReset(noteInfo.note, 'note', ownerUUID, noteFieldInfos);
+              ItemLikeService.persistAndReset(noteInfo.note, NOTE_TYPE, ownerUUID, noteFieldInfos);
             }
           }else{
             updatedNotes.push(notesResponse[i]);
-            ItemLikeService.persistAndReset(notesResponse[i], 'note', ownerUUID, noteFieldInfos);
+            ItemLikeService.persistAndReset(notesResponse[i], NOTE_TYPE, ownerUUID, noteFieldInfos);
           }
         }
-        return ArrayService.updateArrays('notes', updatedNotes,
+        return ArrayService.updateArrays(ownerUUID, 'notes', updatedNotes,
                                          notes[ownerUUID].activeNotes,
                                          notes[ownerUUID].deletedNotes, getOtherArrays(ownerUUID));
       }
@@ -335,7 +336,7 @@
       if (notes[ownerUUID].deletedNotes.findFirstObjectByKeyValue('uuid', note.trans.uuid, 'trans')) {
         deferred.reject({type: 'deleted'});
       } else {
-        ItemLikeService.save(note, 'note', ownerUUID, noteFieldInfos).then(
+        ItemLikeService.save(note, NOTE_TYPE, ownerUUID, noteFieldInfos).then(
           function(result){
 
             if (result === 'new') setNote(note, ownerUUID, ['uuid', 'created', 'modified']);
@@ -370,29 +371,20 @@
     removeNote: function(uuid, ownerUUID) {
       var noteInfo = this.getNoteInfo(uuid, ownerUUID);
       if (noteInfo) {
-        var noteIndex;
-        if (noteInfo.type === 'active') {
-          noteIndex = notes[ownerUUID].activeNotes.indexOf(noteInfo.note);
-          ItemLikeService.remove(noteInfo.note.trans.uuid);
-          notes[ownerUUID].activeNotes.splice(noteIndex, 1);
-        } else if (noteInfo.type === 'deleted') {
-          noteIndex = notes[ownerUUID].deletedNotes.indexOf(noteInfo.note);
-          ItemLikeService.remove(noteInfo.note.trans.uuid);
-          notes[ownerUUID].deletedNotes.splice(noteIndex, 1);
-        } else if (noteInfo.type === 'archived') {
-          noteIndex = notes[ownerUUID].archivedNotes.indexOf(noteInfo.note);
-          ItemLikeService.remove(noteInfo.note.trans.uuid);
-          notes[ownerUUID].archivedNotes.splice(noteIndex, 1);
-        }
+        ItemLikeService.remove(noteInfo.note.trans.uuid);
+        ArrayService.removeFromArrays(ownerUUID, noteInfo.note, 'notes',
+                                      notes[ownerUUID].activeNotes,
+                                      notes[ownerUUID].deletedNotes,
+                                      getOtherArrays(ownerUUID));
       }
     },
     isNoteEdited: function(note) {
       var ownerUUID = note.trans.owner;
-      return ItemLikeService.isEdited(note, 'note', ownerUUID, noteFieldInfos);
+      return ItemLikeService.isEdited(note, NOTE_TYPE, ownerUUID, noteFieldInfos);
     },
     resetNote: function(note) {
       var ownerUUID = note.trans.owner;
-      return ItemLikeService.resetTrans(note, 'note', ownerUUID, noteFieldInfos);
+      return ItemLikeService.resetTrans(note, NOTE_TYPE, ownerUUID, noteFieldInfos);
     },
     deleteNote: function(note) {
       var ownerUUID = note.trans.owner;
@@ -400,7 +392,7 @@
       if (notes[ownerUUID].deletedNotes.findFirstObjectByKeyValue('uuid', note.trans.uuid, 'trans')) {
         deferred.resolve('unmodified');
       }else{
-        ItemLikeService.processDelete(note, 'note', ownerUUID, noteFieldInfos).then(
+        ItemLikeService.processDelete(note, NOTE_TYPE, ownerUUID, noteFieldInfos).then(
           function(){
             updateNote(note, ownerUUID);
             deferred.resolve(note);
@@ -417,7 +409,7 @@
       if (!notes[ownerUUID].deletedNotes.findFirstObjectByKeyValue('uuid', note.trans.uuid, 'trans')) {
         deferred.resolve('unmodified');
       }else{
-        ItemLikeService.undelete(note, 'note', ownerUUID, noteFieldInfos).then(
+        ItemLikeService.undelete(note, NOTE_TYPE, ownerUUID, noteFieldInfos).then(
           function(){
             updateNote(note, ownerUUID);
             deferred.resolve(note);
@@ -437,7 +429,7 @@
         deferred.resolve(note);
       } else {
         var params = {
-          type: 'note', owner: ownerUUID, uuid: note.trans.uuid,
+          type: NOTE_TYPE, owner: ownerUUID, uuid: note.trans.uuid,
           reverse: {
             method: 'post',
             url: '/api/' + ownerUUID + '/note/' + note.trans.uuid + '/unfavorite'
@@ -464,7 +456,7 @@
       } else if (!note.trans.favorited){
         deferred.resolve(note);
       } else {
-        var params = {type: 'note', owner: ownerUUID, uuid: note.trans.uuid, lastReplaceable: true};
+        var params = {type: NOTE_TYPE, owner: ownerUUID, uuid: note.trans.uuid, lastReplaceable: true};
         var fakeTimestamp = BackendClientService.generateFakeTimestamp();
         BackendClientService.postOffline('/api/' + ownerUUID + '/note/' + note.trans.uuid + '/unfavorite',
                                   this.unfavoriteNoteRegex, params, undefined, fakeTimestamp);
@@ -484,9 +476,9 @@
       if (notes[oldUUID]){
         notes[newUUID] = notes[oldUUID];
         delete notes[oldUUID];
-        ItemLikeService.persistAndReset(notes[newUUID].activeNotes, 'note', newUUID, noteFieldInfos);
-        ItemLikeService.persistAndReset(notes[newUUID].archivedNotes, 'note', newUUID, noteFieldInfos);
-        ItemLikeService.persistAndReset(notes[newUUID].deletedNotes, 'note', newUUID, noteFieldInfos);
+        ItemLikeService.persistAndReset(notes[newUUID].activeNotes, NOTE_TYPE, newUUID, noteFieldInfos);
+        ItemLikeService.persistAndReset(notes[newUUID].archivedNotes, NOTE_TYPE, newUUID, noteFieldInfos);
+        ItemLikeService.persistAndReset(notes[newUUID].deletedNotes, NOTE_TYPE, newUUID, noteFieldInfos);
       }
     },
     /*
@@ -512,10 +504,10 @@
     },
     noteFieldInfos: noteFieldInfos,
     // Regular expressions for note requests
-    putNewNoteRegex: ItemLikeService.getPutNewRegex('note'),
-    putExistingNoteRegex: ItemLikeService.getPutExistingRegex('note'),
-    deleteNoteRegex: ItemLikeService.getDeleteRegex('note'),
-    undeleteNoteRegex: ItemLikeService.getUndeleteRegex('note'),
+    putNewNoteRegex: ItemLikeService.getPutNewRegex(NOTE_TYPE),
+    putExistingNoteRegex: ItemLikeService.getPutExistingRegex(NOTE_TYPE),
+    deleteNoteRegex: ItemLikeService.getDeleteRegex(NOTE_TYPE),
+    undeleteNoteRegex: ItemLikeService.getUndeleteRegex(NOTE_TYPE),
     favoriteNoteRegex: new RegExp('^' +
                                   BackendClientService.apiPrefixRegex.source +
                                   BackendClientService.uuidRegex.source +

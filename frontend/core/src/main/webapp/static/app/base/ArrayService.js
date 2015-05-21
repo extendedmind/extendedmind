@@ -21,12 +21,12 @@
 */
 function ArrayService($rootScope, UISessionService) {
 
-  function emitChangeEvent(data, type, item) {
+  function emitChangeEvent(ownerUUID, data, type, item) {
     $rootScope.$emit('arrayChanged',
                      {data: data,
                       type: type,
                       item: item,
-                      ownerUUID: UISessionService.getActiveUUID()});
+                      ownerUUID: ownerUUID});
   }
 
   // Modified from:
@@ -95,7 +95,7 @@ function ArrayService($rootScope, UISessionService) {
     // Based on given backend response, sets active array, deleted array
     // and optionally other arrays, which are objects of type {array: [], id: ''}.
     // Returns the latest (biggest) modified value.
-    setArrays: function(itemType, response, activeArray, deletedArray, otherArrays) {
+    setArrays: function(ownerUUID, itemType, response, activeArray, deletedArray, otherArrays) {
       // First clear existing arrays..
       var changedArrays = [];
       activeArray.length = 0;
@@ -114,7 +114,7 @@ function ArrayService($rootScope, UISessionService) {
       if (response) {
         var index = 0;
         while (response[index]) {
-          var modified = this.setItem(itemType, response[index], activeArray, deletedArray, otherArrays,
+          var modified = this.setItem(ownerUUID, itemType, response[index], activeArray, deletedArray, otherArrays,
                                       true);
           if (!latestModified || latestModified < modified) {
             latestModified = modified;
@@ -123,18 +123,18 @@ function ArrayService($rootScope, UISessionService) {
         }
       }
 
-      emitChangeEvent(changedArrays, itemType);
+      emitChangeEvent(ownerUUID, changedArrays, itemType);
       return latestModified;
     },
     // Based on given backend response, updates all given arrays and returns the
     // latest (biggest) modified value.
-    updateArrays: function(itemType, response, activeArray, deletedArray, otherArrays) {
+    updateArrays: function(ownerUUID, itemType, response, activeArray, deletedArray, otherArrays) {
       if (response) {
         var i = 0;
         var latestModified;
         var skipEmit = response.length > 1;
         while (response[i]) {
-          var modified = this.updateItem(itemType, response[i], activeArray, deletedArray, otherArrays,
+          var modified = this.updateItem(ownerUUID, itemType, response[i], activeArray, deletedArray, otherArrays,
                                          skipEmit);
           if (!latestModified || latestModified < response[i].modified) {
             latestModified = modified;
@@ -151,7 +151,7 @@ function ArrayService($rootScope, UISessionService) {
               changedArrays.push({type: otherArrays[i].id, array: otherArrays[i].array});
             }
           }
-          emitChangeEvent(changedArrays, itemType);
+          emitChangeEvent(ownerUUID, changedArrays, itemType);
         }
         return latestModified;
       }
@@ -174,41 +174,43 @@ function ArrayService($rootScope, UISessionService) {
       }
     },
     // item and activeArray are mandatory, rest are optional
-    removeFromArrays: function(item, itemType, activeArray, deletedArray, otherArrays) {
+    removeFromArrays: function(ownerUUID, item, itemType, activeArray, deletedArray, otherArrays) {
       var arrayInfo = this.getActiveArrayInfo(item, activeArray, deletedArray, otherArrays);
       if (arrayInfo) {
         arrayInfo.array.splice(arrayInfo.array.indexOf(item), 1);
-        emitChangeEvent({type: arrayInfo.type, array: arrayInfo.array}, itemType, item);
+        emitChangeEvent(ownerUUID, {type: arrayInfo.type, array: arrayInfo.array}, itemType, item);
       }
       return arrayInfo;
     },
     /*
     * itemType, item and activeArray are mandatory, rest are optional
     */
-    setItem: function(itemType, item, activeArray, deletedArray, otherArrays, skipChangeEvent) {
+    setItem: function(ownerUUID, itemType, item, activeArray, deletedArray, otherArrays, skipChangeEvent) {
       var otherArrayInfo = getFirstMatchingArrayInfoByProperty(item, otherArrays);
       if (deletedArray && item.trans.deleted) {
         insertItemToArray(item, deletedArray, 'deleted');
         if (!skipChangeEvent) {
-          emitChangeEvent([{type: 'active', array: activeArray},
+          emitChangeEvent(ownerUUID, [{type: 'active', array: activeArray},
                           {type: 'deleted', array: deletedArray}],
                           itemType, item);
         }
       } else if (otherArrayInfo) {
         insertItemToArray(item, otherArrayInfo.array, otherArrayInfo.id, otherArrayInfo.reverse);
         if (!skipChangeEvent) {
-          emitChangeEvent({type: otherArrayInfo.id, array: otherArrayInfo.array}, itemType, item);
+          emitChangeEvent(ownerUUID, {type: otherArrayInfo.id, array: otherArrayInfo.array}, itemType, item);
         }
       } else {
         insertItemToArray(item, activeArray, 'created');
-        if (!skipChangeEvent) emitChangeEvent({type: 'active', array: activeArray}, itemType, item);
+        if (!skipChangeEvent) emitChangeEvent(ownerUUID,
+                                              {type: 'active', array: activeArray},
+                                              itemType, item);
       }
       return item.modified;
     },
     /*
     * itemType, item and activeArray are mandatory, rest are optional
     */
-    updateItem: function(itemType, item, activeArray, deletedArray, otherArrays, skipChangeEvent) {
+    updateItem: function(ownerUUID, itemType, item, activeArray, deletedArray, otherArrays, skipChangeEvent) {
       var activeItemId, deletedItemId, otherArrayItemId;
       var otherArrayInfo = getFirstMatchingArrayInfoByProperty(item, otherArrays);
       var otherArrayWithItemInfo = getFirstMatchingArrayInfoByUUID(item.trans.uuid, otherArrays);
@@ -227,20 +229,21 @@ function ArrayService($rootScope, UISessionService) {
         if (item.trans.deleted) {
           insertItemToArray(item, deletedArray, 'deleted');
           if (!skipChangeEvent) {
-            emitChangeEvent([{type: 'active', array: activeArray},
+            emitChangeEvent(ownerUUID, [{type: 'active', array: activeArray},
                             {type: 'deleted', array: deletedArray}],
                             itemType, item);
           }
         } else if (otherArrayInfo && item[otherArrayInfo.id]) {
           insertItemToArray(item, otherArrayInfo.array, otherArrayInfo.id, otherArrayInfo.reverse);
           if (!skipChangeEvent) {
-            emitChangeEvent([{type: 'active', array: activeArray},
+            emitChangeEvent(ownerUUID,[{type: 'active', array: activeArray},
                             {type: otherArrayInfo.id, array: otherArrayInfo.array}],
                             itemType, item);
           }
         } else {
           insertItemToArray(item, activeArray, 'created');
-          if (!skipChangeEvent) emitChangeEvent({type: 'active', array: activeArray}, itemType, item);
+          if (!skipChangeEvent) emitChangeEvent(ownerUUID, {type: 'active', array: activeArray},
+                                                itemType, item);
         }
       } else if (deletedItemId !== undefined) {
         deletedArray.splice(deletedItemId, 1);
@@ -248,28 +251,29 @@ function ArrayService($rootScope, UISessionService) {
           if (otherArrayInfo && item[otherArrayInfo.id]) {
             insertItemToArray(item, otherArrayInfo.array, otherArrayInfo.id, otherArrayInfo.reverse);
             if (!skipChangeEvent) {
-              emitChangeEvent([{type: otherArrayInfo.id, array: otherArrayInfo.array},
+              emitChangeEvent(ownerUUID, [{type: otherArrayInfo.id, array: otherArrayInfo.array},
                               {type: 'deleted', array: deletedArray}],
                               itemType, item);
             }
           } else {
             insertItemToArray(item, activeArray, 'created');
             if (!skipChangeEvent) {
-              emitChangeEvent([{type: 'active', array: activeArray},
+              emitChangeEvent(ownerUUID, [{type: 'active', array: activeArray},
                               {type: 'deleted', array: deletedArray}],
                               itemType, item);
             }
           }
         } else {
           insertItemToArray(item, deletedArray, 'deleted');
-          if (!skipChangeEvent) emitChangeEvent({type: 'deleted', array: deletedArray}, itemType, item);
+          if (!skipChangeEvent) emitChangeEvent(ownerUUID, {type: 'deleted', array: deletedArray},
+                                                itemType, item);
         }
       } else if (otherArrayItemId !== undefined) {
         otherArrayWithItemInfo.array.splice(otherArrayItemId, 1);
         if (item.trans.deleted) {
           insertItemToArray(item, deletedArray, 'deleted');
           if (!skipChangeEvent) {
-            emitChangeEvent([{type: otherArrayWithItemInfo.id, array: otherArrayWithItemInfo.array},
+            emitChangeEvent(ownerUUID, [{type: otherArrayWithItemInfo.id, array: otherArrayWithItemInfo.array},
                             {type: 'deleted', array: deletedArray}],
                             itemType, item);
           }
@@ -279,7 +283,7 @@ function ArrayService($rootScope, UISessionService) {
           // it used to belong to => it is active again.
           insertItemToArray(item, activeArray, 'created');
           if (!skipChangeEvent) {
-            emitChangeEvent([{type: 'active', array: activeArray},
+            emitChangeEvent(ownerUUID, [{type: 'active', array: activeArray},
                             {type: otherArrayWithItemInfo.id, array: otherArrayWithItemInfo.array}],
                             itemType, item);
           }
@@ -287,7 +291,7 @@ function ArrayService($rootScope, UISessionService) {
           // Should be placed in another other array
           insertItemToArray(item, otherArrayInfo.array, otherArrayInfo.id, otherArrayInfo.reverse);
           if (!skipChangeEvent) {
-            emitChangeEvent([{type: otherArrayInfo.id, array: otherArrayInfo.array},
+            emitChangeEvent(ownerUUID, [{type: otherArrayInfo.id, array: otherArrayInfo.array},
                             {type: otherArrayWithItemInfo.id, array: otherArrayWithItemInfo.array}],
                             itemType, item);
           }
@@ -296,12 +300,12 @@ function ArrayService($rootScope, UISessionService) {
           insertItemToArray(item, otherArrayWithItemInfo.array, otherArrayWithItemInfo.id,
                             otherArrayInfo.reverse);
           if (!skipChangeEvent) {
-            emitChangeEvent({type: otherArrayWithItemInfo.id, array: otherArrayWithItemInfo.array},
+            emitChangeEvent(ownerUUID, {type: otherArrayWithItemInfo.id, array: otherArrayWithItemInfo.array},
                             itemType, item);
           }
         }
       } else {
-        this.setItem(itemType, item, activeArray, deletedArray, otherArrays, skipChangeEvent);
+        this.setItem(ownerUUID, itemType, item, activeArray, deletedArray, otherArrays, skipChangeEvent);
       }
 
       return item.modified;

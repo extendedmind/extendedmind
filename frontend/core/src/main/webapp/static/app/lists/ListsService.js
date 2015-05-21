@@ -18,6 +18,7 @@
 
  function ListsService($q, ArrayService, BackendClientService, ExtendedItemService, ItemLikeService,
                        TagsService, UserSessionService) {
+  var LIST_TYPE = 'list';
 
   var listFieldInfos = ItemLikeService.getFieldInfos(
     [ 'due',
@@ -99,16 +100,17 @@
   }
 
   function updateList(list, ownerUUID, oldItemUUID, propertiesToReset) {
-    ItemLikeService.persistAndReset(list, 'list', ownerUUID, listFieldInfos, oldItemUUID, propertiesToReset);
-    return ArrayService.updateItem('lists', list,
+    ItemLikeService.persistAndReset(list, LIST_TYPE, ownerUUID,
+                                    listFieldInfos, oldItemUUID, propertiesToReset);
+    return ArrayService.updateItem(ownerUUID, 'lists', list,
                                    lists[ownerUUID].activeLists,
                                    lists[ownerUUID].deletedLists,
                                    getOtherArrays(ownerUUID));
   }
 
   function setList(list, ownerUUID) {
-    ItemLikeService.persistAndReset(list, 'list', ownerUUID, listFieldInfos);
-    ArrayService.setItem('lists', list,
+    ItemLikeService.persistAndReset(list, LIST_TYPE, ownerUUID, listFieldInfos);
+    ArrayService.setItem(ownerUUID, 'lists', list,
                          lists[ownerUUID].activeLists,
                          lists[ownerUUID].deletedLists,
                          getOtherArrays(ownerUUID));
@@ -116,23 +118,23 @@
 
   return {
     getNewList: function(initialValues, ownerUUID) {
-      return ItemLikeService.getNew(initialValues, 'list', ownerUUID, listFieldInfos);
+      return ItemLikeService.getNew(initialValues, LIST_TYPE, ownerUUID, listFieldInfos);
     },
     setLists: function(listsResponse, ownerUUID, skipPersist, addToExisting) {
       if (skipPersist){
-        ItemLikeService.resetTrans(listsResponse, 'list', ownerUUID, listFieldInfos);
+        ItemLikeService.resetTrans(listsResponse, LIST_TYPE, ownerUUID, listFieldInfos);
       }else{
-        ItemLikeService.persistAndReset(listsResponse, 'list', ownerUUID, listFieldInfos);
+        ItemLikeService.persistAndReset(listsResponse, LIST_TYPE, ownerUUID, listFieldInfos);
       }
 
       if (addToExisting){
-        return ArrayService.updateArrays('lists', listsResponse,
+        return ArrayService.updateArrays(ownerUUID, 'lists', listsResponse,
                                                        lists[ownerUUID].activeLists,
                                                        lists[ownerUUID].deletedLists,
                                                        getOtherArrays(ownerUUID));
 
       }else{
-        return ArrayService.setArrays('lists', listsResponse,
+        return ArrayService.setArrays(ownerUUID, 'lists', listsResponse,
                                     lists[ownerUUID].activeLists,
                                     lists[ownerUUID].deletedLists,
                                     getOtherArrays(ownerUUID));
@@ -147,14 +149,15 @@
           var listInfo = this.getListInfo(listsResponse[i].uuid, ownerUUID);
           if (listInfo){
             if (listInfo.list.trans.deleted) locallyDeletedLists.push(listInfo.list);
-            ItemLikeService.evaluateMod(listsResponse[i], listInfo.list, 'list', ownerUUID, listFieldInfos);
+            ItemLikeService.evaluateMod(listsResponse[i], listInfo.list,
+                                        LIST_TYPE, ownerUUID, listFieldInfos);
             updatedLists.push(listInfo.list);
           }else{
             updatedLists.push(listsResponse[i]);
           }
         }
-        ItemLikeService.persistAndReset(updatedLists, 'list', ownerUUID, listFieldInfos);
-        var latestModified = ArrayService.updateArrays('lists', updatedLists,
+        ItemLikeService.persistAndReset(updatedLists, LIST_TYPE, ownerUUID, listFieldInfos);
+        var latestModified = ArrayService.updateArrays(ownerUUID, 'lists', updatedLists,
                                                        lists[ownerUUID].activeLists,
                                                        lists[ownerUUID].deletedLists,
                                                        getOtherArrays(ownerUUID));
@@ -243,7 +246,7 @@
       if (lists[ownerUUID].deletedLists.findFirstObjectByKeyValue('uuid', list.trans.uuid, 'trans')) {
         deferred.reject({type: 'deleted'});
       } else {
-        ItemLikeService.save(list, 'list', ownerUUID, listFieldInfos).then(
+        ItemLikeService.save(list, LIST_TYPE, ownerUUID, listFieldInfos).then(
           function(result){
             if (result === 'new') setList(list, ownerUUID);
             else if (result === 'existing') updateList(list, ownerUUID);
@@ -257,11 +260,11 @@
     },
     isListEdited: function(list) {
       var ownerUUID = list.trans.owner;
-      return ItemLikeService.isEdited(list, 'list', ownerUUID, listFieldInfos);
+      return ItemLikeService.isEdited(list, LIST_TYPE, ownerUUID, listFieldInfos);
     },
     resetList: function(list) {
       var ownerUUID = list.trans.owner;
-      return ItemLikeService.resetTrans(list, 'list', ownerUUID, listFieldInfos);
+      return ItemLikeService.resetTrans(list, LIST_TYPE, ownerUUID, listFieldInfos);
     },
     getListStatus: function(list) {
       var ownerUUID = list.trans.owner;
@@ -282,20 +285,11 @@
         for (var id in listDeletedCallbacks) {
           listDeletedCallbacks[id](listInfo.list, ownerUUID);
         }
-        var listIndex;
-        if (listInfo.type === 'active') {
-          listIndex = lists[ownerUUID].activeLists.indexOf(listInfo.list);
-          ItemLikeService.remove(listInfo.list.trans.uuid);
-          lists[ownerUUID].activeLists.splice(listIndex, 1);
-        } else if (listInfo.type === 'deleted') {
-          listIndex = lists[ownerUUID].deletedLists.indexOf(listInfo.list);
-          ItemLikeService.remove(listInfo.list.trans.uuid);
-          lists[ownerUUID].deletedLists.splice(listIndex, 1);
-        } else if (listInfo.type === 'archived') {
-          listIndex = lists[ownerUUID].archivedLists.indexOf(listInfo.list);
-          ItemLikeService.remove(listInfo.list.trans.uuid);
-          lists[ownerUUID].archivedLists.splice(listIndex, 1);
-        }
+        ItemLikeService.remove(listInfo.list.trans.uuid);
+        ArrayService.removeFromArrays(ownerUUID, listInfo.list, 'lists',
+                                      lists[ownerUUID].activeLists,
+                                      lists[ownerUUID].deletedLists,
+                                      getOtherArrays(ownerUUID));
       }
 
     },
@@ -305,7 +299,7 @@
       if (lists[ownerUUID].deletedLists.findFirstObjectByKeyValue('uuid', list.trans.uuid, 'trans')) {
         deferred.resolve('unmodified');
       }else{
-        ItemLikeService.processDelete(list, 'list', ownerUUID, listFieldInfos).then(
+        ItemLikeService.processDelete(list, LIST_TYPE, ownerUUID, listFieldInfos).then(
           function(){
             updateList(list, ownerUUID);
             for (var id in listDeletedCallbacks) {
@@ -325,7 +319,7 @@
       if (!lists[ownerUUID].deletedLists.findFirstObjectByKeyValue('uuid', list.trans.uuid, 'trans')) {
         deferred.resolve('unmodified');
       }else{
-        ItemLikeService.undelete(list, 'list', ownerUUID, listFieldInfos).then(
+        ItemLikeService.undelete(list, LIST_TYPE, ownerUUID, listFieldInfos).then(
           function(){
             updateList(list, ownerUUID);
             for (var id in listDeletedCallbacks) {
@@ -368,7 +362,7 @@
           // Add generated tag to list tags array
           if (!list.relationships) list.relationships = {};
           if (!list.relationships.tags) list.relationships.tags = [];
-          list.relationships.tags.push(response.history.uuid)
+          list.relationships.tags.push(response.history.uuid);
 
           // Update list
           updateList(list, ownerUUID);
@@ -439,17 +433,17 @@
       if (lists[oldUUID]){
         lists[newUUID] = lists[oldUUID];
         delete lists[oldUUID];
-        ItemLikeService.persistAndReset(lists[newUUID].activeLists, 'list', newUUID, listFieldInfos);
-        ItemLikeService.persistAndReset(lists[newUUID].archivedLists, 'list', newUUID, listFieldInfos);
-        ItemLikeService.persistAndReset(lists[newUUID].deletedLists, 'list', newUUID, listFieldInfos);
+        ItemLikeService.persistAndReset(lists[newUUID].activeLists, LIST_TYPE, newUUID, listFieldInfos);
+        ItemLikeService.persistAndReset(lists[newUUID].archivedLists, LIST_TYPE, newUUID, listFieldInfos);
+        ItemLikeService.persistAndReset(lists[newUUID].deletedLists, LIST_TYPE, newUUID, listFieldInfos);
       }
     },
     listFieldInfos: listFieldInfos,
     // Regular expressions for list requests
-    putNewListRegex: ItemLikeService.getPutNewRegex('list'),
-    putExistingListRegex: ItemLikeService.getPutExistingRegex('list'),
-    deleteListRegex: ItemLikeService.getDeleteRegex('list'),
-    undeleteListRegex: ItemLikeService.getUndeleteRegex('list'),
+    putNewListRegex: ItemLikeService.getPutNewRegex(LIST_TYPE),
+    putExistingListRegex: ItemLikeService.getPutExistingRegex(LIST_TYPE),
+    deleteListRegex: ItemLikeService.getDeleteRegex(LIST_TYPE),
+    undeleteListRegex: ItemLikeService.getUndeleteRegex(LIST_TYPE),
     archiveListRegex: new RegExp('^' +
                                  BackendClientService.apiPrefixRegex.source +
                                  BackendClientService.uuidRegex.source +
