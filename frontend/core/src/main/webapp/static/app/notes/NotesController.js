@@ -53,7 +53,7 @@
       if (newKeywords) {
         var saveNewKeywordPromises = newKeywords.map(function(newKeyword) {
           // Make array of save keyword promises from new keywords.
-          return TagsService.saveTag(newKeyword, UISessionService.getActiveUUID());
+          return TagsService.saveTag(newKeyword);
         });
 
         return $q.all(saveNewKeywordPromises);

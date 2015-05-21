@@ -57,7 +57,7 @@
 
   $scope.isTagEdited = function() {
     if ($scope.tagTitlebarHasText()) {
-      return TagsService.isTagEdited($scope.tag, UISessionService.getActiveUUID());
+      return TagsService.isTagEdited($scope.tag);
     }
   };
 
@@ -75,7 +75,7 @@
       $scope.swipeToContextsAndReset();
       deleting = false;
     } else {
-      TagsService.resetTag($scope.tag, UISessionService.getActiveUUID());
+      TagsService.resetTag($scope.tag);
     }
   }
 

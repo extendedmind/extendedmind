@@ -158,8 +158,9 @@
         };
       }
     },
-    saveTag: function(tag, ownerUUID) {
+    saveTag: function(tag) {
       var deferred = $q.defer();
+      var ownerUUID = tag.trans.owner;
       if (tags[ownerUUID].deletedTags.findFirstObjectByKeyValue('uuid', tag.trans.uuid, 'trans')) {
         deferred.reject({type: 'deleted'});
       } else {
@@ -175,13 +176,16 @@
       }
       return deferred.promise;
     },
-    isTagEdited: function(tag, ownerUUID) {
+    isTagEdited: function(tag) {
+      var ownerUUID = tag.trans.owner;
       return ItemLikeService.isEdited(tag, 'tag', ownerUUID, tagFieldInfos);
     },
-    resetTag: function(tag, ownerUUID) {
+    resetTag: function(tag) {
+      var ownerUUID = tag.trans.owner;
       return ItemLikeService.resetTrans(tag, 'tag', ownerUUID, tagFieldInfos);
     },
-    deleteTag: function(tag, ownerUUID) {
+    deleteTag: function(tag) {
+      var ownerUUID = tag.trans.owner;
       var deferred = $q.defer();
       if (tags[ownerUUID].deletedTags.findFirstObjectByKeyValue('uuid', tag.trans.uuid, 'trans')) {
         deferred.resolve('unmodified');
@@ -200,7 +204,8 @@
       }
       return deferred.promise;
     },
-    undeleteTag: function(tag, ownerUUID) {
+    undeleteTag: function(tag) {
+      var ownerUUID = tag.trans.owner;
       var deferred = $q.defer();
       if (!tags[ownerUUID].deletedTags.findFirstObjectByKeyValue('uuid', tag.trans.uuid, 'trans')) {
         deferred.resolve('unmodified');

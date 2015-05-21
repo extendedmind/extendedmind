@@ -24,7 +24,7 @@
     if (keyword.trans.uuid) AnalyticsService.do('saveKeyword');
     else AnalyticsService.do('addKeyword');
 
-    return TagsService.saveTag(keyword, UISessionService.getActiveUUID());
+    return TagsService.saveTag(keyword);
   };
 
   // DELETING
@@ -32,14 +32,14 @@
   $scope.deleteKeyword = function (keyword) {
     if (keyword.trans.uuid){
       AnalyticsService.do('deleteKeyword');
-      return TagsService.deleteTag(keyword, UISessionService.getActiveUUID());
+      return TagsService.deleteTag(keyword);
     }
   };
 
   $scope.undeleteKeyword = function(keyword) {
     if (keyword.trans.uuid){
       AnalyticsService.do('undeleteKeyword');
-      return TagsService.undeleteTag(keyword, UISessionService.getActiveUUID());
+      return TagsService.undeleteTag(keyword);
     }
   };
 
@@ -55,7 +55,7 @@
     if (context.trans.uuid) AnalyticsService.do('saveContext');
     else AnalyticsService.do('addContext');
 
-    return TagsService.saveTag(context, UISessionService.getActiveUUID());
+    return TagsService.saveTag(context);
   };
 
   // DELETING
@@ -75,14 +75,14 @@
       }, $rootScope.LIST_ITEM_LEAVE_ANIMATION_SPEED);
 
       AnalyticsService.do('deleteContext');
-      return TagsService.deleteTag(context, UISessionService.getActiveUUID());
+      return TagsService.deleteTag(context);
     }
   };
 
   $scope.undeleteContext = function(context) {
     if (context.trans.uuid){
       AnalyticsService.do('undeleteContext');
-      return TagsService.undeleteTag(context, UISessionService.getActiveUUID());
+      return TagsService.undeleteTag(context);
     }
   };
 }

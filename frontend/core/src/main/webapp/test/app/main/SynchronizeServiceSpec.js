@@ -1760,7 +1760,7 @@ describe('SynchronizeService', function() {
     var testTag = TagsService.getNewTag(testTagValues, testOwnerUUID);
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/tag', testTagValues)
        .respond(404);
-    TagsService.saveTag(testTag, testOwnerUUID);
+    TagsService.saveTag(testTag);
     $httpBackend.flush();
     expect(tags.length)
       .toBe(4);
@@ -1773,7 +1773,7 @@ describe('SynchronizeService', function() {
     testTag.trans.description = 'test description';
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/tag', testTagValues)
        .respond(404);
-    TagsService.saveTag(testTag, testOwnerUUID);
+    TagsService.saveTag(testTag);
     $httpBackend.flush();
     expect(tags.length)
       .toBe(4);
@@ -1795,7 +1795,7 @@ describe('SynchronizeService', function() {
     // 4. delete offline
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/tag', testTagValues)
        .respond(404);
-    TagsService.deleteTag(testTag, testOwnerUUID);
+    TagsService.deleteTag(testTag);
     $httpBackend.flush();
 
     expect(tags.length)
@@ -1812,7 +1812,7 @@ describe('SynchronizeService', function() {
     // 5. undelete offline
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/tag', testTagValues)
        .respond(404);
-    TagsService.undeleteTag(testTag, testOwnerUUID);
+    TagsService.undeleteTag(testTag);
     $httpBackend.flush();
     expect(tags.length)
       .toBe(4);
@@ -1861,7 +1861,7 @@ describe('SynchronizeService', function() {
     // 5. delete online
     $httpBackend.expectDELETE('/api/' + testOwnerUUID + '/tag/' + testTag.mod.uuid)
        .respond(200, deleteItemResponse);
-    TagsService.deleteTag(testTag, testOwnerUUID);
+    TagsService.deleteTag(testTag);
     $httpBackend.flush();
 
     expect(tags.length)
@@ -1874,7 +1874,7 @@ describe('SynchronizeService', function() {
     // 6. undelete online
     $httpBackend.expectPOST('/api/' + testOwnerUUID + '/tag/' + testTag.mod.uuid + '/undelete')
        .respond(200, undeleteItemResponse);
-    TagsService.undeleteTag(testTag, testOwnerUUID);
+    TagsService.undeleteTag(testTag);
     $httpBackend.flush();
     expect(tags[3].mod.deleted)
       .toBeUndefined();
@@ -1931,7 +1931,7 @@ describe('SynchronizeService', function() {
     var testTag = TagsService.getNewTag(testTagValues, testOwnerUUID);
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/tag', testTagValues)
        .respond(200, {});
-    TagsService.saveTag(testTag, testOwnerUUID);
+    TagsService.saveTag(testTag);
     $httpBackend.flush();
     expect(tags.length)
       .toBe(4);

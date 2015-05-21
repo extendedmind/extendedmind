@@ -153,7 +153,7 @@ afterEach(function() {
     var testTag = TagsService.getNewTag(testTagValues, testOwnerUUID);
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/tag', testTagValues)
       .respond(200, putNewTagResponse);
-    TagsService.saveTag(testTag, testOwnerUUID);
+    TagsService.saveTag(testTag);
     $httpBackend.flush();
     expect(TagsService.getTagInfo(MockUUIDService.mockFakeUUIDs[0], testOwnerUUID)).toBeDefined();
 
@@ -177,7 +177,7 @@ afterEach(function() {
                             tagType: secret.tagType,
                             modified: secret.modified})
     .respond(200, putExistingTagResponse);
-    TagsService.saveTag(secret, testOwnerUUID);
+    TagsService.saveTag(secret);
     $httpBackend.flush();
     expect(TagsService.getTagInfo(secret.uuid, testOwnerUUID).tag.mod.modified)
       .toBeGreaterThan(secret.modified);
@@ -198,7 +198,7 @@ afterEach(function() {
     var secret = TagsService.getTagInfo('c933e120-90e7-488b-9f15-ea2ee2887e67', testOwnerUUID).tag;
     $httpBackend.expectDELETE('/api/' + testOwnerUUID + '/tag/' + secret.uuid)
     .respond(200, deleteTagResponse);
-    TagsService.deleteTag(secret, testOwnerUUID);
+    TagsService.deleteTag(secret);
     $httpBackend.flush();
     expect(TagsService.getTagInfo(secret.uuid, testOwnerUUID).type)
     .toBe('deleted');
@@ -211,7 +211,7 @@ afterEach(function() {
     // Undelete the tag
     $httpBackend.expectPOST('/api/' + testOwnerUUID + '/tag/' + secret.uuid + '/undelete')
     .respond(200, undeleteTagResponse);
-    TagsService.undeleteTag(secret, testOwnerUUID);
+    TagsService.undeleteTag(secret);
     $httpBackend.flush();
     expect(TagsService.getTagInfo(secret.uuid, testOwnerUUID).tag.mod.modified)
       .toBeGreaterThan(secret.modified);
