@@ -147,7 +147,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
             tags = (if (tags.isEmpty) None else (Some(getEndNodeUUIDList(tags.get))))))
           else None),
         visibility = {
-          val listVisibilityResult = getListVisibility(agreementInfos)
+          val listVisibilityResult = getListVisibility(agreementInfos, owner)
           if (listVisibilityResult.isLeft) return Left(listVisibilityResult.left.get)
           else listVisibilityResult.right.get
         }
@@ -386,10 +386,10 @@ trait ListDatabase extends UserDatabase with TagDatabase {
     }
   }
 
-  protected def getListVisibility(agreementInformations: Option[scala.List[AgreementInformation]])(implicit neo4j: DatabaseService): Response[Option[SharedItemVisibility]] = {
+  protected def getListVisibility(agreementInformations: Option[scala.List[AgreementInformation]], owner: Owner)(implicit neo4j: DatabaseService): Response[Option[SharedItemVisibility]] = {
     if (agreementInformations.isDefined){
       val agreements = agreementInformations.get.map(agreementInformation => {
-        val agreement = toAgreement(agreementInformation)
+        val agreement = toAgreement(agreementInformation, showProposedBy = owner.isLimitedAccess)
         if (agreement.isLeft) return Left(agreement.left.get)
         else agreement.right.get
       })

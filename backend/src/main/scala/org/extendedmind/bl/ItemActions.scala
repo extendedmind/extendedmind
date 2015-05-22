@@ -141,13 +141,18 @@ trait ItemActions {
           assigner = None,
           visibility =
             if (list.visibility.isDefined && list.visibility.get.agreements.isDefined){
-              val agreementForCurrentUser = list.visibility.get.agreements.get.filter(agreement => {
+              val agreementsForCurrentUser = list.visibility.get.agreements.get.filter(agreement => {
                 agreement.proposedTo.get.uuid.get == owner.userUUID
               })
-              if (agreementForCurrentUser.isEmpty){
+              val strippedAgreementsForCurrentUser = agreementsForCurrentUser.map(agreement => {
+                // No need to include the users own email/uuid into the agreement
+                agreement.copy(proposedTo = None)
+              })
+              if (strippedAgreementsForCurrentUser.isEmpty){
                 None
               }else{
-                Some(SharedItemVisibility(None, Some(agreementForCurrentUser)))
+                Some(SharedItemVisibility(None,
+                    Some(strippedAgreementsForCurrentUser)))
               }
             }else{
               None

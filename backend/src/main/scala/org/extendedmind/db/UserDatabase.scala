@@ -715,14 +715,23 @@ trait UserDatabase extends AbstractGraphDatabase {
     }
   }
   
-  protected def toAgreement(agreementInfo: AgreementInformation)(implicit neo4j: DatabaseService): Response[Agreement] = {
+  protected def toAgreement(agreementInfo: AgreementInformation, showProposedBy: Boolean = false)(implicit neo4j: DatabaseService): Response[Agreement] = {
     for {
       agreement <- toCaseClass[Agreement](agreementInfo.agreement).right
-      fullAgreement <- Right(agreement.copy(
-        proposedTo = Some(AgreementUser(Some(getUUID(agreementInfo.proposedTo.get)),
-                                        Some(agreementInfo.proposedTo.get.getProperty("email").asInstanceOf[String])))
-      )).right
+      fullAgreement <- Right(addAgreementParty(agreement, agreementInfo, showProposedBy)).right
     } yield fullAgreement
   }
+
+  private def addAgreementParty(agreement: Agreement, agreementInfo: AgreementInformation, showProposedBy: Boolean)(implicit neo4j: DatabaseService): Agreement = {
+    return agreement.copy(
+        proposedTo = Some(AgreementUser(Some(getUUID(agreementInfo.proposedTo.get)),
+                                        Some(agreementInfo.proposedTo.get.getProperty("email").asInstanceOf[String]))),
+        proposedBy = 
+          if (showProposedBy)
+            Some(AgreementUser(Some(getUUID(agreementInfo.proposedBy)),
+                               Some(agreementInfo.proposedBy.getProperty("email").asInstanceOf[String])))
+          else None)
+  }
+
   
 }

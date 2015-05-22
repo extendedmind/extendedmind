@@ -105,7 +105,7 @@ class ItemBestCaseSpec extends ServiceSpecBase {
         itemsResponse.notes should be (None)
         itemsResponse.lists should not be None
         itemsResponse.lists.get.length should equal(1)
-        itemsResponse.lists.get(0).visibility.get.agreements.get(0).proposedTo.get.email.get should be (LAURI_EMAIL)
+        itemsResponse.lists.get(0).visibility.get.agreements.get(0).proposedBy.get.email.get should be (TIMO_EMAIL)
        }
     }
     it("should successfully put new item on PUT to /[userUUID]/item "
