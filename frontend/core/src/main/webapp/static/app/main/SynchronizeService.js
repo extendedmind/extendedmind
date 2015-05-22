@@ -904,8 +904,8 @@
     });
   }
 
-  function synchronize(ownerUUID) {
-    function doSynchronize(url, latestModified, deferred){
+  function synchronize(ownerUUID, initialParams) {
+    function doSynchronize(url, latestModified, deferred, initialParams){
       if (UserSessionService.isFakeUser()){
         deferred.resolve('fakeUser');
       }else if (latestModified !== undefined) {
@@ -917,7 +917,9 @@
         url += 'deleted=true&archived=true&completed=true';
 
         // Push request to offline buffer
-        BackendClientService.getSecondary(url, getItemsRegex, {owner: ownerUUID});
+        var params = initialParams ? initialParams : {};
+        params.owner = ownerUUID;
+        BackendClientService.getSecondary(url, getItemsRegex, params);
         deferred.resolve('delta');
       } else {
         getAllOnline(ownerUUID, getAllItemsOnline, deferred);
@@ -950,10 +952,10 @@
         }
         // Set data and then synchronize
         UserSessionService.setPersistentDataLoaded(true);
-        doSynchronize(url, latestModified, deferred);
+        doSynchronize(url, latestModified, deferred, initialParams);
       });
     }else {
-      doSynchronize(url, latestModified, deferred);
+      doSynchronize(url, latestModified, deferred, initialParams);
     }
 
     return deferred.promise;
@@ -981,8 +983,8 @@
 
   return {
     // Main method to synchronize all arrays with backend.
-    synchronize: function(ownerUUID) {
-      return synchronize(ownerUUID);
+    synchronize: function(ownerUUID, initialParams) {
+      return synchronize(ownerUUID, initialParams);
     },
     addCompletedAndArchived: function(ownerUUID) {
       var deferred = $q.defer();

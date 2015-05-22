@@ -90,8 +90,9 @@
     }
   };
 
-  $scope.getNewNote = function(initialValues){
-    return NotesService.getNewNote(initialValues, UISessionService.getActiveUUID());
+  $scope.getNewNote = function(initialValues, overrideOwnerUUID){
+    var ownerUUID = overrideOwnerUUID ? overrideOwnerUUID : UISessionService.getActiveUUID();
+    return NotesService.getNewNote(initialValues, ownerUUID);
   };
 
   $scope.getNewFavoriteNote = function(){

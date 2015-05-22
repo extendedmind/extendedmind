@@ -16,8 +16,7 @@
  /*global angular, getJSONFixture */
 'use strict';
 
-function MockItemsBackendService($httpBackend, ItemsService, PersistentStorageService, SynchronizeService,
-                                 UISessionService, UserSessionService, UUIDService) {
+function MockItemsBackendService($httpBackend, ItemsService, SynchronizeService, UUIDService) {
 
   function convertModifiedItemsIntoPersistent(modifiedItems){
     var persistentItems = [];
@@ -74,27 +73,27 @@ function MockItemsBackendService($httpBackend, ItemsService, PersistentStorageSe
     $httpBackend.whenGET(SynchronizeService.getItemsRegex)
       .respond(function(method, url, data, headers) {
         var i;
-        if (url.indexOf('?modified=') != -1){
+        if (url.indexOf('?modified=') !== -1 || url.indexOf('?deleted=') !== -1){
           var modifiedResponse = {};
-          var activeUUID = UISessionService.getActiveUUID();
+          var ownerUUID = url.substr(5, 36);
           // Search values that contain mod from the PersistentStorageService and return them
-          var modifiedItems = SynchronizeService.getModifiedItems('item', activeUUID);
+          var modifiedItems = SynchronizeService.getModifiedItems('item', ownerUUID);
           if (modifiedItems && modifiedItems.length){
             modifiedResponse.items = convertModifiedItemsIntoPersistent(modifiedItems);
           }
-          var modifiedTasks = SynchronizeService.getModifiedItems('task', activeUUID);
+          var modifiedTasks = SynchronizeService.getModifiedItems('task', ownerUUID);
           if (modifiedTasks && modifiedTasks.length){
             modifiedResponse.tasks = convertModifiedItemsIntoPersistent(modifiedTasks);
           }
-          var modifiedNotes = SynchronizeService.getModifiedItems('note', activeUUID);
+          var modifiedNotes = SynchronizeService.getModifiedItems('note', ownerUUID);
           if (modifiedNotes && modifiedNotes.length){
             modifiedResponse.notes = convertModifiedItemsIntoPersistent(modifiedNotes);
           }
-          var modifiedLists = SynchronizeService.getModifiedItems('list', activeUUID);
+          var modifiedLists = SynchronizeService.getModifiedItems('list', ownerUUID);
           if (modifiedLists && modifiedLists.length){
             modifiedResponse.lists = convertModifiedItemsIntoPersistent(modifiedLists);
           }
-          var modifiedTags = SynchronizeService.getModifiedItems('tag', activeUUID);
+          var modifiedTags = SynchronizeService.getModifiedItems('tag', ownerUUID);
           if (modifiedTags && modifiedTags.length){
             modifiedResponse.tags = convertModifiedItemsIntoPersistent(modifiedTags);
           }
@@ -236,6 +235,6 @@ function MockItemsBackendService($httpBackend, ItemsService, PersistentStorageSe
   };
 }
 
-MockItemsBackendService['$inject'] = ['$httpBackend', 'ItemsService', 'PersistentStorageService',
-'SynchronizeService', 'UISessionService', 'UserSessionService', 'UUIDService'];
+MockItemsBackendService['$inject'] = ['$httpBackend', 'ItemsService',
+'SynchronizeService', 'UUIDService'];
 angular.module('em.appTest').factory('MockItemsBackendService', MockItemsBackendService);

@@ -94,7 +94,7 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
           if (status === 'firstSync'){
             // On first sync, most stale other owner syncing must be started manually, because it is done
             // with online methods, not using the queue
-            synchronizeMostStaleOtherOwner(ownerUUID);
+            synchronizeMostStaleOtherOwner();
           }
         }
       });
@@ -103,7 +103,7 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
 
   // Synchronize items for given owner if interval reached.
 
-  function synchronizeItems(ownerUUID, sinceLastItemsSynchronized, skipDeleted) {
+  function synchronizeItems(ownerUUID, sinceLastItemsSynchronized, skipDeleted, forceSyncParams) {
     function isItemSynchronizeValid(sinceLastItemsSynchronized){
       if (isNaN(sinceLastItemsSynchronized)) return true;
       else if (sinceLastItemsSynchronized > itemsSynchronizedThreshold) return true;
@@ -113,7 +113,7 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
     }
 
     return $q(function(resolve, reject) {
-      if (isItemSynchronizeValid(sinceLastItemsSynchronized)) {
+      if (forceSyncParams || isItemSynchronizeValid(sinceLastItemsSynchronized)) {
         $scope.$evalAsync(function() {
           if (!$rootScope.synced){
             // This is the first load for the user
@@ -122,8 +122,7 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
             $rootScope.syncState = 'modified';
           }
         });
-
-        SynchronizeService.synchronize(ownerUUID).then(function(status) {
+        SynchronizeService.synchronize(ownerUUID, forceSyncParams).then(function(status) {
           if (status === 'firstSync'){
             // Also immediately after first sync add completed and archived to the mix
             $rootScope.syncState = 'completedAndArchived';
@@ -188,7 +187,7 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
     // Only execute sync if the previous sync is ready or error happened the previous time
     if ($rootScope.syncState === 'ready' || $rootScope.syncState === 'error'){
       var activeUUID = UISessionService.getActiveUUID();
-      return SynchronizeService.synchronize(activeUUID).then(function() {
+      return SynchronizeService.synchronize(activeUUID, {emptied: true}).then(function() {
         updateItemsSyncronizeAttempted(activeUUID);
       }, function(){
         $rootScope.syncState = 'error';
@@ -218,13 +217,13 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
 
   // Executes after secondary when there is nothing in the queue
   function afterSecondaryWithEmptyQueueCallback(previousSecondary) {
-    var previousOwnerUUID = previousSecondary.params.owner;
-    return synchronizeMostStaleOtherOwner(previousOwnerUUID);
+    var previousParams = previousSecondary.params;
+    return synchronizeMostStaleOtherOwner(previousParams);
   }
   BackendClientService.registerAfterSecondaryWithEmptyQueueCallback(afterSecondaryWithEmptyQueueCallback);
 
   // Synchronizes the other owner that has not been synced for the longest period
-  function synchronizeMostStaleOtherOwner(previousOwnerUUID){
+  function synchronizeMostStaleOtherOwner(previousParams){
     var sharedLists = UserSessionService.getSharedLists();
 
     return $q(function(resolve, reject) {
@@ -242,7 +241,14 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
           }
         }
         if (mostStaleOwnerUUID){
-          synchronizeItems(mostStaleOwnerUUID, biggestSince, true).then(function(success){
+          var forceSyncParams;
+          if (previousParams && (previousParams.emptied || (previousParams.shared &&
+              previousParams.shared.indexOf(mostStaleOwnerUUID) === -1))){
+            if (!previousParams.shared) forceSyncParams = {shared: []};
+            else forceSyncParams = {shared: previousParams.shared};
+            forceSyncParams.shared.push(mostStaleOwnerUUID);
+          }
+          synchronizeItems(mostStaleOwnerUUID, biggestSince, true, forceSyncParams).then(function(success){
             resolve(success);
           }, function(error){
             reject(error);

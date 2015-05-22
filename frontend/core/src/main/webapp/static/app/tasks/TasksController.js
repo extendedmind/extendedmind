@@ -347,8 +347,9 @@
     }
   };
 
-  $scope.getNewTask = function(initialValues){
-    return TasksService.getNewTask(initialValues, UISessionService.getActiveUUID());
+  $scope.getNewTask = function(initialValues, overrideOwnerUUID){
+    var ownerUUID = overrideOwnerUUID ? overrideOwnerUUID : UISessionService.getActiveUUID();
+    return TasksService.getNewTask(initialValues, ownerUUID);
   };
 
   $scope.repeatTypes = [

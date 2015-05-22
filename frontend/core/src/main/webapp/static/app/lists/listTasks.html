@@ -10,7 +10,7 @@
       </div>
       <div class="group-mixed--right" task-list-completed></div>
     </div>
-    <div list-item-add="getNewTask({list: list})"
+    <div list-item-add="getNewTask({list: list}, overrideOwnerUUID)"
       list-item-add-save="saveTask(newItem)" ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
     <div class="animate-list-item-leave"
       ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
