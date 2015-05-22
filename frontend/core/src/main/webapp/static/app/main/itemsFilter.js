@@ -17,18 +17,6 @@
  function itemsFilter() {
   var itemsFilters = {};
 
-  itemsFilters.byList = function(items, list) {
-    var filteredItems = [];
-    for (var i = 0, len = items.length; i < len; i++) {
-      var item = items[i];
-
-      if (item.trans.list && item.trans.list === list) {
-        filteredItems.push(item);
-      }
-    }
-    return filteredItems;
-  };
-
   itemsFilters.byTagType = function(items, tagType) {
     var filteredItems = [];
     for (var i = 0, len = items.length; i < len; i++) {

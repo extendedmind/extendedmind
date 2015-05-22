@@ -315,32 +315,6 @@ function ArrayService($rootScope) {
 
       return item.modified;
     },
-    combineArrays: function(firstArray, secondArray, id, reverse) {
-      function compareById(firstItem, secondItem) {
-
-        if (reverse) {
-          if (firstItem[id] > secondItem[id]) {
-            return -1;
-          } else if (firstItem[id] < secondItem[id]) {
-            return 1;
-          }
-        } else {
-          if (firstItem[id] < secondItem[id]) {
-            return -1;
-          } else if (firstItem[id] > secondItem[id]) {
-            return 1;
-          }
-        }
-        return 0;
-      }
-      if (!firstArray || !firstArray.length) return secondArray;
-      if (!secondArray || !secondArray.length) return firstArray;
-
-      var combinedArray = firstArray.concat(secondArray);
-
-      // Sort combined array
-      return combinedArray.sort(compareById);
-    },
     combineAndSortArrays: function(firstArray, secondArray, id, reverse) {
       var combinedArray = firstArray.concat(secondArray);
       var combinedAndSortedArray = [];

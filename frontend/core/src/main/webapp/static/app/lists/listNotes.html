@@ -1,11 +1,10 @@
 <div class="container-content--outer" ng-if="isFeatureActive('list')" list-container>
-  <section class="container-content" list="allNotes | itemsFilter:{name:'byList', filterBy: list}"
+  <section class="container-content" list="getNotesArray('list', {uuid: list.trans.uuid, owner: overrideOwnerUUID})"
     list-open="openEditor('note', getNewNote({list: list}), 'new')">
     <h2 class="group-heading justified row">notes</h2>
 
     <div class="animate-list-item-leave tall"
-      ng-repeat="note in listInfos.array = (getFullArray())
-      | orderBy:'trans.created':true | limitTo: currentListLimitTo track by note.trans.uuid"
+      ng-repeat="note in getVisibleArray(getFullArray, currentListLimitTo) track by note.trans.uuid"
       list-item ng-include="urlBase + 'app/notes/noteListItem.html'"></div>
     <div list-prompt="notes" list-prompt-infos="listInfos"></div>
   </section>

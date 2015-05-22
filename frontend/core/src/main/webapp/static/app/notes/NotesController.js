@@ -39,7 +39,7 @@
   function updateAllNotes(cachedNotes, ownerUUID) {
     var activeNotes = NotesService.getNotes(ownerUUID);
     var archivedNotes = NotesService.getArchivedNotes(ownerUUID);
-    cachedNotes['all'] = ArrayService.combineAndSortArrays(activeNotes, archivedNotes, 'created');
+    cachedNotes['all'] = ArrayService.combineAndSortArrays(activeNotes, archivedNotes, 'modified', true);
   }
 
   function updateStarredNotes(cachedNotes, ownerUUID) {
@@ -58,7 +58,9 @@
     cachedNotes['list'] = [];
     for (var i = 0; i < cachedNotes['all'].length; i++) {
       var note = cachedNotes['all'][i];
-      if (note.trans.list && note.trans.list.trans.uuid === listUUID) cachedNotes['list'].array.push(note);
+      if (note.trans.list && note.trans.list.trans.uuid === listUUID){
+        ArrayService.insertItemToArray(note, cachedNotes['list'], 'created', true);
+      }
     }
     return cachedNotes['list'];
   }

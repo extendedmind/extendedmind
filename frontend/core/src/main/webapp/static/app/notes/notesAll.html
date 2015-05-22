@@ -1,11 +1,10 @@
 <div class="container-fluid--inner" list-container drawer-handle="left" swiper-prevent>
-  <section class="container-content" list="allNotes" list-recent list-open="openEditor('note', getNewNote(), 'new')">
+  <section class="container-content" list="getNotesArray('all')" list-recent list-open="openEditor('note', getNewNote(), 'new')">
 
     <div ng-show="isContentVisible('notes')">
       <h2 class="group-heading justified row">all notes</h2>
       <div class="animate-list-item-leave tall"
-        ng-repeat="note in listInfos.array = (getFullArray()) | orderBy:'trans.modified':true
-        | limitTo: currentListLimitTo track by note.trans.uuid"
+        ng-repeat="note in getVisibleArray(getFullArray, currentListLimitTo) track by note.trans.uuid"
         list-item ng-include="urlBase + 'app/notes/noteListItem.html'"></div>
       <div list-prompt="notes" list-prompt-infos="listInfos"></div>
     </div>
