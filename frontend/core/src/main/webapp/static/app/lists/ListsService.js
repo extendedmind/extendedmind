@@ -20,9 +20,7 @@
                        TagsService, UserSessionService) {
   var LIST_TYPE = 'list';
 
-  var listFieldInfos = ItemLikeService.getFieldInfos(
-    [ 'due',
-      {
+  var archivedFieldInfo = {
         name: 'archived',
         skipTransport: true,
         isEdited: function(){
@@ -37,7 +35,11 @@
           else if (list.archived !== undefined) list.trans.archived = list.archived;
           else if (list.trans.archived !== undefined) delete list.trans.archived;
         }
-      },
+      };
+
+  var listFieldInfos = ItemLikeService.getFieldInfos(
+    [ 'due',
+      archivedFieldInfo,
       // TODO
       // 'assignee',
       // 'assigner',
@@ -45,6 +47,13 @@
       ExtendedItemService.getRelationshipsFieldInfo()
     ]
   );
+
+  // Minimal field infos that are needed to sort lists in arrays
+  var listMinimalFieldInfos = [
+    'uuid',
+    'created',
+    'deleted',
+    archivedFieldInfo];
 
   // An object containing lists for every owner
   var lists = {};
@@ -120,25 +129,31 @@
     getNewList: function(initialValues, ownerUUID) {
       return ItemLikeService.getNew(initialValues, LIST_TYPE, ownerUUID, listFieldInfos);
     },
-    setLists: function(listsResponse, ownerUUID, skipPersist, addToExisting) {
-      if (skipPersist){
-        ItemLikeService.resetTrans(listsResponse, LIST_TYPE, ownerUUID, listFieldInfos);
-      }else{
-        ItemLikeService.persistAndReset(listsResponse, LIST_TYPE, ownerUUID, listFieldInfos);
-      }
 
+    setLists: function(listsResponse, ownerUUID, skipPersist, addToExisting) {
+      // To avoid problems with parent list not resetting to trans, we first store the response
+      // to the arrays using minimal trans, then properly reset trans
+      ItemLikeService.resetTrans(listsResponse, LIST_TYPE, ownerUUID, listMinimalFieldInfos);
+      var latestModified;
       if (addToExisting){
-        return ArrayService.updateArrays(ownerUUID, LIST_TYPE, listsResponse,
+        latestModified = ArrayService.updateArrays(ownerUUID, LIST_TYPE, listsResponse,
                                                        lists[ownerUUID].activeLists,
                                                        lists[ownerUUID].deletedLists,
                                                        getOtherArrays(ownerUUID));
 
       }else{
-        return ArrayService.setArrays(ownerUUID, LIST_TYPE, listsResponse,
+        latestModified = ArrayService.setArrays(ownerUUID, LIST_TYPE, listsResponse,
                                     lists[ownerUUID].activeLists,
                                     lists[ownerUUID].deletedLists,
                                     getOtherArrays(ownerUUID));
       }
+
+      if (skipPersist){
+        ItemLikeService.resetTrans(listsResponse, LIST_TYPE, ownerUUID, listFieldInfos);
+      }else{
+        ItemLikeService.persistAndReset(listsResponse, LIST_TYPE, ownerUUID, listFieldInfos);
+      }
+      return latestModified;
     },
     updateLists: function(listsResponse, ownerUUID) {
       if (listsResponse && listsResponse.length){
@@ -156,11 +171,15 @@
             updatedLists.push(listsResponse[i]);
           }
         }
-        ItemLikeService.persistAndReset(updatedLists, LIST_TYPE, ownerUUID, listFieldInfos);
+
+        // To avoid problems with parent list not resetting to trans, we first store the response
+        // to the arrays using minimal trans, then properly reset trans
+        ItemLikeService.resetTrans(updatedLists, LIST_TYPE, ownerUUID, listMinimalFieldInfos);
         var latestModified = ArrayService.updateArrays(ownerUUID, LIST_TYPE, updatedLists,
                                                        lists[ownerUUID].activeLists,
                                                        lists[ownerUUID].deletedLists,
                                                        getOtherArrays(ownerUUID));
+        ItemLikeService.persistAndReset(updatedLists, LIST_TYPE, ownerUUID, listFieldInfos);
         if (latestModified) {
           // Go through response to see if something was deleted
           for (i=0; i<updatedLists.length; i++) {
