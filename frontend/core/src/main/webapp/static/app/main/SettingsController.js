@@ -14,8 +14,8 @@
  */
  'use strict';
 
- function SettingsController($timeout, $scope, AnalyticsService, ListsService, SwiperService, UISessionService,
-                             UserService, UserSessionService, packaging, version) {
+ function SettingsController($timeout, $scope, AnalyticsService, ListsService, SwiperService,
+                             UISessionService, UserService, UserSessionService, packaging, version) {
 
   // VERSION
   $scope.extendedMindVersion = version;
@@ -94,13 +94,23 @@
 
   $scope.isToggleDisabled = function(feature, overrideEnabled){
     var enabled = overrideEnabled !== undefined ? overrideEnabled : $scope.settings[feature];
+    var listsPrefs
     if (feature === 'lists'){
       if (enabled){
-        var listsPrefs = UserSessionService.getFeaturePreferences('lists');
+        listsPrefs = UserSessionService.getFeaturePreferences('lists');
         if (angular.isString(listsPrefs) ||
             (angular.isObject(listsPrefs) && listsPrefs.archived &&
             (angular.isNumber(listsPrefs.archived) ||
             (angular.isString(listsPrefs.archived) && !listsPrefs.archived.endsWith(':d'))))){
+          return true;
+        }
+      }
+    }else if (feature === 'archive'){
+      if (!enabled){
+        listsPrefs = UserSessionService.getFeaturePreferences('lists');
+        if (!listsPrefs || (angular.isObject(listsPrefs) &&
+            (!listsPrefs.active || (listsPrefs.active &&
+            (angular.isString(listsPrefs.active) && listsPrefs.active.endsWith(':d')))))){
           return true;
         }
       }
@@ -187,6 +197,15 @@
       }else if (feature === 'archive'){
         var listsPrefs = UserSessionService.getFeaturePreferences('lists');
         if (enable){
+          if ($scope.isToggleDisabled('archive', !enable)){
+            // Can't enable archive if lists is enabled or currently onboarding
+            $scope.settings[feature] = false;
+            UISessionService.pushNotification({
+              type: 'fyi',
+              text: 'archive can not be enabled when lists is disabled'
+            });
+            return;
+          }
           listsPrefs = activateFeatureOnboarding(listsPrefs, 'archived');
           if (angular.isObject(listsPrefs) && listsPrefs.archived === 1)
             AnalyticsService.do('listsArchivedOnboarding');

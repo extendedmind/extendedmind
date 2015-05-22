@@ -67,11 +67,12 @@
 
     <div class="group-mixed" ng-if="showArchiveFeature()">
       <div class="group-mixed--left">
-        <input type="checkbox" ng-model="settings.archive" ng-true-value="true"
+        <input type="checkbox" ng-class="isToggleDisabled('archive') && 'downplayed'"
+          ng-model="settings.archive" ng-true-value="true"
           icon-checkbox="'archive'" ng-click="featureCheckboxClicked('archive')"/>
       </div>
       <div class="group-mixed--middle">
-        <span class="text-link">archive</span>
+        <span class="text-link" ng-class="isToggleDisabled('archive') && 'downplayed'">archive</span>
       </div>
     </div>
 
