@@ -15,8 +15,79 @@
  'use strict';
 
  function NotesController($q, $rootScope, $scope, $timeout,
-                          AnalyticsService, BackendClientService, ItemsService, ListsService, NotesService,
-                          TagsService, SwiperService, UISessionService) {
+                          AnalyticsService, ArrayService, BackendClientService, ItemsService, ListsService,
+                          NotesService, TagsService, SwiperService, UISessionService) {
+
+  if (angular.isFunction($scope.registerArrayChangeCallback)) {
+    $scope.registerArrayChangeCallback('note', ['active', 'archived'], invalidateNotesArrays,
+                                       'NotesController');
+  }
+
+  var cachedNotesArrays = {};
+
+  /*
+  * Invalidate cached active notes arrays.
+  */
+  function invalidateNotesArrays(notes, modifiedNote, notesType, ownerUUID) {
+    if (cachedNotesArrays[ownerUUID]) {
+      updateAllNotes(cachedNotesArrays[ownerUUID], ownerUUID);
+      cachedNotesArrays[ownerUUID]['list'] = undefined;
+      cachedNotesArrays[ownerUUID]['starred'] = undefined;
+    }
+  }
+
+  function updateAllNotes(cachedNotes, ownerUUID) {
+    var activeNotes = NotesService.getNotes(ownerUUID);
+    var archivedNotes = NotesService.getArchivedNotes(ownerUUID);
+    cachedNotes['all'] = ArrayService.combineAndSortArrays(activeNotes, archivedNotes, 'created');
+  }
+
+  function updateStarredNotes(cachedNotes, ownerUUID) {
+    if (!cachedNotes['all']) updateAllNotes(cachedNotes, ownerUUID);
+    cachedNotes['starred'] = [];
+    for (var i = 0; i < cachedNotes['all'].length; i++) {
+      if (!cachedNotes['all'][i].trans.favorited) cachedNotes['starred'].push(cachedNotes['all'][i]);
+    }
+    return cachedNotes['active'];
+  }
+
+  function updateListNotes(cachedNotes, listUUID, ownerUUID) {
+    if (!cachedNotes['all']) updateAllNotes(cachedNotes, ownerUUID);
+    cachedNotes['list'] = [];
+    for (var i = 0; i < cachedNotes['all'].length; i++) {
+      var note = cachedNotes['all'][i];
+      if (note.trans.list && note.trans.list.trans.uuid === listUUID) cachedNotes['list'].array.push(note);
+    }
+    return cachedNotes['list'];
+  }
+
+  $scope.getNotesArray = function(arrayType, info) {
+    if (info)
+    var ownerUUID = info && info.owner ? info.owner : UISessionService.getActiveUUID();
+    var ownerUUID = UISessionService.getActiveUUID();
+    if (!cachedNotesArrays[ownerUUID]) cachedNotesArrays[ownerUUID] = {};
+
+    switch (arrayType) {
+
+      case 'all':
+      if (!cachedNotesArrays[ownerUUID]['all']) {
+        updateAllNotes(cachedNotesArrays[ownerUUID], ownerUUID);
+      }
+      return cachedNotesArrays[ownerUUID]['all'];
+
+      case 'list':
+      if (!cachedNotesArrays[ownerUUID]['list']  || cachedNotesArrays[ownerUUID]['list'].uuid !== info.uuid) {
+        updateListNotes(cachedNotesArrays[ownerUUID], info.uuid, ownerUUID);
+      }
+      return cachedNotesArrays[ownerUUID]['list'];
+
+      case 'starred':
+      if (!cachedNotesArrays[ownerUUID]['starred']) {
+        updateStarredNotes(cachedNotesArrays[ownerUUID], ownerUUID);
+      }
+      return cachedNotesArrays[ownerUUID]['starred'];
+    }
+  };
 
   $scope.getNewNote = function(initialValues){
     return NotesService.getNewNote(initialValues, UISessionService.getActiveUUID());
@@ -145,8 +216,7 @@
 
 }
 
-NotesController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout',
-'AnalyticsService', 'BackendClientService', 'ItemsService', 'ListsService', 'NotesService', 'TagsService',
-'SwiperService', 'UISessionService'
-];
+NotesController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout', 'AnalyticsService', 'ArrayService',
+'BackendClientService', 'ItemsService', 'ListsService', 'NotesService', 'TagsService', 'SwiperService',
+'UISessionService'];
 angular.module('em.notes').controller('NotesController', NotesController);
