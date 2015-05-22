@@ -86,13 +86,25 @@ angular.module('em.appTest')
         function($location, $route, AuthenticationService, MockPlatformService, UserSessionService) {
           localStorage.clear();
           sessionStorage.clear();
+
+          var user = {};
+          if ($route.current.params.user) {
+            if ($route.current.params.user === 'lauri') {
+              user.username = 'lauri@ext.md';
+              user.password = 'lauripwd';
+            } else if ($route.current.params.user === 'jp') {
+              user.username = 'jp@ext.md';
+              user.password = 'jiipeepwd';
+            }
+          } else {
+            user.username = 'timo@ext.md';
+            user.password = 'timopwd';
+          }
+
           if ($route.current.params.offline)
             UserSessionService.enableOffline(true);
 
-          AuthenticationService.login({username: 'timo@ext.md', password: 'timopwd'}).then(function() {
-            UserSessionService.setUIPreference('focusTasksOnboarded', 'devel');
-            UserSessionService.setUIPreference('focusNotesOnboarded', 'devel');
-            UserSessionService.setUIPreference('inboxOnboarded', 'devel');
+          AuthenticationService.login(user).then(function() {
             MockPlatformService.setPlatformUIPreferences();
             $location.path('/my');
           });
