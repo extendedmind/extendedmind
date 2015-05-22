@@ -41,6 +41,7 @@
     $httpBackend.whenPOST(NotesService.favoriteNoteRegex)
     .respond(function(method, url, data, headers) {
       var favoriteNoteResponse = getJSONFixture('favoriteNoteResponse.json');
+      favoriteNoteResponse.favorited = (new Date()).getTime();
       favoriteNoteResponse.result.modified = (new Date()).getTime();
       return expectResponse(method, url, data, headers, favoriteNoteResponse);
     });

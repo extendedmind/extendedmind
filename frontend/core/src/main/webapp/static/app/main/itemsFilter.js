@@ -29,31 +29,6 @@
     return filteredItems;
   };
 
-  itemsFilters.byContext = function(items, context) {
-    var filteredItems = [];
-    for (var i = 0, len = items.length; i < len; i++) {
-      var item = items[i];
-      if (context && item.trans.context && item.trans.context === context) {
-        // Context exists and item is in the context.
-        filteredItems.push(item);
-      } else if (!context && !item.trans.context) {
-        // No context and item has no context.
-        filteredItems.push(item);
-      }
-    }
-    return filteredItems;
-  };
-
-  itemsFilters.favorited = function(items) {
-    var filteredItems = [];
-    for (var i = 0, len = items.length; i < len; i++) {
-      if (items[i].trans.favorited) {
-        filteredItems.push(items[i]);
-      }
-    }
-    return filteredItems;
-  };
-
   itemsFilters.byTagType = function(items, tagType) {
     var filteredItems = [];
     for (var i = 0, len = items.length; i < len; i++) {

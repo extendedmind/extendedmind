@@ -46,7 +46,9 @@
     if (!cachedNotes['all']) updateAllNotes(cachedNotes, ownerUUID);
     cachedNotes['starred'] = [];
     for (var i = 0; i < cachedNotes['all'].length; i++) {
-      if (!cachedNotes['all'][i].trans.favorited) cachedNotes['starred'].push(cachedNotes['all'][i]);
+      if (cachedNotes['all'][i].trans.favorited){
+        ArrayService.insertItemToArray(cachedNotes['all'][i], cachedNotes['starred'], 'favorited', true);
+      }
     }
     return cachedNotes['active'];
   }
@@ -62,11 +64,8 @@
   }
 
   $scope.getNotesArray = function(arrayType, info) {
-    if (info)
     var ownerUUID = info && info.owner ? info.owner : UISessionService.getActiveUUID();
-    var ownerUUID = UISessionService.getActiveUUID();
     if (!cachedNotesArrays[ownerUUID]) cachedNotesArrays[ownerUUID] = {};
-
     switch (arrayType) {
 
       case 'all':
