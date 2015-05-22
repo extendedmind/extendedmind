@@ -80,8 +80,7 @@
           </div>
 
           <!-- LIST -->
-          <div ng-hide="listIsParent(list) || descriptionFocused || listPickerOpen || features.lists.getStatus('active') === 'disabled'"
-            class="group-mixed">
+          <div ng-hide="listIsParent(list) || descriptionFocused || listPickerOpen" class="group-mixed">
             <a href class="group-mixed--middle link-search-result" ng-class="!list.trans.list && 'downplayed'"
               swiper-click="openListPicker()">
               <span class="text-field--title"
