@@ -19,7 +19,7 @@
 /**
 * Helper service for array manipulation.
 */
-function ArrayService($rootScope, UISessionService) {
+function ArrayService($rootScope) {
 
   function emitChangeEvent(ownerUUID, data, type, item) {
     $rootScope.$emit('arrayChanged',
@@ -382,5 +382,5 @@ function ArrayService($rootScope, UISessionService) {
   };
 }
 
-ArrayService['$inject'] = ['$rootScope', 'UISessionService'];
+ArrayService['$inject'] = ['$rootScope'];
 angular.module('em.base').factory('ArrayService', ArrayService);
