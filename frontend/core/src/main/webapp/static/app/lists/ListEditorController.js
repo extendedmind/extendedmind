@@ -172,7 +172,6 @@
     var lists = $scope.getListsArray('all');
     for (var i = 0; i < lists.length; i++) {
       if (lists[i].trans.list && lists[i].trans.list.trans.uuid === list.trans.uuid) {
-        console.log(list.trans.title + ' is parent');
         return true;
       }
     }
