@@ -206,7 +206,7 @@
               </div>
             </div>
 
-            <div class="group-symmetrical">
+            <div ng-if="shareEditor.existing" class="group-symmetrical">
               <a href ng-if="mode !== 'extrinsic' && !shareEditor.data.accepted"
                 class="group-symmetrical--left"
                 ng-class="(!shareEditor.resendPending && !shareEditor.resendResolved) ? 'highlighted' : 'link-disable downplayed'"
