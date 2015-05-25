@@ -335,23 +335,23 @@ trait ItemDatabase extends UserDatabase {
     node
   }
 
-  protected def putExistingExtendedItem(owner: Owner, itemUUID: UUID, extItem: ExtendedItem, label: Label): Response[(Node, Option[Long])] = {
+  protected def putExistingExtendedItem(owner: Owner, itemUUID: UUID, extItem: ExtendedItem, label: Label, skipParentHistoryTag: Boolean = false): Response[(Node, Option[Long])] = {
     withTx {
       implicit neo4j =>
         for {
           itemNode <- updateItem(owner, itemUUID, extItem, Some(label), None, None, extItem.modified).right
-          archived <- setParentNode(itemNode, owner, extItem.parent).right
+          archived <- setParentNode(itemNode, owner, extItem.parent, skipParentHistoryTag).right
           tagNodes <- setTagNodes(itemNode, owner, extItem).right
         } yield (itemNode, archived)
     }
   }
 
-  protected def putNewExtendedItem(owner: Owner, extItem: ExtendedItem, label: Label, subLabel: Option[Label] = None): Response[(Node, Option[Long])] = {
+  protected def putNewExtendedItem(owner: Owner, extItem: ExtendedItem, label: Label, subLabel: Option[Label] = None, skipParentHistoryTag: Boolean = false): Response[(Node, Option[Long])] = {
     withTx {
       implicit neo4j =>
         for {
           itemNode <- createItem(owner, extItem, Some(label), subLabel).right
-          archived <- setParentNode(itemNode, owner, extItem.parent).right
+          archived <- setParentNode(itemNode, owner, extItem.parent, skipParentHistoryTag).right
           tagNodes <- setTagNodes(itemNode, owner, extItem).right
         } yield (itemNode, archived)
     }
@@ -377,16 +377,16 @@ trait ItemDatabase extends UserDatabase {
     }
   }
   
-  protected def setParentNode(itemNode: Node, owner: Owner, parentUUID: Option[UUID])(implicit neo4j: DatabaseService): Response[Option[Long]] = {
+  protected def setParentNode(itemNode: Node, owner: Owner, parentUUID: Option[UUID], skipParentHistoryTag: Boolean = false)(implicit neo4j: DatabaseService): Response[Option[Long]] = {
     for {
       oldParentRelationship <- Right(getItemRelationship(itemNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.LIST)).right
       archived <- setParentRelationship(itemNode, owner, parentUUID,
-        oldParentRelationship, ItemLabel.LIST).right
+        oldParentRelationship, ItemLabel.LIST, skipParentHistoryTag).right
     } yield archived
   }
 
   protected def setParentRelationship(itemNode: Node, owner: Owner, parentUUID: Option[UUID], oldParentRelationship: Option[Relationship],
-    parentLabel: Label)(implicit neo4j: DatabaseService): Response[Option[Long]] = {
+    parentLabel: Label, skipParentHistoryTag: Boolean)(implicit neo4j: DatabaseService): Response[Option[Long]] = {
     if (parentUUID.isDefined) {
       if (oldParentRelationship.isDefined) {
         if (getUUID(oldParentRelationship.get.getEndNode())
@@ -398,7 +398,7 @@ trait ItemDatabase extends UserDatabase {
       }
       for {
         parentNode <- getItemNode(owner, parentUUID.get, Some(parentLabel)).right
-        archived <- createParentRelationship(itemNode, owner, parentNode).right
+        archived <- createParentRelationship(itemNode, owner, parentNode, skipParentHistoryTag).right
       } yield archived
     } else {
       if (oldParentRelationship.isDefined) {
@@ -490,7 +490,7 @@ trait ItemDatabase extends UserDatabase {
     itemsFromTag.traverse(tagNode).nodes().toList
   }
 
-  protected def createParentRelationship(itemNode: Node, owner: Owner, parentNode: Node)(implicit neo4j: DatabaseService): Response[Option[Long]] = {
+  protected def createParentRelationship(itemNode: Node, owner: Owner, parentNode: Node, skipParentHistoryTag: Boolean)(implicit neo4j: DatabaseService): Response[Option[Long]] = {
     
     // First, make sure there isn't a infinite loop of parents, problem possible only for lists and tags
     if (itemNode.hasLabel(ItemLabel.LIST) || itemNode.hasLabel(ItemLabel.TAG)){
@@ -519,23 +519,25 @@ trait ItemDatabase extends UserDatabase {
           None
         }
       // Get the history tag of the parent and add it to the child
-      val historyTagRelationship = getItemRelationship(parentNode, owner, ItemRelationship.HAS_TAG, TagLabel.HISTORY)
-      if (historyTagRelationship.isDefined) {
-        val historyTagNode = historyTagRelationship.get.getEndNode()
-
-        // Need to make sure the child does not already have this tag
-        val tagRelationshipsResult = getTagRelationships(itemNode, owner)
-        if (tagRelationshipsResult.isLeft) return Left(tagRelationshipsResult.left.get)
-        if (tagRelationshipsResult.right.get.isDefined) {
-          tagRelationshipsResult.right.get.get foreach (tagRelationship => {
-            if (tagRelationship.getEndNode() == historyTagNode) {
-              // Already has this history tag, return
-              return Right(archived)
-            }
-          })
+      if (!skipParentHistoryTag){
+        val historyTagRelationship = getItemRelationship(parentNode, owner, ItemRelationship.HAS_TAG, TagLabel.HISTORY)
+        if (historyTagRelationship.isDefined) {
+          val historyTagNode = historyTagRelationship.get.getEndNode()
+  
+          // Need to make sure the child does not already have this tag
+          val tagRelationshipsResult = getTagRelationships(itemNode, owner)
+          if (tagRelationshipsResult.isLeft) return Left(tagRelationshipsResult.left.get)
+          if (tagRelationshipsResult.right.get.isDefined) {
+            tagRelationshipsResult.right.get.get foreach (tagRelationship => {
+              if (tagRelationship.getEndNode() == historyTagNode) {
+                // Already has this history tag, return
+                return Right(archived)
+              }
+            })
+          }
+          // Does not have the tag, add it
+          createTagRelationships(itemNode, scala.List(historyTagNode))
         }
-        // Does not have the tag, add it
-        createTagRelationships(itemNode, scala.List(historyTagNode))
       }
       Right(archived)
     }else{

@@ -51,6 +51,8 @@ object List{
                    link, due, None, None, None, relationships)
 }
 
+case class ArchivePayload(parent: UUID)
+
 case class ArchiveListResult(archived: Long, children: Option[scala.List[SetResult]], history: Tag, result: SetResult)
 
 case class UnarchiveListResult(children: Option[scala.List[SetResult]], history: DeleteItemResult, result: SetResult)

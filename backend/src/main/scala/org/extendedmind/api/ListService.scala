@@ -129,12 +129,14 @@ trait ListService extends ServiceBase {
       archiveList { (ownerUUID, listUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
-            complete {
-              Future[ArchiveListResult] {
-                setLogContext(securityContext, ownerUUID, listUUID)
-                listActions.archiveList(getOwner(ownerUUID, securityContext), listUUID) match {
-                  case Right(result) => processResult(result)
-                  case Left(e) => processErrors(e)
+            entity(as[Option[ArchivePayload]]) { payload =>
+              complete {
+                Future[ArchiveListResult] {
+                  setLogContext(securityContext, ownerUUID, listUUID)
+                  listActions.archiveList(getOwner(ownerUUID, securityContext), listUUID, payload) match {
+                    case Right(result) => processResult(result)
+                    case Left(e) => processErrors(e)
+                  }
                 }
               }
             }
@@ -144,12 +146,14 @@ trait ListService extends ServiceBase {
       unarchiveList { (ownerUUID, listUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
-            complete {
-              Future[UnarchiveListResult] {
-                setLogContext(securityContext, ownerUUID, listUUID)
-                listActions.unarchiveList(getOwner(ownerUUID, securityContext), listUUID) match {
-                  case Right(result) => processResult(result)
-                  case Left(e) => processErrors(e)
+            entity(as[Option[ArchivePayload]]) { payload =>
+              complete {
+                Future[UnarchiveListResult] {
+                  setLogContext(securityContext, ownerUUID, listUUID)
+                  listActions.unarchiveList(getOwner(ownerUUID, securityContext), listUUID, payload) match {
+                    case Right(result) => processResult(result)
+                    case Left(e) => processErrors(e)
+                  }
                 }
               }
             }

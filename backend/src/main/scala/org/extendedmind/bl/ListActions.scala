@@ -34,6 +34,7 @@ trait ListActions {
   def db: GraphDatabase;
   
   def putNewList(owner: Owner, list: List)(implicit log: LoggingAdapter): Response[SetResult] = {
+    log.info("putNewList")
     db.putNewList(owner, list)
   }
 
@@ -57,15 +58,15 @@ trait ListActions {
     db.undeleteList(owner, listUUID)
   }
 
-  def archiveList(owner: Owner, listUUID: UUID)(implicit log: LoggingAdapter): Response[ArchiveListResult] = {
+  def archiveList(owner: Owner, listUUID: UUID, payload: Option[ArchivePayload])(implicit log: LoggingAdapter): Response[ArchiveListResult] = {
     log.info("archiveList")
     if (!owner.hasPremium) fail(INVALID_PARAMETER, ERR_LIST_ARCHIVE_NOT_PREMIUM, "List archiving requires premium subscription")
-    else db.archiveList(owner, listUUID)
+    else db.archiveList(owner, listUUID, if(payload.isDefined) Some(payload.get.parent) else None)
   }
   
-  def unarchiveList(owner: Owner, listUUID: UUID)(implicit log: LoggingAdapter): Response[UnarchiveListResult] = {
+  def unarchiveList(owner: Owner, listUUID: UUID, payload: Option[ArchivePayload])(implicit log: LoggingAdapter): Response[UnarchiveListResult] = {
     log.info("unarchiveList")
-    db.unarchiveList(owner, listUUID)
+    db.unarchiveList(owner, listUUID, if(payload.isDefined) Some(payload.get.parent) else None)
   }
   
   def listToTask(owner: Owner, listUUID: UUID, list: List)(implicit log: LoggingAdapter): Response[Task] = {

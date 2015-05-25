@@ -130,7 +130,7 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
           Response[Option[Long]] = {
     for {
       oldParentRelationship <- Right(getItemRelationship(tagNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.TAG)).right
-      result <- setParentRelationship(tagNode, owner, tag.parent, oldParentRelationship, ItemLabel.TAG).right
+      result <- setParentRelationship(tagNode, owner, tag.parent, oldParentRelationship, ItemLabel.TAG, skipParentHistoryTag = true).right
     }yield result
   }
   

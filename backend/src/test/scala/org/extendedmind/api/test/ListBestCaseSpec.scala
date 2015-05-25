@@ -258,90 +258,112 @@ class ListBestCaseSpec extends ServiceSpecBase {
         + "and turn it back active with POST to /[userUUID]/list/[listUUID]/unarchive") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       
-      // Create list and put task and note on it
-      val newList = List("studies", None, None, None, None)
-      val putListResponse = putNewList(newList, authenticateResponse)
-      val newTask = Task("learn Spanish", None, None, None, None, None, 
-          Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None)))
-      val putTaskResponse = putNewTask(newTask, authenticateResponse)
-      val newNote = Note("Spanish 101", None, None, Some("lecture notes for Spanish 101 class"), None,
-    		  				Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None)))
-      val putNoteResponse = putNewNote(newNote, authenticateResponse)
-      
-      // Archive list
-      Post("/" + authenticateResponse.userUUID + "/list/" + putListResponse.uuid.get + "/archive"
+      // Create archive parent
+      val newArchiveParentList = List("completed courses", None, None, None, None)
+      val putArchiveParentListResponse = putNewList(newArchiveParentList, authenticateResponse)
+
+      // Archive empty parent list
+      Post("/" + authenticateResponse.userUUID + "/list/" + putArchiveParentListResponse.uuid.get + "/archive"
         ) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-        val archiveListResponse = responseAs[ArchiveListResult]
-        writeJsonOutput("archiveListResponse", responseAs[String])
-        archiveListResponse.children.get.size should be (2)
-        archiveListResponse.history.tagType.get should be (HISTORY)
+        val emptyParentArchiveListResponse = responseAs[ArchiveListResult]
+        emptyParentArchiveListResponse.children should be (None)
+        emptyParentArchiveListResponse.history.tagType.get should be (HISTORY)
 
-        // Check that getting archived items returns the right tasks
-        Get("/" + authenticateResponse.userUUID + "/items" + "?archived=true&active=false") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-          val itemsResponse = responseAs[Items]
-          itemsResponse.tasks.get.length should be (1)
-          itemsResponse.tasks.get(0).archived.get should be (archiveListResponse.archived)
-          itemsResponse.tasks.get(0).relationships.get.tags.get(0) should be (archiveListResponse.history.uuid.get)          
-          itemsResponse.lists.get.length should be (1)
-          itemsResponse.lists.get(0).archived.get should be (archiveListResponse.archived)
-          itemsResponse.lists.get(0).relationships.get.tags.get(0) should be (archiveListResponse.history.uuid.get)
-          itemsResponse.notes.get.length should be (1)
-          itemsResponse.notes.get(0).archived.get should be (archiveListResponse.archived)
-          itemsResponse.notes.get(0).relationships.get.tags.get(0) should be (archiveListResponse.history.uuid.get)
-
-          // Remove note from list and make sure it is no longer archived but still has the history tag
-          putExistingNote(itemsResponse.notes.get(0).copy(
-            relationships = Some(ExtendedItemRelationships(None, None, itemsResponse.notes.get(0).relationships.get.tags))), putNoteResponse.uuid.get, authenticateResponse)
-          val note = getNote(putNoteResponse.uuid.get, authenticateResponse)
-          note.archived should be(None)
-          note.relationships.get.tags.get(0) should be(archiveListResponse.history.uuid.get)
-          
-          // Add note back to list and make sure it is again archived with history tag
-          val putNoteToArchivedList = putExistingNote(note.copy(
-            relationships = Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, itemsResponse.notes.get(0).relationships.get.tags))), putNoteResponse.uuid.get, authenticateResponse)
-          putNoteToArchivedList.archived should not be (None)
-            val noteAgain = getNote(putNoteResponse.uuid.get, authenticateResponse)
-          noteAgain.archived should not be(None)
-          note.relationships.get.tags.get(0) should be(archiveListResponse.history.uuid.get)
-          
-          // Unarchive list and make sure everything is unarchived
-          Post("/" + authenticateResponse.userUUID + "/list/" + putListResponse.uuid.get + "/unarchive"
-          ) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-            val unarchiveListResponse = responseAs[UnarchiveListResult]
-            writeJsonOutput("unarchiveListResponse", responseAs[String])
-            unarchiveListResponse.children.get.size should be (2)
-            unarchiveListResponse.history.deleted should not be (None)
+        // Create active parent list and put task and note on it
+        val newParentList = List("studies", None, None, None, None)
+        val putParentListResponse = putNewList(newParentList, authenticateResponse)
+        val newList = List("Spanish", None, None, None,
+              Some(ExtendedItemRelationships(Some(putParentListResponse.uuid.get), None, None)))
+        val putListResponse = putNewList(newList, authenticateResponse)
+        val newTask = Task("learn Spanish", None, None, None, None, None, 
+            Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None)))
+        val putTaskResponse = putNewTask(newTask, authenticateResponse)
+        val newNote = Note("Spanish 101", None, None, Some("lecture notes for Spanish 101 class"), None,
+      		  				Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None)))
+        val putNoteResponse = putNewNote(newNote, authenticateResponse)
+        
+        // Archive list under completed courses
+        Post("/" + authenticateResponse.userUUID + "/list/" + putListResponse.uuid.get + "/archive",
+          marshal(ArchivePayload(putArchiveParentListResponse.uuid.get)).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+          val archiveListResponse = responseAs[ArchiveListResult]
+          writeJsonOutput("archiveListResponse", responseAs[String])
+          archiveListResponse.children.get.size should be (2)
+          archiveListResponse.history.tagType.get should be (HISTORY)
+  
+          // Check that getting archived items returns the right tasks
+          Get("/" + authenticateResponse.userUUID + "/items" + "?archived=true&active=false") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+            val itemsResponse = responseAs[Items]
+            itemsResponse.tasks.get.length should be (1)
+            itemsResponse.tasks.get(0).archived.get should be (archiveListResponse.archived)
+            itemsResponse.tasks.get(0).relationships.get.tags.get(0) should be (archiveListResponse.history.uuid.get)          
+            itemsResponse.lists.get.length should be (2)
             
-            val unarchivedNote = getNote(putNoteResponse.uuid.get, authenticateResponse)
-            unarchivedNote.archived should be(None)
-            val unarchivedTask = getTask(putTaskResponse.uuid.get, authenticateResponse)
-            unarchivedTask.archived should be(None)
-            val unarchivedList = getList(putListResponse.uuid.get, authenticateResponse)
-            unarchivedList.archived should be(None)
+            val archivedSpanish = itemsResponse.lists.get.find(list => {list.uuid.get == putListResponse.uuid.get}).get
+            archivedSpanish.archived.get should be (archiveListResponse.archived)
+            archivedSpanish.relationships.get.tags.size should be(1)
+            archivedSpanish.relationships.get.tags.get(0) should be (archiveListResponse.history.uuid.get)
+            archivedSpanish.relationships.get.parent.get should be (putArchiveParentListResponse.uuid.get)
+            itemsResponse.notes.get.length should be (1)
+            itemsResponse.notes.get(0).archived.get should be (archiveListResponse.archived)
+            itemsResponse.notes.get(0).relationships.get.tags.get(0) should be (archiveListResponse.history.uuid.get)
+  
+            // Remove note from list and make sure it is no longer archived but still has the history tag
+            putExistingNote(itemsResponse.notes.get(0).copy(
+              relationships = Some(ExtendedItemRelationships(None, None, itemsResponse.notes.get(0).relationships.get.tags))), putNoteResponse.uuid.get, authenticateResponse)
+            val note = getNote(putNoteResponse.uuid.get, authenticateResponse)
+            note.archived should be(None)
+            note.relationships.get.tags.get(0) should be(archiveListResponse.history.uuid.get)
             
-            // The deleted history tag should still be there
-            unarchivedList.relationships.get.tags.get.size should be (1)
-            Get("/" + authenticateResponse.userUUID + "/items" + "?archived=false&active=false&deleted=true") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-              val deletedItemsResponse = responseAs[Items]
-              deletedItemsResponse.tags.get(0).uuid.get should be (unarchivedList.relationships.get.tags.get(0))
+            // Add note back to list and make sure it is again archived with history tag
+            val putNoteToArchivedList = putExistingNote(note.copy(
+              relationships = Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, itemsResponse.notes.get(0).relationships.get.tags))), putNoteResponse.uuid.get, authenticateResponse)
+            putNoteToArchivedList.archived should not be (None)
+              val noteAgain = getNote(putNoteResponse.uuid.get, authenticateResponse)
+            noteAgain.archived should not be(None)
+            note.relationships.get.tags.get(0) should be(archiveListResponse.history.uuid.get)
+            
+            // Unarchive list under active parent and make sure everything is unarchived
+            Post("/" + authenticateResponse.userUUID + "/list/" + putListResponse.uuid.get + "/unarchive",
+            marshal(ArchivePayload(putParentListResponse.uuid.get)).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+              val unarchiveListResponse = responseAs[UnarchiveListResult]
+              writeJsonOutput("unarchiveListResponse", responseAs[String])
+              unarchiveListResponse.children.get.size should be (2)
+              unarchiveListResponse.history.deleted should not be (None)
               
-              val newNote2 = Note("Spanish 102", None, None, Some("lecture notes for Spanish 102 class"), None,
-              Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None)))
-              putNewNote(newNote2, authenticateResponse)
-
-              // Archive list
-              Post("/" + authenticateResponse.userUUID + "/list/" + putListResponse.uuid.get + "/archive"
-                ) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                val archive2ListResponse = responseAs[ArchiveListResult]
-
-                val newNote3 = Note("Spanish 103", None, None, Some("lecture notes for Spanish 103 class"), None,
+              val unarchivedNote = getNote(putNoteResponse.uuid.get, authenticateResponse)
+              unarchivedNote.archived should be(None)
+              val unarchivedTask = getTask(putTaskResponse.uuid.get, authenticateResponse)
+              unarchivedTask.archived should be(None)
+              val unarchivedList = getList(putListResponse.uuid.get, authenticateResponse)
+              unarchivedList.archived should be(None)
+              unarchivedList.relationships.get.parent.get should be (putParentListResponse.uuid.get)
+              // The deleted history tag should still be there
+              unarchivedList.relationships.get.tags.get.size should be (1)
+              Get("/" + authenticateResponse.userUUID + "/items" + "?archived=false&active=false&deleted=true") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                val deletedItemsResponse = responseAs[Items]
+                deletedItemsResponse.tags.get(0).uuid.get should be (unarchivedList.relationships.get.tags.get(0))
+                
+                val newNote2 = Note("Spanish 102", None, None, Some("lecture notes for Spanish 102 class"), None,
                 Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None)))
-                putNewNote(newNote3, authenticateResponse)
-
-                // Unarchive list and make sure everything is unarchived
-                Post("/" + authenticateResponse.userUUID + "/list/" + putListResponse.uuid.get + "/unarchive"
-                ) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                  val unarchive2ListResponse = responseAs[UnarchiveListResult]
+                putNewNote(newNote2, authenticateResponse)
+  
+                // Archive list
+                Post("/" + authenticateResponse.userUUID + "/list/" + putListResponse.uuid.get + "/archive"
+                  ) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                  val archive2ListResponse = responseAs[ArchiveListResult]  
+                  val archived2List = getList(putListResponse.uuid.get, authenticateResponse)
+                  archived2List.relationships.get.parent should be (None)
+                  val newNote3 = Note("Spanish 103", None, None, Some("lecture notes for Spanish 103 class"), None,
+                  Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None)))
+                  putNewNote(newNote3, authenticateResponse)
+  
+                  // Unarchive list and make sure everything is unarchived
+                  Post("/" + authenticateResponse.userUUID + "/list/" + putListResponse.uuid.get + "/unarchive"
+                  ) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                    val unarchive2ListResponse = responseAs[UnarchiveListResult]
+                    val unarchived2List = getList(putListResponse.uuid.get, authenticateResponse)
+                    unarchived2List.relationships.get.parent should be (None)
+                  }
                 }
               }
             }

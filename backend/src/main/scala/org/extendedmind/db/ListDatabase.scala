@@ -40,7 +40,8 @@ trait ListDatabase extends UserDatabase with TagDatabase {
 
   def putNewList(owner: Owner, list: List): Response[SetResult] = {
     for {
-      listResult <- putNewExtendedItem(owner, list, ItemLabel.LIST).right
+      // Don't set history tag of parent to list      
+      listResult <- putNewExtendedItem(owner, list, ItemLabel.LIST, skipParentHistoryTag = true).right
       result <- Right(getSetResult(listResult._1, true, listResult._2)).right
       unit <- Right(addToItemsIndex(owner, listResult._1, result)).right
     } yield result
@@ -48,7 +49,8 @@ trait ListDatabase extends UserDatabase with TagDatabase {
 
   def putExistingList(owner: Owner, listUUID: UUID, list: List): Response[SetResult] = {
     for {
-      listResult <- putExistingExtendedItem(owner, listUUID, list, ItemLabel.LIST).right
+      // Don't set history tag of parent to list
+      listResult <- putExistingExtendedItem(owner, listUUID, list, ItemLabel.LIST, skipParentHistoryTag = true).right
       result <- Right(getSetResult(listResult._1, false, listResult._2)).right
       unit <- Right(updateItemsIndex(listResult._1, result)).right
     } yield result
@@ -83,12 +85,12 @@ trait ListDatabase extends UserDatabase with TagDatabase {
     } yield result
   }
 
-  def archiveList(owner: Owner, listUUID: UUID): Response[ArchiveListResult] = {
+  def archiveList(owner: Owner, listUUID: UUID, parent: Option[UUID]): Response[ArchiveListResult] = {
     for {
-      listResult <- validateListArchivable(owner, listUUID).right
+      listResult <- validateListArchivable(owner, listUUID, parent).right
       tagResult <- putNewTag(owner, Tag(listResult._2,
                              None, None, HISTORY, None)).right
-      archivedChildren <- archiveListNode(listResult._1, owner, tagResult.uuid.get).right
+      archivedChildren <- archiveListNode(listResult._1, owner, tagResult.uuid.get, listResult._3).right
       setResults <- Right(updateItemsIndex(archivedChildren)).right
       tag <- getTag(owner, tagResult.uuid.get).right
       result <- Right(getArchiveListResult(listResult._1, tag, setResults)).right
@@ -96,10 +98,10 @@ trait ListDatabase extends UserDatabase with TagDatabase {
     } yield result
   }
   
-  def unarchiveList(owner: Owner, listUUID: UUID): Response[UnarchiveListResult] = {
+  def unarchiveList(owner: Owner, listUUID: UUID, parent: Option[UUID]): Response[UnarchiveListResult] = {
     for {
-      listResult <- validateListUnarchivable(owner, listUUID).right
-      unarchiveResult <- unarchiveListNode(listResult._1, owner, listResult._2).right
+      listResult <- validateListUnarchivable(owner, listUUID, parent).right
+      unarchiveResult <- unarchiveListNode(listResult._1, owner, listResult._2, listResult._3).right
       tagDeleteResult <- Right(getDeleteItemResult(listResult._2, unarchiveResult._2, true)).right
       unit <- Right(updateItemsIndex(listResult._2, tagDeleteResult.result)).right
       setResults <- Right(updateItemsIndex(unarchiveResult._1)).right
@@ -155,43 +157,49 @@ trait ListDatabase extends UserDatabase with TagDatabase {
     } yield task
   }
 
-  protected def validateListArchivable(owner: Owner, listUUID: UUID): Response[(Node, String)] = {
+  protected def validateListArchivable(owner: Owner, listUUID: UUID, parent: Option[UUID]): Response[(Node, String, Option[Node])] = {
     withTx {
       implicit neo =>
         for {
           listNode <- getItemNode(owner, listUUID, Some(ItemLabel.LIST)).right
-          listNode <- validateListArchivable(listNode).right
+          parentNode <- getNodeOption(parent, ItemLabel.LIST).right
+          listNode <- validateListArchivable(listNode, parentNode).right
           listTitle <- Right(listNode.getProperty("title").asInstanceOf[String]).right
-        } yield (listNode, listTitle)
+        } yield (listNode, listTitle, parentNode)
     }
   }
 
-  protected def validateListArchivable(listNode: Node)(implicit neo4j: DatabaseService): Response[Node] = {
+  protected def validateListArchivable(listNode: Node, parentNode: Option[Node])(implicit neo4j: DatabaseService): Response[Node] = {
     if (hasChildren(listNode, Some(ItemLabel.LIST))){
       fail(INVALID_PARAMETER, ERR_LIST_ARCHIVE_CHILDREN, "List " + getUUID(listNode) + " has child lists, can not archive")
     }else if (listNode.hasProperty("archived")){
       fail(INVALID_PARAMETER, ERR_LIST_ALREADY_ARCHIVED, "List " + getUUID(listNode) + " is already archived")
-    }else{
+    }else if (parentNode.isDefined && !parentNode.get.hasProperty("archived")){
+      fail(INVALID_PARAMETER, ERR_LIST_PARENT_NOT_ARCHIVED, "Parent list " + getUUID(parentNode.get) + " is not archived")
+    }else{      
       Right(listNode)      
     }
   }
   
-  protected def validateListUnarchivable(owner: Owner, listUUID: UUID): Response[(Node, Node)] = {
+  protected def validateListUnarchivable(owner: Owner, listUUID: UUID, parent: Option[UUID]): Response[(Node, Node, Option[Node])] = {
     withTx {
       implicit neo =>
         for {
           listNode <- getItemNode(owner, listUUID, Some(ItemLabel.LIST)).right
-          listNode <- validateListUnarchivable(listNode).right
+          parentNode <- getNodeOption(parent, ItemLabel.LIST).right
+          listNode <- validateListUnarchivable(listNode, parentNode).right
           historyTag <- getArchivedListHistoryTag(listNode).right
-        } yield (listNode, historyTag)
+        } yield (listNode, historyTag, parentNode)
     }
   }
   
-  protected def validateListUnarchivable(listNode: Node)(implicit neo4j: DatabaseService): Response[Node] = {
+  protected def validateListUnarchivable(listNode: Node, parentNode: Option[Node])(implicit neo4j: DatabaseService): Response[Node] = {
     if (hasChildren(listNode, Some(ItemLabel.LIST))){
       fail(INVALID_PARAMETER, ERR_LIST_UNARCHIVE_CHILDREN, "List " + getUUID(listNode) + " has child lists, can not unarchive")
     }else if (!listNode.hasProperty("archived")){
       fail(INVALID_PARAMETER, ERR_LIST_NOT_ARCHIVED, "List " + getUUID(listNode) + " is not archived")
+    }else if (parentNode.isDefined && parentNode.get.hasProperty("archived")){
+      fail(INVALID_PARAMETER, ERR_LIST_PARENT_ARCHIVED, "Parent list " + getUUID(parentNode.get) + " is archived")
     }else{
       Right(listNode)
     }
@@ -220,30 +228,62 @@ trait ListDatabase extends UserDatabase with TagDatabase {
     }
   }
 
-  protected def archiveListNode(listNode: Node, owner: Owner, tagUUID: UUID): Response[scala.List[Node]] = {
+  protected def archiveListNode(listNode: Node, owner: Owner, tagUUID: UUID, parentNode: Option[Node]): Response[scala.List[Node]] = {
     withTx {
       implicit neo =>
         val tagNodeResult = getItemNode(owner, tagUUID, Some(ItemLabel.TAG))
         if (tagNodeResult.isLeft) fail(INTERNAL_SERVER_ERROR, ERR_LIST_MISSING_HISTORY_TAG, "Failed to find newly created history tag for list " + getUUID(listNode))
         else {
+          // First: remove previous parent relationship
+          val oldParentRelationship = getParentRelationship(listNode)
+          if (oldParentRelationship.isDefined){
+            deleteParentRelationship(oldParentRelationship.get)
+          }
+          
+          // See if list gets archived timestamp from parent
+          val archivedTimestampFromParent = {
+            if (parentNode.isDefined){
+              val archivedResult = createParentRelationship(listNode, owner, parentNode.get, skipParentHistoryTag = true)
+              if (archivedResult.isLeft) return Left(archivedResult.left.get)
+              archivedResult.right.get
+            }else{
+              None
+            }
+          }
+
+          // Mark all as archived and add a history tag
           val tagNode = tagNodeResult.right.get
           val childNodes = getChildren(listNode, None, true)
-          // Mark all as archived and add a history tag
-          val currentTime = System.currentTimeMillis()
+          val archivedTimestamp =
+            if (archivedTimestampFromParent.isDefined) archivedTimestampFromParent.get
+            else System.currentTimeMillis
           childNodes foreach (childNode => {
-            childNode.setProperty("archived", currentTime)
+            childNode.setProperty("archived", archivedTimestamp)
             createTagRelationships(childNode, scala.List(tagNode))
           })
           createTagRelationships(listNode, scala.List(tagNode))
-          listNode.setProperty("archived", currentTime)
+          if (archivedTimestampFromParent.isEmpty)
+            listNode.setProperty("archived", archivedTimestamp)
           Right(childNodes)
         }
     }
   }
   
-  protected def unarchiveListNode(listNode: Node, owner: Owner, historyTag: Node): Response[(scala.List[Node], Long)] = {
+  protected def unarchiveListNode(listNode: Node, owner: Owner, historyTag: Node, parentNode: Option[Node]): Response[(scala.List[Node], Long)] = {
     withTx {
       implicit neo4j =>
+        // First: remove previous parent relationship
+        val oldParentRelationship = getParentRelationship(listNode)
+        if (oldParentRelationship.isDefined){
+          deleteParentRelationship(oldParentRelationship.get)
+        }
+        
+        // Then, set new parent relationship
+        if (parentNode.isDefined){
+          val parentSetResult = createParentRelationship(listNode, owner, parentNode.get, skipParentHistoryTag = true)
+          if (parentSetResult.isLeft) return Left(parentSetResult.left.get)
+        }
+
         val childNodes = getChildren(listNode, None, true)
         // Remove archived from all children and list node
         childNodes foreach (childNode => {
