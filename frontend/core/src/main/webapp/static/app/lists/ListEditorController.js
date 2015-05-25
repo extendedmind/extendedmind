@@ -15,7 +15,7 @@
 
  'use strict';
 
- function ListEditorController($q, $rootScope, $scope, ListsService, UISessionService) {
+ function ListEditorController($q, $rootScope, $scope, $timeout, ListsService, UISessionService) {
 
   // INITIALIZING
 
@@ -23,14 +23,17 @@
     $scope.registerFeatureEditorAboutToCloseCallback(listEditorAboutToClose, 'ListEditorController');
 
   if ($scope.list.visibility && $scope.list.visibility.agreements &&
-      $scope.list.visibility.agreements.length > 0){
+      $scope.list.visibility.agreements.length > 0)
+  {
     $scope.sharedToList = [];
     for (var i=0; i<$scope.list.visibility.agreements.length; i++){
       $scope.sharedToList.push({
         email: $scope.list.visibility.agreements[i].proposedTo.email,
-        mode: ($scope.list.visibility.agreements[i].access === 2 ? 'read/write' : 'read'),
+        access: $scope.list.visibility.agreements[i].access,
+        accessText: ($scope.list.visibility.agreements[i].access === 2 ? 'read/write' : 'read'),
+        accepted: $scope.list.visibility.agreements[i].accepted,
         acceptStatus: ($scope.list.visibility.agreements[i].accepted ? 'accepted' : 'pending')
-      })
+      });
     }
   }
 
@@ -159,7 +162,7 @@
   // UI
 
   $scope.isListPropertyInEdit = function() {
-    return $scope.descriptionFocused || $scope.isPickerOpen();
+    return $scope.descriptionFocused || $scope.listShareEditorOpen || $scope.isPickerOpen();
   };
 
   function isPickerOpenInListEditor(){
@@ -180,18 +183,111 @@
 
   $scope.showArchive = function() {
     return !$scope.isFakeUser() &&
-        $scope.list.trans.archived === undefined &&
-        $scope.editorType !== 'recurring' &&
-        $scope.features.lists.getStatus('archived') !== 'disabled';
+    $scope.list.trans.archived === undefined &&
+    $scope.editorType !== 'recurring' &&
+    $scope.features.lists.getStatus('archived') !== 'disabled';
   };
 
   $scope.showUnarchive = function() {
     return !$scope.isFakeUser() &&
-        $scope.list.trans.archived !== undefined &&
-        $scope.editorType !== 'recurring' &&
-        $scope.features.lists.getStatus('archived') !== 'disabled';
+    $scope.list.trans.archived !== undefined &&
+    $scope.editorType !== 'recurring' &&
+    $scope.features.lists.getStatus('archived') !== 'disabled';
+  };
+
+  // SHARE LIST EDITOR
+
+  $scope.openListShareEditor = function(data, mode) {
+    if ($scope.useSharedLists()) {
+      var initialData = {};
+      $scope.shareEditor = {
+        data: {},
+        mode: mode
+      };
+
+      if (data) {
+        // Initialize with data.
+        initialData.email = $scope.shareEditor.data.email = data.email;
+        initialData.access = $scope.shareEditor.data.access = data.access;
+        initialData.accepted = $scope.shareEditor.data.accepted = data.accepted;
+
+        $scope.shareEditor.existing = true;
+      } else {
+        // Initialize with default values.
+        initialData.email = $scope.shareEditor.data.email = undefined;
+        initialData.access = $scope.shareEditor.data.access = 1; // read access
+        initialData.accepted = $scope.shareEditor.data.accepted = undefined;
+      }
+
+      $scope.listShareEditorOpen = true;
+
+      if (angular.isFunction($scope.registerPropertyEditDoneCallback)) {
+        $scope.registerPropertyEditDoneCallback(saveListShare);
+      }
+      if (angular.isFunction($scope.registerIsPropertyEdited)) {
+        $scope.registerIsPropertyEdited(function() {
+          return isShareListEdited(initialData);
+        });
+      }
+    } else {
+      // TODO: get premium
+    }
+  };
+
+  function saveListShare() {
+    // TODO: save
+    $scope.listShareEditorOpen = false;
+  }
+
+  function isShareListEdited(initialData) {
+    if (!initialData.email && $scope.shareEditor.data.email) {
+      return true;
+    } else if (initialData.access !== $scope.shareEditor.data.access) {
+      return true;
+    }
+  }
+
+  $scope.clearSharedToEmail = function() {
+    $scope.shareEditor.data.email = undefined;
+  };
+
+  $scope.removeShareList = function() {
+    var interaction = {
+      type: 'confirmationRequired',
+      value: {
+        messageHeading: 'confirm unshare',
+        messageIngress: 'are you sure you want to stop sharing this list to ' +
+        $scope.shareEditor.data.email + '?',
+        confirmText: 'unshare',
+        confirmAction: function() {
+          // TODO: remove
+        },
+        allowCancel: true
+      }
+    };
+    $rootScope.$emit('emInteraction', interaction);
+  };
+
+  $scope.resendShareList = function() {
+    $scope.shareEditor.resendPending = true;
+    // TODO: resend
+    $timeout(function() {
+      $scope.shareEditor.resendPending = false;
+      $scope.shareEditor.resendResolved = true;
+    }, 1000);
+  };
+
+  $scope.getShareListResendStatusText = function() {
+    if ($scope.shareEditor.resendPending) {
+      return 'resending';
+    } else if ($scope.shareEditor.resendResolved) {
+      return 'resent';
+    } else {
+      return 'resend';
+    }
   };
 }
 
-ListEditorController['$inject'] = ['$q', '$rootScope', '$scope', 'ListsService', 'UISessionService'];
+ListEditorController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout',
+'ListsService', 'UISessionService'];
 angular.module('em.main').controller('ListEditorController', ListEditorController);

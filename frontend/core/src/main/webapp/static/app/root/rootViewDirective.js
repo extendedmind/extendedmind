@@ -143,8 +143,9 @@
 
       // Listen to interactions emitted to $rootScope.
       var unbindEmInteraction = $rootScope.$on('emInteraction', function(name, interaction) {
+        var params;
         if (interaction.type === 'onlineRequired') {
-          var params = {
+          params = {
             messageHeading: 'not online',
             messageIngress: 'please connect to the internet and press retry',
             confirmText: 'retry',
@@ -154,7 +155,16 @@
             cancelDisabled: !interaction.value.allowCancel
             // Cancel is disabled by default and overridden with allowCancel.
           };
-
+          $scope.showModal(undefined, params);
+        } else if (interaction.type === 'confirmationRequired') {
+          params = {
+            messageHeading: interaction.value.messageHeading,
+            messageIngress: interaction.value.messageIngress,
+            confirmText: interaction.value.confirmText,
+            confirmAction: interaction.value.confirmAction,
+            cancelDisabled: !interaction.value.allowCancel
+            // Cancel is disabled by default and overridden with allowCancel.
+          };
           $scope.showModal(undefined, params);
         }
       });

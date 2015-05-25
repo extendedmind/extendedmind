@@ -4,7 +4,7 @@
     <div class="container-titlebar--inner">
       <div class="group-symmetrical height-large--top height-large--bottom" swiper-prevent>
 
-        <a href ng-hide="isPickerOpen()"
+        <a href ng-hide="isPickerOpen() || listShareEditorOpen"
           class="group-symmetrical--left link-navigation active highlighted sorting-hide"
           swiper-click="endListEdit()">
           <span class="text-navigation-back"
@@ -13,8 +13,8 @@
           </span>
         </a>
 
-        <a href ng-if="isPickerOpen()" ng-click="propertyEditDone()" class="group-symmetrical--left highlighted"
-          editable-field-container="auto">
+        <a href ng-if="isPickerOpen() || listShareEditorOpen" class="group-symmetrical--left highlighted"
+           ng-click="propertyEditDone()" editable-field-container="auto">
           <span class="text-edit" ng-bind="isPropertyEdited() ? 'save' : 'done'"></span>
         </a>
 
@@ -42,7 +42,9 @@
         </a>
 
         <div ng-if="isListPropertyInEdit()" class="group-symmetrical--right">
-          <span ng-if="listPickerOpen" class="text-field--label-bold">list</span>
+          <span ng-if="listPickerOpen || listShareEditorOpen" class="text-field--label-bold"
+            ng-bind="listPickerOpen ? 'list' : 'share'">
+          </span>
           <div ng-if="descriptionFocused" class="text-field--label-multi-row">
             <span ng-bind="'de' + (columns === 1 ? '-\n' : '') + 'scription'" class="text-field--label-bold"></span>
           </div>
@@ -143,25 +145,75 @@
         <div ng-style="{'padding-bottom': advancedSlideInfo.footerHeight}" class="container-content">
 
           <!-- URL -->
-          <div class="row-vertically-centered with-textarea row-top-parent">
+          <div ng-hide="listShareEditorOpen" class="row-vertically-centered with-textarea row-top-parent">
             <textarea ng-model="list.trans.link" input-model-validator ng-trim="false" msd-elastic
               maxlength="2000" placeholder="enter url&#8230;" autocapitalize="none" autocorrect="off">
             </textarea>
           </div>
 
-          <div ng-repeat="sharedTo in sharedToList">
-            <div class="group-mixed">
-              <div class="group-mixed--middle">
-                <span class="text-normal">{{sharedTo.email}}, {{sharedTo.mode}}, {{sharedTo.acceptStatus}}</span>
-              </div>
-              <div class="group-mixed--right">
-                <button type="button" class="btn-clear" swiper-click="destroyAgreement(sharedTo)"></button>
-              </div>
+          <!-- SHARE -->
+          <div ng-hide="listShareEditorOpen" class="group-mixed">
+            <a href class="group-mixed--middle link-search-result downplayed"
+              ng-click="openListShareEditor(undefined, 'outward')">
+              <span class="text-field--title">share list&hellip;</span>
+            </a>
+          </div>
+
+          <div ng-hide="listShareEditorOpen" ng-repeat="sharedTo in sharedToList" class="group-mixed">
+            <a href class="group-mixed--middle link-search-result"
+              ng-click="openListShareEditor(sharedTo, 'outward')">
+              <span class="text-field--title"
+                ng-bind="sharedTo.email + ', ' + sharedTo.accessText + ', ' + sharedTo.acceptStatus">
+              </span>
+            </a>
+            <div class="group-mixed--right">
+              <span class="text-field--label">share</span>
             </div>
           </div>
+
+          <!-- LIST SHARE EDITOR -->
+          <div ng-if="listShareEditorOpen" class="swiper-no-swiping animate-fade-in"
+            editable-field-container="auto">
+
+            <div class="group-mixed vertically-centered">
+              <div class="group-mixed--middle">
+                <input style="display: block; height: 22px; line-height: 22px;"
+                  type="email" ng-model="shareEditor.data.email" placeholder="enter email&#8230;"
+                  maxlength="254" clear-email-validator ng-disabled="shareEditor.existing" />
+              </div>
+              <div ng-show="!shareEditor.existing && shareEditor.data.email.length" class="group-mixed--right">
+                <button type="button" class="btn-clear" ng-click="clearSharedToEmail()"></button>
+              </div>
+            </div>
+
+            <div ng-if="shareEditor.mode === 'outward'" class="group-mixed">
+              <div class="group-mixed--left">
+                <input type="checkbox" ng-model="shareEditor.data.access" ng-true-value="2" ng-false-value="1"
+                  icon-checkbox="'sharedToAccess'"/>
+              </div>
+              <div class="group-mixed--middle">
+                <span class="text-link">allow write</span>
+              </div>
+            </div>
+
+            <div class="group-symmetrical">
+              <a href ng-if="shareEditor.mode === 'outward' && !shareEditor.data.accepted"
+                class="group-symmetrical--left"
+                ng-class="(!shareEditor.resendPending && !shareEditor.resendResolved) ? 'highlighted' : 'link-disable downplayed'"
+                swiper-click="resendShareList()">
+                <span ng-bind="getShareListResendStatusText()"></span>
+              </a>
+              <a href class="group-symmetrical--right" swiper-click="removeShareList()">
+                <span class="text-remove">unshare</span>
+              </a>
+            </div>
+
+          </div>
+
         </div>
 
-        <footer class="container-content--after editor-footer" editor-footer="advancedSlideInfo">
+        <footer ng-hide="listShareEditorOpen" class="container-content--after editor-footer"
+          editor-footer="advancedSlideInfo">
 
           <!-- CONVERT -->
           <div class="group-symmetrical">
