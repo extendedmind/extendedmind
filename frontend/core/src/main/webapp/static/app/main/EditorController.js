@@ -41,7 +41,14 @@
     }else if (editorType === 'note'){
       $scope.note = dataInEdit;
     }else if (editorType === 'list'){
-      $scope.list = dataInEdit;
+      if (dataInEdit.list){
+        // Shared/adopted list
+        $scope.list = dataInEdit.list;
+        $scope.overrideOwnerUUID = dataInEdit.owner;
+        $scope.mode = 'extrinsic';
+      }else{
+        $scope.list = dataInEdit;
+      }
     }else if (editorType === 'item'){
       $scope.item = dataInEdit;
     }else if (editorType === 'tag'){

@@ -25,15 +25,28 @@
   if ($scope.list.visibility && $scope.list.visibility.agreements &&
       $scope.list.visibility.agreements.length > 0)
   {
-    $scope.sharedToList = [];
-    for (var i=0; i<$scope.list.visibility.agreements.length; i++){
-      $scope.sharedToList.push({
-        email: $scope.list.visibility.agreements[i].proposedTo.email,
-        access: $scope.list.visibility.agreements[i].access,
-        accessText: ($scope.list.visibility.agreements[i].access === 2 ? 'read/write' : 'read'),
-        accepted: $scope.list.visibility.agreements[i].accepted,
-        acceptStatus: ($scope.list.visibility.agreements[i].accepted ? 'accepted' : 'pending')
-      });
+    var i;
+    if ($scope.mode === 'extrinsic') {
+      $scope.sharedByList = {};
+      for (i = 0; i < $scope.list.visibility.agreements.length; i++) {
+        if ($scope.list.visibility.agreements[i].proposedBy) {
+          $scope.sharedByList.email = $scope.list.visibility.agreements[i].proposedBy.email;
+          $scope.sharedByList.accessText = $scope.list.visibility.agreements[i].proposedBy.access === 2 ?
+          'read/write' : 'read';
+          break;
+        }
+      }
+    } else {
+      $scope.sharedToList = [];
+      for (i = 0; i < $scope.list.visibility.agreements.length; i++) {
+        $scope.sharedToList.push({
+          email: $scope.list.visibility.agreements[i].proposedTo.email,
+          access: $scope.list.visibility.agreements[i].access,
+          accessText: ($scope.list.visibility.agreements[i].access === 2 ? 'read/write' : 'read'),
+          accepted: $scope.list.visibility.agreements[i].accepted,
+          acceptStatus: ($scope.list.visibility.agreements[i].accepted ? 'accepted' : 'pending')
+        });
+      }
     }
   }
 
@@ -197,12 +210,11 @@
 
   // SHARE LIST EDITOR
 
-  $scope.openListShareEditor = function(data, mode) {
+  $scope.openListShareEditor = function(data) {
     if ($scope.useSharedLists()) {
       var initialData = {};
       $scope.shareEditor = {
-        data: {},
-        mode: mode
+        data: {}
       };
 
       if (data) {
@@ -252,20 +264,24 @@
   };
 
   $scope.removeShareList = function() {
-    var interaction = {
-      type: 'confirmationRequired',
-      value: {
-        messageHeading: 'confirm unshare',
-        messageIngress: 'are you sure you want to stop sharing this list to ' +
-        $scope.shareEditor.data.email + '?',
-        confirmText: 'unshare',
-        confirmAction: function() {
-          // TODO: remove
-        },
-        allowCancel: true
-      }
-    };
-    $rootScope.$emit('emInteraction', interaction);
+    if ($scope.mode === 'extrinsic') {
+      // TODO
+    } else {
+      var interaction = {
+        type: 'confirmationRequired',
+        value: {
+          messageHeading: 'confirm unshare',
+          messageIngress: 'are you sure you want to stop sharing this list to ' +
+          $scope.shareEditor.data.email + '?',
+          confirmText: 'unshare',
+          confirmAction: function() {
+            // TODO: remove
+          },
+          allowCancel: true
+        }
+      };
+      $rootScope.$emit('emInteraction', interaction);
+    }
   };
 
   $scope.resendShareList = function() {
