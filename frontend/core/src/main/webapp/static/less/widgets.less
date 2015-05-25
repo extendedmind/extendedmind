@@ -441,6 +441,11 @@ TODO: working example needed!
   &, *:not(.link-disable) {
     pointer-events: auto !important;
   }
+  .link-disable {
+    &, * {
+      pointer-events: none !important;
+    }
+  }
 }
 
 // 1. Set height to 100% so that content can be scrollable.

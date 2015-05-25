@@ -26,6 +26,7 @@ Text colors
 @color-text: #000000;
 @color-text-pressed: lighten(@color-text, 20%); // TODO: don't use lighten;
 @color-text-error: #e22c09;
+@color-text-remove: #e22c09;
 @color-text-active: #0098ea;
 @color-text-highlighted: #0f82fe;
 @color-text-highlighted-pressed: darken(@color-text-highlighted, 10%);
@@ -152,8 +153,10 @@ html {
   display: none;
 }
 
-.link-disable{
-  pointer-events: none !important;
+.link-disable {
+  &, * {
+    pointer-events: none !important;
+  }
 }
 
 .hide {
