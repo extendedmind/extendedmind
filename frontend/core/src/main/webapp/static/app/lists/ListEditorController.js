@@ -179,7 +179,7 @@
   };
 
   function isSubEditorOpenInListEditor(){
-    return $scope.listPickerOpen;
+    return $scope.listPickerOpen || $scope.listShareEditorOpen;
   }
   $scope.registerIsSubEditorOpenCondition(isSubEditorOpenInListEditor);
 
