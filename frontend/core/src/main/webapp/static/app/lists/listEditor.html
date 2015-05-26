@@ -45,7 +45,7 @@
           <span ng-if="listPickerOpen || listShareEditorOpen" class="text-field--label-bold"
             ng-bind="listPickerOpen ? 'list' : 'share'">
           </span>
-          <div ng-if="descriptionFocused" class="text-field--label-multi-row">
+          <div ng-if="focusedTextProperty === 'description'" class="text-field--label-multi-row">
             <span ng-bind="'descrip' + (columns === 1 ? '-\n' : '') + 'tion'" class="text-field--label-bold"></span>
           </div>
         </div>
@@ -82,7 +82,7 @@
           </div>
 
           <!-- LIST -->
-          <div ng-hide="listIsParent(list) || descriptionFocused || listPickerOpen" class="group-mixed">
+          <div ng-hide="listIsParent(list) || focusedTextProperty === 'description' || listPickerOpen" class="group-mixed">
             <a href class="group-mixed--middle link-search-result" ng-class="!list.trans.list && 'downplayed'"
               swiper-click="openListPicker()">
               <span class="text-field--title"
@@ -115,7 +115,8 @@
           <!-- DESCRIPTION -->
           <textarea ng-if="drawerAisleInitialized" ng-hide="listPickerOpen" id="ignoreSnap"
             ng-model="list.trans.description" input-model-validator ng-trim="false"
-            ng-focus="setDescriptionFocus(true, 'listEditor')" ng-blur="setDescriptionFocus(false, 'listEditor')"
+            ng-focus="setTextPropertyFocus('description', true)"
+            ng-blur="setTextPropertyFocus('description', false)"
             editable-field msd-elastic placeholder="enter description&#8230;" maxlength="1024"
             autocapitalize="none" autocorrect="off">
          </textarea>

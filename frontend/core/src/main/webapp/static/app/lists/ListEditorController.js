@@ -175,7 +175,7 @@
   // UI
 
   $scope.isListPropertyInEdit = function() {
-    return $scope.descriptionFocused || $scope.listShareEditorOpen || $scope.isSubEditorOpen();
+    return $scope.focusedTextProperty || $scope.listShareEditorOpen || $scope.isSubEditorOpen();
   };
 
   function isSubEditorOpenInListEditor(){

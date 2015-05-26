@@ -143,6 +143,10 @@
     return ($scope.editorType === 'task' || $scope.editorType === 'note' || $scope.editorType === 'list');
   }
 
+  function getEditorSwiperId(){
+    return $scope.editorType + 'Editor';
+  }
+
   // HELPER METHODS
 
   var featureEditorAboutToCloseCallback, featureEditorOpenedCallback;
@@ -325,7 +329,7 @@
 
   $scope.getEditorNavigationBackClasses = function(){
     if (($scope.mode === 'search') ||
-        (editorHasSwiper() && !$scope.isFirstSlide($scope.editorType + 'Editor')) ||
+        (editorHasSwiper() && !$scope.isFirstSlide(getEditorSwiperId())) ||
         ($scope.mode === 'keywordEdit' && $scope.editorType == 'tag')){
       return 'not-swipeable';
     }
@@ -372,11 +376,14 @@
     if (typeof editorFooterCloseCallback === 'function') editorFooterCloseCallback();
   };
 
-  // DESCRIPTION
+  // TEXT PROPERTIES (i.e. description, url and content)
 
-  $scope.setDescriptionFocus = function(focus, editor){
-    $scope.descriptionFocused = focus;
-    SwiperService.setOnlyExternal(editor, focus);
+  $scope.setTextPropertyFocus = function(name, hasFocus){
+    if (hasFocus) $scope.focusedTextProperty = name;
+    else $scope.focusedTextProperty = undefined;
+    if (editorHasSwiper()){
+      SwiperService.setOnlyExternal(getEditorSwiperId(), hasFocus);
+    }
   };
 
   // URL
@@ -479,9 +486,9 @@
   // EDITOR HEADER
 
   $scope.isEditorHeaderTitleVisible = function(){
-    if ((editorHasSwiper() && !$scope.isFirstSlide($scope.editorType + 'Editor')) ||
+    if ((editorHasSwiper() && !$scope.isFirstSlide(getEditorSwiperId())) ||
         $scope.isSubEditorOpen() ||
-        $scope.descriptionFocused ||
+        $scope.focusedTextProperty ||
         $scope.urlFocused){
       return true;
     }
