@@ -319,6 +319,15 @@
       $scope.$digest();
   };
 
+  $scope.getEditorNavigationBackClasses = function(){
+    if (($scope.mode === 'search') ||
+        (($scope.editorType === 'task' || $scope.editorType === 'note' || $scope.editorType === 'list') &&
+         !$scope.isFirstSlide($scope.editorType + 'Editor')) ||
+        ($scope.mode === 'keywordEdit' && $scope.editorType == 'tag')){
+      return 'not-swipeable';
+    }
+  };
+
   // LIST PICKER WIDGET
 
   $scope.openListPicker = function() {

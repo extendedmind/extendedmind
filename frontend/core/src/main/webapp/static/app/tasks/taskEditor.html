@@ -8,7 +8,7 @@
           class="group-symmetrical--left link-navigation active highlighted sorting-hide"
           swiper-click="endTaskEdit()">
           <span class="text-navigation-back"
-            ng-class="(!isFirstSlide('taskEditor') || mode === 'search') && 'not-swipeable'"
+            ng-class="getEditorNavigationBackClasses()"
             ng-bind="isTaskEdited() && !task.trans.deleted ? 'save' : 'back'">
           </span>
         </a>

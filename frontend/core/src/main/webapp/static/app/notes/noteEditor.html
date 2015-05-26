@@ -8,7 +8,7 @@
           class="group-symmetrical--left link-navigation active highlighted sorting-hide"
           swiper-click="endNoteEdit()">
           <span class="text-navigation-back"
-            ng-class="(!isFirstSlide('noteEditor') || mode === 'search') && 'not-swipeable'"
+            ng-class="getEditorNavigationBackClasses()"
             ng-bind="isAutoSavingPrevented() ? (isNoteEdited() && !note.trans.deleted ? 'save' : 'back') : noteStatus">
           </span>
         </a>

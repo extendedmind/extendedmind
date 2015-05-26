@@ -8,7 +8,7 @@
           class="group-symmetrical--left link-navigation active highlighted sorting-hide"
           swiper-click="endListEdit()">
           <span class="text-navigation-back"
-            ng-class="(!isFirstSlide('listEditor') || mode === 'search') && 'not-swipeable'"
+            ng-class="getEditorNavigationBackClasses()"
             ng-bind="isListEdited() && !list.trans.deleted ? 'save' : 'back'">
           </span>
         </a>
@@ -18,7 +18,7 @@
           <span class="text-edit" ng-bind="hasSubEditorEdited() ? 'save' : 'done'"></span>
         </a>
 
-        <div ng-show="isListPropertyInEdit() || !isFirstSlide('listEditor')"
+        <div ng-if="isListPropertyInEdit() || !isFirstSlide('listEditor')"
           ng-style="{maxWidth: calculateTitleWidth()}"
           class="group-symmetrical--middle width-large text-heading-primary--outer primary">
           <div class="text-heading-primary--inner">

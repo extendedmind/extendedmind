@@ -6,7 +6,7 @@
 
         <a href class="group-symmetrical--left link-navigation highlighted active" swiper-click="endTagEdit()">
           <span class="text-navigation-back"
-          ng-class="mode === 'keywordEdit' && 'not-swipeable'"
+          ng-class="getEditorNavigationBackClasses()"
           ng-bind="isTagEdited() && !tag.trans.deleted ? 'save' : 'back'"></span>
         </a>
 
