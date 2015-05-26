@@ -62,7 +62,7 @@
           drawer-override-aisle="right" ng-init="drawerAisleInitialized = true">
 
           <!-- LIST TITLE -->
-          <div ng-hide="isListPropertyInEdit()" class="row-top-parent">
+          <div ng-hide="isPropertyInEdit()" class="row-top-parent">
             <div class="group-mixed large">
               <div class="group-mixed--middle">
                 <textarea class="text-heading-primary large" ng-model="list.trans.title"
@@ -81,14 +81,14 @@
           </div>
 
           <!-- URL -->
-          <div ng-hide="isListPropertyInEdit()" class="row-vertically-centered with-textarea">
+          <div ng-hide="isPropertyInEdit()" class="row-vertically-centered with-textarea">
             <textarea class="text-metadata" ng-model="list.trans.link" input-model-validator ng-trim="false" msd-elastic
               maxlength="2000" placeholder="enter url&#8230;" autocapitalize="none" autocorrect="off">
             </textarea>
           </div>
 
           <!-- LIST -->
-          <div ng-hide="listIsParent(list) || focusedTextProperty === 'description' || listPickerOpen" class="group-mixed">
+          <div ng-if="!listIsParent(list)" ng-hide="isPropertyInEdit()" class="group-mixed">
             <a href class="group-mixed--middle link-search-result" ng-class="!list.trans.list && 'downplayed'"
               swiper-click="openListPicker()">
               <span class="text-field--title"
@@ -128,7 +128,7 @@
          </textarea>
 
         </div>
-        <footer ng-hide="isListPropertyInEdit()" class="container-content--after editor-footer">
+        <footer ng-hide="isPropertyInEdit()" class="container-content--after editor-footer">
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
 
             <a ng-if="showArchive()" href swiper-click="archiveListInEdit(list)"
