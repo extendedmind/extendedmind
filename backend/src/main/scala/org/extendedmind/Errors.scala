@@ -79,6 +79,7 @@ case object ERR_LIST_MORE_THAN_ONE_ACTIVE_HISTORY extends ErrorCode(4009)
 case object ERR_LIST_NO_ACTIVE_HISTORY extends ErrorCode(4010)
 case object ERR_LIST_PARENT_NOT_ARCHIVED extends ErrorCode(4011)
 case object ERR_LIST_PARENT_ARCHIVED extends ErrorCode(4012)
+case object ERR_LIST_DELETE_AGREEMENTS extends ErrorCode(4013)
 
 case object ERR_USER_NO_USERS extends ErrorCode(5001)
 case object ERR_USER_ALREADY_EXISTS extends ErrorCode(5002)

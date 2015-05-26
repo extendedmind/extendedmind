@@ -69,8 +69,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
 
   def deleteList(owner: Owner, listUUID: UUID): Response[DeleteItemResult] = {
     for {
-      listNode <- validateListDeletable(owner, listUUID).right
-      deletedListNode <- deleteListNode(owner, listNode).right
+      deletedListNode <- deleteListNode(owner, listUUID).right
       result <- Right(getDeleteItemResult(deletedListNode._1, deletedListNode._2)).right
       unit <- Right(updateItemsIndex(deletedListNode._1, result.result)).right
       unit <- Right(updateItemsIndex(deletedListNode._3, result.result)).right
@@ -156,18 +155,6 @@ trait ListDatabase extends UserDatabase with TagDatabase {
         }
       )).right
     } yield task
-  }
-  
-  protected def validateListArchivable(owner: Owner, listUUID: UUID): Response[Node] = {
-    withTx {
-      implicit neo =>
-        for {
-          listNode <- getItemNode(owner, listUUID, Some(ItemLabel.LIST)).right
-          parentNode <- getNodeOption(parent, ItemLabel.LIST).right
-          listNode <- validateListArchivable(listNode, parentNode).right
-          listTitle <- Right(listNode.getProperty("title").asInstanceOf[String]).right
-        } yield (listNode, listTitle, parentNode)
-    }
   }
 
   protected def validateListArchivable(owner: Owner, listUUID: UUID, parent: Option[UUID]): Response[(Node, String, Option[Node])] = {
@@ -322,11 +309,12 @@ trait ListDatabase extends UserDatabase with TagDatabase {
     withTx {
       implicit neo =>
         for {
-          itemNode <- getItemNode(owner, listUUID, Some(ItemLabel.LIST)).right
-          deletable <- validateListDeletable(itemNode).right
-          deleted <- Right(deleteItem(itemNode)).right
-          childNodes <- Right(getChildren(itemNode, None, true)).right
-        } yield (itemNode, deleted, childNodes)
+          listNode <- getItemNode(owner, listUUID, Some(ItemLabel.LIST)).right
+          agreementNodes <- getListAgreementNodes(listNode).right
+          unit <- validateListDeletable(listNode, agreementNodes).right
+          deleted <- Right(deleteItem(listNode)).right
+          childNodes <- Right(getChildren(listNode, None, true)).right
+        } yield (listNode, deleted, childNodes)
     }
   }
   
@@ -341,12 +329,14 @@ trait ListDatabase extends UserDatabase with TagDatabase {
     }
   }
 
-  protected def validateListDeletable(listNode: Node)(implicit neo4j: DatabaseService): Response[Boolean] = {
-    // Can't delete if list has child lists
+  protected def validateListDeletable(listNode: Node, agreementNodes: Option[scala.List[Node]])(implicit neo4j: DatabaseService): Response[Unit] = {
+    // Can't delete if list has child lists or agreements
     if (hasChildren(listNode, Some(ItemLabel.LIST)))
       fail(INVALID_PARAMETER, ERR_LIST_DELETE_CHILDREN, "can not delete list with child lists")
+    else if (agreementNodes.isDefined)
+      fail(INVALID_PARAMETER, ERR_LIST_DELETE_AGREEMENTS, "List " + getUUID(listNode) + " has agreements, can not delete")
     else
-      Right(true)
+      Right()
   }
 
   protected def updateItemsIndex(itemNodes: scala.List[Node]): Option[scala.List[SetResult]] = {
@@ -451,4 +441,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
       Right(None)
     }
   }
+  
+  
+  
 }
