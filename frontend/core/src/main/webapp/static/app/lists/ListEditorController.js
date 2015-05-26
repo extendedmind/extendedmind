@@ -175,13 +175,13 @@
   // UI
 
   $scope.isListPropertyInEdit = function() {
-    return $scope.descriptionFocused || $scope.listShareEditorOpen || $scope.isPickerOpen();
+    return $scope.descriptionFocused || $scope.listShareEditorOpen || $scope.isSubEditorOpen();
   };
 
-  function isPickerOpenInListEditor(){
+  function isSubEditorOpenInListEditor(){
     return $scope.listPickerOpen;
   }
-  $scope.registerIsPickerOpenCondition(isPickerOpenInListEditor);
+  $scope.registerIsSubEditorOpenCondition(isSubEditorOpenInListEditor);
 
   // LIST PICKER
   $scope.listIsParent = function(list) {
@@ -233,11 +233,11 @@
 
       $scope.listShareEditorOpen = true;
 
-      if (angular.isFunction($scope.registerPropertyEditDoneCallback)) {
-        $scope.registerPropertyEditDoneCallback(saveListShare);
+      if (angular.isFunction($scope.registerSubEditorDoneCallback)) {
+        $scope.registerSubEditorDoneCallback(saveListShare);
       }
-      if (angular.isFunction($scope.registerIsPropertyEdited)) {
-        $scope.registerIsPropertyEdited(function() {
+      if (angular.isFunction($scope.registerHasSubEditorEditedCallback)) {
+        $scope.registerHasSubEditorEditedCallback(function() {
           return isShareListEdited(initialData);
         });
       }

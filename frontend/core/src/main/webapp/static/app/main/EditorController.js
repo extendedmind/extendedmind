@@ -383,6 +383,9 @@
     return $scope.editorType === 'recurring' || $scope.isOnboarding('notes');
   };
 
+  // ***************
+  // DEPRECATED! USE subEditor* FUNCTIONS!
+
   var propertyEditDoneCallbackData;
   $scope.registerPropertyEditDoneCallback = function(callback, parameters) {
     propertyEditDoneCallbackData = {
@@ -420,11 +423,52 @@
     if (angular.isFunction(isPickerOpenCondition)) return isPickerOpenCondition();
   };
 
+  // DEPRECATED! USE subEditor* FUNCTIONS!
+  // ***************
+
+  // Only one subeditor can be open at a time
+  var subEditorDoneCallbackData;
+  $scope.registerSubEditorDoneCallback = function(callback, parameters) {
+    subEditorDoneCallbackData = {
+      fn: callback,
+      parameters: parameters
+    };
+  };
+  $scope.unregisterSubEditorDoneCallback = function() {
+    subEditorDoneCallbackData = undefined;
+  };
+  $scope.subEditorDone = function() {
+    if (subEditorDoneCallbackData && typeof subEditorDoneCallbackData.fn === 'function') {
+      subEditorDoneCallbackData.fn.apply(undefined, subEditorDoneCallbackData.parameters);
+    }
+  };
+
+  var hasSubEditorEdited;
+  $scope.registerHasSubEditorEditedCallback = function(callback) {
+    hasSubEditorEdited = callback;
+  };
+  $scope.unregisterHasSubEditorEditedCallback = function() {
+    hasSubEditorEdited = undefined;
+  };
+  $scope.hasSubEditorEdited = function() {
+    if (angular.isFunction(hasSubEditorEdited)) return hasSubEditorEdited();
+  };
+
+  var isSubEditorOpenCondition;
+  $scope.registerIsSubEditorOpenCondition = function(condition){
+    isSubEditorOpenCondition = condition;
+  };
+  $scope.isSubEditorOpen = function(){
+    if (angular.isFunction(isSubEditorOpenCondition)) return isSubEditorOpenCondition();
+  };
+
   // BACK HANDLER
 
   function onBackButton(){
-    if ($scope.isPickerOpen()){
+    // FIXME: REMOVE isPickerOpen & propertyEditDone WHEN THEY HAVE BEEN REMOVED
+    if ($scope.isPickerOpen() || $scope.isSubEditorOpen()){
       $scope.propertyEditDone();
+      $scope.subEditorDone();
     }else{
       $scope.closeEditor();
     }
