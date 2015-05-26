@@ -337,7 +337,8 @@
   $scope.getEditorNavigationBackClasses = function(){
     if (($scope.mode === 'search') ||
         (editorHasSwiper() && !$scope.isFirstSlide(getEditorSwiperId())) ||
-        ($scope.mode === 'keywordEdit' && $scope.editorType == 'tag')){
+        ($scope.mode === 'keywordEdit' && $scope.editorType == 'tag'))
+    {
       return 'not-swipeable';
     }
   };
@@ -505,7 +506,7 @@
   $scope.getPropertyNameInEdit = function() {
     if ($scope.focusedTextProperty){
       if ($scope.focusedTextProperty === 'description'){
-        return 'descrip' + ($scope.columns === 1 ? '-\n' : '') + 'tion'
+        return 'descrip' + ($scope.columns === 1 ? '-\n' : '') + 'tion';
       }else{
         return $scope.focusedTextProperty;
       }
@@ -524,7 +525,7 @@
 
   $scope.getPropertyInEditContainerStatus = function(){
     if ($scope.isSubEditorOpen()) return 'auto';
-  }
+  };
 
   // EDITOR HEADER
 
@@ -532,7 +533,8 @@
     if ((editorHasSwiper() && !$scope.isFirstSlide(getEditorSwiperId())) ||
         $scope.isSubEditorOpen() ||
         $scope.focusedTextProperty ||
-        $scope.urlFocused){
+        $scope.urlFocused)
+    {
       return true;
     }
   };
