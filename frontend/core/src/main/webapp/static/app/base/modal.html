@@ -27,7 +27,7 @@
         <div class="textgroup-ingress first last row" ng-bind="messageIngress"></div>
 
         <div ng-if="messageText" class="textgroup-message row">
-          <span ng-repeat="textNode in messageText" ng-switch="textNode.type" class="text-normal">
+          <span ng-repeat="textNode in messageText" ng-switch="textNode.type" class="text-metadata">
             <span ng-switch-when="text" ng-bind="textNode.data"></span>
             <a href ng-switch-when="link" class="highlighted" ng-click="textNode.action()">
               <span ng-bind="textNode.data"></span>

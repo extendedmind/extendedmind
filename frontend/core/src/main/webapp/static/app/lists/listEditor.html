@@ -81,6 +81,13 @@
             </div>
           </div>
 
+          <!-- URL -->
+          <div ng-hide="isListPropertyInEdit()" class="row-vertically-centered with-textarea">
+            <textarea class="text-metadata" ng-model="list.trans.link" input-model-validator ng-trim="false" msd-elastic
+              maxlength="2000" placeholder="enter url&#8230;" autocapitalize="none" autocorrect="off">
+            </textarea>
+          </div>
+
           <!-- LIST -->
           <div ng-hide="listIsParent(list) || focusedTextProperty === 'description' || listPickerOpen" class="group-mixed">
             <a href class="group-mixed--middle link-search-result" ng-class="!list.trans.list && 'downplayed'"
@@ -144,13 +151,6 @@
 
       <div class="swiper-slide" swiper-slide="listEditor/advanced" slide-index="1" ng-init="advancedSlideInfo = {}">
         <div ng-style="{'padding-bottom': advancedSlideInfo.footerHeight}" class="container-content">
-
-          <!-- URL -->
-          <div ng-hide="listShareEditorOpen" class="row-vertically-centered with-textarea row-top-parent">
-            <textarea ng-model="list.trans.link" input-model-validator ng-trim="false" msd-elastic
-              maxlength="2000" placeholder="enter url&#8230;" autocapitalize="none" autocorrect="off">
-            </textarea>
-          </div>
 
           <!-- SHARE -->
           <div ng-if="mode !== 'extrinsic'" ng-hide="listShareEditorOpen" class="group-mixed">

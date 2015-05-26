@@ -83,7 +83,7 @@ h2 {
 }
 
 .textgroup-toaster {
-  font-size: @size-font-medium;
+  .text-metadata();
 }
 
 .textgroup-ingress {
@@ -105,6 +105,10 @@ h2 {
   }
 }
 
+.text-metadata {
+  font-size: @size-font-medium;
+}
+
 .text-highlighted {
   color: @color-text-highlighted;
 }
@@ -120,8 +124,6 @@ h2 {
 .text-heading.highlighted {
   color: @color-text-active;
 }
-
-
 
 .text-heading.long {
   font-size: @size-font-not-so-large;
@@ -173,7 +175,7 @@ Use `.text-details` to separate details from body text.
 
 .text-teaser {
   display: inline-block;
-  font-size: @size-font-medium;
+  .text-metadata();
   color: @color-text-downplayed;
   line-height: @line-height-size-font-medium;
 }
@@ -189,11 +191,6 @@ Use `.text-details` to separate details from body text.
   line-height: @grid-vertical;
   font-size: @size-font-medium-large;
   .set-font-bold();
-}
-
-.text-normal {
-  line-height: @grid-vertical-half;
-  font-size: @size-font-medium;
 }
 
 .text-downplayed {
@@ -357,7 +354,7 @@ Search results (omnibar, deleted)
 //    classes.
 .text-search-result {
   line-height: @line-height-text-search; // [1]
-  font-size: @size-font-medium;
+  .text-metadata();
 }
 // 1. Align vertically with .text-search-result, which has different font-size, using same line-height in both
 //    classes.
@@ -372,7 +369,7 @@ Search results (omnibar, deleted)
 // FIXME: merge with .text-search-result
 .text-field--title {
   line-height: @line-height-text-search; // [1]
-  font-size: @size-font-medium;
+  .text-metadata();
   display: block;
 }
 .text-field--label,
@@ -442,7 +439,7 @@ Search results (omnibar, deleted)
 //    NOTE: In widgets.less for specificity reasons.
 .text-agenda--time {
   color: @color-text-downplayed;
-  font-size: @size-font-medium; // [1]
+  .text-metadata();                   // [1]
   // line-height: @size-font-content; // [2]
   &.emphasize:first-line {
     color: black;
@@ -453,5 +450,5 @@ Search results (omnibar, deleted)
 // 2. Match line-height with .text-agenda--time.
 .text-agenda--title {
   line-height: @size-font-content;  // [1]
-  font-size: @size-font-medium;     // [2]
+  .text-metadata();                 // [2]
 }
