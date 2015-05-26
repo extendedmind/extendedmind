@@ -59,17 +59,26 @@
   }
 
   $scope.deleteListInEdit = function() {
-    var activeFeature = $scope.getActiveFeature();
-    if (activeFeature === 'list') {
-      var currentData = UISessionService.getFeatureData(activeFeature);
-      if (currentData === $scope.list) {
-        $scope.features.lists.resizeFix = true;
-        $scope.features.list.resizeFix = true;
-        $scope.changeFeature('lists', undefined, false);
+    if ($scope.sharedToList) {
+      var exception = {
+        type: 'deleteSharedList',
+        value: {
+          allowCancel: true
+        }
+      };
+      $rootScope.$emit('emException', exception);
+    } else {
+      var activeFeature = $scope.getActiveFeature();
+      if (activeFeature === 'list') {
+        var currentData = UISessionService.getFeatureData(activeFeature);
+        if (currentData === $scope.list) {
+          $scope.features.lists.resizeFix = true;
+          $scope.features.list.resizeFix = true;
+          $scope.changeFeature('lists', undefined, false);
+        }
       }
+      $scope.processDelete($scope.list, $scope.deleteList, $scope.undeleteList);
     }
-
-    $scope.processDelete($scope.list, $scope.deleteList, $scope.undeleteList);
   };
 
   $scope.isListEdited = function() {

@@ -171,6 +171,7 @@
 
       // Listen to exceptions emitted to $rootScope.
       var unbindEmException = $rootScope.$on('emException', function(name, exception) {
+        var params;
 
         if (exception.type === 'http' && exception.value.status === 403) {
           // Redirect thrown 403 Forbidden exception to the login page
@@ -242,10 +243,18 @@
 
           $scope.showModal(undefined, primaryParams);
         }
+        else if (exception.type === 'deleteSharedList') {
+          params = {
+            messageHeading: 'can\'t remove shared list',
+            messageIngress: 'first unshare the list and then delete it',
+            confirmText: 'close'
+          };
+          $scope.showModal(undefined, params);
+        }
         else {
           AnalyticsService.error('unexpected', JSON.stringify(exception));
 
-          var params = {
+          params = {
             messageHeading: 'oops',
             messageIngress: 'something unexpected happened, sorry!',
             messageDetails: JSON.stringify(exception, null, 2),
