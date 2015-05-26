@@ -387,10 +387,15 @@
   // TEXT PROPERTIES (i.e. description, url and content)
 
   $scope.setTextPropertyFocus = function(name, hasFocus){
-    if (hasFocus) $scope.focusedTextProperty = name;
-    else $scope.focusedTextProperty = undefined;
-    if (editorHasSwiper()){
-      SwiperService.setOnlyExternal(getEditorSwiperId(), hasFocus);
+    if (!$scope.foreignOwner) {
+      if (hasFocus) {
+        $scope.focusedTextProperty = name;
+      } else {
+        $scope.focusedTextProperty = undefined;
+      }
+      if (editorHasSwiper()) {
+        SwiperService.setOnlyExternal(getEditorSwiperId(), hasFocus);
+      }
     }
   };
 

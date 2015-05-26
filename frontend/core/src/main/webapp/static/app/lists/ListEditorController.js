@@ -308,6 +308,23 @@
       return 'resend';
     }
   };
+
+  function handleReadOnlyPropertyClick() {
+    UISessionService.pushNotification({
+      type: 'fyi',
+      text: 'can\'t edit shared list'
+    });
+  }
+
+  $scope.listTitlebarClick = function() {
+    if ($scope.foreignOwner) handleReadOnlyPropertyClick();
+  };
+  $scope.listUrlClick = function() {
+    if ($scope.foreignOwner) handleReadOnlyPropertyClick();
+  };
+  $scope.listDescriptionClick = function() {
+    if ($scope.foreignOwner) handleReadOnlyPropertyClick();
+  };
 }
 
 ListEditorController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout',

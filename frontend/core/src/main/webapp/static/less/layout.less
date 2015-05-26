@@ -1395,7 +1395,7 @@ textarea#ignoreSnap {
   padding-right: @grid-horizontal;  // [2]
 }
 
-textarea#ignoreSnap:not(.disable-full-height):focus {
+textarea#ignoreSnap:not([readonly]):not(.disable-full-height):focus {
   padding-bottom: @grid-vertical-half;  // [3]
   overflow: initial !important; // [4]
   height: 100% !important;      // [1,4]
