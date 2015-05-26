@@ -32,11 +32,12 @@
           <span class="text-heading-primary text-downplayed">list</span>
         </div>
 
-        <a href ng-if="!list.trans.deleted" ng-hide="isPropertyInEdit()" class="group-symmetrical--right"
-          swiper-click="deleteListInEdit()">
+        <a href ng-if="!list.trans.deleted && !foreignOwner" ng-hide="isPropertyInEdit()"
+          class="group-symmetrical--right" swiper-click="deleteListInEdit()">
           <span class="icon-trash"></span>
         </a>
-        <a href ng-if="list.trans.deleted" class="group-symmetrical--right link-navigation highlighted active"
+        <a href ng-if="list.trans.deleted && !foreignOwner"
+          class="group-symmetrical--right link-navigation highlighted active"
           swiper-click="undeleteList(list)">
           <span class="text-navigation">restore</span>
         </a>
@@ -89,7 +90,7 @@
           </textarea>
 
           <!-- LIST -->
-          <div ng-if="!listIsParent(list)" ng-hide="isPropertyInEdit()" class="group-mixed">
+          <div ng-if="!listIsParent(list) && !foreignOwner" ng-hide="isPropertyInEdit()" class="group-mixed">
             <a href class="group-mixed--middle link-search-result" ng-class="!list.trans.list && 'downplayed'"
               swiper-click="openListPicker()">
               <span class="text-field--title"
@@ -226,7 +227,7 @@
           editor-footer="advancedSlideInfo">
 
           <!-- CONVERT -->
-          <div class="group-symmetrical">
+          <div ng-if="!foreignOwner" class="group-symmetrical">
             <a href class="group-symmetrical--left link" swiper-click="convertToTask(list)">
               <span class="text-convert small">task</span>
             </a>
