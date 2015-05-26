@@ -202,6 +202,7 @@
 
   $scope.showArchive = function() {
     return !$scope.isFakeUser() &&
+    !$scope.foreignOwner &&
     $scope.list.trans.archived === undefined &&
     $scope.editorType !== 'recurring' &&
     $scope.features.lists.getStatus('archived') !== 'disabled';
@@ -209,6 +210,7 @@
 
   $scope.showUnarchive = function() {
     return !$scope.isFakeUser() &&
+    !$scope.foreignOwner &&
     $scope.list.trans.archived !== undefined &&
     $scope.editorType !== 'recurring' &&
     $scope.features.lists.getStatus('archived') !== 'disabled';
