@@ -38,16 +38,19 @@
 
     if (editorType === 'task'){
       $scope.task = dataInEdit;
+      $scope.foreignOwner = getIsForeignOwner(dataInEdit);
     }else if (editorType === 'note'){
       $scope.note = dataInEdit;
+      $scope.foreignOwner = getIsForeignOwner(dataInEdit);
     }else if (editorType === 'list'){
       if (dataInEdit.list){
         // Shared/adopted list
         $scope.list = dataInEdit.list;
         $scope.overrideOwnerUUID = dataInEdit.owner;
-        $scope.mode = 'extrinsic';
+        $scope.foreignOwner = getIsForeignOwner(dataInEdit.list);
       }else{
         $scope.list = dataInEdit;
+        $scope.foreignOwner = getIsForeignOwner(dataInEdit);
       }
     }else if (editorType === 'item'){
       $scope.item = dataInEdit;
@@ -59,6 +62,10 @@
       $scope.iterableItems = dataInEdit;
     }
   };
+
+  function getIsForeignOwner(item) {
+    return item.trans.owner !== UISessionService.getActiveUUID();
+  }
 
   function editorAboutToClose() {
     if (typeof featureEditorAboutToCloseCallback === 'function') featureEditorAboutToCloseCallback();

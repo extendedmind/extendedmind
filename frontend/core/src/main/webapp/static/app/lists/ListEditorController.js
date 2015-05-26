@@ -26,7 +26,7 @@
       $scope.list.visibility.agreements.length > 0)
   {
     var i;
-    if ($scope.mode === 'extrinsic') {
+    if ($scope.foreignOwner) {
       $scope.sharedByList = {};
       for (i = 0; i < $scope.list.visibility.agreements.length; i++) {
         if ($scope.list.visibility.agreements[i].proposedBy) {
@@ -270,7 +270,7 @@
   };
 
   $scope.removeShareList = function() {
-    if ($scope.mode === 'extrinsic') {
+    if ($scope.foreignOwner) {
       // TODO
     } else {
       var interaction = {

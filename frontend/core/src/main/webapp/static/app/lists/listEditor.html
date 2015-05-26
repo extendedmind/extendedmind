@@ -153,23 +153,14 @@
         <div ng-style="{'padding-bottom': advancedSlideInfo.footerHeight}" class="container-content">
 
           <!-- SHARE -->
-          <div ng-if="mode !== 'extrinsic'" ng-hide="listShareEditorOpen" class="group-mixed">
+          <div ng-if="!foreignOwner" ng-hide="listShareEditorOpen" class="group-mixed">
             <a href class="group-mixed--middle link-search-result downplayed"
               ng-click="openListShareEditor()">
               <span class="text-field--title">share list&hellip;</span>
             </a>
           </div>
 
-          <div ng-if="mode === 'extrinsic'" class="group-mixed">
-            <a href class="group-mixed--middle link-search-result" ng-click="openListShareEditor(sharedByList)">
-              <span class="text-field--title" ng-bind="sharedByList.email + ', ' + sharedByList.accessText"></span>
-            </a>
-            <div class="group-mixed--right">
-              <span class="text-field--label">owner</span>
-            </div>
-          </div>
-
-          <div ng-if="mode !== 'extrinsic'" ng-hide="listShareEditorOpen" ng-repeat="sharedTo in sharedToList"
+          <div ng-if="!foreignOwner" ng-hide="listShareEditorOpen" ng-repeat="sharedTo in sharedToList"
             class="group-mixed">
             <a href class="group-mixed--middle link-search-result"
               ng-click="openListShareEditor(sharedTo)">
@@ -182,11 +173,20 @@
             </div>
           </div>
 
+          <div ng-if="foreignOwner" class="group-mixed">
+            <a href class="group-mixed--middle link-search-result" ng-click="openListShareEditor(sharedByList)">
+              <span class="text-field--title" ng-bind="sharedByList.email + ', ' + sharedByList.accessText"></span>
+            </a>
+            <div class="group-mixed--right">
+              <span class="text-field--label">owner</span>
+            </div>
+          </div>
+
           <!-- LIST SHARE EDITOR -->
           <div ng-if="listShareEditorOpen" class="swiper-no-swiping animate-fade-in"
             editable-field-container="auto">
 
-            <div ng-if="mode !== 'extrinsic'" class="group-mixed vertically-centered">
+            <div ng-if="!foreignOwner" class="group-mixed vertically-centered">
               <div class="group-mixed--middle">
                 <input style="display: block; height: 22px; line-height: 22px;"
                   type="email" ng-model="shareEditor.data.email" placeholder="enter email&#8230;"
@@ -197,7 +197,7 @@
               </div>
             </div>
 
-            <div ng-if="mode !== 'extrinsic'" class="group-mixed">
+            <div ng-if="!foreignOwner" class="group-mixed">
               <div class="group-mixed--left">
                 <input type="checkbox" ng-model="shareEditor.data.access" ng-true-value="2" ng-false-value="1"
                   icon-checkbox="'sharedToAccess'"/>
@@ -208,14 +208,13 @@
             </div>
 
             <div ng-if="shareEditor.existing" class="group-symmetrical">
-              <a href ng-if="mode !== 'extrinsic' && !shareEditor.data.accepted"
-                class="group-symmetrical--left"
+              <a href ng-if="!foreignOwner && !shareEditor.data.accepted" class="group-symmetrical--left"
                 ng-class="(!shareEditor.resendPending && !shareEditor.resendResolved) ? 'highlighted' : 'link-disable downplayed'"
                 swiper-click="resendShareList()">
                 <span ng-bind="getShareListResendStatusText()"></span>
               </a>
               <a href class="group-symmetrical--right" swiper-click="removeShareList()">
-                <span class="text-remove" ng-bind="mode === 'extrinsic' ? 'remove' : 'unshare'"></span>
+                <span class="text-remove" ng-bind="foreignOwner ? 'remove' : 'unshare'"></span>
               </a>
             </div>
 
