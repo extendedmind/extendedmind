@@ -184,6 +184,7 @@
   $scope.registerIsSubEditorOpenCondition(isSubEditorOpenInListEditor);
 
   // LIST PICKER
+
   $scope.listIsParent = function(list) {
     var lists = $scope.getListsArray('all');
     for (var i = 0; i < lists.length; i++) {

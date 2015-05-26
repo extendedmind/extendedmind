@@ -18,7 +18,7 @@
           <span class="text-edit" ng-bind="hasSubEditorEdited() ? 'save' : 'done'"></span>
         </a>
 
-        <div ng-if="isListPropertyInEdit() || !isFirstSlide('listEditor')"
+        <div ng-show="isEditorHeaderTitleVisible()"
           ng-style="{maxWidth: calculateTitleWidth()}"
           class="group-symmetrical--middle width-large text-heading-primary--outer primary">
           <div class="text-heading-primary--inner">

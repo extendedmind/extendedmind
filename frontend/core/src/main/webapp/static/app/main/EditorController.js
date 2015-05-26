@@ -139,6 +139,10 @@
 
   $scope.processClose = $scope.closeEditor;
 
+  function editorHasSwiper(){
+    return ($scope.editorType === 'task' || $scope.editorType === 'note' || $scope.editorType === 'list');
+  }
+
   // HELPER METHODS
 
   var featureEditorAboutToCloseCallback, featureEditorOpenedCallback;
@@ -321,8 +325,7 @@
 
   $scope.getEditorNavigationBackClasses = function(){
     if (($scope.mode === 'search') ||
-        (($scope.editorType === 'task' || $scope.editorType === 'note' || $scope.editorType === 'list') &&
-         !$scope.isFirstSlide($scope.editorType + 'Editor')) ||
+        (editorHasSwiper() && !$scope.isFirstSlide($scope.editorType + 'Editor')) ||
         ($scope.mode === 'keywordEdit' && $scope.editorType == 'tag')){
       return 'not-swipeable';
     }
@@ -370,12 +373,14 @@
   };
 
   // DESCRIPTION
+
   $scope.setDescriptionFocus = function(focus, editor){
     $scope.descriptionFocused = focus;
     SwiperService.setOnlyExternal(editor, focus);
   };
 
   // URL
+
   $scope.setUrlFocus = function(value) {
     $scope.urlFocused = value;
   };
@@ -469,6 +474,17 @@
   };
   $scope.isSubEditorOpen = function(){
     if (angular.isFunction(isSubEditorOpenCondition)) return isSubEditorOpenCondition();
+  };
+
+  // EDITOR HEADER
+
+  $scope.isEditorHeaderTitleVisible = function(){
+    if ((editorHasSwiper() && !$scope.isFirstSlide($scope.editorType + 'Editor')) ||
+        $scope.isSubEditorOpen() ||
+        $scope.descriptionFocused ||
+        $scope.urlFocused){
+      return true;
+    }
   };
 
   // BACK HANDLER
