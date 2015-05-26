@@ -183,6 +183,15 @@
   }
   $scope.registerIsSubEditorOpenCondition(isSubEditorOpenInListEditor);
 
+
+  $scope.getListPropertyNameInEdit = function() {
+    var propertyName = $scope.getPropertyNameInEdit();
+    if (!propertyName && $scope.listShareEditorOpen){
+      propertyName = 'share';
+    }
+    return propertyName;
+  };
+
   // LIST PICKER
 
   $scope.listIsParent = function(list) {

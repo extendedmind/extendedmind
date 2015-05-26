@@ -124,7 +124,8 @@
   }
   $scope.registerIsPickerOpenCondition(isPickerOpenInTaskEditor);
 
-  $scope.getPropertyNameInEdit = function() {
+  $scope.getTaskPropertyNameInEdit = function() {
+    // TODO: Use $scope.getPropertyNameInEdit
     if ($scope.calendarOpen)
       return 'date';
     else if ($scope.contextPickerOpen)

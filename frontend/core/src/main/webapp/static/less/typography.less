@@ -372,6 +372,20 @@ Search results (omnibar, deleted)
   .text-metadata();
   display: block;
 }
+
+.text-field--label-wrapper {
+  text-align: center;
+  height: inherit;
+  display: table-cell;
+  vertical-align: middle;
+  .text-field--label-bold {
+    white-space: pre;
+    padding-top: 0;
+    padding-bottom: 0;
+    line-height: @size-font-small;
+    margin-top: 3px;
+  }
+}
 .text-field--label,
 .text-field--label-bold {
   font-size: @size-font-small;
@@ -391,20 +405,6 @@ Search results (omnibar, deleted)
   padding-top: 11px;
   padding-bottom: 11px;
 
-}
-// FIXME: .text-field--label-multi-row == .group-symmetrical--middle > a > div
-.text-field--label-multi-row {
-  text-align: center;
-  height: inherit;
-  display: table-cell;
-  vertical-align: middle;
-  .text-field--label-bold {
-    white-space: pre;
-    padding-top: 0;
-    padding-bottom: 0;
-    line-height: @size-font-small;
-    margin-top: 3px;
-  }
 }
 
 // 1. Occupy available space.

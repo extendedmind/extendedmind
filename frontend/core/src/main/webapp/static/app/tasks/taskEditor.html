@@ -42,9 +42,9 @@
         </a>
 
         <div ng-if="isTaskPropertyInEdit()" class="group-symmetrical--right">
-          <span ng-if="isPickerOpen()" class="text-field--label-bold" ng-bind="getPropertyNameInEdit()">
+          <span ng-if="isPickerOpen()" class="text-field--label-bold" ng-bind="getTaskPropertyNameInEdit()">
           </span>
-          <div ng-if="taskDescriptionFocused" class="text-field--label-multi-row">
+          <div ng-if="taskDescriptionFocused" class="text-field--label-wrapper">
             <span ng-bind="'descrip' + (columns === 1 ? '-\n' : '') + 'tion'" class="text-field--label-bold"></span>
           </div>
         </div>

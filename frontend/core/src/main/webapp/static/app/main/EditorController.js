@@ -483,6 +483,30 @@
     if (angular.isFunction(isSubEditorOpenCondition)) return isSubEditorOpenCondition();
   };
 
+  $scope.isPropertyInEdit = function(){
+    return $scope.focusedTextProperty !== undefined || $scope.isSubEditorOpen();
+  };
+
+  $scope.isOtherPropertyInEdit = function(exceptionTextProperty){
+    if ($scope.focusedTextProperty === exceptionTextProperty){
+      return false;
+    }else{
+      return $scope.isPropertyInEdit();
+    }
+  };
+
+  $scope.getPropertyNameInEdit = function() {
+    if ($scope.focusedTextProperty){
+      if ($scope.focusedTextProperty === 'description'){
+        return 'descrip' + ($scope.columns === 1 ? '-\n' : '') + 'tion'
+      }else{
+        return $scope.focusedTextProperty;
+      }
+    }
+    else if ($scope.listPickerOpen)
+      return 'list';
+  };
+
   // EDITOR HEADER
 
   $scope.isEditorHeaderTitleVisible = function(){

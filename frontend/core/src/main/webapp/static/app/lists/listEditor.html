@@ -32,21 +32,20 @@
           <span class="text-heading-primary text-downplayed">list</span>
         </div>
 
-        <a href ng-if="!list.trans.deleted" ng-hide="isListPropertyInEdit()" class="group-symmetrical--right"
+        <a href ng-if="!list.trans.deleted" ng-hide="isPropertyInEdit()" class="group-symmetrical--right"
           swiper-click="deleteListInEdit()">
           <span class="icon-trash"></span>
         </a>
-        <a href ng-if="list.trans.deleted" ng-hide="isListPropertyInEdit()"
-          class="group-symmetrical--right link-navigation highlighted active" swiper-click="undeleteList(list)">
+        <a href ng-if="list.trans.deleted" class="group-symmetrical--right link-navigation highlighted active"
+          swiper-click="undeleteList(list)">
           <span class="text-navigation">restore</span>
         </a>
 
-        <div ng-if="isListPropertyInEdit()" class="group-symmetrical--right">
-          <span ng-if="listPickerOpen || listShareEditorOpen" class="text-field--label-bold"
-            ng-bind="listPickerOpen ? 'list' : 'share'">
-          </span>
-          <div ng-if="focusedTextProperty === 'description'" class="text-field--label-multi-row">
-            <span ng-bind="'descrip' + (columns === 1 ? '-\n' : '') + 'tion'" class="text-field--label-bold"></span>
+        <div ng-if="isPropertyInEdit()" class="group-symmetrical--right">
+          <div class="text-field--label-wrapper">
+            <span class="text-field--label-bold"
+              ng-bind="getListPropertyNameInEdit()">
+            </span>
           </div>
         </div>
 
