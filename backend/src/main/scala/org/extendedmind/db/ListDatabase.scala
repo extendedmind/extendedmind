@@ -69,7 +69,8 @@ trait ListDatabase extends UserDatabase with TagDatabase {
 
   def deleteList(owner: Owner, listUUID: UUID): Response[DeleteItemResult] = {
     for {
-      deletedListNode <- deleteListNode(owner, listUUID).right
+      listNode <- validateListDeletable(owner, listUUID).right
+      deletedListNode <- deleteListNode(owner, listNode).right
       result <- Right(getDeleteItemResult(deletedListNode._1, deletedListNode._2)).right
       unit <- Right(updateItemsIndex(deletedListNode._1, result.result)).right
       unit <- Right(updateItemsIndex(deletedListNode._3, result.result)).right
@@ -156,6 +157,18 @@ trait ListDatabase extends UserDatabase with TagDatabase {
       )).right
     } yield task
   }
+  
+  protected def validateListArchivable(owner: Owner, listUUID: UUID): Response[Node] = {
+    withTx {
+      implicit neo =>
+        for {
+          listNode <- getItemNode(owner, listUUID, Some(ItemLabel.LIST)).right
+          parentNode <- getNodeOption(parent, ItemLabel.LIST).right
+          listNode <- validateListArchivable(listNode, parentNode).right
+          listTitle <- Right(listNode.getProperty("title").asInstanceOf[String]).right
+        } yield (listNode, listTitle, parentNode)
+    }
+  }
 
   protected def validateListArchivable(owner: Owner, listUUID: UUID, parent: Option[UUID]): Response[(Node, String, Option[Node])] = {
     withTx {
@@ -168,7 +181,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
         } yield (listNode, listTitle, parentNode)
     }
   }
-
+  
   protected def validateListArchivable(listNode: Node, parentNode: Option[Node])(implicit neo4j: DatabaseService): Response[Node] = {
     if (hasChildren(listNode, Some(ItemLabel.LIST))){
       fail(INVALID_PARAMETER, ERR_LIST_ARCHIVE_CHILDREN, "List " + getUUID(listNode) + " has child lists, can not archive")
