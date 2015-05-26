@@ -34,6 +34,9 @@ function MockItemsBackendService($httpBackend, ItemsService, SynchronizeService,
       if (modifiedItems[i].mod.description) persistentItem.description = modifiedItems[i].mod.description;
       else if (modifiedItems[i].trans.description) persistentItem.description = modifiedItems[i].trans.description;
 
+      if (modifiedItems[i].mod.link) persistentItem.link = modifiedItems[i].mod.link;
+      else if (modifiedItems[i].trans.link) persistentItem.link = modifiedItems[i].trans.link;
+
       if (modifiedItems[i].mod.deleted) persistentItem.deleted = modifiedItems[i].mod.deleted;
       else if (modifiedItems[i].trans.deleted) persistentItem.deleted = modifiedItems[i].trans.deleted;
 

@@ -507,6 +507,18 @@
       return 'list';
   };
 
+  $scope.isPropertyEdited = function(textPropertyEditedFn) {
+    if ($scope.focusedTextProperty !== undefined){
+      if (angular.isFunction(textPropertyEditedFn)) return textPropertyEditedFn();
+    }else{
+      return $scope.hasSubEditorEdited();
+    }
+  };
+
+  $scope.getPropertyInEditContainerStatus = function(){
+    if ($scope.isSubEditorOpen()) return 'auto';
+  }
+
   // EDITOR HEADER
 
   $scope.isEditorHeaderTitleVisible = function(){
