@@ -1,6 +1,6 @@
 <div class="container-fluid--inner" list-container drawer-handle="left" swiper-prevent>
   <section ng-show="isContentVisible('inbox')" class="container-content" list="getItemsArray('all')">
-    <h2 class="group-heading justified row" ng-bind="items.length + ' items'"></h2>
+    <h2 class="group-heading justified row" ng-bind="getFullArray().length + ' items'"></h2>
 
     <div list-item-add="getNewItem()" list-item-add-save="saveItem(newItem)">
       <form role="form" class="group-mixed vertically-centered swiper-no-swiping"
