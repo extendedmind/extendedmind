@@ -350,7 +350,8 @@
 
             <a href ng-if="isAgendaVisible() && daySlides[2].info !== null" ng-hide="daySlidesInfosCleared"
               class="link agenda" ng-click="openCalendar(daySlides[2].info)">
-              <div ng-repeat="agendaEvent in getEventInstances(daySlides[2].info) as agendaEvents track by agendaEvent.event_id">
+              <div ng-repeat="agendaEvent in getEventInstances(daySlides[2].info) as agendaEvents track by agendaEvent.event_id"
+                   ng-class="agendaEvent.past && 'past-event'">
                 <div class="group-mixed">
                   <div class="group-mixed--left">
                     <span ng-class="!agendaEvent.allDay && 'emphasize'" class="text-agenda--time"
@@ -400,7 +401,8 @@
 
             <a href ng-if="isAgendaVisible() && daySlides[0].info !== null" ng-hide="daySlidesInfosCleared"
               class="link agenda" ng-click="openCalendar(daySlides[0].info)">
-              <div ng-repeat="agendaEvent in getEventInstances(daySlides[0].info) as agendaEvents track by agendaEvent.event_id">
+              <div ng-repeat="agendaEvent in getEventInstances(daySlides[0].info) as agendaEvents track by agendaEvent.event_id"
+                   ng-class="agendaEvent.past && 'past-event'">
                 <div class="group-mixed">
                   <div class="group-mixed--left">
                     <span ng-class="!agendaEvent.allDay && 'emphasize'" class="text-agenda--time"
@@ -450,7 +452,8 @@
 
             <a href ng-if="isAgendaVisible() && daySlides[1].info !== null" ng-hide="daySlidesInfosCleared"
               class="link agenda" ng-click="openCalendar(daySlides[1].info)">
-              <div ng-repeat="agendaEvent in getEventInstances(daySlides[1].info) as agendaEvents track by agendaEvent.event_id">
+              <div ng-repeat="agendaEvent in getEventInstances(daySlides[1].info) as agendaEvents track by agendaEvent.event_id"
+                   ng-class="agendaEvent.past && 'past-event'">
                 <div class="group-mixed">
                   <div class="group-mixed--left">
                     <span ng-class="!agendaEvent.allDay && 'emphasize'" class="text-agenda--time"
@@ -500,7 +503,8 @@
 
             <a href ng-if="isAgendaVisible() && daySlides[2].info !== null" ng-hide="daySlidesInfosCleared"
               class="link agenda" ng-click="openCalendar(daySlides[2].info)">
-              <div ng-repeat="agendaEvent in getEventInstances(daySlides[2].info) as agendaEvents track by agendaEvent.event_id">
+              <div ng-repeat="agendaEvent in getEventInstances(daySlides[2].info) as agendaEvents track by agendaEvent.event_id"
+                   ng-class="agendaEvent.past && 'past-event'">
                 <div class="group-mixed">
                   <div class="group-mixed--left">
                     <span ng-class="!agendaEvent.allDay && 'emphasize'" class="text-agenda--time"
@@ -550,7 +554,8 @@
 
             <a href ng-if="isAgendaVisible() && daySlides[0].info !== null" ng-hide="daySlidesInfosCleared"
               class="link agenda" ng-click="openCalendar(daySlides[0].info)">
-              <div ng-repeat="agendaEvent in getEventInstances(daySlides[0].info) as agendaEvents track by agendaEvent.event_id">
+              <div ng-repeat="agendaEvent in getEventInstances(daySlides[0].info) as agendaEvents track by agendaEvent.event_id"
+                   ng-class="agendaEvent.past && 'past-event'">
                 <div class="group-mixed">
                   <div class="group-mixed--left">
                     <span ng-class="!agendaEvent.allDay && 'emphasize'" class="text-agenda--time"

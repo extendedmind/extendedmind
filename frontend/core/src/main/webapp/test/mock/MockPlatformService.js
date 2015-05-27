@@ -167,13 +167,34 @@
 
     var eventInstances = [{
       calendar_id: 1,
+      event_id: 99,
+      title: 'yesterday all day event from calendar 1',
+      begin: Date.now() - 86400000,
+      end: Date.now() - 86400000,
+      allDay: true,
+      location: 'location location location',
+      rrule: true
+    },{
+      calendar_id: 1,
       event_id: 100,
-      title: 'first event',
+      title: 'all day event from calendar 1',
       begin: Date.now(),
       end: Date.now(),
       allDay: true,
       location: 'location location location',
       rrule: true
+    },{
+      calendar_id: 1,
+      event_id: 101,
+      title: 'past today event from calendar 1',
+      begin: Date.now() - 1000000,
+      end: Date.now() - 10000
+    },{
+      calendar_id: 1,
+      event_id: 102,
+      title: 'future today event from calendar 1',
+      begin: Date.now() + 1000000,
+      end: Date.now() + 20000000
     }];
 
     window.plugins.calendar = {

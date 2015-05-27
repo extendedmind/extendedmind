@@ -846,7 +846,8 @@
       // End of the event is between start time and end time.
       agendaEvent = {
         begin: 'ends',
-        end: $filter('date')(eventInstance.end, 'HH:mm')
+        end: $filter('date')(eventInstance.end, 'HH:mm'),
+        past: eventInstance.end < Date.now()
         // ends
         // 9:00
       };
@@ -856,7 +857,8 @@
       // Event is between start and end time.
       agendaEvent = {
         begin: $filter('date')(eventInstance.begin, 'HH:mm'),
-        end: $filter('date')(eventInstance.end, 'HH:mm')
+        end: $filter('date')(eventInstance.end, 'HH:mm'),
+        past: eventInstance.end < Date.now()
         // 9:00
         // 12:45
       };
