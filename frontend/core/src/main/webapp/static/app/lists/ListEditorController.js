@@ -44,7 +44,8 @@
           access: $scope.list.visibility.agreements[i].access,
           accessText: ($scope.list.visibility.agreements[i].access === 2 ? 'read/write' : 'read'),
           accepted: $scope.list.visibility.agreements[i].accepted,
-          acceptStatus: ($scope.list.visibility.agreements[i].accepted ? 'accepted' : 'pending')
+          acceptStatus: ($scope.list.visibility.agreements[i].accepted ? 'accepted' : 'pending'),
+          uuid: $scope.list.visibility.agreements[i].uuid
         });
       }
     }
@@ -239,6 +240,7 @@
         initialData.email = $scope.shareEditor.data.email = data.email;
         initialData.access = $scope.shareEditor.data.access = data.access;
         initialData.accepted = $scope.shareEditor.data.accepted = data.accepted;
+        initialData.uuid = $scope.shareEditor.data.uuid = data.uuid;
 
         $scope.shareEditor.existing = true;
       } else {
@@ -246,43 +248,108 @@
         initialData.email = $scope.shareEditor.data.email = undefined;
         initialData.access = $scope.shareEditor.data.access = 1; // read access
         initialData.accepted = $scope.shareEditor.data.accepted = undefined;
+
+        $scope.$watch('shareEditor.data.email', clearInvalidListShareEmailErrorOnChange);
       }
 
       $scope.listShareEditorOpen = true;
 
       if (angular.isFunction($scope.registerSubEditorDoneCallback)) {
-        $scope.registerSubEditorDoneCallback(saveListShare);
+        $scope.registerSubEditorDoneCallback(saveListShareAndClose,
+                                             [$scope.shareEditor.data, initialData,
+                                             $scope.shareEditor.existing, $scope.list]);
       }
-      if (angular.isFunction($scope.registerHasSubEditorEditedCallback)) {
-        $scope.registerHasSubEditorEditedCallback(function() {
-          return isShareListEdited(initialData);
-        });
+
+      if (!$scope.foreignOwner && angular.isFunction($scope.registerHasSubEditorEditedCallback)) {
+        $scope.registerHasSubEditorEditedCallback(isListShareEdited,
+                                                  [initialData, $scope.shareEditor.data]);
       }
     } else {
       // TODO: get premium
     }
   };
 
-  function saveListShare() {
-    // TODO: save
+  function closeListShareEditor() {
+    if (angular.isFunction($scope.unregisterSubEditorDoneCallback)) $scope.unregisterSubEditorDoneCallback();
     $scope.listShareEditorOpen = false;
+    delete $scope.shareEditor;
   }
 
-  function isShareListEdited(initialData) {
-    if (!initialData.email && $scope.shareEditor.data.email) {
+  function clearInvalidListShareEmailErrorOnChange(newEmail, oldEmail) {
+    if ($scope.shareEditor.previouslyFailedEmail && newEmail !== oldEmail) {
+      $scope.shareEditor.previouslyFailedEmail = false;
+    }
+  }
+
+  function isListShareEdited(initialData, data) {
+    if (!data.email) {
+      return false;
+    } else if (!initialData.email && data.email) {
       return true;
-    } else if (initialData.access !== $scope.shareEditor.data.access) {
+    } else if (initialData.access !== data.access) {
       return true;
     }
+  }
+
+  function saveListShareAndClose(data, initialData, existing, targetList) {
+
+    function doSaveListShare(data, initialData, existing, targetList) {
+      return $q(function(resolve, reject) {
+        if (isListShareEdited(initialData, data)) {
+          if (existing) {
+            // Existing
+            ListsService.updateExistingListShareAccess(data.uuid).then(resolve, reject);
+          } else {
+            // New
+            var listShareToSave = {
+              agreementType: 'list',
+              access: data.access,
+              targetItem: {uuid: targetList.trans.uuid},
+              proposedTo: {email: data.email}
+            };
+            ListsService.shareList(listShareToSave).then(resolve, function() {
+              reject('email');
+            });
+          }
+        } else {
+          resolve();
+        }
+      });
+    }
+
+    var promise = doSaveListShare(data, initialData, existing, targetList);
+    promise.then(closeListShareEditor, function(reason) {
+      if (reason === 'email') { // FIXME: backend returns something different
+        $scope.shareEditor.previouslyFailedEmail = true;
+      }
+    });
+  }
+
+  function unshareListAndClose(uuid) {
+
+    function showListUnsharedToaster() {
+      UISessionService.pushNotification({
+        type: 'fyi',
+        text: 'list unshared'
+      });
+    }
+    var unshareListPromise = ListsService.unshareList(uuid);
+    unshareListPromise.then(showListUnsharedToaster);
+    closeListShareEditor();
+  }
+
+  function removeListShareAndClose(uuid) {
+    ListsService.removeListShare(uuid);
+    closeListShareEditor();
   }
 
   $scope.clearSharedToEmail = function() {
     $scope.shareEditor.data.email = undefined;
   };
 
-  $scope.removeShareList = function() {
+  $scope.removeListShare = function() {
     if ($scope.foreignOwner) {
-      // TODO
+      removeListShareAndClose($scope.shareEditor.data.uuid);
     } else {
       var interaction = {
         type: 'confirmationRequired',
@@ -292,7 +359,7 @@
           $scope.shareEditor.data.email + '?',
           confirmText: 'unshare',
           confirmAction: function() {
-            // TODO: remove
+            unshareListAndClose($scope.shareEditor.data.uuid);
           },
           allowCancel: true
         }
@@ -301,16 +368,35 @@
     }
   };
 
-  $scope.resendShareList = function() {
+  $scope.resendListShare = function(uuid) {
+
+    function doResendListShare(uuid) {
+      return $q(function(resolve, reject) {
+        ListsService.resendListShare(uuid).then(resolve, reject);
+      });
+    }
+
     $scope.shareEditor.resendPending = true;
-    // TODO: resend
-    $timeout(function() {
-      $scope.shareEditor.resendPending = false;
-      $scope.shareEditor.resendResolved = true;
+    var resendListSharePromise = doResendListShare(uuid);
+    var resendResolveMinimumTimeReached = false;
+    var resendResolveMinimumTimeTimer = $timeout(function() {
+      resendResolveMinimumTimeReached = true;
     }, 1000);
+
+    resendListSharePromise.then(function() {
+      if (resendResolveMinimumTimeReached) {
+        $scope.shareEditor.resendPending = false;
+        $scope.shareEditor.resendResolved = true;
+      } else {
+        resendResolveMinimumTimeTimer.then(function() {
+          $scope.shareEditor.resendPending = false;
+          $scope.shareEditor.resendResolved = true;
+        });
+      }
+    });
   };
 
-  $scope.getShareListResendStatusText = function() {
+  $scope.getListShareResendStatusText = function() {
     if ($scope.shareEditor.resendPending) {
       return 'resending';
     } else if ($scope.shareEditor.resendResolved) {

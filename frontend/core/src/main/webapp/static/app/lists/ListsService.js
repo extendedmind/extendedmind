@@ -61,6 +61,65 @@
   var listSlashRegex = /\/list\//;
   var archiveRegex = /\/archive/;
   var unarchiveRegex = /\/unarchive/;
+  var agreementRegex = /\/agreement/;
+  var agreementSlashRegex = /\/agreement/;
+  var acceptRegex = /\/accept/;
+  var accessSlashRegex = /\/access\//;
+  var resendRegex = /\/resend/;
+  var integerRegex = /^\d+$/;
+
+  // PUT /api/UUID/agreement
+  var putShareListRegexp = new RegExp(
+    /^/.source +
+    BackendClientService.apiPrefixRegex.source +
+    BackendClientService.uuidRegex.source +
+    agreementRegex.source +
+    /$/.source
+  );
+
+  // POST /api/UUID/agreement/HEX/accept
+  var postAcceptShareListRegexp = new RegExp(
+    /^/.source +
+    BackendClientService.apiPrefixRegex.source +
+    BackendClientService.uuidRegex.source +
+    agreementSlashRegex.source +
+    BackendClientService.hexCodeRegex.source +
+    acceptRegex.source +
+    /$/.source
+  );
+
+  // DELETE /api/UUID/agreement/UUID/
+  var deleteShareListRegexp = new RegExp(
+    /^/.source +
+    BackendClientService.apiPrefixRegex.source +
+    BackendClientService.uuidRegex.source +
+    agreementSlashRegex.source +
+    BackendClientService.uuidRegex.source +
+    /$/.source
+  );
+
+  // POST /api/UUID/agreement/UUID/access/#
+  var postSharedListAccessRegexp = new RegExp(
+    /^/.source +
+    BackendClientService.apiPrefixRegex.source +
+    BackendClientService.uuidRegex.source +
+    agreementSlashRegex.source +
+    BackendClientService.uuidRegex.source +
+    accessSlashRegex.source +
+    integerRegex.source +
+    /$/.source
+  );
+
+  // POST /api/UUID/agreement/UUID/resend
+  var postResendShareListRegexp = new RegExp(
+    /^/.source +
+    BackendClientService.apiPrefixRegex.source +
+    BackendClientService.uuidRegex.source +
+    agreementSlashRegex.source +
+    BackendClientService.uuidRegex.source +
+    resendRegex.source +
+    /$/.source
+  );
 
   var itemArchiveCallbacks = {};
   var listDeletedCallbacks = {};
@@ -445,6 +504,41 @@
       }
       return deferred.promise;
     },
+    shareList: function(/*listShareData*/) {
+      // TODO
+      return $q(function(resolve/*, reject*/) {
+        resolve();
+        // reject();
+      });
+    },
+    unshareList: function(/*uuid*/) {
+      // TODO
+      return $q(function(resolve/*, reject*/) {
+        resolve();
+        // reject();
+      });
+    },
+    updateExistingListShareAccess: function(/*uuid*/) {
+      // TODO
+      return $q(function(resolve/*, reject*/) {
+        resolve();
+        // reject();
+      });
+    },
+    removeListShare: function(/*uuid*/) {
+      // TODO
+      return $q(function(resolve/*, reject*/) {
+        resolve();
+        // reject();
+      });
+    },
+    resendListShare: function(/*uuid*/) {
+      // TODO
+      return $q(function(resolve/*, reject*/) {
+        resolve();
+        // reject();
+      });
+    },
     clearLists: function() {
       lists = {};
     },
@@ -477,6 +571,11 @@
                                  BackendClientService.uuidRegex.source +
                                  unarchiveRegex.source +
                                  '$'),
+    putShareListRegex: putShareListRegexp,
+    postAcceptShareListRegex: postAcceptShareListRegexp,
+    deleteShareListRegex: deleteShareListRegexp,
+    postSharedListAccessRegex: postSharedListAccessRegexp,
+    postResendShareListRegex: postResendShareListRegexp,
 
     // Register callbacks that are fired for implicit archiving of
     // elements. Callback must return the latest modified value it

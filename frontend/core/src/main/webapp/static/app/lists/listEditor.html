@@ -202,6 +202,10 @@
               </div>
             </div>
 
+            <div class="group-error comfortable row-form">
+              <span ng-if="shareEditor.previouslyFailedEmail" class="text-error">invalid email</span>
+            </div>
+
             <div ng-if="!foreignOwner" class="group-mixed">
               <div class="group-mixed--left">
                 <input type="checkbox" ng-model="shareEditor.data.access" ng-true-value="2" ng-false-value="1"
@@ -215,10 +219,10 @@
             <div ng-if="shareEditor.existing" class="group-symmetrical">
               <a href ng-if="!foreignOwner && !shareEditor.data.accepted" class="group-symmetrical--left"
                 ng-class="(!shareEditor.resendPending && !shareEditor.resendResolved) ? 'highlighted' : 'link-disable downplayed'"
-                swiper-click="resendShareList()">
-                <span ng-bind="getShareListResendStatusText()"></span>
+                swiper-click="resendListShare(shareEditor.data.uuid)">
+                <span ng-bind="getListShareResendStatusText()"></span>
               </a>
-              <a href class="group-symmetrical--right" swiper-click="removeShareList()">
+              <a href class="group-symmetrical--right" swiper-click="removeListShare()">
                 <span class="text-remove" ng-bind="foreignOwner ? 'remove' : 'unshare'"></span>
               </a>
             </div>
