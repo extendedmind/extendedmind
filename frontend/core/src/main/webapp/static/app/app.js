@@ -232,6 +232,37 @@
       }
     });
 
+    $routeProvider.when('/accept/:hex_code', {
+      redirectTo: '/',
+      resolve: {
+        routes: ['$location', '$route', 'AnalyticsService', 'AuthenticationService', 'UISessionService',
+        function($location, $route, AnalyticsService, AuthenticationService, UISessionService) {
+          AnalyticsService.visitEntry('accept');
+          var acceptCode = $route.current.params.hex_code;
+          var email = $route.current.params.email;
+          $location.url($location.path());
+          if (acceptCode && email) {
+            // accept share directly
+            AuthenticationService.postAcceptShare(acceptCode, email).then(
+              function(){
+                $location.path('/');
+                UISessionService.pushNotification({
+                  type: 'fyi',
+                  text: 'list share accepted'
+                });
+              }, function(){
+                $location.path('/');
+                UISessionService.pushNotification({
+                  type: 'fyi',
+                  text: 'list share accept failed'
+                });
+              }
+            );
+          }
+        }]
+      }
+    });
+
     $routeProvider.when('/404', {
       templateUrl: urlBase + 'app/main/pageNotFound.html',
       controller: 'PageNotFoundController'

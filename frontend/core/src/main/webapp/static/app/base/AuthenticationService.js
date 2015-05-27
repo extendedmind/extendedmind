@@ -66,6 +66,14 @@
     /\/verify/.source +
     /$/.source
     ),
+  postAcceptShareRegexp = new RegExp(
+    /^/.source +
+    BackendClientService.apiPrefixRegex.source +
+    /agreement\//.source +
+    BackendClientService.hexCodeRegex.source +
+    /\/accept/.source +
+    /$/.source
+    ),
   putChangePasswordRegexp = new RegExp(
     /^/.source +
     BackendClientService.apiPrefixRegex.source +
@@ -249,6 +257,12 @@
         postVerifyEmailRegexp,
         {email: sanitizeEmail(email)}, true);
     },
+    postAcceptShare: function(acceptCode, email) {
+      return BackendClientService.postOnline(
+        '/api/agreement/' + acceptCode + '/accept',
+        postAcceptShareRegexp,
+        {email: sanitizeEmail(email)}, true);
+    },
     putChangePassword: function(email, currentPassword, newPassword) {
       return BackendClientService.putOnlineWithUsernamePassword(
         '/api/password',
@@ -266,7 +280,8 @@
     getPasswordResetExpiresRegex: getPasswordResetExpiresRegexp,
     postResetPasswordRegex: postResetPasswordRegexp,
     putChangePasswordRegex: putChangePasswordRegexp,
-    postVerifyEmailRegex: postVerifyEmailRegexp
+    postVerifyEmailRegex: postVerifyEmailRegexp,
+    postAcceptShareRegex: postAcceptShareRegexp
   };
 }
 AuthenticationService['$inject'] = ['$q', '$rootScope', 'BackendClientService',

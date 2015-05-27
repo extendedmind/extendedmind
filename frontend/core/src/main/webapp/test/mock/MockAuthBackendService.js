@@ -64,6 +64,13 @@ function MockAuthBackendService($httpBackend, AuthenticationService, UUIDService
     });
   }
 
+  function mockPostAcceptShare() {
+    $httpBackend.whenPOST(AuthenticationService.postAcceptShareRegex).respond(function(method, url, data, headers) {
+      var acceptShareResponse = getJSONFixture('acceptAgreementResponse.json');
+      return [200, acceptShareResponse];
+    });
+  }
+
   function mockPostSignUp() {
     $httpBackend.whenPOST(AuthenticationService.postSignUpRegex).respond(function(method, url, data, headers) {
       var signUpResponse = getJSONFixture('signUpResponse.json');
@@ -88,6 +95,7 @@ function MockAuthBackendService($httpBackend, AuthenticationService, UUIDService
       mockGetPasswordResetExpires(expectResponse);
       mockPostResetPassword(expectResponse);
       mockPostVerifyEmail();
+      mockPostAcceptShare();
       mockPostSignUp();
       mockPutChangePassword(expectResponse);
     }
