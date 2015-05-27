@@ -477,15 +477,20 @@
     }
   };
 
-  var hasSubEditorEdited;
-  $scope.registerHasSubEditorEditedCallback = function(callback) {
-    hasSubEditorEdited = callback;
+  var hasSubEditorEditedCallbackData;
+  $scope.registerHasSubEditorEditedCallback = function(callback, parameters) {
+    hasSubEditorEditedCallbackData = {
+      fn: callback,
+      parameters: parameters
+    };
   };
   $scope.unregisterHasSubEditorEditedCallback = function() {
-    hasSubEditorEdited = undefined;
+    hasSubEditorEditedCallbackData = undefined;
   };
   $scope.hasSubEditorEdited = function() {
-    if (angular.isFunction(hasSubEditorEdited)) return hasSubEditorEdited();
+    if (hasSubEditorEditedCallbackData && typeof hasSubEditorEditedCallbackData.fn === 'function') {
+      return hasSubEditorEditedCallbackData.fn.apply(undefined, hasSubEditorEditedCallbackData.parameters);
+    }
   };
 
   var isSubEditorOpenCondition;
