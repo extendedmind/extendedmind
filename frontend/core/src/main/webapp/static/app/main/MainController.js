@@ -675,8 +675,6 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
   // DATA ARRAYS
 
   $scope.items = ItemsService.getItems(UISessionService.getActiveUUID());
-  $scope.notes = NotesService.getNotes(UISessionService.getActiveUUID());
-  $scope.archivedNotes = NotesService.getArchivedNotes(UISessionService.getActiveUUID());
   $scope.lists = ListsService.getLists(UISessionService.getActiveUUID());
   $scope.archivedLists = ListsService.getArchivedLists(UISessionService.getActiveUUID());
 
@@ -734,18 +732,6 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
       return true;
     }
   };
-
-  function combineNotesArrays() {
-    if ($scope.notes.length && $scope.archivedNotes.length) {
-      $scope.allNotes = $scope.notes.concat($scope.archivedNotes);
-    } else if ($scope.notes.length && !$scope.archivedNotes.length) {
-      $scope.allNotes = $scope.notes;
-    } else if ($scope.archivedNotes.length && !$scope.notes.length) {
-      $scope.allNotes = $scope.archivedNotes;
-    } else {
-      $scope.allNotes = [];
-    }
-  }
 
   /*
   * tasks: {
@@ -811,13 +797,6 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
                                    arrayInfo.item,
                                    arrayInfo.ownerUUID);
     }
-  });
-
-  $scope.$watch('notes.length', function(/*newValue, oldValue*/) {
-    combineNotesArrays();
-  });
-  $scope.$watch('archivedNotes.length', function(/*newValue, oldValue*/) {
-    combineNotesArrays();
   });
 
   // ACTIVATE / DEACTIVATE

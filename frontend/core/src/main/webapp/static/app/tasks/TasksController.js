@@ -287,7 +287,7 @@
     switch (arrayType) {
 
       case 'all':
-      if ($scope.getActiveFeature() === 'tasks') {
+      if ($scope.getActiveFeature() === 'tasks' || (info && info.force)) {
         if (!cachedTasksArrays[ownerUUID]['activeAndArchived'])
           updateActiveAndArchivedTasks(cachedTasksArrays[ownerUUID], ownerUUID);
         if (!cachedTasksArrays[ownerUUID]['all'])

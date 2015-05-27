@@ -214,18 +214,13 @@
     if (itemType === 'item'){
       return $scope.items.length;
     }else if (itemType === 'task'){
-      var tasks = TasksService.getTasks(UISessionService.getActiveUUID());
-      if (tasks)
-        return tasks.length;
+      return $scope.getTasksArray('all', {force:true}).length;
     }else if (itemType === 'note'){
-      return $scope.allNotes.length;
+      return $scope.getNotesArray('all').length;
     }else if (itemType === 'list'){
-      var activeUUID = UISessionService.getActiveUUID();
-      var activeLists = ListsService.getLists(activeUUID);
-      var archivedLists = ListsService.getArchivedLists(activeUUID);
-      return activeLists.length + archivedLists.length;
+      return $scope.getListsArray('all').length;
     }else if (itemType === 'tag'){
-      return $scope.tags.length;
+      return $scope.getTagsArray('all').length;
     }else if (itemType === 'deleted'){
       return getDeletedItemsLength();
     }
