@@ -14,7 +14,85 @@
  */
  'use strict';
 
- function TagsController($rootScope, $scope, $timeout, AnalyticsService, TagsService, UISessionService) {
+ function TagsController($rootScope, $scope, $timeout, AnalyticsService, ArrayService, TagsService,
+                         UISessionService) {
+
+
+  if (angular.isFunction($scope.registerArrayChangeCallback)) {
+    $scope.registerArrayChangeCallback('tag', ['active'], invalidateTagsArrays,
+                                       'TagsController');
+  }
+
+  var cachedTagsArrays = {};
+
+  /*
+  * Invalidate cached active tag arrays.
+  */
+  function invalidateTagsArrays(tags, modifiedTag, tagsType, ownerUUID) {
+    if (cachedTagsArrays[ownerUUID]) {
+      updateAllTags(cachedTagsArrays[ownerUUID], ownerUUID);
+      cachedTagsArrays[ownerUUID]['contexts'] = undefined;
+      cachedTagsArrays[ownerUUID]['keywords'] = undefined;
+    }
+  }
+
+  function updateAllTags(cachedTags, ownerUUID) {
+    var activeTags = TagsService.getTags(ownerUUID);
+    cachedTags['all'] = [];
+    if (activeTags && activeTags.length){
+      for (var i = 0; i < activeTags.length; i++) {
+        // Contexts and keywords are sorted everywhere in alphabetical order
+        ArrayService.insertItemToArray(activeTags[i], cachedTags['all'], 'title');
+      }
+    }
+  }
+
+  function updateContexts(cachedTags, ownerUUID) {
+    if (!cachedTags['all']) updateAllTags(cachedTags, ownerUUID);
+    cachedTags['contexts'] = [];
+    for (var i = 0; i < cachedTags['all'].length; i++) {
+      if (cachedTags['all'][i].trans.tagType === 'context'){
+        cachedTags['contexts'].push(cachedTags['all'][i]);
+      }
+    }
+    return cachedTags['contexts'];
+  }
+
+  function updateKeywords(cachedTags, ownerUUID) {
+    if (!cachedTags['all']) updateAllTags(cachedTags, ownerUUID);
+    cachedTags['keywords'] = [];
+    for (var i = 0; i < cachedTags['all'].length; i++) {
+      if (cachedTags['all'][i].trans.tagType === 'keyword'){
+        cachedTags['keywords'].push(cachedTags['all'][i]);
+      }
+    }
+    return cachedTags['keywords'];
+  }
+
+  $scope.getTagsArray = function(arrayType, info) {
+    var ownerUUID = info && info.owner ? info.owner : UISessionService.getActiveUUID();
+    if (!cachedTagsArrays[ownerUUID]) cachedTagsArrays[ownerUUID] = {};
+    switch (arrayType) {
+
+      case 'all':
+      if (!cachedTagsArrays[ownerUUID]['all']) {
+        updateAllTags(cachedTagsArrays[ownerUUID], ownerUUID);
+      }
+      return cachedTagsArrays[ownerUUID]['all'];
+
+      case 'keywords':
+      if (!cachedTagsArrays[ownerUUID]['keywords']) {
+        updateKeywords(cachedTagsArrays[ownerUUID], ownerUUID);
+      }
+      return cachedTagsArrays[ownerUUID]['keywords'];
+
+      case 'contexts':
+      if (!cachedTagsArrays[ownerUUID]['contexts']) {
+        updateContexts(cachedTagsArrays[ownerUUID], ownerUUID);
+      }
+      return cachedTagsArrays[ownerUUID]['contexts'];
+    }
+  };
 
   // KEYWORDS
 
@@ -87,8 +165,6 @@
   };
 }
 
-TagsController['$inject'] = [
-'$rootScope', '$scope', '$timeout',
-'AnalyticsService', 'TagsService', 'UISessionService'
-];
+TagsController['$inject'] = ['$rootScope', '$scope', '$timeout', 'AnalyticsService', 'ArrayService',
+'TagsService', 'UISessionService'];
 angular.module('em.base').controller('TagsController', TagsController);

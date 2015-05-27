@@ -230,7 +230,7 @@
   };
   // Store filtered items into object to maintain prototypical inheritance.
   $scope.filteredItems = {
-    unselectedKeywords: $scope.keywords,
+    unselectedKeywords: $scope.getTagsArray('keywords'),
     searchResults: undefined
   };
 

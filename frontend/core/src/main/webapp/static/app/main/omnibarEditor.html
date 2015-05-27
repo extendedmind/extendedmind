@@ -56,7 +56,7 @@
           swiper-click="convertToTask()">
           <span class="text-convert">task</span>
         </a>
-        <div ng-if="keywords && keywords.length" class="group-symmetrical--middle">
+        <div ng-if="getTagsArray('keywords').length" class="group-symmetrical--middle">
           <a href id="editorFooterExpandLink" class="link" swiper-click="toggleExpand()">
             <span id="editorFooterExpandText" class="icon-tag"></span>
           </a>
@@ -97,8 +97,8 @@
         <!-- SELECT MODE -->
         <div ng-if="!footerExpandedToMaxHeight" class="keywords-container row">
           <div class="keyword-wrapper"
-            ng-repeat="keyword in filteredItems.unselectedKeywords = (keywords | filter:keywordsFilter)
-            | filter:{trans:{title:keywordsSearch.text}} | orderBy:'trans.title' track by keyword.trans.uuid">
+            ng-repeat="keyword in filteredItems.unselectedKeywords = (getTagsArray('keywords') | filter:keywordsFilter)
+            | filter:{trans:{title:keywordsSearch.text}} track by keyword.trans.uuid">
             <a href class="keyword link" swiper-click="selectKeyword(keyword)">
               <span class="text-keyword" ng-bind="'#' + keyword.trans.title" clamp=1></span>
             </a>
@@ -108,7 +108,7 @@
         <!-- EDIT MODE -->
         <div ng-if="footerExpandedToMaxHeight" class="keywords-container row">
           <div class="keyword-wrapper"
-            ng-repeat="keyword in keywords | orderBy:'trans.title' track by keyword.trans.uuid">
+            ng-repeat="keyword in getTagsArray('keywords') track by keyword.trans.uuid">
             <a href class="keyword link" swiper-click="initializeEditor('tag', keyword, 'keywordEdit')">
               <span class="text-keyword" ng-bind="'#' + keyword.trans.title" clamp=1></span>
             </a>

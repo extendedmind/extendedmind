@@ -671,6 +671,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     e.preventDefault();
   }
 
+  // DEPRECATED: REMOVE THESE WHEN CACHE READY!
   // DATA ARRAYS
 
   $scope.items = ItemsService.getItems(UISessionService.getActiveUUID());
@@ -678,12 +679,6 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
   $scope.archivedNotes = NotesService.getArchivedNotes(UISessionService.getActiveUUID());
   $scope.lists = ListsService.getLists(UISessionService.getActiveUUID());
   $scope.archivedLists = ListsService.getArchivedLists(UISessionService.getActiveUUID());
-  $scope.tags = TagsService.getTags(UISessionService.getActiveUUID());
-
-  $scope.$watch('tags.length', function(/*newValue, oldValue*/) {
-    $scope.contexts = $filter('itemsFilter')($scope.tags, {name: 'byTagType', filterBy: 'context'});
-    $scope.keywords = $filter('itemsFilter')($scope.tags, {name: 'byTagType', filterBy: 'keyword'});
-  });
 
   function combineListsArrays() {
     if ($scope.archivedLists.length && $scope.lists.length) {

@@ -316,7 +316,7 @@
           <div ng-if="contextPickerOpen" class="swiper-no-swiping animate-fade-in"
             editable-field-container="auto" editable-field-container-scrollable="true"
             editable-field-container-clicked-elsewhere="closeContextPicker()" data-snap-ignore="true">
-            <div list-picker="contexts" list-picker-new-item="getNewContext()"
+            <div list-picker="getTagsArray('contexts', {owner: task.trans.owner})" list-picker-new-item="getNewContext()"
               list-picker-save="closeContextPickerAndSetContextToTask(task, list)"
               list-picker-clear="closeContextPickerAndClearContextFromTask(task, list)"
               list-picker-get-selected="task.trans.context" list-picker-type="context"

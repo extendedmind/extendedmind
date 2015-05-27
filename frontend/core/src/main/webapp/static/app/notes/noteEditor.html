@@ -202,9 +202,9 @@
                 </div>
               </div>
 
-              <div ng-if="keywords" class="keywords-container row">
+              <div ng-if="getTagsArray('keywords').length" class="keywords-container row">
                 <div class="keyword-wrapper"
-                  ng-repeat="keyword in keywords
+                  ng-repeat="keyword in getTagsArray('keywords')
                   | keywordsFilter:{name:'byOtherThanNoteKeywords', item: note}
                   | filter:newKeyword.trans.title
                   | orderBy:'trans.title' track by keyword.trans.uuid">

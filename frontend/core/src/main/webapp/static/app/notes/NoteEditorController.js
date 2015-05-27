@@ -267,7 +267,7 @@
       }
     }
 
-    var keywordToAdd = $scope.keywords.findFirstObjectByKeyValue('title', newKeyword.trans.title,
+    var keywordToAdd = $scope.getTagsArray('keywords', {owner: $scope.note.trans.owner}).findFirstObjectByKeyValue('title', newKeyword.trans.title,
                                                                  'trans') || newKeyword;
     // Add already existing keyword or newly created keyword.
     $scope.addKeywordToNote(note, keywordToAdd);
