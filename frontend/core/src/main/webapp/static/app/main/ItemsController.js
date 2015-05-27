@@ -14,7 +14,45 @@
  */
  'use strict';
 
- function ItemsController($rootScope, $scope, AnalyticsService, ItemsService, UISessionService) {
+ function ItemsController($rootScope, $scope, AnalyticsService, ArrayService, ItemsService, UISessionService) {
+
+  if (angular.isFunction($scope.registerArrayChangeCallback)) {
+    $scope.registerArrayChangeCallback('item', ['active'], invalidateItemsArrays,
+                                       'ItemsController');
+  }
+
+  var cachedItemsArrays = {};
+
+  /*
+  * Invalidate cached active notes arrays.
+  */
+  function invalidateItemsArrays(items, modifiedItem, itemsType, ownerUUID) {
+    if (cachedItemsArrays[ownerUUID]) {
+      updateAllItems(cachedItemsArrays[ownerUUID], ownerUUID);
+    }
+  }
+
+  function updateAllItems(cachedItems, ownerUUID) {
+    var activeItems = ItemsService.getItems(ownerUUID);
+    cachedItems['all'] = [];
+    if (activeItems && activeItems.length){
+      for (var i = 0; i < activeItems.length; i++) {
+        ArrayService.insertItemToArray(activeItems[i], cachedItems['all'], 'created', true);
+      }
+    }
+  }
+
+  $scope.getItemsArray = function(arrayType, info) {
+    var ownerUUID = info && info.owner ? info.owner : UISessionService.getActiveUUID();
+    if (!cachedItemsArrays[ownerUUID]) cachedItemsArrays[ownerUUID] = {};
+    switch (arrayType) {
+      case 'all':
+      if (!cachedItemsArrays[ownerUUID]['all']) {
+        updateAllItems(cachedItemsArrays[ownerUUID], ownerUUID);
+      }
+      return cachedItemsArrays[ownerUUID]['all'];
+    }
+  };
 
   // NAVIGATING
 
@@ -53,6 +91,6 @@
   };
 }
 
-ItemsController['$inject'] = ['$rootScope', '$scope', 'AnalyticsService', 'ItemsService', 'UISessionService'
-];
+ItemsController['$inject'] = ['$rootScope', '$scope', 'AnalyticsService', 'ArrayService', 'ItemsService',
+'UISessionService'];
 angular.module('em.main').controller('ItemsController', ItemsController);

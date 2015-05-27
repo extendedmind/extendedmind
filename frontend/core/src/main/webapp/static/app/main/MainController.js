@@ -21,9 +21,9 @@
 // the arrays because everything is needed anyway to get home and inbox to work,
 // which are part of every main slide collection.
 function MainController($element, $controller, $filter, $q, $rootScope, $scope, $timeout, $window,
-                        AnalyticsService, CalendarService, DrawerService, ItemsService,
-                        ListsService, NotesService, ReminderService, SwiperService,
-                        TagsService, TasksService, UISessionService, UserService, UserSessionService,
+                        AnalyticsService, CalendarService, DrawerService,
+                        ListsService, ReminderService, SwiperService,
+                        TasksService, UISessionService, UserService, UserSessionService,
                         packaging) {
 
 
@@ -674,7 +674,6 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
   // DEPRECATED: REMOVE THESE WHEN CACHE READY!
   // DATA ARRAYS
 
-  $scope.items = ItemsService.getItems(UISessionService.getActiveUUID());
   $scope.lists = ListsService.getLists(UISessionService.getActiveUUID());
   $scope.archivedLists = ListsService.getArchivedLists(UISessionService.getActiveUUID());
 
@@ -1030,7 +1029,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
 MainController['$inject'] = [
 '$element', '$controller', '$filter', '$q', '$rootScope', '$scope', '$timeout', '$window',
 'AnalyticsService', 'CalendarService', 'DrawerService',
-'ItemsService', 'ListsService', 'NotesService', 'ReminderService', 'SwiperService',
-'TagsService', 'TasksService', 'UISessionService', 'UserService', 'UserSessionService', 'packaging'
+'ListsService', 'ReminderService', 'SwiperService', 'TasksService', 'UISessionService', 'UserService',
+'UserSessionService', 'packaging'
 ];
 angular.module('em.main').controller('MainController', MainController);

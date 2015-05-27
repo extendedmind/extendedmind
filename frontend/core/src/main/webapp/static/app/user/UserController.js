@@ -212,7 +212,7 @@
 
   $scope.getCount = function(itemType) {
     if (itemType === 'item'){
-      return $scope.items.length;
+      return $scope.getItemsArray('all').length;
     }else if (itemType === 'task'){
       return $scope.getTasksArray('all', {force:true}).length;
     }else if (itemType === 'note'){

@@ -132,7 +132,7 @@
     // Join rest of the arrays to search items.
     unsortedSearchItems = unsortedSearchItems.concat($scope.getNotesArray('all'),
                                                      $scope.getListsArray('all'),
-                                                     $scope.items);
+                                                     $scope.getItemsArray('all'));
 
     // Sort search items.
     for (i = 0; i < unsortedSearchItems.length; i ++) {
