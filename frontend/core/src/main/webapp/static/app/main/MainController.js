@@ -671,67 +671,6 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     e.preventDefault();
   }
 
-  // DEPRECATED: REMOVE THESE WHEN CACHE READY!
-  // DATA ARRAYS
-
-  $scope.lists = ListsService.getLists(UISessionService.getActiveUUID());
-  $scope.archivedLists = ListsService.getArchivedLists(UISessionService.getActiveUUID());
-
-  function combineListsArrays() {
-    if ($scope.archivedLists.length && $scope.lists.length) {
-      $scope.allLists = $scope.lists.concat($scope.archivedLists);
-    } else if ($scope.lists.length && !$scope.archivedLists.length) {
-      $scope.allLists = $scope.lists;
-    } else if ($scope.archivedLists.length && !$scope.lists.length) {
-      $scope.allLists = $scope.archivedLists;
-    } else {
-      $scope.allLists = [];
-    }
-    $scope.refreshFavoriteLists();
-  }
-
-  $scope.$watch('lists.length', function(/*newValue, oldValue*/) {
-    combineListsArrays();
-  });
-  $scope.$watch('archivedLists.length', function(/*newValue, oldValue*/) {
-    combineListsArrays();
-  });
-
-  $scope.refreshFavoriteLists = function(){
-    // Can not refresh if allLists array has not been created yet
-    if ($scope.allLists && $rootScope.synced){
-      $scope.favoriteLists = [];
-      var favoriteListUuids = UserSessionService.getUIPreference('favoriteLists');
-      if (favoriteListUuids){
-        var len = favoriteListUuids.length;
-        var deleted = false;
-        while (len--) {
-          var favoriteList = $scope.allLists.findFirstObjectByKeyValue('uuid', favoriteListUuids[len],
-                                                                       'trans');
-          if (favoriteList){
-            $scope.favoriteLists.unshift(favoriteList);
-          }else{
-            // Favorite list is not among all lists, splice it from the array
-            favoriteListUuids.splice(len, 1);
-            deleted = true;
-          }
-        }
-        if (deleted){
-          UserSessionService.setUIPreference('favoriteLists', favoriteListUuids);
-          UserService.saveAccountPreferences();
-        }
-      }
-    }
-  };
-
-  $scope.isFavoriteList = function (list) {
-    if ($scope.favoriteLists && $scope.favoriteLists.length &&
-        $scope.favoriteLists.indexOf(list) !== -1)
-    {
-      return true;
-    }
-  };
-
   /*
   * tasks: {
   *   active: [cb1, cb2...],

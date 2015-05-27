@@ -62,7 +62,6 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
     UserSessionService.setItemsSynchronized(timestamp, ownerUUID);
     $rootScope.synced = timestamp;
     $rootScope.syncState = 'ready';
-    $scope.refreshFavoriteLists();
     itemsSynchronizeCounter++;
     if ($rootScope.signUpInProgress) $rootScope.signUpInProgress = false;
   }
@@ -170,9 +169,7 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
       if (itemsSynchronizeCounter === 0 ||
           itemsSynchronizeCounter%userSyncCounterTreshold === 0 ||
           sinceLastItemsSynchronized > userSyncTimeTreshold){
-        SynchronizeService.synchronizeUser().then(function(){
-          $scope.refreshFavoriteLists();
-        });
+        SynchronizeService.synchronizeUser();
       }
     }
   }

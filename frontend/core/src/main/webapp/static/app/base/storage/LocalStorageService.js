@@ -15,7 +15,7 @@
  'use strict';
 
  function LocalStorageService() {
-  var cachedExpires;
+  var cachedExpires, cachedUserUUID;
   return {
 
     // setters
@@ -57,8 +57,13 @@
       else localStorage.removeItem('userType');
     },
     setUserUUID: function(uuid) {
-      if (uuid !== undefined) localStorage.setItem('userUUID', uuid);
-      else localStorage.removeItem('userUUID');
+      if (uuid !== undefined){
+        localStorage.setItem('userUUID', uuid);
+        cachedUserUUID = uuid;
+      }else{
+        localStorage.removeItem('userUUID');
+        cachedUserUUID = null;
+      }
     },
     setCohort: function(cohort) {
       if (cohort !== undefined) localStorage.setItem('cohort', cohort);
@@ -143,7 +148,8 @@
       return localStorage.getItem('userType');
     },
     getUserUUID: function() {
-      return localStorage.getItem('userUUID');
+      if (cachedUserUUID === undefined) cachedUserUUID = localStorage.getItem('userUUID');
+      return cachedUserUUID;
     },
     getCohort: function() {
       return localStorage.getItem('cohort');
@@ -201,7 +207,7 @@
       localStorage.removeItem('synced');
 
       // Clear cached values
-      cachedExpires = undefined;
+      cachedExpires = cachedUserUUID = undefined;
     }
   };
 }

@@ -51,6 +51,8 @@
       cachedListsArrays[ownerUUID]['activeParentless'] = undefined;
       cachedListsArrays[ownerUUID]['archivedParentless'] = undefined;
     }
+    var favoriteListInfos = UserSessionService.getUIPreference('favoriteLists');
+    updateFavoritedLists(cachedListsArrays, favoriteListInfos);
   }
 
   function sortAndCacheSubsetOfAllLists(subset) {
@@ -168,6 +170,67 @@
     return cachedLists['archivedParentless'];
   }
 
+  function updateFavoritedLists(cachedLists, favoriteListInfos){
+    cachedLists['favorited'] = [];
+    if (favoriteListInfos && favoriteListInfos.length){
+      for (var i = favoriteListInfos.length-1; i >= 0; i--) {
+
+        var listInfo;
+        if (angular.isObject(favoriteListInfos[i])){
+          listInfo = ListsService.getListInfo(favoriteListInfos[i].uuid, favoriteListInfos[i].owner);
+        }else{
+          listInfo = ListsService.getListInfo(favoriteListInfos[i], UISessionService.getActiveUUID());
+        }
+
+        if (listInfo && listInfo.type === 'deleted'){
+          // When list is deleted, it needs to be unfavorited
+          $scope.unfavoriteList(listInfo.list);
+        }else if (listInfo && listInfo.list){
+          cachedLists['favorited'].push(listInfo.list);
+        }
+      }
+    }
+    return cachedLists['favorited'];
+  }
+
+
+  function validateFavoritedListsArray(cachedFavoritedLists, favoriteListInfos){
+    if (!favoriteListInfos || !favoriteListInfos.length){
+      if (cachedFavoritedLists && cachedFavoritedLists.length){
+        // No favorite lists in preferences, but favorite lists in array => not valid
+        return false;
+      }else{
+        // No favorite lists in preferences and no favorite lists in array => valid
+        return true;
+      }
+    }
+    if (favoriteListInfos.length !== cachedFavoritedLists.length){
+      // Different number of favorite lists => invalid
+      return false;
+    }
+
+    // There are equal number of lists there, see if UUID's match
+    for (var i=0; i<favoriteListInfos.length; i++){
+      var found = false;
+      for (var j=0; j<cachedFavoritedLists.length; j++){
+        if (getFavoriteListUUID(favoriteListInfos[i]) === cachedFavoritedLists[j].trans.uuid){
+          found = true;
+          break;
+        }
+      }
+      if (!found){
+        return false;
+      }
+    }
+    return true;
+  }
+
+  function getFavoriteListUUID(favoriteListInfo){
+    if (angular.isString(favoriteListInfo)) return favoriteListInfo;
+    else if (angular.isObject(favoriteListInfo)) return favoriteListInfo.uuid;
+  }
+
+
   $scope.getListsArray = function(arrayType/*, info*/) {
     var ownerUUID = UISessionService.getActiveUUID();
     if (!cachedListsArrays[ownerUUID]) cachedListsArrays[ownerUUID] = {};
@@ -208,6 +271,14 @@
         updateArchivedParentlessLists(cachedListsArrays[ownerUUID], ownerUUID);
       }
       return cachedListsArrays[ownerUUID]['archivedParentless'];
+
+      case 'favorited':
+      var favoriteListInfos = UserSessionService.getUIPreference('favoriteLists');
+      if (!cachedListsArrays['favorited'] ||
+          !validateFavoritedListsArray(cachedListsArrays['favorited'], favoriteListInfos)) {
+        updateFavoritedLists(cachedListsArrays, favoriteListInfos);
+      }
+      return cachedListsArrays['favorited'];
     }
   };
 
@@ -238,19 +309,18 @@
   };
   UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'ListsController');
 
-  function updateFavoriteLists(favoriteListUuids){
-    UserSessionService.setUIPreference('favoriteLists', favoriteListUuids);
+  function updateFavoriteListPreferences(favoriteListInfos){
+    UserSessionService.setUIPreference('favoriteLists', favoriteListInfos);
     UserService.saveAccountPreferences();
-    $scope.refreshFavoriteLists();
   }
 
   $scope.favoriteList = function(list) {
     if (list.trans.itemType === 'list') {
-      var favoriteListUuids = UserSessionService.getUIPreference('favoriteLists');
-      if (!favoriteListUuids) favoriteListUuids = [];
-      if (favoriteListUuids.indexOf(list.trans.uuid) === -1){
-        favoriteListUuids.push(list.trans.uuid);
-        updateFavoriteLists(favoriteListUuids);
+      var favoriteListInfos = UserSessionService.getUIPreference('favoriteLists');
+      if (!favoriteListInfos) favoriteListInfos = [];
+      if (favoriteListInfos.indexOf(list.trans.uuid) === -1){
+        favoriteListInfos.push(list.trans.uuid);
+        updateFavoriteListPreferences(favoriteListInfos);
       }
     } else {
       list.trans.favorited = true;
@@ -259,16 +329,24 @@
 
   $scope.unfavoriteList = function(list) {
     if (list.trans.itemType === 'list') {
-      var favoriteListUuids = UserSessionService.getUIPreference('favoriteLists');
-      if (favoriteListUuids){
-        var favoriteIndex = favoriteListUuids.indexOf(list.trans.uuid);
+      var favoriteListInfos = UserSessionService.getUIPreference('favoriteLists');
+      if (favoriteListInfos){
+        var favoriteIndex = favoriteListInfos.indexOf(list.trans.uuid);
         if (favoriteIndex !== -1){
-          favoriteListUuids.splice(favoriteIndex, 1);
-          updateFavoriteLists(favoriteListUuids);
+          favoriteListInfos.splice(favoriteIndex, 1);
+          updateFavoriteListPreferences(favoriteListInfos);
         }
       }
     } else {
       delete list.trans.favorited;
+    }
+  };
+
+  $scope.isFavoriteList = function (list) {
+    var favoritedLists = $scope.getListsArray('favorited');
+    if (favoritedLists && favoritedLists.length &&
+        favoritedLists.indexOf(list) !== -1){
+      return true;
     }
   };
 

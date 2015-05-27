@@ -45,8 +45,8 @@
         </a>
       </div>
     </div>
-    <div ng-if="favoriteLists.length > 0" class="group-mixed small"
-      ng-repeat="favoriteList in favoriteLists track by favoriteList.trans.uuid"
+    <div ng-if="getListsArray('favorited').length > 0" class="group-mixed small"
+      ng-repeat="favoriteList in getListsArray('favorited') track by favoriteList.trans.uuid"
       ng-hide="favoriteList === getActiveList()">
       <div class="group-mixed--middle">
         <a href class="link-menu-small" ng-click="gotoFeature('list', favoriteList)">
