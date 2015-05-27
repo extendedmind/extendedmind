@@ -63,6 +63,26 @@
         return scope.newList && scope.newList.trans.title && scope.newList.trans.title.length;
       }
 
+      if (angular.isObject(scope.lists)){
+        scope.useSubHeadings = true;
+        scope.upperSubHeading = scope.lists.upperHeading;
+        scope.lowerSubHeading = scope.lists.lowerHeading;
+      }
+
+      scope.getUpperLists = function(){
+        if (angular.isArray(scope.lists)){
+          return scope.lists;
+        }else if (angular.isObject(scope.lists)){
+          return scope.lists.upperArray;
+        }
+      };
+
+      scope.getLowerLists = function(){
+        if (angular.isObject(scope.lists)){
+          return scope.lists.lowerArray;
+        }
+      };
+
       /*
       * Filter selected list from lists.
       */

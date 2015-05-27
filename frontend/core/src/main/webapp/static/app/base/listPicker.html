@@ -16,12 +16,25 @@
       dynamic-placeholder="add {{type}}&#8230;" maxlength="128" autocapitalize="none" autocorrect="off">
     </textarea>
   </div>
-
+  <p ng-if="useSubHeadings && getLowerLists().length" class="row">
+    <span class="text-heading-primary" ng-bind="upperSubHeading"></span></br>
+  </p>
   <div class="row-vertically-centered"
-    ng-repeat="list in lists | filter:notSelectedListAndNotThisList track by list.trans.uuid || $index"
-    swiper-click="listSelected(list)">
-    <a href class="link" ng-class="list.trans.list && 'indent'">
-      <span class="text-link" clamp=2>{{::prefix}}{{list.trans.title}}</span>
+    ng-repeat="upperList in getUpperLists() | filter:notSelectedListAndNotThisList track by upperList.trans.uuid || $index"
+    swiper-click="listSelected(upperList)">
+    <a href class="link" ng-class="upperList.trans.list && 'indent'">
+      <span class="text-link" clamp=2>{{::prefix}}{{upperList.trans.title}}</span>
+    </a>
+  </div>
+
+  <p ng-if="useSubHeadings && getLowerLists().length" class="row">
+    <span class="text-heading-primary" ng-bind="lowerSubHeading"></span></br>
+  </p>
+  <div ng-if="useSubHeadings && getLowerLists().length" class="row-vertically-centered"
+    ng-repeat="lowerList in getLowerLists() | filter:notSelectedListAndNotThisList track by lowerList.trans.uuid || $index"
+    swiper-click="listSelected(lowerList)">
+    <a href class="link" ng-class="lowerList.trans.list && 'indent'">
+      <span class="text-link" clamp=2>{{::prefix}}{{lowerList.trans.title}}</span>
     </a>
   </div>
 
