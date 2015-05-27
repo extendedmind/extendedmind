@@ -320,21 +320,13 @@
     }
   };
 
-  function handleReadOnlyPropertyClick() {
-    UISessionService.pushNotification({
-      type: 'fyi',
-      text: 'can\'t edit shared list'
-    });
-  }
-
-  $scope.listTitlebarClick = function() {
-    if ($scope.foreignOwner) handleReadOnlyPropertyClick();
-  };
-  $scope.listUrlClick = function() {
-    if ($scope.foreignOwner) handleReadOnlyPropertyClick();
-  };
-  $scope.listDescriptionClick = function() {
-    if ($scope.foreignOwner) handleReadOnlyPropertyClick();
+  $scope.containerClick = function(disabledElement) {
+    if ($scope.foreignOwner && disabledElement) {
+      UISessionService.pushNotification({
+        type: 'fyi',
+        text: 'can\'t edit shared list'
+      });
+    }
   };
 }
 

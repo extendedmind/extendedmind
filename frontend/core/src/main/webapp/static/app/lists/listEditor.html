@@ -56,7 +56,8 @@
 
   <div class="swiper-container container-fluid--inner" swiper-container="listEditor" swiper-type="main"
     expected-slides="2" swiper-container-toggle-drawer-sliding-events="hasSwipeToClose('list')"
-    swiper-container-slide-changed="editorSwiperSlideChanged()">
+    swiper-container-slide-changed="editorSwiperSlideChanged()"
+    swiper-click="containerClick($event.target.disabled)">
     <div class="swiper-wrapper">
       <div class="swiper-slide" swiper-slide="listEditor/basic" slide-index="0">
         <div ng-style="{'padding-bottom': EDITOR_FOOTER_HEIGHT}" class="container-content"
@@ -68,8 +69,8 @@
               <div class="group-mixed--middle">
                 <textarea class="text-heading-primary large" ng-model="list.trans.title"
                   input-model-validator ng-trim="false" msd-elastic ng-keydown="listTitlebarTextKeyDown($event)"
-                  ng-click="listTitlebarClick()" ng-readonly="foreignOwner"
                   editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
+                  ng-disabled="foreignOwner"
                   placeholder="enter list title&#8230;" maxlength="128" autocapitalize="none" autocorrect="off">
                 </textarea>
               </div>
@@ -87,7 +88,7 @@
             id="ignoreSnap" class="text-metadata" ng-model="list.trans.link" input-model-validator
             ng-trim="false"
             ng-focus="setTextPropertyFocus('url', true)" ng-blur="setTextPropertyFocus('url', false)"
-            ng-click="listUrlClick()" ng-readonly="foreignOwner" msd-elastic
+            ng-disabled="foreignOwner" msd-elastic
             maxlength="2000" placeholder="enter url&#8230;" autocapitalize="none" autocorrect="off">
           </textarea>
 
@@ -127,7 +128,7 @@
             ng-model="list.trans.description" input-model-validator ng-trim="false"
             ng-focus="setTextPropertyFocus('description', true)"
             ng-blur="setTextPropertyFocus('description', false)"
-            ng-click="listDescriptionClick()" ng-readonly="foreignOwner"
+            ng-disabled="foreignOwner"
             msd-elastic placeholder="enter description&#8230;" maxlength="1024"
             autocapitalize="none" autocorrect="off">
           </textarea>
