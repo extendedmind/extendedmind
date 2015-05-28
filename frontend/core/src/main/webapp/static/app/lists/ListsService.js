@@ -40,10 +40,89 @@
   var listFieldInfos = ItemLikeService.getFieldInfos(
     [ 'due',
       archivedFieldInfo,
+      {
+        name: 'visibility',
+        skipTransport: true,
+        /*
+        * trans !== mod || persistent
+        */
+        isEdited: function(list, ownerUUID, compareValues) {
+          if (list.trans.visibility) {
+            if (!compareValues) {
+              if ((!list.mod || !list.mod.visibility) && !list.visibility) {
+                // Not in mod nor in database.
+                return true;
+              }
+
+              if (list.mod && list.mod.visibility) {
+                if (!angular.equals(list.trans.visibility, list.mod.visibility)) {
+                  // Trans does not match with mod.
+                  return true;
+                }
+              } else if (list.visibility) {
+                if (!angular.equals(list.trans.visibility, list.visibility)) {
+                  // Trans does not match with database.
+                  return true;
+                }
+              }
+            } else {
+              if (!compareValues.visibility) {
+                return true;
+              } else {
+                if (!angular.equals(list.trans.visibility, compareValues.visibility)) {
+                  // Trans does not match with compare values.
+                  return true;
+                }
+              }
+            }
+          } else {
+            if (!compareValues) {
+              if (list.mod && list.mod.visibility) {
+                // Not in trans but in mod.
+                return true;
+              } else if (list.visibility) {
+                // Not in trans but in database.
+                return true;
+              }
+            } else if (compareValues.visibility) {
+              return true;
+            }
+          }
+        },
+        copyTransToMod: function(list) {
+          if (list.trans.visibility) {
+            // http://stackoverflow.com/a/23481096
+            list.mod.visibility = JSON.parse(JSON.stringify(list.trans.visibility));
+          } else {
+            list.mod.visibility = undefined;
+          }
+        },
+        /*
+        * mod || persistent !== trans
+        *
+        * mod > persistent
+        */
+        resetTrans: function(list) {
+          if (list.mod && list.mod.hasOwnProperty('visibility')) {
+            if (!list.mod.visibility && list.trans.visibility !== undefined) {
+              delete list.trans.visibility;
+            } else if (list.mod.visibility !== undefined) {
+              // Copy mod to trans.
+              // http://stackoverflow.com/a/23481096
+              list.trans.visibility = JSON.parse(JSON.stringify(list.mod.visibility));
+            }
+          } else if (list.visibility) {
+            // Copy persistent to mod.
+            // http://stackoverflow.com/a/23481096
+            list.trans.visibility = JSON.parse(JSON.stringify(list.visibility));
+          } else if (list.trans.visibility) {
+            delete list.trans.visibility;
+          }
+        }
+      },
       // TODO
       // 'assignee',
       // 'assigner',
-      // 'visibility',
       ExtendedItemService.getRelationshipsFieldInfo()
     ]
   );
@@ -61,7 +140,7 @@
   var listSlashRegex = /\/list\//;
   var archiveRegex = /\/archive/;
   var unarchiveRegex = /\/unarchive/;
-  var agreementRegex = /\/agreement/;
+  var agreementRegex = /agreement/;
   var agreementSlashRegex = /\/agreement/;
   var acceptRegex = /\/accept/;
   var accessSlashRegex = /\/access\//;
@@ -69,10 +148,9 @@
   var integerRegex = /^\d+$/;
 
   // PUT /api/UUID/agreement
-  var putShareListRegexp = new RegExp(
+  var putNewAgreementRegexp = new RegExp(
     /^/.source +
     BackendClientService.apiPrefixRegex.source +
-    BackendClientService.uuidRegex.source +
     agreementRegex.source +
     /$/.source
   );
@@ -516,11 +594,26 @@
       }
       return deferred.promise;
     },
-    shareList: function(/*listShareData*/) {
-      // TODO
-      return $q(function(resolve/*, reject*/) {
-        resolve();
-        // reject();
+    shareList: function(list, newAgreement) {
+      return BackendClientService.putOnline('/api/agreement', putNewAgreementRegexp, newAgreement)
+      .then(function(response) {
+        var ownerUUID = list.trans.owner;
+        if (!list.mod) list.mod = {};
+        var propertiesToReset = {
+          visibility: (list.trans.visibility ? list.trans.visibility : {})
+        };
+        if (!propertiesToReset.visibility.agreements) propertiesToReset.visibility.agreements = [];
+
+        newAgreement.created = response.created;
+        newAgreement.modified = newAgreement.modified;
+        newAgreement.uuid = response.uuid;
+
+        propertiesToReset.visibility.agreements.push(newAgreement);
+
+        ItemLikeService.updateObjectProperties(list.mod, propertiesToReset);
+        updateList(list, ownerUUID, undefined, propertiesToReset);
+
+        return response;
       });
     },
     unshareList: function(/*uuid*/) {
@@ -583,7 +676,7 @@
                                  BackendClientService.uuidRegex.source +
                                  unarchiveRegex.source +
                                  '$'),
-    putShareListRegex: putShareListRegexp,
+    putNewAgreementRegex: putNewAgreementRegexp,
     postAcceptShareListRegex: postAcceptShareListRegexp,
     deleteShareListRegex: deleteShareListRegexp,
     postSharedListAccessRegex: postSharedListAccessRegexp,

@@ -22,32 +22,36 @@
   if (angular.isFunction($scope.registerFeatureEditorAboutToCloseCallback))
     $scope.registerFeatureEditorAboutToCloseCallback(listEditorAboutToClose, 'ListEditorController');
 
-  if ($scope.list.visibility && $scope.list.visibility.agreements &&
-      $scope.list.visibility.agreements.length > 0)
+  if ($scope.list.trans.visibility && $scope.list.trans.visibility.agreements &&
+      $scope.list.trans.visibility.agreements.length > 0)
   {
     var i;
     if ($scope.foreignOwner) {
       $scope.sharedByList = {};
-      for (i = 0; i < $scope.list.visibility.agreements.length; i++) {
-        if ($scope.list.visibility.agreements[i].proposedBy) {
-          $scope.sharedByList.email = $scope.list.visibility.agreements[i].proposedBy.email;
-          $scope.sharedByList.accessText = $scope.list.visibility.agreements[i].proposedBy.access === 2 ?
-          'read/write' : 'read';
+      for (i = 0; i < $scope.list.trans.visibility.agreements.length; i++) {
+        if ($scope.list.trans.visibility.agreements[i].proposedBy) {
+          $scope.sharedByList.email = $scope.list.trans.visibility.agreements[i].proposedBy.email;
+          $scope.sharedByList.accessText =
+          $scope.list.trans.visibility.agreements[i].proposedBy.access === 2 ? 'read/write' : 'read';
           break;
         }
       }
     } else {
-      $scope.sharedToList = [];
-      for (i = 0; i < $scope.list.visibility.agreements.length; i++) {
-        $scope.sharedToList.push({
-          email: $scope.list.visibility.agreements[i].proposedTo.email,
-          access: $scope.list.visibility.agreements[i].access,
-          accessText: ($scope.list.visibility.agreements[i].access === 2 ? 'read/write' : 'read'),
-          accepted: $scope.list.visibility.agreements[i].accepted,
-          acceptStatus: ($scope.list.visibility.agreements[i].accepted ? 'accepted' : 'pending'),
-          uuid: $scope.list.visibility.agreements[i].uuid
-        });
-      }
+      refreshSharedToList($scope.list);
+    }
+  }
+
+  function refreshSharedToList(list) {
+    $scope.sharedToList = [];
+    for (i = 0; i < list.trans.visibility.agreements.length; i++) {
+      $scope.sharedToList.push({
+        email: list.trans.visibility.agreements[i].proposedTo.email,
+        access: list.trans.visibility.agreements[i].access,
+        accessText: (list.trans.visibility.agreements[i].access === 2 ? 'read/write' : 'read'),
+        accepted: list.trans.visibility.agreements[i].accepted,
+        acceptStatus: (list.trans.visibility.agreements[i].accepted ? 'accepted' : 'pending'),
+        uuid: list.trans.visibility.agreements[i].uuid
+      });
     }
   }
 
@@ -249,7 +253,8 @@
         initialData.access = $scope.shareEditor.data.access = 1; // read access
         initialData.accepted = $scope.shareEditor.data.accepted = undefined;
 
-        $scope.$watch('shareEditor.data.email', clearInvalidListShareEmailErrorOnChange);
+        $scope.shareEditor.emailWatcher = $scope.$watch('shareEditor.data.email',
+                                                        clearInvalidListShareEmailErrorOnChange);
       }
 
       $scope.listShareEditorOpen = true;
@@ -272,6 +277,7 @@
   function closeListShareEditor() {
     if (angular.isFunction($scope.unregisterSubEditorDoneCallback)) $scope.unregisterSubEditorDoneCallback();
     $scope.listShareEditorOpen = false;
+    if ($scope.shareEditor.emailWatcher) $scope.shareEditor.emailWatcher();
     delete $scope.shareEditor;
   }
 
@@ -307,7 +313,7 @@
               targetItem: {uuid: targetList.trans.uuid},
               proposedTo: {email: data.email}
             };
-            ListsService.shareList(listShareToSave).then(resolve, function() {
+            ListsService.shareList(targetList, listShareToSave).then(resolve, function() {
               reject('email');
             });
           }
@@ -317,12 +323,20 @@
       });
     }
 
-    var promise = doSaveListShare(data, initialData, existing, targetList);
-    promise.then(closeListShareEditor, function(reason) {
+    function listShareResolved(targetList) {
+      refreshSharedToList(targetList);
+      closeListShareEditor();
+    }
+    function listShareRejected(reason) {
       if (reason === 'email') { // FIXME: backend returns something different
         $scope.shareEditor.previouslyFailedEmail = true;
       }
-    });
+    }
+
+    var promise = doSaveListShare(data, initialData, existing, targetList);
+    promise.then(function() {
+      listShareResolved(targetList);
+    }, listShareRejected);
   }
 
   function unshareListAndClose(uuid) {

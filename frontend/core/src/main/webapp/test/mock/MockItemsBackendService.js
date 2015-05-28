@@ -51,9 +51,14 @@ function MockItemsBackendService($httpBackend, ItemsService, SynchronizeService,
 
       if (modifiedItems[i].mod.reminders) {
         persistentItem.reminders = JSON.parse(JSON.stringify(modifiedItems[i].mod.reminders));
-      }
-      else if (modifiedItems[i].trans.reminders) {
+      } else if (modifiedItems[i].trans.reminders) {
         persistentItem.reminders = JSON.parse(JSON.stringify(modifiedItems[i].trans.reminders));
+      }
+
+      if (modifiedItems[i].mod.visibility) {
+        persistentItem.visibility = JSON.parse(JSON.stringify(modifiedItems[i].mod.visibility));
+      } else if (modifiedItems[i].trans.visibility) {
+        persistentItem.visibility = JSON.parse(JSON.stringify(modifiedItems[i].trans.visibility));
       }
 
       if (modifiedItems[i].mod.content) persistentItem.content = modifiedItems[i].mod.content;

@@ -101,6 +101,15 @@
     });
   }
 
+  function mockPutNewAgreement(expectResponse) {
+    $httpBackend.whenPUT(ListsService.putNewAgreementRegex)
+    .respond(function(method, url, data, headers) {
+      var putNewAgreementResponse = getJSONFixture('putNewAgreementResponse.json');
+      putNewAgreementResponse.created = putNewAgreementResponse.modified = Date.now();
+      return expectResponse(method, url, data, headers, putNewAgreementResponse);
+    });
+  }
+
   return {
     mockListsBackend: function(expectResponse) {
       mockPutNewList(expectResponse);
@@ -109,6 +118,7 @@
       mockUndeleteList(expectResponse);
       mockArchiveList(expectResponse);
       mockUnarchiveList(expectResponse);
+      mockPutNewAgreement(expectResponse);
     }
   };
 }
