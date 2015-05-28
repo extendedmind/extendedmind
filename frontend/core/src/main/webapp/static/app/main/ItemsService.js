@@ -32,7 +32,17 @@
       };
     }
   }
-  UserSessionService.registerNofifyOwnerCallback(initializeArrays, 'ItemsService');
+  function notifyOwners(userUUID, collectives, sharedLists) {
+    var extraOwners = ItemLikeService.processOwners(userUUID, collectives, sharedLists,
+                                                    items, initializeArrays);
+    for (var i=0; i < extraOwners.length; i++){
+      // Need to destroy data from this owner
+      ItemLikeService.destroyPersistentItems(
+        items[extraOwners[i]].activeItems.concat(items[extraOwners[i]].deletedItems));
+      delete items[extraOwners[i]];
+    }
+  }
+  UserSessionService.registerNofifyOwnersCallback(notifyOwners, 'ItemsService');
 
   function updateItem(item, ownerUUID, oldUUID) {
     ItemLikeService.persistAndReset(item, ITEM_TYPE, ownerUUID, itemFieldInfos, oldUUID);

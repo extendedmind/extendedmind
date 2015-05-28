@@ -134,8 +134,18 @@
       };
     }
   }
-  UserSessionService.registerNofifyOwnerCallback(initializeArrays, 'ListsService');
-
+  function notifyOwners(userUUID, collectives, sharedLists) {
+    var extraOwners = ItemLikeService.processOwners(userUUID, collectives, sharedLists,
+                                                    lists, initializeArrays);
+    for (var i=0; i < extraOwners.length; i++){
+      // Need to destroy data from this owner
+      ItemLikeService.destroyPersistentItems(
+        lists[extraOwners[i]].activeLists.concat(
+            lists[extraOwners[i]].deletedLists).concat(lists[extraOwners[i]].archivedLists));
+      delete lists[extraOwners[i]];
+    }
+  }
+  UserSessionService.registerNofifyOwnersCallback(notifyOwners, 'ListsService');
 
   function getListInfo(value, ownerUUID, searchField){
     var field = searchField ? searchField : 'uuid';

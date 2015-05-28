@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 
- /* global angular */
  'use strict';
 
 /*
@@ -324,6 +323,19 @@ function HttpRequestQueueService(enableOffline) {
       if (beforeLast) {
         doChangeOwnerUUID(beforeLast, oldUUID, newUUID);
         storage.setItem('beforeLastRequest', JSON.stringify(beforeLast));
+      }
+    },
+    deleteQueueRequestsForOwner: function(ownerUUID, dataFragment){
+      if (queue && queue.length){
+        for (var i=queue.length-1; i>=0; i--){
+          if (queue[i].params && queue[i].params.owner === ownerUUID){
+            if (!dataFragment || (queue[i].content.data &&
+                JSON.stringify(queue[i].content.data).indexOf(dataFragment) !== -1)){
+              queue.splice(i, 1);
+            }
+          }
+        }
+        persistQueue();
       }
     },
     clearAll: function(){

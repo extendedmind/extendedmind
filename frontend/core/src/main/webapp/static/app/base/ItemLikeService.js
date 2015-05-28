@@ -250,12 +250,49 @@
     return createTransportItem(item, fieldInfos);
   }
 
-  function destroyModAndReset(item, itemType, ownerUUID, fieldInfos){
-    delete item.mod;
-    return resetTrans(item, itemType, ownerUUID, fieldInfos);
-  }
-
   return {
+    processOwners: function(userUUID, collectives, sharedLists, itemsMap, initializeArraysFn){
+      initializeArraysFn(userUUID);
+      if (collectives){
+        for (var collectiveUUID in collectives){
+          initializeArraysFn(collectiveUUID);
+        }
+      }
+      if (sharedLists){
+        for (var shareOwnerUUID in sharedLists){
+          initializeArraysFn(shareOwnerUUID);
+        }
+      }
+      // Return all owners that are in the itemsMap but are not included in the given owner list
+      var extraOwners = [];
+      if (itemsMap){
+        for (var ownerUUID in itemsMap){
+          if (itemsMap.hasOwnProperty(ownerUUID)){
+            if (ownerUUID !== userUUID){
+              // Not the user, check if not in collectives
+              if (collectives && collectives[ownerUUID] && collectives[ownerUUID][2] === false){
+                BackendClientService.notifyOwnerAccess(ownerUUID, collectives[ownerUUID][1]);
+              }else{
+                // Not in collectives, are they in shared lists?
+                if (sharedLists && sharedLists[ownerUUID]){
+                  // In shared lists, notify access using listUUID as a necessary fragment in the data
+                  // field of the request
+                  for (var listUUID in sharedLists[ownerUUID][1]){
+                    BackendClientService.notifyOwnerAccess(ownerUUID, sharedLists[ownerUUID][1][listUUID][1],
+                                                           listUUID);
+                  }
+                }else{
+                  // Not in shared lists either, push this owner to return array and notify no access
+                  extraOwners.push(ownerUUID);
+                  BackendClientService.notifyOwnerAccess(ownerUUID, undefined);
+                }
+              }
+            }
+          }
+        }
+      }
+      return extraOwners;
+    },
     isEdited: isEdited,
     getFieldInfos: function(additionalFieldInfos){
       var fieldInfos = getDefaultFieldInfos();
@@ -396,9 +433,6 @@
       return deferred.promise;
     },
     processDelete: function(item, itemType, ownerUUID, fieldInfos, data){
-      function getDeleteUrl(params){
-        return params.prefix + params.item.trans.uuid;
-      }
       var deferred = $q.defer();
       var params = {
         type: itemType, owner: ownerUUID, uuid: item.trans.uuid,
@@ -418,9 +452,6 @@
       return deferred.promise;
     },
     undelete: function(item, itemType, ownerUUID, fieldInfos, data){
-      function getUndeleteUrl(params){
-        return params.prefix + params.item.trans.uuid + '/undelete';
-      }
       var deferred = $q.defer();
       var params = {type: itemType, owner: ownerUUID, uuid: item.trans.uuid, lastReplaceable: true};
       var fakeTimestamp = BackendClientService.generateFakeTimestamp();
@@ -437,6 +468,16 @@
         deferred.resolve();
       });
       return deferred.promise;
+    },
+    destroyPersistentItems: function(items){
+      if (UserSessionService.isPersistentStorageEnabled()){
+        var i;
+        if (items && items.length){
+          for (i=0; i<items.length; i++){
+            PersistentStorageService.destroy(items[i].trans.uuid);
+          }
+        }
+      }
     },
     // Regexp helper functions
     getPutNewRegex: function(itemType){

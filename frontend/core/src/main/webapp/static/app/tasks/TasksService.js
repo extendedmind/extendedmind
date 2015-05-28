@@ -228,7 +228,18 @@
       };
     }
   }
-  UserSessionService.registerNofifyOwnerCallback(initializeArrays, 'TasksService');
+  function notifyOwners(userUUID, collectives, sharedLists) {
+    var extraOwners = ItemLikeService.processOwners(userUUID, collectives, sharedLists,
+                                                    tasks, initializeArrays);
+    for (var i=0; i < extraOwners.length; i++){
+      // Need to destroy data from this owner
+      ItemLikeService.destroyPersistentItems(
+        tasks[extraOwners[i]].activeTasks.concat(
+            tasks[extraOwners[i]].deletedTasks).concat(tasks[extraOwners[i]].archivedTasks));
+      delete tasks[extraOwners[i]];
+    }
+  }
+  UserSessionService.registerNofifyOwnersCallback(notifyOwners, 'TasksService');
 
   function getOtherArrays(ownerUUID) {
     return [{array: tasks[ownerUUID].archivedTasks, id: 'archived'}];

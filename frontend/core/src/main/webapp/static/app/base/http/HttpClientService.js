@@ -533,6 +533,12 @@
     HttpRequestQueueService.changeOwnerUUID(oldUUID, newUUID);
   };
 
+  methods.notifyOwnerAccess = function(ownerUUID, access, dataFragment){
+    if (access !== 0 && access !== 2){
+      HttpRequestQueueService.deleteQueueRequestsForOwner(ownerUUID, dataFragment);
+    }
+  };
+
   methods.clearAll = function(){
     HttpRequestQueueService.clearAll();
   };

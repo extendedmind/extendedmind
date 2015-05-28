@@ -16,7 +16,7 @@
  /*global angular, jQuery */
  'use strict';
 
- function TagsService($q, ArrayService, BackendClientService, ItemLikeService, UserSessionService) {
+ function TagsService($q, ArrayService, ItemLikeService, UserSessionService) {
   var TAG_TYPE = 'tag';
 
   var tagFieldInfos = ItemLikeService.getFieldInfos(
@@ -40,7 +40,18 @@
       };
     }
   }
-  UserSessionService.registerNofifyOwnerCallback(initializeArrays, 'TagsService');
+
+  function notifyOwners(userUUID, collectives, sharedLists) {
+    var extraOwners = ItemLikeService.processOwners(userUUID, collectives, sharedLists,
+                                                    tags, initializeArrays);
+    for (var i=0; i < extraOwners.length; i++){
+      // Need to destroy data from this owner
+      ItemLikeService.destroyPersistentItems(
+        tags[extraOwners[i]].activeTags.concat(tags[extraOwners[i]].deletedTags));
+      delete tags[extraOwners[i]];
+    }
+  }
+  UserSessionService.registerNofifyOwnersCallback(notifyOwners, 'TagsService');
 
   function updateTag(tag, ownerUUID, oldUUID) {
     ItemLikeService.persistAndReset(tag, TAG_TYPE, ownerUUID, tagFieldInfos, oldUUID);
@@ -316,6 +327,6 @@
   };
 }
 
-TagsService['$inject'] = ['$q', 'ArrayService', 'BackendClientService', 'ItemLikeService',
+TagsService['$inject'] = ['$q', 'ArrayService', 'ItemLikeService',
 'UserSessionService'];
 angular.module('em.base').factory('TagsService', TagsService);

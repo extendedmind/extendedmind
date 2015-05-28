@@ -24,7 +24,7 @@
   var itemsSynchronizeAttempted = {};
   var persistentStorageEnabled = enableOffline;
   var offlineEnabledBypass = false;
-  var notifyOwnerCallbacks = {};
+  var notifyOwnersCallbacks = {};
   var persistentDataLoadedCallbacks = {};
   var persistentDataLoaded = false;
 
@@ -92,19 +92,9 @@
     }
   }
 
-  function executeNotifyOwnerCallbacks(userUUID, collectives, sharedLists) {
-    for (var id in notifyOwnerCallbacks) {
-      notifyOwnerCallbacks[id](userUUID);
-      if (collectives){
-        for (var collectiveUUID in collectives){
-          notifyOwnerCallbacks[id](collectiveUUID, true);
-        }
-      }
-      if (sharedLists){
-        for (var shareUUID in sharedLists){
-          notifyOwnerCallbacks[id](shareUUID, true);
-        }
-      }
+  function executeNotifyOwnersCallbacks(userUUID, collectives, sharedLists) {
+    for (var id in notifyOwnersCallbacks) {
+      notifyOwnersCallbacks[id](userUUID, collectives, sharedLists);
     }
   }
 
@@ -196,7 +186,7 @@
       }
 
       // Notify owner UUID's
-      executeNotifyOwnerCallbacks(authenticateResponse.userUUID,
+      executeNotifyOwnersCallbacks(authenticateResponse.userUUID,
                                   authenticateResponse.collectives,
                                   authenticateResponse.sharedLists);
       return credentials;
@@ -303,7 +293,7 @@
       if (this.isPersistentStorageEnabled()){
         LocalStorageService.setUserUUID(fakeUserUUID);
       }
-      executeNotifyOwnerCallbacks(fakeUserUUID);
+      executeNotifyOwnersCallbacks(fakeUserUUID);
       return fakeUserUUID;
     },
     // Web storage getters
@@ -468,8 +458,8 @@
         persistentDataLoadedCallbacks[id] = callback;
       }
     },
-    registerNofifyOwnerCallback: function(callback, id){
-      notifyOwnerCallbacks[id] = callback;
+    registerNofifyOwnersCallback: function(callback, id){
+      notifyOwnersCallbacks[id] = callback;
 
       // In case the registration comes after UserSessionService has received owners,
       // notify caller immediately
@@ -477,12 +467,12 @@
       var collectives = this.getCollectives();
       var sharedLists = this.getSharedLists();
       if (userUUID){
-        executeNotifyOwnerCallbacks(userUUID, collectives, sharedLists);
+        executeNotifyOwnersCallbacks(userUUID, collectives, sharedLists);
       }
     },
     // NOTE: Here for easier testing!
-    executeNotifyOwnerCallbacks: function(userUUID, collectives, sharedLists){
-      executeNotifyOwnerCallbacks(userUUID, collectives, sharedLists);
+    executeNotifyOwnersCallbacks: function(userUUID, collectives, sharedLists){
+      executeNotifyOwnersCallbacks(userUUID, collectives, sharedLists);
     }
   };
 }

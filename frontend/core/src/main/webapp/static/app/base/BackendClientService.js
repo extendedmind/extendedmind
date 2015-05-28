@@ -279,6 +279,10 @@
     HttpClientService.notifyOwnerUUIDChange(oldUUID, newUUID);
   };
 
+  methods.notifyOwnerAccess = function(ownerUUID, access, dataFragment){
+    HttpClientService.notifyOwnerAccess(ownerUUID, access, dataFragment);
+  };
+
   methods.executeRequests = function(){
     return refreshCredentials().then(function() {
       HttpClientService.executeRequests();

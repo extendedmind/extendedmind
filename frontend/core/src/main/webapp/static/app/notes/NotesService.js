@@ -75,7 +75,18 @@
       };
     }
   }
-  UserSessionService.registerNofifyOwnerCallback(initializeArrays, 'NotesService');
+  function notifyOwners(userUUID, collectives, sharedLists) {
+    var extraOwners = ItemLikeService.processOwners(userUUID, collectives, sharedLists,
+                                                    notes, initializeArrays);
+    for (var i=0; i < extraOwners.length; i++){
+      // Need to destroy data from this owner
+      ItemLikeService.destroyPersistentItems(
+        notes[extraOwners[i]].activeNotes.concat(
+            notes[extraOwners[i]].deletedNotes).concat(notes[extraOwners[i]].archivedNotes));
+      delete notes[extraOwners[i]];
+    }
+  }
+  UserSessionService.registerNofifyOwnersCallback(notifyOwners, 'NotesService');
 
   function getOtherArrays(ownerUUID) {
     return [{array: notes[ownerUUID].archivedNotes, id: 'archived'}];
