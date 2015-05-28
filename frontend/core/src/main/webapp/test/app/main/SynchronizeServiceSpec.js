@@ -106,7 +106,7 @@ describe('SynchronizeService', function() {
     setPersistentDataLoaded: function(value) {
       this.persistentDataLoaded = value;
     },
-    registerNofifyOwnerCallback: function(callback, id){
+    registerNofifyOwnersCallback: function(callback, id){
       this.callbacks[id] = callback;
     }
   };

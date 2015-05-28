@@ -69,18 +69,19 @@
       return ItemLikeService.getNew(initialValues, ITEM_TYPE, ownerUUID, itemFieldInfos);
     },
     setItems: function(itemsResponse, ownerUUID, skipPersist, addToExisting) {
+      var itemsToSave;
       if (skipPersist){
-        ItemLikeService.resetTrans(itemsResponse, ITEM_TYPE, ownerUUID, itemFieldInfos);
+        itemsToSave = ItemLikeService.resetAndPruneOldDeleted(itemsResponse, ITEM_TYPE, ownerUUID, itemFieldInfos);
       }else{
-        ItemLikeService.persistAndReset(itemsResponse, ITEM_TYPE, ownerUUID, itemFieldInfos);
+        itemsToSave = ItemLikeService.persistAndReset(itemsResponse, ITEM_TYPE, ownerUUID, itemFieldInfos);
       }
 
       if (addToExisting){
-        return ArrayService.updateArrays(ownerUUID, ITEM_TYPE, itemsResponse,
+        return ArrayService.updateArrays(ownerUUID, ITEM_TYPE, itemsToSave,
                                     items[ownerUUID].activeItems,
                                     items[ownerUUID].deletedItems);
       }else{
-        return ArrayService.setArrays(ownerUUID, ITEM_TYPE, itemsResponse,
+        return ArrayService.setArrays(ownerUUID, ITEM_TYPE, itemsToSave,
                                     items[ownerUUID].activeItems,
                                     items[ownerUUID].deletedItems);
       }

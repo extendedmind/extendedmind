@@ -98,7 +98,7 @@ describe('ListsService', function() {
       BackendClientService = _BackendClientService_;
       HttpClientService = _HttpClientService_;
       UserSessionService = _UserSessionService_;
-      UserSessionService.executeNotifyOwnerCallbacks(testOwnerUUID);
+      UserSessionService.executeNotifyOwnersCallbacks(testOwnerUUID);
 
       ListsService.setLists(
         [{

@@ -71,7 +71,8 @@ function CalendarService(UISessionService, UserService, UserSessionService, pack
   }
 
   function isCalendarLoaded(){
-    return window.plugins && window.plugins.calendar && device && device.model;
+    return window.plugins && window.plugins.calendar &&
+           (typeof device !== 'undefined') && device && device.model;
   }
 
   return {

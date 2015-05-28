@@ -342,6 +342,29 @@
         return false;
       }
     },
+    resetAndPruneOldDeleted: function(itemsArray, itemType, ownerUUID, fieldInfos){
+      function destroyIfDeletedLimitReached(item){
+        if (item.trans.deleted){
+          // Item stays deleted for 30 days before it is destroyed
+          var DESTROY_TRESHOLD = 2592000000;
+          if (item.trans.deleted < (Date.now() - DESTROY_TRESHOLD)){
+            if (UserSessionService.isPersistentStorageEnabled()){
+              PersistentStorageService.destroy(item.trans.uuid);
+            }
+            return true;
+          }
+        }
+      }
+      if (itemsArray && itemsArray.length){
+        this.resetTrans(itemsArray, itemType, ownerUUID, fieldInfos);
+        for (var i=itemsArray.length-1; i>=0; i--){
+          if (destroyIfDeletedLimitReached(itemsArray[i])){
+            itemsArray.splice(i, 1);
+          }
+        }
+      }
+      return itemsArray;
+    },
     persistAndReset: function(data, itemType, ownerUUID, fieldInfos, oldUUID, propertiesToReset){
       if (angular.isArray(data) && !oldUUID){
         var i;

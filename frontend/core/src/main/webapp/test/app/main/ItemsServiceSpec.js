@@ -96,7 +96,7 @@ describe('ItemsService', function() {
       NotesService = _NotesService_;
       ItemLikeService = _ItemLikeService_;
       UserSessionService = _UserSessionService_;
-      UserSessionService.executeNotifyOwnerCallbacks(testOwnerUUID);
+      UserSessionService.executeNotifyOwnersCallbacks(testOwnerUUID);
 
       ItemsService.setItems(
         [{

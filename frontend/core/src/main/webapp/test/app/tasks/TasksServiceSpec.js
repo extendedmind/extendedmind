@@ -86,7 +86,7 @@
       HttpClientService = _HttpClientService_;
       ListsService = _ListsService_;
       UserSessionService = _UserSessionService_;
-      UserSessionService.executeNotifyOwnerCallbacks(testOwnerUUID);
+      UserSessionService.executeNotifyOwnersCallbacks(testOwnerUUID);
 
       TasksService.setTasks(
         [{

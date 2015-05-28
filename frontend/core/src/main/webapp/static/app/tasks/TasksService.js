@@ -411,18 +411,21 @@
     },
     setTasks: function(tasksResponse, ownerUUID, skipPersist, addToExisting) {
       var latestModified, modifiedTasksInfos;
+      var tasksToSave;
       if (skipPersist){
-        ItemLikeService.resetTrans(tasksResponse, TASK_TYPE, ownerUUID, taskFieldInfos);
+        tasksToSave = ItemLikeService.resetAndPruneOldDeleted(tasksResponse, TASK_TYPE,
+                                                              ownerUUID, taskFieldInfos);
       }else{
-        ItemLikeService.persistAndReset(tasksResponse, TASK_TYPE, ownerUUID, taskFieldInfos);
+        tasksToSave = ItemLikeService.persistAndReset(tasksResponse, TASK_TYPE,
+                                                      ownerUUID, taskFieldInfos);
       }
       if (addToExisting){
-        latestModified = ArrayService.updateArrays(ownerUUID, TASK_TYPE, tasksResponse,
+        latestModified = ArrayService.updateArrays(ownerUUID, TASK_TYPE, tasksToSave,
                                                tasks[ownerUUID].activeTasks,
                                                tasks[ownerUUID].deletedTasks,
                                                getOtherArrays(ownerUUID));
       }else{
-        latestModified = ArrayService.setArrays(ownerUUID, TASK_TYPE, tasksResponse,
+        latestModified = ArrayService.setArrays(ownerUUID, TASK_TYPE, tasksToSave,
                                             tasks[ownerUUID].activeTasks,
                                             tasks[ownerUUID].deletedTasks,
                                             getOtherArrays(ownerUUID));

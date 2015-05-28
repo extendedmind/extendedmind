@@ -90,7 +90,7 @@
       ListsService = _ListsService_;
       TagsService = _TagsService_;
       UserSessionService = _UserSessionService_;
-      UserSessionService.executeNotifyOwnerCallbacks(testOwnerUUID);
+      UserSessionService.executeNotifyOwnersCallbacks(testOwnerUUID);
 
       TagsService.setTags(
         [{

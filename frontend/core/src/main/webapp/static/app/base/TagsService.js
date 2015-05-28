@@ -72,17 +72,18 @@
       return ItemLikeService.getNew(initialValues, TAG_TYPE, ownerUUID, tagFieldInfos);
     },
     setTags: function(tagsResponse, ownerUUID, skipPersist, addToExisting) {
+      var tagsToSave;
       if (skipPersist){
-        ItemLikeService.resetTrans(tagsResponse, TAG_TYPE, ownerUUID, tagFieldInfos);
+        tagsToSave = ItemLikeService.resetAndPruneOldDeleted(tagsResponse, TAG_TYPE, ownerUUID, tagFieldInfos);
       }else{
-        ItemLikeService.persistAndReset(tagsResponse, TAG_TYPE, ownerUUID, tagFieldInfos);
+        tagsToSave = ItemLikeService.persistAndReset(tagsResponse, TAG_TYPE, ownerUUID, tagFieldInfos);
       }
       if (addToExisting){
-        return ArrayService.updateArrays(ownerUUID, TAG_TYPE, tagsResponse,
+        return ArrayService.updateArrays(ownerUUID, TAG_TYPE, tagsToSave,
                                     tags[ownerUUID].activeTags,
                                     tags[ownerUUID].deletedTags);
       }else{
-        return ArrayService.setArrays(ownerUUID, TAG_TYPE, tagsResponse,
+        return ArrayService.setArrays(ownerUUID, TAG_TYPE, tagsToSave,
                                     tags[ownerUUID].activeTags,
                                     tags[ownerUUID].deletedTags);
       }

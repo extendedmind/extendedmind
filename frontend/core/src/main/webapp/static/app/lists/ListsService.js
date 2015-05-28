@@ -202,25 +202,27 @@
     setLists: function(listsResponse, ownerUUID, skipPersist, addToExisting) {
       // To avoid problems with parent list not resetting to trans, we first store the response
       // to the arrays using minimal trans, then properly reset trans
-      ItemLikeService.resetTrans(listsResponse, LIST_TYPE, ownerUUID, listMinimalFieldInfos);
+
+      var listsToSave = ItemLikeService.resetAndPruneOldDeleted(listsResponse, LIST_TYPE,
+                                                            ownerUUID, listMinimalFieldInfos);
       var latestModified;
       if (addToExisting){
-        latestModified = ArrayService.updateArrays(ownerUUID, LIST_TYPE, listsResponse,
+        latestModified = ArrayService.updateArrays(ownerUUID, LIST_TYPE, listsToSave,
                                                        lists[ownerUUID].activeLists,
                                                        lists[ownerUUID].deletedLists,
                                                        getOtherArrays(ownerUUID));
 
       }else{
-        latestModified = ArrayService.setArrays(ownerUUID, LIST_TYPE, listsResponse,
+        latestModified = ArrayService.setArrays(ownerUUID, LIST_TYPE, listsToSave,
                                     lists[ownerUUID].activeLists,
                                     lists[ownerUUID].deletedLists,
                                     getOtherArrays(ownerUUID));
       }
 
       if (skipPersist){
-        ItemLikeService.resetTrans(listsResponse, LIST_TYPE, ownerUUID, listFieldInfos);
+        ItemLikeService.resetTrans(listsToSave, LIST_TYPE, ownerUUID, listFieldInfos);
       }else{
-        ItemLikeService.persistAndReset(listsResponse, LIST_TYPE, ownerUUID, listFieldInfos);
+        ItemLikeService.persistAndReset(listsToSave, LIST_TYPE, ownerUUID, listFieldInfos);
       }
       return latestModified;
     },
