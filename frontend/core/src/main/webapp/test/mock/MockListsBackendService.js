@@ -110,6 +110,15 @@
     });
   }
 
+  function mockPostChangeAgreementAccess(expectResponse) {
+    $httpBackend.whenPOST(ListsService.postChangeAgreementAccessRegex)
+    .respond(function(method, url, data, headers) {
+      var postChangeAgreementAccessResponse = getJSONFixture('changeAgreementAccessResponse.json');
+      postChangeAgreementAccessResponse.modified = Date.now();
+      return expectResponse(method, url, data, headers, postChangeAgreementAccessResponse);
+    });
+  }
+
   return {
     mockListsBackend: function(expectResponse) {
       mockPutNewList(expectResponse);
@@ -119,6 +128,7 @@
       mockArchiveList(expectResponse);
       mockUnarchiveList(expectResponse);
       mockPutNewAgreement(expectResponse);
+      mockPostChangeAgreementAccess(expectResponse);
     }
   };
 }

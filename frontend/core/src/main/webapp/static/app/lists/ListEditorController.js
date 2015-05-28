@@ -304,7 +304,8 @@
         if (isListShareEdited(initialData, data)) {
           if (existing) {
             // Existing
-            ListsService.updateExistingListShareAccess(data.uuid).then(resolve, reject);
+            ListsService.updateExistingListShareAccess(targetList, data.uuid, data.access).then(resolve,
+                                                                                                reject);
           } else {
             // New
             var listShareToSave = {
