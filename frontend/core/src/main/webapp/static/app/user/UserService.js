@@ -68,8 +68,8 @@
       var preferences = UserSessionService.getPreferences();
       if (preferences){
         var needToPersist = false;
-        if (preferences.onboarded && !angular.isObject(preferences.onboarded)){
-          // Old preferences value, migrate to new one
+        if (!preferences.onboarded || (preferences.onboarded && !angular.isObject(preferences.onboarded))){
+          // Old/missing preferences value, migrate to new one
           var value = UISessionService.getOnboardedValue();
           preferences.onboarded = {
             user:value,

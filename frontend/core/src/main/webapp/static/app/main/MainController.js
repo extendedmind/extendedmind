@@ -21,8 +21,7 @@
 // the arrays because everything is needed anyway to get home and inbox to work,
 // which are part of every main slide collection.
 function MainController($element, $controller, $filter, $q, $rootScope, $scope, $timeout, $window,
-                        AnalyticsService, CalendarService, DrawerService,
-                        ListsService, ReminderService, SwiperService,
+                        AnalyticsService, CalendarService, DrawerService, ReminderService, SwiperService,
                         TasksService, UISessionService, UserService, UserSessionService,
                         packaging) {
 
@@ -967,8 +966,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
 
 MainController['$inject'] = [
 '$element', '$controller', '$filter', '$q', '$rootScope', '$scope', '$timeout', '$window',
-'AnalyticsService', 'CalendarService', 'DrawerService',
-'ListsService', 'ReminderService', 'SwiperService', 'TasksService', 'UISessionService', 'UserService',
-'UserSessionService', 'packaging'
+'AnalyticsService', 'CalendarService', 'DrawerService', 'ReminderService', 'SwiperService',
+'TasksService', 'UISessionService', 'UserService', 'UserSessionService', 'packaging'
 ];
 angular.module('em.main').controller('MainController', MainController);
