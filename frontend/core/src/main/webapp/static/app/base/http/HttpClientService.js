@@ -354,14 +354,23 @@
     });
   };
 
-  methods.putOnline = function(url, data) {
-    return $http({method: 'put', url: url, data: data}).then(function(success) {
-      handleOnlineCallback(true);
-      return success;
-    }, function(error) {
-      handleOnlineCallback(error);
-      return $q.reject({type:'http', value: error});
-    });
+  methods.putOnline = function(urlPrefix, url, data) {
+    function doPutOnline(urlPrefix, url, data){
+      return $http({method: 'put', url: getRefreshedUrlString(urlPrefix, url), data: data})
+      .then(function(success) {
+        handleOnlineCallback(true);
+        return success;
+      }, function(error) {
+        handleOnlineCallback(error);
+        return $q.reject({type:'http', value: error});
+      });
+    }
+
+    if (HttpRequestQueueService.isEmpty()){
+      return doPutOnline(urlPrefix, url, data);
+    }else{
+      return executeRequestsAndPoll(doPutOnline, urlPrefix, url, data);
+    }
   };
 
   methods.putOnlineWithCredentials = function(url, data, overrideCredentials) {

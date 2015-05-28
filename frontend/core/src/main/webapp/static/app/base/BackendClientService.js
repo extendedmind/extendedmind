@@ -181,7 +181,7 @@
   methods.putOnline = function(url, regex, data) {
     return refreshCredentials(true).then(function() {
       if (regex.test(url)) {
-        return HttpClientService.putOnline(getUrlPrefix() + url, data).then(handleHttpSuccess,
+        return HttpClientService.putOnline(getUrlPrefix(), url, data).then(handleHttpSuccess,
                                                                             handleHttpError);
       } else {
         return emitRegexException(regex, 'put', url);
