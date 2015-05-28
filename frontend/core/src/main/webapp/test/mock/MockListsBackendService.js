@@ -119,6 +119,13 @@
     });
   }
 
+  function mockDeleteAgreement(expectResponse) {
+    $httpBackend.whenDELETE(ListsService.deleteAgreementRegex)
+    .respond(function(method, url, data, headers) {
+      return expectResponse(method, url, data, headers);
+    });
+  }
+
   return {
     mockListsBackend: function(expectResponse) {
       mockPutNewList(expectResponse);
@@ -129,6 +136,7 @@
       mockUnarchiveList(expectResponse);
       mockPutNewAgreement(expectResponse);
       mockPostChangeAgreementAccess(expectResponse);
+      mockDeleteAgreement(expectResponse);
     }
   };
 }

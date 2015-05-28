@@ -147,7 +147,7 @@
   var resendRegex = /\/resend/;
   var oneOrTwoRegex = /[1-2]/;
 
-  // PUT /api/UUID/agreement
+  // PUT /api/agreement
   var putNewAgreementRegexp = new RegExp(
     /^/.source +
     BackendClientService.apiPrefixRegex.source +
@@ -155,7 +155,7 @@
     /$/.source
   );
 
-  // POST /api/UUID/agreement/HEX/accept
+  // POST /api/agreement/HEX/accept
   var postAcceptShareListRegexp = new RegExp(
     /^/.source +
     BackendClientService.apiPrefixRegex.source +
@@ -165,8 +165,8 @@
     /$/.source
   );
 
-  // DELETE /api/UUID/agreement/UUID/
-  var deleteShareListRegexp = new RegExp(
+  // DELETE /api/agreement/UUID/
+  var deleteAgreementRegexp = new RegExp(
     /^/.source +
     BackendClientService.apiPrefixRegex.source +
     agreementSlashRegex.source +
@@ -174,7 +174,7 @@
     /$/.source
   );
 
-  // POST /api/UUID/agreement/UUID/access/#
+  // POST /api/agreement/UUID/access/#
   var postChangeAgreementAccessRegexp = new RegExp(
     /^/.source +
     BackendClientService.apiPrefixRegex.source +
@@ -185,7 +185,7 @@
     /$/.source
   );
 
-  // POST /api/UUID/agreement/UUID/resend
+  // POST /api/agreement/UUID/resend
   var postResendShareListRegexp = new RegExp(
     /^/.source +
     BackendClientService.apiPrefixRegex.source +
@@ -612,11 +612,22 @@
         return response;
       });
     },
-    unshareList: function(/*uuid*/) {
-      // TODO
-      return $q(function(resolve/*, reject*/) {
-        resolve();
-        // reject();
+    unshareList: function(list, agreementUUID) {
+      return BackendClientService.deleteOnline('/api/agreement/' + agreementUUID, deleteAgreementRegexp)
+      .then(function() {
+        var ownerUUID = list.trans.owner;
+        if (!list.mod) list.mod = {};
+        var propertiesToReset = {
+          visibility: list.trans.visibility
+        };
+        var agreementIndex = propertiesToReset.visibility.agreements.findFirstIndexByKeyValue('uuid',
+                                                                                              agreementUUID);
+        if (agreementIndex !== undefined) {
+          propertiesToReset.visibility.agreements.splice(agreementIndex, 1);
+        }
+        ItemLikeService.updateObjectProperties(list.mod, propertiesToReset);
+        updateList(list, ownerUUID, undefined, propertiesToReset);
+        return;
       });
     },
     updateExistingListShareAccess: function(list, agreementUUID, agreementAccess) {
@@ -689,7 +700,7 @@
                                  '$'),
     putNewAgreementRegex: putNewAgreementRegexp,
     postAcceptShareListRegex: postAcceptShareListRegexp,
-    deleteShareListRegex: deleteShareListRegexp,
+    deleteAgreementRegex: deleteAgreementRegexp,
     postChangeAgreementAccessRegex: postChangeAgreementAccessRegexp,
     postResendShareListRegex: postResendShareListRegexp,
 

@@ -22,36 +22,40 @@
   if (angular.isFunction($scope.registerFeatureEditorAboutToCloseCallback))
     $scope.registerFeatureEditorAboutToCloseCallback(listEditorAboutToClose, 'ListEditorController');
 
-  if ($scope.list.trans.visibility && $scope.list.trans.visibility.agreements &&
-      $scope.list.trans.visibility.agreements.length > 0)
-  {
-    var i;
-    if ($scope.foreignOwner) {
-      $scope.sharedByList = {};
-      for (i = 0; i < $scope.list.trans.visibility.agreements.length; i++) {
-        if ($scope.list.trans.visibility.agreements[i].proposedBy) {
-          $scope.sharedByList.email = $scope.list.trans.visibility.agreements[i].proposedBy.email;
+  if ($scope.foreignOwner) refreshSharedByList($scope.list);
+  else refreshSharedToList($scope.list);
+
+  function refreshSharedToList(list) {
+    $scope.sharedToList = [];
+    if (list.trans.visibility && list.trans.visibility.agreements &&
+        list.trans.visibility.agreements.length > 0)
+    {
+      for (var i = 0; i < list.trans.visibility.agreements.length; i++) {
+        $scope.sharedToList.push({
+          email: list.trans.visibility.agreements[i].proposedTo.email,
+          access: list.trans.visibility.agreements[i].access,
+          accessText: (list.trans.visibility.agreements[i].access === 2 ? 'read/write' : 'read'),
+          accepted: list.trans.visibility.agreements[i].accepted,
+          acceptStatus: (list.trans.visibility.agreements[i].accepted ? 'accepted' : 'pending'),
+          uuid: list.trans.visibility.agreements[i].uuid
+        });
+      }
+    }
+  }
+
+  function refreshSharedByList(list) {
+    $scope.sharedByList = {};
+    if (list.trans.visibility && list.trans.visibility.agreements &&
+        list.trans.visibility.agreements.length > 0)
+    {
+      for (var i = 0; i < list.trans.visibility.agreements.length; i++) {
+        if (list.trans.visibility.agreements[i].proposedBy) {
+          $scope.sharedByList.email = list.trans.visibility.agreements[i].proposedBy.email;
           $scope.sharedByList.accessText =
           $scope.list.trans.visibility.agreements[i].proposedBy.access === 2 ? 'read/write' : 'read';
           break;
         }
       }
-    } else {
-      refreshSharedToList($scope.list);
-    }
-  }
-
-  function refreshSharedToList(list) {
-    $scope.sharedToList = [];
-    for (i = 0; i < list.trans.visibility.agreements.length; i++) {
-      $scope.sharedToList.push({
-        email: list.trans.visibility.agreements[i].proposedTo.email,
-        access: list.trans.visibility.agreements[i].access,
-        accessText: (list.trans.visibility.agreements[i].access === 2 ? 'read/write' : 'read'),
-        accepted: list.trans.visibility.agreements[i].accepted,
-        acceptStatus: (list.trans.visibility.agreements[i].accepted ? 'accepted' : 'pending'),
-        uuid: list.trans.visibility.agreements[i].uuid
-      });
     }
   }
 
@@ -340,17 +344,18 @@
     }, listShareRejected);
   }
 
-  function unshareListAndClose(uuid) {
+  function unshareListAndClose(targetList, agreementUUID) {
 
-    function showListUnsharedToaster() {
+    function listUnshareResolved() {
+      refreshSharedToList(targetList);
+      closeListShareEditor();
       UISessionService.pushNotification({
         type: 'fyi',
         text: 'list unshared'
       });
     }
-    var unshareListPromise = ListsService.unshareList(uuid);
-    unshareListPromise.then(showListUnsharedToaster);
-    closeListShareEditor();
+    var unshareListPromise = ListsService.unshareList(targetList, agreementUUID);
+    unshareListPromise.then(listUnshareResolved);
   }
 
   function removeListShareAndClose(uuid) {
@@ -374,7 +379,7 @@
           $scope.shareEditor.data.email + '?',
           confirmText: 'unshare',
           confirmAction: function() {
-            unshareListAndClose($scope.shareEditor.data.uuid);
+            unshareListAndClose($scope.list, $scope.shareEditor.data.uuid);
           },
           allowCancel: true
         }
