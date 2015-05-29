@@ -596,13 +596,14 @@
       }else if (lists[ownerUUID].archivedLists.findFirstObjectByKeyValue('uuid', list.trans.uuid, 'trans')) {
         deferred.resolve('unmodified');
       } else {
+        var payload = list.trans.archiveParent ? {parent: list.trans.archiveParent.trans.uuid} : undefined;
         BackendClientService.postOnline({ value: '/api/' + ownerUUID + '/list/' +
                                                  list.trans.uuid + '/archive',
                                           refresh: getArchiveUrl,
                                           params: {
                                             prefix: '/api/' + ownerUUID + '/list/',
                                             list: list }},
-                                        archiveListRegexp)
+                                        archiveListRegexp, payload)
         .then(function(response) {
           if (!list.mod) list.mod = {};
           var propertiesToReset = {
@@ -613,6 +614,13 @@
           else if (list.relationships) propertiesToReset.relationships = list.relationships;
           else propertiesToReset.relationships = {};
           if (!propertiesToReset.relationships.tags) propertiesToReset.relationships.tags = [];
+
+          if (payload && payload.parent){
+            propertiesToReset.relationships.parent = payload.parent;
+          }else {
+            // Parent is removed on archive if it a new one isn't given as parameter
+            propertiesToReset.relationships.parent = undefined;
+          }
 
           // Add generated tag to the tag array
           TagsService.setGeneratedTag(response.history, ownerUUID);
@@ -649,19 +657,31 @@
       }else if (lists[ownerUUID].activeLists.findFirstObjectByKeyValue('uuid', list.trans.uuid, 'trans')) {
         deferred.resolve('unmodified');
       } else {
+        var payload = list.trans.activeParent ? {parent: list.trans.activeParent.trans.uuid} : undefined;
         BackendClientService.postOnline({ value: '/api/' + ownerUUID + '/list/' +
                                                  list.trans.uuid + '/unarchive',
                                           refresh: getUnarchiveUrl,
                                           params: {
                                             prefix: '/api/' + ownerUUID + '/list/',
                                             list: list }},
-                                        unarchiveListRegexp)
+                                        unarchiveListRegexp, payload)
         .then(function(response) {
           if (!list.mod) list.mod = {};
           var propertiesToReset = {
             archived: undefined,
             modified: response.result.modified
           };
+          if (list.mod.relationships) propertiesToReset.relationships = list.mod.relationships;
+          else if (list.relationships) propertiesToReset.relationships = list.relationships;
+          else propertiesToReset.relationships = {};
+
+          if (payload && payload.parent){
+            propertiesToReset.relationships.parent = payload.parent;
+          }else {
+            // Parent is removed on unarchive if it a new one isn't given as parameter
+            propertiesToReset.relationships.parent = undefined;
+          }
+
           ItemLikeService.updateObjectProperties(list.mod, propertiesToReset);
           updateList(list, ownerUUID, undefined, propertiesToReset);
 

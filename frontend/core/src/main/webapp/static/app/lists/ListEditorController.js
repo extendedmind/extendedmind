@@ -108,23 +108,40 @@
     else ListsService.resetList($scope.list);
   }
 
+  // ARCHIVE LIST
+
+  $scope.archiveListInEdit = function() {
+    var parentListPickerModalParams = {
+      messageHeading: 'select parent',
+      messageIngress: 'optionally add or choose a parent for the archived list',
+      confirmText: 'archive',
+      confirmTextDeferred: 'archiving\u2026',
+      confirmActionDeferredFn: saveAndArchiveList,
+      confirmActionDeferredParam: $scope.list,
+      confirmActionPromiseFn: true,
+      listPicker: {
+        getListsArray: getArhivedParentlessLists,
+        getNewList: $scope.getNewList,
+        save: saveNewArchiveParentToList,
+        clear: function(list, parent){
+          list.trans.archiveParent = undefined;
+        },
+        getSelected: function(list){
+          return list.trans.archiveParent;
+        },
+        itemInEdit: $scope.list
+      }
+    };
+    $scope.showModal(undefined, parentListPickerModalParams);
+  };
+
   function saveAndArchiveList(list){
     return $scope.saveAndArchiveList(list, processSaveNewParentOffline).then(
-      archiveOrUnarchiveListSuccess, function(error){
-        return $q.reject(error);
-      });
+      archiveOrUnarchiveListSuccess, archiveOrUnarchiveListError);
   }
 
   function getArhivedParentlessLists(){
     return $scope.getListsArray('archivedParentless');
-  }
-
-  function getNewParentListForArchiving(){
-    if ($scope.list.trans.archived){
-      return $scope.getNewList();
-    }else{
-      return $scope.getNewList();
-    }
   }
 
   function saveNewArchiveParentToList(list, listParent){
@@ -156,84 +173,76 @@
     return deferred.promise;
   }
 
+  // UNARCHIVING
+
+  $scope.unarchiveListInEdit = function() {
+    var parentListPickerModalParams = {
+      messageHeading: 'select parent',
+      messageIngress: 'optionally add or choose a parent for the active list',
+      confirmText: 'activate',
+      confirmTextDeferred: 'activating\u2026',
+      confirmActionDeferredFn: saveAndUnarchiveList,
+      confirmActionDeferredParam: $scope.list,
+      confirmActionPromiseFn: true,
+      listPicker: {
+        getListsArray: getActiveParentlessLists,
+        getNewList: $scope.getNewList,
+        save: saveNewActiveParentToList,
+        clear: function(list, parent){
+          list.trans.activeParent = undefined;
+        },
+        getSelected: function(list){
+          return list.trans.activeParent;
+        },
+        itemInEdit: $scope.list
+      }
+    };
+    $scope.showModal(undefined, parentListPickerModalParams);
+  };
+
+  function saveAndUnarchiveList(list){
+    return $scope.saveAndUnarchiveList(list, processSaveNewParentOffline).then(
+      archiveOrUnarchiveListSuccess, archiveOrUnarchiveListError);
+  }
+
+  function getActiveParentlessLists(){
+    return $scope.getListsArray('activeParentless');
+  }
+
+  function saveNewActiveParentToList(list, listParent){
+    var deferred = $q.defer();
+    if (listParent.trans.uuid){
+      // This is an existing active list, just set it to the trans activeParent
+      list.trans.activeParent = listParent;
+      deferred.resolve();
+    }else{
+      $scope.saveAndUnarchiveList(listParent, processSaveNewParentOffline).then(
+        function(success){
+          list.trans.activeParent = listParent;
+          deferred.resolve(success);
+        }, function(error){
+          deferred.reject(error);
+        });
+    }
+    return deferred.promise;
+  }
+
+  // ARCHIVE/UNARCHIVE HELPERS
+
   function processSaveNewParentOffline(error, list, deferred, retryFn){
     deferred.reject(error);
   }
-
-  $scope.archiveListInEdit = function() {
-    if ($scope.showModal){
-      var parentListPickerModalParams = {
-        messageHeading: 'select parent',
-        messageIngress: 'optionally add or choose a parent for the archived list',
-        confirmText: 'archive',
-        confirmTextDeferred: 'archiving\u2026',
-        confirmActionDeferredFn: saveAndArchiveList,
-        confirmActionDeferredParam: $scope.list,
-        confirmActionPromiseFn: true,
-        listPicker: {
-          getListsArray: getArhivedParentlessLists,
-          getNewList: $scope.getNewList,
-          save: saveNewArchiveParentToList,
-          clear: function(list, parent){
-            list.trans.archiveParent = undefined;
-          },
-          getSelected: function(list){
-            return list.trans.archiveParent;
-          },
-          itemInEdit: $scope.list
-        }
-      };
-      $scope.showModal(undefined, parentListPickerModalParams);
-    }
-  };
 
   function archiveOrUnarchiveListSuccess() {
     $scope.closeEditor();
     $scope.changeFeature('lists', $scope.list);
   }
 
-  function archiveListError(error) {
-    if (error.type === 'offline') {
-      var rejection = {
-        type: 'onlineRequired',
-        value: {
-          retry: function() {
-            var archiveListDeferred = $scope.archiveList($scope.list);
-            if (archiveListDeferred) {
-              return archiveListDeferred.then(archiveOrUnarchiveListSuccess);
-            }
-          },
-          allowCancel: true
-        }
-      };
-      $rootScope.$emit('emInteraction', rejection);
-    }
+  function archiveOrUnarchiveListError(error){
+    return $q.reject(error);
   }
 
-  $scope.unarchiveListInEdit = function() {
-    return $scope.saveAndUnarchiveList($scope.list).then(function(success){
-      $scope.closeEditor();
-      $scope.changeFeature('lists', $scope.list);
-    });
-  };
-
-  function unarchiveListError(error) {
-    if (error.type === 'offline') {
-      var rejection = {
-        type: 'onlineRequired',
-        value: {
-          retry: function() {
-            var unarchiveListDeferred = $scope.unarchiveList($scope.list);
-            if (unarchiveListDeferred) {
-              return unarchiveListDeferred.then(archiveOrUnarchiveListSuccess);
-            }
-          },
-          allowCancel: true
-        }
-      };
-      $rootScope.$emit('emInteraction', rejection);
-    }
-  }
+  // FAVORITING
 
   $scope.clickFavorite = function() {
     if (!$scope.isFavoriteList($scope.list)){

@@ -21,10 +21,10 @@
     <span class="text-error">can't connect to server. are you online?</span>
   </div>
 
-  <p ng-if="useSubHeadings && getLowerLists().length" class="row">
+  <p ng-if="useSubHeadings && getLowerLists().length && !listSelectionDone" class="row">
     <span class="text-heading-primary" ng-bind="upperSubHeading"></span></br>
   </p>
-  <div class="row-vertically-centered"
+  <div ng-if="!listSelectionDone" class="row-vertically-centered"
     ng-repeat="upperList in getUpperLists() | filter:notSelectedListAndNotThisList track by upperList.trans.uuid || $index"
     swiper-click="listSelected(upperList)">
     <a href class="link" ng-class="upperList.trans.list && 'indent'">
@@ -32,10 +32,10 @@
     </a>
   </div>
 
-  <p ng-if="useSubHeadings && getLowerLists().length" class="row">
+  <p ng-if="useSubHeadings && getLowerLists().length && !listSelectionDone" class="row">
     <span class="text-heading-primary" ng-bind="lowerSubHeading"></span></br>
   </p>
-  <div ng-if="useSubHeadings && getLowerLists().length" class="row-vertically-centered"
+  <div ng-if="useSubHeadings && getLowerLists().length && !listSelectionDone" class="row-vertically-centered"
     ng-repeat="lowerList in getLowerLists() | filter:notSelectedListAndNotThisList track by lowerList.trans.uuid || $index"
     swiper-click="listSelected(lowerList)">
     <a href class="link" ng-class="lowerList.trans.list && 'indent'">

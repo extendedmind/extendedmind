@@ -117,6 +117,7 @@
             function(success){
               scope.newList = undefined;
               scope.selectedList = scope.getSelectedList(scope.thisList);
+              scope.listSelectionDone = true;
             }, function(error){
               scope.saveError = error;
               return $q.reject(error);
@@ -128,6 +129,7 @@
         scope.closeAndClearList({list: list});
         scope.selectedList = scope.getSelectedList(scope.thisList);
         scope.newList = scope.getNewList();
+        scope.listSelectionDone = false;
       };
 
       scope.textareaKeyDown = function(event) {
