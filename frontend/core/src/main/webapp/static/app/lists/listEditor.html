@@ -197,7 +197,7 @@
                   type="email" ng-model="shareEditor.data.email" placeholder="enter email&#8230;"
                   maxlength="254" clear-email-validator ng-disabled="shareEditor.existing" />
               </div>
-              <div ng-show="!shareEditor.existing && shareEditor.data.email.length" class="group-mixed--right">
+              <div ng-if="!shareEditor.existing && shareEditor.data.email.length" class="group-mixed--right">
                 <button type="button" class="btn-clear" ng-click="clearSharedToEmail()"></button>
               </div>
             </div>
