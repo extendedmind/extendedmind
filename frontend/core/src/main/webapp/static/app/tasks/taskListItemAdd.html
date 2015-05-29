@@ -1,6 +1,6 @@
 <form role="form" class="group-mixed with-textarea swiper-no-swiping"
   ng-submit="callAndExit(saveTask, newItem)" data-snap-ignore="true" editable-field-container
-  editable-field-container-clicked-elsewhere="clickedElsewhere()"
+  editable-field-container-clicked-elsewhere="clickedElsewhere(containerDestroyed)"
   autocapitalize="none" autocorrect="off">
   <div class="group-mixed--left">
     <input type="checkbox" ng-model="newItem.trans.optimisticComplete" ng-model-options="{getterSetter: true}"

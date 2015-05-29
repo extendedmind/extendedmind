@@ -3,7 +3,7 @@
     <h2 class="group-heading justified row">
       <span class="text-heading" ng-class="smallDeviceWidth && 'long'">archived lists</span>
     </h2>
-    <div list-item-add="getNewList()" list-item-add-save="saveAndArchiveList(newItem)"
+    <div list-item-add="getNewList()" list-item-add-save="saveAndArchiveList(newItem)" list-item-add-once
       ng-include="urlBase + 'app/lists/listListItemAdd.html'"></div>
     <div class="animate-list-item-leave"
       ng-repeat="list in getVisibleArray(getFullArray, currentListLimitTo) track by list.trans.uuid"

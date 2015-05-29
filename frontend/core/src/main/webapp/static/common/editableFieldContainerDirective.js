@@ -67,16 +67,16 @@
         }
       };
 
-      scope.deactivateContainer = function(directCall) {
+      scope.deactivateContainer = function(containerDestroyed) {
         if (scope.containerActive){
-          if (attrs.editableFieldContainer !== 'auto' || directCall){
+          if (attrs.editableFieldContainer !== 'auto' || containerDestroyed){
             backdropController.deactivateContainer(element[0]);
             element[0].removeEventListener('click', clickedContainer, false);
             element.removeClass('active');
             scope.containerActive = false;
-            if (directCall && clickedElsewhereFn){
-              // Call click elsewhere also on direct deactivation
-              clickedElsewhereFn();
+            if (containerDestroyed && clickedElsewhereFn){
+              // Call click elsewhere also when container is destroyed
+              clickedElsewhereFn({containerDestroyed: true});
             }
             if (scope.unFocusCallback){
               scope.unFocusCallback();

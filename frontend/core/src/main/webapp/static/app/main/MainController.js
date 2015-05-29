@@ -268,18 +268,20 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
 
     }else if (featureInfo === $scope.features.focus){
       var focusPreferences = UserSessionService.getFeaturePreferences('focus');
-      var phase = $scope.getOnboardingPhase('focus', 'tasks');
-      if (phase && (phase === 1 || phase === 2)){
-        if (type === 'noAdd'){
-          decreaseOnboardingPhase('focus', focusPreferences, subfeature);
-        }else{
-          // Focus tasks is the current feature and it is onboarding: we update the onboarding status
-          var warpIntoPhase;
-          if (phase === 2 && !CalendarService.isCalendarEnabled()) {
-            warpIntoPhase = 5;
+      if (subfeature === 'tasks'){
+        var phase = $scope.getOnboardingPhase('focus', 'tasks');
+        if (phase && (phase === 1 || phase === 2)){
+          if (type === 'noAdd'){
+            decreaseOnboardingPhase('focus', focusPreferences, subfeature);
+          }else if (type === 'add' || type === 'activate'){
+            // Focus tasks is the current feature and it is onboarding: we update the onboarding status
+            var warpIntoPhase;
+            if (phase === 2 && !CalendarService.isCalendarEnabled()) {
+              warpIntoPhase = 5;
+            }
+            increaseOnboardingPhase('focus', focusPreferences, subfeature, warpIntoPhase);
+            return true;
           }
-          increaseOnboardingPhase('focus', focusPreferences, subfeature, warpIntoPhase);
-          return true;
         }
       }
     }else if (featureInfo === $scope.features.inbox){
@@ -290,12 +292,20 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
 
     }else if (featureInfo === $scope.features.lists){
       var listsPreferences = UserSessionService.getFeaturePreferences('lists');
-      if (getFeatureStatus(listsPreferences, subfeature).startsWith('onboarding')){
-        if (type === 'noAdd'){
-          decreaseOnboardingPhase('lists', listsPreferences, subfeature);
-        }else{
-          // Lists is the current feature and it is onboarding: we update the onboarding status
-          increaseOnboardingPhase('lists', listsPreferences, subfeature);
+      if (subfeature == 'active'){
+        if (getFeatureStatus(listsPreferences, subfeature).startsWith('onboarding')){
+          if (type === 'noAdd'){
+            decreaseOnboardingPhase('lists', listsPreferences, subfeature);
+          }else if (type === 'add' || type === 'activate'){
+            // Lists is the current feature and it is onboarding: we update the onboarding status
+            increaseOnboardingPhase('lists', listsPreferences, subfeature);
+            return true;
+          }
+        }
+      }else if (subfeature === 'archived'){
+        if (type === 'beginAdd'){
+          // When adding new archived lists, it is important it is done one at a time, to prevent
+          // problems with online causing list to appear too slow
           return true;
         }
       }

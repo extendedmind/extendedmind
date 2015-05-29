@@ -132,21 +132,23 @@
     }
   };
   function setArchiveFields(note, modified, archived, historyTag, ownerUUID, unarchive){
-    if (!unarchive){
-      note.archived = archived;
-    }else if (note.archived){
-      delete note.archived;
-    }
-    note.modified = modified;
+    if (!note.mod) note.mod = {};
+    var propertiesToReset = {
+      modified: modified,
+      archived: archived
+    };
 
     // Also set history tag on the note
     if (!unarchive){
-      if (!note.relationships) note.relationships = {};
-      if (!note.relationships.tags) note.relationships.tags = [];
-      var historyTagIndex = note.relationships.tags.indexOf(historyTag.uuid);
-      if (historyTagIndex === -1) note.relationships.tags.push(historyTag.uuid);
+      if (note.mod.relationships) propertiesToReset.relationships = note.mod.relatiohships;
+      else if (note.relationships) propertiesToReset.relationships = note.relationships;
+      else propertiesToReset.relationships = {};
+      if (!propertiesToReset.relationships.tags) propertiesToReset.relationships.tags = [];
+      var historyTagIndex = propertiesToReset.relationships.tags.indexOf(historyTag.uuid);
+      if (historyTagIndex === -1) propertiesToReset.relationships.tags.push(historyTag.uuid);
     }
-    updateNote(note, ownerUUID);
+    ItemLikeService.updateObjectProperties(note.mod, propertiesToReset);
+    updateNote(note, ownerUUID, undefined, propertiesToReset);
   }
   ListsService.registerItemArchiveCallback(itemArchiveCallback, 'NotesService');
 

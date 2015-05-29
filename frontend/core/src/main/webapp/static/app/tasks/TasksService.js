@@ -287,21 +287,23 @@
     }
   };
   function setArchiveFields(task, modified, archived, historyTag, ownerUUID, unarchive){
-    if (!unarchive){
-      task.archived = archived;
-    }else if (task.archived){
-      delete task.archived;
-    }
-    task.modified = modified;
+    if (!task.mod) task.mod = {};
+    var propertiesToReset = {
+      modified: modified,
+      archived: archived
+    };
 
     // Also set history tag on the task
     if (!unarchive){
-      if (!task.relationships) task.relationships = {};
-      if (!task.relationships.tags) task.relationships.tags = [];
-      var historyTagIndex = task.relationships.tags.indexOf(historyTag.uuid);
-      if (historyTagIndex === -1) task.relationships.tags.push(historyTag.uuid);
+      if (task.mod.relationships) propertiesToReset.relationships = task.mod.relatiohships;
+      else if (task.relationships) propertiesToReset.relationships = task.relationships;
+      else propertiesToReset.relationships = {};
+      if (!propertiesToReset.relationships.tags) propertiesToReset.relationships.tags = [];
+      var historyTagIndex = propertiesToReset.relationships.tags.indexOf(historyTag.uuid);
+      if (historyTagIndex === -1) propertiesToReset.relationships.tags.push(historyTag.uuid);
     }
-    updateTask(task, ownerUUID);
+    ItemLikeService.updateObjectProperties(task.mod, propertiesToReset);
+    updateTask(task, ownerUUID, undefined, propertiesToReset);
   }
   ListsService.registerItemArchiveCallback(itemArchiveCallback, 'TasksService');
 

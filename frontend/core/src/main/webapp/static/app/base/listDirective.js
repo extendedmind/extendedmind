@@ -105,19 +105,22 @@
 
       this.notifyListItemAdd = function(){
         if ($scope.notifyAddAction){
-          var returnValue = $scope.notifyAddAction('add', $scope.listAddState.featureInfo,
+          return $scope.notifyAddAction('add', $scope.listAddState.featureInfo,
                                                    $scope.listAddState.subfeature);
-          $scope.listAddState = {};
-          return returnValue;
         }
       };
 
       this.notifyListItemExitNoAdd = function(){
         if ($scope.notifyAddAction){
-          var returnValue = $scope.notifyAddAction('noAdd', $scope.listAddState.featureInfo,
+          return $scope.notifyAddAction('noAdd', $scope.listAddState.featureInfo,
                                                    $scope.listAddState.subfeature);
-          $scope.listAddState = {};
-          return returnValue;
+        }
+      };
+
+      this.notifyListItemBeginAdd = function(){
+        if ($scope.notifyAddAction){
+          return $scope.notifyAddAction('beginAdd', $scope.listAddState.featureInfo,
+                                                   $scope.listAddState.subfeature);
         }
       };
 

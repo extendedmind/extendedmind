@@ -27,10 +27,10 @@
       getThisList: '&listPickerGetThisList',
       closeAndSave: '&listPickerSave',
       closeAndClearList: '&listPickerClear',
-      registerSaveNewListCallback: '&listPickerRegisterSaveNewListCallback',
-      unregisterSaveNewListCallback: '&listPickerUnregisterSaveNewListCallback',
-      registerIsEditedCallback: '&listPickerRegisterIsEditedCallback',
-      unregisterIsEditedCallback: '&listPickerUnregisterIsEditedCallback'
+      registerSaveNewListCallback: '&?listPickerRegisterSaveNewListCallback',
+      unregisterSaveNewListCallback: '&?listPickerUnregisterSaveNewListCallback',
+      registerIsEditedCallback: '&?listPickerRegisterIsEditedCallback',
+      unregisterIsEditedCallback: '&?listPickerUnregisterIsEditedCallback'
     },
     link: function(scope) {
       scope.newList = scope.getNewList();
@@ -38,7 +38,7 @@
       scope.thisList = scope.getThisList();
       scope.type = scope.type || 'list';
 
-      scope.registerSaveNewListCallback({saveNewList: saveNewList});
+      if (scope.registerSaveNewListCallback) scope.registerSaveNewListCallback({saveNewList: saveNewList});
       function saveNewList() {
         if (scope.newList.trans.title && scope.newList.trans.title.length > 0) {
           if (scope.prefix) {
@@ -58,7 +58,7 @@
         }
       }
 
-      scope.registerIsEditedCallback({isEdited: isEdited});
+      if (scope.registerIsEditedCallback) scope.registerIsEditedCallback({isEdited: isEdited});
       function isEdited() {
         return scope.newList && scope.newList.trans.title && scope.newList.trans.title.length;
       }
@@ -172,8 +172,8 @@
       };
 
       scope.$on('$destroy', function() {
-        scope.unregisterSaveNewListCallback();
-        scope.unregisterIsEditedCallback();
+        if (scope.unregisterSaveNewListCallback) scope.unregisterSaveNewListCallback();
+        if (scope.unregisterIsEditedCallback) scope.unregisterIsEditedCallback();
       });
     }
   };

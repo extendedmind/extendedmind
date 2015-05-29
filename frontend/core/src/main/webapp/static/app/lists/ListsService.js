@@ -17,7 +17,7 @@
  'use strict';
 
  function ListsService($q, ArrayService, BackendClientService, ExtendedItemService, ItemLikeService,
-                       TagsService, UserSessionService) {
+                       TagsService, UserSessionService, UUIDService) {
   var LIST_TYPE = 'list';
 
   var archivedFieldInfo = {
@@ -195,6 +195,25 @@
     /$/.source
   );
 
+  var archiveListRegexp = new RegExp('^' +
+    BackendClientService.apiPrefixRegex.source +
+    BackendClientService.uuidRegex.source +
+    listSlashRegex.source +
+    BackendClientService.uuidRegex.source +
+    archiveRegex.source +
+    '$');
+
+  var unarchiveListRegexp = new RegExp('^' +
+    BackendClientService.apiPrefixRegex.source +
+    BackendClientService.uuidRegex.source +
+    listSlashRegex.source +
+    BackendClientService.uuidRegex.source +
+    unarchiveRegex.source +
+    '$')
+
+  var putNewListRegexp = ItemLikeService.getPutNewRegex(LIST_TYPE);
+  var putExistingListRegexp = ItemLikeService.getPutExistingRegex(LIST_TYPE);
+
   var itemArchiveCallbacks = {};
   var listDeletedCallbacks = {};
   var listUUIDChangedCallbacks = {};
@@ -266,6 +285,38 @@
                          lists[ownerUUID].activeLists,
                          lists[ownerUUID].deletedLists,
                          getOtherArrays(ownerUUID));
+  }
+
+  function saveListOnline(list){
+    var ownerUUID = list.trans.owner;
+    if (!list.trans.uuid)
+      list.trans.id = UUIDService.getShortIdFromFakeUUID(UUIDService.generateFakeUUID());
+    var transportList = ItemLikeService.prepareTransport(list, LIST_TYPE, ownerUUID, listFieldInfos);
+    var putUrl = list.trans.uuid ? '/api/' + ownerUUID + '/list/' + list.trans.uuid :
+                                   '/api/' + ownerUUID + '/list';
+    var putRegex = !list.trans.uuid ? putNewListRegexp : putExistingListRegexp;
+    return BackendClientService.putOnline(putUrl, putRegex, transportList).then(
+      function(response) {
+        var propertiesToUpdate = {modified: response.modified};
+        if (response.uuid){
+          propertiesToUpdate.uuid = response.uuid;
+        }
+        if (response.created){
+          propertiesToUpdate.created = response.created;
+        }
+        ItemLikeService.updateObjectProperties(list.mod, propertiesToUpdate);
+        if (propertiesToUpdate.uuid){
+          // Set new list
+          setList(list, ownerUUID);
+        }else{
+          // Update existing list
+          updateList(list, ownerUUID, undefined, propertiesToUpdate);
+        }
+        return response;
+      },function(error){
+        error.onSave = true;
+        return $q.reject(error);
+      });
   }
 
   return {
@@ -422,6 +473,42 @@
       }
       return deferred.promise;
     },
+    saveAndArchiveList: function(list){
+      var deferred = $q.defer();
+      var thisService = this;
+      saveListOnline(list).then(
+        function(){
+          // Then, archive list
+          thisService.archiveList(list).then(
+            function(success){
+              deferred.resolve(success);
+            },function(error){
+              deferred.reject(error);
+            }
+          );
+        }, function(error){
+          deferred.reject(error);
+        });
+      return deferred.promise;
+    },
+    saveAndUnarchiveList: function(list){
+      var deferred = $q.defer();
+      var thisService = this;
+      saveListOnline(list).then(
+        function(){
+          // Then, unarchive list
+          thisService.unarchiveList(list).then(
+            function(success){
+              deferred.resolve(success);
+            },function(error){
+              deferred.reject(error);
+            }
+          );
+        }, function(error){
+          deferred.reject(error);
+        });
+      return deferred.promise;
+    },
     isListEdited: function(list) {
       var ownerUUID = list.trans.owner;
       return ItemLikeService.isEdited(list, LIST_TYPE, ownerUUID, listFieldInfos);
@@ -515,21 +602,27 @@
                                           params: {
                                             prefix: '/api/' + ownerUUID + '/list/',
                                             list: list }},
-                                        this.archiveListRegex)
+                                        archiveListRegexp)
         .then(function(response) {
-          list.archived = response.archived;
-          ItemLikeService.updateObjectProperties(list, response.result);
+          if (!list.mod) list.mod = {};
+          var propertiesToReset = {
+            archived: response.archived,
+            modified: response.result.modified
+          };
+          if (list.mod.relationships) propertiesToReset.relationships = list.mod.relationships;
+          else if (list.relationships) propertiesToReset.relationships = list.relationships;
+          else propertiesToReset.relationships = {};
+          if (!propertiesToReset.relationships.tags) propertiesToReset.relationships.tags = [];
 
           // Add generated tag to the tag array
           TagsService.setGeneratedTag(response.history, ownerUUID);
 
           // Add generated tag to list tags array
-          if (!list.relationships) list.relationships = {};
-          if (!list.relationships.tags) list.relationships.tags = [];
-          list.relationships.tags.push(response.history.uuid);
+          propertiesToReset.relationships.tags.push(response.history.uuid);
 
-          // Update list
-          updateList(list, ownerUUID);
+          // Add properties to .mod and update list
+          ItemLikeService.updateObjectProperties(list.mod, propertiesToReset);
+          updateList(list, ownerUUID, undefined, propertiesToReset);
 
           // Call child callbacks
           if (response.children) {
@@ -537,7 +630,7 @@
               itemArchiveCallbacks[id](response.children, response.archived, response.history, ownerUUID);
             }
           }
-          deferred.resolve();
+          deferred.resolve(response);
         },function(error){
           deferred.reject(error);
         });
@@ -562,17 +655,22 @@
                                           params: {
                                             prefix: '/api/' + ownerUUID + '/list/',
                                             list: list }},
-                                        this.unarchiveListRegex)
+                                        unarchiveListRegexp)
         .then(function(response) {
-          if (list.archived) delete list.archived;
-          ItemLikeService.updateObjectProperties(list, response.result);
-          updateList(list, ownerUUID);
+          if (!list.mod) list.mod = {};
+          var propertiesToReset = {
+            archived: undefined,
+            modified: response.result.modified
+          };
+          ItemLikeService.updateObjectProperties(list.mod, propertiesToReset);
+          updateList(list, ownerUUID, undefined, propertiesToReset);
 
           // Update the history tag
           var historyTag = TagsService.getTagInfo(response.history.result.uuid, ownerUUID);
           if (historyTag){
-            historyTag.tag.deleted = response.history.deleted;
-            historyTag.tag.modified = response.history.result.modified;
+            if (!historyTag.tag.mod) historyTag.tag.mod = {};
+            historyTag.tag.mod.deleted = response.history.deleted;
+            historyTag.tag.mod.modified = response.history.result.modified;
             TagsService.updateTag(historyTag.tag, ownerUUID);
           }
 
@@ -583,7 +681,7 @@
                                        historyTag.tag ? historyTag.tag : undefined, ownerUUID, true);
             }
           }
-          deferred.resolve();
+          deferred.resolve(response);
         },function(error){
           deferred.reject(error);
         });
@@ -680,24 +778,12 @@
     },
     listFieldInfos: listFieldInfos,
     // Regular expressions for list requests
-    putNewListRegex: ItemLikeService.getPutNewRegex(LIST_TYPE),
-    putExistingListRegex: ItemLikeService.getPutExistingRegex(LIST_TYPE),
+    putNewListRegex: putNewListRegexp,
+    putExistingListRegex: putExistingListRegexp,
     deleteListRegex: ItemLikeService.getDeleteRegex(LIST_TYPE),
     undeleteListRegex: ItemLikeService.getUndeleteRegex(LIST_TYPE),
-    archiveListRegex: new RegExp('^' +
-                                 BackendClientService.apiPrefixRegex.source +
-                                 BackendClientService.uuidRegex.source +
-                                 listSlashRegex.source +
-                                 BackendClientService.uuidRegex.source +
-                                 archiveRegex.source +
-                                 '$'),
-    unarchiveListRegex: new RegExp('^' +
-                                 BackendClientService.apiPrefixRegex.source +
-                                 BackendClientService.uuidRegex.source +
-                                 listSlashRegex.source +
-                                 BackendClientService.uuidRegex.source +
-                                 unarchiveRegex.source +
-                                 '$'),
+    archiveListRegex: archiveListRegexp,
+    unarchiveListRegex: unarchiveListRegexp,
     putNewAgreementRegex: putNewAgreementRegexp,
     postAcceptShareListRegex: postAcceptShareListRegexp,
     deleteAgreementRegex: deleteAgreementRegexp,
@@ -763,5 +849,5 @@
 }
 
 ListsService['$inject'] = ['$q', 'ArrayService', 'BackendClientService', 'ExtendedItemService',
-                           'ItemLikeService', 'TagsService', 'UserSessionService'];
+                           'ItemLikeService', 'TagsService', 'UserSessionService', 'UUIDService'];
 angular.module('em.lists').factory('ListsService', ListsService);

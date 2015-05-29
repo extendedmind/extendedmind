@@ -108,11 +108,55 @@
     else ListsService.resetList($scope.list);
   }
 
-  $scope.archiveListInEdit = function() {
-    var deferredSaveAndArchive = $scope.saveAndArchiveList($scope.list);
-    if (deferredSaveAndArchive){
-      return deferredSaveAndArchive.then(archiveOrUnarchiveListSuccess, archiveListError);
+  function saveAndArchiveList(){
+    return $scope.saveAndArchiveList($scope.list).then(archiveOrUnarchiveListSuccess, archiveListError);
+  }
+
+  function getArhivedParentlessLists(){
+    return $scope.getListsArray('archivedParentless');
+  }
+
+  function getNewParentListForArchiving(){
+    if ($scope.list.trans.archived){
+      return $scope.getNewList();
+    }else{
+      return $scope.getNewList();
     }
+  }
+
+  $scope.archiveListInEdit = function() {
+    /*
+    TODO: Use this
+    if ($scope.showModal){
+      var parentListPickerModalParams = {
+        messageHeading: 'select parent',
+        messageIngress: 'optionally add or choose a parent for the archived list',
+        confirmText: 'archive',
+        confirmTextDeferred: 'archiving\u2026',
+        confirmActionDeferredFn: $scope.saveAndArchiveList,
+        confirmActionDeferredParam: $scope.list,
+        listPicker: {
+          getListsArray: getArhivedParentlessLists,
+          getNewList: $scope.getNewList,
+          save: $scope.saveList,
+          clear: function(list){
+            list.trans.list = undefined;
+          },
+          getSelected: function(list){
+            return list.trans.list;
+          },
+          itemInEdit: $scope.list
+        }
+      };
+      $scope.showModal(undefined, parentListPickerModalParams);
+
+    }
+*/
+
+    return $scope.saveAndArchiveList($scope.list).then(function(success){
+      $scope.closeEditor();
+      $scope.changeFeature('lists', $scope.list);
+    });
   };
 
   function archiveOrUnarchiveListSuccess() {
@@ -139,10 +183,10 @@
   }
 
   $scope.unarchiveListInEdit = function() {
-    var deferredSaveAndUnarchive = $scope.saveAndUnarchiveList($scope.list);
-    if (deferredSaveAndUnarchive){
-      return deferredSaveAndUnarchive.then(archiveOrUnarchiveListSuccess, unarchiveListError);
-    }
+    return $scope.saveAndUnarchiveList($scope.list).then(function(success){
+      $scope.closeEditor();
+      $scope.changeFeature('lists', $scope.list);
+    });
   };
 
   function unarchiveListError(error) {

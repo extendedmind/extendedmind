@@ -78,7 +78,7 @@ function ArrayService($rootScope) {
   function getFirstMatchingArrayInfoByProperty(item, otherArrays) {
     if (otherArrays) {
       for (var i=0, len=otherArrays.length; i<len; i++) {
-        if (item[otherArrays[i].id]) {
+        if (item.trans[otherArrays[i].id]) {
           return otherArrays[i];
         }
       }
@@ -238,7 +238,7 @@ function ArrayService($rootScope) {
                             {type: 'deleted', array: deletedArray}],
                             itemType, item);
           }
-        } else if (otherArrayInfo && item[otherArrayInfo.id]) {
+        } else if (otherArrayInfo && item.trans[otherArrayInfo.id]) {
           insertItemToArray(item, otherArrayInfo.array, otherArrayInfo.id, otherArrayInfo.reverse);
           if (!skipChangeEvent) {
             emitChangeEvent(ownerUUID,[{type: 'active', array: activeArray},
@@ -253,7 +253,7 @@ function ArrayService($rootScope) {
       } else if (deletedItemId !== undefined) {
         deletedArray.splice(deletedItemId, 1);
         if (!item.trans.deleted) {
-          if (otherArrayInfo && item[otherArrayInfo.id]) {
+          if (otherArrayInfo && item.trans[otherArrayInfo.id]) {
             insertItemToArray(item, otherArrayInfo.array, otherArrayInfo.id, otherArrayInfo.reverse);
             if (!skipChangeEvent) {
               emitChangeEvent(ownerUUID, [{type: otherArrayInfo.id, array: otherArrayInfo.array},
@@ -283,7 +283,7 @@ function ArrayService($rootScope) {
                             itemType, item);
           }
         } else if (!otherArrayInfo &&
-         (!otherArrayWithItemInfo || !item[otherArrayWithItemInfo.id])) {
+         (!otherArrayWithItemInfo || !item.trans[otherArrayWithItemInfo.id])) {
           // Item does not belong to a new other array, nor anymore to the other array
           // it used to belong to => it is active again.
           insertItemToArray(item, activeArray, 'created');
@@ -325,7 +325,7 @@ function ArrayService($rootScope) {
       return combinedAndSortedArray;
     },
     getModifiedItems: function(activeArray, deletedArray, otherArrays) {
-      var i, len, modifiedItems;
+      var i, len, j, jlen, modifiedItems;
       for (i=0, len=activeArray.length; i<len; i++) {
         if (activeArray[i].mod){
           if (!modifiedItems) modifiedItems = [];
@@ -340,7 +340,7 @@ function ArrayService($rootScope) {
       }
       if (otherArrays) {
         for (i=0, len=otherArrays.length; i<len; i++) {
-          for (var j=0, jlen=otherArrays[i].array; j<jlen; j++) {
+          for (j=0, jlen=otherArrays[i].array.length; j<jlen; j++) {
             if (otherArrays[i].array[j].mod) {
               if (!modifiedItems) modifiedItems = [];
               modifiedItems.push(otherArrays[i].array[j]);

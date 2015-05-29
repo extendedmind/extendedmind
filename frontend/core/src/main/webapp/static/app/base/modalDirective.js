@@ -34,6 +34,7 @@
         scope.closeText = params.closeText;
         scope.confirmText = params.confirmText || 'ok';
         scope.hideCloseText = params.cancelDisabled;
+        scope.listPicker = params.listPicker;
       }
 
       init(scope.modalInfos);
@@ -63,7 +64,8 @@
           scope.confirmText = scope.modalInfos.confirmTextDeferred;
           scope.confirmDisabled = true;
 
-          var confirmActionDeferred = scope.modalInfos.confirmActionDeferredFn();
+          var confirmActionDeferred = scope.modalInfos.confirmActionDeferredFn(
+                                        scope.modalInfos.confirmActionDeferredParam);
           if (confirmActionDeferred)
             confirmActionDeferred.then(confirmActionDeferredSuccess, confirmActionDeferredError);
 

@@ -35,6 +35,17 @@
           </span>
         </div>
 
+        <!-- LIST PICKER AS MODAL CONTENT -->
+        <div ng-if="listPicker">
+          <div list-picker="listPicker.getListsArray()"
+            list-picker-new-item="listPicker.getNewList()"
+            list-picker-save="listPicker.save(listPicker.itemInEdit, list)"
+            list-picker-clear="listPicker.clear(listPicker.itemInEdit, list)"
+            list-picker-get-selected="listPicker.getSelected(listPicker.itemInEdit)"
+            list-picker-get-this-list="listPicker.itemInEdit">
+          </div>
+        </div>
+
         <div ng-if="messageDetails" class="row">
           <pre class="text-preformatted" ng-bind="messageDetails"></pre>
         </div>

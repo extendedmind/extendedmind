@@ -37,10 +37,9 @@
             controllers[0].registerAddActiveCallback(enter);
           };
 
-          scope.isOnboardingInProgress = function() {
-            if (scope.listAddState && scope.listAddState.featureInfo) {
-              return scope.listAddState.featureInfo.getStatus(scope.listAddState.subfeature)
-              .startsWith('onboarding');
+          scope.isOnboardingInProgress = function(feature, subfeature) {
+            if (scope.listAddState && scope.listAddState.featureInfo && scope.isOnboarding) {
+              return scope.isOnboarding(feature, subfeature);
             }
           };
 
@@ -63,14 +62,17 @@
             controllers[0].notifyListItemAddActive(false);
           }
 
-          scope.clickedElsewhere = function(options){
-            var itemHasTitle = scope.newItem.trans.title && scope.newItem.trans.title.length > 0;
-            if (itemHasTitle) {
-              saveNewItem(scope.newItem);
-            }else{
-              controllers[0].notifyListItemExitNoAdd();
+          scope.clickedElsewhere = function(containerDestroyed){
+            // Don't do anything when container is destroyed
+            if (!containerDestroyed){
+              var itemHasTitle = scope.newItem.trans.title && scope.newItem.trans.title.length > 0;
+              if (itemHasTitle) {
+                saveNewItem(scope.newItem);
+              }else {
+                controllers[0].notifyListItemExitNoAdd();
+              }
+              exit();
             }
-            exit();
           };
 
           scope.getListItemAddId = function(){
@@ -83,7 +85,10 @@
 
           scope.textareaKeyDown = function (event) {
             // ESC button
-            if (event.keyCode === 27) exit();
+            if (event.keyCode === 27){
+              scope.newItem.trans.title = undefined;
+              exit();
+            }
             // RETURN button
             else if (event.keyCode === 13){
               if (scope.newItem.trans.title && scope.newItem.trans.title.length > 0) {
@@ -97,6 +102,9 @@
           };
 
           function saveNewItem(newItem){
+            if (controllers[0].notifyListItemBeginAdd()){
+              exit();
+            }
             saveNewItemFn(newItem).then(function(){
               if (controllers[0].notifyListItemAdd()){
                 exit(true);

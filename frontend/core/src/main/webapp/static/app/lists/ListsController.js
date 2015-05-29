@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function ListsController($scope,
+ function ListsController($q, $rootScope, $scope,
                           AnalyticsService, ArrayService, ListsService, SwiperService, UISessionService,
                           UserService, UserSessionService) {
 
@@ -370,37 +370,51 @@
     }
   };
 
+  // (UN)ARCHIVING
+
   $scope.saveAndArchiveList = function(list){
-    var saveListDeferred = $scope.saveList(list);
-    if (saveListDeferred){
-      return saveListDeferred.then(function(){
-        return $scope.archiveList(list);
+    var deferred = $q.defer();
+    AnalyticsService.do('saveAndArchiveList');
+    ListsService.saveAndArchiveList(list).then(
+      function(success){
+        deferred.resolve(success);
+      },function(error){
+        if (error.type === 'offline') {
+          var retryFn = error.onSave ? ListsService.saveAndArchiveList : ListsService.archiveList;
+          processListOffline(error, list, deferred, retryFn);
+        }
       });
-    }
+    return deferred.promise;
   };
 
-  $scope.archiveList = function(list) {
-    if (list.trans.uuid){
-      AnalyticsService.do('archiveList');
-      return ListsService.archiveList(list);
-    }
-  };
 
   $scope.saveAndUnarchiveList = function(list){
-    var saveListDeferred = $scope.saveList(list);
-    if (saveListDeferred){
-      return saveListDeferred.then(function(){
-        return $scope.unarchiveList(list);
+    var deferred = $q.defer();
+    AnalyticsService.do('saveAndUnarchiveList');
+    ListsService.saveAndUnarchiveList(list).then(
+      function(success){
+        deferred.resolve(success);
+      },function(error){
+        if (error.type === 'offline') {
+          var retryFn = error.onSave ? ListsService.saveAndUnarchiveList : ListsService.unarchiveList;
+          processListOffline(error, list, deferred, retryFn);
+        }
       });
-    }
+    return deferred.promise;
   };
 
-  $scope.unarchiveList = function(list) {
-    if (list.trans.uuid){
-      AnalyticsService.do('unarchiveList');
-      return ListsService.unarchiveList(list);
-    }
-  };
+  function processListOffline(error, list, deferred, retryFn) {
+    var rejection = {
+      type: 'onlineRequired',
+      value: {
+        retry: retryFn,
+        retryParam: list,
+        allowCancel: true,
+        promise: deferred.resolve
+      }
+    };
+    $rootScope.$emit('emInteraction', rejection);
+  }
 
   // (UN)DELETING
 
@@ -426,7 +440,7 @@
   };
 }
 
-ListsController['$inject'] = ['$scope',
+ListsController['$inject'] = ['$q', '$rootScope', '$scope',
 'AnalyticsService', 'ArrayService', 'ListsService', 'SwiperService', 'UISessionService', 'UserService',
 'UserSessionService'
 ];

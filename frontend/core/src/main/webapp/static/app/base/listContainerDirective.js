@@ -21,6 +21,8 @@
     controller: ['$scope', '$element', '$attrs', function($scope, $element, $attrs) {
       var activateAddListItemCallback;
       var notifyListAddFeatureCallback;
+      var listAddFeatureInfo;
+      var listAddSubfeature;
 
       this.registerActivateAddListItemCallback = function(callback, element){
         activateAddListItemCallback = callback;
@@ -30,10 +32,16 @@
 
       this.registerNotifyListAddFeatureCallback = function(callback){
         notifyListAddFeatureCallback = callback;
+        // If nofity came before registering, notify right away
+        if (listAddFeatureInfo) notifyListAddFeatureCallback(listAddFeatureInfo, listAddSubfeature);
       };
 
       this.notifyListAddFeature = function(featureInfo, subfeature){
         if (notifyListAddFeatureCallback) notifyListAddFeatureCallback(featureInfo, subfeature);
+        else {
+          listAddFeatureInfo = featureInfo;
+          listAddSubfeature = subfeature;
+        }
       };
 
       this.activateAddListItem = function(){
