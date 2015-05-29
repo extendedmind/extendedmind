@@ -161,7 +161,10 @@
             messageHeading: interaction.value.messageHeading,
             messageIngress: interaction.value.messageIngress,
             confirmText: interaction.value.confirmText,
+            confirmTextDeferred: interaction.value.confirmTextDeferred,
             confirmAction: interaction.value.confirmAction,
+            confirmActionDeferredFn: interaction.value.confirmActionDeferredFn,
+            confirmActionPromiseFn: interaction.value.confirmActionPromiseFn,
             cancelDisabled: !interaction.value.allowCancel
             // Cancel is disabled by default and overridden with allowCancel.
           };

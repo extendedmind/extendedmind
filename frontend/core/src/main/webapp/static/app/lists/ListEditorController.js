@@ -344,18 +344,17 @@
     }, listShareRejected);
   }
 
-  function unshareListAndClose(targetList, agreementUUID) {
+  function unshareList(targetList, agreementUUID) {
+    return ListsService.unshareList(targetList, agreementUUID);
+  }
 
-    function listUnshareResolved() {
-      refreshSharedToList(targetList);
-      closeListShareEditor();
-      UISessionService.pushNotification({
-        type: 'fyi',
-        text: 'list unshared'
-      });
-    }
-    var unshareListPromise = ListsService.unshareList(targetList, agreementUUID);
-    unshareListPromise.then(listUnshareResolved);
+  function unshareListResolved(targetList) {
+    refreshSharedToList(targetList);
+    closeListShareEditor();
+    UISessionService.pushNotification({
+      type: 'fyi',
+      text: 'list unshared'
+    });
   }
 
   function removeListShareAndClose(uuid) {
@@ -378,8 +377,12 @@
           messageIngress: 'are you sure you want to stop sharing this list to ' +
           $scope.shareEditor.data.email + '?',
           confirmText: 'unshare',
-          confirmAction: function() {
-            unshareListAndClose($scope.list, $scope.shareEditor.data.uuid);
+          confirmTextDeferred: 'unsharing\u2026',
+          confirmActionDeferredFn: function() {
+            return unshareList($scope.list, $scope.shareEditor.data.uuid);
+          },
+          confirmActionPromiseFn: function() {
+            unshareListResolved($scope.list);
           },
           allowCancel: true
         }
