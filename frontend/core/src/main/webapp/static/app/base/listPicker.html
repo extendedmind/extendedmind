@@ -16,6 +16,11 @@
       dynamic-placeholder="add {{type}}&#8230;" maxlength="128" autocapitalize="none" autocorrect="off">
     </textarea>
   </div>
+
+  <div ng-if="saveError && saveError.type === 'offline'" class="group-error row-form">
+    <span class="text-error">can't connect to server. are you online?</span>
+  </div>
+
   <p ng-if="useSubHeadings && getLowerLists().length" class="row">
     <span class="text-heading-primary" ng-bind="upperSubHeading"></span></br>
   </p>

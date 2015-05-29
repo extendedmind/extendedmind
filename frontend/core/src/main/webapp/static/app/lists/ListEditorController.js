@@ -124,9 +124,32 @@
     }
   }
 
+  function saveNewArchiveParentToList(list, listParent){
+    console.log(JSON.stringify(listParent, undefined, 2));
+    if (listParent.trans.uuid){
+      // This is an existing list, just set it to
+      console.log("saveNewArchiveParentToList existing success")
+      list.trans.archiveParent = listParent.trans.uuid;
+    }else{
+      return $scope.saveAndArchiveList(listParent, processSaveNewParentOffline).then(
+        function(success){
+          list.trans.archiveParent = listParent;
+          console.log("saveNewArchiveParentToList success")
+          console.log(success);
+        }, function(error){
+          console.log("saveNewArchiveParentToList fail")
+          console.log(error);
+          return $q.reject(error);
+        });
+    }
+  }
+
+  function processSaveNewParentOffline(error, list, deferred, retryFn){
+    console.log("processSaveNewParentOffline")
+    deferred.reject(error);
+  }
+
   $scope.archiveListInEdit = function() {
-    /*
-    TODO: Use this
     if ($scope.showModal){
       var parentListPickerModalParams = {
         messageHeading: 'select parent',
@@ -138,12 +161,12 @@
         listPicker: {
           getListsArray: getArhivedParentlessLists,
           getNewList: $scope.getNewList,
-          save: $scope.saveList,
+          save: saveNewArchiveParentToList,
           clear: function(list){
             list.trans.list = undefined;
           },
           getSelected: function(list){
-            return list.trans.list;
+            return list.trans.archiveParent;
           },
           itemInEdit: $scope.list
         }
@@ -151,7 +174,6 @@
       $scope.showModal(undefined, parentListPickerModalParams);
 
     }
-*/
 
     return $scope.saveAndArchiveList($scope.list).then(function(success){
       $scope.closeEditor();

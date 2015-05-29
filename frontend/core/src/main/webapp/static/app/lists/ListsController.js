@@ -372,32 +372,35 @@
 
   // (UN)ARCHIVING
 
-  $scope.saveAndArchiveList = function(list){
+  $scope.saveAndArchiveList = function(list, customOfflineProcessFn){
     var deferred = $q.defer();
     AnalyticsService.do('saveAndArchiveList');
+    var offlineProcessFn = customOfflineProcessFn ? customOfflineProcessFn : processListOffline;
+    console.log(customOfflineProcessFn)
     ListsService.saveAndArchiveList(list).then(
       function(success){
         deferred.resolve(success);
       },function(error){
         if (error.type === 'offline') {
           var retryFn = error.onSave ? ListsService.saveAndArchiveList : ListsService.archiveList;
-          processListOffline(error, list, deferred, retryFn);
+          offlineProcessFn(error, list, deferred, retryFn);
         }
       });
     return deferred.promise;
   };
 
 
-  $scope.saveAndUnarchiveList = function(list){
+  $scope.saveAndUnarchiveList = function(list, customOfflineProcessFn){
     var deferred = $q.defer();
     AnalyticsService.do('saveAndUnarchiveList');
+    var offlineProcessFn = customOfflineProcessFn ? customOfflineProcessFn : processListOffline;
     ListsService.saveAndUnarchiveList(list).then(
       function(success){
         deferred.resolve(success);
       },function(error){
         if (error.type === 'offline') {
           var retryFn = error.onSave ? ListsService.saveAndUnarchiveList : ListsService.unarchiveList;
-          processListOffline(error, list, deferred, retryFn);
+          offlineProcessFn(error, list, deferred, retryFn);
         }
       });
     return deferred.promise;

@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function listPickerDirective($rootScope) {
+ function listPickerDirective($q, $rootScope) {
   return {
     restrict: 'A',
     templateUrl: $rootScope.urlBase + 'app/base/listPicker.html',
@@ -34,8 +34,8 @@
     },
     link: function(scope) {
       scope.newList = scope.getNewList();
-      scope.selectedList = scope.getSelectedList();
       scope.thisList = scope.getThisList();
+      scope.selectedList = scope.getSelectedList(scope.thisList);
       scope.type = scope.type || 'list';
 
       if (scope.registerSaveNewListCallback) scope.registerSaveNewListCallback({saveNewList: saveNewList});
@@ -110,7 +110,18 @@
       };
 
       scope.listSelected = function(list) {
-        scope.closeAndSave({list: list});
+        var closeAndSaveDeferred = scope.closeAndSave({list: list});
+        scope.saveError = undefined;
+        if (closeAndSaveDeferred && closeAndSaveDeferred.then){
+          closeAndSaveDeferred.then(
+            function(success){
+              scope.newList = scope.getNewList();
+              scope.selectedList = scope.getSelectedList(scope.thisList);
+            }, function(error){
+              scope.saveError = error;
+              return $q.reject(error);
+            })
+        }
       };
 
       scope.listCleared = function(list) {
@@ -178,5 +189,5 @@
     }
   };
 }
-listPickerDirective['$inject'] = ['$rootScope'];
+listPickerDirective['$inject'] = ['$q', '$rootScope'];
 angular.module('em.base').directive('listPicker', listPickerDirective);
