@@ -617,6 +617,7 @@
 
           if (payload && payload.parent){
             propertiesToReset.relationships.parent = payload.parent;
+            delete list.trans.archiveParent;
           }else {
             // Parent is removed on archive if it a new one isn't given as parameter
             propertiesToReset.relationships.parent = undefined;
@@ -677,6 +678,7 @@
 
           if (payload && payload.parent){
             propertiesToReset.relationships.parent = payload.parent;
+            delete list.trans.activeParent;
           }else {
             // Parent is removed on unarchive if it a new one isn't given as parameter
             propertiesToReset.relationships.parent = undefined;
