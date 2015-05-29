@@ -1732,9 +1732,9 @@ describe('SynchronizeService', function() {
         $httpBackend.flush();
         expect(lists.length)
           .toBe(4);
-        expect(updatedTestList.archived)
+        expect(updatedTestList.mod.archived)
           .toBe(archiveListResponse.archived);
-        expect(updatedTestList.modified)
+        expect(updatedTestList.mod.modified)
           .toBe(archiveListResponse.result.modified);
         flag = true;
       }, 100);
