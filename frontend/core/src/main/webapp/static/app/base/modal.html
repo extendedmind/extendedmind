@@ -37,6 +37,9 @@
 
         <!-- LIST PICKER AS MODAL CONTENT -->
         <div ng-if="listPicker && !selectedList">
+          <div ng-if="saveError && saveError.type === 'offline'" class="group-error row-form">
+            <span class="text-error">can't connect to server. are you online?</span>
+          </div>
           <div list-picker="listPicker.getListsArray()"
             list-picker-new-item="listPicker.getNewList()"
             list-picker-save="listPicker.save(listPicker.itemInEdit, list)"

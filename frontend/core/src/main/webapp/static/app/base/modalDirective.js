@@ -54,6 +54,7 @@
       }
 
       scope.confirmAction = function() {
+        scope.saveError = undefined;
         if (typeof scope.modalInfos.confirmAction === 'function') {
           scope.closeModal();
           // Delay executing callback so that close animation has finished before it.
@@ -74,7 +75,7 @@
         }
       };
 
-      function confirmActionDeferredSuccess() {
+      function confirmActionDeferredSuccess(success) {
         scope.confirmDisabled = false;
         scope.closeModal();
         if (typeof scope.modalInfos.confirmActionPromiseFn === 'function') {
@@ -82,9 +83,12 @@
           $timeout(scope.modalInfos.confirmActionPromiseFn, 300);
         }
       }
-      function confirmActionDeferredError() {
+      function confirmActionDeferredError(error) {
         scope.confirmText = scope.modalInfos.confirmText;
         scope.confirmDisabled = false;
+        if (scope.modalInfos.confirmActionPromiseFn === true){
+          scope.saveError = error;
+        }
       }
 
       if (scope.reinit && typeof scope.reinit.register === 'function') scope.reinit.register(reinit);

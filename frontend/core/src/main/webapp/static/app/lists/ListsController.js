@@ -376,7 +376,6 @@
     var deferred = $q.defer();
     AnalyticsService.do('saveAndArchiveList');
     var offlineProcessFn = customOfflineProcessFn ? customOfflineProcessFn : processListOffline;
-    console.log(customOfflineProcessFn)
     ListsService.saveAndArchiveList(list).then(
       function(success){
         deferred.resolve(success);
@@ -388,7 +387,6 @@
       });
     return deferred.promise;
   };
-
 
   $scope.saveAndUnarchiveList = function(list, customOfflineProcessFn){
     var deferred = $q.defer();

@@ -115,7 +115,7 @@
         if (closeAndSaveDeferred && closeAndSaveDeferred.then){
           closeAndSaveDeferred.then(
             function(success){
-              scope.newList = scope.getNewList();
+              scope.newList = undefined;
               scope.selectedList = scope.getSelectedList(scope.thisList);
             }, function(error){
               scope.saveError = error;
@@ -126,6 +126,8 @@
 
       scope.listCleared = function(list) {
         scope.closeAndClearList({list: list});
+        scope.selectedList = scope.getSelectedList(scope.thisList);
+        scope.newList = scope.getNewList();
       };
 
       scope.textareaKeyDown = function(event) {

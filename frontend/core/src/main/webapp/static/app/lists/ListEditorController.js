@@ -108,8 +108,11 @@
     else ListsService.resetList($scope.list);
   }
 
-  function saveAndArchiveList(){
-    return $scope.saveAndArchiveList($scope.list).then(archiveOrUnarchiveListSuccess, archiveListError);
+  function saveAndArchiveList(list){
+    return $scope.saveAndArchiveList(list, processSaveNewParentOffline).then(
+      archiveOrUnarchiveListSuccess, function(error){
+        return $q.reject(error);
+      });
   }
 
   function getArhivedParentlessLists(){
@@ -125,27 +128,35 @@
   }
 
   function saveNewArchiveParentToList(list, listParent){
-    console.log(JSON.stringify(listParent, undefined, 2));
+    var deferred = $q.defer();
     if (listParent.trans.uuid){
-      // This is an existing list, just set it to
-      console.log("saveNewArchiveParentToList existing success")
-      list.trans.archiveParent = listParent.trans.uuid;
+      if (!listParent.trans.archived){
+        // Save succeeded but archive failed, retry archive
+        ListsService.archiveList(listParent).then(
+          function(success){
+            list.trans.archiveParent = listParent;
+            deferred.resolve();
+          }, function(error){
+            deferred.reject(error);
+          })
+      }else{
+        // This is an existing archived list, just set it to the trans archiveParent
+        list.trans.archiveParent = listParent;
+        deferred.resolve();
+      }
     }else{
-      return $scope.saveAndArchiveList(listParent, processSaveNewParentOffline).then(
+      $scope.saveAndArchiveList(listParent, processSaveNewParentOffline).then(
         function(success){
           list.trans.archiveParent = listParent;
-          console.log("saveNewArchiveParentToList success")
-          console.log(success);
+          deferred.resolve(success);
         }, function(error){
-          console.log("saveNewArchiveParentToList fail")
-          console.log(error);
-          return $q.reject(error);
+          deferred.reject(error);
         });
     }
+    return deferred.promise;
   }
 
   function processSaveNewParentOffline(error, list, deferred, retryFn){
-    console.log("processSaveNewParentOffline")
     deferred.reject(error);
   }
 
@@ -156,14 +167,15 @@
         messageIngress: 'optionally add or choose a parent for the archived list',
         confirmText: 'archive',
         confirmTextDeferred: 'archiving\u2026',
-        confirmActionDeferredFn: $scope.saveAndArchiveList,
+        confirmActionDeferredFn: saveAndArchiveList,
         confirmActionDeferredParam: $scope.list,
+        confirmActionPromiseFn: true,
         listPicker: {
           getListsArray: getArhivedParentlessLists,
           getNewList: $scope.getNewList,
           save: saveNewArchiveParentToList,
-          clear: function(list){
-            list.trans.list = undefined;
+          clear: function(list, parent){
+            list.trans.archiveParent = undefined;
           },
           getSelected: function(list){
             return list.trans.archiveParent;
@@ -172,13 +184,7 @@
         }
       };
       $scope.showModal(undefined, parentListPickerModalParams);
-
     }
-
-    return $scope.saveAndArchiveList($scope.list).then(function(success){
-      $scope.closeEditor();
-      $scope.changeFeature('lists', $scope.list);
-    });
   };
 
   function archiveOrUnarchiveListSuccess() {
