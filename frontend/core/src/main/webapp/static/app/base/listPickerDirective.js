@@ -109,10 +109,19 @@
         return true;
       };
 
+      var addNewInputBlurCallbackFunction;
+      scope.registerListPickerAddInputCallbacks = function(focus, blur){
+        addNewInputBlurCallbackFunction = blur;
+      };
+
       scope.listSelected = function(list) {
         var closeAndSaveDeferred = scope.closeAndSave({list: list});
         scope.saveError = undefined;
         if (closeAndSaveDeferred && closeAndSaveDeferred.then){
+          if (addNewInputBlurCallbackFunction){
+            // Blur add new input on save
+            addNewInputBlurCallbackFunction();
+          }
           closeAndSaveDeferred.then(
             function(success){
               scope.newList = undefined;

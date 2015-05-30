@@ -11,7 +11,8 @@
   </div>
 
   <div ng-if="newList" class="row-vertically-centered with-textarea">
-    <textarea ng-model="newList.trans.title" msd-elastic
+    <textarea ng-model="newList.trans.title" msd-elastic editable-field
+      editable-field-register-callbacks="registerListPickerAddInputCallbacks(focus, blur)"
       swiper-click="watchForTitleChange()" ng-keydown="textareaKeyDown($event)"
       dynamic-placeholder="add {{type}}&#8230;" maxlength="128" autocapitalize="none" autocorrect="off">
     </textarea>
