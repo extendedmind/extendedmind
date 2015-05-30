@@ -304,7 +304,8 @@
     !$scope.foreignOwner &&
     $scope.list.trans.archived === undefined &&
     $scope.editorType !== 'recurring' &&
-    $scope.features.lists.getStatus('archived') !== 'disabled';
+    $scope.features.lists.getStatus('archived') !== 'disabled' &&
+    !ListsService.isListsWithParent($scope.list);
   };
 
   $scope.showUnarchive = function() {
@@ -312,7 +313,8 @@
     !$scope.foreignOwner &&
     $scope.list.trans.archived !== undefined &&
     $scope.editorType !== 'recurring' &&
-    $scope.features.lists.getStatus('archived') !== 'disabled';
+    $scope.features.lists.getStatus('archived') !== 'disabled'  &&
+    !ListsService.isListsWithParent($scope.list);
   };
 
   // SHARE LIST EDITOR

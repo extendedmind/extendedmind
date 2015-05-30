@@ -798,6 +798,27 @@
         ItemLikeService.persistAndReset(lists[newUUID].deletedLists, LIST_TYPE, newUUID, listFieldInfos);
       }
     },
+    /*
+    * Check active and archived arrays for lists with the given parentList as parent.
+    */
+    isListsWithParent: function(parentList) {
+      var ownerUUID = parentList.trans.owner;
+      var i;
+      for (i = 0; i < lists[ownerUUID].activeLists.length; i++) {
+        if (lists[ownerUUID].activeLists[i].trans.list &&
+            lists[ownerUUID].activeLists[i].trans.list.uuid === parentList.trans.uuid)
+        {
+          return true;
+        }
+      }
+      for (i = 0; i < lists[ownerUUID].archivedLists.length; i++){
+        if (lists[ownerUUID].archivedLists[i].trans.list &&
+            lists[ownerUUID].archivedLists[i].trans.list.uuid === parentList.trans.uuid)
+        {
+          return true;
+        }
+      }
+    },
     listFieldInfos: listFieldInfos,
     // Regular expressions for list requests
     putNewListRegex: putNewListRegexp,

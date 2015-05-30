@@ -504,14 +504,14 @@
       var i;
       for (i = 0; i < notes[ownerUUID].activeNotes.length; i++) {
         if (notes[ownerUUID].activeNotes[i].trans.list &&
-            notes[ownerUUID].activeNotes[i].trans.list.uuid === list.uuid)
+            notes[ownerUUID].activeNotes[i].trans.list.uuid === list.trans.uuid)
         {
           return true;
         }
       }
       for (i = 0; i < notes[ownerUUID].archivedNotes.length; i++){
         if (notes[ownerUUID].archivedNotes[i].trans.list &&
-            notes[ownerUUID].archivedNotes[i].trans.list.uuid === list.uuid)
+            notes[ownerUUID].archivedNotes[i].trans.list.uuid === list.trans.uuid)
         {
           return true;
         }
