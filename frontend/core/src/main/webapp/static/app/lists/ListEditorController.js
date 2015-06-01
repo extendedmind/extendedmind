@@ -60,6 +60,35 @@
     }
   }
 
+  // LIST EDITOR FIELD VISIBILITY
+
+  $scope.showListAction = function(actionName){
+    switch (actionName){
+      case 'saveBack':
+      return !$scope.isPropertyInEdit();
+      break;
+      case 'saveDone':
+      return $scope.isPropertyInEdit();
+      break;
+    }
+  };
+
+  $scope.showListProperty = function(propertyName){
+    switch (propertyName){
+      case 'title':
+      return !$scope.isPropertyInEdit()
+      break;
+    }
+  };
+
+  $scope.showListSubEditor = function(subEditorName){
+    switch (subEditorName){
+      case 'list':
+      return $scope.listPickerOpen;
+      break;
+    }
+  };
+
   // SAVING, DELETING
 
   function saveListInEdit () {
