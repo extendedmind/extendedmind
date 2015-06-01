@@ -503,15 +503,8 @@
   };
 
   $scope.resendListShare = function(uuid) {
-
-    function doResendListShare(uuid) {
-      return $q(function(resolve, reject) {
-        ListsService.resendListShare(uuid).then(resolve, reject);
-      });
-    }
-
+    var resendListSharePromise = ListsService.resendListShare(uuid);
     $scope.shareEditor.resendPending = true;
-    var resendListSharePromise = doResendListShare(uuid);
     var resendResolveMinimumTimeReached = false;
     var resendResolveMinimumTimeTimer = $timeout(function() {
       resendResolveMinimumTimeReached = true;

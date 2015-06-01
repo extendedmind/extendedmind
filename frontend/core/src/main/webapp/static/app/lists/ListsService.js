@@ -186,7 +186,7 @@
   );
 
   // POST /api/agreement/UUID/resend
-  var postResendShareListRegexp = new RegExp(
+  var postResendAgreementRegexp = new RegExp(
     /^/.source +
     BackendClientService.apiPrefixRegex.source +
     agreementSlashRegex.source +
@@ -772,12 +772,9 @@
         return response;
       });
     },
-    resendListShare: function(/*uuid*/) {
-      // TODO
-      return $q(function(resolve/*, reject*/) {
-        resolve();
-        // reject();
-      });
+    resendListShare: function(agreementUUID) {
+      return BackendClientService.postOnline('/api/agreement/' + agreementUUID + '/resend',
+                                             postResendAgreementRegexp);
     },
     clearLists: function() {
       lists = {};
@@ -824,7 +821,7 @@
     postAcceptShareListRegex: postAcceptShareListRegexp,
     deleteAgreementRegex: deleteAgreementRegexp,
     postChangeAgreementAccessRegex: postChangeAgreementAccessRegexp,
-    postResendShareListRegex: postResendShareListRegexp,
+    postResendAgreementRegex: postResendAgreementRegexp,
 
     // Register callbacks that are fired for implicit archiving of
     // elements. Callback must return the latest modified value it
