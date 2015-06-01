@@ -36,8 +36,6 @@
 
   $scope.showNoteAction = function(actionName){
     switch (actionName){
-      case 'footerNavigation':
-      return !$scope.isFooterNavigationHidden();
       case 'delete':
       return !$scope.note.trans.deleted && !$scope.isPropertyInEdit() && !$scope.isOnboarding('notes');
       case 'restore':
@@ -49,40 +47,57 @@
     }
   };
 
+  $scope.showNoteEditorComponent = function(componentName, subcomponentName) {
+    switch (componentName) {
+
+      case 'collapsible':
+      if (!subcomponentName) {
+        return $scope.collapsibleOpen && !$scope.isPropertyInEdit();
+      }
+      switch (subcomponentName) {
+        case 'keywords':
+        return !hasActiveKeywords($scope.note);
+        case 'list':
+        return ((!$scope.note.trans.list || $scope.note.trans.list.trans.deleted) &&
+                ($scope.features.lists.getStatus('active') !== 'disabled'));
+      }
+      break;
+
+      case 'editorType':
+      return $scope.showEditorType;
+
+      case 'footerNavigation':
+      return !$scope.isFooterNavigationHidden();
+
+      case 'lessMore':
+      return hasUnsetCollapsableProperty() && !$scope.isPropertyInEdit() && !$scope.isOnboarding('notes');
+
+      case 'titlebarTitle':
+      return $scope.isEditorHeaderTitleVisible();
+    }
+  };
+
   $scope.showNoteProperty = function(propertyName){
     if (!propertyName) {
       // Special case where name is undefined.
       return $scope.isPropertyInEdit();
     }
     switch (propertyName){
-      case 'addKeywords':
-      return !hasActiveKeywords($scope.note);
-      case 'collapsible':
-      return $scope.collapsibleOpen && !$scope.isPropertyInEdit();
       case 'content':
       return $scope.drawerAisleInitialized && !$scope.isOtherPropertyInEdit('content');
       case 'created':
       return $scope.note.trans.uuid;
-      case 'editorType':
-      return $scope.showEditorType;
       case 'favorite':
       return !$scope.isOnboarding('notes');
       case 'keywords':
       return hasActiveKeywords($scope.note) && !$scope.isPropertyInEdit();
-      case 'lessMore':
-      return hasUnsetCollapsableProperty() && !$scope.isPropertyInEdit() && !$scope.isOnboarding('notes');
       case 'list':
       return ($scope.note.trans.list && !$scope.note.trans.list.trans.deleted &&
               $scope.features.lists.getStatus('active') !== 'disabled' && !$scope.isPropertyInEdit());
       case 'modified':
       return $scope.note.trans.uuid && $scope.note.trans.created !== $scope.note.trans.modified;
-      case 'selectList':
-      return ((!$scope.note.trans.list || $scope.note.trans.list.trans.deleted) &&
-              ($scope.features.lists.getStatus('active') !== 'disabled'));
       case 'title':
       return !$scope.isPropertyInEdit();
-      case 'titlebarTitle':
-      return $scope.isEditorHeaderTitleVisible();
     }
   };
 

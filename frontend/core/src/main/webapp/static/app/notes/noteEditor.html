@@ -17,7 +17,7 @@
           <span class="text-edit" ng-bind="isPropertyEdited() ? 'save' : 'done'"></span>
         </a>
 
-        <div ng-show="showNoteProperty('titlebarTitle')" id="noteEditorTitlebarTitle"
+        <div ng-show="showNoteEditorComponent('titlebarTitle')" id="noteEditorTitlebarTitle"
           ng-style="{maxWidth: calculateTitleWidth()}"
           class="scroll-then-toggle group-symmetrical--middle width-large primary">
           <a href class="link" swiper-click="gotoTitle()">
@@ -29,7 +29,8 @@
           </a>
         </div>
 
-        <div ng-if="showNoteProperty('editorType')" class="group-symmetrical--middle group-centered substitute">
+        <div ng-if="showNoteEditorComponent('editorType')"
+          class="group-symmetrical--middle group-centered substitute">
           <span class="text-heading-primary text-downplayed">note</span>
         </div>
 
@@ -115,24 +116,24 @@
           </div>
 
           <!-- COLLAPSIBLE-->
-          <div ng-if="showNoteProperty('collapsible')">
+          <div ng-if="showNoteEditorComponent('collapsible')">
 
             <!-- LIST -->
-            <div ng-if="showNoteProperty('selectList')" class="group-mixed">
+            <div ng-if="showNoteEditorComponent('collapsible', 'list')" class="group-mixed">
               <a href class="group-mixed--middle link-search-result downplayed" swiper-click="openListPicker()">
                 <span class="text-field--title">select list&#8230;</span>
               </a>
             </div>
 
             <!-- KEYWORDS -->
-            <div ng-if="showNoteProperty('addKeywords')" class="group-mixed">
+            <div ng-if="showNoteEditorComponent('collapsible', 'keywords')" class="group-mixed">
               <a href class="group-mixed--middle link-search-result downplayed"
                 swiper-click="openKeywordsPicker()">
                 <span class="text-field--title">add keywords&#8230;</span>
               </a>
             </div>
           </div>
-          <div ng-if="showNoteProperty('lessMore')" class="row collapsible">
+          <div ng-if="showNoteEditorComponent('lessMore')" class="row collapsible">
             <a href class="downplayed" swiper-click="toggleCollapsible()">
               <span ng-class="collapsibleOpen ? 'text-expand-up' : 'text-expand-down'"
                 ng-bind="collapsibleOpen ? 'less' : 'more'"></span>
@@ -217,8 +218,8 @@
 
         <footer ng-hide="showNoteProperty()" class="container-content--after editor-footer">
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
-            <a href ng-if="showNoteAction('footerNavigation')" swiper-click="swipeToAdvanced('noteEditor')"
-              class="group-symmetrical--right link-navigation">
+            <a href ng-if="showNoteEditorComponent('footerNavigation')"
+              class="group-symmetrical--right link-navigation" swiper-click="swipeToAdvanced('noteEditor')">
               <span class="text-navigation-forward">advanced</span>
             </a>
           </nav>
@@ -279,8 +280,8 @@
           </div>
 
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
-            <a href ng-if="showNoteAction('footerNavigation')" swiper-click="swipeToBasic('noteEditor')"
-              class="group-symmetrical--left link-navigation">
+            <a href ng-if="showNoteEditorComponent('footerNavigation')"
+              class="group-symmetrical--left link-navigation" swiper-click="swipeToBasic('noteEditor')">
               <span class="text-navigation-back">basic</span>
             </a>
           </nav>
