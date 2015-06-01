@@ -51,8 +51,9 @@
       for (var i = 0; i < list.trans.visibility.agreements.length; i++) {
         if (list.trans.visibility.agreements[i].proposedBy) {
           $scope.sharedByList.email = list.trans.visibility.agreements[i].proposedBy.email;
-          $scope.sharedByList.accessText =
-          $scope.list.trans.visibility.agreements[i].proposedBy.access === 2 ? 'read/write' : 'read';
+          $scope.sharedByList.accessText = ($scope.list.trans.visibility.agreements[i].proposedBy.access ===
+                                            2 ? 'read/write' : 'read');
+          $scope.sharedByList.uuid = list.trans.visibility.agreements[i].uuid;
           break;
         }
       }
@@ -68,7 +69,7 @@
   }
 
   $scope.deleteListInEdit = function() {
-    if ($scope.sharedToList) {
+    if ($scope.sharedToList && $scope.sharedToList.length) {
       var exception = {
         type: 'deleteSharedList',
         value: {
@@ -421,10 +422,14 @@
       }
     }
 
-    var promise = doSaveListShare(data, initialData, existing, targetList);
-    promise.then(function() {
-      listShareResolved(targetList);
-    }, listShareRejected);
+    if ($scope.foreignOwner) {
+      closeListShareEditor();
+    } else {
+      var promise = doSaveListShare(data, initialData, existing, targetList);
+      promise.then(function() {
+        listShareResolved(targetList);
+      }, listShareRejected);
+    }
   }
 
   function unshareList(targetList, agreementUUID) {
@@ -440,9 +445,15 @@
     });
   }
 
-  function removeListShareAndClose(uuid) {
-    ListsService.removeListShare(uuid);
-    closeListShareEditor();
+  function removeListShareResolved() {
+    $scope.closeEditor();
+    UISessionService.pushDelayedNotification({
+      type: 'fyi',
+      text: 'removed shared list'
+    });
+    $timeout(function() {
+      UISessionService.activateDelayedNotifications();
+    }, $rootScope.EDITOR_CLOSED_FAILSAFE_TIME);
   }
 
   $scope.clearSharedToEmail = function() {
@@ -450,10 +461,27 @@
   };
 
   $scope.removeListShare = function() {
+    var interaction;
     if ($scope.foreignOwner) {
-      removeListShareAndClose($scope.shareEditor.data.uuid);
+      interaction = {
+        type: 'confirmationRequired',
+        value: {
+          messageHeading: 'confirm remove',
+          messageIngress: 'are you sure you want to leave from the list shared to you?',
+          confirmText: 'remove',
+          confirmTextDeferred: 'removing\u2026',
+          confirmActionDeferredFn: function() {
+            return unshareList($scope.list, $scope.shareEditor.data.uuid);
+          },
+          confirmActionPromiseFn: function() {
+            removeListShareResolved($scope.list);
+          },
+          allowCancel: true
+        }
+      };
+      $rootScope.$emit('emInteraction', interaction);
     } else {
-      var interaction = {
+      interaction = {
         type: 'confirmationRequired',
         value: {
           messageHeading: 'confirm unshare',

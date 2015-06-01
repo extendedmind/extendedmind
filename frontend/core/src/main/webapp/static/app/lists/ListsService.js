@@ -772,13 +772,6 @@
         return response;
       });
     },
-    removeListShare: function(/*uuid*/) {
-      // TODO
-      return $q(function(resolve/*, reject*/) {
-        resolve();
-        // reject();
-      });
-    },
     resendListShare: function(/*uuid*/) {
       // TODO
       return $q(function(resolve/*, reject*/) {
