@@ -138,11 +138,13 @@
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
 
             <a ng-if="showArchive()" href swiper-click="archiveListInEdit(list)"
-              class="group-symmetrical--left link-navigation highlighted">
+              class="group-symmetrical--left link-navigation highlighted"
+              ng-class="hasChildLists(list) && 'downplayed'">
               <span class="text-navigation">archive</span>
             </a>
             <a ng-if="showUnarchive()" href swiper-click="unarchiveListInEdit(list)"
-              class="group-symmetrical--left link-navigation highlighted">
+              class="group-symmetrical--left link-navigation highlighted"
+              ng-class="hasChildLists(list) && 'downplayed'">
               <span class="text-navigation">activate</span>
             </a>
 

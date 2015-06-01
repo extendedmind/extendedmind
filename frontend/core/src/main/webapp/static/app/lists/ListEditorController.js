@@ -112,6 +112,14 @@
   // ARCHIVE LIST
 
   $scope.archiveListInEdit = function() {
+    if ($scope.hasChildLists($scope.list)){
+      UISessionService.pushNotification({
+        type: 'fyi',
+        text: 'can\'t archive a parent list'
+      });
+      return;
+    }
+
     var parentListPickerModalParams = {
       messageHeading: 'select parent',
       messageIngress: 'optionally add or choose a parent for the archived list',
@@ -124,7 +132,7 @@
         getListsArray: getArhivedParentlessLists,
         getNewList: $scope.getNewList,
         save: saveNewArchiveParentToList,
-        clear: function(list, parent){
+        clear: function(list){
           list.trans.archiveParent = undefined;
         },
         getSelected: function(list){
@@ -151,12 +159,12 @@
       if (!listParent.trans.archived){
         // Save succeeded but archive failed, retry archive
         ListsService.archiveList(listParent).then(
-          function(success){
+          function(){
             list.trans.archiveParent = listParent;
             deferred.resolve();
           }, function(error){
             deferred.reject(error);
-          })
+          });
       }else{
         // This is an existing archived list, just set it to the trans archiveParent
         list.trans.archiveParent = listParent;
@@ -177,6 +185,14 @@
   // UNARCHIVING
 
   $scope.unarchiveListInEdit = function() {
+    if ($scope.hasChildLists($scope.list)){
+      UISessionService.pushNotification({
+        type: 'fyi',
+        text: 'can\'t activate a parent list'
+      });
+      return;
+    }
+
     var parentListPickerModalParams = {
       messageHeading: 'select parent',
       messageIngress: 'optionally add or choose a parent for the active list',
@@ -189,7 +205,7 @@
         getListsArray: getActiveParentlessLists,
         getNewList: $scope.getNewList,
         save: saveNewActiveParentToList,
-        clear: function(list, parent){
+        clear: function(list){
           list.trans.activeParent = undefined;
         },
         getSelected: function(list){
@@ -230,7 +246,7 @@
 
   // ARCHIVE/UNARCHIVE HELPERS
 
-  function processSaveNewParentOffline(error, list, deferred, retryFn){
+  function processSaveNewParentOffline(error, list, deferred){
     deferred.reject(error);
   }
 
@@ -305,8 +321,11 @@
     !$scope.foreignOwner &&
     $scope.list.trans.archived === undefined &&
     $scope.editorType !== 'recurring' &&
-    $scope.features.lists.getStatus('archived') !== 'disabled' &&
-    !ListsService.isListsWithParent($scope.list);
+    $scope.features.lists.getStatus('archived') !== 'disabled';
+  };
+
+  $scope.hasChildLists = function(){
+    return ListsService.isListsWithParent($scope.list);
   };
 
   $scope.showUnarchive = function() {
@@ -314,8 +333,7 @@
     !$scope.foreignOwner &&
     $scope.list.trans.archived !== undefined &&
     $scope.editorType !== 'recurring' &&
-    $scope.features.lists.getStatus('archived') !== 'disabled'  &&
-    !ListsService.isListsWithParent($scope.list);
+    $scope.features.lists.getStatus('archived') !== 'disabled';
   };
 
   // SHARE LIST EDITOR
