@@ -366,11 +366,30 @@ Search results (omnibar, deleted)
   // Undo break words
   .dont-break-words();
 }
+
+// 1. Set smaller font
+// 2. Align with .text-field--title
+.text-field {
+  // Undo break words
+  .dont-break-words();
+  .text-field--title {
+    font-size: @size-font-small;  // [1]
+  }
+  .text-field--label {
+    padding-top: 11px;    // [2]
+    padding-bottom: 11px; // [2]
+  }
+}
+
 // FIXME: merge with .text-search-result
 .text-field--title {
   line-height: @line-height-text-search; // [1]
   .text-metadata();
   display: block;
+}
+
+.text-field--title.small {
+  font-size: @size-font-small;
 }
 
 .text-field--label-wrapper {

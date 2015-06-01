@@ -4,21 +4,20 @@
     <div class="container-titlebar--inner">
       <div class="group-symmetrical height-large--top height-large--bottom" swiper-prevent>
 
-        <a href ng-hide="isEndNoteEditActionHidden()"
+        <a href ng-show="showNoteAction('saveBack')"
           class="group-symmetrical--left link-navigation active highlighted sorting-hide"
           swiper-click="endNoteEdit()">
-          <span class="text-navigation-back"
-            ng-class="getEditorNavigationBackClasses()"
+          <span class="text-navigation-back" ng-class="getEditorNavigationBackClasses()"
             ng-bind="isAutoSavingPrevented() ? (isNoteEdited() && !note.trans.deleted ? 'save' : 'back') : noteStatus">
           </span>
         </a>
 
-        <a href ng-if="isPickerOpen()" ng-click="propertyEditDone()" class="group-symmetrical--left highlighted"
-          editable-field-container="auto">
+        <a href ng-if="showNoteAction('saveDone')" class="group-symmetrical--left highlighted"
+          ng-click="subEditorDone()" editable-field-container="auto">
           <span class="text-edit" ng-bind="isPropertyEdited() ? 'save' : 'done'"></span>
         </a>
 
-        <div ng-hide="!isNotePropertyInEdit() && isFirstSlide('noteEditor')" id="noteEditorTitlebarTitle"
+        <div ng-show="showNoteProperty('titlebarTitle')" id="noteEditorTitlebarTitle"
           ng-style="{maxWidth: calculateTitleWidth()}"
           class="scroll-then-toggle group-symmetrical--middle width-large primary">
           <a href class="link" swiper-click="gotoTitle()">
@@ -30,24 +29,22 @@
           </a>
         </div>
 
-        <div ng-if="showEditorType" class="group-symmetrical--middle group-centered substitute">
+        <div ng-if="showNoteProperty('editorType')" class="group-symmetrical--middle group-centered substitute">
           <span class="text-heading-primary text-downplayed">note</span>
         </div>
-        <a href ng-if="!note.trans.deleted && !isOnboarding('notes')" ng-hide="isNotePropertyInEdit()"
-          class="group-symmetrical--right" swiper-click="deleteNoteInEdit()">
+
+        <a href ng-if="showNoteAction('delete')" class="group-symmetrical--right"
+          swiper-click="deleteNoteInEdit()">
           <span class="icon-trash"></span>
         </a>
-        <a href ng-if="note.trans.deleted && !isOnboarding('notes')" ng-hide="isNotePropertyInEdit()"
+        <a href ng-if="showNoteAction('restore')"
           class="group-symmetrical--right link-navigation highlighted active" swiper-click="undeleteNote(note)">
           <span class="text-navigation">restore</span>
         </a>
 
-        <div ng-if="contentFocused || listPickerOpen " class="group-symmetrical--right">
-          <span class="text-field--label-bold" ng-bind="contentFocused ? 'content' : 'list'"></span>
-        </div>
-        <div ng-if="keywordsPickerOpen" class="group-symmetrical--right">
+        <div ng-if="showNoteProperty()" class="group-symmetrical--right">
           <div class="text-field--label-wrapper">
-            <span ng-bind="'key' + (columns === 1 ? '-\n' : '') + 'words'" class="text-field--label-bold"></span>
+            <span class="text-field--label-bold" ng-bind="getNotePropertyNameInEdit()"></span>
           </div>
         </div>
 
@@ -58,35 +55,35 @@
   <div class="swiper-container container-fluid--inner" swiper-container="noteEditor" swiper-type="main"
     expected-slides="2" swiper-container-toggle-drawer-sliding-events="hasSwipeToClose('note')"
     swiper-container-slide-changed="editorSwiperSlideChanged()">
-    <div class="swiper-wrapper" ng-class="isOnboarding('notes') && 'swiper-no-swiping'">
+    <div class="swiper-wrapper" ng-class="showNoteInstruction() && 'swiper-no-swiping'">
       <div class="swiper-slide" swiper-slide="noteEditor/basic" slide-index="0">
-        <div ng-style="{'padding-bottom': isNotePropertyInEdit() ? 0 : EDITOR_FOOTER_HEIGHT}"
+        <div ng-style="{'padding-bottom': showNoteProperty() ? 0 : EDITOR_FOOTER_HEIGHT}"
           class="container-content" drawer-override-aisle="right" ng-init="drawerAisleInitialized = true"
           scroll-then-toggle="noteEditorTitlebarTitle" scroll-then-toggle-top="noteEditorTitleInput"
           scroll-then-toggle-resizeable="noteEditorTitleInput"
           scroll-then-toggle-reset="registerGotoTitleCallback">
 
           <!-- NOTE TITLE -->
-          <div ng-hide="isNotePropertyInEdit()" class="row-top-parent">
+          <div ng-show="showNoteProperty('title')" class="row-top-parent">
             <div class="group-mixed large">
               <div class="group-mixed--middle">
                 <textarea id="noteEditorTitleInput" class="text-heading-primary large"
-                  ng-model="note.trans.title" input-model-validator ng-trim="false"
-                  ng-change="inputChanged()" ng-keydown="noteTitlebarTextKeyDown($event)" editable-field
+                  ng-model="note.trans.title" input-model-validator ng-trim="false" msd-elastic
+                  ng-change="inputChanged()" ng-keydown="noteTitlebarTextKeyDown($event)"
+                  editable-field
                   editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
-                  msd-elastic placeholder="enter title&#8230;" maxlength="128" autocapitalize="none"
-                  autocorrect="off">
+                  placeholder="enter title&#8230;" maxlength="128" autocapitalize="none" autocorrect="off">
                 </textarea>
               </div>
 
-              <div class="group-mixed--right" ng-if="!isOnboarding('notes')">
+              <div ng-if="showNoteProperty('favorite')" class="group-mixed--right">
                 <a href class="link-navigation" swiper-click="clickFavorite()">
                   <span class="icon-star large" ng-class="!note.trans.favorited && 'inactive'"></span>
                 </a>
               </div>
             </div>
 
-            <div ng-if="isOnboarding('notes')" class="row">
+            <div ng-if="showNoteInstruction('title')" class="row">
               <span ng-show="!noteTitlebarHasText()" class="text-details">
                 e.g. reading suggestions, budget meeting minutes, summer plans
               </span>
@@ -98,8 +95,7 @@
           </div>
 
           <!-- LIST -->
-          <div ng-if="(note.trans.list && !note.trans.list.trans.deleted) && (features.lists.getStatus('active') !== 'disabled')"
-          ng-hide="isNotePropertyInEdit()" class="group-mixed">
+          <div ng-if="showNoteProperty('list')" class="group-mixed">
             <a href class="group-mixed--middle link-search-result" swiper-click="openListPicker()">
               <span class="text-field--title" ng-bind="note.trans.list.trans.title"></span>
             </a>
@@ -109,8 +105,7 @@
           </div>
 
           <!-- KEYWORDS -->
-          <div ng-if="hasActiveKeywords(note)" ng-hide="isNotePropertyInEdit()"
-            class="group-mixed">
+          <div ng-if="showNoteProperty('keywords')" class="group-mixed">
             <a href class="group-mixed--middle link-search-result" swiper-click="openKeywordsPicker()">
               <span class="text-field--title" ng-bind="getKeywordsListString(note)"></span>
             </a>
@@ -120,26 +115,24 @@
           </div>
 
           <!-- COLLAPSIBLE-->
-          <div ng-if="collapsibleOpen" ng-hide="isNotePropertyInEdit()">
+          <div ng-if="showNoteProperty('collapsible')">
 
             <!-- LIST -->
-            <div ng-if="(!note.trans.list || note.trans.list.trans.deleted) && (features.lists.getStatus('active') !== 'disabled')"
-                 class="group-mixed">
+            <div ng-if="showNoteProperty('selectList')" class="group-mixed">
               <a href class="group-mixed--middle link-search-result downplayed" swiper-click="openListPicker()">
                 <span class="text-field--title">select list&#8230;</span>
               </a>
             </div>
 
             <!-- KEYWORDS -->
-            <div ng-if="!hasActiveKeywords(note)" class="group-mixed">
+            <div ng-if="showNoteProperty('addKeywords')" class="group-mixed">
               <a href class="group-mixed--middle link-search-result downplayed"
                 swiper-click="openKeywordsPicker()">
                 <span class="text-field--title">add keywords&#8230;</span>
               </a>
             </div>
           </div>
-          <div ng-if="!isOnboarding('notes') && hasUnsetCollapsableProperty()" ng-hide="isNotePropertyInEdit()"
-            class="row collapsible">
+          <div ng-if="showNoteProperty('lessMore')" class="row collapsible">
             <a href class="downplayed" swiper-click="toggleCollapsible()">
               <span ng-class="collapsibleOpen ? 'text-expand-up' : 'text-expand-down'"
                 ng-bind="collapsibleOpen ? 'less' : 'more'"></span>
@@ -147,23 +140,24 @@
           </div>
 
           <!-- CONTENT -->
-          <textarea ng-if="drawerAisleInitialized" ng-hide="listPickerOpen || keywordsPickerOpen"
-            id="ignoreSnap"
-            ng-class="{'disable-full-height': isOnboarding('notes'), 'input-separate': !contentFocused}"
-            ng-model="note.trans.content" input-model-validator ng-trim="false" msd-elastic editable-field
+          <textarea ng-if="showNoteProperty('content')" id="ignoreSnap"
+            ng-class="{'disable-full-height': showNoteInstruction(), 'input-separate': !contentFocused}"
+            ng-model="note.trans.content" input-model-validator ng-trim="false" msd-elastic
+            editable-field
             editable-field-register-callbacks="registerNoteContentInputCallbacks(focus, blur)"
-            editable-field-focus="setNoteContentFocus(true)" editable-field-blur="setNoteContentFocus(false)"
+            editable-field-focus="setTextPropertyFocus('content', true)"
+            editable-field-blur="setTextPropertyFocus('content', false)"
             placeholder="enter content&#8230;" maxlength="1000000" autocapitalize="none" autocorrect="off">
           </textarea>
 
-          <div ng-if="isOnboarding('notes')" ng-show="note.trans.content.length" class="row">
+          <div ng-if="showNoteInstruction('content')" class="row">
             <span class="text-details">
               when done, save your note by clicking 'save' in the top-left corner or swipe left
             </span>
           </div>
 
           <!-- LIST PICKER -->
-          <div ng-if="listPickerOpen" class="swiper-no-swiping animate-fade-in"
+          <div ng-if="showNoteSubEditor('list')" class="swiper-no-swiping animate-fade-in"
             editable-field-container="auto" editable-field-container-scrollable="true"
             editable-field-container-clicked-elsewhere="closeListPicker()" data-snap-ignore="true">
             <div list-picker="{upperHeading: 'active lists', upperArray: getListsArray('active'),
@@ -173,15 +167,15 @@
               list-picker-save="closeListPickerAndSetListToItem(note, list, autoSaveNote)"
               list-picker-clear="closeListPickerAndClearListFromItem(note, list, autoSaveNote)"
               list-picker-get-selected="note.trans.list"
-              list-picker-register-save-new-list-callback="registerPropertyEditDoneCallback(saveNewList)"
-              list-picker-unregister-save-new-list-callback="unregisterPropertyEditDoneCallback()"
-              list-picker-register-is-edited-callback="registerIsPropertyEdited(isEdited)"
-              list-picker-unregister-is-edited-callback="unregisterIsPropertyEdited()">
+              list-picker-register-save-new-list-callback="registerSubEditorDoneCallback(saveNewList)"
+              list-picker-unregister-save-new-list-callback="unregisterSubEditorDoneCallback()"
+              list-picker-register-is-edited-callback="registerHasSubEditorEditedCallback(isEdited)"
+              list-picker-unregister-is-edited-callback="unregisterHasSubEditorEditedCallback()">
             </div>
           </div>
 
           <!-- KEYWORDS PICKER -->
-          <div ng-if="keywordsPickerOpen" class="swiper-no-swiping animate-fade-in"
+          <div ng-if="showNoteSubEditor('keywords')" class="swiper-no-swiping animate-fade-in"
             editable-field-container="auto" editable-field-container-scrollable="true"
             editable-field-container-clicked-elsewhere="closeKeywordsPicker()" data-snap-ignore="true">
 
@@ -221,9 +215,9 @@
 
         </div>
 
-        <footer ng-hide="isNotePropertyInEdit()" class="container-content--after editor-footer">
+        <footer ng-hide="showNoteProperty()" class="container-content--after editor-footer">
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
-            <a href swiper-click="swipeToAdvanced('noteEditor')" ng-hide="isFooterNavigationHidden()"
+            <a href ng-if="showNoteAction('footerNavigation')" swiper-click="swipeToAdvanced('noteEditor')"
               class="group-symmetrical--right link-navigation">
               <span class="text-navigation-forward">advanced</span>
             </a>
@@ -243,20 +237,22 @@
             </textarea>
           </div>
 
-          <div ng-if="note.trans.uuid" class="group-mixed"
-            style="color: #919191; font-size: 13px; line-height: 22px;">
-            <div class="group-mixed--middle link-search-result">
-              <span class="text-field--title">{{::note.trans.created | date:'EEE d MMMM y' | lowercase}}</span>
+          <div ng-if="showNoteProperty('created')" class="group-mixed text-field">
+            <div class="group-mixed--middle">
+              <span class="text-field--title text-downplayed">
+                {{::note.trans.created | date:'EEE d MMMM y' | lowercase}}
+              </span>
             </div>
             <div class="group-mixed--right">
               <span class="text-field--label">created</span>
             </div>
           </div>
 
-          <div ng-if="note.trans.uuid && note.trans.created !== note.trans.modified"
-            class="group-mixed" style="color: #919191; font-size: 13px; line-height: 22px;">
+          <div ng-if="showNoteProperty('modified')" class="group-mixed text-field">
             <div class="group-mixed--middle link-search-result">
-              <span class="text-field--title">{{note.trans.modified | date:'EEE d MMMM y' | lowercase}}</span>
+              <span class="text-field--title text-downplayed">
+                {{note.trans.modified | date:'EEE d MMMM y' | lowercase}}
+              </span>
             </div>
             <div class="group-mixed--right">
               <span class="text-field--label">modified</span>
@@ -265,7 +261,7 @@
 
         </div>
 
-        <footer ng-hide="isNotePropertyInEdit()" class="container-content--after editor-footer"
+        <footer ng-hide="showNoteProperty()" class="container-content--after editor-footer"
           editor-footer="advancedSlideInfo">
 
           <div class="group-symmetrical">
@@ -283,7 +279,7 @@
           </div>
 
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
-            <a href swiper-click="swipeToBasic('noteEditor')" ng-hide="isFooterNavigationHidden()"
+            <a href ng-if="showNoteAction('footerNavigation')" swiper-click="swipeToBasic('noteEditor')"
               class="group-symmetrical--left link-navigation">
               <span class="text-navigation-back">basic</span>
             </a>

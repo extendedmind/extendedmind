@@ -30,21 +30,83 @@
     $scope.registerFeatureEditorAboutToCloseCallback(noteEditorAboutToClose, 'NoteEditorController');
 
   $scope.noteStatus = 'back';
-  var savedTimer, savedTimerInner;
-  function noteEdited() {
-    $scope.noteStatus = 'saving';
-    if (savedTimer) {
-      $timeout.cancel(savedTimer);
-      if (savedTimerInner) $timeout.cancel(savedTimerInner);
-    }
+  var keywordsPickerOpen = false;
 
-    savedTimer = $timeout(function() {
-      $scope.noteStatus = 'saved';
-      savedTimerInner = $timeout(function() {
-        $scope.noteStatus = 'back';
-      }, 1000);
-    }, 1000);
-  }
+  // NOTE EDITOR FIELD VISIBILITY
+
+  $scope.showNoteAction = function(actionName){
+    switch (actionName){
+      case 'footerNavigation':
+      return !$scope.isFooterNavigationHidden();
+      case 'delete':
+      return !$scope.note.trans.deleted && !$scope.isPropertyInEdit() && !$scope.isOnboarding('notes');
+      case 'restore':
+      return $scope.note.trans.deleted && !$scope.isPropertyInEdit() && !$scope.isOnboarding('notes');
+      case 'saveBack':
+      return !$scope.isPropertyInEdit();
+      case 'saveDone':
+      return $scope.isPropertyInEdit();
+    }
+  };
+
+  $scope.showNoteProperty = function(propertyName){
+    if (!propertyName) {
+      // Special case where name is undefined.
+      return $scope.isPropertyInEdit();
+    }
+    switch (propertyName){
+      case 'addKeywords':
+      return !hasActiveKeywords($scope.note);
+      case 'collapsible':
+      return $scope.collapsibleOpen && !$scope.isPropertyInEdit();
+      case 'content':
+      return $scope.drawerAisleInitialized && !$scope.isOtherPropertyInEdit('content');
+      case 'created':
+      return $scope.note.trans.uuid;
+      case 'editorType':
+      return $scope.showEditorType;
+      case 'favorite':
+      return !$scope.isOnboarding('notes');
+      case 'keywords':
+      return hasActiveKeywords($scope.note) && !$scope.isPropertyInEdit();
+      case 'lessMore':
+      return hasUnsetCollapsableProperty() && !$scope.isPropertyInEdit() && !$scope.isOnboarding('notes');
+      case 'list':
+      return ($scope.note.trans.list && !$scope.note.trans.list.trans.deleted &&
+              $scope.features.lists.getStatus('active') !== 'disabled' && !$scope.isPropertyInEdit());
+      case 'modified':
+      return $scope.note.trans.uuid && $scope.note.trans.created !== $scope.note.trans.modified;
+      case 'selectList':
+      return ((!$scope.note.trans.list || $scope.note.trans.list.trans.deleted) &&
+              ($scope.features.lists.getStatus('active') !== 'disabled'));
+      case 'title':
+      return !$scope.isPropertyInEdit();
+      case 'titlebarTitle':
+      return $scope.isEditorHeaderTitleVisible();
+    }
+  };
+
+  $scope.showNoteSubEditor = function(subEditorName){
+    switch (subEditorName){
+      case 'list':
+      return $scope.listPickerOpen;
+      case 'keywords':
+      return keywordsPickerOpen;
+    }
+  };
+
+  $scope.showNoteInstruction = function(instructionName) {
+    if (!instructionName) {
+      // Special case where name is undefined.
+      return $scope.isOnboarding('notes');
+    }
+    switch (instructionName) {
+      case 'content':
+      return $scope.note.trans.content && $scope.note.trans.content.length && $scope.isOnboarding('notes');
+      case 'title':
+      return $scope.isOnboarding('notes');
+    }
+  };
 
   // SAVING, DELETING
 
@@ -136,12 +198,6 @@
 
   // MODES
 
-  $scope.setNoteContentFocus = function(focus) {
-    $scope.contentFocused = focus;
-    // FIXME: Maybe some directive with focus, blur event listeners, swiper and drawer.
-    SwiperService.setOnlyExternal('noteEditor', focus);
-  };
-
   $scope.gotoTitle = function() {
     if (typeof gotoTitleCallback === 'function') gotoTitleCallback();
     if (!$scope.isFirstSlide('noteEditor')) $scope.swipeToBasic('noteEditor');
@@ -152,18 +208,20 @@
     gotoTitleCallback = callback;
   };
 
-  $scope.isNotePropertyInEdit = function() {
-    return $scope.contentFocused || $scope.isPickerOpen();
-  };
+  // UI
 
-  $scope.isEndNoteEditActionHidden = function() {
-    return $scope.isPickerOpen();
-  };
-
-  function isPickerOpenInNoteEditor(){
-    return $scope.listPickerOpen || $scope.keywordsPickerOpen;
+  function isSubEditorOpenInListEditor(){
+    return $scope.listPickerOpen || keywordsPickerOpen;
   }
-  $scope.registerIsPickerOpenCondition(isPickerOpenInNoteEditor);
+  $scope.registerIsSubEditorOpenCondition(isSubEditorOpenInListEditor);
+
+  $scope.getNotePropertyNameInEdit = function() {
+    var propertyName = $scope.getPropertyNameInEdit();
+    if (!propertyName && keywordsPickerOpen) {
+      propertyName = 'key' + ($scope.columns === 1 ? '-\n' : '') + 'words';
+    }
+    return propertyName;
+  };
 
   // CONTENT
 
@@ -267,8 +325,9 @@
       }
     }
 
-    var keywordToAdd = $scope.getTagsArray('keywords', {owner: $scope.note.trans.owner}).findFirstObjectByKeyValue('title', newKeyword.trans.title,
-                                                                 'trans') || newKeyword;
+    var keywords = $scope.getTagsArray('keywords', {owner: $scope.note.trans.owner});
+    var exisitingKeyword = keywords.findFirstObjectByKeyValue('title', newKeyword.trans.title, 'trans');
+    var keywordToAdd = exisitingKeyword || newKeyword;
     // Add already existing keyword or newly created keyword.
     $scope.addKeywordToNote(note, keywordToAdd);
   };
@@ -305,8 +364,8 @@
       if (!note.trans.keywords[i].trans.deleted){
         if (keywordsList !== ''){
           // Separate keywords with comma and non-breaking space.
-          // NOTE:  Non-breaking space is used to make Clamp.js (when used) work better - with regular space it
-          //        would remove word following the space leaving trailing comma + ellipsis in the end.
+          // NOTE:  Non-breaking space is used to make Clamp.js (when used) work better - with regular space
+          //        it would remove word following the space leaving trailing comma + ellipsis in the end.
           //        With nbsp, last keyword is split.
           keywordsList += ',\xA0';
         }
@@ -317,35 +376,36 @@
   };
 
   $scope.openKeywordsPicker = function() {
-    $scope.keywordsPickerOpen = true;
-    if (angular.isFunction($scope.registerPropertyEditDoneCallback)) {
-      $scope.registerPropertyEditDoneCallback(function() {
+    keywordsPickerOpen = true;
+    if (angular.isFunction($scope.registerSubEditorDoneCallback)) {
+      $scope.registerSubEditorDoneCallback(function() {
         if ($scope.newKeyword.trans.title) {
           $scope.addKeywordToNote($scope.note, $scope.newKeyword);
         }
         $scope.closeKeywordsPicker();
       });
     }
-    if (angular.isFunction($scope.registerIsPropertyEdited)) {
-      $scope.registerIsPropertyEdited(function() {
+    if (angular.isFunction($scope.registerHasSubEditorEditedCallback)) {
+      $scope.registerHasSubEditorEditedCallback(function() {
         return $scope.newKeyword && $scope.newKeyword.trans.title;
       });
     }
   };
 
   $scope.closeKeywordsPicker = function() {
-    $scope.keywordsPickerOpen = false;
+    keywordsPickerOpen = false;
     clearKeyword();
-    if (angular.isFunction($scope.unregisterIsPropertyEdited)) $scope.unregisterIsPropertyEdited();
+    if (angular.isFunction($scope.unregisterHasSubEditorEditedCallback))
+      $scope.unregisterHasSubEditorEditedCallback();
   };
 
-  $scope.hasActiveKeywords = function(note){
+  function hasActiveKeywords(note){
     if (note.trans.keywords && note.trans.keywords.length){
       for (var i=0; i<note.trans.keywords.length; i++){
         if (!note.trans.keywords[i].trans.deleted) return true;
       }
     }
-  };
+  }
 
   $scope.getActiveKeywords = function(note){
     var activeKeywords = [];
@@ -363,9 +423,9 @@
     $scope.collapsibleOpen = !$scope.collapsibleOpen;
   };
 
-  $scope.hasUnsetCollapsableProperty = function() {
+  function hasUnsetCollapsableProperty() {
     return !$scope.note.trans.list || (!$scope.note.trans.keywords || !$scope.note.trans.keywords.length);
-  };
+  }
 
   $scope.$on('$destroy', function() {
     if (pollForSaveReady) pollForSaveReady.value = false;
