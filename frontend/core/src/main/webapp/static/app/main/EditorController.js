@@ -557,6 +557,12 @@
       return !$scope.isPropertyInEdit();
       case 'saveDone':
       return $scope.isPropertyInEdit();
+      case 'convertToNote':
+      return !($scope.foreignOwner || $scope.features.notes.getStatus() === 'disabled');
+      case 'convertToList':
+      return !($scope.foreignOwner || $scope.features.lists.getStatus('active') === 'disabled');
+      case 'convertToTask':
+      return !$scope.foreignOwner;
     }
   };
 

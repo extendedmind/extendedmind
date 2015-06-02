@@ -238,11 +238,11 @@
 
           <!-- CONVERT -->
           <div ng-if="showListEditorComponent('advancedFooter', 'convert') " class="group-symmetrical">
-            <a href ng-class="!showListAction('convertToTask') && 'invisible'"
+            <a href ng-class="!showEditorAction('convertToTask') && 'invisible'"
                class="group-symmetrical--left link" swiper-click="convertToTask(list)">
               <span class="text-convert small">task</span>
             </a>
-            <a href ng-class="!showListAction('convertToNote') && 'invisible'"
+            <a href ng-class="!showEditorAction('convertToNote') && 'invisible'"
             class="group-symmetrical--middle group-centered link" swiper-click="convertToNote(list)">
               <span class="text-convert small">note</span>
             </a>

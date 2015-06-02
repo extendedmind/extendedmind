@@ -4,18 +4,18 @@
     <div class="container-titlebar--inner">
       <div class="group-symmetrical height-large--top">
 
-        <a href ng-hide="itemDescriptionFocused"
+        <a href ng-show="showEditorAction('saveBack')"
           class="group-symmetrical--left link-navigation active highlighted sorting-hide"
           swiper-click="endItemEdit()">
           <span class="text-navigation-back" ng-bind="isItemEdited() && !item.trans.deleted ? 'save' : 'back'"
           ng-class="getEditorNavigationBackClasses()"></span>
         </a>
 
-        <a href ng-if="itemDescriptionFocused" class="group-symmetrical--left highlighted">
+        <a href ng-if="showEditorAction('saveDone')" class="group-symmetrical--left highlighted">
           <span class="text-edit">done</span>
         </a>
 
-        <div ng-show="itemDescriptionFocused" ng-style="{maxWidth: calculateTitleWidth()}"
+        <div ng-show="showEditorComponent('titlebarTitle')" ng-style="{maxWidth: calculateTitleWidth()}"
           class="group-symmetrical--middle width-large text-heading-primary--outer">
           <div class="text-heading-primary--inner">
             <span class="text-heading-primary" ng-class="!item.trans.title && 'text-downplayed'"
@@ -24,23 +24,22 @@
           </div>
         </div>
 
-        <a href ng-if="!item.trans.deleted" ng-hide="itemDescriptionFocused" class="group-symmetrical--right"
+        <a href ng-if="showItemAction('delete')" class="group-symmetrical--right"
           swiper-click="deleteItemInEdit()">
           <span class="icon-trash"></span>
         </a>
-        <a href ng-if="item.trans.deleted" ng-hide="itemDescriptionFocused"
+        <a href ng-if="showItemAction('restore')"
           class="group-symmetrical--right link-navigation highlighted active"
           swiper-click="undeleteItem(item)"><span class="text-navigation">restore</span>
         </a>
 
-        <div ng-if="itemDescriptionFocused" class="group-symmetrical--right">
+        <div ng-if="showEditorProperty()" class="group-symmetrical--right">
           <div class="text-field--label-wrapper">
-            <span ng-bind="'descrip' + (columns === 1 ? '-\n' : '') + 'tion'"
-              class="text-field--label-bold">
+            <span class="text-field--label-bold"
+              ng-bind="getPropertyNameInEdit()">
             </span>
           </div>
         </div>
-
       </div>
     </div>
   </header>
@@ -49,7 +48,7 @@
     <div class="container-content" drawer-override-aisle="right" ng-init="drawerAisleInitialized = true">
 
       <!-- ITEM TITLE -->
-      <div ng-hide="itemDescriptionFocused" class="row-vertically-centered with-textarea">
+      <div ng-show="showEditorProperty('title')" class="row-vertically-centered with-textarea">
         <textarea class="text-heading-primary large" ng-model="item.trans.title"
           input-model-validator ng-trim="false" msd-elastic ng-keydown="itemTitlebarTextKeyDown($event)"
           editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
@@ -58,10 +57,11 @@
       </div>
 
       <!-- DESCRIPTION -->
-      <textarea ng-if="drawerAisleInitialized" id="ignoreSnap" ng-model="item.trans.description"
-        input-model-validator ng-trim="false" ng-focus="setItemDescriptionFocus(true)"
-        ng-blur="setItemDescriptionFocus(false)" msd-elastic
-        placeholder="enter description&#8230;" maxlength="1024" autocapitalize="none" autocorrect="off">
+      <textarea ng-if="showEditorProperty('description')" id="ignoreSnap" ng-model="item.trans.description"
+        input-model-validator ng-trim="false" msd-elastic maxlength="1024" autocapitalize="none"
+        ng-focus="setTextPropertyFocus('description', true)"
+        ng-blur="setTextPropertyFocus('description', false)"
+        placeholder="enter description&#8230;" autocorrect="off">
       </textarea>
 
     </div>
@@ -72,12 +72,12 @@
         </a>
         <div class="group-symmetrical--middle width-large">
           <a href class="link" swiper-click="convertToNote(item)"
-          ng-class="(features.notes.getStatus() === 'disabled') && 'invisible'">
+          ng-class="!showEditorAction('convertToNote') && 'invisible'">
             <span class="text-convert">note</span>
           </a>
         </div>
         <a href class="group-symmetrical--right link"
-          ng-class="(features.lists.getStatus('active') === 'disabled') && 'invisible'"
+          ng-class="!showEditorAction('convertToList') && 'invisible'"
           swiper-click="convertToList(item)">
           <span class="text-convert">list</span>
         </a>

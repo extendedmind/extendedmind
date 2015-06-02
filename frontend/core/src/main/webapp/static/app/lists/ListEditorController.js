@@ -86,11 +86,6 @@
         $scope.features.lists.getStatus('archived') !== 'disabled';
       case 'share':
       return !$scope.foreignOwner && !$scope.listShareEditorOpen;
-      case 'convertToNote':
-      return !$scope.foreignOwner && !$scope.features.notes.getStatus() === 'disabled';
-      case 'convertToTask':
-      return !$scope.foreignOwner
-
     }
   };
 
@@ -128,7 +123,7 @@
       }else if (subcomponentName === 'navigation'){
         return !$scope.isFooterNavigationHidden();
       }else if (subcomponentName === 'convert'){
-        return $scope.showListAction('convertToTask') || $scope.showListAction('convertToNote');
+        return $scope.showEditorAction('convertToTask') || $scope.showEditorAction('convertToNote');
       }
     }
   };
