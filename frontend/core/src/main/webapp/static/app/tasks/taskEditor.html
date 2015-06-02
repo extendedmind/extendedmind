@@ -13,7 +13,8 @@
         </a>
 
         <a href ng-if="showEditorAction('saveDone')" class="group-symmetrical--left highlighted"
-          editable-field-container="auto" ng-click="subEditorDone()">
+          editable-field-container="{{getTaskPropertyInEditHasContainer() && 'auto'}}"
+          ng-click="subEditorDone()">
           <span class="text-edit" ng-bind="isPropertyEdited() ? 'save' : 'done'"></span>
         </a>
 
@@ -150,8 +151,7 @@
 
           <!-- REMINDER PICKER -->
           <div ng-if="showTaskSubEditor('reminders')"
-            class="swiper-no-swiping animate-fade-in group-mixed vertically-centered"
-            editable-field-container="auto" data-snap-ignore="true">
+            class="swiper-no-swiping animate-fade-in group-mixed vertically-centered" data-snap-ignore="true">
 
             <div class="reminder-container group-mixed--middle">
 

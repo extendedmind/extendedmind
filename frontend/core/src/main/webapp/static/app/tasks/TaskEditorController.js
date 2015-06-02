@@ -83,6 +83,10 @@
     }
   };
 
+  $scope.getTaskPropertyInEditHasContainer = function() {
+    return calendarOpen || contextPickerOpen || $scope.listPickerOpen || repeatingPickerOpen;
+  }
+
   // COMPLETING, SAVING, DELETING
 
   var completeReadyDeferred;
