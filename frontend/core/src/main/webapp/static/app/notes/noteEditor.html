@@ -17,7 +17,7 @@
           <span class="text-edit" ng-bind="isPropertyEdited() ? 'save' : 'done'"></span>
         </a>
 
-        <div ng-show="showNoteEditorComponent('titlebarTitle')" id="noteEditorTitlebarTitle"
+        <div ng-show="showEditorComponent('titlebarTitle')" id="noteEditorTitlebarTitle"
           ng-style="{maxWidth: calculateTitleWidth()}"
           class="scroll-then-toggle group-symmetrical--middle width-large primary">
           <a href class="link" swiper-click="gotoTitle()">

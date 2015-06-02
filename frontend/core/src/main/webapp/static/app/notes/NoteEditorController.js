@@ -71,9 +71,6 @@
 
       case 'lessMore':
       return hasUnsetCollapsableProperty() && !$scope.isPropertyInEdit() && !$scope.isOnboarding('notes');
-
-      case 'titlebarTitle':
-      return $scope.isEditorHeaderTitleVisible();
     }
   };
 
