@@ -573,7 +573,6 @@
   };
 
   $scope.showEditorProperty = function(propertyName){
-    if (!propertyName) return $scope.isPropertyInEdit();
     switch (propertyName){
       case 'title':
       return !$scope.isPropertyInEdit();
