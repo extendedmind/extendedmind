@@ -32,11 +32,11 @@
           <span class="text-heading-primary text-downplayed">list</span>
         </div>
 
-        <a href ng-if="showListAction('delete')" class="group-symmetrical--right"
+        <a href ng-if="showEditorAction('delete', list)" class="group-symmetrical--right"
            swiper-click="deleteListInEdit()">
           <span class="icon-trash"></span>
         </a>
-        <a href ng-if="showListAction('restore')"
+        <a href ng-if="showEditorAction('restore', list)"
           class="group-symmetrical--right link-navigation highlighted active"
           swiper-click="undeleteList(list)">
           <span class="text-navigation">restore</span>

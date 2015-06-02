@@ -37,9 +37,9 @@
   $scope.showNoteAction = function(actionName){
     switch (actionName){
       case 'delete':
-      return !$scope.note.trans.deleted && !$scope.isPropertyInEdit() && !$scope.isOnboarding('notes');
+      return $scope.showEditorAction('delete', $scope.note) && !$scope.isOnboarding('notes');
       case 'restore':
-      return $scope.note.trans.deleted && !$scope.isPropertyInEdit() && !$scope.isOnboarding('notes');
+      return $scope.showEditorAction('restore', $scope.note) && !$scope.isOnboarding('notes');
       case 'saveBack':
       return !$scope.isPropertyInEdit();
       case 'saveDone':

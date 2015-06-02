@@ -560,9 +560,9 @@
       case 'saveDone':
       return $scope.isPropertyInEdit();
       case 'delete':
-      return !item.trans.deleted && !$scope.isPropertyInEdit();
+      return !item.trans.deleted && !$scope.foreignOwner && !$scope.isPropertyInEdit();
       case 'restore':
-      return item.trans.deleted && !$scope.isPropertyInEdit();
+      return item.trans.deleted && !$scope.foreignOwner && !$scope.isPropertyInEdit();
       case 'convertToNote':
       return !($scope.foreignOwner || $scope.features.notes.getStatus() === 'disabled');
       case 'convertToList':

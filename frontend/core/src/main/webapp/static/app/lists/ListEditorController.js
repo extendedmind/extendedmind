@@ -64,10 +64,6 @@
 
   $scope.showListAction = function(actionName){
     switch (actionName){
-      case 'delete':
-      return !$scope.list.trans.deleted && !$scope.foreignOwner && !$scope.isPropertyInEdit();
-      case 'restore':
-      return $scope.list.trans.deleted && !$scope.foreignOwner && !$scope.isPropertyInEdit();
       case 'favorite':
       // For lists, favoriting is an action because there is no 'favorited' field in the list there is
       // for a note.
