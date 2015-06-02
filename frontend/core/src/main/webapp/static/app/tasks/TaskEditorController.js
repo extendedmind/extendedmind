@@ -85,7 +85,7 @@
 
   $scope.getTaskPropertyInEditHasContainer = function() {
     return calendarOpen || contextPickerOpen || $scope.listPickerOpen || repeatingPickerOpen;
-  }
+  };
 
   // COMPLETING, SAVING, DELETING
 
@@ -288,9 +288,18 @@
     };
 
     reminderPickerOpen = true;
-    if (angular.isFunction($scope.registerSubEditorDoneCallback))
+    if (angular.isFunction($scope.registerSubEditorDoneCallback)) {
       $scope.registerSubEditorDoneCallback(closeReminderPickerAndSave, [reminder, task]);
+    }
+
+    if (angular.isFunction($scope.registerHasSubEditorEditedCallback)) {
+      $scope.registerHasSubEditorEditedCallback(isReminderEdited);
+    }
   };
+
+  function isReminderEdited() {
+    // TODO
+  }
 
   function compareWithNotificationTime(a, b) {
     return a.notification - b.notification;
