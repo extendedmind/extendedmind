@@ -22,18 +22,6 @@
   if (angular.isFunction($scope.registerFeatureEditorAboutToCloseCallback))
     $scope.registerFeatureEditorAboutToCloseCallback(itemEditorAboutToClose, 'ItemEditorController');
 
-  // ITEM EDITOR ELEMENT VISIBILITY
-
-  $scope.showItemAction = function(actionName){
-    switch (actionName){
-      case 'delete':
-      return !$scope.item.trans.deleted && !$scope.isPropertyInEdit();
-      case 'restore':
-      return $scope.item.trans.deleted && !$scope.isPropertyInEdit();
-    }
-  };
-
-
   // SAVING, DELETING
 
   function saveItemInEdit() {

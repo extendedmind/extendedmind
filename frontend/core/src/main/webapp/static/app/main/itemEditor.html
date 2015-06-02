@@ -24,11 +24,11 @@
           </div>
         </div>
 
-        <a href ng-if="showItemAction('delete')" class="group-symmetrical--right"
+        <a href ng-if="showEditorAction('delete', item)" class="group-symmetrical--right"
           swiper-click="deleteItemInEdit()">
           <span class="icon-trash"></span>
         </a>
-        <a href ng-if="showItemAction('restore')"
+        <a href ng-if="showEditorAction('restore', item)"
           class="group-symmetrical--right link-navigation highlighted active"
           swiper-click="undeleteItem(item)"><span class="text-navigation">restore</span>
         </a>

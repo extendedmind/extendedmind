@@ -553,12 +553,16 @@
     }
   };
 
-  $scope.showEditorAction = function(actionName){
+  $scope.showEditorAction = function(actionName, item){
     switch (actionName){
       case 'saveBack':
       return !$scope.isPropertyInEdit();
       case 'saveDone':
       return $scope.isPropertyInEdit();
+      case 'delete':
+      return !item.trans.deleted && !$scope.isPropertyInEdit();
+      case 'restore':
+      return item.trans.deleted && !$scope.isPropertyInEdit();
       case 'convertToNote':
       return !($scope.foreignOwner || $scope.features.notes.getStatus() === 'disabled');
       case 'convertToList':
