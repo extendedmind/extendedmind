@@ -373,13 +373,13 @@
             ng-class="(features.notes.getStatus() === 'disabled' &&
             features.lists.getStatus('active') === 'disabled') && 'invisible'">
             <a href class="group-symmetrical--left link"
-            ng-class="(features.notes.getStatus() === 'disabled') && 'invisible'"
-            swiper-click="convertToNote(task)">
+              ng-class="(features.notes.getStatus() === 'disabled') && 'invisible'"
+              swiper-click="convertToNote(task)">
               <span class="text-convert small">note</span>
             </a>
             <a href class="group-symmetrical--middle group-centered link"
-            ng-class="(features.lists.getStatus('active') === 'disabled') && 'invisible'"
-            swiper-click="convertToList(task)">
+              ng-class="(features.lists.getStatus('active') === 'disabled') && 'invisible'"
+              swiper-click="convertToList(task)">
               <span class="text-convert small">list</span>
             </a>
             <div class="group-symmetrical--right">
