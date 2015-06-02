@@ -113,14 +113,19 @@
       }else if (subcomponentName === 'navigation'){
         return !$scope.isFooterNavigationHidden();
       }
+      break;
+
       case 'advancedFooter':
       if (!subcomponentName){
-        return !$scope.listShareEditorOpen;
+        return !$scope.listShareEditorOpen &&
+           ($scope.showListEditorComponent('advancedFooter', 'convert') ||
+            $scope.showListEditorComponent('advancedFooter', 'navigation'));
       }else if (subcomponentName === 'navigation'){
         return !$scope.isFooterNavigationHidden();
       }else if (subcomponentName === 'convert'){
         return $scope.showEditorAction('convertToTask') || $scope.showEditorAction('convertToNote');
       }
+      break;
     }
   };
 

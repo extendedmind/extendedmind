@@ -40,10 +40,6 @@
       return $scope.showEditorAction('delete', $scope.note) && !$scope.isOnboarding('notes');
       case 'restore':
       return $scope.showEditorAction('restore', $scope.note) && !$scope.isOnboarding('notes');
-      case 'saveBack':
-      return !$scope.isPropertyInEdit();
-      case 'saveDone':
-      return $scope.isPropertyInEdit();
     }
   };
 
@@ -54,23 +50,31 @@
       if (!subcomponentName) {
         return $scope.collapsibleOpen && !$scope.isPropertyInEdit();
       }
-      switch (subcomponentName) {
-        case 'keywords':
+      if (subcomponentName ==='keywords'){
         return !hasActiveKeywords($scope.note);
-        case 'list':
+      }else if (subcomponentName ==='list'){
         return ((!$scope.note.trans.list || $scope.note.trans.list.trans.deleted) &&
                 ($scope.features.lists.getStatus('active') !== 'disabled'));
       }
       break;
 
-      case 'editorType':
-      return $scope.showEditorType;
-
-      case 'footerNavigation':
-      return !$scope.isFooterNavigationHidden();
-
       case 'lessMore':
       return hasUnsetCollapsableProperty() && !$scope.isPropertyInEdit() && !$scope.isOnboarding('notes');
+
+      case 'basicFooter':
+      return !$scope.isPropertyInEdit() && !$scope.isFooterNavigationHidden();
+
+      case 'advancedFooter':
+      if (!subcomponentName){
+        return $scope.showNoteEditorComponent('advancedFooter', 'convert') ||
+               $scope.showNoteEditorComponent('advancedFooter', 'navigation');
+      }else if (subcomponentName === 'navigation'){
+        return !$scope.isFooterNavigationHidden();
+      }else if (subcomponentName === 'convert'){
+        return $scope.showEditorAction('convertToTask') || $scope.showEditorAction('convertToList');
+      }
+
+      break;
     }
   };
 
@@ -89,15 +93,11 @@
               $scope.features.lists.getStatus('active') !== 'disabled' && !$scope.isPropertyInEdit());
       case 'modified':
       return $scope.note.trans.uuid && $scope.note.trans.created !== $scope.note.trans.modified;
-      case 'title':
-      return !$scope.isPropertyInEdit();
     }
   };
 
   $scope.showNoteSubEditor = function(subEditorName){
     switch (subEditorName){
-      case 'list':
-      return $scope.listPickerOpen;
       case 'keywords':
       return keywordsPickerOpen;
     }

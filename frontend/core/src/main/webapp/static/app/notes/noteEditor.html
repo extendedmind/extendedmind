@@ -4,7 +4,7 @@
     <div class="container-titlebar--inner">
       <div class="group-symmetrical height-large--top height-large--bottom" swiper-prevent>
 
-        <a href ng-show="showNoteAction('saveBack')"
+        <a href ng-show="showEditorAction('saveBack')"
           class="group-symmetrical--left link-navigation active highlighted sorting-hide"
           swiper-click="endNoteEdit()">
           <span class="text-navigation-back" ng-class="getEditorNavigationBackClasses()"
@@ -12,7 +12,7 @@
           </span>
         </a>
 
-        <a href ng-if="showNoteAction('saveDone')" class="group-symmetrical--left highlighted"
+        <a href ng-if="showEditorAction('saveDone')" class="group-symmetrical--left highlighted"
           ng-click="subEditorDone()" editable-field-container="auto">
           <span class="text-edit" ng-bind="isPropertyEdited() ? 'save' : 'done'"></span>
         </a>
@@ -29,7 +29,7 @@
           </a>
         </div>
 
-        <div ng-if="showNoteEditorComponent('editorType')"
+        <div ng-if="showEditorComponent('editorType')"
           class="group-symmetrical--middle group-centered substitute">
           <span class="text-heading-primary text-downplayed">note</span>
         </div>
@@ -96,7 +96,7 @@
           </div>
 
           <!-- LIST -->
-          <div ng-if="showNoteProperty('list')" class="group-mixed">
+          <div ng-if="showEditorProperty('list')" class="group-mixed">
             <a href class="group-mixed--middle link-search-result" swiper-click="openListPicker()">
               <span class="text-field--title" ng-bind="note.trans.list.trans.title"></span>
             </a>
@@ -158,7 +158,7 @@
           </div>
 
           <!-- LIST PICKER -->
-          <div ng-if="showNoteSubEditor('list')" class="swiper-no-swiping animate-fade-in"
+          <div ng-if="showEditorSubEditor('list')" class="swiper-no-swiping animate-fade-in"
             editable-field-container="auto" editable-field-container-scrollable="true"
             editable-field-container-clicked-elsewhere="closeListPicker()" data-snap-ignore="true">
             <div list-picker="{upperHeading: 'active lists', upperArray: getListsArray('active'),
@@ -216,10 +216,10 @@
 
         </div>
 
-        <footer ng-hide="showNoteProperty()" class="container-content--after editor-footer">
+        <footer ng-if="showNoteEditorComponent('basicFooter')" class="container-content--after editor-footer">
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
-            <a href ng-if="showNoteEditorComponent('footerNavigation')"
-              class="group-symmetrical--right link-navigation" swiper-click="swipeToAdvanced('noteEditor')">
+            <a href class="group-symmetrical--right link-navigation"
+               swiper-click="swipeToAdvanced('noteEditor')">
               <span class="text-navigation-forward">advanced</span>
             </a>
           </nav>
@@ -262,16 +262,17 @@
 
         </div>
 
-        <footer ng-hide="showNoteProperty()" class="container-content--after editor-footer"
+        <footer ng-if="showNoteEditorComponent('advancedFooter')" class="container-content--after editor-footer"
           editor-footer="advancedSlideInfo">
 
           <!-- CONVERT -->
-          <div class="group-symmetrical">
-            <a href class="group-symmetrical--left link" swiper-click="convertToTask(note)">
+          <div ng-if="showNoteEditorComponent('advancedFooter', 'convert')" class="group-symmetrical">
+            <a href ng-class="!showEditorAction('convertToTask') && 'invisible'"
+               class="group-symmetrical--left link" swiper-click="convertToTask(note)">
               <span class="text-convert small">task</span>
             </a>
-            <a href class="group-symmetrical--middle group-centered link"
-              ng-class="(features.lists.getStatus('active') === 'disabled') && 'invisible'"
+            <a href ng-class="!showEditorAction('convertToList') && 'invisible'"
+              class="group-symmetrical--middle group-centered link"
               swiper-click="convertToList(note)">
               <span class="text-convert small">list</span>
             </a>
@@ -280,9 +281,9 @@
             </div>
           </div>
 
-          <nav role="navigation" class="swiper-no-swiping group-symmetrical">
-            <a href ng-if="showNoteEditorComponent('footerNavigation')"
-              class="group-symmetrical--left link-navigation" swiper-click="swipeToBasic('noteEditor')">
+          <nav ng-if="showNoteEditorComponent('advancedFooter', 'navigation')" role="navigation"
+          class="swiper-no-swiping group-symmetrical">
+            <a href class="group-symmetrical--left link-navigation" swiper-click="swipeToBasic('noteEditor')">
               <span class="text-navigation-back">basic</span>
             </a>
           </nav>
