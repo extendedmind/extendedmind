@@ -78,10 +78,6 @@
   };
 
   $scope.showNoteProperty = function(propertyName){
-    if (!propertyName) {
-      // Special case where name is undefined.
-      return $scope.isPropertyInEdit();
-    }
     switch (propertyName){
       case 'content':
       return $scope.drawerAisleInitialized && !$scope.isOtherPropertyInEdit('content');
