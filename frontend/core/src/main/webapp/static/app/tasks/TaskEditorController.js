@@ -32,7 +32,9 @@
     switch (componentName) {
 
       case 'advancedFooter':
-      if (subcomponentName === 'convert') {
+      if (!subcomponentName) {
+        return !$scope.isPropertyInEdit();
+      } else if (subcomponentName === 'convert') {
         return $scope.showEditorAction('convertToList') || $scope.showEditorAction('convertToNote');
       } else if (subcomponentName === 'navigation') {
         return !$scope.isFooterNavigationHidden();
@@ -40,7 +42,9 @@
       break;
 
       case 'basicFooter':
-      if (subcomponentName === 'navigation') {
+      if (!subcomponentName) {
+        return !$scope.isPropertyInEdit();
+      } else if (subcomponentName === 'navigation') {
         return !$scope.isFooterNavigationHidden();
       }
       break;
@@ -154,24 +158,7 @@
     }
   };
 
-  /*$scope.setTaskDescriptionFocus = function(focus) {
-    $scope.taskDescriptionFocused = focus;
-    // FIXME: Maybe some directive with focus, blur event listeners, swiper and drawer.
-    SwiperService.setOnlyExternal('taskEditor', focus);
-    if (!focus && typeof contentBlurCallback === 'function') contentBlurCallback();
-  };*/
-
   // UI
-
-  $scope.isTaskPropertyInEdit = function() {
-    if ($scope.taskDescriptionFocused) {
-      if (typeof hideCallback === 'function') hideCallback(true);
-      return true;
-    }
-    var pickerOpen = $scope.isPickerOpen();
-    if (typeof hideCallback === 'function') hideCallback(pickerOpen);
-    return pickerOpen;
-  };
 
   function isSubEditorOpenInTaskEditor(){
     return calendarOpen || contextPickerOpen || $scope.listPickerOpen || reminderPickerOpen ||
@@ -542,23 +529,19 @@
       delete task.trans.repeating;
   };
 
-  $scope.isTaskFooterHidden = function(footerHiddenCallback) {
-    var footerHidden = $scope.isTaskPropertyInEdit();
-    if (typeof footerHiddenCallback === 'function') footerHiddenCallback(footerHidden);
-    return footerHidden;
+  var showFooterCallbacks = {};
+  $scope.registerShowFooterCallback = function(callback, id) {
+    if (!showFooterCallbacks[id]) {
+      showFooterCallbacks[id] = callback;
+    }
   };
 
-  var hideCallback;
-  $scope.registerHideCallback = function(callback) {
-    if (!hideCallback)
-      hideCallback = callback;
-  };
-
-  var contentBlurCallback;
-  $scope.registerContentBlurCallback = function(callback) {
-    if (!contentBlurCallback)
-      contentBlurCallback = callback;
-  };
+  $scope.$watch(function() {
+    for (var id in showFooterCallbacks) {
+      var showFooter = $scope.showTaskEditorComponent(id);
+      if (showFooterCallbacks.hasOwnProperty(id)) showFooterCallbacks[id](showFooter);
+    }
+  });
 
   $scope.$on('$destroy', function() {
     if (angular.isFunction($scope.unregisterSubEditorDoneCallback)) {

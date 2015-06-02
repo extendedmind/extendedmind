@@ -54,7 +54,8 @@
     expected-slides="2" swiper-container-toggle-drawer-sliding-events="hasSwipeToClose('task')"
     swiper-container-slide-changed="editorSwiperSlideChanged()">
     <div class="swiper-wrapper">
-      <div class="swiper-slide" swiper-slide="taskEditor/basic" slide-index="0" ng-init="basicSlideInfo = {}">
+      <div class="swiper-slide" swiper-slide="taskEditor/basic" slide-index="0"
+        ng-init="slideInfo = {footerId: 'basicFooter'}">
 
         <div class="container-content" drawer-override-aisle="right" ng-init="drawerAisleInitialized = true">
 
@@ -275,7 +276,7 @@
 
         </div>
 
-        <footer class="container-content--after editor-footer" editor-footer="basicSlideInfo"
+        <footer class="container-content--after editor-footer" editor-footer="slideInfo"
           editor-footer-ios-click editor-footer-start-expanded>
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
             <div class="group-symmetrical--middle">
@@ -294,8 +295,8 @@
       </div>
 
       <div class="swiper-slide" swiper-slide="taskEditor/advanced" slide-index="1"
-        ng-init="advancedSlideInfo = {}">
-        <div class="container-content" ng-style="{'padding-bottom': advancedSlideInfo.footerHeight}">
+        ng-init="slideInfo = {footerId: 'advancedFooter'}">
+        <div class="container-content" ng-style="{'padding-bottom': slideInfo.footerHeight}">
 
           <!-- CONTEXT -->
           <div ng-show="showTaskProperty('context')" class="group-mixed row-top-parent">
@@ -392,8 +393,7 @@
           </div>
 
         </div>
-        <footer ng-hide="isTaskFooterHidden(editorFooterHiddenCallback)"
-          class="container-content--after editor-footer" editor-footer="advancedSlideInfo">
+        <footer class="container-content--after editor-footer" editor-footer="slideInfo">
 
           <!-- CONVERT -->
           <div class="group-symmetrical" ng-if="showTaskEditorComponent('advancedFooter', 'convert')">
@@ -410,9 +410,9 @@
             </div>
           </div>
 
-          <nav role="navigation" class="swiper-no-swiping group-symmetrical">
-            <a href ng-if="showTaskEditorComponent('advancedFooter', 'navigation')"
-              class="group-symmetrical--left link-navigation active" swiper-click="swipeToBasic('taskEditor')">
+          <nav ng-if="showTaskEditorComponent('advancedFooter', 'navigation')" role="navigation"
+            class="swiper-no-swiping group-symmetrical">
+            <a href class="group-symmetrical--left link-navigation active" swiper-click="swipeToBasic('taskEditor')">
               <span class="text-navigation-back">basic</span>
             </a>
           </nav>

@@ -612,6 +612,20 @@
       });
     }
   };
+
+  var showFooterCallbacks = {};
+  $scope.registerShowFooterCallback = function(callback, id) {
+    if (!showFooterCallbacks[id]) {
+      showFooterCallbacks[id] = callback;
+    }
+  };
+
+  $scope.$watch(function() {
+    for (var id in showFooterCallbacks) {
+      var showFooter = $scope.showListEditorComponent(id);
+      if (showFooterCallbacks.hasOwnProperty(id)) showFooterCallbacks[id](showFooter);
+    }
+  });
 }
 
 ListEditorController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout',

@@ -24,7 +24,8 @@
     </div>
   </header>
 
-  <div ng-if="syncState !== 'active'" class="container-fluid--inner" ng-init="containerInfo = {}">
+  <div ng-if="syncState !== 'active'" class="container-fluid--inner"
+    ng-init="containerInfo = {footerId: 'omnibarFooter'}">
     <div ng-style="{'padding-bottom': containerInfo.footerHeight}"
       class="container-content with-expandable-footer" drawer-override-aisle="right">
 

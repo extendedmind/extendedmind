@@ -35,27 +35,35 @@
       // var customMaxHeight;  // TODO: rename to expandedFooterMaxHeight
 
       var contentElement = element[0].previousElementSibling;
+      var containerInfos;
 
-      scope.editorFooterHiddenCallback = function(hidden) {
-        if (hidden && containerInfos.footerHeight !== 0) {
+      function showEditorFooter(visible) {
+        if (visible) {
+          if (containerInfos.oldFooterHeight !== undefined &&
+              containerInfos.footerHeight !== containerInfos.oldFooterHeight)
+          {
+            containerInfos.footerHeight = containerInfos.oldFooterHeight;
+            contentElement.style.paddingBottom = containerInfos.footerHeight + 'px';
+            element[0].style.display = 'initial';
+          }
+          if (!containerInfos.footerHeight) {
+            // When the height is initially not set.
+            containerInfos.footerHeight = element[0].offsetHeight;
+            contentElement.style.paddingBottom = containerInfos.footerHeight + 'px';
+          }
+          // Reset footer height.
+        } else if (!visible && containerInfos.footerHeight !== 0) {
           // Store old footer height and set footer height temporarily to zero.
           element[0].style.display = 'none';
           containerInfos.oldFooterHeight = containerInfos.footerHeight;
           containerInfos.footerHeight = 0;
           contentElement.style.paddingBottom = containerInfos.footerHeight;
-        } else if (!hidden && containerInfos.oldFooterHeight !== undefined &&
-                   containerInfos.footerHeight !== containerInfos.oldFooterHeight)
-        {
-          containerInfos.footerHeight = containerInfos.oldFooterHeight;
-          contentElement.style.paddingBottom = containerInfos.footerHeight + 'px';
-          element[0].style.display = 'initial';
-          // Reset footer height.
         }
-      };
+      }
 
       if (attrs.editorFooter) {
         // Delegate footer height info.
-        var containerInfos = $parse(attrs.editorFooter)(scope);
+        containerInfos = $parse(attrs.editorFooter)(scope);
         containerInfos.footerHeight = element[0].offsetHeight;
         contentElement.style.paddingBottom = containerInfos.footerHeight + 'px';
       }
@@ -158,23 +166,8 @@
         }
       }
 
-      if (angular.isFunction(scope.registerHideCallback))
-        scope.registerHideCallback(scope.editorFooterHiddenCallback);
-
-      if (angular.isFunction(scope.registerContentBlurCallback))
-        scope.registerContentBlurCallback(showFooterDelayed);
-
-      /*
-      * Wait for the resize animation to end.
-      */
-      function showFooterDelayed() {
-        setTimeout(function() {
-          containerInfos.footerHeight = containerInfos.oldFooterHeight;
-          contentElement.style.paddingBottom = containerInfos.footerHeight + 'px';
-          element[0].style.display = 'initial';
-          // Reset footer height.
-        }, 150);
-      }
+      if (angular.isFunction(scope.registerShowFooterCallback))
+        scope.registerShowFooterCallback(showEditorFooter, containerInfos.footerId);
 
       scope.closeExpand = function() {
         // Reset container's padding-bottom to default footer height before animation so that the backside

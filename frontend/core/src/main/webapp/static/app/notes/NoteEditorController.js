@@ -434,6 +434,20 @@
     return !$scope.note.trans.list || (!$scope.note.trans.keywords || !$scope.note.trans.keywords.length);
   }
 
+  var showFooterCallbacks = {};
+  $scope.registerShowFooterCallback = function(callback, id) {
+    if (!showFooterCallbacks[id]) {
+      showFooterCallbacks[id] = callback;
+    }
+  };
+
+  $scope.$watch(function() {
+    for (var id in showFooterCallbacks) {
+      var showFooter = $scope.showNoteEditorComponent(id);
+      if (showFooterCallbacks.hasOwnProperty(id)) showFooterCallbacks[id](showFooter);
+    }
+  });
+
   $scope.$on('$destroy', function() {
     if (pollForSaveReady) pollForSaveReady.value = false;
   });

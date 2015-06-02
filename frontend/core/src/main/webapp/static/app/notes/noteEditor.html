@@ -228,8 +228,8 @@
       </div>
 
       <div class="swiper-slide" swiper-slide="noteEditor/advanced" slide-index="1"
-        ng-init="advancedSlideInfo = {}">
-        <div ng-style="{'padding-bottom': advancedSlideInfo.footerHeight}" class="container-content">
+        ng-init="slideInfo = {footerId: 'advancedFooter'}">
+        <div ng-style="{'padding-bottom': slideInfo.footerHeight}" class="container-content">
 
           <!-- URL -->
           <div class="row-vertically-centered with-textarea row-top-parent">
@@ -271,8 +271,7 @@
           </div>
         </div>
 
-        <footer ng-if="showNoteEditorComponent('advancedFooter')" class="container-content--after editor-footer"
-          editor-footer="advancedSlideInfo">
+        <footer class="container-content--after editor-footer" editor-footer="slideInfo">
 
           <!-- CONVERT -->
           <div ng-if="showNoteEditorComponent('advancedFooter', 'convert')" class="group-symmetrical">

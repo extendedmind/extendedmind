@@ -157,8 +157,9 @@
         </footer>
       </div>
 
-      <div class="swiper-slide" swiper-slide="listEditor/advanced" slide-index="1" ng-init="advancedSlideInfo = {}">
-        <div ng-style="{'padding-bottom': advancedSlideInfo.footerHeight}" class="container-content">
+      <div class="swiper-slide" swiper-slide="listEditor/advanced" slide-index="1"
+        ng-init="slideInfo = {footerId: 'advancedFooter'}">
+        <div ng-style="{'padding-bottom': slideInfo.footerHeight}" class="container-content">
 
           <!-- SHARE -->
           <div ng-if="showListAction('share')" class="group-mixed">
@@ -262,8 +263,7 @@
           </div>
         </div>
 
-        <footer ng-if="showListEditorComponent('advancedFooter')" class="container-content--after editor-footer"
-          editor-footer="advancedSlideInfo">
+        <footer class="container-content--after editor-footer" editor-footer="slideInfo">
 
           <!-- CONVERT -->
           <div ng-if="showListEditorComponent('advancedFooter', 'convert')" class="group-symmetrical">
