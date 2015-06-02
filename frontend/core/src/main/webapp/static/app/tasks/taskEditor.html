@@ -284,7 +284,7 @@
               </a>
             </div>
             <a href ng-if="showTaskEditorComponent('basicFooter', 'navigation')"
-              class="group-symmetrical--right link-navigation animate-fade-in-out"
+              class="group-symmetrical--right link-navigation animate-fade-in-out active"
               swiper-click="swipeToAdvanced('taskEditor')">
               <span class="text-navigation-forward">advanced</span>
             </a>
@@ -359,6 +359,38 @@
             maxlength="2000" placeholder="enter url&#8230;" autocapitalize="none" autocorrect="off">
           </textarea>
 
+
+          <div ng-if="showEditorProperty('created', task)" class="group-mixed text-field">
+            <div class="group-mixed--middle">
+              <span class="text-field--title">
+                {{::task.trans.created | date:'EEE d MMMM y hh:mm' | lowercase}}
+              </span>
+            </div>
+            <div class="group-mixed--right">
+              <span class="text-field--label">created</span>
+            </div>
+          </div>
+          <div ng-if="showEditorProperty('modified', task)" class="group-mixed text-field">
+            <div class="group-mixed--middle link-search-result">
+              <span class="text-field--title">
+                {{task.trans.modified | date:'EEE d MMMM y hh:mm' | lowercase}}
+              </span>
+            </div>
+            <div class="group-mixed--right">
+              <span class="text-field--label">modified</span>
+            </div>
+          </div>
+          <div ng-if="showEditorProperty('deleted', task)" class="group-mixed text-field">
+            <div class="group-mixed--middle link-search-result">
+              <span class="text-field--title">
+                {{task.trans.deleted | date:'EEE d MMMM y hh:mm' | lowercase}}
+              </span>
+            </div>
+            <div class="group-mixed--right">
+              <span class="text-field--label">deleted</span>
+            </div>
+          </div>
+
         </div>
         <footer ng-hide="isTaskFooterHidden(editorFooterHiddenCallback)"
           class="container-content--after editor-footer" editor-footer="advancedSlideInfo">
@@ -380,7 +412,7 @@
 
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
             <a href ng-if="showTaskEditorComponent('advancedFooter', 'navigation')"
-              class="group-symmetrical--left link-navigation" swiper-click="swipeToBasic('taskEditor')">
+              class="group-symmetrical--left link-navigation active" swiper-click="swipeToBasic('taskEditor')">
               <span class="text-navigation-back">basic</span>
             </a>
           </nav>

@@ -219,7 +219,7 @@
 
         <footer ng-if="showNoteEditorComponent('basicFooter')" class="container-content--after editor-footer">
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
-            <a href class="group-symmetrical--right link-navigation"
+            <a href class="group-symmetrical--right link-navigation active"
                swiper-click="swipeToAdvanced('noteEditor')">
               <span class="text-navigation-forward">advanced</span>
             </a>
@@ -239,28 +239,36 @@
             </textarea>
           </div>
 
-          <div ng-if="showNoteProperty('created')" class="group-mixed text-field">
+          <div ng-if="showEditorProperty('created', note)" class="group-mixed text-field">
             <div class="group-mixed--middle">
-              <span class="text-field--title text-downplayed">
-                {{::note.trans.created | date:'EEE d MMMM y' | lowercase}}
+              <span class="text-field--title">
+                {{::note.trans.created | date:'EEE d MMMM y hh:mm' | lowercase}}
               </span>
             </div>
             <div class="group-mixed--right">
               <span class="text-field--label">created</span>
             </div>
           </div>
-
-          <div ng-if="showNoteProperty('modified')" class="group-mixed text-field">
+          <div ng-if="showEditorProperty('modified', note)" class="group-mixed text-field">
             <div class="group-mixed--middle link-search-result">
-              <span class="text-field--title text-downplayed">
-                {{note.trans.modified | date:'EEE d MMMM y' | lowercase}}
+              <span class="text-field--title">
+                {{note.trans.modified | date:'EEE d MMMM y hh:mm' | lowercase}}
               </span>
             </div>
             <div class="group-mixed--right">
               <span class="text-field--label">modified</span>
             </div>
           </div>
-
+          <div ng-if="showEditorProperty('deleted', note)" class="group-mixed text-field">
+            <div class="group-mixed--middle link-search-result">
+              <span class="text-field--title">
+                {{note.trans.deleted | date:'EEE d MMMM y hh:mm' | lowercase}}
+              </span>
+            </div>
+            <div class="group-mixed--right">
+              <span class="text-field--label">deleted</span>
+            </div>
+          </div>
         </div>
 
         <footer ng-if="showNoteEditorComponent('advancedFooter')" class="container-content--after editor-footer"
@@ -284,7 +292,7 @@
 
           <nav ng-if="showNoteEditorComponent('advancedFooter', 'navigation')" role="navigation"
           class="swiper-no-swiping group-symmetrical">
-            <a href class="group-symmetrical--left link-navigation" swiper-click="swipeToBasic('noteEditor')">
+            <a href class="group-symmetrical--left link-navigation active" swiper-click="swipeToBasic('noteEditor')">
               <span class="text-navigation-back">basic</span>
             </a>
           </nav>

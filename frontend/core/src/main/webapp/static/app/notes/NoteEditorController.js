@@ -83,8 +83,6 @@
     switch (propertyName){
       case 'content':
       return $scope.drawerAisleInitialized && !$scope.isOtherPropertyInEdit('content');
-      case 'created':
-      return $scope.note.trans.uuid;
       case 'favorite':
       return !$scope.isOnboarding('notes');
       case 'keywords':

@@ -149,7 +149,8 @@
             </a>
 
             <a ng-if="showListEditorComponent('basicFooter', 'navigation')" href
-              swiper-click="swipeToAdvanced('listEditor')" class="group-symmetrical--right link-navigation">
+              swiper-click="swipeToAdvanced('listEditor')"
+              class="group-symmetrical--right link-navigation active">
               <span class="text-navigation-forward">advanced</span>
             </a>
           </nav>
@@ -227,9 +228,38 @@
                 <span class="text-remove" ng-bind="foreignOwner ? 'remove' : 'unshare'"></span>
               </a>
             </div>
-
           </div>
 
+          <div ng-if="showEditorProperty('created', list)" class="group-mixed text-field">
+            <div class="group-mixed--middle">
+              <span class="text-field--title">
+                {{::list.trans.created | date:'EEE d MMMM y hh:mm' | lowercase}}
+              </span>
+            </div>
+            <div class="group-mixed--right">
+              <span class="text-field--label">created</span>
+            </div>
+          </div>
+          <div ng-if="showEditorProperty('modified', list)" class="group-mixed text-field">
+            <div class="group-mixed--middle link-search-result">
+              <span class="text-field--title">
+                {{list.trans.modified | date:'EEE d MMMM y hh:mm' | lowercase}}
+              </span>
+            </div>
+            <div class="group-mixed--right">
+              <span class="text-field--label">modified</span>
+            </div>
+          </div>
+          <div ng-if="showEditorProperty('deleted', list)" class="group-mixed text-field">
+            <div class="group-mixed--middle link-search-result">
+              <span class="text-field--title">
+                {{list.trans.deleted | date:'EEE d MMMM y hh:mm' | lowercase}}
+              </span>
+            </div>
+            <div class="group-mixed--right">
+              <span class="text-field--label">deleted</span>
+            </div>
+          </div>
         </div>
 
         <footer ng-if="showListEditorComponent('advancedFooter')" class="container-content--after editor-footer"
@@ -252,7 +282,8 @@
 
           <nav ng-if="showListEditorComponent('advancedFooter', 'navigation')" role="navigation"
                class="swiper-no-swiping group-symmetrical">
-            <a href swiper-click="swipeToBasic('listEditor')" class="group-symmetrical--left link-navigation">
+            <a href swiper-click="swipeToBasic('listEditor')"
+               class="group-symmetrical--left link-navigation active">
               <span class="text-navigation-back">basic</span>
             </a>
           </nav>

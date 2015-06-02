@@ -568,7 +568,7 @@
     }
   };
 
-  $scope.showEditorProperty = function(propertyName){
+  $scope.showEditorProperty = function(propertyName, item){
     switch (propertyName){
       case 'title':
       return !$scope.isPropertyInEdit();
@@ -576,6 +576,12 @@
       return !$scope.isOtherPropertyInEdit('url');
       case 'description':
       return !$scope.isOtherPropertyInEdit('description');
+      case 'created':
+      return item.trans.created;
+      case 'modified':
+      return item.trans.modified && (item.trans.created !== item.trans.modified);
+      case 'deleted':
+      return item.trans.deleted;
     }
   };
 
