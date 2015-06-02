@@ -24,6 +24,95 @@
   if (angular.isFunction($scope.registerFeatureEditorAboutToCloseCallback))
     $scope.registerFeatureEditorAboutToCloseCallback(taskEditorAboutToClose, 'TaskEditorController');
 
+  var calendarOpen, contextPickerOpen, reminderPickerOpen, repeatingPickerOpen;
+
+  // TASK EDITOR FIELD VISIBILITY
+
+  $scope.showTaskAction = function(actionName){
+    switch (actionName){
+      case 'convertToList':
+      return $scope.features.lists.getStatus('active') !== 'disabled';
+      case 'convertToNote':
+      return $scope.features.notes.getStatus() !== 'disabled';
+      case 'delete':
+      return !$scope.task.trans.deleted && !$scope.isPropertyInEdit();
+      case 'restore':
+      return $scope.task.trans.deleted && !$scope.isPropertyInEdit();
+      case 'saveBack':
+      return !$scope.isPropertyInEdit();
+      case 'saveDone':
+      return $scope.isPropertyInEdit();
+    }
+  };
+
+  $scope.showTaskEditorComponent = function(componentName, subcomponentName) {
+    switch (componentName) {
+
+      case 'advancedFooter':
+      if (subcomponentName === 'convert') {
+        return !$scope.showTaskAction('convertToList') && !$scope.showTaskAction('convertToNote');
+      } else if (subcomponentName === 'navigation') {
+        return !$scope.isFooterNavigationHidden();
+      }
+      break;
+
+      case 'basicFooter':
+      if (subcomponentName === 'navigation') {
+        return !$scope.isFooterNavigationHidden();
+      }
+      break;
+
+      case 'editorType':
+      return $scope.showEditorType;
+
+      case 'propertyNameInEdit':
+      return $scope.isPropertyInEdit();
+
+      case 'titlebarTitle':
+      return $scope.isEditorHeaderTitleVisible();
+    }
+  };
+
+  $scope.showTaskProperty = function(propertyName){
+    switch (propertyName){
+      case 'context':
+      return $scope.features.tasks.getStatus('contexts') !== 'disabled' && !$scope.isPropertyInEdit();
+      case 'created':
+      return;
+      case 'date':
+      return !$scope.isPropertyInEdit();
+      case 'description':
+      return !$scope.isOtherPropertyInEdit('description');
+      case 'list':
+      return $scope.features.lists.getStatus('active') !== 'disabled' && !$scope.isPropertyInEdit();
+      case 'modified':
+      return;
+      case 'reminders':
+      return isRemindersVisible($scope.task) && !$scope.isPropertyInEdit();
+      case 'repeating':
+      return $scope.task.trans.due && !$scope.isPropertyInEdit();
+      case 'title':
+      return !$scope.isPropertyInEdit();
+      case 'url':
+      return !contextPickerOpen && !repeatingPickerOpen;
+    }
+  };
+
+  $scope.showTaskSubEditor = function(subEditorName){
+    switch (subEditorName){
+      case 'calendar':
+      return calendarOpen;
+      case 'context':
+      return contextPickerOpen;
+      case 'list':
+      return $scope.listPickerOpen;
+      case 'reminders':
+      return reminderPickerOpen;
+      case 'repeating':
+      return repeatingPickerOpen;
+    }
+  };
+
   // COMPLETING, SAVING, DELETING
 
   var completeReadyDeferred;
@@ -53,7 +142,7 @@
   };
 
   $scope.isTaskEdited = function() {
-    if ($scope.taskTitlebarHasText()) {
+    if (taskTitlebarHasText()) {
       return TasksService.isTaskEdited($scope.task);
     }
   };
@@ -82,15 +171,15 @@
 
   // TITLEBAR
 
-  $scope.taskTitlebarHasText = function() {
+  function taskTitlebarHasText() {
     return $scope.task.trans.title && $scope.task.trans.title.length !== 0;
-  };
+  }
 
   $scope.taskTitlebarTextKeyDown = function (keydownEvent) {
     $scope.handleBasicTitlebarKeydown(keydownEvent, $scope.task);
     // Return
     if (event.keyCode === 13) {
-      if ($scope.taskTitlebarHasText()) {
+      if (taskTitlebarHasText()) {
         // Enter in editor saves, no line breaks allowed
         $scope.handleTitlebarEnterAction(saveTaskInEdit);
       }
@@ -99,12 +188,12 @@
     }
   };
 
-  $scope.setTaskDescriptionFocus = function(focus) {
+  /*$scope.setTaskDescriptionFocus = function(focus) {
     $scope.taskDescriptionFocused = focus;
     // FIXME: Maybe some directive with focus, blur event listeners, swiper and drawer.
     SwiperService.setOnlyExternal('taskEditor', focus);
     if (!focus && typeof contentBlurCallback === 'function') contentBlurCallback();
-  };
+  };*/
 
   // UI
 
@@ -118,32 +207,34 @@
     return pickerOpen;
   };
 
-  function isPickerOpenInTaskEditor(){
-    return $scope.calendarOpen || $scope.contextPickerOpen || $scope.listPickerOpen ||
-    $scope.reminderPickerOpen || $scope.repeatingPickerOpen;
+  function isSubEditorOpenInTaskEditor(){
+    return calendarOpen || contextPickerOpen || $scope.listPickerOpen || reminderPickerOpen ||
+    repeatingPickerOpen;
   }
-  $scope.registerIsPickerOpenCondition(isPickerOpenInTaskEditor);
+  $scope.registerIsSubEditorOpenCondition(isSubEditorOpenInTaskEditor);
 
   $scope.getTaskPropertyNameInEdit = function() {
-    // TODO: Use $scope.getPropertyNameInEdit
-    if ($scope.calendarOpen)
-      return 'date';
-    else if ($scope.contextPickerOpen)
-      return 'context';
-    else if ($scope.listPickerOpen)
-      return 'list';
-    else if ($scope.reminderPickerOpen)
-      return 'reminder';
-    else if ($scope.repeatingPickerOpen)
-      return 'repeat';
+    var propertyName = $scope.getPropertyNameInEdit();
+    if (!propertyName) {
+      if (calendarOpen) {
+        propertyName = 'date';
+      } else if (contextPickerOpen) {
+        propertyName = 'context';
+      } else if (reminderPickerOpen) {
+        propertyName = 'reminder';
+      } else if (repeatingPickerOpen) {
+        propertyName = 'repeat';
+      }
+    }
+    return propertyName;
   };
 
   // CALENDAR
 
   $scope.openCalendar = function() {
-    $scope.calendarOpen = true;
-    if (angular.isFunction($scope.registerPropertyEditDoneCallback))
-      $scope.registerPropertyEditDoneCallback($scope.closeCalendar);
+    calendarOpen = true;
+    if (angular.isFunction($scope.registerSubEditorDoneCallback))
+      $scope.registerSubEditorDoneCallback($scope.closeCalendar);
   };
 
   $scope.getCalendarStartingDate = function(task) {
@@ -152,7 +243,7 @@
   };
 
   $scope.closeCalendar = function() {
-    $scope.calendarOpen = false;
+    calendarOpen = false;
   };
 
   $scope.closeCalendarAndCall = function(taskAction, task, taskNewProperty) {
@@ -182,9 +273,9 @@
     return ReminderService.isRemindersSupported();
   };
 
-  $scope.isRemindersVisible = function(task) {
+  function isRemindersVisible(task) {
     return !task.trans.completed && !task.trans.deleted && $scope.editorType !== 'recurring';
-  };
+  }
 
   $scope.isReminderInThisDevice = function(reminder) {
     return ReminderService.isReminderInThisDevice(reminder);
@@ -239,9 +330,9 @@
       error: {}
     };
 
-    $scope.reminderPickerOpen = true;
-    if (angular.isFunction($scope.registerPropertyEditDoneCallback))
-      $scope.registerPropertyEditDoneCallback(closeReminderPickerAndSave, [reminder, task]);
+    reminderPickerOpen = true;
+    if (angular.isFunction($scope.registerSubEditorDoneCallback))
+      $scope.registerSubEditorDoneCallback(closeReminderPickerAndSave, [reminder, task]);
   };
 
   function compareWithNotificationTime(a, b) {
@@ -326,7 +417,7 @@
       $scope.reminder.date.setHours($scope.reminder.hours.value, $scope.reminder.minutes.value);
       if ($scope.reminder.date > new Date().setSeconds(0, 0)) {
         // Make sure date is set to future.
-        $scope.reminderPickerOpen = false;
+        reminderPickerOpen = false;
 
         if (reminder !== undefined) {
           ReminderService.updateReminder(reminder, $scope.reminder.date);
@@ -347,7 +438,7 @@
   }
 
   $scope.clearReminderAndClose = function() {
-    $scope.reminderPickerOpen = false;
+    reminderPickerOpen = false;
     $scope.reminder = undefined;
     if ($scope.task.trans.reminders) {
       var reminder = ReminderService.findActiveReminderForThisDevice($scope.task.trans.reminders);
@@ -438,10 +529,10 @@
 
   // CONTEXT PICKER
   $scope.openContextPicker = function() {
-    $scope.contextPickerOpen = true;
+    contextPickerOpen = true;
   };
   $scope.closeContextPicker = function() {
-    $scope.contextPickerOpen = false;
+    contextPickerOpen = false;
   };
   $scope.closeContextPickerAndSetContextToTask = function(task, context) {
 
@@ -468,18 +559,18 @@
 
   // REPEATING PICKER
   $scope.openRepeatingPicker = function() {
-    $scope.repeatingPickerOpen = true;
-    if (angular.isFunction($scope.registerPropertyEditDoneCallback))
-      $scope.registerPropertyEditDoneCallback($scope.closeRepeatingPicker);
+    repeatingPickerOpen = true;
+    if (angular.isFunction($scope.registerSubEditorDoneCallback))
+      $scope.registerSubEditorDoneCallback($scope.closeRepeatingPicker);
   };
   $scope.closeRepeatingPicker = function() {
-    $scope.repeatingPickerOpen = false;
+    repeatingPickerOpen = false;
   };
   $scope.closeRepeatingPickerAndSetRepeatTypeToTask = function(task, repeatType) {
     $scope.closeRepeatingPicker();
     task.trans.repeating = repeatType.trans.title;
   };
-  $scope.closeRepeatingPickerAndClearRepeatTypeFromtask = function(task, repeatType) {
+  $scope.closeRepeatingPickerAndClearRepeatTypeFromTask = function(task, repeatType) {
     $scope.closeRepeatingPicker();
     if (task.trans.repeating === repeatType.trans.title)
       delete task.trans.repeating;
@@ -504,9 +595,9 @@
   };
 
   $scope.$on('$destroy', function() {
-    if (angular.isFunction($scope.unregisterPropertyEditDoneCallback)) {
+    if (angular.isFunction($scope.unregisterSubEditorDoneCallback)) {
       // Unregister any leftover callback.
-      $scope.unregisterPropertyEditDoneCallback();
+      $scope.unregisterSubEditorDoneCallback();
     }
   });
 
