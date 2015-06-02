@@ -4,7 +4,7 @@
     <div class="container-titlebar--inner">
       <div class="group-symmetrical height-large--top height-large--bottom" swiper-prevent>
 
-        <a href ng-show="showListAction('saveBack')"
+        <a href ng-show="showEditorAction('saveBack')"
           class="group-symmetrical--left link-navigation active highlighted sorting-hide"
           swiper-click="endListEdit()">
           <span class="text-navigation-back"
@@ -13,12 +13,12 @@
           </span>
         </a>
 
-        <a href ng-if="showListAction('saveDone')" class="group-symmetrical--left highlighted"
+        <a href ng-if="showEditorAction('saveDone')" class="group-symmetrical--left highlighted"
            ng-click="subEditorDone()" editable-field-container="{{getPropertyInEditContainerStatus()}}">
           <span class="text-edit" ng-bind="isPropertyEdited() ? 'save' : 'done'"></span>
         </a>
 
-        <div ng-show="isEditorHeaderTitleVisible()"
+        <div ng-show="showEditorComponent('titlebarTitle')"
           ng-style="{maxWidth: calculateTitleWidth()}"
           class="group-symmetrical--middle width-large text-heading-primary--outer primary">
           <div class="text-heading-primary--inner">
@@ -28,21 +28,21 @@
           </div>
         </div>
 
-        <div ng-if="showEditorType" class="group-symmetrical--middle group-centered substitute">
+        <div ng-if="showEditorComponent('editorType')" class="group-symmetrical--middle group-centered substitute">
           <span class="text-heading-primary text-downplayed">list</span>
         </div>
 
-        <a href ng-if="!list.trans.deleted && !foreignOwner" ng-hide="isPropertyInEdit()"
-          class="group-symmetrical--right" swiper-click="deleteListInEdit()">
+        <a href ng-if="showListAction('delete')" class="group-symmetrical--right"
+           swiper-click="deleteListInEdit()">
           <span class="icon-trash"></span>
         </a>
-        <a href ng-if="list.trans.deleted && !foreignOwner"
+        <a href ng-if="showListAction('restore')"
           class="group-symmetrical--right link-navigation highlighted active"
           swiper-click="undeleteList(list)">
           <span class="text-navigation">restore</span>
         </a>
 
-        <div ng-if="isPropertyInEdit()" class="group-symmetrical--right">
+        <div ng-if="showEditorProperty()" class="group-symmetrical--right">
           <div class="text-field--label-wrapper">
             <span class="text-field--label-bold"
               ng-bind="getListPropertyNameInEdit()">
@@ -64,7 +64,7 @@
           drawer-override-aisle="right" ng-init="drawerAisleInitialized = true">
 
           <!-- LIST TITLE -->
-          <div ng-show="showListProperty('title')" class="row-top-parent">
+          <div ng-show="showEditorProperty('title')" class="row-top-parent">
             <div class="group-mixed large">
               <div class="group-mixed--middle">
                 <textarea class="text-heading-primary large" ng-model="list.trans.title"
@@ -75,7 +75,7 @@
                 </textarea>
               </div>
 
-              <div class="group-mixed--right">
+              <div ng-if="showListAction('favorite')" class="group-mixed--right">
                 <a href class="link-navigation" swiper-click="clickFavorite()">
                   <span class="icon-star large" ng-class="!isFavoriteList(list) && 'inactive'"></span>
                 </a>
@@ -84,7 +84,7 @@
           </div>
 
           <!-- URL -->
-          <textarea ng-if="drawerAisleInitialized" ng-hide="isOtherPropertyInEdit('url')"
+          <textarea ng-if="drawerAisleInitialized && showEditorProperty('url')"
             id="ignoreSnap" class="text-metadata" ng-model="list.trans.link" input-model-validator
             ng-trim="false"
             ng-focus="setTextPropertyFocus('url', true)" ng-blur="setTextPropertyFocus('url', false)"
@@ -93,7 +93,7 @@
           </textarea>
 
           <!-- LIST -->
-          <div ng-if="!listIsParent(list) && !foreignOwner" ng-hide="isPropertyInEdit()" class="group-mixed">
+          <div ng-if="showListProperty('list')" class="group-mixed">
             <a href class="group-mixed--middle link-search-result" ng-class="!list.trans.list && 'downplayed'"
               swiper-click="openListPicker()">
               <span class="text-field--title"
@@ -106,7 +106,7 @@
           </div>
 
           <!-- LIST PICKER -->
-          <div ng-if="showListSubEditor('list')" class="swiper-no-swiping animate-fade-in"
+          <div ng-if="showEditorSubEditor('list')" class="swiper-no-swiping animate-fade-in"
             ng-init="thisList = list"
             editable-field-container="auto" editable-field-container-scrollable="true"
             editable-field-container-clicked-elsewhere="closeListPicker()" data-snap-ignore="true">
@@ -124,7 +124,7 @@
           </div>
 
           <!-- DESCRIPTION -->
-          <textarea ng-if="drawerAisleInitialized" ng-hide="isOtherPropertyInEdit('description')" id="ignoreSnap"
+          <textarea ng-if="drawerAisleInitialized && showEditorProperty('description')" id="ignoreSnap"
             ng-model="list.trans.description" input-model-validator ng-trim="false"
             ng-focus="setTextPropertyFocus('description', true)"
             ng-blur="setTextPropertyFocus('description', false)"
@@ -134,22 +134,22 @@
           </textarea>
 
         </div>
-        <footer ng-hide="isPropertyInEdit()" class="container-content--after editor-footer">
+        <footer ng-if="showListEditorComponent('basicFooter')" class="container-content--after editor-footer">
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
 
-            <a ng-if="showArchive()" href swiper-click="archiveListInEdit(list)"
+            <a ng-if="showListAction('archive')" href swiper-click="archiveListInEdit(list)"
               class="group-symmetrical--left link-navigation highlighted"
               ng-class="hasChildLists(list) && 'downplayed'">
               <span class="text-navigation">archive</span>
             </a>
-            <a ng-if="showUnarchive()" href swiper-click="unarchiveListInEdit(list)"
+            <a ng-if="showListAction('activate')" href swiper-click="unarchiveListInEdit(list)"
               class="group-symmetrical--left link-navigation highlighted"
               ng-class="hasChildLists(list) && 'downplayed'">
               <span class="text-navigation">activate</span>
             </a>
 
-            <a href swiper-click="swipeToAdvanced('listEditor')" ng-hide="isFooterNavigationHidden()"
-              class="group-symmetrical--right link-navigation">
+            <a ng-if="showListEditorComponent('basicFooter', 'navigation')" href
+              swiper-click="swipeToAdvanced('listEditor')" class="group-symmetrical--right link-navigation">
               <span class="text-navigation-forward">advanced</span>
             </a>
           </nav>
@@ -160,14 +160,14 @@
         <div ng-style="{'padding-bottom': advancedSlideInfo.footerHeight}" class="container-content">
 
           <!-- SHARE -->
-          <div ng-if="!foreignOwner" ng-hide="listShareEditorOpen" class="group-mixed">
+          <div ng-if="showListAction('share')" class="group-mixed">
             <a href class="group-mixed--middle link-search-result downplayed"
               ng-click="openListShareEditor()">
               <span class="text-field--title">share list&hellip;</span>
             </a>
           </div>
 
-          <div ng-if="!foreignOwner" ng-hide="listShareEditorOpen" ng-repeat="sharedTo in sharedToList"
+          <div ng-if="showListProperty('sharedTo')" ng-repeat="sharedTo in sharedToList"
             class="group-mixed">
             <a href class="group-mixed--middle link-search-result"
               ng-click="openListShareEditor(sharedTo)">
@@ -180,7 +180,7 @@
             </div>
           </div>
 
-          <div ng-if="foreignOwner" class="group-mixed">
+          <div ng-if="showListProperty('sharedBy')" class="group-mixed">
             <a href class="group-mixed--middle link-search-result" ng-click="openListShareEditor(sharedByList)">
               <span class="text-field--title" ng-bind="sharedByList.email + ', ' + sharedByList.accessText"></span>
             </a>
@@ -190,7 +190,7 @@
           </div>
 
           <!-- LIST SHARE EDITOR -->
-          <div ng-if="listShareEditorOpen" class="swiper-no-swiping animate-fade-in"
+          <div ng-if="showListSubEditor('share')" class="swiper-no-swiping animate-fade-in"
             editable-field-container="auto">
 
             <div ng-if="!foreignOwner" class="group-mixed vertically-centered">
@@ -233,15 +233,16 @@
 
         </div>
 
-        <footer ng-hide="listShareEditorOpen" class="container-content--after editor-footer"
+        <footer ng-if="showListEditorComponent('advancedFooter')" class="container-content--after editor-footer"
           editor-footer="advancedSlideInfo">
 
           <!-- CONVERT -->
-          <div ng-if="!foreignOwner" class="group-symmetrical">
-            <a href class="group-symmetrical--left link" swiper-click="convertToTask(list)">
+          <div ng-if="showListEditorComponent('advancedFooter', 'convert') " class="group-symmetrical">
+            <a href ng-class="!showListAction('convertToTask') && 'invisible'"
+               class="group-symmetrical--left link" swiper-click="convertToTask(list)">
               <span class="text-convert small">task</span>
             </a>
-            <a href ng-class="(features.notes.getStatus() === 'disabled') && 'invisible'"
+            <a href ng-class="!showListAction('convertToNote') && 'invisible'"
             class="group-symmetrical--middle group-centered link" swiper-click="convertToNote(list)">
               <span class="text-convert small">note</span>
             </a>
@@ -250,9 +251,9 @@
             </div>
           </div>
 
-          <nav role="navigation" class="swiper-no-swiping group-symmetrical">
-            <a href swiper-click="swipeToBasic('listEditor')" ng-hide="isFooterNavigationHidden()"
-              class="group-symmetrical--left link-navigation">
+          <nav ng-if="showListEditorComponent('advancedFooter', 'navigation')" role="navigation"
+               class="swiper-no-swiping group-symmetrical">
+            <a href swiper-click="swipeToBasic('listEditor')" class="group-symmetrical--left link-navigation">
               <span class="text-navigation-back">basic</span>
             </a>
           </nav>

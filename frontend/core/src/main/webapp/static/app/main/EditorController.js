@@ -537,15 +537,45 @@
     if ($scope.isSubEditorOpen()) return 'auto';
   };
 
-  // EDITOR HEADER
+  // COMMON EDITOR VISIBILITY
 
-  $scope.isEditorHeaderTitleVisible = function(){
-    if ((editorHasSwiper() && !$scope.isFirstSlide(getEditorSwiperId())) ||
+  $scope.showEditorComponent = function(componentName){
+    switch (componentName){
+      case 'titlebarTitle':
+      return (editorHasSwiper() && !$scope.isFirstSlide(getEditorSwiperId())) ||
         $scope.isSubEditorOpen() ||
         $scope.focusedTextProperty ||
-        $scope.urlFocused)
-    {
-      return true;
+        $scope.urlFocused;
+      case 'editorType':
+      return $scope.showEditorType;
+    }
+  };
+
+  $scope.showEditorAction = function(actionName){
+    switch (actionName){
+      case 'saveBack':
+      return !$scope.isPropertyInEdit();
+      case 'saveDone':
+      return $scope.isPropertyInEdit();
+    }
+  };
+
+  $scope.showEditorProperty = function(propertyName){
+    if (!propertyName) return $scope.isPropertyInEdit();
+    switch (propertyName){
+      case 'title':
+      return !$scope.isPropertyInEdit();
+      case 'url':
+      return !$scope.isOtherPropertyInEdit('url');
+      case 'description':
+      return !$scope.isOtherPropertyInEdit('description');
+    }
+  };
+
+  $scope.showEditorSubEditor = function(subEditorName){
+    switch (subEditorName){
+      case 'list':
+      return $scope.listPickerOpen;
     }
   };
 

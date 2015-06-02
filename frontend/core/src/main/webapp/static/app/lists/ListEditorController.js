@@ -64,28 +64,72 @@
 
   $scope.showListAction = function(actionName){
     switch (actionName){
-      case 'saveBack':
-      return !$scope.isPropertyInEdit();
-      break;
-      case 'saveDone':
-      return $scope.isPropertyInEdit();
-      break;
+      case 'delete':
+      return !$scope.list.trans.deleted && !$scope.foreignOwner && !$scope.isPropertyInEdit();
+      case 'restore':
+      return $scope.list.trans.deleted && !$scope.foreignOwner && !$scope.isPropertyInEdit();
+      case 'favorite':
+      // For lists, favoriting is an action because there is no 'favorited' field in the list there is
+      // for a note.
+      return $scope.showEditorProperty('title');
+      case 'archive':
+      return !$scope.isFakeUser() &&
+        !$scope.foreignOwner &&
+        $scope.list.trans.archived === undefined &&
+        $scope.editorType !== 'recurring' &&
+        $scope.features.lists.getStatus('archived') !== 'disabled';
+      case 'activate':
+      return !$scope.isFakeUser() &&
+        !$scope.foreignOwner &&
+        $scope.list.trans.archived !== undefined &&
+        $scope.editorType !== 'recurring' &&
+        $scope.features.lists.getStatus('archived') !== 'disabled';
+      case 'share':
+      return !$scope.foreignOwner && !$scope.listShareEditorOpen;
+      case 'convertToNote':
+      return !$scope.foreignOwner && !$scope.features.notes.getStatus() === 'disabled';
+      case 'convertToTask':
+      return !$scope.foreignOwner
+
     }
   };
 
   $scope.showListProperty = function(propertyName){
     switch (propertyName){
-      case 'title':
-      return !$scope.isPropertyInEdit()
-      break;
+      case 'list':
+      return  !$scope.listIsParent($scope.list) && !$scope.foreignOwner && !$scope.isPropertyInEdit();
+      case 'sharedTo':
+      return !$scope.foreignOwner && !$scope.listShareEditorOpen;
+      case 'sharedBy':
+      return $scope.foreignOwner;
     }
   };
 
   $scope.showListSubEditor = function(subEditorName){
     switch (subEditorName){
-      case 'list':
-      return $scope.listPickerOpen;
-      break;
+      case 'share':
+      return $scope.listShareEditorOpen;
+    }
+  };
+
+  $scope.showListEditorComponent = function(componentName, subcomponentName) {
+    switch (componentName) {
+      case 'basicFooter':
+      if (!subcomponentName){
+        return !$scope.isPropertyInEdit() &&
+              (($scope.showListAction('archive') || $scope.showListAction('activate')) ||
+               $scope.showListEditorComponent('basicFooter', 'navigation'));
+      }else if (subcomponentName === 'navigation'){
+        return !$scope.isFooterNavigationHidden();
+      }
+      case 'advancedFooter':
+      if (!subcomponentName){
+        return !$scope.listShareEditorOpen;
+      }else if (subcomponentName === 'navigation'){
+        return !$scope.isFooterNavigationHidden();
+      }else if (subcomponentName === 'convert'){
+        return $scope.showListAction('convertToTask') || $scope.showListAction('convertToNote');
+      }
     }
   };
 
@@ -345,24 +389,8 @@
     return false;
   };
 
-  $scope.showArchive = function() {
-    return !$scope.isFakeUser() &&
-    !$scope.foreignOwner &&
-    $scope.list.trans.archived === undefined &&
-    $scope.editorType !== 'recurring' &&
-    $scope.features.lists.getStatus('archived') !== 'disabled';
-  };
-
   $scope.hasChildLists = function(){
     return ListsService.isListsWithParent($scope.list);
-  };
-
-  $scope.showUnarchive = function() {
-    return !$scope.isFakeUser() &&
-    !$scope.foreignOwner &&
-    $scope.list.trans.archived !== undefined &&
-    $scope.editorType !== 'recurring' &&
-    $scope.features.lists.getStatus('archived') !== 'disabled';
   };
 
   // SHARE LIST EDITOR
