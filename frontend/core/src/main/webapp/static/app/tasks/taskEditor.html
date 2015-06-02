@@ -122,7 +122,7 @@
             <div ng-if="isRemindersSupported() &&
               (!task.trans.reminders || !findActiveReminderForThisDevice(task.trans.reminders))"
               class="group-mixed">
-              <a href ng-click="openReminderPicker(task)"
+              <a href swiper-click="openReminderPicker(task)"
                 class="group-mixed--middle link-search-result downplayed">
                 <span class="text-field--title">add reminder&hellip;</span>
               </a>

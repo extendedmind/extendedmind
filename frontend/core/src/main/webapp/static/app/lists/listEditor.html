@@ -164,7 +164,7 @@
           <!-- SHARE -->
           <div ng-if="showListAction('share')" class="group-mixed">
             <a href class="group-mixed--middle link-search-result downplayed"
-              ng-click="openListShareEditor()">
+              swiper-click="openListShareEditor()">
               <span class="text-field--title">share list&hellip;</span>
             </a>
           </div>
@@ -172,7 +172,7 @@
           <div ng-if="showListProperty('sharedTo')" ng-repeat="sharedTo in sharedToList"
             class="group-mixed">
             <a href class="group-mixed--middle link-search-result"
-              ng-click="openListShareEditor(sharedTo)">
+              swiper-click="openListShareEditor(sharedTo)">
               <span class="text-field--title"
                 ng-bind="sharedTo.email + ', ' + sharedTo.accessText + ', ' + sharedTo.acceptStatus">
               </span>
@@ -183,7 +183,7 @@
           </div>
 
           <div ng-if="showListProperty('sharedBy')" class="group-mixed">
-            <a href class="group-mixed--middle link-search-result" ng-click="openListShareEditor(sharedByList)">
+            <a href class="group-mixed--middle link-search-result" swiper-click="openListShareEditor(sharedByList)">
               <span class="text-field--title" ng-bind="sharedByList.email + ', ' + sharedByList.accessText"></span>
             </a>
             <div class="group-mixed--right">
