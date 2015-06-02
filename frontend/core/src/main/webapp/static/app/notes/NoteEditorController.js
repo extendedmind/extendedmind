@@ -59,7 +59,6 @@
       break;
 
       case 'lessMore':
-      console.log(hasUnsetCollapsableProperty())
       return hasUnsetCollapsableProperty() && !$scope.isPropertyInEdit() && !$scope.isOnboarding('notes');
 
       case 'basicFooter':
