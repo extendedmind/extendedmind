@@ -265,17 +265,18 @@
         <footer ng-hide="showNoteProperty()" class="container-content--after editor-footer"
           editor-footer="advancedSlideInfo">
 
+          <!-- CONVERT -->
           <div class="group-symmetrical">
-            <a href class="group-symmetrical--left" swiper-click="convertToTask(note)">
-              <span style="font-size: 13px;" class="text-convert">task</span>
+            <a href class="group-symmetrical--left link" swiper-click="convertToTask(note)">
+              <span class="text-convert small">task</span>
             </a>
-            <a href style="text-align:center;" class="group-symmetrical--middle"
+            <a href class="group-symmetrical--middle group-centered link"
               ng-class="(features.lists.getStatus('active') === 'disabled') && 'invisible'"
               swiper-click="convertToList(note)">
-              <span style="font-size: 13px;" class="text-convert">list</span>
+              <span class="text-convert small">list</span>
             </a>
             <div class="group-symmetrical--right">
-              <span style="font-weight: 300;" class="text-search-type">convert</span>
+              <span class="text-field--label">convert</span>
             </div>
           </div>
 
