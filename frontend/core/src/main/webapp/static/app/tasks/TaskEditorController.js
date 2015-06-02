@@ -30,18 +30,10 @@
 
   $scope.showTaskAction = function(actionName){
     switch (actionName){
-      case 'convertToList':
-      return $scope.features.lists.getStatus('active') !== 'disabled';
-      case 'convertToNote':
-      return $scope.features.notes.getStatus() !== 'disabled';
       case 'delete':
       return !$scope.task.trans.deleted && !$scope.isPropertyInEdit();
       case 'restore':
       return $scope.task.trans.deleted && !$scope.isPropertyInEdit();
-      case 'saveBack':
-      return !$scope.isPropertyInEdit();
-      case 'saveDone':
-      return $scope.isPropertyInEdit();
     }
   };
 
@@ -50,7 +42,7 @@
 
       case 'advancedFooter':
       if (subcomponentName === 'convert') {
-        return !$scope.showTaskAction('convertToList') && !$scope.showTaskAction('convertToNote');
+        return $scope.showEditorAction('convertToList') || $scope.showEditorAction('convertToNote');
       } else if (subcomponentName === 'navigation') {
         return !$scope.isFooterNavigationHidden();
       }
@@ -61,15 +53,6 @@
         return !$scope.isFooterNavigationHidden();
       }
       break;
-
-      case 'editorType':
-      return $scope.showEditorType;
-
-      case 'propertyNameInEdit':
-      return $scope.isPropertyInEdit();
-
-      case 'titlebarTitle':
-      return $scope.isEditorHeaderTitleVisible();
     }
   };
 
@@ -81,8 +64,6 @@
       return;
       case 'date':
       return !$scope.isPropertyInEdit();
-      case 'description':
-      return !$scope.isOtherPropertyInEdit('description');
       case 'list':
       return $scope.features.lists.getStatus('active') !== 'disabled' && !$scope.isPropertyInEdit();
       case 'modified':
@@ -91,10 +72,6 @@
       return isRemindersVisible($scope.task) && !$scope.isPropertyInEdit();
       case 'repeating':
       return $scope.task.trans.due && !$scope.isPropertyInEdit();
-      case 'title':
-      return !$scope.isPropertyInEdit();
-      case 'url':
-      return !contextPickerOpen && !repeatingPickerOpen;
     }
   };
 
@@ -104,8 +81,6 @@
       return calendarOpen;
       case 'context':
       return contextPickerOpen;
-      case 'list':
-      return $scope.listPickerOpen;
       case 'reminders':
       return reminderPickerOpen;
       case 'repeating':

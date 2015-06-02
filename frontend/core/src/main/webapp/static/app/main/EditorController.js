@@ -541,6 +541,8 @@
 
   $scope.showEditorComponent = function(componentName){
     switch (componentName){
+      case 'label':
+      return $scope.isPropertyInEdit();
       case 'titlebarTitle':
       return (editorHasSwiper() && !$scope.isFirstSlide(getEditorSwiperId())) ||
         $scope.isSubEditorOpen() ||

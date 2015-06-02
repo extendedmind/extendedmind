@@ -4,7 +4,7 @@
     <div class="container-titlebar--inner">
       <div class="group-symmetrical height-large--top height-large--bottom" swiper-prevent>
 
-        <a href ng-show="showTaskAction('saveBack')"
+        <a href ng-show="showEditorAction('saveBack')"
           class="group-symmetrical--left link-navigation active highlighted sorting-hide"
           swiper-click="endTaskEdit()">
           <span class="text-navigation-back" ng-class="getEditorNavigationBackClasses()"
@@ -12,12 +12,12 @@
           </span>
         </a>
 
-        <a href ng-if="showTaskAction('saveDone')" class="group-symmetrical--left highlighted"
+        <a href ng-if="showEditorAction('saveDone')" class="group-symmetrical--left highlighted"
           editable-field-container="auto" ng-click="subEditorDone()">
           <span class="text-edit" ng-bind="isPropertyEdited() ? 'save' : 'done'"></span>
         </a>
 
-        <div ng-show="showTaskEditorComponent('titlebarTitle')" ng-style="{maxWidth: calculateTitleWidth()}"
+        <div ng-show="showEditorComponent('titlebarTitle')" ng-style="{maxWidth: calculateTitleWidth()}"
           class="group-symmetrical--middle width-large text-heading-primary--outer primary">
           <div class="text-heading-primary--inner">
             <span class="text-heading-primary" ng-class="!task.trans.title && 'text-downplayed'"
@@ -26,7 +26,7 @@
           </div>
         </div>
 
-        <div ng-if="showTaskEditorComponent('editorType')"
+        <div ng-if="showEditorComponent('editorType')"
           class="group-symmetrical--middle group-centered substitute">
           <span class="text-heading-primary text-downplayed">task</span>
         </div>
@@ -40,7 +40,7 @@
           <span class="text-navigation">restore</span>
         </a>
 
-        <div ng-if="showTaskEditorComponent('propertyNameInEdit')" class="group-symmetrical--right">
+        <div ng-if="showEditorComponent('label')" class="group-symmetrical--right">
           <div class="text-field--label-wrapper">
             <span class="text-field--label-bold" ng-bind="getTaskPropertyNameInEdit()"></span>
           </div>
@@ -59,7 +59,7 @@
         <div class="container-content" drawer-override-aisle="right" ng-init="drawerAisleInitialized = true">
 
           <!-- TASK TITLE -->
-          <form role="form" ng-show="showTaskProperty('title')" class="group-mixed"
+          <form role="form" ng-show="showEditorProperty('title')" class="group-mixed"
             autocapitalize="none" autocorrect="off">
             <div class="group-mixed--left">
               <input type="checkbox" swiper-click="clickCompleteTaskInEdit()"
@@ -247,7 +247,7 @@
           </div>
 
           <!-- LIST PICKER -->
-          <div ng-if="showTaskSubEditor('list')" class="swiper-no-swiping animate-fade-in"
+          <div ng-if="showEditorSubEditor('list')" class="swiper-no-swiping animate-fade-in"
             editable-field-container="auto"
             editable-field-container-scrollable="true"
             editable-field-container-clicked-elsewhere="closeListPicker()" data-snap-ignore="true">
@@ -266,7 +266,7 @@
           </div>
 
           <!-- DESCRIPTION -->
-          <textarea ng-if="drawerAisleInitialized && showTaskProperty('description')" id="ignoreSnap"
+          <textarea ng-if="drawerAisleInitialized && showEditorProperty('description')" id="ignoreSnap"
             ng-model="task.trans.description" input-model-validator ng-trim="false"
             ng-focus="setTextPropertyFocus('description', true)"
             ng-blur="setTextPropertyFocus('description', false)" msd-elastic
@@ -352,7 +352,7 @@
             </div>
           </div>
 
-          <textarea ng-show="showTaskProperty('url')" id="ignoreSnap" class="text-metadata"
+          <textarea ng-show="showEditorProperty('url')" id="ignoreSnap" class="text-metadata"
             ng-model="task.trans.link" input-model-validator ng-trim="false"
             ng-focus="setTextPropertyFocus('url', true)" ng-blur="setTextPropertyFocus('url', false)"
             msd-elastic
@@ -366,11 +366,11 @@
           <!-- CONVERT -->
           <div class="group-symmetrical" ng-if="showTaskEditorComponent('advancedFooter', 'convert')">
             <a href class="group-symmetrical--left link"
-              ng-class="!showTaskAction('convertToNote') && 'invisible'" swiper-click="convertToNote(task)">
+              ng-class="!showEditorAction('convertToNote') && 'invisible'" swiper-click="convertToNote(task)">
               <span class="text-convert small">note</span>
             </a>
             <a href class="group-symmetrical--middle group-centered link"
-              ng-class="!showTaskAction('convertToList') && 'invisible'" swiper-click="convertToList(task)">
+              ng-class="!showEditorAction('convertToList') && 'invisible'" swiper-click="convertToList(task)">
               <span class="text-convert small">list</span>
             </a>
             <div class="group-symmetrical--right">
