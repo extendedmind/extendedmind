@@ -57,7 +57,8 @@
       </div>
 
       <!-- DESCRIPTION -->
-      <textarea ng-if="showEditorProperty('description')" id="ignoreSnap" ng-model="item.trans.description"
+      <textarea ng-if="drawerAisleInitialized && showEditorProperty('description')" id="ignoreSnap"
+        ng-model="item.trans.description"
         input-model-validator ng-trim="false" msd-elastic maxlength="1024" autocapitalize="none"
         ng-focus="setTextPropertyFocus('description', true)"
         ng-blur="setTextPropertyFocus('description', false)"

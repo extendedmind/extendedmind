@@ -4,13 +4,18 @@
     <div class="container-titlebar--inner">
       <div class="group-symmetrical height-large--top">
 
-        <a href class="group-symmetrical--left link-navigation highlighted active" swiper-click="endTagEdit()">
+        <a href ng-show="showEditorAction('saveBack')"
+          class="group-symmetrical--left link-navigation highlighted active" swiper-click="endTagEdit()">
           <span class="text-navigation-back"
           ng-class="getEditorNavigationBackClasses()"
           ng-bind="isTagEdited() && !tag.trans.deleted ? 'save' : 'back'"></span>
         </a>
 
-        <div ng-show="focusedTextProperty === 'description'" ng-style="{maxWidth: calculateTitleWidth()}"
+        <a href ng-if="showEditorAction('saveDone')" class="group-symmetrical--left highlighted">
+          <span class="text-edit">done</span>
+        </a>
+
+        <div ng-show="showEditorComponent('titlebarTitle')" ng-style="{maxWidth: calculateTitleWidth()}"
           class="group-symmetrical--middle width-large text-heading-primary--outer primary">
           <div class="text-heading-primary--inner">
             <span class="text-heading-primary" data-prefix="{{getPrefix(tag)}}"
@@ -20,11 +25,13 @@
           </div>
         </div>
 
-        <a href ng-if="!tag.trans.deleted" ng-hide="focusedTextProperty === 'description'" class="group-symmetrical--right" swiper-click="deleteTagInEdit()" >
+        <a href ng-if="showEditorAction('delete', tag)"
+           class="group-symmetrical--right" swiper-click="deleteTagInEdit()" >
           <span class="icon-trash"></span>
         </a>
-        <a href ng-if="tag.trans.deleted" ng-hide="focusedTextProperty === 'description'" class="group-symmetrical--right link-navigation highlighted active"
-          swiper-click="undeleteTagInEdit()">
+        <a href ng-if="showEditorAction('restore', tag)"
+           class="group-symmetrical--right link-navigation highlighted active"
+           swiper-click="undeleteTagInEdit()">
           <span class="text-navigation">restore</span>
         </a>
 
@@ -44,7 +51,7 @@
     <div class="container-content" drawer-override-aisle="right" ng-init="drawerAisleInitialized = true">
 
       <!-- TITLE -->
-      <div ng-hide="focusedTextProperty === 'description'">
+      <div ng-show="showEditorProperty('title')">
         <label for="tagEditorTitlebarTitle" class="text-prefixed--label large"
           ng-bind="tag.trans.tagType === 'context' ? '@' : '#'"></label>
         <div class="text-prefixed--outer">
@@ -57,18 +64,21 @@
         </div>
       </div>
 
+      <!-- URL -->
+      <textarea ng-if="drawerAisleInitialized && showEditorProperty('url')"
+        id="ignoreSnap" class="text-metadata" ng-model="tag.trans.link" input-model-validator ng-trim="false"
+        ng-focus="setTextPropertyFocus('url', true)" ng-blur="setTextPropertyFocus('url', false)"
+        ng-disabled="foreignOwner" msd-elastic
+        maxlength="2000" placeholder="enter url&#8230;" autocapitalize="none" autocorrect="off">
+      </textarea>
+
       <!-- DESCRIPTION -->
-      <textarea ng-if="drawerAisleInitialized" id="ignoreSnap" ng-model="tag.trans.description"
-        input-model-validator ng-trim="false" ng-focus="setTextPropertyFocus('description', true)"
+      <textarea ng-if="drawerAisleInitialized && showEditorProperty('description')" id="ignoreSnap"
+        ng-model="tag.trans.description" input-model-validator ng-trim="false"
+        ng-focus="setTextPropertyFocus('description', true)"
         ng-blur="setTextPropertyFocus('description', false)" msd-elastic
         placeholder="enter description&#8230;" maxlength="1024" autocapitalize="none" autocorrect="off">
       </textarea>
-
-      <div class="row-vertically-centered with-textarea">
-        <textarea ng-model="tag.trans.link" input-model-validator ng-trim="false" msd-elastic
-          maxlength="2000" placeholder="enter url&#8230;" autocapitalize="none" autocorrect="off">
-        </textarea>
-      </div>
 
     </div>
     <footer class="container-content--after editor-footer">
