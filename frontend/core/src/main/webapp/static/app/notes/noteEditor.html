@@ -13,7 +13,8 @@
         </a>
 
         <a href ng-if="showEditorAction('saveDone')" class="group-symmetrical--left highlighted"
-          ng-click="subEditorDone()" editable-field-container="auto">
+          ng-click="subEditorDone()"
+          editable-field-container="{{(listPickerOpen || keywordsPickerOpen) && 'auto'}}">
           <span class="text-edit" ng-bind="isPropertyEdited() ? 'save' : 'done'"></span>
         </a>
 
@@ -65,7 +66,7 @@
           scroll-then-toggle-reset="registerGotoTitleCallback">
 
           <!-- NOTE TITLE -->
-          <div ng-show="showNoteProperty('title')" class="row-top-parent">
+          <div ng-show="showEditorProperty('title')" class="row-top-parent">
             <div class="group-mixed large">
               <div class="group-mixed--middle">
                 <textarea id="noteEditorTitleInput" class="text-heading-primary large"
@@ -96,7 +97,7 @@
           </div>
 
           <!-- LIST -->
-          <div ng-if="showEditorProperty('list')" class="group-mixed">
+          <div ng-if="showNoteProperty('list')" class="group-mixed">
             <a href class="group-mixed--middle link-search-result" swiper-click="openListPicker()">
               <span class="text-field--title" ng-bind="note.trans.list.trans.title"></span>
             </a>

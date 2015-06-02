@@ -30,7 +30,7 @@
     $scope.registerFeatureEditorAboutToCloseCallback(noteEditorAboutToClose, 'NoteEditorController');
 
   $scope.noteStatus = 'back';
-  var keywordsPickerOpen = false;
+  $scope.keywordsPickerOpen = false;
 
   // NOTE EDITOR FIELD VISIBILITY
 
@@ -59,6 +59,7 @@
       break;
 
       case 'lessMore':
+      console.log(hasUnsetCollapsableProperty())
       return hasUnsetCollapsableProperty() && !$scope.isPropertyInEdit() && !$scope.isOnboarding('notes');
 
       case 'basicFooter':
@@ -99,7 +100,7 @@
   $scope.showNoteSubEditor = function(subEditorName){
     switch (subEditorName){
       case 'keywords':
-      return keywordsPickerOpen;
+      return $scope.keywordsPickerOpen;
     }
   };
 
@@ -219,13 +220,13 @@
   // UI
 
   function isSubEditorOpenInListEditor(){
-    return $scope.listPickerOpen || keywordsPickerOpen;
+    return $scope.listPickerOpen || $scope.keywordsPickerOpen;
   }
   $scope.registerIsSubEditorOpenCondition(isSubEditorOpenInListEditor);
 
   $scope.getNotePropertyNameInEdit = function() {
     var propertyName = $scope.getPropertyNameInEdit();
-    if (!propertyName && keywordsPickerOpen) {
+    if (!propertyName && $scope.keywordsPickerOpen) {
       propertyName = 'key' + ($scope.columns === 1 ? '-\n' : '') + 'words';
     }
     return propertyName;
@@ -384,7 +385,7 @@
   };
 
   $scope.openKeywordsPicker = function() {
-    keywordsPickerOpen = true;
+    $scope.keywordsPickerOpen = true;
     if (angular.isFunction($scope.registerSubEditorDoneCallback)) {
       $scope.registerSubEditorDoneCallback(function() {
         if ($scope.newKeyword.trans.title) {
@@ -401,7 +402,7 @@
   };
 
   $scope.closeKeywordsPicker = function() {
-    keywordsPickerOpen = false;
+    $scope.keywordsPickerOpen = false;
     clearKeyword();
     if (angular.isFunction($scope.unregisterHasSubEditorEditedCallback))
       $scope.unregisterHasSubEditorEditedCallback();
