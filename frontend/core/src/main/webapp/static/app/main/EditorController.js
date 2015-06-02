@@ -417,49 +417,6 @@
     return $scope.editorType === 'recurring' || $scope.isOnboarding('notes');
   };
 
-  // ***************
-  // DEPRECATED! USE subEditor* FUNCTIONS!
-
-  var propertyEditDoneCallbackData;
-  $scope.registerPropertyEditDoneCallback = function(callback, parameters) {
-    propertyEditDoneCallbackData = {
-      fn: callback,
-      parameters: parameters
-    };
-  };
-  $scope.unregisterPropertyEditDoneCallbackData = function() {
-    propertyEditDoneCallbackData = undefined;
-  };
-
-  $scope.propertyEditDone = function() {
-    if (propertyEditDoneCallbackData && typeof propertyEditDoneCallbackData.fn === 'function') {
-      propertyEditDoneCallbackData.fn.apply(undefined, propertyEditDoneCallbackData.parameters);
-    }
-  };
-
-  var isPropertyEdited;
-  $scope.registerIsPropertyEdited = function(callback) {
-    isPropertyEdited = callback;
-  };
-  $scope.unregisterIsPropertyEdited = function() {
-    isPropertyEdited = undefined;
-  };
-
-  $scope.isPropertyEdited = function() {
-    if (typeof isPropertyEdited === 'function') return isPropertyEdited();
-  };
-
-  var isPickerOpenCondition;
-  $scope.registerIsPickerOpenCondition = function(condition){
-    isPickerOpenCondition = condition;
-  };
-  $scope.isPickerOpen = function(){
-    if (angular.isFunction(isPickerOpenCondition)) return isPickerOpenCondition();
-  };
-
-  // DEPRECATED! USE subEditor* FUNCTIONS!
-  // ***************
-
   // Only one subeditor can be open at a time
   var subEditorDoneCallbackData;
   $scope.registerSubEditorDoneCallback = function(callback, parameters) {
@@ -595,9 +552,7 @@
   // BACK HANDLER
 
   function onBackButton(){
-    // FIXME: REMOVE isPickerOpen & propertyEditDone WHEN THEY HAVE BEEN REMOVED
-    if ($scope.isPickerOpen() || $scope.isSubEditorOpen()){
-      $scope.propertyEditDone();
+    if ($scope.isSubEditorOpen()){
       $scope.subEditorDone();
     }else{
       $scope.closeEditor();
