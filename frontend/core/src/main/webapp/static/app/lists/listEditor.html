@@ -14,7 +14,7 @@
         </a>
 
         <a href ng-if="showEditorAction('saveDone')" class="group-symmetrical--left highlighted"
-           ng-click="subEditorDone()" editable-field-container="{{getPropertyInEditContainerStatus()}}">
+           ng-click="subEditorDone()" editable-field-container="{{listPickerOpen && 'auto'}}">
           <span class="text-edit" ng-bind="isPropertyEdited() ? 'save' : 'done'"></span>
         </a>
 
@@ -190,8 +190,7 @@
           </div>
 
           <!-- LIST SHARE EDITOR -->
-          <div ng-if="showListSubEditor('share')" class="swiper-no-swiping animate-fade-in"
-            editable-field-container="auto">
+          <div ng-if="showListSubEditor('share')" class="swiper-no-swiping animate-fade-in">
 
             <div ng-if="!foreignOwner" class="group-mixed vertically-centered">
               <div class="group-mixed--middle">

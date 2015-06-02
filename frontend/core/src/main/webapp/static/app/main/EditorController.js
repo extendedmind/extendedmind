@@ -533,10 +533,6 @@
     }
   };
 
-  $scope.getPropertyInEditContainerStatus = function(){
-    if ($scope.isSubEditorOpen()) return 'auto';
-  };
-
   // COMMON EDITOR VISIBILITY
 
   $scope.showEditorComponent = function(componentName){
