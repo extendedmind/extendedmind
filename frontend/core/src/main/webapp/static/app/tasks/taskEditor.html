@@ -31,11 +31,11 @@
           <span class="text-heading-primary text-downplayed">task</span>
         </div>
 
-        <a href ng-if="showTaskAction('delete')" class="group-symmetrical--right"
+        <a href ng-if="showEditorAction('delete', task)" class="group-symmetrical--right"
           swiper-click="deleteTaskInEdit()">
           <span class="icon-trash"></span>
         </a>
-        <a href ng-if="showTaskAction('restore')"
+        <a href ng-if="showEditorAction('restore', task)"
           class="group-symmetrical--right link-navigation highlighted active" swiper-click="undeleteTask(task)">
           <span class="text-navigation">restore</span>
         </a>

@@ -28,15 +28,6 @@
 
   // TASK EDITOR FIELD VISIBILITY
 
-  $scope.showTaskAction = function(actionName){
-    switch (actionName){
-      case 'delete':
-      return !$scope.task.trans.deleted && !$scope.isPropertyInEdit();
-      case 'restore':
-      return $scope.task.trans.deleted && !$scope.isPropertyInEdit();
-    }
-  };
-
   $scope.showTaskEditorComponent = function(componentName, subcomponentName) {
     switch (componentName) {
 
