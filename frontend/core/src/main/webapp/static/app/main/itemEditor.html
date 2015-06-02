@@ -44,7 +44,8 @@
     </div>
   </header>
 
-  <div ng-style="{'padding-bottom': EDITOR_FOOTER_HEIGHT}" class="container-fluid--inner">
+  <div ng-style="{'padding-bottom': isPropertyInEdit() ? 0 : EDITOR_FOOTER_HEIGHT}"
+    class="container-fluid--inner">
     <div class="container-content" drawer-override-aisle="right" ng-init="drawerAisleInitialized = true">
 
       <!-- ITEM TITLE -->

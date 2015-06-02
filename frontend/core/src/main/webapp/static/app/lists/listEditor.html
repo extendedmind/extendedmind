@@ -60,8 +60,8 @@
     swiper-click="containerClick($event.target.disabled)">
     <div class="swiper-wrapper">
       <div class="swiper-slide" swiper-slide="listEditor/basic" slide-index="0">
-        <div ng-style="{'padding-bottom': EDITOR_FOOTER_HEIGHT}" class="container-content"
-          drawer-override-aisle="right" ng-init="drawerAisleInitialized = true">
+        <div ng-style="{'padding-bottom': isPropertyInEdit() ? 0 : EDITOR_FOOTER_HEIGHT}"
+          class="container-content" drawer-override-aisle="right" ng-init="drawerAisleInitialized = true">
 
           <!-- LIST TITLE -->
           <div ng-show="showEditorProperty('title')" class="row-top-parent">
