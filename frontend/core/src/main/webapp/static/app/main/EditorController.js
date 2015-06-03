@@ -449,12 +449,6 @@
     }
   };
 
-  // URL
-
-  $scope.setUrlFocus = function(value) {
-    $scope.urlFocused = value;
-  };
-
   $scope.hasSwipeToClose = function(editorItemType) {
     if ($scope.editorType === 'recurring' && $scope.mode !== editorItemType) {
       // Prevent swipe to close in recurring editor with wrong mode.
