@@ -622,6 +622,11 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
             function(url) {
               // url is the value of EXTRA_TEXT
               storeSharedItem('url', url);
+              window.plugins.webintent.clearExtra(window.plugins.webintent.EXTRA_TEXT,
+                function() { // extra is now cleared
+                },function() { // There was no extra supplied.
+                }
+              );
             }, function() {
               // There was no extra text supplied, this means there is no proper share
               shareViaValues = undefined;
@@ -631,6 +636,11 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
             function(subject) {
               // subject is the value of EXTRA_SUBJECT
               storeSharedItem('subject', subject);
+              window.plugins.webintent.clearExtra(window.plugins.webintent.EXTRA_SUBJECT,
+                function() { // extra is now cleared
+                },function() { // There was no extra supplied.
+                }
+              );
             }, function() {
               // There was no extra supplied.
               storeSharedItem('subject', undefined);
