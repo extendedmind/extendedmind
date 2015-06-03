@@ -601,6 +601,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
       }
       if (packaging === 'android-cordova'){
         document.addEventListener('backbutton', onBack, false);
+        document.addEventListener('menubutton', onMenu, false);
       }
     };
 
@@ -679,6 +680,25 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     }
     e.preventDefault();
   }
+
+
+  // MENU HANDLER
+
+  function onMenu(e) {
+    if (!$scope.isTutorialInProgress()){
+      if ($scope.isEditorVisible()){
+        $scope.closeEditorDrawer();
+        $timeout(function(){
+          $scope.changeFeature('settings', undefined, true);
+        }, $rootScope.EDITOR_ANIMATION_SPEED);
+      }else{
+        $scope.changeFeature('settings', undefined, true);
+      }
+    }
+    e.preventDefault();
+  }
+
+  // DATA ARRAY LISTENERS
 
   /*
   * tasks: {
