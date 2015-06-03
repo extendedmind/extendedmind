@@ -31,6 +31,7 @@
     $scope.tag = undefined;
     $scope.iterableItems = undefined;
     dataInEdit = data;
+    var itemInEdit;
 
     $scope.editorType = editorType;
     $scope.editorVisible = true;
@@ -38,33 +39,79 @@
 
     if (editorType === 'task'){
       $scope.task = dataInEdit;
-      $scope.foreignOwner = getIsForeignOwner(dataInEdit);
+      itemInEdit = dataInEdit;
     }else if (editorType === 'note'){
       $scope.note = dataInEdit;
-      $scope.foreignOwner = getIsForeignOwner(dataInEdit);
+      itemInEdit = dataInEdit;
     }else if (editorType === 'list'){
       if (dataInEdit.list){
         // Shared/adopted list
         $scope.list = dataInEdit.list;
-        $scope.overrideOwnerUUID = dataInEdit.owner;
-        $scope.foreignOwner = getIsForeignOwner(dataInEdit.list);
+        itemInEdit = dataInEdit.list;
       }else{
         $scope.list = dataInEdit;
-        $scope.foreignOwner = getIsForeignOwner(dataInEdit);
+        itemInEdit = dataInEdit;
       }
     }else if (editorType === 'item'){
       $scope.item = dataInEdit;
+      itemInEdit = dataInEdit;
     }else if (editorType === 'tag'){
       $scope.tag = dataInEdit;
+      itemInEdit = dataInEdit;
     }else if (editorType === 'user'){
       $scope.user = dataInEdit ? dataInEdit : UserSessionService.getUser();
+      itemInEdit = dataInEdit;
     }else if (editorType === 'recurring') {
       $scope.iterableItems = dataInEdit;
+      itemInEdit = dataInEdit;
     }
+
+    initializeEditorVisibilityAndPermission(itemInEdit);
   };
 
-  function getIsForeignOwner(item) {
-    return item.trans.owner !== UISessionService.getActiveUUID();
+  function initializeEditorVisibilityAndPermission(item) {
+
+    function isCollectiveOwner(ownerUUID) {
+      return $scope.collectives && $scope.collectives[ownerUUID];
+    }
+
+    function isCollectiveReadOnly(ownerUUID) {
+      if ($scope.collectives && $scope.collectives[ownerUUID]) {
+        return $scope.collectives[ownerUUID][1] === 2;
+      }
+    }
+
+    function isSharedListOwner(ownerUUID) {
+      return $scope.sharedLists && $scope.sharedLists[ownerUUID];
+    }
+
+    function isSharedListReadOnly(ownerUUID, listUUID) {
+      if ($scope.sharedLists && $scope.sharedLists[ownerUUID]) {
+        var sharedListInfo = $scope.sharedLists[ownerUUID][1][listUUID];
+        return sharedListInfo && sharedListInfo[1] === 2;
+      }
+    }
+
+    var ownerUUID = item.trans.owner;
+    var userUUID = UserSessionService.getUserUUID();
+    var activeUUID = UISessionService.getActiveUUID();
+
+    if (ownerUUID === userUUID && ownerUUID === activeUUID) {
+      $scope.fullEditor = true;
+      $scope.readOnly = false;
+    } else if (isCollectiveOwner(ownerUUID)) {
+      $scope.fullEditor = ownerUUID === activeUUID;
+      $scope.readOnly = isCollectiveReadOnly(ownerUUID);
+    } else if (isSharedListOwner(ownerUUID)) {
+      $scope.fullEditor = false;
+      var listUUID;
+      if (item.trans.itemType === 'list') {
+        listUUID = item.trans.uuid;
+      } else if (item.trans.list) {
+        listUUID = item.trans.list.trans.uuid;
+      }
+      $scope.readOnly = listUUID && isSharedListReadOnly(ownerUUID, listUUID);
+    }
   }
 
   function editorAboutToClose() {
@@ -387,15 +434,13 @@
   // TEXT PROPERTIES (i.e. description, url and content)
 
   $scope.setTextPropertyFocus = function(name, hasFocus){
-    if (!$scope.foreignOwner) {
+    if (!$scope.readOnly) {
       if (hasFocus) {
         $scope.focusedTextProperty = name;
       } else {
         $scope.focusedTextProperty = undefined;
       }
-      if (editorHasSwiper()) {
-        SwiperService.setOnlyExternal(getEditorSwiperId(), hasFocus);
-      }
+      if (editorHasSwiper()) SwiperService.setOnlyExternal(getEditorSwiperId(), hasFocus);
     }
   };
 
@@ -517,15 +562,15 @@
       case 'saveDone':
       return $scope.isPropertyInDedicatedEdit();
       case 'delete':
-      return !item.trans.deleted && !$scope.foreignOwner && !$scope.isPropertyInDedicatedEdit();
+      return !item.trans.deleted && $scope.fullEditor && !$scope.isPropertyInDedicatedEdit();
       case 'restore':
-      return item.trans.deleted && !$scope.foreignOwner && !$scope.isPropertyInDedicatedEdit();
+      return item.trans.deleted && $scope.fullEditor && !$scope.isPropertyInDedicatedEdit();
       case 'convertToNote':
-      return !($scope.foreignOwner || $scope.features.notes.getStatus() === 'disabled');
+      return $scope.fullEditor && $scope.features.notes.getStatus() !== 'disabled';
       case 'convertToList':
-      return !($scope.foreignOwner || $scope.features.lists.getStatus('active') === 'disabled');
+      return $scope.fullEditor && $scope.features.lists.getStatus('active') !== 'disabled';
       case 'convertToTask':
-      return !$scope.foreignOwner;
+      return $scope.fullEditor;
     }
   };
 

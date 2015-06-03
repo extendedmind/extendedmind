@@ -22,8 +22,8 @@
   if (angular.isFunction($scope.registerFeatureEditorAboutToCloseCallback))
     $scope.registerFeatureEditorAboutToCloseCallback(listEditorAboutToClose, 'ListEditorController');
 
-  if ($scope.foreignOwner) refreshSharedByList($scope.list);
-  else refreshSharedToList($scope.list);
+  if ($scope.fullEditor) refreshSharedToList($scope.list);
+  else refreshSharedByList($scope.list);
 
   function refreshSharedToList(list) {
     $scope.sharedToList = [];
@@ -70,29 +70,29 @@
       return $scope.showEditorProperty('title');
       case 'archive':
       return !$scope.isFakeUser() &&
-        !$scope.foreignOwner &&
+        $scope.fullEditor &&
         $scope.list.trans.archived === undefined &&
         $scope.editorType !== 'recurring' &&
         $scope.features.lists.getStatus('archived') !== 'disabled';
       case 'activate':
       return !$scope.isFakeUser() &&
-        !$scope.foreignOwner &&
+        $scope.fullEditor &&
         $scope.list.trans.archived !== undefined &&
         $scope.editorType !== 'recurring' &&
         $scope.features.lists.getStatus('archived') !== 'disabled';
       case 'share':
-      return !$scope.foreignOwner && !$scope.listShareEditorOpen;
+      return $scope.fullEditor && !$scope.listShareEditorOpen;
     }
   };
 
   $scope.showListProperty = function(propertyName){
     switch (propertyName){
       case 'list':
-      return  !$scope.listIsParent($scope.list) && !$scope.foreignOwner && !$scope.isPropertyInDedicatedEdit();
+      return  !$scope.listIsParent($scope.list) && $scope.fullEditor && !$scope.isPropertyInDedicatedEdit();
       case 'sharedTo':
-      return !$scope.foreignOwner && !$scope.listShareEditorOpen;
+      return $scope.fullEditor && !$scope.listShareEditorOpen;
       case 'sharedBy':
-      return $scope.foreignOwner;
+      return !$scope.fullEditor;
     }
   };
 
@@ -424,7 +424,7 @@
                                              $scope.shareEditor.existing, $scope.list]);
       }
 
-      if (!$scope.foreignOwner && angular.isFunction($scope.registerHasSubEditorEditedCallback)) {
+      if (!$scope.fullEditor && angular.isFunction($scope.registerHasSubEditorEditedCallback)) {
         $scope.registerHasSubEditorEditedCallback(isListShareEdited,
                                                   [initialData, $scope.shareEditor.data]);
       }
@@ -493,13 +493,13 @@
       }
     }
 
-    if ($scope.foreignOwner) {
-      closeListShareEditor();
-    } else {
+    if ($scope.fullEditor) {
       var promise = doSaveListShare(data, initialData, existing, targetList);
       promise.then(function() {
         listShareResolved(targetList);
       }, listShareRejected);
+    } else {
+      closeListShareEditor();
     }
   }
 
@@ -533,25 +533,7 @@
 
   $scope.removeListShare = function() {
     var interaction;
-    if ($scope.foreignOwner) {
-      interaction = {
-        type: 'confirmationRequired',
-        value: {
-          messageHeading: 'confirm remove',
-          messageIngress: 'are you sure you want to leave from the list shared to you?',
-          confirmText: 'remove',
-          confirmTextDeferred: 'removing\u2026',
-          confirmActionDeferredFn: function() {
-            return unshareList($scope.list, $scope.shareEditor.data.uuid);
-          },
-          confirmActionPromiseFn: function() {
-            removeListShareResolved($scope.list);
-          },
-          allowCancel: true
-        }
-      };
-      $rootScope.$emit('emInteraction', interaction);
-    } else {
+    if ($scope.fullEditor) {
       interaction = {
         type: 'confirmationRequired',
         value: {
@@ -565,6 +547,24 @@
           },
           confirmActionPromiseFn: function() {
             unshareListResolved($scope.list);
+          },
+          allowCancel: true
+        }
+      };
+      $rootScope.$emit('emInteraction', interaction);
+    } else {
+      interaction = {
+        type: 'confirmationRequired',
+        value: {
+          messageHeading: 'confirm remove',
+          messageIngress: 'are you sure you want to leave from the list shared to you?',
+          confirmText: 'remove',
+          confirmTextDeferred: 'removing\u2026',
+          confirmActionDeferredFn: function() {
+            return unshareList($scope.list, $scope.shareEditor.data.uuid);
+          },
+          confirmActionPromiseFn: function() {
+            removeListShareResolved($scope.list);
           },
           allowCancel: true
         }
@@ -605,7 +605,7 @@
   };
 
   $scope.containerClick = function(disabledElement) {
-    if ($scope.foreignOwner && disabledElement) {
+    if ($scope.readOnly && disabledElement) {
       UISessionService.pushNotification({
         type: 'fyi',
         text: 'can\'t edit shared list'
