@@ -458,15 +458,21 @@
     if (angular.isFunction(isSubEditorOpenCondition)) return isSubEditorOpenCondition();
   };
 
-  $scope.isPropertyInEdit = function(){
-    return $scope.focusedTextProperty !== undefined || $scope.isSubEditorOpen();
+  /* Returns true when either subeditor is open or a text property is in a full screen edit mode. */
+  $scope.isPropertyInDedicatedEdit = function(){
+    if ($scope.columns === 3){
+      // Desktop, text properties are not in full screen edit mode
+      return $scope.isSubEditorOpen();
+    }else{
+      return $scope.focusedTextProperty !== undefined || $scope.isSubEditorOpen();
+    }
   };
 
   $scope.isOtherPropertyInEdit = function(exceptionTextProperty){
     if ($scope.focusedTextProperty === exceptionTextProperty){
       return false;
     }else{
-      return $scope.isPropertyInEdit();
+      return $scope.isPropertyInDedicatedEdit();
     }
   };
 
@@ -495,12 +501,10 @@
   $scope.showEditorComponent = function(componentName){
     switch (componentName){
       case 'label':
-      return $scope.isPropertyInEdit();
+      return $scope.isPropertyInDedicatedEdit();
       case 'titlebarTitle':
       return (editorHasSwiper() && !$scope.isFirstSlide(getEditorSwiperId())) ||
-        $scope.isSubEditorOpen() ||
-        $scope.focusedTextProperty ||
-        $scope.urlFocused;
+        $scope.isPropertyInDedicatedEdit();
       case 'editorType':
       return $scope.showEditorType;
     }
@@ -509,13 +513,13 @@
   $scope.showEditorAction = function(actionName, item){
     switch (actionName){
       case 'saveBack':
-      return !$scope.isPropertyInEdit();
+      return !$scope.isPropertyInDedicatedEdit();
       case 'saveDone':
-      return $scope.isPropertyInEdit();
+      return $scope.isPropertyInDedicatedEdit();
       case 'delete':
-      return !item.trans.deleted && !$scope.foreignOwner && !$scope.isPropertyInEdit();
+      return !item.trans.deleted && !$scope.foreignOwner && !$scope.isPropertyInDedicatedEdit();
       case 'restore':
-      return item.trans.deleted && !$scope.foreignOwner && !$scope.isPropertyInEdit();
+      return item.trans.deleted && !$scope.foreignOwner && !$scope.isPropertyInDedicatedEdit();
       case 'convertToNote':
       return !($scope.foreignOwner || $scope.features.notes.getStatus() === 'disabled');
       case 'convertToList':
@@ -528,17 +532,18 @@
   $scope.showEditorProperty = function(propertyName, item){
     switch (propertyName){
       case 'title':
-      return !$scope.isPropertyInEdit();
+      return !$scope.isPropertyInDedicatedEdit();
       case 'url':
       return !$scope.isOtherPropertyInEdit('url');
       case 'description':
       return !$scope.isOtherPropertyInEdit('description');
       case 'created':
-      return item.trans.created;
+      return !$scope.isPropertyInDedicatedEdit() && item.trans.created;
       case 'modified':
-      return item.trans.modified && (item.trans.created !== item.trans.modified);
+      return !$scope.isPropertyInDedicatedEdit() && item.trans.modified &&
+             (item.trans.created !== item.trans.modified);
       case 'deleted':
-      return item.trans.deleted;
+      return !$scope.isPropertyInDedicatedEdit() && item.trans.deleted;
     }
   };
 

@@ -65,12 +65,13 @@
       </div>
 
       <!-- URL -->
-      <textarea ng-if="drawerAisleInitialized && showEditorProperty('url')"
-        id="ignoreSnap" class="text-metadata" ng-model="tag.trans.link" input-model-validator ng-trim="false"
-        ng-focus="setTextPropertyFocus('url', true)" ng-blur="setTextPropertyFocus('url', false)"
-        ng-disabled="foreignOwner" msd-elastic
-        maxlength="2000" placeholder="enter url&#8230;" autocapitalize="none" autocorrect="off">
-      </textarea>
+      <div ng-if="drawerAisleInitialized && showEditorProperty('url')">
+        <textarea class="text-metadata" ng-model="tag.trans.link" input-model-validator ng-trim="false"
+          ng-focus="setTextPropertyFocus('url', true)" ng-blur="setTextPropertyFocus('url', false)"
+          ng-disabled="foreignOwner" msd-elastic
+          maxlength="2000" placeholder="enter url&#8230;" autocapitalize="none" autocorrect="off">
+        </textarea>
+      </div>
 
       <!-- DESCRIPTION -->
       <textarea ng-if="drawerAisleInitialized && showEditorProperty('description')" id="ignoreSnap"

@@ -48,7 +48,7 @@
 
       case 'collapsible':
       if (!subcomponentName) {
-        return $scope.collapsibleOpen && !$scope.isPropertyInEdit();
+        return $scope.collapsibleOpen && !$scope.isPropertyInDedicatedEdit();
       }
       if (subcomponentName ==='keywords'){
         return !hasActiveKeywords($scope.note);
@@ -59,19 +59,20 @@
       break;
 
       case 'lessMore':
-      return hasUnsetCollapsableProperty() && !$scope.isPropertyInEdit() && !$scope.isOnboarding('notes');
+      return hasUnsetCollapsableProperty() && !$scope.isPropertyInDedicatedEdit() && !$scope.isOnboarding('notes');
 
       case 'basicFooter':
-      return !$scope.isPropertyInEdit() && !$scope.isFooterNavigationHidden();
+      return !$scope.isPropertyInDedicatedEdit() && !$scope.isFooterNavigationHidden();
 
       case 'advancedFooter':
       if (!subcomponentName){
         return $scope.showNoteEditorComponent('advancedFooter', 'convert') ||
                $scope.showNoteEditorComponent('advancedFooter', 'navigation');
       }else if (subcomponentName === 'navigation'){
-        return !$scope.isFooterNavigationHidden();
+        return !$scope.isPropertyInDedicatedEdit() && !$scope.isFooterNavigationHidden();
       }else if (subcomponentName === 'convert'){
-        return $scope.showEditorAction('convertToTask') || $scope.showEditorAction('convertToList');
+        return !$scope.isPropertyInDedicatedEdit() &&
+           ($scope.showEditorAction('convertToTask') || $scope.showEditorAction('convertToList'));
       }
 
       break;
@@ -85,10 +86,10 @@
       case 'favorite':
       return !$scope.isOnboarding('notes');
       case 'keywords':
-      return hasActiveKeywords($scope.note) && !$scope.isPropertyInEdit();
+      return hasActiveKeywords($scope.note) && !$scope.isPropertyInDedicatedEdit();
       case 'list':
       return ($scope.note.trans.list && !$scope.note.trans.list.trans.deleted &&
-              $scope.features.lists.getStatus('active') !== 'disabled' && !$scope.isPropertyInEdit());
+              $scope.features.lists.getStatus('active') !== 'disabled' && !$scope.isPropertyInDedicatedEdit());
       case 'modified':
       return $scope.note.trans.uuid && $scope.note.trans.created !== $scope.note.trans.modified;
     }

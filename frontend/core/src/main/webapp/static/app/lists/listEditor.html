@@ -60,7 +60,7 @@
     swiper-click="containerClick($event.target.disabled)">
     <div class="swiper-wrapper">
       <div class="swiper-slide" swiper-slide="listEditor/basic" slide-index="0">
-        <div ng-style="{'padding-bottom': isPropertyInEdit() ? 0 : EDITOR_FOOTER_HEIGHT}"
+        <div ng-style="{'padding-bottom': isPropertyInDedicatedEdit() ? 0 : EDITOR_FOOTER_HEIGHT}"
           class="container-content" drawer-override-aisle="right" ng-init="drawerAisleInitialized = true">
 
           <!-- LIST TITLE -->
@@ -84,13 +84,15 @@
           </div>
 
           <!-- URL -->
-          <textarea ng-if="drawerAisleInitialized && showEditorProperty('url')"
-            id="ignoreSnap" class="text-metadata" ng-model="list.trans.link" input-model-validator
-            ng-trim="false"
-            ng-focus="setTextPropertyFocus('url', true)" ng-blur="setTextPropertyFocus('url', false)"
-            ng-disabled="foreignOwner" msd-elastic
-            maxlength="2000" placeholder="enter url&#8230;" autocapitalize="none" autocorrect="off">
-          </textarea>
+          <div ng-if="drawerAisleInitialized && showEditorProperty('url')"
+               class="row-vertically-centered with-textarea">
+            <textarea class="text-metadata" ng-model="list.trans.link" input-model-validator
+              ng-trim="false"
+              ng-focus="setTextPropertyFocus('url', true)" ng-blur="setTextPropertyFocus('url', false)"
+              ng-disabled="foreignOwner" msd-elastic
+              maxlength="2000" placeholder="enter url&#8230;" autocapitalize="none" autocorrect="off">
+            </textarea>
+          </div>
 
           <!-- LIST -->
           <div ng-if="showListProperty('list')" class="group-mixed">
@@ -254,7 +256,7 @@
           <div ng-if="showEditorProperty('deleted', list)" class="group-mixed text-field">
             <div class="group-mixed--middle link-search-result">
               <span class="text-field--title">
-                {{list.trans.deleted | date:'EEE d MMMM y hh:mm' | lowercase}}
+                {{::list.trans.deleted | date:'EEE d MMMM y hh:mm' | lowercase}}
               </span>
             </div>
             <div class="group-mixed--right">

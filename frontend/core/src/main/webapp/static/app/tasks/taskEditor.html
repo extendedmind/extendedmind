@@ -353,13 +353,13 @@
             </div>
           </div>
 
-          <textarea ng-show="showEditorProperty('url')" id="ignoreSnap" class="text-metadata"
-            ng-model="task.trans.link" input-model-validator ng-trim="false"
-            ng-focus="setTextPropertyFocus('url', true)" ng-blur="setTextPropertyFocus('url', false)"
-            msd-elastic
-            maxlength="2000" placeholder="enter url&#8230;" autocapitalize="none" autocorrect="off">
-          </textarea>
-
+          <div ng-if="showEditorProperty('url')" class="row-vertically-centered with-textarea">
+            <textarea class="text-metadata" ng-model="task.trans.link" input-model-validator ng-trim="false"
+              ng-focus="setTextPropertyFocus('url', true)" ng-blur="setTextPropertyFocus('url', false)"
+              msd-elastic
+              maxlength="2000" placeholder="enter url&#8230;" autocapitalize="none" autocorrect="off">
+            </textarea>
+          </div>
 
           <div ng-if="showEditorProperty('created', task)" class="group-mixed text-field">
             <div class="group-mixed--middle">
@@ -384,7 +384,7 @@
           <div ng-if="showEditorProperty('deleted', task)" class="group-mixed text-field">
             <div class="group-mixed--middle link-search-result">
               <span class="text-field--title">
-                {{task.trans.deleted | date:'EEE d MMMM y hh:mm' | lowercase}}
+                {{::task.trans.deleted | date:'EEE d MMMM y hh:mm' | lowercase}}
               </span>
             </div>
             <div class="group-mixed--right">

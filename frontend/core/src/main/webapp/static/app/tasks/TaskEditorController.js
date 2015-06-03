@@ -33,7 +33,7 @@
 
       case 'advancedFooter':
       if (!subcomponentName) {
-        return !$scope.isPropertyInEdit();
+        return !$scope.isPropertyInDedicatedEdit();
       } else if (subcomponentName === 'convert') {
         return $scope.showEditorAction('convertToList') || $scope.showEditorAction('convertToNote');
       } else if (subcomponentName === 'navigation') {
@@ -43,7 +43,7 @@
 
       case 'basicFooter':
       if (!subcomponentName) {
-        return !$scope.isPropertyInEdit();
+        return !$scope.isPropertyInDedicatedEdit();
       } else if (subcomponentName === 'navigation') {
         return !$scope.isFooterNavigationHidden();
       }
@@ -54,19 +54,19 @@
   $scope.showTaskProperty = function(propertyName){
     switch (propertyName){
       case 'context':
-      return $scope.features.tasks.getStatus('contexts') !== 'disabled' && !$scope.isPropertyInEdit();
+      return $scope.features.tasks.getStatus('contexts') !== 'disabled' && !$scope.isPropertyInDedicatedEdit();
       case 'created':
       return;
       case 'date':
-      return !$scope.isPropertyInEdit();
+      return !$scope.isPropertyInDedicatedEdit();
       case 'list':
-      return $scope.features.lists.getStatus('active') !== 'disabled' && !$scope.isPropertyInEdit();
+      return $scope.features.lists.getStatus('active') !== 'disabled' && !$scope.isPropertyInDedicatedEdit();
       case 'modified':
       return;
       case 'reminders':
-      return isRemindersVisible($scope.task) && !$scope.isPropertyInEdit();
+      return isRemindersVisible($scope.task) && !$scope.isPropertyInDedicatedEdit();
       case 'repeating':
-      return $scope.task.trans.due && !$scope.isPropertyInEdit();
+      return $scope.task.trans.due && !$scope.isPropertyInDedicatedEdit();
     }
   };
 

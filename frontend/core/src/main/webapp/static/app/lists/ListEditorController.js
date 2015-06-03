@@ -88,7 +88,7 @@
   $scope.showListProperty = function(propertyName){
     switch (propertyName){
       case 'list':
-      return  !$scope.listIsParent($scope.list) && !$scope.foreignOwner && !$scope.isPropertyInEdit();
+      return  !$scope.listIsParent($scope.list) && !$scope.foreignOwner && !$scope.isPropertyInDedicatedEdit();
       case 'sharedTo':
       return !$scope.foreignOwner && !$scope.listShareEditorOpen;
       case 'sharedBy':
@@ -107,7 +107,7 @@
     switch (componentName) {
       case 'basicFooter':
       if (!subcomponentName){
-        return !$scope.isPropertyInEdit() &&
+        return !$scope.isPropertyInDedicatedEdit() &&
               (($scope.showListAction('archive') || $scope.showListAction('activate')) ||
                $scope.showListEditorComponent('basicFooter', 'navigation'));
       }else if (subcomponentName === 'navigation'){
