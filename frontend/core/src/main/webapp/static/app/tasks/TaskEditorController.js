@@ -257,7 +257,7 @@
         // Get date from task due date when it is present or future.
         reminderDate = new Date(task.trans.due);
         // Set hours and minutes to current time and clear seconds.
-        reminderDate.setHours(new Date().getHours(), reminderDate.getMinutes(), 0, 0);
+        reminderDate.setHours(new Date().getHours(), new Date().getMinutes(), 0, 0);
       }
       else {
         // Get today date.
