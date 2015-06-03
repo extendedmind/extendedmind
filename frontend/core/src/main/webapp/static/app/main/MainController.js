@@ -21,8 +21,8 @@
 // the arrays because everything is needed anyway to get home and inbox to work,
 // which are part of every main slide collection.
 function MainController($element, $controller, $filter, $q, $rootScope, $scope, $timeout, $window,
-                        AnalyticsService, CalendarService, DrawerService, ReminderService, SwiperService,
-                        TasksService, UISessionService, UserService, UserSessionService,
+                        AnalyticsService, CalendarService, DrawerService, ItemsService, ReminderService,
+                        SwiperService, TasksService, UISessionService, UserService, UserSessionService,
                         packaging) {
 
 
@@ -261,6 +261,22 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     UserSessionService.setFeaturePreferences(feature, featurePreferences);
     UserService.saveAccountPreferences();
   }
+
+  $scope.activateFeatureOnboarding = function(featurePreferences, subfeature){
+    if (angular.isString(featurePreferences)){
+      if (featurePreferences.endsWith(':d')){
+        return featurePreferences.substring(0, featurePreferences.length - 2);
+      }
+    }else if (angular.isObject(featurePreferences) && subfeature){
+      featurePreferences[subfeature] = $scope.activateFeatureOnboarding(featurePreferences[subfeature]);
+      return featurePreferences;
+    }else if (!featurePreferences && subfeature){
+      var newPreferences = {};
+      newPreferences[subfeature] = 1;
+      return newPreferences;
+    }
+    return 1;
+  };
 
   // Plus button is pressed or new item is added, this function figures out what to do then
   $scope.notifyAddAction = function(type, featureInfo, subfeature){
@@ -599,7 +615,29 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
       if (cordova.plugins && cordova.plugins.notification) {
         listenReminderClick();
       }
+
       if (packaging === 'android-cordova'){
+        if (window.plugins && window.plugins.webintent){
+          window.plugins.webintent.getExtra(window.plugins.webintent.EXTRA_TEXT,
+            function(url) {
+              // url is the value of EXTRA_TEXT
+              storeSharedItem('url', url);
+            }, function() {
+              // There was no extra text supplied, this means there is no proper share
+              shareViaValues = undefined;
+            }
+          );
+          window.plugins.webintent.getExtra(window.plugins.webintent.EXTRA_SUBJECT,
+            function(subject) {
+              // subject is the value of EXTRA_SUBJECT
+              storeSharedItem('subject', subject);
+            }, function() {
+              // There was no extra supplied.
+              storeSharedItem('subject', undefined);
+            }
+          );
+        }
+
         document.addEventListener('backbutton', onBack, false);
         document.addEventListener('menubutton', onMenu, false);
       }
@@ -613,6 +651,47 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
       }
     } else {
       document.addEventListener('deviceready', onDeviceReady, false);
+    }
+  }
+
+  var shareViaValues;
+  function storeSharedItem(type, value){
+    if (!shareViaValues) shareViaValues = {};
+    if (type === 'subject'){
+      shareViaValues.subject = value;
+    }else if (type === 'url'){
+      shareViaValues.url = value;
+    }
+    if (shareViaValues.hasOwnProperty('url') && shareViaValues.hasOwnProperty('subject')){
+
+      // First activate inbox if not active
+      if ($scope.features.inbox.getStatus() === 'disabled'){
+        var inboxPrefs = UserSessionService.getFeaturePreferences('inbox');
+        inboxPrefs = $scope.activateFeatureOnboarding(inboxPrefs);
+        UserSessionService.setFeaturePreferences('inbox', inboxPrefs);
+        UserService.saveAccountPreferences();
+      }
+
+      // Then, save value to inbox
+      var initialShareItemValues = {
+        title: shareViaValues.subject ? shareViaValues.subject : shareViaValues.url
+      };
+      if (shareViaValues.url){
+        initialShareItemValues.link = shareViaValues.url;
+      }
+      shareViaValues = undefined;
+      if (initialShareItemValues.title){
+        var newItem = ItemsService.getNewItem(initialShareItemValues, UserSessionService.getUserUUID());
+        ItemsService.saveItem(newItem).then(function(){
+          UISessionService.pushNotification({
+            type: 'inbox',
+            itemType: 'item',
+            item: newItem,
+            openFn: $scope.openItemEditor,
+            gotoFn: $scope.gotoInbox
+          });
+        });
+      }
     }
   }
 
@@ -1000,7 +1079,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
 
 MainController['$inject'] = [
 '$element', '$controller', '$filter', '$q', '$rootScope', '$scope', '$timeout', '$window',
-'AnalyticsService', 'CalendarService', 'DrawerService', 'ReminderService', 'SwiperService',
+'AnalyticsService', 'CalendarService', 'DrawerService', 'ItemsService', 'ReminderService', 'SwiperService',
 'TasksService', 'UISessionService', 'UserService', 'UserSessionService', 'packaging'
 ];
 angular.module('em.main').controller('MainController', MainController);

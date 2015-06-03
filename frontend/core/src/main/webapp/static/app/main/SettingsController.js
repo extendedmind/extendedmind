@@ -75,22 +75,6 @@
 
   // FEATURES
 
-  function activateFeatureOnboarding(featurePreferences, subfeature){
-    if (angular.isString(featurePreferences)){
-      if (featurePreferences.endsWith(':d')){
-        return featurePreferences.substring(0, featurePreferences.length - 2);
-      }
-    }else if (angular.isObject(featurePreferences) && subfeature){
-      featurePreferences[subfeature] = activateFeatureOnboarding(featurePreferences[subfeature]);
-      return featurePreferences;
-    }else if (!featurePreferences && subfeature){
-      var newPreferences = {};
-      newPreferences[subfeature] = 1;
-      return newPreferences;
-    }
-    return 1;
-  }
-
   function deactivateFeature(featurePreferences, subfeature, fallbackSubfeature){
     if (angular.isString(featurePreferences)){
       if (!featurePreferences.endsWith(':d')){
@@ -146,8 +130,8 @@
         var focusPrefs = UserSessionService.getFeaturePreferences('focus');
         var notesPrefs = UserSessionService.getFeaturePreferences('notes');
         if (enable){
-          notesPrefs = activateFeatureOnboarding(notesPrefs);
-          focusPrefs = activateFeatureOnboarding(focusPrefs, 'notes');
+          notesPrefs = $scope.activateFeatureOnboarding(notesPrefs);
+          focusPrefs = $scope.activateFeatureOnboarding(focusPrefs, 'notes');
           if (notesPrefs === 1)
             AnalyticsService.do('notesOnboarding');
           else
@@ -165,8 +149,8 @@
         listsPrefs = UserSessionService.getFeaturePreferences('lists');
         var listPrefs = UserSessionService.getFeaturePreferences('list');
         if (enable) {
-          listsPrefs = activateFeatureOnboarding(listsPrefs, 'active');
-          listPrefs = activateFeatureOnboarding(listPrefs);
+          listsPrefs = $scope.activateFeatureOnboarding(listsPrefs, 'active');
+          listPrefs = $scope.activateFeatureOnboarding(listPrefs);
           if (angular.isObject(listsPrefs) && listsPrefs.active === 1)
             AnalyticsService.do('listsActiveOnboarding');
           else
@@ -190,7 +174,7 @@
       }else if (feature === 'inbox'){
         var inboxPrefs = UserSessionService.getFeaturePreferences('inbox');
         if (enable){
-          inboxPrefs = activateFeatureOnboarding(inboxPrefs);
+          inboxPrefs = $scope.activateFeatureOnboarding(inboxPrefs);
           if (inboxPrefs === 1)
             AnalyticsService.do('inboxOnboarding');
           else
@@ -203,8 +187,8 @@
       }else if (feature === 'contexts'){
         var tasksPrefs = UserSessionService.getFeaturePreferences('tasks');
         if (enable){
-          tasksPrefs = activateFeatureOnboarding(tasksPrefs, 'contexts');
-          tasksPrefs = activateFeatureOnboarding(tasksPrefs, 'context');
+          tasksPrefs = $scope.activateFeatureOnboarding(tasksPrefs, 'contexts');
+          tasksPrefs = $scope.activateFeatureOnboarding(tasksPrefs, 'context');
           if (angular.isObject(tasksPrefs) && tasksPrefs.contexts === 1)
             AnalyticsService.do('tasksContextsOnboarding');
           else
@@ -228,7 +212,7 @@
             });
             return;
           }
-          listsPrefs = activateFeatureOnboarding(listsPrefs, 'archived');
+          listsPrefs = $scope.activateFeatureOnboarding(listsPrefs, 'archived');
           if (angular.isObject(listsPrefs) && listsPrefs.archived === 1)
             AnalyticsService.do('listsArchivedOnboarding');
           else
