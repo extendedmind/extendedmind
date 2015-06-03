@@ -27,6 +27,9 @@ if (shell.test('-d', androidroot)){
   shell.exec( "cp -f " + iconroot + "/icon-96-xhdpi.png " + androidroot + "/res/drawable/icon.png", {silent:false} );
   shell.exec( "cp -f " + screenroot + "/launch-xhdpi.png " + androidroot + "/res/drawable/splash.9.png", {silent:false} );
 
+  // Copy reminder icon
+  shell.exec( "cp -f " + iconroot + "/ic_popup_reminder.png " + androidroot + "/res/drawable", {silent:false} );
+
   // copy ant.properties
   shell.exec( "cp -f " + buildroot + "/ant.properties " + androidroot, {silent:false} );
 }

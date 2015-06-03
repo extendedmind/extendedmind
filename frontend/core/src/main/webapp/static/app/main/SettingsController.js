@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function SettingsController($timeout, $scope, AnalyticsService, ListsService, SwiperService,
+ function SettingsController($timeout, $scope, AnalyticsService, ListsService, ReminderService, SwiperService,
                              UISessionService, UserService, UserSessionService, packaging, version) {
 
   // VERSION
@@ -27,6 +27,11 @@
       hideFooter: UserSessionService.getUIPreference('hideFooter'),
       disableVibration: UserSessionService.getUIPreference('disableVibration')
     };
+
+    var keepRunningPreferences = UserSessionService.getUIPreference('keepRunning');
+    if (keepRunningPreferences){
+      $scope.settings.keepRunning = keepRunningPreferences[UISessionService.getDeviceId()];
+    }
 
     if ($scope.features.notes.getStatus() !== 'disabled'){
       $scope.settings.notes = true;
@@ -47,7 +52,23 @@
 
   $scope.settingsCheckboxClicked = function(preference) {
     if ($scope.settings[preference] !== undefined){
-      UserSessionService.setUIPreference(preference, $scope.settings[preference]);
+
+      if (preference === 'keepRunning'){
+        if ($scope.settings[preference] === true){
+          // Create/update persistent notification
+          ReminderService.setPersistentReminderForThisDevice();
+        }else{
+          // Clear persistent notification
+          ReminderService.removePersistentReminderForThisDevice();
+        }
+
+        var keepRunningPreferences = UserSessionService.getUIPreference('keepRunning');
+        if (!keepRunningPreferences) keepRunningPreferences = {};
+        keepRunningPreferences[UISessionService.getDeviceId()] = $scope.settings[preference];
+        UserSessionService.setUIPreference('keepRunning', keepRunningPreferences);
+      }else{
+        UserSessionService.setUIPreference(preference, $scope.settings[preference]);
+      }
       UserService.saveAccountPreferences();
     }
   };
@@ -94,7 +115,7 @@
 
   $scope.isToggleDisabled = function(feature, overrideEnabled){
     var enabled = overrideEnabled !== undefined ? overrideEnabled : $scope.settings[feature];
-    var listsPrefs
+    var listsPrefs;
     if (feature === 'lists'){
       if (enabled){
         listsPrefs = UserSessionService.getFeaturePreferences('lists');
@@ -120,6 +141,7 @@
   $scope.featureCheckboxClicked = function(feature) {
     if ($scope.settings[feature] !== undefined){
       var enable = $scope.settings[feature];
+      var listsPrefs;
       if (feature === 'notes'){
         var focusPrefs = UserSessionService.getFeaturePreferences('focus');
         var notesPrefs = UserSessionService.getFeaturePreferences('notes');
@@ -140,7 +162,7 @@
         UserSessionService.setFeaturePreferences('notes', notesPrefs);
         UserSessionService.setFeaturePreferences('focus', focusPrefs);
       }else if (feature === 'lists'){
-        var listsPrefs = UserSessionService.getFeaturePreferences('lists');
+        listsPrefs = UserSessionService.getFeaturePreferences('lists');
         var listPrefs = UserSessionService.getFeaturePreferences('list');
         if (enable) {
           listsPrefs = activateFeatureOnboarding(listsPrefs, 'active');
@@ -195,7 +217,7 @@
         $scope.features.tasks.resizeFix = true;
         UserSessionService.setFeaturePreferences('tasks', tasksPrefs);
       }else if (feature === 'archive'){
-        var listsPrefs = UserSessionService.getFeaturePreferences('lists');
+        listsPrefs = UserSessionService.getFeaturePreferences('lists');
         if (enable){
           if ($scope.isToggleDisabled('archive', !enable)){
             // Can't enable archive if lists is enabled or currently onboarding
@@ -244,10 +266,12 @@
     } else {
       $scope.agendaCalendarSettingVisible = true;
     }
+    $scope.keepRunningVisible = true;
   }
 
 }
 
-SettingsController['$inject'] = ['$timeout', '$scope', 'AnalyticsService', 'ListsService', 'SwiperService',
-'UISessionService', 'UserService', 'UserSessionService', 'packaging', 'version'];
+SettingsController['$inject'] = ['$timeout', '$scope', 'AnalyticsService', 'ListsService',
+'ReminderService', 'SwiperService', 'UISessionService', 'UserService', 'UserSessionService',
+'packaging', 'version'];
 angular.module('em.main').controller('SettingsController', SettingsController);

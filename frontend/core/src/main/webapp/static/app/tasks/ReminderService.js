@@ -175,6 +175,24 @@
       if (reminderForThisDevice && reminderForThisDevice.notification > Date.now()){
         return reminderForThisDevice;
       }
+    },
+    setPersistentReminderForThisDevice: function(){
+      if (packaging === 'android-cordova') {
+        var notification = {
+          id: 0,
+          title: 'extended mind running',
+          text: 'remove this from app settings',
+          ongoing: true,
+          led: false,
+          sound: false
+        };
+        cordova.plugins.notification.local.schedule(notification);
+      }
+    },
+    removePersistentReminderForThisDevice: function(){
+      if (packaging === 'android-cordova') {
+        cordova.plugins.notification.local.cancel(0);
+      }
     }
   };
 }

@@ -791,6 +791,10 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
   function executeActivateCallbacks() {
     if (packaging.endsWith('cordova')){
       ReminderService.clearTriggeredReminders();
+      var keepRunningPreferences = UserSessionService.getUIPreference('keepRunning');
+      if (keepRunningPreferences && keepRunningPreferences[UISessionService.getDeviceId()]){
+        ReminderService.setPersistentReminderForThisDevice();
+      }
     }
     for (var id in activateDeactivateCallbacks)
       activateDeactivateCallbacks[id].activate();

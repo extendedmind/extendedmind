@@ -115,6 +115,17 @@
       </div>
     </div>
 
+    <div ng-if="keepRunningVisible" class="group-mixed">
+      <div class="group-mixed--left">
+        <input type="checkbox" ng-model="settings.keepRunning" ng-true-value="true"
+          icon-checkbox="'keepRunning'"
+          ng-click="settingsCheckboxClicked('keepRunning')"/>
+      </div>
+      <div class="group-mixed--middle">
+        <span class="text-link">keep extended mind running in the background</span>
+      </div>
+    </div>
+
   </section>
 
   <!-- ONBOARDING -->
