@@ -381,7 +381,7 @@
   };
 
   $scope.setTitleBarFocus = function() {
-    if (typeof editorFooterCloseCallback === 'function') editorFooterCloseCallback();
+    if ($scope.columns !== 3 && typeof editorFooterCloseCallback === 'function') editorFooterCloseCallback();
   };
 
   // TEXT PROPERTIES (i.e. description, url and content)
