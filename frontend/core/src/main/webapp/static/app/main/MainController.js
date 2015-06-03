@@ -693,13 +693,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
       if (initialShareItemValues.title){
         var newItem = ItemsService.getNewItem(initialShareItemValues, UserSessionService.getUserUUID());
         ItemsService.saveItem(newItem).then(function(){
-          UISessionService.pushNotification({
-            type: 'inbox',
-            itemType: 'item',
-            item: newItem,
-            openFn: $scope.openItemEditor,
-            gotoFn: $scope.gotoInbox
-          });
+          $scope.changeFeature('inbox', undefined);
         });
       }
     }
