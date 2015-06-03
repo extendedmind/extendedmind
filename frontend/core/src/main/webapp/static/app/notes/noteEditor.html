@@ -56,7 +56,8 @@
 
   <div class="swiper-container container-fluid--inner" swiper-container="noteEditor" swiper-type="main"
     expected-slides="2" swiper-container-toggle-drawer-sliding-events="hasSwipeToClose('note')"
-    swiper-container-slide-changed="editorSwiperSlideChanged()">
+    swiper-container-slide-changed="editorSwiperSlideChanged()"
+    swiper-click="containerClick($event.target.disabled, 'note')">
     <div class="swiper-wrapper" ng-class="showNoteInstruction() && 'swiper-no-swiping'">
       <div class="swiper-slide" swiper-slide="noteEditor/basic" slide-index="0">
         <div ng-style="{'padding-bottom': isPropertyInDedicatedEdit() ? 0 : EDITOR_FOOTER_HEIGHT}"
@@ -74,6 +75,7 @@
                   ng-change="inputChanged()" ng-keydown="noteTitlebarTextKeyDown($event)"
                   editable-field
                   editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
+                  ng-disabled="readOnly"
                   placeholder="enter title&#8230;" maxlength="128" autocapitalize="none" autocorrect="off">
                 </textarea>
               </div>
@@ -149,6 +151,7 @@
             editable-field-register-callbacks="registerNoteContentInputCallbacks(focus, blur)"
             editable-field-focus="setTextPropertyFocus('content', true)"
             editable-field-blur="setTextPropertyFocus('content', false)"
+            ng-disabled="readOnly"
             placeholder="enter content&#8230;" maxlength="1000000" autocapitalize="none" autocorrect="off">
           </textarea>
 
@@ -236,6 +239,7 @@
             <textarea class="text-metadata" ng-model="note.trans.link" input-model-validator ng-trim="false"
               ng-focus="setTextPropertyFocus('url', true)" ng-blur="setTextPropertyFocus('url', false)"
               ng-change="inputChanged()" msd-elastic
+              ng-disabled="readOnly"
               maxlength="2000" placeholder="enter url&#8230;" autocapitalize="none" autocorrect="off">
             </textarea>
           </div>
@@ -273,7 +277,7 @@
         </div>
 
         <footer ng-if="showNoteEditorComponent('advancedFooter')"
-        class="container-content--after editor-footer" editor-footer="slideInfo">
+          class="container-content--after editor-footer" editor-footer="slideInfo">
           <!-- CONVERT -->
           <div ng-if="showNoteEditorComponent('advancedFooter', 'convert')" class="group-symmetrical">
             <a href ng-class="!showEditorAction('convertToTask') && 'invisible'"

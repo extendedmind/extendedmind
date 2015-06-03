@@ -51,7 +51,7 @@
         return $scope.collapsibleOpen && !$scope.isPropertyInDedicatedEdit();
       }
       if (subcomponentName ==='keywords'){
-        return !hasActiveKeywords($scope.note);
+        return !hasActiveKeywords($scope.note) && $scope.fullEditor;
       }else if (subcomponentName ==='list'){
         return ((!$scope.note.trans.list || $scope.note.trans.list.trans.deleted) &&
                 ($scope.features.lists.getStatus('active') !== 'disabled'));
@@ -59,7 +59,8 @@
       break;
 
       case 'lessMore':
-      return hasUnsetCollapsableProperty() && !$scope.isPropertyInDedicatedEdit() && !$scope.isOnboarding('notes');
+      return (hasUnsetCollapsableProperty() && !$scope.isPropertyInDedicatedEdit() &&
+              !$scope.isOnboarding('notes'));
 
       case 'basicFooter':
       return !$scope.isPropertyInDedicatedEdit() && !$scope.isFooterNavigationHidden();
@@ -84,12 +85,13 @@
       case 'content':
       return $scope.drawerAisleInitialized && !$scope.isOtherPropertyInEdit('content');
       case 'favorite':
-      return !$scope.isOnboarding('notes');
+      return $scope.fullEditor && !$scope.isOnboarding('notes');
       case 'keywords':
-      return hasActiveKeywords($scope.note) && !$scope.isPropertyInDedicatedEdit();
+      return hasActiveKeywords($scope.note) && !$scope.isPropertyInDedicatedEdit() && $scope.fullEditor;
       case 'list':
       return ($scope.note.trans.list && !$scope.note.trans.list.trans.deleted &&
-              $scope.features.lists.getStatus('active') !== 'disabled' && !$scope.isPropertyInDedicatedEdit());
+              $scope.features.lists.getStatus('active') !== 'disabled' &&
+              !$scope.isPropertyInDedicatedEdit());
       case 'modified':
       return $scope.note.trans.uuid && $scope.note.trans.created !== $scope.note.trans.modified;
     }
