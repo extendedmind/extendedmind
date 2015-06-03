@@ -312,7 +312,9 @@
         }
       };
 
-      if (attrs.editorFooterStartExpanded !== undefined) {
+      if (attrs.editorFooterStartExpanded !== undefined &&
+          $parse(attrs.editorFooterStartExpanded)(scope))
+      {
         // Open on init, without animation.
         // NOTE: scope.openExpand is defined in run-time so it needs to be defined before calling it.
         scope.openExpand(true);

@@ -53,7 +53,8 @@
 
   <div class="swiper-container container-fluid--inner" swiper-container="taskEditor" swiper-type="main"
     expected-slides="2" swiper-container-toggle-drawer-sliding-events="hasSwipeToClose('task')"
-    swiper-container-slide-changed="editorSwiperSlideChanged()">
+    swiper-container-slide-changed="editorSwiperSlideChanged()"
+    swiper-click="containerClick($event.target.disabled, 'task')">
     <div class="swiper-wrapper">
       <div class="swiper-slide" swiper-slide="taskEditor/basic" slide-index="0"
         ng-init="slideInfo = {footerId: 'basicFooter'}">
@@ -66,13 +67,14 @@
             <div class="group-mixed--left">
               <input type="checkbox" swiper-click="clickCompleteTaskInEdit()"
                 ng-model="task.trans.optimisticComplete" ng-model-options="{getterSetter: true}"
-                icon-checkbox="editorTitlebarCheckbox" />
+                icon-checkbox="editorTitlebarCheckbox" ng-disabled="readOnly"/>
             </div>
             <div class="group-mixed--middle">
               <textarea ng-model="task.trans.title" input-model-validator ng-trim="false"
                 ng-keydown="taskTitlebarTextKeyDown($event)"
                 editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
                 editable-field-focus="setTitleBarFocus()" msd-elastic
+                ng-disabled="readOnly"
                 placeholder="enter task title&#8230;" maxlength="128">
               </textarea>
             </div>
@@ -268,18 +270,19 @@
 
           <!-- DESCRIPTION -->
           <textarea ng-if="drawerAisleInitialized && showEditorProperty('description')" id="ignoreSnap"
-            ng-model="task.trans.description" input-model-validator ng-trim="false"
+            ng-model="task.trans.description" input-model-validator ng-trim="false" msd-elastic
             ng-focus="setTextPropertyFocus('description', true)"
-            ng-blur="setTextPropertyFocus('description', false)" msd-elastic
+            ng-blur="setTextPropertyFocus('description', false)"
+            ng-disabled="readOnly"
             placeholder="enter description&#8230;" maxlength="1024" autocapitalize="none" autocorrect="off">
           </textarea>
 
         </div>
 
         <footer class="container-content--after editor-footer" editor-footer="slideInfo"
-          editor-footer-ios-click editor-footer-start-expanded>
+          editor-footer-ios-click editor-footer-start-expanded="{{fullEditor}}">
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
-            <div class="group-symmetrical--middle">
+            <div ng-if="showTaskEditorComponent('basicFooter', 'later')" class="group-symmetrical--middle">
               <a href class="icon-downplayed" ng-click="toggleExpand()">
                 <span class="icon-calendar"></span>
               </a>
@@ -355,8 +358,9 @@
 
           <div ng-if="showEditorProperty('url')" class="row-vertically-centered with-textarea">
             <textarea class="text-metadata" ng-model="task.trans.link" input-model-validator ng-trim="false"
-              ng-focus="setTextPropertyFocus('url', true)" ng-blur="setTextPropertyFocus('url', false)"
               msd-elastic
+              ng-focus="setTextPropertyFocus('url', true)" ng-blur="setTextPropertyFocus('url', false)"
+              ng-disabled="readOnly"
               maxlength="2000" placeholder="enter url&#8230;" autocapitalize="none" autocorrect="off">
             </textarea>
           </div>

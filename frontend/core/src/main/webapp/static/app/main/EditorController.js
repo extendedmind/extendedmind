@@ -31,7 +31,6 @@
     $scope.tag = undefined;
     $scope.iterableItems = undefined;
     dataInEdit = data;
-    var itemInEdit;
 
     $scope.editorType = editorType;
     $scope.editorVisible = true;
@@ -39,34 +38,23 @@
 
     if (editorType === 'task'){
       $scope.task = dataInEdit;
-      itemInEdit = dataInEdit;
+      initializeEditorVisibilityAndPermission(dataInEdit);
     }else if (editorType === 'note'){
       $scope.note = dataInEdit;
-      itemInEdit = dataInEdit;
+      initializeEditorVisibilityAndPermission(dataInEdit);
     }else if (editorType === 'list'){
-      if (dataInEdit.list){
-        // Shared/adopted list
-        $scope.list = dataInEdit.list;
-        itemInEdit = dataInEdit.list;
-      }else{
-        $scope.list = dataInEdit;
-        itemInEdit = dataInEdit;
-      }
+      var list = dataInEdit.list || dataInEdit;
+      $scope.list = list;
+      initializeEditorVisibilityAndPermission(list);
     }else if (editorType === 'item'){
       $scope.item = dataInEdit;
-      itemInEdit = dataInEdit;
     }else if (editorType === 'tag'){
       $scope.tag = dataInEdit;
-      itemInEdit = dataInEdit;
     }else if (editorType === 'user'){
-      $scope.user = dataInEdit ? dataInEdit : UserSessionService.getUser();
-      itemInEdit = dataInEdit;
+      $scope.user = dataInEdit || UserSessionService.getUser();
     }else if (editorType === 'recurring') {
       $scope.iterableItems = dataInEdit;
-      itemInEdit = dataInEdit;
     }
-
-    initializeEditorVisibilityAndPermission(itemInEdit);
   };
 
   function initializeEditorVisibilityAndPermission(item) {
@@ -88,7 +76,7 @@
     function isSharedListReadOnly(ownerUUID, listUUID) {
       if ($scope.sharedLists && $scope.sharedLists[ownerUUID]) {
         var sharedListInfo = $scope.sharedLists[ownerUUID][1][listUUID];
-        return sharedListInfo && sharedListInfo[1] === 2;
+        return sharedListInfo && sharedListInfo[1] !== 2;
       }
     }
 
@@ -233,18 +221,30 @@
 
   // DELETING
   $scope.processDelete = function(dataInEdit, deleteCallback, undeleteFn) {
-    $scope.closeEditor();
-    $scope.deferEdit().then(function() {
-      UISessionService.allow('leaveAnimation', 200);
-      var deletePromise = deleteCallback(dataInEdit);
-      if (deletePromise) {
-        deletePromise.then(function() {
+
+    function doProcessDelete(dataInEdit, deleteCallback, undeleteFn) {
+      $scope.closeEditor();
+      $scope.deferEdit().then(function() {
+        UISessionService.allow('leaveAnimation', 200);
+        var deletePromise = deleteCallback(dataInEdit);
+        if (deletePromise) {
+          deletePromise.then(function() {
+            generateItemDeletedDelayedNotification(dataInEdit, undeleteFn);
+          });
+        } else {
           generateItemDeletedDelayedNotification(dataInEdit, undeleteFn);
-        });
-      } else {
-        generateItemDeletedDelayedNotification(dataInEdit, undeleteFn);
-      }
-    });
+        }
+      });
+    }
+
+    if ($scope.readOnly) {
+      UISessionService.pushNotification({
+        type: 'fyi',
+        text: 'can\'t delete shared ' + dataInEdit.trans.itemType
+      });
+    } else {
+      doProcessDelete(dataInEdit, deleteCallback, undeleteFn);
+    }
   };
 
   // CONVERTING
@@ -393,7 +393,12 @@
   // LIST PICKER WIDGET
 
   $scope.openListPicker = function() {
-    $scope.listPickerOpen = true;
+    if ($scope.fullEditor && !$scope.readOnly) {
+      $scope.listPickerOpen = true;
+    } else {
+      // NOTE: Setting parent is disabled in !$scope.fullEditor as well!
+      $scope.generateReadOnlyPropertyClickNotification(dataInEdit.trans.itemType);
+    }
   };
   $scope.closeListPicker = function() {
     $scope.listPickerOpen = false;
@@ -562,9 +567,9 @@
       case 'saveDone':
       return $scope.isPropertyInDedicatedEdit();
       case 'delete':
-      return !item.trans.deleted && $scope.fullEditor && !$scope.isPropertyInDedicatedEdit();
+      return !item.trans.deleted && !$scope.isPropertyInDedicatedEdit();
       case 'restore':
-      return item.trans.deleted && $scope.fullEditor && !$scope.isPropertyInDedicatedEdit();
+      return item.trans.deleted && !$scope.isPropertyInDedicatedEdit();
       case 'convertToNote':
       return $scope.fullEditor && $scope.features.notes.getStatus() !== 'disabled';
       case 'convertToList':
@@ -597,6 +602,17 @@
       case 'list':
       return $scope.listPickerOpen;
     }
+  };
+
+  $scope.generateReadOnlyPropertyClickNotification = function(itemType) {
+    UISessionService.pushNotification({
+      type: 'fyi',
+      text: 'can\'t edit shared ' + itemType
+    });
+  };
+
+  $scope.containerClick = function(disabledElement, itemType) {
+    if ($scope.readOnly && disabledElement) $scope.generateReadOnlyPropertyClickNotification(itemType);
   };
 
   // BACK HANDLER

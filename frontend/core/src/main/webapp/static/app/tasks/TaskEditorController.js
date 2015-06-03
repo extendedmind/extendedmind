@@ -43,7 +43,15 @@
 
       case 'basicFooter':
       if (!subcomponentName) {
-        return !$scope.isPropertyInDedicatedEdit();
+        if (!$scope.isPropertyInDedicatedEdit() &&
+            ($scope.showTaskEditorComponent('basicFooter', 'later') ||
+             $scope.showTaskEditorComponent('basicFooter', 'navigation')))
+        {
+          return true;
+        }
+        break;
+      } else if (subcomponentName === 'later') {
+        return $scope.fullEditor;
       } else if (subcomponentName === 'navigation') {
         return !$scope.isFooterNavigationHidden();
       }
@@ -54,19 +62,27 @@
   $scope.showTaskProperty = function(propertyName){
     switch (propertyName){
       case 'context':
-      return $scope.features.tasks.getStatus('contexts') !== 'disabled' && !$scope.isPropertyInDedicatedEdit();
+      if ($scope.features.tasks.getStatus('contexts') !== 'disabled' && !$scope.isPropertyInDedicatedEdit() &&
+          $scope.fullEditor)
+      {
+        return true;
+      }
+      break;
       case 'created':
       return;
       case 'date':
-      return !$scope.isPropertyInDedicatedEdit();
+      return !$scope.isPropertyInDedicatedEdit() && $scope.fullEditor;
       case 'list':
-      return $scope.features.lists.getStatus('active') !== 'disabled' && !$scope.isPropertyInDedicatedEdit();
+      if ($scope.features.lists.getStatus('active') !== 'disabled' && !$scope.isPropertyInDedicatedEdit()) {
+        return $scope.fullEditor ? true : ($scope.task.trans.list && !$scope.task.trans.list.trans.deleted);
+      }
+      break;
       case 'modified':
       return;
       case 'reminders':
-      return isRemindersVisible($scope.task) && !$scope.isPropertyInDedicatedEdit();
+      return isRemindersVisible($scope.task) && !$scope.isPropertyInDedicatedEdit() && $scope.fullEditor;
       case 'repeating':
-      return $scope.task.trans.due && !$scope.isPropertyInDedicatedEdit();
+      return $scope.task.trans.due && !$scope.isPropertyInDedicatedEdit() && $scope.fullEditor;
     }
   };
 
@@ -91,12 +107,22 @@
 
   var completeReadyDeferred;
   $scope.clickCompleteTaskInEdit = function() {
-    completeReadyDeferred = $q.defer();
-    var completed = $scope.toggleCompleteTask($scope.task, completeReadyDeferred);
+    if ($scope.readOnly) {
+      /*
+      // NOTE: Test this with Android when checkbox is disabled in task lists as well.
+      event.preventDefault();
+      if (angular.isFunction($scope.generateReadOnlyPropertyClickNotification)) {
+        $scope.generateReadOnlyPropertyClickNotification('task');
+      }
+      */
+    } else {
+      completeReadyDeferred = $q.defer();
+      var completed = $scope.toggleCompleteTask($scope.task, completeReadyDeferred);
 
-    if (!completed) {
-      completeReadyDeferred.resolve($scope.task);
-      completeReadyDeferred = undefined;
+      if (!completed) {
+        completeReadyDeferred.resolve($scope.task);
+        completeReadyDeferred = undefined;
+      }
     }
   };
 

@@ -32,11 +32,11 @@
           <span class="text-heading-primary text-downplayed">list</span>
         </div>
 
-        <a href ng-if="showEditorAction('delete', list)" class="group-symmetrical--right"
+        <a href ng-if="showListAction('delete', list)" class="group-symmetrical--right"
            swiper-click="deleteListInEdit()">
           <span class="icon-trash"></span>
         </a>
-        <a href ng-if="showEditorAction('restore', list)"
+        <a href ng-if="showListAction('restore', list)"
           class="group-symmetrical--right link-navigation highlighted active"
           swiper-click="undeleteList(list)">
           <span class="text-navigation">restore</span>
@@ -57,7 +57,7 @@
   <div class="swiper-container container-fluid--inner" swiper-container="listEditor" swiper-type="main"
     expected-slides="2" swiper-container-toggle-drawer-sliding-events="hasSwipeToClose('list')"
     swiper-container-slide-changed="editorSwiperSlideChanged()"
-    swiper-click="containerClick($event.target.disabled)">
+    swiper-click="containerClick($event.target.disabled, 'list')">
     <div class="swiper-wrapper">
       <div class="swiper-slide" swiper-slide="listEditor/basic" slide-index="0">
         <div ng-style="{'padding-bottom': isPropertyInDedicatedEdit() ? 0 : EDITOR_FOOTER_HEIGHT}"

@@ -62,7 +62,7 @@
 
   // LIST EDITOR FIELD VISIBILITY
 
-  $scope.showListAction = function(actionName){
+  $scope.showListAction = function(actionName, list){
     switch (actionName){
       case 'favorite':
       // For lists, favoriting is an action because there is no 'favorited' field in the list there is
@@ -80,6 +80,10 @@
         $scope.list.trans.archived !== undefined &&
         $scope.editorType !== 'recurring' &&
         $scope.features.lists.getStatus('archived') !== 'disabled';
+      case 'delete':
+      return !list.trans.deleted && $scope.fullEditor && !$scope.isPropertyInDedicatedEdit();
+      case 'restore':
+      return list.trans.deleted && $scope.fullEditor && !$scope.isPropertyInDedicatedEdit();
       case 'share':
       return $scope.fullEditor && !$scope.listShareEditorOpen;
     }
@@ -601,15 +605,6 @@
       return 'resent';
     } else {
       return 'resend';
-    }
-  };
-
-  $scope.containerClick = function(disabledElement) {
-    if ($scope.readOnly && disabledElement) {
-      UISessionService.pushNotification({
-        type: 'fyi',
-        text: 'can\'t edit shared list'
-      });
     }
   };
 
