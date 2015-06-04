@@ -250,7 +250,7 @@
     } else {
       $scope.agendaCalendarSettingVisible = true;
     }
-    $scope.keepRunningVisible = true;
+    if (packaging === 'android-cordova') $scope.keepRunningVisible = true;
   }
 
 }
