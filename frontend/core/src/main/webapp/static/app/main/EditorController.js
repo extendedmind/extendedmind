@@ -422,8 +422,9 @@
     if (!list.trans.uuid) {// List is new, save it first. Close list picker on error saving new list.
       $scope.saveList(list).then(doCloseAndSave, $scope.closeListPicker);
     }
-    else
+    else {
       doCloseAndSave();
+    }
   };
 
   $scope.closeListPickerAndClearListFromItem = function(item, list, callback) {

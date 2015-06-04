@@ -25,6 +25,7 @@
       getNewList: '&?listPickerNewItem',
       getSelectedList: '&listPickerGetSelected',
       getThisList: '&listPickerGetThisList',
+      close: '&?listPickerClose',
       closeAndSave: '&listPickerSave',
       closeAndClearList: '&listPickerClear',
       registerSaveNewListCallback: '&?listPickerRegisterSaveNewListCallback',
@@ -54,7 +55,7 @@
           }
           scope.listSelected(scope.newList);
         } else {
-          scope.listCleared(scope.newList);
+          if (angular.isFunction(scope.close)) scope.close();
         }
       }
 
@@ -122,15 +123,14 @@
             // Blur add new input on save
             addNewInputBlurCallbackFunction();
           }
-          closeAndSaveDeferred.then(
-            function(success){
-              scope.newList = undefined;
-              scope.selectedList = scope.getSelectedList(scope.thisList);
-              scope.listSelectionDone = true;
-            }, function(error){
-              scope.saveError = error;
-              return $q.reject(error);
-            })
+          closeAndSaveDeferred.then(function(/*success*/){
+            scope.newList = undefined;
+            scope.selectedList = scope.getSelectedList(scope.thisList);
+            scope.listSelectionDone = true;
+          }, function(error){
+            scope.saveError = error;
+            return $q.reject(error);
+          });
         }
       };
 
