@@ -180,7 +180,7 @@
       if (packaging === 'android-cordova') {
         var notification = {
           id: 0,
-          title: 'extended mind running',
+          title: 'launch extended mind',
           text: 'remove this from app settings',
           ongoing: true,
           led: false,

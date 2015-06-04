@@ -609,6 +609,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
 
     var onDeviceReady = function() {
       registerCordovaListeners();
+      activateCordova();
     };
 
     var registerCordovaListeners = function() {
@@ -617,37 +618,6 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
       }
 
       if (packaging === 'android-cordova'){
-        if (window.plugins && window.plugins.webintent){
-          window.plugins.webintent.getExtra(window.plugins.webintent.EXTRA_TEXT,
-            function(url) {
-              // url is the value of EXTRA_TEXT
-              storeSharedItem('url', url);
-              window.plugins.webintent.clearExtra(window.plugins.webintent.EXTRA_TEXT,
-                function() { // extra is now cleared
-                },function() { // There was no extra supplied.
-                }
-              );
-            }, function() {
-              // There was no extra text supplied, this means there is no proper share
-              shareViaValues = undefined;
-            }
-          );
-          window.plugins.webintent.getExtra(window.plugins.webintent.EXTRA_SUBJECT,
-            function(subject) {
-              // subject is the value of EXTRA_SUBJECT
-              storeSharedItem('subject', subject);
-              window.plugins.webintent.clearExtra(window.plugins.webintent.EXTRA_SUBJECT,
-                function() { // extra is now cleared
-                },function() { // There was no extra supplied.
-                }
-              );
-            }, function() {
-              // There was no extra supplied.
-              storeSharedItem('subject', undefined);
-            }
-          );
-        }
-
         document.addEventListener('backbutton', onBack, false);
         document.addEventListener('menubutton', onMenu, false);
       }
@@ -664,6 +634,52 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     }
   }
 
+  function activateCordova(){
+    ReminderService.clearTriggeredReminders();
+    var keepRunningPreferences = UserSessionService.getUIPreference('keepRunning');
+    if (keepRunningPreferences && keepRunningPreferences[UISessionService.getDeviceId()]){
+      ReminderService.setPersistentReminderForThisDevice();
+    }
+    if (packaging === 'android-cordova'){
+      processIncomingItem();
+    }
+  }
+
+  // SHARE VIA
+
+  function processIncomingItem(){
+    if (window.plugins && window.plugins.webintent){
+      window.plugins.webintent.getExtra(window.plugins.webintent.EXTRA_TEXT,
+        function(url) {
+          // url is the value of EXTRA_TEXT
+          storeSharedItem('url', url);
+          window.plugins.webintent.clearExtra(window.plugins.webintent.EXTRA_TEXT,
+            function() { // extra is now cleared
+            },function() { // There was no extra supplied.
+            }
+          );
+        }, function() {
+          // There was no extra text supplied, this means there is no proper share
+          shareViaValues = undefined;
+        }
+      );
+      window.plugins.webintent.getExtra(window.plugins.webintent.EXTRA_SUBJECT,
+        function(subject) {
+          // subject is the value of EXTRA_SUBJECT
+          storeSharedItem('subject', subject);
+          window.plugins.webintent.clearExtra(window.plugins.webintent.EXTRA_SUBJECT,
+            function() { // extra is now cleared
+            },function() { // There was no extra supplied.
+            }
+          );
+        }, function() {
+          // There was no extra supplied.
+          storeSharedItem('subject', undefined);
+        }
+      );
+    }
+  }
+
   var shareViaValues;
   function storeSharedItem(type, value){
     if (!shareViaValues) shareViaValues = {};
@@ -673,8 +689,10 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
       shareViaValues.url = value;
     }
     if (shareViaValues.hasOwnProperty('url') && shareViaValues.hasOwnProperty('subject')){
+      // First deactivate back button
+      document.removeEventListener('backbutton', onBack, false);
 
-      // First activate inbox if not active
+      // Second: activate inbox if not active
       if ($scope.features.inbox.getStatus() === 'disabled'){
         var inboxPrefs = UserSessionService.getFeaturePreferences('inbox');
         inboxPrefs = $scope.activateFeatureOnboarding(inboxPrefs);
@@ -693,7 +711,11 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
       if (initialShareItemValues.title){
         var newItem = ItemsService.getNewItem(initialShareItemValues, UserSessionService.getUserUUID());
         ItemsService.saveItem(newItem).then(function(){
-          $scope.changeFeature('inbox', undefined);
+          $scope.openEditor('item', newItem);
+          if (!$rootScope.$$phase && !$scope.$$phase) {
+            // Programmatic open. Most likely does not cause digest.
+            $scope.$digest();
+          }
         });
       }
     }
@@ -873,11 +895,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
   };
   function executeActivateCallbacks() {
     if (packaging.endsWith('cordova')){
-      ReminderService.clearTriggeredReminders();
-      var keepRunningPreferences = UserSessionService.getUIPreference('keepRunning');
-      if (keepRunningPreferences && keepRunningPreferences[UISessionService.getDeviceId()]){
-        ReminderService.setPersistentReminderForThisDevice();
-      }
+      activateCordova();
     }
     for (var id in activateDeactivateCallbacks)
       activateDeactivateCallbacks[id].activate();
