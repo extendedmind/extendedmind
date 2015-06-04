@@ -38,16 +38,11 @@ function ArrayService($rootScope) {
 
   function locationOfItemInArray(element, array, field, reverse, start, end) {
 
-    function compareTransField(a, b, field) {
-      if (a.trans[field] < b.trans[field]) {
-        return -1;
-      } else if (a.trans[field] > b.trans[field]) {
-        return 1;
-      }
-      return 0;
+    function compareNumberTransField(a, b, field) {
+      return a.trans[field] - b.trans[field];
     }
 
-    var compareFn = typeof field === 'function' ? field : compareTransField;
+    var compareFn = typeof field === 'function' ? field : compareNumberTransField;
 
     start = start || 0;
     end = end || array.length;

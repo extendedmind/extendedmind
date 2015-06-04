@@ -36,13 +36,24 @@
     }
   }
 
+  function caseInsensitiveTitleCompare(a, b) {
+    var aValue = a.trans['title'].toLowerCase();
+    var bValue = b.trans['title'].toLowerCase();
+    if (aValue < bValue) {
+      return -1;
+    } else if (aValue > bValue) {
+      return 1;
+    }
+    return 0;
+  }
+
   function updateAllTags(cachedTags, ownerUUID) {
     var activeTags = TagsService.getTags(ownerUUID);
     cachedTags['all'] = [];
     if (activeTags && activeTags.length){
       for (var i = 0; i < activeTags.length; i++) {
         // Contexts and keywords are sorted everywhere in alphabetical order
-        ArrayService.insertItemToArray(activeTags[i], cachedTags['all'], 'title');
+        ArrayService.insertItemToArray(activeTags[i], cachedTags['all'], caseInsensitiveTitleCompare);
       }
     }
   }
