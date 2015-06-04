@@ -626,6 +626,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     if (cordova) {
       if (cordova.plugins && cordova.plugins.notification) {
         registerCordovaListeners();
+        activateCordova();
       } else {
         document.addEventListener('deviceready', onDeviceReady, false);
       }
@@ -689,8 +690,8 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
       shareViaValues.url = value;
     }
     if (shareViaValues.hasOwnProperty('url') && shareViaValues.hasOwnProperty('subject')){
-      // First deactivate back button
-      document.removeEventListener('backbutton', onBack, false);
+      // First set back button to exit app
+      $scope.exitAppOnBack = true;
 
       // Second: activate inbox if not active
       if ($scope.features.inbox.getStatus() === 'disabled'){
@@ -702,10 +703,10 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
 
       // Then, save value to inbox
       var initialShareItemValues = {
-        title: shareViaValues.subject ? shareViaValues.subject : shareViaValues.url
+        title: shareViaValues.subject ? shareViaValues.subject : shareViaValues.url.trim()
       };
       if (shareViaValues.url){
-        initialShareItemValues.link = shareViaValues.url;
+        initialShareItemValues.link = shareViaValues.url.trim();
       }
       shareViaValues = undefined;
       if (initialShareItemValues.title){

@@ -104,6 +104,12 @@
 
   function editorAboutToClose() {
     if (typeof featureEditorAboutToCloseCallback === 'function') featureEditorAboutToCloseCallback();
+    if ($scope.exitAppOnBack === true){
+      if (navigator && navigator.app && navigator.app.exitApp){
+        navigator.app.exitApp();
+      }
+      $scope.exitAppOnBack = false;
+    }
   }
 
   // Callback from Snap.js, outside of AngularJS event loop
