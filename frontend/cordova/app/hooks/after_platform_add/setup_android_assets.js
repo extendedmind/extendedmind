@@ -30,8 +30,8 @@ if (shell.test('-d', androidroot)){
   // Copy reminder icon
   shell.exec( "cp -f " + iconroot + "/ic_popup_reminder.png " + androidroot + "/res/drawable", {silent:false} );
 
-  // copy ant.properties
-  shell.exec( "cp -f " + buildroot + "/ant.properties " + androidroot, {silent:false} );
+  // copy build properties
+  shell.exec( "cp -f " + buildroot + "/build-extras.gradle " + androidroot, {silent:false} );
 }
 
 process.exit(0);

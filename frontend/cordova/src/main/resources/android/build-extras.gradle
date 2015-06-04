@@ -1,0 +1,15 @@
+android {
+  signingConfigs {
+    release {
+      storeFile file("${settings.servers.android-developer-certificate.privateKey}")
+      storePassword "${settings.servers.android-developer-certificate.passphrase}"
+      keyAlias "${settings.servers.android-developer-certificate.username}"
+      keyPassword "${settings.servers.android-developer-certificate.password}"
+    }
+  }
+  buildTypes {
+    release {
+      signingConfig signingConfigs.release
+    }
+  }
+}

@@ -6,7 +6,7 @@ if [ -z "$2" ]
   then
     mvn -o clean install
   else
-    mvn -o clean install -Dcordova.urlPrefix=$2 
+    mvn -o clean install -Dcordova.urlPrefix=$2
 fi
 
 cd app

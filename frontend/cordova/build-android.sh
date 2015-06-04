@@ -9,8 +9,4 @@ source ./setup-environment.sh
 cd app
 
 # run phonegap command locally
-cordova build android
-
-# make new build using ant release configuration
-cd platforms/android
-ant release
+cordova build android --release

@@ -4,14 +4,15 @@
 
 var pluginlist = [
     "https://github.com/driftyco/ionic-plugins-keyboard.git",
-    "org.apache.cordova.vibration",
-    "org.apache.cordova.media",
+    "cordova-plugin-vibration",
+    "cordova-plugin-media",
     "https://github.com/apache/cordova-plugin-splashscreen.git",
     "https://github.com/extendedmind/Calendar-PhoneGap-Plugin.git",
     "https://github.com/extendedmind/cordova-plugin-local-notifications",
     "https://github.com/leohenning/KeepScreenOnPlugin",
     "https://github.com/extendedmind/cordova-webintent",
-    "org.apache.cordova.device"
+    "cordova-plugin-device",
+    "cordova-plugin-whitelist"
 ];
 
 // no need to configure below
