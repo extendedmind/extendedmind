@@ -5,7 +5,7 @@
     <div list-item-add="getNewItem()" list-item-add-save="saveItem(newItem)">
       <form role="form" class="group-mixed vertically-centered swiper-no-swiping"
         ng-submit="callAndExit(saveItem, newItem)" data-snap-ignore="true" editable-field-container
-        editable-field-container-clicked-elsewhere="clickedElsewhere()"
+        editable-field-container-clicked-elsewhere="onListItemAddExit()"
         autocapitalize="none" autocorrect="off">
         <div class="group-mixed--middle">
           <textarea ng-model="newItem.trans.title" msd-elastic ng-keydown="textareaKeyDown($event)"

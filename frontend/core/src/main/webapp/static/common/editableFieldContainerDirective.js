@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function editableFieldContainerDirective($parse) {
+ function editableFieldContainerDirective($parse, $rootScope) {
   return {
     restrict: 'A',
     scope: true,
@@ -35,7 +35,7 @@
       };
       this.deactivateContainer = function(){
         // deactivate and call click elsewhere
-        $scope.deactivateContainer(true);
+        $scope.deactivateContainer();
       };
     }],
     link: function (scope, element, attrs, backdropController) {
@@ -67,50 +67,58 @@
         }
       };
 
-      scope.deactivateContainer = function(containerDestroyed) {
+      scope.deactivateContainer = function() {
         if (scope.containerActive){
-          if (attrs.editableFieldContainer !== 'auto' || containerDestroyed){
-            backdropController.deactivateContainer(element[0]);
-            element[0].removeEventListener('click', clickedContainer, false);
-            element.removeClass('active');
-            scope.containerActive = false;
-            if (containerDestroyed && clickedElsewhereFn){
-              // Call click elsewhere also when container is destroyed
-              clickedElsewhereFn({containerDestroyed: true});
-            }
-            if (scope.unFocusCallback){
-              scope.unFocusCallback();
-              scope.unFocusCallback = undefined;
-            }
-            if (attrs.editableFieldContainerScrollable) {
-              element.removeClass('scrollable');
-            }
+          backdropController.deactivateContainer(element[0]);
+          element[0].removeEventListener('click', clickedContainer, false);
+          element.removeClass('active');
+          scope.containerActive = false;
+          if (scope.unFocusCallback){
+            scope.unFocusCallback();
+            scope.unFocusCallback = undefined;
+          }
+          if (attrs.editableFieldContainerScrollable) {
+            element.removeClass('scrollable');
+          }
+
+          if (typeof deactivateCallback === 'function') {
+            // NOTE: use $apply because callback may not be inside scope.
+            if (!scope.$$phase && !$rootScope.$$phase) scope.$apply(deactivateCallback);
+            else deactivateCallback();
           }
         }
       };
 
-      // optional click elsewhere function can be set with editable-field-container-click-elswhere="fn"
-      // If not set, clicking elsewhere just deactivates the backdrop
-      var clickedElsewhereFn;
-      if (attrs.editableFieldContainerClickedElsewhere){
-        clickedElsewhereFn = $parse(attrs.editableFieldContainerClickedElsewhere).bind(undefined, scope);
+      function onContainerDestroy() {
+        if (scope.containerActive) {
+          backdropController.deactivateContainer(element[0]);
+          element[0].removeEventListener('click', clickedContainer, false);
+          element.removeClass('active');
+          if (attrs.editableFieldContainerScrollable) {
+            element.removeClass('scrollable');
+          }
+          scope.unFocusCallback = undefined;
+        }
+        backdropController.unregisterContainer(element[0]);
       }
 
-      backdropController.registerContainer(element[0], scope.deactivateContainer, clickedElsewhereFn);
+      // optional click elsewhere function can be set with editable-field-container-click-elswhere="fn"
+      // If not set, clicking elsewhere just deactivates the backdrop
+      var deactivateCallback;
+      if (attrs.editableFieldContainerClickedElsewhere){
+        deactivateCallback = $parse(attrs.editableFieldContainerClickedElsewhere).bind(undefined, scope);
+      }
+
+      backdropController.registerContainer(element[0], scope.deactivateContainer);
 
       if (attrs.editableFieldContainer === 'auto') {
         // Activate immediately for "auto" type container
         scope.activateContainer();
       }
 
-      scope.$on('$destroy', function() {
-        if (scope.containerActive) {
-          scope.deactivateContainer(true);
-        }
-        backdropController.unregisterContainer(element[0]);
-      });
+      scope.$on('$destroy', onContainerDestroy);
     }
   };
 }
-editableFieldContainerDirective['$inject'] = ['$parse'];
+editableFieldContainerDirective['$inject'] = ['$parse', '$rootScope'];
 angular.module('common').directive('editableFieldContainer', editableFieldContainerDirective);

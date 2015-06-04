@@ -62,17 +62,14 @@
             controllers[0].notifyListItemAddActive(false);
           }
 
-          scope.clickedElsewhere = function(containerDestroyed){
-            // Don't do anything when container is destroyed
-            if (!containerDestroyed){
-              var itemHasTitle = scope.newItem.trans.title && scope.newItem.trans.title.length > 0;
-              if (itemHasTitle) {
-                saveNewItem(scope.newItem);
-              }else {
-                controllers[0].notifyListItemExitNoAdd();
-              }
-              exit();
+          scope.onListItemAddExit = function(){
+            var itemHasTitle = scope.newItem.trans.title && scope.newItem.trans.title.length > 0;
+            if (itemHasTitle) {
+              saveNewItem(scope.newItem);
+            }else {
+              controllers[0].notifyListItemExitNoAdd();
             }
+            exit();
           };
 
           scope.getListItemAddId = function(){

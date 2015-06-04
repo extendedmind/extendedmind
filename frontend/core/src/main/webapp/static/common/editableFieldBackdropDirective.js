@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function editableFieldBackdropDirective($rootScope) {
+ function editableFieldBackdropDirective() {
   return {
     restrict: 'A',
     controller: ['$scope', '$element', function($scope, $element) {
@@ -24,18 +24,16 @@
       var preventBackdropBubbleClick, preventContainerBubbleClick;
       var backdropActive;
 
-      this.registerContainer = function(id, deactivateFn, callback){
+      this.registerContainer = function(id, deactivateFn){
         var containerInfo = containerInfos.findFirstObjectByKeyValue('id', id);
         if (containerInfo) {
           // Overwrite id's existing values
           containerInfo.deactivate = deactivateFn;
-          containerInfo.clickedElsewhere = callback;
           return;
         }
         containerInfos.push({
           id: id,
-          deactivate: deactivateFn,
-          clickedElsewhere: callback
+          deactivate: deactivateFn
         });
       };
 
@@ -75,14 +73,6 @@
               // Clicked elsewhere than container for an active container, deactivate container.
               // NOTE: Make sure container is not removed same time as looping containers.
               containerInfos[j].deactivate();
-              if (typeof containerInfos[j].clickedElsewhere === 'function'){
-                // Click elsewhere callback.
-                // NOTE: use $apply because callback may not be inside scope.
-                if (!$scope.$$phase && !$rootScope.$$phase)
-                  $scope.$apply(containerInfos[j].clickedElsewhere);
-                else
-                  containerInfos[j].clickedElsewhere();
-              }
             }
           }
         }
@@ -153,5 +143,4 @@
     }]
   };
 }
-editableFieldBackdropDirective['$inject'] = ['$rootScope'];
 angular.module('common').directive('editableFieldBackdrop', editableFieldBackdropDirective);
