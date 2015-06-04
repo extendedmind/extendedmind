@@ -142,6 +142,7 @@
     $scope.editorType = undefined;
     $scope.mode = undefined;
     $scope.editorVisible = false;
+    $scope.focusedTextProperty = undefined;
     titleBarInputFocusCallbackFunction = titleBarInputBlurCallbackFunction = undefined;
     featureEditorAboutToCloseCallback = undefined;
   }
