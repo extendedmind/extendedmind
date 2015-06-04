@@ -108,7 +108,8 @@
           </div>
 
           <!-- LIST PICKER -->
-          <div ng-if="showEditorSubEditor('list')" class="swiper-no-swiping animate-fade-in"
+          <div ng-if="showEditorSubEditor('list')"
+            class="container-sub-editor swiper-no-swiping animate-fade-in"
             ng-init="thisList = list"
             editable-field-container="auto" editable-field-container-scrollable="true"
             editable-field-container-clicked-elsewhere="closeListPicker()" data-snap-ignore="true">
@@ -194,7 +195,8 @@
           </div>
 
           <!-- LIST SHARE EDITOR -->
-          <div ng-if="showListSubEditor('share')" class="swiper-no-swiping animate-fade-in">
+          <div ng-if="showListSubEditor('share')"
+            class="container-sub-editor swiper-no-swiping animate-fade-in">
 
             <div ng-if="fullEditor" class="group-mixed vertically-centered">
               <div class="group-mixed--middle">

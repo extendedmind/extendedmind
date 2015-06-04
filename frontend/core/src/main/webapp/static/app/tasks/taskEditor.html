@@ -94,7 +94,8 @@
           </div>
 
           <!-- CALENDAR -->
-          <div ng-if="showTaskSubEditor('calendar')" class="swiper-no-swiping animate-fade-in row-top-parent"
+          <div ng-if="showTaskSubEditor('calendar')"
+            class="container-sub-editor swiper-no-swiping animate-fade-in row-top-parent"
             editable-field-container="auto" editable-field-container-clicked-elsewhere="closeCalendar()"
             data-snap-ignore="true">
 
@@ -153,7 +154,8 @@
 
           <!-- REMINDER PICKER -->
           <div ng-if="showTaskSubEditor('reminders')"
-            class="swiper-no-swiping animate-fade-in group-mixed vertically-centered" data-snap-ignore="true">
+            class="container-sub-editor swiper-no-swiping animate-fade-in group-mixed vertically-centered"
+            data-snap-ignore="true">
 
             <div class="reminder-container group-mixed--middle">
 
@@ -250,7 +252,8 @@
           </div>
 
           <!-- LIST PICKER -->
-          <div ng-if="showEditorSubEditor('list')" class="swiper-no-swiping animate-fade-in"
+          <div ng-if="showEditorSubEditor('list')"
+            class="container-sub-editor swiper-no-swiping animate-fade-in"
             editable-field-container="auto"
             editable-field-container-scrollable="true"
             editable-field-container-clicked-elsewhere="closeListPicker()" data-snap-ignore="true">
@@ -315,7 +318,8 @@
           </div>
 
           <!-- CONTEXT PICKER -->
-          <div ng-if="showTaskSubEditor('context')" class="swiper-no-swiping animate-fade-in"
+          <div ng-if="showTaskSubEditor('context')"
+            class="container-sub-editor swiper-no-swiping animate-fade-in"
             editable-field-container="auto" editable-field-container-scrollable="true"
             editable-field-container-clicked-elsewhere="closeContextPicker()" data-snap-ignore="true">
             <div list-picker="getTagsArray('contexts', {owner: task.trans.owner})"
@@ -345,7 +349,8 @@
           </div>
 
           <!-- REPEATING PICKER -->
-          <div ng-if="showTaskSubEditor('repeating')" class="swiper-no-swiping animate-fade-in"
+          <div ng-if="showTaskSubEditor('repeating')"
+            class="container-sub-editor swiper-no-swiping animate-fade-in"
             editable-field-container="auto" editable-field-container-scrollable="true"
             editable-field-container-clicked-elsewhere="closeRepeatingPicker()" data-snap-ignore="true">
             <div list-picker="repeatTypes"

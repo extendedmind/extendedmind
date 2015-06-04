@@ -162,7 +162,8 @@
           </div>
 
           <!-- LIST PICKER -->
-          <div ng-if="showEditorSubEditor('list')" class="swiper-no-swiping animate-fade-in"
+          <div ng-if="showEditorSubEditor('list')"
+            class="container-sub-editor swiper-no-swiping animate-fade-in"
             editable-field-container="auto" editable-field-container-scrollable="true"
             editable-field-container-clicked-elsewhere="closeListPicker()" data-snap-ignore="true">
             <div list-picker="{upperHeading: 'active lists', upperArray: getListsArray('active'),
@@ -180,7 +181,8 @@
           </div>
 
           <!-- KEYWORDS PICKER -->
-          <div ng-if="showNoteSubEditor('keywords')" class="swiper-no-swiping animate-fade-in"
+          <div ng-if="showNoteSubEditor('keywords')"
+            class="container-sub-editor swiper-no-swiping animate-fade-in"
             editable-field-container="auto" editable-field-container-scrollable="true"
             editable-field-container-clicked-elsewhere="closeKeywordsPicker()" data-snap-ignore="true">
 
