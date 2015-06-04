@@ -65,7 +65,7 @@
 
     function isCollectiveReadOnly(ownerUUID) {
       if ($scope.collectives && $scope.collectives[ownerUUID]) {
-        return $scope.collectives[ownerUUID][1] === 2;
+        return $scope.collectives[ownerUUID][1] === 1;
       }
     }
 
@@ -76,7 +76,7 @@
     function isSharedListReadOnly(ownerUUID, listUUID) {
       if ($scope.sharedLists && $scope.sharedLists[ownerUUID]) {
         var sharedListInfo = $scope.sharedLists[ownerUUID][1][listUUID];
-        return sharedListInfo && sharedListInfo[1] !== 2;
+        return sharedListInfo && sharedListInfo[1] === 1;
       }
     }
 
