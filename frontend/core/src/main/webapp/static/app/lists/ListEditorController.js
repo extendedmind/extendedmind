@@ -12,6 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+  /* global jQuery */
 
  'use strict';
 
@@ -65,11 +66,12 @@
 
   $scope.showListAction = function(actionName, list){
     var ownerUUID = $scope.list.trans.owner;
+    var adoptedLists;
     switch (actionName){
       case 'favorite':
       // For lists, favoriting is an action because there is no 'favorited' field in the list there is
       // for a note.
-      return $scope.showEditorProperty('title');
+      return $scope.showEditorProperty('title') && $scope.isPersonalData();
       case 'archive':
       return !$scope.isFakeUser() &&
         $scope.fullEditor &&
@@ -87,13 +89,14 @@
       case 'restore':
       return list.trans.deleted && $scope.fullEditor && !$scope.isPropertyInDedicatedEdit();
       case 'share':
-      return $scope.fullEditor && !$scope.listShareEditorOpen;
+      return $scope.fullEditor && (ownerUUID === UserSessionService.getUserUUID()) &&
+             !$scope.listShareEditorOpen;
       case 'adopt':
       // Show adopt when activeUUID is not the same as userUUID (in collective)
       // and list not already adopted
       var userUUID = UserSessionService.getUserUUID();
       var activeUUID = UISessionService.getActiveUUID();
-      var adoptedLists = UserSessionService.getUIPreference('adoptedLists');
+      adoptedLists = UserSessionService.getUIPreference('adoptedLists');
       if (activeUUID !== userUUID && activeUUID === ownerUUID &&
         (!adoptedLists || !adoptedLists[ownerUUID] ||
          adoptedLists[ownerUUID].indexOf[$scope.list.trans.uuid] === -1)){
@@ -102,7 +105,7 @@
       break;
       case 'unadopt':
       // Show unadopt when ownerUUID and listUUID are found in adopted lists
-      var adoptedLists = UserSessionService.getUIPreference('adoptedLists');
+      adoptedLists = UserSessionService.getUIPreference('adoptedLists');
       if (adoptedLists && adoptedLists[ownerUUID] &&
           adoptedLists[ownerUUID].indexOf[$scope.list.trans.uuid] !== -1){
         return true;
@@ -116,9 +119,9 @@
       case 'list':
       return  !$scope.listIsParent($scope.list) && $scope.fullEditor && !$scope.isPropertyInDedicatedEdit();
       case 'sharedTo':
-      return $scope.fullEditor && !$scope.listShareEditorOpen;
+      return $scope.sharedToList && $scope.sharedToList.length && !$scope.listShareEditorOpen;
       case 'sharedBy':
-      return !$scope.fullEditor;
+      return $scope.sharedByList && !jQuery.isEmptyObject($scope.sharedByList);
     }
   };
 

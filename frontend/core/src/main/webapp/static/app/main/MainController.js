@@ -37,6 +37,10 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     }
   };
 
+  $scope.isPersonalData = function(){
+    return UserSessionService.getUserUUID() === UISessionService.getActiveUUID();
+  };
+
   // MAP OF ALL FEATURES
 
   function getFeatureStatus(featurePreferences, subfeature){
