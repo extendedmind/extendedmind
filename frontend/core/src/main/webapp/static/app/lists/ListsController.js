@@ -173,10 +173,10 @@
       for (var i = favoriteListInfos.length-1; i >= 0; i--) {
 
         var listInfo;
-        if (angular.isObject(favoriteListInfos[i])){
-          listInfo = ListsService.getListInfo(favoriteListInfos[i].uuid, favoriteListInfos[i].owner);
+        if (angular.isArray(favoriteListInfos[i])){
+          listInfo = ListsService.getListInfo(favoriteListInfos[i][1], favoriteListInfos[i][0]);
         }else{
-          listInfo = ListsService.getListInfo(favoriteListInfos[i], UISessionService.getActiveUUID());
+          listInfo = ListsService.getListInfo(favoriteListInfos[i], UserSessionService.getUserUUID());
         }
 
         if (listInfo && listInfo.type === 'deleted'){
@@ -342,12 +342,26 @@
     UserService.saveAccountPreferences();
   }
 
+  function getFavoriteListIndex(list, favoriteListInfos){
+    for (var i=0; i<favoriteListInfos.length; i++){
+      if ((angular.isArray(favoriteListInfos[i]) &&
+            favoriteListInfos[i][0] === list.trans.owner && favoriteListInfos[i][1] === list.trans.uuid) ||
+          (angular.isString(favoriteListInfos[i]) && favoriteListInfos[i] === list.trans.uuid)){
+        return i;
+      }
+    }
+  }
+
   $scope.favoriteList = function(list) {
     if (list.trans.itemType === 'list') {
       var favoriteListInfos = UserSessionService.getUIPreference('favoriteLists');
       if (!favoriteListInfos) favoriteListInfos = [];
-      if (favoriteListInfos.indexOf(list.trans.uuid) === -1){
-        favoriteListInfos.push(list.trans.uuid);
+      if (getFavoriteListIndex(list, favoriteListInfos) === undefined){
+        if (list.trans.owner === UserSessionService.getUserUUID()){
+          favoriteListInfos.push(list.trans.uuid);
+        }else{
+          favoriteListInfos.push([list.trans.owner, list.trans.uuid]);
+        }
         updateFavoriteListPreferences(favoriteListInfos);
       }
     } else {
@@ -359,8 +373,8 @@
     if (list.trans.itemType === 'list') {
       var favoriteListInfos = UserSessionService.getUIPreference('favoriteLists');
       if (favoriteListInfos){
-        var favoriteIndex = favoriteListInfos.indexOf(list.trans.uuid);
-        if (favoriteIndex !== -1){
+        var favoriteIndex = getFavoriteListIndex(list, favoriteListInfos);
+        if (favoriteIndex !== undefined){
           favoriteListInfos.splice(favoriteIndex, 1);
           updateFavoriteListPreferences(favoriteListInfos);
         }
