@@ -49,6 +49,7 @@
       initializeEditorVisibilityAndPermission(list);
     }else if (editorType === 'item'){
       $scope.item = dataInEdit;
+      initializeEditorVisibilityAndPermission(dataInEdit);
     }else if (editorType === 'tag'){
       $scope.tag = dataInEdit;
     }else if (editorType === 'user'){
