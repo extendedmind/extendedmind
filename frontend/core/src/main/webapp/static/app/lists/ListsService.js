@@ -132,6 +132,7 @@
     'uuid',
     'created',
     'deleted',
+    'title',
     archivedFieldInfo];
 
   // An object containing lists for every owner

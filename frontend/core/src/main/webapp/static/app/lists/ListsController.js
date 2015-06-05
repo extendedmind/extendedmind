@@ -42,8 +42,8 @@
   }
 
   function caseInsensitiveTitleCompare(a, b) {
-    var aValue = a.trans['title'].toLowerCase();
-    var bValue = b.trans['title'].toLowerCase();
+    var aValue = a.trans.title.toLowerCase();
+    var bValue = b.trans.title.toLowerCase();
     if (aValue < bValue) {
       return -1;
     } else if (aValue > bValue) {
