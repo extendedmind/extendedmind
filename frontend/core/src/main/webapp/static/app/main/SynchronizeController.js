@@ -219,22 +219,41 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
   }
   BackendClientService.registerAfterSecondaryWithEmptyQueueCallback(afterSecondaryWithEmptyQueueCallback);
 
+  function getOtherOwnerUUIDs(sharedLists, adoptedLists){
+    var otherOwnerUUIDs;
+    if (sharedLists){
+      for (var sharedListOwnerUUID in sharedLists) {
+        if (sharedLists.hasOwnProperty(sharedListOwnerUUID)){
+          if (!otherOwnerUUIDs) otherOwnerUUIDs = [];
+          otherOwnerUUIDs.push(sharedListOwnerUUID);
+        }
+      }
+    }
+    if (adoptedLists){
+      for (var adoptedListOwnerUUID in adoptedLists) {
+        if (adoptedLists.hasOwnProperty(adoptedListOwnerUUID)){
+          if (!otherOwnerUUIDs) otherOwnerUUIDs = [];
+          otherOwnerUUIDs.push(adoptedListOwnerUUID);
+        }
+      }
+    }
+    return otherOwnerUUIDs;
+  }
+
   // Synchronizes the other owner that has not been synced for the longest period
   function synchronizeMostStaleOtherOwner(previousParams){
-    var sharedLists = UserSessionService.getSharedLists();
-
+    var otherOwnerUUIDs = getOtherOwnerUUIDs(UserSessionService.getSharedLists(),
+                                             UserSessionService.getUIPreference('adoptedLists'));
     return $q(function(resolve, reject) {
-      if (sharedLists){
+      if (otherOwnerUUIDs){
         var biggestSince;
         var mostStaleOwnerUUID;
-        for (var ownerUUID in sharedLists) {
-          if (sharedLists.hasOwnProperty(ownerUUID)) {
-            var sinceLastItemsSynchronized =
-              getLastItemsSynchronized(UserSessionService.getItemsSynchronized(ownerUUID));
-            if (!biggestSince || biggestSince < sinceLastItemsSynchronized){
-              mostStaleOwnerUUID = ownerUUID;
-              biggestSince = sinceLastItemsSynchronized;
-            }
+        for (var i=0; i<otherOwnerUUIDs.length; i++) {
+          var sinceLastItemsSynchronized =
+            getLastItemsSynchronized(UserSessionService.getItemsSynchronized(otherOwnerUUIDs[i]));
+          if (!biggestSince || biggestSince < sinceLastItemsSynchronized){
+            mostStaleOwnerUUID = otherOwnerUUIDs[i];
+            biggestSince = sinceLastItemsSynchronized;
           }
         }
         if (mostStaleOwnerUUID){

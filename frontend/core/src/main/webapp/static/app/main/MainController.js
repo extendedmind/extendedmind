@@ -31,6 +31,11 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
   $scope.collectives = UserSessionService.getCollectives();
   $scope.sharedLists = UserSessionService.getSharedLists();
 
+  $scope.getCollectiveName = function(collectiveUUID){
+    if ($scope.collectives && $scope.collectives[collectiveUUID]){
+      return $scope.collectives[collectiveUUID][0];
+    }
+  };
 
   // MAP OF ALL FEATURES
 

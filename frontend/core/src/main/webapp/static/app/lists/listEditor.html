@@ -268,8 +268,8 @@
           </div>
         </div>
 
-        <footer class="container-content--after editor-footer" editor-footer="slideInfo">
-
+        <footer ng-if="showListEditorComponent('advancedFooter')"
+        class="container-content--after editor-footer" editor-footer="slideInfo">
           <!-- CONVERT -->
           <div ng-if="showListEditorComponent('advancedFooter', 'convert')" class="group-symmetrical">
             <a href ng-class="!showEditorAction('convertToTask') && 'invisible'"
@@ -285,11 +285,20 @@
             </div>
           </div>
 
-          <nav ng-if="showListEditorComponent('advancedFooter', 'navigation')" role="navigation"
-               class="swiper-no-swiping group-symmetrical">
-            <a href swiper-click="swipeToBasic('listEditor')"
+          <nav ng-if="showListEditorComponent('advancedFooter', 'navigationWrapper')"
+            role="navigation" class="swiper-no-swiping group-symmetrical">
+            <a href ng-if="showListEditorComponent('advancedFooter', 'navigation')"
+               swiper-click="swipeToBasic('listEditor')"
                class="group-symmetrical--left link-navigation active">
               <span class="text-navigation-back">basic</span>
+            </a>
+            <a href ng-if="showListAction('adopt')" swiper-click="adoptList(list)"
+               class="group-symmetrical--right link-navigation highlighted">
+              <span class="text-navigation">adopt</span>
+            </a>
+            <a href ng-if="showListAction('unadopt')" swiper-click="unadoptList(list)"
+               class="group-symmetrical--right link-navigation highlighted">
+              <span class="text-navigation">unadopt</span>
             </a>
           </nav>
         </footer>

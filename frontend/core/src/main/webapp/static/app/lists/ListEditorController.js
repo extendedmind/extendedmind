@@ -15,7 +15,8 @@
 
  'use strict';
 
- function ListEditorController($q, $rootScope, $scope, $timeout, ListsService, UISessionService) {
+ function ListEditorController($q, $rootScope, $scope, $timeout, ListsService, UISessionService,
+                               UserSessionService) {
 
   // INITIALIZING
 
@@ -63,6 +64,7 @@
   // LIST EDITOR FIELD VISIBILITY
 
   $scope.showListAction = function(actionName, list){
+    var ownerUUID = $scope.list.trans.owner;
     switch (actionName){
       case 'favorite':
       // For lists, favoriting is an action because there is no 'favorited' field in the list there is
@@ -86,6 +88,26 @@
       return list.trans.deleted && $scope.fullEditor && !$scope.isPropertyInDedicatedEdit();
       case 'share':
       return $scope.fullEditor && !$scope.listShareEditorOpen;
+      case 'adopt':
+      // Show adopt when activeUUID is not the same as userUUID (in collective)
+      // and list not already adopted
+      var userUUID = UserSessionService.getUserUUID();
+      var activeUUID = UISessionService.getActiveUUID();
+      var adoptedLists = UserSessionService.getUIPreference('adoptedLists');
+      if (activeUUID !== userUUID && activeUUID === ownerUUID &&
+        (!adoptedLists || !adoptedLists[ownerUUID] ||
+         adoptedLists[ownerUUID].indexOf[$scope.list.trans.uuid] === -1)){
+        return true;
+      }
+      break;
+      case 'unadopt':
+      // Show unadopt when ownerUUID and listUUID are found in adopted lists
+      var adoptedLists = UserSessionService.getUIPreference('adoptedLists');
+      if (adoptedLists && adoptedLists[ownerUUID] &&
+          adoptedLists[ownerUUID].indexOf[$scope.list.trans.uuid] !== -1){
+        return true;
+      }
+      break;
     }
   };
 
@@ -123,7 +145,10 @@
       if (!subcomponentName){
         return !$scope.listShareEditorOpen &&
            ($scope.showListEditorComponent('advancedFooter', 'convert') ||
-            $scope.showListEditorComponent('advancedFooter', 'navigation'));
+            $scope.showListEditorComponent('advancedFooter', 'navigationWrapper'));
+      }else if (subcomponentName === 'navigationWrapper'){
+        return $scope.showListEditorComponent('advancedFooter', 'navigation') ||
+               ($scope.showListAction('adopt') || $scope.showListAction('unadopt'));
       }else if (subcomponentName === 'navigation'){
         return !$scope.isFooterNavigationHidden();
       }else if (subcomponentName === 'convert'){
@@ -624,5 +649,5 @@
 }
 
 ListEditorController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout',
-'ListsService', 'UISessionService'];
+'ListsService', 'UISessionService', 'UserSessionService'];
 angular.module('em.main').controller('ListEditorController', ListEditorController);

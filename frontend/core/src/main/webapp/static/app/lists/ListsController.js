@@ -12,6 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+  /* global jQuery */
  'use strict';
 
  function ListsController($q, $rootScope, $scope,
@@ -22,21 +23,6 @@
     $scope.registerArrayChangeCallback('list', ['active', 'archived'], invalidateListsArrays,
                                        'ListsController');
   }
-
-  $scope.useSharedLists = function() {
-    return UserSessionService.getUserType() === 0 || UserSessionService.getUserType() === 1;
-  };
-
-  $scope.isListDataReady = function(listUUID, ownerUUID) {
-    var listInfo = ListsService.getListInfo(listUUID, ownerUUID);
-    if (listInfo){
-      return true;
-    }
-  };
-
-  $scope.getSharedListFeatureData = function(sharedListUUID, ownerUUID){
-    return {list: ListsService.getListInfo(sharedListUUID, ownerUUID).list, owner: ownerUUID};
-  };
 
   var cachedListsArrays = {};
 
@@ -241,6 +227,36 @@
     else if (angular.isObject(favoriteListInfo)) return favoriteListInfo.uuid;
   }
 
+  function listUUIDChangedCallback(oldListUUID, newListUUID, ownerUUID){
+    // Also update favorited lists and adopted lists
+    var savePrefs = false;
+    var favoriteListInfos = UserSessionService.getUIPreference('favoriteLists');
+    if (favoriteListInfos){
+      for (var i=favoriteListInfos.length-1; i>=0; i--){
+        if (angular.isArray(favoriteListInfos[i]) && favoriteListInfos[i][0] === ownerUUID &&
+            favoriteListInfos[i][1] === oldListUUID) {
+          favoriteListInfos[i][1] = newListUUID;
+          savePrefs = true;
+        }else if (favoriteListInfos[i] === oldListUUID){
+          favoriteListInfos[i] = newListUUID;
+          savePrefs = true;
+        }
+      }
+    }
+    if (savePrefs) UserSessionService.setUIPreference('favoriteLists', favoriteListInfos);
+
+    var adoptedListInfos = UserSessionService.getUIPreference('adoptedListInfos');
+    if (adoptedListInfos && adoptedListInfos[ownerUUID]){
+      var adoptedIndex = adoptedListInfos[ownerUUID].indexOf(oldListUUID);
+      if (adoptedIndex !== -1){
+        adoptedListInfos[ownerUUID][adoptedIndex] = newListUUID;
+        savePrefs = true;
+        UserSessionService.setUIPreference('adoptedLists', adoptedListInfos);
+      }
+    }
+    if (savePrefs) UserService.saveAccountPreferences();
+  }
+  ListsService.registerListUUIDChangedCallback(listUUIDChangedCallback, 'ListsController');
 
   $scope.getListsArray = function(arrayType/*, info*/) {
     var ownerUUID = UISessionService.getActiveUUID();
@@ -316,6 +332,7 @@
         // List was archived, swipe to archived lists slide.
         SwiperService.swipeTo('lists/archived');
       }
+      $scope.adoptedLists = getAdoptedListsPerOwner();
     }
   };
   UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'ListsController');
@@ -358,6 +375,91 @@
     if (favoritedLists && favoritedLists.length &&
         favoritedLists.indexOf(list) !== -1){
       return true;
+    }
+  };
+
+  // SHARED LISTS
+
+  $scope.useSharedLists = function() {
+    return UserSessionService.getUserType() === 0 || UserSessionService.getUserType() === 1;
+  };
+
+  $scope.isListDataReady = function(listUUID, ownerUUID) {
+    var listInfo = ListsService.getListInfo(listUUID, ownerUUID);
+    if (listInfo){
+      return true;
+    }
+  };
+
+  $scope.getSharedListFeatureData = function(sharedListUUID, ownerUUID){
+    return {list: ListsService.getListInfo(sharedListUUID, ownerUUID).list, owner: ownerUUID};
+  };
+
+  // ADOPTED LISTS
+
+  $scope.useAdoptedLists = function() {
+    if (UserSessionService.getUserType() === 0 || UserSessionService.getUserType() === 1){
+      return UserSessionService.getUIPreference('adoptedLists');
+    }
+  };
+
+  function getAdoptedListsPerOwner() {
+    var adoptedListsPerOwner;
+    var adoptedLists = UserSessionService.getUIPreference('adoptedLists');
+    if (adoptedLists){
+      for (var ownerUUID in adoptedLists){
+        if (adoptedLists.hasOwnProperty(ownerUUID)){
+          for (var i=0; i<adoptedLists[ownerUUID].length; i++){
+            var adoptedListInfo = ListsService.getListInfo(adoptedLists[ownerUUID][i], ownerUUID);
+            if (adoptedListInfo){
+              if (adoptedListInfo.type === 'deleted'){
+                // Unadopt deleted list
+                $scope.unadoptList(adoptedListInfo.list, true);
+              }else{
+                if (!adoptedListsPerOwner) adoptedListsPerOwner = {};
+                if (!adoptedListsPerOwner[ownerUUID]) adoptedListsPerOwner[ownerUUID] = [];
+                adoptedListsPerOwner[ownerUUID].push(adoptedListInfo.list);
+              }
+            }
+          }
+        }
+      }
+    }
+    return adoptedListsPerOwner;
+  };
+
+  $scope.adoptList = function(list) {
+    var adoptedLists = UserSessionService.getUIPreference('adoptedLists');
+    if (!adoptedLists) adoptedLists = {};
+    if (!adoptedLists[list.trans.owner]) adoptedLists[list.trans.owner] = [];
+    adoptedLists[list.trans.owner].push(list.trans.uuid);
+    UserSessionService.setUIPreference('adoptedLists', adoptedLists);
+    UserService.saveAccountPreferences();
+
+    UISessionService.pushNotification({
+      type: 'fyi',
+      text: 'list adopted'
+    });
+    return;
+  };
+
+  $scope.unadoptList = function(list, skipNotification) {
+    var adoptedLists = UserSessionService.getUIPreference('adoptedLists');
+    if (adoptedLists && adoptedLists[list.trans.owner]){
+      var adoptedListIndex = adoptedLists[list.trans.owner].indexOf(list.trans.uuid);
+      if (adoptedListIndex !== -1){
+        adoptedLists[list.trans.owner].splice(adoptedListIndex, 1);
+        if (adoptedLists[list.trans.owner].length === 0) delete adoptedLists[list.trans.owner];
+        if (jQuery.isEmptyObject(adoptedLists)) adoptedLists = undefined;
+        UserSessionService.setUIPreference('adoptedLists', adoptedLists);
+        UserService.saveAccountPreferences();
+        if (!skipNotification){
+          UISessionService.pushNotification({
+            type: 'fyi',
+            text: 'list adoption removed'
+          });
+        }
+      }
     }
   };
 
