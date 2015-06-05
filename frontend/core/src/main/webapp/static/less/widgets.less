@@ -443,12 +443,13 @@ TODO: working example needed!
   }
 }
 
-// 1. Override any height set to .container-sub-editor to make (possible) click elsewhere working in.
+// 1. Override any height set to .container-sub-editor to make (possible) click elsewhere working in
+//    non-scrollable editable fields.
 .editable-field-container.active {
   &, *:not(.link-disable) {
     pointer-events: auto !important;
   }
-  &.container-sub-editor {
+  &.container-sub-editor:not(.scrollable) {
     height: auto; // [1]
   }
   .link-disable {
