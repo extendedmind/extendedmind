@@ -269,11 +269,12 @@
   };
 
   $scope.openReminderPicker = function(task, reminder) {
-    var reminderDate, hours, minutes;
+    var reminderDate, hours, minutes, existing;
 
     if (reminder !== undefined) {
       // Get date from the existing reminder in this device.
       reminderDate = new Date(reminder.notification);
+      existing = true;
     }
     else {
       // New reminder.
@@ -313,18 +314,31 @@
       error: {}
     };
 
+    var initialDate = {
+      date: new Date($scope.reminder.date),
+      hours: hours,
+      minutes: minutes
+    };
+
     reminderPickerOpen = true;
     if (angular.isFunction($scope.registerSubEditorDoneCallback)) {
       $scope.registerSubEditorDoneCallback(closeReminderPickerAndSave, [reminder, task]);
     }
 
     if (angular.isFunction($scope.registerHasSubEditorEditedCallback)) {
-      $scope.registerHasSubEditorEditedCallback(isReminderEdited);
+      $scope.registerHasSubEditorEditedCallback(isReminderEdited, [initialDate, $scope.reminder, existing]);
     }
   };
 
-  function isReminderEdited() {
-    // TODO
+  function isReminderEdited(initialData, currentData, existing) {
+    if (existing && initialData.date.getTime() !== currentData.date.getTime() ||
+        initialData.hours != currentData.hours.value ||
+        initialData.minutes != currentData.minutes.value)
+    {
+      return true;
+    } else if (!existing) {
+      return true;
+    }
   }
 
   function compareWithNotificationTime(a, b) {
