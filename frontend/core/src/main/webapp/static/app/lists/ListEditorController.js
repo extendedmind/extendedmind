@@ -463,7 +463,7 @@
                                              $scope.shareEditor.existing, $scope.list]);
       }
 
-      if (!$scope.fullEditor && angular.isFunction($scope.registerHasSubEditorEditedCallback)) {
+      if ($scope.fullEditor && angular.isFunction($scope.registerHasSubEditorEditedCallback)) {
         $scope.registerHasSubEditorEditedCallback(isListShareEdited,
                                                   [initialData, $scope.shareEditor.data]);
       }
