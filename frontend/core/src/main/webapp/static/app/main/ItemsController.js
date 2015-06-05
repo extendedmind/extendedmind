@@ -71,7 +71,7 @@
   // SAVING
 
   $scope.saveItem = function(item) {
-    return ItemsService.saveItem(item, UISessionService.getActiveUUID());
+    return ItemsService.saveItem(item);
   };
 
   // DELETING

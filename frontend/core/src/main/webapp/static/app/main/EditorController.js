@@ -104,13 +104,26 @@
     }
   }
 
-  function editorAboutToClose() {
-    if (typeof featureEditorAboutToCloseCallback === 'function') featureEditorAboutToCloseCallback();
+  function evaluateExitApp(){
     if ($scope.exitAppOnBack === true){
       if (navigator && navigator.app && navigator.app.exitApp){
         navigator.app.exitApp();
       }
       $scope.exitAppOnBack = false;
+    }
+  }
+
+  function editorAboutToClose() {
+    var aboutToClosePromise;
+    if (typeof featureEditorAboutToCloseCallback === 'function'){
+      aboutToClosePromise = featureEditorAboutToCloseCallback($scope.exitAppOnBack);
+    }
+    if (aboutToClosePromise){
+      aboutToClosePromise.then(function(){
+        evaluateExitApp();
+      })
+    }else{
+      evaluateExitApp();
     }
   }
 

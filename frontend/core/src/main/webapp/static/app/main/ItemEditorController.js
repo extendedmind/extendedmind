@@ -43,10 +43,14 @@
 
   // SAVING, DELETING
 
-  function saveItemInEdit() {
-    $scope.deferEdit().then(function() {
-      $scope.saveItem($scope.item);
-    });
+  function saveItemInEdit(exitAppAfterSave) {
+    if (exitAppAfterSave){
+      return $scope.saveItem($scope.item);
+    }else{
+      return $scope.deferEdit().then(function() {
+        $scope.saveItem($scope.item);
+      });
+    }
   }
 
   $scope.deleteItemInEdit = function() {
@@ -63,11 +67,11 @@
     $scope.closeEditor();
   };
 
-  function itemEditorAboutToClose() {
+  function itemEditorAboutToClose(exitAppAfterSave) {
     if (angular.isFunction($scope.unregisterEditorAboutToCloseCallback))
       $scope.unregisterEditorAboutToCloseCallback('ItemEditorController');
 
-    if ($scope.isItemEdited() && !$scope.item.trans.deleted) saveItemInEdit();
+    if ($scope.isItemEdited() && !$scope.item.trans.deleted) return saveItemInEdit(exitAppAfterSave);
     else ItemsService.resetItem($scope.item);
   }
 
