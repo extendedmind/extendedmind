@@ -97,6 +97,39 @@
 
           </div>
 
+          <!-- URL -->
+          <div ng-show="showEditorProperty('url')">
+            <div ng-if="showEditorComponent('urlLink', note)" class="group-mixed">
+              <a class="group-mixed--middle" ng-click="clickUrl(note)"
+                 ng-class="showEditorComponent('urlLinkError', note) ? 'link-disabled' : 'highlighted'"
+                 external-link="getItemHref(note)">
+                <span class="text-metadata" ng-bind="getItemVisibleUrl(note)"></span>
+              </a>
+              <div class="group-mixed--right">
+                <a href ng-click="setUrlFocus()">
+                  <span class="icon-pencil"></span>
+                </a>
+              </div>
+            </div>
+            <div ng-show="showEditorProperty('url') && focusedTextProperty === 'url'">
+              <div ng-show="showEditorComponent('urlTextArea', note)"
+                   class="row-vertically-centered with-textarea" >
+                <textarea class="text-metadata" ng-model="note.trans.link" input-model-validator ng-trim="false"
+                  editable-field
+                  editable-field-register-callbacks="registerUrlInputCallbacks(focus, blur)"
+                  editable-field-focus="setTextPropertyFocus('url', true)"
+                  editable-field-blur="setTextPropertyFocus('url', false, note)"
+                  ng-keydown="urlTextKeyDown($event, note)"
+                  ng-disabled="readOnly" msd-elastic
+                  maxlength="2000" placeholder="enter url&#8230;" autocapitalize="none" autocorrect="off">
+                </textarea>
+              </div>
+            </div>
+            <div ng-if="showEditorComponent('urlLinkError', note)" class="group-error row-form">
+              <span class="text-error">invalid url</span>
+            </div>
+          </div>
+
           <!-- LIST -->
           <div ng-if="showNoteProperty('list')" class="group-mixed">
             <a href class="group-mixed--middle link-search-result" swiper-click="openListPicker()">
@@ -120,6 +153,12 @@
           <!-- COLLAPSIBLE-->
           <div ng-if="showNoteEditorComponent('collapsible')">
 
+            <!-- URL -->
+            <div ng-if="showNoteEditorComponent('collapsible', 'url')" class="group-mixed">
+              <a href class="group-mixed--middle link-search-result downplayed" swiper-click="setUrlFocus()">
+                <span class="text-field--title">enter url&#8230;</span>
+              </a>
+            </div>
             <!-- LIST -->
             <div ng-if="showNoteEditorComponent('collapsible', 'list')" class="group-mixed">
               <a href class="group-mixed--middle link-search-result downplayed" swiper-click="openListPicker()">
@@ -235,37 +274,6 @@
       <div class="swiper-slide" swiper-slide="noteEditor/advanced" slide-index="1"
         ng-init="slideInfo = {footerId: 'advancedFooter'}">
         <div ng-style="{'padding-bottom': slideInfo.footerHeight}" class="container-content">
-
-          <!-- URL -->
-          <div ng-if="showEditorProperty('url')">
-            <div ng-show="showEditorComponent('urlTextArea', note)"
-                 class="row-vertically-centered with-textarea" >
-              <textarea class="text-metadata" ng-model="note.trans.link" input-model-validator ng-trim="false"
-                editable-field
-                editable-field-register-callbacks="registerUrlInputCallbacks(focus, blur)"
-                editable-field-focus="setTextPropertyFocus('url', true)"
-                editable-field-blur="setTextPropertyFocus('url', false, note)"
-                ng-keydown="urlTextKeyDown($event, note)"
-                ng-disabled="readOnly" msd-elastic
-                maxlength="2000" placeholder="enter url&#8230;" autocapitalize="none" autocorrect="off">
-              </textarea>
-            </div>
-            <div ng-if="showEditorComponent('urlLink', note)" class="group-mixed">
-              <a class="group-mixed--middle" ng-click="clickUrl(note)"
-                 ng-class="showEditorComponent('urlLinkError', note) ? 'link-disabled' : 'highlighted'"
-                 external-link="getItemHref(note)">
-                <span class="text-metadata" ng-bind="getItemVisibleUrl(note)"></span>
-              </a>
-              <div class="group-mixed--right">
-                <a href ng-click="setUrlFocus()">
-                  <span class="icon-pencil"></span>
-                </a>
-              </div>
-            </div>
-            <div ng-if="showEditorComponent('urlLinkError', note)" class="group-error row-form">
-              <span class="text-error">invalid url</span>
-            </div>
-          </div>
 
           <div ng-if="showEditorProperty('created', note)" class="group-mixed text-field">
             <div class="group-mixed--middle">

@@ -55,6 +55,8 @@
       }else if (subcomponentName ==='list'){
         return ((!$scope.note.trans.list || $scope.note.trans.list.trans.deleted) &&
                 ($scope.features.lists.getStatus('active') !== 'disabled'));
+      }else if (subcomponentName ==='url'){
+        return !$scope.note.trans.link;
       }
       break;
 
@@ -433,7 +435,7 @@
   };
 
   function hasUnsetCollapsableProperty() {
-    return !$scope.note.trans.list || ($scope.isFullEditor &&
+    return !$scope.note.trans.list || !$scope.note.trans.link || ($scope.isFullEditor &&
                                        (!$scope.note.trans.keywords || !$scope.note.trans.keywords.length));
   }
 
