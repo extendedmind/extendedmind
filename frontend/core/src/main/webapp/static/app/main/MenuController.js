@@ -17,7 +17,11 @@
  function MenuController($rootScope, $scope, ListsService, UISessionService) {
 
   $scope.gotoFeature = function (feature, data) {
-    $scope.changeFeature(feature,data);
+    if (feature === 'list' && data.trans.owner !== UISessionService.getActiveUUID()){
+      $scope.changeFeature(feature, {list: data, owner: data.trans.owner});
+    }else{
+      $scope.changeFeature(feature, data);
+    }
     if ($rootScope.columns === 1) $scope.closeMenu();
   };
 

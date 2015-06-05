@@ -321,6 +321,7 @@
         $scope.overrideOwnerUUID = data.owner;
       }else{
         $scope.list = data;
+        $scope.overrideOwnerUUID = undefined;
       }
     } else if (name === 'lists') {
       if ($scope.features.lists.getStatus('archived') === 'disabled'){
