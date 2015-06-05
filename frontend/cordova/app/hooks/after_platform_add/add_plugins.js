@@ -12,7 +12,8 @@ var pluginlist = [
     "https://github.com/leohenning/KeepScreenOnPlugin",
     "https://github.com/extendedmind/cordova-webintent",
     "cordova-plugin-device",
-    "cordova-plugin-whitelist"
+    "cordova-plugin-whitelist",
+    "cordova-plugin-inappbrowser"
 ];
 
 // no need to configure below

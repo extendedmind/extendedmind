@@ -13,11 +13,12 @@
  * limitations under the License.
  */
 
+ /* global cordova */
  'use strict';
 
  function EditorController($rootScope, $scope, $timeout,
                            ConvertService, ItemsService, SwiperService, UISessionService,
-                           UserSessionService) {
+                           UserSessionService, packaging) {
 
   // OPENING, INITIALIZING, CLOSING
 
@@ -397,6 +398,91 @@
     }
   };
 
+  // URL EDIT FIELD
+
+  var focusUrlInput;
+  var blurUrlInput;
+  $scope.registerUrlInputCallbacks = function(focus, blur){
+    focusUrlInput = focus;
+    blurUrlInput = blur;
+  };
+
+  $scope.setUrlFocus = function(){
+    $scope.setTextPropertyFocus('url', true);
+    if (focusUrlInput) focusUrlInput();
+  };
+
+  $scope.urlTextKeyDown = function(keydownEvent){
+    // Escape or return, blur
+    if (keydownEvent.keyCode === 27 || keydownEvent.keyCode === 13){
+      blurUrlInput();
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  };
+
+  var urlRegexp = new RegExp(
+    '^' +
+      // protocol identifier
+      '(?:(?:https?|ftp)://)' +
+      // user:pass authentication
+      '(?:\\S+(?::\\S*)?@)?' +
+      '(?:' +
+        // IP address exclusion
+        // private & local networks
+        '(?!(?:10|127)(?:\\.\\d{1,3}){3})' +
+        '(?!(?:169\\.254|192\\.168)(?:\\.\\d{1,3}){2})' +
+        '(?!172\\.(?:1[6-9]|2\\d|3[0-1])(?:\\.\\d{1,3}){2})' +
+        // IP address dotted notation octets
+        // excludes loopback network 0.0.0.0
+        // excludes reserved space >= 224.0.0.0
+        // excludes network & broacast addresses
+        // (first & last IP address of each class)
+        '(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])' +
+        '(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}' +
+        '(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))' +
+      '|' +
+        // host name
+        '(?:(?:[a-z\\u00a1-\\uffff0-9]-*)*[a-z\\u00a1-\\uffff0-9]+)' +
+        // domain name
+        '(?:\\.(?:[a-z\\u00a1-\\uffff0-9]-*)*[a-z\\u00a1-\\uffff0-9]+)*' +
+        // TLD identifier
+        '(?:\\.(?:[a-z\\u00a1-\\uffff]{2,}))' +
+      ')' +
+      // port number
+      '(?::\\d{2,5})?' +
+      // resource path
+      '(?:/\\S*)?' +
+    '$', 'i'
+  );
+
+  function isValidUrl(url){
+    return urlRegexp.test(url);
+  }
+
+  $scope.getItemHref = function(item){
+    if (!packaging.endsWith('cordova') && item.trans.link && isValidUrl(item.trans.link)){
+      return item.trans.link;
+    }
+  };
+
+  $scope.getItemVisibleUrl = function(item){
+    if (item.trans.link){
+      if (item.trans.link.startsWith('http://')){
+        return item.trans.link.substring(7, item.trans.link.length);
+      }else{
+        return item.trans.link;
+      }
+    }
+  };
+
+  $scope.clickUrl = function(item){
+    if (packaging.endsWith('cordova') && item.trans.link && isValidUrl(item.trans.link) &&
+        cordova && cordova.InAppBrowser){
+      cordova.InAppBrowser.open(item.trans.link, '_blank', 'location=yes');
+    }
+  };
+
   // LIST PICKER WIDGET
 
   $scope.openListPicker = function() {
@@ -446,14 +532,27 @@
 
   // TEXT PROPERTIES (i.e. description, url and content)
 
-  $scope.setTextPropertyFocus = function(name, hasFocus){
+  $scope.setTextPropertyFocus = function(name, hasFocus, item){
     if (!$scope.readOnly) {
       if (hasFocus) {
         $scope.focusedTextProperty = name;
       } else {
         $scope.focusedTextProperty = undefined;
+        if (name === 'url' && item){
+          if (item.trans.link && item.trans.link.length){
+            if (item.trans.link.indexOf('://') === -1 && item.trans.link.indexOf('.') !== -1 &&
+                item.trans.link.indexOf(' ') === -1){
+              // There is a period and no blank space, make an educated guess to add 'http://'
+              item.trans.link = 'http://' + item.trans.link;
+            }
+          }
+        }
       }
       if (editorHasSwiper()) SwiperService.setOnlyExternal(getEditorSwiperId(), hasFocus);
+      // Need to digest ot be sure that url/description/content unfocus bites right away
+      if (!$rootScope.$$phase && !$scope.$$phase){
+        $scope.$digest();
+      }
     }
   };
 
@@ -550,7 +649,7 @@
 
   // COMMON EDITOR VISIBILITY
 
-  $scope.showEditorComponent = function(componentName){
+  $scope.showEditorComponent = function(componentName, item){
     switch (componentName){
       case 'label':
       return $scope.isPropertyInDedicatedEdit();
@@ -559,6 +658,12 @@
         $scope.isPropertyInDedicatedEdit();
       case 'editorType':
       return $scope.showEditorType;
+      case 'urlLink':
+      return item.trans.link && $scope.focusedTextProperty !== 'url';
+      case 'urlTextArea':
+      return !item.trans.link || $scope.focusedTextProperty === 'url';
+      case 'urlLinkError':
+      return $scope.focusedTextProperty !== 'url' && item.trans.link && !isValidUrl(item.trans.link);
     }
   };
 
@@ -642,5 +747,5 @@
 }
 
 EditorController['$inject'] = ['$rootScope', '$scope', '$timeout',
-'ConvertService', 'ItemsService', 'SwiperService', 'UISessionService', 'UserSessionService'];
+'ConvertService', 'ItemsService', 'SwiperService', 'UISessionService', 'UserSessionService', 'packaging'];
 angular.module('em.main').controller('EditorController', EditorController);

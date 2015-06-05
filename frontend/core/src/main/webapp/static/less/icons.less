@@ -28,6 +28,7 @@ TODO: Icons are not working yet with Phytoplankton
 @size-icon-offline: 10px;
 @size-icon-calendar: 17px;
 @size-icon-tag: 19px;
+@size-icon-pencil: 15px;
 
 // Icon character codes
 @icon-show-completed: "\e60e";
@@ -58,14 +59,16 @@ TODO: Icons are not working yet with Phytoplankton
 @icon-facebook: "\e619";
 @icon-twitter: "\e61a";
 @icon-email: "\e61b";
+@icon-pencil: "\e61c";
 
 @font-face {
   font-family: 'icomoon';
-  src:url('../fonts/icomoon.eot?m5bl0u');
-  src:url('../fonts/icomoon.eot?#iefixm5bl0u') format('embedded-opentype'),
-    url('../fonts/icomoon.woff?m5bl0u') format('woff'),
-    url('../fonts/icomoon.ttf?m5bl0u') format('truetype'),
-    url('../fonts/icomoon.svg?m5bl0u#icomoon') format('svg');
+  src:url('../fonts/icomoon.eot?xjuxvy');
+  src:url('../fonts/icomoon.eot?#iefixxjuxvy') format('embedded-opentype'),
+    url('../fonts/icomoon.woff2?xjuxvy') format('woff2'),
+    url('../fonts/icomoon.ttf?xjuxvy') format('truetype'),
+    url('../fonts/icomoon.woff?xjuxvy') format('woff'),
+    url('../fonts/icomoon.svg?xjuxvy#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -387,4 +390,10 @@ Icon classes
   -o-transform: rotate(-90deg);
   -ms-transform: rotate(-90deg);
   transform: rotate(-90deg);
+}
+
+.icon-pencil:after {
+  .set-icon-font();
+  content: @icon-pencil;
+  font-size: @size-icon-pencil;
 }

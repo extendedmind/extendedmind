@@ -58,14 +58,34 @@
       </div>
 
       <!-- URL -->
-      <div ng-if="drawerAisleInitialized && showEditorProperty('url')"
-      class="row-vertically-centered with-textarea">
-        <textarea class="text-metadata" ng-model="item.trans.link" input-model-validator
-          ng-trim="false"
-          ng-focus="setTextPropertyFocus('url', true)" ng-blur="setTextPropertyFocus('url', false)"
-          ng-disabled="readOnly" msd-elastic
-          maxlength="2000" placeholder="enter url&#8230;" autocapitalize="none" autocorrect="off">
-        </textarea>
+      <div ng-if="drawerAisleInitialized && showEditorProperty('url')">
+        <div ng-show="showEditorComponent('urlTextArea', item)"
+             class="row-vertically-centered with-textarea" >
+          <textarea class="text-metadata" ng-model="item.trans.link" input-model-validator ng-trim="false"
+            editable-field
+            editable-field-register-callbacks="registerUrlInputCallbacks(focus, blur)"
+            editable-field-focus="setTextPropertyFocus('url', true)"
+            editable-field-blur="setTextPropertyFocus('url', false, item)"
+            ng-keydown="urlTextKeyDown($event, item)"
+            ng-disabled="readOnly" msd-elastic
+            maxlength="2000" placeholder="enter url&#8230;" autocapitalize="none" autocorrect="off">
+          </textarea>
+        </div>
+        <div ng-if="showEditorComponent('urlLink', item)" class="group-mixed">
+          <a class="group-mixed--middle" ng-click="clickUrl(item)"
+             ng-class="showEditorComponent('urlLinkError', item) ? 'link-disabled' : 'highlighted'"
+             external-link="getItemHref(item)">
+            <span class="text-metadata" ng-bind="getItemVisibleUrl(item)"></span>
+          </a>
+          <div class="group-mixed--right">
+            <a href ng-click="setUrlFocus()">
+              <span class="icon-pencil"></span>
+            </a>
+          </div>
+        </div>
+        <div ng-if="showEditorComponent('urlLinkError', item)" class="group-error row-form">
+          <span class="text-error">invalid url</span>
+        </div>
       </div>
 
       <!-- DESCRIPTION -->
