@@ -479,7 +479,7 @@
   $scope.clickUrl = function(item){
     if (packaging.endsWith('cordova') && item.trans.link && isValidUrl(item.trans.link) &&
         cordova && cordova.InAppBrowser){
-      cordova.InAppBrowser.open(item.trans.link, '_blank', 'location=yes');
+      cordova.InAppBrowser.open(item.trans.link, '_system', 'location=yes');
     }
   };
 
