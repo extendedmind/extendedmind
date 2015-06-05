@@ -433,7 +433,8 @@
   };
 
   function hasUnsetCollapsableProperty() {
-    return !$scope.note.trans.list || (!$scope.note.trans.keywords || !$scope.note.trans.keywords.length);
+    return !$scope.note.trans.list || ($scope.isFullEditor &&
+                                       (!$scope.note.trans.keywords || !$scope.note.trans.keywords.length));
   }
 
   var showFooterCallbacks = {};
