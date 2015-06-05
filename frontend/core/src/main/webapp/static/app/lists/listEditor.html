@@ -98,7 +98,7 @@
           <div ng-if="showListProperty('list')" class="group-mixed">
             <a href class="group-mixed--middle link-search-result" ng-class="!list.trans.list && 'downplayed'"
               swiper-click="openListPicker()">
-              <span class="text-field--title"
+              <span class="text-field--title" clamp=1
                 ng-bind="(list.trans.list && !list.trans.list.trans.deleted) ? list.trans.list.trans.title : 'select parent list\u2026'">
               </span>
             </a>

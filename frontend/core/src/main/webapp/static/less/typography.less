@@ -59,6 +59,14 @@ Font mixins.
   .set-font-bold;
 }
 
+.text-metadata {
+  font-size: @size-font-small;
+}
+
+.text-medium {
+  font-size: @size-font-medium;
+}
+
 /*
 ******************************************************************
 # Headings.
@@ -83,7 +91,7 @@ h2 {
 }
 
 .textgroup-toaster {
-  .text-metadata();
+  .text-medium();
 }
 
 .textgroup-ingress {
@@ -103,10 +111,6 @@ h2 {
   &.emphasis {
     .set-font-bold();
   }
-}
-
-.text-metadata {
-  font-size: @size-font-medium;
 }
 
 .text-highlighted {
@@ -175,7 +179,7 @@ Use `.text-details` to separate details from body text.
 
 .text-teaser {
   display: inline-block;
-  .text-metadata();
+  .text-medium();
   color: @color-text-downplayed;
   line-height: @line-height-size-font-medium;
 }
@@ -354,7 +358,7 @@ Search results (omnibar, deleted)
 //    classes.
 .text-search-result {
   line-height: @line-height-text-search; // [1]
-  .text-metadata();
+  .text-medium();
 }
 // 1. Align vertically with .text-search-result, which has different font-size, using same line-height in both
 //    classes.
