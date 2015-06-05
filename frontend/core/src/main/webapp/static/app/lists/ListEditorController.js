@@ -53,7 +53,7 @@
       for (var i = 0; i < list.trans.visibility.agreements.length; i++) {
         if (list.trans.visibility.agreements[i].proposedBy) {
           $scope.sharedByList.email = list.trans.visibility.agreements[i].proposedBy.email;
-          $scope.sharedByList.accessText = ($scope.list.trans.visibility.agreements[i].proposedBy.access ===
+          $scope.sharedByList.accessText = ($scope.list.trans.visibility.agreements[i].access ===
                                             2 ? 'read/write' : 'read');
           $scope.sharedByList.uuid = list.trans.visibility.agreements[i].uuid;
           break;
