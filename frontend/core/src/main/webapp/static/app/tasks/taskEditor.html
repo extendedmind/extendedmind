@@ -12,9 +12,8 @@
           </span>
         </a>
 
-        <a href ng-if="showEditorAction('saveDone')" class="group-symmetrical--left highlighted"
-          editable-field-container="{{getTaskPropertyInEditHasContainer() && 'auto'}}"
-          ng-click="subEditorDone()">
+        <a href ng-show="showEditorAction('saveDone')"
+          class="group-symmetrical--left highlighted override-disabled" ng-click="subEditorDone()">
           <span class="text-edit" ng-bind="isPropertyEdited() ? 'save' : 'done'"></span>
         </a>
 

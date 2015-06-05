@@ -431,9 +431,15 @@ TODO: working example needed!
 }
 
 // 1. Blur backdrop. See http://tympanus.net/codrops/2011/12/14/item-blur-effect-with-css3-and-jquery/
+// 2. Allow clicks for overridden elements.
 .editable-field-backdrop.active {
   * {
     pointer-events: none;
+  }
+  a.override-disabled {
+    &, & > span {
+      pointer-events: auto !important;  // [2]
+    }
   }
 }
 
