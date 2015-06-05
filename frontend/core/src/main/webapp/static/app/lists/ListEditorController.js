@@ -206,7 +206,7 @@
     $scope.closeEditor();
   };
 
-  function listEditorAboutToClose() {
+  function listEditorAboutToClose(exitAppAfterSave) {
     if (angular.isFunction($scope.unregisterEditorAboutToCloseCallback))
       $scope.unregisterEditorAboutToCloseCallback('ListEditorController');
 
@@ -356,6 +356,7 @@
   }
 
   function archiveOrUnarchiveListSuccess() {
+    $scope.features.lists.resizeFix = true;
     $scope.closeEditor();
     $scope.changeFeature('lists', $scope.list);
   }

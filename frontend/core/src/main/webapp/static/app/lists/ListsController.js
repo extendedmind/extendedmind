@@ -313,6 +313,12 @@
     return ListsService.getNewList(initialValues, UISessionService.getActiveUUID());
   };
 
+  function swipeToArchivedLists(){
+    SwiperService.swipeTo('lists/archived');
+    angular.isFunction($scope.unregisterEditorClosedCallback)
+      $scope.unregisterEditorClosedCallback('ListsController');
+  };
+
   var featureChangedCallback = function featureChangedCallback(name, data/*, state*/) {
     if (name === 'list') {
       if (data.list){
@@ -329,9 +335,13 @@
       }else{
         SwiperService.setOnlyExternal('lists', false);
       }
-      if (data && data.archived) {
-        // List was archived, swipe to archived lists slide.
-        SwiperService.swipeTo('lists/archived');
+      if (data && data.trans.archived) {
+        // Swipe to archive when editor is closed
+        if (!$scope.isEditorVisible()){
+          swipeToArchivedLists();
+        }else if (angular.isFunction($scope.registerEditorClosedCallback)){
+          $scope.registerEditorClosedCallback(swipeToArchivedLists, 'ListsController');
+        }
       }
       $scope.adoptedLists = getAdoptedListsPerOwner();
     }

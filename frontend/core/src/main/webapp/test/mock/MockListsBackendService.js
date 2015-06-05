@@ -18,8 +18,6 @@
 
  function MockListsBackendService($httpBackend, ListsService, UUIDService) {
 
-  var listArchiveFirstRun = true;
-
   function mockPutNewList(expectResponse){
     $httpBackend.whenPUT(ListsService.putNewListRegex)
     .respond(function(method, url, data, headers) {
@@ -64,17 +62,11 @@
       archiveListResponse.result.modified = (new Date()).getTime();
       archiveListResponse.archived = Date.now();
 
-      if (!listArchiveFirstRun) {
-        var randomlyOffline = Math.floor((Math.random() * 10) + 1) < 8;
-        // There is a 70% change we are offline.
-        if (!randomlyOffline) {
-          return expectResponse(method, url, data, headers, archiveListResponse);
-        } else {
-          return [404];
-        }
+      var randomlyOffline = Math.floor((Math.random() * 10) + 1) < 2;
+      // There is a 10% change we are offline.
+      if (!randomlyOffline) {
+        return expectResponse(method, url, data, headers, archiveListResponse);
       } else {
-        // Simulate offline on first run.
-        listArchiveFirstRun = false;
         return [404];
       }
     });
@@ -85,19 +77,7 @@
     .respond(function(method, url, data, headers) {
       var unarchiveListResponse = getJSONFixture('unarchiveListResponse.json');
       unarchiveListResponse.result.modified = (new Date()).getTime();
-      if (!listArchiveFirstRun) {
-        var randomlyOffline = Math.floor((Math.random() * 10) + 1) < 8;
-        // There is a 70% change we are offline.
-        if (!randomlyOffline) {
-          return expectResponse(method, url, data, headers, unarchiveListResponse);
-        } else {
-          return [404];
-        }
-      } else {
-        // Simulate offline on first run.
-        listArchiveFirstRun = false;
-        return [404];
-      }
+      return expectResponse(method, url, data, headers, unarchiveListResponse);
     });
   }
 
