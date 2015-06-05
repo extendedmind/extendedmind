@@ -29,7 +29,6 @@
 
       case 'collapsible':
       return $scope.collapsibleOpen && !$scope.isPropertyInDedicatedEdit();
-      break;
 
       case 'lessMore':
       return $scope.item.created && !$scope.isPropertyInDedicatedEdit();

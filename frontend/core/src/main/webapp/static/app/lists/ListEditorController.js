@@ -163,10 +163,14 @@
 
   // SAVING, DELETING
 
-  function saveListInEdit () {
-    $scope.deferEdit().then(function() {
-      $scope.saveList($scope.list);
-    });
+  function saveListInEdit(exitAppAfterSave) {
+    if (exitAppAfterSave){
+      return $scope.saveList($scope.list);
+    }else{
+      return $scope.deferEdit().then(function() {
+        $scope.saveList($scope.list);
+      });
+    }
   }
 
   $scope.deleteListInEdit = function() {
@@ -206,7 +210,7 @@
     if (angular.isFunction($scope.unregisterEditorAboutToCloseCallback))
       $scope.unregisterEditorAboutToCloseCallback('ListEditorController');
 
-    if ($scope.isListEdited() && !$scope.list.trans.deleted) saveListInEdit();
+    if ($scope.isListEdited() && !$scope.list.trans.deleted) return saveListInEdit(exitAppAfterSave);
     else ListsService.resetList($scope.list);
   }
 

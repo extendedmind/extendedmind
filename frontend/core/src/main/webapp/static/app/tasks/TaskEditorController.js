@@ -126,15 +126,22 @@
     }
   };
 
-  function saveTaskInEdit() {
-    $scope.deferEdit().then(function() {
-      $scope.saveTask($scope.task);
+  function saveTaskInEdit(exitAppAfterSave) {
+    function doSaveTaskInEdit(){
       if (completeReadyDeferred){
         UISessionService.allow('leaveAnimation', 200);
         completeReadyDeferred.resolve($scope.task);
         completeReadyDeferred = undefined;
       }
-    });
+      return $scope.saveTask($scope.task);
+    }
+    if (exitAppAfterSave){
+      return doSaveTaskInEdit();
+    }else{
+      return $scope.deferEdit().then(function() {
+        return doSaveTaskInEdit();
+      });
+    }
   }
 
   $scope.deleteTaskInEdit = function() {
@@ -151,11 +158,11 @@
     $scope.closeEditor();
   };
 
-  function taskEditorAboutToClose() {
+  function taskEditorAboutToClose(exitAppAfterSave) {
     if (angular.isFunction($scope.unregisterEditorAboutToCloseCallback))
       $scope.unregisterEditorAboutToCloseCallback('TaskEditorController');
 
-    if ($scope.isTaskEdited() && !$scope.task.trans.deleted) saveTaskInEdit();
+    if ($scope.isTaskEdited() && !$scope.task.trans.deleted) return saveTaskInEdit(exitAppAfterSave);
     else {
       if (completeReadyDeferred){
         $scope.deferEdit().then(function(){

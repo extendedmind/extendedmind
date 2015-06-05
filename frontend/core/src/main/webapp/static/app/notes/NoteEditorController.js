@@ -121,11 +121,15 @@
 
   // SAVING, DELETING
 
-  function saveNoteInEdit() {
+  function saveNoteInEdit(exitAppAfterSave) {
     // TODO: Keywords
-    $scope.deferEdit().then(function() {
-      $scope.saveNote($scope.note);
-    });
+    if (exitAppAfterSave){
+      return $scope.saveNote($scope.note);
+    }else{
+      return $scope.deferEdit().then(function() {
+        $scope.saveNote($scope.note);
+      });
+    }
   }
 
   $scope.deleteNoteInEdit = function() {
@@ -141,7 +145,7 @@
 
   $scope.endNoteEdit = $scope.closeEditor;
 
-  function noteEditorAboutToClose() {
+  function noteEditorAboutToClose(exitAppAfterSave) {
     if (angular.isFunction($scope.unregisterEditorAboutToCloseCallback))
       $scope.unregisterEditorAboutToCloseCallback('NoteEditorController');
 
@@ -149,7 +153,7 @@
       if ($scope.features.notes.getStatus() === 'onboarding_1'){
         $scope.increaseOnboardingPhase('notes');
       }
-      saveNoteInEdit();
+      return saveNoteInEdit(exitAppAfterSave);
     }else{
       NotesService.resetNote($scope.note);
     }
