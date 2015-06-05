@@ -22,6 +22,26 @@
   if (angular.isFunction($scope.registerFeatureEditorAboutToCloseCallback))
     $scope.registerFeatureEditorAboutToCloseCallback(tagEditorAboutToClose, 'TagEditorController');
 
+  // VISIBILITY
+
+  $scope.showTagEditorComponent = function(componentName) {
+    switch (componentName) {
+
+      case 'collapsible':
+      return $scope.collapsibleOpen && !$scope.isPropertyInDedicatedEdit();
+      break;
+
+      case 'lessMore':
+      return $scope.tag.created && !$scope.isPropertyInDedicatedEdit();
+    }
+  };
+
+  $scope.collapsibleOpen = false;
+  $scope.toggleCollapsible = function() {
+    $scope.collapsibleOpen = !$scope.collapsibleOpen;
+  };
+
+
   // SAVING, DELETING
   function saveTagInEdit() {
     $scope.deferEdit().then(function() {

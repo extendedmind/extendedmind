@@ -540,6 +540,7 @@
         $scope.focusedTextProperty = undefined;
         if (name === 'url' && item){
           if (item.trans.link && item.trans.link.length){
+            item.trans.link = item.trans.link.trim();
             if (item.trans.link.indexOf('://') === -1 && item.trans.link.indexOf('.') !== -1 &&
                 item.trans.link.indexOf(' ') === -1){
               // There is a period and no blank space, make an educated guess to add 'http://'
@@ -701,6 +702,8 @@
              (item.trans.created !== item.trans.modified);
       case 'deleted':
       return !$scope.isPropertyInDedicatedEdit() && item.trans.deleted;
+      case 'archived':
+      return !$scope.isPropertyInDedicatedEdit() && item.trans.archived;
     }
   };
 

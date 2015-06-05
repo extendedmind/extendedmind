@@ -22,6 +22,25 @@
   if (angular.isFunction($scope.registerFeatureEditorAboutToCloseCallback))
     $scope.registerFeatureEditorAboutToCloseCallback(itemEditorAboutToClose, 'ItemEditorController');
 
+  // VISIBILITY
+
+  $scope.showItemEditorComponent = function(componentName) {
+    switch (componentName) {
+
+      case 'collapsible':
+      return $scope.collapsibleOpen && !$scope.isPropertyInDedicatedEdit();
+      break;
+
+      case 'lessMore':
+      return $scope.item.created && !$scope.isPropertyInDedicatedEdit();
+    }
+  };
+
+  $scope.collapsibleOpen = false;
+  $scope.toggleCollapsible = function() {
+    $scope.collapsibleOpen = !$scope.collapsibleOpen;
+  };
+
   // SAVING, DELETING
 
   function saveItemInEdit() {

@@ -237,13 +237,34 @@
         <div ng-style="{'padding-bottom': slideInfo.footerHeight}" class="container-content">
 
           <!-- URL -->
-          <div class="row-vertically-centered with-textarea row-top-parent">
-            <textarea class="text-metadata" ng-model="note.trans.link" input-model-validator ng-trim="false"
-              ng-focus="setTextPropertyFocus('url', true)" ng-blur="setTextPropertyFocus('url', false)"
-              ng-change="inputChanged()" msd-elastic
-              ng-disabled="readOnly"
-              maxlength="2000" placeholder="enter url&#8230;" autocapitalize="none" autocorrect="off">
-            </textarea>
+          <div ng-if="showEditorProperty('url')">
+            <div ng-show="showEditorComponent('urlTextArea', note)"
+                 class="row-vertically-centered with-textarea" >
+              <textarea class="text-metadata" ng-model="note.trans.link" input-model-validator ng-trim="false"
+                editable-field
+                editable-field-register-callbacks="registerUrlInputCallbacks(focus, blur)"
+                editable-field-focus="setTextPropertyFocus('url', true)"
+                editable-field-blur="setTextPropertyFocus('url', false, note)"
+                ng-keydown="urlTextKeyDown($event, note)"
+                ng-disabled="readOnly" msd-elastic
+                maxlength="2000" placeholder="enter url&#8230;" autocapitalize="none" autocorrect="off">
+              </textarea>
+            </div>
+            <div ng-if="showEditorComponent('urlLink', note)" class="group-mixed">
+              <a class="group-mixed--middle" ng-click="clickUrl(note)"
+                 ng-class="showEditorComponent('urlLinkError', note) ? 'link-disabled' : 'highlighted'"
+                 external-link="getItemHref(note)">
+                <span class="text-metadata" ng-bind="getItemVisibleUrl(note)"></span>
+              </a>
+              <div class="group-mixed--right">
+                <a href ng-click="setUrlFocus()">
+                  <span class="icon-pencil"></span>
+                </a>
+              </div>
+            </div>
+            <div ng-if="showEditorComponent('urlLinkError', note)" class="group-error row-form">
+              <span class="text-error">invalid url</span>
+            </div>
           </div>
 
           <div ng-if="showEditorProperty('created', note)" class="group-mixed text-field">
@@ -274,6 +295,16 @@
             </div>
             <div class="group-mixed--right">
               <span class="text-field--label">deleted</span>
+            </div>
+          </div>
+          <div ng-if="showEditorProperty('archived', note)" class="group-mixed text-field">
+            <div class="group-mixed--middle link-search-result">
+              <span class="text-field--title">
+                {{::note.trans.archived | date:'EEE d MMMM y hh:mm' | lowercase}}
+              </span>
+            </div>
+            <div class="group-mixed--right">
+              <span class="text-field--label">archived</span>
             </div>
           </div>
         </div>

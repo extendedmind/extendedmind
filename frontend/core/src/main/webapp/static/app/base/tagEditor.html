@@ -66,11 +66,73 @@
 
       <!-- URL -->
       <div ng-if="drawerAisleInitialized && showEditorProperty('url')">
-        <textarea class="text-metadata" ng-model="tag.trans.link" input-model-validator ng-trim="false"
-          ng-focus="setTextPropertyFocus('url', true)" ng-blur="setTextPropertyFocus('url', false)"
-          ng-disabled="readOnly" msd-elastic
-          maxlength="2000" placeholder="enter url&#8230;" autocapitalize="none" autocorrect="off">
-        </textarea>
+        <div ng-show="showEditorComponent('urlTextArea', tag)"
+             class="row-vertically-centered with-textarea" >
+          <textarea class="text-metadata" ng-model="tag.trans.link" input-model-validator ng-trim="false"
+            editable-field
+            editable-field-register-callbacks="registerUrlInputCallbacks(focus, blur)"
+            editable-field-focus="setTextPropertyFocus('url', true)"
+            editable-field-blur="setTextPropertyFocus('url', false, tag)"
+            ng-keydown="urlTextKeyDown($event, tag)"
+            ng-disabled="readOnly" msd-elastic
+            maxlength="2000" placeholder="enter url&#8230;" autocapitalize="none" autocorrect="off">
+          </textarea>
+        </div>
+        <div ng-if="showEditorComponent('urlLink', tag)" class="group-mixed">
+          <a class="group-mixed--middle" ng-click="clickUrl(tag)"
+             ng-class="showEditorComponent('urlLinkError', tag) ? 'link-disabled' : 'highlighted'"
+             external-link="getItemHref(tag)">
+            <span class="text-metadata" ng-bind="getItemVisibleUrl(tag)"></span>
+          </a>
+          <div class="group-mixed--right">
+            <a href ng-click="setUrlFocus()">
+              <span class="icon-pencil"></span>
+            </a>
+          </div>
+        </div>
+        <div ng-if="showEditorComponent('urlLinkError', tag)" class="group-error row-form">
+          <span class="text-error">invalid url</span>
+        </div>
+      </div>
+
+      <!-- COLLAPSIBLE-->
+      <div ng-if="showTagEditorComponent('collapsible')">
+        <div ng-if="showEditorProperty('created', tag)" class="group-mixed text-field">
+          <div class="group-mixed--middle">
+            <span class="text-field--title">
+              {{::tag.trans.created | date:'EEE d MMMM y hh:mm' | lowercase}}
+            </span>
+          </div>
+          <div class="group-mixed--right">
+            <span class="text-field--label">created</span>
+          </div>
+        </div>
+        <div ng-if="showEditorProperty('modified', tag)" class="group-mixed text-field">
+          <div class="group-mixed--middle link-search-result">
+            <span class="text-field--title">
+              {{tag.trans.modified | date:'EEE d MMMM y hh:mm' | lowercase}}
+            </span>
+          </div>
+          <div class="group-mixed--right">
+            <span class="text-field--label">modified</span>
+          </div>
+        </div>
+        <div ng-if="showEditorProperty('deleted', tag)" class="group-mixed text-field">
+          <div class="group-mixed--middle link-search-result">
+            <span class="text-field--title">
+              {{::tag.trans.deleted | date:'EEE d MMMM y hh:mm' | lowercase}}
+            </span>
+          </div>
+          <div class="group-mixed--right">
+            <span class="text-field--label">deleted</span>
+          </div>
+        </div>
+      </div>
+      <div ng-if="showTagEditorComponent('lessMore')" class="row collapsible">
+        <a href class="downplayed" swiper-click="toggleCollapsible()">
+          <span ng-class="collapsibleOpen ? 'text-expand-up' : 'text-expand-down'"
+            ng-bind="collapsibleOpen ? 'less' : 'more'"></span>
+        </a>
       </div>
 
       <!-- DESCRIPTION -->
