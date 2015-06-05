@@ -47,8 +47,8 @@
       function backdropClicked() {
 
         if (preventBackdropBubbleClick) {
-          if (preventBackdropBubbleClick > Date.now() - 400){
-            // Event bubbled from undesired click less than 400ms ago. Do nothing.
+          if (preventBackdropBubbleClick > Date.now() - 600){
+            // Event bubbled from undesired click less than 600ms ago. Do nothing.
             preventBackdropBubbleClick = false;
             return;
           }
