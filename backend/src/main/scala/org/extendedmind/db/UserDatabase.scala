@@ -139,7 +139,6 @@ trait UserDatabase extends AbstractGraphDatabase {
         for {
           agreementInfo <- getAgreementInformation(userUUID, agreementUUID).right
           agreement <- toAgreement(agreementInfo, showProposedBy=true).right
-          agreement <- toCaseClass[Agreement](agreementInfo.agreement).right
         } yield (agreement, agreementInfo.concerningTitle)
     }
   }
