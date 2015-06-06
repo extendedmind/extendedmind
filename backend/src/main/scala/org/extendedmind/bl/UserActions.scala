@@ -142,12 +142,13 @@ trait UserActions {
     }else if (agreement.targetItem.isEmpty){
       fail(INVALID_PARAMETER, ERR_USER_INVALID_AGREEMENT, "Missing targetItem with uuid field")
     }else{
-      val agreementWithProposedBy = agreement.copy(proposedBy = Some(AgreementUser(Some(userUUID), None)))
-      val agreementResult = db.putNewAgreement(agreementWithProposedBy)
+      val agreementWithProposedByUUID = agreement.copy(proposedBy = Some(AgreementUser(Some(userUUID), None)))
+      val agreementResult = db.putNewAgreement(agreementWithProposedByUUID)
       if (agreementResult.isRight){
-        sendAgreementEmail(agreementWithProposedBy.copy(
+        sendAgreementEmail(agreementWithProposedByUUID.copy(
                             uuid = agreementResult.right.get._1.uuid,
-                            modified = Some(agreementResult.right.get._1.modified)),
+                            modified = Some(agreementResult.right.get._1.modified),
+                            proposedBy = Some(AgreementUser(Some(userUUID), Some(agreementResult.right.get._3)))),
                             agreementResult.right.get._2)
         Right(agreementResult.right.get._1)
       }else{

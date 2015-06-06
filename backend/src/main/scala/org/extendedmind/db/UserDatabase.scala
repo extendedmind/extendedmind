@@ -134,17 +134,17 @@ trait UserDatabase extends AbstractGraphDatabase {
       implicit neo =>
         for {
           agreementInfo <- getAgreementInformation(userUUID, agreementUUID).right
-          agreement <- toAgreement(agreementInfo).right
+          agreement <- toAgreement(agreementInfo, showProposedBy=true).right
           agreement <- toCaseClass[Agreement](agreementInfo.agreement).right
         } yield (agreement, agreementInfo.concerningTitle)
     }
   }
   
-  def putNewAgreement(agreement: Agreement): Response[(SetResult, String)] = {
+  def putNewAgreement(agreement: Agreement): Response[(SetResult, String, String)] = {
     for {
       agreementResult <- createAgreementNode(agreement).right       
       result <- Right(getSetResult(agreementResult._1, true)).right
-    } yield (result, agreementResult._2)
+    } yield (result, agreementResult._2, agreementResult._3)
   }
   
   def changeAgreementAccess(userUUID: UUID, agreementUUID: UUID, access: Byte): Response[SetResult] = {
@@ -427,7 +427,7 @@ trait UserDatabase extends AbstractGraphDatabase {
     Right(true)
   }
 
-  protected def createAgreementNode(agreement: Agreement): Response[(Node, String)] = {
+  protected def createAgreementNode(agreement: Agreement): Response[(Node, String, String)] = {
     withTx {
       implicit neo4j =>
         for {
@@ -435,7 +435,9 @@ trait UserDatabase extends AbstractGraphDatabase {
           proposedToUserNode <- getUserNode(agreement.proposedTo.get.email.get).right
           concerningNode <- getItemNode(agreement.proposedBy.get.uuid.get, agreement.targetItem.get.uuid, ItemLabel.LIST, false).right
           agreementNode <- createAgreementNode(agreement, proposedByUserNode, proposedToUserNode, concerningNode).right
-        } yield (agreementNode, concerningNode.getProperty("title").asInstanceOf[String])
+        } yield (agreementNode,
+                 concerningNode.getProperty("title").asInstanceOf[String],
+                 proposedByUserNode.getProperty("email").asInstanceOf[String])
     }
   }
   
