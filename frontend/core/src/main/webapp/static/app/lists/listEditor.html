@@ -75,7 +75,7 @@
                 </textarea>
               </div>
 
-              <div ng-if="showListAction('favorite')" class="group-mixed--right">
+              <div ng-show="showListAction('favorite')" class="group-mixed--right">
                 <a href class="link-navigation" swiper-click="clickFavorite()">
                   <span class="icon-star large" ng-class="!isFavoriteList(list) && 'inactive'"></span>
                 </a>
