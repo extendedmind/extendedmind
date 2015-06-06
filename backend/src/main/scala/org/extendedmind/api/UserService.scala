@@ -165,7 +165,7 @@ trait UserService extends ServiceBase {
       deleteAgreement  { agreementUUID =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           complete {
-            Future[DestroyResult] {
+            Future[SetResult] {
               setLogContext(securityContext)
               userActions.destroyAgreement(securityContext.userUUID, agreementUUID) match {
                 case Right(dr) => processResult(dr)

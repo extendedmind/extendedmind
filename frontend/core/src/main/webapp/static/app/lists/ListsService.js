@@ -717,16 +717,13 @@
         var ownerUUID = list.trans.owner;
         if (!list.mod) list.mod = {};
         var propertiesToReset = {
-          visibility: list.trans.visibility || {}
+          visibility: list.trans.visibility ? list.trans.visibility : {}
         };
         if (!propertiesToReset.visibility.agreements) propertiesToReset.visibility.agreements = [];
-
-        newAgreement.created = response.created;
-        newAgreement.modified = newAgreement.modified;
         newAgreement.uuid = response.uuid;
-
         propertiesToReset.visibility.agreements.push(newAgreement);
-
+        // Set modified to list, created is ignored, as it isn't returned with the list
+        propertiesToReset.modified = response.modified;
         ItemLikeService.updateObjectProperties(list.mod, propertiesToReset);
         updateList(list, ownerUUID, undefined, propertiesToReset);
 
@@ -735,7 +732,7 @@
     },
     unshareList: function(list, agreementUUID) {
       return BackendClientService.deleteOnline('/api/agreement/' + agreementUUID, deleteAgreementRegexp)
-      .then(function() {
+      .then(function(response) {
         var ownerUUID = list.trans.owner;
         if (!list.mod) list.mod = {};
         var propertiesToReset = {
@@ -746,6 +743,8 @@
         if (agreementIndex !== undefined) {
           propertiesToReset.visibility.agreements.splice(agreementIndex, 1);
         }
+        // Set modified to the list, not the agreement
+        propertiesToReset.modified = response.modified;
         ItemLikeService.updateObjectProperties(list.mod, propertiesToReset);
         updateList(list, ownerUUID, undefined, propertiesToReset);
         return;
@@ -766,7 +765,8 @@
         if (agreementIndex !== undefined) {
           var agreement = propertiesToReset.visibility.agreements[agreementIndex];
           agreement.access = agreementAccess;
-          agreement.modified = response.modified;
+          // Set modified to the list, not the agreement
+          propertiesToReset.modified = response.modified;
           ItemLikeService.updateObjectProperties(list.mod, propertiesToReset);
           updateList(list, ownerUUID, undefined, propertiesToReset);
         }

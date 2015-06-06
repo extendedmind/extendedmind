@@ -90,7 +90,8 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     if (settings.disableTimestamps){
       println("WARNING: Automatic timestamps disabled!")
     }else{
-      val customPropertyHandlers = new java.util.ArrayList[TimestampCustomPropertyHandler](2)
+      val customPropertyHandlers = new java.util.ArrayList[TimestampCustomPropertyHandler](1)
+      // soft delete of list or tag needs to cause items associated with it to also modify themselves
       val deletedModificationTags = new java.util.ArrayList[RelationshipType](2)
       deletedModificationTags.add(ItemRelationship.HAS_TAG)
       deletedModificationTags.add(ItemRelationship.HAS_PARENT)

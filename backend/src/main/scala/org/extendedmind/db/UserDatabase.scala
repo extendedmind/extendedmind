@@ -41,6 +41,10 @@ import scala.collection.mutable.HashMap
 
 trait UserDatabase extends AbstractGraphDatabase {
 
+  // METHODS THAT NEED TO BE OVERRIDDEN
+  
+  def updateItemsIndex(itemNode: Node, setResult: SetResult): Unit
+
   // PUBLICs
 
   def putNewUser(user: User, password: String, signUpMode: SignUpMode): Response[(SetResult, Option[Long])] = {
@@ -144,24 +148,29 @@ trait UserDatabase extends AbstractGraphDatabase {
     for {
       agreementResult <- createAgreementNode(agreement).right       
       result <- Right(getSetResult(agreementResult._1, true)).right
+      unit <- Right(if (agreement.agreementType == "list") // Update items index with new list modified
+                      updateItemsIndex(agreementResult._4, getSetResult(agreementResult._4, false))).right
     } yield (result, agreementResult._2, agreementResult._3)
   }
   
-  def changeAgreementAccess(userUUID: UUID, agreementUUID: UUID, access: Byte): Response[SetResult] = {
+
+  def changeAgreementAccess(owner: Owner, agreementUUID: UUID, access: Byte): Response[SetResult] = {
     for {
-      agreementInfo <- changeAgreementAccessNode(userUUID, agreementUUID, access).right
+      agreementInfo <- changeAgreementAccessNode(owner.userUUID, agreementUUID, access).right
       result <- Right(getSetResult(agreementInfo.agreement, false)).right
+      unit <- Right(if (agreementInfo.agreementType == "list") // Update items index with new list modified
+                      updateItemsIndex(agreementInfo.concerning, getSetResult(agreementInfo.concerning, false))).right 
     } yield result
   }
   
-  def destroyAgreement(userUUID: UUID, agreementUUID: UUID): Response[DestroyResult] = {
-    withTx {
-      implicit neo4j =>   
-        for {
-          agreementInfo <- getAgreementInformation(userUUID, agreementUUID).right
-          destroyResult <- Right(destroyAgreementNode(agreementInfo.agreement)).right          
-        } yield destroyResult
-    }
+  def destroyAgreement(userUUID: UUID, agreementUUID: UUID): Response[SetResult] = {
+    for {
+      destroyAgreementResult <- destroyAgreementNode(userUUID, agreementUUID).right
+      concerningSetResult <- Right(getSetResult(destroyAgreementResult._1.concerning, false)).right
+      unit <- Right(if (destroyAgreementResult._1.agreementType == "list") // Update items index with new list modified
+                      updateItemsIndex(destroyAgreementResult._1.concerning,
+                                      concerningSetResult)).right 
+    } yield concerningSetResult
   }
   
   def saveAgreementAcceptInformation(agreementUUID: UUID, acceptCode: Long, emailId: String): Response[Unit] = {
@@ -176,8 +185,10 @@ trait UserDatabase extends AbstractGraphDatabase {
   
   def acceptAgreement(acceptCode: Long, proposedToEmail: String): Response[SetResult] = {
     for {
-      agreementNode <- acceptAgreementNode(acceptCode, proposedToEmail).right
-      result <- Right(getSetResult(agreementNode, true)).right
+      agreementInfo <- acceptAgreementNode(acceptCode, proposedToEmail).right
+      result <- Right(getSetResult(agreementInfo.agreement, true)).right
+      unit <- Right(if (agreementInfo.agreementType == "list") // Update items index with new list modified
+                      updateItemsIndex(agreementInfo.concerning, getSetResult(agreementInfo.concerning, false))).right 
     } yield result
   }
 
@@ -427,7 +438,7 @@ trait UserDatabase extends AbstractGraphDatabase {
     Right(true)
   }
 
-  protected def createAgreementNode(agreement: Agreement): Response[(Node, String, String)] = {
+  protected def createAgreementNode(agreement: Agreement): Response[(Node, String, String, Node)] = {
     withTx {
       implicit neo4j =>
         for {
@@ -437,7 +448,8 @@ trait UserDatabase extends AbstractGraphDatabase {
           agreementNode <- createAgreementNode(agreement, proposedByUserNode, proposedToUserNode, concerningNode).right
         } yield (agreementNode,
                  concerningNode.getProperty("title").asInstanceOf[String],
-                 proposedByUserNode.getProperty("email").asInstanceOf[String])
+                 proposedByUserNode.getProperty("email").asInstanceOf[String],
+                 concerningNode)
     }
   }
   
@@ -484,7 +496,18 @@ trait UserDatabase extends AbstractGraphDatabase {
     }
   }
   
-  case class AgreementInformation(agreement: Node, proposedBy: Node, concerning: Node, proposedTo: Option[Node], userIsCreator: Boolean, concerningTitle: String)
+  def destroyAgreementNode(userUUID: UUID, agreementUUID: UUID): Response[(AgreementInformation, DestroyResult)] = {
+    withTx {
+      implicit neo4j =>   
+        for {
+          agreementInfo <- getAgreementInformation(userUUID, agreementUUID).right
+          destroyResult <- Right(destroyAgreementNode(agreementInfo.agreement)).right
+        } yield (agreementInfo, destroyResult)
+    }
+  }
+
+  
+  case class AgreementInformation(agreement: Node, agreementType: String, proposedBy: Node, concerning: Node, proposedTo: Option[Node], userIsCreator: Boolean, concerningTitle: String)
   
   protected def getAgreementInformation(userUUID: UUID, agreementUUID: UUID): Response[AgreementInformation] = {
     withTx {
@@ -506,7 +529,8 @@ trait UserDatabase extends AbstractGraphDatabase {
     }
     val proposedByUser = proposedByRelationship.get.getStartNode
     val userIsCreator = proposedByUser.getId == userNode.getId
-
+    val agreementType = agreementNode.getProperty("agreementType").asInstanceOf[String]
+    
     val concerningRelationship = agreementNode.getRelationships.find(relationship => {
       relationship.getType.name == AgreementRelationship.CONCERNING.name
     })
@@ -527,7 +551,7 @@ trait UserDatabase extends AbstractGraphDatabase {
       return fail(INVALID_PARAMETER, ERR_USER_INVALID_AGREEMENT_PARTY, "User is not a party in the agreement")
     }
     
-    Right(AgreementInformation(agreementNode, proposedByUser, concerningNode, proposedToUser, userIsCreator, concerningNode.getProperty("title").asInstanceOf[String]))
+    Right(AgreementInformation(agreementNode, agreementType, proposedByUser, concerningNode, proposedToUser, userIsCreator, concerningNode.getProperty("title").asInstanceOf[String]))
   }
   
   protected def changeAgreementAccessNode(agreementInfo: AgreementInformation, access: Byte)(implicit neo4j: DatabaseService): Response[Option[Relationship]] = {
@@ -677,14 +701,15 @@ trait UserDatabase extends AbstractGraphDatabase {
     agreementNode.setProperty("acceptEmailId", emailId)
   }
   
-  protected def acceptAgreementNode(acceptCode: Long, proposedToEmail: String): Response[Node] = {
+  protected def acceptAgreementNode(acceptCode: Long, proposedToEmail: String): Response[AgreementInformation] = {
     withTx {
       implicit neo4j =>
         for {
           proposedToNode <- getUserNode(proposedToEmail).right
           agreementNode <- getAgreementNodeForAcceptance(proposedToNode, acceptCode).right
           unit <- acceptAgreementNode(proposedToNode, agreementNode).right
-        } yield agreementNode
+          agreementInformation <- getAgreementInformation(agreementNode, proposedToNode).right
+        } yield agreementInformation
     }
   }
   
@@ -717,11 +742,12 @@ trait UserDatabase extends AbstractGraphDatabase {
     }
   }
   
-  protected def toAgreement(agreementInfo: AgreementInformation, showProposedBy: Boolean = false)(implicit neo4j: DatabaseService): Response[Agreement] = {
+  protected def toAgreement(agreementInfo: AgreementInformation, showProposedBy: Boolean = false, skipCreatedAndModified: Boolean = false)(implicit neo4j: DatabaseService): Response[Agreement] = {
     for {
       agreement <- toCaseClass[Agreement](agreementInfo.agreement).right
       fullAgreement <- Right(addAgreementParty(agreement, agreementInfo, showProposedBy)).right
-    } yield fullAgreement
+      returnAgreement <- Right(if (skipCreatedAndModified) fullAgreement.copy(modified=None, created=None) else fullAgreement).right
+    } yield returnAgreement
   }
 
   private def addAgreementParty(agreement: Agreement, agreementInfo: AgreementInformation, showProposedBy: Boolean)(implicit neo4j: DatabaseService): Agreement = {

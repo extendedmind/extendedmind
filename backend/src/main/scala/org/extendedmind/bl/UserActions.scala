@@ -160,10 +160,10 @@ trait UserActions {
   
   def changeAgreementAccess(userUUID: UUID, agreementUUID: UUID, access: Byte)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("changeAgreementAccess")
-    db.changeAgreementAccess(userUUID, agreementUUID, access)      
+    db.changeAgreementAccess(Owner(userUUID, None), agreementUUID, access)      
   }
   
-  def destroyAgreement(userUUID: UUID, agreementUUID: UUID)(implicit log: LoggingAdapter): Response[DestroyResult] = {
+  def destroyAgreement(userUUID: UUID, agreementUUID: UUID)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("destroyAgreement")
     db.destroyAgreement(userUUID, agreementUUID)      
   }

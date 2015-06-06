@@ -445,9 +445,17 @@ class ListBestCaseSpec extends ServiceSpecBase {
       Put("/agreement",
           marshal(sharingAgreement).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
         val agreementSetResult = responseAs[SetResult]
-        writeJsonOutput("putNewAgreementResponse", responseAs[String])        
+        writeJsonOutput("putNewAgreementResponse", responseAs[String])
         verify(mockMailgunClient).sendShareListAgreement(anyObject(), agreementCodeCaptor.capture(), anyObject())
         val agreementCode = agreementCodeCaptor.getValue
+
+        // Verify that list has the same modified as agreement
+        Get("/" + lauriAuthenticateResponse.userUUID + "/items?modified=" + putListResponse.modified) ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
+          val itemsResponse = responseAs[Items]
+          itemsResponse.lists.size should be (1)
+          itemsResponse.lists.get(0).modified.get should be (agreementSetResult.modified)
+        }
+        
         // Accept agreement
         val timoAuthenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
         Post("/agreement/" + agreementCode.toHexString + "/accept",
@@ -455,6 +463,13 @@ class ListBestCaseSpec extends ServiceSpecBase {
           val agreementAcceptSetResult = responseAs[SetResult]
           writeJsonOutput("acceptAgreementResponse", responseAs[String])
 
+	      // Verify that list has the same modified as accepted agreement
+	      Get("/" + lauriAuthenticateResponse.userUUID + "/items?modified=" + agreementSetResult.modified) ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
+	        val itemsResponse = responseAs[Items]
+	        itemsResponse.lists.size should be (1)
+	        itemsResponse.lists.get(0).modified.get should be (agreementAcceptSetResult.modified)
+	      }
+          
           Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
             val accountResponse = responseAs[User]
             val lauriUUID = accountResponse.sharedLists.get.last._1
@@ -472,9 +487,29 @@ class ListBestCaseSpec extends ServiceSpecBase {
                 Post("/agreement/" + agreementSetResult.uuid.get + "/access/2") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
                   val accessResult = responseAs[SetResult]
                   writeJsonOutput("changeAgreementAccessResponse", responseAs[String])
+
+                  // Verify that list has the same modified as accept changed agreement
+			      Get("/" + lauriAuthenticateResponse.userUUID + "/items?modified=" + agreementAcceptSetResult.modified) ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
+			        val itemsResponse = responseAs[Items]
+			        itemsResponse.lists.size should be (1)
+			        itemsResponse.lists.get(0).modified.get should be (accessResult.modified)
+			      }
+                  
                   Put("/" + lauriUUID + "/task",
                     marshal(newTask).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
                     val putTaskResponse = responseAs[SetResult]
+                    
+                    // Last, proposedTo destroys agreement
+	                Delete("/agreement/" + agreementSetResult.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
+	                  val deleteAgreementResult = responseAs[SetResult]
+	                  writeJsonOutput("deleteAgreementResponse", responseAs[String])
+	                  // Verify that list has the same modified as what destroy result claims
+				      Get("/" + lauriAuthenticateResponse.userUUID + "/items?modified=" + accessResult.modified) ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
+				        val itemsResponse = responseAs[Items]
+				        itemsResponse.lists.size should be (1)
+				        itemsResponse.lists.get(0).modified.get should be (deleteAgreementResult.modified)
+				      }
+	                }
                   }
                 }
               }

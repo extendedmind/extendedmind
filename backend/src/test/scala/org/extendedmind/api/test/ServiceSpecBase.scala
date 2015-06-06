@@ -140,6 +140,13 @@ abstract class ServiceSpecBase extends ImpermanentGraphDatabaseSpecBase {
       }
   }
 
+  def getList(listUUID: UUID, authenticateResponse: SecurityContext): List = {
+    Get("/" + authenticateResponse.userUUID + "/list/" + listUUID) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+      responseAs[List]
+    }
+  }
+
+  
   def putExistingList(existingList: List, listUUID: UUID, authenticateResponse: SecurityContext,
     collectiveUUID: Option[UUID] = None): SetResult = {
     val ownerUUID = if (collectiveUUID.isDefined) collectiveUUID.get else authenticateResponse.userUUID
@@ -173,12 +180,6 @@ abstract class ServiceSpecBase extends ImpermanentGraphDatabaseSpecBase {
   def getNote(noteUUID: UUID, authenticateResponse: SecurityContext): Note = {
     Get("/" + authenticateResponse.userUUID + "/note/" + noteUUID) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
       responseAs[Note]
-    }
-  }
-  
-  def getList(listUUID: UUID, authenticateResponse: SecurityContext): List = {
-    Get("/" + authenticateResponse.userUUID + "/list/" + listUUID) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-      responseAs[List]
     }
   }
   

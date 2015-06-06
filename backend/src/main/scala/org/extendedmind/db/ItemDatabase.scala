@@ -846,7 +846,7 @@ trait ItemDatabase extends UserDatabase {
     addModifiedIndex(itemsIndex, itemNode, modified)
   }
 
-  protected def updateItemsIndex(itemNode: Node, setResult: SetResult): Unit = {
+  def updateItemsIndex(itemNode: Node, setResult: SetResult): Unit = {
     withTx {
       implicit neo4j =>
         val itemsIndex = neo4j.gds.index().forNodes("items")
