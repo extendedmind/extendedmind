@@ -81,13 +81,15 @@
       $scope.readOnly = $scope.isCollectiveReadOnly(ownerUUID);
     } else if (isSharedListOwner(ownerUUID)) {
       $scope.fullEditor = false;
-      var listUUID;
       if (item.trans.itemType === 'list') {
-        listUUID = item.trans.uuid;
-      } else if (item.trans.list) {
-        listUUID = item.trans.list.trans.uuid;
+        $scope.readOnly = true;
+      }else{
+        var listUUID;
+        if (item.trans.list) {
+          listUUID = item.trans.list.trans.uuid;
+        }
+        $scope.readOnly = listUUID && $scope.isSharedListReadOnly(ownerUUID, listUUID);
       }
-      $scope.readOnly = listUUID && $scope.isSharedListReadOnly(ownerUUID, listUUID);
     }
   }
 
@@ -718,7 +720,7 @@
   $scope.generateReadOnlyPropertyClickNotification = function(itemType) {
     UISessionService.pushNotification({
       type: 'fyi',
-      text: itemType + ' is read only'
+      text: 'no permission to edit'
     });
   };
 
