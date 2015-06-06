@@ -82,6 +82,10 @@
         listOpenOnAddFn = $parse($attrs.listOpen).bind(undefined, $scope);
       }
       $scope.activateListAdd = function() {
+        if (angular.isFunction($scope.isListAddDisabled) && $scope.isListAddDisabled()){
+          // Add is disabled, exit
+          return;
+        }
         if (listOpenOnAddFn){
           // Execute open function
           listOpenOnAddFn();

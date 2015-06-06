@@ -47,18 +47,18 @@
       var isReadOnlyFn;
       if ($attrs.listContainerReadonly !== undefined)
         isReadOnlyFn = $parse($attrs.listContainerReadonly);
-      function isReadOnly(){
+      $scope.isListAddDisabled = function(){
         if (isReadOnlyFn){
           return isReadOnlyFn($scope);
         }
-      }
+      };
 
       this.activateAddListItem = function(){
         if ($attrs.listContainerOverrideVerticalResize){
           // Re-register just in case list container active has not fired
           $scope.registerOverrideElement();
         }
-        if (!isReadOnly() && activateAddListItemCallback) activateAddListItemCallback();
+        if (activateAddListItemCallback) activateAddListItemCallback();
       };
 
       this.registerGetFullArrayFn = function(getArrayFn) {
