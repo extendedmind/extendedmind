@@ -457,12 +457,16 @@ class ListBestCaseSpec extends ServiceSpecBase {
         }
         
         // Accept agreement
-        val timoAuthenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
         Post("/agreement/" + agreementCode.toHexString + "/accept",
-          marshal(UserEmail(TIMO_EMAIL)).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {            
+          marshal(UserEmail(TIMO_EMAIL)).right.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {            
           val agreementAcceptSetResult = responseAs[SetResult]
           writeJsonOutput("acceptAgreementResponse", responseAs[String])
-
+          agreementAcceptSetResult.modified should be > agreementSetResult.modified
+          
+          // Verify that authentication has shared list
+          val timoAuthenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+          timoAuthenticateResponse.sharedLists.get.size should be (1)
+          
 	      // Verify that list has the same modified as accepted agreement
 	      Get("/" + lauriAuthenticateResponse.userUUID + "/items?modified=" + agreementSetResult.modified) ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
 	        val itemsResponse = responseAs[Items]
@@ -487,6 +491,7 @@ class ListBestCaseSpec extends ServiceSpecBase {
                 Post("/agreement/" + agreementSetResult.uuid.get + "/access/2") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
                   val accessResult = responseAs[SetResult]
                   writeJsonOutput("changeAgreementAccessResponse", responseAs[String])
+	              accessResult.modified should be > agreementAcceptSetResult.modified
 
                   // Verify that list has the same modified as accept changed agreement
 			      Get("/" + lauriAuthenticateResponse.userUUID + "/items?modified=" + agreementAcceptSetResult.modified) ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
@@ -503,11 +508,17 @@ class ListBestCaseSpec extends ServiceSpecBase {
 	                Delete("/agreement/" + agreementSetResult.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
 	                  val deleteAgreementResult = responseAs[SetResult]
 	                  writeJsonOutput("deleteAgreementResponse", responseAs[String])
+	                  deleteAgreementResult.modified should be > accessResult.modified
 	                  // Verify that list has the same modified as what destroy result claims
 				      Get("/" + lauriAuthenticateResponse.userUUID + "/items?modified=" + accessResult.modified) ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
 				        val itemsResponse = responseAs[Items]
 				        itemsResponse.lists.size should be (1)
 				        itemsResponse.lists.get(0).modified.get should be (deleteAgreementResult.modified)
+				      }
+				      // Verify that there is no more shared list access
+				      Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
+				        val accountResponse = responseAs[User]
+				        accountResponse.sharedLists should be(None)
 				      }
 	                }
                   }

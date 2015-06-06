@@ -1,5 +1,6 @@
-<div class="container-content--outer" list-container drawer-handle="left"
-  drawer-handle-register-activate="registerFeatureActivateCallback(activate, 'list', 'listTasks')">
+<div class="container-content--outer" list-container list-container-readonly="isListReadOnly(list)"
+  ng-class="isListReadOnly(list) && 'checkbox-disable'"
+  drawer-handle="left" drawer-handle-register-activate="registerFeatureActivateCallback(activate, 'list', 'listTasks')">
   <section class="container-content" list="getTasksArray('list', {uuid: list.trans.uuid, owner: overrideOwnerUUID})"
     list-options="{hideItemDefault: true}">
     <div class="group-mixed heading">

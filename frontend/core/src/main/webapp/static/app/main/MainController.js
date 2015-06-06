@@ -41,6 +41,19 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     return UserSessionService.getUserUUID() === UISessionService.getActiveUUID();
   };
 
+  $scope.isCollectiveReadOnly = function(ownerUUID) {
+    if ($scope.collectives && $scope.collectives[ownerUUID]) {
+      return $scope.collectives[ownerUUID][1] === 1;
+    }
+  };
+
+  $scope.isSharedListReadOnly = function(ownerUUID, listUUID) {
+    if ($scope.sharedLists && $scope.sharedLists[ownerUUID]) {
+      var sharedListInfo = $scope.sharedLists[ownerUUID][1][listUUID];
+      return sharedListInfo && sharedListInfo[1] === 1;
+    }
+  };
+
   // MAP OF ALL FEATURES
 
   function getFeatureStatus(featurePreferences, subfeature){

@@ -18,7 +18,7 @@
   return {
     restrict: 'A',
     require: ['^verticalResize', '?^swiperSlide'],
-    controller: ['$scope', '$element', '$attrs', function($scope, $element, $attrs) {
+    controller: ['$scope', '$element', '$attrs', '$parse', function($scope, $element, $attrs, $parse) {
       var activateAddListItemCallback;
       var notifyListAddFeatureCallback;
       var listAddFeatureInfo;
@@ -44,12 +44,21 @@
         }
       };
 
+      var isReadOnlyFn;
+      if ($attrs.listContainerReadonly !== undefined)
+        isReadOnlyFn = $parse($attrs.listContainerReadonly);
+      function isReadOnly(){
+        if (isReadOnlyFn){
+          return isReadOnlyFn($scope);
+        }
+      }
+
       this.activateAddListItem = function(){
         if ($attrs.listContainerOverrideVerticalResize){
           // Re-register just in case list container active has not fired
           $scope.registerOverrideElement();
         }
-        if (activateAddListItemCallback) activateAddListItemCallback();
+        if (!isReadOnly() && activateAddListItemCallback) activateAddListItemCallback();
       };
 
       this.registerGetFullArrayFn = function(getArrayFn) {

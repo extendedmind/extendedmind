@@ -164,3 +164,8 @@ input[type="checkbox"]:checked + label:before {
 input[type="checkbox"].downplayed:checked + label:before {
   color: @color-text-downplayed-light;
 }
+
+// Completely disable checkboxes with .checkbox-disable
+.checkbox-disable input[type="checkbox"] + label {
+  pointer-events:none;
+}

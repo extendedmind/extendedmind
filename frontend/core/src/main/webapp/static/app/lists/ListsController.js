@@ -579,6 +579,14 @@
     $scope.editListFields(list);
     $scope.changeFeature('lists');
   };
+
+  // Permissions
+
+  $scope.isListReadOnly = function(list){
+    var ownerUUID = list.trans.owner;
+    var listUUID = list.trans.uuid;
+    return $scope.isCollectiveReadOnly(ownerUUID) || $scope.isSharedListReadOnly(ownerUUID, listUUID);
+  };
 }
 
 ListsController['$inject'] = ['$q', '$rootScope', '$scope',

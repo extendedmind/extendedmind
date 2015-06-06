@@ -1,4 +1,5 @@
-<div class="container-content--outer" ng-if="isFeatureActive('list')" list-container>
+<div class="container-content--outer" ng-if="isFeatureActive('list')" list-container
+     list-container-readonly="isListReadOnly(list)">
   <section class="container-content" list="getNotesArray('list', {uuid: list.trans.uuid, owner: overrideOwnerUUID})"
     list-open="openEditor('note', getNewNote({list: list}, overrideOwnerUUID), 'new')">
     <h2 class="group-heading justified row">notes</h2>

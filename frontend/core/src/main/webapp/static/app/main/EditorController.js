@@ -65,21 +65,8 @@
       return $scope.collectives && $scope.collectives[ownerUUID];
     }
 
-    function isCollectiveReadOnly(ownerUUID) {
-      if ($scope.collectives && $scope.collectives[ownerUUID]) {
-        return $scope.collectives[ownerUUID][1] === 1;
-      }
-    }
-
     function isSharedListOwner(ownerUUID) {
       return $scope.sharedLists && $scope.sharedLists[ownerUUID];
-    }
-
-    function isSharedListReadOnly(ownerUUID, listUUID) {
-      if ($scope.sharedLists && $scope.sharedLists[ownerUUID]) {
-        var sharedListInfo = $scope.sharedLists[ownerUUID][1][listUUID];
-        return sharedListInfo && sharedListInfo[1] === 1;
-      }
     }
 
     var ownerUUID = item.trans.owner;
@@ -91,7 +78,7 @@
       $scope.readOnly = false;
     } else if (isCollectiveOwner(ownerUUID)) {
       $scope.fullEditor = ownerUUID === activeUUID;
-      $scope.readOnly = isCollectiveReadOnly(ownerUUID);
+      $scope.readOnly = $scope.isCollectiveReadOnly(ownerUUID);
     } else if (isSharedListOwner(ownerUUID)) {
       $scope.fullEditor = false;
       var listUUID;
@@ -100,7 +87,7 @@
       } else if (item.trans.list) {
         listUUID = item.trans.list.trans.uuid;
       }
-      $scope.readOnly = listUUID && isSharedListReadOnly(ownerUUID, listUUID);
+      $scope.readOnly = listUUID && $scope.isSharedListReadOnly(ownerUUID, listUUID);
     }
   }
 
@@ -731,7 +718,7 @@
   $scope.generateReadOnlyPropertyClickNotification = function(itemType) {
     UISessionService.pushNotification({
       type: 'fyi',
-      text: 'can\'t edit shared ' + itemType
+      text: itemType + ' is read only'
     });
   };
 
