@@ -36,6 +36,7 @@
       .then(function(response) {
         UserSessionService.setEmail(response.email);
         UserSessionService.setTransportPreferences(response.preferences);
+        UserSessionService.setAccessInformation(response.uuid, response.collectives, response.sharedLists);
         return response;
       });
     },

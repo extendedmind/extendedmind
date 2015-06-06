@@ -711,6 +711,7 @@
     UserSessionService.setEmail(response.email);
     UserSessionService.setUserModified(response.modified);
     UserSessionService.setTransportPreferences(response.preferences);
+    UserSessionService.setAccessInformation(response.uuid, response.collectives, response.sharedLists);
   }
 
   // Handles response from backend where offline buffer has been used

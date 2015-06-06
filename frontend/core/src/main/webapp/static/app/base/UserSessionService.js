@@ -258,6 +258,15 @@
     setTransportPreferences: function(transportPreferences) {
       this.setPreferences(migrateTransportPreferences(transportPreferences));
     },
+    setAccessInformation: function(userUUID, collectives, sharedLists) {
+      SessionStorageService.setCollectives(collectives);
+      SessionStorageService.setSharedLists(sharedLists);
+      if (this.isPersistentStorageEnabled() || LocalStorageService.getReplaceable() !== null) {
+        LocalStorageService.setCollectives(collectives);
+        LocalStorageService.setSharedLists(sharedLists);
+      }
+      executeNotifyOwnersCallbacks(userUUID, collectives, sharedLists);
+    },
     setLatestModified: function(modified, ownerUUID) {
       // Only set if given value is larger than set value
       var currentLatestModified = this.getLatestModified(ownerUUID);
