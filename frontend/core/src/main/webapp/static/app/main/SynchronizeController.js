@@ -244,6 +244,8 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
   function synchronizeMostStaleOtherOwner(previousParams){
     var otherOwnerUUIDs = getOtherOwnerUUIDs(UserSessionService.getSharedLists(),
                                              UserSessionService.getUIPreference('adoptedLists'));
+
+    console.log(otherOwnerUUIDs)
     return $q(function(resolve, reject) {
       if (otherOwnerUUIDs){
         var biggestSince;
@@ -251,9 +253,10 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
         for (var i=0; i<otherOwnerUUIDs.length; i++) {
           var sinceLastItemsSynchronized =
             getLastItemsSynchronized(UserSessionService.getItemsSynchronized(otherOwnerUUIDs[i]));
-          if (!biggestSince || biggestSince < sinceLastItemsSynchronized){
+          if (!sinceLastItemsSynchronized || !biggestSince || biggestSince < sinceLastItemsSynchronized){
             mostStaleOwnerUUID = otherOwnerUUIDs[i];
-            biggestSince = sinceLastItemsSynchronized;
+            if (sinceLastItemsSynchronized) biggestSince = sinceLastItemsSynchronized;
+            else biggestSince = 100000;
           }
         }
         if (mostStaleOwnerUUID){
