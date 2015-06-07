@@ -1,5 +1,5 @@
 cd ../core
-mvn -o clean install -DskipTests=true
+mvn -o clean install -DskipTests=true -Ddebug=true
 cd ../cordova
 
 if [ -z "$2" ]
