@@ -501,34 +501,6 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     }
   }
   
-  private def getCollectiveAccess(relationshipList: List[Relationship]): Option[Map[UUID,(String, Byte, Boolean)]] = {
-    if (relationshipList.isEmpty) None
-    else{
-      val collectiveAccessMap = new HashMap[UUID,(String, Byte, Boolean)]
-      relationshipList foreach (relationship => {
-        val collective = relationship.getEndNode()
-        val title = collective.getProperty("title").asInstanceOf[String]
-        val uuid = getUUID(collective)
-        val common = if(collective.hasProperty("common")) true else false
-        relationship.getType().name() match {
-          case SecurityRelationship.IS_FOUNDER.relationshipName => 
-            collectiveAccessMap.put(uuid, (title, SecurityContext.FOUNDER, common))
-          case SecurityRelationship.CAN_READ.relationshipName => {
-            if (!collectiveAccessMap.contains(uuid))
-              collectiveAccessMap.put(uuid, (title, SecurityContext.READ, common))
-          }
-          case SecurityRelationship.CAN_READ_WRITE.relationshipName => {
-            if (collectiveAccessMap.contains(uuid))
-              collectiveAccessMap.update(uuid, (title, SecurityContext.READ_WRITE, common))
-            else
-              collectiveAccessMap.put(uuid, (title, SecurityContext.READ_WRITE, common))
-          }
-        }
-      })
-      Some(collectiveAccessMap.toMap)
-    }
-  }
-  
   private def getAuthenticationInfo(tokenNode: Node): (Long, Long, Option[Long]) = {
     val authenticated = tokenNode.getProperty("modified").asInstanceOf[Long]
     val expires = tokenNode.getProperty("expires").asInstanceOf[Long]
