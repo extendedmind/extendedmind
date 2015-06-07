@@ -99,7 +99,7 @@
       adoptedLists = UserSessionService.getUIPreference('adoptedLists');
       if (activeUUID !== userUUID && activeUUID === ownerUUID &&
         (!adoptedLists || !adoptedLists[ownerUUID] ||
-         adoptedLists[ownerUUID].indexOf[$scope.list.trans.uuid] === -1)){
+         adoptedLists[ownerUUID].indexOf($scope.list.trans.uuid) === -1)){
         return true;
       }
       break;
@@ -107,7 +107,7 @@
       // Show unadopt when ownerUUID and listUUID are found in adopted lists
       adoptedLists = UserSessionService.getUIPreference('adoptedLists');
       if (adoptedLists && adoptedLists[ownerUUID] &&
-          adoptedLists[ownerUUID].indexOf[$scope.list.trans.uuid] !== -1){
+          adoptedLists[ownerUUID].indexOf($scope.list.trans.uuid) !== -1){
         return true;
       }
       break;
