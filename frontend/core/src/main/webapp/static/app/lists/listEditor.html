@@ -68,14 +68,15 @@
             <div class="group-mixed large">
               <div class="group-mixed--middle">
                 <textarea class="text-heading-primary large" ng-model="list.trans.title"
-                  input-model-validator ng-trim="false" msd-elastic ng-keydown="listTitlebarTextKeyDown($event)"
+                  input-model-validator ng-trim="false" msd-elastic msd-elastic-inline
+                  ng-keydown="listTitlebarTextKeyDown($event)"
                   editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
                   ng-disabled="readOnly"
                   placeholder="enter list title&#8230;" maxlength="128" autocapitalize="none" autocorrect="off">
                 </textarea>
               </div>
 
-              <div ng-show="showListAction('favorite')" class="group-mixed--right">
+              <div ng-if="showListAction('favorite')" class="group-mixed--right">
                 <a href class="link-navigation" swiper-click="clickFavorite()">
                   <span class="icon-star large" ng-class="!isFavoriteList(list) && 'inactive'"></span>
                 </a>

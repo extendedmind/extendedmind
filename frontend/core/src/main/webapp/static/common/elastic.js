@@ -2,6 +2,10 @@
  * angular-elastic v2.4.0
  * (c) 2014 Monospaced http://monospaced.com
  * License: MIT
+ *
+ * FORKS
+ *  i.  Give some time for the siblings of the inline element using ng-if to be rendered into DOM before
+ *      adjusting.
  */
 
 angular.module('monospaced.elastic', [])
@@ -200,7 +204,12 @@ angular.module('monospaced.elastic', [])
             forceAdjust();
           });
 
-          $timeout(adjust);
+          $timeout(function() {
+            // FORK: i
+            if (attrs.msdElasticInline !== undefined) window.requestAnimationFrame(adjust);
+            else adjust();
+            // FORK: i
+          });
 
           /*
            * destroy
