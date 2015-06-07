@@ -259,13 +259,15 @@
       this.setPreferences(migrateTransportPreferences(transportPreferences));
     },
     setAccessInformation: function(userUUID, collectives, sharedLists) {
-      SessionStorageService.setCollectives(collectives);
+      /* TODO: Remove this when backend is updated to v1.9 and collectives is returned with /account */
+      var collectivesToStore = collectives ? collectives : LocalStorageService.getCollectives();
+      SessionStorageService.setCollectives(collectivesToStore);
       SessionStorageService.setSharedLists(sharedLists);
       if (this.isPersistentStorageEnabled() || LocalStorageService.getReplaceable() !== null) {
-        LocalStorageService.setCollectives(collectives);
+        LocalStorageService.setCollectives(collectivesToStore);
         LocalStorageService.setSharedLists(sharedLists);
       }
-      executeNotifyOwnersCallbacks(userUUID, collectives, sharedLists);
+      executeNotifyOwnersCallbacks(userUUID, collectivesToStore, sharedLists);
     },
     setLatestModified: function(modified, ownerUUID) {
       // Only set if given value is larger than set value
