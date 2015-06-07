@@ -244,8 +244,6 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
   function synchronizeMostStaleOtherOwner(previousParams){
     var otherOwnerUUIDs = getOtherOwnerUUIDs(UserSessionService.getSharedLists(),
                                              UserSessionService.getUIPreference('adoptedLists'));
-
-    console.log(otherOwnerUUIDs)
     return $q(function(resolve, reject) {
       if (otherOwnerUUIDs){
         var biggestSince;
