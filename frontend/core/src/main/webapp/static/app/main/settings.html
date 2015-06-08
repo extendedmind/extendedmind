@@ -20,7 +20,8 @@
         <input type="checkbox" class="downplayed" checked="true" ng-true-value="true" icon-checkbox="'tasks'" disabled/>
       </div>
       <div href class="group-mixed--middle">
-        <span class="text-link downplayed">tasks</span>
+        <span class="text-link downplayed">tasks</span><br/>
+        <span class="text-details downplayed">tasks are issues you can complete when they are done</span>
       </div>
     </div>
 
@@ -30,7 +31,8 @@
           icon-checkbox="'notes'" ng-click="featureCheckboxClicked('notes')"/>
       </div>
       <div class="group-mixed--middle">
-        <span class="text-link">notes</span>
+        <span class="text-link">notes</span><br/>
+        <span class="text-details downplayed">notes are things you want to remember</span>
       </div>
     </div>
 
@@ -41,7 +43,9 @@
          icon-checkbox="'lists'" ng-click="featureCheckboxClicked('lists')"/>
       </div>
       <div class="group-mixed--middle">
-        <span class="text-link" ng-class="isToggleDisabled('lists') && 'downplayed'">lists</span>
+        <span class="text-link" ng-class="isToggleDisabled('lists') && 'downplayed'">lists</span><br/>
+        <span class="text-details downplayed">lists are used to group tasks and notes, and can be shared with
+        other people</span>
       </div>
     </div>
 
@@ -51,7 +55,9 @@
           icon-checkbox="'inbox'" ng-click="featureCheckboxClicked('inbox')"/>
       </div>
       <div class="group-mixed--middle">
-        <span class="text-link">inbox</span>
+        <span class="text-link">inbox</span><br/>
+        <span class="text-details downplayed">inbox is a quick input buffer for items that can later be
+        converted to tasks, notes or lists</span>
       </div>
     </div>
 
@@ -61,7 +67,8 @@
           icon-checkbox="'contexts'" ng-click="featureCheckboxClicked('contexts')"/>
       </div>
       <div class="group-mixed--middle">
-        <span class="text-link">task contexts</span>
+        <span class="text-link">task contexts</span><br/>
+        <span class="text-details downplayed">contexts are used to group tasks based on their environment</span>
       </div>
     </div>
 
@@ -72,7 +79,8 @@
           icon-checkbox="'archive'" ng-click="featureCheckboxClicked('archive')"/>
       </div>
       <div class="group-mixed--middle">
-        <span class="text-link" ng-class="isToggleDisabled('archive') && 'downplayed'">lists archive</span>
+        <span class="text-link" ng-class="isToggleDisabled('archive') && 'downplayed'">lists archive</span><br/>
+        <span class="text-details downplayed">archive is used to separate active and inactive lists</span>
       </div>
     </div>
 
