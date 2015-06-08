@@ -54,6 +54,11 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     }
   };
 
+  $scope.usePremiumFeatures = function() {
+    // For now, only admin and alfa users can see premium features
+    return UserSessionService.getUserType() === 0 || UserSessionService.getUserType() === 1;
+  };
+
   // MAP OF ALL FEATURES
 
   function getFeatureStatus(featurePreferences, subfeature){

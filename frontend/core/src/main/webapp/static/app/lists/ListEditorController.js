@@ -89,7 +89,8 @@
       case 'restore':
       return list.trans.deleted && $scope.fullEditor && !$scope.isPropertyInDedicatedEdit();
       case 'share':
-      return $scope.fullEditor && (ownerUUID === UserSessionService.getUserUUID()) &&
+      return $scope.usePremiumFeatures() && $scope.fullEditor &&
+             (ownerUUID === UserSessionService.getUserUUID()) &&
              !$scope.listShareEditorOpen;
       case 'adopt':
       // Show adopt when activeUUID is not the same as userUUID (in collective)
@@ -117,11 +118,12 @@
   $scope.showListProperty = function(propertyName){
     switch (propertyName){
       case 'list':
-      return  !$scope.listIsParent($scope.list) && $scope.fullEditor && !$scope.isPropertyInDedicatedEdit();
+      return  $scope.usePremiumFeatures() && !$scope.listIsParent($scope.list) && $scope.fullEditor &&
+              !$scope.isPropertyInDedicatedEdit();
       case 'sharedTo':
-      return $scope.sharedToList && $scope.sharedToList.length && !$scope.listShareEditorOpen;
+      return $scope.usePremiumFeatures() && $scope.sharedToList && $scope.sharedToList.length && !$scope.listShareEditorOpen;
       case 'sharedBy':
-      return $scope.sharedByList && !jQuery.isEmptyObject($scope.sharedByList);
+      return $scope.usePremiumFeatures() && $scope.sharedByList && !jQuery.isEmptyObject($scope.sharedByList);
     }
   };
 
