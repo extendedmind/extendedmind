@@ -149,7 +149,6 @@ class UserBestCaseSpec extends ServiceSpecBase {
       }
       Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val accountResponse = responseAs[User]
-        println(accountResponse)
         accountResponse.email.get should equal(newEmail.email)
       }
       val newEmailAuthenticateResponse = emailPasswordAuthenticate(newEmail.email, TIMO_PASSWORD)

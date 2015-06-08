@@ -229,8 +229,6 @@ class TaskBestCaseSpec extends ServiceSpecBase {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       val newTask = Task("learn Spanish", Some("would be useful"), None, None, None, None, None)
       val putTaskResponse = putNewTask(newTask, authenticateResponse)
-
-      println(putTaskResponse.modified)
       
       Post("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get + "/note",
           marshal(newTask.copy(title = "Spanish studies"))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
@@ -241,8 +239,6 @@ class TaskBestCaseSpec extends ServiceSpecBase {
         noteFromTask.description should be (None)
         noteFromTask.content.get should be ("would be useful")
   
-        println(noteFromTask.modified.get)
-
         Post("/" + authenticateResponse.userUUID + "/note/" + putTaskResponse.uuid.get + "/task",
           marshal(noteFromTask.copy(title = "learn Spanish"))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           val taskFromNote = responseAs[Task]
