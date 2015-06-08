@@ -35,6 +35,7 @@
     var urlPrefix = "${cordova.urlPrefix}";
     var html5Mode = false;
     var enableOffline = true;
+    var cordovaDeviceReady = false;
 
     // Wait for device API libraries to load
     //
@@ -45,6 +46,7 @@
     // device APIs are available
     //
     function onDeviceReady() {
+      cordovaDeviceReady = true;
       if (navigator && navigator.splashscreen && navigator.splashscreen.hide)
         navigator.splashscreen.hide();
     }

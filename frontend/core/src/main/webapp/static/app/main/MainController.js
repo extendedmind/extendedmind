@@ -629,32 +629,22 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
 
   if (packaging.endsWith('cordova')) {
 
-    var onDeviceReady = function() {
-      registerCordovaListeners();
-      activateCordova();
-    };
-
     var registerCordovaListeners = function() {
       if (cordova.plugins && cordova.plugins.notification) {
         listenReminderClick();
       }
 
       if (packaging === 'android-cordova'){
-        document.addEventListener('backbutton', onBack, false);
         document.addEventListener('menubutton', onMenu, false);
       }
     };
 
-    if (cordova) {
-      if (cordova.plugins && cordova.plugins.notification) {
-        registerCordovaListeners();
-        activateCordova();
-      } else {
-        document.addEventListener('deviceready', onDeviceReady, false);
-      }
-    } else {
-      document.addEventListener('deviceready', onDeviceReady, false);
-    }
+    var onDeviceReady = function() {
+      registerCordovaListeners();
+      activateCordova();
+    };
+    $rootScope.registerCordovaDeviceReadyCallback({callback: onDeviceReady}, 'MainController');
+    $rootScope.registerCordovaBackCallback(onBack, 'MainController');
   }
 
   function activateCordova(){
@@ -664,43 +654,47 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
       ReminderService.setPersistentReminderForThisDevice();
     }
     if (packaging === 'android-cordova'){
-      processIncomingItem();
+      $rootScope.registerCordovaPropertyReadyCallback(
+          {callback: processIncomingAndroidWebintentItem,
+           condition: isAndroidCordovaWebintentReady}, 'MainControllerAndroidWebIntent');
     }
+  }
+
+  function isAndroidCordovaWebintentReady(){
+    return window.plugins && window.plugins.webintent;
   }
 
   // SHARE VIA
 
-  function processIncomingItem(){
-    if (window.plugins && window.plugins.webintent){
-      window.plugins.webintent.getExtra(window.plugins.webintent.EXTRA_TEXT,
-        function(url) {
-          // url is the value of EXTRA_TEXT
-          storeSharedItem('url', url);
-          window.plugins.webintent.clearExtra(window.plugins.webintent.EXTRA_TEXT,
-            function() { // extra is now cleared
-            },function() { // There was no extra supplied.
-            }
-          );
-        }, function() {
-          // There was no extra text supplied, this means there is no proper share
-          shareViaValues = undefined;
-        }
-      );
-      window.plugins.webintent.getExtra(window.plugins.webintent.EXTRA_SUBJECT,
-        function(subject) {
-          // subject is the value of EXTRA_SUBJECT
-          storeSharedItem('subject', subject);
-          window.plugins.webintent.clearExtra(window.plugins.webintent.EXTRA_SUBJECT,
-            function() { // extra is now cleared
-            },function() { // There was no extra supplied.
-            }
-          );
-        }, function() {
-          // There was no extra supplied.
-          storeSharedItem('subject', undefined);
-        }
-      );
-    }
+  function processIncomingAndroidWebintentItem(){
+    window.plugins.webintent.getExtra(window.plugins.webintent.EXTRA_TEXT,
+      function(url) {
+        // url is the value of EXTRA_TEXT
+        storeSharedItem('url', url);
+        window.plugins.webintent.clearExtra(window.plugins.webintent.EXTRA_TEXT,
+          function() { // extra is now cleared
+          },function() { // There was no extra supplied.
+          }
+        );
+      }, function() {
+        // There was no extra text supplied, this means there is no proper share
+        shareViaValues = undefined;
+      }
+    );
+    window.plugins.webintent.getExtra(window.plugins.webintent.EXTRA_SUBJECT,
+      function(subject) {
+        // subject is the value of EXTRA_SUBJECT
+        storeSharedItem('subject', subject);
+        window.plugins.webintent.clearExtra(window.plugins.webintent.EXTRA_SUBJECT,
+          function() { // extra is now cleared
+          },function() { // There was no extra supplied.
+          }
+        );
+      }, function() {
+        // There was no extra supplied.
+        storeSharedItem('subject', undefined);
+      }
+    );
   }
 
   var shareViaValues;
@@ -802,11 +796,10 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     }
     return backHandled;
   }
-  function onBack(e) {
+  function onBack() {
     if (executeBackCallbacks() !== true){
       // TODO: Back wasn't handled by a callback, navigate to previous feature
     }
-    e.preventDefault();
   }
 
 
@@ -933,10 +926,15 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     if (!packaging.endsWith('cordova')){
       angular.element($window).unbind('focus', executeActivateCallbacks);
       angular.element($window).unbind('blur', executeDeactivateCallbacks);
+
+      if (packaging === 'android-cordova'){
+        $rootScope.unregisterCordovaBackCallback('MainController');
+      }
     }else{
       document.removeEventListener('resume', executeActivateCallbacks, false);
       document.removeEventListener('pause', executeDeactivateCallbacks, false);
     }
+
   });
 
   // EDITOR CALLBACKS

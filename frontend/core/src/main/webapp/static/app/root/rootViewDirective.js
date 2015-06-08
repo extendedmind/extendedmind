@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- /* global cordova */
+ /* global cordova, cordovaDeviceReady */
  'use strict';
 
  function rootViewDirective($injector, $rootScope, $templateCache, $window, $timeout,
@@ -138,6 +138,105 @@
       $scope.unregisterModalReinit = function() {
         reinitModal = undefined;
       };
+
+      // CORDOVA
+
+      function onCordovaDeviceReady() {
+        document.addEventListener('backbutton', onCordovaBackbutton, false);
+        executeCordovaDeviceReadyCallbacks();
+      };
+
+      var cordovaDeviceReadyCallbackSettings = {};
+      function executeCordovaDeviceReadyCallbacks() {
+        for (var id in cordovaDeviceReadyCallbackSettings) {
+          if (cordovaDeviceReadyCallbackSettings.hasOwnProperty(id)){
+            if (cordovaDeviceReadyCallbackSettings[id].callback){
+              cordovaDeviceReadyCallbackSettings[id].callback(id);
+              cordovaDeviceReadyCallbackSettings[id].callback = undefined;
+            }
+          }
+        }
+      };
+
+      function onCordovaBackbutton(e){
+        // Prevent default action, if back was executed somewhere else
+        if (executeCordovaBackCallbacks())
+          e.preventDefault();
+      };
+
+      var cordovaBackCallbacks = {};
+      function executeCordovaBackCallbacks() {
+        var called = false;
+        for (var id in cordovaBackCallbacks) {
+          if (cordovaBackCallbacks.hasOwnProperty(id)){
+            cordovaBackCallbacks[id]();
+            called = true;
+          }
+        }
+        return called;
+      };
+
+      function checkCordovaPropertyRepeated(settings){
+        if (!settings.callback || settings.until < Date.now()){
+          return;
+        }
+        if (settings.condition()){
+          if (settings.callback){
+            settings.callback();
+            settings.callback = undefined;
+          }
+        }else{
+          setTimeout(checkCordovaPropertyRepeated(settings), 100);
+        }
+      }
+
+      if (packaging.endsWith('cordova')) {
+
+        if (!cordovaDeviceReady){
+          document.addEventListener('deviceready', onCordovaDeviceReady, false);
+        }
+
+        // Fires when deviceready fires, or directly
+        $rootScope.registerCordovaDeviceReadyCallback = function(settings, id){
+          if (cordovaDeviceReady){
+            // Execute immediately
+            if (settings.callback){
+              settings.callback();
+              settings.callback = undefined;
+              return true;
+            }
+          }else{
+            // Register callback to fire when deviceready fires
+            cordovaDeviceReadyCallbackSettings[id] = settings;
+          }
+        };
+
+        $rootScope.registerCordovaBackCallback = function(callback, id){
+          cordovaBackCallbacks[id] = callback;
+        };
+        $rootScope.unregisterCordovaBackCallback = function(id){
+          if (cordovaBackCallbacks[id]) delete cordovaBackCallbacks[id];
+        };
+
+        // A function to get a cordova property if it is possible to get, regardles of deviceready
+        $rootScope.registerCordovaPropertyReadyCallback = function(settings, id){
+          if (settings.condition()){
+            settings.callback();
+            settings.callback = undefined;
+            return true;
+          }
+
+          if (!settings.until){
+            // Poll for 3 seconds (30 times) by default
+            settings.until = Date.now() + 3000;
+          }
+
+          // Start both deviceready polling as well as direct polling as there is no guarantee that
+          // deviceready will always fire
+          $rootScope.registerCordovaDeviceReadyCallback(settings, id);
+          checkCordovaPropertyRepeated(settings);
+        };
+      }
 
       // EVENTS - user interactions, exceptions
 
