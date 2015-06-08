@@ -132,25 +132,27 @@ class UserBestCaseSpec extends ServiceSpecBase {
     }
     it("should successfully change email with PUT to /email "
       + "and get the changed email back") {
-      val authenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
+      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         writeJsonOutput("accountResponse", responseAs[String])
         val accountResponse = responseAs[User]
         accountResponse.uuid.get should equal(authenticateResponse.userUUID)
-        accountResponse.email.get should equal(LAURI_EMAIL)
+        accountResponse.email.get should equal(TIMO_EMAIL)
+        accountResponse.collectives.get should not be None
       }
-      val newEmail = UserEmail("lauri.jarvilehto@filosofianakatemia.fi")
+      val newEmail = UserEmail("timo.tiuraniemi@filosofianakatemia.fi")
       Put("/email",
-        marshal(newEmail).right.get) ~> addHeader("Content-Type", "application/json") ~> addHeader(Authorization(BasicHttpCredentials(LAURI_EMAIL, LAURI_PASSWORD))) ~> route ~> check {
+        marshal(newEmail).right.get) ~> addHeader("Content-Type", "application/json") ~> addHeader(Authorization(BasicHttpCredentials(TIMO_EMAIL, TIMO_PASSWORD))) ~> route ~> check {
           writeJsonOutput("putEmailResponse", responseAs[String])
           val putAccountResponse = responseAs[SetResult]
           putAccountResponse.modified should not be None
       }
       Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val accountResponse = responseAs[User]
+        println(accountResponse)
         accountResponse.email.get should equal(newEmail.email)
       }
-      val newEmailAuthenticateResponse = emailPasswordAuthenticate(newEmail.email, LAURI_PASSWORD)
+      val newEmailAuthenticateResponse = emailPasswordAuthenticate(newEmail.email, TIMO_PASSWORD)
       newEmailAuthenticateResponse.userUUID should not be None
     }
     it("should successfully delete user with DELETE to /account "

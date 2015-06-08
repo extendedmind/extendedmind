@@ -58,19 +58,7 @@ trait UserActions {
               else Right(Unit).right
     } yield userResult._1
   }
-  
-  def sendEmailVerification(email: String, emailVerificationCode: Long)(implicit log: LoggingAdapter) {
-    log.info("sendEmailVerification: email {}", email)
-    val futureMailResponse = mailgun.sendEmailVerificationLink(email, emailVerificationCode)
-    futureMailResponse onSuccess {
-      case SendEmailResponse(message, id) => {
-        log.info("Email verification sent to " + email + " with id " + id)
-      }
-      case _ =>
-        log.error("Could not send email verification to {}", email)
-    }
-  }
-  
+    
   def getPublicUser(email: String)(implicit log: LoggingAdapter): Response[PublicUser] = {
     log.info("getPublicUser: email {}", email)
     val user = db.getUser(email)
@@ -181,6 +169,19 @@ trait UserActions {
     db.acceptAgreement(code, proposedToEmail)
   }
   
+  
+  private def sendEmailVerification(email: String, emailVerificationCode: Long)(implicit log: LoggingAdapter) {
+    log.info("sendEmailVerification: email {}", email)
+    val futureMailResponse = mailgun.sendEmailVerificationLink(email, emailVerificationCode)
+    futureMailResponse onSuccess {
+      case SendEmailResponse(message, id) => {
+        log.info("Email verification sent to " + email + " with id " + id)
+      }
+      case _ =>
+        log.error("Could not send email verification to {}", email)
+    }
+  }
+
   private def sendAgreementEmail(agreement: Agreement, sharedListTitle: String)(implicit log: LoggingAdapter): Response[CountResult] = {
     if (agreement.accepted.isDefined){
       fail(INVALID_PARAMETER, ERR_USER_AGREEMENT_ACCEPTED, "Agreeement has already been accepted, no need to send email")
