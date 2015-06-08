@@ -78,7 +78,7 @@
             if (item.trans.favorited) {
               classes.push('favorited');
             }
-            if (item.trans.itemType === 'list' && item.trans.list) {
+            if (item.trans.itemType === 'list' && item.trans.list && !item.trans.list.trans.deleted) {
               classes.push('indent');
             }
             if (!classes.length) {
