@@ -69,7 +69,8 @@
               !$scope.isOnboarding('notes'));
 
       case 'basicFooter':
-      return !$scope.isPropertyInDedicatedEdit() && !$scope.isFooterNavigationHidden();
+      return !$scope.isPropertyInDedicatedEdit() && !$scope.isFooterNavigationHidden() &&
+      !$scope.isOnboarding('notes');
 
       case 'advancedFooter':
       if (!subcomponentName){
