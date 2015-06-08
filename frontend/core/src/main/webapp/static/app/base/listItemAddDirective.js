@@ -62,11 +62,11 @@
             controllers[0].notifyListItemAddActive(false);
           }
 
-          scope.onListItemAddExit = function(){
+          scope.onListItemAddExit = function(skipNotifyNoAdd){
             var itemHasTitle = scope.newItem.trans.title && scope.newItem.trans.title.length > 0;
             if (itemHasTitle) {
               saveNewItem(scope.newItem);
-            }else {
+            }else if (!skipNotifyNoAdd){
               controllers[0].notifyListItemExitNoAdd();
             }
             exit();

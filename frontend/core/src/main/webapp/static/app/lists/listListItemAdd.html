@@ -1,6 +1,6 @@
 <form role="form" class="group-mixed vertically-centered swiper-no-swiping"
   ng-submit="callAndExit(saveList, newItem)" data-snap-ignore="true" editable-field-container
-  editable-field-container-clicked-elsewhere="onListItemAddExit()"
+  editable-field-container-clicked-elsewhere="onListItemAddExit(getOnboardingPhase('lists', 'active') === 3)"
   autocapitalize="none" autocorrect="off">
   <div class="group-mixed--left">
     <a href swiper-click="callAndExit(saveListAndChangeFeature, newItem)"
