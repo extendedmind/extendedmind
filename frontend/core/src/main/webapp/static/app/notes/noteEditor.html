@@ -4,7 +4,7 @@
     <div class="container-titlebar--inner">
       <div class="group-symmetrical height-large--top height-large--bottom" swiper-prevent>
 
-        <a href ng-show="showEditorAction('saveBack')"
+        <a href ng-show="showNoteAction('saveBack')"
           class="group-symmetrical--left link-navigation active highlighted sorting-hide"
           swiper-click="endNoteEdit()">
           <span class="text-navigation-back" ng-class="getEditorNavigationBackClasses()"
@@ -12,7 +12,7 @@
           </span>
         </a>
 
-        <a href ng-show="showEditorAction('saveDone')"
+        <a href ng-show="showNoteAction('saveDone')"
           class="group-symmetrical--left highlighted override-disabled" ng-click="subEditorDone()">
           <span class="text-edit" ng-bind="isPropertyEdited() ? 'save' : 'done'"></span>
         </a>

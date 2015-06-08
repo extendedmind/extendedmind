@@ -36,6 +36,10 @@
 
   $scope.showNoteAction = function(actionName){
     switch (actionName){
+      case 'saveBack':
+      return $scope.isOnboarding('notes') || $scope.showEditorAction('saveBack');
+      case 'saveDone':
+      return !$scope.isOnboarding('notes') && $scope.showEditorAction('saveDone');
       case 'delete':
       return $scope.showEditorAction('delete', $scope.note) && !$scope.isOnboarding('notes');
       case 'restore':
