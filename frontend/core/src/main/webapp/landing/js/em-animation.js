@@ -151,11 +151,11 @@ function animatePhase11(){
   var connectElem = $('#em-animation-11-connect');
   var careElem = $('#em-animation-11-care');
 
-  createElem.removeClass('hidden');
+  createElem.removeClass('invisible');
   createElem.animo( { animation: 'fadeIn', duration: 1.2 }, function(){
-    connectElem.removeClass('hidden');
+    connectElem.removeClass('invisible');
     connectElem.animo( { animation: 'fadeIn', duration: 1.2 }, function(){
-      careElem.removeClass('hidden');
+      careElem.removeClass('invisible');
       careElem.animo( { animation: 'fadeIn', duration: 1.2 }, function(){
         createElem.animo( { animation: 'fadeOut', duration: 1, keep: true });
         connectElem.animo( { animation: 'fadeOut', duration: 1, keep: true });
@@ -177,11 +177,11 @@ function animatePhase13(){
   var organizeElem = $('#em-animation-13-organize');
   var keepElem = $('#em-animation-13-keep');
 
-  focusElem.removeClass('hidden');
+  focusElem.removeClass('invisible');
   focusElem.animo( { animation: 'fadeIn', duration: 1.2, keep: true }, function(){
-    organizeElem.removeClass('hidden');
+    organizeElem.removeClass('invisible');
     organizeElem.animo( { animation: 'fadeIn', duration: 1.2, keep: true }, function(){
-      keepElem.removeClass('hidden');
+      keepElem.removeClass('invisible');
       keepElem.animo( { animation: 'fadeIn', duration: 1.2, keep: true }, function(){
         focusElem.animo( { animation: 'fadeOut', duration: 1, keep: true });
         organizeElem.animo( { animation: 'fadeOut', duration: 1, keep: true });
@@ -211,13 +211,13 @@ function animatePhase16(){
   var youElem = $('#em-animation-16-you');
   var thinkElem = $('#em-animation-16-think');
 
-  changeElem.removeClass('hidden');
+  changeElem.removeClass('invisible');
   changeElem.animo( { animation: 'fadeIn', duration: 0.8, keep: true }, function(){
-    wayElem.removeClass('hidden');
+    wayElem.removeClass('invisible');
     wayElem.animo( { animation: 'fadeIn', duration: 0.8, keep: true }, function(){
-      youElem.removeClass('hidden');
+      youElem.removeClass('invisible');
       youElem.animo( { animation: 'fadeIn', duration: 0.8, keep: true }, function(){
-        thinkElem.removeClass('hidden');
+        thinkElem.removeClass('invisible');
         thinkElem.animo( { animation: 'fadeIn', duration: 0.8, keep: true }, function(){
           $('#em-animation').unbind('click');
           if (extendedMindAudio.endCallback) extendedMindAudio.endCallback();
