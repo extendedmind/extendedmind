@@ -59,7 +59,7 @@
 
     for (i = 0; i < subset.length; i++) {
       var list = subset[i];
-      if (list.trans.list) {
+      if (list.trans.list && !list.trans.list.trans.deleted) {
         // Push children into temp.
         childLists.push(list);
       } else {
