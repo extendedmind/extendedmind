@@ -248,12 +248,8 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
             getLastItemsSynchronized(UserSessionService.getItemsSynchronized(otherOwnerUUIDs[i]));
           if (!sinceLastItemsSynchronized || !biggestSince || biggestSince < sinceLastItemsSynchronized){
             mostStaleOwnerUUID = otherOwnerUUIDs[i];
-            if (sinceLastItemsSynchronized){
-              biggestSince = sinceLastItemsSynchronized;
-            }else {
-              biggestSince = NaN;
-              break;
-            }
+            biggestSince = sinceLastItemsSynchronized;
+            if (biggestSince === NaN) break;
           }
         }
         if (mostStaleOwnerUUID){
