@@ -209,7 +209,7 @@
                   // Emit error to root scope, so that
                   // it can be listened on at by the application
                   $rootScope.$emit('emException', {type: 'http', value: {status: status, data: data,
-                   url: config.url}});
+                   url: config.url, owner: headRequest.params.owner}});
                 }
               }
             }

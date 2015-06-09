@@ -269,6 +269,17 @@
       }
       executeNotifyOwnersCallbacks(userUUID, collectivesToStore, sharedLists);
     },
+    removeForeignOwner: function(ownerUUID) {
+      var userUUID = this.getUserUUID();
+      var collectives = this.getCollectives();
+      var sharedLists = this.getSharedLists();
+      if (collectives[ownerUUID]){
+        delete collectives[ownerUUID];
+      }else if (sharedLists[ownerUUID]){
+        delete sharedLists[ownerUUID];
+      }
+      this.setAccessInformation(userUUID, collectives, sharedLists);
+    },
     setLatestModified: function(modified, ownerUUID) {
       // Only set if given value is larger than set value
       var currentLatestModified = this.getLatestModified(ownerUUID);

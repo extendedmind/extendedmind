@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- /* global cordova, cordovaDeviceReady */
+ /* global cordova */
  'use strict';
 
  function rootViewDirective($injector, $rootScope, $templateCache, $window, $timeout,
@@ -108,7 +108,7 @@
         //
         // which almost worked, but on menu open, failed. In app that always broke.
         $templateCache.removeAll();
-      };
+      }
 
       // MODAL
       $scope.modal = {
@@ -178,9 +178,14 @@
         var params;
 
         if (exception.type === 'http' && exception.value.status === 403) {
-          // Redirect thrown 403 Forbidden exception to the login page
-          AnalyticsService.error('forbidden', JSON.stringify(exception));
-          redirectToEntry();
+          // Redirect thrown 403 Forbidden exception to the login page if forbidden comes from the user's
+          // own data. If it comes from not having rights to foreign data, this does not matter
+          if (!exception.value.owner || exception.value.owner === UserSessionService.getUserUUID()){
+            AnalyticsService.error('forbidden', JSON.stringify(exception));
+            redirectToEntry();
+          }else if (exception.value.owner){
+            UserSessionService.removeForeignOwner(exception.value.owner);
+          }
         }
         else if (exception.type === 'session') {
           if (!exiting) {
