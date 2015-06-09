@@ -28,8 +28,8 @@ function DeviceService(packaging) {
   var cordovaDeviceReadyCallbackSettings = {};
   function executeCordovaDeviceReadyCallbacks() {
     for (var id in cordovaDeviceReadyCallbackSettings) {
-      if (cordovaDeviceReadyCallbackSettings.hasOwnProperty(id)){
-        if (cordovaDeviceReadyCallbackSettings[id].callback){
+      if (cordovaDeviceReadyCallbackSettings.hasOwnProperty(id) && cordovaDeviceReadyCallbackSettings[id].callback){
+        if (!cordovaDeviceReadyCallbackSettings[id].condition || cordovaDeviceReadyCallbackSettings[id].condition()){
           cordovaDeviceReadyCallbackSettings[id].callback(id);
           cordovaDeviceReadyCallbackSettings[id].callback = undefined;
         }
@@ -65,7 +65,7 @@ function DeviceService(packaging) {
         settings.callback = undefined;
       }
     }else{
-      setTimeout(checkCordovaPropertyRepeated(settings), 100);
+      setTimeout(checkCordovaPropertyRepeated(settings), 400);
     }
   }
 
@@ -80,7 +80,7 @@ function DeviceService(packaging) {
     registerCordovaDeviceReadyCallback: function(settings, id){
       if (cordovaDeviceReady){
         // Execute immediately
-        if (settings.callback){
+        if (settings.callback && (!settings.condition || settings.condition())){
           settings.callback();
           settings.callback = undefined;
           return true;
@@ -105,8 +105,8 @@ function DeviceService(packaging) {
       }
 
       if (!settings.until){
-        // Poll for 3 seconds (30 times) by default
-        settings.until = Date.now() + 3000;
+        // Poll for 2 seconds (5 times) by default
+        settings.until = Date.now() + 2000;
       }
 
       // Start both deviceready polling as well as direct polling as there is no guarantee that
