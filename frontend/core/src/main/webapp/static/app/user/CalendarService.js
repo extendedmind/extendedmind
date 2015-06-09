@@ -16,8 +16,7 @@
  /* global angular */
  'use strict';
 
-function CalendarService($rootScope, DeviceService, UISessionService, UserService, UserSessionService,
-                         packaging) {
+function CalendarService($rootScope, UISessionService, UserService, UserSessionService, packaging) {
   var calendarActivationChangedCallbacks = {};
 
   function setActiveCalendars(calendars){
@@ -60,7 +59,7 @@ function CalendarService($rootScope, DeviceService, UISessionService, UserServic
     },
     registerCalendarLoadedCallback: function(callback, id){
       if (this.isCalendarEnabled()){
-        DeviceService.registerCordovaPropertyReadyCallback(
+        $rootScope.registerCordovaPropertyReadyCallback(
             {callback: callback, condition: isCalendarLoaded}, id);
       }
     },
@@ -102,6 +101,6 @@ function CalendarService($rootScope, DeviceService, UISessionService, UserServic
     }
   };
 }
-CalendarService['$inject'] = ['$rootScope', 'DeviceService', 'UISessionService', 'UserService',
-'UserSessionService', 'packaging'];
+CalendarService['$inject'] = ['$rootScope', 'UISessionService', 'UserService', 'UserSessionService',
+'packaging'];
 angular.module('em.user').factory('CalendarService', CalendarService);

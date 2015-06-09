@@ -21,9 +21,9 @@
 // the arrays because everything is needed anyway to get home and inbox to work,
 // which are part of every main slide collection.
 function MainController($element, $controller, $filter, $q, $rootScope, $scope, $timeout, $window,
-                        AnalyticsService, CalendarService, DeviceService, DrawerService, ItemsService,
-                        ReminderService, SwiperService, TasksService, UISessionService, UserService,
-                        UserSessionService, packaging) {
+                        AnalyticsService, CalendarService, DrawerService, ItemsService, ReminderService,
+                        SwiperService, TasksService, UISessionService, UserService, UserSessionService,
+                        packaging) {
 
 
   // SHARED ACCESS
@@ -648,8 +648,8 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
       registerCordovaListeners();
       activateCordova();
     };
-    DeviceService.registerCordovaDeviceReadyCallback({callback: onDeviceReady}, 'MainController');
-    DeviceService.registerCordovaBackCallback(onBack, 'MainController');
+    $rootScope.registerCordovaDeviceReadyCallback({callback: onDeviceReady}, 'MainController');
+    $rootScope.registerCordovaBackCallback(onBack, 'MainController');
   }
 
   function activateCordova(){
@@ -659,7 +659,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
       ReminderService.setPersistentReminderForThisDevice();
     }
     if (packaging === 'android-cordova'){
-      DeviceService.registerCordovaPropertyReadyCallback(
+      $rootScope.registerCordovaPropertyReadyCallback(
           {callback: processIncomingAndroidWebintentItem,
            condition: isAndroidCordovaWebintentReady}, 'MainControllerAndroidWebIntent');
     }
@@ -933,7 +933,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
       angular.element($window).unbind('blur', executeDeactivateCallbacks);
 
       if (packaging === 'android-cordova'){
-        DeviceService.unregisterCordovaBackCallback('MainController');
+        $rootScope.unregisterCordovaBackCallback('MainController');
       }
     }else{
       document.removeEventListener('resume', executeActivateCallbacks, false);
@@ -1127,7 +1127,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
 
 MainController['$inject'] = [
 '$element', '$controller', '$filter', '$q', '$rootScope', '$scope', '$timeout', '$window',
-'AnalyticsService', 'CalendarService', 'DeviceService', 'DrawerService', 'ItemsService', 'ReminderService',
-'SwiperService', 'TasksService', 'UISessionService', 'UserService', 'UserSessionService', 'packaging'
+'AnalyticsService', 'CalendarService', 'DrawerService', 'ItemsService', 'ReminderService', 'SwiperService',
+'TasksService', 'UISessionService', 'UserService', 'UserSessionService', 'packaging'
 ];
 angular.module('em.main').controller('MainController', MainController);

@@ -18,8 +18,8 @@ playExtendedMindAnimation, extendedMindAnimationPhase, Media, cordova */
 'use strict';
 
 function EntryController($http, $location, $rootScope, $routeParams, $scope,
-                         AnalyticsService, AuthenticationService, DetectBrowserService, DeviceService,
-                         SwiperService, UISessionService, UserService, UserSessionService, packaging) {
+                         AnalyticsService, AuthenticationService, DetectBrowserService, SwiperService,
+                         UISessionService, UserService, UserSessionService, packaging) {
 
   AnalyticsService.visitEntry('entry');
 
@@ -298,16 +298,16 @@ function EntryController($http, $location, $rootScope, $routeParams, $scope,
   }
 
   if (packaging.endsWith('cordova')){
-    DeviceService.registerCordovaBackCallback(onBack, 'EntryController');
+    $rootScope.registerCordovaBackCallback(onBack, 'EntryController');
     document.addEventListener('pause', pauseCallback, false);
     $scope.$on('$destroy', function() {
-      DeviceService.unregisterCordovaBackCallback('EntryController');
+      $rootScope.unregisterCordovaBackCallback('EntryController');
       document.removeEventListener('pause', pauseCallback, false);
     });
   }
 }
 
 EntryController['$inject'] = ['$http', '$location', '$rootScope', '$routeParams', '$scope',
-'AnalyticsService', 'AuthenticationService', 'DetectBrowserService', 'DeviceService', 'SwiperService',
+'AnalyticsService', 'AuthenticationService', 'DetectBrowserService', 'SwiperService',
 'UISessionService', 'UserService', 'UserSessionService', 'packaging'];
 angular.module('em.entry').controller('EntryController', EntryController);
