@@ -34,7 +34,6 @@
     var urlPrefix = "${cordova.urlPrefix}";
     var html5Mode = false;
     var enableOffline = true;
-    var cordovaDeviceReady = false;
 
     // Wait for device API libraries to load
     //
@@ -45,7 +44,6 @@
     // device APIs are available
     //
     function onDeviceReady() {
-      cordovaDeviceReady = true;
       // Now safe to use device APIs
       cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
       cordova.plugins.Keyboard.disableScroll(true);

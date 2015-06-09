@@ -580,7 +580,7 @@
     }
 
     if (CalendarService.isCalendarEnabled()) {
-      CalendarService.registerCalendarLoadedCallback(doInitializeAgenda, 'DatesController');
+      CalendarService.registerCalendarLoadedCallback(doInitializeAgenda);
     }
   }
   initializeAgenda();

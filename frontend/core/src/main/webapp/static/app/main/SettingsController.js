@@ -14,9 +14,8 @@
  */
  'use strict';
 
- function SettingsController($rootScope, $timeout, $scope, AnalyticsService, CalendarService, ListsService,
-                             ReminderService, SwiperService, UISessionService, UserService,
-                             UserSessionService, packaging, version) {
+ function SettingsController($timeout, $scope, AnalyticsService, ListsService, ReminderService, SwiperService,
+                             UISessionService, UserService, UserSessionService, packaging, version) {
 
   // VERSION
   $scope.extendedMindVersion = version;
@@ -241,17 +240,22 @@
   };
 
   // THIS DEVICE
-
   // agenda
-  CalendarService.registerCalendarLoadedCallback(function(){
-    $scope.agendaCalendarSettingVisible = true;
-  }, 'SettingsController');
 
-  // keep running
-  if (packaging === 'android-cordova') $scope.keepRunningVisible = true;
+  if (packaging.endsWith('cordova')) {
+    if (!window.plugins || !window.plugins.calendar) {
+      document.addEventListener('deviceready', function() {
+        $scope.agendaCalendarSettingVisible = window.plugins && window.plugins.calendar;
+      });
+    } else {
+      $scope.agendaCalendarSettingVisible = true;
+    }
+    if (packaging === 'android-cordova') $scope.keepRunningVisible = true;
+  }
+
 }
 
-SettingsController['$inject'] = ['$rootScope', '$timeout', '$scope', 'AnalyticsService', 'CalendarService',
-'ListsService', 'ReminderService', 'SwiperService', 'UISessionService', 'UserService', 'UserSessionService',
+SettingsController['$inject'] = ['$timeout', '$scope', 'AnalyticsService', 'ListsService',
+'ReminderService', 'SwiperService', 'UISessionService', 'UserService', 'UserSessionService',
 'packaging', 'version'];
 angular.module('em.main').controller('SettingsController', SettingsController);

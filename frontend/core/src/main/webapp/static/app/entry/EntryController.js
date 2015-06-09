@@ -110,14 +110,10 @@ function EntryController($http, $location, $rootScope, $routeParams, $scope,
   };
 
   $scope.entrySwiperSlideChanged = function(slidePath/*, activeIndex*/){
-    if (slidePath === 'entry/home'){
-      if (entryEmailMainInputBlurCallbackFunction) entryEmailMainInputBlurCallbackFunction(true);
-      if (entryPasswordMainInputBlurCallbackFunction) entryPasswordMainInputBlurCallbackFunction(true);
-    }else if (slidePath === 'entry/main'){
-      if (entryEmailForgotInputBlurCallbackFunction) entryEmailForgotInputBlurCallbackFunction(true);
-      if (entryEmailMainInputFocusCallbackFunction) entryEmailMainInputFocusCallbackFunction();
-    }else if (slidePath === 'entry/details'){
-      if (entryEmailForgotInputFocusCallbackFunction) entryEmailForgotInputFocusCallbackFunction();
+    if (entryEmailMainInputFocusCallbackFunction && slidePath === 'entry/main'){
+      entryEmailMainInputFocusCallbackFunction();
+    }else if (entryEmailForgotInputFocusCallbackFunction && slidePath === 'entry/details'){
+      entryEmailForgotInputFocusCallbackFunction();
     }
   };
 
@@ -288,20 +284,9 @@ function EntryController($http, $location, $rootScope, $routeParams, $scope,
       pauseExtendedMindAnimation();
     }
   }
-
-  function onBack(){
-    if (SwiperService.isSlideActive('entry/main')){
-      SwiperService.swipeTo('entry/home');
-    }else if (SwiperService.isSlideActive('entry/details')){
-      SwiperService.swipeTo('entry/main');
-    }
-  }
-
   if (packaging.endsWith('cordova')){
-    $rootScope.registerCordovaBackCallback(onBack, 'EntryController');
     document.addEventListener('pause', pauseCallback, false);
     $scope.$on('$destroy', function() {
-      $rootScope.unregisterCordovaBackCallback('EntryController');
       document.removeEventListener('pause', pauseCallback, false);
     });
   }

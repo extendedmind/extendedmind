@@ -16,7 +16,7 @@
  /* global angular */
  'use strict';
 
-function CalendarService($rootScope, UISessionService, UserService, UserSessionService, packaging) {
+function CalendarService(UISessionService, UserService, UserSessionService, packaging) {
   var calendarActivationChangedCallbacks = {};
 
   function setActiveCalendars(calendars){
@@ -48,6 +48,28 @@ function CalendarService($rootScope, UISessionService, UserService, UserSessionS
     }
   }
 
+  // Calendar loading polling
+
+  var calendarLoadedCallback;
+  function beginCalendarLoadedPoll(callback){
+    calendarLoadedCallback = callback;
+    // Start both deviceready polling as well as direct polling as there is no guarantee that
+    // deviceready will always fire
+    document.addEventListener('deviceready', checkCalendarLoadedRepeated);
+    checkCalendarLoadedRepeated();
+  }
+  function checkCalendarLoadedRepeated(){
+    if (isCalendarLoaded()){
+      if (calendarLoadedCallback){
+        calendarLoadedCallback();
+        calendaLoadedCallback = undefined;
+        document.removeEventListener('deviceready', checkCalendarLoadedRepeated);
+      }
+    }else{
+      setTimeout(checkCalendarLoadedRepeated, 100);
+    }
+  }
+
   function isCalendarLoaded(){
     return window.plugins && window.plugins.calendar &&
            (typeof device !== 'undefined') && device && device.model;
@@ -57,10 +79,10 @@ function CalendarService($rootScope, UISessionService, UserService, UserSessionS
     isCalendarEnabled: function(){
       return packaging.endsWith('cordova');
     },
-    registerCalendarLoadedCallback: function(callback, id){
+    registerCalendarLoadedCallback: function(callback){
       if (this.isCalendarEnabled()){
-        $rootScope.registerCordovaPropertyReadyCallback(
-            {callback: callback, condition: isCalendarLoaded}, id);
+        if (isCalendarLoaded()) callback();
+        else beginCalendarLoadedPoll(callback);
       }
     },
     getActiveCalendars: getActiveCalendars,
@@ -101,6 +123,5 @@ function CalendarService($rootScope, UISessionService, UserService, UserSessionS
     }
   };
 }
-CalendarService['$inject'] = ['$rootScope', 'UISessionService', 'UserService', 'UserSessionService',
-'packaging'];
+CalendarService['$inject'] = ['UISessionService', 'UserService', 'UserSessionService', 'packaging'];
 angular.module('em.user').factory('CalendarService', CalendarService);
