@@ -254,7 +254,18 @@
         text: 'can\'t delete shared ' + dataInEdit.trans.itemType
       });
     } else {
-      doProcessDelete(dataInEdit, deleteCallback, undeleteFn);
+      if ($scope.exitAppOnBack){
+        var deletePromise = deleteCallback(dataInEdit);
+        if (deletePromise) {
+          deletePromise.then(function() {
+            evaluateExitApp();
+          });
+        } else {
+          evaluateExitApp();
+        }
+      }else{
+        doProcessDelete(dataInEdit, deleteCallback, undeleteFn);
+      }
     }
   };
 
