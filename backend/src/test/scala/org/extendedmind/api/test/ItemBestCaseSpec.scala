@@ -134,21 +134,27 @@ class ItemBestCaseSpec extends ServiceSpecBase {
                 writeJsonOutput("itemResponse", responseAs[String])
                 itemResponse.description.get should be("not kidding")
                 Delete("/" + authenticateResponse.userUUID + "/item/" + putItemResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                  val deleteItemResponse = responseAs[String]
-                  writeJsonOutput("deleteItemResponse", deleteItemResponse)
-                  deleteItemResponse should include("deleted")
+                  val deleteItemResponse = responseAs[DeleteItemResult]
+                  writeJsonOutput("deleteItemResponse", responseAs[String])
                   Get("/" + authenticateResponse.userUUID + "/item/" + putItemResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                 	val failure = responseAs[ErrorResult]        
                 	status should be (BadRequest)
                     failure.description should startWith("Item " + putItemResponse.uuid.get + " is deleted")
                   }
-                  Post("/" + authenticateResponse.userUUID + "/item/" + putItemResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                    val undeleteItemResponse = responseAs[String]
-                    writeJsonOutput("undeleteItemResponse", undeleteItemResponse)
-                    undeleteItemResponse should include("modified")
-                    val undeletedItem = getItem(putItemResponse.uuid.get, authenticateResponse)
-                    undeletedItem.deleted should be(None)
-                    undeletedItem.modified should not be (None)
+                  // Deleting again should return the same deleted and modified values
+                  Delete("/" + authenticateResponse.userUUID + "/item/" + putItemResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                    val redeleteItemResponse = responseAs[DeleteItemResult]
+                    redeleteItemResponse.deleted should be (deleteItemResponse.deleted)
+                    redeleteItemResponse.result.modified should be (deleteItemResponse.result.modified)
+                  
+                    Post("/" + authenticateResponse.userUUID + "/item/" + putItemResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                      val undeleteItemResponse = responseAs[String]
+                      writeJsonOutput("undeleteItemResponse", undeleteItemResponse)
+                      undeleteItemResponse should include("modified")
+                      val undeletedItem = getItem(putItemResponse.uuid.get, authenticateResponse)
+                      undeletedItem.deleted should be(None)
+                      undeletedItem.modified should not be (None)
+                    }
                   }
                 }
               }

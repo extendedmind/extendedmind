@@ -322,9 +322,14 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
   }
   
   protected def deleteItem(itemNode: Node)(implicit neo4j: DatabaseService): Long = {
-    val deleted = System.currentTimeMillis()
-    itemNode.setProperty("deleted", deleted)
-    deleted
+    if (itemNode.hasProperty("deleted")){
+      itemNode.getProperty("deleted").asInstanceOf[Long]
+    }
+    else{
+      val timestamp = System.currentTimeMillis()
+      itemNode.setProperty("deleted", timestamp)
+      timestamp
+    }
   }
 
   protected def undeleteItem(itemNode: Node)(implicit neo4j: DatabaseService): Unit = {

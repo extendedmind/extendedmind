@@ -756,7 +756,7 @@ trait ItemDatabase extends UserDatabase {
     withTx {
       implicit neo =>
         for {
-          itemNode <- getItemNode(owner, itemUUID).right
+          itemNode <- getItemNode(owner, itemUUID, acceptDeleted = true).right
           deleted <- Right(deleteItem(itemNode)).right
         } yield (itemNode, deleted)
     }
