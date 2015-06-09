@@ -96,21 +96,33 @@ class TaskBestCaseSpec extends ServiceSpecBase {
                 writeJsonOutput("taskResponse", responseAs[String])
                 taskResponse.due.get should be("2014-03-01")
                 Delete("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                  val deleteTaskResponse = responseAs[String]
-                  writeJsonOutput("deleteTaskResponse", deleteTaskResponse)
-                  deleteTaskResponse should include("deleted")
+                  val deleteTaskResponse = responseAs[DeleteItemResult]
+                  writeJsonOutput("deleteTaskResponse", responseAs[String])
                   Get("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                 	val failure = responseAs[ErrorResult]        
                 	status should be (BadRequest)
                     failure.description should startWith("Item " + putTaskResponse.uuid.get + " is deleted")
                   }
+                  
+                  // Deleting again should return the same deleted and modified values
+                  Delete("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                    val redeleteTaskResponse = responseAs[DeleteItemResult]
+                    redeleteTaskResponse.deleted should be (deleteTaskResponse.deleted)
+                    redeleteTaskResponse.result.modified should be (deleteTaskResponse.result.modified)
+                  }
+                  
                   Post("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                    val undeleteTaskResponse = responseAs[String]
-                    writeJsonOutput("undeleteTaskResponse", undeleteTaskResponse)
-                    undeleteTaskResponse should include("modified")
+                    val undeleteTaskResponse = responseAs[SetResult]
+                    writeJsonOutput("undeleteTaskResponse", responseAs[String])
                     val undeletedTask = getTask(putTaskResponse.uuid.get, authenticateResponse)
                     undeletedTask.deleted should be(None)
                     undeletedTask.modified should not be (None)
+
+                    // Re-undelete should also work
+                    Post("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                      val reundeleteTaskResponse = responseAs[SetResult]
+                      reundeleteTaskResponse.modified should be (undeleteTaskResponse.modified)
+                    }
                   }
                 }
               }

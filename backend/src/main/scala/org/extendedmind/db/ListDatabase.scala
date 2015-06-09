@@ -309,7 +309,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
     withTx {
       implicit neo =>
         for {
-          listNode <- getItemNode(owner, listUUID, Some(ItemLabel.LIST)).right
+          listNode <- getItemNode(owner, listUUID, Some(ItemLabel.LIST), acceptDeleted=true).right
           agreementNodes <- getListAgreementNodes(listNode).right
           unit <- validateListDeletable(listNode, agreementNodes).right
           deleted <- Right(deleteItem(listNode)).right

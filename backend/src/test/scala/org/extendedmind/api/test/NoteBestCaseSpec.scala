@@ -96,21 +96,33 @@ class NoteBestCaseSpec extends ServiceSpecBase {
                 noteResponse.content should not be None
                 noteResponse.description.get should be("Helsinki home dimensions")
                 Delete("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                  val deleteNoteResponse = responseAs[String]
-                  writeJsonOutput("deleteNoteResponse", deleteNoteResponse)
-                  deleteNoteResponse should include("deleted")
+                  val deleteNoteResponse = responseAs[DeleteItemResult]
+                  writeJsonOutput("deleteNoteResponse", responseAs[String])
                   Get("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                 	val failure = responseAs[ErrorResult]        
                 	status should be (BadRequest)
                     failure.description should startWith("Item " + putNoteResponse.uuid.get + " is deleted")
                   }
+                  
+                  // Deleting again should return the same deleted and modified values
+                  Delete("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                    val redeleteNoteResponse = responseAs[DeleteItemResult]
+                    redeleteNoteResponse.deleted should be (deleteNoteResponse.deleted)
+                    redeleteNoteResponse.result.modified should be (deleteNoteResponse.result.modified)
+                  }
+                  
                   Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                    val undeleteNoteResponse = responseAs[String]
-                    writeJsonOutput("undeleteNoteResponse", undeleteNoteResponse)
-                    undeleteNoteResponse should include("modified")
+                    val undeleteNoteResponse = responseAs[SetResult]
+                    writeJsonOutput("undeleteNoteResponse", responseAs[String])
                     val undeletedTask = getNote(putNoteResponse.uuid.get, authenticateResponse)
                     undeletedTask.deleted should be(None)
                     undeletedTask.modified should not be (None)
+                    
+                    // Re-undelete should also work
+                    Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                      val reundeleteNoteResponse = responseAs[SetResult]
+                      reundeleteNoteResponse.modified should be (undeleteNoteResponse.modified)
+                    }
                   }
                 }
               }

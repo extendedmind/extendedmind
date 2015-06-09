@@ -106,14 +106,21 @@ class TagBestCaseSpec extends ServiceSpecBase {
                     val noteWithTag = getNote(putNoteResponse.uuid.get, authenticateResponse)
                     noteWithTag.relationships.get.tags.get should be(scala.List(putTagResponse.uuid.get))
                     Delete("/" + authenticateResponse.userUUID + "/tag/" + putTagResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                      val deleteTagResponse = responseAs[String]
-                      writeJsonOutput("deleteTagResponse", deleteTagResponse)
-                      deleteTagResponse should include("deleted")
+                      val deleteTagResponse = responseAs[DeleteItemResult]
+                      writeJsonOutput("deleteTagResponse", responseAs[String])
                       Get("/" + authenticateResponse.userUUID + "/tag/" + putTagResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                         val failure = responseAs[ErrorResult]
                         status should be(BadRequest)
                         failure.description should startWith("Item " + putTagResponse.uuid.get + " is deleted")
                       }
+                      
+                      // Deleting again should return the same deleted and modified values
+                      Delete("/" + authenticateResponse.userUUID + "/tag/" + putTagResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                        val redeleteTagResponse = responseAs[DeleteItemResult]
+                        redeleteTagResponse.deleted should be (deleteTagResponse.deleted)
+                        redeleteTagResponse.result.modified should be (deleteTagResponse.result.modified)
+                      }
+                      
                       // Change note context to new value and verify that change works
                       Put("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get,
                         marshal(newNote.copy(relationships = Some(ExtendedItemRelationships(None, None, Some(scala.List(putTag2Response.uuid.get)))))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
@@ -122,12 +129,17 @@ class TagBestCaseSpec extends ServiceSpecBase {
                       }
                       
                       Post("/" + authenticateResponse.userUUID + "/tag/" + putTagResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                        val undeleteTagResponse = responseAs[String]
-                        writeJsonOutput("undeleteTagResponse", undeleteTagResponse)
-                        undeleteTagResponse should include("modified")
+                        val undeleteTagResponse = responseAs[SetResult]
+                        writeJsonOutput("undeleteTagResponse", responseAs[String])
                         val undeletedTag = getTag(putTagResponse.uuid.get, authenticateResponse)
                         undeletedTag.deleted should be(None)
                         undeletedTag.modified should not be (None)
+
+                        // Re-undelete should also work
+                        Post("/" + authenticateResponse.userUUID + "/tag/" + putTagResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                          val reundeleteTagResponse = responseAs[SetResult]
+                          reundeleteTagResponse.modified should be (undeleteTagResponse.modified)
+                        }
                       }
                     }
                   }

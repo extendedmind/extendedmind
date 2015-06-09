@@ -146,14 +146,18 @@ class ItemBestCaseSpec extends ServiceSpecBase {
                     val redeleteItemResponse = responseAs[DeleteItemResult]
                     redeleteItemResponse.deleted should be (deleteItemResponse.deleted)
                     redeleteItemResponse.result.modified should be (deleteItemResponse.result.modified)
-                  
+                  }
+                  Post("/" + authenticateResponse.userUUID + "/item/" + putItemResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                    val undeleteItemResponse = responseAs[SetResult]
+                    writeJsonOutput("undeleteItemResponse", responseAs[String])
+                    val undeletedItem = getItem(putItemResponse.uuid.get, authenticateResponse)
+                    undeletedItem.deleted should be(None)
+                    undeletedItem.modified should not be (None)
+                    
+                    // Re-undelete should also work
                     Post("/" + authenticateResponse.userUUID + "/item/" + putItemResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                      val undeleteItemResponse = responseAs[String]
-                      writeJsonOutput("undeleteItemResponse", undeleteItemResponse)
-                      undeleteItemResponse should include("modified")
-                      val undeletedItem = getItem(putItemResponse.uuid.get, authenticateResponse)
-                      undeletedItem.deleted should be(None)
-                      undeletedItem.modified should not be (None)
+                      val reundeleteItemResponse = responseAs[SetResult]
+                      reundeleteItemResponse.modified should be (undeleteItemResponse.modified)
                     }
                   }
                 }

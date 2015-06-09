@@ -158,7 +158,7 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
     withTx {
       implicit neo =>
         for {
-          tagNode <- getItemNode(owner, tagUUID, Some(ItemLabel.TAG)).right
+          tagNode <- getItemNode(owner, tagUUID, Some(ItemLabel.TAG), acceptDeleted = true).right
           deleted <- Right(deleteItem(tagNode)).right
           childrenAndTagged <- getChildrenAndTagged(owner, tagNode).right
         } yield (tagNode, deleted, childrenAndTagged)

@@ -109,15 +109,21 @@ class ListBestCaseSpec extends ServiceSpecBase {
                   noteWithList.relationships.get.parent.get should be(putListResponse.uuid.get)
 	                
 	                Delete("/" + authenticateResponse.userUUID + "/list/" + putListResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-	                  val deleteListResponse = responseAs[String]
-	                  writeJsonOutput("deleteListResponse", deleteListResponse)
-	                  deleteListResponse should include("deleted")
+	                  val deleteListResponse = responseAs[DeleteItemResult]
+	                  writeJsonOutput("deleteListResponse", responseAs[String])
 	                  Get("/" + authenticateResponse.userUUID + "/list/" + putListResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
 	                	val failure = responseAs[ErrorResult]        
 	                	status should be (BadRequest)
 	                    failure.description should startWith("Item " + putListResponse.uuid.get + " is deleted")
 	                  }
-	                  
+
+                    // Re-deleting should be possible
+                    Delete("/" + authenticateResponse.userUUID + "/list/" + putListResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                      val redeleteListResponse = responseAs[DeleteItemResult]
+                      redeleteListResponse.deleted should be (deleteListResponse.deleted)
+                      redeleteListResponse.result.modified should be (deleteListResponse.result.modified)
+                    }
+                    
 	                  // Change note list to new value and verify that change works
                     Put("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get,
                       marshal(newNote.copy(relationships = Some(ExtendedItemRelationships(Some(putList2Response.uuid.get), None, None)))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
@@ -126,12 +132,17 @@ class ListBestCaseSpec extends ServiceSpecBase {
                     }
 	                  
 	                  Post("/" + authenticateResponse.userUUID + "/list/" + putListResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-	                    val undeleteListResponse = responseAs[String]
-	                    writeJsonOutput("undeleteListResponse", undeleteListResponse)
-	                    undeleteListResponse should include("modified")
+	                    val undeleteListResponse = responseAs[SetResult]
+	                    writeJsonOutput("undeleteListResponse", responseAs[String])
 	                    val undeletedList = getList(putListResponse.uuid.get, authenticateResponse)
 	                    undeletedList.deleted should be(None)
 	                    undeletedList.modified should not be (None)
+                      
+                      // Re-undeleting should be possible
+                      Post("/" + authenticateResponse.userUUID + "/list/" + putListResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                        val reundeleteListResponse = responseAs[SetResult]
+                        reundeleteListResponse.modified should be (undeleteListResponse.modified)
+                      }
 	                  }
 	                }
 	              }
