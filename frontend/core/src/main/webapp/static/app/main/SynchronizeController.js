@@ -102,7 +102,7 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
 
   // Synchronize items for given owner if interval reached.
 
-  function synchronizeItems(ownerUUID, sinceLastItemsSynchronized, skipDeleted, forceSyncParams) {
+  function synchronizeItems(ownerUUID, sinceLastItemsSynchronized, forceSyncParams) {
     function isItemSynchronizeValid(sinceLastItemsSynchronized){
       if (isNaN(sinceLastItemsSynchronized)) return true;
       else if (sinceLastItemsSynchronized > itemsSynchronizedThreshold) return true;
@@ -126,20 +126,15 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
             // Also immediately after first sync add completed and archived to the mix
             $rootScope.syncState = 'completedAndArchived';
             SynchronizeService.addCompletedAndArchived(ownerUUID).then(function(){
-              if (!skipDeleted){
-                $rootScope.syncState = 'deleted';
-                // Also after this, get deleted items as well
-                SynchronizeService.addDeleted(ownerUUID).then(function(){
-                  updateItemsSyncronizeAttempted(ownerUUID);
-                  resolve(status);
-                }, function(error){
-                  $rootScope.syncState = 'error';
-                  reject(error);
-                });
-              }else{
+              $rootScope.syncState = 'deleted';
+              // Also after this, get deleted items as well
+              SynchronizeService.addDeleted(ownerUUID).then(function(){
                 updateItemsSyncronizeAttempted(ownerUUID);
                 resolve(status);
-              }
+              }, function(error){
+                $rootScope.syncState = 'error';
+                reject(error);
+              });
             }, function(error){
               $rootScope.syncState = 'error';
               reject(error);
@@ -253,8 +248,12 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
             getLastItemsSynchronized(UserSessionService.getItemsSynchronized(otherOwnerUUIDs[i]));
           if (!sinceLastItemsSynchronized || !biggestSince || biggestSince < sinceLastItemsSynchronized){
             mostStaleOwnerUUID = otherOwnerUUIDs[i];
-            if (sinceLastItemsSynchronized) biggestSince = sinceLastItemsSynchronized;
-            else break;
+            if (sinceLastItemsSynchronized){
+              biggestSince = sinceLastItemsSynchronized;
+            }else {
+              biggestSince = NaN;
+              break;
+            }
           }
         }
         if (mostStaleOwnerUUID){
@@ -265,8 +264,18 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
             else forceSyncParams = {shared: previousParams.shared};
             forceSyncParams.shared.push(mostStaleOwnerUUID);
           }
-          synchronizeItems(mostStaleOwnerUUID, biggestSince, true, forceSyncParams).then(function(success){
-            resolve(success);
+          synchronizeItems(mostStaleOwnerUUID, biggestSince, forceSyncParams).then(function(status){
+            if (status === 'firstSync'){
+              // For online firstSync, the only way to get the next owner at the same go, we call this method
+              // again manually and then resolve.
+              synchronizeMostStaleOtherOwner().then(function(status){
+                resolve(status);
+              },function(error){
+                reject(error);
+              });
+            }else{
+              resolve(status);
+            }
           }, function(error){
             reject(error);
           });
