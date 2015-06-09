@@ -38,6 +38,7 @@
                              'common']);
 
  angular.module('em.lists', ['em.tasks', 'em.notes',
+                             'em.user',
                              'em.base',
                              'common']);
 

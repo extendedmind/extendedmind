@@ -504,7 +504,7 @@ trait UserDatabase extends AbstractGraphDatabase {
       implicit neo4j =>   
         for {
           agreementInfo <- getAgreementInformation(userUUID, agreementUUID).right
-          destroyResult <- Right(destroyAgreementNode(agreementInfo.agreement)).right
+          destroyResult <- Right(destroyAgreementNode(agreementInfo)).right
         } yield (agreementInfo, destroyResult)
     }
   }
@@ -684,14 +684,16 @@ trait UserDatabase extends AbstractGraphDatabase {
       }
       case Some(SecurityContext.READ_WRITE) => 
         if(existingRelationship.isDefined){
-          if(existingRelationship.get.getType().name != SecurityRelationship.CAN_READ_WRITE.name)
+          if(existingRelationship.get.getType().name != SecurityRelationship.CAN_READ_WRITE.name){
             existingRelationship.get.delete()
-          else
+          }else
             return Right(existingRelationship)          
         }
         Right(Some(userNode --> SecurityRelationship.CAN_READ_WRITE --> targetNode <))
       case None => {
         if(existingRelationship.isDefined){
+          // Make sure modified value for end node is always changed also when permission is removed
+          existingRelationship.get.getEndNode.setProperty("modified", System.currentTimeMillis)
           existingRelationship.get.delete()
         }
         Right(None)
@@ -707,23 +709,22 @@ trait UserDatabase extends AbstractGraphDatabase {
             SecurityRelationship.IS_FOUNDER)
   }
   
-  protected def destroyAgreementNode(agreementNode: Node)(implicit neo4j: DatabaseService): DestroyResult = {
-    // Need to find what it concerns
-    val concerningResult = agreementNode.getRelationships.find(relationship => {
-      relationship.getType.name == AgreementRelationship.CONCERNING.name
-    })
-    agreementNode.getRelationships.foreach(relationship => {
-      if (relationship.getType.name == AgreementRelationship.IS_PROPOSED_TO.name && 
-          concerningResult.isDefined && agreementNode.hasProperty("accepted")){
-        // Remove permission to the original element
-        setPermission(concerningResult.get.getEndNode, relationship.getEndNode, None)
-      }
+  protected def destroyAgreementNode(agreementInfo: AgreementInformation)(implicit neo4j: DatabaseService): DestroyResult = {
+
+    // First: remove permission
+    if (agreementInfo.agreement.hasProperty("accepted")){
+      // Remove permission to the original element
+      setPermission(agreementInfo.concerning, agreementInfo.proposedTo.get, None)
+    }
+
+    // Second, delete all relationships to the agreement
+    agreementInfo.agreement.getRelationships.foreach(relationship => {
       relationship.delete
     })
 
     // Delete agreement
-    val agreementUUID = getUUID(agreementNode)
-    agreementNode.delete
+    val agreementUUID = getUUID(agreementInfo.agreement)
+    agreementInfo.agreement.delete
     DestroyResult(scala.List(agreementUUID))
   }
 

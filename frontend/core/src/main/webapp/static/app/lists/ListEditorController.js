@@ -17,7 +17,7 @@
  'use strict';
 
  function ListEditorController($q, $rootScope, $scope, $timeout, ListsService, UISessionService,
-                               UserSessionService) {
+                               UserService, UserSessionService) {
 
   // INITIALIZING
 
@@ -542,8 +542,23 @@
     }
   }
 
-  function unshareList(targetList, agreementUUID) {
-    return ListsService.unshareList(targetList, agreementUUID);
+  function unshareList(targetList, agreementUUID, sharedToRemovesList) {
+    return ListsService.unshareList(targetList, agreementUUID).then(function(){
+      if (sharedToRemovesList){
+        var sharedLists = $scope.sharedLists;
+        if (sharedLists && sharedLists[targetList.trans.owner] && sharedLists[targetList.trans.owner][1]
+            && sharedLists[targetList.trans.owner][1][targetList.trans.uuid]){
+          // Delete the list from the in-memory-array
+          delete sharedLists[targetList.trans.owner][1][targetList.trans.uuid];
+          if (jQuery.isEmptyObject(sharedLists[targetList.trans.owner][1])){
+            delete sharedLists[targetList.trans.owner];
+          }
+        }
+        UserService.getAccount();
+        $scope.closeEditor();
+        $scope.changeFeature('lists');
+      }
+    });
   }
 
   function unshareListResolved(targetList) {
@@ -600,7 +615,7 @@
           confirmText: 'remove',
           confirmTextDeferred: 'removing\u2026',
           confirmActionDeferredFn: function() {
-            return unshareList($scope.list, $scope.shareEditor.data.uuid);
+            return unshareList($scope.list, $scope.shareEditor.data.uuid, true);
           },
           confirmActionPromiseFn: function() {
             removeListShareResolved($scope.list);
@@ -659,5 +674,5 @@
 }
 
 ListEditorController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout',
-'ListsService', 'UISessionService', 'UserSessionService'];
+'ListsService', 'UISessionService', 'UserService', 'UserSessionService'];
 angular.module('em.main').controller('ListEditorController', ListEditorController);

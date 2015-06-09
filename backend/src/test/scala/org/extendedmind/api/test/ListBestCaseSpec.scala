@@ -478,12 +478,12 @@ class ListBestCaseSpec extends ServiceSpecBase {
           val timoAuthenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
           timoAuthenticateResponse.sharedLists.get.size should be (1)
           
-	      // Verify that list has the same modified as accepted agreement
-	      Get("/" + lauriAuthenticateResponse.userUUID + "/items?modified=" + agreementSetResult.modified) ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
-	        val itemsResponse = responseAs[Items]
-	        itemsResponse.lists.size should be (1)
-	        itemsResponse.lists.get(0).modified.get should be (agreementAcceptSetResult.modified)
-	      }
+  	      // Verify that list has the same modified as accepted agreement
+  	      Get("/" + lauriAuthenticateResponse.userUUID + "/items?modified=" + agreementSetResult.modified) ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
+  	        val itemsResponse = responseAs[Items]
+  	        itemsResponse.lists.size should be (1)
+  	        itemsResponse.lists.get(0).modified.get should be (agreementAcceptSetResult.modified)
+  	      }
           
           Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
             val accountResponse = responseAs[User]
@@ -505,33 +505,36 @@ class ListBestCaseSpec extends ServiceSpecBase {
 	              accessResult.modified should be > agreementAcceptSetResult.modified
 
                   // Verify that list has the same modified as accept changed agreement
-			      Get("/" + lauriAuthenticateResponse.userUUID + "/items?modified=" + agreementAcceptSetResult.modified) ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
-			        val itemsResponse = responseAs[Items]
-			        itemsResponse.lists.size should be (1)
-			        itemsResponse.lists.get(0).modified.get should be (accessResult.modified)
-			      }
+      			      Get("/" + lauriAuthenticateResponse.userUUID + "/items?modified=" + agreementAcceptSetResult.modified) ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
+      			        val itemsResponse = responseAs[Items]
+      			        itemsResponse.lists.size should be (1)
+      			        itemsResponse.lists.get(0).modified.get should be (accessResult.modified)
+                    itemsResponse.lists.get(0).visibility should not be (None)
+                  }
                   
                   Put("/" + lauriUUID + "/task",
                     marshal(newTask).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
                     val putTaskResponse = responseAs[SetResult]
                     
                     // Last, proposedTo destroys agreement
-	                Delete("/agreement/" + agreementSetResult.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
-	                  val deleteAgreementResult = responseAs[SetResult]
-	                  writeJsonOutput("deleteAgreementResponse", responseAs[String])
-	                  deleteAgreementResult.modified should be > accessResult.modified
-	                  // Verify that list has the same modified as what destroy result claims
-				      Get("/" + lauriAuthenticateResponse.userUUID + "/items?modified=" + accessResult.modified) ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
-				        val itemsResponse = responseAs[Items]
-				        itemsResponse.lists.size should be (1)
-				        itemsResponse.lists.get(0).modified.get should be (deleteAgreementResult.modified)
-				      }
-				      // Verify that there is no more shared list access
-				      Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
-				        val accountResponse = responseAs[User]
-				        accountResponse.sharedLists should be(None)
-				      }
-	                }
+  	                Delete("/agreement/" + agreementSetResult.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
+  	                  val deleteAgreementResult = responseAs[SetResult]
+  	                  writeJsonOutput("deleteAgreementResponse", responseAs[String])                      
+  	                  deleteAgreementResult.modified should be > accessResult.modified
+                      deleteAgreementResult.modified should be > putTaskResponse.modified
+  	                  // Verify that list has the same modified as what destroy result claims
+        				      Get("/" + lauriAuthenticateResponse.userUUID + "/items?modified=" + accessResult.modified) ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
+        				        val itemsResponse = responseAs[Items]
+        				        itemsResponse.lists.size should be (1)
+        				        itemsResponse.lists.get(0).modified.get should be (deleteAgreementResult.modified)
+                        itemsResponse.lists.get(0).visibility should be (None)
+        				      }
+        				      // Verify that there is no more shared list access
+        				      Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
+        				        val accountResponse = responseAs[User]
+        				        accountResponse.sharedLists should be(None)
+        				      }
+  	                }
                   }
                 }
               }

@@ -102,7 +102,9 @@
   function mockDeleteAgreement(expectResponse) {
     $httpBackend.whenDELETE(ListsService.deleteAgreementRegex)
     .respond(function(method, url, data, headers) {
-      return expectResponse(method, url, data, headers);
+      var deleteAgreementResponse = getJSONFixture('deleteAgreementResponse.json');
+      deleteAgreementResponse.modified =  Date.now();
+      return expectResponse(method, url, data, headers, deleteAgreementResponse);
     });
   }
 
