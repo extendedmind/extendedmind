@@ -298,6 +298,11 @@
           <artifactId>exec-maven-plugin</artifactId>
           <version>1.2.1.jbossorg-3</version>
         </plugin>
+        <plugin>
+          <groupId>org.jolokia</groupId>
+          <artifactId>docker-maven-plugin</artifactId>
+          <version>0.11.5</version>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
