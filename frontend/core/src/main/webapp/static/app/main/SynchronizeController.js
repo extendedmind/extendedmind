@@ -249,7 +249,7 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
           if (!sinceLastItemsSynchronized || !biggestSince || biggestSince < sinceLastItemsSynchronized){
             mostStaleOwnerUUID = otherOwnerUUIDs[i];
             biggestSince = sinceLastItemsSynchronized;
-            if (biggestSince === NaN) break;
+            if (isNaN(biggestSince)) break;
           }
         }
         if (mostStaleOwnerUUID){
