@@ -14,23 +14,22 @@
  */
  'use strict';
 
- function swiperContainerDirective($rootScope, DetectBrowserService, DrawerService, SwiperService,
-                                   packaging) {
+ function swiperContainerDirective($rootScope, DetectBrowserService, SwiperService, packaging) {
 
   return {
     restrict: 'A',
-    require: '?^drawerAisle',
+    require: ['?^drawerAisle', '?^drawer'],
     scope: {
       swiperPath: '@swiperContainer',
       swiperType: '@swiperType',
       expectedSlidesFn: '&expectedSlides',
-      toggleDrawerSlidingEvents: '&swiperContainerToggleDrawerSlidingEvents',
+      notifyOuterInteractionStateFn: '&swiperContainerNotifyOuterInteractionState',
       slideChangedCallbackFn: '&swiperContainerSlideChanged'
     },
     controller: ['$scope', '$element', '$attrs', function($scope, $element, $attrs) {
       var swiperSlideInfos = [];
       var initializeSwiperCalled = false;
-      var toggleDrawerSlidingEvents = $scope.toggleDrawerSlidingEvents();
+      var notifyOuterInteractionState = $scope.notifyOuterInteractionStateFn();
 
       $scope.expectedSlides = $scope.expectedSlidesFn();
 
@@ -92,7 +91,7 @@
             var queueStartCallbacks = true; // Queue slide change start callbacks.
             var slideChangeStartCallback, slideResetCallback;
 
-            if (toggleDrawerSlidingEvents) {
+            if (notifyOuterInteractionState) {
               queueStartCallbacks = false;
               slideResetCallback = swiperSlideChangeReset;  // Add custom callback.
             }
@@ -116,7 +115,7 @@
                                                         'swiperContainer');
             }
 
-            if (toggleDrawerSlidingEvents) {
+            if (notifyOuterInteractionState) {
               // Add custom callback.
               SwiperService.registerSlideChangeCallback(swiperSlideChangeEnd, $scope.swiperPath,
                                                         'swiperContainer' + $scope.swiperPath);
@@ -212,32 +211,12 @@
         }
       };
 
-      var drawerDisabled; // FIXME: use isDraggable from DrawerService
-      function disableDrawerAndResetPosition() {
-        if (!drawerDisabled && toggleDrawerSlidingEvents) {
-          drawerDisabled = true;
-          // FIXME: Remove DrawerService dependency and use drawerAisleController.
-          DrawerService.disableDragging('right');
-          DrawerService.resetPosition('right');
-        }
-      }
-      function enableDrawer() {
-        if (drawerDisabled && toggleDrawerSlidingEvents) {
-          if (SwiperService.getActiveSlideIndex($scope.swiperPath) === 0) {
-            // FIXME: Listen touch events only on first slide(?)
-            drawerDisabled = false;
-            // FIXME: Remove DrawerService dependency and use drawerAisleController.
-            DrawerService.enableDragging('right');
-          }
-        }
-      }
-
       function swiperSlideChangeReset(path, index) {
-        if (index === 0) enableDrawer();
+        if (index === 0) $scope.allowOuterInteraction();
       }
       function swiperSlideChangeEnd(path, index) {
-        if (index === 0) enableDrawer();
-        else disableDrawerAndResetPosition();
+        if (index === 0) $scope.allowOuterInteraction();
+        else $scope.preventOuterInteraction();
       }
 
       function onSlideResetCallback(swiper) {
@@ -260,6 +239,16 @@
         var slideInfo = swiperSlideInfos.findFirstObjectByKeyValue('slideChildElement', slideChildElement);
         if (slideInfo && slideInfo.verticalMovementCallback) {
           slideInfo.verticalMovementCallback(movement);
+        }
+      }
+
+      function notifyHorizontalMovement(movement) {
+        if (notifyOuterInteractionState) {
+          if (movement < 0) {
+            $scope.preventOuterInteraction();
+          } else if (movement > 0 && SwiperService.getActiveSlideIndex($scope.swiperPath) === 0) {
+            $scope.allowOuterInteraction();
+          }
         }
       }
 
@@ -297,14 +286,13 @@
         {
           // Horizontal swipe.
           if (swipeDistanceX < 0) {
-            disableDrawerAndResetPosition();  // FIXME: Listen touch events only on first slide(?)
             swipeLeft = true;
             swipeRight = false;
           } else {
-            enableDrawer();   // FIXME: Listen touch events only on first slide(?)
             swipeLeft = false;
             swipeRight = true;
           }
+          notifyHorizontalMovement(swipeDistanceX);
         } else if (Math.abs(swipeDistanceY) >= swipeRestraintY &&
                    Math.abs(swipeDistanceX) <= swipeRestraintX)
         {
@@ -523,10 +511,11 @@
             }
           }
         }
+        $scope.allowOuterInteraction(); // Allow possibly prevented outer interaction
         SwiperService.deleteSwiper($scope.swiperPath);
       });
     }],
-    link: function (scope, element, attrs, drawerAisleController){
+    link: function (scope, element, attrs, controllers){
 
       // Hide previous and/or next slide with this for the duration of a resize animation
       // to prevent flickering.
@@ -641,32 +630,38 @@
         SwiperService.setOnlyExternalSwiperAndChildSwipers(scope.swiperPath, true);
       }
 
-      if (drawerAisleController){
+      scope.allowOuterInteraction = function() {
+        if (controllers[1]) controllers[1].enableEditorDrawer();
+      };
+      scope.preventOuterInteraction = function() {
+        if (controllers[1]) controllers[1].disableEditorDrawerAndResetPosition();
+      };
+
+      if (controllers[0]){
 
         // Register callbacks for main swipers
         if (scope.swiperType === 'main'){
-          drawerAisleController.registerAreaAboutToShrink(swiperAboutToShrink, scope.swiperPath);
-          drawerAisleController.registerAreaAboutToGrow(swiperAboutToGrow, scope.swiperPath);
-          drawerAisleController.registerAreaResizeReady(swiperResizeReady, scope.swiperPath);
+          controllers[0].registerAreaAboutToShrink(swiperAboutToShrink, scope.swiperPath);
+          controllers[0].registerAreaAboutToGrow(swiperAboutToGrow, scope.swiperPath);
+          controllers[0].registerAreaResizeReady(swiperResizeReady, scope.swiperPath);
 
-          drawerAisleController.registerAreaAboutToMoveToNewPosition(swiperAboutToMoveToNewPosition,
-                                                                     scope.swiperPath);
-          drawerAisleController.registerAreaAboutToMoveToInitialPosition(swiperAboutToMoveToInitialPosition,
-                                                                         scope.swiperPath);
-          drawerAisleController.registerAreaMovedToNewPosition(swiperMovedToNewPosition,
-                                                               scope.swiperPath);
-          drawerAisleController.registerAreaMovedToInitialPosition(swiperMovedToInitialPosition,
-                                                                   scope.swiperPath);
+          controllers[0].registerAreaAboutToMoveToNewPosition(swiperAboutToMoveToNewPosition,
+                                                              scope.swiperPath);
+          controllers[0].registerAreaAboutToMoveToInitialPosition(swiperAboutToMoveToInitialPosition,
+                                                                  scope.swiperPath);
+          controllers[0].registerAreaMovedToNewPosition(swiperMovedToNewPosition,
+                                                        scope.swiperPath);
+          controllers[0].registerAreaMovedToInitialPosition(swiperMovedToInitialPosition,
+                                                            scope.swiperPath);
 
-          drawerAisleController.registerAreaResizeCallback(resizeSwiper, scope.swiperPath);
+          controllers[0].registerAreaResizeCallback(resizeSwiper, scope.swiperPath);
         }
-        // Register hide and show callbacks to swipers whose ancestor is drawerAisleController.
-        drawerAisleController.registerAreaAboutToHide(disableSwiping, scope.swiperPath);
-        drawerAisleController.registerAreaAboutToShow(enableSwiping, scope.swiperPath);
+        // Register hide and show callbacks to swipers whose ancestor is controllers[0].
+        controllers[0].registerAreaAboutToHide(disableSwiping, scope.swiperPath);
+        controllers[0].registerAreaAboutToShow(enableSwiping, scope.swiperPath);
       }
     }
   };
 }
-swiperContainerDirective['$inject'] = ['$rootScope', 'DetectBrowserService', 'DrawerService',
-'SwiperService', 'packaging'];
+swiperContainerDirective['$inject'] = ['$rootScope', 'DetectBrowserService', 'SwiperService', 'packaging'];
 angular.module('em.base').directive('swiperContainer', swiperContainerDirective);

@@ -17,7 +17,18 @@
  function drawerDirective(DrawerService) {
   return {
     restrict: 'A',
-    link: function postLink(scope, element, attrs, drawerController) {
+    controller: function() {
+      // GLOBAL FUNCTIONS
+      this.disableEditorDrawerAndResetPosition = function() {
+        DrawerService.disableDragging('right');
+        DrawerService.resetPosition('right');
+      };
+
+      this.enableEditorDrawer = function() {
+        DrawerService.enableDragging('right');
+      };
+    },
+    link: function postLink(scope, element, attrs) {
       DrawerService.setDrawerElement(attrs.drawer, element[0]);
     }
   };

@@ -54,7 +54,7 @@
   </header>
 
   <div class="swiper-container container-fluid--inner" swiper-container="noteEditor" swiper-type="main"
-    expected-slides="2" swiper-container-toggle-drawer-sliding-events="hasSwipeToClose('note')"
+    expected-slides="2" swiper-container-notify-outer-interaction-state="hasSwipeToClose('note')"
     swiper-container-slide-changed="editorSwiperSlideChanged()"
     swiper-click="containerClick($event.target.disabled, 'note')">
     <div class="swiper-wrapper" ng-class="showNoteInstruction() && 'swiper-no-swiping'">
