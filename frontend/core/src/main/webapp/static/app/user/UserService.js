@@ -61,7 +61,7 @@
         '/api/clear',
         this.postClearRegex,
         undefined,
-        AuthenticationService.sanitizeEmail(user.email),
+        AuthenticationService.sanitizeEmail(user.username),
         user.password);
     },
     migrateUser: function(){

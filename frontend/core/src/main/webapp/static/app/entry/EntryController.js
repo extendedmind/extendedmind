@@ -169,8 +169,8 @@ function EntryController($http, $location, $rootScope, $routeParams, $scope,
     $scope.loggingIn = false;
   }
 
-  function clearAllLogins() {
-    return UserService.clear();
+  function clearAllLogins(userData) {
+    return UserService.clear(userData);
   }
 
   function clearAllLoginsSuccess() {
