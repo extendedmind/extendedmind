@@ -61,9 +61,9 @@ object Authentication{
       case Right(sc) => Some(sc)
       case Left(e) => {
         // Don't expose the internals of what went wrong for security reasons
-        logErrors(e)       
-        if (e.exists{ rc => rc.code == ERR_BASE_ALREADY_LOGGED_IN.number}){
-          throw new InvalidAuthenticationException(ERR_BASE_ALREADY_LOGGED_IN, "Authentication failed: user already logged in")          
+        logErrors(e)
+        if (e.exists{ rc => rc.code.number == ERR_BASE_ALREADY_LOGGED_IN.number}){
+          throw new InvalidAuthenticationException(ERR_BASE_ALREADY_LOGGED_IN, "Authentication failed: user already logged in")
         }else{
           throw new InvalidAuthenticationException(ERR_BASE_AUTHENTICATION_FAILED, "Authentication failed")
         }
@@ -77,12 +77,12 @@ object Authentication{
 /**
  * The RealmHttpAuthenticator implements HTTP Basic Auth with realm included
  */
-class RealmHttpAuthenticator[U](val realm: String, 
-                                val userPassAuthenticator: UserPassRealmAuthenticator[U], 
+class RealmHttpAuthenticator[U](val realm: String,
+                                val userPassAuthenticator: UserPassRealmAuthenticator[U],
                                 val ownerUUID: Option[UUID])
     (implicit val executionContext: ExecutionContext)
     extends HttpAuthenticator[U] {
-  
+
   def authenticate(credentials: Option[HttpCredentials], ctx: RequestContext) = {
     userPassAuthenticator {
       credentials.flatMap {
@@ -91,7 +91,7 @@ class RealmHttpAuthenticator[U](val realm: String,
       }
     }
   }
-  
+
   def getChallengeHeaders(httpRequest: HttpRequest) =
     `WWW-Authenticate`(HttpChallenge(scheme = "Basic", realm = realm, params = Map.empty)) :: Nil
 }
@@ -137,11 +137,11 @@ class ExtendedMindUserPassAuthenticatorImpl(implicit val settings: Settings, imp
  */
 class AuthenticateHttpAuthenticator[U](val realm: String, val userPassAuthenticator: UserPassRememberAuthenticator[U])(implicit val executionContext: ExecutionContext)
     extends HttpAuthenticator[U] {
-  
+
   def authenticate(credentials: Option[HttpCredentials], ctx: RequestContext) = {
     userPassAuthenticator {
       credentials.flatMap {
-        case BasicHttpCredentials(user, pass) => 
+        case BasicHttpCredentials(user, pass) =>
                 Some(UserPassRemember(user, pass, payload(ctx.request.entity)))
         case _                                => None
       }
