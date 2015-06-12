@@ -56,6 +56,7 @@
       $scope.user = dataInEdit || UserSessionService.getUser();
     }else if (editorType === 'recurring') {
       $scope.iterableItems = dataInEdit;
+      initializeEditorVisibilityAndPermission(dataInEdit[0]);
     }
   };
 
