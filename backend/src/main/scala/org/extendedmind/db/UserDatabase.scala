@@ -329,6 +329,7 @@ trait UserDatabase extends AbstractGraphDatabase {
       case MODE_ADMIN => Some(UserLabel.ADMIN)
       case MODE_ALFA => Some(UserLabel.ALFA)
       case MODE_BETA => Some(UserLabel.BETA)
+      case MODE_NORMAL => Some(UserLabel.NORMAL)
       case _ => None
     }
   }
