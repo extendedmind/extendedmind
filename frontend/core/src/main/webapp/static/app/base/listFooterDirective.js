@@ -86,16 +86,17 @@
 
       // FOOTER ACTIONS
       if (scope.featureInfo.sortable) {
-        var sortableArray = controllers[0].getFullArrayFn();
         scope.leftActionText = scope.featureInfo.sortable.heading;
 
         scope.leftAction = function() {
+          var sortableArray = controllers[0].getFullArrayFn();
           var param = $filter('orderBy')(sortableArray, 'trans.created', true);
           scope.featureInfo.sortable.action(param, scope.featureInfo.sortable.actionParam);
         };
       }
 
       scope.isLeftActionActive = function() {
+        var sortableArray = controllers[0].getFullArrayFn();
         return scope.featureInfo.sortable && sortableArray && sortableArray.length;
       };
     }
