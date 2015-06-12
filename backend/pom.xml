@@ -336,22 +336,6 @@
             <image>
               <name>extendedmind/backend</name>
               <alias>backend</alias>
-              <run>
-                <env>
-                  <CATALINA_OPTS>-Xmx32m</CATALINA_OPTS>
-                </env>
-                <ports>
-                  <port>extendedmind.port:8081</port>
-                </ports>
-                <links>
-                  <link>db</link>
-                </links>
-                <wait>
-                  <url>http://localhost:${extendedmind.port}/jolokia</url>
-                  <time>10000</time>
-                </wait>
-                <command>java -jar /maven/docker-demo.jar</command>
-              </run>
               <build>
                 <from>java:8</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
@@ -362,10 +346,6 @@
                 <ports>
                   <port>8081</port>
                 </ports>
-                <!--volumes>
-                  <volume>/path/to/expose</volume>
-                </volumes-->
-                <command>java /usr/src/extendedmind/server.jar</command>
                 <assembly>
                   <mode>dir</mode>
                   <basedir>/usr/src/extendedmind</basedir>
