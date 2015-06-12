@@ -247,6 +247,7 @@
             confirmText: 'log out',
             confirmTextDeferred: 'logging out\u2026',
             confirmActionDeferredFn: exception.value.secondaryConfirmDeferred,
+            confirmActionDeferredParam: exception.value.secondaryConfirmDeferredParam,
             confirmActionPromiseFn: exception.value.secondaryConfirmPromise
           };
 

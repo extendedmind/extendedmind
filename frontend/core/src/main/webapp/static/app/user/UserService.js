@@ -56,13 +56,13 @@
     logout: function() {
       return BackendClientService.postOnline('/api/logout', postLogoutRegexp);
     },
-    clear: function(email, password) {
+    clear: function(user) {
       return BackendClientService.postOnlineWithUsernamePassword(
         '/api/clear',
         this.postClearRegex,
         undefined,
-        AuthenticationService.sanitizeEmail(email),
-        password);
+        AuthenticationService.sanitizeEmail(user.email),
+        user.password);
     },
     migrateUser: function(){
       /* migrate old onboarded value to 1.8-> values */

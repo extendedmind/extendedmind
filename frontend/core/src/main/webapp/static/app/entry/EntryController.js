@@ -130,7 +130,9 @@ function EntryController($http, $location, $rootScope, $routeParams, $scope,
     // Clear all previous data to prevent problems with tutorial starting again after login
     $rootScope.$emit('emException', {type: 'clearAll'});
 
-    AuthenticationService.login($scope.user).then(logInSuccess, logInError);
+    AuthenticationService.login($scope.user).then(logInSuccess, function(error) {
+      logInError(error, $scope.user);
+    });
   };
 
   function logInSuccess() {
@@ -141,7 +143,7 @@ function EntryController($http, $location, $rootScope, $routeParams, $scope,
     $location.path('/my');
   }
 
-  function logInError(error) {
+  function logInError(error, userData) {
     if (error.type === 'offline') {
       AnalyticsService.error('login', 'offline');
       $scope.entryOffline = true;
@@ -153,6 +155,7 @@ function EntryController($http, $location, $rootScope, $routeParams, $scope,
           value: {
             confirm: swipeToPremium,
             secondaryConfirmDeferred: clearAllLogins,
+            secondaryConfirmDeferredParam: userData,
             secondaryConfirmPromise: clearAllLoginsSuccess
           }
         };
