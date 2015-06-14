@@ -738,13 +738,27 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
       shareViaValues = undefined;
       if (initialShareItemValues.title){
         var newItem = ItemsService.getNewItem(initialShareItemValues, UserSessionService.getUserUUID());
-        ItemsService.saveItem(newItem).then(function(){
-          $scope.openEditor('item', newItem);
-          if (!$rootScope.$$phase && !$scope.$$phase) {
-            // Programmatic open. Most likely does not cause digest.
-            $scope.$digest();
-          }
-        });
+
+        var unregisterSyncAttemptedWatcher;
+        var processSharedItemSave = function(newItem){
+          if (unregisterSyncAttemptedWatcher) unregisterSyncAttemptedWatcher();
+          ItemsService.saveItem(newItem).then(function(){
+            $scope.openEditor('item', newItem);
+            if (!$rootScope.$$phase && !$scope.$$phase) {
+              // Programmatic open. Most likely does not cause digest.
+              $scope.$digest();
+            }
+          });
+        }
+        if (UserSessionService.isFakeUser() || $rootScope.syncAttempted) {
+          processSharedItemSave(newItem);
+        } else {
+          // Sync has not been attempted yet, saving before secondary request is being attempted causes nasty
+          // problems
+          unregisterSyncAttemptedWatcher = $scope.$watch('syncAttempted', function(){
+            processSharedItemSave(newItem);
+          });
+        }
       }
     }
   }
