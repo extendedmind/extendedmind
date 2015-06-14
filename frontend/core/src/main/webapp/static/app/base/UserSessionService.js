@@ -51,6 +51,7 @@
     SessionStorageService.setUserUUID(LocalStorageService.getUserUUID());
     SessionStorageService.setCohort(LocalStorageService.getCohort());
     SessionStorageService.setPreferences(LocalStorageService.getPreferences());
+    SessionStorageService.setUserCreated(LocalStorageService.getUserCreated());
     SessionStorageService.setUserModified(LocalStorageService.getUserModified());
     SessionStorageService.setState(LocalStorageService.getState());
     SessionStorageService.setLatestModified(LocalStorageService.getLatestModified());
@@ -167,6 +168,7 @@
       SessionStorageService.setCohort(authenticateResponse.cohort);
       SessionStorageService.setPreferences(preferences);
       SessionStorageService.setUserModified(authenticateResponse.modified);
+      SessionStorageService.setUserCreated(authenticateResponse.created);
 
       if (authenticateResponse.replaceable) {
         LocalStorageService.setBackendDelta(backendDelta);
@@ -180,6 +182,7 @@
         LocalStorageService.setCohort(authenticateResponse.cohort);
         LocalStorageService.setPreferences(preferences);
         LocalStorageService.setUserModified(authenticateResponse.modified);
+        LocalStorageService.setUserCreated(authenticateResponse.created);
       }
       if (email) {
         setEmail(email);
@@ -431,6 +434,7 @@
         var user = {
           uuid: SessionStorageService.getUserUUID(),
           type: parseInt(SessionStorageService.getUserType()),
+          created: SessionStorageService.getUserCreated(),
           modified: SessionStorageService.getUserModified()
         };
         if (SessionStorageService.getCohort()) {

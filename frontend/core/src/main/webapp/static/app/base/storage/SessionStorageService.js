@@ -110,6 +110,10 @@
       if (modified) sessionStorage.setItem('userModified', modified);
       else sessionStorage.removeItem('userModified');
     },
+    setUserCreated: function(created) {
+      if (created) sessionStorage.setItem('userCreated', created);
+      else sessionStorage.removeItem('userCreated');
+    },
     setState: function(state) {
       if (state) sessionStorage.setItem('state', JSON.stringify(state));
       else sessionStorage.removeItem('state');
@@ -218,6 +222,9 @@
     },
     getUserModified: function() {
       return sessionStorage.getItem('userModified');
+    },
+    getUserCreated: function() {
+      return sessionStorage.getItem('userCreated');
     },
     getState: function() {
       var state = sessionStorage.getItem('state');

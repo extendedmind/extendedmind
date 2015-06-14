@@ -47,14 +47,14 @@ object JsonImplicits extends DefaultJsonProtocol {
     def read(value: JsValue) = value match {
       case JsString(x) => {
         if (x == "keyword") KEYWORD
-        else if (x == "context") CONTEXT 
-        else if (x == "history") HISTORY 
+        else if (x == "context") CONTEXT
+        else if (x == "history") HISTORY
         else deserializationError("Expected 'context', 'keyword' or 'history' but got " + x)
       }
       case x => deserializationError("Expected TagType as JsString, but got " + x)
     }
   }
-  
+
   implicit val implIdToUUID = jsonFormat2(IdToUUID.apply)
   implicit val implSetResult = jsonFormat5(SetResult.apply)
   implicit val implErrorResult = jsonFormat3(ErrorResult.apply)
@@ -77,8 +77,8 @@ object JsonImplicits extends DefaultJsonProtocol {
   implicit val implReminder = jsonFormat7(Reminder.apply)
   implicit val implTask = jsonFormat17(Task.apply)
   implicit val implNote = jsonFormat13(Note.apply)
-  implicit val implList = jsonFormat14(List.apply)  
-  implicit val implTag = jsonFormat11(Tag.apply)  
+  implicit val implList = jsonFormat14(List.apply)
+  implicit val implTag = jsonFormat11(Tag.apply)
   implicit val implItems = jsonFormat5(Items.apply)
   implicit val implCollective = jsonFormat8(Collective.apply)
   implicit val implUserPreferences = jsonFormat2(UserPreferences.apply)
@@ -86,7 +86,7 @@ object JsonImplicits extends DefaultJsonProtocol {
   implicit val implUsers = jsonFormat1(Users.apply)
   implicit val implSubscription = jsonFormat9(Subscription.apply)
   implicit val implStatistics = jsonFormat2(Statistics.apply)
-  implicit val implSecurityContext = jsonFormat12(SecurityContext.apply)
+  implicit val implSecurityContext = jsonFormat13(SecurityContext.apply)
   implicit val implAuthenticatePayload = jsonFormat2(AuthenticatePayload.apply)
   implicit val implCompleteTaskResult = jsonFormat3(CompleteTaskResult.apply)
   implicit val implReminderModification = jsonFormat2(ReminderModification.apply)

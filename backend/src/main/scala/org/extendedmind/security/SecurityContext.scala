@@ -23,10 +23,11 @@ import java.util.UUID
 import org.neo4j.graphdb.Node
 import org.extendedmind.domain.UserPreferences
 
-case class SecurityContext(userUUID: UUID, 
+case class SecurityContext(userUUID: UUID,
 						   userType: Byte,
                subscription: Option[String],
-						   modified: Long,
+						   created: Long,
+               modified: Long,
 						   cohort: Option[Int],
 						   token: Option[String],
 						   authenticated: Option[Long],

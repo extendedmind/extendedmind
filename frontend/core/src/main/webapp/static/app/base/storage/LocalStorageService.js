@@ -77,6 +77,10 @@
       if (modified) localStorage.setItem('userModified', modified);
       else localStorage.removeItem('userModified');
     },
+    setUserCreated: function(created) {
+      if (created) localStorage.setItem('userCreated', created);
+      else localStorage.removeItem('userCreated');
+    },
     setState: function(state) {
       if (state) localStorage.setItem('state', JSON.stringify(state));
       else localStorage.removeItem('state');
@@ -161,6 +165,9 @@
     },
     getUserModified: function() {
       return localStorage.getItem('userModified');
+    },
+    getUserCreated: function() {
+      return localStorage.getItem('userCreated');
     },
     getState: function() {
       if (localStorage.getItem('state')) {

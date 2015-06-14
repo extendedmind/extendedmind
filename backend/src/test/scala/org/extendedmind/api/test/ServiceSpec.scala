@@ -48,11 +48,11 @@ class ServiceSpec extends SpraySpecBase with ImpermanentGraphDatabaseSpecBase{
   }
 
   override def configurations = ServiceTestConfiguration
- 
+
   before{
     db.insertTestData()
   }
-  
+
   after {
     cleanDb(db.ds.gds)
     // Reset mocks after each test to be able to use verify after each test
@@ -80,12 +80,12 @@ class ServiceSpec extends SpraySpecBase with ImpermanentGraphDatabaseSpecBase{
   def stubTimoAuthenticate(): SecurityContext = {
     val uuid = UUID.randomUUID()
     val token = Token.encryptToken(Token(uuid))
-    val securityContext = SecurityContext(uuid, Token.ADMIN, None, System.currentTimeMillis, None, Some(token), None, None, None, None, None, None)
+    val securityContext = SecurityContext(uuid, Token.ADMIN, None, System.currentTimeMillis, System.currentTimeMillis, None, Some(token), None, None, None, None, None, None)
     stub(mockGraphDatabase.generateToken(TIMO_EMAIL, TIMO_PASSWORD, None)).toReturn(
       Right(securityContext))
     stub(mockGraphDatabase.authenticate(token, None)).toReturn(
       Right(securityContext))
     securityContext
   }
-  
+
 }
