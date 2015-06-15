@@ -4,7 +4,14 @@
   <fileSets>
     <fileSet>
       <directory>${project.basedir}/src/main/docker</directory>
-      <outputDirectory>.</outputDirectory>
+      <outputDirectory>conf.d</outputDirectory>
+      <includes>
+        <include>mongodb.conf.toml</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>${project.basedir}/src/main/docker</directory>
+      <outputDirectory>templates</outputDirectory>
       <filtered>true</filtered>
       <includes>
         <include>mongodb.conf.tmpl</include>

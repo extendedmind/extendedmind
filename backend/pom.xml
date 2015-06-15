@@ -344,7 +344,7 @@
                 </tags>
                 <assembly>
                   <mode>dir</mode>
-                  <basedir>/etc/mongodb</basedir>
+                  <basedir>/etc/confd</basedir>
                   <descriptor>mongo-conf-assembly.xml</descriptor>
                 </assembly>
                 <volumes>
@@ -382,7 +382,7 @@
                 </tags>
                 <assembly>
                   <mode>dir</mode>
-                  <basedir>/etc/extendedmind</basedir>
+                  <basedir>/etc/confd</basedir>
                   <descriptor>backend-conf-assembly.xml</descriptor>
                 </assembly>
                 <volumes>

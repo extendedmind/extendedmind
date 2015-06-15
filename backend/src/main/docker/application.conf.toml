@@ -1,5 +1,5 @@
 [template]
-src = "application.conf.tmpl"
+src = "/etc/confd/templates/application.conf.tmpl"
 dest = "/etc/extendedmind/application.conf"
 keys = [
     "/extendedmind/ha",

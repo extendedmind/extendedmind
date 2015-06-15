@@ -4,11 +4,20 @@
   <fileSets>
     <fileSet>
       <directory>${project.basedir}/src/main/docker</directory>
-      <outputDirectory>.</outputDirectory>
+      <outputDirectory>conf.d</outputDirectory>
       <filtered>true</filtered>
       <includes>
-        <include>application.conf.*</include>
-        <include>logback.xml</include>
+        <include>application.conf.toml</include>
+        <include>logback.xml.toml</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>${project.basedir}/src/main/docker</directory>
+      <outputDirectory>templates</outputDirectory>
+      <filtered>true</filtered>
+      <includes>
+        <include>application.conf.tmpl</include>
+        <include>logback.xml.tmpl</include>
       </includes>
     </fileSet>
   </fileSets>
