@@ -208,8 +208,12 @@
                 }else{
                   // Emit error to root scope, so that
                   // it can be listened on at by the application
-                  $rootScope.$emit('emException', {type: 'http', value: {status: status, data: data,
-                   url: config.url, method: config.method, owner: headRequest.params.owner}});
+                  $rootScope.$emit('emException', {type: 'http', value: {
+                    status: status, data: data,
+                    url: config.url,
+                    method: config.method,
+                    owner: headRequest.params ? headRequest.params.owner : undefined}
+                  });
                 }
               }
             }
