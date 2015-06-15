@@ -357,8 +357,6 @@
       featureHistory = {};
       notificationMap = {};
       delayedNotificationMap = {};
-      featureChangedCallbacks = [];
-      notificationsActiveCallbacks = [];
       deferredActions = [];
       ownerPrefix = 'my';
       allowedActions = {};
