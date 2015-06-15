@@ -1,0 +1,62 @@
+# Extended Mind Configuration
+# confd (https://github.com/kelseyhightower/confd) source template.
+
+extendedmind {
+  version = ${project.version}
+  neo4j {
+    storeDir = "/var/extendedmind/neo4j"
+    isHighAvailability = {{getv "/extendedmind/backend/neo4jHA"}}
+    startServer = false
+    serverPort = 7473
+    propertiesFile = "/etc/extendedmind/neo4j.properties"
+  }
+  security {
+    # HEX encoded 16 bytes
+    tokenSecret = "{{getv "/extendedmind/backend/tokenSecret"}}"
+    signUpMethod = "ON"
+    signUpMode = "{{getv "/extendedmind/backend/signUpMode"}}"
+  }
+  server {
+    port = 8081
+  }
+  email {
+    mailgun {
+      domain = "{{getv "/extendedmind/domain"}}"
+      apiKey = "{{getv "/extendedmind/backend/mailgunKey"}}"
+    }
+    from = "{{getv "/extendedmind/emailFrom"}}"
+    # URL for non-secure and secure pages
+    urlPrefix = "{{getv "/extendedmind/urlPrefix"}}"
+    secureUrlPrefix = "{{getv "/extendedmind/secureUrlPrefix"}}"
+    templates {
+      # Set this to use custom emails
+      # directory = "custom_email_template_directory"
+      shareListTitle = "inviterEmail shared a list with you"
+      acceptShareURI = "accept/shareValue?email=emailValue"
+      resetPasswordTitle = "password reset instructions"
+      resetPasswordURI = "reset/resetCodeValue?email=emailValue"
+      verifyEmailTitle = "verify your email address"
+      verifyEmailURI = "verify/verifyCodeValue?email=emailValue"
+    }
+  }
+}
+
+akka {
+  log-config-on-start = off
+  loglevel = DEBUG
+  loggers = ["akka.event.slf4j.Slf4jLogger"]
+  log-dead-letters = off
+}
+
+# check the reference.conf in spray-can/src/main/resources for all defined settings
+spray.can.server {
+  idle-timeout = 60 s
+  request-timeout = 20 s
+}
+
+spray.routing {
+  # Enables/disables more lenient HTTP header parsing
+  # off = illegal HTTP headers are not accepted, an error message is produced
+  # on = illegal HTTP headers are accepted as RawHeaders
+  relaxed-header-parsing = on
+}

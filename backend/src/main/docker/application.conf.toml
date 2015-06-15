@@ -1,0 +1,13 @@
+[template]
+src = "application.conf.tmpl"
+dest = "/etc/extendedmind/application.conf"
+keys = [
+    "/extendedmind/backend/neo4jHA",
+    "/extendedmind/backend/tokenSecret",
+    "/extendedmind/backend/signUpMode",
+    "/extendedmind/backend/mailgunKey",
+    "/extendedmind/domain",
+    "/extendedmind/emailFrom",
+    "/extendedmind/urlPrefix",
+    "/extendedmind/secureUrlPrefix"
+]
