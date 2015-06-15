@@ -2,7 +2,7 @@
 src = "application.conf.tmpl"
 dest = "/etc/extendedmind/application.conf"
 keys = [
-    "/extendedmind/backend/neo4jHA",
+    "/extendedmind/ha",
     "/extendedmind/backend/tokenSecret",
     "/extendedmind/backend/signUpMode",
     "/extendedmind/backend/mailgunKey",

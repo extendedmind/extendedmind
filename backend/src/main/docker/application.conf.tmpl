@@ -5,7 +5,12 @@ extendedmind {
   version = ${project.version}
   neo4j {
     storeDir = "/var/extendedmind/neo4j"
-    isHighAvailability = {{getv "/extendedmind/backend/neo4jHA"}}
+
+    {{if exists "/extendedmind/ha"}}
+    isHighAvailability = true
+    {{else}}
+    isHighAvailability = false
+    {{end}}
     startServer = false
     serverPort = 7473
     propertiesFile = "/etc/extendedmind/neo4j.properties"

@@ -1,0 +1,9 @@
+# MongoDB Configuration
+storage:
+  dbPath: "/var/extendedmind/mongodb"
+systemLog:
+  destination: syslog
+{{if exists "/extendedmind/ha"}}
+replication:
+    replSetName: "extendedmind"
+{{end}}
