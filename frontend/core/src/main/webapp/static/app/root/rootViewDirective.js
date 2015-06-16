@@ -49,6 +49,8 @@
       $rootScope.EDITOR_CLOSED_FAILSAFE_TIME = 2*$rootScope.EDITOR_ANIMATION_SPEED;
       $rootScope.CHECKBOX_CHECKING_ANIMATION_TIME = 3000;
       $rootScope.LIST_ITEM_LEAVE_ANIMATION_SPEED = 1000;
+      $rootScope.TOASTER_ANIMATION_SPEED = 500;
+      $rootScope.TOASTER_ANIMATION_TIME = 3000;
 
       // Sticky inputs
       var useStickyInputs = false;
@@ -161,6 +163,7 @@
           params = {
             messageHeading: interaction.value.messageHeading,
             messageIngress: interaction.value.messageIngress,
+            messageText: interaction.value.messageText,
             confirmText: interaction.value.confirmText,
             confirmTextDeferred: interaction.value.confirmTextDeferred,
             confirmAction: interaction.value.confirmAction,

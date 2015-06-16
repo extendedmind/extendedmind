@@ -12,11 +12,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ /* global cordova */
  'use strict';
 
  function TasksController($rootScope, $scope, $timeout,
                           AnalyticsService, ArrayService, DateService, ItemsService, SwiperService,
-                          TasksService, UISessionService) {
+                          TasksService, UISessionService, UserService, UserSessionService, packaging) {
 
   // INITIALIZING
   if (angular.isFunction($scope.registerArrayChangeCallback)) {
@@ -231,7 +232,83 @@
     }
   }
 
+  var reviewAsked = !!UserSessionService.getUIPreference('reviewAsked');
+  var reviewInProgress;
+
+  function attemptToAskForReview(previousCount, cachedDatesArray) {
+
+    function doAskForReview() {
+      var marketUrl;
+      if (packaging === 'ios-cordova') {
+        marketUrl = 'itms://itunes.com/apps/extendedmind';  // TODO: $rootScope
+      } else if (packaging === 'android-cordova') {
+        marketUrl = 'market://details?id=org.extendedmind'; // TODO: $rootScope
+      }
+
+      var gotoMarketFn = function() {
+        if (cordova && cordova.InAppBrowser) cordova.InAppBrowser.open(marketUrl, '_system');
+      };
+
+      var timeoutTime = $rootScope.LIST_ITEM_LEAVE_ANIMATION_SPEED;
+      if (UISessionService.isAllowed('leaveAnimation')) {
+        timeoutTime += $rootScope.TOASTER_ANIMATION_SPEED + $rootScope.TOASTER_ANIMATION_TIME;
+      } else {
+        timeoutTime += $rootScope.CHECKBOX_CHECKING_ANIMATION_TIME;
+      }
+
+      reviewInProgress = $timeout(function() {
+        var interaction = {
+          type: 'confirmationRequired',
+          value: {
+            messageHeading: 'today cleared!',
+            messageIngress: 'enjoy your day!',
+            messageText: [{
+              type: 'text',
+              data: 'if you have a moment, please review your extended mind. we will only do this once'
+            }],
+            confirmAction: gotoMarketFn,
+            confirmText: 'review',
+            allowCancel: true
+          }
+        };
+        $rootScope.$emit('emInteraction', interaction);
+        reviewInProgress = false;
+        reviewAsked = true;
+
+        UserSessionService.setUIPreference('reviewAsked', Date.now());
+        UserService.saveAccountPreferences();
+
+      }, timeoutTime);
+    }
+
+    // Check that there is no uncompleted tasks in today slide.
+    var askForReviewConditionsMet = true;
+    for (var i = 0; i < cachedDatesArray.length; i++) {
+      if (!cachedDatesArray[i].trans.completed) {
+        askForReviewConditionsMet = false;
+        break;
+      }
+    }
+
+    // Ok to ask for app review.
+    if (askForReviewConditionsMet && !reviewInProgress) {
+      doAskForReview();
+    } else if (!askForReviewConditionsMet && reviewInProgress) {
+      // Cancel review in progress if the conditions are not met anymore
+      $timeout.cancel(reviewInProgress);
+      reviewInProgress = undefined;
+    }
+  }
+
   function updateDateTasks(cachedDates, info, ownerUUID) {
+
+    function initializeDateTasksCache() {
+      cachedDates[info.date] = {
+        array: [],
+        pastDate: pastDate
+      };
+    }
+
     var pastDate;
 
     if (cachedDates[info.date])
@@ -239,21 +316,32 @@
     else if (info.pastDate)
       pastDate = info.pastDate;
 
-    cachedDates[info.date] = {
-      array: [],
-      pastDate: pastDate
-    };
-
     if (pastDate) {
+      initializeDateTasksCache();
       updatePastDateTasks(TasksService.getTasks(ownerUUID), cachedDates[info.date].array, pastDate);
     } else if (info.date === 'noDate') {
+      initializeDateTasksCache();
       updateNoDateTasks(TasksService.getTasks(ownerUUID), cachedDates[info.date].array);
-    } else {
-      if (info.date === DateService.getTodayYYYYMMDD()) {
-        updateTodayTasks(TasksService.getTasks(ownerUUID), cachedDates[info.date].array, info.date);
-      } else {
-        updateFutureDateTasks(TasksService.getTasks(ownerUUID), cachedDates[info.date].array, info.date);
+    } else if (info.date === DateService.getTodayYYYYMMDD()) {
+      var previousCount;
+
+      if (!reviewAsked && packaging.endsWith('cordova') &&
+          cachedDates[info.date] && cachedDates[info.date].array)
+      {
+        // Keep track of the previous count while the app review has not been asked.
+        previousCount = cachedDates[info.date].array.length;
       }
+      initializeDateTasksCache();
+
+      updateTodayTasks(TasksService.getTasks(ownerUUID), cachedDates[info.date].array, info.date);
+      if (!reviewAsked && previousCount && packaging.endsWith('cordova') &&
+          !$scope.isOnboarding('focus', 'tasks'))
+      {
+        attemptToAskForReview(previousCount, cachedDates[info.date].array);
+      }
+    } else {
+      initializeDateTasksCache();
+      updateFutureDateTasks(TasksService.getTasks(ownerUUID), cachedDates[info.date].array, info.date);
     }
   }
 
@@ -579,6 +667,6 @@
 TasksController['$inject'] = [
 '$rootScope', '$scope', '$timeout',
 'AnalyticsService', 'ArrayService', 'DateService', 'ItemsService', 'SwiperService', 'TasksService',
-'UISessionService'
+'UISessionService', 'UserService', 'UserSessionService', 'packaging'
 ];
 angular.module('em.tasks').controller('TasksController', TasksController);
