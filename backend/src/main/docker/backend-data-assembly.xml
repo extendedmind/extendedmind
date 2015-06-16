@@ -3,7 +3,7 @@
     xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
   <fileSets>
     <fileSet>
-      <!-- Creating empty directory 'neo4j' needs a source directory where everything is excluded -->
+      <!-- Add test data as the initial data for the container. Delete everything in the /var/extendedmind/neo4j folder to begin fresh. -->
       <directory>${project.build.directory}/neo4j-test</directory>
       <outputDirectory>neo4j</outputDirectory>
     </fileSet>

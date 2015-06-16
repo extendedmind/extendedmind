@@ -195,11 +195,8 @@
                 <exclude>common/**/*.js</exclude>
                 <exclude>less/**</exclude>
                 <exclude>lib/**</exclude>
+                <exclude>em.angularjs.min.js</exclude>
               </excludes>
-            </resource>
-            <resource>
-              <directory>src/main/webapp/static/lib/lawnchair</directory>
-              <targetPath>static/${project.version}</targetPath>
             </resource>
           </webResources>
           <packagingIncludes>
@@ -478,6 +475,63 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.jolokia</groupId>
+        <artifactId>docker-maven-plugin</artifactId>
+        <configuration>
+          <images>
+            <image>
+              <name>extendedmind/frontend-data</name>
+              <alias>frontend-data</alias>
+              <build>
+                <from>ubuntu:14.04</from>
+                <maintainer>timo.tiuraniemi@iki.fi</maintainer>
+                <tags>
+                  <tag>latest</tag>
+                </tags>
+                <assembly>
+                  <mode>dir</mode>
+                  <basedir>/var/www</basedir>
+                  <descriptor>frontend-data-assembly.xml</descriptor>
+                </assembly>
+                <volumes>
+                  <volume>/var/www</volume>
+                </volumes>
+              </build>
+            </image>
+            <image>
+              <name>extendedmind/frontend</name>
+              <alias>frontend</alias>
+              <build>
+                <from>ubuntu:14.04</from>
+                <maintainer>timo.tiuraniemi@iki.fi</maintainer>
+                <tags>
+                  <tag>latest</tag>
+                  <tag>${project.version}</tag>
+                </tags>
+                <assembly>
+                  <mode>dir</mode>
+                  <basedir>/usr/src/extendedmind</basedir>
+                  <descriptor>frontend-assembly.xml</descriptor>
+                </assembly>
+              </build>
+            </image>
+          </images>
+        </configuration>
+        <!-- Connect start/stop to pre- and
+             post-integration-test phase, respectively if you want to start
+             your docker containers during integration tests -->
+        <!--executions>
+          <execution>
+             <id>build</id>
+             <phase>package</phase>
+             <goals>
+               <goal>build</goal>
+             </goals>
+          </execution>
+        </executions-->
+      </plugin>
+
     </plugins>
     <pluginManagement>
       <plugins>
