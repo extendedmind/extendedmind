@@ -337,7 +337,7 @@
               <name>extendedmind/mongodb-conf</name>
               <alias>mongodb-conf</alias>
               <build>
-                <from>mongo:3</from>
+                <from>ubuntu:14.04</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
                 <tags>
                   <tag>latest</tag>
@@ -345,9 +345,11 @@
                 <assembly>
                   <mode>dir</mode>
                   <basedir>/etc/confd</basedir>
-                  <descriptor>mongo-conf-assembly.xml</descriptor>
+                  <descriptor>mongodb-conf-assembly.xml</descriptor>
                 </assembly>
                 <volumes>
+                  <volume>/etc/confd/conf.d/mongodb</volume>
+                  <volume>/etc/confd/templates/mongodb</volume>
                   <volume>/etc/mongodb</volume>
                 </volumes>
               </build>
@@ -356,7 +358,7 @@
               <name>extendedmind/mongodb-data</name>
               <alias>mongodb-data</alias>
               <build>
-                <from>mongo:3</from>
+                <from>ubuntu:14.04</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
                 <tags>
                   <tag>latest</tag>
@@ -364,7 +366,7 @@
                 <assembly>
                   <mode>dir</mode>
                   <basedir>/var/extendedmind</basedir>
-                  <descriptor>mongo-data-assembly.xml</descriptor>
+                  <descriptor>mongodb-data-assembly.xml</descriptor>
                 </assembly>
                 <volumes>
                   <volume>/var/extendedmind/mongodb</volume>
@@ -375,7 +377,7 @@
               <name>extendedmind/backend-conf</name>
               <alias>backend-conf</alias>
               <build>
-                <from>java:8</from>
+                <from>ubuntu:14.04</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
                 <tags>
                   <tag>latest</tag>
@@ -386,6 +388,8 @@
                   <descriptor>backend-conf-assembly.xml</descriptor>
                 </assembly>
                 <volumes>
+                  <volume>/etc/confd/conf.d/backend</volume>
+                  <volume>/etc/confd/templates/backend</volume>
                   <volume>/etc/extendedmind</volume>
                 </volumes>
               </build>
@@ -394,7 +398,7 @@
               <name>extendedmind/backend-data</name>
               <alias>backend-data</alias>
               <build>
-                <from>java:8</from>
+                <from>ubuntu:14.04</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
                 <tags>
                   <tag>latest</tag>

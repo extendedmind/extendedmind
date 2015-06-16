@@ -4,7 +4,7 @@
   <fileSets>
     <fileSet>
       <directory>${project.basedir}/src/main/docker</directory>
-      <outputDirectory>conf.d</outputDirectory>
+      <outputDirectory>conf.d/backend</outputDirectory>
       <filtered>true</filtered>
       <includes>
         <include>application.conf.toml</include>
@@ -13,7 +13,7 @@
     </fileSet>
     <fileSet>
       <directory>${project.basedir}/src/main/docker</directory>
-      <outputDirectory>templates</outputDirectory>
+      <outputDirectory>templates/backend</outputDirectory>
       <filtered>true</filtered>
       <includes>
         <include>application.conf.tmpl</include>

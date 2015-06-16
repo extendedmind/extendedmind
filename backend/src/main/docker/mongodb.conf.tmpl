@@ -1,6 +1,7 @@
 # MongoDB Configuration
 storage:
   dbPath: "/var/extendedmind/mongodb"
+  engine: "wiredTiger"
 systemLog:
   destination: syslog
 {{if exists "/extendedmind/ha"}}

@@ -17,22 +17,22 @@ extendedmind {
   }
   security {
     # HEX encoded 16 bytes
-    tokenSecret = "{{getv "/extendedmind/backend/tokenSecret"}}"
+    tokenSecret = "{{getv "/extendedmind/backend/tokensecret"}}"
     signUpMethod = "ON"
-    signUpMode = "{{getv "/extendedmind/backend/signUpMode"}}"
+    signUpMode = "{{getv "/extendedmind/backend/signupmode"}}"
   }
   server {
     port = 8081
   }
   email {
     mailgun {
-      domain = "{{getv "/extendedmind/domain"}}"
-      apiKey = "{{getv "/extendedmind/backend/mailgunKey"}}"
+      domain = "{{getv "/extendedmind/backend/mailgundomain"}}"
+      apiKey = "{{getv "/extendedmind/backend/mailgunkey"}}"
     }
-    from = "{{getv "/extendedmind/emailFrom"}}"
+    from = "{{getv "/extendedmind/emailfrom"}}"
     # URL for non-secure and secure pages
-    urlPrefix = "{{getv "/extendedmind/urlPrefix"}}"
-    secureUrlPrefix = "{{getv "/extendedmind/secureUrlPrefix"}}"
+    urlPrefix = "{{getv "/extendedmind/urlprefix"}}"
+    secureUrlPrefix = "{{getv "/extendedmind/secureurlprefix"}}"
     templates {
       # Set this to use custom emails
       # directory = "custom_email_template_directory"

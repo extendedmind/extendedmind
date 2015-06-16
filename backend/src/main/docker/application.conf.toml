@@ -1,13 +1,13 @@
 [template]
-src = "/etc/confd/templates/application.conf.tmpl"
+src = "../templates/backend/application.conf.tmpl"
 dest = "/etc/extendedmind/application.conf"
 keys = [
     "/extendedmind/ha",
-    "/extendedmind/backend/tokenSecret",
-    "/extendedmind/backend/signUpMode",
-    "/extendedmind/backend/mailgunKey",
-    "/extendedmind/domain",
-    "/extendedmind/emailFrom",
-    "/extendedmind/urlPrefix",
-    "/extendedmind/secureUrlPrefix"
+    "/extendedmind/backend/tokensecret",
+    "/extendedmind/backend/signupmode",
+    "/extendedmind/backend/mailgundomain",
+    "/extendedmind/backend/mailgunkey",
+    "/extendedmind/emailfrom",
+    "/extendedmind/urlprefix",
+    "/extendedmind/secureurlprefix"
 ]

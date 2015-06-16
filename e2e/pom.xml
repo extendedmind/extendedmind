@@ -316,6 +316,68 @@
           <backgroundPollingAddress>127.0.0.1:8081</backgroundPollingAddress>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.jolokia</groupId>
+        <artifactId>docker-maven-plugin</artifactId>
+        <configuration>
+          <images>
+            <image>
+              <name>extendedmind/mongodb-conf</name>
+              <alias>mongodb-conf</alias>
+            </image>
+            <image>
+              <name>extendedmind/backend-conf</name>
+              <alias>backend-conf</alias>
+            </image>
+            <image>
+              <name>extendedmind/confd</name>
+              <alias>confd</alias>
+              <run>
+                <env>
+                  <EXTENDEDMIND_BACKEND_TOKENSECRET>01234567890123456789012345678901</EXTENDEDMIND_BACKEND_TOKENSECRET>
+                  <EXTENDEDMIND_BACKEND_SIGNUPMODE>ON</EXTENDEDMIND_BACKEND_SIGNUPMODE>
+                  <EXTENDEDMIND_BACKEND_MAILGUNKEY>TEST KEY</EXTENDEDMIND_BACKEND_MAILGUNKEY>
+                  <EXTENDEDMIND_BACKEND_MAILGUNDOMAIN>ext.md</EXTENDEDMIND_BACKEND_MAILGUNDOMAIN>
+                  <EXTENDEDMIND_EMAILFROM>extended mind &lt;support@ext.md&gt;</EXTENDEDMIND_EMAILFROM>
+                  <EXTENDEDMIND_URLPREFIX>http://localhost/landing/</EXTENDEDMIND_URLPREFIX>
+                  <EXTENDEDMIND_SECUREURLPREFIX>http://localhost/</EXTENDEDMIND_SECUREURLPREFIX>
+                </env>
+                <volumes>
+                  <from>
+                    <image>backend-conf</image>
+                    <image>mongodb-conf</image>
+                  </from>
+                </volumes>
+                <cmd>/usr/src/confd -backend=env</cmd>
+              </run>
+            </image>
+            <!--image>
+              <name>extendedmind/backend</name>
+              <alias>backend</alias>
+              <run>
+                <volumes>
+                  <from>
+                    <image>extendedmind/backend-conf</image>
+                    <image>extendedmind/backend-data</image>
+                  </from>
+                </volumes>
+              </run>
+            </image-->
+          </images>
+        </configuration>
+        <!-- Connect start/stop to pre- and
+             post-integration-test phase, respectively if you want to start
+             your docker containers during integration tests -->
+        <!--executions>
+          <execution>
+             <id>build</id>
+             <phase>package</phase>
+             <goals>
+               <goal>build</goal>
+             </goals>
+          </execution>
+        </executions-->
+      </plugin>
     </plugins>
     <pluginManagement>
       <plugins>
