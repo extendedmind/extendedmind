@@ -234,8 +234,9 @@
 
   var reviewAsked = !!UserSessionService.getUIPreference('reviewAsked');
   var reviewInProgress;
+  var userCreatedTimestamp = UserSessionService.getUserCreated();
 
-  function attemptToAskForReview(previousCount, cachedDatesArray) {
+  function attemptToAskForReview(previousCount, cachedDatesArray, userCreatedTimestamp) {
 
     function doAskForReview() {
       var marketUrl;
@@ -281,22 +282,27 @@
       }, timeoutTime);
     }
 
-    // Check that there is no uncompleted tasks in today slide.
-    var askForReviewConditionsMet = true;
-    for (var i = 0; i < cachedDatesArray.length; i++) {
-      if (!cachedDatesArray[i].trans.completed) {
-        askForReviewConditionsMet = false;
-        break;
+    if (previousCount && packaging.endsWith('cordova') && !$scope.isOnboarding('focus', 'tasks') &&
+        userCreatedTimestamp && (Date.now() - userCreatedTimestamp >= 86400000))
+        // Is user created over 24 hours ago.
+    {
+      // Check that there is no uncompleted tasks in today slide.
+      var askForReviewConditionsMet = true;
+      for (var i = 0; i < cachedDatesArray.length; i++) {
+        if (!cachedDatesArray[i].trans.completed) {
+          askForReviewConditionsMet = false;
+          break;
+        }
       }
-    }
 
-    // Ok to ask for app review.
-    if (askForReviewConditionsMet && !reviewInProgress) {
-      doAskForReview();
-    } else if (!askForReviewConditionsMet && reviewInProgress) {
-      // Cancel review in progress if the conditions are not met anymore
-      $timeout.cancel(reviewInProgress);
-      reviewInProgress = undefined;
+      if (askForReviewConditionsMet && !reviewInProgress) {
+        // Ok to ask for app review.
+        doAskForReview();
+      } else if (!askForReviewConditionsMet && reviewInProgress) {
+        // Cancel review in progress if the conditions are not met anymore
+        $timeout.cancel(reviewInProgress);
+        reviewInProgress = undefined;
+      }
     }
   }
 
@@ -334,10 +340,8 @@
       initializeDateTasksCache();
 
       updateTodayTasks(TasksService.getTasks(ownerUUID), cachedDates[info.date].array, info.date);
-      if (!reviewAsked && previousCount && packaging.endsWith('cordova') &&
-          !$scope.isOnboarding('focus', 'tasks'))
-      {
-        attemptToAskForReview(previousCount, cachedDates[info.date].array);
+      if (!reviewAsked) {
+        attemptToAskForReview(previousCount, cachedDates[info.date].array, userCreatedTimestamp);
       }
     } else {
       initializeDateTasksCache();

@@ -443,6 +443,9 @@
         return user;
       }
     },
+    getUserCreated: function() {
+      return parseInt(SessionStorageService.getUserCreated());
+    },
     getUserType: function() {
       return parseInt(SessionStorageService.getUserType());
     },
