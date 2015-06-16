@@ -27,7 +27,7 @@
   </appender>
 
   <appender name="MONGODB" class="org.extendedmind.logback.MongoDBAppender">
-    <host>localhost</host>
+    <host>${MONGODB_PORT_27017_TCP_ADDR}</host>
     <port>27017</port>
     <db>cube</db>
   </appender>

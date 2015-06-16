@@ -374,6 +374,26 @@
               </build>
             </image>
             <image>
+              <name>extendedmind/mongodb</name>
+              <alias>mongodb</alias>
+              <build>
+                <from>mongo:3</from>
+                <maintainer>timo.tiuraniemi@iki.fi</maintainer>
+                <tags>
+                  <tag>latest</tag>
+                </tags>
+                <ports>
+                  <port>27017</port>
+                </ports>
+                <assembly>
+                  <mode>dir</mode>
+                  <basedir>/etc/confd</basedir>
+                  <descriptor>backend-conf-assembly.xml</descriptor>
+                </assembly>
+                <cmd><shell>mongod --config /etc/mongodb/mongodb.conf</shell></cmd>
+              </build>
+            </image>
+            <image>
               <name>extendedmind/backend-conf</name>
               <alias>backend-conf</alias>
               <build>
@@ -428,6 +448,7 @@
                   <basedir>/usr/src/extendedmind</basedir>
                   <descriptor>backend-assembly.xml</descriptor>
                 </assembly>
+                <cmd><shell>java -Dconfig.file=/etc/extendedmind/application.conf -Dlogback.configurationFile=/etc/extendedmind/logback.xml -cp "/usr/src/extendedmind/lib/*" org.extendedmind.Server</shell></cmd>
               </build>
             </image>
           </images>

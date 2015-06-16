@@ -335,7 +335,7 @@
               <run>
                 <env>
                   <EXTENDEDMIND_BACKEND_TOKENSECRET>01234567890123456789012345678901</EXTENDEDMIND_BACKEND_TOKENSECRET>
-                  <EXTENDEDMIND_BACKEND_SIGNUPMODE>ON</EXTENDEDMIND_BACKEND_SIGNUPMODE>
+                  <EXTENDEDMIND_BACKEND_SIGNUPMODE>BETA</EXTENDEDMIND_BACKEND_SIGNUPMODE>
                   <EXTENDEDMIND_BACKEND_MAILGUNKEY>TEST KEY</EXTENDEDMIND_BACKEND_MAILGUNKEY>
                   <EXTENDEDMIND_BACKEND_MAILGUNDOMAIN>ext.md</EXTENDEDMIND_BACKEND_MAILGUNDOMAIN>
                   <EXTENDEDMIND_EMAILFROM>extended mind &lt;support@ext.md&gt;</EXTENDEDMIND_EMAILFROM>
@@ -351,18 +351,41 @@
                 <cmd>/usr/src/confd -backend=env</cmd>
               </run>
             </image>
-            <!--image>
+            <image>
+              <name>extendedmind/mongodb-data</name>
+              <alias>mongodb-data</alias>
+            </image>
+            <image>
+              <name>extendedmind/mongodb</name>
+              <alias>mongodb</alias>
+              <run>
+                <volumes>
+                  <from>
+                    <image>mongodb-conf</image>
+                    <image>mongodb-data</image>
+                  </from>
+                </volumes>
+              </run>
+            </image>
+            <image>
+              <name>extendedmind/backend-data</name>
+              <alias>backend-data</alias>
+            </image>
+            <image>
               <name>extendedmind/backend</name>
               <alias>backend</alias>
               <run>
                 <volumes>
                   <from>
-                    <image>extendedmind/backend-conf</image>
-                    <image>extendedmind/backend-data</image>
+                    <image>backend-conf</image>
+                    <image>backend-data</image>
                   </from>
                 </volumes>
+                <links>
+                  <link>mongodb:mongodb</link>
+                </links>
               </run>
-            </image-->
+            </image>
           </images>
         </configuration>
         <!-- Connect start/stop to pre- and
