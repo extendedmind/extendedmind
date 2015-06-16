@@ -132,7 +132,7 @@
               <includes>
                 <include>em.angularjs.min.js</include>
                 <include>em.min.js</include>
-              </includes>
+              </includes>*
             </fileset>
             <fileset>
               <directory>${basedir}/src/main/webapp/static/favicon</directory>
@@ -156,7 +156,21 @@
               <directory>${basedir}/src/main/webapp/static/audio</directory>
             </fileset>
             <fileset>
+              <directory>${basedir}/src/main/webapp</directory>
+              <includes>
+                <include>terms.html</include>
+                <include>privacy.html</include>
+              </includes>*
+            </fileset>
+            <fileset>
               <directory>${basedir}/src/main/webapp/landing/audio</directory>
+            </fileset>
+            <fileset>
+              <directory>${basedir}/src/main/webapp/landing</directory>
+              <includes>
+                <include>terms.html</include>
+                <include>privacy.html</include>
+              </includes>*
             </fileset>
           </filesets>
         </configuration>
@@ -203,6 +217,8 @@
             WEB-INF/**,
             META-INF/**,
             index.html,
+            terms.html,
+            privacy.html,
             static/${project.version}/**
           </packagingIncludes>
         </configuration>
@@ -331,6 +347,26 @@
                   </configuration>
               </execution>
               <execution>
+                  <id>import-terms</id>
+                  <phase>generate-resources</phase>
+                  <goals>
+                      <goal>copy-resources</goal>
+                  </goals>
+                  <configuration>
+                      <outputDirectory>${project.basedir}/src/main/webapp/landing</outputDirectory>
+                      <overwrite>true</overwrite>
+                      <resources>
+                          <resource>
+                              <directory>${user.home}/.extendedmind</directory>
+                              <includes>
+                                  <include>terms.html</include>
+                                  <include>privacy.html</include>
+                              </includes>
+                          </resource>
+                      </resources>
+                  </configuration>
+              </execution>
+              <execution>
                   <id>copy-audio</id>
                   <phase>generate-resources</phase>
                   <goals>
@@ -342,6 +378,26 @@
                       <resources>
                           <resource>
                               <directory>${project.basedir}/src/main/webapp/landing/audio</directory>
+                          </resource>
+                      </resources>
+                  </configuration>
+              </execution>
+              <execution>
+                  <id>copy-terms</id>
+                  <phase>generate-resources</phase>
+                  <goals>
+                      <goal>copy-resources</goal>
+                  </goals>
+                  <configuration>
+                      <outputDirectory>${project.basedir}/src/main/webapp</outputDirectory>
+                      <overwrite>true</overwrite>
+                      <resources>
+                          <resource>
+                              <directory>${project.basedir}/src/main/webapp/landing</directory>
+                              <includes>
+                                  <include>terms.html</include>
+                                  <include>privacy.html</include>
+                              </includes>
                           </resource>
                       </resources>
                   </configuration>
