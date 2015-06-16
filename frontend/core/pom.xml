@@ -537,6 +537,27 @@
         <configuration>
           <images>
             <image>
+              <name>extendedmind/nginx</name>
+              <alias>nginx</alias>
+              <build>
+                <from>nginx:1.9</from>
+                <maintainer>timo.tiuraniemi@iki.fi</maintainer>
+                <tags>
+                  <tag>latest</tag>
+                </tags>
+                <ports>
+                  <port>591</port>
+                  <port>8008</port>
+                </ports>
+                <assembly>
+                  <mode>dir</mode>
+                  <basedir>/etc/nginx</basedir>
+                  <descriptor>nginx-assembly.xml</descriptor>
+                </assembly>
+                <cmd><shell>/bin/bash /etc/nginx/nginx-run.sh</shell></cmd>
+              </build>
+            </image>
+            <image>
               <name>extendedmind/frontend-data</name>
               <alias>frontend-data</alias>
               <build>
@@ -570,6 +591,7 @@
                   <basedir>/usr/src/extendedmind</basedir>
                   <descriptor>frontend-assembly.xml</descriptor>
                 </assembly>
+                <cmd><shell>cp -R /usr/src/extendedmind/* /var/www</shell></cmd>
               </build>
             </image>
           </images>

@@ -70,7 +70,7 @@ object Service {
         val currentTime = System.currentTimeMillis()
         if (e.code.number == ERR_BASE_WRONG_EXPECTED_MODIFIED.number){
           log.error("Status code: " + Conflict + ", Error code: " + e.code.number + ", Description: " + e.description + " @" + currentTime)
-          ctx.complete(Conflict, ErrorResult(e.code.number, e.description, currentTime))          
+          ctx.complete(Conflict, ErrorResult(e.code.number, e.description, currentTime))
         }else{
           log.error("Status code: " + BadRequest + ", Error code: " + e.code.number + ", Description: " + e.description + " @" + currentTime)
           ctx.complete(BadRequest, ErrorResult(e.code.number, e.description, currentTime))
@@ -88,7 +88,7 @@ object Service {
       }
     }
   }
-  
+
 }
 
 // we don't implement our route structure directly in the service actor because
@@ -100,7 +100,7 @@ class ServiceActor extends HttpServiceActor with Service {
   def configurations = new Configuration(settings, actorRefFactory)
 
   // LOGGING WITH MDC
-  
+
   override implicit val log: DiagnosticLoggingAdapter = Logging(this);
   override def putMdc(mdc: Map[String, Any]) {
     log.mdc(mdc)
@@ -117,7 +117,7 @@ class ServiceActor extends HttpServiceActor with Service {
     log.clearMDC()
     result
   }
-  
+
   override def logErrors(errors: scala.List[ResponseContent]) = {
     errors foreach (e => {
     	val errorString = e.responseType + ": " + e.description
@@ -130,7 +130,7 @@ class ServiceActor extends HttpServiceActor with Service {
       }
     )
   }
-  
+
   // Setup implicits
   implicit def implRejectionHandler = Service.rejectionHandler
   implicit def implExceptionHandler = Service.exceptionHandler
@@ -141,20 +141,20 @@ class ServiceActor extends HttpServiceActor with Service {
       throw new RuntimeException("Could not load database")
     }
   }
-    
+
   // this actor only runs our route, but you could add
   // other things here, like request stream processing
   // or timeout handling
   def receive = {
     runRoute(route)
   }
-    
+
 }
 
 // this class defines our service behavior independently from the service actor
-trait Service extends AdminService 
-			  with SecurityService 
-			  with UserService 
+trait Service extends AdminService
+			  with SecurityService
+			  with UserService
 			  with ItemService
 			  with TaskService
 			  with NoteService
@@ -167,7 +167,7 @@ trait Service extends AdminService
   val route = {
     getRoot {
       complete {
-      "{\"version\":\"" + settings.version + "\"}"
+        "{\"version\":\"" + settings.version + "\"}"
       }
     } ~
     shutdown {
@@ -188,6 +188,21 @@ trait Service extends AdminService
           "{\"status\":" + adminActions.tick(payload.priority).toString + "}"
         }
       }
+    } ~
+    getHAAvailable { ctx =>
+      val haStatus = adminActions.getHAStatus
+      if (haStatus == "master" || haStatus == "slave") ctx.complete(200, "true")
+      else ctx.complete(NotFound, "false")
+    } ~
+    getHAMaster { ctx =>
+      val haStatus = adminActions.getHAStatus
+      if (haStatus == "master") ctx.complete(200, "true")
+      else ctx.complete(NotFound, "false")
+    } ~
+    getHASlave { ctx =>
+      val haStatus = adminActions.getHAStatus
+      if (haStatus == "slave") ctx.complete(200, "true")
+      else ctx.complete(NotFound, "false")
     } ~ adminRoutes ~ securityRoutes ~ userRoutes ~ itemRoutes ~ taskRoutes ~ noteRoutes ~ listRoutes ~ tagRoutes
   }
 }

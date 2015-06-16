@@ -443,6 +443,9 @@
                   <tag>latest</tag>
                   <tag>${project.version}</tag>
                 </tags>
+                <ports>
+                  <port>8081</port>
+                </ports>
                 <assembly>
                   <mode>dir</mode>
                   <basedir>/usr/src/extendedmind</basedir>

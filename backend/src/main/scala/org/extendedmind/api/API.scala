@@ -40,7 +40,7 @@ trait API extends HttpService {
   val postSubscribe = post & path("subscribe".r)
   val putNewAgreement = put & path("agreement".r)
   val postAgreementAccess = post & path("agreement" / JavaUUID / "access" / IntNumber)
-  val postAgreementResend = post & path("agreement" / JavaUUID / "resend")  
+  val postAgreementResend = post & path("agreement" / JavaUUID / "resend")
   val deleteAgreement = delete & path("agreement" / JavaUUID)
   val postAgreementAccept = post & path("agreement" / HexLongNumber / "accept")
 
@@ -93,7 +93,7 @@ trait API extends HttpService {
   val unfavoriteNote = post & path(JavaUUID / "note" / JavaUUID / "unfavorite")
   val noteToTask = post & path(JavaUUID / "note" / JavaUUID / "task")
   val noteToList = post & path(JavaUUID / "note" / JavaUUID / "list")
-  
+
   // LISTS
   val getList = get & path(JavaUUID / "list" / JavaUUID)
   val putNewList = put & path(JavaUUID / "list")
@@ -104,7 +104,7 @@ trait API extends HttpService {
   val unarchiveList = post & path(JavaUUID / "list" / JavaUUID / "unarchive")
   val listToTask = post & path(JavaUUID / "list" / JavaUUID / "task")
   val listToNote = post & path(JavaUUID / "list" / JavaUUID / "note")
-  
+
   // TAGS
   val getTag = get & path(JavaUUID / "tag" / JavaUUID)
   val putNewTag = put & path(JavaUUID / "tag")
@@ -125,4 +125,8 @@ trait API extends HttpService {
   // SYSTEM
   val shutdown = post & path("shutdown")
   val tick = post & path("tick")
+  val getHAAvailable = get & path("ha" / "available")
+  val getHAMaster = get & path("ha" / "master")
+  val getHASlave = get & path("ha" / "slave")
+
 }

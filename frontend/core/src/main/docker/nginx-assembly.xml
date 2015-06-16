@@ -3,20 +3,25 @@
     xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
   <fileSets>
     <fileSet>
-      <!-- Creating empty directory 'landing' needs a source directory where everything is excluded -->
       <directory>${project.basedir}/src/main/docker</directory>
-      <outputDirectory>landing</outputDirectory>
-      <excludes>
-        <exclude>**/*</exclude>
-      </excludes>
+      <outputDirectory>sites-enabled</outputDirectory>
+      <includes>
+        <include>nginx.extendedmind.conf</include>
+      </includes>
     </fileSet>
     <fileSet>
-      <!-- Creating empty directory 'core' needs a source directory where everything is excluded -->
       <directory>${project.basedir}/src/main/docker</directory>
-      <outputDirectory>core</outputDirectory>
-      <excludes>
-        <exclude>**/*</exclude>
-      </excludes>
+      <outputDirectory>.</outputDirectory>
+      <includes>
+        <include>nginx.conf</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>${project.basedir}/src/main/docker</directory>
+      <outputDirectory>.</outputDirectory>
+      <includes>
+        <include>nginx-run.sh</include>
+      </includes>
     </fileSet>
   </fileSets>
 </assembly>

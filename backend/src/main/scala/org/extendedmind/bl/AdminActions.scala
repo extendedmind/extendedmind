@@ -28,31 +28,34 @@ import scaldi.Injectable
 import org.extendedmind.security._
 import java.util.UUID
 import akka.event.LoggingAdapter
+import org.neo4j.kernel.ha.HighlyAvailableGraphDatabase
+import org.neo4j.kernel.ha.cluster.HighAvailabilityMemberState
 
 trait AdminActions {
 
   def db: GraphDatabase;
+  def settings: Settings
 
   def getStatistics()(implicit log: LoggingAdapter): Response[Statistics] = {
     log.info("getStatistics")
     db.getStatistics
   }
-  
+
   def rebuildUserIndexes()(implicit log: LoggingAdapter): Response[CountResult] = {
     log.info("rebuildUserIndexes")
     db.rebuildUserIndexes
   }
-      
+
   def resetTokens()(implicit log: LoggingAdapter): Response[CountResult] = {
     log.info("resetTokens")
     db.destroyAllTokens
   }
-  
+
   def rebuildItemsIndex(ownerUUID: UUID)(implicit log: LoggingAdapter): Response[CountResult] = {
     log.info("rebuildItemsIndex")
     db.rebuildItemsIndex(ownerUUID)
   }
-  
+
   def rebuildItemsIndexes(implicit log: LoggingAdapter): Response[CountResult] = {
     log.info("rebuildItemsIndexes")
     val result = db.rebuildItemsIndexes
@@ -66,17 +69,17 @@ trait AdminActions {
     log.info("loadDatabase")
     db.loadDatabase
   }
-  
+
   def checkDatabase(implicit log: LoggingAdapter): Boolean = {
     log.info("checkDatabase")
     db.checkDatabase
   }
-  
+
   def shutdown(implicit log: LoggingAdapter): Unit = {
     log.info("shutdown")
     db.shutdownServer
   }
-  
+
   def tick(priority: Int)(implicit log: LoggingAdapter): Boolean = {
     if (priority == 1){
       // Minute
@@ -95,10 +98,21 @@ trait AdminActions {
       false
     }
   }
-  
+
+  def getHAStatus: String = {
+    if (settings.isHighAvailability){
+      val state = db.ds.gds.asInstanceOf[HighlyAvailableGraphDatabase].getInstanceState
+      if (state == HighAvailabilityMemberState.MASTER) "master"
+      else if (state == HighAvailabilityMemberState.SLAVE) "slave"
+      else "none"
+    }else{
+      "na"
+    }
+  }
 }
 
-class AdminActionsImpl(implicit val settings: Settings, implicit val inj: Injector)
+class AdminActionsImpl(implicit val implSettings: Settings, implicit val inj: Injector)
   extends AdminActions with Injectable {
+  override def settings  = implSettings
   def db = inject[GraphDatabase]
 }

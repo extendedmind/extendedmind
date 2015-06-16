@@ -20,12 +20,10 @@
     <fileSet>
       <directory>${project.basedir}/src/main/webapp/landing</directory>
       <outputDirectory>landing</outputDirectory>
-      <filtered>true</filtered>
     </fileSet>
     <fileSet>
       <directory>${project.basedir}/src/main/webapp/analytics</directory>
-      <outputDirectory>analytics</outputDirectory>
-      <filtered>true</filtered>
+      <outputDirectory>core/analytics</outputDirectory>
     </fileSet>
   </fileSets>
 </assembly>
