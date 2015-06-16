@@ -49,15 +49,16 @@ import spray.httpx.marshalling._
 class TestDataGeneratorSpec extends SpraySpecBase {
 
   val TEST_DATA_STORE = "target/neo4j-test-database"
+  val EXPORT_TEST_DATA_STORE = "target/neo4j-test"
 
-  // Create test database  
+  // Create test database
   val db = new TestEmbeddedGraphDatabase(TEST_DATA_STORE)
-    
+
   object TestDataGeneratorConfiguration extends Module{
     bind [GraphDatabase] to db
   }
   override def configurations = TestDataGeneratorConfiguration
-    
+
   describe("Embedded Graph Database") {
     it("should initialize with test data") {
       db.insertTestData(Some(db.TEST_DATA_DESTINATION))
@@ -69,6 +70,9 @@ class TestDataGeneratorSpec extends SpraySpecBase {
   def packNeo4jStore() {
     val storeDir = new File(TEST_DATA_STORE)
     ZipUtil.pack(storeDir, new File(db.TEST_DATA_DESTINATION + "/neo4j-test.zip"))
+    val exportStoreDir = new File(EXPORT_TEST_DATA_STORE)
+    if (exportStoreDir.exists()) FileUtils.deleteDirectory(exportStoreDir)
+    FileUtils.copyDirectory(new File(TEST_DATA_STORE), new File(EXPORT_TEST_DATA_STORE))
     FileUtils.deleteDirectory(storeDir)
   }
 }

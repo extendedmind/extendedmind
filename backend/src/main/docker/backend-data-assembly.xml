@@ -4,11 +4,8 @@
   <fileSets>
     <fileSet>
       <!-- Creating empty directory 'neo4j' needs a source directory where everything is excluded -->
-      <directory>${project.basedir}/src/main/docker</directory>
+      <directory>${project.build.directory}/neo4j-test</directory>
       <outputDirectory>neo4j</outputDirectory>
-      <excludes>
-        <exclude>**/*</exclude>
-      </excludes>
     </fileSet>
   </fileSets>
 </assembly>
