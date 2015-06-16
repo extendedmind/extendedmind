@@ -4,20 +4,6 @@
   <fileSets>
     <fileSet>
       <directory>${project.basedir}/src/main/docker</directory>
-      <outputDirectory>sites-enabled</outputDirectory>
-      <includes>
-        <include>nginx.extendedmind.conf</include>
-      </includes>
-    </fileSet>
-    <fileSet>
-      <directory>${project.basedir}/src/main/docker</directory>
-      <outputDirectory>.</outputDirectory>
-      <includes>
-        <include>nginx.conf</include>
-      </includes>
-    </fileSet>
-    <fileSet>
-      <directory>${project.basedir}/src/main/docker</directory>
       <outputDirectory>.</outputDirectory>
       <includes>
         <include>nginx-run.sh</include>

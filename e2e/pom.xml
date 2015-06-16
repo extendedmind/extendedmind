@@ -330,6 +330,10 @@
               <alias>backend-conf</alias>
             </image>
             <image>
+              <name>extendedmind/nginx-conf</name>
+              <alias>nginx-conf</alias>
+            </image>
+            <image>
               <name>extendedmind/confd</name>
               <alias>confd</alias>
               <run>
@@ -341,11 +345,14 @@
                   <EXTENDEDMIND_EMAILFROM>extended mind &lt;support@ext.md&gt;</EXTENDEDMIND_EMAILFROM>
                   <EXTENDEDMIND_URLPREFIX>http://localhost/landing/</EXTENDEDMIND_URLPREFIX>
                   <EXTENDEDMIND_SECUREURLPREFIX>http://localhost/</EXTENDEDMIND_SECUREURLPREFIX>
+                  <!-- test login admin:adminpwd for /evaluate -->
+                  <EXTENDEDMIND_EVALUATECREDENTIALS>admin:$apr1$iRuCzNe7$wGTyTAez42hHC9rGP6CHg.</EXTENDEDMIND_EVALUATECREDENTIALS>
                 </env>
                 <volumes>
                   <from>
                     <image>backend-conf</image>
                     <image>mongodb-conf</image>
+                    <image>nginx-conf</image>
                   </from>
                 </volumes>
                 <cmd>/usr/src/confd -backend=env</cmd>
@@ -402,16 +409,37 @@
               </run>
             </image>
             <image>
+              <name>extendedmind/cube-evaluator</name>
+              <alias>cube-evaluator</alias>
+              <run>
+                <links>
+                  <link>mongodb:mongodb</link>
+                </links>
+              </run>
+            </image>
+            <image>
+              <name>extendedmind/cube-collector</name>
+              <alias>cube-collector</alias>
+              <run>
+                <links>
+                  <link>mongodb:mongodb</link>
+                </links>
+              </run>
+            </image>
+            <image>
               <name>extendedmind/nginx</name>
               <alias>nginx</alias>
               <run>
                 <volumes>
                   <from>
+                    <image>nginx-conf</image>
                     <image>frontend</image>
                   </from>
                 </volumes>
                 <links>
                   <link>backend:backend</link>
+                  <link>cube-evaluator:evaluator</link>
+                  <link>cube-collector:collector</link>
                 </links>
                 <ports>
                   <port>591:591</port>

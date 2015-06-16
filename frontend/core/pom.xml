@@ -537,6 +537,28 @@
         <configuration>
           <images>
             <image>
+              <name>extendedmind/nginx-conf</name>
+              <alias>nginx-conf</alias>
+              <build>
+                <from>ubuntu:14.04</from>
+                <maintainer>timo.tiuraniemi@iki.fi</maintainer>
+                <tags>
+                  <tag>latest</tag>
+                </tags>
+                <assembly>
+                  <mode>dir</mode>
+                  <basedir>/etc</basedir>
+                  <descriptor>nginx-conf-assembly.xml</descriptor>
+                </assembly>
+                <volumes>
+                  <volume>/etc/confd/conf.d/nginx</volume>
+                  <volume>/etc/confd/templates/nginx</volume>
+                  <volume>/etc/nginx/sites-enabled</volume>
+                  <volume>/etc/nginx/credentials</volume>
+                </volumes>
+              </build>
+            </image>
+            <image>
               <name>extendedmind/nginx</name>
               <alias>nginx</alias>
               <build>
@@ -551,10 +573,10 @@
                 </ports>
                 <assembly>
                   <mode>dir</mode>
-                  <basedir>/etc/nginx</basedir>
+                  <basedir>/usr/src</basedir>
                   <descriptor>nginx-assembly.xml</descriptor>
                 </assembly>
-                <cmd><shell>/bin/bash /etc/nginx/nginx-run.sh</shell></cmd>
+                <cmd><shell>/bin/bash /usr/src/nginx-run.sh</shell></cmd>
               </build>
             </image>
             <image>
