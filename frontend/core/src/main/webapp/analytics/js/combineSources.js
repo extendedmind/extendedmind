@@ -1,5 +1,5 @@
 function prepareCombination () {
-    var dataUrl = "https://ext.md/evaluate/1.0/metric?expression=sum(session.eq(user.type,2))&start=2014-05-1&stop=2014-07-23&step=864e5";
+    var dataUrl = window.location.origin + "/evaluate/1.0/metric?expression=sum(session.eq(user.type,2))&start=2014-05-1&stop=2014-07-23&step=864e5";
 
     combinedItems = [];
     combinations = 2;

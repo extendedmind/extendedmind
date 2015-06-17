@@ -141,28 +141,6 @@
     <code id="signUpCode"></code>
     <div id="chart10"></div>
 
-    <!-- <h3>First item added</h3>
-    <p>Is this buggy? Numbers don't make sense with the rest of the data. Does not include admin or beta users.</p>
-    <code>https://ext.md/evaluate/1.0/metric?expression=sum(firstItemAdded.eq(user.type,2))&start=2014-05-1&stop=2014-07-23&step=864e5</code>
-    <div id="chart7"></div>
-
-    <hr>
-
-    <h3>Visit signup</h3>
-    <p>Does not include admin or beta users.</p>
-    <code>https://ext.md/evaluate/1.0/metric?expression=sum(visit_signup.eq(user.type,2))&start=2014-05-1&stop=2014-07-23&step=864e5</code>
-    <div id="chart8"></div>
-
-    <h3>AcceptInvite</h3>
-    <p>Does not include admin or beta users.</p>
-    <code>https://ext.md/evaluate/1.0/metric?expression=sum(visit_signup.eq(user.type,2))&start=2014-05-1&stop=2014-07-23&step=864e5</code>
-    <div id="chart9"></div>
-
-    <h3>SignUp</h3>
-    <p>Does not include admin or beta users.</p>
-    <code>https://ext.md/evaluate/1.0/metric?expression=sum(visit_signup.eq(user.type,2))&start=2014-05-1&stop=2014-07-23&step=864e5</code>
-    <div id="chart10"></div> -->
-
 </div>
 
 <script src="js/jquery-2.1.1.js"></script>
@@ -181,7 +159,7 @@
     $('#pageDate').text(startDay + " to " + endDay);
 
     // queries for each chart
-    var baseUrl = "https://ext.md/evaluate/1.0/metric?expression=";
+    var baseUrl = window.location.origin + "/evaluate/1.0/metric?expression=";
     var dauQuery =  baseUrl + "distinct(session(user.uuid).eq(user.type,2))&step=864e5&start=" + startDay + "&stop=" + endDay;
     var sessionsQuery = baseUrl + "sum(session.eq(user.type,2))&step=864e5&start=" + startDay + "&stop=" + endDay;
     var dauTasksQuery = baseUrl + "distinct(addTask(user.uuid).eq(user.type,2))&step=864e5&start=" + startDay + "&stop=" + endDay;
@@ -194,7 +172,7 @@
     var signUpQuery = baseUrl + "sum(signUp)&step=864e5&start=" + startDay + "&stop=" + endDay;
     var mauStartDate = new Date();
     mauStartDate.setMonth(mauStartDate.getMonth() - 1);
-    var mauEventQuery = "https://ext.md/evaluate/1.0/event?expression=session(user.uuid).eq(user.type,2)&step=864e5&start=" + dateToString(mauStartDate) + "&stop=" + endDay;
+    var mauEventQuery =  window.location.origin + "/evaluate/1.0/event?expression=session(user.uuid).eq(user.type,2)&step=864e5&start=" + dateToString(mauStartDate) + "&stop=" + endDay;
 
     // print queries to code blocks and make visible
     $('#dauCode').text(dauQuery);

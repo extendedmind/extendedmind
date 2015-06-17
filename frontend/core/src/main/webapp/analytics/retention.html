@@ -62,7 +62,7 @@
         </tr>
     </thead>
     <tbody>
-        <!-- 
+        <!--
         example structure
         <tr>
             <td>16.6.2014</td>
@@ -74,14 +74,14 @@
         -->
     </tbody>
     </table>
-    <!-- 
+    <!--
     <h3>Day 1 retention</h3>
     <p>Does not include admin or beta users.</p>
     <p><strong>Cube requests</strong></p>
     <code>
-    Signups with user uuid: https://ext.md/evaluate/1.0/event?expression=signUp(user.uuid)&start=2014-05-12&stop=2014-08-06&step=864e5<br>
-    Sessions per day: https://ext.md/evaluate/1.0/event?expression=session(user.uuid)&start=2014-05-12&stop=2014-08-04&step=864e5
-    Sessions filtered with uuids: https://ext.md/evaluate/1.0/metric/get?expression=sum(session.in(user.uuid,["user-uuid","user-uuid"]))&start=2014-05-12&stop=2014-08-06&step=864e5
+    Signups with user uuid:  /evaluate/1.0/event?expression=signUp(user.uuid)&start=2014-05-12&stop=2014-08-06&step=864e5<br>
+    Sessions per day: /evaluate/1.0/event?expression=session(user.uuid)&start=2014-05-12&stop=2014-08-04&step=864e5
+    Sessions filtered with uuids: /evaluate/1.0/metric/get?expression=sum(session.in(user.uuid,["user-uuid","user-uuid"]))&start=2014-05-12&stop=2014-08-06&step=864e5
 </code>
     <div id="chart1"></div>
 
@@ -89,14 +89,14 @@
 
     <h3>Day 7 retention</h3>
     <p>Unique users who have session. Does not include admin or beta users.</p>
-    <code>https://ext.md/evaluate/1.0/metric?expression=distinct(session(user.uuid).eq(user.type,2))&start=2014-05-1&stop=2014-07-23&step=864e5</code>
+    <code>/evaluate/1.0/metric?expression=distinct(session(user.uuid).eq(user.type,2))&start=2014-05-1&stop=2014-07-23&step=864e5</code>
     <div id="chart2"></div>
 
     <hr>
 
     <h3>Day 30 retention</h3>
     <p>Does not include admin or beta users.</p>
-    <code>https://ext.md/evaluate/1.0/metric?expression=distinct(addTask(user.uuid).eq(user.type,2))&start=2014-05-1&stop=2014-07-23&step=864e5</code>
+    <code>/evaluate/1.0/metric?expression=distinct(addTask(user.uuid).eq(user.type,2))&start=2014-05-1&stop=2014-07-23&step=864e5</code>
     <div id="chart3"></div>
 
     <hr>
@@ -111,15 +111,15 @@
 <script src="js/retentionCalc.js"></script>
 <script>
 
-    // calculate difference between today and first of August 2014.
+    // calculate difference between today and first of June 2015.
     var today = new Date();
-    var begin = new Date(2014,6,31,0,0,0);   // january is 0!
+    var begin = new Date(2015,4,31,0,0,0);   // january is 0!
     var oneDay = 24*60*60*1000; // hours*minutes*seconds*milliseconds
     var daysBetween = Math.round(Math.abs((today.getTime() - begin.getTime())/(oneDay)));
 
     checkRetention(today, daysBetween);
 
-    /* 
+    /*
     initChartToElement("#chart1","data/sessions.json");
     initChartToElement("#chart2","data/unique_users_sessions.json");
     initChartToElement("#chart3","data/visit_signup.json");

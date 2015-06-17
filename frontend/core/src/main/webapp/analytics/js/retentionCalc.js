@@ -12,22 +12,22 @@ function startRetention(date, days) {
     var endDate = new Date(date.getTime());
     endDate.setDate(date.getDate() + 1);
 
-    /* 
+    /*
     Fetch all signups for a single day
-    https://ext.md/evaluate/1.0/event?expression=signUp(user.uuid)&start=2014-08-5&stop=2014-08-06&step=864e5
+    window.location.origin + "/evaluate/1.0/event?expression=signUp(user.uuid)&start=2014-08-5&stop=2014-08-06&step=864e5
     */
     var startDay = dateToString(date);
     var endDay = dateToString(endDate);
 
-    var baseUrl = "https://ext.md/evaluate/1.0/event?expression="; 
+    var baseUrl = window.location.origin + "/evaluate/1.0/event?expression=";
     var query = baseUrl + "signUp(user.uuid,version,packaging)&step=864e5&start=" + startDay + "&stop=" + endDay;
     var example = "data/signup_uuid.json";
 
-    // Process signups 
+    // Process signups
     $.getJSON( query, function( data ) {
         var items = [];
         $.each( data, function( key, val ) {
-            
+
             var dateobj = new Date(val.time);
             var uuid = val.data.user.uuid;
             var packaging = val.data.packaging;
@@ -53,21 +53,21 @@ function startRetention(date, days) {
 }
 
 function continueRetention(uuids, date, days, packaging, versions) {
-	/* 
+	/*
     Fetch all distinct sessions per day
-    https://ext.md/evaluate/1.0/metric/get?expression=distinct(session.in(user.uuid,[%229721068b-7850-44e1-b951-68efe5bea9ab%22,%22cde2222c-f092-485b-96dd-4221f8d13054%22,%225b269b37-80e9-495b-a641-081b73b6884b%22,%22dca7bc8a-102c-436a-bd6d-3288a270d94f%22]))&start=2014-08-05&stop=2014-08-18&step=864e5
+    window.location.origin + "/evaluate/1.0/metric/get?expression=distinct(session.in(user.uuid,[%229721068b-7850-44e1-b951-68efe5bea9ab%22,%22cde2222c-f092-485b-96dd-4221f8d13054%22,%225b269b37-80e9-495b-a641-081b73b6884b%22,%22dca7bc8a-102c-436a-bd6d-3288a270d94f%22]))&start=2014-08-05&stop=2014-08-18&step=864e5
     */
     var uuidsString = "'" + uuids.join("','") + "'";
     var packagingString = packaging.join();
     var versionsString = versions.join();
 
-    var endDate = new Date(); 
+    var endDate = new Date();
     endDate.setDate(date.getDate() + 32);
 
     var startDay = dateToString(date);
     var endDay = dateToString(endDate);
 
-    var baseUrl = "https://ext.md/evaluate/1.0/metric/get?expression="; 
+    var baseUrl = window.location.origin + "/evaluate/1.0/metric/get?expression=";
     var query = baseUrl + "distinct(session.in(user.uuid,["+uuidsString+"]))&step=864e5&start=" + startDay + "&stop=" + endDay;
     var example = "data/sessions_uuids.json";
 
@@ -78,7 +78,7 @@ function continueRetention(uuids, date, days, packaging, versions) {
 
     if (uuids.length > 0) {
 
-        // Json processing 
+        // Json processing
         $.getJSON( query, function( data ) {
 
             var signups = uuids.length;
