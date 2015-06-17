@@ -233,10 +233,6 @@
           }
           expandPromise = undefined;
         });
-        // Need to digest ot be sure that class is applied
-        if (!$rootScope.$$phase && !scope.$$phase){
-          scope.$digest();
-        }
         oldTranslateYPosition = expandedHeight;
       }
 
