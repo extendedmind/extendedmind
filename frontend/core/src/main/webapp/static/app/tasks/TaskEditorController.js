@@ -448,6 +448,11 @@
     } else {
       setReminderError($scope.reminder, 'invalid');
     }
+    if (angular.isFunction($scope.unregisterSubEditorDoneCallback))
+      $scope.unregisterSubEditorDoneCallback();
+
+    if (angular.isFunction($scope.unregisterHasSubEditorEditedCallback))
+      $scope.unregisterHasSubEditorEditedCallback();
   }
 
   $scope.clearReminderAndClose = function() {
@@ -465,6 +470,11 @@
         ReminderService.removeReminder(reminder);
       }
     }
+    if (angular.isFunction($scope.unregisterSubEditorDoneCallback))
+      $scope.unregisterSubEditorDoneCallback();
+
+    if (angular.isFunction($scope.unregisterHasSubEditorEditedCallback))
+      $scope.unregisterHasSubEditorEditedCallback();
   };
 
   $scope.loopTime = function(time, direction) {
