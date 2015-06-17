@@ -48,6 +48,7 @@
     <skipJUnitTests>true</skipJUnitTests>
     <phantomjs.version>1.9.7</phantomjs.version>
     <jetty.version>9.0.4.v20130625</jetty.version>
+    <docker.skip>true</docker.skip>
   </properties>
 
   <repositories>
@@ -202,6 +203,17 @@
       </activation>
       <properties>
         <platform.classifier>mac</platform.classifier>
+      </properties>
+    </profile>
+    <profile>
+      <id>docker-activation</id>
+      <activation>
+        <property>
+          <name>env.DOCKER_HOST</name>
+        </property>
+      </activation>
+      <properties>
+        <docker.skip>false</docker.skip>
       </properties>
     </profile>
   </profiles>

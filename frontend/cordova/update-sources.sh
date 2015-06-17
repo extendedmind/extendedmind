@@ -1,5 +1,5 @@
 cd ../core
-mvn -o clean install -DskipTests=true -Ddebug=true
+mvn -o clean install -DskipTests=true -Ddebug=true -Ddocker.skip=true
 cd ../cordova
 
 if [ -z "$1" ]

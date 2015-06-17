@@ -618,10 +618,7 @@
             </image>
           </images>
         </configuration>
-        <!-- Connect start/stop to pre- and
-             post-integration-test phase, respectively if you want to start
-             your docker containers during integration tests -->
-        <!--executions>
+        <executions>
           <execution>
              <id>build</id>
              <phase>package</phase>
@@ -629,7 +626,7 @@
                <goal>build</goal>
              </goals>
           </execution>
-        </executions-->
+        </executions>
       </plugin>
 
     </plugins>
