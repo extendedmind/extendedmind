@@ -34,12 +34,16 @@
       unregisterIsEditedCallback: '&?listPickerUnregisterIsEditedCallback'
     },
     link: function(scope) {
-      scope.newList = scope.getNewList();
+      if (angular.isFunction(scope.getNewList))
+        scope.newList = scope.getNewList();
+
       scope.thisList = scope.getThisList();
       scope.selectedList = scope.getSelectedList(scope.thisList);
       scope.type = scope.type || 'list';
 
-      if (scope.registerSaveNewListCallback) scope.registerSaveNewListCallback({saveNewList: saveNewList});
+      if (angular.isFunction(scope.registerSaveNewListCallback))
+        scope.registerSaveNewListCallback({saveNewList: saveNewList});
+
       function saveNewList() {
         if (scope.newList.trans.title && scope.newList.trans.title.length > 0) {
           if (scope.prefix) {
@@ -59,7 +63,9 @@
         }
       }
 
-      if (scope.registerIsEditedCallback) scope.registerIsEditedCallback({isEdited: isEdited});
+      if (angular.isFunction(scope.registerIsEditedCallback))
+        scope.registerIsEditedCallback({isEdited: isEdited});
+
       function isEdited() {
         return scope.newList && scope.newList.trans.title && scope.newList.trans.title.length;
       }
@@ -196,8 +202,8 @@
       };
 
       scope.$on('$destroy', function() {
-        if (scope.unregisterSaveNewListCallback) scope.unregisterSaveNewListCallback();
-        if (scope.unregisterIsEditedCallback) scope.unregisterIsEditedCallback();
+        if (angular.isFunction(scope.unregisterSaveNewListCallback)) scope.unregisterSaveNewListCallback();
+        if (angular.isFunction(scope.unregisterIsEditedCallback)) scope.unregisterIsEditedCallback();
       });
     }
   };
