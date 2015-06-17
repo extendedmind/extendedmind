@@ -183,14 +183,16 @@
         shrinkPromise = $animateCss(element, {
           // Remove flicker during open caused by leftover transform property in element style from previous
           // position.
+          addClass: 'animate-editor-footer-close',
+          removeClass: 'animate-editor-footer-open',
           to: {
             transform: 'translate3d(0, 0, 0)' // Reset element style.
           },
-          easing: $rootScope.ANIMATION_TIMING_FUNCTION,
-          duration: $rootScope.EDITOR_FOOTER_ANIMATION_SPEED
-        });
+          duration: true,
+          easing: true
+        }).start();
 
-        shrinkPromise.start().done(function() {
+        shrinkPromise.done(function() {
           scope.footerExpanded = false;   // Remove expandable DOM.
           scope.footerExpandOpen = false; // Footer is now closed.
           scope.footerExpandedToMaxHeight = false;  // Reset variable.
@@ -209,17 +211,19 @@
         element[0].style.bottom = -expandedHeight + 'px';
 
         expandPromise = $animateCss(element, {
+          addClass: 'animate-editor-footer-open',
+          removeClass: 'animate-editor-footer-close',
           from: {
             transform: 'translate3d(0, ' + -oldTranslateYPosition + 'px' + ', 0)'
           },
           to: {
             transform: 'translate3d(0, ' + -expandedHeight + 'px, 0)'
           },
-          easing: $rootScope.ANIMATION_TIMING_FUNCTION,
-          duration: noAnimation ? 0 : $rootScope.EDITOR_FOOTER_ANIMATION_SPEED
-        });
+          duration: noAnimation ? 0 : true,
+          easing: true
+        }).start();
 
-        expandPromise.start().done(function() {
+        expandPromise.done(function() {
           // Shrink promise exists if footer is shrinked before it is fully expanded. In that case,
           // this resolve callback is more like a rejection so let's do nothing here and let shrink promise
           // do its thing instead.

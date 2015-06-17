@@ -852,3 +852,21 @@ a.link-menu.onboarding:not(.highlighted) span {
   65% {transform: translateY(0);}
   100% {transform: translateY(0);}
 }
+
+@speed-animate-editor-footer-toggle: .3s;
+
+.animate-editor-footer-open {
+  -webkit-transition: -webkit-transform @speed-animate-editor-footer-toggle @timing-animate;
+  -moz-transition: -moz-transform @speed-animate-editor-footer-toggle @timing-animate;
+  -o-transition: -o-transform @speed-animate-editor-footer-toggle @timing-animate;
+  -ms-transition: -ms-transform @speed-animate-editor-footer-toggle @timing-animate;
+  transition: transform @speed-animate-editor-footer-toggle @timing-animate;
+}
+
+.animate-editor-footer-close {
+  -webkit-transition: -webkit-transform @speed-animate-editor-footer-toggle @timing-animate;
+  -moz-transition: -moz-transform @speed-animate-editor-footer-toggle @timing-animate;
+  -o-transition: -o-transform @speed-animate-editor-footer-toggle @timing-animate;
+  -ms-transition: -ms-transform @speed-animate-editor-footer-toggle @timing-animate;
+  transition: transform @speed-animate-editor-footer-toggle @timing-animate;
+}

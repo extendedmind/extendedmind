@@ -46,8 +46,6 @@
       // NOTE: These need to be in sync with their counterparts in LESS and/or JS.
       $rootScope.MENU_ANIMATION_SPEED = 200;
       $rootScope.EDITOR_ANIMATION_SPEED = 350;
-      $rootScope.EDITOR_FOOTER_ANIMATION_SPEED = 0.3;
-      $rootScope.ANIMATION_TIMING_FUNCTION = 'cubic-bezier(0.250, 0.460, 0.450, 0.940)';
       $rootScope.EDITOR_CLOSED_FAILSAFE_TIME = 2*$rootScope.EDITOR_ANIMATION_SPEED;
       $rootScope.CHECKBOX_CHECKING_ANIMATION_TIME = 3000;
       $rootScope.LIST_ITEM_LEAVE_ANIMATION_SPEED = 1000;
