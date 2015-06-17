@@ -294,6 +294,15 @@
                 </ports>
               </run>
             </image>
+            <image>
+              <name>extendedmind/backend-backup</name>
+              <alias>backend-backup</alias>
+              <run>
+                <links>
+                  <link>backend:backend</link>
+                </links>
+              </run>
+            </image>
           </images>
         </configuration>
         <executions>

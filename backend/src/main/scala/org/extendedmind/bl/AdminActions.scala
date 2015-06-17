@@ -106,7 +106,7 @@ trait AdminActions {
       else if (state == HighAvailabilityMemberState.SLAVE) "slave"
       else "none"
     }else{
-      "na"
+      "master"
     }
   }
 }

@@ -254,6 +254,23 @@
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-backup-dependencies</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/backend-runtime-dependencies</outputDirectory>
+              <includeScope>runtime</includeScope>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <skipTests>${skipJUnitTests}</skipTests>
@@ -445,6 +462,10 @@
                 </tags>
                 <ports>
                   <port>8081</port>
+                  <!-- Neo4j backup port -->
+                  <port>6362</port>
+                  <!-- Neo4j cluster heartbeat -->
+                  <port>5001</port>
                 </ports>
                 <assembly>
                   <mode>dir</mode>
@@ -452,6 +473,23 @@
                   <descriptor>backend-assembly.xml</descriptor>
                 </assembly>
                 <cmd><shell>java -Dconfig.file=/etc/extendedmind/application.conf -Dlogback.configurationFile=/etc/extendedmind/logback.xml -cp "/usr/src/extendedmind/lib/*" org.extendedmind.Server</shell></cmd>
+              </build>
+            </image>
+            <image>
+              <name>extendedmind/backend-backup</name>
+              <alias>backend-backup</alias>
+              <build>
+                <from>extendedmind/cloud-sdk</from>
+                <maintainer>timo.tiuraniemi@iki.fi</maintainer>
+                <tags>
+                  <tag>latest</tag>
+                </tags>
+                <assembly>
+                  <mode>dir</mode>
+                  <basedir>/usr/src/extendedmind</basedir>
+                  <descriptor>backend-backup-assembly.xml</descriptor>
+                </assembly>
+                <cmd><shell>/usr/src/extendedmind/backend-backup.sh</shell></cmd>
               </build>
             </image>
           </images>
