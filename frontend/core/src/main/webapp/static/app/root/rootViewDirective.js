@@ -39,7 +39,6 @@
       $rootScope.TOOLBAR_HEADING_MAX_WIDTH = $rootScope.TITLEBAR_HEADING_MAX_WIDTH = 350;
       $rootScope.TOOLBAR_HEIGHT = 66;
       $rootScope.LIST_FOOTER_HEIGHT = 44;
-      $rootScope.LOADING_ANIMATION_HEIGHT = 19;
 
       // ANIMATION
       $rootScope.KEYBOARD_ANIMATION_TIME = 300;
