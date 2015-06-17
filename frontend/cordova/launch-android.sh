@@ -4,9 +4,9 @@ cd ../cordova
 
 if [ -z "$2" ]
   then
-    mvn -o clean install
+    mvn clean install
   else
-    mvn -o clean install -Dcordova.urlPrefix=$2
+    mvn clean install -Dcordova.urlPrefix=$2
 fi
 
 cd app
