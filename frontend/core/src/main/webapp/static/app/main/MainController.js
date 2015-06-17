@@ -739,9 +739,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
       if (initialShareItemValues.title){
         var newItem = ItemsService.getNewItem(initialShareItemValues, UserSessionService.getUserUUID());
 
-        var unregisterSyncAttemptedWatcher;
-        var processSharedItemSave = function(newItem){
-          if (unregisterSyncAttemptedWatcher) unregisterSyncAttemptedWatcher();
+        var doSaveSharedItem = function(newItem){
           ItemsService.saveItem(newItem).then(function(){
             $scope.openEditor('item', newItem);
             if (!$rootScope.$$phase && !$scope.$$phase) {
@@ -750,14 +748,11 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
             }
           });
         }
-        if (UserSessionService.isFakeUser() || $rootScope.syncAttempted) {
-          processSharedItemSave(newItem);
-        } else {
-          // Sync has not been attempted yet, saving before secondary request is being attempted causes nasty
-          // problems
-          unregisterSyncAttemptedWatcher = $scope.$watch('syncAttempted', function(){
-            processSharedItemSave(newItem);
-          });
+        if (editorReady) {
+          doSaveSharedItem(newItem);
+        }else{
+          editorReadyCallback.fn = doSaveSharedItem;
+          editorReadyCallback.parameters = [newItem];
         }
       }
     }
