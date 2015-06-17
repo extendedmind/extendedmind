@@ -43,9 +43,10 @@
             }
           };
 
-          scope.toggleLeftCheckbox = function (toggleFn) {
-            controllers[0].toggleLeftCheckbox(scope.newItem, toggleFn,
-                                              angular.element(element[0].firstElementChild));
+          var checkingInProgress;
+          scope.toggleLeftCheckbox = function(toggleFn) {
+            checkingInProgress = controllers[0].toggleLeftCheckbox(scope.newItem, toggleFn,
+                                                                   checkingInProgress);
           };
 
           function enter(){

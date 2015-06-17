@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function listItemDirective($parse, $rootScope, UserSessionService) {
+ function listItemDirective($parse, $q, $rootScope, UISessionService, UserSessionService) {
   return {
     restrict: 'A',
     require: '^list',
@@ -36,6 +36,7 @@
         },
         post: function(scope, element, attrs, listController) {
           if (scope.$last) listController.notifyArrayVisible();
+          var checkingInProgress;
 
           scope.toggleLeftCheckbox = function (item, toggleFn) {
             // Add class for animation when item is not completed, remove when item is completed.
@@ -44,20 +45,13 @@
             {
               // Completing
               element[0].firstElementChild.classList.add('checkbox-checked-active');
-              scope.checkedActiveAdded = Date.now();
-              setTimeout(function(){
-                // Remove the class anyway if there hasn't been another add in the near history
-                if (Date.now() - scope.checkedActiveAdded >= $rootScope.CHECKBOX_CHECKING_ANIMATION_TIME){
-                  element[0].firstElementChild.classList.remove('checkbox-checked-active');
-                }
-              }, $rootScope.CHECKBOX_CHECKING_ANIMATION_TIME);
-            }else if (element[0].firstElementChild.classList.contains('checkbox-checked-active') &&
-                      !item.trans.optimisticComplete())
+            } else if (element[0].firstElementChild.classList.contains('checkbox-checked-active') &&
+                       !item.trans.optimisticComplete())
             {
               // Uncompleting
               element[0].firstElementChild.classList.remove('checkbox-checked-active');
             }
-            listController.toggleLeftCheckbox(item, toggleFn, angular.element(element[0].firstElementChild));
+            checkingInProgress = listController.toggleLeftCheckbox(item, toggleFn, checkingInProgress);
           };
 
           scope.getListItemClasses = function(item) {
@@ -91,7 +85,7 @@
     }
   };
 }
-listItemDirective['$inject'] = ['$parse', '$rootScope', 'UserSessionService'];
+listItemDirective['$inject'] = ['$parse', '$q', '$rootScope', 'UISessionService', 'UserSessionService'];
 angular.module('em.base').directive('listItem', listItemDirective);
 
 /*

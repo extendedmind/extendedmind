@@ -147,8 +147,7 @@
         }
       };
 
-      var checkingTimeout;
-      this.toggleLeftCheckbox = function(item, toggleFn) {
+      this.toggleLeftCheckbox = function(item, toggleFn, checkingTimeout) {
 
         var checkboxCheckingReadyDeferred = $q.defer();
         var checked = toggleFn(item, checkboxCheckingReadyDeferred);
@@ -166,6 +165,8 @@
           }
           checkboxCheckingReadyDeferred.resolve(item);
         }
+
+        return checkingTimeout;
       };
     }],
     link: function(scope, element, attrs, controllers) {
