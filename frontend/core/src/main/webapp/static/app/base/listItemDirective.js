@@ -96,7 +96,7 @@ angular.module('em.base').directive('listItem', listItemDirective);
 * See: https://docs.angularjs.org/api/ngAnimate
 */
 
-function listItemLeaveAnimation($animate, UISessionService) {
+function listItemLeaveAnimation(UISessionService) {
 
   return {
     /*
@@ -112,5 +112,5 @@ function listItemLeaveAnimation($animate, UISessionService) {
     }
   };
 }
-listItemLeaveAnimation['$inject'] = ['$animate', 'UISessionService'];
+listItemLeaveAnimation['$inject'] = ['UISessionService'];
 angular.module('em.tasks').animation('.animate-list-item-leave', listItemLeaveAnimation);
