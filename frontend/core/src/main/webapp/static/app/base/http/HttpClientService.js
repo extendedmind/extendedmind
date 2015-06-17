@@ -123,6 +123,14 @@
     var headRequest = HttpRequestQueueService.getHead(skipSecondary);
     if (headRequest) {
       if (!headRequest.last) {
+
+        // Never execute a request that has a fake UUID in the url, it _will_ fail. We need to wait
+        // for a sync to come, which should correct this problem.
+        if (headRequest.content.url.indexOf('00000000-0000-') !== -1){
+          HttpRequestQueueService.releaseLock();
+          return;
+        }
+
         headRequest.executing = true;
         $http(headRequest.content)
         .success(function(data /*, status, headers, config*/) {
