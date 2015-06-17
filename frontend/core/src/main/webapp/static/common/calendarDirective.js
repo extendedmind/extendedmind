@@ -80,10 +80,8 @@
             // Add little animation to indicate the user that he/she succesfully clicked a date.
             $animate.addClass(activeDate.firstElementChild, 'animate-calendar-selected-date')
             .then(function() {
-              scope.$apply(function() {
-                // Good to return the date.
-                scope.returnDate({date: calendar.getDate()});
-              });
+              // Good to return the date.
+              scope.returnDate({date: calendar.getDate()});
             });
           });
         }

@@ -15,11 +15,11 @@
  'use strict';
 
  /*
- * WHAT'S NOT WORKING:
+ * NOTE: what's not working
  *  - enter omnibar text, enter keywords search, unfocus, clear omnibar text, focus keywords search
  */
 
- function editorFooterDirective($animate, $document, $parse, $rootScope, $timeout, packaging) {
+ function editorFooterDirective($animateCss, $document, $parse, $rootScope, $timeout, packaging) {
   var footerHeight = 44;  // NOTE: Match with @grid-vertical in LESS.
   return {
     restrict: 'A',
@@ -179,28 +179,21 @@
         element[0].style.height = footerHeight + 'px';
         element[0].style.bottom = 0;
 
-        // Remove animation class from opening.
-        element[0].classList.remove('animate-editor-footer-open');
-
         // Start shrink animation.
-        shrinkPromise = $animate.addClass(element, 'animate-editor-footer-close', {
+        shrinkPromise = $animateCss(element, {
           // Remove flicker during open caused by leftover transform property in element style from previous
           // position.
           to: {
             transform: 'translate3d(0, 0, 0)' // Reset element style.
-          }
-        }).then(function() {
-          if (!$rootScope.$$phase && !scope.$$phase)
-            scope.$apply(function(){
-              scope.footerExpanded = false;   // Remove expandable DOM.
-              scope.footerExpandOpen = false; // Footer is now closed.
-              scope.footerExpandedToMaxHeight = false;  // Reset variable.
-            });
-          else {
-            scope.footerExpanded = false;   // Remove expandable DOM.
-            scope.footerExpandOpen = false; // Footer is now closed.
-            scope.footerExpandedToMaxHeight = false;  // Reset variable.
-          }
+          },
+          easing: $rootScope.ANIMATION_TIMING_FUNCTION,
+          duration: $rootScope.EDITOR_FOOTER_ANIMATION_SPEED
+        });
+
+        shrinkPromise.start().done(function() {
+          scope.footerExpanded = false;   // Remove expandable DOM.
+          scope.footerExpandOpen = false; // Footer is now closed.
+          scope.footerExpandedToMaxHeight = false;  // Reset variable.
           shrinkPromise = undefined;
           resetStates = {}; // Clear reset states
         });
@@ -215,42 +208,30 @@
         element[0].style.height = expandedHeight + footerHeight + 'px';
         element[0].style.bottom = -expandedHeight + 'px';
 
-        // Remove animation class from previous toggling.
-        element[0].classList.remove('animate-editor-footer-close');
-        element[0].classList.remove('animate-editor-footer-open');
-
-        var editorFooterOpenClass = 'animate-editor-footer-open';
-        if (noAnimation) {
-          // Prevent animation.
-          editorFooterOpenClass += ' no-animate';
-        }
-
-        expandPromise = $animate.addClass(element, editorFooterOpenClass, {
+        expandPromise = $animateCss(element, {
           from: {
             transform: 'translate3d(0, ' + -oldTranslateYPosition + 'px' + ', 0)'
           },
           to: {
             transform: 'translate3d(0, ' + -expandedHeight + 'px, 0)'
-          }
-        }).then(function() {
+          },
+          easing: $rootScope.ANIMATION_TIMING_FUNCTION,
+          duration: noAnimation ? 0 : $rootScope.EDITOR_FOOTER_ANIMATION_SPEED
+        });
+
+        expandPromise.start().done(function() {
           // Shrink promise exists if footer is shrinked before it is fully expanded. In that case,
           // this resolve callback is more like a rejection so let's do nothing here and let shrink promise
           // do its thing instead.
           if (!shrinkPromise) {
             // No shrink promise -> footer expanded.
 
-            scope.$apply(function() {
-              // Set padding-bottom for container to make content scrollable.
-              containerInfos.footerHeight = containerInfos.oldFooterHeight = expandedHeight + footerHeight;
-              contentElement.style.paddingBottom = containerInfos.footerHeight + 'px';
-              scope.footerExpandOpen = true;  // Footer is now opened.
-            });
+            // Set padding-bottom for container to make content scrollable.
+            containerInfos.footerHeight = containerInfos.oldFooterHeight = expandedHeight + footerHeight;
+            contentElement.style.paddingBottom = containerInfos.footerHeight + 'px';
+            scope.footerExpandOpen = true;  // Footer is now opened.
           }
           expandPromise = undefined;
-
-          if (noAnimation) {
-            element[0].classList.remove('no-animate');
-          }
         });
         // Need to digest ot be sure that class is applied
         if (!$rootScope.$$phase && !scope.$$phase){
@@ -467,5 +448,6 @@
     }
   };
 }
-editorFooterDirective['$inject'] = ['$animate', '$document', '$parse', '$rootScope', '$timeout', 'packaging'];
+editorFooterDirective['$inject'] = ['$animateCss', '$document', '$parse', '$rootScope', '$timeout',
+'packaging'];
 angular.module('em.base').directive('editorFooter', editorFooterDirective);

@@ -96,21 +96,26 @@ angular.module('em.base').directive('listItem', listItemDirective);
 * See: https://docs.angularjs.org/api/ngAnimate
 */
 
-function listItemLeaveAnimation(UISessionService) {
+function listItemLeaveAnimation($animateCss, UISessionService) {
 
   return {
     /*
     *  Cancel animation when leave animation is locked.
     */
     leave: function(element, leaveDone) {
-      leaveDone();
-      if (!UISessionService.isAllowed('leaveAnimation')) {
-        // Second leaveDone call will cancel animation.
+      var runner = $animateCss(element, {
+        event: 'leave',
+        structural: true
+      }).start();
+
+      if (UISessionService.isAllowed('leaveAnimation')) {
+        runner.done(leaveDone);
+      } else {
+        runner.end();
         leaveDone();
-        return;
       }
     }
   };
 }
-listItemLeaveAnimation['$inject'] = ['UISessionService'];
+listItemLeaveAnimation['$inject'] = ['$animateCss', 'UISessionService'];
 angular.module('em.tasks').animation('.animate-list-item-leave', listItemLeaveAnimation);
