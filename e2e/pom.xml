@@ -181,6 +181,10 @@
               <alias>nginx-conf</alias>
             </image>
             <image>
+              <name>extendedmind/cube-conf</name>
+              <alias>cube-conf</alias>
+            </image>
+            <image>
               <name>extendedmind/confd</name>
               <alias>confd</alias>
               <run>
@@ -200,6 +204,7 @@
                     <image>backend-conf</image>
                     <image>mongodb-conf</image>
                     <image>nginx-conf</image>
+                    <image>cube-conf</image>
                   </from>
                 </volumes>
                 <cmd>/usr/src/confd -backend=env</cmd>
@@ -259,6 +264,11 @@
               <name>extendedmind/cube-evaluator</name>
               <alias>cube-evaluator</alias>
               <run>
+                <volumes>
+                  <from>
+                    <image>cube-conf</image>
+                  </from>
+                </volumes>
                 <links>
                   <link>mongodb:mongodb</link>
                 </links>
@@ -268,6 +278,11 @@
               <name>extendedmind/cube-collector</name>
               <alias>cube-collector</alias>
               <run>
+                <volumes>
+                  <from>
+                    <image>cube-conf</image>
+                  </from>
+                </volumes>
                 <links>
                   <link>mongodb:mongodb</link>
                 </links>
