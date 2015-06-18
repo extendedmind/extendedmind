@@ -28,6 +28,9 @@
   var persistentDataLoadedCallbacks = {};
   var persistentDataLoaded = false;
 
+  // Items and users stay deleted for 30 days before they are destroyed
+  var DELETED_BEFORE_DESTROYED = 2592000000;
+
   // Sync session storage with local storage.
   function syncWebStorages() {
     // Fake user
@@ -377,6 +380,9 @@
     },
     isItemsSynchronized: function(ownerUUID) {
       return this.getItemsSynchronized(ownerUUID) !== undefined;
+    },
+    getDeletedBeforeDestroyedDuration: function() {
+      return DELETED_BEFORE_DESTROYED;
     },
     setPersistentDataLoaded: function(value) {
       persistentDataLoaded = value;

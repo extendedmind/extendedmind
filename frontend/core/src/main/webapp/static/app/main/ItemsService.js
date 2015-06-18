@@ -281,6 +281,13 @@
         ItemLikeService.persistAndReset(items[newUUID].deletedItems, ITEM_TYPE, newUUID, itemFieldInfos);
       }
     },
+    resetOwnerData: function(ownerUUID){
+      if (items[ownerUUID]){
+        ItemLikeService.destroyPersistentItems(
+          items[ownerUUID].activeItems.concat(items[ownerUUID].deletedItems));
+        initializeArrays(ownerUUID);
+      }
+    },
     // Regular expressions for item requests
     putNewItemRegex: ItemLikeService.getPutNewRegex(ITEM_TYPE),
     putExistingItemRegex: ItemLikeService.getPutExistingRegex(ITEM_TYPE),

@@ -517,6 +517,14 @@
         }
       }
     },
+    resetOwnerData: function(ownerUUID){
+      if (notes[ownerUUID]){
+        ItemLikeService.destroyPersistentItems(
+          notes[ownerUUID].activeNotes.concat(
+            notes[ownerUUID].deletedNotes).concat(notes[ownerUUID].archivedNotes));
+        initializeArrays(ownerUUID);
+      }
+    },
     noteFieldInfos: noteFieldInfos,
     // Regular expressions for note requests
     putNewNoteRegex: ItemLikeService.getPutNewRegex(NOTE_TYPE),

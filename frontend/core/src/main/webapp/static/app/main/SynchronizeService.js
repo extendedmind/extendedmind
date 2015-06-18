@@ -905,7 +905,7 @@
     });
   }
 
-  function synchronize(ownerUUID, initialParams) {
+  function synchronize(ownerUUID, sinceLastItemsSynchronized, initialParams) {
     function doSynchronize(url, latestModified, deferred, initialParams){
       if (UserSessionService.isFakeUser()){
         deferred.resolve('fakeUser');
@@ -929,6 +929,23 @@
 
     var deferred = $q.defer();
     var latestModified = UserSessionService.getLatestModified(ownerUUID);
+
+    if (!UserSessionService.isFakeUser() && latestModified !== undefined && latestModified !== null &&
+        sinceLastItemsSynchronized > UserSessionService.getDeletedBeforeDestroyedDuration()){
+      // The user has data but there has been over 30 days since last sync. This means that there might
+      // have been deleted items which will not come up in the delta search. We need to destroy this owner.
+      NotesService.resetOwnerData(ownerUUID);
+      TasksService.resetOwnerData(ownerUUID);
+      TagsService.resetOwnerData(ownerUUID);
+      ListsService.resetOwnerData(ownerUUID);
+      ItemsService.resetOwnerData(ownerUUID);
+
+      // Delete also all modifications from the queue
+      BackendClientService.notifyOwnerAccess(ownerUUID, undefined);
+      // Setting lastModified to undefined causes online sync
+      latestModified = undefined;
+    }
+
     var url = '/api/' + ownerUUID + '/items';
     if (UserSessionService.isPersistentStorageEnabled() && !UserSessionService.isPersistentDataLoaded()){
       // Load items from the database
@@ -984,8 +1001,8 @@
 
   return {
     // Main method to synchronize all arrays with backend.
-    synchronize: function(ownerUUID, initialParams) {
-      return synchronize(ownerUUID, initialParams);
+    synchronize: function(ownerUUID, sinceLastItemsSynchronized, initialParams) {
+      return synchronize(ownerUUID, sinceLastItemsSynchronized, initialParams);
     },
     addCompletedAndArchived: function(ownerUUID) {
       var deferred = $q.defer();

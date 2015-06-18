@@ -345,9 +345,7 @@
     resetAndPruneOldDeleted: function(itemsArray, itemType, ownerUUID, fieldInfos){
       function destroyIfDeletedLimitReached(item){
         if (item.trans.deleted){
-          // Item stays deleted for 30 days before it is destroyed
-          var DESTROY_TRESHOLD = 2592000000;
-          if (item.trans.deleted < (Date.now() - DESTROY_TRESHOLD)){
+          if (item.trans.deleted < (Date.now() - UserSessionService.getDeletedBeforeDestroyedDuration())){
             if (UserSessionService.isPersistentStorageEnabled()){
               PersistentStorageService.destroy(item.trans.uuid);
             }

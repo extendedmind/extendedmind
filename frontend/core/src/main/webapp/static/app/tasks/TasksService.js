@@ -826,6 +826,14 @@
       }
       return $q.all(saveTaskPromises);
     },
+    resetOwnerData: function(ownerUUID){
+      if (tasks[ownerUUID]){
+        ItemLikeService.destroyPersistentItems(
+          tasks[ownerUUID].activeTasks.concat(
+            tasks[ownerUUID].deletedTasks).concat(tasks[ownerUUID].archivedTasks));
+        initializeArrays(ownerUUID);
+      }
+    },
     taskFieldInfos: taskFieldInfos,
     // Regular expressions for task requests
     putNewTaskRegex: ItemLikeService.getPutNewRegex(TASK_TYPE),

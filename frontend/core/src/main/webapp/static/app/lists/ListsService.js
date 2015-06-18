@@ -810,6 +810,14 @@
         }
       }
     },
+    resetOwnerData: function(ownerUUID){
+      if (lists[ownerUUID]){
+        ItemLikeService.destroyPersistentItems(
+          lists[ownerUUID].activeLists.concat(
+            lists[ownerUUID].deletedLists).concat(lists[ownerUUID].archivedLists));
+        initializeArrays(ownerUUID);
+      }
+    },
     listFieldInfos: listFieldInfos,
     // Regular expressions for list requests
     putNewListRegex: putNewListRegexp,

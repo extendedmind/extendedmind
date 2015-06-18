@@ -248,6 +248,13 @@
         ItemLikeService.persistAndReset(tags[newUUID].deletedTags, TAG_TYPE, newUUID, tagFieldInfos);
       }
     },
+    resetOwnerData: function(ownerUUID){
+      if (tags[ownerUUID]){
+        ItemLikeService.destroyPersistentItems(
+          tags[ownerUUID].activeTags.concat(tags[ownerUUID].deletedTags));
+        initializeArrays(ownerUUID);
+      }
+    },
     // Regular expressions for tag requests
     putNewTagRegex: ItemLikeService.getPutNewRegex(TAG_TYPE),
     putExistingTagRegex: ItemLikeService.getPutExistingRegex(TAG_TYPE),

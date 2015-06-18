@@ -121,7 +121,8 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
             $rootScope.syncState = 'modified';
           }
         });
-        SynchronizeService.synchronize(ownerUUID, forceSyncParams).then(function(status) {
+        SynchronizeService.synchronize(ownerUUID, sinceLastItemsSynchronized, forceSyncParams)
+        .then(function(status) {
           if (status === 'firstSync'){
             // Also immediately after first sync add completed and archived to the mix
             $rootScope.syncState = 'completedAndArchived';
