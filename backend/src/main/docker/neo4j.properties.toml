@@ -2,5 +2,7 @@
 src = "../templates/backend/neo4j.properties.tmpl"
 dest = "/etc/extendedmind/neo4j.properties"
 keys = [
-    "/extendedmind/backend/neo4jupgrade"
+    "/extendedmind/backend/neo4jupgrade",
+    "/extendedmind/ha",
+    "/extendedmind/servers"
 ]

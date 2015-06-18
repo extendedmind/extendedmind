@@ -3,3 +3,9 @@ allow_store_upgrade=true
 {{end}}
 online_backup_enabled=true
 online_backup_server=0.0.0.0:6362
+
+{{if exists "/extendedmind/ha"}}
+ha.server_id={{getenv "HOST_ID"}}
+{{$servers := getvs "/extendedmind/servers/*"}}
+ha.initial_hosts={{join $servers ":5001,"}}:5001
+{{end}}
