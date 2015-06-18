@@ -444,7 +444,7 @@
   };
 
   function hasUnsetCollapsableProperty() {
-    return !$scope.note.trans.list || !$scope.note.trans.link || ($scope.isFullEditor &&
+    return !$scope.note.trans.list || !$scope.note.trans.link || ($scope.fullEditor &&
                                        (!$scope.note.trans.keywords || !$scope.note.trans.keywords.length));
   }
 
