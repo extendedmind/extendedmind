@@ -73,7 +73,7 @@ trait ServiceBase extends API with Injectable {
     val mutableMap: scala.collection.mutable.Map[String, Any] = scala.collection.mutable.Map(("user" -> sc.userUUID.toString))
     if (ownerUUID.isDefined){
       if (ownerUUID.get != sc.userUUID){
-        mutableMap.put("collective", ownerUUID.get.toString())
+        mutableMap.put("foreign", ownerUUID.get.toString())
       }
       if(itemUUID.isDefined){
         mutableMap.put("item", itemUUID.get.toString())

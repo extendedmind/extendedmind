@@ -1,14 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-    <target>System.out</target>
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <!-- This would log also TRACE and DEBUG to System.out -->
+    <!--filter class="ch.qos.logback.core.filter.EvaluatorFilter">      
+      <evaluator class="ch.qos.logback.classic.boolex.GEventEvaluator"> 
+        <expression>
+          e.level.toInt() &lt;= INFO.toInt()
+        </expression>
+      </evaluator>
+      <OnMismatch>DENY</OnMismatch>
+      <OnMatch>NEUTRAL</OnMatch>
+    </filter-->
+
+    <filter class="ch.qos.logback.classic.filter.LevelFilter">
+      <level>INFO</level>
+      <onMatch>ACCEPT</onMatch>
+      <onMismatch>DENY</onMismatch>
+    </filter>
+
     <encoder>
-      <pattern>%date{MM/dd HH:mm:ss} %-5level[%.15thread] %logger{1} - %msg%n</pattern>
+      <pattern>%date{MM/dd HH:mm:ss} %-5level[%.15thread] %logger{1} - %X{user}/%X{foreign}:%X{item}: %msg%n</pattern>
     </encoder>
-    <root level="DEBUG">
-      <appender-ref ref="CONSOLE" />
-    </root>
+    <target>System.out</target>
+  </appender>
+
+  <appender name="STDERR" class="ch.qos.logback.core.ConsoleAppender">
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter"> 
+      <level>warn</level>
+    </filter>
+
+    <encoder>
+      <pattern>%date{MM/dd HH:mm:ss} %-5level[%.15thread] %logger{1} - %X{user}/%X{foreign}:%X{item}: %msg%n</pattern>
+    </encoder>
+    <target>System.err</target>
   </appender>
 
   <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -22,22 +47,29 @@
     </rollingPolicy>
 
     <encoder>
-      <pattern>%date{MM/dd HH:mm:ss} %-5level[%.15thread] %logger{1} - %msg%n</pattern>
+      <pattern>%date{MM/dd HH:mm:ss} %-5level[%.15thread] %logger{1} - %X{user}/%X{foreign}:%X{item}: %msg%n</pattern>
     </encoder>
   </appender>
 
-  <appender name="MONGODB" class="org.extendedmind.logback.MongoDBAppender">
+  <!-- Needs slf4j 1.7.6 to work because of classpath problems. -->
+  <!-- appender name="MONGODB" class="org.extendedmind.logback.MongoDBAppender">
     <host>${MONGODB_PORT_27017_TCP_ADDR}</host>
     <port>27017</port>
     <db>cube</db>
-  </appender>
+  </appender -->
+  <!--root level="info">
+    <appender-ref ref="MONGODB" />
+  </root-->
 
-  <root level="debug">
-    <appender-ref ref="CONSOLE" />
+  <!-- Rolling files have most detailed logs -->
+  <root level="DEBUG">
     <appender-ref ref="FILE" />
   </root>
 
-  <root level="info">
-    <appender-ref ref="MONGODB" />
+  <!-- stdout and stderr are fed into systemd journal -->
+  <root level="INFO">
+    <appender-ref ref="STDOUT"/>
+    <appender-ref ref="STDERR" />
   </root>
+
 </configuration>
