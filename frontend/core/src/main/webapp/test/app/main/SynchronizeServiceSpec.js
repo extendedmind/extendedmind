@@ -82,6 +82,9 @@ describe('SynchronizeService', function() {
     getActiveUUID: function () {
       return testOwnerUUID;
     },
+    getDeletedBeforeDestroyedDuration: function() {
+      return 2592000000;
+    },
     isFakeUser: function () {
       return false;
     },

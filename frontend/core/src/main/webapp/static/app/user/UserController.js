@@ -100,7 +100,7 @@
 
   $scope.openTermsInEditor = function(){
     var user  = UserSessionService.getUser();
-    $http.get('http://ext.md/terms.html').then(function(termsResponse){
+    $http.get('https://ext.md/terms.html').then(function(termsResponse){
       user.terms = termsResponse.data;
       $scope.openEditor('user', user, 'terms');
     });
@@ -108,7 +108,7 @@
 
   $scope.openPrivacyInEditor = function(){
     var user  = UserSessionService.getUser();
-    $http.get('http://ext.md/privacy.html').then(function(privacyResponse){
+    $http.get('https://ext.md/privacy.html').then(function(privacyResponse){
       user.privacy = privacyResponse.data;
       $scope.openEditor('user', user, 'privacy');
     });
