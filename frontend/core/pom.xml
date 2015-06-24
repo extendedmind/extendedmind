@@ -573,10 +573,10 @@
                 </ports>
                 <assembly>
                   <mode>dir</mode>
-                  <basedir>/usr/src</basedir>
+                  <basedir>/usr/src/nginx</basedir>
                   <descriptor>nginx-assembly.xml</descriptor>
                 </assembly>
-                <cmd><shell>/bin/bash /usr/src/nginx-run.sh</shell></cmd>
+                <entryPoint><exec><arg>/usr/src/nginx/nginx-run.pl</arg></exec></entryPoint>
               </build>
             </image>
             <image>
