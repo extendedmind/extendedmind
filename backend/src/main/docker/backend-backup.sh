@@ -4,7 +4,7 @@ if [ -z "$1" ]
   then
     BACKUP_LOCATION=/var/extendedmind/backup/$TODAY/
   else
-  	BACKUP_LOCATION=$1/$TODAY/
+    BACKUP_LOCATION=$1/$TODAY/
 fi
 
 if [ -z "$2" ]
@@ -29,9 +29,13 @@ do
     if [ $? -ne 0 ]; then echo "problems in the backup"; fi
     BACKUP_FILE=/usr/src/extendedmind/work/em-$(date +"%Y-%m-%d-%H%M%S").tar.gz
     tar -zcf $BACKUP_FILE /usr/src/extendedmind/work/neo4j 2>&1 | grep -v 'Removing leading'
-    if [ ! -d $BACKUP_LOCATION ]
+
+    if [ -z  $CP_PRE_COMMAND ]
     then
-      mkdir -p $BACKUP_LOCATION
+      if [ ! -d $BACKUP_LOCATION ]
+      then
+        mkdir -p $BACKUP_LOCATION
+      fi
     fi
     echo "Executing: " $CP_PRE_COMMAND cp $BACKUP_FILE $BACKUP_LOCATION
     $CP_PRE_COMMAND cp $BACKUP_FILE $BACKUP_LOCATION
