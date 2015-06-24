@@ -6,6 +6,7 @@
       <directory>${project.basedir}/src/main/docker</directory>
       <outputDirectory>.</outputDirectory>
       <includes>
+        <include>backend-backup.pl</include>
         <include>backend-backup.sh</include>
       </includes>
     </fileSet>

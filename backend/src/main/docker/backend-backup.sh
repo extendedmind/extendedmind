@@ -14,6 +14,9 @@ else
   CP_PRE_COMMAND=$2
 fi
 
+# Add a clean exit trap
+trap 'echo exiting backup script..; exit' SIGINT SIGQUIT SIGTERM
+
 # Poll infinitely every hour
 POLL_INTERVAL=3600
 while true;
