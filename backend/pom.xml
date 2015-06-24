@@ -504,7 +504,11 @@
                   <basedir>/usr/src/extendedmind</basedir>
                   <descriptor>backend-backup-assembly.xml</descriptor>
                 </assembly>
-                <cmd><shell>/usr/src/extendedmind/backend-backup.sh</shell></cmd>
+                <cmd>
+                  <exec>
+                    <arg>/usr/src/extendedmind/backend-backup.sh</arg>
+                  </exec>
+                </cmd>
               </build>
             </image>
           </images>
