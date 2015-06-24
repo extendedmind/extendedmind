@@ -8,6 +8,7 @@ TODO: em grid structure explained in plain English (when new grid structure deci
 */
 @height-column-max: 1025px;
 @width-column-max: 768px; // iPhone 5 landscape is still one column
+@min-width-three-column: 1088px;
 
 @width-menu: 260px;
 
@@ -41,10 +42,10 @@ TODO: em grid structure explained in plain English (when new grid structure deci
   height: inherit;  // [1]
 }
 
-// 1. Hide - but do not collapse - menu when editor is open.
+// 1. Hide - but do not collapse - menu when editor is open and when menu is not open.
 // 2. Hide editor when it is not open.
 .container-main {
-  &.editor-show .container-menu {
+  &.editor-show:not(.menu-show) .container-menu {
     visibility: hidden; // [1]
   }
   &:not(.editor-show) .container-editor {
@@ -194,6 +195,14 @@ Vertically center .container-master and .container-editor in large screens
   }
 }
 
+// 1. Align right, but FIXME when there is more room.
+@media (min-width: @min-width-three-column) {
+  .container-editor {
+    right: 0; // [1]
+    max-width: @width-column-max;
+  }
+}
+
 /*
 **************************************************************************
 # LEVEL 4: Fluid
@@ -240,9 +249,9 @@ Vertically center .container-master and .container-editor in large screens
   padding-bottom: @height-footer-short;
 }
 
-// 1. Inherit width from parent. Elements inside swiper would otherwise be as wide as `.swiper-wrapper`.
+// 1. Set width to expand horizontally.
 .swiper-slide .container-content {
-  width: inherit; /* [1] */
+  width: 100%; /* [1] */
 }
 
 // 1. Make room for outer footer (.container-editor--inner__after).

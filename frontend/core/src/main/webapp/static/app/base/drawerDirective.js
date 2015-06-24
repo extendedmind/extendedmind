@@ -14,10 +14,22 @@
  */
  'use strict';
 
- function drawerDirective(DrawerService) {
+ function drawerDirective($rootScope, DrawerService) {
   return {
     restrict: 'A',
     controller: function() {
+      // CALLBACK REGISTRATION
+
+      var areaResizeReadyCallbacks = {};
+
+      this.registerAreaResizeReady = function(callback, id) {
+        areaResizeReadyCallbacks[id] = callback;
+      };
+
+      this.unregisterAreaResizeReady = function(id) {
+        delete areaResizeReadyCallbacks[id];
+      };
+
       // GLOBAL FUNCTIONS
       this.disableEditorDrawerAndResetPosition = function() {
         DrawerService.disableDragging('right');
@@ -27,11 +39,35 @@
       this.enableEditorDrawer = function() {
         DrawerService.enableDragging('right');
       };
+
+      DrawerService.registerOpenedCallback('left', menuDrawerOpened, 'drawerDirective');
+      DrawerService.registerClosedCallback('left', menuDrawerClosed, 'drawerDirective');
+
+      /*
+      * Menu drawer animation is ready - menu is open.
+      */
+      function menuDrawerOpened() {
+        if ($rootScope.columns === 3) executeAreaResizeReadyCallbacks();
+      }
+
+      /*
+      * Animation of menu drawer ready, menu now hidden.
+      */
+      function menuDrawerClosed() {
+        if ($rootScope.columns === 3) executeAreaResizeReadyCallbacks();
+      }
+
+      function executeAreaResizeReadyCallbacks() {
+        for (var id in areaResizeReadyCallbacks) {
+          if (areaResizeReadyCallbacks.hasOwnProperty(id)) areaResizeReadyCallbacks[id]();
+        }
+      }
+
     },
     link: function postLink(scope, element, attrs) {
       DrawerService.setDrawerElement(attrs.drawer, element[0]);
     }
   };
 }
-drawerDirective['$inject'] = ['DrawerService'];
+drawerDirective['$inject'] = ['$rootScope', 'DrawerService'];
 angular.module('em.base').directive('drawer', drawerDirective);

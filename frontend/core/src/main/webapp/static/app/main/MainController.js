@@ -433,7 +433,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
 
     var promise = UISessionService.deferAction('editorClose');
 
-    if (DrawerService.isOpen('left')) {
+    if (DrawerService.isOpen('left') && $rootScope.columns < 3) {
       DrawerService.close('left', speed);
       openEditorAfterMenuClosed = {type: type, item: item, mode: mode, speed: speed};
       openMenuAfterEditorClosed = true;
@@ -459,16 +459,28 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
   };
 
   $scope.toggleMenu = function() {
-    DrawerService.toggle('left');
+    var menuOpen = DrawerService.toggle('left');
+    if ($rootScope.columns === 3) {
+      if (menuOpen && !$element[0].classList.contains('menu-show')) {
+        $element[0].classList.add('menu-show');
+      } else if (!menuOpen && $element[0].classList.contains('menu-show')) {
+        $element[0].classList.remove('menu-show');
+      }
+    }
   };
 
   $scope.closeMenu = function() {
     DrawerService.close('left');
+    if ($rootScope.columns === 3 && $element[0].classList.contains('menu-show'))
+      $element[0].classList.remove('menu-show');
   };
 
   $scope.openMenu = function() {
     if (!$scope.isMenuVisible()){
       DrawerService.open('left');
+      if ($rootScope.columns === 3 && !$element[0].classList.contains('menu-show')) {
+        $element[0].classList.add('menu-show');
+      }
     }
   };
 
@@ -1011,7 +1023,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     for (var id in editorOpenedCallbacks) {
       editorOpenedCallbacks[id]();
     }
-    $element[0].classList.add('editor-visible');
+    if ($rootScope.columns < 3) $element[0].classList.add('editor-visible');
   }
 
   function executeAboutToCloseCallbacks() {

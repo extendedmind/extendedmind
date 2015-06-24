@@ -639,8 +639,8 @@
 
       if (controllers[0]){
 
-        // Register callbacks for main swipers
         if (scope.swiperType === 'main'){
+          // Register callbacks for main swipers
           controllers[0].registerAreaAboutToShrink(swiperAboutToShrink, scope.swiperPath);
           controllers[0].registerAreaAboutToGrow(swiperAboutToGrow, scope.swiperPath);
           controllers[0].registerAreaResizeReady(swiperResizeReady, scope.swiperPath);
@@ -659,6 +659,18 @@
         // Register hide and show callbacks to swipers whose ancestor is controllers[0].
         controllers[0].registerAreaAboutToHide(disableSwiping, scope.swiperPath);
         controllers[0].registerAreaAboutToShow(enableSwiping, scope.swiperPath);
+      }
+
+      if (controllers[1] && scope.swiperType === 'main') {
+        controllers[1].registerAreaResizeReady(swiperResizeReady, scope.swiperPath);
+      }
+
+      scope.$on('$destroy', onDestroy);
+
+      function onDestroy() {
+        if (controllers[1] && scope.swiperType === 'main') {
+          controllers[1].unregisterAreaResizeReady(scope.swiperPath);
+        }
       }
     }
   };

@@ -16,93 +16,101 @@
 
  function DrawerService($q) {
 
-  var snappers = {};
+  var drawers = {};
   var executeOpenedCallbacksDeferred;
 
   // CALLBACKS
 
-  function executeSnapperAnimatedCallbacks(snapperSide) {
-    // drawer is open when state is left or right
-    if (snappers[snapperSide].snapper.state().state === snapperSide) {
-
-      // Don't execute callbacks if already open. Animated is triggered
-      // on every swipe to handle!
-      if (!snappers[snapperSide].isOpen){
-        snappers[snapperSide].isOpen = true;
-        executeOpenedCallbacksDeferred = $q.defer();
-        for (var openId in snappers[snapperSide].openedCallbacks) {
-          if (snappers[snapperSide].openedCallbacks.hasOwnProperty(openId))
-            snappers[snapperSide].openedCallbacks[openId]();
-        }
-        executeOpenedCallbacksDeferred.resolve();
-        executeOpenedCallbacksDeferred = undefined;
-      }
-    }
-    if (snappers[snapperSide].snapper.state().state === 'closed') {
-      snappers[snapperSide].isOpen = false;
-      for (var closeId in snappers[snapperSide].closedCallbacks) {
-        if (snappers[snapperSide].closedCallbacks.hasOwnProperty(closeId))
-          snappers[snapperSide].closedCallbacks[closeId]();
-      }
-    }
-  }
-
-  function executeSnapperDraggerReleasedCallbacks(snapperSide) {
+  function executeSnapperDraggerReleasedCallbacks(drawerSide) {
     // This if statement is according to current understanding the most reliable (yet not the most intuitive)
     // way to detect that the drawer is closing.
-    var drawerState = snappers[snapperSide].snapper.state();
-    var drawerDirection;
-    if (drawerState.info.opening === snapperSide &&
-        drawerState.info.towards === snapperSide &&
-        drawerState.info.flick)
+    var snapperState = drawers[drawerSide].snapper.state();
+    if (snapperState.info.opening === drawerSide &&
+        snapperState.info.towards === drawerSide &&
+        snapperState.info.flick)
     {
-      drawerDirection = 'closing';
-      for (var aboutToCloseID in snappers[snapperSide].aboutToCloseCallbacks) {
-        if (snappers[snapperSide].aboutToCloseCallbacks.hasOwnProperty(aboutToCloseID))
-          snappers[snapperSide].aboutToCloseCallbacks[aboutToCloseID]();
+      for (var aboutToCloseID in drawers[drawerSide].aboutToCloseCallbacks) {
+        if (drawers[drawerSide].aboutToCloseCallbacks.hasOwnProperty(aboutToCloseID))
+          drawers[drawerSide].aboutToCloseCallbacks[aboutToCloseID]();
       }
-    } else if (drawerState.info.towards !== snapperSide && drawerState.info.flick) {
-      drawerDirection = 'opening';
-      for (var aboutToOpenID in snappers[snapperSide].aboutToOpenCallbacks) {
-        if (snappers[snapperSide].aboutToOpenCallbacks.hasOwnProperty(aboutToOpenID))
-          snappers[snapperSide].aboutToOpenCallbacks[aboutToOpenID]();
+    } else if (snapperState.info.towards !== drawerSide && snapperState.info.flick) {
+      for (var aboutToOpenID in drawers[drawerSide].aboutToOpenCallbacks) {
+        if (drawers[drawerSide].aboutToOpenCallbacks.hasOwnProperty(aboutToOpenID))
+          drawers[drawerSide].aboutToOpenCallbacks[aboutToOpenID]();
       }
     }
   }
 
-  function executeSnapperCloseCallbacks(snapperSide) {
-    for (var id in snappers[snapperSide].closeCallbacks) {
-      if (snappers[snapperSide].closeCallbacks.hasOwnProperty(id))
-        snappers[snapperSide].closeCallbacks[id]();
+  function executeOnDrawerCloseCallbacks(drawerSide) {
+    drawers[drawerSide].closing = true;
+    for (var id in drawers[drawerSide].onCloseCallbacks) {
+      if (drawers[drawerSide].onCloseCallbacks.hasOwnProperty(id))
+        drawers[drawerSide].onCloseCallbacks[id]();
     }
   }
 
-  function executeSnapperOpenCallbacks(snapperSide) {
-    for (var id in snappers[snapperSide].openCallbacks) {
-      if (snappers[snapperSide].openCallbacks.hasOwnProperty(id))
-        snappers[snapperSide].openCallbacks[id]();
+  function executeOnDrawerOpenCallbacks(drawerSide) {
+    drawers[drawerSide].opening = true;
+    for (var id in drawers[drawerSide].onOpenCallbacks) {
+      if (drawers[drawerSide].onOpenCallbacks.hasOwnProperty(id))
+        drawers[drawerSide].onOpenCallbacks[id]();
     }
   }
 
-  function executeSnapperInitializedCallbacks(snapperSide) {
-    var initializedCallbacks = snappers[snapperSide].initializedCallbacks;
+  function executeSnapperAnimatedCallbacks(drawerSide) {
+    if (drawers[drawerSide].snapper.state().state === drawerSide && !drawers[drawerSide].isOpen) {
+      // Drawer is open when state is left or right. Don't execute callbacks if already open.
+      // Animated is triggered on every swipe to handle!
+      executeDrawerOpenedCallbacks(drawerSide);
+    } else if (drawers[drawerSide].snapper.state().state === 'closed') {
+      executeDrawerClosedCallbacks(drawerSide);
+    }
+  }
+
+  function executeDrawerOpenedCallbacks(drawerSide) {
+    drawers[drawerSide].isOpen = true;
+    drawers[drawerSide].opening = false;
+    executeOpenedCallbacksDeferred = $q.defer();
+    for (var openId in drawers[drawerSide].openedCallbacks) {
+      if (drawers[drawerSide].openedCallbacks.hasOwnProperty(openId))
+        drawers[drawerSide].openedCallbacks[openId]();
+    }
+    executeOpenedCallbacksDeferred.resolve();
+    executeOpenedCallbacksDeferred = undefined;
+  }
+
+  function executeDrawerClosedCallbacks(drawerSide) {
+    drawers[drawerSide].isOpen = false;
+    drawers[drawerSide].closing = false;
+    for (var closeId in drawers[drawerSide].closedCallbacks) {
+      if (drawers[drawerSide].closedCallbacks.hasOwnProperty(closeId))
+        drawers[drawerSide].closedCallbacks[closeId]();
+    }
+  }
+
+  function executeDrawerInitializedCallbacks(drawerSide) {
+    var initializedCallbacks = drawers[drawerSide].initializedCallbacks;
     if (initializedCallbacks) {
-      for (var i = 0, len = initializedCallbacks.length; i < len; i++) {
-        initializedCallbacks[i](snapperSide);
+      for (var i = 0; i < initializedCallbacks.length; i++) {
+        initializedCallbacks[i](drawerSide);
       }
+      initializedCallbacks = [];
     }
   }
 
   // PRIVATE METHODS
+  function isDrawerCreated(drawerSide) {
+    return drawers[drawerSide] && drawers[drawerSide].created;
+  }
 
-  function snapperExists(snapperSide) {
-    if (snappers[snapperSide] && snappers[snapperSide].snapper) return true;
+  function snapperExists(drawerSide) {
+    return drawers[drawerSide] && drawers[drawerSide].snapper;
   }
 
   function createDrawerSkeleton() {
     return {
-      openCallbacks: {},
-      closeCallbacks: {},
+      onOpenCallbacks: {},
+      onCloseCallbacks: {},
       aboutToOpenCallbacks: {},
       aboutToCloseCallbacks: {},
       openedCallbacks: {},
@@ -116,183 +124,205 @@
     // INITIALIZATION
 
     setupDrawer: function(drawerSide, settings) {
-      if (!snappers[drawerSide]){
-        snappers[drawerSide] = createDrawerSkeleton();
+      if (!drawers[drawerSide]){
+        drawers[drawerSide] = createDrawerSkeleton();
       }
+      drawers[drawerSide].moveAisle = settings.moveAisle;
 
-      if (!snappers[drawerSide].snapper) {
-        // Snapper not created yet
-        snappers[drawerSide].snapper = new Snap(settings);
-        snappers[drawerSide].isDraggable = settings.touchToDrag ? true : false;
+      if (!drawers[drawerSide].created) {
+        // Drawer not created yet
+        drawers[drawerSide].isDraggable = settings.touchToDrag;
+        drawers[drawerSide].preventDrag = !settings.touchToDrag;
 
-        if (snappers[drawerSide].isDraggable) {
-          snappers[drawerSide].preventDrag = false;
-          snappers[drawerSide].snapper.enable();
-        } else{
-          snappers[drawerSide].preventDrag = true;
-          snappers[drawerSide].snapper.disable();
+        if (settings.moveAisle) {
+          drawers[drawerSide].snapper = new Snap(settings);
+
+          if (settings.touchToDrag) drawers[drawerSide].snapper.enable();
+          else drawers[drawerSide].snapper.disable();
+
+          drawers[drawerSide].snapper.on('animated', function() {
+            executeSnapperAnimatedCallbacks(drawerSide);
+          });
+          drawers[drawerSide].snapper.on('end', function(){
+            executeSnapperDraggerReleasedCallbacks(drawerSide);
+          });
+          drawers[drawerSide].snapper.on('close', function(){
+            executeOnDrawerCloseCallbacks(drawerSide);
+          });
+          drawers[drawerSide].snapper.on('open', function(){
+            executeOnDrawerOpenCallbacks(drawerSide);
+          });
         }
-
-        snappers[drawerSide].snapper.on('animated', function() {
-          executeSnapperAnimatedCallbacks(drawerSide);
-        });
-        snappers[drawerSide].snapper.on('end', function(){
-          executeSnapperDraggerReleasedCallbacks(drawerSide);
-        });
-
-        snappers[drawerSide].snapper.on('close', function(){
-          executeSnapperCloseCallbacks(drawerSide);
-        });
-
-        snappers[drawerSide].snapper.on('open', function(){
-          executeSnapperOpenCallbacks(drawerSide);
-        });
-
+        drawers[drawerSide].created = true;
       } else {
-        // Snapper created already, update settings
-        snappers[drawerSide].snapper.settings(settings);
+        // Drawer created already, update settings
+        drawers[drawerSide].preventDrag = !settings.touchToDrag;
 
-        // touchToDrag can not be updated with the settings method above
-        if (settings.touchToDrag) {
-          snappers[drawerSide].preventDrag = false;
-          this.enableDragging(drawerSide);
-        }
-        else {
-          snappers[drawerSide].preventDrag = true;
-          this.disableDragging(drawerSide);
+        if (settings.moveAisle) {
+          if (!snapperExists(drawerSide)) {
+            drawers[drawerSide].snapper = new Snap(settings);
+          } else {
+            drawers[drawerSide].snapper.settings(settings);
+          }
+
+          // Call functions because touchToDrag can not be updated within the settings parameter above.
+          if (settings.touchToDrag) {
+            this.enableDragging(drawerSide);
+          } else {
+            this.disableDragging(drawerSide);
+          }
+        } else if (snapperExists(drawerSide)) {
+          // Delete leftover snapper.
+          delete drawers[drawerSide].snapper;
         }
       }
-      executeSnapperInitializedCallbacks(drawerSide);
+      executeDrawerInitializedCallbacks(drawerSide);
     },
     deleteDrawer: function(drawerSide) {
-      if (snapperExists(drawerSide)) {
-        // Delete Snap.js instance and then delete the whole object.
-        delete snappers[drawerSide].snapper;
-        delete snappers[drawerSide];
-      }
+      if (snapperExists(drawerSide)) delete drawers[drawerSide].snapper;  // Delete Snap.js instance.
+      if (drawers[drawerSide]) delete drawers[drawerSide];                // Then delete the whole object.
     },
     setDrawerElement: function(drawerSide, drawerElement) {
-      if (!snappers[drawerSide]){
-        snappers[drawerSide] = createDrawerSkeleton();
+      if (!drawers[drawerSide]){
+        drawers[drawerSide] = createDrawerSkeleton();
       }
-      snappers[drawerSide].drawerElement = drawerElement;
+      drawers[drawerSide].drawerElement = drawerElement;
     },
     getDrawerElement: function(drawerSide) {
-      if (snappers[drawerSide]) return snappers[drawerSide].drawerElement;
+      if (drawers[drawerSide]) return drawers[drawerSide].drawerElement;
     },
     // NOTE: Call here needs to be _after_  setupDrawer has been called!
     setHandleElement: function(drawerSide, handleElement) {
-      snappers[drawerSide].snapper.settings({dragger: handleElement});
+      if (snapperExists(drawerSide)) drawers[drawerSide].snapper.settings({dragger: handleElement});
     },
     // NOTE: Call here needs to be _after_  setupDrawer has been called!
     setOverrideAisleElement: function(drawerSide, element) {
-      snappers[drawerSide].snapper.settings({overrideElement: element});
+      if (snapperExists(drawerSide)) {
+        drawers[drawerSide].snapper.settings({overrideElement: element});
 
-      if (snappers[drawerSide].isDraggable)
-        snappers[drawerSide].snapper.addOverrideListeningElementEvents(element);
+        if (drawers[drawerSide].isDraggable) {
+          drawers[drawerSide].snapper.addOverrideListeningElementEvents(element);
+        }
+      }
     },
 
     // MANIPULATION
 
     open: function(drawerSide, speed) {
       if (snapperExists(drawerSide)){
-        if (drawerSide === 'left' && snappers[drawerSide].snapper.state().state !== 'left'){
-          snappers[drawerSide].snapper.open('left', speed);
-        } else if (drawerSide === 'right' && snappers[drawerSide].snapper.state().state !== 'right'){
-          snappers[drawerSide].snapper.open('right', speed);
+        if (drawerSide === 'left' && drawers[drawerSide].snapper.state().state !== 'left'){
+          drawers[drawerSide].snapper.open('left', speed);
+        } else if (drawerSide === 'right' && drawers[drawerSide].snapper.state().state !== 'right'){
+          drawers[drawerSide].snapper.open('right', speed);
         }
+      } else if (isDrawerCreated(drawerSide) && !drawers[drawerSide].moveAisle) {
+        // Just execute callbacks.
+        executeOnDrawerOpenCallbacks(drawerSide);
+        executeDrawerOpenedCallbacks(drawerSide);
       }
     },
     close: function(drawerSide) {
-      if (snapperExists(drawerSide) && snappers[drawerSide].snapper.state().state === drawerSide){
-        snappers[drawerSide].snapper.close();
+      if (snapperExists(drawerSide) && drawers[drawerSide].snapper.state().state === drawerSide) {
+        drawers[drawerSide].snapper.close();
+      }
+      else if (isDrawerCreated(drawerSide) && !drawers[drawerSide].moveAisle) {
+        // Just execute callbacks.
+        executeOnDrawerCloseCallbacks(drawerSide);
+        executeDrawerClosedCallbacks(drawerSide);
       }
     },
     toggle: function(drawerSide) {
+      var drawerOpen;
       if (snapperExists(drawerSide)){
-        if (snappers[drawerSide].snapper.state().state === drawerSide){
+        if (drawers[drawerSide].snapper.state().state === drawerSide) {
           this.close(drawerSide);
-        }else {
+        } else {
           this.open(drawerSide);
+          drawerOpen = true;
         }
       }
+      return drawerOpen;
     },
     disableDragging: function(drawerSide) {
-      if (!snappers[drawerSide]) {
+      if (!drawers[drawerSide]) {
         // Create skeleton.
-        snappers[drawerSide] = createDrawerSkeleton();
+        drawers[drawerSide] = createDrawerSkeleton();
       }
 
-      if (!snapperExists(drawerSide)) {
+      if (!snapperExists(drawerSide) && !(isDrawerCreated(drawerSide) && !drawers[drawerSide].moveAisle)) {
         // Push into created callbacks.
-        snappers[drawerSide].initializedCallbacks.push(this.disableDragging);
-      } else if (snappers[drawerSide].isDraggable) {
-        snappers[drawerSide].snapper.disable();
-        snappers[drawerSide].isDraggable = false;
+        drawers[drawerSide].initializedCallbacks.push(this.disableDragging);
+      } else if (drawers[drawerSide].isDraggable) {
+        drawers[drawerSide].snapper.disable();
+        drawers[drawerSide].isDraggable = false;
       }
     },
     enableDragging: function(drawerSide) {
       if (snapperExists(drawerSide) &&
-          !snappers[drawerSide].preventDrag && !snappers[drawerSide].isDraggable)
+          !drawers[drawerSide].preventDrag && !drawers[drawerSide].isDraggable)
       {
-        snappers[drawerSide].snapper.enable();
-        snappers[drawerSide].isDraggable = true;
+        drawers[drawerSide].snapper.enable();
+        drawers[drawerSide].isDraggable = true;
       }
     },
     isDraggingEnabled: function(drawerSide) {
-      if (snapperExists(drawerSide)){
-        return snappers[drawerSide].isDraggable;
-      }
+      return snapperExists(drawerSide) && drawers[drawerSide].isDraggable;
+    },
+    isOpening: function(drawerSide) {
+      return isDrawerCreated(drawerSide) && drawers[drawerSide].opening;
+    },
+    isClosing: function(drawerSide) {
+      return isDrawerCreated(drawerSide) && drawers[drawerSide].closing;
     },
     isOpen: function(drawerSide) {
-      if (snapperExists(drawerSide)) return snappers[drawerSide].isOpen;
+      return isDrawerCreated(drawerSide) && drawers[drawerSide].isOpen;
     },
     resetPosition: function(drawerSide) {
       if (snapperExists(drawerSide) && drawerSide === 'right') {
-        snappers[drawerSide].snapper.resetToMinPosition();
+        drawers[drawerSide].snapper.resetToMinPosition();
       }
     },
     setDrawerTranslate: function(drawerSide, x) {
       if (snapperExists(drawerSide)) {
-        snappers[drawerSide].snapper.translate(x);
+        drawers[drawerSide].snapper.translate(x);
       }
     },
 
     // CALLBACK REGISTRATION
 
     registerOpenedCallback: function(drawerSide, callback, id) {
-      if (!snappers[drawerSide]){
-        snappers[drawerSide] = createDrawerSkeleton();
+      if (!drawers[drawerSide]){
+        drawers[drawerSide] = createDrawerSkeleton();
       }
-      snappers[drawerSide].openedCallbacks[id] = callback;
+      drawers[drawerSide].openedCallbacks[id] = callback;
     },
     registerClosedCallback: function(drawerSide, callback, id) {
-      if (!snappers[drawerSide]){
-        snappers[drawerSide] = createDrawerSkeleton();
+      if (!drawers[drawerSide]){
+        drawers[drawerSide] = createDrawerSkeleton();
       }
-      snappers[drawerSide].closedCallbacks[id] = callback;
+      drawers[drawerSide].closedCallbacks[id] = callback;
     },
     registerAboutToOpenCallback: function(drawerSide, callback, id) {
-      if (!snappers[drawerSide])
-        snappers[drawerSide] = createDrawerSkeleton();
-      snappers[drawerSide].aboutToOpenCallbacks[id] = callback;
+      if (!drawers[drawerSide])
+        drawers[drawerSide] = createDrawerSkeleton();
+      drawers[drawerSide].aboutToOpenCallbacks[id] = callback;
     },
     registerAboutToCloseCallback: function(drawerSide, callback, id) {
-      if (!snappers[drawerSide])
-        snappers[drawerSide] = createDrawerSkeleton();
-      snappers[drawerSide].aboutToCloseCallbacks[id] = callback;
+      if (!drawers[drawerSide])
+        drawers[drawerSide] = createDrawerSkeleton();
+      drawers[drawerSide].aboutToCloseCallbacks[id] = callback;
     },
-    registerCloseCallback: function(drawerSide, callback, id) {
-      if (!snappers[drawerSide]){
-        snappers[drawerSide] = createDrawerSkeleton();
+    registerOnCloseCallback: function(drawerSide, callback, id) {
+      if (!drawers[drawerSide]){
+        drawers[drawerSide] = createDrawerSkeleton();
       }
-      snappers[drawerSide].closeCallbacks[id] = callback;
+      drawers[drawerSide].onCloseCallbacks[id] = callback;
     },
-    registerOpenCallback: function(drawerSide, callback, id) {
-      if (!snappers[drawerSide]){
-        snappers[drawerSide] = createDrawerSkeleton();
+    registerOnOpenCallback: function(drawerSide, callback, id) {
+      if (!drawers[drawerSide]){
+        drawers[drawerSide] = createDrawerSkeleton();
       }
-      snappers[drawerSide].openCallbacks[id] = callback;
+      drawers[drawerSide].onOpenCallbacks[id] = callback;
     },
     getExecuteOpenedCallbacksPromise: function() {
       if (executeOpenedCallbacksDeferred)

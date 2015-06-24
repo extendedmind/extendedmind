@@ -18,6 +18,8 @@
 * Handle aisle background animation classes here.
 * NOTE: Editor open animation slows down after first open, which is probably why animation is different for
 *       the first time vs. the rest.
+* FIXME:  i.  Set only when calculateAisleAndEditorDrawerMaxWidthAndResize is not called.
+*         ii. First calculateAisleAndEditorDrawerMaxWidthAndResize, then execute callbacks.
 */
 function drawerAisleDirective($rootScope, DrawerService) {
   return {
@@ -85,14 +87,15 @@ function drawerAisleDirective($rootScope, DrawerService) {
       function setupMenuDrawer() {
         var settings = {
           element: $element[0],
-          touchToDrag: $rootScope.columns === 1 ? true : false,
+          touchToDrag: $rootScope.columns === 1,
           disable: 'right', // use left only
           transitionSpeed: $rootScope.MENU_ANIMATION_SPEED / 1000,
           easing: 'ease-out',
           minDragDistance: 10,
           addBodyClasses: false,
-          tapToClose: $rootScope.columns === 1 ? true : false,
-          maxPosition: $rootScope.MENU_WIDTH
+          tapToClose: $rootScope.columns === 1,
+          maxPosition: $rootScope.MENU_WIDTH,
+          moveAisle: true
         };
         DrawerService.setupDrawer('left', settings);
       }
@@ -101,15 +104,20 @@ function drawerAisleDirective($rootScope, DrawerService) {
         var settings = {
           element: $element[0],
           overrideListeningElement: true,
-          touchToDrag: $rootScope.columns === 1 ? true : false,
+          touchToDrag: $rootScope.columns === 1,
           tapToClose: false,
           disable: 'left', // use right only
           transitionSpeed: $rootScope.EDITOR_ANIMATION_SPEED / 1000,
           easing: 'ease-out',
           minDragDistance: 0,
           addBodyClasses: false,
-          minPosition: -$rootScope.currentWidth
+          moveAisle: $rootScope.columns !== 3
         };
+        if ($rootScope.columns === 3)
+          settings.minPosition = DrawerService.isOpen('left') ? $rootScope.MENU_WIDTH : 0;
+        else
+          settings.minPosition = -$rootScope.currentWidth;
+
         DrawerService.setupDrawer('right', settings);
       }
 
@@ -122,18 +130,26 @@ function drawerAisleDirective($rootScope, DrawerService) {
         }
       }.debounce(250);  // Fire once every quarter of a second.
 
-      function resizeAisleAndSetupDrawers() {
-        var drawerWidth = 0;
+      function resizeAisleAndSetupAndResizeDrawers() {
+        var newWidth = $rootScope.currentWidth;
+
         if (DrawerService.isOpen('left')) {
-          drawerWidth = $rootScope.MENU_WIDTH;
+          newWidth -= $rootScope.MENU_WIDTH;
         }
-        var newAisleWidth = $rootScope.currentWidth - drawerWidth;
-        $element[0].firstElementChild.style.maxWidth = newAisleWidth + 'px';
 
         if (DrawerService.isOpen('right')) {
-          // Editor drawer needs to be moved into correct position.
-          DrawerService.setDrawerTranslate('right', -newAisleWidth);
+          if ($rootScope.columns === 3) {
+            newWidth /= 2;
+            $element[0].style.maxWidth = newWidth + 'px';
+            var editorDrawerElement = DrawerService.getDrawerElement('right');
+            if (editorDrawerElement) editorDrawerElement.style.maxWidth = newWidth + 'px';
+          } else {
+            // Editor drawer needs to be moved into correct position.
+            DrawerService.setDrawerTranslate('right', -newWidth);
+          }
         }
+
+        $element[0].firstElementChild.style.maxWidth = newWidth + 'px';
 
         // Setup drawers again on every window resize event
         // TODO: Can these be set when $rootScope.columns changes, or at least debounced?
@@ -149,7 +165,7 @@ function drawerAisleDirective($rootScope, DrawerService) {
         }
       }
 
-      $scope.registerWindowResizedCallback(resizeAisleAndSetupDrawers, 'drawerAisleDirective');
+      $scope.registerWindowResizedCallback(resizeAisleAndSetupAndResizeDrawers, 'drawerAisleDirective');
       $scope.registerResizeSwiperCallback(isAreaResizeNeeded);
 
       // Initialize everyting
@@ -158,16 +174,19 @@ function drawerAisleDirective($rootScope, DrawerService) {
       DrawerService.registerClosedCallback('left', menuDrawerClosed, 'drawerAisleDirective');
       DrawerService.registerAboutToOpenCallback('left', menuDrawerAboutToOpen, 'drawerAisleDirective');
       DrawerService.registerAboutToCloseCallback('left', menuDrawerAboutToClose, 'drawerAisleDirective');
-      DrawerService.registerOpenCallback('left', menuDrawerOpen, 'drawerAisleDirective');
-      DrawerService.registerCloseCallback('left', menuDrawerClose, 'drawerAisleDirective');
+      DrawerService.registerOnOpenCallback('left', menuDrawerOpen, 'drawerAisleDirective');
+      DrawerService.registerOnCloseCallback('left', menuDrawerClose, 'drawerAisleDirective');
 
       setupEditorDrawer();
       DrawerService.registerOpenedCallback('right', editorDrawerOpened, 'drawerAisleDirective');
       DrawerService.registerClosedCallback('right', editorDrawerClosed, 'drawerAisleDirective');
       DrawerService.registerAboutToCloseCallback('right', editorDrawerAboutToClose, 'drawerAisleDirective');
-      DrawerService.registerOpenCallback('right', editorDrawerOpen, 'drawerAisleDirective');
-      DrawerService.registerCloseCallback('right', editorDrawerClose, 'drawerAisleDirective');
-      $element[0].firstElementChild.style.maxWidth = $rootScope.currentWidth + 'px';
+      DrawerService.registerOnOpenCallback('right', editorDrawerOpen, 'drawerAisleDirective');
+      DrawerService.registerOnCloseCallback('right', editorDrawerClose, 'drawerAisleDirective');
+      if ($rootScope.columns !== 1) {
+        // Set initial max width so that the width animation works at the first time as well.
+        $element[0].firstElementChild.style.maxWidth = $rootScope.currentWidth + 'px';
+      }
 
       // MENU DRAWER CALLBACKS
 
@@ -215,11 +234,29 @@ function drawerAisleDirective($rootScope, DrawerService) {
           // same time as the menu opens.
 
           var drawerWidth = $rootScope.MENU_WIDTH;
-          drawerAisleContent.style.maxWidth = $rootScope.currentWidth - drawerWidth + 'px';
+
+          drawerAisleContent.style.maxWidth = $rootScope.currentWidth - drawerWidth + 'px'; // FIXME: i
 
           if (areaAboutToShrinkCallbacks[activeFeature]) {
+            // FIXME: ii
             areaAboutToShrinkCallbacks[activeFeature](drawerWidth, 'left', $rootScope.MENU_ANIMATION_SPEED);
           }
+          if ($rootScope.columns === 3 && DrawerService.isOpen('right')) {
+            calculateAisleAndEditorDrawerMaxWidthAndResize();
+          }
+        }
+      }
+
+      /*
+      * Disable swiping when drawer handle is released and about to open and animation starts.
+      */
+      function menuDrawerAboutToOpen() {
+        if ($rootScope.columns === 1) {
+          var activeFeature = $scope.getActiveFeature();
+          if (areaAboutToMoveToNewPositionCallbacks[activeFeature]) {
+            areaAboutToMoveToNewPositionCallbacks[activeFeature]();
+          }
+          attachAndFailsafeRemovePartiallyVisibleTouch();
         }
       }
 
@@ -232,8 +269,9 @@ function drawerAisleDirective($rootScope, DrawerService) {
         if ($rootScope.columns === 1) {
           // Re-enable dragging
           DrawerService.enableDragging('left');
-          if (areaMovedToNewPositionCallbacks[activeFeature])
+          if (areaMovedToNewPositionCallbacks[activeFeature]) {
             areaMovedToNewPositionCallbacks[activeFeature]();
+          }
           // There is only one column,
           // so we need to prevent any touching from getting to the partially visible aisle.
           $element[0].addEventListener('touchstart', partiallyVisibleDrawerAisleClicked, false);
@@ -269,10 +307,31 @@ function drawerAisleDirective($rootScope, DrawerService) {
           drawerAisleContent.classList.add('animate-container-master');
 
           var drawerWidth = $rootScope.MENU_WIDTH;
-          drawerAisleContent.style.maxWidth = $rootScope.currentWidth + 'px';
+
+          drawerAisleContent.style.maxWidth = $rootScope.currentWidth + 'px'; // FIXME: i
 
           if (areaAboutToGrowCallbacks[activeFeature]) {
+            // FIXME: ii
             areaAboutToGrowCallbacks[activeFeature](drawerWidth, 'left', $rootScope.MENU_ANIMATION_SPEED);
+          }
+
+          if ($rootScope.columns === 3 && DrawerService.isOpen('right')) {
+            calculateAisleAndEditorDrawerMaxWidthAndResize();
+          }
+        }
+      }
+
+      /*
+      * Enable swiping and disable sliding when drawer handle is released and about to close
+      * and animation starts.
+      */
+      function menuDrawerAboutToClose() {
+        var activeFeature = $scope.getActiveFeature();
+        if ($rootScope.columns === 1) {
+          // Disable dragging for the short time that the menu is animating
+          DrawerService.disableDragging('left');
+          if (areaAboutToMoveToInitialPositionCallbacks[activeFeature]) {
+            areaAboutToMoveToInitialPositionCallbacks[activeFeature]();
           }
         }
       }
@@ -303,30 +362,46 @@ function drawerAisleDirective($rootScope, DrawerService) {
       }
 
       /*
-      * Disable swiping when drawer handle is released and about to open and animation starts.
+      * Fires when open is called programmatically, i.e. item is pressed.
       */
-      function menuDrawerAboutToOpen() {
+      function editorDrawerOpen() {
         var activeFeature = $scope.getActiveFeature();
         if ($rootScope.columns === 1) {
-          if (areaAboutToMoveToNewPositionCallbacks[activeFeature]) {
-            areaAboutToMoveToNewPositionCallbacks[activeFeature]();
-          }
-          attachAndFailsafeRemovePartiallyVisibleTouch();
+          // Animation starts. Add .editor-animating.
+          $element[0].firstElementChild.classList.toggle('editor-animating', true);
+          if (areaAboutToHideCallbacks[activeFeature]) areaAboutToHideCallbacks[activeFeature]();
+          $element[0].addEventListener('touchstart', partiallyVisibleDrawerAisleClicked, false);
+        } else if ($rootScope.columns === 3) {
+          calculateAisleAndEditorDrawerMaxWidthAndResize();
         }
       }
 
       /*
-      * Enable swiping and disable sliding when drawer handle is released and about to close
-      * and animation starts.
+      * TODO: Move editor drawer handling to drawerDirective
       */
-      function menuDrawerAboutToClose() {
-        var activeFeature = $scope.getActiveFeature();
-        if ($rootScope.columns === 1) {
-          // Disable dragging for the short time that the menu is animating
-          DrawerService.disableDragging('left');
-          if (areaAboutToMoveToInitialPositionCallbacks[activeFeature])
-            areaAboutToMoveToInitialPositionCallbacks[activeFeature]();
+      function calculateAisleAndEditorDrawerMaxWidthAndResize() {
+        var newWidth;
+
+        if ($rootScope.currentWidth < $rootScope.EDITOR_MAX_WIDTH * 2) {
+          // Divide available width in half.
+          newWidth = $rootScope.currentWidth / 2;
+        } else {
+          // TODO: Align aisle right, drawer left.
+          newWidth = $rootScope.EDITOR_MAX_WIDTH;
         }
+
+        if (DrawerService.isOpening('left') ||
+            (DrawerService.isOpen('left') && !DrawerService.isClosing('left')))
+        {
+          // Decrease the width to make room for the menu.
+          newWidth -= $rootScope.MENU_WIDTH / 2;
+        }
+
+        $element[0].style.maxWidth = newWidth + 'px';
+        $element[0].firstElementChild.style.maxWidth = newWidth + 'px';
+
+        var editorDrawerElement = DrawerService.getDrawerElement('right');
+        if (editorDrawerElement) editorDrawerElement.style.maxWidth = newWidth + 'px';
       }
 
       function editorDrawerOpened() {
@@ -334,14 +409,27 @@ function drawerAisleDirective($rootScope, DrawerService) {
           // Animation done. Remove .editor-animating and add .editor-open.
           $element[0].firstElementChild.classList.toggle('editor-animating', false);
           $element[0].firstElementChild.classList.toggle('editor-open', true);
+        } else if ($rootScope.columns === 3) {
+          var activeFeature = $scope.getActiveFeature();
+
+          if (areaResizeReadyCallbacks[activeFeature]) {
+            // Execute callbacks to resize ready
+            areaResizeReadyCallbacks[activeFeature]();
+          }
         }
       }
-      function editorDrawerClosed() {
+
+      /*
+      * Enable swiping for underlying swiper when drawer handle is released and about to close
+      * and animation starts.
+      */
+      function editorDrawerAboutToClose() {
+        var activeFeature = $scope.getActiveFeature();
         if ($rootScope.columns === 1) {
-          // Animation done. Remove .editor-animating and remove .editor-open.
-          $element[0].firstElementChild.classList.toggle('editor-animating', false);
-          $element[0].firstElementChild.classList.toggle('editor-open', false);
-          $element[0].removeEventListener('touchstart', partiallyVisibleDrawerAisleClicked, false);
+          // Animation starts. Add .editor-animating.
+          $element[0].firstElementChild.classList.toggle('editor-animating', true);
+          if (areaAboutToShowCallbacks[activeFeature]) areaAboutToShowCallbacks[activeFeature]();
+          attachAndFailsafeRemovePartiallyVisibleTouch();
         }
       }
 
@@ -357,33 +445,32 @@ function drawerAisleDirective($rootScope, DrawerService) {
           // Editor drawer is closing, enable swiping for underlying swiper.
           if (areaAboutToShowCallbacks[activeFeature]) areaAboutToShowCallbacks[activeFeature]();
           $element[0].removeEventListener('touchstart', partiallyVisibleDrawerAisleClicked, false);
+        } else if ($rootScope.columns === 3) {
+          $element[0].style.removeProperty('max-width');  // Restore width.
+
+          var drawerAisleContentRestoredWidth = $rootScope.currentWidth;
+          if (DrawerService.isOpen('left')) drawerAisleContentRestoredWidth -= $rootScope.MENU_WIDTH;
+
+          $element[0].firstElementChild.style.maxWidth = drawerAisleContentRestoredWidth + 'px';
+
+          var editorDrawerElement = DrawerService.getDrawerElement('right');
+          if (editorDrawerElement) editorDrawerElement.style.removeProperty('max-width'); // Restore width
         }
       }
 
-      /*
-      * Fires when open is called programmatically, i.e. item is pressed.
-      */
-      function editorDrawerOpen() {
-        var activeFeature = $scope.getActiveFeature();
+      function editorDrawerClosed() {
         if ($rootScope.columns === 1) {
-          // Animation starts. Add .editor-animating.
-          $element[0].firstElementChild.classList.toggle('editor-animating', true);
-          if (areaAboutToHideCallbacks[activeFeature]) areaAboutToHideCallbacks[activeFeature]();
-          $element[0].addEventListener('touchstart', partiallyVisibleDrawerAisleClicked, false);
-        }
-      }
+          // Animation done. Remove .editor-animating and remove .editor-open.
+          $element[0].firstElementChild.classList.toggle('editor-animating', false);
+          $element[0].firstElementChild.classList.toggle('editor-open', false);
+          $element[0].removeEventListener('touchstart', partiallyVisibleDrawerAisleClicked, false);
+        } else if ($rootScope.columns === 3) {
+          var activeFeature = $scope.getActiveFeature();
 
-      /*
-      * Enable swiping for underlying swiper when drawer handle is released and about to close
-      * and animation starts.
-      */
-      function editorDrawerAboutToClose() {
-        var activeFeature = $scope.getActiveFeature();
-        if ($rootScope.columns === 1) {
-          // Animation starts. Add .editor-animating.
-          $element[0].firstElementChild.classList.toggle('editor-animating', true);
-          if (areaAboutToShowCallbacks[activeFeature]) areaAboutToShowCallbacks[activeFeature]();
-          attachAndFailsafeRemovePartiallyVisibleTouch();
+          if (areaResizeReadyCallbacks[activeFeature]) {
+            // Execute callbacks to resize ready
+            areaResizeReadyCallbacks[activeFeature]();
+          }
         }
       }
 
