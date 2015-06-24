@@ -404,10 +404,16 @@
                 </ports>
                 <assembly>
                   <mode>dir</mode>
-                  <basedir>/etc/confd</basedir>
-                  <descriptor>backend-conf-assembly.xml</descriptor>
+                  <basedir>/etc</basedir>
+                  <descriptor>mongodb-assembly.xml</descriptor>
                 </assembly>
-                <cmd><shell>mongod --config /etc/mongodb/mongodb.conf</shell></cmd>
+                <cmd>
+                  <exec>
+                    <arg>/usr/bin/mongod</arg>
+                    <arg>--config</arg>
+                    <arg>/etc/mongodb/mongodb.conf</arg>
+                  </exec>
+                </cmd>
               </build>
             </image>
             <image>
