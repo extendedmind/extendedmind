@@ -478,7 +478,16 @@
                   <basedir>/usr/src/extendedmind</basedir>
                   <descriptor>backend-assembly.xml</descriptor>
                 </assembly>
-                <cmd><shell>java -Dconfig.file=/etc/extendedmind/application.conf -Dlogback.configurationFile=/etc/extendedmind/logback.xml -cp "/usr/src/extendedmind/lib/*" org.extendedmind.Server</shell></cmd>
+                <entryPoint>
+                  <exec>
+                    <arg>/usr/bin/java</arg>
+                    <arg>-Dconfig.file=/etc/extendedmind/application.conf</arg>
+                    <arg>-Dlogback.configurationFile=/etc/extendedmind/logback.xml</arg>
+                    <arg>-cp</arg>
+                    <arg>/usr/src/extendedmind/lib/*</arg>
+                    <arg>org.extendedmind.Server</arg>
+                  </exec>
+                </entryPoint>
               </build>
             </image>
             <image>
