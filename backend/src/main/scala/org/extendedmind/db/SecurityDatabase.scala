@@ -513,7 +513,10 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
   }
 
   private def getSecurityContextSkeleton(user: Node, userType: Byte, subscription: Option[String])(implicit neo4j: DatabaseService): SecurityContext = {
-    SecurityContext(
+   // Just in case there are users without a created timestamp, set it now
+   if (!user.hasProperty("created")) user.setProperty("created", System.currentTimeMillis)
+
+   SecurityContext(
       getUUID(user),
       userType,
       subscription,
