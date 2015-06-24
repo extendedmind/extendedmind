@@ -407,13 +407,13 @@
                   <basedir>/etc</basedir>
                   <descriptor>mongodb-assembly.xml</descriptor>
                 </assembly>
-                <cmd>
+                <entryPoint>
                   <exec>
                     <arg>/usr/bin/mongod</arg>
                     <arg>--config</arg>
                     <arg>/etc/mongodb/mongodb.conf</arg>
                   </exec>
-                </cmd>
+                </entryPoint>
               </build>
             </image>
             <image>
