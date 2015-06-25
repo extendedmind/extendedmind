@@ -195,11 +195,30 @@ Vertically center .container-master and .container-editor in large screens
   }
 }
 
-// 1. Align right, but FIXME when there is more room.
+// 1. Center .container-editor and .container-drawer-aisle horizontally when the menu is not visible.
+// 2. Align .container-editor right when the menu is visible.
+// 3. Center .container-master horizontally when the menu is visible.
 @media (min-width: @min-width-three-column) {
   .container-editor {
-    right: 0; // [1]
     max-width: @width-column-max;
+  }
+  .container-main.editor-show {
+    &:not(.menu-show) {
+      & > .container-editor {
+        left: 50%; // [1]
+      }
+      & > .container-drawer-aisle {
+        right: 50%; // [1]
+      }
+    }
+    &.menu-show {
+      & > .container-editor {
+        right: 0; // [2]
+      }
+      & > .container-drawer-aisle > .container-master {
+        .center-horizontally-absolute();  // [3]
+      }
+    }
   }
 }
 

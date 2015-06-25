@@ -131,25 +131,19 @@ function drawerAisleDirective($rootScope, DrawerService) {
       }.debounce(250);  // Fire once every quarter of a second.
 
       function resizeAisleAndSetupAndResizeDrawers() {
-        var newWidth = $rootScope.currentWidth;
-
-        if (DrawerService.isOpen('left')) {
-          newWidth -= $rootScope.MENU_WIDTH;
-        }
-
-        if (DrawerService.isOpen('right')) {
-          if ($rootScope.columns === 3) {
-            newWidth /= 2;
-            $element[0].style.maxWidth = newWidth + 'px';
-            var editorDrawerElement = DrawerService.getDrawerElement('right');
-            if (editorDrawerElement) editorDrawerElement.style.maxWidth = newWidth + 'px';
-          } else {
+        if ($rootScope.columns !== 3) {
+          var newWidth = $rootScope.currentWidth;
+          if (DrawerService.isOpen('left')) {
+            newWidth -= $rootScope.MENU_WIDTH;
+          }
+          if (DrawerService.isOpen('right')) {
             // Editor drawer needs to be moved into correct position.
             DrawerService.setDrawerTranslate('right', -newWidth);
           }
+          $element[0].firstElementChild.style.maxWidth = newWidth + 'px';
+        } else if (DrawerService.isOpen('right')) {
+          calculateAisleAndEditorDrawerMaxWidthAndResize();
         }
-
-        $element[0].firstElementChild.style.maxWidth = newWidth + 'px';
 
         // Setup drawers again on every window resize event
         // TODO: Can these be set when $rootScope.columns changes, or at least debounced?
@@ -380,28 +374,36 @@ function drawerAisleDirective($rootScope, DrawerService) {
       * TODO: Move editor drawer handling to drawerDirective
       */
       function calculateAisleAndEditorDrawerMaxWidthAndResize() {
-        var newWidth;
+        var availableWidth = $rootScope.currentWidth;
+        var aisleWidth, aisleContentWidth, editorDrawerWidth;
 
-        if ($rootScope.currentWidth < $rootScope.EDITOR_MAX_WIDTH * 2) {
-          // Divide available width in half.
-          newWidth = $rootScope.currentWidth / 2;
-        } else {
-          // TODO: Align aisle right, drawer left.
-          newWidth = $rootScope.EDITOR_MAX_WIDTH;
-        }
+        var menuOpeningOrOpen = DrawerService.isOpening('left') || (DrawerService.isOpen('left') &&
+                                                                    !DrawerService.isClosing('left'));
 
-        if (DrawerService.isOpening('left') ||
-            (DrawerService.isOpen('left') && !DrawerService.isClosing('left')))
-        {
+        if (menuOpeningOrOpen) {
           // Decrease the width to make room for the menu.
-          newWidth -= $rootScope.MENU_WIDTH / 2;
+          availableWidth -= $rootScope.MENU_WIDTH;
         }
 
-        $element[0].style.maxWidth = newWidth + 'px';
-        $element[0].firstElementChild.style.maxWidth = newWidth + 'px';
+        var availableMaxWidth = $rootScope.CONTAINER_MASTER_MAX_WIDTH + $rootScope.EDITOR_MAX_WIDTH;
+        if (availableWidth > availableMaxWidth) {
+          if (menuOpeningOrOpen) {
+            // Expand aisle to the remaining width.
+            aisleWidth = availableWidth - $rootScope.EDITOR_MAX_WIDTH;
+          } else {
+            aisleWidth = $rootScope.CONTAINER_MASTER_MAX_WIDTH;
+          }
+          aisleContentWidth = $rootScope.CONTAINER_MASTER_MAX_WIDTH;
+          editorDrawerWidth = $rootScope.EDITOR_MAX_WIDTH;
+        } else {
+          // Available width is narrow, divide available width in half.
+          aisleWidth = aisleContentWidth = editorDrawerWidth = availableWidth / 2;
+        }
 
+        $element[0].style.maxWidth = aisleWidth + 'px';
+        $element[0].firstElementChild.style.maxWidth = aisleContentWidth + 'px';
         var editorDrawerElement = DrawerService.getDrawerElement('right');
-        if (editorDrawerElement) editorDrawerElement.style.maxWidth = newWidth + 'px';
+        if (editorDrawerElement) editorDrawerElement.style.maxWidth = editorDrawerWidth + 'px';
       }
 
       function editorDrawerOpened() {
