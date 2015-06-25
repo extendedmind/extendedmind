@@ -512,6 +512,28 @@
                 </entryPoint>
               </build>
             </image>
+            <image>
+              <name>extendedmind/backend-restore</name>
+              <alias>backend-restore</alias>
+              <build>
+                <from>extendedmind/cloud-sdk</from>
+                <maintainer>timo.tiuraniemi@iki.fi</maintainer>
+                <tags>
+                  <tag>latest</tag>
+                </tags>
+                <assembly>
+                  <mode>dir</mode>
+                  <basedir>/usr/src/extendedmind</basedir>
+                  <descriptor>backend-restore-assembly.xml</descriptor>
+                </assembly>
+                <entryPoint>
+                  <exec>
+                    <arg>/usr/src/extendedmind/run-backend-script.pl</arg>
+                    <arg>restore</arg>
+                  </exec>
+                </entryPoint>
+              </build>
+            </image>
           </images>
         </configuration>
         <executions>

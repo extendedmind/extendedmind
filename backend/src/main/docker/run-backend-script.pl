@@ -8,6 +8,7 @@ if ($numArgs < 1){
 $scriptType = $ARGV[0];
 $param1 = '';
 $param2 = '';
+$param3 = '';
 
 if ($numArgs > 1){
   $param1 = $ARGV[1];
@@ -15,10 +16,13 @@ if ($numArgs > 1){
 if ($numArgs > 2){
   $param2 = $ARGV[2];
 }
+if ($numArgs > 3){
+  $param2 = $ARGV[3];
+}
 
 # Workaround for SIGTERM not being handled by bash
 $SIG{TERM} = sub {
   die "exiting backend script " . $scriptType . "...\n";
 };
-print "executing command: " . "/bin/sh -c '/usr/src/extendedmind/backend-" . $scriptType . ".sh " . $param1 . " " . $param2 . "'\n";
-system "/bin/sh -c '/usr/src/extendedmind/backend-" . $scriptType . ".sh " . $param1 . " " . $param2 . "'";
+print "executing command: " . "/bin/sh -c '/usr/src/extendedmind/backend-" . $scriptType . ".sh " . $param1 . " " . $param2 . " " . $param3 . "'\n";
+system "/bin/sh -c '/usr/src/extendedmind/backend-" . $scriptType . ".sh " . $param1 . " " . $param2 . " " . $param3 . "'";
