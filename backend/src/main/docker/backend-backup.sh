@@ -1,10 +1,11 @@
 #!/bin/bash
+
 TODAY=$(date +"%Y-%m-%d")
 if [ -z "$1" ]
-  then
-    BACKUP_LOCATION=/var/extendedmind/backup/$TODAY/
-  else
-    BACKUP_LOCATION=$1/$TODAY/
+then
+  BACKUP_LOCATION=/var/extendedmind/backup/$TODAY/
+else
+  BACKUP_LOCATION=$1/$TODAY/
 fi
 
 if [ -z "$2" ]

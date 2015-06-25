@@ -505,7 +505,10 @@
                   <descriptor>backend-backup-assembly.xml</descriptor>
                 </assembly>
                 <entryPoint>
-                  <exec><arg>/usr/src/extendedmind/backend-backup.pl</arg></exec>
+                  <exec>
+                    <arg>/usr/src/extendedmind/run-backend-script.pl</arg>
+                    <arg>backup</arg>
+                  </exec>
                 </entryPoint>
               </build>
             </image>
