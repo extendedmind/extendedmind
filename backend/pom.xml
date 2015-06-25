@@ -481,6 +481,10 @@
                 <entryPoint>
                   <exec>
                     <arg>/usr/bin/java</arg>
+                    <arg>-server</arg>
+                    <arg>-XX:+PrintCommandLineFlags</arg>
+                    <!-- Neo4j suggests to use this -->
+                    <arg>-XX:+UseConcMarkSweepGC</arg>
                     <arg>-Dconfig.file=/etc/extendedmind/application.conf</arg>
                     <arg>-Dlogback.configurationFile=/etc/extendedmind/logback.xml</arg>
                     <arg>-cp</arg>

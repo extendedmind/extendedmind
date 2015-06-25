@@ -234,6 +234,9 @@
               <name>extendedmind/backend</name>
               <alias>backend</alias>
               <run>
+                <env>
+                  <JAVA_TOOL_OPTIONS>-Xmx512m</JAVA_TOOL_OPTIONS>
+                </env>
                 <volumes>
                   <from>
                     <image>backend-conf</image>
