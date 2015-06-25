@@ -27,7 +27,8 @@ do
   if [ $IS_MASTER -eq 200 ]
   then
     echo "Begin full backend backup"
-    rm -fR /usr/src/extendedmind/work/*
+    rm -fR /usr/src/extendedmind/work
+    mkdir /usr/src/extendedmind/work
     cd /usr/src/extendedmind/bin
     ./backend-backup-neo4j.sh -host $BACKEND_PORT_6362_TCP_ADDR -to /usr/src/extendedmind/work/neo4j &>> /var/log/neo4j-backup.log
     if [ $? -ne 0 ]; then echo "problems in the backup"; fi

@@ -30,7 +30,8 @@ trap 'echo exiting restore script..; exit' SIGINT SIGQUIT SIGTERM
 echo "Begin restore from file: $BACKUP_FILE to $NEO4J_DIRECTORY"
 
 # Empty work directory
-rm -fR /usr/src/extendedmind/work/*
+rm -fR /usr/src/extendedmind/work
+mkdir /usr/src/extendedmind/work
 echo "Executing: $CP_PRE_COMMAND cp $BACKUP_FILE  /usr/src/extendedmind/work/backup.tar.gz"
 $CP_PRE_COMMAND cp $BACKUP_FILE /usr/src/extendedmind/work/backup.tar.gz
 rc=$?; if [[ $rc != 0 ]]; then echo "Failed copying backup file $BACKUP_FILE"; exit $rc; fi
