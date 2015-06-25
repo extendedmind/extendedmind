@@ -132,6 +132,21 @@
     // INITIALIZATION
 
     setupDrawer: function(drawerSide, settings) {
+      function attachCallbacks() {
+        drawers[drawerSide].snapper.on('animated', function() {
+          executeSnapperAnimatedCallbacks(drawerSide);
+        });
+        drawers[drawerSide].snapper.on('end', function(){
+          executeSnapperDraggerReleasedCallbacks(drawerSide);
+        });
+        drawers[drawerSide].snapper.on('close', function(){
+          executeOnDrawerCloseCallbacks(drawerSide);
+        });
+        drawers[drawerSide].snapper.on('open', function(){
+          executeOnDrawerOpenCallbacks(drawerSide);
+        });
+      }
+
       if (!drawers[drawerSide]){
         drawers[drawerSide] = createDrawerSkeleton();
       }
@@ -144,22 +159,9 @@
 
         if (settings.moveAisle) {
           drawers[drawerSide].snapper = new Snap(settings);
-
           if (settings.touchToDrag) drawers[drawerSide].snapper.enable();
           else drawers[drawerSide].snapper.disable();
-
-          drawers[drawerSide].snapper.on('animated', function() {
-            executeSnapperAnimatedCallbacks(drawerSide);
-          });
-          drawers[drawerSide].snapper.on('end', function(){
-            executeSnapperDraggerReleasedCallbacks(drawerSide);
-          });
-          drawers[drawerSide].snapper.on('close', function(){
-            executeOnDrawerCloseCallbacks(drawerSide);
-          });
-          drawers[drawerSide].snapper.on('open', function(){
-            executeOnDrawerOpenCallbacks(drawerSide);
-          });
+          attachCallbacks();
         }
         drawers[drawerSide].created = true;
       } else {
@@ -169,6 +171,7 @@
         if (settings.moveAisle) {
           if (!snapperExists(drawerSide)) {
             drawers[drawerSide].snapper = new Snap(settings);
+            attachCallbacks();
           } else {
             drawers[drawerSide].snapper.settings(settings);
           }
