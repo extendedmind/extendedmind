@@ -17,7 +17,7 @@ if ($numArgs > 2){
   $param2 = $ARGV[2];
 }
 if ($numArgs > 3){
-  $param2 = $ARGV[3];
+  $param3 = $ARGV[3];
 }
 
 # Workaround for SIGTERM not being handled by bash
