@@ -460,8 +460,10 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
 
   $scope.toggleMenu = function() {
     var menuOpen = DrawerService.toggle('left');
-    if ($rootScope.columns === 3) {
+    if ($rootScope.columns !== 1) {
       if (menuOpen && !$element[0].classList.contains('menu-show')) {
+        // Set class for 2 column layout as well to ensure layout does not break if it is changed between
+        // 2 and 3 columns.
         $element[0].classList.add('menu-show');
       }
     }
@@ -474,7 +476,9 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
   $scope.openMenu = function() {
     if (!$scope.isMenuVisible()){
       DrawerService.open('left');
-      if ($rootScope.columns === 3 && !$element[0].classList.contains('menu-show')) {
+      if ($rootScope.columns !== 1 && !$element[0].classList.contains('menu-show')) {
+        // Set class for 2 column layout as well to ensure layout does not break if it is changed between
+        // 2 and 3 columns.
         $element[0].classList.add('menu-show');
       }
     }
@@ -1089,7 +1093,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
         $element[0].classList.add('editor-show');
       });
     }
-    if ($rootScope.columns === 3 && $element[0].classList.contains('menu-show')) {
+    if ($rootScope.columns !== 1 && $element[0].classList.contains('menu-show')) {
       $element[0].classList.remove('menu-show');
     }
     executeMenuClosedCallbacks();
