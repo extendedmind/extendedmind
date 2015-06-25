@@ -473,6 +473,8 @@
                   <port>6362</port>
                   <!-- Neo4j cluster heartbeat -->
                   <port>5001</port>
+                  <!-- Neo4j cluster transaction -->
+                  <port>6001</port>
                 </ports>
                 <assembly>
                   <mode>dir</mode>

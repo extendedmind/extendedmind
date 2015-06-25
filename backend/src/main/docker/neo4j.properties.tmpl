@@ -3,6 +3,8 @@ online_backup_server=0.0.0.0:6362
 
 {{if exists "/extendedmind/ha"}}
 ha.server_id={{getenv "HOST_ID"}}
+ha.cluster_server={{getenv "COREOS_PRIVATE_IPV4"}}:5001
+ha.server={{getenv "COREOS_PRIVATE_IPV4"}}:6001
 {{$servers := getvs "/extendedmind/servers/*"}}
 ha.initial_hosts={{join $servers ":5001,"}}:5001
 {{end}}
