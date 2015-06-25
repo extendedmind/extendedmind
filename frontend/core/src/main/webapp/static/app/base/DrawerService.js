@@ -29,15 +29,9 @@
         snapperState.info.towards === drawerSide &&
         snapperState.info.flick)
     {
-      for (var aboutToCloseID in drawers[drawerSide].aboutToCloseCallbacks) {
-        if (drawers[drawerSide].aboutToCloseCallbacks.hasOwnProperty(aboutToCloseID))
-          drawers[drawerSide].aboutToCloseCallbacks[aboutToCloseID]();
-      }
+      executeDrawerAboutToCloseCallbacks(drawerSide);
     } else if (snapperState.info.towards !== drawerSide && snapperState.info.flick) {
-      for (var aboutToOpenID in drawers[drawerSide].aboutToOpenCallbacks) {
-        if (drawers[drawerSide].aboutToOpenCallbacks.hasOwnProperty(aboutToOpenID))
-          drawers[drawerSide].aboutToOpenCallbacks[aboutToOpenID]();
-      }
+      executeDrawerAboutToOpenCallbacks(drawerSide);
     }
   }
 
@@ -54,6 +48,20 @@
     for (var id in drawers[drawerSide].onOpenCallbacks) {
       if (drawers[drawerSide].onOpenCallbacks.hasOwnProperty(id))
         drawers[drawerSide].onOpenCallbacks[id]();
+    }
+  }
+
+  function executeDrawerAboutToCloseCallbacks(drawerSide) {
+    for (var id in drawers[drawerSide].aboutToCloseCallbacks) {
+      if (drawers[drawerSide].aboutToCloseCallbacks.hasOwnProperty(id))
+        drawers[drawerSide].aboutToCloseCallbacks[id]();
+    }
+  }
+
+  function executeDrawerAboutToOpenCallbacks(drawerSide) {
+    for (var id in drawers[drawerSide].aboutToOpenCallbacks) {
+      if (drawers[drawerSide].aboutToOpenCallbacks.hasOwnProperty(id))
+        drawers[drawerSide].aboutToOpenCallbacks[id]();
     }
   }
 
@@ -228,6 +236,7 @@
       else if (isDrawerCreated(drawerSide) && !drawers[drawerSide].moveAisle) {
         // Just execute callbacks.
         executeOnDrawerCloseCallbacks(drawerSide);
+        executeDrawerAboutToCloseCallbacks(drawerSide);
         executeDrawerClosedCallbacks(drawerSide);
       }
     },
