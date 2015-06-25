@@ -129,18 +129,23 @@ function drawerAisleDirective($rootScope, DrawerService) {
       }.debounce(250);  // Fire once every quarter of a second.
 
       function resizeAisleAndSetupAndResizeDrawers() {
-        if ($rootScope.columns !== 3) {
+        function resizeAisleContent() {
           var newWidth = $rootScope.currentWidth;
           if (DrawerService.isOpen('left')) {
             newWidth -= $rootScope.MENU_WIDTH;
           }
+          $element[0].firstElementChild.style.maxWidth = newWidth + 'px';
+        }
+
+        if ($rootScope.columns !== 3) {
+          resizeAisleContent();
           if (DrawerService.isOpen('right')) {
             // Editor drawer needs to be moved into correct position.
-            DrawerService.setDrawerTranslate('right', -newWidth);
+            DrawerService.setDrawerTranslate('right', -$rootScope.currentWidth);
           }
-          $element[0].firstElementChild.style.maxWidth = newWidth + 'px';
-        } else if (DrawerService.isOpen('right')) {
-          calculateAisleAndEditorDrawerMaxWidthAndResize();
+        } else {
+          if (DrawerService.isOpen('right')) calculateAisleAndEditorDrawerMaxWidthAndResize();
+          else resizeAisleContent();
         }
 
         // Setup drawers again on every window resize event
