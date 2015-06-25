@@ -20,12 +20,25 @@
     controller: function() {
       // CALLBACK REGISTRATION
 
+      var areaAboutToShrinkCallbacks = {};
+      var areaAboutToGrowCallbacks = {};
       var areaResizeReadyCallbacks = {};
 
+      this.registerAreaAboutToShrink = function(callback, id) {
+        areaAboutToShrinkCallbacks[id] = callback;
+      };
+      this.registerAreaAboutToGrow = function(callback, id) {
+        areaAboutToGrowCallbacks[id] = callback;
+      };
       this.registerAreaResizeReady = function(callback, id) {
         areaResizeReadyCallbacks[id] = callback;
       };
-
+      this.unregisterAreaAboutToShrink = function(id) {
+        delete areaAboutToShrinkCallbacks[id];
+      };
+      this.unregisterAreaAboutToGrow = function(id) {
+        delete areaAboutToGrowCallbacks[id];
+      };
       this.unregisterAreaResizeReady = function(id) {
         delete areaResizeReadyCallbacks[id];
       };
@@ -40,21 +53,46 @@
         DrawerService.enableDragging('right');
       };
 
+      DrawerService.registerOnOpenCallback('left', menuDrawerOpen, 'drawerDirective');
+      DrawerService.registerOnCloseCallback('left', menuDrawerClose, 'drawerDirective');
       DrawerService.registerOpenedCallback('left', menuDrawerOpened, 'drawerDirective');
       DrawerService.registerClosedCallback('left', menuDrawerClosed, 'drawerDirective');
+
+      /*
+      * Fires when open is called programmatically, i.e. menu button pressed.
+      */
+      function menuDrawerOpen() {
+        if ($rootScope.columns === 3 && DrawerService.isOpen('right')) {
+          for (var id in areaAboutToShrinkCallbacks) {
+            if (areaAboutToShrinkCallbacks.hasOwnProperty(id)) areaAboutToShrinkCallbacks[id]();
+          }
+        }
+      }
+
+      /*
+      * Fires when menu is closed programmatically, i.e. menu button pressed or tapToClose called.
+      * This is triggered before any animation takes place.
+      */
+      function menuDrawerClose() {
+        if ($rootScope.columns === 3 && DrawerService.isOpen('right')) {
+          for (var id in areaAboutToGrowCallbacks) {
+            if (areaAboutToGrowCallbacks.hasOwnProperty(id)) areaAboutToGrowCallbacks[id]();
+          }
+        }
+      }
 
       /*
       * Menu drawer animation is ready - menu is open.
       */
       function menuDrawerOpened() {
-        if ($rootScope.columns === 3) executeAreaResizeReadyCallbacks();
+        if ($rootScope.columns === 3 && DrawerService.isOpen('right')) executeAreaResizeReadyCallbacks();
       }
 
       /*
       * Animation of menu drawer ready, menu now hidden.
       */
       function menuDrawerClosed() {
-        if ($rootScope.columns === 3) executeAreaResizeReadyCallbacks();
+        if ($rootScope.columns === 3 && DrawerService.isOpen('right')) executeAreaResizeReadyCallbacks();
       }
 
       function executeAreaResizeReadyCallbacks() {

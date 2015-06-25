@@ -18,8 +18,6 @@
 * Handle aisle background animation classes here.
 * NOTE: Editor open animation slows down after first open, which is probably why animation is different for
 *       the first time vs. the rest.
-* FIXME:  i.  Set only when calculateAisleAndEditorDrawerMaxWidthAndResize is not called.
-*         ii. First calculateAisleAndEditorDrawerMaxWidthAndResize, then execute callbacks.
 */
 function drawerAisleDirective($rootScope, DrawerService) {
   return {
@@ -222,21 +220,30 @@ function drawerAisleDirective($rootScope, DrawerService) {
           $element[0].addEventListener('touchstart', partiallyVisibleDrawerAisleClicked, false);
           $rootScope.contentPartiallyVisible = true;
         } else {
-          var drawerAisleContent = $element[0].firstElementChild;
-          drawerAisleContent.classList.add('animate-container-master');
           // There are more than one column, this means the aisle area is about to shrink the
           // same time as the menu opens.
+          var shrinkDrawerAisleContent = function(amount) {
+            var drawerAisleContent = $element[0].firstElementChild;
+            drawerAisleContent.classList.add('animate-container-master');
+            drawerAisleContent.style.maxWidth = $rootScope.currentWidth - amount + 'px';
+            return true;
+          };
 
-          var drawerWidth = $rootScope.MENU_WIDTH;
-
-          drawerAisleContent.style.maxWidth = $rootScope.currentWidth - drawerWidth + 'px'; // FIXME: i
-
-          if (areaAboutToShrinkCallbacks[activeFeature]) {
-            // FIXME: ii
-            areaAboutToShrinkCallbacks[activeFeature](drawerWidth, 'left', $rootScope.MENU_ANIMATION_SPEED);
+          var drawerAisleContentShrinked;
+          if ($rootScope.columns === 2) {
+            drawerAisleContentShrinked = shrinkDrawerAisleContent($rootScope.MENU_WIDTH);
+          } else if ($rootScope.columns === 3) {
+            if (DrawerService.isOpen('right')) {
+              calculateAisleAndEditorDrawerMaxWidthAndResize();
+            }
+            else {
+              drawerAisleContentShrinked = shrinkDrawerAisleContent($rootScope.MENU_WIDTH);
+            }
           }
-          if ($rootScope.columns === 3 && DrawerService.isOpen('right')) {
-            calculateAisleAndEditorDrawerMaxWidthAndResize();
+          if (areaAboutToShrinkCallbacks[activeFeature]) {
+            areaAboutToShrinkCallbacks[activeFeature]($rootScope.MENU_WIDTH, 'left',
+                                                      $rootScope.MENU_ANIMATION_SPEED,
+                                                      drawerAisleContentShrinked);
           }
         }
       }
@@ -297,20 +304,28 @@ function drawerAisleDirective($rootScope, DrawerService) {
         } else {
           // There are more than one column, this means the aisle area is about to grow the
           // same time as the menu closes
-          var drawerAisleContent = $element[0].firstElementChild;
-          drawerAisleContent.classList.add('animate-container-master');
+          var growDrawerAisleContent = function() {
+            var drawerAisleContent = $element[0].firstElementChild;
+            drawerAisleContent.classList.add('animate-container-master');
+            drawerAisleContent.style.maxWidth = $rootScope.currentWidth + 'px';
+            return true;
+          };
 
-          var drawerWidth = $rootScope.MENU_WIDTH;
-
-          drawerAisleContent.style.maxWidth = $rootScope.currentWidth + 'px'; // FIXME: i
-
-          if (areaAboutToGrowCallbacks[activeFeature]) {
-            // FIXME: ii
-            areaAboutToGrowCallbacks[activeFeature](drawerWidth, 'left', $rootScope.MENU_ANIMATION_SPEED);
+          var drawerAisleContentGrowed;
+          if ($rootScope.columns === 2) {
+            drawerAisleContentGrowed = growDrawerAisleContent();
+          } else if ($rootScope.columns === 3) {
+            if (DrawerService.isOpen('right')) {
+              calculateAisleAndEditorDrawerMaxWidthAndResize();
+            }
+            else {
+              drawerAisleContentGrowed = growDrawerAisleContent();
+            }
           }
-
-          if ($rootScope.columns === 3 && DrawerService.isOpen('right')) {
-            calculateAisleAndEditorDrawerMaxWidthAndResize();
+          if (areaAboutToGrowCallbacks[activeFeature]) {
+            areaAboutToGrowCallbacks[activeFeature]($rootScope.MENU_WIDTH, 'left',
+                                                    $rootScope.MENU_ANIMATION_SPEED,
+                                                    drawerAisleContentGrowed);
           }
         }
       }
@@ -359,7 +374,7 @@ function drawerAisleDirective($rootScope, DrawerService) {
       * Fires when open is called programmatically, i.e. item is pressed.
       */
       function editorDrawerOpen() {
-        var activeFeature = $scope.getActiveFeature();
+        var activeFeature = $scope.getActiveFeature();  // TODO: Move.
         if ($rootScope.columns === 1) {
           // Animation starts. Add .editor-animating.
           $element[0].firstElementChild.classList.toggle('editor-animating', true);

@@ -463,16 +463,12 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     if ($rootScope.columns === 3) {
       if (menuOpen && !$element[0].classList.contains('menu-show')) {
         $element[0].classList.add('menu-show');
-      } else if (!menuOpen && $element[0].classList.contains('menu-show')) {
-        $element[0].classList.remove('menu-show');
       }
     }
   };
 
   $scope.closeMenu = function() {
     DrawerService.close('left');
-    if ($rootScope.columns === 3 && $element[0].classList.contains('menu-show'))
-      $element[0].classList.remove('menu-show');
   };
 
   $scope.openMenu = function() {
@@ -1092,6 +1088,9 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
         openEditorAfterMenuClosed = undefined;
         $element[0].classList.add('editor-show');
       });
+    }
+    if ($rootScope.columns === 3 && $element[0].classList.contains('menu-show')) {
+      $element[0].classList.remove('menu-show');
     }
     executeMenuClosedCallbacks();
   }

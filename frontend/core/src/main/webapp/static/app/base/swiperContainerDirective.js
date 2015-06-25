@@ -557,13 +557,13 @@
                                                        translateSwiperWrapperX, 0, 0);
       }
 
-      function swiperAboutToShrink(amount, direction, speed){
-        swiperWrapperTranslate(amount, 'left', speed);
+      function swiperAboutToShrink(amount, direction, speed, move) {
+        if (move) swiperWrapperTranslate(amount, 'left', speed);
         toggleAdjacentInactiveSwiperSlidesVisiblity('hidden');
       }
 
-      function swiperAboutToGrow(amount, direction, speed){
-        swiperWrapperTranslate(amount, 'right', speed);
+      function swiperAboutToGrow(amount, direction, speed, move) {
+        if (move) swiperWrapperTranslate(amount, 'right', speed);
         toggleAdjacentInactiveSwiperSlidesVisiblity('hidden');
       }
 
@@ -662,6 +662,8 @@
       }
 
       if (controllers[1] && scope.swiperType === 'main') {
+        controllers[1].registerAreaAboutToShrink(swiperAboutToShrink, scope.swiperPath);
+        controllers[1].registerAreaAboutToGrow(swiperAboutToGrow, scope.swiperPath);
         controllers[1].registerAreaResizeReady(swiperResizeReady, scope.swiperPath);
       }
 
@@ -669,6 +671,8 @@
 
       function onDestroy() {
         if (controllers[1] && scope.swiperType === 'main') {
+          controllers[1].unregisterAreaAboutToShrink(scope.swiperPath);
+          controllers[1].unregisterAreaAboutToGrow(scope.swiperPath);
           controllers[1].unregisterAreaResizeReady(scope.swiperPath);
         }
       }
