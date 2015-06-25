@@ -207,7 +207,7 @@
                     <image>cube-conf</image>
                   </from>
                 </volumes>
-                <cmd>/usr/src/confd -backend=env</cmd>
+                <cmd>-backend=env</cmd>
               </run>
             </image>
             <image>
