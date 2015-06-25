@@ -424,6 +424,7 @@
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
                 <tags>
                   <tag>latest</tag>
+                  <tag>${project.version}</tag>
                 </tags>
                 <assembly>
                   <mode>dir</mode>
