@@ -449,11 +449,11 @@
                 </tags>
                 <assembly>
                   <mode>dir</mode>
-                  <basedir>/var/extendedmind</basedir>
+                  <basedir>/var/extendedmind/backend</basedir>
                   <descriptor>backend-data-assembly.xml</descriptor>
                 </assembly>
                 <volumes>
-                  <volume>/var/extendedmind/neo4j</volume>
+                  <volume>/var/extendedmind/backend</volume>
                 </volumes>
               </build>
             </image>

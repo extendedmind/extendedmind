@@ -4,7 +4,7 @@
 extendedmind {
   version = ${project.version}
   neo4j {
-    storeDir = "/var/extendedmind/neo4j"
+    storeDir = "/var/extendedmind/backend/neo4j"
 
     {{if exists "/extendedmind/ha"}}
     isHighAvailability = true
