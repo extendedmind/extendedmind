@@ -168,6 +168,9 @@ function drawerAisleDirective($rootScope, DrawerService) {
           if (DrawerService.isOpen('left')) {
             detachAndRemovePartiallyVisibleTouch();
           }
+          if (DrawerService.isOpen('right')) {
+            $element[0].firstElementChild.classList.remove('editor-open');
+          }
         }
         // Setup drawers again.
         setupMenuDrawer();
