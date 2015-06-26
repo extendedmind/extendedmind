@@ -172,6 +172,9 @@ function drawerAisleDirective($rootScope, DrawerService) {
               areaAboutToMoveToNewPositionCallbacks[activeFeature]();
             }
           }
+          if (DrawerService.isOpen('right')) {
+            $element[0].firstElementChild.classList.add('editor-open');
+          }
         } else if (newLayout === 3) {
           if (DrawerService.isOpen('right')) {
             DrawerService.translateTo('right', 0);
