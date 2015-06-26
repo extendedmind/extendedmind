@@ -164,6 +164,13 @@ function drawerAisleDirective($rootScope, DrawerService) {
           if (DrawerService.isOpen('left')) {
             $element[0].firstElementChild.style.removeProperty('max-width');
             attachAndAddPartiallyVisibleTouch();
+            window.requestAnimationFrame(function() {
+              DrawerService.translateTo('left', $rootScope.MENU_WIDTH);
+            });
+            var activeFeature = $scope.getActiveFeature();
+            if (areaAboutToMoveToNewPositionCallbacks[activeFeature]) {
+              areaAboutToMoveToNewPositionCallbacks[activeFeature]();
+            }
           }
         } else if (newLayout === 3) {
           if (DrawerService.isOpen('right')) {

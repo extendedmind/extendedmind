@@ -134,6 +134,12 @@
 
   function reinitializeDrawer(drawerSide, settings) {
     if (settings.moveAisle) {
+      if (drawers[drawerSide].handleElement) {
+        settings.dragger = drawers[drawerSide].handleElement;
+      }
+      if (drawers[drawerSide].overrideElement) {
+        settings.overrideElement = drawers[drawerSide].overrideElement;
+      }
       if (!snapperExists(drawerSide)) {
         initializeSnapper(drawerSide, settings);
       } else {
@@ -205,10 +211,16 @@
     },
     // NOTE: Call here needs to be _after_  setupDrawer has been called!
     setHandleElement: function(drawerSide, handleElement) {
+      if (isDrawerCreated(drawerSide)) {
+        drawers[drawerSide].handleElement = handleElement;
+      }
       if (snapperExists(drawerSide)) drawers[drawerSide].snapper.settings({dragger: handleElement});
     },
     // NOTE: Call here needs to be _after_  setupDrawer has been called!
     setOverrideAisleElement: function(drawerSide, element) {
+      if (isDrawerCreated(drawerSide)) {
+        drawers[drawerSide].overrideElement = element;
+      }
       if (snapperExists(drawerSide)) {
         drawers[drawerSide].snapper.settings({overrideElement: element});
 
