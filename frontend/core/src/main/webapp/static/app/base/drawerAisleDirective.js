@@ -142,6 +142,10 @@ function drawerAisleDirective($rootScope, DrawerService) {
             // Editor drawer needs to be moved into correct position.
             DrawerService.setDrawerTranslate('right', -$rootScope.currentWidth);
           }
+          if (previousLayout !== 1 && DrawerService.isOpen('left')) {
+            $element[0].firstElementChild.style.removeProperty('max-width');
+            attachAndAddPartiallyVisibleTouch();
+          }
         } else if ($rootScope.columns === 2) {
           resizeAisleContent();
           if (previousLayout === 1 && DrawerService.isOpen('left')) detachAndRemovePartiallyVisibleTouch();
@@ -204,6 +208,11 @@ function drawerAisleDirective($rootScope, DrawerService) {
           partiallyVisibleTouchTimer = undefined;
         }
         partiallyVisibleTouchTimer = setTimeout(detachAndRemovePartiallyVisibleTouch, 1000);
+      }
+
+      function attachAndAddPartiallyVisibleTouch() {
+        $element[0].addEventListener('touchstart', partiallyVisibleDrawerAisleClicked, false);
+        $rootScope.contentPartiallyVisible = true;
       }
 
       function detachAndRemovePartiallyVisibleTouch() {
