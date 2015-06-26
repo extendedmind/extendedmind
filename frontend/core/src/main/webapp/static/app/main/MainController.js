@@ -460,12 +460,10 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
 
   $scope.toggleMenu = function() {
     var menuOpen = DrawerService.toggle('left');
-    if ($rootScope.columns !== 1) {
-      if (menuOpen && !$element[0].classList.contains('menu-show')) {
-        // Set class for 2 column layout as well to ensure layout does not break if it is changed between
-        // 2 and 3 columns.
-        $element[0].classList.add('menu-show');
-      }
+    if ($rootScope.columns !== 1 && menuOpen && !$element[0].classList.contains('menu-show')) {
+      // Set class for 2 column layout as well to ensure layout does not break if it is changed between
+      // 2 and 3 columns.
+      $element[0].classList.add('menu-show');
     }
   };
 
@@ -1042,6 +1040,11 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     if (openMenuAfterEditorClosed) {
       DrawerService.open('left');
       openMenuAfterEditorClosed = false;
+      if ($rootScope.columns !== 1 && !$element[0].classList.contains('menu-show')) {
+        // Set class for 2 column layout as well to ensure layout does not break if it is changed between
+        // 2 and 3 columns.
+        $element[0].classList.add('menu-show');
+      }
     }
     for (var id in editorClosedCallbacks)
       editorClosedCallbacks[id]();
