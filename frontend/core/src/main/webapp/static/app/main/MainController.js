@@ -1059,12 +1059,15 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
   DrawerService.registerClosedCallback('right', editorClosed, 'MainController');
   function editorClosed() {
     if (openMenuAfterEditorClosed) {
-      DrawerService.open('left');
       openMenuAfterEditorClosed = false;
-      if ($rootScope.columns !== 1 && !$element[0].classList.contains('menu-show')) {
-        // Set class for 2 column layout as well to ensure layout does not break if it is changed between
-        // 2 and 3 columns.
-        $element[0].classList.add('menu-show');
+      if ($rootScope.columns !== 1) {
+        // Menu behaves like this only in > 1 column layout.
+        DrawerService.open('left');
+        if (!$element[0].classList.contains('menu-show')) {
+          // Set class for 2 column layout as well to ensure layout does not break if it is changed between
+          // 2 and 3 columns.
+          $element[0].classList.add('menu-show');
+        }
       }
     }
     for (var id in editorClosedCallbacks)
