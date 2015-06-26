@@ -438,6 +438,7 @@ function drawerAisleDirective($rootScope, DrawerService) {
             // Execute callbacks to resize ready
             areaResizeReadyCallbacks[activeFeature]();
           }
+          setAreaResizeNeeded();  // Make sure area is eventually resized.
         }
       }
 
