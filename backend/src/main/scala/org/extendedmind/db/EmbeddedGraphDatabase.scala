@@ -33,6 +33,13 @@ class EmbeddedGraphDatabase(implicit val settings: Settings)
     else
       null
   }
+  
+  // Add possibility to set ha.server via environment variables.
+  // This is needed to get Docker to start listening on the right eth0 port.
+  if (System.getenv("HA_SERVER_IP_ENV") != null){
+    configParams("ha.server") = System.getenv(System.getenv("HA_SERVER_IP_ENV")) + ":" + System.getenv("HA_SERVER_PORT")
+  }
+  
   override def graphDatabaseFactory = {
     if (settings.isHighAvailability){
       new HighlyAvailableGraphDatabaseFactory().addKernelExtensions(kernelExtensions(false))
