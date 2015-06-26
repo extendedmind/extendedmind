@@ -137,7 +137,12 @@ function drawerAisleDirective($rootScope, DrawerService) {
           $element[0].firstElementChild.style.maxWidth = newWidth + 'px';
         }
 
-        if ($rootScope.columns !== 3) {
+        if ($rootScope.columns === 1) {
+          if (DrawerService.isOpen('right')) {
+            // Editor drawer needs to be moved into correct position.
+            DrawerService.setDrawerTranslate('right', -$rootScope.currentWidth);
+          }
+        } else if ($rootScope.columns === 2) {
           resizeAisleContent();
           if (DrawerService.isOpen('right')) {
             // Editor drawer needs to be moved into correct position.
