@@ -128,7 +128,7 @@ function drawerAisleDirective($rootScope, DrawerService) {
         }
       }.debounce(250);  // Fire once every quarter of a second.
 
-      function resizeAisleAndSetupAndResizeDrawers() {
+      function resizeAisleAndSetupAndResizeDrawers(previousLayout) {
         function resizeAisleContent() {
           var newWidth = $rootScope.currentWidth;
           if (DrawerService.isOpen('left')) {
@@ -144,6 +144,7 @@ function drawerAisleDirective($rootScope, DrawerService) {
           }
         } else if ($rootScope.columns === 2) {
           resizeAisleContent();
+          if (previousLayout === 1 && DrawerService.isOpen('left')) detachAndRemovePartiallyVisibleTouch();
           if (DrawerService.isOpen('right')) {
             // Editor drawer needs to be moved into correct position.
             DrawerService.setDrawerTranslate('right', -$rootScope.currentWidth);
@@ -151,6 +152,7 @@ function drawerAisleDirective($rootScope, DrawerService) {
         } else {
           if (DrawerService.isOpen('right')) calculateAisleAndEditorDrawerMaxWidthAndResize();
           else resizeAisleContent();
+          if (previousLayout === 1 && DrawerService.isOpen('left')) detachAndRemovePartiallyVisibleTouch();
         }
 
         // Setup drawers again on every window resize event
@@ -201,11 +203,12 @@ function drawerAisleDirective($rootScope, DrawerService) {
           clearTimeout(partiallyVisibleTouchTimer);
           partiallyVisibleTouchTimer = undefined;
         }
+        partiallyVisibleTouchTimer = setTimeout(detachAndRemovePartiallyVisibleTouch, 1000);
+      }
 
-        partiallyVisibleTouchTimer = setTimeout(function() {
-          $element[0].removeEventListener('touchstart', partiallyVisibleDrawerAisleClicked, false);
-          $rootScope.contentPartiallyVisible = false;
-        }, 1000);
+      function detachAndRemovePartiallyVisibleTouch() {
+        $element[0].removeEventListener('touchstart', partiallyVisibleDrawerAisleClicked, false);
+        $rootScope.contentPartiallyVisible = false;
       }
 
       /*
@@ -367,8 +370,7 @@ function drawerAisleDirective($rootScope, DrawerService) {
           // Re-enable dragging
           DrawerService.enableDragging('left');
           // Re-enable touching in fully visible aisle.
-          $element[0].removeEventListener('touchstart', partiallyVisibleDrawerAisleClicked, false);
-          $rootScope.contentPartiallyVisible = false;
+          detachAndRemovePartiallyVisibleTouch();
         }
         else {
           $element[0].firstElementChild.classList.remove('animate-container-master');

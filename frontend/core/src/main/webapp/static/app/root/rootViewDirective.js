@@ -319,6 +319,7 @@
         if (windowResizedCallbacks[id]) delete windowResizedCallbacks[id];
       };
 
+      var previousLayout;
       function setDimensions(width, height) {
 
         $rootScope.currentWidth = width;
@@ -349,9 +350,9 @@
 
         // Execute callbacks
         for (var id in windowResizedCallbacks) {
-          windowResizedCallbacks[id]();
+          windowResizedCallbacks[id](previousLayout);
         }
-
+        previousLayout = $rootScope.columns;  // Store previous layout into memory.
       }
       setDimensions(window.innerWidth, window.innerHeight);
 
@@ -399,6 +400,7 @@
         } else {
           window.removeEventListener('resize', windowResized, false);
         }
+        previousLayout = undefined;
 
         if (packaging === 'ios-cordova') {
           window.removeEventListener('native.keyboardshow', cordovaKeyboardShow);
