@@ -471,9 +471,9 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     DrawerService.close('left', speed);
   };
 
-  $scope.openMenu = function() {
+  $scope.openMenu = function(speed) {
     if (!$scope.isMenuVisible()){
-      DrawerService.open('left');
+      DrawerService.open('left', speed);
       if ($rootScope.columns !== 1 && !$element[0].classList.contains('menu-show')) {
         // Set class for 2 column layout as well to ensure layout does not break if it is changed between
         // 2 and 3 columns.
@@ -608,7 +608,9 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
       if (DrawerService.isOpen('right')) {
         if ($element[0].classList.contains('editor-visible')) $element[0].classList.remove('editor-visible');
         if (openMenuAfterEditorClosed) {
-          window.requestAnimationFrame($scope.openMenu);
+          window.requestAnimationFrame(function() {
+            $scope.openMenu(0);
+          });
           openMenuAfterEditorClosed = false;
         }
       }
