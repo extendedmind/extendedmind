@@ -319,6 +319,15 @@
         if (windowResizedCallbacks[id]) delete windowResizedCallbacks[id];
       };
 
+      var layoutChangedCallbacks = {};
+      scope.registerLayoutChangedCallback = function(callback, id) {
+        layoutChangedCallbacks[id] = callback;
+      };
+
+      scope.unregisterLayoutChangedCallback = function(id) {
+        if (layoutChangedCallbacks[id]) delete layoutChangedCallbacks[id];
+      };
+
       var previousLayout;
       function setDimensions(width, height) {
 
@@ -348,11 +357,22 @@
           $rootScope.smallDeviceWidth = false;
         }
 
+        var id;
         // Execute callbacks
-        for (var id in windowResizedCallbacks) {
+        for (id in windowResizedCallbacks) {
           windowResizedCallbacks[id](previousLayout);
         }
+
+        if (previousLayout !== undefined && previousLayout !== $rootScope.columns) {
+          // Execute callbacks
+          for (id in layoutChangedCallbacks) {
+            if (layoutChangedCallbacks.hasOwnProperty(id))  {
+              layoutChangedCallbacks[id]($rootScope.columns, previousLayout);
+            }
+          }
+        }
         previousLayout = $rootScope.columns;  // Store previous layout into memory.
+
       }
       setDimensions(window.innerWidth, window.innerHeight);
 

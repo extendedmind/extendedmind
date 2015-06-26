@@ -293,9 +293,14 @@
         drawers[drawerSide].snapper.resetToMinPosition();
       }
     },
-    setDrawerTranslate: function(drawerSide, x) {
+    translateTo: function(drawerSide, x) {
       if (snapperExists(drawerSide)) {
-        drawers[drawerSide].snapper.translate(x);
+        drawers[drawerSide].snapper.translateTo(x);
+      }
+    },
+    setDrawerMinPosition: function(drawerSide, x) {
+      if (snapperExists(drawerSide)) {
+        drawers[drawerSide].snapper.setMinPosition(x);
       }
     },
 

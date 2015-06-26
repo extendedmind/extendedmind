@@ -128,7 +128,7 @@ function drawerAisleDirective($rootScope, DrawerService) {
         }
       }.debounce(250);  // Fire once every quarter of a second.
 
-      function resizeAisleAndSetupAndResizeDrawers(previousLayout) {
+      function resizeAisleAndSetupAndResizeDrawers() {
         function resizeAisleContent() {
           var newWidth = $rootScope.currentWidth;
           if (DrawerService.isOpen('left')) {
@@ -138,32 +138,40 @@ function drawerAisleDirective($rootScope, DrawerService) {
         }
 
         if ($rootScope.columns === 1) {
+          DrawerService.setDrawerMinPosition('right', -$rootScope.currentWidth);
           if (DrawerService.isOpen('right')) {
             // Editor drawer needs to be moved into correct position.
-            DrawerService.setDrawerTranslate('right', -$rootScope.currentWidth);
-          }
-          if (previousLayout !== 1 && DrawerService.isOpen('left')) {
-            $element[0].firstElementChild.style.removeProperty('max-width');
-            attachAndAddPartiallyVisibleTouch();
+            DrawerService.translateTo('right', -$rootScope.currentWidth);
           }
         } else if ($rootScope.columns === 2) {
           resizeAisleContent();
-          if (previousLayout === 1 && DrawerService.isOpen('left')) detachAndRemovePartiallyVisibleTouch();
+          DrawerService.setDrawerMinPosition('right', -$rootScope.currentWidth);
           if (DrawerService.isOpen('right')) {
             // Editor drawer needs to be moved into correct position.
-            DrawerService.setDrawerTranslate('right', -$rootScope.currentWidth);
+            DrawerService.translateTo('right', -$rootScope.currentWidth);
           }
         } else {
           if (DrawerService.isOpen('right')) calculateAisleAndEditorDrawerMaxWidthAndResize();
           else resizeAisleContent();
-          if (previousLayout === 1 && DrawerService.isOpen('left')) detachAndRemovePartiallyVisibleTouch();
         }
+        // Notify that area needs to be resized.
+        setAreaResizeNeeded();
+      }
 
-        // Setup drawers again on every window resize event
-        // TODO: Can these be set when $rootScope.columns changes, or at least debounced?
+      function onLayoutChange(newLayout, oldLayout) {
+        if (newLayout === 1 && oldLayout !== 1) {
+          if (DrawerService.isOpen('left')) {
+            $element[0].firstElementChild.style.removeProperty('max-width');
+            attachAndAddPartiallyVisibleTouch();
+          }
+        } else if (newLayout !== 1 && oldLayout === 1) {
+          if (DrawerService.isOpen('left')) {
+            detachAndRemovePartiallyVisibleTouch();
+          }
+        }
+        // Setup drawers again.
         setupMenuDrawer();
         setupEditorDrawer();
-        setAreaResizeNeeded();
       }
 
       function isAreaResizeNeeded(feature) {
@@ -174,6 +182,7 @@ function drawerAisleDirective($rootScope, DrawerService) {
       }
 
       $scope.registerWindowResizedCallback(resizeAisleAndSetupAndResizeDrawers, 'drawerAisleDirective');
+      $scope.registerLayoutChangedCallback(onLayoutChange, 'drawerAisleDirective');
       $scope.registerResizeSwiperCallback(isAreaResizeNeeded);
 
       // Initialize everyting
@@ -516,6 +525,8 @@ function drawerAisleDirective($rootScope, DrawerService) {
 
       $scope.$on('$destroy', function() {
         $element[0].removeEventListener('touchstart', partiallyVisibleDrawerAisleClicked, false);
+        $scope.unregisterWindowResizedCallback('drawerAisleDirective');
+        $scope.unregisterLayoutChangedCallback('drawerAisleDirective');
       });
 
     }],

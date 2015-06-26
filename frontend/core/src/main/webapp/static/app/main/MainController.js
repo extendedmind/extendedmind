@@ -595,6 +595,24 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     }
   }
 
+  if (angular.isFunction($scope.registerLayoutChangedCallback)) {
+    $scope.registerLayoutChangedCallback(onLayoutChange, 'MainController');
+  }
+
+  function onLayoutChange(newLayout, oldLayout) {
+    if (newLayout === 1 && oldLayout !== 1) {
+      if (DrawerService.isOpen('left') && $element[0].classList.contains('menu-show')) {
+        $element[0].classList.remove('menu-show');
+      }
+    } else if (newLayout !== 1 && oldLayout === 1) {
+      if (DrawerService.isOpen('left') && !$element[0].classList.contains('menu-show')) {
+        // Set class for 2 column layout as well to ensure layout does not break if it is changed between
+        // 2 and 3 columns.
+        $element[0].classList.add('menu-show');
+      }
+    }
+  }
+
   $scope.isFeatureLoaded = function(feature){
     return ($rootScope.syncState !== 'active' || $rootScope.signUpInProgress) &&
     $scope.features[feature].loaded;
@@ -960,6 +978,9 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     }else{
       document.removeEventListener('resume', executeActivateCallbacks, false);
       document.removeEventListener('pause', executeDeactivateCallbacks, false);
+    }
+    if (angular.isFunction($scope.unregisterLayoutChangedCallback)) {
+      $scope.unregisterLayoutChangedCallback('MainController');
     }
   });
 

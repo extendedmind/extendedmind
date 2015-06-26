@@ -18,6 +18,7 @@
  *  v.      Add public interface for the translate function.
  *  vi      Reset to minPosition.
  *  vii.    Possibility to run open without animation.
+ *  viii.   Add public interface for the minPosition setter.
  */
 /*jslint browser: true*/
 /*global define, module, ender, packaging*/
@@ -658,11 +659,16 @@
         };
         // FORK
         // FORK v
-        this.translate = function(n) {
+        this.translateTo = function(n) {
             cache.translation = n;
             action.translate.x(n);
         };
         // FORK v
+        // FORK viii
+        this.setMinPosition = function(n) {
+            settings.minPosition = n;
+        };
+        // FORK viii
         // FORK vi
         this.resetToMinPosition = function() {
             if (settings.minPosition !== undefined) {
