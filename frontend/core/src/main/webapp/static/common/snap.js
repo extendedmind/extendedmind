@@ -19,6 +19,7 @@
  *  vi      Reset to minPosition.
  *  vii.    Possibility to run open without animation.
  *  viii.   Add public interface for the minPosition setter.
+ *  vix.    Possibility to run close without animation.
  */
 /*jslint browser: true*/
 /*global define, module, ender, packaging*/
@@ -586,9 +587,9 @@
                 action.translate.easeTo(settings.minPosition, speed);   // FORK: vii
             }
         };
-        this.close = function() {
+        this.close = function(speed) {  // FORK: vix
             utils.dispatchEvent('close');
-            action.translate.easeTo(0);
+            action.translate.easeTo(0, speed);  // FORK: vix
         };
         this.expand = function(side){
             var to = win.innerWidth || doc.documentElement.clientWidth;

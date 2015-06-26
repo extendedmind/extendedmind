@@ -159,17 +159,34 @@ function drawerAisleDirective($rootScope, DrawerService) {
       }
 
       function onLayoutChange(newLayout, oldLayout) {
-        if (newLayout === 1 && oldLayout !== 1) {
+
+        if (newLayout === 1) {
           if (DrawerService.isOpen('left')) {
             $element[0].firstElementChild.style.removeProperty('max-width');
             attachAndAddPartiallyVisibleTouch();
           }
-        } else if (newLayout !== 1 && oldLayout === 1) {
+        } else if (newLayout === 3) {
+          if (DrawerService.isOpen('right')) {
+            DrawerService.translateTo('right', 0);
+            calculateAisleAndEditorDrawerMaxWidthAndResize();
+          }
+        }
+
+        if (oldLayout === 1) {
           if (DrawerService.isOpen('left')) {
             detachAndRemovePartiallyVisibleTouch();
           }
           if (DrawerService.isOpen('right')) {
             $element[0].firstElementChild.classList.remove('editor-open');
+          }
+        } else if (oldLayout === 3) {
+          if (DrawerService.isOpen('right')) {
+            window.requestAnimationFrame(function() {
+              DrawerService.translateTo('right', -$rootScope.currentWidth);
+            });
+            $element[0].style.removeProperty('max-width');  // Restore width.
+            var editorDrawerElement = DrawerService.getDrawerElement('right');
+            if (editorDrawerElement) editorDrawerElement.style.removeProperty('max-width');
           }
         }
         // Setup drawers again.

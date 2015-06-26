@@ -233,9 +233,9 @@
         executeDrawerOpenedCallbacks(drawerSide);
       }
     },
-    close: function(drawerSide) {
+    close: function(drawerSide, speed) {
       if (snapperExists(drawerSide) && drawers[drawerSide].snapper.state().state === drawerSide) {
-        drawers[drawerSide].snapper.close();
+        drawers[drawerSide].snapper.close(speed);
       }
       else if (isDrawerCreated(drawerSide) && !drawers[drawerSide].moveAisle) {
         // Just execute callbacks.
