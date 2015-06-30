@@ -51,6 +51,9 @@ import akka.event.LoggingAdapter
 import org.neo4j.index.lucene.QueryContext
 import org.neo4j.extension.timestamp.TimestampCustomPropertyHandler
 import org.neo4j.graphdb.index.IndexHits
+import org.neo4j.graphdb.event.TransactionEventHandler
+import org.neo4j.extension.uuid.UUIDTransactionEventHandler
+import org.neo4j.extension.timestamp.TimestampTransactionEventHandler
 
 case class OwnerNodes(user: Node, foreignOwner: Option[Node])
 
@@ -83,9 +86,9 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
 
   // INITIALIZATION
 
-  protected def kernelExtensions(setupAutoindexing: Boolean = true): java.util.ArrayList[KernelExtensionFactory[_]] = {
-    val extensions = new java.util.ArrayList[KernelExtensionFactory[_]](2);
-    extensions.add(new UUIDKernelExtensionFactory(false, false, setupAutoindexing));
+  protected def transactionEventHandlers(): java.util.ArrayList[TransactionEventHandler[_]] = {
+    val eventHandlers = new java.util.ArrayList[TransactionEventHandler[_]](2);
+    eventHandlers.add(new UUIDTransactionEventHandler(false, false));
 
     if (settings.disableTimestamps){
       println("WARNING: Automatic timestamps disabled!")
@@ -97,9 +100,9 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
       deletedModificationTags.add(ItemRelationship.HAS_PARENT)
       val deletedHandler = new TimestampCustomPropertyHandler("deleted", deletedModificationTags, Direction.INCOMING)
       customPropertyHandlers.add(deletedHandler)
-      extensions.add(new TimestampKernelExtensionFactory(setupAutoindexing, true, customPropertyHandlers));
+      eventHandlers.add(new TimestampTransactionEventHandler(true, customPropertyHandlers));
     }
-    extensions
+    eventHandlers
   }
 
   protected def startServer() {
@@ -125,6 +128,8 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
         val statistics = getStatisticsInTx
         log.info("users: " + statistics.users +
           ", items: " + statistics.items)
+        // Add transaction event handlers here
+        transactionEventHandlers.foreach( eventHandler => neo4j.gds.registerTransactionEventHandler(eventHandler))
         available
     }
   }
@@ -186,12 +191,12 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
           if (newNode)
             Some(UUIDUtils.getUUID(node.getProperty("uuid").asInstanceOf[String]))
           else None
-        val created = 
+        val created =
           if (newNode)
             Some(node.getProperty("created").asInstanceOf[Long])
           else
             None
-        
+
         val idToUUIDList = {
           if (associated.isEmpty) None
           else{
@@ -235,7 +240,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
       if (nodeResponse.isLeft) return Left(nodeResponse.left.get)
       else nodeResponse.right.get
     })
-    
+
     if (skipLabel.isDefined){
       Right(nodeList filter (node => {
         !node.hasLabel(skipLabel.get)
@@ -320,7 +325,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     if (ownerNodes.foreignOwner.isDefined) ownerNodes.foreignOwner.get
     else ownerNodes.user
   }
-  
+
   protected def deleteItem(itemNode: Node)(implicit neo4j: DatabaseService): Long = {
     if (itemNode.hasProperty("deleted")){
       itemNode.getProperty("deleted").asInstanceOf[Long]
@@ -337,10 +342,10 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
       itemNode.removeProperty("deleted")
     }
   }
-  
+
   protected def getItemNode(owner: Owner, itemUUID: UUID, mandatoryLabel: Option[Label] = None,
     acceptDeleted: Boolean = false, exactLabelMatch: Boolean = true)(implicit neo4j: DatabaseService): Response[Node] = {
-    val itemNode = 
+    val itemNode =
       if (mandatoryLabel.isDefined) getItemNode(getOwnerUUID(owner), itemUUID, mandatoryLabel.get, acceptDeleted)
       else getItemNode(getOwnerUUID(owner), itemUUID, MainLabel.ITEM, acceptDeleted)
     if (itemNode.isLeft) return itemNode
@@ -359,7 +364,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
   protected def getItemNode(ownerUUID: UUID, itemUUID: UUID, label: Label, acceptDeleted: Boolean)(implicit neo4j: DatabaseService): Response[Node] = {
     val itemsIndex = neo4j.gds.index().forNodes("items")
     val itemHits: IndexHits[Node] = itemsIndex.query("owner:\"" + UUIDUtils.getTrimmedBase64UUID(ownerUUID) + "\" AND item:\"" + UUIDUtils.getTrimmedBase64UUID(itemUUID) + "\"")
-    
+
     if (itemHits.size == 0) {
       fail(INVALID_PARAMETER, ERR_ITEM_NOT_FOUND, "Could not find item " + itemUUID + " for owner " + ownerUUID)
     } else if (itemHits.size > 1) {
@@ -382,5 +387,5 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
         DeleteItemResult(deleted, getSetResult(item, addUUID))
     }
   }
-  
+
 }

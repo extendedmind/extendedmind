@@ -59,6 +59,13 @@ trait TestGraphDatabase extends GraphDatabase {
   var emtUUID: UUID = null
 
   def insertTestData(testDataLocation: Option[String] = None) {
+    // Insert transaction event handlers at the beginning of each test
+    withTx {
+      implicit neo4j =>
+         import scala.collection.JavaConversions._
+         transactionEventHandlers.foreach( eventHandler => neo4j.gds.registerTransactionEventHandler(eventHandler))
+    }
+
     val timoUser = User(TIMO_EMAIL, Some(1), None)
     val timoNode = createUser(timoUser, TIMO_PASSWORD, Some(UserLabel.ADMIN)).right.get._1
     val lauriUser = User(LAURI_EMAIL, None, None)
@@ -266,9 +273,7 @@ trait TestGraphDatabase extends GraphDatabase {
 class TestImpermanentGraphDatabase(implicit val settings: Settings)
   extends TestGraphDatabase with ImpermanentGraphDatabaseServiceProvider {
   def testGraphDatabaseFactory = {
-    val factory = new TestGraphDatabaseFactory()
-    factory.addKernelExtensions(kernelExtensions(false))
-    factory
+    new TestGraphDatabaseFactory()
   }
 }
 
@@ -276,6 +281,6 @@ class TestEmbeddedGraphDatabase(dataStore: String)(implicit val settings: Settin
   extends TestGraphDatabase with EmbeddedGraphDatabaseServiceProvider {
   def neo4jStoreDir = dataStore
   def graphDatabaseFactory = {
-    new GraphDatabaseFactory().addKernelExtensions(kernelExtensions(true))
+    new GraphDatabaseFactory()
   }
 }

@@ -91,7 +91,7 @@
     <dependency>
       <groupId>org.extendedmind</groupId>
       <artifactId>neo4j-scala</artifactId>
-      <version>${neo4j.version}.1</version>
+      <version>${neo4j.version}</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
@@ -468,13 +468,11 @@
                   <tag>${project.version}</tag>
                 </tags>
                 <ports>
+                  <!-- Backend port -->
                   <port>8081</port>
                   <!-- Neo4j backup port -->
                   <port>6362</port>
-                  <!-- Neo4j cluster heartbeat -->
-                  <port>5001</port>
-                  <!-- Neo4j cluster transaction -->
-                  <port>6001</port>
+                  <!-- HA ports don't need to be opened because HA communication needs to happen in an in-container subnet created with e.g. Flannel -->
                 </ports>
                 <assembly>
                   <mode>dir</mode>
@@ -554,5 +552,38 @@
         </executions>
       </plugin>
     </plugins>
+    <pluginManagement>
+    	<plugins>
+    		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+    		<plugin>
+    			<groupId>org.eclipse.m2e</groupId>
+    			<artifactId>lifecycle-mapping</artifactId>
+    			<version>1.0.0</version>
+    			<configuration>
+    				<lifecycleMappingMetadata>
+    					<pluginExecutions>
+    						<pluginExecution>
+    							<pluginExecutionFilter>
+    								<groupId>
+    									org.apache.maven.plugins
+    								</groupId>
+    								<artifactId>
+    									maven-dependency-plugin
+    								</artifactId>
+    								<versionRange>[2.8,)</versionRange>
+    								<goals>
+    									<goal>copy-dependencies</goal>
+    								</goals>
+    							</pluginExecutionFilter>
+    							<action>
+    								<ignore></ignore>
+    							</action>
+    						</pluginExecution>
+    					</pluginExecutions>
+    				</lifecycleMappingMetadata>
+    			</configuration>
+    		</plugin>
+    	</plugins>
+    </pluginManagement>
   </build>
 </project>

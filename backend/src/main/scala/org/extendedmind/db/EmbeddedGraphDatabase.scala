@@ -23,8 +23,9 @@ import org.extendedmind.Settings
 import org.neo4j.graphdb.factory.GraphDatabaseFactory
 import org.neo4j.graphdb.factory.HighlyAvailableGraphDatabaseFactory
 import org.neo4j.scala.EmbeddedGraphDatabaseServiceProvider
+import scala.reflect.io.File
 
-class EmbeddedGraphDatabase(implicit val settings: Settings) 
+class EmbeddedGraphDatabase(implicit val settings: Settings)
 	extends GraphDatabase with EmbeddedGraphDatabaseServiceProvider{
   def neo4jStoreDir = settings.neo4jStoreDir
   override def configFileLocation = {
@@ -33,18 +34,44 @@ class EmbeddedGraphDatabase(implicit val settings: Settings)
     else
       null
   }
-  
-  // Add possibility to set ha.server via environment variables.
-  // This is needed to get Docker to start listening on the right eth0 port.
-  if (System.getenv("HA_SERVER_IP_ENV") != null){
-    configParams("ha.server") = System.getenv(System.getenv("HA_SERVER_IP_ENV")) + ":" + System.getenv("HA_SERVER_PORT")
-  }
-  
+
+
+
   override def graphDatabaseFactory = {
     if (settings.isHighAvailability){
-      new HighlyAvailableGraphDatabaseFactory().addKernelExtensions(kernelExtensions(false))
+      if (settings.neo4jPropertiesFile.isDefined){
+        def getHAServerCount(propertiesFileLocation: String): Int = {
+          val propertiesInputStream = new java.io.FileInputStream(settings.neo4jPropertiesFile.get)
+          val properties = new java.util.Properties()
+          properties.load(propertiesInputStream)
+          if (properties.containsKey("ha.initial_hosts")){
+            val initialHosts = properties.getProperty("ha.initial_hosts")
+            propertiesInputStream.close()
+            val numberOfHAServers = {
+              if (initialHosts.length() > 0){
+                initialHosts.length() - initialHosts.replace(",", "").length() + 1
+              }else{
+                0
+              }
+            }
+            println("Configuration contains " + numberOfHAServers + " HA servers")
+            numberOfHAServers
+          }else{
+            println("Configuration does not have a ha.initial_hosts parameter")
+            0
+          }
+        }
+
+        // We need to make sure that the properties file has at least three ha.initial_hosts before
+        // launching to get HA to work. Do a blocking poll here.
+        while(getHAServerCount(settings.neo4jPropertiesFile.get) < 3){
+          Thread.sleep(1000)
+        }
+        println("Found at least 3 HA hosts, continuing")
+      }
+      new HighlyAvailableGraphDatabaseFactory()
     }else{
-      new GraphDatabaseFactory().addKernelExtensions(kernelExtensions(false))
+      new GraphDatabaseFactory()
     }
   }
   startServer()
