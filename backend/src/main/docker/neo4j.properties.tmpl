@@ -9,5 +9,6 @@ ha.cluster_server={{printf "%s" $ip_key | getv}}:5001
 ha.server={{printf "%s" $ip_key | getv}}:6001
 {{$hosts := getvs "/extendedmind/backend/hosts/*"}}
 ha.initial_hosts={{join $hosts ":5001,"}}:5001
+ha.tx_push_factor={{getenv "SLAVE_COUNT"}}
 {{end}}
 {{end}}
