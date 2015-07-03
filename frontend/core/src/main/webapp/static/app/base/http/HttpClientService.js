@@ -27,7 +27,7 @@
 
   // Offline checker for the entire application
   function isOffline(status) {
-    if (status === 0 || status === 404 || status === 502) {
+    if (status === 0 || status === 404 || status === 502 || status === 503) {
       return true;
     }
   }
