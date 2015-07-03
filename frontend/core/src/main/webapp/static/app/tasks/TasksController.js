@@ -264,7 +264,7 @@
             messageIngress: 'enjoy your day!',
             messageText: [{
               type: 'text',
-              data: 'if you have a moment, please review your extended mind. we will only do this once'
+              data: 'if you have a moment, please review the extended mind app. we will only ask you once.'
             }],
             confirmAction: gotoMarketFn,
             confirmText: 'review',
