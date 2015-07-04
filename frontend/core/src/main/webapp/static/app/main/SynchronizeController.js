@@ -211,7 +211,7 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
   // Executes after secondary when there is nothing in the queue
   function afterSecondaryWithEmptyQueueCallback(previousSecondary) {
     var previousParams = previousSecondary.params;
-    return synchronizeMostStaleOtherOwner(previousParams);
+    return synchronizeMostStaleOtherOwner(previousParams, true);
   }
   BackendClientService.registerAfterSecondaryWithEmptyQueueCallback(afterSecondaryWithEmptyQueueCallback);
 
@@ -237,7 +237,7 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
   }
 
   // Synchronizes the other owner that has not been synced for the longest period
-  function synchronizeMostStaleOtherOwner(previousParams){
+  function synchronizeMostStaleOtherOwner(previousParams, forceIfNotPreviouslySynced){
     var otherOwnerUUIDs = getOtherOwnerUUIDs(UserSessionService.getSharedLists(),
                                              UserSessionService.getUIPreference('adoptedLists'));
     return $q(function(resolve, reject) {
@@ -255,9 +255,9 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
         }
         if (mostStaleOwnerUUID){
           var forceSyncParams;
-          if (previousParams && (previousParams.emptied || (previousParams.shared &&
-              previousParams.shared.indexOf(mostStaleOwnerUUID) === -1))){
-            if (!previousParams.shared) forceSyncParams = {shared: []};
+          if (forceIfNotPreviouslySynced && (!previousParams || !previousParams.shared ||
+            previousParams.shared.indexOf(mostStaleOwnerUUID) === -1)){
+            if (!previousParams || !previousParams.shared) forceSyncParams = {shared: []};
             else forceSyncParams = {shared: previousParams.shared};
             forceSyncParams.shared.push(mostStaleOwnerUUID);
           }
