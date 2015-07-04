@@ -1,11 +1,10 @@
 #!/bin/bash
 
-TODAY=$(date +"%Y-%m-%d")
 if [ -z "$1" ]
 then
-  BACKUP_LOCATION=/var/extendedmind/backup/$TODAY/
+  BACKUP_LOCATION_PREFIX=/var/extendedmind/backup
 else
-  BACKUP_LOCATION=$1/$TODAY/
+  BACKUP_LOCATION_PREFIX=$1
 fi
 
 if [ -z "$2" ]
@@ -27,6 +26,8 @@ do
   if [ $IS_MASTER -eq 200 ]
   then
     echo "Begin full backend backup"
+    TODAY=$(date +"%Y-%m-%d")
+    BACKUP_LOCATION = $BACKUP_LOCATION_PREFIX/$TODAY/
     rm -fR /usr/src/extendedmind/work
     mkdir /usr/src/extendedmind/work
     cd /usr/src/extendedmind/bin
