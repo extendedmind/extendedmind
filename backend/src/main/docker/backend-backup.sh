@@ -27,7 +27,7 @@ do
   then
     echo "Begin full backend backup"
     TODAY=$(date +"%Y-%m-%d")
-    BACKUP_LOCATION = $BACKUP_LOCATION_PREFIX/$TODAY/
+    BACKUP_LOCATION=$BACKUP_LOCATION_PREFIX/$TODAY/
     rm -fR /usr/src/extendedmind/work
     mkdir /usr/src/extendedmind/work
     cd /usr/src/extendedmind/bin
