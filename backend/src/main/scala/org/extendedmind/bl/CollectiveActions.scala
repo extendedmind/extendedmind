@@ -40,7 +40,7 @@ trait CollectiveActions {
 
   def db: GraphDatabase
   def settings: Settings
-    
+
   def putNewCollective(creatorUUID: UUID, collective: Collective)(implicit log: LoggingAdapter): Response[SetResult] = {
     if (!db.hasCommonCollective){
       log.info("Making collective {} a common collective to all "
@@ -50,17 +50,17 @@ trait CollectiveActions {
       db.putNewCollective(creatorUUID, collective, false)
     }
   }
-  
+
   def putExistingCollective(collectiveUUID: UUID, collective: Collective)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("putExistingCollective: collective {}", collectiveUUID)
     db.putExistingCollective(collectiveUUID, collective)
   }
-  
+
   def getCollective(collectiveUUID: UUID)(implicit log: LoggingAdapter): Response[Collective] = {
     log.info("getCollective: collective {}", collectiveUUID)
     db.getCollective(collectiveUUID)
   }
-  
+
   def setCollectiveUserPermission(collectiveUUID: UUID, founderUUID: UUID, userUUID: UUID, access: Option[Byte])
           (implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("setCollectiveUserPermission: collective {}, founder {}, user {}, access {}", collectiveUUID, founderUUID, userUUID, access)

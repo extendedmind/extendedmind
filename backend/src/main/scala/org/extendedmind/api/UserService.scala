@@ -42,7 +42,7 @@ import spray.util._
 import scala.concurrent.duration._
 
 trait UserService extends ServiceBase {
-  
+
   import JsonImplicits._
 
   def userRoutes = {

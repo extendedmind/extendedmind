@@ -67,7 +67,7 @@ class Settings(config: Config) extends Extension {
     if (config.hasPath("extendedmind.neo4j.disableTimestamps"))
       config.getBoolean("extendedmind.neo4j.disableTimestamps")
     else false
-    
+
   val tokenSecret = config.getString("extendedmind.security.tokenSecret")
   val signUpMethod: SignUpMethod  = {
     config.getString("extendedmind.security.signUpMethod") match {
@@ -81,13 +81,13 @@ class Settings(config: Config) extends Extension {
     else
       None
   }
-  
+
   val signUpMode: SignUpMode  = {
     config.getString("extendedmind.security.signUpMode") match {
       case "ADMIN" => MODE_ADMIN
       case "ALFA" => MODE_ALFA
       case "BETA" => MODE_BETA
-      case "NORMAL" => MODE_NORMAL        
+      case "NORMAL" => MODE_NORMAL
     }
   }
   val mailgunDomain = config.getString("extendedmind.email.mailgun.domain")

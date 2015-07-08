@@ -129,7 +129,7 @@ trait ItemDatabase extends UserDatabase {
         } yield result
     }
   }
-  
+
   def rebuildItemsIndexes: Response[CountResult] = {
     for {
       ownerUUIDs <- getOwnerUUIDs.right
@@ -152,7 +152,7 @@ trait ItemDatabase extends UserDatabase {
       }
     }
   }
-  
+
   protected def getItems(itemNodes: Iterable[Node], owner: Owner)(implicit neo4j: DatabaseService, log: LoggingContext): Response[Items] = {
     val itemBuffer = new ListBuffer[Item]
     val taskBuffer = new ListBuffer[Task]
@@ -199,7 +199,7 @@ trait ItemDatabase extends UserDatabase {
         log.warning("Owner " + getOwnerUUID(owner) + " has node " + itemNode.getId() + " with labels " + labels +
           " that was found in the items index")
       })
-    
+
     Right(Items(
       if (itemBuffer.isEmpty) None else Some(itemBuffer.toList),
       if (taskBuffer.isEmpty) None else Some(taskBuffer.toList),
@@ -256,7 +256,7 @@ trait ItemDatabase extends UserDatabase {
       .evaluator(LabelEvaluator(scala.List(MainLabel.ITEM)))
   }
 
-  
+
   protected def createItem(owner: Owner, item: AnyRef,
     extraLabel: Option[Label] = None, extraSubLabel: Option[Label] = None): Response[Node] = {
     withTx {
@@ -356,7 +356,7 @@ trait ItemDatabase extends UserDatabase {
         } yield (itemNode, archived)
     }
   }
-  
+
   protected def putExistingLimitedExtendedItem(owner: Owner, itemUUID: UUID, extItem: LimitedExtendedItem, label: Label): Response[(Node, Option[Long])] = {
     withTx {
       implicit neo4j =>
@@ -376,7 +376,7 @@ trait ItemDatabase extends UserDatabase {
         } yield (itemNode, archived)
     }
   }
-  
+
   protected def setParentNode(itemNode: Node, owner: Owner, parentUUID: Option[UUID], skipParentHistoryTag: Boolean = false)(implicit neo4j: DatabaseService): Response[Option[Long]] = {
     for {
       oldParentRelationship <- Right(getItemRelationship(itemNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.LIST)).right
@@ -445,13 +445,13 @@ trait ItemDatabase extends UserDatabase {
     if (label.isDefined) itemsFromParent.evaluator(LabelEvaluator(scala.List(label.get))).traverse(itemNode).nodes().toList
     else itemsFromParent.traverse(itemNode).nodes().toList
   }
-  
+
   protected def getParentRelationship(itemNode: Node)(implicit neo4j: DatabaseService): Option[Relationship] = {
     itemNode.getRelationships.find { relationship => {
       relationship.getEndNode.getId != itemNode.getId && relationship.getType.name == ItemRelationship.HAS_PARENT.name
     }}
   }
-  
+
   protected def isUniqueParent(itemNode: Node, itemsInPath: ListBuffer[Long])(implicit neo4j: DatabaseService): Boolean = {
     val parentRelationship = getParentRelationship(itemNode)
     if (parentRelationship.isDefined){
@@ -467,7 +467,7 @@ trait ItemDatabase extends UserDatabase {
     }
     true
   }
-  
+
   protected def getTaggedItems(tagNode: Node, includeDeleted: Boolean = false)(implicit neo4j: DatabaseService): scala.List[Node] = {
     val itemsFromTagSkeleton: TraversalDescription =
       neo4j.gds.traversalDescription()
@@ -491,19 +491,19 @@ trait ItemDatabase extends UserDatabase {
   }
 
   protected def createParentRelationship(itemNode: Node, owner: Owner, parentNode: Node, skipParentHistoryTag: Boolean)(implicit neo4j: DatabaseService): Response[Option[Long]] = {
-    
+
     // First, make sure there isn't a infinite loop of parents, problem possible only for lists and tags
     if (itemNode.hasLabel(ItemLabel.LIST) || itemNode.hasLabel(ItemLabel.TAG)){
       if (itemNode.getId == parentNode.getId)
         return fail(INVALID_PARAMETER, ERR_ITEM_OWN_PARENT, "Item can not be its own parent")
-      
+
       val itemsInPath = new ListBuffer[Long]
       itemsInPath.append(itemNode.getId)
       if (!isUniqueParent(parentNode, itemsInPath)){
-        return fail(INVALID_PARAMETER, ERR_ITEM_PARENT_INFINITE_LOOP, "Infinite loop in item parents")      
+        return fail(INVALID_PARAMETER, ERR_ITEM_PARENT_INFINITE_LOOP, "Infinite loop in item parents")
       }
     }
-    
+
     val relationship = itemNode --> ItemRelationship.HAS_PARENT --> parentNode <;
     // When adding a relationship to a parent list, item needs to match the archived status of the parent
     if (parentNode.hasProperty("archived")) {
@@ -523,7 +523,7 @@ trait ItemDatabase extends UserDatabase {
         val historyTagRelationship = getItemRelationship(parentNode, owner, ItemRelationship.HAS_TAG, TagLabel.HISTORY)
         if (historyTagRelationship.isDefined) {
           val historyTagNode = historyTagRelationship.get.getEndNode()
-  
+
           // Need to make sure the child does not already have this tag
           val tagRelationshipsResult = getTagRelationships(itemNode, owner)
           if (tagRelationshipsResult.isLeft) return Left(tagRelationshipsResult.left.get)
@@ -724,7 +724,7 @@ trait ItemDatabase extends UserDatabase {
       Right(Some(relationshipList))
     }
   }
-  
+
   protected def moveDescriptionToContent(node: Node)(implicit neo4j: DatabaseService) {
     if (node.hasProperty("description")){
       val description = node.getProperty("description").asInstanceOf[String]
@@ -734,14 +734,14 @@ trait ItemDatabase extends UserDatabase {
       node.removeProperty("content")
     }
   }
-  
+
   protected def moveContentToDescription(node: Node)(implicit neo4j: DatabaseService): Response[Unit] = {
     if (node.hasProperty("description")){
       fail(INVALID_PARAMETER, ERR_ITEM_CONTENT_ALREADY_DESCRIPTION, "Can't move content to description: item already has a description field.")
     }else if (node.hasProperty("content")){
       val content = node.getProperty("content").asInstanceOf[String]
       if (!Validators.validateDescription(content)){
-        fail(INVALID_PARAMETER, ERR_ITEM_CONTENT_TOO_LONG, "Can't move content to description: content too long to fit to a description field.")        
+        fail(INVALID_PARAMETER, ERR_ITEM_CONTENT_TOO_LONG, "Can't move content to description: content too long to fit to a description field.")
       }else{
         node.setProperty("description", content)
         node.removeProperty("content")
@@ -771,15 +771,15 @@ trait ItemDatabase extends UserDatabase {
         } yield itemNode
     }
   }
-  
-    
+
+
   protected def validateExtendedItemModifiable(owner: Owner, itemUUID: UUID, label: Label, requireFounder: Boolean = false): Response[Node] = {
     withTx {
       implicit neo4j =>
         for {
           taskNode <- getItemNode(owner, itemUUID, Some(label), acceptDeleted = true).right
           parentRelationship <- (if(owner.isLimitedAccess) Right(getParentRelationship(taskNode)) else Right(None)).right
-          accessRight <- 
+          accessRight <-
           (if (owner.isLimitedAccess) Right(getSharedListAccessRight(owner.sharedLists.get,
               if (parentRelationship.isDefined){
                 Some(ExtendedItemRelationships(Some(getUUID(parentRelationship.get.getEndNode)), None, None))
@@ -790,7 +790,7 @@ trait ItemDatabase extends UserDatabase {
           ).right
           unit <- (if (requireFounder && accessRight.isDefined && accessRight.get != SecurityContext.FOUNDER)
         	  		fail(INVALID_PARAMETER, ERR_BASE_FOUNDER_ACCESS_RIGHT_REQUIRED, "Given parameters require founder access")
-        		   else if (writeAccess(accessRight)) Right() 
+        		   else if (writeAccess(accessRight)) Right()
         		   else fail(INVALID_PARAMETER, ERR_BASE_NO_LIST_ACCESS, "No write access to (un)delete task")).right
         } yield taskNode
     }
@@ -823,11 +823,11 @@ trait ItemDatabase extends UserDatabase {
     // Remove all relationships
     val relationshipList = deletedItem.getRelationships().toList
     relationshipList.foreach(relationship => relationship.delete())
-    
+
     // Remove from items index
     val itemsIndex = neo4j.gds.index().forNodes("items")
     itemsIndex.remove(deletedItem)
-    
+
     // Delete item itself
     deletedItem.delete()
   }
@@ -853,7 +853,7 @@ trait ItemDatabase extends UserDatabase {
         updateModifiedIndex(itemsIndex, itemNode, setResult.modified)
     }
   }
-  
+
   protected def updateItemsIndex(itemNodeList: scala.List[Node], setResult: SetResult): Unit = {
     withTx {
       implicit neo4j =>
@@ -870,7 +870,7 @@ trait ItemDatabase extends UserDatabase {
   protected def addModifiedIndex(index: Index[Node], node: Node, modified: Long)(implicit neo4j: DatabaseService): Unit = {
     index.add(node, "modified", new ValueContext(node.getProperty("modified").asInstanceOf[Long]).indexNumeric())
   }
-  
+
   protected def rebuildItemsIndexes(ownerUUIDs: scala.List[UUID]): Response[CountResult] = {
     ownerUUIDs.foreach(ownerUUID => {
       val rebuildResult = rebuildItemsIndex(ownerUUID)

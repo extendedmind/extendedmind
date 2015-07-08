@@ -81,7 +81,7 @@ object defaults {
   implicit object WritesLong extends DataOutputStreamWrites[Long](_.writeLong(_))
   implicit object WritesInt extends DataOutputStreamWrites[Int](_.writeInt(_))
   implicit object WritesShort extends DataOutputStreamWrites[Short](_.writeShort(_))
-  
+
   def encodeBase64(bytes: Array[Byte]) = Base64.encodeBase64String(bytes)
   def decodeBase64(base64String: String) = Base64.decodeBase64(base64String)
 }

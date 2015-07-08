@@ -34,10 +34,10 @@ import org.extendedmind.security.Authorization._
 trait TaskActions {
 
   def db: GraphDatabase;
-  
+
   def putNewTask(owner: Owner, task: Task)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("putNewTask")
-    val accessRight =  db.getTaskAccessRight(owner, task)   
+    val accessRight =  db.getTaskAccessRight(owner, task)
     if (!writeAccess(accessRight)){
       fail(INVALID_PARAMETER, ERR_BASE_NO_LIST_ACCESS, "No write access to new task")
     }else{
@@ -53,7 +53,7 @@ trait TaskActions {
 
   def putExistingTask(owner: Owner, taskUUID: UUID, task: Task)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("putExistingTask")
-    val accessRight =  db.getTaskAccessRight(owner, task)   
+    val accessRight =  db.getTaskAccessRight(owner, task)
     if (!writeAccess(accessRight)){
       fail(INVALID_PARAMETER, ERR_BASE_NO_LIST_ACCESS, "No write access to existing task")
     }else{
@@ -71,12 +71,12 @@ trait TaskActions {
     log.info("getTask")
     db.getTask(owner, taskUUID)
   }
-  
+
   def deleteTask(owner: Owner, taskUUID: UUID, rm: Option[ReminderModification])(implicit log: LoggingAdapter): Response[DeleteItemResult] = {
     log.info("deleteTask")
     db.deleteTask(owner, taskUUID, rm)
   }
-  
+
   def undeleteTask(owner: Owner, taskUUID: UUID, rm: Option[ReminderModification])(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("undeleteTask")
     db.undeleteTask(owner: Owner, taskUUID, rm)
@@ -86,17 +86,17 @@ trait TaskActions {
     log.info("completeTask")
     db.completeTask(owner, taskUUID, rm)
   }
-  
+
   def uncompleteTask(owner: Owner, taskUUID: UUID, rm: Option[ReminderModification])(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("uncompleteTask")
     db.uncompleteTask(owner, taskUUID, rm)
   }
-  
+
   def taskToList(owner: Owner, taskUUID: UUID, task: Task)(implicit log: LoggingAdapter): Response[List] = {
     log.info("taskToList")
     db.taskToList(owner, taskUUID, task)
   }
-  
+
   def taskToNote(owner: Owner, taskUUID: UUID, task: Task)(implicit log: LoggingAdapter): Response[Note] = {
     log.info("taskToNote")
     db.taskToNote(owner, taskUUID, task)

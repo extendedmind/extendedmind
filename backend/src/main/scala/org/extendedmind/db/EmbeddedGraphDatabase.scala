@@ -35,8 +35,6 @@ class EmbeddedGraphDatabase(implicit val settings: Settings)
       null
   }
 
-
-
   override def graphDatabaseFactory = {
     if (settings.isHighAvailability){
       if (settings.neo4jPropertiesFile.isDefined){

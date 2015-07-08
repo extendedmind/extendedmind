@@ -40,8 +40,8 @@ trait SecurityActions {
 
   def actorRefFactory: ActorRefFactory
   implicit val implicitActorRefFactory = actorRefFactory
-  implicit val implicitExecutionContext = actorRefFactory.dispatcher 
-  
+  implicit val implicitExecutionContext = actorRefFactory.dispatcher
+
   def logout(userUUID: UUID, payload: Option[LogoutPayload])(implicit log: LoggingAdapter): Response[CountResult] = {
     log.info("logout: payload {}", payload)
     if (payload.isEmpty || payload.get.clearAll == false)
@@ -53,18 +53,18 @@ trait SecurityActions {
       }
     }
   }
-  
+
   def clear(userUUID: UUID)(implicit log: LoggingAdapter): Response[CountResult] = {
     log.info("clear")
     db.destroyTokens(userUUID)
   }
-  
+
   def changePassword(userUUID: UUID, newPassword: String)(implicit log: LoggingAdapter): Response[CountResult] = {
     log.info("changePassword")
     db.changePassword(userUUID, newPassword)
     db.destroyTokens(userUUID)
   }
-  
+
   def forgotPassword(userEmail: UserEmail)(implicit log: LoggingAdapter): Response[ForgotPasswordResult] = {
     log.info("forgotPassword: user {}", userEmail.email)
     for {
@@ -72,14 +72,14 @@ trait SecurityActions {
       result <- sendPasswordResetLink(user).right
     } yield result
   }
-  
+
   def getPasswordResetExpires(code: Long, email: String)(implicit log: LoggingAdapter): Response[ForgotPasswordResult] = {
     log.info("getPasswordResetable: user {}", email)
     for {
       expires <- db.getPasswordResetExpires(code, email).right
     } yield ForgotPasswordResult(expires)
   }
-  
+
   def resetPassword(code: Long, signUp: SignUp)(implicit log: LoggingAdapter): Response[CountResult] = {
     log.info("resetPassword: {}", signUp.email)
     val result = db.resetPassword(code, signUp)
@@ -89,12 +89,12 @@ trait SecurityActions {
       Left(result.left.get)
     }
   }
-  
+
   def verifyEmail(code: Long, email: String)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("verifyEmail: {}", email)
     db.verifyEmail(code, email)
   }
-  
+
   private def sendPasswordResetLink(user: User)(implicit log: LoggingAdapter): Response[ForgotPasswordResult] = {
     val resetCode = Random.generateRandomUnsignedLong
     val currentTime = System.currentTimeMillis
@@ -115,10 +115,10 @@ trait SecurityActions {
     }
     Right(ForgotPasswordResult(resetCodeValid))
   }
-  
+
 }
 
-class SecurityActionsImpl(implicit val implSettings: Settings, implicit val inj: Injector, 
+class SecurityActionsImpl(implicit val implSettings: Settings, implicit val inj: Injector,
                       implicit val implActorRefFactory: ActorRefFactory)
   extends SecurityActions with Injectable {
   override def settings  = implSettings

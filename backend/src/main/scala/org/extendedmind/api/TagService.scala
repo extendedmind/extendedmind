@@ -43,9 +43,9 @@ import scala.concurrent.duration._
 import MediaTypes._
 
 trait TagService extends ServiceBase {
-  
+
   import JsonImplicits._
-  
+
   def tagRoutes = {
       getTag { (ownerUUID, tagUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>

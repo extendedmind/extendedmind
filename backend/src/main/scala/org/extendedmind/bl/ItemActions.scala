@@ -50,7 +50,7 @@ trait ItemActions {
 
   def getItems(owner: Owner, modified: Option[Long], active: Boolean, deleted: Boolean, archived: Boolean, completed: Boolean)(implicit log: LoggingAdapter): Response[Items] = {
     log.info("getItems")
-    
+
     // When using shared lists, archived needs to always be true to make sure archiving list
     // does not break sharing
     val overrideArchived = if (owner.isLimitedAccess) true else archived
@@ -72,7 +72,7 @@ trait ItemActions {
             tasks =
               if (ownerItems.right.get.tasks.isDefined){
                 Some(ownerItems.right.get.tasks.get.filter(task => {
-                  task.relationships.isDefined &&  task.relationships.get.parent.isDefined && 
+                  task.relationships.isDefined &&  task.relationships.get.parent.isDefined &&
                   owner.sharedLists.get.find(sharedListInfo => {
                     sharedListInfo._1 == task.relationships.get.parent.get
                   }).isDefined}))
@@ -82,7 +82,7 @@ trait ItemActions {
             notes =
               if (ownerItems.right.get.notes.isDefined){
                 Some(ownerItems.right.get.notes.get.filter(note => {
-                  note.relationships.isDefined &&  note.relationships.get.parent.isDefined && 
+                  note.relationships.isDefined &&  note.relationships.get.parent.isDefined &&
                   owner.sharedLists.get.find(sharedListInfo => {
                     sharedListInfo._1 == note.relationships.get.parent.get
                   }).isDefined}))
@@ -94,10 +94,10 @@ trait ItemActions {
           lists = stripLists(owner, fullListsTasksAndNotes.lists),
           tasks = stripTasks(fullListsTasksAndNotes.tasks),
           notes = stripNotes(fullListsTasksAndNotes.notes))
-        
+
         Right(limitedListsTasksAndNotes)
       }else{
-        // Destroy old deleted items    
+        // Destroy old deleted items
         val futureDestroyResponse = Future[Response[CountResult]] {
           db.destroyDeletedItems(owner)
         }
@@ -130,7 +130,7 @@ trait ItemActions {
     log.info("undeleteItem")
     db.undeleteItem(owner, itemUUID)
   }
-  
+
   private def stripLists(owner: Owner, lists: Option[scala.List[List]]): Option[scala.List[List]] = {
     if (lists.isDefined && lists.get.size > 0){
       Some(lists.get.map(list => {
@@ -163,7 +163,7 @@ trait ItemActions {
       None
     }
   }
-  
+
   private def stripTasks(tasks: Option[scala.List[Task]]): Option[scala.List[Task]] = {
     if (tasks.isDefined && tasks.get.size > 0){
       Some(tasks.get.map(task => {
@@ -180,7 +180,7 @@ trait ItemActions {
       None
     }
   }
-  
+
   private def stripNotes(notes: Option[scala.List[Note]]): Option[scala.List[Note]] = {
     if (notes.isDefined && notes.get.size > 0){
       Some(notes.get.map(note => {

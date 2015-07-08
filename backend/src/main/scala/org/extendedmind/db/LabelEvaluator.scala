@@ -24,8 +24,8 @@ import org.neo4j.graphdb.Path
 import org.neo4j.graphdb.traversal.Evaluation
 import org.neo4j.graphdb.traversal.Evaluator
 
-case class LabelEvaluator(labels: List[Label], 
-    foundEvaluation: Evaluation = Evaluation.INCLUDE_AND_PRUNE, 
+case class LabelEvaluator(labels: List[Label],
+    foundEvaluation: Evaluation = Evaluation.INCLUDE_AND_PRUNE,
     notFoundEvaluation: Evaluation = Evaluation.EXCLUDE_AND_CONTINUE,
     length: Option[Int] = None,
     notLenghtEvaluation: Evaluation = Evaluation.INCLUDE_AND_CONTINUE) extends Evaluator{
@@ -36,7 +36,7 @@ case class LabelEvaluator(labels: List[Label],
       if (labels find(label => currentNode.hasLabel(label)) isDefined){
         foundEvaluation
       }else{
-        notFoundEvaluation  
+        notFoundEvaluation
       }
     }else{
       notLenghtEvaluation

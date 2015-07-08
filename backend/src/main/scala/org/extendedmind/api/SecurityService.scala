@@ -45,7 +45,7 @@ import MediaTypes._
 trait SecurityService extends ServiceBase {
 
   import JsonImplicits._
-  
+
   def securityRoutes = {
       postAuthenticate { url =>
         authenticate(ExtendedAuth(authenticateAuthenticator)) { securityContext =>

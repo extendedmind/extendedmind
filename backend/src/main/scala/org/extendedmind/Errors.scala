@@ -105,4 +105,3 @@ case object ERR_TASK_INVALID_REMINDER_ID extends ErrorCode(6002)
 case object ERR_TASK_CONVERT_REMINDERS extends ErrorCode(6003)
 
 case object ERR_TAG_UNDELETE_HISTORY extends ErrorCode(7001)
-

@@ -60,7 +60,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
   }
 
   override def configurations = TestDataGeneratorConfiguration :: new Configuration(settings, actorRefFactory)
-  
+
   before {
     db.insertTestData()
   }
@@ -99,25 +99,25 @@ class NoteBestCaseSpec extends ServiceSpecBase {
                   val deleteNoteResponse = responseAs[DeleteItemResult]
                   writeJsonOutput("deleteNoteResponse", responseAs[String])
                   Get("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                	val failure = responseAs[ErrorResult]        
+                	val failure = responseAs[ErrorResult]
                 	status should be (BadRequest)
                     failure.description should startWith("Item " + putNoteResponse.uuid.get + " is deleted")
                   }
-                  
+
                   // Deleting again should return the same deleted and modified values
                   Delete("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                     val redeleteNoteResponse = responseAs[DeleteItemResult]
                     redeleteNoteResponse.deleted should be (deleteNoteResponse.deleted)
                     redeleteNoteResponse.result.modified should be (deleteNoteResponse.result.modified)
                   }
-                  
+
                   Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                     val undeleteNoteResponse = responseAs[SetResult]
                     writeJsonOutput("undeleteNoteResponse", responseAs[String])
                     val undeletedTask = getNote(putNoteResponse.uuid.get, authenticateResponse)
                     undeletedTask.deleted should be(None)
                     undeletedTask.modified should not be (None)
-                    
+
                     // Re-undelete should also work
                     Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                       val reundeleteNoteResponse = responseAs[SetResult]
@@ -161,14 +161,14 @@ class NoteBestCaseSpec extends ServiceSpecBase {
       val putNoteResponse = putNewNote(newNote, authenticateResponse)
       val originalNoteResponse = getNote(putNoteResponse.uuid.get, authenticateResponse)
       originalNoteResponse.favorited should be (None)
-      
+
       Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/favorite") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         writeJsonOutput("favoriteNoteResponse", responseAs[String])
         val favoriteNoteResponse = responseAs[FavoriteNoteResult]
         favoriteNoteResponse.favorited should not be None
         val noteResponse = getNote(putNoteResponse.uuid.get, authenticateResponse)
         noteResponse.favorited should not be None
-        
+
         Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/unfavorite") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           writeJsonOutput("unfavoriteNoteResponse", responseAs[String])
           val unfavoritedNoteResponse = getNote(putNoteResponse.uuid.get, authenticateResponse)

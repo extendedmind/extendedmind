@@ -45,7 +45,7 @@ import MediaTypes._
 trait NoteService extends ServiceBase {
 
   import JsonImplicits._
-  
+
   def noteRoutes = {
       getNote { (ownerUUID, noteUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
@@ -155,7 +155,7 @@ trait NoteService extends ServiceBase {
             }
           }
         }
-      } ~      
+      } ~
       noteToTask { (ownerUUID, noteUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {

@@ -46,7 +46,7 @@ import akka.event.DiagnosticLoggingAdapter
 trait ItemService extends ServiceBase {
 
   import JsonImplicits._
-  
+
   def itemRoutes = {
       getItems { ownerUUID =>
         parameters('modified.as[Long].?, 'active ? true, 'deleted ? false, 'archived ? false, 'completed ? false) { (modified, active, deleted, archived, completed) =>

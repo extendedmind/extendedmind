@@ -50,7 +50,7 @@ import java.util.concurrent.TimeUnit
 abstract class ServiceSpecBase extends ImpermanentGraphDatabaseSpecBase {
 
   implicit val timeout = RouteTestTimeout(Duration(10, TimeUnit.SECONDS))
-  
+
   def emailPasswordAuthenticate(email: String, password: String): SecurityContext = {
     Post("/authenticate") ~> addHeader(Authorization(BasicHttpCredentials(email, password))) ~> route ~> check {
       responseAs[SecurityContext]
@@ -69,7 +69,7 @@ abstract class ServiceSpecBase extends ImpermanentGraphDatabaseSpecBase {
         responseAs[SetResult]
       }
   }
-  
+
   def putNewNote(newNote: Note, authenticateResponse: SecurityContext, foreignOwnerUUID: Option[UUID] = None): SetResult = {
     val ownerUUID = if (foreignOwnerUUID.isDefined) foreignOwnerUUID.get else authenticateResponse.userUUID
     Put("/" + ownerUUID + "/note",
@@ -86,14 +86,14 @@ abstract class ServiceSpecBase extends ImpermanentGraphDatabaseSpecBase {
         responseAs[SetResult]
       }
   }
-  
+
   def deleteNote(noteUUID: UUID, authenticateResponse: SecurityContext, foreignUUID: Option[UUID] = None): DeleteItemResult = {
     val ownerUUID = if (foreignUUID.isDefined) foreignUUID.get else authenticateResponse.userUUID
     Delete("/" + ownerUUID + "/note/" + noteUUID) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
       responseAs[DeleteItemResult]
     }
   }
-  
+
   def undeleteNote(noteUUID: UUID, authenticateResponse: SecurityContext, foreignUUID: Option[UUID] = None): SetResult = {
     val ownerUUID = if (foreignUUID.isDefined) foreignUUID.get else authenticateResponse.userUUID
     Post("/" + ownerUUID + "/note/" + noteUUID + "/undelete") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
@@ -117,14 +117,14 @@ abstract class ServiceSpecBase extends ImpermanentGraphDatabaseSpecBase {
         responseAs[SetResult]
       }
   }
-  
+
   def deleteTask(taskUUID: UUID, authenticateResponse: SecurityContext, foreignUUID: Option[UUID] = None): DeleteItemResult = {
     val ownerUUID = if (foreignUUID.isDefined) foreignUUID.get else authenticateResponse.userUUID
     Delete("/" + ownerUUID + "/task/" + taskUUID) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
       responseAs[DeleteItemResult]
     }
   }
-  
+
   def undeleteTask(taskUUID: UUID, authenticateResponse: SecurityContext, foreignUUID: Option[UUID] = None): SetResult = {
     val ownerUUID = if (foreignUUID.isDefined) foreignUUID.get else authenticateResponse.userUUID
     Post("/" + ownerUUID + "/task/" + taskUUID + "/undelete") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
@@ -146,7 +146,7 @@ abstract class ServiceSpecBase extends ImpermanentGraphDatabaseSpecBase {
     }
   }
 
-  
+
   def putExistingList(existingList: List, listUUID: UUID, authenticateResponse: SecurityContext,
     collectiveUUID: Option[UUID] = None): SetResult = {
     val ownerUUID = if (collectiveUUID.isDefined) collectiveUUID.get else authenticateResponse.userUUID
@@ -182,7 +182,7 @@ abstract class ServiceSpecBase extends ImpermanentGraphDatabaseSpecBase {
       responseAs[Note]
     }
   }
-  
+
   def getTag(tagUUID: UUID, authenticateResponse: SecurityContext): Tag = {
     Get("/" + authenticateResponse.userUUID + "/tag/" + tagUUID) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
       responseAs[Tag]

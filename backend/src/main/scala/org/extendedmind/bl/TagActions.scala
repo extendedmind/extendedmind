@@ -36,22 +36,22 @@ trait TagActions {
   def putNewTag(owner: Owner, tag: Tag)(implicit log: LoggingAdapter): Response[SetResult] = {
     db.putNewTag(owner, tag)
   }
-  
+
   def putExistingTag(owner: Owner, tagUUID: UUID, tag: Tag)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("putExistingTag")
     db.putExistingTag(owner, tagUUID, tag)
   }
-  
+
   def getTag(owner: Owner, tagUUID: UUID)(implicit log: LoggingAdapter): Response[Tag] = {
     log.info("getTag")
     db.getTag(owner, tagUUID)
   }
-  
+
   def deleteTag(owner: Owner, tagUUID: UUID)(implicit log: LoggingAdapter): Response[DeleteItemResult] = {
     log.info("deleteTag")
     db.deleteTag(owner, tagUUID)
   }
-  
+
   def undeleteTag(owner: Owner, tagUUID: UUID)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("undeleteTag")
     db.undeleteTag(owner: Owner, tagUUID)

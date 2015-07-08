@@ -58,7 +58,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
   }
 
   override def configurations = TestDataGeneratorConfiguration :: new Configuration(settings, actorRefFactory)
-  
+
   before {
     db.insertTestData()
   }

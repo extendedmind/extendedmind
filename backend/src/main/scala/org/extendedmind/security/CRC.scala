@@ -59,52 +59,52 @@ abstract class CRC {
         finalized = false
         this
     }
-    
+
     def get: Int = curCRC
-    
+
     def getHex: String = {
         val tableHex: Array[Char] = Array( '0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f' )
         var hexCRC: String = ""
         var tempCRC: Int = curCRC
-        
+
         for (digitCnt <- 0 to (((bits - 1) >> 2))) {
             hexCRC = tableHex( tempCRC & 0xf ) + hexCRC
             tempCRC >>>= 4
         }
         hexCRC
     }
-    
+
     /// update CRC with single byte
     def upd( newValue: Byte ): CRC
-    
+
     /// update CRC with multiple bytes
     def upd( newValues: Iterable[Byte] ): CRC = {
         for (newValue <- newValues) upd( newValue )
         this
     }
-    
+
     /// update CRC with multiple bytes
     def upd( newValues: Seq[Byte], start:Int, end:Int ): CRC = {
         for (i <- start to end) upd( newValues(i) )
         this
     }
-    
+
     /// finalize CRC calculation
     def end: CRC = {
         finalized = true
         this
     }
-    
+
     def isFinalized: Boolean = finalized
 }
 
 class CRC16_MMC extends CRC {
-    
+
     override def bits: Int = 16
     override def bitsMask: Int = 0xffff
     override def poly: Int = 0x1021
     override def initCRC: Int = 0x0
-    
+
     override def upd( newValue: Byte ): CRC = {
         var newCRC: Int = curCRC
         var dataIn: Int = newValue & 0xFF
@@ -118,7 +118,7 @@ class CRC16_MMC extends CRC {
         curCRC = newCRC & bitsMask
         this
     }
-    
+
     def getBytes(): Array[Byte] = {
       val bb = ByteBuffer.allocate(4)
       bb.putInt(curCRC)

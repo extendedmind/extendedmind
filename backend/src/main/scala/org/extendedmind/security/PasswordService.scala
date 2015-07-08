@@ -35,36 +35,36 @@ object PasswordService {
   // PBKDF2 with SHA-1 as the hashing algorithm. Note that the NIST
 	// specifically names SHA-1 as an acceptable hashing algorithm for PBKDF2
   val ALGORITHM = "PBKDF2WithHmacSHA1"
-  
+
 	// Pick an iteration count that works for you. The NIST recommends at
   // least 1,000 iterations:
   // http://csrc.nist.gov/publications/nistpubs/800-132/nist-sp800-132.pdf
   // iOS 4.x reportedly uses 10,000:
   // http://blog.crackpassword.com/2010/09/smartphone-forensics-cracking-blackberry-backup-passwords/
   val ITERATIONS = 20000
-  
+
   def authenticate(attemptedPassword: String, password: Password): Boolean = {
 	  // Encrypt the clear-text password using the same salt that was used to
 	  // encrypt the original password
-	  val encryptedAttemptedPassword = 
+	  val encryptedAttemptedPassword =
 	    getEncryptedPassword(attemptedPassword,
                              password.salt,
                              password.algorithm,
                              password.iterations);
-    
+
 	  // Authentication succeeds if encrypted password that the user entered
 	  // is equal to the stored hash
 	  return Arrays.equals(password.passwordHash, encryptedAttemptedPassword.passwordHash);
   }
-  
+
   def getEncryptedPassword(password: String, salt: Array[Byte], algorithm: String, iterations: Int): Password = {
 	  // SHA-1 generates 160 bit hashes, so that's what makes sense here
 	  val derivedKeyLength = 160;
 	  val spec = new PBEKeySpec(password.toCharArray(), salt, iterations, derivedKeyLength);
 	  val f = SecretKeyFactory.getInstance(algorithm);
-	  return Password(algorithm, iterations, f.generateSecret(spec).getEncoded(), salt);    
-  } 
-  
+	  return Password(algorithm, iterations, f.generateSecret(spec).getEncoded(), salt);
+  }
+
   def generateSalt(): Array[Byte] = {
     // VERY important to use SecureRandom instead of just Random
     val random = SecureRandom.getInstance("SHA1PRNG");

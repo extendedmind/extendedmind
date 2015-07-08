@@ -35,7 +35,7 @@ object RepeatingType extends Enumeration {
 }
 
 case class Task(uuid: Option[UUID], id: Option[String], created: Option[Long], modified: Option[Long], deleted: Option[Long], archived: Option[Long],
-                title: String, description: Option[String], 
+                title: String, description: Option[String],
                 link: Option[String],
                 due: Option[String],
                 repeating: Option[String],
@@ -48,7 +48,7 @@ case class Task(uuid: Option[UUID], id: Option[String], created: Option[Long], m
             extends ExtendedItem{
   if (id.isDefined) require(validateLength(id.get, 100), "Id can not be more than 100 characters")
   require(validateTitle(title), "Title can not be more than " + TITLE_MAX_LENGTH + " characters")
-  if (description.isDefined) require(validateDescription(description.get), 
+  if (description.isDefined) require(validateDescription(description.get),
       "Description can not be more than " + DESCRIPTION_MAX_LENGTH + " characters")
   if (link.isDefined) require(validateLength(link.get, 2000), "Link can not be more than 2000 characters")
   if (due.isDefined) require(validateDateString(due.get), "Due date does not match pattern yyyy-MM-dd")
@@ -59,31 +59,31 @@ case class Task(uuid: Option[UUID], id: Option[String], created: Option[Long], m
         true
       }catch {
         case _:Throwable => false
-      }, 
+      },
       "Expected 'daily', 'weekly', 'biweekly', 'monthly', 'bimonthly', 'yearly' but got " + repeating.get)
 }
 
 object Task{
-  def apply(title: String, description: Option[String], 
+  def apply(title: String, description: Option[String],
             link: Option[String],
             due: Option[String],
             repeating: Option[RepeatingType.RepeatingType],
             reminders: Option[scala.List[Reminder]],
-            relationships: Option[ExtendedItemRelationships]) 
-        = new Task(None, None, None, None, None, None, title, description, 
+            relationships: Option[ExtendedItemRelationships])
+        = new Task(None, None, None, None, None, None, title, description,
                    link, due, if (repeating.isDefined) Some(repeating.get.toString()) else None, None, None, None,
                    reminders, None, relationships)
 }
 
 case class LimitedTask(uuid: Option[UUID], id: Option[String], created: Option[Long], modified: Option[Long], deleted: Option[Long],
-                title: String, description: Option[String], 
+                title: String, description: Option[String],
                 link: Option[String],
                 completed: Option[Long],
                 relationships: LimitedExtendedItemRelationships)
                 extends LimitedExtendedItem {
   if (id.isDefined) require(validateLength(id.get, 100), "Id can not be more than 100 characters")
   require(validateTitle(title), "Title can not be more than " + TITLE_MAX_LENGTH + " characters")
-  if (description.isDefined) require(validateDescription(description.get), 
+  if (description.isDefined) require(validateDescription(description.get),
       "Description can not be more than " + DESCRIPTION_MAX_LENGTH + " characters")
   if (link.isDefined) require(validateLength(link.get, 2000), "Link can not be more than 2000 characters")
 }
@@ -101,22 +101,22 @@ object ReminderType extends Enumeration {
 }
 
 case class Reminder(uuid: Option[UUID], id: Option[String], reminderType: String, packaging: String, device: String,
-                    notification: Long, removed: Option[Long]){ 
+                    notification: Long, removed: Option[Long]){
   require(
       try {
         val rt = ReminderType.withName(reminderType)
         true
       }catch {
         case _:Throwable => false
-      }, 
+      },
       "Expected 'ln' but got " + reminderType)
   if (id.isDefined) require(validateLength(id.get, 64), "Reminder id can not be more than 64 characters")
   require(validateLength(packaging, 32), "Packaging can not be more than 32 characters")
-  require(validateLength(device, 64), "Device can not be more than 64 characters")    
+  require(validateLength(device, 64), "Device can not be more than 64 characters")
 }
 
 object Reminder{
-  def apply(id: String, reminderType: String, packaging: String, device: String, notification: Long) 
+  def apply(id: String, reminderType: String, packaging: String, device: String, notification: Long)
         = new Reminder(None, Some(id), reminderType, packaging, device, notification, None)
 }
 

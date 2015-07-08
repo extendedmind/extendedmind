@@ -30,7 +30,7 @@ object MainLabel {
   val ITEM = Label("ITEM")
   val TOKEN = Label("TOKEN")
   val REMINDER = Label("REMINDER")
-  val AGREEMENT = Label("AGREEMENT")  
+  val AGREEMENT = Label("AGREEMENT")
 }
 
 object OwnerLabel {
@@ -64,7 +64,7 @@ object TagLabel {
 
 object SecurityLabel {
   val PRIVATE = Label("PRIVATE")
-  val EXCLUSIVE = Label("EXCLUSIVE") 
+  val EXCLUSIVE = Label("EXCLUSIVE")
   val PUBLIC = Label("PUBLIC")
 }
 

@@ -78,16 +78,16 @@ case class Subscription(uuid: Option[UUID], created: Option[Long], modified: Opt
         true
       }catch {
         case _:Throwable => false
-      }, 
-      "Expected 'monthly' or 'yearly' but got " + subscriptionType)  
+      },
+      "Expected 'monthly' or 'yearly' but got " + subscriptionType)
   require(
       try {
         val rt = PaymentMethod.withName(paymentMethod)
         true
       }catch {
         case _:Throwable => false
-      }, 
-      "Expected 'google', 'apple' or 'paypal' but got " + paymentMethod)  
+      },
+      "Expected 'google', 'apple' or 'paypal' but got " + paymentMethod)
   if (data.isDefined) require(validateLength(data.get, 1000), "Subscription data max length is 1000")
 }
 
@@ -116,8 +116,8 @@ object Owner{
           "Security context with foreign owner UUID which can not be found in securityContext collectives nor shared lists")
     }
   }
-  
-  def apply(ownerUUID: UUID, collectiveUUID: Option[UUID]) 
+
+  def apply(ownerUUID: UUID, collectiveUUID: Option[UUID])
         = new Owner(ownerUUID, collectiveUUID, None, false, false)
 }
 
@@ -148,15 +148,15 @@ case class Agreement(uuid: Option[UUID], created: Option[Long], modified: Option
         true
       }catch {
         case _:Throwable => false
-      }, 
+      },
       "Expected 'list' but got " + agreementType)
 
   require(access == 1 || access == 2, "Access needs to be either 1 for read or 2 for write")
 }
 
 object Agreement{
-  import org.extendedmind.domain.AgreementType._  
+  import org.extendedmind.domain.AgreementType._
   def apply(agreementType: AgreementType, access: Byte, targetItem: AgreementTarget,
-            proposedBy: Option[AgreementUser], proposedTo: AgreementUser) 
+            proposedBy: Option[AgreementUser], proposedTo: AgreementUser)
         = new Agreement(None, None, None, agreementType.toString, access, None, Some(targetItem), proposedBy, Some(proposedTo))
 }

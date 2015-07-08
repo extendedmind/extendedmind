@@ -70,7 +70,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
   }
 
   describe("In the best case, UserService") {
-    it("should create an administrator with POST to /signup because adminSignUp is set to true") {      
+    it("should create an administrator with POST to /signup because adminSignUp is set to true") {
       val testEmail = "example@example.com"
       stub(mockMailgunClient.sendEmailVerificationLink(mockEq(testEmail), anyObject())).toReturn(
         Future { SendEmailResponse("OK", "1234") })
@@ -103,11 +103,11 @@ class UserBestCaseSpec extends ServiceSpecBase {
         val accountResponse = responseAs[User]
         accountResponse.preferences.get.onboarded.get should be("web")
         accountResponse.preferences.get.ui.get should be(initialUIPreferences)
-        
+
         val newEmailAuthenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
         newEmailAuthenticateResponse.userUUID should not be None
         newEmailAuthenticateResponse.preferences.get.onboarded.get should be("web")
-        
+
         // Add more UI preferences, make sure onboarded isn't removed
         val newUIPreferences = "{hideFooter: true, hidePlus: true}"
         Put("/account", marshal(accountResponse.copy(email = None, preferences = Some(UserPreferences(None, Some(newUIPreferences))))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", newEmailAuthenticateResponse.token.get)) ~> route ~> check {
@@ -122,13 +122,13 @@ class UserBestCaseSpec extends ServiceSpecBase {
               Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", newEmailAuthenticateResponse.token.get)) ~> route ~> check {
                 val accountResponse2 = responseAs[User]
                 accountResponse2.preferences.get.onboarded.get should be("{web}")
-                accountResponse2.preferences.get.ui.get should be(newUIPreferences)                  
+                accountResponse2.preferences.get.ui.get should be(newUIPreferences)
               }
             }
           }
         }
       }
-        
+
     }
     it("should successfully change email with PUT to /email "
       + "and get the changed email back") {
@@ -163,7 +163,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
         writeJsonOutput("deleteAccountResponse", responseAs[String])
         val deleteAccountResponse = responseAs[DeleteItemResult]
         deleteAccountResponse.result.modified should not be None
-        
+
         // Should not be able to do anything else with any previous login
         Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           status should be (Forbidden)
@@ -177,7 +177,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
         }
       }
       val adminAuthenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-      
+
       Get("/admin/users") ~> addCredentials(BasicHttpCredentials("token", adminAuthenticateResponse.token.get)) ~> route ~> check {
         val users = responseAs[Users]
         val lauri = users.users.filter(user => {
@@ -186,7 +186,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
         })
         lauri(0).deleted should not be None
       }
-      
+
       // Resurrect with new authenticate
       val reauthenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
       Get("/admin/users") ~> addCredentials(BasicHttpCredentials("token", adminAuthenticateResponse.token.get)) ~> route ~> check {
@@ -197,7 +197,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
         })
         lauri(0).deleted should be(None)
       }
-      
+
     }
   }
 

@@ -60,7 +60,7 @@ class SecurityBestCaseSpec extends ServiceSpecBase {
   }
 
   override def configurations = TestDataGeneratorConfiguration :: new Configuration(settings, actorRefFactory)
-  
+
   before {
     db.insertTestData()
   }
@@ -114,10 +114,10 @@ class SecurityBestCaseSpec extends ServiceSpecBase {
           tokenAuthenticateResponse.authenticated should not be None
           tokenAuthenticateResponse.expires should not be None
           tokenReAuthenticateResponse.replaceable should be (None)
-          
+
           // Shouldn't be able to swap it again because rememberMe was missing the last time
           Post("/authenticate") ~> addCredentials(BasicHttpCredentials("token", tokenReAuthenticateResponse.token.get)) ~> route ~> check {
-        	val failure = responseAs[ErrorResult]        
+        	val failure = responseAs[ErrorResult]
         	status should be (Forbidden)
             failure.description should startWith("Authentication failed")
           }
@@ -162,9 +162,9 @@ class SecurityBestCaseSpec extends ServiceSpecBase {
     it("should successfully send password with email with POST to /password/forgot "
        + "get password expires with given code to ") {
       stub(mockMailgunClient.sendPasswordResetLink(mockEq(TIMO_EMAIL), anyObject())).toReturn(Future { SendEmailResponse("OK", "1234") })
-      val resetCodeCaptor: ArgumentCaptor[Long] = ArgumentCaptor.forClass(classOf[Long])      
-      val emailCaptor: ArgumentCaptor[String] = ArgumentCaptor.forClass(classOf[String])      
-              
+      val resetCodeCaptor: ArgumentCaptor[Long] = ArgumentCaptor.forClass(classOf[Long])
+      val emailCaptor: ArgumentCaptor[String] = ArgumentCaptor.forClass(classOf[String])
+
       Post("/password/forgot", marshal(UserEmail(TIMO_EMAIL)).right.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
         writeJsonOutput("forgotPasswordResponse", responseAs[String])
         val forgotPasswordResponse = responseAs[ForgotPasswordResult]

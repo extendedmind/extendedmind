@@ -47,7 +47,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
       Some(SecurityContext.FOUNDER)
     }
   }
-  
+
   def putNewNote(owner: Owner, note: Note): Response[SetResult] = {
     for {
       noteResult <- putNewExtendedItem(owner, note, ItemLabel.NOTE).right
@@ -55,7 +55,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
       unit <- Right(addToItemsIndex(owner, noteResult._1, result)).right
     } yield result
   }
-  
+
   def putNewLimitedNote(owner: Owner, limitedNote: LimitedNote): Response[SetResult] = {
     for {
       noteResult <- putNewLimitedExtendedItem(owner, limitedNote, ItemLabel.NOTE).right
@@ -71,7 +71,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
       unit <- Right(updateItemsIndex(noteResult._1, result)).right
     } yield result
   }
-  
+
   def putExistingLimitedNote(owner: Owner, noteUUID: UUID, limitedNote: LimitedNote): Response[SetResult] = {
     for {
       noteResult <- putExistingLimitedExtendedItem(owner, noteUUID, limitedNote, ItemLabel.NOTE).right
@@ -89,25 +89,25 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
         } yield note
     }
   }
-  
+
   def deleteNote(owner: Owner, noteUUID: UUID): Response[DeleteItemResult] = {
     for {
-      noteNode <- validateExtendedItemModifiable(owner, noteUUID, ItemLabel.NOTE).right       
+      noteNode <- validateExtendedItemModifiable(owner, noteUUID, ItemLabel.NOTE).right
       deletedNoteNode <- deleteNoteNode(owner, noteNode).right
       result <- Right(getDeleteItemResult(deletedNoteNode._1, deletedNoteNode._2)).right
       unit <- Right(updateItemsIndex(deletedNoteNode._1, result.result)).right
     } yield result
   }
-  
+
   def undeleteNote(owner: Owner, noteUUID: UUID): Response[SetResult] = {
     for {
-      noteNode <- validateExtendedItemModifiable(owner, noteUUID, ItemLabel.NOTE).right       
+      noteNode <- validateExtendedItemModifiable(owner, noteUUID, ItemLabel.NOTE).right
       undeletedNoteNode <- undeleteNoteNode(owner, noteNode).right
       result <- Right(getSetResult(undeletedNoteNode, false)).right
       unit <- Right(updateItemsIndex(undeletedNoteNode, result)).right
     } yield result
   }
-  
+
   def favoriteNote(owner: Owner, noteUUID: UUID): Response[FavoriteNoteResult] = {
     for {
       favoriteInfo <- favoriteNoteNode(owner, noteUUID).right
@@ -115,7 +115,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
       unit <- Right(updateItemsIndex(favoriteInfo._1, result.result)).right
     } yield result
   }
-  
+
   def unfavoriteNote(owner: Owner, noteUUID: UUID): Response[SetResult] = {
     for {
       noteNode <- unfavoriteNoteNode(owner, noteUUID).right
@@ -123,7 +123,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
       unit <- Right(updateItemsIndex(noteNode, result)).right
     } yield result
   }
-  
+
   def noteToTask(owner: Owner, noteUUID: UUID, note: Note): Response[Task] = {
     for {
       convertResult <- convertNoteToTask(owner, noteUUID, note).right
@@ -131,7 +131,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
       unit <- Right(updateItemsIndex(convertResult._1, result)).right
     } yield (convertResult._2.copy(modified = Some(result.modified)))
   }
-  
+
   def noteToList(owner: Owner, noteUUID: UUID, note: Note): Response[List] = {
     for {
       convertResult <- convertNoteToList(owner, noteUUID, note).right
@@ -156,9 +156,9 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
       parent <- Right(getItemRelationship(noteNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.LIST)).right
       tags <- getTagRelationships(noteNode, owner).right
       note <- Right(note.copy(
-        relationships = 
-          (if (parent.isDefined || tags.isDefined)            
-            Some(ExtendedItemRelationships(  
+        relationships =
+          (if (parent.isDefined || tags.isDefined)
+            Some(ExtendedItemRelationships(
               parent = (if (parent.isEmpty) None else (Some(getUUID(parent.get.getEndNode())))),
               None,
               tags = (if (tags.isEmpty) None else (Some(getEndNodeUUIDList(tags.get))))))
@@ -167,7 +167,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     } yield note
   }
 
-  
+
   protected def deleteNoteNode(owner: Owner, noteNode: Node): Response[Tuple2[Node, Long]] = {
     withTx {
       implicit neo =>
@@ -176,7 +176,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
         } yield (noteNode, deleted)
     }
   }
-  
+
   protected def undeleteNoteNode(owner: Owner, noteNode: Node): Response[Node] = {
     withTx {
       implicit neo =>
@@ -185,7 +185,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
         } yield noteNode
     }
   }
-  
+
   protected def favoriteNoteNode(owner: Owner, noteUUID: UUID): Response[(Node, Long)] = {
     withTx {
       implicit neo4j =>
@@ -195,13 +195,13 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
         } yield (noteNode, favorited)
     }
   }
-  
+
   protected def favoriteNoteNode(noteNode: Node)(implicit neo4j: DatabaseService): Long = {
     val currentTime = System.currentTimeMillis()
     noteNode.setProperty("favorited", currentTime)
     currentTime
   }
-  
+
   protected def unfavoriteNoteNode(owner: Owner, noteUUID: UUID): Response[Node] = {
     withTx {
       implicit neo =>
@@ -227,7 +227,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
         } yield (taskNode, task)
     }
   }
-  
+
   protected def convertNoteToList(owner: Owner, noteUUID: UUID, note: Note): Response[(Node, List)] = {
     withTx {
       implicit neo4j =>

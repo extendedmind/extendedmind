@@ -49,14 +49,14 @@ trait CollectiveDatabase extends UserDatabase {
       result <- Right(getSetResult(collectiveNode, true)).right
     }yield result
   }
-  
+
   def putExistingCollective(collectiveUUID: UUID, collective: Collective): Response[SetResult] = {
     for {
       collectiveNode <- putExistingCollectiveNode(collectiveUUID, collective).right
       result <- Right(getSetResult(collectiveNode, false)).right
     } yield result
   }
-  
+
   def getCollective(collectiveUUID: UUID): Response[Collective] = {
     withTx {
       implicit neo =>
@@ -66,7 +66,7 @@ trait CollectiveDatabase extends UserDatabase {
         } yield collective
     }
   }
-  
+
   def hasCommonCollective(): Boolean = {
     withTx {
       implicit neo4j =>
@@ -77,8 +77,8 @@ trait CollectiveDatabase extends UserDatabase {
           true
     }
   }
-  
-  def setCollectiveUserPermission(collectiveUUID: UUID, founderUUID: UUID, userUUID: UUID, access: Option[Byte]): 
+
+  def setCollectiveUserPermission(collectiveUUID: UUID, founderUUID: UUID, userUUID: UUID, access: Option[Byte]):
         Response[SetResult] = {
     for {
       collectiveNode <- setCollectiveUserPermissionNode(collectiveUUID, founderUUID, userUUID, access).right
@@ -87,7 +87,7 @@ trait CollectiveDatabase extends UserDatabase {
   }
 
   // PRIVATE
-  
+
   protected def createCollective(founderUUID: UUID, collective: Collective, commonCollective: Boolean): Response[Node] = {
     withTx{
       implicit neo4j =>
@@ -97,7 +97,7 @@ trait CollectiveDatabase extends UserDatabase {
         } yield collectiveNode
     }
   }
-  
+
   protected def createCollectiveNode(founderNode: Node, collective: Collective, commonCollective: Boolean)
                (implicit neo4j: DatabaseService): Response[Node] = {
     val collectiveNode = createNode(collective, MainLabel.OWNER, OwnerLabel.COLLECTIVE)
@@ -112,11 +112,11 @@ trait CollectiveDatabase extends UserDatabase {
           user --> SecurityRelationship.CAN_READ --> collectiveNode;
       })
     }
-        
+
     Right(collectiveNode)
   }
-  
-  protected def putExistingCollectiveNode(collectiveUUID: UUID, collective: Collective): 
+
+  protected def putExistingCollectiveNode(collectiveUUID: UUID, collective: Collective):
         Response[Node] = {
     withTx {
       implicit neo4j =>
@@ -126,8 +126,8 @@ trait CollectiveDatabase extends UserDatabase {
         } yield collectiveNode
     }
   }
-  
-  protected def setCollectiveUserPermissionNode(collectiveUUID: UUID, founderUUID: UUID, userUUID: UUID, access: Option[Byte]): 
+
+  protected def setCollectiveUserPermissionNode(collectiveUUID: UUID, founderUUID: UUID, userUUID: UUID, access: Option[Byte]):
       Response[Node] = {
     withTx {
       implicit neo4j =>
@@ -138,12 +138,12 @@ trait CollectiveDatabase extends UserDatabase {
         } yield collectiveNode
     }
   }
-  
+
   protected def getFoundedCollective(collectiveUUID: UUID, founderUUID: UUID)
         (implicit neo4j: DatabaseService): Response[Node] = {
     val collectiveNode = getNode(collectiveUUID, OwnerLabel.COLLECTIVE)
     if (collectiveNode.isLeft) return collectiveNode
-        
+
     val founderFromCollective: TraversalDescription = {
         neo4j.gds.traversalDescription()
           .relationships(DynamicRelationshipType.withName(SecurityRelationship.IS_FOUNDER.name),
@@ -162,16 +162,16 @@ trait CollectiveDatabase extends UserDatabase {
     } else if (collectiveNodeList.length > 1) {
       fail(INTERNAL_SERVER_ERROR, ERR_COLLECTIVE_MORE_THAN_1_FOUNDER, "More than one founder found for collective with UUID " + collectiveUUID)
     } else {
-      val founder = collectiveNodeList.head      
+      val founder = collectiveNodeList.head
       if (getUUID(founder) != founderUUID){
-        fail(INVALID_PARAMETER, ERR_COLLECTIVE_WRONG_FOUNDER, "Collective " + collectiveUUID + " is not founded by user " 
+        fail(INVALID_PARAMETER, ERR_COLLECTIVE_WRONG_FOUNDER, "Collective " + collectiveUUID + " is not founded by user "
             + founderUUID)
       }else{
         Right(collectiveNode.right.get)
       }
     }
   }
-  
-  
+
+
 
 }

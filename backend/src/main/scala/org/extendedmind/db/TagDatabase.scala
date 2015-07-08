@@ -50,7 +50,7 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
       unit <- Right(addToItemsIndex(owner, tagNode, result)).right
     } yield result
   }
-  
+
   def putExistingTag(owner: Owner, tagUUID: UUID, tag: Tag): Response[SetResult] = {
     for {
       tagNode <- putExistingTagNode(owner, tagUUID, tag).right
@@ -68,16 +68,16 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
         } yield tag
     }
   }
-  
+
   def deleteTag(owner: Owner, tagUUID: UUID): Response[DeleteItemResult] = {
     for {
       deletedTagNode <- deleteTagNode(owner, tagUUID).right
       result <- Right(getDeleteItemResult(deletedTagNode._1, deletedTagNode._2)).right
       unit <- Right(updateItemsIndex(deletedTagNode._1, result.result)).right
-      unit <- Right(updateItemsIndex(deletedTagNode._3, result.result)).right      
+      unit <- Right(updateItemsIndex(deletedTagNode._3, result.result)).right
     } yield result
   }
-  
+
   def undeleteTag(owner: Owner, tagUUID: UUID): Response[SetResult] = {
     for {
       undeleteTagResult <- undeleteTagNode(owner, tagUUID).right
@@ -86,22 +86,22 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
       unit <- Right(updateItemsIndex(undeleteTagResult._2, result)).right
     } yield result
   }
-  
+
   // PRIVATE
 
-  protected def putExistingTagNode(owner: Owner, tagUUID: UUID, tag: Tag): 
+  protected def putExistingTagNode(owner: Owner, tagUUID: UUID, tag: Tag):
         Response[Node] = {
     val subLabel = if (tag.tagType.get == CONTEXT) Some(TagLabel.CONTEXT)
                    else if (tag.tagType.get == KEYWORD) Some(TagLabel.KEYWORD)
                    else Some(TagLabel.HISTORY)
-    val subLabelAlternative = 
+    val subLabelAlternative =
       if (tag.tagType.get == CONTEXT)
-        Some(scala.List(TagLabel.KEYWORD, TagLabel.HISTORY)) 
-      else if (tag.tagType.get == KEYWORD) 
+        Some(scala.List(TagLabel.KEYWORD, TagLabel.HISTORY))
+      else if (tag.tagType.get == KEYWORD)
         Some(scala.List(TagLabel.CONTEXT, TagLabel.HISTORY))
       else // history
         Some(scala.List(TagLabel.CONTEXT, TagLabel.KEYWORD))
-        
+
     withTx {
       implicit neo4j =>
         for {
@@ -110,8 +110,8 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
         } yield tagNode
     }
   }
-  
-  def putNewTagNode(owner: Owner, tag: Tag): 
+
+  def putNewTagNode(owner: Owner, tag: Tag):
           Response[Node] = {
     withTx {
       implicit neo4j =>
@@ -125,15 +125,15 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
         } yield tagNode
     }
   }
-  
-  protected def setTagParentNodes(tagNode: Node,  owner: Owner, tag: Tag)(implicit neo4j: DatabaseService): 
+
+  protected def setTagParentNodes(tagNode: Node,  owner: Owner, tag: Tag)(implicit neo4j: DatabaseService):
           Response[Option[Long]] = {
     for {
       oldParentRelationship <- Right(getItemRelationship(tagNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.TAG)).right
       result <- setParentRelationship(tagNode, owner, tag.parent, oldParentRelationship, ItemLabel.TAG, skipParentHistoryTag = true).right
     }yield result
   }
-  
+
   override def toTag(tagNode: Node, owner: Owner)
             (implicit neo4j: DatabaseService): Response[Tag] = {
     for {
@@ -147,13 +147,13 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
     for {
       parent <- Right(getItemRelationship(tagNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.TAG)).right
       completeTag <- Right(tag.copy(
-        tagType = (if (tagNode.hasLabel(TagLabel.CONTEXT)) Some(CONTEXT) 
+        tagType = (if (tagNode.hasLabel(TagLabel.CONTEXT)) Some(CONTEXT)
                    else if (tagNode.hasLabel(TagLabel.KEYWORD)) Some(KEYWORD)
                    else Some(HISTORY)),
         parent = (if (parent.isEmpty) None else (Some(getUUID(parent.get.getEndNode())))))).right
     } yield completeTag
   }
- 
+
   protected def deleteTagNode(owner: Owner, tagUUID: UUID): Response[(Node, Long, scala.List[Node])] = {
     withTx {
       implicit neo =>
@@ -164,7 +164,7 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
         } yield (tagNode, deleted, childrenAndTagged)
     }
   }
-  
+
   protected def undeleteTagNode(owner: Owner, tagUUID: UUID): Response[(Node, scala.List[Node])] = {
     withTx {
       implicit neo =>
@@ -176,7 +176,7 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
         } yield (tagNode, childrenAndTagged)
     }
   }
-  
+
   protected def getChildrenAndTagged(owner: Owner, tagNode: Node)
             (implicit neo4j: DatabaseService): Response[scala.List[Node]] = {
     for {
@@ -185,7 +185,7 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
       childrenAndTagged <- Right(scala.List.concat(childNodes, taggedItems)).right
     } yield childrenAndTagged
   }
-  
+
   protected def validateTagUndeletable(tagNode: Node)(implicit neo4j: DatabaseService): Response[Unit] = {
     if (tagNode.hasLabel(TagLabel.HISTORY))
       fail(INVALID_PARAMETER, ERR_TAG_UNDELETE_HISTORY, "Can't undelete history tag")

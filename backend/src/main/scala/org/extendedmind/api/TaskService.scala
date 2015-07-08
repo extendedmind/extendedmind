@@ -45,7 +45,7 @@ import MediaTypes._
 trait TaskService extends ServiceBase {
 
   import JsonImplicits._
-  
+
   def taskRoutes = {
       getTask { (ownerUUID, taskUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
@@ -198,8 +198,8 @@ trait TaskService extends ServiceBase {
           }
         }
       }
-      
-      
+
+
   }
 
 }

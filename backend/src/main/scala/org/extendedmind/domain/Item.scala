@@ -23,22 +23,22 @@ import java.util.UUID
 import Validators._
 import org.extendedmind.SetResult
 
-case class Item(uuid: Option[UUID], id: Option[String], created: Option[Long], modified: Option[Long], deleted: Option[Long], 
+case class Item(uuid: Option[UUID], id: Option[String], created: Option[Long], modified: Option[Long], deleted: Option[Long],
                 title: String, description: Option[String], link: Option[String]) extends ItemLike{
   if (id.isDefined) require(validateLength(id.get, 100), "Id can not be more than 100 characters")
   require(validateTitle(title), "Title can not be more than " + TITLE_MAX_LENGTH + " characters")
-  if (description.isDefined) require(validateDescription(description.get), 
+  if (description.isDefined) require(validateDescription(description.get),
       "Description can not be more than " + DESCRIPTION_MAX_LENGTH + " characters")
   if (link.isDefined) require(validateLength(link.get, 2000), "Link can not be more than 2000 characters")
 }
 
 object Item{
-  def apply(title: String, description: Option[String], 
-            link: Option[String]) 
+  def apply(title: String, description: Option[String],
+            link: Option[String])
         = new Item(None, None, None, None, None, title, description, link)
 }
 
-case class Items(items: Option[scala.List[Item]], 
+case class Items(items: Option[scala.List[Item]],
 				 tasks: Option[scala.List[Task]],
 				 notes: Option[scala.List[Note]],
 				 lists: Option[scala.List[List]],
@@ -69,13 +69,13 @@ trait ShareableItem extends ItemLike{
   val deleted: Option[Long]
   val title: String
   val description: Option[String]
-  val link: Option[String]  
+  val link: Option[String]
   val visibility: Option[SharedItemVisibility]
 }
 
 trait ExtendedItem extends ShareableItem{
   val uuid: Option[UUID]
-  val created: Option[Long]  
+  val created: Option[Long]
   val modified: Option[Long]
   val deleted: Option[Long]
   val title: String
@@ -84,12 +84,12 @@ trait ExtendedItem extends ShareableItem{
   val visibility: Option[SharedItemVisibility]
   val relationships: Option[ExtendedItemRelationships]
   val archived: Option[Long]
-  
+
   def parent: Option[UUID] = {
     if (relationships.isDefined) relationships.get.parent
     else None
   }
-  
+
   def tags: Option[scala.List[UUID]] = {
     if (relationships.isDefined) relationships.get.tags
     else None
@@ -98,7 +98,7 @@ trait ExtendedItem extends ShareableItem{
 
 trait LimitedExtendedItem extends ItemLike{
   val uuid: Option[UUID]
-  val created: Option[Long]  
+  val created: Option[Long]
   val modified: Option[Long]
   val deleted: Option[Long]
   val title: String

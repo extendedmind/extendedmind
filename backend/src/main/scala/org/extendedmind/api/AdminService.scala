@@ -240,7 +240,7 @@ trait AdminService extends ServiceBase {
               }
             }
           }
-        }        
+        }
       } ~
       rebuildUserIndexes { url =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>

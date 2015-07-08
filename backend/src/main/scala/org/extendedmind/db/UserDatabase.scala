@@ -42,7 +42,7 @@ import scala.collection.mutable.HashMap
 trait UserDatabase extends AbstractGraphDatabase {
 
   // METHODS THAT NEED TO BE OVERRIDDEN
-  
+
   def updateItemsIndex(itemNode: Node, setResult: SetResult): Unit
 
   // PUBLICs
@@ -132,7 +132,7 @@ trait UserDatabase extends AbstractGraphDatabase {
         } yield result
     }
   }
-  
+
   def getAgreement(userUUID: UUID, agreementUUID: UUID): Response[(Agreement, String)] = {
     withTx {
       implicit neo =>
@@ -142,36 +142,36 @@ trait UserDatabase extends AbstractGraphDatabase {
         } yield (agreement, agreementInfo.concerningTitle)
     }
   }
-  
+
   def putNewAgreement(agreement: Agreement): Response[(SetResult, String, String)] = {
     for {
-      agreementResult <- createAgreementNode(agreement).right       
+      agreementResult <- createAgreementNode(agreement).right
       result <- Right(getSetResult(agreementResult._1, true)).right
       unit <- Right(if (agreement.agreementType == "list") // Update items index with new list modified
                       updateItemsIndex(agreementResult._4, getSetResult(agreementResult._4, false))).right
     } yield (result, agreementResult._2, agreementResult._3)
   }
-  
+
 
   def changeAgreementAccess(owner: Owner, agreementUUID: UUID, access: Byte): Response[SetResult] = {
     for {
       agreementInfo <- changeAgreementAccessNode(owner.userUUID, agreementUUID, access).right
       result <- Right(getSetResult(agreementInfo.agreement, false)).right
       unit <- Right(if (agreementInfo.agreementType == "list") // Update items index with new list modified
-                      updateItemsIndex(agreementInfo.concerning, getSetResult(agreementInfo.concerning, false))).right 
+                      updateItemsIndex(agreementInfo.concerning, getSetResult(agreementInfo.concerning, false))).right
     } yield result
   }
-  
+
   def destroyAgreement(userUUID: UUID, agreementUUID: UUID): Response[SetResult] = {
     for {
       destroyAgreementResult <- destroyAgreementNode(userUUID, agreementUUID).right
       concerningSetResult <- Right(getSetResult(destroyAgreementResult._1.concerning, false)).right
       unit <- Right(if (destroyAgreementResult._1.agreementType == "list") // Update items index with new list modified
                       updateItemsIndex(destroyAgreementResult._1.concerning,
-                                      concerningSetResult)).right 
+                                      concerningSetResult)).right
     } yield concerningSetResult
   }
-  
+
   def saveAgreementAcceptInformation(agreementUUID: UUID, acceptCode: Long, emailId: String): Response[Unit] = {
     withTx {
       implicit neo4j =>
@@ -181,13 +181,13 @@ trait UserDatabase extends AbstractGraphDatabase {
         } yield result
     }
   }
-  
+
   def acceptAgreement(acceptCode: Long, proposedToEmail: String): Response[SetResult] = {
     for {
       agreementInfo <- acceptAgreementNode(acceptCode, proposedToEmail).right
       result <- Right(getSetResult(agreementInfo.agreement, true)).right
       unit <- Right(if (agreementInfo.agreementType == "list") // Update items index with new list modified
-                      updateItemsIndex(agreementInfo.concerning, getSetResult(agreementInfo.concerning, false))).right 
+                      updateItemsIndex(agreementInfo.concerning, getSetResult(agreementInfo.concerning, false))).right
     } yield result
   }
 
@@ -207,7 +207,7 @@ trait UserDatabase extends AbstractGraphDatabase {
           if (user.cohort.isDefined) userNode.setProperty("cohort", user.cohort.get)
 
           val emailVerificationCode = if (emailVerified.isDefined) {
-            // When the user accepts invite using a code sent to her email, 
+            // When the user accepts invite using a code sent to her email,
             // that means that the email is also verified
             userNode.setProperty("emailVerified", emailVerified.get)
             None
@@ -384,15 +384,15 @@ trait UserDatabase extends AbstractGraphDatabase {
         Right(ownerUUIDList)
     }
   }
-  
+
   protected def destroyItem(deletedItem: Node)(implicit neo4j: DatabaseService);
   protected def destroyTokens(userNode: Node)(implicit neo4j: DatabaseService): Response[CountResult];
-  
+
   protected def destroyUserNode(userNode: Node)(implicit neo4j: DatabaseService): Response[DestroyResult] = {
     // First delete tokens
     val destroyTokensResponse = destroyTokens(userNode)
     if (destroyTokensResponse.isLeft) return Left(destroyTokensResponse.left.get)
-    
+
     // Then process relationships
     val relationships = userNode.getRelationships().toList
     val proposedByAgreementRelationships = relationships.filter(relationship => {
@@ -404,7 +404,7 @@ trait UserDatabase extends AbstractGraphDatabase {
       else false
     })
     val userUUID = getUUID(userNode)
-    
+
     // Delete all relationships and also destroy items that the user owns
     relationships.foreach(relationship => {
       if (relationship.getType.name == SecurityRelationship.OWNS.name()){
@@ -413,12 +413,12 @@ trait UserDatabase extends AbstractGraphDatabase {
         relationship.delete()
       }
     })
-    
+
     // Delete user
     userNode.delete()
     Right(DestroyResult(scala.List(userUUID)))
   }
-  
+
 
   protected def deleteUserNode(userUUID: UUID): Response[Tuple2[Node, Long]] = {
     withTx {
@@ -456,12 +456,12 @@ trait UserDatabase extends AbstractGraphDatabase {
                  concerningNode)
     }
   }
-  
+
   protected def createAgreementNode(agreement: Agreement, proposedByUserNode: Node, proposedToUserNode: Node, concerningNode: Node)(implicit neo4j: DatabaseService): Response[Node] = {
     if (proposedByUserNode.getId == proposedToUserNode.getId){
       return fail(INVALID_PARAMETER, ERR_USER_AGREEMENT_TO_SELF, "Can't share list to the same user")
     }
-    
+
     val agreementsFromProposedBy: TraversalDescription =
     neo4j.gds.traversalDescription()
       .relationships(DynamicRelationshipType.withName(AgreementRelationship.PROPOSES.name),
@@ -482,14 +482,14 @@ trait UserDatabase extends AbstractGraphDatabase {
     if (previousAgreementToList.isDefined){
       fail(INVALID_PARAMETER, ERR_USER_AGREEMENT_ALREADY_EXISTS, "There is already an agreement about this list to the given user")
     }else{
-      val agreementNode = createNode(agreement, MainLabel.AGREEMENT, AgreementLabel.LIST_AGREEMENT) 
-      proposedByUserNode --> AgreementRelationship.PROPOSES --> agreementNode 
+      val agreementNode = createNode(agreement, MainLabel.AGREEMENT, AgreementLabel.LIST_AGREEMENT)
+      proposedByUserNode --> AgreementRelationship.PROPOSES --> agreementNode
       agreementNode --> AgreementRelationship.IS_PROPOSED_TO --> proposedToUserNode
       agreementNode --> AgreementRelationship.CONCERNING --> concerningNode
       Right(agreementNode)
     }
   }
-  
+
   protected def changeAgreementAccessNode(userUUID: UUID, agreementUUID: UUID, access: Byte): Response[AgreementInformation] = {
     withTx {
       implicit neo4j =>
@@ -499,10 +499,10 @@ trait UserDatabase extends AbstractGraphDatabase {
         } yield agreementInfo
     }
   }
-  
+
   def destroyAgreementNode(userUUID: UUID, agreementUUID: UUID): Response[(AgreementInformation, DestroyResult)] = {
     withTx {
-      implicit neo4j =>   
+      implicit neo4j =>
         for {
           agreementInfo <- getAgreementInformation(userUUID, agreementUUID).right
           destroyResult <- Right(destroyAgreementNode(agreementInfo)).right
@@ -510,9 +510,9 @@ trait UserDatabase extends AbstractGraphDatabase {
     }
   }
 
-  
+
   case class AgreementInformation(agreement: Node, agreementType: String, proposedBy: Node, concerning: Node, proposedTo: Option[Node], userIsCreator: Boolean, concerningTitle: String)
-  
+
   protected def getAgreementInformation(userUUID: UUID, agreementUUID: UUID): Response[AgreementInformation] = {
     withTx {
       implicit neo4j =>
@@ -521,9 +521,9 @@ trait UserDatabase extends AbstractGraphDatabase {
           userNode <- getNode(userUUID, OwnerLabel.USER).right
           result <- getAgreementInformation(agreementNode, userNode).right
         } yield result
-    }    
+    }
   }
-  
+
   protected def getAgreementInformation(agreementNode: Node, userNode: Node)(implicit neo4j: DatabaseService): Response[AgreementInformation] = {
     val proposedByRelationship = agreementNode.getRelationships.find(relationship => {
       relationship.getType.name == AgreementRelationship.PROPOSES.name
@@ -534,7 +534,7 @@ trait UserDatabase extends AbstractGraphDatabase {
     val proposedByUser = proposedByRelationship.get.getStartNode
     val userIsCreator = proposedByUser.getId == userNode.getId
     val agreementType = agreementNode.getProperty("agreementType").asInstanceOf[String]
-    
+
     val concerningRelationship = agreementNode.getRelationships.find(relationship => {
       relationship.getType.name == AgreementRelationship.CONCERNING.name
     })
@@ -542,27 +542,27 @@ trait UserDatabase extends AbstractGraphDatabase {
       return fail(INTERNAL_SERVER_ERROR, ERR_USER_CANT_FIND_AGREEMENT_PARTY, "Can't find node the agreement concerns")
     }
     val concerningNode = concerningRelationship.get.getEndNode
-    
+
     val proposedToRelationship = agreementNode.getRelationships.find(relationship => {
       relationship.getType.name == AgreementRelationship.IS_PROPOSED_TO.name
     })
-        
+
     val proposedToUser =
       if (proposedToRelationship.isDefined) Some(proposedToRelationship.get.getEndNode)
       else None
-      
+
     if (!userIsCreator && (proposedToUser.isEmpty || proposedToUser.get.getId != userNode.getId)){
       return fail(INVALID_PARAMETER, ERR_USER_INVALID_AGREEMENT_PARTY, "User is not a party in the agreement")
     }
-    
+
     Right(AgreementInformation(agreementNode, agreementType, proposedByUser, concerningNode, proposedToUser, userIsCreator, concerningNode.getProperty("title").asInstanceOf[String]))
   }
-  
+
   protected def changeAgreementAccessNode(agreementInfo: AgreementInformation, access: Byte)(implicit neo4j: DatabaseService): Response[Option[Relationship]] = {
     if (access != SecurityContext.READ && access != SecurityContext.READ_WRITE){
-      fail(INVALID_PARAMETER, ERR_USER_INVALID_ACCESS_VALUE, "List access value needs to be either 1 for read or 2 for write")      
+      fail(INVALID_PARAMETER, ERR_USER_INVALID_ACCESS_VALUE, "List access value needs to be either 1 for read or 2 for write")
     }else if (!agreementInfo.userIsCreator){
-      fail(INVALID_PARAMETER, ERR_BASE_NO_ACCESS, "Only agreement creator can change agreement access")            
+      fail(INVALID_PARAMETER, ERR_BASE_NO_ACCESS, "Only agreement creator can change agreement access")
     }else{
       agreementInfo.agreement.setProperty("access", access)
       if (agreementInfo.agreement.hasProperty("accepted")){
@@ -573,7 +573,7 @@ trait UserDatabase extends AbstractGraphDatabase {
       }
     }
   }
-  
+
   protected def sharingTraversalDescription(implicit neo4j: DatabaseService): TraversalDescription = {
     neo4j.gds.traversalDescription()
           .depthFirst()
@@ -584,7 +584,7 @@ trait UserDatabase extends AbstractGraphDatabase {
           .evaluator(LabelEvaluator(scala.List(ItemLabel.LIST, OwnerLabel.COLLECTIVE)))
           .evaluator(Evaluators.toDepth(1))
   }
-  
+
   protected def getCollectiveAccess(relationshipList: scala.List[Relationship]): Option[Map[UUID,(String, Byte, Boolean)]] = {
     if (relationshipList.isEmpty) None
     else{
@@ -595,7 +595,7 @@ trait UserDatabase extends AbstractGraphDatabase {
         val uuid = getUUID(collective)
         val common = if(collective.hasProperty("common")) true else false
         relationship.getType().name() match {
-          case SecurityRelationship.IS_FOUNDER.relationshipName => 
+          case SecurityRelationship.IS_FOUNDER.relationshipName =>
             collectiveAccessMap.put(uuid, (title, SecurityContext.FOUNDER, common))
           case SecurityRelationship.CAN_READ.relationshipName => {
             if (!collectiveAccessMap.contains(uuid))
@@ -612,17 +612,17 @@ trait UserDatabase extends AbstractGraphDatabase {
       Some(collectiveAccessMap.toMap)
     }
   }
-  
+
   protected def getSharedListAccess(relationshipList: scala.List[Relationship], foreignOwnerUUID: Option[UUID] = None)(implicit neo4j: DatabaseService): Option[Map[UUID,(String, Map[UUID, (String, Byte)])]] = {
     if (relationshipList.isEmpty){
       None
     }else{
       val sharedListAccessMap = new HashMap[UUID,(String, HashMap[UUID, (String, Byte)])]
-      
+
       relationshipList foreach (relationship => {
         val sharedList = relationship.getEndNode()
         val title = sharedList.getProperty("title").asInstanceOf[String]
-        
+
         val ownerNodeList = neo4j.gds.traversalDescription()
           .depthFirst()
           .relationships(DynamicRelationshipType.withName(SecurityRelationship.OWNS.name), Direction.INCOMING)
@@ -639,7 +639,7 @@ trait UserDatabase extends AbstractGraphDatabase {
                   (ownerNodeList(0).getProperty("email").asInstanceOf[String], new HashMap[UUID, (String, Byte)]))
             }
             relationship.getType().name() match {
-              case SecurityRelationship.CAN_READ.relationshipName => {                
+              case SecurityRelationship.CAN_READ.relationshipName => {
                 sharedListAccessMap.get(ownerUUID).get._2.put(getUUID(sharedList), (title, SecurityContext.READ))
               }
               case SecurityRelationship.CAN_READ_WRITE.relationshipName => {
@@ -658,15 +658,15 @@ trait UserDatabase extends AbstractGraphDatabase {
       }
     }
   }
-  
-  protected def setPermission(targetNode: Node, userNode: Node, access: Option[Byte]) 
-       (implicit neo4j: DatabaseService): Response[Option[Relationship]] = {    
+
+  protected def setPermission(targetNode: Node, userNode: Node, access: Option[Byte])
+       (implicit neo4j: DatabaseService): Response[Option[Relationship]] = {
     // Get existing relationship
     val existingRelationship = {
       val result = getSecurityRelationship(targetNode, userNode)
       if (result.isLeft) return result
       else{
-        if (result.right.get.isDefined && 
+        if (result.right.get.isDefined &&
             result.right.get.get.getType.name() == SecurityRelationship.IS_FOUNDER.relationshipName){
           return fail(INVALID_PARAMETER, ERR_USER_FOUNDER_PERMISSION, "Can not change permissions for founder")
         }
@@ -683,12 +683,12 @@ trait UserDatabase extends AbstractGraphDatabase {
         }
         Right(Some(userNode --> SecurityRelationship.CAN_READ --> targetNode <))
       }
-      case Some(SecurityContext.READ_WRITE) => 
+      case Some(SecurityContext.READ_WRITE) =>
         if(existingRelationship.isDefined){
           if(existingRelationship.get.getType().name != SecurityRelationship.CAN_READ_WRITE.name){
             existingRelationship.get.delete()
           }else
-            return Right(existingRelationship)          
+            return Right(existingRelationship)
         }
         Right(Some(userNode --> SecurityRelationship.CAN_READ_WRITE --> targetNode <))
       case None => {
@@ -699,17 +699,17 @@ trait UserDatabase extends AbstractGraphDatabase {
         }
         Right(None)
       }
-      case _ => 
+      case _ =>
         fail(INVALID_PARAMETER, ERR_USER_INVALID_ACCESS_VALUE, "Invalid access value: " + access)
     }
   }
-  
+
   protected def getSecurityRelationship(targetNode: Node, userNode: Node)
       (implicit neo4j: DatabaseService): Response[Option[Relationship]] = {
-    getRelationship(userNode, targetNode, SecurityRelationship.CAN_READ, SecurityRelationship.CAN_READ_WRITE, 
+    getRelationship(userNode, targetNode, SecurityRelationship.CAN_READ, SecurityRelationship.CAN_READ_WRITE,
             SecurityRelationship.IS_FOUNDER)
   }
-  
+
   protected def destroyAgreementNode(agreementInfo: AgreementInformation)(implicit neo4j: DatabaseService): DestroyResult = {
 
     // First: remove permission
@@ -733,7 +733,7 @@ trait UserDatabase extends AbstractGraphDatabase {
     agreementNode.setProperty("acceptCode", acceptCode)
     agreementNode.setProperty("acceptEmailId", emailId)
   }
-  
+
   protected def acceptAgreementNode(acceptCode: Long, proposedToEmail: String): Response[AgreementInformation] = {
     withTx {
       implicit neo4j =>
@@ -745,7 +745,7 @@ trait UserDatabase extends AbstractGraphDatabase {
         } yield agreementInformation
     }
   }
-  
+
   private def getAgreementNodeForAcceptance(proposedToNode: Node, acceptCode: Long)(implicit neo4j: DatabaseService): Response[Node] = {
     val agreementNodeResult = proposedToNode.getRelationships.find(relationship => {
       relationship.getType.name == AgreementRelationship.IS_PROPOSED_TO.name &&
@@ -754,19 +754,19 @@ trait UserDatabase extends AbstractGraphDatabase {
     })
     if (agreementNodeResult.isEmpty){
       fail(INVALID_PARAMETER, ERR_USER_AGREEMENT_NOT_FOUND, "Can't find agreement with given code")
-    }else if (agreementNodeResult.get.getStartNode.hasProperty("accepted")){      
+    }else if (agreementNodeResult.get.getStartNode.hasProperty("accepted")){
       fail(INVALID_PARAMETER, ERR_USER_AGREEMENT_ACCEPTED, "Agreement already accepted")
     }else{
       Right(agreementNodeResult.get.getStartNode)
     }
   }
-  
+
   private def acceptAgreementNode(proposedToNode: Node, agreementNode: Node)(implicit neo4j: DatabaseService): Response[Option[Relationship]] = {
     // Need to find what it concerns
     val concerningResult = agreementNode.getRelationships.find(relationship => {
       relationship.getType.name == AgreementRelationship.CONCERNING.name
     })
-    
+
     if (concerningResult.isEmpty){
       fail(INTERNAL_SERVER_ERROR, ERR_USER_CANT_FIND_AGREEMENT_CONCERNING, "Can't the agreement target")
     }else{
@@ -774,7 +774,7 @@ trait UserDatabase extends AbstractGraphDatabase {
       setPermission(concerningResult.get.getEndNode, proposedToNode, Some(agreementNode.getProperty("access").asInstanceOf[Byte]))
     }
   }
-  
+
   protected def toAgreement(agreementInfo: AgreementInformation, showProposedBy: Boolean = false, skipCreatedAndModified: Boolean = false)(implicit neo4j: DatabaseService): Response[Agreement] = {
     for {
       agreement <- toCaseClass[Agreement](agreementInfo.agreement).right
@@ -787,12 +787,12 @@ trait UserDatabase extends AbstractGraphDatabase {
     return agreement.copy(
         proposedTo = Some(AgreementUser(Some(getUUID(agreementInfo.proposedTo.get)),
                                         Some(agreementInfo.proposedTo.get.getProperty("email").asInstanceOf[String]))),
-        proposedBy = 
+        proposedBy =
           if (showProposedBy)
             Some(AgreementUser(Some(getUUID(agreementInfo.proposedBy)),
                                Some(agreementInfo.proposedBy.getProperty("email").asInstanceOf[String])))
           else None)
   }
 
-  
+
 }

@@ -28,12 +28,12 @@ class CRCSpec extends SpecBase{
     it("should generate valid CRC"){
       var crc = new CRC16_MMC();
 
-      val testString = "CRC Test String"      
+      val testString = "CRC Test String"
       crc.upd(testString.getBytes("UTF-8"))
       crc.end
-      var bytes = crc.getBytes       
+      var bytes = crc.getBytes
       assert(bytes(0) == 3)
-      assert(bytes(1) == -60) 
+      assert(bytes(1) == -60)
       assert(crc.get == 964);
 
       crc.reset
@@ -42,15 +42,15 @@ class CRCSpec extends SpecBase{
       crc.upd(testString2.getBytes("UTF-8"))
       crc.end
       assert(crc.get == 56428)
-      
+
       crc = new CRC16_MMC();
-      
+
       crc.upd(testString2.getBytes("UTF-8"))
       crc.end
-      
-      bytes = crc.getBytes      
+
+      bytes = crc.getBytes
       assert(bytes(0) == -36)
-      assert(bytes(1) == 108) 
+      assert(bytes(1) == 108)
     }
   }
 }

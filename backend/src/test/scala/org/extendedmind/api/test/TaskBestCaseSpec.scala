@@ -60,7 +60,7 @@ class TaskBestCaseSpec extends ServiceSpecBase {
   }
 
   override def configurations = TestDataGeneratorConfiguration :: new Configuration(settings, actorRefFactory)
- 
+
   before {
     db.insertTestData()
   }
@@ -99,18 +99,18 @@ class TaskBestCaseSpec extends ServiceSpecBase {
                   val deleteTaskResponse = responseAs[DeleteItemResult]
                   writeJsonOutput("deleteTaskResponse", responseAs[String])
                   Get("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                	val failure = responseAs[ErrorResult]        
+                	val failure = responseAs[ErrorResult]
                 	status should be (BadRequest)
                     failure.description should startWith("Item " + putTaskResponse.uuid.get + " is deleted")
                   }
-                  
+
                   // Deleting again should return the same deleted and modified values
                   Delete("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                     val redeleteTaskResponse = responseAs[DeleteItemResult]
                     redeleteTaskResponse.deleted should be (deleteTaskResponse.deleted)
                     redeleteTaskResponse.result.modified should be (deleteTaskResponse.result.modified)
                   }
-                  
+
                   Post("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                     val undeleteTaskResponse = responseAs[SetResult]
                     writeJsonOutput("undeleteTaskResponse", responseAs[String])
@@ -177,7 +177,7 @@ class TaskBestCaseSpec extends ServiceSpecBase {
         generatedTaskResponse.completed should be (None)
         generatedTaskResponse.repeating.get should be (RepeatingType.WEEKLY.toString())
         generatedTaskResponse.relationships.get.origin.get should be (putTaskResponse.uuid.get)
-        
+
         // Uncomplete and re-complete and make sure another new task isn't generated
         Post("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get + "/uncomplete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           val uncompletedTaskResponse = getTask(putTaskResponse.uuid.get, authenticateResponse)
@@ -185,7 +185,7 @@ class TaskBestCaseSpec extends ServiceSpecBase {
         }
         Post("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get + "/complete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           val recompleteTaskResponse = responseAs[CompleteTaskResult]
-          recompleteTaskResponse.generated should be (None)	  
+          recompleteTaskResponse.generated should be (None)
           val completedTaskResponse = getTask(putTaskResponse.uuid.get, authenticateResponse)
           completedTaskResponse.completed should not be None
         }
@@ -206,7 +206,7 @@ class TaskBestCaseSpec extends ServiceSpecBase {
         }
       }
     }
-    
+
     it("should successfully put new task with tags to /[userUUID]/task, "
       + "and update tags with PUT to /[userUUID]/task/[taskUUID]") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
@@ -215,13 +215,13 @@ class TaskBestCaseSpec extends ServiceSpecBase {
         val newTask = Task("review inbox", None, None, None, None, None, Some(
             ExtendedItemRelationships(None, None, Some(scala.List(itemsResponse.tags.get(0).uuid.get)))))
         val putTaskResponse = putNewTask(newTask, authenticateResponse)
-        
+
         // Add new tag to tags and update task
         val taskWithAddedTag = newTask.copy(relationships = Some(
             ExtendedItemRelationships(None, None, Some(
                 scala.List(itemsResponse.tags.get(0).uuid.get, itemsResponse.tags.get(1).uuid.get)))));
         putExistingTask(taskWithAddedTag, putTaskResponse.uuid.get, authenticateResponse)
-        
+
         // Change one tag and update task
         val taskWithChangedTag = taskWithAddedTag.copy(relationships = Some(
             ExtendedItemRelationships(None, None, Some(
@@ -230,7 +230,7 @@ class TaskBestCaseSpec extends ServiceSpecBase {
 
         // Revert to one tag and update task
         putExistingTask(newTask, putTaskResponse.uuid.get, authenticateResponse)
-        
+
         val endTask = getTask(putTaskResponse.uuid.get, authenticateResponse)
         endTask.relationships.get.tags.get.size should be (1)
         endTask.relationships.get.tags.get(0) should be (itemsResponse.tags.get(0).uuid.get)
@@ -241,7 +241,7 @@ class TaskBestCaseSpec extends ServiceSpecBase {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       val newTask = Task("learn Spanish", Some("would be useful"), None, None, None, None, None)
       val putTaskResponse = putNewTask(newTask, authenticateResponse)
-      
+
       Post("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get + "/note",
           marshal(newTask.copy(title = "Spanish studies"))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val noteFromTask = responseAs[Note]
@@ -250,7 +250,7 @@ class TaskBestCaseSpec extends ServiceSpecBase {
         noteFromTask.title should be ("Spanish studies")
         noteFromTask.description should be (None)
         noteFromTask.content.get should be ("would be useful")
-  
+
         Post("/" + authenticateResponse.userUUID + "/note/" + putTaskResponse.uuid.get + "/task",
           marshal(noteFromTask.copy(title = "learn Spanish"))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           val taskFromNote = responseAs[Task]
@@ -261,7 +261,7 @@ class TaskBestCaseSpec extends ServiceSpecBase {
         }
       }
     }
-    
+
     it("should successfully put new task with reminder on PUT to /[userUUID]/task, "
       + "add new reminders with PUT to /[userUUID]/task/[taskUUID], "
       + "remove one reminders with PUT to /[userUUID]/task/[taskUUID], "
@@ -275,8 +275,8 @@ class TaskBestCaseSpec extends ServiceSpecBase {
       val reminder3 = Reminder(reminderId3, "ln", "ios-cordova", "iPhone6", reminderTime+2)
       val reminderId4 = "4"
       val reminder4 = Reminder(reminderId4, "ln", "ios-cordova", "iPhone6", reminderTime+3)
-      val newTask = Task("learn Spanish", None, None, None, None, 
-                          Some(scala.List(reminder1)), None)                          
+      val newTask = Task("learn Spanish", None, None, None, None,
+                          Some(scala.List(reminder1)), None)
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       val putTaskResponse = putNewTask(newTask, authenticateResponse)
       putTaskResponse.associated.get(0).id should be (reminderId1)
@@ -299,7 +299,7 @@ class TaskBestCaseSpec extends ServiceSpecBase {
           untaskResponse.reminders.get(0).removed should be (None)
         }
       }
-      
+
       // Change removed value in reminder with delete/undelete
       Delete("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get,
         marshal(ReminderModification(reminderId1, Some(removed))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
@@ -320,17 +320,17 @@ class TaskBestCaseSpec extends ServiceSpecBase {
       val threeReminders = getTask(putTaskResponse.uuid.get, authenticateResponse).reminders.get
       threeReminders.length should be (3)
       putExistingTaskResponse.modified should not be (putTaskResponse.modified)
-      
+
       // Add fourth and remove first and third
       val twoReminders = threeReminders.filter { reminder => reminder.id.get == reminderId2 } :+ reminder4
       val putAgainExistingTaskResponse = putExistingTask(updatedTask.copy(reminders = Some(twoReminders)), putTaskResponse.uuid.get, authenticateResponse)
       getTask(putTaskResponse.uuid.get, authenticateResponse).reminders.get.length should be (2)
       putAgainExistingTaskResponse.modified should not be (putExistingTaskResponse.modified)
-      
+
       // Delete every reminder
       val putOnceMoreExistingTaskResponse = putExistingTask(updatedTask.copy(reminders = None), putTaskResponse.uuid.get, authenticateResponse)
       getTask(putTaskResponse.uuid.get, authenticateResponse).reminders should be (None)
       putOnceMoreExistingTaskResponse.modified should not be (putAgainExistingTaskResponse.modified)
-    }    
+    }
   }
 }

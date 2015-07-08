@@ -28,16 +28,16 @@ import org.extendedmind._
 import org.extendedmind.Response._
 
 class TokenSpec extends SpraySpecBase{
-  
-  def configurations = EmptyTestConfiguration 
-  
+
+  def configurations = EmptyTestConfiguration
+
   describe("Token class"){
     it("should encode and decode Tokens"){
       val testUUID = UUID.randomUUID()
       val testToken = Token(testUUID, 1L)
       val stringToken = Token.encryptToken(testToken)
       assert(stringToken.length() === 44)
-            
+
       // Decrypt and verify
       val decryptedToken = Token.decryptToken(stringToken)
       decryptedToken match{

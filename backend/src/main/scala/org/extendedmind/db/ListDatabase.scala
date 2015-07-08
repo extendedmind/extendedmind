@@ -40,7 +40,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
 
   def putNewList(owner: Owner, list: List): Response[SetResult] = {
     for {
-      // Don't set history tag of parent to list      
+      // Don't set history tag of parent to list
       listResult <- putNewExtendedItem(owner, list, ItemLabel.LIST, skipParentHistoryTag = true).right
       result <- Right(getSetResult(listResult._1, true, listResult._2)).right
       unit <- Right(addToItemsIndex(owner, listResult._1, result)).right
@@ -75,7 +75,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
       unit <- Right(updateItemsIndex(deletedListNode._3, result.result)).right
     } yield result
   }
-  
+
   def undeleteList(owner: Owner, listUUID: UUID): Response[SetResult] = {
     for {
       undeleteListResult <- undeleteListNode(owner, listUUID).right
@@ -97,7 +97,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
       unit <- Right(updateItemsIndex(listResult._1, result.result)).right
     } yield result
   }
-  
+
   def unarchiveList(owner: Owner, listUUID: UUID, parent: Option[UUID]): Response[UnarchiveListResult] = {
     for {
       listResult <- validateListUnarchivable(owner, listUUID, parent).right
@@ -168,7 +168,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
         } yield (listNode, listTitle, parentNode)
     }
   }
-  
+
   protected def validateListArchivable(listNode: Node, parentNode: Option[Node])(implicit neo4j: DatabaseService): Response[Node] = {
     if (hasChildren(listNode, Some(ItemLabel.LIST))){
       fail(INVALID_PARAMETER, ERR_LIST_ARCHIVE_CHILDREN, "List " + getUUID(listNode) + " has child lists, can not archive")
@@ -176,11 +176,11 @@ trait ListDatabase extends UserDatabase with TagDatabase {
       fail(INVALID_PARAMETER, ERR_LIST_ALREADY_ARCHIVED, "List " + getUUID(listNode) + " is already archived")
     }else if (parentNode.isDefined && !parentNode.get.hasProperty("archived")){
       fail(INVALID_PARAMETER, ERR_LIST_PARENT_NOT_ARCHIVED, "Parent list " + getUUID(parentNode.get) + " is not archived")
-    }else{      
-      Right(listNode)      
+    }else{
+      Right(listNode)
     }
   }
-  
+
   protected def validateListUnarchivable(owner: Owner, listUUID: UUID, parent: Option[UUID]): Response[(Node, Node, Option[Node])] = {
     withTx {
       implicit neo =>
@@ -192,7 +192,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
         } yield (listNode, historyTag, parentNode)
     }
   }
-  
+
   protected def validateListUnarchivable(listNode: Node, parentNode: Option[Node])(implicit neo4j: DatabaseService): Response[Node] = {
     if (hasChildren(listNode, Some(ItemLabel.LIST))){
       fail(INVALID_PARAMETER, ERR_LIST_UNARCHIVE_CHILDREN, "List " + getUUID(listNode) + " has child lists, can not unarchive")
@@ -204,7 +204,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
       Right(listNode)
     }
   }
-  
+
   protected def getArchivedListHistoryTag(listNode: Node)(implicit neo4j: DatabaseService): Response[Node] = {
     val historyTagTraversal = neo4j.gds.traversalDescription()
         .depthFirst()
@@ -217,7 +217,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
         .depthFirst()
         .evaluator(Evaluators.toDepth(1))
         .traverse(listNode)
-     
+
     val historyTagList = historyTagTraversal.nodes().toList
     if (historyTagList.isEmpty || historyTagList.length == 0){
       fail(INTERNAL_SERVER_ERROR, ERR_LIST_NO_ACTIVE_HISTORY, "Archived list does not have an active history tag")
@@ -239,7 +239,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
           if (oldParentRelationship.isDefined){
             deleteParentRelationship(oldParentRelationship.get)
           }
-          
+
           // See if list gets archived timestamp from parent
           val archivedTimestampFromParent = {
             if (parentNode.isDefined){
@@ -268,7 +268,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
         }
     }
   }
-  
+
   protected def unarchiveListNode(listNode: Node, owner: Owner, historyTag: Node, parentNode: Option[Node]): Response[(scala.List[Node], Long)] = {
     withTx {
       implicit neo4j =>
@@ -277,7 +277,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
         if (oldParentRelationship.isDefined){
           deleteParentRelationship(oldParentRelationship.get)
         }
-        
+
         // Then, set new parent relationship
         if (parentNode.isDefined){
           val parentSetResult = createParentRelationship(listNode, owner, parentNode.get, skipParentHistoryTag = true)
@@ -317,14 +317,14 @@ trait ListDatabase extends UserDatabase with TagDatabase {
         } yield (listNode, deleted, childNodes)
     }
   }
-  
+
   protected def undeleteListNode(owner: Owner, itemUUID: UUID): Response[(Node, scala.List[Node])] = {
     withTx {
       implicit neo =>
         for {
           itemNode <- getItemNode(owner, itemUUID, Some(ItemLabel.LIST), acceptDeleted = true).right
           success <- Right(undeleteItem(itemNode)).right
-          childNodes <- Right(getChildren(itemNode, None, true)).right          
+          childNodes <- Right(getChildren(itemNode, None, true)).right
         } yield (itemNode, childNodes)
     }
   }
@@ -390,11 +390,11 @@ trait ListDatabase extends UserDatabase with TagDatabase {
     else
       Right()
   }
-  
+
   protected def getListAgreementInformations(owner: Owner, listNode: Node)(implicit neo4j: DatabaseService): Response[Option[scala.List[AgreementInformation]]] = {
     for {
       agreementNodes <- getListAgreementNodes(listNode).right
-      userNode <- (if (agreementNodes.isDefined) getNodeOption(Some(owner.userUUID), OwnerLabel.USER) 
+      userNode <- (if (agreementNodes.isDefined) getNodeOption(Some(owner.userUUID), OwnerLabel.USER)
                    else Right(None)).right
       agreementInformations <- getListAgreementInformations(agreementNodes, userNode).right
     } yield agreementInformations
@@ -416,7 +416,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
     }
   }
 
-  protected def getListAgreementInformations(agreementNodes: Option[scala.List[Node]], userNode: Option[Node])(implicit neo4j: DatabaseService): Response[Option[scala.List[AgreementInformation]]] = {    
+  protected def getListAgreementInformations(agreementNodes: Option[scala.List[Node]], userNode: Option[Node])(implicit neo4j: DatabaseService): Response[Option[scala.List[AgreementInformation]]] = {
     if (userNode.isEmpty || agreementNodes.isEmpty){
       Right(None)
     }else{
@@ -441,7 +441,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
       Right(None)
     }
   }
-  
-  
-  
+
+
+
 }

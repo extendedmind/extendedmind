@@ -32,7 +32,7 @@ import akka.event.LoggingAdapter
 trait ListActions {
 
   def db: GraphDatabase;
-  
+
   def putNewList(owner: Owner, list: List)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("putNewList")
     db.putNewList(owner, list)
@@ -42,17 +42,17 @@ trait ListActions {
     log.info("putExistingList")
     db.putExistingList(owner, listUUID, list)
   }
-  
+
    def getList(owner: Owner, listUUID: UUID)(implicit log: LoggingAdapter): Response[List] = {
     log.info("getList")
     db.getList(owner, listUUID)
   }
-  
+
   def deleteList(owner: Owner, listUUID: UUID)(implicit log: LoggingAdapter): Response[DeleteItemResult] = {
     log.info("deleteList")
     db.deleteList(owner, listUUID)
   }
-  
+
   def undeleteList(owner: Owner, listUUID: UUID)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("undeleteList")
     db.undeleteList(owner, listUUID)
@@ -63,17 +63,17 @@ trait ListActions {
     if (!owner.hasPremium) fail(INVALID_PARAMETER, ERR_LIST_ARCHIVE_NOT_PREMIUM, "List archiving requires premium subscription")
     else db.archiveList(owner, listUUID, if(payload.isDefined) Some(payload.get.parent) else None)
   }
-  
+
   def unarchiveList(owner: Owner, listUUID: UUID, payload: Option[ArchivePayload])(implicit log: LoggingAdapter): Response[UnarchiveListResult] = {
     log.info("unarchiveList")
     db.unarchiveList(owner, listUUID, if(payload.isDefined) Some(payload.get.parent) else None)
   }
-  
+
   def listToTask(owner: Owner, listUUID: UUID, list: List)(implicit log: LoggingAdapter): Response[Task] = {
     log.info("listToTask")
     db.listToTask(owner, listUUID, list)
   }
-  
+
   def listToNote(owner: Owner, listUUID: UUID, list: List)(implicit log: LoggingAdapter): Response[Note] = {
     log.info("listToNote")
     db.listToNote(owner, listUUID, list)

@@ -24,12 +24,12 @@ import org.extendedmind.security.SecurityContext._
 import org.extendedmind.security.Token._
 
 object Authorization {
-  
+
   def adminAccess(sc: SecurityContext): Boolean = {
     if (sc.userType == ADMIN) true
     else false
   }
-  
+
   def readAccess(ownerUUID: UUID, sc: SecurityContext, shareable: Boolean = false): Boolean = {
     val access = getAccess(ownerUUID, sc)
     if (access.isDefined){
@@ -44,7 +44,7 @@ object Authorization {
       false
     }
   }
-  
+
   def writeAccess(ownerUUID: UUID, sc: SecurityContext, shareable: Boolean = false): Boolean = {
     val access = getAccess(ownerUUID, sc)
     if (access.isDefined){
@@ -59,15 +59,15 @@ object Authorization {
       false
     }
   }
-  
+
   def writeAccess(accessRight: Option[Byte]): Boolean = {
     accessRight.isDefined && (accessRight.get == SecurityContext.FOUNDER || accessRight.get == SecurityContext.READ_WRITE)
   }
-  
+
   def readAccess(accessRight: Option[Byte]): Boolean = {
     accessRight.isDefined && (accessRight.get == SecurityContext.FOUNDER || accessRight.get == SecurityContext.READ_WRITE || accessRight.get == SecurityContext.READ)
   }
-  
+
   private def getAccess(ownerUUID: UUID, sc: SecurityContext): Option[Byte] = {
     if (ownerUUID == sc.userUUID){
       Some(FOUNDER)

@@ -45,7 +45,7 @@ import MediaTypes._
 trait ListService extends ServiceBase {
 
   import JsonImplicits._
-  
+
   def listRoutes = {
       getList { (ownerUUID, listUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>

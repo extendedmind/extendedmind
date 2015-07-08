@@ -24,7 +24,7 @@ import Validators._
 import org.extendedmind.SetResult
 
 case class Note(uuid: Option[UUID], id: Option[String], created: Option[Long], modified: Option[Long], deleted: Option[Long], archived: Option[Long],
-                title: String, description: Option[String], 
+                title: String, description: Option[String],
                 link: Option[String],
                 content: Option[String],
                 favorited: Option[Long],
@@ -33,31 +33,31 @@ case class Note(uuid: Option[UUID], id: Option[String], created: Option[Long], m
            extends ExtendedItem{
   if (id.isDefined) require(validateLength(id.get, 100), "id can not be more than 100 characters")
   require(validateTitle(title), "Title can not be more than " + TITLE_MAX_LENGTH + " characters")
-  if (description.isDefined) require(validateDescription(description.get), 
+  if (description.isDefined) require(validateDescription(description.get),
       "Description can not be more than " + DESCRIPTION_MAX_LENGTH + " characters")
   if (link.isDefined) require(validateLength(link.get, 2000), "Link can not be more than 2000 characters")
   if (content.isDefined) require(validateLength(content.get, 1000000), "Content can not be more than 1000000 characters")
 }
 
 object Note{
-  def apply(title: String, description: Option[String], 
+  def apply(title: String, description: Option[String],
             link: Option[String],
             content: Option[String],
             favorited: Option[Long],
-            relationships: Option[ExtendedItemRelationships]) 
-        = new Note(None, None, None, None, None, None, title, description, link, content, favorited, 
+            relationships: Option[ExtendedItemRelationships])
+        = new Note(None, None, None, None, None, None, title, description, link, content, favorited,
                    None, relationships)
 }
 
 case class LimitedNote(uuid: Option[UUID], id: Option[String], created: Option[Long], modified: Option[Long], deleted: Option[Long],
-                title: String, description: Option[String], 
+                title: String, description: Option[String],
                 link: Option[String],
                 content: Option[String],
                 relationships: LimitedExtendedItemRelationships)
                 extends LimitedExtendedItem {
   if (id.isDefined) require(validateLength(id.get, 100), "Id can not be more than 100 characters")
   require(validateTitle(title), "Title can not be more than " + TITLE_MAX_LENGTH + " characters")
-  if (description.isDefined) require(validateDescription(description.get), 
+  if (description.isDefined) require(validateDescription(description.get),
       "Description can not be more than " + DESCRIPTION_MAX_LENGTH + " characters")
   if (link.isDefined) require(validateLength(link.get, 2000), "Link can not be more than 2000 characters")
   if (content.isDefined) require(validateLength(content.get, 1000000), "Content can not be more than 1000000 characters")

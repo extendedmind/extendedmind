@@ -59,7 +59,7 @@ object Response{
     }
   }
   type Response[T] = Either[List[ResponseContent], T]
-  
+
   // Convenience methods to use when failing
   def fail(responseType: ResponseType, code: ErrorCode, description: String) = {
     Left(List(ResponseContent(responseType, code, description)))
@@ -67,7 +67,7 @@ object Response{
   def fail(responseType: ResponseType, code: ErrorCode, description: String, throwable: Throwable) = {
     Left(List(ResponseContent(responseType, code, description, Some(throwable))))
   }
-  
+
   def processErrors(errors: List[ResponseContent])(implicit logErrors: List[ResponseContent] => Unit) = {
     // First log all errors
     logErrors(errors)
@@ -86,7 +86,7 @@ object Response{
 case class SetResult(uuid: Option[UUID], created: Option[Long], modified: Long, archived: Option[Long], associated: Option[scala.List[IdToUUID]])
 
 object SetResult{
-  def apply(uuid: Option[UUID], created: Option[Long], modified: Long) 
+  def apply(uuid: Option[UUID], created: Option[Long], modified: Long)
         = new SetResult(uuid, created, modified, None, None)
 }
 

@@ -37,7 +37,7 @@ trait NoteActions {
 
   def putNewNote(owner: Owner, note: Note)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("putNewNote")
-    val accessRight =  db.getNoteAccessRight(owner, note)   
+    val accessRight =  db.getNoteAccessRight(owner, note)
     if (!writeAccess(accessRight)){
       fail(INVALID_PARAMETER, ERR_BASE_NO_LIST_ACCESS, "No write access to new note")
     }else{
@@ -49,12 +49,11 @@ trait NoteActions {
         db.putNewLimitedNote(owner, limitedNote)
       }
     }
-  
   }
 
   def putExistingNote(owner: Owner, noteUUID: UUID, note: Note)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("putExistingNote")
-    val accessRight =  db.getNoteAccessRight(owner, note)   
+    val accessRight =  db.getNoteAccessRight(owner, note)
     if (!writeAccess(accessRight)){
       fail(INVALID_PARAMETER, ERR_BASE_NO_LIST_ACCESS, "No write access to existing note")
     }else{
@@ -72,33 +71,33 @@ trait NoteActions {
     log.info("getNote")
     db.getNote(owner, noteUUID)
   }
-  
+
   def deleteNote(owner: Owner, noteUUID: UUID)(implicit log: LoggingAdapter): Response[DeleteItemResult] = {
     log.info("deleteNote")
     db.deleteNote(owner, noteUUID)
   }
-  
+
   def undeleteNote(owner: Owner, noteUUID: UUID)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("undeleteNote")
     db.undeleteNote(owner, noteUUID)
   }
-  
+
   def favoriteNote(owner: Owner, noteUUID: UUID)(implicit log: LoggingAdapter): Response[FavoriteNoteResult] = {
     log.info("favoriteNote")
     db.favoriteNote(owner, noteUUID)
   }
-  
+
   def unfavoriteNote(owner: Owner, noteUUID: UUID)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("unfavoriteNote")
     db.unfavoriteNote(owner, noteUUID)
   }
-  
-  
+
+
   def noteToTask(owner: Owner, noteUUID: UUID, note: Note)(implicit log: LoggingAdapter): Response[Task] = {
     log.info("noteToTask")
     db.noteToTask(owner, noteUUID, note)
   }
-  
+
   def noteToList(owner: Owner, noteUUID: UUID, note: Note)(implicit log: LoggingAdapter): Response[List] = {
     log.info("noteToList")
     db.noteToList(owner, noteUUID, note)

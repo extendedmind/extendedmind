@@ -59,9 +59,9 @@ trait Neo4jHelper {
 
     graphDatabaseService.getAllNodes() foreach (node =>
       node.getRelationships(Direction.OUTGOING) foreach (rel =>
-        rel.delete()  
+        rel.delete()
       ))
-        
+
     graphDatabaseService.getAllNodes() foreach (node =>
       node.delete()
     )
@@ -70,7 +70,7 @@ trait Neo4jHelper {
   private def clearIndex(gds: GraphDatabaseService) = {
     val indexManager: IndexManager = gds.index()
     indexManager.nodeIndexNames() foreach (ix => {
-      val index = indexManager.forNodes(ix) 
+      val index = indexManager.forNodes(ix)
       getMutableIndex(index).delete()
     })
 
@@ -79,7 +79,7 @@ trait Neo4jHelper {
       getMutableIndex(index).delete()
     })
   }
-  
+
   private def getMutableIndex(index: Index[_]): Index[_] = {
      val indexClass = index.getClass();
         if (indexClass.getName().endsWith("ReadOnlyIndexToIndexAdapter")) {
@@ -87,13 +87,13 @@ trait Neo4jHelper {
                 val delegateIndexField: Field = indexClass.getDeclaredField("delegate");
                 delegateIndexField.setAccessible(true);
                 return delegateIndexField.get(index).asInstanceOf[Index[_]];
-            } catch{ 
+            } catch{
                 case e: Exception => throw new UnsupportedOperationException(e);
             }
         } else {
             return index;
         }
     }
-  
-  
+
+
 }

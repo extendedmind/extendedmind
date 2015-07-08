@@ -43,12 +43,12 @@ trait UserActions {
 
   def actorRefFactory: ActorRefFactory
   implicit val implicitActorRefFactory = actorRefFactory
-  implicit val implicitExecutionContext = actorRefFactory.dispatcher 
-  
+  implicit val implicitExecutionContext = actorRefFactory.dispatcher
+
   def signUp(signUp: SignUp)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("signUp: email {}", signUp.email)
-    if (settings.signUpMode == MODE_ADMIN) 
-      log.warning("CRITICAL: Making {} an administrator because extendedmind.security.signUpMode is set to ADMIN", 
+    if (settings.signUpMode == MODE_ADMIN)
+      log.warning("CRITICAL: Making {} an administrator because extendedmind.security.signUpMode is set to ADMIN",
           signUp.email)
     for {
       isUnique <- db.validateEmailUniqueness(signUp.email).right
@@ -58,29 +58,29 @@ trait UserActions {
               else Right(Unit).right
     } yield userResult._1
   }
-    
+
   def getPublicUser(email: String)(implicit log: LoggingAdapter): Response[PublicUser] = {
     log.info("getPublicUser: email {}", email)
     val user = db.getUser(email)
     if (user.isLeft) Left(user.left.get)
     else Right(PublicUser(user.right.get.uuid.get))
   }
-   
+
   def getUser(userUUID: UUID)(implicit log: LoggingAdapter): Response[User] = {
     log.info("getUser")
     db.getUser(userUUID)
   }
-  
+
   def getUsers(implicit log: LoggingAdapter): Response[Users] = {
     log.info("getUsers")
     db.getUsers
   }
-  
+
   def putUser(userUUID: UUID, user: User)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("putUser")
     db.putExistingUser(userUUID, user)
   }
-  
+
   def deleteUser(userUUID: UUID)(implicit log: LoggingAdapter): Response[DeleteItemResult] = {
     log.info("deleteUser")
     val destroyTokensResult = db.destroyTokens(userUUID)
@@ -90,7 +90,7 @@ trait UserActions {
       db.deleteUser(userUUID)
     }
   }
-  
+
   def putEmail(userUUID: UUID, email: UserEmail)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("putEmail")
     db.changeUserEmail(userUUID, email.email) match {
@@ -98,31 +98,31 @@ trait UserActions {
         Right(result._1)
         // TODO
         // if (result._2)
-        //   SEND EMAIL CONFIRMATION TO NEW ADDRESS! 
+        //   SEND EMAIL CONFIRMATION TO NEW ADDRESS!
       }
       case Left(e) => Left(e)
     }
   }
-  
+
   def changeUserType(userUUID: UUID, userType: Integer)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("changeUserType: type {}", userType)
     db.changeUserType(userUUID, userType)
   }
-  
+
   def destroyUser(userUUID: UUID)(implicit log: LoggingAdapter): Response[DestroyResult] = {
     log.info("destroyUser: {}", userUUID)
     db.destroyUser(userUUID)
   }
-  
+
   /* Subscriptions */
-  
+
   def subscribe(userUUID: UUID, subscription: Subscription)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("subscribe: {}", userUUID)
     Right(SetResult(None, None, 1))
   }
-  
+
   /* Agreements */
-  
+
   def putNewAgreement(userUUID: UUID, agreement: Agreement)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("putNewAgreement")
     if (agreement.proposedTo.isEmpty || agreement.proposedTo.get.email.isEmpty){
@@ -142,20 +142,20 @@ trait UserActions {
       }else{
         Left(agreementResult.left.get)
       }
-      
+
     }
   }
-  
+
   def changeAgreementAccess(userUUID: UUID, agreementUUID: UUID, access: Byte)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("changeAgreementAccess")
-    db.changeAgreementAccess(Owner(userUUID, None), agreementUUID, access)      
+    db.changeAgreementAccess(Owner(userUUID, None), agreementUUID, access)
   }
-  
+
   def destroyAgreement(userUUID: UUID, agreementUUID: UUID)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("destroyAgreement")
-    db.destroyAgreement(userUUID, agreementUUID)      
+    db.destroyAgreement(userUUID, agreementUUID)
   }
-  
+
   def resendAgreement(userUUID: UUID, agreementUUID: UUID)(implicit log: LoggingAdapter): Response[CountResult] = {
     log.info("resendAgreement")
     for {
@@ -163,13 +163,13 @@ trait UserActions {
       result <- sendAgreementEmail(agreementResult._1, agreementResult._2).right
     } yield result
   }
-  
+
   def acceptAgreement(code: Long, proposedToEmail: String)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("acceptAgreement: {}", proposedToEmail)
     db.acceptAgreement(code, proposedToEmail)
   }
-  
-  
+
+
   private def sendEmailVerification(email: String, emailVerificationCode: Long)(implicit log: LoggingAdapter) {
     log.info("sendEmailVerification: email {}", email)
     val futureMailResponse = mailgun.sendEmailVerificationLink(email, emailVerificationCode)
@@ -205,7 +205,7 @@ trait UserActions {
   }
 }
 
-class UserActionsImpl(implicit val implSettings: Settings, implicit val inj: Injector, 
+class UserActionsImpl(implicit val implSettings: Settings, implicit val inj: Injector,
                       implicit val implActorRefFactory: ActorRefFactory)
   extends UserActions with Injectable {
   override def settings  = implSettings

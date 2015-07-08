@@ -26,7 +26,7 @@ import org.neo4j.graphdb.traversal.Evaluation
 import java.util.UUID
 import org.extendedmind.security.UUIDUtils
 
-case class PropertyEvaluator(label: Label, property: String, 
+case class PropertyEvaluator(label: Label, property: String,
                              foundEvaluation: Evaluation = Evaluation.INCLUDE_AND_PRUNE,
                              notFoundEvaluation: Evaluation = Evaluation.EXCLUDE_AND_CONTINUE) extends Evaluator{
 

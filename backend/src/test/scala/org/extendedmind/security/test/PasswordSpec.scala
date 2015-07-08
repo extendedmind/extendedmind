@@ -30,9 +30,9 @@ class PasswordSpec extends SpecBase {
       val password = "Password1234"
       val salt = PasswordService.generateSalt
       val encryptedPassword = PasswordService.getEncryptedPassword(
-          			password, salt, 
-          			PasswordService.ALGORITHM, 
-          			PasswordService.ITERATIONS)      
+          			password, salt,
+          			PasswordService.ALGORITHM,
+          			PasswordService.ITERATIONS)
       assert(PasswordService.authenticate(password, encryptedPassword))
       assert(!PasswordService.authenticate("Password12345", encryptedPassword))
     }

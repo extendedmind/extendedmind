@@ -27,17 +27,17 @@ import java.util.UUID
 import org.extendedmind.security.AuthenticatePayload
 
 class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
-	
-  def configurations = EmptyTestConfiguration 
+
+  def configurations = EmptyTestConfiguration
 
   before{
     db.insertTestData()
   }
-  
+
   after {
     cleanDb(db.ds.gds)
   }
-  
+
   describe("UserDatabase"){
     it("should getUser"){
       val testEmail = TIMO_EMAIL
@@ -56,7 +56,7 @@ class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
   }
   describe("ItemDatabase"){
      it("should getItems"){
-      
+
        db.getItems(Owner(db.timoUUID, None), None, true, false, false, false) match {
         case Right(items) => {
           assert(items.items.isDefined)
@@ -76,12 +76,12 @@ class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
   describe("TaskDatabase"){
      it("should remove properties of a task from the database"){
       val testTask = Task("testTitle", Some("testDescription"), None, None, None, None, None)
-      val result = db.putNewTask(Owner(db.timoUUID, None), 
+      val result = db.putNewTask(Owner(db.timoUUID, None),
            testTask)
       // Put it back without the description
-      val updateResult = db.putExistingTask(Owner(db.timoUUID, None), result.right.get.uuid.get, 
+      val updateResult = db.putExistingTask(Owner(db.timoUUID, None), result.right.get.uuid.get,
           testTask.copy(description = None))
-      
+
       db.getTask(Owner(db.timoUUID, None), result.right.get.uuid.get) match {
         case Right(task) => {
           // Assert that the modified timestamp has changed from the previous round
@@ -139,13 +139,13 @@ class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
       db.authenticate(TIMO_EMAIL, TIMO_PASSWORD) match {
         case Right(securityContext) => {
           val collectiveUuidMap = getCollectiveUUIDMap(securityContext)
-          
+
           // Change permission for Lauri
           val lauri = db.getUser(LAURI_EMAIL).right.get
 
-          db.setCollectiveUserPermission(collectiveUuidMap.get("extended mind technologies").get, 
+          db.setCollectiveUserPermission(collectiveUuidMap.get("extended mind technologies").get,
                                          securityContext.userUUID, lauri.uuid.get, Some(SecurityContext.READ))
-          
+
           // Authenticate as Lauri and check modified permission
           db.authenticate(LAURI_EMAIL, LAURI_PASSWORD) match {
             case Right(lauriSecurityContext) => {
@@ -165,9 +165,9 @@ class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
       }
     }
     it("should be consistently be able to store and get token"){
-      
+
       db.rebuildUserIndexes
-      
+
       1 to 100 foreach { _ => {
         db.generateToken(TIMO_EMAIL, TIMO_PASSWORD, Some(AuthenticatePayload(true, None))) match {
           case Right(securityContext) => {

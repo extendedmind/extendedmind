@@ -52,7 +52,6 @@ trait ServiceBase extends API with Injectable {
   def putMdc(mdc: Map[String, Any])
   def processResult[T <: Any](result: T): T
   def processNewItemResult(itemType: String, result: SetResult): SetResult
-  
   def logErrors(errors: scala.List[ResponseContent])
 
   implicit val implModules = configurations
@@ -60,15 +59,15 @@ trait ServiceBase extends API with Injectable {
   implicit val executor = actorRefFactory.dispatcher
   implicit val log: LoggingAdapter = LoggingContext.fromActorRefFactory(actorRefFactory)
   implicit val implLogErrors = logErrors _
-  
+
   def setLogContext(sc: SecurityContext, ownerUUID: UUID): Unit = {
     setLogContext(sc, Some(ownerUUID))
   }
-  
+
   def setLogContext(sc: SecurityContext, ownerUUID: UUID, itemUUID: UUID): Unit = {
     setLogContext(sc, Some(ownerUUID), Some(itemUUID))
   }
-  
+
   def setLogContext(sc: SecurityContext, ownerUUID: Option[UUID] = None, itemUUID: Option[UUID] = None): Unit = {
     val mutableMap: scala.collection.mutable.Map[String, Any] = scala.collection.mutable.Map(("user" -> sc.userUUID.toString))
     if (ownerUUID.isDefined){
@@ -84,7 +83,7 @@ trait ServiceBase extends API with Injectable {
     }
     putMdc(mutableMap.toMap)
   }
-  
+
   def authenticateAuthenticator: ExtendedMindAuthenticateUserPassAuthenticator = {
     inject[ExtendedMindAuthenticateUserPassAuthenticator](by default new ExtendedMindAuthenticateUserPassAuthenticatorImpl)
   }
@@ -120,15 +119,15 @@ trait ServiceBase extends API with Injectable {
   def listActions: ListActions = {
     inject[ListActions]
   }
-  
+
   def tagActions: TagActions = {
     inject[TagActions]
   }
-  
+
   def adminActions: AdminActions = {
     inject[AdminActions]
   }
-  
+
   def in[U](duration: FiniteDuration)(body: => U): Unit =
     actorSystem.scheduler.scheduleOnce(duration)(body)
 
