@@ -71,7 +71,8 @@ class UserBestCaseSpec extends ServiceSpecBase {
   }
 
   describe("In the best case, UserService") {
-    it("should create an administrator with POST to /signup because adminSignUp is set to true") {
+    it("should create an administrator with POST to /signup because adminSignUp is set to true " +
+       "and resend verification email with POST to /email/resend") {
       val testEmail = "example@example.com"
       stub(mockMailgunClient.sendEmailVerificationLink(mockEq(testEmail), anyObject())).toReturn(
         Future { SendEmailResponse("OK", "1234") })
@@ -84,11 +85,23 @@ class UserBestCaseSpec extends ServiceSpecBase {
           val signUpResponse = responseAs[String]
           writeJsonOutput("signUpResponse", signUpResponse)
           verify(mockMailgunClient).sendEmailVerificationLink(emailCaptor.capture(), verificationCodeCaptor.capture())
+          val verificationCode = verificationCodeCaptor.getValue
           signUpResponse should include("uuid")
           signUpResponse should include("modified")
           val authenticationResponse = emailPasswordAuthenticate(signUp.email, signUp.password)
           authenticationResponse.userType should be(0)
           authenticationResponse.cohort.get should be(1)
+
+          reset(mockMailgunClient)
+          stub(mockMailgunClient.sendEmailVerificationLink(testEmail, verificationCode)).toReturn(
+            Future { SendEmailResponse("OK", "4321") })
+
+          // Should resend verification link email
+          Post("/email/resend") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticationResponse.token.get)) ~> route ~> check {
+            val resendResponse = responseAs[CountResult]
+            writeJsonOutput("emailResendResponse", responseAs[String])
+            verify(mockMailgunClient).sendEmailVerificationLink(testEmail, verificationCode)
+          }
         }
     }
     it("should successfully get user with GET to /account, "
