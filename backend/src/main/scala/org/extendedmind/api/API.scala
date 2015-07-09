@@ -54,6 +54,7 @@ trait API extends HttpService {
   val getPasswordResetExpires = get & path("password" / HexLongNumber)
   val postResetPassword = post & path("password" / HexLongNumber / "reset")
   val postVerifyEmail = post & path("email" / HexLongNumber / "verify")
+  val postVerifyResend = post & path("email" / "resend".r)
 
   // COLLECTIVES
   val putNewCollective = put & path("collective".r)

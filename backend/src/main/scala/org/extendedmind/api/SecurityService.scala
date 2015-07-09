@@ -146,7 +146,18 @@ trait SecurityService extends ServiceBase {
             }
           }
         }
+      } ~
+      postVerifyResend { url =>
+        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+          complete {
+            Future[CountResult] {
+              securityActions.resendVerifyEmail(securityContext.userUUID) match {
+                case Right(result) => result
+                case Left(e) => processErrors(e)
+              }
+            }
+          }
+        }
       }
   }
-
 }

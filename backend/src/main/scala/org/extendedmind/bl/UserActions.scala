@@ -170,7 +170,7 @@ trait UserActions {
   }
 
 
-  private def sendEmailVerification(email: String, emailVerificationCode: Long)(implicit log: LoggingAdapter) {
+  protected def sendEmailVerification(email: String, emailVerificationCode: Long)(implicit log: LoggingAdapter) {
     log.info("sendEmailVerification: email {}", email)
     val futureMailResponse = mailgun.sendEmailVerificationLink(email, emailVerificationCode)
     futureMailResponse onSuccess {

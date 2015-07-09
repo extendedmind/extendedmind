@@ -45,6 +45,7 @@ import spray.httpx.marshalling._
 import spray.json.DefaultJsonProtocol._
 import scala.concurrent.Future
 import spray.http.StatusCodes._
+import org.mockito.ArgumentCaptor
 
 /**
  * Best case test for user routes. Also generates .json files.
@@ -74,12 +75,15 @@ class UserBestCaseSpec extends ServiceSpecBase {
       val testEmail = "example@example.com"
       stub(mockMailgunClient.sendEmailVerificationLink(mockEq(testEmail), anyObject())).toReturn(
         Future { SendEmailResponse("OK", "1234") })
+      val verificationCodeCaptor: ArgumentCaptor[Long] = ArgumentCaptor.forClass(classOf[Long])
+      val emailCaptor: ArgumentCaptor[String] = ArgumentCaptor.forClass(classOf[String])
 
       val signUp = SignUp(testEmail, "infopwd", Some(1), None)
       Post("/signup",
         marshal(signUp).right.get) ~> route ~> check {
           val signUpResponse = responseAs[String]
           writeJsonOutput("signUpResponse", signUpResponse)
+          verify(mockMailgunClient).sendPasswordResetLink(emailCaptor.capture(), verificationCodeCaptor.capture())
           signUpResponse should include("uuid")
           signUpResponse should include("modified")
           val authenticationResponse = emailPasswordAuthenticate(signUp.email, signUp.password)

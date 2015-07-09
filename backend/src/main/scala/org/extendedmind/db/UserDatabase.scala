@@ -105,6 +105,16 @@ trait UserDatabase extends AbstractGraphDatabase {
     }
   }
 
+  def getUserEmailVerificationInfo(uuid: UUID): Response[(String, Long)] = {
+    withTx {
+      implicit neo4j =>
+        for {
+          userNode <- getNode(uuid, OwnerLabel.USER).right
+          verificationInfo <- getUserEmailVerificationInfo(userNode).right
+        } yield verificationInfo
+    }
+  }
+
   def rebuildUserIndexes: Response[CountResult] = {
     dropIndexes(OwnerLabel.USER)
     createNewIndex(OwnerLabel.USER, "uuid")
@@ -382,6 +392,17 @@ trait UserDatabase extends AbstractGraphDatabase {
           getUUID(ownerNode)
         })
         Right(ownerUUIDList)
+    }
+  }
+
+  protected def getUserEmailVerificationInfo(userNode: Node)(implicit neo4j: DatabaseService): Response[(String, Long)] = {
+    if (userNode.hasProperty("emailVerified")){
+      fail(INVALID_PARAMETER, ERR_USER_EMAIL_ALREADY_VERIFIED, "email has already been verified")
+    }else{
+      if (!userNode.hasProperty("emailVerificationCode")){
+        userNode.setProperty("emailVerificationCode", Random.generateRandomUnsignedLong)
+      }
+      Right(userNode.getProperty("email").asInstanceOf[String], userNode.getProperty("emailVerificationCode").asInstanceOf[Long])
     }
   }
 
