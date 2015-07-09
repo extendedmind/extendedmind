@@ -158,11 +158,17 @@ class UserBestCaseSpec extends ServiceSpecBase {
         accountResponse.collectives.get should not be None
       }
       val newEmail = UserEmail("timo.tiuraniemi@filosofianakatemia.fi")
+      stub(mockMailgunClient.sendEmailVerificationLink(mockEq(newEmail.email), anyObject())).toReturn(
+        Future { SendEmailResponse("OK", "1234") })
+      val verificationCodeCaptor: ArgumentCaptor[Long] = ArgumentCaptor.forClass(classOf[Long])
+      val emailCaptor: ArgumentCaptor[String] = ArgumentCaptor.forClass(classOf[String])
+
       Put("/email",
         marshal(newEmail).right.get) ~> addHeader("Content-Type", "application/json") ~> addHeader(Authorization(BasicHttpCredentials(TIMO_EMAIL, TIMO_PASSWORD))) ~> route ~> check {
           writeJsonOutput("putEmailResponse", responseAs[String])
           val putAccountResponse = responseAs[SetResult]
           putAccountResponse.modified should not be None
+          verify(mockMailgunClient).sendEmailVerificationLink(emailCaptor.capture(), verificationCodeCaptor.capture())
       }
       Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val accountResponse = responseAs[User]

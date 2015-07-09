@@ -106,10 +106,10 @@ trait UserActions {
     log.info("putEmail")
     db.changeUserEmail(userUUID, email.email) match {
       case Right(result) => {
+        if (result._2.isDefined){
+          sendEmailVerification(email.email, result._2.get)
+        }
         Right(result._1)
-        // TODO
-        // if (result._2)
-        //   SEND EMAIL CONFIRMATION TO NEW ADDRESS!
       }
       case Left(e) => Left(e)
     }

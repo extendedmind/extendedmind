@@ -33,6 +33,7 @@ trait API extends HttpService {
 
   // USER
   val postSignUp = post & path("signup".r)
+  val postVerifyResend = post & path("email" / "resend".r)
   val getAccount = get & path("account".r)
   val putAccount = put & path("account".r)
   val deleteAccount = delete & path("account".r)
@@ -54,7 +55,6 @@ trait API extends HttpService {
   val getPasswordResetExpires = get & path("password" / HexLongNumber)
   val postResetPassword = post & path("password" / HexLongNumber / "reset")
   val postVerifyEmail = post & path("email" / HexLongNumber / "verify")
-  val postVerifyResend = post & path("email" / "resend".r)
 
   // COLLECTIVES
   val putNewCollective = put & path("collective".r)

@@ -61,7 +61,7 @@ trait UserDatabase extends AbstractGraphDatabase {
     } yield result
   }
 
-  def changeUserEmail(userUUID: UUID, email: String): Response[(SetResult, Boolean)] = {
+  def changeUserEmail(userUUID: UUID, email: String): Response[(SetResult, Option[Long])] = {
     for {
       updateResult <- updateUserEmail(userUUID, email).right
       result <- Right(getSetResult(updateResult._1, false)).right
@@ -263,22 +263,25 @@ trait UserDatabase extends AbstractGraphDatabase {
     }
   }
 
-  protected def updateUserEmail(userUUID: UUID, email: String): Response[(Node, Boolean)] = {
+  protected def updateUserEmail(userUUID: UUID, email: String): Response[(Node, Option[Long])] = {
     withTx {
       implicit neo4j =>
         for {
           userNode <- getNode(userUUID, OwnerLabel.USER).right
-          result <- Right(updateUserEmail(userNode, email)).right
-        } yield (userNode, result)
+          verificationCode <- Right(updateUserEmail(userNode, email)).right
+        } yield (userNode, verificationCode)
     }
   }
 
-  protected def updateUserEmail(userNode: Node, email: String)(implicit neo4j: DatabaseService): Boolean = {
+  protected def updateUserEmail(userNode: Node, email: String)(implicit neo4j: DatabaseService): Option[Long] = {
     if (userNode.getProperty("email").asInstanceOf[String] != email) {
       userNode.setProperty("email", email)
-      true
+      if (userNode.hasProperty("emailVerified")) userNode.removeProperty("emailVerified")
+      val emailVerificationCode = Random.generateRandomUnsignedLong
+      userNode.setProperty("emailVerificationCode", emailVerificationCode)
+      Some(emailVerificationCode)
     } else {
-      false
+      None
     }
   }
 
