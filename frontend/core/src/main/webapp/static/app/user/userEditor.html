@@ -35,7 +35,7 @@
     </div>
   </div>
 
-  <form name="userForm" ng-if="mode === 'password' || mode === 'terms' || mode === 'privacy'"
+  <form name="userForm" ng-if="mode === 'password' || mode === 'email' || mode === 'terms' || mode === 'privacy'"
     class="container-fluid--inner">
     <div ng-if="mode === 'password'" class="container-content" drawer-override-aisle="right">
       <h2 class="group-heading row-form">change password</h2>
@@ -55,6 +55,25 @@
         <span ng-if="changePasswordFailed" class="text-error">invalid old password</span>
       </div>
     </div>
+    <div ng-if="mode === 'email'" class="container-content" drawer-override-aisle="right">
+      <h2 class="group-heading row-form">change email</h2>
+      <div class="row-form">
+        <input type="email" name="emailNew" ng-model="user.emailNew"
+        placeholder="enter new email&#8230;" maxlength="254" editable-field required />
+      </div>
+      <div class="row-form">
+        <input type="password" name="password" id="password" ng-model="user.password"
+        ng-minlength="7" ng-maxlength="100" placeholder="enter password&#8230;" required />
+      </div>
+      <div class="group-error row-form">
+        <span ng-if="userEditOffline" class="text-error">can't connect to server. are you online?</span>
+        <div ng-if="signUpForm.emailNew.$touched" ng-messages="signUpForm.emailNew.$error">
+          <span class="text-error" ng-message="emailNew">invalid email address</span>
+        </div>
+        <span ng-if="changeEmailFailed" class="text-error">invalid password</span>
+        <span ng-if="changeEmailLoginFailed" class="text-error">could not log in using new email</span>
+      </div>
+    </div>
     <div ng-if="mode === 'terms'" class="container-content" drawer-override-aisle="right">
       <div class="group-html-external row" ng-bind-html="user.terms"></div>
     </div>
@@ -62,7 +81,13 @@
       <div class="group-html-external row" ng-bind-html="user.privacy"></div>
     </div>
     <footer class="container-content--after group-btn editor-footer">
-      <button ng-if="mode === 'password'"type="submit" class="btn-action" ng-disabled="!userForm.$valid" ng-click="changePassword(user.passwordOld, user.passwordNew)">
+      <button ng-if="mode === 'password'" type="submit" class="btn-action" ng-disabled="!userForm.$valid"
+      ng-click="changePassword(user.passwordOld, user.passwordNew)">
+        <span class="text-btn">done</span>
+      </button>
+      <button ng-if="mode === 'email'" type="submit" class="btn-action"
+      ng-disabled="!userForm.$valid || changeEmailLoginFailed"
+      ng-click="changeEmail(user.emailNew, user.password)">
         <span class="text-btn">done</span>
       </button>
     </footer>

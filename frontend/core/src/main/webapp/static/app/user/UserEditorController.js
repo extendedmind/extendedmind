@@ -122,6 +122,31 @@
     });
   };
 
+  $scope.changeEmail = function (newEmail, password) {
+    $scope.userEditOffline = false;
+    $scope.changeEmailFailed = false;
+    $scope.changeEmailLoginFailed = false;
+    AuthenticationService.putChangeEmail(UserSessionService.getEmail(), password, newEmail)
+    .then(function(){
+      // Need to relogin with new email
+      AuthenticationService.login({username: newEmail,
+        password: password,
+        remember: UserSessionService.isAuthenticateReplaceable()})
+      .then(function(){
+        $scope.closeEditor();
+      }, function(){
+        $scope.changeEmailLoginFailed = true;
+      });
+    }, function(error){
+      if (error.type === 'offline') {
+        $scope.userEditOffline = true;
+      } else if (error.type === 'forbidden') {
+        $scope.changeEmailFailed = true;
+      }
+      console.log("failure")
+    });
+  };
+
   // SIGN UP
 
   var userEditorEmailInputFocusCallbackFunction;

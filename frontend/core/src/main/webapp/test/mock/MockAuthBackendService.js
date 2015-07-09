@@ -88,6 +88,13 @@ function MockAuthBackendService($httpBackend, AuthenticationService, UUIDService
     });
   }
 
+  function mockPutChangeEmail(expectResponse) {
+    $httpBackend.whenPUT(AuthenticationService.putChangeEmailRegex).respond(function(method, url, data, headers) {
+      var changeEmailResponse = getJSONFixture('putEmailResponse.json');
+      return expectResponse(method, url, data, headers, changeEmailResponse);
+    });
+  }
+
   return {
     mockAuthBackend: function(expectResponse) {
       mockAuthenticate(expectResponse);
@@ -98,6 +105,7 @@ function MockAuthBackendService($httpBackend, AuthenticationService, UUIDService
       mockPostAcceptShare();
       mockPostSignUp();
       mockPutChangePassword(expectResponse);
+      mockPutChangeEmail(expectResponse);
     }
   };
 }

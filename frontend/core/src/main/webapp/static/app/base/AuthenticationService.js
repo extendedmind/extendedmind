@@ -78,6 +78,11 @@
     /^/.source +
     BackendClientService.apiPrefixRegex.source +
     /password$/.source
+    ),
+  putChangeEmailRegexp = new RegExp(
+    /^/.source +
+    BackendClientService.apiPrefixRegex.source +
+    /email/.source
     );
 
   // Register refresh credentials callback to backend
@@ -271,6 +276,14 @@
         sanitizeEmail(email),
         currentPassword);
     },
+    putChangeEmail: function(email, password, newEmail) {
+      return BackendClientService.putOnlineWithUsernamePassword(
+        '/api/email',
+        this.putChangeEmailRegex,
+        {email: newEmail},
+        sanitizeEmail(email),
+        password);
+    },
     sanitizeEmail: function(email) {
       return sanitizeEmail(email);
     },
@@ -280,6 +293,7 @@
     getPasswordResetExpiresRegex: getPasswordResetExpiresRegexp,
     postResetPasswordRegex: postResetPasswordRegexp,
     putChangePasswordRegex: putChangePasswordRegexp,
+    putChangeEmailRegex: putChangeEmailRegexp,
     postVerifyEmailRegex: postVerifyEmailRegexp,
     postAcceptShareRegex: postAcceptShareRegexp
   };
