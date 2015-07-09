@@ -83,7 +83,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
         marshal(signUp).right.get) ~> route ~> check {
           val signUpResponse = responseAs[String]
           writeJsonOutput("signUpResponse", signUpResponse)
-          verify(mockMailgunClient).sendPasswordResetLink(emailCaptor.capture(), verificationCodeCaptor.capture())
+          verify(mockMailgunClient).sendEmailVerificationLink(emailCaptor.capture(), verificationCodeCaptor.capture())
           signUpResponse should include("uuid")
           signUpResponse should include("modified")
           val authenticationResponse = emailPasswordAuthenticate(signUp.email, signUp.password)

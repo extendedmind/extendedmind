@@ -59,6 +59,17 @@ trait UserActions {
     } yield userResult._1
   }
 
+  def resendVerifyEmail(userUUID: UUID)(implicit log: LoggingAdapter): Response[CountResult] = {
+    log.info("resendVerifyEmail")
+    val verificationInfo = db.getUserEmailVerificationInfo(userUUID)
+    if (verificationInfo.isRight){
+      sendEmailVerification(verificationInfo.right.get._1, verificationInfo.right.get._2)
+      Right(CountResult(1))
+    }else{
+      Left(verificationInfo.left.get)
+    }
+  }
+
   def getPublicUser(email: String)(implicit log: LoggingAdapter): Response[PublicUser] = {
     log.info("getPublicUser: email {}", email)
     val user = db.getUser(email)

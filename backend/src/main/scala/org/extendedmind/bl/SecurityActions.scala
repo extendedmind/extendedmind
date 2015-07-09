@@ -32,7 +32,7 @@ import org.extendedmind.email.MailgunClient
 import akka.actor.ActorRefFactory
 import org.extendedmind.email.SendEmailResponse
 
-trait SecurityActions extends UserActions {
+trait SecurityActions {
 
   def db: GraphDatabase;
   def mailgun: MailgunClient
@@ -93,17 +93,6 @@ trait SecurityActions extends UserActions {
   def verifyEmail(code: Long, email: String)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("verifyEmail: {}", email)
     db.verifyEmail(code, email)
-  }
-
-  def resendVerifyEmail(userUUID: UUID)(implicit log: LoggingAdapter): Response[CountResult] = {
-    log.info("resendVerifyEmail")
-    val verificationInfo = db.getUserEmailVerificationInfo(userUUID)
-    if (verificationInfo.isRight){
-      sendEmailVerification(verificationInfo.right.get._1, verificationInfo.right.get._2)
-      Right(CountResult(1))
-    }else{
-      Left(verificationInfo.left.get)
-    }
   }
 
   private def sendPasswordResetLink(user: User)(implicit log: LoggingAdapter): Response[ForgotPasswordResult] = {
