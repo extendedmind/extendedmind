@@ -19,6 +19,9 @@
 
 package org.extendedmind.security
 
+import scala.collection.mutable.ArrayBuffer
+import java.nio.ByteBuffer
+
 object Random {
   def generateRandomLong(): Long = {
     val random = new scala.util.Random(new java.security.SecureRandom())
@@ -37,5 +40,26 @@ object Random {
     // that in practice doesn't matter
     if (randomLong == java.lang.Long.MIN_VALUE) return 0
     else Math.abs(randomLong)
+  }
+
+  def generateRandomUniqueString(): String = {
+    // Need to use synchronized block because ByteBuffer isn't thread safe.
+    // Not optimal and this method should not be used too frequently.
+    this.synchronized {
+      val uuid = java.util.UUID.randomUUID()
+      val random = generateRandomLong()
+      val inputBuffer = ByteBuffer.allocate(24)
+                          .putLong(uuid.getLeastSignificantBits)
+                          .putLong(uuid.getMostSignificantBits)
+                          .putLong(random)
+      // Use SHA1 to create a simple HEX string value of the seed input
+      val messageDigest = java.security.MessageDigest.getInstance("SHA1");
+      val sha1Result = messageDigest.digest(inputBuffer.array());
+      val sb = new StringBuffer();
+      for (i <- 0 until sha1Result.length){
+        sb.append(Integer.toString((sha1Result(i) & 0xff) + 0x100, 16).substring(1));
+      }
+      return sb.toString();
+    }
   }
 }
