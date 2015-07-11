@@ -131,6 +131,29 @@ trait ItemActions {
     db.undeleteItem(owner, itemUUID)
   }
 
+  def putNewItemToInbox(inboxId: String, fields: Seq[(String,String)])(implicit log: LoggingAdapter): Response[SetResult] = {
+    log.info("putNewItemToInbox")
+    var title: String = null;
+    var description: String = null;
+    var link: String = null;
+    for (i <- 0 until fields.length){
+      if (fields(i)._1 == "Subject"){
+        title = fields(i)._2
+      }else if (fields(i)._1 == "stripped-text"){
+        if ((fields(i)._2.startsWith("http://") || fields(i)._2.startsWith("https://")) && !fields(i)._2.contains(" "))
+          link = fields(i)._2
+        else
+          description = fields(i)._2
+      }
+    }
+    if (title == null){
+      fail(INVALID_PARAMETER, ERR_ITEM_MISSING_SUBJECT, "could not find subject in inbox parameters")
+    }else {
+      db.putNewItemToInbox(inboxId, Item(title, if (description==null) None else Some(description),
+                                if (link==null) None else Some(link)))
+    }
+  }
+
   private def stripLists(owner: Owner, lists: Option[scala.List[List]]): Option[scala.List[List]] = {
     if (lists.isDefined && lists.get.size > 0){
       Some(lists.get.map(list => {

@@ -143,6 +143,18 @@ trait ItemService extends ServiceBase {
             }
           }
         }
+      } ~
+      postInbox { inboxId =>
+        entity(as[FormData]) { formData =>
+          complete {
+            Future[SetResult] {
+              itemActions.putNewItemToInbox(inboxId, formData.fields) match {
+                case Right(sr) => processResult(sr)
+                case Left(e) => processErrors(e, useNotAcceptable=true)
+              }
+            }
+          }
+        }
       }
   }
 }

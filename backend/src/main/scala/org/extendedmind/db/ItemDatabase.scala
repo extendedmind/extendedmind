@@ -110,6 +110,15 @@ trait ItemDatabase extends UserDatabase {
     } yield result
   }
 
+  def putNewItemToInbox(inboxId: String, item: Item): Response[SetResult] = {
+    for {
+      ownerNode <- getNode("inboxId", inboxId, MainLabel.OWNER, None, false).right
+      itemCreateResult <- createItem(ownerNode, item).right
+      result <- Right(getSetResult(itemCreateResult._1, true)).right
+      unit <- Right(addToItemsIndex(itemCreateResult._2, itemCreateResult._1, result)).right
+    } yield result
+  }
+
   def destroyDeletedItems(owner: Owner): Response[CountResult] = {
     withTx {
       implicit neo4j =>
@@ -256,6 +265,14 @@ trait ItemDatabase extends UserDatabase {
       .evaluator(LabelEvaluator(scala.List(MainLabel.ITEM)))
   }
 
+  protected def createItem(ownerNode: Node, item: Item): Response[(Node, Owner)] = {
+    withTx {
+      implicit neo4j =>
+        for {
+          itemNode <- createItem(OwnerNodes(ownerNode, None), item, None, None).right
+        } yield (itemNode, Owner(getUUID(ownerNode), None))
+    }
+  }
 
   protected def createItem(owner: Owner, item: AnyRef,
     extraLabel: Option[Label] = None, extraSubLabel: Option[Label] = None): Response[Node] = {
@@ -771,7 +788,6 @@ trait ItemDatabase extends UserDatabase {
         } yield itemNode
     }
   }
-
 
   protected def validateExtendedItemModifiable(owner: Owner, itemUUID: UUID, label: Label, requireFounder: Boolean = false): Response[Node] = {
     withTx {

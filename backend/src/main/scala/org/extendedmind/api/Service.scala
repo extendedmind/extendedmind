@@ -81,6 +81,11 @@ object Service {
         log.error("Status code: " + InternalServerError + ", Error code: " + e.code.number + ", Description: " + e.description + " @" + currentTime)
         ctx.complete(InternalServerError, ErrorResult(e.code.number, e.description, currentTime))
       }
+      case e: NotAcceptableErrorException => ctx => {
+        val currentTime = System.currentTimeMillis()
+        log.error("Status code: " + NotAcceptable + ", Description: " + e.description + " @" + currentTime)
+        ctx.complete(NotAcceptable, e.description)
+      }
       case t: Throwable => ctx => {
         val currentTime = System.currentTimeMillis()
         log.error(t, "Status code: " + InternalServerError + ": " + t.getMessage() + " @" + currentTime)

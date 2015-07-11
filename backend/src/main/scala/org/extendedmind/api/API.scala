@@ -69,6 +69,7 @@ trait API extends HttpService {
   val putExistingItem = put & path(JavaUUID / "item" / JavaUUID)
   val deleteItem = delete & path(JavaUUID / "item" / JavaUUID)
   val undeleteItem = post & path(JavaUUID / "item" / JavaUUID / "undelete")
+  val postInbox = post & path("inbox" / """^[0-9a-f]{40}$""".r )
 
   // TASKS
   val getTask = get & path(JavaUUID / "task" / JavaUUID)

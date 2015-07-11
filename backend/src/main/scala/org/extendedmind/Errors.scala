@@ -66,6 +66,7 @@ case object ERR_ITEM_ARCHIVE_NOT_PREMIUM extends ErrorCode(3017)
 case object ERR_ITEM_OWN_PARENT extends ErrorCode(3018)
 case object ERR_ITEM_PARENT_INFINITE_LOOP extends ErrorCode(3019)
 case object ERR_ITEM_INVALID_PARENT extends ErrorCode(3020)
+case object ERR_ITEM_MISSING_SUBJECT extends ErrorCode(3021)
 
 case object ERR_LIST_ARCHIVE_CHILDREN extends ErrorCode(4001)
 case object ERR_LIST_MISSING_HISTORY_TAG extends ErrorCode(4002)

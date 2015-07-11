@@ -40,6 +40,7 @@ case object INTERNAL_SERVER_ERROR extends ResponseType
 case class InvalidParameterException(code: ErrorCode, description: String, throwable: Option[Throwable] = None) extends ExtendedMindException(description, throwable)
 case class InvalidAuthenticationException(code: ErrorCode, description: String) extends ExtendedMindException(description)
 case class InternalServerErrorException(code: ErrorCode, description: String, throwable: Option[Throwable] = None) extends ExtendedMindException(description, throwable)
+case class NotAcceptableErrorException(description: String, throwable: Option[Throwable] = None) extends ExtendedMindException(description, throwable)
 
 // Generic response
 object Response{
@@ -68,10 +69,12 @@ object Response{
     Left(List(ResponseContent(responseType, code, description, Some(throwable))))
   }
 
-  def processErrors(errors: List[ResponseContent])(implicit logErrors: List[ResponseContent] => Unit) = {
+  def processErrors(errors: List[ResponseContent], useNotAcceptable: Boolean = false)(implicit logErrors: List[ResponseContent] => Unit) = {
     // First log all errors
     logErrors(errors)
-    if (!errors.isEmpty){
+    if (useNotAcceptable){
+      throw new NotAcceptableErrorException("Can not accept request")
+    }else if (!errors.isEmpty){
       // Reject based on the first exception
       errors(0).throwRejectionError
     }else {
