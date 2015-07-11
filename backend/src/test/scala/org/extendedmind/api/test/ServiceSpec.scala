@@ -80,7 +80,7 @@ class ServiceSpec extends SpraySpecBase with ImpermanentGraphDatabaseSpecBase{
   def stubTimoAuthenticate(): SecurityContext = {
     val uuid = UUID.randomUUID()
     val token = Token.encryptToken(Token(uuid))
-    val securityContext = SecurityContext(uuid, Token.ADMIN, None, System.currentTimeMillis, System.currentTimeMillis, None, Some(token), None, None, None, None, None, None)
+    val securityContext = SecurityContext(uuid, Token.ADMIN, None, System.currentTimeMillis, System.currentTimeMillis, None, None, Some(token), None, None, None, None, None, None)
     stub(mockGraphDatabase.generateToken(TIMO_EMAIL, TIMO_PASSWORD, None)).toReturn(
       Right(securityContext))
     stub(mockGraphDatabase.authenticate(token, None)).toReturn(

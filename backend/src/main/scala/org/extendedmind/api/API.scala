@@ -122,6 +122,7 @@ trait API extends HttpService {
   val rebuildItemsIndexes = post & path("admin" / "items" / "rebuild".r)
   val rebuildUserIndexes = post & path("admin" / "users" / "rebuild".r)
   val resetTokens = post & path("admin" / "tokens" / "reset".r)
+  val postUpgradeOwners = post & path("admin" / "owners" / "upgrade".r)
 
   // SYSTEM
   val shutdown = post & path("shutdown")

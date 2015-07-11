@@ -102,6 +102,7 @@ trait CollectiveDatabase extends UserDatabase {
                (implicit neo4j: DatabaseService): Response[Node] = {
     val collectiveNode = createNode(collective, MainLabel.OWNER, OwnerLabel.COLLECTIVE)
     founderNode --> SecurityRelationship.IS_FOUNDER --> collectiveNode;
+    collectiveNode.setProperty("inboxId", Random.generateRandomUniqueString())
 
     if (commonCollective){
       collectiveNode.setProperty("common", true)
@@ -122,7 +123,9 @@ trait CollectiveDatabase extends UserDatabase {
       implicit neo4j =>
         for {
           collectiveNode <- getNode(collectiveUUID, OwnerLabel.COLLECTIVE).right
-          collectiveNode <- updateNode(collectiveNode, collective).right
+          collectiveNode <- updateNode(collectiveNode, collective.copy(
+              inboxId = (if (collectiveNode.hasProperty("inboxId")) Some(collectiveNode.getProperty("inboxId").asInstanceOf[String])
+                        else None))).right
         } yield collectiveNode
     }
   }

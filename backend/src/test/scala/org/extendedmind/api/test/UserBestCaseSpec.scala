@@ -118,11 +118,13 @@ class UserBestCaseSpec extends ServiceSpecBase {
         }
       Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val accountResponse = responseAs[User]
+        accountResponse.inboxId should not be None
         accountResponse.preferences.get.onboarded.get should be("web")
         accountResponse.preferences.get.ui.get should be(initialUIPreferences)
 
         val newEmailAuthenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
         newEmailAuthenticateResponse.userUUID should not be None
+        newEmailAuthenticateResponse.inboxId should not be None
         newEmailAuthenticateResponse.preferences.get.onboarded.get should be("web")
 
         // Add more UI preferences, make sure onboarded isn't removed

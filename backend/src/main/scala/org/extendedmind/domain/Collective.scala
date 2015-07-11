@@ -23,7 +23,7 @@ import java.util.UUID
 import Validators._
 
 case class Collective(uuid: Option[UUID], created: Option[Long], modified: Option[Long], deleted: Option[Long],
-                title: String, description: Option[String], creator: Option[UUID], common: Option[Boolean])
+                title: String, description: Option[String], inboxId: Option[String], creator: Option[UUID], common: Option[Boolean])
            extends Container {
   require(validateTitle(title), "Title can not be more than " + TITLE_MAX_LENGTH + " characters")
   if (description.isDefined) require(validateDescription(description.get),
@@ -32,5 +32,5 @@ case class Collective(uuid: Option[UUID], created: Option[Long], modified: Optio
 
 object Collective{
   def apply(title: String, description: Option[String])
-        = new Collective(None, None, None, None, title, description, None, None)
+        = new Collective(None, None, None, None, title, description, None, None, None)
 }

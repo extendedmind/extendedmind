@@ -100,7 +100,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
                 val collectiveResponse = responseAs[Collective]
                 writeJsonOutput("collectiveResponse", responseAs[String])
                 collectiveResponse.description.get should be("test description")
-
+                collectiveResponse.inboxId should not be None
                 // Should be possible to assign read/write access to new collective
                 val lauriAuthenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
                 lauriAuthenticateResponse.collectives.get.get(putCollectiveResponse.uuid.get) should equal(None)
@@ -198,6 +198,13 @@ class AdminBestCaseSpec extends ServiceSpecBase {
       Get("/admin/users") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val users = responseAs[Users]
         writeJsonOutput("usersResponse", responseAs[String])
+      }
+    }
+    it("should successfully upgrade owners with POST to /admin/owners/upgrade") {
+      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+      Post("/admin/owners/upgrade") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        val upgradeCount = responseAs[CountResult]
+        upgradeCount.count should be(0)
       }
     }
     it("should successfully delete a user with DELETE to /admin/user/[userUUID]") {

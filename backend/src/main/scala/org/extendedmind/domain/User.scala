@@ -31,7 +31,7 @@ case class UserPreferences(onboarded: Option[String], ui: Option[String]){
 }
 
 case class User(uuid: Option[UUID], created: Option[Long], modified: Option[Long], deleted: Option[Long],
-                email: Option[String], emailVerified: Option[Long], cohort: Option[Int],
+                email: Option[String], emailVerified: Option[Long], cohort: Option[Int], inboxId: Option[String],
                 preferences: Option[UserPreferences],
                 collectives: Option[Map[UUID,(String, Byte, Boolean)]],
                 sharedLists: Option[Map[UUID,(String, Map[UUID, (String, Byte)])]])
@@ -41,7 +41,7 @@ case class User(uuid: Option[UUID], created: Option[Long], modified: Option[Long
 }
 
 object User{
-  def apply(email:String, cohort: Option[Int], preferences: Option[UserPreferences]) = new User(None, None, None, None, Some(email), None, cohort, preferences, None, None)
+  def apply(email:String, cohort: Option[Int], preferences: Option[UserPreferences]) = new User(None, None, None, None, Some(email), None, cohort, None, preferences, None, None)
 }
 
 case class SignUp(email: String, password: String, cohort: Option[Int], bypass: Option[Boolean]){

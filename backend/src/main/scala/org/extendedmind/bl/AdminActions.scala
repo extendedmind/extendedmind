@@ -65,6 +65,15 @@ trait AdminActions {
     result
   }
 
+  def upgradeOwners(implicit log: LoggingAdapter): Response[CountResult] = {
+    log.info("upgradeOwners")
+    val result = db.upgradeOwners
+    if (result.isRight){
+      log.info("upgraded " + result.right.get.count + " owners")
+    }
+    result
+  }
+
   def loadDatabase(implicit log: LoggingAdapter): Boolean = {
     log.info("loadDatabase")
     db.loadDatabase

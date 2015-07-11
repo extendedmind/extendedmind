@@ -125,6 +125,13 @@ trait UserDatabase extends AbstractGraphDatabase {
     Right(CountResult(3))
   }
 
+  def upgradeOwners: Response[CountResult] = {
+    for {
+      ownerUUIDs <- getOwnerUUIDs.right
+      count <- upgradeOwners(ownerUUIDs).right
+    } yield count
+  }
+
   def deleteUser(userUUID: UUID): Response[DeleteItemResult] = {
     for {
       deletedUserNode <- deleteUserNode(userUUID).right
@@ -215,6 +222,7 @@ trait UserDatabase extends AbstractGraphDatabase {
           setUserPassword(userNode, plainPassword)
           userNode.setProperty("email", user.email.get)
           if (user.cohort.isDefined) userNode.setProperty("cohort", user.cohort.get)
+          userNode.setProperty("inboxId", Random.generateRandomUniqueString())
 
           val emailVerificationCode = if (emailVerified.isDefined) {
             // When the user accepts invite using a code sent to her email,
@@ -408,6 +416,37 @@ trait UserDatabase extends AbstractGraphDatabase {
       Right(userNode.getProperty("email").asInstanceOf[String], userNode.getProperty("emailVerificationCode").asInstanceOf[Long])
     }
   }
+
+  protected def upgradeOwners(ownerUUIDs: scala.List[UUID]): Response[CountResult] = {
+    val upgradeCount = ownerUUIDs.count(ownerUUID => {
+      val upgradeResult = upgradeOwnerNode(ownerUUID)
+      if (upgradeResult.isLeft) {
+        return Left(upgradeResult.left.get)
+      }else{
+        upgradeResult.right.get
+      }
+    })
+    Right(CountResult(upgradeCount))
+  }
+
+  protected def upgradeOwnerNode(ownerUUID: UUID): Response[Boolean] = {
+    withTx {
+      implicit neo4j =>
+        val ownerNodeResponse = getNode(ownerUUID, MainLabel.OWNER)
+        if (ownerNodeResponse.isLeft)
+          Left(ownerNodeResponse.left.get)
+        else {
+          val ownerNode = ownerNodeResponse.right.get
+          if (!ownerNode.hasProperty("inboxId")){
+            ownerNode.setProperty("inboxId", Random.generateRandomUniqueString())
+            Right(true)
+          }else{
+            Right(false)
+          }
+        }
+    }
+  }
+
 
   protected def destroyItem(deletedItem: Node)(implicit neo4j: DatabaseService);
   protected def destroyTokens(userNode: Node)(implicit neo4j: DatabaseService): Response[CountResult];
