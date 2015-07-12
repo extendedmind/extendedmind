@@ -185,9 +185,12 @@ trait ItemActions {
         if (trimmedDescription.length < Validators.DESCRIPTION_MAX_LENGTH)
           trimmedDescription.length
         else Validators.DESCRIPTION_MAX_LENGTH
-      return trimmedDescription.substring(0, descriptionMaxLength)
+      val trimmedShortDescription = trimmedDescription.substring(0, descriptionMaxLength)
+      // If the description contains only --, it is most likely the signature, so we just remove it
+      if (trimmedShortDescription == "--") null
+      else trimmedShortDescription
     }else {
-      return null
+      null
     }
   }
 
