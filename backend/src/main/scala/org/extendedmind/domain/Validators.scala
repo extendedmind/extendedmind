@@ -24,8 +24,8 @@ import java.time.format.DateTimeFormatter
 
 object Validators {
 
-  val TITLE_MAX_LENGTH = 128
-  val DESCRIPTION_MAX_LENGTH = 1024
+  def TITLE_MAX_LENGTH = 128
+  def DESCRIPTION_MAX_LENGTH = 1024
 
   // Pattern from: http://www.mkyong.com/regular-expressions/how-to-validate-email-address-with-regular-expression/
   // removed uppercase to make sure no duplicates exist

@@ -138,12 +138,36 @@ trait ItemActions {
     var link: String = null;
     for (i <- 0 until fields.length){
       if (fields(i)._1 == "Subject"){
-        title = fields(i)._2
+        if (fields(i)._2 == null || fields(i)._2.trim.length == 0){
+          title = "untitled"
+        }else{
+          val trimmedTitle = fields(i)._2.trim
+          val titleMaxLength =
+            if (trimmedTitle.length < Validators.TITLE_MAX_LENGTH) trimmedTitle.length
+            else Validators.TITLE_MAX_LENGTH
+          title = trimmedTitle.substring(0, titleMaxLength)
+        }
       }else if (fields(i)._1 == "stripped-text"){
-        if ((fields(i)._2.startsWith("http://") || fields(i)._2.startsWith("https://")) && !fields(i)._2.contains(" "))
-          link = fields(i)._2
-        else
-          description = fields(i)._2
+        if (fields(i)._2 != null && fields(i)._2.length > 0){
+          // Tokenize with whitespace
+          val tokenized = fields(i)._2.split("\\s+");
+          if (!tokenized.isEmpty){
+            try{
+              val url = new java.net.URL(tokenized(0))
+              // Success, the first part is an URL
+              link = tokenized(0)
+              if (tokenized.size > 1){
+                // There is more after the link, use it as the description
+                description = getValidDescriptionOrNull(fields(i)._2.substring(tokenized(0).length))
+              }
+            }catch {
+              case e: java.net.MalformedURLException => {
+                // The content does not start with an URL, use it as a description
+                description = getValidDescriptionOrNull(fields(i)._2)
+              }
+            }
+          }
+        }
       }
     }
     if (title == null){
@@ -151,6 +175,19 @@ trait ItemActions {
     }else {
       db.putNewItemToInbox(inboxId, Item(title, if (description==null) None else Some(description),
                                 if (link==null) None else Some(link)))
+    }
+  }
+
+  private def getValidDescriptionOrNull(descriptionSeed: String): String = {
+    val trimmedDescription = descriptionSeed.trim
+    if (trimmedDescription.length > 0){
+      val descriptionMaxLength =
+        if (trimmedDescription.length < Validators.DESCRIPTION_MAX_LENGTH)
+          trimmedDescription.length
+        else Validators.DESCRIPTION_MAX_LENGTH
+      return trimmedDescription.substring(0, descriptionMaxLength)
+    }else {
+      return null
     }
   }
 
