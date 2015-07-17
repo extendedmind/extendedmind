@@ -222,6 +222,13 @@ class AdminBestCaseSpec extends ServiceSpecBase {
         }
       }
     }
+    it("should successfully send hourly tick with POST to /tick") {
+      Post("/tick",
+          marshal(Tick(2)).right.get) ~> route ~> check {
+        val statusResponse = responseAs[String]
+        statusResponse should be ("{\"status\":true}")
+      }
+    }
   }
 
 }

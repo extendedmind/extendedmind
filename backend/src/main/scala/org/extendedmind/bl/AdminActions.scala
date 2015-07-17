@@ -97,7 +97,15 @@ trait AdminActions {
     }else if (priority == 2){
       // Hourly
       log.info("tick hourly")
-      true
+      db.destroyDeletedOwners match {
+        case Right(CountResult(deleteCount)) => {
+          log.info("Destroyed {} deleted users", deleteCount)
+          true
+        } case Left(errors) =>
+          log.error("Could not destroy deleted owners with the following errors")
+             errors foreach (e => log.error(e.responseType + ": " + e.description, e.throwable))
+          false
+      }
     }else if (priority == 3){
       // Daily
       log.info("tick daily")

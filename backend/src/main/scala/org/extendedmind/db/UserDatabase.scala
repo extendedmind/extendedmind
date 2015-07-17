@@ -41,6 +41,9 @@ import scala.collection.mutable.HashMap
 
 trait UserDatabase extends AbstractGraphDatabase {
 
+  // User that has been deleted over one minute ago is is destroyed
+  val USER_DESTROY_TRESHOLD: Long = 60000l
+
   // METHODS THAT NEED TO BE OVERRIDDEN
 
   def updateItemsIndex(itemNode: Node, setResult: SetResult): Unit
@@ -137,6 +140,13 @@ trait UserDatabase extends AbstractGraphDatabase {
       deletedUserNode <- deleteUserNode(userUUID).right
       result <- Right(getDeleteItemResult(deletedUserNode._1, deletedUserNode._2)).right
     } yield result
+  }
+
+  def destroyDeletedOwners: Response[CountResult] = {
+    for {
+      ownerUUIDs <- getOwnerUUIDs.right
+      count <- destroyDeletedOwners(ownerUUIDs).right
+    } yield count
   }
 
   def destroyUser(userUUID: UUID): Response[DestroyResult] = {
@@ -414,6 +424,44 @@ trait UserDatabase extends AbstractGraphDatabase {
         userNode.setProperty("emailVerificationCode", Random.generateRandomUnsignedLong)
       }
       Right(userNode.getProperty("email").asInstanceOf[String], userNode.getProperty("emailVerificationCode").asInstanceOf[Long])
+    }
+  }
+
+  protected def destroyDeletedOwners(ownerUUIDs: scala.List[UUID]): Response[CountResult] = {
+    val currentTimestamp = System.currentTimeMillis
+    val destroyCount = ownerUUIDs.count(ownerUUID => {
+      val destroyResult = destroyDeletedOwner(ownerUUID, currentTimestamp)
+      if (destroyResult.isLeft) {
+        return Left(destroyResult.left.get)
+      }else{
+        destroyResult.right.get
+      }
+    })
+    Right(CountResult(destroyCount))
+  }
+
+  protected def destroyDeletedOwner(ownerUUID: UUID, currentTimestamp: Long): Response[Boolean] = {
+    withTx {
+      implicit neo4j =>
+        val ownerNodeResponse = getNode(ownerUUID, MainLabel.OWNER)
+        if (ownerNodeResponse.isLeft)
+          Left(ownerNodeResponse.left.get)
+        else {
+          val ownerNode = ownerNodeResponse.right.get
+          if (ownerNode.hasLabel(OwnerLabel.USER)){
+            if (ownerNode.hasProperty("deleted") &&
+                ownerNode.getProperty("deleted").asInstanceOf[Long] < (currentTimestamp - USER_DESTROY_TRESHOLD)){
+              val destroyResult = destroyUserNode(ownerNode)
+              if (destroyResult.isLeft) Left(destroyResult.left.get)
+              else Right(true)
+            }else{
+              Right(false)
+            }
+          }else{
+            // TODO: Collective destroying
+            Right(false)
+          }
+        }
     }
   }
 
