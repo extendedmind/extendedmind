@@ -11,6 +11,7 @@ var pluginlist = [
     "https://github.com/extendedmind/cordova-plugin-local-notifications",
     "https://github.com/leohenning/KeepScreenOnPlugin",
     "https://github.com/extendedmind/cordova-webintent",
+    "https://github.com/extendedmind/phonegap-backbutton-plugin",
     "cordova-plugin-device",
     "cordova-plugin-whitelist",
     "cordova-plugin-inappbrowser"

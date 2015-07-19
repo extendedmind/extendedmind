@@ -96,8 +96,16 @@
 
   function evaluateExitApp(){
     if ($scope.exitAppOnBack === true){
-      if (navigator && navigator.app && navigator.app.exitApp){
-        navigator.app.exitApp();
+      if (navigator && navigator.Backbutton && navigator.Backbutton.goBack){
+        navigator.Backbutton.goBack(undefined, function(){
+          // Try to go home if there is no going back
+          navigator.Backbutton.goHome(undefined, function(){
+            // Just exit app, if can't go home either
+            if (navigator.app && navigator.app.exitApp){
+              navigator.app.exitApp();
+            }
+          });
+        });
       }
       $scope.exitAppOnBack = false;
     }
