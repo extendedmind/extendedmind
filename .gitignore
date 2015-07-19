@@ -18,7 +18,7 @@ frontend/core/src/main/webapp/static/img/
 frontend/core/src/main/webapp/static/fonts/
 frontend/core/src/main/webapp/static/audio/
 frontend/core/src/main/webapp/static/js/
-frontend/core/src/main/webapp/landing/audio/
+frontend/core/src/main/webapp/landing/static/audio/
 frontend/core/src/main/webapp/landing/terms.html
 frontend/core/src/main/webapp/landing/privacy.html
 frontend/core/src/main/webapp/terms.html

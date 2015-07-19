@@ -163,7 +163,7 @@
               </includes>*
             </fileset>
             <fileset>
-              <directory>${basedir}/src/main/webapp/landing/audio</directory>
+              <directory>${basedir}/src/main/webapp/landing/static/audio</directory>
             </fileset>
             <fileset>
               <directory>${basedir}/src/main/webapp/landing</directory>
@@ -333,7 +333,7 @@
                       <goal>copy-resources</goal>
                   </goals>
                   <configuration>
-                      <outputDirectory>${project.basedir}/src/main/webapp/landing/audio</outputDirectory>
+                      <outputDirectory>${project.basedir}/src/main/webapp/landing/static/audio</outputDirectory>
                       <overwrite>true</overwrite>
                       <resources>
                           <resource>
@@ -377,7 +377,7 @@
                       <overwrite>true</overwrite>
                       <resources>
                           <resource>
-                              <directory>${project.basedir}/src/main/webapp/landing/audio</directory>
+                              <directory>${project.basedir}/src/main/webapp/landing/static/audio</directory>
                           </resource>
                       </resources>
                   </configuration>
@@ -413,7 +413,7 @@
                       <overwrite>true</overwrite>
                       <resources>
                           <resource>
-                              <directory>${project.basedir}/src/main/webapp/landing/favicon</directory>
+                              <directory>${project.basedir}/src/main/webapp/landing/static/favicon</directory>
                           </resource>
                       </resources>
                   </configuration>
@@ -429,7 +429,7 @@
                       <overwrite>true</overwrite>
                       <resources>
                           <resource>
-                              <directory>${project.basedir}/src/main/webapp/landing/img</directory>
+                              <directory>${project.basedir}/src/main/webapp/landing/static/img</directory>
                               <includes>
                                   <include>download*@2x.png</include>
                               </includes>
@@ -448,7 +448,7 @@
                       <overwrite>true</overwrite>
                       <resources>
                           <resource>
-                              <directory>${project.basedir}/src/main/webapp/landing/fonts</directory>
+                              <directory>${project.basedir}/src/main/webapp/landing/static/fonts</directory>
                           </resource>
                       </resources>
                   </configuration>
@@ -464,7 +464,7 @@
                       <overwrite>true</overwrite>
                       <resources>
                           <resource>
-                              <directory>${project.basedir}/src/main/webapp/landing/js</directory>
+                              <directory>${project.basedir}/src/main/webapp/landing/static/js</directory>
                               <includes>
                                   <include>em-animation.js</include>
                                   <include>animo.min.js</include>
@@ -484,7 +484,7 @@
                       <overwrite>true</overwrite>
                       <resources>
                           <resource>
-                              <directory>${project.basedir}/src/main/webapp/landing/css</directory>
+                              <directory>${project.basedir}/src/main/webapp/landing/static/css</directory>
                               <includes>
                                   <include>em-animation.css</include>
                                   <include>animate-animo.css</include>
