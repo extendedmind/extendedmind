@@ -25,7 +25,7 @@ var sys = require('sys')
 var exec = require('child_process').exec;
 
 var cmd = "";
-for (var i=0; i < (pluginlist.length-1); i++){
+for (var i=0; i < (pluginlist.length); i++){
   if (i>0){
     cmd += " && ";
   }
