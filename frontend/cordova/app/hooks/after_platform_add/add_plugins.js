@@ -24,10 +24,15 @@ var path = require('path');
 var sys = require('sys')
 var exec = require('child_process').exec;
 
-function puts(error, stdout, stderr) {
-    sys.puts(stdout)
+var cmd = "";
+for (var i=0; i < (pluginlist.length-1); i++){
+  if (i>0){
+    cmd += " && ";
+  }
+  cmd += "cordova plugin add " + pluginlist[i];
 }
 
-pluginlist.forEach(function(plug) {
-    exec("cordova plugin add " + plug, puts);
-});
+function puts(error, stdout, stderr) {
+  sys.puts(stdout)
+}
+exec(cmd, puts);
