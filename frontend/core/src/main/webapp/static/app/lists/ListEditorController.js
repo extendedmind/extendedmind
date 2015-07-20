@@ -62,6 +62,11 @@
     }
   }
 
+  $scope.list.trans.showNotesFirst = $scope.isShowListNotesFirst($scope.list);
+  $scope.toggleShowNotesFirst = function(list){
+    $scope.setShowListNotesFirst(list, $scope.list.trans.showNotesFirst);
+  };
+
   // LIST EDITOR FIELD VISIBILITY
 
   $scope.showListAction = function(actionName, list){
@@ -124,6 +129,8 @@
       return $scope.usePremiumFeatures() && $scope.sharedToList && $scope.sharedToList.length && !$scope.listShareEditorOpen;
       case 'sharedBy':
       return $scope.usePremiumFeatures() && $scope.sharedByList && !jQuery.isEmptyObject($scope.sharedByList);
+      case 'showNotesFirst':
+      return $scope.features.notes.getStatus() !== 'disabled' && !$scope.listShareEditorOpen;
     }
   };
 

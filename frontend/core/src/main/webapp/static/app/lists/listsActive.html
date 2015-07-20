@@ -19,13 +19,13 @@
           <div class="group-mixed vertically-centered">
             <div class="group-mixed--left">
               <a href ng-class="!isListDataReady(sharedListUUID, ownerUUID) && 'link-disable'"
-                swiper-click="changeFeature('list', getSharedListFeatureData(sharedListUUID, ownerUUID), true)">
+                swiper-click="changeToSharedList(sharedListUUID, ownerUUID)">
                 <span class="text-navigation-back large"></span>
               </a>
             </div>
             <a href ng-class="!isListDataReady(sharedListUUID, ownerUUID) && 'link-disable'"
               class="group-mixed--middle link-list-item"
-              swiper-click="changeFeature('list', getSharedListFeatureData(sharedListUUID, ownerUUID), true)">
+              swiper-click="changeToSharedList(sharedListUUID, ownerUUID)">
               <span class="text-link" clamp=2 ng-bind="sharedListInfo[0]"></span>
             </a>
           </div>
@@ -39,12 +39,12 @@
         <div ng-repeat="adoptedList in adoptedLists">
           <div class="group-mixed vertically-centered">
             <div class="group-mixed--left">
-              <a href swiper-click="changeFeature('list', {list: adoptedList, owner: collectiveUUID}, true)">
+              <a href swiper-click="changeToAdoptedList(adoptedList, collectiveUUID)">
                 <span class="text-navigation-back large"></span>
               </a>
             </div>
             <a href class="group-mixed--middle link-list-item"
-              swiper-click="changeFeature('list', {list: adoptedList, owner: collectiveUUID}, true)">
+              swiper-click="changeToAdoptedList(adoptedList, collectiveUUID)">
               <span class="text-link" clamp=2 ng-bind="adoptedList.trans.title"></span>
             </a>
           </div>

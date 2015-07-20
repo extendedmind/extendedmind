@@ -54,7 +54,7 @@
       return 'tutorial ' + $scope.getTutorialPhase() + '/' + $scope.getTutorialLength();
     } else {
       var currentHeading = $scope.getActiveFeature();
-      if (currentHeading === 'list'){
+      if (currentHeading === 'list' || currentHeading === 'listInverse'){
         // Get list's title from trans object stored into feature data.
         var listData = UISessionService.getFeatureData(currentHeading);
         if (listData.list){
@@ -82,7 +82,7 @@
 
   $scope.clickToolbarHeading = function(){
     var activeFeature = $scope.getActiveFeature();
-    if (activeFeature === 'list'){
+    if (activeFeature === 'list' || activeFeature === 'listInverse'){
       $scope.openEditor('list', UISessionService.getFeatureData(activeFeature)).then(function(){
         if ($scope.isOnboarding('list')){
           $scope.completeOnboarding('list');

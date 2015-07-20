@@ -13,6 +13,7 @@
         <div ng-if="isFeatureActive('notes')" ng-include="urlBase + 'app/notes/notesAll.html'" include-replace></div>
         <div ng-if="isFeatureLoaded('lists')" ng-include="urlBase + 'app/lists/listsSlides.html'" include-replace></div>
         <div ng-if="isFeatureLoaded('list')" ng-include="urlBase + 'app/lists/listSlides.html'" include-replace></div>
+        <div ng-if="isFeatureLoaded('listInverse')" ng-include="urlBase + 'app/lists/listInverseSlides.html'" include-replace></div>
         <div ng-if="isFeatureActive('trash')" ng-include="urlBase + 'app/main/trash.html'" include-replace></div>
         <div ng-if="isFeatureActive('settings')" ng-include="urlBase + 'app/main/settings.html'" include-replace></div>
         <div ng-if="isFeatureLoaded('admin')" ng-include="urlBase + 'app/admin/admin.html'" include-replace></div>

@@ -22,6 +22,8 @@
   if (angular.isFunction($scope.registerArrayChangeCallback)) {
     $scope.registerArrayChangeCallback('list', ['active', 'archived'], invalidateListsArrays,
                                        'ListsController');
+    $scope.registerArrayChangeCallback('list', ['deleted'], notifyListDeleted,
+                                       'ListsControllerDeleted');
   }
 
   var cachedListsArrays = {};
@@ -309,6 +311,14 @@
     }
   };
 
+  /*
+  * When list is deleted, notesFirst setting needs to be removed
+  */
+  function notifyListDeleted(lists, deletedList, listsType, ownerUUID) {
+    // Remove notest first when list is deleted to prevent cluttering of preferences of old lists
+    $scope.setShowListNotesFirst(deletedList, false);
+  }
+
   $scope.getNewList = function(initialValues) {
     return ListsService.getNewList(initialValues, UISessionService.getActiveUUID());
   };
@@ -320,7 +330,7 @@
   };
 
   var featureChangedCallback = function featureChangedCallback(name, data/*, state*/) {
-    if (name === 'list') {
+    if (name === 'list' || name === 'listInverse') {
       if (data.list){
         // Shared/adopted list
         $scope.list = data.list;
@@ -347,6 +357,24 @@
     }
   };
   UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'ListsController');
+
+  $scope.changeToList = function(list){
+    $scope.changeFeature(getActiveListFeature(list), list, true);
+  };
+
+  $scope.changeToSharedList = function(sharedListUUID, ownerUUID){
+    var data = {list: ListsService.getListInfo(sharedListUUID, ownerUUID).list, owner: ownerUUID};
+    $scope.changeFeature(getActiveListFeature(data.list), data, true);
+  };
+
+  $scope.changeToAdoptedList = function(adoptedList, ownerUUID){
+    var data = {list: adoptedList, owner: ownerUUID};
+    $scope.changeFeature(getActiveListFeature(data.list), data, true);
+  };
+
+  function getActiveListFeature(list){
+    return $scope.isShowListNotesFirst(list) ? 'listInverse' : 'list';
+  }
 
   function updateFavoriteListPreferences(favoriteListInfos){
     UserSessionService.setUIPreference('favoriteLists', favoriteListInfos);
@@ -415,10 +443,6 @@
     if (listInfo){
       return true;
     }
-  };
-
-  $scope.getSharedListFeatureData = function(sharedListUUID, ownerUUID){
-    return {list: ListsService.getListInfo(sharedListUUID, ownerUUID).list, owner: ownerUUID};
   };
 
   // ADOPTED LISTS
@@ -490,6 +514,38 @@
     }
   };
 
+  // NOTES FIRST LISTS
+
+  $scope.isShowListNotesFirst = function(list){
+    var notesFirstLists = UserSessionService.getUIPreference('notesFirstLists');
+    return $scope.features.focus.getStatus('notes') !== 'disabled' && notesFirstLists &&
+           notesFirstLists[list.trans.owner] &&
+           notesFirstLists[list.trans.owner].indexOf(list.trans.uuid) !== -1;;
+  };
+
+  $scope.setShowListNotesFirst = function(list, value){
+    var notesFirstLists = UserSessionService.getUIPreference('notesFirstLists');
+    if (value === true){
+      if (!notesFirstLists) notesFirstLists = {};
+      if (!notesFirstLists[list.trans.owner]) notesFirstLists[list.trans.owner] = [];
+      notesFirstLists[list.trans.owner].push(list.trans.uuid);
+      UserSessionService.setUIPreference('notesFirstLists', notesFirstLists);
+      UserService.saveAccountPreferences();
+    }else if (notesFirstLists && notesFirstLists[list.trans.owner]){
+      var notesFirstListIndex = notesFirstLists[list.trans.owner].indexOf(list.trans.uuid);
+      if (notesFirstListIndex !== -1){
+        notesFirstLists[list.trans.owner].splice(notesFirstListIndex, 1);
+        if (notesFirstLists[list.trans.owner].length === 0) delete notesFirstLists[list.trans.owner];
+        if (jQuery.isEmptyObject(notesFirstLists)) notesFirstLists = undefined;
+        UserSessionService.setUIPreference('notesFirstLists', notesFirstLists);
+        UserService.saveAccountPreferences();
+      }
+    }
+    if ($scope.isFeatureActive('list') || $scope.isFeatureActive('listInverse')){
+      $scope.changeFeature('lists');
+    }
+  };
+
   // SAVING
 
   $scope.saveList = function(list) {
@@ -505,7 +561,7 @@
     var saveListDeferred = $scope.saveList(list);
     if (saveListDeferred){
       return saveListDeferred.then(function(savedList){
-        $scope.changeFeature('list', savedList, true);
+        $scope.changeToList(savedList);
       });
     }
   };

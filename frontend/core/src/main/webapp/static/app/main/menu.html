@@ -33,7 +33,7 @@
       <span class="text-navigation-menu">lists</span>
     </a>
 
-    <div ng-if="isFeatureActive('list')" class="group-mixed small">
+    <div ng-if="isFeatureActive('list') || isFeatureActive('listInverse')" class="group-mixed small">
       <div class="group-mixed--middle">
         <a href class="link-menu-small highlighted" ng-click="gotoFeature('list', getActiveList())">
           <span class="text-navigation-menu-small" clamp=2 ng-bind="getActiveList().trans.title"></span>

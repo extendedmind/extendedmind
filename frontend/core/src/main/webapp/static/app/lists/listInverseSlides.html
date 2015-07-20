@@ -1,0 +1,10 @@
+<div ng-show="isFeatureActive('listInverse')"
+class="swiper-container container-fluid--inner" swiper-container="listInverse" swiper-type="main"
+expected-slides="2">
+  <div class="swiper-wrapper">
+    <div class="swiper-slide" swiper-slide="listInverse/notes" slide-index=0
+    ng-include="urlBase + 'app/lists/listInverseNotes.html'"></div>
+    <div class="swiper-slide" swiper-slide="listInverse/tasks" slide-index=1
+    ng-include="urlBase + 'app/lists/listInverseTasks.html'"></div>
+  </div>
+</div>

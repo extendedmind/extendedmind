@@ -30,7 +30,7 @@
   $scope.lists = ListsService.getLists(UISessionService.getActiveUUID());
 
   $scope.getActiveList = function() {
-    if ($scope.isFeatureActive('list')){
+    if ($scope.isFeatureActive('list') || $scope.isFeatureActive('listInverse')){
       //return UISessionService.getFeatureData(UISessionService.getCurrentFeatureName());
       var listData = UISessionService.getFeatureData(UISessionService.getCurrentFeatureName());
       if (listData.list)

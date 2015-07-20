@@ -257,6 +257,16 @@
             </div>
           </div>
 
+          <div ng-if="showListProperty('showNotesFirst')" class="group-mixed">
+            <div class="group-mixed--left">
+              <input type="checkbox" ng-model="list.trans.showNotesFirst" ng-true-value="true"
+              ng-false-value="false" icon-checkbox="'notesFirst'" ng-click="toggleShowNotesFirst(list)"/>
+            </div>
+            <div class="group-mixed--middle">
+              <span class="text-metadata">show notes first</span>
+            </div>
+          </div>
+
           <div ng-if="showEditorProperty('created', list)" class="group-mixed text-field">
             <div class="group-mixed--middle">
               <span class="text-field--title">

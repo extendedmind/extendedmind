@@ -1,0 +1,22 @@
+<div class="container-content--outer" list-container list-container-readonly="isListReadOnly(list)"
+  ng-class="isListReadOnly(list) && 'checkbox-disable'">
+  <section class="container-content" list="getTasksArray('list', {uuid: list.trans.uuid, owner: overrideOwnerUUID})"
+    list-options="{hideItemDefault: true}">
+    <div class="group-mixed heading">
+      <div class="group-mixed--middle">
+        <h2 class="group-heading justified">
+          <span class="text-heading">tasks</span>
+        </h2>
+      </div>
+      <div class="group-mixed--right" task-list-completed></div>
+    </div>
+    <div list-item-add="getNewTask({list: list}, overrideOwnerUUID)"
+      list-item-add-save="saveTask(newItem)" ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
+    <div class="animate-list-item-leave"
+      ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
+      list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
+    <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-hide="[listItemAddActive]"></div>
+  </section>
+  <footer ng-if="isFeatureActive('listInverse')" class="container-content--after" list-footer="getFeatureMap('listInverse')"
+  list-footer-subfeature="tasks"></footer>
+</div>

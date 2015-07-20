@@ -1,11 +1,11 @@
 <div class="group-mixed vertically-centered" ng-class="getListItemClasses(list)">
   <div class="group-mixed--left">
-    <a href swiper-click="changeFeature('list', list, true)">
+    <a href swiper-click="changeToList(list)">
       <span class="text-navigation-back large"></span>
     </a>
   </div>
   <a href class="group-mixed--middle link-list-item"
-    swiper-click="changeFeature('list', list, true)">
+    swiper-click="changeToList(list)">
     <span class="text-link" clamp=2 ng-bind="list.trans.title"></span>
   </a>
 

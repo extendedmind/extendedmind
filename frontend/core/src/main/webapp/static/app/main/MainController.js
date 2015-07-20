@@ -193,6 +193,22 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
         }
       }
     },
+    listInverse: {
+      heading: undefined,
+      getStatus: function(subfeature){
+        return getFeatureStatus(UserSessionService.getFeaturePreferences('list'), subfeature);
+      },
+      slides: {
+        left: {
+          path: 'listInverse/notes',
+          heading: 'notes'
+        },
+        right: {
+          path: 'listInverse/tasks',
+          heading: 'tasks'
+        }
+      }
+    },
     trash: {
       heading: 'trash',
       getStatus: function(subfeature){
