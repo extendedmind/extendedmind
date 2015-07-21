@@ -316,7 +316,14 @@
   */
   function notifyListDeleted(lists, deletedList, listsType, ownerUUID) {
     // Remove notest first when list is deleted to prevent cluttering of preferences of old lists
-    $scope.setShowListNotesFirst(deletedList, false);
+    if (deletedList){
+      $scope.setShowListNotesFirst(deletedList, false);
+    }else if (lists && angular.isArray(lists) && listsType === 'deleted'){
+      // Loop through all deleted lists
+      for (var i=0; i<lists.length; i++){
+        $scope.setShowListNotesFirst(lists[i], false);
+      }
+    }
   }
 
   $scope.getNewList = function(initialValues) {
