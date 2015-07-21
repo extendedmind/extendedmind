@@ -96,6 +96,7 @@
 
   function evaluateExitApp(){
     if ($scope.exitAppOnBack === true){
+      $scope.exitAppOnBack = false;
       if (navigator && navigator.Backbutton && navigator.Backbutton.goBack){
         navigator.Backbutton.goBack(undefined, function(){
           // Try to go home if there is no going back
@@ -107,7 +108,6 @@
           });
         });
       }
-      $scope.exitAppOnBack = false;
     }
   }
 
@@ -267,6 +267,10 @@
         var deletePromise = deleteCallback(dataInEdit);
         if (deletePromise) {
           deletePromise.then(function() {
+            evaluateExitApp();
+          }, function(error){
+            console.error("error deleting item:");
+            console.error(error);
             evaluateExitApp();
           });
         } else {
