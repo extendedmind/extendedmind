@@ -879,7 +879,7 @@ trait UserDatabase extends AbstractGraphDatabase {
     })
 
     if (concerningResult.isEmpty){
-      fail(INTERNAL_SERVER_ERROR, ERR_USER_CANT_FIND_AGREEMENT_CONCERNING, "Can't the agreement target")
+      fail(INTERNAL_SERVER_ERROR, ERR_USER_CANT_FIND_AGREEMENT_CONCERNING, "Can't find the agreement target")
     }else{
       agreementNode.setProperty("accepted", System.currentTimeMillis)
       setPermission(concerningResult.get.getEndNode, proposedToNode, Some(agreementNode.getProperty("access").asInstanceOf[Byte]))

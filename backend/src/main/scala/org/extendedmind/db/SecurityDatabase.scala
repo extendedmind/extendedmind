@@ -618,7 +618,7 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
           userNode <- getUserNode(signUp.email).right
           expires <- getPasswordResetExpires(code, userNode).right
           result <- Right(setUserPassword(userNode, signUp.password)).right
-          result <- Right(clearPasswordResetExpires(userNode)).right
+          result <- Right(finalizePasswordReset(userNode)).right
         } yield userNode
     }
   }
@@ -647,8 +647,13 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     }
   }
 
-  private def clearPasswordResetExpires(userNode: Node)(implicit neo4j: DatabaseService){
+  private def finalizePasswordReset(userNode: Node)(implicit neo4j: DatabaseService){
     if (userNode.hasProperty("passwordResetCodeExpires")) userNode.removeProperty("passwordResetCodeExpires")
+    if (!userNode.hasProperty("emailVerified")){
+      // Resetting password can also verify email address as reset code is sent to the
+      // email address of the user
+      userNode.setProperty("emailVerified", System.currentTimeMillis)
+    }
   }
 
 }
