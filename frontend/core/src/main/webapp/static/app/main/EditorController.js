@@ -265,6 +265,7 @@
     } else {
       if ($scope.exitAppOnBack){
         var deletePromise = deleteCallback(dataInEdit);
+        $scope.closeEditor();
         if (deletePromise) {
           deletePromise.then(function() {
             evaluateExitApp();
