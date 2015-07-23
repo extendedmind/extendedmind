@@ -258,7 +258,7 @@
         // On error, emit redirectToEntry
         var deleteAccountInstructionNodes = [{
           type: 'text',
-          data: 'if you have second thoughts, log back in immediately'
+          data: 'if you have second thoughts, log back in immediately to reactivate your account'
         }];
         var deleteAccountModal = {
           messageHeading: 'account marked for deletion',
