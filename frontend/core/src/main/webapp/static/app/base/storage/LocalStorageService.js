@@ -81,6 +81,10 @@
       if (created) localStorage.setItem('userCreated', created);
       else localStorage.removeItem('userCreated');
     },
+    setEmailVerified: function(emailVerified) {
+      if (emailVerified) localStorage.setItem('emailVerified', emailVerified);
+      else localStorage.removeItem('emailVerified');
+    },
     setState: function(state) {
       if (state) localStorage.setItem('state', JSON.stringify(state));
       else localStorage.removeItem('state');
@@ -168,6 +172,9 @@
     },
     getUserCreated: function() {
       return localStorage.getItem('userCreated');
+    },
+    getEmailVerified: function() {
+      return localStorage.getItem('emailVerified');
     },
     getState: function() {
       if (localStorage.getItem('state')) {

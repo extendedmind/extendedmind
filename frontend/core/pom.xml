@@ -132,7 +132,9 @@
               <includes>
                 <include>em.angularjs.min.js</include>
                 <include>em.min.js</include>
-              </includes>*
+                <include>terms.html</include>
+                <include>privacy.html</include>
+              </includes>
             </fileset>
             <fileset>
               <directory>${basedir}/src/main/webapp/static/favicon</directory>
@@ -156,17 +158,10 @@
               <directory>${basedir}/src/main/webapp/static/audio</directory>
             </fileset>
             <fileset>
-              <directory>${basedir}/src/main/webapp</directory>
-              <includes>
-                <include>terms.html</include>
-                <include>privacy.html</include>
-              </includes>*
-            </fileset>
-            <fileset>
               <directory>${basedir}/src/main/webapp/landing/static/audio</directory>
             </fileset>
             <fileset>
-              <directory>${basedir}/src/main/webapp/landing</directory>
+              <directory>${basedir}/src/main/webapp/landing/static</directory>
               <includes>
                 <include>terms.html</include>
                 <include>privacy.html</include>
@@ -210,6 +205,8 @@
                 <exclude>less/**</exclude>
                 <exclude>lib/**</exclude>
                 <exclude>em.angularjs.min.js</exclude>
+                <exclude>terms.html</exclude>
+                <exclude>privacy.html</exclude>
               </excludes>
             </resource>
           </webResources>
@@ -217,9 +214,9 @@
             WEB-INF/**,
             META-INF/**,
             index.html,
-            terms.html,
-            privacy.html,
-            static/${project.version}/**
+            static/${project.version}/**,
+            static/terms.html,
+            static/privacy.html
           </packagingIncludes>
         </configuration>
       </plugin>
@@ -353,7 +350,7 @@
                       <goal>copy-resources</goal>
                   </goals>
                   <configuration>
-                      <outputDirectory>${project.basedir}/src/main/webapp/landing</outputDirectory>
+                      <outputDirectory>${project.basedir}/src/main/webapp/landing/static</outputDirectory>
                       <overwrite>true</overwrite>
                       <resources>
                           <resource>
@@ -389,11 +386,11 @@
                       <goal>copy-resources</goal>
                   </goals>
                   <configuration>
-                      <outputDirectory>${project.basedir}/src/main/webapp</outputDirectory>
+                      <outputDirectory>${project.basedir}/src/main/webapp/static</outputDirectory>
                       <overwrite>true</overwrite>
                       <resources>
                           <resource>
-                              <directory>${project.basedir}/src/main/webapp/landing</directory>
+                              <directory>${project.basedir}/src/main/webapp/landing/static</directory>
                               <includes>
                                   <include>terms.html</include>
                                   <include>privacy.html</include>

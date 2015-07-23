@@ -114,6 +114,10 @@
       if (created) sessionStorage.setItem('userCreated', created);
       else sessionStorage.removeItem('userCreated');
     },
+    setEmailVerified: function(emailVerified) {
+      if (emailVerified) sessionStorage.setItem('emailVerified', emailVerified);
+      else sessionStorage.removeItem('emailVerified');
+    },
     setState: function(state) {
       if (state) sessionStorage.setItem('state', JSON.stringify(state));
       else sessionStorage.removeItem('state');
@@ -225,6 +229,9 @@
     },
     getUserCreated: function() {
       return sessionStorage.getItem('userCreated');
+    },
+    getEmailVerified: function() {
+      return sessionStorage.getItem('emailVerified');
     },
     getState: function() {
       var state = sessionStorage.getItem('state');

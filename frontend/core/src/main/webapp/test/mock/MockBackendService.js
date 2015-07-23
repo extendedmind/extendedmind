@@ -59,6 +59,23 @@
           }
           response = [200, responseData];
         }
+        // EMAIL UNVERIFIED USER
+        else if (userNamePass === 'info@ext.md:infopwd') {
+          if (responseData.token){
+            responseData.userType = 2;
+            if (responseData.token) responseData.token = 'TEST';
+            if (responseData.collectives){
+              for (var uuid in responseData.collectives){
+                if (responseData.collectives[uuid][2] === false){
+                  delete responseData.collectives[uuid];
+                }
+              }
+            }
+            delete responseData.emailVerified;
+            responseData.token = 'UNVERIFIED';
+          }
+          response = [200, responseData];
+        }
         else if (userName === 'token') {
           response = [200, responseData];
         }

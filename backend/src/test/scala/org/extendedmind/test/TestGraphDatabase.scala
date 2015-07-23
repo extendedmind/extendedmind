@@ -65,13 +65,16 @@ trait TestGraphDatabase extends GraphDatabase {
          import scala.collection.JavaConversions._
          transactionEventHandlers.foreach( eventHandler => neo4j.gds.registerTransactionEventHandler(eventHandler))
     }
-
+    val verifiedTimestamp = System.currentTimeMillis + 1000
     val timoUser = User(TIMO_EMAIL, Some(1), None)
-    val timoNode = createUser(timoUser, TIMO_PASSWORD, Some(UserLabel.ADMIN)).right.get._1
+    val timoNode = createUser(timoUser, TIMO_PASSWORD, Some(UserLabel.ADMIN),
+                              emailVerified=Some(verifiedTimestamp)).right.get._1
     val lauriUser = User(LAURI_EMAIL, None, None)
-    val lauriNode = createUser(lauriUser, LAURI_PASSWORD, Some(UserLabel.ADMIN)).right.get._1
+    val lauriNode = createUser(lauriUser, LAURI_PASSWORD, Some(UserLabel.ADMIN),
+                               emailVerified=Some(verifiedTimestamp)).right.get._1
     val jpUser = User(JP_EMAIL, None, None)
-    val jpNode = createUser(jpUser, JP_PASSWORD, Some(UserLabel.ADMIN)).right.get._1
+    val jpNode = createUser(jpUser, JP_PASSWORD, Some(UserLabel.ADMIN),
+                               emailVerified=Some(verifiedTimestamp)).right.get._1
 
     // Collectives
     val extendedMind = createCollective(timoNode, "extended mind", Some("common collective for all extended mind users"), true)
@@ -79,7 +82,8 @@ trait TestGraphDatabase extends GraphDatabase {
       timoNode, "extended mind technologies",
       Some("private collective for extended mind technologies"), false)
 
-    // Info node created after common collective "extended mind" but should still be part of it
+    // Info node created after common collective "extended mind" but should still be part of it,
+    // Info does not have email verified
     val infoNode = createUser(User(INFO_EMAIL, None, None), INFO_PASSWORD).right.get
 
     // Add permissions to collectives

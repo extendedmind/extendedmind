@@ -53,7 +53,7 @@
     }else if (editorType === 'tag'){
       $scope.tag = dataInEdit;
     }else if (editorType === 'user'){
-      $scope.user = dataInEdit || UserSessionService.getUser();
+      $scope.user = dataInEdit || {};
     }else if (editorType === 'recurring') {
       $scope.iterableItems = dataInEdit;
       initializeEditorVisibilityAndPermission(dataInEdit[0]);

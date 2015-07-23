@@ -134,6 +134,9 @@
         remember: UserSessionService.isAuthenticateReplaceable()})
       .then(function(){
         $scope.closeEditor();
+        $timeout(function() {
+          $scope.showVerifyEmailModal();
+        }, $rootScope.EDITOR_CLOSED_FAILSAFE_TIME);
       }, function(){
         $scope.changeEmailLoginFailed = true;
       });
@@ -143,7 +146,6 @@
       } else if (error.type === 'forbidden') {
         $scope.changeEmailFailed = true;
       }
-      console.log("failure")
     });
   };
 
@@ -170,13 +172,13 @@
   $scope.swipeToDetails = function(mode) {
     $scope.detailsMode = mode;
     if (mode === 'privacy'){
-      $http.get('http://ext.md/privacy.html').then(function(privacyResponse){
+      $http.get(BackendClientService.getUrlPrefix() + '/static/privacy.html').then(function(privacyResponse){
         $scope.details = {html: privacyResponse.data};
         SwiperService.swipeTo('signUp/details');
         AnalyticsService.visit('privacy');
       });
     }else if (mode === 'terms') {
-      $http.get('http://ext.md/terms.html').then(function(termsResponse){
+      $http.get(BackendClientService.getUrlPrefix() + '/static/terms.html').then(function(termsResponse){
         $scope.details = {html: termsResponse.data};
         SwiperService.swipeTo('signUp/details');
         AnalyticsService.visit('terms');
@@ -223,12 +225,8 @@
         // Start executing all pending requests now
         BackendClientService.executeRequests();
         $scope.closeEditor();
-        UISessionService.pushDelayedNotification({
-          type: 'fyi',
-          text: 'sign up successful'
-        });
         $timeout(function() {
-          UISessionService.activateDelayedNotifications();
+          $scope.showVerifyEmailModal('account created');
         }, $rootScope.EDITOR_CLOSED_FAILSAFE_TIME);
       },
       function(error) {

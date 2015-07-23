@@ -69,17 +69,18 @@ function MockUserBackendService($httpBackend, UserService, UserSessionService) {
       accountResponse.preferences = UserSessionService.getTransportPreferences();
       accountResponse.sharedLists = UserSessionService.getSharedLists();
       accountResponse.collectives = UserSessionService.getCollectives();
+      accountResponse.emailVerified = UserSessionService.getEmailVerified();
       return expectResponse(method, url, data, headers, accountResponse);
     });
   }
 
   function mockGetTermsOfService() {
-    $httpBackend.whenGET('http://ext.md/terms.html').
+    $httpBackend.whenGET('/static/terms.html').
     respond(termsOfService);
   }
 
   function mockGetPrivacyPolicy() {
-    $httpBackend.whenGET('http://ext.md/privacy.html').
+    $httpBackend.whenGET('/static/privacy.html').
     respond(termsOfService);
   }
 
@@ -99,6 +100,21 @@ function MockUserBackendService($httpBackend, UserService, UserSessionService) {
     });
   }
 
+  function mockResendVerification(expectResponse){
+    $httpBackend.whenPOST(UserService.postResendVerificationRegex)
+    .respond(function(method, url, data, headers) {
+      var resendResponse = getJSONFixture('emailResendResponse.json');
+      var now = Date.now();
+      if (localStorage.getItem('expires')){
+        localStorage.setItem('emailVerified', now);
+      }
+      sessionStorage.setItem('emailVerified', now);
+      return expectResponse(method, url, data, headers, resendResponse);
+    });
+  }
+
+
+
   return {
     mockUserBackend: function(expectResponse) {
       mockGetAccount(expectResponse);
@@ -106,6 +122,7 @@ function MockUserBackendService($httpBackend, UserService, UserSessionService) {
       mockGetTermsOfService();
       mockGetPrivacyPolicy();
       mockLogout(expectResponse);
+      mockResendVerification(expectResponse);
     }
   };
 }

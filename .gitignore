@@ -12,6 +12,8 @@ frontend/core/*.sublime-workspace
 target/
 frontend/core/src/main/webapp/test/json/
 frontend/core/src/main/webapp/static/*.min.js
+frontend/core/src/main/webapp/static/terms.html
+frontend/core/src/main/webapp/static/privacy.html
 frontend/core/src/main/webapp/static/css
 frontend/core/src/main/webapp/static/favicon/
 frontend/core/src/main/webapp/static/img/
@@ -19,8 +21,8 @@ frontend/core/src/main/webapp/static/fonts/
 frontend/core/src/main/webapp/static/audio/
 frontend/core/src/main/webapp/static/js/
 frontend/core/src/main/webapp/landing/static/audio/
-frontend/core/src/main/webapp/landing/terms.html
-frontend/core/src/main/webapp/landing/privacy.html
+frontend/core/src/main/webapp/landing/static/terms.html
+frontend/core/src/main/webapp/landing/static/privacy.html
 frontend/core/src/main/webapp/terms.html
 frontend/core/src/main/webapp/privacy.html
 

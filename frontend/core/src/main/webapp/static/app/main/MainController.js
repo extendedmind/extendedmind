@@ -1203,6 +1203,56 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     }
   };
 
+  function checkEmailVerified(){
+    return $q(function(resolve, reject) {
+      UserService.getAccount().then(function(){
+        if (UserSessionService.getEmailVerified()){
+          UISessionService.pushNotification({
+            type: 'fyi',
+            text: 'email verified'
+          });
+          resolve();
+        }else{
+          reject();
+        }
+      }, function(error){
+        reject(error);
+      });
+    });
+  }
+
+  $scope.isEmailVerified = function(){
+    return $scope.isFakeUser() || UserSessionService.getEmailVerified();
+  };
+
+  $scope.showVerifyEmailModal = function(messageHeading){
+    // Show verify email modal on cold boot if email is not verified
+    var verificationInstructionNodes = [{
+        type: 'text',
+        data: 'follow the instructions and then press the button below, or'
+      },{
+        type: 'link',
+        data: 'go to your account',
+        action: function() {
+          $scope.hideModal();
+          $scope.changeFeature('user', {account: true});
+        }
+      },{
+        type: 'text',
+        data: 'to resend the message or change your email address'
+    }];
+    var verifyEmailModalParams = {
+      messageHeading: messageHeading ? messageHeading : 'verify your address',
+      messageIngress: 'message has been sent to ' +  UserSessionService.getEmail(),
+      messageText: verificationInstructionNodes,
+      confirmText: 'check now',
+      confirmTextDeferred: 'checking\u2026',
+      confirmActionDeferredFn: checkEmailVerified,
+      confirmActionPromiseFn: true
+    };
+    $scope.showModal(undefined, verifyEmailModalParams);
+  };
+
   // INJECT OTHER CONTENT CONTROLLERS HERE
   $controller('SynchronizeController',{$scope: $scope});
   $controller('TasksController',{$scope: $scope});

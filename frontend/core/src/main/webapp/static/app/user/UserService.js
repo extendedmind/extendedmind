@@ -27,6 +27,11 @@
     /^/.source +
     BackendClientService.apiPrefixRegex.source +
     /clear$/.source
+    ),
+  postResendVerificationRegexp = new RegExp(
+    /^/.source +
+    BackendClientService.apiPrefixRegex.source +
+    /email\/resend$/.source
     );
 
   return {
@@ -35,6 +40,7 @@
         this.getAccountRegex)
       .then(function(response) {
         UserSessionService.setEmail(response.email);
+        UserSessionService.setEmailVerified(response.emailVerified);
         UserSessionService.setTransportPreferences(response.preferences);
         UserSessionService.setAccessInformation(response.uuid, response.collectives, response.sharedLists);
         return response;
@@ -63,6 +69,11 @@
         undefined,
         AuthenticationService.sanitizeEmail(user.username),
         user.password);
+    },
+    resendVerification: function() {
+      return BackendClientService.postOnline(
+        '/api/email/resend',
+        postResendVerificationRegexp);
     },
     migrateUser: function(){
       /* migrate old onboarded value to 1.8-> values */
@@ -138,6 +149,7 @@
     getAccountRegex: new RegExp(/api\/account/.source),
     putAccountRegex: new RegExp(/api\/account/.source),
     postLogoutRegex: postLogoutRegexp,
+    postResendVerificationRegex: postResendVerificationRegexp,
     putChangePasswordRegex: new RegExp(
       /^/.source +
       BackendClientService.apiPrefixRegex.source +

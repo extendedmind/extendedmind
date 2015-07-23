@@ -641,7 +641,7 @@
   }
 
   if (!$scope.isOnboarding('focus', 'tasks') && $scope.isFakeUser()){
-    // Show modal immediately on cold boot on other than first onboarding
+    // Show notification immediately on cold boot on other than first onboarding
     UISessionService.pushDelayedNotification({
       type: 'signUp',
       gotoFn: gotoSignUp
@@ -649,6 +649,15 @@
     $timeout(function() {
       UISessionService.activateDelayedNotifications();
     }, 1000);
+  }else if (!$scope.isEmailVerified()){
+    // It might just be that emailVerified has not been stored properly to local storage
+    // so we need to get account first
+    UserService.getAccount().then(function(){
+      if (!UserSessionService.getEmailVerified()){
+        // Show verify email modal on cold boot if email is not verified
+        $scope.showVerifyEmailModal();
+      }
+    });
   }
 
   $scope.openCalendarSettingsAndIncreaseOnboarding = function(){

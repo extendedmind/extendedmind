@@ -14,10 +14,25 @@
  */
  'use strict';
 
- function UserController($http, $location, $q, $rootScope, $scope, $templateCache, $window,
+ function UserController($http, $location, $q, $rootScope, $scope, $templateCache, $timeout, $window,
                          AnalyticsService, AuthenticationService, BackendClientService, ItemsService,
                          ListsService, NotesService, ReminderService, SwiperService, SynchronizeService,
                          TagsService, TasksService, UISessionService, UserService, UserSessionService) {
+
+
+  var featureChangedCallback = function featureChangedCallback(name, data/*, state*/) {
+    if (name === 'user' && data && data.account === true){
+      if ($scope.activeDetails === undefined){
+        SwiperService.setInitialSlidePath('user', 'user/details');
+        $scope.swipeToDetails('account');
+      }else{
+        setTimeout(function(){
+          $scope.swipeToDetails('account');
+        });
+      }
+    }
+  };
+  UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'UserController');
 
   $scope.isAdmin = function isAdmin() {
     return UserSessionService.getUserType() === 0;
@@ -68,6 +83,9 @@
   $scope.activeDetails = undefined;
   $scope.swipeToDetails = function(detailsType){
     $scope.activeDetails = detailsType;
+    if (detailsType === 'account'){
+      $scope.user = {created: UserSessionService.getUserCreated()};
+    }
     SwiperService.swipeTo('user/details');
   };
 
@@ -99,18 +117,16 @@
   // TERMS AND PRIVACY
 
   $scope.openTermsInEditor = function(){
-    var user  = UserSessionService.getUser();
-    $http.get('https://ext.md/terms.html').then(function(termsResponse){
+    $http.get(BackendClientService.getUrlPrefix() + '/static/terms.html').then(function(termsResponse){
       user.terms = termsResponse.data;
-      $scope.openEditor('user', user, 'terms');
+      $scope.openEditor('user', undefined, 'terms');
     });
   };
 
   $scope.openPrivacyInEditor = function(){
-    var user  = UserSessionService.getUser();
-    $http.get('https://ext.md/privacy.html').then(function(privacyResponse){
+    $http.get(BackendClientService.getUrlPrefix() + '/static/privacy.html').then(function(privacyResponse){
       user.privacy = privacyResponse.data;
-      $scope.openEditor('user', user, 'privacy');
+      $scope.openEditor('user', undefined, 'privacy');
     });
   };
 
@@ -230,9 +246,28 @@
     return BackendClientService.getQueueLength();
   };
 
+  // Actions
+
+  $scope.resendEmailVerification = function(){
+    $scope.resendOffline = false;
+    $scope.verificationResendInProgress = true;
+    UserService.resendVerification().then(function(){
+      $scope.showVerifyEmailModal('resent');
+      $timeout(function() {
+        $scope.verificationResendInProgress = false;
+      }, 10000);
+    },function(error){
+      if (error.type === 'offline') {
+        AnalyticsService.error('resend', 'offline');
+        $scope.resendOffline = true;
+      }
+      $scope.verificationResendInProgress = false;
+    });
+  };
+
 }
-UserController['$inject'] = ['$http', '$location', '$q', '$rootScope', '$scope', '$templateCache', '$window',
-'AnalyticsService', 'AuthenticationService', 'BackendClientService', 'ItemsService', 'ListsService',
-'NotesService', 'ReminderService', 'SwiperService', 'SynchronizeService', 'TagsService', 'TasksService',
-'UISessionService', 'UserService', 'UserSessionService'];
+UserController['$inject'] = ['$http', '$location', '$q', '$rootScope', '$scope', '$templateCache',
+'$timeout', '$window', 'AnalyticsService', 'AuthenticationService', 'BackendClientService', 'ItemsService',
+'ListsService', 'NotesService', 'ReminderService', 'SwiperService', 'SynchronizeService', 'TagsService',
+'TasksService', 'UISessionService', 'UserService', 'UserSessionService'];
 angular.module('em.user').controller('UserController', UserController);

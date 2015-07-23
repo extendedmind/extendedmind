@@ -13,7 +13,7 @@
 
       <div ng-if="useSharedLists()" ng-repeat="(ownerUUID, sharedListInfos) in sharedLists">
         <p class="row">
-          <span class="text-heading-primary" ng-bind="'shared by ' + sharedListInfos[0]"></span></br>
+          <span class="text-heading-primary" ng-bind="'shared by ' + sharedListInfos[0]"></span><br/>
         </p>
         <div ng-repeat="(sharedListUUID, sharedListInfo) in sharedListInfos[1]">
           <div class="group-mixed vertically-centered">
@@ -34,7 +34,7 @@
       <div ng-if="useAdoptedLists()" ng-repeat="(collectiveUUID, adoptedLists) in adoptedLists">
         <p class="row">
           <span class="text-heading-primary"
-                ng-bind="'adopted from ' + getCollectiveName(collectiveUUID)"></span></br>
+                ng-bind="'adopted from ' + getCollectiveName(collectiveUUID)"></span><br/>
         </p>
         <div ng-repeat="adoptedList in adoptedLists">
           <div class="group-mixed vertically-centered">

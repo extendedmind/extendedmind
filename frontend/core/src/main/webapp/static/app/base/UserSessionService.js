@@ -56,6 +56,7 @@
     SessionStorageService.setPreferences(LocalStorageService.getPreferences());
     SessionStorageService.setUserCreated(LocalStorageService.getUserCreated());
     SessionStorageService.setUserModified(LocalStorageService.getUserModified());
+    SessionStorageService.setEmailVerified(LocalStorageService.getEmailVerified());
     SessionStorageService.setState(LocalStorageService.getState());
     SessionStorageService.setLatestModified(LocalStorageService.getLatestModified());
     SessionStorageService.setItemsSynchronized(LocalStorageService.getItemsSynchronized());
@@ -172,6 +173,7 @@
       SessionStorageService.setPreferences(preferences);
       SessionStorageService.setUserModified(authenticateResponse.modified);
       SessionStorageService.setUserCreated(authenticateResponse.created);
+      SessionStorageService.setEmailVerified(authenticateResponse.emailVerified);
 
       if (authenticateResponse.replaceable) {
         LocalStorageService.setBackendDelta(backendDelta);
@@ -186,10 +188,9 @@
         LocalStorageService.setPreferences(preferences);
         LocalStorageService.setUserModified(authenticateResponse.modified);
         LocalStorageService.setUserCreated(authenticateResponse.created);
+        LocalStorageService.setEmailVerified(authenticateResponse.emailVerified);
       }
-      if (email) {
-        setEmail(email);
-      }
+      setEmail(email);
 
       // Notify owner UUID's
       executeNotifyOwnersCallbacks(authenticateResponse.userUUID,
@@ -199,6 +200,12 @@
     },
     setEmail: function(email) {
       setEmail(email);
+    },
+    setEmailVerified: function(emailVerified) {
+      SessionStorageService.setEmailVerified(emailVerified);
+      if (persistentStorageEnabled || LocalStorageService.getReplaceable() !== null) {
+        LocalStorageService.setEmailVerified(emailVerified);
+      }
     },
     setPreference: function(name, value) {
       var preferences = this.getPreferences() || {};
@@ -434,15 +441,21 @@
     getRememberByDefault: function() {
       return this.isPersistentStorageEnabled();
     },
-    getUser: function() {
+    getAnalyticsUser: function() {
       syncWebStorages();
-      if (SessionStorageService.getUserUUID()) {
-        var user = {
-          uuid: SessionStorageService.getUserUUID(),
-          type: parseInt(SessionStorageService.getUserType()),
-          created: SessionStorageService.getUserCreated(),
-          modified: SessionStorageService.getUserModified()
-        };
+      var userUUID = SessionStorageService.getUserUUID();
+      if (userUUID) {
+        var user = { uuid: userUUID };
+        var userType = SessionStorageService.getUserType();
+        if (userType !== null && userType !== undefined){
+          user.userType = parseInt(userType);
+        }
+        if (SessionStorageService.getUserCreated()){
+          user.created = SessionStorageService.getUserCreated();
+        }
+        if (SessionStorageService.getUserModified()){
+          user.modified = SessionStorageService.getUserModified();
+        }
         if (SessionStorageService.getCohort()) {
           user.cohort = parseInt(SessionStorageService.getCohort());
         }
@@ -454,6 +467,10 @@
     },
     getUserType: function() {
       return parseInt(SessionStorageService.getUserType());
+    },
+    getEmailVerified: function() {
+      syncWebStorages();
+      return SessionStorageService.getEmailVerified();
     },
     isFakeUser: function() {
       return UUIDService.isFakeUUID(this.getUserUUID());

@@ -533,7 +533,7 @@ function AnalyticsService($q, $rootScope, $timeout, BackendClientService, HttpCl
     if (id){
       payload[0].id = id;
     }
-    var user = UserSessionService.getUser();
+    var user = UserSessionService.getAnalyticsUser();
     if (user){
       payload[0].data.user = user;
     }
