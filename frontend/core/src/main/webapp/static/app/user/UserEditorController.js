@@ -248,6 +248,33 @@
     }
     $scope.signingUp = false;
   }
+
+  $scope.deleteAccount = function(password) {
+    $scope.deleteAccountFailed = false;
+    $scope.userEditOffline = false;
+    UserService.deleteAccount($scope.getUserEmail(), password).then(
+      function(){
+        // Go to login and show modal there
+        // On error, emit redirectToEntry
+        var deleteAccountInstructionNodes = [{
+          type: 'text',
+          data: 'if you have second thoughts, log back in immediately'
+        }];
+        var deleteAccountModal = {
+          messageHeading: 'account marked for deletion',
+          messageIngress: 'all of your data will be destroyed within one hour',
+          messageText: deleteAccountInstructionNodes,
+          confirmText: 'done'
+        };
+        $rootScope.$emit('emException', {type: 'redirectToEntry', modal: deleteAccountModal});
+      }, function(error){
+        if (error.type === 'offline') {
+          $scope.userEditOffline = true;
+        } else if (error.type === 'forbidden') {
+          $scope.deleteAccountFailed = true;
+        }
+      });
+  };
 }
 
 UserEditorController['$inject'] = ['$http', '$rootScope', '$scope', '$timeout', 'AnalyticsService',

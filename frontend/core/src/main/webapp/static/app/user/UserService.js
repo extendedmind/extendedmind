@@ -32,6 +32,11 @@
     /^/.source +
     BackendClientService.apiPrefixRegex.source +
     /email\/resend$/.source
+    ),
+  deleteAccountRegexp = new RegExp(
+    /^/.source +
+    BackendClientService.apiPrefixRegex.source +
+    /account$/.source
     );
 
   return {
@@ -74,6 +79,14 @@
       return BackendClientService.postOnline(
         '/api/email/resend',
         postResendVerificationRegexp);
+    },
+    deleteAccount: function(username, password) {
+      return BackendClientService.deleteOnlineWithUsernamePassword(
+        '/api/account',
+        deleteAccountRegexp,
+        undefined,
+        username,
+        password);
     },
     migrateUser: function(){
       /* migrate old onboarded value to 1.8-> values */
@@ -150,6 +163,7 @@
     putAccountRegex: new RegExp(/api\/account/.source),
     postLogoutRegex: postLogoutRegexp,
     postResendVerificationRegex: postResendVerificationRegexp,
+    deleteAccountRegex: deleteAccountRegexp,
     putChangePasswordRegex: new RegExp(
       /^/.source +
       BackendClientService.apiPrefixRegex.source +

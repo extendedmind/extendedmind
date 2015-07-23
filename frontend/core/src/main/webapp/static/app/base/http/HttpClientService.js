@@ -419,6 +419,22 @@
     }
   };
 
+  methods.deleteOnlineWithCredentials = function(url, data, overrideCredentials) {
+    return $http({
+      method: 'delete',
+      url: url,
+      data: data,
+      headers: {'Authorization': 'Basic ' + overrideCredentials}
+    })
+    .then(function(success) {
+      handleOnlineCallback(true);
+      return success;
+    }, function(error) {
+      handleOnlineCallback(error);
+      return $q.reject({type:'http', value: error});
+    });
+  };
+
   // Custom method for a primary POST, i.e. authentication
   methods.postPrimary = function(url, data) {
     processPrimaryRequest(url, data);

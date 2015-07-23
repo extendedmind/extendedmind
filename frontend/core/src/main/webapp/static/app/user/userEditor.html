@@ -35,8 +35,8 @@
     </div>
   </div>
 
-  <form name="userForm" ng-if="mode === 'password' || mode === 'email' || mode === 'terms' || mode === 'privacy'"
-    class="container-fluid--inner">
+  <form name="userForm" class="container-fluid--inner"
+        ng-if="mode === 'password' || mode === 'email' || mode === 'delete'">
     <div ng-if="mode === 'password'" class="container-content" drawer-override-aisle="right">
       <h2 class="group-heading row-form">change password</h2>
       <div class="row-form">
@@ -74,11 +74,18 @@
         <span ng-if="changeEmailLoginFailed" class="text-error">could not log in using new email</span>
       </div>
     </div>
-    <div ng-if="mode === 'terms'" class="container-content" drawer-override-aisle="right">
-      <div class="group-html-external row" ng-bind-html="user.terms"></div>
-    </div>
-    <div ng-if="mode === 'privacy'" class="container-content" drawer-override-aisle="right">
-      <div class="group-html-external row" ng-bind-html="user.privacy"></div>
+    <div ng-if="mode === 'delete'" class="container-content" drawer-override-aisle="right">
+      <h2 class="group-heading row-form">delete account</h2>
+      <p class="row"><b>warning:</b> by entering your password and pressing delete below, you will be logged out of
+      every device and your account will be marked for immediate deletion</p>
+      <div class="row-form">
+        <input type="password" name="password" id="password" ng-model="user.password"
+        ng-minlength="7" ng-maxlength="100" placeholder="enter password&#8230;" required />
+      </div>
+      <div class="group-error row-form">
+        <span ng-if="userEditOffline" class="text-error">can't connect to server. are you online?</span>
+        <span ng-if="deleteAccountFailed" class="text-error">invalid password</span>
+      </div>
     </div>
     <footer class="container-content--after group-btn editor-footer">
       <button ng-if="mode === 'password'" type="submit" class="btn-action" ng-disabled="!userForm.$valid"
@@ -90,8 +97,22 @@
       ng-click="changeEmail(user.emailNew, user.password)">
         <span class="text-btn">done</span>
       </button>
+      <button ng-if="mode === 'delete'" type="submit" class="btn-action"
+      ng-disabled="!userForm.$valid"
+      ng-click="deleteAccount(user.password)">
+        <span class="text-btn danger">delete</span>
+      </button>
     </footer>
   </form>
+
+  <div class="container-fluid--inner" ng-if="mode === 'terms' || mode === 'privacy'">
+    <div ng-if="mode === 'terms'" class="container-content" drawer-override-aisle="right">
+      <div class="group-html-external row" ng-bind-html="user.terms"></div>
+    </div>
+    <div ng-if="mode === 'privacy'" class="container-content" drawer-override-aisle="right">
+      <div class="group-html-external row" ng-bind-html="user.privacy"></div>
+    </div>
+  </div>
 
   <div ng-if="mode === 'signUp'" class="swiper-container container-fluid--inner" swiper-container="signUp" swiper-type="main"
     expected-slides="2" swiper-container-slide-changed="signUpSwiperSlideChanged(path, activeIndex)">

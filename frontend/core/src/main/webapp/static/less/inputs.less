@@ -106,9 +106,15 @@ are `button` elements that have a logo as `label`.
     vertical-align: middle;
     width: 100%;
     line-height: @height-btn;
+    &.danger{
+      background-color: @color-background-btn-danger-active;
+    }
   }
   &:active > .text-btn {
     background-color: @color-background-btn-pressed;
+    &.danger{
+      background-color: @color-background-btn-danger-pressed;
+    }
   }
   &[disabled] > .text-btn {
     background-color: @color-background-btn-disabled;

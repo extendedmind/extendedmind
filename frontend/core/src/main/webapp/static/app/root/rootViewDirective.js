@@ -82,7 +82,7 @@
       }
 
       var exiting = false;
-      function redirectToEntry() {
+      function redirectToEntry(modal) {
         exiting = true;
         clearAll();
 
@@ -109,6 +109,13 @@
         //
         // which almost worked, but on menu open, failed. In app that always broke.
         $templateCache.removeAll();
+
+        if (modal){
+          // Show modal in timeout after redirect is ready
+          $timeout(function(){
+            $scope.showModal(undefined, modal);
+          });
+        }
       }
 
       // MODAL
@@ -198,7 +205,7 @@
           // TODO: Type 'response' for offline responses!
         }
         else if (exception.type === 'redirectToEntry') {
-          redirectToEntry();
+          redirectToEntry(exception.modal);
         }
         else if (exception.type === 'clearAll') {
           clearAll();

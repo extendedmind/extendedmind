@@ -168,6 +168,17 @@
     });
   };
 
+  methods.deleteOnlineWithUsernamePassword = function(url, regex, data, username, password) {
+    if (regex.test(url)) {
+      var usernamePasswordCredentials = base64.encode(username + ':' + password);
+      return HttpClientService.deleteOnlineWithCredentials(getUrlPrefix() + url, data,
+                                                        usernamePasswordCredentials)
+      .then(handleHttpSuccess, handleHttpError);
+    } else {
+      return emitRegexException(regex, 'delete', url);
+    }
+  };
+
   methods.putOffline = function(url, regex, params, data, timestamp) {
     return refreshCredentials().then(function() {
       if (regex.test(url)) {
@@ -196,7 +207,7 @@
                                                         usernamePasswordCredentials)
       .then(handleHttpSuccess, handleHttpError);
     } else {
-      return emitRegexException(regex, 'put', data);
+      return emitRegexException(regex, 'put', url);
     }
   };
 

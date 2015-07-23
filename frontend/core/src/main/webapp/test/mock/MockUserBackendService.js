@@ -113,7 +113,13 @@ function MockUserBackendService($httpBackend, UserService, UserSessionService) {
     });
   }
 
-
+  function mockDeleteAccount(expectResponse){
+    $httpBackend.whenDELETE(UserService.deleteAccountRegex)
+    .respond(function(method, url, data, headers) {
+      var deleteAccountResponse = getJSONFixture('deleteAccountResponse.json');
+      return expectResponse(method, url, data, headers, deleteAccountResponse);
+    });
+  }
 
   return {
     mockUserBackend: function(expectResponse) {
@@ -123,6 +129,7 @@ function MockUserBackendService($httpBackend, UserService, UserSessionService) {
       mockGetPrivacyPolicy();
       mockLogout(expectResponse);
       mockResendVerification(expectResponse);
+      mockDeleteAccount(expectResponse);
     }
   };
 }
