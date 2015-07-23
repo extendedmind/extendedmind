@@ -264,7 +264,7 @@
           messageHeading: 'account marked for deletion',
           messageIngress: 'all of your data will be destroyed within one hour',
           messageText: deleteAccountInstructionNodes,
-          confirmText: 'done'
+          confirmText: 'got it'
         };
         $rootScope.$emit('emException', {type: 'redirectToEntry', modal: deleteAccountModal});
       }, function(error){
