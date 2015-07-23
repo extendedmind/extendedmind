@@ -155,7 +155,7 @@
                   <type>war</type>
                   <overWrite>true</overWrite>
                   <outputDirectory>${basedir}/app/www</outputDirectory>
-                  <includes>index.html,static/**</includes>
+                  <includes>static/${project.version}/**</includes>
                   <excludes>static/${project.version}/audio/theme.m4a,static/${project.version}/audio/theme.ogg</excludes>
                 </artifactItem>
               </artifactItems>
