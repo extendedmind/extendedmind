@@ -1,0 +1,11 @@
+var trackBegin = function(url) {
+  ga('send', 'event', {
+      'category': 'begin',
+      'action': 'click',
+      'label': '{{ pageName }}',
+      'hitCallback': function() {
+        document.location = url;
+      }
+    }
+  );
+};

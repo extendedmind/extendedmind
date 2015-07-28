@@ -1,0 +1,95 @@
+{% extends "views/base.nunjucks" %}
+{% set pageName = 'manifesto' %}
+{% block title %}{{ super() }} &ndash; manifesto{% endblock %}
+{% block description %}{{ super() }} &ndash; manifesto{% endblock %}
+{% block stylesheets %}
+<link rel="stylesheet" href="static/css/normalize.css">
+<link rel="stylesheet" href="static/css/foundation.min.css">
+<link rel="stylesheet" href="static/css/main.css">
+{% endblock %}
+{% block trackactions %}
+{% include 'views/partials/trackbegin.nunjucks' %}
+{% endblock %}
+{% block header %}
+<nav class="top-bar" data-topbar role="navigation">
+  <ul class="title-area">
+    <li class="name">
+      <a href="/" class="logo"><span class="icon-logo"></span></a>
+    </li>
+    <li class="toggle-topbar menu-icon"><a href><span class="icon-menu"></span></a></li>
+  </ul>
+  <section class="top-bar-section">
+    <ul class="right">
+      <li><a href="/">home</a></li>
+      <li id="manifesto-link" class="active"><a href>manifesto</a></li>
+      <li><a href="http://www.extendedmind.org" target="_blank">blog</a></li>
+      <li class="hide-for-large-up"><a href="mailto:info@ext.md">contact</a></li>
+      <li class="hide-for-medium-up"><a href="https://www.facebook.com/extmd" target="_blank">facebook</a></li>
+      <li class="hide-for-medium-up"><a href="https://www.twitter.com/extmd" target="_blank">twitter</a></li>
+      <li class="show-for-large-up"><a href="https://ext.md/login">log in</a></li>
+    </ul>
+  </section>
+</nav>
+{% endblock %}
+{% block main %}
+<div id="manifesto">
+  <div id="manifesto-container">
+    <p id="manifesto-heading-top"><span class="text-large">we are</span>&nbsp;
+    <span class="text-large highlighted">philosophers</span>
+    </p>
+    <p><span class="text-normal">not just the shaggy haired guys spouting nietzsche and kant at the local pub
+    (though we’ve been known to do that too). but ph.d’s in intuitive thinking, learning and
+    communication. we’re also geeks that design, code and polish. so we’ve married our two
+    worlds &ndash; technology and philosophy &ndash; to create products designed to</span></p>
+    <p id="manifesto-heading-bottom"><span class="text-large">change the way you</span>&nbsp;
+    <span class="text-large highlighted">think</span></p>
+    <p><span class="text-normal">we believe the human mind is the single greatest tool we have to better
+    humanity. so what would the world look like if we could improve our minds’ capacity to function,
+    focus and flow?</span>
+    </p>
+  </div>
+</div>
+{% endblock %}
+{% block footer %}
+<div class="left">
+  <div class="some-container">
+    <a href="https://www.facebook.com/extmd" class="some" target="_blank">
+      <span class="icon-facebook"></span>
+    </a>
+    <a href="https://www.twitter.com/extmd" class="some" target="_blank">
+      <span class="icon-twitter"></span>
+    </a>
+    <a href="mailto:info@ext.md" class="some">
+      <span class="icon-email"></span>
+    </a>
+  </div>
+</div>
+<div class="centered">
+  <a href="/new" class="button" onclick="trackBegin(this.href);return false;">begin</a>
+</div>
+<div class="right">
+  <div onclick="var audio = document.getElementById('theme');
+                if (audio.muted){
+                  audio.muted = false;
+                  this.firstElementChild.className = 'icon-volume-mute';
+                }
+                else{
+                  audio.muted = true;
+                  this.firstElementChild.className = 'icon-volume-up';
+                }">
+    <span id="volume" class="icon-volume-mute hide"></span>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script type='text/javascript' src='//code.jquery.com/jquery-2.1.3.min.js'></script>
+<script type='text/javascript' src='//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js'></script>
+<script type='text/javascript' src='//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js'></script>
+<script type="text/javascript" src="static/js/animo.min.js"></script>
+<script type='text/javascript' src='static/js/foundation.min.js'></script>
+<script type="text/javascript" src="static/js/em-animation.js"></script>
+<script>
+  $(document).foundation();
+  setupHTML5Audio();
+</script>
+{% endblock %}
