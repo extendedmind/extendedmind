@@ -97,6 +97,10 @@
       return deferred.promise;
     }
 
+    $routeProvider.when('/', {
+      redirectTo: '/entry'
+    });
+
     $routeProvider.when('/entry', {
       templateUrl: urlBase + 'app/entry/entrySlides.html',
       resolve: {
