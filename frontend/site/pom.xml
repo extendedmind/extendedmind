@@ -33,6 +33,23 @@
     </developer>
   </developers>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.extendedmind.frontend</groupId>
+      <artifactId>frontend-app</artifactId>
+      <version>${project.version}</version>
+      <type>war</type>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.extendedmind.frontend</groupId>
+      <artifactId>frontend-analytics</artifactId>
+      <version>${project.version}</version>
+      <type>jar</type>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+
   <build>
     <plugins>
       <plugin>
@@ -66,10 +83,150 @@
         </configuration>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack-to-www</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.extendedmind.frontend</groupId>
+                  <artifactId>frontend-app</artifactId>
+                  <type>war</type>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${project.build.directory}/unpacked-app</outputDirectory>
+                  <includes>static/${project.version}/**</includes>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-static</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.basedir}/src/static</outputDirectory>
+              <overwrite>true</overwrite>
+              <resources>
+                <resource>
+                  <directory>${project.build.directory}/unpacked-app/static/${project.version}</directory>
+                  <includes>
+                    <include>terms.html</include>
+                    <include>privacy.html</include>
+                    <include>css/em-animation.css</include>
+                    <include>css/animate-animo.css</include>
+                    <include>js/animo.min.js</include>
+                    <include>js/em-animation.js</include>
+                    <include>favicon/*</include>
+                    <include>audio/*</include>
+                    <include>img/*</include>
+                    <include>fonts/*</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.jolokia</groupId>
         <artifactId>docker-maven-plugin</artifactId>
         <configuration>
+          <sourceDirectory>docker</sourceDirectory>
           <images>
+            <image>
+              <name>extendedmind/nginx-conf</name>
+              <alias>nginx-conf</alias>
+              <build>
+                <from>ubuntu:14.04</from>
+                <maintainer>timo.tiuraniemi@iki.fi</maintainer>
+                <tags>
+                  <tag>latest</tag>
+                </tags>
+                <assembly>
+                  <mode>dir</mode>
+                  <basedir>/etc</basedir>
+                  <descriptor>nginx-conf-assembly.xml</descriptor>
+                </assembly>
+                <volumes>
+                  <volume>/etc/confd/conf.d/nginx</volume>
+                  <volume>/etc/confd/templates/nginx</volume>
+                  <volume>/etc/nginx/sites-enabled</volume>
+                  <volume>/etc/nginx/credentials</volume>
+                </volumes>
+              </build>
+            </image>
+            <image>
+              <name>extendedmind/nginx</name>
+              <alias>nginx</alias>
+              <build>
+                <from>nginx:1.9</from>
+                <maintainer>timo.tiuraniemi@iki.fi</maintainer>
+                <tags>
+                  <tag>latest</tag>
+                </tags>
+                <ports>
+                  <port>591</port>
+                  <port>8008</port>
+                </ports>
+                <assembly>
+                  <mode>dir</mode>
+                  <basedir>/usr/src/nginx</basedir>
+                  <descriptor>nginx-assembly.xml</descriptor>
+                </assembly>
+                <entryPoint><exec><arg>/usr/src/nginx/nginx-run.pl</arg></exec></entryPoint>
+              </build>
+            </image>
+            <image>
+              <name>extendedmind/frontend-data</name>
+              <alias>frontend-data</alias>
+              <build>
+                <from>ubuntu:14.04</from>
+                <maintainer>timo.tiuraniemi@iki.fi</maintainer>
+                <tags>
+                  <tag>latest</tag>
+                </tags>
+                <assembly>
+                  <mode>dir</mode>
+                  <basedir>/var/www</basedir>
+                  <descriptor>frontend-data-assembly.xml</descriptor>
+                </assembly>
+                <volumes>
+                  <volume>/var/www</volume>
+                </volumes>
+              </build>
+            </image>
+            <image>
+              <name>extendedmind/frontend</name>
+              <alias>frontend</alias>
+              <build>
+                <from>ubuntu:14.04</from>
+                <maintainer>timo.tiuraniemi@iki.fi</maintainer>
+                <tags>
+                  <tag>latest</tag>
+                  <tag>${project.version}</tag>
+                </tags>
+                <assembly>
+                  <mode>dir</mode>
+                  <basedir>/usr/src/extendedmind</basedir>
+                  <descriptor>frontend-assembly.xml</descriptor>
+                </assembly>
+                <cmd><shell>cp -R /usr/src/extendedmind/* /var/www</shell></cmd>
+              </build>
+            </image>
             <image>
               <name>extendedmind/site-conf</name>
               <alias>site-conf</alias>
@@ -139,6 +296,39 @@
             </fileset>
             <fileset>
               <directory>${basedir}/src/node_modules</directory>
+            </fileset>
+            <fileset>
+              <directory>${basedir}/src/static/favicon</directory>
+            </fileset>
+            <fileset>
+              <directory>${basedir}/src/static</directory>
+              <includes>
+                <include>terms.html</include>
+                <include>privacy.html</include>
+              </includes>
+            </fileset>
+            <fileset>
+              <directory>${basedir}/src/static/img</directory>
+            </fileset>
+            <fileset>
+              <directory>${basedir}/src/static/fonts</directory>
+            </fileset>
+            <fileset>
+              <directory>${basedir}/src/static/js</directory>
+              <includes>
+                <include>em-animation.js</include>
+                <include>animo.min.js</include>
+              </includes>
+            </fileset>
+            <fileset>
+              <directory>${basedir}/src/static/css</directory>
+              <includes>
+                <include>em-animation.css</include>
+                <include>animate-animo.css</include>
+              </includes>
+            </fileset>
+            <fileset>
+              <directory>${basedir}/src/static/audio</directory>
             </fileset>
           </filesets>
         </configuration>

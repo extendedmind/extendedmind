@@ -13,4 +13,4 @@
  * limitations under the License.
  */
 
- jasmine.getJSONFixtures().fixturesPath = 'src/main/webapp/test/json';
+ jasmine.getJSONFixtures().fixturesPath = 'src/test/json';

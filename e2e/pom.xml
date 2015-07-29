@@ -56,7 +56,7 @@
 
     <dependency>
       <groupId>org.extendedmind.frontend</groupId>
-      <artifactId>frontend-core</artifactId>
+      <artifactId>frontend-app</artifactId>
       <type>war</type>
       <scope>compile</scope>
     </dependency>
@@ -98,7 +98,7 @@
               <artifactItems>
                 <artifactItem>
                   <groupId>org.extendedmind.frontend</groupId>
-                  <artifactId>frontend-core</artifactId>
+                  <artifactId>frontend-app</artifactId>
                   <type>war</type>
                   <overWrite>true</overWrite>
                   <outputDirectory>${project.build.directory}</outputDirectory>
@@ -144,7 +144,7 @@
         <configuration>
           <stopKey>testKey</stopKey>
           <stopPort>9999</stopPort>
-          <war>${project.build.directory}/frontend-core-${project.version}.war</war>
+          <war>${project.build.directory}/frontend-app-${project.version}.war</war>
         </configuration>
         <dependencies>
           <dependency>

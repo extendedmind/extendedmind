@@ -10,9 +10,9 @@ AngularJS is set to use 'html5mode' so you have to configure a rewrite such as t
 Default installation location on OS X is `/usr/local/etc/nginx/nginx.conf`
 ```
 	location / {
-    root  [extendedmind_home]/frontend/core/src/main/webapp;
+    root  [extendedmind_home]/frontend/app/src;
     index  index_devel.html index.html;
-    rewrite ^/(?!(static|api|collect|evaluate|landing|test|styleguide)) /index_devel.html break;
+    rewrite ^/(?!(static|api|collect|evaluate|test|styleguide)) /index_devel.html break;
   }
 ```
 

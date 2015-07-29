@@ -6,25 +6,30 @@
 .externalToolBuilders
 
 # Ignore Sublime Text files
-frontend/core/*.sublime-workspace
+*.sublime-workspace
 
 # Ignore Maven builds
 target/
-frontend/core/src/main/webapp/test/json/
-frontend/core/src/main/webapp/static/*.min.js
-frontend/core/src/main/webapp/static/terms.html
-frontend/core/src/main/webapp/static/privacy.html
-frontend/core/src/main/webapp/static/css
-frontend/core/src/main/webapp/static/favicon/
-frontend/core/src/main/webapp/static/img/
-frontend/core/src/main/webapp/static/fonts/
-frontend/core/src/main/webapp/static/audio/
-frontend/core/src/main/webapp/static/js/
-frontend/core/src/main/webapp/landing/static/audio/
-frontend/core/src/main/webapp/landing/static/terms.html
-frontend/core/src/main/webapp/landing/static/privacy.html
-frontend/core/src/main/webapp/terms.html
-frontend/core/src/main/webapp/privacy.html
+
+# Ignore frontend app generated files
+frontend/app/src/test/json/
+frontend/app/src/static/*.min.js
+frontend/app/src/static/terms.html
+frontend/app/src/static/privacy.html
+frontend/app/src/static/css/em.css
+frontend/app/src/static/audio/
+
+# Ignore frontend site generated files
+frontend/site/src/node/
+frontend/site/src/node_modules/
+frontend/site/src/static/audio/
+frontend/site/src/static/css/animate-animo.css
+frontend/site/src/static/css/em-animation.css
+frontend/site/src/static/favicon/
+frontend/site/src/static/fonts/
+frontend/site/src/static/img/
+frontend/site/src/static/js/animo.min.js
+frontend/site/src/static/js/em-animation.js
 
 # Ignore PhantomJS logs
 phantomjsdriver.log
@@ -45,5 +50,5 @@ frontend/cordova/app/config.xml
 frontend/cordova/app/merges
 
 # Analytics
-frontend/core/src/main/webapp/analytics/data/
+frontend/analytics/src/data/
 

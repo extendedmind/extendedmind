@@ -1,15 +1,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.extendedmind</groupId>
-    <artifactId>root</artifactId>
+    <artifactId>frontend</artifactId>
     <version>0-SNAPSHOT</version>
   </parent>
-  <artifactId>frontend</artifactId>
-  <packaging>pom</packaging>
-  <name>Extended Mind :: Frontend</name>
-  <description>Extended Mind Frontend</description>
+  <groupId>org.extendedmind.frontend</groupId>
+  <artifactId>frontend-analytics</artifactId>
+  <packaging>jar</packaging>
+  <name>Extended Mind :: Frontend :: Analytics</name>
+  <description>Extended Mind Frontend Analytics</description>
   <url>https://github.com/extendedmind/extendedmind</url>
   <inceptionYear>2013</inceptionYear>
   <licenses>
@@ -31,23 +32,12 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       <email>timo.tiuraniemi@iki.fi</email>
     </developer>
   </developers>
-  <modules>
-    <module>app</module>
-    <module>analytics</module>
-    <module>site</module>
-  </modules>
-  <profiles>
-    <profile>
-      <id>cordova</id>
-      <activation>
-        <file>
-          <exists>${user.home}/.extendedmind</exists>
-        </file>
-      </activation>
-      <modules>
-        <module>cordova</module>
-      </modules>
-    </profile>
-  </profiles>
 
+  <build>
+    <resources>
+      <resource>
+        <directory>src</directory>
+      </resource>
+    </resources>
+  </build>
 </project>

@@ -41,6 +41,16 @@
     <cordova.urlPrefix>https://ext.md</cordova.urlPrefix>
   </properties>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.extendedmind.frontend</groupId>
+      <artifactId>frontend-app</artifactId>
+      <version>${project.version}</version>
+      <type>war</type>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+
   <profiles>
     <profile>
       <id>cordova-android</id>
@@ -151,7 +161,7 @@
               <artifactItems>
                 <artifactItem>
                   <groupId>org.extendedmind.frontend</groupId>
-                  <artifactId>frontend-core</artifactId>
+                  <artifactId>frontend-app</artifactId>
                   <type>war</type>
                   <overWrite>true</overWrite>
                   <outputDirectory>${basedir}/app/www</outputDirectory>
