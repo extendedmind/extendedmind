@@ -1,4 +1,4 @@
-<div ng-if="entryState !== 'download' && !isWeb()">
+<div ng-if="entryState !== 'unsupported' && !isWeb()">
   <section class="container-content em-animation-background">
     <div class="group-instruction-jumbotron row">
       <div class="group-instruction--animation" >
@@ -85,7 +85,7 @@
     </button>
   </footer>
 </div>
-<div ng-if="entryState === 'download'">
+<div ng-if="entryState === 'unsupported'">
   <section class="container-content" style="padding-bottom: 122px;">
     <ul style="padding-left: 28px;">
       <li style="display:inline; margin-right: 15px;">

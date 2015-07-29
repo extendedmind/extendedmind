@@ -180,7 +180,7 @@
                     status: error.value.status,
                     data: error.value.data,
                     retry: swapTokenAndAuthenticate,
-                    redirectUrl: '/',
+                    redirectUrl: '/entry',
                     promise: deferredAuthentication.resolve
                   }
                 };

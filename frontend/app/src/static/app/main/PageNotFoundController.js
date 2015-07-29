@@ -14,9 +14,11 @@
  */
  'use strict';
 
- function PageNotFoundController($scope, UISessionService) {
-   $scope.ownerPrefix = UISessionService.getOwnerPrefix();
- }
+function PageNotFoundController($location, $scope) {
+  $scope.goHome = function(){
+    $location.path('/entry');
+  };
+}
 
- PageNotFoundController['$inject'] = ['$scope', 'UISessionService'];
- angular.module('em.main').controller('PageNotFoundController', PageNotFoundController);
+PageNotFoundController['$inject'] = ['$location', '$scope'];
+angular.module('em.main').controller('PageNotFoundController', PageNotFoundController);

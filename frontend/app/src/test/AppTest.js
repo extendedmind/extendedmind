@@ -122,7 +122,7 @@ angular.module('em.appTest')
             UserSessionService.enableOffline(true);
 
           UserSessionService.createFakeUserUUID();
-          $location.path('/');
+          $location.path('/entry');
         }]
       }
     });

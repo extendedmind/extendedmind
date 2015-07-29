@@ -89,7 +89,7 @@
         // $location can not be injected directly presumably because this directive
         // is defined above ng-view
         var $location = $injector.get('$location');
-        $location.url('/');
+        $location.url('/entry');
 
         // NOTE:  Without this swiper breaks after logout/login, because
         //        window.getComputedStyle(el, null).getPropertyValue('width');

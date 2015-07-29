@@ -25,7 +25,7 @@
 
   if (!passwordResetCode || !$scope.user.username) {
     $location.url($location.path());
-    $location.path('/');
+    $location.path('/entry');
   }
 
   $scope.resetPassword = function resetPassword() {
@@ -37,13 +37,13 @@
         if (packaging === 'web' && (DetectBrowserService.isMobile() ||
               (!DetectBrowserService.isChrome() && !DetectBrowserService.isWindowsPhone()))){
           $location.url($location.path());
-          $location.path('/');
+          $location.path('/entry');
         }else{
           // Authenticate using the new password
           AuthenticationService.login($scope.user)
           .then(function(/*authenticationResponse*/) {
             $location.url($location.path());
-            $location.path('/');
+            $location.path('/entry');
           }, function(error) {
             if (error.type === 'offline') {
               $scope.resetOffline = true;

@@ -35,14 +35,14 @@ function EntryController($http, $location, $rootScope, $routeParams, $scope,
   // Initialize login path.
 
   if (packaging === 'web' && DetectBrowserService.isMobile()) {
-    $scope.entryState = 'download';
+    $scope.entryState = 'unsupported';
     $scope.mobilePlatform = true;
   }else if (packaging === 'web' &&
             ((!DetectBrowserService.isChrome() && !DetectBrowserService.isWindowsPhone()) ||
-             $location.path() === '/download')) {
-    $scope.entryState = 'download';
+             $location.path() === '/unsupported')) {
+    $scope.entryState = 'unsupported';
   }else if ($location.path() === '/login' ||
-            (($location.path() === '/' || $location.path() === '') && packaging === 'web')){
+            (($location.path() === '/entry' || $location.path() === '') && packaging === 'web')){
     initializeLogin();
   }
 

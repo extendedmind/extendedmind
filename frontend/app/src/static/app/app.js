@@ -97,7 +97,7 @@
       return deferred.promise;
     }
 
-    $routeProvider.when('/', {
+    $routeProvider.when('/entry', {
       templateUrl: urlBase + 'app/entry/entrySlides.html',
       resolve: {
         supportedPlatformAndBrowser: ['$q', 'DetectBrowserService', isSupportedPlatformAndBrowser],
@@ -111,7 +111,7 @@
       }
     });
 
-    $routeProvider.when('/download', {
+    $routeProvider.when('/unsupported', {
       templateUrl: urlBase + 'app/entry/entrySlides.html'
     });
 
@@ -181,14 +181,14 @@
         routes: ['$location', '$route', 'AuthenticationService', 'UISessionService',
         function($location, $route, AuthenticationService, UISessionService) {
           if (!$route.current.params.hex_code || !$route.current.params.email) {
-            $location.path('/');
+            $location.path('/entry');
           }else{
             // make sure code is valid
             AuthenticationService.getPasswordResetExpires($route.current.params.hex_code,
                                                           $route.current.params.email).then(undefined,
               function(){
                 $location.url($location.path());
-                $location.path('/');
+                $location.path('/entry');
                 UISessionService.pushNotification({
                   type: 'fyi',
                   text: 'password reset failed'
@@ -201,7 +201,7 @@
     });
 
     $routeProvider.when('/verify/:hex_code', {
-      redirectTo: '/',
+      redirectTo: '/entry',
       resolve: {
         routes: ['$location', '$route', 'AnalyticsService', 'AuthenticationService', 'UISessionService',
         function($location, $route, AnalyticsService, AuthenticationService, UISessionService) {
@@ -214,14 +214,14 @@
             AuthenticationService.postVerifyEmail(verifyCode, email).then(
               function(){
                 $location.url($location.path());
-                $location.path('/');
+                $location.path('/entry');
                 UISessionService.pushNotification({
                   type: 'fyi',
                   text: 'email verified'
                 });
               }, function(){
                 $location.url($location.path());
-                $location.path('/');
+                $location.path('/entry');
                 UISessionService.pushNotification({
                   type: 'fyi',
                   text: 'email verification failed'
@@ -234,7 +234,7 @@
     });
 
     $routeProvider.when('/accept/:hex_code', {
-      redirectTo: '/',
+      redirectTo: '/entry',
       resolve: {
         routes: ['$location', '$route', 'AnalyticsService', 'AuthenticationService', 'UISessionService',
         function($location, $route, AnalyticsService, AuthenticationService, UISessionService) {
@@ -246,13 +246,13 @@
             // accept share directly
             AuthenticationService.postAcceptShare(acceptCode, email).then(
               function(){
-                $location.path('/');
+                $location.path('/entry');
                 UISessionService.pushNotification({
                   type: 'fyi',
                   text: 'list share accepted'
                 });
               }, function(){
-                $location.path('/');
+                $location.path('/entry');
                 UISessionService.pushNotification({
                   type: 'fyi',
                   text: 'list share accept failed'
@@ -264,7 +264,7 @@
       }
     });
 
-    $routeProvider.when('/404', {
+    $routeProvider.when('/invalid', {
       templateUrl: urlBase + 'app/main/pageNotFound.html',
       controller: 'PageNotFoundController'
     });
@@ -273,7 +273,7 @@
 
     $routeProvider.otherwise({
       controller: 'PageNotFoundController',
-      redirectTo: '404'
+      redirectTo: 'invalid'
     });
 
     // ADMINISTRATION
@@ -297,7 +297,7 @@ angular.module('em.app').run(['$injector', '$rootScope', 'version', function($in
     if (rejection === 'clearAll') {
       $rootScope.$emit('emException', {type: 'clearAll'});
       var $location = $injector.get('$location');
-      $location.path('/download');
+      $location.path('/unsupported');
     }
   });
 
