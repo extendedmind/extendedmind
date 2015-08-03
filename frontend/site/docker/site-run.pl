@@ -4,4 +4,4 @@
 $SIG{TERM} = sub {
   die "exiting site...\n"
 };
-system "/usr/local/bin/node bin/site /etc/extendedmind/site-config.js";
+system "/usr/local/bin/node --harmony server.js /etc/extendedmind/site-config.js";

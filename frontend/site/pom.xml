@@ -179,7 +179,6 @@
                   <tag>latest</tag>
                 </tags>
                 <ports>
-                  <port>591</port>
                   <port>8008</port>
                 </ports>
                 <assembly>

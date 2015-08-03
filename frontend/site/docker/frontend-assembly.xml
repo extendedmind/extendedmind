@@ -3,7 +3,7 @@
     xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
   <dependencySets>
     <dependencySet>
-      <outputDirectory>web</outputDirectory>
+      <outputDirectory>extendedmind</outputDirectory>
       <includes>
         <include>org.extendedmind.frontend:frontend-app:war:${project.version}</include>
       </includes>
@@ -16,7 +16,7 @@
       </unpackOptions>
     </dependencySet>
     <dependencySet>
-      <outputDirectory>web/analytics</outputDirectory>
+      <outputDirectory>extendedmind/analytics</outputDirectory>
       <includes>
         <include>org.extendedmind.frontend:frontend-analytics:jar:${project.version}</include>
       </includes>
@@ -31,7 +31,7 @@
   <fileSets>
     <fileSet>
       <directory>${project.basedir}/src/static</directory>
-      <outputDirectory>web/static</outputDirectory>
+      <outputDirectory>extendedmind/static</outputDirectory>
     </fileSet>
   </fileSets>
 </assembly>

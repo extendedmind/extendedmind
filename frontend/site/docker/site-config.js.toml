@@ -1,0 +1,6 @@
+[template]
+src = "../templates/site/site-config.js.tmpl"
+dest = "/etc/extendedmind/site-config.js"
+keys = [
+    "/extendedmind/site/backendUrlPrefix"
+]
