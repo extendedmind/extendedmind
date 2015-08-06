@@ -24,7 +24,7 @@
       <li class="hide-for-large-up"><a href="mailto:info@ext.md">contact</a></li>
       <li class="hide-for-medium-up"><a href="https://www.facebook.com/extmd" target="_blank">facebook</a></li>
       <li class="hide-for-medium-up"><a href="https://www.twitter.com/extmd" target="_blank">twitter</a></li>
-      <li class="show-for-large-up"><a href="https://ext.md/login">log in</a></li>
+      <li class="show-for-large-up"><a href="/login">log in</a></li>
     </ul>
   </section>
 </nav>
