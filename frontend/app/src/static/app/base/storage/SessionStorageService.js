@@ -277,6 +277,8 @@
       sessionStorage.removeItem('modified');
       sessionStorage.removeItem('offline');
       sessionStorage.removeItem('synced');
+      sessionStorage.removeItem('userCreated');
+      sessionStorage.removeItem('emailVerified');
 
       cachedBackendDelta = cachedActiveUUID = cachedUserUUID = cachedEmail = cachedSharedLists =
       cachedPreferences = cachedCollectives = cachedOffline = cachedExpires = undefined;

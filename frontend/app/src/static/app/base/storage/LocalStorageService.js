@@ -219,6 +219,8 @@
       localStorage.removeItem('modified');
       localStorage.removeItem('offline');
       localStorage.removeItem('synced');
+      localStorage.removeItem('userCreated');
+      localStorage.removeItem('emailVerified');
 
       // Clear cached values
       cachedExpires = cachedUserUUID = undefined;
