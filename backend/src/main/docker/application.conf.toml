@@ -1,6 +1,6 @@
 [template]
 src = "../templates/backend/application.conf.tmpl"
-dest = "/etc/extendedmind/application.conf"
+dest = "/etc/extendedmind/backend/application.conf"
 keys = [
     "/extendedmind/ha",
     "/extendedmind/backend/tokensecret",
@@ -8,6 +8,5 @@ keys = [
     "/extendedmind/backend/mailgundomain",
     "/extendedmind/backend/mailgunkey",
     "/extendedmind/emailfrom",
-    "/extendedmind/urlprefix",
-    "/extendedmind/secureurlprefix"
+    "/extendedmind/urlorigin"
 ]

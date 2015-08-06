@@ -130,9 +130,16 @@
 
       <dependency>
         <groupId>org.extendedmind.frontend</groupId>
-        <artifactId>frontend-core</artifactId>
+        <artifactId>frontend-app</artifactId>
         <version>${project.version}</version>
         <type>war</type>
+      </dependency>
+
+      <dependency>
+        <groupId>org.extendedmind.frontend</groupId>
+        <artifactId>frontend-analytics</artifactId>
+        <version>${project.version}</version>
+        <type>jar</type>
       </dependency>
 
       <dependency>

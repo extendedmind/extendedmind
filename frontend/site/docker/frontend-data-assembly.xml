@@ -4,7 +4,7 @@
   <fileSets>
     <fileSet>
       <!-- Creating empty directory 'extendedmind' needs a source directory where everything is excluded -->
-      <directory>${project.basedir}/src/main/docker</directory>
+      <directory>${project.basedir}/docker</directory>
       <outputDirectory>extendedmind</outputDirectory>
       <excludes>
         <exclude>**/*</exclude>

@@ -13,7 +13,7 @@ extendedmind {
     {{end}}
     startServer = false
     serverPort = 7473
-    propertiesFile = "/etc/extendedmind/neo4j.properties"
+    propertiesFile = "/etc/extendedmind/backend/neo4j.properties"
   }
   security {
     # HEX encoded 16 bytes
@@ -31,17 +31,16 @@ extendedmind {
     }
     from = "{{getv "/extendedmind/emailfrom"}}"
     # URL for non-secure and secure pages
-    urlPrefix = "{{getv "/extendedmind/urlprefix"}}"
-    secureUrlPrefix = "{{getv "/extendedmind/secureurlprefix"}}"
+    urlOrigin = "{{getv "/extendedmind/urlorigin"}}"
     templates {
       # Set this to use custom emails
       # directory = "custom_email_template_directory"
       shareListTitle = "inviterEmail shared a list with you"
-      acceptShareURI = "accept/shareValue?email=emailValue"
+      acceptShareURI = "/accept/shareValue?email=emailValue"
       resetPasswordTitle = "password reset instructions"
-      resetPasswordURI = "reset/resetCodeValue?email=emailValue"
+      resetPasswordURI = "/reset/resetCodeValue?email=emailValue"
       verifyEmailTitle = "verify your email address"
-      verifyEmailURI = "verify/verifyCodeValue?email=emailValue"
+      verifyEmailURI = "/verify/verifyCodeValue?email=emailValue"
     }
   }
 }

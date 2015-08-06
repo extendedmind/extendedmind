@@ -34,6 +34,7 @@ import org.neo4j.test.TestGraphDatabaseFactory
 import org.neo4j.graphdb.Node
 import java.io.PrintWriter
 import org.neo4j.scala.DatabaseService
+import java.lang.{Long=>JLong}
 
 object TestGraphDatabase {
   val TIMO_EMAIL: String = "timo@ext.md"
@@ -78,6 +79,13 @@ trait TestGraphDatabase extends GraphDatabase {
 
     // Collectives
     val extendedMind = createCollective(timoNode, "extended mind", Some("common collective for all extended mind users"), true)
+    withTx {
+      implicit neo =>
+        // Set a predictable test UUID "11111111-1111-1111-1111-111111111111" for the common collective,
+        // stored as tight base64
+        extendedMind.setProperty("uuid", "EREREREREREREREREREREQ")
+    }
+
     val extendedMindTechnologies = createCollective(
       timoNode, "extended mind technologies",
       Some("private collective for extended mind technologies"), false)

@@ -8,7 +8,7 @@
   </parent>
   <groupId>org.extendedmind.frontend</groupId>
   <artifactId>frontend-site</artifactId>
-  <packaging>war</packaging>
+  <packaging>pom</packaging>
   <name>Extended Mind :: Frontend :: Site</name>
   <description>Extended Mind Frontend Site</description>
   <url>https://github.com/extendedmind/extendedmind</url>
@@ -37,16 +37,12 @@
     <dependency>
       <groupId>org.extendedmind.frontend</groupId>
       <artifactId>frontend-app</artifactId>
-      <version>${project.version}</version>
       <type>war</type>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.extendedmind.frontend</groupId>
       <artifactId>frontend-analytics</artifactId>
-      <version>${project.version}</version>
       <type>jar</type>
-      <scope>compile</scope>
     </dependency>
   </dependencies>
 
@@ -243,6 +239,7 @@
                 <volumes>
                   <volume>/etc/confd/conf.d/site</volume>
                   <volume>/etc/confd/templates/site</volume>
+                  <volume>/etc/extendedmind/site</volume>
                 </volumes>
               </build>
             </image>
@@ -261,12 +258,12 @@
                 </ports>
                 <assembly>
                   <mode>dir</mode>
-                  <basedir>/usr/src/extendedmind</basedir>
+                  <basedir>/usr/src/extendedmind/site</basedir>
                   <descriptor>site-assembly.xml</descriptor>
                 </assembly>
-                <workdir>/usr/src/extendedmind</workdir>
+                <workdir>/usr/src/extendedmind/site</workdir>
                 <entryPoint>
-                  <exec><arg>/usr/src/extendedmind/run-site.pl</arg></exec>
+                  <exec><arg>/usr/src/extendedmind/site/site-run.pl</arg></exec>
                 </entryPoint>
               </build>
             </image>

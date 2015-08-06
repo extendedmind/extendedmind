@@ -1,0 +1,29 @@
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+  <fileSets>
+    <fileSet>
+      <directory>${project.basedir}/src</directory>
+      <outputDirectory>.</outputDirectory>
+      <includes>
+        <include>package.json</include>
+        <include>server.js</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>${project.basedir}/docker</directory>
+      <outputDirectory>.</outputDirectory>
+      <includes>
+        <include>site-run.pl</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>${project.basedir}/src/node_modules</directory>
+      <outputDirectory>node_modules</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>${project.basedir}/src/views</directory>
+      <outputDirectory>views</outputDirectory>
+    </fileSet>
+  </fileSets>
+</assembly>

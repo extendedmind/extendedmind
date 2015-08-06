@@ -1,6 +1,6 @@
 [template]
 src = "../templates/backend/neo4j.properties.tmpl"
-dest = "/etc/extendedmind/neo4j.properties"
+dest = "/etc/extendedmind/backend/neo4j.properties"
 keys = [
     "/extendedmind/ha",
     "/extendedmind/backend/hosts"

@@ -85,11 +85,11 @@ trait MailgunClient {
       shareListHtmlTemplate
         .replaceAll(
           "acceptLink",
-          settings.emailSecureUrlPrefix
+          settings.emailUrlOrigin
             + settings.acceptShareURI
             .replaceAll("shareValue", acceptCode.toHexString)
             .replaceAll("emailValue", agreement.proposedTo.get.email.get))
-        .replaceAll("logoLink", settings.emailUrlPrefix + "static/img/logo-text.png")
+        .replaceAll("logoLink", settings.emailUrlOrigin + "/static/img/logo-text.png")
         .replaceAll("inviterEmail", agreement.proposedBy.get.email.get)
         .replaceAll("sharedListTitle", xml.Utility.escape(sharedListTitle))
         )
@@ -102,11 +102,11 @@ trait MailgunClient {
       resetPasswordHtmlTemplate
         .replaceAll(
           "resetPasswordLink",
-          settings.emailSecureUrlPrefix
+          settings.emailUrlOrigin
             + settings.resetPasswordURI
             .replaceAll("resetCodeValue", resetCode.toHexString)
             .replaceAll("emailValue", email))
-        .replaceAll("logoLink", settings.emailUrlPrefix + "static/img/logo-text.png"))
+        .replaceAll("logoLink", settings.emailUrlOrigin + "/static/img/logo-text.png"))
     sendEmail(sendEmailRequest)
   }
 
@@ -116,11 +116,11 @@ trait MailgunClient {
       verifyEmailHtmlTemplate
         .replaceAll(
           "verifyEmailLink",
-          settings.emailSecureUrlPrefix
+          settings.emailUrlOrigin
             + settings.verifyEmailURI
             .replaceAll("verifyCodeValue", emailVerificationCode.toHexString)
             .replaceAll("emailValue", email))
-        .replaceAll("logoLink", settings.emailUrlPrefix + "static/img/logo-text.png"))
+        .replaceAll("logoLink", settings.emailUrlOrigin + "/static/img/logo-text.png"))
     sendEmail(sendEmailRequest)
   }
 

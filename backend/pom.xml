@@ -434,7 +434,7 @@
                 <volumes>
                   <volume>/etc/confd/conf.d/backend</volume>
                   <volume>/etc/confd/templates/backend</volume>
-                  <volume>/etc/extendedmind</volume>
+                  <volume>/etc/extendedmind/backend</volume>
                 </volumes>
               </build>
             </image>
@@ -486,8 +486,8 @@
                     <arg>-XX:+PrintCommandLineFlags</arg>
                     <!-- Neo4j suggests to use this -->
                     <arg>-XX:+UseConcMarkSweepGC</arg>
-                    <arg>-Dconfig.file=/etc/extendedmind/application.conf</arg>
-                    <arg>-Dlogback.configurationFile=/etc/extendedmind/logback.xml</arg>
+                    <arg>-Dconfig.file=/etc/extendedmind/backend/application.conf</arg>
+                    <arg>-Dlogback.configurationFile=/etc/extendedmind/backend/logback.xml</arg>
                     <arg>-cp</arg>
                     <arg>/usr/src/extendedmind/lib/*</arg>
                     <arg>org.extendedmind.Server</arg>

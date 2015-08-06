@@ -4,14 +4,14 @@
   <fileSets>
     <fileSet>
       <directory>${project.basedir}/docker</directory>
-      <outputDirectory>conf.d/site</outputDirectory>
+      <outputDirectory>confd/conf.d/site</outputDirectory>
       <includes>
         <include>site-config.js.toml</include>
       </includes>
     </fileSet>
     <fileSet>
       <directory>${project.basedir}/docker</directory>
-      <outputDirectory>templates/site</outputDirectory>
+      <outputDirectory>confd/templates/site</outputDirectory>
       <includes>
         <include>site-config.js.tmpl</include>
       </includes>

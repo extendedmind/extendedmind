@@ -3,14 +3,14 @@
     xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
   <fileSets>
     <fileSet>
-      <directory>${project.basedir}/src/main/docker</directory>
+      <directory>${project.basedir}/docker</directory>
       <outputDirectory>nginx/sites-enabled</outputDirectory>
       <includes>
         <include>nginx.extendedmind.conf</include>
       </includes>
     </fileSet>
     <fileSet>
-      <directory>${project.basedir}/src/main/docker</directory>
+      <directory>${project.basedir}/docker</directory>
       <!-- not actually a template but moved with nginx-run.sh to /etc/nginx -->
       <outputDirectory>confd/templates/nginx</outputDirectory>
       <includes>
@@ -18,14 +18,14 @@
       </includes>
     </fileSet>
     <fileSet>
-      <directory>${project.basedir}/src/main/docker</directory>
+      <directory>${project.basedir}/docker</directory>
       <outputDirectory>confd/conf.d/nginx</outputDirectory>
       <includes>
         <include>evaluate.htpasswd.toml</include>
       </includes>
     </fileSet>
     <fileSet>
-      <directory>${project.basedir}/src/main/docker</directory>
+      <directory>${project.basedir}/docker</directory>
       <outputDirectory>confd/templates/nginx</outputDirectory>
       <filtered>true</filtered>
       <includes>

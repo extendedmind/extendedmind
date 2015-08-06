@@ -1,5 +1,5 @@
-extendedmind {
-  site {
-    backendUrlPrefix={{getv "/extendedmind/site/backendUrlPrefix"}}
-  }
-}
+module.exports = {
+  port: 3000,
+  externalStatic: true,
+  backendUrlPrefix: '{{getv "/extendedmind/site/backendurlprefix"}}'
+};

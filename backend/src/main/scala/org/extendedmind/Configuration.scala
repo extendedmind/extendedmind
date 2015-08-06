@@ -94,8 +94,7 @@ class Settings(config: Config) extends Extension {
   val mailgunApiKey = config.getString("extendedmind.email.mailgun.apiKey")
   // Email templates
   val emailFrom = config.getString("extendedmind.email.from")
-  val emailUrlPrefix = config.getString("extendedmind.email.urlPrefix")
-  val emailSecureUrlPrefix = config.getString("extendedmind.email.secureUrlPrefix")
+  val emailUrlOrigin = config.getString("extendedmind.email.urlOrigin")
   val emailTemplateDir: Option[String] = {
     if (config.hasPath("extendedmind.email.templates.directory"))
       Some(config.getString("extendedmind.email.templates.directory"))

@@ -197,10 +197,10 @@
                   <EXTENDEDMIND_BACKEND_MAILGUNKEY>TEST KEY</EXTENDEDMIND_BACKEND_MAILGUNKEY>
                   <EXTENDEDMIND_BACKEND_MAILGUNDOMAIN>ext.md</EXTENDEDMIND_BACKEND_MAILGUNDOMAIN>
                   <EXTENDEDMIND_EMAILFROM>extended mind &lt;support@ext.md&gt;</EXTENDEDMIND_EMAILFROM>
-                  <EXTENDEDMIND_URLPREFIX>http://localhost/landing/</EXTENDEDMIND_URLPREFIX>
-                  <EXTENDEDMIND_SECUREURLPREFIX>http://localhost/</EXTENDEDMIND_SECUREURLPREFIX>
+                  <EXTENDEDMIND_URLORIGIN>http://localhost:8008</EXTENDEDMIND_URLORIGIN>
                   <!-- test login admin:adminpwd for /evaluate -->
                   <EXTENDEDMIND_EVALUATECREDENTIALS>admin:$apr1$iRuCzNe7$wGTyTAez42hHC9rGP6CHg.</EXTENDEDMIND_EVALUATECREDENTIALS>
+                  <EXTENDEDMIND_SITE_BACKENDURLPREFIX>http://localhost:8081/api/11111111-1111-1111-1111-111111111111</EXTENDEDMIND_SITE_BACKENDURLPREFIX>
                 </env>
                 <volumes>
                   <from>
@@ -320,6 +320,7 @@
                   <link>backend:backend</link>
                   <link>cube-evaluator:evaluator</link>
                   <link>cube-collector:collector</link>
+                  <link>site:site</link>
                 </links>
                 <ports>
                   <port>8008:8008</port>
