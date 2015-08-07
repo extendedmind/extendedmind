@@ -347,6 +347,17 @@ function ArrayService($rootScope) {
     },
     insertItemToArray: function(element, array, field, reverse) {
       return insertItemToArray(element, array, field, reverse);
+    },
+    evaluateArrays: function(ownerUUID, itemType, activeArray, deletedArray, otherArrays) {
+      var changedArrays = [];
+      changedArrays.push({type: 'active', array: activeArray});
+      changedArrays.push({type: 'deleted', array: deletedArray});
+      if (otherArrays) {
+        for (var i = 0; i < otherArrays.length; i++) {
+          changedArrays.push({type: otherArrays[i].id, array: otherArrays[i].array});
+        }
+      }
+      emitChangeEvent(ownerUUID, changedArrays, itemType);
     }
   };
 }

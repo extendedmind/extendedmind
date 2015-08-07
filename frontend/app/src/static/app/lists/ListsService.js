@@ -350,6 +350,11 @@
       }else{
         ItemLikeService.persistAndReset(listsToSave, LIST_TYPE, ownerUUID, listFieldInfos);
       }
+      // Without this, sorting lists fails, as the arrays are never re-evaluated
+      ArrayService.evaluateArrays(ownerUUID, LIST_TYPE,
+                                  lists[ownerUUID].activeLists,
+                                  lists[ownerUUID].deletedLists,
+                                  getOtherArrays(ownerUUID));
       return latestModified;
     },
     updateLists: function(listsResponse, ownerUUID) {
