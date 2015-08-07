@@ -74,6 +74,16 @@ trait AdminActions {
     result
   }
 
+  def getItemStatistics(uuid: UUID)(implicit log: LoggingAdapter): Response[ItemStatistics] = {
+    log.info("getItemStatistics")
+    db.getItemStatistics(uuid)
+  }
+
+  def setItemProperty(uuid: UUID, property: ItemProperty)(implicit log: LoggingAdapter): Response[SetResult] = {
+    log.info("setItemProperty")
+    db.setItemProperty(uuid, property.key, property.stringValue, property.longValue)
+  }
+
   def loadDatabase(implicit log: LoggingAdapter): Boolean = {
     log.info("loadDatabase")
     db.loadDatabase

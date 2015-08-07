@@ -108,3 +108,6 @@ trait LimitedExtendedItem extends ItemLike{
 
   def parent: Option[UUID] = relationships.parent
 }
+
+case class ItemStatistics(properties: scala.List[(String, Long)], labels: scala.List[String])
+case class ItemProperty(key: String, stringValue: Option[String], longValue: Option[Long])

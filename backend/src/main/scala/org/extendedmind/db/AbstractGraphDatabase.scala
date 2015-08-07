@@ -45,6 +45,7 @@ import scala.collection.mutable.ListBuffer
 import org.neo4j.graphdb.Relationship
 import org.neo4j.graphdb.RelationshipType
 import spray.util.LoggingContext
+import scala.reflect.runtime.universe._
 import java.lang.Boolean
 import org.neo4j.cypher.javacompat.ExecutionEngine
 import akka.event.LoggingAdapter
@@ -176,11 +177,14 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     }
   }
 
-  protected def toCaseClass[T: Manifest](node: Node): Response[T] = {
+  protected def toCaseClass[T: Manifest](node: Node)(implicit tag: TypeTag[T]): Response[T] = {
     try {
       Right(Neo4jWrapper.deSerialize[T](node))
     } catch {
-      case e: Exception => fail(INTERNAL_SERVER_ERROR, ERR_BASE_CONVERT_NODE, "Exception while converting node " + node.getId(), e)
+      case e: Exception => {
+        val id: String = if (node.hasProperty("uuid")) getUUID(node).toString else node.getId.toString
+        fail(INTERNAL_SERVER_ERROR, ERR_BASE_CONVERT_NODE, "Exception while converting node " + id + " to " + tag.tpe, e)
+      }
     }
   }
 

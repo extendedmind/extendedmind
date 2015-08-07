@@ -57,6 +57,7 @@ trait TestGraphDatabase extends GraphDatabase {
   val TEST_DATA_DESTINATION = "target/test-classes"
 
   var timoUUID: UUID = null
+  var lauriUUID: UUID = null
   var emtUUID: UUID = null
 
   def insertTestData(testDataLocation: Option[String] = None) {
@@ -102,7 +103,9 @@ trait TestGraphDatabase extends GraphDatabase {
         setCollectiveUserPermission(getUUID(extendedMindTechnologies), getUUID(timoNode), getUUID(jpNode),
           Some(SecurityContext.READ_WRITE))
         emtUUID = getUUID(extendedMindTechnologies)
+        lauriUUID = getUUID(lauriNode)
     }
+
     withTx {
       implicit neo =>
 
@@ -255,6 +258,13 @@ trait TestGraphDatabase extends GraphDatabase {
     // Store notes for EMT
     putNewNote(Owner(timoUUID, Some(emtUUID)),
       Note("list of servers", None, None, None, None, None)).right.get
+
+    // Lauri's personal items
+
+    // Store tasks for Lauri
+    val laurisCompletedTask = putNewTask(Owner(lauriUUID, None),
+      Task("complete this", Some("for testing"), None, Some("2015-06-02"), None, None, None)).right.get
+    completeTask(Owner(lauriUUID, None), laurisCompletedTask.uuid.get, None)
 
     // Build indexes
     rebuildUserIndexes

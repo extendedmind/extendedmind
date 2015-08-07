@@ -271,6 +271,38 @@ trait AdminService extends ServiceBase {
             }
           }
         }
+      } ~
+      getItemStatistics { uuid =>
+        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+          authorize(adminAccess(securityContext)) {
+            complete {
+              Future[ItemStatistics] {
+                setLogContext(securityContext)
+                adminActions.getItemStatistics(uuid) match {
+                  case Right(stats) => processResult(stats)
+                  case Left(e) => processErrors(e)
+                }
+              }
+            }
+          }
+        }
+      } ~
+      postSetItemProperty { uuid =>
+        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+          authorize(adminAccess(securityContext)) {
+            entity(as[ItemProperty]) { property =>
+              complete {
+                Future[SetResult] {
+                  setLogContext(securityContext)
+                  adminActions.setItemProperty(uuid, property) match {
+                    case Right(sr) => processResult(sr)
+                    case Left(e) => processErrors(e)
+                  }
+                }
+              }
+            }
+          }
+        }
       }
   }
 }

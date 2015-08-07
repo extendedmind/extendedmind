@@ -229,6 +229,43 @@ class AdminBestCaseSpec extends ServiceSpecBase {
         statusResponse should be ("{\"status\":true}")
       }
     }
+    it("should successfully get foreign item statistics with GET to /admin/item/[itemUUID] " +
+       "and change and remove single Long and String properties with POST to /admin/item/[userUUID]/property") {
+      val timoAuthenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+      val lauriAuthenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
+      Get("/" + lauriAuthenticateResponse.userUUID + "/items?completed=true") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
+        val itemsResponse = responseAs[Items]
+        itemsResponse.tasks.get.length should be(1)
+        val itemUUID = itemsResponse.tasks.get(0).uuid.get
+        val completed = itemsResponse.tasks.get(0).completed.get
+        val title = itemsResponse.tasks.get(0).title
+        Get("/admin/item/" + itemUUID) ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
+          val statisticsResponse = responseAs[ItemStatistics]
+          writeJsonOutput("itemStatisticsResponse", responseAs[String])
+          // Change two values and remove one property
+          val newCompleted = System.currentTimeMillis
+          Post("/admin/item/" + itemUUID + "/property",
+              marshal(ItemProperty("completed", None, Some(newCompleted))).right.get) ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
+            val setResult = responseAs[SetResult]
+          }
+          val newTitle = "updated"
+          Post("/admin/item/" + itemUUID + "/property",
+              marshal(ItemProperty("title", Some(newTitle), None)).right.get) ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
+            val setResult = responseAs[SetResult]
+          }
+          Post("/admin/item/" + itemUUID + "/property",
+              marshal(ItemProperty("description", None, None)).right.get) ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
+            val setResult = responseAs[SetResult]
+          }
+          Get("/" + lauriAuthenticateResponse.userUUID + "/items?completed=true") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
+            val changedTask = responseAs[Items].tasks.get(0)
+            changedTask.completed.get should be(newCompleted)
+            changedTask.title should be(newTitle)
+            changedTask.description should be(None)
+          }
+        }
+      }
+    }
   }
 
 }

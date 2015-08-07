@@ -49,6 +49,7 @@ import org.apache.lucene.search.NumericRangeQuery
 import org.apache.lucene.search.BooleanQuery
 import org.apache.lucene.search.BooleanClause
 import spray.util.LoggingContext
+import org.neo4j.graphdb.NotFoundException
 
 trait ItemDatabase extends UserDatabase {
 
@@ -144,6 +145,22 @@ trait ItemDatabase extends UserDatabase {
       ownerUUIDs <- getOwnerUUIDs.right
       count <- rebuildItemsIndexes(ownerUUIDs).right
     } yield count
+  }
+
+  def getItemStatistics(uuid: UUID): Response[ItemStatistics] = {
+    for {
+      itemNode <- getItemNodeByUUID(uuid).right
+      stats <- Right(getItemStatistics(itemNode)).right
+    } yield stats
+  }
+
+  def setItemProperty(uuid: UUID, key: String, stringValue: Option[String], longValue: Option[Long]): Response[SetResult] = {
+    for {
+      itemNode <- getItemNodeByUUID(uuid).right
+      unit <- Right(setItemProperty(itemNode, key: String, stringValue: Option[String], longValue: Option[Long])).right
+      result <- Right(getSetResult(itemNode, false)).right
+      unit <- Right(updateItemsIndex(itemNode, result)).right
+    } yield result
   }
 
   // PRIVATE
@@ -914,4 +931,51 @@ trait ItemDatabase extends UserDatabase {
     Right(CountResult(traverser.nodes.size))
   }
 
+  protected def getItemNodeByUUID(uuid: UUID): Response[Node] = {
+    withTx {
+      implicit neo4j =>
+        val nodeIter = findNodesByLabelAndProperty(MainLabel.ITEM, "uuid", UUIDUtils.getTrimmedBase64UUID(uuid))
+        if (nodeIter.toList.isEmpty) {
+          fail(INVALID_PARAMETER, ERR_ITEM_NOT_FOUND, "Item not found for statistics with given uuid")
+        } else if (nodeIter.toList.size > 1) {
+          fail(INVALID_PARAMETER, ERR_ITEM_MORE_THAN_1, "More than one item found for statistics with given uuid")
+        } else {
+          Right(nodeIter.toList(0))
+        }
+    }
+  }
+
+  protected def getItemStatistics(itemNode: Node): ItemStatistics = {
+    withTx {
+      implicit neo4j =>
+        val itemProperties: scala.List[(String, Long)] = {
+          itemNode.getPropertyKeys.toList.map(key => {
+            // we know that all item properties are either String or Long
+            if (key == "created" || key == "modified" || key == "deleted" ||
+                key == "completed" || key == "archived" || key == "favorited"){
+              (key, itemNode.getProperty(key).asInstanceOf[Long])
+            }else{
+              (key, itemNode.getProperty(key).asInstanceOf[String].length.asInstanceOf[Long])
+            }
+          })
+        }
+        val itemLabels = itemNode.getLabels.toList.map(label => {
+          label.name
+        })
+        ItemStatistics(itemProperties, itemLabels)
+    }
+  }
+
+  protected def setItemProperty(itemNode: Node, key: String, stringValue: Option[String], longValue: Option[Long]): Unit = {
+    withTx {
+      implicit neo4j =>
+        if (stringValue.isDefined){
+          itemNode.setProperty(key, stringValue.get)
+        }else if (longValue.isDefined){
+          itemNode.setProperty(key, longValue.get)
+        }else if (itemNode.hasProperty(key)){
+          itemNode.removeProperty(key)
+        }
+    }
+  }
 }
