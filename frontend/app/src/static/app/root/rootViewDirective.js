@@ -214,6 +214,13 @@
           var primaryMessageTextNodes = [
           {
             type: 'text',
+            data: 'first you need to update your version of the extended mind to upgrade to the premium'
+          },
+          {
+            type: 'separator'
+          },
+          {
+            type: 'text',
             data: 'log out from the other device, or'
           },
           {
@@ -243,9 +250,9 @@
 
           var primaryParams = {
             messageHeading: 'already logged in',
-            messageIngress: 'with the free account you can only sync one device at a time',
+            messageIngress: 'with the free account you can only sync two devices at a time',
             messageText: primaryMessageTextNodes,
-            confirmText: 'get premium',
+            confirmText: 'update',
             confirmAction: exception.value.confirm
           };
 

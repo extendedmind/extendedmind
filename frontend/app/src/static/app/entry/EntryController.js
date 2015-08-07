@@ -80,12 +80,6 @@ function EntryController($http, $location, $rootScope, $routeParams, $scope,
     SwiperService.swipeTo('entry/main');
   };
 
-  // PREMIUM
-
-  function swipeToPremium() {
-    $scope.swipeToDetails('premium');
-  }
-
   $scope.isHomeSlideEnabled = function() {
     return !$scope.directToLogin;
   };
@@ -150,10 +144,21 @@ function EntryController($http, $location, $rootScope, $routeParams, $scope,
     } else if (error.type === 'forbidden') {
        if (error.value.data && error.value.data.code === 24) {
         // Premium
+        var marketUrl;
+        if (packaging === 'ios-cordova') {
+          marketUrl = 'itms://itunes.com/apps/extendedmind';  // TODO: $rootScope/PlatformService
+        } else if (packaging === 'android-cordova') {
+          marketUrl = 'market://details?id=org.extendedmind'; // TODO: $rootScope/PlatformService
+        }
+
+        var gotoMarketFn = function() {
+          if (cordova && cordova.InAppBrowser) cordova.InAppBrowser.open(marketUrl, '_system');
+        };
+
         var rejection = {
           type: 'premium',
           value: {
-            confirm: swipeToPremium,
+            confirm: gotoMarketFn,
             secondaryConfirmDeferred: clearAllLogins,
             secondaryConfirmDeferredParam: userData,
             secondaryConfirmPromise: clearAllLoginsSuccess
