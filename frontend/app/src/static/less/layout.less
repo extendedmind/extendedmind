@@ -151,6 +151,8 @@ Menu
   }
 }
 
+@max-width-modal: 500px;
+
 // 1. Center vertically. See http://css-tricks.com/centering-css-complete-guide/#vertical-block-known
 // 2. Set default max-height
 // 3. Set white background to hide stuff below.
@@ -163,35 +165,23 @@ Menu
   -ms-transform: translateY(-50%);      // [1]
   transform: translateY(-50%);          // [1]
   width: 100%;
+  max-width: @max-width-modal;
   .center-horizontally-absolute();
   background-color: white;  // [3]
   .container-content {
     height: auto;
-    max-height: 60vh; // [2]
+    max-height: 80vh; // [2]
   }
 }
-
-@large-screen-width-modal: 350px;
-@large-screen-height-modal: 400px;
 
 /*
 Vertically center .container-master and .container-editor in large screens
 */
-// 1. Set maximum dimensions for modal.
 @media (min-height: @height-column-max) {
   .container-master,
   .container-editor {
     margin-top: -@height-column-max / 2;
     top: 50%;
-  }
-  .container-modal {
-    max-height: @large-screen-height-modal; // [1]
-  }
-}
-
-@media (min-width: @width-column-max) {
-  .container-modal {
-    max-width: @large-screen-width-modal;   // [1]
   }
 }
 
