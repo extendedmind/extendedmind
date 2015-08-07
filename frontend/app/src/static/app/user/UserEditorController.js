@@ -18,10 +18,6 @@
                                BackendClientService, CalendarService, SwiperService, SynchronizeService,
                                UISessionService, UserService, UserSessionService) {
 
-  if ($scope.mode === 'signUp'){
-    $scope.user = {};
-  }
-
   // AGENDA CALENDAR
 
   function listCalendars() {

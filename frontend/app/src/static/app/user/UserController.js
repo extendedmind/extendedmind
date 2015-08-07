@@ -118,15 +118,13 @@
 
   $scope.openTermsInEditor = function(){
     $http.get(BackendClientService.getUrlPrefix() + '/static/terms.html').then(function(termsResponse){
-      user.terms = termsResponse.data;
-      $scope.openEditor('user', undefined, 'terms');
+      $scope.openEditor('user', {terms: termsResponse.data}, 'terms');
     });
   };
 
   $scope.openPrivacyInEditor = function(){
     $http.get(BackendClientService.getUrlPrefix() + '/static/privacy.html').then(function(privacyResponse){
-      user.privacy = privacyResponse.data;
-      $scope.openEditor('user', undefined, 'privacy');
+      $scope.openEditor('user', {privacy: privacyResponse.data}, 'privacy');
     });
   };
 
