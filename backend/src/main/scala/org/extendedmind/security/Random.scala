@@ -42,7 +42,7 @@ object Random {
     else Math.abs(randomLong)
   }
 
-  def generateRandomUniqueString(): String = {
+  def generateRandomUniqueString(characterLimit: Int = 40): String = {
     // Need to use synchronized block because ByteBuffer isn't thread safe.
     // Not optimal and this method should not be used too frequently.
     this.synchronized {
@@ -59,7 +59,10 @@ object Random {
       for (i <- 0 until sha1Result.length){
         sb.append(Integer.toString((sha1Result(i) & 0xff) + 0x100, 16).substring(1));
       }
-      return sb.toString();
+      val uniqueString = sb.toString()
+
+      return sb.substring(0, Math.min(uniqueString.length(), characterLimit));
     }
   }
+
 }

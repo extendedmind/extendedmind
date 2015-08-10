@@ -100,9 +100,10 @@ trait CollectiveDatabase extends UserDatabase {
 
   protected def createCollectiveNode(founderNode: Node, collective: Collective, commonCollective: Boolean)
                (implicit neo4j: DatabaseService): Response[Node] = {
-    val collectiveNode = createNode(collective, MainLabel.OWNER, OwnerLabel.COLLECTIVE)
+    val collectiveNode = createNode(collective.copy(inboxId=None, apiKey=None), MainLabel.OWNER, OwnerLabel.COLLECTIVE)
     founderNode --> SecurityRelationship.IS_FOUNDER --> collectiveNode;
-    collectiveNode.setProperty("inboxId", Random.generateRandomUniqueString())
+    collectiveNode.setProperty("inboxId", generateUniqueInboxId())
+    collectiveNode.setProperty("apiKey", Random.generateRandomUniqueString())
 
     if (commonCollective){
       collectiveNode.setProperty("common", true)
@@ -125,6 +126,8 @@ trait CollectiveDatabase extends UserDatabase {
           collectiveNode <- getNode(collectiveUUID, OwnerLabel.COLLECTIVE).right
           collectiveNode <- updateNode(collectiveNode, collective.copy(
               inboxId = (if (collectiveNode.hasProperty("inboxId")) Some(collectiveNode.getProperty("inboxId").asInstanceOf[String])
+                        else None),
+              apiKey = (if (collectiveNode.hasProperty("apiKey")) Some(collectiveNode.getProperty("apiKey").asInstanceOf[String])
                         else None))).right
         } yield collectiveNode
     }

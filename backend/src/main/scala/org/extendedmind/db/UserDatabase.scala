@@ -232,7 +232,7 @@ trait UserDatabase extends AbstractGraphDatabase {
           setUserPassword(userNode, plainPassword)
           userNode.setProperty("email", user.email.get)
           if (user.cohort.isDefined) userNode.setProperty("cohort", user.cohort.get)
-          userNode.setProperty("inboxId", Random.generateRandomUniqueString())
+          userNode.setProperty("inboxId", generateUniqueInboxId())
 
           val emailVerificationCode = if (emailVerified.isDefined) {
             // When the user accepts invite using a code sent to her email,
@@ -486,7 +486,10 @@ trait UserDatabase extends AbstractGraphDatabase {
         else {
           val ownerNode = ownerNodeResponse.right.get
           if (!ownerNode.hasProperty("inboxId")){
-            ownerNode.setProperty("inboxId", Random.generateRandomUniqueString())
+            ownerNode.setProperty("inboxId", generateUniqueInboxId())
+            if (ownerNode.hasLabel(OwnerLabel.COLLECTIVE)){
+              ownerNode.setProperty("apiKey", Random.generateRandomUniqueString())
+            }
             Right(true)
           }else{
             Right(false)
@@ -905,5 +908,16 @@ trait UserDatabase extends AbstractGraphDatabase {
           else None)
   }
 
+  protected def generateUniqueInboxId()(implicit neo4j: DatabaseService): String = {
+    var inboxId: String = null
+    do {
+      inboxId = Random.generateRandomUniqueString(characterLimit = 8)
+      if (!findNodesByLabelAndProperty(MainLabel.OWNER, "inboxId", inboxId).toList.isEmpty){
+        // Already found an owner with this inboxId, create another
+        inboxId = null
+      }
+    }while(inboxId == null)
+    inboxId
+  }
 
 }
