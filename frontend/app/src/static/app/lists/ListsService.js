@@ -382,6 +382,13 @@
                                                        lists[ownerUUID].deletedLists,
                                                        getOtherArrays(ownerUUID));
         ItemLikeService.persistAndReset(updatedLists, LIST_TYPE, ownerUUID, listFieldInfos);
+
+        // When creating multiple hierarchical lists in another client, without this, they would be
+        // in the wrong order
+        ArrayService.evaluateArrays(ownerUUID, LIST_TYPE,
+                                  lists[ownerUUID].activeLists,
+                                  lists[ownerUUID].deletedLists,
+                                  getOtherArrays(ownerUUID));
         if (latestModified) {
           // Go through response to see if something was deleted
           for (i=0; i<updatedLists.length; i++) {
