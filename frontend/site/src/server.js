@@ -41,14 +41,12 @@ app.use(route.get('/privacy', privacy));
 // routes
 
 function *index() {
-  console.log('got index')
   this.body = yield render('pages/home');
 }
 function *download() {
   this.body = yield render('pages/download');
 }
 function *manifesto() {
-  console.log('got manifesto')
   this.body = yield render('pages/manifesto');
 }
 function *terms() {
