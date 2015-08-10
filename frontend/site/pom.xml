@@ -176,6 +176,7 @@
                 </tags>
                 <ports>
                   <port>8008</port>
+                  <port>8009</port>
                 </ports>
                 <assembly>
                   <mode>dir</mode>
