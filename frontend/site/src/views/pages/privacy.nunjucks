@@ -1,5 +1,5 @@
-{% extends "views/base.nunjucks" %}
-{% set pageName = 'home' %}
+{% extends "base.nunjucks" %}
+{% set pageName = 'privacy' %}
 {% block title %}{{ super() }} &ndash; privacy policy{% endblock %}
 {% block description %}{{ super() }} &ndash; privacy policy{% endblock %}
 {% block stylesheets %}
@@ -14,7 +14,7 @@
     <li class="name">
       <a href="/" class="logo"><span class="icon-logo"></span></a>
     </li>
-    <li class="toggle-topbar menu-icon"><a href><span class="icon-menu"></span></a></li>
+    <li class="toggle-topbar menu-icon"><a href="/"><span class="icon-menu"></span></a></li>
   </ul>
   <section class="top-bar-section">
     <ul class="right">

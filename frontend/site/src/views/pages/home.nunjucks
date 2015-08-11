@@ -1,4 +1,4 @@
-{% extends "views/base.nunjucks" %}
+{% extends "base.nunjucks" %}
 {% set pageName = 'home' %}
 {% block title %}{{ super() }} &ndash; task and note organizer that keeps you zen{% endblock %}
 {% block description %}{{ super() }} &ndash; task and note organizer that keeps you zen{% endblock %}
@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="static/css/em-animation.css">
 {% endblock %}
 {% block trackactions %}
-{% include 'views/partials/trackbegin.nunjucks' %}
+{% include 'partials/trackbegin.nunjucks' %}
 {% endblock %}
 {% block bodyattrs %}class="em-animation-background"{% endblock %}
 
@@ -18,13 +18,13 @@
 <nav class="top-bar" data-topbar role="navigation">
   <ul class="title-area">
     <li class="name">
-      <a href class="logo"><span class="icon-logo"></span></a>
+      <a href="/" onclick="return false;" class="logo"><span class="icon-logo"></span></a>
     </li>
-    <li class="toggle-topbar menu-icon"><a href><span class="icon-menu"></span></a></li>
+    <li class="toggle-topbar menu-icon"><a href="/" onclick="return false;"><span class="icon-menu"></span></a></li>
   </ul>
   <section class="top-bar-section">
     <ul class="right">
-      <li class="active"><a href>home</a></li>
+      <li class="active"><a href="/" onclick="return false;">home</a></li>
       <li id="manifesto-link"><a href="/manifesto">manifesto</a></li>
       <li><a href="http://www.extendedmind.org" target="_blank">blog</a></li>
       <li class="hide-for-large-up"><a href="mailto:info@ext.md">contact</a></li>

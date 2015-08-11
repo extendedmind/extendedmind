@@ -1,5 +1,5 @@
-{% extends "views/base.nunjucks" %}
-{% set pageName = 'home' %}
+{% extends "base.nunjucks" %}
+{% set pageName = 'terms' %}
 {% block title %}{{ super() }} &ndash; terms and conditions{% endblock %}
 {% block description %}{{ super() }} &ndash; terms and conditions{% endblock %}
 {% block stylesheets %}

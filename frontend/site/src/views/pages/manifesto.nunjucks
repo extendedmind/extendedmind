@@ -1,4 +1,4 @@
-{% extends "views/base.nunjucks" %}
+{% extends "base.nunjucks" %}
 {% set pageName = 'manifesto' %}
 {% block title %}{{ super() }} &ndash; manifesto{% endblock %}
 {% block description %}{{ super() }} &ndash; manifesto{% endblock %}
@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="static/css/main.css">
 {% endblock %}
 {% block trackactions %}
-{% include 'views/partials/trackbegin.nunjucks' %}
+{% include 'partials/trackbegin.nunjucks' %}
 {% endblock %}
 {% block header %}
 <nav class="top-bar" data-topbar role="navigation">
@@ -16,12 +16,12 @@
     <li class="name">
       <a href="/" class="logo"><span class="icon-logo"></span></a>
     </li>
-    <li class="toggle-topbar menu-icon"><a href><span class="icon-menu"></span></a></li>
+    <li class="toggle-topbar menu-icon"><a href="/"><span class="icon-menu"></span></a></li>
   </ul>
   <section class="top-bar-section">
     <ul class="right">
       <li><a href="/">home</a></li>
-      <li id="manifesto-link" class="active"><a href>manifesto</a></li>
+      <li id="manifesto-link" class="active"><a href="/manifesto" onclick="return false;">manifesto</a></li>
       <li><a href="http://www.extendedmind.org" target="_blank">blog</a></li>
       <li class="hide-for-large-up"><a href="mailto:info@ext.md">contact</a></li>
       <li class="hide-for-medium-up"><a href="https://www.facebook.com/extmd" target="_blank">facebook</a></li>

@@ -13,22 +13,33 @@ if (process.argv.length > 2) {
  * Module dependencies.
  */
 
-var views = require('co-views');
 var koa = require('koa');
 var logger = require('koa-logger');
 var route = require('koa-route');
+var nunjucks = require('koa-nunjucks-2');
+var path = require('path');
 
-// main
+// setup koa
 
 var app = module.exports = koa();
-var render = views(__dirname + '/views', { ext: 'nunjucks' });
 
 // middleware
 
-app.use(logger());
+if (config.debug){
+  app.use(logger());
+}
 if (!config.externalStatic){
   app.use(require('koa-static-folder')('./static'));
 }
+
+app.context.render = nunjucks({
+  autoescape: true,
+  ext: 'nunjucks',
+  path: path.join(__dirname, 'views'),
+  noCache: config.debug,
+  watch: config.debug,
+  dev: config.debug
+});
 
 // route middleware
 
@@ -41,19 +52,24 @@ app.use(route.get('/privacy', privacy));
 // routes
 
 function *index() {
-  this.body = yield render('pages/home');
+  console.log('GET /');
+  this.body = yield this.render('pages/home');
 }
 function *download() {
-  this.body = yield render('pages/download');
+  console.log('GET /download');
+  this.body = yield this.render('pages/download');
 }
 function *manifesto() {
-  this.body = yield render('pages/manifesto');
+  console.log('GET /manifesto');
+  this.body = yield this.render('pages/manifesto');
 }
 function *terms() {
-  this.body = yield render('pages/terms');
+  console.log('GET /terms');
+  this.body = yield this.render('pages/terms');
 }
 function *privacy() {
-  this.body = yield render('pages/privacy');
+  console.log('GET /privacy');
+  this.body = yield this.render('pages/privacy');
 }
 
 // listen
