@@ -178,26 +178,43 @@
             <image>
               <name>extendedmind/mongodb-conf</name>
               <alias>mongodb-conf</alias>
+              <run>
+                <namingStrategy>alias</namingStrategy>
+              </run>
             </image>
             <image>
               <name>extendedmind/backend-conf</name>
               <alias>backend-conf</alias>
+              <run>
+                <namingStrategy>alias</namingStrategy>
+              </run>
             </image>
             <image>
               <name>extendedmind/site-conf</name>
               <alias>site-conf</alias>
+              <run>
+                <namingStrategy>alias</namingStrategy>
+              </run>
             </image>
             <image>
               <name>extendedmind/cube-conf</name>
               <alias>cube-conf</alias>
+              <run>
+                <namingStrategy>alias</namingStrategy>
+              </run>
             </image>
             <image>
               <name>extendedmind/nginx-conf</name>
               <alias>nginx-conf</alias>
-            </image>            <image>
+              <run>
+                <namingStrategy>alias</namingStrategy>
+              </run>
+            </image>
+            <image>
               <name>extendedmind/confd</name>
               <alias>confd</alias>
               <run>
+                <namingStrategy>alias</namingStrategy>
                 <env>
                   <EXTENDEDMIND_BACKEND_TOKENSECRET>01234567890123456789012345678901</EXTENDEDMIND_BACKEND_TOKENSECRET>
                   <EXTENDEDMIND_BACKEND_SIGNUPMODE>BETA</EXTENDEDMIND_BACKEND_SIGNUPMODE>
@@ -207,7 +224,7 @@
                   <EXTENDEDMIND_EMAILFROM>${e2e.emailFrom}</EXTENDEDMIND_EMAILFROM>
                   <!-- test login admin:adminpwd for /evaluate -->
                   <EXTENDEDMIND_EVALUATECREDENTIALS>admin:$apr1$iRuCzNe7$wGTyTAez42hHC9rGP6CHg.</EXTENDEDMIND_EVALUATECREDENTIALS>
-                  <EXTENDEDMIND_SITE_BACKENDURLPREFIX>http://localhost:8081/api/11111111-1111-1111-1111-111111111111</EXTENDEDMIND_SITE_BACKENDURLPREFIX>
+                  <EXTENDEDMIND_SITE_BACKENDCOLLECTIVE>11111111-1111-1111-1111-111111111111</EXTENDEDMIND_SITE_BACKENDCOLLECTIVE>
                 </env>
                 <volumes>
                   <from>
@@ -224,11 +241,15 @@
             <image>
               <name>extendedmind/mongodb-data</name>
               <alias>mongodb-data</alias>
+              <run>
+                <namingStrategy>alias</namingStrategy>
+              </run>
             </image>
             <image>
               <name>extendedmind/mongodb</name>
               <alias>mongodb</alias>
               <run>
+                <namingStrategy>alias</namingStrategy>
                 <volumes>
                   <from>
                     <image>mongodb-conf</image>
@@ -240,11 +261,15 @@
             <image>
               <name>extendedmind/backend-data</name>
               <alias>backend-data</alias>
+              <run>
+                <namingStrategy>alias</namingStrategy>
+              </run>
             </image>
             <image>
               <name>extendedmind/backend</name>
               <alias>backend</alias>
               <run>
+                <namingStrategy>alias</namingStrategy>
                 <env>
                   <JAVA_TOOL_OPTIONS>-Xmx512m</JAVA_TOOL_OPTIONS>
                 </env>
@@ -254,9 +279,6 @@
                     <image>backend-data</image>
                   </from>
                 </volumes>
-                <links>
-                  <link>mongodb:mongodb</link>
-                </links>
               </run>
             </image>
             <image>
@@ -267,6 +289,7 @@
               <name>extendedmind/frontend</name>
               <alias>frontend</alias>
               <run>
+                <namingStrategy>alias</namingStrategy>
                 <volumes>
                   <from>
                     <image>frontend-data</image>
@@ -278,6 +301,7 @@
               <name>extendedmind/site</name>
               <alias>site</alias>
               <run>
+                <namingStrategy>alias</namingStrategy>
                 <volumes>
                   <from>
                     <image>site-conf</image>
@@ -289,6 +313,7 @@
               <name>extendedmind/cube-evaluator</name>
               <alias>cube-evaluator</alias>
               <run>
+                <namingStrategy>alias</namingStrategy>
                 <volumes>
                   <from>
                     <image>cube-conf</image>
@@ -303,6 +328,7 @@
               <name>extendedmind/cube-collector</name>
               <alias>cube-collector</alias>
               <run>
+                <namingStrategy>alias</namingStrategy>
                 <volumes>
                   <from>
                     <image>cube-conf</image>
@@ -317,6 +343,7 @@
               <name>extendedmind/nginx</name>
               <alias>nginx</alias>
               <run>
+                <namingStrategy>alias</namingStrategy>
                 <volumes>
                   <from>
                     <image>nginx-conf</image>
@@ -338,8 +365,19 @@
               <name>extendedmind/backend-backup</name>
               <alias>backend-backup</alias>
               <run>
+                <namingStrategy>alias</namingStrategy>
                 <links>
                   <link>backend:backend</link>
+                </links>
+              </run>
+            </image>
+            <image>
+              <name>extendedmind/mongodb-backup</name>
+              <alias>mongodb-backup</alias>
+              <run>
+                <namingStrategy>alias</namingStrategy>
+                <links>
+                  <link>mongodb:mongodb</link>
                 </links>
               </run>
             </image>

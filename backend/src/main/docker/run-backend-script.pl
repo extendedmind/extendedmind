@@ -3,7 +3,7 @@
 $numArgs = $#ARGV + 1;
 
 if ($numArgs < 1){
-  die "usage: run-backend-script.pl [backup/restore] ([param1] [param2])\n";
+  die "usage: run-backend-script.pl [backup/restore] ([param1] [param2] [param3])\n";
 }
 $scriptType = $ARGV[0];
 $param1 = '';

@@ -417,6 +417,27 @@
               </build>
             </image>
             <image>
+              <name>extendedmind/mongodb-backup</name>
+              <alias>mongodb-backup</alias>
+              <build>
+                <from>extendedmind/cloud-sdk</from>
+                <maintainer>timo.tiuraniemi@iki.fi</maintainer>
+                <tags>
+                  <tag>latest</tag>
+                </tags>
+                <assembly>
+                  <mode>dir</mode>
+                  <basedir>/usr/src/extendedmind</basedir>
+                  <descriptor>mongodb-backup-assembly.xml</descriptor>
+                </assembly>
+                <entryPoint>
+                  <exec>
+                    <arg>/usr/src/extendedmind/run-mongodb-backup.pl</arg>
+                  </exec>
+                </entryPoint>
+              </build>
+            </image>
+            <image>
               <name>extendedmind/backend-conf</name>
               <alias>backend-conf</alias>
               <build>
