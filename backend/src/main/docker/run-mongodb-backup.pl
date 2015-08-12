@@ -1,5 +1,7 @@
 #!/usr/bin/perl
 
+$numArgs = $#ARGV + 1;
+
 $param1 = '';
 $param2 = '';
 

@@ -3,6 +3,7 @@
 if [ -z "$2" ]
 then
   echo "Usage: backend-restore.sh [BACKUP_TAR_GZ_FILE] [NEO4J_DIRECTORY_LOCATION]"
+  exit 1
 fi
 
 BACKUP_FILE=$1
@@ -13,7 +14,7 @@ NEO4J_DB_BAK="$NEO4J_DIRECTORY/neo4j-bak"
 if [ ! -d $NEO4J_DIRECTORY ]
 then
   echo "Directory: $NEO4j_DIRECTORY does not exist, exiting."
-  exit 1
+  exit 2
 fi
 
 if [ -z "$3" ]
@@ -46,7 +47,7 @@ fi
 if [ ! -d /usr/src/extendedmind/work/neo4j ]
 then
   echo "Backup file $BACKUP_FILE does not contain folder neo4j, exiting."
-  exit 2
+  exit 3
 fi
 
 if [ -d $NEO4J_DB_BAK ]
