@@ -57,6 +57,7 @@
     SessionStorageService.setUserCreated(LocalStorageService.getUserCreated());
     SessionStorageService.setUserModified(LocalStorageService.getUserModified());
     SessionStorageService.setEmailVerified(LocalStorageService.getEmailVerified());
+    SessionStorageService.setInboxId(LocalStorageService.getInboxId());
     SessionStorageService.setState(LocalStorageService.getState());
     SessionStorageService.setLatestModified(LocalStorageService.getLatestModified());
     SessionStorageService.setItemsSynchronized(LocalStorageService.getItemsSynchronized());
@@ -174,6 +175,7 @@
       SessionStorageService.setUserModified(authenticateResponse.modified);
       SessionStorageService.setUserCreated(authenticateResponse.created);
       SessionStorageService.setEmailVerified(authenticateResponse.emailVerified);
+      SessionStorageService.setInboxId(authenticateResponse.inboxId);
 
       if (authenticateResponse.replaceable) {
         LocalStorageService.setBackendDelta(backendDelta);
@@ -189,6 +191,7 @@
         LocalStorageService.setUserModified(authenticateResponse.modified);
         LocalStorageService.setUserCreated(authenticateResponse.created);
         LocalStorageService.setEmailVerified(authenticateResponse.emailVerified);
+        LocalStorageService.setInboxId(authenticateResponse.inboxId);
       }
       setEmail(email);
 
@@ -205,6 +208,12 @@
       SessionStorageService.setEmailVerified(emailVerified);
       if (persistentStorageEnabled || LocalStorageService.getReplaceable() !== null) {
         LocalStorageService.setEmailVerified(emailVerified);
+      }
+    },
+    setInboxId: function(inboxId) {
+      SessionStorageService.setInboxId(inboxId);
+      if (persistentStorageEnabled || LocalStorageService.getReplaceable() !== null) {
+        LocalStorageService.setInboxId(inboxId);
       }
     },
     setPreference: function(name, value) {
@@ -471,6 +480,10 @@
     getEmailVerified: function() {
       syncWebStorages();
       return SessionStorageService.getEmailVerified();
+    },
+    getInboxId: function() {
+      syncWebStorages();
+      return SessionStorageService.getInboxId();
     },
     isFakeUser: function() {
       return UUIDService.isFakeUUID(this.getUserUUID());

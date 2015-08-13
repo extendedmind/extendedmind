@@ -14,7 +14,8 @@
  */
  'use strict';
 
- function ItemsController($rootScope, $scope, AnalyticsService, ArrayService, ItemsService, UISessionService) {
+ function ItemsController($rootScope, $scope, AnalyticsService, ArrayService, BackendClientService,
+                          ItemsService, UISessionService, UserSessionService, packaging) {
 
   if (angular.isFunction($scope.registerArrayChangeCallback)) {
     $scope.registerArrayChangeCallback('item', ['active'], invalidateItemsArrays,
@@ -89,8 +90,39 @@
       return ItemsService.undeleteItem(item);
     }
   };
+
+  // UI
+
+  $scope.getInboxEmailPrompt = function() {
+    return 'send email to <b>' + $scope.getInboxEmailAddress() + '</b> or press plus below';
+  };
+
+  $scope.getInboxEmailAddress = function() {
+    var inboxEmail = 'inbox-' + UserSessionService.getInboxId();
+
+    var urlPrefix = BackendClientService.getUrlPrefix();
+    if (urlPrefix.length > 0){
+      var domainIndex = urlPrefix.indexOf('://');
+      if (domainIndex !== -1){
+        inboxEmail += "@" + urlPrefix.substring(urlPrefix.indexOf('://') + 3);
+      }
+    }
+    return inboxEmail;
+  };
+
+  $scope.getInboxEmailHref = function() {
+    if (!packaging.endsWith('cordova')){
+      return 'mailto:' + $scope.getInboxEmailAddress();
+    }
+  };
+
+  $scope.clickInboxEmail = function() {
+    if (packaging.endsWith('cordova') && cordova && cordova.InAppBrowser){
+      cordova.InAppBrowser.open('mailto:' + $scope.getInboxEmailAddress(), '_system', 'location=yes');
+    }
+  };
 }
 
-ItemsController['$inject'] = ['$rootScope', '$scope', 'AnalyticsService', 'ArrayService', 'ItemsService',
-'UISessionService'];
+ItemsController['$inject'] = ['$rootScope', '$scope', 'AnalyticsService', 'ArrayService',
+'BackendClientService', 'ItemsService', 'UISessionService', 'UserSessionService', 'packaging'];
 angular.module('em.main').controller('ItemsController', ItemsController);

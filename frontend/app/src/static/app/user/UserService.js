@@ -46,6 +46,7 @@
       .then(function(response) {
         UserSessionService.setEmail(response.email);
         UserSessionService.setEmailVerified(response.emailVerified);
+        UserSessionService.setInboxId(response.inboxId);
         UserSessionService.setTransportPreferences(response.preferences);
         UserSessionService.setAccessInformation(response.uuid, response.collectives, response.sharedLists);
         return response;

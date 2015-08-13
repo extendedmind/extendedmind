@@ -1,4 +1,4 @@
-cd ../core
+cd ../app
 mvn -o clean install -DskipTests=true -Ddebug=true -Ddocker.skip=true
 cd ../cordova
 

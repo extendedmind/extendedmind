@@ -118,6 +118,10 @@
       if (emailVerified) sessionStorage.setItem('emailVerified', emailVerified);
       else sessionStorage.removeItem('emailVerified');
     },
+    setInboxId: function(inboxId) {
+      if (inboxId) sessionStorage.setItem('inboxId', inboxId);
+      else sessionStorage.removeItem('inboxId');
+    },
     setState: function(state) {
       if (state) sessionStorage.setItem('state', JSON.stringify(state));
       else sessionStorage.removeItem('state');
@@ -233,6 +237,9 @@
     getEmailVerified: function() {
       return sessionStorage.getItem('emailVerified');
     },
+    getInboxId: function() {
+      return sessionStorage.getItem('inboxId');
+    },
     getState: function() {
       var state = sessionStorage.getItem('state');
       if (state) return JSON.parse(state);
@@ -279,6 +286,7 @@
       sessionStorage.removeItem('synced');
       sessionStorage.removeItem('userCreated');
       sessionStorage.removeItem('emailVerified');
+      sessionStorage.removeItem('inboxId');
 
       cachedBackendDelta = cachedActiveUUID = cachedUserUUID = cachedEmail = cachedSharedLists =
       cachedPreferences = cachedCollectives = cachedOffline = cachedExpires = undefined;

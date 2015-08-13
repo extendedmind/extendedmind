@@ -36,6 +36,14 @@
     </div>
     <div list-prompt list-prompt-infos="listInfos"
       list-prompt-hide="[listItemAddActive]"></div>
+    <div ng-if="!isFakeUser()" class="row-form enable-text-selection">
+      <span class="text-details downplayed">email</span>
+      <a class="highlighted" ng-click="clickInboxEmail()"
+         external-link="getInboxEmailHref()">
+        <span class="text-metadata" ng-bind="getInboxEmailAddress()"></span>
+      </a>
+      <span class="text-details downplayed">to add new items</span>
+    </div>
   </section>
   <footer ng-show="isContentVisible('inbox')" class="container-content--after" list-footer="getFeatureMap('inbox')"></footer>
 
