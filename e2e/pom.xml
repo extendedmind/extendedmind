@@ -287,8 +287,8 @@
               <alias>frontend-data</alias>
             </image>
             <image>
-              <name>extendedmind/frontend</name>
-              <alias>frontend</alias>
+              <name>extendedmind/site-static</name>
+              <alias>site-static</alias>
               <run>
                 <namingStrategy>alias</namingStrategy>
                 <volumes>
@@ -348,7 +348,7 @@
                 <volumes>
                   <from>
                     <image>nginx-conf</image>
-                    <image>frontend</image>
+                    <image>frontend-data</image>
                   </from>
                 </volumes>
                 <links>
