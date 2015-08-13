@@ -21,6 +21,7 @@ package org.extendedmind.security
 
 import scala.collection.mutable.ArrayBuffer
 import java.nio.ByteBuffer
+import org.apache.commons.codec.binary.Base32
 
 object Random {
   def generateRandomLong(): Long = {
@@ -42,7 +43,7 @@ object Random {
     else Math.abs(randomLong)
   }
 
-  def generateRandomUniqueString(characterLimit: Int = 40): String = {
+  def generateRandomUniqueString(characterLimit: Int = 32): String = {
     // Need to use synchronized block because ByteBuffer isn't thread safe.
     // Not optimal and this method should not be used too frequently.
     this.synchronized {
@@ -52,16 +53,12 @@ object Random {
                           .putLong(uuid.getLeastSignificantBits)
                           .putLong(uuid.getMostSignificantBits)
                           .putLong(random)
-      // Use SHA1 to create a simple HEX string value of the seed input
+      // Use SHA1 to create a simple Base32 string value of the seed input
       val messageDigest = java.security.MessageDigest.getInstance("SHA1");
       val sha1Result = messageDigest.digest(inputBuffer.array());
-      val sb = new StringBuffer();
-      for (i <- 0 until sha1Result.length){
-        sb.append(Integer.toString((sha1Result(i) & 0xff) + 0x100, 16).substring(1));
-      }
-      val uniqueString = sb.toString()
-
-      return sb.substring(0, Math.min(uniqueString.length(), characterLimit));
+      val base32: Base32 = new Base32()
+      val uniqueString = new String(base32.encode(sha1Result)).toLowerCase
+      return uniqueString.substring(0, Math.min(uniqueString.length(), characterLimit));
     }
   }
 

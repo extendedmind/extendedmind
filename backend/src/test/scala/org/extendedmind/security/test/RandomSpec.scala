@@ -34,9 +34,9 @@ class RandomSpec extends SpraySpecBase{
   describe("Random class"){
     it("should generate a random HEX string of specific length"){
       val randomString1 = Random.generateRandomUniqueString()
-      randomString1.length should be(40)
+      randomString1.length should be(32)
       val randomString2 = Random.generateRandomUniqueString()
-      randomString2.length should be(40)
+      randomString2.length should be(32)
       randomString1 should not be(randomString2)
     }
   }
