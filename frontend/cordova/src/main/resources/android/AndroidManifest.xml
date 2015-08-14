@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <application android:hardwareAccelerated="true" android:icon="@drawable/icon" android:label="@string/app_name">
-        <activity android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale" android:label="@string/activity_name" android:name="extmd" android:screenOrientation="userPortrait" android:theme="@android:style/Theme.Black.NoTitleBar">
+        <activity android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale" android:label="@string/activity_name" android:name="extmd" android:launchMode="singleInstance" android:screenOrientation="userPortrait" android:theme="@android:style/Theme.Black.NoTitleBar">
             <intent-filter android:label="@string/launcher_name">
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
