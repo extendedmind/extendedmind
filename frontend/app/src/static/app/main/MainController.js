@@ -717,6 +717,19 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
       if (cordova.plugins && cordova.plugins.notification) {
         registerCordovaListeners();
         activateCordova();
+
+        // Check for immediately incoming data and then start listening to new intents
+        if (packaging === 'android-cordova' && window.plugins && window.plugins.webintent){
+          window.plugins.webintent.getExtras(function(extras) {
+            // url is the value of EXTRA_TEXT and subject is EXTRA_SUBJECT
+            storeSharedItem(extras[window.plugins.webintent.EXTRA_TEXT],
+                            extras[window.plugins.webintent.EXTRA_SUBJECT]);
+          });
+          window.plugins.webintent.onNewIntent(function(extras) {
+            storeSharedItem(extras[window.plugins.webintent.EXTRA_TEXT],
+                            extras[window.plugins.webintent.EXTRA_SUBJECT]);
+          });
+        }
       } else {
         document.addEventListener('deviceready', onDeviceReady, false);
       }
@@ -731,59 +744,13 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     if (keepRunningPreferences && keepRunningPreferences[UISessionService.getDeviceId()]){
       ReminderService.setPersistentReminderForThisDevice();
     }
-    if (packaging === 'android-cordova'){
-      processIncomingItem();
-    }
   }
 
   // SHARE VIA
 
-  function processIncomingItem(){
-    if (window.plugins && window.plugins.webintent){
-      window.plugins.webintent.getExtra(window.plugins.webintent.EXTRA_TEXT,
-        function(url) {
-          // url is the value of EXTRA_TEXT
-          storeSharedItem('url', url);
-          window.plugins.webintent.clearExtra(window.plugins.webintent.EXTRA_TEXT,
-            function() { // extra is now cleared
-            },function() { // There was no extra supplied.
-            }
-          );
-        }, function() {
-          // There was no extra text supplied, this means there is no proper share
-          shareViaValues = undefined;
-        }
-      );
-      window.plugins.webintent.getExtra(window.plugins.webintent.EXTRA_SUBJECT,
-        function(subject) {
-          // subject is the value of EXTRA_SUBJECT
-          storeSharedItem('subject', subject);
-          window.plugins.webintent.clearExtra(window.plugins.webintent.EXTRA_SUBJECT,
-            function() { // extra is now cleared
-            },function() { // There was no extra supplied.
-            }
-          );
-        }, function() {
-          // There was no extra supplied.
-          storeSharedItem('subject', undefined);
-        }
-      );
-    }
-  }
-
-  var shareViaValues;
-  function storeSharedItem(type, value){
-    if (!shareViaValues) shareViaValues = {};
-    if (type === 'subject'){
-      shareViaValues.subject = value;
-    }else if (type === 'url'){
-      shareViaValues.url = value;
-    }
-    if (shareViaValues.hasOwnProperty('url') && shareViaValues.hasOwnProperty('subject')){
-      // First set back button to exit app
-      $scope.exitAppOnBack = true;
-
-      // Second: activate inbox if not active
+  function storeSharedItem(url, subject){
+    if (url || subject){
+      // First: activate inbox if not active
       if ($scope.features.inbox.getStatus() === 'disabled'){
         var inboxPrefs = UserSessionService.getFeaturePreferences('inbox');
         inboxPrefs = $scope.activateFeatureOnboarding(inboxPrefs);
@@ -791,26 +758,26 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
         UserService.saveAccountPreferences();
       }
 
-      // Then, save value to inbox
+      // Second: save value to inbox
       var initialShareItemValues = {
-        title: shareViaValues.subject ? shareViaValues.subject : shareViaValues.url.trim()
+        title: subject ? subject : url.trim()
       };
-      if (shareViaValues.url){
-        initialShareItemValues.link = shareViaValues.url.trim();
+      if (url){
+        initialShareItemValues.link = url.trim();
       }
-      shareViaValues = undefined;
       if (initialShareItemValues.title){
+        // Set back button to exit app
         var newItem = ItemsService.getNewItem(initialShareItemValues, UserSessionService.getUserUUID());
 
-        var doSaveSharedItem = function(newItem){
+        var doSaveSharedItem = function(newItem) {
           ItemsService.saveItem(newItem).then(function(){
-            $scope.openEditor('item', newItem);
+            $scope.openEditor('item', newItem, 'share');
             if (!$rootScope.$$phase && !$scope.$$phase) {
               // Programmatic open. Most likely does not cause digest.
               $scope.$digest();
             }
           });
-        }
+        };
         if (editorReady) {
           doSaveSharedItem(newItem);
         }else{

@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
- /* global cordova */
+ /* global cordova, console */
  'use strict';
 
  function EditorController($rootScope, $scope, $timeout,
@@ -23,6 +23,7 @@
   // OPENING, INITIALIZING, CLOSING
 
   var dataInEdit;
+  var exitAppOnBack = false;
   $scope.initializeEditor = function(editorType, data, mode){
     // Reset $scope variables. These may exist from previous editor.
     $scope.task = undefined;
@@ -36,7 +37,6 @@
     $scope.editorType = editorType;
     $scope.editorVisible = true;
     $scope.mode = mode;
-
     if (editorType === 'task'){
       $scope.task = dataInEdit;
       initializeEditorVisibilityAndPermission(dataInEdit);
@@ -50,6 +50,7 @@
     }else if (editorType === 'item'){
       $scope.item = dataInEdit;
       initializeEditorVisibilityAndPermission(dataInEdit);
+      exitAppOnBack = mode === 'share';
     }else if (editorType === 'tag'){
       $scope.tag = dataInEdit;
     }else if (editorType === 'user'){
@@ -95,8 +96,8 @@
   }
 
   function evaluateExitApp(){
-    if ($scope.exitAppOnBack === true){
-      $scope.exitAppOnBack = false;
+    if (exitAppOnBack){
+      exitAppOnBack = false;
       if (navigator && navigator.Backbutton && navigator.Backbutton.goBack){
         navigator.Backbutton.goBack(undefined, function(){
           // Try to go home if there is no going back
@@ -114,12 +115,12 @@
   function editorAboutToClose() {
     var aboutToClosePromise;
     if (typeof featureEditorAboutToCloseCallback === 'function'){
-      aboutToClosePromise = featureEditorAboutToCloseCallback($scope.exitAppOnBack);
+      aboutToClosePromise = featureEditorAboutToCloseCallback(exitAppOnBack);
     }
     if (aboutToClosePromise){
       aboutToClosePromise.then(function(){
         evaluateExitApp();
-      })
+      });
     }else{
       evaluateExitApp();
     }
@@ -270,7 +271,7 @@
           deletePromise.then(function() {
             evaluateExitApp();
           }, function(error){
-            console.error("error deleting item:");
+            console.error('error deleting item:');
             console.error(error);
             evaluateExitApp();
           });
@@ -742,7 +743,7 @@
     }
   };
 
-  $scope.generateReadOnlyPropertyClickNotification = function(itemType) {
+  $scope.generateReadOnlyPropertyClickNotification = function(/*itemType*/) {
     UISessionService.pushNotification({
       type: 'fyi',
       text: 'no permission to edit'
