@@ -64,14 +64,18 @@
     });
   };
 
-  // CONVERTING
-
-  $scope.convertToNote = function(){
-    $scope.initializeEditor('note', $scope.getNewNote({title: $scope.titlebar.text}), 'omnibar');
+  $scope.saveOmnibarToNote = function(){
+    var note = $scope.getNewNote({title: $scope.titlebar.text});
+    $scope.saveNote(note).then(function() {
+      $scope.initializeEditor('note', note, 'omnibar');
+    });
   };
 
-  $scope.convertToTask = function(){
-    $scope.initializeEditor('task', $scope.getNewTask({title: $scope.titlebar.text}));
+  $scope.saveOmnibarToTask = function(){
+    var task = $scope.getNewTask({title: $scope.titlebar.text});
+    $scope.saveTask(task).then(function() {
+      $scope.initializeEditor('task', task, 'omnibar');
+    });
   };
 
   // TITLEBAR

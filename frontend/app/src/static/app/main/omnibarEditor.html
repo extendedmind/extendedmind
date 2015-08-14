@@ -54,7 +54,7 @@
 
       <div class="group-symmetrical">
         <a href ng-hide="footerExpanded" class="group-symmetrical--left link"
-          swiper-click="convertToTask()">
+          swiper-click="saveOmnibarToTask()">
           <span class="text-convert">task</span>
         </a>
         <div ng-if="getTagsArray('keywords').length" class="group-symmetrical--middle">
@@ -64,7 +64,7 @@
         </div>
         <a href ng-hide="footerExpanded" class="group-symmetrical--right link"
           ng-class="(features.notes.getStatus() === 'disabled') && 'invisible'"
-          swiper-click="convertToNote()">
+          swiper-click="saveOmnibarToNote()">
           <span class="text-convert">note</span>
         </a>
         <a href ng-if="footerExpanded && (!selectedKeywords || !selectedKeywords.length)"
