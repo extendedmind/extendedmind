@@ -315,7 +315,7 @@
 
     if (convertToNotePromise){
       convertToNotePromise.then(function(note){
-        $scope.initializeEditor('note', note);
+        $scope.initializeEditor('note', note, 'convert');
       }, handleConvertError);
     }
   };
@@ -334,7 +334,7 @@
     }
     if (convertToTaskPromise){
       convertToTaskPromise.then(function(task){
-        $scope.initializeEditor('task', task);
+        $scope.initializeEditor('task', task, 'convert');
       }, handleConvertError);
     }
   };
@@ -354,7 +354,7 @@
     }
     if (convertToListPromise){
       convertToListPromise.then(function(list){
-        $scope.initializeEditor('list', list);
+        $scope.initializeEditor('list', list, 'convert');
       }, handleConvertError);
     }
   };

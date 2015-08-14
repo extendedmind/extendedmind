@@ -18,19 +18,22 @@
  function NoteEditorController($scope, $timeout, NotesService, SwiperService,
                                TagsService, UISessionService) {
 
+  // INITIALIZING
+
   if ($scope.mode === 'omnibar') {
     // Dirtily set flag on to remove flicker when note editor is rendered.
     $scope.contentFocused = true;
   }
 
 
-  // INITIALIZING
-
   if (angular.isFunction($scope.registerFeatureEditorAboutToCloseCallback))
     $scope.registerFeatureEditorAboutToCloseCallback(noteEditorAboutToClose, 'NoteEditorController');
 
   $scope.noteStatus = 'back';
   $scope.keywordsPickerOpen = false;
+
+  // Set collapsible open when
+  $scope.collapsibleOpen = $scope.editorType === 'recurring' || $scope.mode === 'convert';
 
   // NOTE EDITOR FIELD VISIBILITY
 
@@ -437,8 +440,6 @@
     return activeKeywords;
   };
 
-  // Set collapsible open when
-  $scope.collapsibleOpen = $scope.editorType === 'recurring';
   $scope.toggleCollapsible = function() {
     $scope.collapsibleOpen = !$scope.collapsibleOpen;
   };
