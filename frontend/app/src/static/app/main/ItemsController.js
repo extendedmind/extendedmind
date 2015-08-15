@@ -106,6 +106,8 @@
       if (domainIndex !== -1){
         inboxEmail += "@" + urlPrefix.substring(urlPrefix.indexOf('://') + 3);
       }
+    }else {
+      inboxEmail += "@" + window.location.hostname;
     }
     return inboxEmail;
   };
