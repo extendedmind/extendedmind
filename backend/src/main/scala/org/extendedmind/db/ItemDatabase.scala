@@ -120,6 +120,13 @@ trait ItemDatabase extends UserDatabase {
     } yield result
   }
 
+  def isInboxValid(inboxId: String): Response[SetResult] = {
+    for {
+      ownerNode <- getNode("inboxId", inboxId, MainLabel.OWNER, None, false).right
+      result <- Right(SetResult(None, None, System.currentTimeMillis())).right
+    } yield result
+  }
+
   def destroyDeletedItems(owner: Owner): Response[CountResult] = {
     withTx {
       implicit neo4j =>

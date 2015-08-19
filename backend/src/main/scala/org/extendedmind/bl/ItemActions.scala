@@ -136,6 +136,7 @@ trait ItemActions {
     var title: String = null;
     var description: String = null;
     var link: String = null;
+    var checkConnection: Boolean = false;
     for (i <- 0 until fields.length){
       if (fields(i)._1 == "Subject"){
         if (fields(i)._2 == null || fields(i)._2.trim.length == 0){
@@ -168,10 +169,14 @@ trait ItemActions {
             }
           }
         }
+      }else if (fields(i)._1 == "check-connection"){
+        checkConnection = true;
       }
     }
-    if (title == null){
+    if (title == null && !checkConnection){
       fail(INVALID_PARAMETER, ERR_ITEM_MISSING_SUBJECT, "could not find subject in inbox parameters")
+    }else if (checkConnection){
+      db.isInboxValid(inboxId)
     }else {
       db.putNewItemToInbox(inboxId, Item(title, if (description==null) None else Some(description),
                                 if (link==null) None else Some(link)))
