@@ -1,67 +1,70 @@
-<div class="container-fluid">
+<div class="container-modal" editable-field-container="auto" editable-field-container-blur
+    editable-field-container-clicked-elsewhere="!modal.params.cancelDisabled && closeModal()">
+  <div class="container-fluid">
 
-  <!-- TOOLBAR -->
-  <header class="modal-toolbar group-symmetrical">
-    <a href ng-if="!hideCloseText && !closeText" class="group-symmetrical--right icon-downplayed"
-      ng-click="closeModal()">
-      <span class="icon-x"></span>
-    </a>
+    <!-- TOOLBAR -->
+    <header class="modal-toolbar group-symmetrical">
+      <a href ng-if="!hideCloseText && !closeText" class="group-symmetrical--right icon-downplayed"
+        ng-click="closeModal()">
+        <span class="icon-x"></span>
+      </a>
 
-    <a href ng-if="!hideCloseText && closeText" class="group-symmetrical--right link-navigation"
-      ng-click="closeModal()">
-      <span class="text-navigation" ng-bind="closeText"></span>
-    </a>
-  </header>
+      <a href ng-if="!hideCloseText && closeText" class="group-symmetrical--right link-navigation"
+        ng-click="closeModal()">
+        <span class="text-navigation" ng-bind="closeText"></span>
+      </a>
+    </header>
 
-  <div class="container-fluid--inner">
-    <section class="container-content">
+    <div class="container-fluid--inner">
+      <section class="container-content">
 
-      <div class="group-instruction">
+        <div class="group-instruction">
 
-        <!-- HEADING -->
-        <h2 class="group-heading shrinked row" ng-class="messageHeading.length > 6 && 'long';">
-          <span class="text-heading" ng-bind="messageHeading"></span>
-        </h2>
+          <!-- HEADING -->
+          <h2 class="group-heading shrinked row" ng-class="messageHeading.length > 6 && 'long';">
+            <span class="text-heading" ng-bind="messageHeading"></span>
+          </h2>
 
-        <!-- CONTENT -->
-        <div class="textgroup-ingress first last row" ng-bind="messageIngress"></div>
+          <!-- CONTENT -->
+          <div class="textgroup-ingress first last row" ng-bind="messageIngress"></div>
 
-        <div ng-if="messageText" class="textgroup-message row">
-          <span ng-repeat="textNode in messageText" ng-switch="textNode.type" class="text-medium">
-            <span ng-switch-when="text" ng-bind="textNode.data"></span>
-            <a href ng-switch-when="link" class="highlighted" ng-click="textNode.action()">
-              <span ng-bind="textNode.data"></span>
-            </a>
-            <span ng-switch-when="separator"><br><br></span>
-          </span>
-        </div>
-
-        <!-- LIST PICKER AS MODAL CONTENT -->
-        <div ng-if="listPicker && !selectedList">
-          <div ng-if="saveError && saveError.type === 'offline'" class="group-error row-form">
-            <span class="text-error">can't connect to server. are you online?</span>
+          <div ng-if="messageText" class="textgroup-message row">
+            <span ng-repeat="textNode in messageText" ng-switch="textNode.type" class="text-medium">
+              <span ng-switch-when="text" ng-bind="textNode.data"></span>
+              <a href ng-switch-when="link" class="highlighted" ng-click="textNode.action()">
+                <span ng-bind="textNode.data"></span>
+              </a>
+              <span ng-switch-when="separator"><br><br></span>
+            </span>
           </div>
-          <div list-picker="listPicker.getListsArray()"
-            list-picker-new-item="listPicker.getNewList()"
-            list-picker-save="listPicker.save(listPicker.itemInEdit, list)"
-            list-picker-clear="listPicker.clear(listPicker.itemInEdit, list)"
-            list-picker-get-selected="listPicker.getSelected(listPicker.itemInEdit)"
-            list-picker-get-this-list="listPicker.itemInEdit">
+
+          <!-- LIST PICKER AS MODAL CONTENT -->
+          <div ng-if="listPicker && !selectedList">
+            <div ng-if="saveError && saveError.type === 'offline'" class="group-error row-form">
+              <span class="text-error">can't connect to server. are you online?</span>
+            </div>
+            <div list-picker="listPicker.getListsArray()"
+              list-picker-new-item="listPicker.getNewList()"
+              list-picker-save="listPicker.save(listPicker.itemInEdit, list)"
+              list-picker-clear="listPicker.clear(listPicker.itemInEdit, list)"
+              list-picker-get-selected="listPicker.getSelected(listPicker.itemInEdit)"
+              list-picker-get-this-list="listPicker.itemInEdit">
+            </div>
+          </div>
+
+          <div ng-if="messageDetails" class="row">
+            <pre class="text-preformatted" ng-bind="messageDetails"></pre>
           </div>
         </div>
 
-        <div ng-if="messageDetails" class="row">
-          <pre class="text-preformatted" ng-bind="messageDetails"></pre>
-        </div>
-      </div>
+      </section>
 
-    </section>
-
-    <!-- FOOTER -->
-    <footer class="container-content--after group-btn">
-      <button type="submit" ng-disabled="confirmDisabled" class="btn-action" ng-click="confirmAction()">
-        <span class="text-btn" ng-bind="confirmText"></span>
-      </button>
-    </footer>
+      <!-- FOOTER -->
+      <footer class="container-content--after group-btn">
+        <button type="submit" ng-disabled="confirmDisabled" class="btn-action" ng-click="confirmAction()">
+          <span class="text-btn" ng-bind="confirmText"></span>
+        </button>
+      </footer>
+    </div>
   </div>
 </div>

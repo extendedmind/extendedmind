@@ -154,9 +154,7 @@ Menu
 @max-width-modal: 500px;
 
 // 1. Center vertically. See http://css-tricks.com/centering-css-complete-guide/#vertical-block-known
-// 2. Set default max-height
-// 3. Set white background to hide stuff below.
-.container-modal {
+.container-modal--outer {
   position: absolute;                   // [1]
   top: 50%;                             // [1]
   -webkit-transform: translateY(-50%);  // [1]
@@ -167,10 +165,15 @@ Menu
   width: 100%;
   max-width: @max-width-modal;
   .center-horizontally-absolute();
-  background-color: white;  // [3]
+}
+
+// 1. Set default max-height
+// 2. Set white background to hide stuff below.
+.container-modal {
+  background-color: white;  // [2]
   .container-content {
     height: auto;
-    max-height: 80vh; // [2]
+    max-height: 80vh; // [1]
   }
 }
 
