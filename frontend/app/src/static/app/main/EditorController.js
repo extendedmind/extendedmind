@@ -566,14 +566,17 @@
       if (hasFocus) {
         $scope.focusedTextProperty = name;
       } else {
-        $scope.focusedTextProperty = undefined;
-        if (name === 'url' && item){
-          if (item.trans.link && item.trans.link.length){
-            item.trans.link = item.trans.link.trim();
-            if (item.trans.link.indexOf('://') === -1 && item.trans.link.indexOf('.') !== -1 &&
-                item.trans.link.indexOf(' ') === -1){
-              // There is a period and no blank space, make an educated guess to add 'http://'
-              item.trans.link = 'http://' + item.trans.link;
+        if (document.hasFocus()) {
+          // Only perform blur made inside the document.
+          $scope.focusedTextProperty = undefined;
+          if (name === 'url' && item){
+            if (item.trans.link && item.trans.link.length){
+              item.trans.link = item.trans.link.trim();
+              if (item.trans.link.indexOf('://') === -1 && item.trans.link.indexOf('.') !== -1 &&
+                  item.trans.link.indexOf(' ') === -1){
+                // There is a period and no blank space, make an educated guess to add 'http://'
+                item.trans.link = 'http://' + item.trans.link;
+              }
             }
           }
         }
