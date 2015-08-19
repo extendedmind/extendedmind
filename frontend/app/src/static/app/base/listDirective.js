@@ -65,6 +65,10 @@
         $scope.arrayVisible = true;
       };
 
+      this.getSlideId = function() {
+        return $scope.listOptions.id;
+      };
+
       var arrayVisibleCallbacks = {};
       this.registerArrayVisibleCallback = function(callback, id) {
         arrayVisibleCallbacks[id] = callback;

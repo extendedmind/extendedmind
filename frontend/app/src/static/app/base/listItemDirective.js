@@ -21,7 +21,7 @@
     scope: true,
     compile: function(){
       return {
-        pre: function(scope, _, attrs) {
+        pre: function(scope, _, attrs, listController) {
           if (attrs.listItem) {
             var listId = $parse(attrs.listItem)(scope);
           }
@@ -30,6 +30,10 @@
             var uniqueListItemId = itemUUID;
             if (listId) {
               uniqueListItemId += listId;
+            }
+            var slideId = listController.getSlideId();
+            if (slideId){
+              uniqueListItemId += slideId;
             }
             return uniqueListItemId;
           };
