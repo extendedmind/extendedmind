@@ -20,9 +20,9 @@
   var TAG_TYPE = 'tag';
 
   var tagFieldInfos = ItemLikeService.getFieldInfos(
-    ['tagType'
+    ['tagType',
+     'parent'
     // TODO
-    //'parent',
     //'visibility'
     ]
   );
