@@ -100,7 +100,7 @@ class TagBestCaseSpec extends ServiceSpecBase {
                     writeJsonOutput("tagResponse", responseAs[String])
                     tagResponse.description.get should be("my home")
                     // Add the tag to a Note
-                    val newNote = Note("bike details", None, Some("model: 12345"), None, None,
+                    val newNote = Note("bike details", None, Some("model: 12345"), None, None, None,
                       Some(ExtendedItemRelationships(None, None, Some(scala.List(putTagResponse.uuid.get)))))
                     val putNoteResponse = putNewNote(newNote, authenticateResponse)
                     val noteWithTag = getNote(putNoteResponse.uuid.get, authenticateResponse)
@@ -158,7 +158,7 @@ class TagBestCaseSpec extends ServiceSpecBase {
       val newChildTag = Tag("spanish studies", None, None, KEYWORD, Some(putTagResponse.uuid.get))
       val putChildTagResponse = putNewTag(newChildTag, authenticateResponse)
 
-      val newNote = Note("Spanish 101", None, None, Some("lecture notes for Spanish 101 class"), None,
+      val newNote = Note("Spanish 101", None, None, Some("lecture notes for Spanish 101 class"), None, None,
                   Some(ExtendedItemRelationships(None, None, Some(scala.List(putTagResponse.uuid.get)))))
       val putNoteResponse = putNewNote(newNote, authenticateResponse)
 

@@ -75,7 +75,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
       + "update it with PUT to /[userUUID]/note/[noteUUID] "
       + "and get it back with GET to /[userUUID]/note/[noteUUID]") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-      val newNote = Note("home measurements", None, None, Some("bedroom wall: 420cm*250cm"), None, None)
+      val newNote = Note("home measurements", None, None, Some("bedroom wall: 420cm*250cm"), None, None, None)
       Put("/" + authenticateResponse.userUUID + "/note",
         marshal(newNote).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           val putNoteResponse = responseAs[SetResult]
@@ -132,7 +132,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
     it("should successfully convert note to list with POST to /[userUUID]/note/[itemUUID]/list "
       + "and transform it back with POST to /[userUUID]/list/[itemUUID]/note") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-      val newNote = Note("Spanish 101", None, None, Some("lecture notes for Spanish 101 class"), None, None)
+      val newNote = Note("Spanish 101", None, None, Some("lecture notes for Spanish 101 class"), None, None, None)
       val putNoteResponse = putNewNote(newNote, authenticateResponse)
 
       Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/list",
@@ -157,7 +157,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
     it("should successfully favorite note with POST to /[userUUID]/note/[itemUUID]/favorite "
       + "and unfavorite it with POST to /[userUUID]/note/[itemUUID]/unfavorite") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-      val newNote = Note("Spanish 101", None, None, Some("lecture notes for Spanish 101 class"), Some(100L), None)
+      val newNote = Note("Spanish 101", None, None, Some("lecture notes for Spanish 101 class"), None, Some(100L), None)
       val putNoteResponse = putNewNote(newNote, authenticateResponse)
       val originalNoteResponse = getNote(putNoteResponse.uuid.get, authenticateResponse)
       originalNoteResponse.favorited should be (None)

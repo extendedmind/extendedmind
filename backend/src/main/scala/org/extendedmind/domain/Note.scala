@@ -23,10 +23,18 @@ import java.util.UUID
 import Validators._
 import org.extendedmind.SetResult
 
+
+// List of FormatTypes
+object FormatType extends Enumeration {
+  type FormatType = Value
+  val MARKDOWN = Value("md")
+}
+
 case class Note(uuid: Option[UUID], id: Option[String], created: Option[Long], modified: Option[Long], deleted: Option[Long], archived: Option[Long],
                 title: String, description: Option[String],
                 link: Option[String],
                 content: Option[String],
+                format: Option[String],
                 favorited: Option[Long],
                 visibility: Option[SharedItemVisibility],
                 relationships: Option[ExtendedItemRelationships])
@@ -37,15 +45,24 @@ case class Note(uuid: Option[UUID], id: Option[String], created: Option[Long], m
       "Description can not be more than " + DESCRIPTION_MAX_LENGTH + " characters")
   if (link.isDefined) require(validateLength(link.get, 2000), "Link can not be more than 2000 characters")
   if (content.isDefined) require(validateLength(content.get, 1000000), "Content can not be more than 1000000 characters")
+  if (format.isDefined) require(
+      try {
+        val formatType = FormatType.withName(format.get)
+        true
+      }catch {
+        case _:Throwable => false
+      },
+      "Expected 'md' but got " + format.get)
 }
 
 object Note{
   def apply(title: String, description: Option[String],
             link: Option[String],
             content: Option[String],
+            format: Option[String],
             favorited: Option[Long],
             relationships: Option[ExtendedItemRelationships])
-        = new Note(None, None, None, None, None, None, title, description, link, content, favorited,
+        = new Note(None, None, None, None, None, None, title, description, link, content, format, favorited,
                    None, relationships)
 }
 
@@ -53,6 +70,7 @@ case class LimitedNote(uuid: Option[UUID], id: Option[String], created: Option[L
                 title: String, description: Option[String],
                 link: Option[String],
                 content: Option[String],
+                format: Option[String],
                 relationships: LimitedExtendedItemRelationships)
                 extends LimitedExtendedItem {
   if (id.isDefined) require(validateLength(id.get, 100), "Id can not be more than 100 characters")
@@ -61,12 +79,20 @@ case class LimitedNote(uuid: Option[UUID], id: Option[String], created: Option[L
       "Description can not be more than " + DESCRIPTION_MAX_LENGTH + " characters")
   if (link.isDefined) require(validateLength(link.get, 2000), "Link can not be more than 2000 characters")
   if (content.isDefined) require(validateLength(content.get, 1000000), "Content can not be more than 1000000 characters")
+  if (format.isDefined) require(
+      try {
+        val formatType = FormatType.withName(format.get)
+        true
+      }catch {
+        case _:Throwable => false
+      },
+      "Expected 'md' but got " + format.get)
 }
 
 object LimitedNote{
   def apply(note: Note)
         = new LimitedNote(note.uuid, note.id, note.created, note.modified, note.deleted,
-                          note.title, note.description, note.link, note.content,
+                          note.title, note.description, note.link, note.content, note.format,
                           LimitedExtendedItemRelationships(note.relationships.get.parent,note.relationships.get.origin))
 }
 

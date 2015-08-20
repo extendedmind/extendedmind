@@ -22,6 +22,7 @@
 
   var noteFieldInfos = ItemLikeService.getFieldInfos(
     [ 'content',
+      'format',
       {
         name: 'favorited',
         skipTransport: true,

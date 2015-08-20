@@ -102,7 +102,7 @@ class ListBestCaseSpec extends ServiceSpecBase {
 	                listResponse.due.get should be("2014-03-01")
 
 	                // Add the list to a note
-                  val newNote = Note("bike details", None, Some("model: 12345"), None, None,
+                  val newNote = Note("bike details", None, Some("model: 12345"), None, None, None,
                     Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None)))
                   val putNoteResponse = putNewNote(newNote, authenticateResponse)
                   val noteWithList = getNote(putNoteResponse.uuid.get, authenticateResponse)
@@ -179,7 +179,7 @@ class ListBestCaseSpec extends ServiceSpecBase {
       // Put existing task and new note into list
       val existingTaskInList = newTask.copy(relationships = Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None)))
       val putTaskInListResponse = putExistingTask(existingTaskInList, putTaskResponse.uuid.get, authenticateResponse)
-      val newNote = Note("Spanish 101", None, None, Some("lecture notes for Spanish 101 class"), None,
+      val newNote = Note("Spanish 101", None, None, Some("lecture notes for Spanish 101 class"), None, None,
     		  				Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None)))
       val putNoteResponse = putNewNote(newNote, authenticateResponse)
 
@@ -289,7 +289,7 @@ class ListBestCaseSpec extends ServiceSpecBase {
         val newTask = Task("learn Spanish", None, None, None, None, None,
             Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None)))
         val putTaskResponse = putNewTask(newTask, authenticateResponse)
-        val newNote = Note("Spanish 101", None, None, Some("lecture notes for Spanish 101 class"), None,
+        val newNote = Note("Spanish 101", None, None, Some("lecture notes for Spanish 101 class"), None, None,
       		  				Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None)))
         val putNoteResponse = putNewNote(newNote, authenticateResponse)
 
@@ -354,7 +354,7 @@ class ListBestCaseSpec extends ServiceSpecBase {
                 val deletedItemsResponse = responseAs[Items]
                 deletedItemsResponse.tags.get(0).uuid.get should be (unarchivedList.relationships.get.tags.get(0))
 
-                val newNote2 = Note("Spanish 102", None, None, Some("lecture notes for Spanish 102 class"), None,
+                val newNote2 = Note("Spanish 102", None, None, Some("lecture notes for Spanish 102 class"), None, None,
                 Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None)))
                 putNewNote(newNote2, authenticateResponse)
 
@@ -364,7 +364,7 @@ class ListBestCaseSpec extends ServiceSpecBase {
                   val archive2ListResponse = responseAs[ArchiveListResult]
                   val archived2List = getList(putListResponse.uuid.get, authenticateResponse)
                   archived2List.relationships.get.parent should be (None)
-                  val newNote3 = Note("Spanish 103", None, None, Some("lecture notes for Spanish 103 class"), None,
+                  val newNote3 = Note("Spanish 103", None, None, Some("lecture notes for Spanish 103 class"), None, None,
                   Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None)))
                   putNewNote(newNote3, authenticateResponse)
 
@@ -398,7 +398,7 @@ class ListBestCaseSpec extends ServiceSpecBase {
         val newTask = Task("help with writing essay", None, None, Some("2015-10-10"), None, None,
         Some(ExtendedItemRelationships(Some(essayListUUID), None, None)))
         val putTaskResponse = putNewTask(newTask, lauriAuthenticateResponse, Some(timoUUID))
-        val newNote = Note("tips for writing", None, None, Some("first just write, then edit"), None,
+        val newNote = Note("tips for writing", None, None, Some("first just write, then edit"), None, None,
                     Some(ExtendedItemRelationships(Some(essayListUUID), None, None)))
         val putNoteResponse = putNewNote(newNote, lauriAuthenticateResponse, Some(timoUUID))
 
