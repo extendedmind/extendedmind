@@ -104,6 +104,7 @@ trait CollectiveDatabase extends UserDatabase {
     founderNode --> SecurityRelationship.IS_FOUNDER --> collectiveNode;
     collectiveNode.setProperty("inboxId", generateUniqueInboxId())
     collectiveNode.setProperty("apiKey", Random.generateRandomUniqueString())
+    if (collective.handle.isDefined) collectiveNode.setProperty("handle", collective.handle.get)
 
     if (commonCollective){
       collectiveNode.setProperty("common", true)
@@ -114,7 +115,6 @@ trait CollectiveDatabase extends UserDatabase {
           user --> SecurityRelationship.CAN_READ --> collectiveNode;
       })
     }
-
     Right(collectiveNode)
   }
 
@@ -124,11 +124,13 @@ trait CollectiveDatabase extends UserDatabase {
       implicit neo4j =>
         for {
           collectiveNode <- getNode(collectiveUUID, OwnerLabel.COLLECTIVE).right
+          handle <- getCollectiveHandle(collectiveNode, collective).right
           collectiveNode <- updateNode(collectiveNode, collective.copy(
               inboxId = (if (collectiveNode.hasProperty("inboxId")) Some(collectiveNode.getProperty("inboxId").asInstanceOf[String])
                         else None),
               apiKey = (if (collectiveNode.hasProperty("apiKey")) Some(collectiveNode.getProperty("apiKey").asInstanceOf[String])
-                        else None))).right
+                        else None),
+              handle = handle)).right
         } yield collectiveNode
     }
   }
@@ -158,8 +160,8 @@ trait CollectiveDatabase extends UserDatabase {
           .evaluator(Evaluators.excludeStartPosition())
           .evaluator(PropertyEvaluator(
             OwnerLabel.COLLECTIVE, "deleted",
-            Evaluation.EXCLUDE_AND_PRUNE,
-            Evaluation.INCLUDE_AND_CONTINUE))
+            foundEvaluation=Evaluation.EXCLUDE_AND_PRUNE,
+            notFoundEvaluation=Evaluation.INCLUDE_AND_CONTINUE))
     }
     val traverser = founderFromCollective.traverse(collectiveNode.right.get)
     val collectiveNodeList = traverser.nodes().toList
@@ -178,6 +180,26 @@ trait CollectiveDatabase extends UserDatabase {
     }
   }
 
-
-
+  protected def getCollectiveHandle(collectiveNode: Node, collective: Collective)(implicit neo4j: DatabaseService): Response[Option[String]] = {
+     // Handle change
+    if (collective.handle.isDefined && collectiveNode.hasProperty("handle")) {
+      val previousHandle = collectiveNode.getProperty("handle").asInstanceOf[String]
+      if (previousHandle != collective.handle.get){
+        // Attempting to change handle, check for new handle uniqueness
+        val validateResult = validateHandleUniqueness(collective.handle)
+        if (validateResult.isRight){
+          collectiveNode.setProperty("handle", collective.handle.get);
+          Right(Some(collective.handle.get))
+        } else{
+          Left(validateResult.left.get)
+        }
+      }else{
+        Right(Some(previousHandle))
+      }
+    }else if (collectiveNode.hasProperty("handle")){
+      Right(Some(collectiveNode.getProperty("handle").asInstanceOf[String]))
+    }else{
+      Right(None)
+    }
+  }
 }

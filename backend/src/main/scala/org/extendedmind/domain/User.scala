@@ -31,23 +31,39 @@ case class UserPreferences(onboarded: Option[String], ui: Option[String]){
 }
 
 case class User(uuid: Option[UUID], created: Option[Long], modified: Option[Long], deleted: Option[Long],
-                email: Option[String], emailVerified: Option[Long], cohort: Option[Int], inboxId: Option[String],
+                email: Option[String], emailVerified: Option[Long],
+                displayName: Option[String], handle: Option[String],
+                cohort: Option[Int], inboxId: Option[String],
                 preferences: Option[UserPreferences],
-                collectives: Option[Map[UUID,(String, Byte, Boolean)]],
+                collectives: Option[Map[UUID,(String, Byte, Boolean, Option[String])]],
                 sharedLists: Option[Map[UUID,(String, Map[UUID, (String, Byte)])]])
            extends Container{
   if (email.isDefined) require(validateEmailAddress(email.get), "Not a valid email address")
   if (cohort.isDefined) require(cohort.get > 0 && cohort.get <= 128, "Cohort needs to be a number between 1 and 128")
+  if (displayName.isDefined) require(validateLength(displayName.get, 256), "Display name can not be more than 256 characters")
+  if (handle.isDefined){
+    require(validateLength(handle.get, Validators.TITLE_MAX_LENGTH), "Handle can not be more than " + Validators.TITLE_MAX_LENGTH + " characters")
+    require(handle.get.matches("""^[0-9a-z-]+$"""),
+       "Handle can only contain numbers, lower case letters and dashes")
+  }
 }
 
 object User{
-  def apply(email:String, cohort: Option[Int], preferences: Option[UserPreferences]) = new User(None, None, None, None, Some(email), None, cohort, None, preferences, None, None)
+  def apply(email:String, displayName: Option[String], handle: Option[String],
+            cohort: Option[Int], preferences: Option[UserPreferences])
+      = new User(None, None, None, None, Some(email), None, displayName, handle, cohort, None, preferences, None, None)
 }
 
-case class SignUp(email: String, password: String, cohort: Option[Int], bypass: Option[Boolean]){
+case class SignUp(email: String, password: String, displayName: Option[String], handle: Option[String], cohort: Option[Int], bypass: Option[Boolean]){
   require(validateEmailAddress(email), "Not a valid email address")
   require(validatePassword(password), "Password needs to be 7 or more characters long")
   if (cohort.isDefined) require(cohort.get > 0 && cohort.get <= 128, "Cohort needs to be a number between 1 and 128")
+  if (displayName.isDefined) require(validateLength(displayName.get, 256), "Display name can not be more than 256 characters")
+  if (handle.isDefined){
+    require(validateLength(handle.get, Validators.TITLE_MAX_LENGTH), "Handle can not be more than " + Validators.TITLE_MAX_LENGTH + " characters")
+    require(handle.get.matches("""^[0-9a-z-]+$"""),
+       "Handle can only contain numbers, lower case letters and dashes")
+  }
 }
 
 case class UserEmail(email: String){

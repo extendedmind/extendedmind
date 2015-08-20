@@ -89,6 +89,14 @@
       if (inboxId) localStorage.setItem('inboxId', inboxId);
       else localStorage.removeItem('inboxId');
     },
+    setHandle: function(handle) {
+      if (handle) localStorage.setItem('handle', handle);
+      else localStorage.removeItem('handle');
+    },
+    setDisplayName: function(displayName) {
+      if (displayName) localStorage.setItem('displayName', displayName);
+      else localStorage.removeItem('displayName');
+    },
     setState: function(state) {
       if (state) localStorage.setItem('state', JSON.stringify(state));
       else localStorage.removeItem('state');
@@ -183,6 +191,12 @@
     getInboxId: function() {
       return localStorage.getItem('inboxId');
     },
+    getHandle: function() {
+      return localStorage.getItem('handle');
+    },
+    getDisplayName: function() {
+      return localStorage.getItem('displayName');
+    },
     getState: function() {
       if (localStorage.getItem('state')) {
         return JSON.parse(localStorage.getItem('state'));
@@ -229,6 +243,8 @@
       localStorage.removeItem('userCreated');
       localStorage.removeItem('emailVerified');
       localStorage.removeItem('inboxId');
+      localStorage.removeItem('handle');
+      localStorage.removeItem('displayName');
 
       // Clear cached values
       cachedExpires = cachedUserUUID = undefined;

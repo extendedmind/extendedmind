@@ -170,6 +170,17 @@ trait ItemDatabase extends UserDatabase {
     } yield result
   }
 
+  def getPublicItem(handle: String, path: String): Response[PublicItem] = {
+    withTx {
+      implicit neo4j =>
+        for {
+          ownerNode <- getNode("handle", handle, MainLabel.OWNER, Some(handle), false).right
+          itemNode <- getItemNodeByPath(ownerNode, path).right
+          publicItem <- toPublicItem(ownerNode, itemNode).right
+        } yield publicItem
+    }
+  }
+
   // PRIVATE
 
   protected def getSharedListAccessRight(sharedLists: Map[UUID,(String, Byte)], relationships: Option[ExtendedItemRelationships]): Option[Byte] = {
@@ -243,7 +254,7 @@ trait ItemDatabase extends UserDatabase {
 
   // Methods for converting tasks and nodes
   def toTask(taskNode: Node, owner: Owner)(implicit neo4j: DatabaseService): Response[Task];
-  def toNote(noteNode: Node, owner: Owner)(implicit neo4j: DatabaseService): Response[Note];
+  def toNote(noteNode: Node, owner: Owner, tagRelationships: Option[Option[scala.List[Relationship]]] = None, skipParent: Boolean = false)(implicit neo4j: DatabaseService): Response[Note];
   def toTag(tagNode: Node, owner: Owner)(implicit neo4j: DatabaseService): Response[Tag];
   def toList(listNode: Node, owner: Owner)(implicit neo4j: DatabaseService): Response[List];
 
@@ -478,8 +489,8 @@ trait ItemDatabase extends UserDatabase {
       } else {
         itemsFromParentSkeleton.evaluator(PropertyEvaluator(
           MainLabel.ITEM, "deleted",
-          Evaluation.EXCLUDE_AND_PRUNE,
-          Evaluation.INCLUDE_AND_CONTINUE))
+          foundEvaluation=Evaluation.EXCLUDE_AND_PRUNE,
+          notFoundEvaluation=Evaluation.INCLUDE_AND_CONTINUE))
       }
     }
 
@@ -509,6 +520,18 @@ trait ItemDatabase extends UserDatabase {
     true
   }
 
+  protected def addNewAncestors(itemNode: Node, parentBuffer: ListBuffer[Node])(implicit neo4j: DatabaseService): Unit = {
+    val parentRelationship = getParentRelationship(itemNode)
+    if (parentRelationship.isDefined){
+      val parentNode = parentRelationship.get.getEndNode
+      if (!parentBuffer.contains(parentNode)){
+        // if the parent buffer does not yet contain this parent, add it
+        parentBuffer.append(parentNode)
+        addNewAncestors(parentNode, parentBuffer)
+      }
+    }
+  }
+
   protected def getTaggedItems(tagNode: Node, includeDeleted: Boolean = false)(implicit neo4j: DatabaseService): scala.List[Node] = {
     val itemsFromTagSkeleton: TraversalDescription =
       neo4j.gds.traversalDescription()
@@ -524,8 +547,8 @@ trait ItemDatabase extends UserDatabase {
       } else {
         itemsFromTagSkeleton.evaluator(PropertyEvaluator(
           MainLabel.ITEM, "deleted",
-          Evaluation.EXCLUDE_AND_PRUNE,
-          Evaluation.INCLUDE_AND_CONTINUE))
+          foundEvaluation=Evaluation.EXCLUDE_AND_PRUNE,
+          notFoundEvaluation=Evaluation.INCLUDE_AND_CONTINUE))
       }
     }
     itemsFromTag.traverse(tagNode).nodes().toList
@@ -669,8 +692,8 @@ trait ItemDatabase extends UserDatabase {
           .evaluator(Evaluators.excludeStartPosition())
           .evaluator(PropertyEvaluator(
             MainLabel.ITEM, "deleted",
-            Evaluation.EXCLUDE_AND_PRUNE,
-            Evaluation.INCLUDE_AND_CONTINUE))
+            foundEvaluation=Evaluation.EXCLUDE_AND_PRUNE,
+            notFoundEvaluation=Evaluation.INCLUDE_AND_CONTINUE))
           .uniqueness(Uniqueness.NODE_PATH) // We want to make sure to get the same owner node for all tags
       val traverser = ownerFromTag.traverse(tagNodes.right.get: _*)
       val ownerNodeList = traverser.nodes().toArray
@@ -983,6 +1006,77 @@ trait ItemDatabase extends UserDatabase {
         }else if (itemNode.hasProperty(key)){
           itemNode.removeProperty(key)
         }
+    }
+  }
+
+  protected def getItemNodeByPath(ownerNode: Node, path: String, includeDeleted: Boolean = false)(implicit neo4j: DatabaseService): Response[Node] = {
+
+    val itemTraversalSkeleton = neo4j.gds.traversalDescription()
+      .breadthFirst()
+      .relationships(DynamicRelationshipType.withName(SecurityRelationship.OWNS.name), Direction.OUTGOING)
+      .evaluator(Evaluators.excludeStartPosition())
+      .evaluator(LabelEvaluator(scala.List(MainLabel.ITEM)))
+      .evaluator(PropertyEvaluator(MainLabel.ITEM, "path", propertyStringValue=Some(path)))
+      .evaluator(Evaluators.toDepth(1))
+
+    val itemTraversal = if (includeDeleted) {
+      itemTraversalSkeleton.traverse(ownerNode)
+    } else {
+      itemTraversalSkeleton.evaluator(PropertyEvaluator(MainLabel.ITEM, "deleted",
+          foundEvaluation=Evaluation.EXCLUDE_AND_PRUNE,
+          notFoundEvaluation=Evaluation.INCLUDE_AND_CONTINUE))
+      .traverse(ownerNode)
+    }
+    val itemList = itemTraversal.nodes().toList
+    if (itemList.isEmpty) {
+      fail(INVALID_PARAMETER, ERR_ITEM_NOT_FOUND, "Item not found with given path")
+    } else if (itemList.size > 1) {
+      fail(INVALID_PARAMETER, ERR_ITEM_MORE_THAN_1, "More than one public item found with given path")
+    } else {
+      Right(itemList(0))
+    }
+  }
+
+  protected def toPublicItem(ownerNode: Node, itemNode: Node)(implicit neo4j: DatabaseService): Response[PublicItem] = {
+    if (itemNode.hasLabel(ItemLabel.NOTE)){
+      val displayOwner =
+        if (ownerNode.hasProperty("displayName")) ownerNode.getProperty("displayName").asInstanceOf[String]
+        else if (ownerNode.hasProperty("title")) ownerNode.getProperty("title").asInstanceOf[String]
+        else ownerNode.getProperty("email").asInstanceOf[String]
+
+      val owner = Owner(getUUID(ownerNode), None)
+      for {
+        tagRels <- getTagRelationships(itemNode, owner).right
+        note <- toNote(itemNode, owner, tagRelationships=Some(tagRels), skipParent=true).right
+        tags <- getTagsWithParents(tagRels, owner).right
+      } yield PublicItem(displayOwner, note, tags)
+    }else{
+      fail(INTERNAL_SERVER_ERROR, ERR_ITEM_NOT_NOTE, "Public item not note")
+    }
+  }
+
+  protected def getTagsWithParents(tagRels: Option[scala.List[Relationship]], owner: Owner)
+          (implicit neo4j: DatabaseService): Response[Option[scala.List[Tag]]] = {
+    if (tagRels.isDefined && !tagRels.get.isEmpty){
+      val tagNodeBuffer = new ListBuffer[Node]
+      tagRels.get.foreach(tagRelationship => {
+        tagNodeBuffer.append(tagRelationship.getEndNode)
+      })
+      tagRels.get.foreach(tagRelationship => {
+        addNewAncestors(tagRelationship.getEndNode, tagNodeBuffer)
+      })
+      val tagBuffer = new ListBuffer[Tag]
+      tagNodeBuffer.foreach(tagNode => {
+        val tagResult = toTag(tagNode, owner)
+        if (tagResult.isRight){
+          tagBuffer.append(tagResult.right.get)
+        }else{
+          return Left(tagResult.left.get)
+        }
+      })
+      Right(Some(tagBuffer.toList))
+    }else{
+      Right(None)
     }
   }
 }

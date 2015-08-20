@@ -155,6 +155,16 @@ trait ItemService extends ServiceBase {
             }
           }
         }
+      } ~
+      getPublicItem { (handle, path) =>
+        complete {
+          Future[PublicItem] {
+            itemActions.getPublicItem(handle, path) match {
+              case Right(pi) => processResult(pi)
+              case Left(e) => processErrors(e)
+            }
+          }
+        }
       }
   }
 }

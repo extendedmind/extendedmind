@@ -176,5 +176,38 @@ class NoteBestCaseSpec extends ServiceSpecBase {
         }
       }
     }
+    it("should successfully get public note with GET to /public/[handle]/[path]") {
+      Get("/public/timo/productivity") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+        val publicItem = responseAs[PublicItem]
+        writeJsonOutput("publicItemResponse", responseAs[String])
+        publicItem.note.relationships.get.parent should be(None)
+      }
+    }
+    it("should successfully publish note with POST to [userUUID]/note/[itemUUID]/publish "
+      + "and unpublish it with POST to /[userUUID]/note/[itemUUID]/unpublish") {
+      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+      val newNote = Note("Public note", None, None, Some("this is public"), None, None, None)
+      val putNoteResponse = putNewNote(newNote, authenticateResponse)
+
+      Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/publish",
+          marshal(PublishPayload("md", Some("test")))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        val publishNoteResult = responseAs[PublishNoteResult]
+        writeJsonOutput("publishNoteResponse", responseAs[String])
+        Get("/public/timo/test") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+          val publicItem = responseAs[PublicItem]
+          publicItem.note.relationships should be(None)
+          publicItem.note.visibility should not be(None)
+          Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/unpublish") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+            writeJsonOutput("unpublishNoteResponse", responseAs[String])
+            val unpublishedNoteResponse = getNote(putNoteResponse.uuid.get, authenticateResponse)
+            unpublishedNoteResponse.visibility should be(None)
+            Get("/public/timo/test") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+              val failure = responseAs[ErrorResult]
+              failure.code should be (3007)
+            }
+          }
+        }
+      }
+    }
   }
 }

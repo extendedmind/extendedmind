@@ -212,8 +212,8 @@ trait ListDatabase extends UserDatabase with TagDatabase {
         .evaluator(Evaluators.excludeStartPosition())
         .evaluator(PropertyEvaluator(
           MainLabel.ITEM, "deleted",
-          Evaluation.EXCLUDE_AND_PRUNE,
-          Evaluation.INCLUDE_AND_CONTINUE))
+          foundEvaluation=Evaluation.EXCLUDE_AND_PRUNE,
+          notFoundEvaluation=Evaluation.INCLUDE_AND_CONTINUE))
         .depthFirst()
         .evaluator(Evaluators.toDepth(1))
         .traverse(listNode)
@@ -436,12 +436,9 @@ trait ListDatabase extends UserDatabase with TagDatabase {
         if (agreement.isLeft) return Left(agreement.left.get)
         else agreement.right.get
       })
-      Right(Some(SharedItemVisibility(None, Some(agreements))))
+      Right(Some(SharedItemVisibility(None, None, Some(agreements))))
     }else{
       Right(None)
     }
   }
-
-
-
 }

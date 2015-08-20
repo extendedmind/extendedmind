@@ -47,6 +47,8 @@
         UserSessionService.setEmail(response.email);
         UserSessionService.setEmailVerified(response.emailVerified);
         UserSessionService.setInboxId(response.inboxId);
+        UserSessionService.setHandle(response.handle);
+        UserSessionService.setDisplayName(response.displayName);
         UserSessionService.setTransportPreferences(response.preferences);
         UserSessionService.setAccessInformation(response.uuid, response.collectives, response.sharedLists);
         return response;
@@ -57,6 +59,10 @@
         preferences: UserSessionService.getTransportPreferences()
       };
 
+      var displayName = UserSessionService.getDisplayName();
+      if (displayName){
+        payload.displayName = displayName;
+      }
       var params = {
         uuid: UserSessionService.getUserUUID(),
         replaceable: true,

@@ -58,6 +58,8 @@
     SessionStorageService.setUserModified(LocalStorageService.getUserModified());
     SessionStorageService.setEmailVerified(LocalStorageService.getEmailVerified());
     SessionStorageService.setInboxId(LocalStorageService.getInboxId());
+    SessionStorageService.setHandle(LocalStorageService.getHandle());
+    SessionStorageService.setDisplayName(LocalStorageService.getDisplayName());
     SessionStorageService.setState(LocalStorageService.getState());
     SessionStorageService.setLatestModified(LocalStorageService.getLatestModified());
     SessionStorageService.setItemsSynchronized(LocalStorageService.getItemsSynchronized());
@@ -176,6 +178,8 @@
       SessionStorageService.setUserCreated(authenticateResponse.created);
       SessionStorageService.setEmailVerified(authenticateResponse.emailVerified);
       SessionStorageService.setInboxId(authenticateResponse.inboxId);
+      SessionStorageService.setHandle(authenticateResponse.handle);
+      SessionStorageService.setDisplayName(authenticateResponse.displayName);
 
       if (authenticateResponse.replaceable) {
         LocalStorageService.setBackendDelta(backendDelta);
@@ -192,6 +196,8 @@
         LocalStorageService.setUserCreated(authenticateResponse.created);
         LocalStorageService.setEmailVerified(authenticateResponse.emailVerified);
         LocalStorageService.setInboxId(authenticateResponse.inboxId);
+        LocalStorageService.setHandle(authenticateResponse.handle);
+        LocalStorageService.setDisplayName(authenticateResponse.displayName);
       }
       setEmail(email);
 
@@ -214,6 +220,18 @@
       SessionStorageService.setInboxId(inboxId);
       if (persistentStorageEnabled || LocalStorageService.getReplaceable() !== null) {
         LocalStorageService.setInboxId(inboxId);
+      }
+    },
+    setHandle: function(handle) {
+      SessionStorageService.setHandle(handle);
+      if (persistentStorageEnabled || LocalStorageService.getReplaceable() !== null) {
+        LocalStorageService.setHandle(handle);
+      }
+    },
+    setDisplayName: function(displayName) {
+      SessionStorageService.setDisplayName(displayName);
+      if (persistentStorageEnabled || LocalStorageService.getReplaceable() !== null) {
+        LocalStorageService.setDisplayName(displayName);
       }
     },
     setPreference: function(name, value) {
@@ -484,6 +502,14 @@
     getInboxId: function() {
       syncWebStorages();
       return SessionStorageService.getInboxId();
+    },
+    getHandle: function() {
+      syncWebStorages();
+      return SessionStorageService.getHandle();
+    },
+    getDisplayName: function() {
+      syncWebStorages();
+      return SessionStorageService.getDisplayName();
     },
     isFakeUser: function() {
       return UUIDService.isFakeUUID(this.getUserUUID());

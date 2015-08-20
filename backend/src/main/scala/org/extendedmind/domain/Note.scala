@@ -97,3 +97,29 @@ object LimitedNote{
 }
 
 case class FavoriteNoteResult(favorited: Long, result: SetResult)
+
+case class PublishPayload(format: String, path: Option[String]){
+  require(
+    try {
+      val formatType = FormatType.withName(format)
+      true
+    }catch {
+      case _:Throwable => false
+    },
+    "Expected 'md' but got " + format)
+  if(path.isDefined){
+    require(validateLength(path.get, Validators.TITLE_MAX_LENGTH), "Path can not be more than " + Validators.TITLE_MAX_LENGTH + " characters")
+    require(path.get.matches("""^[0-9a-z-]+$"""),
+       "Path can only contain numbers, lower case letters and dashes")
+    require(
+        try{
+          val uuid = UUID.fromString(path.get)
+          false
+        }catch {
+          case _:Throwable => true
+        },
+       "Path can not be a UUID")
+  }
+}
+
+case class PublishNoteResult(published: Long, result: SetResult)

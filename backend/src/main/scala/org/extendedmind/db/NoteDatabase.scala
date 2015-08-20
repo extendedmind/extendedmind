@@ -34,6 +34,7 @@ import org.neo4j.graphdb.traversal.TraversalDescription
 import org.neo4j.kernel.Traversal
 import org.neo4j.scala.DatabaseService
 import scala.collection.mutable.ListBuffer
+import org.neo4j.graphdb.Relationship
 
 trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
 
@@ -140,22 +141,46 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     } yield (convertResult._2.copy(modified = Some(result.modified)))
   }
 
+  def publishNote(owner: Owner, noteUUID: UUID, format: String, path: Option[String]): Response[PublishNoteResult] = {
+    for {
+      publishResult <- publishNoteNode(owner, noteUUID, format, path).right
+      result <- Right(PublishNoteResult(publishResult._2, getSetResult(publishResult._1, false))).right
+      unit <- Right(updateItemsIndex(publishResult._1, result.result)).right
+    } yield result
+  }
+
+  def unpublishNote(owner: Owner, noteUUID: UUID): Response[SetResult] = {
+    for {
+      noteNode <- unpublishNoteNode(owner, noteUUID).right
+      result <- Right(getSetResult(noteNode, false)).right
+      unit <- Right(updateItemsIndex(noteNode, result)).right
+    } yield result
+  }
+
   // PRIVATE
 
-  override def toNote(noteNode: Node, owner: Owner)
+  override def toNote(noteNode: Node, owner: Owner, tagRelationships: Option[Option[scala.List[Relationship]]] = None, skipParent: Boolean = false)
                (implicit neo4j: DatabaseService): Response[Note] = {
     for {
       note <- toCaseClass[Note](noteNode).right
-      completeNote <- addTransientNoteProperties(noteNode, owner, note).right
+      completeNote <- addTransientNoteProperties(noteNode, owner, note, tagRelationships, skipParent).right
     } yield completeNote
   }
 
-  protected def addTransientNoteProperties(noteNode: Node, owner: Owner, note: Note)
+  protected def addTransientNoteProperties(noteNode: Node, owner: Owner, note: Note, tagRelationships: Option[Option[scala.List[Relationship]]], skipParent: Boolean)
                 (implicit neo4j: DatabaseService): Response[Note] = {
     for {
-      parent <- Right(getItemRelationship(noteNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.LIST)).right
-      tags <- getTagRelationships(noteNode, owner).right
+      parent <- Right(if (skipParent) None else getItemRelationship(noteNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.LIST)).right
+      tags <- (if (tagRelationships.isDefined) Right(tagRelationships.get)
+              else getTagRelationships(noteNode, owner)).right
       note <- Right(note.copy(
+        visibility =
+          (if (noteNode.hasProperty("published"))
+            Some(SharedItemVisibility(
+                 Some(noteNode.getProperty("published").asInstanceOf[Long]),
+                 Some(noteNode.getProperty("path").asInstanceOf[String]),
+                 None))
+           else None),
         relationships =
           (if (parent.isDefined || tags.isDefined)
             Some(ExtendedItemRelationships(
@@ -239,4 +264,63 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
         } yield (listNode, list)
     }
   }
+
+  protected def publishNoteNode(owner: Owner, noteUUID: UUID, format: String, path: Option[String]): Response[(Node, Long)] = {
+    withTx {
+      implicit neo4j =>
+        for {
+          ownerNodes <- getOwnerNodes(owner).right
+          noteNode <- getItemNode(owner, noteUUID, Some(ItemLabel.NOTE)).right
+          published <- publishNoteNode(ownerNodes, noteNode, format, path).right
+        } yield (noteNode, published)
+    }
+  }
+
+  protected def publishNoteNode(ownerNodes: OwnerNodes, noteNode: Node, format: String, path: Option[String]): Response[Long] = {
+    withTx {
+      implicit neo4j =>
+        val ownerNode = if (ownerNodes.foreignOwner.isDefined) ownerNodes.foreignOwner.get else ownerNodes.user
+        if (!ownerNode.hasProperty("handle")){
+          fail(INVALID_PARAMETER, ERR_NOTE_NO_HANDLE, "Can not publish because owner does not have a handle")
+        }else{
+          val handle = ownerNode.getProperty("handle").asInstanceOf[String]
+
+          // Use note uuid as path if it is not set
+          if (path.isDefined){
+            val pathResult = getItemNodeByPath(ownerNode, path.get, includeDeleted=true)
+            if (pathResult.isRight){
+              return fail(INVALID_PARAMETER, ERR_NOTE_PATH_IN_USE, "Can not publish because given path is already in use")
+            }else{
+              noteNode.setProperty("path", path.get)
+            }
+          }else{
+            noteNode.setProperty("path", getUUID(noteNode).toString())
+          }
+
+          // Set format
+          noteNode.setProperty("format", format)
+
+          // Set public timestamp
+          val currentTime = System.currentTimeMillis()
+          noteNode.setProperty("published", currentTime)
+          Right(currentTime)
+        }
+    }
+  }
+
+  protected def unpublishNoteNode(owner: Owner, noteUUID: UUID): Response[Node] = {
+    withTx {
+      implicit neo =>
+        for {
+          noteNode <- getItemNode(owner, noteUUID, Some(ItemLabel.NOTE)).right
+          result <- Right(unpublishNoteNode(noteNode)).right
+        } yield noteNode
+    }
+  }
+
+  protected def unpublishNoteNode(noteNode: Node)(implicit neo4j: DatabaseService): Unit = {
+    if (noteNode.hasProperty("published")) noteNode.removeProperty("published")
+    if (noteNode.hasProperty("path")) noteNode.removeProperty("path")
+  }
+
 }

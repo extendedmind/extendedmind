@@ -177,12 +177,12 @@ class SecurityBestCaseSpec extends ServiceSpecBase {
         }
         // Reset password
         val testPassword = "testPassword"
-        Post("/password/" + resetCodeCaptor.getValue.toHexString + "/reset", marshal(SignUp(TIMO_EMAIL, testPassword, Some(1), None)).right.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+        Post("/password/" + resetCodeCaptor.getValue.toHexString + "/reset", marshal(SignUp(TIMO_EMAIL, testPassword, None, None, Some(1), None)).right.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
           val resetPasswordResponse = responseAs[CountResult]
           writeJsonOutput("resetPasswordResponse", responseAs[String])
           val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, testPassword)
           // Make sure that reset password again with the same code fails
-          Post("/password/" + resetCodeCaptor.getValue.toHexString + "/reset", marshal(SignUp(TIMO_EMAIL, testPassword, Some(1),None)).right.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+          Post("/password/" + resetCodeCaptor.getValue.toHexString + "/reset", marshal(SignUp(TIMO_EMAIL, testPassword, None, None, Some(1),None)).right.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
             val failure = responseAs[ErrorResult]
             status should be(BadRequest)
             failure.description should startWith("Password not resetable anymore")

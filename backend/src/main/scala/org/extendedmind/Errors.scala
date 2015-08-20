@@ -32,6 +32,7 @@ case object ERR_BASE_OWNER_NOT_IN_SECURITY_CONTEXT extends ErrorCode(26)
 case object ERR_BASE_NO_LIST_ACCESS extends ErrorCode(27)
 case object ERR_BASE_FOUNDER_ACCESS_RIGHT_REQUIRED extends ErrorCode(28)
 case object ERR_BASE_WRONG_EXPECTED_MODIFIED extends ErrorCode(29)
+case object ERR_BASE_HANDLE_EXISTS extends ErrorCode(30)
 
 case object ERR_COLLECTIVE_NO_FOUNDER extends ErrorCode(1001)
 case object ERR_COLLECTIVE_MORE_THAN_1_FOUNDER extends ErrorCode(1002)
@@ -67,6 +68,7 @@ case object ERR_ITEM_OWN_PARENT extends ErrorCode(3018)
 case object ERR_ITEM_PARENT_INFINITE_LOOP extends ErrorCode(3019)
 case object ERR_ITEM_INVALID_PARENT extends ErrorCode(3020)
 case object ERR_ITEM_MISSING_SUBJECT extends ErrorCode(3021)
+case object ERR_ITEM_NOT_NOTE extends ErrorCode(3022)
 
 case object ERR_LIST_ARCHIVE_CHILDREN extends ErrorCode(4001)
 case object ERR_LIST_MISSING_HISTORY_TAG extends ErrorCode(4002)
@@ -107,3 +109,6 @@ case object ERR_TASK_INVALID_REMINDER_ID extends ErrorCode(6002)
 case object ERR_TASK_CONVERT_REMINDERS extends ErrorCode(6003)
 
 case object ERR_TAG_UNDELETE_HISTORY extends ErrorCode(7001)
+
+case object ERR_NOTE_NO_HANDLE extends ErrorCode(8001)
+case object ERR_NOTE_PATH_IN_USE extends ErrorCode(8002)

@@ -23,15 +23,22 @@ import java.util.UUID
 import Validators._
 
 case class Collective(uuid: Option[UUID], created: Option[Long], modified: Option[Long], deleted: Option[Long],
-                title: String, description: Option[String], inboxId: Option[String], apiKey: Option[String],
+                title: String, description: Option[String],
+                displayName: Option[String], handle: Option[String], inboxId: Option[String], apiKey: Option[String],
                 creator: Option[UUID], common: Option[Boolean])
            extends Container {
   require(validateTitle(title), "Title can not be more than " + TITLE_MAX_LENGTH + " characters")
   if (description.isDefined) require(validateDescription(description.get),
       "Description can not be more than " + DESCRIPTION_MAX_LENGTH + " characters")
+  if (displayName.isDefined) require(validateLength(displayName.get, 256), "Display name can not be more than 256 characters")
+  if (handle.isDefined){
+    require(validateLength(handle.get, Validators.TITLE_MAX_LENGTH), "Handle can not be more than " + Validators.TITLE_MAX_LENGTH + " characters")
+    require(handle.get.matches("""^[0-9a-z-]+$"""),
+       "Handle can only contain numbers, lower case letters and dashes")
+  }
 }
 
 object Collective{
-  def apply(title: String, description: Option[String])
-        = new Collective(None, None, None, None, title, description, None, None, None, None)
+  def apply(title: String, description: Option[String], displayName: Option[String], handle: Option[String])
+        = new Collective(None, None, None, None, title, description, displayName, handle, None, None, None, None)
 }

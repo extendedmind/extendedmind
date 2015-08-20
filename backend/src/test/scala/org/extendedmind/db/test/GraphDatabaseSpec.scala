@@ -106,8 +106,8 @@ class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
         case Right(securityContext) => {
           assert(securityContext.collectives.get.size === 2)
           val nameSet = getCollectiveAccess(securityContext)
-          assert(nameSet.contains(("extended mind", 0, true)))
-          assert(nameSet.contains(("extended mind technologies", 0, false)))
+          assert(nameSet.contains(("extended mind", 0, true, None)))
+          assert(nameSet.contains(("extended mind technologies", 0, false, Some("emt"))))
         }
         case Left(e) => {
           fail("Could not authenticate as Timo")
@@ -117,8 +117,8 @@ class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
         case Right(securityContext) => {
           assert(securityContext.collectives.get.size === 2)
           val nameSet = getCollectiveAccess(securityContext)
-          assert(nameSet.contains(("extended mind", 1, true)))
-          assert(nameSet.contains(("extended mind technologies", 2, false)))
+          assert(nameSet.contains(("extended mind", 1, true, None)))
+          assert(nameSet.contains(("extended mind technologies", 2, false, Some("emt"))))
         }
         case Left(e) => {
           fail("Could not authenticate as Lauri")
@@ -128,7 +128,7 @@ class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
         case Right(securityContext) => {
           assert(securityContext.collectives.get.size === 1)
           val nameSet = getCollectiveAccess(securityContext)
-          assert(nameSet.contains(("extended mind", 1, true)))
+          assert(nameSet.contains(("extended mind", 1, true, None)))
         }
         case Left(e) => {
           fail("Could not authenticate as info")
@@ -151,8 +151,8 @@ class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
             case Right(lauriSecurityContext) => {
               assert(lauriSecurityContext.collectives.get.size === 2)
               val nameSet = getCollectiveAccess(lauriSecurityContext)
-              assert(nameSet.contains(("extended mind", 1, true)))
-              assert(nameSet.contains(("extended mind technologies", 1, false)))
+              assert(nameSet.contains(("extended mind", 1, true, None)))
+              assert(nameSet.contains(("extended mind technologies", 1, false, Some("emt"))))
             }
             case Left(e) => {
               fail("Could not authenticate as Lauri")

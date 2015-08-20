@@ -218,6 +218,21 @@ trait UserDatabase extends AbstractGraphDatabase {
     } yield result
   }
 
+  def validateHandleUniqueness(handle: Option[String]): Response[Boolean] = {
+    if (handle.isEmpty) Right(false)
+    else{
+      withTx{
+        implicit neo4j =>
+          val userNodeList = findNodesByLabelAndProperty(MainLabel.OWNER, "handle", handle.get).toList
+          if (!userNodeList.isEmpty){
+            return fail(INVALID_PARAMETER, ERR_BASE_HANDLE_EXISTS, "Owner already exists with given handle: " + handle.get)
+          }
+          Right(true)
+      }
+    }
+  }
+
+
   // PRIVATE
 
   protected def createUser(user: User, plainPassword: String,
@@ -254,6 +269,9 @@ trait UserDatabase extends AbstractGraphDatabase {
             })
           }
 
+          if (user.handle.isDefined) userNode.setProperty("handle", user.handle.get)
+          if (user.displayName.isDefined) userNode.setProperty("displayName", user.displayName.get)
+
           Right((userNode, emailVerificationCode))
         }
     }
@@ -264,12 +282,12 @@ trait UserDatabase extends AbstractGraphDatabase {
       implicit neo4j =>
         for {
           userNode <- getNode(userUUID, OwnerLabel.USER).right
-          result <- Right(updateUser(userNode, user)).right
+          result <- updateUser(userNode, user).right
         } yield userNode
     }
   }
 
-  protected def updateUser(userNode: Node, user: User)(implicit neo4j: DatabaseService): Unit = {
+  protected def updateUser(userNode: Node, user: User)(implicit neo4j: DatabaseService): Response[Unit] = {
     // Onboarding status
     if (user.preferences.isDefined && user.preferences.get.onboarded.isDefined) {
       userNode.setProperty("onboarded", user.preferences.get.onboarded.get);
@@ -279,6 +297,29 @@ trait UserDatabase extends AbstractGraphDatabase {
     if (user.preferences.isDefined && user.preferences.get.ui.isDefined) {
       userNode.setProperty("ui", user.preferences.get.ui.get);
     }
+
+    // Display name
+    if (user.displayName.isDefined) {
+      userNode.setProperty("displayName", user.displayName.get);
+    }else if (userNode.hasProperty("displayName")){
+      userNode.removeProperty("displayName");
+    }
+
+    // Handle change
+    if (user.handle.isDefined) {
+      if (userNode.hasProperty("handle")){
+        val previousHandle = userNode.getProperty("handle").asInstanceOf[String]
+        if (previousHandle != user.handle.get){
+          // Attempting to change handle, check for new handle uniqueness
+          val validateResult = validateHandleUniqueness(user.handle)
+          if (validateResult.isRight)
+            userNode.setProperty("handle", user.handle.get);
+          else
+            return Left(validateResult.left.get)
+        }
+      }
+    }
+    Right()
   }
 
   protected def updateUserEmail(userUUID: UUID, email: String): Response[(Node, Option[Long])] = {
@@ -699,27 +740,30 @@ trait UserDatabase extends AbstractGraphDatabase {
           .evaluator(Evaluators.toDepth(1))
   }
 
-  protected def getCollectiveAccess(relationshipList: scala.List[Relationship]): Option[Map[UUID,(String, Byte, Boolean)]] = {
+  protected def getCollectiveAccess(relationshipList: scala.List[Relationship]): Option[Map[UUID,(String, Byte, Boolean, Option[String])]] = {
     if (relationshipList.isEmpty) None
     else{
-      val collectiveAccessMap = new HashMap[UUID,(String, Byte, Boolean)]
+      val collectiveAccessMap = new HashMap[UUID,(String, Byte, Boolean, Option[String])]
       relationshipList foreach (relationship => {
         val collective = relationship.getEndNode()
         val title = collective.getProperty("title").asInstanceOf[String]
         val uuid = getUUID(collective)
         val common = if(collective.hasProperty("common")) true else false
+        val handle = if(collective.hasProperty("handle"))
+                       Some(collective.getProperty("handle").asInstanceOf[String])
+                     else None
         relationship.getType().name() match {
           case SecurityRelationship.IS_FOUNDER.relationshipName =>
-            collectiveAccessMap.put(uuid, (title, SecurityContext.FOUNDER, common))
+            collectiveAccessMap.put(uuid, (title, SecurityContext.FOUNDER, common, handle))
           case SecurityRelationship.CAN_READ.relationshipName => {
             if (!collectiveAccessMap.contains(uuid))
-              collectiveAccessMap.put(uuid, (title, SecurityContext.READ, common))
+              collectiveAccessMap.put(uuid, (title, SecurityContext.READ, common, handle))
           }
           case SecurityRelationship.CAN_READ_WRITE.relationshipName => {
             if (collectiveAccessMap.contains(uuid))
-              collectiveAccessMap.update(uuid, (title, SecurityContext.READ_WRITE, common))
+              collectiveAccessMap.update(uuid, (title, SecurityContext.READ_WRITE, common, handle))
             else
-              collectiveAccessMap.put(uuid, (title, SecurityContext.READ_WRITE, common))
+              collectiveAccessMap.put(uuid, (title, SecurityContext.READ_WRITE, common, handle))
           }
         }
       })

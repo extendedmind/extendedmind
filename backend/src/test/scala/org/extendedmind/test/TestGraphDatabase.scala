@@ -68,18 +68,18 @@ trait TestGraphDatabase extends GraphDatabase {
          transactionEventHandlers.foreach( eventHandler => neo4j.gds.registerTransactionEventHandler(eventHandler))
     }
     val verifiedTimestamp = System.currentTimeMillis + 1000
-    val timoUser = User(TIMO_EMAIL, Some(1), None)
+    val timoUser = User(TIMO_EMAIL, Some("Timo"), Some("timo"), Some(1), None)
     val timoNode = createUser(timoUser, TIMO_PASSWORD, Some(UserLabel.ADMIN),
                               emailVerified=Some(verifiedTimestamp)).right.get._1
-    val lauriUser = User(LAURI_EMAIL, None, None)
+    val lauriUser = User(LAURI_EMAIL, None, None, None, None)
     val lauriNode = createUser(lauriUser, LAURI_PASSWORD, Some(UserLabel.ADMIN),
                                emailVerified=Some(verifiedTimestamp)).right.get._1
-    val jpUser = User(JP_EMAIL, None, None)
+    val jpUser = User(JP_EMAIL, None, None, None, None)
     val jpNode = createUser(jpUser, JP_PASSWORD, Some(UserLabel.ADMIN),
                                emailVerified=Some(verifiedTimestamp)).right.get._1
 
     // Collectives
-    val extendedMind = createCollective(timoNode, "extended mind", Some("common collective for all extended mind users"), true)
+    val extendedMind = createCollective(timoNode, "extended mind", Some("common collective for all extended mind users"), true, None, None)
     withTx {
       implicit neo =>
         // Set a predictable test UUID "11111111-1111-1111-1111-111111111111" for the common collective,
@@ -89,11 +89,11 @@ trait TestGraphDatabase extends GraphDatabase {
 
     val extendedMindTechnologies = createCollective(
       timoNode, "extended mind technologies",
-      Some("private collective for extended mind technologies"), false)
+      Some("private collective for extended mind technologies"), false, None, Some("emt"))
 
     // Info node created after common collective "extended mind" but should still be part of it,
     // Info does not have email verified
-    val infoNode = createUser(User(INFO_EMAIL, None, None), INFO_PASSWORD).right.get
+    val infoNode = createUser(User(INFO_EMAIL, None, None, None, None), INFO_PASSWORD).right.get
 
     // Add permissions to collectives
     withTx {
@@ -216,7 +216,7 @@ trait TestGraphDatabase extends GraphDatabase {
     putNewNote(Owner(timoUUID, None),
       Note("office door code", None, None, Some("4321"), None, None,
         Some(ExtendedItemRelationships(None, None, Some(scala.List(secretTag.right.get.uuid.get)))))).right.get
-    putNewNote(Owner(timoUUID, None),
+    val result = putNewNote(Owner(timoUUID, None),
       Note("notes on productivity", None, None, Some(
         "##what I've learned about productivity \n" +
           "#focus \n" +
@@ -232,7 +232,7 @@ trait TestGraphDatabase extends GraphDatabase {
         Some("md"), None,
         Some(ExtendedItemRelationships(Some(extendedMindTechnologiesList.uuid.get), None,
           Some(scala.List(productivityTag.right.get.uuid.get)))))).right.get
-
+    publishNote(Owner(timoUUID, None), result.uuid.get, "md", Some("productivity"))
 
     // Timo shares essay list with Lauri
 
@@ -282,10 +282,10 @@ trait TestGraphDatabase extends GraphDatabase {
     newToken
   }
 
-  def createCollective(creator: Node, title: String, description: Option[String], common: Boolean): Node = {
+  def createCollective(creator: Node, title: String, description: Option[String], common: Boolean, displayName: Option[String], handle: Option[String]): Node = {
     withTx {
       implicit neo =>
-        val collective = createCollective(getUUID(creator), Collective(title, description), common)
+        val collective = createCollective(getUUID(creator), Collective(title, description, displayName, handle), common)
         collective.right.get
     }
   }

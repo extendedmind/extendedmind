@@ -102,6 +102,16 @@ trait NoteActions {
     log.info("noteToList")
     db.noteToList(owner, noteUUID, note)
   }
+
+  def publishNote(owner: Owner, noteUUID: UUID, payload: PublishPayload)(implicit log: LoggingAdapter): Response[PublishNoteResult] = {
+    log.info("publishNote")
+    db.publishNote(owner, noteUUID, payload.format, payload.path)
+  }
+
+  def unpublishNote(owner: Owner, noteUUID: UUID)(implicit log: LoggingAdapter): Response[SetResult] = {
+    log.info("unpublishNote")
+    db.unpublishNote(owner, noteUUID)
+  }
 }
 
 class NoteActionsImpl(implicit val settings: Settings, implicit val inj: Injector)

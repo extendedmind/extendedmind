@@ -26,13 +26,14 @@ import org.neo4j.graphdb.traversal.Evaluation
 import java.util.UUID
 import org.extendedmind.security.UUIDUtils
 
-case class PropertyEvaluator(label: Label, property: String,
+case class PropertyEvaluator(label: Label, property: String, propertyStringValue: Option[String] = None,
                              foundEvaluation: Evaluation = Evaluation.INCLUDE_AND_PRUNE,
                              notFoundEvaluation: Evaluation = Evaluation.EXCLUDE_AND_CONTINUE) extends Evaluator{
 
   override def evaluate(path: Path): Evaluation = {
     val currentNode: Node = path.endNode();
-    if (currentNode.hasLabel(label) && currentNode.hasProperty(property)){
+    if (currentNode.hasLabel(label) && currentNode.hasProperty(property) &&
+        (propertyStringValue.isEmpty || propertyStringValue.get == currentNode.getProperty(property).asInstanceOf[String])){
       return foundEvaluation
     }
     return notFoundEvaluation

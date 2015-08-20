@@ -122,6 +122,14 @@
       if (inboxId) sessionStorage.setItem('inboxId', inboxId);
       else sessionStorage.removeItem('inboxId');
     },
+    setHandle: function(handle) {
+      if (handle) sessionStorage.setItem('handle', handle);
+      else sessionStorage.removeItem('handle');
+    },
+    setDisplayName: function(displayName) {
+      if (displayName) sessionStorage.setItem('displayName', displayName);
+      else sessionStorage.removeItem('displayName');
+    },
     setState: function(state) {
       if (state) sessionStorage.setItem('state', JSON.stringify(state));
       else sessionStorage.removeItem('state');
@@ -240,6 +248,12 @@
     getInboxId: function() {
       return sessionStorage.getItem('inboxId');
     },
+    getHandle: function() {
+      return sessionStorage.getItem('handle');
+    },
+    getDisplayName: function() {
+      return sessionStorage.getItem('displayName');
+    },
     getState: function() {
       var state = sessionStorage.getItem('state');
       if (state) return JSON.parse(state);
@@ -287,6 +301,8 @@
       sessionStorage.removeItem('userCreated');
       sessionStorage.removeItem('emailVerified');
       sessionStorage.removeItem('inboxId');
+      sessionStorage.removeItem('handle');
+      sessionStorage.removeItem('displayName');
 
       cachedBackendDelta = cachedActiveUUID = cachedUserUUID = cachedEmail = cachedSharedLists =
       cachedPreferences = cachedCollectives = cachedOffline = cachedExpires = undefined;
