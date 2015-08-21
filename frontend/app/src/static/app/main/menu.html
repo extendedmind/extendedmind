@@ -45,7 +45,7 @@
         </a>
       </div>
     </div>
-    <div ng-if="getListsArray('favorited').length > 0" class="group-mixed small"
+    <div ng-if="isPersonalData() && getListsArray('favorited').length > 0" class="group-mixed small"
       ng-repeat="favoriteList in getListsArray('favorited') track by favoriteList.trans.uuid"
       ng-hide="favoriteList === getActiveList()">
       <div class="group-mixed--middle">
