@@ -442,17 +442,18 @@
           $scope.task.trans.reminders.push(reminderToAdd);
         }
         $scope.saveTask(task);
+        if (angular.isFunction($scope.unregisterSubEditorDoneCallback)) {
+          $scope.unregisterSubEditorDoneCallback();
+        }
+        if (angular.isFunction($scope.unregisterHasSubEditorEditedCallback)) {
+          $scope.unregisterHasSubEditorEditedCallback();
+        }
       } else {
         setReminderError($scope.reminder, 'past');
       }
     } else {
       setReminderError($scope.reminder, 'invalid');
     }
-    if (angular.isFunction($scope.unregisterSubEditorDoneCallback))
-      $scope.unregisterSubEditorDoneCallback();
-
-    if (angular.isFunction($scope.unregisterHasSubEditorEditedCallback))
-      $scope.unregisterHasSubEditorEditedCallback();
   }
 
   $scope.clearReminderAndClose = function() {
