@@ -1049,7 +1049,7 @@ trait ItemDatabase extends UserDatabase {
         tagRels <- getTagRelationships(itemNode, owner).right
         note <- toNote(itemNode, owner, tagRelationships=Some(tagRels), skipParent=true).right
         tags <- getTagsWithParents(tagRels, owner).right
-      } yield PublicItem(displayOwner, note, tags)
+      } yield PublicItem(displayOwner, note.copy(archived=None, favorited=None), tags)
     }else{
       fail(INTERNAL_SERVER_ERROR, ERR_ITEM_NOT_NOTE, "Public item not note")
     }
