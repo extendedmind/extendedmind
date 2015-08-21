@@ -174,8 +174,10 @@ trait TestGraphDatabase extends GraphDatabase {
       Tag("email", None, None, CONTEXT, computerTag.right.get.uuid))
     val secretTag = putNewTag(Owner(timoUUID, None),
       Tag("secret", None, None, KEYWORD, None))
+    val workTag = putNewTag(Owner(timoUUID, None),
+      Tag("work", None, None, KEYWORD, None))
     val productivityTag = putNewTag(Owner(timoUUID, None),
-      Tag("productivity", None, None, KEYWORD, None))
+      Tag("productivity", None, None, KEYWORD, workTag.right.get.uuid))
 
     // Store lists for user
     val extendedMindTechnologiesList = putNewList(Owner(timoUUID, None),

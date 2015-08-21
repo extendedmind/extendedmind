@@ -70,6 +70,7 @@ trait API extends HttpService {
   val deleteItem = delete & path(JavaUUID / "item" / JavaUUID)
   val undeleteItem = post & path(JavaUUID / "item" / JavaUUID / "undelete")
   val postInbox = post & path("inbox" / """^[0-9a-z]{8,32}""".r )
+  val getPublicItems = get & path("public" / """^[0-9a-z-]+$""".r )
   val getPublicItem = get & path("public" / """^[0-9a-z-]+$""".r / """^[0-9a-z-]+$""".r )
 
   // TASKS

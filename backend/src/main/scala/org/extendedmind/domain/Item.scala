@@ -115,3 +115,4 @@ case class ItemProperty(key: String, stringValue: Option[String], longValue: Opt
 // Owner is the display name of the owner. Later on we might want to add also a authors list,
 // but before that saying "by [owner]" works
 case class PublicItem(owner: String, note: Note, tags: Option[scala.List[Tag]])
+case class PublicItems(owner: String, notes: Option[scala.List[Note]], tags: Option[scala.List[Tag]])

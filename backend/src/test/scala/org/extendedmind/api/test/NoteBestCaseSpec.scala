@@ -209,5 +209,31 @@ class NoteBestCaseSpec extends ServiceSpecBase {
         }
       }
     }
+    it("should successfully get all public notes with GET to /public/[handle]") {
+      Get("/public/timo/productivity") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+        val publicItem = responseAs[PublicItem]
+        val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+        // Put the same tags to the new public note as in the note before that
+        val newNote = Note("Public note", None, None, Some("this is public"), None, None,
+            Some(ExtendedItemRelationships(None, None, publicItem.note.relationships.get.tags)))
+        val putNoteResponse = putNewNote(newNote, authenticateResponse)
+        Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/publish",
+            marshal(PublishPayload("md", Some("test")))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+          val publishNoteResult = responseAs[PublishNoteResult]
+          Get("/public/timo") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+            val publicItems = responseAs[PublicItems]
+            writeJsonOutput("publicItemsResponse", responseAs[String])
+            publicItems.notes.get.size should be(2)
+            publicItems.tags.get.size should be(2)
+            // Getting modified should return only the latter
+            Get("/public/timo?modified=" + putNoteResponse.modified) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+              val modifiedPublicItems = responseAs[PublicItems]
+              modifiedPublicItems.notes.get.size should be(1)
+              modifiedPublicItems.tags.get.size should be(2)
+            }
+          }
+        }
+      }
+    }
   }
 }

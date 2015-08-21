@@ -183,6 +183,11 @@ trait ItemActions {
     }
   }
 
+  def getPublicItems(handle: String, modified: Option[Long])(implicit log: LoggingAdapter): Response[PublicItems] = {
+    log.info("getPublicItems")
+    db.getPublicItems(handle, modified)
+  }
+
   def getPublicItem(handle: String, path: String)(implicit log: LoggingAdapter): Response[PublicItem] = {
     log.info("getPublicItem")
     db.getPublicItem(handle, path)

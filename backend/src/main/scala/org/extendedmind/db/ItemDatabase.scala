@@ -170,13 +170,24 @@ trait ItemDatabase extends UserDatabase {
     } yield result
   }
 
+  def getPublicItems(handle: String, modified: Option[Long]): Response[PublicItems] = {
+    withTx {
+      implicit neo4j =>
+        for {
+          ownerNode <- getNode("handle", handle, MainLabel.OWNER, Some(handle), false).right
+          publicItemNodes <- getItemNodes(getUUID(ownerNode), modified, true, false, true, false, publicOnly=true).right
+          publicItems <- toPublicItems(ownerNode, publicItemNodes).right
+        } yield publicItems
+    }
+  }
+
   def getPublicItem(handle: String, path: String): Response[PublicItem] = {
     withTx {
       implicit neo4j =>
         for {
           ownerNode <- getNode("handle", handle, MainLabel.OWNER, Some(handle), false).right
           itemNode <- getItemNodeByPath(ownerNode, path).right
-          publicItem <- toPublicItem(ownerNode, itemNode).right
+          publicItem <- toPublicItem(ownerNode, itemNode, getDisplayOwner(ownerNode)).right
         } yield publicItem
     }
   }
@@ -258,7 +269,7 @@ trait ItemDatabase extends UserDatabase {
   def toTag(tagNode: Node, owner: Owner)(implicit neo4j: DatabaseService): Response[Tag];
   def toList(listNode: Node, owner: Owner)(implicit neo4j: DatabaseService): Response[List];
 
-  protected def getItemNodes(ownerUUID: UUID, modified: Option[Long], active: Boolean, deleted: Boolean, archived: Boolean, completed: Boolean)(implicit neo4j: DatabaseService): Response[Iterable[Node]] = {
+  protected def getItemNodes(ownerUUID: UUID, modified: Option[Long], active: Boolean, deleted: Boolean, archived: Boolean, completed: Boolean, publicOnly: Boolean = false)(implicit neo4j: DatabaseService): Response[Iterable[Node]] = {
     val itemsIndex = neo4j.gds.index().forNodes("items")
 
     val itemNodeList =
@@ -277,6 +288,7 @@ trait ItemDatabase extends UserDatabase {
       // Filter out active, deleted, archived and/or completed
       Right(itemNodeList filter (itemNode => {
         var include = true
+        if (publicOnly && !itemNode.hasProperty("published")) include = false
         if (!deleted && itemNode.hasProperty("deleted")) include = false
         if (include && !archived && itemNode.hasProperty("archived") && !itemNode.hasProperty("favorited")) include = false
         if (include && !completed && itemNode.hasProperty("completed")) include = false
@@ -524,7 +536,7 @@ trait ItemDatabase extends UserDatabase {
     val parentRelationship = getParentRelationship(itemNode)
     if (parentRelationship.isDefined){
       val parentNode = parentRelationship.get.getEndNode
-      if (!parentBuffer.contains(parentNode)){
+      if (parentBuffer.find(existingParent => existingParent.getId == parentNode.getId).isEmpty){
         // if the parent buffer does not yet contain this parent, add it
         parentBuffer.append(parentNode)
         addNewAncestors(parentNode, parentBuffer)
@@ -1037,13 +1049,32 @@ trait ItemDatabase extends UserDatabase {
     }
   }
 
-  protected def toPublicItem(ownerNode: Node, itemNode: Node)(implicit neo4j: DatabaseService): Response[PublicItem] = {
-    if (itemNode.hasLabel(ItemLabel.NOTE)){
-      val displayOwner =
-        if (ownerNode.hasProperty("displayName")) ownerNode.getProperty("displayName").asInstanceOf[String]
-        else if (ownerNode.hasProperty("title")) ownerNode.getProperty("title").asInstanceOf[String]
-        else ownerNode.getProperty("email").asInstanceOf[String]
+  protected def toPublicItems(ownerNode: Node, itemNodes: Iterable[Node])(implicit neo4j: DatabaseService): Response[PublicItems] = {
+    val noteBuffer = new ListBuffer[Note]
+    val tagBuffer = new ListBuffer[Tag]
+    val displayOwner = getDisplayOwner(ownerNode)
+    itemNodes foreach (itemNode => {
+      val publicItemResult = toPublicItem(ownerNode, itemNode, displayOwner)
+      if (publicItemResult.isLeft){
+        return Left(publicItemResult.left.get)
+      }else{
+        noteBuffer.append(publicItemResult.right.get.note)
+        if (publicItemResult.right.get.tags.isDefined){
+          publicItemResult.right.get.tags.get.foreach ( tag => {
+            if (tagBuffer.find(existingTag => existingTag.uuid.get.toString == tag.uuid.get.toString).isEmpty){
+              tagBuffer.append(tag)
+            }
+          })
+        }
+      }
+    })
+    Right(PublicItems(displayOwner,
+                if (noteBuffer.isEmpty) None else Some(noteBuffer.toList),
+                if (tagBuffer.isEmpty) None else Some(tagBuffer.toList)))
+  }
 
+  protected def toPublicItem(ownerNode: Node, itemNode: Node, displayOwner: String)(implicit neo4j: DatabaseService): Response[PublicItem] = {
+    if (itemNode.hasLabel(ItemLabel.NOTE)){
       val owner = Owner(getUUID(ownerNode), None)
       for {
         tagRels <- getTagRelationships(itemNode, owner).right
@@ -1053,6 +1084,12 @@ trait ItemDatabase extends UserDatabase {
     }else{
       fail(INTERNAL_SERVER_ERROR, ERR_ITEM_NOT_NOTE, "Public item not note")
     }
+  }
+
+  private def getDisplayOwner(ownerNode: Node)(implicit neo4j: DatabaseService): String = {
+    if (ownerNode.hasProperty("displayName")) ownerNode.getProperty("displayName").asInstanceOf[String]
+    else if (ownerNode.hasProperty("title")) ownerNode.getProperty("title").asInstanceOf[String]
+    else ownerNode.getProperty("email").asInstanceOf[String]
   }
 
   protected def getTagsWithParents(tagRels: Option[scala.List[Relationship]], owner: Owner)

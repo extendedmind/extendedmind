@@ -156,6 +156,18 @@ trait ItemService extends ServiceBase {
           }
         }
       } ~
+      getPublicItems { handle =>
+        parameters('modified.as[Long].?) { modified =>
+          complete {
+            Future[PublicItems] {
+              itemActions.getPublicItems(handle, modified) match {
+                case Right(pis) => processResult(pis)
+                case Left(e) => processErrors(e)
+              }
+            }
+          }
+        }
+      } ~
       getPublicItem { (handle, path) =>
         complete {
           Future[PublicItem] {
