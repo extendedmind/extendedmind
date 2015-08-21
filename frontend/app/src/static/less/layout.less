@@ -1420,8 +1420,6 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
 
 // 1. Set full height.
 // 2. Set full width.
-// 3. Set new line with the value of line-height into padding-bottom.
-// 4. Override values from msd-elastic
 textarea#ignoreSnap {
   padding-top: @padding-vertically-centered;    // [1]
   padding-bottom: @padding-vertically-centered; // [1]
@@ -1429,10 +1427,15 @@ textarea#ignoreSnap {
   padding-right: @grid-horizontal;  // [2]
 }
 
-textarea#ignoreSnap:not(.disable-full-height):focus {
-  padding-bottom: @grid-vertical-half;  // [3]
-  overflow: initial !important; // [4]
-  height: 100% !important;      // [1,4]
+// 1. Set full height.
+// 2. Set new line with the value of line-height into padding-bottom.
+// 3. Override values from msd-elastic
+@media (max-width: @min-width-three-column) {
+  textarea#ignoreSnap:not(.disable-full-height):focus {
+    padding-bottom: @grid-vertical-half;  // [2]
+    overflow: initial !important; // [3]
+    height: 100% !important;      // [1,3]
+  }
 }
 
 textarea#ignoreSnap.disable-full-height.input-separate {
