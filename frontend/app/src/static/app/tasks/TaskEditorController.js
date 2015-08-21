@@ -483,7 +483,7 @@
       time.value = 0;
     } else {
       if (direction === 'up') {
-        if (time.value === time.limit) {
+        if (parseInt(time.value) === time.limit) {  // Unchanged time.value is typeof string.
           time.value = 0;
         } else {
           time.value++;
