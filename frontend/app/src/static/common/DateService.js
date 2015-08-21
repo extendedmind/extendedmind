@@ -137,8 +137,7 @@
     },
     getDateWithoutTime: function(date) {
       var dateWithoutTime = date;
-      dateWithoutTime.setHours(0, 0, 0, 0);
-      return dateWithoutTime;
+      return dateWithoutTime.setHours(0, 0, 0, 0);
     },
     getTomorrowDate: function() {
       var tomorrow = new Date();

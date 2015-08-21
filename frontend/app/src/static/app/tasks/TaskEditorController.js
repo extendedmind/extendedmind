@@ -385,16 +385,22 @@
 
   $scope.getReminderTime = function(reminder, task) {
     var time;
+    var reminderDate = DateService.getDateWithoutTime(new Date(reminder.notification));
+    var todayDate = DateService.getTodayDateWithoutTime();
+
     if (task.trans.due) {
-      if (new Date(reminder.notification).setHours(0, 0, 0, 0) !==
-          new Date(task.trans.due).setHours(0, 0, 0, 0))
-      {
-        // Show date of the reminder when task has different due date.
+      var taskDueDate = DateService.getDateWithoutTime(new Date(task.trans.due));
+      if (reminderDate === taskDueDate) {
+        time = $filter('date')(reminder.notification, 'HH:mm');
+      } else {
         time = $filter('date')(reminder.notification, 'HH:mm EEE d MMM').toLowerCase();
       }
-    }
-    if (!time) {
-      time = $filter('date')(reminder.notification, 'HH:mm');
+    } else {
+      if (reminderDate === todayDate) {
+        time = $filter('date')(reminder.notification, 'HH:mm');
+      } else {
+        time = $filter('date')(reminder.notification, 'HH:mm EEE d MMM').toLowerCase();
+      }
     }
     return time;
   };
