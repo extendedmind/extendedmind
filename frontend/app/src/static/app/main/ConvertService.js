@@ -199,7 +199,7 @@
       var deferred = $q.defer();
       if (TasksService.getTaskStatus(task) === 'deleted') {
         deferred.reject({type: 'deleted'});
-      } else if (task.trans.reminders) {
+      } else if (TasksService.hasTaskActiveReminder(task)) {
         deferred.reject({type: 'reminders'});
       } else {
         var path = '/api/' + ownerUUID + '/task/' + task.trans.uuid + '/note';
@@ -222,7 +222,7 @@
 
       if (TasksService.getTaskStatus(task) === 'deleted') {
         deferred.reject({type: 'deleted'});
-      } else if (task.trans.reminders) {
+      } else if (TasksService.hasTaskActiveReminder(task)) {
         deferred.reject({type: 'reminders'});
       } else {
         // NOTE: Currently only one-level lists are supported.

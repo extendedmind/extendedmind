@@ -109,6 +109,18 @@
         }
       }
     },
+    hasActiveReminder: function(item) {
+      var hasActiveReminder = false;
+      if (item.trans.reminders) {
+        for (var i = 0; i < item.trans.reminders.length; i++) {
+          if (item.trans.reminders[i].notification > Date.now()) {
+            hasActiveReminder = true;
+            break;
+          }
+        }
+      }
+      return hasActiveReminder;
+    },
     /**
     * @description
     *

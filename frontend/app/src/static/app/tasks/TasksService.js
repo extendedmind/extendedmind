@@ -810,6 +810,9 @@
         }
       }
     },
+    hasTaskActiveReminder: function(task) {
+      return ReminderService.hasActiveReminder(task);
+    },
     unscheduleAllReminders: function(ownerUUID) {
       var activeTasks = tasks[ownerUUID].activeTasks;
       var saveTaskPromises = [];

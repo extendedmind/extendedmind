@@ -434,6 +434,101 @@ it('should not convert deleted task to list', function() {
   .toBe(3);
 });
 
+it('should not convert task with future reminder(s) to note', function() {
+  // SETUP
+  var writeEssayBody = TasksService.getTaskInfo('9a1ce3aa-f476-43c4-845e-af59a9a33760', testOwnerUUID).task;
+  var futureReminder = {
+    'packaging': 'ios-cordova',
+    'notification': Date.now() + 86400000, // tomorrow
+    'uuid': '51ff61b4-2a07-4b69-b149-d58b0510a1cd',
+    'reminderType': 'ln',
+    'id': '12345678961234567',
+    'device': 'iPhone6',
+    'created': Date.now()
+  };
+  writeEssayBody.trans.reminders.push(futureReminder);
+
+  // EXECUTE
+  ConvertService.finishTaskToNoteConvert(writeEssayBody, testOwnerUUID);
+
+  // TESTS
+  expect(TasksService.getTaskInfo(writeEssayBody.uuid, testOwnerUUID))
+  .toBeDefined();
+
+  // There should be still three left
+  expect(TasksService.getTasks(testOwnerUUID).length)
+  .toBe(3);
+
+  // Notes should not have the new item
+  expect(NotesService.getNotes(testOwnerUUID).length)
+  .toBe(3);
+});
+
+it('should not convert task with future reminder(s) to list', function() {
+  // SETUP
+  var writeEssayBody = TasksService.getTaskInfo('9a1ce3aa-f476-43c4-845e-af59a9a33760', testOwnerUUID).task;
+  var futureReminder1 = {
+    'packaging': 'ios-cordova',
+    'notification': Date.now() + 86400000, // tomorrow
+    'uuid': '51ff61b4-2a07-4b69-b149-d58b0510a1cd',
+    'reminderType': 'ln',
+    'id': '12345678961234567',
+    'device': 'iPhone6',
+    'created': Date.now()
+  };
+  var futureReminder2 = {
+    'packaging': 'ios-cordova',
+    'notification': Date.now() + 86400000*2, // day after tomorrow
+    'uuid': '51ff61b4-2a05-4b69-b149-d58b0510a1cd',
+    'reminderType': 'ln',
+    'id': '12335678961234567',
+    'device': 'iPhone6',
+    'created': Date.now() + 100000
+  };
+  writeEssayBody.trans.reminders.push(futureReminder1, futureReminder2);
+
+  // EXECUTE
+  ConvertService.finishTaskToListConvert(writeEssayBody, testOwnerUUID);
+
+  // TESTS
+  expect(TasksService.getTaskInfo(writeEssayBody.uuid, testOwnerUUID))
+  .toBeDefined();
+
+  // There should be still three left
+  expect(TasksService.getTasks(testOwnerUUID).length)
+  .toBe(3);
+
+  // Notes should not have the new item
+  expect(ListsService.getLists(testOwnerUUID).length)
+  .toBe(3);
+});
+
+it('should convert task with only past reminder(s) to note', function() {
+  // SETUP
+  var writeEssayBody = TasksService.getTaskInfo('9a1ce3aa-f476-43c4-845e-af59a9a33760', testOwnerUUID).task;
+  var taskToNotePath = '/api/' + testOwnerUUID + '/task/' + writeEssayBody.uuid + '/note';
+  $httpBackend.expectPOST(taskToNotePath).respond(200, taskToNoteResponse);
+  taskToNoteResponse.uuid = writeEssayBody.uuid;
+
+  // EXECUTE
+  ConvertService.finishTaskToNoteConvert(writeEssayBody, testOwnerUUID);
+  $httpBackend.flush();
+
+  // TESTS
+  expect(TasksService.getTaskInfo(writeEssayBody.uuid, testOwnerUUID))
+  .toBeUndefined();
+
+  // There should be just two tasks left
+  expect(TasksService.getTasks(testOwnerUUID).length)
+  .toBe(2);
+
+  // Notes should have the new item
+  expect(NotesService.getNoteInfo(taskToNoteResponse.uuid, testOwnerUUID))
+  .toBeDefined();
+  expect(NotesService.getNotes(testOwnerUUID).length)
+  .toBe(4);
+});
+
 it('should remove pre-existing parent from task when converting existing task to list', function() {
   // SETUP
   var writeEssayBody = TasksService.getTaskInfo('7a612ca2-7de0-45ad-a758-d949df37f51e', testOwnerUUID).task;
