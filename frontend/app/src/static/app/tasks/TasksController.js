@@ -407,7 +407,7 @@
       break;
 
       case 'list':
-      if ($scope.getActiveFeature() === 'list') {
+      if ($scope.getActiveFeature() === 'list' || $scope.getActiveFeature() === 'listInverse') {
         if (!cachedTasksArrays[ownerUUID]['activeAndArchived'])
           updateActiveAndArchivedTasks(cachedTasksArrays[ownerUUID], ownerUUID);
         if (!cachedTasksArrays[ownerUUID]['list'] ||
