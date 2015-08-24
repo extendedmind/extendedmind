@@ -30,6 +30,8 @@ frontend/site/src/static/fonts/
 frontend/site/src/static/img/
 frontend/site/src/static/js/animo.min.js
 frontend/site/src/static/js/em-animation.js
+frontend/site/src/static/terms.html
+frontend/site/src/static/privacy.html
 
 # Ignore PhantomJS logs
 phantomjsdriver.log

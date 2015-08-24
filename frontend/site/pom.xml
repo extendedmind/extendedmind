@@ -96,7 +96,7 @@
                   <type>war</type>
                   <overWrite>true</overWrite>
                   <outputDirectory>${project.build.directory}/unpacked-app</outputDirectory>
-                  <includes>static/${project.version}/**</includes>
+                  <includes>static/${project.version}/**,static/*.html</includes>
                 </artifactItem>
               </artifactItems>
             </configuration>
@@ -120,8 +120,6 @@
                 <resource>
                   <directory>${project.build.directory}/unpacked-app/static/${project.version}</directory>
                   <includes>
-                    <include>terms.html</include>
-                    <include>privacy.html</include>
                     <include>css/em-animation.css</include>
                     <include>css/animate-animo.css</include>
                     <include>js/animo.min.js</include>
@@ -130,6 +128,13 @@
                     <include>audio/*</include>
                     <include>img/*</include>
                     <include>fonts/*</include>
+                  </includes>
+                </resource>
+                <resource>
+                  <directory>${project.build.directory}/unpacked-app/static</directory>
+                  <includes>
+                    <include>terms.html</include>
+                    <include>privacy.html</include>
                   </includes>
                 </resource>
               </resources>
