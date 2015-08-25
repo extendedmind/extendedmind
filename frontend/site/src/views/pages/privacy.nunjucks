@@ -30,7 +30,9 @@
 </nav>
 {% endblock %}
 {% block main %}
-{% include 'privacy.html' %}
+<div class="privacy-terms-container">
+  {% include 'privacy.html' %}
+</div>
 {% endblock %}
 {% block footer %}
 <div class="left">

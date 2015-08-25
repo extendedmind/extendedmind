@@ -436,6 +436,56 @@ div.main {
   }
 }
 
+
+/*********************/
+/* PRIVACY AND TERMS */
+/*********************/
+
+.privacy-terms-container{
+  display: inline-block;
+  overflow-y: auto;
+  margin-top: 110px;
+  max-height: 77vh;
+  -webkit-overflow-scrolling: touch;
+  padding-left: 28px;
+  padding-right: 28px;
+}
+
+/* TARGET IPHONES THAT DON'T SUPPORT vh */
+/* iPhone 6 */
+@media screen and (device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2){
+  .privacy-terms-container {
+    max-height: 90vh;
+    margin-top: 50px;
+  }
+}
+
+/* iPhone 6 Plus */
+@media screen and (device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3){
+  .privacy-terms-container {
+    max-height: 90vh;
+    margin-top: 50px;
+  }
+}
+
+/* iPhone 5 */
+@media screen and (device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2){
+  .privacy-terms-container {
+    max-height: 90vh;
+    margin-top: 50px;
+  }
+}
+
+/* iPhone 4 */
+@media screen and (device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 2){
+  .privacy-terms-container {
+    max-height: 90vh;
+    margin-top: 50px;
+  }
+}
+
+
+
 /******************/
 /* FOOTER         */
 /******************/
