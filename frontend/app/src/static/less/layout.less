@@ -192,7 +192,8 @@ Vertically center .container-master and .container-editor in large screens
 // 2. Align .container-editor right when the menu is visible.
 // 3. Center .container-master horizontally when the menu is visible.
 // 4. Override and reset position and size in expanded mode.
-// 5. Remove menu and content from flow when when the editor is expanded.
+// 5. Hide menu and content, but still affect the layout.
+//    NOTE: With "display: none;" resize does not work because width is calculated in javascript.
 @media (min-width: @min-width-three-column) {
   .container-main.editor-show {
     & > .container-editor {
@@ -220,10 +221,10 @@ Vertically center .container-master and .container-editor in large screens
         max-width: none;  // [4]
       }
       & > .container-drawer-aisle {
-        display: none;  // [5]
+        visibility: hidden; // [5]
       }
       & > .container-menu {
-        display: none;  // [5]
+        visibility: hidden; // [5]
       }
     }
   }
