@@ -130,6 +130,19 @@
                     <include>fonts/*</include>
                   </includes>
                 </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-terms-and-privacy</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.basedir}/src/views</outputDirectory>
+              <overwrite>true</overwrite>
+              <resources>
                 <resource>
                   <directory>${project.build.directory}/unpacked-app/static</directory>
                   <includes>
@@ -303,7 +316,7 @@
               <directory>${basedir}/src/static/favicon</directory>
             </fileset>
             <fileset>
-              <directory>${basedir}/src/static</directory>
+              <directory>${basedir}/src/views</directory>
               <includes>
                 <include>terms.html</include>
                 <include>privacy.html</include>

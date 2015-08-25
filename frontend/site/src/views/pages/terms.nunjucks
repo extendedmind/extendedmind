@@ -30,7 +30,7 @@
 </nav>
 {% endblock %}
 {% block main %}
-{% include 'static/terms.html' %}
+{% include 'terms.html' %}
 {% endblock %}
 {% block footer %}
 <div class="left">
