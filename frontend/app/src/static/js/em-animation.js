@@ -26,6 +26,31 @@ function playExtendedMindAnimation(){
   }
 }
 
+var videoCounter = 750;
+var counterElem = $('#em-animation-counter');
+function resumeCounter(){
+  var interval = setInterval(function() {
+      videoCounter--;
+      // Display 'counter' wherever you want to display it.
+      if (videoCounter < 0 || extendedMindAudio.paused) {
+        // Display a login box
+        clearInterval(interval);
+      }else{
+        if (videoCounter >= 600){
+          counterElem.text('1:' + zfill(Math.floor((videoCounter-600)/10), 2));
+        }else{
+          counterElem.text('0:' + zfill(Math.floor(videoCounter/10), 2));
+        }
+      }
+  }, 100);
+}
+
+function zfill(number, size) {
+  number = number.toString();
+  while (number.length < size) number = "0" + number;
+  return number;
+}
+
 function pauseExtendedMindAnimation(){
   if (extendedMindAudio && !extendedMindAudio.ended){
     extendedMindAudio.pause();
@@ -45,6 +70,9 @@ function resumeExtendedMindAnimation(){
   $('#em-animation-play').hide();
   var elem = getCurrentAnimationElement();
   elem.removeClass('paused');
+  if (counterElem){
+    resumeCounter();
+  }
   setTimeout(function(){
     $('#em-animation').click(pauseExtendedMindAnimation);
   });
@@ -224,6 +252,11 @@ function animatePhase16(){
           $('#volume').animo({ animation: 'fadeOut', duration: 0.5 }, function(){
             $('#volume').addClass('hide');
           });
+          if (counterElem){
+            counterElem.animo({ animation: 'fadeOut', duration: 0.5 }, function(){
+              counterElem.addClass('hide');
+            });
+          }
         })
       });
     });

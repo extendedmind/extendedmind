@@ -125,6 +125,7 @@
   <a href="/new" class="button" onclick="trackBegin(this.href);return false;">begin</a>
 </div>
 <div class="right">
+  <span id="em-animation-counter"></span>
   <div onclick="var audio = document.getElementById('theme');
                 if (audio.muted){
                   audio.muted = false;

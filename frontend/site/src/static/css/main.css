@@ -277,6 +277,14 @@ div.main {
   color: #0f82fe;
 }
 
+#em-animation-counter {
+  top: 6px;
+  right: 45px;
+  text-align: center;
+  width: 40px;
+  position: absolute;
+}
+
 /* MEDIUM */
 @media only screen and (min-width: 40.063em){
   .text-jumbotron {
@@ -499,12 +507,12 @@ footer {
   height: 44px;
 }
 
-footer div {
+footer > div {
   display: block;
   text-align: center;
 }
 
-footer div.centered .button {
+footer > div.centered .button {
   width: 100%;
   max-width: 568px;
   font-family: 'HelveticaNeue', 'Helvetica Neue', 'Segoe UI Bold', 'Segoe UI', 'sans-serif';
@@ -515,7 +523,7 @@ footer div.centered .button {
   padding: 0;
 }
 
-footer div.right {
+footer > div.right {
   display: none; /* Don't show on mobile */
   position: absolute;
   right: 5%;
@@ -523,14 +531,14 @@ footer div.right {
   cursor: pointer;
 }
 
-footer div.right .icon-volume-mute:before, footer div.right .icon-volume-up:before {
+footer > div.right .icon-volume-mute:before, footer > div.right .icon-volume-up:before {
   height: 44px;
   line-height: 44px;
   color: #000000;
   font-size: 30px;
 }
 
-footer div.left {
+footer > div.left {
   display: none; /* Don't show on mobile */
   position: absolute;
   left: 5%;
