@@ -23,6 +23,7 @@
       var areaAboutToShrinkCallbacks = {};
       var areaAboutToGrowCallbacks = {};
       var areaResizeReadyCallbacks = {};
+      var areaResizeCallbacks = {};
 
       this.registerAreaAboutToShrink = function(callback, id) {
         areaAboutToShrinkCallbacks[id] = callback;
@@ -33,6 +34,9 @@
       this.registerAreaResizeReady = function(callback, id) {
         areaResizeReadyCallbacks[id] = callback;
       };
+      this.registerAreaResizeCallback = function(callback, id) {
+        areaResizeCallbacks[id] = callback;
+      };
       this.unregisterAreaAboutToShrink = function(id) {
         delete areaAboutToShrinkCallbacks[id];
       };
@@ -41,6 +45,9 @@
       };
       this.unregisterAreaResizeReady = function(id) {
         delete areaResizeReadyCallbacks[id];
+      };
+      this.unregisterAreaResizeCallback = function(id) {
+        delete areaResizeCallbacks[id];
       };
 
       // GLOBAL FUNCTIONS
@@ -55,6 +62,8 @@
 
       DrawerService.registerOnOpenCallback('left', menuDrawerOpen, 'drawerDirective');
       DrawerService.registerOnCloseCallback('left', menuDrawerClose, 'drawerDirective');
+      DrawerService.registerOnExpandCallback('right', editorDrawerExpand, 'drawerDirective');
+      DrawerService.registerOnExpandResetCallback('right', editorDrawerExpandReset, 'drawerDirective');
       DrawerService.registerOpenedCallback('left', menuDrawerOpened, 'drawerDirective');
       DrawerService.registerClosedCallback('left', menuDrawerClosed, 'drawerDirective');
 
@@ -95,9 +104,23 @@
         if ($rootScope.columns === 3 && DrawerService.isOpen('right')) executeAreaResizeReadyCallbacks();
       }
 
+      function editorDrawerExpand() {
+        executeAreaResizeCallbacks();
+      }
+
+      function editorDrawerExpandReset() {
+        executeAreaResizeCallbacks();
+      }
+
       function executeAreaResizeReadyCallbacks() {
         for (var id in areaResizeReadyCallbacks) {
           if (areaResizeReadyCallbacks.hasOwnProperty(id)) areaResizeReadyCallbacks[id]();
+        }
+      }
+
+      function executeAreaResizeCallbacks() {
+        for (var id in areaResizeCallbacks) {
+          if (areaResizeCallbacks.hasOwnProperty(id)) areaResizeCallbacks[id]();
         }
       }
 

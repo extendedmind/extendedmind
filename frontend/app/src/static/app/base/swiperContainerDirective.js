@@ -665,6 +665,7 @@
         controllers[1].registerAreaAboutToShrink(swiperAboutToShrink, scope.swiperPath);
         controllers[1].registerAreaAboutToGrow(swiperAboutToGrow, scope.swiperPath);
         controllers[1].registerAreaResizeReady(swiperResizeReady, scope.swiperPath);
+        controllers[1].registerAreaResizeCallback(resizeSwiper, scope.swiperPath);
       }
 
       scope.$on('$destroy', onDestroy);
@@ -674,6 +675,7 @@
           controllers[1].unregisterAreaAboutToShrink(scope.swiperPath);
           controllers[1].unregisterAreaAboutToGrow(scope.swiperPath);
           controllers[1].unregisterAreaResizeReady(scope.swiperPath);
+          controllers[1].unregisterAreaResizeCallback(scope.swiperPath);
         }
       }
     }

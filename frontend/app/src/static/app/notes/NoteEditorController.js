@@ -15,7 +15,7 @@
 
  'use strict';
 
- function NoteEditorController($scope, $timeout, NotesService, SwiperService,
+ function NoteEditorController($scope, $timeout, DrawerService, NotesService, SwiperService,
                                TagsService, UISessionService) {
 
   // INITIALIZING
@@ -72,20 +72,34 @@
               !$scope.isOnboarding('notes'));
 
       case 'basicFooter':
-      return !$scope.isPropertyInDedicatedEdit() && !$scope.isFooterNavigationHidden() &&
-      !$scope.isOnboarding('notes');
+
+      if (!subcomponentName) {
+        if ($scope.showNoteEditorComponent('advancedFooter', 'expandible') ||
+            $scope.showNoteEditorComponent('advancedFooter', 'navigation'))
+        {
+          return true;
+        }
+      } else if (subcomponentName === 'expandible') {
+        return $scope.columns === 3;
+      } else if (subcomponentName === 'navigation') {
+        if (!$scope.isPropertyInDedicatedEdit() && !$scope.isFooterNavigationHidden() &&
+            !$scope.isOnboarding('notes'))
+        {
+          return true;
+        }
+      }
+      break;
 
       case 'advancedFooter':
       if (!subcomponentName){
         return $scope.showNoteEditorComponent('advancedFooter', 'convert') ||
-               $scope.showNoteEditorComponent('advancedFooter', 'navigation');
+        $scope.showNoteEditorComponent('advancedFooter', 'navigation');
       }else if (subcomponentName === 'navigation'){
         return !$scope.isPropertyInDedicatedEdit() && !$scope.isFooterNavigationHidden();
       }else if (subcomponentName === 'convert'){
         return !$scope.isPropertyInDedicatedEdit() &&
-           ($scope.showEditorAction('convertToTask') || $scope.showEditorAction('convertToList'));
+        ($scope.showEditorAction('convertToTask') || $scope.showEditorAction('convertToList'));
       }
-
       break;
     }
   };
@@ -244,6 +258,10 @@
       propertyName = 'key' + ($scope.columns === 1 ? '-\n' : '') + 'words';
     }
     return propertyName;
+  };
+
+  $scope.isExpanded = function() {
+    return DrawerService.isExpanded('right');
   };
 
   // CONTENT
@@ -446,7 +464,7 @@
 
   function hasUnsetCollapsableProperty() {
     return !$scope.note.trans.list || !$scope.note.trans.link || ($scope.fullEditor &&
-                                       (!$scope.note.trans.keywords || !$scope.note.trans.keywords.length));
+            (!$scope.note.trans.keywords || !$scope.note.trans.keywords.length));
   }
 
   var showFooterCallbacks = {};
@@ -454,6 +472,10 @@
     if (!showFooterCallbacks[id]) {
       showFooterCallbacks[id] = callback;
     }
+  };
+
+  $scope.toggleExpand = function() {
+    $scope.toggleExpandEditor();
   };
 
   $scope.$watch(function() {
@@ -469,5 +491,5 @@
 }
 
 NoteEditorController['$inject'] = ['$scope', '$timeout',
-'NotesService', 'SwiperService', 'TagsService', 'UISessionService'];
+'DrawerService', 'NotesService', 'SwiperService', 'TagsService', 'UISessionService'];
 angular.module('em.main').controller('NoteEditorController', NoteEditorController);

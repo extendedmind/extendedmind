@@ -264,8 +264,15 @@
 
         <footer ng-if="showNoteEditorComponent('basicFooter')" class="container-content--after editor-footer">
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
-            <a href class="group-symmetrical--right link-navigation active"
-               swiper-click="swipeToAdvanced('noteEditor')">
+
+            <a href ng-if="showNoteEditorComponent('basicFooter', 'expandible')"
+              class="group-symmetrical--left downplayed" ng-click="toggleExpand()">
+              <span class="text-expand" ng-bind="isExpanded() ? 'minimize' : 'expand'"></span>
+            </a>
+
+            <a href ng-if="showNoteEditorComponent('basicFooter', 'navigation')"
+              class="group-symmetrical--right link-navigation active"
+              swiper-click="swipeToAdvanced('noteEditor')">
               <span class="text-navigation-forward">advanced</span>
             </a>
           </nav>

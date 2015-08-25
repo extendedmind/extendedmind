@@ -230,6 +230,8 @@ function drawerAisleDirective($rootScope, DrawerService) {
       DrawerService.registerAboutToCloseCallback('right', editorDrawerAboutToClose, 'drawerAisleDirective');
       DrawerService.registerOnOpenCallback('right', editorDrawerOpen, 'drawerAisleDirective');
       DrawerService.registerOnCloseCallback('right', editorDrawerClose, 'drawerAisleDirective');
+      DrawerService.registerOnExpandCallback('right', editorDrawerExpand, 'drawerAisleDirective');
+      DrawerService.registerOnExpandResetCallback('right', editorDrawerExpandReset, 'drawerAisleDirective');
       if ($rootScope.columns !== 1) {
         // Set initial max width so that the width animation works at the first time as well.
         $element[0].firstElementChild.style.maxWidth = $rootScope.currentWidth + 'px';
@@ -445,6 +447,15 @@ function drawerAisleDirective($rootScope, DrawerService) {
         }
       }
 
+      function editorDrawerExpand() {
+        var editorDrawerElement = DrawerService.getDrawerElement('right');
+        if (editorDrawerElement) editorDrawerElement.style.removeProperty('max-width'); // Restore width
+      }
+
+      function editorDrawerExpandReset() {
+        if (DrawerService.isOpen('left')) calculateAisleAndEditorDrawerMaxWidthAndResize();
+      }
+
       /*
       * TODO: Move editor drawer handling to drawerDirective
       */
@@ -477,8 +488,10 @@ function drawerAisleDirective($rootScope, DrawerService) {
 
         $element[0].style.maxWidth = aisleWidth + 'px';
         $element[0].firstElementChild.style.maxWidth = aisleContentWidth + 'px';
-        var editorDrawerElement = DrawerService.getDrawerElement('right');
-        if (editorDrawerElement) editorDrawerElement.style.maxWidth = editorDrawerWidth + 'px';
+        if (!DrawerService.isExpanded('right')) {
+          var editorDrawerElement = DrawerService.getDrawerElement('right');
+          if (editorDrawerElement) editorDrawerElement.style.maxWidth = editorDrawerWidth + 'px';
+        }
       }
 
       function editorDrawerOpened() {

@@ -462,6 +462,10 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     return promise;
   };
 
+  $scope.toggleExpandEditor = function() {
+    DrawerService.toggleExpand('right');
+  };
+
   /*
   * Recurring editor.
   */
@@ -1079,6 +1083,16 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     // See: listItemLeaveAnimation in listItemDirective.
     UISessionService.resolveDeferredActions('editorClose');
     $element[0].classList.remove('editor-show', 'editor-visible');
+  }
+
+  DrawerService.registerOnExpandCallback('right', editorExpand, 'MainController');
+  function editorExpand() {
+    $element[0].classList.add('editor-expanded');
+  }
+
+  DrawerService.registerOnExpandResetCallback('right', editorExpandReset, 'MainController');
+  function editorExpandReset() {
+    $element[0].classList.remove('editor-expanded');
   }
 
   DrawerService.registerOpenedCallback('left', menuOpened, 'MainController');

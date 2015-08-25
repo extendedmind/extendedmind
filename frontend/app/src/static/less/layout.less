@@ -191,11 +191,13 @@ Vertically center .container-master and .container-editor in large screens
 // 1. Center .container-editor and .container-drawer-aisle horizontally when the menu is not visible.
 // 2. Align .container-editor right when the menu is visible.
 // 3. Center .container-master horizontally when the menu is visible.
+// 4. Override and reset position and size in expanded mode.
+// 5. Remove menu and content from flow when when the editor is expanded.
 @media (min-width: @min-width-three-column) {
-  .container-editor {
-    max-width: @width-column-max;
-  }
   .container-main.editor-show {
+    & > .container-editor {
+      max-width: @width-column-max;
+    }
     &:not(.menu-show) {
       & > .container-editor {
         left: 50%; // [1]
@@ -210,6 +212,18 @@ Vertically center .container-master and .container-editor in large screens
       }
       & > .container-drawer-aisle > .container-master {
         .center-horizontally-absolute();  // [3]
+      }
+    }
+    &.editor-expanded {
+      & > .container-editor {
+        left: auto;       // [4]
+        max-width: none;  // [4]
+      }
+      & > .container-drawer-aisle {
+        display: none;  // [5]
+      }
+      & > .container-menu {
+        display: none;  // [5]
       }
     }
   }

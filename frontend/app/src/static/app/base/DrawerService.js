@@ -51,6 +51,22 @@
     }
   }
 
+  function executeOnDrawerExpandCallbacks(drawerSide) {
+    drawers[drawerSide].isExpanded = true;
+    for (var id in drawers[drawerSide].onExpandCallbacks) {
+      if (drawers[drawerSide].onExpandCallbacks.hasOwnProperty(id))
+        drawers[drawerSide].onExpandCallbacks[id]();
+    }
+  }
+
+  function executeOnDrawerExpandResetCallbacks(drawerSide) {
+    drawers[drawerSide].isExpanded = false;
+    for (var id in drawers[drawerSide].onExpandResetCallbacks) {
+      if (drawers[drawerSide].onExpandResetCallbacks.hasOwnProperty(id))
+        drawers[drawerSide].onExpandResetCallbacks[id]();
+    }
+  }
+
   function executeDrawerAboutToCloseCallbacks(drawerSide) {
     for (var id in drawers[drawerSide].aboutToCloseCallbacks) {
       if (drawers[drawerSide].aboutToCloseCallbacks.hasOwnProperty(id))
@@ -71,6 +87,7 @@
       // Animated is triggered on every swipe to handle!
       executeDrawerOpenedCallbacks(drawerSide);
     } else if (drawers[drawerSide].snapper.state().state === 'closed') {
+      if (drawers[drawerSide].isExpanded) executeOnDrawerExpandResetCallbacks(drawerSide);
       executeDrawerClosedCallbacks(drawerSide);
     }
   }
@@ -119,6 +136,8 @@
     return {
       onOpenCallbacks: {},
       onCloseCallbacks: {},
+      onExpandCallbacks: {},
+      onExpandResetCallbacks: {},
       aboutToOpenCallbacks: {},
       aboutToCloseCallbacks: {},
       openedCallbacks: {},
@@ -247,14 +266,20 @@
     },
     close: function(drawerSide, speed) {
       if (snapperExists(drawerSide) && drawers[drawerSide].snapper.state().state === drawerSide) {
+        if (drawers[drawerSide].isExpanded) executeOnDrawerExpandResetCallbacks(drawerSide);
         drawers[drawerSide].snapper.close(speed);
       }
       else if (isDrawerCreated(drawerSide) && !drawers[drawerSide].moveAisle) {
         // Just execute callbacks.
+        if (drawers[drawerSide].isExpanded) executeOnDrawerExpandResetCallbacks(drawerSide);
         executeOnDrawerCloseCallbacks(drawerSide);
         executeDrawerAboutToCloseCallbacks(drawerSide);
         executeDrawerClosedCallbacks(drawerSide);
       }
+    },
+    toggleExpand: function(drawerSide) {
+      if (drawers[drawerSide].isExpanded) executeOnDrawerExpandResetCallbacks(drawerSide);
+      else executeOnDrawerExpandCallbacks(drawerSide);
     },
     toggle: function(drawerSide) {
       var drawerOpen;
@@ -299,6 +324,9 @@
     },
     isOpen: function(drawerSide) {
       return isDrawerCreated(drawerSide) && drawers[drawerSide].isOpen;
+    },
+    isExpanded: function(drawerSide) {
+      return isDrawerCreated(drawerSide) && drawers[drawerSide].isExpanded;
     },
     resetPosition: function(drawerSide) {
       if (snapperExists(drawerSide) && drawerSide === 'right') {
@@ -351,6 +379,18 @@
         drawers[drawerSide] = createDrawerSkeleton();
       }
       drawers[drawerSide].onOpenCallbacks[id] = callback;
+    },
+    registerOnExpandCallback: function(drawerSide, callback, id) {
+      if (!drawers[drawerSide]){
+        drawers[drawerSide] = createDrawerSkeleton();
+      }
+      drawers[drawerSide].onExpandCallbacks[id] = callback;
+    },
+    registerOnExpandResetCallback: function(drawerSide, callback, id) {
+      if (!drawers[drawerSide]){
+        drawers[drawerSide] = createDrawerSkeleton();
+      }
+      drawers[drawerSide].onExpandResetCallbacks[id] = callback;
     },
     getExecuteOpenedCallbacksPromise: function() {
       if (executeOpenedCallbacksDeferred)
