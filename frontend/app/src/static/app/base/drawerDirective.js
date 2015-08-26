@@ -17,7 +17,7 @@
  function drawerDirective($rootScope, DrawerService) {
   return {
     restrict: 'A',
-    controller: function() {
+    controller: function($scope) {
       // CALLBACK REGISTRATION
 
       var areaAboutToShrinkCallbacks = {};
@@ -94,22 +94,30 @@
       * Menu drawer animation is ready - menu is open.
       */
       function menuDrawerOpened() {
-        if ($rootScope.columns === 3 && DrawerService.isOpen('right')) executeAreaResizeReadyCallbacks();
+        if ($rootScope.columns === 3 && DrawerService.isOpen('right')) {
+          executeAreaResizeReadyCallbacks();
+          $scope.$broadcast('elastic:adjust');
+        }
       }
 
       /*
       * Animation of menu drawer ready, menu now hidden.
       */
       function menuDrawerClosed() {
-        if ($rootScope.columns === 3 && DrawerService.isOpen('right')) executeAreaResizeReadyCallbacks();
+        if ($rootScope.columns === 3 && DrawerService.isOpen('right')) {
+          executeAreaResizeReadyCallbacks();
+          $scope.$broadcast('elastic:adjust');
+        }
       }
 
       function editorDrawerExpand() {
         executeAreaResizeCallbacks();
+        $scope.$broadcast('elastic:adjust');
       }
 
       function editorDrawerExpandReset() {
         executeAreaResizeCallbacks();
+        $scope.$broadcast('elastic:adjust');
       }
 
       function executeAreaResizeReadyCallbacks() {
