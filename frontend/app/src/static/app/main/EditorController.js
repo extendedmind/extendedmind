@@ -556,7 +556,8 @@
   };
 
   $scope.setTitleBarFocus = function() {
-    if ($scope.columns !== 3 && typeof editorFooterCloseCallback === 'function') editorFooterCloseCallback();
+    if ($rootScope.columns !== 3 && typeof editorFooterCloseCallback === 'function')
+      editorFooterCloseCallback();
   };
 
   // TEXT PROPERTIES (i.e. description, url and content)
@@ -644,7 +645,7 @@
 
   /* Returns true when either subeditor is open or a text property is in a full screen edit mode. */
   $scope.isPropertyInDedicatedEdit = function(){
-    if ($scope.columns === 3){
+    if ($rootScope.columns === 3){
       // Desktop, text properties are not in full screen edit mode
       return $scope.isSubEditorOpen();
     }else{
@@ -663,7 +664,7 @@
   $scope.getPropertyNameInEdit = function() {
     if ($scope.focusedTextProperty){
       if ($scope.focusedTextProperty === 'description'){
-        return 'descrip' + ($scope.columns === 1 ? '-\n' : '') + 'tion';
+        return 'descrip' + ($rootScope.columns === 1 ? '-\n' : '') + 'tion';
       }else{
         return $scope.focusedTextProperty;
       }

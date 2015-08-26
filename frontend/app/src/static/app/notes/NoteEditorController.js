@@ -15,7 +15,7 @@
 
  'use strict';
 
- function NoteEditorController($scope, $timeout, DrawerService, NotesService, SwiperService,
+ function NoteEditorController($rootScope, $scope, $timeout, DrawerService, NotesService, SwiperService,
                                TagsService, UISessionService) {
 
   // INITIALIZING
@@ -80,7 +80,7 @@
           return true;
         }
       } else if (subcomponentName === 'expandible') {
-        return $scope.columns === 3;
+        return $rootScope.columns === 3;
       } else if (subcomponentName === 'navigation') {
         if (!$scope.isPropertyInDedicatedEdit() && !$scope.isFooterNavigationHidden() &&
             !$scope.isOnboarding('notes'))
@@ -255,7 +255,7 @@
   $scope.getNotePropertyNameInEdit = function() {
     var propertyName = $scope.getPropertyNameInEdit();
     if (!propertyName && $scope.keywordsPickerOpen) {
-      propertyName = 'key' + ($scope.columns === 1 ? '-\n' : '') + 'words';
+      propertyName = 'key' + ($rootScope.columns === 1 ? '-\n' : '') + 'words';
     }
     return propertyName;
   };
@@ -490,6 +490,6 @@
   });
 }
 
-NoteEditorController['$inject'] = ['$scope', '$timeout',
+NoteEditorController['$inject'] = ['$rootScope', '$scope', '$timeout',
 'DrawerService', 'NotesService', 'SwiperService', 'TagsService', 'UISessionService'];
 angular.module('em.main').controller('NoteEditorController', NoteEditorController);
