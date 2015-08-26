@@ -17,7 +17,7 @@
  function drawerDirective($rootScope, DrawerService) {
   return {
     restrict: 'A',
-    controller: function($scope) {
+    controller: ['$scope', function($scope) {
       // CALLBACK REGISTRATION
 
       var areaAboutToShrinkCallbacks = {};
@@ -132,7 +132,7 @@
         }
       }
 
-    },
+    }],
     link: function postLink(scope, element, attrs) {
       DrawerService.setDrawerElement(attrs.drawer, element[0]);
     }
