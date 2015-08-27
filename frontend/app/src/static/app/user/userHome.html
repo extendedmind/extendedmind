@@ -73,7 +73,7 @@
     <div ng-if="useCollectives()">
       <h3 class="row-form">switch to</h3>
       <div ng-repeat="(key, value) in collectives">
-        <div ng-if="value[2] === false && !isCollectiveActive(key)">
+        <div ng-if="(value[2] === false || isAdmin()) && !isCollectiveActive(key)">
           <a href class="row-form link" ng-click="setCollectiveActive(key)">
             <span ng-bind="value[0]"></span>
           </a>
