@@ -2,15 +2,15 @@
 var extendedMindAnimationPhase;
 var extendedMindAudio;
 var extendedMindAnimationDelay = 0;
+var counterElem;
 function setupHTML5Audio(animationEndCallback){
   extendedMindAudio = document.getElementById('theme');
   if (animationEndCallback) extendedMindAudio.endCallback = animationEndCallback;
 }
 
 function playExtendedMindAnimation(){
+  counterElem = $('#em-animation-counter');
   if (extendedMindAnimationPhase === undefined){
-    $('#em-animation-play').hide();
-
     if (extendedMindAudio.readyState >= extendedMindAudio.HAVE_FUTURE_DATA) {
       startAnimation();
     } else {
@@ -19,7 +19,6 @@ function playExtendedMindAnimation(){
       }, false);
     }
   }
-
   function startAnimation(){
     resumeExtendedMindAnimation();
     animatePhase0();
@@ -27,22 +26,50 @@ function playExtendedMindAnimation(){
 }
 
 var videoCounter = 750;
-var counterElem = $('#em-animation-counter');
+var interval;
+var currentCounterText;
 function resumeCounter(){
-  var interval = setInterval(function() {
-      videoCounter--;
-      // Display 'counter' wherever you want to display it.
-      if (videoCounter < 0 || extendedMindAudio.paused) {
-        // Display a login box
-        clearInterval(interval);
-      }else{
-        if (videoCounter >= 600){
-          counterElem.text('1:' + zfill(Math.floor((videoCounter-600)/10), 2));
+  if (interval === undefined){
+    interval = setInterval(function() {
+        videoCounter--;
+        if (videoCounter < 0 || extendedMindAudio.paused) {
+          clearInterval(interval);
+          interval = undefined;
         }else{
-          counterElem.text('0:' + zfill(Math.floor(videoCounter/10), 2));
+          var counterText;
+          if (videoCounter >= 600){
+            counterText = '1:' + zfill(Math.floor((videoCounter-600)/10), 2);
+          }else{
+            counterText = '0:' + zfill(Math.floor(videoCounter/10), 2);
+          }
+          if (currentCounterText !== counterText){
+            counterElem.text(counterText);
+            currentCounterText = counterText;
+            if (extendedMindAudio.setVolume){
+              if (currentCounterText === '1:14'){
+                extendedMindAudio.setVolume(0.11);
+              }else if (currentCounterText === '1:13'){
+                extendedMindAudio.setVolume(0.22);
+              }else if (currentCounterText === '1:12'){
+                extendedMindAudio.setVolume(0.33);
+              }else if (currentCounterText === '1:11'){
+                extendedMindAudio.setVolume(0.44);
+              }else if (currentCounterText === '1:10'){
+                extendedMindAudio.setVolume(0.55);
+              }else if (currentCounterText === '1:09'){
+                extendedMindAudio.setVolume(0.66);
+              }else if (currentCounterText === '1:08'){
+                extendedMindAudio.setVolume(0.77);
+              }else if (currentCounterText === '1:07'){
+                extendedMindAudio.setVolume(0.88);
+              }else if (currentCounterText === '1:06'){
+                extendedMindAudio.setVolume(1.0);
+              }
+            }
+          }
         }
-      }
-  }, 100);
+    }, 100);
+  }
 }
 
 function zfill(number, size) {
@@ -54,20 +81,22 @@ function zfill(number, size) {
 function pauseExtendedMindAnimation(){
   if (extendedMindAudio && !extendedMindAudio.ended){
     extendedMindAudio.pause();
+    if (!extendedMindAudio.paused) extendedMindAudio.paused = true;
     var elem = getCurrentAnimationElement();
     elem.addClass('paused');
-    var playElem = $('#em-animation-play');
-    playElem.show();
-    playElem.click(resumeExtendedMindAnimation);
+    $('span#play').removeClass('invisible');
+    $('#em-animation-play').click(resumeExtendedMindAnimation);
     $('#em-animation').off('click');
   }
 }
 
 function resumeExtendedMindAnimation(){
   extendedMindAudio.play();
+  if (extendedMindAudio.paused) extendedMindAudio.paused = false;
   var volume = $('#volume');
   volume.removeClass('hide');
-  $('#em-animation-play').hide();
+  $('span#play').addClass('invisible');
+  $('#em-animation-play').unbind('click');
   var elem = getCurrentAnimationElement();
   elem.removeClass('paused');
   if (counterElem){

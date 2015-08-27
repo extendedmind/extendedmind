@@ -9,7 +9,7 @@
         <div class="swiper-slide swiper-no-swiping" swiper-slide="entry/main" slide-index=1
         ng-include="urlBase + 'app/entry/entryMain.html'"></div>
         <div class="swiper-slide swiper-no-swiping" swiper-slide="entry/details" slide-index=2
-        ng-include="urlBase + 'app/entry/entryDetails.html'"></div>
+        ng-include="urlBase + 'app/entry/entryDetails.html'" onload="notifyAnimationReady('slides')"></div>
       </div>
     </div>
   </div>

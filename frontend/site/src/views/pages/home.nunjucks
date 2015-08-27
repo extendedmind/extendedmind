@@ -43,7 +43,7 @@
     <source src="static/audio/theme.mp3" type="audio/mpeg">
   </audio>
   <div id="em-animation-play" onclick="playExtendedMindAnimation()">
-    <span class="icon-play"></span>
+    <span id="play" class="icon-play"></span>
   </div>
   <div id="em-animation-0">
     <span class="icon-logo-text"></span></br></br>

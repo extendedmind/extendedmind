@@ -147,16 +147,6 @@
   vertical-align: 5px;
 }
 
-#em-animation-logo {
-  position: absolute;
-  padding-left: 28px;
-  top: 0;
-  left: 0;
-  font-size: 19px;
-  line-height: 66px;
-  height: 66px;
-}
-
 .animation-word {
   padding-left: 10px;
   padding-right: 10px;
@@ -181,4 +171,37 @@
   0%   { opacity: 0.01; }
   50% { opacity: 0.08; }
   100%   { opacity: 0.01; }
+}
+
+/* OPTIONAL ELEMENTS */
+
+#em-animation-logo {
+  position: absolute;
+  padding-left: 28px;
+  top: 0;
+  left: 0;
+  font-size: 19px;
+  line-height: 66px;
+  height: 66px;
+}
+
+#em-animation-controls {
+  position: absolute;
+  z-index: 2;
+  padding-right: 28px;
+  padding-left: 28px;
+  top: 0;
+  right: 0;
+  font-size: 19px;
+  line-height: 66px;
+  height: 66px;
+}
+
+#em-animation-controls > #em-animation-counter {
+  top: 0px;
+  right: 62px;
+  text-align: center;
+  width: 40px;
+  position: absolute;
+  font-size: 14px;
 }

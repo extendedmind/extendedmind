@@ -17,7 +17,7 @@
 playExtendedMindAnimation, extendedMindAnimationPhase, Media, cordova */
 'use strict';
 
-function EntryController($http, $location, $rootScope, $routeParams, $scope,
+function EntryController($http, $location, $rootScope, $routeParams, $scope, $timeout,
                          AnalyticsService, AuthenticationService, DetectBrowserService, SwiperService,
                          UISessionService, UserService, UserSessionService, packaging) {
 
@@ -268,10 +268,16 @@ function EntryController($http, $location, $rootScope, $routeParams, $scope,
           pause: function(){
             $scope.theme.pause();
           },
+          muted: false,
+          setVolume: function(volume){
+            $scope.theme.setVolume(volume);
+          },
           readyState: 1,
           HAVE_FUTURE_DATA: 1,
           endCallback: animationEndCallback
         };
+        // Start off with a very quiet volume, volume is added gradually as animation progresses
+        extendedMindAudio.setVolume(0.05);
       }
     }
     if (packaging === 'android-cordova'){
@@ -284,6 +290,39 @@ function EntryController($http, $location, $rootScope, $routeParams, $scope,
     }
     AnalyticsService.do('playAnimation');
     playExtendedMindAnimation();
+  };
+
+  var audioReady = !$scope.useHTML5Audio();
+  var sloganReady, logoReady, slidesReady;
+  $scope.notifyAnimationReady = function(type){
+    if (type === 'audio') audioReady = true;
+    else if (type === 'slogan') sloganReady = true;
+    else if (type === 'logo') logoReady = true;
+    else if (type === 'slides') slidesReady = true;
+    if (audioReady && sloganReady && logoReady && slidesReady){
+      $timeout(function(){
+        $scope.playExtendedMindAnimation();
+      }, 1000);
+    }
+  };
+
+  $scope.toggleVolume = function(clickEvent){
+    extendedMindAudio.muted = !extendedMindAudio.muted;
+    if (!$scope.useHTML5Audio()){
+      if (extendedMindAudio.muted) $scope.theme.setVolume('0.0');
+      else $scope.theme.setVolume('1.0');
+    }
+    var volumeElem = document.getElementById("volume");
+    if (extendedMindAudio.muted){
+      volumeElem.className = 'icon-volume-up';
+    }else {
+      volumeElem.className = 'icon-volume-mute';
+    }
+    if (clickEvent){
+      clickEvent.stopPropagation();
+      clickEvent.preventDefault();
+    }
+    return false;
   };
 
   // Pause animation when entering background, not really working on iOS
@@ -300,7 +339,7 @@ function EntryController($http, $location, $rootScope, $routeParams, $scope,
   }
 }
 
-EntryController['$inject'] = ['$http', '$location', '$rootScope', '$routeParams', '$scope',
+EntryController['$inject'] = ['$http', '$location', '$rootScope', '$routeParams', '$scope', '$timeout',
 'AnalyticsService', 'AuthenticationService', 'DetectBrowserService', 'SwiperService',
 'UISessionService', 'UserService', 'UserSessionService', 'packaging'];
 angular.module('em.entry').controller('EntryController', EntryController);

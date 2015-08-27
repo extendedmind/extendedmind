@@ -29,6 +29,8 @@ TODO: Icons are not working yet with Phytoplankton
 @size-icon-calendar: 17px;
 @size-icon-tag: 19px;
 @size-icon-pencil: 15px;
+@size-icon-volume-up: 25px;
+@size-icon-volume-mute: 25px;
 
 // Icon character codes
 @icon-show-completed: "\e60e";
@@ -397,3 +399,18 @@ Icon classes
   content: @icon-pencil;
   font-size: @size-icon-pencil;
 }
+
+.icon-volume-mute:before {
+  .set-icon-font();
+  content: @icon-volume-mute;
+  font-size: @size-icon-volume-mute;
+  vertical-align: baseline; // [2]
+}
+
+.icon-volume-up:before {
+  .set-icon-font();
+  content: @icon-volume-up;
+  font-size: @size-icon-volume-up;
+  vertical-align: baseline; // [2]
+}
+

@@ -3,18 +3,22 @@
     <div class="group-instruction-jumbotron row">
       <div class="group-instruction--animation" >
         <div id="em-animation">
-          <audio ng-if="useHTML5Audio()" id="theme">
+          <audio ng-if="useHTML5Audio()" id="theme" ng-init="notifyAnimationReady('audio')">
             <source ng-src="{{urlBase + 'audio/theme.ogg'}}" type="audio/ogg">
             <source ng-src="{{urlBase + 'audio/theme.m4a'}}" type="audio/mp4">
             <source ng-src="{{urlBase + 'audio/theme.mp3'}}" type="audio/mpeg">
           </audio>
           <span id="em-animation-logo" class="icon-logo"></span>
+          <a href id="em-animation-controls" ng-click="toggleVolume($event)">
+            <span id="em-animation-counter"></span>
+            <span id="volume" class="icon-volume-mute hide"></span>
+          </a>
           <div id="em-animation-play" ng-click="playExtendedMindAnimation()">
-            <span class="icon-play"></span>
+            <span id="play" class="icon-play invisible"></span>
           </div>
           <div id="em-animation-0">
-            <span class="icon-logo-text"></span><br/><br/>
-            <span>task and note organizer that keeps you zen</span>
+            <span class="icon-logo-text" ng-init="notifyAnimationReady('logo')"></span><br/><br/>
+            <span ng-init="notifyAnimationReady('slogan')">task and note organizer that keeps you zen</span>
           </div>
           <div id="em-animation-1" class="hide">
             <span>what if you never had to forget anything again?</span>
