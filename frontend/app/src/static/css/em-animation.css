@@ -198,7 +198,7 @@
 }
 
 #em-animation-controls > #em-animation-counter {
-  top: 0px;
+  top: -1px;
   right: 62px;
   text-align: center;
   width: 40px;
