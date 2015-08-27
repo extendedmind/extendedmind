@@ -368,11 +368,21 @@ trait ItemDatabase extends UserDatabase {
       implicit neo4j =>
         for {
           itemNode <- getItemNode(owner, itemUUID, exactLabelMatch = false).right
-          unit <- validateExpectedModified(itemNode, expectedModified).right
-          itemNode <- Right(setLabel(itemNode, additionalLabel, additionalSubLabel, additionalSubLabelAlternatives)).right
-          itemNode <- updateNode(itemNode, item).right
+          itemNode <- updateItemNode(itemNode, item, additionalLabel, additionalSubLabel, additionalSubLabelAlternatives, expectedModified).right
         } yield itemNode
     }
+  }
+
+  protected def updateItemNode(itemNode: Node, item: AnyRef,
+    additionalLabel: Option[Label] = None,
+    additionalSubLabel: Option[Label] = None,
+    additionalSubLabelAlternatives: Option[scala.List[Label]] = None,
+    expectedModified: Option[Long] = None)(implicit neo4j: DatabaseService): Response[Node] = {
+    for {
+      unit <- validateExpectedModified(itemNode, expectedModified).right
+      itemNode <- Right(setLabel(itemNode, additionalLabel, additionalSubLabel, additionalSubLabelAlternatives)).right
+      itemNode <- updateNode(itemNode, item).right
+    } yield itemNode
   }
 
   protected def validateExpectedModified(node: Node, expectedModified: Option[Long])(implicit neo4j: DatabaseService): Response[Unit] = {

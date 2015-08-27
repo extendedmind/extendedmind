@@ -67,7 +67,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
 
   def putExistingNote(owner: Owner, noteUUID: UUID, note: Note): Response[SetResult] = {
     for {
-      noteResult <- putExistingExtendedItem(owner, noteUUID, note, ItemLabel.NOTE).right
+      noteResult <- putExistingNoteNode(owner, noteUUID, note).right
       result <- Right(getSetResult(noteResult._1, false, noteResult._2)).right
       unit <- Right(updateItemsIndex(noteResult._1, result)).right
     } yield result
@@ -190,6 +190,23 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
            else None
           ))).right
     } yield note
+  }
+
+  protected def putExistingNoteNode(owner: Owner, noteUUID: UUID, note: Note): Response[(Node, Option[Long])] = {
+    withTx {
+      implicit neo4j =>
+        for {
+          noteNode <- getItemNode(owner, noteUUID, exactLabelMatch = false).right
+          noteNode <- updateItemNode(noteNode,
+              note.copy(
+                format = if (noteNode.hasProperty("published") && noteNode.hasProperty("format") && note.format.isEmpty)
+                           Some(noteNode.getProperty("format").asInstanceOf[String])
+                         else note.format),
+              Some(ItemLabel.NOTE), None, None, note.modified).right
+          archived <- setParentNode(noteNode, owner, note.parent, skipParentHistoryTag=false).right
+          tagNodes <- setTagNodes(noteNode, owner, note).right
+        } yield (noteNode, archived)
+    }
   }
 
 
