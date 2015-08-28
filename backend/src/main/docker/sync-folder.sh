@@ -24,8 +24,6 @@ while true;
 do
   echo "Executing:" $RSYNC_PRE_COMMAND rsync -r -d $FROM_LOCATION $TO_DIRECTORY
   $RSYNC_PRE_COMMAND rsync -r -d $FROM_LOCATION $TO_DIRECTORY
-  # Wait for the syncing to complete before continuing to prevent [python] <defunct> processes
-  wait
   # Create/update "latest" symbolic links to each directory inside the synced directory
   for subfolder in $(find $TO_DIRECTORY -maxdepth 1 -mindepth 1 -type d -printf '%p\n'); do
     ln -sf $subfolder/$(ls $subfolder -Art | tail -n 1) $subfolder/latest

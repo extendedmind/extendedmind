@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+use POSIX ":sys_wait_h";
 
 $numArgs = $#ARGV + 1;
 
@@ -20,5 +21,11 @@ if ($numArgs > 2){
 $SIG{TERM} = sub {
   die "exiting sync folder...\n"
 };
+$SIG{CHLD} = \&REAPER;
+sub REAPER {
+  my $stiff;
+  while (($stiff = waitpid(-1, &WNOHANG)) > 0) {}
+  $SIG{CHLD} = \&REAPER;
+}
 print "executing command: " . "/bin/sh -c '/usr/src/extendedmind/sync-folder.sh " . $param1 . " " . $param2 . " " . $param3 . "'\n";
 system "/bin/sh -c '/usr/src/extendedmind/sync-folder.sh " . $param1 . " " . $param2 . " " . $param3 . "'";
