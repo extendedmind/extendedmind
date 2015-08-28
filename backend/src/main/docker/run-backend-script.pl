@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+use POSIX ":sys_wait_h";
 
 $numArgs = $#ARGV + 1;
 
@@ -24,5 +25,11 @@ if ($numArgs > 3){
 $SIG{TERM} = sub {
   die "exiting backend script " . $scriptType . "...\n";
 };
+$SIG{CHLD} = \&REAPER;
+sub REAPER {
+  my $stiff;
+  while (($stiff = waitpid(-1, &WNOHANG)) > 0) {}
+  $SIG{CHLD} = \&REAPER;
+}
 print "executing command: " . "/bin/sh -c '/usr/src/extendedmind/backend-" . $scriptType . ".sh " . $param1 . " " . $param2 . " " . $param3 . "'\n";
 system "/bin/sh -c '/usr/src/extendedmind/backend-" . $scriptType . ".sh " . $param1 . " " . $param2 . " " . $param3 . "'";
