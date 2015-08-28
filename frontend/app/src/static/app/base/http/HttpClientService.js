@@ -65,12 +65,24 @@
   defaultCallback, onlineCallback, afterSecondaryWithEmptyQueueCallback, queueEmptiedCallback,
   conflictCallback;
 
+  // Deletes broken request that can not be executed. Returns true if pruning works.
+  function validateRequest(request, needsData){
+    if (!request.content || !request.content.method || !request.content.url ||
+        (needsData && !request.content.data)){
+      return false;
+    }
+    return true;
+  }
+
   function executeLastRequest(lastRequest){
     // As last request is insignificant, lock needs to be released before executing to prevent
     // problems with subsequent calls failing
     HttpRequestQueueService.releaseLock();
 
-    if (!lastRequest.executing){
+    if (!validateRequest(lastRequest, true)){
+      // Request is broken, remove it
+      HttpRequestQueueService.remove(lastRequest);
+    }else if (!lastRequest.executing){
       lastRequest.executing = true;
       $.ajax({
         type: lastRequest.content.method.toUpperCase(),
@@ -124,10 +136,31 @@
     if (headRequest) {
       if (!headRequest.last) {
 
+        // First validate that request is valid to begin with
+        if (!validateRequest(headRequest)){
+          console.error('invalid request removed');
+          console.error(headRequest);
+          // Request is broken, remove it and release lock to prevent failures later on.
+          HttpRequestQueueService.remove(headRequest);
+          return;
+        }
+
         // Never execute a request that has a fake UUID in the url, it _will_ fail. We need to wait
         // for a sync to come, which should correct this problem.
         if (headRequest.content.url.indexOf('00000000-0000-') !== -1){
-          HttpRequestQueueService.releaseLock();
+          if (!headRequest.transientCount) headRequest.transientCount = 1;
+          else headRequest.transientCount += 1;
+
+          console.error('request contains a transient UUID, count: ' + headRequest.transientCount);
+          console.error(headRequest);
+          if (headRequest.transientCount > 10){
+            // We've waited over 10 times, the situation won't get any better, just delete the request
+            console.error('removing request with transient UUID');
+            HttpRequestQueueService.remove(headRequest);
+          }else{
+            HttpRequestQueueService.saveQueue();
+            HttpRequestQueueService.releaseLock();
+          }
           return;
         }
 
@@ -480,7 +513,7 @@
       },
       failure: function(/*data*/) {
         // Only log failure of analytics
-        console.log('postLastOnline failed');
+        console.error('postLastOnline failed');
       }
     });
   };
