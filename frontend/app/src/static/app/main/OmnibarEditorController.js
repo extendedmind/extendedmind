@@ -65,17 +65,25 @@
   };
 
   $scope.saveOmnibarToNote = function(){
-    var note = $scope.getNewNote({title: $scope.titlebar.text});
-    $scope.saveNote(note).then(function() {
-      $scope.initializeEditor('note', note, 'omnibar');
-    });
+    if ($scope.titlebarHasText()) {
+      var note = $scope.getNewNote({title: $scope.titlebar.text});
+      $scope.saveNote(note).then(function() {
+        $scope.initializeEditor('note', note, 'omnibar');
+      });
+    } else {
+      $scope.initializeEditor('note', $scope.getNewNote(), 'omnibar');
+    }
   };
 
   $scope.saveOmnibarToTask = function(){
-    var task = $scope.getNewTask({title: $scope.titlebar.text});
-    $scope.saveTask(task).then(function() {
-      $scope.initializeEditor('task', task, 'omnibar');
-    });
+    if ($scope.titlebarHasText()) {
+      var task = $scope.getNewTask({title: $scope.titlebar.text});
+      $scope.saveTask(task).then(function() {
+        $scope.initializeEditor('task', task, 'omnibar');
+      });
+    } else {
+      $scope.initializeEditor('task', $scope.getNewTask(), 'omnibar');
+    }
   };
 
   // TITLEBAR
