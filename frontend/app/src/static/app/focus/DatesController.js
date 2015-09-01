@@ -120,8 +120,9 @@
     else {
       startingDate = startingDateYYYYMMDD.yyyymmddToNoonDate();
     }
-
-    var currentWeek = DateService.generateAndReturnCurrentWeek(startingDate);
+    var currentWeek = DateService.generateAndReturnCurrentWeek(
+                        startingDate,
+                        UserSessionService.getUIPreference('sundayWeek'));
     $scope.datepickerWeeks = [];
     var previousWeek = DateService.generateAndReturnPreviousWeek(currentWeek);
     var nextWeek = DateService.generateAndReturnNextWeek(currentWeek);
@@ -696,7 +697,9 @@
         startDate.setHours(0, 0, 0, 0);
         endDate.setHours(0, 0, 0, 0);
 
-        DateService.setFirstDateOfTheWeek(startDate).setOffsetDate(-7, startDate);
+        DateService.setFirstDateOfTheWeek(
+                startDate,
+                UserSessionService.getUIPreference('sundayWeek')).setOffsetDate(-7, startDate);
         DateService.setDateToFirstDayOfFortNight(endDate);
 
         window.plugins.calendar.listEventInstances(calendarIds, startDate, endDate,

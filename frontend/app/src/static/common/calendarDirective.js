@@ -23,7 +23,7 @@
       getStartingDate: '&calendar',
       setDefaultDate: '=calendarSetDefaultDate',
       returnDate: '&calendarReturnDate',
-      firstDay: '@calendarFirstDay',
+      firstDay: '&calendarFirstDay',
       bound: '=calendarBound'
     },
     transclude: true,
@@ -43,7 +43,7 @@
       var startingDate = scope.getStartingDate();
 
       // Set first day of the week. Default to 1 = Monday.
-      var firstDay = scope.firstDay ? parseInt(scope.firstDay) : 1;
+      var firstDay = scope.firstDay ? parseInt(scope.firstDay()) : 1;
 
       // Listen to touch events to detect movements during date select.
       var touchMovedAmount = 0, touchMoveThreshold = 5;

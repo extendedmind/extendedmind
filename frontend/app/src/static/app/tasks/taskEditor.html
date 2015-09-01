@@ -111,7 +111,8 @@
 
             <div class="row" calendar="getCalendarStartingDate(task)"
               calendar-return-date="closeCalendarAndCall(setTaskDate, task, date)"
-              calendar-set-default-date="true" calendar-bound="false">
+              calendar-set-default-date="true" calendar-bound="false"
+              calendar-first-day="getFirstDayOfWeek()">
               <a href class="pikaday-today highlighted" ng-click="gotoCurrentMonth()">
                 <span>today</span>
               </a>

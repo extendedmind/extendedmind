@@ -39,11 +39,11 @@
   }
 
   // http://stackoverflow.com/a/4156516
-  function getFirstDateOfTheWeek(date) {
+  function getFirstDateOfTheWeek(date, sundayWeek) {
     var currentDay = date.getDay();
-    var diff = date.getDate() - currentDay + (currentDay === 0 ? -6 : 1); // adjust when day is sunday
+    var diff = date.getDate() - currentDay;
+    if (!sundayWeek) diff += currentDay === 0 ? -6 : 1; // adjust when day is sunday
     date.setDate(diff);
-
     return date;
   }
 
@@ -85,8 +85,8 @@
   }
 
   return {
-    generateAndReturnCurrentWeek: function(date) {
-      date = getFirstDateOfTheWeek(date);
+    generateAndReturnCurrentWeek: function(date, sundayWeek) {
+      date = getFirstDateOfTheWeek(date, sundayWeek);
       return weekDaysStartingFrom(date);
     },
     generateAndReturnPreviousWeek: function(week) {
@@ -147,8 +147,8 @@
     getYYYYMMDD: function(date) {
       return yyyymmdd(date);
     },
-    getFirstDateOfTheWeek: function(date) {
-      return getFirstDateOfTheWeek(date);
+    getFirstDateOfTheWeek: function(date, sundayWeek) {
+      return getFirstDateOfTheWeek(date, sundayWeek);
     },
     getFirstDateOfTheMonth: function(date) {
       return new Date(date.getFullYear(), date.getMonth(), 1);
@@ -184,8 +184,8 @@
     },
 
     // setters
-    setFirstDateOfTheWeek: function(date) {
-      getFirstDateOfTheWeek(date);
+    setFirstDateOfTheWeek: function(date, sundayWeek) {
+      getFirstDateOfTheWeek(date, sundayWeek);
       return this;
     },
     setReferenceDateToNext: function(weekday, referenceDate) {

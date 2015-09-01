@@ -26,7 +26,8 @@
     $scope.settings = {
       hideFooter: UserSessionService.getUIPreference('hideFooter'),
       disableVibration: UserSessionService.getUIPreference('disableVibration'),
-      hour12: UserSessionService.getUIPreference('hour12')
+      hour12: UserSessionService.getUIPreference('hour12'),
+      sundayWeek: UserSessionService.getUIPreference('sundayWeek')
     };
 
     var keepRunningPreferences = UserSessionService.getUIPreference('keepRunning');

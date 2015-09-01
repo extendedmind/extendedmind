@@ -120,6 +120,16 @@
       </div>
     </div>
 
+    <div class="group-mixed">
+      <div class="group-mixed--left">
+        <input type="checkbox" ng-model="settings.sundayWeek" ng-true-value="true"
+          icon-checkbox="'sundayWeek'" ng-click="settingsCheckboxClicked('sundayWeek')"/>
+      </div>
+      <div class="group-mixed--middle">
+        <span class="text-link">week starts on sunday</span>
+      </div>
+    </div>
+
     <p ng-if="agendaCalendarSettingVisible" class="row">
       <span class="text-heading-primary">this device</span><br/>
     </p>

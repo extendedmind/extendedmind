@@ -59,6 +59,14 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     return UserSessionService.getUserType() === 0 || UserSessionService.getUserType() === 1;
   };
 
+  $scope.getFirstDayOfWeek = function() {
+    if (UserSessionService.getUIPreference('sundayWeek')){
+      return 0;
+    }else{
+      return 1;
+    }
+  };
+
   // MAP OF ALL FEATURES
 
   function getFeatureStatus(featurePreferences, subfeature){
