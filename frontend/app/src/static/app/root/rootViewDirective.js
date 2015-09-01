@@ -61,6 +61,10 @@
         if (useStickyInputs) return 'sticky';
       };
 
+      $scope.is12HourTime = function() {
+        return UserSessionService.getUIPreference('hour12');
+      };
+
       // Online/offline status, optimistic default
       $scope.online = true;
       var onlineStatusCallback = function(online) {

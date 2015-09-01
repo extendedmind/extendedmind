@@ -160,13 +160,14 @@
 
               <!-- HOURS -->
               <div class="reminder--time-wrapper">
-                <a href class="reminder--up" swiper-click="loopTime(reminder.hours, 'up')">
+                <a href class="reminder--up" swiper-click="loopTime(reminder.hours, 'up', 'hours')">
                   <span class="icon-arrow-up"></span>
                 </a>
                 <input type="number" pattern="\d*" class="reminder--time"
                   ng-class="isPastDate(reminder.date, 'hour') && 'past-date'" ng-model="reminder.hours.value"
-                  ng-keydown="reminderHourKeyDown($event)" reminder-picker="{{reminder.hours.limit}}" />
-                <a href class="reminder--down" ng-click="loopTime(reminder.hours, 'down')">
+                  ng-keydown="reminderHourKeyDown($event)"
+                  reminder-picker="getReminderPickerData(reminder, 'hour')"/>
+                <a href class="reminder--down" ng-click="loopTime(reminder.hours, 'down', 'hours')">
                   <span class="icon-arrow-down"></span>
                 </a>
               </div>
@@ -175,25 +176,31 @@
 
               <!-- MINUTES -->
               <div class="reminder--time-wrapper">
-                <a href class="reminder--up" swiper-click="loopTime(reminder.minutes, 'up')">
+                <a href class="reminder--up" swiper-click="loopTime(reminder.minutes, 'up', 'minutes')">
                   <span class="icon-arrow-up"></span>
                 </a>
                 <input type="number" pattern="\d*" class="reminder--time"
                   ng-class="isPastDate(reminder.date, 'minute') && 'past-date'" ng-model="reminder.minutes.value"
-                  ng-keydown="reminderHourKeyDown($event)" reminder-picker="{{reminder.minutes.limit}}" />
-                <a href class="reminder--down" ng-click="loopTime(reminder.minutes, 'down')">
+                  ng-keydown="reminderHourKeyDown($event)"
+                  reminder-picker="getReminderPickerData(reminder, 'minute')" />
+                <a href class="reminder--down" ng-click="loopTime(reminder.minutes, 'down', 'minutes')">
                   <span class="icon-arrow-down"></span>
                 </a>
               </div>
+
+              <a href ng-if="reminder.hours.hour12" class="link-inline reminder--time-period-indicator"
+                ng-click="changeReminderTimePeriod()">
+                <span class="text-details" ng-bind="reminder.hours.beforeMidday ? 'am' : 'pm'"></span>
+              </a>
 
               <!-- WEEKDAY & DATE -->
               <div class="reminder--date-wrapper">
                 <a href class="reminder--up" swiper-click="moveDate(reminder.date, 'day', 'up')">
                   <span class="icon-arrow-up"></span>
                 </a>
-                  <span class="reminder--date" ng-class="isPastDate(reminder.date, 'day') && 'past-date'"
-                    ng-bind="reminder.date | date:'EEE d' | lowercase">
-                  </span>
+                <span class="reminder--date" ng-class="isPastDate(reminder.date, 'day') && 'past-date'"
+                  ng-bind="reminder.date | date:'EEE d' | lowercase">
+                </span>
                 <a href class="reminder--down" ng-click="moveDate(reminder.date, 'day', 'down')">
                   <span class="icon-arrow-down"></span>
                 </a>
@@ -204,9 +211,9 @@
                 <a href class="reminder--up" swiper-click="moveDate(reminder.date, 'month', 'up')">
                   <span class="icon-arrow-up"></span>
                 </a>
-                  <span class="reminder--date" ng-class="isPastDate(reminder.date, 'month') && 'past-date'"
-                    ng-bind="reminder.date | date:'MMM' | lowercase">
-                  </span>
+                <span class="reminder--date" ng-class="isPastDate(reminder.date, 'month') && 'past-date'"
+                  ng-bind="reminder.date | date:'MMM' | lowercase">
+                </span>
                 <a href class="reminder--down" ng-click="moveDate(reminder.date, 'month', 'down')">
                   <span class="icon-arrow-down"></span>
                 </a>
@@ -217,9 +224,9 @@
                 <a href class="reminder--up" swiper-click="moveDate(reminder.date, 'year', 'up')">
                   <span class="icon-arrow-up"></span>
                 </a>
-                  <span class="reminder--date" ng-class="isPastDate(reminder.date, 'year') && 'past-date'"
-                    ng-bind="reminder.date | date:'yy'">
-                  </span>
+                <span class="reminder--date" ng-class="isPastDate(reminder.date, 'year') && 'past-date'"
+                  ng-bind="reminder.date | date:'yy'">
+                </span>
                 <a href class="reminder--down" ng-click="moveDate(reminder.date, 'year', 'down')">
                   <span class="icon-arrow-down"></span>
                 </a>
@@ -396,7 +403,7 @@
           <div ng-if="showEditorProperty('created', task)" class="group-mixed text-field">
             <div class="group-mixed--middle">
               <span class="text-field--title">
-                {{::task.trans.created | date:'EEE d MMMM y hh:mm' | lowercase}}
+                {{::formatToLocaleDateWithTime(task.trans.created)}}
               </span>
             </div>
             <div class="group-mixed--right">
@@ -405,9 +412,7 @@
           </div>
           <div ng-if="showEditorProperty('modified', task)" class="group-mixed text-field">
             <div class="group-mixed--middle link-search-result">
-              <span class="text-field--title">
-                {{task.trans.modified | date:'EEE d MMMM y hh:mm' | lowercase}}
-              </span>
+              <span class="text-field--title" ng-bind="formatToLocaleDateWithTime(task.trans.modified)"></span>
             </div>
             <div class="group-mixed--right">
               <span class="text-field--label">modified</span>
@@ -416,7 +421,7 @@
           <div ng-if="showEditorProperty('deleted', task)" class="group-mixed text-field">
             <div class="group-mixed--middle link-search-result">
               <span class="text-field--title">
-                {{::task.trans.deleted | date:'EEE d MMMM y hh:mm' | lowercase}}
+                {{::formatToLocaleDateWithTime(task.trans.deleted)}}
               </span>
             </div>
             <div class="group-mixed--right">
@@ -426,7 +431,7 @@
           <div ng-if="showEditorProperty('archived', task)" class="group-mixed text-field">
             <div class="group-mixed--middle link-search-result">
               <span class="text-field--title">
-                {{::task.trans.archived | date:'EEE d MMMM y hh:mm' | lowercase}}
+                {{::formatToLocaleDateWithTime(task.trans.archived)}}
               </span>
             </div>
             <div class="group-mixed--right">

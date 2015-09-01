@@ -816,6 +816,16 @@ TODO: Example needed
   width: 81px;      // [1]
 }
 
+// 1. Make some more room for text inside .group-mixed--left.
+// 1. With twelwe-hour time, align text to right.
+.twelve-hour-time .agenda .group-mixed--left {
+  min-width: 80px;  // [1]
+  width: 80px;      // [1]
+  & > .text-agenda--time {
+    text-align: right;
+  }
+}
+
 // 1. Nudge .text-agenda--details to align it horizontally with the second row of .text-agenda--time.
 .android,
 .ios {
@@ -851,10 +861,10 @@ TODO: Example needed
 .reminder--date-wrapper {
   display: inline-block;
   text-align: center; // [1]
-  &:nth-child(4) {
+  &:nth-last-child(3) {
     min-width: 64px;
   }
-  &:nth-child(5) {
+  &:nth-last-child(2) {
     min-width: 36px;
   }
   &> * {
@@ -864,7 +874,7 @@ TODO: Example needed
 
 // 1. Set minimum possible width for the input - including the caret!
 // 2. Align .reminder--up and .reminder--down horizontally with .remider--time and add padding
-// 3. Pad rigth .reminder--time-wrapper by the width of self.
+// 3. Pad right .reminder--time-wrapper by the width of self.
 // 4. Clear.
 .reminder--time-wrapper {
   width: @width-reminder-time;  // [1]
@@ -887,6 +897,16 @@ TODO: Example needed
       padding-right: 30px;                // [2]
       margin-left: -7px;                  // [2]
     }
+  }
+}
+
+// 1. With twelwe-hour time, center input so that it looks somewhat ok with one and two digits.
+.twelve-hour-time .reminder--time-wrapper {
+  .reminder--time {
+    text-align: center; // [1]
+  }
+  &~ .reminder--time-wrapper {
+    margin-right: 0;
   }
 }
 
@@ -918,4 +938,20 @@ TODO: Example needed
   vertical-align: top;    // [1]
   padding-top: 44px;      // [1]
   padding-bottom: 44px;   // [1]
+}
+
+// 1. Align vertically and increase clicking area.
+.reminder--time-period-indicator {
+  display: inline-block;  // [1]
+  vertical-align: top;    // [1]
+  margin-top: 33px;       // [1]
+  margin-bottom: 33px;    // [1]
+  padding-top: 11px;      // [1]
+  padding-bottom: 11px;   // [1]
+  margin-right: @width-reminder-time / 2;   // [1]
+  padding-right: @width-reminder-time / 2;  // [1]
+  & > span {
+    width: @width-reminder-time;  // [1]
+    display: inline-block;        // [1]
+  }
 }

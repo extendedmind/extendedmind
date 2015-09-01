@@ -110,6 +110,16 @@
       </div>
     </div>
 
+    <div class="group-mixed">
+      <div class="group-mixed--left">
+        <input type="checkbox" ng-model="settings.hour12" ng-true-value="true"
+          icon-checkbox="'hour12'" ng-click="settingsCheckboxClicked('hour12')"/>
+      </div>
+      <div class="group-mixed--middle">
+        <span class="text-link">use a 12-hour time</span>
+      </div>
+    </div>
+
     <p ng-if="agendaCalendarSettingVisible" class="row">
       <span class="text-heading-primary">this device</span><br/>
     </p>

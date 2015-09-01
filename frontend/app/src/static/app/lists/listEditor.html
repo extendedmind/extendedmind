@@ -270,7 +270,7 @@
           <div ng-if="showEditorProperty('created', list)" class="group-mixed text-field">
             <div class="group-mixed--middle">
               <span class="text-field--title">
-                {{::list.trans.created | date:'EEE d MMMM y hh:mm' | lowercase}}
+                {{::formatToLocaleDateWithTime(list.trans.created)}}
               </span>
             </div>
             <div class="group-mixed--right">
@@ -279,9 +279,7 @@
           </div>
           <div ng-if="showEditorProperty('modified', list)" class="group-mixed text-field">
             <div class="group-mixed--middle link-search-result">
-              <span class="text-field--title">
-                {{list.trans.modified | date:'EEE d MMMM y hh:mm' | lowercase}}
-              </span>
+              <span class="text-field--title" ng-bind="formatToLocaleDateWithTime(list.trans.modified)"></span>
             </div>
             <div class="group-mixed--right">
               <span class="text-field--label">modified</span>
@@ -290,7 +288,7 @@
           <div ng-if="showEditorProperty('deleted', list)" class="group-mixed text-field">
             <div class="group-mixed--middle link-search-result">
               <span class="text-field--title">
-                {{::list.trans.deleted | date:'EEE d MMMM y hh:mm' | lowercase}}
+                {{::formatToLocaleDateWithTime(list.trans.deleted)}}
               </span>
             </div>
             <div class="group-mixed--right">
@@ -300,7 +298,7 @@
           <div ng-if="showEditorProperty('archived', list)" class="group-mixed text-field">
             <div class="group-mixed--middle link-search-result">
               <span class="text-field--title">
-                {{::list.trans.archived | date:'EEE d MMMM y hh:mm' | lowercase}}
+                {{::formatToLocaleDateWithTime(list.trans.archived)}}
               </span>
             </div>
             <div class="group-mixed--right">

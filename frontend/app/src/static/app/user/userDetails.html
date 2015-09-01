@@ -53,7 +53,7 @@
     <div class="group-mixed text-field">
       <div class="group-mixed--middle">
         <span class="text-field--title">
-          {{::user.created | date:'EEE d MMMM y hh:mm' | lowercase}}
+          {{::formatToLocaleDateWithTime(user.created)}}
         </span>
       </div>
       <div class="group-mixed--right">

@@ -216,6 +216,31 @@
       referenceDate.setMonth(referenceDate.getMonth() + 1);
       referenceDate.setDate(1);
       return this;
+    },
+    /*
+    * http://stackoverflow.com/a/4898840
+    */
+    toHour12: function(hours) {
+      if (hours >= 12) {
+        hours -= 12;
+      }
+      if (hours === 0) {
+        hours = 12;
+      }
+      return hours;
+    },
+    toHour24: function(hours, afterMidday) {
+      if (hours < 12 && afterMidday) {
+        hours += 12;
+      }
+      return hours;
+    },
+    padTimeValue: function(timeValue) {
+      timeValue = timeValue.toString();
+      return timeValue[1] ? timeValue : '0' + timeValue[0];
+    },
+    isBeforeMidday: function(hours) {
+      return hours < 12;
     }
   };
 }

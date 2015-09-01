@@ -605,9 +605,9 @@
     return agendaCalendarsEnabled;
   };
 
-  $scope.isEventInstancesLoaded = function() {
+  $scope.isEventInstancesLoaded = function() {
     return eventInstancesLoaded;
-  }
+  };
 
   var agendaVisibilityChangedCallbacks = {};
   $scope.registerAgendaVisibilityChangedCallback = function(callback, id) {
@@ -808,6 +808,20 @@
   function generateAgendaEvent(yyyymmddEventInstances, yyyymmdd, startTimeStamp, endTimeStamp, eventInstance,
                                isAllDayEventInRangeFn) {
 
+    function formatDate(date) {
+      var formattedDate;
+      if (UserSessionService.getUIPreference('hour12')) {
+        var d = new Date(date);
+        var hours = d.getHours();
+        var hours12 = DateService.toHour12(hours);
+        formattedDate = hours12 + ':' + DateService.padTimeValue(d.getMinutes());
+        formattedDate += DateService.isBeforeMidday(hours) ? 'a' : 'p';
+      } else {
+        formattedDate = $scope.formatToLocaleTime(date);
+      }
+      return formattedDate;
+    }
+
     var agendaEvent;
 
     if (eventInstance.allDay) {
@@ -832,9 +846,9 @@
       // Start of the event is between start time and end time.
       // End of the event is after the end time.
       agendaEvent = {
-        begin: $filter('date')(eventInstance.begin, 'HH:mm'),
+        begin: formatDate(eventInstance.begin),
         end: 'starts'
-        // 9:00
+        // 09:00 / 9:00a
         // starts
       };
     }
@@ -846,21 +860,21 @@
       // End of the event is between start time and end time.
       agendaEvent = {
         begin: 'ends',
-        end: $filter('date')(eventInstance.end, 'HH:mm'),
+        end: formatDate(eventInstance.end),
         past: eventInstance.end < Date.now()
         // ends
-        // 9:00
+        // 09:00 / 9:00a
       };
     }
 
     else if (eventInstance.begin < endTimeStamp && eventInstance.end > startTimeStamp) {
       // Event is between start and end time.
       agendaEvent = {
-        begin: $filter('date')(eventInstance.begin, 'HH:mm'),
-        end: $filter('date')(eventInstance.end, 'HH:mm'),
+        begin: formatDate(eventInstance.begin),
+        end: formatDate(eventInstance.end),
         past: eventInstance.end < Date.now()
-        // 9:00
-        // 12:45
+        // 09:00 / 9:00a
+        // 12:45 / 12:45p
       };
     }
 

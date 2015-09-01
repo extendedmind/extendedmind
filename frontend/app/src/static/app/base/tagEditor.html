@@ -100,7 +100,7 @@
         <div ng-if="showEditorProperty('created', tag)" class="group-mixed text-field">
           <div class="group-mixed--middle">
             <span class="text-field--title">
-              {{::tag.trans.created | date:'EEE d MMMM y hh:mm' | lowercase}}
+              {{::formatToLocaleDateWithTime(tag.trans.created)}}
             </span>
           </div>
           <div class="group-mixed--right">
@@ -109,9 +109,7 @@
         </div>
         <div ng-if="showEditorProperty('modified', tag)" class="group-mixed text-field">
           <div class="group-mixed--middle link-search-result">
-            <span class="text-field--title">
-              {{tag.trans.modified | date:'EEE d MMMM y hh:mm' | lowercase}}
-            </span>
+            <span class="text-field--title" ng-bind="formatToLocaleDateWithTime(tag.trans.modified)"></span>
           </div>
           <div class="group-mixed--right">
             <span class="text-field--label">modified</span>
@@ -120,7 +118,7 @@
         <div ng-if="showEditorProperty('deleted', tag)" class="group-mixed text-field">
           <div class="group-mixed--middle link-search-result">
             <span class="text-field--title">
-              {{::tag.trans.deleted | date:'EEE d MMMM y hh:mm' | lowercase}}
+              {{::formatToLocaleDateWithTime(tag.trans.deleted)}}
             </span>
           </div>
           <div class="group-mixed--right">

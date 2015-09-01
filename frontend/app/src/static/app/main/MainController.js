@@ -21,9 +21,9 @@
 // the arrays because everything is needed anyway to get home and inbox to work,
 // which are part of every main slide collection.
 function MainController($element, $controller, $filter, $q, $rootScope, $scope, $timeout, $window,
-                        AnalyticsService, CalendarService, DrawerService, ItemsService, ReminderService,
-                        SwiperService, TasksService, UISessionService, UserService, UserSessionService,
-                        packaging) {
+                        AnalyticsService, CalendarService, DateService, DrawerService, ItemsService,
+                        ReminderService, SwiperService, TasksService, UISessionService, UserService,
+                        UserSessionService, packaging) {
 
 
   // SHARED ACCESS
@@ -1234,6 +1234,40 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     $scope.showModal(undefined, verifyEmailModalParams);
   };
 
+  $scope.formatToLocaleTime = function(date) {
+    if (UserSessionService.getUIPreference('hour12')) {
+      // e.g. 9:35 am
+      return $filter('date')(date, 'h:mm a');
+    } else {
+      // e.g. 09:35
+      return $filter('date')(date, 'HH:mm');
+    }
+  };
+
+  $scope.formatToLocaleTimeWithDate = function(date) {
+    var formattedDate;
+    if (UserSessionService.getUIPreference('hour12')) {
+      // e.g. tue 1 september 9:35 am
+      formattedDate = $filter('date')(date, 'h:mm a EEE d MMM');
+    } else {
+      // e.g. tue 1 september 09:35
+      formattedDate = $filter('date')(date, 'HH:mm EEE d MMM');
+    }
+    return formattedDate.toLowerCase();
+  };
+
+  $scope.formatToLocaleDateWithTime = function(date) {
+    var formattedDate;
+    if (UserSessionService.getUIPreference('hour12')) {
+      // e.g. tue 1 september 9:35 am
+      formattedDate = $filter('date')(date, 'EEE d MMMM y h:mm a');
+    } else {
+      // e.g. tue 1 september 09:35
+      formattedDate = $filter('date')(date, 'EEE d MMMM y HH:mm');
+    }
+    return formattedDate.toLowerCase();
+  };
+
   // INJECT OTHER CONTENT CONTROLLERS HERE
   $controller('SynchronizeController',{$scope: $scope});
   $controller('TasksController',{$scope: $scope});
@@ -1246,7 +1280,7 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
 
 MainController['$inject'] = [
 '$element', '$controller', '$filter', '$q', '$rootScope', '$scope', '$timeout', '$window',
-'AnalyticsService', 'CalendarService', 'DrawerService', 'ItemsService', 'ReminderService', 'SwiperService',
-'TasksService', 'UISessionService', 'UserService', 'UserSessionService', 'packaging'
+'AnalyticsService', 'CalendarService', 'DateService', 'DrawerService', 'ItemsService', 'ReminderService',
+'SwiperService', 'TasksService', 'UISessionService', 'UserService', 'UserSessionService', 'packaging'
 ];
 angular.module('em.main').controller('MainController', MainController);

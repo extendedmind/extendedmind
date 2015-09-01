@@ -18,6 +18,9 @@
   return {
     restrict: 'A',
     require: 'ngModel', // get a hold of NgModelController
+    scope: {
+      getOptions: '&reminderPicker'
+    },
     link: function(scope, element, attrs, ngModel) {
       if (ngModel.$formatters && ngModel.$formatters.length) {
         // Clear formatters. Otherwise Angular will throw 'numfmt' exception.
@@ -25,7 +28,9 @@
         ngModel.$formatters = [];
       }
 
-      var maxValue = parseInt(attrs.reminderPicker);
+      var options = scope.getOptions();
+      var maxValue = options.limit;
+      var minValue = options.bottomLimit;
 
       function isNull(viewValue) {
         if (viewValue === null) {
@@ -50,7 +55,12 @@
       function isTooLong(viewValue) {
         var currentValue;
 
-        if (viewValue.length > 2) {
+        if (!options.padOneDigit && viewValue < 10 && viewValue.length > 1) {
+          currentValue = ngModel.$modelValue;
+          ngModel.$setViewValue(currentValue);
+          ngModel.$render();
+          return currentValue;
+        } else if (viewValue.length > 2) {
           currentValue = ngModel.$modelValue;
           if (currentValue !== undefined && currentValue !== null) {
             if (viewValue.charAt(0) === '0') {
@@ -69,6 +79,19 @@
         var viewValueInt = parseInt(viewValue);
 
         if (viewValueInt > maxValue) {
+          currentValue = ngModel.$modelValue;
+          ngModel.$setViewValue(currentValue);
+          ngModel.$render();
+          return currentValue;
+        }
+        return viewValue;
+      }
+
+      function isTooSmall(viewValue) {
+        var currentValue;
+        var viewValueInt = parseInt(viewValue);
+
+        if (viewValueInt < minValue) {
           currentValue = ngModel.$modelValue;
           ngModel.$setViewValue(currentValue);
           ngModel.$render();
@@ -99,21 +122,24 @@
         }
       }.debounce(3000);
 
-      ngModel.$parsers.unshift(isNull, isInteger, isTooLong, isTooBig, hasOneDigit);
-
       function padValidInput() {
         if (ngModel.$valid) {
           var value = element[0].value;
           if (value === '') {
-            element[0].value = '00';
-          }
-          else if (value && value.length === 1) {
+            element[0].value = options.padOneDigit ? '00' : 0;
+          } else if (value && value.length === 1 && options.padOneDigit) {
             element[0].value = '0' + value.toString();
           }
         }
       }
 
+      if (options.padOneDigit) {
+        ngModel.$parsers.unshift(isNull, isInteger, isTooLong, isTooBig, hasOneDigit);
+      } else {
+        ngModel.$parsers.unshift(isNull, isInteger, isTooLong, isTooBig, isTooSmall);
+      }
       element[0].addEventListener('blur', padValidInput);
+
     }
   };
 }

@@ -17,7 +17,7 @@
 
  function TaskEditorController($filter, $q, $rootScope, $scope, $timeout, ArrayService, DateService,
                                ReminderService, SwiperService, TasksService, UISessionService,
-                               packaging) {
+                               UserSessionService, packaging) {
 
   // INITIALIZING
 
@@ -276,7 +276,7 @@
   };
 
   $scope.openReminderPicker = function(task, reminder) {
-    var reminderDate, hours, minutes, existing;
+    var reminderDate, hoursData, hours, minutes, existing;
 
     if (reminder !== undefined) {
       // Get date from the existing reminder in this device.
@@ -300,21 +300,34 @@
       }
     }
 
-    // TODO:
-    //  hours = DateService.padTimeValue(hours)
-    //  minutes = DateService.padTimeValue(minutes)
-    var reminderHours = reminderDate.getHours().toString();
-    var reminderMinutes = reminderDate.getMinutes().toString();
-    hours = reminderHours[1] ? reminderHours : '0' + reminderHours[0];
-    minutes = reminderMinutes[1] ? reminderMinutes : '0' + reminderMinutes[0];
+    var reminderHours = reminderDate.getHours();
+    var reminderMinutes = reminderDate.getMinutes();
+
+    if (UserSessionService.getUIPreference('hour12')) {
+      hours = DateService.toHour12(reminderHours);
+      hoursData = {
+        bottomLimit: 1,
+        limit: 12,
+        value: hours,
+        beforeMidday: reminderHours < 12,
+        hour12: true
+      };
+    } else {
+      hoursData = {
+        bottomLimit: 0,
+        limit: 23,
+        value: DateService.padTimeValue(reminderHours),
+        padOneDigit: true
+      };
+    }
+
+    minutes = DateService.padTimeValue(reminderMinutes);
 
     $scope.reminder = {
       date: reminderDate,
-      hours: {
-        limit: 23,
-        value: hours
-      },
+      hours: hoursData,
       minutes: {
+        bottomLimit: 0,
         limit: 59,
         value: minutes
       },
@@ -323,7 +336,10 @@
 
     var initialDate = {
       date: new Date($scope.reminder.date),
-      hours: hours,
+      hours: {
+        value: hoursData.value,
+        beforeMidday: hoursData.beforeMidday
+      },
       minutes: minutes
     };
 
@@ -338,15 +354,36 @@
   };
 
   function isReminderEdited(initialData, currentData, existing) {
+    function isHoursEdited(initialData, currentData) {
+      if (initialData.hours.value != currentData.hours.value ||
+          initialData.hours.beforeMidday !== currentData.hours.beforeMidday)
+      {
+        return true;
+      }
+    }
     if (existing && initialData.date.getTime() !== currentData.date.getTime() ||
-        initialData.hours != currentData.hours.value ||
-        initialData.minutes != currentData.minutes.value)
+        isHoursEdited(initialData, currentData) || initialData.minutes != currentData.minutes.value)
     {
       return true;
     } else if (!existing) {
       return true;
     }
   }
+
+  $scope.getReminderPickerData = function(reminder, timeUnit) {
+    if (timeUnit === 'hour') {
+      return {
+        limit: reminder.hours.limit,
+        bottomLimit: reminder.hours.bottomLimit,
+        padOneDigit: reminder.hours.padOneDigit
+      };
+    } else if (timeUnit === 'minute') {
+      return {
+        limit: reminder.minutes.limit,
+        padOneDigit: true
+      };
+    }
+  };
 
   function compareWithNotificationTime(a, b) {
     return a.notification - b.notification;
@@ -391,15 +428,15 @@
     if (task.trans.due) {
       var taskDueDate = DateService.getDateWithoutTime(new Date(task.trans.due));
       if (reminderDate === taskDueDate) {
-        time = $filter('date')(reminder.notification, 'HH:mm');
+        time = $scope.formatToLocaleTime(reminder.notification);
       } else {
-        time = $filter('date')(reminder.notification, 'HH:mm EEE d MMM').toLowerCase();
+        time = $scope.formatToLocaleTimeWithDate(reminder.notification);
       }
     } else {
       if (reminderDate === todayDate) {
-        time = $filter('date')(reminder.notification, 'HH:mm');
+        time = $scope.formatToLocaleTime(reminder.notification);
       } else {
-        time = $filter('date')(reminder.notification, 'HH:mm EEE d MMM').toLowerCase();
+        time = $scope.formatToLocaleTimeWithDate(reminder.notification);
       }
     }
     return time;
@@ -433,7 +470,14 @@
 
   function closeReminderPickerAndSave(reminder, task) {
     if ($scope.reminder.hours.value !== undefined && $scope.reminder.minutes.value !== undefined) {
-      $scope.reminder.date.setHours($scope.reminder.hours.value, $scope.reminder.minutes.value);
+      var hours;
+      if ($scope.reminder.hours.hour12) {
+        // Convert silly 12-hour value into a proper 24-hour value.
+        hours = DateService.toHour24($scope.reminder.hours.value, !$scope.reminder.hours.beforeMidday);
+      } else {
+        hours = $scope.reminder.hours.value;
+      }
+      $scope.reminder.date.setHours(hours, $scope.reminder.minutes.value);
       if ($scope.reminder.date > new Date().setSeconds(0, 0)) {
         // Make sure date is set to future.
         reminderPickerOpen = false;
@@ -484,25 +528,32 @@
       $scope.unregisterHasSubEditorEditedCallback();
   };
 
-  $scope.loopTime = function(time, direction) {
+  $scope.loopTime = function(time, direction, timeUnit) {
     if (time.value === undefined) {
       time.value = 0;
     } else {
       if (direction === 'up') {
         if (parseInt(time.value) === time.limit) {  // Unchanged time.value is typeof string.
-          time.value = 0;
+          if (timeUnit === 'hours' && time.hour12) {
+            time.value = 1;
+          } else {
+            time.value = 0;
+          }
         } else {
           time.value++;
+          if (timeUnit === 'hours' && time.hour12 && time.value === time.limit) $scope.changeReminderTimePeriod();
         }
       } else if (direction === 'down') {
-        if (time.value === null || time.value === 0 || (time.value && time.value.toString() === '00')) {
+        if (time.value === null || parseInt(time.value) === time.bottomLimit) {
           time.value = time.limit;
         } else {
           time.value--;
+          if (timeUnit === 'hours' && time.hour12 && time.value === time.limit - 1) $scope.changeReminderTimePeriod();
         }
       }
     }
-    if (time.value < 10) {
+
+    if (time.value < 10 && (timeUnit === 'minutes' || (timeUnit === 'hours' && !time.hour12))) {
       // Pad
       time.value = 0 + time.value.toString();
     }
@@ -520,6 +571,10 @@
       date.setFullYear(date.getFullYear() + (direction === 'up' ? 1 : -1));
       break;
     }
+  };
+
+  $scope.changeReminderTimePeriod = function() {
+    $scope.reminder.hours.beforeMidday = !$scope.reminder.hours.beforeMidday;
   };
 
   $scope.reminderHourKeyDown = function(e) {
@@ -630,6 +685,7 @@
 }
 
 TaskEditorController['$inject'] = ['$filter', '$q', '$rootScope', '$scope', '$timeout', 'ArrayService',
-'DateService', 'ReminderService', 'SwiperService', 'TasksService', 'UISessionService', 'packaging'
+'DateService', 'ReminderService', 'SwiperService', 'TasksService', 'UISessionService', 'UserSessionService',
+'packaging'
 ];
 angular.module('em.main').controller('TaskEditorController', TaskEditorController);
