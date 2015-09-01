@@ -192,7 +192,9 @@
           easing: true
         }).start();
 
-        shrinkPromise.done(function() {
+        // NOTE: Using .then() instead of done() here
+        // See https://docs.angularjs.org/api/ngAnimate/service/$animateCss#runner-done-vs-runner-then-
+        shrinkPromise.then(function() {
           scope.footerExpanded = false;   // Remove expandable DOM.
           scope.footerExpandOpen = false; // Footer is now closed.
           scope.footerExpandedToMaxHeight = false;  // Reset variable.
