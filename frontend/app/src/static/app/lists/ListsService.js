@@ -554,8 +554,8 @@
                                       lists[ownerUUID].activeLists,
                                       lists[ownerUUID].deletedLists,
                                       getOtherArrays(ownerUUID));
+        return listInfo.list.hist ? listInfo.list.hist : {};
       }
-
     },
     deleteList: function(list) {
       var ownerUUID = list.trans.owner;

@@ -223,6 +223,7 @@
                                         items[ownerUUID].activeItems,
                                         items[ownerUUID].deletedItems);
         }
+        return itemInfo.item.hist ? itemInfo.item.hist : {};
       }
     },
     itemToTask: function(item) {

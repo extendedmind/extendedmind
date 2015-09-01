@@ -392,6 +392,7 @@
                                       notes[ownerUUID].activeNotes,
                                       notes[ownerUUID].deletedNotes,
                                       getOtherArrays(ownerUUID));
+        return noteInfo.note.hist ? noteInfo.note.hist : {};
       }
     },
     isNoteEdited: function(note) {

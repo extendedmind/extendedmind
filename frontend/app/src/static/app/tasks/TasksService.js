@@ -617,6 +617,7 @@
                                       tasks[ownerUUID].activeTasks,
                                       tasks[ownerUUID].deletedTasks,
                                       getOtherArrays(ownerUUID));
+        return taskInfo.task.hist ? taskInfo.task.hist : {};
       }
     },
     isTaskEdited: function(task) {

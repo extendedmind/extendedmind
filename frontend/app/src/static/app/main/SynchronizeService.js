@@ -78,6 +78,19 @@
     }
   }
 
+  function removeItemUUIDFromArray(ownerUUID, itemUUID){
+    var hist = ItemsService.removeItem(itemUUID, ownerUUID);
+    if (hist) return hist;
+    hist = ItemsService.removeItem(itemUUID, ownerUUID);
+    if (hist) return hist;
+    hist = TasksService.removeTask(itemUUID, ownerUUID);
+    if (hist) return hist;
+    hist = NotesService.removeNote(itemUUID, ownerUUID);
+    if (hist) return hist;
+    hist = ListsService.removeList(itemUUID, ownerUUID);
+    if (hist) return hist;
+  }
+
   function removeItemsFromWrongArrays(ownerUUID, items, itemType){
     var locallyDifferentType;
     for (var i = 0, len = items.length; i < len; i++){
@@ -385,6 +398,7 @@
       if (queue && queue.length){
         var updatedPutUUIDs = [];
         var mismatchTypeConflictInfos = [];
+        var danglingItemsToDestroy = [];
         var i, len;
 
         // First make sure that there aren't any items in the response that were PUT to the backend
@@ -515,6 +529,18 @@
               }
             }else if (queue[i].content.method === 'post'){
               if (queue[i].content.url.endsWith('/complete') && conflictingItem.completed){
+                // Check for repeating sync
+                if (conflictingItem.repeating && queue[i].params && queue[i].params.generatedFakeUUID){
+                  // The task has been completed online but also a new task has been generated offline,
+                  // we need to remove the uuid and everything about from everywhere
+                  if (danglingItemsToDestroy.indexOf(queue[i].params.generatedFakeUUID) === -1){
+                    danglingItemsToDestroy.push({uuid: queue[i].params.generatedFakeUUID,
+                                                 owner: request.params.owner});
+                  }
+                  updateHistProperties(conflictingItem.uuid, queue[i].params.type,
+                     undefined, request.params.owner);
+                }
+
                 // Need to change completed value to make sure mod is deleted on update
                 updateModProperties(conflictingItem.uuid,
                                     queue[i].params.type,
@@ -694,6 +720,23 @@
           }
         }
 
+        if (danglingItemsToDestroy.length){
+          for (i = 0; i < danglingItemsToDestroy.length; i++){
+            var hist = removeItemUUIDFromArray(danglingItemsToDestroy[i].owner, danglingItemsToDestroy[i].uuid);
+            if (hist.generatedUUID){
+              // The dangling item has generated another dangling item, it needs to be destroyed as well
+              danglingItemsToDestroy.push({uuid: hist.generatedUUID, owner: danglingItemsToDestroy[i].owner});
+            }
+          }
+          // Remove the items from the queue as well
+          for (i = queue.length-1; i >= 0; i--){
+            if (queue[i].params &&
+                danglingItemsToDestroy.findFirstIndexByKeyValue('uuid',
+                                                                queue[i].params.fakeUUID) !== undefined){
+              queue.splice(i, 1);
+            }
+          }
+        }
       }
       processSynchronizeUpdateResult(ownerUUID, response);
     }
@@ -752,7 +795,7 @@
           // Convert to note
           properties = {modified: response.modified};
           updateModProperties(request.params.uuid, 'note', properties, request.params.owner);
-        } else if ( request.content.url.endsWith('/list')){
+        } else if (request.content.url.endsWith('/list')){
           // Convert to list
           properties = {modified: response.modified};
           updateModProperties(request.params.uuid, 'list', properties, request.params.owner);
@@ -771,7 +814,7 @@
           // Convert to task
           properties = {modified: response.modified};
           updateModProperties(request.params.uuid, 'task', properties, request.params.owner);
-        } else if ( request.content.url.endsWith('/list')){
+        } else if (request.content.url.endsWith('/list')){
           // Convert to list
           properties = {modified: response.modified};
           updateModProperties(request.params.uuid, 'list', properties, request.params.owner);
@@ -786,7 +829,7 @@
           // Convert to note
           properties = {modified: response.modified};
           updateModProperties(request.params.uuid, 'note', properties, request.params.owner);
-        } else if ( request.content.url.endsWith('/task')){
+        } else if (request.content.url.endsWith('/task')){
           // Convert to task
           properties = {modified: response.modified};
           updateModProperties(request.params.uuid, 'task', properties, request.params.owner);

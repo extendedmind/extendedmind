@@ -1130,7 +1130,112 @@ describe('SynchronizeService', function() {
     expect(generatedTask.uuid).toBe(completeRepeatingTaskResponse.generated.uuid);
   });
 
- it('should handle task offline create with no/empty response from server, and then sync', function () {
+  it('should handle repeating complete both online and offline and then sync', function () {
+
+    // 1. save existing task with repeating (and remove parent)
+    var tasks = TasksService.getTasks(testOwnerUUID);
+    var buyTickets = TasksService.getTaskInfo('1a1ce3aa-f476-43c4-845e-af59a9a33760', testOwnerUUID).task;
+    buyTickets.trans.due = '2015-01-01';
+    buyTickets.trans.repeating = 'daily';
+    buyTickets.trans.list = undefined;
+    var buyTicketsTransport = {title: buyTickets.trans.title,
+                                due: buyTickets.trans.due,
+                                repeating: buyTickets.trans.repeating,
+                                modified: buyTickets.trans.modified};
+    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' + buyTickets.trans.uuid, buyTicketsTransport)
+       .respond(200, putExistingItemResponse);
+    TasksService.saveTask(buyTickets);
+    $httpBackend.flush();
+    expect(tasks.length)
+      .toBe(4);
+
+    var latestModified = putExistingItemResponse.modified - 1;
+
+    // 2. synchronize with generated task
+    MockUserSessionService.setLatestModified(latestModified);
+    var backendTaskResponse = {
+      tasks: [{
+        'uuid': buyTickets.trans.uuid,
+        'created': buyTickets.trans.created,
+        'modified': putExistingItemResponse.modified,
+        'due': buyTickets.trans.due,
+        'repeating': buyTickets.trans.repeating,
+        'title': buyTickets.trans.title
+      }]
+    };
+    $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
+                            latestModified + '&deleted=true&archived=true&completed=true')
+        .respond(200, backendTaskResponse);
+    SynchronizeService.synchronize(testOwnerUUID);
+    $httpBackend.flush();
+    expect(tasks.length)
+      .toBe(4);
+    expect(buyTickets.mod).toBeUndefined();
+
+    // 3. complete task offline, expect new task to be created
+    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + buyTickets.trans.uuid + '/complete')
+       .respond(404);
+    TasksService.completeTask(buyTickets);
+    $httpBackend.flush();
+    var generatedTask = TasksService.getTaskInfo(buyTickets.hist.generatedUUID, testOwnerUUID).task;
+    expect(tasks.length)
+      .toBe(5);
+    expect(buyTickets.mod.completed).toBeDefined();
+    var generatedFakeUUID = buyTickets.hist.generatedUUID;
+    expect(generatedFakeUUID).toBeDefined();
+    expect(MockUUIDService.isFakeUUID(buyTickets.hist.generatedUUID)).toBeTruthy();
+
+    expect(generatedTask).toBeDefined();
+    expect(generatedTask.trans.due)
+      .toBe('2015-01-02');
+
+
+    // 4. complete the generated task offline again, expect another task to be created
+    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + buyTickets.trans.uuid + '/complete')
+       .respond(404);
+    TasksService.completeTask(generatedTask);
+    $httpBackend.flush();
+    expect(tasks.length)
+      .toBe(6);
+
+    // 5. Get sync with online generated task from first task,
+    //    expect both offline generated tasks to be destroyed
+    latestModified += 1;
+    MockUserSessionService.setLatestModified(latestModified);
+    backendTaskResponse = {
+      tasks: [{
+        'uuid': buyTickets.trans.uuid,
+        'created': buyTickets.trans.created,
+        'modified': latestModified+1,
+        'completed': latestModified+1,
+        'due': buyTickets.trans.due,
+        'repeating': buyTickets.trans.repeating,
+        'title': buyTickets.trans.title
+      },{
+        'uuid': '2a1ce3aa-f476-43c4-845e-af59a9a33760',
+        'created': latestModified+2,
+        'modified': latestModified+2,
+        'due': '2015-01-02',
+        'repeating': buyTickets.trans.repeating,
+        'title': buyTickets.trans.title,
+        'relationships': {
+          'origin': buyTickets.trans.uuid
+        }
+      }]
+    };
+    $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
+                            latestModified + '&deleted=true&archived=true&completed=true')
+        .respond(200, backendTaskResponse);
+    SynchronizeService.synchronize(testOwnerUUID);
+    $httpBackend.flush();
+    expect(tasks.length)
+      .toBe(5);
+    expect(buyTickets.hist).toBeUndefined();
+    expect(buyTickets.mod).toBeUndefined();
+    expect(TasksService.getTaskInfo(generatedFakeUUID, testOwnerUUID)).toBeUndefined();
+  });
+
+  it('should handle task offline create with no/empty response from server, and then sync', function () {
 
     var tasks = TasksService.getTasks(testOwnerUUID);
     expect(tasks.length)
