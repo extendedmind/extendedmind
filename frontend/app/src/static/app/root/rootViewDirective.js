@@ -113,6 +113,7 @@
         //
         // which almost worked, but on menu open, failed. In app that always broke.
         $templateCache.removeAll();
+        UISessionService.setTransientUIState('loggedOut');
 
         if (modal){
           // Show modal in timeout after redirect is ready

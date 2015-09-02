@@ -33,6 +33,7 @@
 
   var deferredActions = [];
   var allowedActions = {};
+  var transientUIState;
 
   function removeDeferredAction(type) {
     var deferredActionIndex = deferredActions.findFirstIndexByKeyValue('type', type);
@@ -201,6 +202,15 @@
       return state;
     },
 
+    // TRANSIENT UI STATE
+
+    setTransientUIState: function(value){
+      transientUIState = value;
+    },
+    getTransientUIState: function(value){
+      return transientUIState;
+    },
+
     // NOTIFICATION
 
     registerNotificationsActiveCallback: function(type, callback) {
@@ -360,6 +370,7 @@
       deferredActions = [];
       ownerPrefix = 'my';
       allowedActions = {};
+      transientUIState = undefined;
     },
     notifyOwnerUUIDChange: function(oldUUID, newUUID){
       if (featureMap[oldUUID]){

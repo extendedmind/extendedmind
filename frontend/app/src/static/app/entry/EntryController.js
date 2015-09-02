@@ -46,10 +46,6 @@ function EntryController($http, $location, $rootScope, $routeParams, $scope, $ti
     initializeLogin();
   }
 
-  if ($routeParams.offline === 'true'){
-    UserSessionService.enableOffline(true);
-  }
-
   $scope.isWeb = function() {
     return packaging === 'web';
   };
@@ -123,6 +119,11 @@ function EntryController($http, $location, $rootScope, $routeParams, $scope, $ti
 
     // Clear all previous data to prevent problems with tutorial starting again after login
     $rootScope.$emit('emException', {type: 'clearAll'});
+
+    // Force enable offline if route param offline is given
+    if ($routeParams.offline === 'true'){
+      UserSessionService.enableOffline(true);
+    }
 
     AuthenticationService.login($scope.user).then(logInSuccess, function(error) {
       logInError(error, $scope.user);
@@ -299,7 +300,8 @@ function EntryController($http, $location, $rootScope, $routeParams, $scope, $ti
     else if (type === 'slogan') sloganReady = true;
     else if (type === 'logo') logoReady = true;
     else if (type === 'slides') slidesReady = true;
-    if (audioReady && sloganReady && logoReady && slidesReady){
+    if (audioReady && sloganReady && logoReady && slidesReady &&
+        UISessionService.getTransientUIState() !== 'loggedOut'){
       $timeout(function(){
         $scope.playExtendedMindAnimation();
       }, 1000);
