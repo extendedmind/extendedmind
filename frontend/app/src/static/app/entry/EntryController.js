@@ -18,44 +18,70 @@ playExtendedMindAnimation, extendedMindAnimationPhase, Media, cordova */
 'use strict';
 
 function EntryController($http, $location, $rootScope, $routeParams, $scope, $timeout,
-                         AnalyticsService, AuthenticationService, DetectBrowserService, PlatformService,
-                         SwiperService, UISessionService, UserService, UserSessionService, packaging) {
+                         AnalyticsService, AuthenticationService, BackendClientService, DetectBrowserService,
+                         PlatformService, SwiperService, UISessionService, UserService, UserSessionService,
+                         packaging) {
 
   AnalyticsService.visitEntry('entry');
 
-  $scope.directToLogin = false;
+  $scope.directToEntryMain = false;
   function initializeLogin(){
-    $scope.directToLogin = true;
+    $scope.directToEntryMain = true;
     $scope.entryState = 'login';
     $scope.user = {};
     SwiperService.setInitialSlidePath('entry', 'entry/main');
     AnalyticsService.visitEntry('login');
   }
 
-  // Initialize login path.
+  function initializeSignup(){
+    $scope.directToEntryMain = true;
+    $scope.entryState = 'signup';
+    $scope.user = {};
+    SwiperService.setInitialSlidePath('entry', 'entry/main');
+    AnalyticsService.visitEntry('signup');
+  }
 
-  if (packaging === 'web' && DetectBrowserService.isMobile()) {
+  $scope.isWeb = function() {
+    return packaging === 'web' ||
+    packaging === 'devel'; // #################################################3TEMPTEMPTEMPTEMPTE
+  };
+
+  // Initialize login/signup path.
+
+  if ($scope.isWeb() && DetectBrowserService.isMobile()) {
     $scope.entryState = 'unsupported';
     $scope.mobilePlatform = true;
-  }else if (packaging === 'web' &&
+  }else if ($scope.isWeb() &&
             ((!DetectBrowserService.isChrome() && !DetectBrowserService.isWindowsPhone()) ||
              $location.path() === '/unsupported')) {
     $scope.entryState = 'unsupported';
   }else if ($location.path() === '/login' ||
-            (($location.path() === '/entry' || $location.path() === '') && packaging === 'web')){
+            (($location.path() === '/entry' || $location.path() === '') && $scope.isWeb())){
     initializeLogin();
+  }else if ($location.path() === '/signup' && $scope.isWeb()){
+    initializeSignup();
   }
-
-  $scope.isWeb = function() {
-    return packaging === 'web';
-  };
 
   // NAVIGATION
 
   $scope.activeDetails = undefined;
-  $scope.swipeToDetails = function(detailsType){
+  $scope.swipeToDetails = function(detailsType, mode){
     $scope.activeDetails = detailsType;
-    SwiperService.swipeTo('entry/details');
+    if (mode === 'privacy'){
+      $http.get(BackendClientService.getUrlPrefix() + '/static/privacy.html').then(function(privacyResponse){
+        $scope.details = {html: privacyResponse.data};
+        SwiperService.swipeTo('entry/details');
+        AnalyticsService.visit('privacy');
+      });
+    }else if (mode === 'terms') {
+      $http.get(BackendClientService.getUrlPrefix() + '/static/terms.html').then(function(termsResponse){
+        $scope.details = {html: termsResponse.data};
+        SwiperService.swipeTo('entry/details');
+        AnalyticsService.visit('terms');
+      });
+    }else{
+      SwiperService.swipeTo('entry/details');
+    }
   };
 
   $scope.swipeToLogin = function() {
@@ -77,7 +103,7 @@ function EntryController($http, $location, $rootScope, $routeParams, $scope, $ti
   };
 
   $scope.isHomeSlideEnabled = function() {
-    return !$scope.directToLogin;
+    return !$scope.directToEntryMain;
   };
 
   var entryEmailMainInputFocusCallbackFunction;
@@ -190,10 +216,58 @@ function EntryController($http, $location, $rootScope, $routeParams, $scope, $ti
     return UserSessionService.getRememberByDefault();
   };
 
+  // SIGN UP
+
+  $scope.signUp = function() {
+    $scope.signupFailed = false;
+    $scope.entryOffline = false;
+    $scope.loginFailed = false;
+    $scope.signingUp = true;
+
+    // Cohort is a random number between 1 and 128
+    var randomCohort = Math.floor(Math.random() * 128) + 1;
+
+    var payload = {email: $scope.user.username,
+     password: $scope.user.password,
+     cohort: randomCohort};
+
+    AuthenticationService.signUp(payload).then(signUpSuccess, signUpFailed);
+  };
+
+  function signUpSuccess(/*response*/) {
+    // Clear all possible previous data to prevent problems with simultaneous other log in
+    $rootScope.$emit('emException', {type: 'clearAll'});
+
+    AuthenticationService.login($scope.user).then(
+      function(/*response*/) {
+        $scope.startTutorial();
+      },
+      function(error) {
+        if (error.type === 'offline') {
+          $scope.entryOffline = true;
+        } else if (error.type === 'forbidden') {
+          $scope.loginFailed = true;
+        }
+        $scope.signingUp = false;
+      }
+    );
+  }
+
+  function signUpFailed(error) {
+    if (error.type === 'offline') {
+      $scope.entryOffline = true;
+    } else if (error.type === 'badRequest') {
+      $scope.signupFailed = true;
+    }
+    $scope.signingUp = false;
+  }
+
   // TUTORIAL
 
   $scope.startTutorial = function() {
-    var userUUID = UserSessionService.createFakeUserUUID();
+    var userUUID = UserSessionService.getUserUUID();
+    if (!userUUID) userUUID = UserSessionService.createFakeUserUUID();
+
     // Start tutorial from focus/tasks
     var newUserFeatureValues = {
       focus: { tasks: 1 }
@@ -222,7 +296,12 @@ function EntryController($http, $location, $rootScope, $routeParams, $scope, $ti
 
     UserSessionService.setPreference('onboarded', newUserFeatureValues);
     UserService.saveAccountPreferences();
-    AnalyticsService.doWithUuid('startTutorial', undefined, userUUID);
+    if (UserSessionService.isFakeUser()){
+      AnalyticsService.doWithUuid('startTutorial', undefined, userUUID);
+    }else{
+      console.log(userUUID)
+      AnalyticsService.do('startTutorial');
+    }
     $location.path('/my');
   };
 
@@ -364,6 +443,6 @@ function EntryController($http, $location, $rootScope, $routeParams, $scope, $ti
 }
 
 EntryController['$inject'] = ['$http', '$location', '$rootScope', '$routeParams', '$scope', '$timeout',
-'AnalyticsService', 'AuthenticationService', 'DetectBrowserService', 'PlatformService', 'SwiperService',
-'UISessionService', 'UserService', 'UserSessionService', 'packaging'];
+'AnalyticsService', 'AuthenticationService', 'BackendClientService', 'DetectBrowserService',
+'PlatformService', 'SwiperService', 'UISessionService', 'UserService', 'UserSessionService', 'packaging'];
 angular.module('em.entry').controller('EntryController', EntryController);

@@ -1,6 +1,6 @@
-var trackBegin = function(url) {
+var trackAction = function(url, type) {
   ga('send', 'event', {
-      'category': 'begin',
+      'category': type,
       'action': 'click',
       'label': '{{ pageName }}',
       'hitCallback': function() {

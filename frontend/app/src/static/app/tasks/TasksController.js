@@ -649,7 +649,7 @@
     $timeout(function() {
       UISessionService.activateDelayedNotifications();
     }, 1000);
-  }else if (!$scope.isEmailVerified()){
+  }else if (!$scope.isEmailVerified() && !$scope.isTutorialInProgress()){
     // It might just be that emailVerified has not been stored properly to local storage
     // so we need to get account first
     UserService.getAccount().then(function(){

@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="static/css/main.css">
 {% endblock %}
 {% block trackactions %}
-{% include 'partials/trackbegin.nunjucks' %}
+{% include 'partials/trackaction.nunjucks' %}
 {% endblock %}
 {% block header %}
 <nav class="top-bar" data-topbar role="navigation">
@@ -65,7 +65,7 @@
   </div>
 </div>
 <div class="centered">
-  <a href="/new" class="button" onclick="trackBegin(this.href);return false;">begin</a>
+  <a href="/signup" class="button" onclick="trackAction(this.href, 'signup');return false;">sign up</a>
 </div>
 <div class="right">
   <div onclick="var audio = document.getElementById('theme');

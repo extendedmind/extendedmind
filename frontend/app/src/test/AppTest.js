@@ -127,6 +127,46 @@ angular.module('em.appTest')
       }
     });
 
+    $routeProvider.when('/new', {
+      resolve: {
+        initializeNewUserWithOnboarding: ['$location', '$rootScope', 'AnalyticsService',
+        'PlatformService', 'UserService', 'UserSessionService',
+        function($location, $rootScope, AnalyticsService, PlatformService, UserService, UserSessionService) {
+          // Clear all previous data to prevent problems with tutorial starting again after login
+          $rootScope.$emit('emException', {type: 'clearAll'});
+          var userUUID = UserSessionService.createFakeUserUUID();
+          // Start tutorial from focus/tasks
+          var newUserFeatureValues = {
+            focus: { tasks: 1 }
+          };
+          PlatformService.getFeatureValue('timeFormat').then(
+            function(timeFormat){
+              if (timeFormat === '12h'){
+                UserSessionService.setUIPreference('hour12', true);
+              }
+            },function(error) {
+              console.error('could not get time format');
+              console.error(error);
+            }
+          );
+          PlatformService.getFeatureValue('firstDayOfWeek').then(
+            function(firstDayOfWeek){
+              if (firstDayOfWeek === 0){
+                UserSessionService.setUIPreference('sundayWeek', true);
+              }
+            },function(error) {
+              console.error('could not get first day of week');
+              console.error(error);
+            }
+          );
+          UserSessionService.setPreference('onboarded', newUserFeatureValues);
+          UserService.saveAccountPreferences();
+          AnalyticsService.doWithUuid('startTutorial', undefined, userUUID);
+          $location.path('/my');
+        }]
+      }
+    });
+
   }])
   .run(['$httpBackend',
     function($httpBackend) {

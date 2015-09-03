@@ -48,3 +48,15 @@
   </header>
   <div ng-include="urlBase + 'app/user/userPremium.html'" include-replace></div>
 </section>
+
+<!-- SIGN UP -->
+<section ng-if="entryState === 'signup'" class="container-content" editable-field-container>
+  <header class="group-symmetrical">
+    <a href class="group-symmetrical--left link-navigation" ng-click="swipeToMain()" editable-field-deactivate>
+      <span class="text-navigation-back downplayed">back</span>
+    </a>
+  </header>
+  <div ng-if="details.html" class="container-content">
+    <div class="group-html-external row" ng-bind-html="details.html"></div>
+  </div>
+</section>

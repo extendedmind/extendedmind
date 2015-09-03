@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="static/css/em-animation.css">
 {% endblock %}
 {% block trackactions %}
-{% include 'partials/trackbegin.nunjucks' %}
+{% include 'partials/trackaction.nunjucks' %}
 {% endblock %}
 {% block bodyattrs %}class="em-animation-background"{% endblock %}
 
@@ -122,7 +122,7 @@
   </div>
 </div>
 <div class="centered">
-  <a href="/new" class="button" onclick="trackBegin(this.href);return false;">begin</a>
+  <a href="/signup" class="button" onclick="trackAction(this.href, 'signup');return false;">sign up</a>
 </div>
 <div class="right">
   <span id="em-animation-counter"></span>
