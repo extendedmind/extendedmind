@@ -298,7 +298,6 @@ function EntryController($http, $location, $rootScope, $routeParams, $scope, $ti
     if (UserSessionService.isFakeUser()){
       AnalyticsService.doWithUuid('startTutorial', undefined, userUUID);
     }else{
-      console.log(userUUID)
       AnalyticsService.do('startTutorial');
     }
     $location.path('/my');
