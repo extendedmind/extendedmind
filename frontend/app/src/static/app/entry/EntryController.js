@@ -42,8 +42,7 @@ function EntryController($http, $location, $rootScope, $routeParams, $scope, $ti
   }
 
   $scope.isWeb = function() {
-    return packaging === 'web' ||
-    packaging === 'devel'; // #################################################3TEMPTEMPTEMPTEMPTE
+    return packaging === 'web';
   };
 
   // Initialize login/signup path.
