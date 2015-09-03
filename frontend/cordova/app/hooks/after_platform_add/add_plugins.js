@@ -14,7 +14,8 @@ var pluginlist = [
     "https://github.com/extendedmind/phonegap-backbutton-plugin",
     "cordova-plugin-device",
     "cordova-plugin-whitelist",
-    "cordova-plugin-inappbrowser"
+    "cordova-plugin-inappbrowser",
+    "cordova-plugin-globalization"
 ];
 
 // no need to configure below

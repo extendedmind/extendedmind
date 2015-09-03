@@ -18,8 +18,8 @@ playExtendedMindAnimation, extendedMindAnimationPhase, Media, cordova */
 'use strict';
 
 function EntryController($http, $location, $rootScope, $routeParams, $scope, $timeout,
-                         AnalyticsService, AuthenticationService, DetectBrowserService, SwiperService,
-                         UISessionService, UserService, UserSessionService, packaging) {
+                         AnalyticsService, AuthenticationService, DetectBrowserService, PlatformService,
+                         SwiperService, UISessionService, UserService, UserSessionService, packaging) {
 
   AnalyticsService.visitEntry('entry');
 
@@ -198,6 +198,28 @@ function EntryController($http, $location, $rootScope, $routeParams, $scope, $ti
     var newUserFeatureValues = {
       focus: { tasks: 1 }
     };
+
+    PlatformService.getFeatureValue('timeFormat').then(
+      function(timeFormat){
+        if (timeFormat === '12h'){
+          UserSessionService.setUIPreference('hour12', true);
+        }
+      },function(error) {
+        console.error('could not get time format');
+        console.error(error);
+      }
+    );
+    PlatformService.getFeatureValue('firstDayOfWeek').then(
+      function(firstDayOfWeek){
+        if (firstDayOfWeek === 0){
+          UserSessionService.setUIPreference('sundayWeek', true);
+        }
+      },function(error) {
+        console.error('could not get first day of week');
+        console.error(error);
+      }
+    );
+
     UserSessionService.setPreference('onboarded', newUserFeatureValues);
     UserService.saveAccountPreferences();
     AnalyticsService.doWithUuid('startTutorial', undefined, userUUID);
@@ -342,6 +364,6 @@ function EntryController($http, $location, $rootScope, $routeParams, $scope, $ti
 }
 
 EntryController['$inject'] = ['$http', '$location', '$rootScope', '$routeParams', '$scope', '$timeout',
-'AnalyticsService', 'AuthenticationService', 'DetectBrowserService', 'SwiperService',
+'AnalyticsService', 'AuthenticationService', 'DetectBrowserService', 'PlatformService', 'SwiperService',
 'UISessionService', 'UserService', 'UserSessionService', 'packaging'];
 angular.module('em.entry').controller('EntryController', EntryController);
