@@ -1,0 +1,6 @@
+{
+  "name": "extended-mind-desktop",
+  "version": "${project.version.node}",
+  "description": "Extended Mind Desktop",
+  "main": "main.js"
+}

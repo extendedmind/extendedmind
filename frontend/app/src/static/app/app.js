@@ -293,5 +293,5 @@ angular.module('em.app').run(['$injector', '$rootScope', 'version', function($in
 
   // http://stackoverflow.com/a/21113518
   // http://www.youtube.com/watch?v=xOAG7Ab_Oz0#t=2314
-  FastClick.attach(document.body);
+  if (typeof FastClick !== 'undefined') FastClick.attach(document.body);
 }]);

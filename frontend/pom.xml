@@ -48,6 +48,16 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
         <module>cordova</module>
       </modules>
     </profile>
+    <profile>
+      <id>electron</id>
+      <activation>
+        <file>
+          <exists>/usr/local/bin/wine</exists>
+        </file>
+      </activation>
+      <modules>
+        <module>electron</module>
+      </modules>
+    </profile>
   </profiles>
-
 </project>

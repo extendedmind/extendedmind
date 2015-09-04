@@ -27,25 +27,14 @@
   <link rel="stylesheet" href="static/${project.version}/css/em.css"/>
   <link rel="stylesheet" href="static/${project.version}/css/animate-animo.css"/>
   <link rel="stylesheet" href="static/${project.version}/css/em-animation.css"/>
-  <script src="cordova.js"></script>
   <script>
-    var packaging = "nwjs";
+    var packaging = "electron";
     var version = "${project.version}";
     var urlPrefix = 'https://ext.md';
     var html5Mode = false;
     var bindToFocusEvent = true;
     var bindToResumeEvent = false;
     var enableOffline = true;
-
-    var gui = require('nw.gui');
-    win = gui.Window.get();
-    var nativeMenuBar = new gui.Menu({ type: "menubar" });
-    try {
-      nativeMenuBar.createMacBuiltin("extended mind");
-      win.menu = nativeMenuBar;
-    } catch (ex) {
-      console.log(ex.message);
-    }
   </script>
 </head>
 <body>
