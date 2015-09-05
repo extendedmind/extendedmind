@@ -16,8 +16,8 @@
     "clean:win": "rm -rf ./dist/win",
 
     "build": "npm run clean && npm run build:osx && npm run build:win",
-    "build:osx": "npm run clean:osx && electron-packager ./app \"extended mind\" --out=dist/osx --platform=darwin --arch=x64 --version=0.31.2 --icon=assets/osx/icon.icns",
-    "build:win": "npm run clean:win && electron-packager ./app \"extended mind\" --out=dist/win --platform=win32 --arch=ia32 --version=0.31.2 --icon=assets/win/icon.ico",
+    "build:osx": "npm run clean:osx && electron-packager ./app \"extended mind\" --out=dist/osx --platform=darwin --arch=x64 --version=0.31.2 --app-version=${project.version.node} --icon=assets/osx/icon.icns --sign=\"${settings.servers.osx-developer-certificate.username}\"",
+    "build:win": "npm run clean:win && electron-packager ./app \"extended mind\" --out=dist/win --platform=win32 --arch=ia32 --version=0.31.2 --app-version=${project.version.node} --icon=assets/win/icon.ico",
 
     "pack": "npm run pack:osx && npm run pack:win",
     "pack:osx": "npm run build:osx && electron-builder \"dist/osx/extended mind-darwin-x64/extended mind.app\" --platform=osx --out=\"dist/osx\" --config=packager.json",

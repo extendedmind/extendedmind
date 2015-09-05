@@ -48,7 +48,7 @@ app.on('ready', function() {
     label: 'extended mind',
     submenu: [
       {
-        label: 'quit extended mind',
+        label: 'Quit extended mind',
         accelerator: 'Command+Q',
         click: function() { app.quit(); }
       },

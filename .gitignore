@@ -51,6 +51,15 @@ frontend/cordova/app/www
 frontend/cordova/app/config.xml
 frontend/cordova/app/merges
 
+# Electron
+frontend/electron/src/app/index.html
+frontend/electron/src/app/package.json
+frontend/electron/src/app/static/
+frontend/electron/src/dist/
+frontend/electron/src/node/
+frontend/electron/src/node_modules/
+frontend/electron/src/package.json
+
 # Analytics
 frontend/analytics/src/data/
 
