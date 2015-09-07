@@ -91,9 +91,9 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     val eventHandlers = new java.util.ArrayList[TransactionEventHandler[_]](2);
     eventHandlers.add(new UUIDTransactionEventHandler(false, false));
 
-    if (settings.disableTimestamps){
+    if (settings.disableTimestamps) {
       println("WARNING: Automatic timestamps disabled!")
-    }else{
+    } else {
       val customPropertyHandlers = new java.util.ArrayList[TimestampCustomPropertyHandler](1)
       // soft delete of list or tag needs to cause items associated with it to also modify themselves
       val deletedModificationTags = new java.util.ArrayList[RelationshipType](2)
@@ -130,7 +130,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
         log.info("users: " + statistics.users +
           ", items: " + statistics.items)
         // Add transaction event handlers here
-        transactionEventHandlers.foreach( eventHandler => neo4j.gds.registerTransactionEventHandler(eventHandler))
+        transactionEventHandlers.foreach(eventHandler => neo4j.gds.registerTransactionEventHandler(eventHandler))
         available
     }
   }
@@ -148,7 +148,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     shutdown(ds)
   }
 
-  // STATISTICS
+  // STATISTICS AND INFO
 
   def getStatistics(): Response[Statistics] = {
     withTx {
@@ -166,6 +166,37 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     Statistics(userCountResult.get("userCount").asInstanceOf[Long],
       itemCount)
   }
+
+  def getInfo(): Response[Info] = {
+    withTx {
+      implicit neo4j =>
+        val infoNodes = findNodesByLabel(MainLabel.INFO).toList
+        if (infoNodes.size == 1){
+          val infoNode = infoNodes(0)
+          val platforms = infoNode.getPropertyKeys.filter(property => {
+            property != "created" && property != "modified" && property != "uuid"
+          })
+          val frontend = platforms.map(platform => VersionInfo(platform, infoNode.getProperty(platform).asInstanceOf[String]))
+          if (frontend.isEmpty){
+            Right(Info(None, None))
+          }else{
+            Right(Info(None, Some(frontend.toList)))
+          }
+        }else {
+          Right(Info(None, None))
+        }
+    }
+  }
+
+  def putInfo(info: Info): Response[SetResult] = {
+    for {
+      // Don't set history tag of parent to list
+      infoNode <- putInfoNode(info).right
+      result <- Right(getSetResult(infoNode, false)).right
+    } yield result
+  }
+
+
 
   // CONVERSION
 
@@ -203,7 +234,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
 
         val idToUUIDList = {
           if (associated.isEmpty) None
-          else{
+          else {
             Some(associated.get.map(associatedNode => {
               IdToUUID(getUUID(associatedNode), associatedNode.getProperty("id").asInstanceOf[String])
             }))
@@ -245,11 +276,11 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
       else nodeResponse.right.get
     })
 
-    if (skipLabel.isDefined){
+    if (skipLabel.isDefined) {
       Right(nodeList filter (node => {
         !node.hasLabel(skipLabel.get)
       }))
-    }else{
+    } else {
       Right(nodeList)
     }
   }
@@ -331,10 +362,9 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
   }
 
   protected def deleteItem(itemNode: Node)(implicit neo4j: DatabaseService): Long = {
-    if (itemNode.hasProperty("deleted")){
+    if (itemNode.hasProperty("deleted")) {
       itemNode.getProperty("deleted").asInstanceOf[Long]
-    }
-    else{
+    } else {
       val timestamp = System.currentTimeMillis()
       itemNode.setProperty("deleted", timestamp)
       timestamp
@@ -392,4 +422,39 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     }
   }
 
+  protected def putInfoNode(info: Info): Response[Node] = {
+    withTx {
+      implicit neo4j =>
+        val infoNodes = findNodesByLabel(MainLabel.INFO).toList
+        if (infoNodes.size == 0){
+          val infoNode = createNode(MainLabel.INFO)
+          putInfoNodeValues(infoNode, info)
+          Right(infoNode)
+        }else if (infoNodes.size == 1){
+          putInfoNodeValues(infoNodes(0), info)
+          Right(infoNodes(0))
+        }else {
+          fail(INTERNAL_SERVER_ERROR, ERR_BASE_INFO_MORE_THAN_1, "More than one info node found.")
+        }
+    }
+  }
+
+  protected def putInfoNodeValues(infoNode: Node, info: Info)(implicit neo4j: DatabaseService): Unit = {
+    // First remove missing keys
+    infoNode.getPropertyKeys.foreach(property => {
+      val versionInfo =
+        if (info.frontend.isDefined)
+          info.frontend.get.find({ versionInfo => versionInfo.platform == property })
+        else None
+      if (property != "created" && property != "modified" && property != "uuid" && versionInfo.isEmpty){
+        infoNode.removeProperty(property)
+      }
+    })
+    // Then set new keys
+    if (info.frontend.isDefined){
+      info.frontend.get.foreach(versionInfo => {
+        infoNode.setProperty(versionInfo.platform, versionInfo.version)
+      })
+    }
+  }
 }

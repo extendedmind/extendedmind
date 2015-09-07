@@ -194,6 +194,16 @@ trait Service extends AdminService
         }
       }
     } ~
+    getInfo {
+      complete {
+        Future[Info] {
+          adminActions.getInfo match {
+            case Right(info) => processResult(info.copy(backend=Some(settings.version)))
+            case Left(e) => processErrors(e)
+          }
+        }
+      }
+    } ~
     getHAAvailable { ctx =>
       val haStatus = adminActions.getHAStatus
       if (haStatus == "master" || haStatus == "slave") ctx.complete(200, "true")

@@ -303,6 +303,23 @@ trait AdminService extends ServiceBase {
             }
           }
         }
+      } ~
+      putInfo { url =>
+        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+          authorize(adminAccess(securityContext)) {
+            entity(as[Info]) { info =>
+              complete {
+                Future[SetResult] {
+                  adminActions.putInfo(info) match {
+                    case Right(sr) => processResult(sr)
+                    case Left(e) => processErrors(e)
+                  }
+                }
+              }
+            }
+          }
+        }
       }
+
   }
 }

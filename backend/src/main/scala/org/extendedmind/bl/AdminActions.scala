@@ -136,6 +136,14 @@ trait AdminActions {
       "master"
     }
   }
+
+  def getInfo: Response[Info] = {
+    db.getInfo
+  }
+
+  def putInfo(info: Info): Response[SetResult] = {
+    db.putInfo(info)
+  }
 }
 
 class AdminActionsImpl(implicit val implSettings: Settings, implicit val inj: Injector)

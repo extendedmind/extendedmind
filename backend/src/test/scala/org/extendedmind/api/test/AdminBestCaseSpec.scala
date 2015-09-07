@@ -266,6 +266,45 @@ class AdminBestCaseSpec extends ServiceSpecBase {
         }
       }
     }
+    it("should successfully put info with PUT to /admin/info " +
+       "and get it back without authentication from GET to /info") {
+      Get("/info") ~> route ~> check {
+        val info = responseAs[Info]
+        info.backend should not be(None)
+        info.frontend should be (None)
+      }
+      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+      Put("/admin/info",
+          marshal(Info(None, Some(scala.List(VersionInfo("osx", "2.0"))))).right.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get))  ~> route ~> check {
+        val setResult = responseAs[Info]
+        Get("/info") ~> route ~> check {
+          val info = responseAs[Info]
+          info.backend should not be(None)
+          info.frontend.get.size should be (1)
+          info.frontend.get(0).platform should be("osx")
+          info.frontend.get(0).version should be("2.0")
+          Put("/admin/info",
+              marshal(Info(None, Some(scala.List(VersionInfo("win", "1.0"))))).right.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get))  ~> route ~> check {
+            val setResult2 = responseAs[Info]
+            Get("/info") ~> route ~> check {
+              val info2 = responseAs[Info]
+              info2.backend should not be(None)
+              info2.frontend.get.size should be (1)
+              info2.frontend.get(0).platform should be("win")
+              info2.frontend.get(0).version should be("1.0")
+              Put("/admin/info",
+                  marshal(Info(None, None)).right.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                Get("/info") ~> route ~> check {
+                  val info3 = responseAs[Info]
+                  info3.backend should not be(None)
+                  info3.frontend should be (None)
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
 
 }

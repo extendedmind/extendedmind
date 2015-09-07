@@ -26,6 +26,7 @@ case class Label(labelName: String) extends Neo4jLabel{
 }
 
 object MainLabel {
+  val INFO = Label("INFO")
   val OWNER = Label("OWNER")
   val ITEM = Label("ITEM")
   val TOKEN = Label("TOKEN")

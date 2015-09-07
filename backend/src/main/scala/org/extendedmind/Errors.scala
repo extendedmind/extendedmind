@@ -33,6 +33,7 @@ case object ERR_BASE_NO_LIST_ACCESS extends ErrorCode(27)
 case object ERR_BASE_FOUNDER_ACCESS_RIGHT_REQUIRED extends ErrorCode(28)
 case object ERR_BASE_WRONG_EXPECTED_MODIFIED extends ErrorCode(29)
 case object ERR_BASE_HANDLE_EXISTS extends ErrorCode(30)
+case object ERR_BASE_INFO_MORE_THAN_1 extends ErrorCode(31)
 
 case object ERR_COLLECTIVE_NO_FOUNDER extends ErrorCode(1001)
 case object ERR_COLLECTIVE_MORE_THAN_1_FOUNDER extends ErrorCode(1002)

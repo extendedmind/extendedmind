@@ -130,10 +130,12 @@ trait API extends HttpService {
   val postUpgradeOwners = post & path("admin" / "owners" / "upgrade".r)
   val getItemStatistics = get & path("admin" / "item" / JavaUUID)
   val postSetItemProperty = post & path("admin" / "item" / JavaUUID / "property")
+  val putInfo = put & path("admin" / "info".r)
 
   // SYSTEM
   val shutdown = post & path("shutdown")
   val tick = post & path("tick")
+  val getInfo = get & path("info")
   val getHAAvailable = get & path("ha" / "available")
   val getHAMaster = get & path("ha" / "master")
   val getHASlave = get & path("ha" / "slave")
