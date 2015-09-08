@@ -8,6 +8,10 @@
     "electron-packager": "^5.0.2",
     "electron-builder": "^2.0.0"
   },
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-electron-debian-installer": "0.0.5"
+  },
   "scripts": {
     "dev": "./node_modules/.bin/electron ./app",
 
