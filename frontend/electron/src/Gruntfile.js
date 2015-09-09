@@ -21,7 +21,8 @@ module.exports = function(grunt) {
         },
         depends: [],
         recommends: [],
-        suggests: []
+        suggests: [],
+	icon: "assets/linux/icon.png"
       },
       src: {
         src: 'dist/linux/extended-mind-linux-x64',
