@@ -21,13 +21,13 @@
     "clean:linux": "rm -rf ./dist/linux",
 
     "build": "npm run clean && npm run build:osx && npm run build:win && npm run build:linux",
-    "build:osx": "npm run clean:osx && electron-packager ./app \"extended mind\" --out=dist/osx --platform=darwin --arch=x64 --version=0.31.2 --app-version=${project.version.node} --icon=assets/osx/icon.icns --sign=\"${settings.servers.osx-developer-certificate.username}\"",
+    "build:osx": "npm run clean:osx && electron-packager ./app \"extended mind\" --out=dist/osx --platform=darwin --arch=x64 --version=0.31.2 --app-version=${project.version.node} --build-version=${buildNumber} --icon=assets/osx/icon.icns --sign=\"${settings.servers.osx-developer-certificate.username}\"",
     "build:win": "npm run clean:win && electron-packager ./app \"extended mind\" --out=dist/win --platform=win32 --arch=x64 --version=0.31.2 --app-version=${project.version.node} --icon=assets/win/icon.ico",
     "build:linux": "npm run clean:linux && electron-packager ./app \"extended-mind\" --out=dist/linux --platform=linux --arch=x64 --version=0.31.2 --app-version=${project.version.node}",
 
     "pack": "npm run pack:osx && npm run pack:win && npm run pack:linux",
-    "pack:osx": "npm run build:osx && electron-builder \"dist/osx/extended mind-darwin-x64/extended mind.app\" --platform=osx --out=\"dist/osx\" --config=packager.json",
-    "pack:win": "npm run build:win && electron-builder \"dist/win/extended mind-win32-ia32\" --platform=win --out=\"dist/win\" --config=packager.json",
+    "pack:osx": "npm run build:osx && electron-builder \"dist/osx/extended mind-darwin-x64/extended mind.app\" --platform=osx --out=\"dist/osx\" --config=packager.json && mv \"dist/osx/extended mind.dmg\" dist/osx/extended-mind-${project.version.node}-osx.dmg",
+    "pack:win": "npm run build:win && electron-builder \"dist/win/extended mind-win32-x64\" --platform=win --out=\"dist/win\" --config=packager.json && mv \"dist/win/extended mind Setup.exe\" dist/win/extended-mind-${project.version.node}-win.exe",
     "pack:linux": "npm run build:linux && grunt electron-debian-installer --verbose"
   },
   "keywords": [

@@ -59,6 +59,7 @@ frontend/electron/src/dist/
 frontend/electron/src/node/
 frontend/electron/src/node_modules/
 frontend/electron/src/package.json
+frontend/electron/src/Gruntfile.js
 
 # Analytics
 frontend/analytics/src/data/

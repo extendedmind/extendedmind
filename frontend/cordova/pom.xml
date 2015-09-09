@@ -37,7 +37,6 @@
     <skipAndroid>true</skipAndroid>
     <skipIos>true</skipIos>
     <cordova.bundleId>org.extendedmind</cordova.bundleId>
-    <cordova.buildNumber>0</cordova.buildNumber>
     <cordova.urlPrefix>https://ext.md</cordova.urlPrefix>
   </properties>
 

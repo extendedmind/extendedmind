@@ -67,7 +67,7 @@
         <artifactId>maven-resources-plugin</artifactId>
         <executions>
           <execution>
-            <id>copy-package-json</id>
+            <id>copy-config</id>
             <phase>generate-resources</phase>
             <goals>
               <goal>copy-resources</goal>
@@ -81,13 +81,14 @@
                   <filtering>true</filtering>
                   <includes>
                     <include>package.json</include>
+                    <include>Gruntfile.js</include>
                   </includes>
                 </resource>
               </resources>
             </configuration>
           </execution>
           <execution>
-            <id>copy-electron-package-json</id>
+            <id>copy-electron-config</id>
             <phase>generate-resources</phase>
             <goals>
               <goal>copy-resources</goal>
@@ -153,6 +154,16 @@
               <arguments>install</arguments>
             </configuration>
           </execution>
+          <execution>
+            <id>npm pack</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <arguments>run pack</arguments>
+            </configuration>
+          </execution>
         </executions>
         <configuration>
           <workingDirectory>src</workingDirectory>
@@ -207,6 +218,7 @@
               <directory>${basedir}/src</directory>
               <includes>
                 <include>package.json</include>
+                <include>Gruntfile.js</include>
               </includes>
             </fileset>
             <fileset>
