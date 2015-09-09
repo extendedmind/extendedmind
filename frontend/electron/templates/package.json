@@ -1,5 +1,5 @@
 {
-  "name": "extended-mind",
+  "name": "extended-mind-desktop",
   "version": "${project.version.node}",
   "description": "Extended Mind Desktop",
   "private": true,
@@ -10,7 +10,7 @@
   },
   "devDependencies": {
     "grunt": "^0.4.5",
-    "grunt-electron-debian-installer": "0.0.5"
+    "grunt-electron-debian-installer": "^0.0.5"
   },
   "scripts": {
     "dev": "./node_modules/.bin/electron ./app",
@@ -18,14 +18,17 @@
     "clean": "rm -rf ./dist",
     "clean:osx": "rm -rf ./dist/osx",
     "clean:win": "rm -rf ./dist/win",
+    "clean:linux": "rm -rf ./dist/linux",
 
-    "build": "npm run clean && npm run build:osx && npm run build:win",
+    "build": "npm run clean && npm run build:osx && npm run build:win && npm run build:linux",
     "build:osx": "npm run clean:osx && electron-packager ./app \"extended mind\" --out=dist/osx --platform=darwin --arch=x64 --version=0.31.2 --app-version=${project.version.node} --icon=assets/osx/icon.icns --sign=\"${settings.servers.osx-developer-certificate.username}\"",
-    "build:win": "npm run clean:win && electron-packager ./app \"extended mind\" --out=dist/win --platform=win32 --arch=ia32 --version=0.31.2 --app-version=${project.version.node} --icon=assets/win/icon.ico",
+    "build:win": "npm run clean:win && electron-packager ./app \"extended mind\" --out=dist/win --platform=win32 --arch=x64 --version=0.31.2 --app-version=${project.version.node} --icon=assets/win/icon.ico",
+    "build:linux": "npm run clean:linux && electron-packager ./app \"extended-mind\" --out=dist/linux --platform=linux --arch=x64 --version=0.31.2 --app-version=${project.version.node}",
 
-    "pack": "npm run pack:osx && npm run pack:win",
+    "pack": "npm run pack:osx && npm run pack:win && npm run pack:linux",
     "pack:osx": "npm run build:osx && electron-builder \"dist/osx/extended mind-darwin-x64/extended mind.app\" --platform=osx --out=\"dist/osx\" --config=packager.json",
-    "pack:win": "npm run build:win && electron-builder \"dist/win/extended mind-win32-ia32\" --platform=win --out=\"dist/win\" --config=packager.json"
+    "pack:win": "npm run build:win && electron-builder \"dist/win/extended mind-win32-ia32\" --platform=win --out=\"dist/win\" --config=packager.json",
+    "pack:linux": "npm run build:linux && grunt electron-debian-installer --verbose"
   },
   "keywords": [
     "productivity"

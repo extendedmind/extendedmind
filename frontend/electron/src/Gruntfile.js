@@ -2,10 +2,11 @@ module.exports = function(grunt) {
   // Project configuration.
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
-    electron-debian-installer: {
+    'electron-debian-installer': {
       options: {
         section: 'misc',
         priority: 'optional',
+        arch: 'amd64',
         lintianOverrides: [
           'changelog-file-missing-in-native-package',
           'executable-not-elf-or-script',
@@ -16,15 +17,15 @@ module.exports = function(grunt) {
           'ProjectManagement'
         ],
         rename: function (dest, src) {
-          return dest + '<%= name %>_<%= version %>-<%= revision %>_<%= arch %>.deb';
-        }
-      },
-      linux64: {
-        options: {
-          arch: 'amd64'
+          return dest + 'extended-mind-<%= version %>-linux.deb';
         },
-        src: 'dist/linux64/',
-        dest: 'dist/linux64/'
+        depends: [],
+        recommends: [],
+        suggests: []
+      },
+      src: {
+        src: 'dist/linux/extended-mind-linux-x64',
+        dest: 'dist/linux/'
       }
     }
   });

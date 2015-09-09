@@ -1,5 +1,5 @@
 {
-  "name": "extended-mind-desktop",
+  "name": "extended-mind",
   "version": "${project.version.node}",
   "description": "Extended Mind Desktop",
   "main": "main.js"
