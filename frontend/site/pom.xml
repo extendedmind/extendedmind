@@ -61,6 +61,7 @@
             <configuration>
               <nodeVersion>v0.12.7</nodeVersion>
               <npmVersion>2.12.1</npmVersion>
+              <nodeDownloadRoot>https://nodejs.org/dist/</nodeDownloadRoot>
             </configuration>
           </execution>
           <execution>
