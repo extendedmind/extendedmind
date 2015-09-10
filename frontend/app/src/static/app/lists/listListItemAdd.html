@@ -15,12 +15,10 @@
       editable-field-register-callbacks="registerAddItemCallbacks(focus, blur)" maxlength="128">
     </textarea>
   </div>
-  <div class="group-mixed--right">
-    <a href ng-hide="isOnboardingInProgress('lists', 'active')"
-      editable-field-deactivate swiper-click="openEditor('list', newItem)">
-      <span class="text-navigation-forward without-text"></span>
-    </a>
-  </div>
+  <a href class="group-mixed--right" ng-hide="isOnboardingInProgress('lists', 'active')"
+    editable-field-deactivate swiper-click="openEditor('list', newItem)">
+    <span class="text-navigation-forward without-text"></span>
+  </a>
 </form>
 
 <!-- ONBOARDING -->
