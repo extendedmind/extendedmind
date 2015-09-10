@@ -102,7 +102,7 @@ if (backendApi){
           console.log(JSON.stringify(backendInfo, null, 2));
           clearInterval(backendPollInterval);
         }else{
-          console.log('backend returned status code: ' + response.statusCode + ', retrying...');
+          console.log('backend returned status code: ' + (response ? response.statusCode : 'unknown') + ', retrying...');
         }
       });
     }
