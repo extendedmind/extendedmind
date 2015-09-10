@@ -308,6 +308,9 @@
                     <image>site-conf</image>
                   </from>
                 </volumes>
+                <links>
+                  <link>backend:backend</link>
+                </links>
               </run>
             </image>
             <image>
