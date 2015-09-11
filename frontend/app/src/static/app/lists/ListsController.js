@@ -314,7 +314,7 @@
   /*
   * When list is deleted, notesFirst setting needs to be removed
   */
-  function notifyListDeleted(lists, deletedList, listsType, ownerUUID) {
+  function notifyListDeleted(lists, deletedList, listsType) {
     // Remove notest first when list is deleted to prevent cluttering of preferences of old lists
     if (deletedList){
       $scope.setShowListNotesFirst(deletedList, false);
@@ -332,9 +332,9 @@
 
   function swipeToArchivedLists(){
     SwiperService.swipeTo('lists/archived');
-    angular.isFunction($scope.unregisterEditorClosedCallback)
+    if (angular.isFunction($scope.unregisterEditorClosedCallback))
       $scope.unregisterEditorClosedCallback('ListsController');
-  };
+  }
 
   var featureChangedCallback = function featureChangedCallback(name, data/*, state*/) {
     if (name === 'list' || name === 'listInverse') {
@@ -484,7 +484,7 @@
       }
     }
     return adoptedListsPerOwner;
-  };
+  }
 
   $scope.adoptList = function(list) {
     var adoptedLists = UserSessionService.getUIPreference('adoptedLists');
@@ -527,7 +527,7 @@
     var notesFirstLists = UserSessionService.getUIPreference('notesFirstLists');
     return $scope.features.focus.getStatus('notes') !== 'disabled' && notesFirstLists &&
            notesFirstLists[list.trans.owner] &&
-           notesFirstLists[list.trans.owner].indexOf(list.trans.uuid) !== -1;;
+           notesFirstLists[list.trans.owner].indexOf(list.trans.uuid) !== -1;
   };
 
   $scope.setShowListNotesFirst = function(list, value){
@@ -650,6 +650,37 @@
     var listUUID = list.trans.uuid;
     return $scope.isCollectiveReadOnly(ownerUUID) || $scope.isSharedListReadOnly(ownerUUID, listUUID);
   };
+
+  // KEYBOARD SHORTCUTS
+
+  if (angular.isFunction($scope.registerKeyboardShortcutCallback)){
+    $scope.registerKeyboardShortcutCallback(function(){
+      if ($scope.isFeatureActive('lists') &&
+          !$scope.isEditorVisible() &&
+          $scope.features.lists.getStatus('active') === 'active'){
+        SwiperService.swipeNext('lists');
+      }else if ($scope.isFeatureActive('list') &&
+                !$scope.isEditorVisible()){
+        SwiperService.swipeNext('list');
+      }else if ($scope.isFeatureActive('listInverse') &&
+                !$scope.isEditorVisible()){
+        SwiperService.swipeNext('listInverse');
+      }
+    }, 'right', 'ListsControllerRight');
+    $scope.registerKeyboardShortcutCallback(function(){
+      if ($scope.isFeatureActive('lists') &&
+          !$scope.isEditorVisible() &&
+          $scope.features.lists.getStatus('active') === 'active'){
+        SwiperService.swipePrevious('lists');
+      }else if ($scope.isFeatureActive('list') &&
+                !$scope.isEditorVisible()){
+        SwiperService.swipePrevious('list');
+      }else if ($scope.isFeatureActive('listInverse') &&
+                !$scope.isEditorVisible()){
+        SwiperService.swipePrevious('listInverse');
+      }
+    }, 'left', 'ListsControllerLeft');
+  }
 }
 
 ListsController['$inject'] = ['$q', '$rootScope', '$scope',

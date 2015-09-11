@@ -20,10 +20,10 @@
 // Holds a reference to all the item arrays. There is no sense in limiting
 // the arrays because everything is needed anyway to get home and inbox to work,
 // which are part of every main slide collection.
-function MainController($element, $controller, $filter, $q, $rootScope, $scope, $timeout, $window,
+function MainController($element, $controller, $document, $filter, $q, $rootScope, $scope, $timeout, $window,
                         AnalyticsService, CalendarService, DateService, DrawerService, ItemsService,
-                        ReminderService, SwiperService, TasksService, UISessionService, UserService,
-                        UserSessionService, packaging) {
+                        PlatformService, ReminderService, SwiperService, TasksService, UISessionService,
+                        UserService, UserSessionService, packaging) {
 
 
   // SHARED ACCESS
@@ -1276,7 +1276,48 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
     return formattedDate.toLowerCase();
   };
 
-  // INJECT OTHER CONTENT CONTROLLERS HERE
+  // KEYBOARD SHORTCUTS
+
+  var keyboardShortcutCallbacks = {};
+
+  function executeKeyboardShortcutCallbacks(shortcutName){
+    for (var id in keyboardShortcutCallbacks) {
+      if (keyboardShortcutCallbacks[id].shortcutName === shortcutName) {
+        keyboardShortcutCallbacks[id].callback();
+      }
+    }
+  }
+
+  function keydownHandler(keydownEvent){
+    if (!$scope.backdropActive){
+      if (keydownEvent.keyCode === 37){
+        executeKeyboardShortcutCallbacks('left');
+      }else if(keydownEvent.keyCode === 38){
+        executeKeyboardShortcutCallbacks('up');
+      }else if (keydownEvent.keyCode === 39){
+        executeKeyboardShortcutCallbacks('right');
+      }else if (keydownEvent.keyCode === 40){
+        executeKeyboardShortcutCallbacks('down');
+      }
+    }
+  }
+
+  if (PlatformService.isFeatureSupported('keyboardShortcuts')){
+    $scope.registerKeyboardShortcutCallback = function(shortcutFn, shortcutName, id) {
+      keyboardShortcutCallbacks[id] = {
+        callback: shortcutFn,
+        shortcutName: shortcutName
+      };
+    };
+
+    $document.on('keydown', keydownHandler);
+    $scope.$on('$destroy', function () {
+      $document.off('keydown', keydownHandler);
+    });
+  }
+
+  // INJECT OTHER CONTENT CONTROLLERS
+
   $controller('SynchronizeController',{$scope: $scope});
   $controller('TasksController',{$scope: $scope});
   $controller('ListsController',{$scope: $scope});
@@ -1287,8 +1328,8 @@ function MainController($element, $controller, $filter, $q, $rootScope, $scope, 
 }
 
 MainController['$inject'] = [
-'$element', '$controller', '$filter', '$q', '$rootScope', '$scope', '$timeout', '$window',
-'AnalyticsService', 'CalendarService', 'DateService', 'DrawerService', 'ItemsService', 'ReminderService',
-'SwiperService', 'TasksService', 'UISessionService', 'UserService', 'UserSessionService', 'packaging'
-];
+'$element', '$controller', '$document', '$filter', '$q', '$rootScope', '$scope', '$timeout', '$window',
+'AnalyticsService', 'CalendarService', 'DateService', 'DrawerService', 'ItemsService', 'PlatformService',
+'ReminderService', 'SwiperService', 'TasksService', 'UISessionService', 'UserService', 'UserSessionService',
+'packaging'];
 angular.module('em.main').controller('MainController', MainController);

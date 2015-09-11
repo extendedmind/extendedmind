@@ -557,6 +557,22 @@
     }
   };
 
+  $scope.swipeToNextDaySlide = function(speed){
+    if (SwiperService.isSlideActive('focus/tasks') &&
+        !$scope.isTutorialInProgress() &&
+        !$scope.isEditorVisible()){
+      SwiperService.swipeNext('focus/tasks', speed);
+    }
+  };
+
+  $scope.swipeToPreviousDaySlide = function(speed){
+    if (SwiperService.isSlideActive('focus/tasks') &&
+        !$scope.isTutorialInProgress() &&
+        !$scope.isEditorVisible()){
+      SwiperService.swipePrevious('focus/tasks', speed);
+    }
+  };
+
   $scope.swipeDatepickerLeft = function(){
     SwiperService.swipePrevious('datepicker');
   };
@@ -896,7 +912,14 @@
     }
   }
 
-  // ONBOARDING
+  // KEYBOARD SHORTCUTS
+
+  if (angular.isFunction($scope.registerKeyboardShortcutCallback)){
+    $scope.registerKeyboardShortcutCallback($scope.swipeToPreviousDaySlide, 'up', 'DatesControllerUp');
+    $scope.registerKeyboardShortcutCallback($scope.swipeToNextDaySlide, 'down', 'DatesControllerDown');
+  }
+
+  // CLEANUP
 
   $scope.$on('$destroy', function() {
     if (angular.isFunction($scope.unregisterSynchronizeCallback))

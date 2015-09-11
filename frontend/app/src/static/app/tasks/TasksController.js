@@ -673,6 +673,30 @@
       }
     });
   };
+
+  // KEYBOARD SHORTCUTS
+
+  if (angular.isFunction($scope.registerKeyboardShortcutCallback)){
+    $scope.registerKeyboardShortcutCallback(function(){
+      if ($scope.isFeatureActive('tasks') && !$scope.isEditorVisible()){
+        SwiperService.swipeNext('tasks');
+      }else if ($scope.isFeatureActive('focus') &&
+                !$scope.isTutorialInProgress() &&
+                !$scope.isEditorVisible()){
+        SwiperService.swipeNext('focus');
+      }
+    }, 'right', 'TasksControllerRight');
+    $scope.registerKeyboardShortcutCallback(function(){
+      if ($scope.isFeatureActive('tasks') && !$scope.isEditorVisible()){
+        SwiperService.swipePrevious('tasks');
+      }else if ($scope.isFeatureActive('focus') &&
+                !$scope.isTutorialInProgress() &&
+                !$scope.isEditorVisible()){
+        SwiperService.swipePrevious('focus');
+      }
+    }, 'left', 'TasksControllerLeft');
+  }
+
 }
 
 TasksController['$inject'] = [

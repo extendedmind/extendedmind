@@ -74,6 +74,9 @@ function PlatformService($q, packaging) {
 
         case 'firstDayOfWeek':
         return true;
+
+        case 'keyboardShortcuts':
+        return !packaging.endsWith('cordova');
       }
     }
   }
