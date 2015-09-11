@@ -1,4 +1,4 @@
-{% extends "views/base.nunjucks" %}
+{% extends "base.nunjucks" %}
 {% set pageName = 'download' %}
 {% block title %}{{ super() }} &ndash; download{% endblock %}
 {% block description %}{{ super() }} &ndash; download{% endblock %}
