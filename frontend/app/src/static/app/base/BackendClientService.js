@@ -300,6 +300,10 @@
     });
   };
 
+  methods.clearRequest = function(method, urlPostfix){
+    HttpClientService.clearRequest(method, urlPostfix);
+  };
+
   methods.clearAll = function(){
     HttpClientService.clearAll();
   };

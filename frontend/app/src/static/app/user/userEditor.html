@@ -186,4 +186,32 @@
       </div>
     </div>
   </div>
+  <form ng-if="mode === 'logIn'" class="container-fluid--inner" name="loginForm">
+    <section class="container-content">
+      <h2 class="group-heading row-form">log in</h2>
+      <div class="row-form">
+        <input type="email" name="email" ng-model="user.username"
+        placeholder="enter email&#8230;" maxlength="254" editable-field
+        editable-field-register-callbacks="registerUserEditorEmailInputCallbacks(focus, blur)" required />
+      </div>
+      <div class="group-error row-form">
+        <div ng-if="loginForm.email.$touched" ng-messages="loginForm.email.$error">
+          <span class="text-error" ng-message="email">invalid email address</span>
+        </div>
+      </div>
+      <div class="row-form">
+        <input type="password" name="password" id="password" ng-model="user.password" ng-minlength="7"
+        placeholder="enter password&#8230;" editable-field ng-maxlength="100" required>
+      </div>
+      <div class="group-error height-large row-form">
+        <span ng-if="loginFailed" class="text-error">invalid email or password</span>
+        <span ng-if="userEditOffline" class="text-error">can't connect to server. are you online?</span>
+      </div>
+    </section>
+    <footer class="container-content--after editor-footer group-btn">
+      <button type="submit" class="btn-action" ng-disabled="!loginForm.$valid || loggingIn" ng-click="logIn()">
+        <span class="text-btn" ng-bind="loggingIn && 'logging in' || 'done'"></span>
+      </button>
+    </footer>
+  </form>
 </div>

@@ -82,7 +82,7 @@
         $rootScope.synced = $rootScope.syncState =
         $rootScope.signingUp = $rootScope.contentPartiallyVisible =
         $rootScope.outerSwiping = $rootScope.innerSwiping = $rootScope.scrolling =
-        $rootScope.contentTouchMoved = $rootScope.signUpInProgress = undefined;
+        $rootScope.contentTouchMoved = $rootScope.firstSyncInProgress = undefined;
       }
 
       var exiting = false;

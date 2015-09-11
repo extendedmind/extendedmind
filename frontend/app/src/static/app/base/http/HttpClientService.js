@@ -600,6 +600,10 @@
     }
   };
 
+  methods.clearRequest = function(method, urlPostfix){
+    HttpRequestQueueService.clearRequest(method, urlPostfix);
+  };
+
   methods.clearAll = function(){
     HttpRequestQueueService.clearAll();
   };

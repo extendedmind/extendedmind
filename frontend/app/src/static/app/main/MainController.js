@@ -661,7 +661,7 @@ function MainController($element, $controller, $document, $filter, $q, $rootScop
   }
 
   $scope.isFeatureLoaded = function(feature){
-    return ($rootScope.syncState !== 'active' || $rootScope.signUpInProgress) &&
+    return ($rootScope.syncState !== 'active' || $rootScope.firstSyncInProgress) &&
     $scope.features[feature].loaded;
   };
 

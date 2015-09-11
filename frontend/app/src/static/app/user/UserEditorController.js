@@ -145,7 +145,7 @@
     });
   };
 
-  // SIGN UP
+  // SIGN UP / LOG IN
 
   var userEditorEmailInputFocusCallbackFunction;
   $scope.registerUserEditorEmailInputCallbacks = function(focus){
@@ -153,7 +153,7 @@
   };
 
   function userEditorOpened(){
-    if ($scope.mode === 'signUp' && userEditorEmailInputFocusCallbackFunction){
+    if (($scope.mode === 'signUp' || $scope.mode === 'logIn') && userEditorEmailInputFocusCallbackFunction){
       userEditorEmailInputFocusCallbackFunction();
     }
   }
@@ -186,7 +186,7 @@
   };
 
   $scope.signUp = function() {
-    $rootScope.signUpInProgress = true;
+    $rootScope.firstSyncInProgress = true;
     $scope.signupFailed = false;
     $scope.userEditOffline = false;
     $scope.loginFailed = false;
@@ -209,9 +209,7 @@
 
     // Register uuid change
     var oldUUID = UserSessionService.getUserUUID();
-    SynchronizeService.notifyOwnerUUIDChange(oldUUID, response.uuid);
-    UserSessionService.notifyOwnerUUIDChange(oldUUID, response.uuid);
-    UISessionService.notifyOwnerUUIDChange(oldUUID, response.uuid);
+    processUUIDChange(oldUUID, response.uuid);
     AnalyticsService.doWithUuid('signUp', oldUUID, response.uuid, true);
     if (UserSessionService.isPersistentStorageEnabled()){
       $scope.user.remember = true;
@@ -236,14 +234,61 @@
     );
   }
 
+  function processUUIDChange(oldUUID, newUUID){
+    SynchronizeService.notifyOwnerUUIDChange(oldUUID, newUUID);
+    UserSessionService.notifyOwnerUUIDChange(oldUUID, newUUID);
+    UISessionService.notifyOwnerUUIDChange(oldUUID, newUUID);
+  }
+
   function signUpFailed(error) {
     if (error.type === 'offline') {
-      $scope.signUpOffline = true;
+      $scope.userEditOffline = true;
     } else if (error.type === 'badRequest') {
       $scope.signupFailed = true;
     }
     $scope.signingUp = false;
   }
+
+  $scope.logIn = function() {
+    $rootScope.firstSyncInProgress = true;
+    $scope.userEditOffline = false;
+    $scope.loginFailed = false;
+    $scope.loggingIn = true;
+    if (UserSessionService.isPersistentStorageEnabled()){
+      $scope.user.remember = true;
+    }
+    var oldUUID = UserSessionService.getUserUUID();
+    AuthenticationService.login($scope.user, processUUIDChange).then(
+      function(response){
+        // Remove user synchronization from the queue to prevent tutorial from starting again
+        // for existing user
+        SynchronizeService.clearUserUpdate();
+
+        // Analytics
+        AnalyticsService.doWithUuid('innerLogIn', oldUUID, response.userUUID, true);
+
+        // Start executing all pending requests now
+        BackendClientService.executeRequests();
+
+        $scope.features.lists.resizeFix = true;
+        $scope.features.focus.resizeFix = true;
+        $scope.features.list.resizeFix = true;
+        $scope.features.listInverse.resizeFix = true;
+
+        $scope.closeEditor();
+      },
+      function(error){
+        if (error.type === 'offline') {
+          $scope.userEditOffline = true;
+        } else if (error.type === 'badRequest') {
+          $scope.loginFailed = true;
+        }
+        $scope.loggingIn = false;
+      }
+    );
+  };
+
+  // DELETE ACCOUNT
 
   $scope.deleteAccount = function(password) {
     $scope.deleteAccountFailed = false;

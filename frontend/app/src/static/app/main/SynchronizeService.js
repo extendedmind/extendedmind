@@ -1097,6 +1097,9 @@
       TasksService.changeOwnerUUID(oldUUID, newUUID);
       NotesService.changeOwnerUUID(oldUUID, newUUID);
     },
+    clearUserUpdate: function(){
+      BackendClientService.clearRequest('put', '/api/account');
+    },
     registerItemsSynchronizedCallback: function(callback){
       itemsSynchronizedCallback = callback;
     },

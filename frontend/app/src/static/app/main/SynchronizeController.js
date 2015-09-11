@@ -63,7 +63,7 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
     $rootScope.synced = timestamp;
     $rootScope.syncState = 'ready';
     itemsSynchronizeCounter++;
-    if ($rootScope.signUpInProgress) $rootScope.signUpInProgress = false;
+    if ($rootScope.firstSyncInProgress) $rootScope.firstSyncInProgress = false;
   }
   SynchronizeService.registerItemsSynchronizedCallback(itemsSynchronizedCallback);
 
@@ -171,7 +171,7 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
   }
 
   $scope.showLoadingAnimation = function(){
-    return $rootScope.syncState === 'active' && !$rootScope.signUpInProgress;
+    return $rootScope.syncState === 'active' && !$rootScope.firstSyncInProgress;
   };
 
   // Execute synchronize immediately when queue is empty to be fully synced right after data has been

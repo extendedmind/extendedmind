@@ -224,10 +224,13 @@
         return verifyAndUpdateAuthentication(true);
       }
     },
-    login: function(user) {
+    login: function(user, processUUIDChangeFn) {
       var remember = user.remember || false;
       BackendClientService.setUsernamePassword(user.username, user.password);
       return authenticate(remember).then(function(response) {
+        if (angular.isFunction(processUUIDChangeFn)){
+          processUUIDChangeFn(UserSessionService.getUserUUID(), response.userUUID);
+        }
         var encodedCredentials = UserSessionService.setAuthenticateInformation(response, user.username);
         // Update backend client to use token authentication instead of username/password
         BackendClientService.setCredentials(encodedCredentials);

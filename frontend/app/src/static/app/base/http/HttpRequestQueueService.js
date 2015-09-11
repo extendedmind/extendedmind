@@ -338,6 +338,17 @@ function HttpRequestQueueService(enableOffline) {
         persistQueue();
       }
     },
+    clearRequest: function(method, urlPostfix){
+      if (queue && queue.length){
+        for (var i=queue.length-1; i>=0; i--){
+          if (queue[i].content && queue[i].content.url &&
+              queue[i].content.url.endsWith(urlPostfix) && queue[i].content.method === method){
+            queue.splice(i, 1);
+          }
+        }
+        persistQueue();
+      }
+    },
     clearAll: function(){
       primary = secondary = beforeLast = last = undefined;
       queue = [];
