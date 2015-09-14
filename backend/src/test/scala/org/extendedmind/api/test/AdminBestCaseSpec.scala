@@ -159,9 +159,20 @@ class AdminBestCaseSpec extends ServiceSpecBase {
           changeUserTypeResponse.modified should not be None
           val infoAuthenticateResponse = emailPasswordAuthenticate(INFO_EMAIL, INFO_PASSWORD)
           infoAuthenticateResponse.userType should equal(Token.ALFA)
+
+          // Also verify that account works
+          Get("/account") ~> addCredentials(BasicHttpCredentials("token", infoAuthenticateResponse.token.get)) ~> route ~> check {
+            val userResponse = responseAs[User]
+          }
+
           Post("/admin/user/" + infoUser.uuid + "/type/" + Token.NORMAL) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
             val infoReAuthenticateResponse = emailPasswordAuthenticate(INFO_EMAIL, INFO_PASSWORD)
             infoReAuthenticateResponse.userType should equal(Token.NORMAL)
+
+            // Also verify that account works
+            Get("/account") ~> addCredentials(BasicHttpCredentials("token", infoAuthenticateResponse.token.get)) ~> route ~> check {
+              val userReResponse = responseAs[User]
+            }
           }
         }
       }
@@ -240,21 +251,21 @@ class AdminBestCaseSpec extends ServiceSpecBase {
         val completed = itemsResponse.tasks.get(0).completed.get
         val title = itemsResponse.tasks.get(0).title
         Get("/admin/item/" + itemUUID) ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
-          val statisticsResponse = responseAs[ItemStatistics]
+          val statisticsResponse = responseAs[NodeStatistics]
           writeJsonOutput("itemStatisticsResponse", responseAs[String])
           // Change two values and remove one property
           val newCompleted = System.currentTimeMillis
           Post("/admin/item/" + itemUUID + "/property",
-              marshal(ItemProperty("completed", None, Some(newCompleted))).right.get) ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
+              marshal(NodeProperty("completed", None, Some(newCompleted))).right.get) ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
             val setResult = responseAs[SetResult]
           }
           val newTitle = "updated"
           Post("/admin/item/" + itemUUID + "/property",
-              marshal(ItemProperty("title", Some(newTitle), None)).right.get) ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
+              marshal(NodeProperty("title", Some(newTitle), None)).right.get) ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
             val setResult = responseAs[SetResult]
           }
           Post("/admin/item/" + itemUUID + "/property",
-              marshal(ItemProperty("description", None, None)).right.get) ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
+              marshal(NodeProperty("description", None, None)).right.get) ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
             val setResult = responseAs[SetResult]
           }
           Get("/" + lauriAuthenticateResponse.userUUID + "/items?completed=true") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
@@ -264,6 +275,14 @@ class AdminBestCaseSpec extends ServiceSpecBase {
             changedTask.description should be(None)
           }
         }
+      }
+    }
+    it("should successfully get owner statistics with GET to /admin/owner/[ownerUUID]") {
+      val timoAuthenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+      val lauriAuthenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
+      Get("/admin/owner/" + lauriAuthenticateResponse.userUUID.toString) ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
+        val statisticsResponse = responseAs[NodeStatistics]
+        writeJsonOutput("ownerStatisticsResponse", responseAs[String])
       }
     }
     it("should successfully put info with PUT to /admin/info " +

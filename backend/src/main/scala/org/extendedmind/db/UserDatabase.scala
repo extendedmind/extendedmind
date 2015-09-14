@@ -232,6 +232,12 @@ trait UserDatabase extends AbstractGraphDatabase {
     }
   }
 
+  def getOwnerStatistics(uuid: UUID): Response[NodeStatistics] = {
+    for {
+      ownerNode <- getNode(uuid, MainLabel.OWNER).right
+      stats <- Right(getOwnerStatistics(ownerNode)).right
+    } yield stats
+  }
 
   // PRIVATE
 
@@ -975,6 +981,35 @@ trait UserDatabase extends AbstractGraphDatabase {
       }
     }while(inboxId == null)
     inboxId
+  }
+
+  protected def getOwnerStatistics(ownerNode: Node): NodeStatistics = {
+    withTx {
+      implicit neo4j =>
+        val ownerProperties: scala.List[(String, Long)] = {
+          ownerNode.getPropertyKeys.toList.map(key => {
+            // we know that all user properties are Long, Int, Boolean, or String
+            if (key == "created" || key == "modified" || key == "deleted" ||
+                key == "passwordResetCode" || key == "passwordResetCodeExpires" ||
+                key == "emailVerified" || key == "emailVerificationCode"){
+              (key, ownerNode.getProperty(key).asInstanceOf[Long])
+            }else if (key == "cohort"){
+              (key, ownerNode.getProperty(key).asInstanceOf[Int].toLong)
+            }else if (key == "common"){
+              val common = ownerNode.getProperty(key).asInstanceOf[Boolean]
+              (key, if (common) 1l else 0l)
+            }else if (key.startsWith("password")){
+              (key, -1l)
+            }else{
+              (key, ownerNode.getProperty(key).asInstanceOf[String].length.asInstanceOf[Long])
+            }
+          })
+        }
+        val ownerLabels = ownerNode.getLabels.toList.map(label => {
+          label.name
+        })
+        NodeStatistics(ownerProperties, ownerLabels)
+    }
   }
 
 }

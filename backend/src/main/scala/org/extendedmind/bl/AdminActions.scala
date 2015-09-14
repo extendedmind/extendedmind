@@ -74,12 +74,17 @@ trait AdminActions {
     result
   }
 
-  def getItemStatistics(uuid: UUID)(implicit log: LoggingAdapter): Response[ItemStatistics] = {
+  def getItemStatistics(uuid: UUID)(implicit log: LoggingAdapter): Response[NodeStatistics] = {
     log.info("getItemStatistics")
     db.getItemStatistics(uuid)
   }
 
-  def setItemProperty(uuid: UUID, property: ItemProperty)(implicit log: LoggingAdapter): Response[SetResult] = {
+  def getOwnerStatistics(uuid: UUID)(implicit log: LoggingAdapter): Response[NodeStatistics] = {
+    log.info("getOwnerStatistics")
+    db.getOwnerStatistics(uuid)
+  }
+
+  def setItemProperty(uuid: UUID, property: NodeProperty)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("setItemProperty")
     db.setItemProperty(uuid, property.key, property.stringValue, property.longValue)
   }

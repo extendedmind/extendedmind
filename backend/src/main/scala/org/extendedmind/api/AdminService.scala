@@ -276,9 +276,24 @@ trait AdminService extends ServiceBase {
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           authorize(adminAccess(securityContext)) {
             complete {
-              Future[ItemStatistics] {
+              Future[NodeStatistics] {
                 setLogContext(securityContext)
                 adminActions.getItemStatistics(uuid) match {
+                  case Right(stats) => processResult(stats)
+                  case Left(e) => processErrors(e)
+                }
+              }
+            }
+          }
+        }
+      } ~
+      getOwnerStatistics{ uuid =>
+        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+          authorize(adminAccess(securityContext)) {
+            complete {
+              Future[NodeStatistics] {
+                setLogContext(securityContext)
+                adminActions.getOwnerStatistics(uuid) match {
                   case Right(stats) => processResult(stats)
                   case Left(e) => processErrors(e)
                 }
@@ -290,7 +305,7 @@ trait AdminService extends ServiceBase {
       postSetItemProperty { uuid =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           authorize(adminAccess(securityContext)) {
-            entity(as[ItemProperty]) { property =>
+            entity(as[NodeProperty]) { property =>
               complete {
                 Future[SetResult] {
                   setLogContext(securityContext)

@@ -109,8 +109,8 @@ trait LimitedExtendedItem extends ItemLike{
   def parent: Option[UUID] = relationships.parent
 }
 
-case class ItemStatistics(properties: scala.List[(String, Long)], labels: scala.List[String])
-case class ItemProperty(key: String, stringValue: Option[String], longValue: Option[Long])
+case class NodeStatistics(properties: scala.List[(String, Long)], labels: scala.List[String])
+case class NodeProperty(key: String, stringValue: Option[String], longValue: Option[Long])
 
 // Owner is the display name of the owner. Later on we might want to add also a authors list,
 // but before that saying "by [owner]" works

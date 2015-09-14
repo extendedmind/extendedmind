@@ -154,7 +154,7 @@ trait ItemDatabase extends UserDatabase {
     } yield count
   }
 
-  def getItemStatistics(uuid: UUID): Response[ItemStatistics] = {
+  def getItemStatistics(uuid: UUID): Response[NodeStatistics] = {
     for {
       itemNode <- getItemNodeByUUID(uuid).right
       stats <- Right(getItemStatistics(itemNode)).right
@@ -997,7 +997,7 @@ trait ItemDatabase extends UserDatabase {
     }
   }
 
-  protected def getItemStatistics(itemNode: Node): ItemStatistics = {
+  protected def getItemStatistics(itemNode: Node): NodeStatistics = {
     withTx {
       implicit neo4j =>
         val itemProperties: scala.List[(String, Long)] = {
@@ -1014,7 +1014,7 @@ trait ItemDatabase extends UserDatabase {
         val itemLabels = itemNode.getLabels.toList.map(label => {
           label.name
         })
-        ItemStatistics(itemProperties, itemLabels)
+        NodeStatistics(itemProperties, itemLabels)
     }
   }
 
