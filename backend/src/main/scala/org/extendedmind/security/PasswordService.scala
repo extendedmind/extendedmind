@@ -26,7 +26,6 @@ import java.security.spec.KeySpec
 import java.util.Arrays
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec;
-import java.nio.ByteBuffer
 
 case class Password(algorithm: String, iterations: Int, passwordHash: Array[Byte], salt: Array[Byte])
 

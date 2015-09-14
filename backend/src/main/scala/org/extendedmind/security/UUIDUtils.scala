@@ -28,15 +28,23 @@ object UUIDUtils {
     getUUID(Base64.decodeBase64(trimmedBase64UUID + "=="))
   }
   def getUUID(bytes: Array[Byte]): UUID = {
-    val mostSignificantBits = ByteBuffer.wrap(bytes.slice(0, 8)).getLong()
-    val leastSignificantBits = ByteBuffer.wrap(bytes.slice(8, 16)).getLong()
+    val mostSignificantBits = convertByteArrayToLong(bytes.slice(0, 8))
+    val leastSignificantBits = convertByteArrayToLong(bytes.slice(8, 16))
     new UUID(mostSignificantBits, leastSignificantBits)
   }
   def getTrimmedBase64UUID(uuid: UUID): String = {
-    val bb = ByteBuffer.allocate(16)
-    bb.putLong(uuid.getMostSignificantBits())
-    bb.putLong(uuid.getLeastSignificantBits())
-    Base64.encodeBase64String(bb.array()).slice(0, 22)
+    this.synchronized {
+      val bb = ByteBuffer.allocate(16)
+      bb.putLong(uuid.getMostSignificantBits())
+      bb.putLong(uuid.getLeastSignificantBits())
+      Base64.encodeBase64String(bb.array()).slice(0, 22)
+    }
+  }
+
+  def convertByteArrayToLong(byteArray: Array[Byte]): Long = {
+    this.synchronized {
+      ByteBuffer.wrap(byteArray).getLong()
+    }
   }
 }
 

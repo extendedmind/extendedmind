@@ -40,19 +40,21 @@ object Token{
   def apply(userUUID: UUID) = new Token(userUUID, Random.generateRandomLong)
 
   def encryptToken(token: Token)(implicit settings: Settings): String = {
-    val bb = ByteBuffer.allocate(26)
-    bb.putLong(token.userUUID.getMostSignificantBits())
-    bb.putLong(token.userUUID.getLeastSignificantBits())
-    bb.putLong(token.accessKey)
+    this.synchronized {
+      val bb = ByteBuffer.allocate(26)
+      bb.putLong(token.userUUID.getMostSignificantBits())
+      bb.putLong(token.userUUID.getLeastSignificantBits())
+      bb.putLong(token.accessKey)
 
-    // Add CRC to token
-    val crc = new CRC16_MMC();
-    crc.upd(bb.array().slice(0, 24))
-    crc.end
-    bb.put(crc.getBytes)
+      // Add CRC to token
+      val crc = new CRC16_MMC();
+      crc.upd(bb.array().slice(0, 24))
+      crc.end
+      bb.put(crc.getBytes)
 
-    // Encrypt token using AES with secret
-    new String(encodeBase64(AES.encrypt(bb.array(), settings.tokenSecret)))
+      // Encrypt token using AES with secret
+      new String(encodeBase64(AES.encrypt(bb.array(), settings.tokenSecret)))
+    }
   }
 
   def decryptToken(stringToken: String)(implicit settings: Settings): Response[Token] =
@@ -75,8 +77,9 @@ object Token{
 
       // Create Token
       val userUUID = UUIDUtils.getUUID(decryptedToken.slice(0, 16))
-      Right(Token(userUUID, ByteBuffer.wrap(decryptedToken.slice(16, 24)).getLong()))
+      Right(Token(userUUID, UUIDUtils.convertByteArrayToLong(decryptedToken.slice(16, 24))))
     } catch {
       case e: Throwable => fail(INTERNAL_SERVER_ERROR, ERR_BASE_DECRYPT_FAILED, "Could not decrypt token", e)
     }
+
 }

@@ -280,6 +280,9 @@
                     <image>backend-data</image>
                   </from>
                 </volumes>
+                <ports>
+                  <port>8007:8081</port>
+                </ports>
               </run>
             </image>
             <image>

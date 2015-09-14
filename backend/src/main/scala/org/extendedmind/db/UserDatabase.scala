@@ -144,7 +144,7 @@ trait UserDatabase extends AbstractGraphDatabase {
 
   def destroyDeletedOwners: Response[CountResult] = {
     for {
-      ownerUUIDs <- getOwnerUUIDs.right
+      ownerUUIDs <- getDeletedOwnerUUIDs.right
       count <- destroyDeletedOwners(ownerUUIDs).right
     } yield count
   }
@@ -153,7 +153,7 @@ trait UserDatabase extends AbstractGraphDatabase {
     withTx {
       implicit neo4j =>
         for {
-          userNode <- getNode(userUUID, OwnerLabel.USER).right
+          userNode <- getNode(userUUID, OwnerLabel.USER, acceptDeleted=true).right
           deletable <- validateUserDeletable(userNode).right
           result <- destroyUserNode(userNode).right
         } yield result
@@ -457,6 +457,19 @@ trait UserDatabase extends AbstractGraphDatabase {
     }
   }
 
+  protected def getDeletedOwnerUUIDs: Response[scala.List[UUID]] = {
+    withTx {
+      implicit neo4j =>
+        val ownerNodeList = findNodesByLabel(MainLabel.OWNER).toList
+        val deletedOwnerBuffer = new ListBuffer[UUID]
+        ownerNodeList.foreach(ownerNode => {
+          if (ownerNode.hasProperty("deleted"))
+            deletedOwnerBuffer.append(getUUID(ownerNode))
+        })
+        Right(deletedOwnerBuffer.toList)
+    }
+  }
+
   protected def getUserEmailVerificationInfo(userNode: Node)(implicit neo4j: DatabaseService): Response[(String, Long)] = {
     if (userNode.hasProperty("emailVerified")){
       fail(INVALID_PARAMETER, ERR_USER_EMAIL_ALREADY_VERIFIED, "email has already been verified")
@@ -484,7 +497,7 @@ trait UserDatabase extends AbstractGraphDatabase {
   protected def destroyDeletedOwner(ownerUUID: UUID, currentTimestamp: Long): Response[Boolean] = {
     withTx {
       implicit neo4j =>
-        val ownerNodeResponse = getNode(ownerUUID, MainLabel.OWNER)
+        val ownerNodeResponse = getNode(ownerUUID, MainLabel.OWNER, acceptDeleted=true)
         if (ownerNodeResponse.isLeft)
           Left(ownerNodeResponse.left.get)
         else {

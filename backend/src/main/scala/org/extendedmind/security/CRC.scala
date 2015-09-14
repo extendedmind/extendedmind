@@ -120,8 +120,10 @@ class CRC16_MMC extends CRC {
     }
 
     def getBytes(): Array[Byte] = {
-      val bb = ByteBuffer.allocate(4)
-      bb.putInt(curCRC)
-      bb.array().slice(2, 4)
+      this.synchronized {
+        val bb = ByteBuffer.allocate(4)
+        bb.putInt(curCRC)
+        bb.array().slice(2, 4)
+      }
     }
 }
