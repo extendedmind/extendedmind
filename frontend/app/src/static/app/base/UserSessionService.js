@@ -493,7 +493,10 @@
       return parseInt(SessionStorageService.getUserCreated());
     },
     getUserType: function() {
-      return parseInt(SessionStorageService.getUserType());
+      var userType = SessionStorageService.getUserType();
+      if (userType !== undefined && userType !== null){
+        return parseInt(userType);
+      }
     },
     getEmailVerified: function() {
       syncWebStorages();
