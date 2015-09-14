@@ -93,10 +93,10 @@
   opacity: 1;       // [1]
 }
 
-// 1. Fade prompt in with delay.
-//    This is used when list empties, and 1 second delay ensures there is no more .animate-list-item-leave
-//    animations running.
-.animate-no-items-prompt {
+// Fade prompt in with delay.
+// This is used when list empties, and 1 second delay ensures there is no more .animate-list-item-leave
+// animations running.
+.container-content:not(.with-agenda) .animate-no-items-prompt {
   -webkit-transition: opacity @timing-animate 0.5s 1s;
   -moz-transition: opacity @timing-animate 0.5s 1s;
   -o-transition: opacity @timing-animate 0.5s 1s;
@@ -104,14 +104,33 @@
   transition: opacity @timing-animate 0.5s 1s;
 }
 
-// 1. Fade in start.
-.animate-no-items-prompt-add {
-  opacity: 0; // [1]
+// When agenda is visible, animate both opacity and max-height
+.container-content.with-agenda .animate-no-items-prompt {
+  -webkit-transition: opacity 0.5s @timing-animate 1s, max-height 0.3s @timing-animate 0.7s;
+  -moz-transition: opacity 0.5s @timing-animate 1s, max-height 0.3s @timing-animate 0.7s;
+  -o-transition: opacity 0.5s @timing-animate 1s, max-height 0.3s @timing-animate 0.7s;
+  -ms-transition: opacity 0.5s @timing-animate 1s, max-height 0.3s @timing-animate 0.7s;
+  transition: opacity 0.5s @timing-animate 1s, max-height 0.3s @timing-animate 0.7s;
 }
 
-// 1. Fade in end.
+// Fade in start.
+.animate-no-items-prompt-add {
+  opacity: 0;
+}
+
+// Fade in end.
 .animate-no-items-prompt-add-active {
-  opacity: 1; // [1]
+  opacity: 1;
+}
+
+// When agenda is visible start height from 0
+.container-content.with-agenda .animate-no-items-prompt-add {
+  max-height: 0px;
+}
+
+// When agenda is visible, animates no items prompt to implicit height of 24px
+.container-content.with-agenda .animate-no-items-prompt-add-active {
+  max-height: 24px;
 }
 
 // Animate checkbox checking.
