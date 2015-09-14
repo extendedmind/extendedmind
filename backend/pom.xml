@@ -98,7 +98,7 @@
     <dependency>
       <groupId>org.extendedmind</groupId>
       <artifactId>neo4j-uuid</artifactId>
-      <version>${neo4j.version}</version>
+      <version>${neo4j.version}.1</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
