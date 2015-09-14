@@ -303,7 +303,8 @@ function EntryController($http, $location, $rootScope, $routeParams, $scope, $ti
     $location.path('/my');
 
     // Manually kill sound at this stage to prevent audio from leaking to tutorial
-    if (extendedMindAudio && angular.isFunction(extendedMindAudio.pause)){
+    if (typeof extendedmindAudio !== 'undefined' && extendedMindAudio &&
+        angular.isFunction(extendedMindAudio.pause)){
       extendedMindAudio.pause()
     }
   };
