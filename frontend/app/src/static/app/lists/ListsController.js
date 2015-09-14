@@ -441,8 +441,7 @@
   // SHARED LISTS
 
   $scope.useSharedLists = function() {
-    return $scope.isPersonalData() &&
-           (UserSessionService.getUserType() === 0 || UserSessionService.getUserType() === 1);
+    return $scope.isPersonalData();
   };
 
   $scope.isListDataReady = function(listUUID, ownerUUID) {
@@ -455,8 +454,7 @@
   // ADOPTED LISTS
 
   $scope.useAdoptedLists = function() {
-    if ($scope.isPersonalData() &&
-        (UserSessionService.getUserType() === 0 || UserSessionService.getUserType() === 1)){
+    if ($scope.isPersonalData()){
       return UserSessionService.getUIPreference('adoptedLists');
     }
   };
