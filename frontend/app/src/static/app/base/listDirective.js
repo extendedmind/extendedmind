@@ -151,25 +151,53 @@
         }
       };
 
-      this.toggleLeftCheckbox = function(item, toggleFn, checkingTimeout) {
+      var checkingItemsDeferred = [];
+      function resolveAllDeferredCheckings(){
+        UISessionService.allow('leaveAnimation', 200);
+        for (var i=0; i<checkingItemsDeferred.length; i++){
+          if (checkingItemsDeferred[i].deferred)
+            checkingItemsDeferred[i].deferred.resolve(checkingItemsDeferred[i].item);
+        }
+        checkingItemsDeferred = [];
+      }
+      function resolveDeferredChekckingsIfItemLatest(item){
+        return $timeout(function() {
+            if (checkingItemsDeferred.length > 0 &&
+                (checkingItemsDeferred[checkingItemsDeferred.length-1].item === item ||
+                (checkingItemsDeferred.length>1 &&
+                 checkingItemsDeferred[checkingItemsDeferred.length-1].deferred === undefined &&
+                 checkingItemsDeferred[checkingItemsDeferred.length-2].item === item))){
+              resolveAllDeferredCheckings();
+              if (!$scope.$$phase && !$rootScope.$$phase) $scope.$digest();
+            }
+          }, $rootScope.CHECKBOX_CHECKING_ANIMATION_TIME);
+      }
 
+      this.toggleLeftCheckbox = function(item, toggleFn, checkingTimeout) {
         var checkboxCheckingReadyDeferred = $q.defer();
         var checked = toggleFn(item, checkboxCheckingReadyDeferred);
-
         if (checked) {
-          checkingTimeout = $timeout(function() {
-            UISessionService.allow('leaveAnimation', 200);
-            checkboxCheckingReadyDeferred.resolve(item);
-            if (!$scope.$$phase && !$rootScope.$$phase) $scope.$digest();
-          }, $rootScope.CHECKBOX_CHECKING_ANIMATION_TIME);
+          checkingItemsDeferred.push({deferred: checkboxCheckingReadyDeferred, item: item});
+          checkingTimeout = resolveDeferredChekckingsIfItemLatest(item);
         } else{
+          checkingItemsDeferred.push({item: item});
           if (checkingTimeout){
             $timeout.cancel(checkingTimeout);
             checkingTimeout = undefined;
           }
+          if (checkingItemsDeferred.length > 1){
+            // See if this item is among the recently checked (not the last one, as that was just pushed)
+            // and splice it from there
+            for (var i=0; i<checkingItemsDeferred.length-1; i++){
+              if (checkingItemsDeferred[i].item === item){
+                checkingItemsDeferred.splice(i, 1);
+                break;
+              }
+            }
+          }
           checkboxCheckingReadyDeferred.resolve(item);
+          resolveDeferredChekckingsIfItemLatest(item);
         }
-
         return checkingTimeout;
       };
     }],
