@@ -484,7 +484,7 @@
             registerModeChanged: registerAgendaVisibilityChangedCallback,
             id: 'focus/tasks/right', scrollInactiveTop: true, duplicate: 'focus/tasks/rightDuplicate'}">
 
-            <div ng-hide="datepickerVisible" class="group-mixed">
+            <div ng-hide="datepickerVisible" class="group-mixed heading">
               <div class="group-mixed--middle" ng-class="getOnboardingPhase('focus', 'tasks') === 6 && 'onboarding'" swiper-click="openDatepicker(daySlides[2].info)">
                 <h2 class="group-heading justified" ng-bind="daySlides[2].heading"></h2>
               </div>
