@@ -260,11 +260,11 @@
         var interaction = {
           type: 'confirmationRequired',
           value: {
-            messageHeading: 'today cleared!',
-            messageIngress: 'enjoy your day!',
+            messageHeading: 'today cleared',
+            messageIngress: 'if you like our app, please write a review',
             messageText: [{
               type: 'text',
-              data: 'if you have a moment, please review the extended mind app. we will only ask you once.'
+              data: 'we hate these as much as anyone and won\'t ever ask you again, promise'
             }],
             confirmAction: gotoMarketFn,
             confirmText: 'review',
