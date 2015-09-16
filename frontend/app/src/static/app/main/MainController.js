@@ -99,6 +99,7 @@ function MainController($element, $controller, $document, $filter, $q, $rootScop
         return getFeatureStatus(UserSessionService.getFeaturePreferences('user'), subfeature);
       },
       slides: {
+        path: 'user',
         left: {
           path: 'user/home',
           heading: 'home'
@@ -116,6 +117,7 @@ function MainController($element, $controller, $document, $filter, $q, $rootScop
       },
       additionalContentVisibleStatuses: ['onboarding_2', 'onboarding_6'],
       slides: {
+        path: 'focus',
         left: {
           path: 'focus/tasks',
           heading: 'tasks'
@@ -143,6 +145,7 @@ function MainController($element, $controller, $document, $filter, $q, $rootScop
         return getFeatureStatus(UserSessionService.getFeaturePreferences('tasks'), subfeature);
       },
       slides: {
+        path: 'tasks',
         left: {
           path: 'tasks/all',
           heading: 'all tasks'
@@ -170,6 +173,7 @@ function MainController($element, $controller, $document, $filter, $q, $rootScop
       },
       additionalContentVisibleStatuses: ['onboarding_2'],
       slides: {
+        path: 'lists',
         left: {
           path: 'lists/active',
           heading: 'active'
@@ -191,6 +195,7 @@ function MainController($element, $controller, $document, $filter, $q, $rootScop
         }
       },
       slides: {
+        path: 'list',
         left: {
           path: 'list/tasks',
           heading: 'tasks'
@@ -207,6 +212,7 @@ function MainController($element, $controller, $document, $filter, $q, $rootScop
         return getFeatureStatus(UserSessionService.getFeaturePreferences('list'), subfeature);
       },
       slides: {
+        path: 'listInverse',
         left: {
           path: 'listInverse/notes',
           heading: 'notes'
