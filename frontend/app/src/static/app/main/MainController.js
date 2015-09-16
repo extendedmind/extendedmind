@@ -582,7 +582,7 @@ function MainController($element, $controller, $document, $filter, $q, $rootScop
     if (featureActiveCallbacks) {
       for (var id in featureActiveCallbacks) {
         if (featureActiveCallbacks[id].feature === feature) {
-          featureActiveCallbacks[id].callback(featureChanged);
+          featureActiveCallbacks[id].callback(featureChanged, data);
         }
       }
     }
@@ -602,7 +602,7 @@ function MainController($element, $controller, $document, $filter, $q, $rootScop
       });
     }
 
-    if (featureInfos.slides && featureInfos.slides.left) {
+    if (featureInfos.slides && (featureInfos.slides.left || featureInfos.slides.overrideActiveSlide)) {
       if (featureChanged) {
         // Swipe to initial slide before the next repaint when feature changes,
         // ng-show is evaluated and the DOM is rendered.
@@ -620,7 +620,13 @@ function MainController($element, $controller, $document, $filter, $q, $rootScop
             //        inactive swipers so they have no width which swiper.js depends on when it calculates
             //        width for resized swiper (height is calculated in CSS with cssWidthAndHeight: 'height').
           }
-          SwiperService.swipeToWithoutAnimation(featureInfos.slides.left.path);
+          if (featureInfos.slides.overrideActiveSlide){
+            SwiperService.setInitialSlidePath(featureInfos.slides.path, featureInfos.slides.overrideActiveSlide);
+            SwiperService.swipeToWithoutAnimation(featureInfos.slides.overrideActiveSlide);
+            delete featureInfos.slides.overrideActiveSlide;
+          }else{
+            SwiperService.swipeToWithoutAnimation(featureInfos.slides.left.path);
+          }
         });
       } else {
         // Swipe to initial slide immediately.
