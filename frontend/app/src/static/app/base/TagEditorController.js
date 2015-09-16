@@ -36,6 +36,15 @@
     }
   };
 
+  $scope.showTagAction = function(actionName, tag){
+    switch (actionName){
+      case 'favoriteContext':
+      return $scope.tag.trans.tagType === 'context' &&
+             $scope.showEditorProperty('title') &&
+             $scope.isPersonalData();
+    }
+  };
+
   $scope.collapsibleOpen = false;
   $scope.toggleCollapsible = function() {
     $scope.collapsibleOpen = !$scope.collapsibleOpen;
@@ -127,6 +136,16 @@
         return '\u0023';  // # (number sign)
     }
   }
+
+  // FAVORITING
+
+  $scope.clickFavorite = function() {
+    if (!$scope.isFavoriteContext($scope.tag)){
+      $scope.favoriteContext($scope.tag);
+    }else{
+      $scope.unfavoriteContext($scope.tag);
+    }
+  };
 }
 
 TagEditorController['$inject'] = ['$q', '$rootScope', '$scope', 'TagsService', 'UISessionService'];

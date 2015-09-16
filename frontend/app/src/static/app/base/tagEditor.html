@@ -51,16 +51,25 @@
     <div class="container-content" drawer-override-aisle="right" ng-init="drawerAisleInitialized = true">
 
       <!-- TITLE -->
-      <div ng-show="showEditorProperty('title')">
-        <label for="tagEditorTitlebarTitle" class="text-prefixed--label large"
-          ng-bind="tag.trans.tagType === 'context' ? '@' : '#'"></label>
-        <div class="text-prefixed--outer">
-          <textarea id="tagEditorTitlebarTitle" class="text-heading-primary large text-prefixed"
-            ng-model="tag.trans.title" input-model-validator ng-trim="false"
-            ng-keydown="tagTitlebarTextKeyDown($event)" msd-elastic editable-field
-            editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
-            placeholder="enter title&#8230;" maxlength="128" autocapitalize="none" autocorrect="off">
-          </textarea>
+      <div ng-show="showEditorProperty('title')" class="row-top-parent">
+        <div class="group-mixed large">
+          <div class="group-mixed--middle">
+            <label for="tagEditorTitlebarTitle" class="text-prefixed--label large"
+              ng-bind="tag.trans.tagType === 'context' ? '@' : '#'"></label>
+            <div class="text-prefixed--outer">
+              <textarea id="tagEditorTitlebarTitle" class="text-heading-primary large text-prefixed"
+                ng-model="tag.trans.title" input-model-validator ng-trim="false"
+                ng-keydown="tagTitlebarTextKeyDown($event)" msd-elastic editable-field
+                editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
+                placeholder="enter title&#8230;" maxlength="128" autocapitalize="none" autocorrect="off">
+              </textarea>
+            </div>
+          </div>
+          <div ng-if="showTagAction('favoriteContext')" class="group-mixed--right">
+            <a href class="link-navigation" swiper-click="clickFavorite()">
+              <span class="icon-star large" ng-class="!isFavoriteContext(tag) && 'inactive'"></span>
+            </a>
+          </div>
         </div>
       </div>
 

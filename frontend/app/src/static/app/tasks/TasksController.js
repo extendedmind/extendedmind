@@ -634,6 +634,46 @@
     return $scope.context ? $scope.context.trans.uuid : 'no';
   };
 
+  $scope.isContextActive = function() {
+    return $scope.isFeatureActive('tasks') &&
+      $scope.getFeatureMap('tasks').slides.right.activeContext;
+  };
+
+  $scope.getActiveContext = function() {
+    return $scope.getFeatureMap('tasks').slides.right.activeContext;
+  };
+
+  function taskSlideChange(slidePath){
+    if (slidePath === 'tasks/context' && $scope.context){
+      $scope.getFeatureMap('tasks').slides.right.activeContext = $scope.context;
+      if (!$scope.$$phase && !$rootScope.$$phase) $scope.$digest();
+    }else if ($scope.getFeatureMap('tasks').slides.right.activeContext){
+      delete $scope.getFeatureMap('tasks').slides.right.activeContext;
+      if (!$scope.$$phase && !$rootScope.$$phase) $scope.$digest();
+    }
+  }
+  SwiperService.registerSlideChangeCallback(taskSlideChange, 'tasks', 'TasksController');
+
+
+  function featureChangedCallback(name, data/*, state*/) {
+    if (name === 'tasks' && data && data.trans.tagType === 'context') {
+      $scope.context = data;
+      // Set specific active slide for this feature change
+      $scope.getFeatureMap('tasks').slides.overrideActiveSlide = 'tasks/context';
+    }else if ($scope.getFeatureMap('tasks').slides.right.activeContext){
+      delete $scope.getFeatureMap('tasks').slides.right.activeContext;
+    }
+  };
+  UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'TasksController');
+
+  function tasksActive(featureChanged, data) {
+    if (!featureChanged && data && data.trans.tagType === 'context') {
+      $scope.swipeToContext(data);
+    }
+  }
+  if (angular.isFunction($scope.registerFeatureActivateCallback))
+    $scope.registerFeatureActivateCallback(tasksActive, 'tasks', 'TasksController');
+
   // ONBOARDING
 
   function gotoSignUp(){

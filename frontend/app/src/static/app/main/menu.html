@@ -20,6 +20,34 @@
       ng-class="{'highlighted': isFeatureActive('tasks'), 'onboarding': isOnboarding('tasks', 'all')}">
       <span class="text-navigation-menu">tasks</span>
     </a>
+    <div ng-if="useContexts()" class="container-menu--extras">
+      <div ng-if="isContextActive()" class="group-mixed small">
+        <div class="group-mixed--middle">
+          <a href class="link-menu-small highlighted" ng-click="gotoFeature('tasks', getActiveContext())">
+            <span class="text-navigation-menu-small" clamp=2 ng-bind="'@' + getActiveContext().trans.title"></span>
+          </a>
+        </div>
+        <div class="group-mixed--right">
+          <a href ng-if="isFavoriteContext(getActiveContext())" ng-click="unfavoriteContext(getActiveContext())">
+            <span class="icon-star small inverse"></span>
+          </a>
+        </div>
+      </div>
+      <div ng-if="isPersonalData() && getTagsArray('favoritedContexts').length > 0 && favoriteContext !== getActiveContext()"
+        class="group-mixed small"
+        ng-repeat="favoriteContext in getTagsArray('favoritedContexts') track by favoriteContext.trans.uuid">
+        <div class="group-mixed--middle">
+          <a href class="link-menu-small" ng-click="gotoFeature('tasks', favoriteContext)">
+            <span class="text-navigation-menu-small" clamp=2 ng-bind="'@' + favoriteContext.trans.title"></span>
+          </a>
+        </div>
+        <div class="group-mixed--right">
+          <a href ng-click="unfavoriteContext(favoriteContext)">
+            <span class="icon-star small inverse"></span>
+          </a>
+        </div>
+      </div>
+    </div>
     <a href class="link-menu row" ng-click="gotoFeature('notes')"
       ng-class="{'highlighted': isFeatureActive('notes'),
                  'invisible': features.notes.getStatus() === 'disabled',
