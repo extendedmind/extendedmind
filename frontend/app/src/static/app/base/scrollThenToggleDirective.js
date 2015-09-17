@@ -27,17 +27,35 @@
       var topElementBottomPosition = getTopElementBottomPosition();
 
       if (attrs.scrollThenToggleReset) $parse(attrs.scrollThenToggleReset)(scope)(scrollToTop);
-
       if (attrs.scrollThenToggleResizeable) {
-        scope.$on('elastic:resize', function(event, element) {
-          if (element[0].id === attrs.scrollThenToggleResizeable) {
+
+        var scrollToBottomOnResizeFn;
+        if (attrs.scrollThenToggleResizeableToBottom){
+          scrollToBottomOnResizeFn = $parse(attrs.scrollThenToggleResizeableToBottom)(scope);
+        }
+
+        var elementToScroll;
+        scope.$on('elastic:resize', function(event, elem) {
+          if (elem[0].id === attrs.scrollThenToggleResizeable) {
             topElementBottomPosition = getTopElementBottomPosition();
+          }
+          if (angular.isFunction(scrollToBottomOnResizeFn)){
+            var elementIdScroll = scrollToBottomOnResizeFn();
+            if (elementIdScroll){
+              if (!elementToScroll && elementIdScroll === true) elementToScroll = element[0];
+              else if (!elementToScroll) elementToScroll = document.getElementById(elementIdScroll);
+              scrollToBottom(elementToScroll);
+            }
           }
         });
       }
 
       function scrollToTop() {
         element[0].scrollTop = 0;
+      }
+
+      function scrollToBottom(elementToScroll) {
+        elementToScroll.scrollTop = elementToScroll.scrollHeight;
       }
 
       var toggleElement = document.getElementById(attrs.scrollThenToggle);

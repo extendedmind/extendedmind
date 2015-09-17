@@ -758,6 +758,17 @@
     if ($scope.readOnly && disabledElement) $scope.generateReadOnlyPropertyClickNotification(itemType);
   };
 
+  // EXPANDING TEXTAREA HANDLING
+
+  $scope.doScrollToBottomOnTextareaResize = function(){
+    if ($scope.focusedTextProperty){
+      // When using three column mode, scrolling is enabled on the larger container
+      if ($rootScope.columns === 3) return true;
+      // On less than three, scrolling is in the textarea, which is identified with the ignoreSnap id
+      else return 'ignoreSnap';
+    }
+  };
+
   // BACK HANDLER
 
   function onBackButton(){
