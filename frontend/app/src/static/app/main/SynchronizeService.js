@@ -127,7 +127,7 @@
     }
   }
 
-  function executeUpdateFns(updateFns, itemUUID, probableItemType, properties, ownerUUID){
+  function executeUpdateFns(updateFns, itemUUID, probableItemType, properties, ownerUUID, localModToggleValueWins){
     switch(probableItemType) {
     case 'item':
       // Already right order
@@ -147,7 +147,7 @@
     }
     // Now execute the functions
     for (var i=0, len=updateFns.length; i<len; i++){
-      var itemInfo = updateFns[i](itemUUID, properties, ownerUUID);
+      var itemInfo = updateFns[i](itemUUID, properties, ownerUUID, localModToggleValueWins);
       if (itemInfo.item) return itemInfo;
     }
   }
@@ -169,16 +169,17 @@
     return executeUpdateFns(updateFns, itemUUID, probableItemType, properties, ownerUUID);
   }
 
-
-  function updateModProperties(itemUUID, probableItemType, properties, ownerUUID){
+  function updateModProperties(itemUUID, probableItemType, properties, ownerUUID, localModToggleValueWins){
     function updateItemModProperties (itemUUID, properties, ownerUUID){
       return {type: 'item', item: ItemsService.updateItemModProperties(itemUUID, properties, ownerUUID)};
     }
-    function updateTaskModProperties (itemUUID, properties, ownerUUID){
-      return {type: 'task', item: TasksService.updateTaskModProperties(itemUUID, properties, ownerUUID)};
+    function updateTaskModProperties (itemUUID, properties, ownerUUID, localModToggleValueWins){
+      return {type: 'task', item: TasksService.updateTaskModProperties(itemUUID, properties, ownerUUID,
+                                                                       localModToggleValueWins)};
     }
-    function updateNoteModProperties (itemUUID, properties, ownerUUID){
-      return {type: 'note', item: NotesService.updateNoteModProperties(itemUUID, properties, ownerUUID)};
+    function updateNoteModProperties (itemUUID, properties, ownerUUID, localModToggleValueWins){
+      return {type: 'note', item: NotesService.updateNoteModProperties(itemUUID, properties, ownerUUID,
+                                                                       localModToggleValueWins)};
     }
     function updateListModProperties (itemUUID, properties, ownerUUID){
       return {type: 'list', item: ListsService.updateListModProperties(itemUUID, properties, ownerUUID)};
@@ -192,7 +193,7 @@
                      updateNoteModProperties,
                      updateListModProperties,
                      updateTagModProperties];
-    return executeUpdateFns(updateFns, itemUUID, probableItemType, properties, ownerUUID);
+    return executeUpdateFns(updateFns, itemUUID, probableItemType, properties, ownerUUID, localModToggleValueWins);
   }
 
   function processUUIDChange(oldUUID, newUUID, created, modified, archived, associated, type, ownerUUID,
@@ -759,7 +760,7 @@
 
   // Handles response from backend where offline buffer has been used
   function defaultCallback(request, response, queue) {
-    var properties;
+    var properties, localModToggleValueWins = false;;
     // Get the necessary information from the request
     // ****
     // POST
@@ -779,6 +780,7 @@
         } else if (request.content.url.endsWith('/complete')) {
           // Complete
           properties = {completed: response.completed, modified: response.result.modified};
+          localModToggleValueWins = true;
           // Handle repeating task
           if (response.generated){
             // Update generated item properties
@@ -801,7 +803,8 @@
           updateModProperties(request.params.uuid, 'list', properties, request.params.owner);
         }
         if (properties)
-          updateModProperties(request.params.uuid, request.params.type, properties, request.params.owner);
+          updateModProperties(request.params.uuid, request.params.type, properties, request.params.owner,
+                              localModToggleValueWins);
       } else if (request.params.type === 'note') {
         if (request.content.url.endsWith('/undelete')){
           properties = {modified: response.modified, deleted: undefined};
@@ -810,6 +813,7 @@
         }else if (request.content.url.endsWith('/favorite')) {
           // Favorite
           properties = {favorited: response.favorited, modified: response.result.modified};
+          localModToggleValueWins = true;
         } else if (request.content.url.endsWith('/task')){
           // Convert to task
           properties = {modified: response.modified};
@@ -820,7 +824,8 @@
           updateModProperties(request.params.uuid, 'list', properties, request.params.owner);
         }
         if (properties)
-          updateModProperties(request.params.uuid, request.params.type, properties, request.params.owner);
+          updateModProperties(request.params.uuid, request.params.type, properties, request.params.owner,
+                              localModToggleValueWins);
       } else if (request.params.type === 'list') {
         if (request.content.url.endsWith('/undelete')){
           properties = {modified: response.modified, deleted: undefined};

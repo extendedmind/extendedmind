@@ -267,7 +267,7 @@
                                          notes[ownerUUID].deletedNotes, getOtherArrays(ownerUUID));
       }
     },
-    updateNoteModProperties: function(uuid, properties, ownerUUID) {
+    updateNoteModProperties: function(uuid, properties, ownerUUID, localModToggleValueWins) {
       var noteInfo = this.getNoteInfo(uuid, ownerUUID);
       if (noteInfo){
         if (!properties){
@@ -281,6 +281,13 @@
             // Delete associated array before update.
             delete properties.associated;
           }
+
+          if (localModToggleValueWins && properties.favorited && !noteInfo.note.mod.favorited){
+            // This means that there has been a quick unfavorite after this response from the server,
+            // don't set favorited value to mod
+            delete properties.favorited;
+          }
+
           ItemLikeService.updateObjectProperties(noteInfo.note.mod, properties);
           if (properties.uuid){
             // UUID has changed

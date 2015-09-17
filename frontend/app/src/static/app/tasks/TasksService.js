@@ -48,14 +48,14 @@
     }else{
       // getter
       if (this._complete > 0 && this.completed === undefined) {
-        // Complete action fired less than half a second ago - we are propably in a $digest() loop
+        // Complete action fired and resetTrans not yet executed - we are propably in a $digest() loop
         // caused by it.
         return true;
       } else if (this._complete < 0 && this.completed !== undefined) {
-        // Task is uncompleted in the UI and its internal status is completed.
+        // Task is uncompleted in the UI but its internal status is completed as resetTrans has not been
+        // executed yet
         return false;
       }
-
       // Get value from internal status.
       return this.completed !== undefined;
     }
@@ -488,7 +488,7 @@
         return latestModified;
       }
     },
-    updateTaskModProperties: function(uuid, properties, ownerUUID) {
+    updateTaskModProperties: function(uuid, properties, ownerUUID, localModToggleValueWins) {
       var taskInfo = this.getTaskInfo(uuid, ownerUUID);
       if (taskInfo){
         if (!properties){
@@ -511,6 +511,11 @@
             }
             // Delete associated array before update.
             delete properties.associated;
+          }
+          if (localModToggleValueWins && properties.completed && !taskInfo.task.mod.completed){
+            // This means that there has been a quick uncomplete after this response from the server,
+            // don't set completed value to mod
+            delete properties.completed;
           }
           ItemLikeService.updateObjectProperties(taskInfo.task.mod, properties);
           if (properties.uuid){
