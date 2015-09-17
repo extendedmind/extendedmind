@@ -219,6 +219,16 @@
     return propertyName;
   };
 
+
+  var gotoTitleCallback;
+  $scope.gotoTaskTitle = function() {
+    if (typeof gotoTitleCallback === 'function') gotoTitleCallback();
+    if (!$scope.isFirstSlide('taskEditor')) $scope.swipeToBasic('taskEditor');
+  };
+  $scope.registerGotoTaskTitleCallback = function(callback) {
+    gotoTitleCallback = callback;
+  };
+
   // CALENDAR
 
   $scope.openCalendar = function() {

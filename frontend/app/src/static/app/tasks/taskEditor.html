@@ -17,13 +17,16 @@
           <span class="text-edit" ng-bind="isPropertyEdited() ? 'save' : 'done'"></span>
         </a>
 
-        <div ng-show="showEditorComponent('titlebarTitle')" ng-style="{maxWidth: calculateTitleWidth()}"
-          class="group-symmetrical--middle width-large text-heading-primary--outer primary">
-          <div class="text-heading-primary--inner">
-            <span class="text-heading-primary" ng-class="!task.trans.title && 'text-downplayed'"
-              ng-bind="task.trans.title && task.trans.title.length ? task.trans.title : 'new task'" clamp=2>
-            </span>
-          </div>
+        <div ng-show="showEditorComponent('titlebarTitle')" id="taskEditorTitlebarTitle"
+          ng-style="{maxWidth: calculateTitleWidth()}"
+          class="scroll-then-toggle group-symmetrical--middle width-large primary">
+          <a href class="link" swiper-click="gotoTaskTitle()">
+            <div class="text-heading-primary--inner">
+              <span class="text-heading-primary" ng-class="!task.trans.title && 'text-downplayed'"
+                ng-bind="task.trans.title && task.trans.title.length ? task.trans.title : 'new task'" clamp=2>
+              </span>
+            </div>
+          </a>
         </div>
 
         <div ng-if="showEditorComponent('editorType')"
@@ -58,7 +61,11 @@
       <div class="swiper-slide" swiper-slide="taskEditor/basic" slide-index="0"
         ng-init="slideInfo = {footerId: 'basicFooter'}">
 
-        <div class="container-content" drawer-override-aisle="right" ng-init="drawerAisleInitialized = true">
+        <div class="container-content" drawer-override-aisle="right" ng-init="drawerAisleInitialized = true"
+          scroll-then-toggle="taskEditorTitlebarTitle" scroll-then-toggle-top="taskEditorTitleInput"
+          scroll-then-toggle-resizeable="taskEditorTitleInput"
+          scroll-then-toggle-resizeable-to-bottom="doScrollToBottomOnTextareaResize"
+          scroll-then-toggle-reset="registerGotoTaskTitleCallback">
 
           <!-- TASK TITLE -->
           <form role="form" ng-show="showEditorProperty('title')" class="group-mixed"
@@ -69,7 +76,7 @@
                 icon-checkbox="editorTitlebarCheckbox" ng-disabled="readOnly"/>
             </div>
             <div class="group-mixed--middle">
-              <textarea ng-model="task.trans.title" input-model-validator ng-trim="false"
+              <textarea id="taskEditorTitleInput" ng-model="task.trans.title" input-model-validator ng-trim="false"
                 ng-keydown="taskTitlebarTextKeyDown($event)"
                 editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
                 editable-field-focus="setTitleBarFocus()" msd-elastic

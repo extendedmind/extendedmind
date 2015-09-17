@@ -20,7 +20,7 @@
         <div ng-show="showEditorComponent('titlebarTitle')" id="noteEditorTitlebarTitle"
           ng-style="{maxWidth: calculateTitleWidth()}"
           class="scroll-then-toggle group-symmetrical--middle width-large primary">
-          <a href class="link" swiper-click="gotoTitle()">
+          <a href class="link" swiper-click="gotoNoteTitle()">
             <div>
               <span class="text-heading-primary" ng-class="!note.trans.title && 'text-downplayed'"
                 ng-bind="note.trans.title && note.trans.title.length ? note.trans.title : 'new note'" clamp=2>
@@ -64,7 +64,7 @@
           scroll-then-toggle="noteEditorTitlebarTitle" scroll-then-toggle-top="noteEditorTitleInput"
           scroll-then-toggle-resizeable="noteEditorTitleInput"
           scroll-then-toggle-resizeable-to-bottom="doScrollToBottomOnTextareaResize"
-          scroll-then-toggle-reset="registerGotoTitleCallback">
+          scroll-then-toggle-reset="registerGotoNoteTitleCallback">
 
           <!-- NOTE TITLE -->
           <div ng-show="showEditorProperty('title')" class="row-top-parent">

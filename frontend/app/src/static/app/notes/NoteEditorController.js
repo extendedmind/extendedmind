@@ -235,13 +235,13 @@
 
   // MODES
 
-  $scope.gotoTitle = function() {
+  $scope.gotoNoteTitle = function() {
     if (typeof gotoTitleCallback === 'function') gotoTitleCallback();
     if (!$scope.isFirstSlide('noteEditor')) $scope.swipeToBasic('noteEditor');
   };
 
   var gotoTitleCallback;
-  $scope.registerGotoTitleCallback = function(callback) {
+  $scope.registerGotoNoteTitleCallback = function(callback) {
     gotoTitleCallback = callback;
   };
 
