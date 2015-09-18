@@ -678,12 +678,29 @@
     }
   };
 
+  // LATER FOOTER AND DESCRIPTION TEXTAREA INTERPLAY
+
+  var getLaterFooterHeight;
+  $scope.registerGetLaterFooterHeight = function(callback) {
+    getLaterFooterHeight = callback;
+  };
+
+  $scope.doScrollToBottomOnTaskDescriptionResize = function(){
+    if ($rootScope.columns === 3 && getLaterFooterHeight){
+      return $scope.doScrollToBottomOnTextareaResize(getLaterFooterHeight());
+    }else{
+      return $scope.doScrollToBottomOnTextareaResize();
+    }
+  };
+
   $scope.$watch(function() {
     for (var id in showFooterCallbacks) {
       var showFooter = $scope.showTaskEditorComponent(id);
       if (showFooterCallbacks.hasOwnProperty(id)) showFooterCallbacks[id](showFooter);
     }
   });
+
+  // CLEANUP
 
   $scope.$on('$destroy', function() {
     if (angular.isFunction($scope.unregisterSubEditorDoneCallback)) {

@@ -64,6 +64,7 @@
           scroll-then-toggle="noteEditorTitlebarTitle" scroll-then-toggle-top="noteEditorTitleInput"
           scroll-then-toggle-resizeable="noteEditorTitleInput"
           scroll-then-toggle-resizeable-to-bottom="doScrollToBottomOnTextareaResize"
+          scroll-then-toggle-resizeable-to-bottom-callback="registerScrollDownIfAtBottomCallback"
           scroll-then-toggle-reset="registerGotoNoteTitleCallback">
 
           <!-- NOTE TITLE -->
@@ -191,7 +192,7 @@
             editable-field-register-callbacks="registerNoteContentInputCallbacks(focus, blur)"
             editable-field-focus="setTextPropertyFocus('content', true)"
             editable-field-blur="setTextPropertyFocus('content', false)"
-            ng-disabled="readOnly"
+            ng-disabled="readOnly" ng-keydown="mainTextPropertyKeyDown($event)"
             placeholder="enter content&#8230;" maxlength="1000000" autocapitalize="none" autocorrect="off">
           </textarea>
 

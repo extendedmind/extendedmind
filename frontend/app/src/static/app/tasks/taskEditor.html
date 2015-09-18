@@ -64,7 +64,8 @@
         <div class="container-content" drawer-override-aisle="right" ng-init="drawerAisleInitialized = true"
           scroll-then-toggle="taskEditorTitlebarTitle" scroll-then-toggle-top="taskEditorTitleInput"
           scroll-then-toggle-resizeable="taskEditorTitleInput"
-          scroll-then-toggle-resizeable-to-bottom="doScrollToBottomOnTextareaResize"
+          scroll-then-toggle-resizeable-to-bottom="doScrollToBottomOnTaskDescriptionResize"
+          scroll-then-toggle-resizeable-to-bottom-callback="registerScrollDownIfAtBottomCallback"
           scroll-then-toggle-reset="registerGotoTaskTitleCallback">
 
           <!-- TASK TITLE -->
@@ -323,14 +324,15 @@
             ng-model="task.trans.description" input-model-validator ng-trim="false" msd-elastic
             ng-focus="setTextPropertyFocus('description', true)"
             ng-blur="setTextPropertyFocus('description', false)"
-            ng-disabled="readOnly"
+            ng-disabled="readOnly" ng-keydown="mainTextPropertyKeyDown($event)"
             placeholder="enter description&#8230;" maxlength="1024" autocapitalize="none" autocorrect="off">
           </textarea>
 
         </div>
 
         <footer class="container-content--after editor-footer" editor-footer="slideInfo"
-          editor-footer-ios-click editor-footer-start-expanded="{{fullEditor}}">
+          editor-footer-ios-click editor-footer-start-expanded="{{fullEditor}}"
+          editor-footer-register-get-height="registerGetLaterFooterHeight">
           <nav role="navigation" class="swiper-no-swiping group-symmetrical">
             <div ng-if="showTaskEditorComponent('basicFooter', 'later')" class="group-symmetrical--middle">
               <a href class="icon-downplayed" ng-click="toggleExpand()">

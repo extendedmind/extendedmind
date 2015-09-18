@@ -760,12 +760,28 @@
 
   // EXPANDING TEXTAREA HANDLING
 
-  $scope.doScrollToBottomOnTextareaResize = function(){
+  var scrollDownIfCaretBelowScreen;
+  $scope.registerScrollDownIfAtBottomCallback = function(callback){
+    scrollDownIfCaretBelowScreen = callback;
+  };
+
+  $scope.doScrollToBottomOnTextareaResize = function(overrideThreeColumenFooterHeight){
     if ($scope.focusedTextProperty){
       // When using three column mode, scrolling is enabled on the larger container
-      if ($rootScope.columns === 3) return true;
-      // On less than three, scrolling is in the textarea, which is identified with the ignoreSnap id
-      else return 'ignoreSnap';
+      if ($rootScope.columns === 3){
+        return {footerHeight:
+                  (overrideThreeColumenFooterHeight ?
+                   overrideThreeColumenFooterHeight : $rootScope.EDITOR_FOOTER_HEIGHT_THREE_COLUMN)};
+      } else{
+        // On less than three, scrolling is in the textarea, which is identified with the ignoreSnap id
+        return {id: 'ignoreSnap', footerHeight: 0};
+      };
+    }
+  };
+
+  $scope.mainTextPropertyKeyDown = function(keydownEvent){
+    if (scrollDownIfCaretBelowScreen && keydownEvent.keyCode >= 37 && keydownEvent.keyCode <= 40){
+      scrollDownIfCaretBelowScreen(keydownEvent.target);
     }
   };
 
