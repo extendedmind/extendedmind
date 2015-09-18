@@ -74,6 +74,16 @@
     else ItemsService.resetItem($scope.item);
   }
 
+  // TITLE HANDLING
+
+  var gotoTitleCallback;
+  $scope.gotoItemTitle = function() {
+    if (typeof gotoTitleCallback === 'function') gotoTitleCallback();
+  };
+  $scope.registerGotoItemTitleCallback = function(callback) {
+    gotoTitleCallback = callback;
+  };
+
   // TITLEBAR
 
   $scope.itemTitlebarHasText = function() {

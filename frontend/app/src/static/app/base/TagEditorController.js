@@ -108,6 +108,16 @@
     }
   }
 
+  // TITLE HANDLING
+
+  var gotoTitleCallback;
+  $scope.gotoTagTitle = function() {
+    if (typeof gotoTitleCallback === 'function') gotoTitleCallback();
+  };
+  $scope.registerGotoTagTitleCallback = function(callback) {
+    gotoTitleCallback = callback;
+  };
+
   // TITLEBAR
 
   $scope.tagTitlebarHasText = function() {

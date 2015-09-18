@@ -15,13 +15,16 @@
           <span class="text-edit">done</span>
         </a>
 
-        <div ng-show="showEditorComponent('titlebarTitle')" ng-style="{maxWidth: calculateTitleWidth()}"
-          class="group-symmetrical--middle width-large text-heading-primary--outer">
-          <div class="text-heading-primary--inner">
-            <span class="text-heading-primary" ng-class="!item.trans.title && 'text-downplayed'"
-              ng-bind="item.trans.title && item.trans.title.length ? item.trans.title : 'new item'" clamp=2>
-            </span>
-          </div>
+        <div ng-show="showEditorComponent('titlebarTitle')" id="itemEditorTitlebarTitle"
+          ng-style="{maxWidth: calculateTitleWidth()}"
+          class="scroll-then-toggle group-symmetrical--middle width-large primary">
+          <a href class="link" swiper-click="gotoItemTitle()">
+            <div class="text-heading-primary--inner">
+              <span class="text-heading-primary" ng-class="!item.trans.title && 'text-downplayed'"
+                ng-bind="item.trans.title && item.trans.title.length ? item.trans.title : 'new item'" clamp=2>
+              </span>
+            </div>
+          </a>
         </div>
 
         <a href ng-if="showEditorAction('delete', item)" class="group-symmetrical--right"
@@ -46,11 +49,13 @@
 
   <div ng-style="{'padding-bottom': isPropertyInDedicatedEdit() ? 0 : EDITOR_FOOTER_HEIGHT}"
     class="container-fluid--inner">
-    <div class="container-content" drawer-override-aisle="right" ng-init="drawerAisleInitialized = true">
+    <div class="container-content" drawer-override-aisle="right" ng-init="drawerAisleInitialized = true"
+      scroll-then-toggle="itemEditorTitlebarTitle" scroll-then-toggle-top="itemEditorTitleInput"
+      scroll-then-toggle-reset="registerGotoItemTitleCallback">
 
       <!-- ITEM TITLE -->
       <div ng-show="showEditorProperty('title')" class="row-vertically-centered with-textarea">
-        <textarea class="text-heading-primary large" ng-model="item.trans.title"
+        <textarea class="text-heading-primary large" ng-model="item.trans.title" id="itemEditorTitleInput"
           input-model-validator ng-trim="false" msd-elastic ng-keydown="itemTitlebarTextKeyDown($event)"
           editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
           placeholder="enter item title&#8230;" maxlength="128" autocapitalize="none" autocorrect="off">

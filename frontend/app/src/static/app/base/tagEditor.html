@@ -15,14 +15,17 @@
           <span class="text-edit">done</span>
         </a>
 
-        <div ng-show="showEditorComponent('titlebarTitle')" ng-style="{maxWidth: calculateTitleWidth()}"
-          class="group-symmetrical--middle width-large text-heading-primary--outer primary">
-          <div class="text-heading-primary--inner">
-            <span class="text-heading-primary" data-prefix="{{getPrefix(tag)}}"
-              ng-class="{'text-downplayed': !tag.trans.title, 'text-prefix': tag.trans.title}"
-              ng-bind="tag.trans.title && tag.trans.title.length ? tag.trans.title : 'new tag'" clamp=2>
-            </span>
-          </div>
+        <div ng-show="showEditorComponent('titlebarTitle')" id="tagEditorTitlebarTitle"
+          ng-style="{maxWidth: calculateTitleWidth()}"
+          class="scroll-then-toggle group-symmetrical--middle width-large primary">
+          <a href class="link" swiper-click="gotoTagTitle()">
+            <div class="text-heading-primary--inner">
+              <span class="text-heading-primary" data-prefix="{{getPrefix(tag)}}"
+                ng-class="{'text-downplayed': !tag.trans.title, 'text-prefix': tag.trans.title}"
+                ng-bind="tag.trans.title && tag.trans.title.length ? tag.trans.title : 'new tag'" clamp=2>
+              </span>
+            </div>
+          </a>
         </div>
 
         <a href ng-if="showEditorAction('delete', tag)"
@@ -48,7 +51,9 @@
   </header>
 
   <div class="container-fluid--inner">
-    <div class="container-content" drawer-override-aisle="right" ng-init="drawerAisleInitialized = true">
+    <div class="container-content" drawer-override-aisle="right" ng-init="drawerAisleInitialized = true"
+      scroll-then-toggle="tagEditorTitlebarTitle" scroll-then-toggle-top="tagEditorTitlebarTitle"
+      scroll-then-toggle-reset="registerGotoTagTitleCallback">
 
       <!-- TITLE -->
       <div ng-show="showEditorProperty('title')" class="row-top-parent">
