@@ -1314,6 +1314,8 @@ function MainController($element, $controller, $document, $filter, $q, $rootScop
       }else if (keydownEvent.keyCode === 40){
         if (keydownEvent.shiftKey) executeKeyboardShortcutCallbacks('shift-down');
         else executeKeyboardShortcutCallbacks('down');
+      }else if (event.keyCode === 27){
+        executeKeyboardShortcutCallbacks('esc');
       }
     }
   }

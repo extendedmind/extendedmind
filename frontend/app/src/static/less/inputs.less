@@ -43,6 +43,13 @@ textarea {
   resize: none;
 }
 
+// For three column mode, the textarea line spacing needs to be more
+@media (min-width: @min-width-three-column) {
+  textarea {
+    line-height: (@grid-vertical-half + 4px);
+  }
+}
+
 // 1. Use same color in placeholders as in .downplayed.
 ::-webkit-input-placeholder {
    color: @color-text-downplayed; // [1]

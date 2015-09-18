@@ -769,12 +769,13 @@
     if ($scope.focusedTextProperty){
       // When using three column mode, scrolling is enabled on the larger container
       if ($rootScope.columns === 3){
-        return {footerHeight:
+        return {scrollAmount: 26,
+                footerHeight:
                   (overrideThreeColumenFooterHeight ?
                    overrideThreeColumenFooterHeight : $rootScope.getEditorFooterHeight())};
       } else{
         // On less than three, scrolling is in the textarea, which is identified with the ignoreSnap id
-        return {id: 'ignoreSnap', footerHeight: 0};
+        return {id: 'ignoreSnap', scrollAmount: 22, footerHeight: 0};
       };
     }
   };
@@ -784,6 +785,18 @@
       scrollDownIfCaretBelowScreen(keydownEvent.target);
     }
   };
+
+  // KEYBOARD SHORTCUTS
+
+  if (angular.isFunction($scope.registerKeyboardShortcutCallback)){
+    $scope.registerKeyboardShortcutCallback(function(){
+      if ($scope.isSubEditorOpen()){
+        $scope.subEditorDone();
+      }else if (!$scope.focusedTextProperty){
+        $scope.closeEditor();
+      }
+    }, 'esc', 'EditorControllerEsc');
+  }
 
   // BACK HANDLER
 

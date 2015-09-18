@@ -180,7 +180,7 @@
             // caret is near the bottom of the screen
             if (caretDistanceToBottom < (35 + elementScrollInfo.footerHeight)){
               // Nudge one down
-              elementToScroll.scrollTop += 22;
+              elementToScroll.scrollTop += elementScrollInfo.scrollAmount;
             }
           }
         }
