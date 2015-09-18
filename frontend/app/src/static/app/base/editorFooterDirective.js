@@ -88,6 +88,13 @@
       if (attrs.editorFooterRegisterOkToReset) {
         var isHeightChangeAllowed = $parse(attrs.editorFooterRegisterOkToReset)(scope);
       }
+      if (attrs.editorFooterRegisterGetHeight) {
+        $parse(attrs.editorFooterRegisterGetHeight)(scope)(getFooterHeight);
+      }
+
+      function getFooterHeight(){
+        return containerInfos.footerHeight;
+      }
 
       var resetStates = {};
       function toggleBetween(setToMaxHeight, id/*, preventToggleTemporarily*/) {
