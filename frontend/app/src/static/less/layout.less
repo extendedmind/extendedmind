@@ -200,10 +200,14 @@ Vertically center .container-master and .container-editor in large screens
 // 4. Override and reset position and size in expanded mode.
 // 5. Hide menu and content, but still affect the layout.
 //    NOTE: With "display: none;" resize does not work because width is calculated in javascript.
+// 6. Add a border between editor and drawer aisle
 @media (min-width: @min-width-three-column) {
   .container-main.editor-show {
     & > .container-editor {
       max-width: @width-column-max;
+      .container-content{
+        border-left: 1px solid #EAEAEA; // [6]
+      }
     }
     &:not(.menu-show) {
       & > .container-editor {
