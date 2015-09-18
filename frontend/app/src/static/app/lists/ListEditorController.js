@@ -672,6 +672,15 @@
     }
   };
 
+  var gotoTitleCallback;
+  $scope.gotoListTitle = function() {
+    if (typeof gotoTitleCallback === 'function') gotoTitleCallback();
+    if (!$scope.isFirstSlide('listEditor')) $scope.swipeToBasic('listEditor');
+  };
+  $scope.registerGotoListTitleCallback = function(callback) {
+    gotoTitleCallback = callback;
+  };
+
   $scope.$watch(function() {
     for (var id in showFooterCallbacks) {
       var showFooter = $scope.showListEditorComponent(id);

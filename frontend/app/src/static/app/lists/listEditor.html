@@ -18,14 +18,16 @@
           <span class="text-edit" ng-bind="isPropertyEdited() ? 'save' : 'done'"></span>
         </a>
 
-        <div ng-show="showEditorComponent('titlebarTitle')"
+        <div ng-show="showEditorComponent('titlebarTitle')" id="listEditorTitlebarTitle"
           ng-style="{maxWidth: calculateTitleWidth()}"
-          class="group-symmetrical--middle width-large text-heading-primary--outer primary">
-          <div class="text-heading-primary--inner">
-            <span class="text-heading-primary" ng-class="!list.trans.title && 'text-downplayed'"
-              ng-bind="list.trans.title && list.trans.title.length ? list.trans.title : 'new list'" clamp=2>
-            </span>
-          </div>
+          class="scroll-then-toggle group-symmetrical--middle width-large primary">
+          <a href class="link" swiper-click="gotoListTitle()">
+            <div class="text-heading-primary--inner">
+              <span class="text-heading-primary" ng-class="!list.trans.title && 'text-downplayed'"
+                ng-bind="list.trans.title && list.trans.title.length ? list.trans.title : 'new list'" clamp=2>
+              </span>
+            </div>
+          </a>
         </div>
 
         <div ng-if="showEditorComponent('editorType')" class="group-symmetrical--middle group-centered substitute">
@@ -61,13 +63,18 @@
     <div class="swiper-wrapper">
       <div class="swiper-slide" swiper-slide="listEditor/basic" slide-index="0">
         <div ng-style="{'padding-bottom': showListEditorComponent('basicFooter') ? EDITOR_FOOTER_HEIGHT : 0}"
-          class="container-content" drawer-override-aisle="right" ng-init="drawerAisleInitialized = true">
+          class="container-content" drawer-override-aisle="right" ng-init="drawerAisleInitialized = true"
+          scroll-then-toggle="listEditorTitlebarTitle" scroll-then-toggle-top="listEditorTitleInput"
+          scroll-then-toggle-resizeable="listEditorTitleInput"
+          scroll-then-toggle-resizeable-to-bottom="doScrollToBottomOnTextareaResize"
+          scroll-then-toggle-resizeable-to-bottom-callback="registerScrollDownIfAtBottomCallback"
+          scroll-then-toggle-reset="registerGotoListTitleCallback">
 
           <!-- LIST TITLE -->
           <div ng-show="showEditorProperty('title')" class="row-top-parent">
             <div class="group-mixed large">
               <div class="group-mixed--middle">
-                <textarea class="text-heading-primary large" ng-model="list.trans.title"
+                <textarea id="listEditorTitleInput" class="text-heading-primary large" ng-model="list.trans.title"
                   input-model-validator ng-trim="false" msd-elastic msd-elastic-inline
                   ng-keydown="listTitlebarTextKeyDown($event)"
                   editable-field editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
@@ -153,7 +160,7 @@
             ng-model="list.trans.description" input-model-validator ng-trim="false"
             ng-focus="setTextPropertyFocus('description', true)"
             ng-blur="setTextPropertyFocus('description', false)"
-            ng-disabled="readOnly"
+            ng-disabled="readOnly" ng-keydown="mainTextPropertyKeyDown($event)"
             msd-elastic placeholder="enter description&#8230;" maxlength="1024"
             autocapitalize="none" autocorrect="off">
           </textarea>
