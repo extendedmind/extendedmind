@@ -1303,13 +1303,17 @@ function MainController($element, $controller, $document, $filter, $q, $rootScop
   function keydownHandler(keydownEvent){
     if (!$scope.backdropActive){
       if (keydownEvent.keyCode === 37){
-        executeKeyboardShortcutCallbacks('left');
+        if (keydownEvent.shiftKey) executeKeyboardShortcutCallbacks('shift-left');
+        else executeKeyboardShortcutCallbacks('left');
       }else if(keydownEvent.keyCode === 38){
-        executeKeyboardShortcutCallbacks('up');
+        if (keydownEvent.shiftKey) executeKeyboardShortcutCallbacks('shift-up');
+        else executeKeyboardShortcutCallbacks('up');
       }else if (keydownEvent.keyCode === 39){
-        executeKeyboardShortcutCallbacks('right');
+        if (keydownEvent.shiftKey) executeKeyboardShortcutCallbacks('shift-right');
+        else executeKeyboardShortcutCallbacks('right');
       }else if (keydownEvent.keyCode === 40){
-        executeKeyboardShortcutCallbacks('down');
+        if (keydownEvent.shiftKey) executeKeyboardShortcutCallbacks('shift-down');
+        else executeKeyboardShortcutCallbacks('down');
       }
     }
   }

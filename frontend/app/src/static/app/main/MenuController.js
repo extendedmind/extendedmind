@@ -39,6 +39,85 @@
         return listData;
     }
   };
+
+  // KEYBOARD SHORTCUTS
+
+  if (angular.isFunction($scope.registerKeyboardShortcutCallback)){
+    $scope.registerKeyboardShortcutCallback(function(){
+      var activeFeature = $scope.getActiveFeature();
+
+      switch (activeFeature){
+      case 'user':
+        return $scope.changeFeature('focus', undefined, true);
+      // NOTE: break; missing here on purpose: makes it possible to just continue on if features are missing
+      case 'focus':
+        if ($scope.features.inbox.getStatus() !== 'disabled'){
+          return $scope.changeFeature('inbox', undefined, true);
+        }
+      case 'inbox':
+        if ($scope.features.tasks.getStatus('all') !== 'disabled'){
+          return $scope.changeFeature('tasks', undefined, true);
+        }
+      case 'tasks':
+        if ($scope.features.notes.getStatus() !== 'disabled'){
+          return $scope.changeFeature('notes', undefined, true);
+        }
+      case 'notes':
+        if ($scope.features.lists.getStatus('active') !== 'disabled'){
+          return $scope.changeFeature('lists', undefined, true);
+        }
+      case 'lists':
+        return $scope.changeFeature('trash', undefined, true);
+      case 'list':
+        return $scope.changeFeature('trash', undefined, true);
+      case 'listInverse':
+        return $scope.changeFeature('trash', undefined, true);
+      case 'trash':
+        return $scope.changeFeature('settings', undefined, true);
+      case 'settings':
+        return $scope.changeFeature('user', undefined, true);
+      }
+    }, 'shift-down', 'MenuControllerDown');
+    $scope.registerKeyboardShortcutCallback(function(){
+      var activeFeature = $scope.getActiveFeature();
+
+      switch (activeFeature){
+      case 'settings':
+        return $scope.changeFeature('trash', undefined, true);
+      // NOTE: Again without break; to just continue up
+      case 'trash':
+        if ($scope.features.lists.getStatus('active') !== 'disabled'){
+          return $scope.changeFeature('lists', undefined, true);
+        }
+      case 'list':
+        if ($scope.features.lists.getStatus('active') !== 'disabled'){
+          return $scope.changeFeature('lists', undefined, true);
+        }
+      case 'listInverse':
+        if ($scope.features.lists.getStatus('active') !== 'disabled'){
+          return $scope.changeFeature('lists', undefined, true);
+        }
+      case 'lists':
+        if ($scope.features.notes.getStatus() !== 'disabled'){
+          return $scope.changeFeature('notes', undefined, true);
+        }
+      case 'notes':
+        if ($scope.features.tasks.getStatus('all') !== 'disabled'){
+          return $scope.changeFeature('tasks', undefined, true);
+        }
+      case 'tasks':
+        if ($scope.features.inbox.getStatus() !== 'disabled'){
+          return $scope.changeFeature('inbox', undefined, true);
+        }
+      case 'inbox':
+        return $scope.changeFeature('focus', undefined, true);
+      case 'focus':
+        return $scope.changeFeature('user', undefined, true);
+      case 'user':
+        return $scope.changeFeature('settings', undefined, true);
+      }
+    }, 'shift-up', 'MenuControllerUp');
+  }
 }
 
 MenuController['$inject'] = ['$rootScope', '$scope', 'ListsService', 'UISessionService'];
