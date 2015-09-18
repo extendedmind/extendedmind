@@ -47,7 +47,7 @@
     </div>
   </header>
 
-  <div ng-style="{'padding-bottom': isPropertyInDedicatedEdit() ? 0 : EDITOR_FOOTER_HEIGHT}"
+  <div ng-style="{'padding-bottom': isPropertyInDedicatedEdit() ? 0 : getEditorFooterHeight()}"
     class="container-fluid--inner">
     <div class="container-content" drawer-override-aisle="right" ng-init="drawerAisleInitialized = true"
       scroll-then-toggle="itemEditorTitlebarTitle" scroll-then-toggle-top="itemEditorTitleInput"

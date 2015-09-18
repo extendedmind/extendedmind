@@ -771,7 +771,7 @@
       if ($rootScope.columns === 3){
         return {footerHeight:
                   (overrideThreeColumenFooterHeight ?
-                   overrideThreeColumenFooterHeight : $rootScope.EDITOR_FOOTER_HEIGHT_THREE_COLUMN)};
+                   overrideThreeColumenFooterHeight : $rootScope.getEditorFooterHeight())};
       } else{
         // On less than three, scrolling is in the textarea, which is identified with the ignoreSnap id
         return {id: 'ignoreSnap', footerHeight: 0};

@@ -35,7 +35,7 @@
       $rootScope.MAX_HEIGHT = 1025;
       $rootScope.MENU_WIDTH = 260;
       $rootScope.EDITOR_FOOTER_HEIGHT = 44;
-      $rootScope.EDITOR_FOOTER_HEIGHT_THREE_COLUMN = 44;
+      $rootScope.EDITOR_FOOTER_HEIGHT_THREE_COLUMN = 68;
       $rootScope.TOOLBAR_BUTTON_WIDTH = $rootScope.TITLEBAR_BUTTON_WIDTH = 80;
       $rootScope.TOOLBAR_HEADING_MAX_WIDTH = $rootScope.TITLEBAR_HEADING_MAX_WIDTH = 350;
       $rootScope.TOOLBAR_HEIGHT = 66;
@@ -60,6 +60,14 @@
 
       $scope.getEditableFieldSticky = function(){
         if (useStickyInputs) return 'sticky';
+      };
+
+      $rootScope.getEditorFooterHeight = function(){
+        if (window.innerWidth >= $rootScope.THREE_COLUMN_MIN_WIDTH){
+          return $rootScope.EDITOR_FOOTER_HEIGHT_THREE_COLUMN;
+        }else{
+          return $rootScope.EDITOR_FOOTER_HEIGHT;
+        }
       };
 
       $scope.is12HourTime = function() {
@@ -350,7 +358,6 @@
 
       var previousLayout;
       function setDimensions(width, height) {
-
         $rootScope.currentWidth = width;
         $rootScope.currentHeight = height;
 

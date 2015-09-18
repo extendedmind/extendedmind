@@ -59,7 +59,7 @@
     swiper-click="containerClick($event.target.disabled, 'note')">
     <div class="swiper-wrapper" ng-class="showNoteInstruction() && 'swiper-no-swiping'">
       <div class="swiper-slide" swiper-slide="noteEditor/basic" slide-index="0">
-        <div ng-style="{'padding-bottom': showNoteEditorComponent('basicFooter') ? EDITOR_FOOTER_HEIGHT : 0}"
+        <div ng-style="{'padding-bottom': showNoteEditorComponent('basicFooter') ? getEditorFooterHeight() : 0}"
           class="container-content" drawer-override-aisle="right" ng-init="drawerAisleInitialized = true"
           scroll-then-toggle="noteEditorTitlebarTitle" scroll-then-toggle-top="noteEditorTitleInput"
           scroll-then-toggle-resizeable="noteEditorTitleInput"

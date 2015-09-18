@@ -62,7 +62,7 @@
     swiper-click="containerClick($event.target.disabled, 'list')">
     <div class="swiper-wrapper">
       <div class="swiper-slide" swiper-slide="listEditor/basic" slide-index="0">
-        <div ng-style="{'padding-bottom': showListEditorComponent('basicFooter') ? EDITOR_FOOTER_HEIGHT : 0}"
+        <div ng-style="{'padding-bottom': showListEditorComponent('basicFooter') ? getEditorFooterHeight() : 0}"
           class="container-content" drawer-override-aisle="right" ng-init="drawerAisleInitialized = true"
           scroll-then-toggle="listEditorTitlebarTitle" scroll-then-toggle-top="listEditorTitleInput"
           scroll-then-toggle-resizeable="listEditorTitleInput"

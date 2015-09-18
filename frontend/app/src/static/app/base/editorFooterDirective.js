@@ -20,13 +20,15 @@
  */
 
  function editorFooterDirective($animateCss, $document, $parse, $rootScope, $timeout, packaging) {
-  var footerHeight = 44;  // NOTE: Match with @grid-vertical in LESS.
+  var footerHeight = $rootScope.getEditorFooterHeight();  // NOTE: Matches LESS.
   return {
     restrict: 'A',
     scope: true,
     link: function(scope, element, attrs) {
-      var expandedFooterMaxHeight = 156;  // Default expanded height. Used in task editor.
-                                          // TODO: Rename to expandedFooterDefaultHeight
+      // Default expanded height. Used in task editor.
+      // TODO: Rename to expandedFooterDefaultHeight
+      var expandedFooterMaxHeight =
+        footerHeight === $rootScope.EDITOR_FOOTER_HEIGHT_THREE_COLUMN ? 148 : 156;
       var oldTranslateYPosition = 0;      // Default and previous translateY position.
       var currentExpandedFooterHeight;    // Current expanded footer height.
       var expandPromise, shrinkPromise;   // Animation promises.

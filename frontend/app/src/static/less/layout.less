@@ -205,9 +205,9 @@ Vertically center .container-master and .container-editor in large screens
   .container-main.editor-show {
     & > .container-editor {
       max-width: @width-column-max;
-      .container-content{
-        border-left: 1px solid #EAEAEA; // [6]
-      }
+    }
+    &:not(.editor-expanded) > .container-editor .container-content{
+      border-left: 1px solid @color-border-light; // [6]
     }
     &:not(.menu-show) {
       & > .container-editor {
@@ -245,8 +245,10 @@ Vertically center .container-master and .container-editor in large screens
 # LEVEL 4: Fluid
 */
 // 1. Match with .container-toolbar.
+// 2. Bigger footer for three column mode, match plus with last item in menu
 @height-footer: 62px; // [1]
 @height-footer-short: @grid-vertical;
+@height-footer-large: 68px; // [2]
 
 // Fluid container height.
 //
@@ -368,6 +370,36 @@ Vertically center .container-master and .container-editor in large screens
   right: 0;           // [1]
 }
 
+// Use large footer when in three column mode
+@media (min-width: @min-width-three-column) {
+  .container-fluid--inner {
+    padding-bottom: @height-footer-large;
+  }
+  .container-fluid--inner.small-footer-height {
+    padding-bottom: @height-footer-large;
+  }
+  .container-editor--inner__outer {
+    padding-bottom: @height-footer-large;
+  }
+  .container-editor--inner__after, .container-editor--inner__after.group-symmetrical {
+    height: @height-footer-large;
+    line-height: @height-footer-large;
+  }
+  .container-master .container-content--after {
+    bottom: -@height-footer-large;  // [1]
+    .btn-action{
+      margin-top: (@height-footer-large - @grid-vertical);
+    }
+  }
+  .container-fluid--inner.small-footer-height .container-content--after {
+    bottom: -@height-footer-large;
+  }
+  .container-master .container-content--after.group-btn,
+  .container-modal .container-content--after.group-btn {
+    height: @height-footer-large;
+  }
+}
+
 /*
 *************************************************************
 # Master footer
@@ -401,6 +433,20 @@ Vertically center .container-master and .container-editor in large screens
   }
 }
 
+@media (min-width: @min-width-three-column) {
+  .container-master .container-content--after .group-symmetrical {
+    height: @height-footer-large;
+    line-height: @height-footer-large;
+    .group-symmetrical--left > .icon-sort,
+    .group-symmetrical--middle > a > .icon-plus {
+      line-height: @height-footer-large;
+    }
+    .group-symmetrical--left.link-navigation > .text-navigation-back,
+    .group-symmetrical--right.link-navigation > .text-navigation-forward {
+      height: @height-footer-large;
+    }
+  }
+}
 
 /*
 *************************************************************
@@ -441,6 +487,20 @@ Vertically center .container-master and .container-editor in large screens
 // 1. When expanded only one row, .keywords-footer would have undesired scroll due to padding-bottom.
 .editor-footer.expanded-one-row .keywords-footer {
   padding-bottom: 0;  // [1]
+}
+
+// Use larger footer
+@media (min-width: @min-width-three-column) {
+  .container-content--after {
+    height: @height-footer-large;
+  }
+  .container-content--after > .group-symmetrical {
+    height: @height-footer-large;
+    line-height: @height-footer-large;
+    & .text-navigation-forward{
+      height: inherit;
+    }
+  }
 }
 
 /*
