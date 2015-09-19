@@ -161,6 +161,40 @@
         reinitModal = undefined;
       };
 
+      $scope.openModal = function(activeElementsArrayLike) {
+        var activeElements = [];
+        for (var i = 0; i < activeElementsArrayLike.length; i++) {
+          activeElements.push(activeElementsArrayLike[i]);
+        }
+
+        function getParams(previousActiveElement) {
+          var activeElement;
+          if (activeElements.length > 0) {
+            activeElement = activeElements.shift();
+          }
+          return {
+            messageText: [{
+              type: 'text',
+              data: 'this is a description of a feature'
+            }],
+            confirmText: 'next',
+            customPosition: true,
+            activeElement: activeElement,
+            previousActiveElement: previousActiveElement,
+            anchorToElement: true,
+            keepOpenOnClose: activeElements.length > 0,
+            confirmAction: function() {
+              if (activeElements.length > 0) reinitModal(getParams(activeElement));
+              else {
+                // TODO: menu tutorial complete etc.
+              }
+            }
+          };
+        }
+
+        $scope.showModal(undefined, getParams());
+      };
+
       // EVENTS - user interactions, exceptions
 
       // Listen to interactions emitted to $rootScope.

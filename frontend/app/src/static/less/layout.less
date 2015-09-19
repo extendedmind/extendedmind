@@ -160,6 +160,7 @@ Menu
 @max-width-modal: 500px;
 
 // 1. Center vertically. See http://css-tricks.com/centering-css-complete-guide/#vertical-block-known
+// 2. Anchor with menu.
 .container-modal--outer {
   position: absolute;                   // [1]
   top: 50%;                             // [1]
@@ -171,6 +172,20 @@ Menu
   width: 100%;
   max-width: @max-width-modal;
   .center-horizontally-absolute();
+  &.anchor-to-menu-element {
+    left: @width-menu - @grid-horizontal; // [2]
+    right: auto;                          // [2]
+  }
+}
+
+// 1. In one-column layout, anchor to menu element in JavaScript.
+@media (max-width: (@width-column-max - 1px)) {
+  .container-modal--outer.anchor-to-menu-element {
+    transform: none;  // [1]
+    top: 0;           // [1]
+    left: 0;          // [1]
+    right: 0;         // [1]
+  }
 }
 
 // 1. Set default max-height

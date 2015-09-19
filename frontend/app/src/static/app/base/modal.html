@@ -1,16 +1,16 @@
 <div class="container-modal" editable-field-container="auto" editable-field-container-blur
-    editable-field-container-clicked-elsewhere="!modal.params.cancelDisabled && closeModal()">
+    editable-field-container-clicked-elsewhere="!modal.params.cancelDisabled && close()">
   <div class="container-fluid">
 
     <!-- TOOLBAR -->
     <header class="modal-toolbar group-symmetrical">
       <a href ng-if="!hideCloseText && !closeText" class="group-symmetrical--right icon-downplayed"
-        ng-click="closeModal()">
+        ng-click="close()">
         <span class="icon-x"></span>
       </a>
 
       <a href ng-if="!hideCloseText && closeText" class="group-symmetrical--right link-navigation"
-        ng-click="closeModal()">
+        ng-click="close()">
         <span class="text-navigation" ng-bind="closeText"></span>
       </a>
     </header>
@@ -21,12 +21,13 @@
         <div class="group-instruction">
 
           <!-- HEADING -->
-          <h2 class="group-heading shrinked row" ng-class="messageHeading.length > 6 && 'long';">
+          <h2 ng-if="messageHeading" class="group-heading shrinked row"
+            ng-class="messageHeading.length > 6 && 'long'">
             <span class="text-heading" ng-bind="messageHeading"></span>
           </h2>
 
           <!-- CONTENT -->
-          <div class="textgroup-ingress first last row" ng-bind="messageIngress"></div>
+          <div ng-if="messageIngress" class="textgroup-ingress first last row" ng-bind="messageIngress"></div>
 
           <div ng-if="messageText" class="textgroup-message row">
             <span ng-repeat="textNode in messageText" ng-switch="textNode.type" class="text-medium">

@@ -7,6 +7,7 @@
 
   <div ng-if="modal.visible" class="container-modal--outer animate-modal"
     modal="modal.params" modal-close="hideModal()"
+    modal-layout-change="{register: registerLayoutChangedCallback, unregister: unregisterLayoutChangedCallback}"
     modal-reinit="{register: registerModalReinit, unregister: unregisterModalReinit}">
   </div>
 </div>
