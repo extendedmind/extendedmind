@@ -2,8 +2,13 @@
   <header class="container-titlebar">
     <div class="container-titlebar--inner">
       <div class="group-symmetrical height-large--top">
-        <a href class="group-symmetrical--left link-navigation highlighted" swiper-click="closeEditor()">
+        <a ng-if="!showEditorComponent('side-by-side-links')" href
+        class="group-symmetrical--left link-navigation highlighted" swiper-click="closeEditor()">
           <span class="text-navigation-back">back</span>
+        </a>
+        <a ng-if="showEditorComponent('side-by-side-links')" href
+        class="group-symmetrical--right link-navigation highlighted" swiper-click="closeEditor()">
+          <span class="text-navigation">close</span>
         </a>
       </div>
 

@@ -34,14 +34,33 @@
           <span class="text-heading-primary text-downplayed">note</span>
         </div>
 
-        <a href ng-if="showNoteAction('delete')" class="group-symmetrical--right"
-          swiper-click="deleteNoteInEdit()">
-          <span class="icon-trash"></span>
-        </a>
-        <a href ng-if="showNoteAction('restore')"
-          class="group-symmetrical--right link-navigation highlighted active" swiper-click="undeleteNote(note)">
-          <span class="text-navigation">restore</span>
-        </a>
+        <div ng-if="!showEditorComponent('side-by-side-links')">
+          <a href ng-if="showNoteAction('delete')" class="group-symmetrical--right"
+            swiper-click="deleteNoteInEdit()">
+            <span class="icon-trash"></span>
+          </a>
+          <a href ng-if="showNoteAction('restore')"
+            class="group-symmetrical--right link-navigation highlighted active" swiper-click="undeleteNote(note)">
+            <span class="text-navigation">restore</span>
+          </a>
+        </div>
+
+        <div ng-if="showEditorComponent('side-by-side-links')" class="group-symmetrical--right side-by-side">
+          <a href ng-if="showEditorAction('delete', note)" class="link-side-by-side"
+            swiper-click="deleteNoteInEdit()">
+            <span class="icon-trash"></span>
+          </a>
+          <a href ng-if="showEditorAction('restore', note)"
+            class="link-navigation highlighted active link-side-by-side" swiper-click="undeleteNote(note)">
+            <span class="text-navigation">restore</span>
+          </a>
+          <a href ng-if="!iterableItem" class="link-navigation active highlighted link-side-by-side"
+            swiper-click="endNoteEdit()">
+            <span class="text-navigation" ng-class="getEditorNavigationBackClasses()"
+              ng-bind="isAutoSavingPrevented() ? (isNoteEdited() && !note.trans.deleted ? 'save' : 'close') : noteStatus">
+            </span>
+          </a>
+        </div>
 
         <div ng-if="showEditorComponent('label')" class="group-symmetrical--right">
           <div class="text-field--label-wrapper">

@@ -201,13 +201,6 @@ Use `.text-details` to separate details from body text.
   .set-font-bold();
 }
 
-@media (min-width: @min-width-three-column) {
-  .text-heading-primary.large {
-    font-size: @size-font-large;
-    line-height: (@grid-vertical + 6px);
-  }
-}
-
 .text-downplayed {
   color: @color-text-downplayed;
 }
@@ -462,6 +455,14 @@ Search results (omnibar, deleted)
   &.large {
     line-height: @grid-vertical;
     font-size: @size-font-medium-large;
+  }
+}
+
+// For desktop, make editor heading larger, including prefix label
+@media (min-width: @min-width-three-column) {
+  .text-heading-primary.large, .text-prefixed--label.large {
+    font-size: @size-font-large;
+    line-height: (@grid-vertical + 6px);
   }
 }
 

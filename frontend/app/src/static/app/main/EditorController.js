@@ -698,13 +698,17 @@
       return !item.trans.link || $scope.focusedTextProperty === 'url';
       case 'urlLinkError':
       return $scope.focusedTextProperty !== 'url' && item.trans.link && !isValidUrl(item.trans.link);
+      case 'side-by-side-links':
+      return $rootScope.columns === 3;
     }
   };
 
   $scope.showEditorAction = function(actionName, item){
     switch (actionName){
       case 'saveBack':
-      return !$scope.isPropertyInDedicatedEdit();
+      return !$scope.showEditorComponent('side-by-side-links') && !$scope.isPropertyInDedicatedEdit();
+      case 'saveClose':
+      return $scope.showEditorComponent('side-by-side-links') && !$scope.isPropertyInDedicatedEdit();
       case 'saveDone':
       return $scope.isPropertyInDedicatedEdit();
       case 'delete':

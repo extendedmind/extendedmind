@@ -34,15 +34,34 @@
           <span class="text-heading-primary text-downplayed">list</span>
         </div>
 
-        <a href ng-if="showListAction('delete', list)" class="group-symmetrical--right"
-           swiper-click="deleteListInEdit()">
-          <span class="icon-trash"></span>
-        </a>
-        <a href ng-if="showListAction('restore', list)"
-          class="group-symmetrical--right link-navigation highlighted active"
-          swiper-click="undeleteList(list)">
-          <span class="text-navigation">restore</span>
-        </a>
+        <div ng-if="!showEditorComponent('side-by-side-links')">
+          <a href ng-if="showListAction('delete', list)" class="group-symmetrical--right"
+             swiper-click="deleteListInEdit()">
+            <span class="icon-trash"></span>
+          </a>
+          <a href ng-if="showListAction('restore', list)"
+            class="group-symmetrical--right link-navigation highlighted active"
+            swiper-click="undeleteList(list)">
+            <span class="text-navigation">restore</span>
+          </a>
+        </div>
+
+        <div ng-if="showEditorComponent('side-by-side-links')" class="group-symmetrical--right side-by-side">
+          <a href ng-if="showEditorAction('delete', list)" class="link-side-by-side"
+            swiper-click="deleteListInEdit()">
+            <span class="icon-trash"></span>
+          </a>
+          <a href ng-if="showEditorAction('restore', list)"
+            class="link-navigation highlighted active link-side-by-side" swiper-click="undeleteList(list)">
+            <span class="text-navigation">restore</span>
+          </a>
+          <a href ng-if="!iterableItem" class="link-navigation active highlighted link-side-by-side"
+            swiper-click="endListEdit()">
+            <span class="text-navigation"
+              ng-bind="isListEdited() && !list.trans.deleted ? 'save' : 'close'">
+            </span>
+          </a>
+        </div>
 
         <div ng-if="showEditorComponent('label')" class="group-symmetrical--right">
           <div class="text-field--label-wrapper">

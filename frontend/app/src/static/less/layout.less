@@ -1432,6 +1432,32 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
   }
 }
 
+// Desktop version using side-by-side links
+// 1. 'close' / 'saving' / 'save' needs to not move the trash can on its left
+// 2. For recurring editor, the trash can needs to be pushed a bit down
+.group-symmetrical--right.side-by-side {
+  padding-right: 0;
+  .link-side-by-side{
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  .link-side-by-side:first-child{
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .link-side-by-side:last-child{
+    padding-left: 20px;
+    padding-right: @grid-horizontal + 38px;  // [1]
+    .text-navigation, .icon-trash {
+      position: absolute;  // [1]
+      right: @grid-horizontal;
+    }
+    .icon-trash {
+      top: 21px; // [2]
+    }
+  }
+}
+
 .group-centered {
   width: 100%;
   text-align: center;

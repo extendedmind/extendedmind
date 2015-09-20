@@ -29,7 +29,7 @@
   if (angular.isFunction($scope.registerFeatureEditorAboutToCloseCallback))
     $scope.registerFeatureEditorAboutToCloseCallback(noteEditorAboutToClose, 'NoteEditorController');
 
-  $scope.noteStatus = 'back';
+  $scope.noteStatus = $scope.showEditorComponent('side-by-side-links') ? 'close' : 'back';
   $scope.keywordsPickerOpen = false;
 
   // Set collapsible open when
@@ -195,7 +195,7 @@
     function doSetSaved() {
       $scope.noteStatus = 'saved';
       resetNoteStatusTimer = $timeout(function() {
-        $scope.noteStatus = 'back';
+        $scope.noteStatus = $scope.showEditorComponent('side-by-side-links') ? 'close' : 'back';
       }, 1000);
     }
 
@@ -300,7 +300,7 @@
       $scope.saveNote($scope.note, pollForSaveReady).then(function() {
         $scope.noteStatus = 'saved';
         backTimer = $timeout(function() {
-          $scope.noteStatus = 'back';
+          $scope.noteStatus = $scope.showEditorComponent('side-by-side-links') ? 'close' : 'back';
         }, 1000);
         noteSavingInProgress = false;
       }, function() {

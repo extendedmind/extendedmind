@@ -11,7 +11,8 @@
           ng-bind="isTagEdited() && !tag.trans.deleted ? 'save' : 'back'"></span>
         </a>
 
-        <a href ng-if="showEditorAction('saveDone')" class="group-symmetrical--left highlighted">
+        <a href ng-show="showEditorAction('saveDone')"
+          class="group-symmetrical--left highlighted override-disabled" ng-click="subEditorDone()">
           <span class="text-edit">done</span>
         </a>
 
@@ -28,15 +29,34 @@
           </a>
         </div>
 
-        <a href ng-if="showEditorAction('delete', tag)"
-           class="group-symmetrical--right" swiper-click="deleteTagInEdit()" >
-          <span class="icon-trash"></span>
-        </a>
-        <a href ng-if="showEditorAction('restore', tag)"
-           class="group-symmetrical--right link-navigation highlighted active"
-           swiper-click="undeleteTagInEdit()">
-          <span class="text-navigation">restore</span>
-        </a>
+        <div ng-if="!showEditorComponent('side-by-side-links')">
+          <a href ng-if="showEditorAction('delete', tag)"
+             class="group-symmetrical--right" swiper-click="deleteTagInEdit()" >
+            <span class="icon-trash"></span>
+          </a>
+          <a href ng-if="showEditorAction('restore', tag)"
+             class="group-symmetrical--right link-navigation highlighted active"
+             swiper-click="undeleteTagInEdit()">
+            <span class="text-navigation">restore</span>
+          </a>
+        </div>
+
+        <div ng-if="showEditorComponent('side-by-side-links')" class="group-symmetrical--right side-by-side">
+          <a href ng-if="showEditorAction('delete', tag)" class="link-side-by-side"
+            swiper-click="deleteTagInEdit()">
+            <span class="icon-trash"></span>
+          </a>
+          <a href ng-if="showEditorAction('restore', tag)"
+            class="link-navigation highlighted active link-side-by-side" swiper-click="undeleteTag(tag)">
+            <span class="text-navigation">restore</span>
+          </a>
+          <a href class="link-navigation active highlighted link-side-by-side"
+            swiper-click="endTagEdit()">
+            <span class="text-navigation"
+              ng-bind="isTagEdited() && !tag.trans.deleted ? 'save' : 'close'">
+            </span>
+          </a>
+        </div>
 
         <div ng-if="focusedTextProperty === 'description'" class="group-symmetrical--right">
           <div class="text-field--label-wrapper">

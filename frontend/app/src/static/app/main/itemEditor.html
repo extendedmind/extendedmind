@@ -11,8 +11,9 @@
           ng-class="getEditorNavigationBackClasses()"></span>
         </a>
 
-        <a href ng-if="showEditorAction('saveDone')" class="group-symmetrical--left highlighted">
-          <span class="text-edit">done</span>
+        <a href ng-show="showEditorAction('saveDone')"
+           class="group-symmetrical--left highlighted override-disabled" ng-click="subEditorDone()">
+          <span class="text-edit" ng-bind="isPropertyEdited() ? 'save' : 'done'"></span>
         </a>
 
         <div ng-show="showEditorComponent('titlebarTitle')" id="itemEditorTitlebarTitle"
@@ -27,14 +28,33 @@
           </a>
         </div>
 
-        <a href ng-if="showEditorAction('delete', item)" class="group-symmetrical--right"
-          swiper-click="deleteItemInEdit()">
-          <span class="icon-trash"></span>
-        </a>
-        <a href ng-if="showEditorAction('restore', item)"
-          class="group-symmetrical--right link-navigation highlighted active"
-          swiper-click="undeleteItem(item)"><span class="text-navigation">restore</span>
-        </a>
+        <div ng-if="!showEditorComponent('side-by-side-links')">
+          <a href ng-if="showEditorAction('delete', item)" class="group-symmetrical--right"
+            swiper-click="deleteItemInEdit()">
+            <span class="icon-trash"></span>
+          </a>
+          <a href ng-if="showEditorAction('restore', item)"
+            class="group-symmetrical--right link-navigation highlighted active"
+            swiper-click="undeleteItem(item)"><span class="text-navigation">restore</span>
+          </a>
+        </div>
+
+        <div ng-if="showEditorComponent('side-by-side-links')" class="group-symmetrical--right side-by-side">
+          <a href ng-if="showEditorAction('delete', item)" class="link-side-by-side"
+            swiper-click="deleteItemInEdit()">
+            <span class="icon-trash"></span>
+          </a>
+          <a href ng-if="showEditorAction('restore', item)"
+            class="link-navigation highlighted active link-side-by-side" swiper-click="undeleteItem(item)">
+            <span class="text-navigation">restore</span>
+          </a>
+          <a href ng-if="!iterableItem" class="link-navigation active highlighted link-side-by-side"
+            swiper-click="endItemEdit()">
+            <span class="text-navigation"
+              ng-bind="isItemEdited() && !item.trans.deleted ? 'save' : 'close'">
+            </span>
+          </a>
+        </div>
 
         <div ng-if="showEditorComponent('label')" class="group-symmetrical--right">
           <div class="text-field--label-wrapper">
