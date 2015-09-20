@@ -653,9 +653,31 @@ input[type="checkbox"]:checked + label:before {
   opacity: 0;
 }
 
-// 1. Blur backdrop. See http://tympanus.net/codrops/2011/12/14/item-blur-effect-with-css3-and-jquery/
+// 1. Blur backdrop. See
+// http://tympanus.net/codrops/2011/12/14/item-blur-effect-with-css3-and-jquery/
+// http://stackoverflow.com/a/10879586
 // 2. Focus active element.
 .blur {
+  position: relative;
+  text-shadow: 0px 0px 10px rgba(0, 0, 0, 0.9);
+  color: rgba(0, 0, 0, 0) !important;
+  &:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.5);
+  }
+  .active {
+    position: relative;
+    z-index: 1;
+    &, * {
+      color: white !important;  // [2]
+      text-shadow: none;
+    }
+  }
   &,
   span, span:after,
   textarea {
@@ -679,20 +701,11 @@ input[type="checkbox"]:checked + label:before {
     transition-duration: @speed-animate-blur, @speed-animate-blur, @speed-animate-blur;
     transition-timing-function: @timing-animate, @timing-animate, @timing-animate;
   }
-  text-shadow: 0px 0px 10px rgba(0, 0, 0, 0.9);
-  color: rgba(0, 0, 0, 0) !important;
-  opacity: 0.5;
   span,
   span:after,
   textarea {
     text-shadow: 0px 0px 10px rgba(51, 51, 51, 0.9);
     color: rgba(51, 51, 51, 0) !important;
-  }
-  & .active {
-    &, * {
-      text-shadow: none;        // [2]
-      color: white !important;  // [2]
-    }
   }
 }
 
