@@ -465,7 +465,6 @@ input[type="checkbox"]:checked + label:before {
 */
 
 @speed-animate-modal: 70ms;
-@speed-animate-blur: 70ms;
 
 .animate-modal.ng-enter,
 .animate-modal.ng-leave {
@@ -677,29 +676,6 @@ input[type="checkbox"]:checked + label:before {
       color: white !important;  // [2]
       text-shadow: none;
     }
-  }
-  &,
-  span, span:after,
-  textarea {
-    -webkit-transition-property: opacity, text-shadow, color;
-    -webkit-transition-duration: @speed-animate-blur, @speed-animate-blur, @speed-animate-blur;
-    -webkit-transition-timing-function: @timing-animate, @timing-animate, @timing-animate;
-
-    -moz-transition-property: opacity, text-shadow, color;
-    -moz-transition-duration: @speed-animate-blur, @speed-animate-blur, @speed-animate-blur;
-    -moz-transition-timing-function: @timing-animate, @timing-animate, @timing-animate;
-
-    -o-transition-property: opacity, text-shadow, color;
-    -o-transition-duration: @speed-animate-blur, @speed-animate-blur, @speed-animate-blur;
-    -o-transition-timing-function: @timing-animate, @timing-animate, @timing-animate;
-
-    -ms-transition-property: opacity, text-shadow, color;
-    -ms-transition-duration: @speed-animate-blur, @speed-animate-blur, @speed-animate-blur;
-    -ms-transition-timing-function: @timing-animate, @timing-animate, @timing-animate;
-
-    transition-property: opacity, text-shadow, color;
-    transition-duration: @speed-animate-blur, @speed-animate-blur, @speed-animate-blur;
-    transition-timing-function: @timing-animate, @timing-animate, @timing-animate;
   }
   span,
   span:after,
