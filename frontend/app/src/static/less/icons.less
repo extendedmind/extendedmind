@@ -18,6 +18,7 @@ TODO: Icons are not working yet with Phytoplankton
 @size-icon-convert: 11px;
 @size-icon-convert-large: 15px;
 @size-icon-star-large: 25px;
+@size-icon-star-extra-large: 30px;
 @size-icon-star: 16px;
 @size-icon-star-small: 8px;
 @size-icon-trash: 18px;
@@ -321,6 +322,16 @@ Icon classes
   height: @size-icon-star-large;      // [1]
   &:after {
     font-size: @size-icon-star-large;
+  }
+}
+
+@media (min-width: @min-width-three-column) {
+  .icon-star.large {
+    line-height: @size-icon-star-extra-large;
+    height: @size-icon-star-extra-large;
+    &:after {
+      font-size: @size-icon-star-extra-large;
+    }
   }
 }
 

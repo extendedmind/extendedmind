@@ -901,6 +901,17 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   }
 }
 
+// Vertically align larger star for three columns
+
+@media (min-width: @min-width-three-column) {
+  .group-mixed.large > .group-mixed--right {
+    & > a.link-navigation {
+      height: 78px;
+      line-height: 78px;
+    }
+  }
+}
+
 .group-mixed.height-large {
   margin-top: 10px;
 }
@@ -1569,14 +1580,10 @@ textarea#ignoreSnap.disable-full-height.input-separate {
 // From http://stackoverflow.com/a/6471713
 .text-prefixed--label {
   float: left;
-  padding-top: @padding-vertically-centered;
-  padding-bottom: @padding-vertically-centered;
 }
 .text-prefixed--outer {
   overflow: hidden;
   .text-prefixed {
-    padding-top: @padding-vertically-centered;
-    padding-bottom: @padding-vertically-centered;
     padding-right: @grid-horizontal;
   }
 }
