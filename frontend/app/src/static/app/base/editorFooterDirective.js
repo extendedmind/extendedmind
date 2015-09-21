@@ -28,7 +28,7 @@
       // Default expanded height. Used in task editor.
       // TODO: Rename to expandedFooterDefaultHeight
       var expandedFooterMaxHeight =
-        footerHeight === $rootScope.EDITOR_FOOTER_HEIGHT_THREE_COLUMN ? 148 : 156;
+        footerHeight === $rootScope.EDITOR_FOOTER_HEIGHT_THREE_COLUMN ? 145 : 156;
       var oldTranslateYPosition = 0;      // Default and previous translateY position.
       var currentExpandedFooterHeight;    // Current expanded footer height.
       var expandPromise, shrinkPromise;   // Animation promises.
