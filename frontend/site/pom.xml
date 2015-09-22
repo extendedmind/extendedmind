@@ -59,8 +59,8 @@
               <goal>install-node-and-npm</goal>
             </goals>
             <configuration>
-              <nodeVersion>v0.12.7</nodeVersion>
-              <npmVersion>2.12.1</npmVersion>
+              <nodeVersion>v4.1.0</nodeVersion>
+              <npmVersion>3.3.3</npmVersion>
               <nodeDownloadRoot>https://nodejs.org/dist/</nodeDownloadRoot>
             </configuration>
           </execution>
@@ -267,7 +267,7 @@
               <name>extendedmind/site</name>
               <alias>site</alias>
               <build>
-                <from>node:0.12</from>
+                <from>node:4</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
                 <tags>
                   <tag>latest</tag>
