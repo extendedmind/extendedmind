@@ -306,6 +306,25 @@
         }
       }
     }
+
+    // Also check that there isn't any request in the queue with fakeUUID that is in the response but isn't
+    // stored locally, and thus not caught by the checks above. We only remove the first PUT that has
+    // fakeUUID in it, because were there in the queue more, the item would definitely be in the arrays.
+    if (queue && queue.length){
+      for (i = queue.length-1; i >= 0; i--){
+        if (queue[i].params.fakeUUID){
+          // Try to find with fake UUID stored as 'id' field
+          var conflictingItemInfo = getItemInfoFromResponse(response,
+                                    UUIDService.getShortIdFromFakeUUID(queue[i].params.fakeUUID), 'id');
+          if (conflictingItemInfo){
+            // Still found a conflicting item in the response with the exact same id, and the above
+            // did not find it from the service arrays, we just splice the request from the queue,
+            // and treat this as a new item returned from the response
+            queue.splice(i, 1);
+          }
+        }
+      }
+    }
   }
 
 
@@ -396,36 +415,23 @@
   function synchronizeCallback(request, response, queue) {
     var ownerUUID = request.params.owner;
     if (!jQuery.isEmptyObject(response)) {
+
+      // First make sure that there aren't any items in the response that were PUT to the backend
+      // but whose result was never processed - i.e. locally the fake UUID is still present,
+      // but there is a new UUID in the backend. To do this, we use the id field we set in
+      // ItemLikeService.save -> new item.
+      validateSynchronizeResultIdFields(request, response, queue);
+
       if (queue && queue.length){
-        var updatedPutUUIDs = [];
         var mismatchTypeConflictInfos = [];
         var danglingItemsToDestroy = [];
         var i, len;
-
-        // First make sure that there aren't any items in the response that were PUT to the backend
-        // but whose result was never processed - i.e. locally the fake UUID is still present,
-        // but there is a new UUID in the backend. To do this, we use the id field we set in
-        // ItemLikeService.save -> new item.
-        validateSynchronizeResultIdFields(request, response, queue);
 
         // Loop over the queue to see if there are any conflicting requests there
         for (i = queue.length-1; i >= 0; i--){
           var conflictingItemInfo =
             getItemInfoFromResponse(response,
                                 queue[i].params.uuid);
-          if (!conflictingItemInfo && queue[i].params.fakeUUID){
-            // Try to find with fake UUID stored as 'id' field
-            conflictingItemInfo = getItemInfoFromResponse(response,
-                                      UUIDService.getShortIdFromFakeUUID(queue[i].params.fakeUUID), 'id');
-            if (conflictingItemInfo){
-              // This means that new item response never reached the client, process UUID change here
-              processUUIDChange(queue[i].params.fakeUUID, conflictingItemInfo.item.uuid,
-                                conflictingItemInfo.item.created, conflictingItemInfo.item.modified,
-                                conflictingItemInfo.item.archived, undefined, queue[i].params.type,
-                                request.params.owner, queue);
-            }
-          }
-
           if (conflictingItemInfo && conflictingItemInfo.type === queue[i].params.type){
 
             // *******************************************************************************
@@ -437,96 +443,88 @@
               queue.splice(i, 1);
               continue;
             }else if (queue[i].content.method === 'put'){
-              if (!updatedPutUUIDs.findFirstObjectByKeyValue('uuid', conflictingItem.uuid)){
-                if (queue[i].params.type === 'note' &&
-                    queue[i].content.data.content && queue[i].content.data.content.length &&
-                    conflictingItem.content && conflictingItem.content.length &&
-                    queue[i].content.data.content !== conflictingItem.content){
+              if (queue[i].params.type === 'note' &&
+                  queue[i].content.data.content && queue[i].content.data.content.length &&
+                  conflictingItem.content && conflictingItem.content.length &&
+                  queue[i].content.data.content !== conflictingItem.content){
 
-                  // Content conflict, create hybrid and change PUT in queue to reflect the change
-                  var conflictDelimiter = '\n\n>>> conflicting changes >>>\n\n', conflictedContent;
-                  if (conflictingItem.modified > queue[i].content.timestamp){
-                    conflictedContent = conflictingItem.content +
-                                              conflictDelimiter +
-                                              queue[i].content.data.content;
-                  }else{
-                    conflictedContent = queue[i].content.data.content +
-                                              conflictDelimiter +
-                                              conflictingItem.content;
-                  }
-                  queue[i].content.data.content = conflictedContent;
-                  queue[i].content.data.modified = conflictingItem.modified;
-                  conflictingItem.content = conflictedContent;
+                // Content conflict, create hybrid and change PUT in queue to reflect the change
+                var conflictDelimiter = '\n\n>>> conflicting changes >>>\n\n', conflictedContent;
+                if (conflictingItem.modified > queue[i].content.timestamp){
+                  conflictedContent = conflictingItem.content +
+                                            conflictDelimiter +
+                                            queue[i].content.data.content;
+                }else{
+                  conflictedContent = queue[i].content.data.content +
+                                            conflictDelimiter +
+                                            conflictingItem.content;
+                }
+                queue[i].content.data.content = conflictedContent;
+                queue[i].content.data.modified = conflictingItem.modified;
+                conflictingItem.content = conflictedContent;
 
-                  // Also update the current note modifications to match the queue
-                  updateModProperties(conflictingItem.uuid,
-                                      queue[i].params.type,
-                                      {content: conflictedContent,
-                                       modified: conflictingItem.modified},
-                                       request.params.owner);
-                  // In both cases remove the item to prevent mixed data model
-                  removeItemFromResponse(response, conflictingItem.uuid, queue[i].params.type);
-                } else if (queue[i].params.type === 'task' &&
-                           !angular.equals(queue[i].content.data.reminders, conflictingItem.reminders)){
+                // Also update the current note modifications to match the queue
+                updateModProperties(conflictingItem.uuid,
+                                    queue[i].params.type,
+                                    {content: conflictedContent,
+                                     modified: conflictingItem.modified},
+                                     request.params.owner);
+                // In both cases remove the item to prevent mixed data model
+                removeItemFromResponse(response, conflictingItem.uuid, queue[i].params.type);
+              } else if (queue[i].params.type === 'task' &&
+                         !angular.equals(queue[i].content.data.reminders, conflictingItem.reminders)){
 
-                  // Reminder conflict, merge reminders and change PUT in queue to reflect the change
-                  var mergedReminders = [];
-                  var correctReminderForThisDevice =
-                    ReminderService.findReminderForThisDevice(queue[i].content.data.reminders);
-                  if (correctReminderForThisDevice) {
-                    mergedReminders.push(correctReminderForThisDevice);
-                  }
+                // Reminder conflict, merge reminders and change PUT in queue to reflect the change
+                var mergedReminders = [];
+                var correctReminderForThisDevice =
+                  ReminderService.findReminderForThisDevice(queue[i].content.data.reminders);
+                if (correctReminderForThisDevice) {
+                  mergedReminders.push(correctReminderForThisDevice);
+                }
 
-                  if (conflictingItem.reminders && conflictingItem.reminders.length){
-                    var invalidReminderForThisDevice =
-                      ReminderService.findReminderForThisDevice(conflictingItem.reminders);
-                    for(var k=0; k<conflictingItem.reminders.length; k++){
-                      if (conflictingItem.reminders[k] !== invalidReminderForThisDevice){
-                        mergedReminders.push(conflictingItem.reminders[k]);
-                      }
+                if (conflictingItem.reminders && conflictingItem.reminders.length){
+                  var invalidReminderForThisDevice =
+                    ReminderService.findReminderForThisDevice(conflictingItem.reminders);
+                  for(var k=0; k<conflictingItem.reminders.length; k++){
+                    if (conflictingItem.reminders[k] !== invalidReminderForThisDevice){
+                      mergedReminders.push(conflictingItem.reminders[k]);
                     }
                   }
+                }
 
-                  queue[i].content.data.reminders = mergedReminders;
+                queue[i].content.data.reminders = mergedReminders;
+                queue[i].content.data.modified = conflictingItem.modified;
+
+                // Also update the current task modifications to match the queue
+                updateModProperties(conflictingItem.uuid,
+                                    queue[i].params.type,
+                                    {reminders: mergedReminders,
+                                     modified: conflictingItem.modified},
+                                     request.params.owner);
+                removeItemFromResponse(response, conflictingItem.uuid, queue[i].params.type);
+              } else{
+                // Other types than note: no need to do a merge of content
+                if (conflictingItem.modified > queue[i].content.timestamp){
+                  // Database item is newer, remove the PUT from the queue. ItemService.evaluateMod()
+                  // should be able to remove local modifications eventually. We can't delete them here,
+                  // as it is quite hard to know which .mod values aren't the result of previous
+                  // processUUIDChange calls that change the values of .mod, and are overwritten in
+                  // processSynchronizeUpdateResult, and which are the result of this request.
+                  queue.splice(i, 1);
+                  continue;
+                }else{
+                  // Don't splice it from the buffer, but we still want to change the modified value so that
+                  // the call doesn't fail with next sync
                   queue[i].content.data.modified = conflictingItem.modified;
 
-                  // Also update the current task modifications to match the queue
+                  // Update modified value to reflect backend from both persistent and mod fields
                   updateModProperties(conflictingItem.uuid,
                                       queue[i].params.type,
-                                      {reminders: mergedReminders,
-                                       modified: conflictingItem.modified},
-                                       request.params.owner);
+                                      {modified: conflictingItem.modified},
+                                      request.params.owner);
+                  // Remove database item from response
                   removeItemFromResponse(response, conflictingItem.uuid, queue[i].params.type);
-                } else{
-                  // Other types than note: no need to do a merge of content
-                  if (conflictingItem.modified > queue[i].content.timestamp){
-                    // We now removed the latest PUT from the queue, so we sould also remove the local
-                    // modifications on the item
-                    updateModProperties(conflictingItem.uuid, queue[i].params.type,
-                                        undefined, request.params.owner);
-                    // Database item is newer, remove the PUT from the queue
-                    queue.splice(i, 1);
-                    continue;
-                  }else{
-
-                    // Don't splice it from the buffer, but we still want to change the modified value so that
-                    // the call doesn't fail with next sync
-                    queue[i].content.data.modified = conflictingItem.modified;
-
-                    // Update modified value to reflect backend from both persistent and mod fields
-                    updateModProperties(conflictingItem.uuid,
-                                        queue[i].params.type,
-                                        {modified: conflictingItem.modified},
-                                        request.params.owner);
-                    // Remove database item from response
-                    removeItemFromResponse(response, conflictingItem.uuid, queue[i].params.type);
-                  }
                 }
-                updatedPutUUIDs.push(conflictingItem.uuid);
-              }else{
-                // This has already been updated, but we want to change the modified value anyway to
-                // match the backend
-                queue[i].content.data.modified = conflictingItem.modified;
               }
             }else if (queue[i].content.method === 'post'){
               if (queue[i].content.url.endsWith('/complete') && conflictingItem.completed){
@@ -534,7 +532,8 @@
                 if (conflictingItem.repeating && queue[i].params && queue[i].params.generatedFakeUUID){
                   // The task has been completed online but also a new task has been generated offline,
                   // we need to remove the uuid and everything about from everywhere
-                  if (danglingItemsToDestroy.indexOf(queue[i].params.generatedFakeUUID) === -1){
+                  if (!danglingItemsToDestroy.findFirstObjectByKeyValue(
+                                            'uuid', queue[i].params.generatedFakeUUID)){
                     danglingItemsToDestroy.push({uuid: queue[i].params.generatedFakeUUID,
                                                  owner: request.params.owner});
                   }
@@ -707,15 +706,16 @@
               }
             }
           }
-          for (i=0, len=queueSpliceInfos.length; i<len; i++){
-            // Remove mod from the item and then remove the entire item
-            var mismatchItemInfo = updateModProperties(queue[queueSpliceInfos[i].index].params.uuid,
-                                               queue[queueSpliceInfos[i].index].params.type,
-                                               undefined, request.params.owner);
-            if (mismatchItemInfo){
-              removeItemFromArray(request.params.owner, mismatchItemInfo.item, mismatchItemInfo.type);
+          // Loop now from the end to avoid problem with splicing in queue
+          for (i=queueSpliceInfos.length-1; i>=0; i--){
+            // Splice the request from the queue and mark the item for deletion
+            if (!danglingItemsToDestroy.findFirstObjectByKeyValue(
+                                      'uuid', queue[queueSpliceInfos[i].index].params.uuid)){
+              danglingItemsToDestroy.push({uuid: queue[queueSpliceInfos[i].index].params.uuid,
+                                           owner: request.params.owner,
+                                           skipSplice: true});
             }
-            // All that's left is to remove the request from the queue: the response and will be added to
+            // All that's left is to remove the request from the queue: the response will be added to
             // the right service after this
             queue.splice(queueSpliceInfos[i].index, 1);
           }
@@ -724,21 +724,25 @@
         if (danglingItemsToDestroy.length){
           for (i = 0; i < danglingItemsToDestroy.length; i++){
             var hist = removeItemUUIDFromArray(danglingItemsToDestroy[i].owner, danglingItemsToDestroy[i].uuid);
-            if (hist.generatedUUID){
+            if (hist && hist.generatedUUID){
               // The dangling item has generated another dangling item, it needs to be destroyed as well
               danglingItemsToDestroy.push({uuid: hist.generatedUUID, owner: danglingItemsToDestroy[i].owner});
             }
           }
-          // Remove the items from the queue as well
+          // Remove the dangling item modifications from the queue also
           for (i = queue.length-1; i >= 0; i--){
+            var danglingItem = danglingItemsToDestroy.findFirstObjectByKeyValue(
+                                  'uuid',
+                                  queue[i].params.fakeUUID ? queue[i].params.fakeUUID : queue[i].params.uuid);
             if (queue[i].params &&
-                danglingItemsToDestroy.findFirstIndexByKeyValue('uuid',
-                                                                queue[i].params.fakeUUID) !== undefined){
+                danglingItem && !danglingItem.skipSplice){
               queue.splice(i, 1);
             }
           }
         }
       }
+
+      // Queue is now processed, now update results to arrays
       processSynchronizeUpdateResult(ownerUUID, response);
     }
     // Execute items synchronized callback
