@@ -560,27 +560,29 @@
                                          getOtherArrays(ownerUUID));
     },
     getTaskInfo: function(value, ownerUUID, searchField) {
-      var field = searchField ? searchField : 'uuid';
-      var task = tasks[ownerUUID].activeTasks.findFirstObjectByKeyValue(field, value, 'trans');
-      if (task){
-        return {
-          type: 'active',
-          task: task
-        };
-      }
-      task = tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue(field, value, 'trans');
-      if (task){
-        return {
-          type: 'deleted',
-          task: task
-        };
-      }
-      task = tasks[ownerUUID].archivedTasks.findFirstObjectByKeyValue(field, value, 'trans');
-      if (task){
-        return {
-          type: 'archived',
-          task: task
-        };
+      if (value !== undefined && ownerUUID !== undefined){
+        var field = searchField ? searchField : 'uuid';
+        var task = tasks[ownerUUID].activeTasks.findFirstObjectByKeyValue(field, value, 'trans');
+        if (task){
+          return {
+            type: 'active',
+            task: task
+          };
+        }
+        task = tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue(field, value, 'trans');
+        if (task){
+          return {
+            type: 'deleted',
+            task: task
+          };
+        }
+        task = tasks[ownerUUID].archivedTasks.findFirstObjectByKeyValue(field, value, 'trans');
+        if (task){
+          return {
+            type: 'archived',
+            task: task
+          };
+        }
       }
     },
     saveTask: function(task) {

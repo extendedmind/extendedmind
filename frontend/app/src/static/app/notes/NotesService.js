@@ -330,27 +330,29 @@
                                             notes[ownerUUID].deletedNotes, getOtherArrays(ownerUUID));
     },
     getNoteInfo: function(value, ownerUUID, searchField) {
-      var field = searchField ? searchField : 'uuid';
-      var note = notes[ownerUUID].activeNotes.findFirstObjectByKeyValue(field, value, 'trans');
-      if (note){
-        return {
-          type: 'active',
-          note: note
-        };
-      }
-      note = notes[ownerUUID].deletedNotes.findFirstObjectByKeyValue(field, value, 'trans');
-      if (note){
-        return {
-          type: 'deleted',
-          note: note
-        };
-      }
-      note = notes[ownerUUID].archivedNotes.findFirstObjectByKeyValue(field, value, 'trans');
-      if (note){
-        return {
-          type: 'archived',
-          note: note
-        };
+      if (value !== undefined){
+        var field = searchField ? searchField : 'uuid';
+        var note = notes[ownerUUID].activeNotes.findFirstObjectByKeyValue(field, value, 'trans');
+        if (note){
+          return {
+            type: 'active',
+            note: note
+          };
+        }
+        note = notes[ownerUUID].deletedNotes.findFirstObjectByKeyValue(field, value, 'trans');
+        if (note){
+          return {
+            type: 'deleted',
+            note: note
+          };
+        }
+        note = notes[ownerUUID].archivedNotes.findFirstObjectByKeyValue(field, value, 'trans');
+        if (note){
+          return {
+            type: 'archived',
+            note: note
+          };
+        }
       }
     },
     saveNote: function(note, pollForSaveReady) {

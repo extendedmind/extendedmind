@@ -155,20 +155,22 @@
                                            tags[ownerUUID].deletedTags);
     },
     getTagInfo: function(value, ownerUUID, searchField) {
-      var field = searchField ? searchField : 'uuid';
-      var tag = tags[ownerUUID].activeTags.findFirstObjectByKeyValue(field, value, 'trans');
-      if (tag){
-        return {
-          type: 'active',
-          tag: tag
-        };
-      }
-      tag = tags[ownerUUID].deletedTags.findFirstObjectByKeyValue(field, value, 'trans');
-      if (tag){
-        return {
-          type: 'deleted',
-          tag: tag
-        };
+      if (value !== undefined && ownerUUID !== undefined){
+        var field = searchField ? searchField : 'uuid';
+        var tag = tags[ownerUUID].activeTags.findFirstObjectByKeyValue(field, value, 'trans');
+        if (tag){
+          return {
+            type: 'active',
+            tag: tag
+          };
+        }
+        tag = tags[ownerUUID].deletedTags.findFirstObjectByKeyValue(field, value, 'trans');
+        if (tag){
+          return {
+            type: 'deleted',
+            tag: tag
+          };
+        }
       }
     },
     saveTag: function(tag) {

@@ -242,27 +242,29 @@
   UserSessionService.registerNofifyOwnersCallback(notifyOwners, 'ListsService');
 
   function getListInfo(value, ownerUUID, searchField){
-    var field = searchField ? searchField : 'uuid';
-    var list = lists[ownerUUID].activeLists.findFirstObjectByKeyValue(field, value, 'trans');
-    if (list){
-      return {
-        type: 'active',
-        list: list
-      };
-    }
-    list = lists[ownerUUID].deletedLists.findFirstObjectByKeyValue(field, value, 'trans');
-    if (list){
-      return {
-        type: 'deleted',
-        list: list
-      };
-    }
-    list = lists[ownerUUID].archivedLists.findFirstObjectByKeyValue(field, value, 'trans');
-    if (list){
-      return {
-        type: 'archived',
-        list: list
-      };
+    if (value !== undefined && ownerUUID !== undefined){
+      var field = searchField ? searchField : 'uuid';
+      var list = lists[ownerUUID].activeLists.findFirstObjectByKeyValue(field, value, 'trans');
+      if (list){
+        return {
+          type: 'active',
+          list: list
+        };
+      }
+      list = lists[ownerUUID].deletedLists.findFirstObjectByKeyValue(field, value, 'trans');
+      if (list){
+        return {
+          type: 'deleted',
+          list: list
+        };
+      }
+      list = lists[ownerUUID].archivedLists.findFirstObjectByKeyValue(field, value, 'trans');
+      if (list){
+        return {
+          type: 'archived',
+          list: list
+        };
+      }
     }
   }
   ExtendedItemService.registerGetListInfoCallback(getListInfo);
