@@ -72,6 +72,7 @@
                                BackendClientService.generateFakeTimestamp());
     },
     logout: function() {
+      // Bypass queue
       return BackendClientService.postOnline('/api/logout', postLogoutRegexp, undefined, false, true);
     },
     clear: function(user) {
