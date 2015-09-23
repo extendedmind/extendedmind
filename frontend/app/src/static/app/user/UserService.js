@@ -72,7 +72,7 @@
                                BackendClientService.generateFakeTimestamp());
     },
     logout: function() {
-      return BackendClientService.postOnline('/api/logout', postLogoutRegexp);
+      return BackendClientService.postOnline('/api/logout', postLogoutRegexp, undefined, false, true);
     },
     clear: function(user) {
       return BackendClientService.postOnlineWithUsernamePassword(
