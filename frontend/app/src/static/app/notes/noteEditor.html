@@ -216,9 +216,7 @@
           </textarea>
 
           <div ng-if="showNoteInstruction('content')" class="row">
-            <span class="text-details">
-              when done, save your note by clicking 'save' in the top-left corner or swipe left
-            </span>
+            <span class="text-details" ng-bind="getNoteContentInstructionText()"></span>
           </div>
 
           <!-- LIST PICKER -->

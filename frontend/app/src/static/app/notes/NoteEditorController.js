@@ -40,9 +40,11 @@
   $scope.showNoteAction = function(actionName){
     switch (actionName){
       case 'saveBack':
-      return $scope.isOnboarding('notes') || $scope.showEditorAction('saveBack');
+      return ($scope.isOnboarding('notes') && $rootScope.columns !== 3) ||
+              $scope.showEditorAction('saveBack');
       case 'saveDone':
-      return !$scope.isOnboarding('notes') && $scope.showEditorAction('saveDone');
+      return !($scope.isOnboarding('notes') && $rootScope.columns !== 3) &&
+              $scope.showEditorAction('saveDone');
       case 'delete':
       return $scope.showEditorAction('delete', $scope.note) && !$scope.isOnboarding('notes');
       case 'restore':
@@ -137,9 +139,19 @@
       case 'content':
       return $scope.note.trans.content && $scope.note.trans.content.length && $scope.isOnboarding('notes');
       case 'title':
-      return $scope.isOnboarding('notes');
+      return $scope.isOnboarding('notes') && $scope.focusedTextProperty !== 'content' &&
+             !($scope.note.trans.content && $scope.note.trans.content.length);
     }
   };
+
+  $scope.getNoteContentInstructionText = function(){
+    if ($rootScope.columns === 3){
+      return 'when done, save your note by clicking \'save\' in the top-right corner';
+    }else{
+      return 'when done, save your note by clicking \'save\' in the top-left corner or swipe left';
+    }
+  };
+
 
   // SAVING, DELETING
 
