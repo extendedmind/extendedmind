@@ -718,8 +718,13 @@ function MainController($element, $controller, $document, $filter, $q, $rootScop
   };
 
 
-  // START FROM FOCUS
-  $scope.changeFeature('focus');
+  // STARTUP FEATURE
+
+  if ($scope.isFakeUser()){
+    $scope.changeFeature('user');
+  }else{
+    $scope.changeFeature('focus');
+  }
 
   var editorReady, editorReadyCallback = {};
   $scope.editorReady = function() {
