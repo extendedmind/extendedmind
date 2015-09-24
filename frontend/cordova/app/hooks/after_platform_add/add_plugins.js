@@ -13,7 +13,7 @@ var pluginlist = [
     "https://github.com/extendedmind/cordova-webintent",
     "https://github.com/extendedmind/phonegap-backbutton-plugin",
     "cordova-plugin-device",
-    "cordova-plugin-whitelist",
+    "cordova-plugin-whitelist@1.0.0",
     "cordova-plugin-inappbrowser",
     "cordova-plugin-globalization"
 ];

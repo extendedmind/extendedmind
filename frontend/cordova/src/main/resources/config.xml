@@ -32,6 +32,7 @@
     <preference name="SplashScreen" value="splash" />
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />
     <platform name="ios">
+        <preference name="deployment-target" value="8.0" />
         <!-- images are determined by width and height. The following are supported -->
         <splash src="assets/screens/ios/Default~iphone.png" width="320" height="480"/>
         <splash src="assets/screens/ios/Default@2x~iphone.png" width="640" height="960"/>
@@ -44,7 +45,6 @@
         <splash src="assets/screens/ios/Default-736h@3x~iphone.png" width="1242" height="2208"/>
         <splash src="assets/screens/ios/Default-Landscape-736h@3x~iphone.png" width="2208" height="1242"/>
     </platform>
-
     <access origin="*" />
     <content src="index.html" />
 </widget>
