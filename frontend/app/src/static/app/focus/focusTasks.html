@@ -332,7 +332,7 @@
             id: 'focus/tasks/rightDuplicate', scrollInactiveTop: true, duplicate: 'focus/tasks/right'}">
 
             <div ng-hide="datepickerVisible" class="group-mixed heading">
-              <div class="group-mixed--middle" swiper-click="openDatepicker(daySlides[2].info)">
+              <div class="group-mixed--middle clickable" ng-class="getOnboardingPhase('focus', 'tasks') === 6 && 'onboarding'" swiper-click="openDatepicker(daySlides[2].info)">
                 <h2 class="group-heading justified" ng-bind="daySlides[2].heading"></h2>
               </div>
               <div class="group-mixed--right" task-list-completed="{{daySlides[2].pastDate}}"></div>
@@ -383,7 +383,7 @@
             id: 'focus/tasks/left', scrollInactiveTop: true, duplicate: 'focus/tasks/leftDuplicate'}">
 
             <div ng-hide="datepickerVisible" class="group-mixed heading">
-              <div class="group-mixed--middle" ng-class="getOnboardingPhase('focus', 'tasks') === 6 && 'onboarding'" swiper-click="openDatepicker(daySlides[0].info)">
+              <div class="group-mixed--middle clickable" ng-class="getOnboardingPhase('focus', 'tasks') === 6 && 'onboarding'" swiper-click="openDatepicker(daySlides[0].info)">
                 <h2 class="group-heading justified" ng-bind="daySlides[0].heading"></h2>
               </div>
               <div class="group-mixed--right" task-list-completed="{{daySlides[0].pastDate}}"></div>
@@ -434,7 +434,7 @@
             id: 'focus/tasks/middle', scrollInactiveTop: true}">
 
             <div ng-hide="datepickerVisible" class="group-mixed heading">
-              <div class="group-mixed--middle" ng-class="getOnboardingPhase('focus', 'tasks') === 6 && 'onboarding'" swiper-click="openDatepicker(daySlides[1].info)">
+              <div class="group-mixed--middle clickable" ng-class="getOnboardingPhase('focus', 'tasks') === 6 && 'onboarding'" swiper-click="openDatepicker(daySlides[1].info)">
                 <h2 class="group-heading justified" ng-bind="daySlides[1].heading"></h2>
               </div>
               <div class="group-mixed--right" task-list-completed="{{daySlides[1].pastDate}}"></div>
@@ -485,7 +485,7 @@
             id: 'focus/tasks/right', scrollInactiveTop: true, duplicate: 'focus/tasks/rightDuplicate'}">
 
             <div ng-hide="datepickerVisible" class="group-mixed heading">
-              <div class="group-mixed--middle" ng-class="getOnboardingPhase('focus', 'tasks') === 6 && 'onboarding'" swiper-click="openDatepicker(daySlides[2].info)">
+              <div class="group-mixed--middle clickable" ng-class="getOnboardingPhase('focus', 'tasks') === 6 && 'onboarding'" swiper-click="openDatepicker(daySlides[2].info)">
                 <h2 class="group-heading justified" ng-bind="daySlides[2].heading"></h2>
               </div>
               <div class="group-mixed--right" task-list-completed="{{daySlides[2].pastDate}}"></div>
@@ -536,7 +536,7 @@
             id: 'focus/tasks/leftDuplicate', scrollInactiveTop: true, duplicate: 'focus/tasks/left'}">
 
             <div ng-hide="datepickerVisible" class="group-mixed heading">
-              <div class="group-mixed--middle" ng-class="getOnboardingPhase('focus', 'tasks') === 6 && 'onboarding'" swiper-click="openDatepicker(daySlides[0].info)">
+              <div class="group-mixed--middle clickable" ng-class="getOnboardingPhase('focus', 'tasks') === 6 && 'onboarding'" swiper-click="openDatepicker(daySlides[0].info)">
                 <h2 class="group-heading justified" ng-bind="daySlides[0].heading"></h2>
               </div>
               <div class="group-mixed--right" task-list-completed="{{daySlides[0].pastDate}}"></div>
@@ -611,13 +611,13 @@
       <h2 class="group-heading instruction row">
         <span>tutorial <span class="highlighted">complete</span>!</span>
       </h2>
-      <div class="textgroup-ingress row">click on <a href ng-click="blinkingTextClicked = true"
+      <div class="textgroup-ingress row">click on <div class="clickable" ng-click="blinkingTextClicked = true"
         ng-class="!blinkingTextClicked && 'onboarding'">
-        <span class="text-heading">blinking text</span></a> anywhere
+        <span class="text-heading">blinking text</span></div> anywhere
         in the app to find new places and unlock features
       </div>
 
-      <div id="test" ng-if="blinkingTextClicked"class="textgroup-ingress row">nice going! now click on
+      <div id="test" ng-if="blinkingTextClicked" class="textgroup-ingress row">nice going! now click on
       the button below</div>
     </div>
 

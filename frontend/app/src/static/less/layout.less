@@ -427,7 +427,8 @@ Vertically center .container-master and .container-editor in large screens
   // 1. Plus icon element is taller than icon itself and since it's a font, its baseline is somewhere.
   //    Set vertical-align to adjust icon inside element, and set same for sort icon.
   .group-symmetrical--left > .icon-sort,
-  .group-symmetrical--middle > a > .icon-plus {
+  .group-symmetrical--middle > a > .icon-plus,
+  .group-symmetrical--middle > .clickable > .icon-plus {
     line-height: @height-footer;
     &:after {
       vertical-align: -5%;      // [1]
@@ -435,7 +436,9 @@ Vertically center .container-master and .container-editor in large screens
   }
 
   // 1. Align plus icon vertically.
-  .group-symmetrical--middle > a > .icon-plus {
+  .group-symmetrical--middle > a > .icon-plus,
+  .group-symmetrical--middle > .clickable > .icon-plus {
+
     display: block;
   }
 
@@ -453,7 +456,8 @@ Vertically center .container-master and .container-editor in large screens
     height: @height-footer-large;
     line-height: @height-footer-large;
     .group-symmetrical--left > .icon-sort,
-    .group-symmetrical--middle > a > .icon-plus {
+    .group-symmetrical--middle > a > .icon-plus,
+    .group-symmetrical--middle > .clickable > .icon-plus {
       line-height: @height-footer-large;
     }
     .group-symmetrical--left.link-navigation > .text-navigation-back,
@@ -594,7 +598,7 @@ margin.
 //          Use span[clamp="2"] if needed to target clamped span.
 .row-vertically-centered {
   .row();
-  & > a {
+  & > a, & > .clickable {
     padding-top: @padding-vertically-centered;    // [1]
     padding-bottom: @padding-vertically-centered; // [1]
     display: block; // [2]
@@ -674,13 +678,13 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 .group-mixed--left {
   padding-right: @padding-inner-group-mixed;
 
-  & > a,
+  & > a, & > .clickable,
   & > input[type="checkbox"] + label,
   & > div {
     padding-left: @grid-horizontal; /* [1] */
     height: @grid-vertical;         /* [1] */
   }
-  & > a,
+  & > a, & > .clickable,
   & > span {
     line-height: @grid-vertical;
   }
@@ -720,11 +724,11 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 
   // NOTE: all buttons have height defined
   & > button,
-  & > a,
+  & > a, & > .clickable,
   & > span {
     padding-right: @grid-horizontal;  /* [1] */
   }
-  & > a {
+  & > a, & > .clickable {
     height: @grid-vertical;
     line-height: @grid-vertical;
   }
@@ -744,7 +748,7 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 //    NOTE: Star icon height is a combination of @size-icon-star-small and line-height: @grid-vertical-half.
 .group-mixed {
   .group-mixed--middle {
-    & > a:not(.link-inline) {
+    & > a:not(.link-inline), & > .clickable:not(.link-inline), {
       display: block;                               // [2]
       padding-top: inherit;    // [2]
       margin-top: -@padding-vertically-centered;    // [2]
@@ -784,7 +788,7 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
     vertical-align: middle; // [4]
   }
   .group-mixed--left {
-    & > a > span {
+    & > a > span, & > .clickable > span {
       height: @grid-vertical; // [1]
     }
   }
@@ -838,7 +842,7 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
     & > h2.group-heading.justified {
       padding-top: 0;     // [1]
       padding-bottom: 0;  // [1]
-      & > a,
+      & > a, & > .clickable,
       & > div {
         padding-top: @padding-vertical-heading-text;    // [2]
         padding-bottom: @padding-vertical-heading-text; // [2]
@@ -851,7 +855,7 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
           padding-bottom: @padding-vertical-not-so-large-heading-text;  // [4]
         }
       }
-      & > a {
+      & > a, & > .clickable, {
         display: block; // [5]
       }
     }
@@ -865,14 +869,14 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 // 3. Align with text in .group-mixed--middle.
 //    TODO: vertical padding in .group-mixed--middle + negative vertical margin in & > a
 .group-mixed.small {
-  .group-mixed--middle > a.link-menu-small {
+  .group-mixed--middle > .link-menu-small {
     padding-top: 4px;     // [1]
     padding-bottom: 4px;  // [1]
     & > span.text-navigation-menu-small {
       line-height: @grid-vertical-small;
     }
   }
-  .group-mixed--right > a {
+  .group-mixed--right > a, .group-mixed--right > .clickable {
     height: @grid-vertical-medium;       // [1]
     line-height: @grid-vertical-medium;  // [1]
     & > span.icon-star.small {
@@ -889,7 +893,7 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 //      (WIDTH_icon-star.large - WIDTH_icon.trash) / 2
 .group-mixed.large > .group-mixed--right {
   padding-left: 0;                            // [1]
-  & > a.link-navigation {
+  & > a.link-navigation, & > .clickable.link-navigation {
     padding-left: @padding-inner-group-mixed; // [1]
     display: table-cell;                // [2]
     vertical-align: middle;             // [2]
@@ -905,7 +909,7 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 
 @media (min-width: @min-width-three-column) {
   .group-mixed.large > .group-mixed--right {
-    & > a.link-navigation {
+    & > a.link-navigation, & > .clickable.link-navigation {
       height: 78px;
       line-height: 78px;
     }
@@ -1373,7 +1377,7 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
   max-width: @max-width-group-symmetrical-middle;
   height: inherit;
 
-  & > a {                        // [1]
+  & > a, & > .clickable {                        // [1]
     display: table;
     width: 100%;
     height: inherit;

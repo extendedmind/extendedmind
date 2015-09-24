@@ -13,7 +13,7 @@ Following navigation links are used. These shouldn't be used for actions!
 ```
 */
 
-a {
+a, .clickable {
   text-decoration: none;
   color: @color-text;
   outline: 0;
@@ -26,37 +26,37 @@ Highlighting and downplaying
 
 // 1. important is needed for before and after elements to get
 //    selector to match
-a.highlighted {
+a.highlighted, .clickable.highlighted {
   *, *:before, *:after {
     color: @color-text-highlighted !important; // [1]
   }
 }
 
-a:active.highlighted {
+a:active.highlighted, div:active.clickable.highlighted {
   *, *:before, *:after {
     color: @color-text-highlighted-pressed !important; // [1]
   }
 }
 
-a.downplayed {
+a.downplayed, .clickable.downplayed {
   *, *:before, *:after {
     color: @color-text-downplayed !important; // [1]
   }
 }
 
-a:active.downplayed {
+a:active.downplayed, div:active.clickable.downplayed {
   *, *:before, *:after {
     color: @color-text-downplayed-pressed !important; // [1]
   }
 }
 
-a.icon-downplayed {
+a.icon-downplayed, .clickable.icon-downplayed {
   *, *:before, *:after {
     color: @color-icon-deactivated; // [1]
   }
 }
 
-a:active.icon-downplayed {
+a:active.icon-downplayed, div:active.clickable.icon-downplayed{
   *, *:before, *:after {
     color: @color-icon-deactivated-pressed; // [1]
   }

@@ -1,104 +1,104 @@
 <div class="container-menu swiper-no-swiping" ng-controller="MenuController" drawer="left">
   <div class="container-menu--top">
 
-    <a href class="link-menu row" ng-click="gotoFeature('user')"
+    <div class="clickable link-menu row" ng-click="gotoFeature('user')"
       ng-class="isFeatureActive('user') && 'highlighted'">
       <span class="text-navigation-menu-small" clamp=1 ng-bind="getActiveDisplayName()"></span>
-    </a>
+    </div>
 
-    <a href class="link-menu separate row active-under-modal" ng-click="gotoFeature('focus')"
+    <div class="clickable link-menu separate row active-under-modal" ng-click="gotoFeature('focus')"
       ng-class="isFeatureActive('focus') && 'highlighted'">
       <span class="text-navigation-menu">focus</span>
-    </a>
-    <a href class="link-menu row active-under-modal" ng-click="gotoFeature('inbox')"
+    </div>
+    <div class="clickable link-menu row active-under-modal" ng-click="gotoFeature('inbox')"
       ng-class="{'highlighted': isFeatureActive('inbox'),
                  'invisible': features.inbox.getStatus() === 'disabled',
                  'onboarding': isOnboarding('inbox')}">
       <span class="text-navigation-menu">inbox</span>
-    </a>
-    <a href class="link-menu row active-under-modal" ng-click="gotoFeature('tasks')"
+    </div>
+    <div class="clickable link-menu row active-under-modal" ng-click="gotoFeature('tasks')"
       ng-class="{'highlighted': isFeatureActive('tasks'), 'onboarding': isOnboarding('tasks', 'all')}">
       <span class="text-navigation-menu">tasks</span>
-    </a>
+    </div>
     <div ng-if="useContexts()" class="container-menu--extras">
       <div ng-if="isContextActive()" class="group-mixed small">
         <div class="group-mixed--middle">
-          <a href class="link-menu-small highlighted" ng-click="gotoFeature('tasks', getActiveContext())">
+          <div class="clickable link-menu-small highlighted" ng-click="gotoFeature('tasks', getActiveContext())">
             <span class="text-navigation-menu-small" clamp=2 ng-bind="'@' + getActiveContext().trans.title"></span>
-          </a>
+          </div>
         </div>
         <div class="group-mixed--right">
-          <a href ng-if="isFavoriteContext(getActiveContext())" ng-click="unfavoriteContext(getActiveContext())">
+          <div class="clickable" ng-if="isFavoriteContext(getActiveContext())" ng-click="unfavoriteContext(getActiveContext())">
             <span class="icon-star small inverse"></span>
-          </a>
+          </div>
         </div>
       </div>
       <div ng-if="isPersonalData() && getTagsArray('favoritedContexts').length > 0 && favoriteContext !== getActiveContext()"
         class="group-mixed small"
         ng-repeat="favoriteContext in getTagsArray('favoritedContexts') track by favoriteContext.trans.uuid">
         <div class="group-mixed--middle">
-          <a href class="link-menu-small" ng-click="gotoFeature('tasks', favoriteContext)">
+          <div class="clickable link-menu-small" ng-click="gotoFeature('tasks', favoriteContext)">
             <span class="text-navigation-menu-small" clamp=2 ng-bind="'@' + favoriteContext.trans.title"></span>
-          </a>
+          </div>
         </div>
         <div class="group-mixed--right">
-          <a href ng-click="unfavoriteContext(favoriteContext)">
+          <div class="clickable" ng-click="unfavoriteContext(favoriteContext)">
             <span class="icon-star small inverse"></span>
-          </a>
+          </div>
         </div>
       </div>
     </div>
-    <a href class="link-menu row active-under-modal" ng-click="gotoFeature('notes')"
+    <div class="clickable link-menu row active-under-modal" ng-click="gotoFeature('notes')"
       ng-class="{'highlighted': isFeatureActive('notes'),
                  'invisible': features.notes.getStatus() === 'disabled',
                  'onboarding': isOnboarding('notes')}">
       <span class="text-navigation-menu">notes</span>
-    </a>
-    <a href class="link-menu row active-under-modal" ng-click="gotoFeature('lists')"
+    </div>
+    <div class="clickable link-menu row active-under-modal" ng-click="gotoFeature('lists')"
       ng-class="{'highlighted': isFeatureActive('lists'),
                 'invisible': features.lists.getStatus('active') === 'disabled',
                 'onboarding': isOnboarding('lists', 'active')}">
       <span class="text-navigation-menu">lists</span>
-    </a>
+    </div>
 
     <div ng-if="isFeatureActive('list') || isFeatureActive('listInverse')" class="group-mixed small">
       <div class="group-mixed--middle">
-        <a href class="link-menu-small highlighted" ng-click="gotoFeature('list', getActiveList())">
+        <div class="clickable link-menu-small highlighted" ng-click="gotoFeature('list', getActiveList())">
           <span class="text-navigation-menu-small" clamp=2 ng-bind="getActiveList().trans.title"></span>
-        </a>
+        </div>
       </div>
       <div class="group-mixed--right">
-        <a href ng-if="isFavoriteList(getActiveList())" ng-click="unfavoriteList(getActiveList())">
+        <div class="clickable" ng-if="isFavoriteList(getActiveList())" ng-click="unfavoriteList(getActiveList())">
           <span class="icon-star small inverse"></span>
-        </a>
+        </div>
       </div>
     </div>
     <div ng-if="isPersonalData() && getListsArray('favorited').length > 0" class="group-mixed small"
       ng-repeat="favoriteList in getListsArray('favorited') track by favoriteList.trans.uuid"
       ng-hide="favoriteList === getActiveList()">
       <div class="group-mixed--middle">
-        <a href class="link-menu-small" ng-click="gotoFeature('list', favoriteList)">
+        <div class="clickable link-menu-small" ng-click="gotoFeature('list', favoriteList)">
           <span class="text-navigation-menu-small" clamp=2 ng-bind="favoriteList.trans.title"></span>
-        </a>
+        </div>
       </div>
       <div class="group-mixed--right">
-        <a href ng-click="unfavoriteList(favoriteList)">
+        <div class="clickable" ng-click="unfavoriteList(favoriteList)">
           <span class="icon-star small inverse"></span>
-        </a>
+        </div>
       </div>
     </div>
     <div class="container-menu--push"></div>
   </div>
   <div class="container-menu--bottom">
-    <a href class="link-menu row" ng-click="gotoFeature('trash')"
+    <div class="clickable link-menu row" ng-click="gotoFeature('trash')"
       ng-class="isFeatureActive('trash') ? 'highlighted' : 'downplayed'">
       <span class="text-navigation-menu-small">trash</span>
-    </a>
-    <a href class="link-menu row" ng-click="gotoFeature('settings')"
+    </div>
+    <div class="clickable link-menu row" ng-click="gotoFeature('settings')"
       ng-class="{'highlighted': isFeatureActive('settings'),
                  'downplayed': !isFeatureActive('settings'),
                  'onboarding': isOnboarding('settings')}">
       <span class="text-navigation-menu-small">settings</span>
-    </a>
+    </div>
   </div>
 </div>
