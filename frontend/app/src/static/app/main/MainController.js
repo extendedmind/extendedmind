@@ -720,7 +720,7 @@ function MainController($element, $controller, $document, $filter, $q, $rootScop
 
   // STARTUP FEATURE
 
-  if ($scope.isFakeUser()){
+  if ($scope.isFakeUser() && !$scope.isTutorialInProgress()){
     $scope.changeFeature('user');
   }else{
     $scope.changeFeature('focus');

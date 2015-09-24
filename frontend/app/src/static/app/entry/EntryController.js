@@ -300,13 +300,12 @@ function EntryController($http, $location, $rootScope, $routeParams, $scope, $ti
     }else{
       AnalyticsService.do('startTutorial');
     }
-    $location.path('/my');
-
     // Manually kill sound at this stage to prevent audio from leaking to tutorial
-    if (typeof extendedmindAudio !== 'undefined' && extendedMindAudio &&
+    if (typeof extendedMindAudio !== 'undefined' && extendedMindAudio &&
         angular.isFunction(extendedMindAudio.pause)){
-      extendedMindAudio.pause()
+      extendedMindAudio.pause();
     }
+    $location.path('/my');
   };
 
   // FORGOT
