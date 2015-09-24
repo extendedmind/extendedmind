@@ -676,30 +676,6 @@
 
   // ONBOARDING
 
-  function gotoSignUp(){
-    $scope.changeFeature('user', undefined, true);
-  }
-
-  if (!$scope.isOnboarding('focus', 'tasks') && $scope.isFakeUser()){
-    // Show notification immediately on cold boot on other than first onboarding
-    UISessionService.pushDelayedNotification({
-      type: 'signUp',
-      gotoFn: gotoSignUp
-    });
-    $timeout(function() {
-      UISessionService.activateDelayedNotifications();
-    }, 1000);
-  }else if (!$scope.isEmailVerified() && !$scope.isTutorialInProgress()){
-    // It might just be that emailVerified has not been stored properly to local storage
-    // so we need to get account first
-    UserService.getAccount().then(function(){
-      if (!UserSessionService.getEmailVerified()){
-        // Show verify email modal on cold boot if email is not verified
-        $scope.showVerifyEmailModal();
-      }
-    });
-  }
-
   $scope.openCalendarSettingsAndIncreaseOnboarding = function(){
     $scope.openEditor('user', undefined, 'agendaCalendar').then(function(){
       $scope.increaseOnboardingPhase('focus', 'tasks')

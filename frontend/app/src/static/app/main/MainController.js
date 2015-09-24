@@ -274,7 +274,7 @@ function MainController($element, $controller, $document, $filter, $q, $rootScop
 
   $scope.isOnboarding = function(feature, subfeature){
     var status = getFeatureStatus(UserSessionService.getFeaturePreferences(feature), subfeature);
-    if (status.startsWith('onboarding')){
+    if (status && status.startsWith('onboarding')){
       return true;
     }
   };
@@ -716,15 +716,6 @@ function MainController($element, $controller, $document, $filter, $q, $rootScop
   $scope.isFakeUser = function(){
     return UserSessionService.isFakeUser();
   };
-
-
-  // STARTUP FEATURE
-
-  if ($scope.isFakeUser() && !$scope.isTutorialInProgress()){
-    $scope.changeFeature('user');
-  }else{
-    $scope.changeFeature('focus');
-  }
 
   var editorReady, editorReadyCallback = {};
   $scope.editorReady = function() {
@@ -1366,6 +1357,46 @@ function MainController($element, $controller, $document, $filter, $q, $rootScop
     $document.on('keydown', keydownHandler);
     $scope.$on('$destroy', function () {
       $document.off('keydown', keydownHandler);
+    });
+  }
+
+  // BOOT LOGIC
+
+  if ($scope.isFakeUser() && !$scope.isTutorialInProgress()){
+    $scope.changeFeature('user');
+  }else{
+    $scope.changeFeature('focus');
+  }
+
+  var signUpPromptInterval;
+  function gotoSignUp(){
+    if (signUpPromptInterval){
+      clearInterval(signUpPromptInterval);
+      signUpPromptInterval = undefined;
+    }
+    $scope.changeFeature('user', undefined, true);
+  }
+
+  if ($scope.isFakeUser()){
+    signUpPromptInterval = setInterval(function(){
+      if (!$scope.isTutorialInProgress() && !$scope.isFeatureActive('user') &&
+          !$scope.isOnboarding($scope.getActiveFeature()) &&
+          !$scope.isEditorVisible()){
+        // Show notification immediately on cold boot on other than first onboarding
+        UISessionService.pushNotification({
+          type: 'signUp',
+          gotoFn: gotoSignUp
+        });
+      }
+    }, 30000);
+  }else if (!$scope.isEmailVerified() && !$scope.isTutorialInProgress()){
+    // It might just be that emailVerified has not been stored properly to local storage
+    // so we need to get account first
+    UserService.getAccount().then(function(){
+      if (!UserSessionService.getEmailVerified()){
+        // Show verify email modal on cold boot if email is not verified
+        $scope.showVerifyEmailModal();
+      }
     });
   }
 
