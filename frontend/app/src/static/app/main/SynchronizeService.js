@@ -127,7 +127,8 @@
     }
   }
 
-  function executeUpdateFns(updateFns, itemUUID, probableItemType, properties, ownerUUID, localModToggleValueWins){
+  function executeUpdateFns(updateFns, itemUUID, probableItemType, properties, ownerUUID,
+                            localModToggleValueWins){
     switch(probableItemType) {
     case 'item':
       // Already right order
@@ -193,7 +194,8 @@
                      updateNoteModProperties,
                      updateListModProperties,
                      updateTagModProperties];
-    return executeUpdateFns(updateFns, itemUUID, probableItemType, properties, ownerUUID, localModToggleValueWins);
+    return executeUpdateFns(updateFns, itemUUID, probableItemType, properties, ownerUUID,
+                            localModToggleValueWins);
   }
 
   function processUUIDChange(oldUUID, newUUID, created, modified, archived, associated, type, ownerUUID,
@@ -635,7 +637,7 @@
                       delete queue[i].content.data.relationships;
                       listDeleteProperties = {relationships: undefined};
                     }else{
-                      listDeleteProperties = {relationships: queue[i].content.data.relationships};
+                      listDeleteProperties = {relationships: queue[i].content.data.relationships};
                     }
                     updateModProperties(queue[i].params.uuid,
                                         queue[i].params.type,
@@ -723,7 +725,8 @@
 
         if (danglingItemsToDestroy.length){
           for (i = 0; i < danglingItemsToDestroy.length; i++){
-            var hist = removeItemUUIDFromArray(danglingItemsToDestroy[i].owner, danglingItemsToDestroy[i].uuid);
+            var hist = removeItemUUIDFromArray(danglingItemsToDestroy[i].owner,
+                                               danglingItemsToDestroy[i].uuid);
             if (hist && hist.generatedUUID){
               // The dangling item has generated another dangling item, it needs to be destroyed as well
               danglingItemsToDestroy.push({uuid: hist.generatedUUID, owner: danglingItemsToDestroy[i].owner});
@@ -764,7 +767,7 @@
 
   // Handles response from backend where offline buffer has been used
   function defaultCallback(request, response, queue) {
-    var properties, localModToggleValueWins = false;;
+    var properties, localModToggleValueWins = false;
     // Get the necessary information from the request
     // ****
     // POST
