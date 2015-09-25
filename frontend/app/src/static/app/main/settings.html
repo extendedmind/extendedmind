@@ -1,4 +1,5 @@
-<div class="container-fluid--inner" drawer-handle="left" ng-controller="SettingsController">
+<div class="container-fluid--inner" drawer-handle="left" ng-controller="SettingsController"
+ng-class="!isOnboarding('settings') && 'no-footer'">
   <section class="container-content" ng-show="isContentVisible('settings')">
     <h2 class="group-heading justified row">settings</h2>
 

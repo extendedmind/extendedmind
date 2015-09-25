@@ -241,6 +241,12 @@
     }
   };
 
+  $scope.getSettingsPadding = function(){
+    if (isOnboarding('settings')){
+      return initial;
+    }
+  };
+
   // THIS DEVICE
   // agenda
 

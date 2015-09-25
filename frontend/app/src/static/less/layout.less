@@ -293,7 +293,8 @@ Vertically center .container-master and .container-editor in large screens
 
 // 1. Clear padding-bottom for footer from fluid container in editor.
 //    Padding-bottom is set programmatically in editor into .content-container.
-.container-editor .container-fluid--inner {
+.container-editor .container-fluid--inner,
+.container-fluid--inner.no-footer {
   padding-bottom: 0;  // [1]
 }
 
@@ -1058,6 +1059,10 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
   padding-top: @group-mixed--left-vertical-padding + 1px; // [1]
 }
 
+// When there is no footer in the view, there needs to be some margin in the last group-mixed of the content
+.no-footer .container-content .group-mixed:last-child {
+  margin-bottom: @grid-vertical-half;
+}
 
 /*
 *************************************************************
