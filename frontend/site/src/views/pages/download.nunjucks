@@ -2,8 +2,8 @@
 {% set pageName = 'download' %}
 {% block title %}{{ super() }} &ndash; download{% endblock %}
 {% block description %}{{ super() }} &ndash; download{% endblock %}
-{% block ogtitle %}{{ super() }} &ndash; download{% endblock %}
-{% block ogtype %}website{% endblock %}
+{% block ogtitle %}{{ super() }} download{% endblock %}
+{% block ogtype %}{{ super() }}{% endblock %}
 {% block stylesheets %}
 <link rel="stylesheet" href="static/css/normalize.css">
 <link rel="stylesheet" href="static/css/foundation.min.css">

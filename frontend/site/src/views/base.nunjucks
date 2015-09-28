@@ -9,7 +9,7 @@
   <meta name="application-name" content="extended mind">
 
   <meta property="og:title" content="{% block ogtitle %}extended mind{% endblock %}" />
-  <meta property="og:type" content="{% block ogtype %}{% ogtype %}" />
+  <meta property="og:type" content="{% block ogtype %}website{% endblock %}" />
   <meta property="og:image:secure_url" content="https://ext.md/static/img/logo-text.png" />
   <meta property="og:image:secure_url" content="https://ext.md/static/img/logo.png" />
 

@@ -2,8 +2,8 @@
 {% set pageName = 'terms' %}
 {% block title %}{{ super() }} &ndash; terms and conditions{% endblock %}
 {% block description %}{{ super() }} &ndash; terms and conditions{% endblock %}
-{% block ogtitle %}{{ super() }} &ndash; terms and conditions{% endblock %}
-{% block ogtype %}website{% endblock %}
+{% block ogtitle %}{{ super() }} terms and conditions{% endblock %}
+{% block ogtype %}{{ super() }}{% endblock %}
 {% block stylesheets %}
 <link rel="stylesheet" href="static/css/normalize.css">
 <link rel="stylesheet" href="static/css/foundation.min.css">

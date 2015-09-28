@@ -2,8 +2,8 @@
 {% set pageName = 'manifesto' %}
 {% block title %}{{ super() }} &ndash; manifesto{% endblock %}
 {% block description %}{{ super() }} &ndash; manifesto{% endblock %}
-{% block ogtitle %}{{ super() }} &ndash; manifesto{% endblock %}
-{% block ogtype %}website{% endblock %}
+{% block ogtitle %}{{ super() }} manifesto{% endblock %}
+{% block ogtype %}{{ super() }}{% endblock %}
 {% block stylesheets %}
 <link rel="stylesheet" href="static/css/normalize.css">
 <link rel="stylesheet" href="static/css/foundation.min.css">
