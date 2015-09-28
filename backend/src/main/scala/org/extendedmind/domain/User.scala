@@ -33,6 +33,7 @@ case class UserPreferences(onboarded: Option[String], ui: Option[String]){
 case class User(uuid: Option[UUID], created: Option[Long], modified: Option[Long], deleted: Option[Long],
                 email: Option[String], emailVerified: Option[Long],
                 displayName: Option[String], handle: Option[String],
+                content: Option[String], format: Option[String],
                 cohort: Option[Int], inboxId: Option[String],
                 preferences: Option[UserPreferences],
                 collectives: Option[Map[UUID,(String, Byte, Boolean, Option[String])]],
@@ -46,15 +47,27 @@ case class User(uuid: Option[UUID], created: Option[Long], modified: Option[Long
     require(handle.get.matches("""^[0-9a-z-]+$"""),
        "Handle can only contain numbers, lower case letters and dashes")
   }
+  if (content.isDefined) require(validateLength(content.get, 1000000),
+      "Content can not be more than 1000000 characters")
+  if (format.isDefined) require(
+    try {
+      val formatType = FormatType.withName(format.get)
+      true
+    }catch {
+      case _:Throwable => false
+    },
+    "Expected 'md' but got " + format.get)
 }
 
 object User{
-  def apply(email:String, displayName: Option[String], handle: Option[String],
+  def apply(email:String, displayName: Option[String], handle: Option[String], content: Option[String], format: Option[String],
             cohort: Option[Int], preferences: Option[UserPreferences])
-      = new User(None, None, None, None, Some(email), None, displayName, handle, cohort, None, preferences, None, None)
+      = new User(None, None, None, None, Some(email), None, displayName, handle, content, format, cohort, None, preferences, None, None)
 }
 
-case class SignUp(email: String, password: String, displayName: Option[String], handle: Option[String], cohort: Option[Int], bypass: Option[Boolean]){
+case class SignUp(email: String, password: String, displayName: Option[String],
+    handle: Option[String], content: Option[String], format: Option[String],
+    cohort: Option[Int], bypass: Option[Boolean]){
   require(validateEmailAddress(email), "Not a valid email address")
   require(validatePassword(password), "Password needs to be 7 or more characters long")
   if (cohort.isDefined) require(cohort.get > 0 && cohort.get <= 128, "Cohort needs to be a number between 1 and 128")
@@ -64,6 +77,16 @@ case class SignUp(email: String, password: String, displayName: Option[String], 
     require(handle.get.matches("""^[0-9a-z-]+$"""),
        "Handle can only contain numbers, lower case letters and dashes")
   }
+  if (content.isDefined) require(validateLength(content.get, 1000000),
+      "Content can not be more than 1000000 characters")
+  if (format.isDefined) require(
+    try {
+      val formatType = FormatType.withName(format.get)
+      true
+    }catch {
+      case _:Throwable => false
+    },
+    "Expected 'md' but got " + format.get)
 }
 
 case class UserEmail(email: String){

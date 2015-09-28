@@ -1078,7 +1078,10 @@ trait ItemDatabase extends UserDatabase {
         }
       }
     })
-    Right(PublicItems(displayOwner,
+    val content: Option[String] =
+      if (ownerNode.hasProperty("content")) Some(ownerNode.getProperty("content").asInstanceOf[String])
+      else None
+    Right(PublicItems(displayOwner, content,
                 if (noteBuffer.isEmpty) None else Some(noteBuffer.toList),
                 if (tagBuffer.isEmpty) None else Some(tagBuffer.toList)))
   }

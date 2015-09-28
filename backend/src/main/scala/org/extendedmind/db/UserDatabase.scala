@@ -277,6 +277,8 @@ trait UserDatabase extends AbstractGraphDatabase {
 
           if (user.handle.isDefined) userNode.setProperty("handle", user.handle.get)
           if (user.displayName.isDefined) userNode.setProperty("displayName", user.displayName.get)
+          if (user.content.isDefined) userNode.setProperty("content", user.content.get)
+          if (user.format.isDefined) userNode.setProperty("format", user.format.get)
 
           Right((userNode, emailVerificationCode))
         }
@@ -325,6 +327,21 @@ trait UserDatabase extends AbstractGraphDatabase {
         }
       }
     }
+
+    // Content update
+    if (user.content.isDefined) {
+      userNode.setProperty("content", user.content.get);
+    }else if (userNode.hasProperty("content")){
+      userNode.removeProperty("content")
+    }
+
+    // Format update
+    if (user.format.isDefined) {
+      userNode.setProperty("format", user.format.get);
+    }else if (userNode.hasProperty("format")){
+      userNode.removeProperty("format")
+    }
+
     Right()
   }
 

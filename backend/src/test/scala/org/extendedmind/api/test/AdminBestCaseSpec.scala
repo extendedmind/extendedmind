@@ -73,7 +73,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
       + "update it with PUT to /collective/[collectiveUUID] "
       + "and get it back with GET to /collective/[collectiveUUID]") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-      val testCollective = Collective("Test", None, None, None)
+      val testCollective = Collective("Test", None, None, None, None, None)
       Put("/collective",
         marshal(testCollective).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           writeJsonOutput("putCollectiveResponse", responseAs[String])

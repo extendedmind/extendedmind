@@ -53,7 +53,7 @@ trait UserActions {
     for {
       unit <- db.validateEmailUniqueness(signUp.email).right
       handleIsSet <- db.validateHandleUniqueness(signUp.handle).right
-      userResult <- db.putNewUser(User(signUp.email, signUp.displayName, signUp.handle, signUp.cohort, None), signUp.password, settings.signUpMode).right
+      userResult <- db.putNewUser(User(signUp.email, signUp.displayName, signUp.handle, signUp.content, signUp.format, signUp.cohort, None), signUp.password, settings.signUpMode).right
       sent <- if (userResult._2.isDefined)
                 Right(sendEmailVerification(signUp.email, userResult._2.get)).right
               else Right(Unit).right

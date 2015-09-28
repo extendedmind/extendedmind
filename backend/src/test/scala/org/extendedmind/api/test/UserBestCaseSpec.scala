@@ -79,7 +79,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
       val verificationCodeCaptor: ArgumentCaptor[Long] = ArgumentCaptor.forClass(classOf[Long])
       val emailCaptor: ArgumentCaptor[String] = ArgumentCaptor.forClass(classOf[String])
 
-      val signUp = SignUp(testEmail, "infopwd", None, None, Some(1), None)
+      val signUp = SignUp(testEmail, "infopwd", None, None, None, None, Some(1), None)
       Post("/signup",
         marshal(signUp).right.get) ~> route ~> check {
           val signUpResponse = responseAs[String]
@@ -109,7 +109,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
       + "and get the changed email and onboarded status back") {
       val authenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
       val initialUIPreferences = "{hideFooter: true}"
-      val newUser = User("ignored@example.com", None, None, None, Some(UserPreferences(Some("web"), Some(initialUIPreferences))))
+      val newUser = User("ignored@example.com", None, None, None, None, None, Some(UserPreferences(Some("web"), Some(initialUIPreferences))))
       Put("/account",
         marshal(newUser).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           writeJsonOutput("putAccountResponse", responseAs[String])

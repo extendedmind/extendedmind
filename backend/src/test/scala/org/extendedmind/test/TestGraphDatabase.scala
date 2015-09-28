@@ -68,18 +68,18 @@ trait TestGraphDatabase extends GraphDatabase {
          transactionEventHandlers.foreach( eventHandler => neo4j.gds.registerTransactionEventHandler(eventHandler))
     }
     val verifiedTimestamp = System.currentTimeMillis + 1000
-    val timoUser = User(TIMO_EMAIL, Some("Timo"), Some("timo"), Some(1), None)
+    val timoUser = User(TIMO_EMAIL, Some("Timo"), Some("timo"), None, None, Some(1), None)
     val timoNode = createUser(timoUser, TIMO_PASSWORD, Some(UserLabel.ADMIN),
                               emailVerified=Some(verifiedTimestamp)).right.get._1
-    val lauriUser = User(LAURI_EMAIL, None, None, None, None)
+    val lauriUser = User(LAURI_EMAIL, None, None, None, None, None, None)
     val lauriNode = createUser(lauriUser, LAURI_PASSWORD, Some(UserLabel.ADMIN),
                                emailVerified=Some(verifiedTimestamp)).right.get._1
-    val jpUser = User(JP_EMAIL, None, None, None, None)
+    val jpUser = User(JP_EMAIL, None, None, None, None, None, None)
     val jpNode = createUser(jpUser, JP_PASSWORD, Some(UserLabel.ADMIN),
                                emailVerified=Some(verifiedTimestamp)).right.get._1
 
     // Collectives
-    val extendedMind = createCollective(timoNode, "extended mind", Some("common collective for all extended mind users"), true, None, None)
+    val extendedMind = createCollective(timoNode, "extended mind", Some("common collective for all extended mind users"), true, None, None, None, None)
     withTx {
       implicit neo =>
         // Set a predictable test UUID "11111111-1111-1111-1111-111111111111" for the common collective,
@@ -89,11 +89,11 @@ trait TestGraphDatabase extends GraphDatabase {
 
     val extendedMindTechnologies = createCollective(
       timoNode, "extended mind technologies",
-      Some("private collective for extended mind technologies"), false, None, Some("emt"))
+      Some("private collective for extended mind technologies"), false, None, Some("emt"), Some("Test _underlined_content_ for the collective"), Some("md"))
 
     // Info node created after common collective "extended mind" but should still be part of it,
     // Info does not have email verified
-    val infoNode = createUser(User(INFO_EMAIL, None, None, None, None), INFO_PASSWORD).right.get
+    val infoNode = createUser(User(INFO_EMAIL, None, None, None, None, None, None), INFO_PASSWORD).right.get
 
     // Add permissions to collectives
     withTx {
@@ -284,10 +284,11 @@ trait TestGraphDatabase extends GraphDatabase {
     newToken
   }
 
-  def createCollective(creator: Node, title: String, description: Option[String], common: Boolean, displayName: Option[String], handle: Option[String]): Node = {
+  def createCollective(creator: Node, title: String, description: Option[String], common: Boolean, displayName: Option[String], handle: Option[String], content: Option[String], format: Option[String]): Node = {
     withTx {
       implicit neo =>
-        val collective = createCollective(getUUID(creator), Collective(title, description, displayName, handle), common)
+        val collective = createCollective(getUUID(creator),
+            Collective(title, description, displayName, handle, content, format), common)
         collective.right.get
     }
   }

@@ -24,7 +24,9 @@ import Validators._
 
 case class Collective(uuid: Option[UUID], created: Option[Long], modified: Option[Long], deleted: Option[Long],
                 title: String, description: Option[String],
-                displayName: Option[String], handle: Option[String], inboxId: Option[String], apiKey: Option[String],
+                displayName: Option[String], handle: Option[String],
+                content: Option[String], format: Option[String],
+                inboxId: Option[String], apiKey: Option[String],
                 creator: Option[UUID], common: Option[Boolean])
            extends Container {
   require(validateTitle(title), "Title can not be more than " + TITLE_MAX_LENGTH + " characters")
@@ -36,9 +38,19 @@ case class Collective(uuid: Option[UUID], created: Option[Long], modified: Optio
     require(handle.get.matches("""^[0-9a-z-]+$"""),
        "Handle can only contain numbers, lower case letters and dashes")
   }
+  if (content.isDefined) require(validateLength(content.get, 1000000),
+      "Content can not be more than 1000000 characters")
+  if (format.isDefined) require(
+    try {
+      val formatType = FormatType.withName(format.get)
+      true
+    }catch {
+      case _:Throwable => false
+    },
+    "Expected 'md' but got " + format.get)
 }
 
 object Collective{
-  def apply(title: String, description: Option[String], displayName: Option[String], handle: Option[String])
-        = new Collective(None, None, None, None, title, description, displayName, handle, None, None, None, None)
+  def apply(title: String, description: Option[String], displayName: Option[String], handle: Option[String], content: Option[String], format: Option[String])
+        = new Collective(None, None, None, None, title, description, displayName, handle, content, format, None, None, None, None)
 }
