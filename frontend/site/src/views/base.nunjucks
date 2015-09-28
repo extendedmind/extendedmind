@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" prefix="og: http://ogp.me/ns#">
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,6 +7,9 @@
   <title>{% block title %}extended mind{% endblock %}</title>
   <meta name="description" content="{% block description %}extended mind{% endblock %}">
   <meta name="application-name" content="extended mind">
+
+  <meta property="og:title" content="{% block ogtitle %}extended mind{% endblock %}" />
+  <meta property="og:type" content="{% block ogtype %}{% ogtype %}" />
   <meta property="og:image:secure_url" content="https://ext.md/static/img/logo-text.png" />
   <meta property="og:image:secure_url" content="https://ext.md/static/img/logo.png" />
 

@@ -2,6 +2,8 @@
 {% set pageName = 'privacy' %}
 {% block title %}{{ super() }} &ndash; privacy policy{% endblock %}
 {% block description %}{{ super() }} &ndash; privacy policy{% endblock %}
+{% block ogtitle %}{{ super() }} &ndash; privacy policy{% endblock %}
+{% block ogtype %}website{% endblock %}
 {% block stylesheets %}
 <link rel="stylesheet" href="static/css/normalize.css">
 <link rel="stylesheet" href="static/css/foundation.min.css">

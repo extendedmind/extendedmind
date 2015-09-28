@@ -2,6 +2,8 @@
 {% set pageName = 'home' %}
 {% block title %}{{ super() }} &ndash; minimal task and note organizer{% endblock %}
 {% block description %}{{ super() }} &ndash; minimal task and note organizer{% endblock %}
+{% block ogtitle %}{{ super() }} &ndash; minimal task and note organizer{% endblock %}
+{% block ogtype %}website{% endblock %}
 {% block stylesheets %}
 <link rel="stylesheet" href="static/css/normalize.css">
 <link rel="stylesheet" href="static/css/foundation.min.css">
