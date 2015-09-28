@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
- /* global cordova, console */
+ /* global cordova, console, shell */
  'use strict';
 
  function EditorController($rootScope, $scope, $timeout,
@@ -490,7 +490,8 @@
   }
 
   $scope.getItemHref = function(item){
-    if (!packaging.endsWith('cordova') && item.trans.link && isValidUrl(item.trans.link)){
+    if (!packaging.endsWith('cordova') && !packaging.endsWith('electron') &&
+        item.trans.link && isValidUrl(item.trans.link)){
       return item.trans.link;
     }
   };
@@ -506,9 +507,12 @@
   };
 
   $scope.clickUrl = function(item){
-    if (packaging.endsWith('cordova') && item.trans.link && isValidUrl(item.trans.link) &&
-        cordova && cordova.InAppBrowser){
-      cordova.InAppBrowser.open(item.trans.link, '_system', 'location=yes');
+    if (item.trans.link && isValidUrl(item.trans.link)){
+      if (packaging.endsWith('cordova') && cordova && cordova.InAppBrowser){
+        cordova.InAppBrowser.open(item.trans.link, '_system', 'location=yes');
+      }else if (packaging.endsWith('electron') && typeof shell !== 'undefined' && shell){
+        shell.openExternal(item.trans.link);
+      }
     }
   };
 
@@ -780,7 +784,7 @@
       } else{
         // On less than three, scrolling is in the textarea, which is identified with the ignoreSnap id
         return {id: 'ignoreSnap', scrollAmount: 22, footerHeight: 0};
-      };
+      }
     }
   };
 
