@@ -113,7 +113,7 @@
           </textarea>
         </div>
         <div ng-if="showEditorComponent('urlLink', tag)" class="group-mixed">
-          <a class="group-mixed--middle" ng-click="clickUrl(tag)"
+          <a class="group-mixed--middle clickable" ng-click="clickUrl(tag)"
              ng-class="showEditorComponent('urlLinkError', tag) ? 'link-disabled' : 'highlighted'"
              external-link="getItemHref(tag)">
             <span class="text-metadata" ng-bind="getItemVisibleUrl(tag)"></span>

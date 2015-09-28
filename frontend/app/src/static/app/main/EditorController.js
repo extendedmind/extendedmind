@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
- /* global cordova, console, shell */
+ /* global cordova, console, require */
  'use strict';
 
  function EditorController($rootScope, $scope, $timeout,
@@ -510,8 +510,8 @@
     if (item.trans.link && isValidUrl(item.trans.link)){
       if (packaging.endsWith('cordova') && cordova && cordova.InAppBrowser){
         cordova.InAppBrowser.open(item.trans.link, '_system', 'location=yes');
-      }else if (packaging.endsWith('electron') && typeof shell !== 'undefined' && shell){
-        shell.openExternal(item.trans.link);
+      }else if (packaging.endsWith('electron') && typeof require !== 'undefined' && require){
+        require('remote').require('shell').openExternal(item.trans.link);
       }
     }
   };

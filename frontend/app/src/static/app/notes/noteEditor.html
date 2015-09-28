@@ -122,7 +122,7 @@
           <!-- URL -->
           <div ng-show="showEditorProperty('url')">
             <div ng-if="showEditorComponent('urlLink', note)" class="group-mixed">
-              <a class="group-mixed--middle" ng-click="clickUrl(note)"
+              <a class="group-mixed--middle clickable" ng-click="clickUrl(note)"
                  ng-class="showEditorComponent('urlLinkError', note) ? 'link-disabled' : 'highlighted'"
                  external-link="getItemHref(note)">
                 <span class="text-metadata" ng-bind="getItemVisibleUrl(note)"></span>
