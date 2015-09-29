@@ -69,29 +69,13 @@
 <div class="centered">
   <a href="/signup" class="button" onclick="trackAction(this.href, 'signup');return false;">sign up</a>
 </div>
-<div class="right">
-  <div onclick="var audio = document.getElementById('theme');
-                if (audio.muted){
-                  audio.muted = false;
-                  this.firstElementChild.className = 'icon-volume-mute';
-                }
-                else{
-                  audio.muted = true;
-                  this.firstElementChild.className = 'icon-volume-up';
-                }">
-    <span id="volume" class="icon-volume-mute hide"></span>
-  </div>
-</div>
 {% endblock %}
 {% block scripts %}
 <script type='text/javascript' src='//code.jquery.com/jquery-2.1.3.min.js'></script>
 <script type='text/javascript' src='//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js'></script>
 <script type='text/javascript' src='//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js'></script>
-<script type="text/javascript" src="static/js/animo.min.js"></script>
 <script type='text/javascript' src='static/js/foundation.min.js'></script>
-<script type="text/javascript" src="static/js/em-animation.js"></script>
 <script>
   $(document).foundation();
-  setupHTML5Audio();
 </script>
 {% endblock %}
