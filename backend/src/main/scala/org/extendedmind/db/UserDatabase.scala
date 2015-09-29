@@ -218,20 +218,6 @@ trait UserDatabase extends AbstractGraphDatabase {
     } yield result
   }
 
-  def validateHandleUniqueness(handle: Option[String]): Response[Boolean] = {
-    if (handle.isEmpty) Right(false)
-    else{
-      withTx{
-        implicit neo4j =>
-          val userNodeList = findNodesByLabelAndProperty(MainLabel.OWNER, "handle", handle.get).toList
-          if (!userNodeList.isEmpty){
-            return fail(INVALID_PARAMETER, ERR_BASE_HANDLE_EXISTS, "Owner already exists with given handle: " + handle.get)
-          }
-          Right(true)
-      }
-    }
-  }
-
   def getOwnerStatistics(uuid: UUID): Response[NodeStatistics] = {
     for {
       ownerNode <- getNode(uuid, MainLabel.OWNER).right
@@ -248,7 +234,7 @@ trait UserDatabase extends AbstractGraphDatabase {
         if (findNodesByLabelAndProperty(OwnerLabel.USER, "email", user.email.get).toList.size > 0) {
           fail(INVALID_PARAMETER, ERR_USER_ALREADY_EXISTS, "User already exists with given email " + user.email.get)
         } else {
-          val userNode = createNode(user, MainLabel.OWNER, OwnerLabel.USER)
+          val userNode = createNode(user.copy(handle = None), MainLabel.OWNER, OwnerLabel.USER)
           if (userLabel.isDefined) userNode.addLabel(userLabel.get)
           setUserPassword(userNode, plainPassword)
           userNode.setProperty("email", user.email.get)
@@ -275,12 +261,15 @@ trait UserDatabase extends AbstractGraphDatabase {
             })
           }
 
-          if (user.handle.isDefined) userNode.setProperty("handle", user.handle.get)
           if (user.displayName.isDefined) userNode.setProperty("displayName", user.displayName.get)
           if (user.content.isDefined) userNode.setProperty("content", user.content.get)
           if (user.format.isDefined) userNode.setProperty("format", user.format.get)
 
-          Right((userNode, emailVerificationCode))
+          val handleResult = setOwnerHandle(userNode, user.handle)
+          if (handleResult.isRight)
+            Right((userNode, emailVerificationCode))
+          else
+            Left(handleResult.left.get)
         }
     }
   }
@@ -313,21 +302,6 @@ trait UserDatabase extends AbstractGraphDatabase {
       userNode.removeProperty("displayName");
     }
 
-    // Handle change
-    if (user.handle.isDefined) {
-      if (userNode.hasProperty("handle")){
-        val previousHandle = userNode.getProperty("handle").asInstanceOf[String]
-        if (previousHandle != user.handle.get){
-          // Attempting to change handle, check for new handle uniqueness
-          val validateResult = validateHandleUniqueness(user.handle)
-          if (validateResult.isRight)
-            userNode.setProperty("handle", user.handle.get);
-          else
-            return Left(validateResult.left.get)
-        }
-      }
-    }
-
     // Content update
     if (user.content.isDefined) {
       userNode.setProperty("content", user.content.get);
@@ -342,7 +316,12 @@ trait UserDatabase extends AbstractGraphDatabase {
       userNode.removeProperty("format")
     }
 
-    Right()
+    // Update handle
+    val handleResult = setOwnerHandle(userNode, user.handle)
+    if (handleResult.isRight)
+      Right()
+    else
+      Left(handleResult.left.get)
   }
 
   protected def updateUserEmail(userUUID: UUID, email: String): Response[(Node, Option[Long])] = {
@@ -1029,4 +1008,49 @@ trait UserDatabase extends AbstractGraphDatabase {
     }
   }
 
+  protected def validateHandleUniqueness(handle: Option[String])(implicit neo4j: DatabaseService): Response[Boolean] = {
+    if (handle.isEmpty){
+      Right(false)
+    }else{
+      val userNodeList = findNodesByLabelAndProperty(MainLabel.OWNER, "handle", handle.get).toList
+      if (!userNodeList.isEmpty){
+        return fail(INVALID_PARAMETER, ERR_BASE_HANDLE_EXISTS, "Owner already exists with given handle: " + handle.get)
+      }
+      Right(true)
+    }
+  }
+
+  protected def setOwnerHandle(ownerNode: Node, handle: Option[String])(implicit neo4j: DatabaseService): Response[Option[String]] = {
+    if (handle.isDefined){
+      if (ownerNode.hasProperty("handle")) {
+        // Handle change of handle
+        val previousHandle = ownerNode.getProperty("handle").asInstanceOf[String]
+        if (previousHandle != handle.get){
+          // Attempting to change handle
+          setOwnerHandleValue(ownerNode, handle.get, Some(previousHandle))
+        }else{
+          Right(None)
+        }
+      }else{
+        // Setting handle to owner for the first time
+        setOwnerHandleValue(ownerNode, handle.get, None)
+      }
+    }else if (ownerNode.hasProperty("handle")){
+      val previousHandle = ownerNode.getProperty("handle").asInstanceOf[String]
+      ownerNode.removeProperty("handle")
+      Right(Some(previousHandle))
+    }else{
+      Right(None)
+    }
+  }
+
+  protected def setOwnerHandleValue(ownerNode: Node, handle: String, previousHandle: Option[String])(implicit neo4j: DatabaseService): Response[Option[String]] = {
+    val validateResult = validateHandleUniqueness(Some(handle))
+    if (validateResult.isRight){
+      ownerNode.setProperty("handle", handle);
+      Right(previousHandle)
+    } else{
+      Left(validateResult.left.get)
+    }
+  }
 }

@@ -100,11 +100,10 @@ trait CollectiveDatabase extends UserDatabase {
 
   protected def createCollectiveNode(founderNode: Node, collective: Collective, commonCollective: Boolean)
                (implicit neo4j: DatabaseService): Response[Node] = {
-    val collectiveNode = createNode(collective.copy(inboxId=None, apiKey=None), MainLabel.OWNER, OwnerLabel.COLLECTIVE)
+    val collectiveNode = createNode(collective.copy(inboxId=None, apiKey=None, handle=None), MainLabel.OWNER, OwnerLabel.COLLECTIVE)
     founderNode --> SecurityRelationship.IS_FOUNDER --> collectiveNode;
     collectiveNode.setProperty("inboxId", generateUniqueInboxId())
     collectiveNode.setProperty("apiKey", Random.generateRandomUniqueString())
-    if (collective.handle.isDefined) collectiveNode.setProperty("handle", collective.handle.get)
 
     if (commonCollective){
       collectiveNode.setProperty("common", true)
@@ -115,7 +114,13 @@ trait CollectiveDatabase extends UserDatabase {
           user --> SecurityRelationship.CAN_READ --> collectiveNode;
       })
     }
-    Right(collectiveNode)
+
+    // Set handle
+    val handleResult = setOwnerHandle(collectiveNode, collective.handle)
+    if (handleResult.isRight)
+      Right(collectiveNode)
+    else
+      Left(handleResult.left.get)
   }
 
   protected def putExistingCollectiveNode(collectiveUUID: UUID, collective: Collective):
@@ -124,13 +129,12 @@ trait CollectiveDatabase extends UserDatabase {
       implicit neo4j =>
         for {
           collectiveNode <- getNode(collectiveUUID, OwnerLabel.COLLECTIVE).right
-          handle <- getCollectiveHandle(collectiveNode, collective).right
+          oldHandle <- setOwnerHandle(collectiveNode, collective.handle).right
           collectiveNode <- updateNode(collectiveNode, collective.copy(
               inboxId = (if (collectiveNode.hasProperty("inboxId")) Some(collectiveNode.getProperty("inboxId").asInstanceOf[String])
                         else None),
               apiKey = (if (collectiveNode.hasProperty("apiKey")) Some(collectiveNode.getProperty("apiKey").asInstanceOf[String])
-                        else None),
-              handle = handle)).right
+                        else None))).right
         } yield collectiveNode
     }
   }
@@ -177,29 +181,6 @@ trait CollectiveDatabase extends UserDatabase {
       }else{
         Right(collectiveNode.right.get)
       }
-    }
-  }
-
-  protected def getCollectiveHandle(collectiveNode: Node, collective: Collective)(implicit neo4j: DatabaseService): Response[Option[String]] = {
-     // Handle change
-    if (collective.handle.isDefined && collectiveNode.hasProperty("handle")) {
-      val previousHandle = collectiveNode.getProperty("handle").asInstanceOf[String]
-      if (previousHandle != collective.handle.get){
-        // Attempting to change handle, check for new handle uniqueness
-        val validateResult = validateHandleUniqueness(collective.handle)
-        if (validateResult.isRight){
-          collectiveNode.setProperty("handle", collective.handle.get);
-          Right(Some(collective.handle.get))
-        } else{
-          Left(validateResult.left.get)
-        }
-      }else{
-        Right(Some(previousHandle))
-      }
-    }else if (collectiveNode.hasProperty("handle")){
-      Right(Some(collectiveNode.getProperty("handle").asInstanceOf[String]))
-    }else{
-      Right(None)
     }
   }
 }
