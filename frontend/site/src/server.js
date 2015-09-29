@@ -4,6 +4,10 @@
 if (process.argv.length > 2) {
   console.log('loading configuration file: ' + process.argv[2]);
   var config = require(process.argv[2]);
+  if (process.argv.length > 3){
+    config.backend = process.argv[3];
+  }
+
 }else{
   console.error('no configuration file provided');
   process.exit();
