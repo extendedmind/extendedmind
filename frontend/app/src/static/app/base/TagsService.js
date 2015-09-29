@@ -179,7 +179,10 @@
       if (tags[ownerUUID].deletedTags.findFirstObjectByKeyValue('uuid', tag.trans.uuid, 'trans')) {
         deferred.reject({type: 'deleted'});
       } else {
-        ItemLikeService.save(tag, TAG_TYPE, ownerUUID, tagFieldInfos).then(
+        // Remove modified value to prevent Conflict, as tag is modified when a tag relationship
+        // is formed during note, task or list saving.
+        var removeModifiedValue = true;
+        ItemLikeService.save(tag, TAG_TYPE, ownerUUID, tagFieldInfos, removeModifiedValue).then(
           function(result){
             if (result === 'new') setTag(tag, ownerUUID);
             else if (result === 'existing') updateTag(tag, ownerUUID);

@@ -387,7 +387,7 @@ trait ItemDatabase extends UserDatabase {
 
   protected def validateExpectedModified(node: Node, expectedModified: Option[Long])(implicit neo4j: DatabaseService): Response[Unit] = {
     if (expectedModified.isDefined && node.hasProperty("modified") && node.getProperty("modified").asInstanceOf[Long] != expectedModified.get){
-      fail(INVALID_PARAMETER, ERR_BASE_WRONG_EXPECTED_MODIFIED, "Given modified value does not match stored modified value")
+      fail(INVALID_PARAMETER, ERR_BASE_WRONG_EXPECTED_MODIFIED, "Given modified value " + expectedModified.get + " does not match stored modified value " + node.getProperty("modified").asInstanceOf[Long])
     }else{
       Right()
     }
