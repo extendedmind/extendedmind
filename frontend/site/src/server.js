@@ -18,9 +18,10 @@ var logger = require('koa-logger');
 var route = require('koa-route');
 var nunjucks = require('koa-nunjucks-2');
 var path = require('path');
-var nativeRequest = require('request');
+var request = require('superagent');
 var thunkify = require('thunkify');
-var request = thunkify(nativeRequest);
+var get = thunkify(request.get);
+var markdownParser = new require('markdown-it')();
 
 // setup koa
 
@@ -62,6 +63,7 @@ app.use(route.get('/download', download));
 app.use(route.get('/manifesto', manifesto));
 app.use(route.get('/terms', terms));
 app.use(route.get('/privacy', privacy));
+app.use(route.get('/our/:handle', ourOwner));
 
 // routes
 
@@ -86,6 +88,20 @@ function *privacy() {
   this.body = yield this.render('pages/privacy');
 }
 
+function *ourOwner(handle) {
+  console.log('GET /our/' + handle);
+  var context = {};
+  if (backendApi){
+    var backendResponse = yield get(backendApi + "/public/" + handle);
+    if (backendResponse.status === 200){
+      var ownerData = backendResponse.body;
+      context.ownerTitle = ownerData.owner;
+      context.ownerContent = ownerData.content ? markdownParser.render(ownerData.content) : '';
+    }
+  }
+  this.body = yield this.render('pages/owner', context);
+}
+
 // get backend /info path from backend on boot
 
 if (backendApi){
@@ -94,17 +110,20 @@ if (backendApi){
     if (!requestInProgress){
       requestInProgress = true;
       console.log('GET ' + backendApi + '/info')
-      nativeRequest(backendApi + '/info', function(error, response, body){
-        requestInProgress = false;
-        if (!error  && response.statusCode == 200){
-          backendInfo = JSON.parse(body);
-          console.log('backend info:');
-          console.log(JSON.stringify(backendInfo, null, 2));
-          clearInterval(backendPollInterval);
-        }else{
-          console.log('backend returned status code: ' + (response ? response.statusCode : 'unknown') + ', retrying...');
-        }
-      });
+      request
+        .get(backendApi + '/info')
+        .set('Accept', 'application/json')
+        .end(function(error, response){
+          requestInProgress = false;
+          if (response && response.ok){
+            backendInfo = response.body;
+            console.log('backend info:');
+            console.log(JSON.stringify(backendInfo, null, 2));
+            clearInterval(backendPollInterval);
+          }else{
+            console.log('backend returned status code: ' + (error ? error.code : 'unknown') + ', retrying...');
+          }
+        });
     }
   }, 2000);
 }
