@@ -101,7 +101,15 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
       deletedModificationTags.add(ItemRelationship.HAS_PARENT)
       val deletedHandler = new TimestampCustomPropertyHandler("deleted", deletedModificationTags, Direction.INCOMING)
       customPropertyHandlers.add(deletedHandler)
-      eventHandlers.add(new TimestampTransactionEventHandler(true, customPropertyHandlers));
+      // For some of our item relationships, the end node should not be updated when a new relationship is created
+      val skipEndNodeUpdateOnNewRelationshipsFor = new java.util.ArrayList[RelationshipType](2)
+      skipEndNodeUpdateOnNewRelationshipsFor.add(ItemRelationship.HAS_TAG)
+      skipEndNodeUpdateOnNewRelationshipsFor.add(ItemRelationship.HAS_PARENT)
+      val addCreatedTimestampToNewNodes = true
+      eventHandlers.add(new TimestampTransactionEventHandler(
+          addCreatedTimestampToNewNodes,
+          skipEndNodeUpdateOnNewRelationshipsFor,
+          customPropertyHandlers));
     }
     eventHandlers
   }

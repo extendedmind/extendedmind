@@ -32,7 +32,6 @@ object SecurityRelationship {
   val IS_CREATOR = ExtendedMindRelationship("IS_CREATOR")
   val CAN_READ = ExtendedMindRelationship("CAN_READ")
   val CAN_READ_WRITE = ExtendedMindRelationship("CAN_READ_WRITE")
-  val IS_ORIGIN = ExtendedMindRelationship("IS_ORIGIN")
 }
 
 object ItemRelationship {
