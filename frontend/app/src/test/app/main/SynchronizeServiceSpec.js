@@ -1653,7 +1653,8 @@ describe('SynchronizeService', function() {
                            putNewItemResponse.uuid,
                            {id: updatedTestList.trans.id,
                             title: updatedTestList.trans.title,
-                            description: updatedTestList.trans.description})
+                            description: updatedTestList.trans.description,
+                            modified: putNewItemResponse.modified})
         .respond(200, putExistingItemResponse);
     testTaskValues.relationships.parent = putNewItemResponse.uuid;
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task',
@@ -1825,7 +1826,8 @@ describe('SynchronizeService', function() {
                            putNewItemResponse.uuid,
                            {id: updatedTestList.trans.id,
                             title: updatedTestList.trans.title,
-                            description: updatedTestList.trans.description})
+                            description: updatedTestList.trans.description,
+                            modified: putNewItemResponse.modified})
         .respond(200, putExistingItemResponse);
     ListsService.archiveList(updatedTestList);
     $httpBackend.flush();
@@ -1944,7 +1946,8 @@ describe('SynchronizeService', function() {
                            {id: testTag.trans.id,
                             title: testTag.trans.title,
                             description: testTag.trans.description,
-                            tagType: testTag.trans.tagType})
+                            tagType: testTag.trans.tagType,
+                            modified: putNewItemResponse.modified})
         .respond(200, putExistingItemResponse);
     testNoteValues.relationships.tags[0] = putNewItemResponse.uuid;
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/note',

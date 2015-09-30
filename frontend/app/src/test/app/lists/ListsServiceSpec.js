@@ -225,7 +225,8 @@ describe('ListsService', function() {
     tripToDublin.trans.title = 'another trip to Dublin';
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/list/' + tripToDublin.uuid,
                           {title: tripToDublin.trans.title,
-                           due: tripToDublin.due})
+                           due: tripToDublin.due,
+                           modified: tripToDublin.modified})
        .respond(200, putExistingListResponse);
     ListsService.saveList(tripToDublin);
     $httpBackend.flush();

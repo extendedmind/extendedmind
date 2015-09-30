@@ -401,7 +401,7 @@
     prepareTransport: prepareTransport,
     // Returns promise which returns 'new', 'existing', 'unmodified', or failure on failed save because
     // data is invalid
-    save: function(item, itemType, ownerUUID, fieldInfos, removeModifiedValue){
+    save: function(item, itemType, ownerUUID, fieldInfos){
       var deferred = $q.defer();
       var validationErrors = validate(item, ownerUUID, fieldInfos);
 
@@ -416,7 +416,6 @@
 
         if (item.trans.uuid) {
           transportItem = prepareTransport(item, itemType, ownerUUID, fieldInfos);
-          if (removeModifiedValue && transportItem.modified) delete transportItem.modified;
 
           /////////////////////////
           // Existing item

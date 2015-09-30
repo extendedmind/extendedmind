@@ -295,10 +295,6 @@
     if (!list.trans.uuid)
       list.trans.id = UUIDService.getShortIdFromFakeUUID(UUIDService.generateFakeUUID());
     var transportList = ItemLikeService.prepareTransport(list, LIST_TYPE, ownerUUID, listFieldInfos);
-    // There is a good chance that we don't have the right modified value which causes Conflict response,
-    // so just remove it here. Creating a new task or note to the list and creating a parent relationship,
-    // changed the note's modified value, and that value is not available.
-    if (transportList.modified) delete transportList.modified;
     var putUrl = list.trans.uuid ? '/api/' + ownerUUID + '/list/' + list.trans.uuid :
                                    '/api/' + ownerUUID + '/list';
     var putRegex = !list.trans.uuid ? putNewListRegexp : putExistingListRegexp;
@@ -480,10 +476,7 @@
       if (lists[ownerUUID].deletedLists.findFirstObjectByKeyValue('uuid', list.trans.uuid, 'trans')) {
         deferred.reject({type: 'deleted'});
       } else {
-        // Remove modified value to prevent Conflict, as list is modified when a new parent relationship
-        // is formed during note, task or list saving.
-        var removeModifiedValue = true;
-        ItemLikeService.save(list, LIST_TYPE, ownerUUID, listFieldInfos, removeModifiedValue).then(
+        ItemLikeService.save(list, LIST_TYPE, ownerUUID, listFieldInfos).then(
           function(result){
             if (result === 'new') setList(list, ownerUUID);
             else if (result === 'existing') updateList(list, ownerUUID);

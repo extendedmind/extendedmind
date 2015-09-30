@@ -174,7 +174,8 @@ afterEach(function() {
     secret.trans.title = 'top secret';
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/tag/' + secret.uuid,
                            {title: secret.trans.title,
-                            tagType: secret.tagType})
+                            tagType: secret.tagType,
+                            modified: secret.modified})
     .respond(200, putExistingTagResponse);
     TagsService.saveTag(secret);
     $httpBackend.flush();
