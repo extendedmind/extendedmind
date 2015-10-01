@@ -221,16 +221,16 @@ trait TestGraphDatabase extends GraphDatabase {
         Some(ExtendedItemRelationships(None, None, Some(scala.List(secretTag.right.get.uuid.get)))))).right.get
     val result = putNewNote(Owner(timoUUID, None),
       Note("notes on productivity", None, None, Some(
-        "##what I've learned about productivity \n" +
-          "#focus \n" +
+        "# what I've learned about productivity \n" +
+          "## focus \n" +
           "to get things done, you need to have uninterrupted time \n" +
-          "#rhythm \n" +
+          "## rhythm \n" +
           "work in high intensity sprints of 90 minutes, then break for 15 minutes \n" +
-          "#rest \n" +
-          "without ample rest and sleep, your productivity will decline rapidly" +
-          "#tools \n" +
+          "## rest \n" +
+          "without ample rest and sleep, your productivity will decline rapidly \n" +
+          "## tools \n" +
           "use the best possible tools for your work \n" +
-          "#process \n" +
+          "## process \n" +
           "increasing your productivity doesn't happen overnight"),
         Some("md"), None,
         Some(ExtendedItemRelationships(Some(extendedMindTechnologiesList.uuid.get), None,
