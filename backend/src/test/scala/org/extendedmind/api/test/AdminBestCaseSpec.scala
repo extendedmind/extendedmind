@@ -90,7 +90,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
 
           // Update collective
           Put("/collective/" + putCollectiveResponse.uuid.get,
-            marshal(testCollective.copy(description = Some("test description"))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", reauthenticateResponse.token.get)) ~> route ~> check {
+            marshal(testCollective.copy(description = Some("test description"), common = Some(true))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", reauthenticateResponse.token.get)) ~> route ~> check {
               writeJsonOutput("putExistingCollectiveResponse", responseAs[String])
               val putExistingCollectiveResponse = responseAs[SetResult]
               putExistingCollectiveResponse.uuid should be(None)
@@ -101,6 +101,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
                 writeJsonOutput("collectiveResponse", responseAs[String])
                 collectiveResponse.description.get should be("test description")
                 collectiveResponse.inboxId should not be None
+                collectiveResponse.common should be(None)
                 // Should be possible to assign read/write access to new collective
                 val lauriAuthenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
                 lauriAuthenticateResponse.collectives.get.get(putCollectiveResponse.uuid.get) should equal(None)

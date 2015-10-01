@@ -134,7 +134,10 @@ trait CollectiveDatabase extends UserDatabase {
               inboxId = (if (collectiveNode.hasProperty("inboxId")) Some(collectiveNode.getProperty("inboxId").asInstanceOf[String])
                         else None),
               apiKey = (if (collectiveNode.hasProperty("apiKey")) Some(collectiveNode.getProperty("apiKey").asInstanceOf[String])
-                        else None))).right
+                        else None),
+              common = (if (collectiveNode.hasProperty("common")) Some(collectiveNode.getProperty("common").asInstanceOf[Boolean])
+                        else None)
+          )).right
         } yield collectiveNode
     }
   }
