@@ -256,7 +256,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
                   Get("/public/timo?modified=" + latestModified) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
                     val nonPublicModifiedItems = responseAs[PublicItems]
                     nonPublicModifiedItems.owner should be(None)
-                    nonPublicModifiedItems.modified should be (modifiedPublicItems.modified)
+                    nonPublicModifiedItems.modified should be (None)
                     nonPublicModifiedItems.notes should be(None)
                     nonPublicModifiedItems.tags should be(None)
                     Put("/account",
@@ -264,7 +264,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
                       Get("/public/timo?modified=" + putNoteResponse.modified) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
                         val ownerModifiedPublicItems = responseAs[PublicItems]
                         ownerModifiedPublicItems.owner.get should be("testing")
-                        assert(ownerModifiedPublicItems.modified > modifiedPublicItems.modified)
+                        assert(ownerModifiedPublicItems.modified.get > publicItems.modified.get)
                         nonPublicModifiedItems.notes should be(None)
                         nonPublicModifiedItems.tags should be(None)
                       }
