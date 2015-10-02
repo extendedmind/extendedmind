@@ -32,6 +32,7 @@
         scope.messageIngress = params.messageIngress;
         scope.messageText = params.messageText;
         scope.messageDetails = params.messageDetails;
+        scope.messageHtml = params.messageHtml;
         scope.closeText = params.closeText;
         scope.confirmText = params.confirmText || 'ok';
         scope.hideCloseText = params.cancelDisabled;
@@ -40,6 +41,9 @@
           if (params.anchorToElement) {
             initAnchoredModal(params.activeElement, params.previousActiveElement, reinit);
           }
+        }
+        if (scope.messageHtml){
+          element.addClass("wide");
         }
       }
 

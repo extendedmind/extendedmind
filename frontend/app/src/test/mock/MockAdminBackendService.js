@@ -31,45 +31,6 @@ function MockAdminBackendService($httpBackend, AdminService) {
     });
   }
 
-  function mockGetInvites(){
-    $httpBackend.whenGET(AdminService.invitesRegex).respond(function() {
-      var invitesResponse = getJSONFixture('invitesResponse.json');
-      return [200, invitesResponse];
-    });
-  }
-
-  function mockGetInviteRequests(){
-    $httpBackend.whenGET(AdminService.inviteRequestsRegex).respond(function() {
-      var inviteRequestsResponse = getJSONFixture('inviteRequestsResponse.json');
-      return [200, inviteRequestsResponse];
-    });
-  }
-
-  function mockAcceptInviteRequest(expectResponse){
-    $httpBackend.whenPOST(AdminService.acceptInviteRequestRegex)
-      .respond(function(method, url, data, headers) {
-        var acceptInviteRequestResponse = getJSONFixture('acceptInviteRequestResponse.json');
-        acceptInviteRequestResponse.modified = (new Date()).getTime();
-        return expectResponse(method, url, data, headers, acceptInviteRequestResponse);
-      });
-  }
-
-  function mockDeleteInviteRequest(){
-    $httpBackend.whenDELETE(AdminService.deleteInviteRequestRegex)
-      .respond(function() {
-        var deleteInviteRequestResponse = getJSONFixture('deleteInviteRequestResponse.json');
-        return [200, deleteInviteRequestResponse];
-      });
-  }
-
-  function mockDeleteInvite(){
-    $httpBackend.whenDELETE(AdminService.deleteInviteRegex)
-      .respond(function() {
-        var deleteInviteResponse = getJSONFixture('deleteInviteResponse.json');
-        return [200, deleteInviteResponse];
-      });
-  }
-
   function mockDestroyUser(){
     $httpBackend.whenDELETE(AdminService.destroyUserRegex)
       .respond(function() {
@@ -79,14 +40,9 @@ function MockAdminBackendService($httpBackend, AdminService) {
   }
 
   return {
-    mockAdminBackend: function(expectResponse) {
+    mockAdminBackend: function() {
       mockGetStatistics();
       mockGetUsers();
-      mockGetInvites();
-      mockGetInviteRequests();
-      mockAcceptInviteRequest(expectResponse);
-      mockDeleteInviteRequest();
-      mockDeleteInvite();
       mockDestroyUser();
     }
   };

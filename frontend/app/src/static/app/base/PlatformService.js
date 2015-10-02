@@ -89,6 +89,7 @@ function PlatformService($q, packaging) {
           switch (featureName) {
             case 'timeFormat':
             resolve(getTimeFormat());
+            break;
             case 'firstDayOfWeek':
             resolve(getFirstDayOfWeek());
             break;

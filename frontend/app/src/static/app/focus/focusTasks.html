@@ -589,7 +589,8 @@
     <!-- PHASE 1 -->
     <div ng-if="getOnboardingPhase('focus', 'tasks') === 1" class="group-instruction">
       <h2 class="group-heading instruction row">
-        <span>what do you want to <span class="highlighted">get done</span>?</span>
+        <span>what do you want to</span>
+        <a href ng-click="clickHighlightedText('get done')"><span class="highlighted">get done</span></a><span>?</span>
       </h2>
       <div class="textgroup-ingress row">
         <span>add a <span class="text-highlighted">task</span> by clicking the plus sign below</span>

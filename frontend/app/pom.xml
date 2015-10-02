@@ -232,6 +232,7 @@
             <include>lib/clamp.js</include>
             <include>lib/lawnchair/lawnchair.js</include>
             <include>lib/lawnchair/lawnchair-memory.js</include>
+            <include>lib/markdown-it/markdown-it.js</include>
             <include>app/*.js</include>
             <include>common/common.js</include>
             <include>common/*.js</include>

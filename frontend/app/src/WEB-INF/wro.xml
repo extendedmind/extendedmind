@@ -18,6 +18,7 @@
     <js>/src/static/lib/lawnchair/lawnchair.js</js>
     <js>/src/static/lib/lawnchair/lawnchair-webkit-sqlite.js</js>
     <js>/src/static/lib/lawnchair/lawnchair-indexeddb.js</js>
+    <js>/src/static/lib/markdown-it/markdown-it.min.js</js>
   	<js>/src/static/lib/base64.js</js>
     <js>/src/static/lib/elastic.js</js>
     <js>/src/static/lib/clamp.min.js</js>

@@ -158,6 +158,7 @@ Menu
 }
 
 @max-width-modal: 500px;
+@max-width-modal-wide: 650px;
 
 // 1. Center vertically. See http://css-tricks.com/centering-css-complete-guide/#vertical-block-known
 // 2. Anchor with menu.
@@ -175,6 +176,9 @@ Menu
   &.anchor-to-menu-element {
     left: @width-menu - @grid-horizontal; // [2]
     right: auto;                          // [2]
+  }
+  &.wide{
+    max-width: @max-width-modal-wide;
   }
 }
 
@@ -1146,7 +1150,6 @@ Class `.group-link` groups automatically a elements horizontally. Works for 7 an
 Use `.group-instruction` to create an instruction block in the middle of a section.
 */
 
-// 1. If there are more than one paragraph, create padding between them.
 // 2. Normalize line height for the message.
 // 3. Add padding-bottom to the last child when it is not .textgroup-ingress, which has padding-bottom set
 //    with .first class.
@@ -1154,15 +1157,10 @@ Use `.group-instruction` to create an instruction block in the middle of a secti
   display: block;
   line-height: @grid-vertical;
 
-  p:not(:first-child) {
-    padding-top: @grid-vertical;  // [1]
-  }
-
   .textgroup-ingress {
     padding-top: @grid-vertical;
     line-height: @grid-vertical-medium;
   }
-
   .textgroup-ingress.first {
     padding-bottom: @grid-vertical-half;
   }
@@ -1528,6 +1526,52 @@ Not compatible with `.row` so we need to apply padding-left and -right inside.
   }
   p, li {
     font-size: 12px;
+  }
+}
+
+// Container for HTML content field
+.group-html-content {
+  margin-top: 10px;
+  h1 {
+    font-size: 24px;
+    line-height: 24px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+  }
+  h2 {
+    font-size: 18px;
+    padding-top: 13px;
+    padding-bottom: 13px;
+  }
+  h3 {
+    font-size: 16px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+  h4 {
+    font-size: 14px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  p, li {
+    font-size: 12px;
+    line-height: @grid-vertical-half;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  img {
+    max-width: 100%;
+    padding-top: @grid-vertical-half;
+    padding-bottom: @grid-vertical-half;
+  }
+  h1 + p, h2 + p, h3 + p, h4 + p{
+    margin-top: 0;
+  }
+  p + p {
+    margin-top: 10px;
+  }
+  p > a, p > a:visited {
+    color: @color-text-highlighted;
   }
 }
 

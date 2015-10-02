@@ -20,10 +20,10 @@
 // Holds a reference to all the item arrays. There is no sense in limiting
 // the arrays because everything is needed anyway to get home and inbox to work,
 // which are part of every main slide collection.
-function MainController($element, $controller, $document, $filter, $q, $rootScope, $scope, $timeout, $window,
-                        AnalyticsService, CalendarService, DateService, DrawerService, ItemsService,
-                        PlatformService, ReminderService, SwiperService, TasksService, UISessionService,
-                        UserService, UserSessionService, packaging) {
+function MainController($element, $controller, $document, $filter, $http, $q, $rootScope, $scope, $timeout,
+                        $window, AnalyticsService, CalendarService, ContentService, DateService,
+                        DrawerService, ItemsService, PlatformService, ReminderService, SwiperService,
+                        TasksService, UISessionService, UserService, UserSessionService, packaging) {
 
 
   // SHARED ACCESS
@@ -637,7 +637,8 @@ function MainController($element, $controller, $document, $filter, $q, $rootScop
             //        width for resized swiper (height is calculated in CSS with cssWidthAndHeight: 'height').
           }
           if (featureInfos.slides.overrideActiveSlide){
-            SwiperService.setInitialSlidePath(featureInfos.slides.path, featureInfos.slides.overrideActiveSlide);
+            SwiperService.setInitialSlidePath(featureInfos.slides.path,
+                                              featureInfos.slides.overrideActiveSlide);
             SwiperService.swipeToWithoutAnimation(featureInfos.slides.overrideActiveSlide);
             delete featureInfos.slides.overrideActiveSlide;
           }else{
@@ -1314,6 +1315,19 @@ function MainController($element, $controller, $document, $filter, $q, $rootScop
     return formattedDate.toLowerCase();
   };
 
+
+  // SHOW ONBOARDING TEXT
+
+  $scope.clickHighlightedText = function(text){
+    ContentService.getHighlightedTextInstruction(text).then(
+      function(params){
+        $scope.showModal(undefined, params);
+      },
+      function(){
+        // On error, don't do anything
+      });
+  };
+
   // KEYBOARD SHORTCUTS
 
   var keyboardShortcutCallbacks = {};
@@ -1412,8 +1426,8 @@ function MainController($element, $controller, $document, $filter, $q, $rootScop
 }
 
 MainController['$inject'] = [
-'$element', '$controller', '$document', '$filter', '$q', '$rootScope', '$scope', '$timeout', '$window',
-'AnalyticsService', 'CalendarService', 'DateService', 'DrawerService', 'ItemsService', 'PlatformService',
-'ReminderService', 'SwiperService', 'TasksService', 'UISessionService', 'UserService', 'UserSessionService',
-'packaging'];
+'$element', '$controller', '$document', '$filter', '$http', '$q', '$rootScope', '$scope', '$timeout',
+'$window', 'AnalyticsService', 'CalendarService', 'ContentService', 'DateService', 'DrawerService',
+'ItemsService', 'PlatformService', 'ReminderService', 'SwiperService', 'TasksService', 'UISessionService',
+'UserService', 'UserSessionService', 'packaging'];
 angular.module('em.main').controller('MainController', MainController);
