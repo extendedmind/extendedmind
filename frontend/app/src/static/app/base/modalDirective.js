@@ -52,9 +52,11 @@
           previousTargetElement.classList.remove('active');
         }
         targetElement.classList.add('active');
+        // NOTE:  This has to be before calculating targetElementBottom using offsetHeight and offsetTop.
+        //        First run won't work on iOS otherwise.
+        element[0].classList.add('anchor-to-menu-element');
         var targetElementBottom = targetElement.offsetHeight + targetElement.offsetTop;
         if (!reinit) {
-          element[0].classList.add('anchor-to-menu-element');
           if ($rootScope.columns === 1) {
             $animateCss(element, {
               from: {
@@ -67,6 +69,8 @@
               },
               duration: 0.07
             }).start();
+          } else {
+            element[0].classList.add('anchor-to-menu-element');
           }
           scope.modalInfos.oldPosition = targetElementBottom;
           if (scope.layoutChange && typeof scope.layoutChange.register === 'function') {
