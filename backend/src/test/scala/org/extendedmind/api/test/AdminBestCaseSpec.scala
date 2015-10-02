@@ -69,7 +69,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
   }
 
   describe("In the best case, AdminService") {
-    it("should successfully create new collective with PUT to /collective"
+    it("should successfully create new collective with PUT to /collective "
       + "update it with PUT to /collective/[collectiveUUID] "
       + "and get it back with GET to /collective/[collectiveUUID]") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
@@ -93,6 +93,9 @@ class AdminBestCaseSpec extends ServiceSpecBase {
             marshal(testCollective.copy(description = Some("test description"), common = Some(true))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", reauthenticateResponse.token.get)) ~> route ~> check {
               writeJsonOutput("putExistingCollectiveResponse", responseAs[String])
               val putExistingCollectiveResponse = responseAs[SetResult]
+
+              println(putCollectiveResponse)
+              println(putExistingCollectiveResponse)
               putExistingCollectiveResponse.uuid should be(None)
               assert(putExistingCollectiveResponse.modified > putCollectiveResponse.modified)
               // Get it back

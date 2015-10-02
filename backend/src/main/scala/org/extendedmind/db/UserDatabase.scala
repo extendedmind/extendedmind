@@ -234,7 +234,7 @@ trait UserDatabase extends AbstractGraphDatabase {
         if (findNodesByLabelAndProperty(OwnerLabel.USER, "email", user.email.get).toList.size > 0) {
           fail(INVALID_PARAMETER, ERR_USER_ALREADY_EXISTS, "User already exists with given email " + user.email.get)
         } else {
-          val userNode = createNode(user.copy(handle = None), MainLabel.OWNER, OwnerLabel.USER)
+          val userNode = createNode(user.copy(handle = None, content = None, format = None, displayName = None), MainLabel.OWNER, OwnerLabel.USER)
           if (userLabel.isDefined) userNode.addLabel(userLabel.get)
           setUserPassword(userNode, plainPassword)
           userNode.setProperty("email", user.email.get)
@@ -261,15 +261,27 @@ trait UserDatabase extends AbstractGraphDatabase {
             })
           }
 
-          if (user.displayName.isDefined) userNode.setProperty("displayName", user.displayName.get)
-          if (user.content.isDefined) userNode.setProperty("content", user.content.get)
-          if (user.format.isDefined) userNode.setProperty("format", user.format.get)
+          var updatePublicModified = false
+          if (user.displayName.isDefined){
+            userNode.setProperty("displayName", user.displayName.get)
+            updatePublicModified = true
+          }
+
+          // Only set content if format is also defined
+          if (user.content.isDefined && user.format.isDefined){
+            userNode.setProperty("content", user.content.get)
+            userNode.setProperty("format", user.format.get)
+            updatePublicModified = true
+          }
 
           val handleResult = setOwnerHandle(userNode, user.handle)
-          if (handleResult.isRight)
+          if (handleResult.isRight){
+            if (handleResult.right.get) updatePublicModified = true
+            if (updatePublicModified) userNode.setProperty("publicModified", System.currentTimeMillis)
             Right((userNode, emailVerificationCode))
-          else
+          }else{
             Left(handleResult.left.get)
+          }
         }
     }
   }
@@ -295,33 +307,45 @@ trait UserDatabase extends AbstractGraphDatabase {
       userNode.setProperty("ui", user.preferences.get.ui.get);
     }
 
+    var updatePublicModified = false
     // Display name
-    if (user.displayName.isDefined) {
+    if (user.displayName.isDefined &&
+        (!userNode.hasProperty("displayName") ||
+         userNode.getProperty("displayName").asInstanceOf[String] != user.displayName.get)) {
       userNode.setProperty("displayName", user.displayName.get);
+      updatePublicModified = true
     }else if (userNode.hasProperty("displayName")){
       userNode.removeProperty("displayName");
+      updatePublicModified = true
     }
 
-    // Content update
-    if (user.content.isDefined) {
-      userNode.setProperty("content", user.content.get);
-    }else if (userNode.hasProperty("content")){
-      userNode.removeProperty("content")
-    }
-
-    // Format update
-    if (user.format.isDefined) {
-      userNode.setProperty("format", user.format.get);
-    }else if (userNode.hasProperty("format")){
-      userNode.removeProperty("format")
+    // Content and format update
+    if (user.content.isDefined && user.format.isDefined) {
+      if (!userNode.hasProperty("content") ||
+          userNode.getProperty("content").asInstanceOf[String] != user.content.get){
+        userNode.setProperty("content", user.content.get);
+        updatePublicModified = true
+      }
+      if (!userNode.hasProperty("format") ||
+          userNode.getProperty("format").asInstanceOf[String] != user.format.get){
+        userNode.setProperty("format", user.format.get);
+        updatePublicModified = true
+      }
+    }else if (userNode.hasProperty("content") || userNode.hasProperty("format")){
+      if (userNode.hasProperty("content")) userNode.removeProperty("content")
+      if (userNode.hasProperty("format")) userNode.removeProperty("format")
+      updatePublicModified = true
     }
 
     // Update handle
     val handleResult = setOwnerHandle(userNode, user.handle)
-    if (handleResult.isRight)
+    if (handleResult.isRight){
+      if (handleResult.right.get) updatePublicModified = true
+      if (updatePublicModified) userNode.setProperty("publicModified", System.currentTimeMillis)
       Right()
-    else
+    }else{
       Left(handleResult.left.get)
+    }
   }
 
   protected def updateUserEmail(userUUID: UUID, email: String): Response[(Node, Option[Long])] = {
@@ -1020,35 +1044,35 @@ trait UserDatabase extends AbstractGraphDatabase {
     }
   }
 
-  protected def setOwnerHandle(ownerNode: Node, handle: Option[String])(implicit neo4j: DatabaseService): Response[Option[String]] = {
+  protected def setOwnerHandle(ownerNode: Node, handle: Option[String])(implicit neo4j: DatabaseService): Response[Boolean] = {
     if (handle.isDefined){
       if (ownerNode.hasProperty("handle")) {
         // Handle change of handle
         val previousHandle = ownerNode.getProperty("handle").asInstanceOf[String]
         if (previousHandle != handle.get){
           // Attempting to change handle
-          setOwnerHandleValue(ownerNode, handle.get, Some(previousHandle))
+          setOwnerHandleValue(ownerNode, handle.get)
         }else{
-          Right(None)
+          Right(false)
         }
       }else{
         // Setting handle to owner for the first time
-        setOwnerHandleValue(ownerNode, handle.get, None)
+        setOwnerHandleValue(ownerNode, handle.get)
       }
     }else if (ownerNode.hasProperty("handle")){
       val previousHandle = ownerNode.getProperty("handle").asInstanceOf[String]
       ownerNode.removeProperty("handle")
-      Right(Some(previousHandle))
+      Right(true)
     }else{
-      Right(None)
+      Right(false)
     }
   }
 
-  protected def setOwnerHandleValue(ownerNode: Node, handle: String, previousHandle: Option[String])(implicit neo4j: DatabaseService): Response[Option[String]] = {
+  protected def setOwnerHandleValue(ownerNode: Node, handle: String)(implicit neo4j: DatabaseService): Response[Boolean] = {
     val validateResult = validateHandleUniqueness(Some(handle))
     if (validateResult.isRight){
       ownerNode.setProperty("handle", handle);
-      Right(previousHandle)
+      Right(true)
     } else{
       Left(validateResult.left.get)
     }

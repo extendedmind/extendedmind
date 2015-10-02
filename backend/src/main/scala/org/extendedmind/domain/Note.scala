@@ -122,4 +122,4 @@ case class PublishPayload(format: String, path: Option[String]){
   }
 }
 
-case class PublishNoteResult(published: Long, result: SetResult)
+case class PublishNoteResult(published: Long, draft: Option[Long], result: SetResult)

@@ -176,7 +176,7 @@ trait ItemDatabase extends UserDatabase {
         for {
           ownerNode <- getNode("handle", handle, MainLabel.OWNER, Some(handle), false).right
           publicItemNodes <- getItemNodes(getUUID(ownerNode), modified, true, false, true, false, publicOnly=true).right
-          publicItems <- toPublicItems(ownerNode, publicItemNodes).right
+          publicItems <- toPublicItems(ownerNode, publicItemNodes, modified).right
         } yield publicItems
     }
   }
@@ -1059,29 +1059,45 @@ trait ItemDatabase extends UserDatabase {
     }
   }
 
-  protected def toPublicItems(ownerNode: Node, itemNodes: Iterable[Node])(implicit neo4j: DatabaseService): Response[PublicItems] = {
+  protected def toPublicItems(ownerNode: Node, itemNodes: Iterable[Node], modified: Option[Long])(implicit neo4j: DatabaseService): Response[PublicItems] = {
     val noteBuffer = new ListBuffer[Note]
     val tagBuffer = new ListBuffer[Tag]
     val displayOwner = getDisplayOwner(ownerNode)
     itemNodes foreach (itemNode => {
-      val publicItemResult = toPublicItem(ownerNode, itemNode, displayOwner)
-      if (publicItemResult.isLeft){
-        return Left(publicItemResult.left.get)
-      }else{
-        noteBuffer.append(publicItemResult.right.get.note)
-        if (publicItemResult.right.get.tags.isDefined){
-          publicItemResult.right.get.tags.get.foreach ( tag => {
-            if (tagBuffer.find(existingTag => existingTag.uuid.get.toString == tag.uuid.get.toString).isEmpty){
-              tagBuffer.append(tag)
-            }
-          })
+      // public items does not return drafts
+      if (!itemNode.hasProperty("draft")){
+        val publicItemResult = toPublicItem(ownerNode, itemNode, displayOwner)
+        if (publicItemResult.isLeft){
+          return Left(publicItemResult.left.get)
+        }else{
+          noteBuffer.append(publicItemResult.right.get.note)
+          if (publicItemResult.right.get.tags.isDefined){
+            publicItemResult.right.get.tags.get.foreach ( tag => {
+              if (tagBuffer.find(existingTag => existingTag.uuid.get.toString == tag.uuid.get.toString).isEmpty){
+                tagBuffer.append(tag)
+              }
+            })
+          }
         }
       }
     })
+    val ownerPublicModified = ownerNode.getProperty("publicModified").asInstanceOf[Long]
     val content: Option[String] =
-      if (ownerNode.hasProperty("content")) Some(ownerNode.getProperty("content").asInstanceOf[String])
+      if (ownerNode.hasProperty("content") &&
+          (modified.isEmpty || ownerPublicModified > modified.get))
+        Some(ownerNode.getProperty("content").asInstanceOf[String])
       else None
-    Right(PublicItems(displayOwner, content,
+    val format: Option[String] =
+      if (ownerNode.hasProperty("format") &&
+          (modified.isEmpty || ownerPublicModified > modified.get))
+        Some(ownerNode.getProperty("format").asInstanceOf[String])
+      else None
+
+    Right(PublicItems(
+                if (modified.isEmpty || ownerPublicModified > modified.get) Some(displayOwner) else None,
+                content,
+                format,
+                if (modified.isEmpty || ownerPublicModified > modified.get) Some(ownerPublicModified) else None,
                 if (noteBuffer.isEmpty) None else Some(noteBuffer.toList),
                 if (tagBuffer.isEmpty) None else Some(tagBuffer.toList)))
   }

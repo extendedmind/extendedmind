@@ -144,7 +144,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
   def publishNote(owner: Owner, noteUUID: UUID, format: String, path: Option[String]): Response[PublishNoteResult] = {
     for {
       publishResult <- publishNoteNode(owner, noteUUID, format, path).right
-      result <- Right(PublishNoteResult(publishResult._2, getSetResult(publishResult._1, false))).right
+      result <- Right(PublishNoteResult(publishResult._2, publishResult._3, getSetResult(publishResult._1, false))).right
       unit <- Right(updateItemsIndex(publishResult._1, result.result)).right
     } yield result
   }
@@ -178,6 +178,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
           (if (noteNode.hasProperty("published"))
             Some(SharedItemVisibility(
                  Some(noteNode.getProperty("published").asInstanceOf[Long]),
+                 if (noteNode.hasProperty("draft")) Some(noteNode.getProperty("draft").asInstanceOf[Long]) else None,
                  Some(noteNode.getProperty("path").asInstanceOf[String]),
                  None))
            else None),
@@ -282,18 +283,18 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     }
   }
 
-  protected def publishNoteNode(owner: Owner, noteUUID: UUID, format: String, path: Option[String]): Response[(Node, Long)] = {
+  protected def publishNoteNode(owner: Owner, noteUUID: UUID, format: String, path: Option[String]): Response[(Node, Long, Option[Long])] = {
     withTx {
       implicit neo4j =>
         for {
           ownerNodes <- getOwnerNodes(owner).right
           noteNode <- getItemNode(owner, noteUUID, Some(ItemLabel.NOTE)).right
-          published <- publishNoteNode(ownerNodes, noteNode, format, path).right
-        } yield (noteNode, published)
+          publishResult <- publishNoteNode(ownerNodes, noteNode, format, path).right
+        } yield (noteNode, publishResult._1, publishResult._2)
     }
   }
 
-  protected def publishNoteNode(ownerNodes: OwnerNodes, noteNode: Node, format: String, path: Option[String]): Response[Long] = {
+  protected def publishNoteNode(ownerNodes: OwnerNodes, noteNode: Node, format: String, path: Option[String]): Response[(Long, Option[Long])] = {
     withTx {
       implicit neo4j =>
         val ownerNode = if (ownerNodes.foreignOwner.isDefined) ownerNodes.foreignOwner.get else ownerNodes.user
@@ -303,24 +304,30 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
           val handle = ownerNode.getProperty("handle").asInstanceOf[String]
 
           // Use note uuid as path if it is not set
-          if (path.isDefined){
+          val currentTime = System.currentTimeMillis()
+          val draft = if (path.isDefined){
             val pathResult = getItemNodeByPath(ownerNode, path.get, includeDeleted=true)
             if (pathResult.isRight){
               return fail(INVALID_PARAMETER, ERR_NOTE_PATH_IN_USE, "Can not publish because given path is already in use")
             }else{
               noteNode.setProperty("path", path.get)
             }
+            // Path was set, remove draft property if it's there
+            if (noteNode.hasProperty("draft")) noteNode.removeProperty("draft")
+            None
           }else{
             noteNode.setProperty("path", getUUID(noteNode).toString())
+            // Also set note to be a draft
+            noteNode.setProperty("draft", currentTime)
+            Some(currentTime)
           }
 
           // Set format
           noteNode.setProperty("format", format)
 
-          // Set public timestamp
-          val currentTime = System.currentTimeMillis()
+          // Set published timestamp
           noteNode.setProperty("published", currentTime)
-          Right(currentTime)
+          Right((currentTime, draft))
         }
     }
   }
@@ -337,6 +344,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
 
   protected def unpublishNoteNode(noteNode: Node)(implicit neo4j: DatabaseService): Unit = {
     if (noteNode.hasProperty("published")) noteNode.removeProperty("published")
+    if (noteNode.hasProperty("draft")) noteNode.removeProperty("draft")
     if (noteNode.hasProperty("path")) noteNode.removeProperty("path")
   }
 

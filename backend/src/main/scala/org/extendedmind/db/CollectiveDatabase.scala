@@ -100,7 +100,7 @@ trait CollectiveDatabase extends UserDatabase {
 
   protected def createCollectiveNode(founderNode: Node, collective: Collective, commonCollective: Boolean)
                (implicit neo4j: DatabaseService): Response[Node] = {
-    val collectiveNode = createNode(collective.copy(inboxId=None, apiKey=None, handle=None), MainLabel.OWNER, OwnerLabel.COLLECTIVE)
+    val collectiveNode = createNode(collective.copy(inboxId=None, apiKey=None, handle=None, content=None, format=None, displayName=None), MainLabel.OWNER, OwnerLabel.COLLECTIVE)
     founderNode --> SecurityRelationship.IS_FOUNDER --> collectiveNode;
     collectiveNode.setProperty("inboxId", generateUniqueInboxId())
     collectiveNode.setProperty("apiKey", Random.generateRandomUniqueString())
@@ -115,12 +115,29 @@ trait CollectiveDatabase extends UserDatabase {
       })
     }
 
+    var updatePublicModified = false
+
+    if (collective.displayName.isDefined){
+      collectiveNode.setProperty("displayName", collective.displayName.get)
+      updatePublicModified = true
+    }
+
+    // Only set content if format is also defined
+    if (collective.content.isDefined && collective.format.isDefined){
+      collectiveNode.setProperty("content", collective.content.get)
+      collectiveNode.setProperty("format", collective.format.get)
+      updatePublicModified = true
+    }
+
     // Set handle
     val handleResult = setOwnerHandle(collectiveNode, collective.handle)
-    if (handleResult.isRight)
+    if (handleResult.isRight){
+      if (handleResult.right.get) updatePublicModified = true
+      if (updatePublicModified) collectiveNode.setProperty("publicModified", System.currentTimeMillis)
       Right(collectiveNode)
-    else
+    }else{
       Left(handleResult.left.get)
+    }
   }
 
   protected def putExistingCollectiveNode(collectiveUUID: UUID, collective: Collective):
@@ -129,16 +146,59 @@ trait CollectiveDatabase extends UserDatabase {
       implicit neo4j =>
         for {
           collectiveNode <- getNode(collectiveUUID, OwnerLabel.COLLECTIVE).right
-          oldHandle <- setOwnerHandle(collectiveNode, collective.handle).right
-          collectiveNode <- updateNode(collectiveNode, collective.copy(
-              inboxId = (if (collectiveNode.hasProperty("inboxId")) Some(collectiveNode.getProperty("inboxId").asInstanceOf[String])
-                        else None),
-              apiKey = (if (collectiveNode.hasProperty("apiKey")) Some(collectiveNode.getProperty("apiKey").asInstanceOf[String])
-                        else None),
-              common = (if (collectiveNode.hasProperty("common")) Some(collectiveNode.getProperty("common").asInstanceOf[Boolean])
-                        else None)
-          )).right
+          result <- updateCollective(collectiveNode, collective).right
         } yield collectiveNode
+    }
+  }
+
+  protected def updateCollective(collectiveNode: Node, collective: Collective)(implicit neo4j: DatabaseService): Response[Unit] = {
+
+    // Description
+    if (collective.description.isDefined) {
+      collectiveNode.setProperty("description", collective.description.get);
+    }else if (collectiveNode.hasProperty("description")){
+      collectiveNode.removeProperty("description");
+    }
+
+    var updatePublicModified = false
+
+    // Display name
+    if (collective.displayName.isDefined &&
+        (!collectiveNode.hasProperty("displayName") ||
+         collectiveNode.getProperty("displayName").asInstanceOf[String] != collective.displayName.get)){
+      collectiveNode.setProperty("displayName", collective.displayName.get);
+      updatePublicModified = true
+    }else if (collectiveNode.hasProperty("displayName")){
+      collectiveNode.removeProperty("displayName");
+      updatePublicModified = true
+    }
+
+    // Content and format update
+    if (collective.content.isDefined && collective.format.isDefined){
+      if (!collectiveNode.hasProperty("content") ||
+          collectiveNode.getProperty("content").asInstanceOf[String] != collective.content.get){
+        collectiveNode.setProperty("content", collective.content.get);
+        updatePublicModified = true
+      }
+      if (!collectiveNode.hasProperty("format") ||
+          collectiveNode.getProperty("format").asInstanceOf[String] != collective.format.get){
+        collectiveNode.setProperty("format", collective.format.get);
+        updatePublicModified = true
+      }
+    }else if (collectiveNode.hasProperty("content") || collectiveNode.hasProperty("format")){
+      if (collectiveNode.hasProperty("content")) collectiveNode.removeProperty("content")
+      if (collectiveNode.hasProperty("format")) collectiveNode.removeProperty("format")
+      updatePublicModified = true
+    }
+
+    // Update handle
+    val handleResult = setOwnerHandle(collectiveNode, collective.handle)
+    if (handleResult.isRight){
+      if (handleResult.right.get) updatePublicModified = true
+      if (updatePublicModified) collectiveNode.setProperty("publicModified", System.currentTimeMillis)
+      Right()
+    }else{
+      Left(handleResult.left.get)
     }
   }
 

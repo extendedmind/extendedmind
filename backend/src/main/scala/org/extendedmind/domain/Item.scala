@@ -44,7 +44,7 @@ case class Items(items: Option[scala.List[Item]],
 				 lists: Option[scala.List[List]],
 				 tags: Option[scala.List[Tag]])
 
-case class SharedItemVisibility(published: Option[Long], path: Option[String], agreements: Option[scala.List[Agreement]])
+case class SharedItemVisibility(published: Option[Long], draft: Option[Long], path: Option[String], agreements: Option[scala.List[Agreement]])
 case class ExtendedItemRelationships(parent: Option[UUID], origin: Option[UUID], tags: Option[scala.List[UUID]])
 case class LimitedExtendedItemRelationships(parent: Option[UUID], origin: Option[UUID])
 
@@ -115,4 +115,5 @@ case class NodeProperty(key: String, stringValue: Option[String], longValue: Opt
 // Owner is the display name of the owner. Later on we might want to add also a authors list,
 // but before that saying "by [owner]" works
 case class PublicItem(owner: String, note: Note, tags: Option[scala.List[Tag]])
-case class PublicItems(owner: String, content: Option[String], notes: Option[scala.List[Note]], tags: Option[scala.List[Tag]])
+case class PublicItems(owner: Option[String], content: Option[String], format: Option[String], modified: Option[Long],
+                       notes: Option[scala.List[Note]], tags: Option[scala.List[Tag]])

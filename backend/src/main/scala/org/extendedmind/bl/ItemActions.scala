@@ -229,7 +229,7 @@ trait ItemActions {
               if (strippedAgreementsForCurrentUser.isEmpty){
                 None
               }else{
-                Some(SharedItemVisibility(None, None,
+                Some(SharedItemVisibility(None, None, None,
                     Some(strippedAgreementsForCurrentUser)))
               }
             }else{

@@ -189,21 +189,34 @@ class NoteBestCaseSpec extends ServiceSpecBase {
       val newNote = Note("Public note", None, None, Some("this is public"), None, None, None)
       val putNoteResponse = putNewNote(newNote, authenticateResponse)
 
+      // First publish as draft by leaving out the path attribute
       Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/publish",
-          marshal(PublishPayload("md", Some("test")))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-        val publishNoteResult = responseAs[PublishNoteResult]
-        writeJsonOutput("publishNoteResponse", responseAs[String])
-        Get("/public/timo/test") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
-          val publicItem = responseAs[PublicItem]
-          publicItem.note.relationships should be(None)
-          publicItem.note.visibility should not be(None)
-          Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/unpublish") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-            writeJsonOutput("unpublishNoteResponse", responseAs[String])
-            val unpublishedNoteResponse = getNote(putNoteResponse.uuid.get, authenticateResponse)
-            unpublishedNoteResponse.visibility should be(None)
+          marshal(PublishPayload("md", None))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        val publishNoteDraftResult = responseAs[PublishNoteResult]
+        writeJsonOutput("publishNoteDraftResponse", responseAs[String])
+        Get("/public/timo/" + putNoteResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+          val publicDraftItem = responseAs[PublicItem]
+          publicDraftItem.note.visibility.get.draft should not be (None)
+          // Next republish with path
+          Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/publish",
+              marshal(PublishPayload("md", Some("test")))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+            val publishNoteResult = responseAs[PublishNoteResult]
+            writeJsonOutput("publishNoteResponse", responseAs[String])
+            publishNoteResult.draft should be (None)
             Get("/public/timo/test") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
-              val failure = responseAs[ErrorResult]
-              failure.code should be (3007)
+              val publicItem = responseAs[PublicItem]
+              publicItem.note.relationships should be(None)
+              publicItem.note.visibility should not be(None)
+              publicItem.note.visibility.get.draft should be (None)
+              Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/unpublish") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                writeJsonOutput("unpublishNoteResponse", responseAs[String])
+                val unpublishedNoteResponse = getNote(putNoteResponse.uuid.get, authenticateResponse)
+                unpublishedNoteResponse.visibility should be(None)
+                Get("/public/timo/test") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+                  val failure = responseAs[ErrorResult]
+                  failure.code should be (3007)
+                }
+              }
             }
           }
         }
@@ -228,8 +241,37 @@ class NoteBestCaseSpec extends ServiceSpecBase {
             // Getting modified should return only the latter
             Get("/public/timo?modified=" + putNoteResponse.modified) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
               val modifiedPublicItems = responseAs[PublicItems]
+              modifiedPublicItems.owner should be(None)
               modifiedPublicItems.notes.get.size should be(1)
               modifiedPublicItems.tags.get.size should be(2)
+              val latestModified = modifiedPublicItems.notes.get(0).modified.get
+
+              // Change account values, expect modified to return different values
+              Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                val account = responseAs[User]
+                // Should be able to update public modified value of owner
+                Put("/account",
+                  marshal(account.copy(preferences=Some(UserPreferences(None, None)))).right.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                  // This should not change the response as public items have not changed
+                  Get("/public/timo?modified=" + latestModified) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+                    val nonPublicModifiedItems = responseAs[PublicItems]
+                    nonPublicModifiedItems.owner should be(None)
+                    nonPublicModifiedItems.modified should be (modifiedPublicItems.modified)
+                    nonPublicModifiedItems.notes should be(None)
+                    nonPublicModifiedItems.tags should be(None)
+                    Put("/account",
+                      marshal(account.copy(displayName=Some("testing"))).right.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                      Get("/public/timo?modified=" + putNoteResponse.modified) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+                        val ownerModifiedPublicItems = responseAs[PublicItems]
+                        ownerModifiedPublicItems.owner.get should be("testing")
+                        assert(ownerModifiedPublicItems.modified > modifiedPublicItems.modified)
+                        nonPublicModifiedItems.notes should be(None)
+                        nonPublicModifiedItems.tags should be(None)
+                      }
+                    }
+                  }
+                }
+              }
             }
           }
         }
