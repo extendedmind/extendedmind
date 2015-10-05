@@ -1284,7 +1284,7 @@ function MainController($element, $controller, $document, $filter, $http, $q, $r
   $scope.formatToLocaleTime = function(date) {
     if (UserSessionService.getUIPreference('hour12')) {
       // e.g. 9:35 am
-      return $filter('date')(date, 'h:mm a');
+      return $filter('date')(date, 'h:mm a').toLowerCase();
     } else {
       // e.g. 09:35
       return $filter('date')(date, 'HH:mm');
