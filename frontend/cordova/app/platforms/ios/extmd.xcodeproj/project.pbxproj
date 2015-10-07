@@ -36,6 +36,7 @@
 		335F5011C9F84BAA848D4145 /* UIApplication+APPLocalNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = 05E2F31C18BF476A9CEA69B7 /* UIApplication+APPLocalNotification.m */; };
 		397A59F38434462789F801CD /* CDVInAppBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1F6B60682E0042CD9FBBE153 /* CDVInAppBrowser.m */; };
 		49A123A9DC7F4780BFE3B154 /* EventKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB3F3F787C944B3AAF81E1CE /* EventKit.framework */; };
+		49BE165E1BC58D4200C0C274 /* SharePreprocessor.js in Resources */ = {isa = PBXBuildFile; fileRef = 49BE165D1BC58D4200C0C274 /* SharePreprocessor.js */; settings = {ASSET_TAGS = (); }; };
 		49DE2AD91BC51C0C00D50720 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49DE2AD81BC51C0C00D50720 /* ShareViewController.swift */; };
 		49DE2ADC1BC51C0C00D50720 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 49DE2ADA1BC51C0C00D50720 /* MainInterface.storyboard */; };
 		49DE2AE01BC51C0C00D50720 /* extmd-share.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 49DE2AD61BC51C0B00D50720 /* extmd-share.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -62,6 +63,7 @@
 		D4A0D8761607E02300AEF8BB /* Default-568h@2x~iphone.png in Resources */ = {isa = PBXBuildFile; fileRef = D4A0D8751607E02300AEF8BB /* Default-568h@2x~iphone.png */; };
 		DDF6CEED97514D7B8DCAD493 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 400064EBF12C4197986D4C5B /* AudioToolbox.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		E0D2E140F6B443828244F2B7 /* CDVDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 30A4BFC702D84CE7890EC18B /* CDVDevice.m */; };
+		EBD8D52C5B5E43BBA0D1CCAE /* AppGroupsUserDefaults.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A1A6D01E7E340EA9FE0B1F4 /* AppGroupsUserDefaults.m */; };
 		F1DAB536BFE34BBFB02D45B3 /* CDVFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 4791714202F142488AF16635 /* CDVFile.m */; };
 		FDF83CF4AFA342C69295D520 /* UIWebViewExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = A7E61BB21FB34507A48C77BC /* UIWebViewExtension.m */; };
 /* End PBXBuildFile section */
@@ -106,6 +108,7 @@
 
 /* Begin PBXFileReference section */
 		05E2F31C18BF476A9CEA69B7 /* UIApplication+APPLocalNotification.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIApplication+APPLocalNotification.m"; path = "de.appplant.cordova.plugin.local-notification/UIApplication+APPLocalNotification.m"; sourceTree = "<group>"; };
+		0A1A6D01E7E340EA9FE0B1F4 /* AppGroupsUserDefaults.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppGroupsUserDefaults.m; path = info.protonet.appgroupsuserdefaults/AppGroupsUserDefaults.m; sourceTree = "<group>"; };
 		0C2756F422BB4F5A92B22A2B /* CDVLocalFilesystem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDVLocalFilesystem.m; path = "cordova-plugin-file/CDVLocalFilesystem.m"; sourceTree = "<group>"; };
 		171E17B9AD5F46308033502E /* CDVGlobalization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDVGlobalization.h; path = "cordova-plugin-globalization/CDVGlobalization.h"; sourceTree = "<group>"; };
 		19902D64EF014DB897D06A13 /* UIApplication+APPLocalNotification.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIApplication+APPLocalNotification.h"; path = "de.appplant.cordova.plugin.local-notification/UIApplication+APPLocalNotification.h"; sourceTree = "<group>"; };
@@ -142,6 +145,9 @@
 		400064EBF12C4197986D4C5B /* AudioToolbox.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		4791714202F142488AF16635 /* CDVFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDVFile.m; path = "cordova-plugin-file/CDVFile.m"; sourceTree = "<group>"; };
 		4827990A189741F28F82BF74 /* CDVVibration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDVVibration.h; path = "cordova-plugin-vibration/CDVVibration.h"; sourceTree = "<group>"; };
+		49BE165B1BC58A3300C0C274 /* extmd.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = extmd.entitlements; path = extmd/extmd.entitlements; sourceTree = "<group>"; };
+		49BE165C1BC58A7D00C0C274 /* extmd-share.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "extmd-share.entitlements"; sourceTree = "<group>"; };
+		49BE165D1BC58D4200C0C274 /* SharePreprocessor.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = SharePreprocessor.js; sourceTree = "<group>"; };
 		49DE2AD61BC51C0B00D50720 /* extmd-share.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "extmd-share.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		49DE2AD81BC51C0C00D50720 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
 		49DE2ADB1BC51C0C00D50720 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
@@ -177,6 +183,7 @@
 		BB3F3F787C944B3AAF81E1CE /* EventKit.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = EventKit.framework; path = System/Library/Frameworks/EventKit.framework; sourceTree = SDKROOT; };
 		BC7ABFFB7EFC4E239DC1A437 /* CDVSplashScreen.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDVSplashScreen.m; path = "cordova-plugin-splashscreen/CDVSplashScreen.m"; sourceTree = "<group>"; };
 		BD729BFEA1D84E87A5535190 /* UIWebViewExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIWebViewExtension.h; path = com.ionic.keyboard/UIWebViewExtension.h; sourceTree = "<group>"; };
+		C093530CE5F540FDA8881F6C /* AppGroupsUserDefaults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppGroupsUserDefaults.h; path = info.protonet.appgroupsuserdefaults/AppGroupsUserDefaults.h; sourceTree = "<group>"; };
 		CEABF4E2866E4C4780F7C839 /* IonicKeyboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IonicKeyboard.h; path = com.ionic.keyboard/IonicKeyboard.h; sourceTree = "<group>"; };
 		CEE559FAA4C541258CB574E0 /* CDVViewController+SplashScreen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "CDVViewController+SplashScreen.h"; path = "cordova-plugin-splashscreen/CDVViewController+SplashScreen.h"; sourceTree = "<group>"; };
 		CF5DFBAE77764C6DBD211890 /* CDVLocalFilesystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDVLocalFilesystem.h; path = "cordova-plugin-file/CDVLocalFilesystem.h"; sourceTree = "<group>"; };
@@ -243,6 +250,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				49BE165B1BC58A3300C0C274 /* extmd.entitlements */,
 				EB87FDF41871DAF40020F90C /* config.xml */,
 				EB87FDF31871DA8E0020F90C /* www */,
 				EB87FDF21871DA7A0020F90C /* merges */,
@@ -340,6 +348,8 @@
 				B40FB18A89C94C17B8934EC6 /* CDVInAppBrowser.h */,
 				4D6E30230B3D406789C1942F /* CDVGlobalization.m */,
 				171E17B9AD5F46308033502E /* CDVGlobalization.h */,
+				0A1A6D01E7E340EA9FE0B1F4 /* AppGroupsUserDefaults.m */,
+				C093530CE5F540FDA8881F6C /* AppGroupsUserDefaults.h */,
 			);
 			name = Plugins;
 			path = extmd/Plugins;
@@ -387,6 +397,8 @@
 		49DE2AD71BC51C0C00D50720 /* extmd-share */ = {
 			isa = PBXGroup;
 			children = (
+				49BE165D1BC58D4200C0C274 /* SharePreprocessor.js */,
+				49BE165C1BC58A7D00C0C274 /* extmd-share.entitlements */,
 				49DE2AD81BC51C0C00D50720 /* ShareViewController.swift */,
 				49DE2ADA1BC51C0C00D50720 /* MainInterface.storyboard */,
 				49DE2ADD1BC51C0C00D50720 /* Info.plist */,
@@ -453,8 +465,22 @@
 				LastSwiftUpdateCheck = 0700;
 				LastUpgradeCheck = 510;
 				TargetAttributes = {
+					1D6058900D05DD3D006BFB54 = {
+						DevelopmentTeam = Z9X5PYT4CA;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+						};
+					};
 					49DE2AD51BC51C0B00D50720 = {
 						CreatedOnToolsVersion = 7.0.1;
+						DevelopmentTeam = Z9X5PYT4CA;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -538,6 +564,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				49DE2ADC1BC51C0C00D50720 /* MainInterface.storyboard in Resources */,
+				49BE165E1BC58D4200C0C274 /* SharePreprocessor.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -587,6 +614,7 @@
 				CCAAEFAB78B14EDBB402B1CB /* UILocalNotification+APPLocalNotification.m in Sources */,
 				397A59F38434462789F801CD /* CDVInAppBrowser.m in Sources */,
 				915D8C4D9BD64C0398CAB17E /* CDVGlobalization.m in Sources */,
+				EBD8D52C5B5E43BBA0D1CCAE /* AppGroupsUserDefaults.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -630,6 +658,9 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_ENTITLEMENTS = extmd/extmd.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -653,6 +684,7 @@
 					"-ObjC",
 				);
 				PRODUCT_NAME = extmd;
+				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -662,6 +694,9 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_ENTITLEMENTS = extmd/extmd.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -683,6 +718,7 @@
 					"-ObjC",
 				);
 				PRODUCT_NAME = extmd;
+				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -697,6 +733,9 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CODE_SIGN_ENTITLEMENTS = "extmd-share/extmd-share.entitlements";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -718,6 +757,7 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.extendedmind.extmd-share";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -733,6 +773,9 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CODE_SIGN_ENTITLEMENTS = "extmd-share/extmd-share.entitlements";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -748,6 +791,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.extendedmind.extmd-share";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = YES;
 				VALIDATE_PRODUCT = YES;
 			};
