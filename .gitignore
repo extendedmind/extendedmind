@@ -43,7 +43,17 @@ logs/
 .DS_Store
 
 # Ignore Cordova generated directories
-frontend/cordova/app/platforms
+frontend/cordova/app/platforms/android
+frontend/cordova/app/platforms/ios/.gitignore
+frontend/cordova/app/platforms/ios/build
+frontend/cordova/app/platforms/ios/cordova
+frontend/cordova/app/platforms/ios/CordovaLib
+frontend/cordova/app/platforms/ios/extmd
+frontend/cordova/app/platforms/ios/platform_www
+frontend/cordova/app/platforms/ios/www
+frontend/cordova/app/platforms/ios/extmd.xcodeproj/project.xcworkspace
+frontend/cordova/app/platforms/ios/extmd.xcodeproj/xcuserdata
+frontend/cordova/app/platforms/platforms.json
 frontend/cordova/app/plugins
 frontend/cordova/app/assets/fonts
 frontend/cordova/app/assets/build

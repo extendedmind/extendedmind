@@ -225,7 +225,20 @@
         <configuration>
           <filesets>
             <fileset>
+              <directory>${basedir}/app/platforms/ios</directory>
+              <excludes>
+                <exclude>extmd-share/**</exclude>
+                <exclude>extmd.xcodeproj/project.pbxproj</exclude>
+              </excludes>
+            </fileset>
+            <fileset>
+              <directory>${basedir}/app/platforms/android</directory>
+            </fileset>
+            <fileset>
               <directory>${basedir}/app/platforms</directory>
+              <includes>
+                <include>*.json</include>
+              </includes>
             </fileset>
             <fileset>
               <directory>${basedir}/app/plugins</directory>
