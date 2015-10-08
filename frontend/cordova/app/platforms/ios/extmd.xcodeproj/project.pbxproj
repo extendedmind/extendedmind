@@ -35,6 +35,7 @@
 		30FC414916E50CA1004E6F35 /* icon-72@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30FC414816E50CA1004E6F35 /* icon-72@2x.png */; };
 		335F5011C9F84BAA848D4145 /* UIApplication+APPLocalNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = 05E2F31C18BF476A9CEA69B7 /* UIApplication+APPLocalNotification.m */; };
 		397A59F38434462789F801CD /* CDVInAppBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1F6B60682E0042CD9FBBE153 /* CDVInAppBrowser.m */; };
+		496FCEF11BC6656700C8A782 /* images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 496FCEF01BC6656700C8A782 /* images.xcassets */; settings = {ASSET_TAGS = (); }; };
 		49A123A9DC7F4780BFE3B154 /* EventKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB3F3F787C944B3AAF81E1CE /* EventKit.framework */; };
 		49BE165E1BC58D4200C0C274 /* SharePreprocessor.js in Resources */ = {isa = PBXBuildFile; fileRef = 49BE165D1BC58D4200C0C274 /* SharePreprocessor.js */; settings = {ASSET_TAGS = (); }; };
 		49DE2AD91BC51C0C00D50720 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49DE2AD81BC51C0C00D50720 /* ShareViewController.swift */; };
@@ -145,6 +146,7 @@
 		400064EBF12C4197986D4C5B /* AudioToolbox.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		4791714202F142488AF16635 /* CDVFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDVFile.m; path = "cordova-plugin-file/CDVFile.m"; sourceTree = "<group>"; };
 		4827990A189741F28F82BF74 /* CDVVibration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDVVibration.h; path = "cordova-plugin-vibration/CDVVibration.h"; sourceTree = "<group>"; };
+		496FCEF01BC6656700C8A782 /* images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = images.xcassets; sourceTree = "<group>"; };
 		49BE165C1BC58A7D00C0C274 /* extmd-share.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "extmd-share.entitlements"; sourceTree = "<group>"; };
 		49BE165D1BC58D4200C0C274 /* SharePreprocessor.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = SharePreprocessor.js; sourceTree = "<group>"; };
 		49D9284F1BC65CDE005F9111 /* extmd.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = extmd.entitlements; path = extmd/extmd.entitlements; sourceTree = "<group>"; };
@@ -402,6 +404,7 @@
 				49DE2AD81BC51C0C00D50720 /* ShareViewController.swift */,
 				49DE2ADA1BC51C0C00D50720 /* MainInterface.storyboard */,
 				49DE2ADD1BC51C0C00D50720 /* Info.plist */,
+				496FCEF01BC6656700C8A782 /* images.xcassets */,
 			);
 			path = "extmd-share";
 			sourceTree = "<group>";
@@ -563,6 +566,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				496FCEF11BC6656700C8A782 /* images.xcassets in Resources */,
 				49DE2ADC1BC51C0C00D50720 /* MainInterface.storyboard in Resources */,
 				49BE165E1BC58D4200C0C274 /* SharePreprocessor.js in Resources */,
 			);
