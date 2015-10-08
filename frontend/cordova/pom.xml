@@ -227,6 +227,7 @@
             <fileset>
               <directory>${basedir}/app/platforms/ios</directory>
               <excludes>
+                <exclude>extmd/extmd.entitlements</exclude>
                 <exclude>extmd-share/**</exclude>
                 <exclude>extmd.xcodeproj/project.pbxproj</exclude>
               </excludes>

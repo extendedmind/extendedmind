@@ -48,7 +48,14 @@ frontend/cordova/app/platforms/ios/.gitignore
 frontend/cordova/app/platforms/ios/build
 frontend/cordova/app/platforms/ios/cordova
 frontend/cordova/app/platforms/ios/CordovaLib
-frontend/cordova/app/platforms/ios/extmd
+frontend/cordova/app/platforms/ios/extmd/Classes
+frontend/cordova/app/platforms/ios/extmd/Plugins
+frontend/cordova/app/platforms/ios/extmd/Resources
+frontend/cordova/app/platforms/ios/extmd/config.xml
+frontend/cordova/app/platforms/ios/extmd/extmd-Info.plist
+frontend/cordova/app/platforms/ios/extmd/extmd-Prefix.pch
+frontend/cordova/app/platforms/ios/extmd/main.m
+frontend/cordova/app/platforms/ios/extmd/.gitignore
 frontend/cordova/app/platforms/ios/platform_www
 frontend/cordova/app/platforms/ios/www
 frontend/cordova/app/platforms/ios/extmd.xcodeproj/project.xcworkspace

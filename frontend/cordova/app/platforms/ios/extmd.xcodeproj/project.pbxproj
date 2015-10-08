@@ -145,9 +145,9 @@
 		400064EBF12C4197986D4C5B /* AudioToolbox.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		4791714202F142488AF16635 /* CDVFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDVFile.m; path = "cordova-plugin-file/CDVFile.m"; sourceTree = "<group>"; };
 		4827990A189741F28F82BF74 /* CDVVibration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDVVibration.h; path = "cordova-plugin-vibration/CDVVibration.h"; sourceTree = "<group>"; };
-		49BE165B1BC58A3300C0C274 /* extmd.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = extmd.entitlements; path = extmd/extmd.entitlements; sourceTree = "<group>"; };
 		49BE165C1BC58A7D00C0C274 /* extmd-share.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "extmd-share.entitlements"; sourceTree = "<group>"; };
 		49BE165D1BC58D4200C0C274 /* SharePreprocessor.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = SharePreprocessor.js; sourceTree = "<group>"; };
+		49D9284F1BC65CDE005F9111 /* extmd.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = extmd.entitlements; path = extmd/extmd.entitlements; sourceTree = "<group>"; };
 		49DE2AD61BC51C0B00D50720 /* extmd-share.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "extmd-share.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		49DE2AD81BC51C0C00D50720 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
 		49DE2ADB1BC51C0C00D50720 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
@@ -250,7 +250,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				49BE165B1BC58A3300C0C274 /* extmd.entitlements */,
+				49D9284F1BC65CDE005F9111 /* extmd.entitlements */,
 				EB87FDF41871DAF40020F90C /* config.xml */,
 				EB87FDF31871DA8E0020F90C /* www */,
 				EB87FDF21871DA7A0020F90C /* merges */,

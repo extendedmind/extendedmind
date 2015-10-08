@@ -2,7 +2,7 @@
 
 source setup-environment.sh
 
-if [ -d "app/platforms/ios/extmd" ]
+if [ -d "app/platforms/ios/cordova" ]
 then
   echo "iOS already prepared, skipping."
 else
