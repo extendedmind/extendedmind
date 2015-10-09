@@ -14,11 +14,11 @@
  */
  'use strict';
 
- function UserController($http, $location, $q, $rootScope, $scope, $templateCache, $timeout, $window,
-                         AnalyticsService, AuthenticationService, BackendClientService, ItemsService,
-                         ListsService, NotesService, ReminderService, SwiperService, SynchronizeService,
-                         TagsService, TasksService, UISessionService, UserService, UserSessionService) {
-
+ function UserController($location, $q, $rootScope, $scope, $templateCache, $timeout, $window,
+                         AnalyticsService, AuthenticationService, BackendClientService, ContentService,
+                         ItemsService, ListsService, NotesService, ReminderService, SwiperService,
+                         SynchronizeService, TagsService, TasksService, UISessionService, UserService,
+                         UserSessionService) {
 
   var featureChangedCallback = function featureChangedCallback(name, data/*, state*/) {
     if (name === 'user' && data && data.account === true){
@@ -117,14 +117,14 @@
   // TERMS AND PRIVACY
 
   $scope.openTermsInEditor = function(){
-    $http.get(BackendClientService.getUrlPrefix() + '/static/terms.html').then(function(termsResponse){
-      $scope.openEditor('user', {terms: termsResponse.data}, 'terms');
+    ContentService.getExternalHtml('terms').then(function(response){
+      $scope.openEditor('user', {terms: response}, 'terms');
     });
   };
 
   $scope.openPrivacyInEditor = function(){
-    $http.get(BackendClientService.getUrlPrefix() + '/static/privacy.html').then(function(privacyResponse){
-      $scope.openEditor('user', {privacy: privacyResponse.data}, 'privacy');
+    ContentService.getExternalHtml('privacy').then(function(response){
+      $scope.openEditor('user', {privacy: response}, 'privacy');
     });
   };
 
@@ -264,8 +264,8 @@
   };
 
 }
-UserController['$inject'] = ['$http', '$location', '$q', '$rootScope', '$scope', '$templateCache',
-'$timeout', '$window', 'AnalyticsService', 'AuthenticationService', 'BackendClientService', 'ItemsService',
-'ListsService', 'NotesService', 'ReminderService', 'SwiperService', 'SynchronizeService', 'TagsService',
-'TasksService', 'UISessionService', 'UserService', 'UserSessionService'];
+UserController['$inject'] = ['$location', '$q', '$rootScope', '$scope', '$templateCache',
+'$timeout', '$window', 'AnalyticsService', 'AuthenticationService', 'BackendClientService', 'ContentService',
+'ItemsService', 'ListsService', 'NotesService', 'ReminderService', 'SwiperService', 'SynchronizeService',
+'TagsService', 'TasksService', 'UISessionService', 'UserService', 'UserSessionService'];
 angular.module('em.user').controller('UserController', UserController);

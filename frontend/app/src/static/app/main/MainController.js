@@ -20,7 +20,7 @@
 // Holds a reference to all the item arrays. There is no sense in limiting
 // the arrays because everything is needed anyway to get home and inbox to work,
 // which are part of every main slide collection.
-function MainController($element, $controller, $document, $filter, $http, $q, $rootScope, $scope, $timeout,
+function MainController($element, $controller, $document, $filter, $q, $rootScope, $scope, $timeout,
                         $window, AnalyticsService, CalendarService, ContentService, DateService,
                         DrawerService, ItemsService, PlatformService, ReminderService, SwiperService,
                         TasksService, UISessionService, UserService, UserSessionService, packaging) {
@@ -1426,7 +1426,7 @@ function MainController($element, $controller, $document, $filter, $http, $q, $r
 }
 
 MainController['$inject'] = [
-'$element', '$controller', '$document', '$filter', '$http', '$q', '$rootScope', '$scope', '$timeout',
+'$element', '$controller', '$document', '$filter', '$q', '$rootScope', '$scope', '$timeout',
 '$window', 'AnalyticsService', 'CalendarService', 'ContentService', 'DateService', 'DrawerService',
 'ItemsService', 'PlatformService', 'ReminderService', 'SwiperService', 'TasksService', 'UISessionService',
 'UserService', 'UserSessionService', 'packaging'];

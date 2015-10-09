@@ -24,6 +24,16 @@ function ContentService($q, BackendClientService) {
     /[0-9a-z-]+/.source +
     '$'
     );
+  var privacyRegexp = new RegExp(
+    /^/.source +
+    /\/static\/privacy\.html/.source +
+    '$'
+    );
+  var termsRegexp = new RegExp(
+    /^/.source +
+    /\/static\/terms\.html/.source +
+    '$'
+    );
 
   var _md;
   function mardown(){
@@ -70,7 +80,32 @@ function ContentService($q, BackendClientService) {
     });
   }
 
+  function getExternalHtml(path, regex){
+    return $q(function(resolve, reject) {
+      BackendClientService.get(path, regex, true).then(function(response){
+        resolve(response);
+      }, function(error){
+        reject(error);
+      });
+    });
+  }
+
   return {
+    getExternalHtml: function(type) {
+      return $q(function(resolve, reject) {
+        switch (type){
+        case 'privacy':
+          resolve(getExternalHtml('/static/privacy.html', privacyRegexp));
+          break;
+        case 'terms':
+          resolve(getExternalHtml('/static/terms.html', termsRegexp));
+          break;
+        default:
+          reject();
+          break;
+        }
+      });
+    },
     getHighlightedTextInstruction: function(text) {
       return $q(function(resolve, reject) {
         switch (text){
@@ -83,7 +118,9 @@ function ContentService($q, BackendClientService) {
         }
       });
     },
-    publicExtendedMindNoteRegex: publicExtendedMindNoteRegexp
+    publicExtendedMindNoteRegex: publicExtendedMindNoteRegexp,
+    privacyRegex: privacyRegexp,
+    termsRegex: termsRegexp
   };
 }
 ContentService['$inject'] = ['$q', 'BackendClientService'];

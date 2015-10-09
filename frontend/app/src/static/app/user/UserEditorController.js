@@ -14,9 +14,9 @@
  */
  'use strict';
 
- function UserEditorController($http, $rootScope, $scope, $timeout, AnalyticsService, AuthenticationService,
-                               BackendClientService, CalendarService, SwiperService, SynchronizeService,
-                               UISessionService, UserService, UserSessionService) {
+ function UserEditorController($rootScope, $scope, $timeout, AnalyticsService, AuthenticationService,
+                               BackendClientService, ContentService, CalendarService, SwiperService,
+                               SynchronizeService, UISessionService, UserService, UserSessionService) {
 
   // AGENDA CALENDAR
 
@@ -167,17 +167,11 @@
 
   $scope.swipeToDetails = function(mode) {
     $scope.detailsMode = mode;
-    if (mode === 'privacy'){
-      $http.get(BackendClientService.getUrlPrefix() + '/static/privacy.html').then(function(privacyResponse){
-        $scope.details = {html: privacyResponse.data};
+    if (mode === 'privacy' || mode === 'terms'){
+      ContentService.getExternalHtml(mode).then(function(response){
+        $scope.details = {html: response};
         SwiperService.swipeTo('signUp/details');
-        AnalyticsService.visit('privacy');
-      });
-    }else if (mode === 'terms') {
-      $http.get(BackendClientService.getUrlPrefix() + '/static/terms.html').then(function(termsResponse){
-        $scope.details = {html: termsResponse.data};
-        SwiperService.swipeTo('signUp/details');
-        AnalyticsService.visit('terms');
+        AnalyticsService.visit(mode);
       });
     }
   };
@@ -318,7 +312,7 @@
   };
 }
 
-UserEditorController['$inject'] = ['$http', '$rootScope', '$scope', '$timeout', 'AnalyticsService',
-'AuthenticationService', 'BackendClientService', 'CalendarService', 'SwiperService', 'SynchronizeService',
-'UISessionService', 'UserService', 'UserSessionService'];
+UserEditorController['$inject'] = ['$rootScope', '$scope', '$timeout', 'AnalyticsService',
+'AuthenticationService', 'BackendClientService', 'ContentService', 'CalendarService', 'SwiperService',
+'SynchronizeService', 'UISessionService', 'UserService', 'UserSessionService'];
 angular.module('em.user').controller('UserEditorController', UserEditorController);

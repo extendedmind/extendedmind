@@ -17,10 +17,10 @@
 playExtendedMindAnimation, extendedMindAnimationPhase, Media, cordova */
 'use strict';
 
-function EntryController($http, $location, $rootScope, $routeParams, $scope, $timeout,
-                         AnalyticsService, AuthenticationService, BackendClientService, DetectBrowserService,
-                         PlatformService, SwiperService, UISessionService, UserService, UserSessionService,
-                         packaging) {
+function EntryController($location, $rootScope, $routeParams, $scope, $timeout,
+                         AnalyticsService, AuthenticationService, BackendClientService, ContentService,
+                         DetectBrowserService, PlatformService, SwiperService, UISessionService, UserService,
+                         UserSessionService, packaging) {
 
   AnalyticsService.visitEntry('entry');
 
@@ -66,17 +66,11 @@ function EntryController($http, $location, $rootScope, $routeParams, $scope, $ti
   $scope.activeDetails = undefined;
   $scope.swipeToDetails = function(detailsType, mode){
     $scope.activeDetails = detailsType;
-    if (mode === 'privacy'){
-      $http.get(BackendClientService.getUrlPrefix() + '/static/privacy.html').then(function(privacyResponse){
-        $scope.details = {html: privacyResponse.data};
+    if (mode === 'privacy' || mode === 'terms'){
+      ContentService.getExternalHtml(mode).then(function(response){
+        $scope.details = {html: response};
         SwiperService.swipeTo('entry/details');
-        AnalyticsService.visit('privacy');
-      });
-    }else if (mode === 'terms') {
-      $http.get(BackendClientService.getUrlPrefix() + '/static/terms.html').then(function(termsResponse){
-        $scope.details = {html: termsResponse.data};
-        SwiperService.swipeTo('entry/details');
-        AnalyticsService.visit('terms');
+        AnalyticsService.visit(mode);
       });
     }else{
       SwiperService.swipeTo('entry/details');
@@ -445,7 +439,7 @@ function EntryController($http, $location, $rootScope, $routeParams, $scope, $ti
   }
 }
 
-EntryController['$inject'] = ['$http', '$location', '$rootScope', '$routeParams', '$scope', '$timeout',
-'AnalyticsService', 'AuthenticationService', 'BackendClientService', 'DetectBrowserService',
+EntryController['$inject'] = ['$location', '$rootScope', '$routeParams', '$scope', '$timeout',
+'AnalyticsService', 'AuthenticationService', 'BackendClientService', 'ContentService', 'DetectBrowserService',
 'PlatformService', 'SwiperService', 'UISessionService', 'UserService', 'UserSessionService', 'packaging'];
 angular.module('em.entry').controller('EntryController', EntryController);
