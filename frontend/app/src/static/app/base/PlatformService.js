@@ -66,6 +66,24 @@ function PlatformService($q, packaging) {
     }
   }
 
+  function storeInboxId(inboxId){
+    return $q(function(resolve, reject) {
+      if (window.AppGroupsUserDefaults){
+        var options = {
+              key: "inboxId",
+              value: inboxId,
+              suite: "group.org.extendedmind"};
+        window.AppGroupsUserDefaults.save(options, function(){
+          resolve();
+        }, function(){
+          reject('error saving');
+        });
+      }else{
+        reject('invalid configuration');
+      }
+    });
+  }
+
   function isFeatureSupported(featureName){
     if (featureName){
       switch (featureName) {
@@ -77,6 +95,9 @@ function PlatformService($q, packaging) {
 
         case 'keyboardShortcuts':
         return !packaging.endsWith('cordova');
+
+        case 'storeInboxId':
+        return packaging === 'ios-cordova';
       }
     }
   }
@@ -92,6 +113,19 @@ function PlatformService($q, packaging) {
             break;
             case 'firstDayOfWeek':
             resolve(getFirstDayOfWeek());
+            break;
+          }
+        }else{
+          reject('not supported');
+        }
+      });
+    },
+    setFeatureValue: function(featureName, featureValue){
+      return $q(function(resolve, reject) {
+        if (isFeatureSupported(featureName)){
+          switch (featureName) {
+            case 'storeInboxId':
+            resolve(storeInboxId(featureValue));
             break;
           }
         }else{

@@ -16,8 +16,8 @@
  'use strict';
 
  function rootViewDirective($injector, $rootScope, $templateCache, $window, $timeout,
-                            AnalyticsService, BackendClientService, SynchronizeService, UISessionService,
-                            UUIDService, UserSessionService, packaging) {
+                            AnalyticsService, BackendClientService, PlatformService, SynchronizeService,
+                            UISessionService, UUIDService, UserSessionService, packaging) {
 
   return {
     restrict: 'A',
@@ -86,6 +86,15 @@
         SynchronizeService.clearData();
         UserSessionService.clearUser();
         BackendClientService.clearAll();
+
+        if (PlatformService.isFeatureSupported('storeInboxId')){
+          PlatformService.setFeatureValue('storeInboxId', '').then(
+            undefined,
+            function(error){
+              console.error("Could not remove inboxId from user defaults: " + error);
+            }
+          );
+        }
 
         // Clear all rootScope variables just in case
         $rootScope.synced = $rootScope.syncState =
@@ -493,6 +502,6 @@
 }
 
 rootViewDirective['$inject'] = ['$injector', '$rootScope', '$templateCache', '$window', '$timeout',
-'AnalyticsService', 'BackendClientService', 'SynchronizeService', 'UISessionService', 'UUIDService',
-'UserSessionService', 'packaging'];
+'AnalyticsService', 'BackendClientService', 'PlatformService', 'SynchronizeService', 'UISessionService',
+'UUIDService', 'UserSessionService', 'packaging'];
 angular.module('em.root').directive('rootView', rootViewDirective);

@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function AuthenticationService($q, $rootScope, BackendClientService,
+ function AuthenticationService($q, $rootScope, BackendClientService, PlatformService,
                                 UserSessionService, packaging) {
 
   var authenticateRegex = /authenticate/;
@@ -88,11 +88,24 @@
   // Register refresh credentials callback to backend
   BackendClientService.registerRefreshCredentialsCallback(verifyAndUpdateAuthentication);
 
-  // Register swapTokenCallback to backend
-  var swapTokenCallback = function(request, authenticateResponse) {
-    var encodedCredentials = UserSessionService.setAuthenticateInformation(authenticateResponse);
+  function setAuthenticateInformation(authenticateResponse, email){
+    var encodedCredentials = UserSessionService.setAuthenticateInformation(authenticateResponse, email);
     // Update backend client with new token
     BackendClientService.setCredentials(encodedCredentials);
+
+    if (PlatformService.isFeatureSupported('storeInboxId')){
+      PlatformService.setFeatureValue('storeInboxId', authenticateResponse.inboxId).then(
+        undefined,
+        function(error){
+          console.error("Could not save inboxId to user defaults: " + error);
+        }
+      );
+    }
+  }
+
+  // Register swapTokenCallback to backend
+  var swapTokenCallback = function(request, authenticateResponse) {
+    setAuthenticateInformation(authenticateResponse);
   };
   BackendClientService.registerPrimaryPostResultCallback(swapTokenCallback);
 
@@ -122,9 +135,7 @@
   function swapTokenAndAuthenticate() {
     var remember = true;
     return authenticate(remember).then(function(response) {
-      var encodedCredentials = UserSessionService.setAuthenticateInformation(response);
-      // Update backend client with new token
-      BackendClientService.setCredentials(encodedCredentials);
+      setAuthenticateInformation(response);
       // We want to remove possible duplicate swap token calls from the backend client
       BackendClientService.clearPrimary();
       return response;
@@ -231,9 +242,7 @@
         if (angular.isFunction(processUUIDChangeFn)){
           processUUIDChangeFn(UserSessionService.getUserUUID(), response.userUUID);
         }
-        var encodedCredentials = UserSessionService.setAuthenticateInformation(response, user.username);
-        // Update backend client to use token authentication instead of username/password
-        BackendClientService.setCredentials(encodedCredentials);
+        setAuthenticateInformation(response, user.username);
         return response;
       });
     },
@@ -301,6 +310,6 @@
     postAcceptShareRegex: postAcceptShareRegexp
   };
 }
-AuthenticationService['$inject'] = ['$q', '$rootScope', 'BackendClientService',
+AuthenticationService['$inject'] = ['$q', '$rootScope', 'BackendClientService', 'PlatformService',
                                     'UserSessionService', 'packaging'];
 angular.module('em.base').factory('AuthenticationService', AuthenticationService);

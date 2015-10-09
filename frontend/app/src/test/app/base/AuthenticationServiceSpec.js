@@ -205,7 +205,7 @@ describe('AuthenticationService', function() {
     AuthenticationService.verifyAndUpdateAuthentication();
     $httpBackend.flush();
 
-    expect(MockUserSessionService.setAuthenticateInformation).toHaveBeenCalledWith(authenticateResponse);
+    expect(MockUserSessionService.setAuthenticateInformation).toHaveBeenCalledWith(authenticateResponse, undefined);
   });
 
   it('should not verify and update authentication with not valid authentication', function() {
