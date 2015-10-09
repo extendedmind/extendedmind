@@ -38,7 +38,7 @@ class ShareViewController: SLComposeServiceViewController {
             request.setValue("application/x-www-form-urlencoded;charset=utf-8", forHTTPHeaderField: "Content-Type")
             let task = NSURLSession.sharedSession().dataTaskWithRequest(request) {
                 data, response, error in
-                if error != nil {
+                if (error != nil || (response! as! NSHTTPURLResponse).statusCode != 200) {
                     self.alertError("Could not save link, are you online?", onOKPressed: self.closeExtension)
                 }else{
                     // print(NSString(data: data!, encoding: NSUTF8StringEncoding))
