@@ -93,8 +93,8 @@
     // Update backend client with new token
     BackendClientService.setCredentials(encodedCredentials);
 
-    if (PlatformService.isFeatureSupported('storeInboxId')){
-      PlatformService.setFeatureValue('storeInboxId', authenticateResponse.inboxId).then(
+    if (PlatformService.isSupported('setInboxId')){
+      PlatformService.setFeatureValue('setInboxId', authenticateResponse.inboxId).then(
         undefined,
         function(error){
           console.error("Could not save inboxId to user defaults: " + error);

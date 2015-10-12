@@ -30,7 +30,6 @@
               publicItemResponse.note.content.length-beginningContent.length-1)
         publicItemResponse.note.content = beginningContent +
           '![logo](/static/img/logo-text.png)\n\n[external-link](https://ext.md)\n' + endContent;
-        console.log(publicItemResponse.note.content)
       }
       return [200, publicItemResponse];
     });

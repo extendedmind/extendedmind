@@ -15,7 +15,7 @@
 
 'use strict';
 
-function ContentService($q, BackendClientService) {
+function ContentService($q, BackendClientService, PlatformService) {
 
   var publicExtendedMindNoteRegexp = new RegExp(
     /^/.source +
@@ -36,7 +36,7 @@ function ContentService($q, BackendClientService) {
     );
 
   var _md;
-  function mardown(){
+  function markdown(){
     if (!_md){
       _md = window.markdownit({breaks: true});
 
@@ -46,20 +46,34 @@ function ContentService($q, BackendClientService) {
       };
 
       _md.renderer.rules.link_open = function (tokens, idx, options, env, self) {
-        // If you are sure other plugins can't add `target` - drop check below
-        var aIndex = tokens[idx].attrIndex('target');
+        var targetValue = '_blank'
 
-        if (aIndex < 0) {
-          tokens[idx].attrPush(['target', '_blank']); // add new attribute
-        } else {
-          tokens[idx].attrs[aIndex][1] = '_blank';    // replace value of existing attr
+        if (PlatformService.isSupported('openLinkExternal')){
+          var hrefIndex = tokens[idx].attrIndex('href');
+          if (hrefIndex >= 0 ){
+            // HACK: Use target as a temporary storage for URL, because no other attribute seems to stick
+            // at this point in Markdown-IT. bindPreprocessedHtml.js changes the target attribute it to a
+            // nicer 'data-href' before compiling the link.
+            targetValue = tokens[idx].attrs[hrefIndex][1];
+            tokens[idx].attrs.splice(hrefIndex, 1);
+            tokens[idx].attrPush(['class', 'clickable']);
+          }
         }
-
+        var targetIndex = tokens[idx].attrIndex('target');
+        if (targetIndex < 0) {
+          tokens[idx].attrPush(['target', targetValue]); // add new attribute
+        } else {
+          tokens[idx].attrs[targetIndex][1] = targetValue;    // replace value of existing attr
+        }
         // pass token to default renderer.
         return defaultRender(tokens, idx, options, env, self);
       };
     }
     return _md;
+  }
+
+  function onExternalLinkClick(clickEvent){
+    console.log(clickEvent)
   }
 
   function getPublicExtendedMindNote(pathPostfix){
@@ -70,7 +84,7 @@ function ContentService($q, BackendClientService) {
           messageHeading: publicNoteResponse.note.title,
           messageIngress: publicNoteResponse.note.description,
           messageHtml: publicNoteResponse.note.content ?
-            mardown().render(publicNoteResponse.note.content) : undefined,
+            markdown().render(publicNoteResponse.note.content) : undefined,
           confirmText: 'close'
         };
         resolve(messageParams);
@@ -123,5 +137,5 @@ function ContentService($q, BackendClientService) {
     termsRegex: termsRegexp
   };
 }
-ContentService['$inject'] = ['$q', 'BackendClientService'];
+ContentService['$inject'] = ['$q', 'BackendClientService', 'PlatformService'];
 angular.module('em.base').factory('ContentService', ContentService);

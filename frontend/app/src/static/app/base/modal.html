@@ -41,7 +41,7 @@
           </div>
 
           <!-- HTML CONTENT -->
-          <div ng-if="messageHtml" class="group-html-content row" ng-bind-html="messageHtml"></div>
+          <div ng-if="messageHtml" class="group-html-content row" bind-preprocessed-html="messageHtml" ></div>
 
           <!-- LIST PICKER AS MODAL CONTENT -->
           <div ng-if="listPicker && !selectedList">

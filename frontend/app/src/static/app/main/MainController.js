@@ -1360,7 +1360,7 @@ function MainController($element, $controller, $document, $filter, $q, $rootScop
     }
   }
 
-  if (PlatformService.isFeatureSupported('keyboardShortcuts')){
+  if (PlatformService.isSupported('keyboardShortcuts')){
     $scope.registerKeyboardShortcutCallback = function(shortcutFn, shortcutName, id) {
       keyboardShortcutCallbacks[id] = {
         callback: shortcutFn,

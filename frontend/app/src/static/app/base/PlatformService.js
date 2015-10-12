@@ -66,7 +66,7 @@ function PlatformService($q, packaging) {
     }
   }
 
-  function storeInboxId(inboxId){
+  function setInboxId(inboxId){
     return $q(function(resolve, reject) {
       if (window.AppGroupsUserDefaults){
         var options = {
@@ -84,9 +84,21 @@ function PlatformService($q, packaging) {
     });
   }
 
-  function isFeatureSupported(featureName){
-    if (featureName){
-      switch (featureName) {
+  function openLinkExternal(url){
+    return $q(function(resolve, reject) {
+      if (packaging.endsWith('cordova') && cordova && cordova.InAppBrowser){
+        resolve(cordova.InAppBrowser.open(url, '_system', 'location=yes'));
+      }else if (packaging.endsWith('electron') && typeof require !== 'undefined' && require){
+        resolve(require('remote').require('shell').openExternal(url));
+      }else{
+        reject('invalid configuration');
+      }
+    });
+  }
+
+  function isSupported(name){
+    if (name){
+      switch (name) {
         case 'timeFormat':
         return true;
 
@@ -96,17 +108,20 @@ function PlatformService($q, packaging) {
         case 'keyboardShortcuts':
         return !packaging.endsWith('cordova');
 
-        case 'storeInboxId':
+        case 'setInboxId':
         return packaging === 'ios-cordova';
+
+        case 'openLinkExternal':
+        return packaging.endsWith('cordova') || packaging.endsWith('electron');
       }
     }
   }
 
   return {
-    isFeatureSupported: isFeatureSupported,
+    isSupported: isSupported,
     getFeatureValue: function(featureName) {
       return $q(function(resolve, reject) {
-        if (isFeatureSupported(featureName)){
+        if (isSupported(featureName)){
           switch (featureName) {
             case 'timeFormat':
             resolve(getTimeFormat());
@@ -122,10 +137,23 @@ function PlatformService($q, packaging) {
     },
     setFeatureValue: function(featureName, featureValue){
       return $q(function(resolve, reject) {
-        if (isFeatureSupported(featureName)){
+        if (isSupported(featureName)){
           switch (featureName) {
             case 'storeInboxId':
             resolve(storeInboxId(featureValue));
+            break;
+          }
+        }else{
+          reject('not supported');
+        }
+      });
+    },
+    doAction: function(actionName, actionValue){
+      return $q(function(resolve, reject) {
+        if (isSupported(actionName)){
+          switch (actionName) {
+            case 'openLinkExternal':
+            resolve(openLinkExternal(actionValue));
             break;
           }
         }else{
