@@ -28,6 +28,8 @@ import org.extendedmind.SetResult
 object FormatType extends Enumeration {
   type FormatType = Value
   val MARKDOWN = Value("md")
+  val MADOKO = Value("madoko")
+  val BIBTEX = Value("bibtex")
 }
 
 case class Note(uuid: Option[UUID], id: Option[String], created: Option[Long], modified: Option[Long], deleted: Option[Long], archived: Option[Long],
@@ -52,7 +54,7 @@ case class Note(uuid: Option[UUID], id: Option[String], created: Option[Long], m
       }catch {
         case _:Throwable => false
       },
-      "Expected 'md' but got " + format.get)
+      "Expected 'md', 'madoko' or 'bibtex' but got " + format.get)
 }
 
 object Note{
