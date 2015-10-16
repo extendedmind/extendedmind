@@ -22,6 +22,10 @@
       <outputDirectory>node_modules</outputDirectory>
     </fileSet>
     <fileSet>
+      <directory>${project.basedir}/src/js</directory>
+      <outputDirectory>js</outputDirectory>
+    </fileSet>
+    <fileSet>
       <directory>${project.basedir}/src/views</directory>
       <outputDirectory>views</outputDirectory>
     </fileSet>

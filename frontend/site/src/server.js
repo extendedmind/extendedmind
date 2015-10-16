@@ -17,6 +17,7 @@ if (process.argv.length > 2) {
  * Module dependencies.
  */
 
+// external
 var koa = require('koa');
 var logger = require('koa-logger');
 var route = require('koa-route');
@@ -26,8 +27,14 @@ var request = require('superagent');
 var thunkify = require('thunkify');
 var get = thunkify(request.get);
 var markdownParser = new require('markdown-it')();
+var sendfile = require('koa-sendfile');
 
-// setup koa
+// internal
+var madoko = require('./js/madoko.js');
+
+/**
+ * Setup Koa
+ */
 
 var app = module.exports = koa();
 
@@ -60,6 +67,10 @@ if (config.backend === true){
   backendApi = config.backend;
 }
 
+/**
+ * Routing
+ */
+
 // route middleware
 
 app.use(route.get('/', index));
@@ -68,6 +79,8 @@ app.use(route.get('/manifesto', manifesto));
 app.use(route.get('/terms', terms));
 app.use(route.get('/privacy', privacy));
 app.use(route.get('/our/:handle', ourOwner));
+app.use(route.get('/our/:handle/:path', ourOwnerPath));
+app.use(route.get('/our/:handle/:path/pdf', ourOwnerPathPdf));
 
 // routes
 
@@ -96,7 +109,7 @@ function *ourOwner(handle) {
   console.log('GET /our/' + handle);
   var context = {};
   if (backendApi){
-    var backendResponse = yield get(backendApi + "/public/" + handle);
+    var backendResponse = yield get(backendApi + '/public/' + handle);
     if (backendResponse.status === 200){
       var ownerData = backendResponse.body;
       context.ownerTitle = ownerData.owner;
@@ -104,6 +117,36 @@ function *ourOwner(handle) {
     }
   }
   this.body = yield this.render('pages/owner', context);
+}
+
+function *ourOwnerPath(handle, path) {
+  console.log('GET /our/' + handle + '/' + path);
+
+  var context = {};
+  if (backendApi){
+    var backendResponse = yield get(backendApi + '/public/' + handle + '/' + path);
+    if (backendResponse.status === 200){
+      var ownerPathData = backendResponse.body;
+      if (ownerPathData.note && ownerPathData.note.format === 'madoko' && ownerPathData.note.content &&
+          ownerPathData.note.content.length){
+        var bibPath = madoko.getMadokoBibliographyPath(ownerPathData);
+        var bibPathData;
+        if (bibPath){
+          var bibResponse = yield get(backendApi + '/public/' + bibPath);
+          if (bibResponse.status === 200) bibPathData = bibResponse.body;
+        }
+        var madokoHtml = madoko.getMadokoHtml(handle, path, ownerPathData, bibPathData, bibPath);
+        this.body = madokoHtml;
+      }else{
+        // TODO: Format non-Madoko page with markdown-it normally
+      }
+    }
+  }
+}
+
+function *ourOwnerPathPdf(handle, path) {
+  console.log('GET /our/' + handle + '/' + path + '/pdf');
+  yield* sendfile.call(this, madoko.getMadokoPDFPath(handle, path));
 }
 
 // get backend /info path from backend on boot
