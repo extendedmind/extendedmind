@@ -787,36 +787,18 @@ input[type="checkbox"]:checked + label:before {
 }
 
 @-webkit-keyframes onboarding-text-pulse {
-  0%   { color: @color-text; }
-  5% { color: lighten(@color-text, 65%); }
-  10%   { color: @color-text; }
-  15% { color: lighten(@color-text, 65%); }
-  20%   { color: @color-text; }
-  25% { color: lighten(@color-text, 65%); }
-  30%   { color: @color-text; }
-  100%   { color: @color-text; }
+  .text-pulse();
 }
 @-moz-keyframes onboarding-text-pulse {
-  0%   { color: @color-text; }
-  5% { color: lighten(@color-text, 65%); }
-  10%   { color: @color-text; }
-  15% { color: lighten(@color-text, 65%); }
-  20%   { color: @color-text; }
-  25% { color: lighten(@color-text, 65%); }
-  30%   { color: @color-text; }
-  100%   { color: @color-text; }
+  .text-pulse();
 }
 @-o-keyframes onboarding-text-pulse {
-  0%   { color: @color-text; }
-  5% { color: lighten(@color-text, 65%); }
-  10%   { color: @color-text; }
-  15% { color: lighten(@color-text, 65%); }
-  20%   { color: @color-text; }
-  25% { color: lighten(@color-text, 65%); }
-  30%   { color: @color-text; }
-  100%   { color: @color-text; }
+  .text-pulse();
 }
 @keyframes onboarding-text-pulse {
+  .text-pulse();
+}
+.text-pulse() {
   0%   { color: @color-text; }
   5% { color: lighten(@color-text, 65%); }
   10%   { color: @color-text; }
@@ -827,7 +809,10 @@ input[type="checkbox"]:checked + label:before {
   100%   { color: @color-text; }
 }
 
-.onboarding h2, .onboarding .text-heading, .onboarding .text-heading-primary {
+.onboarding h2,
+.onboarding .text-heading,
+.onboarding .text-heading-primary,
+.onboarding.btn .icon-menu:after {
   -webkit-animation: onboarding-text-pulse ease-in-out 3.5s infinite;
   -moz-animation:    onboarding-text-pulse ease-in-out 3.5s infinite;
   -o-animation:      onboarding-text-pulse ease-in-out 3.5s infinite;
