@@ -10,10 +10,9 @@
       ng-class="isFeatureActive('focus') && 'highlighted'">
       <span class="text-navigation-menu">focus</span>
     </div>
-    <div class="clickable link-menu row active-under-modal" ng-click="gotoFeature('inbox')"
-      ng-class="{'highlighted': isFeatureActive('inbox'),
-                 'invisible': features.inbox.getStatus() === 'disabled',
-                 'onboarding': isOnboarding('inbox')}">
+    <div ng-if="features.inbox.getStatus() !== 'disabled'" class="clickable link-menu row active-under-modal"
+      ng-click="gotoFeature('inbox')"
+      ng-class="{'highlighted': isFeatureActive('inbox'), 'onboarding': isOnboarding('inbox')}">
       <span class="text-navigation-menu">inbox</span>
     </div>
     <div class="clickable link-menu row active-under-modal" ng-click="gotoFeature('tasks')"
@@ -48,16 +47,14 @@
         </div>
       </div>
     </div>
-    <div class="clickable link-menu row active-under-modal" ng-click="gotoFeature('notes')"
-      ng-class="{'highlighted': isFeatureActive('notes'),
-                 'invisible': features.notes.getStatus() === 'disabled',
-                 'onboarding': isOnboarding('notes')}">
+    <div ng-if="features.notes.getStatus() !== 'disabled'" class="clickable link-menu row active-under-modal"
+      ng-click="gotoFeature('notes')"
+      ng-class="{'highlighted': isFeatureActive('notes'), 'onboarding': isOnboarding('notes')}">
       <span class="text-navigation-menu">notes</span>
     </div>
-    <div class="clickable link-menu row active-under-modal" ng-click="gotoFeature('lists')"
-      ng-class="{'highlighted': isFeatureActive('lists'),
-                'invisible': features.lists.getStatus('active') === 'disabled',
-                'onboarding': isOnboarding('lists', 'active')}">
+    <div ng-if="features.lists.getStatus() !== 'disabled'" class="clickable link-menu row active-under-modal"
+      ng-click="gotoFeature('lists')"
+      ng-class="{'highlighted': isFeatureActive('lists'), 'onboarding': isOnboarding('lists', 'active')}">
       <span class="text-navigation-menu">lists</span>
     </div>
 
