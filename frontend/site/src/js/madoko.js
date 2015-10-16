@@ -8,6 +8,64 @@ var madokoRunners = madokoDriver.Runners(madokoMath.runPdfLaTeX,
 var madokoOptions = require('../node_modules/madoko/lib/options.js');
 var jsdom = require('jsdom').jsdom;
 
+function getUnprocessedMadokoHtml(handle, path, madokoItem, bibliographyItem, bibliographyPath, callback){
+  var workPath = '/tmp/madoko/' + handle + '/' + path;
+  mkdirp(workPath, function(err){
+    if (err){
+      callback(err);
+    }else{
+      var madokoContent = 'Title : ' + madokoItem.note.title + '\n' + madokoItem.note.content;
+      if (bibliographyItem && bibliographyItem.note && bibliographyItem.note.content &&
+          bibliographyItem.note.content.length && bibliographyItem.note.format === 'bibtex'){
+        var bibFilePath = workPath + '/bibliography.bib';
+        fs.writeFile(bibFilePath, bibliographyItem.note.content);
+        madokoContent = madokoContent.replace(bibliographyPath, 'bibliography.bib');
+      }
+      var inputFileName = path + '.md';
+      var opts = madokoOptions.parseOptions('--pdf --odir=' + workPath);
+      opts.unJust.installDir = opts.unJust.installDir + '/node_modules/madoko/lib';
+      var outName = madokoDriver.outputName(inputFileName, opts.unJust);
+      var madokoHtml;
+
+      madokoDriver.processContent(inputFileName, outName, madokoContent,
+                                  opts.unJust, true, madokoRunners,
+        function(outText){
+          callback(null, outText);
+        });
+    }
+  });
+}
+
+function getProcessedMadokoHtml(handle, path, madokoItem, bibliographyItem, bibliographyPath, callback){
+  getUnprocessedMadokoHtml(handle, path, madokoItem, bibliographyItem,
+                                               bibliographyPath, function(err, outText){
+    if (err){
+      callback(err);
+    }else{
+      var madokoDocument = jsdom(outText);
+      var bodyElement = madokoDocument.getElementsByTagName("body")[0];
+      var headerElement = madokoDocument.createElement("header");
+
+      // TODO: Add extended mind logo to header
+      bodyElement.insertBefore(headerElement, bodyElement.firstChild);
+
+      var footerElement = madokoDocument.createElement("footer");
+      bodyElement.appendChild(footerElement);
+      // TODO: Add author and share links to footer
+
+      var titleAuthorElement = madokoDocument.getElementsByClassName('authorrow')[0];
+      var authorColumnElement = titleAuthorElement.getElementsByClassName('author column')[0];
+      var downloadPdfElement = madokoDocument.createElement("a");
+      downloadPdfElement.setAttribute('href', '/our/' + handle + '/' + path + '/pdf');
+      downloadPdfElement.setAttribute('class', 'localref');
+      var textnode = madokoDocument.createTextNode("Download PDF");
+      downloadPdfElement.appendChild(textnode)
+      authorColumnElement.appendChild(downloadPdfElement);
+      callback(null, madokoDocument.documentElement.innerHTML);
+    }
+  });
+}
+
 module.exports = {
   getMadokoBibliographyPath: function(madokoItem){
     if (madokoItem.note && madokoItem.note.content && madokoItem.note.content.length){
@@ -28,50 +86,11 @@ module.exports = {
     }
   },
   getMadokoHtml: function(handle, path, madokoItem, bibliographyItem, bibliographyPath) {
-    var workPath = '/tmp/madoko/' + handle + '/' + path;
-    mkdirp(workPath + '/output');
-    var madokoContent = 'Title : ' + madokoItem.note.title + '\n' + madokoItem.note.content;
-    if (bibliographyItem && bibliographyItem.note && bibliographyItem.note.content &&
-        bibliographyItem.note.content.length && bibliographyItem.note.format === 'bibtex'){
-      var bibFilePath = workPath + '/bibliography.bib';
-      fs.writeFile(bibFilePath, bibliographyItem.note.content);
-      madokoContent = madokoContent.replace(bibliographyPath, 'bibliography.bib');
-    }
-
-    var inputFileName = path + '.md';
-    var opts = madokoOptions.parseOptions('--pdf --odir=' + workPath);
-    opts.unJust.installDir = opts.unJust.installDir + '/node_modules/madoko/lib';
-    var outName = madokoDriver.outputName(inputFileName, opts.unJust);
-    var madokoHtml;
-    madokoDriver.processContent(inputFileName, outName, madokoContent,
-                                opts.unJust, true, madokoRunners,
-      function(outText,_input,output,_options) {
-
-        // Add PDF download link, and add header and footer to the document
-        var madokoDocument = jsdom(outText);
-        var bodyElement = madokoDocument.getElementsByTagName("body")[0];
-        var headerElement = madokoDocument.createElement("header");
-        // TODO: Add extended mind logo to header
-        bodyElement.insertBefore(headerElement, bodyElement.firstChild);
-
-        var footerElement = madokoDocument.createElement("footer");
-        bodyElement.appendChild(footerElement);
-        // TODO: Add author and share links to footer
-
-        var titleAuthorElement = madokoDocument.getElementsByClassName('authorrow')[0];
-        var authorColumnElement = titleAuthorElement.getElementsByClassName('author column')[0];
-        var downloadPdfElement = madokoDocument.createElement("a");
-        downloadPdfElement.setAttribute('href', '/our/' + handle + '/' + path + '/pdf');
-        downloadPdfElement.setAttribute('class', 'localref');
-        var textnode = madokoDocument.createTextNode("Download PDF");
-        downloadPdfElement.appendChild(textnode)
-        authorColumnElement.appendChild(downloadPdfElement);
-        madokoHtml = madokoDocument.documentElement.innerHTML;
-      }
-    );
-    return madokoHtml;
+    // Return a thunk
+    return function(callback){
+      getProcessedMadokoHtml(handle, path, madokoItem, bibliographyItem, bibliographyPath, callback);
+    };
   },
-
   getMadokoPDFPath: function(handle, path) {
     return '/tmp/madoko/' + handle + '/' + path + '/' + path + '.pdf';
   }

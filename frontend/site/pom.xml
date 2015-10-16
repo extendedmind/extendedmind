@@ -267,7 +267,7 @@
               <name>extendedmind/site</name>
               <alias>site</alias>
               <build>
-                <from>node:4</from>
+                <from>extendedmind/node:latest</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
                 <tags>
                   <tag>latest</tag>

@@ -135,8 +135,8 @@ function *ourOwnerPath(handle, path) {
           var bibResponse = yield get(backendApi + '/public/' + bibPath);
           if (bibResponse.status === 200) bibPathData = bibResponse.body;
         }
-        var madokoHtml = madoko.getMadokoHtml(handle, path, ownerPathData, bibPathData, bibPath);
-        this.body = madokoHtml;
+        //var madokoHtml = yield madoko.getMadokoHtml(handle, path, ownerPathData, bibPathData, bibPath);
+        this.body = yield madoko.getMadokoHtml(handle, path, ownerPathData, bibPathData, bibPath);
       }else{
         // TODO: Format non-Madoko page with markdown-it normally
       }
