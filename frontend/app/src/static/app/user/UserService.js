@@ -63,6 +63,11 @@
       if (displayName){
         payload.displayName = displayName;
       }
+      var handle = UserSessionService.getHandle();
+      if (handle){
+        payload.handle = handle;
+      }
+
       var params = {
         uuid: UserSessionService.getUserUUID(),
         replaceable: true,
