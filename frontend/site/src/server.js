@@ -146,7 +146,23 @@ function *ourOwnerPath(handle, path) {
 
 function *ourOwnerPathPdf(handle, path) {
   console.log('GET /our/' + handle + '/' + path + '/pdf');
-  yield* sendfile.call(this, madoko.getMadokoPDFPath(handle, path));
+  if (backendApi){
+    var backendResponse = yield get(backendApi + '/public/' + handle + '/' + path);
+    if (backendResponse.status === 200){
+      var ownerPathData = backendResponse.body;
+      if (ownerPathData.note && ownerPathData.note.format === 'madoko' && ownerPathData.note.content &&
+          ownerPathData.note.content.length){
+        var bibPath = madoko.getMadokoBibliographyPath(ownerPathData);
+        var bibPathData;
+        if (bibPath){
+          var bibResponse = yield get(backendApi + '/public/' + bibPath);
+          if (bibResponse.status === 200) bibPathData = bibResponse.body;
+        }
+        var madokoHtml = yield madoko.getMadokoHtml(handle, path, ownerPathData, bibPathData, bibPath);
+        if (madokoHtml) yield* sendfile.call(this, madoko.getMadokoPDFPath(handle, path));
+      }
+    }
+  }
 }
 
 // get backend /info path from backend on boot
