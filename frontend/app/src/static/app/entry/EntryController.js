@@ -201,8 +201,9 @@ function EntryController($location, $rootScope, $routeParams, $scope, $timeout,
   function clearAllLoginsSuccess() {
     UISessionService.pushNotification({
       type: 'fyi',
-      text: 'you are now logged out'
+      text: 'you are now logged out of every device'
     });
+    if ($scope.user && $scope.user.password) $scope.user.password = '';
   }
 
   $scope.rememberByDefault = function() {
