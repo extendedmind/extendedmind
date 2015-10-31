@@ -24,6 +24,7 @@ import org.neo4j.graphdb.index.IndexManager
 import scala.collection.JavaConversions._
 import org.neo4j.graphdb.index.Index
 import java.lang.reflect.Field
+import org.neo4j.tooling.GlobalGraphOperations
 
 
 /**
@@ -51,18 +52,17 @@ trait Neo4jHelper {
       removeNodes(graphDatabaseService)
       tx.success()
     } finally {
-      tx.finish()
+      tx.close()
     }
   }
 
   private def removeNodes(graphDatabaseService: GraphDatabaseService): Unit = {
-
-    graphDatabaseService.getAllNodes() foreach (node =>
+    val ggo = GlobalGraphOperations.at(graphDatabaseService)
+    ggo.getAllNodes() foreach (node =>
       node.getRelationships(Direction.OUTGOING) foreach (rel =>
         rel.delete()
       ))
-
-    graphDatabaseService.getAllNodes() foreach (node =>
+    ggo.getAllNodes() foreach (node =>
       node.delete()
     )
   }
