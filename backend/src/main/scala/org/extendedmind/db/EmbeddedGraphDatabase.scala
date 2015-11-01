@@ -60,10 +60,18 @@ class EmbeddedGraphDatabase(implicit val settings: Settings)
           }
         }
 
-        // We need to make sure that the properties file has at least three ha.initial_hosts before
-        // launching to get HA to work. Do a blocking poll here.
-        while(getHAServerCount(settings.neo4jPropertiesFile.get) < 3){
-          Thread.sleep(1000)
+        if (settings.startSingleHAMaster.isDefined && settings.startSingleHAMaster.get){
+          // When upgrading Neo4j, single master needs to start the cluster first, and only after
+          // that, more slaves join
+          while(getHAServerCount(settings.neo4jPropertiesFile.get) < 1){
+            Thread.sleep(1000)
+          }
+        }else{
+          // We need to make sure that the properties file has at least three ha.initial_hosts before
+          // launching to get HA to work. Do a blocking poll here.
+          while(getHAServerCount(settings.neo4jPropertiesFile.get) < 3){
+            Thread.sleep(1000)
+          }
         }
         println("Found at least 3 HA hosts, continuing")
       }

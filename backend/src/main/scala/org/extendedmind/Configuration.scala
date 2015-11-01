@@ -61,6 +61,14 @@ class Settings(config: Config) extends Extension {
       None
   }
   val isHighAvailability = config.getBoolean("extendedmind.neo4j.isHighAvailability")
+  val startSingleHAMaster: Option[Boolean] = {
+    if (config.hasPath("extendedmind.neo4j.startSingleHAMaster"))
+      Some(config.getBoolean("extendedmind.neo4j.startSingleHAMaster"))
+    else
+      None
+  }
+
+
   val startNeo4jServer = config.getBoolean("extendedmind.neo4j.startServer")
   val neo4jServerPort = config.getInt("extendedmind.neo4j.serverPort")
   val disableTimestamps =
