@@ -1,12 +1,12 @@
 'use strict'
 
-const route = require('./koa-route.js');
-const nunjucks = require('./koa-nunjucks-2');
+const siteutils = require('extendedmind-siteutils');
+const route = siteutils.koaRoute;
+const nunjucks = siteutils.koaNunjucks;
+const sendfile = siteutils.koaSendfile;
 const path = require('path');
 const request = require('superagent-promise')(require('superagent'), Promise);
-const thunkify = require('thunkify');
 const markdownParser = new require('markdown-it')();
-const sendfile = require('./koa-sendfile.js');
 
 module.exports = function(config, app, convert, request, backendApi) {
 

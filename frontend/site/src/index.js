@@ -4,7 +4,9 @@
 require('babel-core/register')({
     presets: ["stage-0"],
     plugins: ["syntax-async-functions", "syntax-async-generators"],
-    extensions: [".js"]
+    extensions: [".js"],
+    // Only these files are included
+    only: ['./js', './node-modules/extendedmind-siteutils']
 });
 
 /**
