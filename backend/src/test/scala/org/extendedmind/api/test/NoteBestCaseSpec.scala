@@ -245,7 +245,6 @@ class NoteBestCaseSpec extends ServiceSpecBase {
               modifiedPublicItems.notes.get.size should be(1)
               modifiedPublicItems.tags.get.size should be(2)
               val latestModified = modifiedPublicItems.notes.get(0).modified.get
-
               // Change account values, expect modified to return different values
               Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                 val account = responseAs[User]
@@ -276,6 +275,9 @@ class NoteBestCaseSpec extends ServiceSpecBase {
           }
         }
       }
+    }
+    it("should successfully get unpublished UUIDs from unpublished or deleted notes with GET to /public/[handle]?modified") {
+      // TODO: fix publish =>removeProperty("unpublished")
     }
   }
 }

@@ -116,4 +116,5 @@ case class NodeProperty(key: String, stringValue: Option[String], longValue: Opt
 // but before that saying "by [owner]" works
 case class PublicItem(owner: String, note: Note, tags: Option[scala.List[Tag]])
 case class PublicItems(owner: Option[String], content: Option[String], format: Option[String], modified: Option[Long],
-                       notes: Option[scala.List[Note]], tags: Option[scala.List[Tag]])
+                       notes: Option[scala.List[Note]], tags: Option[scala.List[Tag]],
+                       unpublished: Option[scala.List[UUID]])

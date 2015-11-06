@@ -175,7 +175,7 @@ trait ItemDatabase extends UserDatabase {
       implicit neo4j =>
         for {
           ownerNode <- getNode("handle", handle, MainLabel.OWNER, Some(handle), false).right
-          publicItemNodes <- getItemNodes(getUUID(ownerNode), modified, true, false, true, false, publicOnly=true).right
+          publicItemNodes <- getItemNodes(getUUID(ownerNode), modified, true, true, true, false, publicOnly=true).right
           publicItems <- toPublicItems(ownerNode, publicItemNodes, modified).right
         } yield publicItems
     }
@@ -288,7 +288,9 @@ trait ItemDatabase extends UserDatabase {
       // Filter out active, deleted, archived and/or completed
       Right(itemNodeList filter (itemNode => {
         var include = true
-        if (publicOnly && !itemNode.hasProperty("published")) include = false
+        if (publicOnly &&
+            (!itemNode.hasProperty("published") ||
+            ((itemNode.hasProperty("unpublished") || itemNode.hasProperty("deleted")) && modified.isEmpty))) include = false
         if (!deleted && itemNode.hasProperty("deleted")) include = false
         if (include && !archived && itemNode.hasProperty("archived") && !itemNode.hasProperty("favorited")) include = false
         if (include && !completed && itemNode.hasProperty("completed")) include = false
@@ -1062,10 +1064,13 @@ trait ItemDatabase extends UserDatabase {
   protected def toPublicItems(ownerNode: Node, itemNodes: Iterable[Node], modified: Option[Long])(implicit neo4j: DatabaseService): Response[PublicItems] = {
     val noteBuffer = new ListBuffer[Note]
     val tagBuffer = new ListBuffer[Tag]
+    val unpublishedBuffer = new ListBuffer[UUID]
     val displayOwner = getDisplayOwner(ownerNode)
     itemNodes foreach (itemNode => {
-      // public items does not return drafts
-      if (!itemNode.hasProperty("draft")){
+      if (itemNode.hasProperty("unpublished") || itemNode.hasProperty("deleted")){
+        unpublishedBuffer.append(getUUID(itemNode))
+      }else if (!itemNode.hasProperty("draft")){
+        // public items returns only non-drafts
         val publicItemResult = toPublicItem(ownerNode, itemNode, displayOwner)
         if (publicItemResult.isLeft){
           return Left(publicItemResult.left.get)
@@ -1099,7 +1104,8 @@ trait ItemDatabase extends UserDatabase {
                 format,
                 if (modified.isEmpty || ownerPublicModified > modified.get) Some(ownerPublicModified) else None,
                 if (noteBuffer.isEmpty) None else Some(noteBuffer.toList),
-                if (tagBuffer.isEmpty) None else Some(tagBuffer.toList)))
+                if (tagBuffer.isEmpty) None else Some(tagBuffer.toList),
+                if (unpublishedBuffer.isEmpty) None else Some(unpublishedBuffer.toList)))
   }
 
   protected def toPublicItem(ownerNode: Node, itemNode: Node, displayOwner: String)(implicit neo4j: DatabaseService): Response[PublicItem] = {

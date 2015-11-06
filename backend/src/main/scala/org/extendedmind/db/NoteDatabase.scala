@@ -343,7 +343,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
   }
 
   protected def unpublishNoteNode(noteNode: Node)(implicit neo4j: DatabaseService): Unit = {
-    if (noteNode.hasProperty("published")) noteNode.removeProperty("published")
+    if (noteNode.hasProperty("published")) noteNode.setProperty("unpublished", System.currentTimeMillis);
     if (noteNode.hasProperty("draft")) noteNode.removeProperty("draft")
     if (noteNode.hasProperty("path")) noteNode.removeProperty("path")
   }
