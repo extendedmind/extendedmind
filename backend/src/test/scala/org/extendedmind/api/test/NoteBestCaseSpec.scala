@@ -277,7 +277,45 @@ class NoteBestCaseSpec extends ServiceSpecBase {
       }
     }
     it("should successfully get unpublished UUIDs from unpublished or deleted notes with GET to /public/[handle]?modified") {
-      // TODO: fix publish =>removeProperty("unpublished")
+      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+      Get("/public/timo") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+        val publicItems = responseAs[PublicItems]
+        publicItems.notes.get.size should be (1)
+        val newNote = Note("Public note", None, None, Some("this is public"), None, None, None)
+        val putNoteResponse = putNewNote(newNote, authenticateResponse)
+
+        // Publish a second note
+        Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/publish",
+            marshal(PublishPayload("md", Some("test")))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+          val publishNoteResult = responseAs[PublishNoteResult]
+          Get("/public/timo") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+             responseAs[PublicItems].notes.get.size should be (2)
+             // Delete the first note
+             Delete("/" + authenticateResponse.userUUID + "/note/" +  publicItems.notes.get(0).uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+               // Getting notes
+               Get("/public/timo") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+                 responseAs[PublicItems].notes.get.size should be (1)
+               }
+               Get("/public/timo?modified=" + publicItems.notes.get(0).modified.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+                 val oneDeletedPublicItem = responseAs[PublicItems]
+                 oneDeletedPublicItem.notes.get.size should be (1)
+                 oneDeletedPublicItem.unpublished.get(0) should be(publicItems.notes.get(0).uuid.get)
+               }
+               // Unpublish the second note and check that unpublished contains two uuids
+               Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/unpublish") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                 Get("/public/timo?modified=" + publicItems.notes.get(0).modified.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+                   val oneDeletedOneUnpublishedPublicItem = responseAs[PublicItems]
+                   oneDeletedOneUnpublishedPublicItem.notes should be (None)
+                   oneDeletedOneUnpublishedPublicItem.tags should be (None)
+                   oneDeletedOneUnpublishedPublicItem.unpublished.get.size should be (2)
+                   oneDeletedOneUnpublishedPublicItem.unpublished.get.contains(publicItems.notes.get(0).uuid.get) should be (true)
+                   oneDeletedOneUnpublishedPublicItem.unpublished.get.contains(putNoteResponse.uuid.get) should be (true)
+                 }
+               }
+             }
+          }
+        }
+      }
     }
   }
 }

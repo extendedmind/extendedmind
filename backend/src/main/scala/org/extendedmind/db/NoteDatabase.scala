@@ -175,7 +175,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
               else getTagRelationships(noteNode, owner)).right
       note <- Right(note.copy(
         visibility =
-          (if (noteNode.hasProperty("published"))
+          (if (noteNode.hasProperty("published") && !noteNode.hasProperty("unpublished"))
             Some(SharedItemVisibility(
                  Some(noteNode.getProperty("published").asInstanceOf[Long]),
                  if (noteNode.hasProperty("draft")) Some(noteNode.getProperty("draft").asInstanceOf[Long]) else None,
@@ -327,6 +327,10 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
 
           // Set published timestamp
           noteNode.setProperty("published", currentTime)
+
+          // Remove unpublished if it exists
+          if (noteNode.hasProperty("unpublished")) noteNode.removeProperty("unpublished")
+
           Right((currentTime, draft))
         }
     }
