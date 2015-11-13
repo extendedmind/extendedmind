@@ -197,6 +197,7 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
             Some(ExtendedItemRelationships(
               parent = (if (parent.isEmpty) None else (Some(getUUID(parent.get.getEndNode())))),
               origin = (if (origin.isEmpty) None else (Some(getUUID(origin.get.getEndNode())))),
+              assignee = None, // TODO
               tags = (if (tags.isEmpty) None else (Some(getEndNodeUUIDList(tags.get))))))
            else None
           ))).right

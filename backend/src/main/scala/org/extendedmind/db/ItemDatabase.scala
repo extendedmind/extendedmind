@@ -269,20 +269,27 @@ trait ItemDatabase extends UserDatabase {
   def toTag(tagNode: Node, owner: Owner)(implicit neo4j: DatabaseService): Response[Tag];
   def toList(listNode: Node, owner: Owner)(implicit neo4j: DatabaseService): Response[List];
 
-  protected def getItemNodes(ownerUUID: UUID, modified: Option[Long], active: Boolean, deleted: Boolean, archived: Boolean, completed: Boolean, publicOnly: Boolean = false)(implicit neo4j: DatabaseService): Response[Iterable[Node]] = {
+  protected def getItemNodes(ownerUUID: UUID, modified: Option[Long], active: Boolean, deleted: Boolean,
+                             archived: Boolean, completed: Boolean, publicOnly: Boolean = false)
+                            (implicit neo4j: DatabaseService): Response[Iterable[Node]] = {
     val itemsIndex = neo4j.gds.index().forNodes("items")
 
-    val itemNodeList =
+    val itemNodeList = {
+      val ownerQuery = new TermQuery(new Term("owner", UUIDUtils.getTrimmedBase64UUID(ownerUUID)))
+      val assigneeQuery = new TermQuery(new Term("assignee", UUIDUtils.getTrimmedBase64UUID(ownerUUID)))
+      val userQuery = new BooleanQuery;
+      userQuery.add(ownerQuery, BooleanClause.Occur.SHOULD);
+      userQuery.add(assigneeQuery, BooleanClause.Occur.SHOULD);
       if (modified.isDefined) {
-        val ownerQuery = new TermQuery(new Term("owner", UUIDUtils.getTrimmedBase64UUID(ownerUUID)))
         val modifiedRangeQuery = NumericRangeQuery.newLongRange("modified", 8, modified.get, null, false, false)
-        val combinedQuery = new BooleanQuery;
-        combinedQuery.add(ownerQuery, BooleanClause.Occur.MUST);
-        combinedQuery.add(modifiedRangeQuery, BooleanClause.Occur.MUST);
-        itemsIndex.query(combinedQuery).toList
+        val userModifiedQuery = new BooleanQuery;
+        userModifiedQuery.add(modifiedRangeQuery, BooleanClause.Occur.MUST);
+        userModifiedQuery.add(userQuery, BooleanClause.Occur.MUST);
+        itemsIndex.query(userModifiedQuery).toList
       } else {
-        itemsIndex.query("owner:\"" + UUIDUtils.getTrimmedBase64UUID(ownerUUID) + "\"").toList
+        itemsIndex.query(new BooleanClause(userQuery, BooleanClause.Occur.MUST)).toList
       }
+    }
 
     if (!itemNodeList.isEmpty && (!active || !deleted || !archived || !completed)) {
       // Filter out active, deleted, archived and/or completed
@@ -869,7 +876,7 @@ trait ItemDatabase extends UserDatabase {
           accessRight <-
           (if (owner.isLimitedAccess) Right(getSharedListAccessRight(owner.sharedLists.get,
               if (parentRelationship.isDefined){
-                Some(ExtendedItemRelationships(Some(getUUID(parentRelationship.get.getEndNode)), None, None))
+                Some(ExtendedItemRelationships(Some(getUUID(parentRelationship.get.getEndNode)), None, None, None))
               }else{
                 None
               }))
@@ -1149,6 +1156,32 @@ trait ItemDatabase extends UserDatabase {
       Right(Some(tagBuffer.toList))
     }else{
       Right(None)
+    }
+  }
+
+  protected def removeAssigneeRelationships(collectiveNode: Node, userNode: Node)(implicit neo4j: DatabaseService): Unit = {
+    val itemsIndex = neo4j.gds.index().forNodes("items")
+    val ownerQuery = new TermQuery(new Term("owner", UUIDUtils.getTrimmedBase64UUID(getUUID(collectiveNode))))
+    val assigneeQuery = new TermQuery(new Term("assignee", UUIDUtils.getTrimmedBase64UUID(getUUID(userNode))))
+    val userQuery = new BooleanQuery;
+    userQuery.add(ownerQuery, BooleanClause.Occur.MUST);
+    userQuery.add(assigneeQuery, BooleanClause.Occur.MUST);
+    val assignedItemNodeList = itemsIndex.query(userQuery).toList
+    if (!assignedItemNodeList.isEmpty){
+      assignedItemNodeList.foreach(assignedItemNode => {
+        // Remove assignee key from index
+        itemsIndex.remove(assignedItemNode, "assignee")
+        // Remove assign relationship
+        val assignedItemRelationships = assignedItemNode.getRelationships()
+        val assignRelationship = assignedItemRelationships.find(
+            relationship => {
+              relationship.getEndNode() == userNode &&
+              relationship.getType().name == ItemRelationship.IS_ASSIGNED_TO.name
+            })
+        if (assignRelationship.isDefined){
+          assignRelationship.get.delete()
+        }
+      })
     }
   }
 }

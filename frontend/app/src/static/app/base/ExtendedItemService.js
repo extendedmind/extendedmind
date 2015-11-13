@@ -47,6 +47,18 @@
     }
   }
 
+  function copyTransAssigneeToMod(extendedItem) {
+    if (extendedItem.trans.hasOwnProperty('assignee')){
+      if (!extendedItem.trans.assignee){
+        if (!extendedItem.mod.relationships) extendedItem.mod.relationships = undefined;
+        else extendedItem.mod.relationships.assignee = undefined;
+      } else{
+        if (!extendedItem.mod.relationships) extendedItem.mod.relationships = {};
+        extendedItem.mod.relationships.assignee = extendedItem.trans.assignee;
+      }
+    }
+  }
+
   function copyTagsToTrans(origin, extendedItem, ownerUUID) {
     if (origin && origin.tags) {
       var hasContext = false;
@@ -225,7 +237,7 @@
       return {
         name: 'relationships',
         isEdited: this.isRelationshipsEdited,
-        validate: this.validateRelatioships,
+        validate: this.validateRelationships,
         copyTransToMod: this.copyRelationshipsTransToMod,
         resetTrans: this.resetRelationshipsTrans
       };
@@ -266,6 +278,31 @@
               return true;
             }
           }else if (compareValues.relationships.parent){
+            return true;
+          }
+        }
+
+        // Check assignee
+        if (extendedItem.trans.assignee){
+          if (!compareValues){
+            if (extendedItem.mod && extendedItem.mod.relationships){
+              if (extendedItem.mod.relationships.assignee !== extendedItem.trans.assignee)
+                return true;
+            }else if (extendedItem.relationships &&
+                      (extendedItem.relationships.assignee !== extendedItem.trans.assignee)){
+              return true;
+            }
+          }else if (compareValues.relationships.assignee !== extendedItem.trans.assignee){
+            return true;
+          }
+        }else{
+          if (!compareValues){
+            if ((extendedItem.relationships && extendedItem.relationships.assignee) ||
+                    (extendedItem.mod && extendedItem.mod.relationships &&
+                     extendedItem.mod.relationships.assignee)){
+              return true;
+            }
+          }else if (compareValues.relationships.assignee){
             return true;
           }
         }
@@ -369,6 +406,7 @@
     },
     copyRelationshipsTransToMod: function(extendedItem, ownerUUID){
       copyTransListToModParent(extendedItem);
+      copyTransAssigneeToMod(extendedItem);
       copyKeywordsToTags(extendedItem.trans, extendedItem.mod, ownerUUID);
       copyTransContextToModTags(extendedItem, ownerUUID);
     },
@@ -380,6 +418,14 @@
         copyParentToList(extendedItem.relationships, extendedItem, ownerUUID);
       }else if (extendedItem.trans.list !== undefined){
         delete extendedItem.trans.list;
+      }
+      if (extendedItem.mod && extendedItem.mod.relationships &&
+          extendedItem.mod.relationships.assignee !== undefined){
+        extendedItem.trans.assignee = extendedItem.mod.relationships.assignee;
+      }else if (extendedItem.relationships && extendedItem.relationships.assignee !== undefined){
+        extendedItem.trans.assignee = extendedItem.relationships.assignee;
+      }else if (extendedItem.trans.assignee !== undefined){
+        delete extendedItem.trans.assignee;
       }
       if (extendedItem.mod && extendedItem.mod.relationships &&
           extendedItem.mod.relationships.tags !== undefined){

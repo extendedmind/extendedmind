@@ -86,36 +86,36 @@ class ListBestCaseSpec extends ServiceSpecBase {
           writeJsonOutput("putListResponse", responseAs[String])
           putListResponse.modified should not be None
           putListResponse.uuid should not be None
-	      Put("/" + authenticateResponse.userUUID + "/list",
-	        marshal(newList2).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-	          val putList2Response = responseAs[SetResult]
-	          val updatedList = newList.copy(due = Some("2014-03-01"))
-	          Put("/" + authenticateResponse.userUUID + "/list/" + putListResponse.uuid.get,
-	            marshal(updatedList).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-	              val putExistingListResponse = responseAs[String]
-	              writeJsonOutput("putExistingListResponse", putExistingListResponse)
-	              putExistingListResponse should include("modified")
-	              putExistingListResponse should not include ("uuid")
-	              Get("/" + authenticateResponse.userUUID + "/list/" + putListResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-	                val listResponse = responseAs[List]
-	                writeJsonOutput("listResponse", responseAs[String])
-	                listResponse.due.get should be("2014-03-01")
+        Put("/" + authenticateResponse.userUUID + "/list",
+          marshal(newList2).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+            val putList2Response = responseAs[SetResult]
+            val updatedList = newList.copy(due = Some("2014-03-01"))
+            Put("/" + authenticateResponse.userUUID + "/list/" + putListResponse.uuid.get,
+              marshal(updatedList).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                val putExistingListResponse = responseAs[String]
+                writeJsonOutput("putExistingListResponse", putExistingListResponse)
+                putExistingListResponse should include("modified")
+                putExistingListResponse should not include ("uuid")
+                Get("/" + authenticateResponse.userUUID + "/list/" + putListResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                  val listResponse = responseAs[List]
+                  writeJsonOutput("listResponse", responseAs[String])
+                  listResponse.due.get should be("2014-03-01")
 
-	                // Add the list to a note
+                  // Add the list to a note
                   val newNote = Note("bike details", None, Some("model: 12345"), None, None, None,
-                    Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None)))
+                    Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None, None)))
                   val putNoteResponse = putNewNote(newNote, authenticateResponse)
                   val noteWithList = getNote(putNoteResponse.uuid.get, authenticateResponse)
                   noteWithList.relationships.get.parent.get should be(putListResponse.uuid.get)
 
-	                Delete("/" + authenticateResponse.userUUID + "/list/" + putListResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-	                  val deleteListResponse = responseAs[DeleteItemResult]
-	                  writeJsonOutput("deleteListResponse", responseAs[String])
-	                  Get("/" + authenticateResponse.userUUID + "/list/" + putListResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-	                	val failure = responseAs[ErrorResult]
-	                	status should be (BadRequest)
-	                    failure.description should startWith("Item " + putListResponse.uuid.get + " is deleted")
-	                  }
+                  Delete("/" + authenticateResponse.userUUID + "/list/" + putListResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                    val deleteListResponse = responseAs[DeleteItemResult]
+                    writeJsonOutput("deleteListResponse", responseAs[String])
+                    Get("/" + authenticateResponse.userUUID + "/list/" + putListResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                    val failure = responseAs[ErrorResult]
+                    status should be (BadRequest)
+                      failure.description should startWith("Item " + putListResponse.uuid.get + " is deleted")
+                    }
 
                     // Re-deleting should be possible
                     Delete("/" + authenticateResponse.userUUID + "/list/" + putListResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
@@ -124,30 +124,30 @@ class ListBestCaseSpec extends ServiceSpecBase {
                       redeleteListResponse.result.modified should be (deleteListResponse.result.modified)
                     }
 
-	                  // Change note list to new value and verify that change works
+                    // Change note list to new value and verify that change works
                     Put("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get,
-                      marshal(newNote.copy(relationships = Some(ExtendedItemRelationships(Some(putList2Response.uuid.get), None, None)))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                      marshal(newNote.copy(relationships = Some(ExtendedItemRelationships(Some(putList2Response.uuid.get), None, None, None)))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                         val reputExistingNoteResponse = responseAs[SetResult]
                         reputExistingNoteResponse.modified should not be None
                     }
 
-	                  Post("/" + authenticateResponse.userUUID + "/list/" + putListResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-	                    val undeleteListResponse = responseAs[SetResult]
-	                    writeJsonOutput("undeleteListResponse", responseAs[String])
-	                    val undeletedList = getList(putListResponse.uuid.get, authenticateResponse)
-	                    undeletedList.deleted should be(None)
-	                    undeletedList.modified should not be (None)
+                    Post("/" + authenticateResponse.userUUID + "/list/" + putListResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                      val undeleteListResponse = responseAs[SetResult]
+                      writeJsonOutput("undeleteListResponse", responseAs[String])
+                      val undeletedList = getList(putListResponse.uuid.get, authenticateResponse)
+                      undeletedList.deleted should be(None)
+                      undeletedList.modified should not be (None)
 
                       // Re-undeleting should be possible
                       Post("/" + authenticateResponse.userUUID + "/list/" + putListResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                         val reundeleteListResponse = responseAs[SetResult]
                         reundeleteListResponse.modified should be (undeleteListResponse.modified)
                       }
-	                  }
-	                }
-	              }
-	            }
-	        }
+                    }
+                  }
+                }
+              }
+          }
         }
     }
     it("should successfully update item to list with PUT to /[userUUID]/list/[listUUID]") {
@@ -177,29 +177,29 @@ class ListBestCaseSpec extends ServiceSpecBase {
       val putListResponse = putNewList(newList, authenticateResponse)
 
       // Put existing task and new note into list
-      val existingTaskInList = newTask.copy(relationships = Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None)))
+      val existingTaskInList = newTask.copy(relationships = Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None, None)))
       val putTaskInListResponse = putExistingTask(existingTaskInList, putTaskResponse.uuid.get, authenticateResponse)
       val newNote = Note("Spanish 101", None, None, Some("lecture notes for Spanish 101 class"), None, None,
-    		  				Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None)))
+                  Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None, None)))
       val putNoteResponse = putNewNote(newNote, authenticateResponse)
 
       // Get note and task and check that they are in the list
       getTask(putTaskResponse.uuid.get, authenticateResponse)
-      			.relationships.get.parent.get should be (putListResponse.uuid.get)
+            .relationships.get.parent.get should be (putListResponse.uuid.get)
       getNote(putNoteResponse.uuid.get, authenticateResponse)
-      			.relationships.get.parent.get should be (putListResponse.uuid.get)
+            .relationships.get.parent.get should be (putListResponse.uuid.get)
 
       // Create sublist and move note below it
       val newSubList = List("Spanish studies", None, None, None,
-    		  				Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None)))
+                  Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None, None)))
       val putSubListResponse = putNewList(newSubList, authenticateResponse)
       getList(putSubListResponse.uuid.get, authenticateResponse)
-      		    .relationships.get.parent.get should be (putListResponse.uuid.get)
+              .relationships.get.parent.get should be (putListResponse.uuid.get)
       val existingNoteInSubList = newNote.copy(relationships =
-    		  				Some(ExtendedItemRelationships(Some(putSubListResponse.uuid.get), None, None)))
+                  Some(ExtendedItemRelationships(Some(putSubListResponse.uuid.get), None, None, None)))
       val putExistingNoteResponse = putExistingNote(existingNoteInSubList, putNoteResponse.uuid.get, authenticateResponse)
       getNote(putNoteResponse.uuid.get, authenticateResponse)
-      			.relationships.get.parent.get should be (putSubListResponse.uuid.get)
+            .relationships.get.parent.get should be (putSubListResponse.uuid.get)
 
       // Turn task into list
       Post("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get + "/list",
@@ -247,7 +247,7 @@ class ListBestCaseSpec extends ServiceSpecBase {
 
       // Try to create a sublist that has as parent the same list
       val itemItsOwnList = newSubList.copy(
-          relationships = Some(ExtendedItemRelationships(Some(putSubListResponse.uuid.get), None, None)))
+          relationships = Some(ExtendedItemRelationships(Some(putSubListResponse.uuid.get), None, None, None)))
 
       Put("/" + authenticateResponse.userUUID + "/list/" + putSubListResponse.uuid.get,
           marshal(itemItsOwnList).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
@@ -257,7 +257,7 @@ class ListBestCaseSpec extends ServiceSpecBase {
 
       // Create an infinite loop between newList <-> subList
       val infiniteLoopParent = newList.copy(
-          relationships = Some(ExtendedItemRelationships(Some(putSubListResponse.uuid.get), None, None)))
+          relationships = Some(ExtendedItemRelationships(Some(putSubListResponse.uuid.get), None, None, None)))
 
       Put("/" + authenticateResponse.userUUID + "/list/" + putListResponse.uuid.get,
           marshal(infiniteLoopParent).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
@@ -284,13 +284,13 @@ class ListBestCaseSpec extends ServiceSpecBase {
         val newParentList = List("studies", None, None, None, None)
         val putParentListResponse = putNewList(newParentList, authenticateResponse)
         val newList = List("Spanish", None, None, None,
-              Some(ExtendedItemRelationships(Some(putParentListResponse.uuid.get), None, None)))
+              Some(ExtendedItemRelationships(Some(putParentListResponse.uuid.get), None, None, None)))
         val putListResponse = putNewList(newList, authenticateResponse)
         val newTask = Task("learn Spanish", None, None, None, None, None,
-            Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None)))
+            Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None, None)))
         val putTaskResponse = putNewTask(newTask, authenticateResponse)
         val newNote = Note("Spanish 101", None, None, Some("lecture notes for Spanish 101 class"), None, None,
-      		  				Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None)))
+                    Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None, None)))
         val putNoteResponse = putNewNote(newNote, authenticateResponse)
 
         // Archive list under completed courses
@@ -320,14 +320,14 @@ class ListBestCaseSpec extends ServiceSpecBase {
 
             // Remove note from list and make sure it is no longer archived but still has the history tag
             putExistingNote(itemsResponse.notes.get(0).copy(
-              relationships = Some(ExtendedItemRelationships(None, None, itemsResponse.notes.get(0).relationships.get.tags))), putNoteResponse.uuid.get, authenticateResponse)
+              relationships = Some(ExtendedItemRelationships(None, None, None, itemsResponse.notes.get(0).relationships.get.tags))), putNoteResponse.uuid.get, authenticateResponse)
             val note = getNote(putNoteResponse.uuid.get, authenticateResponse)
             note.archived should be(None)
             note.relationships.get.tags.get(0) should be(archiveListResponse.history.uuid.get)
 
             // Add note back to list and make sure it is again archived with history tag
             val putNoteToArchivedList = putExistingNote(note.copy(
-              relationships = Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, itemsResponse.notes.get(0).relationships.get.tags))), putNoteResponse.uuid.get, authenticateResponse)
+              relationships = Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None, itemsResponse.notes.get(0).relationships.get.tags))), putNoteResponse.uuid.get, authenticateResponse)
             putNoteToArchivedList.archived should not be (None)
               val noteAgain = getNote(putNoteResponse.uuid.get, authenticateResponse)
             noteAgain.archived should not be(None)
@@ -355,7 +355,7 @@ class ListBestCaseSpec extends ServiceSpecBase {
                 deletedItemsResponse.tags.get(0).uuid.get should be (unarchivedList.relationships.get.tags.get(0))
 
                 val newNote2 = Note("Spanish 102", None, None, Some("lecture notes for Spanish 102 class"), None, None,
-                Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None)))
+                Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None, None)))
                 putNewNote(newNote2, authenticateResponse)
 
                 // Archive list
@@ -365,7 +365,7 @@ class ListBestCaseSpec extends ServiceSpecBase {
                   val archived2List = getList(putListResponse.uuid.get, authenticateResponse)
                   archived2List.relationships.get.parent should be (None)
                   val newNote3 = Note("Spanish 103", None, None, Some("lecture notes for Spanish 103 class"), None, None,
-                  Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None)))
+                  Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None, None)))
                   putNewNote(newNote3, authenticateResponse)
 
                   // Unarchive list and make sure everything is unarchived
@@ -396,10 +396,10 @@ class ListBestCaseSpec extends ServiceSpecBase {
         essayListUUID should be (lauriAuthenticateResponse.sharedLists.get.last._2._2.last._1)
 
         val newTask = Task("help with writing essay", None, None, Some("2015-10-10"), None, None,
-        Some(ExtendedItemRelationships(Some(essayListUUID), None, None)))
+        Some(ExtendedItemRelationships(Some(essayListUUID), None, None, None)))
         val putTaskResponse = putNewTask(newTask, lauriAuthenticateResponse, Some(timoUUID))
         val newNote = Note("tips for writing", None, None, Some("first just write, then edit"), None, None,
-                    Some(ExtendedItemRelationships(Some(essayListUUID), None, None)))
+                    Some(ExtendedItemRelationships(Some(essayListUUID), None, None, None)))
         val putNoteResponse = putNewNote(newNote, lauriAuthenticateResponse, Some(timoUUID))
 
         Get("/" + timoUUID + "/items") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
@@ -478,12 +478,12 @@ class ListBestCaseSpec extends ServiceSpecBase {
           val timoAuthenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
           timoAuthenticateResponse.sharedLists.get.size should be (1)
 
-  	      // Verify that list has the same modified as accepted agreement
-  	      Get("/" + lauriAuthenticateResponse.userUUID + "/items?modified=" + agreementSetResult.modified) ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
-  	        val itemsResponse = responseAs[Items]
-  	        itemsResponse.lists.size should be (1)
-  	        itemsResponse.lists.get(0).modified.get should be (agreementAcceptSetResult.modified)
-  	      }
+          // Verify that list has the same modified as accepted agreement
+          Get("/" + lauriAuthenticateResponse.userUUID + "/items?modified=" + agreementSetResult.modified) ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
+            val itemsResponse = responseAs[Items]
+            itemsResponse.lists.size should be (1)
+            itemsResponse.lists.get(0).modified.get should be (agreementAcceptSetResult.modified)
+          }
 
           Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
             val accountResponse = responseAs[User]
@@ -495,20 +495,20 @@ class ListBestCaseSpec extends ServiceSpecBase {
               sharedItemsResponse.lists.get.length should equal(1)
               val studiesListUUID = sharedItemsResponse.lists.get(0).uuid.get
               val newTask = Task("help with writing essay", None, None, Some("2015-10-10"), None, None,
-                                 Some(ExtendedItemRelationships(Some(studiesListUUID), None, None)))
+                                 Some(ExtendedItemRelationships(Some(studiesListUUID), None, None, None)))
               Put("/" + lauriUUID + "/task",
                 marshal(newTask).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
                 val errorResult = responseAs[ErrorResult]
                 Post("/agreement/" + agreementSetResult.uuid.get + "/access/2") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
                   val accessResult = responseAs[SetResult]
                   writeJsonOutput("changeAgreementAccessResponse", responseAs[String])
-	              accessResult.modified should be > agreementAcceptSetResult.modified
+                accessResult.modified should be > agreementAcceptSetResult.modified
 
                   // Verify that list has the same modified as accept changed agreement
-      			      Get("/" + lauriAuthenticateResponse.userUUID + "/items?modified=" + agreementAcceptSetResult.modified) ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
-      			        val itemsResponse = responseAs[Items]
-      			        itemsResponse.lists.size should be (1)
-      			        itemsResponse.lists.get(0).modified.get should be (accessResult.modified)
+                  Get("/" + lauriAuthenticateResponse.userUUID + "/items?modified=" + agreementAcceptSetResult.modified) ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
+                    val itemsResponse = responseAs[Items]
+                    itemsResponse.lists.size should be (1)
+                    itemsResponse.lists.get(0).modified.get should be (accessResult.modified)
                     itemsResponse.lists.get(0).visibility should not be (None)
                   }
 
@@ -517,24 +517,24 @@ class ListBestCaseSpec extends ServiceSpecBase {
                     val putTaskResponse = responseAs[SetResult]
 
                     // Last, proposedTo destroys agreement
-  	                Delete("/agreement/" + agreementSetResult.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
-  	                  val deleteAgreementResult = responseAs[SetResult]
-  	                  writeJsonOutput("deleteAgreementResponse", responseAs[String])
-  	                  deleteAgreementResult.modified should be > accessResult.modified
+                    Delete("/agreement/" + agreementSetResult.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
+                      val deleteAgreementResult = responseAs[SetResult]
+                      writeJsonOutput("deleteAgreementResponse", responseAs[String])
+                      deleteAgreementResult.modified should be > accessResult.modified
                       deleteAgreementResult.modified should be > putTaskResponse.modified
-  	                  // Verify that list has the same modified as what destroy result claims
-        				      Get("/" + lauriAuthenticateResponse.userUUID + "/items?modified=" + accessResult.modified) ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
-        				        val itemsResponse = responseAs[Items]
-        				        itemsResponse.lists.size should be (1)
-        				        itemsResponse.lists.get(0).modified.get should be (deleteAgreementResult.modified)
+                      // Verify that list has the same modified as what destroy result claims
+                      Get("/" + lauriAuthenticateResponse.userUUID + "/items?modified=" + accessResult.modified) ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
+                        val itemsResponse = responseAs[Items]
+                        itemsResponse.lists.size should be (1)
+                        itemsResponse.lists.get(0).modified.get should be (deleteAgreementResult.modified)
                         itemsResponse.lists.get(0).visibility should be (None)
-        				      }
-        				      // Verify that there is no more shared list access
-        				      Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
-        				        val accountResponse = responseAs[User]
-        				        accountResponse.sharedLists should be(None)
-        				      }
-  	                }
+                      }
+                      // Verify that there is no more shared list access
+                      Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
+                        val accountResponse = responseAs[User]
+                        accountResponse.sharedLists should be(None)
+                      }
+                    }
                   }
                 }
               }

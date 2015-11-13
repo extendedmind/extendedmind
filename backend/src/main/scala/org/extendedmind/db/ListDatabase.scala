@@ -146,6 +146,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
             Some(ExtendedItemRelationships(
             parent = (if (parentRelatioship.isEmpty) None else (Some(getUUID(parentRelatioship.get.getEndNode())))),
             None,
+            None,
             tags = (if (tags.isEmpty) None else (Some(getEndNodeUUIDList(tags.get))))))
           else None),
         visibility = {

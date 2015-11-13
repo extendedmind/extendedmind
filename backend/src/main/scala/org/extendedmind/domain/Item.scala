@@ -45,7 +45,7 @@ case class Items(items: Option[scala.List[Item]],
 				 tags: Option[scala.List[Tag]])
 
 case class SharedItemVisibility(published: Option[Long], draft: Option[Long], path: Option[String], agreements: Option[scala.List[Agreement]])
-case class ExtendedItemRelationships(parent: Option[UUID], origin: Option[UUID], tags: Option[scala.List[UUID]])
+case class ExtendedItemRelationships(parent: Option[UUID], origin: Option[UUID], assignee: Option[UUID], tags: Option[scala.List[UUID]])
 case class LimitedExtendedItemRelationships(parent: Option[UUID], origin: Option[UUID])
 
 case class DeleteItemResult(deleted: Long, result: SetResult)
@@ -63,25 +63,10 @@ trait ItemLike extends Container {
 }
 
 trait ShareableItem extends ItemLike{
-  val uuid: Option[UUID]
-  val created: Option[Long]
-  val modified: Option[Long]
-  val deleted: Option[Long]
-  val title: String
-  val description: Option[String]
-  val link: Option[String]
   val visibility: Option[SharedItemVisibility]
 }
 
 trait ExtendedItem extends ShareableItem{
-  val uuid: Option[UUID]
-  val created: Option[Long]
-  val modified: Option[Long]
-  val deleted: Option[Long]
-  val title: String
-  val description: Option[String]
-  val link: Option[String]
-  val visibility: Option[SharedItemVisibility]
   val relationships: Option[ExtendedItemRelationships]
   val archived: Option[Long]
 
@@ -97,13 +82,6 @@ trait ExtendedItem extends ShareableItem{
 }
 
 trait LimitedExtendedItem extends ItemLike{
-  val uuid: Option[UUID]
-  val created: Option[Long]
-  val modified: Option[Long]
-  val deleted: Option[Long]
-  val title: String
-  val description: Option[String]
-  val link: Option[String]
   val relationships: LimitedExtendedItemRelationships
 
   def parent: Option[UUID] = relationships.parent

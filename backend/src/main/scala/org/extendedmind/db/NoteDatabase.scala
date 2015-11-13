@@ -187,6 +187,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
             Some(ExtendedItemRelationships(
               parent = (if (parent.isEmpty) None else (Some(getUUID(parent.get.getEndNode())))),
               None,
+              None,
               tags = (if (tags.isEmpty) None else (Some(getEndNodeUUIDList(tags.get))))))
            else None
           ))).right

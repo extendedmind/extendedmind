@@ -873,10 +873,16 @@ trait UserDatabase extends AbstractGraphDatabase {
     access match {
       case Some(SecurityContext.READ) => {
         if(existingRelationship.isDefined){
-          if(existingRelationship.get.getType().name != SecurityRelationship.CAN_READ.name)
+          if(existingRelationship.get.getType().name != SecurityRelationship.CAN_READ.name){
+            if (targetNode.hasLabel(OwnerLabel.COLLECTIVE)){
+              // When collective permission is lowered to read-only, all assignee relationships need to be removed,
+              // as the user can not do anything about the things she is assigned to
+              removeAssigneeRelationships(targetNode, userNode)
+            }
             existingRelationship.get.delete()
-          else
+          }else{
             return Right(existingRelationship)
+          }
         }
         Right(Some(userNode --> SecurityRelationship.CAN_READ --> targetNode <))
       }
@@ -890,6 +896,10 @@ trait UserDatabase extends AbstractGraphDatabase {
         Right(Some(userNode --> SecurityRelationship.CAN_READ_WRITE --> targetNode <))
       case None => {
         if(existingRelationship.isDefined){
+          if (targetNode.hasLabel(OwnerLabel.COLLECTIVE)){
+            // Removing permission to collective, remove assignees as well
+            removeAssigneeRelationships(targetNode, userNode)
+          }
           // Make sure modified value for end node is always changed also when permission is removed
           existingRelationship.get.getEndNode.setProperty("modified", System.currentTimeMillis)
           existingRelationship.get.delete()
@@ -900,6 +910,9 @@ trait UserDatabase extends AbstractGraphDatabase {
         fail(INVALID_PARAMETER, ERR_USER_INVALID_ACCESS_VALUE, "Invalid access value: " + access)
     }
   }
+
+  // Child needs to implement this method
+  protected def removeAssigneeRelationships(collectiveNode: Node, userNode: Node)(implicit neo4j: DatabaseService): Unit;
 
   protected def getSecurityRelationship(targetNode: Node, userNode: Node)
       (implicit neo4j: DatabaseService): Response[Option[Relationship]] = {
@@ -1077,4 +1090,5 @@ trait UserDatabase extends AbstractGraphDatabase {
       Left(validateResult.left.get)
     }
   }
+
 }
