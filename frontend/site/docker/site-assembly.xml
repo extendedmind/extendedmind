@@ -6,7 +6,8 @@
       <directory>${project.basedir}/src</directory>
       <outputDirectory>.</outputDirectory>
       <includes>
-        <include>index.js</include>
+        <include>package.json</include>
+        <include>server.js</include>
       </includes>
     </fileSet>
     <fileSet>
