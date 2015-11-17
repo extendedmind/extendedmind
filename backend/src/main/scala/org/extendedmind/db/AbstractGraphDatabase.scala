@@ -405,7 +405,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
 
   protected def getItemNode(ownerUUID: UUID, itemUUID: UUID, label: Label, acceptDeleted: Boolean)(implicit neo4j: DatabaseService): Response[Node] = {
     val itemsIndex = neo4j.gds.index().forNodes("items")
-    val itemHits: IndexHits[Node] = itemsIndex.query("owner:\"" + UUIDUtils.getTrimmedBase64UUID(ownerUUID) + "\" AND item:\"" + UUIDUtils.getTrimmedBase64UUID(itemUUID) + "\"")
+    val itemHits: IndexHits[Node] = itemsIndex.query("owner:\"" + UUIDUtils.getTrimmedBase64UUIDForLucene(ownerUUID) + "\" AND item:\"" + UUIDUtils.getTrimmedBase64UUIDForLucene(itemUUID) + "\"")
 
     if (itemHits.size == 0) {
       fail(INVALID_PARAMETER, ERR_ITEM_NOT_FOUND, "Could not find item " + itemUUID + " for owner " + ownerUUID)

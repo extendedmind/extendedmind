@@ -137,8 +137,8 @@ class ItemBestCaseSpec extends ServiceSpecBase {
                   val deleteItemResponse = responseAs[DeleteItemResult]
                   writeJsonOutput("deleteItemResponse", responseAs[String])
                   Get("/" + authenticateResponse.userUUID + "/item/" + putItemResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                	val failure = responseAs[ErrorResult]
-                	status should be (BadRequest)
+                    val failure = responseAs[ErrorResult]
+                    status should be (BadRequest)
                     failure.description should startWith("Item " + putItemResponse.uuid.get + " is deleted")
                   }
                   // Deleting again should return the same deleted and modified values
@@ -259,8 +259,8 @@ class ItemBestCaseSpec extends ServiceSpecBase {
 
       // Check that deleting the second, we get it back with deleted query
       Delete("/" + authenticateResponse.userUUID + "/item/" + test2Response.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-    	val deleteResponse = responseAs[DeleteItemResult]
-    	deleteResponse.deleted should not be None
+        val deleteResponse = responseAs[DeleteItemResult]
+        deleteResponse.deleted should not be None
       }
       // Check that getting with the modified value of second we get the deleted item
       Get("/" + authenticateResponse.userUUID + "/items" + "?modified=" + test2Response.modified + "&deleted=true") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {

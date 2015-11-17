@@ -33,8 +33,6 @@ import org.neo4j.graphdb.traversal.Evaluators
 import org.neo4j.graphdb.traversal.TraversalDescription
 import org.neo4j.scala.DatabaseService
 import scala.collection.mutable.ListBuffer
-import org.neo4j.index.lucene.ValueContext
-import org.neo4j.index.lucene.QueryContext
 import org.neo4j.graphdb.Relationship
 import spray.util.LoggingContext
 import scala.collection.mutable.HashMap

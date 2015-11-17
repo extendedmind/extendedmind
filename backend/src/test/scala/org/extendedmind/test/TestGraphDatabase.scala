@@ -85,6 +85,9 @@ trait TestGraphDatabase extends GraphDatabase {
         // Set a predictable test UUID "11111111-1111-1111-1111-111111111111" for the common collective,
         // stored as tight base64
         extendedMind.setProperty("uuid", "EREREREREREREREREREREQ")
+
+        // Store a uuid with + character that needs to be escaped in Lucene indices
+        timoNode.setProperty("uuid","+eDZ9pdBSQWexIARddL9zA")
     }
 
     val extendedMindTechnologies = createCollective(

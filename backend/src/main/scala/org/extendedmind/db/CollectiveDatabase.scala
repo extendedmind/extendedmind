@@ -34,8 +34,6 @@ import org.neo4j.graphdb.traversal.TraversalDescription
 import org.neo4j.kernel.Traversal
 import org.neo4j.scala.DatabaseService
 import scala.collection.mutable.ListBuffer
-import org.neo4j.index.lucene.ValueContext
-import org.neo4j.index.lucene.QueryContext
 import org.neo4j.graphdb.traversal.Evaluation
 import org.neo4j.graphdb.Relationship
 

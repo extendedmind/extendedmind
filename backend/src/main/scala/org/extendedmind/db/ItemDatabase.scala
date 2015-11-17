@@ -275,8 +275,8 @@ trait ItemDatabase extends UserDatabase {
     val itemsIndex = neo4j.gds.index().forNodes("items")
 
     val itemNodeList = {
-      val ownerQuery = new TermQuery(new Term("owner", UUIDUtils.getTrimmedBase64UUID(ownerUUID)))
-      val assigneeQuery = new TermQuery(new Term("assignee", UUIDUtils.getTrimmedBase64UUID(ownerUUID)))
+      val ownerQuery = new TermQuery(new Term("owner", UUIDUtils.getTrimmedBase64UUIDForLucene(ownerUUID)))
+      val assigneeQuery = new TermQuery(new Term("assignee", UUIDUtils.getTrimmedBase64UUIDForLucene(ownerUUID)))
       val userQuery = new BooleanQuery;
       userQuery.add(ownerQuery, BooleanClause.Occur.SHOULD);
       userQuery.add(assigneeQuery, BooleanClause.Occur.SHOULD);
@@ -681,11 +681,11 @@ trait ItemDatabase extends UserDatabase {
   }
 
   protected def setTagNodes(itemNode: Node, owner: Owner, extItem: ExtendedItem)(implicit neo4j: DatabaseService): Response[Option[scala.List[Relationship]]] = {
-	for {
-	  ownerNodes <- getOwnerNodes(owner).right
-	  oldTagRelationships <- getTagRelationships(itemNode, owner).right
-	  newTagRelationships <- setTagRelationships(itemNode, ownerNodes, extItem.tags, oldTagRelationships).right
-	} yield newTagRelationships
+    for {
+      ownerNodes <- getOwnerNodes(owner).right
+      oldTagRelationships <- getTagRelationships(itemNode, owner).right
+      newTagRelationships <- setTagRelationships(itemNode, ownerNodes, extItem.tags, oldTagRelationships).right
+    } yield newTagRelationships
   }
 
   protected def setTagRelationships(itemNode: Node, ownerNodes: OwnerNodes, tagUUIDList: Option[scala.List[UUID]],
@@ -883,9 +883,9 @@ trait ItemDatabase extends UserDatabase {
            else Right(Some(SecurityContext.FOUNDER))
           ).right
           unit <- (if (requireFounder && accessRight.isDefined && accessRight.get != SecurityContext.FOUNDER)
-        	  		fail(INVALID_PARAMETER, ERR_BASE_FOUNDER_ACCESS_RIGHT_REQUIRED, "Given parameters require founder access")
-        		   else if (writeAccess(accessRight)) Right()
-        		   else fail(INVALID_PARAMETER, ERR_BASE_NO_LIST_ACCESS, "No write access to (un)delete task")).right
+                fail(INVALID_PARAMETER, ERR_BASE_FOUNDER_ACCESS_RIGHT_REQUIRED, "Given parameters require founder access")
+               else if (writeAccess(accessRight)) Right()
+               else fail(INVALID_PARAMETER, ERR_BASE_NO_LIST_ACCESS, "No write access to (un)delete task")).right
         } yield taskNode
     }
   }
@@ -935,8 +935,8 @@ trait ItemDatabase extends UserDatabase {
 
   protected def addToItemsIndex(ownerUUID: UUID, itemNode: Node, modified: Long)(implicit neo4j: DatabaseService): Unit = {
     val itemsIndex = neo4j.gds.index().forNodes("items")
-    itemsIndex.add(itemNode, "owner", UUIDUtils.getTrimmedBase64UUID(ownerUUID))
-    itemsIndex.add(itemNode, "item", itemNode.getProperty("uuid"))
+    itemsIndex.add(itemNode, "owner", UUIDUtils.getTrimmedBase64UUIDForLucene(ownerUUID))
+    itemsIndex.add(itemNode, "item", UUIDUtils.getTrimmedBase64UUIDForLucene(getUUID(itemNode)))
     addModifiedIndex(itemsIndex, itemNode, modified)
   }
 
@@ -978,7 +978,7 @@ trait ItemDatabase extends UserDatabase {
   protected def rebuildItemsIndex(ownerNode: Node)(implicit neo4j: DatabaseService): Response[CountResult] = {
     val itemsIndex = neo4j.gds.index().forNodes("items")
     val ownerUUID = getUUID(ownerNode)
-    val oldItemsInIndex = itemsIndex.query("owner:\"" + UUIDUtils.getTrimmedBase64UUID(ownerUUID) + "\"").toList
+    val oldItemsInIndex = itemsIndex.query("owner:\"" + UUIDUtils.getTrimmedBase64UUIDForLucene(ownerUUID) + "\"").toList
     oldItemsInIndex.foreach(itemNode => {
       itemsIndex.remove(itemNode)
     })
@@ -1161,8 +1161,8 @@ trait ItemDatabase extends UserDatabase {
 
   protected def removeAssigneeRelationships(collectiveNode: Node, userNode: Node)(implicit neo4j: DatabaseService): Unit = {
     val itemsIndex = neo4j.gds.index().forNodes("items")
-    val ownerQuery = new TermQuery(new Term("owner", UUIDUtils.getTrimmedBase64UUID(getUUID(collectiveNode))))
-    val assigneeQuery = new TermQuery(new Term("assignee", UUIDUtils.getTrimmedBase64UUID(getUUID(userNode))))
+    val ownerQuery = new TermQuery(new Term("owner", UUIDUtils.getTrimmedBase64UUIDForLucene(getUUID(collectiveNode))))
+    val assigneeQuery = new TermQuery(new Term("assignee", UUIDUtils.getTrimmedBase64UUIDForLucene(getUUID(userNode))))
     val userQuery = new BooleanQuery;
     userQuery.add(ownerQuery, BooleanClause.Occur.MUST);
     userQuery.add(assigneeQuery, BooleanClause.Occur.MUST);

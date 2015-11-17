@@ -32,6 +32,7 @@ object UUIDUtils {
     val leastSignificantBits = convertByteArrayToLong(bytes.slice(8, 16))
     new UUID(mostSignificantBits, leastSignificantBits)
   }
+
   def getTrimmedBase64UUID(uuid: UUID): String = {
     this.synchronized {
       val bb = ByteBuffer.allocate(16)
@@ -39,6 +40,10 @@ object UUIDUtils {
       bb.putLong(uuid.getLeastSignificantBits())
       Base64.encodeBase64String(bb.array()).slice(0, 22)
     }
+  }
+  def getTrimmedBase64UUIDForLucene(uuid: UUID): String = {
+    // In Lucene the + character in Base64 is reserved, so changing it to @ is needed
+    getTrimmedBase64UUID(uuid).replace('+', '@')
   }
 
   def convertByteArrayToLong(byteArray: Array[Byte]): Long = {
