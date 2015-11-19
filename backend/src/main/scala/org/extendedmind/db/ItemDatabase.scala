@@ -797,7 +797,7 @@ trait ItemDatabase extends UserDatabase {
         }).fold(
           fail(INVALID_PARAMETER, ERR_ITEM_ASSIGNEE_NO_ACCESS, "Assignee " + assigneeUUID + " does not have read/write access to collective")
         )(readWriteRelationship =>{
-          val relationship = readWriteRelationship.getStartNode --> ItemRelationship.IS_ASSIGNED_TO --> itemNode <;
+          val relationship = itemNode --> ItemRelationship.IS_ASSIGNED_TO --> readWriteRelationship.getStartNode <;
           // Store the assigner uuid as a property in the relationship
           relationship.setProperty("assigner", ownerNodes.user.getProperty("uuid"))
           val itemsIndex = neo4j.gds.index().forNodes("items")
@@ -1230,14 +1230,14 @@ trait ItemDatabase extends UserDatabase {
       else None
 
     Right(PublicItems(
-                if (modified.isEmpty || ownerPublicModified > modified.get) Some(displayOwner) else None,
-                content,
-                format,
-                if (modified.isEmpty || ownerPublicModified > modified.get) Some(ownerPublicModified) else None,
-                if (noteBuffer.isEmpty) None else Some(noteBuffer.toList),
-                if (tagBuffer.isEmpty) None else Some(tagBuffer.toList),
-                if (assigneeBuffer.isEmpty) None else Some(assigneeBuffer.toList),
-                if (unpublishedBuffer.isEmpty) None else Some(unpublishedBuffer.toList)))
+                owner = if (modified.isEmpty || ownerPublicModified > modified.get) Some(displayOwner) else None,
+                content = content,
+                format = format,
+                modified = if (modified.isEmpty || ownerPublicModified > modified.get) Some(ownerPublicModified) else None,
+                notes = if (noteBuffer.isEmpty) None else Some(noteBuffer.toList),
+                tags = if (tagBuffer.isEmpty) None else Some(tagBuffer.toList),
+                assignees = if (assigneeBuffer.isEmpty) None else Some(assigneeBuffer.toList),
+                unpublished = if (unpublishedBuffer.isEmpty) None else Some(unpublishedBuffer.toList)))
   }
 
   protected def toPublicItem(ownerNode: Node, itemNode: Node, displayOwner: String)(implicit neo4j: DatabaseService): Response[PublicItem] = {

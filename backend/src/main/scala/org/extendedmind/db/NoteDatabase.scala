@@ -189,8 +189,8 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
               parent = parentRel.flatMap(parentRel => Some(getUUID(parentRel.getEndNode))),
               origin = None,
               assignee = assigneeRel.flatMap(assigneeRel => {
-                if (owner.foreignOwnerUUID.isEmpty && getUUID(assigneeRel.getStartNode) == owner.userUUID) None
-                else Some(getUUID(assigneeRel.getStartNode))
+                if (owner.foreignOwnerUUID.isEmpty && getUUID(assigneeRel.getEndNode) == owner.userUUID) None
+                else Some(getUUID(assigneeRel.getEndNode))
               }),
               assigner = assigneeRel.flatMap(assigneeRel => Some(UUIDUtils.getUUID(assigneeRel.getProperty("assigner").asInstanceOf[String]))),
               tags = tags.flatMap(tags => Some(getEndNodeUUIDList(tags)))))
@@ -272,6 +272,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
       implicit neo4j =>
         for {
           noteResult <- putExistingExtendedItem(owner, noteUUID, note, ItemLabel.NOTE).right
+          result <- validateNoteConvertable(noteResult._1).right
           taskNode <- Right(setLabel(noteResult._1, Some(MainLabel.ITEM), Some(ItemLabel.TASK), Some(scala.List(ItemLabel.NOTE)))).right
           result <- moveContentToDescription(taskNode).right
           task <- toTask(taskNode, owner).right
@@ -284,6 +285,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
       implicit neo4j =>
         for {
           noteResult <- putExistingExtendedItem(owner, noteUUID, note, ItemLabel.NOTE).right
+          result <- validateNoteConvertable(noteResult._1).right
           listNode <- Right(setLabel(noteResult._1, Some(MainLabel.ITEM), Some(ItemLabel.LIST), Some(scala.List(ItemLabel.NOTE)))).right
           result <- moveContentToDescription(listNode).right
           list <- toList(listNode, owner).right
@@ -359,5 +361,14 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     if (noteNode.hasProperty("draft")) noteNode.removeProperty("draft")
     if (noteNode.hasProperty("path")) noteNode.removeProperty("path")
   }
+
+  protected def validateNoteConvertable(noteNode: Node)(implicit neo4j: DatabaseService): Response[Unit] = {
+    // Can't convert note that has been published
+    if (noteNode.hasProperty("published") && !noteNode.hasProperty("unpublished"))
+      fail(INVALID_PARAMETER, ERR_NOTE_CONVERT_PUBLISHED, "Can not convert a note that has been published")
+    else
+      Right()
+  }
+
 
 }

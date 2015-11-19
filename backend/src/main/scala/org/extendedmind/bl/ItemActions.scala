@@ -215,8 +215,6 @@ trait ItemActions {
         list.copy(
           archived = None,
           due = None,
-          assignee = None,
-          assigner = None,
           visibility =
             if (list.visibility.isDefined && list.visibility.get.agreements.isDefined){
               val agreementsForCurrentUser = list.visibility.get.agreements.get.filter(agreement => {
@@ -248,8 +246,6 @@ trait ItemActions {
         task.copy(
           archived = None,
           due = None,
-          assignee = None,
-          assigner = None,
           reminders = None,
           visibility = None,
           relationships = Some(task.relationships.get.copy(origin=None, tags=None)))

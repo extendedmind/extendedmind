@@ -40,8 +40,6 @@ case class Task(uuid: Option[UUID], id: Option[String], created: Option[Long], m
                 due: Option[String],
                 repeating: Option[String],
                 completed: Option[Long],
-                assignee: Option[UUID],
-                assigner: Option[UUID],
                 reminders: Option[scala.List[Reminder]],
                 visibility: Option[SharedItemVisibility],
                 relationships: Option[ExtendedItemRelationships])
@@ -71,7 +69,7 @@ object Task{
             reminders: Option[scala.List[Reminder]],
             relationships: Option[ExtendedItemRelationships])
         = new Task(None, None, None, None, None, None, title, description,
-                   link, due, if (repeating.isDefined) Some(repeating.get.toString()) else None, None, None, None,
+                   link, due, if (repeating.isDefined) Some(repeating.get.toString()) else None, None,
                    reminders, None, relationships)
 }
 

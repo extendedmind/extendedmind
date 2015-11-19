@@ -74,7 +74,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     scala.List("uuid", "created", "modified", "deleted", // Container
       "visibility", // ShareableItem
       "relationships", // ExtendedItem
-      "completed", "assignee", "assigner", "reminders", // Task
+      "completed", "reminders", // Task
       "favorited", // Note
       "archived", // List
       "parent", "tagType", // Tag

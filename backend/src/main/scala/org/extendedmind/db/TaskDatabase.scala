@@ -200,8 +200,8 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
               parent = parentRel.flatMap(parentRel => Some(getUUID(parentRel.getEndNode()))),
               origin = originRel.flatMap(originRel => Some(getUUID(originRel.getEndNode()))),
               assignee = assigneeRel.flatMap(assigneeRel => {
-                if (owner.foreignOwnerUUID.isEmpty && getUUID(assigneeRel.getStartNode) == owner.userUUID) None
-                else Some(getUUID(assigneeRel.getStartNode))
+                if (owner.foreignOwnerUUID.isEmpty && getUUID(assigneeRel.getEndNode) == owner.userUUID) None
+                else Some(getUUID(assigneeRel.getEndNode))
               }),
               assigner = assigneeRel.flatMap(assigneeRel => Some(UUIDUtils.getUUID(assigneeRel.getProperty("assigner").asInstanceOf[String]))),
               tags = tags.flatMap(tags => Some(getEndNodeUUIDList(tags)))))

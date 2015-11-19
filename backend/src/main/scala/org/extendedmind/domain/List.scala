@@ -29,8 +29,6 @@ case class List(
       description: Option[String],
       link: Option[String],
       due: Option[String],
-      assignee: Option[UUID],
-      assigner: Option[UUID],
       visibility: Option[SharedItemVisibility],
       relationships: Option[ExtendedItemRelationships])
       extends ExtendedItem{
@@ -44,11 +42,11 @@ case class List(
 
 object List{
   def apply(title: String, description: Option[String],
-		  	link: Option[String],
-		  	due: Option[String],
+        link: Option[String],
+        due: Option[String],
             relationships: Option[ExtendedItemRelationships])
         = new List(None, None, None, None, None, None,  title, description,
-                   link, due, None, None, None, relationships)
+                   link, due, None, relationships)
 }
 
 case class ArchivePayload(parent: UUID)

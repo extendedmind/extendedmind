@@ -44,6 +44,7 @@ import spray.httpx.SprayJsonSupport._
 import spray.httpx.marshalling._
 import spray.json.DefaultJsonProtocol._
 import scala.concurrent.Future
+import spray.http.StatusCodes._
 
 /**
  * Best case test for admin routes. Also generates .json files.
@@ -78,47 +79,48 @@ class AdminBestCaseSpec extends ServiceSpecBase {
         marshal(testCollective).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           writeJsonOutput("putCollectiveResponse", responseAs[String])
           val putCollectiveResponse = responseAs[SetResult]
-          putCollectiveResponse.uuid should not be None
+          val collectiveUUID = putCollectiveResponse.uuid.get
           putCollectiveResponse.modified should not be None
 
           // Authenticating again should have the new collective
           val reauthenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
           reauthenticateResponse.collectives should not be None
-          reauthenticateResponse.collectives.get.get(putCollectiveResponse.uuid.get).get._1 should equal(testCollective.title)
-          reauthenticateResponse.collectives.get.get(putCollectiveResponse.uuid.get).get._2 should equal(0)
-          reauthenticateResponse.collectives.get.get(putCollectiveResponse.uuid.get).get._3 should equal(false)
+          reauthenticateResponse.collectives.get.get(collectiveUUID).get._1 should equal(testCollective.title)
+          reauthenticateResponse.collectives.get.get(collectiveUUID).get._2 should equal(0)
+          reauthenticateResponse.collectives.get.get(collectiveUUID).get._3 should equal(false)
 
           // Update collective
-          Put("/collective/" + putCollectiveResponse.uuid.get,
-            marshal(testCollective.copy(description = Some("test description"), common = Some(true))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", reauthenticateResponse.token.get)) ~> route ~> check {
+          Put("/collective/" + collectiveUUID,
+            marshal(testCollective.copy(description = Some("test description"), common = Some(true), handle=Some("test"))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", reauthenticateResponse.token.get)) ~> route ~> check {
               writeJsonOutput("putExistingCollectiveResponse", responseAs[String])
               val putExistingCollectiveResponse = responseAs[SetResult]
               putExistingCollectiveResponse.uuid should be(None)
               assert(putExistingCollectiveResponse.modified > putCollectiveResponse.modified)
               // Get it back
-              Get("/collective/" + putCollectiveResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", reauthenticateResponse.token.get)) ~> route ~> check {
+              Get("/collective/" + collectiveUUID) ~> addCredentials(BasicHttpCredentials("token", reauthenticateResponse.token.get)) ~> route ~> check {
                 val collectiveResponse = responseAs[Collective]
                 writeJsonOutput("collectiveResponse", responseAs[String])
                 collectiveResponse.description.get should be("test description")
                 collectiveResponse.inboxId should not be None
                 collectiveResponse.common should be(None)
+                collectiveResponse.handle.get should be("test")
                 collectiveResponse.access.get.length should be (1)
                 collectiveResponse.access.get(0)._2 should be ("timo@ext.md")
                 collectiveResponse.access.get(0)._3 should be (0)
                 // Should be possible to assign read/write access to new collective
                 val lauriAuthenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
-                lauriAuthenticateResponse.collectives.get.get(putCollectiveResponse.uuid.get) should equal(None)
+                lauriAuthenticateResponse.collectives.get.get(collectiveUUID) should equal(None)
                 val lauriUUID = getUserUUID(LAURI_EMAIL, reauthenticateResponse)
 
-                Post("/collective/" + putCollectiveResponse.uuid.get + "/user/" + lauriUUID,
+                Post("/collective/" + collectiveUUID + "/user/" + lauriUUID,
                   marshal(UserAccessRight(Some(2))).right.get) ~> addCredentials(BasicHttpCredentials("token", reauthenticateResponse.token.get)) ~> route ~> check {
                     val postCollectiveUserPermissionResponse = responseAs[SetResult]
                     writeJsonOutput("postCollectiveUserPermissionResponse", responseAs[String])
                     assert(postCollectiveUserPermissionResponse.modified > putExistingCollectiveResponse.modified)
                     val lauriReauthenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
-                    lauriReauthenticateResponse.collectives.get.get(putCollectiveResponse.uuid.get).get._2 should equal(2)
+                    lauriReauthenticateResponse.collectives.get.get(collectiveUUID).get._2 should equal(2)
                   }
-                Get("/collective/" + putCollectiveResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", reauthenticateResponse.token.get)) ~> route ~> check {
+                Get("/collective/" + collectiveUUID) ~> addCredentials(BasicHttpCredentials("token", reauthenticateResponse.token.get)) ~> route ~> check {
                   val modifiedCollectiveResponse = responseAs[Collective]
                   modifiedCollectiveResponse.access.get.length should be (2)
                   modifiedCollectiveResponse.access.get.find(access => {
@@ -136,7 +138,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
                 val putTaskResponse = putNewTask(newTask, authenticateResponse, foreignOwnerUUID=putCollectiveResponse.uuid)
 
                 // Get collective tasks, check that assign is correct
-                Get("/" + putCollectiveResponse.uuid.get + "/items") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                Get("/" + collectiveUUID + "/items") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                   val itemsResponse = responseAs[Items]
                   itemsResponse.items should be(None)
                   itemsResponse.tasks.get.length should equal(1)
@@ -149,7 +151,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
                 Get("/" + lauriUUID + "/items") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
                   val lauriItemsResponse = responseAs[Items]
                   lauriItemsResponse.tasks should be(None)
-                  lauriItemsResponse.assigned.get(0).collective should be (putCollectiveResponse.uuid.get)
+                  lauriItemsResponse.assigned.get(0).collective should be (collectiveUUID)
                   lauriItemsResponse.assigned.get(0).tasks.get(0).uuid.get should be (putTaskResponse.uuid.get)
                   lauriItemsResponse.assigned.get(0).tasks.get(0).relationships.get.assignee should be (None)
                   lauriItemsResponse.assigned.get(0).tasks.get(0).relationships.get.assigner.get should be (authenticateResponse.userUUID)
@@ -158,7 +160,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
                 Get("/" + lauriUUID + "/items?modified=0") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
                   val lauriItemsResponse = responseAs[Items]
                   lauriItemsResponse.tasks should be(None)
-                  lauriItemsResponse.assigned.get(0).collective should be (putCollectiveResponse.uuid.get)
+                  lauriItemsResponse.assigned.get(0).collective should be (collectiveUUID)
                   lauriItemsResponse.assigned.get(0).tasks.get(0).uuid.get should be (putTaskResponse.uuid.get)
                   lauriItemsResponse.assigned.get(0).tasks.get(0).relationships.get.assignee should be (None)
                   lauriItemsResponse.assigned.get(0).tasks.get(0).relationships.get.assigner.get should be (authenticateResponse.userUUID)
@@ -171,7 +173,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
 
                 // Remove assign, make sure task has been removed
                 val putExistingTaskResponse = putExistingTask(newTask.copy(relationships=None), putTaskResponse.uuid.get, authenticateResponse, foreignOwnerUUID=putCollectiveResponse.uuid)
-                Get("/" + putCollectiveResponse.uuid.get + "/items") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                Get("/" + collectiveUUID + "/items") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                   val itemsResponse = responseAs[Items]
                   itemsResponse.tasks.get.length should equal(1)
                   itemsResponse.tasks.get(0).relationships should be (None)
@@ -181,6 +183,54 @@ class AdminBestCaseSpec extends ServiceSpecBase {
                 Get("/" + lauriUUID + "/items") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
                   val lauriItemsResponse = responseAs[Items]
                   lauriItemsResponse.assigned should be (None)
+                }
+
+                // Put a new note, put it again and assign
+                val newNote = Note("Public note", None, None, Some("this is public"), None, None, None)
+                val putNoteResponse = putNewNote(newNote, authenticateResponse, foreignOwnerUUID=Some(collectiveUUID))
+                Get("/" + lauriUUID + "/items") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
+                  val lauriItemsResponse = responseAs[Items]
+                  lauriItemsResponse.assigned should be (None)
+                }
+                val assignedNote = newNote.copy(relationships=Some(ExtendedItemRelationships(None, None, Some(lauriUUID), None, None)))
+                putExistingNote(assignedNote, putNoteResponse.uuid.get, authenticateResponse, foreignOwnerUUID=Some(collectiveUUID))
+                Get("/" + lauriUUID + "/items") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
+                  val lauriItemsResponse = responseAs[Items]
+                  lauriItemsResponse.assigned.get(0).notes.get(0).uuid.get should be (putNoteResponse.uuid.get)
+                }
+
+                // Publish note, verify that public result has the right assignee
+                Post("/" + collectiveUUID + "/note/" + putNoteResponse.uuid.get + "/publish",
+                      marshal(PublishPayload("md", Some("public-note")))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                   val publishNoteResult = responseAs[PublishNoteResult]
+                }
+                Get("/public/test") ~> route ~> check {
+                  val publicItemsResponse = responseAs[PublicItems]
+                  publicItemsResponse.notes.get.length should be (1)
+                  publicItemsResponse.notes.get(0).relationships.get.assignee.get should be (lauriUUID)
+                  publicItemsResponse.assignees.get.length should be (1)
+                  publicItemsResponse.assignees.get(0).uuid should be (lauriUUID)
+                  publicItemsResponse.assignees.get(0).displayName should be ("lauri@ext.md")
+                }
+
+                // Convert note to list, verify that it fails because note is published
+                Post("/" + collectiveUUID + "/note/" + putNoteResponse.uuid.get + "/list",
+                    marshal(newNote)) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                  val failure = responseAs[ErrorResult]
+                  status should be (BadRequest)
+                  failure.code should be(ERR_NOTE_CONVERT_PUBLISHED.number)
+                }
+
+                // Unpublish, then convert again should work
+                Post("/" + collectiveUUID + "/note/" + putNoteResponse.uuid.get + "/unpublish") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                  val unpublishNoteResult = responseAs[SetResult]
+                  Post("/" + collectiveUUID + "/note/" + putNoteResponse.uuid.get + "/list",
+                      marshal(assignedNote)) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                    val listFromNote = responseAs[List]
+                    println(listFromNote.relationships)
+                    listFromNote.relationships.get.assignee.get should be (lauriUUID)
+                    listFromNote.relationships.get.assigner.get should be (authenticateResponse.userUUID)
+                  }
                 }
               }
             }

@@ -99,8 +99,8 @@ class TaskBestCaseSpec extends ServiceSpecBase {
                   val deleteTaskResponse = responseAs[DeleteItemResult]
                   writeJsonOutput("deleteTaskResponse", responseAs[String])
                   Get("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                  val failure = responseAs[ErrorResult]
-                  status should be (BadRequest)
+                    val failure = responseAs[ErrorResult]
+                    status should be (BadRequest)
                     failure.description should startWith("Item " + putTaskResponse.uuid.get + " is deleted")
                   }
 
