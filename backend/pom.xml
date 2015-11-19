@@ -139,6 +139,15 @@
       <scope>compile</scope>
     </dependency>
 
+    <!-- Binary Diffing -->
+	<dependency>
+      <groupId>com.nitorcreations</groupId>
+	  <artifactId>javaxdelta</artifactId>
+      <version>1.5</version>
+      <type>jar</type>
+      <scope>compile</scope>
+    </dependency>
+
     <!-- Logging -->
     <dependency>
       <groupId>com.typesafe.akka</groupId>
