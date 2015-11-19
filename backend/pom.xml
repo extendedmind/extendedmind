@@ -139,11 +139,18 @@
       <scope>compile</scope>
     </dependency>
 
-    <!-- Binary Diffing -->
+    <!-- Binary Diff and Pickle -->
 	<dependency>
       <groupId>com.nitorcreations</groupId>
 	  <artifactId>javaxdelta</artifactId>
       <version>1.5</version>
+      <type>jar</type>
+      <scope>compile</scope>
+    </dependency>
+	<dependency>
+      <groupId>me.chrons</groupId>
+	  <artifactId>boopickle_${scala.version.short}</artifactId>
+      <version>1.1.0</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>

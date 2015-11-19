@@ -50,6 +50,9 @@ import org.apache.lucene.search.BooleanQuery
 import org.apache.lucene.search.BooleanClause
 import spray.util.LoggingContext
 import org.neo4j.graphdb.NotFoundException
+import boopickle.CompositePickler
+import java.nio.ByteBuffer
+import scala.collection.mutable.ArrayBuffer
 
 trait ItemDatabase extends UserDatabase {
 
@@ -1521,4 +1524,58 @@ trait ItemDatabase extends UserDatabase {
       })
     }
   }
+
+  // PICKLING
+
+  import boopickle.Default._
+
+  implicit val agreementUserPickler = generatePickler[AgreementUser]
+  implicit val agreementTargetPickler = generatePickler[AgreementTarget]
+  implicit val agreementPickler = generatePickler[Agreement]
+  implicit val sharedItemVisibilityPickler = generatePickler[SharedItemVisibility]
+  implicit val extendedItemRelationshipsPickler = generatePickler[ExtendedItemRelationships]
+  implicit val reminderPickler = generatePickler[Reminder]
+  implicit val notePickler = generatePickler[Note]
+  implicit val taskPickler = generatePickler[Task]
+  implicit val listPickler = generatePickler[List]
+
+  def pickleNote(note: Note): Array[Byte] = {
+    this.synchronized {
+      val bb = Pickle.intoBytes(note)
+      bb.array().slice(0, bb.remaining)
+    }
+  }
+
+  def unpickleNote(byteNote: Array[Byte]): Note = {
+    this.synchronized {
+      Unpickle[Note].fromBytes(ByteBuffer.wrap(byteNote))
+    }
+  }
+
+  def pickleTask(task: Task): Array[Byte] = {
+    this.synchronized {
+      val bb = Pickle.intoBytes(task)
+      bb.array().slice(0, bb.remaining)
+    }
+  }
+
+  def unpickleTask(byteTask: Array[Byte]): Task = {
+    this.synchronized {
+      Unpickle[Task].fromBytes(ByteBuffer.wrap(byteTask))
+    }
+  }
+
+  def pickleList(list: List): Array[Byte] = {
+    this.synchronized {
+      val bb = Pickle.intoBytes(list)
+      bb.array().slice(0, bb.remaining)
+    }
+  }
+
+  def unpickleList(byteList: Array[Byte]): List = {
+    this.synchronized {
+      Unpickle[List].fromBytes(ByteBuffer.wrap(byteList))
+    }
+  }
+
 }

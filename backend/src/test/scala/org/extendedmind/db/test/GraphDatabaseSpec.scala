@@ -72,6 +72,49 @@ class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
         }
       }
     }
+    it("should pickle extended items"){
+
+      // NOTE
+
+      val note = Note("home measurements", None, None, Some("bedroom wall: 420cm*250cm"), None, None,
+          Some(ExtendedItemRelationships(Some(UUID.randomUUID()), None, None, None,
+              Some(scala.List(UUID.randomUUID()))))).copy(
+            visibility = Some(SharedItemVisibility(Some(System.currentTimeMillis()), Some(System.currentTimeMillis()),
+              Some("test"), Some(scala.List(Agreement(None, None, None, "list", 1, None,
+              Some(AgreementTarget(UUID.randomUUID(), Some("sdaasd"))),
+              Some(AgreementUser(Some(UUID.randomUUID()), None)), None))))))
+      val byteNote = db.pickleNote(note)
+      val sameByteNote = db.pickleNote(note)
+      byteNote should be(sameByteNote)
+      val unpickledNote = db.unpickleNote(byteNote)
+      val sameUnpickledNote = db.unpickleNote(byteNote)
+      note should be(unpickledNote)
+      unpickledNote should be(sameUnpickledNote)
+
+      // TASK
+
+      val reminder = Reminder("1", "ln", "ios-cordova", "iPhone6", System.currentTimeMillis + 60000)
+      val task = Task("learn Spanish", None, None, None, None,
+                          Some(scala.List(reminder)), note.relationships).copy(visibility = note.visibility)
+      val byteTask = db.pickleTask(task)
+      val sameByteTask = db.pickleTask(task)
+      byteTask should be(sameByteTask)
+      val unpickledTask = db.unpickleTask(byteTask)
+      val sameUnpickledTask = db.unpickleTask(byteTask)
+      task should be(unpickledTask)
+      unpickledTask should be(sameUnpickledTask)
+
+      // LIST
+
+      val list = List("learn Spanish", None, None, None, note.relationships).copy(visibility = note.visibility)
+      val byteList = db.pickleList(list)
+      val sameByteList = db.pickleList(list)
+      byteList should be(sameByteList)
+      val unpickledList = db.unpickleList(byteList)
+      val sameUnpickledList = db.unpickleList(byteList)
+      list should be(unpickledList)
+      unpickledList should be(sameUnpickledList)
+    }
   }
   describe("TaskDatabase"){
      it("should remove properties of a task from the database"){
