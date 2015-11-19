@@ -195,6 +195,10 @@ abstract class ServiceSpecBase extends ImpermanentGraphDatabaseSpecBase {
     }
   }
 
+  def isEmptyItems(items: Items): Boolean = {
+    return items.items.isEmpty && items.tasks.isEmpty && items.notes.isEmpty && items.lists.isEmpty && items.tags.isEmpty
+  }
+
   // Helper file writer
   def writeJsonOutput(filename: String, contents: String): Unit = {
     Some(new PrintWriter(db.TEST_DATA_DESTINATION + "/" + filename + ".json")).foreach { p => p.write(contents); p.close }

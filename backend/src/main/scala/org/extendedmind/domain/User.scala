@@ -193,6 +193,10 @@ case class Agreement(uuid: Option[UUID], created: Option[Long], modified: Option
   require(access == 1 || access == 2, "Access needs to be either 1 for read or 2 for write")
 }
 
+case class Assignee(uuid: UUID, displayName: String){
+  require(validateLength(displayName, 256), "Display name can not be more than 256 characters")
+}
+
 object Agreement{
   import org.extendedmind.domain.AgreementType._
   def apply(agreementType: AgreementType, access: Byte, targetItem: AgreementTarget,

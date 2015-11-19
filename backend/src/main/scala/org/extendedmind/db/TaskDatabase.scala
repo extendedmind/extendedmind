@@ -35,6 +35,7 @@ import scala.collection.mutable.ListBuffer
 import org.neo4j.graphdb.Relationship
 import java.time.temporal.ChronoUnit
 import org.extendedmind.security.SecurityContext
+import org.extendedmind.security.UUIDUtils
 
 trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
 
@@ -185,20 +186,25 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
 
   protected def addTransientTaskProperties(taskNode: Node, owner: Owner, task: Task)(implicit neo4j: DatabaseService): Response[Task] = {
     for {
-      parent <- Right(getItemRelationship(taskNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.LIST)).right
-      origin <- Right(getItemRelationship(taskNode, owner, ItemRelationship.HAS_ORIGIN, ItemLabel.TASK)).right
+      parentRel <- Right(getItemRelationship(taskNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.LIST)).right
+      originRel <- Right(getItemRelationship(taskNode, owner, ItemRelationship.HAS_ORIGIN, ItemLabel.TASK)).right
+      assigneeRel <- Right(getAssigneeRelationship(taskNode)).right
       tags <- getTagRelationships(taskNode, owner).right
       reminderNodes <- Right(getReminderNodes(taskNode)).right
       reminders <- getReminders(reminderNodes).right
       task <- Right(task.copy(
         reminders = reminders,
         relationships =
-          (if (parent.isDefined || origin.isDefined || tags.isDefined )
+          (if (parentRel.isDefined || originRel.isDefined || assigneeRel.isDefined || tags.isDefined )
             Some(ExtendedItemRelationships(
-              parent = (if (parent.isEmpty) None else (Some(getUUID(parent.get.getEndNode())))),
-              origin = (if (origin.isEmpty) None else (Some(getUUID(origin.get.getEndNode())))),
-              assignee = None, // TODO
-              tags = (if (tags.isEmpty) None else (Some(getEndNodeUUIDList(tags.get))))))
+              parent = parentRel.flatMap(parentRel => Some(getUUID(parentRel.getEndNode()))),
+              origin = originRel.flatMap(originRel => Some(getUUID(originRel.getEndNode()))),
+              assignee = assigneeRel.flatMap(assigneeRel => {
+                if (owner.foreignOwnerUUID.isEmpty && getUUID(assigneeRel.getStartNode) == owner.userUUID) None
+                else Some(getUUID(assigneeRel.getStartNode))
+              }),
+              assigner = assigneeRel.flatMap(assigneeRel => Some(UUIDUtils.getUUID(assigneeRel.getProperty("assigner").asInstanceOf[String]))),
+              tags = tags.flatMap(tags => Some(getEndNodeUUIDList(tags)))))
            else None
           ))).right
     } yield task
@@ -225,9 +231,9 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
   protected def markTaskNodeComplete(owner: Owner, taskNode: Node)(implicit neo4j: DatabaseService): Response[Long] = {
     withTx {
       implicit neo4j =>
-  	    val currentTime = System.currentTimeMillis()
-  	    taskNode.setProperty("completed", currentTime)
-  	    Right(currentTime)
+        val currentTime = System.currentTimeMillis()
+        taskNode.setProperty("completed", currentTime)
+        Right(currentTime)
     }
   }
 
@@ -238,32 +244,32 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
           // Generate new task on complete if a new task has not already been created
           val originRelationshipResponse = getItemRelationship(taskNode, owner, ItemRelationship.HAS_ORIGIN, ItemLabel.TASK, Direction.INCOMING)
           if (originRelationshipResponse.isEmpty){
-	          // First, get new due string
-	          val repeatingType = RepeatingType.withName(taskNode.getProperty("repeating").asInstanceOf[String])
-	          val oldDue: java.util.Calendar = java.util.Calendar.getInstance();
+            // First, get new due string
+            val repeatingType = RepeatingType.withName(taskNode.getProperty("repeating").asInstanceOf[String])
+            val oldDue: java.util.Calendar = java.util.Calendar.getInstance();
 
             Validators.dateFormat.parse(taskNode.getProperty("due").asInstanceOf[String])
 
             val dueDate = java.time.LocalDate.parse(taskNode.getProperty("due").asInstanceOf[String], Validators.dateFormat)
-	          val newDue = repeatingType match {
-	            case RepeatingType.DAILY => dueDate.plus(1, ChronoUnit.DAYS)
-	            case RepeatingType.WEEKLY => dueDate.plus(7, ChronoUnit.DAYS)
-	            case RepeatingType.BIWEEKLY => dueDate.plus(14, ChronoUnit.DAYS)
-	            case RepeatingType.MONTHLY => dueDate.plus(1, ChronoUnit.MONTHS)
-	            case RepeatingType.BIMONTHLY => dueDate.plus(2, ChronoUnit.MONTHS)
-	            case RepeatingType.YEARLY => dueDate.plus(1, ChronoUnit.YEARS)
-	          }
-	          val newDueString = Validators.dateFormat.format(newDue)
+            val newDue = repeatingType match {
+              case RepeatingType.DAILY => dueDate.plus(1, ChronoUnit.DAYS)
+              case RepeatingType.WEEKLY => dueDate.plus(7, ChronoUnit.DAYS)
+              case RepeatingType.BIWEEKLY => dueDate.plus(14, ChronoUnit.DAYS)
+              case RepeatingType.MONTHLY => dueDate.plus(1, ChronoUnit.MONTHS)
+              case RepeatingType.BIMONTHLY => dueDate.plus(2, ChronoUnit.MONTHS)
+              case RepeatingType.YEARLY => dueDate.plus(1, ChronoUnit.YEARS)
+            }
+            val newDueString = Validators.dateFormat.format(newDue)
 
-	          // Second, duplicate old task
-	          val oldTask = for {
-	            task <- toCaseClass[Task](taskNode).right
-	            completeTask <- addTransientTaskProperties(taskNode, owner, task).right
-	          } yield completeTask
-	          if (oldTask.isLeft) Left(oldTask.left.get)
-	          else {
-	            Right(Some(oldTask.right.get.copy(uuid = None, modified = None, due = Some(newDueString))))
-	          }
+            // Second, duplicate old task
+            val oldTask = for {
+              task <- toCaseClass[Task](taskNode).right
+              completeTask <- addTransientTaskProperties(taskNode, owner, task).right
+            } yield completeTask
+            if (oldTask.isLeft) Left(oldTask.left.get)
+            else {
+              Right(Some(oldTask.right.get.copy(uuid = None, modified = None, due = Some(newDueString))))
+            }
           }
           else{
             // A new task has already been created

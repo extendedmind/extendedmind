@@ -33,6 +33,7 @@ import org.neo4j.kernel.Traversal
 import org.neo4j.scala.DatabaseService
 import scala.collection.mutable.ListBuffer
 import org.neo4j.graphdb.traversal.Evaluation
+import org.extendedmind.security.UUIDUtils
 
 trait ListDatabase extends UserDatabase with TagDatabase {
 
@@ -137,17 +138,22 @@ trait ListDatabase extends UserDatabase with TagDatabase {
 
   protected def addTransientListProperties(listNode: Node, owner: Owner, list: List)(implicit neo4j: DatabaseService): Response[List] = {
     for {
-      parentRelatioship <- Right(getItemRelationship(listNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.LIST)).right
+      parentRel <- Right(getItemRelationship(listNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.LIST)).right
+      assigneeRel <- Right(getAssigneeRelationship(listNode)).right
       tags <- getTagRelationships(listNode, owner).right
       agreementInfos <- getListAgreementInformations(owner, listNode).right
       task <- Right(list.copy(
         relationships =
-          (if (parentRelatioship.isDefined || tags.isDefined)
+          (if (parentRel.isDefined || assigneeRel.isDefined || tags.isDefined)
             Some(ExtendedItemRelationships(
-            parent = (if (parentRelatioship.isEmpty) None else (Some(getUUID(parentRelatioship.get.getEndNode())))),
-            None,
-            None,
-            tags = (if (tags.isEmpty) None else (Some(getEndNodeUUIDList(tags.get))))))
+              parent = parentRel.flatMap(parentRel => Some(getUUID(parentRel.getEndNode))),
+              origin = None,
+              assignee = assigneeRel.flatMap(assigneeRel => {
+                if (owner.foreignOwnerUUID.isEmpty && getUUID(assigneeRel.getStartNode) == owner.userUUID) None
+                else Some(getUUID(assigneeRel.getStartNode))
+              }),
+              assigner = assigneeRel.flatMap(assigneeRel => Some(UUIDUtils.getUUID(assigneeRel.getProperty("assigner").asInstanceOf[String]))),
+              tags = tags.flatMap(tags => Some(getEndNodeUUIDList(tags)))))
           else None),
         visibility = {
           val listVisibilityResult = getListVisibility(agreementInfos, owner)

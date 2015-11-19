@@ -170,7 +170,8 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
   protected def addTransientNoteProperties(noteNode: Node, owner: Owner, note: Note, tagRelationships: Option[Option[scala.List[Relationship]]], skipParent: Boolean)
                 (implicit neo4j: DatabaseService): Response[Note] = {
     for {
-      parent <- Right(if (skipParent) None else getItemRelationship(noteNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.LIST)).right
+      parentRel <- Right(if (skipParent) None else getItemRelationship(noteNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.LIST)).right
+      assigneeRel <- Right(getAssigneeRelationship(noteNode)).right
       tags <- (if (tagRelationships.isDefined) Right(tagRelationships.get)
               else getTagRelationships(noteNode, owner)).right
       note <- Right(note.copy(
@@ -183,12 +184,16 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
                  None))
            else None),
         relationships =
-          (if (parent.isDefined || tags.isDefined)
+          (if (parentRel.isDefined || assigneeRel.isDefined || tags.isDefined)
             Some(ExtendedItemRelationships(
-              parent = (if (parent.isEmpty) None else (Some(getUUID(parent.get.getEndNode())))),
-              None,
-              None,
-              tags = (if (tags.isEmpty) None else (Some(getEndNodeUUIDList(tags.get))))))
+              parent = parentRel.flatMap(parentRel => Some(getUUID(parentRel.getEndNode))),
+              origin = None,
+              assignee = assigneeRel.flatMap(assigneeRel => {
+                if (owner.foreignOwnerUUID.isEmpty && getUUID(assigneeRel.getStartNode) == owner.userUUID) None
+                else Some(getUUID(assigneeRel.getStartNode))
+              }),
+              assigner = assigneeRel.flatMap(assigneeRel => Some(UUIDUtils.getUUID(assigneeRel.getProperty("assigner").asInstanceOf[String]))),
+              tags = tags.flatMap(tags => Some(getEndNodeUUIDList(tags)))))
            else None
           ))).right
     } yield note
@@ -207,6 +212,8 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
               Some(ItemLabel.NOTE), None, None, note.modified).right
           archived <- setParentNode(noteNode, owner, note.parent, skipParentHistoryTag=false).right
           tagNodes <- setTagNodes(noteNode, owner, note).right
+          ownerNodes <- getOwnerNodes(owner).right
+          result <- setAssigneeRelationship(noteNode, ownerNodes, note).right
         } yield (noteNode, archived)
     }
   }

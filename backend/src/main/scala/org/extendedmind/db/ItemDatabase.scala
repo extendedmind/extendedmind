@@ -214,26 +214,38 @@ trait ItemDatabase extends UserDatabase {
     val noteBuffer = new ListBuffer[Note]
     val listBuffer = new ListBuffer[List]
     val tagBuffer = new ListBuffer[Tag]
+    val assignedNotesBuffer = new ListBuffer[(UUID, Note)]
+    val assignedTasksBuffer = new ListBuffer[(UUID, Task)]
+    val assignedListsBuffer = new ListBuffer[(UUID, List)]
 
-    itemNodes foreach (itemNode =>
+    itemNodes foreach (itemNode => {
+      val ownerNode = getItemOwnerNode(itemNode)
+      if (ownerNode.isEmpty)
+        return fail(INTERNAL_SERVER_ERROR, ERR_ITEM_NO_OWNER, "Item " + getUUID(itemNode) + " does not have an owner")
+      val itemOwnerUUID = getUUID(ownerNode.get)
+      val ownerUUID = getOwnerUUID(owner)
+
       if (itemNode.hasLabel(ItemLabel.NOTE)) {
         val note = toNote(itemNode, owner)
         if (note.isLeft) {
           return fail(INTERNAL_SERVER_ERROR, ERR_ITEM_TO_NOTE, note.left.get.toString)
         }
-        noteBuffer.append(note.right.get)
+        if (ownerUUID == itemOwnerUUID) noteBuffer.append(note.right.get)
+        else assignedNotesBuffer.append((itemOwnerUUID, note.right.get))
       } else if (itemNode.hasLabel(ItemLabel.TASK)) {
         val task = toTask(itemNode, owner)
         if (task.isLeft) {
           return fail(INTERNAL_SERVER_ERROR, ERR_ITEM_TO_TASK, task.left.get.toString)
         }
-        taskBuffer.append(task.right.get)
+        if (ownerUUID == itemOwnerUUID) taskBuffer.append(task.right.get)
+        else assignedTasksBuffer.append((itemOwnerUUID, task.right.get))
       } else if (itemNode.hasLabel(ItemLabel.LIST)) {
         val list = toList(itemNode, owner)
         if (list.isLeft) {
           return fail(INTERNAL_SERVER_ERROR, ERR_ITEM_TO_LIST, list.left.get.toString)
         }
-        listBuffer.append(list.right.get)
+        if (ownerUUID == itemOwnerUUID) listBuffer.append(list.right.get)
+        else assignedListsBuffer.append((itemOwnerUUID, list.right.get))
       } else if (itemNode.hasLabel(ItemLabel.TAG)) {
         val tag = toTag(itemNode, owner)
         if (tag.isLeft) {
@@ -253,14 +265,49 @@ trait ItemDatabase extends UserDatabase {
         }
         log.warning("Owner " + getOwnerUUID(owner) + " has node " + itemNode.getId() + " with labels " + labels +
           " that was found in the items index")
-      })
+      }
+    })
+
+    // Get assigned items to separate array
+
+    val assignedItems: Option[scala.List[AssignedItems]] = {
+      if (!assignedNotesBuffer.isEmpty || !assignedListsBuffer.isEmpty || !assignedTasksBuffer.isEmpty){
+        val collectiveUUIDBuffer = new ListBuffer[UUID]
+        assignedNotesBuffer.foreach(assignedNote =>
+          if (!collectiveUUIDBuffer.contains(assignedNote._1))
+            collectiveUUIDBuffer.append(assignedNote._1))
+        assignedListsBuffer.foreach(assignedList =>
+          if (!collectiveUUIDBuffer.contains(assignedList._1))
+            collectiveUUIDBuffer.append(assignedList._1))
+        assignedTasksBuffer.foreach(assignedTask =>
+          if (!collectiveUUIDBuffer.contains(assignedTask._1))
+            collectiveUUIDBuffer.append(assignedTask._1))
+        if (collectiveUUIDBuffer.isEmpty) None
+        else{
+          Some(collectiveUUIDBuffer.toList.map(collectiveUUID => {
+            val tasksAssignedToCollective = assignedTasksBuffer.filter(assignedTask => assignedTask._1 == collectiveUUID)
+            val notesAssignedToCollective = assignedNotesBuffer.filter(assignedNote => assignedNote._1 == collectiveUUID)
+            val listsAssignedToCollective = assignedListsBuffer.filter(assignedList => assignedList._1 == collectiveUUID)
+            AssignedItems(
+              collectiveUUID,
+              if (tasksAssignedToCollective.isEmpty) None else Some(tasksAssignedToCollective.toList.map(assigned => assigned._2)),
+              if (notesAssignedToCollective.isEmpty) None else Some(notesAssignedToCollective.toList.map(assigned => assigned._2)),
+              if (listsAssignedToCollective.isEmpty) None else Some(listsAssignedToCollective.toList.map(assigned => assigned._2))
+            )
+          }))
+        }
+      }else{
+        None
+      }
+    }
 
     Right(Items(
       if (itemBuffer.isEmpty) None else Some(itemBuffer.toList),
       if (taskBuffer.isEmpty) None else Some(taskBuffer.toList),
       if (noteBuffer.isEmpty) None else Some(noteBuffer.toList),
       if (listBuffer.isEmpty) None else Some(listBuffer.toList),
-      if (tagBuffer.isEmpty) None else Some(tagBuffer.toList)))
+      if (tagBuffer.isEmpty) None else Some(tagBuffer.toList),
+      assignedItems))
   }
 
   // Methods for converting tasks and nodes
@@ -275,23 +322,26 @@ trait ItemDatabase extends UserDatabase {
     val itemsIndex = neo4j.gds.index().forNodes("items")
 
     val itemNodeList = {
-      val ownerQuery = new TermQuery(new Term("owner", UUIDUtils.getTrimmedBase64UUIDForLucene(ownerUUID)))
-      val assigneeQuery = new TermQuery(new Term("assignee", UUIDUtils.getTrimmedBase64UUIDForLucene(ownerUUID)))
-      val userQuery = new BooleanQuery;
-      userQuery.add(ownerQuery, BooleanClause.Occur.SHOULD);
-      userQuery.add(assigneeQuery, BooleanClause.Occur.SHOULD);
+      val ownerSearchString = UUIDUtils.getTrimmedBase64UUIDForLucene(ownerUUID)
       if (modified.isDefined) {
+        val ownerQuery = new TermQuery(new Term("owner", UUIDUtils.getTrimmedBase64UUIDForLucene(ownerUUID)))
+        val assigneeQuery = new TermQuery(new Term("assignee", UUIDUtils.getTrimmedBase64UUIDForLucene(ownerUUID)))
+        val userQuery = new BooleanQuery;
+        userQuery.add(ownerQuery, BooleanClause.Occur.SHOULD);
+        userQuery.add(assigneeQuery, BooleanClause.Occur.SHOULD);
         val modifiedRangeQuery = NumericRangeQuery.newLongRange("modified", 8, modified.get, null, false, false)
         val userModifiedQuery = new BooleanQuery;
         userModifiedQuery.add(modifiedRangeQuery, BooleanClause.Occur.MUST);
         userModifiedQuery.add(userQuery, BooleanClause.Occur.MUST);
+        println(userModifiedQuery);
         itemsIndex.query(userModifiedQuery).toList
       } else {
-        itemsIndex.query(new BooleanClause(userQuery, BooleanClause.Occur.MUST)).toList
+        val userQuery = "(owner:" + ownerSearchString + " OR assignee:" + ownerSearchString + ")"
+        itemsIndex.query(userQuery).toList
       }
     }
 
-    if (!itemNodeList.isEmpty && (!active || !deleted || !archived || !completed)) {
+    if (!itemNodeList.isEmpty && (!active || !deleted || !archived || !completed || publicOnly)) {
       // Filter out active, deleted, archived and/or completed
       Right(itemNodeList filter (itemNode => {
         var include = true
@@ -425,6 +475,8 @@ trait ItemDatabase extends UserDatabase {
           itemNode <- updateItem(owner, itemUUID, extItem, Some(label), None, None, extItem.modified).right
           archived <- setParentNode(itemNode, owner, extItem.parent, skipParentHistoryTag).right
           tagNodes <- setTagNodes(itemNode, owner, extItem).right
+          ownerNodes <- getOwnerNodes(owner).right
+          result <- setAssigneeRelationship(itemNode, ownerNodes, extItem).right
         } yield (itemNode, archived)
     }
   }
@@ -436,6 +488,8 @@ trait ItemDatabase extends UserDatabase {
           itemNode <- createItem(owner, extItem, Some(label), subLabel).right
           archived <- setParentNode(itemNode, owner, extItem.parent, skipParentHistoryTag).right
           tagNodes <- setTagNodes(itemNode, owner, extItem).right
+          ownerNodes <- getOwnerNodes(owner).right
+          result <- setAssigneeRelationship(itemNode, ownerNodes, extItem).right
         } yield (itemNode, archived)
     }
   }
@@ -711,6 +765,74 @@ trait ItemDatabase extends UserDatabase {
     }
   }
 
+  protected def setAssigneeRelationship(itemNode: Node, ownerNodes: OwnerNodes, extItem: ExtendedItem)(implicit neo4j: DatabaseService): Response[Unit] = {
+    if (extItem.relationships.isEmpty || extItem.relationships.get.assignee.isEmpty){
+      val assigneeRelationship = getAssigneeRelationship(itemNode)
+      if (assigneeRelationship.isDefined){
+        removeAssigneeRelationship(itemNode, assigneeRelationship.get)
+      }
+      Right()
+    }else{
+      setAssigneeRelationshipNode(itemNode, ownerNodes, extItem.relationships.get.assignee.get)
+    }
+  }
+
+  private def removeAssigneeRelationship(itemNode: Node, assigneeRelationship: Relationship)(implicit neo4j: DatabaseService) {
+    val itemsIndex = neo4j.gds.index().forNodes("items")
+    assigneeRelationship.delete()
+    itemsIndex.remove(itemNode, "assignee")
+  }
+
+  private def setAssigneeRelationshipNode(itemNode: Node, ownerNodes: OwnerNodes, assigneeUUID: UUID)(implicit neo4j: DatabaseService): Response[Unit] = {
+    if (ownerNodes.foreignOwner.isDefined && ownerNodes.foreignOwner.get.hasLabel(OwnerLabel.COLLECTIVE)){
+      // Is a collective, assign relationship can be created
+      val existingAssigneeRelationship = getAssigneeRelationship(itemNode)
+      if (existingAssigneeRelationship.isDefined &&
+          getUUID(existingAssigneeRelationship.get.getStartNode) == assigneeUUID){
+        // This item is already assigned to this uuid, just return
+        Right()
+      }else{
+        incomingSharingTraversalDescription.traverse(ownerNodes.foreignOwner.get).relationships.toList.find(relationship => {
+          getUUID(relationship.getStartNode()) == assigneeUUID &&
+          relationship.getType().name() != SecurityRelationship.CAN_READ.relationshipName
+        }).fold(
+          fail(INVALID_PARAMETER, ERR_ITEM_ASSIGNEE_NO_ACCESS, "Assignee " + assigneeUUID + " does not have read/write access to collective")
+        )(readWriteRelationship =>{
+          val relationship = readWriteRelationship.getStartNode --> ItemRelationship.IS_ASSIGNED_TO --> itemNode <;
+          // Store the assigner uuid as a property in the relationship
+          relationship.setProperty("assigner", ownerNodes.user.getProperty("uuid"))
+          val itemsIndex = neo4j.gds.index().forNodes("items")
+          if (existingAssigneeRelationship.isDefined){
+            removeAssigneeRelationship(itemNode, existingAssigneeRelationship.get)
+          }
+
+println("ADDING " + UUIDUtils.getTrimmedBase64UUIDForLucene(getUUID(readWriteRelationship.getStartNode)))
+
+          itemsIndex.add(itemNode, "assignee",
+              UUIDUtils.getTrimmedBase64UUIDForLucene(getUUID(readWriteRelationship.getStartNode)))
+          return Right()
+        })
+      }
+    }else{
+      fail(INVALID_PARAMETER, ERR_ITEM_NOT_ASSIGNABLE, "Only items in collectives can be assigned")
+    }
+  }
+
+  protected def getAssigneeRelationship(itemNode: Node): Option[Relationship] = {
+    itemNode.getRelationships.toList.find(relationship => {
+      relationship.getType().name == ItemRelationship.IS_ASSIGNED_TO.name
+    })
+  }
+
+  protected def getItemOwnerNode(itemNode: Node): Option[Node] = {
+    val iterator = itemNode.getRelationships.iterator()
+    while(iterator.hasNext()){
+      val relationship = iterator.next()
+      if (relationship.getType().name == SecurityRelationship.OWNS.name) return Some(relationship.getStartNode)
+    }
+    None
+  }
+
   protected def getTagNodes(tagUUIDList: scala.List[UUID], ownerNodes: OwnerNodes, acceptDeleted: Boolean = false, skipLabel: Option[Label] = None)(implicit neo4j: DatabaseService): Response[scala.List[Node]] = {
     val tagNodes = getNodes(tagUUIDList, ItemLabel.TAG, acceptDeleted, skipLabel)
     if (tagNodes.isRight) {
@@ -876,7 +998,8 @@ trait ItemDatabase extends UserDatabase {
           accessRight <-
           (if (owner.isLimitedAccess) Right(getSharedListAccessRight(owner.sharedLists.get,
               if (parentRelationship.isDefined){
-                Some(ExtendedItemRelationships(Some(getUUID(parentRelationship.get.getEndNode)), None, None, None))
+                Some(ExtendedItemRelationships(
+                  Some(getUUID(parentRelationship.get.getEndNode)), None, None, None, None))
               }else{
                 None
               }))
@@ -1071,13 +1194,13 @@ trait ItemDatabase extends UserDatabase {
   protected def toPublicItems(ownerNode: Node, itemNodes: Iterable[Node], modified: Option[Long])(implicit neo4j: DatabaseService): Response[PublicItems] = {
     val noteBuffer = new ListBuffer[Note]
     val tagBuffer = new ListBuffer[Tag]
+    val assigneeBuffer = new ListBuffer[Assignee]
     val unpublishedBuffer = new ListBuffer[UUID]
     val displayOwner = getDisplayOwner(ownerNode)
     itemNodes foreach (itemNode => {
       if (itemNode.hasProperty("unpublished") || itemNode.hasProperty("deleted")){
         unpublishedBuffer.append(getUUID(itemNode))
-      }else if (!itemNode.hasProperty("draft")){
-        // public items returns only non-drafts
+      }else if (!itemNode.hasProperty("draft")){ // public items returns only non-drafts
         val publicItemResult = toPublicItem(ownerNode, itemNode, displayOwner)
         if (publicItemResult.isLeft){
           return Left(publicItemResult.left.get)
@@ -1089,6 +1212,11 @@ trait ItemDatabase extends UserDatabase {
                 tagBuffer.append(tag)
               }
             })
+          }
+          if (publicItemResult.right.get.assignee.isDefined){
+            if (assigneeBuffer.find(existingAssignee => existingAssignee.uuid.toString == publicItemResult.right.get.assignee.get.uuid.toString).isEmpty){
+              assigneeBuffer.append(publicItemResult.right.get.assignee.get)
+            }
           }
         }
       }
@@ -1112,6 +1240,7 @@ trait ItemDatabase extends UserDatabase {
                 if (modified.isEmpty || ownerPublicModified > modified.get) Some(ownerPublicModified) else None,
                 if (noteBuffer.isEmpty) None else Some(noteBuffer.toList),
                 if (tagBuffer.isEmpty) None else Some(tagBuffer.toList),
+                if (assigneeBuffer.isEmpty) None else Some(assigneeBuffer.toList),
                 if (unpublishedBuffer.isEmpty) None else Some(unpublishedBuffer.toList)))
   }
 
@@ -1122,16 +1251,19 @@ trait ItemDatabase extends UserDatabase {
         tagRels <- getTagRelationships(itemNode, owner).right
         note <- toNote(itemNode, owner, tagRelationships=Some(tagRels), skipParent=true).right
         tags <- getTagsWithParents(tagRels, owner).right
-      } yield PublicItem(displayOwner, note.copy(archived=None, favorited=None), tags)
+        assignee <- Right(getAssignee(itemNode)).right
+      } yield PublicItem(displayOwner, note.copy(archived=None, favorited=None), tags, assignee)
     }else{
       fail(INTERNAL_SERVER_ERROR, ERR_ITEM_NOT_NOTE, "Public item not note")
     }
   }
 
-  private def getDisplayOwner(ownerNode: Node)(implicit neo4j: DatabaseService): String = {
-    if (ownerNode.hasProperty("displayName")) ownerNode.getProperty("displayName").asInstanceOf[String]
-    else if (ownerNode.hasProperty("title")) ownerNode.getProperty("title").asInstanceOf[String]
-    else ownerNode.getProperty("email").asInstanceOf[String]
+  private def getAssignee(itemNode: Node)(implicit neo4j: DatabaseService): Option[Assignee] = {
+    itemNode.getRelationships.toList.find(relationship => {
+      relationship.getType().name == ItemRelationship.IS_ASSIGNED_TO.name
+    }).flatMap(assigneeRelationship =>
+      Some(Assignee(getUUID(assigneeRelationship.getEndNode), getDisplayOwner(assigneeRelationship.getEndNode)))
+    )
   }
 
   protected def getTagsWithParents(tagRels: Option[scala.List[Relationship]], owner: Owner)

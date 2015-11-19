@@ -27,7 +27,8 @@ case class Collective(uuid: Option[UUID], created: Option[Long], modified: Optio
                 displayName: Option[String], handle: Option[String],
                 content: Option[String], format: Option[String],
                 inboxId: Option[String], apiKey: Option[String],
-                creator: Option[UUID], common: Option[Boolean])
+                creator: Option[UUID], common: Option[Boolean],
+                access: Option[scala.List[(UUID, String, Byte)]])
            extends Container {
   require(validateTitle(title), "Title can not be more than " + TITLE_MAX_LENGTH + " characters")
   if (description.isDefined) require(validateDescription(description.get),
@@ -52,5 +53,5 @@ case class Collective(uuid: Option[UUID], created: Option[Long], modified: Optio
 
 object Collective{
   def apply(title: String, description: Option[String], displayName: Option[String], handle: Option[String], content: Option[String], format: Option[String])
-        = new Collective(None, None, None, None, title, description, displayName, handle, content, format, None, None, None, None)
+        = new Collective(None, None, None, None, title, description, displayName, handle, content, format, None, None, None, None, None)
 }

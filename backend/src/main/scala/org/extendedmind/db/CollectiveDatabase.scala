@@ -61,7 +61,8 @@ trait CollectiveDatabase extends UserDatabase {
         for {
           collectiveNode <- getNode(collectiveUUID, OwnerLabel.COLLECTIVE).right
           collective <- toCaseClass[Collective](collectiveNode).right
-        } yield collective
+          completeCollective <- addTransientCollectiveProperties(collectiveNode, collective).right
+        } yield completeCollective
     }
   }
 
@@ -244,4 +245,18 @@ trait CollectiveDatabase extends UserDatabase {
       }
     }
   }
+
+  protected def addTransientCollectiveProperties(collectiveNode: Node, collective: Collective)(implicit neo4j: DatabaseService): Response[Collective] = {
+    val usersFromCollective: TraversalDescription = incomingSharingTraversalDescription
+    val traverser = usersFromCollective.traverse(collectiveNode)
+    val collectiveAccessRelationships = usersFromCollective.traverse(collectiveNode).relationships().toList
+    val collectiveAccessList = getAccessForCollective(collectiveAccessRelationships)
+
+    if (collectiveAccessList.isEmpty || collectiveAccessList.get.length == 0) {
+      fail(INTERNAL_SERVER_ERROR, ERR_COLLECTIVE_NO_FOUNDER, "Collective " + getUUID(collectiveNode) + " has no founder and no access list")
+    } else {
+      Right(collective.copy(access = collectiveAccessList))
+    }
+  }
+
 }

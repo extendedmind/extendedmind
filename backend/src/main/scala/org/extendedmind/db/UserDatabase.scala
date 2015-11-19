@@ -36,6 +36,7 @@ import scala.collection.mutable.ListBuffer
 import org.neo4j.graphdb.Relationship
 import spray.util.LoggingContext
 import scala.collection.mutable.HashMap
+import org.neo4j.graphdb.traversal.Evaluation
 
 trait UserDatabase extends AbstractGraphDatabase {
 
@@ -777,6 +778,20 @@ trait UserDatabase extends AbstractGraphDatabase {
           .evaluator(Evaluators.toDepth(1))
   }
 
+  protected def incomingSharingTraversalDescription(implicit neo4j: DatabaseService): TraversalDescription = {
+    neo4j.gds.traversalDescription()
+          .relationships(DynamicRelationshipType.withName(SecurityRelationship.IS_FOUNDER.name), Direction.INCOMING)
+          .relationships(DynamicRelationshipType.withName(SecurityRelationship.CAN_READ.name), Direction.INCOMING)
+          .relationships(DynamicRelationshipType.withName(SecurityRelationship.CAN_READ_WRITE.name), Direction.INCOMING)
+          .depthFirst()
+          .evaluator(Evaluators.excludeStartPosition())
+          .evaluator(Evaluators.toDepth(1))
+          .evaluator(PropertyEvaluator(
+            OwnerLabel.USER, "deleted",
+            foundEvaluation=Evaluation.EXCLUDE_AND_PRUNE,
+            notFoundEvaluation=Evaluation.INCLUDE_AND_CONTINUE))
+  }
+
   protected def getCollectiveAccess(relationshipList: scala.List[Relationship]): Option[Map[UUID,(String, Byte, Boolean, Option[String])]] = {
     if (relationshipList.isEmpty) None
     else{
@@ -851,6 +866,29 @@ trait UserDatabase extends AbstractGraphDatabase {
         val resultingMap = immutableMainMap.map(kv => (kv._1,(kv._2._1, kv._2._2.toMap))).toMap
         Some(resultingMap)
       }
+    }
+  }
+
+  protected def getAccessForCollective(relationshipList: scala.List[Relationship])(implicit neo4j: DatabaseService): Option[scala.List[(UUID, String, Byte)]] = {
+    if (relationshipList.isEmpty) None
+    else{
+      val userAccessMap = new ListBuffer[(UUID, String, Byte)]
+      relationshipList foreach (relationship => {
+        val userNode = relationship.getStartNode()
+        val displayName = getDisplayOwner(userNode)
+        val userUUID = getUUID(userNode)
+        relationship.getType().name() match {
+          case SecurityRelationship.IS_FOUNDER.relationshipName =>
+            userAccessMap.append((userUUID, displayName, SecurityContext.FOUNDER))
+          case SecurityRelationship.CAN_READ.relationshipName => {
+            userAccessMap.append((userUUID, displayName, SecurityContext.READ))
+          }
+          case SecurityRelationship.CAN_READ_WRITE.relationshipName => {
+            userAccessMap.append((userUUID, displayName, SecurityContext.READ_WRITE))
+          }
+        }
+      })
+      Some(userAccessMap.toList)
     }
   }
 
@@ -1087,6 +1125,12 @@ trait UserDatabase extends AbstractGraphDatabase {
     } else{
       Left(validateResult.left.get)
     }
+  }
+
+  protected def getDisplayOwner(ownerNode: Node)(implicit neo4j: DatabaseService): String = {
+    if (ownerNode.hasProperty("displayName")) ownerNode.getProperty("displayName").asInstanceOf[String]
+    else if (ownerNode.hasProperty("title")) ownerNode.getProperty("title").asInstanceOf[String]
+    else ownerNode.getProperty("email").asInstanceOf[String]
   }
 
 }

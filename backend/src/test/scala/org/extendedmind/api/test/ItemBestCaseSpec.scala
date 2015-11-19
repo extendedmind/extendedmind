@@ -276,7 +276,4 @@ class ItemBestCaseSpec extends ServiceSpecBase {
       }
     }
   }
-  private def isEmptyItems(items: Items): Boolean = {
-    return items.items.isEmpty && items.tasks.isEmpty && items.notes.isEmpty && items.lists.isEmpty && items.tags.isEmpty
-  }
 }
