@@ -333,7 +333,6 @@ trait ItemDatabase extends UserDatabase {
         val userModifiedQuery = new BooleanQuery;
         userModifiedQuery.add(modifiedRangeQuery, BooleanClause.Occur.MUST);
         userModifiedQuery.add(userQuery, BooleanClause.Occur.MUST);
-        println(userModifiedQuery);
         itemsIndex.query(userModifiedQuery).toList
       } else {
         val userQuery = "(owner:" + ownerSearchString + " OR assignee:" + ownerSearchString + ")"
@@ -805,9 +804,6 @@ trait ItemDatabase extends UserDatabase {
           if (existingAssigneeRelationship.isDefined){
             removeAssigneeRelationship(itemNode, existingAssigneeRelationship.get)
           }
-
-println("ADDING " + UUIDUtils.getTrimmedBase64UUIDForLucene(getUUID(readWriteRelationship.getStartNode)))
-
           itemsIndex.add(itemNode, "assignee",
               UUIDUtils.getTrimmedBase64UUIDForLucene(getUUID(readWriteRelationship.getStartNode)))
           return Right()

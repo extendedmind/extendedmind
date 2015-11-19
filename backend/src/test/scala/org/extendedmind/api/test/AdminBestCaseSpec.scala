@@ -120,7 +120,6 @@ class AdminBestCaseSpec extends ServiceSpecBase {
                   }
                 Get("/collective/" + putCollectiveResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", reauthenticateResponse.token.get)) ~> route ~> check {
                   val modifiedCollectiveResponse = responseAs[Collective]
-                  println(modifiedCollectiveResponse.access.get)
                   modifiedCollectiveResponse.access.get.length should be (2)
                   modifiedCollectiveResponse.access.get.find(access => {
                     access._2 =="timo@ext.md" &&
