@@ -60,8 +60,7 @@ trait ListActions {
 
   def archiveList(owner: Owner, listUUID: UUID, payload: Option[ArchivePayload])(implicit log: LoggingAdapter): Response[ArchiveListResult] = {
     log.info("archiveList")
-    if (!owner.hasPremium) fail(INVALID_PARAMETER, ERR_LIST_ARCHIVE_NOT_PREMIUM, "List archiving requires premium subscription")
-    else db.archiveList(owner, listUUID, if(payload.isDefined) Some(payload.get.parent) else None)
+    db.archiveList(owner, listUUID, if(payload.isDefined) Some(payload.get.parent) else None)
   }
 
   def unarchiveList(owner: Owner, listUUID: UUID, payload: Option[ArchivePayload])(implicit log: LoggingAdapter): Response[UnarchiveListResult] = {

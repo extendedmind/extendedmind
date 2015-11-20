@@ -81,7 +81,7 @@ trait ItemDatabase extends UserDatabase {
     withTx {
       implicit neo4j =>
         for {
-          itemNode <- getItemNode(owner, itemUUID).right
+          itemNode <- getItemNode(getOwnerUUID(owner), itemUUID).right
           item <- toCaseClass[Item](itemNode).right
         } yield item
     }
@@ -397,10 +397,16 @@ trait ItemDatabase extends UserDatabase {
   }
 
   protected def getOwnerNodes(owner: Owner)(implicit neo4j: DatabaseService): Response[OwnerNodes] = {
-    for {
-      userNode <- getNode(owner.userUUID, OwnerLabel.USER).right
-      foreignOwnerNode <- getNodeOption(owner.foreignOwnerUUID, MainLabel.OWNER).right
-    } yield OwnerNodes(userNode, foreignOwnerNode)
+    if (!owner.isFakeUser){
+      for {
+        userNode <- getNode(owner.userUUID, OwnerLabel.USER).right
+        foreignOwnerNode <- getNodeOption(owner.foreignOwnerUUID, MainLabel.OWNER).right
+      } yield OwnerNodes(userNode, foreignOwnerNode)
+    }else{
+      for {
+        unspecifiedOwnerNode <- getNode(owner.userUUID, MainLabel.OWNER).right
+      } yield OwnerNodes(unspecifiedOwnerNode, None)
+    }
   }
 
   protected def createItem(ownerNodes: OwnerNodes, item: AnyRef, extraLabel: Option[Label], extraSubLabel: Option[Label])(implicit neo4j: DatabaseService): Response[Node] = {
@@ -431,7 +437,7 @@ trait ItemDatabase extends UserDatabase {
     withTx {
       implicit neo4j =>
         for {
-          itemNode <- getItemNode(owner, itemUUID, exactLabelMatch = false).right
+          itemNode <- getItemNode(getOwnerUUID(owner), itemUUID, exactLabelMatch = false).right
           itemNode <- updateItemNode(itemNode, item, additionalLabel, additionalSubLabel, additionalSubLabelAlternatives, expectedModified).right
         } yield itemNode
     }
@@ -473,61 +479,63 @@ trait ItemDatabase extends UserDatabase {
     node
   }
 
-  protected def putExistingExtendedItem(owner: Owner, itemUUID: UUID, extItem: ExtendedItem, label: Label, skipParentHistoryTag: Boolean = false): Response[(Node, Option[Long])] = {
+  protected def putExistingExtendedItem(owner: Owner, itemUUID: UUID, extItem: ExtendedItem, label: Label, skipParentHistoryTag: Boolean = false): Response[(Node, Option[Long], OwnerNodes)] = {
     withTx {
       implicit neo4j =>
         for {
           itemNode <- updateItem(owner, itemUUID, extItem, Some(label), None, None, extItem.modified).right
-          archived <- setParentNode(itemNode, owner, extItem.parent, skipParentHistoryTag).right
-          tagNodes <- setTagNodes(itemNode, owner, extItem).right
           ownerNodes <- getOwnerNodes(owner).right
+          archived <- setParentNode(itemNode, ownerNodes, extItem.parent, skipParentHistoryTag).right
+          tagNodes <- setTagNodes(itemNode, ownerNodes, extItem).right
           result <- setAssigneeRelationship(itemNode, ownerNodes, extItem).right
-        } yield (itemNode, archived)
+        } yield (itemNode, archived, ownerNodes)
     }
   }
 
-  protected def putNewExtendedItem(owner: Owner, extItem: ExtendedItem, label: Label, subLabel: Option[Label] = None, skipParentHistoryTag: Boolean = false): Response[(Node, Option[Long])] = {
+  protected def putNewExtendedItem(owner: Owner, extItem: ExtendedItem, label: Label, subLabel: Option[Label] = None, skipParentHistoryTag: Boolean = false): Response[(Node, Option[Long], OwnerNodes)] = {
     withTx {
       implicit neo4j =>
         for {
           itemNode <- createItem(owner, extItem, Some(label), subLabel).right
-          archived <- setParentNode(itemNode, owner, extItem.parent, skipParentHistoryTag).right
-          tagNodes <- setTagNodes(itemNode, owner, extItem).right
           ownerNodes <- getOwnerNodes(owner).right
+          archived <- setParentNode(itemNode, ownerNodes, extItem.parent, skipParentHistoryTag).right
+          tagNodes <- setTagNodes(itemNode, ownerNodes, extItem).right
           result <- setAssigneeRelationship(itemNode, ownerNodes, extItem).right
-        } yield (itemNode, archived)
+        } yield (itemNode, archived, ownerNodes)
     }
   }
 
-  protected def putExistingLimitedExtendedItem(owner: Owner, itemUUID: UUID, extItem: LimitedExtendedItem, label: Label): Response[(Node, Option[Long])] = {
+  protected def putExistingLimitedExtendedItem(owner: Owner, itemUUID: UUID, extItem: LimitedExtendedItem, label: Label): Response[(Node, Option[Long], OwnerNodes)] = {
     withTx {
       implicit neo4j =>
         for {
           itemNode <- updateItem(owner, itemUUID, extItem, Some(label), None, None, extItem.modified).right
-          archived <- setParentNode(itemNode, owner, extItem.parent).right
-        } yield (itemNode, archived)
+          ownerNodes <- getOwnerNodes(owner).right
+          archived <- setParentNode(itemNode, ownerNodes, extItem.parent).right
+        } yield (itemNode, archived, ownerNodes)
     }
   }
 
-  protected def putNewLimitedExtendedItem(owner: Owner, extItem: LimitedExtendedItem, label: Label): Response[(Node, Option[Long])] = {
+  protected def putNewLimitedExtendedItem(owner: Owner, extItem: LimitedExtendedItem, label: Label): Response[(Node, Option[Long], OwnerNodes)] = {
     withTx {
       implicit neo4j =>
         for {
           itemNode <- createItem(owner, extItem, Some(label)).right
-          archived <- setParentNode(itemNode, owner, extItem.parent).right
-        } yield (itemNode, archived)
+          ownerNodes <- getOwnerNodes(owner).right
+          archived <- setParentNode(itemNode, ownerNodes, extItem.parent).right
+        } yield (itemNode, archived, ownerNodes)
     }
   }
 
-  protected def setParentNode(itemNode: Node, owner: Owner, parentUUID: Option[UUID], skipParentHistoryTag: Boolean = false)(implicit neo4j: DatabaseService): Response[Option[Long]] = {
+  protected def setParentNode(itemNode: Node, ownerNodes: OwnerNodes, parentUUID: Option[UUID], skipParentHistoryTag: Boolean = false)(implicit neo4j: DatabaseService): Response[Option[Long]] = {
     for {
-      oldParentRelationship <- Right(getItemRelationship(itemNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.LIST)).right
-      archived <- setParentRelationship(itemNode, owner, parentUUID,
+      oldParentRelationship <- Right(getItemRelationship(itemNode, ownerNodes, ItemRelationship.HAS_PARENT, ItemLabel.LIST)).right
+      archived <- setParentRelationship(itemNode, ownerNodes, parentUUID,
         oldParentRelationship, ItemLabel.LIST, skipParentHistoryTag).right
     } yield archived
   }
 
-  protected def setParentRelationship(itemNode: Node, owner: Owner, parentUUID: Option[UUID], oldParentRelationship: Option[Relationship],
+  protected def setParentRelationship(itemNode: Node, ownerNodes: OwnerNodes, parentUUID: Option[UUID], oldParentRelationship: Option[Relationship],
     parentLabel: Label, skipParentHistoryTag: Boolean)(implicit neo4j: DatabaseService): Response[Option[Long]] = {
     if (parentUUID.isDefined) {
       if (oldParentRelationship.isDefined) {
@@ -539,8 +547,8 @@ trait ItemDatabase extends UserDatabase {
         }
       }
       for {
-        parentNode <- getItemNode(owner, parentUUID.get, Some(parentLabel)).right
-        archived <- createParentRelationship(itemNode, owner, parentNode, skipParentHistoryTag).right
+        parentNode <- getItemNode(getOwnerUUID(ownerNodes), parentUUID.get, Some(parentLabel)).right
+        archived <- createParentRelationship(itemNode, ownerNodes, parentNode, skipParentHistoryTag).right
       } yield archived
     } else {
       if (oldParentRelationship.isDefined) {
@@ -656,7 +664,7 @@ trait ItemDatabase extends UserDatabase {
     itemsFromTag.traverse(tagNode).nodes().toList
   }
 
-  protected def createParentRelationship(itemNode: Node, owner: Owner, parentNode: Node, skipParentHistoryTag: Boolean)(implicit neo4j: DatabaseService): Response[Option[Long]] = {
+  protected def createParentRelationship(itemNode: Node, ownerNodes: OwnerNodes, parentNode: Node, skipParentHistoryTag: Boolean)(implicit neo4j: DatabaseService): Response[Option[Long]] = {
 
     // First, make sure there isn't a infinite loop of parents, problem possible only for lists and tags
     if (itemNode.hasLabel(ItemLabel.LIST) || itemNode.hasLabel(ItemLabel.TAG)){
@@ -673,9 +681,6 @@ trait ItemDatabase extends UserDatabase {
     val relationship = itemNode --> ItemRelationship.HAS_PARENT --> parentNode <;
     // When adding a relationship to a parent list, item needs to match the archived status of the parent
     if (parentNode.hasProperty("archived")) {
-      if (!owner.hasPremium){
-        return fail(INVALID_PARAMETER, ERR_ITEM_ARCHIVE_NOT_PREMIUM, "Archive is only available for premium users")
-      }
       val archived =
         if (!itemNode.hasProperty("archived")) {
           val archived = System.currentTimeMillis
@@ -686,12 +691,12 @@ trait ItemDatabase extends UserDatabase {
         }
       // Get the history tag of the parent and add it to the child
       if (!skipParentHistoryTag){
-        val historyTagRelationship = getItemRelationship(parentNode, owner, ItemRelationship.HAS_TAG, TagLabel.HISTORY)
+        val historyTagRelationship = getItemRelationship(parentNode, ownerNodes, ItemRelationship.HAS_TAG, TagLabel.HISTORY)
         if (historyTagRelationship.isDefined) {
           val historyTagNode = historyTagRelationship.get.getEndNode()
 
           // Need to make sure the child does not already have this tag
-          val tagRelationshipsResult = getTagRelationships(itemNode, owner)
+          val tagRelationshipsResult = getTagRelationships(itemNode, ownerNodes)
           if (tagRelationshipsResult.isLeft) return Left(tagRelationshipsResult.left.get)
           if (tagRelationshipsResult.right.get.isDefined && tagRelationshipsResult.right.get.get.ownerTags.isDefined) {
             tagRelationshipsResult.right.get.get.ownerTags.get foreach (ownerTagRelationship => {
@@ -711,7 +716,7 @@ trait ItemDatabase extends UserDatabase {
     }
   }
 
-  protected def getItemRelationship(itemNode: Node, owner: Owner,
+  protected def getItemRelationship(itemNode: Node, ownerNodes: OwnerNodes,
     relationshipType: RelationshipType,
     endNodeLabel: Label,
     direction: Direction = Direction.OUTGOING)(implicit neo4j: DatabaseService): Option[Relationship] = {
@@ -727,7 +732,7 @@ trait ItemDatabase extends UserDatabase {
           foundEvaluation = Evaluation.INCLUDE_AND_CONTINUE,
           notFoundEvaluation = Evaluation.EXCLUDE_AND_PRUNE,
           length = Some(1)))
-        .evaluator(UUIDEvaluator(getOwnerUUID(owner), length = Some(2)))
+        .evaluator(UUIDEvaluator(getOwnerUUID(ownerNodes), length = Some(2)))
         .evaluator(Evaluators.toDepth(2))
         .uniqueness(Uniqueness.NODE_PATH) // We want to get the userUUID twice to be sure that we have the same owner for both paths
 
@@ -751,10 +756,9 @@ trait ItemDatabase extends UserDatabase {
     itemRelationship
   }
 
-  protected def setTagNodes(itemNode: Node, owner: Owner, extItem: ExtendedItem)(implicit neo4j: DatabaseService): Response[Option[scala.List[Relationship]]] = {
+  protected def setTagNodes(itemNode: Node, ownerNodes: OwnerNodes, extItem: ExtendedItem)(implicit neo4j: DatabaseService): Response[Option[scala.List[Relationship]]] = {
     for {
-      ownerNodes <- getOwnerNodes(owner).right
-      oldTagRelationships <- getTagRelationships(itemNode, owner).right
+      oldTagRelationships <- getTagRelationships(itemNode, ownerNodes).right
       newTagRelationships <- setTagRelationships(itemNode, ownerNodes, extItem.ownerTags, extItem.collectiveTags, oldTagRelationships).right
     } yield newTagRelationships
   }
@@ -958,7 +962,7 @@ trait ItemDatabase extends UserDatabase {
     }))
   }
 
-  protected def getTagRelationships(itemNode: Node, owner: Owner)(implicit neo4j: DatabaseService): Response[Option[TagRelationships]] = {
+  protected def getTagRelationships(itemNode: Node, ownerNodes: OwnerNodes)(implicit neo4j: DatabaseService): Response[Option[TagRelationships]] = {
     val tagNodesFromItem: TraversalDescription =
       neo4j.gds.traversalDescription()
         .depthFirst()
@@ -971,6 +975,7 @@ trait ItemDatabase extends UserDatabase {
           foundEvaluation = Evaluation.INCLUDE_AND_CONTINUE,
           notFoundEvaluation = Evaluation.EXCLUDE_AND_PRUNE,
           length = Some(1)))
+        .evaluator(UUIDEvaluator(getOwnerUUID(ownerNodes), length = Some(2)))
         .evaluator(Evaluators.toDepth(2))
         .uniqueness(Uniqueness.NODE_PATH)
 
@@ -994,7 +999,6 @@ trait ItemDatabase extends UserDatabase {
       }
       previousRelationship = relationship
     })
-
     if (ownerTagRelationshipBuffer.isEmpty && collectiveTagRelationshipBuffer.isEmpty){
       Right(None)
     }else{
@@ -1066,7 +1070,7 @@ trait ItemDatabase extends UserDatabase {
     withTx {
       implicit neo =>
         for {
-          itemNode <- getItemNode(owner, itemUUID, acceptDeleted = true).right
+          itemNode <- getItemNode(getOwnerUUID(owner), itemUUID, acceptDeleted = true).right
           deleted <- Right(deleteItem(itemNode)).right
         } yield (itemNode, deleted)
     }
@@ -1076,7 +1080,7 @@ trait ItemDatabase extends UserDatabase {
     withTx {
       implicit neo =>
         for {
-          itemNode <- getItemNode(owner, itemUUID, mandatoryLabel, acceptDeleted = true).right
+          itemNode <- getItemNode(getOwnerUUID(owner), itemUUID, mandatoryLabel, acceptDeleted = true).right
           success <- Right(undeleteItem(itemNode)).right
         } yield itemNode
     }
@@ -1086,7 +1090,7 @@ trait ItemDatabase extends UserDatabase {
     withTx {
       implicit neo4j =>
         for {
-          taskNode <- getItemNode(owner, itemUUID, Some(label), acceptDeleted = true).right
+          taskNode <- getItemNode(getOwnerUUID(owner), itemUUID, Some(label), acceptDeleted = true).right
           parentRelationship <- (if(owner.isLimitedAccess) Right(getParentRelationship(taskNode)) else Right(None)).right
           accessRight <-
           (if (owner.isLimitedAccess) Right(getSharedListAccessRight(owner.sharedLists.get,
@@ -1363,9 +1367,9 @@ trait ItemDatabase extends UserDatabase {
 
   protected def toPublicItem(ownerNode: Node, itemNode: Node, displayOwner: String)(implicit neo4j: DatabaseService): Response[PublicItem] = {
     if (itemNode.hasLabel(ItemLabel.NOTE)){
-      val owner = Owner(getUUID(ownerNode), None)
+      val owner = Owner(getUUID(ownerNode), None).copy(isFakeUser = true)
       for {
-        tagRels <- getTagRelationships(itemNode, owner).right
+        tagRels <- getTagRelationships(itemNode, OwnerNodes(ownerNode, None)).right
         note <- toNote(itemNode, owner, tagRelationships=Some(tagRels), skipParent=true).right
         tagsResult <- getTagsWithParents(tagRels, owner, noUi=true).right
         assignee <- Right(getAssignee(itemNode)).right
@@ -1578,4 +1582,46 @@ trait ItemDatabase extends UserDatabase {
     }
   }
 
+  // REVISIONS
+
+  protected def createExtendedItemRevision(itemNode: Node, ownerNodes: OwnerNodes, extItemBytes: Array[Byte])(implicit neo4j: DatabaseService): Node= {
+    val latestRevisionRel = getLatestExtendedItemRevisionRelationship(itemNode)
+    if (latestRevisionRel.isEmpty){
+      // No latest revision, make this a base revision
+      createLatestRevisionNode(itemNode, ownerNodes, extItemBytes, 1)
+    }else{
+      // Create a diff
+      val latestRevisionNode = latestRevisionRel.get.getEndNode
+      val latestRevisionNumber = latestRevisionNode.getProperty("number").asInstanceOf[Long]
+      val delta = BinaryDiff.getDelta(latestRevisionNode.getProperty("data").asInstanceOf[Array[Byte]], extItemBytes)
+      if (latestRevisionNumber > 1){
+        latestRevisionNode.setProperty("delta", delta)
+        latestRevisionNode.removeProperty("data")
+      }
+      latestRevisionRel.get.removeProperty("latest")
+      createLatestRevisionNode(itemNode, ownerNodes, extItemBytes, latestRevisionNumber + 1)
+    }
+  }
+
+  protected def createLatestRevisionNode(itemNode: Node, ownerNodes: OwnerNodes, extItemBytes: Array[Byte], revisionNumber: Long)(implicit neo4j: DatabaseService): Node = {
+    val revisionNode = createNode(MainLabel.REVISION)
+    revisionNode.setProperty("number", revisionNumber)
+    revisionNode.setProperty("data", extItemBytes)
+    val relationship = itemNode --> ItemRelationship.HAS_REVISION --> revisionNode <;
+    relationship.setProperty("latest", true)
+    if (ownerNodes.foreignOwner.isDefined){
+      ownerNodes.user --> SecurityRelationship.IS_CREATOR --> revisionNode
+    }
+    revisionNode
+  }
+
+  protected def getLatestExtendedItemRevisionRelationship(itemNode: Node)(implicit neo4j: DatabaseService): Option[Relationship] = {
+     itemNode.getRelationships().foreach(relationship => {
+      if(relationship.hasProperty("latest") &&
+         relationship.getType().name == ItemRelationship.HAS_REVISION.relationshipName){
+        return Some(relationship);
+      }
+    })
+    None
+  }
 }

@@ -63,7 +63,7 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
     withTx {
       implicit neo =>
         for {
-          tagNode <- getItemNode(owner, tagUUID, Some(ItemLabel.TAG)).right
+          tagNode <- getItemNode(getOwnerUUID(owner), tagUUID, Some(ItemLabel.TAG)).right
           tag <- toTag(tagNode, owner).right
         } yield tag
     }
@@ -105,8 +105,9 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
     withTx {
       implicit neo4j =>
         for {
+          ownerNodes <- getOwnerNodes(owner).right
           tagNode <- updateItem(owner, tagUUID, tag, Some(ItemLabel.TAG), subLabel, subLabelAlternative, tag.modified).right
-          result <- setTagParentNodes(tagNode, owner, tag).right
+          result <- setTagParentNodes(tagNode, ownerNodes, tag).right
         } yield tagNode
     }
   }
@@ -116,21 +117,22 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
     withTx {
       implicit neo4j =>
         for {
+          ownerNodes <- getOwnerNodes(owner).right
           tagNode <- createItem(owner, tag, Some(ItemLabel.TAG),
                          (if (tag.tagType.get == CONTEXT) Some(TagLabel.CONTEXT)
                           else if (tag.tagType.get == KEYWORD) Some(TagLabel.KEYWORD)
                           else Some(TagLabel.HISTORY))
                          ).right
-          result <- setTagParentNodes(tagNode, owner, tag).right
+          result <- setTagParentNodes(tagNode, ownerNodes, tag).right
         } yield tagNode
     }
   }
 
-  protected def setTagParentNodes(tagNode: Node,  owner: Owner, tag: Tag)(implicit neo4j: DatabaseService):
+  protected def setTagParentNodes(tagNode: Node,  ownerNodes: OwnerNodes, tag: Tag)(implicit neo4j: DatabaseService):
           Response[Option[Long]] = {
     for {
-      oldParentRelationship <- Right(getItemRelationship(tagNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.TAG)).right
-      result <- setParentRelationship(tagNode, owner, tag.parent, oldParentRelationship, ItemLabel.TAG, skipParentHistoryTag = true).right
+      oldParentRelationship <- Right(getItemRelationship(tagNode, ownerNodes, ItemRelationship.HAS_PARENT, ItemLabel.TAG)).right
+      result <- setParentRelationship(tagNode, ownerNodes, tag.parent, oldParentRelationship, ItemLabel.TAG, skipParentHistoryTag = true).right
     }yield result
   }
 
@@ -145,7 +147,8 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
   protected def addTransientTagProperties(tagNode: Node, owner: Owner, tag: Tag)
             (implicit neo4j: DatabaseService): Response[Tag] = {
     for {
-      parent <- Right(getItemRelationship(tagNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.TAG)).right
+      ownerNodes <- getOwnerNodes(owner).right
+      parent <- Right(getItemRelationship(tagNode, ownerNodes, ItemRelationship.HAS_PARENT, ItemLabel.TAG)).right
       completeTag <- Right(tag.copy(
         tagType = (if (tagNode.hasLabel(TagLabel.CONTEXT)) Some(CONTEXT)
                    else if (tagNode.hasLabel(TagLabel.KEYWORD)) Some(KEYWORD)
@@ -158,7 +161,7 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
     withTx {
       implicit neo =>
         for {
-          tagNode <- getItemNode(owner, tagUUID, Some(ItemLabel.TAG), acceptDeleted = true).right
+          tagNode <- getItemNode(getOwnerUUID(owner), tagUUID, Some(ItemLabel.TAG), acceptDeleted = true).right
           deleted <- Right(deleteItem(tagNode)).right
           childrenAndTagged <- getChildrenAndTagged(owner, tagNode).right
         } yield (tagNode, deleted, childrenAndTagged)
@@ -169,7 +172,7 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
     withTx {
       implicit neo =>
         for {
-          tagNode <- getItemNode(owner, tagUUID, Some(ItemLabel.TAG), acceptDeleted = true).right
+          tagNode <- getItemNode(getOwnerUUID(owner), tagUUID, Some(ItemLabel.TAG), acceptDeleted = true).right
           unit <- validateTagUndeletable(tagNode).right
           success <- Right(undeleteItem(tagNode)).right
           childrenAndTagged <- getChildrenAndTagged(owner, tagNode).right

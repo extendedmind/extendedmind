@@ -364,6 +364,10 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     else owner.userUUID
   }
 
+  protected def getOwnerUUID(ownerNodes: OwnerNodes): UUID = {
+    getUUID(getOwnerNode(ownerNodes))
+  }
+
   protected def getOwnerNode(ownerNodes: OwnerNodes): Node = {
     if (ownerNodes.foreignOwner.isDefined) ownerNodes.foreignOwner.get
     else ownerNodes.user
@@ -385,11 +389,11 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     }
   }
 
-  protected def getItemNode(owner: Owner, itemUUID: UUID, mandatoryLabel: Option[Label] = None,
+  protected def getItemNode(ownerUUID: UUID, itemUUID: UUID, mandatoryLabel: Option[Label] = None,
     acceptDeleted: Boolean = false, exactLabelMatch: Boolean = true)(implicit neo4j: DatabaseService): Response[Node] = {
     val itemNode =
-      if (mandatoryLabel.isDefined) getItemNode(getOwnerUUID(owner), itemUUID, mandatoryLabel.get, acceptDeleted)
-      else getItemNode(getOwnerUUID(owner), itemUUID, MainLabel.ITEM, acceptDeleted)
+      if (mandatoryLabel.isDefined) getItemNode(ownerUUID, itemUUID, mandatoryLabel.get, acceptDeleted)
+      else getItemNode(ownerUUID, itemUUID, MainLabel.ITEM, acceptDeleted)
     if (itemNode.isLeft) return itemNode
 
     // If searching for just ITEM, needs to fail for tasks and notes

@@ -227,7 +227,6 @@ class AdminBestCaseSpec extends ServiceSpecBase {
                   Post("/" + collectiveUUID + "/note/" + putNoteResponse.uuid.get + "/list",
                       marshal(assignedNote)) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                     val listFromNote = responseAs[List]
-                    println(listFromNote.relationships)
                     listFromNote.relationships.get.assignee.get should be (lauriUUID)
                     listFromNote.relationships.get.assigner.get should be (authenticateResponse.userUUID)
                   }

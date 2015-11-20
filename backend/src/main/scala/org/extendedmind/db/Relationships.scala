@@ -40,6 +40,7 @@ object ItemRelationship {
   val HAS_ORIGIN = ExtendedMindRelationship("HAS_ORIGIN")
   val HAS_REMINDER = ExtendedMindRelationship("HAS_REMINDER")
   val IS_ASSIGNED_TO = ExtendedMindRelationship("IS_ASSIGNED_TO")
+  val HAS_REVISION = ExtendedMindRelationship("HAS_REVISION")
 }
 
 object AgreementRelationship {

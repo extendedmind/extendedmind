@@ -136,7 +136,7 @@ case class UserAccessRight(access: Option[Byte]){
 
 case class PublicUser(uuid: UUID)
 
-case class Owner(userUUID: UUID, foreignOwnerUUID: Option[UUID], sharedLists: Option[Map[UUID, (String, Byte)]], hasPremium: Boolean, isLimitedAccess: Boolean)
+case class Owner(userUUID: UUID, foreignOwnerUUID: Option[UUID], sharedLists: Option[Map[UUID, (String, Byte)]], hasPremium: Boolean, isLimitedAccess: Boolean, isFakeUser: Boolean = false)
 
 object Owner{
   def getOwner(ownerUUID: UUID, securityContext: SecurityContext)(implicit settings: Settings): Owner = {

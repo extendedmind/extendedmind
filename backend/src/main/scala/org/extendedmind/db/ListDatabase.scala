@@ -61,7 +61,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
     withTx {
       implicit neo =>
         for {
-          listNode <- getItemNode(owner, listUUID, Some(ItemLabel.LIST)).right
+          listNode <- getItemNode(getOwnerUUID(owner), listUUID, Some(ItemLabel.LIST)).right
           list <- toCaseClass[List](listNode).right
           fullList <- addTransientListProperties(listNode, owner, list).right
         } yield fullList
@@ -91,7 +91,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
       listResult <- validateListArchivable(owner, listUUID, parent).right
       tagResult <- putNewTag(owner, Tag(listResult._2,
                              None, None, HISTORY, None)).right
-      archivedChildren <- archiveListNode(listResult._1, owner, tagResult.uuid.get, listResult._3).right
+      archivedChildren <- archiveListNode(listResult._1, listResult._4, tagResult.uuid.get, listResult._3).right
       setResults <- Right(updateItemsIndex(archivedChildren)).right
       tag <- getTag(owner, tagResult.uuid.get).right
       result <- Right(getArchiveListResult(listResult._1, tag, setResults)).right
@@ -102,7 +102,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
   def unarchiveList(owner: Owner, listUUID: UUID, parent: Option[UUID]): Response[UnarchiveListResult] = {
     for {
       listResult <- validateListUnarchivable(owner, listUUID, parent).right
-      unarchiveResult <- unarchiveListNode(listResult._1, owner, listResult._2, listResult._3).right
+      unarchiveResult <- unarchiveListNode(listResult._1, listResult._4, listResult._2, listResult._3).right
       tagDeleteResult <- Right(getDeleteItemResult(listResult._2, unarchiveResult._2, true)).right
       unit <- Right(updateItemsIndex(listResult._2, tagDeleteResult.result)).right
       setResults <- Right(updateItemsIndex(unarchiveResult._1)).right
@@ -138,10 +138,11 @@ trait ListDatabase extends UserDatabase with TagDatabase {
 
   protected def addTransientListProperties(listNode: Node, owner: Owner, list: List)(implicit neo4j: DatabaseService): Response[List] = {
     for {
-      parentRel <- Right(getItemRelationship(listNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.LIST)).right
+      ownerNodes <- getOwnerNodes(owner).right
+      parentRel <- Right(getItemRelationship(listNode, ownerNodes, ItemRelationship.HAS_PARENT, ItemLabel.LIST)).right
       assigneeRel <- Right(getAssigneeRelationship(listNode)).right
-      tagsRels <- getTagRelationships(listNode, owner).right
-      agreementInfos <- getListAgreementInformations(owner, listNode).right
+      tagsRels <- getTagRelationships(listNode, ownerNodes).right
+      agreementInfos <- getListAgreementInformations(ownerNodes, listNode).right
       task <- Right(list.copy(
         relationships =
           (if (parentRel.isDefined || assigneeRel.isDefined || tagsRels.isDefined)
@@ -149,7 +150,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
               parent = parentRel.flatMap(parentRel => Some(getUUID(parentRel.getEndNode))),
               origin = None,
               assignee = assigneeRel.flatMap(assigneeRel => {
-                if (owner.foreignOwnerUUID.isEmpty && getUUID(assigneeRel.getEndNode) == owner.userUUID) None
+                if (ownerNodes.foreignOwner.isEmpty && getUUID(assigneeRel.getEndNode) == getUUID(ownerNodes.user)) None
                 else Some(getUUID(assigneeRel.getEndNode))
               }),
               assigner = assigneeRel.flatMap(assigneeRel => Some(UUIDUtils.getUUID(assigneeRel.getProperty("assigner").asInstanceOf[String]))),
@@ -165,15 +166,16 @@ trait ListDatabase extends UserDatabase with TagDatabase {
     } yield task
   }
 
-  protected def validateListArchivable(owner: Owner, listUUID: UUID, parent: Option[UUID]): Response[(Node, String, Option[Node])] = {
+  protected def validateListArchivable(owner: Owner, listUUID: UUID, parent: Option[UUID]): Response[(Node, String, Option[Node], OwnerNodes)] = {
     withTx {
       implicit neo =>
         for {
-          listNode <- getItemNode(owner, listUUID, Some(ItemLabel.LIST)).right
+          ownerNodes <- getOwnerNodes(owner).right
+          listNode <- getItemNode(getOwnerUUID(owner), listUUID, Some(ItemLabel.LIST)).right
           parentNode <- getNodeOption(parent, ItemLabel.LIST).right
           listNode <- validateListArchivable(listNode, parentNode).right
           listTitle <- Right(listNode.getProperty("title").asInstanceOf[String]).right
-        } yield (listNode, listTitle, parentNode)
+        } yield (listNode, listTitle, parentNode, ownerNodes)
     }
   }
 
@@ -189,15 +191,16 @@ trait ListDatabase extends UserDatabase with TagDatabase {
     }
   }
 
-  protected def validateListUnarchivable(owner: Owner, listUUID: UUID, parent: Option[UUID]): Response[(Node, Node, Option[Node])] = {
+  protected def validateListUnarchivable(owner: Owner, listUUID: UUID, parent: Option[UUID]): Response[(Node, Node, Option[Node], OwnerNodes)] = {
     withTx {
       implicit neo =>
         for {
-          listNode <- getItemNode(owner, listUUID, Some(ItemLabel.LIST)).right
+          ownerNodes <- getOwnerNodes(owner).right
+          listNode <- getItemNode(getOwnerUUID(owner), listUUID, Some(ItemLabel.LIST)).right
           parentNode <- getNodeOption(parent, ItemLabel.LIST).right
           listNode <- validateListUnarchivable(listNode, parentNode).right
           historyTag <- getArchivedListHistoryTag(listNode).right
-        } yield (listNode, historyTag, parentNode)
+        } yield (listNode, historyTag, parentNode, ownerNodes)
     }
   }
 
@@ -236,10 +239,10 @@ trait ListDatabase extends UserDatabase with TagDatabase {
     }
   }
 
-  protected def archiveListNode(listNode: Node, owner: Owner, tagUUID: UUID, parentNode: Option[Node]): Response[scala.List[Node]] = {
+  protected def archiveListNode(listNode: Node, ownerNodes: OwnerNodes, tagUUID: UUID, parentNode: Option[Node]): Response[scala.List[Node]] = {
     withTx {
       implicit neo =>
-        val tagNodeResult = getItemNode(owner, tagUUID, Some(ItemLabel.TAG))
+        val tagNodeResult = getItemNode(getOwnerUUID(ownerNodes), tagUUID, Some(ItemLabel.TAG))
         if (tagNodeResult.isLeft) fail(INTERNAL_SERVER_ERROR, ERR_LIST_MISSING_HISTORY_TAG, "Failed to find newly created history tag for list " + getUUID(listNode))
         else {
           // First: remove previous parent relationship
@@ -251,7 +254,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
           // See if list gets archived timestamp from parent
           val archivedTimestampFromParent = {
             if (parentNode.isDefined){
-              val archivedResult = createParentRelationship(listNode, owner, parentNode.get, skipParentHistoryTag = true)
+              val archivedResult = createParentRelationship(listNode, ownerNodes, parentNode.get, skipParentHistoryTag = true)
               if (archivedResult.isLeft) return Left(archivedResult.left.get)
               archivedResult.right.get
             }else{
@@ -277,7 +280,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
     }
   }
 
-  protected def unarchiveListNode(listNode: Node, owner: Owner, historyTag: Node, parentNode: Option[Node]): Response[(scala.List[Node], Long)] = {
+  protected def unarchiveListNode(listNode: Node, ownerNodes: OwnerNodes, historyTag: Node, parentNode: Option[Node]): Response[(scala.List[Node], Long)] = {
     withTx {
       implicit neo4j =>
         // First: remove previous parent relationship
@@ -288,7 +291,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
 
         // Then, set new parent relationship
         if (parentNode.isDefined){
-          val parentSetResult = createParentRelationship(listNode, owner, parentNode.get, skipParentHistoryTag = true)
+          val parentSetResult = createParentRelationship(listNode, ownerNodes, parentNode.get, skipParentHistoryTag = true)
           if (parentSetResult.isLeft) return Left(parentSetResult.left.get)
         }
 
@@ -317,7 +320,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
     withTx {
       implicit neo =>
         for {
-          listNode <- getItemNode(owner, listUUID, Some(ItemLabel.LIST), acceptDeleted=true).right
+          listNode <- getItemNode(getOwnerUUID(owner), listUUID, Some(ItemLabel.LIST), acceptDeleted=true).right
           agreementNodes <- getListAgreementNodes(listNode).right
           unit <- validateListDeletable(listNode, agreementNodes).right
           deleted <- Right(deleteItem(listNode)).right
@@ -330,7 +333,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
     withTx {
       implicit neo =>
         for {
-          itemNode <- getItemNode(owner, itemUUID, Some(ItemLabel.LIST), acceptDeleted = true).right
+          itemNode <- getItemNode(getOwnerUUID(owner), itemUUID, Some(ItemLabel.LIST), acceptDeleted = true).right
           success <- Right(undeleteItem(itemNode)).right
           childNodes <- Right(getChildren(itemNode, None, true)).right
         } yield (itemNode, childNodes)
@@ -399,10 +402,10 @@ trait ListDatabase extends UserDatabase with TagDatabase {
       Right()
   }
 
-  protected def getListAgreementInformations(owner: Owner, listNode: Node)(implicit neo4j: DatabaseService): Response[Option[scala.List[AgreementInformation]]] = {
+  protected def getListAgreementInformations(ownerNodes: OwnerNodes, listNode: Node)(implicit neo4j: DatabaseService): Response[Option[scala.List[AgreementInformation]]] = {
     for {
       agreementNodes <- getListAgreementNodes(listNode).right
-      userNode <- (if (agreementNodes.isDefined) getNodeOption(Some(owner.userUUID), OwnerLabel.USER)
+      userNode <- (if (agreementNodes.isDefined) getNodeOption(Some(getUUID(ownerNodes.user)), OwnerLabel.USER)
                    else Right(None)).right
       agreementInformations <- getListAgreementInformations(agreementNodes, userNode).right
     } yield agreementInformations

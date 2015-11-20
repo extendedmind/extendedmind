@@ -85,7 +85,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     withTx {
       implicit neo =>
         for {
-          noteNode <- getItemNode(owner, noteUUID, Some(ItemLabel.NOTE)).right
+          noteNode <- getItemNode(getOwnerUUID(owner), noteUUID, Some(ItemLabel.NOTE)).right
           note <- toNote(noteNode, owner).right
         } yield note
     }
@@ -119,9 +119,9 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
 
   def unfavoriteNote(owner: Owner, noteUUID: UUID): Response[SetResult] = {
     for {
-      noteNode <- unfavoriteNoteNode(owner, noteUUID).right
-      result <- Right(getSetResult(noteNode, false)).right
-      unit <- Right(updateItemsIndex(noteNode, result)).right
+      noteResult <- unfavoriteNoteNode(owner, noteUUID).right
+      result <- Right(getSetResult(noteResult._1, false)).right
+      unit <- Right(updateItemsIndex(noteResult._1, result)).right
     } yield result
   }
 
@@ -151,9 +151,9 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
 
   def unpublishNote(owner: Owner, noteUUID: UUID): Response[SetResult] = {
     for {
-      noteNode <- unpublishNoteNode(owner, noteUUID).right
-      result <- Right(getSetResult(noteNode, false)).right
-      unit <- Right(updateItemsIndex(noteNode, result)).right
+      noteResult <- unpublishNoteNode(owner, noteUUID).right
+      result <- Right(getSetResult(noteResult._1, false)).right
+      unit <- Right(updateItemsIndex(noteResult._1, result)).right
     } yield result
   }
 
@@ -163,19 +163,20 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
                (implicit neo4j: DatabaseService): Response[Note] = {
     for {
       note <- toCaseClass[Note](noteNode).right
-      completeNote <- addTransientNoteProperties(noteNode, owner, note, tagRelationships, skipParent).right
+      ownerNodes <- getOwnerNodes(owner).right
+      completeNote <- addTransientNoteProperties(noteNode, ownerNodes, note, tagRelationships, skipParent).right
     } yield completeNote
   }
 
   protected def addTransientNoteProperties(
-                    noteNode: Node, owner: Owner, note: Note,
+                    noteNode: Node, ownerNodes: OwnerNodes, note: Note,
                     tagRelationships: Option[Option[TagRelationships]], skipParent: Boolean)
                 (implicit neo4j: DatabaseService): Response[Note] = {
     for {
-      parentRel <- Right(if (skipParent) None else getItemRelationship(noteNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.LIST)).right
+      parentRel <- Right(if (skipParent) None else getItemRelationship(noteNode, ownerNodes, ItemRelationship.HAS_PARENT, ItemLabel.LIST)).right
       assigneeRel <- Right(getAssigneeRelationship(noteNode)).right
       tagsRels <- (if (tagRelationships.isDefined) Right(tagRelationships.get)
-              else getTagRelationships(noteNode, owner)).right
+              else getTagRelationships(noteNode, ownerNodes)).right
       note <- Right(note.copy(
         visibility =
           (if (noteNode.hasProperty("published") && !noteNode.hasProperty("unpublished"))
@@ -191,7 +192,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
               parent = parentRel.flatMap(parentRel => Some(getUUID(parentRel.getEndNode))),
               origin = None,
               assignee = assigneeRel.flatMap(assigneeRel => {
-                if (owner.foreignOwnerUUID.isEmpty && getUUID(assigneeRel.getEndNode) == owner.userUUID) None
+                if (ownerNodes.foreignOwner.isEmpty && getUUID(assigneeRel.getEndNode) == getUUID(ownerNodes.user)) None
                 else Some(getUUID(assigneeRel.getEndNode))
               }),
               assigner = assigneeRel.flatMap(assigneeRel => Some(UUIDUtils.getUUID(assigneeRel.getProperty("assigner").asInstanceOf[String]))),
@@ -202,22 +203,22 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     } yield note
   }
 
-  protected def putExistingNoteNode(owner: Owner, noteUUID: UUID, note: Note): Response[(Node, Option[Long])] = {
+  protected def putExistingNoteNode(owner: Owner, noteUUID: UUID, note: Note): Response[(Node, Option[Long], OwnerNodes)] = {
     withTx {
       implicit neo4j =>
         for {
-          noteNode <- getItemNode(owner, noteUUID, exactLabelMatch = false).right
+          ownerNodes <- getOwnerNodes(owner).right
+          noteNode <- getItemNode(getOwnerUUID(owner), noteUUID, exactLabelMatch = false).right
           noteNode <- updateItemNode(noteNode,
               note.copy(
                 format = if (noteNode.hasProperty("published") && noteNode.hasProperty("format") && note.format.isEmpty)
                            Some(noteNode.getProperty("format").asInstanceOf[String])
                          else note.format),
               Some(ItemLabel.NOTE), None, None, note.modified).right
-          archived <- setParentNode(noteNode, owner, note.parent, skipParentHistoryTag=false).right
-          tagNodes <- setTagNodes(noteNode, owner, note).right
-          ownerNodes <- getOwnerNodes(owner).right
+          archived <- setParentNode(noteNode, ownerNodes, note.parent, skipParentHistoryTag=false).right
+          tagNodes <- setTagNodes(noteNode, ownerNodes, note).right
           result <- setAssigneeRelationship(noteNode, ownerNodes, note).right
-        } yield (noteNode, archived)
+        } yield (noteNode, archived, ownerNodes)
     }
   }
 
@@ -240,13 +241,14 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     }
   }
 
-  protected def favoriteNoteNode(owner: Owner, noteUUID: UUID): Response[(Node, Long)] = {
+  protected def favoriteNoteNode(owner: Owner, noteUUID: UUID): Response[(Node, Long, OwnerNodes)] = {
     withTx {
       implicit neo4j =>
         for {
-          noteNode <- getItemNode(owner, noteUUID, Some(ItemLabel.NOTE)).right
+          ownerNodes <- getOwnerNodes(owner).right
+          noteNode <- getItemNode(getOwnerUUID(owner), noteUUID, Some(ItemLabel.NOTE)).right
           favorited <- Right(favoriteNoteNode(noteNode)).right
-        } yield (noteNode, favorited)
+        } yield (noteNode, favorited, ownerNodes)
     }
   }
 
@@ -256,13 +258,14 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     currentTime
   }
 
-  protected def unfavoriteNoteNode(owner: Owner, noteUUID: UUID): Response[Node] = {
+  protected def unfavoriteNoteNode(owner: Owner, noteUUID: UUID): Response[(Node, OwnerNodes)] = {
     withTx {
       implicit neo =>
         for {
-          noteNode <- getItemNode(owner, noteUUID, Some(ItemLabel.NOTE)).right
+          ownerNodes <- getOwnerNodes(owner).right
+          noteNode <- getItemNode(getOwnerUUID(owner), noteUUID, Some(ItemLabel.NOTE)).right
           result <- Right(unfavoriteNoteNode(noteNode)).right
-        } yield noteNode
+        } yield (noteNode, ownerNodes)
     }
   }
 
@@ -296,14 +299,14 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     }
   }
 
-  protected def publishNoteNode(owner: Owner, noteUUID: UUID, format: String, path: Option[String]): Response[(Node, Long, Option[Long])] = {
+  protected def publishNoteNode(owner: Owner, noteUUID: UUID, format: String, path: Option[String]): Response[(Node, Long, Option[Long], OwnerNodes)] = {
     withTx {
       implicit neo4j =>
         for {
           ownerNodes <- getOwnerNodes(owner).right
-          noteNode <- getItemNode(owner, noteUUID, Some(ItemLabel.NOTE)).right
+          noteNode <- getItemNode(getOwnerUUID(owner), noteUUID, Some(ItemLabel.NOTE)).right
           publishResult <- publishNoteNode(ownerNodes, noteNode, format, path).right
-        } yield (noteNode, publishResult._1, publishResult._2)
+        } yield (noteNode, publishResult._1, publishResult._2, ownerNodes)
     }
   }
 
@@ -349,13 +352,14 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     }
   }
 
-  protected def unpublishNoteNode(owner: Owner, noteUUID: UUID): Response[Node] = {
+  protected def unpublishNoteNode(owner: Owner, noteUUID: UUID): Response[(Node, OwnerNodes)] = {
     withTx {
       implicit neo =>
         for {
-          noteNode <- getItemNode(owner, noteUUID, Some(ItemLabel.NOTE)).right
+          ownerNodes <- getOwnerNodes(owner).right
+          noteNode <- getItemNode(getOwnerUUID(owner), noteUUID, Some(ItemLabel.NOTE)).right
           result <- Right(unpublishNoteNode(noteNode)).right
-        } yield noteNode
+        } yield (noteNode, ownerNodes)
     }
   }
 
@@ -372,6 +376,5 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     else
       Right()
   }
-
 
 }
