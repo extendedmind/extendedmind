@@ -25,6 +25,7 @@ import org.extendedmind.domain._
 import org.extendedmind.security.SecurityContext
 import java.util.UUID
 import org.extendedmind.security.AuthenticatePayload
+import org.extendedmind.security.BinaryDiff
 
 class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
 
@@ -115,6 +116,40 @@ class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
       val sameUnpickledList = db.unpickleList(byteList)
       list should be(unpickledList)
       unpickledList should be(sameUnpickledList)
+
+      // TEST DIFFING
+
+      val byteTaskModified1 = db.pickleTask(task.copy(title = "learn more Spanish"))
+      val byteTaskModified2 = db.pickleTask(task.copy(title = "learn even more Spanish"))
+      val byteTaskModified3 = db.pickleTask(task.copy(title = "just learn more Spanish"))
+      val byteTaskModified4 = db.pickleTask(task.copy(title = "learn more Spanish"))
+      val task5 = task.copy(title = "learn Spanish")
+      val byteTaskModified5 = db.pickleTask(task5)
+      val task6 = task5.copy(title = "learn Spanish and French")
+      val byteTaskModified6 = db.pickleTask(task6)
+
+      val delta1 = BinaryDiff.getDelta(byteTask, byteTaskModified1)
+      val delta2 = BinaryDiff.getDelta(byteTaskModified1, byteTaskModified2)
+      val delta3 = BinaryDiff.getDelta(byteTaskModified2, byteTaskModified3)
+      val delta4 = BinaryDiff.getDelta(byteTaskModified3, byteTaskModified4)
+      val delta5 = BinaryDiff.getDelta(byteTaskModified4, byteTaskModified5)
+      val delta6 = BinaryDiff.getDelta(byteTaskModified5, byteTaskModified6)
+
+      // Check that patching with 6 deltas results in the correct intermediate values
+      val patchedModified1 = BinaryDiff.patch(byteTask, delta1)
+      patchedModified1 should be(byteTaskModified1)
+      val patchedModified2 = BinaryDiff.patch(patchedModified1, delta2)
+      patchedModified2 should be(byteTaskModified2)
+      val patchedModified3 = BinaryDiff.patch(patchedModified2, delta3)
+      patchedModified3 should be(byteTaskModified3)
+      val patchedModified4 = BinaryDiff.patch(patchedModified3, delta4)
+      patchedModified4 should be(byteTaskModified4)
+      val patchedModified5 = BinaryDiff.patch(patchedModified4, delta5)
+      patchedModified5 should be(byteTaskModified5)
+      val patchedModified6 = BinaryDiff.patch(patchedModified5, delta6)
+      patchedModified6 should be(byteTaskModified6)
+
+      task6 should be (db.unpickleTask(patchedModified6))
     }
   }
   describe("TaskDatabase"){
