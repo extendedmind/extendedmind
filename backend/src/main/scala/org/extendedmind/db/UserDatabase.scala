@@ -910,11 +910,6 @@ trait UserDatabase extends AbstractGraphDatabase {
       case Some(SecurityContext.READ) => {
         if(existingRelationship.isDefined){
           if(existingRelationship.get.getType().name != SecurityRelationship.CAN_READ.name){
-            if (targetNode.hasLabel(OwnerLabel.COLLECTIVE)){
-              // When collective permission is lowered to read-only, all assignee relationships need to be removed,
-              // as the user can not do anything about the things she is assigned to
-              removeAssigneeRelationships(targetNode, userNode)
-            }
             existingRelationship.get.delete()
           }else{
             return Right(existingRelationship)

@@ -792,12 +792,15 @@ trait ItemDatabase extends UserDatabase {
         Right()
       }else{
         incomingSharingTraversalDescription.traverse(ownerNodes.foreignOwner.get).relationships.toList.find(relationship => {
+          val relationshipType = relationship.getType().name()
           getUUID(relationship.getStartNode()) == assigneeUUID &&
-          relationship.getType().name() != SecurityRelationship.CAN_READ.relationshipName
+          (relationshipType == SecurityRelationship.CAN_READ.relationshipName ||
+           relationshipType == SecurityRelationship.CAN_READ_WRITE.relationshipName ||
+           relationshipType == SecurityRelationship.IS_FOUNDER.relationshipName)
         }).fold(
-          fail(INVALID_PARAMETER, ERR_ITEM_ASSIGNEE_NO_ACCESS, "Assignee " + assigneeUUID + " does not have read/write access to collective")
-        )(readWriteRelationship =>{
-          val relationship = itemNode --> ItemRelationship.IS_ASSIGNED_TO --> readWriteRelationship.getStartNode <;
+          fail(INVALID_PARAMETER, ERR_ITEM_ASSIGNEE_NO_ACCESS, "Assignee " + assigneeUUID + " does not have access to collective " + getUUID(ownerNodes.foreignOwner.get))
+        )(securityRelationship =>{
+          val relationship = itemNode --> ItemRelationship.IS_ASSIGNED_TO --> securityRelationship.getStartNode <;
           // Store the assigner uuid as a property in the relationship
           relationship.setProperty("assigner", ownerNodes.user.getProperty("uuid"))
           val itemsIndex = neo4j.gds.index().forNodes("items")
@@ -805,7 +808,7 @@ trait ItemDatabase extends UserDatabase {
             removeAssigneeRelationship(itemNode, existingAssigneeRelationship.get)
           }
           itemsIndex.add(itemNode, "assignee",
-              UUIDUtils.getTrimmedBase64UUIDForLucene(getUUID(readWriteRelationship.getStartNode)))
+              UUIDUtils.getTrimmedBase64UUIDForLucene(getUUID(securityRelationship.getStartNode)))
           return Right()
         })
       }
