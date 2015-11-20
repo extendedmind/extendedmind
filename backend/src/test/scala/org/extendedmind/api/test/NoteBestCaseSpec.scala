@@ -228,7 +228,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
         val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
         // Put the same tags to the new public note as in the note before that
         val newNote = Note("Public note", None, None, Some("this is public"), None, None,
-            Some(ExtendedItemRelationships(None, None, None, None, publicItem.note.relationships.get.tags)))
+            Some(ExtendedItemRelationships(None, None, None, None, publicItem.note.relationships.get.tags, None)))
         val putNoteResponse = putNewNote(newNote, authenticateResponse)
         Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/publish",
             marshal(PublishPayload("md", Some("test")))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {

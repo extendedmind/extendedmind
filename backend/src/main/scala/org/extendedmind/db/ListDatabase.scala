@@ -153,7 +153,8 @@ trait ListDatabase extends UserDatabase with TagDatabase {
                 else Some(getUUID(assigneeRel.getEndNode))
               }),
               assigner = assigneeRel.flatMap(assigneeRel => Some(UUIDUtils.getUUID(assigneeRel.getProperty("assigner").asInstanceOf[String]))),
-              tags = tags.flatMap(tags => Some(getEndNodeUUIDList(tags)))))
+              tags = tags.flatMap(tags => Some(getEndNodeUUIDList(tags))),
+              collectiveTags = None /* TODO: vcollectiveTags */))
           else None),
         visibility = {
           val listVisibilityResult = getListVisibility(agreementInfos, owner)

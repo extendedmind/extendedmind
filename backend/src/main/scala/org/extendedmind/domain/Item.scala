@@ -53,7 +53,8 @@ case class Items(items: Option[scala.List[Item]],
          assigned: Option[scala.List[AssignedItems]])
 
 case class SharedItemVisibility(published: Option[Long], draft: Option[Long], path: Option[String], agreements: Option[scala.List[Agreement]])
-case class ExtendedItemRelationships(parent: Option[UUID], origin: Option[UUID], assignee: Option[UUID], assigner: Option[UUID], tags: Option[scala.List[UUID]])
+case class ExtendedItemRelationships(parent: Option[UUID], origin: Option[UUID], assignee: Option[UUID],
+                                     assigner: Option[UUID], tags: Option[scala.List[UUID]], collectiveTags: Option[scala.List[(UUID, scala.List[UUID])]])
 case class LimitedExtendedItemRelationships(parent: Option[UUID], origin: Option[UUID])
 
 case class DeleteItemResult(deleted: Long, result: SetResult)
@@ -98,8 +99,14 @@ trait LimitedExtendedItem extends ItemLike{
 case class NodeStatistics(properties: scala.List[(String, Long)], labels: scala.List[String])
 case class NodeProperty(key: String, stringValue: Option[String], longValue: Option[Long])
 
-// Owner is the display name of the owner, and author the display name of the person the note is assigned to
-case class PublicItem(owner: String, note: Note, tags: Option[scala.List[Tag]], assignee: Option[Assignee])
+// Owner is the display name of the owner, and assignee is the display name of the person the note is assigned to
+case class PublicItem(owner: String, note: Note,
+                      tags: Option[scala.List[Tag]],
+                      collectiveTags: Option[scala.List[(UUID, scala.List[Tag])]],
+                      assignee: Option[Assignee])
 case class PublicItems(owner: Option[String], content: Option[String], format: Option[String], modified: Option[Long],
-                       notes: Option[scala.List[Note]], tags: Option[scala.List[Tag]], assignees: Option[scala.List[Assignee]],
+                       notes: Option[scala.List[Note]],
+                       tags: Option[scala.List[Tag]],
+                       collectiveTags: Option[scala.List[(UUID, scala.List[Tag])]],
+                       assignees: Option[scala.List[Assignee]],
                        unpublished: Option[scala.List[UUID]])

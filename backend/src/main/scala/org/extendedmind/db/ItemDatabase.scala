@@ -998,7 +998,7 @@ trait ItemDatabase extends UserDatabase {
           (if (owner.isLimitedAccess) Right(getSharedListAccessRight(owner.sharedLists.get,
               if (parentRelationship.isDefined){
                 Some(ExtendedItemRelationships(
-                  Some(getUUID(parentRelationship.get.getEndNode)), None, None, None, None))
+                  Some(getUUID(parentRelationship.get.getEndNode)), None, None, None, None, None))
               }else{
                 None
               }))
@@ -1239,6 +1239,7 @@ trait ItemDatabase extends UserDatabase {
                 modified = if (modified.isEmpty || ownerPublicModified > modified.get) Some(ownerPublicModified) else None,
                 notes = if (noteBuffer.isEmpty) None else Some(noteBuffer.toList),
                 tags = if (tagBuffer.isEmpty) None else Some(tagBuffer.toList),
+                collectiveTags = None /* TODO: foreicollectiveTagsgnTags */,
                 assignees = if (assigneeBuffer.isEmpty) None else Some(assigneeBuffer.toList),
                 unpublished = if (unpublishedBuffer.isEmpty) None else Some(unpublishedBuffer.toList)))
   }
@@ -1251,7 +1252,9 @@ trait ItemDatabase extends UserDatabase {
         note <- toNote(itemNode, owner, tagRelationships=Some(tagRels), skipParent=true).right
         tags <- getTagsWithParents(tagRels, owner).right
         assignee <- Right(getAssignee(itemNode)).right
-      } yield PublicItem(displayOwner, note.copy(archived=None, favorited=None), tags, assignee)
+      } yield PublicItem(displayOwner, note.copy(archived=None, favorited=None), tags,
+          None /* TODO: collectiveTags */,
+          assignee)
     }else{
       fail(INTERNAL_SERVER_ERROR, ERR_ITEM_NOT_NOTE, "Public item not note")
     }

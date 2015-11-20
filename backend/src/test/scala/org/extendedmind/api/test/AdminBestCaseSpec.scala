@@ -134,7 +134,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
                 }
                 // Put a task to the collective and assign it to Lauri
                 val newTask = Task("learn Spanish", None, None, None, None, None,
-                    Some(ExtendedItemRelationships(None, None, Some(lauriUUID), None, None)))
+                    Some(ExtendedItemRelationships(None, None, Some(lauriUUID), None, None, None)))
                 val putTaskResponse = putNewTask(newTask, authenticateResponse, foreignOwnerUUID=putCollectiveResponse.uuid)
 
                 // Get collective tasks, check that assign is correct
@@ -192,7 +192,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
                   val lauriItemsResponse = responseAs[Items]
                   lauriItemsResponse.assigned should be (None)
                 }
-                val assignedNote = newNote.copy(relationships=Some(ExtendedItemRelationships(None, None, Some(lauriUUID), None, None)))
+                val assignedNote = newNote.copy(relationships=Some(ExtendedItemRelationships(None, None, Some(lauriUUID), None, None, None)))
                 putExistingNote(assignedNote, putNoteResponse.uuid.get, authenticateResponse, foreignOwnerUUID=Some(collectiveUUID))
                 Get("/" + lauriUUID + "/items") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
                   val lauriItemsResponse = responseAs[Items]
