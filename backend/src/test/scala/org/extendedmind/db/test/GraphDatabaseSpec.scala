@@ -78,7 +78,8 @@ class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
 
       val note = Note("home measurements", None, None, Some("bedroom wall: 420cm*250cm"), None, None,
           Some(ExtendedItemRelationships(Some(UUID.randomUUID()), None, None, None,
-              Some(scala.List(UUID.randomUUID()))))).copy(
+              Some(scala.List(UUID.randomUUID())),
+              Some(scala.List((UUID.randomUUID(), scala.List(UUID.randomUUID()))))))).copy(
             visibility = Some(SharedItemVisibility(Some(System.currentTimeMillis()), Some(System.currentTimeMillis()),
               Some("test"), Some(scala.List(Agreement(None, None, None, "list", 1, None,
               Some(AgreementTarget(UUID.randomUUID(), Some("sdaasd"))),
