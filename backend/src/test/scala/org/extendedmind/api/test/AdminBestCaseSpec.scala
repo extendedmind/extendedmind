@@ -210,7 +210,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
                   publicItemsResponse.notes.get(0).relationships.get.assignee.get should be (lauriUUID)
                   publicItemsResponse.assignees.get.length should be (1)
                   publicItemsResponse.assignees.get(0).uuid should be (lauriUUID)
-                  publicItemsResponse.assignees.get(0).displayName should be ("lauri@ext.md")
+                  publicItemsResponse.assignees.get(0).name should be ("lauri@ext.md")
                 }
 
                 // Convert note to list, verify that it fails because note is published
