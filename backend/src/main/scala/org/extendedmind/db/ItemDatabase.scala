@@ -1038,7 +1038,12 @@ trait ItemDatabase extends UserDatabase {
   protected def destroyItem(deletedItem: Node)(implicit neo4j: DatabaseService) {
     // Remove all relationships
     val relationshipList = deletedItem.getRelationships().toList
-    relationshipList.foreach(relationship => relationship.delete())
+    relationshipList.foreach(relationship => {
+      if (deletedItem.hasLabel(ItemLabel.TASK)){
+        destroyTaskRelationship(relationship);
+      }
+      relationship.delete()
+    })
 
     // Remove from items index
     val itemsIndex = neo4j.gds.index().forNodes("items")
@@ -1047,6 +1052,8 @@ trait ItemDatabase extends UserDatabase {
     // Delete item itself
     deletedItem.delete()
   }
+
+  protected def destroyTaskRelationship(relationship: Relationship)(implicit neo4j: DatabaseService)
 
   protected def addToItemsIndex(owner: Owner, itemNode: Node, setResult: SetResult): Unit = {
     withTx {

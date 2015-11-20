@@ -478,4 +478,11 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     else
       Right()
   }
+
+  protected def destroyTaskRelationship(relationship: Relationship)(implicit neo4j: DatabaseService){
+    if (relationship.getType().name() == ItemRelationship.HAS_REMINDER.relationshipName){
+      // Also destroy all reminders
+      relationship.getEndNode().delete()
+    }
+  }
 }
