@@ -37,7 +37,7 @@
   </developers>
 
   <properties>
-    <neo4j.version>2.2.5</neo4j.version>
+    <neo4j.version>2.2.7</neo4j.version>
     <spray.version>1.3.3</spray.version>
     <akka.version>2.3.9</akka.version>
   </properties>
@@ -98,14 +98,14 @@
     <dependency>
       <groupId>org.extendedmind</groupId>
       <artifactId>neo4j-uuid</artifactId>
-      <version>${neo4j.version}.1</version>
+      <version>${neo4j.version}</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.extendedmind</groupId>
       <artifactId>neo4j-timestamp</artifactId>
-      <version>${neo4j.version}.1</version>
+      <version>${neo4j.version}</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
