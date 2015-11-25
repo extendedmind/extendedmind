@@ -159,7 +159,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
 
   // PRIVATE
 
-  override def toNote(noteNode: Node, owner: Owner, tagRelationships: Option[Option[scala.List[Relationship]]] = None, skipParent: Boolean = false)
+  override def toNote(noteNode: Node, owner: Owner, tagRelationships: Option[Option[TagRelationships]] = None, skipParent: Boolean = false)
                (implicit neo4j: DatabaseService): Response[Note] = {
     for {
       note <- toCaseClass[Note](noteNode).right
@@ -167,12 +167,14 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     } yield completeNote
   }
 
-  protected def addTransientNoteProperties(noteNode: Node, owner: Owner, note: Note, tagRelationships: Option[Option[scala.List[Relationship]]], skipParent: Boolean)
+  protected def addTransientNoteProperties(
+                    noteNode: Node, owner: Owner, note: Note,
+                    tagRelationships: Option[Option[TagRelationships]], skipParent: Boolean)
                 (implicit neo4j: DatabaseService): Response[Note] = {
     for {
       parentRel <- Right(if (skipParent) None else getItemRelationship(noteNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.LIST)).right
       assigneeRel <- Right(getAssigneeRelationship(noteNode)).right
-      tags <- (if (tagRelationships.isDefined) Right(tagRelationships.get)
+      tagsRels <- (if (tagRelationships.isDefined) Right(tagRelationships.get)
               else getTagRelationships(noteNode, owner)).right
       note <- Right(note.copy(
         visibility =
@@ -184,7 +186,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
                  None))
            else None),
         relationships =
-          (if (parentRel.isDefined || assigneeRel.isDefined || tags.isDefined)
+          (if (parentRel.isDefined || assigneeRel.isDefined || tagsRels.isDefined)
             Some(ExtendedItemRelationships(
               parent = parentRel.flatMap(parentRel => Some(getUUID(parentRel.getEndNode))),
               origin = None,
@@ -193,7 +195,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
                 else Some(getUUID(assigneeRel.getEndNode))
               }),
               assigner = assigneeRel.flatMap(assigneeRel => Some(UUIDUtils.getUUID(assigneeRel.getProperty("assigner").asInstanceOf[String]))),
-              tags = tags.flatMap(tags => Some(getEndNodeUUIDList(tags))),
+              tags = tagsRels.flatMap(tagsRels => if (tagsRels.ownerTags.isDefined) Some(getEndNodeUUIDList(tagsRels.ownerTags.get)) else None),
               collectiveTags = None /* TODO: collectiveTags */))
            else None
           ))).right

@@ -140,11 +140,11 @@ trait ListDatabase extends UserDatabase with TagDatabase {
     for {
       parentRel <- Right(getItemRelationship(listNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.LIST)).right
       assigneeRel <- Right(getAssigneeRelationship(listNode)).right
-      tags <- getTagRelationships(listNode, owner).right
+      tagsRels <- getTagRelationships(listNode, owner).right
       agreementInfos <- getListAgreementInformations(owner, listNode).right
       task <- Right(list.copy(
         relationships =
-          (if (parentRel.isDefined || assigneeRel.isDefined || tags.isDefined)
+          (if (parentRel.isDefined || assigneeRel.isDefined || tagsRels.isDefined)
             Some(ExtendedItemRelationships(
               parent = parentRel.flatMap(parentRel => Some(getUUID(parentRel.getEndNode))),
               origin = None,
@@ -153,7 +153,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
                 else Some(getUUID(assigneeRel.getEndNode))
               }),
               assigner = assigneeRel.flatMap(assigneeRel => Some(UUIDUtils.getUUID(assigneeRel.getProperty("assigner").asInstanceOf[String]))),
-              tags = tags.flatMap(tags => Some(getEndNodeUUIDList(tags))),
+              tags = tagsRels.flatMap(tagsRels => if (tagsRels.ownerTags.isDefined) Some(getEndNodeUUIDList(tagsRels.ownerTags.get)) else None),
               collectiveTags = None /* TODO: vcollectiveTags */))
           else None),
         visibility = {

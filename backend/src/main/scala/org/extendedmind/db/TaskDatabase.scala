@@ -189,13 +189,13 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
       parentRel <- Right(getItemRelationship(taskNode, owner, ItemRelationship.HAS_PARENT, ItemLabel.LIST)).right
       originRel <- Right(getItemRelationship(taskNode, owner, ItemRelationship.HAS_ORIGIN, ItemLabel.TASK)).right
       assigneeRel <- Right(getAssigneeRelationship(taskNode)).right
-      tags <- getTagRelationships(taskNode, owner).right
+      tagsRels <- getTagRelationships(taskNode, owner).right
       reminderNodes <- Right(getReminderNodes(taskNode)).right
       reminders <- getReminders(reminderNodes).right
       task <- Right(task.copy(
         reminders = reminders,
         relationships =
-          (if (parentRel.isDefined || originRel.isDefined || assigneeRel.isDefined || tags.isDefined )
+          (if (parentRel.isDefined || originRel.isDefined || assigneeRel.isDefined || tagsRels.isDefined )
             Some(ExtendedItemRelationships(
               parent = parentRel.flatMap(parentRel => Some(getUUID(parentRel.getEndNode()))),
               origin = originRel.flatMap(originRel => Some(getUUID(originRel.getEndNode()))),
@@ -204,7 +204,7 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
                 else Some(getUUID(assigneeRel.getEndNode))
               }),
               assigner = assigneeRel.flatMap(assigneeRel => Some(UUIDUtils.getUUID(assigneeRel.getProperty("assigner").asInstanceOf[String]))),
-              tags = tags.flatMap(tags => Some(getEndNodeUUIDList(tags))),
+              tags = tagsRels.flatMap(tagsRels => if (tagsRels.ownerTags.isDefined) Some(getEndNodeUUIDList(tagsRels.ownerTags.get)) else None),
               collectiveTags = None /* TODO: collectiveTags */))
            else None
           ))).right

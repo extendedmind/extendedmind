@@ -84,8 +84,13 @@ trait ExtendedItem extends ShareableItem{
     else None
   }
 
-  def tags: Option[scala.List[UUID]] = {
+  def ownerTags: Option[scala.List[UUID]] = {
     if (relationships.isDefined) relationships.get.tags
+    else None
+  }
+
+  def collectiveTags: Option[scala.List[(UUID, scala.List[UUID])]] = {
+    if (relationships.isDefined) relationships.get.collectiveTags
     else None
   }
 }

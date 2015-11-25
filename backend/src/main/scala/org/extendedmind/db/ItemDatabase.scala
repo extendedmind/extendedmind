@@ -194,6 +194,8 @@ trait ItemDatabase extends UserDatabase {
 
   // PRIVATE
 
+  case class TagRelationships(ownerTags: Option[scala.List[Relationship]], collectiveTags: Option[scala.List[Relationship]])
+
   protected def getSharedListAccessRight(sharedLists: Map[UUID,(String, Byte)], relationships: Option[ExtendedItemRelationships]): Option[Byte] = {
     // Need to use list access rights
     if (relationships.isEmpty || relationships.get.parent.isEmpty){
@@ -312,7 +314,7 @@ trait ItemDatabase extends UserDatabase {
 
   // Methods for converting tasks and nodes
   def toTask(taskNode: Node, owner: Owner)(implicit neo4j: DatabaseService): Response[Task];
-  def toNote(noteNode: Node, owner: Owner, tagRelationships: Option[Option[scala.List[Relationship]]] = None, skipParent: Boolean = false)(implicit neo4j: DatabaseService): Response[Note];
+  def toNote(noteNode: Node, owner: Owner, tagRelationships: Option[Option[TagRelationships]] = None, skipParent: Boolean = false)(implicit neo4j: DatabaseService): Response[Note];
   def toTag(tagNode: Node, owner: Owner)(implicit neo4j: DatabaseService): Response[Tag];
   def toList(listNode: Node, owner: Owner)(implicit neo4j: DatabaseService): Response[List];
 
@@ -675,9 +677,9 @@ trait ItemDatabase extends UserDatabase {
           // Need to make sure the child does not already have this tag
           val tagRelationshipsResult = getTagRelationships(itemNode, owner)
           if (tagRelationshipsResult.isLeft) return Left(tagRelationshipsResult.left.get)
-          if (tagRelationshipsResult.right.get.isDefined) {
-            tagRelationshipsResult.right.get.get foreach (tagRelationship => {
-              if (tagRelationship.getEndNode() == historyTagNode) {
+          if (tagRelationshipsResult.right.get.isDefined && tagRelationshipsResult.right.get.get.ownerTags.isDefined) {
+            tagRelationshipsResult.right.get.get.ownerTags.get foreach (ownerTagRelationship => {
+              if (ownerTagRelationship.getEndNode() == historyTagNode) {
                 // Already has this history tag, return
                 return Right(archived)
               }
@@ -737,31 +739,63 @@ trait ItemDatabase extends UserDatabase {
     for {
       ownerNodes <- getOwnerNodes(owner).right
       oldTagRelationships <- getTagRelationships(itemNode, owner).right
-      newTagRelationships <- setTagRelationships(itemNode, ownerNodes, extItem.tags, oldTagRelationships).right
+      newTagRelationships <- setTagRelationships(itemNode, ownerNodes, extItem.ownerTags, extItem.collectiveTags, oldTagRelationships).right
     } yield newTagRelationships
   }
 
-  protected def setTagRelationships(itemNode: Node, ownerNodes: OwnerNodes, tagUUIDList: Option[scala.List[UUID]],
-    oldTagRelationships: Option[scala.List[Relationship]])(implicit neo4j: DatabaseService): Response[Option[scala.List[Relationship]]] = {
-    if (tagUUIDList.isDefined) {
-      val oldTagUUIDList = if (oldTagRelationships.isDefined) getEndNodeUUIDList(oldTagRelationships.get) else scala.List()
-      // Get all new UUIDs
-      val newUUIDList = tagUUIDList.get.diff(oldTagUUIDList)
-      // Get all removed UUIDs
-      val removedUUIDList = oldTagUUIDList.diff(tagUUIDList.get)
+  protected def setTagRelationships(itemNode: Node, ownerNodes: OwnerNodes,
+          ownerTagUUIDList: Option[scala.List[UUID]],
+          collectiveUUIDTagUUIDList: Option[scala.List[(UUID, scala.List[UUID])]],
+          oldTagRelationships: Option[TagRelationships])(implicit neo4j: DatabaseService): Response[Option[scala.List[Relationship]]] = {
 
+    // FIRST: owner tags
+
+    val oldOwnerTagUUIDList =
+      if (oldTagRelationships.isDefined && oldTagRelationships.get.ownerTags.isDefined)
+        getEndNodeUUIDList(oldTagRelationships.get.ownerTags.get)
+      else scala.List()
+    // Get all new owner UUIDs
+    val newOwnerUUIDList: scala.List[UUID] =
+      if (ownerTagUUIDList.isDefined) ownerTagUUIDList.get.diff(oldOwnerTagUUIDList)
+      else scala.List()
+    // Get all removed owner UUIDs
+    val removedOwnerUUIDList: scala.List[UUID] =
+      if (ownerTagUUIDList.isDefined) oldOwnerTagUUIDList.diff(ownerTagUUIDList.get)
+      else oldOwnerTagUUIDList
+
+    // SECOND: collective tags
+
+    // TODO: Verify at least read access to collectives in the list
+    val collectiveTagUUIDList: Option[scala.List[UUID]] = /*getCollectiveTagUUIDs*/ None
+
+    val oldCollectiveTagUUIDList =
+      if (oldTagRelationships.isDefined && oldTagRelationships.get.collectiveTags.isDefined)
+        // TODO: getCollectiveTagUUIDList(oldTagRelationships.get.collectiveTags.get)
+        scala.List()
+      else scala.List[UUID]()
+    // Get all new collective UUIDs
+    val newCollectiveUUIDList: scala.List[UUID] =
+      if (collectiveTagUUIDList.isDefined) collectiveTagUUIDList.get.diff(oldCollectiveTagUUIDList)
+      else scala.List()
+    // Get all removed collective UUIDs
+    val removedCollectiveUUIDList: scala.List[UUID] =
+      if (collectiveTagUUIDList.isDefined) oldCollectiveTagUUIDList.diff(collectiveTagUUIDList.get)
+      else oldCollectiveTagUUIDList
+
+    // THIRD: Combine lists, as all tag relationships are of type HAS_TAG
+
+    // Combine into a single list
+    val newTagUUIDList: scala.List[UUID] = newOwnerUUIDList ++ newCollectiveUUIDList
+    val removedTagUUIDList: scala.List[UUID] = removedOwnerUUIDList ++ removedCollectiveUUIDList
+
+    for {
       // It is not possible to use this method to add or remove HISTORY tags, that happens only via archive/unarchive
-      for {
-        newTagNodes <- getTagNodes(newUUIDList, ownerNodes, false, Some(TagLabel.HISTORY)).right
-        newTagRelationships <- Right(createTagRelationships(itemNode, newTagNodes)).right
-        removedTagNodes <- getTagNodes(removedUUIDList, ownerNodes, true, Some(TagLabel.HISTORY)).right
-        removedTagRelationships <- getTagRelationships(itemNode, removedTagNodes).right
-        result <- Right(deleteTagRelationships(removedTagRelationships)).right
-      } yield newTagRelationships
-    } else {
-      deleteTagRelationships(oldTagRelationships)
-      Right(None)
-    }
+      newTagNodes <- getTagNodes(newTagUUIDList, ownerNodes, false, Some(TagLabel.HISTORY)).right
+      newTagRelationships <- Right(createTagRelationships(itemNode, newTagNodes)).right
+      removedTagNodes <- getTagNodes(removedTagUUIDList, ownerNodes, true, Some(TagLabel.HISTORY)).right
+      removedTagRelationships <- getTagRelationships(itemNode, removedTagNodes).right
+      result <- Right(deleteTagRelationships(removedTagRelationships)).right
+    } yield newTagRelationships
   }
 
   protected def setAssigneeRelationship(itemNode: Node, ownerNodes: OwnerNodes, extItem: ExtendedItem)(implicit neo4j: DatabaseService): Response[Unit] = {
@@ -881,7 +915,7 @@ trait ItemDatabase extends UserDatabase {
     }))
   }
 
-  protected def getTagRelationships(itemNode: Node, owner: Owner)(implicit neo4j: DatabaseService): Response[Option[scala.List[Relationship]]] = {
+  protected def getTagRelationships(itemNode: Node, owner: Owner)(implicit neo4j: DatabaseService): Response[Option[TagRelationships]] = {
     val tagNodesFromItem: TraversalDescription =
       neo4j.gds.traversalDescription()
         .depthFirst()
@@ -901,19 +935,30 @@ trait ItemDatabase extends UserDatabase {
     val traverser = tagNodesFromItem.traverse(itemNode)
     val relationshipList = traverser.relationships().toArray
 
-    val tagRelationshipBuffer = new ListBuffer[Relationship]
+    val ownerTagRelationshipBuffer = new ListBuffer[Relationship]
+    val collectiveTagRelationshipBuffer = new ListBuffer[Relationship]
+
+
     var previousRelationship: Relationship = null
     relationshipList foreach (relationship => {
       if (relationship.getStartNode().hasLabel(MainLabel.OWNER)
         && (previousRelationship != null && previousRelationship.getEndNode() == relationship.getEndNode())) {
         if (relationship.getEndNode().hasLabel(ItemLabel.TAG))
-          tagRelationshipBuffer.append(previousRelationship)
+          ownerTagRelationshipBuffer.append(previousRelationship)
       }
       previousRelationship = relationship
     })
 
-    if (tagRelationshipBuffer.isEmpty) Right(None)
-    else Right(Some(tagRelationshipBuffer.toList))
+    if (ownerTagRelationshipBuffer.isEmpty && collectiveTagRelationshipBuffer.isEmpty){
+      Right(None)
+    }else{
+      Right(Some(TagRelationships(
+        ownerTags = {
+          if (ownerTagRelationshipBuffer.isEmpty) None
+          else Some(ownerTagRelationshipBuffer.toList)
+        },
+        None)))
+    }
   }
 
   protected def getTagRelationships(itemNode: Node, tagNodes: scala.List[Node])(implicit neo4j: DatabaseService): Response[Option[scala.List[Relationship]]] = {
@@ -1257,10 +1302,11 @@ trait ItemDatabase extends UserDatabase {
       for {
         tagRels <- getTagRelationships(itemNode, owner).right
         note <- toNote(itemNode, owner, tagRelationships=Some(tagRels), skipParent=true).right
-        tags <- getTagsWithParents(tagRels, owner).right
+        tagsResult <- getTagsWithParents(tagRels, owner).right
         assignee <- Right(getAssignee(itemNode)).right
-      } yield PublicItem(displayOwner, note.copy(archived=None, favorited=None), tags,
-          None /* TODO: collectiveTags */,
+      } yield PublicItem(displayOwner, note.copy(archived=None, favorited=None),
+          tagsResult._1,
+          tagsResult._2,
           assignee)
     }else{
       fail(INTERNAL_SERVER_ERROR, ERR_ITEM_NOT_NOTE, "Public item not note")
@@ -1275,16 +1321,22 @@ trait ItemDatabase extends UserDatabase {
     )
   }
 
-  protected def getTagsWithParents(tagRels: Option[scala.List[Relationship]], owner: Owner)
-          (implicit neo4j: DatabaseService): Response[Option[scala.List[Tag]]] = {
-    if (tagRels.isDefined && !tagRels.get.isEmpty){
+  protected def getTagsWithParents(tagRels: Option[TagRelationships], owner: Owner)
+          (implicit neo4j: DatabaseService): Response[(Option[scala.List[Tag]], Option[scala.List[(UUID, scala.List[Tag])]])] = {
+    if (tagRels.isDefined){
+
+      // FIRST: Owner tags
+
       val tagNodeBuffer = new ListBuffer[Node]
-      tagRels.get.foreach(tagRelationship => {
-        tagNodeBuffer.append(tagRelationship.getEndNode)
-      })
-      tagRels.get.foreach(tagRelationship => {
-        addNewAncestors(tagRelationship.getEndNode, tagNodeBuffer)
-      })
+      if (tagRels.get.ownerTags.isDefined){
+        tagRels.get.ownerTags.get.foreach(ownerTagRelationship => {
+          tagNodeBuffer.append(ownerTagRelationship.getEndNode)
+        })
+        tagRels.get.ownerTags.get.foreach(ownerTagRelationship => {
+          addNewAncestors(ownerTagRelationship.getEndNode, tagNodeBuffer)
+        })
+      }
+
       val tagBuffer = new ListBuffer[Tag]
       tagNodeBuffer.foreach(tagNode => {
         val tagResult = toTag(tagNode, owner)
@@ -1294,9 +1346,18 @@ trait ItemDatabase extends UserDatabase {
           return Left(tagResult.left.get)
         }
       })
-      Right(Some(tagBuffer.toList))
+
+      // SECOND: Collective tags
+
+      val collectiveTagNodeBuffer = new ListBuffer[(UUID, Node)]
+      val collectiveTagBuffer = new ListBuffer[(UUID, scala.List[Tag])]
+
+      // TODO: Collective tags
+
+      Right(( if (!tagBuffer.isEmpty) Some(tagBuffer.toList) else None,
+              if (!collectiveTagBuffer.isEmpty) Some(collectiveTagBuffer.toList) else None))
     }else{
-      Right(None)
+      Right((None, None))
     }
   }
 
