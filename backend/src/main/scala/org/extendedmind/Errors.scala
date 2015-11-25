@@ -38,6 +38,7 @@ case object ERR_BASE_INFO_MORE_THAN_1 extends ErrorCode(31)
 case object ERR_COLLECTIVE_NO_FOUNDER extends ErrorCode(1001)
 case object ERR_COLLECTIVE_MORE_THAN_1_FOUNDER extends ErrorCode(1002)
 case object ERR_COLLECTIVE_WRONG_FOUNDER extends ErrorCode(1003)
+case object ERR_COLLECTIVE_NO_ACCESS extends ErrorCode(1004)
 
 case object ERR_INVITE_DELETE_ACCEPTED extends ErrorCode(2001)
 case object ERR_INVITE_NOT_FOUND extends ErrorCode(2002)

@@ -929,7 +929,9 @@ trait UserDatabase extends AbstractGraphDatabase {
         if(existingRelationship.isDefined){
           if (targetNode.hasLabel(OwnerLabel.COLLECTIVE)){
             // Removing permission to collective, remove assignees as well
-            removeAssigneeRelationships(targetNode, userNode)
+            removeCollectiveAssigneeRelationships(targetNode, userNode)
+            val response = removeCollectiveTagRelationships(targetNode, userNode)
+            if (response.isLeft) return Left(response.left.get)
           }
           // Make sure modified value for end node is always changed also when permission is removed
           existingRelationship.get.getEndNode.setProperty("modified", System.currentTimeMillis)
@@ -943,7 +945,8 @@ trait UserDatabase extends AbstractGraphDatabase {
   }
 
   // Child needs to implement this method
-  protected def removeAssigneeRelationships(collectiveNode: Node, userNode: Node)(implicit neo4j: DatabaseService): Unit;
+  protected def removeCollectiveAssigneeRelationships(collectiveNode: Node, userNode: Node)(implicit neo4j: DatabaseService): Unit;
+  protected def removeCollectiveTagRelationships(collectiveNode: Node, userNode: Node)(implicit neo4j: DatabaseService): Response[Unit];
 
   protected def getSecurityRelationship(targetNode: Node, userNode: Node)
       (implicit neo4j: DatabaseService): Response[Option[Relationship]] = {

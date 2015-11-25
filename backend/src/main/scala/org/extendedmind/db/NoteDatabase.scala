@@ -196,7 +196,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
               }),
               assigner = assigneeRel.flatMap(assigneeRel => Some(UUIDUtils.getUUID(assigneeRel.getProperty("assigner").asInstanceOf[String]))),
               tags = tagsRels.flatMap(tagsRels => if (tagsRels.ownerTags.isDefined) Some(getEndNodeUUIDList(tagsRels.ownerTags.get)) else None),
-              collectiveTags = None /* TODO: collectiveTags */))
+              collectiveTags = tagsRels.flatMap(tagsRels => getCollectiveTagEndNodeUUIDList(tagsRels.collectiveTags))))
            else None
           ))).right
     } yield note
