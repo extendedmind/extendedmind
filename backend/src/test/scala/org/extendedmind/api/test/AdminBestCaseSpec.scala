@@ -313,7 +313,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
       Post("/admin/user/" + authenticateResponse.userUUID + "/items/rebuild") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         writeJsonOutput("itemsRebuildResponse", responseAs[String])
         val countResult = responseAs[CountResult]
-        countResult.count should be(23)
+        countResult.count should be(16)
       }
     }
     it("should successfully get statistics with GET to /admin") {

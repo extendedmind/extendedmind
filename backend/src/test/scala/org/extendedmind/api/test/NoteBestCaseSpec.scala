@@ -228,7 +228,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
         val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
         // Put the same tags to the new public note as in the note before that
         val newNote = Note("Public note", None, None, Some("this is public"), None, None,
-            Some(ExtendedItemRelationships(None, None, None, None, publicItem.note.relationships.get.tags, None)))
+            Some(ExtendedItemRelationships(None, None, None, None, None, publicItem.note.relationships.get.collectiveTags)))
         val putNoteResponse = putNewNote(newNote, authenticateResponse)
         Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/publish",
             marshal(PublishPayload("md", Some("test")))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
@@ -237,13 +237,17 @@ class NoteBestCaseSpec extends ServiceSpecBase {
             val publicItems = responseAs[PublicItems]
             writeJsonOutput("publicItemsResponse", responseAs[String])
             publicItems.notes.get.size should be(2)
-            publicItems.tags.get.size should be(2)
+            publicItems.collectiveTags.get.size should be(1)
+            publicItems.collectiveTags.get(0)._2.size should be(2)
             // Getting modified should return only the latter
             Get("/public/timo?modified=" + putNoteResponse.modified) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
               val modifiedPublicItems = responseAs[PublicItems]
               modifiedPublicItems.owner should be(None)
               modifiedPublicItems.notes.get.size should be(1)
-              modifiedPublicItems.tags.get.size should be(2)
+              modifiedPublicItems.tags should be(None)
+              modifiedPublicItems.collectiveTags.get.size should be(1)
+              modifiedPublicItems.collectiveTags.get(0)._2.size should be(2)
+
               val latestModified = modifiedPublicItems.notes.get(0).modified.get
               // Change account values, expect modified to return different values
               Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
@@ -258,6 +262,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
                     nonPublicModifiedItems.modified should be (None)
                     nonPublicModifiedItems.notes should be(None)
                     nonPublicModifiedItems.tags should be(None)
+                    nonPublicModifiedItems.collectiveTags should be(None)
                     Put("/account",
                       marshal(account.copy(displayName=Some("testing"))).right.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                       Get("/public/timo?modified=" + putNoteResponse.modified) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
@@ -266,6 +271,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
                         assert(ownerModifiedPublicItems.modified.get > publicItems.modified.get)
                         nonPublicModifiedItems.notes should be(None)
                         nonPublicModifiedItems.tags should be(None)
+                        nonPublicModifiedItems.collectiveTags should be(None)
                       }
                     }
                   }

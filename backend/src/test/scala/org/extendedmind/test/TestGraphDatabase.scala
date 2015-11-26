@@ -59,6 +59,7 @@ trait TestGraphDatabase extends GraphDatabase {
   var timoUUID: UUID = null
   var lauriUUID: UUID = null
   var emtUUID: UUID = null
+  var emUUID: UUID = null
 
   def insertTestData(testDataLocation: Option[String] = None) {
     // Insert transaction event handlers at the beginning of each test
@@ -84,8 +85,8 @@ trait TestGraphDatabase extends GraphDatabase {
       implicit neo =>
         // Set a predictable test UUID "11111111-1111-1111-1111-111111111111" for the common collective,
         // stored as tight base64
+        emUUID = java.util.UUID.fromString("11111111-1111-1111-1111-111111111111")
         extendedMind.setProperty("uuid", "EREREREREREREREREREREQ")
-
         // Store a uuid with + character that needs to be escaped in Lucene indices
         timoNode.setProperty("uuid","+eDZ9pdBSQWexIARddL9zA")
     }
@@ -156,6 +157,45 @@ trait TestGraphDatabase extends GraphDatabase {
         }
     }
 
+    // Extended Mind
+
+    // Common contexts, and one productivity tag
+    val homeTag = putNewTag(Owner(timoUUID, Some(emUUID)),
+      Tag("home", None, None, CONTEXT, None))
+    val officeTag = putNewTag(Owner(timoUUID, Some(emUUID)),
+      Tag("office", None, None, CONTEXT, None))
+    val computerTag = putNewTag(Owner(timoUUID, Some(emUUID)),
+      Tag("computer", None, None, CONTEXT, None))
+    val browserTag = putNewTag(Owner(timoUUID, Some(emUUID)),
+      Tag("browser", None, None, CONTEXT, computerTag.right.get.uuid))
+    val emailTag = putNewTag(Owner(timoUUID, Some(emUUID)),
+      Tag("email", None, None, CONTEXT, computerTag.right.get.uuid))
+
+    val workTag = putNewTag(Owner(timoUUID, Some(emUUID)),
+      Tag("work", None, None, KEYWORD, None))
+    val productivityTag = putNewTag(Owner(timoUUID, Some(emUUID)),
+      Tag("productivity", None, None, KEYWORD, workTag.right.get.uuid))
+
+    // Extended Mind Technologies
+
+    // Store tags for EMT
+    val devopsTag = putNewTag(Owner(timoUUID, Some(emtUUID)),
+      Tag("devops", None, None, KEYWORD, None))
+
+    // Store items for EMT
+    putNewItem(Owner(timoUUID, Some(emtUUID)),
+      Item("should we try a premortem?", None, None)).right.get
+    putNewItem(Owner(timoUUID, Some(emtUUID)),
+      Item("review agile project planning tools", None, None)).right.get
+
+    // Store tasks for EMT
+    putNewTask(Owner(timoUUID, Some(emtUUID)),
+      Task("backup script changes", None, None, Some("2014-06-02"), None, None, None)).right.get
+
+    // Store notes for EMT
+    putNewNote(Owner(timoUUID, Some(emtUUID)),
+      Note("list of servers", None, None, None, None, None,
+          Some(ExtendedItemRelationships(None, None, None, None, Some(scala.List(devopsTag.right.get.uuid.get)), None)))).right.get
 
     // Timo's personal items
 
@@ -166,22 +206,8 @@ trait TestGraphDatabase extends GraphDatabase {
       Item("remember the milk", None, None)).right.get
 
     // Store tags for user
-    val homeTag = putNewTag(Owner(timoUUID, None),
-      Tag("home", None, None, CONTEXT, None))
-    val officeTag = putNewTag(Owner(timoUUID, None),
-      Tag("office", None, None, CONTEXT, None))
-    val computerTag = putNewTag(Owner(timoUUID, None),
-      Tag("computer", None, None, CONTEXT, None))
-    val browserTag = putNewTag(Owner(timoUUID, None),
-      Tag("browser", None, None, CONTEXT, computerTag.right.get.uuid))
-    val emailTag = putNewTag(Owner(timoUUID, None),
-      Tag("email", None, None, CONTEXT, computerTag.right.get.uuid))
     val secretTag = putNewTag(Owner(timoUUID, None),
       Tag("secret", None, None, KEYWORD, None))
-    val workTag = putNewTag(Owner(timoUUID, None),
-      Tag("work", None, None, KEYWORD, None))
-    val productivityTag = putNewTag(Owner(timoUUID, None),
-      Tag("productivity", None, None, KEYWORD, workTag.right.get.uuid))
 
     // Store lists for user
     val extendedMindTechnologiesList = putNewList(Owner(timoUUID, None),
@@ -194,17 +220,21 @@ trait TestGraphDatabase extends GraphDatabase {
     // Store tasks for user
     putNewTask(Owner(timoUUID, None),
       Task("clean closet", None, None, None, None, None,
-        Some(ExtendedItemRelationships(None, None, None, None, Some(scala.List(homeTag.right.get.uuid.get)), None)))).right.get
+        Some(ExtendedItemRelationships(None, None, None, None, None,
+            Some(scala.List((emUUID, scala.List(homeTag.right.get.uuid.get)))))))).right.get
     putNewTask(Owner(timoUUID, None),
       Task("book flight", None, None, Some("2014-01-01"), None, None,
-        Some(ExtendedItemRelationships(Some(tripList.uuid.get), None, None, None, Some(scala.List(browserTag.right.get.uuid.get)), None)))).right.get
+        Some(ExtendedItemRelationships(Some(tripList.uuid.get), None, None, None, None,
+            Some(scala.List((emUUID, scala.List(browserTag.right.get.uuid.get)))))))).right.get
     putNewTask(Owner(timoUUID, None),
       Task("print tickets", None, Some("http://www.finnair.fi"), Some("2014-01-02"), None,
           Some(scala.List(Reminder("12345678901234567", "ln", "ios-cordova", "iPhone6", System.currentTimeMillis + 60000))),
-        Some(ExtendedItemRelationships(Some(tripList.uuid.get), None, None, None, Some(scala.List(officeTag.right.get.uuid.get)), None)))).right.get
+        Some(ExtendedItemRelationships(Some(tripList.uuid.get), None, None, None, None,
+            Some(scala.List((emUUID, scala.List(officeTag.right.get.uuid.get)))))))).right.get
     val completedTask = putNewTask(Owner(timoUUID, None),
       Task("get ext.md domain", None, None, Some("2013-05-01"), None, None,
-        Some(ExtendedItemRelationships(Some(extendedMindTechnologiesList.uuid.get), None, None, None, Some(scala.List(browserTag.right.get.uuid.get)), None)))).right.get
+        Some(ExtendedItemRelationships(Some(extendedMindTechnologiesList.uuid.get), None, None, None, None,
+            Some(scala.List((emUUID, scala.List(browserTag.right.get.uuid.get)))))))).right.get
     completeTask(Owner(timoUUID, None), completedTask.uuid.get, None)
     putNewTask(Owner(timoUUID, None),
       Task("sketch outline for essay", None, None, Some("2014-03-08"), None, None,
@@ -236,8 +266,8 @@ trait TestGraphDatabase extends GraphDatabase {
           "## process \n" +
           "increasing your productivity doesn't happen overnight"),
         Some("md"), None,
-        Some(ExtendedItemRelationships(Some(extendedMindTechnologiesList.uuid.get), None, None, None,
-          Some(scala.List(productivityTag.right.get.uuid.get)), None)))).right.get
+        Some(ExtendedItemRelationships(Some(extendedMindTechnologiesList.uuid.get), None, None, None, None,
+          Some(scala.List((emUUID, scala.List(productivityTag.right.get.uuid.get)))))))).right.get
     publishNote(Owner(timoUUID, None), result.uuid.get, "md", Some("productivity"))
 
     // Timo shares essay list with Lauri
@@ -248,22 +278,6 @@ trait TestGraphDatabase extends GraphDatabase {
     val agreementCode = 1234L
     val saveResponse = saveAgreementAcceptInformation(shareAgreementResult._1.uuid.get, agreementCode, "1234")
     acceptAgreement(agreementCode, LAURI_EMAIL).right.get
-
-    // Extended Mind Technologies
-
-    // Store items for EMT
-    putNewItem(Owner(timoUUID, Some(emtUUID)),
-      Item("should we try a premortem?", None, None)).right.get
-    putNewItem(Owner(timoUUID, Some(emtUUID)),
-      Item("review agile project planning tools", None, None)).right.get
-
-    // Store tasks for EMT
-    putNewTask(Owner(timoUUID, Some(emtUUID)),
-      Task("backup script changes", None, None, Some("2014-06-02"), None, None, None)).right.get
-
-    // Store notes for EMT
-    putNewNote(Owner(timoUUID, Some(emtUUID)),
-      Note("list of servers", None, None, None, None, None, None)).right.get
 
     // Lauri's personal items
 

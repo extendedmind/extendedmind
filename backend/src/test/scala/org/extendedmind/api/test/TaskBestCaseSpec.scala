@@ -219,15 +219,20 @@ class TaskBestCaseSpec extends ServiceSpecBase {
         // Add new tag to tags and update task
         val taskWithAddedTag = newTask.copy(relationships = Some(
             ExtendedItemRelationships(None, None, None, None, Some(
-                scala.List(itemsResponse.tags.get(0).uuid.get, itemsResponse.tags.get(1).uuid.get)),
+                scala.List(itemsResponse.tags.get(0).uuid.get)),
                 None)));
         putExistingTask(taskWithAddedTag, putTaskResponse.uuid.get, authenticateResponse)
+
+        // Find a collective tag from one note
+        val noteWithCollectiveTags = itemsResponse.notes.get.find(note => {
+          note.relationships.isDefined && note.relationships.get.collectiveTags.isDefined
+        }).get
 
         // Change one tag and update task
         val taskWithChangedTag = taskWithAddedTag.copy(relationships = Some(
             ExtendedItemRelationships(None, None, None, None, Some(
-                scala.List(itemsResponse.tags.get(0).uuid.get, itemsResponse.tags.get(2).uuid.get)),
-                None)));
+                scala.List(itemsResponse.tags.get(0).uuid.get)),
+                noteWithCollectiveTags.relationships.get.collectiveTags)))
         putExistingTask(taskWithChangedTag, putTaskResponse.uuid.get, authenticateResponse)
 
         // Revert to one tag and update task
@@ -236,6 +241,7 @@ class TaskBestCaseSpec extends ServiceSpecBase {
         val endTask = getTask(putTaskResponse.uuid.get, authenticateResponse)
         endTask.relationships.get.tags.get.size should be (1)
         endTask.relationships.get.tags.get(0) should be (itemsResponse.tags.get(0).uuid.get)
+        endTask.relationships.get.collectiveTags should be (None)
       }
     }
     it("should successfully convert task to note with POST to /[userUUID]/task/[itemUUID]/note "

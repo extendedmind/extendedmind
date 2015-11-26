@@ -967,9 +967,8 @@ trait ItemDatabase extends UserDatabase {
           foundEvaluation = Evaluation.INCLUDE_AND_CONTINUE,
           notFoundEvaluation = Evaluation.EXCLUDE_AND_PRUNE,
           length = Some(1)))
-        .evaluator(UUIDEvaluator(getOwnerUUID(owner), length = Some(2)))
         .evaluator(Evaluators.toDepth(2))
-        .uniqueness(Uniqueness.NODE_PATH) // We want to get the userUUID twice to be sure that we have the same owner for both paths
+        .uniqueness(Uniqueness.NODE_PATH)
 
     val traverser = tagNodesFromItem.traverse(itemNode)
     val relationshipList = traverser.relationships().toArray
@@ -977,13 +976,17 @@ trait ItemDatabase extends UserDatabase {
     val ownerTagRelationshipBuffer = new ListBuffer[Relationship]
     val collectiveTagRelationshipBuffer = new ListBuffer[Relationship]
 
-
     var previousRelationship: Relationship = null
     relationshipList foreach (relationship => {
       if (relationship.getStartNode().hasLabel(MainLabel.OWNER)
         && (previousRelationship != null && previousRelationship.getEndNode() == relationship.getEndNode())) {
-        if (relationship.getEndNode().hasLabel(ItemLabel.TAG))
-          ownerTagRelationshipBuffer.append(previousRelationship)
+        if (relationship.getEndNode().hasLabel(ItemLabel.TAG)){
+          if (getUUID(relationship.getStartNode()) == owner.userUUID){
+            ownerTagRelationshipBuffer.append(previousRelationship)
+          }else{
+            collectiveTagRelationshipBuffer.append(previousRelationship)
+          }
+        }
       }
       previousRelationship = relationship
     })
@@ -996,7 +999,10 @@ trait ItemDatabase extends UserDatabase {
           if (ownerTagRelationshipBuffer.isEmpty) None
           else Some(ownerTagRelationshipBuffer.toList)
         },
-        None)))
+        collectiveTags = {
+          if (collectiveTagRelationshipBuffer.isEmpty) None
+          else Some(collectiveTagRelationshipBuffer.toList)
+        })))
     }
   }
 
@@ -1419,6 +1425,20 @@ trait ItemDatabase extends UserDatabase {
           addNewAncestors(collectiveTag, collectiveTagNodeBuffer)
         })
       }
+
+      // Convert node buffer to tag buffer
+      collectiveTagNodeBuffer.foreach(collectiveTagNode => {
+        val tagResult = toTag(collectiveTagNode._2, owner)
+        if (tagResult.isLeft) return Left(tagResult.left.get)
+        collectiveTagBuffer.find(existingCollectiveTag => existingCollectiveTag._1 == collectiveTagNode._1).fold({
+          collectiveTagBuffer.append( (collectiveTagNode._1, scala.List(tagResult.right.get)) )
+        })(existingCollectiveTags => {
+          val jointTags = (existingCollectiveTags._1, (existingCollectiveTags._2 :+ tagResult.right.get).distinct)
+          collectiveTagBuffer -= existingCollectiveTags
+          collectiveTagBuffer.append(jointTags)
+        })
+      })
+
       Right(( if (!tagBuffer.isEmpty) Some(tagBuffer.toList) else None,
               if (!collectiveTagBuffer.isEmpty) Some(collectiveTagBuffer.toList) else None))
     }else{
