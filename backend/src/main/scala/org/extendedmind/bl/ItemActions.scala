@@ -48,13 +48,13 @@ trait ItemActions {
     db.putExistingItem(owner, itemUUID, item)
   }
 
-  def getItems(owner: Owner, modified: Option[Long], active: Boolean, deleted: Boolean, archived: Boolean, completed: Boolean)(implicit log: LoggingAdapter): Response[Items] = {
+  def getItems(owner: Owner, modified: Option[Long], active: Boolean, deleted: Boolean, archived: Boolean, completed: Boolean, tagsOnly: Boolean)(implicit log: LoggingAdapter): Response[Items] = {
     log.info("getItems")
 
     // When using shared lists, archived needs to always be true to make sure archiving list
     // does not break sharing
     val overrideArchived = if (owner.isLimitedAccess) true else archived
-    val ownerItems = db.getItems(owner, modified, active, deleted, overrideArchived, completed)
+    val ownerItems = db.getItems(owner, modified, active, deleted, overrideArchived, completed, tagsOnly)
 
     if (ownerItems.isRight) {
       if (owner.isLimitedAccess){

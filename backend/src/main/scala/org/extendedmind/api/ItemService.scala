@@ -49,13 +49,13 @@ trait ItemService extends ServiceBase {
 
   def itemRoutes = {
       getItems { ownerUUID =>
-        parameters('modified.as[Long].?, 'active ? true, 'deleted ? false, 'archived ? false, 'completed ? false) { (modified, active, deleted, archived, completed) =>
-      	  authenticate(ExtendedAuth(authenticator, "shareable", Some(ownerUUID))) { securityContext =>
+        parameters('modified.as[Long].?, 'active ? true, 'deleted ? false, 'archived ? false, 'completed ? false, 'tagsOnly? false) { (modified, active, deleted, archived, completed, tagsOnly) =>
+          authenticate(ExtendedAuth(authenticator, "shareable", Some(ownerUUID))) { securityContext =>
             authorize(readAccess(ownerUUID, securityContext, shareable = true)) {
               complete {
                 Future[Items] {
                   setLogContext(securityContext, ownerUUID)
-                  itemActions.getItems(getOwner(ownerUUID, securityContext), modified, active, deleted, archived, completed) match {
+                  itemActions.getItems(getOwner(ownerUUID, securityContext), modified, active, deleted, archived, completed, tagsOnly) match {
                     case Right(items) => processResult(items)
                     case Left(e) => processErrors(e)
                   }

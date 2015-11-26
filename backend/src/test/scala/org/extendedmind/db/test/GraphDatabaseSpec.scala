@@ -41,23 +41,23 @@ class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
   describe("UserDatabase"){
     it("should getUser"){
       val testEmail = TIMO_EMAIL
-    	db.getUser(testEmail) match {
-				case Right(user) => assert(user.email.get === testEmail)
-				case Left(e) => {
-				  e foreach (resp => {
-				      println(resp)
-				      if (resp.throwable.isDefined) resp.throwable.get.printStackTrace()
-				    }
-				  )
-				  fail("Got errors")
-				}
-    	}
+      db.getUser(testEmail) match {
+        case Right(user) => assert(user.email.get === testEmail)
+        case Left(e) => {
+          e foreach (resp => {
+              println(resp)
+              if (resp.throwable.isDefined) resp.throwable.get.printStackTrace()
+            }
+          )
+          fail("Got errors")
+        }
+      }
     }
   }
   describe("ItemDatabase"){
      it("should getItems"){
 
-       db.getItems(Owner(db.timoUUID, None), None, true, false, false, false) match {
+       db.getItems(Owner(db.timoUUID, None), None, true, false, false, false, false) match {
         case Right(items) => {
           assert(items.items.isDefined)
           assert(items.items.get.size === 2)

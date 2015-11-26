@@ -84,12 +84,12 @@ trait ItemDatabase extends UserDatabase {
     }
   }
 
-  def getItems(owner: Owner, modified: Option[Long], active: Boolean, deleted: Boolean, archived: Boolean, completed: Boolean)(implicit log: LoggingContext): Response[Items] = {
+  def getItems(owner: Owner, modified: Option[Long], active: Boolean, deleted: Boolean, archived: Boolean, completed: Boolean, tagsOnly: Boolean)(implicit log: LoggingContext): Response[Items] = {
     withTx {
       implicit neo4j =>
         for {
           ownerUUID <- Right(getOwnerUUID(owner)).right
-          itemNodes <- getItemNodes(ownerUUID, modified, active, deleted, archived, completed).right
+          itemNodes <- getItemNodes(ownerUUID, modified, active, deleted, archived, completed, tagsOnly).right
           items <- getItems(itemNodes, owner).right
         } yield items
     }
@@ -319,7 +319,7 @@ trait ItemDatabase extends UserDatabase {
   def toList(listNode: Node, owner: Owner)(implicit neo4j: DatabaseService): Response[List];
 
   protected def getItemNodes(ownerUUID: UUID, modified: Option[Long], active: Boolean, deleted: Boolean,
-                             archived: Boolean, completed: Boolean, publicOnly: Boolean = false)
+                             archived: Boolean, completed: Boolean, tagsOnly: Boolean = false, publicOnly: Boolean = false)
                             (implicit neo4j: DatabaseService): Response[Iterable[Node]] = {
     val itemsIndex = neo4j.gds.index().forNodes("items")
 
@@ -342,10 +342,11 @@ trait ItemDatabase extends UserDatabase {
       }
     }
 
-    if (!itemNodeList.isEmpty && (!active || !deleted || !archived || !completed || publicOnly)) {
+    if (!itemNodeList.isEmpty && (!active || !deleted || !archived || !completed || publicOnly || tagsOnly)) {
       // Filter out active, deleted, archived and/or completed
       Right(itemNodeList filter (itemNode => {
         var include = true
+        if (tagsOnly && !itemNode.hasLabel(ItemLabel.TAG)) include = false
         if (publicOnly &&
             (!itemNode.hasProperty("published") ||
             ((itemNode.hasProperty("unpublished") || itemNode.hasProperty("deleted")) && modified.isEmpty))) include = false

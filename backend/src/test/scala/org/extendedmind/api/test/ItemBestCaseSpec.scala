@@ -108,6 +108,17 @@ class ItemBestCaseSpec extends ServiceSpecBase {
         itemsResponse.lists.get(0).visibility.get.agreements.get(0).proposedBy.get.email.get should be (TIMO_EMAIL)
        }
     }
+    it("should return only tags response on /[userUUID]/items?tagsOnly=true") {
+      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+      Get("/" + authenticateResponse.userUUID + "/items?tagsOnly=true") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        val itemsResponse = responseAs[Items]
+        itemsResponse.items should be (None)
+        itemsResponse.tasks should be (None)
+        itemsResponse.notes should be (None)
+        itemsResponse.lists should be (None)
+        itemsResponse.tags should not be None
+      }
+    }
     it("should successfully put new item on PUT to /[userUUID]/item "
       + "update it with PUT to /[userUUID]/item/[itemUUID] "
       + "and get it back with GET to /[userUUID]/item/[itemUUID] "
