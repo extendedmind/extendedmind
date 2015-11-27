@@ -363,6 +363,18 @@
       syncWebStorages();
       return SessionStorageService.getCollectives();
     },
+    isCollective: function(ownerUUID) {
+      if (ownerUUID){
+        var collectives = this.getCollectives();
+        if (collectives){
+          for (var collectiveUUID in collectives){
+            if (collectives.hasOwnProperty(collectiveUUID) && ownerUUID === collectiveUUID){
+              return true;
+            }
+          }
+        }
+      }
+    },
     getSharedLists: function() {
       syncWebStorages();
       return SessionStorageService.getSharedLists();

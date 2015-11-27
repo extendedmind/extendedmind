@@ -960,8 +960,18 @@
     });
   }
 
-  function synchronize(ownerUUID, sinceLastItemsSynchronized, initialParams) {
-    function doSynchronize(url, latestModified, deferred, initialParams){
+  function getAllTagsOnline(ownerUUID) {
+    return BackendClientService.getSecondary('/api/' +
+                                             ownerUUID +
+                                             '/items?tagsOnly=true', getItemsRegex,
+                                             undefined, true).then(function(response) {
+      setItemArrays(response, ownerUUID);
+      return response;
+    });
+  }
+
+  function synchronize(ownerUUID, sinceLastItemsSynchronized, initialParams, tagsOnly) {
+    function doSynchronize(url, latestModified, deferred, initialParams, tagsOnly){
       if (UserSessionService.isFakeUser()){
         deferred.resolve('fakeUser');
       }else if (latestModified !== undefined) {
@@ -972,11 +982,15 @@
         }
         url += 'deleted=true&archived=true&completed=true';
 
+        if (tagsOnly) url += '&tagsOnly=true';
+
         // Push request to offline buffer
         var params = initialParams ? initialParams : {};
         params.owner = ownerUUID;
         BackendClientService.getSecondary(url, getItemsRegex, params);
         deferred.resolve('delta');
+      } else if (tagsOnly){
+        getAllOnline(ownerUUID, getAllTagsOnline, deferred);
       } else {
         getAllOnline(ownerUUID, getAllItemsOnline, deferred);
       }
@@ -1025,10 +1039,10 @@
         }
         // Set data and then synchronize
         UserSessionService.setPersistentDataLoaded(true);
-        doSynchronize(url, latestModified, deferred, initialParams);
+        doSynchronize(url, latestModified, deferred, initialParams, tagsOnly);
       });
     }else {
-      doSynchronize(url, latestModified, deferred, initialParams);
+      doSynchronize(url, latestModified, deferred, initialParams, tagsOnly);
     }
 
     return deferred.promise;
@@ -1056,8 +1070,8 @@
 
   return {
     // Main method to synchronize all arrays with backend.
-    synchronize: function(ownerUUID, sinceLastItemsSynchronized, initialParams) {
-      return synchronize(ownerUUID, sinceLastItemsSynchronized, initialParams);
+    synchronize: function(ownerUUID, sinceLastItemsSynchronized, initialParams, tagsOnly) {
+      return synchronize(ownerUUID, sinceLastItemsSynchronized, initialParams, tagsOnly);
     },
     addCompletedAndArchived: function(ownerUUID) {
       var deferred = $q.defer();

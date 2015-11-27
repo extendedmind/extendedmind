@@ -87,21 +87,23 @@ function MockItemsBackendService($httpBackend, ItemsService, SynchronizeService,
         if (url.indexOf('?modified=') !== -1 || url.indexOf('?deleted=') !== -1){
           var modifiedResponse = {};
           var ownerUUID = url.substr(5, 36);
+
+          var tagsOnly = (url.indexOf('tagsOnly=true') !== -1);
           // Search values that contain mod from the PersistentStorageService and return them
           var modifiedItems = SynchronizeService.getModifiedItems('item', ownerUUID);
-          if (modifiedItems && modifiedItems.length){
+          if (modifiedItems && modifiedItems.length && !tagsOnly){
             modifiedResponse.items = convertModifiedItemsIntoPersistent(modifiedItems);
           }
           var modifiedTasks = SynchronizeService.getModifiedItems('task', ownerUUID);
-          if (modifiedTasks && modifiedTasks.length){
+          if (modifiedTasks && modifiedTasks.length && !tagsOnly){
             modifiedResponse.tasks = convertModifiedItemsIntoPersistent(modifiedTasks);
           }
           var modifiedNotes = SynchronizeService.getModifiedItems('note', ownerUUID);
-          if (modifiedNotes && modifiedNotes.length){
+          if (modifiedNotes && modifiedNotes.length && !tagsOnly){
             modifiedResponse.notes = convertModifiedItemsIntoPersistent(modifiedNotes);
           }
           var modifiedLists = SynchronizeService.getModifiedItems('list', ownerUUID);
-          if (modifiedLists && modifiedLists.length){
+          if (modifiedLists && modifiedLists.length && !tagsOnly){
             modifiedResponse.lists = convertModifiedItemsIntoPersistent(modifiedLists);
           }
           var modifiedTags = SynchronizeService.getModifiedItems('tag', ownerUUID);
@@ -151,6 +153,9 @@ function MockItemsBackendService($httpBackend, ItemsService, SynchronizeService,
           return expectResponse(method, url, data, headers, {});
         }else if (url.indexOf('?deleted=true') != -1){
           return expectResponse(method, url, data, headers, {});
+        }else if (url.indexOf('?tagsOnly=true') != -1){
+          var tagsOnlyItemsResponseData = getJSONFixture('tagsOnlyItemsResponse.json');
+          return expectResponse(method, url, data, headers, tagsOnlyItemsResponseData);
         }else{
           var authenticateResponse = getJSONFixture('authenticateResponse.json');
           for (var collectiveUUID in authenticateResponse.collectives) {

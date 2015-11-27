@@ -17,7 +17,7 @@
 
 // Controller for synchronizing
 function SynchronizeController($q, $rootScope, $scope, $timeout,
-                        BackendClientService, SynchronizeService,
+                        BackendClientService, SynchronizeService, TagsService,
                         UISessionService, UserSessionService, packaging) {
 
   var synchronizeTimer;
@@ -215,33 +215,29 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
   }
   BackendClientService.registerAfterSecondaryWithEmptyQueueCallback(afterSecondaryWithEmptyQueueCallback);
 
-  function getOtherOwnerUUIDs(sharedLists, adoptedLists){
-    var otherOwnerUUIDs;
-    if (sharedLists){
-      for (var sharedListOwnerUUID in sharedLists) {
-        if (sharedLists.hasOwnProperty(sharedListOwnerUUID)){
-          if (!otherOwnerUUIDs) otherOwnerUUIDs = [];
-          otherOwnerUUIDs.push(sharedListOwnerUUID);
+  function getOwnerUUIDsFromObject(ownerObject){
+    var ownerUUIDArray = [];
+    if (ownerObject){
+      for (var ownerUUID in ownerObject) {
+        if (ownerObject.hasOwnProperty(ownerUUID)){
+          ownerUUIDArray.push(ownerUUID);
         }
       }
     }
-    if (adoptedLists){
-      for (var adoptedListOwnerUUID in adoptedLists) {
-        if (adoptedLists.hasOwnProperty(adoptedListOwnerUUID)){
-          if (!otherOwnerUUIDs) otherOwnerUUIDs = [];
-          otherOwnerUUIDs.push(adoptedListOwnerUUID);
-        }
-      }
-    }
-    return otherOwnerUUIDs;
+    return ownerUUIDArray;
   }
 
   // Synchronizes the other owner that has not been synced for the longest period
   function synchronizeMostStaleOtherOwner(previousParams, forceIfNotPreviouslySynced){
-    var otherOwnerUUIDs = getOtherOwnerUUIDs(UserSessionService.getSharedLists(),
-                                             UserSessionService.getUIPreference('adoptedLists'));
+    var collectivesUUIDsWithAddedTags = TagsService.getCollectivesWithAddedTags(
+                                                  UISessionService.getActiveUUID());
+    var sharedListOwnerUUIDs = getOwnerUUIDsFromObject(UserSessionService.getSharedLists());
+    var adoptedListsOwnerUUIDs = getOwnerUUIDsFromObject(UserSessionService.getUIPreference('adoptedLists'));
+    var otherOwnerUUIDs =
+      collectivesUUIDsWithAddedTags.concat(sharedListOwnerUUIDs).concat(adoptedListsOwnerUUIDs).unique();
+
     return $q(function(resolve, reject) {
-      if (otherOwnerUUIDs){
+      if (otherOwnerUUIDs.length){
         var biggestSince;
         var mostStaleOwnerUUID;
         for (var i=0; i<otherOwnerUUIDs.length; i++) {
@@ -261,7 +257,16 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
             else forceSyncParams = {shared: previousParams.shared};
             forceSyncParams.shared.push(mostStaleOwnerUUID);
           }
-          synchronizeItems(mostStaleOwnerUUID, biggestSince, forceSyncParams).then(function(status){
+          var tagsOnly = false;
+          if (collectivesUUIDsWithAddedTags.indexOf(mostStaleOwnerUUID) !== -1 &&
+              sharedListOwnerUUIDs.indexOf(mostStaleOwnerUUID) === -1 &&
+              adoptedListsOwnerUUIDs.indexOf(mostStaleOwnerUUID) === -1){
+            // The other owner is only in the collective with tags, then we should get tags only as it is
+            // a lot faster
+            tagsOnly = true;;
+          }
+
+          synchronizeItems(mostStaleOwnerUUID, biggestSince, forceSyncParams, tagsOnly).then(function(status){
             if (status === 'firstSync'){
               // For online firstSync, the only way to get the next owner at the same go, we call this method
               // again manually and then resolve.
@@ -314,6 +319,6 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
 }
 
 SynchronizeController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout',
-'BackendClientService', 'SynchronizeService', 'UISessionService', 'UserSessionService',
+'BackendClientService', 'SynchronizeService', 'TagsService', 'UISessionService', 'UserSessionService',
 'packaging'];
 angular.module('em.main').controller('SynchronizeController', SynchronizeController);

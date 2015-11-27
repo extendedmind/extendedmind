@@ -32,6 +32,10 @@
 
   var tagDeletedCallbacks = {};
 
+  var collectiveTagsSyncedCallbacks = {};
+
+  var collectiveTags = {};
+
   function initializeArrays(ownerUUID) {
     if (!tags[ownerUUID]) {
       tags[ownerUUID] = {
@@ -67,6 +71,38 @@
                                 tags[ownerUUID].deletedTags);
   }
 
+  function executeCollectiveTagsSyncedCallbacks(ownerUUID, updatedTags){
+    if (updatedTags && updatedTags.length && UserSessionService.isCollective(ownerUUID)){
+      var collectiveUUID = ownerUUID;
+      var updateTagUUIDs;
+      var itemsToNotify = {};
+      for (var ownerUUIDWithCollectiveTags in collectiveTags){
+        if (ownerUUID !== ownerUUIDWithCollectiveTags){
+          for (var extendedItemUUIDWithCollectiveTags in collectiveTags[ownerUUIDWithCollectiveTags]){
+
+            if (!updateTagUUIDs){
+              updateTagUUIDs = [];
+              for (var i=0; i< updateTags.length; i++){
+                updateTagUUIDs.push(updateTags.trans.uuid);
+              }
+            }
+
+            if (collectiveTags[ownerUUIDWithCollectiveTags]
+                              [extendedItemUUIDWithCollectiveTags].tags.containsAtLeastOne(updateTagUUIDs)){
+              itemsToNotify[itemType]
+
+            // TODO: Continue from here, add to itemsToNotify values and then call for
+            }
+          }
+        }
+      }
+
+      for (var itemType in collectiveTagsSyncedCallbacks[collectiveUUID]) {
+        tagDeletedCallbacks[id](tag, ownerUUID);
+      }
+    }
+  }
+
   return {
     getNewTag: function(initialValues, ownerUUID) {
       return ItemLikeService.getNew(initialValues, TAG_TYPE, ownerUUID, tagFieldInfos);
@@ -74,19 +110,23 @@
     setTags: function(tagsResponse, ownerUUID, skipPersist, addToExisting) {
       var tagsToSave;
       if (skipPersist){
-        tagsToSave = ItemLikeService.resetAndPruneOldDeleted(tagsResponse, TAG_TYPE, ownerUUID, tagFieldInfos);
+        tagsToSave = ItemLikeService.resetAndPruneOldDeleted(tagsResponse, TAG_TYPE, ownerUUID,
+                                                             tagFieldInfos);
       }else{
         tagsToSave = ItemLikeService.persistAndReset(tagsResponse, TAG_TYPE, ownerUUID, tagFieldInfos);
       }
+      var arrayUpdateResult;
       if (addToExisting){
-        return ArrayService.updateArrays(ownerUUID, TAG_TYPE, tagsToSave,
+        arrayUpdateResult = ArrayService.updateArrays(ownerUUID, TAG_TYPE, tagsToSave,
                                     tags[ownerUUID].activeTags,
                                     tags[ownerUUID].deletedTags);
       }else{
-        return ArrayService.setArrays(ownerUUID, TAG_TYPE, tagsToSave,
+        arrayUpdateResult = ArrayService.setArrays(ownerUUID, TAG_TYPE, tagsToSave,
                                     tags[ownerUUID].activeTags,
                                     tags[ownerUUID].deletedTags);
       }
+      executeCollectiveTagsSyncedCallbacks(ownerUUID, tagsToSave);
+      return arrayUpdateResult;
     },
     updateTags: function(tagsResponse, ownerUUID) {
       if (tagsResponse && tagsResponse.length){
@@ -124,6 +164,7 @@
             }
           }
         }
+        executeCollectiveTagsSyncedCallbacks(ownerUUID, updatedTags);
         return latestModified;
       }
     },
@@ -155,7 +196,8 @@
                                            tags[ownerUUID].deletedTags);
     },
     getTagInfo: function(value, ownerUUID, searchField) {
-      if (value !== undefined && ownerUUID !== undefined){
+      // Collective tags for local owner might not have yet been initialized, hence the last condition
+      if (value !== undefined && ownerUUID !== undefined && tags[ownerUUID]){
         var field = searchField ? searchField : 'uuid';
         var tag = tags[ownerUUID].activeTags.findFirstObjectByKeyValue(field, value, 'trans');
         if (tag){
@@ -241,6 +283,7 @@
     },
     clearTags: function() {
       tags = {};
+      collectiveTags = {};
     },
     changeOwnerUUID: function(oldUUID, newUUID){
       if (tags[oldUUID]){
@@ -271,6 +314,9 @@
     // Register callbacks that are fired on tag deletion.
     registerTagDeletedCallback: function(tagDeletedCallback, id) {
       tagDeletedCallbacks[id] = tagDeletedCallback;
+    },
+    registerCollectiveTagsSyncedCallback: function(collectiveTagsSyncedCallback, itemType) {
+      collectiveTagsSyncedCallbacks[itemType] = collectiveTagsSyncedCallback;
     },
     removeDeletedTagFromItems: function(items, deletedTag) {
       var modifiedItems = [], i, deletedTagIndex;
@@ -333,6 +379,26 @@
         }
       }
       return modifiedItems;
+    },
+    notifyExtendedItemWithCollectiveTags: function(ownerUUID, collectiveUUID, tagUUIDs, extendedItemUUID,
+                                                   itemType){
+      if (!collectiveTags[collectiveUUID]) collectiveTags[collectiveUUID] = {};
+      if (!collectiveTags[ownerUUID]) collectiveTags[ownerUUID] = {};
+      collectiveTags[ownerUUID][collectiveUUID][extendedItemUUID] = {
+        'tags': tagUUIDs,
+        'itemType': itemType
+      };
+    },
+    getCollectivesWithAddedTags: function(ownerUUID){
+      var collectiveUUIDs = [];
+      if (collectiveTags[ownerUUID]){
+        for (var collectiveUUID in collectiveTags[ownerUUID]){
+          if (collectiveTags.hasOwnProperty(collectiveUUID)){
+            collectiveUUIDs.push(collectiveUUID);
+          }
+        }
+      }
+      return collectiveUUIDs;
     }
   };
 }

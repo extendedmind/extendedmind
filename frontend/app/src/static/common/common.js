@@ -113,6 +113,27 @@
     return this; // for testing purposes
   };
 
+  if (typeof Array.prototype.unique !== 'function') {
+    Array.prototype.unique = function() {
+      var a = this.concat();
+      for(var i=0; i<a.length; ++i) {
+        for(var j=i+1; j<a.length; ++j) {
+          if(a[i] === a[j])
+            a.splice(j--, 1);
+          }
+      }
+      return a;
+    };
+  }
+
+  if (typeof Array.prototype.containsAtLeastOne !== 'function') {
+    Array.prototype.containsAtLeastOne = function(otherArray) {
+      return this.some(function (v) {
+        return otherArray.indexOf(v) >= 0;
+      });
+    };
+  }
+
   /*
   * See:  http://davidwalsh.name/javascript-debounce-function
   *       http://unscriptable.com/2009/03/20/debouncing-javascript-methods/
