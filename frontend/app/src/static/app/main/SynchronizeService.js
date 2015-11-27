@@ -995,7 +995,6 @@
         getAllOnline(ownerUUID, getAllItemsOnline, deferred);
       }
     }
-
     var deferred = $q.defer();
     var latestModified = UserSessionService.getLatestModified(ownerUUID);
 

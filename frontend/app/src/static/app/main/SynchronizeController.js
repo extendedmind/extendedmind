@@ -102,7 +102,7 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
 
   // Synchronize items for given owner if interval reached.
 
-  function synchronizeItems(ownerUUID, sinceLastItemsSynchronized, forceSyncParams) {
+  function synchronizeItems(ownerUUID, sinceLastItemsSynchronized, forceSyncParams, tagsOnly) {
     function isItemSynchronizeValid(sinceLastItemsSynchronized){
       if (isNaN(sinceLastItemsSynchronized)) return true;
       else if (sinceLastItemsSynchronized > itemsSynchronizedThreshold) return true;
@@ -121,7 +121,7 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
             $rootScope.syncState = 'modified';
           }
         });
-        SynchronizeService.synchronize(ownerUUID, sinceLastItemsSynchronized, forceSyncParams)
+        SynchronizeService.synchronize(ownerUUID, sinceLastItemsSynchronized, forceSyncParams, tagsOnly)
         .then(function(status) {
           if (status === 'firstSync'){
             // Also immediately after first sync add completed and archived to the mix
@@ -229,12 +229,11 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
 
   // Synchronizes the other owner that has not been synced for the longest period
   function synchronizeMostStaleOtherOwner(previousParams, forceIfNotPreviouslySynced){
-    var collectivesUUIDsWithAddedTags = TagsService.getCollectivesWithAddedTags(
-                                                  UISessionService.getActiveUUID());
+    var collectivesUUIDs = UserSessionService.getCollectiveUUIDs();
     var sharedListOwnerUUIDs = getOwnerUUIDsFromObject(UserSessionService.getSharedLists());
     var adoptedListsOwnerUUIDs = getOwnerUUIDsFromObject(UserSessionService.getUIPreference('adoptedLists'));
     var otherOwnerUUIDs =
-      collectivesUUIDsWithAddedTags.concat(sharedListOwnerUUIDs).concat(adoptedListsOwnerUUIDs).unique();
+      collectivesUUIDs.concat(sharedListOwnerUUIDs).concat(adoptedListsOwnerUUIDs).unique();
 
     return $q(function(resolve, reject) {
       if (otherOwnerUUIDs.length){
@@ -258,10 +257,10 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
             forceSyncParams.shared.push(mostStaleOwnerUUID);
           }
           var tagsOnly = false;
-          if (collectivesUUIDsWithAddedTags.indexOf(mostStaleOwnerUUID) !== -1 &&
+          if (collectivesUUIDs.indexOf(mostStaleOwnerUUID) !== -1 &&
               sharedListOwnerUUIDs.indexOf(mostStaleOwnerUUID) === -1 &&
               adoptedListsOwnerUUIDs.indexOf(mostStaleOwnerUUID) === -1){
-            // The other owner is only in the collective with tags, then we should get tags only as it is
+            // The other owner is only in the collectives, then we should get tags only as it is
             // a lot faster
             tagsOnly = true;;
           }

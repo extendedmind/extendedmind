@@ -71,34 +71,46 @@
                                 tags[ownerUUID].deletedTags);
   }
 
-  function executeCollectiveTagsSyncedCallbacks(ownerUUID, updatedTags){
+  function executeCollectiveTagsSyncedCallbacks(updatedTags, ownerUUID){
     if (updatedTags && updatedTags.length && UserSessionService.isCollective(ownerUUID)){
-      var collectiveUUID = ownerUUID;
-      var updateTagUUIDs;
+      var updatedTagUUIDs;
       var itemsToNotify = {};
-      for (var ownerUUIDWithCollectiveTags in collectiveTags){
-        if (ownerUUID !== ownerUUIDWithCollectiveTags){
-          for (var extendedItemUUIDWithCollectiveTags in collectiveTags[ownerUUIDWithCollectiveTags]){
-
-            if (!updateTagUUIDs){
-              updateTagUUIDs = [];
-              for (var i=0; i< updateTags.length; i++){
-                updateTagUUIDs.push(updateTags.trans.uuid);
+      for (var oUUID in collectiveTags){
+        if (collectiveTags.hasOwnProperty(oUUID) &&
+            ownerUUID !== oUUID){
+          for (var cUUID in collectiveTags[oUUID]){
+            if (collectiveTags[oUUID].hasOwnProperty(cUUID) && cUUID === ownerUUID){
+              for (var extendedItemUUID in collectiveTags[oUUID][cUUID]){
+                if (collectiveTags[oUUID][cUUID].hasOwnProperty(extendedItemUUID)){
+                  if (!updatedTagUUIDs){
+                    updatedTagUUIDs = [];
+                    for (var i=0; i<updatedTags.length; i++){
+                      updatedTagUUIDs.push(updatedTags[i].trans.uuid);
+                    }
+                  }
+                  if (collectiveTags[oUUID][cUUID][extendedItemUUID].tags.containsAtLeastOne(
+                        updatedTagUUIDs)){
+                    var itemType = collectiveTags[oUUID][cUUID][extendedItemUUID].itemType;
+                    if (!itemsToNotify[itemType]) itemsToNotify[itemType] = [];
+                    if (itemsToNotify[itemType].indexOf(extendedItemUUID) === -1){
+                      itemsToNotify[itemType].push({
+                        uuid: extendedItemUUID,
+                        owner: collectiveTags[oUUID][cUUID][extendedItemUUID].owner
+                      });
+                    }
+                  }
+                }
               }
-            }
-
-            if (collectiveTags[ownerUUIDWithCollectiveTags]
-                              [extendedItemUUIDWithCollectiveTags].tags.containsAtLeastOne(updateTagUUIDs)){
-              itemsToNotify[itemType]
-
-            // TODO: Continue from here, add to itemsToNotify values and then call for
             }
           }
         }
       }
-
-      for (var itemType in collectiveTagsSyncedCallbacks[collectiveUUID]) {
-        tagDeletedCallbacks[id](tag, ownerUUID);
+      // Execute callback per item type to make it possible to resetTrans for every extended item in
+      // the list to get more tags to the trans.keywords array and trans.context object.
+      for (var itemType in collectiveTagsSyncedCallbacks) {
+        if (itemsToNotify[itemType]){
+          collectiveTagsSyncedCallbacks[itemType](updatedTags, itemsToNotify[itemType], ownerUUID);
+        }
       }
     }
   }
@@ -125,7 +137,7 @@
                                     tags[ownerUUID].activeTags,
                                     tags[ownerUUID].deletedTags);
       }
-      executeCollectiveTagsSyncedCallbacks(ownerUUID, tagsToSave);
+      executeCollectiveTagsSyncedCallbacks(tagsToSave, ownerUUID);
       return arrayUpdateResult;
     },
     updateTags: function(tagsResponse, ownerUUID) {
@@ -164,7 +176,7 @@
             }
           }
         }
-        executeCollectiveTagsSyncedCallbacks(ownerUUID, updatedTags);
+        executeCollectiveTagsSyncedCallbacks(updatedTags, ownerUUID);
         return latestModified;
       }
     },
@@ -382,23 +394,13 @@
     },
     notifyExtendedItemWithCollectiveTags: function(ownerUUID, collectiveUUID, tagUUIDs, extendedItemUUID,
                                                    itemType){
-      if (!collectiveTags[collectiveUUID]) collectiveTags[collectiveUUID] = {};
       if (!collectiveTags[ownerUUID]) collectiveTags[ownerUUID] = {};
+      if (!collectiveTags[ownerUUID][collectiveUUID]) collectiveTags[ownerUUID][collectiveUUID] = {};
       collectiveTags[ownerUUID][collectiveUUID][extendedItemUUID] = {
-        'tags': tagUUIDs,
-        'itemType': itemType
+        tags: tagUUIDs,
+        itemType: itemType,
+        owner: ownerUUID
       };
-    },
-    getCollectivesWithAddedTags: function(ownerUUID){
-      var collectiveUUIDs = [];
-      if (collectiveTags[ownerUUID]){
-        for (var collectiveUUID in collectiveTags[ownerUUID]){
-          if (collectiveTags.hasOwnProperty(collectiveUUID)){
-            collectiveUUIDs.push(collectiveUUID);
-          }
-        }
-      }
-      return collectiveUUIDs;
     }
   };
 }

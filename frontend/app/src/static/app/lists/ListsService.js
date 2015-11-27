@@ -241,6 +241,53 @@
   }
   UserSessionService.registerNofifyOwnersCallback(notifyOwners, 'ListsService');
 
+
+  // Setup callback for tags
+  var tagDeletedCallback = function(deletedTag, ownerUUID, undelete) {
+    if (lists[ownerUUID] && deletedTag) {
+      var modifiedItems, i;
+      if (!undelete){
+        // Remove tags from existing parents
+        modifiedItems = TagsService.removeDeletedTagFromItems(lists[ownerUUID].activeLists,
+                                                                  deletedTag);
+        modifiedItems.concat(TagsService.removeDeletedTagFromItems(lists[ownerUUID].deletedLists,
+                                                                   deletedTag));
+        modifiedItems.concat(TagsService.removeDeletedTagFromItems(lists[ownerUUID].archivedLists,
+                                                                   deletedTag));
+        for (i=0;i<modifiedItems.length;i++){
+          updateList(modifiedItems[i], ownerUUID);
+        }
+      }else{
+        // Add tag back to items on undelete
+        modifiedItems = TagsService.addUndeletedTagToItems(lists[ownerUUID].activeLists,
+                                                                    deletedTag);
+        modifiedItems.concat(TagsService.addUndeletedTagToItems(lists[ownerUUID].deletedLists,
+                                                                     deletedTag));
+        modifiedItems.concat(TagsService.addUndeletedTagToItems(lists[ownerUUID].archivedLists,
+                                                                     deletedTag));
+        for (i=0;i<modifiedItems.length;i++){
+          updateList(modifiedItems[i], ownerUUID);
+        }
+      }
+    }
+  };
+  TagsService.registerTagDeletedCallback(tagDeletedCallback, 'ListsService');
+
+  // Setup callback for collective tag sync
+  var collectiveTagsSyncedCallback = function(updatedTags, listInfos, collectiveUUID) {
+    if (listInfos && listInfos.length){
+      for (var i=0; i<listInfos.length; i++){
+        var listInfo = getListInfo(listInfos[i].uuid, listInfos[i].owner);
+        if (listInfo){
+          ItemLikeService.resetTrans(listInfo.note, LIST_TYPE, listInfo.note.trans.owner, listFieldInfos);
+        }
+      }
+    }
+  };
+  TagsService.registerCollectiveTagsSyncedCallback(collectiveTagsSyncedCallback, LIST_TYPE);
+
+
+
   function getListInfo(value, ownerUUID, searchField){
     if (value !== undefined && ownerUUID !== undefined){
       var field = searchField ? searchField : 'uuid';

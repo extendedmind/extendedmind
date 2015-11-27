@@ -184,6 +184,19 @@
   };
   TagsService.registerTagDeletedCallback(tagDeletedCallback, 'NotesService');
 
+  // Setup callback for collective tag sync
+  var collectiveTagsSyncedCallback = function(updatedTags, noteInfos, collectiveUUID) {
+    if (noteInfos && noteInfos.length){
+      for (var i=0; i<noteInfos.length; i++){
+        var noteInfo = getNoteInfo(noteInfos[i].uuid, noteInfos[i].owner);
+        if (noteInfo){
+          ItemLikeService.resetTrans(noteInfo.note, NOTE_TYPE, noteInfo.note.trans.owner, noteFieldInfos);
+        }
+      }
+    }
+  };
+  TagsService.registerCollectiveTagsSyncedCallback(collectiveTagsSyncedCallback, NOTE_TYPE);
+
   // Setup callback for list deletion
   var listDeletedCallback = function(deletedList, ownerUUID, undelete) {
     if (notes[ownerUUID] && deletedList) {
@@ -215,6 +228,33 @@
     }
   };
   ListsService.registerListDeletedCallback(listDeletedCallback, 'NotesService');
+
+  function getNoteInfo(value, ownerUUID, searchField) {
+    if (value !== undefined){
+      var field = searchField ? searchField : 'uuid';
+      var note = notes[ownerUUID].activeNotes.findFirstObjectByKeyValue(field, value, 'trans');
+      if (note){
+        return {
+          type: 'active',
+          note: note
+        };
+      }
+      note = notes[ownerUUID].deletedNotes.findFirstObjectByKeyValue(field, value, 'trans');
+      if (note){
+        return {
+          type: 'deleted',
+          note: note
+        };
+      }
+      note = notes[ownerUUID].archivedNotes.findFirstObjectByKeyValue(field, value, 'trans');
+      if (note){
+        return {
+          type: 'archived',
+          note: note
+        };
+      }
+    }
+  };
 
   return {
     getNewNote: function(initialValues, ownerUUID) {
@@ -329,32 +369,7 @@
       return ArrayService.getModifiedItems(notes[ownerUUID].activeNotes,
                                             notes[ownerUUID].deletedNotes, getOtherArrays(ownerUUID));
     },
-    getNoteInfo: function(value, ownerUUID, searchField) {
-      if (value !== undefined){
-        var field = searchField ? searchField : 'uuid';
-        var note = notes[ownerUUID].activeNotes.findFirstObjectByKeyValue(field, value, 'trans');
-        if (note){
-          return {
-            type: 'active',
-            note: note
-          };
-        }
-        note = notes[ownerUUID].deletedNotes.findFirstObjectByKeyValue(field, value, 'trans');
-        if (note){
-          return {
-            type: 'deleted',
-            note: note
-          };
-        }
-        note = notes[ownerUUID].archivedNotes.findFirstObjectByKeyValue(field, value, 'trans');
-        if (note){
-          return {
-            type: 'archived',
-            note: note
-          };
-        }
-      }
-    },
+    getNoteInfo: getNoteInfo,
     saveNote: function(note, pollForSaveReady) {
       var ownerUUID = note.trans.owner;
       var deferred = $q.defer();

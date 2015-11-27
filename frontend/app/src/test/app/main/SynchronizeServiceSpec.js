@@ -106,6 +106,9 @@ describe('SynchronizeService', function() {
     isPersistentDataLoaded: function() {
       return this.persistentDataLoaded;
     },
+    isCollective: function() {
+      return false;
+    },
     setPersistentDataLoaded: function(value) {
       this.persistentDataLoaded = value;
     },

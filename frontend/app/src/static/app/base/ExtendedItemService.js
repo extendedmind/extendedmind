@@ -76,15 +76,16 @@
       }
       if (origin.collectiveTags){
         for (i = 0; i<origin.collectiveTags.length; i++) {
-          var collectiveUUID = origin.collectiveTags[i](0);
+          var collectiveUUID = origin.collectiveTags[i][0];
           // We want to notify TagsService about every extended item with collective tags, so that time
           // it can get give callbacks to update tags that are not yet synced
           TagsService.notifyExtendedItemWithCollectiveTags(extendedItem.trans.owner,
-                                                           collectiveUUID, origin.collectiveTags[i](1)[j],
+                                                           collectiveUUID,
+                                                           origin.collectiveTags[i][1],
                                                            extendedItem.trans.uuid,
                                                            extendedItem.trans.itemType);
-          for (var j = 0; j<origin.collectiveTags[i](1).length; j++) {
-            switch(copyTagWithUUIDToTrans(origin.collectiveTags[i](1)[j], collectiveUUID, extendedItem)){
+          for (var j=0; j<origin.collectiveTags[i][1].length; j++) {
+            switch(copyTagWithUUIDToTrans(origin.collectiveTags[i][1][j], collectiveUUID, extendedItem)){
               case 'context': hasContext = true; break;
               case 'keyword': hasKeywords = true; break;
               case 'history': hasHistory = true; break;
@@ -156,8 +157,8 @@
         var alreadyExists = false;
         // Check if this collective already has an array
         for (var j=0; j<extendedItem.mod.relationships.collectiveTags.length; j++){
-          if (extendedItem.mod.relationships.collectiveTags[j](0) === collectiveTagOwnerUUID){
-            extendedItem.mod.relationships.collectiveTags[j](1).push(collectiveTagUUID);
+          if (extendedItem.mod.relationships.collectiveTags[j][0] === collectiveTagOwnerUUID){
+            extendedItem.mod.relationships.collectiveTags[j][1].push(collectiveTagUUID);
             alreadyExists = true;
             break;
           }
@@ -379,9 +380,12 @@
         delete extendedItem.trans.assignee;
       }
       if (extendedItem.mod && extendedItem.mod.relationships &&
-          extendedItem.mod.relationships.tags !== undefined){
+          (extendedItem.mod.relationships.tags !== undefined ||
+           extendedItem.mod.relationships.collectiveTags !== undefined)){
         copyTagsToTrans(extendedItem.mod.relationships, extendedItem, ownerUUID);
-      }else if (extendedItem.relationships && extendedItem.relationships.tags !== undefined){
+      }else if (extendedItem.relationships &&
+                (extendedItem.relationships.tags !== undefined ||
+                 extendedItem.relationships.collectiveTags !== undefined)){
         copyTagsToTrans(extendedItem.relationships, extendedItem, ownerUUID);
       }else{
         if (extendedItem.trans.context !== undefined) delete extendedItem.trans.context;

@@ -45,6 +45,7 @@ import spray.httpx.marshalling._
 import spray.json.DefaultJsonProtocol._
 import scala.concurrent.Future
 import spray.http.StatusCodes._
+import scala.collection.mutable.ListBuffer
 
 /**
  * Best case test for item routes. Also generates .json files.
@@ -84,6 +85,53 @@ class ItemBestCaseSpec extends ServiceSpecBase {
             list=>list.visibility.isDefined &&
             list.visibility.get.agreements.isDefined &&
             list.visibility.get.agreements.get(0).proposedTo.get.email.get == LAURI_EMAIL) should not be (None)
+
+        // Make sure common collective values are found in tagsOnly response
+        val commonCollectiveUUID = authenticateResponse.collectives.get.find(value => {
+          value._2._3
+        }).get._1
+
+        Get("/" + commonCollectiveUUID + "/items?tagsOnly=true") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+          val tagsOnlyItemsResponse = responseAs[Items]
+          writeJsonOutput("tagsOnlyItemsResponse", responseAs[String])
+          tagsOnlyItemsResponse.items should be (None)
+          tagsOnlyItemsResponse.tasks should be (None)
+          tagsOnlyItemsResponse.notes should be (None)
+          tagsOnlyItemsResponse.lists should be (None)
+          tagsOnlyItemsResponse.tags should not be None
+
+          val commonCollectiveTagUUIDs = new ListBuffer[UUID]
+          itemsResponse.tasks.get.foreach(task => {
+            if (task.relationships.isDefined && task.relationships.get.collectiveTags.isDefined){
+              task.relationships.get.collectiveTags.get.foreach(colTags => {
+                if (colTags._1 == commonCollectiveUUID){
+                  colTags._2.foreach(commonCollectiveTagUUID => {
+                    if (!commonCollectiveTagUUIDs.contains(commonCollectiveTagUUID))
+                      commonCollectiveTagUUIDs.append(commonCollectiveTagUUID)
+                  })
+                }
+              })
+            }
+          })
+          itemsResponse.notes.get.foreach(note => {
+            if (note.relationships.isDefined && note.relationships.get.collectiveTags.isDefined){
+              note.relationships.get.collectiveTags.get.foreach(colTags => {
+                if (colTags._1 == commonCollectiveUUID){
+                  colTags._2.foreach(commonCollectiveTagUUID => {
+                    if (!commonCollectiveTagUUIDs.contains(commonCollectiveTagUUID))
+                      commonCollectiveTagUUIDs.append(commonCollectiveTagUUID)
+                  })
+                }
+              })
+            }
+          })
+          commonCollectiveTagUUIDs.size should not be(0)
+          commonCollectiveTagUUIDs.foreach(commonCollectiveTagUUID=>{
+            tagsOnlyItemsResponse.tags.get.find(tag => {
+              tag.uuid.get == commonCollectiveTagUUID
+            }) should not be(None)
+          })
+        }
       }
       Post("/authenticate") ~> addHeader(Authorization(BasicHttpCredentials(LAURI_EMAIL, LAURI_PASSWORD))) ~> route ~> check {
         val lauriAuthenticateResponse = responseAs[SecurityContext]
@@ -92,19 +140,6 @@ class ItemBestCaseSpec extends ServiceSpecBase {
           val sharedItemsResponse = responseAs[Items]
           writeJsonOutput("sharedItemsResponse", responseAs[String])
         }
-      }
-      val commonCollectiveUUID = authenticateResponse.collectives.get.find(value => {
-        value._2._3
-      }).get._1
-
-      Get("/" + commonCollectiveUUID + "/items?tagsOnly=true") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-        val itemsResponse = responseAs[Items]
-        writeJsonOutput("tagsOnlyItemsResponse", responseAs[String])
-        itemsResponse.items should be (None)
-        itemsResponse.tasks should be (None)
-        itemsResponse.notes should be (None)
-        itemsResponse.lists should be (None)
-        itemsResponse.tags should not be None
       }
     }
     it("should generate limited item list response on /[userUUID]/items to foreign user") {
@@ -183,7 +218,6 @@ class ItemBestCaseSpec extends ServiceSpecBase {
 
       Get("/" + authenticateResponse.userUUID + "/items") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val itemsResponse = responseAs[Items]
-        writeJsonOutput("itemsResponse", responseAs[String])
         itemsResponse.items should not be None
         itemsResponse.tasks should not be None
         itemsResponse.tasks.get.length should equal(6)

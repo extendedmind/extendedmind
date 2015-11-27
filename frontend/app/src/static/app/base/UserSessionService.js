@@ -363,6 +363,18 @@
       syncWebStorages();
       return SessionStorageService.getCollectives();
     },
+    getCollectiveUUIDs: function() {
+      var collectiveUUIDs = [];
+      var collectives = this.getCollectives();
+      if (collectives){
+        for (var collectiveUUID in collectives){
+          if (collectives.hasOwnProperty(collectiveUUID)){
+            collectiveUUIDs.push(collectiveUUID);
+          }
+        }
+      }
+      return collectiveUUIDs;
+    },
     isCollective: function(ownerUUID) {
       if (ownerUUID){
         var collectives = this.getCollectives();

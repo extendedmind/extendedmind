@@ -338,6 +338,19 @@
   };
   TagsService.registerTagDeletedCallback(tagDeletedCallback, 'TasksService');
 
+  // Setup callback for collective tag sync
+  var collectiveTagsSyncedCallback = function(updatedTags, taskInfos, collectiveUUID) {
+    if (taskInfos && taskInfos.length){
+      for (var i=0; i<taskInfos.length; i++){
+        var taskInfo = getTaskInfo(taskInfos[i].uuid, taskInfos[i].owner);
+        if (taskInfo){
+          ItemLikeService.resetTrans(taskInfo.task, TASK_TYPE, taskInfo.task.trans.owner, taskFieldInfos);
+        }
+      }
+    }
+  };
+  TagsService.registerCollectiveTagsSyncedCallback(collectiveTagsSyncedCallback, TASK_TYPE);
+
   // Setup callback for lists
   var listDeletedCallback = function(deletedList, ownerUUID, undelete) {
     if (tasks[ownerUUID] && deletedList){
@@ -400,6 +413,33 @@
     }
   };
   ListsService.registerListUUIDChangedCallback(listUUIDChangedCallback, 'TasksService');
+
+  function getTaskInfo(value, ownerUUID, searchField) {
+    if (value !== undefined && ownerUUID !== undefined){
+      var field = searchField ? searchField : 'uuid';
+      var task = tasks[ownerUUID].activeTasks.findFirstObjectByKeyValue(field, value, 'trans');
+      if (task){
+        return {
+          type: 'active',
+          task: task
+        };
+      }
+      task = tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue(field, value, 'trans');
+      if (task){
+        return {
+          type: 'deleted',
+          task: task
+        };
+      }
+      task = tasks[ownerUUID].archivedTasks.findFirstObjectByKeyValue(field, value, 'trans');
+      if (task){
+        return {
+          type: 'archived',
+          task: task
+        };
+      }
+    }
+  }
 
   return {
     getNewTask: function(initialValues, ownerUUID) {
@@ -559,32 +599,7 @@
                                          tasks[ownerUUID].deletedTasks,
                                          getOtherArrays(ownerUUID));
     },
-    getTaskInfo: function(value, ownerUUID, searchField) {
-      if (value !== undefined && ownerUUID !== undefined){
-        var field = searchField ? searchField : 'uuid';
-        var task = tasks[ownerUUID].activeTasks.findFirstObjectByKeyValue(field, value, 'trans');
-        if (task){
-          return {
-            type: 'active',
-            task: task
-          };
-        }
-        task = tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue(field, value, 'trans');
-        if (task){
-          return {
-            type: 'deleted',
-            task: task
-          };
-        }
-        task = tasks[ownerUUID].archivedTasks.findFirstObjectByKeyValue(field, value, 'trans');
-        if (task){
-          return {
-            type: 'archived',
-            task: task
-          };
-        }
-      }
-    },
+    getTaskInfo: getTaskInfo,
     saveTask: function(task) {
       var deferred = $q.defer();
       var ownerUUID = task.trans.owner;
