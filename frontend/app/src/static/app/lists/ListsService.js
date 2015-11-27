@@ -286,8 +286,6 @@
   };
   TagsService.registerCollectiveTagsSyncedCallback(collectiveTagsSyncedCallback, LIST_TYPE);
 
-
-
   function getListInfo(value, ownerUUID, searchField){
     if (value !== undefined && ownerUUID !== undefined){
       var field = searchField ? searchField : 'uuid';
