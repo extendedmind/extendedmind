@@ -75,6 +75,7 @@
     if (updatedTags && updatedTags.length && UserSessionService.isCollective(ownerUUID)){
       var updatedTagUUIDs;
       var itemsToNotify = {};
+      var itemType;
       for (var oUUID in collectiveTags){
         if (collectiveTags.hasOwnProperty(oUUID) &&
             ownerUUID !== oUUID){
@@ -90,7 +91,7 @@
                   }
                   if (collectiveTags[oUUID][cUUID][extendedItemUUID].tags.containsAtLeastOne(
                         updatedTagUUIDs)){
-                    var itemType = collectiveTags[oUUID][cUUID][extendedItemUUID].itemType;
+                    itemType = collectiveTags[oUUID][cUUID][extendedItemUUID].itemType;
                     if (!itemsToNotify[itemType]) itemsToNotify[itemType] = [];
                     if (itemsToNotify[itemType].indexOf(extendedItemUUID) === -1){
                       itemsToNotify[itemType].push({
@@ -107,7 +108,7 @@
       }
       // Execute callback per item type to make it possible to resetTrans for every extended item in
       // the list to get more tags to the trans.keywords array and trans.context object.
-      for (var itemType in collectiveTagsSyncedCallbacks) {
+      for (itemType in collectiveTagsSyncedCallbacks) {
         if (itemsToNotify[itemType]){
           collectiveTagsSyncedCallbacks[itemType](updatedTags, itemsToNotify[itemType], ownerUUID);
         }

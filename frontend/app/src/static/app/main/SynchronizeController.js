@@ -262,7 +262,7 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
               adoptedListsOwnerUUIDs.indexOf(mostStaleOwnerUUID) === -1){
             // The other owner is only in the collectives, then we should get tags only as it is
             // a lot faster
-            tagsOnly = true;;
+            tagsOnly = true;
           }
 
           synchronizeItems(mostStaleOwnerUUID, biggestSince, forceSyncParams, tagsOnly).then(function(status){
