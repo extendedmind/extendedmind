@@ -19,13 +19,76 @@
  function TagsService($q, ArrayService, ItemLikeService, UserSessionService) {
   var TAG_TYPE = 'tag';
 
+
+  var tagParentFieldInfo = {
+    name: 'parent',
+    isEdited: function(tag, ownerUUID, compareValues){
+      if (tag.trans.parent){
+        if (!compareValues){
+          if (!tag.mod.parent || tag.mod.parent !== tag.trans.parent.trans.uuid){
+            return true;
+          }else if (!tag.parent || tag.parent !== tag.trans.parent.trans.uuid){
+            return true;
+          }
+        }else if (!compareValues.parent || compareValues.parent !== tag.trans.parent.trans.uuid){
+          return true;
+        }
+      }else{
+        // No parent in .trans
+        if (!compareValues){
+          if (tag.mod && tag.mod.hasOwnProperty('parent')){
+            // undefined value in .mod is allowed as it means that parent has been deleted
+            if (tag.mod.parent){
+              return true;
+            }
+          }else if (tag.parent){
+            return true;
+          }
+        }else if (compareValues.parent){
+          return true;
+        }
+      }
+    },
+    copyTransToMod: function(tag /*, ownerUUID*/){
+      if (tag.trans.hasOwnProperty('parent')){
+        if (!tag.trans.parent){
+          tag.mod.parent = undefined;
+        } else {
+          tag.mod.parent = tag.trans.parent.trans.uuid;
+        }
+      }
+    },
+    resetTrans: function(tag, ownerUUID){
+      var tagInfo;
+      if (tag.mod && tag.mod.parent){
+        tagInfo = getTagInfo(tag.mod.parent, ownerUUID);
+        if (tagInfo){
+          tag.trans.parent = tagInfo.tag;
+        }
+      }else if (tag.parent){
+        tagInfo = getTagInfo(tag.parent, ownerUUID);
+        if (tagInfo){
+          tag.trans.parent = tagInfo.tag;
+        }
+      }else if (tag.trans.parent){
+        delete tag.trans.parent;
+      }
+    }
+  };
+
   var tagFieldInfos = ItemLikeService.getFieldInfos(
     ['tagType',
-     'parent'
+     tagParentFieldInfo
     // TODO
     //'visibility'
     ]
   );
+
+  var tagMinimalFieldInfos = [
+    'uuid',
+    'created',
+    'deleted',
+    'title'];
 
   // An object containing tags for every owner
   var tags = {};
@@ -116,30 +179,54 @@
     }
   }
 
+  function getTagInfo(value, ownerUUID, searchField) {
+    // Collective tags for local owner might not have yet been initialized, hence the last condition
+    if (value !== undefined && ownerUUID !== undefined && tags[ownerUUID]){
+      var field = searchField ? searchField : 'uuid';
+      var tag = tags[ownerUUID].activeTags.findFirstObjectByKeyValue(field, value, 'trans');
+      if (tag){
+        return {
+          type: 'active',
+          tag: tag
+        };
+      }
+      tag = tags[ownerUUID].deletedTags.findFirstObjectByKeyValue(field, value, 'trans');
+      if (tag){
+        return {
+          type: 'deleted',
+          tag: tag
+        };
+      }
+    }
+  }
+
   return {
     getNewTag: function(initialValues, ownerUUID) {
       return ItemLikeService.getNew(initialValues, TAG_TYPE, ownerUUID, tagFieldInfos);
     },
     setTags: function(tagsResponse, ownerUUID, skipPersist, addToExisting) {
-      var tagsToSave;
-      if (skipPersist){
-        tagsToSave = ItemLikeService.resetAndPruneOldDeleted(tagsResponse, TAG_TYPE, ownerUUID,
-                                                             tagFieldInfos);
-      }else{
-        tagsToSave = ItemLikeService.persistAndReset(tagsResponse, TAG_TYPE, ownerUUID, tagFieldInfos);
-      }
-      var arrayUpdateResult;
+      // To avoid problems with parent tag not resetting to trans, we first store the response
+      // to the arrays using minimal trans, then properly reset trans
+      var tagsToSave = ItemLikeService.resetAndPruneOldDeleted(tagsResponse, TAG_TYPE,
+                                                            ownerUUID, tagMinimalFieldInfos);
+
+      var latestModified;
       if (addToExisting){
-        arrayUpdateResult = ArrayService.updateArrays(ownerUUID, TAG_TYPE, tagsToSave,
+        latestModified = ArrayService.updateArrays(ownerUUID, TAG_TYPE, tagsToSave,
                                     tags[ownerUUID].activeTags,
                                     tags[ownerUUID].deletedTags);
       }else{
-        arrayUpdateResult = ArrayService.setArrays(ownerUUID, TAG_TYPE, tagsToSave,
+        latestModified = ArrayService.setArrays(ownerUUID, TAG_TYPE, tagsToSave,
                                     tags[ownerUUID].activeTags,
                                     tags[ownerUUID].deletedTags);
+      }
+      if (skipPersist){
+        ItemLikeService.resetTrans(tagsToSave, TAG_TYPE, ownerUUID, tagFieldInfos);
+      }else{
+        ItemLikeService.persistAndReset(tagsToSave, TAG_TYPE, ownerUUID, tagFieldInfos);
       }
       executeCollectiveTagsSyncedCallbacks(tagsToSave, ownerUUID);
-      return arrayUpdateResult;
+      return latestModified;
     },
     updateTags: function(tagsResponse, ownerUUID) {
       if (tagsResponse && tagsResponse.length){
@@ -158,10 +245,20 @@
           }
         }
 
-        ItemLikeService.persistAndReset(updatedTags, TAG_TYPE, ownerUUID, tagFieldInfos);
+        // To avoid problems with parent tag not resetting to trans, we first store the response
+        // to the arrays using minimal trans, then properly reset trans
+        ItemLikeService.resetTrans(updatedTags, TAG_TYPE, ownerUUID, tagMinimalFieldInfos);
         var latestModified = ArrayService.updateArrays(ownerUUID, TAG_TYPE, updatedTags,
                                                        tags[ownerUUID].activeTags,
                                                        tags[ownerUUID].deletedTags);
+        ItemLikeService.persistAndReset(updatedTags, TAG_TYPE, ownerUUID, tagFieldInfos);
+
+        // When creating multiple parent relationships in another client, without this, they would be
+        // in the wrong order
+        ArrayService.evaluateArrays(ownerUUID, TAG_TYPE,
+                                    tags[ownerUUID].activeTags,
+                                    tags[ownerUUID].deletedTags);
+
         if (latestModified) {
           // Go through response to see if something was deleted or undeleted
           for (i=0; i<updatedTags.length; i++) {
@@ -208,26 +305,7 @@
       return ArrayService.getModifiedItems(tags[ownerUUID].activeTags,
                                            tags[ownerUUID].deletedTags);
     },
-    getTagInfo: function(value, ownerUUID, searchField) {
-      // Collective tags for local owner might not have yet been initialized, hence the last condition
-      if (value !== undefined && ownerUUID !== undefined && tags[ownerUUID]){
-        var field = searchField ? searchField : 'uuid';
-        var tag = tags[ownerUUID].activeTags.findFirstObjectByKeyValue(field, value, 'trans');
-        if (tag){
-          return {
-            type: 'active',
-            tag: tag
-          };
-        }
-        tag = tags[ownerUUID].deletedTags.findFirstObjectByKeyValue(field, value, 'trans');
-        if (tag){
-          return {
-            type: 'deleted',
-            tag: tag
-          };
-        }
-      }
-    },
+    getTagInfo: getTagInfo,
     saveTag: function(tag) {
       var deferred = $q.defer();
       var ownerUUID = tag.trans.owner;
