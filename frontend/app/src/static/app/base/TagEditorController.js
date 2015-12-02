@@ -121,13 +121,13 @@
     }
   };
 
-  $scope.getParentText = function() {
-    if (!$scope.tag.trans.parent || $scope.tag.trans.parent.trans.deleted){
-      return 'select parent ' + $scope.tag.trans.tagType + '\u2026';
-    }else if ($scope.tag.trans.tagType === 'keyword'){
-      return '#' + $scope.tag.trans.parent.trans.title;
-    }else if ($scope.tag.trans.tagType === 'context'){
-      return '@' + $scope.tag.trans.parent.trans.title;
+  $scope.getTagParentText = function(tag) {
+    if (!tag.trans.parent || tag.trans.parent.trans.deleted){
+      return 'select parent ' + tag.trans.tagType + '\u2026';
+    }else if (tag.trans.tagType === 'keyword'){
+      return '#' + tag.trans.parent.trans.title;
+    }else if (tag.trans.tagType === 'context'){
+      return '@' + tag.trans.parent.trans.title;
     }
   };
 

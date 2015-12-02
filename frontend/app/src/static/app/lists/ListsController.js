@@ -43,68 +43,6 @@
     updateFavoritedLists(cachedListsArrays, favoriteListInfos);
   }
 
-  function caseInsensitiveTitleCompare(a, b) {
-    var aValue = a.trans.title.toLowerCase();
-    var bValue = b.trans.title.toLowerCase();
-    if (aValue < bValue) {
-      return -1;
-    } else if (aValue > bValue) {
-      return 1;
-    }
-    return 0;
-  }
-
-  function sortAndCacheSubsetOfAllLists(subset) {
-    var i;
-    var cachedLists = [];
-    var childLists = [];
-
-    for (i = 0; i < subset.length; i++) {
-      var list = subset[i];
-      if (list.trans.list && !list.trans.list.trans.deleted) {
-        // Push children into temp.
-        childLists.push(list);
-      } else {
-        // Insert parentless lists alphabetically into cache.
-        ArrayService.insertItemToArray(list, cachedLists, caseInsensitiveTitleCompare);
-      }
-    }
-
-    for (i = 0; i < childLists.length; i++) {
-      var childList = childLists[i];
-      var parentFoundButPositionAmongSiblingsNotFound = false;
-
-      for (var j = 0; j < cachedLists.length; j++) {
-        if (childList.trans.list.trans.uuid === cachedLists[j].trans.uuid ||
-            parentFoundButPositionAmongSiblingsNotFound)
-        {
-          // Parent found, insert alphabetically under parent.
-          if (j === cachedLists.length - 1) {
-            // End of array, push to the end of the cache.
-            cachedLists.push(childList);
-            parentFoundButPositionAmongSiblingsNotFound = false;
-            break;
-          } else if (!cachedLists[j + 1].trans.list) {
-            // Next is parentless, insert here.
-            cachedLists.splice(j + 1, 0, childList);
-            parentFoundButPositionAmongSiblingsNotFound = false;
-            break;
-          } else if (childList.trans.title <= cachedLists[j + 1].trans.title) {
-            // Alphabetical position among siblings found, insert here.
-            cachedLists.splice(j + 1, 0, childList);
-            parentFoundButPositionAmongSiblingsNotFound = false;
-            break;
-          } else {
-            // Continue iterating until correct position for the child among siblings is found.
-            parentFoundButPositionAmongSiblingsNotFound = true;
-            continue;
-          }
-        }
-      }
-    }
-    return cachedLists;
-  }
-
   /*
   * Sorted alphabetically.
   *
@@ -122,8 +60,8 @@
   function updateAllLists(cachedLists, ownerUUID) {
     var activeLists = ListsService.getLists(ownerUUID);
     var archivedLists = ListsService.getArchivedLists(ownerUUID);
-    var cachedActiveLists = sortAndCacheSubsetOfAllLists(activeLists);
-    var cachedArchivedLists = sortAndCacheSubsetOfAllLists(archivedLists);
+    var cachedActiveLists = ArrayService.sortAlphabeticallyWithParent(activeLists, 'list');
+    var cachedArchivedLists = ArrayService.sortAlphabeticallyWithParent(archivedLists, 'list');
     cachedLists['all'] = cachedActiveLists.concat(cachedArchivedLists);
   }
 

@@ -296,7 +296,8 @@
       }
     },
     getTags: function(ownerUUID) {
-      return tags[ownerUUID].activeTags;
+      // Tags for collective might not be initialized yet
+      if (tags[ownerUUID]) return tags[ownerUUID].activeTags;
     },
     getDeletedTags: function(ownerUUID) {
       return tags[ownerUUID].deletedTags;
@@ -471,8 +472,8 @@
       }
       return modifiedItems;
     },
-    notifyExtendedItemWithCollectiveTags: function(ownerUUID, collectiveUUID, tagUUIDs, extendedItemUUID,
-                                                   itemType){
+    notifyExtendedItemWithCollectiveTags: function(ownerUUID, collectiveUUID, tagUUIDs,
+                                                   extendedItemUUID, itemType){
       if (!collectiveTags[ownerUUID]) collectiveTags[ownerUUID] = {};
       if (!collectiveTags[ownerUUID][collectiveUUID]) collectiveTags[ownerUUID][collectiveUUID] = {};
       collectiveTags[ownerUUID][collectiveUUID][extendedItemUUID] = {
@@ -480,6 +481,19 @@
         itemType: itemType,
         owner: ownerUUID
       };
+    },
+    isTagInExtendedItemCollectiveTags: function(tag, ownerUUID, collectiveUUID){
+      if (collectiveTags[ownerUUID] && collectiveTags[ownerUUID][collectiveUUID] &&
+          collectiveTags[ownerUUID][collectiveUUID]){
+        for (var extendedItemUUID in collectiveTags[ownerUUID][collectiveUUID]){
+          if (collectiveTags[ownerUUID][collectiveUUID].hasOwnProperty(extendedItemUUID) &&
+              collectiveTags[ownerUUID][collectiveUUID][extendedItemUUID].tags &&
+              collectiveTags[ownerUUID][collectiveUUID][extendedItemUUID].tags.indexOf(tag.trans.uuid) !== -1){
+            // Found the tag for this owner in the given collective
+            return true;
+          }
+        }
+      }
     }
   };
 }

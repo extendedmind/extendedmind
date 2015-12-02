@@ -754,6 +754,21 @@
     }
   };
 
+  // KEYWORDS
+
+  $scope.getKeywordFirstPart = function(keyword){
+    return '#' + (keyword.trans.parent ? keyword.trans.parent.trans.title : keyword.trans.title);
+  };
+
+  $scope.hasKeywordSecondPart = function(keyword){
+    return keyword.trans.parent !== undefined;
+  };
+
+  $scope.getKeywordSecondPart = function(keyword){
+    return keyword.trans.title;
+  };
+
+
   // KEYBOARD SHORTCUTS
 
   if (angular.isFunction($scope.registerKeyboardShortcutCallback)){

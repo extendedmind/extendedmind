@@ -91,6 +91,68 @@ function ArrayService($rootScope) {
     }
   }
 
+  function caseInsensitiveTitleCompare(a, b) {
+    var aValue = a.trans.title.toLowerCase();
+    var bValue = b.trans.title.toLowerCase();
+    if (aValue < bValue) {
+      return -1;
+    } else if (aValue > bValue) {
+      return 1;
+    }
+    return 0;
+  }
+
+  function sortAlphabeticallyWithParent(items, parentTransKey) {
+    var i;
+    var sortedItems = [];
+    var childItems = [];
+
+    for (i = 0; i < items.length; i++) {
+      var item = items[i];
+      if (item.trans[parentTransKey] && !item.trans[parentTransKey].trans.deleted) {
+        // Push children into temp.
+        childItems.push(item);
+      } else {
+        // Insert parentless items alphabetically into cache.
+        insertItemToArray(item, sortedItems, caseInsensitiveTitleCompare);
+      }
+    }
+
+    for (i = 0; i < childItems.length; i++) {
+      var childList = childItems[i];
+      var parentFoundButPositionAmongSiblingsNotFound = false;
+
+      for (var j = 0; j < sortedItems.length; j++) {
+        if (childList.trans[parentTransKey].trans.uuid === sortedItems[j].trans.uuid ||
+            parentFoundButPositionAmongSiblingsNotFound)
+        {
+          // Parent found, insert alphabetically under parent.
+          if (j === sortedItems.length - 1) {
+            // End of array, push to the end of the cache.
+            sortedItems.push(childList);
+            parentFoundButPositionAmongSiblingsNotFound = false;
+            break;
+          } else if (!sortedItems[j + 1].trans[parentTransKey]) {
+            // Next is parentless, insert here.
+            sortedItems.splice(j + 1, 0, childList);
+            parentFoundButPositionAmongSiblingsNotFound = false;
+            break;
+          } else if (childList.trans.title <= sortedItems[j + 1].trans.title) {
+            // Alphabetical position among siblings found, insert here.
+            sortedItems.splice(j + 1, 0, childList);
+            parentFoundButPositionAmongSiblingsNotFound = false;
+            break;
+          } else {
+            // Continue iterating until correct position for the child among siblings is found.
+            parentFoundButPositionAmongSiblingsNotFound = true;
+            continue;
+          }
+        }
+      }
+    }
+    return sortedItems;
+  }
+
   return {
     // Based on given backend response, sets active array, deleted array
     // and optionally other arrays, which are objects of type {array: [], id: ''}.
@@ -114,8 +176,8 @@ function ArrayService($rootScope) {
       if (response) {
         var index = 0;
         while (response[index]) {
-          var modified = this.setItem(ownerUUID, itemType, response[index], activeArray, deletedArray, otherArrays,
-                                      true);
+          var modified = this.setItem(ownerUUID, itemType, response[index], activeArray,
+                                      deletedArray, otherArrays, true);
           if (!latestModified || latestModified < modified) {
             latestModified = modified;
           }
@@ -134,8 +196,8 @@ function ArrayService($rootScope) {
         var latestModified;
         var skipEmit = response.length > 1;
         while (response[i]) {
-          var modified = this.updateItem(ownerUUID, itemType, response[i], activeArray, deletedArray, otherArrays,
-                                         skipEmit);
+          var modified = this.updateItem(ownerUUID, itemType, response[i],
+                                         activeArray, deletedArray, otherArrays, skipEmit);
           if (!latestModified || latestModified < response[i].modified) {
             latestModified = modified;
           }
@@ -147,7 +209,7 @@ function ArrayService($rootScope) {
           changedArrays.push({type: 'active', array: activeArray});
           changedArrays.push({type: 'deleted', array: deletedArray});
           if (otherArrays) {
-            for (var i=0, len=otherArrays.length; i<len; i++) {
+            for (i=0; i<otherArrays.length; i++) {
               changedArrays.push({type: otherArrays[i].id, array: otherArrays[i].array});
             }
           }
@@ -198,7 +260,8 @@ function ArrayService($rootScope) {
         } else if (otherArrayInfo) {
           insertItemToArray(item, otherArrayInfo.array, otherArrayInfo.id, otherArrayInfo.reverse);
           if (!skipChangeEvent) {
-            emitChangeEvent(ownerUUID, {type: otherArrayInfo.id, array: otherArrayInfo.array}, itemType, item);
+            emitChangeEvent(ownerUUID, {type: otherArrayInfo.id, array: otherArrayInfo.array},
+                            itemType, item);
           }
         } else {
           insertItemToArray(item, activeArray, 'created');
@@ -276,7 +339,8 @@ function ArrayService($rootScope) {
           if (item.trans.deleted) {
             insertItemToArray(item, deletedArray, 'deleted');
             if (!skipChangeEvent) {
-              emitChangeEvent(ownerUUID, [{type: otherArrayWithItemInfo.id, array: otherArrayWithItemInfo.array},
+              emitChangeEvent(ownerUUID, [
+                              {type: otherArrayWithItemInfo.id, array: otherArrayWithItemInfo.array},
                               {type: 'deleted', array: deletedArray}],
                               itemType, item);
             }
@@ -303,7 +367,8 @@ function ArrayService($rootScope) {
             insertItemToArray(item, otherArrayWithItemInfo.array, otherArrayWithItemInfo.id,
                               otherArrayInfo.reverse);
             if (!skipChangeEvent) {
-              emitChangeEvent(ownerUUID, {type: otherArrayWithItemInfo.id, array: otherArrayWithItemInfo.array},
+              emitChangeEvent(ownerUUID,
+                              {type: otherArrayWithItemInfo.id, array: otherArrayWithItemInfo.array},
                               itemType, item);
             }
           }
@@ -349,9 +414,8 @@ function ArrayService($rootScope) {
       }
       return modifiedItems;
     },
-    insertItemToArray: function(element, array, field, reverse) {
-      return insertItemToArray(element, array, field, reverse);
-    },
+    insertItemToArray: insertItemToArray,
+    sortAlphabeticallyWithParent: sortAlphabeticallyWithParent,
     evaluateArrays: function(ownerUUID, itemType, activeArray, deletedArray, otherArrays) {
       var changedArrays = [];
       changedArrays.push({type: 'active', array: activeArray});

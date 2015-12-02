@@ -94,8 +94,9 @@
 
         <div ng-if="selectedKeywords && selectedKeywords.length" class="keywords-container row">
           <div class="keyword-wrapper" ng-repeat="keyword in selectedKeywords track by keyword.trans.uuid">
-            <a href class="keyword highlighted" swiper-click="unselectKeyword(keyword)">
-              <span class="text-keyword" ng-bind="'#' + keyword.trans.title" clamp=1></span>
+            <a href class="keyword highlighted" swiper-click="unselectKeyword(keyword)" clamp=1>
+              <span class="text-keyword" ng-bind="getKeywordFirstPart(keyword)"
+                ng-class="hasKeywordSecondPart(keyword) && 'text-keyword-parent'"></span><span class="text-keyword" ng-if="hasKeywordSecondPart(keyword)" ng-bind="getKeywordSecondPart(keyword)"></span>
             </a>
           </div>
         </div>
@@ -105,8 +106,9 @@
           <div class="keyword-wrapper"
             ng-repeat="keyword in filteredItems.unselectedKeywords = (getTagsArray('keywords') | filter:keywordsFilter)
             | filter:{trans:{title:keywordsSearch.text}} track by keyword.trans.uuid">
-            <a href class="keyword link" swiper-click="selectKeyword(keyword)">
-              <span class="text-keyword" ng-bind="'#' + keyword.trans.title" clamp=1></span>
+            <a href class="keyword link" swiper-click="selectKeyword(keyword)" clamp=1>
+              <span class="text-keyword" ng-bind="getKeywordFirstPart(keyword)"
+                ng-class="hasKeywordSecondPart(keyword) && 'text-keyword-parent'"></span><span class="text-keyword" ng-if="hasKeywordSecondPart(keyword)" ng-bind="getKeywordSecondPart(keyword)"></span>
             </a>
           </div>
         </div>
@@ -115,8 +117,9 @@
         <div ng-if="footerExpandedToMaxHeight" class="keywords-container row">
           <div class="keyword-wrapper"
             ng-repeat="keyword in getTagsArray('keywords') track by keyword.trans.uuid">
-            <a href class="keyword link" swiper-click="initializeEditor('tag', keyword, 'keywordEdit')">
-              <span class="text-keyword" ng-bind="'#' + keyword.trans.title" clamp=1></span>
+            <a href class="keyword link" swiper-click="initializeEditor('tag', keyword, 'keywordEdit')" clamp=1>
+              <span class="text-keyword" ng-bind="getKeywordFirstPart(keyword)"
+                ng-class="hasKeywordSecondPart(keyword) && 'text-keyword-parent'"></span><span class="text-keyword" ng-if="hasKeywordSecondPart(keyword)" ng-bind="getKeywordSecondPart(keyword)"></span>
             </a>
           </div>
         </div>

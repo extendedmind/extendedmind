@@ -23,7 +23,7 @@
     <div class="animate-list-item-leave"
       ng-repeat="context in getVisibleArray(getFullArray, currentListLimitTo) track by context.trans.uuid"
       list-item>
-      <div class="group-mixed vertically-centered">
+      <div class="group-mixed vertically-centered" ng-class="getTagItemClasses(context)">
         <a href class="group-mixed--middle link-list-item" swiper-click="swipeToContext(context)">
           <span class="text-link" clamp=2 ng-bind="'@' + context.trans.title"></span>
         </a>

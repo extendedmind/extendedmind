@@ -168,8 +168,7 @@
               <div ng-repeat="keyword in getActiveKeywords(note) | orderBy:'trans.title' track by keyword.trans.uuid"
               class="keyword-list-wrapper">
                 <span class="text-keyword" ng-bind="getKeywordFirstPart(keyword)"
-                  ng-class="hasKeywordSecondPart(keyword) && 'text-keyword-parent'"></span>
-                <span class="text-keyword" ng-if="hasKeywordSecondPart(keyword)" ng-bind="getKeywordSecondPart(keyword)"></span><span ng-if="!$last">,&nbsp;</span>
+                  ng-class="hasKeywordSecondPart(keyword) && 'text-keyword-parent'"></span><span class="text-keyword" ng-if="hasKeywordSecondPart(keyword)" ng-bind="getKeywordSecondPart(keyword)"></span><span ng-if="!$last">,&nbsp;</span>
               </div>
             </a>
             <div class="group-mixed--right">
