@@ -641,6 +641,11 @@ margin.
   margin-top: -@margin-bottom-heading;  // [1]
 }
 
+// Make it possible to disable row top parent for editors without swiper
+.row-top-parent-disable .row-top-parent:not(.ng-hide) >:first-child {
+  margin-top: 0;
+}
+
 /*
 *************************************************************
 # Mixed group

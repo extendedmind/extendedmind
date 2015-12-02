@@ -663,7 +663,7 @@
       case 'urlLinkError':
       return $scope.focusedTextProperty !== 'url' && item.trans.link && !isValidUrl(item.trans.link);
       case 'side-by-side-links':
-      return $rootScope.columns === 3;
+      return $rootScope.columns === 3 && !$scope.isSubEditorOpen();
     }
   };
 

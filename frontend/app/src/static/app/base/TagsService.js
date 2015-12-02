@@ -25,7 +25,7 @@
     isEdited: function(tag, ownerUUID, compareValues){
       if (tag.trans.parent){
         if (!compareValues){
-          if (!tag.mod.parent || tag.mod.parent !== tag.trans.parent.trans.uuid){
+          if (tag.mod && (!tag.mod.parent || tag.mod.parent !== tag.trans.parent.trans.uuid)){
             return true;
           }else if (!tag.parent || tag.parent !== tag.trans.parent.trans.uuid){
             return true;

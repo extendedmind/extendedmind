@@ -22,6 +22,8 @@
   if (angular.isFunction($scope.registerFeatureEditorAboutToCloseCallback))
     $scope.registerFeatureEditorAboutToCloseCallback(tagEditorAboutToClose, 'TagEditorController');
 
+  var parentPickerOpen;
+
   // VISIBILITY
 
   $scope.showTagEditorComponent = function(componentName) {
@@ -33,6 +35,18 @@
 
       case 'lessMore':
       return $scope.tag.created && !$scope.isPropertyInDedicatedEdit();
+      break;
+
+      case 'parentPicker':
+      return parentPickerOpen;
+      break;
+    }
+  };
+
+  $scope.showTagProperty = function(propertyName) {
+    switch (propertyName) {
+      case 'parent':
+      return !$scope.tagIsParent($scope.tag) && !$scope.isPropertyInDedicatedEdit();
     }
   };
 
@@ -50,6 +64,77 @@
     $scope.collapsibleOpen = !$scope.collapsibleOpen;
   };
 
+  // PARENT PICKER
+  $scope.openParentPicker = function() {
+    parentPickerOpen = true;
+  };
+  $scope.closeParentPicker = function() {
+    parentPickerOpen = false;
+  };
+  $scope.closeParentPickerAndSetParentToTag = function(tag, parentTag) {
+
+    function doCloseAndSave() {
+      $scope.closeParentPicker();
+      tag.trans.parent = parentTag;
+    }
+
+    if (!parentTag.trans.uuid) {
+      // Parent tag is new, save it first. Close parent picker on error saving new parent.
+      var saveTag = parentTag.trans.tagType === 'keyword' ? $scope.saveKeyword : $scope.saveContext;
+      saveTag(parentTag).then(doCloseAndSave, $scope.closeParentPicker);
+    }
+    else {
+      doCloseAndSave();
+    }
+  };
+
+  $scope.closeParentPickerAndClearParentFromTag = function(tag, parentTag) {
+    $scope.closeParentPicker();
+    if (tag.trans.parent === parentTag){
+      tag.trans.parent = undefined;
+    }
+  };
+
+  $scope.tagIsParent = function(tag) {
+    var tags = $scope.getTagsArray('all');
+    for (var i = 0; i < tags.length; i++) {
+      if (tags[i].trans.parent && tags[i].trans.parent.trans.uuid === tag.trans.uuid) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  $scope.getParentTagArray = function() {
+    if ($scope.tag.trans.tagType === 'context'){
+      return $scope.getTagsArray('contextsParentless', {owner: $scope.tag.trans.owner})
+    }else if ($scope.tag.trans.tagType === 'keyword'){
+      return $scope.getTagsArray('keywordsParentless', {owner: $scope.tag.trans.owner})
+    }
+  };
+
+  $scope.getNewParentTag = function() {
+    if ($scope.tag.trans.tagType === 'context'){
+      return TagsService.getNewTag({tagType: 'context'}, $scope.tag.trans.owner);
+    }else if ($scope.tag.trans.tagType === 'keyword'){
+      return TagsService.getNewTag({tagType: 'keyword'}, $scope.tag.trans.owner);
+    }
+  };
+
+  $scope.getParentText = function() {
+    if (!$scope.tag.trans.parent || $scope.tag.trans.parent.trans.deleted){
+      return 'select parent ' + $scope.tag.trans.tagType + '\u2026';
+    }else if ($scope.tag.trans.tagType === 'keyword'){
+      return '#' + $scope.tag.trans.parent.trans.title;
+    }else if ($scope.tag.trans.tagType === 'context'){
+      return '@' + $scope.tag.trans.parent.trans.title;
+    }
+  };
+
+  function isSubEditorOpenInTagEditor(){
+    return parentPickerOpen ;
+  }
+  $scope.registerIsSubEditorOpenCondition(isSubEditorOpenInTagEditor);
 
   // SAVING, DELETING
   function saveTagInEdit() {
@@ -146,6 +231,17 @@
         return '\u0023';  // # (number sign)
     }
   }
+
+
+  $scope.getTagPropertyNameInEdit = function() {
+    var propertyName = $scope.getPropertyNameInEdit();
+    if (!propertyName) {
+      if (parentPickerOpen) {
+        propertyName = 'parent';
+      }
+    }
+    return propertyName;
+  };
 
   // FAVORITING
 

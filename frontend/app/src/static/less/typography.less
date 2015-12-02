@@ -352,8 +352,17 @@ Convert texts.
 Keywords
 */
 
-.text-keyword {
+.text-keyword, .text-keyword-parent {
   font-size: @size-font-small;
+}
+
+.text-keyword-parent:after {
+  .set-icon-font;
+  content: @icon-arrow-right;
+  color: @color-text;
+  font-size: @size-icon-arrow-smallest;
+  padding-left: @width-arrow-text-gap;
+  vertical-align: middle;
 }
 
 /*

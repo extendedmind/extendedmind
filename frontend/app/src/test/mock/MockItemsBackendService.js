@@ -71,11 +71,16 @@ function MockItemsBackendService($httpBackend, ItemsService, SynchronizeService,
         persistentItem.relationships = modifiedItems[i].mod.relationships;
       else if (modifiedItems[i].relationships)
         persistentItem.relationships = modifiedItems[i].relationships;
-      persistentItems.push(persistentItem);
+
+      if (modifiedItems[i].mod.parent)
+        persistentItem.parent = modifiedItems[i].mod.parent;
+      else if (modifiedItems[i].parent)
+        persistentItem.parent = modifiedItems[i].parent;
 
       if (modifiedItems[i].mod.tagType) persistentItem.tagType = modifiedItems[i].mod.tagType;
       else if (modifiedItems[i].trans.tagType) persistentItem.tagType = modifiedItems[i].trans.tagType;
 
+      persistentItems.push(persistentItem);
     }
     return persistentItems;
   }

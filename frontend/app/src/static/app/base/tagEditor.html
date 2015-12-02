@@ -60,9 +60,7 @@
 
         <div ng-if="showEditorComponent('label')" class="group-symmetrical--right">
           <div class="text-field--label-wrapper">
-            <span ng-bind="'descrip' + (columns === 1 ? '-\n' : '') + 'tion'"
-              class="text-field--label-bold">
-            </span>
+            <span class="text-field--label-bold" ng-bind="getTagPropertyNameInEdit()"></span>
           </div>
         </div>
 
@@ -129,6 +127,17 @@
         </div>
       </div>
 
+      <!-- PARENT -->
+      <div ng-if="showTagProperty('parent')" class="group-mixed">
+        <a href class="group-mixed--middle link-search-result" ng-class="!tag.trans.parent && 'downplayed'"
+          swiper-click="openParentPicker()">
+          <span class="text-field--title" clamp=1 ng-bind="getParentText()"></span>
+        </a>
+        <div ng-if="tag.trans.parent" class="group-mixed--right">
+          <span class="text-field--label">parent</span>
+        </div>
+      </div>
+
       <!-- COLLAPSIBLE-->
       <div ng-if="showTagEditorComponent('collapsible')">
         <div ng-if="showEditorProperty('created', tag)" class="group-mixed text-field">
@@ -165,6 +174,27 @@
           <span ng-class="collapsibleOpen ? 'text-expand-up' : 'text-expand-down'"
             ng-bind="collapsibleOpen ? 'less' : 'more'"></span>
         </a>
+      </div>
+
+      <!-- KEYWORD PICKER -->
+      <div ng-if="showTagEditorComponent('parentPicker')"
+        class="container-sub-editor swiper-no-swiping animate-fade-in row-top-parent-disable"
+        editable-field-container="auto" editable-field-container-scrollable="true"
+        editable-field-container-clicked-elsewhere="closeParentPicker()" data-snap-ignore="true">
+        <div list-picker="getParentTagArray()"
+          list-picker-new-item="getNewParentTag()"
+          list-picker-save="closeParentPickerAndSetParentToTag(tag, list)"
+          list-picker-close="closeParentPicker()"
+          list-picker-clear="closeParentPickerAndClearParentFromTag(tag, list)"
+          list-picker-get-selected="tag.trans.parent"
+          list-picker-get-this-list="tag"
+          list-picker-type="{{tag.trans.tagType}}"
+          list-picker-prefix="{{tag.trans.tagType === 'keyword' ? '#' : '@'}}"
+          list-picker-register-save-new-list-callback="registerSubEditorDoneCallback(saveNewList)"
+          list-picker-unregister-save-new-list-callback="unregisterSubEditorDoneCallback()"
+          list-picker-register-is-edited-callback="registerHasSubEditorEditedCallback(isEdited)"
+          list-picker-unregister-is-edited-callback="unregisterHasSubEditorEditedCallback()">
+        </div>
       </div>
 
       <!-- DESCRIPTION -->

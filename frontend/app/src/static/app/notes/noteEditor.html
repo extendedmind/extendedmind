@@ -165,7 +165,12 @@
           <!-- KEYWORDS -->
           <div ng-if="showNoteProperty('keywords')" class="group-mixed">
             <a href class="group-mixed--middle link-search-result" swiper-click="openKeywordsPicker()">
-              <span class="text-field--title" ng-bind="getKeywordsListString(note)"></span>
+              <div ng-repeat="keyword in getActiveKeywords(note) | orderBy:'trans.title' track by keyword.trans.uuid"
+              class="keyword-list-wrapper">
+                <span class="text-keyword" ng-bind="getKeywordFirstPart(keyword)"
+                  ng-class="hasKeywordSecondPart(keyword) && 'text-keyword-parent'"></span>
+                <span class="text-keyword" ng-if="hasKeywordSecondPart(keyword)" ng-bind="getKeywordSecondPart(keyword)"></span><span ng-if="!$last">,&nbsp;</span>
+              </div>
             </a>
             <div class="group-mixed--right">
               <span class="text-field--label">keywords</span>

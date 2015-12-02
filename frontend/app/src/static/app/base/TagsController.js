@@ -32,7 +32,9 @@
     if (cachedTagsArrays[ownerUUID]) {
       updateAllTags(cachedTagsArrays[ownerUUID], ownerUUID);
       cachedTagsArrays[ownerUUID]['contexts'] = undefined;
+      cachedTagsArrays[ownerUUID]['contextsParentless'] = undefined;
       cachedTagsArrays[ownerUUID]['keywords'] = undefined;
+      cachedTagsArrays[ownerUUID]['keywordsParentless'] = undefined;
     }
   }
 
@@ -69,6 +71,17 @@
     return cachedTags['contexts'];
   }
 
+  function updateContextsParentless(cachedTags, ownerUUID) {
+    if (!cachedTags['contexts']) updateContexts(cachedTags, ownerUUID);
+    cachedTags['contextsParentless'] = [];
+    for (var i = 0; i < cachedTags['contexts'].length; i++) {
+      if (!cachedTags['contexts'][i].trans.parent) {
+        cachedTags['contextsParentless'].push(cachedTags['contexts'][i]);
+      }
+    }
+    return cachedTags['contextsParentless'];
+  }
+
   function updateKeywords(cachedTags, ownerUUID) {
     if (!cachedTags['all']) updateAllTags(cachedTags, ownerUUID);
     cachedTags['keywords'] = [];
@@ -78,6 +91,17 @@
       }
     }
     return cachedTags['keywords'];
+  }
+
+  function updateKeywordsParentless(cachedTags, ownerUUID) {
+    if (!cachedTags['keywords']) updateKeywords(cachedTags, ownerUUID);
+    cachedTags['keywordsParentless'] = [];
+    for (var i = 0; i < cachedTags['keywords'].length; i++) {
+      if (!cachedTags['keywords'][i].trans.parent) {
+        cachedTags['keywordsParentless'].push(cachedTags['keywords'][i]);
+      }
+    }
+    return cachedTags['keywordsParentless'];
   }
 
   function updateFavoritedContexts(cachedTags, favoriteContextInfos){
@@ -156,11 +180,23 @@
       }
       return cachedTagsArrays[ownerUUID]['keywords'];
 
+      case 'keywordsParentless':
+      if (!cachedTagsArrays[ownerUUID]['keywordsParentless']) {
+        updateKeywordsParentless(cachedTagsArrays[ownerUUID], ownerUUID);
+      }
+      return cachedTagsArrays[ownerUUID]['keywordsParentless'];
+
       case 'contexts':
       if (!cachedTagsArrays[ownerUUID]['contexts']) {
         updateContexts(cachedTagsArrays[ownerUUID], ownerUUID);
       }
       return cachedTagsArrays[ownerUUID]['contexts'];
+
+      case 'contextsParentless':
+      if (!cachedTagsArrays[ownerUUID]['contextsParentless']) {
+        updateContextsParentless(cachedTagsArrays[ownerUUID], ownerUUID);
+      }
+      return cachedTagsArrays[ownerUUID]['contextsParentless'];
 
       case 'favoritedContexts':
       var favoriteContextInfos = UserSessionService.getUIPreference('favoriteContexts');
