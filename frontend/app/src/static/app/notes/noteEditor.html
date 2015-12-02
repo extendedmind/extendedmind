@@ -263,8 +263,9 @@
               <div ng-if="noteHasKeywords(note)" class="keywords-container row">
                 <div class="keyword-wrapper"
                   ng-repeat="keyword in getActiveKeywords(note) | orderBy:'trans.title' track by keyword.trans.uuid">
-                  <a href class="keyword highlighted" swiper-click="removeKeywordFromNote(note, keyword)">
-                    <span class="text-keyword" ng-bind="'#' + keyword.trans.title" clamp=1></span>
+                  <a href class="keyword highlighted" swiper-click="removeKeywordFromNote(note, keyword)" clamp=1>
+                    <span class="text-keyword" ng-bind="getKeywordFirstPart(keyword)"
+                      ng-class="hasKeywordSecondPart(keyword) && 'text-keyword-parent'"></span><span class="text-keyword" ng-if="hasKeywordSecondPart(keyword)" ng-bind="getKeywordSecondPart(keyword)"></span>
                   </a>
                 </div>
               </div>
@@ -275,8 +276,9 @@
                   | keywordsFilter:{name:'byOtherThanNoteKeywords', item: note}
                   | filter:newKeyword.trans.title
                   | orderBy:'trans.title' track by keyword.trans.uuid">
-                  <a href class="keyword link" swiper-click="addKeywordToNote(note, keyword)">
-                    <span class="text-keyword" ng-bind="'#' + keyword.trans.title" clamp=1></span>
+                  <a href class="keyword link" swiper-click="addKeywordToNote(note, keyword)" clamp=1>
+                    <span class="text-keyword" ng-bind="getKeywordFirstPart(keyword)"
+                      ng-class="hasKeywordSecondPart(keyword) && 'text-keyword-parent'"></span><span class="text-keyword" ng-if="hasKeywordSecondPart(keyword)" ng-bind="getKeywordSecondPart(keyword)"></span>
                   </a>
                 </div>
               </div>
