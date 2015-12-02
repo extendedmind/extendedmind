@@ -28,7 +28,7 @@
   <div ng-if="!listSelectionDone" class="row-vertically-centered"
     ng-repeat="upperList in getUpperLists() | filter:notSelectedListAndNotThisList track by upperList.trans.uuid || $index"
     swiper-click="listSelected(upperList)">
-    <a href class="link" ng-class="upperList.trans.list && 'indent'">
+    <a href class="link" ng-class="hasParent(upperList) && 'indent'">
       <span class="text-link" clamp=2>{{::prefix}}{{upperList.trans.title}}</span>
     </a>
   </div>
@@ -39,7 +39,7 @@
   <div ng-if="useSubHeadings && getLowerLists().length && !listSelectionDone" class="row-vertically-centered"
     ng-repeat="lowerList in getLowerLists() | filter:notSelectedListAndNotThisList track by lowerList.trans.uuid || $index"
     swiper-click="listSelected(lowerList)">
-    <a href class="link" ng-class="lowerList.trans.list && 'indent'">
+    <a href class="link" ng-class="hasParent(lowerList) && 'indent'">
       <span class="text-link" clamp=2>{{::prefix}}{{lowerList.trans.title}}</span>
     </a>
   </div>

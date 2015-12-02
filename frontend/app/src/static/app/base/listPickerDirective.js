@@ -201,6 +201,15 @@
         if (scope.prefix) bindWatcher();
       };
 
+      scope.hasParent = function(item){
+        if (item.trans.itemType === 'list' && item.trans.list && !item.trans.list.trans.deleted) {
+          return true;
+        }
+        if(item.trans.itemType === 'tag' && item.trans.parent && !item.trans.parent.trans.deleted) {
+          return true;
+        }
+      };
+
       scope.$on('$destroy', function() {
         if (angular.isFunction(scope.unregisterSaveNewListCallback)) scope.unregisterSaveNewListCallback();
         if (angular.isFunction(scope.unregisterIsEditedCallback)) scope.unregisterIsEditedCallback();
