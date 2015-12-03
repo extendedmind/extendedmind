@@ -72,7 +72,6 @@
   * @param {Object} task Changed task.
   */
   function invalidateTasksArrays(tasks, modifiedTask, tasksType, ownerUUID) {
-
     if (cachedTasksArrays[ownerUUID]) {
       var arrayType;
       if (tasksType === 'active') {
@@ -89,9 +88,12 @@
                                   ownerUUID);
             } else if (arrayType === 'context') {
               if ($scope.getActiveFeature() === 'tasks' && SwiperService.isSlideActive('tasks/context')) {
-                updateContextTasks(cachedTasksArrays[ownerUUID],
-                                   cachedTasksArrays[ownerUUID]['context'].id,
-                                   ownerUUID);
+
+                for (var contextId in cachedTasksArrays[ownerUUID]['context']){
+                  if (cachedTasksArrays[ownerUUID]['context'].hasOwnProperty(contextId)){
+                    updateContextTasks(cachedTasksArrays[ownerUUID], contextId, ownerUUID);
+                  }
+                }
               } else {
                 delete cachedTasksArrays[ownerUUID]['context'];
               }
@@ -155,20 +157,19 @@
   function updateContextTasks(cachedTasks, contextId, ownerUUID) {
     var activeTasks = TasksService.getTasks(ownerUUID), i;
 
-    cachedTasks['context'] = {
-      array: [],
-      id: contextId
-    };
+    if (!cachedTasks['context']) cachedTasks['context'] = {};
+
+    cachedTasks['context'][contextId] = [];
 
     if (contextId === 'noContext') {
       for (i = activeTasks.length - 1; i >= 0; i--) {
-        if (!activeTasks[i].trans.context) cachedTasks['context'].array.push(activeTasks[i]);
+        if (!activeTasks[i].trans.context) cachedTasks['context'][contextId].push(activeTasks[i]);
       }
     } else {
       for (i = activeTasks.length - 1; i >= 0; i--) {
         var task = activeTasks[i];
         if (task.trans.context && task.trans.context.trans.uuid === contextId) {
-          cachedTasks['context'].array.push(task);
+          cachedTasks['context'][contextId].push(task);
         }
       }
     }
@@ -410,8 +411,7 @@
       if ($scope.getActiveFeature() === 'list' || $scope.getActiveFeature() === 'listInverse') {
         if (!cachedTasksArrays[ownerUUID]['activeAndArchived'])
           updateActiveAndArchivedTasks(cachedTasksArrays[ownerUUID], ownerUUID);
-        if (!cachedTasksArrays[ownerUUID]['list'] ||
-            (cachedTasksArrays[ownerUUID]['list'] && cachedTasksArrays[ownerUUID]['list'].uuid !== info.uuid))
+        if (!cachedTasksArrays[ownerUUID]['list'] || cachedTasksArrays[ownerUUID]['list'].uuid !== info.uuid)
         {
           updateListTasks(cachedTasksArrays[ownerUUID], info.uuid, ownerUUID);
         }
@@ -425,13 +425,10 @@
           // Use 'noContext' to identify cached tasks without context instead of undefined.
           info.id = 'noContext';
         }
-        if (!cachedTasksArrays[ownerUUID]['context'] ||
-            (cachedTasksArrays[ownerUUID]['context'] &&
-             cachedTasksArrays[ownerUUID]['context'].id !== info.id))
-        {
+        if (!cachedTasksArrays[ownerUUID]['context'] || !cachedTasksArrays[ownerUUID]['context'][info.id]){
           updateContextTasks(cachedTasksArrays[ownerUUID], info.id, ownerUUID);
         }
-        return cachedTasksArrays[ownerUUID]['context'].array;
+        return cachedTasksArrays[ownerUUID]['context'][info.id];
       }
       break;
     }
@@ -608,6 +605,7 @@
   // NAVIGATION
 
   $scope.context = undefined;
+  $scope.childContexts = undefined;
 
   function refreshFeatureMapHeading(){
     $scope.$evalAsync(function(){
@@ -620,18 +618,39 @@
 
   $scope.swipeToContext = function(context){
     $scope.context = context;
+    $scope.childContexts = undefined;
+    if ($scope.context && !$scope.context.trans.parent){
+      // Get all children of the context
+      var allContexts = $scope.getTagsArray('contexts');
+      if (allContexts){
+        var thisContextIndex = allContexts.indexOf($scope.context);
+        if (thisContextIndex !== -1){
+          for (var i=thisContextIndex+1; i<allContexts.length; i++){
+            if (allContexts[i].trans.parent === $scope.context){
+              if (!$scope.childContexts) $scope.childContexts = [];
+              $scope.childContexts.push(allContexts[i]);
+            }else{
+              // Break immediately, as all children are in order after the context
+              break;
+            }
+          }
+        }
+      }
+    }
     SwiperService.swipeTo('tasks/context');
     refreshFeatureMapHeading();
   };
 
   $scope.swipeToContextsAndReset = function(){
     $scope.context = undefined;
+    $scope.childContexts = undefined;
     SwiperService.swipeTo('tasks/contexts');
     refreshFeatureMapHeading();
   };
 
-  $scope.getContextId = function() {
-    return $scope.context ? $scope.context.trans.uuid : 'no';
+  $scope.getContextId = function(overrideContext) {
+    var context = overrideContext ? overrideContext : $scope.context;
+    return context ? context.trans.uuid : 'no';
   };
 
   $scope.isContextActive = function() {

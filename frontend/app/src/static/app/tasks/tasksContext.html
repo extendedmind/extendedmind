@@ -1,27 +1,40 @@
 <div class="container-content--outer" list-container>
-  <section class="container-content" list="getTasksArray('context', {id: context && context.trans.uuid})"
+  <section class="container-content">
+    <div list="getTasksArray('context', {id: context && context.trans.uuid})"
     list-options="{hideItemDefault: true}">
-    <div class="group-mixed heading vertically-centered">
-      <div class="group-mixed--middle">
-        <h2 class="group-heading justified">
-          <a href ng-if="context" class="link" swiper-click="openContextEditor(context)"
-          ng-class="isOnboarding('tasks', 'context') && 'onboarding'">
-            <span class="text-heading" ng-bind="'@' + context.trans.title"
-              ng-class="context.trans.title.length > 6 && 'long'" clamp=2></span>
-          </a>
-          <div ng-if="!context">
-            <span class="text-heading long" clamp=2>no context</span>
-          </div>
-        </h2>
+      <div class="group-mixed heading vertically-centered">
+        <div class="group-mixed--middle">
+          <h2 class="group-heading justified">
+            <a href ng-if="context" class="link" swiper-click="openContextEditor(context)"
+            ng-class="isOnboarding('tasks', 'context') && 'onboarding'">
+              <span class="text-heading" ng-bind="'@' + context.trans.title"
+                ng-class="context.trans.title.length > 6 && 'long'" clamp=2></span>
+            </a>
+            <div ng-if="!context">
+              <span class="text-heading long" clamp=2>no context</span>
+            </div>
+          </h2>
+        </div>
+        <div class="group-mixed--right" task-list-completed></div>
       </div>
-      <div class="group-mixed--right" task-list-completed></div>
+      <div list-item-add="getNewTaskWithContext(context)" list-item-add-save="saveTask(newItem)"
+        ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
+      <div class="animate-list-item-leave"
+        ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
+        list-item="getContextId()" ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
+      <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-hide="[listItemAddActive]"></div>
     </div>
-    <div list-item-add="getNewTaskWithContext(context)" list-item-add-save="saveTask(newItem)"
-      ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
-    <div class="animate-list-item-leave"
-      ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
-      list-item="getContextId()" ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
-    <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-hide="[listItemAddActive]"></div>
+    <div ng-if="childContexts" ng-repeat="childContext in childContexts track by childContext.trans.uuid"
+    list="getTasksArray('context', {id: childContext.trans.uuid})" list-options="{disabled: true}">
+      <p class="row">
+        <span class="text-heading-primary"
+              ng-bind="'@' + childContext.trans.title"></span><br/>
+      </p>
+      <div class="animate-list-item-leave"
+        ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
+        list-item="getContextId(childContext)" ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
+      <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-hide="[listItemAddActive]"></div>
+    </div>
   </section>
   <footer class="container-content--after" list-footer="getFeatureMap('tasks')"></footer>
 </div>

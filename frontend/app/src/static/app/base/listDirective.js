@@ -331,7 +331,7 @@
         }
       }
 
-      if (controllers[1]){
+      if (controllers[1] && !scope.listOptions.disabled){
         controllers[1].registerSlideActiveCallback(listActive, 'listDirective');
         if (controllers[1].isSlideActiveByDefault()){
           listActive();
@@ -658,7 +658,8 @@
       }
 
       scope.$on('$destroy', function() {
-        if (controllers[1]) controllers[1].unregisterSlideActiveCallback('listDirective');
+        if (controllers[1] && !scope.listOptions.disabled)
+          controllers[1].unregisterSlideActiveCallback('listDirective');
         element[0].removeEventListener('scroll', listScroll, false);
       });
     }

@@ -237,11 +237,10 @@
   }
 
   function getCollectiveTags(tags, ownerUUID){
-    var collectiveTags = {};
+    var collectiveTags = [];
     for (var i=0; i<tags.length; i++){
       if (tags[i].trans.owner !== ownerUUID){
-        if (!collectiveTags[tags[i].trans.owner]) collectiveTags[tags[i].trans.owner] = [];
-        collectiveTags[tags[i].trans.owner].push(tags[i]);
+        collectiveTags.push(tags[i]);
       }
     }
     return collectiveTags;
