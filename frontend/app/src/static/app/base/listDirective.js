@@ -151,6 +151,15 @@
         }
       };
 
+      this.setLoading = function(enabled) {
+        if (enabled){
+          $scope.disableLoading = false;
+        }else{
+          $scope.currentListLimitTo = $scope.getFilteredFullArrayLength();
+          $scope.disableLoading = true;
+        }
+      };
+
       var checkingItemsDeferred = [];
       function resolveAllDeferredCheckings(){
         UISessionService.allow('leaveAnimation', 200);
@@ -202,6 +211,8 @@
       };
     }],
     link: function(scope, element, attrs, controllers) {
+      var scrollElement = scope.listOptions.scrollParent ? element[0].parentElement : element[0];
+
       var listLockedCallback;
       if (attrs.listLocked) {
         listLockedCallback = $parse(attrs.listLocked).bind(undefined, scope);
@@ -233,7 +244,7 @@
       }
 
       var listData = {
-        element: element[0],
+        element: scrollElement,
         setLimits: setLimits,
         setIsNearListBottom: setIsNearListBottom,
         getCurrentListStartIndex: function() {
@@ -270,13 +281,14 @@
         }
 
         if (!isListBounded()) {
-          var elementHeight = element[0].offsetHeight;
-          var elementScrollHeight = element[0].scrollHeight;
+
+          var elementHeight = scrollElement.offsetHeight;
+          var elementScrollHeight = scrollElement.scrollHeight;
           var elementScrollPosition, remainingToBottom;
 
           if (elementHeight !== elementScrollHeight) {
             // Item has scrollable content
-            elementScrollPosition = element[0].scrollTop;
+            elementScrollPosition = scrollElement.scrollTop;
             remainingToBottom = elementScrollHeight - elementScrollPosition - elementHeight;
 
             if (remainingToBottom === 0) {
@@ -297,8 +309,8 @@
       }
 
       function listInActive() {
-        if (element[0].scrollTop) {
-          element[0].scrollTop = 0;
+        if (scrollElement.scrollTop) {
+          scrollElement.scrollTop = 0;
         }
 
         if (scope.currentListStartIndex !== 0) {
@@ -331,7 +343,7 @@
         }
       }
 
-      if (controllers[1] && !scope.listOptions.disabled){
+      if (controllers[1] && !scope.listOptions.slidePollingDisabled){
         controllers[1].registerSlideActiveCallback(listActive, 'listDirective');
         if (controllers[1].isSlideActiveByDefault()){
           listActive();
@@ -347,7 +359,7 @@
         var promise = fn(parameter);
         if (attrs.listRecent !== undefined && promise && promise.then){
           promise.then(function(){
-            element[0].scrollTop = 0;
+            scrollElement.scrollTop = 0;
           });
         }
       };
@@ -418,7 +430,7 @@
           scope.maximumNumberOfItems = calculateMaximumNumberOfBoundedItems();
           if (options.id) scope.registerWindowResizedCallback(calculateBoundedItemsAndLimits, options.id);
         } else {
-          element[0].addEventListener('scroll', listScroll, false);
+          scrollElement.addEventListener('scroll', listScroll, false);
           removeCoefficientToEdge = 3;
 
           // TODO:  Max number and increase amount should be calculated based on the height of the
@@ -442,12 +454,12 @@
           scope.maximumNumberOfItems = calculateMaximumNumberOfBoundedItems();
           if (options.id) scope.registerWindowResizedCallback(calculateBoundedItemsAndLimits, options.id);
 
-          element[0].removeEventListener('scroll', listScroll, false);
+          scrollElement.removeEventListener('scroll', listScroll, false);
           if (controllers[1]) {
             controllers[1].unregisterSlideMovementCallback('listDirective');
           }
         } else {
-          element[0].addEventListener('scroll', listScroll, false);
+          scrollElement.addEventListener('scroll', listScroll, false);
           removeCoefficientToEdge = 3;
 
           // TODO:  Max number and increase amount should be calculated based on the height of the
@@ -497,9 +509,9 @@
       var negativeHoldPositionTimer;
       function startNegativeHoldPositionTimer() {
         negativeHoldPositionTimer = setTimeout(function() {
-          var elementHeight = element[0].offsetHeight;
-          var elementScrollHeight = element[0].scrollHeight;
-          var elementScrollPosition = element[0].scrollTop;
+          var elementHeight = scrollElement.offsetHeight;
+          var elementScrollHeight = scrollElement.scrollHeight;
+          var elementScrollPosition = scrollElement.scrollTop;
           var remainingToBottom = elementScrollHeight - elementScrollPosition - elementHeight;
 
           if (remainingToBottom < 0) {
@@ -529,9 +541,9 @@
       function listScroll(/*event*/){
 
         // get scroll position
-        var elementHeight = element[0].offsetHeight;
-        var elementScrollHeight = element[0].scrollHeight;
-        var elementScrollPosition = element[0].scrollTop;
+        var elementHeight = scrollElement.offsetHeight;
+        var elementScrollHeight = scrollElement.scrollHeight;
+        var elementScrollPosition = scrollElement.scrollTop;
         var remainingToBottom = elementScrollHeight - elementScrollPosition - elementHeight;
 
         var scrollingDown = lastScrollPosition < elementScrollPosition; // evaluate direction
@@ -539,7 +551,6 @@
 
         if (remainingToBottom >= 0 && remainingToBottom <= elementHeight * nearingCoefficientToEdge) {
           // At the bottom or at lower half of the element.
-
           if (stoppedInNegativeScrollPosition && remainingToBottom > 0) {
             // Do nothing when stopped in negative scroll position and then scrolled towards the top.
             return;
@@ -635,8 +646,11 @@
 
       function setLimits(startIndex){
         scope.currentListStartIndex = startIndex;
-        scope.currentListLimitTo = scope.maximumNumberOfItems + scope.currentListStartIndex;
-
+        if (scope.disableLoading){
+          scope.currentListLimitTo = scope.getFilteredFullArrayLength();
+        }else{
+          scope.currentListLimitTo = scope.maximumNumberOfItems + scope.currentListStartIndex;
+        }
         if (startIndex === 0) {
           scope.currentListStartIndexLimit = scope.currentListLimitTo;
         } else {
@@ -658,9 +672,9 @@
       }
 
       scope.$on('$destroy', function() {
-        if (controllers[1] && !scope.listOptions.disabled)
+        if (controllers[1] && !scope.listOptions.slidePollingDisabled)
           controllers[1].unregisterSlideActiveCallback('listDirective');
-        element[0].removeEventListener('scroll', listScroll, false);
+        scrollElement.removeEventListener('scroll', listScroll, false);
       });
     }
   };

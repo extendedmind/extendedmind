@@ -23,6 +23,7 @@
       listInfos: '=listPromptInfos',
       noItemsVisible: '=listPromptHide',
       hideLoadingPrompt: '=?listPromptHideLoad',
+      disableLoading: '=?listPromptDisableLoading',
       loadMore: '=listPromptLoadMore',
       loadMoreFn: '&?listPromptLoadMoreFn'
     },
@@ -33,13 +34,18 @@
       var loadingAnimationElement;
 
       function init() {
-        loadingAnimationElementVisible =
-        listController.registerIsNearListBottomCallback(isNearListBottom);
+        if (scope.disableLoading){
+          listController.setLoading(false);
+        }else{
+          listController.setLoading(true);
+          loadingAnimationElementVisible =
+          listController.registerIsNearListBottomCallback(isNearListBottom);
 
-        loadingAnimationElement = element[0].firstElementChild.lastElementChild;
-        if (loadingAnimationElement && loadingAnimationElementVisible) {
-          // Set loading animation element initially visible.
-          loadingAnimationElement.style.display = 'block';
+          loadingAnimationElement = element[0].firstElementChild.lastElementChild;
+          if (loadingAnimationElement && loadingAnimationElementVisible) {
+            // Set loading animation element initially visible.
+            loadingAnimationElement.style.display = 'block';
+          }
         }
       }
 

@@ -1,7 +1,7 @@
 <div class="container-content--outer" list-container>
   <section class="container-content">
     <div list="getTasksArray('context', {id: context && context.trans.uuid})"
-    list-options="{hideItemDefault: true}">
+    list-options="{hideItemDefault: true, scrollParent: true}">
       <div class="group-mixed heading vertically-centered">
         <div class="group-mixed--middle">
           <h2 class="group-heading justified">
@@ -22,18 +22,23 @@
       <div class="animate-list-item-leave"
         ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
         list-item="getContextId()" ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
-      <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-hide="[listItemAddActive]"></div>
+      <div ng-if="contextSlideActive" list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-hide="[listItemAddActive]"
+           list-prompt-disable-loading="childContexts"></div>
     </div>
     <div ng-if="childContexts" ng-repeat="childContext in childContexts track by childContext.trans.uuid"
-    list="getTasksArray('context', {id: childContext.trans.uuid})" list-options="{disabled: true}">
-      <p class="row">
-        <span class="text-heading-primary"
-              ng-bind="'@' + childContext.trans.title"></span><br/>
-      </p>
+    list="getTasksArray('context', {id: childContext.trans.uuid})"
+    list-options="{hideItemDefault: true, slidePollingDisabled: true}">
+      <div class="group-mixed height-large">
+        <div class="group-mixed--middle">
+          <span class="text-heading-primary" ng-bind="'@' + childContext.trans.title"></span>
+        </div>
+        <div class="group-mixed--right" task-list-completed></div>
+      </div>
       <div class="animate-list-item-leave"
         ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
         list-item="getContextId(childContext)" ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
-      <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-hide="[listItemAddActive]"></div>
+      <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-hide="[listItemAddActive]"
+           list-prompt-disable-loading="true"></div>
     </div>
   </section>
   <footer class="container-content--after" list-footer="getFeatureMap('tasks')"></footer>

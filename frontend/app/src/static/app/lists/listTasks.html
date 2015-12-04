@@ -1,22 +1,41 @@
 <div class="container-content--outer" list-container list-container-readonly="isListReadOnly(list)"
   ng-class="isListReadOnly(list) && 'checkbox-disable'"
   drawer-handle="left" drawer-handle-register-activate="registerFeatureActivateCallback(activate, 'list', 'listTasks')">
-  <section class="container-content" list="getTasksArray('list', {uuid: list.trans.uuid, owner: overrideOwnerUUID})"
-    list-options="{hideItemDefault: true}">
-    <div class="group-mixed heading">
-      <div class="group-mixed--middle">
-        <h2 class="group-heading justified">
-          <span class="text-heading">tasks</span>
-        </h2>
+  <section class="container-content">
+    <div list="getTasksArray('list', {uuid: list.trans.uuid, owner: overrideOwnerUUID})"
+    list-options="{hideItemDefault: true, scrollParent: true}">
+      <div class="group-mixed heading">
+        <div class="group-mixed--middle">
+          <h2 class="group-heading justified">
+            <span class="text-heading">tasks</span>
+          </h2>
+        </div>
+        <div class="group-mixed--right" task-list-completed></div>
       </div>
-      <div class="group-mixed--right" task-list-completed></div>
+      <div list-item-add="getNewTask({list: list}, overrideOwnerUUID)"
+        list-item-add-save="saveTask(newItem)" ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
+      <div class="animate-list-item-leave"
+        ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
+        list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
+      <div ng-if="isFeatureActive('list')"
+           list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-hide="[listItemAddActive]"
+           list-prompt-disable-loading="childLists"></div>
     </div>
-    <div list-item-add="getNewTask({list: list}, overrideOwnerUUID)"
-      list-item-add-save="saveTask(newItem)" ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
-    <div class="animate-list-item-leave"
-      ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
-      list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
-    <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-hide="[listItemAddActive]"></div>
+    <div ng-if="childLists" ng-repeat="childList in childLists track by childList.trans.uuid"
+    list="getTasksArray('list', {uuid: childList.trans.uuid, owner: overrideOwnerUUID})"
+    list-options="{hideItemDefault: true, slidePollingDisabled: true}">
+      <div class="group-mixed height-large">
+        <div class="group-mixed--middle">
+          <span class="text-heading-primary" ng-bind="childList.trans.title"></span>
+        </div>
+        <div class="group-mixed--right" task-list-completed></div>
+      </div>
+      <div class="animate-list-item-leave"
+        ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
+        list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
+      <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-hide="[listItemAddActive]"
+           list-prompt-disable-loading="true"></div>
+    </div>
   </section>
   <footer ng-if="isFeatureActive('list')" class="container-content--after" list-footer="getFeatureMap('list')"
   list-footer-subfeature="tasks"></footer>

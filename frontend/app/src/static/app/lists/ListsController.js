@@ -284,6 +284,26 @@
         $scope.list = data;
         $scope.overrideOwnerUUID = undefined;
       }
+
+      $scope.childLists = undefined;
+      if ($scope.list && !$scope.list.trans.list && !$scope.overrideOwnerUUID){
+        // Get all children of the context
+        var allLists = $scope.getListsArray('all');
+        if (allLists){
+          var thisListIndex = allLists.indexOf($scope.list);
+          if (thisListIndex !== -1){
+            for (var i=thisListIndex+1; i<allLists.length; i++){
+              if (allLists[i].trans.list === $scope.list){
+                if (!$scope.childLists) $scope.childLists = [];
+                $scope.childLists.push(allLists[i]);
+              }else{
+                // Break immediately, as all children are in order after the list
+                break;
+              }
+            }
+          }
+        }
+      }
     } else if (name === 'lists') {
       if ($scope.features.lists.getStatus('archived') === 'disabled'){
         SwiperService.setOnlyExternal('lists', true);

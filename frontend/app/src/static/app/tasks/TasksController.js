@@ -73,7 +73,7 @@
   */
   function invalidateTasksArrays(tasks, modifiedTask, tasksType, ownerUUID) {
     if (cachedTasksArrays[ownerUUID]) {
-      var arrayType;
+      var arrayType, listUUID;
       if (tasksType === 'active') {
         for (arrayType in cachedTasksArrays[ownerUUID]) {
           if (cachedTasksArrays[ownerUUID].hasOwnProperty(arrayType)) {
@@ -83,9 +83,14 @@
             }
             else if (arrayType === 'date') {
               $scope.invalidateDateTasks(cachedTasksArrays[ownerUUID], ownerUUID);
-            } else if (arrayType === 'list') {
-              invalidateListTasks(cachedTasksArrays[ownerUUID], cachedTasksArrays[ownerUUID]['list'].uuid,
-                                  ownerUUID);
+            }
+            else if (arrayType === 'list') {
+              for (listUUID in cachedTasksArrays[ownerUUID]['list']){
+                if (cachedTasksArrays[ownerUUID]['list'] &&
+                    cachedTasksArrays[ownerUUID]['list'].hasOwnProperty(listUUID)){
+                  invalidateListTasks(cachedTasksArrays[ownerUUID], listUUID, ownerUUID);
+                }
+              }
             } else if (arrayType === 'context') {
               if ($scope.getActiveFeature() === 'tasks' && SwiperService.isSlideActive('tasks/context')) {
 
@@ -104,11 +109,15 @@
         for (arrayType in cachedTasksArrays[ownerUUID]) {
           if (cachedTasksArrays[ownerUUID].hasOwnProperty(arrayType)) {
             // Every cached tasks array has cached tasks.
-            if (arrayType === 'all')
+            if (arrayType === 'all'){
               invalidateAllTasks(cachedTasksArrays[ownerUUID], ownerUUID);
-            else if (arrayType === 'list')
-              invalidateListTasks(cachedTasksArrays[ownerUUID], cachedTasksArrays[ownerUUID]['list'].uuid,
-                                  ownerUUID);
+            }else if (arrayType === 'list'){
+              for (listUUID in cachedTasksArrays[ownerUUID]['list']){
+                if (cachedTasksArrays[ownerUUID]['list'].hasOwnProperty(listUUID)){
+                  invalidateListTasks(cachedTasksArrays[ownerUUID], listUUID, ownerUUID);
+                }
+              }
+            }
           }
         }
       }
@@ -143,14 +152,14 @@
   function updateListTasks(cachedTasks, listUUID) {
     var activeAndArchivedTasks = cachedTasks['activeAndArchived'];
 
-    cachedTasks['list'] = {
-      array: [],
-      uuid: listUUID
-    };
+    if (!cachedTasks['list']) cachedTasks['list'] = {};
+
+    cachedTasks['list'][listUUID] = [];
 
     for (var i = activeAndArchivedTasks.length - 1; i >= 0; i--) {
       var task = activeAndArchivedTasks[i];
-      if (task.trans.list && task.trans.list.trans.uuid === listUUID) cachedTasks['list'].array.push(task);
+      if (task.trans.list && task.trans.list.trans.uuid === listUUID)
+        cachedTasks['list'][listUUID].push(task);
     }
   }
 
@@ -411,11 +420,11 @@
       if ($scope.getActiveFeature() === 'list' || $scope.getActiveFeature() === 'listInverse') {
         if (!cachedTasksArrays[ownerUUID]['activeAndArchived'])
           updateActiveAndArchivedTasks(cachedTasksArrays[ownerUUID], ownerUUID);
-        if (!cachedTasksArrays[ownerUUID]['list'] || cachedTasksArrays[ownerUUID]['list'].uuid !== info.uuid)
+        if (!cachedTasksArrays[ownerUUID]['list'] || !cachedTasksArrays[ownerUUID]['list'][info.uuid])
         {
           updateListTasks(cachedTasksArrays[ownerUUID], info.uuid, ownerUUID);
         }
-        return cachedTasksArrays[ownerUUID]['list'].array;
+        return cachedTasksArrays[ownerUUID]['list'][info.uuid];
       }
       break;
 
@@ -638,6 +647,7 @@
       }
     }
     SwiperService.swipeTo('tasks/context');
+    $scope.contextSlideActive = true;
     refreshFeatureMapHeading();
   };
 
@@ -665,9 +675,11 @@
   function taskSlideChange(slidePath){
     if (slidePath === 'tasks/context' && $scope.context){
       $scope.getFeatureMap('tasks').slides.right.activeContext = $scope.context;
+      $scope.contextSlideActive = true;
       if (!$scope.$$phase && !$rootScope.$$phase) $scope.$digest();
     }else if ($scope.getFeatureMap('tasks').slides.right.activeContext){
       delete $scope.getFeatureMap('tasks').slides.right.activeContext;
+      $scope.contextSlideActive = false;
       if (!$scope.$$phase && !$rootScope.$$phase) $scope.$digest();
     }
   }
