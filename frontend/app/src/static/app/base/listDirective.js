@@ -154,6 +154,7 @@
       this.setLoading = function(enabled) {
         if (enabled){
           $scope.disableLoading = false;
+          if (!$scope.currentListLimitTo || $scope.currentListLimitTo < 25) $scope.currentListLimitTo = 25;
         }else{
           $scope.currentListLimitTo = $scope.getFilteredFullArrayLength();
           $scope.disableLoading = true;
