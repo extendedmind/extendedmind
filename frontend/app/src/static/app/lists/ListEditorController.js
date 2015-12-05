@@ -419,22 +419,6 @@
     return propertyName;
   };
 
-  // LIST PICKER
-
-  $scope.listIsParent = function(list) {
-    var lists = $scope.getListsArray('all');
-    for (var i = 0; i < lists.length; i++) {
-      if (lists[i].trans.list && lists[i].trans.list.trans.uuid === list.trans.uuid) {
-        return true;
-      }
-    }
-    return false;
-  };
-
-  $scope.hasChildLists = function(){
-    return ListsService.isListsWithParent($scope.list);
-  };
-
   // SHARE LIST EDITOR
 
   $scope.openListShareEditor = function(data) {

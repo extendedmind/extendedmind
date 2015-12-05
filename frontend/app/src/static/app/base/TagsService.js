@@ -392,6 +392,20 @@
         initializeArrays(ownerUUID);
       }
     },
+    /*
+    * Check active tags with the given parentTag as parent.
+    */
+    isTagsWithParent: function(parentTag) {
+      var ownerUUID = parentTag.trans.owner;
+      var i;
+      for (i = 0; i < tags[ownerUUID].activeTags.length; i++) {
+        if (tags[ownerUUID].activeTags[i].trans.parent &&
+            tags[ownerUUID].activeTags[i].trans.parent.uuid === parentTag.trans.uuid)
+        {
+          return true;
+        }
+      }
+    },
     // Regular expressions for tag requests
     putNewTagRegex: ItemLikeService.getPutNewRegex(TAG_TYPE),
     putExistingTagRegex: ItemLikeService.getPutExistingRegex(TAG_TYPE),

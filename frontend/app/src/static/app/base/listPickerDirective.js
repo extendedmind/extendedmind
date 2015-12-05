@@ -25,6 +25,7 @@
       getNewList: '&?listPickerNewItem',
       getSelectedList: '&listPickerGetSelected',
       getThisList: '&listPickerGetThisList',
+      hasChildren: '=?listPickerHasChildren',
       close: '&?listPickerClose',
       closeAndSave: '&listPickerSave',
       closeAndClearList: '&listPickerClear',
@@ -98,7 +99,10 @@
           if (list.trans.uuid) {
             // Compare with uuid.
             if (scope.selectedList.trans.uuid && list.trans.uuid === scope.selectedList.trans.uuid) {
-              return false;
+              // If the list has child lists, it needs to be in the list, but disabled
+              if (!angular.isFunction(scope.hasChildren) || !scope.hasChildren(list)){
+                return false;
+              }
             }
           } else {
             // Compare with title.

@@ -28,7 +28,10 @@
   <div ng-if="!listSelectionDone" class="row-vertically-centered"
     ng-repeat="upperList in getUpperLists() | filter:notSelectedListAndNotThisList track by upperList.trans.uuid || $index"
     swiper-click="listSelected(upperList)">
-    <a href class="link" ng-class="hasParent(upperList) && 'indent'">
+    <a href class="link" ng-class="{indent: hasParent(upperList),
+                                    'link-disable': upperList === selectedList,
+                                    downplayed: upperList === selectedList,
+                                    'text-metadata': upperList === selectedList}">
       <span class="text-link" clamp=2>{{::prefix}}{{upperList.trans.title}}</span>
     </a>
   </div>

@@ -405,6 +405,10 @@
     }
     return classes;
   };
+
+  $scope.hasChildTags = function(tag){
+    return TagsService.isTagsWithParent(tag);
+  };
 }
 
 TagsController['$inject'] = ['$rootScope', '$scope', '$timeout', 'AnalyticsService', 'ArrayService',
