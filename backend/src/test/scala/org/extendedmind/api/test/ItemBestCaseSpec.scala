@@ -73,12 +73,12 @@ class ItemBestCaseSpec extends ServiceSpecBase {
   describe("In the best case, ItemService") {
     it("should generate item list response on /[userUUID]/items") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-      Get("/" + authenticateResponse.userUUID + "/items") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+      Get("/" + authenticateResponse.userUUID + "/items?completed=true") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val itemsResponse = responseAs[Items]
         writeJsonOutput("itemsResponse", responseAs[String])
         itemsResponse.items should not be None
         itemsResponse.tasks should not be None
-        itemsResponse.tasks.get.length should equal(6)
+        itemsResponse.tasks.get.length should equal(7)
         itemsResponse.notes should not be None
         itemsResponse.lists should not be None
         itemsResponse.lists.get.find(

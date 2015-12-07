@@ -154,9 +154,8 @@
       this.setLoading = function(enabled) {
         if (enabled){
           $scope.disableLoading = false;
-          if (!$scope.currentListLimitTo || $scope.currentListLimitTo < 25) $scope.currentListLimitTo = 25;
         }else{
-          $scope.currentListLimitTo = $scope.getFilteredFullArrayLength();
+          if ($scope.currentListLimitTo) $scope.currentListLimitTo = undefined;
           $scope.disableLoading = true;
         }
       };
@@ -648,26 +647,28 @@
       function setLimits(startIndex){
         scope.currentListStartIndex = startIndex;
         if (scope.disableLoading){
-          scope.currentListLimitTo = scope.getFilteredFullArrayLength();
+          scope.currentListLimitTo = undefined;
         }else{
           scope.currentListLimitTo = scope.maximumNumberOfItems + scope.currentListStartIndex;
+          if (startIndex === 0) {
+            scope.currentListStartIndexLimit = scope.currentListLimitTo;
+          } else {
+            scope.currentListStartIndexLimit = -startIndex;
+          }
+          setIsNearListBottom();
         }
-        if (startIndex === 0) {
-          scope.currentListStartIndexLimit = scope.currentListLimitTo;
-        } else {
-          scope.currentListStartIndexLimit = -startIndex;
-        }
-        setIsNearListBottom();
       }
 
       function setIsNearListBottom() {
-        if (scope.currentListLimitTo >= scope.getFilteredFullArrayLength()) {
-          if (angular.isFunction(scope.isNearListBottomCallback)) {
-            scope.isNearListBottomCallback(false);
-          }
-        } else if (scope.getFilteredFullArrayLength()) {
-          if (angular.isFunction(scope.isNearListBottomCallback)) {
-            scope.isNearListBottomCallback(true);
+        if (scope.currentListLimitTo !== undefined){
+          if (scope.currentListLimitTo >= scope.getFilteredFullArrayLength()) {
+            if (angular.isFunction(scope.isNearListBottomCallback)) {
+              scope.isNearListBottomCallback(false);
+            }
+          } else if (scope.getFilteredFullArrayLength()) {
+            if (angular.isFunction(scope.isNearListBottomCallback)) {
+              scope.isNearListBottomCallback(true);
+            }
           }
         }
       }
