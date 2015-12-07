@@ -1,14 +1,29 @@
 <div class="container-content--outer" ng-if="isFeatureActive('listInverse')" list-container
      list-container-readonly="isListReadOnly(list)"
      drawer-handle="left" drawer-handle-register-activate="registerFeatureActivateCallback(activate, 'listInverse', 'listInverseNotes')">
-  <section class="container-content" list="getNotesArray('list', {uuid: list.trans.uuid, owner: overrideOwnerUUID})"
-    list-open="openEditor('note', getNewNote({list: list}, overrideOwnerUUID), 'new')">
+  <section class="container-content">
     <h2 class="group-heading justified row">notes</h2>
-
-    <div class="animate-list-item-leave tall"
-      ng-repeat="note in getVisibleArray(getFullArray, currentListLimitTo) track by note.trans.uuid"
-      list-item ng-include="urlBase + 'app/notes/noteListItem.html'"></div>
-    <div list-prompt="notes" list-prompt-infos="listInfos"></div>
+    <div list="getNotesArray('list', {uuid: list.trans.uuid, owner: overrideOwnerUUID})"
+    list-open="openEditor('note', getNewNote({list: list}, overrideOwnerUUID), 'new')"
+    list-options="{scrollParent: true}">
+      <div class="animate-list-item-leave tall"
+        ng-repeat="note in getVisibleArray(getFullArray, currentListLimitTo) track by note.trans.uuid"
+        list-item ng-include="urlBase + 'app/notes/noteListItem.html'"></div>
+      <div list-prompt="notes" list-prompt-infos="listInfos" list-prompt-disable-loading="childLists"></div>
+    </div>
+    <div ng-if="childLists" ng-repeat="childList in childLists track by childList.trans.uuid"
+    list="getNotesArray('list', {uuid: childList.trans.uuid, owner: overrideOwnerUUID})"
+    list-options="{slidePollingDisabled: true}">
+      <div class="group-mixed height-large">
+        <div class="group-mixed--middle">
+          <span class="text-heading-primary text-downplayed" ng-bind="childList.trans.title"></span>
+        </div>
+      </div>
+      <div class="animate-list-item-leave tall"
+        ng-repeat="note in getVisibleArray(getFullArray, currentListLimitTo) track by note.trans.uuid"
+        list-item ng-include="urlBase + 'app/notes/noteListItem.html'"></div>
+      <div list-prompt="notes" list-prompt-infos="listInfos" list-prompt-disable-loading="true"></div>
+    </div>
   </section>
   <footer ng-if="isFeatureActive('listInverse')" class="container-content--after" list-footer="getFeatureMap('listInverse')"
   list-footer-subfeature="notes"></footer>
