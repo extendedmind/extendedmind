@@ -200,8 +200,8 @@
 
     for (var i = 0, len = $scope.selectedKeywords.length; i < len; i++) {
       if (item.trans.keywords) {
-        if (item.trans.keywords.indexOf($scope.selectedKeywords[i]) === -1) {
-          // Selected keyword is not found in the item.
+        if (!isSelectedKeywordInKeywordsOrParents($scope.selectedKeywords[i], item.trans.keywords)) {
+          // Selected keyword is not found in the item keywords nor item keyword parents.
           return false;
         }
       } else {
@@ -211,6 +211,18 @@
     }
     // Item contains all selected keywords.
     return true;
+  }
+
+  function isSelectedKeywordInKeywordsOrParents(selectedKeyword, itemKeywords){
+    if (itemKeywords.indexOf(selectedKeyword) !== -1){
+      // It is in the selected keywords
+      return true;
+    }else if (!selectedKeyword.trans.parent){
+      // Check for keyword parents
+      for (var i=0; i<itemKeywords.length; i++){
+        if (itemKeywords[i].trans.parent === selectedKeyword) return true;
+      }
+    }
   }
 
   $scope.keywordsFilter = unselectedKeywordsFromItemsWithSelectedKeywords;  // Set default keywords filter.
