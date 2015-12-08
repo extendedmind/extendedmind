@@ -112,7 +112,7 @@ function listItemLeaveAnimation($animateCss, UISessionService) {
         structural: true
       }).start();
 
-      if (UISessionService.isAllowed('leaveAnimation')) {
+      if (UISessionService.isAllowed('leaveAnimation', element[0].id)) {
         runner.done(leaveDone);
       } else {
         runner.end();

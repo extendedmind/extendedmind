@@ -307,14 +307,25 @@
 
     // ALLOWED ACTIONS
 
-    allow: function(type, duration) {
-      allowedActions[type] = true;
+    allow: function(type, duration, ids){
+      allowedActions[type] = {ids: ids};
       $timeout(function(){
-        allowedActions[type] = false;
+        allowedActions[type] = undefined;
       },duration);
     },
-    isAllowed: function(type) {
-      return allowedActions[type];
+    isAllowed: function(type, id) {
+      if (allowedActions[type] &&  (id === undefined || allowedActions[type].ids === undefined)){
+        // Allow based on type alone
+        return true;
+      }else if (allowedActions[type]){
+        // Both ids and id is given, check to see if value is in ids
+        if (angular.isArray(allowedActions[type].ids)){
+          return allowedActions[type].ids.indexOf(id) !== -1;
+        }else{
+          return allowedActions[type].ids === id;
+        }
+      }
+      return false;
     },
 
     // CALLBACK REGISTRATION
