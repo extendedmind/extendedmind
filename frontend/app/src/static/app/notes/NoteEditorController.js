@@ -386,23 +386,34 @@
   };
 
   $scope.addKeywordToNote = function(note, keyword) {
-    function doAddKeywordToNote(note, keyword){
-      if (!$scope.note.trans.keywords) $scope.note.trans.keywords = [];
-      $scope.note.trans.keywords.push(keyword);
+    function doAddKeywordToNote(note, keyword, removedParent){
+      if (!note.trans.keywords) note.trans.keywords = [];
+      var removedParentIndex = note.trans.keywords.indexOf(removedParent);
+      if (removedParentIndex !== -1){
+        note.trans.keywords.splice(removedParentIndex, 1);
+      }
+      note.trans.keywords.push(keyword);
       clearKeyword();
-      if (!$scope.isAutoSavingPrevented()) $scope.saveNote($scope.note).then(function() {
+      if (!$scope.isAutoSavingPrevented()) $scope.saveNote(note).then(function() {
         setSaved(savingSetTime);
       });
     }
     var savingSetTime = setSaving();
-
     if (!keyword.trans.uuid){
       // Save new keyword immediately to prevent problems with sorting
       $scope.saveKeyword(keyword).then(function(){
         doAddKeywordToNote(note, keyword);
       });
     }else {
-      doAddKeywordToNote(note, keyword);
+      // First check if the keyword is a child keyword and the note already as the parent
+      // in which case we want to remove the parent and keep only the child
+      var removedParent;
+      if (keyword.trans.parent &&
+          note.trans.keywords &&
+          note.trans.keywords.indexOf(keyword.trans.parent) !== -1){
+        removedParent = keyword.trans.parent;
+      }
+      doAddKeywordToNote(note, keyword, removedParent);
     }
   };
 

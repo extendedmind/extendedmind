@@ -17,11 +17,26 @@
  function keywordsFilter() {
   var keywordsFilters = {};
 
+  function isSelectedKeywordInKeywordsOrParents(selectedKeyword, itemKeywords){
+    if (itemKeywords.indexOf(selectedKeyword) !== -1){
+      // It is in the selected keywords
+      return true;
+    }else if (!selectedKeyword.trans.parent){
+      // Check for keyword parents
+      for (var i=0; i<itemKeywords.length; i++){
+        if (itemKeywords[i].trans.parent === selectedKeyword) return true;
+      }
+    }
+  }
+
   keywordsFilters.byOtherThanNoteKeywords = function(keywords, note) {
     if (note.trans.keywords) {
       var filteredKeywords = [];
       for (var i = 0, len = keywords.length; i < len; i++) {
-        if (note.trans.keywords.indexOf(keywords[i]) === -1)
+        // Filter out not only keywords that are present, but also parent keywords => no point in having
+        // both the parent and the child keyword in one note, as the parent is implicitly already
+        // part of the child.
+        if (!isSelectedKeywordInKeywordsOrParents(keywords[i], note.trans.keywords))
           filteredKeywords.push(keywords[i]);
       }
       return filteredKeywords;
