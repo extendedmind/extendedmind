@@ -23,7 +23,7 @@
   </div>
 
   <p ng-if="useSubHeadings && getLowerLists().length && !listSelectionDone" class="row">
-    <span class="text-heading-primary" ng-bind="upperSubHeading"></span><br(>
+    <span class="text-heading-primary" ng-bind="upperSubHeading"></span><br/>
   </p>
   <div ng-if="!listSelectionDone" class="row-vertically-centered"
     ng-repeat="upperList in getUpperLists() | filter:notSelectedListAndNotThisList track by upperList.trans.uuid || $index"

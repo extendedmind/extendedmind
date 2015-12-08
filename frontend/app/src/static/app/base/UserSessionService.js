@@ -375,6 +375,12 @@
       }
       return collectiveUUIDs;
     },
+    getCollectiveName: function(collectiveUUID) {
+      var collectives = this.getCollectives();
+      if (collectives && collectives[collectiveUUID]){
+        return collectives[collectiveUUID][0];
+      }
+    },
     isCollective: function(ownerUUID) {
       if (ownerUUID){
         var collectives = this.getCollectives();

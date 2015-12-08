@@ -54,6 +54,7 @@
     cachedTags['contextsParentless'] = undefined;
     cachedTags['keywords'] = undefined;
     cachedTags['keywordsParentless'] = undefined;
+    cachedTags['collectiveKeywords'] = undefined;
   }
 
   function caseInsensitiveTitleCompare(a, b) {
@@ -88,8 +89,10 @@
         cachedTags['contexts'].push(cachedTags['all'][i]);
       }
     }
-    addCollectiveTagsToCachedTagsArray(cachedTags, 'contexts', ownerUUID);
-
+    var collectiveTags = getCollectiveTags('contexts', ownerUUID);
+    if (collectiveTags.usedByOwner && collectiveTags.usedByOwner.length){
+      cachedTags['contexts'] = cachedTags['contexts'].concat(collectiveTags.usedByOwner);
+    }
     var sortedContexts = ArrayService.sortAlphabeticallyWithParent(cachedTags['contexts'], 'parent');
     cachedTags['contexts'] = sortedContexts;
     return cachedTags['contexts'];
@@ -114,14 +117,67 @@
         cachedTags['keywords'].push(cachedTags['all'][i]);
       }
     }
-    addCollectiveTagsToCachedTagsArray(cachedTags, 'keywords', ownerUUID);
+    var collectiveTags = getCollectiveTags('keywords', ownerUUID);
+    if (collectiveTags.usedByOwner && collectiveTags.usedByOwner.length){
+      cachedTags['keywords'] = cachedTags['keywords'].concat(collectiveTags.usedByOwner);
+    }
+
     var sortedKeywords = ArrayService.sortAlphabeticallyWithParent(cachedTags['keywords'], 'parent');
     cachedTags['keywords'] = sortedKeywords;
     return cachedTags['keywords'];
   }
 
-  function addCollectiveTagsToCachedTagsArray(cachedTags, cachedTagArrayName, ownerUUID){
-    // Add those collective contexts that are present in some extended items collectiveTags list
+
+  function updateCollectiveKeywords(cachedTags, ownerUUID) {
+    if (!cachedTags['keywords']) updateKeywords(cachedTags, ownerUUID);
+    cachedTags['collectiveKeywords'] = [];
+    // Collective keywords have keywords that are not yet in the keywords array for this owner,
+    // but could be added to tasks/notes/lists from the collective if the user wants.
+    var additionalCollectiveUUIDs = UserSessionService.getCollectiveUUIDs(ownerUUID);
+    var collectiveTags = getCollectiveTags('keywords', ownerUUID);
+    var i, j;
+    if (collectiveTags.unUsedByOwner && collectiveTags.unUsedByOwner.length){
+      for (i=0; i<collectiveTags.unUsedByOwner.length; i++){
+        var collectiveData;
+        for (j=0; j<cachedTags['collectiveKeywords']; j++){
+          if (cachedTags['collectiveKeywords'][j].uuid === collectiveTags.unUsedByOwner[i].trans.owner){
+            collectiveData = cachedTags['collectiveKeywords'][j];
+            break;
+          }
+        }
+
+
+        if (!collectiveData){
+          collectiveData = {uuid: collectiveTags.unUsedByOwner[i].trans.owner,
+                     name: UserSessionService.getCollectiveName(collectiveTags.unUsedByOwner[i].trans.owner),
+                     array: []};
+          cachedTags['collectiveKeywords'].push(collectiveData);
+        }
+        collectiveData.array.push(collectiveTags.unUsedByOwner[i]);
+
+      }
+      for (i=cachedTags['collectiveKeywords'].length-1; i>=0; i--){
+        var sortedKeywords = ArrayService.sortAlphabeticallyWithParent(
+                                cachedTags['collectiveKeywords'][i].array, 'parent');
+        cachedTags['collectiveKeywords'][i].array = sortedKeywords;
+        // Now that the keywords have been sorted by parent, remove all adopted parents from the list
+        if (collectiveTags.usedByOwner && collectiveTags.usedByOwner.length){
+          for (j=cachedTags['collectiveKeywords'][i].array.length-1; j>=0; j--){
+            if (collectiveTags.usedByOwner.indexOf(cachedTags['collectiveKeywords'][i].array[j]) !== -1){
+              cachedTags['collectiveKeywords'][i].array.splice(j, 1);
+            }
+          }
+          if (cachedTags['collectiveKeywords'][i].array.length === 0)
+            cachedTags['collectiveKeywords'].splice(i, 1);
+        }
+      }
+    }
+  }
+
+  function getCollectiveTags(cachedTagArrayName, ownerUUID){
+    // Get those collective contexts that are present in some extended items to one list, and others in
+    // other list
+    var splitTags = {};
     var additionalCollectiveUUIDs = UserSessionService.getCollectiveUUIDs(ownerUUID);
     for (var i=0; i<additionalCollectiveUUIDs.length; i++){
 
@@ -142,15 +198,29 @@
         if (TagsService.isTagInExtendedItemCollectiveTags(
               collectiveTag, ownerUUID, additionalCollectiveUUIDs[i])){
           // This tag in this collective is present for this owner, add it to the contexts arrays
-          cachedTags[cachedTagArrayName].push(collectiveTag);
+          if (!splitTags.usedByOwner) splitTags.usedByOwner = [];
+          splitTags.usedByOwner.push(collectiveTag);
           if (collectiveTag.trans.parent &&
-              cachedTags[cachedTagArrayName].indexOf(collectiveTag.trans.parent) === -1){
+              splitTags.usedByOwner.indexOf(collectiveTag.trans.parent) === -1){
             // Also add parent of context
-            cachedTags[cachedTagArrayName].push(collectiveTag.trans.parent);
+            splitTags.usedByOwner.push(collectiveTag.trans.parent);
+          }
+        }else{
+          // This tag in this collective is not present (yet) for the collective, add it to the unused array
+          if (!splitTags.unUsedByOwner) splitTags.unUsedByOwner = [];
+          splitTags.unUsedByOwner.push(collectiveTag);
+          // Only add those parents that are not already in the unUsedByOwner array
+          if (collectiveTag.trans.parent &&
+              splitTags.unUsedByOwner.indexOf(collectiveTag.trans.parent) === -1){
+            // Also add parent of context, NOTE: Thse parent can be in both the used and unused arrays!
+            // This is to make it possible to sort the array based on parent, and only after that the
+            // parent is removed
+            splitTags.unUsedByOwner.push(collectiveTag.trans.parent);
           }
         }
       }
     }
+    return splitTags;
   }
 
   function updateKeywordsParentless(cachedTags, ownerUUID) {
@@ -163,6 +233,7 @@
     }
     return cachedTags['keywordsParentless'];
   }
+
 
   function updateFavoritedContexts(cachedTags, favoriteContextInfos){
     cachedTags['favoritedContexts'] = [];
@@ -245,6 +316,12 @@
         updateKeywordsParentless(cachedTagsArrays[ownerUUID], ownerUUID);
       }
       return cachedTagsArrays[ownerUUID]['keywordsParentless'];
+
+      case 'collectiveKeywords':
+      if (!cachedTagsArrays[ownerUUID]['collectiveKeywords']) {
+        updateCollectiveKeywords(cachedTagsArrays[ownerUUID], ownerUUID);
+      }
+      return cachedTagsArrays[ownerUUID]['collectiveKeywords'];
 
       case 'contexts':
       if (!cachedTagsArrays[ownerUUID]['contexts']) {

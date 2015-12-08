@@ -386,7 +386,7 @@
   };
 
   $scope.addKeywordToNote = function(note, keyword) {
-    function doAddKeywordToNote(note, keyword, removedParent){
+    function doAddKeywordToNote(note, keyword, savingSetTime, removedParent){
       if (!note.trans.keywords) note.trans.keywords = [];
       var removedParentIndex = note.trans.keywords.indexOf(removedParent);
       if (removedParentIndex !== -1){
@@ -413,12 +413,16 @@
           note.trans.keywords.indexOf(keyword.trans.parent) !== -1){
         removedParent = keyword.trans.parent;
       }
-      doAddKeywordToNote(note, keyword, removedParent);
+      doAddKeywordToNote(note, keyword, savingSetTime, removedParent);
     }
   };
 
   $scope.removeKeywordFromNote = function(note, keyword) {
+    var savingSetTime = setSaving();
     note.trans.keywords.splice(note.trans.keywords.indexOf(keyword), 1);
+    if (!$scope.isAutoSavingPrevented()) $scope.saveNote(note).then(function() {
+      setSaved(savingSetTime);
+    });
   };
 
   $scope.getKeywordsListString = function(note) {
