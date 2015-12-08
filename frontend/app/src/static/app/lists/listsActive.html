@@ -5,7 +5,7 @@
       <h2 class="group-heading justified row">active lists</h2>
       <div list-item-add="getNewList()" list-item-add-save="saveList(newItem)"
         ng-include="urlBase + 'app/lists/listListItemAdd.html'"></div>
-      <div class="animate-list-item-leave"
+      <div ng-attr-id="{{ list.trans.uuid }}" class="animate-list-item-leave"
         ng-repeat="list in getVisibleArray(getFullArray, currentListLimitTo) track by list.trans.uuid"
         list-item ng-include="urlBase + 'app/lists/listListItem.html'"></div>
       <div list-prompt="lists" list-prompt-infos="listInfos"

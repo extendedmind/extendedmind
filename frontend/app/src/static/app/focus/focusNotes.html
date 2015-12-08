@@ -5,7 +5,7 @@
     <h2 class="group-heading justified row">
       <span class="text-heading" ng-class="smallDeviceWidth && 'long'">starred notes</span>
     </h2>
-    <div class="animate-list-item-leave tall"
+    <div ng-attr-id="{{ note.trans.uuid }}" class="animate-list-item-leave tall"
       ng-repeat="note in getVisibleArray(getFullArray, currentListLimitTo) track by note.trans.uuid"
       list-item ng-include="urlBase + 'app/notes/noteListItem.html'"></div>
     <div list-prompt="notes" list-prompt-infos="listInfos"></div>

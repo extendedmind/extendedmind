@@ -340,7 +340,7 @@
 
             <div list-item-add="getNewDayTask(2)" list-item-add-save="saveTask(newItem)"
               ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
-            <div class="animate-list-item-leave"
+            <div ng-attr-id="{{ task.trans.uuid }}" class="animate-list-item-leave"
               ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
               list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
             <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-load-more="isAgendaVisible()"
@@ -391,7 +391,7 @@
 
             <div list-item-add="getNewDayTask(0)" list-item-add-save="saveTask(newItem)"
               ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
-            <div class="animate-list-item-leave"
+            <div ng-attr-id="{{ task.trans.uuid }}" class="animate-list-item-leave"
               ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
               list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
             <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-load-more="isAgendaVisible()"
@@ -442,7 +442,7 @@
 
             <div list-item-add="getNewDayTask(1)" list-item-add-save="saveTask(newItem)"
               ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
-            <div class="animate-list-item-leave"
+            <div ng-attr-id="{{ task.trans.uuid }}" class="animate-list-item-leave"
               ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
               list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
             <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-load-more="isAgendaVisible()"
@@ -493,7 +493,7 @@
 
             <div list-item-add="getNewDayTask(2)" list-item-add-save="saveTask(newItem)"
               ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
-            <div class="animate-list-item-leave"
+            <div ng-attr-id="{{ task.trans.uuid }}" class="animate-list-item-leave"
               ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
               list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
             <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-load-more="isAgendaVisible()"
@@ -544,7 +544,7 @@
 
             <div list-item-add="getNewDayTask(0)" list-item-add-save="saveTask(newItem)"
               ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
-            <div class="animate-list-item-leave"
+            <div ng-attr-id="{{ task.trans.uuid }}" class="animate-list-item-leave"
               ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
               list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
             <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-load-more="isAgendaVisible()"

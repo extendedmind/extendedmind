@@ -1,6 +1,6 @@
 <div class="container-content--outer" list-container>
   <section class="container-content">
-    <div list="getTasksArray('context', {id: context && context.trans.uuid})"
+    <div list="DEBUGgetContextTasks(context)"
     list-options="{hideItemDefault: true, scrollParent: true}">
       <div class="group-mixed heading vertically-centered">
         <div class="group-mixed--middle">
@@ -19,7 +19,7 @@
       </div>
       <div list-item-add="getNewTaskWithContext(context)" list-item-add-save="saveTask(newItem)"
         ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
-      <div class="animate-list-item-leave"
+      <div ng-attr-id="{{ task.trans.uuid }}" class="animate-list-item-leave"
         ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
         list-item="getContextId()" ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
       <div ng-if="contextSlideActive" list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-hide="[listItemAddActive]"
@@ -34,7 +34,7 @@
         </div>
         <div class="group-mixed--right" task-list-completed></div>
       </div>
-      <div class="animate-list-item-leave"
+      <div ng-attr-id="{{ task.trans.uuid }}" class="animate-list-item-leave"
         ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
         list-item="getContextId(childContext)" ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
       <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-hide="[listItemAddActive]"

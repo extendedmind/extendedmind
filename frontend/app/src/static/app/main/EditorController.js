@@ -246,7 +246,7 @@
     function doProcessDelete(dataInEdit, deleteCallback, undeleteFn) {
       $scope.closeEditor();
       $scope.deferEdit().then(function() {
-        UISessionService.allow('leaveAnimation', 200);
+        UISessionService.allow('leaveAnimation', 200, dataInEdit.trans.uuid);
         var deletePromise = deleteCallback(dataInEdit);
         if (deletePromise) {
           deletePromise.then(function() {

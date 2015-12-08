@@ -14,7 +14,7 @@
       </div>
       <div list-item-add="getNewTask({list: list}, overrideOwnerUUID)"
         list-item-add-save="saveTask(newItem)" ng-include="urlBase + 'app/tasks/taskListItemAdd.html'"></div>
-      <div class="animate-list-item-leave"
+      <div ng-attr-id="{{ task.trans.uuid }}" class="animate-list-item-leave"
         ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
         list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
       <div ng-if="isFeatureActive('list')"
@@ -30,7 +30,7 @@
         </div>
         <div class="group-mixed--right" task-list-completed></div>
       </div>
-      <div class="animate-list-item-leave"
+      <div ng-attr-id="{{ task.trans.uuid }}" class="animate-list-item-leave"
         ng-repeat="task in getVisibleArray(getFullArray, currentListLimitTo) track by task.trans.uuid"
         list-item ng-include="urlBase + 'app/tasks/taskListItem.html'"></div>
       <div list-prompt="tasks" list-prompt-infos="listInfos" list-prompt-hide="[listItemAddActive]"

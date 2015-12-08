@@ -162,13 +162,22 @@
 
       var checkingItemsDeferred = [];
       function resolveAllDeferredCheckings(){
-        UISessionService.allow('leaveAnimation', 200);
+        UISessionService.allow('leaveAnimation', 200, getCheckingItemsDeferredUUIDs());
         for (var i=0; i<checkingItemsDeferred.length; i++){
           if (checkingItemsDeferred[i].deferred)
             checkingItemsDeferred[i].deferred.resolve(checkingItemsDeferred[i].item);
         }
         checkingItemsDeferred = [];
       }
+
+      function getCheckingItemsDeferredUUIDs(){
+        var uuids = [];
+        for(var i=0; i<checkingItemsDeferred.length; i++){
+          uuids.push(checkingItemsDeferred[i].item.trans.uuid);
+        }
+        return uuids;
+      }
+
       function resolveDeferredChekckingsIfItemLatest(item){
         return $timeout(function() {
             if (checkingItemsDeferred.length > 0 &&

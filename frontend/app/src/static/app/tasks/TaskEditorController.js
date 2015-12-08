@@ -129,7 +129,7 @@
   function saveTaskInEdit(exitAppAfterSave) {
     function doSaveTaskInEdit(){
       if (completeReadyDeferred){
-        UISessionService.allow('leaveAnimation', 200);
+        UISessionService.allow('leaveAnimation', 200, $scope.task.trans.uuid);
         completeReadyDeferred.resolve($scope.task);
         completeReadyDeferred = undefined;
       }
@@ -166,7 +166,7 @@
     else {
       if (completeReadyDeferred){
         $scope.deferEdit().then(function(){
-          UISessionService.allow('leaveAnimation', 200);
+          UISessionService.allow('leaveAnimation', 200, $scope.task.trans.uuid);
           completeReadyDeferred.resolve($scope.task);
           completeReadyDeferred = undefined;
         });
@@ -259,7 +259,7 @@
     $scope.setTaskDate($scope.task, date);
     // FIXME: This is not the place to do this! Better would be at saveTaskInEdit but that would require
     //        that we know if the task will actually leave or not!
-    UISessionService.allow('leaveAnimation', 1000);
+    UISessionService.allow('leaveAnimation', 1000, $scope.task.trans.uuid);
     $scope.processClose($scope.task);
   };
 

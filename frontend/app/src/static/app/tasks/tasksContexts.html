@@ -20,7 +20,7 @@
         </div>
       </form>
     </div>
-    <div class="animate-list-item-leave"
+    <div ng-attr-id="{{ context.trans.uuid }}" class="animate-list-item-leave"
       ng-repeat="context in getVisibleArray(getFullArray, currentListLimitTo) track by context.trans.uuid"
       list-item>
       <div class="group-mixed vertically-centered" ng-class="getTagItemClasses(context)">
