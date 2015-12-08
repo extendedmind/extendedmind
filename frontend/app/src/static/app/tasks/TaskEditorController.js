@@ -652,6 +652,15 @@
     }
   };
 
+  $scope.getUnselectedCommonCollectiveContexts = function(task) {
+    if ($scope.usePremiumFeatures()){
+      var commonCollectiveContexts = $scope.getTagsArray('collectiveContexts', {owner: task.trans.owner});
+      if (commonCollectiveContexts.length === 1){
+        return commonCollectiveContexts[0].array;
+      }
+    }
+  };
+
   // REPEATING PICKER
   $scope.openRepeatingPicker = function() {
     repeatingPickerOpen = true;

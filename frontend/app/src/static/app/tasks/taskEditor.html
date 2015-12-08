@@ -325,7 +325,10 @@
             class="container-sub-editor swiper-no-swiping animate-fade-in"
             editable-field-container="auto" editable-field-container-scrollable="true"
             editable-field-container-clicked-elsewhere="closeContextPicker()" data-snap-ignore="true">
-            <div list-picker="getTagsArray('contexts', {owner: task.trans.owner})"
+            <div list-picker="{upperHeading: 'my contexts',
+                               upperArray: getTagsArray('contexts', {owner: task.trans.owner}),
+                               lowerHeading: 'suggested contexts',
+                               lowerArray: getUnselectedCommonCollectiveContexts(task)}"
               list-picker-new-item="getNewContext()"
               list-picker-save="closeContextPickerAndSetContextToTask(task, list)"
               list-picker-close="closeListPicker()"

@@ -363,9 +363,21 @@
       syncWebStorages();
       return SessionStorageService.getCollectives();
     },
-    getCollectiveUUIDs: function(exceptUUID) {
-      var collectiveUUIDs = [];
+    getCommonCollective: function(){
       var collectives = this.getCollectives();
+      if (collectives){
+        for (var collectiveUUID in collectives){
+          if (collectives.hasOwnProperty(collectiveUUID) && collectives[collectiveUUID][2]){
+            var onlyCommonCollective = {};
+            onlyCommonCollective[collectiveUUID] = collectives[collectiveUUID];
+            return onlyCommonCollective;
+          }
+        }
+      }
+    },
+    getCollectiveUUIDs: function(exceptUUID, commonOnly) {
+      var collectiveUUIDs = [];
+      var collectives = commonOnly ? this.getCommonCollective() : this.getCollectives();
       if (collectives){
         for (var collectiveUUID in collectives){
           if (collectives.hasOwnProperty(collectiveUUID) && collectiveUUID !== exceptUUID){

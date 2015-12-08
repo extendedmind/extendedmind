@@ -283,12 +283,11 @@
                   </a>
                 </div>
               </div>
-              <div ng-if="usePremiumFeatures()"
-                ng-repeat="keywordsFromCollective in getTagsArray('collectiveKeywords', {owner: note.trans.owner})">
-                <p class="row"><span class="text-heading-primary" ng-bind="keywordsFromCollective.name"></span><br/></p>
+              <div ng-if="usePremiumFeatures()">
+                <p class="row"><span class="text-heading-primary">suggested keywords</span><br/></p>
                 <div class="keywords-container row">
                   <div class="keyword-wrapper"
-                    ng-repeat="keyword in keywordsFromCollective.array
+                    ng-repeat="keyword in getUnselectedCommonCollectiveKeywords(note)
                     | keywordsFilter:{name:'byOtherThanNoteKeywords', item: note}
                     | filter:newKeyword.trans.title
                     | orderBy:'trans.title' track by keyword.trans.uuid">

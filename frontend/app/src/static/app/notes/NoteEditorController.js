@@ -499,6 +499,14 @@
     return visibleKeywords;
   };
 
+  $scope.getUnselectedCommonCollectiveKeywords = function(note) {
+    var commonCollectiveKeywords = $scope.getTagsArray('collectiveKeywords', {owner: note.trans.owner});
+    if (commonCollectiveKeywords.length === 1){
+      return commonCollectiveKeywords[0].array;
+    }
+  };
+
+
   $scope.toggleCollapsible = function() {
     $scope.collapsibleOpen = !$scope.collapsibleOpen;
   };
