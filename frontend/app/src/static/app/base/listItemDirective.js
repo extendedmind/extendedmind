@@ -27,7 +27,7 @@
           }
 
           scope.getUniqueListItemId = function(itemUUID) {
-            var uniqueListItemId = itemUUID;
+            var uniqueListItemId = itemUUID + '+';
             if (listId) {
               uniqueListItemId += listId;
             }
