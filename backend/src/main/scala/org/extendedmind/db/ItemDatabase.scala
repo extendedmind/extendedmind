@@ -963,6 +963,7 @@ trait ItemDatabase extends UserDatabase {
   }
 
   protected def getTagRelationships(itemNode: Node, ownerNodes: OwnerNodes)(implicit neo4j: DatabaseService): Response[Option[TagRelationships]] = {
+    val ownerUUID = getOwnerUUID(ownerNodes)
     val tagNodesFromItem: TraversalDescription =
       neo4j.gds.traversalDescription()
         .depthFirst()
@@ -975,7 +976,7 @@ trait ItemDatabase extends UserDatabase {
           foundEvaluation = Evaluation.INCLUDE_AND_CONTINUE,
           notFoundEvaluation = Evaluation.EXCLUDE_AND_PRUNE,
           length = Some(1)))
-        .evaluator(UUIDEvaluator(getOwnerUUID(ownerNodes), length = Some(2)))
+        .evaluator(UUIDEvaluator(ownerUUID, length = Some(2)))
         .evaluator(Evaluators.toDepth(2))
         .uniqueness(Uniqueness.NODE_PATH)
 
@@ -990,7 +991,7 @@ trait ItemDatabase extends UserDatabase {
       if (relationship.getStartNode().hasLabel(MainLabel.OWNER)
         && (previousRelationship != null && previousRelationship.getEndNode() == relationship.getEndNode())) {
         if (relationship.getEndNode().hasLabel(ItemLabel.TAG)){
-          if (getUUID(relationship.getStartNode()) == owner.userUUID){
+          if (getUUID(relationship.getStartNode()) == ownerUUID){
             ownerTagRelationshipBuffer.append(previousRelationship)
           }else{
             collectiveTagRelationshipBuffer.append(previousRelationship)
