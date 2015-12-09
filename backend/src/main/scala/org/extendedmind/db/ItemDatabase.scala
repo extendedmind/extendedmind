@@ -1364,9 +1364,9 @@ trait ItemDatabase extends UserDatabase {
       for {
         tagRels <- getTagRelationships(itemNode, owner).right
         note <- toNote(itemNode, owner, tagRelationships=Some(tagRels), skipParent=true).right
-        tagsResult <- getTagsWithParents(tagRels, owner).right
+        tagsResult <- getTagsWithParents(tagRels, owner, noUi=true).right
         assignee <- Right(getAssignee(itemNode)).right
-      } yield PublicItem(displayOwner, note.copy(archived=None, favorited=None),
+      } yield PublicItem(displayOwner, note.copy(archived=None, favorited=None, ui=None),
           tagsResult._1,
           tagsResult._2,
           assignee)
@@ -1383,7 +1383,7 @@ trait ItemDatabase extends UserDatabase {
     )
   }
 
-  protected def getTagsWithParents(tagRels: Option[TagRelationships], owner: Owner)
+  protected def getTagsWithParents(tagRels: Option[TagRelationships], owner: Owner, noUi: Boolean = false)
           (implicit neo4j: DatabaseService): Response[(Option[scala.List[Tag]], Option[scala.List[(UUID, scala.List[Tag])]])] = {
     if (tagRels.isDefined){
 
@@ -1403,7 +1403,8 @@ trait ItemDatabase extends UserDatabase {
       tagNodeBuffer.foreach(tagNode => {
         val tagResult = toTag(tagNode, owner)
         if (tagResult.isRight){
-          tagBuffer.append(tagResult.right.get)
+          val tag = if (noUi) tagResult.right.get.copy(ui = None) else tagResult.right.get
+          tagBuffer.append(tag)
         }else{
           return Left(tagResult.left.get)
         }
@@ -1431,10 +1432,11 @@ trait ItemDatabase extends UserDatabase {
       collectiveTagNodeBuffer.foreach(collectiveTagNode => {
         val tagResult = toTag(collectiveTagNode._2, owner)
         if (tagResult.isLeft) return Left(tagResult.left.get)
+        val tag = if (noUi) tagResult.right.get.copy(ui = None) else tagResult.right.get
         collectiveTagBuffer.find(existingCollectiveTag => existingCollectiveTag._1 == collectiveTagNode._1).fold({
-          collectiveTagBuffer.append( (collectiveTagNode._1, scala.List(tagResult.right.get)) )
+          collectiveTagBuffer.append( (collectiveTagNode._1, scala.List(tag)) )
         })(existingCollectiveTags => {
-          val jointTags = (existingCollectiveTags._1, (existingCollectiveTags._2 :+ tagResult.right.get).distinct)
+          val jointTags = (existingCollectiveTags._1, (existingCollectiveTags._2 :+ tag).distinct)
           collectiveTagBuffer -= existingCollectiveTags
           collectiveTagBuffer.append(jointTags)
         })

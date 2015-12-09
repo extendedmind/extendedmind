@@ -75,7 +75,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
       + "update it with PUT to /[userUUID]/note/[noteUUID] "
       + "and get it back with GET to /[userUUID]/note/[noteUUID]") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-      val newNote = Note("home measurements", None, None, Some("bedroom wall: 420cm*250cm"), None, None, None)
+      val newNote = Note("home measurements", None, None, Some("bedroom wall: 420cm*250cm"), None, None, None).copy(ui = Some("testUI"))
       Put("/" + authenticateResponse.userUUID + "/note",
         marshal(newNote).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           val putNoteResponse = responseAs[SetResult]
@@ -95,6 +95,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
                 writeJsonOutput("noteResponse", responseAs[String])
                 noteResponse.content should not be None
                 noteResponse.description.get should be("Helsinki home dimensions")
+                noteResponse.ui.get should be("testUI")
                 Delete("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                   val deleteNoteResponse = responseAs[DeleteItemResult]
                   writeJsonOutput("deleteNoteResponse", responseAs[String])

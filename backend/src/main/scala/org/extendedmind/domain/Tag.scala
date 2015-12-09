@@ -29,7 +29,9 @@ case object CONTEXT extends TagType
 case object HISTORY extends TagType
 
 case class Tag(
-      uuid: Option[UUID], id: Option[String], created: Option[Long], modified: Option[Long], deleted: Option[Long],
+      uuid: Option[UUID],
+      id: Option[String], ui: Option[String],
+      created: Option[Long], modified: Option[Long], deleted: Option[Long],
       title: String,
       description: Option[String],
       link: Option[String],
@@ -38,6 +40,7 @@ case class Tag(
       parent: Option[UUID])
       extends ShareableItem{
   if (id.isDefined) require(validateLength(id.get, 100), "Id can not be more than 100 characters")
+  if (ui.isDefined) require(validateLength(ui.get, 10000), "UI preferences max length is 10000")
   require(validateTitle(title), "Title can not be more than " + TITLE_MAX_LENGTH + " characters")
   if (description.isDefined) require(validateDescription(description.get),
       "Description can not be more than " + DESCRIPTION_MAX_LENGTH + " characters")
@@ -46,9 +49,9 @@ case class Tag(
 
 object Tag{
   def apply(title: String, description: Option[String],
-		  	link: Option[String],
+        link: Option[String],
             tagType: TagType,
             parent: Option[UUID])
-        = new Tag(None, None, None, None, None, title, description, link, Some(tagType),
+        = new Tag(None, None, None, None, None, None, title, description, link, Some(tagType),
                    None, parent)
 }

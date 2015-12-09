@@ -78,7 +78,7 @@ class ListBestCaseSpec extends ServiceSpecBase {
       + "and delete it with DELETE to /[userUUID]/list/[listUUID] "
       + "and undelete it with POST to /[userUUID]/list/[listUUID]") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-      val newList = List("learn Spanish", None, None, None, None)
+      val newList = List("learn Spanish", None, None, None, None).copy(ui = Some("testUI"))
       val newList2 = List("learn English", None, None, None, None)
       Put("/" + authenticateResponse.userUUID + "/list",
         marshal(newList).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
@@ -100,6 +100,7 @@ class ListBestCaseSpec extends ServiceSpecBase {
                   val listResponse = responseAs[List]
                   writeJsonOutput("listResponse", responseAs[String])
                   listResponse.due.get should be("2014-03-01")
+                  listResponse.ui.get should be("testUI")
 
                   // Add the list to a note
                   val newNote = Note("bike details", None, Some("model: 12345"), None, None, None,

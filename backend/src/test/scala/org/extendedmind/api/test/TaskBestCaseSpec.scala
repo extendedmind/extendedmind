@@ -77,7 +77,7 @@ class TaskBestCaseSpec extends ServiceSpecBase {
       + "and delete it with DELETE to /[userUUID]/task/[itemUUID] "
       + "and undelete it with POST to /[userUUID]/task/[itemUUID]") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-      val newTask = Task("learn Spanish", None, None, None, None, None, None)
+      val newTask = Task("learn Spanish", None, None, None, None, None, None).copy(ui = Some("testUI"))
       Put("/" + authenticateResponse.userUUID + "/task",
         marshal(newTask).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           val putTaskResponse = responseAs[SetResult]
@@ -95,6 +95,7 @@ class TaskBestCaseSpec extends ServiceSpecBase {
                 val taskResponse = responseAs[Task]
                 writeJsonOutput("taskResponse", responseAs[String])
                 taskResponse.due.get should be("2014-03-01")
+                taskResponse.ui.get should be("testUI")
                 Delete("/" + authenticateResponse.userUUID + "/task/" + putTaskResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                   val deleteTaskResponse = responseAs[DeleteItemResult]
                   writeJsonOutput("deleteTaskResponse", responseAs[String])

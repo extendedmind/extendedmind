@@ -19,10 +19,61 @@
  function ItemLikeService($q, BackendClientService, PersistentStorageService, UserSessionService,
                           UUIDService) {
 
+
+  var uiFieldInfo = {
+    name: 'ui',
+    isEdited: function(item, ownerUUID, compareValues){
+      if (item.trans.ui){
+        if (!compareValues){
+          if (item.mod && (!item.mod.ui || !angular.equals(JSON.parse(item.mod.ui), item.trans.ui))){
+            return true;
+          }else if (!item.ui || !angular.equals(JSON.parse(item.ui), item.trans.ui)){
+            return true;
+          }
+        }else if (!compareValues.ui || !angular.equals(JSON.parse(compareValues.ui, item.trans.ui))){
+          return true;
+        }
+      }else{
+        // No ui in .trans
+        if (!compareValues){
+          if (item.mod && item.mod.hasOwnProperty('ui')){
+            // undefined value in .mod is allowed as it means that ui has been deleted
+            if (item.mod.ui){
+              return true;
+            }
+          }else if (item.ui){
+            return true;
+          }
+        }else if (compareValues.ui){
+          return true;
+        }
+      }
+    },
+    copyTransToMod: function(item /*, ownerUUID*/){
+      if (item.trans.hasOwnProperty('ui')){
+        if (!item.trans.ui){
+          item.mod.ui = undefined;
+        } else {
+          item.mod.ui = JSON.stringify(item.trans.ui);
+        }
+      }
+    },
+    resetTrans: function(item /*, ownerUUID*/){
+      if (item.mod && item.mod.ui){
+        item.trans.ui = JSON.parse(item.mod.ui);
+      }else if (item.ui){
+        item.trans.ui = JSON.parse(item.ui);
+      }else if (item.trans.ui){
+        delete item.trans.ui;
+      }
+    }
+  };
+
   function getDefaultFieldInfos(){
     return [
     'uuid',
     'id',
+    uiFieldInfo,
     'title',
     'description',
     'link',

@@ -24,7 +24,9 @@ import org.extendedmind.SetResult
 import Validators._
 
 case class List(
-      uuid: Option[UUID], id: Option[String],  created: Option[Long], modified: Option[Long], deleted: Option[Long], archived: Option[Long],
+      uuid: Option[UUID],
+      id: Option[String], ui: Option[String],
+      created: Option[Long], modified: Option[Long], deleted: Option[Long], archived: Option[Long],
       title: String,
       description: Option[String],
       link: Option[String],
@@ -33,6 +35,7 @@ case class List(
       relationships: Option[ExtendedItemRelationships])
       extends ExtendedItem{
   if (id.isDefined) require(validateLength(id.get, 100), "Id can not be more than 100 characters")
+  if (ui.isDefined) require(validateLength(ui.get, 10000), "UI preferences max length is 10000")
   require(validateTitle(title), "Title can not be more than " + TITLE_MAX_LENGTH + " characters")
   if (description.isDefined) require(validateDescription(description.get),
       "Description can not be more than " + DESCRIPTION_MAX_LENGTH + " characters")
@@ -45,7 +48,7 @@ object List{
         link: Option[String],
         due: Option[String],
             relationships: Option[ExtendedItemRelationships])
-        = new List(None, None, None, None, None, None,  title, description,
+        = new List(None, None, None, None, None, None, None,  title, description,
                    link, due, None, relationships)
 }
 

@@ -34,7 +34,9 @@ object RepeatingType extends Enumeration {
   val YEARLY = Value("yearly")
 }
 
-case class Task(uuid: Option[UUID], id: Option[String], created: Option[Long], modified: Option[Long], deleted: Option[Long], archived: Option[Long],
+case class Task(uuid: Option[UUID],
+                id: Option[String], ui: Option[String],
+                created: Option[Long], modified: Option[Long], deleted: Option[Long], archived: Option[Long],
                 title: String, description: Option[String],
                 link: Option[String],
                 due: Option[String],
@@ -45,6 +47,7 @@ case class Task(uuid: Option[UUID], id: Option[String], created: Option[Long], m
                 relationships: Option[ExtendedItemRelationships])
             extends ExtendedItem{
   if (id.isDefined) require(validateLength(id.get, 100), "Id can not be more than 100 characters")
+  if (ui.isDefined) require(validateLength(ui.get, 10000), "UI preferences max length is 10000")
   require(validateTitle(title), "Title can not be more than " + TITLE_MAX_LENGTH + " characters")
   if (description.isDefined) require(validateDescription(description.get),
       "Description can not be more than " + DESCRIPTION_MAX_LENGTH + " characters")
@@ -68,18 +71,21 @@ object Task{
             repeating: Option[RepeatingType.RepeatingType],
             reminders: Option[scala.List[Reminder]],
             relationships: Option[ExtendedItemRelationships])
-        = new Task(None, None, None, None, None, None, title, description,
+        = new Task(None, None, None, None, None, None, None, title, description,
                    link, due, if (repeating.isDefined) Some(repeating.get.toString()) else None, None,
                    reminders, None, relationships)
 }
 
-case class LimitedTask(uuid: Option[UUID], id: Option[String], created: Option[Long], modified: Option[Long], deleted: Option[Long],
+case class LimitedTask(uuid: Option[UUID],
+                id: Option[String], ui: Option[String],
+                created: Option[Long], modified: Option[Long], deleted: Option[Long],
                 title: String, description: Option[String],
                 link: Option[String],
                 completed: Option[Long],
                 relationships: LimitedExtendedItemRelationships)
                 extends LimitedExtendedItem {
   if (id.isDefined) require(validateLength(id.get, 100), "Id can not be more than 100 characters")
+  if (ui.isDefined) require(validateLength(ui.get, 10000), "UI preferences max length is 10000")
   require(validateTitle(title), "Title can not be more than " + TITLE_MAX_LENGTH + " characters")
   if (description.isDefined) require(validateDescription(description.get),
       "Description can not be more than " + DESCRIPTION_MAX_LENGTH + " characters")
@@ -88,7 +94,7 @@ case class LimitedTask(uuid: Option[UUID], id: Option[String], created: Option[L
 
 object LimitedTask{
   def apply(task: Task)
-        = new LimitedTask(task.uuid, task.id, task.created, task.modified, task.deleted,
+        = new LimitedTask(task.uuid, task.id, task.ui, task.created, task.modified, task.deleted,
                           task.title, task.description, task.link, task.completed,
                           LimitedExtendedItemRelationships(task.relationships.get.parent, task.relationships.get.origin))
 }

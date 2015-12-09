@@ -23,9 +23,10 @@ import java.util.UUID
 import Validators._
 import org.extendedmind.SetResult
 
-case class Item(uuid: Option[UUID], id: Option[String], created: Option[Long], modified: Option[Long], deleted: Option[Long],
+case class Item(uuid: Option[UUID], id: Option[String], ui: Option[String], created: Option[Long], modified: Option[Long], deleted: Option[Long],
                 title: String, description: Option[String], link: Option[String]) extends ItemLike{
   if (id.isDefined) require(validateLength(id.get, 100), "Id can not be more than 100 characters")
+  if (ui.isDefined) require(validateLength(ui.get, 10000), "UI preferences max length is 10000")
   require(validateTitle(title), "Title can not be more than " + TITLE_MAX_LENGTH + " characters")
   if (description.isDefined) require(validateDescription(description.get),
       "Description can not be more than " + DESCRIPTION_MAX_LENGTH + " characters")
@@ -35,7 +36,7 @@ case class Item(uuid: Option[UUID], id: Option[String], created: Option[Long], m
 object Item{
   def apply(title: String, description: Option[String],
             link: Option[String])
-        = new Item(None, None, None, None, None, title, description, link)
+        = new Item(None, None, None, None, None, None, title, description, link)
 }
 
 
@@ -66,6 +67,7 @@ trait ItemLike extends Container {
   val modified: Option[Long]
   val deleted: Option[Long]
   val id: Option[String]
+  val ui: Option[String]
   val title: String
   val description: Option[String]
   val link: Option[String]

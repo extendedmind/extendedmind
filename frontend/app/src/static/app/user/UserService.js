@@ -164,6 +164,11 @@
             delete preferences.ui.calendars;
             needToPersist = true;
           }
+          if (preferences.ui.notesFirstLists){
+            // these were moved to the list.ui field
+            delete preferences.ui.notesFirstLists;
+            needToPersist = true;
+          }
         }
         if (needToPersist){
           UserSessionService.setPreferences(preferences);

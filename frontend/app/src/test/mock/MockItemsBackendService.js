@@ -31,6 +31,8 @@ function MockItemsBackendService($httpBackend, ItemsService, SynchronizeService,
       if (modifiedItems[i].mod.id) persistentItem.id = modifiedItems[i].mod.id;
       else if (modifiedItems[i].trans.id) persistentItem.id = modifiedItems[i].trans.id;
 
+      if (modifiedItems[i].mod.ui) persistentItem.ui = modifiedItems[i].mod.ui;
+
       if (modifiedItems[i].mod.description) persistentItem.description = modifiedItems[i].mod.description;
       else if (modifiedItems[i].trans.description) persistentItem.description = modifiedItems[i].trans.description;
 

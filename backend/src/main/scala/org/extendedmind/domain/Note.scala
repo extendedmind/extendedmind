@@ -32,7 +32,9 @@ object FormatType extends Enumeration {
   val BIBTEX = Value("bibtex")
 }
 
-case class Note(uuid: Option[UUID], id: Option[String], created: Option[Long], modified: Option[Long], deleted: Option[Long], archived: Option[Long],
+case class Note(uuid: Option[UUID],
+                id: Option[String], ui: Option[String],
+                created: Option[Long], modified: Option[Long], deleted: Option[Long], archived: Option[Long],
                 title: String, description: Option[String],
                 link: Option[String],
                 content: Option[String],
@@ -42,6 +44,7 @@ case class Note(uuid: Option[UUID], id: Option[String], created: Option[Long], m
                 relationships: Option[ExtendedItemRelationships])
            extends ExtendedItem{
   if (id.isDefined) require(validateLength(id.get, 100), "id can not be more than 100 characters")
+  if (ui.isDefined) require(validateLength(ui.get, 10000), "UI preferences max length is 10000")
   require(validateTitle(title), "Title can not be more than " + TITLE_MAX_LENGTH + " characters")
   if (description.isDefined) require(validateDescription(description.get),
       "Description can not be more than " + DESCRIPTION_MAX_LENGTH + " characters")
@@ -64,11 +67,13 @@ object Note{
             format: Option[String],
             favorited: Option[Long],
             relationships: Option[ExtendedItemRelationships])
-        = new Note(None, None, None, None, None, None, title, description, link, content, format, favorited,
+        = new Note(None, None, None, None, None, None, None, title, description, link, content, format, favorited,
                    None, relationships)
 }
 
-case class LimitedNote(uuid: Option[UUID], id: Option[String], created: Option[Long], modified: Option[Long], deleted: Option[Long],
+case class LimitedNote(uuid: Option[UUID],
+                id: Option[String], ui: Option[String],
+                created: Option[Long], modified: Option[Long], deleted: Option[Long],
                 title: String, description: Option[String],
                 link: Option[String],
                 content: Option[String],
@@ -76,6 +81,7 @@ case class LimitedNote(uuid: Option[UUID], id: Option[String], created: Option[L
                 relationships: LimitedExtendedItemRelationships)
                 extends LimitedExtendedItem {
   if (id.isDefined) require(validateLength(id.get, 100), "Id can not be more than 100 characters")
+  if (ui.isDefined) require(validateLength(ui.get, 10000), "UI preferences max length is 10000")
   require(validateTitle(title), "Title can not be more than " + TITLE_MAX_LENGTH + " characters")
   if (description.isDefined) require(validateDescription(description.get),
       "Description can not be more than " + DESCRIPTION_MAX_LENGTH + " characters")
@@ -93,7 +99,7 @@ case class LimitedNote(uuid: Option[UUID], id: Option[String], created: Option[L
 
 object LimitedNote{
   def apply(note: Note)
-        = new LimitedNote(note.uuid, note.id, note.created, note.modified, note.deleted,
+        = new LimitedNote(note.uuid, note.id, note.ui, note.created, note.modified, note.deleted,
                           note.title, note.description, note.link, note.content, note.format,
                           LimitedExtendedItemRelationships(note.relationships.get.parent,note.relationships.get.origin))
 }

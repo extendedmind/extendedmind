@@ -22,8 +22,6 @@
   if (angular.isFunction($scope.registerArrayChangeCallback)) {
     $scope.registerArrayChangeCallback('list', ['active', 'archived'], invalidateListsArrays,
                                        'ListsController');
-    $scope.registerArrayChangeCallback('list', ['deleted'], notifyListDeleted,
-                                       'ListsControllerDeleted');
   }
 
   var cachedListsArrays = {};
@@ -249,21 +247,6 @@
     }
   };
 
-  /*
-  * When list is deleted, notesFirst setting needs to be removed
-  */
-  function notifyListDeleted(lists, deletedList, listsType) {
-    // Remove notest first when list is deleted to prevent cluttering of preferences of old lists
-    if (deletedList){
-      $scope.setShowListNotesFirst(deletedList, false);
-    }else if (lists && angular.isArray(lists) && listsType === 'deleted'){
-      // Loop through all deleted lists
-      for (var i=0; i<lists.length; i++){
-        $scope.setShowListNotesFirst(lists[i], false);
-      }
-    }
-  }
-
   $scope.getNewList = function(initialValues) {
     return ListsService.getNewList(initialValues, UISessionService.getActiveUUID());
   };
@@ -480,29 +463,17 @@
   // NOTES FIRST LISTS
 
   $scope.isShowListNotesFirst = function(list){
-    var notesFirstLists = UserSessionService.getUIPreference('notesFirstLists');
-    return $scope.features.focus.getStatus('notes') !== 'disabled' && notesFirstLists &&
-           notesFirstLists[list.trans.owner] &&
-           notesFirstLists[list.trans.owner].indexOf(list.trans.uuid) !== -1;
+    return $scope.features.focus.getStatus('notes') !== 'disabled' &&
+           list.trans.ui && list.trans.ui.notesFirst;
   };
 
   $scope.setShowListNotesFirst = function(list, value){
-    var notesFirstLists = UserSessionService.getUIPreference('notesFirstLists');
-    if (value === true){
-      if (!notesFirstLists) notesFirstLists = {};
-      if (!notesFirstLists[list.trans.owner]) notesFirstLists[list.trans.owner] = [];
-      notesFirstLists[list.trans.owner].push(list.trans.uuid);
-      UserSessionService.setUIPreference('notesFirstLists', notesFirstLists);
-      UserService.saveAccountPreferences();
-    }else if (notesFirstLists && notesFirstLists[list.trans.owner]){
-      var notesFirstListIndex = notesFirstLists[list.trans.owner].indexOf(list.trans.uuid);
-      if (notesFirstListIndex !== -1){
-        notesFirstLists[list.trans.owner].splice(notesFirstListIndex, 1);
-        if (notesFirstLists[list.trans.owner].length === 0) delete notesFirstLists[list.trans.owner];
-        if (jQuery.isEmptyObject(notesFirstLists)) notesFirstLists = undefined;
-        UserSessionService.setUIPreference('notesFirstLists', notesFirstLists);
-        UserService.saveAccountPreferences();
-      }
+    if (value){
+      if (!list.trans.ui) list.trans.ui = {};
+      list.trans.ui.notesFirst = true;
+    }else{
+      if (list.trans.ui && list.trans.ui.notesFirst) delete list.trans.ui.notesFirst;
+      if (jQuery.isEmptyObject(list.trans.ui)) list.trans.ui = undefined;
     }
     if ($scope.isFeatureActive('list') || $scope.isFeatureActive('listInverse')){
       $scope.changeFeature('lists');

@@ -76,7 +76,7 @@ class TagBestCaseSpec extends ServiceSpecBase {
       + "and delete it with DELETE to /[userUUID]/tag/[itemUUID] "
       + "and undelete it with POST to /[userUUID]/tag/[itemUUID]") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-      val newTag = Tag("home", None, None, CONTEXT, None)
+      val newTag = Tag("home", None, None, CONTEXT, None).copy(ui = Some("testUI"))
       val newTag2 = Tag("office", None, None, CONTEXT, None)
       Put("/" + authenticateResponse.userUUID + "/tag",
         marshal(newTag).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
@@ -99,6 +99,7 @@ class TagBestCaseSpec extends ServiceSpecBase {
                     val tagResponse = responseAs[Tag]
                     writeJsonOutput("tagResponse", responseAs[String])
                     tagResponse.description.get should be("my home")
+                    tagResponse.ui.get should be("testUI")
                     // Add the tag to a Note
                     val newNote = Note("bike details", None, Some("model: 12345"), None, None, None,
                       Some(ExtendedItemRelationships(None, None, None, None, Some(scala.List(putTagResponse.uuid.get)), None)))
