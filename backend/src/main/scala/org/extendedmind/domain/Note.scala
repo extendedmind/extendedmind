@@ -58,6 +58,15 @@ case class Note(uuid: Option[UUID],
         case _:Throwable => false
       },
       "Expected 'md', 'madoko' or 'bibtex' but got " + format.get)
+
+  def apply(limitedNote: LimitedNote)
+        = new Note(limitedNote.uuid, limitedNote.id, limitedNote.ui, limitedNote.created, limitedNote.modified,
+                    limitedNote.deleted, None,
+                    limitedNote.title, limitedNote.description, limitedNote.link, limitedNote.content, limitedNote.format,
+                    None, None,
+                    Some(ExtendedItemRelationships(
+                        limitedNote.relationships.parent, limitedNote.relationships.origin,
+                        None, None, None, None)))
 }
 
 object Note{
@@ -106,7 +115,7 @@ object LimitedNote{
 
 case class FavoriteNoteResult(favorited: Long, result: SetResult)
 
-case class PublishPayload(format: String, path: Option[String]){
+case class PublishPayload(format: String, path: String){
   require(
     try {
       val formatType = FormatType.withName(format)
@@ -114,20 +123,23 @@ case class PublishPayload(format: String, path: Option[String]){
     }catch {
       case _:Throwable => false
     },
-    "Expected 'md' but got " + format)
-  if(path.isDefined){
-    require(validateLength(path.get, Validators.TITLE_MAX_LENGTH), "Path can not be more than " + Validators.TITLE_MAX_LENGTH + " characters")
-    require(path.get.matches("""^[0-9a-z-]+$"""),
-       "Path can only contain numbers, lower case letters and dashes")
-    require(
-        try{
-          val uuid = UUID.fromString(path.get)
-          false
-        }catch {
-          case _:Throwable => true
-        },
-       "Path can not be a UUID")
-  }
+    "Expected 'md', 'madoko' or 'bibtex' but got " + format)
+  require(validateLength(path, Validators.TITLE_MAX_LENGTH), "Path can not be more than " + Validators.TITLE_MAX_LENGTH + " characters")
+  require(path.matches("""^[0-9a-z-]+$"""),
+     "Path can only contain numbers, lower case letters and dashes")
 }
 
-case class PublishNoteResult(published: Long, draft: Option[Long], result: SetResult)
+case class PreviewPayload(format: String){
+  require(
+    try {
+      val formatType = FormatType.withName(format)
+      true
+    }catch {
+      case _:Throwable => false
+    },
+    "Expected 'md', 'madoko' or 'bibtex' but got " + format)
+}
+
+case class PublishNoteResult(published: Long, result: SetResult)
+
+case class PreviewNoteResult(preview: Long, previewExpires: Long, result: SetResult)

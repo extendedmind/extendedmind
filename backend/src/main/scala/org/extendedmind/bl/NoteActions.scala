@@ -42,7 +42,7 @@ trait NoteActions {
       fail(INVALID_PARAMETER, ERR_BASE_NO_LIST_ACCESS, "No write access to new note")
     }else{
       if (accessRight.get == SecurityContext.FOUNDER){
-    	db.putNewNote(owner, note)
+      db.putNewNote(owner, note)
       }else {
         // Need to use limited note
         val limitedNote = LimitedNote(note)
@@ -58,7 +58,7 @@ trait NoteActions {
       fail(INVALID_PARAMETER, ERR_BASE_NO_LIST_ACCESS, "No write access to existing note")
     }else{
       if (accessRight.get == SecurityContext.FOUNDER){
-    	db.putExistingNote(owner, noteUUID, note)
+      db.putExistingNote(owner, noteUUID, note)
       }else {
         // Need to use limited note
         val limitedNote = LimitedNote(note)
@@ -101,6 +101,11 @@ trait NoteActions {
   def noteToList(owner: Owner, noteUUID: UUID, note: Note)(implicit log: LoggingAdapter): Response[List] = {
     log.info("noteToList")
     db.noteToList(owner, noteUUID, note)
+  }
+
+  def previewNote(owner: Owner, noteUUID: UUID, payload: PreviewPayload)(implicit log: LoggingAdapter): Response[PreviewNoteResult] = {
+    log.info("previewNote")
+    db.previewNote(owner, noteUUID, payload.format)
   }
 
   def publishNote(owner: Owner, noteUUID: UUID, payload: PublishPayload)(implicit log: LoggingAdapter): Response[PublishNoteResult] = {

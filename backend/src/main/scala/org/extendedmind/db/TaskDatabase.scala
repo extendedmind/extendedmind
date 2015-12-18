@@ -70,6 +70,7 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     for {
       taskResult <- putExistingTaskNode(owner, taskUUID, task).right
       result <- Right(getSetResult(taskResult._1, false, taskResult._2, taskResult._3)).right
+      unit <- Right(evaluateTaskRevision(task, taskResult._1, taskResult._4, result)).right
       unit <- Right(updateItemsIndex(taskResult._1, result)).right
     } yield result
   }
@@ -78,6 +79,7 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     for {
       taskResult <- putExistingLimitedExtendedItem(owner, taskUUID, limitedTask, ItemLabel.TASK).right
       result <- Right(getSetResult(taskResult._1, false, taskResult._2)).right
+      unit <- Right(evaluateTaskRevision(Task(limitedTask), taskResult._1, taskResult._3, result)).right
       unit <- Right(updateItemsIndex(taskResult._1, result)).right
     } yield result
   }
@@ -134,6 +136,7 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     for {
       convertResult <- convertTaskToList(owner, taskUUID, task).right
       result <- Right(getSetResult(convertResult._1, false)).right
+      unit <- Right(evaluateListRevision(convertResult._2, convertResult._1, convertResult._3, result, force=true)).right
       unit <- Right(updateItemsIndex(convertResult._1, result)).right
     } yield (convertResult._2.copy(modified = Some(result.modified)))
   }
@@ -142,6 +145,7 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     for {
       convertResult <- convertTaskToNote(owner, taskUUID, task).right
       result <- Right(getSetResult(convertResult._1, false)).right
+      unit <- Right(evaluateNoteRevision(convertResult._2, convertResult._1, convertResult._3, result, force=true)).right
       unit <- Right(updateItemsIndex(convertResult._1, result)).right
     } yield (convertResult._2.copy(modified = Some(result.modified)))
   }
@@ -168,13 +172,13 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     }
   }
 
-  protected def putExistingTaskNode(owner: Owner, taskUUID: UUID, task: Task): Response[(Node, Option[Long], Option[scala.List[Node]])] = {
+  protected def putExistingTaskNode(owner: Owner, taskUUID: UUID, task: Task): Response[(Node, Option[Long], Option[scala.List[Node]], OwnerNodes)] = {
     withTx {
       implicit neo4j =>
         for {
           taskResult <- putExistingExtendedItem(owner, taskUUID, task, ItemLabel.TASK).right
           newReminderNodes <- updateReminders(taskResult._1, task.reminders).right
-        } yield (taskResult._1, taskResult._2, newReminderNodes)
+        } yield (taskResult._1, taskResult._2, newReminderNodes, taskResult._3)
     }
   }
 
@@ -425,7 +429,7 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     }
   }
 
-  protected def convertTaskToList(owner: Owner, taskUUID: UUID, task: Task): Response[(Node, List)] = {
+  protected def convertTaskToList(owner: Owner, taskUUID: UUID, task: Task): Response[(Node, List, OwnerNodes)] = {
     withTx {
       implicit neo4j =>
         for {
@@ -433,11 +437,11 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
           result <- validateTaskConvertable(taskResult._1).right
           listNode <- Right(setLabel(taskResult._1, Some(MainLabel.ITEM), Some(ItemLabel.LIST), Some(scala.List(ItemLabel.TASK)))).right
           list <- toList(listNode, owner).right
-        } yield (taskResult._1, list)
+        } yield (taskResult._1, list, taskResult._3)
     }
   }
 
-  protected def convertTaskToNote(owner: Owner, taskUUID: UUID, task: Task): Response[(Node, Note)] = {
+  protected def convertTaskToNote(owner: Owner, taskUUID: UUID, task: Task): Response[(Node, Note, OwnerNodes)] = {
     withTx {
       implicit neo4j =>
         for {
@@ -446,7 +450,7 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
           noteNode <- Right(setLabel(taskResult._1, Some(MainLabel.ITEM), Some(ItemLabel.NOTE), Some(scala.List(ItemLabel.TASK)))).right
           result <- Right(moveDescriptionToContent(noteNode)).right
           note <- toNote(noteNode, owner).right
-        } yield (taskResult._1, note)
+        } yield (taskResult._1, note, taskResult._3)
     }
   }
 
@@ -490,9 +494,39 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
   }
 
   protected def destroyTaskRelationship(relationship: Relationship)(implicit neo4j: DatabaseService){
-    if (relationship.getType().name() == ItemRelationship.HAS_REMINDER.relationshipName){
+    if (relationship.getType().name() == ItemRelationship.HAS_REMINDER.name){
       // Also destroy all reminders
       relationship.getEndNode().delete()
     }
+  }
+
+  protected def evaluateTaskRevision(task: Task, taskNode: Node, ownerNodes: OwnerNodes, setResult: SetResult, force: Boolean = false) = {
+    withTx {
+      implicit neo4j =>
+        evaluateNeedForRevision(taskNode, ownerNodes, force).fold(
+          // No need to do anything if latest revision relationship is new enough
+        )(latestRevisionRel => {
+          // Create a revision containing only the fields that can be set using putExistingTask, and the modified timestamp
+          val taskBytes = pickleTask(getTaskForPickling(task, setResult.modified))
+          createExtendedItemRevision(taskNode, ownerNodes, ItemLabel.TASK, taskBytes, latestRevisionRel)
+        })
+    }
+  }
+
+  private def getTaskForPickling(task: Task, modified: Long): Task = {
+    // Create a revision containing only the fields that can be set using putExistingTask, and the modified timestamp
+    task.copy(
+      modified = Some(modified),
+      archived = None,
+      deleted = None,
+      completed = None,
+      visibility = None,
+      reminders = None,
+      relationships =
+        if (task.relationships.isDefined)
+          Some(task.relationships.get.copy(
+              assigner = None,
+              origin = None))
+        else None)
   }
 }

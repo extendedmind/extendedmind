@@ -59,6 +59,9 @@ trait ItemDatabase extends UserDatabase {
   // Item stays deleted for 30 days before it is destroyed
   val DESTROY_TRESHOLD: Long = 2592000000l
 
+  // New revision is created on normal save if 60 seconds has passed since last revision
+  val NEW_REVISION_TRESHOLD: Long = 60000l
+
   // PUBLIC
 
   def putNewItem(owner: Owner, item: Item): Response[SetResult] = {
@@ -173,13 +176,25 @@ trait ItemDatabase extends UserDatabase {
     } yield result
   }
 
+  def getPreviewItem(ownerUUID: UUID, itemUUID: UUID, previewCode: Long): Response[PublicItem] = {
+    withTx {
+      implicit neo4j =>
+        for {
+          ownerNode <- getNode(ownerUUID, MainLabel.OWNER).right
+          itemNode <- getItemNode(ownerUUID, itemUUID, exactLabelMatch = false).right
+          unit <- validateItemPreviewable(ownerNode, itemNode, previewCode).right
+          publicItem <- toPublicItem(ownerNode, itemNode, getDisplayOwner(ownerNode)).right
+        } yield publicItem
+    }
+  }
+
   def getPublicItems(handle: String, modified: Option[Long]): Response[PublicItems] = {
     withTx {
       implicit neo4j =>
         for {
           ownerNode <- getNode("handle", handle, MainLabel.OWNER, Some(handle), false).right
-          publicItemNodes <- getItemNodes(getUUID(ownerNode), modified, true, true, true, false, publicOnly=true).right
-          publicItems <- toPublicItems(ownerNode, publicItemNodes, modified).right
+          publicItemRevisionNodes <- getPublicItemRevisionNodes(getUUID(ownerNode), modified).right
+          publicItems <- toPublicItems(ownerNode, publicItemRevisionNodes, modified).right
         } yield publicItems
     }
   }
@@ -189,11 +204,12 @@ trait ItemDatabase extends UserDatabase {
       implicit neo4j =>
         for {
           ownerNode <- getNode("handle", handle, MainLabel.OWNER, Some(handle), false).right
-          itemNode <- getItemNodeByPath(ownerNode, path).right
+          itemNode <- getPublicItemRevisionNodeByPath(getUUID(ownerNode), path).right
           publicItem <- toPublicItem(ownerNode, itemNode, getDisplayOwner(ownerNode)).right
         } yield publicItem
     }
   }
+
 
   // PRIVATE
 
@@ -321,15 +337,20 @@ trait ItemDatabase extends UserDatabase {
   def toTag(tagNode: Node, owner: Owner)(implicit neo4j: DatabaseService): Response[Tag];
   def toList(listNode: Node, owner: Owner)(implicit neo4j: DatabaseService): Response[List];
 
+  // Methods for evaluating need for revisions
+  protected def evaluateTaskRevision(task: Task, taskNode: Node, ownerNodes: OwnerNodes, setResult: SetResult, force: Boolean = false);
+  protected def evaluateNoteRevision(note: Note, noteNode: Node, ownerNodes: OwnerNodes, setResult: SetResult, force: Boolean = false);
+  protected def evaluateListRevision(list: List, listNode: Node, ownerNodes: OwnerNodes, setResult: SetResult, force: Boolean = false);
+
   protected def getItemNodes(ownerUUID: UUID, modified: Option[Long], active: Boolean, deleted: Boolean,
-                             archived: Boolean, completed: Boolean, tagsOnly: Boolean = false, publicOnly: Boolean = false)
+                             archived: Boolean, completed: Boolean, tagsOnly: Boolean = false)
                             (implicit neo4j: DatabaseService): Response[Iterable[Node]] = {
     val itemsIndex = neo4j.gds.index().forNodes("items")
 
     val itemNodeList = {
       val ownerSearchString = UUIDUtils.getTrimmedBase64UUIDForLucene(ownerUUID)
       if (modified.isDefined) {
-        val ownerQuery = new TermQuery(new Term("owner", UUIDUtils.getTrimmedBase64UUIDForLucene(ownerUUID)))
+        val ownerQuery = new TermQuery(new Term("owner", ownerSearchString))
         val assigneeQuery = new TermQuery(new Term("assignee", UUIDUtils.getTrimmedBase64UUIDForLucene(ownerUUID)))
         val userQuery = new BooleanQuery;
         userQuery.add(ownerQuery, BooleanClause.Occur.SHOULD);
@@ -345,14 +366,11 @@ trait ItemDatabase extends UserDatabase {
       }
     }
 
-    if (!itemNodeList.isEmpty && (!active || !deleted || !archived || !completed || publicOnly || tagsOnly)) {
+    if (!itemNodeList.isEmpty && (!active || !deleted || !archived || !completed || tagsOnly)) {
       // Filter out active, deleted, archived and/or completed
       Right(itemNodeList filter (itemNode => {
         var include = true
         if (tagsOnly && !itemNode.hasLabel(ItemLabel.TAG)) include = false
-        if (publicOnly &&
-            (!itemNode.hasProperty("published") ||
-            ((itemNode.hasProperty("unpublished") || itemNode.hasProperty("deleted")) && modified.isEmpty))) include = false
         if (!deleted && itemNode.hasProperty("deleted")) include = false
         if (include && !archived && itemNode.hasProperty("archived") && !itemNode.hasProperty("favorited")) include = false
         if (include && !completed && itemNode.hasProperty("completed")) include = false
@@ -365,6 +383,55 @@ trait ItemDatabase extends UserDatabase {
     } else {
       Right(itemNodeList)
     }
+  }
+
+  protected def getPublicItemRevisionNodes(ownerUUID: UUID, modified: Option[Long])
+                            (implicit neo4j: DatabaseService): Response[Iterable[Node]] = {
+    val publicRevisionIndex = neo4j.gds.index().forNodes("public")
+    val itemRevisionNodeList = {
+      val ownerSearchString = UUIDUtils.getTrimmedBase64UUIDForLucene(ownerUUID)
+      if (modified.isDefined) {
+        val ownerQuery = new TermQuery(new Term("owner", ownerSearchString))
+        val modifiedRangeQuery = NumericRangeQuery.newLongRange("modified", 8, modified.get, null, false, false)
+        val userModifiedQuery = new BooleanQuery;
+        userModifiedQuery.add(modifiedRangeQuery, BooleanClause.Occur.MUST);
+        userModifiedQuery.add(ownerQuery, BooleanClause.Occur.MUST);
+        publicRevisionIndex.query(userModifiedQuery).toList
+      } else {
+        publicRevisionIndex.query("owner:" + ownerSearchString).toList
+      }
+    }
+    Right(itemRevisionNodeList)
+  }
+
+  protected def getPublicItemRevisionNodeByPath(ownerUUID: UUID, path: String)
+                            (implicit neo4j: DatabaseService): Response[Node] = {
+    val publicRevisionIndex = neo4j.gds.index().forNodes("public")
+    val itemRevisionNodeList = {
+      val ownerSearchString = UUIDUtils.getTrimmedBase64UUIDForLucene(ownerUUID)
+      val ownerQuery = new TermQuery(new Term("owner", ownerSearchString))
+      val pathQuery = new TermQuery(new Term("path", path))
+      val userPathQuery = new BooleanQuery;
+      userPathQuery.add(pathQuery, BooleanClause.Occur.MUST);
+      userPathQuery.add(ownerQuery, BooleanClause.Occur.MUST);
+      publicRevisionIndex.query(userPathQuery).toList
+    }
+    if (itemRevisionNodeList.isEmpty ||
+        (itemRevisionNodeList.size == 1 && itemRevisionNodeList(0).hasProperty("unpublished"))){
+      fail(INVALID_PARAMETER, ERR_ITEM_INVALID_PUBLIC_PATH, "Item with given path " + path + " not found")
+    }else if (itemRevisionNodeList.size > 1){
+      fail(INTERNAL_SERVER_ERROR, ERR_ITEM_PUBLIC_PATH_MULTIPLE, "Multiple revisions found with given path")
+    }else{
+      Right(itemRevisionNodeList(0))
+    }
+  }
+
+  protected def validateItemPreviewable(ownerNode: Node, itemNode: Node, previewCode: Long)(implicit neo4j: DatabaseService): Response[Unit] = {
+    if (!itemNode.hasProperty("preview") || !itemNode.hasProperty("previewExpires") ||
+        itemNode.getProperty("preview").asInstanceOf[Long] != previewCode ||
+        itemNode.getProperty("previewExpires").asInstanceOf[Long] < System.currentTimeMillis())
+      fail(INVALID_PARAMETER, ERR_ITEM_NOT_PREVIEWABLE, "Item not previewable")
+    else Right()
   }
 
   protected def itemsTraversal(implicit neo4j: DatabaseService): TraversalDescription = {
@@ -804,7 +871,7 @@ trait ItemDatabase extends UserDatabase {
       if (collectiveTagUUIDList.isDefined) oldCollectiveTagUUIDList.diff(collectiveTagUUIDList.get)
       else oldCollectiveTagUUIDList
 
-    // THIRD: Combine lists, as all tag relationships are of type HAS_TAG
+    // THIRD: Combine lists, as all tag relationships are of type HAS_TAGNEW_REVISION_TRESHOLD
 
     // Combine into a single list
     val newTagUUIDList: scala.List[UUID] = newOwnerUUIDList ++ newCollectiveUUIDList
@@ -963,7 +1030,6 @@ trait ItemDatabase extends UserDatabase {
   }
 
   protected def getTagRelationships(itemNode: Node, ownerNodes: OwnerNodes)(implicit neo4j: DatabaseService): Response[Option[TagRelationships]] = {
-    val ownerUUID = getOwnerUUID(ownerNodes)
     val tagNodesFromItem: TraversalDescription =
       neo4j.gds.traversalDescription()
         .depthFirst()
@@ -976,7 +1042,6 @@ trait ItemDatabase extends UserDatabase {
           foundEvaluation = Evaluation.INCLUDE_AND_CONTINUE,
           notFoundEvaluation = Evaluation.EXCLUDE_AND_PRUNE,
           length = Some(1)))
-        .evaluator(UUIDEvaluator(ownerUUID, length = Some(2)))
         .evaluator(Evaluators.toDepth(2))
         .uniqueness(Uniqueness.NODE_PATH)
 
@@ -991,7 +1056,7 @@ trait ItemDatabase extends UserDatabase {
       if (relationship.getStartNode().hasLabel(MainLabel.OWNER)
         && (previousRelationship != null && previousRelationship.getEndNode() == relationship.getEndNode())) {
         if (relationship.getEndNode().hasLabel(ItemLabel.TAG)){
-          if (getUUID(relationship.getStartNode()) == ownerUUID){
+          if (getUUID(relationship.getStartNode()) == getOwnerUUID(ownerNodes)){
             ownerTagRelationshipBuffer.append(previousRelationship)
           }else{
             collectiveTagRelationshipBuffer.append(previousRelationship)
@@ -1091,8 +1156,8 @@ trait ItemDatabase extends UserDatabase {
     withTx {
       implicit neo4j =>
         for {
-          taskNode <- getItemNode(getOwnerUUID(owner), itemUUID, Some(label), acceptDeleted = true).right
-          parentRelationship <- (if(owner.isLimitedAccess) Right(getParentRelationship(taskNode)) else Right(None)).right
+          itemNode <- getItemNode(getOwnerUUID(owner), itemUUID, Some(label), acceptDeleted = true).right
+          parentRelationship <- (if(owner.isLimitedAccess) Right(getParentRelationship(itemNode)) else Right(None)).right
           accessRight <-
           (if (owner.isLimitedAccess) Right(getSharedListAccessRight(owner.sharedLists.get,
               if (parentRelationship.isDefined){
@@ -1107,7 +1172,7 @@ trait ItemDatabase extends UserDatabase {
                 fail(INVALID_PARAMETER, ERR_BASE_FOUNDER_ACCESS_RIGHT_REQUIRED, "Given parameters require founder access")
                else if (writeAccess(accessRight)) Right()
                else fail(INVALID_PARAMETER, ERR_BASE_NO_LIST_ACCESS, "No write access to (un)delete task")).right
-        } yield taskNode
+        } yield itemNode
     }
   }
 
@@ -1268,34 +1333,6 @@ trait ItemDatabase extends UserDatabase {
     }
   }
 
-  protected def getItemNodeByPath(ownerNode: Node, path: String, includeDeleted: Boolean = false)(implicit neo4j: DatabaseService): Response[Node] = {
-
-    val itemTraversalSkeleton = neo4j.gds.traversalDescription()
-      .breadthFirst()
-      .relationships(DynamicRelationshipType.withName(SecurityRelationship.OWNS.name), Direction.OUTGOING)
-      .evaluator(Evaluators.excludeStartPosition())
-      .evaluator(LabelEvaluator(scala.List(MainLabel.ITEM)))
-      .evaluator(PropertyEvaluator(MainLabel.ITEM, "path", propertyStringValue=Some(path)))
-      .evaluator(Evaluators.toDepth(1))
-
-    val itemTraversal = if (includeDeleted) {
-      itemTraversalSkeleton.traverse(ownerNode)
-    } else {
-      itemTraversalSkeleton.evaluator(PropertyEvaluator(MainLabel.ITEM, "deleted",
-          foundEvaluation=Evaluation.EXCLUDE_AND_PRUNE,
-          notFoundEvaluation=Evaluation.INCLUDE_AND_CONTINUE))
-      .traverse(ownerNode)
-    }
-    val itemList = itemTraversal.nodes().toList
-    if (itemList.isEmpty) {
-      fail(INVALID_PARAMETER, ERR_ITEM_NOT_FOUND, "Item not found with given path")
-    } else if (itemList.size > 1) {
-      fail(INVALID_PARAMETER, ERR_ITEM_MORE_THAN_1, "More than one public item found with given path")
-    } else {
-      Right(itemList(0))
-    }
-  }
-
   protected def toPublicItems(ownerNode: Node, itemNodes: Iterable[Node], modified: Option[Long])(implicit neo4j: DatabaseService): Response[PublicItems] = {
     val noteBuffer = new ListBuffer[Note]
     val tagBuffer = new ListBuffer[Tag]
@@ -1306,7 +1343,7 @@ trait ItemDatabase extends UserDatabase {
     itemNodes foreach (itemNode => {
       if (itemNode.hasProperty("unpublished") || itemNode.hasProperty("deleted")){
         unpublishedBuffer.append(getUUID(itemNode))
-      }else if (!itemNode.hasProperty("draft")){ // public items returns only non-drafts
+      }else{
         val publicItemResult = toPublicItem(ownerNode, itemNode, displayOwner)
         if (publicItemResult.isLeft){
           return Left(publicItemResult.left.get)
@@ -1383,6 +1420,24 @@ trait ItemDatabase extends UserDatabase {
     }
   }
 
+  protected def revisionToPublicItem(ownerNode: Node, revisionNode: Node, displayOwner: String)(implicit neo4j: DatabaseService): Response[PublicItem] = {
+    if (revisionNode.hasLabel(ItemLabel.NOTE)){
+      val owner = Owner(getUUID(ownerNode), None).copy(isFakeUser = true)
+      for {
+        // FIXME: this does not actually work
+        tagRels <- getTagRelationships(revisionNode, OwnerNodes(ownerNode, None)).right
+        note <- toNote(revisionNode, owner, tagRelationships=Some(tagRels), skipParent=true).right
+        tagsResult <- getTagsWithParents(tagRels, owner, noUi=true).right
+        assignee <- Right(getAssignee(revisionNode)).right
+      } yield PublicItem(displayOwner, note.copy(archived=None, favorited=None, ui=None),
+          tagsResult._1,
+          tagsResult._2,
+          assignee)
+    }else{
+      fail(INTERNAL_SERVER_ERROR, ERR_ITEM_NOT_NOTE, "Public revision not note")
+    }
+  }
+
   private def getAssignee(itemNode: Node)(implicit neo4j: DatabaseService): Option[Assignee] = {
     itemNode.getRelationships.toList.find(relationship => {
       relationship.getType().name == ItemRelationship.IS_ASSIGNED_TO.name
@@ -1393,6 +1448,7 @@ trait ItemDatabase extends UserDatabase {
 
   protected def getTagsWithParents(tagRels: Option[TagRelationships], owner: Owner, noUi: Boolean = false)
           (implicit neo4j: DatabaseService): Response[(Option[scala.List[Tag]], Option[scala.List[(UUID, scala.List[Tag])]])] = {
+
     if (tagRels.isDefined){
 
       // FIRST: Owner tags
@@ -1585,29 +1641,51 @@ trait ItemDatabase extends UserDatabase {
 
   // REVISIONS
 
-  protected def createExtendedItemRevision(itemNode: Node, ownerNodes: OwnerNodes, extItemBytes: Array[Byte])(implicit neo4j: DatabaseService): Node= {
+  protected def evaluateNeedForRevision(itemNode: Node, ownerNodes: OwnerNodes, force: Boolean = false)(implicit neo4j: DatabaseService): Option[Option[Relationship]] = {
     val latestRevisionRel = getLatestExtendedItemRevisionRelationship(itemNode)
     if (latestRevisionRel.isEmpty){
+      if (force){
+        Some(None)
+      }else if (itemNode.getProperty("modified").asInstanceOf[Long] < (System.currentTimeMillis() - NEW_REVISION_TRESHOLD)){
+        // Use the item's modified timestamp, so that first revision is created only after treshold
+        Some(None)
+      }else{
+        None
+      }
+    }else{
+      val latestRevision = latestRevisionRel.get.getEndNode
+      if (force){
+        Some(latestRevisionRel)
+      }else if (latestRevision.getProperty("modified").asInstanceOf[Long] < (System.currentTimeMillis() - NEW_REVISION_TRESHOLD))
+        Some(latestRevisionRel)
+      else
+        None
+    }
+  }
+
+  protected def createExtendedItemRevision(itemNode: Node, ownerNodes: OwnerNodes, itemLabel: Label, extItemBytes: Array[Byte], latestRevisionRel: Option[Relationship])(implicit neo4j: DatabaseService): Node = {
+    if (latestRevisionRel.isEmpty){
       // No latest revision, make this a base revision
-      createLatestRevisionNode(itemNode, ownerNodes, extItemBytes, 1)
+      createLatestRevisionNode(itemNode, ownerNodes, itemLabel, extItemBytes, 1, base = true)
     }else{
       // Create a diff
       val latestRevisionNode = latestRevisionRel.get.getEndNode
       val latestRevisionNumber = latestRevisionNode.getProperty("number").asInstanceOf[Long]
       val delta = BinaryDiff.getDelta(latestRevisionNode.getProperty("data").asInstanceOf[Array[Byte]], extItemBytes)
-      if (latestRevisionNumber > 1){
+      if (!latestRevisionNode.hasProperty("base")){
         latestRevisionNode.setProperty("delta", delta)
         latestRevisionNode.removeProperty("data")
       }
       latestRevisionRel.get.removeProperty("latest")
-      createLatestRevisionNode(itemNode, ownerNodes, extItemBytes, latestRevisionNumber + 1)
+      createLatestRevisionNode(itemNode, ownerNodes, itemLabel, extItemBytes, latestRevisionNumber + 1)
     }
   }
 
-  protected def createLatestRevisionNode(itemNode: Node, ownerNodes: OwnerNodes, extItemBytes: Array[Byte], revisionNumber: Long)(implicit neo4j: DatabaseService): Node = {
-    val revisionNode = createNode(MainLabel.REVISION)
+  protected def createLatestRevisionNode(itemNode: Node, ownerNodes: OwnerNodes, itemLabel: Label, extItemBytes: Array[Byte], revisionNumber: Long, base: Boolean = false)(implicit neo4j: DatabaseService): Node = {
+    val revisionNode = createNode(MainLabel.REVISION, itemLabel)
     revisionNode.setProperty("number", revisionNumber)
     revisionNode.setProperty("data", extItemBytes)
+    if (base) revisionNode.setProperty("base", true)
     val relationship = itemNode --> ItemRelationship.HAS_REVISION --> revisionNode <;
     relationship.setProperty("latest", true)
     if (ownerNodes.foreignOwner.isDefined){
@@ -1617,9 +1695,19 @@ trait ItemDatabase extends UserDatabase {
   }
 
   protected def getLatestExtendedItemRevisionRelationship(itemNode: Node)(implicit neo4j: DatabaseService): Option[Relationship] = {
-     itemNode.getRelationships().foreach(relationship => {
-      if(relationship.hasProperty("latest") &&
-         relationship.getType().name == ItemRelationship.HAS_REVISION.relationshipName){
+    itemNode.getRelationships().foreach(relationship => {
+      if(relationship.getType().name == ItemRelationship.HAS_REVISION.name &&
+         relationship.hasProperty("latest")){
+        return Some(relationship);
+      }
+    })
+    None
+  }
+
+  protected def getPublishedExtendedItemRevisionRelationship(itemNode: Node)(implicit neo4j: DatabaseService): Option[Relationship] = {
+    itemNode.getRelationships().foreach(relationship => {
+      if(relationship.getType().name == ItemRelationship.HAS_REVISION.name &&
+         relationship.getEndNode.hasProperty("published")){
         return Some(relationship);
       }
     })

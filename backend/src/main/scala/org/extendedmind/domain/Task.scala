@@ -74,6 +74,15 @@ object Task{
         = new Task(None, None, None, None, None, None, None, title, description,
                    link, due, if (repeating.isDefined) Some(repeating.get.toString()) else None, None,
                    reminders, None, relationships)
+
+  def apply(limitedTask: LimitedTask)
+        = new Task(limitedTask.uuid, limitedTask.id, limitedTask.ui, limitedTask.created, limitedTask.modified,
+                    limitedTask.deleted, None,
+                    limitedTask.title, limitedTask.description, limitedTask.link, None, None,
+                    limitedTask.completed, None, None,
+                    Some(ExtendedItemRelationships(
+                        limitedTask.relationships.parent, limitedTask.relationships.origin,
+                        None, None, None, None)))
 }
 
 case class LimitedTask(uuid: Option[UUID],

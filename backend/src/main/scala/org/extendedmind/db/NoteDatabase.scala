@@ -38,6 +38,9 @@ import org.neo4j.graphdb.Relationship
 
 trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
 
+  // Preview is visible for one hour
+  val PREVIEW_VALIDITY: Long = 3600000l
+
   // PUBLIC
 
   def getNoteAccessRight(owner: Owner, note: Note): Option[Byte] = {
@@ -69,6 +72,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     for {
       noteResult <- putExistingNoteNode(owner, noteUUID, note).right
       result <- Right(getSetResult(noteResult._1, false, noteResult._2)).right
+      unit <- Right(evaluateNoteRevision(note, noteResult._1, noteResult._3, result)).right
       unit <- Right(updateItemsIndex(noteResult._1, result)).right
     } yield result
   }
@@ -129,6 +133,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     for {
       convertResult <- convertNoteToTask(owner, noteUUID, note).right
       result <- Right(getSetResult(convertResult._1, false)).right
+      unit <- Right(evaluateTaskRevision(convertResult._2, convertResult._1, convertResult._3, result, force=true)).right
       unit <- Right(updateItemsIndex(convertResult._1, result)).right
     } yield (convertResult._2.copy(modified = Some(result.modified)))
   }
@@ -137,14 +142,24 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     for {
       convertResult <- convertNoteToList(owner, noteUUID, note).right
       result <- Right(getSetResult(convertResult._1, false)).right
+      unit <- Right(evaluateListRevision(convertResult._2, convertResult._1, convertResult._3, result, force=true)).right
       unit <- Right(updateItemsIndex(convertResult._1, result)).right
     } yield (convertResult._2.copy(modified = Some(result.modified)))
   }
 
-  def publishNote(owner: Owner, noteUUID: UUID, format: String, path: Option[String]): Response[PublishNoteResult] = {
+
+  def previewNote(owner: Owner, noteUUID: UUID, format: String): Response[PreviewNoteResult] = {
+    for {
+      previewResult <- previewNoteNode(owner, noteUUID, format).right
+      result <- Right(PreviewNoteResult(previewResult._2, previewResult._3, getSetResult(previewResult._1, false))).right
+      unit <- Right(updateItemsIndex(previewResult._1, result.result)).right
+    } yield result
+  }
+
+  def publishNote(owner: Owner, noteUUID: UUID, format: String, path: String): Response[PublishNoteResult] = {
     for {
       publishResult <- publishNoteNode(owner, noteUUID, format, path).right
-      result <- Right(PublishNoteResult(publishResult._2, publishResult._3, getSetResult(publishResult._1, false))).right
+      result <- Right(PublishNoteResult(publishResult._2, getSetResult(publishResult._1, false))).right
       unit <- Right(updateItemsIndex(publishResult._1, result.result)).right
     } yield result
   }
@@ -168,6 +183,14 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     } yield completeNote
   }
 
+  protected def toNote(noteNode: Node, ownerNodes: OwnerNodes, skipParent: Boolean)
+               (implicit neo4j: DatabaseService): Response[Note] = {
+    for {
+      note <- toCaseClass[Note](noteNode).right
+      completeNote <- addTransientNoteProperties(noteNode, ownerNodes, note, None, skipParent).right
+    } yield completeNote
+  }
+
   protected def addTransientNoteProperties(
                     noteNode: Node, ownerNodes: OwnerNodes, note: Note,
                     tagRelationships: Option[Option[TagRelationships]], skipParent: Boolean)
@@ -182,8 +205,9 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
           (if (noteNode.hasProperty("published") && !noteNode.hasProperty("unpublished"))
             Some(SharedItemVisibility(
                  Some(noteNode.getProperty("published").asInstanceOf[Long]),
-                 if (noteNode.hasProperty("draft")) Some(noteNode.getProperty("draft").asInstanceOf[Long]) else None,
                  Some(noteNode.getProperty("path").asInstanceOf[String]),
+                 if (noteNode.hasProperty("preview")) Some(noteNode.getProperty("preview").asInstanceOf[Long]) else None,
+                 if (noteNode.hasProperty("previewExpires")) Some(noteNode.getProperty("previewExpires").asInstanceOf[Long]) else None,
                  None))
            else None),
         relationships =
@@ -227,6 +251,8 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     withTx {
       implicit neo =>
         for {
+          // Unpublish if published
+          unit <- Right(unpublishNoteNode(noteNode)).right
           deleted <- Right(deleteItem(noteNode)).right
         } yield (noteNode, deleted)
     }
@@ -273,7 +299,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     if (noteNode.hasProperty("favorited")) noteNode.removeProperty("favorited")
   }
 
-  protected def convertNoteToTask(owner: Owner, noteUUID: UUID, note: Note): Response[(Node, Task)] = {
+  protected def convertNoteToTask(owner: Owner, noteUUID: UUID, note: Note): Response[(Node, Task, OwnerNodes)] = {
     withTx {
       implicit neo4j =>
         for {
@@ -282,11 +308,11 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
           taskNode <- Right(setLabel(noteResult._1, Some(MainLabel.ITEM), Some(ItemLabel.TASK), Some(scala.List(ItemLabel.NOTE)))).right
           result <- moveContentToDescription(taskNode).right
           task <- toTask(taskNode, owner).right
-        } yield (taskNode, task)
+        } yield (taskNode, task, noteResult._3)
     }
   }
 
-  protected def convertNoteToList(owner: Owner, noteUUID: UUID, note: Note): Response[(Node, List)] = {
+  protected def convertNoteToList(owner: Owner, noteUUID: UUID, note: Note): Response[(Node, List, OwnerNodes)] = {
     withTx {
       implicit neo4j =>
         for {
@@ -295,22 +321,51 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
           listNode <- Right(setLabel(noteResult._1, Some(MainLabel.ITEM), Some(ItemLabel.LIST), Some(scala.List(ItemLabel.NOTE)))).right
           result <- moveContentToDescription(listNode).right
           list <- toList(listNode, owner).right
-        } yield (listNode, list)
+        } yield (listNode, list, noteResult._3)
     }
   }
 
-  protected def publishNoteNode(owner: Owner, noteUUID: UUID, format: String, path: Option[String]): Response[(Node, Long, Option[Long], OwnerNodes)] = {
+  protected def previewNoteNode(owner: Owner, noteUUID: UUID, format: String): Response[(Node, Long, Long)] = {
+    withTx {
+      implicit neo4j =>
+        for {
+          noteNode <- getItemNode(getOwnerUUID(owner), noteUUID, Some(ItemLabel.NOTE)).right
+          previewResult <- previewNoteNode(noteNode, format).right
+        } yield (noteNode, previewResult._1, previewResult._2)
+    }
+  }
+
+  protected def previewNoteNode(noteNode: Node, format: String): Response[(Long, Long)] = {
+    withTx {
+      implicit neo4j =>
+        // Set format
+        noteNode.setProperty("format", format)
+
+        // Set preview code random long
+        val previewCode = Random.generateRandomUnsignedLong
+        noteNode.setProperty("preview", previewCode)
+
+        // Set preview expires timestamp
+        val previewExpires = System.currentTimeMillis() + PREVIEW_VALIDITY
+        noteNode.setProperty("previewExpires", previewExpires)
+
+        Right((previewCode, previewExpires))
+    }
+  }
+
+
+  protected def publishNoteNode(owner: Owner, noteUUID: UUID, format: String, path: String): Response[(Node, Long, OwnerNodes)] = {
     withTx {
       implicit neo4j =>
         for {
           ownerNodes <- getOwnerNodes(owner).right
           noteNode <- getItemNode(getOwnerUUID(owner), noteUUID, Some(ItemLabel.NOTE)).right
-          publishResult <- publishNoteNode(ownerNodes, noteNode, format, path).right
-        } yield (noteNode, publishResult._1, publishResult._2, ownerNodes)
+          published <- publishNoteNode(ownerNodes, noteNode, format, path).right
+        } yield (noteNode, published, ownerNodes)
     }
   }
 
-  protected def publishNoteNode(ownerNodes: OwnerNodes, noteNode: Node, format: String, path: Option[String]): Response[(Long, Option[Long])] = {
+  protected def publishNoteNode(ownerNodes: OwnerNodes, noteNode: Node, format: String, path: String): Response[Long] = {
     withTx {
       implicit neo4j =>
         val ownerNode = if (ownerNodes.foreignOwner.isDefined) ownerNodes.foreignOwner.get else ownerNodes.user
@@ -319,37 +374,60 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
         }else{
           val handle = ownerNode.getProperty("handle").asInstanceOf[String]
 
-          // Use note uuid as path if it is not set
-          val currentTime = System.currentTimeMillis()
-          val draft = if (path.isDefined){
-            val pathResult = getItemNodeByPath(ownerNode, path.get, includeDeleted=true)
-            if (pathResult.isRight){
-              return fail(INVALID_PARAMETER, ERR_NOTE_PATH_IN_USE, "Can not publish because given path is already in use")
+          val pathResult = getPublicItemRevisionNodeByPath(getUUID(ownerNode), path)
+          if (pathResult.isRight){
+            val publishedNodeRevision = pathResult.right.get
+            if (publishedNodeRevision.getRelationships.find(relationship =>
+                relationship.getType.name == ItemRelationship.HAS_REVISION.name &&
+                relationship.getEndNode != noteNode).isDefined){
+              return fail(INVALID_PARAMETER, ERR_NOTE_PATH_IN_USE,
+                  "Can not publish because given path is already in use with a different item")
             }else{
-              noteNode.setProperty("path", path.get)
+              // Republishing the same node with the same path
+              publishedNodeRevision
             }
-            // Path was set, remove draft property if it's there
-            if (noteNode.hasProperty("draft")) noteNode.removeProperty("draft")
-            None
           }else{
-            noteNode.setProperty("path", getUUID(noteNode).toString())
-            // Also set note to be a draft
-            noteNode.setProperty("draft", currentTime)
-            Some(currentTime)
+            // This path is not in use, check to see if this node has another published revision
+            val previouslyPublishedRevision = getPublishedExtendedItemRevisionRelationship(noteNode)
+            if (previouslyPublishedRevision.isDefined){
+              // Previously published, remove it from the index
+              val publicRevisionIndex = neo4j.gds.index().forNodes("public")
+              publicRevisionIndex.remove(previouslyPublishedRevision.get.getEndNode)
+            }
           }
 
-          // Set format
-          noteNode.setProperty("format", format)
-
-          // Set published timestamp
-          noteNode.setProperty("published", currentTime)
-
-          // Remove unpublished if it exists
-          if (noteNode.hasProperty("unpublished")) noteNode.removeProperty("unpublished")
-
-          Right((currentTime, draft))
+          // Create a revision and mark it published
+          val latestRevisionRel = getLatestExtendedItemRevisionRelationship(noteNode)
+          val newRevisionNumber =
+            if (latestRevisionRel.isDefined)
+              latestRevisionRel.get.getEndNode.getProperty("number").asInstanceOf[Long] + 1
+            else 1
+          for{
+            note <- toNote(noteNode, ownerNodes, skipParent = true).right
+            noteBytes <- Right(pickleNote(note)).right
+            noteRevisionNode <- Right(createLatestRevisionNode(noteNode, ownerNodes, ItemLabel.NOTE, noteBytes, newRevisionNumber, base = true)).right
+            published <- Right(setNotePublished(getUUID(ownerNode), noteNode, noteRevisionNode, note.modified.get, format, path)).right
+          } yield published
         }
     }
+  }
+
+  protected def setNotePublished(ownerUUID: UUID, noteNode: Node, noteRevisionNode: Node, noteModified: Long, format: String, path: String)(implicit neo4j: DatabaseService): Long = {
+    val currentTime = System.currentTimeMillis()
+    noteNode.setProperty("path", path)
+
+    // Set format
+    noteNode.setProperty("format", format)
+
+    // Set published timestamp
+    noteNode.setProperty("published", currentTime)
+
+    // Add revision to public revision index
+    val publicRevisionIndex = neo4j.gds.index().forNodes("public")
+    publicRevisionIndex.add(noteRevisionNode, "owner", UUIDUtils.getTrimmedBase64UUIDForLucene(ownerUUID))
+    publicRevisionIndex.add(noteRevisionNode, "path", path)
+    publicRevisionIndex.add(noteRevisionNode, "modified", noteModified)
+    currentTime
   }
 
   protected def unpublishNoteNode(owner: Owner, noteUUID: UUID): Response[(Node, OwnerNodes)] = {
@@ -364,9 +442,16 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
   }
 
   protected def unpublishNoteNode(noteNode: Node)(implicit neo4j: DatabaseService): Unit = {
-    if (noteNode.hasProperty("published")) noteNode.setProperty("unpublished", System.currentTimeMillis);
-    if (noteNode.hasProperty("draft")) noteNode.removeProperty("draft")
-    if (noteNode.hasProperty("path")) noteNode.removeProperty("path")
+    if (noteNode.hasProperty("published")){
+      noteNode.removeProperty("published")
+      if (noteNode.hasProperty("path")) noteNode.removeProperty("path")
+      // Remove publish info also from the revision
+      val publishedRevision = getPublishedExtendedItemRevisionRelationship(noteNode)
+      if (publishedRevision.isDefined){
+        publishedRevision.get.getEndNode.removeProperty("published")
+        noteNode.setProperty("unpublished", System.currentTimeMillis);
+      }
+    }
   }
 
   protected def validateNoteConvertable(noteNode: Node)(implicit neo4j: DatabaseService): Response[Unit] = {
@@ -375,6 +460,34 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
       fail(INVALID_PARAMETER, ERR_NOTE_CONVERT_PUBLISHED, "Can not convert a note that has been published")
     else
       Right()
+  }
+
+  protected def evaluateNoteRevision(note: Note, noteNode: Node, ownerNodes: OwnerNodes, setResult: SetResult, force: Boolean = false) = {
+    withTx {
+      implicit neo4j =>
+        evaluateNeedForRevision(noteNode, ownerNodes, force).fold(
+          // No need to do anything if latest revision relationship is new enough
+        )(latestRevisionRel => {
+          val noteBytes = pickleNote(getNoteForPickling(note, setResult.modified))
+          createExtendedItemRevision(noteNode, ownerNodes, ItemLabel.NOTE, noteBytes, latestRevisionRel)
+        })
+    }
+  }
+
+  private def getNoteForPickling(note: Note, modified: Long): Note = {
+    // Create a revision containing only the fields that can be set using putExistingNote, and the modified timestamp
+    note.copy(
+      modified = Some(modified),
+      archived = None,
+      deleted = None,
+      favorited = None,
+      visibility = None,
+      relationships =
+        if (note.relationships.isDefined)
+          Some(note.relationships.get.copy(
+              assigner = None,
+              origin = None))
+        else None)
   }
 
 }

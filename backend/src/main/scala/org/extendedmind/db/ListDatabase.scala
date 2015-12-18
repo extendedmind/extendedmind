@@ -53,6 +53,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
       // Don't set history tag of parent to list
       listResult <- putExistingExtendedItem(owner, listUUID, list, ItemLabel.LIST, skipParentHistoryTag = true).right
       result <- Right(getSetResult(listResult._1, false, listResult._2)).right
+      unit <- Right(evaluateListRevision(list, listResult._1, listResult._3, result)).right
       unit <- Right(updateItemsIndex(listResult._1, result)).right
     } yield result
   }
@@ -115,6 +116,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
     for {
       convertResult <- convertListToTask(owner, listUUID, list).right
       result <- Right(getSetResult(convertResult._1, false)).right
+      unit <- Right(evaluateTaskRevision(convertResult._2, convertResult._1, convertResult._3, result, force=true)).right
       unit <- Right(updateItemsIndex(convertResult._1, result)).right
     } yield (convertResult._2.copy(modified = Some(result.modified)))
   }
@@ -123,6 +125,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
     for {
       convertResult <- convertListToNote(owner, listUUID, list).right
       result <- Right(getSetResult(convertResult._1, false)).right
+      unit <- Right(evaluateNoteRevision(convertResult._2, convertResult._1, convertResult._3, result, force=true)).right
       unit <- Right(updateItemsIndex(convertResult._1, result)).right
     } yield (convertResult._2.copy(modified = Some(result.modified)))
   }
@@ -369,7 +372,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
     }
   }
 
-  protected def convertListToTask(owner: Owner, listUUID: UUID, list: List): Response[(Node, Task)] = {
+  protected def convertListToTask(owner: Owner, listUUID: UUID, list: List): Response[(Node, Task, OwnerNodes)] = {
     withTx {
       implicit neo4j =>
         for {
@@ -377,11 +380,11 @@ trait ListDatabase extends UserDatabase with TagDatabase {
           result <- validateListConvertable(listResult._1).right
           taskNode <- Right(setLabel(listResult._1, Some(MainLabel.ITEM), Some(ItemLabel.TASK), Some(scala.List(ItemLabel.LIST)))).right
           task <- toTask(taskNode, owner).right
-        } yield (taskNode, task)
+        } yield (taskNode, task, listResult._3)
     }
   }
 
-  protected def convertListToNote(owner: Owner, listUUID: UUID, list: List): Response[(Node, Note)] = {
+  protected def convertListToNote(owner: Owner, listUUID: UUID, list: List): Response[(Node, Note, OwnerNodes)] = {
     withTx {
       implicit neo4j =>
         for {
@@ -390,7 +393,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
           noteNode <- Right(setLabel(listResult._1, Some(MainLabel.ITEM), Some(ItemLabel.NOTE), Some(scala.List(ItemLabel.LIST)))).right
           result <- Right(moveDescriptionToContent(noteNode)).right
           note <- toNote(noteNode, owner).right
-        } yield (noteNode, note)
+        } yield (noteNode, note, listResult._3)
     }
   }
 
@@ -447,9 +450,36 @@ trait ListDatabase extends UserDatabase with TagDatabase {
         if (agreement.isLeft) return Left(agreement.left.get)
         else agreement.right.get
       })
-      Right(Some(SharedItemVisibility(None, None, None, Some(agreements))))
+      Right(Some(SharedItemVisibility(None, None, None, None, Some(agreements))))
     }else{
       Right(None)
     }
+  }
+
+  protected def evaluateListRevision(list: List, listNode: Node, ownerNodes: OwnerNodes, setResult: SetResult, force: Boolean = false) = {
+    withTx {
+      implicit neo4j =>
+        evaluateNeedForRevision(listNode, ownerNodes, force).fold(
+          // No need to do anything if latest revision relationship is new enough
+        )(latestRevisionRel => {
+          // Create a revision containing only the fields that can be set using putExistingNote, and the modified timestamp
+          val listBytes = pickleList(getListForPickling(list, setResult.modified))
+          createExtendedItemRevision(listNode, ownerNodes, ItemLabel.LIST, listBytes, latestRevisionRel)
+        })
+    }
+  }
+
+  private def getListForPickling(list: List, modified: Long): List = {
+    // Create a revision containing only the fields that can be set using putExistingList, and the modified timestamp
+    list.copy(modified = Some(modified),
+      archived = None,
+      deleted = None,
+      visibility = None,
+      relationships =
+        if (list.relationships.isDefined)
+          Some(list.relationships.get.copy(
+              assigner = None,
+              origin = None))
+        else None)
   }
 }

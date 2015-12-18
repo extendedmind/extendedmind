@@ -190,6 +190,23 @@ trait NoteService extends ServiceBase {
           }
         }
       } ~
+      previewNote { (ownerUUID, noteUUID) =>
+        authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
+          authorize(writeAccess(ownerUUID, securityContext)) {
+            entity(as[PreviewPayload]) { payload =>
+              complete {
+                Future[PreviewNoteResult] {
+                  setLogContext(securityContext, ownerUUID, noteUUID)
+                  noteActions.previewNote(getOwner(ownerUUID, securityContext), noteUUID, payload) match {
+                    case Right(pnr) => processResult(pnr)
+                    case Left(e) => processErrors(e)
+                  }
+                }
+              }
+            }
+          }
+        }
+      } ~
       publishNote { (ownerUUID, noteUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {

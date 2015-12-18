@@ -193,6 +193,11 @@ trait ItemActions {
     db.getPublicItem(handle, path)
   }
 
+  def getPreviewItem(ownerUUID: UUID, itemUUID: UUID, previewCode: Long)(implicit log: LoggingAdapter): Response[PublicItem] = {
+    log.info("getPreviewItem")
+    db.getPreviewItem(ownerUUID, itemUUID, previewCode)
+  }
+
   private def getValidDescriptionOrNull(descriptionSeed: String): String = {
     val trimmedDescription = descriptionSeed.trim
     if (trimmedDescription.length > 0){
@@ -227,7 +232,7 @@ trait ItemActions {
               if (strippedAgreementsForCurrentUser.isEmpty){
                 None
               }else{
-                Some(SharedItemVisibility(None, None, None,
+                Some(SharedItemVisibility(None, None, None, None,
                     Some(strippedAgreementsForCurrentUser)))
               }
             }else{

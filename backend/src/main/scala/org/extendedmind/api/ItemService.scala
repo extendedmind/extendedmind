@@ -177,6 +177,16 @@ trait ItemService extends ServiceBase {
             }
           }
         }
+      } ~
+      getPreviewItem { (ownerUUID, itemUUID, previewCode) =>
+        complete {
+          Future[PublicItem] {
+            itemActions.getPreviewItem(ownerUUID, itemUUID, previewCode) match {
+              case Right(pi) => processResult(pi)
+              case Left(e) => processErrors(e)
+            }
+          }
+        }
       }
   }
 }
