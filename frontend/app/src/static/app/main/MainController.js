@@ -435,13 +435,6 @@ function MainController($element, $controller, $document, $filter, $q, $rootScop
     $scope.increaseOnboardingPhase('focus', 'tasks');
   };
 
-  function menuOpenedFirstTime() {
-    $timeout(function() {
-      $scope.openModal(document.getElementsByClassName('active-under-modal'));
-    }, 500);
-    unregisterMenuOpenedCallback('MainController');
-  }
-
   $scope.completeOnboarding = function(feature, subfeature){
     var featurePreferences = UserSessionService.getFeaturePreferences(feature);
 
@@ -1071,15 +1064,6 @@ function MainController($element, $controller, $document, $filter, $q, $rootScop
     if (menuOpenedCallbacks[id]) delete menuOpenedCallbacks[id];
   }
 
-  /*
-  * DEBUG
-  *
-  * Uncomment to test anchoring modal to element.
-  * $scope.registerMenuOpenedCallbacks(menuOpenedFirstTime, 'MainController');
-  *
-  * DEBUG
-  */
-
   $scope.registerMenuClosedCallbacks = function(callback, id) {
     menuClosedCallbacks[id] = callback;
   };
@@ -1406,6 +1390,18 @@ function MainController($element, $controller, $document, $filter, $q, $rootScop
     });
   }
 
+  if ($scope.isOnboarding('settings')) {
+    $scope.registerMenuOpenedCallbacks(menuOpenedFirstTime, 'MainController');
+  }
+
+  function menuOpenedFirstTime() {
+    if ($scope.getOnboardingPhase('settings') === 1) {
+      $scope.increaseOnboardingPhase('settings');
+    }
+
+    $timeout($scope.openModal, 500);
+    unregisterMenuOpenedCallback('MainController');
+  }
   // INJECT OTHER CONTENT CONTROLLERS
 
   $controller('SynchronizeController',{$scope: $scope});

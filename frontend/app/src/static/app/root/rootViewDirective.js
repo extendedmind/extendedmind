@@ -175,29 +175,29 @@
       };
 
       $scope.openModal = function(activeElementsArrayLike) {
-        var activeElements = [];
-        for (var i = 0; i < activeElementsArrayLike.length; i++) {
-          activeElements.push(activeElementsArrayLike[i]);
-        }
 
-        function getParams(previousActiveElement) {
+        function getParams(previousActiveElement, activeElements, messages) {
           var activeElement;
           if (activeElements.length > 0) {
             activeElement = activeElements.shift();
           }
+          console.log(messages);
+          if (messages.length > 0) {
+            var message = messages.shift();
+            console.log(messages);
+          }
           return {
-            messageText: [{
-              type: 'text',
-              data: 'this is a description of a feature'
-            }],
+            messageHeading: message.messageHeading,
+            messageIngress: message.messageIngress,
             confirmText: 'next',
+            cancelDisabled: true,
             customPosition: true,
             activeElement: activeElement,
             previousActiveElement: previousActiveElement,
             anchorToElement: true,
             keepOpenOnClose: activeElements.length > 0,
             confirmAction: function() {
-              if (activeElements.length > 0) reinitModal(getParams(activeElement));
+              if (activeElements.length > 0) reinitModal(getParams(activeElement, activeElements, messages));
               else {
                 // TODO: menu tutorial complete etc.
               }
@@ -205,7 +205,36 @@
           };
         }
 
-        $scope.showModal(undefined, getParams());
+        var initialModalParams = {
+          messageHeading: 'hello there',
+          messageIngress: 'let\'s walk through the features',
+          confirmText: 'next',
+          keepOpenOnClose: true,
+          confirmAction: function() {
+            $scope.setAllFeaturesVisible();
+            var messages = [{
+              messageHeading: 'text',
+              messageIngress: 'these are all the possible features'
+            },{
+              messageIngress: 'enable them by clicking the settings'
+            }];
+            window.requestAnimationFrame(function() {
+              var activeElementsArrayLike = document.getElementsByClassName('active-under-modal asd');
+              var activeElements = [];
+              for (var i = 0; i < activeElementsArrayLike.length; i++) {
+                activeElements.push(activeElementsArrayLike[i]);
+              }
+              reinitModal(getParams(undefined, activeElements, messages));
+              if (!$rootScope.$$phase && !$scope.$$phase) $scope.$digest();
+            });
+          }
+        };
+
+        $scope.showModal(undefined, initialModalParams);
+      };
+
+      $scope.setAllFeaturesVisible = function() {
+        $rootScope.showAllFeatures = true;
       };
 
       // EVENTS - user interactions, exceptions

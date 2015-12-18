@@ -189,6 +189,10 @@
             newPosition = targetElement.offsetTop - element[0].offsetHeight;  // Modal bottom to target top.
           }
           // http://stackoverflow.com/a/9845896
+          if (scope.modalInfos.oldPosition === undefined) {
+            scope.modalInfos.oldPosition = element[0].offsetHeight;
+            element[0].classList.add('anchor-to-menu-element');
+          }
           if ($rootScope.columns === 1) {
             element[0].firstElementChild.classList.add('modal-fade-scale-anchored');
             $animateCss(element, {
