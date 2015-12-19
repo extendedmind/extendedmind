@@ -110,6 +110,37 @@
     <sourceDirectory>${basedir}/src</sourceDirectory>
     <plugins>
       <plugin>
+        <groupId>com.github.eirslett</groupId>
+        <artifactId>frontend-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>install node and npm</id>
+            <goals>
+              <goal>install-node-and-npm</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <nodeVersion>v0.12.9</nodeVersion>
+              <npmVersion>2.14.9</npmVersion>
+              <nodeDownloadRoot>https://nodejs.org/dist/</nodeDownloadRoot>
+            </configuration>
+          </execution>
+          <execution>
+            <id>npm install</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <arguments>install</arguments>
+            </configuration>
+          </execution>
+        </executions>
+        <configuration>
+          <workingDirectory>src</workingDirectory>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
@@ -224,6 +255,15 @@
         <artifactId>maven-clean-plugin</artifactId>
         <configuration>
           <filesets>
+            <fileset>
+              <directory>${basedir}/src/etc</directory>
+            </fileset>
+            <fileset>
+              <directory>${basedir}/src/node</directory>
+            </fileset>
+            <fileset>
+              <directory>${basedir}/src/node_modules</directory>
+            </fileset>
             <fileset>
               <directory>${basedir}/src/platforms/ios</directory>
               <excludes>

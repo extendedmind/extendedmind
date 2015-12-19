@@ -67,6 +67,8 @@ frontend/cordova/src/assets/build
 frontend/cordova/src/www
 frontend/cordova/src/config.xml
 frontend/cordova/src/merges
+frontend/cordova/src/node/
+frontend/cordova/src/node_modules/
 
 # Electron
 frontend/electron/src/app/index.html

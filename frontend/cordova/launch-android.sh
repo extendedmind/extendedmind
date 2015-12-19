@@ -13,12 +13,12 @@ cd src
 
 if test "$1" == "jp"
 then
-  cordova run android --target=1299e503
+  ./node/node ./node_modules/.bin/cordova run android --target=1299e503
 fi
 
 if test "$1" == "timo"
 then
-  cordova run android --target=4272b012
+  ./node/node ./node_modules/.bin/cordova run android --target=4272b012
 fi
 
 cd ..

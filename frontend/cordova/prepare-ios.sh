@@ -1,7 +1,5 @@
 #!/bin/bash
 
-source setup-environment.sh
-
 if [ -d "src/platforms/ios/cordova" ]
 then
   echo "iOS already prepared, skipping."
@@ -17,7 +15,7 @@ else
   mv platforms/ios platforms/ios-tmp
 
   # add iOS platform
-  cordova platform add ios
+  ./node/node ./node_modules/.bin/cordova platform add ios
 
   # copy sourced code back
   cp -R platforms/ios-tmp/* platforms/ios

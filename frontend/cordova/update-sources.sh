@@ -11,5 +11,5 @@ fi
 
 # copy sources to iOS
 cd app
-cordova prepare ios
+./node/node ./node_modules/.bin/cordova prepare ios
 cd ..

@@ -1,7 +1,5 @@
 #!/bin/bash
 
-source ./setup-environment.sh
-
 # check required environment variables are there
 : ${ANDROID_HOME:?"Need to set ANDROID_HOME non-empty"}
 
@@ -17,5 +15,5 @@ else
   mkdir -p plugins
 
   # add android platform
-  cordova platform add android
+  ./node/node ./node_modules/.bin/cordova platform add android
 fi

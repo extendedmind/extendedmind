@@ -1,9 +1,7 @@
 #!/bin/bash
 
-source setup-environment.sh
-
 # make new iOS project from sources
 cd src
 
-# make phonegap build
-cordova build ios
+# make cordova build
+./node/node ./node_modules/.bin/cordova build ios

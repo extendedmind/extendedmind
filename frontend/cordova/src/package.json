@@ -1,0 +1,20 @@
+{
+  "name": "extendedmind-cordova",
+  "version": "0.0.1",
+  "description": "Extended Mind Cordova",
+  "private": true,
+  "dependencies": {
+    "cordova": "5.0.0",
+    "shelljs": "^0.5.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:extendedmind/extendedmind.git"
+  },
+  "author": "Timo Tiuraniemi",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/extendedmind/extendedmind/issues"
+  },
+  "homepage": "https://ext.md"
+}

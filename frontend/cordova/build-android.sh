@@ -1,12 +1,10 @@
 #!/bin/bash
 
-source ./setup-environment.sh
-
 # check required environment variables are there
 : ${ANDROID_HOME:?"Need to set ANDROID_HOME non-empty"}
 
 # new dir
 cd src
 
-# run phonegap command locally
-cordova build android --release
+# run cordova command locally
+./node/node ./node_modules/.bin/cordova build android --release
