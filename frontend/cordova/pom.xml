@@ -67,44 +67,44 @@
   <build>
     <resources>
       <resource>
-        <directory>src/main/resources</directory>
+        <directory>templates</directory>
         <includes>
           <include>config.xml</include>
         </includes>
         <filtering>true</filtering>
-        <targetPath>${project.basedir}/app</targetPath>
+        <targetPath>${project.basedir}/src</targetPath>
       </resource>
       <resource>
-        <directory>src/main/resources/ios</directory>
+        <directory>templates/ios</directory>
         <filtering>true</filtering>
         <excludes>
           <exclude>index.html</exclude>
         </excludes>
-        <targetPath>${project.basedir}/app/assets/build/ios</targetPath>
+        <targetPath>${project.basedir}/src/assets/build/ios</targetPath>
       </resource>
       <resource>
-        <directory>src/main/resources/ios</directory>
+        <directory>templates/ios</directory>
         <filtering>true</filtering>
         <includes>
           <include>index.html</include>
         </includes>
-        <targetPath>${project.basedir}/app/merges/ios</targetPath>
+        <targetPath>${project.basedir}/src/merges/ios</targetPath>
       </resource>
       <resource>
-        <directory>src/main/resources/android</directory>
+        <directory>templates/android</directory>
         <filtering>true</filtering>
         <excludes>
           <exclude>index.html</exclude>
         </excludes>
-        <targetPath>${project.basedir}/app/assets/build/android</targetPath>
+        <targetPath>${project.basedir}/src/assets/build/android</targetPath>
       </resource>
       <resource>
-        <directory>src/main/resources/android</directory>
+        <directory>templates/android</directory>
         <filtering>true</filtering>
         <includes>
           <include>index.html</include>
         </includes>
-        <targetPath>${project.basedir}/app/merges/android</targetPath>
+        <targetPath>${project.basedir}/src/merges/android</targetPath>
       </resource>
     </resources>
     <sourceDirectory>${basedir}/src</sourceDirectory>
@@ -152,7 +152,7 @@
                   <artifactId>frontend-app</artifactId>
                   <type>war</type>
                   <overWrite>true</overWrite>
-                  <outputDirectory>${basedir}/app/www</outputDirectory>
+                  <outputDirectory>${basedir}/src/www</outputDirectory>
                   <includes>static/${project.version}/**</includes>
                   <excludes>static/${project.version}/audio/theme.m4a,static/${project.version}/audio/theme.ogg</excludes>
                 </artifactItem>
@@ -225,7 +225,7 @@
         <configuration>
           <filesets>
             <fileset>
-              <directory>${basedir}/app/platforms/ios</directory>
+              <directory>${basedir}/src/platforms/ios</directory>
               <excludes>
                 <exclude>extmd/extmd.entitlements</exclude>
                 <exclude>extmd-share/**</exclude>
@@ -233,31 +233,31 @@
               </excludes>
             </fileset>
             <fileset>
-              <directory>${basedir}/app/platforms/android</directory>
+              <directory>${basedir}/src/platforms/android</directory>
             </fileset>
             <fileset>
-              <directory>${basedir}/app/platforms</directory>
+              <directory>${basedir}/src/platforms</directory>
               <includes>
                 <include>*.json</include>
               </includes>
             </fileset>
             <fileset>
-              <directory>${basedir}/app/plugins</directory>
+              <directory>${basedir}/src/plugins</directory>
             </fileset>
             <fileset>
-              <directory>${basedir}/app/merges</directory>
+              <directory>${basedir}/src/merges</directory>
             </fileset>
             <fileset>
-              <directory>${basedir}/app/www</directory>
+              <directory>${basedir}/src/www</directory>
             </fileset>
             <fileset>
-              <directory>${basedir}/app/assets/fonts</directory>
+              <directory>${basedir}/src/assets/fonts</directory>
             </fileset>
             <fileset>
-              <directory>${basedir}/app/assets/build</directory>
+              <directory>${basedir}/src/assets/build</directory>
             </fileset>
             <fileset>
-              <directory>${basedir}/app</directory>
+              <directory>${basedir}/src</directory>
               <includes>
                 <include>config.xml</include>
               </includes>

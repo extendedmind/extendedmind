@@ -6,7 +6,7 @@ source ./setup-environment.sh
 : ${ANDROID_HOME:?"Need to set ANDROID_HOME non-empty"}
 
 # new dir
-cd app
+cd src
 
 # run phonegap command locally
 cordova build android --release

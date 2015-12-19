@@ -2,12 +2,12 @@
 
 source setup-environment.sh
 
-if [ -d "app/platforms/ios/cordova" ]
+if [ -d "src/platforms/ios/cordova" ]
 then
   echo "iOS already prepared, skipping."
 else
-  # Work in the app directory
-  cd app
+  # Work in the src directory
+  cd src
 
   # Create needed empty directories
   mkdir -p platforms

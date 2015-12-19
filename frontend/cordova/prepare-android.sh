@@ -5,12 +5,12 @@ source ./setup-environment.sh
 # check required environment variables are there
 : ${ANDROID_HOME:?"Need to set ANDROID_HOME non-empty"}
 
-if [ -d "app/platforms/android" ]
+if [ -d "src/platforms/android" ]
 then
   echo "Android already prepared, skipping."
 else
-  # Work in the app directory
-  cd app
+  # Work in the src directory
+  cd src
 
   # Create needed empty directories
   mkdir -p platforms

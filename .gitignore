@@ -43,30 +43,30 @@ logs/
 .DS_Store
 
 # Ignore Cordova generated directories
-frontend/cordova/app/platforms/android
-frontend/cordova/app/platforms/ios/.gitignore
-frontend/cordova/app/platforms/ios/build
-frontend/cordova/app/platforms/ios/cordova
-frontend/cordova/app/platforms/ios/CordovaLib
-frontend/cordova/app/platforms/ios/extmd/Classes
-frontend/cordova/app/platforms/ios/extmd/Plugins
-frontend/cordova/app/platforms/ios/extmd/Resources
-frontend/cordova/app/platforms/ios/extmd/config.xml
-frontend/cordova/app/platforms/ios/extmd/extmd-Info.plist
-frontend/cordova/app/platforms/ios/extmd/extmd-Prefix.pch
-frontend/cordova/app/platforms/ios/extmd/main.m
-frontend/cordova/app/platforms/ios/extmd/.gitignore
-frontend/cordova/app/platforms/ios/platform_www
-frontend/cordova/app/platforms/ios/www
-frontend/cordova/app/platforms/ios/extmd.xcodeproj/project.xcworkspace
-frontend/cordova/app/platforms/ios/extmd.xcodeproj/xcuserdata
-frontend/cordova/app/platforms/platforms.json
-frontend/cordova/app/plugins
-frontend/cordova/app/assets/fonts
-frontend/cordova/app/assets/build
-frontend/cordova/app/www
-frontend/cordova/app/config.xml
-frontend/cordova/app/merges
+frontend/cordova/src/platforms/android
+frontend/cordova/src/platforms/ios/.gitignore
+frontend/cordova/src/platforms/ios/build
+frontend/cordova/src/platforms/ios/cordova
+frontend/cordova/src/platforms/ios/CordovaLib
+frontend/cordova/src/platforms/ios/extmd/Classes
+frontend/cordova/src/platforms/ios/extmd/Plugins
+frontend/cordova/src/platforms/ios/extmd/Resources
+frontend/cordova/src/platforms/ios/extmd/config.xml
+frontend/cordova/src/platforms/ios/extmd/extmd-Info.plist
+frontend/cordova/src/platforms/ios/extmd/extmd-Prefix.pch
+frontend/cordova/src/platforms/ios/extmd/main.m
+frontend/cordova/src/platforms/ios/extmd/.gitignore
+frontend/cordova/src/platforms/ios/platform_www
+frontend/cordova/src/platforms/ios/www
+frontend/cordova/src/platforms/ios/extmd.xcodeproj/project.xcworkspace
+frontend/cordova/src/platforms/ios/extmd.xcodeproj/xcuserdata
+frontend/cordova/src/platforms/platforms.json
+frontend/cordova/src/plugins
+frontend/cordova/src/assets/fonts
+frontend/cordova/src/assets/build
+frontend/cordova/src/www
+frontend/cordova/src/config.xml
+frontend/cordova/src/merges
 
 # Electron
 frontend/electron/src/app/index.html

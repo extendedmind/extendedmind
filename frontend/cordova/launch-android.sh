@@ -9,7 +9,7 @@ if [ -z "$2" ]
     mvn clean install -Dcordova.urlPrefix=$2
 fi
 
-cd app
+cd src
 
 if test "$1" == "jp"
 then
