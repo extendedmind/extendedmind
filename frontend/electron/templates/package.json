@@ -10,6 +10,7 @@
   },
   "devDependencies": {
     "grunt": "^0.4.5",
+    "grunt-cli": "^0.1.13",
     "grunt-electron-debian-installer": "^0.0.5"
   },
   "scripts": {
@@ -28,7 +29,7 @@
     "pack": "npm run pack:osx && npm run pack:win && npm run pack:linux",
     "pack:osx": "npm run build:osx && electron-builder \"dist/osx/extended mind-darwin-x64/extended mind.app\" --platform=osx --out=\"dist/osx\" --config=packager.json && mv \"dist/osx/extended mind.dmg\" dist/osx/extended-mind-${project.version.node}-osx.dmg",
     "pack:win": "npm run build:win && electron-builder \"dist/win/extended mind-win32-x64\" --platform=win --out=\"dist/win\" --config=packager.json && mv \"dist/win/extended mind Setup.exe\" dist/win/extended-mind-${project.version.node}-win.exe",
-    "pack:linux": "npm run build:linux && grunt electron-debian-installer --verbose"
+    "pack:linux": "npm run build:linux && ./node_modules/.bin/grunt electron-debian-installer --verbose"
   },
   "keywords": [
     "productivity"
