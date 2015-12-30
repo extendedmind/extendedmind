@@ -138,14 +138,14 @@ class NoteBestCaseSpec extends ServiceSpecBase {
 
       Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/list",
           marshal(newNote.copy(title = "Spanish studies"))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-        val listFromTask = responseAs[List]
+        val listFromNote = responseAs[List]
         writeJsonOutput("noteToListResponse", responseAs[String])
-        listFromTask.uuid.get should be (putNoteResponse.uuid.get)
-        listFromTask.title should be ("Spanish studies")
-        listFromTask.description.get should be ("lecture notes for Spanish 101 class")
+        listFromNote.uuid.get should be (putNoteResponse.uuid.get)
+        listFromNote.title should be ("Spanish studies")
+        listFromNote.description.get should be ("lecture notes for Spanish 101 class")
 
         Post("/" + authenticateResponse.userUUID + "/list/" + putNoteResponse.uuid.get + "/note",
-          marshal(listFromTask.copy(title = "Spanish 101"))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+          marshal(listFromNote.copy(title = "Spanish 101"))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           val noteFromList = responseAs[Note]
           writeJsonOutput("listToNoteResponse", responseAs[String])
           noteFromList.uuid.get should be (putNoteResponse.uuid.get)
