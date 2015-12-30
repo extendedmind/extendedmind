@@ -201,7 +201,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
 
                 // Publish note, verify that public result has the right assignee
                 Post("/" + collectiveUUID + "/note/" + putNoteResponse.uuid.get + "/publish",
-                      marshal(PublishPayload("md", Some("public-note")))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                      marshal(PublishPayload("md", "public-note"))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                    val publishNoteResult = responseAs[PublishNoteResult]
                 }
                 Get("/public/test") ~> route ~> check {

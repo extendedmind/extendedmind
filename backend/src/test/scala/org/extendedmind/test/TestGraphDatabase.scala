@@ -268,7 +268,7 @@ trait TestGraphDatabase extends GraphDatabase {
         Some("md"), None,
         Some(ExtendedItemRelationships(Some(extendedMindTechnologiesList.uuid.get), None, None, None, None,
           Some(scala.List((emUUID, scala.List(productivityTag.right.get.uuid.get)))))))).right.get
-    publishNote(Owner(timoUUID, None), result.uuid.get, "md", Some("productivity"))
+    publishNote(Owner(timoUUID, None), result.uuid.get, "md", "productivity")
 
     // Timo shares essay list with Lauri
 

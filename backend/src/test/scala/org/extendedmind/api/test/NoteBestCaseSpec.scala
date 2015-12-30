@@ -190,25 +190,26 @@ class NoteBestCaseSpec extends ServiceSpecBase {
       val newNote = Note("Public note", None, None, Some("this is public"), None, None, None)
       val putNoteResponse = putNewNote(newNote, authenticateResponse)
 
-      // First publish as draft by leaving out the path attribute
-      Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/publish",
-          marshal(PublishPayload("md", None))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-        val publishNoteDraftResult = responseAs[PublishNoteResult]
-        writeJsonOutput("publishNoteDraftResponse", responseAs[String])
-        Get("/public/timo/" + putNoteResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+      // First preview note
+      Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/preview",
+          marshal(PreviewPayload("md"))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        val previewNoteResult = responseAs[PreviewNoteResult]
+        writeJsonOutput("previewNoteResponse", responseAs[String])
+        Get("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "preview" + previewNoteResult.preview) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
           val publicDraftItem = responseAs[PublicItem]
-          publicDraftItem.note.visibility.get.draft should not be (None)
-          // Next republish with path
+          publicDraftItem.note.visibility.get.preview should not be (previewNoteResult.preview)
+          publicDraftItem.note.visibility.get.previewExpires should not be (previewNoteResult.previewExpires)
+          // Next publish with path
           Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/publish",
-              marshal(PublishPayload("md", Some("test")))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+              marshal(PublishPayload("md", "test"))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
             val publishNoteResult = responseAs[PublishNoteResult]
             writeJsonOutput("publishNoteResponse", responseAs[String])
-            publishNoteResult.draft should be (None)
             Get("/public/timo/test") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
               val publicItem = responseAs[PublicItem]
               publicItem.note.relationships should be(None)
               publicItem.note.visibility should not be(None)
-              publicItem.note.visibility.get.draft should be (None)
+              publicItem.note.visibility.get.preview should be (None)
+              publicItem.note.visibility.get.previewExpires should be (None)
               Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/unpublish") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                 writeJsonOutput("unpublishNoteResponse", responseAs[String])
                 val unpublishedNoteResponse = getNote(putNoteResponse.uuid.get, authenticateResponse)
@@ -232,7 +233,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
             Some(ExtendedItemRelationships(None, None, None, None, None, publicItem.note.relationships.get.collectiveTags)))
         val putNoteResponse = putNewNote(newNote, authenticateResponse)
         Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/publish",
-            marshal(PublishPayload("md", Some("test")))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+            marshal(PublishPayload("md", "test"))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           val publishNoteResult = responseAs[PublishNoteResult]
           Get("/public/timo") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
             val publicItems = responseAs[PublicItems]
@@ -293,7 +294,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
 
         // Publish a second note
         Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/publish",
-            marshal(PublishPayload("md", Some("test")))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+            marshal(PublishPayload("md", "test"))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           val publishNoteResult = responseAs[PublishNoteResult]
           Get("/public/timo") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
              responseAs[PublicItems].notes.get.size should be (2)
