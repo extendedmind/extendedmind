@@ -205,7 +205,7 @@ trait ItemDatabase extends UserDatabase {
         for {
           ownerNode <- getNode("handle", handle, MainLabel.OWNER, Some(handle), false).right
           itemNode <- getPublicItemRevisionNodeByPath(getUUID(ownerNode), path).right
-          publicItem <- toPublicItem(ownerNode, itemNode, getDisplayOwner(ownerNode)).right
+          publicItem <- revisionToPublicItem(ownerNode, itemNode, getDisplayOwner(ownerNode)).right
         } yield publicItem
     }
   }
@@ -1333,18 +1333,22 @@ trait ItemDatabase extends UserDatabase {
     }
   }
 
-  protected def toPublicItems(ownerNode: Node, itemNodes: Iterable[Node], modified: Option[Long])(implicit neo4j: DatabaseService): Response[PublicItems] = {
+  protected def toPublicItems(ownerNode: Node, itemRevisionNodes: Iterable[Node], modified: Option[Long])(implicit neo4j: DatabaseService): Response[PublicItems] = {
     val noteBuffer = new ListBuffer[Note]
     val tagBuffer = new ListBuffer[Tag]
     val foreignTagBuffer = new ListBuffer[(UUID, scala.List[Tag])]
     val assigneeBuffer = new ListBuffer[Assignee]
     val unpublishedBuffer = new ListBuffer[UUID]
     val displayOwner = getDisplayOwner(ownerNode)
-    itemNodes foreach (itemNode => {
-      if (itemNode.hasProperty("unpublished") || itemNode.hasProperty("deleted")){
-        unpublishedBuffer.append(getUUID(itemNode))
+    itemRevisionNodes foreach (itemRevisionNode => {
+      if (itemRevisionNode.hasProperty("unpublished")){
+        itemRevisionNode.getRelationships().find(rel => rel.getType.name == ItemRelationship.HAS_REVISION.name).fold(
+          return fail(INTERNAL_SERVER_ERROR, ERR_ITEM_NO_REVISION_RELATIONSHIP, "Item revision does not have an item relationship")
+        )( relationship =>
+          unpublishedBuffer.append(getUUID(relationship.getStartNode))
+        )
       }else{
-        val publicItemResult = toPublicItem(ownerNode, itemNode, displayOwner)
+        val publicItemResult = revisionToPublicItem(ownerNode, itemRevisionNode, displayOwner)
         if (publicItemResult.isLeft){
           return Left(publicItemResult.left.get)
         }else{
@@ -1423,7 +1427,10 @@ trait ItemDatabase extends UserDatabase {
   protected def revisionToPublicItem(ownerNode: Node, revisionNode: Node, displayOwner: String)(implicit neo4j: DatabaseService): Response[PublicItem] = {
     if (revisionNode.hasLabel(ItemLabel.NOTE)){
       val owner = Owner(getUUID(ownerNode), None).copy(isFakeUser = true)
+
       for {
+        note <- unpickleNote(revisionNode.getProperty("data").asInstanceOf[Array[Byte]]).right
+
         // FIXME: this does not actually work
         tagRels <- getTagRelationships(revisionNode, OwnerNodes(ownerNode, None)).right
         note <- toNote(revisionNode, owner, tagRelationships=Some(tagRels), skipParent=true).right
@@ -1607,9 +1614,15 @@ trait ItemDatabase extends UserDatabase {
     }
   }
 
-  def unpickleNote(byteNote: Array[Byte]): Note = {
+  def unpickleNote(byteNote: Array[Byte]): Response[Note] = {
     this.synchronized {
-      Unpickle[Note].fromBytes(ByteBuffer.wrap(byteNote))
+      try {
+        Right(Unpickle[Note].fromBytes(ByteBuffer.wrap(byteNote)))
+      } catch {
+        case e: Exception => {
+          fail(INTERNAL_SERVER_ERROR, ERR_ITEM_UNPICKLE_FAILED, "Could not generate note from data")
+        }
+      }
     }
   }
 
@@ -1620,9 +1633,15 @@ trait ItemDatabase extends UserDatabase {
     }
   }
 
-  def unpickleTask(byteTask: Array[Byte]): Task = {
+  def unpickleTask(byteTask: Array[Byte]): Response[Task] = {
     this.synchronized {
-      Unpickle[Task].fromBytes(ByteBuffer.wrap(byteTask))
+      try {
+        Right(Unpickle[Task].fromBytes(ByteBuffer.wrap(byteTask)))
+      } catch {
+        case e: Exception => {
+          fail(INTERNAL_SERVER_ERROR, ERR_ITEM_UNPICKLE_FAILED, "Could not generate task from data")
+        }
+      }
     }
   }
 
@@ -1633,9 +1652,15 @@ trait ItemDatabase extends UserDatabase {
     }
   }
 
-  def unpickleList(byteList: Array[Byte]): List = {
+  def unpickleList(byteList: Array[Byte]): Response[List] = {
     this.synchronized {
-      Unpickle[List].fromBytes(ByteBuffer.wrap(byteList))
+      try {
+        Right(Unpickle[List].fromBytes(ByteBuffer.wrap(byteList)))
+      } catch {
+        case e: Exception => {
+          fail(INTERNAL_SERVER_ERROR, ERR_ITEM_UNPICKLE_FAILED, "Could not generate list from data")
+        }
+      }
     }
   }
 

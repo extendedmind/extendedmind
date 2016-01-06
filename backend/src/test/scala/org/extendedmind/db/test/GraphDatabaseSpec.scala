@@ -88,8 +88,8 @@ class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
       val byteNote = db.pickleNote(note)
       val sameByteNote = db.pickleNote(note)
       byteNote should be(sameByteNote)
-      val unpickledNote = db.unpickleNote(byteNote)
-      val sameUnpickledNote = db.unpickleNote(byteNote)
+      val unpickledNote = db.unpickleNote(byteNote).right.get
+      val sameUnpickledNote = db.unpickleNote(byteNote).right.get
       note should be(unpickledNote)
       unpickledNote should be(sameUnpickledNote)
 
@@ -101,8 +101,8 @@ class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
       val byteTask = db.pickleTask(task)
       val sameByteTask = db.pickleTask(task)
       byteTask should be(sameByteTask)
-      val unpickledTask = db.unpickleTask(byteTask)
-      val sameUnpickledTask = db.unpickleTask(byteTask)
+      val unpickledTask = db.unpickleTask(byteTask).right.get
+      val sameUnpickledTask = db.unpickleTask(byteTask).right.get
       task should be(unpickledTask)
       unpickledTask should be(sameUnpickledTask)
 
@@ -112,8 +112,8 @@ class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
       val byteList = db.pickleList(list)
       val sameByteList = db.pickleList(list)
       byteList should be(sameByteList)
-      val unpickledList = db.unpickleList(byteList)
-      val sameUnpickledList = db.unpickleList(byteList)
+      val unpickledList = db.unpickleList(byteList).right.get
+      val sameUnpickledList = db.unpickleList(byteList).right.get
       list should be(unpickledList)
       unpickledList should be(sameUnpickledList)
 
@@ -149,7 +149,7 @@ class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
       val patchedModified6 = BinaryDiff.patch(patchedModified5, delta6)
       patchedModified6 should be(byteTaskModified6)
 
-      task6 should be (db.unpickleTask(patchedModified6))
+      task6 should be (db.unpickleTask(patchedModified6).right.get)
     }
   }
   describe("TaskDatabase"){
