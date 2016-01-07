@@ -893,17 +893,24 @@ trait ItemDatabase extends UserDatabase {
         val collectiveResult = getNode(collectiveTags._1, OwnerLabel.COLLECTIVE)
         if (collectiveResult.isLeft) return Left(collectiveResult.left.get)
         val collectiveNode = collectiveResult.right.get
-        incomingSharingTraversalDescription.traverse(collectiveNode).relationships.toList.find(relationship => {
-          val relationshipType = relationship.getType().name()
-          relationship.getStartNode() == ownerNodes.user &&
-          (relationshipType == SecurityRelationship.CAN_READ.relationshipName ||
-           relationshipType == SecurityRelationship.CAN_READ_WRITE.relationshipName ||
-           relationshipType == SecurityRelationship.IS_FOUNDER.relationshipName)
-        }).fold(
-          return fail(INVALID_PARAMETER, ERR_COLLECTIVE_NO_ACCESS, "User does not have access to collective " + collectiveTags._1)
-        )(securityRelationship =>{
+        if (ownerNodes.foreignOwner.isDefined){
+          // Adding collective tags to a collective, only tags from the "common" collective are allowed
+          if (!collectiveNode.hasProperty("common"))
+            return fail(INVALID_PARAMETER, ERR_COLLECTIVE_NOT_COMMON, "Only tags from the common collective can be added to an item owned by another collective.")
           collectiveUUIDs.prependAll(collectiveTags._2)
-        })
+        }else{
+          incomingSharingTraversalDescription.traverse(collectiveNode).relationships.toList.find(relationship => {
+            val relationshipType = relationship.getType().name()
+            relationship.getStartNode() == ownerNodes.user &&
+            (relationshipType == SecurityRelationship.CAN_READ.relationshipName ||
+             relationshipType == SecurityRelationship.CAN_READ_WRITE.relationshipName ||
+             relationshipType == SecurityRelationship.IS_FOUNDER.relationshipName)
+          }).fold(
+            return fail(INVALID_PARAMETER, ERR_COLLECTIVE_NO_ACCESS, "User does not have access to collective " + collectiveTags._1)
+          )(_ =>{
+            collectiveUUIDs.prependAll(collectiveTags._2)
+          })
+        }
       })
       Right(Some(collectiveUUIDs.toList))
     }else{
@@ -1426,26 +1433,80 @@ trait ItemDatabase extends UserDatabase {
   protected def noteToPublicItem(ownerNode: Node, noteNode: Node, displayOwner: String)(implicit neo4j: DatabaseService): Response[PublicItem]
   protected def noteRevisionToPublicItem(ownerNode: Node, noteRevisionNode: Node, displayOwner: String)(implicit neo4j: DatabaseService): Response[PublicItem]
 
-  protected def validateUser(userUUID: UUID): Option[UUID] = {
-    None
+  protected def validateUser(userUUID: UUID)(implicit neo4j: DatabaseService): Option[UUID] = {
+    val userNodeResult = getNode(userUUID, OwnerLabel.USER)
+    if (userNodeResult.isRight) Some(userUUID)
+    else None
   }
 
-  protected def validateParent(parentUUID: UUID): Option[UUID] = {
-    None
+  protected def validateParent(ownerUUID: UUID, parentUUID: UUID)(implicit neo4j: DatabaseService): Option[UUID] = {
+    val itemNodeResult = getItemNode(ownerUUID, parentUUID)
+    if (itemNodeResult.isRight) Some(parentUUID)
+    else None
   }
 
-  protected def validateOrigin(originUUID: UUID): Option[UUID] = {
-    None
+  protected def validateOrigin(ownerUUID: UUID, originUUID: UUID)(implicit neo4j: DatabaseService): Option[UUID] = {
+    val itemNodeResult = getItemNode(ownerUUID, originUUID)
+    if (itemNodeResult.isRight) Some(originUUID)
+    else None
   }
 
-  protected def validateTags(tags: scala.List[UUID]): Option[scala.List[UUID]] = {
+  protected def validateTags(ownerUUID: UUID, tags: scala.List[UUID])(implicit neo4j: DatabaseService): Option[scala.List[UUID]] = {
     // Check that all tags still exist
-    None
+    val validTags = tags.filter(tag => {
+      val tagNodeResult = getItemNode(ownerUUID, tag, Some(ItemLabel.TAG))
+      tagNodeResult.isRight
+    })
+    if (validTags.isEmpty) None
+    else Some(validTags)
   }
 
-  protected def validateCollectiveTags(collectiveTags: scala.List[(UUID, scala.List[UUID])]): Option[scala.List[(UUID, scala.List[UUID])]] = {
+  protected def validateCollectiveTags(ownerNode: Node, collectiveTags: scala.List[(UUID, scala.List[UUID])])(implicit neo4j: DatabaseService): Option[scala.List[(UUID, scala.List[UUID])]] = {
+
     // Check that user still has access to read tags from the owner and all tags still exist
-    None
+    val validCollectiveTagBuffer = new ListBuffer[(UUID, scala.List[UUID])]
+    collectiveTags.foreach(collectiveTagInfo => {
+      val collectiveUUID = collectiveTagInfo._1
+
+      if (ownerNode.hasLabel(OwnerLabel.COLLECTIVE)){
+        // For collectives, only the common collective is allowed as a foreign collective
+        val collectiveNodeResult = getNode(collectiveUUID, OwnerLabel.COLLECTIVE)
+        if (collectiveNodeResult.isRight && collectiveNodeResult.right.get.hasProperty("common"))
+          addCollectiveTagsToBuffer(collectiveUUID, collectiveTagInfo, validCollectiveTagBuffer)
+      }else{
+        sharingTraversalDescription.traverse(ownerNode).relationships.toList.find(relationship => {
+          val relationshipType = relationship.getType().name()
+          getUUID(relationship.getEndNode()) == collectiveUUID &&
+          (relationshipType == SecurityRelationship.CAN_READ.relationshipName ||
+           relationshipType == SecurityRelationship.CAN_READ_WRITE.relationshipName ||
+           relationshipType == SecurityRelationship.IS_FOUNDER.relationshipName)
+        }).fold(
+          // No access anymore to this collective, skip this owner
+        )(_ =>{
+          // The owner still has access to this collective, add it back
+          addCollectiveTagsToBuffer(collectiveUUID, collectiveTagInfo, validCollectiveTagBuffer)
+        })
+      }
+    })
+
+    if (validCollectiveTagBuffer.isEmpty) None
+    else Some(validCollectiveTagBuffer.toList)
+  }
+
+  private def addCollectiveTagsToBuffer(collectiveUUID: UUID, collectiveTagInfo: (UUID, scala.List[UUID]), collectiveTagBuffer: ListBuffer[(UUID, scala.List[UUID])])(implicit neo4j: DatabaseService): Unit = {
+    // The owner still has access to this collective, add it back
+    collectiveTagInfo._2.foreach(collectiveTagUUID => {
+      val tagNodeResult = getItemNode(collectiveUUID, collectiveTagUUID, Some(ItemLabel.TAG))
+      if (tagNodeResult.isRight){
+        collectiveTagBuffer.find(existingCollectiveTag => existingCollectiveTag._1 == collectiveUUID).fold({
+          collectiveTagBuffer.append( (collectiveUUID, scala.List(collectiveTagUUID)) )
+        })(existingCollectiveTags => {
+          val jointTags = (existingCollectiveTags._1, (existingCollectiveTags._2 :+ collectiveTagUUID).distinct)
+          collectiveTagBuffer -= existingCollectiveTags
+          collectiveTagBuffer.append(jointTags)
+        })
+      }
+    })
   }
 
   protected def getAssignee(itemNode: Node)(implicit neo4j: DatabaseService): Option[Assignee] = {
@@ -1509,8 +1570,8 @@ trait ItemDatabase extends UserDatabase {
     if (extendedItem.relationships.isDefined &&
         (extendedItem.relationships.get.tags.isDefined ||
          extendedItem.relationships.get.collectiveTags.isDefined)){
-
       val ownerUUID = getOwnerUUID(owner)
+
       // FIRST: Owner tags
 
       val tagNodeBuffer = new ListBuffer[Node]

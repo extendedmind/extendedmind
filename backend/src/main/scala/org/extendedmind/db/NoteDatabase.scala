@@ -504,7 +504,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     val owner = Owner(getUUID(ownerNode), None).copy(isFakeUser = true)
     for {
       unprocessedNote <- unpickleNote(noteRevisionNode.getProperty("data").asInstanceOf[Array[Byte]]).right
-      note <- Right(validateNote(stripNonPublicFieldsFromNote(unprocessedNote))).right
+      note <- Right(validateNote(ownerNode, stripNonPublicFieldsFromNote(unprocessedNote))).right
       tagsResult <- getExtendedItemTagsWithParents(note, owner, noUi=true).right
       assignee <- getAssignee(note).right
     } yield PublicItem(displayOwner, note.copy(archived=None, favorited=None, ui=None),
@@ -524,16 +524,17 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     })
   }
 
-  protected def validateNote(note: Note): Note = {
+  protected def validateNote(ownerNode: Node, note: Note)(implicit neo4j: DatabaseService): Note = {
+    val ownerUUID = getUUID(ownerNode)
     note.copy(relationships =
       if (note.relationships.isDefined){
         val relationships = note.relationships.get
-        val parent = relationships.parent.flatMap(parent => validateParent(parent))
-        val origin = relationships.origin.flatMap(origin => validateOrigin(origin))
+        val parent = relationships.parent.flatMap(parent => validateParent(ownerUUID, parent))
+        val origin = relationships.origin.flatMap(origin => validateOrigin(ownerUUID, origin))
         val assignee = relationships.assignee.flatMap(assignee => validateUser(assignee))
         val assigner = relationships.assigner.flatMap(assigner => validateUser(assigner))
-        val tags = relationships.tags.flatMap(tags => validateTags(tags))
-        val collectiveTags = relationships.collectiveTags.flatMap(collectiveTags => validateCollectiveTags(collectiveTags))
+        val tags = relationships.tags.flatMap(tags => validateTags(ownerUUID, tags))
+        val collectiveTags = relationships.collectiveTags.flatMap(collectiveTags => validateCollectiveTags(ownerNode, collectiveTags))
 
         if (parent.isDefined || origin.isDefined || assignee.isDefined || assigner.isDefined ||
             tags.isDefined || collectiveTags.isDefined)
