@@ -204,8 +204,6 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     } yield result
   }
 
-
-
   // CONVERSION
 
   protected def updateNode(node: Node, caseClass: AnyRef): Response[Node] = {
@@ -405,6 +403,16 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
       return fail(INVALID_PARAMETER, ERR_ITEM_ALREADY_EXTENDED, "item already either note, task, list or tag with UUID " + itemUUID)
     }
     itemNode
+  }
+
+  protected def getItemNodeList(ownerUUID: UUID, itemUUIDList: scala.List[UUID], mandatoryLabel: Option[Label] = None,
+    acceptDeleted: Boolean = false, exactLabelMatch: Boolean = true)(implicit neo4j: DatabaseService): Response[scala.List[Node]] = {
+
+    Right(itemUUIDList.map(itemUUID => {
+      val itemNodeResult = getItemNode(ownerUUID, itemUUID, mandatoryLabel, acceptDeleted, exactLabelMatch)
+      if (itemNodeResult.isLeft) return Left(itemNodeResult.left.get)
+      itemNodeResult.right.get
+    }))
   }
 
   protected def getItemNode(ownerUUID: UUID, itemUUID: UUID, label: Label, acceptDeleted: Boolean)(implicit neo4j: DatabaseService): Response[Node] = {

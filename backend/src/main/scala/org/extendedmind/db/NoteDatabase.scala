@@ -147,7 +147,6 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     } yield (convertResult._2.copy(modified = Some(result.modified)))
   }
 
-
   def previewNote(owner: Owner, noteUUID: UUID, format: String): Response[PreviewNoteResult] = {
     for {
       previewResult <- previewNoteNode(owner, noteUUID, format).right
@@ -245,7 +244,6 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
         } yield (noteNode, archived, ownerNodes)
     }
   }
-
 
   protected def deleteNoteNode(owner: Owner, noteNode: Node): Response[Tuple2[Node, Long]] = {
     withTx {
@@ -352,7 +350,6 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
         Right((previewCode, previewExpires))
     }
   }
-
 
   protected def publishNoteNode(owner: Owner, noteUUID: UUID, format: String, path: String): Response[(Node, Long, OwnerNodes)] = {
     withTx {
@@ -488,6 +485,62 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
               assigner = None,
               origin = None))
         else None)
+  }
+
+  protected def noteToPublicItem(ownerNode: Node, noteNode: Node, displayOwner: String)(implicit neo4j: DatabaseService): Response[PublicItem] = {
+    val owner = Owner(getUUID(ownerNode), None).copy(isFakeUser = true)
+    for {
+      tagRels <- getTagRelationships(noteNode, OwnerNodes(ownerNode, None)).right
+      note <- toNote(noteNode, owner, tagRelationships=Some(tagRels), skipParent=true).right
+      tagsResult <- getTagsWithParents(tagRels, owner, noUi=true).right
+      assignee <- Right(getAssignee(noteNode)).right
+    } yield PublicItem(displayOwner, note.copy(archived=None, favorited=None, ui=None),
+        tagsResult._1,
+        tagsResult._2,
+        assignee)
+  }
+
+  protected def noteRevisionToPublicItem(ownerNode: Node, noteRevisionNode: Node, displayOwner: String)(implicit neo4j: DatabaseService): Response[PublicItem] = {
+    val owner = Owner(getUUID(ownerNode), None).copy(isFakeUser = true)
+    for {
+      unprocessedNote <- unpickleNote(noteRevisionNode.getProperty("data").asInstanceOf[Array[Byte]]).right
+      note <- Right(validateNote(stripNonPublicFieldsFromNote(unprocessedNote))).right
+      tagsResult <- getExtendedItemTagsWithParents(note, owner, noUi=true).right
+      assignee <- getAssignee(note).right
+    } yield PublicItem(displayOwner, note.copy(archived=None, favorited=None, ui=None),
+        tagsResult._1,
+        tagsResult._2,
+        assignee)
+  }
+
+  protected def stripNonPublicFieldsFromNote(note: Note): Note ={
+    note.copy(archived=None, favorited=None, ui=None, relationships = {
+      if (note.relationships.isDefined){
+        val rels = note.relationships.get
+        if (rels.assigner.isDefined || rels.tags.isDefined || rels.collectiveTags.isDefined)
+          Some(rels.copy(parent = None, origin = None, assignee = None))
+        else None
+      }else None
+    })
+  }
+
+  protected def validateNote(note: Note): Note = {
+    note.copy(relationships =
+      if (note.relationships.isDefined){
+        val relationships = note.relationships.get
+        val parent = relationships.parent.flatMap(parent => validateParent(parent))
+        val origin = relationships.origin.flatMap(origin => validateOrigin(origin))
+        val assignee = relationships.assignee.flatMap(assignee => validateUser(assignee))
+        val assigner = relationships.assigner.flatMap(assigner => validateUser(assigner))
+        val tags = relationships.tags.flatMap(tags => validateTags(tags))
+        val collectiveTags = relationships.collectiveTags.flatMap(collectiveTags => validateCollectiveTags(collectiveTags))
+
+        if (parent.isDefined || origin.isDefined || assignee.isDefined || assigner.isDefined ||
+            tags.isDefined || collectiveTags.isDefined)
+          Some(ExtendedItemRelationships(parent, origin,
+              assignee, assigner, tags, collectiveTags))
+        else None
+      }else None)
   }
 
 }
