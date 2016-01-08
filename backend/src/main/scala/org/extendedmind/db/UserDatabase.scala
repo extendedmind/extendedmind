@@ -127,13 +127,6 @@ trait UserDatabase extends AbstractGraphDatabase {
     Right(CountResult(3))
   }
 
-  def upgradeOwners: Response[CountResult] = {
-    for {
-      ownerUUIDs <- getOwnerUUIDs.right
-      count <- upgradeOwners(ownerUUIDs).right
-    } yield count
-  }
-
   def deleteUser(userUUID: UUID): Response[DeleteItemResult] = {
     for {
       deletedUserNode <- deleteUserNode(userUUID).right
@@ -543,40 +536,6 @@ trait UserDatabase extends AbstractGraphDatabase {
         }
     }
   }
-
-  protected def upgradeOwners(ownerUUIDs: scala.List[UUID]): Response[CountResult] = {
-    val upgradeCount = ownerUUIDs.count(ownerUUID => {
-      val upgradeResult = upgradeOwnerNode(ownerUUID)
-      if (upgradeResult.isLeft) {
-        return Left(upgradeResult.left.get)
-      }else{
-        upgradeResult.right.get
-      }
-    })
-    Right(CountResult(upgradeCount))
-  }
-
-  protected def upgradeOwnerNode(ownerUUID: UUID): Response[Boolean] = {
-    withTx {
-      implicit neo4j =>
-        val ownerNodeResponse = getNode(ownerUUID, MainLabel.OWNER)
-        if (ownerNodeResponse.isLeft)
-          Left(ownerNodeResponse.left.get)
-        else {
-          val ownerNode = ownerNodeResponse.right.get
-          if (!ownerNode.hasProperty("inboxId")){
-            ownerNode.setProperty("inboxId", generateUniqueInboxId())
-            if (ownerNode.hasLabel(OwnerLabel.COLLECTIVE)){
-              ownerNode.setProperty("apiKey", Random.generateRandomUniqueString())
-            }
-            Right(true)
-          }else{
-            Right(false)
-          }
-        }
-    }
-  }
-
 
   protected def destroyItem(deletedItem: Node)(implicit neo4j: DatabaseService);
   protected def destroyTokens(userNode: Node)(implicit neo4j: DatabaseService): Response[CountResult];

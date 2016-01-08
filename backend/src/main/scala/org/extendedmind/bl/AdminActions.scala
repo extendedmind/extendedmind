@@ -65,11 +65,11 @@ trait AdminActions {
     result
   }
 
-  def upgradeOwners(implicit log: LoggingAdapter): Response[CountResult] = {
-    log.info("upgradeOwners")
-    val result = db.upgradeOwners
+  def upgradePublishedNotes(ownerUUID: UUID)(implicit log: LoggingAdapter): Response[CountResult] = {
+    log.info("upgradePublishedNotes")
+    val result = db.upgradePublishedNotes(ownerUUID)
     if (result.isRight){
-      log.info("upgraded " + result.right.get.count + " owners")
+      log.info("upgraded " + result.right.get.count + " published items for owner " + ownerUUID)
     }
     result
   }
