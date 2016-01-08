@@ -204,8 +204,8 @@ trait ItemDatabase extends UserDatabase {
       implicit neo4j =>
         for {
           ownerNode <- getNode("handle", handle, MainLabel.OWNER, Some(handle), false).right
-          itemNode <- getPublicItemRevisionNodeByPath(getUUID(ownerNode), path).right
-          publicItem <- revisionToPublicItem(ownerNode, itemNode, getDisplayOwner(ownerNode)).right
+          itemRevisionNode <- getPublicItemRevisionNodeByPath(getUUID(ownerNode), path).right
+          publicItem <- revisionToPublicItem(ownerNode, itemRevisionNode, getDisplayOwner(ownerNode)).right
         } yield publicItem
     }
   }
@@ -1847,11 +1847,14 @@ trait ItemDatabase extends UserDatabase {
     None
   }
 
-  protected def getPublishedExtendedItemRevisionRelationship(itemNode: Node)(implicit neo4j: DatabaseService): Option[Relationship] = {
+  protected def getPublishedExtendedItemRevisionRelationship(itemNode: Node, includeUnpublished: Boolean = false)(implicit neo4j: DatabaseService): Option[Relationship] = {
     itemNode.getRelationships().foreach(relationship => {
-      if(relationship.getType().name == ItemRelationship.HAS_REVISION.name &&
-         relationship.getEndNode.hasProperty("published")){
-        return Some(relationship);
+      if(relationship.getType().name == ItemRelationship.HAS_REVISION.name){
+        val revisionNode = relationship.getEndNode
+        if (revisionNode.hasProperty("published") ||
+           (includeUnpublished && revisionNode.hasProperty("unpublished"))){
+          return Some(relationship);
+        }
       }
     })
     None

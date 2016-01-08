@@ -182,6 +182,13 @@ class NoteBestCaseSpec extends ServiceSpecBase {
         val publicItem = responseAs[PublicItem]
         writeJsonOutput("publicItemResponse", responseAs[String])
         publicItem.note.relationships.get.parent should be(None)
+        publicItem.note.relationships.get.tags.get.length should be(1)
+        publicItem.note.relationships.get.collectiveTags.get.length should be(1)
+        publicItem.note.visibility.get.path should not be(None)
+        publicItem.note.visibility.get.published should not be(None)
+        publicItem.tags.get.length should be(1)
+        publicItem.collectiveTags.get.length should be(1)
+        publicItem.collectiveTags.get(0)._2.length should be(2)
       }
     }
     it("should successfully publish note with POST to [userUUID]/note/[itemUUID]/publish "

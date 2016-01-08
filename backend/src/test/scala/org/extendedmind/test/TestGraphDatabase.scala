@@ -208,6 +208,8 @@ trait TestGraphDatabase extends GraphDatabase {
     // Store tags for user
     val secretTag = putNewTag(Owner(timoUUID, None),
       Tag("secret", None, None, KEYWORD, None))
+    val blogTag = putNewTag(Owner(timoUUID, None),
+      Tag("blog", None, None, KEYWORD, None))
 
     // Store lists for user
     val extendedMindTechnologiesList = putNewList(Owner(timoUUID, None),
@@ -266,7 +268,7 @@ trait TestGraphDatabase extends GraphDatabase {
           "## process \n" +
           "increasing your productivity doesn't happen overnight"),
         Some("md"), None,
-        Some(ExtendedItemRelationships(Some(extendedMindTechnologiesList.uuid.get), None, None, None, None,
+        Some(ExtendedItemRelationships(Some(extendedMindTechnologiesList.uuid.get), None, None, None, Some(scala.List(blogTag.right.get.uuid.get)),
           Some(scala.List((emUUID, scala.List(productivityTag.right.get.uuid.get)))))))).right.get
     publishNote(Owner(timoUUID, None), result.uuid.get, "md", "productivity")
 

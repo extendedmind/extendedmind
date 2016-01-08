@@ -124,5 +124,6 @@ case object ERR_TAG_UNDELETE_HISTORY extends ErrorCode(7001)
 case object ERR_NOTE_NO_HANDLE extends ErrorCode(8001)
 case object ERR_NOTE_PATH_IN_USE extends ErrorCode(8002)
 case object ERR_NOTE_CONVERT_PUBLISHED extends ErrorCode(8003)
+case object ERR_NOTE_NO_PATH extends ErrorCode(8004)
 
 

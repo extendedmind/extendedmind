@@ -124,6 +124,8 @@ trait AdminActions {
     }else if (priority == 3){
       // Daily
       log.info("tick daily")
+      // TODO: Purge all "unpublished" revisions from the public revision index, and remove
+      //       "unpublished" properties from those revisions.
       true
     }else{
       log.error("invalid tick priority: " + priority)

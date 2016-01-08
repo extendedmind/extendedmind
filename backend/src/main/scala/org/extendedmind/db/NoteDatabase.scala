@@ -379,18 +379,22 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
                 relationship.getEndNode != noteNode).isDefined){
               return fail(INVALID_PARAMETER, ERR_NOTE_PATH_IN_USE,
                   "Can not publish because given path is already in use with a different item")
-            }else{
-              // Republishing the same node with the same path
-              publishedNodeRevision
             }
-          }else{
-            // This path is not in use, check to see if this node has another published revision
-            val previouslyPublishedRevision = getPublishedExtendedItemRevisionRelationship(noteNode)
-            if (previouslyPublishedRevision.isDefined){
-              // Previously published, remove it from the index
-              val publicRevisionIndex = neo4j.gds.index().forNodes("public")
-              publicRevisionIndex.remove(previouslyPublishedRevision.get.getEndNode)
-            }
+            // Republishing the same node with the same path
+          }
+
+          val previouslyPublishedRevisionRelationship =
+            getPublishedExtendedItemRevisionRelationship(noteNode, includeUnpublished = true)
+          if (previouslyPublishedRevisionRelationship.isDefined){
+            // Previously published (and possibly unpublished), remove it from the index
+            val previouslyPublishedRevisionNode = previouslyPublishedRevisionRelationship.get.getEndNode
+            val publicRevisionIndex = neo4j.gds.index().forNodes("public")
+            publicRevisionIndex.remove(previouslyPublishedRevisionNode)
+            // Remove either published or unpublished timestamp
+            if (previouslyPublishedRevisionNode.hasProperty("published"))
+              previouslyPublishedRevisionNode.removeProperty("published")
+            if (previouslyPublishedRevisionNode.hasProperty("unpublished"))
+              previouslyPublishedRevisionNode.removeProperty("unpublished")
           }
 
           // Create a revision and mark it published
@@ -416,8 +420,9 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     // Set format
     noteNode.setProperty("format", format)
 
-    // Set published timestamp
+    // Set same published timestamp to both revision and note
     noteNode.setProperty("published", currentTime)
+    noteRevisionNode.setProperty("published", currentTime)
 
     // Add revision to public revision index
     val publicRevisionIndex = neo4j.gds.index().forNodes("public")
@@ -445,15 +450,22 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
       // Remove publish info also from the revision
       val publishedRevision = getPublishedExtendedItemRevisionRelationship(noteNode)
       if (publishedRevision.isDefined){
-        publishedRevision.get.getEndNode.removeProperty("published")
-        noteNode.setProperty("unpublished", System.currentTimeMillis);
+        val noteRevisionNode = publishedRevision.get.getEndNode
+        noteRevisionNode.removeProperty("published")
+
+        // Add an unpublished timestamp to the revision node, and not remove it from the index
+        // quite yet. NOTE: unpublished is not needed in the note as the unpublished information
+        // is only used when getting modified public items. Unpublished revisions are purged from
+        // the index at specific intervals, see AdminActions.tick().
+        val currentTime = System.currentTimeMillis
+        noteRevisionNode.setProperty("unpublished", currentTime);
       }
     }
   }
 
   protected def validateNoteConvertable(noteNode: Node)(implicit neo4j: DatabaseService): Response[Unit] = {
     // Can't convert note that has been published
-    if (noteNode.hasProperty("published") && !noteNode.hasProperty("unpublished"))
+    if (noteNode.hasProperty("published"))
       fail(INVALID_PARAMETER, ERR_NOTE_CONVERT_PUBLISHED, "Can not convert a note that has been published")
     else
       Right()
@@ -494,7 +506,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
       note <- toNote(noteNode, owner, tagRelationships=Some(tagRels), skipParent=true).right
       tagsResult <- getTagsWithParents(tagRels, owner, noUi=true).right
       assignee <- Right(getAssignee(noteNode)).right
-    } yield PublicItem(displayOwner, note.copy(archived=None, favorited=None, ui=None),
+    } yield PublicItem(displayOwner, stripNonPublicFieldsFromNote(note),
         tagsResult._1,
         tagsResult._2,
         assignee)
@@ -502,12 +514,21 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
 
   protected def noteRevisionToPublicItem(ownerNode: Node, noteRevisionNode: Node, displayOwner: String)(implicit neo4j: DatabaseService): Response[PublicItem] = {
     val owner = Owner(getUUID(ownerNode), None).copy(isFakeUser = true)
+    val published = noteRevisionNode.getProperty("published").asInstanceOf[Long]
+    val revisionRelationship = noteRevisionNode.getRelationships().find (relationship => relationship.getType.name == ItemRelationship.HAS_REVISION.name)
+    if (revisionRelationship.isEmpty)
+      return fail(INTERNAL_SERVER_ERROR, ERR_ITEM_NO_REVISION_RELATIONSHIP, "Note revision does not have a master")
+    if (!revisionRelationship.get.getStartNode.hasProperty("path"))
+      return fail(INTERNAL_SERVER_ERROR, ERR_NOTE_NO_PATH, "Published note is missing path")
+    val path = revisionRelationship.get.getStartNode.getProperty("path").asInstanceOf[String]
+
     for {
       unprocessedNote <- unpickleNote(noteRevisionNode.getProperty("data").asInstanceOf[Array[Byte]]).right
       note <- Right(validateNote(ownerNode, stripNonPublicFieldsFromNote(unprocessedNote))).right
       tagsResult <- getExtendedItemTagsWithParents(note, owner, noUi=true).right
       assignee <- getAssignee(note).right
-    } yield PublicItem(displayOwner, note.copy(archived=None, favorited=None, ui=None),
+    } yield PublicItem(displayOwner,
+        note.copy(visibility = Some(SharedItemVisibility(Some(published),Some(path), None, None, None))),
         tagsResult._1,
         tagsResult._2,
         assignee)
