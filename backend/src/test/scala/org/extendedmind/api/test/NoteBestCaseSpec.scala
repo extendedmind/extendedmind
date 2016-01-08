@@ -202,10 +202,10 @@ class NoteBestCaseSpec extends ServiceSpecBase {
           marshal(PreviewPayload("md"))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val previewNoteResult = responseAs[PreviewNoteResult]
         writeJsonOutput("previewNoteResponse", responseAs[String])
-        Get("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "preview" + previewNoteResult.preview) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+        Get("/" + authenticateResponse.userUUID + "/item/" + putNoteResponse.uuid.get + "/preview/" + previewNoteResult.preview.toHexString) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
           val publicDraftItem = responseAs[PublicItem]
-          publicDraftItem.note.visibility.get.preview should not be (previewNoteResult.preview)
-          publicDraftItem.note.visibility.get.previewExpires should not be (previewNoteResult.previewExpires)
+          publicDraftItem.note.visibility.get.preview.get should be (previewNoteResult.preview)
+          publicDraftItem.note.visibility.get.previewExpires.get should be (previewNoteResult.previewExpires)
           // Next publish with path
           Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/publish",
               marshal(PublishPayload("md", "test"))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
@@ -217,13 +217,39 @@ class NoteBestCaseSpec extends ServiceSpecBase {
               publicItem.note.visibility should not be(None)
               publicItem.note.visibility.get.preview should be (None)
               publicItem.note.visibility.get.previewExpires should be (None)
+              publicItem.note.visibility.get.published.get should be (publicItem.note.modified.get)
+              Get("/public/timo?modified=" + (publishNoteResult.published-1)) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+                val publicItems = responseAs[PublicItems]
+                publicItems.notes.get.length should be(1)
+              }
+
               Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/unpublish") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                 writeJsonOutput("unpublishNoteResponse", responseAs[String])
                 val unpublishedNoteResponse = getNote(putNoteResponse.uuid.get, authenticateResponse)
-                unpublishedNoteResponse.visibility should be(None)
+                unpublishedNoteResponse.visibility.get.published should be(None)
+                unpublishedNoteResponse.visibility.get.path should be(None)
                 Get("/public/timo/test") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
                   val failure = responseAs[ErrorResult]
-                  failure.code should be (3007)
+                  failure.code should be (3027)
+                }
+                // Try to get with previous modified value that returned the note, make sure it has moved to "unpublished"
+                Get("/public/timo?modified=" + (publishNoteResult.published-1)) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+                  val publicItems = responseAs[PublicItems]
+                  publicItems.notes should be(None)
+                  publicItems.unpublished.get.length should be (1)
+                  publicItems.unpublished.get(0) should be (putNoteResponse.uuid.get)
+                }
+                // Now add an daily tick, which should prune the unpublished revision node from the index
+                Post("/tick",
+                    marshal(Tick(3)).right.get) ~> route ~> check {
+                  val statusResponse = responseAs[String]
+                  statusResponse should be ("{\"status\":true}")
+                }
+                // Now the unpublished should have been pruned
+                Get("/public/timo?modified=" + (publishNoteResult.published-1)) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+                  val publicItems = responseAs[PublicItems]
+                  publicItems.notes should be(None)
+                  publicItems.unpublished should be (None)
                 }
               }
             }
@@ -314,6 +340,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
                Get("/public/timo?modified=" + publicItems.notes.get(0).modified.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
                  val oneDeletedPublicItem = responseAs[PublicItems]
                  oneDeletedPublicItem.notes.get.size should be (1)
+                 oneDeletedPublicItem.unpublished.get.size should be (1)
                  oneDeletedPublicItem.unpublished.get(0) should be(publicItems.notes.get(0).uuid.get)
                }
                // Unpublish the second note and check that unpublished contains two uuids

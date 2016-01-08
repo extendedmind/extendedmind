@@ -31,6 +31,7 @@ import org.neo4j.graphdb.DynamicRelationshipType
 import org.neo4j.graphdb.Node
 import org.neo4j.graphdb.traversal.Evaluators
 import org.neo4j.graphdb.traversal.TraversalDescription
+import org.neo4j.index.lucene.ValueContext
 import org.neo4j.kernel.Traversal
 import org.neo4j.scala.DatabaseService
 import scala.collection.mutable.ListBuffer
@@ -201,10 +202,10 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
               else getTagRelationships(noteNode, ownerNodes)).right
       note <- Right(note.copy(
         visibility =
-          (if (noteNode.hasProperty("published") && !noteNode.hasProperty("unpublished"))
+          (if (noteNode.hasProperty("published") || noteNode.hasProperty("preview"))
             Some(SharedItemVisibility(
-                 Some(noteNode.getProperty("published").asInstanceOf[Long]),
-                 Some(noteNode.getProperty("path").asInstanceOf[String]),
+                 if (noteNode.hasProperty("published")) Some(noteNode.getProperty("published").asInstanceOf[Long]) else None,
+                 if (noteNode.hasProperty("path")) Some(noteNode.getProperty("path").asInstanceOf[String]) else None,
                  if (noteNode.hasProperty("preview")) Some(noteNode.getProperty("preview").asInstanceOf[Long]) else None,
                  if (noteNode.hasProperty("previewExpires")) Some(noteNode.getProperty("previewExpires").asInstanceOf[Long]) else None,
                  None))
@@ -405,15 +406,15 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
             else 1
           for{
             note <- toNote(noteNode, ownerNodes, skipParent = true).right
-            noteBytes <- Right(pickleNote(note)).right
+            noteBytes <- Right(pickleNote(getNoteForPickling(note))).right
             noteRevisionNode <- Right(createLatestRevisionNode(noteNode, ownerNodes, ItemLabel.NOTE, noteBytes, newRevisionNumber, base = true)).right
-            published <- Right(setNotePublished(getUUID(ownerNode), noteNode, noteRevisionNode, note.modified.get, format, path)).right
+            published <- Right(setNotePublished(getUUID(ownerNode), noteNode, noteRevisionNode, format, path)).right
           } yield published
         }
     }
   }
 
-  protected def setNotePublished(ownerUUID: UUID, noteNode: Node, noteRevisionNode: Node, noteModified: Long, format: String, path: String)(implicit neo4j: DatabaseService): Long = {
+  protected def setNotePublished(ownerUUID: UUID, noteNode: Node, noteRevisionNode: Node, format: String, path: String)(implicit neo4j: DatabaseService): Long = {
     val currentTime = System.currentTimeMillis()
     noteNode.setProperty("path", path)
 
@@ -428,7 +429,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     val publicRevisionIndex = neo4j.gds.index().forNodes("public")
     publicRevisionIndex.add(noteRevisionNode, "owner", UUIDUtils.getTrimmedBase64UUIDForLucene(ownerUUID))
     publicRevisionIndex.add(noteRevisionNode, "path", path)
-    publicRevisionIndex.add(noteRevisionNode, "modified", noteModified)
+    publicRevisionIndex.add(noteRevisionNode, "modified", new ValueContext(currentTime).indexNumeric())
     currentTime
   }
 
@@ -452,13 +453,16 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
       if (publishedRevision.isDefined){
         val noteRevisionNode = publishedRevision.get.getEndNode
         noteRevisionNode.removeProperty("published")
-
-        // Add an unpublished timestamp to the revision node, and not remove it from the index
-        // quite yet. NOTE: unpublished is not needed in the note as the unpublished information
+        // Add an unpublished timestamp to the revision node, and mark it as unpublished in the
+        // index. NOTE: unpublished is not needed in the note as the unpublished information
         // is only used when getting modified public items. Unpublished revisions are purged from
         // the index at specific intervals, see AdminActions.tick().
+        val publicRevisionIndex = neo4j.gds.index().forNodes("public")
+        publicRevisionIndex.add(noteRevisionNode, "unpublished", true)
         val currentTime = System.currentTimeMillis
         noteRevisionNode.setProperty("unpublished", currentTime);
+        publicRevisionIndex.remove(noteRevisionNode, "modified")
+        publicRevisionIndex.add(noteRevisionNode, "modified", new ValueContext(currentTime).indexNumeric())
       }
     }
   }
@@ -528,7 +532,8 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
       tagsResult <- getExtendedItemTagsWithParents(note, owner, noUi=true).right
       assignee <- getAssignee(note).right
     } yield PublicItem(displayOwner,
-        note.copy(visibility = Some(SharedItemVisibility(Some(published),Some(path), None, None, None))),
+        note.copy(modified = Some(published),
+                  visibility = Some(SharedItemVisibility(Some(published),Some(path), None, None, None))),
         tagsResult._1,
         tagsResult._2,
         assignee)

@@ -210,6 +210,18 @@ trait ItemDatabase extends UserDatabase {
     }
   }
 
+  def purgeUnpublishedFromPublicIndex(): Unit = {
+    withTx {
+      implicit neo4j =>
+        val publicRevisionIndex = neo4j.gds.index().forNodes("public")
+        val revisionNodeList = publicRevisionIndex.query("unpublished:true").toList
+        revisionNodeList.foreach (unpublishedRevision => {
+          unpublishedRevision.removeProperty("unpublished")
+          publicRevisionIndex.remove(unpublishedRevision)
+        })
+    }
+  }
+
   // PRIVATE
 
   case class TagRelationships(ownerTags: Option[scala.List[Relationship]], collectiveTags: Option[scala.List[Relationship]])
@@ -350,14 +362,14 @@ trait ItemDatabase extends UserDatabase {
       val ownerSearchString = UUIDUtils.getTrimmedBase64UUIDForLucene(ownerUUID)
       if (modified.isDefined) {
         val ownerQuery = new TermQuery(new Term("owner", ownerSearchString))
-        val assigneeQuery = new TermQuery(new Term("assignee", UUIDUtils.getTrimmedBase64UUIDForLucene(ownerUUID)))
-        val userQuery = new BooleanQuery;
-        userQuery.add(ownerQuery, BooleanClause.Occur.SHOULD);
-        userQuery.add(assigneeQuery, BooleanClause.Occur.SHOULD);
+        val assigneeQuery = new TermQuery(new Term("assignee", ownerSearchString))
+        val userQuery = new BooleanQuery
+        userQuery.add(ownerQuery, BooleanClause.Occur.SHOULD)
+        userQuery.add(assigneeQuery, BooleanClause.Occur.SHOULD)
         val modifiedRangeQuery = NumericRangeQuery.newLongRange("modified", 8, modified.get, null, false, false)
         val userModifiedQuery = new BooleanQuery;
-        userModifiedQuery.add(modifiedRangeQuery, BooleanClause.Occur.MUST);
-        userModifiedQuery.add(userQuery, BooleanClause.Occur.MUST);
+        userModifiedQuery.add(modifiedRangeQuery, BooleanClause.Occur.MUST)
+        userModifiedQuery.add(userQuery, BooleanClause.Occur.MUST)
         itemsIndex.query(userModifiedQuery).toList
       } else {
         val userQuery = "(owner:" + ownerSearchString + " OR assignee:" + ownerSearchString + ")"
@@ -392,10 +404,10 @@ trait ItemDatabase extends UserDatabase {
       if (modified.isDefined) {
         val ownerQuery = new TermQuery(new Term("owner", ownerSearchString))
         val modifiedRangeQuery = NumericRangeQuery.newLongRange("modified", 8, modified.get, null, false, false)
-        val userModifiedQuery = new BooleanQuery;
-        userModifiedQuery.add(modifiedRangeQuery, BooleanClause.Occur.MUST);
-        userModifiedQuery.add(ownerQuery, BooleanClause.Occur.MUST);
-        publicRevisionIndex.query(userModifiedQuery).toList
+        val combinedQuery = new BooleanQuery
+        combinedQuery.add(modifiedRangeQuery, BooleanClause.Occur.MUST)
+        combinedQuery.add(ownerQuery, BooleanClause.Occur.MUST)
+        publicRevisionIndex.query(combinedQuery).toList
       } else {
         publicRevisionIndex.query("owner:" + ownerSearchString).toList
       }
