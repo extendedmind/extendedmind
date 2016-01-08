@@ -543,8 +543,8 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     note.copy(archived=None, favorited=None, ui=None, relationships = {
       if (note.relationships.isDefined){
         val rels = note.relationships.get
-        if (rels.assigner.isDefined || rels.tags.isDefined || rels.collectiveTags.isDefined)
-          Some(rels.copy(parent = None, origin = None, assignee = None))
+        if (rels.assignee.isDefined || rels.tags.isDefined || rels.collectiveTags.isDefined)
+          Some(rels.copy(parent = None, origin = None, assigner = None))
         else None
       }else None
     })
