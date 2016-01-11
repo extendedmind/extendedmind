@@ -64,6 +64,16 @@ trait InviteDatabase extends UserDatabase {
     }
   }
 
+  def getInvites(owner: Owner): Response[Invites] = {
+    withTx {
+      implicit neo4j =>
+        for {
+          userNode <- getNode(owner.userUUID, OwnerLabel.USER).right
+          invites <- getInvites(userNode).right
+        } yield invites
+    }
+  }
+
   def destroyInvite(owner: Owner, inviteUUID: UUID): Response[DestroyResult] = {
     withTx {
       implicit neo4j =>
@@ -156,5 +166,17 @@ trait InviteDatabase extends UserDatabase {
       inviteNode.delete()
       Right(DestroyResult(scala.List(inviteUUID)))
     }
+  }
+
+  protected def getInvites(userNode: Node)(implicit neo4j: DatabaseService): Response[Invites] = {
+    val inviteNodes = inviteTraversal.traverse(userNode).nodes.toList
+    val inviteList = inviteNodes.map(inviteNode => {
+      val inviteResult = toCaseClass[Invite](inviteNode)
+      if (inviteResult.isLeft) return Left(inviteResult.left.get)
+      val fullInviteResult = addTransientInviteProperties(inviteNode, inviteResult.right.get)
+      if (fullInviteResult.isLeft) return Left(fullInviteResult.left.get)
+      fullInviteResult.right.get
+    })
+    Right(Invites(inviteList))
   }
 }

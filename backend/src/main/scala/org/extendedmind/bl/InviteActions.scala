@@ -59,8 +59,7 @@ trait InviteActions {
 
   def getInvites(owner: Owner)(implicit log: LoggingAdapter): Response[Invites] = {
     log.info("getInvites")
-    //TODO: db.getInvites(owner)
-    fail(INTERNAL_SERVER_ERROR, ERR_BASE_UNKNOWN, "Not implemented")
+    db.getInvites(owner)
   }
 }
 
