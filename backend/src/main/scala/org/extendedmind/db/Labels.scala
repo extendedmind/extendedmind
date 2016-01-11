@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2013-2015 Extended Mind Technologies Oy
+ * Copyright (c) 2013-2016 Extended Mind Technologies Oy
  *
  * This file is part of Extended Mind.
  *
