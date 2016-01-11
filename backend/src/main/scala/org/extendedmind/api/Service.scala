@@ -125,13 +125,13 @@ class ServiceActor extends HttpServiceActor with Service {
 
   override def logErrors(errors: scala.List[ResponseContent]) = {
     errors foreach (e => {
-    	val errorString = e.responseType + ": " + e.description
-    	println(errorString)
-    	if (e.throwable.isDefined){
-    	  log.error(e.throwable.get, errorString)
-    	}else{
-    	  log.error(errorString)
-    	}
+      val errorString = e.responseType + ": " + e.description
+      println(errorString)
+      if (e.throwable.isDefined){
+        log.error(e.throwable.get, errorString)
+      }else{
+        log.error(errorString)
+      }
       }
     )
   }
@@ -158,13 +158,14 @@ class ServiceActor extends HttpServiceActor with Service {
 
 // this class defines our service behavior independently from the service actor
 trait Service extends AdminService
-			  with SecurityService
-			  with UserService
-			  with ItemService
-			  with TaskService
-			  with NoteService
-			  with ListService
-			  with TagService {
+        with SecurityService
+        with UserService
+        with ItemService
+        with TaskService
+        with NoteService
+        with ListService
+        with TagService
+        with InviteService {
 
   import JsonImplicits._
   implicit val implTick = jsonFormat1(Tick.apply)
@@ -218,6 +219,6 @@ trait Service extends AdminService
       val haStatus = adminActions.getHAStatus
       if (haStatus == "slave") ctx.complete(200, "true")
       else ctx.complete(NotFound, "false")
-    } ~ adminRoutes ~ securityRoutes ~ userRoutes ~ itemRoutes ~ taskRoutes ~ noteRoutes ~ listRoutes ~ tagRoutes
+    } ~ adminRoutes ~ securityRoutes ~ userRoutes ~ itemRoutes ~ taskRoutes ~ noteRoutes ~ listRoutes ~ tagRoutes ~ inviteRoutes
   }
 }

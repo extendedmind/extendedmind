@@ -130,4 +130,5 @@ case object ERR_NOTE_PATH_IN_USE extends ErrorCode(8002)
 case object ERR_NOTE_CONVERT_PUBLISHED extends ErrorCode(8003)
 case object ERR_NOTE_NO_PATH extends ErrorCode(8004)
 
-
+case object ERR_INVITE_MULTIPLE_USERS extends ErrorCode(9001)
+case object ERR_INVITE_ACCEPTED extends ErrorCode(9002)

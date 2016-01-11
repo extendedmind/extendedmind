@@ -28,3 +28,4 @@ with TaskDatabase
 with NoteDatabase
 with ListDatabase
 with TagDatabase
+with InviteDatabase

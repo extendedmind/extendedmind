@@ -30,6 +30,7 @@ object SecurityRelationship {
   val IDS = ExtendedMindRelationship("IDS")
   val IS_FOUNDER = ExtendedMindRelationship("IS_FOUNDER")
   val IS_CREATOR = ExtendedMindRelationship("IS_CREATOR")
+  val IS_ORIGIN = ExtendedMindRelationship("IS_ORIGIN")
   val CAN_READ = ExtendedMindRelationship("CAN_READ")
   val CAN_READ_WRITE = ExtendedMindRelationship("CAN_READ_WRITE")
 }

@@ -217,6 +217,17 @@ trait UserDatabase extends AbstractGraphDatabase {
     } yield stats
   }
 
+  def validateEmailUniqueness(email: String): Response[Boolean] = {
+    withTx{
+      implicit neo4j =>
+        val userNodeList = findNodesByLabelAndProperty(OwnerLabel.USER, "email", email).toList
+        if (!userNodeList.isEmpty){
+          return fail(INVALID_PARAMETER, ERR_BASE_EMAIL_EXISTS, "User already exists with given email: " + email)
+        }
+        Right(true)
+    }
+  }
+
   // PRIVATE
 
   protected def createUser(user: User, plainPassword: String,

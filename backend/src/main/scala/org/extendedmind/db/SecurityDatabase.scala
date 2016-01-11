@@ -127,17 +127,6 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     }
   }
 
-  def validateEmailUniqueness(email: String): Response[Boolean] = {
-    withTx{
-      implicit neo4j =>
-        val userNodeList = findNodesByLabelAndProperty(OwnerLabel.USER, "email", email).toList
-        if (!userNodeList.isEmpty){
-          return fail(INVALID_PARAMETER, ERR_BASE_EMAIL_EXISTS, "User already exists with given email: " + email)
-        }
-        Right(true)
-    }
-  }
-
   def logout(encryptedToken: String): Response[SecurityContext] = {
     withTx{
       implicit neo4j =>
@@ -194,20 +183,20 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
   def savePasswordResetInformation(userUUID: UUID, resetCode: Long, resetCodeValid: Long, emailId: String): Response[Unit] = {
     withTx {
       implicit neo4j =>
-	    for {
-	      userNode <- getNode(userUUID, OwnerLabel.USER).right
-	      result <- Right(savePasswordResetInformation(userNode, resetCode, resetCodeValid, emailId)).right
-	    } yield result
+      for {
+        userNode <- getNode(userUUID, OwnerLabel.USER).right
+        result <- Right(savePasswordResetInformation(userNode, resetCode, resetCodeValid, emailId)).right
+      } yield result
     }
   }
 
   def getPasswordResetExpires(code: Long, email: String): Response[Long] = {
     withTx {
       implicit neo4j =>
-	    for {
-	      userNode <- getUserNode(email).right
-	      result <- getPasswordResetExpires(code, userNode).right
-	    } yield result
+      for {
+        userNode <- getUserNode(email).right
+        result <- getPasswordResetExpires(code, userNode).right
+      } yield result
     }
   }
 
@@ -385,9 +374,9 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     if (payload.isDefined && payload.get.rememberMe) {
       // Remember me has been clicked
       val replaceable = if (payload.get.extended.isDefined && payload.get.extended.get == true)
-					      currentTime + TOKEN_REPLACEABLE_EXTENDED
-					    else
-					      currentTime + TOKEN_REPLACEABLE
+                currentTime + TOKEN_REPLACEABLE_EXTENDED
+              else
+                currentTime + TOKEN_REPLACEABLE
 
       tokenNode.setProperty("replaceable", replaceable)
       return (currentTime, expires, Some(replaceable))
@@ -450,7 +439,7 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
       relationship.getEndNode.hasLabel(ItemLabel.LIST)
     }}
     val sc = getSecurityContextSkeleton(user, userType, subscription).copy(
-    		   collectives = getCollectiveAccess(collectivesRelationshipList),
+           collectives = getCollectiveAccess(collectivesRelationshipList),
            sharedLists = getSharedListAccess(sharedListRelationshipList))
     sc.user = user
     sc

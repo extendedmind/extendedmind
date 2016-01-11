@@ -124,6 +124,10 @@ trait ServiceBase extends API with Injectable {
     inject[TagActions]
   }
 
+  def inviteActions: InviteActions = {
+    inject[InviteActions]
+  }
+
   def adminActions: AdminActions = {
     inject[AdminActions]
   }

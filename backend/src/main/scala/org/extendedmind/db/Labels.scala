@@ -33,6 +33,7 @@ object MainLabel {
   val REMINDER = Label("REMINDER")
   val AGREEMENT = Label("AGREEMENT")
   val REVISION = Label("REVISION")
+  val INVITE = Label("INVITE")
 }
 
 object OwnerLabel {
