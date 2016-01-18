@@ -38,11 +38,11 @@ trait InviteDatabase extends UserDatabase {
 
   // PUBLIC
 
-  def putNewInvite(owner: Owner, invite: Invite): Response[SetResult] = {
+  def putNewInvite(owner: Owner, invite: Invite): Response[(SetResult, String)] = {
     for {
-      inviteNode <- createInvite(owner, invite).right
-      result <- Right(getSetResult(inviteNode, true)).right
-    } yield result
+      inviteResult <- createInvite(owner, invite).right
+      result <- Right(getSetResult(inviteResult._1, true)).right
+    } yield (result, inviteResult._2)
   }
 
   def putExistingInvite(owner: Owner, inviteUUID: UUID, invite: Invite): Response[SetResult] = {
@@ -87,15 +87,16 @@ trait InviteDatabase extends UserDatabase {
 
   // PRIVATE
 
-  protected def createInvite(owner: Owner, invite: Invite): Response[Node] = {
+  protected def createInvite(owner: Owner, invite: Invite): Response[(Node, String)] = {
     withTx {
       implicit neo4j =>
         for {
           unit <- validateEmailUniqueness(invite.email).right
           userNode <- getNode(owner.userUUID, OwnerLabel.USER).right
+          displayOwner <- Right(getDisplayOwner(userNode)).right
           inviteNode <- Right(createInvite(userNode, invite.copy(status = Some(InviteStatus.PENDING.toString),
-                                                           emailId = None, invitee = None, accepted = None))).right
-        } yield inviteNode
+                                                           emailId = None, code = None, invitee = None, accepted = None))).right
+        } yield (inviteNode, displayOwner)
     }
   }
 
@@ -173,7 +174,7 @@ trait InviteDatabase extends UserDatabase {
     val inviteList = inviteNodes.map(inviteNode => {
       val inviteResult = toCaseClass[Invite](inviteNode)
       if (inviteResult.isLeft) return Left(inviteResult.left.get)
-      val fullInviteResult = addTransientInviteProperties(inviteNode, inviteResult.right.get)
+      val fullInviteResult = addTransientInviteProperties(inviteNode, inviteResult.right.get.copy(code = None))
       if (fullInviteResult.isLeft) return Left(fullInviteResult.left.get)
       fullInviteResult.right.get
     })

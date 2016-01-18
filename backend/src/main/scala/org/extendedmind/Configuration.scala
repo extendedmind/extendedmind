@@ -107,6 +107,8 @@ class Settings(config: Config) extends Extension {
     else
       None
   }
+  val inviteTitle = config.getString("extendedmind.email.templates.inviteTitle")
+  val joinInviteURI = config.getString("extendedmind.email.templates.joinInviteURI")
   val shareListTitle = config.getString("extendedmind.email.templates.shareListTitle")
   val acceptShareURI = config.getString("extendedmind.email.templates.acceptShareURI")
   val resetPasswordTitle = config.getString("extendedmind.email.templates.resetPasswordTitle")

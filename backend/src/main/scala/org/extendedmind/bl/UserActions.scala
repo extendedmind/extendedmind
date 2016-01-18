@@ -145,11 +145,12 @@ trait UserActions {
       val agreementResult = db.putNewAgreement(agreementWithProposedByUUID)
       if (agreementResult.isRight){
         sendAgreementEmail(agreementWithProposedByUUID.copy(
-                            uuid = agreementResult.right.get._1.uuid,
-                            modified = Some(agreementResult.right.get._1.modified),
-                            proposedBy = Some(AgreementUser(Some(userUUID), Some(agreementResult.right.get._3)))),
-                            agreementResult.right.get._2)
-        Right(agreementResult.right.get._1)
+                            uuid = agreementResult.right.get.result.uuid,
+                            modified = Some(agreementResult.right.get.result.modified),
+                            proposedBy = Some(AgreementUser(Some(userUUID), Some(agreementResult.right.get.proposedByEmail)))),
+                            agreementResult.right.get.concerningTitle,
+                            agreementResult.right.get.proposedByDisplayName)
+        Right(agreementResult.right.get.result)
       }else{
         Left(agreementResult.left.get)
       }
@@ -171,7 +172,7 @@ trait UserActions {
     log.info("resendAgreement")
     for {
       agreementResult <- db.getAgreement(userUUID, agreementUUID).right
-      result <- sendAgreementEmail(agreementResult._1, agreementResult._2).right
+      result <- sendAgreementEmail(agreementResult._1, agreementResult._2, agreementResult._3).right
     } yield result
   }
 
@@ -192,12 +193,12 @@ trait UserActions {
     }
   }
 
-  private def sendAgreementEmail(agreement: Agreement, sharedListTitle: String)(implicit log: LoggingAdapter): Response[CountResult] = {
+  private def sendAgreementEmail(agreement: Agreement, sharedListTitle: String, proposedByDisplayName: String)(implicit log: LoggingAdapter): Response[CountResult] = {
     if (agreement.accepted.isDefined){
       fail(INVALID_PARAMETER, ERR_USER_AGREEMENT_ACCEPTED, "Agreeement has already been accepted, no need to send email")
     }else{
       val acceptCode = Random.generateRandomUnsignedLong
-      val futureMailResponse = mailgun.sendShareListAgreement(agreement, acceptCode, sharedListTitle)
+      val futureMailResponse = mailgun.sendShareListAgreement(agreement, acceptCode, sharedListTitle, proposedByDisplayName)
       futureMailResponse onSuccess {
         case SendEmailResponse(message, id) => {
           val saveResponse = db.saveAgreementAcceptInformation(agreement.uuid.get, acceptCode, id)

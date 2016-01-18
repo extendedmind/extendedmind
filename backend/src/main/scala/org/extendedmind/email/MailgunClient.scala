@@ -71,17 +71,18 @@ trait MailgunClient {
   val shareListHtmlTemplate = getTemplate("shareList.html", settings.emailTemplateDir)
   val resetPasswordHtmlTemplate = getTemplate("resetPassword.html", settings.emailTemplateDir)
   val verifyEmailHtmlTemplate = getTemplate("verifyEmail.html", settings.emailTemplateDir)
+  val inviteHtmlTemplate = getTemplate("invite.html", settings.emailTemplateDir)
 
   // Prepare pipeline
   implicit val implicitActorRefFactory = actorRefFactory
   implicit val implicitContext = actorRefFactory.dispatcher
   val sendEmailPipeline = sendReceive ~> unmarshal[SendEmailResponse]
 
-  def sendShareListAgreement(agreement: Agreement, acceptCode: Long, sharedListTitle: String): Future[SendEmailResponse] = {
+  def sendShareListAgreement(agreement: Agreement, acceptCode: Long, sharedListTitle: String, proposedByDisplayName: String): Future[SendEmailResponse] = {
     val sendEmailRequest = SendEmailRequest(settings.emailFrom, agreement.proposedTo.get.email.get,
       settings.shareListTitle.replaceAll(
-          "inviterEmail",
-          agreement.proposedBy.get.email.get),
+          "proposedByDisplayName",
+          proposedByDisplayName),
       shareListHtmlTemplate
         .replaceAll(
           "acceptLink",
@@ -90,8 +91,26 @@ trait MailgunClient {
             .replaceAll("shareValue", acceptCode.toHexString)
             .replaceAll("emailValue", agreement.proposedTo.get.email.get))
         .replaceAll("logoLink", settings.emailUrlOrigin + "/static/img/logo-text.png")
-        .replaceAll("inviterEmail", agreement.proposedBy.get.email.get)
+        .replaceAll("proposedByDisplayName", proposedByDisplayName)
         .replaceAll("sharedListTitle", xml.Utility.escape(sharedListTitle))
+        )
+    sendEmail(sendEmailRequest)
+  }
+
+  def sendInvite(invite: Invite, inviterDisplayName: String): Future[SendEmailResponse] = {
+    val sendEmailRequest = SendEmailRequest(settings.emailFrom, invite.email,
+      settings.inviteTitle.replaceAll(
+          "inviterDisplayName",
+          inviterDisplayName),
+      shareListHtmlTemplate
+        .replaceAll(
+          "joinLink",
+          settings.emailUrlOrigin
+            + settings.joinInviteURI
+            .replaceAll("inviteValue", invite.code.get.toHexString)
+            .replaceAll("emailValue", invite.email))
+        .replaceAll("logoLink", settings.emailUrlOrigin + "/static/img/logo-text.png")
+        .replaceAll("inviterDisplayName", inviterDisplayName)
         )
     sendEmail(sendEmailRequest)
   }

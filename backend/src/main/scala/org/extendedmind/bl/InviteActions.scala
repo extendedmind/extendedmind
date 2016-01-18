@@ -30,6 +30,8 @@ import org.extendedmind.Response._
 import akka.actor.ActorRefFactory
 import akka.event.LoggingAdapter
 import org.extendedmind.email.MailgunClient
+import org.extendedmind.email.SendEmailResponse
+import org.extendedmind.security.Random
 
 trait InviteActions {
 
@@ -43,7 +45,10 @@ trait InviteActions {
 
   def putNewInvite(owner: Owner, invite: Invite)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("putNewInvite")
-    db.putNewInvite(owner, invite)
+    for {
+      inviteResult <- db.putNewInvite(owner, invite).right
+      sent <- Right(sendInviteEmail(owner, invite, inviteResult._2)).right
+    } yield inviteResult._1
   }
 
   def resendInvite(owner: Owner, inviteUUID: UUID)(implicit log: LoggingAdapter): Response[SetResult] = {
@@ -60,6 +65,30 @@ trait InviteActions {
   def getInvites(owner: Owner)(implicit log: LoggingAdapter): Response[Invites] = {
     log.info("getInvites")
     db.getInvites(owner)
+  }
+
+  private def sendInviteEmail(owner: Owner, invite: Invite, displayOwner: String)(implicit log: LoggingAdapter): Response[CountResult] = {
+    if (invite.accepted.isDefined){
+      fail(INVALID_PARAMETER, ERR_INVITE_ACCEPTED, "Invite has already been accepted, no need to send email")
+    }else{
+      val acceptCode = Random.generateRandomUnsignedLong
+      val inviteToSend = invite.copy(code = Some(acceptCode))
+      val futureMailResponse = mailgun.sendInvite(inviteToSend, displayOwner)
+      futureMailResponse onSuccess {
+        case SendEmailResponse(message, id) => {
+          val saveResponse = db.putExistingInvite(owner, inviteToSend.uuid.get,
+              inviteToSend.copy(emailId = Some(id)))
+          if (saveResponse.isLeft)
+            log.error("Error saving invite details proposed to email {} with emailId {}, error: {}",
+              inviteToSend.email, id, saveResponse.left.get.head)
+          else log.info("Saved invite join code proposed to email {} with emailId: {}",
+            inviteToSend.email, id)
+        }
+        case _ =>
+          log.error("Could not send invite email proposed to {}", invite.email)
+      }
+      Right(CountResult(1))
+    }
   }
 }
 

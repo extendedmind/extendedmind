@@ -278,7 +278,7 @@ trait TestGraphDatabase extends GraphDatabase {
                     AgreementTarget(essayList.uuid.get, None), Some(AgreementUser(Some(timoUUID), None)),
                     AgreementUser(None, Some(LAURI_EMAIL)))).right.get
     val agreementCode = 1234L
-    val saveResponse = saveAgreementAcceptInformation(shareAgreementResult._1.uuid.get, agreementCode, "1234")
+    val saveResponse = saveAgreementAcceptInformation(shareAgreementResult.result.uuid.get, agreementCode, "1234")
     acceptAgreement(agreementCode, LAURI_EMAIL).right.get
 
     // Lauri's personal items

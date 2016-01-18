@@ -476,13 +476,13 @@ class ListBestCaseSpec extends ServiceSpecBase {
       val sharingAgreement = Agreement(AgreementType.LIST_AGREEMENT, SecurityContext.READ,
                     AgreementTarget(putListResponse.uuid.get, None), None,
                     AgreementUser(None, Some(TIMO_EMAIL)))
-      stub(mockMailgunClient.sendShareListAgreement(anyObject(), anyObject(), anyObject())).toReturn(Future { SendEmailResponse("OK", "1234") })
+      stub(mockMailgunClient.sendShareListAgreement(anyObject(), anyObject(), anyObject(), anyObject())).toReturn(Future { SendEmailResponse("OK", "1234") })
       val agreementCodeCaptor: ArgumentCaptor[Long] = ArgumentCaptor.forClass(classOf[Long])
       Put("/agreement",
           marshal(sharingAgreement).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
         val agreementSetResult = responseAs[SetResult]
         writeJsonOutput("putNewAgreementResponse", responseAs[String])
-        verify(mockMailgunClient).sendShareListAgreement(anyObject(), agreementCodeCaptor.capture(), anyObject())
+        verify(mockMailgunClient).sendShareListAgreement(anyObject(), agreementCodeCaptor.capture(), anyObject(), anyObject())
         val agreementCode = agreementCodeCaptor.getValue
 
         // Verify that list has the same modified as agreement

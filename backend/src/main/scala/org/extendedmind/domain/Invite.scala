@@ -36,6 +36,7 @@ case class Invite(
       emailId: Option[String],
       message: Option[String],
       status: Option[String],
+      code: Option[Long],
       accepted: Option[Long],
       invitee: Option[UUID]){
   require(validateEmailAddress(email), "Not a valid email address")
@@ -54,7 +55,7 @@ case class Invite(
 
 object Invite{
   def apply(email: String, message: Option[String])
-        = new Invite(None, None, None, email, None, message, None, None, None)
+        = new Invite(None, None, None, email, None, message, None, None, None, None)
 }
 
 case class Invites(invites: scala.List[Invite])

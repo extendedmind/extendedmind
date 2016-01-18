@@ -152,25 +152,25 @@ trait UserDatabase extends AbstractGraphDatabase {
     }
   }
 
-  def getAgreement(userUUID: UUID, agreementUUID: UUID): Response[(Agreement, String)] = {
+  def getAgreement(userUUID: UUID, agreementUUID: UUID): Response[(Agreement, String, String)] = {
     withTx {
       implicit neo =>
         for {
           agreementInfo <- getAgreementInformation(userUUID, agreementUUID).right
           agreement <- toAgreement(agreementInfo, showProposedBy=true).right
-        } yield (agreement, agreementInfo.concerningTitle)
+        } yield (agreement, agreementInfo.concerningTitle, agreementInfo.proposedByDisplayName)
     }
   }
 
-  def putNewAgreement(agreement: Agreement): Response[(SetResult, String, String)] = {
+  case class AgreementResult(result: SetResult, concerningTitle: String, proposedByEmail: String, proposedByDisplayName: String)
+  def putNewAgreement(agreement: Agreement): Response[AgreementResult] = {
     for {
       agreementResult <- createAgreementNode(agreement).right
-      result <- Right(getSetResult(agreementResult._1, true)).right
+      result <- Right(getSetResult(agreementResult.agreementNode, true)).right
       unit <- Right(if (agreement.agreementType == "list") // Update items index with new list modified
-                      updateItemsIndex(agreementResult._4, getSetResult(agreementResult._4, false))).right
-    } yield (result, agreementResult._2, agreementResult._3)
+                      updateItemsIndex(agreementResult.concerningNode, getSetResult(agreementResult.concerningNode, false))).right
+    } yield (AgreementResult(result, agreementResult.concerningTitle, agreementResult.proposedByEmail, agreementResult.proposedByDisplayName))
   }
-
 
   def changeAgreementAccess(owner: Owner, agreementUUID: UUID, access: Byte): Response[SetResult] = {
     for {
@@ -605,18 +605,21 @@ trait UserDatabase extends AbstractGraphDatabase {
     Right(true)
   }
 
-  protected def createAgreementNode(agreement: Agreement): Response[(Node, String, String, Node)] = {
+  case class CreateAgreementResult(agreementNode: Node, concerningTitle: String, proposedByEmail: String, proposedByDisplayName: String, concerningNode: Node)
+  protected def createAgreementNode(agreement: Agreement): Response[CreateAgreementResult] = {
     withTx {
       implicit neo4j =>
         for {
           proposedByUserNode <- getNode(agreement.proposedBy.get.uuid.get, OwnerLabel.USER).right
+          proposedByDisplayName <- Right(getDisplayOwner(proposedByUserNode)).right
           proposedToUserNode <- getUserNode(agreement.proposedTo.get.email.get).right
           concerningNode <- getItemNode(agreement.proposedBy.get.uuid.get, agreement.targetItem.get.uuid, ItemLabel.LIST, false).right
           agreementNode <- createAgreementNode(agreement, proposedByUserNode, proposedToUserNode, concerningNode).right
-        } yield (agreementNode,
+        } yield (CreateAgreementResult(agreementNode,
                  concerningNode.getProperty("title").asInstanceOf[String],
                  proposedByUserNode.getProperty("email").asInstanceOf[String],
-                 concerningNode)
+                 proposedByDisplayName,
+                 concerningNode))
     }
   }
 
@@ -674,7 +677,7 @@ trait UserDatabase extends AbstractGraphDatabase {
   }
 
 
-  case class AgreementInformation(agreement: Node, agreementType: String, proposedBy: Node, concerning: Node, proposedTo: Option[Node], userIsCreator: Boolean, concerningTitle: String)
+  case class AgreementInformation(agreement: Node, agreementType: String, proposedBy: Node, proposedByDisplayName: String, concerning: Node, proposedTo: Option[Node], userIsCreator: Boolean, concerningTitle: String)
 
   protected def getAgreementInformation(userUUID: UUID, agreementUUID: UUID): Response[AgreementInformation] = {
     withTx {
@@ -718,7 +721,9 @@ trait UserDatabase extends AbstractGraphDatabase {
       return fail(INVALID_PARAMETER, ERR_USER_INVALID_AGREEMENT_PARTY, "User is not a party in the agreement")
     }
 
-    Right(AgreementInformation(agreementNode, agreementType, proposedByUser, concerningNode, proposedToUser, userIsCreator, concerningNode.getProperty("title").asInstanceOf[String]))
+    val proposedByDisplayName = getDisplayOwner(proposedByUser)
+
+    Right(AgreementInformation(agreementNode, agreementType, proposedByUser, proposedByDisplayName, concerningNode, proposedToUser, userIsCreator, concerningNode.getProperty("title").asInstanceOf[String]))
   }
 
   protected def changeAgreementAccessNode(agreementInfo: AgreementInformation, access: Byte)(implicit neo4j: DatabaseService): Response[Option[Relationship]] = {
