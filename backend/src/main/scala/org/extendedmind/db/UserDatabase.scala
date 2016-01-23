@@ -49,9 +49,10 @@ trait UserDatabase extends AbstractGraphDatabase {
 
   // PUBLICs
 
-  def putNewUser(user: User, password: String, signUpMode: SignUpMode): Response[(SetResult, Option[Long])] = {
+  def putNewUser(user: User, password: String, signUpMode: SignUpMode, inviteCode: Option[Long]): Response[(SetResult, Option[Long])] = {
     for {
-      userResult <- createUser(user, password, getExtraUserLabel(signUpMode)).right
+      unit <- validateEmailUniqueness(user.email.get).right
+      userResult <- createUser(user, password, getExtraUserLabel(signUpMode), inviteCode).right
       result <- Right(getSetResult(userResult._1, true)).right
     } yield (result, userResult._2)
   }
@@ -231,60 +232,59 @@ trait UserDatabase extends AbstractGraphDatabase {
   // PRIVATE
 
   protected def createUser(user: User, plainPassword: String,
-    userLabel: Option[Label] = None, emailVerified: Option[Long] = None): Response[(Node, Option[Long])] = {
+    userLabel: Option[Label], inviteCode: Option[Long] = None): Response[(Node, Option[Long])] = {
     withTx {
       implicit neo4j =>
-        if (findNodesByLabelAndProperty(OwnerLabel.USER, "email", user.email.get).toList.size > 0) {
-          fail(INVALID_PARAMETER, ERR_USER_ALREADY_EXISTS, "User already exists with given email " + user.email.get)
+        if (inviteCode)
+
+
+        val userNode = createNode(user.copy(handle = None, content = None, format = None, displayName = None), MainLabel.OWNER, OwnerLabel.USER)
+        if (userLabel.isDefined) userNode.addLabel(userLabel.get)
+        setUserPassword(userNode, plainPassword)
+        userNode.setProperty("email", user.email.get)
+        if (user.cohort.isDefined) userNode.setProperty("cohort", user.cohort.get)
+        userNode.setProperty("inboxId", generateUniqueInboxId())
+
+        val emailVerificationCode = if (emailVerified.isDefined) {
+          // When the user accepts invite using a code sent to her email,
+          // that means that the email is also verified
+          userNode.setProperty("emailVerified", emailVerified.get)
+          None
         } else {
-          val userNode = createNode(user.copy(handle = None, content = None, format = None, displayName = None), MainLabel.OWNER, OwnerLabel.USER)
-          if (userLabel.isDefined) userNode.addLabel(userLabel.get)
-          setUserPassword(userNode, plainPassword)
-          userNode.setProperty("email", user.email.get)
-          if (user.cohort.isDefined) userNode.setProperty("cohort", user.cohort.get)
-          userNode.setProperty("inboxId", generateUniqueInboxId())
+          // Need to create a verification code
+          val emailVerificationCode = Random.generateRandomUnsignedLong
+          userNode.setProperty("emailVerificationCode", emailVerificationCode)
+          Some(emailVerificationCode)
+        }
 
-          val emailVerificationCode = if (emailVerified.isDefined) {
-            // When the user accepts invite using a code sent to her email,
-            // that means that the email is also verified
-            userNode.setProperty("emailVerified", emailVerified.get)
-            None
-          } else {
-            // Need to create a verification code
-            val emailVerificationCode = Random.generateRandomUnsignedLong
-            userNode.setProperty("emailVerificationCode", emailVerificationCode)
-            Some(emailVerificationCode)
-          }
+        // Give user read permissions to common collectives
+        val collectivesList = findNodesByLabelAndProperty(OwnerLabel.COLLECTIVE, "common", java.lang.Boolean.TRUE).toList
+        if (!collectivesList.isEmpty) {
+          collectivesList.foreach(collective => {
+            userNode --> SecurityRelationship.CAN_READ --> collective;
+          })
+        }
 
-          // Give user read permissions to common collectives
-          val collectivesList = findNodesByLabelAndProperty(OwnerLabel.COLLECTIVE, "common", java.lang.Boolean.TRUE).toList
-          if (!collectivesList.isEmpty) {
-            collectivesList.foreach(collective => {
-              userNode --> SecurityRelationship.CAN_READ --> collective;
-            })
-          }
+        var updatePublicModified = false
+        if (user.displayName.isDefined){
+          userNode.setProperty("displayName", user.displayName.get)
+          updatePublicModified = true
+        }
 
-          var updatePublicModified = false
-          if (user.displayName.isDefined){
-            userNode.setProperty("displayName", user.displayName.get)
-            updatePublicModified = true
-          }
+        // Only set content if format is also defined
+        if (user.content.isDefined && user.format.isDefined){
+          userNode.setProperty("content", user.content.get)
+          userNode.setProperty("format", user.format.get)
+          updatePublicModified = true
+        }
 
-          // Only set content if format is also defined
-          if (user.content.isDefined && user.format.isDefined){
-            userNode.setProperty("content", user.content.get)
-            userNode.setProperty("format", user.format.get)
-            updatePublicModified = true
-          }
-
-          val handleResult = setOwnerHandle(userNode, user.handle)
-          if (handleResult.isRight){
-            if (handleResult.right.get) updatePublicModified = true
-            if (updatePublicModified) userNode.setProperty("publicModified", System.currentTimeMillis)
-            Right((userNode, emailVerificationCode))
-          }else{
-            Left(handleResult.left.get)
-          }
+        val handleResult = setOwnerHandle(userNode, user.handle)
+        if (handleResult.isRight){
+          if (handleResult.right.get) updatePublicModified = true
+          if (updatePublicModified) userNode.setProperty("publicModified", System.currentTimeMillis)
+          Right((userNode, emailVerificationCode))
+        }else{
+          Left(handleResult.left.get)
         }
     }
   }

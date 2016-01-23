@@ -67,7 +67,7 @@ object User{
 
 case class SignUp(email: String, password: String, displayName: Option[String],
     handle: Option[String], content: Option[String], format: Option[String],
-    cohort: Option[Int], bypass: Option[Boolean]){
+    cohort: Option[Int], invite: Option[Long]){
   require(validateEmailAddress(email), "Not a valid email address")
   require(validatePassword(password), "Password needs to be 7 or more characters long")
   if (cohort.isDefined) require(cohort.get > 0 && cohort.get <= 128, "Cohort needs to be a number between 1 and 128")
