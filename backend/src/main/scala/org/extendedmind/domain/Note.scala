@@ -40,6 +40,7 @@ case class Note(uuid: Option[UUID],
                 content: Option[String],
                 format: Option[String],
                 favorited: Option[Long],
+                revision: Option[Long],
                 visibility: Option[SharedItemVisibility],
                 relationships: Option[ExtendedItemRelationships])
            extends ExtendedItem{
@@ -59,14 +60,6 @@ case class Note(uuid: Option[UUID],
       },
       "Expected 'md', 'madoko' or 'bibtex' but got " + format.get)
 
-  def apply(limitedNote: LimitedNote)
-        = new Note(limitedNote.uuid, limitedNote.id, limitedNote.ui, limitedNote.created, limitedNote.modified,
-                    limitedNote.deleted, None,
-                    limitedNote.title, limitedNote.description, limitedNote.link, limitedNote.content, limitedNote.format,
-                    None, None,
-                    Some(ExtendedItemRelationships(
-                        limitedNote.relationships.parent, limitedNote.relationships.origin,
-                        None, None, None, None)))
 }
 
 object Note{
@@ -77,7 +70,16 @@ object Note{
             favorited: Option[Long],
             relationships: Option[ExtendedItemRelationships])
         = new Note(None, None, None, None, None, None, None, title, description, link, content, format, favorited,
-                   None, relationships)
+                   None, None, relationships)
+
+  def apply(limitedNote: LimitedNote)
+        = new Note(limitedNote.uuid, limitedNote.id, limitedNote.ui, limitedNote.created, limitedNote.modified,
+                    limitedNote.deleted, None,
+                    limitedNote.title, limitedNote.description, limitedNote.link, limitedNote.content, limitedNote.format,
+                    None, None, None,
+                    Some(ExtendedItemRelationships(
+                        limitedNote.relationships.parent, limitedNote.relationships.origin,
+                        None, None, None, None)))
 }
 
 case class LimitedNote(uuid: Option[UUID],

@@ -1800,12 +1800,23 @@ trait ItemDatabase extends UserDatabase {
     val latestRevisionRel = getLatestExtendedItemRevisionRelationship(itemNode)
     if (latestRevisionRel.isEmpty){
       if (force){
-        Some(None)
+        Some(latestRevisionRel)
       }else if (itemNode.getProperty("modified").asInstanceOf[Long] < (System.currentTimeMillis() - NEW_REVISION_TRESHOLD)){
         // Use the item's modified timestamp, so that first revision is created only after treshold
-        Some(None)
+        Some(latestRevisionRel)
       }else{
-        None
+        // If there is a previous IS_CREATOR relationship (shared list or collective) then check that this save isn't someone else saving
+        // within one minute of the first save
+        val creatorRel = itemNode.getRelationships().find(relationship => relationship.getType.name == SecurityRelationship.IS_CREATOR.name)
+        if (creatorRel.isDefined && creatorRel.get.getStartNode != ownerNodes.user){
+          // This was created by someone else, but not this one
+          Some(latestRevisionRel)
+        }else if (creatorRel.isEmpty && ownerNodes.foreignOwner.isDefined){
+          // This was created by the owner but this is someone else
+          Some(latestRevisionRel)
+        }else{
+          None
+        }
       }
     }else{
       val latestRevision = latestRevisionRel.get.getEndNode

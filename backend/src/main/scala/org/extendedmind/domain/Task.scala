@@ -43,6 +43,7 @@ case class Task(uuid: Option[UUID],
                 repeating: Option[String],
                 completed: Option[Long],
                 reminders: Option[scala.List[Reminder]],
+                revision: Option[Long],
                 visibility: Option[SharedItemVisibility],
                 relationships: Option[ExtendedItemRelationships])
             extends ExtendedItem{
@@ -73,13 +74,13 @@ object Task{
             relationships: Option[ExtendedItemRelationships])
         = new Task(None, None, None, None, None, None, None, title, description,
                    link, due, if (repeating.isDefined) Some(repeating.get.toString()) else None, None,
-                   reminders, None, relationships)
+                   reminders, None, None, relationships)
 
   def apply(limitedTask: LimitedTask)
         = new Task(limitedTask.uuid, limitedTask.id, limitedTask.ui, limitedTask.created, limitedTask.modified,
                     limitedTask.deleted, None,
                     limitedTask.title, limitedTask.description, limitedTask.link, None, None,
-                    limitedTask.completed, None, None,
+                    limitedTask.completed, None, None, None,
                     Some(ExtendedItemRelationships(
                         limitedTask.relationships.parent, limitedTask.relationships.origin,
                         None, None, None, None)))

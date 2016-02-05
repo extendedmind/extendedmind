@@ -82,6 +82,7 @@ trait ShareableItem extends ItemLike{
 trait ExtendedItem extends ShareableItem{
   val relationships: Option[ExtendedItemRelationships]
   val archived: Option[Long]
+  val revision: Option[Long]
 
   def parent: Option[UUID] = {
     if (relationships.isDefined) relationships.get.parent

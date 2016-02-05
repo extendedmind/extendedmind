@@ -393,6 +393,8 @@ class ListBestCaseSpec extends ServiceSpecBase {
         sharedItemsResponse.tasks.get.length should equal(3)
         sharedItemsResponse.notes should be(None)
         sharedItemsResponse.lists.get.length should equal(1)
+
+        val existingTaskUUID = sharedItemsResponse.tasks.get(0).uuid.get
         val essayListUUID = sharedItemsResponse.lists.get(0).uuid.get
         essayListUUID should be (lauriAuthenticateResponse.sharedLists.get.last._2._2.last._1)
 
@@ -410,11 +412,21 @@ class ListBestCaseSpec extends ServiceSpecBase {
           // NOTE: due date should not stick
           updatedSharedItemsResponse.tasks.get.find(task => task.due.isDefined) should be(None)
 
-          putExistingNote(updatedSharedItemsResponse.notes.get(0).copy(
+          // Update the same not created by Lauri before
+          putExistingNote(updatedSharedItemsResponse.notes.get.find(note => note.uuid.get == putNoteResponse.uuid.get).get.copy(
             title = "updated note"), updatedSharedItemsResponse.notes.get(0).uuid.get, lauriAuthenticateResponse, Some(timoUUID))
 
-          putExistingTask(updatedSharedItemsResponse.tasks.get(0).copy(
+          // Update a task created by Timo
+          putExistingTask(updatedSharedItemsResponse.tasks.get.find(task => task.uuid.get == existingTaskUUID).get.copy(
             title = "updated task"), updatedSharedItemsResponse.tasks.get(0).uuid.get, lauriAuthenticateResponse, Some(timoUUID))
+
+          // Get as the owner: there should be revisions created for updated task but not the note
+          Get("/" + timoUUID + "/items") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
+            val itemsAsOwnerResponse = responseAs[Items]
+            val existingTaskWithRevisions = itemsAsOwnerResponse.tasks.get.find(task  => task.uuid.get == existingTaskUUID).get
+            existingTaskWithRevisions.revision.get should be (1l)
+            itemsAsOwnerResponse.notes.get.find(note => note.uuid.get == putNoteResponse.uuid.get).get.revision should be (None)
+          }
 
           Get("/" + timoUUID + "/items") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
             val updatedSharedItemsResponse = responseAs[Items]

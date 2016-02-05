@@ -143,10 +143,12 @@ trait ListDatabase extends UserDatabase with TagDatabase {
     for {
       ownerNodes <- getOwnerNodes(owner).right
       parentRel <- Right(getItemRelationship(listNode, ownerNodes, ItemRelationship.HAS_PARENT, ItemLabel.LIST)).right
+      latestRevisionRel <- Right(getLatestExtendedItemRevisionRelationship(listNode)).right
       assigneeRel <- Right(getAssigneeRelationship(listNode)).right
       tagsRels <- getTagRelationships(listNode, ownerNodes).right
       agreementInfos <- getListAgreementInformations(ownerNodes, listNode).right
       task <- Right(list.copy(
+        revision = latestRevisionRel.flatMap(latestRevisionRel => Some(latestRevisionRel.getEndNode.getProperty("number").asInstanceOf[Long])),
         relationships =
           (if (parentRel.isDefined || assigneeRel.isDefined || tagsRels.isDefined)
             Some(ExtendedItemRelationships(

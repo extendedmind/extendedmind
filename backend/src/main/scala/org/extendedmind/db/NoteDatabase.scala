@@ -81,6 +81,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
   def putExistingLimitedNote(owner: Owner, noteUUID: UUID, limitedNote: LimitedNote): Response[SetResult] = {
     for {
       noteResult <- putExistingLimitedExtendedItem(owner, noteUUID, limitedNote, ItemLabel.NOTE).right
+      unit <- Right(evaluateNoteRevision(Note(limitedNote), noteResult._1, noteResult._3)).right
       result <- Right(getSetResult(noteResult._1, false, noteResult._2)).right
       unit <- Right(updateItemsIndex(noteResult._1, result)).right
     } yield result
@@ -205,9 +206,11 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     for {
       parentRel <- Right(if (skipParent) None else getItemRelationship(noteNode, ownerNodes, ItemRelationship.HAS_PARENT, ItemLabel.LIST)).right
       assigneeRel <- Right(getAssigneeRelationship(noteNode)).right
+      latestRevisionRel <- Right(getLatestExtendedItemRevisionRelationship(noteNode)).right
       tagsRels <- (if (tagRelationships.isDefined) Right(tagRelationships.get)
               else getTagRelationships(noteNode, ownerNodes)).right
       note <- Right(note.copy(
+        revision = latestRevisionRel.flatMap(latestRevisionRel => Some(latestRevisionRel.getEndNode.getProperty("number").asInstanceOf[Long])),
         visibility =
           (if (noteNode.hasProperty("published") || noteNode.hasProperty("preview"))
             Some(SharedItemVisibility(

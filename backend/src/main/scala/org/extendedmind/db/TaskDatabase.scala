@@ -194,12 +194,14 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     for {
       parentRel <- Right(getItemRelationship(taskNode, ownerNodes, ItemRelationship.HAS_PARENT, ItemLabel.LIST)).right
       originRel <- Right(getItemRelationship(taskNode, ownerNodes, ItemRelationship.HAS_ORIGIN, ItemLabel.TASK)).right
+      latestRevisionRel <- Right(getLatestExtendedItemRevisionRelationship(taskNode)).right
       assigneeRel <- Right(getAssigneeRelationship(taskNode)).right
       tagsRels <- getTagRelationships(taskNode, ownerNodes).right
       reminderNodes <- Right(getReminderNodes(taskNode)).right
       reminders <- getReminders(reminderNodes).right
       task <- Right(task.copy(
         reminders = reminders,
+        revision = latestRevisionRel.flatMap(latestRevisionRel => Some(latestRevisionRel.getEndNode.getProperty("number").asInstanceOf[Long])),
         relationships =
           (if (parentRel.isDefined || originRel.isDefined || assigneeRel.isDefined || tagsRels.isDefined )
             Some(ExtendedItemRelationships(

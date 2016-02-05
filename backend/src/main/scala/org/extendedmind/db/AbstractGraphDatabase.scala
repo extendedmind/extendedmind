@@ -73,7 +73,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     // Always exclude the direct setting of the following:
     scala.List("uuid", "created", "modified", "deleted", // Container
       "visibility", // ShareableItem
-      "relationships", // ExtendedItem
+      "relationships", "revision", // ExtendedItem
       "completed", "reminders", // Task
       "favorited", // Note
       "archived", // List
