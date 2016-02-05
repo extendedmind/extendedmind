@@ -85,9 +85,6 @@ trait API extends HttpService {
   val taskToList = post & path(JavaUUID / "task" / JavaUUID / "list")
   val taskToNote = post & path(JavaUUID / "task" / JavaUUID / "note")
 
-  // TODO:
-  val assignTask = post & path(JavaUUID / "task" / JavaUUID / "assign")
-
   // NOTES
   val getNote = get & path(JavaUUID / "note" / JavaUUID)
   val putNewNote = put & path(JavaUUID / "note")
