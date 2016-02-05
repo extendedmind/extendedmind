@@ -504,6 +504,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
       archived = None,
       deleted = None,
       favorited = None,
+      revision = None,
       visibility = None,
       relationships =
         if (note.relationships.isDefined)

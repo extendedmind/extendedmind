@@ -476,6 +476,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
     list.copy(modified = None,
       archived = None,
       deleted = None,
+      revision = None,
       visibility = None,
       relationships =
         if (list.relationships.isDefined)

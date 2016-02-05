@@ -523,6 +523,7 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
       deleted = None,
       completed = None,
       visibility = None,
+      revision = None,
       reminders = None,
       relationships =
         if (task.relationships.isDefined)
