@@ -1811,6 +1811,14 @@ trait ItemDatabase extends UserDatabase {
       val latestRevision = latestRevisionRel.get.getEndNode
       if (force){
         Some(latestRevisionRel)
+      }else if (latestRevisionRel.get.hasProperty("creator") &&
+                ownerNodes.user.getProperty("uuid").asInstanceOf[String] != latestRevisionRel.get.getProperty("creator").asInstanceOf[String]){
+        // The previous revision has a creator and but this is someone else, create a new revision
+        Some(latestRevisionRel)
+      }else if (!latestRevisionRel.get.hasProperty("creator") && ownerNodes.foreignOwner.isDefined){
+        // The previous revision does not have a creator (i.e. it was created by the owner) but this is someone else (i.e. shared list),
+        // create a new revision
+        Some(latestRevisionRel)
       }else if (latestRevision.getProperty("modified").asInstanceOf[Long] < (System.currentTimeMillis() - NEW_REVISION_TRESHOLD))
         Some(latestRevisionRel)
       else
@@ -1844,7 +1852,8 @@ trait ItemDatabase extends UserDatabase {
     val relationship = itemNode --> ItemRelationship.HAS_REVISION --> revisionNode <;
     relationship.setProperty("latest", true)
     if (ownerNodes.foreignOwner.isDefined){
-      ownerNodes.user --> SecurityRelationship.IS_CREATOR --> revisionNode
+      // If this is a collective, we store the creator UUID into the relationship for faster search
+      relationship.setProperty("creator", ownerNodes.user.getProperty("uuid").asInstanceOf[String])
     }
     revisionNode
   }
