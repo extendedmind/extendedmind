@@ -79,7 +79,7 @@ object Note{
                     None, None, None,
                     Some(ExtendedItemRelationships(
                         limitedNote.relationships.parent, limitedNote.relationships.origin,
-                        None, None, None, None)))
+                        None, None, None, None, None)))
 }
 
 case class LimitedNote(uuid: Option[UUID],

@@ -206,6 +206,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     for {
       parentRel <- Right(if (skipParent) None else getItemRelationship(noteNode, ownerNodes, ItemRelationship.HAS_PARENT, ItemLabel.LIST)).right
       assigneeRel <- Right(getAssigneeRelationship(noteNode)).right
+      creatorUUID <- Right(getItemCreatorUUID(noteNode)).right
       latestRevisionRel <- Right(getLatestExtendedItemRevisionRelationship(noteNode)).right
       tagsRels <- (if (tagRelationships.isDefined) Right(tagRelationships.get)
               else getTagRelationships(noteNode, ownerNodes)).right
@@ -221,7 +222,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
                  None))
            else None),
         relationships =
-          (if (parentRel.isDefined || assigneeRel.isDefined || tagsRels.isDefined)
+          (if (parentRel.isDefined || assigneeRel.isDefined || creatorUUID.isDefined || tagsRels.isDefined)
             Some(ExtendedItemRelationships(
               parent = parentRel.flatMap(parentRel => Some(getUUID(parentRel.getEndNode))),
               origin = None,
@@ -230,6 +231,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
                 else Some(getUUID(assigneeRel.getEndNode))
               }),
               assigner = assigneeRel.flatMap(assigneeRel => Some(UUIDUtils.getUUID(assigneeRel.getProperty("assigner").asInstanceOf[String]))),
+              creator = creatorUUID,
               tags = tagsRels.flatMap(tagsRels => if (tagsRels.ownerTags.isDefined) Some(getEndNodeUUIDList(tagsRels.ownerTags.get)) else None),
               collectiveTags = tagsRels.flatMap(tagsRels => getCollectiveTagEndNodeUUIDList(tagsRels.collectiveTags))))
            else None
@@ -510,6 +512,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
         if (note.relationships.isDefined)
           Some(note.relationships.get.copy(
               assigner = None,
+              creator = None,
               origin = None))
         else None)
   }
@@ -570,13 +573,14 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
         val origin = relationships.origin.flatMap(origin => validateOrigin(ownerUUID, origin))
         val assignee = relationships.assignee.flatMap(assignee => validateUser(assignee))
         val assigner = relationships.assigner.flatMap(assigner => validateUser(assigner))
+        val creator = relationships.creator.flatMap(creator => validateUser(creator))
         val tags = relationships.tags.flatMap(tags => validateTags(ownerUUID, tags))
         val collectiveTags = relationships.collectiveTags.flatMap(collectiveTags => validateCollectiveTags(ownerNode, collectiveTags))
 
         if (parent.isDefined || origin.isDefined || assignee.isDefined || assigner.isDefined ||
             tags.isDefined || collectiveTags.isDefined)
           Some(ExtendedItemRelationships(parent, origin,
-              assignee, assigner, tags, collectiveTags))
+              assignee, assigner, creator, tags, collectiveTags))
         else None
       }else None)
   }

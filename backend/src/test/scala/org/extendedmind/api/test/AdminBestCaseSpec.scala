@@ -134,7 +134,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
                 }
                 // Put a task to the collective and assign it to Lauri
                 val newTask = Task("learn Spanish", None, None, None, None, None,
-                    Some(ExtendedItemRelationships(None, None, Some(lauriUUID), None, None, None)))
+                    Some(ExtendedItemRelationships(None, None, Some(lauriUUID), None, None, None, None)))
                 val putTaskResponse = putNewTask(newTask, authenticateResponse, foreignOwnerUUID=putCollectiveResponse.uuid)
 
                 // Get collective tasks, check that assign is correct
@@ -176,7 +176,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
                 Get("/" + collectiveUUID + "/items") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                   val itemsResponse = responseAs[Items]
                   itemsResponse.tasks.get.length should equal(1)
-                  itemsResponse.tasks.get(0).relationships should be (None)
+                  itemsResponse.tasks.get(0).relationships.get.creator.get should be (authenticateResponse.userUUID)
                 }
 
                 // Get Lauri's tasks, check that the assigned task has been removed
@@ -192,7 +192,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
                   val lauriItemsResponse = responseAs[Items]
                   lauriItemsResponse.assigned should be (None)
                 }
-                val assignedNote = newNote.copy(relationships=Some(ExtendedItemRelationships(None, None, Some(lauriUUID), None, None, None)))
+                val assignedNote = newNote.copy(relationships=Some(ExtendedItemRelationships(None, None, Some(lauriUUID), None, None, None, None)))
                 putExistingNote(assignedNote, putNoteResponse.uuid.get, authenticateResponse, foreignOwnerUUID=Some(collectiveUUID))
                 Get("/" + lauriUUID + "/items") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
                   val lauriItemsResponse = responseAs[Items]

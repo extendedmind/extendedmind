@@ -104,7 +104,7 @@ class ListBestCaseSpec extends ServiceSpecBase {
 
                   // Add the list to a note
                   val newNote = Note("bike details", None, Some("model: 12345"), None, None, None,
-                    Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None, None, None, None)))
+                    Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None, None, None, None, None)))
                   val putNoteResponse = putNewNote(newNote, authenticateResponse)
                   val noteWithList = getNote(putNoteResponse.uuid.get, authenticateResponse)
                   noteWithList.relationships.get.parent.get should be(putListResponse.uuid.get)
@@ -127,7 +127,7 @@ class ListBestCaseSpec extends ServiceSpecBase {
 
                     // Change note list to new value and verify that change works
                     Put("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get,
-                      marshal(newNote.copy(relationships = Some(ExtendedItemRelationships(Some(putList2Response.uuid.get), None, None, None, None, None)))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                      marshal(newNote.copy(relationships = Some(ExtendedItemRelationships(Some(putList2Response.uuid.get), None, None, None, None, None, None)))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                         val reputExistingNoteResponse = responseAs[SetResult]
                         reputExistingNoteResponse.modified should not be None
                     }
@@ -178,10 +178,10 @@ class ListBestCaseSpec extends ServiceSpecBase {
       val putListResponse = putNewList(newList, authenticateResponse)
 
       // Put existing task and new note into list
-      val existingTaskInList = newTask.copy(relationships = Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None, None, None, None)))
+      val existingTaskInList = newTask.copy(relationships = Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None, None, None, None, None)))
       val putTaskInListResponse = putExistingTask(existingTaskInList, putTaskResponse.uuid.get, authenticateResponse)
       val newNote = Note("Spanish 101", None, None, Some("lecture notes for Spanish 101 class"), None, None,
-                  Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None, None, None, None)))
+                  Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None, None, None, None, None)))
       val putNoteResponse = putNewNote(newNote, authenticateResponse)
 
       // Get note and task and check that they are in the list
@@ -192,12 +192,12 @@ class ListBestCaseSpec extends ServiceSpecBase {
 
       // Create sublist and move note below it
       val newSubList = List("Spanish studies", None, None, None,
-                  Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None, None, None, None)))
+                  Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None, None, None, None, None)))
       val putSubListResponse = putNewList(newSubList, authenticateResponse)
       getList(putSubListResponse.uuid.get, authenticateResponse)
               .relationships.get.parent.get should be (putListResponse.uuid.get)
       val existingNoteInSubList = newNote.copy(relationships =
-                  Some(ExtendedItemRelationships(Some(putSubListResponse.uuid.get), None, None, None, None, None)))
+                  Some(ExtendedItemRelationships(Some(putSubListResponse.uuid.get), None, None, None, None, None, None)))
       val putExistingNoteResponse = putExistingNote(existingNoteInSubList, putNoteResponse.uuid.get, authenticateResponse)
       getNote(putNoteResponse.uuid.get, authenticateResponse)
             .relationships.get.parent.get should be (putSubListResponse.uuid.get)
@@ -248,7 +248,7 @@ class ListBestCaseSpec extends ServiceSpecBase {
 
       // Try to create a sublist that has as parent the same list
       val itemItsOwnList = newSubList.copy(
-          relationships = Some(ExtendedItemRelationships(Some(putSubListResponse.uuid.get), None, None, None, None, None)))
+          relationships = Some(ExtendedItemRelationships(Some(putSubListResponse.uuid.get), None, None, None, None, None, None)))
 
       Put("/" + authenticateResponse.userUUID + "/list/" + putSubListResponse.uuid.get,
           marshal(itemItsOwnList).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
@@ -258,7 +258,7 @@ class ListBestCaseSpec extends ServiceSpecBase {
 
       // Create an infinite loop between newList <-> subList
       val infiniteLoopParent = newList.copy(
-          relationships = Some(ExtendedItemRelationships(Some(putSubListResponse.uuid.get), None, None, None, None, None)))
+          relationships = Some(ExtendedItemRelationships(Some(putSubListResponse.uuid.get), None, None, None, None, None, None)))
 
       Put("/" + authenticateResponse.userUUID + "/list/" + putListResponse.uuid.get,
           marshal(infiniteLoopParent).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
@@ -285,13 +285,13 @@ class ListBestCaseSpec extends ServiceSpecBase {
         val newParentList = List("studies", None, None, None, None)
         val putParentListResponse = putNewList(newParentList, authenticateResponse)
         val newList = List("Spanish", None, None, None,
-              Some(ExtendedItemRelationships(Some(putParentListResponse.uuid.get), None, None, None, None, None)))
+              Some(ExtendedItemRelationships(Some(putParentListResponse.uuid.get), None, None, None, None, None, None)))
         val putListResponse = putNewList(newList, authenticateResponse)
         val newTask = Task("learn Spanish", None, None, None, None, None,
-            Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None, None, None, None)))
+            Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None, None, None, None, None)))
         val putTaskResponse = putNewTask(newTask, authenticateResponse)
         val newNote = Note("Spanish 101", None, None, Some("lecture notes for Spanish 101 class"), None, None,
-                    Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None, None, None, None)))
+                    Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None, None, None, None, None)))
         val putNoteResponse = putNewNote(newNote, authenticateResponse)
 
         // Archive list under completed courses
@@ -321,14 +321,14 @@ class ListBestCaseSpec extends ServiceSpecBase {
 
             // Remove note from list and make sure it is no longer archived but still has the history tag
             putExistingNote(itemsResponse.notes.get(0).copy(
-              relationships = Some(ExtendedItemRelationships(None, None, None, None, itemsResponse.notes.get(0).relationships.get.tags, None))), putNoteResponse.uuid.get, authenticateResponse)
+              relationships = Some(ExtendedItemRelationships(None, None, None, None, None, itemsResponse.notes.get(0).relationships.get.tags, None))), putNoteResponse.uuid.get, authenticateResponse)
             val note = getNote(putNoteResponse.uuid.get, authenticateResponse)
             note.archived should be(None)
             note.relationships.get.tags.get(0) should be(archiveListResponse.history.uuid.get)
 
             // Add note back to list and make sure it is again archived with history tag
             val putNoteToArchivedList = putExistingNote(note.copy(
-              relationships = Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None, None, itemsResponse.notes.get(0).relationships.get.tags, None))), putNoteResponse.uuid.get, authenticateResponse)
+              relationships = Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None, None, None, itemsResponse.notes.get(0).relationships.get.tags, None))), putNoteResponse.uuid.get, authenticateResponse)
             putNoteToArchivedList.archived should not be (None)
               val noteAgain = getNote(putNoteResponse.uuid.get, authenticateResponse)
             noteAgain.archived should not be(None)
@@ -356,7 +356,7 @@ class ListBestCaseSpec extends ServiceSpecBase {
                 deletedItemsResponse.tags.get(0).uuid.get should be (unarchivedList.relationships.get.tags.get(0))
 
                 val newNote2 = Note("Spanish 102", None, None, Some("lecture notes for Spanish 102 class"), None, None,
-                Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None, None, None, None)))
+                Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None, None, None, None, None)))
                 putNewNote(newNote2, authenticateResponse)
 
                 // Archive list
@@ -366,7 +366,7 @@ class ListBestCaseSpec extends ServiceSpecBase {
                   val archived2List = getList(putListResponse.uuid.get, authenticateResponse)
                   archived2List.relationships.get.parent should be (None)
                   val newNote3 = Note("Spanish 103", None, None, Some("lecture notes for Spanish 103 class"), None, None,
-                  Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None, None, None, None)))
+                  Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None, None, None, None, None)))
                   putNewNote(newNote3, authenticateResponse)
 
                   // Unarchive list and make sure everything is unarchived
@@ -399,10 +399,10 @@ class ListBestCaseSpec extends ServiceSpecBase {
         essayListUUID should be (lauriAuthenticateResponse.sharedLists.get.last._2._2.last._1)
 
         val newTask = Task("help with writing essay", None, None, Some("2015-10-10"), None, None,
-        Some(ExtendedItemRelationships(Some(essayListUUID), None, None, None, None, None)))
+        Some(ExtendedItemRelationships(Some(essayListUUID), None, None, None, None, None, None)))
         val putTaskResponse = putNewTask(newTask, lauriAuthenticateResponse, Some(timoUUID))
         val newNote = Note("tips for writing", None, None, Some("first just write, then edit"), None, None,
-                    Some(ExtendedItemRelationships(Some(essayListUUID), None, None, None, None, None)))
+                    Some(ExtendedItemRelationships(Some(essayListUUID), None, None, None, None, None, None)))
         val putNoteResponse = putNewNote(newNote, lauriAuthenticateResponse, Some(timoUUID))
 
         Get("/" + timoUUID + "/items") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
@@ -411,6 +411,7 @@ class ListBestCaseSpec extends ServiceSpecBase {
           updatedSharedItemsResponse.notes.get.length should equal(1)
           // NOTE: due date should not stick
           updatedSharedItemsResponse.tasks.get.find(task => task.due.isDefined) should be(None)
+          updatedSharedItemsResponse.tasks.get.find(task => task.relationships.isDefined && task.relationships.get.creator.isDefined) should be(None)
 
           // Update the same not created by Lauri before
           putExistingNote(updatedSharedItemsResponse.notes.get.find(note => note.uuid.get == putNoteResponse.uuid.get).get.copy(
@@ -425,7 +426,10 @@ class ListBestCaseSpec extends ServiceSpecBase {
             val itemsAsOwnerResponse = responseAs[Items]
             val existingTaskWithRevisions = itemsAsOwnerResponse.tasks.get.find(task  => task.uuid.get == existingTaskUUID).get
             existingTaskWithRevisions.revision.get should be (1l)
-            itemsAsOwnerResponse.notes.get.find(note => note.uuid.get == putNoteResponse.uuid.get).get.revision should be (None)
+            existingTaskWithRevisions.relationships.get.creator should be (None)
+            val newNoteWithoutRevision = itemsAsOwnerResponse.notes.get.find(note => note.uuid.get == putNoteResponse.uuid.get).get
+            newNoteWithoutRevision.revision should be (None)
+            newNoteWithoutRevision.relationships.get.creator.get should be (lauriAuthenticateResponse.userUUID)
           }
 
           Get("/" + timoUUID + "/items") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
@@ -508,7 +512,7 @@ class ListBestCaseSpec extends ServiceSpecBase {
               sharedItemsResponse.lists.get.length should equal(1)
               val studiesListUUID = sharedItemsResponse.lists.get(0).uuid.get
               val newTask = Task("help with writing essay", None, None, Some("2015-10-10"), None, None,
-                                 Some(ExtendedItemRelationships(Some(studiesListUUID), None, None, None, None, None)))
+                                 Some(ExtendedItemRelationships(Some(studiesListUUID), None, None, None, None, None, None)))
               Put("/" + lauriUUID + "/task",
                 marshal(newTask).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
                 val errorResult = responseAs[ErrorResult]

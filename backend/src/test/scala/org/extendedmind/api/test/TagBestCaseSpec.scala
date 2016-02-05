@@ -102,7 +102,7 @@ class TagBestCaseSpec extends ServiceSpecBase {
                     tagResponse.ui.get should be("testUI")
                     // Add the tag to a Note
                     val newNote = Note("bike details", None, Some("model: 12345"), None, None, None,
-                      Some(ExtendedItemRelationships(None, None, None, None, Some(scala.List(putTagResponse.uuid.get)), None)))
+                      Some(ExtendedItemRelationships(None, None, None, None, None, Some(scala.List(putTagResponse.uuid.get)), None)))
                     val putNoteResponse = putNewNote(newNote, authenticateResponse)
                     val noteWithTag = getNote(putNoteResponse.uuid.get, authenticateResponse)
                     noteWithTag.relationships.get.tags.get should be(scala.List(putTagResponse.uuid.get))
@@ -124,7 +124,7 @@ class TagBestCaseSpec extends ServiceSpecBase {
 
                       // Change note context to new value and verify that change works
                       Put("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get,
-                        marshal(newNote.copy(relationships = Some(ExtendedItemRelationships(None, None, None, None, Some(scala.List(putTag2Response.uuid.get)), None)))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                        marshal(newNote.copy(relationships = Some(ExtendedItemRelationships(None, None, None, None, None, Some(scala.List(putTag2Response.uuid.get)), None)))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                           val reputExistingNoteResponse = responseAs[SetResult]
                           reputExistingNoteResponse.modified should not be None
                       }
@@ -160,7 +160,7 @@ class TagBestCaseSpec extends ServiceSpecBase {
       val putChildTagResponse = putNewTag(newChildTag, authenticateResponse)
 
       val newNote = Note("Spanish 101", None, None, Some("lecture notes for Spanish 101 class"), None, None,
-                  Some(ExtendedItemRelationships(None, None, None, None, Some(scala.List(putTagResponse.uuid.get)), None)))
+                  Some(ExtendedItemRelationships(None, None, None, None, None, Some(scala.List(putTagResponse.uuid.get)), None)))
       val putNoteResponse = putNewNote(newNote, authenticateResponse)
 
       // Delete tag and expect child tag and note to have a new modified timestamp
