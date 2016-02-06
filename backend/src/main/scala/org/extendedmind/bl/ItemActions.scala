@@ -255,7 +255,11 @@ trait ItemActions {
           reminders = None,
           revision = None,
           visibility = None,
-          relationships = Some(task.relationships.get.copy(origin=None, tags=None)))
+          relationships = Some(task.relationships.get.copy(
+              assignee=None,
+              assigner=None,
+              collectiveTags=None,
+              tags=None)))
       }))
     }else{
       None
@@ -269,7 +273,11 @@ trait ItemActions {
           archived = None,
           favorited = None,
           visibility = None,
-          relationships = Some(note.relationships.get.copy(origin=None, tags=None)))
+          relationships = Some(note.relationships.get.copy(
+              assignee=None,
+              assigner=None,
+              collectiveTags=None,
+              tags=None)))
       }))
     }else{
       None
