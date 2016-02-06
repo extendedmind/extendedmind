@@ -30,6 +30,7 @@ case class List(
       title: String,
       description: Option[String],
       link: Option[String],
+      creator: Option[UUID],
       due: Option[String],
       revision: Option[Long],
       visibility: Option[SharedItemVisibility],
@@ -50,7 +51,7 @@ object List{
         due: Option[String],
             relationships: Option[ExtendedItemRelationships])
         = new List(None, None, None, None, None, None, None,  title, description,
-                   link, due, None, None, relationships)
+                   link, None, due, None, None, relationships)
 }
 
 case class ArchivePayload(parent: UUID)

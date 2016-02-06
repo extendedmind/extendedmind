@@ -39,6 +39,7 @@ case class Task(uuid: Option[UUID],
                 created: Option[Long], modified: Option[Long], deleted: Option[Long], archived: Option[Long],
                 title: String, description: Option[String],
                 link: Option[String],
+                creator: Option[UUID],
                 due: Option[String],
                 repeating: Option[String],
                 completed: Option[Long],
@@ -73,13 +74,13 @@ object Task{
             reminders: Option[scala.List[Reminder]],
             relationships: Option[ExtendedItemRelationships])
         = new Task(None, None, None, None, None, None, None, title, description,
-                   link, due, if (repeating.isDefined) Some(repeating.get.toString()) else None, None,
+                   link, None, due, if (repeating.isDefined) Some(repeating.get.toString()) else None, None,
                    reminders, None, None, relationships)
 
   def apply(limitedTask: LimitedTask)
         = new Task(limitedTask.uuid, limitedTask.id, limitedTask.ui, limitedTask.created, limitedTask.modified,
                     limitedTask.deleted, None,
-                    limitedTask.title, limitedTask.description, limitedTask.link, None, None,
+                    limitedTask.title, limitedTask.description, limitedTask.link, limitedTask.creator, None, None,
                     limitedTask.completed, None, None, None,
                     Some(ExtendedItemRelationships(
                         limitedTask.relationships.parent, limitedTask.relationships.origin,
@@ -90,7 +91,7 @@ case class LimitedTask(uuid: Option[UUID],
                 id: Option[String], ui: Option[String],
                 created: Option[Long], modified: Option[Long], deleted: Option[Long],
                 title: String, description: Option[String],
-                link: Option[String],
+                link: Option[String], creator: Option[UUID],
                 completed: Option[Long],
                 relationships: LimitedExtendedItemRelationships)
                 extends LimitedExtendedItem {
@@ -105,7 +106,7 @@ case class LimitedTask(uuid: Option[UUID],
 object LimitedTask{
   def apply(task: Task)
         = new LimitedTask(task.uuid, task.id, task.ui, task.created, task.modified, task.deleted,
-                          task.title, task.description, task.link, task.completed,
+                          task.title, task.description, task.link, task.creator, task.completed,
                           LimitedExtendedItemRelationships(task.relationships.get.parent, task.relationships.get.origin))
 }
 // List of Reminder types

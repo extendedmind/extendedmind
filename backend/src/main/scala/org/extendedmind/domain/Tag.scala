@@ -35,6 +35,7 @@ case class Tag(
       title: String,
       description: Option[String],
       link: Option[String],
+      creator: Option[UUID],
       tagType: Option[TagType], // This is always Some
       visibility: Option[SharedItemVisibility],
       parent: Option[UUID])
@@ -52,6 +53,6 @@ object Tag{
         link: Option[String],
             tagType: TagType,
             parent: Option[UUID])
-        = new Tag(None, None, None, None, None, None, title, description, link, Some(tagType),
+        = new Tag(None, None, None, None, None, None, title, description, link, None, Some(tagType),
                    None, parent)
 }

@@ -210,6 +210,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
       tagsRels <- (if (tagRelationships.isDefined) Right(tagRelationships.get)
               else getTagRelationships(noteNode, ownerNodes)).right
       note <- Right(note.copy(
+        creator = getItemCreatorUUID(noteNode),
         revision = latestRevisionRel.flatMap(latestRevisionRel => Some(latestRevisionRel.getEndNode.getProperty("number").asInstanceOf[Long])),
         visibility =
           (if (noteNode.hasProperty("published") || noteNode.hasProperty("preview"))
@@ -503,6 +504,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
       modified = None,
       archived = None,
       deleted = None,
+      creator = None,
       favorited = None,
       revision = None,
       visibility = None,

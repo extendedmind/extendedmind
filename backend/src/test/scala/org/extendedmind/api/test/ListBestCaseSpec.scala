@@ -47,7 +47,6 @@ import spray.json.DefaultJsonProtocol._
 import scala.concurrent.Future
 import spray.http.StatusCodes._
 
-
 /**
  * Best case test for list routes. Also generates .json files.
  */
@@ -425,7 +424,10 @@ class ListBestCaseSpec extends ServiceSpecBase {
             val itemsAsOwnerResponse = responseAs[Items]
             val existingTaskWithRevisions = itemsAsOwnerResponse.tasks.get.find(task  => task.uuid.get == existingTaskUUID).get
             existingTaskWithRevisions.revision.get should be (1l)
-            itemsAsOwnerResponse.notes.get.find(note => note.uuid.get == putNoteResponse.uuid.get).get.revision should be (None)
+            existingTaskWithRevisions.creator should be (None)
+            val newNoteWithoutRevision = itemsAsOwnerResponse.notes.get.find(note => note.uuid.get == putNoteResponse.uuid.get).get
+            newNoteWithoutRevision.revision should be (None)
+            newNoteWithoutRevision.creator.get should be (lauriAuthenticateResponse.userUUID)
           }
 
           Get("/" + timoUUID + "/items") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {

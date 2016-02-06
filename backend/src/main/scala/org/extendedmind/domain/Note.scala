@@ -23,7 +23,6 @@ import java.util.UUID
 import Validators._
 import org.extendedmind.SetResult
 
-
 // List of FormatTypes
 object FormatType extends Enumeration {
   type FormatType = Value
@@ -37,6 +36,7 @@ case class Note(uuid: Option[UUID],
                 created: Option[Long], modified: Option[Long], deleted: Option[Long], archived: Option[Long],
                 title: String, description: Option[String],
                 link: Option[String],
+                creator: Option[UUID],
                 content: Option[String],
                 format: Option[String],
                 favorited: Option[Long],
@@ -69,13 +69,13 @@ object Note{
             format: Option[String],
             favorited: Option[Long],
             relationships: Option[ExtendedItemRelationships])
-        = new Note(None, None, None, None, None, None, None, title, description, link, content, format, favorited,
+        = new Note(None, None, None, None, None, None, None, title, description, link, None, content, format, favorited,
                    None, None, relationships)
 
   def apply(limitedNote: LimitedNote)
         = new Note(limitedNote.uuid, limitedNote.id, limitedNote.ui, limitedNote.created, limitedNote.modified,
                     limitedNote.deleted, None,
-                    limitedNote.title, limitedNote.description, limitedNote.link, limitedNote.content, limitedNote.format,
+                    limitedNote.title, limitedNote.description, limitedNote.link, limitedNote.creator, limitedNote.content, limitedNote.format,
                     None, None, None,
                     Some(ExtendedItemRelationships(
                         limitedNote.relationships.parent, limitedNote.relationships.origin,
@@ -86,7 +86,7 @@ case class LimitedNote(uuid: Option[UUID],
                 id: Option[String], ui: Option[String],
                 created: Option[Long], modified: Option[Long], deleted: Option[Long],
                 title: String, description: Option[String],
-                link: Option[String],
+                link: Option[String], creator: Option[UUID],
                 content: Option[String],
                 format: Option[String],
                 relationships: LimitedExtendedItemRelationships)
@@ -111,7 +111,7 @@ case class LimitedNote(uuid: Option[UUID],
 object LimitedNote{
   def apply(note: Note)
         = new LimitedNote(note.uuid, note.id, note.ui, note.created, note.modified, note.deleted,
-                          note.title, note.description, note.link, note.content, note.format,
+                          note.title, note.description, note.link, note.creator, note.content, note.format,
                           LimitedExtendedItemRelationships(note.relationships.get.parent,note.relationships.get.origin))
 }
 

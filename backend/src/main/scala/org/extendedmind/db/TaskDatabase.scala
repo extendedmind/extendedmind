@@ -200,6 +200,7 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
       reminderNodes <- Right(getReminderNodes(taskNode)).right
       reminders <- getReminders(reminderNodes).right
       task <- Right(task.copy(
+        creator = getItemCreatorUUID(taskNode),
         reminders = reminders,
         revision = latestRevisionRel.flatMap(latestRevisionRel => Some(latestRevisionRel.getEndNode.getProperty("number").asInstanceOf[Long])),
         relationships =
@@ -392,7 +393,6 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     reminderNode
   }
 
-
   protected def destroyReminder(reminderNode: Node)(implicit neo4j: DatabaseService) {
     // Remove all relationships
     val relationShipList = reminderNode.getRelationships().toList
@@ -521,6 +521,7 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
       modified = None,
       archived = None,
       deleted = None,
+      creator = None,
       completed = None,
       visibility = None,
       revision = None,

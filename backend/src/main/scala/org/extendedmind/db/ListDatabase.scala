@@ -148,6 +148,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
       tagsRels <- getTagRelationships(listNode, ownerNodes).right
       agreementInfos <- getListAgreementInformations(ownerNodes, listNode).right
       task <- Right(list.copy(
+        creator = getItemCreatorUUID(listNode),
         revision = latestRevisionRel.flatMap(latestRevisionRel => Some(latestRevisionRel.getEndNode.getProperty("number").asInstanceOf[Long])),
         relationships =
           (if (parentRel.isDefined || assigneeRel.isDefined || tagsRels.isDefined)
@@ -476,6 +477,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
     list.copy(modified = None,
       archived = None,
       deleted = None,
+      creator = None,
       revision = None,
       visibility = None,
       relationships =

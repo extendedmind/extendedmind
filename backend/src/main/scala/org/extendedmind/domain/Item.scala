@@ -24,7 +24,7 @@ import Validators._
 import org.extendedmind.SetResult
 
 case class Item(uuid: Option[UUID], id: Option[String], ui: Option[String], created: Option[Long], modified: Option[Long], deleted: Option[Long],
-                title: String, description: Option[String], link: Option[String]) extends ItemLike{
+                title: String, description: Option[String], link: Option[String], creator: Option[UUID]) extends ItemLike{
   if (id.isDefined) require(validateLength(id.get, 100), "Id can not be more than 100 characters")
   if (ui.isDefined) require(validateLength(ui.get, 10000), "UI preferences max length is 10000")
   require(validateTitle(title), "Title can not be more than " + TITLE_MAX_LENGTH + " characters")
@@ -36,9 +36,8 @@ case class Item(uuid: Option[UUID], id: Option[String], ui: Option[String], crea
 object Item{
   def apply(title: String, description: Option[String],
             link: Option[String])
-        = new Item(None, None, None, None, None, None, title, description, link)
+        = new Item(None, None, None, None, None, None, title, description, link, None)
 }
-
 
 case class AssignedItems(
    collective: UUID,
@@ -73,6 +72,7 @@ trait ItemLike extends Container {
   val title: String
   val description: Option[String]
   val link: Option[String]
+  val creator: Option[UUID]
 }
 
 trait ShareableItem extends ItemLike{

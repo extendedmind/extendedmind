@@ -85,7 +85,7 @@ trait ItemDatabase extends UserDatabase {
       implicit neo4j =>
         for {
           itemNode <- getItemNode(getOwnerUUID(owner), itemUUID).right
-          item <- toCaseClass[Item](itemNode).right
+          item <- toItem(itemNode).right
         } yield item
     }
   }
@@ -224,6 +224,13 @@ trait ItemDatabase extends UserDatabase {
 
   // PRIVATE
 
+  protected def toItem(itemNode: Node)
+               (implicit neo4j: DatabaseService): Response[Item] = {
+    for {
+      item <- toCaseClass[Item](itemNode).right
+    } yield item.copy(creator=getItemCreatorUUID(itemNode))
+  }
+
   case class TagRelationships(ownerTags: Option[scala.List[Relationship]], collectiveTags: Option[scala.List[Relationship]])
 
   protected def getSharedListAccessRight(sharedLists: Map[UUID,(String, Byte)], relationships: Option[ExtendedItemRelationships]): Option[Byte] = {
@@ -285,7 +292,7 @@ trait ItemDatabase extends UserDatabase {
         }
         tagBuffer.append(tag.right.get)
       } else if (itemNode.hasLabel(MainLabel.ITEM)) {
-        val item = toCaseClass[Item](itemNode)
+        val item = toItem(itemNode)
         if (item.isLeft) {
           return fail(INTERNAL_SERVER_ERROR, ERR_ITEM_TO_ITEM,  "Could not convert node to Item with error: " + item.left.get)
         }
@@ -1874,6 +1881,15 @@ trait ItemDatabase extends UserDatabase {
       if(relationship.getType().name == ItemRelationship.HAS_REVISION.name &&
          relationship.hasProperty("latest")){
         return Some(relationship);
+      }
+    })
+    None
+  }
+
+  protected def getItemCreatorUUID(itemNode: Node)(implicit neo4j: DatabaseService): Option[UUID] = {
+    itemNode.getRelationships().foreach(relationship => {
+      if(relationship.getType().name == SecurityRelationship.IS_CREATOR.name){
+        return Some(getUUID(relationship.getStartNode));
       }
     })
     None

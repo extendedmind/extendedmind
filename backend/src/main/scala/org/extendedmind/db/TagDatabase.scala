@@ -150,6 +150,7 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
       ownerNodes <- getOwnerNodes(owner).right
       parent <- Right(getItemRelationship(tagNode, ownerNodes, ItemRelationship.HAS_PARENT, ItemLabel.TAG)).right
       completeTag <- Right(tag.copy(
+        creator = getItemCreatorUUID(tagNode),
         tagType = (if (tagNode.hasLabel(TagLabel.CONTEXT)) Some(CONTEXT)
                    else if (tagNode.hasLabel(TagLabel.KEYWORD)) Some(KEYWORD)
                    else Some(HISTORY)),

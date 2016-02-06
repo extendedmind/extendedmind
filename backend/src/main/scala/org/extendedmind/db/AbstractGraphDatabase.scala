@@ -72,6 +72,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
   implicit val serializeExclusions: Option[scala.List[String]] = Some(
     // Always exclude the direct setting of the following:
     scala.List("uuid", "created", "modified", "deleted", // Container
+      "creator", // ItemLike
       "visibility", // ShareableItem
       "relationships", "revision", // ExtendedItem
       "completed", "reminders", // Task
