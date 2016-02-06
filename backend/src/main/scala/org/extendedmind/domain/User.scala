@@ -136,7 +136,7 @@ case class UserAccessRight(access: Option[Byte]){
 
 case class PublicUser(uuid: UUID)
 
-case class Owner(userUUID: UUID, foreignOwnerUUID: Option[UUID], sharedLists: Option[Map[UUID, (String, Byte)]], hasPremium: Boolean, isLimitedAccess: Boolean, isFakeUser: Boolean = false)
+case class Owner(userUUID: UUID, foreignOwnerUUID: Option[UUID], sharedLists: Option[Map[UUID, (String, Byte)]], userType: Byte, hasPremium: Boolean, isLimitedAccess: Boolean)
 
 object Owner{
   def getOwner(ownerUUID: UUID, securityContext: SecurityContext)(implicit settings: Settings): Owner = {
@@ -144,20 +144,20 @@ object Owner{
                      (settings.signUpMode == MODE_NORMAL && securityContext.subscription.isDefined
                       && securityContext.subscription.get == "premium")
     if (securityContext.userUUID == ownerUUID){
-      new Owner(ownerUUID, None, None, hasPremium, false)
+      new Owner(ownerUUID, None, None, securityContext.userType, hasPremium, false)
     }else if (securityContext.collectives.isDefined){
-      new Owner(securityContext.userUUID, Some(ownerUUID), None, hasPremium, false)
+      new Owner(securityContext.userUUID, Some(ownerUUID), None, securityContext.userType, hasPremium, false)
     }else if (securityContext.sharedLists.isDefined){
       val sharedListAccess = securityContext.sharedLists.get(ownerUUID)
-      new Owner(securityContext.userUUID, Some(ownerUUID), Some(sharedListAccess._2), hasPremium, true)
+      new Owner(securityContext.userUUID, Some(ownerUUID), Some(sharedListAccess._2), securityContext.userType, hasPremium, true)
     }else{
       throw new InternalServerErrorException(ERR_BASE_OWNER_NOT_IN_SECURITY_CONTEXT,
           "Security context with foreign owner UUID which can not be found in securityContext collectives nor shared lists")
     }
   }
 
-  def apply(ownerUUID: UUID, collectiveUUID: Option[UUID])
-        = new Owner(ownerUUID, collectiveUUID, None, false, false)
+  def apply(ownerUUID: UUID, collectiveUUID: Option[UUID], userType: Byte)
+        = new Owner(ownerUUID, collectiveUUID, None, userType, false, false)
 }
 
 case class ForgotPasswordResult(resetCodeExpires: Long)

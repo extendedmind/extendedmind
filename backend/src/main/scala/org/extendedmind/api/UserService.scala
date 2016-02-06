@@ -166,7 +166,7 @@ trait UserService extends ServiceBase {
           complete {
             Future[SetResult] {
               setLogContext(securityContext)
-              userActions.changeAgreementAccess(securityContext.userUUID, agreementUUID, access.toByte) match {
+              userActions.changeAgreementAccess(securityContext.userUUID, securityContext.userType, agreementUUID, access.toByte) match {
                 case Right(sr) => processResult(sr)
                 case Left(e) => processErrors(e)
               }

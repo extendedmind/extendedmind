@@ -28,7 +28,7 @@ import java.util.UUID
 import org.extendedmind._
 import org.extendedmind.Response._
 import org.extendedmind.security.Authorization._
-import org.extendedmind.security.SecurityContext
+import org.extendedmind.security._
 import akka.event.LoggingAdapter
 
 trait NoteActions {
@@ -92,7 +92,6 @@ trait NoteActions {
     db.unfavoriteNote(owner, noteUUID)
   }
 
-
   def noteToTask(owner: Owner, noteUUID: UUID, note: Note)(implicit log: LoggingAdapter): Response[Task] = {
     log.info("noteToTask")
     db.noteToTask(owner, noteUUID, note)
@@ -110,7 +109,8 @@ trait NoteActions {
 
   def publishNote(owner: Owner, noteUUID: UUID, payload: PublishPayload)(implicit log: LoggingAdapter): Response[PublishNoteResult] = {
     log.info("publishNote")
-    db.publishNote(owner, noteUUID, payload.format, payload.path)
+    val overridePublished = if (owner.userType == Token.ADMIN) payload.overridePublished else None
+    db.publishNote(owner, noteUUID, payload.format, payload.path, payload.licence, overridePublished)
   }
 
   def unpublishNote(owner: Owner, noteUUID: UUID)(implicit log: LoggingAdapter): Response[SetResult] = {

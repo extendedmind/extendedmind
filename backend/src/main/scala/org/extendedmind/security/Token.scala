@@ -36,6 +36,7 @@ object Token{
   val ALFA: Byte = 1
   val BETA: Byte = 2
   val NORMAL: Byte = 3
+  val ANONYMOUS: Byte = 4
 
   def apply(userUUID: UUID) = new Token(userUUID, Random.generateRandomLong)
 

@@ -120,7 +120,7 @@ trait ItemDatabase extends UserDatabase {
   def putNewItemToInbox(inboxId: String, item: Item): Response[SetResult] = {
     for {
       ownerNode <- getNode("inboxId", inboxId, MainLabel.OWNER, None, false).right
-      itemCreateResult <- createItem(ownerNode, item).right
+      itemCreateResult <- createItem(ownerNode, item, Token.ANONYMOUS).right
       result <- Right(getSetResult(itemCreateResult._1, true)).right
       unit <- Right(addToItemsIndex(itemCreateResult._2, itemCreateResult._1, result)).right
     } yield result
@@ -216,7 +216,6 @@ trait ItemDatabase extends UserDatabase {
         val publicRevisionIndex = neo4j.gds.index().forNodes("public")
         val revisionNodeList = publicRevisionIndex.query("unpublished:true").toList
         revisionNodeList.foreach (unpublishedRevision => {
-          unpublishedRevision.removeProperty("unpublished")
           publicRevisionIndex.remove(unpublishedRevision)
         })
     }
@@ -461,12 +460,12 @@ trait ItemDatabase extends UserDatabase {
       .evaluator(LabelEvaluator(scala.List(MainLabel.ITEM)))
   }
 
-  protected def createItem(ownerNode: Node, item: Item): Response[(Node, Owner)] = {
+  protected def createItem(ownerNode: Node, item: Item, userType: Byte): Response[(Node, Owner)] = {
     withTx {
       implicit neo4j =>
         for {
           itemNode <- createItem(OwnerNodes(ownerNode, None), item, None, None).right
-        } yield (itemNode, Owner(getUUID(ownerNode), None))
+        } yield (itemNode, Owner(getUUID(ownerNode), None, userType))
     }
   }
 
@@ -482,7 +481,7 @@ trait ItemDatabase extends UserDatabase {
   }
 
   protected def getOwnerNodes(owner: Owner)(implicit neo4j: DatabaseService): Response[OwnerNodes] = {
-    if (!owner.isFakeUser){
+    if (owner.userType != Token.ANONYMOUS){
       for {
         userNode <- getNode(owner.userUUID, OwnerLabel.USER).right
         foreignOwnerNode <- getNodeOption(owner.foreignOwnerUUID, MainLabel.OWNER).right
@@ -1895,12 +1894,11 @@ trait ItemDatabase extends UserDatabase {
     None
   }
 
-  protected def getPublishedExtendedItemRevisionRelationship(itemNode: Node, includeUnpublished: Boolean = false)(implicit neo4j: DatabaseService): Option[Relationship] = {
+  protected def getPublishedExtendedItemRevisionRelationship(itemNode: Node)(implicit neo4j: DatabaseService): Option[Relationship] = {
     itemNode.getRelationships().foreach(relationship => {
       if(relationship.getType().name == ItemRelationship.HAS_REVISION.name){
         val revisionNode = relationship.getEndNode
-        if (revisionNode.hasProperty("published") ||
-           (includeUnpublished && revisionNode.hasProperty("unpublished"))){
+        if (revisionNode.hasProperty("published")){
           return Some(relationship);
         }
       }

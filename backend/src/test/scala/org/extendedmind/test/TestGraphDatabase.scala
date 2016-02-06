@@ -160,101 +160,101 @@ trait TestGraphDatabase extends GraphDatabase {
     // Extended Mind
 
     // Common contexts, and one productivity tag
-    val homeTag = putNewTag(Owner(timoUUID, Some(emUUID)),
+    val homeTag = putNewTag(Owner(timoUUID, Some(emUUID), Token.ADMIN),
       Tag("home", None, None, CONTEXT, None))
-    val officeTag = putNewTag(Owner(timoUUID, Some(emUUID)),
+    val officeTag = putNewTag(Owner(timoUUID, Some(emUUID), Token.ADMIN),
       Tag("office", None, None, CONTEXT, None))
-    val computerTag = putNewTag(Owner(timoUUID, Some(emUUID)),
+    val computerTag = putNewTag(Owner(timoUUID, Some(emUUID), Token.ADMIN),
       Tag("computer", None, None, CONTEXT, None))
-    val browserTag = putNewTag(Owner(timoUUID, Some(emUUID)),
+    val browserTag = putNewTag(Owner(timoUUID, Some(emUUID), Token.ADMIN),
       Tag("browser", None, None, CONTEXT, computerTag.right.get.uuid))
-    val emailTag = putNewTag(Owner(timoUUID, Some(emUUID)),
+    val emailTag = putNewTag(Owner(timoUUID, Some(emUUID), Token.ADMIN),
       Tag("email", None, None, CONTEXT, computerTag.right.get.uuid))
 
-    val workTag = putNewTag(Owner(timoUUID, Some(emUUID)),
+    val workTag = putNewTag(Owner(timoUUID, Some(emUUID), Token.ADMIN),
       Tag("work", None, None, KEYWORD, None))
-    val productivityTag = putNewTag(Owner(timoUUID, Some(emUUID)),
+    val productivityTag = putNewTag(Owner(timoUUID, Some(emUUID), Token.ADMIN),
       Tag("productivity", None, None, KEYWORD, workTag.right.get.uuid))
 
     // Extended Mind Technologies
 
     // Store tags for EMT
-    val devopsTag = putNewTag(Owner(timoUUID, Some(emtUUID)),
+    val devopsTag = putNewTag(Owner(timoUUID, Some(emtUUID), Token.ADMIN),
       Tag("devops", None, None, KEYWORD, None))
 
     // Store items for EMT
-    putNewItem(Owner(timoUUID, Some(emtUUID)),
+    putNewItem(Owner(timoUUID, Some(emtUUID), Token.ADMIN),
       Item("should we try a premortem?", None, None)).right.get
-    putNewItem(Owner(timoUUID, Some(emtUUID)),
+    putNewItem(Owner(timoUUID, Some(emtUUID), Token.ADMIN),
       Item("review agile project planning tools", None, None)).right.get
 
     // Store tasks for EMT
-    putNewTask(Owner(timoUUID, Some(emtUUID)),
+    putNewTask(Owner(timoUUID, Some(emtUUID), Token.ADMIN),
       Task("backup script changes", None, None, Some("2014-06-02"), None, None, None)).right.get
 
     // Store notes for EMT
-    putNewNote(Owner(timoUUID, Some(emtUUID)),
+    putNewNote(Owner(timoUUID, Some(emtUUID), Token.ADMIN),
       Note("list of servers", None, None, None, None, None,
           Some(ExtendedItemRelationships(None, None, None, None, Some(scala.List(devopsTag.right.get.uuid.get)), None)))).right.get
 
     // Timo's personal items
 
     // Store items for user
-    putNewItem(Owner(timoUUID, None),
+    putNewItem(Owner(timoUUID, None, Token.ADMIN),
       Item("should I start yoga?", None, None)).right.get
-    putNewItem(Owner(timoUUID, None),
+    putNewItem(Owner(timoUUID, None, Token.ADMIN),
       Item("remember the milk", None, None)).right.get
 
     // Store tags for user
-    val secretTag = putNewTag(Owner(timoUUID, None),
+    val secretTag = putNewTag(Owner(timoUUID, None, Token.ADMIN),
       Tag("secret", None, None, KEYWORD, None))
-    val blogTag = putNewTag(Owner(timoUUID, None),
+    val blogTag = putNewTag(Owner(timoUUID, None, Token.ADMIN),
       Tag("blog", None, None, KEYWORD, None))
 
     // Store lists for user
-    val extendedMindTechnologiesList = putNewList(Owner(timoUUID, None),
+    val extendedMindTechnologiesList = putNewList(Owner(timoUUID, None, Token.ADMIN),
       List("extended mind technologies", None, Some("http://ext.md"), None, None)).right.get
-    val tripList = putNewList(Owner(timoUUID, None),
+    val tripList = putNewList(Owner(timoUUID, None, Token.ADMIN),
       List("trip to Dublin", None, None, Some("2013-10-31"), None)).right.get
-    val essayList = putNewList(Owner(timoUUID, None),
+    val essayList = putNewList(Owner(timoUUID, None, Token.ADMIN),
       List("write essay on cognitive biases", None, None, None, None)).right.get
 
     // Store tasks for user
-    putNewTask(Owner(timoUUID, None),
+    putNewTask(Owner(timoUUID, None, Token.ADMIN),
       Task("clean closet", None, None, None, None, None,
         Some(ExtendedItemRelationships(None, None, None, None, None,
             Some(scala.List((emUUID, scala.List(homeTag.right.get.uuid.get)))))))).right.get
-    putNewTask(Owner(timoUUID, None),
+    putNewTask(Owner(timoUUID, None, Token.ADMIN),
       Task("book flight", None, None, Some("2014-01-01"), None, None,
         Some(ExtendedItemRelationships(Some(tripList.uuid.get), None, None, None, None,
             Some(scala.List((emUUID, scala.List(browserTag.right.get.uuid.get)))))))).right.get
-    putNewTask(Owner(timoUUID, None),
+    putNewTask(Owner(timoUUID, None, Token.ADMIN),
       Task("print tickets", None, Some("http://www.finnair.fi"), Some("2014-01-02"), None,
           Some(scala.List(Reminder("12345678901234567", "ln", "ios-cordova", "iPhone6", System.currentTimeMillis + 60000))),
         Some(ExtendedItemRelationships(Some(tripList.uuid.get), None, None, None, None,
             Some(scala.List((emUUID, scala.List(officeTag.right.get.uuid.get)))))))).right.get
-    val completedTask = putNewTask(Owner(timoUUID, None),
+    val completedTask = putNewTask(Owner(timoUUID, None, Token.ADMIN),
       Task("get ext.md domain", None, None, Some("2013-05-01"), None, None,
         Some(ExtendedItemRelationships(Some(extendedMindTechnologiesList.uuid.get), None, None, None, None,
             Some(scala.List((emUUID, scala.List(browserTag.right.get.uuid.get)))))))).right.get
-    completeTask(Owner(timoUUID, None), completedTask.uuid.get, None)
-    putNewTask(Owner(timoUUID, None),
+    completeTask(Owner(timoUUID, None, Token.ADMIN), completedTask.uuid.get, None)
+    putNewTask(Owner(timoUUID, None, Token.ADMIN),
       Task("sketch outline for essay", None, None, Some("2014-03-08"), None, None,
         Some(ExtendedItemRelationships(Some(essayList.uuid.get), None, None, None, None, None)))).right.get
-    putNewTask(Owner(timoUUID, None),
+    putNewTask(Owner(timoUUID, None, Token.ADMIN),
       Task("write essay body", None, None, Some("2014-03-09"), None, None,
         Some(ExtendedItemRelationships(Some(essayList.uuid.get), None, None, None, None, None)))).right.get
-    putNewTask(Owner(timoUUID, None),
+    putNewTask(Owner(timoUUID, None, Token.ADMIN),
       Task("finalize essay", None, None, Some("2014-03-10"), None, None,
         Some(ExtendedItemRelationships(Some(essayList.uuid.get), None, None, None, None, None)))).right.get
 
     // Store notes for user
-    putNewNote(Owner(timoUUID, None),
+    putNewNote(Owner(timoUUID, None, Token.ADMIN),
       Note("contexts could be used to prevent access to data", None, None, None, None, None, None)).right.get
-    putNewNote(Owner(timoUUID, None),
+    putNewNote(Owner(timoUUID, None, Token.ADMIN),
       Note("office door code", None, None, Some("4321"), None, None,
         Some(ExtendedItemRelationships(None, None, None, None, Some(scala.List(secretTag.right.get.uuid.get)), None)))).right.get
-    val result = putNewNote(Owner(timoUUID, None),
+    val result = putNewNote(Owner(timoUUID, None, Token.ADMIN),
       Note("notes on productivity", None, None, Some(
         "# what I've learned about productivity \n" +
           "## focus \n" +
@@ -270,7 +270,7 @@ trait TestGraphDatabase extends GraphDatabase {
         Some("md"), None,
         Some(ExtendedItemRelationships(Some(extendedMindTechnologiesList.uuid.get), None, None, None, Some(scala.List(blogTag.right.get.uuid.get)),
           Some(scala.List((emUUID, scala.List(productivityTag.right.get.uuid.get)))))))).right.get
-    publishNote(Owner(timoUUID, None), result.uuid.get, "md", "productivity")
+    publishNote(Owner(timoUUID, None, Token.ADMIN), result.uuid.get, "md", "productivity", Some(LicenceType.CC_BY_SA_4_0.toString), None)
 
     // Timo shares essay list with Lauri
 
@@ -284,9 +284,9 @@ trait TestGraphDatabase extends GraphDatabase {
     // Lauri's personal items
 
     // Store tasks for Lauri
-    val laurisCompletedTask = putNewTask(Owner(lauriUUID, None),
+    val laurisCompletedTask = putNewTask(Owner(lauriUUID, None, Token.ADMIN),
       Task("complete this", Some("for testing"), None, Some("2015-06-02"), None, None, None)).right.get
-    completeTask(Owner(lauriUUID, None), laurisCompletedTask.uuid.get, None)
+    completeTask(Owner(lauriUUID, None, Token.ADMIN), laurisCompletedTask.uuid.get, None)
 
     // Build indexes
     rebuildUserIndexes

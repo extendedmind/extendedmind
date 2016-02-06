@@ -225,7 +225,6 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     } yield result
   }
 
-
   // PRIVATE
 
   protected def getTokenNode(token: Token, acceptDeleted: Boolean = false)
@@ -566,7 +565,7 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     }
   }
 
-  private def getUserType(user: Node): Byte = {
+  protected def getUserType(user: Node)(implicit neo4j: DatabaseService): Byte = {
     val labels = user.getLabels().asScala
     if (labels.find(p => p.name() == "ADMIN").isDefined)
       Token.ADMIN

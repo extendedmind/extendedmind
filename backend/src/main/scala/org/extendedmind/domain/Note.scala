@@ -117,7 +117,13 @@ object LimitedNote{
 
 case class FavoriteNoteResult(favorited: Long, result: SetResult)
 
-case class PublishPayload(format: String, path: String){
+// List of FormatTypes
+object LicenceType extends Enumeration {
+  type LicenceType = Value
+  val CC_BY_SA_4_0 = Value("CC BY-SA 4.0")
+}
+
+case class PublishPayload(format: String, path: String, licence: Option[String], overridePublished: Option[Long]){
   require(
     try {
       val formatType = FormatType.withName(format)
@@ -129,6 +135,15 @@ case class PublishPayload(format: String, path: String){
   require(validateLength(path, Validators.TITLE_MAX_LENGTH), "Path can not be more than " + Validators.TITLE_MAX_LENGTH + " characters")
   require(path.matches("""^[0-9a-z-]+$"""),
      "Path can only contain numbers, lower case letters and dashes")
+  if (licence.isDefined) require(
+    try {
+      val licenceType = LicenceType.withName(licence.get)
+      true
+    }catch {
+      case _:Throwable => false
+    },
+    "Expected 'CC BY-SA 4.0' but got " + licence.get)
+
 }
 
 case class PreviewPayload(format: String){

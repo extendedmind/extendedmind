@@ -22,10 +22,8 @@ package org.extendedmind.db.test
 import org.extendedmind.test._
 import org.extendedmind.test.TestGraphDatabase._
 import org.extendedmind.domain._
-import org.extendedmind.security.SecurityContext
+import org.extendedmind.security._
 import java.util.UUID
-import org.extendedmind.security.AuthenticatePayload
-import org.extendedmind.security.BinaryDiff
 
 class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
 
@@ -58,7 +56,7 @@ class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
   describe("ItemDatabase"){
      it("should getItems"){
 
-       db.getItems(Owner(db.timoUUID, None), None, true, false, false, false, false) match {
+       db.getItems(Owner(db.timoUUID, None, Token.ADMIN), None, true, false, false, false, false) match {
         case Right(items) => {
           assert(items.items.isDefined)
           assert(items.items.get.size === 2)
@@ -155,13 +153,13 @@ class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
   describe("TaskDatabase"){
      it("should remove properties of a task from the database"){
       val testTask = Task("testTitle", Some("testDescription"), None, None, None, None, None)
-      val result = db.putNewTask(Owner(db.timoUUID, None),
+      val result = db.putNewTask(Owner(db.timoUUID, None, Token.ADMIN),
            testTask)
       // Put it back without the description
-      val updateResult = db.putExistingTask(Owner(db.timoUUID, None), result.right.get.uuid.get,
+      val updateResult = db.putExistingTask(Owner(db.timoUUID, None, Token.ADMIN), result.right.get.uuid.get,
           testTask.copy(description = None))
 
-      db.getTask(Owner(db.timoUUID, None), result.right.get.uuid.get) match {
+      db.getTask(Owner(db.timoUUID, None, Token.ADMIN), result.right.get.uuid.get) match {
         case Right(task) => {
           // Assert that the modified timestamp has changed from the previous round
           assert(task.modified.get > result.right.get.modified)

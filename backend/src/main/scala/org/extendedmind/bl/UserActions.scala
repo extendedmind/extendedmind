@@ -157,9 +157,9 @@ trait UserActions {
     }
   }
 
-  def changeAgreementAccess(userUUID: UUID, agreementUUID: UUID, access: Byte)(implicit log: LoggingAdapter): Response[SetResult] = {
+  def changeAgreementAccess(userUUID: UUID, userType: Byte, agreementUUID: UUID, access: Byte)(implicit log: LoggingAdapter): Response[SetResult] = {
     log.info("changeAgreementAccess")
-    db.changeAgreementAccess(Owner(userUUID, None), agreementUUID, access)
+    db.changeAgreementAccess(Owner(userUUID, None, userType), agreementUUID, access)
   }
 
   def destroyAgreement(userUUID: UUID, agreementUUID: UUID)(implicit log: LoggingAdapter): Response[SetResult] = {
@@ -179,7 +179,6 @@ trait UserActions {
     log.info("acceptAgreement: {}", proposedToEmail)
     db.acceptAgreement(code, proposedToEmail)
   }
-
 
   protected def sendEmailVerification(email: String, emailVerificationCode: Long)(implicit log: LoggingAdapter) {
     log.info("sendEmailVerification: email {}", email)
