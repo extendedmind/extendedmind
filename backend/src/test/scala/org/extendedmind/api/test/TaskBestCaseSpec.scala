@@ -214,12 +214,12 @@ class TaskBestCaseSpec extends ServiceSpecBase {
       Get("/" + authenticateResponse.userUUID + "/items") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val itemsResponse = responseAs[Items]
         val newTask = Task("review inbox", None, None, None, None, None, Some(
-            ExtendedItemRelationships(None, None, None, None, None, Some(scala.List(itemsResponse.tags.get(0).uuid.get)), None)))
+            ExtendedItemRelationships(None, None, None, None, Some(scala.List(itemsResponse.tags.get(0).uuid.get)), None)))
         val putTaskResponse = putNewTask(newTask, authenticateResponse)
 
         // Add new tag to tags and update task
         val taskWithAddedTag = newTask.copy(relationships = Some(
-            ExtendedItemRelationships(None, None, None, None, None, Some(
+            ExtendedItemRelationships(None, None, None, None, Some(
                 scala.List(itemsResponse.tags.get(0).uuid.get)),
                 None)));
         putExistingTask(taskWithAddedTag, putTaskResponse.uuid.get, authenticateResponse)
@@ -231,7 +231,7 @@ class TaskBestCaseSpec extends ServiceSpecBase {
 
         // Change one tag and update task
         val taskWithChangedTag = taskWithAddedTag.copy(relationships = Some(
-            ExtendedItemRelationships(None, None, None, None, None, Some(
+            ExtendedItemRelationships(None, None, None, None, Some(
                 scala.List(itemsResponse.tags.get(0).uuid.get)),
                 noteWithCollectiveTags.relationships.get.collectiveTags)))
         putExistingTask(taskWithChangedTag, putTaskResponse.uuid.get, authenticateResponse)

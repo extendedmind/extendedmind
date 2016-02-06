@@ -195,7 +195,7 @@ trait TestGraphDatabase extends GraphDatabase {
     // Store notes for EMT
     putNewNote(Owner(timoUUID, Some(emtUUID)),
       Note("list of servers", None, None, None, None, None,
-          Some(ExtendedItemRelationships(None, None, None, None, None, Some(scala.List(devopsTag.right.get.uuid.get)), None)))).right.get
+          Some(ExtendedItemRelationships(None, None, None, None, Some(scala.List(devopsTag.right.get.uuid.get)), None)))).right.get
 
     // Timo's personal items
 
@@ -222,38 +222,38 @@ trait TestGraphDatabase extends GraphDatabase {
     // Store tasks for user
     putNewTask(Owner(timoUUID, None),
       Task("clean closet", None, None, None, None, None,
-        Some(ExtendedItemRelationships(None, None, None, None, None, None,
+        Some(ExtendedItemRelationships(None, None, None, None, None,
             Some(scala.List((emUUID, scala.List(homeTag.right.get.uuid.get)))))))).right.get
     putNewTask(Owner(timoUUID, None),
       Task("book flight", None, None, Some("2014-01-01"), None, None,
-        Some(ExtendedItemRelationships(Some(tripList.uuid.get), None, None, None, None, None,
+        Some(ExtendedItemRelationships(Some(tripList.uuid.get), None, None, None, None,
             Some(scala.List((emUUID, scala.List(browserTag.right.get.uuid.get)))))))).right.get
     putNewTask(Owner(timoUUID, None),
       Task("print tickets", None, Some("http://www.finnair.fi"), Some("2014-01-02"), None,
           Some(scala.List(Reminder("12345678901234567", "ln", "ios-cordova", "iPhone6", System.currentTimeMillis + 60000))),
-        Some(ExtendedItemRelationships(Some(tripList.uuid.get), None, None, None, None, None,
+        Some(ExtendedItemRelationships(Some(tripList.uuid.get), None, None, None, None,
             Some(scala.List((emUUID, scala.List(officeTag.right.get.uuid.get)))))))).right.get
     val completedTask = putNewTask(Owner(timoUUID, None),
       Task("get ext.md domain", None, None, Some("2013-05-01"), None, None,
-        Some(ExtendedItemRelationships(Some(extendedMindTechnologiesList.uuid.get), None, None, None, None, None,
+        Some(ExtendedItemRelationships(Some(extendedMindTechnologiesList.uuid.get), None, None, None, None,
             Some(scala.List((emUUID, scala.List(browserTag.right.get.uuid.get)))))))).right.get
     completeTask(Owner(timoUUID, None), completedTask.uuid.get, None)
     putNewTask(Owner(timoUUID, None),
       Task("sketch outline for essay", None, None, Some("2014-03-08"), None, None,
-        Some(ExtendedItemRelationships(Some(essayList.uuid.get), None, None, None, None, None, None)))).right.get
+        Some(ExtendedItemRelationships(Some(essayList.uuid.get), None, None, None, None, None)))).right.get
     putNewTask(Owner(timoUUID, None),
       Task("write essay body", None, None, Some("2014-03-09"), None, None,
-        Some(ExtendedItemRelationships(Some(essayList.uuid.get), None, None, None, None, None, None)))).right.get
+        Some(ExtendedItemRelationships(Some(essayList.uuid.get), None, None, None, None, None)))).right.get
     putNewTask(Owner(timoUUID, None),
       Task("finalize essay", None, None, Some("2014-03-10"), None, None,
-        Some(ExtendedItemRelationships(Some(essayList.uuid.get), None, None, None, None, None, None)))).right.get
+        Some(ExtendedItemRelationships(Some(essayList.uuid.get), None, None, None, None, None)))).right.get
 
     // Store notes for user
     putNewNote(Owner(timoUUID, None),
       Note("contexts could be used to prevent access to data", None, None, None, None, None, None)).right.get
     putNewNote(Owner(timoUUID, None),
       Note("office door code", None, None, Some("4321"), None, None,
-        Some(ExtendedItemRelationships(None, None, None, None, None, Some(scala.List(secretTag.right.get.uuid.get)), None)))).right.get
+        Some(ExtendedItemRelationships(None, None, None, None, Some(scala.List(secretTag.right.get.uuid.get)), None)))).right.get
     val result = putNewNote(Owner(timoUUID, None),
       Note("notes on productivity", None, None, Some(
         "# what I've learned about productivity \n" +
@@ -268,7 +268,7 @@ trait TestGraphDatabase extends GraphDatabase {
           "## process \n" +
           "increasing your productivity doesn't happen overnight"),
         Some("md"), None,
-        Some(ExtendedItemRelationships(Some(extendedMindTechnologiesList.uuid.get), None, None, None, None, Some(scala.List(blogTag.right.get.uuid.get)),
+        Some(ExtendedItemRelationships(Some(extendedMindTechnologiesList.uuid.get), None, None, None, Some(scala.List(blogTag.right.get.uuid.get)),
           Some(scala.List((emUUID, scala.List(productivityTag.right.get.uuid.get)))))))).right.get
     publishNote(Owner(timoUUID, None), result.uuid.get, "md", "productivity")
 

@@ -144,14 +144,13 @@ trait ListDatabase extends UserDatabase with TagDatabase {
       ownerNodes <- getOwnerNodes(owner).right
       parentRel <- Right(getItemRelationship(listNode, ownerNodes, ItemRelationship.HAS_PARENT, ItemLabel.LIST)).right
       latestRevisionRel <- Right(getLatestExtendedItemRevisionRelationship(listNode)).right
-      creatorUUID <- Right(getItemCreatorUUID(listNode)).right
       assigneeRel <- Right(getAssigneeRelationship(listNode)).right
       tagsRels <- getTagRelationships(listNode, ownerNodes).right
       agreementInfos <- getListAgreementInformations(ownerNodes, listNode).right
       task <- Right(list.copy(
         revision = latestRevisionRel.flatMap(latestRevisionRel => Some(latestRevisionRel.getEndNode.getProperty("number").asInstanceOf[Long])),
         relationships =
-          (if (parentRel.isDefined || assigneeRel.isDefined || creatorUUID.isDefined || tagsRels.isDefined)
+          (if (parentRel.isDefined || assigneeRel.isDefined || tagsRels.isDefined)
             Some(ExtendedItemRelationships(
               parent = parentRel.flatMap(parentRel => Some(getUUID(parentRel.getEndNode))),
               origin = None,
@@ -160,7 +159,6 @@ trait ListDatabase extends UserDatabase with TagDatabase {
                 else Some(getUUID(assigneeRel.getEndNode))
               }),
               assigner = assigneeRel.flatMap(assigneeRel => Some(UUIDUtils.getUUID(assigneeRel.getProperty("assigner").asInstanceOf[String]))),
-              creator = creatorUUID,
               tags = tagsRels.flatMap(tagsRels => if (tagsRels.ownerTags.isDefined) Some(getEndNodeUUIDList(tagsRels.ownerTags.get)) else None),
               collectiveTags = tagsRels.flatMap(tagsRels => getCollectiveTagEndNodeUUIDList(tagsRels.collectiveTags))))
           else None),
@@ -484,7 +482,6 @@ trait ListDatabase extends UserDatabase with TagDatabase {
         if (list.relationships.isDefined)
           Some(list.relationships.get.copy(
               assigner = None,
-              creator = None,
               origin = None))
         else None)
   }

@@ -83,7 +83,7 @@ object Task{
                     limitedTask.completed, None, None, None,
                     Some(ExtendedItemRelationships(
                         limitedTask.relationships.parent, limitedTask.relationships.origin,
-                        None, None, None, None, None)))
+                        None, None, None, None)))
 }
 
 case class LimitedTask(uuid: Option[UUID],

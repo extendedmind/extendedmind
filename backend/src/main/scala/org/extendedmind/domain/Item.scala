@@ -57,8 +57,7 @@ case class SharedItemVisibility(published: Option[Long], path: Option[String],
                                 preview: Option[Long], previewExpires: Option[Long],
                                 agreements: Option[scala.List[Agreement]])
 case class ExtendedItemRelationships(parent: Option[UUID], origin: Option[UUID], assignee: Option[UUID],
-                                     assigner: Option[UUID], creator: Option[UUID],
-                                     tags: Option[scala.List[UUID]], collectiveTags: Option[scala.List[(UUID, scala.List[UUID])]])
+                                     assigner: Option[UUID], tags: Option[scala.List[UUID]], collectiveTags: Option[scala.List[(UUID, scala.List[UUID])]])
 case class LimitedExtendedItemRelationships(parent: Option[UUID], origin: Option[UUID])
 
 case class DeleteItemResult(deleted: Long, result: SetResult)

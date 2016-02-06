@@ -195,7 +195,6 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
       parentRel <- Right(getItemRelationship(taskNode, ownerNodes, ItemRelationship.HAS_PARENT, ItemLabel.LIST)).right
       originRel <- Right(getItemRelationship(taskNode, ownerNodes, ItemRelationship.HAS_ORIGIN, ItemLabel.TASK)).right
       latestRevisionRel <- Right(getLatestExtendedItemRevisionRelationship(taskNode)).right
-      creatorUUID <- Right(getItemCreatorUUID(taskNode)).right
       assigneeRel <- Right(getAssigneeRelationship(taskNode)).right
       tagsRels <- getTagRelationships(taskNode, ownerNodes).right
       reminderNodes <- Right(getReminderNodes(taskNode)).right
@@ -204,7 +203,7 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
         reminders = reminders,
         revision = latestRevisionRel.flatMap(latestRevisionRel => Some(latestRevisionRel.getEndNode.getProperty("number").asInstanceOf[Long])),
         relationships =
-          (if (parentRel.isDefined || originRel.isDefined || assigneeRel.isDefined || creatorUUID.isDefined || tagsRels.isDefined )
+          (if (parentRel.isDefined || originRel.isDefined || assigneeRel.isDefined || tagsRels.isDefined )
             Some(ExtendedItemRelationships(
               parent = parentRel.flatMap(parentRel => Some(getUUID(parentRel.getEndNode()))),
               origin = originRel.flatMap(originRel => Some(getUUID(originRel.getEndNode()))),
@@ -213,7 +212,6 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
                 else Some(getUUID(assigneeRel.getEndNode))
               }),
               assigner = assigneeRel.flatMap(assigneeRel => Some(UUIDUtils.getUUID(assigneeRel.getProperty("assigner").asInstanceOf[String]))),
-              creator = creatorUUID,
               tags = tagsRels.flatMap(tagsRels => if (tagsRels.ownerTags.isDefined) Some(getEndNodeUUIDList(tagsRels.ownerTags.get)) else None),
               collectiveTags = tagsRels.flatMap(tagsRels => getCollectiveTagEndNodeUUIDList(tagsRels.collectiveTags))))
            else None
@@ -531,7 +529,6 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
         if (task.relationships.isDefined)
           Some(task.relationships.get.copy(
               assigner = None,
-              creator = None,
               origin = None))
         else None)
   }

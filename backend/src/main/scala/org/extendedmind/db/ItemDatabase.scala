@@ -1180,7 +1180,7 @@ trait ItemDatabase extends UserDatabase {
           (if (owner.isLimitedAccess) Right(getSharedListAccessRight(owner.sharedLists.get,
               if (parentRelationship.isDefined){
                 Some(ExtendedItemRelationships(
-                  Some(getUUID(parentRelationship.get.getEndNode)), None, None, None, None, None, None))
+                  Some(getUUID(parentRelationship.get.getEndNode)), None, None, None, None, None))
               }else{
                 None
               }))
@@ -1874,15 +1874,6 @@ trait ItemDatabase extends UserDatabase {
       if(relationship.getType().name == ItemRelationship.HAS_REVISION.name &&
          relationship.hasProperty("latest")){
         return Some(relationship);
-      }
-    })
-    None
-  }
-
-  protected def getItemCreatorUUID(itemNode: Node)(implicit neo4j: DatabaseService): Option[UUID] = {
-    itemNode.getRelationships().foreach(relationship => {
-      if(relationship.getType().name == SecurityRelationship.IS_CREATOR.name){
-        return Some(getUUID(relationship.getStartNode));
       }
     })
     None
