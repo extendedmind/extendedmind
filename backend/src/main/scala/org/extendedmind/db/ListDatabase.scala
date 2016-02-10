@@ -43,7 +43,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
     for {
       // Don't set history tag of parent to list
       listResult <- putNewExtendedItem(owner, list, ItemLabel.LIST, skipParentHistoryTag = true).right
-      result <- Right(getSetResult(listResult._1, true, listResult._2)).right
+      result <- Right(getSetResult(listResult._1, true, archived = listResult._2)).right
       unit <- Right(addToItemsIndex(owner, listResult._1, result)).right
     } yield result
   }
@@ -52,8 +52,8 @@ trait ListDatabase extends UserDatabase with TagDatabase {
     for {
       // Don't set history tag of parent to list
       listResult <- putExistingExtendedItem(owner, listUUID, list, ItemLabel.LIST, skipParentHistoryTag = true).right
-      unit <- Right(evaluateListRevision(list, listResult._1, listResult._3)).right
-      result <- Right(getSetResult(listResult._1, false, listResult._2)).right
+      revision <- Right(evaluateListRevision(list, listResult._1, listResult._3)).right
+      result <- Right(getSetResult(listResult._1, false, revision = revision, archived = listResult._2)).right
       unit <- Right(updateItemsIndex(listResult._1, result)).right
     } yield result
   }
@@ -115,8 +115,8 @@ trait ListDatabase extends UserDatabase with TagDatabase {
   def listToTask(owner: Owner, listUUID: UUID, list: List): Response[Task] = {
     for {
       convertResult <- convertListToTask(owner, listUUID, list).right
-      unit <- Right(evaluateTaskRevision(convertResult._2, convertResult._1, convertResult._3, force=true)).right
-      result <- Right(getSetResult(convertResult._1, false)).right
+      revision <- Right(evaluateTaskRevision(convertResult._2, convertResult._1, convertResult._3, force=true)).right
+      result <- Right(getSetResult(convertResult._1, false, revision = revision)).right
       unit <- Right(updateItemsIndex(convertResult._1, result)).right
     } yield (convertResult._2.copy(modified = Some(result.modified)))
   }
@@ -124,8 +124,8 @@ trait ListDatabase extends UserDatabase with TagDatabase {
   def listToNote(owner: Owner, listUUID: UUID, list: List): Response[Note] = {
     for {
       convertResult <- convertListToNote(owner, listUUID, list).right
-      unit <- Right(evaluateNoteRevision(convertResult._2, convertResult._1, convertResult._3, force=true)).right
-      result <- Right(getSetResult(convertResult._1, false)).right
+      revision <- Right(evaluateNoteRevision(convertResult._2, convertResult._1, convertResult._3, force=true)).right
+      result <- Right(getSetResult(convertResult._1, false, revision = revision)).right
       unit <- Right(updateItemsIndex(convertResult._1, result)).right
     } yield (convertResult._2.copy(modified = Some(result.modified)))
   }
@@ -459,15 +459,14 @@ trait ListDatabase extends UserDatabase with TagDatabase {
     }
   }
 
-  protected def evaluateListRevision(list: List, listNode: Node, ownerNodes: OwnerNodes, force: Boolean = false) = {
+  protected def evaluateListRevision(list: List, listNode: Node, ownerNodes: OwnerNodes, force: Boolean = false): Option[Long] = {
     withTx {
       implicit neo4j =>
-        evaluateNeedForRevision(listNode, ownerNodes, force).fold(
-          // No need to do anything if latest revision relationship is new enough
-        )(latestRevisionRel => {
+        evaluateNeedForRevision(listNode, ownerNodes, force).flatMap(latestRevisionRel => {
           // Create a revision containing only the fields that can be set using putExistingNote, and the modified timestamp
           val listBytes = pickleList(getListForPickling(list))
-          createExtendedItemRevision(listNode, ownerNodes, ItemLabel.LIST, listBytes, latestRevisionRel)
+          val revisionNode = createExtendedItemRevision(listNode, ownerNodes, ItemLabel.LIST, listBytes, latestRevisionRel)
+          Some(revisionNode.getProperty("number").asInstanceOf[Long])
         })
     }
   }

@@ -56,7 +56,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
   def putNewNote(owner: Owner, note: Note): Response[SetResult] = {
     for {
       noteResult <- putNewExtendedItem(owner, note, ItemLabel.NOTE).right
-      result <- Right(getSetResult(noteResult._1, true, noteResult._2)).right
+      result <- Right(getSetResult(noteResult._1, true, archived = noteResult._2)).right
       unit <- Right(addToItemsIndex(owner, noteResult._1, result)).right
     } yield result
   }
@@ -64,7 +64,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
   def putNewLimitedNote(owner: Owner, limitedNote: LimitedNote): Response[SetResult] = {
     for {
       noteResult <- putNewLimitedExtendedItem(owner, limitedNote, ItemLabel.NOTE).right
-      result <- Right(getSetResult(noteResult._1, true, noteResult._2)).right
+      result <- Right(getSetResult(noteResult._1, true, archived = noteResult._2)).right
       unit <- Right(addToItemsIndex(owner, noteResult._1, result)).right
     } yield result
   }
@@ -72,8 +72,8 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
   def putExistingNote(owner: Owner, noteUUID: UUID, note: Note): Response[SetResult] = {
     for {
       noteResult <- putExistingNoteNode(owner, noteUUID, note).right
-      unit <- Right(evaluateNoteRevision(note, noteResult._1, noteResult._3)).right
-      result <- Right(getSetResult(noteResult._1, false, noteResult._2)).right
+      revision <- Right(evaluateNoteRevision(note, noteResult._1, noteResult._3)).right
+      result <- Right(getSetResult(noteResult._1, false, revision = revision, archived = noteResult._2)).right
       unit <- Right(updateItemsIndex(noteResult._1, result)).right
     } yield result
   }
@@ -81,8 +81,8 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
   def putExistingLimitedNote(owner: Owner, noteUUID: UUID, limitedNote: LimitedNote): Response[SetResult] = {
     for {
       noteResult <- putExistingLimitedExtendedItem(owner, noteUUID, limitedNote, ItemLabel.NOTE).right
-      unit <- Right(evaluateNoteRevision(Note(limitedNote), noteResult._1, noteResult._3)).right
-      result <- Right(getSetResult(noteResult._1, false, noteResult._2)).right
+      revision <- Right(evaluateNoteRevision(Note(limitedNote), noteResult._1, noteResult._3)).right
+      result <- Right(getSetResult(noteResult._1, false, revision = revision, archived = noteResult._2)).right
       unit <- Right(updateItemsIndex(noteResult._1, result)).right
     } yield result
   }
@@ -134,8 +134,8 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
   def noteToTask(owner: Owner, noteUUID: UUID, note: Note): Response[Task] = {
     for {
       convertResult <- convertNoteToTask(owner, noteUUID, note).right
-      unit <- Right(evaluateTaskRevision(convertResult._2, convertResult._1, convertResult._3, force=true)).right
-      result <- Right(getSetResult(convertResult._1, false)).right
+      revision <- Right(evaluateTaskRevision(convertResult._2, convertResult._1, convertResult._3, force=true)).right
+      result <- Right(getSetResult(convertResult._1, false, revision = revision)).right
       unit <- Right(updateItemsIndex(convertResult._1, result)).right
     } yield (convertResult._2.copy(modified = Some(result.modified)))
   }
@@ -143,8 +143,8 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
   def noteToList(owner: Owner, noteUUID: UUID, note: Note): Response[List] = {
     for {
       convertResult <- convertNoteToList(owner, noteUUID, note).right
-      unit <- Right(evaluateListRevision(convertResult._2, convertResult._1, convertResult._3, force=true)).right
-      result <- Right(getSetResult(convertResult._1, false)).right
+      revision <- Right(evaluateListRevision(convertResult._2, convertResult._1, convertResult._3, force=true)).right
+      result <- Right(getSetResult(convertResult._1, false, revision = revision)).right
       unit <- Right(updateItemsIndex(convertResult._1, result)).right
     } yield (convertResult._2.copy(modified = Some(result.modified)))
   }
@@ -489,14 +489,13 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
       Right()
   }
 
-  protected def evaluateNoteRevision(note: Note, noteNode: Node, ownerNodes: OwnerNodes, force: Boolean = false) = {
+  protected def evaluateNoteRevision(note: Note, noteNode: Node, ownerNodes: OwnerNodes, force: Boolean = false): Option[Long] = {
     withTx {
       implicit neo4j =>
-        evaluateNeedForRevision(noteNode, ownerNodes, force).fold(
-          // No need to do anything if latest revision relationship is new enough
-        )(latestRevisionRel => {
+        evaluateNeedForRevision(noteNode, ownerNodes, force).flatMap(latestRevisionRel => {
           val noteBytes = pickleNote(getNoteForPickling(note))
-          createExtendedItemRevision(noteNode, ownerNodes, ItemLabel.NOTE, noteBytes, latestRevisionRel)
+          val revisionNode = createExtendedItemRevision(noteNode, ownerNodes, ItemLabel.NOTE, noteBytes, latestRevisionRel)
+          Some(revisionNode.getProperty("number").asInstanceOf[Long])
         })
     }
   }

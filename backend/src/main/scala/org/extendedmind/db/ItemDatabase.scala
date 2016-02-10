@@ -366,9 +366,9 @@ trait ItemDatabase extends UserDatabase {
   def toList(listNode: Node, owner: Owner)(implicit neo4j: DatabaseService): Response[List];
 
   // Methods for evaluating need for revisions
-  protected def evaluateTaskRevision(task: Task, taskNode: Node, ownerNodes: OwnerNodes, force: Boolean = false);
-  protected def evaluateNoteRevision(note: Note, noteNode: Node, ownerNodes: OwnerNodes, force: Boolean = false);
-  protected def evaluateListRevision(list: List, listNode: Node, ownerNodes: OwnerNodes, force: Boolean = false);
+  protected def evaluateTaskRevision(task: Task, taskNode: Node, ownerNodes: OwnerNodes, force: Boolean = false): Option[Long];
+  protected def evaluateNoteRevision(note: Note, noteNode: Node, ownerNodes: OwnerNodes, force: Boolean = false): Option[Long];
+  protected def evaluateListRevision(list: List, listNode: Node, ownerNodes: OwnerNodes, force: Boolean = false): Option[Long];
 
   protected def getItemNodes(ownerUUID: UUID, modified: Option[Long], active: Boolean, deleted: Boolean,
                              archived: Boolean, completed: Boolean, tagsOnly: Boolean = false)

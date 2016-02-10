@@ -226,7 +226,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     }
   }
 
-  protected def getSetResult(node: Node, newNode: Boolean, archived: Option[Long] = None, associated: Option[scala.List[Node]] = None): SetResult = {
+  protected def getSetResult(node: Node, newNode: Boolean, revision: Option[Long] = None, archived: Option[Long] = None, associated: Option[scala.List[Node]] = None): SetResult = {
     withTx {
       implicit neo4j =>
         val uuid =
@@ -247,7 +247,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
             }))
           }
         }
-        SetResult(uuid, created, node.getProperty("modified").asInstanceOf[Long], archived, idToUUIDList)
+        SetResult(uuid, created, node.getProperty("modified").asInstanceOf[Long], revision, archived, idToUUIDList)
     }
   }
 
