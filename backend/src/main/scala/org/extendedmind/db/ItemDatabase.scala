@@ -188,6 +188,17 @@ trait ItemDatabase extends UserDatabase {
     }
   }
 
+  def getItemRevisionList(ownerUUID: UUID, itemUUID: UUID): Response[ItemRevisions] = {
+    withTx {
+      implicit neo4j =>
+        for {
+          ownerNode <- getNode(ownerUUID, MainLabel.OWNER).right
+          itemNode <- getItemNode(ownerUUID, itemUUID, exactLabelMatch = false).right
+          publicItem <- getItemRevisionList(ownerNode, itemNode).right
+        } yield publicItem
+    }
+  }
+
   def getPublicItems(handle: String, modified: Option[Long]): Response[PublicItems] = {
     withTx {
       implicit neo4j =>
@@ -1801,6 +1812,26 @@ trait ItemDatabase extends UserDatabase {
   }
 
   // REVISIONS
+
+  protected def getItemRevisionList(ownerNode: Node, itemNode: Node)(implicit neo4j: DatabaseService): Response[ItemRevisions] = {
+    val revisionRelationships = itemNode.getRelationships.filter(relationship => relationship.getType.name == ItemRelationship.HAS_REVISION.name)
+    val revisionItemList: scala.List[ItemRevision] = revisionRelationships.map(revisionRelationship => {
+      val revisionNode = revisionRelationship.getEndNode
+      val itemRevisionResult = toCaseClass[ItemRevision](revisionNode)
+      if (itemRevisionResult.isLeft) return Left(itemRevisionResult.left.get)
+      val itemType =
+        if (revisionNode.hasLabel(ItemLabel.NOTE)) "note"
+        else if (revisionNode.hasLabel(ItemLabel.TASK)) "task"
+        else if (revisionNode.hasLabel(ItemLabel.LIST)) "list"
+        else return fail(INTERNAL_SERVER_ERROR, ERR_ITEM_MISSING_REVISION_TYPE, "Revision does not have an item type")
+      itemRevisionResult.right.get.copy(creator =
+        if (revisionRelationship.hasProperty("creator"))
+           Some(UUIDUtils.getUUID(revisionRelationship.getProperty("creator").asInstanceOf[String]))
+        else None,
+        itemType = Some(itemType))
+    }).toList
+    Right(if (revisionItemList.size > 0) ItemRevisions(Some(revisionItemList)) else ItemRevisions(None))
+  }
 
   protected def evaluateNeedForRevision(itemNode: Node, ownerNodes: OwnerNodes, force: Boolean = false)(implicit neo4j: DatabaseService): Option[Option[Relationship]] = {
     val latestRevisionRel = getLatestExtendedItemRevisionRelationship(itemNode)

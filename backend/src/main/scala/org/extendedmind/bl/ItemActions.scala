@@ -198,6 +198,12 @@ trait ItemActions {
     db.getPreviewItem(ownerUUID, itemUUID, previewCode)
   }
 
+  def getItemRevisionList(ownerUUID: UUID, itemUUID: UUID)(implicit log: LoggingAdapter): Response[ItemRevisions] = {
+    log.info("getItemRevisionList")
+    db.getItemRevisionList(ownerUUID, itemUUID)
+  }
+
+
   private def getValidDescriptionOrNull(descriptionSeed: String): String = {
     val trimmedDescription = descriptionSeed.trim
     if (trimmedDescription.length > 0){

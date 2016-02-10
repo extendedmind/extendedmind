@@ -73,6 +73,7 @@ trait API extends HttpService {
   val getPublicItems = get & path("public" / """^[0-9a-z-]+$""".r )
   val getPublicItem = get & path("public" / """^[0-9a-z-]+$""".r / """^[0-9a-z-]+$""".r )
   val getPreviewItem = get & path(JavaUUID / "item" / JavaUUID / "preview" / HexLongNumber)
+  val getItemRevisionList = get & path(JavaUUID / "item" / JavaUUID / "revisions")
 
   // TASKS
   val getTask = get & path(JavaUUID / "task" / JavaUUID)

@@ -106,6 +106,17 @@ trait LimitedExtendedItem extends ItemLike{
   def parent: Option[UUID] = relationships.parent
 }
 
+case class ItemRevision(uuid: Option[UUID], created: Option[Long], modified: Option[Long],
+                        number: Long,
+                        itemType: Option[String],
+                        published: Option[Long],
+                        unpublished: Option[Long],
+                        format: Option[String],
+                        licence: Option[String],
+                        path: Option[String],
+                        creator: Option[UUID])
+case class ItemRevisions(revisions: Option[scala.List[ItemRevision]])
+
 case class NodeStatistics(properties: scala.List[(String, Long)], labels: scala.List[String])
 case class NodeProperty(key: String, stringValue: Option[String], longValue: Option[Long])
 

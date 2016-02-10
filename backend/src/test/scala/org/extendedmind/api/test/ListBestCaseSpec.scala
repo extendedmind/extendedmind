@@ -425,6 +425,16 @@ class ListBestCaseSpec extends ServiceSpecBase {
             val existingTaskWithRevisions = itemsAsOwnerResponse.tasks.get.find(task  => task.uuid.get == existingTaskUUID).get
             existingTaskWithRevisions.revision.get should be (1l)
             existingTaskWithRevisions.creator should be (None)
+
+            // Get a revision list
+            Get("/" + timoUUID + "/item/" + existingTaskUUID + "/revisions") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
+              val revisionsResponse = responseAs[ItemRevisions]
+              writeJsonOutput("revisionsResponse", responseAs[String])
+              revisionsResponse.revisions.get.length should be (1)
+              revisionsResponse.revisions.get(0).number should be (1l)
+              revisionsResponse.revisions.get(0).creator.get should be (lauriAuthenticateResponse.userUUID)
+            }
+
             val newNoteWithoutRevision = itemsAsOwnerResponse.notes.get.find(note => note.uuid.get == putNoteResponse.uuid.get).get
             newNoteWithoutRevision.revision should be (None)
             newNoteWithoutRevision.creator.get should be (lauriAuthenticateResponse.userUUID)
