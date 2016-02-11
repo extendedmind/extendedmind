@@ -80,7 +80,6 @@ abstract class ServiceSpecBase extends ImpermanentGraphDatabaseSpecBase {
 
   def putExistingNote(existingNote: Note, noteUUID: UUID, authenticateResponse: SecurityContext, foreignOwnerUUID: Option[UUID] = None): SetResult = {
     val ownerUUID = if (foreignOwnerUUID.isDefined) foreignOwnerUUID.get else authenticateResponse.userUUID
-
     Put("/" + ownerUUID + "/note/" + noteUUID.toString(),
       marshal(existingNote).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         responseAs[SetResult]
@@ -192,6 +191,18 @@ abstract class ServiceSpecBase extends ImpermanentGraphDatabaseSpecBase {
   def getUserUUID(email: String, authenticateResponse: SecurityContext): UUID = {
     Get("/user?email=" + email) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
       responseAs[PublicUser].uuid
+    }
+  }
+
+  def getItemRevisionList(itemUUID: UUID, authenticateResponse: SecurityContext): ItemRevisions = {
+    Get("/" + authenticateResponse.userUUID + "/item/" + itemUUID + "/revisions") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+      responseAs[ItemRevisions]
+    }
+  }
+
+  def getItemRevision(itemUUID: UUID, revisionNumber: Long, authenticateResponse: SecurityContext): ExtendedItemChoice = {
+    Get("/" + authenticateResponse.userUUID + "/item/" + itemUUID + "/revision/" + revisionNumber) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+      responseAs[ExtendedItemChoice]
     }
   }
 

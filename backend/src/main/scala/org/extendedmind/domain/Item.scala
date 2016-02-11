@@ -100,6 +100,17 @@ trait ExtendedItem extends ShareableItem{
   }
 }
 
+case class ExtendedItemChoice(task: Option[Task], note: Option[Note], list: Option[List])
+
+object ExtendedItemChoice{
+  def apply(task: Task)
+        = new ExtendedItemChoice(Some(task), None, None)
+  def apply(note: Note)
+        = new ExtendedItemChoice(None, Some(note), None)
+  def apply(list: List)
+        = new ExtendedItemChoice(None, None, Some(list))
+}
+
 trait LimitedExtendedItem extends ItemLike{
   val relationships: LimitedExtendedItemRelationships
 
@@ -116,6 +127,8 @@ case class ItemRevision(uuid: Option[UUID], created: Option[Long], modified: Opt
                         path: Option[String],
                         creator: Option[UUID])
 case class ItemRevisions(revisions: Option[scala.List[ItemRevision]])
+
+
 
 case class NodeStatistics(properties: scala.List[(String, Long)], labels: scala.List[String])
 case class NodeProperty(key: String, stringValue: Option[String], longValue: Option[Long])

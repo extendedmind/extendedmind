@@ -202,6 +202,21 @@ trait ItemService extends ServiceBase {
             }
           }
         }
+      } ~
+      getItemRevision { (ownerUUID, itemUUID, revision) =>
+        authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
+          authorize(writeAccess(ownerUUID, securityContext)) {
+            complete {
+              Future[ExtendedItemChoice] {
+                setLogContext(securityContext, ownerUUID)
+                itemActions.getItemRevision(ownerUUID, itemUUID, revision) match {
+                  case Right(sr) => processResult(sr)
+                  case Left(e) => processErrors(e)
+                }
+              }
+            }
+          }
+        }
       }
   }
 }

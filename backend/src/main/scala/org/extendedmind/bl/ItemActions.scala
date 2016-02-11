@@ -203,6 +203,10 @@ trait ItemActions {
     db.getItemRevisionList(ownerUUID, itemUUID)
   }
 
+  def getItemRevision(ownerUUID: UUID, itemUUID: UUID, revision: Long)(implicit log: LoggingAdapter): Response[ExtendedItemChoice] = {
+    log.info("getItemRevision")
+    db.getItemRevision(ownerUUID, itemUUID, revision)
+  }
 
   private def getValidDescriptionOrNull(descriptionSeed: String): String = {
     val trimmedDescription = descriptionSeed.trim

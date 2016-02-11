@@ -199,6 +199,17 @@ trait ItemDatabase extends UserDatabase {
     }
   }
 
+  def getItemRevision(ownerUUID: UUID, itemUUID: UUID, revision: Long): Response[ExtendedItemChoice] = {
+    withTx {
+      implicit neo4j =>
+        for {
+          ownerNode <- getNode(ownerUUID, MainLabel.OWNER).right
+          itemNode <- getItemNode(ownerUUID, itemUUID, exactLabelMatch = false).right
+          extendedItemChoice <- getItemRevision(ownerNode, itemNode, revision).right
+        } yield extendedItemChoice
+    }
+  }
+
   def getPublicItems(handle: String, modified: Option[Long]): Response[PublicItems] = {
     withTx {
       implicit neo4j =>
@@ -1833,10 +1844,65 @@ trait ItemDatabase extends UserDatabase {
     Right(if (revisionItemList.size > 0) ItemRevisions(Some(revisionItemList)) else ItemRevisions(None))
   }
 
-  protected def evaluateNeedForRevision(itemNode: Node, ownerNodes: OwnerNodes, force: Boolean = false)(implicit neo4j: DatabaseService): Option[Option[Relationship]] = {
+  protected def getItemRevision(ownerNode: Node, itemNode: Node, revision:Long)(implicit neo4j: DatabaseService): Response[ExtendedItemChoice] = {
+    val revisionRelationships = itemNode.getRelationships.filter(relationship => relationship.getType.name == ItemRelationship.HAS_REVISION.name)
+    case class RevisionInfo(number:Long , revisionNode: Node)
+    var oldestDataRevision: Option[Long] = None
+    var itemType: Option[String] = None
+    val revisionInfoList: scala.List[RevisionInfo] = revisionRelationships.map(revisionRelationship => {
+      val revisionNode = revisionRelationship.getEndNode
+      val revisionNumber = revisionNode.getProperty("number").asInstanceOf[Long]
+      if (revisionNumber >= revision && revisionNode.hasProperty("data") && (oldestDataRevision.isEmpty || revisionNumber < oldestDataRevision.get))
+        oldestDataRevision = Some(revisionNumber)
+      if (revisionNumber == revision){
+       itemType = Some(
+          if (revisionNode.hasLabel(ItemLabel.NOTE)) "note"
+          else if (revisionNode.hasLabel(ItemLabel.TASK)) "task"
+          else if (revisionNode.hasLabel(ItemLabel.LIST)) "list"
+          else return fail(INTERNAL_SERVER_ERROR, ERR_ITEM_MISSING_REVISION_TYPE, "Revision does not have an item type"))
+      }
+      RevisionInfo(revisionNumber, revisionNode)
+    }).toList
+
+    if (oldestDataRevision.isEmpty)
+      return fail(INTERNAL_SERVER_ERROR, ERR_ITEM_NO_DATA_REVISION, "Item is missing a data revision")
+    if (itemType.isEmpty)
+      return fail(INVALID_PARAMETER, ERR_ITEM_INVALID_REVISION, "There is no revision with number " + revision)
+
+    val sortedRevisionInfoList = revisionInfoList
+      .filter(revisionInfo => revisionInfo.number >= revision && revisionInfo.number <= oldestDataRevision.get)
+      .sortWith(_.number > _.number)
+
+    // Revisions are now in order starting from the latest full revision with a "data" field, we can not just diff them one after another
+    var revisionBytes: Array[Byte] = null
+    sortedRevisionInfoList.foreach { revisionInfo =>
+      if (revisionBytes == null) revisionBytes = revisionInfo.revisionNode.getProperty("data").asInstanceOf[Array[Byte]]
+      else revisionBytes = BinaryDiff.patch(revisionBytes, revisionInfo.revisionNode.getProperty("delta").asInstanceOf[Array[Byte]])
+    }
+    Right(itemType.get match {
+      case "task" => ExtendedItemChoice({
+        val unpicleResult = unpickleTask(revisionBytes)
+        if (unpicleResult.isLeft) return Left(unpicleResult.left.get)
+        unpicleResult.right.get
+      })
+      case "note" => ExtendedItemChoice({
+        val unpicleResult = unpickleNote(revisionBytes)
+        if (unpicleResult.isLeft) return Left(unpicleResult.left.get)
+        unpicleResult.right.get
+      })
+      case "list" => ExtendedItemChoice({
+        val unpicleResult = unpickleList(revisionBytes)
+        if (unpicleResult.isLeft) return Left(unpicleResult.left.get)
+        unpicleResult.right.get
+      })
+      case _ => return fail(INTERNAL_SERVER_ERROR, ERR_ITEM_MISSING_REVISION_TYPE, "Revision does not have an item type")
+    })
+  }
+
+  protected def evaluateNeedForRevision(requestedRevision: Option[Long], itemNode: Node, ownerNodes: OwnerNodes, force: Boolean = false)(implicit neo4j: DatabaseService): Option[Option[Relationship]] = {
     val latestRevisionRel = getLatestExtendedItemRevisionRelationship(itemNode)
     if (latestRevisionRel.isEmpty){
-      if (force){
+      if (force || (requestedRevision.isDefined && requestedRevision.get == 1l)){
         Some(latestRevisionRel)
       }else if (itemNode.getProperty("modified").asInstanceOf[Long] < (System.currentTimeMillis() - NEW_REVISION_TRESHOLD)){
         // Use the item's modified timestamp, so that first revision is created only after treshold
@@ -1857,7 +1923,8 @@ trait ItemDatabase extends UserDatabase {
       }
     }else{
       val latestRevision = latestRevisionRel.get.getEndNode
-      if (force){
+      val latestRevisionNumber = latestRevisionRel.get.getEndNode.getProperty("number").asInstanceOf[Long]
+      if (force || (requestedRevision.isDefined && requestedRevision.get == latestRevisionNumber+1l)){
         Some(latestRevisionRel)
       }else if (latestRevisionRel.get.hasProperty("creator") &&
                 ownerNodes.user.getProperty("uuid").asInstanceOf[String] != latestRevisionRel.get.getProperty("creator").asInstanceOf[String]){
@@ -1874,25 +1941,24 @@ trait ItemDatabase extends UserDatabase {
     }
   }
 
-  protected def createExtendedItemRevision(itemNode: Node, ownerNodes: OwnerNodes, itemLabel: Label, extItemBytes: Array[Byte], latestRevisionRel: Option[Relationship])(implicit neo4j: DatabaseService): Node = {
+  protected def createExtendedItemRevision(itemNode: Node, ownerNodes: OwnerNodes, itemLabel: Label, extItemBytes: Array[Byte], latestRevisionRel: Option[Relationship], base: Boolean = false)(implicit neo4j: DatabaseService): Node = {
     if (latestRevisionRel.isEmpty){
-      // No latest revision, make this a base revision
-      createLatestRevisionNode(itemNode, ownerNodes, itemLabel, extItemBytes, 1, base = true)
+      createLatestRevisionNode(itemNode, ownerNodes, itemLabel, extItemBytes, 1, base)
     }else{
       // Create a diff
       val latestRevisionNode = latestRevisionRel.get.getEndNode
       val latestRevisionNumber = latestRevisionNode.getProperty("number").asInstanceOf[Long]
-      val delta = BinaryDiff.getDelta(latestRevisionNode.getProperty("data").asInstanceOf[Array[Byte]], extItemBytes)
+      val delta = BinaryDiff.getDelta(extItemBytes, latestRevisionNode.getProperty("data").asInstanceOf[Array[Byte]])
       if (!latestRevisionNode.hasProperty("base")){
         latestRevisionNode.setProperty("delta", delta)
         latestRevisionNode.removeProperty("data")
       }
       latestRevisionRel.get.removeProperty("latest")
-      createLatestRevisionNode(itemNode, ownerNodes, itemLabel, extItemBytes, latestRevisionNumber + 1)
+      createLatestRevisionNode(itemNode, ownerNodes, itemLabel, extItemBytes, latestRevisionNumber + 1, base)
     }
   }
 
-  protected def createLatestRevisionNode(itemNode: Node, ownerNodes: OwnerNodes, itemLabel: Label, extItemBytes: Array[Byte], revisionNumber: Long, base: Boolean = false)(implicit neo4j: DatabaseService): Node = {
+  protected def createLatestRevisionNode(itemNode: Node, ownerNodes: OwnerNodes, itemLabel: Label, extItemBytes: Array[Byte], revisionNumber: Long, base: Boolean)(implicit neo4j: DatabaseService): Node = {
     val revisionNode = createNode(MainLabel.REVISION, itemLabel)
     revisionNode.setProperty("number", revisionNumber)
     revisionNode.setProperty("data", extItemBytes)

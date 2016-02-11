@@ -385,5 +385,100 @@ class NoteBestCaseSpec extends ServiceSpecBase {
         }
       }
     }
+    it("should successfully get revisions with GET to /[userUUID]/item/[itemUUID]/revision") {
+      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+      val newNote = Note("Spanish 101", None, None, Some("lecture notes for Spanish 101 class"), None, None, None)
+      val putNoteResponse = putNewNote(newNote, authenticateResponse)
+      getItemRevisionList(putNoteResponse.uuid.get, authenticateResponse).revisions should be (None)
+
+      // Force creation of first revision right away
+      val noteRevision1 = newNote.copy(title = "Spanish 101 and then some", revision = Some(1l))
+      putExistingNote(noteRevision1, putNoteResponse.uuid.get, authenticateResponse)
+      getItemRevisionList(putNoteResponse.uuid.get, authenticateResponse).revisions.get.length should be (1)
+      getItemRevision(putNoteResponse.uuid.get, 1l, authenticateResponse).note.get.title should be (noteRevision1.title)
+
+      // Also force creation of second revision right away
+      val noteRevision2 = newNote.copy(title = "Spanish 101 and then some 2", revision = Some(2l))
+      putExistingNote(noteRevision2, putNoteResponse.uuid.get, authenticateResponse)
+      getItemRevisionList(putNoteResponse.uuid.get, authenticateResponse).revisions.get.length should be (2)
+      getItemRevision(putNoteResponse.uuid.get, 2l, authenticateResponse).note.get.title should be (noteRevision2.title)
+      getItemRevision(putNoteResponse.uuid.get, 1l, authenticateResponse).note.get.title should be (noteRevision1.title)
+
+      // Note revision 3 is created when note converting to list
+      val noteRevision3 = newNote.copy(title = "Spanish 101 list")
+      Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/list",
+          marshal(noteRevision3)) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        val listFromNote = responseAs[List]
+        getItemRevisionList(putNoteResponse.uuid.get, authenticateResponse).revisions.get.length should be (3)
+        getItemRevision(putNoteResponse.uuid.get, 3l, authenticateResponse).list.get.title should be (noteRevision3.title)
+        getItemRevision(putNoteResponse.uuid.get, 2l, authenticateResponse).note.get.title should be (noteRevision2.title)
+        getItemRevision(putNoteResponse.uuid.get, 1l, authenticateResponse).note.get.title should be (noteRevision1.title)
+
+        // Note revision 4 is created when list is converted to task
+        val noteRevision4 = newNote.copy(title = "Spanish 101 task")
+        Post("/" + authenticateResponse.userUUID + "/list/" + putNoteResponse.uuid.get + "/task",
+          marshal(noteRevision4)) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+          val taskFromList = responseAs[Task]
+          getItemRevisionList(putNoteResponse.uuid.get, authenticateResponse).revisions.get.length should be (4)
+          getItemRevision(putNoteResponse.uuid.get, 4l, authenticateResponse).task.get.title should be (noteRevision4.title)
+          getItemRevision(putNoteResponse.uuid.get, 3l, authenticateResponse).list.get.title should be (noteRevision3.title)
+          getItemRevision(putNoteResponse.uuid.get, 2l, authenticateResponse).note.get.title should be (noteRevision2.title)
+          getItemRevision(putNoteResponse.uuid.get, 1l, authenticateResponse).note.get.title should be (noteRevision1.title)
+
+          // Note revision 5 is created when task is converted back to note
+          val noteRevision5 = newNote.copy(title = "Spanish 101 back to note")
+          Post("/" + authenticateResponse.userUUID + "/task/" + putNoteResponse.uuid.get + "/note",
+            marshal(noteRevision5)) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+            getItemRevisionList(putNoteResponse.uuid.get, authenticateResponse).revisions.get.length should be (5)
+            getItemRevision(putNoteResponse.uuid.get, 5l, authenticateResponse).note.get.title should be (noteRevision5.title)
+            getItemRevision(putNoteResponse.uuid.get, 4l, authenticateResponse).task.get.title should be (noteRevision4.title)
+            getItemRevision(putNoteResponse.uuid.get, 3l, authenticateResponse).list.get.title should be (noteRevision3.title)
+            getItemRevision(putNoteResponse.uuid.get, 2l, authenticateResponse).note.get.title should be (noteRevision2.title)
+            getItemRevision(putNoteResponse.uuid.get, 1l, authenticateResponse).note.get.title should be (noteRevision1.title)
+
+            // Publish the note thus creating a 6. revision
+            Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/publish",
+                marshal(PublishPayload("md", "spanish", Some(LicenceType.CC_BY_SA_4_0.toString), None))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+              getItemRevisionList(putNoteResponse.uuid.get, authenticateResponse).revisions.get.length should be (6)
+              getItemRevision(putNoteResponse.uuid.get, 6l, authenticateResponse).note.get.title should be (noteRevision5.title)
+              getItemRevision(putNoteResponse.uuid.get, 5l, authenticateResponse).note.get.title should be (noteRevision5.title)
+              getItemRevision(putNoteResponse.uuid.get, 4l, authenticateResponse).task.get.title should be (noteRevision4.title)
+              getItemRevision(putNoteResponse.uuid.get, 3l, authenticateResponse).list.get.title should be (noteRevision3.title)
+              getItemRevision(putNoteResponse.uuid.get, 2l, authenticateResponse).note.get.title should be (noteRevision2.title)
+              getItemRevision(putNoteResponse.uuid.get, 1l, authenticateResponse).note.get.title should be (noteRevision1.title)
+
+              // Note revision isn't created when editing after publish right away
+              val noteWithoutRevision = newNote.copy(title = "Spanish 101 modifications after publish")
+              val putNoteResponse7 = putExistingNote(noteWithoutRevision, putNoteResponse.uuid.get, authenticateResponse)
+              getItemRevisionList(putNoteResponse.uuid.get, authenticateResponse).revisions.get.length should be (6)
+
+              // Note revision 7 is again forced
+              val noteRevision7 = newNote.copy(title = "Spanish 101 modifications after publish forced", revision = Some(7l))
+              val putNoteResponse7Revision = putExistingNote(noteRevision7, putNoteResponse.uuid.get, authenticateResponse)
+
+              // Note revision 8 is again forced twice
+              val noteRevision8 = newNote.copy(title = "Spanish 101 modifications after publish forced 2", revision = Some(8l))
+              val putNoteResponse8Revision = putExistingNote(noteRevision8, putNoteResponse.uuid.get, authenticateResponse)
+              putNoteResponse8Revision.revision.get should be(8)
+
+              getItemRevisionList(putNoteResponse.uuid.get, authenticateResponse).revisions.get.length should be (8)
+              getItemRevision(putNoteResponse.uuid.get, 8l, authenticateResponse).note.get.title should be (noteRevision8.title)
+              getItemRevision(putNoteResponse.uuid.get, 7l, authenticateResponse).note.get.title should be (noteRevision7.title)
+              getItemRevision(putNoteResponse.uuid.get, 6l, authenticateResponse).note.get.title should be (noteRevision5.title)
+              getItemRevision(putNoteResponse.uuid.get, 5l, authenticateResponse).note.get.title should be (noteRevision5.title)
+              getItemRevision(putNoteResponse.uuid.get, 4l, authenticateResponse).task.get.title should be (noteRevision4.title)
+              getItemRevision(putNoteResponse.uuid.get, 3l, authenticateResponse).list.get.title should be (noteRevision3.title)
+              getItemRevision(putNoteResponse.uuid.get, 2l, authenticateResponse).note.get.title should be (noteRevision2.title)
+              getItemRevision(putNoteResponse.uuid.get, 1l, authenticateResponse).note.get.title should be (noteRevision1.title)
+            }
+          }
+        }
+      }
+
+
+
+      //PITÄISI ENSIN TEHDÄ NOTE, SITTEN KONVERTOIDA TASKIKSI, SITTEN TAKAISIN NOTEKSI, SITTEN JULKAISTA, SITTEN SAVETTAA, SITTEN HAKEA REVISIOITA
+
+    }
   }
 }

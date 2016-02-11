@@ -81,6 +81,9 @@ case object ERR_ITEM_PUBLIC_PATH_MULTIPLE extends ErrorCode(3028)
 case object ERR_ITEM_NO_REVISION_RELATIONSHIP extends ErrorCode(3029)
 case object ERR_ITEM_UNPICKLE_FAILED extends ErrorCode(3030)
 case object ERR_ITEM_MISSING_REVISION_TYPE extends ErrorCode(3031)
+case object ERR_ITEM_INVALID_REVISION extends ErrorCode(3032)
+case object ERR_ITEM_NO_DATA_REVISION extends ErrorCode(3033)
+
 
 case object ERR_LIST_ARCHIVE_CHILDREN extends ErrorCode(4001)
 case object ERR_LIST_MISSING_HISTORY_TAG extends ErrorCode(4002)

@@ -244,11 +244,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
         for {
           ownerNodes <- getOwnerNodes(owner).right
           noteNode <- getItemNode(getOwnerUUID(owner), noteUUID, exactLabelMatch = false).right
-          noteNode <- updateItemNode(noteNode,
-              note.copy(
-                format = if (noteNode.hasProperty("published") && noteNode.hasProperty("format") && note.format.isEmpty)
-                           Some(noteNode.getProperty("format").asInstanceOf[String])
-                         else note.format),
+          noteNode <- updateItemNode(noteNode, note,
               Some(ItemLabel.NOTE), None, None, note.modified).right
           archived <- setParentNode(noteNode, ownerNodes, note.parent, skipParentHistoryTag=false).right
           tagNodes <- setTagNodes(noteNode, ownerNodes, note).right
@@ -409,14 +405,10 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
 
           // Create a revision and mark it published
           val latestRevisionRel = getLatestExtendedItemRevisionRelationship(noteNode)
-          val newRevisionNumber =
-            if (latestRevisionRel.isDefined)
-              latestRevisionRel.get.getEndNode.getProperty("number").asInstanceOf[Long] + 1
-            else 1
           for{
             note <- toNote(noteNode, ownerNodes, skipParent = true).right
             noteBytes <- Right(pickleNote(getNoteForPickling(note))).right
-            noteRevisionNode <- Right(createLatestRevisionNode(noteNode, ownerNodes, ItemLabel.NOTE, noteBytes, newRevisionNumber, base = true)).right
+            noteRevisionNode <- Right(createExtendedItemRevision(noteNode, ownerNodes, ItemLabel.NOTE, noteBytes, latestRevisionRel, base = true)).right
             published <- Right(setNotePublished(getUUID(ownerNode), noteNode, noteRevisionNode, format, path, licence, overridePublished)).right
           } yield published
         }
@@ -492,7 +484,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
   protected def evaluateNoteRevision(note: Note, noteNode: Node, ownerNodes: OwnerNodes, force: Boolean = false): Option[Long] = {
     withTx {
       implicit neo4j =>
-        evaluateNeedForRevision(noteNode, ownerNodes, force).flatMap(latestRevisionRel => {
+        evaluateNeedForRevision(note.revision, noteNode, ownerNodes, force).flatMap(latestRevisionRel => {
           val noteBytes = pickleNote(getNoteForPickling(note))
           val revisionNode = createExtendedItemRevision(noteNode, ownerNodes, ItemLabel.NOTE, noteBytes, latestRevisionRel)
           Some(revisionNode.getProperty("number").asInstanceOf[Long])

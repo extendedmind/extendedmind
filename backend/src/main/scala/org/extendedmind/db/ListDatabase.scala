@@ -462,7 +462,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
   protected def evaluateListRevision(list: List, listNode: Node, ownerNodes: OwnerNodes, force: Boolean = false): Option[Long] = {
     withTx {
       implicit neo4j =>
-        evaluateNeedForRevision(listNode, ownerNodes, force).flatMap(latestRevisionRel => {
+        evaluateNeedForRevision(list.revision, listNode, ownerNodes, force).flatMap(latestRevisionRel => {
           // Create a revision containing only the fields that can be set using putExistingNote, and the modified timestamp
           val listBytes = pickleList(getListForPickling(list))
           val revisionNode = createExtendedItemRevision(listNode, ownerNodes, ItemLabel.LIST, listBytes, latestRevisionRel)

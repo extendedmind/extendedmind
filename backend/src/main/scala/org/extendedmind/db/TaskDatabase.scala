@@ -505,7 +505,7 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
   protected def evaluateTaskRevision(task: Task, taskNode: Node, ownerNodes: OwnerNodes, force: Boolean = false): Option[Long] = {
     withTx {
       implicit neo4j =>
-        evaluateNeedForRevision(taskNode, ownerNodes, force).flatMap(latestRevisionRel => {
+        evaluateNeedForRevision(task.revision, taskNode, ownerNodes, force).flatMap(latestRevisionRel => {
           // Create a revision containing only the fields that can be set using putExistingTask
           val taskBytes = pickleTask(getTaskForPickling(task))
           val revisionNode = createExtendedItemRevision(taskNode, ownerNodes, ItemLabel.TASK, taskBytes, latestRevisionRel)
