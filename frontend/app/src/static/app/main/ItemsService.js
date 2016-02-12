@@ -249,6 +249,9 @@
       if (items[ownerUUID].deletedItems.findFirstObjectByKeyValue('uuid', item.trans.uuid, 'trans')) {
         deferred.reject({type: 'deleted'});
       } else {
+        // Copy item description as note content
+        item.trans.content = item.trans.description;
+        item.trans.description = undefined;
         NotesService.saveNote(item).then(function(/*result*/){
           removeActiveItem(item, ownerUUID);
           deferred.resolve(item);
