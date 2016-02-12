@@ -1904,8 +1904,8 @@ trait ItemDatabase extends UserDatabase {
     if (latestRevisionRel.isEmpty){
       if (force || (requestedRevision.isDefined && requestedRevision.get == 1l)){
         Some(latestRevisionRel)
-      }else if (itemNode.getProperty("modified").asInstanceOf[Long] < (System.currentTimeMillis() - NEW_REVISION_TRESHOLD)){
-        // Use the item's modified timestamp, so that first revision is created only after treshold
+      }else if (itemNode.getProperty("created").asInstanceOf[Long] < (System.currentTimeMillis() - NEW_REVISION_TRESHOLD)){
+        // Use the item's created timestamp, so that first revision is created only after treshold
         Some(latestRevisionRel)
       }else{
         // If there is a previous IS_CREATOR relationship (shared list or collective) then check that this save isn't someone else saving
