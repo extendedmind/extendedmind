@@ -123,6 +123,7 @@
       // TODO
       // 'assignee',
       // 'assigner',
+      ExtendedItemService.getRevisionFieldInfo(),
       ExtendedItemService.getRelationshipsFieldInfo()
     ]
   );

@@ -292,7 +292,16 @@
               <span class="text-metadata">show notes first</span>
             </div>
           </div>
-
+          <div ng-if="showEditorProperty('revisions', list)" class="group-mixed text-field">
+            <div class="group-mixed--middle">
+              <a href swiper-click="openRevisionPicker(list)">
+                <span class="text-field--title" ng-bind="list.revision"></span>
+              </a>
+            </div>
+            <div class="group-mixed--right">
+              <span class="text-field--label">revisions</span>
+            </div>
+          </div>
           <div ng-if="showEditorProperty('created', list)" class="group-mixed text-field">
             <div class="group-mixed--middle">
               <span class="text-field--title">
@@ -337,11 +346,11 @@
         class="container-content--after editor-footer" editor-footer="slideInfo">
           <!-- CONVERT -->
           <div ng-if="showListEditorComponent('advancedFooter', 'convert')" class="group-symmetrical">
-            <a href ng-class="!showEditorAction('convertToTask') && 'invisible'"
+            <a href ng-class="!showEditorAction('convertToTask', list) && 'invisible'"
                class="group-symmetrical--left link" swiper-click="convertToTask(list)">
               <span class="text-convert small">task</span>
             </a>
-            <a href ng-class="!showEditorAction('convertToNote') && 'invisible'"
+            <a href ng-class="!showEditorAction('convertToNote', list) && 'invisible'"
             class="group-symmetrical--middle group-centered link" swiper-click="convertToNote(list)">
               <span class="text-convert small">note</span>
             </a>

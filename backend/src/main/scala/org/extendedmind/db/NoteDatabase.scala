@@ -137,16 +137,16 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
       revision <- Right(evaluateTaskRevision(convertResult._2, convertResult._1, convertResult._3, force=true)).right
       result <- Right(getSetResult(convertResult._1, false, revision = revision)).right
       unit <- Right(updateItemsIndex(convertResult._1, result)).right
-    } yield (convertResult._2.copy(modified = Some(result.modified)))
+    } yield (convertResult._2.copy(modified = Some(result.modified), revision = revision))
   }
 
   def noteToList(owner: Owner, noteUUID: UUID, note: Note): Response[List] = {
     for {
       convertResult <- convertNoteToList(owner, noteUUID, note).right
       revision <- Right(evaluateListRevision(convertResult._2, convertResult._1, convertResult._3, force=true)).right
-      result <- Right(getSetResult(convertResult._1, false, revision = revision)).right
+      result <- Right(getSetResult(convertResult._1, false)).right
       unit <- Right(updateItemsIndex(convertResult._1, result)).right
-    } yield (convertResult._2.copy(modified = Some(result.modified)))
+    } yield (convertResult._2.copy(modified = Some(result.modified), revision = revision))
   }
 
   def previewNote(owner: Owner, noteUUID: UUID, format: String): Response[PreviewNoteResult] = {

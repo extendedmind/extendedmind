@@ -35,7 +35,8 @@
       if (!subcomponentName) {
         return !$scope.isPropertyInDedicatedEdit();
       } else if (subcomponentName === 'convert') {
-        return $scope.showEditorAction('convertToList') || $scope.showEditorAction('convertToNote');
+        return $scope.showEditorAction('convertToList', $scope.task) ||
+               $scope.showEditorAction('convertToNote', $scope.task);
       } else if (subcomponentName === 'navigation') {
         return !$scope.isFooterNavigationHidden();
       }

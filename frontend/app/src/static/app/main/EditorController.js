@@ -524,6 +524,12 @@
       editorFooterCloseCallback();
   };
 
+  // REVISION PICKER WIDGET
+
+  $scope.openRevisionPicker = function(){
+    console.log("TODO: REVISION PICKER");
+  };
+
   // TEXT PROPERTIES (i.e. description, url and content)
 
   $scope.setTextPropertyFocus = function(name, hasFocus, item){
@@ -680,11 +686,13 @@
       case 'restore':
       return item.trans.deleted && !$scope.isPropertyInDedicatedEdit();
       case 'convertToNote':
-      return $scope.fullEditor && $scope.features.notes.getStatus() !== 'disabled';
+      return $scope.fullEditor && $scope.features.notes.getStatus() !== 'disabled' &&
+             (!item.visibility || !item.visibility.published);
       case 'convertToList':
-      return $scope.fullEditor && $scope.features.lists.getStatus('active') !== 'disabled';
+      return $scope.fullEditor && $scope.features.lists.getStatus('active') !== 'disabled' &&
+             (!item.visibility || !item.visibility.published);
       case 'convertToTask':
-      return $scope.fullEditor;
+      return $scope.fullEditor && (!item.visibility || !item.visibility.published);
     }
   };
 
@@ -694,6 +702,8 @@
       return !$scope.isPropertyInDedicatedEdit();
       case 'url':
       return !$scope.isOtherPropertyInEdit('url');
+      case 'revisions':
+      return item.revision !== undefined;
       case 'description':
       return !$scope.isOtherPropertyInEdit('description');
       case 'created':

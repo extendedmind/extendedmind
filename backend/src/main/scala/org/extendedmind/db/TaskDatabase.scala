@@ -136,18 +136,18 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     for {
       convertResult <- convertTaskToList(owner, taskUUID, task).right
       revision <- Right(evaluateListRevision(convertResult._2, convertResult._1, convertResult._3, force=true)).right
-      result <- Right(getSetResult(convertResult._1, false, revision = revision)).right
+      result <- Right(getSetResult(convertResult._1, false)).right
       unit <- Right(updateItemsIndex(convertResult._1, result)).right
-    } yield (convertResult._2.copy(modified = Some(result.modified)))
+    } yield (convertResult._2.copy(modified = Some(result.modified), revision = revision))
   }
 
   def taskToNote(owner: Owner, taskUUID: UUID, task: Task): Response[Note] = {
     for {
       convertResult <- convertTaskToNote(owner, taskUUID, task).right
       revision <- Right(evaluateNoteRevision(convertResult._2, convertResult._1, convertResult._3, force=true)).right
-      result <- Right(getSetResult(convertResult._1, false, revision = revision)).right
+      result <- Right(getSetResult(convertResult._1, false)).right
       unit <- Right(updateItemsIndex(convertResult._1, result)).right
-    } yield (convertResult._2.copy(modified = Some(result.modified)))
+    } yield (convertResult._2.copy(modified = Some(result.modified), revision = revision))
   }
 
   // PRIVATE

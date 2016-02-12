@@ -116,9 +116,9 @@ trait ListDatabase extends UserDatabase with TagDatabase {
     for {
       convertResult <- convertListToTask(owner, listUUID, list).right
       revision <- Right(evaluateTaskRevision(convertResult._2, convertResult._1, convertResult._3, force=true)).right
-      result <- Right(getSetResult(convertResult._1, false, revision = revision)).right
+      result <- Right(getSetResult(convertResult._1, false)).right
       unit <- Right(updateItemsIndex(convertResult._1, result)).right
-    } yield (convertResult._2.copy(modified = Some(result.modified)))
+    } yield (convertResult._2.copy(modified = Some(result.modified), revision = revision))
   }
 
   def listToNote(owner: Owner, listUUID: UUID, list: List): Response[Note] = {
@@ -127,7 +127,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
       revision <- Right(evaluateNoteRevision(convertResult._2, convertResult._1, convertResult._3, force=true)).right
       result <- Right(getSetResult(convertResult._1, false, revision = revision)).right
       unit <- Right(updateItemsIndex(convertResult._1, result)).right
-    } yield (convertResult._2.copy(modified = Some(result.modified)))
+    } yield (convertResult._2.copy(modified = Some(result.modified), revision = revision))
   }
 
   // PRIVATE

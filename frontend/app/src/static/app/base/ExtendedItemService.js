@@ -256,6 +256,15 @@
         resetTrans: this.resetRelationshipsTrans
       };
     },
+    getRevisionFieldInfo: function(){
+      return {
+        name: 'revision',
+        isEdited: function(){return false;},
+        skipTransport: true,
+        resetTrans: function(){},
+        copyTransToMod: function(){}
+      };
+    },
     isRelationshipsEdited: function(extendedItem, ownerUUID, compareValues){
       if (extendedItem.trans.list || extendedItem.trans.context || extendedItem.trans.keywords){
         if (!compareValues){

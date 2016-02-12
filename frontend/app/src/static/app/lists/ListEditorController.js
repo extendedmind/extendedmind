@@ -164,7 +164,8 @@
       }else if (subcomponentName === 'navigation'){
         return !$scope.isFooterNavigationHidden();
       }else if (subcomponentName === 'convert'){
-        return $scope.showEditorAction('convertToTask') || $scope.showEditorAction('convertToNote');
+        return $scope.showEditorAction('convertToTask', $scope.list) ||
+               $scope.showEditorAction('convertToNote', $scope.list);
       }
       break;
     }

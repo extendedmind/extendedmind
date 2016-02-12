@@ -142,6 +142,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
         listFromNote.uuid.get should be (putNoteResponse.uuid.get)
         listFromNote.title should be ("Spanish studies")
         listFromNote.description.get should be ("lecture notes for Spanish 101 class")
+        listFromNote.revision.get should be (1l)
 
         Post("/" + authenticateResponse.userUUID + "/list/" + putNoteResponse.uuid.get + "/note",
           marshal(listFromNote.copy(title = "Spanish 101"))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {

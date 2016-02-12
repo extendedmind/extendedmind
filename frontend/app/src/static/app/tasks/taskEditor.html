@@ -434,7 +434,16 @@
               <span class="text-error">invalid url</span>
             </div>
           </div>
-
+          <div ng-if="showEditorProperty('revisions', task)" class="group-mixed text-field">
+            <div class="group-mixed--middle">
+              <a href swiper-click="openRevisionPicker(task)">
+                <span class="text-field--title" ng-bind="task.revision"></span>
+              </a>
+            </div>
+            <div class="group-mixed--right">
+              <span class="text-field--label">revisions</span>
+            </div>
+          </div>
           <div ng-if="showEditorProperty('created', task)" class="group-mixed text-field">
             <div class="group-mixed--middle">
               <span class="text-field--title">
@@ -480,11 +489,11 @@
           <!-- CONVERT -->
           <div class="group-symmetrical" ng-if="showTaskEditorComponent('advancedFooter', 'convert')">
             <a href class="group-symmetrical--left link"
-              ng-class="!showEditorAction('convertToNote') && 'invisible'" swiper-click="convertToNote(task)">
+              ng-class="!showEditorAction('convertToNote', task) && 'invisible'" swiper-click="convertToNote(task)">
               <span class="text-convert small">note</span>
             </a>
             <a href class="group-symmetrical--middle group-centered link"
-              ng-class="!showEditorAction('convertToList') && 'invisible'" swiper-click="convertToList(task)">
+              ng-class="!showEditorAction('convertToList', task) && 'invisible'" swiper-click="convertToList(task)">
               <span class="text-convert small">list</span>
             </a>
             <div class="group-symmetrical--right">

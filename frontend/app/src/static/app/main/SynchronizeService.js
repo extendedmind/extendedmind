@@ -802,11 +802,11 @@
           }
         } else if (request.content.url.endsWith('/note')){
           // Convert to note
-          properties = {modified: response.modified};
+          properties = {modified: response.modified, revision: response.revision};
           updateModProperties(request.params.uuid, 'note', properties, request.params.owner);
         } else if (request.content.url.endsWith('/list')){
           // Convert to list
-          properties = {modified: response.modified};
+          properties = {modified: response.modified, revision: response.revision};
           updateModProperties(request.params.uuid, 'list', properties, request.params.owner);
         }
         if (properties)
@@ -823,11 +823,11 @@
           localModToggleValueWins = true;
         } else if (request.content.url.endsWith('/task')){
           // Convert to task
-          properties = {modified: response.modified};
+          properties = {modified: response.modified, revision: response.revision};
           updateModProperties(request.params.uuid, 'task', properties, request.params.owner);
         } else if (request.content.url.endsWith('/list')){
           // Convert to list
-          properties = {modified: response.modified};
+          properties = {modified: response.modified, revision: response.revision};
           updateModProperties(request.params.uuid, 'list', properties, request.params.owner);
         }
         if (properties)
@@ -839,11 +839,11 @@
           updateModProperties(request.params.uuid, request.params.type, properties, request.params.owner);
         } else if (request.content.url.endsWith('/note')){
           // Convert to note
-          properties = {modified: response.modified};
+          properties = {modified: response.modified, revision: response.revision};
           updateModProperties(request.params.uuid, 'note', properties, request.params.owner);
         } else if (request.content.url.endsWith('/task')){
           // Convert to task
-          properties = {modified: response.modified};
+          properties = {modified: response.modified, revision: response.revision};
           updateModProperties(request.params.uuid, 'task', properties, request.params.owner);
         }
       } else if (request.params.type === 'tag') {
@@ -861,6 +861,7 @@
         properties = {modified: response.modified};
         if (response.archived) properties.archived = response.archived;
         if (response.associated) properties.associated = response.associated;
+        if (response.revision) properties.revision = response.revision;
         if (request.params.type === 'user') {
           UserSessionService.setUserModified(properties.modified);
         } else {

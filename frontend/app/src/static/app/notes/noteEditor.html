@@ -323,7 +323,16 @@
       <div class="swiper-slide" swiper-slide="noteEditor/advanced" slide-index="1"
         ng-init="slideInfo = {footerId: 'advancedFooter'}">
         <div ng-style="{'padding-bottom': slideInfo.footerHeight}" class="container-content">
-
+          <div ng-if="showEditorProperty('revisions', note)" class="group-mixed text-field">
+            <div class="group-mixed--middle">
+              <a href swiper-click="openRevisionPicker(note)">
+                <span class="text-field--title" ng-bind="note.revision"></span>
+              </a>
+            </div>
+            <div class="group-mixed--right">
+              <span class="text-field--label">revisions</span>
+            </div>
+          </div>
           <div ng-if="showEditorProperty('created', note)" class="group-mixed text-field">
             <div class="group-mixed--middle">
               <span class="text-field--title">
@@ -368,11 +377,11 @@
           class="container-content--after editor-footer" editor-footer="slideInfo">
           <!-- CONVERT -->
           <div ng-if="showNoteEditorComponent('advancedFooter', 'convert')" class="group-symmetrical">
-            <a href ng-class="!showEditorAction('convertToTask') && 'invisible'"
+            <a href ng-class="!showEditorAction('convertToTask', note) && 'invisible'"
                class="group-symmetrical--left link" swiper-click="convertToTask(note)">
               <span class="text-convert small">task</span>
             </a>
-            <a href ng-class="!showEditorAction('convertToList') && 'invisible'"
+            <a href ng-class="!showEditorAction('convertToList', note) && 'invisible'"
               class="group-symmetrical--middle group-centered link"
               swiper-click="convertToList(note)">
               <span class="text-convert small">list</span>

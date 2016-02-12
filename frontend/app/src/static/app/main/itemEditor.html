@@ -168,12 +168,12 @@
         </a>
         <div class="group-symmetrical--middle width-large">
           <a href class="link" swiper-click="convertToNote(item)"
-          ng-class="!showEditorAction('convertToNote') && 'invisible'">
+          ng-class="!showEditorAction('convertToNote', item) && 'invisible'">
             <span class="text-convert">note</span>
           </a>
         </div>
         <a href class="group-symmetrical--right link"
-          ng-class="!showEditorAction('convertToList') && 'invisible'"
+          ng-class="!showEditorAction('convertToList', item) && 'invisible'"
           swiper-click="convertToList(item)">
           <span class="text-convert">list</span>
         </a>

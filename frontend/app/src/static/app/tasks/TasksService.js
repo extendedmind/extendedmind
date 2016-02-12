@@ -181,6 +181,7 @@
       // assignee,
       // assigner,
       // visibility,
+      ExtendedItemService.getRevisionFieldInfo(),
       ExtendedItemService.getRelationshipsFieldInfo()
     ]
   );

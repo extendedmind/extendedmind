@@ -100,7 +100,8 @@
         return !$scope.isPropertyInDedicatedEdit() && !$scope.isFooterNavigationHidden();
       }else if (subcomponentName === 'convert'){
         return !$scope.isPropertyInDedicatedEdit() &&
-        ($scope.showEditorAction('convertToTask') || $scope.showEditorAction('convertToList'));
+        ($scope.showEditorAction('convertToTask', $scope.note) ||
+         $scope.showEditorAction('convertToList', $scope.note));
       }
       break;
     }

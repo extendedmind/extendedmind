@@ -80,6 +80,7 @@ class ItemBestCaseSpec extends ServiceSpecBase {
         itemsResponse.tasks should not be None
         itemsResponse.tasks.get.length should equal(7)
         itemsResponse.notes should not be None
+        itemsResponse.notes.get.find(note => note.revision.isDefined) should not be(None)
         itemsResponse.lists should not be None
         itemsResponse.lists.get.find(
             list=>list.visibility.isDefined &&

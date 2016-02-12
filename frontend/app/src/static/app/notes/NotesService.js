@@ -57,6 +57,7 @@
       },
       // TODO:
       // visibility,
+      ExtendedItemService.getRevisionFieldInfo(),
       ExtendedItemService.getRelationshipsFieldInfo()
     ]
   );
