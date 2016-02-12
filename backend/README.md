@@ -6,18 +6,16 @@ Extended Mind - Backend
 Docker
 -------
 
-* Arch Linux (https://wiki.archlinux.org/index.php/Docker)
-
+* Arch Linux (https://wiki.archlinux.org/index.php/Docker) install docker
     sudo pacman -S docker
-    sudo nano /usr/lib/systemd/system/docker.service
 
 * Set host to start listening to a TCP port by adding a docker systemd override:
-    sudo systemctl edit unit
+    sudo systemctl edit docker
 
 ```
 [Service]
 ExecStart=
-ExecStart=/usr/bin/docker -d -H tcp://localhost:2375
+ExecStart=/usr/bin/docker daemon -H tcp://localhost:2375
 ```
 
     export DOCKER_HOST=tcp://localhost:2375
