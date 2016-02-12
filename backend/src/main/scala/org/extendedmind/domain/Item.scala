@@ -52,7 +52,7 @@ case class Items(items: Option[scala.List[Item]],
          tags: Option[scala.List[Tag]],
          assigned: Option[scala.List[AssignedItems]])
 
-case class SharedItemVisibility(published: Option[Long], path: Option[String],
+case class SharedItemVisibility(published: Option[Long], path: Option[String], licence: Option[String],
                                 preview: Option[Long], previewExpires: Option[Long],
                                 agreements: Option[scala.List[Agreement]])
 case class ExtendedItemRelationships(parent: Option[UUID], origin: Option[UUID], assignee: Option[UUID],

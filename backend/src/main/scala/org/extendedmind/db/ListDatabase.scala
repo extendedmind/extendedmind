@@ -453,7 +453,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
         if (agreement.isLeft) return Left(agreement.left.get)
         else agreement.right.get
       })
-      Right(Some(SharedItemVisibility(None, None, None, None, Some(agreements))))
+      Right(Some(SharedItemVisibility(None, None, None, None, None, Some(agreements))))
     }else{
       Right(None)
     }

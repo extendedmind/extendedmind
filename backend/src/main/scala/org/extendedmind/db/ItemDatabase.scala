@@ -183,7 +183,7 @@ trait ItemDatabase extends UserDatabase {
           ownerNode <- getNode(ownerUUID, MainLabel.OWNER).right
           itemNode <- getItemNode(ownerUUID, itemUUID, exactLabelMatch = false).right
           unit <- validateItemPreviewable(ownerNode, itemNode, previewCode).right
-          publicItem <- toPublicItem(ownerNode, itemNode, getDisplayOwner(ownerNode)).right
+          publicItem <- toPreviewItem(ownerNode, itemNode, getDisplayOwner(ownerNode)).right
         } yield publicItem
     }
   }
@@ -1453,9 +1453,9 @@ trait ItemDatabase extends UserDatabase {
                 unpublished = if (unpublishedBuffer.isEmpty) None else Some(unpublishedBuffer.toList)))
   }
 
-  protected def toPublicItem(ownerNode: Node, itemNode: Node, displayOwner: String)(implicit neo4j: DatabaseService): Response[PublicItem] = {
+  protected def toPreviewItem(ownerNode: Node, itemNode: Node, displayOwner: String)(implicit neo4j: DatabaseService): Response[PublicItem] = {
     if (itemNode.hasLabel(ItemLabel.NOTE)){
-      noteToPublicItem(ownerNode, itemNode, displayOwner)
+      noteToPreviewItem(ownerNode, itemNode, displayOwner)
     }else{
       fail(INTERNAL_SERVER_ERROR, ERR_ITEM_NOT_NOTE, "Public item not note")
     }
@@ -1470,7 +1470,7 @@ trait ItemDatabase extends UserDatabase {
   }
 
   // Abstract functions
-  protected def noteToPublicItem(ownerNode: Node, noteNode: Node, displayOwner: String)(implicit neo4j: DatabaseService): Response[PublicItem]
+  protected def noteToPreviewItem(ownerNode: Node, noteNode: Node, displayOwner: String)(implicit neo4j: DatabaseService): Response[PublicItem]
   protected def noteRevisionToPublicItem(ownerNode: Node, noteRevisionNode: Node, displayOwner: String)(implicit neo4j: DatabaseService): Response[PublicItem]
 
   protected def validateUser(userUUID: UUID)(implicit neo4j: DatabaseService): Option[UUID] = {
