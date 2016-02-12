@@ -904,30 +904,34 @@
       },
       function(error) {
         var rejection, emitType;
-        if (error.type === 'offline') {
-          emitType = 'emInteraction';
-          rejection = {
-            type: 'onlineRequired',
-            value: {
-              status: error.value.status,
-              data: error.value.data,
-              retry: function() {
-                return getAllMethod(ownerUUID);
-              },
-              promise: function() {
-                deferred.resolve('firstSync');
-              }
-          }};
-        } else {
-          emitType = 'emException';
-          rejection = {type: 'http',
-                       value: {
-                         status: error.value.status,
-                         data: error.value.data, url: error.value.config.url
-                       }};
+        if (!error.skipNotify){
+          if (error.type === 'offline') {
+            emitType = 'emInteraction';
+            rejection = {
+              type: 'onlineRequired',
+              value: {
+                status: error.value.status,
+                data: error.value.data,
+                retry: function() {
+                  return getAllMethod(ownerUUID);
+                },
+                promise: function() {
+                  deferred.resolve('firstSync');
+                }
+            }};
+          } else {
+            emitType = 'emException';
+            rejection = {type: 'http',
+                         value: {
+                           status: error.value.status,
+                           data: error.value.data, url: error.value.config.url
+                         }};
+          }
+          $rootScope.$emit(emitType, rejection);
+          return $q.reject(rejection);
+        }else{
+          return $q.reject(error);
         }
-        $rootScope.$emit(emitType, rejection);
-        return $q.reject(rejection);
       });
   }
 
@@ -962,12 +966,19 @@
   }
 
   function getAllTagsOnline(ownerUUID) {
+
     return BackendClientService.getSecondary('/api/' +
                                              ownerUUID +
                                              '/items?tagsOnly=true', getItemsRegex,
                                              undefined, true).then(function(response) {
       setItemArrays(response, ownerUUID);
       return response;
+    }, function(error){
+      if (error.type === 'offline'){
+        // This is harmless for the getTags method, mark the error as non-emitting
+        error.skipNotify = true;
+      }
+      return $q.reject(error);
     });
   }
 
