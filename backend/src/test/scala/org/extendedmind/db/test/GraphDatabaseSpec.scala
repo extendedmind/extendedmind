@@ -80,7 +80,7 @@ class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
               Some(scala.List(UUID.randomUUID())),
               Some(scala.List((UUID.randomUUID(), scala.List(UUID.randomUUID()))))))).copy(
             visibility = Some(SharedItemVisibility(Some(System.currentTimeMillis()),
-              Some("test"), None, None, Some(scala.List(Agreement(None, None, None, "list", 1, None,
+              Some("test"), None, None, None, Some(scala.List(Agreement(None, None, None, "list", 1, None,
               Some(AgreementTarget(UUID.randomUUID(), Some("sdaasd"))),
               Some(AgreementUser(Some(UUID.randomUUID()), None)), None))))))
       val byteNote = db.pickleNote(note)

@@ -214,13 +214,14 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
         creator = getItemCreatorUUID(noteNode),
         revision = latestRevisionRel.flatMap(latestRevisionRel => Some(latestRevisionRel.getEndNode.getProperty("number").asInstanceOf[Long])),
         visibility =
-          (if (publishedRevisionRel.isDefined && (publishedRevisionRel.get.getEndNode.hasProperty("published") || publishedRevisionRel.get.getEndNode.hasProperty("preview")))
+          (if (noteNode.hasProperty("preview") ||
+              (publishedRevisionRel.isDefined && (publishedRevisionRel.get.getEndNode.hasProperty("published") || publishedRevisionRel.get.getEndNode.hasProperty("preview"))))
             Some(SharedItemVisibility(
-                 if (publishedRevisionRel.get.getEndNode.hasProperty("published")) Some(publishedRevisionRel.get.getEndNode.getProperty("published").asInstanceOf[Long]) else None,
-                 if (publishedRevisionRel.get.getEndNode.hasProperty("path")) Some(publishedRevisionRel.get.getEndNode.getProperty("path").asInstanceOf[String]) else None,
-                 if (publishedRevisionRel.get.getEndNode.hasProperty("licence")) Some(publishedRevisionRel.get.getEndNode.getProperty("licence").asInstanceOf[String]) else None,
-                 if (publishedRevisionRel.get.getEndNode.hasProperty("preview")) Some(publishedRevisionRel.get.getEndNode.getProperty("preview").asInstanceOf[Long]) else None,
-                 if (publishedRevisionRel.get.getEndNode.hasProperty("previewExpires")) Some(publishedRevisionRel.get.getEndNode.getProperty("previewExpires").asInstanceOf[Long]) else None,
+                 if (publishedRevisionRel.isDefined && publishedRevisionRel.get.getEndNode.hasProperty("published")) Some(publishedRevisionRel.get.getEndNode.getProperty("published").asInstanceOf[Long]) else None,
+                 if (publishedRevisionRel.isDefined && publishedRevisionRel.get.getEndNode.hasProperty("path")) Some(publishedRevisionRel.get.getEndNode.getProperty("path").asInstanceOf[String]) else None,
+                 if (publishedRevisionRel.isDefined && publishedRevisionRel.get.getEndNode.hasProperty("licence")) Some(publishedRevisionRel.get.getEndNode.getProperty("licence").asInstanceOf[String]) else None,
+                 if (noteNode.hasProperty("preview")) Some(noteNode.getProperty("preview").asInstanceOf[Long]) else None,
+                 if (noteNode.hasProperty("previewExpires")) Some(noteNode.getProperty("previewExpires").asInstanceOf[Long]) else None,
                  None))
            else None),
         relationships =
@@ -519,7 +520,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
       note <- toNote(noteNode, owner, tagRelationships=Some(tagRels), skipParent=true).right
       tagsResult <- getTagsWithParents(tagRels, owner, noUi=true).right
       assignee <- Right(getAssignee(noteNode)).right
-    } yield PublicItem(displayOwner, stripNonPublicFieldsFromNote(note.copy(visibility = None)),
+    } yield PublicItem(displayOwner, stripNonPublicFieldsFromNote(note),
         tagsResult._1,
         tagsResult._2,
         assignee)
