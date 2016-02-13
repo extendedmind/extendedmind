@@ -263,7 +263,7 @@ trait AdminService extends ServiceBase {
             complete {
               Future[CountResult] {
                 setLogContext(securityContext)
-                adminActions.upgradePublishedNotes(ownerUUID) match {
+                adminActions.upgradePublishedNotes(securityContext.userUUID, ownerUUID) match {
                   case Right(result) => processResult(result)
                   case Left(e) => processErrors(e)
                 }

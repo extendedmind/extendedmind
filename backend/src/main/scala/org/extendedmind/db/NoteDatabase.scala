@@ -173,10 +173,11 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     } yield result
   }
 
-  def upgradePublishedNotes(ownerUUID: UUID): Response[CountResult] = {
+  def upgradePublishedNotes(userUUID: UUID, ownerUUID: UUID): Response[CountResult] = {
     for{
+      ownerNode <- getNode(ownerUUID, MainLabel.OWNER).right
       noteNodes <- removeUnpublishedAndGetPublishedNotes(ownerUUID: UUID).right
-      result <- Right(upgradePublishedNotes(ownerUUID, noteNodes)).right
+      result <- Right(upgradePublishedNotes(userUUID, ownerNode, noteNodes)).right
     } yield result
   }
 
@@ -611,14 +612,21 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     }
   }
 
-  def upgradePublishedNotes(ownerUUID: UUID, noteNodes: scala.List[Node]): CountResult = {
+  def upgradePublishedNotes(userUUID: UUID, ownerNode: Node, noteNodes: scala.List[Node]): CountResult = {
     noteNodes.foreach (noteNode => {
       var path: String = ""
       var format: String = ""
       var published: Long = 0l
       var uuid: UUID = null
+      var owner: Owner = null
       withTx {
         implicit neo4j =>
+          if (owner == null){
+            if (ownerNode.hasLabel(OwnerLabel.COLLECTIVE))
+              owner = Owner(userUUID, Some(getUUID(ownerNode)), Token.ADMIN)
+            else
+              owner = Owner(getUUID(ownerNode), None, Token.ADMIN)
+          }
           path = noteNode.getProperty("path").asInstanceOf[String]
           format = noteNode.getProperty("format").asInstanceOf[String]
           published = noteNode.getProperty("published").asInstanceOf[Long]
@@ -628,7 +636,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
           uuid = getUUID(noteNode)
       }
       for {
-        publishResult <- publishNote(Owner(ownerUUID, None, Token.ADMIN), uuid, format, path, Some(LicenceType.CC_BY_SA_4_0.toString), overridePublished = Some(published)).right
+        publishResult <- publishNote(owner, uuid, format, path, Some(LicenceType.CC_BY_SA_4_0.toString), overridePublished = Some(published)).right
       } yield publishResult
     })
     CountResult(noteNodes.length)
