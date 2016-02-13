@@ -220,6 +220,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
                  if (publishedRevisionRel.isDefined && publishedRevisionRel.get.getEndNode.hasProperty("published")) Some(publishedRevisionRel.get.getEndNode.getProperty("published").asInstanceOf[Long]) else None,
                  if (publishedRevisionRel.isDefined && publishedRevisionRel.get.getEndNode.hasProperty("path")) Some(publishedRevisionRel.get.getEndNode.getProperty("path").asInstanceOf[String]) else None,
                  if (publishedRevisionRel.isDefined && publishedRevisionRel.get.getEndNode.hasProperty("licence")) Some(publishedRevisionRel.get.getEndNode.getProperty("licence").asInstanceOf[String]) else None,
+                 None, // TODO: Reviewing
                  if (noteNode.hasProperty("preview")) Some(noteNode.getProperty("preview").asInstanceOf[Long]) else None,
                  if (noteNode.hasProperty("previewExpires")) Some(noteNode.getProperty("previewExpires").asInstanceOf[Long]) else None,
                  None))
@@ -547,7 +548,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
       assignee <- getAssignee(note).right
     } yield PublicItem(displayOwner,
         note.copy(modified = Some(published),
-                  visibility = Some(SharedItemVisibility(Some(published),Some(path), licence, None, None, None))),
+                  visibility = Some(SharedItemVisibility(Some(published),Some(path), licence, None, None, None, None))),
         tagsResult._1,
         tagsResult._2,
         assignee)
