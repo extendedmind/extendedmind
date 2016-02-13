@@ -37,9 +37,8 @@ case class Tag(
       link: Option[String],
       creator: Option[UUID],
       tagType: Option[TagType], // This is always Some
-      visibility: Option[SharedItemVisibility],
       parent: Option[UUID])
-      extends ShareableItem{
+      extends ItemLike{
   if (id.isDefined) require(validateLength(id.get, 100), "Id can not be more than 100 characters")
   if (ui.isDefined) require(validateLength(ui.get, 10000), "UI preferences max length is 10000")
   require(validateTitle(title), "Title can not be more than " + TITLE_MAX_LENGTH + " characters")
@@ -54,5 +53,5 @@ object Tag{
             tagType: TagType,
             parent: Option[UUID])
         = new Tag(None, None, None, None, None, None, title, description, link, None, Some(tagType),
-                   None, parent)
+                   parent)
 }

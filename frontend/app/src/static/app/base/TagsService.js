@@ -79,8 +79,6 @@
   var tagFieldInfos = ItemLikeService.getFieldInfos(
     ['tagType',
      tagParentFieldInfo
-    // TODO
-    //'visibility'
     ]
   );
 

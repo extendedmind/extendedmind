@@ -75,11 +75,8 @@ trait ItemLike extends Container {
   val creator: Option[UUID]
 }
 
-trait ShareableItem extends ItemLike{
+trait ExtendedItem extends ItemLike{
   val visibility: Option[SharedItemVisibility]
-}
-
-trait ExtendedItem extends ShareableItem{
   val relationships: Option[ExtendedItemRelationships]
   val archived: Option[Long]
   val revision: Option[Long]
@@ -127,8 +124,6 @@ case class ItemRevision(uuid: Option[UUID], created: Option[Long], modified: Opt
                         path: Option[String],
                         creator: Option[UUID])
 case class ItemRevisions(revisions: Option[scala.List[ItemRevision]])
-
-
 
 case class NodeStatistics(properties: scala.List[(String, Long)], labels: scala.List[String])
 case class NodeProperty(key: String, stringValue: Option[String], longValue: Option[Long])
