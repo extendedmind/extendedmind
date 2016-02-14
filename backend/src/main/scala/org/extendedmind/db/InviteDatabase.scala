@@ -180,4 +180,27 @@ trait InviteDatabase extends UserDatabase {
     })
     Right(Invites(inviteList))
   }
+
+  protected def getInviteNodeOption(email: String, inviteCode: Option[Long]): Response[Option[Node]] = {
+    withTx {
+      implicit neo4j =>
+        if (inviteCode.isEmpty){
+          Right(None)
+        }else{
+          val inviteNode = findNodesByLabelAndProperty(MainLabel.INVITE, "code", inviteCode.get:java.lang.Long).toList.find(inviteNode =>
+            inviteNode.getProperty("email").asInstanceOf[String] == email && !inviteNode.hasProperty("accepted"))
+          if (inviteNode.isEmpty)
+            fail(INVALID_PARAMETER, ERR_INVITE_NOT_FOUND, "Invite not found with given code and email")
+          else
+            Right(inviteNode)
+        }
+    }
+  }
+
+  protected def acceptInviteNode(inviteNode: Node, newUserNode: Node)(implicit neo4j: DatabaseService): Unit = {
+    inviteNode.setProperty("accepted", System.currentTimeMillis)
+    inviteNode --> SecurityRelationship.IS_ORIGIN --> newUserNode;
+    // TODO: The inviter gets free premium for successful inviting
+  }
+
 }

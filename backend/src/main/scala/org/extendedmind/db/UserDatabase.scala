@@ -52,7 +52,8 @@ trait UserDatabase extends AbstractGraphDatabase {
   def putNewUser(user: User, password: String, signUpMode: SignUpMode, inviteCode: Option[Long]): Response[(SetResult, Option[Long])] = {
     for {
       unit <- validateEmailUniqueness(user.email.get).right
-      userResult <- createUser(user, password, getExtraUserLabel(signUpMode), inviteCode).right
+      inviteNode <- getInviteNodeOption(user.email.get, inviteCode).right
+      userResult <- createUser(user, password, getExtraUserLabel(signUpMode), inviteNode).right
       result <- Right(getSetResult(userResult._1, true)).right
     } yield (result, userResult._2)
   }
@@ -232,12 +233,11 @@ trait UserDatabase extends AbstractGraphDatabase {
   // PRIVATE
 
   protected def createUser(user: User, plainPassword: String,
-    userLabel: Option[Label], inviteCode: Option[Long] = None): Response[(Node, Option[Long])] = {
+    userLabel: Option[Label], inviteNode: Option[Node] = None, overrideEmailVerified: Option[Long] = None): Response[(Node, Option[Long])] = {
     withTx {
       implicit neo4j =>
-        if (inviteCode)
 
-
+        // Create a user node
         val userNode = createNode(user.copy(handle = None, content = None, format = None, displayName = None), MainLabel.OWNER, OwnerLabel.USER)
         if (userLabel.isDefined) userNode.addLabel(userLabel.get)
         setUserPassword(userNode, plainPassword)
@@ -245,10 +245,14 @@ trait UserDatabase extends AbstractGraphDatabase {
         if (user.cohort.isDefined) userNode.setProperty("cohort", user.cohort.get)
         userNode.setProperty("inboxId", generateUniqueInboxId())
 
-        val emailVerificationCode = if (emailVerified.isDefined) {
+        val emailVerificationCode = if (inviteNode.isDefined){
           // When the user accepts invite using a code sent to her email,
           // that means that the email is also verified
-          userNode.setProperty("emailVerified", emailVerified.get)
+          userNode.setProperty("emailVerified", System.currentTimeMillis)
+          acceptInviteNode(inviteNode.get, userNode)
+          None
+        } else if (overrideEmailVerified.isDefined) {
+          userNode.setProperty("emailVerified", overrideEmailVerified.get)
           None
         } else {
           // Need to create a verification code
@@ -582,7 +586,6 @@ trait UserDatabase extends AbstractGraphDatabase {
     Right(DestroyResult(scala.List(userUUID)))
   }
 
-
   protected def deleteUserNode(userUUID: UUID): Response[Tuple2[Node, Long]] = {
     withTx {
       implicit neo =>
@@ -675,7 +678,6 @@ trait UserDatabase extends AbstractGraphDatabase {
         } yield (agreementInfo, destroyResult)
     }
   }
-
 
   case class AgreementInformation(agreement: Node, agreementType: String, proposedBy: Node, proposedByDisplayName: String, concerning: Node, proposedTo: Option[Node], userIsCreator: Boolean, concerningTitle: String)
 
@@ -1105,5 +1107,9 @@ trait UserDatabase extends AbstractGraphDatabase {
     else if (ownerNode.hasProperty("title")) ownerNode.getProperty("title").asInstanceOf[String]
     else ownerNode.getProperty("email").asInstanceOf[String]
   }
+
+  // Abstract invite methods
+  protected def getInviteNodeOption(email: String, inviteCode: Option[Long]): Response[Option[Node]];
+  protected def acceptInviteNode(inviteNode: Node, userNode: Node)(implicit neo4j: DatabaseService): Unit;
 
 }

@@ -71,13 +71,13 @@ trait TestGraphDatabase extends GraphDatabase {
     val verifiedTimestamp = System.currentTimeMillis + 1000
     val timoUser = User(TIMO_EMAIL, Some("Timo"), Some("timo"), None, None, Some(1), None)
     val timoNode = createUser(timoUser, TIMO_PASSWORD, Some(UserLabel.ADMIN),
-                              emailVerified=Some(verifiedTimestamp)).right.get._1
+                               None, overrideEmailVerified=Some(verifiedTimestamp)).right.get._1
     val lauriUser = User(LAURI_EMAIL, None, None, None, None, None, None)
     val lauriNode = createUser(lauriUser, LAURI_PASSWORD, Some(UserLabel.ADMIN),
-                               emailVerified=Some(verifiedTimestamp)).right.get._1
+                               None, overrideEmailVerified=Some(verifiedTimestamp)).right.get._1
     val jpUser = User(JP_EMAIL, None, None, None, None, None, None)
     val jpNode = createUser(jpUser, JP_PASSWORD, Some(UserLabel.ADMIN),
-                               emailVerified=Some(verifiedTimestamp)).right.get._1
+                               None, overrideEmailVerified=Some(verifiedTimestamp)).right.get._1
 
     // Collectives
     val extendedMind = createCollective(timoNode, "extended mind", Some("common collective for all extended mind users"), true, None, None, None, None)
@@ -97,7 +97,7 @@ trait TestGraphDatabase extends GraphDatabase {
 
     // Info node created after common collective "extended mind" but should still be part of it,
     // Info does not have email verified
-    val infoNode = createUser(User(INFO_EMAIL, None, None, None, None, None, None), INFO_PASSWORD).right.get
+    val infoNode = createUser(User(INFO_EMAIL, None, None, None, None, None, None), INFO_PASSWORD, None).right.get
 
     // Add permissions to collectives
     withTx {

@@ -51,7 +51,7 @@ trait UserActions {
       log.warning("CRITICAL: Making {} an administrator because extendedmind.security.signUpMode is set to ADMIN",
           signUp.email)
     for {
-      userResult <- db.putNewUser(User(signUp.email, signUp.displayName, signUp.handle, signUp.content, signUp.format, signUp.cohort, None), signUp.password, settings.signUpMode).right
+      userResult <- db.putNewUser(User(signUp.email, signUp.displayName, signUp.handle, signUp.content, signUp.format, signUp.cohort, None), signUp.password, settings.signUpMode, signUp.invite).right
       sent <- if (userResult._2.isDefined)
                 Right(sendEmailVerification(signUp.email, userResult._2.get)).right
               else Right(Unit).right
