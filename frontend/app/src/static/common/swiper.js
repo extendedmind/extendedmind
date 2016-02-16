@@ -1284,7 +1284,7 @@ var Swiper = function (selector, params) {
 
     _this.allowLinks = true;
     function preventClick(e) {
-        if (!_this.allowLinks) {
+        if (_this && !_this.allowLinks) {
             if (e.preventDefault) e.preventDefault();
             else e.returnValue = false;
             if (params.preventLinksPropagation && 'stopPropagation' in e) {
