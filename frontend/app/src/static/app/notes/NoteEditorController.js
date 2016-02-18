@@ -292,13 +292,16 @@
     }
   };
 
-  $scope.$watch('note.trans.content', function(newValue, oldValue) {
-    if (newValue && !oldValue && (!$scope.note.trans.title || !$scope.note.trans.title.length)) {
-      // Set untitled as title when title is missing but there is content
-      $scope.note.trans.title = 'untitled';
-    }
-    if (newValue !== oldValue) $scope.inputChanged();
-  });
+  function setNoteContentWatch(){
+    return $scope.$watch('note.trans.content', function(newValue, oldValue) {
+      if (newValue && !oldValue && (!$scope.note.trans.title || !$scope.note.trans.title.length)) {
+        // Set untitled as title when title is missing but there is content
+        $scope.note.trans.title = 'untitled';
+      }
+      if (newValue !== oldValue) $scope.inputChanged();
+    });
+  }
+  var clearNoteContentWatch = setNoteContentWatch();
 
   // TITLEBAR
 
@@ -523,6 +526,9 @@
     }
   };
 
+  $scope.hasAvailableCommonCollectiveKeywords = function(note) {
+    return $scope.getTagsArray('collectiveKeywords', {owner: note.trans.owner}).length;
+  };
 
   $scope.toggleCollapsible = function() {
     $scope.collapsibleOpen = !$scope.collapsibleOpen;
@@ -544,16 +550,31 @@
     $scope.toggleExpandEditor();
   };
 
-  $scope.$watch(function() {
-    for (var id in showFooterCallbacks) {
-      var showFooter = $scope.showNoteEditorComponent(id);
-      if (showFooterCallbacks.hasOwnProperty(id)) showFooterCallbacks[id](showFooter);
-    }
-  });
+  function setNoteFooterWatch(){
+    return $scope.$watch(function() {
+      for (var id in showFooterCallbacks) {
+        var showFooter = $scope.showNoteEditorComponent(id);
+        if (showFooterCallbacks.hasOwnProperty(id)) showFooterCallbacks[id](showFooter);
+      }
+    });
+  }
+  var clearFooterWatch = setNoteFooterWatch();
 
   $scope.$on('$destroy', function() {
     if (pollForSaveReady) pollForSaveReady.value = false;
+    if (angular.isFunction($scope.unregisterInitializeEditorCallback))
+      $scope.unregisterInitializeEditorCallback();
   });
+
+  // INITIALIZING
+
+  function initializeEditor(){
+    clearNoteContentWatch();
+    clearNoteContentWatch = setNoteContentWatch();
+    clearFooterWatch();
+    clearFooterWatch = setNoteFooterWatch();
+  };
+  $scope.registerInitializeEditorCallback(initializeEditor);
 }
 
 NoteEditorController['$inject'] = ['$rootScope', '$scope', '$timeout', 'ContentService',

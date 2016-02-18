@@ -24,6 +24,7 @@
 
   var dataInEdit;
   var exitAppOnBack = false;
+  var initializeEditorCallback;
   $scope.initializeEditor = function(editorType, data, mode){
     // Reset $scope variables. These may exist from previous editor.
     $scope.task = undefined;
@@ -59,6 +60,14 @@
       $scope.iterableItems = dataInEdit;
       initializeEditorVisibilityAndPermission(dataInEdit[0]);
     }
+    if (angular.isFunction(initializeEditorCallback)) initializeEditorCallback();
+  };
+
+  $scope.registerInitializeEditorCallback = function(callback){
+    initializeEditorCallback = callback;
+  };
+  $scope.unregisterInitializeEditorCallback = function(){
+    initializeEditorCallback = undefined;
   };
 
   function initializeEditorVisibilityAndPermission(item) {
