@@ -58,17 +58,47 @@
               <goal>install-node-and-npm</goal>
             </goals>
             <configuration>
-              <nodeVersion>v4.1.0</nodeVersion>
-              <npmVersion>3.3.3</npmVersion>
+              <nodeVersion>v5.6.0</nodeVersion>
+              <npmVersion>3.7.3</npmVersion>
               <nodeDownloadRoot>https://nodejs.org/dist/</nodeDownloadRoot>
             </configuration>
           </execution>
           <execution>
-            <id>npm install</id>
+            <id>npm-install</id>
             <goals>
               <goal>npm</goal>
             </goals>
             <phase>generate-resources</phase>
+            <configuration>
+              <arguments>install</arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>npm-build</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <phase>compile</phase>
+            <configuration>
+              <arguments>run build</arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>npm-prune-to-production</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <phase>prepare-package</phase>
+            <configuration>
+              <arguments>prune --production</arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>npm-back-to-developement</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <phase>pre-integration-test</phase>
             <configuration>
               <arguments>install</arguments>
             </configuration>
@@ -148,6 +178,25 @@
                   <includes>
                     <include>terms.html</include>
                     <include>privacy.html</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-less-compiler</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.basedir}/src/static/js</outputDirectory>
+              <overwrite>true</overwrite>
+              <resources>
+                <resource>
+                  <directory>${project.basedir}/src/node_modules/less/dist</directory>
+                  <includes>
+                    <include>less.js</include>
                   </includes>
                 </resource>
               </resources>
@@ -333,14 +382,11 @@
               <includes>
                 <include>em-animation.js</include>
                 <include>animo.min.js</include>
+                <include>less.js</include>
               </includes>
             </fileset>
             <fileset>
               <directory>${basedir}/src/static/css</directory>
-              <includes>
-                <include>em-animation.css</include>
-                <include>animate-animo.css</include>
-              </includes>
             </fileset>
             <fileset>
               <directory>${basedir}/src/static/audio</directory>

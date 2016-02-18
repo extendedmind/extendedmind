@@ -16,8 +16,12 @@
   <meta property="og:image:secure_url" content="https://ext.md/static/img/logo.png" />
 
   {% block stylesheets %}
-  <link rel="stylesheet" href="static/css/normalize.css">
-  <link rel="stylesheet" href="static/css/foundation.min.css">
+  {% if development %}
+  <link rel="stylesheet/less" href="/static/less/site.less"/>
+  <script src="/static/js/less.js"></script>
+  {% else %}
+  <link rel="stylesheet" href="/static/css/site.min.css" >
+  {% endif %}
   {% endblock %}
 
   <link rel="apple-touch-icon" sizes="57x57" href="static/favicon/apple-touch-icon-57x57.png">
