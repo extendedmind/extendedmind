@@ -132,6 +132,11 @@ function ContentService($q, BackendClientService, PlatformService) {
         }
       });
     },
+    getAbsoluteUrlPrefix: function() {
+      var prefix = BackendClientService.getUrlPrefix();
+      if (!prefix) prefix = location.origin;
+      return prefix;
+    },
     publicExtendedMindNoteRegex: publicExtendedMindNoteRegexp,
     privacyRegex: privacyRegexp,
     termsRegex: termsRegexp

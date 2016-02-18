@@ -454,9 +454,9 @@
     return $rootScope.validUrlRegexp.test(url);
   }
 
-  $scope.getItemHref = function(item){
-    if (!PlatformService.isSupported('openLinkExternal') && item.trans.link && isValidUrl(item.trans.link)){
-      return item.trans.link;
+  $scope.getItemHref = function(link, skipValidation){
+    if (!PlatformService.isSupported('openLinkExternal') && link && (skipValidation || isValidUrl(link))){
+      return link;
     }
   };
 

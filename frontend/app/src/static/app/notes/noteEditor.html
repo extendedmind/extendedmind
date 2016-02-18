@@ -124,7 +124,7 @@
             <div ng-if="showEditorComponent('urlLink', note)" class="group-mixed">
               <a class="group-mixed--middle clickable" ng-click="clickUrl(note)"
                  ng-class="showEditorComponent('urlLinkError', note) ? 'link-disabled' : 'highlighted'"
-                 external-link="getItemHref(note)">
+                 external-link="getItemHref(note.trans.link)">
                 <span class="text-metadata" ng-bind="getItemVisibleUrl(note)"></span>
               </a>
               <div class="group-mixed--right">
@@ -323,16 +323,35 @@
       <div class="swiper-slide" swiper-slide="noteEditor/advanced" slide-index="1"
         ng-init="slideInfo = {footerId: 'advancedFooter'}">
         <div ng-style="{'padding-bottom': slideInfo.footerHeight}" class="container-content">
+          <div ng-if="showNoteProperty('public')" class="group-mixed text-field">
+            <a class="group-mixed--middle clickable highlighted" ng-click="clickUrl(note)"
+               external-link="getItemHref(getNotePublicPath(note), true)">
+              <span class="text-metadata" clamp=1 ng-bind="getNotePublicPath(note)"></span>
+            </a>
+            <div class="group-mixed--right">
+              <span class="text-field--label">path</span>
+            </div>
+          </div>
+          <div ng-if="showNoteProperty('public')" class="group-mixed text-field">
+            <div class="group-mixed--middle">
+              <span class="text-field--title" clamp=2 ng-bind="getNotePublicInfo(note)"></span>
+            </div>
+            <div class="group-mixed--right">
+              <span class="text-field--label">public</span>
+            </div>
+          </div>
           <div ng-if="showEditorProperty('revisions', note)" class="group-mixed text-field">
             <div class="group-mixed--middle">
               <a href swiper-click="openRevisionPicker(note)">
-                <span class="text-field--title" ng-bind="note.revision"></span>
+                <span class="text-field--title" ng-bind="'in total: ' + note.revision"></span>
               </a>
             </div>
             <div class="group-mixed--right">
               <span class="text-field--label">revisions</span>
             </div>
           </div>
+
+
           <div ng-if="showEditorProperty('created', note)" class="group-mixed text-field">
             <div class="group-mixed--middle">
               <span class="text-field--title">

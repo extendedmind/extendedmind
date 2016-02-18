@@ -219,8 +219,8 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
               (publishedRevisionRel.isDefined && (publishedRevisionRel.get.getEndNode.hasProperty("published") || publishedRevisionRel.get.getEndNode.hasProperty("preview"))))
             Some(SharedItemVisibility(
                  if (publishedRevisionRel.isDefined && publishedRevisionRel.get.getEndNode.hasProperty("published")) Some(publishedRevisionRel.get.getEndNode.getProperty("published").asInstanceOf[Long]) else None,
-                 if (publishedRevisionRel.isDefined && publishedRevisionRel.get.getEndNode.hasProperty("path")) Some(publishedRevisionRel.get.getEndNode.getProperty("path").asInstanceOf[String]) else None,
-                 if (publishedRevisionRel.isDefined && publishedRevisionRel.get.getEndNode.hasProperty("licence")) Some(publishedRevisionRel.get.getEndNode.getProperty("licence").asInstanceOf[String]) else None,
+                 if (noteNode.hasProperty("path")) Some(noteNode.getProperty("path").asInstanceOf[String]) else None,
+                 if (noteNode.hasProperty("licence")) Some(noteNode.getProperty("licence").asInstanceOf[String]) else None,
                  None, // TODO: Reviewing
                  if (noteNode.hasProperty("preview")) Some(noteNode.getProperty("preview").asInstanceOf[Long]) else None,
                  if (noteNode.hasProperty("previewExpires")) Some(noteNode.getProperty("previewExpires").asInstanceOf[Long]) else None,

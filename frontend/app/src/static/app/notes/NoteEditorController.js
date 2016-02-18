@@ -15,8 +15,9 @@
 
  'use strict';
 
- function NoteEditorController($rootScope, $scope, $timeout, DrawerService, NotesService, SwiperService,
-                               TagsService, UISessionService) {
+ function NoteEditorController($rootScope, $scope, $timeout, ContentService,
+                               DrawerService, NotesService, SwiperService,
+                               TagsService, UISessionService, UserSessionService) {
 
   // INITIALIZING
 
@@ -121,6 +122,9 @@
               !$scope.isPropertyInDedicatedEdit());
       case 'modified':
       return $scope.note.trans.uuid && $scope.note.trans.created !== $scope.note.trans.modified;
+
+      case 'public':
+      return $scope.note.visibility && $scope.note.visibility.published;
     }
   };
 
@@ -360,6 +364,18 @@
     }
   };
 
+  // PUBLISHING
+
+  $scope.getNotePublicPath = function(note){
+    return ContentService.getAbsoluteUrlPrefix() + '/our/' + UserSessionService.getHandle() + '/' +
+           note.visibility.path;
+  };
+
+  $scope.getNotePublicInfo = function(note){
+    var licenceText = note.visibility.licence ? ' under the ' + note.visibility.licence + ' licence': ', all rights reserved';
+    return 'published at ' + $scope.formatToLocaleDateWithTime(note.visibility.published) + licenceText;
+  };
+
   // KEYWORDS
 
   function clearKeyword() {
@@ -540,6 +556,6 @@
   });
 }
 
-NoteEditorController['$inject'] = ['$rootScope', '$scope', '$timeout',
-'DrawerService', 'NotesService', 'SwiperService', 'TagsService', 'UISessionService'];
+NoteEditorController['$inject'] = ['$rootScope', '$scope', '$timeout', 'ContentService',
+'DrawerService', 'NotesService', 'SwiperService', 'TagsService', 'UISessionService', 'UserSessionService'];
 angular.module('em.main').controller('NoteEditorController', NoteEditorController);

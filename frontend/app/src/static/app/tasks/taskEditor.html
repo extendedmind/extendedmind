@@ -421,7 +421,7 @@
             <div ng-if="showEditorComponent('urlLink', task)" class="group-mixed">
               <a class="group-mixed--middle clickable" ng-click="clickUrl(task)"
                  ng-class="showEditorComponent('urlLinkError', task) ? 'link-disabled' : 'highlighted'"
-                 external-link="getItemHref(task)">
+                 external-link="getItemHref(task.trans.link)">
                 <span class="text-metadata" ng-bind="getItemVisibleUrl(task)"></span>
               </a>
               <div class="group-mixed--right">
@@ -437,7 +437,7 @@
           <div ng-if="showEditorProperty('revisions', task)" class="group-mixed text-field">
             <div class="group-mixed--middle">
               <a href swiper-click="openRevisionPicker(task)">
-                <span class="text-field--title" ng-bind="task.revision"></span>
+                <span class="text-field--title" ng-bind="'in total: ' + task.revision"></span>
               </a>
             </div>
             <div class="group-mixed--right">
