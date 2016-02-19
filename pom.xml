@@ -46,7 +46,7 @@
     <scala.version>${scala.version.short}.7</scala.version>
     <skipScalaTestTests>false</skipScalaTestTests>
     <skipJUnitTests>true</skipJUnitTests>
-    <phantomjs.version>1.9.7</phantomjs.version>
+    <phantomjs.version>2.1.1</phantomjs.version>
     <jetty.version>9.0.4.v20130625</jetty.version>
     <docker.skip>true</docker.skip>
     <buildNumber>0</buildNumber>
