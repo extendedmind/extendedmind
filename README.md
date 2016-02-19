@@ -1,22 +1,48 @@
-Extended Mind
-=============
+# Extended Mind
 
 This is the root of the Extended Mind code repository.
 
-Nginx configuration
--------------------
+## Development
 
-AngularJS is set to use 'html5mode' so you have to configure a rewrite such as this to your 'nginx.conf'.  
-Default installation location on OS X is `/usr/local/etc/nginx/nginx.conf`
+### Compile
+
+To compile Extended Mind, download the latest Java 8 JDK and setup a $JAVA_HOME environment variable to point to the directory. Both OpenJDK and Oracle JDK are supported.
+Then install the latest Apache Maven 3 (e.g. with Brew on OSX) and run:
+
 ```
-	location / {
+mvn clean install
+```
+
+in this directory. If you're using Oracle Java, access to the Extended Mind CI server might fail with:
+
+```
+sun.security.validator.ValidatorException: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target
+```
+
+because the Let's Encrypt certificate we use is not (yet) supported by default in the Oracle JDK. To fix the problem, obtain the Let's Encrypt CA pem file and then run (on OSX):
+
+```
+sudo keytool -trustcacerts -keystore $JAVA_HOME/jre/lib/security/cacerts -storepass changeit -noprompt -importcert -file lets_encrypt_authority_x1.pem
+```
+
+to add the certificate to the JDK keystore.
+
+### Developement Environment
+
+To debug the Extended Mind UI at localhost, you want to install a local NGinx server (e.g. using Brew on OSX).
+
+AngularJS is set to use 'html5mode' so you have to configure a rewrite such as the following to your `nginx.conf`.  
+Default installation location on OS X is `/usr/local/etc/nginx/nginx.conf`.
+
+```
+location / {
     root  [extendedmind_home]/frontend/app/src;
     index  index_devel.html index.html;
     rewrite ^/(?!(static|api|collect|evaluate|test|styleguide)) /index_devel.html break;
-  }
+}
 ```
 
-In production, it is critical that /api/shutdown and /api/tick are 
+In production, it is critical that `/api/shutdown` and `/api/tick` are 
 only allowed locally with a segment like this, where the backend is 
 running at port 8081:
 
@@ -37,7 +63,7 @@ location /api {
 }
 ```
 
-After starting Nginx, the development version of extended mind should be running on 'localhost'. To add support for collecting analytics to Cube, also add
+After starting Nginx, the development version of extended mind should be running on 'localhost'. To add support for collecting analytics to Cube, also add:
 ```
   location /collect {
     rewrite /collect(.*) $1 break;
@@ -56,18 +82,3 @@ After starting Nginx, the development version of extended mind should be running
     proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
   }
 ```
-
-Mac OS X
---------
-
-Installing JDK and XCode are suggested. 
-
-Then you can easily install Brew by:
-`ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"`
-
-And Nginx:
-`brew install nginx`
-[http://learnaholic.me/2012/10/10/installing-nginx-in-mac-os-x-mountain-lion/]
-
-Prior to OSX Maveric, Maven should already be installed by default.
-- In Mavericks, install with Brew: `brew install maven`
