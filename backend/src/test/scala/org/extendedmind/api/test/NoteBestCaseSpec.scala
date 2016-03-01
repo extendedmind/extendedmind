@@ -204,6 +204,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
         writeJsonOutput("previewNoteResponse", responseAs[String])
         Get("/" + authenticateResponse.userUUID + "/item/" + putNoteResponse.uuid.get + "/preview/" + previewNoteResult.preview.toHexString) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
           val publicDraftItem = responseAs[PublicItem]
+          writeJsonOutput("itemPreviewResponse", responseAs[String])
           publicDraftItem.note.visibility.get.preview.get should be (previewNoteResult.preview)
           publicDraftItem.note.visibility.get.previewExpires.get should be (previewNoteResult.previewExpires)
           // Next publish with path
@@ -211,6 +212,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
               marshal(PublishPayload("md", "test", Some(LicenceType.CC_BY_SA_4_0.toString), None))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
             val publishNoteResult = responseAs[PublishNoteResult]
             writeJsonOutput("publishNoteResponse", responseAs[String])
+
             Get("/public/timo/test") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
               val publicItem = responseAs[PublicItem]
               publicItem.note.relationships should be(None)
@@ -223,62 +225,85 @@ class NoteBestCaseSpec extends ServiceSpecBase {
                 val publicItems = responseAs[PublicItems]
                 publicItems.notes.get.length should be(1)
               }
+            }
 
-              // Publish with new path and see that there are two revisions
-              Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/publish",
-                marshal(PublishPayload("md", "test2", None, None))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                Get("/" + authenticateResponse.userUUID + "/item/" + putNoteResponse.uuid.get + "/revisions") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                  val revisionsResult = responseAs[ItemRevisions]
-                  revisionsResult.revisions.get.length should be (2)
-                  val firstRevision = revisionsResult.revisions.get.find(revision => revision.number == 1l).get
-                  val secondRevision = revisionsResult.revisions.get.find(revision => revision.number == 2l).get
-                  firstRevision.unpublished should not be (None)
-                  firstRevision.published should be (None)
-                  secondRevision.unpublished should be (None)
-                  secondRevision.published should not be (None)
-                }
+            // Save note, should not change title of published note
+            val updatedNote = newNote.copy(title = "Public note modified")
+            putExistingNote(updatedNote, putNoteResponse.uuid.get, authenticateResponse)
+            Get("/public/timo/test") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+              val publicItem = responseAs[PublicItem]
+              publicItem.note.title should be(newNote.title)
+            }
+
+            // Publish with same path, make sure that title is changed
+            Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/publish",
+                marshal(PublishPayload("md", "test", Some(LicenceType.CC_BY_SA_4_0.toString), None))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+              Get("/public/timo/test") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+                val publicItem = responseAs[PublicItem]
+                publicItem.note.title should be(updatedNote.title)
+              }
+            }
+
+            // Publish with new path and see that there are four revisions
+            Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/publish",
+              marshal(PublishPayload("md", "test2", None, None))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+              Get("/" + authenticateResponse.userUUID + "/item/" + putNoteResponse.uuid.get + "/revisions") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                val revisionsResult = responseAs[ItemRevisions]
+                revisionsResult.revisions.get.length should be (3)
+                val firstRevision = revisionsResult.revisions.get.find(revision => revision.number == 1l).get
+                val secondRevision = revisionsResult.revisions.get.find(revision => revision.number == 2l).get
+                val thirdRevision = revisionsResult.revisions.get.find(revision => revision.number == 3l).get
+                firstRevision.unpublished should not be (None)
+                firstRevision.published should be (None)
+                secondRevision.unpublished should not be (None)
+                secondRevision.published should be (None)
+                thirdRevision.unpublished should be (None)
+                thirdRevision.published should not be (None)
+              }
+            }
+
+            // Unpublish the latest
+            Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/unpublish") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+              writeJsonOutput("unpublishNoteResponse", responseAs[String])
+              val unpublishedNoteResponse = getNote(putNoteResponse.uuid.get, authenticateResponse)
+              unpublishedNoteResponse.visibility.get.published should be(None)
+              unpublishedNoteResponse.visibility.get.path should be(None)
+              Get("/public/timo/test") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+                val failure = responseAs[ErrorResult]
+                failure.code should be (3027)
+              }
+              Get("/" + authenticateResponse.userUUID + "/item/" + putNoteResponse.uuid.get + "/revisions") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                val revisionsResult = responseAs[ItemRevisions]
+                revisionsResult.revisions.get.length should be (3)
+                val firstRevision = revisionsResult.revisions.get.find(revision => revision.number == 1l).get
+                val secondRevision = revisionsResult.revisions.get.find(revision => revision.number == 2l).get
+                val thirdRevision = revisionsResult.revisions.get.find(revision => revision.number == 3l).get
+                firstRevision.unpublished should not be (None)
+                firstRevision.published should be (None)
+                secondRevision.unpublished should not be (None)
+                secondRevision.published should be (None)
+                thirdRevision.unpublished should not be (None)
+                thirdRevision.published should be (None)
               }
 
-              // Unpublish the latest
-              Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/unpublish") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                writeJsonOutput("unpublishNoteResponse", responseAs[String])
-                val unpublishedNoteResponse = getNote(putNoteResponse.uuid.get, authenticateResponse)
-                unpublishedNoteResponse.visibility.get.published should be(None)
-                unpublishedNoteResponse.visibility.get.path should be(None)
-                Get("/public/timo/test") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
-                  val failure = responseAs[ErrorResult]
-                  failure.code should be (3027)
-                }
-                Get("/" + authenticateResponse.userUUID + "/item/" + putNoteResponse.uuid.get + "/revisions") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                  val revisionsResult = responseAs[ItemRevisions]
-                  revisionsResult.revisions.get.length should be (2)
-                  val firstRevision = revisionsResult.revisions.get.find(revision => revision.number == 1l).get
-                  val secondRevision = revisionsResult.revisions.get.find(revision => revision.number == 2l).get
-                  firstRevision.unpublished should not be (None)
-                  firstRevision.published should be (None)
-                  secondRevision.unpublished should not be (None)
-                  secondRevision.published should be (None)
-                }
-
-                // Try to get with previous modified value that returned the note, make sure it has moved to "unpublished"
-                Get("/public/timo?modified=" + (publishNoteResult.published-1)) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
-                  val publicItems = responseAs[PublicItems]
-                  publicItems.notes should be(None)
-                  publicItems.unpublished.get.length should be (1)
-                  publicItems.unpublished.get(0) should be (putNoteResponse.uuid.get)
-                }
-                // Now add an daily tick, which should prune the unpublished revision node from the index
-                Post("/tick",
-                    marshal(Tick(3)).right.get) ~> route ~> check {
-                  val statusResponse = responseAs[String]
-                  statusResponse should be ("{\"status\":true}")
-                }
-                // Now the unpublished should have been pruned
-                Get("/public/timo?modified=" + (publishNoteResult.published-1)) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
-                  val publicItems = responseAs[PublicItems]
-                  publicItems.notes should be(None)
-                  publicItems.unpublished should be (None)
-                }
+              // Try to get with previous modified value that returned the note, make sure it has moved to "unpublished"
+              Get("/public/timo?modified=" + (publishNoteResult.published-1)) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+                val publicItems = responseAs[PublicItems]
+                publicItems.notes should be(None)
+                publicItems.unpublished.get.length should be (1)
+                publicItems.unpublished.get(0) should be (putNoteResponse.uuid.get)
+              }
+              // Now add an daily tick, which should prune the unpublished revision node from the index
+              Post("/tick",
+                  marshal(Tick(3)).right.get) ~> route ~> check {
+                val statusResponse = responseAs[String]
+                statusResponse should be ("{\"status\":true}")
+              }
+              // Now the unpublished should have been pruned
+              Get("/public/timo?modified=" + (publishNoteResult.published-1)) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+                val publicItems = responseAs[PublicItems]
+                publicItems.notes should be(None)
+                publicItems.unpublished should be (None)
               }
             }
           }

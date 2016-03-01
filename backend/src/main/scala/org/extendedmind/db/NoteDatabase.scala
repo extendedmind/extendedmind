@@ -389,7 +389,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
             val publishedNodeRevision = pathResult.right.get
             if (publishedNodeRevision.getRelationships.find(relationship =>
                 relationship.getType.name == ItemRelationship.HAS_REVISION.name &&
-                relationship.getEndNode != noteNode).isDefined){
+                relationship.getStartNode != noteNode).isDefined){
               return fail(INVALID_PARAMETER, ERR_NOTE_PATH_IN_USE,
                   "Can not publish because given path is already in use with a different item")
             }
