@@ -183,6 +183,21 @@
     }
   };
 
+  // PUBLISHING
+
+  $scope.createPreviewLink = function(note){
+    var deferred = $q.defer();
+    NotesService.previewNote(note).then(
+      function(response){
+        deferred.resolve(response);
+      },function(error){
+        if (error.type === 'offline') {
+          offlineProcessFn(error, note, deferred, NotesService.previewNote);
+        }
+      });
+    return deferred.promise;
+  };
+
   /*
   * Favorite note.
   */

@@ -36,6 +36,10 @@
               <a href ng-switch-when="link" class="highlighted" ng-click="textNode.action()">
                 <span ng-bind="textNode.data"></span>
               </a>
+              <a href ng-switch-when="linkExternal" class="highlighted" ng-click="clickModalUrl(textNode.url)"
+                 external-link="getModalUrlHref(textNode.url)">
+                <span ng-bind="textNode.data"></span>
+              </a>
               <span ng-switch-when="separator"><br><br></span>
             </span>
           </div>

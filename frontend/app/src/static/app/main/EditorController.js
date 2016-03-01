@@ -18,7 +18,7 @@
 
  function EditorController($rootScope, $scope, $timeout,
                            ConvertService, ItemsService, PlatformService, SwiperService, UISessionService,
-                           UserSessionService) {
+                           URLService, UserSessionService) {
 
   // OPENING, INITIALIZING, CLOSING
 
@@ -459,31 +459,20 @@
     }
   };
 
-  function isValidUrl(url){
-    return $rootScope.validUrlRegexp.test(url);
-  }
-
-  $scope.getItemHref = function(link, skipValidation){
-    if (!PlatformService.isSupported('openLinkExternal') && link && (skipValidation || isValidUrl(link))){
-      return link;
+  $scope.clickUrl = function(url, skipValidation){
+    if (PlatformService.isSupported('openLinkExternal') && url &&
+        (skipValidation || URLService.isValidUrl(url))){
+      PlatformService.doAction('openLinkExternal', url);
     }
   };
 
-  $scope.getItemVisibleUrl = function(item){
-    if (item.trans.link){
-      if (item.trans.link.startsWith('http://')){
-        return item.trans.link.substring(7, item.trans.link.length);
-      }else{
-        return item.trans.link;
-      }
+  $scope.getUrlHref = function(url, skipValidation){
+    if (!PlatformService.isSupported('openLinkExternal') && url &&
+        (skipValidation || URLService.isValidUrl(url))){
+      return url;
     }
   };
-
-  $scope.clickUrl = function(item){
-    if (PlatformService.isSupported('openLinkExternal') && item.trans.link && isValidUrl(item.trans.link)){
-      PlatformService.doAction('openLinkExternal', item.trans.link);
-    }
-  };
+  $scope.getVisibleUrl = URLService.getVisibleUrl;
 
   // LIST PICKER WIDGET
 
@@ -676,7 +665,7 @@
       case 'urlTextArea':
       return !item.trans.link || $scope.focusedTextProperty === 'url';
       case 'urlLinkError':
-      return $scope.focusedTextProperty !== 'url' && item.trans.link && !isValidUrl(item.trans.link);
+      return $scope.focusedTextProperty !== 'url' && item.trans.link && !URLService.isValidUrl(item.trans.link);
       case 'side-by-side-links':
       return $rootScope.columns === 3 && !$scope.isSubEditorOpen();
     }
@@ -825,6 +814,6 @@
 }
 
 EditorController['$inject'] = ['$rootScope', '$scope', '$timeout',
-'ConvertService', 'ItemsService', 'PlatformService', 'SwiperService', 'UISessionService',
+'ConvertService', 'ItemsService', 'PlatformService', 'SwiperService', 'UISessionService', 'URLService',
 'UserSessionService'];
 angular.module('em.main').controller('EditorController', EditorController);

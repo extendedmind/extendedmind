@@ -74,6 +74,16 @@
     });
   }
 
+  function mockPreviewNote(expectResponse){
+    $httpBackend.whenPOST(NotesService.previewNoteRegex)
+    .respond(function(method, url, data, headers) {
+      var previewNoteResponse = getJSONFixture('previewNoteResponse.json');
+      previewNoteResponse.previewExpires = Date.now() + 3600000;
+      previewNoteResponse.modified = (new Date()).getTime();
+      return expectResponse(method, url, data, headers, previewNoteResponse);
+    });
+  }
+
   return {
     mockNotesBackend: function(expectResponse) {
       mockPutNewNote(expectResponse);
@@ -82,6 +92,7 @@
       mockUnfavoriteNote(expectResponse);
       mockDeleteNote(expectResponse);
       mockUndeleteNote(expectResponse);
+      mockPreviewNote(expectResponse);
     }
   };
 }

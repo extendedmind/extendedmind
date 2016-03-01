@@ -67,6 +67,15 @@
   var noteSlashRegex = /\/note\//;
   var favoriteRegex = /\/favorite/;
   var unfavoriteRegex = /\/unfavorite/;
+  var previewRegex = /\/preview/;
+
+  var previewNoteRegexp = new RegExp('^' +
+    BackendClientService.apiPrefixRegex.source +
+    BackendClientService.uuidRegex.source +
+    noteSlashRegex.source +
+    BackendClientService.uuidRegex.source +
+    previewRegex.source +
+    '$');
 
   function initializeArrays(ownerUUID) {
     if (!notes[ownerUUID]) {
@@ -511,6 +520,42 @@
       }
       return deferred.promise;
     },
+    previewNote: function(note) {
+      function getPreviewUrl(params){
+        return params.prefix + params.note.trans.uuid + '/preview';
+      }
+      var ownerUUID = note.trans.owner;
+      // Check that note is not deleted before trying to preview
+      var deferred = $q.defer();
+      if (notes[ownerUUID].deletedNotes.findFirstObjectByKeyValue('uuid', note.trans.uuid, 'trans')) {
+        deferred.reject({type: 'deleted'});
+      } else {
+        var payload = {format: 'md'};
+        BackendClientService.postOnline({ value: '/api/' + ownerUUID + '/note/' +
+                                                 note.trans.uuid + '/preview',
+                                          refresh: getPreviewUrl,
+                                          params: {
+                                            prefix: '/api/' + ownerUUID + '/note/',
+                                            note: note }},
+                                        previewNoteRegexp, payload)
+        .then(function(response) {
+          var propertiesToReset = {
+            modified: response.result.modified
+          };
+          propertiesToReset.visibility = note.visibility ? note.visibility : {};
+          propertiesToReset.visibility.preview = response.preview;
+          propertiesToReset.visibility.previewExpires = response.previewExpires;
+
+          // Add properties to .mod and update note
+          ItemLikeService.updateObjectProperties(note, propertiesToReset);
+          updateNote(note, ownerUUID, undefined, propertiesToReset);
+          deferred.resolve(response);
+        },function(error){
+          deferred.reject(error);
+        });
+      }
+      return deferred.promise;
+    },
     clearNotes: function() {
       notes = {};
     },
@@ -571,7 +616,8 @@
                                     noteSlashRegex.source +
                                     BackendClientService.uuidRegex.source +
                                     unfavoriteRegex.source +
-                                    '$')
+                                    '$'),
+    previewNoteRegex : previewNoteRegexp
   };
 }
 

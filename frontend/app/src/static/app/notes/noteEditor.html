@@ -122,10 +122,10 @@
           <!-- URL -->
           <div ng-show="showEditorProperty('url')">
             <div ng-if="showEditorComponent('urlLink', note)" class="group-mixed">
-              <a class="group-mixed--middle clickable" ng-click="clickUrl(note)"
+              <a class="group-mixed--middle clickable" ng-click="clickUrl(note.trans.link)"
                  ng-class="showEditorComponent('urlLinkError', note) ? 'link-disabled' : 'highlighted'"
-                 external-link="getItemHref(note.trans.link)">
-                <span class="text-metadata" ng-bind="getItemVisibleUrl(note)"></span>
+                 external-link="getUrlHref(note.trans.link)">
+                <span class="text-metadata" ng-bind="getVisibleUrl(note.trans.link)"></span>
               </a>
               <div class="group-mixed--right">
                 <a href ng-click="setUrlFocus()">
@@ -324,8 +324,8 @@
         ng-init="slideInfo = {footerId: 'advancedFooter'}">
         <div ng-style="{'padding-bottom': slideInfo.footerHeight}" class="container-content">
           <div ng-if="showNoteProperty('public')" class="group-mixed text-field">
-            <a class="group-mixed--middle clickable highlighted" ng-click="clickUrl(note)"
-               external-link="getItemHref(getNotePublicPath(note), true)">
+            <a class="group-mixed--middle clickable highlighted" ng-click="clickUrl(getNotePublicPath(note), true)"
+               external-link="getUrlHref(getNotePublicPath(note), true)">
               <span class="text-metadata" clamp=1 ng-bind="getNotePublicPath(note)"></span>
             </a>
             <div class="group-mixed--right">
@@ -415,6 +415,20 @@
             <a href class="group-symmetrical--left link-navigation active" swiper-click="swipeToBasic('noteEditor')">
               <span class="text-navigation-back">basic</span>
             </a>
+            <a href ng-if="showNoteAction('preview') && !getNotePreviewPath(note)" swiper-click="openPreviewNoteDialog(note)"
+               class="group-symmetrical--middle link-navigation highlighted">
+              <span class="text-navigation">preview</span>
+            </a>
+            <a ng-if="showNoteAction('preview') && getNotePreviewPath(note)"
+               class="group-symmetrical--middle link-navigation highlighted"
+               ng-click="clickUrl(getNotePreviewPath(note))"
+               external-link="getUrlHref(getNotePreviewPath(note), true)">
+              <span class="text-navigation">preview</span>
+            </a>
+            <!--a href ng-if="showNoteAction('publish')" swiper-click="openPublishNoteDialog(note)"
+               class="group-symmetrical--right link-navigation highlighted">
+              <span class="text-navigation">publish</span>
+            </a-->
           </nav>
         </footer>
       </div>

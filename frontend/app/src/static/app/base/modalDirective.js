@@ -14,7 +14,7 @@
  */
  'use strict';
 
- function modalDirective($animate, $animateCss, $rootScope, $timeout) {
+ function modalDirective($animate, $animateCss, $rootScope, $timeout, PlatformService, URLService) {
   return {
     restrict: 'A',
     scope: {
@@ -212,6 +212,18 @@
         init(scope.modalInfos, true);
       }
 
+      scope.getModalUrlHref = function(url){
+        if (!PlatformService.isSupported('openLinkExternal') && url){
+          return url;
+        }
+      };
+
+      scope.clickModalUrl = function(url){
+        if (PlatformService.isSupported('openLinkExternal') && url){
+          return PlatformService.doAction('openLinkExternal', url);
+        }
+      };
+
       scope.$on('$destroy', function() {
         if (scope.reinit && typeof scope.reinit.unregister === 'function') scope.reinit.unregister();
         if (scope.layoutChange && typeof scope.layoutChange.register === 'function') {
@@ -222,5 +234,6 @@
     }
   };
 }
-modalDirective['$inject'] = ['$animate', '$animateCss', '$rootScope', '$timeout'];
+modalDirective['$inject'] = ['$animate', '$animateCss', '$rootScope', '$timeout', 'PlatformService',
+'URLService'];
 angular.module('em.base').directive('modal', modalDirective);

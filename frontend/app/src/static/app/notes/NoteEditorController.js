@@ -15,9 +15,9 @@
 
  'use strict';
 
- function NoteEditorController($rootScope, $scope, $timeout, ContentService,
+ function NoteEditorController($rootScope, $scope, $timeout, $window, ContentService,
                                DrawerService, NotesService, SwiperService,
-                               TagsService, UISessionService, UserSessionService) {
+                               TagsService, UISessionService, URLService, UserSessionService) {
 
   // INITIALIZING
 
@@ -50,6 +50,10 @@
       return $scope.showEditorAction('delete', $scope.note) && !$scope.isOnboarding('notes');
       case 'restore':
       return $scope.showEditorAction('restore', $scope.note) && !$scope.isOnboarding('notes');
+      case 'preview':
+      return $scope.isAdmin() && !$scope.isOnboarding('notes');
+      case 'publish':
+      return $scope.isAdmin() && !$scope.isOnboarding('notes');
     }
   };
 
@@ -77,9 +81,8 @@
       case 'basicFooter':
 
       if (!subcomponentName) {
-        if ($scope.showNoteEditorComponent('advancedFooter', 'expandible') ||
-            $scope.showNoteEditorComponent('advancedFooter', 'navigation'))
-        {
+        if ($scope.showNoteEditorComponent('basicFooter', 'expandible') ||
+            $scope.showNoteEditorComponent('basicFooter', 'navigation')){
           return true;
         }
       } else if (subcomponentName === 'expandible') {
@@ -94,11 +97,15 @@
       break;
 
       case 'advancedFooter':
+
       if (!subcomponentName){
         return $scope.showNoteEditorComponent('advancedFooter', 'convert') ||
-        $scope.showNoteEditorComponent('advancedFooter', 'navigation');
+               $scope.showNoteEditorComponent('advancedFooter', 'navigation');
       }else if (subcomponentName === 'navigation'){
-        return !$scope.isPropertyInDedicatedEdit() && !$scope.isFooterNavigationHidden();
+        return !$scope.isPropertyInDedicatedEdit() &&
+          ($scope.showNoteAction('preview') ||
+           $scope.showNoteAction('publish') ||
+           !$scope.isFooterNavigationHidden());
       }else if (subcomponentName === 'convert'){
         return !$scope.isPropertyInDedicatedEdit() &&
         ($scope.showEditorAction('convertToTask', $scope.note) ||
@@ -370,13 +377,38 @@
   // PUBLISHING
 
   $scope.getNotePublicPath = function(note){
-    return ContentService.getAbsoluteUrlPrefix() + '/our/' + UserSessionService.getHandle() + '/' +
-           note.visibility.path;
+    return URLService.getVisibleUrl(
+              ContentService.getAbsoluteUrlPrefix() + '/our/' + UserSessionService.getHandle() + '/' +
+              note.visibility.path);
   };
 
   $scope.getNotePublicInfo = function(note){
     var licenceText = note.visibility.licence ? ' under the ' + note.visibility.licence + ' licence': ', all rights reserved';
     return 'published at ' + $scope.formatToLocaleDateWithTime(note.visibility.published) + licenceText;
+  };
+
+  $scope.getNotePreviewPath = function(note){
+    if (note.visibility && note.visibility.preview && (note.visibility.previewExpires > (Date.now()+300000))){
+      return ContentService.getAbsoluteUrlPrefix() + '/preview/' + note.trans.owner + '/' +
+                 note.trans.uuid + '/' + note.visibility.preview;
+    }
+  };
+
+  $scope.openPreviewNoteDialog = function(note){
+    return $scope.createPreviewLink(note).then(function(response){
+      var previewNoteModalParams = {
+        messageHeading: 'preview page created',
+        messageIngress: 'preview expires on ' + $scope.formatToLocaleDateWithTime(response.previewExpires),
+        messageText: [{
+          type: 'linkExternal',
+          data: 'click here to open preview',
+          url: $scope.getNotePreviewPath(note)
+        }],
+        confirmText: 'got it',
+        allowCancel: true
+      };
+      $scope.showModal(undefined, previewNoteModalParams);
+    });
   };
 
   // KEYWORDS
@@ -577,6 +609,7 @@
   $scope.registerInitializeEditorCallback(initializeEditor);
 }
 
-NoteEditorController['$inject'] = ['$rootScope', '$scope', '$timeout', 'ContentService',
-'DrawerService', 'NotesService', 'SwiperService', 'TagsService', 'UISessionService', 'UserSessionService'];
+NoteEditorController['$inject'] = ['$rootScope', '$scope', '$timeout', '$window', 'ContentService',
+'DrawerService', 'NotesService', 'SwiperService', 'TagsService', 'UISessionService', 'URLService',
+'UserSessionService'];
 angular.module('em.main').controller('NoteEditorController', NoteEditorController);

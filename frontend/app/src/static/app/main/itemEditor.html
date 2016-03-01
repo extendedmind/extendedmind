@@ -97,10 +97,10 @@
           </textarea>
         </div>
         <div ng-if="showEditorComponent('urlLink', item)" class="group-mixed">
-          <a class="group-mixed--middle clickable" ng-click="clickUrl(item)"
+          <a class="group-mixed--middle clickable" ng-click="clickUrl(item.trans.link)"
              ng-class="showEditorComponent('urlLinkError', item) ? 'link-disabled' : 'highlighted'"
-             external-link="getItemHref(item.trans.link)">
-            <span class="text-metadata" ng-bind="getItemVisibleUrl(item)"></span>
+             external-link="getUrlHref(item.trans.link)">
+            <span class="text-metadata" ng-bind="getVisibleUrl(item.trans.link)"></span>
           </a>
           <div class="group-mixed--right">
             <a href ng-click="setUrlFocus()">
