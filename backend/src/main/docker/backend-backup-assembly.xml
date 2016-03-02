@@ -29,8 +29,10 @@
       <directory>${project.build.directory}/backend-runtime-dependencies</directory>
       <outputDirectory>lib</outputDirectory>
       <includes>
+        <include>commons-lang3-*</include>
         <include>concurrentlinkedhashmap-*</include>
         <include>lucene-core-*</include>
+        <include>metrics-*</include>
         <include>neo4j-*</include>
         <include>netty-*</include>
         <include>opencsv-*</include>
