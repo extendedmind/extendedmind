@@ -222,7 +222,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
                  if (noteNode.hasProperty("path")) Some(noteNode.getProperty("path").asInstanceOf[String]) else None,
                  if (noteNode.hasProperty("licence")) Some(noteNode.getProperty("licence").asInstanceOf[String]) else None,
                  None, // TODO: Reviewing
-                 if (noteNode.hasProperty("preview")) Some(noteNode.getProperty("preview").asInstanceOf[Long]) else None,
+                 if (noteNode.hasProperty("preview")) Some(noteNode.getProperty("preview").asInstanceOf[Long].toHexString) else None,
                  if (noteNode.hasProperty("previewExpires")) Some(noteNode.getProperty("previewExpires").asInstanceOf[Long]) else None,
                  None))
            else None),
@@ -336,7 +336,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     }
   }
 
-  protected def previewNoteNode(owner: Owner, noteUUID: UUID, format: String): Response[(Node, Long, Long)] = {
+  protected def previewNoteNode(owner: Owner, noteUUID: UUID, format: String): Response[(Node, String, Long)] = {
     withTx {
       implicit neo4j =>
         for {
@@ -346,7 +346,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     }
   }
 
-  protected def previewNoteNode(noteNode: Node, format: String): Response[(Long, Long)] = {
+  protected def previewNoteNode(noteNode: Node, format: String): Response[(String, Long)] = {
     withTx {
       implicit neo4j =>
         // Set format
@@ -360,7 +360,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
         val previewExpires = System.currentTimeMillis() + PREVIEW_VALIDITY
         noteNode.setProperty("previewExpires", previewExpires)
 
-        Right((previewCode, previewExpires))
+        Right((previewCode.toHexString, previewExpires))
     }
   }
 

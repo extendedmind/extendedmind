@@ -202,7 +202,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
           marshal(PreviewPayload("md"))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val previewNoteResult = responseAs[PreviewNoteResult]
         writeJsonOutput("previewNoteResponse", responseAs[String])
-        Get("/" + authenticateResponse.userUUID + "/item/" + putNoteResponse.uuid.get + "/preview/" + previewNoteResult.preview.toHexString) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+        Get("/" + authenticateResponse.userUUID + "/item/" + putNoteResponse.uuid.get + "/preview/" + previewNoteResult.preview) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
           val publicDraftItem = responseAs[PublicItem]
           writeJsonOutput("itemPreviewResponse", responseAs[String])
           publicDraftItem.note.visibility.get.preview.get should be (previewNoteResult.preview)

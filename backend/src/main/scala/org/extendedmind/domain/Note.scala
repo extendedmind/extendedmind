@@ -159,4 +159,4 @@ case class PreviewPayload(format: String){
 
 case class PublishNoteResult(published: Long, result: SetResult)
 
-case class PreviewNoteResult(preview: Long, previewExpires: Long, result: SetResult)
+case class PreviewNoteResult(preview: String, previewExpires: Long, result: SetResult)

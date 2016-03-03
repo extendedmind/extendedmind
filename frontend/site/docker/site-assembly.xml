@@ -7,7 +7,7 @@
       <outputDirectory>.</outputDirectory>
       <includes>
         <include>package.json</include>
-        <include>server.js</include>
+        <include>index.js</include>
       </includes>
     </fileSet>
     <fileSet>
