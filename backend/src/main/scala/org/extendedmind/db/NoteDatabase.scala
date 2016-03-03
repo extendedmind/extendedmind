@@ -221,6 +221,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
                  if (publishedRevisionRel.isDefined && publishedRevisionRel.get.getEndNode.hasProperty("published")) Some(publishedRevisionRel.get.getEndNode.getProperty("published").asInstanceOf[Long]) else None,
                  if (noteNode.hasProperty("path")) Some(noteNode.getProperty("path").asInstanceOf[String]) else None,
                  if (noteNode.hasProperty("licence")) Some(noteNode.getProperty("licence").asInstanceOf[String]) else None,
+                 if (publishedRevisionRel.isDefined && publishedRevisionRel.get.getEndNode.hasProperty("number")) Some(publishedRevisionRel.get.getEndNode.getProperty("number").asInstanceOf[Long]) else None,
                  None, // TODO: Reviewing
                  if (noteNode.hasProperty("preview")) Some(noteNode.getProperty("preview").asInstanceOf[Long].toHexString) else None,
                  if (noteNode.hasProperty("previewExpires")) Some(noteNode.getProperty("previewExpires").asInstanceOf[Long]) else None,
@@ -531,6 +532,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
   protected def noteRevisionToPublicItem(ownerNode: Node, noteRevisionNode: Node, displayOwner: String)(implicit neo4j: DatabaseService): Response[PublicItem] = {
     val owner = Owner(getUUID(ownerNode), None, Token.ANONYMOUS)
     val published = noteRevisionNode.getProperty("published").asInstanceOf[Long]
+    val publishedRevision = noteRevisionNode.getProperty("number").asInstanceOf[Long]
     val revisionRelationship = noteRevisionNode.getRelationships().find (relationship => relationship.getType.name == ItemRelationship.HAS_REVISION.name)
     if (revisionRelationship.isEmpty)
       return fail(INTERNAL_SERVER_ERROR, ERR_ITEM_NO_REVISION_RELATIONSHIP, "Note revision does not have a master")
@@ -549,7 +551,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
       assignee <- getAssignee(note).right
     } yield PublicItem(displayOwner,
         note.copy(modified = Some(published),
-                  visibility = Some(SharedItemVisibility(Some(published),Some(path), licence, None, None, None, None))),
+                  visibility = Some(SharedItemVisibility(Some(published), Some(path), licence, Some(publishedRevision), None, None, None, None))),
         tagsResult._1,
         tagsResult._2,
         assignee)

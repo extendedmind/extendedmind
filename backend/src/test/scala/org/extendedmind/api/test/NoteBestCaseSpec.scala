@@ -224,15 +224,17 @@ class NoteBestCaseSpec extends ServiceSpecBase {
               Get("/public/timo?modified=" + (publishNoteResult.published-1)) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
                 val publicItems = responseAs[PublicItems]
                 publicItems.notes.get.length should be(1)
+                publicItem.note.visibility.get.publishedRevision.get should be(1l)
               }
             }
 
-            // Save note, should not change title of published note
+            // Save note, should not change title of published note and create a new revision
             val updatedNote = newNote.copy(title = "Public note modified")
             putExistingNote(updatedNote, putNoteResponse.uuid.get, authenticateResponse)
             Get("/public/timo/test") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
               val publicItem = responseAs[PublicItem]
               publicItem.note.title should be(newNote.title)
+              publicItem.note.visibility.get.publishedRevision.get should be(1l)
             }
 
             // Publish with same path, make sure that title is changed
@@ -241,6 +243,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
               Get("/public/timo/test") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
                 val publicItem = responseAs[PublicItem]
                 publicItem.note.title should be(updatedNote.title)
+                publicItem.note.visibility.get.publishedRevision.get should be(3l)
               }
             }
 
@@ -249,16 +252,19 @@ class NoteBestCaseSpec extends ServiceSpecBase {
               marshal(PublishPayload("md", "test2", None, None))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
               Get("/" + authenticateResponse.userUUID + "/item/" + putNoteResponse.uuid.get + "/revisions") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                 val revisionsResult = responseAs[ItemRevisions]
-                revisionsResult.revisions.get.length should be (3)
+                revisionsResult.revisions.get.length should be (4)
                 val firstRevision = revisionsResult.revisions.get.find(revision => revision.number == 1l).get
                 val secondRevision = revisionsResult.revisions.get.find(revision => revision.number == 2l).get
                 val thirdRevision = revisionsResult.revisions.get.find(revision => revision.number == 3l).get
+                val fourthRevision = revisionsResult.revisions.get.find(revision => revision.number == 4l).get
                 firstRevision.unpublished should not be (None)
                 firstRevision.published should be (None)
-                secondRevision.unpublished should not be (None)
+                secondRevision.unpublished should be (None)
                 secondRevision.published should be (None)
-                thirdRevision.unpublished should be (None)
-                thirdRevision.published should not be (None)
+                thirdRevision.unpublished should not be (None)
+                thirdRevision.published should be (None)
+                fourthRevision.unpublished should be (None)
+                fourthRevision.published should not be (None)
               }
             }
 
@@ -274,16 +280,19 @@ class NoteBestCaseSpec extends ServiceSpecBase {
               }
               Get("/" + authenticateResponse.userUUID + "/item/" + putNoteResponse.uuid.get + "/revisions") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                 val revisionsResult = responseAs[ItemRevisions]
-                revisionsResult.revisions.get.length should be (3)
+                revisionsResult.revisions.get.length should be (4)
                 val firstRevision = revisionsResult.revisions.get.find(revision => revision.number == 1l).get
                 val secondRevision = revisionsResult.revisions.get.find(revision => revision.number == 2l).get
                 val thirdRevision = revisionsResult.revisions.get.find(revision => revision.number == 3l).get
+                val fourthRevision = revisionsResult.revisions.get.find(revision => revision.number == 4l).get
                 firstRevision.unpublished should not be (None)
                 firstRevision.published should be (None)
-                secondRevision.unpublished should not be (None)
+                secondRevision.unpublished should be (None)
                 secondRevision.published should be (None)
                 thirdRevision.unpublished should not be (None)
                 thirdRevision.published should be (None)
+                fourthRevision.unpublished should not be (None)
+                fourthRevision.published should be (None)
               }
 
               // Try to get with previous modified value that returned the note, make sure it has moved to "unpublished"
@@ -474,17 +483,19 @@ class NoteBestCaseSpec extends ServiceSpecBase {
               getItemRevision(putNoteResponse.uuid.get, 2l, authenticateResponse).note.get.title should be (noteRevision2.title)
               getItemRevision(putNoteResponse.uuid.get, 1l, authenticateResponse).note.get.title should be (noteRevision1.title)
 
-              // Note revision isn't created when editing after publish right away
-              val noteWithoutRevision = newNote.copy(title = "Spanish 101 modifications after publish")
-              val putNoteResponse7 = putExistingNote(noteWithoutRevision, putNoteResponse.uuid.get, authenticateResponse)
-              getItemRevisionList(putNoteResponse.uuid.get, authenticateResponse).revisions.get.length should be (6)
+              // Note revision is created when editing after publish, even without forcing
+              val noteRevision7 = newNote.copy(title = "Spanish 101 modifications after publish")
+              val putNoteResponse7 = putExistingNote(noteRevision7, putNoteResponse.uuid.get, authenticateResponse)
+              putNoteResponse7.revision.get should be (7)
+              getItemRevisionList(putNoteResponse.uuid.get, authenticateResponse).revisions.get.length should be (7)
 
-              // Note revision 7 is again forced
-              val noteRevision7 = newNote.copy(title = "Spanish 101 modifications after publish forced", revision = Some(7l))
-              val putNoteResponse7Revision = putExistingNote(noteRevision7, putNoteResponse.uuid.get, authenticateResponse)
+              // Saving when previous is not published does not create a new revision
+              val noteWithoutRevision = newNote.copy(title = "Spanish 101 modifications after publish not forced")
+              val putNoteResponseNoRevision = putExistingNote(noteWithoutRevision, putNoteResponse.uuid.get, authenticateResponse)
+              getItemRevisionList(putNoteResponse.uuid.get, authenticateResponse).revisions.get.length should be (7)
 
-              // Note revision 8 is again forced twice
-              val noteRevision8 = newNote.copy(title = "Spanish 101 modifications after publish forced 2", revision = Some(8l))
+              // Note revision 8 is again forced
+              val noteRevision8 = newNote.copy(title = "Spanish 101 modifications after publish forced", revision = Some(8l))
               val putNoteResponse8Revision = putExistingNote(noteRevision8, putNoteResponse.uuid.get, authenticateResponse)
               putNoteResponse8Revision.revision.get should be(8)
 

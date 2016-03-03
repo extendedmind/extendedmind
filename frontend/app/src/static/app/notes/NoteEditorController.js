@@ -411,6 +411,10 @@
     });
   };
 
+  $scope.openPublishNoteDialog = function(note){
+    // TODO
+  };
+
   // KEYWORDS
 
   function clearKeyword() {

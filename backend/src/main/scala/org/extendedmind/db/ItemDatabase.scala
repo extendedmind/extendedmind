@@ -1912,10 +1912,10 @@ trait ItemDatabase extends UserDatabase {
         // within one minute of the first save
         val creatorRel = itemNode.getRelationships().find(relationship => relationship.getType.name == SecurityRelationship.IS_CREATOR.name)
         if (creatorRel.isDefined && creatorRel.get.getStartNode != ownerNodes.user){
-          // This was created by someone else, but not this one
+          // This was created by someone else, not current user
           Some(latestRevisionRel)
         }else if (creatorRel.isEmpty && ownerNodes.foreignOwner.isDefined){
-          // This was created by the owner but this is someone else
+          // This was created by the owner but the current user is not the owner
           Some(latestRevisionRel)
         }else{
           None
@@ -1925,6 +1925,9 @@ trait ItemDatabase extends UserDatabase {
       val latestRevision = latestRevisionRel.get.getEndNode
       val latestRevisionNumber = latestRevisionRel.get.getEndNode.getProperty("number").asInstanceOf[Long]
       if (force || (requestedRevision.isDefined && requestedRevision.get == latestRevisionNumber+1l)){
+        Some(latestRevisionRel)
+      }else if (latestRevision.hasProperty("published")){
+        // The latest revision was published, always create a new revision to make it possible to validate that there are unpublished changes
         Some(latestRevisionRel)
       }else if (latestRevisionRel.get.hasProperty("creator") &&
                 ownerNodes.user.getProperty("uuid").asInstanceOf[String] != latestRevisionRel.get.getProperty("creator").asInstanceOf[String]){
