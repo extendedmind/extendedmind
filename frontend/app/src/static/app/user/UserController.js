@@ -78,6 +78,14 @@
     return UserSessionService.getEmail();
   };
 
+  $scope.getPublishingInfo = function(){
+    return {
+      handle: UserSessionService.getHandle(),
+      displayName: UserSessionService.getDisplayName(),
+      useCreativeCommons: UserSessionService.getUIPreference('useCC')
+    };
+  };
+
   // NAVIGATION
 
   $scope.activeDetails = undefined;

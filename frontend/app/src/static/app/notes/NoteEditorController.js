@@ -383,7 +383,8 @@
   };
 
   $scope.getNotePublicInfo = function(note){
-    var licenceText = note.visibility.licence ? ' under the ' + note.visibility.licence + ' licence': ', all rights reserved';
+    var licenceText = note.visibility.licence ? ' under the ' + note.visibility.licence +
+                      ' licence': ', all rights reserved';
     return 'published at ' + $scope.formatToLocaleDateWithTime(note.visibility.published) + licenceText;
   };
 
@@ -412,7 +413,20 @@
   };
 
   $scope.openPublishNoteDialog = function(note){
-    // TODO
+    if (!UserSessionService.getHandle() || !UserSessionService.getDisplayName()){
+      var previewNoteModalParams = {
+        messageHeading: 'update preferences',
+        messageIngress: 'before publishing your first note, you need to set your handle and display name',
+        confirmText: 'open preferences',
+        confirmAction: function() {
+          $scope.openEditor('user', $scope.getPublishingInfo(), 'publishing');
+        },
+        allowCancel: true
+      };
+      $scope.showModal(undefined, previewNoteModalParams);
+    }else{
+      // TODO
+    }
   };
 
   // KEYWORDS
@@ -600,6 +614,9 @@
     if (pollForSaveReady) pollForSaveReady.value = false;
     if (angular.isFunction($scope.unregisterInitializeEditorCallback))
       $scope.unregisterInitializeEditorCallback();
+    if (angular.isFunction($scope.unregisterEditorAboutToCloseCallback)){
+      $scope.unregisterEditorAboutToCloseCallback();
+    }
   });
 
   // INITIALIZING
@@ -609,7 +626,7 @@
     clearNoteContentWatch = setNoteContentWatch();
     clearFooterWatch();
     clearFooterWatch = setNoteFooterWatch();
-  };
+  }
   $scope.registerInitializeEditorCallback(initializeEditor);
 }
 

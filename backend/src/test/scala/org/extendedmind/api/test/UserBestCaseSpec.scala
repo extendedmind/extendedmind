@@ -79,7 +79,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
       val verificationCodeCaptor: ArgumentCaptor[Long] = ArgumentCaptor.forClass(classOf[Long])
       val emailCaptor: ArgumentCaptor[String] = ArgumentCaptor.forClass(classOf[String])
 
-      val signUp = SignUp(testEmail, "infopwd", None, None, None, None, Some(1), None)
+      val signUp = SignUp(testEmail, "infopwd", Some("Info account"), Some("info"), None, None, Some(1), None)
       Post("/signup",
         marshal(signUp).right.get) ~> route ~> check {
           val signUpResponse = responseAs[String]

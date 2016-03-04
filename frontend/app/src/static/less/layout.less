@@ -1301,8 +1301,14 @@ Use `.group-instruction-jumbtron` to create a very large instruction block in th
 @margin-top-heading-justified: -20px;
 // 1. Justify whitespace between toolbar and content
 .group-heading.justified,
-.container-toolbar + .container-fluid--inner .group-heading.justified-under-toolbar {
+.container-toolbar + .container-fluid--inner .group-heading.justified-under-toolbar{
   margin-top: @margin-top-heading-justified; // [1]
+}
+
+@margin-top-heading-in-editor: -11px;
+// 1. Margin of a simple heading in an editor is slightly less than elsewere
+.container-editor .group-heading.jusfified {
+  margin-top: @margin-top-heading-in-editor; // [1]
 }
 
 // FIXME: refactor or move (overrides.less)

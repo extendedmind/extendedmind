@@ -282,6 +282,20 @@
     );
   };
 
+  // PUBLISHING
+
+  $scope.updatePublishing = function(handle, displayName, useCreativeCommons){
+    if (handle && displayName){
+      var trimmedHandle = handle.trim();
+      var trimmedDisplayName = displayName.trim();
+      UserSessionService.setHandle(trimmedHandle);
+      UserSessionService.setDisplayName(trimmedDisplayName);
+      UserSessionService.setUIPreference('useCC', useCreativeCommons);
+      UserService.saveAccountPreferences();
+      $scope.closeEditor();
+    }
+  };
+
   // DELETE ACCOUNT
 
   $scope.deleteAccount = function(password) {

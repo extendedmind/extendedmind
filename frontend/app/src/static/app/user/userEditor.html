@@ -36,9 +36,9 @@
   </div>
 
   <form name="userForm" class="container-fluid--inner"
-        ng-if="mode === 'password' || mode === 'email' || mode === 'delete'">
+        ng-if="mode === 'password' || mode === 'email' || mode === 'publishing' || mode === 'delete'">
     <div ng-if="mode === 'password'" class="container-content" drawer-override-aisle="right">
-      <h2 class="group-heading row-form">change password</h2>
+      <h2 class="group-heading row-form jusfified">change password</h2>
       <div class="row-form">
         <input type="password" name="password" id="password" ng-model="user.passwordOld"
         ng-minlength="7" ng-maxlength="100" placeholder="enter old password&#8230;" required />
@@ -48,7 +48,7 @@
         ng-minlength="7" ng-maxlength="100" placeholder="enter new password&#8230;" required />
       </div>
       <div class="group-error row-form">
-        <div ng-if="userForm.passwordNew.$touched" ng-messages="signUpForm.password.$error">
+        <div ng-if="userForm.passwordNew.$touched" ng-messages="userForm.password.$error">
           <span class="text-error" ng-message="minlength">password must be 7 characters or more</span>
         </div>
         <span ng-if="userEditOffline" class="text-error">can't connect to server. are you online?</span>
@@ -56,7 +56,7 @@
       </div>
     </div>
     <div ng-if="mode === 'email'" class="container-content" drawer-override-aisle="right">
-      <h2 class="group-heading row-form">change email</h2>
+      <h2 class="group-heading row-form jusfified">change email</h2>
       <div class="row-form">
         <input type="email" name="emailNew" ng-model="user.emailNew"
         placeholder="enter new email&#8230;" maxlength="254" editable-field required />
@@ -67,15 +67,47 @@
       </div>
       <div class="group-error row-form">
         <span ng-if="userEditOffline" class="text-error">can't connect to server. are you online?</span>
-        <div ng-if="signUpForm.emailNew.$touched" ng-messages="signUpForm.emailNew.$error">
+        <div ng-if="userForm.emailNew.$touched" ng-messages="userForm.emailNew.$error">
           <span class="text-error" ng-message="emailNew">invalid email address</span>
         </div>
         <span ng-if="changeEmailFailed" class="text-error">invalid password</span>
         <span ng-if="changeEmailLoginFailed" class="text-error">could not log in using new email</span>
       </div>
     </div>
+    <div ng-if="mode === 'publishing'" class="container-content" drawer-override-aisle="right">
+      <h2 class="group-heading row-form jusfified">publishing</h2>
+      <div class="row-form">
+        <input type="text" name="handle" ng-model="user.handle" ng-pattern="/^[0-9a-z-]+$/"
+        placeholder="enter handle&#8230;" maxlength="128" editable-field required />
+      </div>
+      <div class="row-form">
+        <input type="text" name="displayName" ng-model="user.displayName"
+        ng-minlength="1" ng-maxlength="256" placeholder="enter display name&#8230;" required />
+      </div>
+      <div class="group-mixed details height-large">
+        <div class="group-mixed--left">
+          <input type="checkbox" ng-model="user.useCreativeCommons" ng-true-value="true"
+          icon-checkbox="'useCreativeCommons'" />
+        </div>
+        <div class="group-mixed--middle">
+          <span class="text-details">use a creative commons licence</span>
+          <a href class="highlighted link-inline" ng-click="clickUrl('https://creativecommons.org/licenses/by-sa/4.0/')"
+             external-link="getUrlHref('https://creativecommons.org/licenses/by-sa/4.0/')">
+            <span class="text-details">(CC BY-SA 4.0)</span>
+          </a>
+          <span class="text-details">by default</span>
+        </div>
+      </div>
+      <div class="group-error row-form">
+        <span ng-if="userEditOffline" class="text-error">can't connect to server. are you online?</span>
+        <div ng-if="userForm.handle.$touched" ng-messages="userForm.handle.$error">
+          <span class="text-error" ng-message="handle">handle must be lower case and can't contain spaces</span>
+        </div>
+        <span ng-if="updatePublishingFailed" class="text-error">invalid password</span>
+      </div>
+    </div>
     <div ng-if="mode === 'delete'" class="container-content" drawer-override-aisle="right">
-      <h2 class="group-heading row-form">delete account</h2>
+      <h2 class="group-heading row-form jusfified">delete account</h2>
       <p class="row"><b>warning:</b> by entering your password and pressing delete below, you will be logged out of
       every device and your account will be marked for immediate deletion</p>
       <div class="row-form">
@@ -96,6 +128,11 @@
       ng-disabled="!userForm.$valid || changeEmailLoginFailed"
       ng-click="changeEmail(user.emailNew, user.password)">
         <span class="text-btn">done</span>
+      </button>
+      <button ng-if="mode === 'publishing'" type="submit" class="btn-action"
+      ng-disabled="!userForm.$valid || updatePublishingFailed"
+      ng-click="updatePublishing(user.handle, user.displayName, user.useCreativeCommons)">
+        <span class="text-btn">save</span>
       </button>
       <button ng-if="mode === 'delete'" type="submit" class="btn-action"
       ng-disabled="!userForm.$valid"
