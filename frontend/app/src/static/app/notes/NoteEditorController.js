@@ -419,7 +419,7 @@
         messageIngress: 'before publishing your first note, you need to set your handle and display name',
         confirmText: 'open preferences',
         confirmAction: function() {
-          $scope.openEditor('user', $scope.getPublishingInfo(), 'publishing');
+          $scope.openEditor('user', $scope.getPublishingInfo(note), 'publishing');
         },
         allowCancel: true
       };

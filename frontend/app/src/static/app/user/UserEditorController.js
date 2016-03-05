@@ -292,7 +292,12 @@
       UserSessionService.setDisplayName(trimmedDisplayName);
       UserSessionService.setUIPreference('useCC', useCreativeCommons);
       UserService.saveAccountPreferences();
-      $scope.closeEditor();
+
+      if ($scope.user.item && $scope.user.item.trans.itemType === 'note'){
+        $scope.openEditor('note', $scope.user.item, 'advanced');
+      }else{
+        $scope.closeEditor();
+      }
     }
   };
 

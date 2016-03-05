@@ -78,11 +78,12 @@
     return UserSessionService.getEmail();
   };
 
-  $scope.getPublishingInfo = function(){
+  $scope.getPublishingInfo = function(item){
     return {
       handle: UserSessionService.getHandle(),
       displayName: UserSessionService.getDisplayName(),
-      useCreativeCommons: UserSessionService.getUIPreference('useCC')
+      useCreativeCommons: UserSessionService.getUIPreference('useCC'),
+      item: item
     };
   };
 

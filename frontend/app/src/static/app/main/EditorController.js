@@ -44,6 +44,9 @@
     }else if (editorType === 'note'){
       $scope.note = dataInEdit;
       initializeEditorVisibilityAndPermission(dataInEdit);
+      if (mode === 'advanced'){
+        SwiperService.setInitialSlidePath('noteEditor', 'noteEditor/advanced');
+      }
     }else if (editorType === 'list'){
       var list = dataInEdit.list || dataInEdit;
       $scope.list = list;
