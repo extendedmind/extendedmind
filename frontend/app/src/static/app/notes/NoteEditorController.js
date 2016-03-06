@@ -51,9 +51,9 @@
       case 'restore':
       return $scope.showEditorAction('restore', $scope.note) && !$scope.isOnboarding('notes');
       case 'preview':
-      return $scope.isAdmin() && !$scope.isOnboarding('notes');
+      return $scope.isAdmin() && $scope.note.uuid && !$scope.isOnboarding('notes');
       case 'publish':
-      return $scope.isAdmin() && !$scope.isOnboarding('notes');
+      return $scope.isAdmin() && $scope.note.uuid &&!$scope.isOnboarding('notes');
     }
   };
 
@@ -425,7 +425,42 @@
       };
       $scope.showModal(undefined, previewNoteModalParams);
     }else{
-      // TODO
+      var licenceValue = UserSessionService.getUIPreference('useCC') ? $rootScope.CC_LICENCE : undefined;
+      // Override with previous licence for this if this note already has been published
+      if (note.visibility && note.visibility.path) licenceValue = note.visibility.licence;
+      note.trans.cc = licenceValue === $rootScope.CC_LICENCE;
+      note.trans.publishPath = note.visibility && note.visibility.path ? note.visibility.path : undefined;
+      if (!note.trans.publishPath){
+        // Create a path from note title
+        note.trans.publishPath = note.trans.title.toLowerCase();
+        note.trans.publishPath = note.trans.publishPath.replaceAll(' ', '-');
+        note.trans.publishPath = note.trans.publishPath.replace(/[^0-9a-z-]/gi, '');
+      }
+      var messageForm = {
+        input: note.trans.publishPath,
+        inputPlaceholder: 'enter path\u2026',
+        inputMaxLength: 128,
+        inputPattern: /^[0-9a-z-]+$/,
+        inputErrorText: 'path must be lower case and can not contain spaces',
+        checkbox: note.trans.cc,
+        checkboxText: 'publish under creative commons (' + $rootScope.CC_LICENCE + ')',
+        submitErrorText: 'publishing failed'
+      };
+
+      var publishNoteModalParams = {
+        messageHeading: 'publish note',
+        messageIngress: 'set a path and licence for the note',
+        messageForm: messageForm,
+        confirmText: 'publish',
+        confirmTextDeferred: 'publishing\u2026',
+        confirmActionDeferredFn: function(messageForm){
+          var licence = messageForm.checkbox ? $rootScope.CC_LICENCE : undefined;
+          return NotesService.publishNote($scope.note, messageForm.input, licence);
+        },
+        confirmActionDeferredParam: messageForm,
+        allowCancel: true
+      };
+      $scope.showModal(undefined, publishNoteModalParams);
     }
   };
 

@@ -103,7 +103,6 @@
         <div ng-if="userForm.handle.$touched" ng-messages="userForm.handle.$error">
           <span class="text-error" ng-message="handle">handle must be lower case and can't contain spaces</span>
         </div>
-        <span ng-if="updatePublishingFailed" class="text-error">invalid password</span>
       </div>
     </div>
     <div ng-if="mode === 'delete'" class="container-content" drawer-override-aisle="right">

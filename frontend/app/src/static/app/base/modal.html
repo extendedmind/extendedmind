@@ -15,7 +15,7 @@
       </a>
     </header>
 
-    <div class="container-fluid--inner">
+    <div ng-if="!messageForm" class="container-fluid--inner">
       <section class="container-content">
 
         <div class="group-instruction">
@@ -75,5 +75,45 @@
         </button>
       </footer>
     </div>
+    <form ng-if="messageForm" name="modalForm" class="container-fluid--inner">
+      <section class="container-content">
+        <!-- HEADING -->
+        <h2 ng-if="messageHeading" class="group-heading shrinked row"
+          ng-class="messageHeading.length > 6 && 'long'">
+          <span class="text-heading" ng-bind="messageHeading"></span>
+        </h2>
+        <!-- INGRESS -->
+        <div ng-if="messageIngress" class="textgroup-ingress separate row" ng-bind="messageIngress"></div>
+        <!-- INPUT TEXT -->
+        <div class="row-form">
+          <input type="text" name="modalInput" ng-model="messageForm.input" ng-pattern="messageForm.inputPattern"
+          placeholder="{{messageForm.inputPlaceholder}}" ng-maxlength="messageForm.inputMaxLength" editable-field required />
+        </div>
+        <!-- CHECKBOX -->
+        <div ng-if="messageForm.checkbox !== undefined" class="group-mixed details form-last">
+          <div class="group-mixed--left">
+            <input type="checkbox" ng-model="messageForm.checkbox" ng-true-value="true"
+            icon-checkbox="'modalCheckbox'" />
+          </div>
+          <div class="group-mixed--middle">
+            <span class="text-details" ng-bind="messageForm.checkboxText"></span>
+          </div>
+        </div>
+        <div class="group-error row-form">
+          <span ng-if="modalFormOffline" class="text-error">can't connect to server. are you online?</span>
+          <div ng-if="modalForm.modalInput.$touched" ng-messages="modalForm.modalInput.$error">
+            <span class="text-error" ng-message="modalInput" ng-bind="messageForm.inputErrorText"></span>
+          </div>
+          <span ng-if="modalFormSubmitFailed" class="text-error" ng-bind="messageForm.submitErrorText"></span>
+        </div>
+      </section>
+      <!-- FORM FOOTER -->
+      <footer class="container-content--after group-btn">
+        <button type="submit" class="btn-action" ng-disabled="!modalForm.$valid || confirmDisabled"
+        ng-click="confirmAction()">
+          <span class="text-btn" ng-bind="confirmText"></span>
+        </button>
+      </footer>
+    </form>
   </div>
 </div>

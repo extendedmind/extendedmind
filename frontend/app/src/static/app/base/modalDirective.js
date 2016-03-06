@@ -33,6 +33,7 @@
         scope.messageText = params.messageText;
         scope.messageDetails = params.messageDetails;
         scope.messageHtml = params.messageHtml;
+        scope.messageForm = params.messageForm;
         scope.closeText = params.closeText;
         scope.confirmText = params.confirmText || 'ok';
         scope.hideCloseText = params.cancelDisabled;

@@ -52,6 +52,9 @@
       $rootScope.TOASTER_ANIMATION_SPEED = 500;
       $rootScope.TOASTER_ANIMATION_TIME = 3000;
 
+      // OTHER
+      $rootScope.CC_LICENCE = 'CC BY-SA 4.0';
+
       // Sticky inputs
       var useStickyInputs = false;
       if (packaging.endsWith('cordova')){

@@ -935,11 +935,15 @@ NOTE: Implementation depends on the removing of --left|--right DOM nodes if they
 }
 
 // 1. Override for .group-mixed.
+// 2. If last in form, needs a padding before button
 .group-mixed.details {
   & > .group-mixed--middle {
     line-height: @grid-vertical-small;
     padding-top: 0;     // [1]
     padding-bottom: 0;  // [1]
+  }
+  &.form-last{
+    padding-bottom: @grid-vertical-half;  // [2]
   }
 }
 

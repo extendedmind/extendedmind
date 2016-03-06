@@ -68,6 +68,7 @@
   var favoriteRegex = /\/favorite/;
   var unfavoriteRegex = /\/unfavorite/;
   var previewRegex = /\/preview/;
+  var publishRegex = /\/publish/;
 
   var previewNoteRegexp = new RegExp('^' +
     BackendClientService.apiPrefixRegex.source +
@@ -75,6 +76,14 @@
     noteSlashRegex.source +
     BackendClientService.uuidRegex.source +
     previewRegex.source +
+    '$');
+
+  var publishNoteRegexp = new RegExp('^' +
+    BackendClientService.apiPrefixRegex.source +
+    BackendClientService.uuidRegex.source +
+    noteSlashRegex.source +
+    BackendClientService.uuidRegex.source +
+    publishRegex.source +
     '$');
 
   function initializeArrays(ownerUUID) {
@@ -546,7 +555,46 @@
           propertiesToReset.visibility.preview = response.preview;
           propertiesToReset.visibility.previewExpires = response.previewExpires;
 
-          // Add properties to .mod and update note
+          // Add properties to persistent values and update note
+          ItemLikeService.updateObjectProperties(note, propertiesToReset);
+          updateNote(note, ownerUUID, undefined, propertiesToReset);
+          deferred.resolve(response);
+        },function(error){
+          deferred.reject(error);
+        });
+      }
+      return deferred.promise;
+    },
+    publishNote: function(note, path, licence) {
+      function getPublishUrl(params){
+        return params.prefix + params.note.trans.uuid + '/publish';
+      }
+
+      var ownerUUID = note.trans.owner;
+      // Check that note is not deleted before trying to publish
+      var deferred = $q.defer();
+      if (notes[ownerUUID].deletedNotes.findFirstObjectByKeyValue('uuid', note.trans.uuid, 'trans')) {
+        deferred.reject({type: 'deleted'});
+      } else {
+        var payload = {format: 'md', 'path': path};
+        if (licence) payload.licence = licence;
+        BackendClientService.postOnline({ value: '/api/' + ownerUUID + '/note/' +
+                                                 note.trans.uuid + '/publish',
+                                          refresh: getPublishUrl,
+                                          params: {
+                                            prefix: '/api/' + ownerUUID + '/note/',
+                                            note: note }},
+                                        publishNoteRegexp, payload)
+        .then(function(response) {
+          var propertiesToReset = {
+            modified: response.result.modified,
+          };
+          propertiesToReset.visibility = note.visibility ? note.visibility : {};
+          propertiesToReset.visibility.published = response.published;
+          propertiesToReset.visibility.path = path;
+          propertiesToReset.visibility.licence = licence;
+
+          // Add properties to persistent values and update note
           ItemLikeService.updateObjectProperties(note, propertiesToReset);
           updateNote(note, ownerUUID, undefined, propertiesToReset);
           deferred.resolve(response);
@@ -617,7 +665,8 @@
                                     BackendClientService.uuidRegex.source +
                                     unfavoriteRegex.source +
                                     '$'),
-    previewNoteRegex : previewNoteRegexp
+    previewNoteRegex : previewNoteRegexp,
+    publishNoteRegex : publishNoteRegexp
   };
 }
 

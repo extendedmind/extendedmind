@@ -79,8 +79,18 @@
     .respond(function(method, url, data, headers) {
       var previewNoteResponse = getJSONFixture('previewNoteResponse.json');
       previewNoteResponse.previewExpires = Date.now() + 3600000;
-      previewNoteResponse.modified = (new Date()).getTime();
+      previewNoteResponse.result.modified = (new Date()).getTime();
       return expectResponse(method, url, data, headers, previewNoteResponse);
+    });
+  }
+
+  function mockPublishNote(expectResponse){
+    $httpBackend.whenPOST(NotesService.publishNoteRegex)
+    .respond(function(method, url, data, headers) {
+      var publishNoteResponse = getJSONFixture('publishNoteResponse.json');
+      publishNoteResponse.published = Date.now();
+      publishNoteResponse.result.modified = (new Date()).getTime();
+      return expectResponse(method, url, data, headers, publishNoteResponse);
     });
   }
 
@@ -93,6 +103,7 @@
       mockDeleteNote(expectResponse);
       mockUndeleteNote(expectResponse);
       mockPreviewNote(expectResponse);
+      mockPublishNote(expectResponse);
     }
   };
 }
