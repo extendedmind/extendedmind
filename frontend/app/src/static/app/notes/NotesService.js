@@ -587,7 +587,7 @@
                                         publishNoteRegexp, payload)
         .then(function(response) {
           var propertiesToReset = {
-            modified: response.result.modified,
+            modified: response.result.modified
           };
           propertiesToReset.visibility = note.visibility ? note.visibility : {};
           propertiesToReset.visibility.published = response.published;

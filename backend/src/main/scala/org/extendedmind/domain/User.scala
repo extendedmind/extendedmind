@@ -36,7 +36,7 @@ case class User(uuid: Option[UUID], created: Option[Long], modified: Option[Long
                 content: Option[String], format: Option[String],
                 cohort: Option[Int], inboxId: Option[String],
                 preferences: Option[UserPreferences],
-                collectives: Option[Map[UUID,(String, Byte, Boolean, Option[String])]],
+                collectives: Option[Map[UUID,(String, Byte, Boolean, Option[Collective])]],
                 sharedLists: Option[Map[UUID,(String, Map[UUID, (String, Byte)])]])
            extends Container{
   if (email.isDefined) require(validateEmailAddress(email.get), "Not a valid email address")

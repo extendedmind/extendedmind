@@ -85,7 +85,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
           // Authenticating again should have the new collective
           val reauthenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
           reauthenticateResponse.collectives should not be None
-          reauthenticateResponse.collectives.get.get(collectiveUUID).get._1 should equal(testCollective.title)
+          reauthenticateResponse.collectives.get.get(collectiveUUID).get._1 should equal(testCollective.title.get)
           reauthenticateResponse.collectives.get.get(collectiveUUID).get._2 should equal(0)
           reauthenticateResponse.collectives.get.get(collectiveUUID).get._3 should equal(false)
 

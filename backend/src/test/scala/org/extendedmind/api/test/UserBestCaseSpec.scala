@@ -158,6 +158,12 @@ class UserBestCaseSpec extends ServiceSpecBase {
         accountResponse.uuid.get should equal(authenticateResponse.userUUID)
         accountResponse.email.get should equal(TIMO_EMAIL)
         accountResponse.collectives.get should not be None
+        val commonCollective = accountResponse.collectives.get.find(collectiveInfo => collectiveInfo._2._3).get
+        commonCollective._2._4.get.access should be(None)
+        val emtCollective = accountResponse.collectives.get.find(collectiveInfo => collectiveInfo._2._1 == "extended mind technologies").get
+        emtCollective._2._4.get.access should not be(None)
+        emtCollective._2._4.get.access.get.size should be(2)
+        emtCollective._2._4.get.access.get.find(accessInfo => accessInfo._2 == "timo@ext.md") should be (None)
       }
       val newEmail = UserEmail("timo.tiuraniemi@filosofianakatemia.fi")
       stub(mockMailgunClient.sendEmailVerificationLink(mockEq(newEmail.email), anyObject())).toReturn(

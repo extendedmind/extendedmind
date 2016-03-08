@@ -73,11 +73,11 @@ trait UserService extends ServiceBase {
         }
       } ~
       getAccount { url =>
-        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+        authenticate(ExtendedAuth(authenticator, "account", None)) { securityContext =>
           complete {
             Future[User] {
               setLogContext(securityContext)
-              userActions.getUser(securityContext.userUUID) match {
+              userActions.getAccount(securityContext) match {
                 case Right(user) => processResult(user)
                 case Left(e) => processErrors(e)
               }

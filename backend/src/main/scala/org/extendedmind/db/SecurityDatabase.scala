@@ -112,7 +112,7 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     }
   }
 
-  def authenticate(token: String, ownerUUID: Option[UUID], shareable: Boolean = false)(implicit log: LoggingContext): Response[SecurityContext] = {
+  def authenticate(token: String, ownerUUID: Option[UUID], shareable: Boolean = false, fullSecurityContext: Boolean = false)(implicit log: LoggingContext): Response[SecurityContext] = {
     val currentTime = System.currentTimeMillis()
     withTx{
       implicit neo4j =>
@@ -122,7 +122,8 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
           result <- validateToken(tokenNode, currentTime).right
           userNode <- getUserNode(tokenNode).right
           foreignOwnerUUID <- Right(getForeignOwnerUUID(userNode, ownerUUID)).right
-          sc <- getLimitedSecurityContext(userNode, foreignOwnerUUID, shareable).right
+          sc <- (if (!fullSecurityContext) getLimitedSecurityContext(userNode, foreignOwnerUUID, shareable)
+                 else Right(getSecurityContext(userNode))).right
         } yield sc
     }
   }

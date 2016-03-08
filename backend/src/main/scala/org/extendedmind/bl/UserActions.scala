@@ -76,9 +76,9 @@ trait UserActions {
     else Right(PublicUser(user.right.get.uuid.get))
   }
 
-  def getUser(userUUID: UUID)(implicit log: LoggingAdapter): Response[User] = {
-    log.info("getUser")
-    db.getUser(userUUID)
+  def getAccount(securityContext: SecurityContext)(implicit log: LoggingAdapter): Response[User] = {
+    log.info("getAccount")
+    db.getFullUser(securityContext.user)
   }
 
   def getUsers(implicit log: LoggingAdapter): Response[Users] = {

@@ -55,14 +55,22 @@ trait CollectiveDatabase extends UserDatabase {
     } yield result
   }
 
-  def getCollective(collectiveUUID: UUID): Response[Collective] = {
+  def getCollective(collectiveUUID: UUID, securityContext: SecurityContext): Response[Collective] = {
     withTx {
       implicit neo =>
+        val collectiveAccess = securityContext.collectives.get.get(collectiveUUID).get._2
+        val commonCollective = securityContext.collectives.get.get(collectiveUUID).get._3
         for {
           collectiveNode <- getNode(collectiveUUID, OwnerLabel.COLLECTIVE).right
-          collective <- toCaseClass[Collective](collectiveNode).right
-          completeCollective <- addTransientCollectiveProperties(collectiveNode, collective).right
-        } yield completeCollective
+          collective <- getCollectiveNode(collectiveNode, addCollectiveAccess =
+            (if (collectiveAccess == SecurityContext.READ || commonCollective) false
+            else true)).right
+        } yield (
+            if (collectiveAccess == SecurityContext.READ)
+              collective.copy(apiKey=None, creator=None, inboxId=None, created=None, modified=None)
+            else if (collectiveAccess == SecurityContext.READ_WRITE)
+              collective.copy(apiKey=None)
+            else collective)
     }
   }
 
@@ -86,6 +94,15 @@ trait CollectiveDatabase extends UserDatabase {
   }
 
   // PRIVATE
+
+  protected def getCollectiveNode(collectiveNode: Node, addCollectiveAccess: Boolean = false, skipAccessRelationship: Option[Relationship] = None)(implicit neo4j: DatabaseService): Response[Collective] = {
+    for {
+      collective <- toCaseClass[Collective](collectiveNode).right
+      completeCollective <-
+        (if (addCollectiveAccess) addTransientCollectiveProperties(collectiveNode, collective, skipAccessRelationship)
+         else Right(collective)).right
+    } yield completeCollective
+  }
 
   protected def createCollective(founderUUID: UUID, collective: Collective, commonCollective: Boolean): Response[Node] = {
     withTx{
@@ -246,10 +263,12 @@ trait CollectiveDatabase extends UserDatabase {
     }
   }
 
-  protected def addTransientCollectiveProperties(collectiveNode: Node, collective: Collective)(implicit neo4j: DatabaseService): Response[Collective] = {
+  protected def addTransientCollectiveProperties(collectiveNode: Node, collective: Collective, skipAccessRelationship: Option[Relationship])(implicit neo4j: DatabaseService): Response[Collective] = {
     val usersFromCollective: TraversalDescription = incomingSharingTraversalDescription
     val traverser = usersFromCollective.traverse(collectiveNode)
-    val collectiveAccessRelationships = usersFromCollective.traverse(collectiveNode).relationships().toList
+    val collectiveAccessRelationships =
+      usersFromCollective.traverse(collectiveNode).relationships().toList.
+        filter(relationship => skipAccessRelationship.isEmpty || skipAccessRelationship.get != relationship)
     val collectiveAccessList = getAccessForCollective(collectiveAccessRelationships)
 
     if (collectiveAccessList.isEmpty || collectiveAccessList.get.length == 0) {

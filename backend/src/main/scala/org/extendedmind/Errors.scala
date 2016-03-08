@@ -40,6 +40,7 @@ case object ERR_COLLECTIVE_MORE_THAN_1_FOUNDER extends ErrorCode(1002)
 case object ERR_COLLECTIVE_WRONG_FOUNDER extends ErrorCode(1003)
 case object ERR_COLLECTIVE_NO_ACCESS extends ErrorCode(1004)
 case object ERR_COLLECTIVE_NOT_COMMON extends ErrorCode(1005)
+case object ERR_COLLECTIVE_NO_TITLE extends ErrorCode(1006)
 
 case object ERR_INVITE_MULTIPLE_USERS extends ErrorCode(2001)
 case object ERR_INVITE_ACCEPTED extends ErrorCode(2002)

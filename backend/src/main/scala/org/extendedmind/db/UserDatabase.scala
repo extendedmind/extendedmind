@@ -98,13 +98,12 @@ trait UserDatabase extends AbstractGraphDatabase {
     }
   }
 
-  def getUser(uuid: UUID): Response[User] = {
+  def getFullUser(userNode: Node): Response[User] = {
     withTx {
       implicit neo =>
         for {
-          userNode <- getNode(uuid, OwnerLabel.USER).right
           user <- toCaseClass[User](userNode).right
-          completeUser <- Right(addTransientUserProperties(userNode, user)).right
+          completeUser <- addTransientUserProperties(userNode, user, fullCollectives=true).right
         } yield completeUser
     }
   }
@@ -456,7 +455,7 @@ trait UserDatabase extends AbstractGraphDatabase {
     }
   }
 
-  protected def addTransientUserProperties(userNode: Node, user: User)(implicit neo4j: DatabaseService): User = {
+  protected def addTransientUserProperties(userNode: Node, user: User, fullCollectives: Boolean)(implicit neo4j: DatabaseService): Response[User] = {
     val sharingRelationshipsList = sharingTraversalDescription.traverse(userNode).relationships().toList
     val sharedListRelationshipList = sharingRelationshipsList filter {relationship => {
       relationship.getEndNode.hasLabel(ItemLabel.LIST)
@@ -464,9 +463,13 @@ trait UserDatabase extends AbstractGraphDatabase {
     val collectivesRelationshipList = sharingRelationshipsList filter {relationship => {
       relationship.getEndNode.hasLabel(OwnerLabel.COLLECTIVE)
     }}
-    user.copy(preferences = getUserPreferences(userNode),
-              collectives = getCollectiveAccess(collectivesRelationshipList),
-              sharedLists = getSharedListAccess(sharedListRelationshipList))
+    val limitedCollectives = getCollectiveAccess(collectivesRelationshipList)
+
+    val collectiveAccessResponse = getFullCollectiveAccess(collectivesRelationshipList)
+    if (collectiveAccessResponse.isLeft) return Left(collectiveAccessResponse.left.get)
+    Right(user.copy(preferences = getUserPreferences(userNode),
+              collectives = collectiveAccessResponse.right.get,
+              sharedLists = getSharedListAccess(sharedListRelationshipList)))
   }
 
   protected def getUserPreferences(userNode: Node)(implicit neo4j: DatabaseService): Option[UserPreferences] = {
@@ -769,7 +772,7 @@ trait UserDatabase extends AbstractGraphDatabase {
             notFoundEvaluation=Evaluation.INCLUDE_AND_CONTINUE))
   }
 
-  protected def getCollectiveAccess(relationshipList: scala.List[Relationship]): Option[Map[UUID,(String, Byte, Boolean, Option[String])]] = {
+  protected def getCollectiveAccess(relationshipList: scala.List[Relationship])(implicit neo4j: DatabaseService): Option[Map[UUID,(String, Byte, Boolean, Option[String])]] = {
     if (relationshipList.isEmpty) None
     else{
       val collectiveAccessMap = new HashMap[UUID,(String, Byte, Boolean, Option[String])]
@@ -797,6 +800,45 @@ trait UserDatabase extends AbstractGraphDatabase {
         }
       })
       Some(collectiveAccessMap.toMap)
+    }
+  }
+
+  protected def getFullCollectiveAccess(relationshipList: scala.List[Relationship])(implicit neo4j: DatabaseService): Response[Option[Map[UUID,(String, Byte, Boolean, Option[Collective])]]] = {
+    if (relationshipList.isEmpty) Right(None)
+    else{
+      val collectiveAccessMap = new HashMap[UUID,(String, Byte, Boolean, Option[Collective])]
+      relationshipList foreach (relationship => {
+        val collectiveNode = relationship.getEndNode()
+        val common = if (!collectiveNode.hasProperty("common")) false
+                     else collectiveNode.getProperty("common").asInstanceOf[Boolean]
+        val relationshipType = relationship.getType().name()
+        val collectiveResponse =
+          if (relationshipType == SecurityRelationship.CAN_READ.relationshipName || common)
+            getCollectiveNode(collectiveNode, addCollectiveAccess=false)
+          else
+            getCollectiveNode(collectiveNode, addCollectiveAccess=true, skipAccessRelationship=Some(relationship))
+        if (collectiveResponse.isLeft) return Left(collectiveResponse.left.get)
+        val collective = collectiveResponse.right.get
+        val uuid = collective.uuid.get
+        val title = collective.title.get
+        val trimmedCollective = collective.copy(uuid=None, title=None, content=None, format=None, creator=None, apiKey=None)
+        relationship.getType().name() match {
+          case SecurityRelationship.IS_FOUNDER.relationshipName =>
+            collectiveAccessMap.put(uuid, (title, SecurityContext.FOUNDER, common, Some(trimmedCollective)))
+          case SecurityRelationship.CAN_READ.relationshipName => {
+            if (!collectiveAccessMap.contains(uuid))
+              collectiveAccessMap.put(uuid, (title, SecurityContext.READ, common,
+                  Some(trimmedCollective.copy(inboxId=None, modified=None, created=None, common=None))))
+          }
+          case SecurityRelationship.CAN_READ_WRITE.relationshipName => {
+            if (collectiveAccessMap.contains(uuid))
+              collectiveAccessMap.update(uuid, (title, SecurityContext.READ_WRITE, common, Some(trimmedCollective)))
+            else
+              collectiveAccessMap.put(uuid, (title, SecurityContext.READ_WRITE, common, Some(trimmedCollective)))
+          }
+        }
+      })
+      Right(Some(collectiveAccessMap.toMap))
     }
   }
 
@@ -1111,5 +1153,8 @@ trait UserDatabase extends AbstractGraphDatabase {
   // Abstract invite methods
   protected def getInviteNodeOption(email: String, inviteCode: Option[Long]): Response[Option[Node]];
   protected def acceptInviteNode(inviteNode: Node, userNode: Node)(implicit neo4j: DatabaseService): Unit;
+
+  // Abstract collective methods
+  protected def getCollectiveNode(collectiveNode: Node, addCollectiveAccess: Boolean = false, skipAccessRelationship: Option[Relationship] = None)(implicit neo4j: DatabaseService): Response[Collective];
 
 }

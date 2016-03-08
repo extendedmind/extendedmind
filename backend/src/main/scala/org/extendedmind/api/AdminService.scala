@@ -128,7 +128,7 @@ trait AdminService extends ServiceBase {
         }
       } ~
       putNewCollective { url =>
-        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+        authenticate(ExtendedAuth(authenticator, "shareable", None)) { securityContext =>
           // Only admins can create new collectives for now
           authorize(adminAccess(securityContext)) {
             entity(as[Collective]) { collective =>
@@ -146,7 +146,7 @@ trait AdminService extends ServiceBase {
         }
       } ~
       putExistingCollective { collectiveUUID =>
-        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+        authenticate(ExtendedAuth(authenticator, "collective", None)) { securityContext =>
           // Only admins can update collectives for now
           authorize(adminAccess(securityContext)) {
             entity(as[Collective]) { collective =>
@@ -164,13 +164,13 @@ trait AdminService extends ServiceBase {
         }
       } ~
       getCollective { collectiveUUID =>
-        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+        authenticate(ExtendedAuth(authenticator, "collective", None)) { securityContext =>
           // Only admins can get collectives for now
           authorize(adminAccess(securityContext)) {
             complete {
               Future[Collective] {
                 setLogContext(securityContext)
-                collectiveActions.getCollective(collectiveUUID) match {
+                collectiveActions.getCollective(collectiveUUID, securityContext) match {
                   case Right(collective) => processResult(collective)
                   case Left(e) => processErrors(e)
                 }
@@ -180,7 +180,7 @@ trait AdminService extends ServiceBase {
         }
       } ~
       postCollectiveUserPermission { (collectiveUUID, userUUID) =>
-        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+        authenticate(ExtendedAuth(authenticator, "collective", None)) { securityContext =>
           // Only founder admin can assign people to exclusive collectives for now
           authorize(adminAccess(securityContext)) {
             entity(as[UserAccessRight]) { userAccessRight =>
