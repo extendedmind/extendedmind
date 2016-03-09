@@ -62,12 +62,14 @@ trait CollectiveDatabase extends UserDatabase {
         val commonCollective = securityContext.collectives.get.get(collectiveUUID).get._3
         for {
           collectiveNode <- getNode(collectiveUUID, OwnerLabel.COLLECTIVE).right
-          collective <- getCollectiveNode(collectiveNode, addCollectiveAccess =
-            (if (collectiveAccess == SecurityContext.READ || commonCollective) false
-            else true)).right
+          collective <- getCollectiveNode(collectiveNode,
+            skipCreator = if (collectiveAccess == SecurityContext.READ) true else false,
+            skipAccess = if (collectiveAccess == SecurityContext.READ || commonCollective) true else false,
+            skipAccessRelationship = None
+          ).right
         } yield (
             if (collectiveAccess == SecurityContext.READ)
-              collective.copy(apiKey=None, creator=None, inboxId=None, created=None, modified=None)
+              collective.copy(apiKey=None, inboxId=None, created=None, modified=None)
             else if (collectiveAccess == SecurityContext.READ_WRITE)
               collective.copy(apiKey=None)
             else collective)
@@ -95,12 +97,10 @@ trait CollectiveDatabase extends UserDatabase {
 
   // PRIVATE
 
-  protected def getCollectiveNode(collectiveNode: Node, addCollectiveAccess: Boolean = false, skipAccessRelationship: Option[Relationship] = None)(implicit neo4j: DatabaseService): Response[Collective] = {
+  protected def getCollectiveNode(collectiveNode: Node, skipCreator: Boolean, skipAccess: Boolean, skipAccessRelationship: Option[Relationship])(implicit neo4j: DatabaseService): Response[Collective] = {
     for {
       collective <- toCaseClass[Collective](collectiveNode).right
-      completeCollective <-
-        (if (addCollectiveAccess) addTransientCollectiveProperties(collectiveNode, collective, skipAccessRelationship)
-         else Right(collective)).right
+      completeCollective <- Right(addTransientCollectiveProperties(collectiveNode, collective, skipCreator, skipAccess, skipAccessRelationship)).right
     } yield completeCollective
   }
 
@@ -263,18 +263,36 @@ trait CollectiveDatabase extends UserDatabase {
     }
   }
 
-  protected def addTransientCollectiveProperties(collectiveNode: Node, collective: Collective, skipAccessRelationship: Option[Relationship])(implicit neo4j: DatabaseService): Response[Collective] = {
-    val usersFromCollective: TraversalDescription = incomingSharingTraversalDescription
-    val traverser = usersFromCollective.traverse(collectiveNode)
-    val collectiveAccessRelationships =
-      usersFromCollective.traverse(collectiveNode).relationships().toList.
-        filter(relationship => skipAccessRelationship.isEmpty || skipAccessRelationship.get != relationship)
-    val collectiveAccessList = getAccessForCollective(collectiveAccessRelationships)
+  protected def addTransientCollectiveProperties(collectiveNode: Node, collective: Collective, skipCreator:Boolean, skipAccess: Boolean, skipAccessRelationship: Option[Relationship])(implicit neo4j: DatabaseService): Collective = {
 
-    if (collectiveAccessList.isEmpty || collectiveAccessList.get.length == 0) {
-      fail(INTERNAL_SERVER_ERROR, ERR_COLLECTIVE_NO_FOUNDER, "Collective " + getUUID(collectiveNode) + " has no founder and no access list")
-    } else {
-      Right(collective.copy(access = collectiveAccessList))
+    if (skipAccess && skipCreator){
+      // No need to add anything
+      collective
+    }else{
+      val usersFromCollective: TraversalDescription = incomingSharingTraversalDescription
+      val traverser = usersFromCollective.traverse(collectiveNode)
+      val collectiveAccessRelationships = usersFromCollective.traverse(collectiveNode).relationships().toList
+
+      // Find creator
+      val creatorUUID: Option[UUID] = {
+        if (skipCreator){
+          None
+        }else{
+          val creatorRelationship = collectiveAccessRelationships.find(relationship => relationship.getType().name() == SecurityRelationship.IS_FOUNDER.name())
+          creatorRelationship.flatMap(creatorRelationship => Some(getUUID(creatorRelationship.getStartNode)))
+        }
+      }
+      val collectiveAccessList: Option[scala.List[(UUID, String, Byte)]] = {
+        if (skipAccess){
+          None
+        }else{
+          // Possibly filter out relationship to skip
+          val filteredCollectiveAccessRelationships = collectiveAccessRelationships.
+              filter(relationship => skipAccessRelationship.isEmpty || skipAccessRelationship.get != relationship)
+          getAccessForCollective(filteredCollectiveAccessRelationships)
+        }
+      }
+      collective.copy(access = collectiveAccessList, creator=creatorUUID)
     }
   }
 

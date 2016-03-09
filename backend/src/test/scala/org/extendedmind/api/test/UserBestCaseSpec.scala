@@ -149,22 +149,208 @@ class UserBestCaseSpec extends ServiceSpecBase {
       }
 
     }
+
+    it("should successfully get the correct response from GET to /account " +
+       "that matches what is returned from GET /collective/[UUID]") {
+      val timoAuthenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+      val emtCollectiveUUID = timoAuthenticateResponse.collectives.get.find(collectiveInfo => collectiveInfo._2._1 == "extended mind technologies").get._1
+
+      // TIMO IS THE FOUNDER OF EMT AND EM COLLECTIVES
+
+      Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
+        writeJsonOutput("accountResponse", responseAs[String])
+        val accountResponse = responseAs[User]
+        accountResponse.uuid.get should equal(timoAuthenticateResponse.userUUID)
+        accountResponse.email.get should equal(TIMO_EMAIL)
+        accountResponse.collectives.get.size should be (2)
+        val commonCollective = accountResponse.collectives.get.find(collectiveInfo => collectiveInfo._2._3).get
+        commonCollective._2._4.get.handle.get should be("extended-mind")
+        commonCollective._2._4.get.description should not be(None)
+        commonCollective._2._4.get.access should be(None)
+        commonCollective._2._4.get.inboxId should not be(None)
+        commonCollective._2._4.get.apiKey should be(None)
+        commonCollective._2._4.get.modified should be(None)
+        commonCollective._2._4.get.created should be(None)
+        commonCollective._2._4.get.creator should be(None)
+
+        Get("/collective/" + commonCollective._1) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
+          val fullCommonCollective = responseAs[Collective]
+          fullCommonCollective.apiKey should not be (None)
+          fullCommonCollective.handle.get should be(commonCollective._2._4.get.handle.get)
+          fullCommonCollective.description.get should be(commonCollective._2._4.get.description.get)
+          fullCommonCollective.inboxId.get should be (commonCollective._2._4.get.inboxId.get)
+          fullCommonCollective.modified should not be(None)
+          fullCommonCollective.created should not be(None)
+          fullCommonCollective.creator.get should be(timoAuthenticateResponse.userUUID)
+          // Not even the founder can get a full access list for the common collective
+          fullCommonCollective.access should be (None)
+        }
+
+        val emtCollective = accountResponse.collectives.get.find(collectiveInfo => collectiveInfo._1 == emtCollectiveUUID).get
+        emtCollective._2._4.get.handle.get should be("emt")
+        emtCollective._2._4.get.access should not be(None)
+        emtCollective._2._4.get.access.get.size should be(2)
+        emtCollective._2._4.get.access.get.find(accessInfo => accessInfo._2 == TIMO_EMAIL) should be (None)
+        emtCollective._2._4.get.description should not be(None)
+        emtCollective._2._4.get.handle should not be(None)
+        emtCollective._2._4.get.inboxId should not be(None)
+        emtCollective._2._4.get.apiKey should be(None)
+        emtCollective._2._4.get.modified should be(None)
+        emtCollective._2._4.get.created should be(None)
+        emtCollective._2._4.get.creator should be(None)
+
+        Get("/collective/" + emtCollective._1) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
+          val fullEMTCollective = responseAs[Collective]
+          fullEMTCollective.apiKey should not be (None)
+          fullEMTCollective.description.get should be(emtCollective._2._4.get.description.get)
+          fullEMTCollective.inboxId.get should be (emtCollective._2._4.get.inboxId.get)
+          fullEMTCollective.modified should not be(None)
+          fullEMTCollective.created should not be(None)
+          fullEMTCollective.creator.get should be(timoAuthenticateResponse.userUUID)
+          fullEMTCollective.access.get.find(accessInfo => accessInfo._2 == TIMO_EMAIL) should not be(None)
+        }
+      }
+
+      // LAURI HAS READ/WRITE ACCESS TO EMT AND READ TO EM
+
+      val lauriAuthenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
+      Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
+        writeJsonOutput("accountResponseReadWrite", responseAs[String])
+        val accountResponse = responseAs[User]
+        val commonCollective = accountResponse.collectives.get.find(collectiveInfo => collectiveInfo._2._3).get
+        commonCollective._2._4.get.handle.get should be("extended-mind")
+        commonCollective._2._4.get.description should not be(None)
+        commonCollective._2._4.get.access should be(None)
+        commonCollective._2._4.get.inboxId should be(None)
+        commonCollective._2._4.get.apiKey should be(None)
+        commonCollective._2._4.get.modified should be(None)
+        commonCollective._2._4.get.created should be(None)
+        commonCollective._2._4.get.creator should be(None)
+
+        Get("/collective/" + commonCollective._1) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
+          val fullCommonCollective = responseAs[Collective]
+          fullCommonCollective.apiKey should be (None)
+          fullCommonCollective.handle.get should be(commonCollective._2._4.get.handle.get)
+          fullCommonCollective.description.get should be(commonCollective._2._4.get.description.get)
+          fullCommonCollective.inboxId should be (None)
+          fullCommonCollective.modified should be(None)
+          fullCommonCollective.created should be(None)
+          fullCommonCollective.creator should be(None)
+          fullCommonCollective.access should be (None)
+        }
+
+        val emtCollective = accountResponse.collectives.get.find(collectiveInfo => collectiveInfo._1 == emtCollectiveUUID).get
+        emtCollective._2._4.get.handle.get should be("emt")
+        emtCollective._2._4.get.access should not be(None)
+        emtCollective._2._4.get.access.get.size should be(2)
+        emtCollective._2._4.get.access.get.find(accessInfo => accessInfo._2 == LAURI_EMAIL) should be (None)
+        emtCollective._2._4.get.description should not be(None)
+        emtCollective._2._4.get.handle should not be(None)
+        emtCollective._2._4.get.inboxId should not be(None)
+        emtCollective._2._4.get.apiKey should be(None)
+        emtCollective._2._4.get.modified should be(None)
+        emtCollective._2._4.get.created should be(None)
+        emtCollective._2._4.get.creator should be(None)
+        Get("/collective/" + emtCollective._1) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
+          val fullEMTCollective = responseAs[Collective]
+          fullEMTCollective.apiKey should be (None) // This needs to be none, only admin can see the api key
+          fullEMTCollective.description.get should be(emtCollective._2._4.get.description.get)
+          fullEMTCollective.inboxId.get should be (emtCollective._2._4.get.inboxId.get)
+          fullEMTCollective.modified should not be(None)
+          fullEMTCollective.created should not be(None)
+          fullEMTCollective.creator.get should be(timoAuthenticateResponse.userUUID)
+          fullEMTCollective.access.get.find(accessInfo => accessInfo._2 == LAURI_EMAIL) should not be(None)
+        }
+      }
+
+      // JP HAS READ ACCESS TO EMT AND READ TO EM
+
+      val jpAuthenticateResponse = emailPasswordAuthenticate(JP_EMAIL, JP_PASSWORD)
+      Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", jpAuthenticateResponse.token.get)) ~> route ~> check {
+        writeJsonOutput("accountResponseRead", responseAs[String])
+        val accountResponse = responseAs[User]
+        accountResponse.uuid.get should equal(jpAuthenticateResponse.userUUID)
+        accountResponse.email.get should equal(JP_EMAIL)
+        accountResponse.collectives.get.size should be (2)
+        val commonCollective = accountResponse.collectives.get.find(collectiveInfo => collectiveInfo._2._3).get
+        commonCollective._2._4.get.handle.get should be("extended-mind")
+        commonCollective._2._4.get.description should not be(None)
+        commonCollective._2._4.get.access should be(None)
+        commonCollective._2._4.get.inboxId should be(None)
+        commonCollective._2._4.get.apiKey should be(None)
+        commonCollective._2._4.get.modified should be(None)
+        commonCollective._2._4.get.created should be(None)
+        commonCollective._2._4.get.creator should be(None)
+
+        Get("/collective/" + commonCollective._1) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", jpAuthenticateResponse.token.get)) ~> route ~> check {
+          val fullCommonCollective = responseAs[Collective]
+          fullCommonCollective.apiKey should be (None)
+          fullCommonCollective.handle.get should be(commonCollective._2._4.get.handle.get)
+          fullCommonCollective.description.get should be(commonCollective._2._4.get.description.get)
+          fullCommonCollective.inboxId should be (None)
+          fullCommonCollective.modified should be(None)
+          fullCommonCollective.created should be(None)
+          fullCommonCollective.creator should be(None)
+          fullCommonCollective.access should be (None)
+        }
+        val emtCollective = accountResponse.collectives.get.find(collectiveInfo => collectiveInfo._1 == emtCollectiveUUID).get
+        emtCollective._2._4.get.handle.get should be("emt")
+        emtCollective._2._4.get.access should be(None)
+        emtCollective._2._4.get.description should not be(None)
+        emtCollective._2._4.get.handle should not be(None)
+        emtCollective._2._4.get.inboxId should be(None)
+        emtCollective._2._4.get.apiKey should be(None)
+        emtCollective._2._4.get.modified should be(None)
+        emtCollective._2._4.get.created should be(None)
+        emtCollective._2._4.get.creator should be(None)
+        Get("/collective/" + emtCollective._1) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", jpAuthenticateResponse.token.get)) ~> route ~> check {
+          val fullEMTCollective = responseAs[Collective]
+          fullEMTCollective.apiKey should be (None) // This needs to be none, only admin can see the api key
+          fullEMTCollective.description.get should be(emtCollective._2._4.get.description.get)
+          fullEMTCollective.inboxId should be (None)
+          fullEMTCollective.modified should be(None)
+          fullEMTCollective.created should be(None)
+          fullEMTCollective.creator should be(None)
+          fullEMTCollective.access should be(None)
+        }
+
+      }
+
+      // INFO HAS READ ACCESS TO EM
+
+      val infoAuthenticateResponse = emailPasswordAuthenticate(INFO_EMAIL, INFO_PASSWORD)
+      Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", infoAuthenticateResponse.token.get)) ~> route ~> check {
+        writeJsonOutput("accountResponseNormal", responseAs[String])
+        val accountResponse = responseAs[User]
+        accountResponse.uuid.get should equal(infoAuthenticateResponse.userUUID)
+        accountResponse.email.get should equal(INFO_EMAIL)
+        accountResponse.collectives.get.size should be (1)
+        val commonCollective = accountResponse.collectives.get.find(collectiveInfo => collectiveInfo._2._3).get
+        commonCollective._2._4.get.handle.get should be("extended-mind")
+        commonCollective._2._4.get.description should not be(None)
+        commonCollective._2._4.get.access should be(None)
+        commonCollective._2._4.get.inboxId should be(None)
+        commonCollective._2._4.get.apiKey should be(None)
+        commonCollective._2._4.get.modified should be(None)
+        commonCollective._2._4.get.created should be(None)
+        commonCollective._2._4.get.creator should be(None)
+        Get("/collective/" + commonCollective._1) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", infoAuthenticateResponse.token.get)) ~> route ~> check {
+          val fullCommonCollective = responseAs[Collective]
+          fullCommonCollective.apiKey should be (None)
+          fullCommonCollective.handle.get should be(commonCollective._2._4.get.handle.get)
+          fullCommonCollective.description.get should be(commonCollective._2._4.get.description.get)
+          fullCommonCollective.inboxId should be (None)
+          fullCommonCollective.modified should be(None)
+          fullCommonCollective.created should be(None)
+          fullCommonCollective.creator should be(None)
+          fullCommonCollective.access should be (None)
+        }
+      }
+    }
     it("should successfully change email with PUT to /email "
       + "and get the changed email back") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-      Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-        writeJsonOutput("accountResponse", responseAs[String])
-        val accountResponse = responseAs[User]
-        accountResponse.uuid.get should equal(authenticateResponse.userUUID)
-        accountResponse.email.get should equal(TIMO_EMAIL)
-        accountResponse.collectives.get should not be None
-        val commonCollective = accountResponse.collectives.get.find(collectiveInfo => collectiveInfo._2._3).get
-        commonCollective._2._4.get.access should be(None)
-        val emtCollective = accountResponse.collectives.get.find(collectiveInfo => collectiveInfo._2._1 == "extended mind technologies").get
-        emtCollective._2._4.get.access should not be(None)
-        emtCollective._2._4.get.access.get.size should be(2)
-        emtCollective._2._4.get.access.get.find(accessInfo => accessInfo._2 == "timo@ext.md") should be (None)
-      }
+
       val newEmail = UserEmail("timo.tiuraniemi@filosofianakatemia.fi")
       stub(mockMailgunClient.sendEmailVerificationLink(mockEq(newEmail.email), anyObject())).toReturn(
         Future { SendEmailResponse("OK", "1234") })

@@ -163,22 +163,6 @@ trait AdminService extends ServiceBase {
           }
         }
       } ~
-      getCollective { collectiveUUID =>
-        authenticate(ExtendedAuth(authenticator, "collective", None)) { securityContext =>
-          // Only admins can get collectives for now
-          authorize(adminAccess(securityContext)) {
-            complete {
-              Future[Collective] {
-                setLogContext(securityContext)
-                collectiveActions.getCollective(collectiveUUID, securityContext) match {
-                  case Right(collective) => processResult(collective)
-                  case Left(e) => processErrors(e)
-                }
-              }
-            }
-          }
-        }
-      } ~
       postCollectiveUserPermission { (collectiveUUID, userUUID) =>
         authenticate(ExtendedAuth(authenticator, "collective", None)) { securityContext =>
           // Only founder admin can assign people to exclusive collectives for now

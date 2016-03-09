@@ -76,11 +76,11 @@ trait TestGraphDatabase extends GraphDatabase {
     val lauriNode = createUser(lauriUser, LAURI_PASSWORD, Some(UserLabel.ADMIN),
                                None, overrideEmailVerified=Some(verifiedTimestamp)).right.get._1
     val jpUser = User(JP_EMAIL, None, None, None, None, None, None)
-    val jpNode = createUser(jpUser, JP_PASSWORD, Some(UserLabel.ADMIN),
+    val jpNode = createUser(jpUser, JP_PASSWORD, Some(UserLabel.ALFA),
                                None, overrideEmailVerified=Some(verifiedTimestamp)).right.get._1
 
     // Collectives
-    val extendedMind = createCollective(timoNode, "extended mind", Some("common collective for all extended mind users"), true, None, None, None, None)
+    val extendedMind = createCollective(timoNode, "extended mind", Some("common collective for all extended mind users"), true, None, Some("extended-mind"), None, None)
     withTx {
       implicit neo =>
         // Set a predictable test UUID "11111111-1111-1111-1111-111111111111" for the common collective,
@@ -105,7 +105,7 @@ trait TestGraphDatabase extends GraphDatabase {
         setCollectiveUserPermission(getUUID(extendedMindTechnologies), getUUID(timoNode), getUUID(lauriNode),
           Some(SecurityContext.READ_WRITE))
         setCollectiveUserPermission(getUUID(extendedMindTechnologies), getUUID(timoNode), getUUID(jpNode),
-          Some(SecurityContext.READ_WRITE))
+          Some(SecurityContext.READ))
         emtUUID = getUUID(extendedMindTechnologies)
         lauriUUID = getUUID(lauriNode)
     }

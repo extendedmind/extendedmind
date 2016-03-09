@@ -160,6 +160,7 @@ class ServiceActor extends HttpServiceActor with Service {
 trait Service extends AdminService
         with SecurityService
         with UserService
+        with CollectiveService
         with ItemService
         with TaskService
         with NoteService
@@ -219,6 +220,6 @@ trait Service extends AdminService
       val haStatus = adminActions.getHAStatus
       if (haStatus == "slave") ctx.complete(200, "true")
       else ctx.complete(NotFound, "false")
-    } ~ adminRoutes ~ securityRoutes ~ userRoutes ~ itemRoutes ~ taskRoutes ~ noteRoutes ~ listRoutes ~ tagRoutes ~ inviteRoutes
+    } ~ adminRoutes ~ securityRoutes ~ userRoutes ~ collectiveRoutes ~ itemRoutes ~ taskRoutes ~ noteRoutes ~ listRoutes ~ tagRoutes ~ inviteRoutes
   }
 }

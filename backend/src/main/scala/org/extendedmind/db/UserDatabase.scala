@@ -814,21 +814,21 @@ trait UserDatabase extends AbstractGraphDatabase {
         val relationshipType = relationship.getType().name()
         val collectiveResponse =
           if (relationshipType == SecurityRelationship.CAN_READ.relationshipName || common)
-            getCollectiveNode(collectiveNode, addCollectiveAccess=false)
+            getCollectiveNode(collectiveNode, skipCreator=true, skipAccess=true, skipAccessRelationship=None)
           else
-            getCollectiveNode(collectiveNode, addCollectiveAccess=true, skipAccessRelationship=Some(relationship))
+            getCollectiveNode(collectiveNode, skipCreator=true, skipAccess=false, skipAccessRelationship=Some(relationship))
         if (collectiveResponse.isLeft) return Left(collectiveResponse.left.get)
         val collective = collectiveResponse.right.get
         val uuid = collective.uuid.get
         val title = collective.title.get
-        val trimmedCollective = collective.copy(uuid=None, title=None, content=None, format=None, creator=None, apiKey=None)
+        val trimmedCollective = collective.copy(uuid=None, title=None, content=None, format=None, creator=None, apiKey=None, common=None, created=None, modified=None)
         relationship.getType().name() match {
           case SecurityRelationship.IS_FOUNDER.relationshipName =>
             collectiveAccessMap.put(uuid, (title, SecurityContext.FOUNDER, common, Some(trimmedCollective)))
           case SecurityRelationship.CAN_READ.relationshipName => {
             if (!collectiveAccessMap.contains(uuid))
               collectiveAccessMap.put(uuid, (title, SecurityContext.READ, common,
-                  Some(trimmedCollective.copy(inboxId=None, modified=None, created=None, common=None))))
+                  Some(trimmedCollective.copy(inboxId=None))))
           }
           case SecurityRelationship.CAN_READ_WRITE.relationshipName => {
             if (collectiveAccessMap.contains(uuid))
@@ -1155,6 +1155,5 @@ trait UserDatabase extends AbstractGraphDatabase {
   protected def acceptInviteNode(inviteNode: Node, userNode: Node)(implicit neo4j: DatabaseService): Unit;
 
   // Abstract collective methods
-  protected def getCollectiveNode(collectiveNode: Node, addCollectiveAccess: Boolean = false, skipAccessRelationship: Option[Relationship] = None)(implicit neo4j: DatabaseService): Response[Collective];
-
+  protected def getCollectiveNode(collectiveNode: Node, skipCreator: Boolean, skipAccess: Boolean, skipAccessRelationship: Option[Relationship])(implicit neo4j: DatabaseService): Response[Collective];
 }
