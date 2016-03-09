@@ -973,6 +973,16 @@
     });
   }
 
+  function getAllDeletedTagsOnline(ownerUUID) {
+    return BackendClientService.getSecondary('/api/' +
+                                             ownerUUID +
+                                             '/items?deleted=true&active=false&tagsOnly=true',
+                                             getItemsRegex, undefined, true).then(function(response) {
+      setItemArrays(response, ownerUUID, false, true);
+      return response;
+    });
+  }
+
   function synchronize(ownerUUID, sinceLastItemsSynchronized, initialParams, tagsOnly) {
     function doSynchronize(url, latestModified, deferred, initialParams, tagsOnly){
       if (UserSessionService.isFakeUser()){
@@ -1075,14 +1085,17 @@
     synchronize: function(ownerUUID, sinceLastItemsSynchronized, initialParams, tagsOnly) {
       return synchronize(ownerUUID, sinceLastItemsSynchronized, initialParams, tagsOnly);
     },
-    addCompletedAndArchived: function(ownerUUID) {
+    addCompletedAndArchived: function(ownerUUID, tagsOnly) {
       var deferred = $q.defer();
-      getAllOnline(ownerUUID, getAllArchivedAndCompletedOnline, deferred);
+      // Tags can't be completed nor archived, just skip
+      if (tagsOnly) deferred.resolve('skipped');
+      else getAllOnline(ownerUUID, getAllArchivedAndCompletedOnline, deferred);
       return deferred.promise;
     },
-    addDeleted: function(ownerUUID) {
+    addDeleted: function(ownerUUID, tagsOnly) {
       var deferred = $q.defer();
-      getAllOnline(ownerUUID, getAllDeletedOnline, deferred);
+      if (tagsOnly) getAllOnline(ownerUUID, getAllDeletedTagsOnline, deferred);
+      else getAllOnline(ownerUUID, getAllDeletedOnline, deferred);
       return deferred.promise;
     },
     synchronizeUser: function() {

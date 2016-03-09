@@ -139,7 +139,7 @@
         }
       }
     },
-    isPersistentStorageEnabled: function() {
+    isPersistentStorageEnabled: function() {
       syncWebStorages();
       var storedOffline = SessionStorageService.getOffline();
       if (storedOffline !== undefined){

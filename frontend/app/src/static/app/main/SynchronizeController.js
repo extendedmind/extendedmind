@@ -127,10 +127,10 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
           if (status === 'firstSync'){
             // Also immediately after first sync add completed and archived to the mix
             $rootScope.syncState = 'completedAndArchived';
-            SynchronizeService.addCompletedAndArchived(ownerUUID).then(function(){
+            SynchronizeService.addCompletedAndArchived(ownerUUID, tagsOnly).then(function(){
               $rootScope.syncState = 'deleted';
               // Also after this, get deleted items as well
-              SynchronizeService.addDeleted(ownerUUID).then(function(){
+              SynchronizeService.addDeleted(ownerUUID, tagsOnly).then(function(){
                 updateItemsSyncronizeAttempted(ownerUUID);
                 resolve(status);
               }, function(error){
