@@ -23,7 +23,7 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
   var synchronizeTimer;
   var synchronizeDelay = 12 * 1000;
   var itemsSynchronizedThreshold = 10 * 1000; // 10 seconds in milliseconds
-  var itemsSynchronizeCounter = 0; // count the number of syncs in this session
+  var itemsSynchronizeCounter = {}; // count the number of syncs per owner in this session
   var userSyncCounterTreshold = 5; // sync user every fifth sync
   var userSyncTimeTreshold = 60000; // sync user if there has been a minute of non-syncing
 
@@ -62,7 +62,6 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
     UserSessionService.setItemsSynchronized(timestamp, ownerUUID);
     $rootScope.synced = timestamp;
     $rootScope.syncState = 'ready';
-    itemsSynchronizeCounter++;
     if ($rootScope.firstSyncInProgress) $rootScope.firstSyncInProgress = false;
   }
   SynchronizeService.registerItemsSynchronizedCallback(itemsSynchronizedCallback);
@@ -87,8 +86,10 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
       $rootScope.synced = UserSessionService.getItemsSynchronized(ownerUUID);
       // evaluates to NaN, when synced is undefined which it is on first sync or fake user:
       var sinceLastItemsSynchronized = getLastItemsSynchronized($rootScope.synced);
+      if (itemsSynchronizeCounter[ownerUUID] === undefined) itemsSynchronizeCounter[ownerUUID] = 0;
+      itemsSynchronizeCounter[ownerUUID]++;
       synchronizeItems(ownerUUID, sinceLastItemsSynchronized).then(function(status){
-        if (status && status !== 'fakeUser'){
+        if (status && status !== 'fakeUser' && status !== 'skipped'){
           doSynchronizeOwner(ownerUUID, sinceLastItemsSynchronized);
           if (status === 'firstSync'){
             // On first sync, most stale other owner syncing must be started manually, because it is done
@@ -152,7 +153,7 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
           reject(error);
         });
       }else{
-        resolve();
+        resolve('skipped');
       }
       executeSynchronizeCallbacks();
     });
@@ -162,9 +163,9 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
     // If there has been a long enough time from last sync, update account preferences as well
     var activeUUID = UISessionService.getActiveUUID();
     if (activeUUID === ownerUUID){
-      if (itemsSynchronizeCounter === 0 ||
-          itemsSynchronizeCounter%userSyncCounterTreshold === 0 ||
-          sinceLastItemsSynchronized > userSyncTimeTreshold){
+      if (itemsSynchronizeCounter[ownerUUID] && (itemsSynchronizeCounter[ownerUUID] === 1 ||
+          itemsSynchronizeCounter[ownerUUID]%userSyncCounterTreshold === 0 ||
+          sinceLastItemsSynchronized > userSyncTimeTreshold)){
         SynchronizeService.synchronizeUser();
       }
     }
@@ -265,6 +266,9 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
             tagsOnly = true;
           }
 
+          if (itemsSynchronizeCounter[mostStaleOwnerUUID] === undefined)
+            itemsSynchronizeCounter[mostStaleOwnerUUID] = 0;
+          itemsSynchronizeCounter[mostStaleOwnerUUID]++;
           synchronizeItems(mostStaleOwnerUUID, biggestSince, forceSyncParams, tagsOnly).then(function(status){
             if (status === 'firstSync'){
               // For online firstSync, the only way to get the next owner at the same go, we call this method

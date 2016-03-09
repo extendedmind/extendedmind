@@ -68,8 +68,26 @@ function MockUserBackendService($httpBackend, UserService, UserSessionService) {
       accountResponse.email = userEmail;
       accountResponse.preferences = UserSessionService.getTransportPreferences();
       accountResponse.sharedLists = UserSessionService.getSharedLists();
-      accountResponse.collectives = UserSessionService.getCollectives();
       accountResponse.emailVerified = UserSessionService.getEmailVerified();
+
+      // EM collective has a predictable UUID but EMT does not, so use the UUID we already have
+      for (var collectiveUUID in accountResponse.collectives){
+        if (accountResponse.collectives.hasOwnProperty(collectiveUUID) &&
+            accountResponse.collectives[collectiveUUID][2] === false){
+          var existingCollectives = UserSessionService.getCollectives();
+          for (var existingCollectiveUUID in existingCollectives){
+            if (existingCollectives.hasOwnProperty(existingCollectiveUUID) &&
+                existingCollectives[existingCollectiveUUID][2] === false){
+              // This is the non-common UUID
+              accountResponse.collectives[existingCollectiveUUID] =
+                accountResponse.collectives[collectiveUUID];
+              delete accountResponse.collectives[collectiveUUID];
+              break;
+            }
+          }
+          break;
+        }
+      }
       return expectResponse(method, url, data, headers, accountResponse);
     });
   }

@@ -753,16 +753,7 @@
   }
 
   function synchronizeUserAccountCallback(request, response /*, queue*/) {
-    // TODO: We should find from the offline queue whether there is a
-    //       putAccount that comes after this. Currently the response here is just overwritten!
-    storeUserAccountResponse(response);
-  }
-
-  function storeUserAccountResponse(response){
-    UserSessionService.setEmail(response.email);
-    UserSessionService.setUserModified(response.modified);
-    UserSessionService.setTransportPreferences(response.preferences);
-    UserSessionService.setAccessInformation(response.uuid, response.collectives, response.sharedLists);
+    UserService.storeUserAccountResponse(response);
   }
 
   // Handles response from backend where offline buffer has been used

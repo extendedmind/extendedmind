@@ -40,18 +40,21 @@
     );
 
   return {
+    storeUserAccountResponse: function(response){
+      UserSessionService.setEmail(response.email);
+      UserSessionService.setEmailVerified(response.emailVerified);
+      UserSessionService.setInboxId(response.inboxId);
+      UserSessionService.setHandle(response.handle);
+      UserSessionService.setDisplayName(response.displayName);
+      UserSessionService.setTransportPreferences(response.preferences);
+      UserSessionService.setAccessInformation(response.uuid, response.collectives, response.sharedLists);
+      return response;
+    },
     getAccount: function() {
       return BackendClientService.get('/api/account',
         this.getAccountRegex)
       .then(function(response) {
-        UserSessionService.setEmail(response.email);
-        UserSessionService.setEmailVerified(response.emailVerified);
-        UserSessionService.setInboxId(response.inboxId);
-        UserSessionService.setHandle(response.handle);
-        UserSessionService.setDisplayName(response.displayName);
-        UserSessionService.setTransportPreferences(response.preferences);
-        UserSessionService.setAccessInformation(response.uuid, response.collectives, response.sharedLists);
-        return response;
+        return this.storeUserAccountResponse(response);
       });
     },
     saveAccountPreferences: function() {
