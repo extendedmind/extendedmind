@@ -499,8 +499,8 @@
         BackendClientService.postOffline('/api/' + ownerUUID + '/note/' + note.trans.uuid + '/favorite',
                                   this.favoriteNoteRegex, params, undefined, fakeTimestamp);
         if (!note.mod) note.mod = {};
-        var propertiesToReset = {modified: fakeTimestamp,
-                                 favorited: BackendClientService.generateFakeTimestamp()};
+        var propertiesToReset = {saved: fakeTimestamp,
+                                 favorited: fakeTimestamp};
         ItemLikeService.updateObjectProperties(note.mod,
                                                propertiesToReset);
         updateNote(note, ownerUUID, undefined, propertiesToReset);
@@ -521,7 +521,7 @@
         BackendClientService.postOffline('/api/' + ownerUUID + '/note/' + note.trans.uuid + '/unfavorite',
                                   this.unfavoriteNoteRegex, params, undefined, fakeTimestamp);
         if (!note.mod) note.mod = {};
-        var propertiesToReset = {modified: fakeTimestamp,
+        var propertiesToReset = {saved: fakeTimestamp,
                                  favorited: undefined};
         ItemLikeService.updateObjectProperties(note.mod, propertiesToReset);
         updateNote(note, ownerUUID, undefined, propertiesToReset);

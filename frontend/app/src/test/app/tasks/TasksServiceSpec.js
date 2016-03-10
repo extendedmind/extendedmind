@@ -202,7 +202,7 @@ afterEach(function() {
     .respond(200, putExistingTaskResponse);
     TasksService.saveTask(cleanCloset);
     $httpBackend.flush();
-    expect(TasksService.getTaskInfo(cleanCloset.uuid, testOwnerUUID).task.mod.modified)
+    expect(TasksService.getTaskInfo(cleanCloset.uuid, testOwnerUUID).task.mod.saved)
       .toBeGreaterThan(cleanCloset.modified);
 
     // Should stay iin its old place
@@ -234,7 +234,7 @@ afterEach(function() {
     .respond(200, undeleteTaskResponse);
     TasksService.undeleteTask(cleanCloset);
     $httpBackend.flush();
-    expect(TasksService.getTaskInfo(cleanCloset.uuid, testOwnerUUID).task.mod.modified)
+    expect(TasksService.getTaskInfo(cleanCloset.uuid, testOwnerUUID).task.mod.saved)
     .toBeGreaterThan(cleanCloset.modified);
 
     // There should be three left with the undeleted cleanCloset in its old place

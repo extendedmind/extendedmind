@@ -231,7 +231,7 @@ describe('ListsService', function() {
     ListsService.saveList(tripToDublin);
     $httpBackend.flush();
 
-    expect(ListsService.getListInfo(tripToDublin.uuid, testOwnerUUID).list.mod.modified)
+    expect(ListsService.getListInfo(tripToDublin.uuid, testOwnerUUID).list.mod.saved)
       .toBeGreaterThan(tripToDublin.modified);
 
     // Should not change place
@@ -265,7 +265,7 @@ describe('ListsService', function() {
        .respond(200, undeleteListResponse);
     ListsService.undeleteList(tripToDublin);
     $httpBackend.flush();
-    expect(ListsService.getListInfo(tripToDublin.uuid, testOwnerUUID).list.mod.modified)
+    expect(ListsService.getListInfo(tripToDublin.uuid, testOwnerUUID).list.mod.saved)
       .toBeGreaterThan(tripToDublin.modified);
 
     // There should be three left with trip to dublin in the same place

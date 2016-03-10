@@ -179,7 +179,7 @@ afterEach(function() {
     .respond(200, putExistingTagResponse);
     TagsService.saveTag(secret);
     $httpBackend.flush();
-    expect(TagsService.getTagInfo(secret.uuid, testOwnerUUID).tag.mod.modified)
+    expect(TagsService.getTagInfo(secret.uuid, testOwnerUUID).tag.mod.saved)
       .toBeGreaterThan(secret.modified);
 
     // Should not change places
@@ -213,7 +213,7 @@ afterEach(function() {
     .respond(200, undeleteTagResponse);
     TagsService.undeleteTag(secret);
     $httpBackend.flush();
-    expect(TagsService.getTagInfo(secret.uuid, testOwnerUUID).tag.mod.modified)
+    expect(TagsService.getTagInfo(secret.uuid, testOwnerUUID).tag.mod.saved)
       .toBeGreaterThan(secret.modified);
 
     // There should be three left with the undeleted secret in its old place

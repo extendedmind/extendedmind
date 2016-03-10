@@ -738,7 +738,7 @@
           ItemLikeService.copyEditedFieldsToMod(repeatingTask, TASK_TYPE, ownerUUID, taskFieldInfos);
           ItemLikeService.updateObjectProperties(repeatingTask.mod,
             {uuid: fakeRepeatingUUID,
-             modified: fakeTimestamp,
+             saved: fakeTimestamp,
              created: fakeTimestamp});
           setTask(repeatingTask, ownerUUID);
           // store information that task has been repeated to the task itself and to the POST call
@@ -761,7 +761,7 @@
         BackendClientService.postOffline('/api/' + ownerUUID + '/task/' + task.trans.uuid + '/complete',
                                   this.completeTaskRegex, params, data, fakeTimestamp);
         if (!task.mod) task.mod = {};
-        var propertiesToReset = {modified: fakeTimestamp,
+        var propertiesToReset = {saved: fakeTimestamp,
                                 completed: BackendClientService.generateFakeTimestamp()};
         if (reminder !== undefined) {
           propertiesToReset.reminders = task.trans.reminders;
@@ -791,7 +791,7 @@
         BackendClientService.postOffline('/api/' + ownerUUID + '/task/' + task.trans.uuid + '/uncomplete',
                                   this.uncompleteTaskRegex, params, data, fakeTimestamp);
         if (!task.mod) task.mod = {};
-        var propertiesToReset = {modified: fakeTimestamp, completed: undefined};
+        var propertiesToReset = {saved: fakeTimestamp, completed: undefined};
         if (reminder !== undefined) {
           propertiesToReset.reminders = task.trans.reminders;
         }

@@ -193,8 +193,8 @@ describe('ItemsService', function() {
        .respond(200, putExistingItemResponse);
     ItemsService.saveItem(rememberTheMilk);
     $httpBackend.flush();
-    expect(ItemsService.getItemInfo(rememberTheMilk.uuid, testOwnerUUID).item.mod.modified)
-       .toBeGreaterThan(rememberTheMilk.modified);;
+    expect(ItemsService.getItemInfo(rememberTheMilk.uuid, testOwnerUUID).item.mod.saved)
+       .toBeGreaterThan(rememberTheMilk.modified);
 
     // Should not change places
     var items = ItemsService.getItems(testOwnerUUID);
@@ -225,7 +225,7 @@ describe('ItemsService', function() {
        .respond(200, undeleteItemResponse);
     ItemsService.undeleteItem(rememberTheMilk);
     $httpBackend.flush();
-    expect(ItemsService.getItemInfo(rememberTheMilk.uuid, testOwnerUUID).item.mod.modified)
+    expect(ItemsService.getItemInfo(rememberTheMilk.uuid, testOwnerUUID).item.mod.saved)
       .toBeGreaterThan(rememberTheMilk.modified);
 
     // There should be three left with the undeleted rememberTheMilk in its old place

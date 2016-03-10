@@ -51,10 +51,11 @@
       return response;
     },
     getAccount: function() {
+      var thisService = this;
       return BackendClientService.get('/api/account',
         this.getAccountRegex)
       .then(function(response) {
-        return this.storeUserAccountResponse(response);
+        return thisService.storeUserAccountResponse(response);
       });
     },
     saveAccountPreferences: function() {

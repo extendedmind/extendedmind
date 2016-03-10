@@ -218,7 +218,7 @@
     .respond(200, putExistingNoteResponse);
     NotesService.saveNote(officeDoorCode);
     $httpBackend.flush();
-    expect(NotesService.getNoteInfo(officeDoorCode.uuid, testOwnerUUID).note.mod.modified)
+    expect(NotesService.getNoteInfo(officeDoorCode.uuid, testOwnerUUID).note.mod.saved)
       .toBeGreaterThan(officeDoorCode.modified);
 
     // Should stay in its old place
@@ -250,7 +250,7 @@
     .respond(200, undeleteNoteResponse);
     NotesService.undeleteNote(officeDoorCode);
     $httpBackend.flush();
-    expect(NotesService.getNoteInfo(officeDoorCode.uuid, testOwnerUUID).note.mod.modified)
+    expect(NotesService.getNoteInfo(officeDoorCode.uuid, testOwnerUUID).note.mod.saved)
       .toBeGreaterThan(officeDoorCode.modified);
 
     // There should be three left with the undeleted officeDoorCode in its old place
@@ -277,11 +277,11 @@
     expect(notes.length)
     .toBe(3);
     expect(notes[0].trans.favorited)
-    .toBeDefined()
+    .toBeDefined();
     expect(notes[0].trans.favorited)
-    .toBeDefined()
+    .toBeDefined();
     expect(notes[0].trans.favorited)
-    .toBe(notes[0].mod.favorited)
+    .toBe(notes[0].mod.favorited);
 
     // Unfavorite
     $httpBackend.expectPOST('/api/' + testOwnerUUID + '/note/' + officeDoorCode.uuid + '/unfavorite')

@@ -231,18 +231,31 @@
     item.trans.itemType = itemType;
     item.trans.owner = ownerUUID;
 
-    for (var i=0, len=fieldInfos.length; i<len; i++){
-      var fieldName = angular.isObject(fieldInfos[i]) ? fieldInfos[i].name : fieldInfos[i];
+    // Push 'saved' as a special field info
+    var resetFieldInfos = fieldInfos.concat(['saved']);
+    for (var i=0, len=resetFieldInfos.length; i<len; i++){
+      var fieldName = angular.isObject(resetFieldInfos[i]) ? resetFieldInfos[i].name : resetFieldInfos[i];
 
       if (!propertiesToReset ||
           (angular.isObject(propertiesToReset) && propertiesToReset.hasOwnProperty(fieldName)) ||
           (angular.isArray(propertiesToReset) && propertiesToReset.indexOf(fieldName) !== -1)) {
-        if (angular.isObject(fieldInfos[i])){
+        if (angular.isObject(resetFieldInfos[i])){
           // Custom reset method overrides
-          fieldInfos[i].resetTrans(item, ownerUUID);
+          resetFieldInfos[i].resetTrans(item, ownerUUID);
         }else if (item.mod && item.mod.hasOwnProperty(fieldName)) {
           // Priorize value from modified object
-          item.trans[fieldName] = item.mod[fieldName];
+          if (fieldName === 'saved'){
+            // Special case for saved: use it as the transient modified value. Use the mod.modified value
+            // if it is there, the persistent value if the persistent value is newer
+            if (item.mod.hasOwnProperty('modified') ||
+                (item.hasOwnProperty('modified') && item.mod['saved'] < item['modified'])){
+              delete item.mod.saved;
+            }else{
+              item.trans['modified'] = item.mod['saved'];
+            }
+          }else{
+            item.trans[fieldName] = item.mod[fieldName];
+          }
         }else if (item[fieldName] !== undefined){
           // If no modified value found, use persistent value
           item.trans[fieldName] = item[fieldName];
@@ -479,7 +492,7 @@
                                    this.getPutExistingRegex(itemType), params, transportItem,
                                    fakeTimestamp)
           .then(function() {
-            updateObjectProperties(item.mod, {modified: fakeTimestamp});
+            updateObjectProperties(item.mod, {saved: fakeTimestamp});
             deferred.resolve('existing');
           });
         } else {
@@ -497,7 +510,7 @@
           BackendClientService.putOffline('/api/' + params.owner + '/'+ itemType,
                                    this.getPutNewRegex(itemType), params, transportItem, fakeTimestamp)
           .then(function() {
-            updateObjectProperties(item.mod, {uuid: fakeUUID, modified: fakeTimestamp,
+            updateObjectProperties(item.mod, {uuid: fakeUUID, saved: fakeTimestamp,
               created: fakeTimestamp});
             deferred.resolve('new');
           });
@@ -519,7 +532,7 @@
                                          this.getDeleteRegex(itemType), params, data, fakeTimestamp)
       .then(function() {
         if (!item.mod) item.mod = {};
-        updateObjectProperties(item.mod, {modified: fakeTimestamp, deleted: fakeTimestamp});
+        updateObjectProperties(item.mod, {saved: fakeTimestamp, deleted: fakeTimestamp});
         deferred.resolve();
       });
       return deferred.promise;
@@ -533,7 +546,7 @@
                                        this.getUndeleteRegex(itemType), params, data, fakeTimestamp)
       .then(function() {
         if (!item.mod) item.mod = {};
-        updateObjectProperties(item.mod, {modified: fakeTimestamp, deleted: undefined});
+        updateObjectProperties(item.mod, {saved: fakeTimestamp, deleted: undefined});
         if (UserSessionService.isPersistentStorageEnabled()){
           PersistentStorageService.persist(createPersistableItem(item), itemType, ownerUUID);
         }
