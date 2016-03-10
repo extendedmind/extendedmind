@@ -57,9 +57,10 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
     }, synchronizeDelay);
   }
 
-  function itemsSynchronizedCallback(ownerUUID){
+  function itemsSynchronizedCallback(ownerUUID, tagsOnly){
     var timestamp = Date.now();
-    UserSessionService.setItemsSynchronized(timestamp, ownerUUID);
+    if (tagsOnly) UserSessionService.setTagsSynchronized(timestamp);
+    else UserSessionService.setItemsSynchronized(timestamp, ownerUUID);
     $rootScope.synced = timestamp;
     $rootScope.syncState = 'ready';
     if ($rootScope.firstSyncInProgress) $rootScope.firstSyncInProgress = false;
@@ -73,7 +74,7 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
   }
 
   function getLastItemsSynchronized(itemsSynchronized){
-    // evaluates to NaN, when synced is undefined which it is on first sync or fake user:
+    // evaluates to NaN, when synced is undefined which it is on first sync or fake user
     return Date.now() - itemsSynchronized;
   }
 
@@ -84,7 +85,6 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
       // User is present, register activity and set when user was last synchronized
       $scope.registerActivity();
       $rootScope.synced = UserSessionService.getItemsSynchronized(ownerUUID);
-      // evaluates to NaN, when synced is undefined which it is on first sync or fake user:
       var sinceLastItemsSynchronized = getLastItemsSynchronized($rootScope.synced);
       if (itemsSynchronizeCounter[ownerUUID] === undefined) itemsSynchronizeCounter[ownerUUID] = 0;
       itemsSynchronizeCounter[ownerUUID]++;
@@ -230,14 +230,33 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
 
   // Synchronizes the other owner that has not been synced for the longest period
   function synchronizeMostStaleOtherOwner(previousParams, forceIfNotPreviouslySynced){
-    var collectivesUUIDs = UserSessionService.getCollectiveUUIDs();
-    var sharedListOwnerUUIDs = getOwnerUUIDsFromObject(UserSessionService.getSharedLists());
-    var adoptedListsOwnerUUIDs = getOwnerUUIDsFromObject(UserSessionService.getUIPreference('adoptedLists'));
-    var otherOwnerUUIDs =
-      collectivesUUIDs.concat(sharedListOwnerUUIDs).concat(adoptedListsOwnerUUIDs).unique();
+    var activeUUID = UISessionService.getActiveUUID();
 
+    // First check if the user has write access to common collective:
+    // if not, it is tagsOnly, if yes, treat it as any other collective
+    var tagsOnlyCollectiveUUID;
+    var commonCollective = UserSessionService.getCommonCollective();
+    if (commonCollective){
+      for (var commonCollectiveUUID in commonCollective){
+        if (commonCollective.hasOwnProperty(commonCollectiveUUID)){
+          if (commonCollective[commonCollectiveUUID][1] === 1){
+            // Only read access, use tagsOnly
+            tagsOnlyCollectiveUUID = commonCollectiveUUID;
+          }else if (UserSessionService.getTagsSynchronized() !== undefined){
+            // Write access to common collective but tags synced set, remove it
+            UserSessionService.setTagsSynchronized(undefined);
+          }
+          break;
+        }
+      }
+    }
+    // Skip tagsOnlyCollctiveUUID and activeUUID from collectives here
+    var collectivesUUIDs = UserSessionService.getCollectiveUUIDs([tagsOnlyCollectiveUUID, activeUUID]);
+    var sharedListOwnerUUIDs = getOwnerUUIDsFromObject(UserSessionService.getSharedLists());
+    var otherOwnerUUIDs =
+      collectivesUUIDs.concat(sharedListOwnerUUIDs).unique();
     return $q(function(resolve, reject) {
-      if (otherOwnerUUIDs.length){
+      if (otherOwnerUUIDs.length || tagsOnlyCollectiveUUID){
         var biggestSince;
         var mostStaleOwnerUUID;
         for (var i=0; i<otherOwnerUUIDs.length; i++) {
@@ -249,6 +268,15 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
             if (isNaN(biggestSince)) break;
           }
         }
+        if (tagsOnlyCollectiveUUID){
+          var sinceLastTagsSynchronized = getLastItemsSynchronized(UserSessionService.getTagsSynchronized());
+          if (!mostStaleOwnerUUID ||
+             (!sinceLastTagsSynchronized && !isNaN(biggestSince)) ||
+             (sinceLastTagsSynchronized && !isNaN(biggestSince) && biggestSince < sinceLastTagsSynchronized)){
+            mostStaleOwnerUUID = tagsOnlyCollectiveUUID;
+            biggestSince = sinceLastTagsSynchronized;
+          }
+        }
         if (mostStaleOwnerUUID){
           var forceSyncParams;
           if (forceIfNotPreviouslySynced && (!previousParams || !previousParams.shared ||
@@ -257,14 +285,8 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
             else forceSyncParams = {shared: previousParams.shared};
             forceSyncParams.shared.push(mostStaleOwnerUUID);
           }
-          var tagsOnly = false;
-          if (collectivesUUIDs.indexOf(mostStaleOwnerUUID) !== -1 &&
-              sharedListOwnerUUIDs.indexOf(mostStaleOwnerUUID) === -1 &&
-              adoptedListsOwnerUUIDs.indexOf(mostStaleOwnerUUID) === -1){
-            // The other owner is only in the collectives, then we should get tags only as it is
-            // a lot faster
-            tagsOnly = true;
-          }
+          // Get tags only for the common collective if only read access there
+          var tagsOnly = mostStaleOwnerUUID === tagsOnlyCollectiveUUID;
 
           if (itemsSynchronizeCounter[mostStaleOwnerUUID] === undefined)
             itemsSynchronizeCounter[mostStaleOwnerUUID] = 0;

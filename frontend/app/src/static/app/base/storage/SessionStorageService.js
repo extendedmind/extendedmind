@@ -12,6 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ /*global angular, jQuery */
  'use strict';
 
  function SessionStorageService() {
@@ -166,6 +167,10 @@
         sessionStorage.removeItem('synced');
       }
     },
+    setTagsSynchronized: function(value) {
+      if (value) sessionStorage.setItem('tagsSynced', value);
+      else sessionStorage.removeItem('tagsSynced');
+    },
     setOffline: function(value){
       cachedOffline = value;
       if (value !== undefined) sessionStorage.setItem('offline', cachedOffline);
@@ -273,6 +278,9 @@
         if (ownerUUID) return synced[ownerUUID];
         else return synced;
       }
+    },
+    getTagsSynchronized: function() {
+      return sessionStorage.getItem('tagsSynced');
     },
     getOffline: function(){
       if (cachedOffline === undefined){

@@ -12,6 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ /*global jQuery */
  'use strict';
 
  function LocalStorageService() {
@@ -133,6 +134,10 @@
         localStorage.removeItem('synced');
       }
     },
+    setTagsSynchronized: function(value) {
+      if (value) localStorage.setItem('tagsSynced', value);
+      else localStorage.removeItem('tagsSynced');
+    },
     setOffline: function(value){
       if (value !== undefined) localStorage.setItem('offline', value);
       else localStorage.removeItem('offline');
@@ -217,6 +222,9 @@
         if (ownerUUID) return synced[ownerUUID];
         else return synced;
       }
+    },
+    getTagsSynchronized: function() {
+      return localStorage.getItem('tagsSynced');
     },
     getOffline: function(){
       var storedOffline = localStorage.getItem('offline');

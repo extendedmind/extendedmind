@@ -21,6 +21,7 @@
   // When offline isn't enabled, use transient value for latest modified
   var latestModified = {};
   var itemsSynchronized = {};
+  var tagsSynchronized;
   var itemsSynchronizeAttempted = {};
   var persistentStorageEnabled = enableOffline;
   var offlineEnabledBypass = false;
@@ -63,6 +64,7 @@
     SessionStorageService.setState(LocalStorageService.getState());
     SessionStorageService.setLatestModified(LocalStorageService.getLatestModified());
     SessionStorageService.setItemsSynchronized(LocalStorageService.getItemsSynchronized());
+    SessionStorageService.setTagsSynchronized(LocalStorageService.getTagsSynchronized());
     SessionStorageService.setOffline(LocalStorageService.getOffline());
   }
 
@@ -344,6 +346,14 @@
         itemsSynchronized[ownerUUID] = timestamp;
       }
     },
+    setTagsSynchronized: function(timestamp) {
+      if (this.isPersistentStorageEnabled()){
+        SessionStorageService.setTagsSynchronized(timestamp);
+        LocalStorageService.setTagsSynchronized(timestamp);
+      }else{
+        tagsSynchronized = timestamp;
+      }
+    },
     setItemsSynchronizeAttempted: function(timestamp, ownerUUID) {
       itemsSynchronizeAttempted[ownerUUID] = timestamp;
     },
@@ -378,8 +388,11 @@
       var collectives = commonOnly ? this.getCommonCollective() : this.getCollectives();
       if (collectives){
         for (var collectiveUUID in collectives){
-          if (collectives.hasOwnProperty(collectiveUUID) && collectiveUUID !== exceptUUID){
-            collectiveUUIDs.push(collectiveUUID);
+          if (collectives.hasOwnProperty(collectiveUUID)){
+            if ((angular.isArray(exceptUUID) && exceptUUID.indexOf(collectiveUUID) === -1) ||
+                (!angular.isArray(exceptUUID) && collectiveUUID !== exceptUUID)){
+              collectiveUUIDs.push(collectiveUUID);
+            }
           }
         }
       }
@@ -447,6 +460,15 @@
         else return currentItemsSynchronized;
       }else{
         return itemsSynchronized[ownerUUID];
+      }
+    },
+    getTagsSynchronized: function() {
+      if (this.isPersistentStorageEnabled()){
+        var currentTagsSynchronized = SessionStorageService.getTagsSynchronized();
+        if (!isNaN(currentTagsSynchronized)) return parseInt(currentTagsSynchronized);
+        else return currentTagsSynchronized;
+      }else{
+        return tagsSynchronized;
       }
     },
     getItemsSynchronizeAttempted: function(ownerUUID) {

@@ -749,7 +749,8 @@
       processSynchronizeUpdateResult(ownerUUID, response);
     }
     // Execute items synchronized callback
-    if (angular.isFunction(itemsSynchronizedCallback)) itemsSynchronizedCallback(ownerUUID);
+    if (angular.isFunction(itemsSynchronizedCallback))
+      itemsSynchronizedCallback(ownerUUID, request.content.url.indexOf('tagsOnly=true') != -1);
   }
 
   function synchronizeUserAccountCallback(request, response /*, queue*/) {
@@ -887,7 +888,7 @@
   BackendClientService.registerBeforeLastGetCallback(synchronizeUserAccountCallback);
   BackendClientService.registerDefaultCallback(defaultCallback);
 
-  function getAllOnline(ownerUUID, getAllMethod, deferred) {
+  function getAllOnline(ownerUUID, getAllMethod, deferred, tagsOnly) {
     getAllMethod(ownerUUID).then(
       function(result) {
         deferred.resolve('firstSync');
@@ -926,7 +927,7 @@
       });
   }
 
-  function setItemArrays(itemsByType, ownerUUID, skipPersist, addToExisting){
+  function setItemArrays(itemsByType, ownerUUID, skipPersist, addToExisting, tagsOnly){
     var latestTag, latestList, latestTask, latestItem, latestNote;
     // Reset all arrays
     latestTag = TagsService.setTags(itemsByType.tags, ownerUUID, skipPersist, addToExisting);
@@ -942,7 +943,7 @@
     UserSessionService.setLatestModified(latestModified, ownerUUID);
 
     // Execute items synchronized callback
-    if (angular.isFunction(itemsSynchronizedCallback)) itemsSynchronizedCallback(ownerUUID);
+    if (angular.isFunction(itemsSynchronizedCallback)) itemsSynchronizedCallback(ownerUUID, tagsOnly);
   }
 
   function getAllItemsOnline(ownerUUID) {
@@ -962,7 +963,7 @@
                                              ownerUUID +
                                              '/items?tagsOnly=true', getItemsRegex,
                                              undefined, true).then(function(response) {
-      setItemArrays(response, ownerUUID);
+      setItemArrays(response, ownerUUID, undefined, undefined, true);
       return response;
     }, function(error){
       if (error.type === 'offline'){
@@ -978,7 +979,7 @@
                                              ownerUUID +
                                              '/items?deleted=true&active=false&tagsOnly=true',
                                              getItemsRegex, undefined, true).then(function(response) {
-      setItemArrays(response, ownerUUID, false, true);
+      setItemArrays(response, ownerUUID, false, true, true);
       return response;
     });
   }
@@ -1003,9 +1004,9 @@
         BackendClientService.getSecondary(url, getItemsRegex, params);
         deferred.resolve('delta');
       } else if (tagsOnly){
-        getAllOnline(ownerUUID, getAllTagsOnline, deferred);
+        getAllOnline(ownerUUID, getAllTagsOnline, deferred, tagsOnly);
       } else {
-        getAllOnline(ownerUUID, getAllItemsOnline, deferred);
+        getAllOnline(ownerUUID, getAllItemsOnline, deferred, tagsOnly);
       }
     }
     var deferred = $q.defer();
