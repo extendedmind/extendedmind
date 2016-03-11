@@ -200,11 +200,12 @@ trait CollectiveDatabase extends UserDatabase {
     var updatePublicModified = false
 
     // Display name
-    if (collective.displayName.isDefined &&
-        (!collectiveNode.hasProperty("displayName") ||
-         collectiveNode.getProperty("displayName").asInstanceOf[String] != collective.displayName.get)){
-      collectiveNode.setProperty("displayName", collective.displayName.get);
-      updatePublicModified = true
+    if (collective.displayName.isDefined){
+      if (!collectiveNode.hasProperty("displayName") ||
+         collectiveNode.getProperty("displayName").asInstanceOf[String] != collective.displayName.get){
+        collectiveNode.setProperty("displayName", collective.displayName.get);
+        updatePublicModified = true
+      }
     }else if (collectiveNode.hasProperty("displayName")){
       collectiveNode.removeProperty("displayName");
       updatePublicModified = true

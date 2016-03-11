@@ -190,7 +190,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
         emtCollective._2._4.get.handle.get should be("emt")
         emtCollective._2._4.get.access should not be(None)
         emtCollective._2._4.get.access.get.size should be(2)
-        emtCollective._2._4.get.access.get.find(accessInfo => accessInfo._2 == TIMO_EMAIL) should be (None)
+        emtCollective._2._4.get.access.get.find(accessInfo => accessInfo._2 == "Timo") should be (None)
         emtCollective._2._4.get.description should not be(None)
         emtCollective._2._4.get.handle should not be(None)
         emtCollective._2._4.get.inboxId should not be(None)
@@ -207,7 +207,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
           fullEMTCollective.modified should not be(None)
           fullEMTCollective.created should not be(None)
           fullEMTCollective.creator.get should be(timoAuthenticateResponse.userUUID)
-          fullEMTCollective.access.get.find(accessInfo => accessInfo._2 == TIMO_EMAIL) should not be(None)
+          fullEMTCollective.access.get.find(accessInfo => accessInfo._2 == "Timo") should not be(None)
         }
       }
 

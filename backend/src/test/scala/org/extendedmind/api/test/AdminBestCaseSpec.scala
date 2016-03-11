@@ -106,7 +106,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
                 collectiveResponse.handle.get should be("test")
                 collectiveResponse.preferences.get.ui.get should be("{\"useCC\":true}")
                 collectiveResponse.access.get.length should be (1)
-                collectiveResponse.access.get(0)._2 should be ("timo@ext.md")
+                collectiveResponse.access.get(0)._2 should be ("Timo")
                 collectiveResponse.access.get(0)._3 should be (0)
                 // Should be possible to assign read/write access to new collective
                 val lauriAuthenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
@@ -125,7 +125,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
                   val modifiedCollectiveResponse = responseAs[Collective]
                   modifiedCollectiveResponse.access.get.length should be (2)
                   modifiedCollectiveResponse.access.get.find(access => {
-                    access._2 =="timo@ext.md" &&
+                    access._2 =="Timo" &&
                     access._3 == 0
                   }) should not be(None)
                   modifiedCollectiveResponse.access.get.find(access => {

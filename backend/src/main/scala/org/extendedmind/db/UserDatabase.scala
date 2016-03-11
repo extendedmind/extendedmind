@@ -315,11 +315,12 @@ trait UserDatabase extends AbstractGraphDatabase {
 
     var updatePublicModified = false
     // Display name
-    if (user.displayName.isDefined &&
-        (!userNode.hasProperty("displayName") ||
-         userNode.getProperty("displayName").asInstanceOf[String] != user.displayName.get)) {
-      userNode.setProperty("displayName", user.displayName.get);
-      updatePublicModified = true
+    if (user.displayName.isDefined){
+      if(!userNode.hasProperty("displayName") ||
+         userNode.getProperty("displayName").asInstanceOf[String] != user.displayName.get) {
+        userNode.setProperty("displayName", user.displayName.get);
+        updatePublicModified = true
+      }
     }else if (userNode.hasProperty("displayName")){
       userNode.removeProperty("displayName");
       updatePublicModified = true
