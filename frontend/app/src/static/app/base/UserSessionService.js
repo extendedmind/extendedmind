@@ -301,6 +301,15 @@
       this.setPreferences(migrateTransportPreferences(transportPreferences));
     },
     setAccessInformation: function(userUUID, collectives, sharedLists) {
+      if (collectives){
+        for (var collectiveUUID in collectives){
+          if (collectives.hasOwnProperty(collectiveUUID) &&
+              angular.isObject(collectives[collectiveUUID][3])){
+            collectives[collectiveUUID][3].preferences =
+              migrateTransportPreferences(collectives[collectiveUUID][3].preferences);
+          }
+        }
+      }
       SessionStorageService.setCollectives(collectives);
       SessionStorageService.setSharedLists(sharedLists);
       if (this.isPersistentStorageEnabled() || LocalStorageService.getReplaceable() !== null) {
@@ -513,9 +522,19 @@
       syncWebStorages();
       return SessionStorageService.getPreferences();
     },
-    getUIPreference: function(key) {
+    getUIPreference: function(key, ownerUUID) {
       syncWebStorages();
-      var preferences = SessionStorageService.getPreferences();
+      var preferences;
+      if (ownerUUID && ownerUUID !== this.getUserUUID()){
+        var collectiveInfos = SessionStorageService.getCollectives();
+        if (collectiveInfos && collectiveInfos[ownerUUID] &&
+            angular.isObject(collectiveInfos[ownerUUID][3]) &&
+            collectiveInfos[ownerUUID][3].preferences){
+          preferences = collectiveInfos[ownerUUID][3].preferences;
+        }
+      }else{
+        preferences = SessionStorageService.getPreferences();
+      }
       if (preferences && preferences.ui) {
         return preferences.ui[key];
       }
@@ -568,13 +587,27 @@
       syncWebStorages();
       return SessionStorageService.getInboxId();
     },
-    getHandle: function() {
+    getHandle: function(ownerUUID) {
       syncWebStorages();
-      return SessionStorageService.getHandle();
+      if (ownerUUID && ownerUUID !== this.getUserUUID()){
+        var collectiveInfos = SessionStorageService.getCollectives();
+        if (collectiveInfos && collectiveInfos[ownerUUID] && angular.isObject(collectiveInfos[ownerUUID][3])){
+          return collectiveInfos[ownerUUID][3].handle;
+        }
+      }else{
+        return SessionStorageService.getHandle();
+      }
     },
-    getDisplayName: function() {
+    getDisplayName: function(ownerUUID) {
       syncWebStorages();
-      return SessionStorageService.getDisplayName();
+      if (ownerUUID && ownerUUID !== this.getUserUUID()){
+        var collectiveInfos = SessionStorageService.getCollectives();
+        if (collectiveInfos && collectiveInfos[ownerUUID] && angular.isObject(collectiveInfos[ownerUUID][3])){
+          return collectiveInfos[ownerUUID][3].displayName;
+        }
+      }else{
+        return SessionStorageService.getDisplayName();
+      }
     },
     isFakeUser: function() {
       return UUIDService.isFakeUUID(this.getUserUUID());

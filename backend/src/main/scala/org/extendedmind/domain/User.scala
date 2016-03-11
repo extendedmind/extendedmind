@@ -25,7 +25,7 @@ import org.extendedmind.security.SecurityContext
 import org.extendedmind.security.Token
 import org.extendedmind._
 
-case class UserPreferences(onboarded: Option[String], ui: Option[String]){
+case class OwnerPreferences(onboarded: Option[String], ui: Option[String]){
   if (onboarded.isDefined) require(validateLength(onboarded.get, 10000), "Onboarded preferences max length is 10000")
   if (ui.isDefined) require(validateLength(ui.get, 10000), "UI preferences max length is 10000")
 }
@@ -35,7 +35,7 @@ case class User(uuid: Option[UUID], created: Option[Long], modified: Option[Long
                 displayName: Option[String], handle: Option[String],
                 content: Option[String], format: Option[String],
                 cohort: Option[Int], inboxId: Option[String],
-                preferences: Option[UserPreferences],
+                preferences: Option[OwnerPreferences],
                 collectives: Option[Map[UUID,(String, Byte, Boolean, Option[Collective])]],
                 sharedLists: Option[Map[UUID,(String, Map[UUID, (String, Byte)])]])
            extends Container{
@@ -61,7 +61,7 @@ case class User(uuid: Option[UUID], created: Option[Long], modified: Option[Long
 
 object User{
   def apply(email:String, displayName: Option[String], handle: Option[String], content: Option[String], format: Option[String],
-            cohort: Option[Int], preferences: Option[UserPreferences])
+            cohort: Option[Int], preferences: Option[OwnerPreferences])
       = new User(None, None, None, None, Some(email), None, displayName, handle, content, format, cohort, None, preferences, None, None)
 }
 

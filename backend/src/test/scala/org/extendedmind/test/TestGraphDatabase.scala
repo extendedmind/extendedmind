@@ -80,7 +80,7 @@ trait TestGraphDatabase extends GraphDatabase {
                                None, overrideEmailVerified=Some(verifiedTimestamp)).right.get._1
 
     // Collectives
-    val extendedMind = createCollective(timoNode, "extended mind", Some("common collective for all extended mind users"), true, None, Some("extended-mind"), None, None)
+    val extendedMind = createCollective(timoNode, "extended mind", Some("common collective for all extended mind users"), true, None, Some("extended-mind"), None, None, None)
     withTx {
       implicit neo =>
         // Set a predictable test UUID "11111111-1111-1111-1111-111111111111" for the common collective,
@@ -93,7 +93,9 @@ trait TestGraphDatabase extends GraphDatabase {
 
     val extendedMindTechnologies = createCollective(
       timoNode, "extended mind technologies",
-      Some("private collective for extended mind technologies"), false, None, Some("emt"), Some("Test _underlined_content_ for the collective"), Some("md"))
+      Some("private collective for extended mind technologies"), false,
+      Some("Extended Mind Technologies"), Some("emt"), Some("Test _underlined_content_ for the collective"), Some("md"),
+      Some(OwnerPreferences(None, Some("{\"useCC\":true}"))))
 
     // Info node created after common collective "extended mind" but should still be part of it,
     // Info does not have email verified
@@ -116,13 +118,13 @@ trait TestGraphDatabase extends GraphDatabase {
         val testOnboardingPreferences = "{\"user\":\"1432192930431:devel:devel\",\"focus\":\"1432192930431:devel:devel\",\"inbox\":\"1432192930431:devel:devel\",\"tasks\":\"1432192930431:devel:devel\",\"notes\":\"1432192930431:devel:devel\",\"lists\":{\"active\":\"1432192930431:devel:devel\"},\"list\":\"1432192930431:devel:devel\",\"trash\":\"1432192930431:devel:devel\",\"settings\":\"1432192930431:devel:devel\"}"
 
         // Add preferences to timo node
-        putExistingUser(getUUID(timoNode), timoUser.copy(preferences = Some(UserPreferences(Some(testOnboardingPreferences), None))))
+        putExistingUser(getUUID(timoNode), timoUser.copy(preferences = Some(OwnerPreferences(Some(testOnboardingPreferences), None))))
 
         // Add preferences to lauri node
-        putExistingUser(getUUID(lauriNode), lauriUser.copy(preferences = Some(UserPreferences(Some(testOnboardingPreferences), None))))
+        putExistingUser(getUUID(lauriNode), lauriUser.copy(preferences = Some(OwnerPreferences(Some(testOnboardingPreferences), None))))
 
         // Add preferences to JP node
-        putExistingUser(getUUID(jpNode), jpUser.copy(preferences = Some(UserPreferences(Some(testOnboardingPreferences), None))))
+        putExistingUser(getUUID(jpNode), jpUser.copy(preferences = Some(OwnerPreferences(Some(testOnboardingPreferences), None))))
 
         // Valid, unreplaceable
         timoUUID = getUUID(timoNode)
@@ -304,11 +306,11 @@ trait TestGraphDatabase extends GraphDatabase {
     newToken
   }
 
-  def createCollective(creator: Node, title: String, description: Option[String], common: Boolean, displayName: Option[String], handle: Option[String], content: Option[String], format: Option[String]): Node = {
+  def createCollective(creator: Node, title: String, description: Option[String], common: Boolean, displayName: Option[String], handle: Option[String], content: Option[String], format: Option[String], preferences: Option[OwnerPreferences]): Node = {
     withTx {
       implicit neo =>
         val collective = createCollective(getUUID(creator),
-            Collective(title, description, displayName, handle, content, format), common)
+            Collective(title, description, displayName, handle, content, format, preferences), common)
         collective.right.get
     }
   }

@@ -65,7 +65,8 @@ trait CollectiveDatabase extends UserDatabase {
           collective <- getCollectiveNode(collectiveNode,
             skipCreator = if (collectiveAccess == SecurityContext.READ) true else false,
             skipAccess = if (collectiveAccess == SecurityContext.READ || commonCollective) true else false,
-            skipAccessRelationship = None
+            skipAccessRelationship = None,
+            skipPreferences = false
           ).right
         } yield (
             if (collectiveAccess == SecurityContext.READ)
@@ -97,10 +98,10 @@ trait CollectiveDatabase extends UserDatabase {
 
   // PRIVATE
 
-  protected def getCollectiveNode(collectiveNode: Node, skipCreator: Boolean, skipAccess: Boolean, skipAccessRelationship: Option[Relationship])(implicit neo4j: DatabaseService): Response[Collective] = {
+  protected def getCollectiveNode(collectiveNode: Node, skipCreator: Boolean, skipAccess: Boolean, skipAccessRelationship: Option[Relationship], skipPreferences: Boolean)(implicit neo4j: DatabaseService): Response[Collective] = {
     for {
       collective <- toCaseClass[Collective](collectiveNode).right
-      completeCollective <- Right(addTransientCollectiveProperties(collectiveNode, collective, skipCreator, skipAccess, skipAccessRelationship)).right
+      completeCollective <- Right(addTransientCollectiveProperties(collectiveNode, collective, skipCreator, skipAccess, skipAccessRelationship, skipPreferences)).right
     } yield completeCollective
   }
 
@@ -116,7 +117,7 @@ trait CollectiveDatabase extends UserDatabase {
 
   protected def createCollectiveNode(founderNode: Node, collective: Collective, commonCollective: Boolean)
                (implicit neo4j: DatabaseService): Response[Node] = {
-    val collectiveNode = createNode(collective.copy(inboxId=None, apiKey=None, handle=None, content=None, format=None, displayName=None), MainLabel.OWNER, OwnerLabel.COLLECTIVE)
+    val collectiveNode = createNode(collective.copy(inboxId=None, apiKey=None, handle=None, content=None, format=None, displayName=None, preferences=None), MainLabel.OWNER, OwnerLabel.COLLECTIVE)
     founderNode --> SecurityRelationship.IS_FOUNDER --> collectiveNode;
     collectiveNode.setProperty("inboxId", generateUniqueInboxId())
     collectiveNode.setProperty("apiKey", Random.generateRandomUniqueString())
@@ -129,6 +130,16 @@ trait CollectiveDatabase extends UserDatabase {
         if (user != founderNode)
           user --> SecurityRelationship.CAN_READ --> collectiveNode;
       })
+    }
+
+    // Onboarding status
+    if (collective.preferences.isDefined && collective.preferences.get.onboarded.isDefined) {
+      collectiveNode.setProperty("onboarded", collective.preferences.get.onboarded.get);
+    }
+
+    // UI Preferences
+    if (collective.preferences.isDefined && collective.preferences.get.ui.isDefined) {
+      collectiveNode.setProperty("ui", collective.preferences.get.ui.get);
     }
 
     var updatePublicModified = false
@@ -168,6 +179,16 @@ trait CollectiveDatabase extends UserDatabase {
   }
 
   protected def updateCollective(collectiveNode: Node, collective: Collective)(implicit neo4j: DatabaseService): Response[Unit] = {
+
+    // Onboarding status
+    if (collective.preferences.isDefined && collective.preferences.get.onboarded.isDefined) {
+      collectiveNode.setProperty("onboarded", collective.preferences.get.onboarded.get);
+    }
+
+    // UI Preferences
+    if (collective.preferences.isDefined && collective.preferences.get.ui.isDefined) {
+      collectiveNode.setProperty("ui", collective.preferences.get.ui.get);
+    }
 
     // Description
     if (collective.description.isDefined) {
@@ -263,7 +284,7 @@ trait CollectiveDatabase extends UserDatabase {
     }
   }
 
-  protected def addTransientCollectiveProperties(collectiveNode: Node, collective: Collective, skipCreator:Boolean, skipAccess: Boolean, skipAccessRelationship: Option[Relationship])(implicit neo4j: DatabaseService): Collective = {
+  protected def addTransientCollectiveProperties(collectiveNode: Node, collective: Collective, skipCreator:Boolean, skipAccess: Boolean, skipAccessRelationship: Option[Relationship], skipPreferences: Boolean)(implicit neo4j: DatabaseService): Collective = {
 
     if (skipAccess && skipCreator){
       // No need to add anything
@@ -292,7 +313,7 @@ trait CollectiveDatabase extends UserDatabase {
           getAccessForCollective(filteredCollectiveAccessRelationships)
         }
       }
-      collective.copy(access = collectiveAccessList, creator=creatorUUID)
+      collective.copy(access = collectiveAccessList, creator=creatorUUID, preferences = getOwnerPreferences(collectiveNode))
     }
   }
 

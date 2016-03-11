@@ -20,6 +20,15 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
                         BackendClientService, SynchronizeService, TagsService,
                         UISessionService, UserSessionService, packaging) {
 
+
+  var featureChangedCallback = function featureChangedCallback(name, data/*, state*/) {
+    if (name === 'user' && !UserSessionService.isFakeUser()){
+      // Sync owner immediately when entering preferences
+      doSynchronizeOwner(UISessionService.getActiveUUID());
+    }
+  };
+  UISessionService.registerFeatureChangedCallback(featureChangedCallback, 'SynchronizeController');
+
   var synchronizeTimer;
   var synchronizeDelay = 12 * 1000;
   var itemsSynchronizedThreshold = 10 * 1000; // 10 seconds in milliseconds
@@ -160,14 +169,15 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
   }
 
   function doSynchronizeOwner(ownerUUID, sinceLastItemsSynchronized) {
-    // If there has been a long enough time from last sync, update account preferences as well
+    // If there has been a long enough time from last sync, or the user is viewing the user page, sync
+    // user as well.
     var activeUUID = UISessionService.getActiveUUID();
-    if (activeUUID === ownerUUID){
-      if (itemsSynchronizeCounter[ownerUUID] && (itemsSynchronizeCounter[ownerUUID] === 1 ||
-          itemsSynchronizeCounter[ownerUUID]%userSyncCounterTreshold === 0 ||
-          sinceLastItemsSynchronized > userSyncTimeTreshold)){
-        SynchronizeService.synchronizeUser();
-      }
+    if (UISessionService.getCurrentFeatureName() === 'user' ||
+        (activeUUID === ownerUUID && (
+         itemsSynchronizeCounter[ownerUUID] && (itemsSynchronizeCounter[ownerUUID] === 1 ||
+         itemsSynchronizeCounter[ownerUUID]%userSyncCounterTreshold === 0 ||
+         sinceLastItemsSynchronized > userSyncTimeTreshold)))){
+      SynchronizeService.synchronizeUser();
     }
   }
 

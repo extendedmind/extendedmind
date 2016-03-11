@@ -467,14 +467,14 @@ trait UserDatabase extends AbstractGraphDatabase {
 
     val collectiveAccessResponse = getFullCollectiveAccess(collectivesRelationshipList)
     if (collectiveAccessResponse.isLeft) return Left(collectiveAccessResponse.left.get)
-    Right(user.copy(preferences = getUserPreferences(userNode),
+    Right(user.copy(preferences = getOwnerPreferences(userNode),
               collectives = collectiveAccessResponse.right.get,
               sharedLists = getSharedListAccess(sharedListRelationshipList)))
   }
 
-  protected def getUserPreferences(userNode: Node)(implicit neo4j: DatabaseService): Option[UserPreferences] = {
+  protected def getOwnerPreferences(userNode: Node)(implicit neo4j: DatabaseService): Option[OwnerPreferences] = {
     if (userNode.hasProperty("onboarded") || userNode.hasProperty("ui")) {
-      Some(UserPreferences(
+      Some(OwnerPreferences(
         if (userNode.hasProperty("onboarded")) Some(userNode.getProperty("onboarded").asInstanceOf[String]) else None,
         if (userNode.hasProperty("ui")) Some(userNode.getProperty("ui").asInstanceOf[String]) else None))
     } else {
@@ -813,10 +813,14 @@ trait UserDatabase extends AbstractGraphDatabase {
                      else collectiveNode.getProperty("common").asInstanceOf[Boolean]
         val relationshipType = relationship.getType().name()
         val collectiveResponse =
-          if (relationshipType == SecurityRelationship.CAN_READ.relationshipName || common)
-            getCollectiveNode(collectiveNode, skipCreator=true, skipAccess=true, skipAccessRelationship=None)
-          else
-            getCollectiveNode(collectiveNode, skipCreator=true, skipAccess=false, skipAccessRelationship=Some(relationship))
+          if (relationshipType == SecurityRelationship.CAN_READ.relationshipName || common){
+            if (relationshipType == SecurityRelationship.CAN_READ.relationshipName && common)
+              getCollectiveNode(collectiveNode, skipCreator=true, skipAccess=true, skipAccessRelationship=None, skipPreferences=true)
+            else
+              getCollectiveNode(collectiveNode, skipCreator=true, skipAccess=true, skipAccessRelationship=None, skipPreferences=false)
+          }else{
+            getCollectiveNode(collectiveNode, skipCreator=true, skipAccess=false, skipAccessRelationship=Some(relationship), skipPreferences=false)
+          }
         if (collectiveResponse.isLeft) return Left(collectiveResponse.left.get)
         val collective = collectiveResponse.right.get
         val uuid = collective.uuid.get
@@ -1155,5 +1159,5 @@ trait UserDatabase extends AbstractGraphDatabase {
   protected def acceptInviteNode(inviteNode: Node, userNode: Node)(implicit neo4j: DatabaseService): Unit;
 
   // Abstract collective methods
-  protected def getCollectiveNode(collectiveNode: Node, skipCreator: Boolean, skipAccess: Boolean, skipAccessRelationship: Option[Relationship])(implicit neo4j: DatabaseService): Response[Collective];
+  protected def getCollectiveNode(collectiveNode: Node, skipCreator: Boolean, skipAccess: Boolean, skipAccessRelationship: Option[Relationship], skipPreferences: Boolean)(implicit neo4j: DatabaseService): Response[Collective];
 }

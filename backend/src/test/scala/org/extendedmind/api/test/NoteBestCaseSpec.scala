@@ -351,7 +351,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
                 val account = responseAs[User]
                 // Should be able to update public modified value of owner
                 Put("/account",
-                  marshal(account.copy(preferences=Some(UserPreferences(None, None)))).right.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                  marshal(account.copy(preferences=Some(OwnerPreferences(None, None)))).right.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                   // This should not change the response as public items have not changed
                   Get("/public/timo?modified=" + latestModified) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
                     val nonPublicModifiedItems = responseAs[PublicItems]

@@ -21,7 +21,7 @@ package org.extendedmind.security
 
 import java.util.UUID
 import org.neo4j.graphdb.Node
-import org.extendedmind.domain.UserPreferences
+import org.extendedmind.domain.OwnerPreferences
 
 case class SecurityContext(userUUID: UUID,
                userType: Byte,
@@ -39,7 +39,7 @@ case class SecurityContext(userUUID: UUID,
                replaceable: Option[Long],
                collectives: Option[Map[UUID,(String, Byte, Boolean, Option[String])]],
                sharedLists: Option[Map[UUID,(String, Map[UUID, (String, Byte)])]],
-               preferences: Option[UserPreferences]){
+               preferences: Option[OwnerPreferences]){
   // Tweak that helps skip one database call when creating a token
   @transient var user: Node = null
 }

@@ -51,9 +51,11 @@
       case 'restore':
       return $scope.showEditorAction('restore', $scope.note) && !$scope.isOnboarding('notes');
       case 'preview':
-      return $scope.isAdmin() && $scope.note.uuid && !$scope.isOnboarding('notes');
+      return ($scope.isAdmin() || (!$scope.isMyActive() && $scope.usePremiumFeatures())) &&
+              $scope.note.uuid && !$scope.isOnboarding('notes');
       case 'publish':
-      return $scope.isAdmin() && $scope.note.uuid &&!$scope.isOnboarding('notes');
+      return ($scope.isAdmin() || (!$scope.isMyActive() && $scope.usePremiumFeatures())) &&
+              $scope.note.uuid && !$scope.isOnboarding('notes');
     }
   };
 
@@ -378,7 +380,8 @@
 
   $scope.getNotePublicPath = function(note){
     return URLService.getVisibleUrl(
-              ContentService.getAbsoluteUrlPrefix() + '/our/' + UserSessionService.getHandle() + '/' +
+              ContentService.getAbsoluteUrlPrefix() + '/our/' +
+              UserSessionService.getHandle(note.trans.owner) + '/' +
               note.visibility.path);
   };
 
@@ -413,7 +416,8 @@
   };
 
   $scope.openPublishNoteDialog = function(note){
-    if (!UserSessionService.getHandle() || !UserSessionService.getDisplayName()){
+    if (!UserSessionService.getHandle(note.trans.owner) ||
+        !UserSessionService.getDisplayName(note.trans.owner)){
       var previewNoteModalParams = {
         messageHeading: 'update preferences',
         messageIngress: 'before publishing your first note, you need to set your handle and display name',
@@ -425,7 +429,8 @@
       };
       $scope.showModal(undefined, previewNoteModalParams);
     }else{
-      var licenceValue = UserSessionService.getUIPreference('useCC') ? $rootScope.CC_LICENCE : undefined;
+      var licenceValue =
+        UserSessionService.getUIPreference('useCC', note.trans.owner) ? $rootScope.CC_LICENCE : undefined;
       // Override with previous licence for this if this note already has been published
       if (note.visibility && note.visibility.path) licenceValue = note.visibility.licence;
       note.trans.cc = licenceValue === $rootScope.CC_LICENCE;

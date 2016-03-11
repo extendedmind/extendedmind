@@ -38,7 +38,7 @@ import scala.collection.mutable.HashMap
 import org.neo4j.graphdb.Relationship
 import spray.util.LoggingContext
 import org.extendedmind.domain.SignUp
-import org.extendedmind.domain.UserPreferences
+import org.extendedmind.domain.OwnerPreferences
 
 trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
 
@@ -526,7 +526,7 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
       None,
       None,
       None,
-      getUserPreferences(user)
+      getOwnerPreferences(user)
     )
   }
 
