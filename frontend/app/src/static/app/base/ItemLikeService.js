@@ -334,8 +334,7 @@
           if (itemsMap.hasOwnProperty(ownerUUID)){
             if (ownerUUID !== userUUID){
               // Not the user, check if not in collectives
-              if (collectives && collectives[ownerUUID] &&
-                  (collectives[ownerUUID][2] === false || UserSessionService.getUserType() === 0)){
+              if (collectives && collectives[ownerUUID]){
                 BackendClientService.notifyOwnerAccess(ownerUUID, collectives[ownerUUID][1]);
               }else{
                 // Not in collectives, are they in shared lists?

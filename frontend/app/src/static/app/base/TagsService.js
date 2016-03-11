@@ -207,7 +207,6 @@
       // to the arrays using minimal trans, then properly reset trans
       var tagsToSave = ItemLikeService.resetAndPruneOldDeleted(tagsResponse, TAG_TYPE,
                                                             ownerUUID, tagMinimalFieldInfos);
-
       var latestModified;
       if (addToExisting){
         latestModified = ArrayService.updateArrays(ownerUUID, TAG_TYPE, tagsToSave,
