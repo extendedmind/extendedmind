@@ -439,6 +439,8 @@
         // Create a path from note title
         note.trans.publishPath = note.trans.title.toLowerCase();
         note.trans.publishPath = note.trans.publishPath.replaceAll(' ', '-');
+        note.trans.publishPath = note.trans.publishPath.replaceAll('ä', 'a');
+        note.trans.publishPath = note.trans.publishPath.replaceAll('ö', 'o');
         note.trans.publishPath = note.trans.publishPath.replace(/[^0-9a-z-]/gi, '');
       }
       var messageForm = {
