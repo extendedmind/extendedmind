@@ -52,7 +52,8 @@ case class Items(items: Option[scala.List[Item]],
          tags: Option[scala.List[Tag]],
          assigned: Option[scala.List[AssignedItems]])
 
-case class SharedItemVisibility(published: Option[Long], path: Option[String], licence: Option[String], publishedRevision: Option[Long],
+case class SharedItemVisibility(published: Option[Long], path: Option[String], licence: Option[String],
+                                publishedRevision: Option[Long], shortId: Option[String], publicUi: Option[String],
                                 reviewed: Option[Long],
                                 preview: Option[String], previewExpires: Option[Long],
                                 agreements: Option[scala.List[Agreement]])

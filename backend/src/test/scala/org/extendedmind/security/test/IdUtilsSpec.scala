@@ -20,33 +20,52 @@
 package org.extendedmind.security.test
 
 import org.extendedmind.test.SpecBase
-import org.extendedmind.security.UUIDUtils
+import org.extendedmind.security.IdUtils
 import java.util.UUID
 import java.nio.ByteBuffer
 import org.apache.commons.codec.binary.Base64
+import org.extendedmind.security.Random
 
 class UUIDUtilsSpec extends SpecBase{
 
-  describe("UUIDUtilsSpec class"){
+  describe("IdUtilsSpec class"){
     it("should generate a valid trimmed UUID"){
       val testUUIDString = "7b13cdfe-eabf-4124-85fe-e706de4c8314"
       val testUUID = UUID.fromString(testUUIDString)
-      val trimmedBase64UUID = UUIDUtils.getTrimmedBase64UUID(testUUID)
+      val trimmedBase64UUID = IdUtils.getTrimmedBase64UUID(testUUID)
       val bb = ByteBuffer.allocate(16);
       bb.putLong(testUUID.getMostSignificantBits());
       bb.putLong(testUUID.getLeastSignificantBits());
       trimmedBase64UUID should be(Base64.encodeBase64String(bb.array()).substring(0, 22))
 
       // convert back
-      val reConvertedUuid = UUIDUtils.getUUID(trimmedBase64UUID)
+      val reConvertedUuid = IdUtils.getUUID(trimmedBase64UUID)
       reConvertedUuid.toString() should be(testUUIDString)
 
       // Try another UUID
       val testUUID2String = "a353b303-384d-4c79-8e90-0257cfb07a0c"
       val testUUID2 = UUID.fromString(testUUID2String)
-      val trimmedBase64UUID2 = UUIDUtils.getTrimmedBase64UUID(testUUID2)
-      val reConvertedUuid2 = UUIDUtils.getUUID(trimmedBase64UUID2)
+      val trimmedBase64UUID2 = IdUtils.getTrimmedBase64UUID(testUUID2)
+      val reConvertedUuid2 = IdUtils.getUUID(trimmedBase64UUID2)
       reConvertedUuid2.toString() should be(testUUID2String)
+    }
+    it("should generate a valid short id"){
+      val TEST_COUNT = 1000
+      val testArrayOfLongs:Array[Long] = Array.tabulate(TEST_COUNT)(n=>n)
+      val testArrayOfShortIds:Array[String] = Array.tabulate(TEST_COUNT)(n=>IdUtils.getShortIdAsString(n))
+
+      for (i <- 0 until TEST_COUNT-1){
+        val shortIdValue = IdUtils.getShortIdAsLong(testArrayOfShortIds(i))
+        shortIdValue should be(testArrayOfLongs(i))
+      }
+      for (i <- 0 until TEST_COUNT){
+        val randomLong = Random.generateRandomUnsignedLong()
+        val shortIdString = IdUtils.getShortIdAsString(randomLong)
+        if (i == 0)
+          println("Generated a short id value: " + shortIdString + " for random long " + randomLong)
+        val shortIdValue = IdUtils.getShortIdAsLong(shortIdString)
+        shortIdValue should be(randomLong)
+      }
     }
   }
 }

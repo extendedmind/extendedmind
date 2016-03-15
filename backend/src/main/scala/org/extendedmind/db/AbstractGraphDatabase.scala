@@ -84,7 +84,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
   // Implicit Neo4j Scala wrapper converters
   implicit val customConverters: Option[Map[String, AnyRef => AnyRef]] =
     // Convert trimmed Base64 UUID to java.util.UUID
-    Some(Map("uuid" -> (uuid => Some(UUIDUtils.getUUID(uuid.asInstanceOf[String])))))
+    Some(Map("uuid" -> (uuid => Some(IdUtils.getUUID(uuid.asInstanceOf[String])))))
 
   // INITIALIZATION
 
@@ -205,6 +205,27 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     } yield result
   }
 
+  // ID GENERATION
+
+  def generateShortId(implicit neo4j: DatabaseService): Long = {
+    val idNodes = findNodesByLabel(MainLabel.ID).toList
+    val idNode = {
+      if (idNodes.size == 0){
+        val idNode = createNode(MainLabel.ID)
+        // Set value to start from first three digit value "021", by setting this to 579,
+        // which translates to 9Z. Values 579 and below are reserved for internal use,
+        // and can be set by the admin.
+        idNode.setProperty("value", 579l)
+        idNode
+      }else{
+        idNodes(0)
+      }
+    }
+    val newShortId: Long = idNode.getProperty("value").asInstanceOf[Long] + 1
+    idNode.setProperty("value", newShortId)
+    newShortId
+  }
+
   // CONVERSION
 
   protected def updateNode(node: Node, caseClass: AnyRef): Response[Node] = {
@@ -231,7 +252,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
       implicit neo4j =>
         val uuid =
           if (newNode)
-            Some(UUIDUtils.getUUID(node.getProperty("uuid").asInstanceOf[String]))
+            Some(IdUtils.getUUID(node.getProperty("uuid").asInstanceOf[String]))
           else None
         val created =
           if (newNode)
@@ -259,7 +280,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
           val node = getNode(setResult.uuid.get, label)
           if (node.isLeft) Left(node.left.get)
           else {
-            node.right.get.setProperty("uuid", UUIDUtils.getTrimmedBase64UUID(uuid.get))
+            node.right.get.setProperty("uuid", IdUtils.getTrimmedBase64UUID(uuid.get))
             Right(SetResult(uuid, None, node.right.get.getProperty("modified").asInstanceOf[Long]))
           }
       }
@@ -267,7 +288,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
   }
 
   protected def getUUID(node: Node): UUID = {
-    UUIDUtils.getUUID(node.getProperty("uuid").asInstanceOf[String])
+    IdUtils.getUUID(node.getProperty("uuid").asInstanceOf[String])
   }
 
   protected def getEndNodeUUIDList(relationships: scala.List[Relationship]): scala.List[UUID] = {
@@ -301,7 +322,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
   }
 
   protected def getNode(nodeUUID: UUID, label: Label, acceptDeleted: Boolean = false): Response[Node] = {
-    val uuidString = UUIDUtils.getTrimmedBase64UUID(nodeUUID)
+    val uuidString = IdUtils.getTrimmedBase64UUID(nodeUUID)
     getNode("uuid", uuidString, label, Some(nodeUUID.toString()), acceptDeleted)
   }
 
@@ -321,7 +342,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
               nodeList.foreach(node => {
                 println("Invite request for " + node.getProperty("email").asInstanceOf[String]
                   + " has duplicate uuid "
-                  + UUIDUtils.getUUID(node.getProperty("uuid").asInstanceOf[String])
+                  + IdUtils.getUUID(node.getProperty("uuid").asInstanceOf[String])
                   + " with id " + node.getId())
               })
             }
@@ -418,7 +439,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
 
   protected def getItemNode(ownerUUID: UUID, itemUUID: UUID, label: Label, acceptDeleted: Boolean)(implicit neo4j: DatabaseService): Response[Node] = {
     val itemsIndex = neo4j.gds.index().forNodes("items")
-    val itemHits: IndexHits[Node] = itemsIndex.query("owner:\"" + UUIDUtils.getTrimmedBase64UUIDForLucene(ownerUUID) + "\" AND item:\"" + UUIDUtils.getTrimmedBase64UUIDForLucene(itemUUID) + "\"")
+    val itemHits: IndexHits[Node] = itemsIndex.query("owner:\"" + IdUtils.getTrimmedBase64UUIDForLucene(ownerUUID) + "\" AND item:\"" + IdUtils.getTrimmedBase64UUIDForLucene(itemUUID) + "\"")
 
     if (itemHits.size == 0) {
       fail(INVALID_PARAMETER, ERR_ITEM_NOT_FOUND, "Could not find item " + itemUUID + " for owner " + ownerUUID)

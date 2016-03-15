@@ -49,19 +49,19 @@ trait UserDatabase extends AbstractGraphDatabase {
 
   // PUBLICs
 
-  def putNewUser(user: User, password: String, signUpMode: SignUpMode, inviteCode: Option[Long]): Response[(SetResult, Option[Long])] = {
+  def putNewUser(user: User, password: String, signUpMode: SignUpMode, inviteCode: Option[Long]): Response[(SetResult, Option[Long], Option[String])] = {
     for {
       unit <- validateEmailUniqueness(user.email.get).right
       inviteNode <- getInviteNodeOption(user.email.get, inviteCode).right
       userResult <- createUser(user, password, getExtraUserLabel(signUpMode), inviteNode).right
       result <- Right(getSetResult(userResult._1, true)).right
-    } yield (result, userResult._2)
+    } yield (result, userResult._2, userResult._3)
   }
 
   def putExistingUser(userUUID: UUID, user: User): Response[SetResult] = {
     for {
-      userNode <- updateUser(userUUID, user).right
-      result <- Right(getSetResult(userNode, false)).right
+      userResult <- updateUser(userUUID, user).right
+      result <- Right(getSetResult(userResult._1, false)).right
     } yield result
   }
 
@@ -232,7 +232,7 @@ trait UserDatabase extends AbstractGraphDatabase {
   // PRIVATE
 
   protected def createUser(user: User, plainPassword: String,
-    userLabel: Option[Label], inviteNode: Option[Node] = None, overrideEmailVerified: Option[Long] = None): Response[(Node, Option[Long])] = {
+    userLabel: Option[Label], inviteNode: Option[Node] = None, overrideEmailVerified: Option[Long] = None): Response[(Node, Option[Long], Option[String])] = {
     withTx {
       implicit neo4j =>
 
@@ -283,26 +283,27 @@ trait UserDatabase extends AbstractGraphDatabase {
 
         val handleResult = setOwnerHandle(userNode, user.handle)
         if (handleResult.isRight){
-          if (handleResult.right.get) updatePublicModified = true
+          if (handleResult.right.get._1) updatePublicModified = true
           if (updatePublicModified) userNode.setProperty("publicModified", System.currentTimeMillis)
-          Right((userNode, emailVerificationCode))
+
+          Right((userNode, emailVerificationCode, handleResult.right.get._2))
         }else{
           Left(handleResult.left.get)
         }
     }
   }
 
-  protected def updateUser(userUUID: UUID, user: User): Response[Node] = {
+  protected def updateUser(userUUID: UUID, user: User): Response[(Node, Option[String])] = {
     withTx {
       implicit neo4j =>
         for {
           userNode <- getNode(userUUID, OwnerLabel.USER).right
-          result <- updateUser(userNode, user).right
-        } yield userNode
+          shortId <- updateUser(userNode, user).right
+        } yield (userNode, shortId)
     }
   }
 
-  protected def updateUser(userNode: Node, user: User)(implicit neo4j: DatabaseService): Response[Unit] = {
+  protected def updateUser(userNode: Node, user: User)(implicit neo4j: DatabaseService): Response[Option[String]] = {
     // Onboarding status
     if (user.preferences.isDefined && user.preferences.get.onboarded.isDefined) {
       userNode.setProperty("onboarded", user.preferences.get.onboarded.get);
@@ -347,9 +348,9 @@ trait UserDatabase extends AbstractGraphDatabase {
     // Update handle
     val handleResult = setOwnerHandle(userNode, user.handle)
     if (handleResult.isRight){
-      if (handleResult.right.get) updatePublicModified = true
+      if (handleResult.right.get._1) updatePublicModified = true
       if (updatePublicModified) userNode.setProperty("publicModified", System.currentTimeMillis)
-      Right()
+      Right(handleResult.right.get._2)
     }else{
       Left(handleResult.left.get)
     }
@@ -398,7 +399,7 @@ trait UserDatabase extends AbstractGraphDatabase {
           nodeIter.toList.foreach(node => {
             println("User " + node.getProperty("email").asInstanceOf[String]
               + " has duplicate node "
-              + UUIDUtils.getUUID(node.getProperty("uuid").asInstanceOf[String])
+              + IdUtils.getUUID(node.getProperty("uuid").asInstanceOf[String])
               + " with id " + node.getId())
           })
 
@@ -466,9 +467,16 @@ trait UserDatabase extends AbstractGraphDatabase {
     }}
     val limitedCollectives = getCollectiveAccess(collectivesRelationshipList)
 
+    val shortId =
+      if (userNode.hasProperty("sid"))
+        Some(IdUtils.getShortIdAsString(userNode.getProperty("sid").asInstanceOf[Long]))
+      else None
+
     val collectiveAccessResponse = getFullCollectiveAccess(collectivesRelationshipList)
     if (collectiveAccessResponse.isLeft) return Left(collectiveAccessResponse.left.get)
-    Right(user.copy(preferences = getOwnerPreferences(userNode),
+    Right(user.copy(
+              shortId = shortId,
+              preferences = getOwnerPreferences(userNode),
               collectives = collectiveAccessResponse.right.get,
               sharedLists = getSharedListAccess(sharedListRelationshipList)))
   }
@@ -1115,16 +1123,16 @@ trait UserDatabase extends AbstractGraphDatabase {
     }
   }
 
-  protected def setOwnerHandle(ownerNode: Node, handle: Option[String])(implicit neo4j: DatabaseService): Response[Boolean] = {
+  protected def setOwnerHandle(ownerNode: Node, handle: Option[String])(implicit neo4j: DatabaseService): Response[(Boolean, Option[String])] = {
     if (handle.isDefined){
       if (ownerNode.hasProperty("handle")) {
-        // Handle change of handle
+        // Process change of handle
         val previousHandle = ownerNode.getProperty("handle").asInstanceOf[String]
         if (previousHandle != handle.get){
           // Attempting to change handle
           setOwnerHandleValue(ownerNode, handle.get)
         }else{
-          Right(false)
+          Right((false, None))
         }
       }else{
         // Setting handle to owner for the first time
@@ -1133,17 +1141,26 @@ trait UserDatabase extends AbstractGraphDatabase {
     }else if (ownerNode.hasProperty("handle")){
       val previousHandle = ownerNode.getProperty("handle").asInstanceOf[String]
       ownerNode.removeProperty("handle")
-      Right(true)
+      Right((true, None))
     }else{
-      Right(false)
+      Right((false, None))
     }
   }
 
-  protected def setOwnerHandleValue(ownerNode: Node, handle: String)(implicit neo4j: DatabaseService): Response[Boolean] = {
+  protected def setOwnerHandleValue(ownerNode: Node, handle: String)(implicit neo4j: DatabaseService): Response[(Boolean, Option[String])] = {
     val validateResult = validateHandleUniqueness(Some(handle))
     if (validateResult.isRight){
-      ownerNode.setProperty("handle", handle);
-      Right(true)
+      // Also create a short id when handle is set, if it is not set before
+      val shortId =
+        if (!ownerNode.hasProperty("sid")){
+          val shortIdAsLong = generateShortId
+          ownerNode.setProperty("sid", shortIdAsLong)
+          Some(IdUtils.getShortIdAsString(shortIdAsLong))
+        }else{
+          None
+        }
+      ownerNode.setProperty("handle", handle)
+      Right((true, shortId))
     } else{
       Left(validateResult.left.get)
     }

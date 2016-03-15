@@ -33,7 +33,7 @@ import org.neo4j.kernel.Traversal
 import org.neo4j.scala.DatabaseService
 import scala.collection.mutable.ListBuffer
 import org.neo4j.graphdb.traversal.Evaluation
-import org.extendedmind.security.UUIDUtils
+import org.extendedmind.security.IdUtils
 
 trait ListDatabase extends UserDatabase with TagDatabase {
 
@@ -159,7 +159,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
                 if (ownerNodes.foreignOwner.isEmpty && getUUID(assigneeRel.getEndNode) == getUUID(ownerNodes.user)) None
                 else Some(getUUID(assigneeRel.getEndNode))
               }),
-              assigner = assigneeRel.flatMap(assigneeRel => Some(UUIDUtils.getUUID(assigneeRel.getProperty("assigner").asInstanceOf[String]))),
+              assigner = assigneeRel.flatMap(assigneeRel => Some(IdUtils.getUUID(assigneeRel.getProperty("assigner").asInstanceOf[String]))),
               tags = tagsRels.flatMap(tagsRels => if (tagsRels.ownerTags.isDefined) Some(getEndNodeUUIDList(tagsRels.ownerTags.get)) else None),
               collectiveTags = tagsRels.flatMap(tagsRels => getCollectiveTagEndNodeUUIDList(tagsRels.collectiveTags))))
           else None),
@@ -453,7 +453,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
         if (agreement.isLeft) return Left(agreement.left.get)
         else agreement.right.get
       })
-      Right(Some(SharedItemVisibility(None, None, None, None, None, None, None, Some(agreements))))
+      Right(Some(SharedItemVisibility(None, None, None, None, None, None, None, None, None, Some(agreements))))
     }else{
       Right(None)
     }

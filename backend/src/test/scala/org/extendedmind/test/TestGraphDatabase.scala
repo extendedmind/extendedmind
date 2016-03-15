@@ -132,7 +132,7 @@ trait TestGraphDatabase extends GraphDatabase {
         saveToken(timoNode, token, None)
 
         // Valid, replaceable
-        val replaceableToken = Token(UUIDUtils.getUUID(timoNode.getProperty("uuid").asInstanceOf[String]))
+        val replaceableToken = Token(IdUtils.getUUID(timoNode.getProperty("uuid").asInstanceOf[String]))
         saveToken(timoNode, replaceableToken, Some(AuthenticatePayload(true, None)))
 
         val currentTime = System.currentTimeMillis()
@@ -272,7 +272,7 @@ trait TestGraphDatabase extends GraphDatabase {
         Some("md"), None,
         Some(ExtendedItemRelationships(Some(extendedMindTechnologiesList.uuid.get), None, None, None, Some(scala.List(blogTag.right.get.uuid.get)),
           Some(scala.List((emUUID, scala.List(productivityTag.right.get.uuid.get)))))))).right.get
-    publishNote(Owner(timoUUID, None, Token.ADMIN), result.uuid.get, "md", "productivity", Some(LicenceType.CC_BY_SA_4_0.toString), None)
+    publishNote(Owner(timoUUID, None, Token.ADMIN), result.uuid.get, "md", "productivity", Some(LicenceType.CC_BY_SA_4_0.toString), None, None)
 
     // Timo shares essay list with Lauri
 
@@ -295,7 +295,7 @@ trait TestGraphDatabase extends GraphDatabase {
   }
 
   def saveCustomToken(expires: Long, replaceable: Option[Long], userNode: Node)(implicit neo: DatabaseService): Token = {
-    val newToken = Token(UUIDUtils.getUUID(userNode.getProperty("uuid").asInstanceOf[String]))
+    val newToken = Token(IdUtils.getUUID(userNode.getProperty("uuid").asInstanceOf[String]))
     val tokenNode = createNode(MainLabel.TOKEN)
     val currentTime = System.currentTimeMillis()
     tokenNode.setProperty("accessKey", newToken.accessKey)
@@ -311,7 +311,7 @@ trait TestGraphDatabase extends GraphDatabase {
       implicit neo =>
         val collective = createCollective(getUUID(creator),
             Collective(title, description, displayName, handle, content, format, preferences), common)
-        collective.right.get
+        collective.right.get._1
     }
   }
 

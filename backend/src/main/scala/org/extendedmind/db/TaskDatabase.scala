@@ -35,7 +35,7 @@ import scala.collection.mutable.ListBuffer
 import org.neo4j.graphdb.Relationship
 import java.time.temporal.ChronoUnit
 import org.extendedmind.security.SecurityContext
-import org.extendedmind.security.UUIDUtils
+import org.extendedmind.security.IdUtils
 
 trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
 
@@ -212,7 +212,7 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
                 if (ownerNodes.foreignOwner.isEmpty && getUUID(assigneeRel.getEndNode) == getUUID(ownerNodes.user)) None
                 else Some(getUUID(assigneeRel.getEndNode))
               }),
-              assigner = assigneeRel.flatMap(assigneeRel => Some(UUIDUtils.getUUID(assigneeRel.getProperty("assigner").asInstanceOf[String]))),
+              assigner = assigneeRel.flatMap(assigneeRel => Some(IdUtils.getUUID(assigneeRel.getProperty("assigner").asInstanceOf[String]))),
               tags = tagsRels.flatMap(tagsRels => if (tagsRels.ownerTags.isDefined) Some(getEndNodeUUIDList(tagsRels.ownerTags.get)) else None),
               collectiveTags = tagsRels.flatMap(tagsRels => getCollectiveTagEndNodeUUIDList(tagsRels.collectiveTags))))
            else None

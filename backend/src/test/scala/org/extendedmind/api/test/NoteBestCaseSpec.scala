@@ -209,10 +209,10 @@ class NoteBestCaseSpec extends ServiceSpecBase {
           publicDraftItem.note.visibility.get.previewExpires.get should be (previewNoteResult.previewExpires)
           // Next publish with path
           Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/publish",
-              marshal(PublishPayload("md", "test", Some(LicenceType.CC_BY_SA_4_0.toString), None))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+              marshal(PublishPayload("md", "test", Some(LicenceType.CC_BY_SA_4_0.toString), Some("test ui"), None))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
             val publishNoteResult = responseAs[PublishNoteResult]
             writeJsonOutput("publishNoteResponse", responseAs[String])
-
+            val shortId = publishNoteResult.shortId
             Get("/public/timo/test") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
               val publicItem = responseAs[PublicItem]
               publicItem.note.relationships should be(None)
@@ -221,6 +221,8 @@ class NoteBestCaseSpec extends ServiceSpecBase {
               publicItem.note.visibility.get.previewExpires should be (None)
               publicItem.note.visibility.get.published.get should be (publicItem.note.modified.get)
               publicItem.note.visibility.get.licence.get should be (LicenceType.CC_BY_SA_4_0.toString)
+              publicItem.note.visibility.get.shortId.get should be (shortId)
+              publicItem.note.visibility.get.publicUi.get should be ("test ui")
               Get("/public/timo?modified=" + (publishNoteResult.published-1)) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
                 val publicItems = responseAs[PublicItems]
                 publicItems.notes.get.length should be(1)
@@ -239,17 +241,20 @@ class NoteBestCaseSpec extends ServiceSpecBase {
 
             // Publish with same path, make sure that title is changed
             Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/publish",
-                marshal(PublishPayload("md", "test", Some(LicenceType.CC_BY_SA_4_0.toString), None))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                marshal(PublishPayload("md", "test", Some(LicenceType.CC_BY_SA_4_0.toString), None, None))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+              val republishNoteResult = responseAs[PublishNoteResult]
               Get("/public/timo/test") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
                 val publicItem = responseAs[PublicItem]
                 publicItem.note.title should be(updatedNote.title)
                 publicItem.note.visibility.get.publishedRevision.get should be(3l)
+                publicItem.note.visibility.get.publicUi should be(None)
+                publicItem.note.visibility.get.shortId.get should be(shortId)
               }
             }
 
             // Publish with new path and see that there are four revisions
             Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/publish",
-              marshal(PublishPayload("md", "test2", None, None))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+              marshal(PublishPayload("md", "test2", None, None, None))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
               Get("/" + authenticateResponse.userUUID + "/item/" + putNoteResponse.uuid.get + "/revisions") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                 val revisionsResult = responseAs[ItemRevisions]
                 revisionsResult.revisions.get.length should be (4)
@@ -273,7 +278,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
               writeJsonOutput("unpublishNoteResponse", responseAs[String])
               val unpublishedNoteResponse = getNote(putNoteResponse.uuid.get, authenticateResponse)
               unpublishedNoteResponse.visibility.get.published should be(None)
-              unpublishedNoteResponse.visibility.get.path should be(None)
+              unpublishedNoteResponse.visibility.get.path.get should be("test2")
               Get("/public/timo/test") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
                 val failure = responseAs[ErrorResult]
                 failure.code should be (3027)
@@ -328,7 +333,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
             Some(ExtendedItemRelationships(None, None, None, None, None, publicItem.note.relationships.get.collectiveTags)))
         val putNoteResponse = putNewNote(newNote, authenticateResponse)
         Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/publish",
-            marshal(PublishPayload("md", "test", Some(LicenceType.CC_BY_SA_4_0.toString), None))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+            marshal(PublishPayload("md", "test", Some(LicenceType.CC_BY_SA_4_0.toString), None, None))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           val publishNoteResult = responseAs[PublishNoteResult]
           Get("/public/timo") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
             val publicItems = responseAs[PublicItems]
@@ -389,7 +394,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
 
         // Publish a second note
         Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/publish",
-            marshal(PublishPayload("md", "test", Some(LicenceType.CC_BY_SA_4_0.toString), None))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+            marshal(PublishPayload("md", "test", Some(LicenceType.CC_BY_SA_4_0.toString), None, None))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           val publishNoteResult = responseAs[PublishNoteResult]
           Get("/public/timo") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
              responseAs[PublicItems].notes.get.size should be (2)
@@ -474,7 +479,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
 
             // Publish the note thus creating a 6. revision
             Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/publish",
-                marshal(PublishPayload("md", "spanish", Some(LicenceType.CC_BY_SA_4_0.toString), None))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                marshal(PublishPayload("md", "spanish", Some(LicenceType.CC_BY_SA_4_0.toString), None, None))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
               getItemRevisionList(putNoteResponse.uuid.get, authenticateResponse).revisions.get.length should be (6)
               getItemRevision(putNoteResponse.uuid.get, 6l, authenticateResponse).note.get.title should be (noteRevision5.title)
               getItemRevision(putNoteResponse.uuid.get, 5l, authenticateResponse).note.get.title should be (noteRevision5.title)
@@ -512,8 +517,6 @@ class NoteBestCaseSpec extends ServiceSpecBase {
           }
         }
       }
-
-
 
       //PITÄISI ENSIN TEHDÄ NOTE, SITTEN KONVERTOIDA TASKIKSI, SITTEN TAKAISIN NOTEKSI, SITTEN JULKAISTA, SITTEN SAVETTAA, SITTEN HAKEA REVISIOITA
 

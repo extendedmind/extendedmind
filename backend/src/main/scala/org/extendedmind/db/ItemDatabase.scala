@@ -387,7 +387,7 @@ trait ItemDatabase extends UserDatabase {
     val itemsIndex = neo4j.gds.index().forNodes("items")
 
     val itemNodeList = {
-      val ownerSearchString = UUIDUtils.getTrimmedBase64UUIDForLucene(ownerUUID)
+      val ownerSearchString = IdUtils.getTrimmedBase64UUIDForLucene(ownerUUID)
       if (modified.isDefined) {
         val ownerQuery = new TermQuery(new Term("owner", ownerSearchString))
         val assigneeQuery = new TermQuery(new Term("assignee", ownerSearchString))
@@ -428,7 +428,7 @@ trait ItemDatabase extends UserDatabase {
                             (implicit neo4j: DatabaseService): Response[Iterable[Node]] = {
     val publicRevisionIndex = neo4j.gds.index().forNodes("public")
     val itemRevisionNodeList = {
-      val ownerSearchString = UUIDUtils.getTrimmedBase64UUIDForLucene(ownerUUID)
+      val ownerSearchString = IdUtils.getTrimmedBase64UUIDForLucene(ownerUUID)
       if (modified.isDefined) {
         val ownerQuery = new TermQuery(new Term("owner", ownerSearchString))
         val modifiedRangeQuery = NumericRangeQuery.newLongRange("modified", 8, modified.get, null, false, false)
@@ -447,7 +447,7 @@ trait ItemDatabase extends UserDatabase {
                             (implicit neo4j: DatabaseService): Response[Node] = {
     val publicRevisionIndex = neo4j.gds.index().forNodes("public")
     val itemRevisionNodeList = {
-      val ownerSearchString = UUIDUtils.getTrimmedBase64UUIDForLucene(ownerUUID)
+      val ownerSearchString = IdUtils.getTrimmedBase64UUIDForLucene(ownerUUID)
       val ownerQuery = new TermQuery(new Term("owner", ownerSearchString))
       val pathQuery = new TermQuery(new Term("path", path))
       val userPathQuery = new BooleanQuery;
@@ -1002,7 +1002,7 @@ trait ItemDatabase extends UserDatabase {
             removeAssigneeRelationship(itemNode, existingAssigneeRelationship.get)
           }
           itemsIndex.add(itemNode, "assignee",
-              UUIDUtils.getTrimmedBase64UUIDForLucene(getUUID(securityRelationship.getStartNode)))
+              IdUtils.getTrimmedBase64UUIDForLucene(getUUID(securityRelationship.getStartNode)))
           return Right()
         })
       }
@@ -1274,8 +1274,8 @@ trait ItemDatabase extends UserDatabase {
 
   protected def addToItemsIndex(ownerUUID: UUID, itemNode: Node, modified: Long)(implicit neo4j: DatabaseService): Unit = {
     val itemsIndex = neo4j.gds.index().forNodes("items")
-    itemsIndex.add(itemNode, "owner", UUIDUtils.getTrimmedBase64UUIDForLucene(ownerUUID))
-    itemsIndex.add(itemNode, "item", UUIDUtils.getTrimmedBase64UUIDForLucene(getUUID(itemNode)))
+    itemsIndex.add(itemNode, "owner", IdUtils.getTrimmedBase64UUIDForLucene(ownerUUID))
+    itemsIndex.add(itemNode, "item", IdUtils.getTrimmedBase64UUIDForLucene(getUUID(itemNode)))
     addModifiedIndex(itemsIndex, itemNode, modified)
   }
 
@@ -1317,7 +1317,7 @@ trait ItemDatabase extends UserDatabase {
   protected def rebuildItemsIndex(ownerNode: Node)(implicit neo4j: DatabaseService): Response[CountResult] = {
     val itemsIndex = neo4j.gds.index().forNodes("items")
     val ownerUUID = getUUID(ownerNode)
-    val oldItemsInIndex = itemsIndex.query("owner:\"" + UUIDUtils.getTrimmedBase64UUIDForLucene(ownerUUID) + "\"").toList
+    val oldItemsInIndex = itemsIndex.query("owner:\"" + IdUtils.getTrimmedBase64UUIDForLucene(ownerUUID) + "\"").toList
     oldItemsInIndex.foreach(itemNode => {
       itemsIndex.remove(itemNode)
     })
@@ -1334,7 +1334,7 @@ trait ItemDatabase extends UserDatabase {
   protected def getItemNodeByUUID(uuid: UUID): Response[Node] = {
     withTx {
       implicit neo4j =>
-        val nodeIter = findNodesByLabelAndProperty(MainLabel.ITEM, "uuid", UUIDUtils.getTrimmedBase64UUID(uuid))
+        val nodeIter = findNodesByLabelAndProperty(MainLabel.ITEM, "uuid", IdUtils.getTrimmedBase64UUID(uuid))
         if (nodeIter.toList.isEmpty) {
           fail(INVALID_PARAMETER, ERR_ITEM_NOT_FOUND, "Item not found for statistics with given uuid")
         } else if (nodeIter.toList.size > 1) {
@@ -1727,8 +1727,8 @@ trait ItemDatabase extends UserDatabase {
 
   protected def removeCollectiveAssigneeRelationships(collectiveNode: Node, userNode: Node)(implicit neo4j: DatabaseService): Unit = {
     val itemsIndex = neo4j.gds.index().forNodes("items")
-    val ownerQuery = new TermQuery(new Term("owner", UUIDUtils.getTrimmedBase64UUIDForLucene(getUUID(collectiveNode))))
-    val assigneeQuery = new TermQuery(new Term("assignee", UUIDUtils.getTrimmedBase64UUIDForLucene(getUUID(userNode))))
+    val ownerQuery = new TermQuery(new Term("owner", IdUtils.getTrimmedBase64UUIDForLucene(getUUID(collectiveNode))))
+    val assigneeQuery = new TermQuery(new Term("assignee", IdUtils.getTrimmedBase64UUIDForLucene(getUUID(userNode))))
     val userQuery = new BooleanQuery;
     userQuery.add(ownerQuery, BooleanClause.Occur.MUST);
     userQuery.add(assigneeQuery, BooleanClause.Occur.MUST);
@@ -1837,7 +1837,7 @@ trait ItemDatabase extends UserDatabase {
         else return fail(INTERNAL_SERVER_ERROR, ERR_ITEM_MISSING_REVISION_TYPE, "Revision does not have an item type")
       itemRevisionResult.right.get.copy(creator =
         if (revisionRelationship.hasProperty("creator"))
-           Some(UUIDUtils.getUUID(revisionRelationship.getProperty("creator").asInstanceOf[String]))
+           Some(IdUtils.getUUID(revisionRelationship.getProperty("creator").asInstanceOf[String]))
         else None,
         itemType = Some(itemType))
     }).toList

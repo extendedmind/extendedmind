@@ -119,6 +119,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
       Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val accountResponse = responseAs[User]
         accountResponse.inboxId should not be None
+        accountResponse.shortId should be (None)
         accountResponse.preferences.get.onboarded.get should be("web")
         accountResponse.preferences.get.ui.get should be(initialUIPreferences)
 
@@ -165,6 +166,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
         accountResponse.collectives.get.size should be (2)
         val commonCollective = accountResponse.collectives.get.find(collectiveInfo => collectiveInfo._2._3).get
         commonCollective._2._4.get.handle.get should be("extended-mind")
+        commonCollective._2._4.get.shortId should not be(None)
         commonCollective._2._4.get.description should not be(None)
         commonCollective._2._4.get.access should be(None)
         commonCollective._2._4.get.inboxId should not be(None)
@@ -177,6 +179,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
           val fullCommonCollective = responseAs[Collective]
           fullCommonCollective.apiKey should not be (None)
           fullCommonCollective.handle.get should be(commonCollective._2._4.get.handle.get)
+          fullCommonCollective.shortId.get should not be(None)
           fullCommonCollective.description.get should be(commonCollective._2._4.get.description.get)
           fullCommonCollective.inboxId.get should be (commonCollective._2._4.get.inboxId.get)
           fullCommonCollective.modified should not be(None)
@@ -188,6 +191,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
 
         val emtCollective = accountResponse.collectives.get.find(collectiveInfo => collectiveInfo._1 == emtCollectiveUUID).get
         emtCollective._2._4.get.handle.get should be("emt")
+        emtCollective._2._4.get.shortId should not be(None)
         emtCollective._2._4.get.access should not be(None)
         emtCollective._2._4.get.access.get.size should be(2)
         emtCollective._2._4.get.access.get.find(accessInfo => accessInfo._2 == "Timo") should be (None)
@@ -219,6 +223,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
         val accountResponse = responseAs[User]
         val commonCollective = accountResponse.collectives.get.find(collectiveInfo => collectiveInfo._2._3).get
         commonCollective._2._4.get.handle.get should be("extended-mind")
+        commonCollective._2._4.get.shortId should not be(None)
         commonCollective._2._4.get.description should not be(None)
         commonCollective._2._4.get.access should be(None)
         commonCollective._2._4.get.inboxId should be(None)
@@ -231,6 +236,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
           val fullCommonCollective = responseAs[Collective]
           fullCommonCollective.apiKey should be (None)
           fullCommonCollective.handle.get should be(commonCollective._2._4.get.handle.get)
+          fullCommonCollective.shortId should not be(None)
           fullCommonCollective.description.get should be(commonCollective._2._4.get.description.get)
           fullCommonCollective.inboxId should be (None)
           fullCommonCollective.modified should be(None)
@@ -241,6 +247,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
 
         val emtCollective = accountResponse.collectives.get.find(collectiveInfo => collectiveInfo._1 == emtCollectiveUUID).get
         emtCollective._2._4.get.handle.get should be("emt")
+        emtCollective._2._4.get.handle.get should not be(None)
         emtCollective._2._4.get.access should not be(None)
         emtCollective._2._4.get.access.get.size should be(2)
         emtCollective._2._4.get.access.get.find(accessInfo => accessInfo._2 == LAURI_EMAIL) should be (None)
@@ -274,6 +281,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
         accountResponse.collectives.get.size should be (2)
         val commonCollective = accountResponse.collectives.get.find(collectiveInfo => collectiveInfo._2._3).get
         commonCollective._2._4.get.handle.get should be("extended-mind")
+        commonCollective._2._4.get.shortId should not be(None)
         commonCollective._2._4.get.description should not be(None)
         commonCollective._2._4.get.access should be(None)
         commonCollective._2._4.get.inboxId should be(None)
@@ -286,6 +294,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
           val fullCommonCollective = responseAs[Collective]
           fullCommonCollective.apiKey should be (None)
           fullCommonCollective.handle.get should be(commonCollective._2._4.get.handle.get)
+          fullCommonCollective.shortId should not be(None)
           fullCommonCollective.description.get should be(commonCollective._2._4.get.description.get)
           fullCommonCollective.inboxId should be (None)
           fullCommonCollective.modified should be(None)
@@ -295,6 +304,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
         }
         val emtCollective = accountResponse.collectives.get.find(collectiveInfo => collectiveInfo._1 == emtCollectiveUUID).get
         emtCollective._2._4.get.handle.get should be("emt")
+        emtCollective._2._4.get.shortId should not be(None)
         emtCollective._2._4.get.access should be(None)
         emtCollective._2._4.get.description should not be(None)
         emtCollective._2._4.get.handle should not be(None)
@@ -327,6 +337,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
         accountResponse.collectives.get.size should be (1)
         val commonCollective = accountResponse.collectives.get.find(collectiveInfo => collectiveInfo._2._3).get
         commonCollective._2._4.get.handle.get should be("extended-mind")
+        commonCollective._2._4.get.shortId should not be(None)
         commonCollective._2._4.get.description should not be(None)
         commonCollective._2._4.get.access should be(None)
         commonCollective._2._4.get.inboxId should be(None)
@@ -338,6 +349,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
           val fullCommonCollective = responseAs[Collective]
           fullCommonCollective.apiKey should be (None)
           fullCommonCollective.handle.get should be(commonCollective._2._4.get.handle.get)
+          fullCommonCollective.shortId should not be(None)
           fullCommonCollective.description.get should be(commonCollective._2._4.get.description.get)
           fullCommonCollective.inboxId should be (None)
           fullCommonCollective.modified should be(None)
@@ -367,6 +379,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
       Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val accountResponse = responseAs[User]
         accountResponse.email.get should equal(newEmail.email)
+        accountResponse.shortId should not be (None)
       }
       val newEmailAuthenticateResponse = emailPasswordAuthenticate(newEmail.email, TIMO_PASSWORD)
       newEmailAuthenticateResponse.userUUID should not be None

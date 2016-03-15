@@ -77,8 +77,8 @@ object Token{
       }
 
       // Create Token
-      val userUUID = UUIDUtils.getUUID(decryptedToken.slice(0, 16))
-      Right(Token(userUUID, UUIDUtils.convertByteArrayToLong(decryptedToken.slice(16, 24))))
+      val userUUID = IdUtils.getUUID(decryptedToken.slice(0, 16))
+      Right(Token(userUUID, IdUtils.convertByteArrayToLong(decryptedToken.slice(16, 24))))
     } catch {
       case e: Throwable => fail(INTERNAL_SERVER_ERROR, ERR_BASE_DECRYPT_FAILED, "Could not decrypt token", e)
     }

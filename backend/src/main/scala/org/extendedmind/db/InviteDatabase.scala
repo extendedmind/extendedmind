@@ -32,7 +32,7 @@ import org.neo4j.graphdb.traversal.TraversalDescription
 import org.neo4j.scala.DatabaseService
 import scala.collection.mutable.ListBuffer
 import org.neo4j.graphdb.traversal.Evaluation
-import org.extendedmind.security.UUIDUtils
+import org.extendedmind.security.IdUtils
 
 trait InviteDatabase extends UserDatabase {
 

@@ -24,7 +24,7 @@ import org.neo4j.graphdb.Node
 import org.neo4j.graphdb.Path
 import org.neo4j.graphdb.traversal.Evaluation
 import java.util.UUID
-import org.extendedmind.security.UUIDUtils
+import org.extendedmind.security.IdUtils
 
 case class PropertyEvaluator(label: Label, property: String, propertyStringValue: Option[String] = None,
                              foundEvaluation: Evaluation = Evaluation.INCLUDE_AND_PRUNE,

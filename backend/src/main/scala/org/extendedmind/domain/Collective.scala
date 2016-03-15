@@ -24,7 +24,7 @@ import Validators._
 
 case class Collective(uuid: Option[UUID], created: Option[Long], modified: Option[Long], deleted: Option[Long],
                 title: Option[String], description: Option[String],
-                displayName: Option[String], handle: Option[String],
+                displayName: Option[String], handle: Option[String], shortId: Option[String],
                 content: Option[String], format: Option[String],
                 inboxId: Option[String], apiKey: Option[String],
                 creator: Option[UUID], common: Option[Boolean],
@@ -54,5 +54,5 @@ case class Collective(uuid: Option[UUID], created: Option[Long], modified: Optio
 
 object Collective{
   def apply(title: String, description: Option[String], displayName: Option[String], handle: Option[String], content: Option[String], format: Option[String], preferences: Option[OwnerPreferences])
-        = new Collective(None, None, None, None, Some(title), description, displayName, handle, content, format, None, None, None, None, preferences, None)
+        = new Collective(None, None, None, None, Some(title), description, displayName, handle, None, content, format, None, None, None, None, preferences, None)
 }

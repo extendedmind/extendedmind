@@ -32,7 +32,7 @@ case class OwnerPreferences(onboarded: Option[String], ui: Option[String]){
 
 case class User(uuid: Option[UUID], created: Option[Long], modified: Option[Long], deleted: Option[Long],
                 email: Option[String], emailVerified: Option[Long],
-                displayName: Option[String], handle: Option[String],
+                displayName: Option[String], handle: Option[String], shortId: Option[String],
                 content: Option[String], format: Option[String],
                 cohort: Option[Int], inboxId: Option[String],
                 preferences: Option[OwnerPreferences],
@@ -62,7 +62,7 @@ case class User(uuid: Option[UUID], created: Option[Long], modified: Option[Long
 object User{
   def apply(email:String, displayName: Option[String], handle: Option[String], content: Option[String], format: Option[String],
             cohort: Option[Int], preferences: Option[OwnerPreferences])
-      = new User(None, None, None, None, Some(email), None, displayName, handle, content, format, cohort, None, preferences, None, None)
+      = new User(None, None, None, None, Some(email), None, displayName, handle, None, content, format, cohort, None, preferences, None, None)
 }
 
 case class SignUp(email: String, password: String, displayName: Option[String],

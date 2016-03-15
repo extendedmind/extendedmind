@@ -23,7 +23,7 @@ import org.apache.commons.codec.binary.Base64
 import java.util.UUID
 import java.nio.ByteBuffer
 
-object UUIDUtils {
+object IdUtils {
   def getUUID(trimmedBase64UUID: String): UUID = {
     getUUID(Base64.decodeBase64(trimmedBase64UUID + "=="))
   }
@@ -51,5 +51,22 @@ object UUIDUtils {
       ByteBuffer.wrap(byteArray).getLong()
     }
   }
-}
 
+  def getShortIdAsString(shortId: Long): String = {
+    val firstPart: Long = shortId/10
+    val secondPart: Long = shortId%10
+    val postfix: String =
+      if (firstPart < 1) ""
+      else Base58(firstPart)
+    secondPart.toString + postfix
+  }
+
+  def getShortIdAsLong(shortId: String): Long = {
+    val secondPart: Long = shortId.substring(0, 1).toLong
+    val firstPart: Long =
+      if (shortId.length > 1) Base58(shortId.substring(1))
+      else 0
+    firstPart*10 + secondPart
+  }
+
+}

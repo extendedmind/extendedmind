@@ -123,7 +123,7 @@ object LicenceType extends Enumeration {
   val CC_BY_SA_4_0 = Value("CC BY-SA 4.0")
 }
 
-case class PublishPayload(format: String, path: String, licence: Option[String], overridePublished: Option[Long]){
+case class PublishPayload(format: String, path: String, licence: Option[String], publicUi: Option[String], overridePublished: Option[Long]){
   require(
     try {
       val formatType = FormatType.withName(format)
@@ -143,7 +143,7 @@ case class PublishPayload(format: String, path: String, licence: Option[String],
       case _:Throwable => false
     },
     "Expected 'CC BY-SA 4.0' but got " + licence.get)
-
+  if (publicUi.isDefined) require(validateLength(publicUi.get, 10000), "UI preferences max length is 10000")
 }
 
 case class PreviewPayload(format: String){
@@ -157,6 +157,6 @@ case class PreviewPayload(format: String){
     "Expected 'md', 'madoko' or 'bibtex' but got " + format)
 }
 
-case class PublishNoteResult(published: Long, result: SetResult)
+case class PublishNoteResult(published: Long, shortId: String, result: SetResult)
 
 case class PreviewNoteResult(preview: String, previewExpires: Long, result: SetResult)
