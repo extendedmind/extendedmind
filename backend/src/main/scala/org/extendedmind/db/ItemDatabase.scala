@@ -1249,7 +1249,10 @@ trait ItemDatabase extends UserDatabase {
     // Remove all relationships
     val relationshipList = deletedItem.getRelationships().toList
     relationshipList.foreach(relationship => {
-      if (deletedItem.hasLabel(ItemLabel.TASK)){
+      if (relationship.getType.name() == ItemRelationship.HAS_REVISION){
+        // Remove revision node from index and destroy revision node
+        destroyRevisionNode(relationship.getEndNode)
+      }else if (deletedItem.hasLabel(ItemLabel.TASK)){
         destroyTaskRelationship(relationship);
       }
       relationship.delete()
@@ -2005,4 +2008,12 @@ trait ItemDatabase extends UserDatabase {
     })
     None
   }
+
+  protected def destroyRevisionNode(revisionNode: Node)(implicit neo4j: DatabaseService): Unit = {
+    val publicRevisionIndex = neo4j.gds.index().forNodes("public")
+    if (revisionNode.hasProperty("published"))
+      publicRevisionIndex.remove(revisionNode)
+    revisionNode.delete()
+  }
+
 }
