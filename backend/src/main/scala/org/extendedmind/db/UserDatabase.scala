@@ -1139,13 +1139,20 @@ trait UserDatabase extends AbstractGraphDatabase {
         setOwnerHandleValue(ownerNode, handle.get)
       }
     }else if (ownerNode.hasProperty("handle")){
-      val previousHandle = ownerNode.getProperty("handle").asInstanceOf[String]
-      ownerNode.removeProperty("handle")
-      Right((true, None))
+      if (hasPublicItemRevisionNodes(getUUID(ownerNode))){
+        fail(INVALID_PARAMETER, ERR_BASE_CAN_NOT_REMOVE_PUBLISHED_HANDLE, "Can not remove handle from an owner that has published items")
+      }else{
+        val previousHandle = ownerNode.getProperty("handle").asInstanceOf[String]
+        ownerNode.removeProperty("handle")
+        Right((true, None))
+      }
     }else{
       Right((false, None))
     }
   }
+
+  protected def hasPublicItemRevisionNodes(ownerUUID: UUID)(implicit neo4j: DatabaseService): Boolean;
+
 
   protected def setOwnerHandleValue(ownerNode: Node, handle: String)(implicit neo4j: DatabaseService): Response[(Boolean, Option[String])] = {
     val validateResult = validateHandleUniqueness(Some(handle))

@@ -443,6 +443,13 @@ trait ItemDatabase extends UserDatabase {
     Right(itemRevisionNodeList)
   }
 
+  protected def hasPublicItemRevisionNodes(ownerUUID: UUID)(implicit neo4j: DatabaseService): Boolean = {
+    val publicRevisionIndex = neo4j.gds.index().forNodes("public")
+    val ownerSearchString = IdUtils.getTrimmedBase64UUIDForLucene(ownerUUID)
+    val itemRevisionNodeList = publicRevisionIndex.query("owner:" + ownerSearchString).toList
+    !itemRevisionNodeList.isEmpty
+  }
+
   protected def getPublicItemRevisionNodeByPath(ownerUUID: UUID, path: String)
                             (implicit neo4j: DatabaseService): Response[Node] = {
     val publicRevisionIndex = neo4j.gds.index().forNodes("public")
