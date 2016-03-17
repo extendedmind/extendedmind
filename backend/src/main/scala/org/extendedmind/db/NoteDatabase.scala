@@ -405,7 +405,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
             val previouslyPublishedRevisionNode = previouslyPublishedRevisionRelationship.get.getEndNode
             val publicRevisionIndex = neo4j.gds.index().forNodes("public")
             publicRevisionIndex.remove(previouslyPublishedRevisionNode)
-            // Remove published but leave unpublished timestamp to
+            // Remove published but leave unpublished timestamp to previous node
             previouslyPublishedRevisionNode.removeProperty("published")
             previouslyPublishedRevisionNode.setProperty("unpublished", System.currentTimeMillis)
           }
@@ -438,13 +438,13 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     noteRevisionNode.setProperty("published", publishedTimestamp)
 
     // Create a short id for the note when it is published
-    val sid: String =
+    val sid: Long =
       if (!noteNode.hasProperty("sid")){
         val shortId:Long = generateShortId
         noteNode.setProperty("sid", shortId)
-        IdUtils.getShortIdAsString(shortId)
+        shortId
       }else{
-        IdUtils.getShortIdAsString(noteNode.getProperty("sid").asInstanceOf[Long])
+        noteNode.getProperty("sid").asInstanceOf[Long]
       }
 
     // Set or remove publicUi field
@@ -454,9 +454,10 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     // Add revision to public revision index
     val publicRevisionIndex = neo4j.gds.index().forNodes("public")
     publicRevisionIndex.add(noteRevisionNode, "owner", IdUtils.getTrimmedBase64UUIDForLucene(ownerUUID))
+    publicRevisionIndex.add(noteRevisionNode, "sid", sid)
     publicRevisionIndex.add(noteRevisionNode, "path", path)
     publicRevisionIndex.add(noteRevisionNode, "modified", new ValueContext(publishedTimestamp).indexNumeric())
-    (publishedTimestamp, sid)
+    (publishedTimestamp, IdUtils.getShortIdAsString(sid))
   }
 
   protected def unpublishNoteNode(owner: Owner, noteUUID: UUID): Response[(Node, OwnerNodes)] = {
@@ -628,13 +629,23 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     }
   }
 
-  def upgradePublishedNotes(userUUID: UUID, ownerNode: Node, noteNodes: scala.List[Node]): CountResult = {
+  def upgradePublishedNotes(ownerUUID: UUID, ownerNode: Node, noteNodes: scala.List[Node]): CountResult = {
     noteNodes.foreach (noteNode => {
       withTx {
         implicit neo4j =>
           if (noteNode.hasProperty("published")) noteNode.removeProperty("published")
           if (!noteNode.hasProperty("sid")){
-            noteNode.setProperty("sid", generateShortId)
+            val shortIdAsLong = generateShortId
+            noteNode.setProperty("sid", shortIdAsLong)
+            // Add sid to published index as well
+            val path = noteNode.getProperty("path").asInstanceOf[String]
+            val handle = ownerNode.getProperty("handle").asInstanceOf[String]
+            val result = getPublicItemRevisionNodeByPath(ownerUUID, path)
+            if (result.isRight){
+              val noteRevisionNode = result.right.get
+              val publicRevisionIndex = neo4j.gds.index().forNodes("public")
+              publicRevisionIndex.add(noteRevisionNode, "sid", shortIdAsLong)
+            }
           }
       }
     })

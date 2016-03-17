@@ -178,6 +178,16 @@ trait ItemService extends ServiceBase {
           }
         }
       } ~
+      getPublicItemHeader { (shortId) =>
+        complete {
+          Future[PublicItemHeader] {
+            itemActions.getPublicItemHeader(shortId) match {
+              case Right(pi) => processResult(pi)
+              case Left(e) => processErrors(e)
+            }
+          }
+        }
+      } ~
       getPreviewItem { (ownerUUID, itemUUID, previewCode) =>
         complete {
           Future[PublicItem] {

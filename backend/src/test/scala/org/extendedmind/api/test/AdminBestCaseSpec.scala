@@ -201,9 +201,16 @@ class AdminBestCaseSpec extends ServiceSpecBase {
                 }
 
                 // Publish note, verify that public result has the right assignee
+                var shortId:String = null
                 Post("/" + collectiveUUID + "/note/" + putNoteResponse.uuid.get + "/publish",
                       marshal(PublishPayload("md", "public-note", Some(LicenceType.CC_BY_SA_4_0.toString), Some("test ui"), None))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                   val publishNoteResult = responseAs[PublishNoteResult]
+                  val publishNoteResult = responseAs[PublishNoteResult]
+                  shortId = publishNoteResult.shortId
+                  Get("/short/" + shortId) ~> route ~> check {
+                    val publicItemHeaderResponse = responseAs[PublicItemHeader]
+                    publicItemHeaderResponse.handle should be ("test")
+                    publicItemHeaderResponse.path.get should be ("public-note")
+                  }
                 }
                 Get("/public/test") ~> route ~> check {
                   val publicItemsResponse = responseAs[PublicItems]
@@ -233,6 +240,11 @@ class AdminBestCaseSpec extends ServiceSpecBase {
                     listFromNote.relationships.get.assignee.get should be (lauriUUID)
                     listFromNote.relationships.get.assigner.get should be (authenticateResponse.userUUID)
                   }
+                }
+                Get("/short/" + shortId) ~> route ~> check {
+                  val failure = responseAs[ErrorResult]
+                  status should be (BadRequest)
+                  failure.code should be(ERR_ITEM_INVALID_PUBLIC_PATH.number)
                 }
               }
             }

@@ -363,6 +363,23 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     }
   }
 
+  protected def getNodeOption(nodeProperty: String, nodeValue: AnyRef, label: Label,
+    nodeStringValue: Option[String], acceptDeleted: Boolean)(implicit neo4j: DatabaseService): Response[Option[Node]] = {
+    val nodeList = findNodesByLabelAndProperty(label, nodeProperty, nodeValue).toList
+    if (nodeList.isEmpty){
+      Right(None)
+    }else if (nodeList.size > 1) {
+      fail(INTERNAL_SERVER_ERROR, ERR_BASE_NODE_LABEL_MORE_THAN_1, "Ḿore than one " + label.labelName.toLowerCase() + " found with given " + nodeProperty +
+        (if (nodeStringValue.isDefined) ": " + nodeStringValue.get else ""))
+    } else {
+      if (!acceptDeleted && nodeList(0).hasProperty("deleted")) {
+        Right(None)
+      } else {
+        Right(Some(nodeList(0)))
+      }
+    }
+  }
+
   protected def getRelationship(first: Node, second: Node, relationshipType: RelationshipType*)(implicit neo4j: DatabaseService): Response[Option[Relationship]] = {
     val relationshipList = first.getRelationships(relationshipType: _*).toList
     var returnValue: Option[Relationship] = None

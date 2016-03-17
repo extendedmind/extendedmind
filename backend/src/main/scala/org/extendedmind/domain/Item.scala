@@ -135,6 +135,8 @@ case class PublicItem(owner: String, note: Note,
                       tags: Option[scala.List[Tag]],
                       collectiveTags: Option[scala.List[(UUID, scala.List[Tag])]],
                       assignee: Option[Assignee])
+case class PublicItemHeader(handle: String, path: Option[String])
+
 case class PublicItems(owner: Option[String], content: Option[String], format: Option[String], modified: Option[Long],
                        notes: Option[scala.List[Note]],
                        tags: Option[scala.List[Tag]],

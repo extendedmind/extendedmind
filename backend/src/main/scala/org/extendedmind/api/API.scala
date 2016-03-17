@@ -72,6 +72,7 @@ trait API extends HttpService {
   val postInbox = post & path("inbox" / """^[0-9a-z]{8,32}""".r )
   val getPublicItems = get & path("public" / """^[0-9a-z-]+$""".r )
   val getPublicItem = get & path("public" / """^[0-9a-z-]+$""".r / """^[0-9a-z-]+$""".r )
+  val getPublicItemHeader = get & path("short" / """^[0-9][1-9A-Za-z]{0,20}$""".r )
   val getPreviewItem = get & path(JavaUUID / "item" / JavaUUID / "preview" / HexLongNumber)
   val getItemRevisionList = get & path(JavaUUID / "item" / JavaUUID / "revisions")
   val getItemRevision = get & path(JavaUUID / "item" / JavaUUID / "revision" / LongNumber)

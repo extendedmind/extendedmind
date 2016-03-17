@@ -213,6 +213,13 @@ class UserBestCaseSpec extends ServiceSpecBase {
           fullEMTCollective.creator.get should be(timoAuthenticateResponse.userUUID)
           fullEMTCollective.access.get.find(accessInfo => accessInfo._2 == "Timo") should not be(None)
         }
+
+        Get("/short/" + accountResponse.shortId.get) ~> route ~> check {
+          val publicItemHeaderResponse = responseAs[PublicItemHeader]
+          publicItemHeaderResponse.handle should be ("timo")
+          publicItemHeaderResponse.path should be (None)
+        }
+
       }
 
       // LAURI HAS READ/WRITE ACCESS TO EMT AND READ TO EM

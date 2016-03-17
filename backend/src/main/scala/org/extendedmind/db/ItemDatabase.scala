@@ -232,6 +232,17 @@ trait ItemDatabase extends UserDatabase {
     }
   }
 
+  def getPublicItemHeader(shortId: String): Response[PublicItemHeader] = {
+    withTx {
+      implicit neo4j =>
+        val sid = IdUtils.getShortIdAsLong(shortId)
+        for {
+          ownerNodeOption <- getNodeOption("sid", sid.asInstanceOf[java.lang.Long], MainLabel.OWNER, Some(shortId), false).right
+          result <- getPublicItemHeaderNode(ownerNodeOption, sid).right
+        } yield result
+    }
+  }
+
   def purgeUnpublishedFromPublicIndex(): Unit = {
     withTx {
       implicit neo4j =>
@@ -1476,6 +1487,44 @@ trait ItemDatabase extends UserDatabase {
       noteRevisionToPublicItem(ownerNode, itemRevisionNode, displayOwner)
     }else{
       fail(INTERNAL_SERVER_ERROR, ERR_ITEM_NOT_NOTE, "Public revision not note")
+    }
+  }
+
+  protected def getPublicItemHeaderNode(ownerNode: Option[Node], sid: Long)(implicit neo4j: DatabaseService): Response[PublicItemHeader] = {
+    if (ownerNode.isDefined){
+      // The short id matches the owner node
+      Right(PublicItemHeader(ownerNode.get.getProperty("handle").asInstanceOf[String], None))
+    }else{
+      val publicRevisionIndex = neo4j.gds.index().forNodes("public")
+      val itemRevisionNodeList = publicRevisionIndex.query("sid:" + sid).toList
+      if (itemRevisionNodeList.isEmpty ||
+          (itemRevisionNodeList.size == 1 && itemRevisionNodeList(0).hasProperty("unpublished"))){
+        fail(INVALID_PARAMETER, ERR_ITEM_INVALID_PUBLIC_PATH, "Public info with given short id " + IdUtils.getShortIdAsString(sid) + " not found")
+      }else if (itemRevisionNodeList.size > 1){
+        fail(INTERNAL_SERVER_ERROR, ERR_ITEM_PUBLIC_PATH_MULTIPLE, "Multiple revisions found with given path")
+      }else{
+        // Exactly one published revision, get the path of the item and the handle of the owner
+        val itemRevisionNode = itemRevisionNodeList(0)
+        val itemNodeRevisionRel = itemRevisionNode.getRelationships().toList.find(
+            relationship => relationship.getType.name == ItemRelationship.HAS_REVISION.name)
+        if (itemNodeRevisionRel.isDefined){
+          val itemNode = itemNodeRevisionRel.get.getStartNode
+          val ownerNodeRel = itemNode.getRelationships().toList.find(
+            relationship => relationship.getType.name == SecurityRelationship.OWNS.name
+          )
+          if (ownerNodeRel.isDefined){
+            val ownerNode = ownerNodeRel.get.getStartNode
+            val handle = ownerNode.getProperty("handle").asInstanceOf[String]
+            val path = itemNode.getProperty("path").asInstanceOf[String]
+            Right(PublicItemHeader(handle, Some(path)))
+          }else{
+            fail(INTERNAL_SERVER_ERROR, ERR_ITEM_NO_OWNER, "Revision item does not have an owner")
+          }
+        }else{
+          fail(INTERNAL_SERVER_ERROR, ERR_ITEM_NO_REVISION_RELATIONSHIP, "Revision does not have parent item")
+
+        }
+      }
     }
   }
 

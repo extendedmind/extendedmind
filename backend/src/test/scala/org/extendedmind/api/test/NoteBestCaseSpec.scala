@@ -189,6 +189,13 @@ class NoteBestCaseSpec extends ServiceSpecBase {
         publicItem.tags.get.length should be(1)
         publicItem.collectiveTags.get.length should be(1)
         publicItem.collectiveTags.get(0)._2.length should be(2)
+
+        Get("/short/" + publicItem.note.visibility.get.shortId.get) ~> route ~> check {
+          val publicItemHeaderResponse = responseAs[PublicItemHeader]
+          writeJsonOutput("publicItemHeaderResponse", responseAs[String])
+          publicItemHeaderResponse.handle should be ("timo")
+          publicItemHeaderResponse.path.get should be ("productivity")
+        }
       }
     }
     it("should successfully publish note with POST to [userUUID]/note/[itemUUID]/publish "
@@ -228,6 +235,12 @@ class NoteBestCaseSpec extends ServiceSpecBase {
                 publicItems.notes.get.length should be(1)
                 publicItem.note.visibility.get.publishedRevision.get should be(1l)
               }
+              shortId should be (publicItem.note.visibility.get.shortId.get)
+              Get("/short/" + shortId) ~> route ~> check {
+                val publicItemHeaderResponse = responseAs[PublicItemHeader]
+                publicItemHeaderResponse.handle should be ("timo")
+                publicItemHeaderResponse.path.get should be ("test")
+              }
             }
 
             // Save note, should not change title of published note and create a new revision
@@ -250,6 +263,11 @@ class NoteBestCaseSpec extends ServiceSpecBase {
                 publicItem.note.visibility.get.publicUi should be(None)
                 publicItem.note.visibility.get.shortId.get should be(shortId)
               }
+              Get("/short/" + shortId) ~> route ~> check {
+                val publicItemHeaderResponse = responseAs[PublicItemHeader]
+                publicItemHeaderResponse.handle should be ("timo")
+                publicItemHeaderResponse.path.get should be ("test")
+              }
             }
 
             // Publish with new path and see that there are four revisions
@@ -270,6 +288,12 @@ class NoteBestCaseSpec extends ServiceSpecBase {
                 thirdRevision.published should be (None)
                 fourthRevision.unpublished should be (None)
                 fourthRevision.published should not be (None)
+
+              }
+              Get("/short/" + shortId) ~> route ~> check {
+                val publicItemHeaderResponse = responseAs[PublicItemHeader]
+                publicItemHeaderResponse.handle should be ("timo")
+                publicItemHeaderResponse.path.get should be ("test2")
               }
             }
 
@@ -318,6 +342,11 @@ class NoteBestCaseSpec extends ServiceSpecBase {
                 val publicItems = responseAs[PublicItems]
                 publicItems.notes should be(None)
                 publicItems.unpublished should be (None)
+              }
+              Get("/short/" + shortId) ~> route ~> check {
+                val failure = responseAs[ErrorResult]
+                status should be (BadRequest)
+                failure.code should be(ERR_ITEM_INVALID_PUBLIC_PATH.number)
               }
             }
           }

@@ -26,7 +26,7 @@ import java.nio.ByteBuffer
 import org.apache.commons.codec.binary.Base64
 import org.extendedmind.security.Random
 
-class UUIDUtilsSpec extends SpecBase{
+class IdUtilsSpec extends SpecBase{
 
   describe("IdUtilsSpec class"){
     it("should generate a valid trimmed UUID"){
@@ -53,14 +53,18 @@ class UUIDUtilsSpec extends SpecBase{
       val TEST_COUNT = 1000
       val testArrayOfLongs:Array[Long] = Array.tabulate(TEST_COUNT)(n=>n)
       val testArrayOfShortIds:Array[String] = Array.tabulate(TEST_COUNT)(n=>IdUtils.getShortIdAsString(n))
+      val shortIdRegex = "^[0-9][1-9A-Za-z]{0,20}$".r
 
       for (i <- 0 until TEST_COUNT-1){
+        shortIdRegex.findFirstIn(testArrayOfShortIds(i)) should not be(None)
         val shortIdValue = IdUtils.getShortIdAsLong(testArrayOfShortIds(i))
         shortIdValue should be(testArrayOfLongs(i))
       }
       for (i <- 0 until TEST_COUNT){
         val randomLong = Random.generateRandomUnsignedLong()
         val shortIdString = IdUtils.getShortIdAsString(randomLong)
+        shortIdRegex.findFirstIn(shortIdString) should not be(None)
+
         if (i == 0)
           println("Generated a short id value: " + shortIdString + " for random long " + randomLong)
         val shortIdValue = IdUtils.getShortIdAsLong(shortIdString)

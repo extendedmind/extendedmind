@@ -193,6 +193,11 @@ trait ItemActions {
     db.getPublicItem(handle, path)
   }
 
+  def getPublicItemHeader(shortId: String)(implicit log: LoggingAdapter): Response[PublicItemHeader] = {
+    log.info("getPublicItemHeader")
+    db.getPublicItemHeader(shortId)
+  }
+
   def getPreviewItem(ownerUUID: UUID, itemUUID: UUID, previewCode: Long)(implicit log: LoggingAdapter): Response[PublicItem] = {
     log.info("getPreviewItem")
     db.getPreviewItem(ownerUUID, itemUUID, previewCode)
