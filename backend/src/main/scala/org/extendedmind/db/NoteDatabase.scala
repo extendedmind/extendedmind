@@ -622,7 +622,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
         else {
           val itemNodes = itemNodesResponse.right.get
           val filteredNotes = itemNodes.toList.filter(itemNode => {
-            itemNode.hasProperty("published")
+            itemNode.hasProperty("sid")
           })
           Right(filteredNotes)
         }
