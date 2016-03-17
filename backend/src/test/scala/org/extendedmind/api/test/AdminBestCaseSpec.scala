@@ -348,7 +348,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       Post("/admin/owner/" + authenticateResponse.userUUID +"/published/upgrade") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val upgradeCount = responseAs[CountResult]
-        upgradeCount.count should be(0)
+        upgradeCount.count should be(1)
       }
     }
     it("should successfully delete a user with DELETE to /admin/user/[userUUID]") {
