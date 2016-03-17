@@ -416,7 +416,12 @@
   };
 
   $scope.openPublishNoteDialog = function(note){
-    if (!UserSessionService.getHandle(note.trans.owner) ||
+    if (!$scope.isNotePublishable(note)){
+      UISessionService.pushNotification({
+        type: 'fyi',
+        text: 'no saved changed to publish'
+      });
+    } else if (!UserSessionService.getHandle(note.trans.owner) ||
         !UserSessionService.getDisplayName(note.trans.owner)){
       var previewNoteModalParams = {
         messageHeading: 'update preferences',
@@ -469,6 +474,26 @@
       };
       $scope.showModal(undefined, publishNoteModalParams);
     }
+  };
+
+  $scope.isNotePublishable = function(note){
+    return note.uuid &&
+      (!note.visibility || !note.visibility.published || note.revision !== note.visibility.publishedRevision);
+  };
+
+  $scope.openUnpublishNoteDialog = function(note){
+    var unpublishNoteModalParams = {
+      messageHeading: 'unpublish note',
+      messageIngress: 'are you sure you want to make this note private again?',
+      confirmText: 'unpublish',
+      confirmTextDeferred: 'unpublishing\u2026',
+      confirmActionDeferredFn: function(note){
+        return NotesService.unpublishNote(note);
+      },
+      confirmActionDeferredParam: note,
+      allowCancel: true
+    };
+    $scope.showModal(undefined, unpublishNoteModalParams);
   };
 
   // KEYWORDS

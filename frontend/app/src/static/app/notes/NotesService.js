@@ -69,6 +69,7 @@
   var unfavoriteRegex = /\/unfavorite/;
   var previewRegex = /\/preview/;
   var publishRegex = /\/publish/;
+  var unpublishRegex = /\/unpublish/;
 
   var previewNoteRegexp = new RegExp('^' +
     BackendClientService.apiPrefixRegex.source +
@@ -84,6 +85,14 @@
     noteSlashRegex.source +
     BackendClientService.uuidRegex.source +
     publishRegex.source +
+    '$');
+
+  var unpublishNoteRegexp = new RegExp('^' +
+    BackendClientService.apiPrefixRegex.source +
+    BackendClientService.uuidRegex.source +
+    noteSlashRegex.source +
+    BackendClientService.uuidRegex.source +
+    unpublishRegex.source +
     '$');
 
   function initializeArrays(ownerUUID) {
@@ -604,6 +613,43 @@
       }
       return deferred.promise;
     },
+    unpublishNote: function(note) {
+      function getUnpublishUrl(params){
+        return params.prefix + params.note.trans.uuid + '/unpublish';
+      }
+
+      var ownerUUID = note.trans.owner;
+      // Check that note is not deleted before trying to unpublish
+      var deferred = $q.defer();
+      if (notes[ownerUUID].deletedNotes.findFirstObjectByKeyValue('uuid', note.trans.uuid, 'trans')) {
+        deferred.reject({type: 'deleted'});
+      } else {
+        BackendClientService.postOnline({ value: '/api/' + ownerUUID + '/note/' +
+                                                 note.trans.uuid + '/unpublish',
+                                          refresh: getUnpublishUrl,
+                                          params: {
+                                            prefix: '/api/' + ownerUUID + '/note/',
+                                            note: note }},
+                                        unpublishNoteRegexp)
+        .then(function(response) {
+          var propertiesToReset = {
+            modified: response.modified
+          };
+          propertiesToReset.visibility = note.visibility ? note.visibility : {};
+          propertiesToReset.visibility.published = undefined;
+          propertiesToReset.visibility.publishedRevision = undefined;
+          // Add properties to persistent values and update note
+          ItemLikeService.updateObjectProperties(note, propertiesToReset);
+          console.log(propertiesToReset)
+          updateNote(note, ownerUUID, undefined, propertiesToReset);
+          console.log(note)
+          deferred.resolve(response);
+        },function(error){
+          deferred.reject(error);
+        });
+      }
+      return deferred.promise;
+    },
     clearNotes: function() {
       notes = {};
     },
@@ -666,7 +712,8 @@
                                     unfavoriteRegex.source +
                                     '$'),
     previewNoteRegex : previewNoteRegexp,
-    publishNoteRegex : publishNoteRegexp
+    publishNoteRegex : publishNoteRegexp,
+    unpublishNoteRegex: unpublishNoteRegexp
   };
 }
 

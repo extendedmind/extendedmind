@@ -94,6 +94,15 @@
     });
   }
 
+  function mockUnpublishNote(expectResponse){
+    $httpBackend.whenPOST(NotesService.publishNoteRegex)
+    .respond(function(method, url, data, headers) {
+      var unpublishNoteResponse = getJSONFixture('unpublishNoteResponse.json');
+      unpublishNoteResponse.modified = Date.now();
+      return expectResponse(method, url, data, headers, unpublishNoteResponse);
+    });
+  }
+
   return {
     mockNotesBackend: function(expectResponse) {
       mockPutNewNote(expectResponse);
@@ -104,6 +113,7 @@
       mockUndeleteNote(expectResponse);
       mockPreviewNote(expectResponse);
       mockPublishNote(expectResponse);
+      mockUnpublishNote(expectResponse);
     }
   };
 }

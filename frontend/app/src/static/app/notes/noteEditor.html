@@ -336,9 +336,9 @@
             <div class="group-mixed--middle">
               <span class="text-field--title" clamp=2 ng-bind="getNotePublicInfo(note)"></span>
             </div>
-            <div class="group-mixed--right">
-              <span class="text-field--label">public</span>
-            </div>
+            <a href class="group-mixed--right" ng-click="openUnpublishNoteDialog(note)">
+              <span class="icon-x"></span>
+            </a>
           </div>
           <div ng-if="showEditorProperty('revisions', note)" class="group-mixed text-field">
             <div class="group-mixed--middle">
@@ -426,6 +426,7 @@
               <span class="text-navigation">preview</span>
             </a>
             <a href ng-if="showNoteAction('publish')" swiper-click="openPublishNoteDialog(note)"
+               ng-class="!isNotePublishable(note) && 'inactive downplayed'"
                class="group-symmetrical--right link-navigation highlighted">
               <span class="text-navigation">publish</span>
             </a>
