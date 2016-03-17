@@ -265,6 +265,15 @@
         copyTransToMod: function(){}
       };
     },
+    getVisibilityFieldInfo: function(){
+      return {
+        name: 'visibility',
+        isEdited: function(){return false;},
+        skipTransport: true,
+        resetTrans: function(){},
+        copyTransToMod: function(){}
+      };
+    },
     isRelationshipsEdited: function(extendedItem, ownerUUID, compareValues){
       if (extendedItem.trans.list || extendedItem.trans.context || extendedItem.trans.keywords){
         if (!compareValues){

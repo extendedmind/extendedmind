@@ -177,10 +177,7 @@
           }
         }
       },
-      // TODO (when implementing this, update the method below for repeating task cloning!:
-      // assignee,
-      // assigner,
-      // visibility,
+      ExtendedItemService.getVisibilityFieldInfo(),
       ExtendedItemService.getRevisionFieldInfo(),
       ExtendedItemService.getRelationshipsFieldInfo()
     ]

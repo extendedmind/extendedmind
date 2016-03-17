@@ -120,9 +120,7 @@
           }
         }
       },
-      // TODO
-      // 'assignee',
-      // 'assigner',
+      ExtendedItemService.getVisibilityFieldInfo(),
       ExtendedItemService.getRevisionFieldInfo(),
       ExtendedItemService.getRelationshipsFieldInfo()
     ]

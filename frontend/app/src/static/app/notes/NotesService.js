@@ -55,8 +55,7 @@
           else if (note.trans.archived !== undefined) delete note.trans.archived;
         }
       },
-      // TODO:
-      // visibility,
+      ExtendedItemService.getVisibilityFieldInfo(),
       ExtendedItemService.getRevisionFieldInfo(),
       ExtendedItemService.getRelationshipsFieldInfo()
     ]
@@ -597,9 +596,11 @@
                                         publishNoteRegexp, payload)
         .then(function(response) {
           var propertiesToReset = {
-            modified: response.result.modified
+            modified: response.result.modified,
+            revision: note.revision !== undefined ? note.revision + 1 : 1
           };
           propertiesToReset.visibility = note.visibility ? note.visibility : {};
+          propertiesToReset.visibility.publishedRevision = propertiesToReset.revision;
           propertiesToReset.visibility.published = response.published;
           propertiesToReset.visibility.path = path;
           propertiesToReset.visibility.licence = licence;
