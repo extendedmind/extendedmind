@@ -439,6 +439,7 @@
       // Override with previous licence for this if this note already has been published
       if (note.visibility && note.visibility.path) licenceValue = note.visibility.licence;
       note.trans.cc = licenceValue === $rootScope.CC_LICENCE;
+      note.trans.sharing = {};
       note.trans.publishPath = note.visibility && note.visibility.path ? note.visibility.path : undefined;
       if (!note.trans.publishPath){
         // Create a path from note title
@@ -456,6 +457,8 @@
         inputErrorText: 'path must be lower case and can not contain spaces',
         checkbox: note.trans.cc,
         checkboxText: 'publish under creative commons (' + $rootScope.CC_LICENCE + ')',
+        checkbox2: note.trans.publicUi,
+        checkboxText2: 'enable sharing note to Twitter and Facebook',
         submitErrorText: 'publishing failed'
       };
 

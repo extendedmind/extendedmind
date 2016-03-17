@@ -89,14 +89,24 @@
           <input type="text" name="modalInput" ng-model="messageForm.input" ng-pattern="messageForm.inputPattern"
           placeholder="{{messageForm.inputPlaceholder}}" ng-maxlength="messageForm.inputMaxLength" editable-field required />
         </div>
-        <!-- CHECKBOX -->
-        <div ng-if="messageForm.checkbox !== undefined" class="group-mixed details form-last">
+        <!-- CHECKBOX 1 -->
+        <div ng-if="messageForm.checkbox !== undefined" class="group-mixed details">
           <div class="group-mixed--left">
             <input type="checkbox" ng-model="messageForm.checkbox" ng-true-value="true"
             icon-checkbox="'modalCheckbox'" />
           </div>
           <div class="group-mixed--middle">
             <span class="text-details" ng-bind="messageForm.checkboxText"></span>
+          </div>
+        </div>
+        <!-- CHECKBOX 2 -->
+        <div ng-if="messageForm.checkbox2 !== undefined" class="group-mixed details form-last">
+          <div class="group-mixed--left">
+            <input type="checkbox" ng-model="messageForm.checkbox2" ng-true-value="true"
+            icon-checkbox="'modalCheckbox2'" />
+          </div>
+          <div class="group-mixed--middle">
+            <span class="text-details" ng-bind="messageForm.checkboxText2"></span>
           </div>
         </div>
         <div class="group-error row-form">
