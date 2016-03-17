@@ -488,7 +488,7 @@
 
   $scope.isNotePublishable = function(note){
     return note.uuid &&
-      (!note.visibility || !note.visibility.published || note.revision !== note.visibility.publishedRevision);
+      (!note.visibility || !note.visibility.published || (note.revision > note.visibility.publishedRevision));
   };
 
   $scope.openUnpublishNoteDialog = function(note){

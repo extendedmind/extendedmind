@@ -604,6 +604,7 @@
           propertiesToReset.visibility.path = path;
           propertiesToReset.visibility.licence = licence;
           propertiesToReset.visibility.publicUi = payload.publicUi;
+          propertiesToReset.visibility.shortId = response.shortId;
 
           // Add properties to persistent values and update note
           ItemLikeService.updateObjectProperties(note, propertiesToReset);
