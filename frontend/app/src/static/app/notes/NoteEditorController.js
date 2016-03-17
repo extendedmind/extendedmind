@@ -439,7 +439,13 @@
       // Override with previous licence for this if this note already has been published
       if (note.visibility && note.visibility.path) licenceValue = note.visibility.licence;
       note.trans.cc = licenceValue === $rootScope.CC_LICENCE;
-      note.trans.sharing = {};
+
+      var defaultSharing = UserSessionService.getUIPreference('sharing', note.trans.owner);
+      var sharing = defaultSharing ? defaultSharing : false;
+      // Override with previous sharing for this note if this note already has been published
+      if (note.visibility && note.visibility.publicUi) sharing =
+        JSON.parse(note.visibility.publicUi).sharing;
+      note.trans.sharing = sharing;
       note.trans.publishPath = note.visibility && note.visibility.path ? note.visibility.path : undefined;
       if (!note.trans.publishPath){
         // Create a path from note title
@@ -457,8 +463,8 @@
         inputErrorText: 'path must be lower case and can not contain spaces',
         checkbox: note.trans.cc,
         checkboxText: 'publish under creative commons (' + $rootScope.CC_LICENCE + ')',
-        checkbox2: note.trans.publicUi,
-        checkboxText2: 'enable sharing note to Twitter and Facebook',
+        checkbox2: note.trans.sharing,
+        checkboxText2: 'enable social sharing',
         submitErrorText: 'publishing failed'
       };
 
@@ -470,7 +476,8 @@
         confirmTextDeferred: 'publishing\u2026',
         confirmActionDeferredFn: function(messageForm){
           var licence = messageForm.checkbox ? $rootScope.CC_LICENCE : undefined;
-          return NotesService.publishNote($scope.note, messageForm.input, licence);
+          var publicUi = messageForm.checkbox2 ? {"sharing":true} : undefined;
+          return NotesService.publishNote($scope.note, messageForm.input, licence, publicUi);
         },
         confirmActionDeferredParam: messageForm,
         allowCancel: true

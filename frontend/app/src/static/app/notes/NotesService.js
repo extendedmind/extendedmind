@@ -574,7 +574,7 @@
       }
       return deferred.promise;
     },
-    publishNote: function(note, path, licence) {
+    publishNote: function(note, path, licence, publicUi) {
       function getPublishUrl(params){
         return params.prefix + params.note.trans.uuid + '/publish';
       }
@@ -587,6 +587,7 @@
       } else {
         var payload = {format: 'md', 'path': path};
         if (licence) payload.licence = licence;
+        if (publicUi) payload.publicUi = JSON.stringify(publicUi);
         BackendClientService.postOnline({ value: '/api/' + ownerUUID + '/note/' +
                                                  note.trans.uuid + '/publish',
                                           refresh: getPublishUrl,

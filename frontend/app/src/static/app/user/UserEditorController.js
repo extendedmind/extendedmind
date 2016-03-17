@@ -284,13 +284,14 @@
 
   // PUBLISHING
 
-  $scope.updatePublishing = function(handle, displayName, useCreativeCommons){
+  $scope.updatePublishing = function(handle, displayName, useCreativeCommons, enableSharing){
     if (handle && displayName){
       var trimmedHandle = handle.trim();
       var trimmedDisplayName = displayName.trim();
       UserSessionService.setHandle(trimmedHandle);
       UserSessionService.setDisplayName(trimmedDisplayName);
       UserSessionService.setUIPreference('useCC', useCreativeCommons);
+      UserSessionService.setUIPreference('sharing', enableSharing);
       UserService.saveAccountPreferences();
 
       if ($scope.user.item && $scope.user.item.trans.itemType === 'note'){

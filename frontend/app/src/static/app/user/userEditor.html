@@ -98,6 +98,15 @@
           <span class="text-details">by default</span>
         </div>
       </div>
+      <div class="group-mixed details height-large">
+        <div class="group-mixed--left">
+          <input type="checkbox" ng-model="user.enableSharing" ng-true-value="true"
+          icon-checkbox="'enableSharing'" />
+        </div>
+        <div class="group-mixed--middle">
+          <span class="text-details">enable social sharing by default</span>
+        </div>
+      </div>
       <div class="group-error row-form">
         <span ng-if="userEditOffline" class="text-error">can't connect to server. are you online?</span>
         <div ng-if="userForm.handle.$touched" ng-messages="userForm.handle.$error">
@@ -130,7 +139,7 @@
       </button>
       <button ng-if="mode === 'publishing'" type="submit" class="btn-action"
       ng-disabled="!userForm.$valid || updatePublishingFailed"
-      ng-click="updatePublishing(user.handle, user.displayName, user.useCreativeCommons)">
+      ng-click="updatePublishing(user.handle, user.displayName, user.useCreativeCommons, user.enableSharing)">
         <span class="text-btn">save</span>
       </button>
       <button ng-if="mode === 'delete'" type="submit" class="btn-action"
