@@ -603,6 +603,7 @@
           propertiesToReset.visibility.published = response.published;
           propertiesToReset.visibility.path = path;
           propertiesToReset.visibility.licence = licence;
+          propertiesToReset.visibility.publicUi = payload.publicUi;
 
           // Add properties to persistent values and update note
           ItemLikeService.updateObjectProperties(note, propertiesToReset);
