@@ -642,9 +642,7 @@
           propertiesToReset.visibility.publishedRevision = undefined;
           // Add properties to persistent values and update note
           ItemLikeService.updateObjectProperties(note, propertiesToReset);
-          console.log(propertiesToReset)
           updateNote(note, ownerUUID, undefined, propertiesToReset);
-          console.log(note)
           deferred.resolve(response);
         },function(error){
           deferred.reject(error);
