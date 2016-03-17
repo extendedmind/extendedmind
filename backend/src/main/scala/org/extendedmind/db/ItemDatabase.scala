@@ -170,7 +170,7 @@ trait ItemDatabase extends UserDatabase {
   def setItemProperty(uuid: UUID, key: String, stringValue: Option[String], longValue: Option[Long]): Response[SetResult] = {
     for {
       itemNode <- getItemNodeByUUID(uuid).right
-      unit <- Right(setItemProperty(itemNode, key: String, stringValue: Option[String], longValue: Option[Long])).right
+      unit <- Right(setNodeProperty(itemNode, key: String, stringValue: Option[String], longValue: Option[Long])).right
       result <- Right(getSetResult(itemNode, false)).right
       unit <- Right(updateItemsIndex(itemNode, result)).right
     } yield result
@@ -1384,19 +1384,6 @@ trait ItemDatabase extends UserDatabase {
           label.name
         })
         NodeStatistics(itemProperties, itemLabels)
-    }
-  }
-
-  protected def setItemProperty(itemNode: Node, key: String, stringValue: Option[String], longValue: Option[Long]): Unit = {
-    withTx {
-      implicit neo4j =>
-        if (stringValue.isDefined){
-          itemNode.setProperty(key, stringValue.get)
-        }else if (longValue.isDefined){
-          itemNode.setProperty(key, longValue.get)
-        }else if (itemNode.hasProperty(key)){
-          itemNode.removeProperty(key)
-        }
     }
   }
 

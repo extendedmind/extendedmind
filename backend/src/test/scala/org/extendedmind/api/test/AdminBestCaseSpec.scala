@@ -374,7 +374,8 @@ class AdminBestCaseSpec extends ServiceSpecBase {
       }
     }
     it("should successfully get foreign item statistics with GET to /admin/item/[itemUUID] " +
-       "and change and remove single Long and String properties with POST to /admin/item/[userUUID]/property") {
+       "and change and remove single Long and String properties with POST to /admin/item/[userUUID]/property " +
+       "and change and remove single Long and String properties with POST to /admin/owner/[userUUID]/property") {
       val timoAuthenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       val lauriAuthenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
       Get("/" + lauriAuthenticateResponse.userUUID + "/items?completed=true") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
@@ -407,6 +408,25 @@ class AdminBestCaseSpec extends ServiceSpecBase {
             changedTask.title should be(newTitle)
             changedTask.description should be(None)
           }
+        }
+
+        Post("/admin/owner/" + lauriAuthenticateResponse.userUUID + "/property",
+              marshal(NodeProperty("sid", None, Some(2))).right.get) ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
+          val setResult = responseAs[SetResult]
+        }
+        Post("/admin/owner/" + lauriAuthenticateResponse.userUUID + "/property",
+              marshal(NodeProperty("handle", Some("lauri"), None)).right.get) ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
+          val setResult = responseAs[SetResult]
+        }
+        Post("/admin/owner/" + lauriAuthenticateResponse.userUUID + "/property",
+              marshal(NodeProperty("displayName", Some("Lauri J"), None)).right.get) ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
+          val setResult = responseAs[SetResult]
+        }
+        Get("/account") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
+          val account = responseAs[User]
+          account.handle.get should be("lauri")
+          account.displayName.get should be("Lauri J")
+          account.shortId.get should be("2")
         }
       }
     }

@@ -229,6 +229,14 @@ trait UserDatabase extends AbstractGraphDatabase {
     }
   }
 
+  def setOwnerProperty(uuid: UUID, key: String, stringValue: Option[String], longValue: Option[Long]): Response[SetResult] = {
+    for {
+      ownerNode <- getNode(uuid, MainLabel.OWNER).right
+      unit <- Right(setNodeProperty(ownerNode, key: String, stringValue: Option[String], longValue: Option[Long])).right
+      result <- Right(getSetResult(ownerNode, false)).right
+    } yield result
+  }
+
   // PRIVATE
 
   protected def createUser(user: User, plainPassword: String,

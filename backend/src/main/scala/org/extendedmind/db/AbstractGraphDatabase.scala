@@ -226,6 +226,21 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     newShortId
   }
 
+  // NODE PROPERTIES
+
+  protected def setNodeProperty(node: Node, key: String, stringValue: Option[String], longValue: Option[Long]): Unit = {
+    withTx {
+      implicit neo4j =>
+        if (stringValue.isDefined){
+          node.setProperty(key, stringValue.get)
+        }else if (longValue.isDefined){
+          node.setProperty(key, longValue.get)
+        }else if (node.hasProperty(key)){
+          node.removeProperty(key)
+        }
+    }
+  }
+
   // CONVERSION
 
   protected def updateNode(node: Node, caseClass: AnyRef): Response[Node] = {

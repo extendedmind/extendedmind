@@ -303,6 +303,23 @@ trait AdminService extends ServiceBase {
           }
         }
       } ~
+      postSetOwnerProperty{ uuid =>
+        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+          authorize(adminAccess(securityContext)) {
+            entity(as[NodeProperty]) { property =>
+              complete {
+                Future[SetResult] {
+                  setLogContext(securityContext)
+                  adminActions.setOwnerProperty(uuid, property) match {
+                    case Right(sr) => processResult(sr)
+                    case Left(e) => processErrors(e)
+                  }
+                }
+              }
+            }
+          }
+        }
+      } ~
       putInfo { url =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           authorize(adminAccess(securityContext)) {

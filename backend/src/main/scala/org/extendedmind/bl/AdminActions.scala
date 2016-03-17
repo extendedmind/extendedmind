@@ -89,6 +89,11 @@ trait AdminActions {
     db.setItemProperty(uuid, property.key, property.stringValue, property.longValue)
   }
 
+  def setOwnerProperty(uuid: UUID, property: NodeProperty)(implicit log: LoggingAdapter): Response[SetResult] = {
+    log.info("setOwnerProperty")
+    db.setOwnerProperty(uuid, property.key, property.stringValue, property.longValue)
+  }
+
   def loadDatabase(implicit log: LoggingAdapter): Boolean = {
     log.info("loadDatabase")
     db.loadDatabase
