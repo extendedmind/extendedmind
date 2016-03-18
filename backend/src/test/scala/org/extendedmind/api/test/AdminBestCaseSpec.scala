@@ -344,13 +344,6 @@ class AdminBestCaseSpec extends ServiceSpecBase {
         writeJsonOutput("usersResponse", responseAs[String])
       }
     }
-    it("should successfully upgrade owner's published notes with POST to /admin/owner/[ownerUUID]/published/upgrade") {
-      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-      Post("/admin/owner/" + authenticateResponse.userUUID +"/published/upgrade") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-        val upgradeCount = responseAs[CountResult]
-        upgradeCount.count should be(0)
-      }
-    }
     it("should successfully delete a user with DELETE to /admin/user/[userUUID]") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       Get("/admin/users") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {

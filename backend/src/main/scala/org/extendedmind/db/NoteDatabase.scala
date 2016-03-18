@@ -173,14 +173,6 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     } yield result
   }
 
-  def upgradePublishedNotes(userUUID: UUID, ownerUUID: UUID): Response[CountResult] = {
-    for{
-      ownerNode <- getNode(ownerUUID, MainLabel.OWNER).right
-      noteNodes <- getPublishedNoteNodes(ownerUUID: UUID).right
-      result <- Right(upgradePublishedNotes(userUUID, ownerNode, noteNodes)).right
-    } yield result
-  }
-
   // PRIVATE
 
   override def toNote(noteNode: Node, owner: Owner, tagRelationships: Option[Option[TagRelationships]] = None, skipParent: Boolean = false)
@@ -611,54 +603,6 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
               assignee, assigner, tags, collectiveTags))
         else None
       }else None)
-  }
-
-  def getPublishedNoteNodes(ownerUUID: UUID): Response[scala.List[Node]] = {
-    withTx {
-      implicit neo4j =>
-        val itemNodesResponse = getItemNodes(ownerUUID, modified = None, active = true, deleted = false, archived = false, completed = false)
-        if (itemNodesResponse.isLeft)
-          Left(itemNodesResponse.left.get)
-        else {
-          val itemNodes = itemNodesResponse.right.get
-          val filteredNotes = itemNodes.toList.filter(itemNode => {
-            itemNode.hasProperty("sid")
-          })
-          Right(filteredNotes)
-        }
-    }
-  }
-
-  def upgradePublishedNotes(userUUID: UUID, ownerNode: Node, noteNodes: scala.List[Node]): CountResult = {
-    noteNodes.foreach (noteNode => {
-      withTx {
-        implicit neo4j =>
-          if (noteNode.hasProperty("published")) noteNode.removeProperty("published")
-          val shortIdAsLong =
-            if (!noteNode.hasProperty("sid")){
-              val shortIdAsLong = generateShortId
-              noteNode.setProperty("sid", shortIdAsLong)
-              shortIdAsLong
-            }else{
-              noteNode.getProperty("sid").asInstanceOf[Long]
-            }
-          val publicRevisionIndex = neo4j.gds.index().forNodes("public")
-          val itemRevisionNodeList = publicRevisionIndex.query("sid:" + shortIdAsLong).toList
-          if (itemRevisionNodeList.isEmpty){
-            // Add sid to published index as well as it is not there yet
-            val path = noteNode.getProperty("path").asInstanceOf[String]
-            val handle = ownerNode.getProperty("handle").asInstanceOf[String]
-            val result = getPublicItemRevisionNodeByPath(getUUID(ownerNode), path)
-            if (result.isRight){
-              val noteRevisionNode = result.right.get
-              val publicRevisionIndex = neo4j.gds.index().forNodes("public")
-              publicRevisionIndex.add(noteRevisionNode, "sid", shortIdAsLong)
-            }
-          }
-
-      }
-    })
-    CountResult(noteNodes.length)
   }
 
 }

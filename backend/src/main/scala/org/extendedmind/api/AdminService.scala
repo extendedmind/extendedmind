@@ -241,21 +241,6 @@ trait AdminService extends ServiceBase {
           }
         }
       } ~
-      postUpgradePublishedNotes { ownerUUID =>
-        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
-          authorize(adminAccess(securityContext)) {
-            complete {
-              Future[CountResult] {
-                setLogContext(securityContext)
-                adminActions.upgradePublishedNotes(securityContext.userUUID, ownerUUID) match {
-                  case Right(result) => processResult(result)
-                  case Left(e) => processErrors(e)
-                }
-              }
-            }
-          }
-        }
-      } ~
       getItemStatistics { uuid =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           authorize(adminAccess(securityContext)) {
