@@ -155,13 +155,73 @@
             </configuration>
           </execution>
           <execution>
-            <id>npm pack</id>
+            <id>npm-clean</id>
             <goals>
               <goal>npm</goal>
             </goals>
             <phase>package</phase>
             <configuration>
-              <arguments>run pack</arguments>
+              <arguments>run clean</arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>npm-pack-osx</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <arguments>run pack:osx</arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>npm-build-osx</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <arguments>run build:osx</arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>npm-pack-win</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <arguments>run pack:win</arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>npm-build-win</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <arguments>run build:win</arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>npm-pack-linux</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <arguments>run pack:linux</arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>npm-build-linux</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <arguments>run build:linux</arguments>
             </configuration>
           </execution>
         </executions>
