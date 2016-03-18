@@ -13,12 +13,12 @@ app.on('window-all-closed', function() {
   // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform != 'darwin') {
     app.quit();
+  }else{
+    mainWindow = null;
   }
 });
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-app.on('ready', function() {
+function createMainWindow(){
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 1600,
@@ -30,16 +30,7 @@ app.on('ready', function() {
   // and load the index.html of the app.
   mainWindow.loadUrl('file://' + __dirname + '/index.html');
 
-  // Emitted when the window is closed.
-  mainWindow.on('closed', function() {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
-    mainWindow = null;
-  });
-
-
-    // Create the Application's main menu
+  // Create the Application's main menu
   var template = [
   {
     label: 'extended mind',
@@ -131,8 +122,30 @@ app.on('ready', function() {
 
   menu = Menu.buildFromTemplate(template);
   Menu.setApplicationMenu(menu);
+}
+
+// This method will be called when Electron has finished
+// initialization and is ready to create browser windows.
+app.on('ready', function() {
+  createMainWindow();
 });
 
+/* NOTE: This should be the right event for this version of Electron, but it isn't.
+         The latter is fired even though it should be deprecated.
+app.on('activate', function(event, hasVisibleWindows){
+  if (!hasVisibleWindows){
+    if (!mainWindow){
+      createMainWindow();
+    }else{
+      mainWindow.show();
+    }
+  }
+});*/
+
 app.on('activate-with-no-open-windows', function(){
-  if (mainWindow) mainWindow.show();
+  if (!mainWindow){
+    createMainWindow();
+  }else{
+    mainWindow.show();
+  }
 });
