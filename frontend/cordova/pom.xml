@@ -120,8 +120,8 @@
             </goals>
             <phase>generate-resources</phase>
             <configuration>
-              <nodeVersion>v0.12.9</nodeVersion>
-              <npmVersion>2.14.9</npmVersion>
+              <nodeVersion>v5.6.0</nodeVersion>
+              <npmVersion>3.7.3</npmVersion>
               <nodeDownloadRoot>https://nodejs.org/dist/</nodeDownloadRoot>
             </configuration>
           </execution>
@@ -210,19 +210,6 @@
             </configuration>
           </execution>
           <execution>
-            <id>cordova-android-build</id>
-            <phase>compile</phase>
-            <goals>
-              <goal>exec</goal>
-            </goals>
-            <configuration>
-              <skip>${skipAndroid}</skip>
-              <executable>sh</executable>
-              <commandlineArgs>build-android.sh</commandlineArgs>
-              <background>false</background>
-            </configuration>
-          </execution>
-          <execution>
             <id>cordova-ios-prepare</id>
             <phase>process-resources</phase>
             <goals>
@@ -232,6 +219,31 @@
               <skip>${skipIos}</skip>
               <executable>sh</executable>
               <commandlineArgs>prepare-ios.sh</commandlineArgs>
+              <background>false</background>
+            </configuration>
+          </execution>
+          <execution>
+            <id>cordova-add-plugins</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>sh</executable>
+              <commandlineArgs>add-plugins.sh</commandlineArgs>
+              <background>false</background>
+            </configuration>
+          </execution>
+          <execution>
+            <id>cordova-android-build</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <skip>${skipAndroid}</skip>
+              <executable>sh</executable>
+              <commandlineArgs>build-android.sh</commandlineArgs>
               <background>false</background>
             </configuration>
           </execution>

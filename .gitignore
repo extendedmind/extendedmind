@@ -61,6 +61,10 @@ frontend/cordova/src/platforms/ios/platform_www
 frontend/cordova/src/platforms/ios/www
 frontend/cordova/src/platforms/ios/extmd.xcodeproj/project.xcworkspace
 frontend/cordova/src/platforms/ios/extmd.xcodeproj/xcuserdata
+frontend/cordova/src/platforms/ios/extmd/Bridging-Header.h
+frontend/cordova/src/platforms/ios/extmd/Images.xcassets/
+frontend/cordova/src/platforms/ios/ios.json
+frontend/cordova/src/platforms/ios/frameworks.json
 frontend/cordova/src/platforms/platforms.json
 frontend/cordova/src/plugins
 frontend/cordova/src/assets/fonts
