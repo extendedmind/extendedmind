@@ -10,6 +10,6 @@ if [ -z "$1" ]
 fi
 
 # copy sources to iOS
-cd app
+cd src
 ./node/node ./node_modules/.bin/cordova prepare ios
 cd ..
