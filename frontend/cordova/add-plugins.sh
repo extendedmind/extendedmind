@@ -14,7 +14,7 @@ else
   # Temporarily add downloaded node to path to make hooks work from inside cordova
   export PATH=$PATH:./node/
 
-  ./node/node ./node_modules/.bin/cordova plugin add ionic-plugin-keyboard@2.0.1
+  ./node/node ./node_modules/.bin/cordova plugin add https://github.com/extendedmind/ionic-plugin-keyboard
   ./node/node ./node_modules/.bin/cordova plugin add cordova-plugin-vibration@2.1.0
   ./node/node ./node_modules/.bin/cordova plugin add cordova-plugin-media@2.1.0
   ./node/node ./node_modules/.bin/cordova plugin add https://github.com/apache/cordova-plugin-splashscreen.git#r2.1.0

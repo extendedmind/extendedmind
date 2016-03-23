@@ -45,8 +45,7 @@
     //
     function onDeviceReady() {
       // Now safe to use device APIs
-      // ionic-plugin-keyboard Issue #197: now way now to hide keyboard accessory bar!
-      // cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
+      cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
       cordova.plugins.Keyboard.disableScroll(true);
     }
 
