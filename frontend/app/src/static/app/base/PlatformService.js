@@ -139,8 +139,8 @@ function PlatformService($q, packaging) {
       return $q(function(resolve, reject) {
         if (isSupported(featureName)){
           switch (featureName) {
-            case 'storeInboxId':
-            resolve(storeInboxId(featureValue));
+            case 'setInboxId':
+            resolve(setInboxId(featureValue));
             break;
           }
         }else{

@@ -48,4 +48,22 @@ cordova run --device --target=[DEVICE_ID] android
 iOS
 ---
 
-Install latest XCode from App Store.
+Install latest XCode and Xcode Command Line Tools from the App Store.
+
+Updating plugins
+----------------
+
+Steps needed in XCode when updating cordova sources to new version, so that share extension is back.
+
+1. Prevent everything from src/platform/ios to be copied over Cordova generated sources, by editing the end of add-plugins.sh.
+2. Open the extmd Cordova project the way Cordova generated it.
+3. See that the project compiles and installs.
+4. Add a new target to the project by clicking "extmd" next to the General tab in the project settings, and from there selecting "Add target..".
+5. Select Application Extension -> Share Extension.
+6. Set "extmd-share" as the product name, "Extended Mind Technologies Oy" as the organization name, and change language to Swift.
+7. Change deployment target in the extmd-share target match extmd app.
+8. Resurrect SharePreprocessor.js and add is as new source to the project.
+9. Resurrect images.xcassets and add it to the share extension.
+10. Select the Capabilities tab and turn on App Groups for both extmd-share and extmd.
+11. Replace content in ShareViewController.swift with code from version control.
+12. Replace content in info.plist with code from version control.

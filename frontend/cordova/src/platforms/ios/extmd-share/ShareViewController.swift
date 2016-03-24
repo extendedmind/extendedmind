@@ -11,7 +11,7 @@ import Social
 import MobileCoreServices
 
 class ShareViewController: SLComposeServiceViewController {
-
+    
     var linkUrl: String?
     var linkTitle: String?
     var inboxId: String?
@@ -24,7 +24,7 @@ class ShareViewController: SLComposeServiceViewController {
         }
         return false
     }
-
+    
     override func didSelectPost() {
         if let inboxId = self.inboxId, linkUrl = self.linkUrl, linkTitle = self.linkTitle{
             let url = "https://ext.md/api/inbox/" + inboxId
@@ -119,11 +119,11 @@ class ShareViewController: SLComposeServiceViewController {
     // From http://stackoverflow.com/a/19263420/2659424
     private func encodeStringForHttpRequest(string: String) -> String{
         let result = CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
-                    string as CFStringRef,
-                    " " as CFStringRef,
-                    ":/?@!$&'()*+,;=" as CFStringRef,
-                    CFStringBuiltInEncodings.UTF8.rawValue) as String
+                                                             string as CFStringRef,
+                                                             " " as CFStringRef,
+                                                             ":/?@!$&'()*+,;=" as CFStringRef,
+                                                             CFStringBuiltInEncodings.UTF8.rawValue) as String
         return result.stringByReplacingOccurrencesOfString(" ", withString: "+")
     }
-
+    
 }
