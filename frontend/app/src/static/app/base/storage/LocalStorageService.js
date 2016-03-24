@@ -105,7 +105,7 @@
     setLatestModified: function(modified, ownerUUID) {
       if (angular.isObject(modified)) {
         localStorage.setItem('modified', JSON.stringify(modified));
-      }else if (modified && ownerUUID){
+      }else if (ownerUUID && modified !== undefined){
         var latestModified = this.getLatestModified();
         if (latestModified){
           latestModified[ownerUUID] = modified;
