@@ -1393,7 +1393,10 @@ function MainController($element, $controller, $document, $filter, $q, $rootScop
 
   if ($scope.isFakeUser()){
     signUpPromptInterval = setInterval(function(){
-      if (!$scope.isTutorialInProgress() && !$scope.isFeatureActive('user') &&
+      if (!$scope.isFakeUser()){
+        clearInterval(signUpPromptInterval);
+        signUpPromptInterval = undefined;
+      }else if (!$scope.isTutorialInProgress() && !$scope.isFeatureActive('user') &&
           !$scope.isOnboarding($scope.getActiveFeature()) &&
           !$scope.isEditorVisible()){
         // Show notification immediately on cold boot on other than first onboarding
