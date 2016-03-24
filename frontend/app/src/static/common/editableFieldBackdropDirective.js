@@ -45,7 +45,6 @@
       };
 
       function backdropClicked() {
-
         if (preventBackdropBubbleClick) {
           if (preventBackdropBubbleClick > Date.now() - 600){
             // Event bubbled from undesired click less than 600ms ago. Do nothing.
@@ -83,9 +82,12 @@
           // Function called in the middle of a click event.
           // NOTE:  It may be unsafe to stop event bubbling, so prevent bubbling locally to backdrop click
           //        event. event.stopPropagation() would be more reliable though if we were sure this
-          //        function is not and will not be depended on click.
-          preventBackdropBubbleClick = event.timeStamp;
-          preventContainerBubbleClick = event.timeStamp;
+          //        function is not and will not be depended on click. Also in Chrome 48
+          //        event.timeStamp switched to using a float value, so use Date.now() which isn't as
+          //        precise, but works.
+          var currentTime = Date.now();
+          preventBackdropBubbleClick = currentTime;
+          preventContainerBubbleClick = currentTime;
         }
 
         // activate container
