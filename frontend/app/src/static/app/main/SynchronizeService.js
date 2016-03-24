@@ -989,7 +989,7 @@
       if (UserSessionService.isFakeUser()){
         deferred.resolve('fakeUser');
       }else if (latestModified !== undefined) {
-        if (latestModified !== null){
+        if (latestModified > 0){
           url += '?modified=' + latestModified + '&';
         }else{
           url += '?';
