@@ -72,7 +72,7 @@
         return ((!$scope.note.trans.list || $scope.note.trans.list.trans.deleted) &&
                 ($scope.features.lists.getStatus('active') !== 'disabled'));
       }else if (subcomponentName ==='url'){
-        return !$scope.note.trans.link;
+        return !$scope.note.trans.link && $scope.getPropertyNameInEdit() !== 'url';
       }
       break;
 
