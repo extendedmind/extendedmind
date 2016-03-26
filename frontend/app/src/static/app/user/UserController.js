@@ -83,6 +83,7 @@
       handle: UserSessionService.getHandle(),
       displayName: UserSessionService.getDisplayName(),
       useCreativeCommons: UserSessionService.getUIPreference('useCC'),
+      enableSharing: UserSessionService.getUIPreference('sharing'),
       item: item
     };
   };
