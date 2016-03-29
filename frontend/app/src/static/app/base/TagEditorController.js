@@ -15,7 +15,7 @@
 
  'use strict';
 
- function TagEditorController($q, $rootScope, $scope, TagsService, UISessionService) {
+ function TagEditorController($q, $rootScope, $scope, TagsService) {
 
   // INITIALIZING
 
@@ -31,15 +31,12 @@
 
       case 'collapsible':
       return $scope.collapsibleOpen && !$scope.isPropertyInDedicatedEdit();
-      break;
 
       case 'lessMore':
       return $scope.tag.created && !$scope.isPropertyInDedicatedEdit();
-      break;
 
       case 'parentPicker':
       return parentPickerOpen;
-      break;
     }
   };
 
@@ -50,7 +47,7 @@
     }
   };
 
-  $scope.showTagAction = function(actionName, tag){
+  $scope.showTagAction = function(actionName){
     switch (actionName){
       case 'favoriteContext':
       return $scope.tag.trans.tagType === 'context' &&
@@ -107,9 +104,9 @@
 
   $scope.getParentTagArray = function() {
     if ($scope.tag.trans.tagType === 'context'){
-      return $scope.getTagsArray('contextsParentless', {owner: $scope.tag.trans.owner})
+      return $scope.getTagsArray('contextsParentless', {owner: $scope.tag.trans.owner});
     }else if ($scope.tag.trans.tagType === 'keyword'){
-      return $scope.getTagsArray('keywordsParentless', {owner: $scope.tag.trans.owner})
+      return $scope.getTagsArray('keywordsParentless', {owner: $scope.tag.trans.owner});
     }
   };
 
@@ -170,7 +167,7 @@
   };
 
   $scope.isTagEdited = function() {
-    if ($scope.tagTitlebarHasText()) {
+    if ($scope.titlebarHasText()) {
       return TagsService.isTagEdited($scope.tag);
     }
   };
@@ -205,15 +202,11 @@
 
   // TITLEBAR
 
-  $scope.tagTitlebarHasText = function() {
-    return $scope.tag.trans.title && $scope.tag.trans.title.length !== 0;
-  };
-
   $scope.tagTitlebarTextKeyDown = function (keydownEvent) {
     $scope.handleBasicTitlebarKeydown(keydownEvent, $scope.item);
     // Return
     if (event.keyCode === 13){
-      if($scope.tagTitlebarHasText()) {
+      if($scope.titlebarHasText()) {
         // Enter in editor saves, no line breaks allowed
         $scope.closeEditor();
         saveTagInEdit();
@@ -230,7 +223,7 @@
       else if (tag.trans.tagType === 'keyword')
         return '\u0023';  // # (number sign)
     }
-  }
+  };
 
 
   $scope.getTagPropertyNameInEdit = function() {
@@ -254,5 +247,5 @@
   };
 }
 
-TagEditorController['$inject'] = ['$q', '$rootScope', '$scope', 'TagsService', 'UISessionService'];
+TagEditorController['$inject'] = ['$q', '$rootScope', '$scope', 'TagsService'];
 angular.module('em.main').controller('TagEditorController', TagEditorController);

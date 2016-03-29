@@ -109,10 +109,10 @@
             </div>
 
             <div ng-if="showNoteInstruction('title')" class="row">
-              <span ng-show="!noteTitlebarHasText()" class="text-details">
+              <span ng-show="!titlebarHasText()" class="text-details">
                 e.g. reading suggestions, budget meeting minutes, summer plans
               </span>
-              <span ng-show="noteTitlebarHasText()" class="text-details">
+              <span ng-show="titlebarHasText()" class="text-details">
                 when done, hit return
               </span>
             </div>
@@ -396,13 +396,12 @@
           class="container-content--after editor-footer" editor-footer="slideInfo">
           <!-- CONVERT -->
           <div ng-if="showNoteEditorComponent('advancedFooter', 'convert')" class="group-symmetrical">
-            <a href ng-class="!showEditorAction('convertToTask', note) && 'invisible'"
-               class="group-symmetrical--left link" swiper-click="convertToTask(note)">
+            <a href class="group-symmetrical--left link" swiper-click="convertToTask(note)"
+               ng-class="{'invisible': !showEditorAction('convertToTask', note), 'inactive downplayed': !titlebarHasText()}">
               <span class="text-convert small">task</span>
             </a>
-            <a href ng-class="!showEditorAction('convertToList', note) && 'invisible'"
-              class="group-symmetrical--middle group-centered link"
-              swiper-click="convertToList(note)">
+            <a href class="group-symmetrical--middle group-centered link" swiper-click="convertToList(note)"
+              ng-class="{'invisible': !showEditorAction('convertToList', note), 'inactive downplayed': !titlebarHasText()}">
               <span class="text-convert small">list</span>
             </a>
             <div class="group-symmetrical--right">

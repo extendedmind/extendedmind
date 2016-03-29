@@ -15,7 +15,7 @@
 
  'use strict';
 
- function RecurringEditorController($scope, DrawerService, ItemsService, TasksService, UISessionService) {
+ function RecurringEditorController($scope, DrawerService, ItemsService, TasksService) {
 
   // Start from the first item.
   $scope.iterableItem = $scope.iterableItems[0];
@@ -145,6 +145,7 @@
   // OVERRIDDEN METHODS
 
   $scope.convertToTask = function(dataInEdit){
+    if (!$scope.titlebarHasText()) return;
     moveContentToDescription(dataInEdit);
     $scope.task = TasksService.prepareConvertTask(dataInEdit);
     setItemType('task');
@@ -153,6 +154,7 @@
   };
 
   $scope.convertToNote = function(dataInEdit) {
+    if (!$scope.titlebarHasText()) return;
     if (dataInEdit.trans.description) {
       dataInEdit.trans.content = dataInEdit.trans.description;
       delete dataInEdit.trans.description;
@@ -164,6 +166,7 @@
   };
 
   $scope.convertToList = function(dataInEdit) {
+    if (!$scope.titlebarHasText()) return;
     moveContentToDescription(dataInEdit);
     $scope.list = dataInEdit;
     setItemType('list');
@@ -187,8 +190,11 @@
   $scope.handleTitlebarEnterAction = function() {
     angular.noop();
   };
+
+  $scope.titlebarHasText = function() {
+    return $scope.iterableItem.trans.title && $scope.iterableItem.trans.title.length !== 0;
+  };
 }
 
-RecurringEditorController['$inject'] = ['$scope', 'DrawerService', 'ItemsService', 'TasksService',
-'UISessionService'];
+RecurringEditorController['$inject'] = ['$scope', 'DrawerService', 'ItemsService', 'TasksService'];
 angular.module('em.main').controller('RecurringEditorController', RecurringEditorController);

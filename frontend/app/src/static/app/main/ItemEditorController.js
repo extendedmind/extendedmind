@@ -15,7 +15,7 @@
 
  'use strict';
 
- function ItemEditorController($q, $rootScope, $scope, ItemsService, UISessionService) {
+ function ItemEditorController($q, $rootScope, $scope, ItemsService) {
 
   // INITIALIZING
 
@@ -57,7 +57,7 @@
   };
 
   $scope.isItemEdited = function() {
-    if ($scope.itemTitlebarHasText()) {
+    if ($scope.titlebarHasText()) {
       return ItemsService.isItemEdited($scope.item);
     }
   };
@@ -86,15 +86,11 @@
 
   // TITLEBAR
 
-  $scope.itemTitlebarHasText = function() {
-    return $scope.item.trans.title && $scope.item.trans.title.length !== 0;
-  };
-
   $scope.itemTitlebarTextKeyDown = function (keydownEvent) {
     $scope.handleBasicTitlebarKeydown(keydownEvent, $scope.item);
     // Return
     if (event.keyCode === 13) {
-      if ($scope.itemTitlebarHasText()) {
+      if ($scope.titlebarHasText()) {
         // Enter in editor saves, no line breaks allowed
         $scope.handleTitlebarEnterAction(saveItemInEdit);
       }
@@ -104,5 +100,5 @@
   };
 }
 
-ItemEditorController['$inject'] = ['$q', '$rootScope', '$scope', 'ItemsService', 'UISessionService'];
+ItemEditorController['$inject'] = ['$q', '$rootScope', '$scope', 'ItemsService'];
 angular.module('em.main').controller('ItemEditorController', ItemEditorController);

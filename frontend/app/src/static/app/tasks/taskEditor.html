@@ -488,12 +488,12 @@
 
           <!-- CONVERT -->
           <div class="group-symmetrical" ng-if="showTaskEditorComponent('advancedFooter', 'convert')">
-            <a href class="group-symmetrical--left link"
-              ng-class="!showEditorAction('convertToNote', task) && 'invisible'" swiper-click="convertToNote(task)">
+            <a href class="group-symmetrical--left link" swiper-click="convertToNote(task)"
+              ng-class="{'invisible': !showEditorAction('convertToNote', task), 'inactive downplayed': !titlebarHasText()}">
               <span class="text-convert small">note</span>
             </a>
-            <a href class="group-symmetrical--middle group-centered link"
-              ng-class="!showEditorAction('convertToList', task) && 'invisible'" swiper-click="convertToList(task)">
+            <a href class="group-symmetrical--middle group-centered link" swiper-click="convertToList(task)"
+              ng-class="{'invisible': !showEditorAction('convertToList', task), 'inactive downplayed': !titlebarHasText()}">
               <span class="text-convert small">list</span>
             </a>
             <div class="group-symmetrical--right">

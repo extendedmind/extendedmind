@@ -186,7 +186,7 @@
 
   $scope.isNoteEdited = function() {
     // Note without title is unedited
-    if ($scope.noteTitlebarHasText()) {
+    if ($scope.titlebarHasText()) {
       return NotesService.isNoteEdited($scope.note);
     }
   };
@@ -208,7 +208,7 @@
   }
 
   function setSaving() {
-    if (!$scope.isAutoSavingPrevented() && $scope.noteTitlebarHasText()) {
+    if (!$scope.isAutoSavingPrevented() && $scope.titlebarHasText()) {
       $scope.noteStatus = 'saving';
       return Date.now();
     }
@@ -216,7 +216,7 @@
 
   var setSavedTimer, resetNoteStatusTimer;
   function setSaved(savingSetTime) {
-    if (!$scope.noteTitlebarHasText()) return;
+    if (!$scope.titlebarHasText()) return;
 
     function doSetSaved() {
       $scope.noteStatus = 'saved';
@@ -314,10 +314,6 @@
 
   // TITLEBAR
 
-  $scope.noteTitlebarHasText = function() {
-    return $scope.note.trans.title && $scope.note.trans.title.length !== 0;
-  };
-
   var pollForSaveReady = {
     value: true
   };
@@ -339,7 +335,7 @@
   }.debounce(1000);
 
   $scope.autoSaveNote = function() {
-    if (!$scope.isAutoSavingPrevented() && $scope.noteTitlebarHasText()) {
+    if (!$scope.isAutoSavingPrevented() && $scope.titlebarHasText()) {
       var savingSetTime = setSaving();
       $scope.saveNote($scope.note).then(function() {
         setSaved(savingSetTime);
@@ -476,7 +472,7 @@
         confirmTextDeferred: 'publishing\u2026',
         confirmActionDeferredFn: function(messageForm){
           var licence = messageForm.checkbox ? $rootScope.CC_LICENCE : undefined;
-          var publicUi = messageForm.checkbox2 ? {"sharing":true} : undefined;
+          var publicUi = messageForm.checkbox2 ? {sharing:true} : undefined;
           return NotesService.publishNote($scope.note, messageForm.input, licence, publicUi);
         },
         confirmActionDeferredParam: messageForm,

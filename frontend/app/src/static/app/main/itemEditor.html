@@ -163,18 +163,18 @@
     </div>
     <footer class="container-content--after">
       <div class="group-symmetrical">
-        <a href class="group-symmetrical--left link" swiper-click="convertToTask(item)">
+        <a href class="group-symmetrical--left link" swiper-click="convertToTask(item)"
+          ng-class="!titlebarHasText() && 'inactive downplayed'">
           <span class="text-convert">task</span>
         </a>
         <div class="group-symmetrical--middle width-large">
           <a href class="link" swiper-click="convertToNote(item)"
-          ng-class="!showEditorAction('convertToNote', item) && 'invisible'">
+          ng-class="{'invisible': !showEditorAction('convertToNote', item), 'inactive downplayed': !titlebarHasText()}">
             <span class="text-convert">note</span>
           </a>
         </div>
-        <a href class="group-symmetrical--right link"
-          ng-class="!showEditorAction('convertToList', item) && 'invisible'"
-          swiper-click="convertToList(item)">
+        <a href class="group-symmetrical--right link" swiper-click="convertToList(item)"
+          ng-class="{'invisible': !showEditorAction('convertToList', item), 'inactive downplayed': !titlebarHasText()}">
           <span class="text-convert">list</span>
         </a>
       </div>

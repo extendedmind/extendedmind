@@ -207,7 +207,7 @@
   };
 
   $scope.isListEdited = function() {
-    if ($scope.listTitlebarHasText()) {
+    if ($scope.titlebarHasText()) {
       return ListsService.isListEdited($scope.list);
     }
   };
@@ -387,15 +387,11 @@
 
   // TITLEBAR
 
-  $scope.listTitlebarHasText = function() {
-    return $scope.list.trans.title && $scope.list.trans.title.length !== 0;
-  };
-
   $scope.listTitlebarTextKeyDown = function (keydownEvent) {
     $scope.handleBasicTitlebarKeydown(keydownEvent, $scope.list);
     // Return
     if (event.keyCode === 13) {
-      if ($scope.listTitlebarHasText()) {
+      if ($scope.titlebarHasText()) {
         // Enter in editor saves, no line breaks allowed
         $scope.handleTitlebarEnterAction(saveListInEdit);
       }

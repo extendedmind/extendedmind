@@ -150,7 +150,7 @@
   };
 
   $scope.isTaskEdited = function() {
-    if (taskTitlebarHasText()) {
+    if ($scope.titlebarHasText()) {
       return TasksService.isTaskEdited($scope.task);
     }
   };
@@ -179,15 +179,11 @@
 
   // TITLEBAR
 
-  function taskTitlebarHasText() {
-    return $scope.task.trans.title && $scope.task.trans.title.length !== 0;
-  }
-
   $scope.taskTitlebarTextKeyDown = function (keydownEvent) {
     $scope.handleBasicTitlebarKeydown(keydownEvent, $scope.task);
     // Return
     if (event.keyCode === 13) {
-      if (taskTitlebarHasText()) {
+      if ($scope.titlebarHasText()) {
         // Enter in editor saves, no line breaks allowed
         $scope.handleTitlebarEnterAction(saveTaskInEdit);
       }

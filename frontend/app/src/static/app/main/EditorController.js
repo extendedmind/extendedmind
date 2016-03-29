@@ -312,6 +312,7 @@
   }
 
   $scope.convertToNote = function(dataInEdit){
+    if (!$scope.titlebarHasText()) return;
     var convertToNotePromise;
     if (dataInEdit.trans.itemType === 'item') {
       convertToNotePromise = ItemsService.itemToNote(dataInEdit);
@@ -333,6 +334,7 @@
   };
 
   $scope.convertToTask = function(dataInEdit){
+    if (!$scope.titlebarHasText()) return;
     var convertToTaskPromise;
     if (dataInEdit.trans.itemType === 'item') {
       convertToTaskPromise = ItemsService.itemToTask(dataInEdit);
@@ -352,6 +354,7 @@
   };
 
   $scope.convertToList = function(dataInEdit){
+    if (!$scope.titlebarHasText()) return;
     var convertToListPromise;
     if (dataInEdit.trans.itemType === 'item'){
       convertToListPromise = ItemsService.itemToList(dataInEdit);
@@ -407,6 +410,22 @@
     } else {
       // Smaller, leave
       return $rootScope.currentWidth - $rootScope.TITLEBAR_BUTTON_WIDTH*2;
+    }
+  };
+
+  $scope.titlebarHasText = function() {
+    var itemType = $scope.editorType === 'recurring' ? $scope.mode : $scope.editorType;
+    switch (itemType){
+      case 'task':
+      return $scope.task.trans.title && $scope.task.trans.title.length !== 0;
+      case 'note':
+      return $scope.note.trans.title && $scope.note.trans.title.length !== 0;
+      case 'list':
+      return $scope.list.trans.title && $scope.list.trans.title.length !== 0;
+      case 'item':
+      return $scope.item.trans.title && $scope.item.trans.title.length !== 0;
+      case 'tag':
+      return $scope.tag.trans.title && $scope.tag.trans.title.length !== 0;
     }
   };
 
@@ -567,10 +586,6 @@
       return false;
     }
     return true;
-  };
-
-  $scope.isAutoSavingPrevented = function() {
-    return $scope.editorType === 'recurring' || $scope.isOnboarding('notes');
   };
 
   // Only one subeditor can be open at a time
@@ -779,6 +794,12 @@
     return keyword.trans.title;
   };
 
+
+  // AUTOSAVING
+
+  $scope.isAutoSavingPrevented = function() {
+    return $scope.editorType === 'recurring' || $scope.isOnboarding('notes');
+  };
 
   // KEYBOARD SHORTCUTS
 
