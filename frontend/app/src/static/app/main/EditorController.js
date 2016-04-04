@@ -404,12 +404,24 @@
   };
 
   $scope.calculateTitleWidth = function() {
-    if ($rootScope.currentWidth >= $rootScope.EDITOR_MAX_WIDTH) {
-      // Maximum width for column
-      return $rootScope.TITLEBAR_HEADING_MAX_WIDTH;
-    } else {
-      // Smaller, leave
-      return $rootScope.currentWidth - $rootScope.TITLEBAR_BUTTON_WIDTH*2;
+    if ($rootScope.columns === 1){
+      if ($rootScope.currentWidth >= $rootScope.EDITOR_MAX_WIDTH) {
+        // Maximum width for column
+        return $rootScope.TITLEBAR_HEADING_MAX_WIDTH;
+      } else {
+        // Smaller, leave
+        return $rootScope.currentWidth - $rootScope.TITLEBAR_BUTTON_WIDTH*2;
+      }
+    }else{
+      if ($scope.isMenuVisible()){
+        // Menu also open at the same time, very limited space
+        return (($rootScope.currentWidth - $rootScope.MENU_WIDTH) / 2) -
+               ($rootScope.TITLEBAR_BUTTON_WIDTH_SIDE_BY_SIDE * 2);
+      }else{
+        // Three column mode, but menu not open
+        return ($rootScope.currentWidth / 2) -
+               ($rootScope.TITLEBAR_BUTTON_WIDTH_SIDE_BY_SIDE * 2);
+      }
     }
   };
 
