@@ -9,7 +9,7 @@
           swiper-click="endListEdit()">
           <span class="text-navigation-back"
             ng-class="getEditorNavigationBackClasses()"
-            ng-bind="isListEdited() && !list.trans.deleted ? 'save' : 'back'">
+            ng-bind="isEdited(list) && !list.trans.deleted ? 'save' : 'back'">
           </span>
         </a>
 
@@ -58,7 +58,7 @@
           <a href ng-if="!iterableItem" class="link-navigation active highlighted link-side-by-side"
             swiper-click="endListEdit()">
             <span class="text-navigation"
-              ng-bind="isListEdited() && !list.trans.deleted ? 'save' : 'close'">
+              ng-bind="isEdited(list) && !list.trans.deleted ? 'save' : 'close'">
             </span>
           </a>
         </div>

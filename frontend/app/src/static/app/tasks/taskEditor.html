@@ -8,7 +8,7 @@
           class="group-symmetrical--left link-navigation active highlighted sorting-hide"
           swiper-click="endTaskEdit()">
           <span class="text-navigation-back" ng-class="getEditorNavigationBackClasses()"
-            ng-bind="isTaskEdited() && !task.trans.deleted ? 'save' : 'back'">
+            ng-bind="isEdited(task) && !task.trans.deleted ? 'save' : 'back'">
           </span>
         </a>
 
@@ -57,7 +57,7 @@
           <a href ng-if="!iterableItem" class="link-navigation active highlighted link-side-by-side"
             swiper-click="endTaskEdit()">
             <span class="text-navigation"
-              ng-bind="isTaskEdited() && !task.trans.deleted ? 'save' : 'close'">
+              ng-bind="isEdited(task) && !task.trans.deleted ? 'save' : 'close'">
             </span>
           </a>
         </div>

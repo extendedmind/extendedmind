@@ -8,7 +8,7 @@
           class="group-symmetrical--left link-navigation highlighted active" swiper-click="endTagEdit()">
           <span class="text-navigation-back"
           ng-class="getEditorNavigationBackClasses()"
-          ng-bind="isTagEdited() && !tag.trans.deleted ? 'save' : 'back'"></span>
+          ng-bind="isEdited(tag) && !tag.trans.deleted ? 'save' : 'back'"></span>
         </a>
 
         <a href ng-show="showEditorAction('saveDone')"
@@ -53,7 +53,7 @@
           <a href class="link-navigation active highlighted link-side-by-side"
             swiper-click="endTagEdit()">
             <span class="text-navigation"
-              ng-bind="isTagEdited() && !tag.trans.deleted ? 'save' : 'close'">
+              ng-bind="isEdited(tag) && !tag.trans.deleted ? 'save' : 'close'">
             </span>
           </a>
         </div>

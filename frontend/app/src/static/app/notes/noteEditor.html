@@ -8,7 +8,7 @@
           class="group-symmetrical--left link-navigation active highlighted sorting-hide"
           swiper-click="endNoteEdit()">
           <span class="text-navigation-back" ng-class="getEditorNavigationBackClasses()"
-            ng-bind="isAutoSavingPrevented() ? (isNoteEdited() && !note.trans.deleted ? 'save' : 'back') : noteStatus">
+            ng-bind="isAutoSavingPrevented() ? (isEdited(note) && !note.trans.deleted ? 'save' : 'back') : noteStatus">
           </span>
         </a>
 
@@ -57,7 +57,7 @@
           <a href ng-if="!iterableItem" class="link-navigation active highlighted link-side-by-side"
             swiper-click="endNoteEdit()">
             <span class="text-navigation" ng-class="getEditorNavigationBackClasses()"
-              ng-bind="isAutoSavingPrevented() ? (isNoteEdited() && !note.trans.deleted ? 'save' : 'close') : noteStatus">
+              ng-bind="isAutoSavingPrevented() ? (isEdited(note) && !note.trans.deleted ? 'save' : 'close') : noteStatus">
             </span>
           </a>
         </div>

@@ -56,12 +56,6 @@
     $scope.processDelete($scope.item, $scope.deleteItem, $scope.undeleteItem);
   };
 
-  $scope.isItemEdited = function() {
-    if ($scope.titlebarHasText()) {
-      return ItemsService.isItemEdited($scope.item);
-    }
-  };
-
   $scope.endItemEdit = function() {
     $scope.closeEditor();
   };
@@ -70,7 +64,7 @@
     if (angular.isFunction($scope.unregisterEditorAboutToCloseCallback))
       $scope.unregisterEditorAboutToCloseCallback('ItemEditorController');
 
-    if ($scope.isItemEdited() && !$scope.item.trans.deleted) return saveItemInEdit(exitAppAfterSave);
+    if ($scope.isEdited($scope.item) && !$scope.item.trans.deleted) return saveItemInEdit(exitAppAfterSave);
     else ItemsService.resetItem($scope.item);
   }
 

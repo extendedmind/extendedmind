@@ -166,12 +166,6 @@
     }
   };
 
-  $scope.isTagEdited = function() {
-    if ($scope.titlebarHasText()) {
-      return TagsService.isTagEdited($scope.tag);
-    }
-  };
-
   $scope.endTagEdit = function() {
     $scope.closeEditor();
   };
@@ -180,7 +174,7 @@
     if (angular.isFunction($scope.unregisterEditorAboutToCloseCallback))
       $scope.unregisterEditorAboutToCloseCallback('TagEditorController');
 
-    if ($scope.isTagEdited() && !$scope.tag.trans.deleted){
+    if ($scope.isEdited($scope.tag) && !$scope.tag.trans.deleted){
       saveTagInEdit();
     } else if (deleting){
       $scope.swipeToContextsAndReset();

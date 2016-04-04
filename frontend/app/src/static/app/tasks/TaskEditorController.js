@@ -149,12 +149,6 @@
     $scope.processDelete($scope.task, $scope.deleteTask, $scope.undeleteTask);
   };
 
-  $scope.isTaskEdited = function() {
-    if ($scope.titlebarHasText()) {
-      return TasksService.isTaskEdited($scope.task);
-    }
-  };
-
   $scope.endTaskEdit = function() {
     $scope.closeEditor();
   };
@@ -163,7 +157,7 @@
     if (angular.isFunction($scope.unregisterEditorAboutToCloseCallback))
       $scope.unregisterEditorAboutToCloseCallback('TaskEditorController');
 
-    if ($scope.isTaskEdited() && !$scope.task.trans.deleted) return saveTaskInEdit(exitAppAfterSave);
+    if ($scope.isEdited($scope.task) && !$scope.task.trans.deleted) return saveTaskInEdit(exitAppAfterSave);
     else {
       if (completeReadyDeferred){
         $scope.deferEdit().then(function(){

@@ -13,12 +13,13 @@
  * limitations under the License.
  */
 
- /* global cordova, console, require */
+ /* global console */
  'use strict';
 
  function EditorController($rootScope, $scope, $timeout,
-                           ConvertService, ItemsService, PlatformService, SwiperService, UISessionService,
-                           URLService, UserSessionService) {
+                           ConvertService, ItemsService, ListsService, NotesService, PlatformService,
+                           SwiperService, TagsService, TasksService, UISessionService, URLService,
+                           UserSessionService) {
 
   // OPENING, INITIALIZING, CLOSING
 
@@ -252,7 +253,31 @@
     }, $rootScope.LIST_ITEM_LEAVE_ANIMATION_SPEED);
   }
 
+
+  // SAVING
+
+  $scope.isEdited = function(itemInEdit) {
+    // Item without title is unedited
+    if ($scope.titlebarHasText()) {
+      var itemType = $scope.editorType === 'recurring' ? $scope.mode : $scope.editorType;
+      switch (itemType){
+        case 'task':
+        return TasksService.isTaskEdited(itemInEdit);
+        case 'note':
+        return NotesService.isNoteEdited(itemInEdit);
+        case 'list':
+        return ListsService.isListEdited(itemInEdit);
+        case 'item':
+        return ItemsService.isItemEdited(itemInEdit);
+        case 'tag':
+        return TagsService.isTagEdited(itemInEdit);
+      }
+    }
+  };
+
+
   // DELETING
+
   $scope.processDelete = function(dataInEdit, deleteCallback, undeleteFn) {
 
     function doProcessDelete(dataInEdit, deleteCallback, undeleteFn) {
@@ -701,7 +726,8 @@
       case 'urlTextArea':
       return !item.trans.link || $scope.focusedTextProperty === 'url';
       case 'urlLinkError':
-      return $scope.focusedTextProperty !== 'url' && item.trans.link && !URLService.isValidUrl(item.trans.link);
+      return $scope.focusedTextProperty !== 'url' && item.trans.link &&
+             !URLService.isValidUrl(item.trans.link);
       case 'side-by-side-links':
       return $rootScope.columns === 3 && !$scope.isSubEditorOpen();
     }
@@ -856,6 +882,6 @@
 }
 
 EditorController['$inject'] = ['$rootScope', '$scope', '$timeout',
-'ConvertService', 'ItemsService', 'PlatformService', 'SwiperService', 'UISessionService', 'URLService',
-'UserSessionService'];
+'ConvertService', 'ItemsService', 'ListsService', 'NotesService', 'PlatformService', 'SwiperService',
+'TagsService', 'TasksService', 'UISessionService', 'URLService', 'UserSessionService'];
 angular.module('em.main').controller('EditorController', EditorController);

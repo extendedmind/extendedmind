@@ -184,20 +184,13 @@
     $scope.processDelete($scope.note, $scope.deleteNote, $scope.undeleteNote);
   };
 
-  $scope.isNoteEdited = function() {
-    // Note without title is unedited
-    if ($scope.titlebarHasText()) {
-      return NotesService.isNoteEdited($scope.note);
-    }
-  };
-
   $scope.endNoteEdit = $scope.closeEditor;
 
   function noteEditorAboutToClose(exitAppAfterSave) {
     if (angular.isFunction($scope.unregisterEditorAboutToCloseCallback))
       $scope.unregisterEditorAboutToCloseCallback('NoteEditorController');
 
-    if ($scope.isNoteEdited() && !$scope.note.trans.deleted){
+    if ($scope.isEdited($scope.note) && !$scope.note.trans.deleted){
       if ($scope.features.notes.getStatus() === 'onboarding_1'){
         $scope.increaseOnboardingPhase('notes');
       }
