@@ -258,7 +258,7 @@
 
   $scope.isEdited = function(itemInEdit) {
     // Item without title is unedited
-    if ($scope.titlebarHasText()) {
+    if (itemInEdit.trans.title && itemInEdit.trans.title.length) {
       var itemType = $scope.editorType === 'recurring' ? $scope.mode : $scope.editorType;
       switch (itemType){
         case 'task':
