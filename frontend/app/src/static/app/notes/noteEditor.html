@@ -4,15 +4,15 @@
     <div class="container-titlebar--inner">
       <div class="group-symmetrical height-large--top height-large--bottom" swiper-prevent>
 
-        <a href ng-show="showNoteAction('saveBack')"
+        <a href ng-if="showEditorAction('saveBack')"
           class="group-symmetrical--left link-navigation active highlighted sorting-hide"
           swiper-click="endNoteEdit()">
           <span class="text-navigation-back" ng-class="getEditorNavigationBackClasses()"
-            ng-bind="isAutoSavingPrevented() ? (isEdited(note) && !note.trans.deleted ? 'save' : 'back') : noteStatus">
+            ng-bind="getSaveStatusText(note)">
           </span>
         </a>
 
-        <a href ng-show="showNoteAction('saveDone')"
+        <a href ng-show="showEditorAction('saveDone')"
           class="group-symmetrical--left highlighted override-disabled" ng-click="subEditorDone()">
           <span class="text-edit" ng-bind="isPropertyEdited() ? 'save' : 'done'"></span>
         </a>
@@ -57,7 +57,7 @@
           <a href ng-if="!iterableItem" class="link-navigation active highlighted link-side-by-side"
             swiper-click="endNoteEdit()">
             <span class="text-navigation" ng-class="getEditorNavigationBackClasses()"
-              ng-bind="isAutoSavingPrevented() ? (isEdited(note) && !note.trans.deleted ? 'save' : 'close') : noteStatus">
+              ng-bind="getSaveStatusText(note)">
             </span>
           </a>
         </div>
@@ -93,7 +93,7 @@
                 <textarea id="noteEditorTitleInput" class="text-heading-primary large"
                   ng-model="note.trans.title" input-model-validator ng-trim="false"
                   msd-elastic msd-elastic-inline
-                  ng-change="inputChanged()" ng-keydown="noteTitlebarTextKeyDown($event)"
+                  ng-change="noteInputChanged()" ng-keydown="noteTitlebarTextKeyDown($event)"
                   editable-field
                   editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
                   ng-disabled="readOnly"
@@ -232,9 +232,9 @@
                                lowerHeading: 'archived lists', lowerArray: getListsArray('archived')}"
               list-picker-type="active list"
               list-picker-new-item="getNewList()"
-              list-picker-save="closeListPickerAndSetListToItem(note, list, autoSaveNote)"
+              list-picker-save="closeListPickerAndSetListToItem(note, list, autoSaveItemInEdit)"
               list-picker-close="closeListPicker()"
-              list-picker-clear="closeListPickerAndClearListFromItem(note, list, autoSaveNote)"
+              list-picker-clear="closeListPickerAndClearListFromItem(note, list, autoSaveItemInEdit)"
               list-picker-get-selected="note.trans.list"
               list-picker-has-children="hasChildLists"
               list-picker-register-save-new-list-callback="registerSubEditorDoneCallback(saveNewList)"

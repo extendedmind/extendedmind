@@ -254,27 +254,6 @@
   }
 
 
-  // SAVING
-
-  $scope.isEdited = function(itemInEdit) {
-    // Item without title is unedited
-    if (itemInEdit.trans.title && itemInEdit.trans.title.length) {
-      var itemType = $scope.editorType === 'recurring' ? $scope.mode : $scope.editorType;
-      switch (itemType){
-        case 'task':
-        return TasksService.isTaskEdited(itemInEdit);
-        case 'note':
-        return NotesService.isNoteEdited(itemInEdit);
-        case 'list':
-        return ListsService.isListEdited(itemInEdit);
-        case 'item':
-        return ItemsService.isItemEdited(itemInEdit);
-        case 'tag':
-        return TagsService.isTagEdited(itemInEdit);
-      }
-    }
-  };
-
 
   // DELETING
 
@@ -558,7 +537,7 @@
     function doCloseAndSave() {
       $scope.closeListPicker();
       item.trans.list = list;
-      if (typeof callback === 'function') callback();
+      if (typeof callback === 'function') callback(item, list);
     }
 
     if (!list.trans.uuid) {// List is new, save it first. Close list picker on error saving new list.
@@ -574,7 +553,7 @@
     if (item.trans.list === list){
       item.trans.list = undefined;
     }
-    if (typeof callback === 'function') callback();
+    if (typeof callback === 'function') callback(item, list);
   };
 
   var editorFooterCloseCallback;
@@ -736,11 +715,13 @@
   $scope.showEditorAction = function(actionName, item){
     switch (actionName){
       case 'saveBack':
-      return !$scope.showEditorComponent('side-by-side-links') && !$scope.isPropertyInDedicatedEdit();
+      return ($scope.isOnboarding('notes') && $rootScope.columns !== 3) ||
+             (!$scope.showEditorComponent('side-by-side-links') && !$scope.isPropertyInDedicatedEdit());
       case 'saveClose':
       return $scope.showEditorComponent('side-by-side-links') && !$scope.isPropertyInDedicatedEdit();
       case 'saveDone':
-      return $scope.isPropertyInDedicatedEdit();
+      return !($scope.isOnboarding('notes') && $rootScope.columns !== 3) &&
+               $scope.isPropertyInDedicatedEdit();
       case 'delete':
       return !item.trans.deleted && !$scope.isPropertyInDedicatedEdit();
       case 'restore':
@@ -841,8 +822,156 @@
 
   // AUTOSAVING
 
+  var pollForSaveReady = {
+    value: true
+  };
+  var setSavedTimer, resetNoteStatusTimer;
+  var autoSaveStatus = $scope.showEditorComponent('side-by-side-links') ? 'close' : 'back';
+  var autoSavingInProgress, backTimer;
+  var autoSaveDebounced = function(itemInEdit) {
+    function autoSaveDebouncedSuccess(){
+      autoSaveStatus = 'saved';
+      backTimer = $timeout(function() {
+        autoSaveStatus = $scope.showEditorComponent('side-by-side-links') ? 'close' : 'back';
+      }, 1000);
+      autoSavingInProgress = false;
+    }
+    function autoSaveDebouncedFailure(){
+      autoSavingInProgress = false;
+    }
+
+    if (!autoSavingInProgress) {
+      autoSavingInProgress = true;
+      var itemType = itemInEdit.trans.itemType;
+      switch (itemType){
+        case 'task':
+        $scope.saveTask(itemInEdit, pollForSaveReady).then(
+                          autoSaveDebouncedSuccess, autoSaveDebouncedFailure);
+        break;
+        case 'note':
+        $scope.saveNote(itemInEdit, pollForSaveReady).then(
+                          autoSaveDebouncedSuccess, autoSaveDebouncedFailure);
+        break;
+        case 'list':
+        $scope.saveList(itemInEdit, pollForSaveReady).then(
+                          autoSaveDebouncedSuccess, autoSaveDebouncedFailure);
+        break;
+        case 'item':
+        $scope.saveItem(itemInEdit, pollForSaveReady).then(
+                          autoSaveDebouncedSuccess, autoSaveDebouncedFailure);
+        break;
+        case 'tag':
+        $scope.saveTag(itemInEdit, pollForSaveReady).then(
+                          autoSaveDebouncedSuccess, autoSaveDebouncedFailure);
+        break;
+      }
+    }
+  }.debounce(1000);
+
+  $scope.inputChanged = function(itemInEdit) {
+    if (!$scope.isAutoSavingPrevented()) {
+
+      if (setSavedTimer) {
+        $timeout.cancel(setSavedTimer);
+        if (resetNoteStatusTimer) {
+          $timeout.cancel(resetNoteStatusTimer);
+        }
+      }
+
+      if (backTimer) $timeout.cancel(backTimer);
+      autoSaveStatus = 'saving';
+      autoSaveDebounced(itemInEdit);
+    }
+  };
+
+  $scope.autoSaveItemInEdit = function(itemInEdit) {
+    function autoSaveItemInEditSuccess(){
+      $scope.setAutoSaved(savingSetTime);
+    }
+    if (!$scope.isAutoSavingPrevented() && $scope.titlebarHasText()) {
+      var savingSetTime = $scope.setAutoSaving();
+      var itemType = itemInEdit.trans.itemType;
+      switch (itemType){
+        case 'task':
+        $scope.saveTask(itemInEdit).then(autoSaveItemInEditSuccess);
+        break;
+        case 'note':
+        $scope.saveNote(itemInEdit).then(autoSaveItemInEditSuccess);
+        break;
+        case 'list':
+        $scope.saveList(itemInEdit).then(autoSaveItemInEditSuccess);
+        break;
+        case 'item':
+        $scope.saveItem(itemInEdit).then(autoSaveItemInEditSuccess);
+        break;
+        case 'tag':
+        $scope.saveTag(itemInEdit).then(autoSaveItemInEditSuccess);
+        break;
+      }
+    }
+  };
+
+  $scope.setAutoSaving = function() {
+    if (!$scope.isAutoSavingPrevented() && $scope.titlebarHasText()) {
+      autoSaveStatus = 'saving';
+      return Date.now();
+    }
+  };
+
+  $scope.setAutoSaved = function(savingSetTime) {
+    if (!$scope.titlebarHasText()) return;
+
+    function doSetSaved() {
+      autoSaveStatus = 'saved';
+      resetNoteStatusTimer = $timeout(function() {
+        autoSaveStatus = $scope.showEditorComponent('side-by-side-links') ? 'close' : 'back';
+      }, 1000);
+    }
+
+    if (setSavedTimer) {
+      $timeout.cancel(setSavedTimer);
+      if (resetNoteStatusTimer) {
+        $timeout.cancel(resetNoteStatusTimer);
+      }
+    }
+
+    if (backTimer) $timeout.cancel(backTimer);
+
+    var saving = Date.now() - savingSetTime;
+    if (saving < 1000)
+      setSavedTimer = $timeout(doSetSaved, 1000 - saving);
+    else
+      doSetSaved();
+  };
+
   $scope.isAutoSavingPrevented = function() {
     return $scope.editorType === 'recurring' || $scope.isOnboarding('notes');
+  };
+
+  $scope.getSaveStatusText = function(itemInEdit){
+    var backCloseText = $scope.showEditorAction('saveBack') ? 'back' : 'close';
+    return $scope.isAutoSavingPrevented() ?
+      ($scope.isEdited(itemInEdit) && !itemInEdit.trans.deleted ? 'save' : backCloseText) :
+      autoSaveStatus;
+  };
+
+  $scope.isEdited = function(itemInEdit) {
+    // Item without title is unedited
+    if (itemInEdit.trans.title && itemInEdit.trans.title.length) {
+      var itemType = $scope.editorType === 'recurring' ? $scope.mode : $scope.editorType;
+      switch (itemType){
+        case 'task':
+        return TasksService.isTaskEdited(itemInEdit);
+        case 'note':
+        return NotesService.isNoteEdited(itemInEdit);
+        case 'list':
+        return ListsService.isListEdited(itemInEdit);
+        case 'item':
+        return ItemsService.isItemEdited(itemInEdit);
+        case 'tag':
+        return TagsService.isTagEdited(itemInEdit);
+      }
+    }
   };
 
   // KEYBOARD SHORTCUTS

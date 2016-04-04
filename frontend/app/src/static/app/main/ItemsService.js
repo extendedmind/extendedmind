@@ -152,7 +152,7 @@
     getDeletedItems: function(ownerUUID) {
       return items[ownerUUID].deletedItems;
     },
-    saveItem: function(item) {
+    saveItem: function(item, pollForSaveReady) {
       var ownerUUID = item.trans.owner;
       var deferred = $q.defer();
       if (items[ownerUUID].deletedItems.findFirstObjectByKeyValue('uuid', item.trans.uuid, 'trans')) {
@@ -162,7 +162,12 @@
           function(result){
             if (result === 'new') setItem(item, ownerUUID);
             else if (result === 'existing') updateItem(item, ownerUUID);
-            deferred.resolve(result);
+            if (pollForSaveReady) {
+              UISessionService.resolveWhenTrue(BackendClientService.isProcessing, pollForSaveReady, deferred,
+                                               result);
+            } else {
+              deferred.resolve(result);
+            }
           }, function(failure){
             deferred.reject(failure);
           }

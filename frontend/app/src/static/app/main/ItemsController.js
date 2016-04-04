@@ -71,8 +71,8 @@
 
   // SAVING
 
-  $scope.saveItem = function(item) {
-    return ItemsService.saveItem(item);
+  $scope.saveItem = function(item, pollForSaveReady) {
+    return ItemsService.saveItem(item, pollForSaveReady);
   };
 
   // DELETING

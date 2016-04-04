@@ -571,7 +571,7 @@
 
   // SAVING
 
-  $scope.saveTask = function(task) {
+  $scope.saveTask = function(task, pollForSaveReady) {
     var completeOnSave;
     if (task.trans.uuid){
       AnalyticsService.do('saveTask');
@@ -580,7 +580,7 @@
       completeOnSave = task.trans.optimisticComplete();
     }
 
-    return TasksService.saveTask(task).then(function(result) {
+    return TasksService.saveTask(task, pollForSaveReady).then(function(result) {
       if (result === 'new' && completeOnSave){
         $scope.toggleCompleteTask(task);
       }

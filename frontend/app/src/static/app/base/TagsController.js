@@ -367,15 +367,23 @@
     }
   };
 
+  $scope.saveTag = function(tag, pollForSaveReady){
+    if (tag.trans.tagType === 'keyword'){
+      return $scope.saveKeyword(tag, pollForSaveReady);
+    }else if (tag.trans.tagType === 'context'){
+      return $scope.saveContext(tag, pollForSaveReady);
+    }
+  };
+
   // KEYWORDS
 
   // SAVING
 
-  $scope.saveKeyword = function(keyword) {
+  $scope.saveKeyword = function(keyword, pollForSaveReady) {
     if (keyword.trans.uuid) AnalyticsService.do('saveKeyword');
     else AnalyticsService.do('addKeyword');
 
-    return TagsService.saveTag(keyword);
+    return TagsService.saveTag(keyword, pollForSaveReady);
   };
 
   // DELETING
@@ -402,11 +410,11 @@
 
   // SAVING
 
-  $scope.saveContext = function(context) {
+  $scope.saveContext = function(context, pollForSaveReady) {
     if (context.trans.uuid) AnalyticsService.do('saveContext');
     else AnalyticsService.do('addContext');
 
-    return TagsService.saveTag(context);
+    return TagsService.saveTag(context, pollForSaveReady);
   };
 
   // DELETING

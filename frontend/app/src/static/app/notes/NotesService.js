@@ -415,7 +415,6 @@
             } else {
               deferred.resolve(result);
             }
-
           }, function(failure){
             deferred.reject(failure);
           }

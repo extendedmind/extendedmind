@@ -17,7 +17,7 @@
  'use strict';
 
  function ListsService($q, ArrayService, BackendClientService, ExtendedItemService, ItemLikeService,
-                       TagsService, UserSessionService, UUIDService) {
+                       TagsService, UISessionService, UserSessionService, UUIDService) {
   var LIST_TYPE = 'list';
 
   var archivedFieldInfo = {
@@ -514,7 +514,7 @@
     getListInfo: function(value, ownerUUID, searchField) {
       return getListInfo(value, ownerUUID, searchField);
     },
-    saveList: function(list) {
+    saveList: function(list, pollForSaveReady) {
       var deferred = $q.defer();
       var ownerUUID = list.trans.owner;
       if (lists[ownerUUID].deletedLists.findFirstObjectByKeyValue('uuid', list.trans.uuid, 'trans')) {
@@ -524,7 +524,13 @@
           function(result){
             if (result === 'new') setList(list, ownerUUID);
             else if (result === 'existing') updateList(list, ownerUUID);
-            deferred.resolve(result);
+
+            if (pollForSaveReady) {
+              UISessionService.resolveWhenTrue(BackendClientService.isProcessing, pollForSaveReady, deferred,
+                                               result);
+            } else {
+              deferred.resolve(result);
+            }
           }, function(failure){
             deferred.reject(failure);
           }
@@ -949,5 +955,6 @@
 }
 
 ListsService['$inject'] = ['$q', 'ArrayService', 'BackendClientService', 'ExtendedItemService',
-                           'ItemLikeService', 'TagsService', 'UserSessionService', 'UUIDService'];
+                           'ItemLikeService', 'TagsService', 'UISessionService', 'UserSessionService',
+                           'UUIDService'];
 angular.module('em.lists').factory('ListsService', ListsService);

@@ -16,7 +16,7 @@
  /*global angular, jQuery */
  'use strict';
 
- function TagsService($q, ArrayService, ItemLikeService, UserSessionService) {
+ function TagsService($q, ArrayService, ItemLikeService, UISessionService, UserSessionService) {
   var TAG_TYPE = 'tag';
 
 
@@ -304,7 +304,7 @@
                                            tags[ownerUUID].deletedTags);
     },
     getTagInfo: getTagInfo,
-    saveTag: function(tag) {
+    saveTag: function(tag, pollForSaveReady) {
       var deferred = $q.defer();
       var ownerUUID = tag.trans.owner;
       if (tags[ownerUUID].deletedTags.findFirstObjectByKeyValue('uuid', tag.trans.uuid, 'trans')) {
@@ -314,7 +314,12 @@
           function(result){
             if (result === 'new') setTag(tag, ownerUUID);
             else if (result === 'existing') updateTag(tag, ownerUUID);
-            deferred.resolve(result);
+            if (pollForSaveReady) {
+              UISessionService.resolveWhenTrue(BackendClientService.isProcessing, pollForSaveReady, deferred,
+                                               result);
+            } else {
+              deferred.resolve(result);
+            }
           }, function(failure){
             deferred.reject(failure);
           }
@@ -499,7 +504,8 @@
         for (var extendedItemUUID in collectiveTags[ownerUUID][collectiveUUID]){
           if (collectiveTags[ownerUUID][collectiveUUID].hasOwnProperty(extendedItemUUID) &&
               collectiveTags[ownerUUID][collectiveUUID][extendedItemUUID].tags &&
-              collectiveTags[ownerUUID][collectiveUUID][extendedItemUUID].tags.indexOf(tag.trans.uuid) !== -1){
+              collectiveTags[ownerUUID][collectiveUUID][extendedItemUUID].tags.indexOf(
+                                                                                tag.trans.uuid) !==-1){
             // Found the tag for this owner in the given collective
             return true;
           }
@@ -509,6 +515,5 @@
   };
 }
 
-TagsService['$inject'] = ['$q', 'ArrayService', 'ItemLikeService',
-'UserSessionService'];
+TagsService['$inject'] = ['$q', 'ArrayService', 'ItemLikeService', 'UISessionService', 'UserSessionService'];
 angular.module('em.base').factory('TagsService', TagsService);
