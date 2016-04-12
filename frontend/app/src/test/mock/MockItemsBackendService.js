@@ -160,14 +160,10 @@ function MockItemsBackendService($httpBackend, ItemsService, SynchronizeService,
           return expectResponse(method, url, data, headers, {});
         }else if (url.indexOf('?deleted=true') != -1){
           return expectResponse(method, url, data, headers, {});
-        }else if (url.indexOf('?tagsOnly=true') != -1){
-          if (url.indexOf('11111111-1111-1111-1111-111111111111') != -1){
-            // Common collective
-            var tagsOnlyItemsResponseData = getJSONFixture('tagsOnlyItemsResponse.json');
-            return expectResponse(method, url, data, headers, tagsOnlyItemsResponseData);
-          }else{
-            return expectResponse(method, url, data, headers, {});
-          }
+        }else if (url.indexOf('11111111-1111-1111-1111-111111111111') != -1){
+          // Common collective, return tags
+          var tagsOnlyItemsResponseData = getJSONFixture('tagsOnlyItemsResponse.json');
+          return expectResponse(method, url, data, headers, tagsOnlyItemsResponseData);
         }else{
           var authenticateResponse = getJSONFixture('authenticateResponse.json');
           for (var collectiveUUID in authenticateResponse.collectives) {

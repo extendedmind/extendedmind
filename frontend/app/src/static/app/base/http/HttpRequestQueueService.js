@@ -254,7 +254,7 @@ function HttpRequestQueueService(enableOffline) {
         }
       }
     },
-    getLast: function() {
+    getLast: function() {
       if (!processing) {
         if (last){
           processing = true;

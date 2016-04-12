@@ -498,13 +498,13 @@
 
   // SAVING
 
-  $scope.saveList = function(list, pollForSaveReady) {
+  $scope.saveList = function(list) {
     if (list.trans.uuid){
       AnalyticsService.do('saveList');
     }else{
       AnalyticsService.do('addList');
     }
-    return ListsService.saveList(list, pollForSaveReady);
+    return ListsService.saveList(list);
   };
 
   $scope.saveListAndChangeFeature = function(list) {

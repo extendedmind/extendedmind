@@ -77,8 +77,7 @@
 
     if (!parentTag.trans.uuid) {
       // Parent tag is new, save it first. Close parent picker on error saving new parent.
-      var saveTag = parentTag.trans.tagType === 'keyword' ? $scope.saveKeyword : $scope.saveContext;
-      saveTag(parentTag).then(doCloseAndSave, $scope.closeParentPicker);
+      $scope.saveTag(parentTag).then(doCloseAndSave, $scope.closeParentPicker);
     }
     else {
       doCloseAndSave();

@@ -12,6 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+  /*global cordova */
  'use strict';
 
  function ItemsController($rootScope, $scope, AnalyticsService, ArrayService, BackendClientService,
@@ -71,8 +72,8 @@
 
   // SAVING
 
-  $scope.saveItem = function(item, pollForSaveReady) {
-    return ItemsService.saveItem(item, pollForSaveReady);
+  $scope.saveItem = function(item) {
+    return ItemsService.saveItem(item);
   };
 
   // DELETING
@@ -104,10 +105,10 @@
     if (urlPrefix.length > 0){
       var domainIndex = urlPrefix.indexOf('://');
       if (domainIndex !== -1){
-        inboxEmail += "@" + urlPrefix.substring(urlPrefix.indexOf('://') + 3);
+        inboxEmail += '@' + urlPrefix.substring(urlPrefix.indexOf('://') + 3);
       }
     }else {
-      inboxEmail += "@" + window.location.hostname;
+      inboxEmail += '@' + window.location.hostname;
     }
     return inboxEmail;
   };

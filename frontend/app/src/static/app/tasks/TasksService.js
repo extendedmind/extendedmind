@@ -598,7 +598,7 @@
                                          getOtherArrays(ownerUUID));
     },
     getTaskInfo: getTaskInfo,
-    saveTask: function(task, pollForSaveReady) {
+    saveTask: function(task) {
       var deferred = $q.defer();
       var ownerUUID = task.trans.owner;
       if (tasks[ownerUUID].deletedTasks.findFirstObjectByKeyValue('uuid', task.trans.uuid, 'trans')) {
@@ -608,13 +608,7 @@
           function(result){
             if (result === 'new') setTask(task, ownerUUID);
             else if (result === 'existing') updateTask(task, ownerUUID);
-
-            if (pollForSaveReady) {
-              UISessionService.resolveWhenTrue(BackendClientService.isProcessing, pollForSaveReady, deferred,
-                                               result);
-            } else {
-              deferred.resolve(result);
-            }
+            deferred.resolve(result);
           }, function(failure){
             deferred.reject(failure);
           }

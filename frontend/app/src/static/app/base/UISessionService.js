@@ -291,19 +291,6 @@
       var deferredAction = deferredActions.findFirstObjectByKeyValue('type', type);
       if (deferredAction) deferredAction.deferred.resolve(parameter);
     },
-    resolveWhenTrue: function(conditionFn, conditionObject, deferred, result) {
-      (function loop(){
-        setTimeout(function(){
-          if (!conditionFn() || !conditionObject.value) {
-            deferred.resolve(result);
-            return;
-          }
-          loop();
-        }, 1000);
-      })();
-
-      return deferred.promise;
-    },
 
     // ALLOWED ACTIONS
 

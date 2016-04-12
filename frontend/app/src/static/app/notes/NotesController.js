@@ -141,12 +141,12 @@
 
   // SAVING
 
-  $scope.saveNote = function saveNote(note, pollForSaveReady) {
+  $scope.saveNote = function saveNote(note) {
     if (note.trans.uuid) AnalyticsService.do('saveNote');
     else AnalyticsService.do('addNote');
     return saveKeywords(note).then(function() {
       var favoriteBeforeSave = note.trans.favorited;
-      return NotesService.saveNote(note, pollForSaveReady)
+      return NotesService.saveNote(note)
       .then(function(result){
         if (result === 'new' && favoriteBeforeSave){
           return $scope.favoriteNote(note);

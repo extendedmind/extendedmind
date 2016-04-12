@@ -93,7 +93,7 @@
                 <textarea id="noteEditorTitleInput" class="text-heading-primary large"
                   ng-model="note.trans.title" input-model-validator ng-trim="false"
                   msd-elastic msd-elastic-inline
-                  ng-change="noteInputChanged()" ng-keydown="noteTitlebarTextKeyDown($event)"
+                  ng-keydown="noteTitlebarTextKeyDown($event)"
                   editable-field
                   editable-field-register-callbacks="registerTitleBarInputCallbacks(focus, blur)"
                   ng-disabled="readOnly"
@@ -232,9 +232,9 @@
                                lowerHeading: 'archived lists', lowerArray: getListsArray('archived')}"
               list-picker-type="active list"
               list-picker-new-item="getNewList()"
-              list-picker-save="closeListPickerAndSetListToItem(note, list, autoSaveItemInEdit)"
+              list-picker-save="closeListPickerAndSetListToItem(note, list)"
               list-picker-close="closeListPicker()"
-              list-picker-clear="closeListPickerAndClearListFromItem(note, list, autoSaveItemInEdit)"
+              list-picker-clear="closeListPickerAndClearListFromItem(note, list)"
               list-picker-get-selected="note.trans.list"
               list-picker-has-children="hasChildLists"
               list-picker-register-save-new-list-callback="registerSubEditorDoneCallback(saveNewList)"

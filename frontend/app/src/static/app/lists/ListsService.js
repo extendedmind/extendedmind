@@ -209,7 +209,7 @@
     listSlashRegex.source +
     BackendClientService.uuidRegex.source +
     unarchiveRegex.source +
-    '$')
+    '$');
 
   var putNewListRegexp = ItemLikeService.getPutNewRegex(LIST_TYPE);
   var putExistingListRegexp = ItemLikeService.getPutExistingRegex(LIST_TYPE);
@@ -273,7 +273,7 @@
   TagsService.registerTagDeletedCallback(tagDeletedCallback, 'ListsService');
 
   // Setup callback for collective tag sync
-  var collectiveTagsSyncedCallback = function(updatedTags, listInfos, collectiveUUID) {
+  var collectiveTagsSyncedCallback = function(updatedTags, listInfos/*, collectiveUUID*/) {
     if (listInfos && listInfos.length){
       for (var i=0; i<listInfos.length; i++){
         var listInfo = getListInfo(listInfos[i].uuid, listInfos[i].owner);
@@ -514,7 +514,7 @@
     getListInfo: function(value, ownerUUID, searchField) {
       return getListInfo(value, ownerUUID, searchField);
     },
-    saveList: function(list, pollForSaveReady) {
+    saveList: function(list) {
       var deferred = $q.defer();
       var ownerUUID = list.trans.owner;
       if (lists[ownerUUID].deletedLists.findFirstObjectByKeyValue('uuid', list.trans.uuid, 'trans')) {
@@ -524,13 +524,7 @@
           function(result){
             if (result === 'new') setList(list, ownerUUID);
             else if (result === 'existing') updateList(list, ownerUUID);
-
-            if (pollForSaveReady) {
-              UISessionService.resolveWhenTrue(BackendClientService.isProcessing, pollForSaveReady, deferred,
-                                               result);
-            } else {
-              deferred.resolve(result);
-            }
+            deferred.resolve(result);
           }, function(failure){
             deferred.reject(failure);
           }

@@ -397,7 +397,7 @@
                                             notes[ownerUUID].deletedNotes, getOtherArrays(ownerUUID));
     },
     getNoteInfo: getNoteInfo,
-    saveNote: function(note, pollForSaveReady) {
+    saveNote: function(note) {
       var ownerUUID = note.trans.owner;
       var deferred = $q.defer();
       if (notes[ownerUUID].deletedNotes.findFirstObjectByKeyValue('uuid', note.trans.uuid, 'trans')) {
@@ -408,13 +408,7 @@
 
             if (result === 'new') setNote(note, ownerUUID, ['uuid', 'created', 'modified']);
             else if (result === 'existing') updateNote(note, ownerUUID, undefined, {});
-
-            if (pollForSaveReady) {
-              UISessionService.resolveWhenTrue(BackendClientService.isProcessing, pollForSaveReady, deferred,
-                                               result);
-            } else {
-              deferred.resolve(result);
-            }
+            deferred.resolve(result);
           }, function(failure){
             deferred.reject(failure);
           }

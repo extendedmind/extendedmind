@@ -152,7 +152,7 @@
     getDeletedItems: function(ownerUUID) {
       return items[ownerUUID].deletedItems;
     },
-    saveItem: function(item, pollForSaveReady) {
+    saveItem: function(item) {
       var ownerUUID = item.trans.owner;
       var deferred = $q.defer();
       if (items[ownerUUID].deletedItems.findFirstObjectByKeyValue('uuid', item.trans.uuid, 'trans')) {
@@ -162,12 +162,7 @@
           function(result){
             if (result === 'new') setItem(item, ownerUUID);
             else if (result === 'existing') updateItem(item, ownerUUID);
-            if (pollForSaveReady) {
-              UISessionService.resolveWhenTrue(BackendClientService.isProcessing, pollForSaveReady, deferred,
-                                               result);
-            } else {
-              deferred.resolve(result);
-            }
+            deferred.resolve(result);
           }, function(failure){
             deferred.reject(failure);
           }
@@ -255,7 +250,10 @@
         deferred.reject({type: 'deleted'});
       } else {
         // Copy item description as note content
-        item.trans.content = item.trans.description;
+        if ((!item.trans.content || !item.trans.content.length) &&
+            (item.trans.description && item.trans.description.length)){
+          item.trans.content = item.trans.description;
+        }
         item.trans.description = undefined;
         NotesService.saveNote(item).then(function(/*result*/){
           removeActiveItem(item, ownerUUID);

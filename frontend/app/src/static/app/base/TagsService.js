@@ -304,7 +304,7 @@
                                            tags[ownerUUID].deletedTags);
     },
     getTagInfo: getTagInfo,
-    saveTag: function(tag, pollForSaveReady) {
+    saveTag: function(tag) {
       var deferred = $q.defer();
       var ownerUUID = tag.trans.owner;
       if (tags[ownerUUID].deletedTags.findFirstObjectByKeyValue('uuid', tag.trans.uuid, 'trans')) {
@@ -314,12 +314,7 @@
           function(result){
             if (result === 'new') setTag(tag, ownerUUID);
             else if (result === 'existing') updateTag(tag, ownerUUID);
-            if (pollForSaveReady) {
-              UISessionService.resolveWhenTrue(BackendClientService.isProcessing, pollForSaveReady, deferred,
-                                               result);
-            } else {
-              deferred.resolve(result);
-            }
+            deferred.resolve(result);
           }, function(failure){
             deferred.reject(failure);
           }

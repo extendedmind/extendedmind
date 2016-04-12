@@ -163,17 +163,6 @@
 
   // SAVING, DELETING
 
-  function saveNoteInEdit(exitAppAfterSave) {
-    // TODO: Keywords
-    if (exitAppAfterSave){
-      return $scope.saveNote($scope.note);
-    }else{
-      return $scope.deferEdit().then(function() {
-        $scope.saveNote($scope.note);
-      });
-    }
-  }
-
   $scope.deleteNoteInEdit = function() {
     $scope.processDelete($scope.note, $scope.deleteNote, $scope.undeleteNote);
   };
@@ -188,28 +177,24 @@
       if ($scope.features.notes.getStatus() === 'onboarding_1'){
         $scope.increaseOnboardingPhase('notes');
       }
-      return saveNoteInEdit(exitAppAfterSave);
+      // Save note manually here
+      if (exitAppAfterSave){
+        return $scope.saveNote($scope.note);
+      }else{
+        return $scope.deferEdit().then(function() {
+          $scope.saveNote($scope.note);
+        });
+      }
     }else{
       NotesService.resetNote($scope.note);
     }
   }
 
   $scope.clickFavorite = function() {
-    var savingSetTime = $scope.setAutoSaving($scope.note);
-
-    var favoritePromise;
     if (!$scope.note.trans.favorited)
-      favoritePromise = $scope.favoriteNote($scope.note);
+      $scope.favoriteNote($scope.note);
     else
-      favoritePromise = $scope.unfavoriteNote($scope.note);
-
-    if (favoritePromise) {
-      favoritePromise.then(function() {
-        $scope.setAutoSaved(savingSetTime);
-      });
-    } else {
-      $scope.setAutoSaved(savingSetTime);
-    }
+      $scope.unfavoriteNote($scope.note);
   };
 
   // MODES
@@ -254,22 +239,7 @@
     }
   };
 
-  function setNoteContentWatch(){
-    return $scope.$watch('note.trans.content', function(newValue, oldValue) {
-      if (newValue && !oldValue && (!$scope.note.trans.title || !$scope.note.trans.title.length)) {
-        // Set untitled as title when title is missing but there is content
-        $scope.note.trans.title = 'untitled';
-      }
-      if (newValue !== oldValue) $scope.noteInputChanged();
-    });
-  }
-  var clearNoteContentWatch = setNoteContentWatch();
-
   // TITLEBAR
-
-  $scope.noteInputChanged = function() {
-    return $scope.inputChanged($scope.note);
-  };
 
   $scope.noteTitlebarTextKeyDown = function (keydownEvent) {
     $scope.handleBasicTitlebarKeydown(keydownEvent, $scope.note);
@@ -441,7 +411,7 @@
   };
 
   $scope.addKeywordToNote = function(note, keyword) {
-    function doAddKeywordToNote(note, keyword, savingSetTime, removedParent){
+    function doAddKeywordToNote(note, keyword, removedParent){
       if (!note.trans.keywords) note.trans.keywords = [];
       var removedParentIndex = note.trans.keywords.indexOf(removedParent);
       if (removedParentIndex !== -1){
@@ -449,11 +419,7 @@
       }
       note.trans.keywords.push(keyword);
       clearKeyword();
-      if (!$scope.isAutoSavingPrevented()) $scope.saveNote(note).then(function() {
-        $scope.setAutoSaved(savingSetTime);
-      });
     }
-    var savingSetTime = $scope.setAutoSaving();
     if (!keyword.trans.uuid){
       // Save new keyword immediately to prevent problems with sorting
       $scope.saveKeyword(keyword).then(function(){
@@ -468,16 +434,12 @@
           note.trans.keywords.indexOf(keyword.trans.parent) !== -1){
         removedParent = keyword.trans.parent;
       }
-      doAddKeywordToNote(note, keyword, savingSetTime, removedParent);
+      doAddKeywordToNote(note, keyword, removedParent);
     }
   };
 
   $scope.removeKeywordFromNote = function(note, keyword) {
-    var savingSetTime = $scope.setAutoSaving();
     note.trans.keywords.splice(note.trans.keywords.indexOf(keyword), 1);
-    if (!$scope.isAutoSavingPrevented()) $scope.saveNote(note).then(function() {
-      $scope.setAutoSaved(savingSetTime);
-    });
   };
 
   $scope.getKeywordsListString = function(note) {
@@ -585,33 +547,42 @@
     $scope.toggleExpandEditor();
   };
 
-  function setNoteFooterWatch(){
+  function setNoteWatch(){
     return $scope.$watch(function() {
+      // Execute footer callbacks
       for (var id in showFooterCallbacks) {
         var showFooter = $scope.showNoteEditorComponent(id);
         if (showFooterCallbacks.hasOwnProperty(id)) showFooterCallbacks[id](showFooter);
       }
+      if (($scope.note.trans.content && $scope.note.trans.content.length) &&
+          (!$scope.note.trans.title || !$scope.note.trans.title.length)) {
+        // Set untitled as title when title is missing but there is content
+        $scope.note.trans.title = 'untitled';
+      }
+      // Autosave on every tick. Function is debounced so it can be called every digest
+      if (!$scope.isAutoSavingPrevented()) $scope.autoSave($scope.note);
     });
   }
-  var clearFooterWatch = setNoteFooterWatch();
+  var clearNoteWatch = setNoteWatch();
+
+  // INITIALIZING
+
+  function initializeEditor(){
+    clearNoteWatch();
+    clearNoteWatch = setNoteWatch();
+  }
+  $scope.registerInitializeEditorCallback(initializeEditor);
+
+  // CLEAN UP
 
   $scope.$on('$destroy', function() {
+    clearNoteWatch();
     if (angular.isFunction($scope.unregisterInitializeEditorCallback))
       $scope.unregisterInitializeEditorCallback();
     if (angular.isFunction($scope.unregisterEditorAboutToCloseCallback)){
       $scope.unregisterEditorAboutToCloseCallback();
     }
   });
-
-  // INITIALIZING
-
-  function initializeEditor(){
-    clearNoteContentWatch();
-    clearNoteContentWatch = setNoteContentWatch();
-    clearFooterWatch();
-    clearFooterWatch = setNoteFooterWatch();
-  }
-  $scope.registerInitializeEditorCallback(initializeEditor);
 }
 
 NoteEditorController['$inject'] = ['$rootScope', '$scope', '$timeout', '$window', 'ContentService',

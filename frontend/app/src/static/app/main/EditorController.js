@@ -16,10 +16,10 @@
  /* global console */
  'use strict';
 
- function EditorController($rootScope, $scope, $timeout,
-                           ConvertService, ItemsService, ListsService, NotesService, PlatformService,
-                           SwiperService, TagsService, TasksService, UISessionService, URLService,
-                           UserSessionService) {
+ function EditorController($rootScope, $scope, $timeout, $q,
+                           BackendClientService, ConvertService, ItemsService, ListsService, NotesService,
+                           PlatformService, SwiperService, TagsService, TasksService, UISessionService,
+                           URLService, UserSessionService) {
 
   // OPENING, INITIALIZING, CLOSING
 
@@ -126,12 +126,12 @@
   }
 
   function editorAboutToClose() {
-    var aboutToClosePromise;
+    var featureActionBeforeExitPromise;
     if (typeof featureEditorAboutToCloseCallback === 'function'){
-      aboutToClosePromise = featureEditorAboutToCloseCallback(exitAppOnBack);
+      featureActionBeforeExitPromise = featureEditorAboutToCloseCallback(exitAppOnBack);
     }
-    if (aboutToClosePromise){
-      aboutToClosePromise.then(function(){
+    if (featureActionBeforeExitPromise){
+      featureActionBeforeExitPromise.then(function(){
         evaluateExitApp();
       });
     }else{
@@ -822,127 +822,95 @@
 
   // AUTOSAVING
 
-  var pollForSaveReady = {
-    value: true
-  };
   var setSavedTimer, resetNoteStatusTimer;
-  var autoSaveStatus = $scope.showEditorComponent('side-by-side-links') ? 'close' : 'back';
-  var autoSavingInProgress, backTimer;
-  var autoSaveDebounced = function(itemInEdit) {
-    function autoSaveDebouncedSuccess(){
-      autoSaveStatus = 'saved';
-      backTimer = $timeout(function() {
-        autoSaveStatus = $scope.showEditorComponent('side-by-side-links') ? 'close' : 'back';
-      }, 1000);
-      autoSavingInProgress = false;
-    }
-    function autoSaveDebouncedFailure(){
-      autoSavingInProgress = false;
-    }
+  var saveStatus = getDefaultSaveStatus();
+  var savingInProgress;
 
-    if (!autoSavingInProgress) {
-      autoSavingInProgress = true;
-      var itemType = itemInEdit.trans.itemType;
-      switch (itemType){
-        case 'task':
-        $scope.saveTask(itemInEdit, pollForSaveReady).then(
-                          autoSaveDebouncedSuccess, autoSaveDebouncedFailure);
-        break;
-        case 'note':
-        $scope.saveNote(itemInEdit, pollForSaveReady).then(
-                          autoSaveDebouncedSuccess, autoSaveDebouncedFailure);
-        break;
-        case 'list':
-        $scope.saveList(itemInEdit, pollForSaveReady).then(
-                          autoSaveDebouncedSuccess, autoSaveDebouncedFailure);
-        break;
-        case 'item':
-        $scope.saveItem(itemInEdit, pollForSaveReady).then(
-                          autoSaveDebouncedSuccess, autoSaveDebouncedFailure);
-        break;
-        case 'tag':
-        $scope.saveTag(itemInEdit, pollForSaveReady).then(
-                          autoSaveDebouncedSuccess, autoSaveDebouncedFailure);
-        break;
+  function getDefaultSaveStatus(){
+    return $scope.showEditorComponent('side-by-side-links') ? 'close' : 'back';
+  }
+
+  $scope.saveItemInEdit = function(itemInEdit) {
+
+    // SUCCESS SAVE PROCESS
+
+    function saveSuccess(result){
+      function doSetSaved() {
+        saveStatus = 'saved';
+        resetNoteStatusTimer = $timeout(function() {
+          saveStatus = getDefaultSaveStatus();
+        }, 1000);
       }
-    }
-  }.debounce(1000);
 
-  $scope.inputChanged = function(itemInEdit) {
-    if (!$scope.isAutoSavingPrevented()) {
+      // Do this only when actually saving something
+      if (result !== 'unmodified'){
+        // This is returned immediately, so here we set saving.
+        var savingSetTime = Date.now();
+        saveStatus = 'saving';
 
-      if (setSavedTimer) {
-        $timeout.cancel(setSavedTimer);
-        if (resetNoteStatusTimer) {
-          $timeout.cancel(resetNoteStatusTimer);
+        if (setSavedTimer) {
+          $timeout.cancel(setSavedTimer);
+          if (resetNoteStatusTimer) {
+            $timeout.cancel(resetNoteStatusTimer);
+          }
         }
+        var saveReadyDeferred = $q.defer();
+        (function loop(){
+          setTimeout(function(){
+            if (!BackendClientService.isProcessing()) {
+              saveReadyDeferred.resolve();
+              return;
+            }
+            loop();
+          }, 100);
+        })();
+        saveReadyDeferred.promise.then(function(){
+          // Previous save is ready now. We might get another save right after this one if there
+          // are other changes, so always set a timeout. Recursively call this function to also saved
+          // changes after this.
+          var sinceSavingSet = (Date.now() - savingSetTime);
+          var setSavedTimeout = sinceSavingSet > 750 ? 250 : 250 + (750 - sinceSavingSet);
+          setSavedTimer = $timeout(doSetSaved, setSavedTimeout);
+          savingInProgress = false;
+          $scope.saveItemInEdit(itemInEdit);
+        });
+      }else{
+        savingInProgress = false;
       }
-
-      if (backTimer) $timeout.cancel(backTimer);
-      autoSaveStatus = 'saving';
-      autoSaveDebounced(itemInEdit);
     }
-  };
 
-  $scope.autoSaveItemInEdit = function(itemInEdit) {
-    function autoSaveItemInEditSuccess(){
-      $scope.setAutoSaved(savingSetTime);
+    // FAILED SAVE PROCESS
+
+    function saveFailure(){
+      // Do nothing here
+      savingInProgress = false;
     }
-    if (!$scope.isAutoSavingPrevented() && $scope.titlebarHasText()) {
-      var savingSetTime = $scope.setAutoSaving();
+
+    if (!savingInProgress) {
+      savingInProgress = true;
       var itemType = itemInEdit.trans.itemType;
       switch (itemType){
         case 'task':
-        $scope.saveTask(itemInEdit).then(autoSaveItemInEditSuccess);
+        $scope.saveTask(itemInEdit).then(saveSuccess, saveFailure);
         break;
         case 'note':
-        $scope.saveNote(itemInEdit).then(autoSaveItemInEditSuccess);
+        $scope.saveNote(itemInEdit).then(saveSuccess, saveFailure);
         break;
         case 'list':
-        $scope.saveList(itemInEdit).then(autoSaveItemInEditSuccess);
+        $scope.saveList(itemInEdit).then(saveSuccess, saveFailure);
         break;
         case 'item':
-        $scope.saveItem(itemInEdit).then(autoSaveItemInEditSuccess);
+        $scope.saveItem(itemInEdit).then(saveSuccess, saveFailure);
         break;
         case 'tag':
-        $scope.saveTag(itemInEdit).then(autoSaveItemInEditSuccess);
+        $scope.saveTag(itemInEdit).then(saveSuccess, saveFailure);
         break;
       }
     }
   };
 
-  $scope.setAutoSaving = function() {
-    if (!$scope.isAutoSavingPrevented() && $scope.titlebarHasText()) {
-      autoSaveStatus = 'saving';
-      return Date.now();
-    }
-  };
-
-  $scope.setAutoSaved = function(savingSetTime) {
-    if (!$scope.titlebarHasText()) return;
-
-    function doSetSaved() {
-      autoSaveStatus = 'saved';
-      resetNoteStatusTimer = $timeout(function() {
-        autoSaveStatus = $scope.showEditorComponent('side-by-side-links') ? 'close' : 'back';
-      }, 1000);
-    }
-
-    if (setSavedTimer) {
-      $timeout.cancel(setSavedTimer);
-      if (resetNoteStatusTimer) {
-        $timeout.cancel(resetNoteStatusTimer);
-      }
-    }
-
-    if (backTimer) $timeout.cancel(backTimer);
-
-    var saving = Date.now() - savingSetTime;
-    if (saving < 1000)
-      setSavedTimer = $timeout(doSetSaved, 1000 - saving);
-    else
-      doSetSaved();
-  };
+  // Create a debounced auto save function from save function, that fires max once per 100ms
+  $scope.autoSave = $scope.saveItemInEdit.debounce(100);
 
   $scope.isAutoSavingPrevented = function() {
     return $scope.editorType === 'recurring' || $scope.isOnboarding('notes');
@@ -952,7 +920,7 @@
     var backCloseText = $scope.showEditorAction('saveBack') ? 'back' : 'close';
     return $scope.isAutoSavingPrevented() ?
       ($scope.isEdited(itemInEdit) && !itemInEdit.trans.deleted ? 'save' : backCloseText) :
-      autoSaveStatus;
+      saveStatus;
   };
 
   $scope.isEdited = function(itemInEdit) {
@@ -1010,7 +978,7 @@
 
 }
 
-EditorController['$inject'] = ['$rootScope', '$scope', '$timeout',
-'ConvertService', 'ItemsService', 'ListsService', 'NotesService', 'PlatformService', 'SwiperService',
-'TagsService', 'TasksService', 'UISessionService', 'URLService', 'UserSessionService'];
+EditorController['$inject'] = ['$rootScope', '$scope', '$timeout', '$q',
+'BackendClientService', 'ConvertService', 'ItemsService', 'ListsService', 'NotesService', 'PlatformService',
+'SwiperService', 'TagsService', 'TasksService', 'UISessionService', 'URLService', 'UserSessionService'];
 angular.module('em.main').controller('EditorController', EditorController);

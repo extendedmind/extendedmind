@@ -107,7 +107,6 @@
       } else if (itemType === 'note') {
         initializeAndGotoNextItemOrEndSortingOnLast(dataInEdit);
         var favoriteNoteAfterConvert = dataInEdit.trans.favorited;
-
         ItemsService.itemToNote(dataInEdit).then(function() {
           if (favoriteNoteAfterConvert) $scope.favoriteNote(dataInEdit);
         });

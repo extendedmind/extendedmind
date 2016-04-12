@@ -367,11 +367,11 @@
     }
   };
 
-  $scope.saveTag = function(tag, pollForSaveReady){
+  $scope.saveTag = function(tag){
     if (tag.trans.tagType === 'keyword'){
-      return $scope.saveKeyword(tag, pollForSaveReady);
+      return $scope.saveKeyword(tag);
     }else if (tag.trans.tagType === 'context'){
-      return $scope.saveContext(tag, pollForSaveReady);
+      return $scope.saveContext(tag);
     }
   };
 
@@ -379,11 +379,11 @@
 
   // SAVING
 
-  $scope.saveKeyword = function(keyword, pollForSaveReady) {
+  $scope.saveKeyword = function(keyword, saveReady) {
     if (keyword.trans.uuid) AnalyticsService.do('saveKeyword');
     else AnalyticsService.do('addKeyword');
 
-    return TagsService.saveTag(keyword, pollForSaveReady);
+    return TagsService.saveTag(keyword, saveReady);
   };
 
   // DELETING
@@ -410,11 +410,11 @@
 
   // SAVING
 
-  $scope.saveContext = function(context, pollForSaveReady) {
+  $scope.saveContext = function(context, saveReady) {
     if (context.trans.uuid) AnalyticsService.do('saveContext');
     else AnalyticsService.do('addContext');
 
-    return TagsService.saveTag(context, pollForSaveReady);
+    return TagsService.saveTag(context, saveReady);
   };
 
   // DELETING
