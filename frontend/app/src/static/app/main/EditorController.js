@@ -825,9 +825,31 @@
   var setSavedTimer, resetNoteStatusTimer;
   var saveStatus = getDefaultSaveStatus();
   var savingInProgress;
+  var saveReadyDeferred;
 
   function getDefaultSaveStatus(){
     return $scope.showEditorComponent('side-by-side-links') ? 'close' : 'back';
+  }
+
+  function saveItem(item, successCallback, failureCallback){
+    var itemType = item.trans.itemType;
+    switch (itemType){
+      case 'task':
+      $scope.saveTask(item).then(successCallback, failureCallback);
+      break;
+      case 'note':
+      $scope.saveNote(item).then(successCallback, failureCallback);
+      break;
+      case 'list':
+      $scope.saveList(item).then(successCallback, failureCallback);
+      break;
+      case 'item':
+      $scope.saveItem(item).then(successCallback, failureCallback);
+      break;
+      case 'tag':
+      $scope.saveTag(item).then(successCallback, failureCallback);
+      break;
+    }
   }
 
   $scope.saveItemInEdit = function(itemInEdit) {
@@ -854,10 +876,12 @@
             $timeout.cancel(resetNoteStatusTimer);
           }
         }
-        var saveReadyDeferred = $q.defer();
+        saveReadyDeferred = $q.defer();
         (function loop(){
           setTimeout(function(){
-            if (!BackendClientService.isProcessing()) {
+            if (!saveReadyDeferred){
+              return;
+            }else if (!BackendClientService.isProcessing()) {
               saveReadyDeferred.resolve();
               return;
             }
@@ -872,7 +896,15 @@
           var setSavedTimeout = sinceSavingSet > 750 ? 250 : 250 + (750 - sinceSavingSet);
           setSavedTimer = $timeout(doSetSaved, setSavedTimeout);
           savingInProgress = false;
+          saveReadyDeferred = undefined;
           $scope.saveItemInEdit(itemInEdit);
+        }, function(){
+          // Rejected because editor for another item was opened
+          savingInProgress = false;
+          saveReadyDeferred = undefined;
+          // Save the previous item again without any save status changes, so that no changes are
+          // left unsaved
+          saveItem(itemInEdit);
         });
       }else{
         savingInProgress = false;
@@ -888,29 +920,25 @@
 
     if (!savingInProgress) {
       savingInProgress = true;
-      var itemType = itemInEdit.trans.itemType;
-      switch (itemType){
-        case 'task':
-        $scope.saveTask(itemInEdit).then(saveSuccess, saveFailure);
-        break;
-        case 'note':
-        $scope.saveNote(itemInEdit).then(saveSuccess, saveFailure);
-        break;
-        case 'list':
-        $scope.saveList(itemInEdit).then(saveSuccess, saveFailure);
-        break;
-        case 'item':
-        $scope.saveItem(itemInEdit).then(saveSuccess, saveFailure);
-        break;
-        case 'tag':
-        $scope.saveTag(itemInEdit).then(saveSuccess, saveFailure);
-        break;
-      }
+      saveItem(itemInEdit, saveSuccess, saveFailure);
     }
   };
 
   // Create a debounced auto save function from save function, that fires max once per 100ms
   $scope.autoSave = $scope.saveItemInEdit.debounce(100);
+
+  $scope.resetSaveStatus = function(){
+    saveStatus = getDefaultSaveStatus();
+    if (setSavedTimer) {
+      $timeout.cancel(setSavedTimer);
+      if (resetNoteStatusTimer) {
+        $timeout.cancel(resetNoteStatusTimer);
+      }
+    }
+    if (saveReadyDeferred){
+      saveReadyDeferred.reject();
+    }
+  };
 
   $scope.isAutoSavingPrevented = function() {
     return $scope.editorType === 'recurring' || $scope.isOnboarding('notes');

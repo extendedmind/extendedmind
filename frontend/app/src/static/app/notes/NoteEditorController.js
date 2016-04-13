@@ -570,6 +570,7 @@
   function initializeEditor(){
     clearNoteWatch();
     clearNoteWatch = setNoteWatch();
+    $scope.resetSaveStatus();
   }
   $scope.registerInitializeEditorCallback(initializeEditor);
 
