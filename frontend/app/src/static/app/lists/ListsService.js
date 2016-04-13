@@ -131,7 +131,6 @@
     'uuid',
     'created',
     'deleted',
-    'title',
     archivedFieldInfo];
 
   // An object containing lists for every owner
@@ -407,13 +406,18 @@
       if (listsResponse && listsResponse.length){
         // Go through listsResponse, and add .mod values if the fields in the current .mod do not match
         // the values in the persistent response
-        var updatedLists = [], locallyDeletedLists = [], i, id;
+        var updatedLists = [], locallyDeletedLists = [], i, id, modMatchesDatabase;
         for (i=0; i<listsResponse.length; i++){
           var listInfo = this.getListInfo(listsResponse[i].uuid, ownerUUID);
           if (listInfo){
             if (listInfo.list.trans.deleted) locallyDeletedLists.push(listInfo.list);
-            ItemLikeService.evaluateMod(listsResponse[i], listInfo.list,
+            var modMatchesDatabaseForThisItem = ItemLikeService.evaluateMod(listsResponse[i], listInfo.list,
                                         LIST_TYPE, ownerUUID, listFieldInfos);
+            if (modMatchesDatabase !== false){
+              // It has to match for every list here to use the version below, one not matching will
+              // make every list fully reset
+              modMatchesDatabase = modMatchesDatabaseForThisItem;
+            }
             updatedLists.push(listInfo.list);
           }else{
             updatedLists.push(listsResponse[i]);
@@ -427,8 +431,13 @@
                                                        lists[ownerUUID].activeLists,
                                                        lists[ownerUUID].deletedLists,
                                                        getOtherArrays(ownerUUID));
-        ItemLikeService.persistAndReset(updatedLists, LIST_TYPE, ownerUUID, listFieldInfos);
 
+        if (modMatchesDatabase){
+          // Don't reset trans when mod matches database values to prevent problems with autosave
+          ItemLikeService.persistAndReset(updatedLists, LIST_TYPE, ownerUUID, listFieldInfos, undefined, {});
+        }else{
+          ItemLikeService.persistAndReset(updatedLists, LIST_TYPE, ownerUUID, listFieldInfos);
+        }
         // When creating multiple hierarchical lists in another client, without this, they would be
         // in the wrong order
         ArrayService.evaluateArrays(ownerUUID, LIST_TYPE,

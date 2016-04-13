@@ -656,10 +656,37 @@
     gotoTitleCallback = callback;
   };
 
-  $scope.$watch(function() {
-    for (var id in showFooterCallbacks) {
-      var showFooter = $scope.showListEditorComponent(id);
-      if (showFooterCallbacks.hasOwnProperty(id)) showFooterCallbacks[id](showFooter);
+  function setListWatch(){
+    return $scope.$watch(function() {
+      // Execute footer callbacks
+      for (var id in showFooterCallbacks) {
+        var showFooter = $scope.showListEditorComponent(id);
+        if (showFooterCallbacks.hasOwnProperty(id)) showFooterCallbacks[id](showFooter);
+      }
+      // Autosave on every tick. Function is debounced so it can be called every digest
+      if (!$scope.isAutoSavingPrevented()) $scope.autoSave($scope.list);
+    });
+  }
+  var clearListWatch = setListWatch();
+
+  // REINITIALIZING
+
+  function reinitializeListEditor(){
+    clearListWatch();
+    clearListWatch = setListWatch();
+    $scope.resetSaveStatus();
+  }
+  $scope.registerReinitializeEditorCallback(reinitializeListEditor);
+
+  // CLEANUP
+
+  $scope.$on('$destroy', function() {
+    clearListWatch();
+    if (angular.isFunction($scope.unregisterReinitializeEditorCallback))
+      $scope.unregisterReinitializeEditorCallback();
+    if (angular.isFunction($scope.unregisterSubEditorDoneCallback)) {
+      // Unregister any leftover callback.
+      $scope.unregisterSubEditorDoneCallback();
     }
   });
 }
