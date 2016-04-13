@@ -238,6 +238,36 @@
       $scope.unfavoriteContext($scope.tag);
     }
   };
+
+  // WATCH FOR CHANGES
+
+  function setTagWatch(){
+    return $scope.$watch(function() {
+      // Autosave on every tick. Function is debounced so it can be called every digest
+      if (!$scope.isAutoSavingPrevented()) $scope.autoSave($scope.tag);
+    });
+  }
+  var clearTagWatch = setTagWatch();
+
+  // REINITIALIZING
+
+  function reinitializeNoteEditor(){
+    clearTagWatch();
+    clearTagWatch = setTagWatch();
+    $scope.resetSaveStatus();
+  }
+  $scope.registerReinitializeEditorCallback(reinitializeNoteEditor);
+
+  // CLEAN UP
+
+  $scope.$on('$destroy', function() {
+    clearTagWatch();
+    if (angular.isFunction($scope.unregisterReinitializeEditorCallback))
+      $scope.unregisterReinitializeEditorCallback();
+    if (angular.isFunction($scope.unregisterEditorAboutToCloseCallback)){
+      $scope.unregisterEditorAboutToCloseCallback();
+    }
+  });
 }
 
 TagEditorController['$inject'] = ['$q', '$rootScope', '$scope', 'TagsService'];

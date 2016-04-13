@@ -5,10 +5,11 @@
       <div class="group-symmetrical height-large--top">
 
         <a href ng-show="showEditorAction('saveBack')"
-          class="group-symmetrical--left link-navigation highlighted active" swiper-click="endTagEdit()">
-          <span class="text-navigation-back"
-          ng-class="getEditorNavigationBackClasses()"
-          ng-bind="isEdited(tag) && !tag.trans.deleted ? 'save' : 'back'"></span>
+          class="group-symmetrical--left link-navigation highlighted active"
+          swiper-click="endTagEdit()">
+          <span class="text-navigation-back" ng-class="getEditorNavigationBackClasses()"
+            ng-bind="getSaveStatusText(tag)">
+          </span>
         </a>
 
         <a href ng-show="showEditorAction('saveDone')"
@@ -53,7 +54,7 @@
           <a href class="link-navigation active highlighted link-side-by-side"
             swiper-click="endTagEdit()">
             <span class="text-navigation"
-              ng-bind="isEdited(tag) && !tag.trans.deleted ? 'save' : 'close'">
+              ng-bind="getSaveStatusText(tag)">
             </span>
           </a>
         </div>

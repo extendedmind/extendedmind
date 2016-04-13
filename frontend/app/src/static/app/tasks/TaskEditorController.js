@@ -695,6 +695,8 @@
     }
   };
 
+  // WATCH FOR CHANGES
+
   function setTaskWatch(){
     return $scope.$watch(function() {
       // Execute footer callbacks

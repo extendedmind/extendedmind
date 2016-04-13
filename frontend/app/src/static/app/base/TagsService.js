@@ -88,6 +88,8 @@
     'deleted',
     'title'];
 
+  var tagMinimalFieldInfosNoTitle = tagMinimalFieldInfos.slice(0, 3);
+
   // An object containing tags for every owner
   var tags = {};
 
@@ -118,8 +120,8 @@
   }
   UserSessionService.registerNofifyOwnersCallback(notifyOwners, 'TagsService');
 
-  function updateTag(tag, ownerUUID, oldUUID) {
-    ItemLikeService.persistAndReset(tag, TAG_TYPE, ownerUUID, tagFieldInfos, oldUUID);
+  function updateTag(tag, ownerUUID, oldUUID, propertiesToReset) {
+    ItemLikeService.persistAndReset(tag, TAG_TYPE, ownerUUID, tagFieldInfos, oldUUID, propertiesToReset);
     return ArrayService.updateItem(ownerUUID, TAG_TYPE, tag,
                                    tags[ownerUUID].activeTags,
                                    tags[ownerUUID].deletedTags);
@@ -229,13 +231,19 @@
       if (tagsResponse && tagsResponse.length){
         // Go through tagsResponse, and add .mod values if the fields in the current .mod do not match
         // the values in the persistent response
-        var updatedTags = [], locallyDeletedTags = [], i, id;
+        var updatedTags = [], locallyDeletedTags = [], i, id, modMatchesDatabase;
         for (i=0; i<tagsResponse.length; i++){
           var tagInfo = this.getTagInfo(tagsResponse[i].uuid, ownerUUID);
           if (tagInfo){
             if (tagInfo.tag.trans.deleted) locallyDeletedTags.push(tagInfo.tag);
-            ItemLikeService.evaluateMod(tagsResponse[i], tagInfo.tag, TAG_TYPE, ownerUUID, tagFieldInfos);
-
+            var modMatchesDatabaseForThisItem =
+              ItemLikeService.evaluateMod(tagsResponse[i], tagInfo.tag, TAG_TYPE,
+                                          ownerUUID, tagFieldInfos);
+            if (modMatchesDatabase !== false){
+              // It has to match for every tag here to use the version below, one not matching will
+              // make every tag fully reset
+              modMatchesDatabase = modMatchesDatabaseForThisItem;
+            }
             updatedTags.push(tagInfo.tag);
           }else{
             updatedTags.push(tagsResponse[i]);
@@ -244,11 +252,21 @@
 
         // To avoid problems with parent tag not resetting to trans, we first store the response
         // to the arrays using minimal trans, then properly reset trans
-        ItemLikeService.resetTrans(updatedTags, TAG_TYPE, ownerUUID, tagMinimalFieldInfos);
+        if (modMatchesDatabase){
+          // Don't reset title to prevent problems with autosave
+          ItemLikeService.resetTrans(updatedTags, TAG_TYPE, ownerUUID, tagMinimalFieldInfosNoTitle);
+        }else{
+          ItemLikeService.resetTrans(updatedTags, TAG_TYPE, ownerUUID, tagMinimalFieldInfos);
+        }
         var latestModified = ArrayService.updateArrays(ownerUUID, TAG_TYPE, updatedTags,
                                                        tags[ownerUUID].activeTags,
                                                        tags[ownerUUID].deletedTags);
-        ItemLikeService.persistAndReset(updatedTags, TAG_TYPE, ownerUUID, tagFieldInfos);
+        if (modMatchesDatabase){
+          // Don't reset trans when mod matches database values to prevent problems with autosave
+          ItemLikeService.persistAndReset(updatedTags, TAG_TYPE, ownerUUID, tagFieldInfos, undefined, {});
+        }else{
+          ItemLikeService.persistAndReset(updatedTags, TAG_TYPE, ownerUUID, tagFieldInfos);
+        }
 
         // When creating multiple parent relationships in another client, without this, they would be
         // in the wrong order
@@ -287,7 +305,7 @@
         }else{
           if (!tagInfo.tag.mod) tagInfo.tag.mod = {};
           ItemLikeService.updateObjectProperties(tagInfo.tag.mod, properties);
-          updateTag(tagInfo.tag, ownerUUID, properties.uuid ? uuid : undefined);
+          updateTag(tagInfo.tag, ownerUUID, properties.uuid ? uuid : undefined, properties);
         }
         return tagInfo.tag;
       }

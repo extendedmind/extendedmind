@@ -93,6 +93,8 @@
     }
   };
 
+  // WATCH FOR CHANGES
+
   function setItemWatch(){
     return $scope.$watch(function() {
       // Autosave on every tick. Function is debounced so it can be called every digest

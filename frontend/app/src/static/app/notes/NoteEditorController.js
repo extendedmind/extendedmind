@@ -547,6 +547,8 @@
     $scope.toggleExpandEditor();
   };
 
+  // WATCH FOR CHANGES
+
   function setNoteWatch(){
     return $scope.$watch(function() {
       // Execute footer callbacks

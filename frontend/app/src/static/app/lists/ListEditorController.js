@@ -656,6 +656,8 @@
     gotoTitleCallback = callback;
   };
 
+  // WATCH FOR CHANGES
+
   function setListWatch(){
     return $scope.$watch(function() {
       // Execute footer callbacks
