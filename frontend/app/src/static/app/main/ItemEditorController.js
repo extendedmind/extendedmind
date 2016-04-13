@@ -92,6 +92,34 @@
       event.stopPropagation();
     }
   };
+
+  function setItemWatch(){
+    return $scope.$watch(function() {
+      // Autosave on every tick. Function is debounced so it can be called every digest
+      if (!$scope.isAutoSavingPrevented()) $scope.autoSave($scope.item);
+    });
+  }
+  var clearItemWatch = setItemWatch();
+
+  // REINITIALIZING
+
+  function reinitializeItemEditor(){
+    clearItemWatch();
+    clearItemWatch = setItemWatch();
+    $scope.resetSaveStatus();
+  }
+  $scope.registerReinitializeEditorCallback(reinitializeItemEditor);
+
+  // CLEAN UP
+
+  $scope.$on('$destroy', function() {
+    clearItemWatch();
+    if (angular.isFunction($scope.unregisterReinitializeEditorCallback))
+      $scope.unregisterReinitializeEditorCallback();
+    if (angular.isFunction($scope.unregisterEditorAboutToCloseCallback)){
+      $scope.unregisterEditorAboutToCloseCallback();
+    }
+  });
 }
 
 ItemEditorController['$inject'] = ['$q', '$rootScope', '$scope', 'ItemsService'];

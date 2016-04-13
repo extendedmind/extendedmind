@@ -44,8 +44,8 @@
   }
   UserSessionService.registerNofifyOwnersCallback(notifyOwners, 'ItemsService');
 
-  function updateItem(item, ownerUUID, oldUUID) {
-    ItemLikeService.persistAndReset(item, ITEM_TYPE, ownerUUID, itemFieldInfos, oldUUID);
+  function updateItem(item, ownerUUID, oldUUID, propertiesToReset) {
+    ItemLikeService.persistAndReset(item, ITEM_TYPE, ownerUUID, itemFieldInfos, oldUUID, propertiesToReset);
     return ArrayService.updateItem(ownerUUID, ITEM_TYPE, item,
                                    items[ownerUUID].activeItems,
                                    items[ownerUUID].deletedItems);
@@ -90,18 +90,28 @@
       if (itemsResponse && itemsResponse.length){
         // Go through itemsResponse, and add .mod values if the fields in the current .mod do not match
         // the values in the persistent response
-        var updatedItems = [];
+        var updatedItems = [], modMatchesDatabase;
         for (var i=0; i<itemsResponse.length; i++){
           var itemInfo = this.getItemInfo(itemsResponse[i].uuid, ownerUUID);
           if (itemInfo){
-            ItemLikeService.evaluateMod(itemsResponse[i], itemInfo.item,
-                                        ITEM_TYPE, ownerUUID, itemFieldInfos);
+            var modMatchesDatabaseForThisItem = ItemLikeService.evaluateMod(itemsResponse[i], itemInfo.item,
+                                                    ITEM_TYPE, ownerUUID, itemFieldInfos);
+            if (modMatchesDatabase !== false){
+              // It has to match for every item here to use the version below, one not matching will
+              // make every item fully reset
+              modMatchesDatabase = modMatchesDatabaseForThisItem;
+            }
             updatedItems.push(itemInfo.item);
           }else{
             updatedItems.push(itemsResponse[i]);
           }
         }
-        ItemLikeService.persistAndReset(updatedItems, ITEM_TYPE, ownerUUID, itemFieldInfos);
+        if (modMatchesDatabase){
+          // Don't reset trans when mod matches database values to prevent problems with autosave
+          ItemLikeService.persistAndReset(updatedItems, ITEM_TYPE, ownerUUID, itemFieldInfos, undefined, {});
+        }else{
+          ItemLikeService.persistAndReset(updatedItems, ITEM_TYPE, ownerUUID, itemFieldInfos);
+        }
         return ArrayService.updateArrays(ownerUUID, ITEM_TYPE, updatedItems,
                                          items[ownerUUID].activeItems,
                                          items[ownerUUID].deletedItems);
@@ -118,7 +128,7 @@
         }else{
           if (!itemInfo.item.mod) itemInfo.item.mod = {};
           ItemLikeService.updateObjectProperties(itemInfo.item.mod, properties);
-          updateItem(itemInfo.item, ownerUUID, properties.uuid ? uuid : undefined);
+          updateItem(itemInfo.item, ownerUUID, properties.uuid ? uuid : undefined, properties);
         }
         return itemInfo.item;
       }

@@ -405,7 +405,6 @@
       } else {
         ItemLikeService.save(note, NOTE_TYPE, ownerUUID, noteFieldInfos).then(
           function(result){
-
             if (result === 'new') setNote(note, ownerUUID, ['uuid', 'created', 'modified']);
             else if (result === 'existing') updateNote(note, ownerUUID, undefined, {});
             deferred.resolve(result);

@@ -131,7 +131,11 @@
     'uuid',
     'created',
     'deleted',
+    'title',
     archivedFieldInfo];
+
+  var listMinimalFieldInfosNoTitle = listMinimalFieldInfos.slice(0, 3);
+  listMinimalFieldInfosNoTitle.push(archivedFieldInfo);
 
   // An object containing lists for every owner
   var lists = {};
@@ -426,7 +430,13 @@
 
         // To avoid problems with parent list not resetting to trans, we first store the response
         // to the arrays using minimal trans, then properly reset trans
-        ItemLikeService.resetTrans(updatedLists, LIST_TYPE, ownerUUID, listMinimalFieldInfos);
+        if (modMatchesDatabase){
+          // To prevent title editing from failing because of this, we use a minimal list without a title
+          // here temporarily
+          ItemLikeService.resetTrans(updatedLists, LIST_TYPE, ownerUUID, listMinimalFieldInfosNoTitle);
+        }else{
+          ItemLikeService.resetTrans(updatedLists, LIST_TYPE, ownerUUID, listMinimalFieldInfos);
+        }
         var latestModified = ArrayService.updateArrays(ownerUUID, LIST_TYPE, updatedLists,
                                                        lists[ownerUUID].activeLists,
                                                        lists[ownerUUID].deletedLists,
