@@ -493,10 +493,16 @@
           if (taskInfo){
             var oldMod = taskInfo.task.mod;
             updatedTasks.push(taskInfo.task);
-            ItemLikeService.evaluateMod(tasksResponse[i], taskInfo.task,
-                                        TASK_TYPE, ownerUUID, taskFieldInfos);
-            ItemLikeService.persistAndReset(taskInfo.task, TASK_TYPE, ownerUUID,
+            if (ItemLikeService.evaluateMod(tasksResponse[i], taskInfo.task,
+                                        TASK_TYPE, ownerUUID, taskFieldInfos)){
+              // Don't reset trans when mod matches database values to prevent problems with autosave
+              ItemLikeService.persistAndReset(taskInfo.task, TASK_TYPE, ownerUUID,
+                                              taskFieldInfos, undefined, {});
+            }else{
+              // Mod does not exist or it does/did not match database, reset all trans values
+              ItemLikeService.persistAndReset(taskInfo.task, TASK_TYPE, ownerUUID,
                                             taskFieldInfos, undefined, oldMod);
+            }
           }else{
             updatedTasks.push(tasksResponse[i]);
             ItemLikeService.persistAndReset(tasksResponse[i], TASK_TYPE, ownerUUID, taskFieldInfos);

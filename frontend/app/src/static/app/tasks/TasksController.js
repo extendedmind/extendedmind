@@ -584,7 +584,7 @@
       if (result === 'new' && completeOnSave){
         $scope.toggleCompleteTask(task);
       }
-      return task;
+      return result;
     });
   };
 

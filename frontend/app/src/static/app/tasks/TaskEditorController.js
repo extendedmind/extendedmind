@@ -346,7 +346,7 @@
 
     reminderPickerOpen = true;
     if (angular.isFunction($scope.registerSubEditorDoneCallback)) {
-      $scope.registerSubEditorDoneCallback(closeReminderPickerAndSave, [reminder, task]);
+      $scope.registerSubEditorDoneCallback(closeReminderPicker, [reminder, task]);
     }
 
     if (angular.isFunction($scope.registerHasSubEditorEditedCallback)) {
@@ -469,7 +469,7 @@
     }, 2000);
   }
 
-  function closeReminderPickerAndSave(reminder, task) {
+  function closeReminderPicker(reminder, task) {
     if ($scope.reminder.hours.value !== undefined && $scope.reminder.minutes.value !== undefined) {
       var hours;
       if ($scope.reminder.hours.hour12) {
@@ -492,7 +492,6 @@
           }
           $scope.task.trans.reminders.push(reminderToAdd);
         }
-        $scope.saveTask(task);
         if (angular.isFunction($scope.unregisterSubEditorDoneCallback)) {
           $scope.unregisterSubEditorDoneCallback();
         }
@@ -542,14 +541,16 @@
           }
         } else {
           time.value++;
-          if (timeUnit === 'hours' && time.hour12 && time.value === time.limit) $scope.changeReminderTimePeriod();
+          if (timeUnit === 'hours' && time.hour12 && time.value === time.limit)
+            $scope.changeReminderTimePeriod();
         }
       } else if (direction === 'down') {
         if (time.value === null || parseInt(time.value) === time.bottomLimit) {
           time.value = time.limit;
         } else {
           time.value--;
-          if (timeUnit === 'hours' && time.hour12 && time.value === time.limit - 1) $scope.changeReminderTimePeriod();
+          if (timeUnit === 'hours' && time.hour12 && time.value === time.limit - 1)
+            $scope.changeReminderTimePeriod();
         }
       }
     }
@@ -614,6 +615,7 @@
   };
 
   // CONTEXT PICKER
+
   $scope.openContextPicker = function() {
     contextPickerOpen = true;
   };
@@ -693,16 +695,34 @@
     }
   };
 
-  $scope.$watch(function() {
-    for (var id in showFooterCallbacks) {
-      var showFooter = $scope.showTaskEditorComponent(id);
-      if (showFooterCallbacks.hasOwnProperty(id)) showFooterCallbacks[id](showFooter);
-    }
-  });
+  function setTaskWatch(){
+    return $scope.$watch(function() {
+      // Execute footer callbacks
+      for (var id in showFooterCallbacks) {
+        var showFooter = $scope.showTaskEditorComponent(id);
+        if (showFooterCallbacks.hasOwnProperty(id)) showFooterCallbacks[id](showFooter);
+      }
+      // Autosave on every tick. Function is debounced so it can be called every digest
+      if (!$scope.isAutoSavingPrevented()) $scope.autoSave($scope.task);
+    });
+  }
+  var clearTaskWatch = setTaskWatch();
+
+  // REINITIALIZING
+
+  function reinitializeTaskEditor(){
+    clearTaskWatch();
+    clearTaskWatch = setTaskWatch();
+    $scope.resetSaveStatus();
+  }
+  $scope.registerReinitializeEditorCallback(reinitializeTaskEditor);
 
   // CLEANUP
 
   $scope.$on('$destroy', function() {
+    clearTaskWatch();
+    if (angular.isFunction($scope.unregisterReinitializeEditorCallback))
+      $scope.unregisterReinitializeEditorCallback();
     if (angular.isFunction($scope.unregisterSubEditorDoneCallback)) {
       // Unregister any leftover callback.
       $scope.unregisterSubEditorDoneCallback();

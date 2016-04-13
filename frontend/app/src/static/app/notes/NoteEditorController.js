@@ -565,21 +565,21 @@
   }
   var clearNoteWatch = setNoteWatch();
 
-  // INITIALIZING
+  // REINITIALIZING
 
-  function initializeEditor(){
+  function reinitializeNoteEditor(){
     clearNoteWatch();
     clearNoteWatch = setNoteWatch();
     $scope.resetSaveStatus();
   }
-  $scope.registerInitializeEditorCallback(initializeEditor);
+  $scope.registerReinitializeEditorCallback(reinitializeNoteEditor);
 
   // CLEAN UP
 
   $scope.$on('$destroy', function() {
     clearNoteWatch();
-    if (angular.isFunction($scope.unregisterInitializeEditorCallback))
-      $scope.unregisterInitializeEditorCallback();
+    if (angular.isFunction($scope.unregisterReinitializeEditorCallback))
+      $scope.unregisterReinitializeEditorCallback();
     if (angular.isFunction($scope.unregisterEditorAboutToCloseCallback)){
       $scope.unregisterEditorAboutToCloseCallback();
     }
