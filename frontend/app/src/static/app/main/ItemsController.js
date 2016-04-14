@@ -15,7 +15,7 @@
   /*global cordova */
  'use strict';
 
- function ItemsController($rootScope, $scope, AnalyticsService, ArrayService, BackendClientService,
+ function ItemsController($q, $rootScope, $scope, AnalyticsService, ArrayService, BackendClientService,
                           ItemsService, UISessionService, UserSessionService, packaging) {
 
   if (angular.isFunction($scope.registerArrayChangeCallback)) {
@@ -124,8 +124,22 @@
       cordova.InAppBrowser.open('mailto:' + $scope.getInboxEmailAddress(), '_system', 'location=yes');
     }
   };
+
+  $scope.getItemRevisions = function(item){
+    var deferred = $q.defer();
+    ItemsService.getItemRevisions(item).then(
+      function(response){
+        deferred.resolve(response);
+      },function(error){
+        if (error.type === 'offline') {
+          offlineProcessFn(error, item, deferred, ItemsService.getItemRevisions);
+        }
+      });
+    return deferred.promise;
+  };
+
 }
 
-ItemsController['$inject'] = ['$rootScope', '$scope', 'AnalyticsService', 'ArrayService',
+ItemsController['$inject'] = ['$q', '$rootScope', '$scope', 'AnalyticsService', 'ArrayService',
 'BackendClientService', 'ItemsService', 'UISessionService', 'UserSessionService', 'packaging'];
 angular.module('em.main').controller('ItemsController', ItemsController);

@@ -247,6 +247,21 @@ function MockItemsBackendService($httpBackend, ItemsService, SynchronizeService,
       });
   }
 
+  function mockGetItemRevisionsRegex(expectResponse){
+    $httpBackend.whenGET(ItemsService.getItemRevisionsRegex)
+      .respond(function(method, url, data, headers) {
+        var revisionsResponse = getJSONFixture('itemRevisionsResponse.json');
+        return expectResponse(method, url, data, headers, revisionsResponse);
+    });
+  }
+
+  function mockGetItemRevisionRegex(expectResponse){
+    $httpBackend.whenGET(ItemsService.getItemRevisionRegex)
+      .respond(function(method, url, data, headers) {
+        var revisionResponse = getJSONFixture('itemRevisionsResponse.json');
+        return expectResponse(method, url, data, headers, revisionResponse);
+    });
+  }
 
   return {
     mockItemsBackend: function(expectResponse) {
@@ -255,6 +270,8 @@ function MockItemsBackendService($httpBackend, ItemsService, SynchronizeService,
       mockPutExistingItem(expectResponse);
       mockDeleteItem(expectResponse);
       mockUndeleteItem(expectResponse);
+      mockGetItemRevisionsRegex(expectResponse);
+      mockGetItemRevisionRegex(expectResponse);
     }
   };
 }

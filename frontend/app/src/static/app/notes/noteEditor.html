@@ -300,7 +300,6 @@
               </div>
             </div>
           </div>
-
         </div>
 
         <footer ng-if="showNoteEditorComponent('basicFooter')" class="container-content--after editor-footer">
@@ -388,6 +387,25 @@
             </div>
             <div class="group-mixed--right">
               <span class="text-field--label">archived</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- REVISION PICKER -->
+        <div ng-if="showEditorSubEditor('revision')"
+          class="container-sub-editor swiper-no-swiping animate-fade-in row-top-parent-disable"
+          editable-field-container="auto" editable-field-container-scrollable="true"
+          editable-field-container-clicked-elsewhere="closeRevisionPicker()" data-snap-ignore="true">
+          <div class="group-mixed" ng-repeat="revision in note.trans.revisions track by revision.uuid">
+            <a href class="group-mixed--middle link-search-result"
+            ng-click="closeRevisionPickerAndActivateRevision(note, revision.number)">
+              <span class="text-search-result">
+                {{ revision.number + '. ' + formatToLocaleDateWithTime(revision.created)}}
+              </span>
+            </a>
+            <div class="group-mixed--right">
+              <span class="text-search-type"
+              ng-bind="revision.itemType"></span>
             </div>
           </div>
         </div>

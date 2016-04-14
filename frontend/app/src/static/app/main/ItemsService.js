@@ -24,6 +24,22 @@
 
   var items = {};
 
+  var getItemRevisionsRegexp = new RegExp('^' +
+    BackendClientService.apiPrefixRegex.source +
+    BackendClientService.uuidRegex.source +
+    '/item/' +
+    BackendClientService.uuidRegex.source +
+    '/revisions' +
+    '$');
+  var getItemRevisionRegexp = new RegExp('^' +
+    BackendClientService.apiPrefixRegex.source +
+    BackendClientService.uuidRegex.source +
+    '/item/' +
+    BackendClientService.uuidRegex.source +
+    '/revision/' +
+    BackendClientService.numberRegex.source +
+    '$');
+
   function initializeArrays(ownerUUID) {
     if (!items[ownerUUID]) {
       items[ownerUUID] = {
@@ -289,6 +305,41 @@
       }
       return deferred.promise;
     },
+    getItemRevisions: function(item) {
+      var ownerUUID = item.trans.owner;
+      // Check that item is not deleted before trying to get revisions
+      var deferred = $q.defer();
+      if (items[ownerUUID].deletedItems.findFirstObjectByKeyValue('uuid', item.trans.uuid, 'trans')) {
+        deferred.reject({type: 'deleted'});
+      } else {
+        BackendClientService.get('/api/' + ownerUUID + '/item/' + item.trans.uuid + '/revisions',
+                                 getItemRevisionsRegexp)
+        .then(function(response) {
+          deferred.resolve(response);
+        },function(error){
+          deferred.reject(error);
+        });
+      }
+      return deferred.promise;
+    },
+    getItemRevision: function(item, revisionNumber) {
+      var ownerUUID = item.trans.owner;
+      // Check that item is not deleted before trying to get revisions
+      var deferred = $q.defer();
+      if (items[ownerUUID].deletedItems.findFirstObjectByKeyValue('uuid', item.trans.uuid, 'trans')) {
+        deferred.reject({type: 'deleted'});
+      } else {
+        BackendClientService.get('/api/' + ownerUUID + '/item/' + item.trans.uuid +
+                                 '/revision/' + revisionNumber,
+                                 getItemRevisionRegexp)
+        .then(function(response) {
+          deferred.resolve(response);
+        },function(error){
+          deferred.reject(error);
+        });
+      }
+      return deferred.promise;
+    },
     clearItems: function() {
       items = {};
     },
@@ -311,7 +362,9 @@
     putNewItemRegex: ItemLikeService.getPutNewRegex(ITEM_TYPE),
     putExistingItemRegex: ItemLikeService.getPutExistingRegex(ITEM_TYPE),
     deleteItemRegex: ItemLikeService.getDeleteRegex(ITEM_TYPE),
-    undeleteItemRegex: ItemLikeService.getUndeleteRegex(ITEM_TYPE)
+    undeleteItemRegex: ItemLikeService.getUndeleteRegex(ITEM_TYPE),
+    getItemRevisionsRegex: getItemRevisionsRegexp,
+    getItemRevisionRegex: getItemRevisionRegexp
   };
 }
 

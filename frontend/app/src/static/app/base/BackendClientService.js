@@ -28,6 +28,7 @@
   methods.apiPrefixRegex = /\/api\//;
   methods.undeleteRegex = /\/undelete/;
   methods.hexCodeRegex = /[0-9a-f]+/;
+  methods.numberRegex = /[0-9]+/;
 
   var refreshCredentialsCallback;
 

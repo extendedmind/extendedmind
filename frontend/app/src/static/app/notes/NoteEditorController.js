@@ -124,10 +124,12 @@
               $scope.features.lists.getStatus('active') !== 'disabled' &&
               !$scope.isPropertyInDedicatedEdit());
       case 'modified':
-      return $scope.note.trans.uuid && $scope.note.trans.created !== $scope.note.trans.modified;
+      return $scope.note.trans.uuid && $scope.note.trans.created !== $scope.note.trans.modified &&
+            !$scope.isPropertyInDedicatedEdit();
 
       case 'public':
-      return $scope.note.visibility && $scope.note.visibility.published;
+      return $scope.note.visibility && $scope.note.visibility.published &&
+            !$scope.isPropertyInDedicatedEdit();
     }
   };
 
@@ -212,7 +214,7 @@
   // UI
 
   function isSubEditorOpenInListEditor(){
-    return $scope.listPickerOpen || $scope.keywordsPickerOpen;
+    return $scope.listPickerOpen || $scope.keywordsPickerOpen || $scope.revisionPickerOpen;
   }
   $scope.registerIsSubEditorOpenCondition(isSubEditorOpenInListEditor);
 

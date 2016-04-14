@@ -570,8 +570,19 @@
 
   // REVISION PICKER WIDGET
 
-  $scope.openRevisionPicker = function(){
-    console.log("TODO: REVISION PICKER");
+  $scope.openRevisionPicker = function(itemInEdit){
+    $scope.getItemRevisions(itemInEdit).then(function(response){
+      itemInEdit.trans.revisions = response.revisions;
+      $scope.revisionPickerOpen = true;
+    })
+  };
+
+  $scope.closeRevisionPicker = function() {
+    $scope.revisionPickerOpen = false;
+  };
+
+  $scope.closeRevisionPickerAndActivateRevision = function(item, revisionNumber) {
+    $scope.revisionPickerOpen = false;
   };
 
   // TEXT PROPERTIES (i.e. description, url and content)
@@ -678,9 +689,11 @@
       }else{
         return $scope.focusedTextProperty;
       }
-    }
-    else if ($scope.listPickerOpen)
+    }else if ($scope.listPickerOpen){
       return 'list';
+    }else if ($scope.revisionPickerOpen){
+      return 'revision';
+    }
   };
 
   $scope.isPropertyEdited = function(textPropertyEditedFn) {
@@ -746,7 +759,7 @@
       case 'url':
       return !$scope.isOtherPropertyInEdit('url');
       case 'revisions':
-      return item.revision !== undefined;
+      return item.revision !== undefined && !$scope.isPropertyInDedicatedEdit();
       case 'description':
       return !$scope.isOtherPropertyInEdit('description');
       case 'created':
@@ -765,6 +778,8 @@
     switch (subEditorName){
       case 'list':
       return $scope.listPickerOpen;
+      case 'revision':
+      return $scope.revisionPickerOpen;
     }
   };
 
