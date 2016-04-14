@@ -464,8 +464,9 @@ class NoteBestCaseSpec extends ServiceSpecBase {
       // Force creation of first revision right away
       val noteRevision1 = newNote.copy(title = "Spanish 101 and then some", revision = Some(1l))
       putExistingNote(noteRevision1, putNoteResponse.uuid.get, authenticateResponse)
-      getItemRevisionList(putNoteResponse.uuid.get, authenticateResponse).revisions.get.length should be (1)
-      getItemRevision(putNoteResponse.uuid.get, 1l, authenticateResponse).note.get.title should be (noteRevision1.title)
+      // Also output response to json
+      getItemRevisionList(putNoteResponse.uuid.get, authenticateResponse, Some("itemRevisions")).revisions.get.length should be (1)
+      getItemRevision(putNoteResponse.uuid.get, 1l, authenticateResponse, Some("itemRevision")).note.get.title should be (noteRevision1.title)
 
       // Also force creation of second revision right away
       val noteRevision2 = newNote.copy(title = "Spanish 101 and then some 2", revision = Some(2l))

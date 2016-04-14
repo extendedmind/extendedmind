@@ -145,7 +145,6 @@ abstract class ServiceSpecBase extends ImpermanentGraphDatabaseSpecBase {
     }
   }
 
-
   def putExistingList(existingList: List, listUUID: UUID, authenticateResponse: SecurityContext,
     collectiveUUID: Option[UUID] = None): SetResult = {
     val ownerUUID = if (collectiveUUID.isDefined) collectiveUUID.get else authenticateResponse.userUUID
@@ -194,14 +193,16 @@ abstract class ServiceSpecBase extends ImpermanentGraphDatabaseSpecBase {
     }
   }
 
-  def getItemRevisionList(itemUUID: UUID, authenticateResponse: SecurityContext): ItemRevisions = {
+  def getItemRevisionList(itemUUID: UUID, authenticateResponse: SecurityContext, jsonOutputName: Option[String] = None): ItemRevisions = {
     Get("/" + authenticateResponse.userUUID + "/item/" + itemUUID + "/revisions") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+      if (jsonOutputName.isDefined) writeJsonOutput(jsonOutputName.get, responseAs[String])
       responseAs[ItemRevisions]
     }
   }
 
-  def getItemRevision(itemUUID: UUID, revisionNumber: Long, authenticateResponse: SecurityContext): ExtendedItemChoice = {
+  def getItemRevision(itemUUID: UUID, revisionNumber: Long, authenticateResponse: SecurityContext, jsonOutputName: Option[String] = None): ExtendedItemChoice = {
     Get("/" + authenticateResponse.userUUID + "/item/" + itemUUID + "/revision/" + revisionNumber) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+      if (jsonOutputName.isDefined) writeJsonOutput(jsonOutputName.get, responseAs[String])
       responseAs[ExtendedItemChoice]
     }
   }

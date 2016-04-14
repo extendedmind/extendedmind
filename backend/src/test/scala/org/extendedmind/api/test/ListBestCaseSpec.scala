@@ -429,7 +429,6 @@ class ListBestCaseSpec extends ServiceSpecBase {
             // Get a revision list
             Get("/" + timoUUID + "/item/" + existingTaskUUID + "/revisions") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
               val revisionsResponse = responseAs[ItemRevisions]
-              writeJsonOutput("revisionsResponse", responseAs[String])
               revisionsResponse.revisions.get.length should be (1)
               revisionsResponse.revisions.get(0).number should be (1l)
               revisionsResponse.revisions.get(0).creator.get should be (lauriAuthenticateResponse.userUUID)
