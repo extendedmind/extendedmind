@@ -654,6 +654,10 @@
       var ownerUUID = task.trans.owner;
       return ItemLikeService.resetTrans(task, TASK_TYPE, ownerUUID, taskFieldInfos);
     },
+    updateTask: function(task) {
+      var ownerUUID = task.trans.owner;
+      return updateTask(task, ownerUUID);
+    },
     deleteTask: function(task, overrideReminder) {
       var ownerUUID = task.trans.owner;
       var deferred = $q.defer();

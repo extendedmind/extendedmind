@@ -96,7 +96,7 @@
       case 'share':
       return $scope.usePremiumFeatures() && $scope.fullEditor &&
              (ownerUUID === UserSessionService.getUserUUID()) &&
-             !$scope.listShareEditorOpen;
+             !$scope.listShareEditorOpen && !$scope.revisionPickerOpen;
       case 'adopt':
       // Show adopt when activeUUID is not the same as userUUID (in collective)
       // and list not already adopted
@@ -126,11 +126,14 @@
       return  $scope.usePremiumFeatures() && !$scope.listIsParent($scope.list) && $scope.fullEditor &&
               !$scope.isPropertyInDedicatedEdit();
       case 'sharedTo':
-      return $scope.usePremiumFeatures() && $scope.sharedToList && $scope.sharedToList.length && !$scope.listShareEditorOpen;
+      return $scope.usePremiumFeatures() && $scope.sharedToList && $scope.sharedToList.length &&
+             !$scope.listShareEditorOpen && !$scope.revisionPickerOpen;
       case 'sharedBy':
-      return $scope.usePremiumFeatures() && $scope.sharedByList && !jQuery.isEmptyObject($scope.sharedByList);
+      return $scope.usePremiumFeatures() && $scope.sharedByList &&
+             !jQuery.isEmptyObject($scope.sharedByList) && !$scope.revisionPickerOpen;
       case 'showNotesFirst':
-      return $scope.features.notes.getStatus() !== 'disabled' && !$scope.listShareEditorOpen;
+      return $scope.features.notes.getStatus() !== 'disabled' && !$scope.listShareEditorOpen &&
+             !$scope.revisionPickerOpen;
     }
   };
 
@@ -397,7 +400,7 @@
   // UI
 
   function isSubEditorOpenInListEditor(){
-    return $scope.listPickerOpen || $scope.listShareEditorOpen;
+    return $scope.listPickerOpen || $scope.listShareEditorOpen || $scope.revisionPickerOpen;
   }
   $scope.registerIsSubEditorOpenCondition(isSubEditorOpenInListEditor);
 
@@ -528,8 +531,8 @@
     return ListsService.unshareList(targetList, agreementUUID).then(function(){
       if (sharedToRemovesList){
         var sharedLists = $scope.sharedLists;
-        if (sharedLists && sharedLists[targetList.trans.owner] && sharedLists[targetList.trans.owner][1]
-            && sharedLists[targetList.trans.owner][1][targetList.trans.uuid]){
+        if (sharedLists && sharedLists[targetList.trans.owner] && sharedLists[targetList.trans.owner][1] &&
+            sharedLists[targetList.trans.owner][1][targetList.trans.uuid]){
           // Delete the list from the in-memory-array
           delete sharedLists[targetList.trans.owner][1][targetList.trans.uuid];
           if (jQuery.isEmptyObject(sharedLists[targetList.trans.owner][1])){
@@ -654,6 +657,26 @@
   };
   $scope.registerGotoListTitleCallback = function(callback) {
     gotoTitleCallback = callback;
+  };
+
+  // REVISION HANDLING
+
+  $scope.closeListRevisionPickerAndActivateRevision = function(list, revision){
+    var promise = $scope.closeRevisionPickerAndActivateRevision(list, revision);
+    if (promise){
+      promise.then(function(revisionItem){
+        var revisionItemType = revisionItem.trans.itemType;
+        ListsService.resetList(revisionItem);
+        if (revisionItemType === 'list'){
+          $scope.list = revisionItem;
+          ListsService.updateList($scope.list);
+        }else if (revisionItemType === 'note'){
+          $scope.convertToNote(revisionItem);
+        } else if (revisionItemType === 'task'){
+          $scope.convertToTask(revisionItem);
+        }
+      });
+    }
   };
 
   // WATCH FOR CHANGES

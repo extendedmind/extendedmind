@@ -305,7 +305,7 @@
   function handleConvertError(error) {
     var message;
     if (error.type === 'parent') {
-      message = 'can\'t convert list with content';
+      message = 'can\'t convert list that has child items';
     } else if (error.type === 'reminders') {
       message = 'can\'t convert task with reminders';
     }

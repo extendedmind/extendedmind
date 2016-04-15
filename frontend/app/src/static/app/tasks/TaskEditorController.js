@@ -707,6 +707,7 @@
         TasksService.resetTask(revisionItem);
         if (revisionItemType === 'task'){
           $scope.task = revisionItem;
+          TasksService.updateTask($scope.task);
         }else if (revisionItemType === 'note'){
           $scope.convertToNote(revisionItem);
         } else if (revisionItemType === 'list'){
