@@ -886,7 +886,7 @@
 
   // AUTOSAVING
 
-  var setSavedTimer, resetNoteStatusTimer;
+  var setSavedTimer, resetNoteStatusTimer, savingSetTime;
   var saveStatus = getDefaultSaveStatus();
   var savingInProgress;
   var saveReadyDeferred;
@@ -930,29 +930,14 @@
 
       // Do this only when actually saving something
       if (result !== 'unmodified'){
-        // This is returned immediately, so here we set saving.
-        var savingSetTime = Date.now();
-        saveStatus = 'saving';
 
-        if (setSavedTimer) {
-          $timeout.cancel(setSavedTimer);
-          if (resetNoteStatusTimer) {
-            $timeout.cancel(resetNoteStatusTimer);
-          }
-        }
         saveReadyDeferred = $q.defer();
         (function loop(){
           setTimeout(function(){
             if (!saveReadyDeferred){
               return;
             }else if (!BackendClientService.isProcessing()) {
-              // Resolve saving no sooner than every two seconds
-              var sinceSavingSet = (Date.now() - savingSetTime);
-              var setSavedTimeout = sinceSavingSet > 1900 ? 100 : 100 + (1900 - sinceSavingSet);
-              setSavedTimer = $timeout(
-                function(){
-                  saveReadyDeferred.resolve();
-                }, setSavedTimeout);
+              saveReadyDeferred.resolve();
               return;
             }
             loop();
@@ -992,8 +977,28 @@
     }
   };
 
-  // Create a debounced auto save function from save function, that fires max once per 100ms
-  $scope.autoSave = $scope.saveItemInEdit.debounce(100);
+  // Create a debounced auto save function from save function
+  $scope.autoSave = function(itemInEdit){
+    if ($scope.isEdited(itemInEdit)){
+      if (setSavedTimer) {
+        $timeout.cancel(setSavedTimer);
+      }
+      if (resetNoteStatusTimer) {
+        $timeout.cancel(resetNoteStatusTimer);
+      }
+      // This is returned immediately, so here we set saving.
+      savingSetTime = Date.now();
+      saveStatus = 'saving';
+
+      // Autosave after two seconds since last autosave
+      var sinceSavingSet = (Date.now() - savingSetTime);
+      var setSavedTimeout = sinceSavingSet > 1900 ? 100 : 100 + (1900 - sinceSavingSet);
+      setSavedTimer = $timeout(
+        function(){
+          $scope.saveItemInEdit(itemInEdit);
+        }, setSavedTimeout);
+    }
+  }.debounce(100);
 
   $scope.resetSaveStatus = function(){
     saveStatus = getDefaultSaveStatus();
