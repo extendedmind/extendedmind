@@ -668,8 +668,13 @@
         var revisionItemType = revisionItem.trans.itemType;
         ListsService.resetList(revisionItem);
         if (revisionItemType === 'list'){
-          $scope.list = revisionItem;
-          ListsService.updateList($scope.list);
+          // Use one bigger revision number to force creation of a new revision right now
+          var newRevision = $scope.list.revision + 1;
+          $scope.list.trans = revisionItem.trans;
+          $scope.list.revision = newRevision;
+          ListsService.saveList($scope.list).then(function(result){
+            if (result === 'unmodified') $scope.list.revision = $scope.list.revision - 1;
+          });
         }else if (revisionItemType === 'note'){
           $scope.convertToNote(revisionItem);
         } else if (revisionItemType === 'task'){

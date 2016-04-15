@@ -569,7 +569,10 @@
 
   $scope.openRevisionPicker = function(itemInEdit){
     $scope.getItemRevisions(itemInEdit).then(function(response){
-      itemInEdit.trans.revisions = response.revisions;
+      itemInEdit.trans.revisions = response.revisions.sort(
+        function(a,b) {
+          return (a.number > b.number) ? 1 : ((b.number > a.number) ? -1 : 0);
+        });
       $scope.revisionPickerOpen = true;
     });
   };
@@ -610,9 +613,6 @@
       if (item.archived) revisionItem.archived = item.archived;
       if (item.deleted) revisionItem.deleted = item.deleted;
       if (item.creator) revisionItem.creator = item.creator;
-
-      // Use one bigger revision number to force creation of a new revision when this is saved
-      if (item.revision) revisionItem.revision = item.revision + 1;
       if (item.visibility) revisionItem.visibility = item.visibility;
 
       // Assigner and origin are not part of the revision

@@ -446,10 +446,6 @@
       var ownerUUID = note.trans.owner;
       return ItemLikeService.resetTrans(note, NOTE_TYPE, ownerUUID, noteFieldInfos);
     },
-    updateNote: function(note) {
-      var ownerUUID = note.trans.owner;
-      return updateNote(note, ownerUUID);
-    },
     deleteNote: function(note) {
       var ownerUUID = note.trans.owner;
       var deferred = $q.defer();

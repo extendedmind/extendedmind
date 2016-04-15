@@ -595,10 +595,6 @@
       var ownerUUID = list.trans.owner;
       return ItemLikeService.resetTrans(list, LIST_TYPE, ownerUUID, listFieldInfos);
     },
-    updateList: function(list) {
-      var ownerUUID = list.trans.owner;
-      return updateList(list, ownerUUID);
-    },
     getListStatus: function(list) {
       var ownerUUID = list.trans.owner;
       var arrayInfo = ArrayService.getActiveArrayInfo(list,

@@ -706,8 +706,13 @@
         var revisionItemType = revisionItem.trans.itemType;
         TasksService.resetTask(revisionItem);
         if (revisionItemType === 'task'){
-          $scope.task = revisionItem;
-          TasksService.updateTask($scope.task);
+          // Use one bigger revision number to force creation of a new revision right now
+          var newRevision = $scope.task.revision + 1;
+          $scope.task.trans = revisionItem.trans;
+          $scope.task.revision = newRevision;
+          TasksService.saveTask($scope.task).then(function(result){
+            if (result === 'unmodified') $scope.task.revision = $scope.task.revision - 1;
+          });;
         }else if (revisionItemType === 'note'){
           $scope.convertToNote(revisionItem);
         } else if (revisionItemType === 'list'){
