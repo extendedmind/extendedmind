@@ -946,7 +946,13 @@
             if (!saveReadyDeferred){
               return;
             }else if (!BackendClientService.isProcessing()) {
-              saveReadyDeferred.resolve();
+              // Resolve saving no sooner than every two seconds
+              var sinceSavingSet = (Date.now() - savingSetTime);
+              var setSavedTimeout = sinceSavingSet > 1900 ? 100 : 100 + (1900 - sinceSavingSet);
+              setSavedTimer = $timeout(
+                function(){
+                  saveReadyDeferred.resolve();
+                }, setSavedTimeout);
               return;
             }
             loop();
@@ -956,9 +962,7 @@
           // Previous save is ready now. We might get another save right after this one if there
           // are other changes, so always set a timeout. Recursively call this function to also saved
           // changes after this.
-          var sinceSavingSet = (Date.now() - savingSetTime);
-          var setSavedTimeout = sinceSavingSet > 750 ? 250 : 250 + (750 - sinceSavingSet);
-          setSavedTimer = $timeout(doSetSaved, setSavedTimeout);
+          doSetSaved();
           savingInProgress = false;
           saveReadyDeferred = undefined;
           $scope.saveItemInEdit(itemInEdit);
