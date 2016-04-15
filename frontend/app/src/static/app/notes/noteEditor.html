@@ -398,7 +398,7 @@
           editable-field-container-clicked-elsewhere="closeRevisionPicker()" data-snap-ignore="true">
           <div class="group-mixed" ng-repeat="revision in note.trans.revisions track by revision.uuid">
             <a href class="group-mixed--middle link-search-result"
-            ng-click="closeRevisionPickerAndActivateRevision(note, revision.number)">
+            ng-click="closeNoteRevisionPickerAndActivateRevision(note, revision)">
               <span class="text-search-result">
                 {{ revision.number + '. ' + formatToLocaleDateWithTime(revision.created)}}
               </span>

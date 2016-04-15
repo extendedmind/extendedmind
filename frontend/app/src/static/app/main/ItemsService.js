@@ -322,7 +322,9 @@
       }
       return deferred.promise;
     },
-    getItemRevision: function(item, revisionNumber) {
+    getItemRevision: function(payload) {
+      var item = payload.item;
+      var revisionNumber = payload.number;
       var ownerUUID = item.trans.owner;
       // Check that item is not deleted before trying to get revisions
       var deferred = $q.defer();

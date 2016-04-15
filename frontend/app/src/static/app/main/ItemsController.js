@@ -132,11 +132,38 @@
         deferred.resolve(response);
       },function(error){
         if (error.type === 'offline') {
-          offlineProcessFn(error, item, deferred, ItemsService.getItemRevisions);
+          processItemOffline(error, item, deferred, ItemsService.getItemRevisions);
         }
       });
     return deferred.promise;
   };
+
+  $scope.getItemRevision = function(item, revisionNumber){
+    var deferred = $q.defer();
+    var payload = {item: item, number: revisionNumber};
+    ItemsService.getItemRevision(payload).then(
+      function(response){
+        deferred.resolve(response);
+      },function(error){
+        if (error.type === 'offline') {
+          processItemOffline(error, payload, deferred, ItemsService.getItemRevision);
+        }
+      });
+    return deferred.promise;
+  };
+
+  function processItemOffline(error, item, deferred, retryFn) {
+    var rejection = {
+      type: 'onlineRequired',
+      value: {
+        retry: retryFn,
+        retryParam: item,
+        allowCancel: true,
+        promise: deferred.resolve
+      }
+    };
+    $rootScope.$emit('emInteraction', rejection);
+  }
 
 }
 

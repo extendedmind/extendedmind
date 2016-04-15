@@ -192,11 +192,24 @@
         deferred.resolve(response);
       },function(error){
         if (error.type === 'offline') {
-          offlineProcessFn(error, note, deferred, NotesService.previewNote);
+          processNoteOffline(error, note, deferred, NotesService.previewNote);
         }
       });
     return deferred.promise;
   };
+
+  function processNoteOffline(error, note, deferred, retryFn) {
+    var rejection = {
+      type: 'onlineRequired',
+      value: {
+        retry: retryFn,
+        retryParam: note,
+        allowCancel: true,
+        promise: deferred.resolve
+      }
+    };
+    $rootScope.$emit('emInteraction', rejection);
+  }
 
   /*
   * Favorite note.

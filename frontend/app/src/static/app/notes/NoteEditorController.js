@@ -549,6 +549,25 @@
     $scope.toggleExpandEditor();
   };
 
+  // REVISION HANDLING
+
+  $scope.closeNoteRevisionPickerAndActivateRevision = function(note, revision){
+    var promise = $scope.closeRevisionPickerAndActivateRevision(note, revision);
+    if (promise){
+      promise.then(function(revisionItem){
+        var revisionItemType = revisionItem.trans.itemType;
+        NotesService.resetNote(revisionItem);
+        if (revisionItemType === 'note'){
+          $scope.note = revisionItem;
+        }else if (revisionItemType === 'task'){
+          $scope.convertToTask(revisionItem);
+        } else if (revisionItemType === 'list'){
+          $scope.convertToList(revisionItem);
+        }
+      });
+    }
+  };
+
   // WATCH FOR CHANGES
 
   function setNoteWatch(){

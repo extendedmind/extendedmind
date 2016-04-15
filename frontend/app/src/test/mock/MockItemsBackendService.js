@@ -258,7 +258,7 @@ function MockItemsBackendService($httpBackend, ItemsService, SynchronizeService,
   function mockGetItemRevisionRegex(expectResponse){
     $httpBackend.whenGET(ItemsService.getItemRevisionRegex)
       .respond(function(method, url, data, headers) {
-        var revisionResponse = getJSONFixture('itemRevisionsResponse.json');
+        var revisionResponse = getJSONFixture('itemRevisionResponse.json');
         return expectResponse(method, url, data, headers, revisionResponse);
     });
   }

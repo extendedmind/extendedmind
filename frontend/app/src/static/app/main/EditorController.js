@@ -255,8 +255,6 @@
     }, $rootScope.LIST_ITEM_LEAVE_ANIMATION_SPEED);
   }
 
-
-
   // DELETING
 
   $scope.processDelete = function(dataInEdit, deleteCallback, undeleteFn) {
@@ -325,11 +323,11 @@
     }
     else if (dataInEdit.trans.itemType === 'task') {
       convertToNotePromise = ConvertService.finishTaskToNoteConvert(dataInEdit,
-                                                                    UISessionService.getActiveUUID());
+                                                                    dataInEdit.trans.owner);
     }
     else if (dataInEdit.trans.itemType === 'list') {
       convertToNotePromise = ConvertService.finishListToNoteConvert(dataInEdit,
-                                                                    UISessionService.getActiveUUID());
+                                                                    dataInEdit.trans.owner);
     }
 
     if (convertToNotePromise){
@@ -344,13 +342,12 @@
     var convertToTaskPromise;
     if (dataInEdit.trans.itemType === 'item') {
       convertToTaskPromise = ItemsService.itemToTask(dataInEdit);
-    }
-    else if (dataInEdit.trans.itemType === 'note') {
+    } else if (dataInEdit.trans.itemType === 'note') {
       convertToTaskPromise = ConvertService.finishNoteToTaskConvert(dataInEdit,
-                                                                    UISessionService.getActiveUUID());
+                                                                    dataInEdit.trans.owner);
     } else if (dataInEdit.trans.itemType === 'list') {
       convertToTaskPromise = ConvertService.finishListToTaskConvert(dataInEdit,
-                                                                    UISessionService.getActiveUUID());
+                                                                    dataInEdit.trans.owner);
     }
     if (convertToTaskPromise){
       convertToTaskPromise.then(function(task){
@@ -367,11 +364,11 @@
     }
     else if (dataInEdit.trans.itemType === 'task') {
       convertToListPromise = ConvertService.finishTaskToListConvert(dataInEdit,
-                                                                    UISessionService.getActiveUUID());
+                                                                    dataInEdit.trans.owner);
     }
     else if (dataInEdit.trans.itemType === 'note') {
       convertToListPromise = ConvertService.finishNoteToListConvert(dataInEdit,
-                                                                    UISessionService.getActiveUUID());
+                                                                    dataInEdit.trans.owner);
     }
     if (convertToListPromise){
       convertToListPromise.then(function(list){
@@ -574,15 +571,60 @@
     $scope.getItemRevisions(itemInEdit).then(function(response){
       itemInEdit.trans.revisions = response.revisions;
       $scope.revisionPickerOpen = true;
-    })
+    });
   };
 
   $scope.closeRevisionPicker = function() {
     $scope.revisionPickerOpen = false;
   };
 
-  $scope.closeRevisionPickerAndActivateRevision = function(item, revisionNumber) {
-    $scope.revisionPickerOpen = false;
+  $scope.closeRevisionPickerAndActivateRevision = function(item, revisionInfo) {
+    // First check that not attempting to convert a non-convertable item
+    if (item.trans.itemType !== revisionInfo.itemType && !isConvertable(item)){
+      UISessionService.pushNotification({
+        type: 'fyi',
+        text: 'this ' + item.trans.itemType + ' can\'t be converted to ' + revisionInfo.itemType
+      });
+      return;
+    }
+
+    return $scope.getItemRevision(item, revisionInfo.number).then(function(response){
+      $scope.revisionPickerOpen = false;
+      var revisionItem;
+      if (response.note){
+        revisionItem = response.note;
+        revisionItem.trans = {itemType: 'note', owner: item.trans.owner};
+        if (item.favorited) revisionItem.favorited = item.favorited;
+      }else if (response.task){
+        revisionItem = response.task;
+        revisionItem.trans = {itemType: 'task', owner: item.trans.owner};
+        if (item.completed) revisionItem.completed = item.completed;
+        if (item.reminders) revisionItem.reminders = item.reminders;
+      }else if (response.list){
+        revisionItem = response.list;
+        revisionItem.trans = {itemType: 'list', owner: item.trans.owner};
+      }
+      revisionItem.uuid = item.uuid;
+      revisionItem.created = item.created;
+      revisionItem.modified = item.modified;
+      if (item.archived) revisionItem.archived = item.archived;
+      if (item.deleted) revisionItem.deleted = item.deleted;
+      if (item.creator) revisionItem.creator = item.creator;
+
+      // Use one bigger revision number to force creation of a new revision when this is saved
+      if (item.revision) revisionItem.revision = item.revision + 1;
+      if (item.visibility) revisionItem.visibility = item.visibility;
+
+      // Assigner and origin are not part of the revision
+      if (item.relationships){
+        if (item.relationships.assigner || item.relationships.origin){
+          if (!revisionItem.relationships) revisionItem.relationships = {};
+          if (item.relationships.assigner) revisionItem.relationships.assigner = item.relationships.assigner;
+          if (item.relationships.origin) revisionItem.relationships.origin = item.relationships.origin;
+        }
+      }
+      return revisionItem;
+    });
   };
 
   // TEXT PROPERTIES (i.e. description, url and content)
@@ -727,6 +769,11 @@
     }
   };
 
+  function isConvertable(item){
+    return ((!item.visibility || !item.visibility.published) &&
+           !(item.content && item.content.length > 1024));
+  }
+
   $scope.showEditorAction = function(actionName, item){
     switch (actionName){
       case 'saveBack':
@@ -746,9 +793,9 @@
              (!item.visibility || !item.visibility.published);
       case 'convertToList':
       return $scope.fullEditor && $scope.features.lists.getStatus('active') !== 'disabled' &&
-             (!item.visibility || !item.visibility.published);
+             isConvertable(item);
       case 'convertToTask':
-      return $scope.fullEditor && (!item.visibility || !item.visibility.published);
+      return $scope.fullEditor && isConvertable(item);
     }
   };
 

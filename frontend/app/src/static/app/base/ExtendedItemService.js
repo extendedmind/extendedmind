@@ -260,7 +260,6 @@
       return {
         name: 'revision',
         isEdited: function(){return false;},
-        skipTransport: true,
         resetTrans: function(){},
         copyTransToMod: function(){}
       };
