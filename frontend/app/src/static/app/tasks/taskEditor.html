@@ -377,7 +377,6 @@
         ng-init="slideInfo = {footerId: 'advancedFooter'}">
         <div class="container-content" ng-style="{'padding-bottom': slideInfo.footerHeight}">
 
-
           <!-- REPEATING -->
           <div ng-if="showTaskProperty('repeating')" class="group-mixed row-top-parent">
             <a href class="group-mixed--middle link-search-result"
@@ -480,6 +479,25 @@
             </div>
             <div class="group-mixed--right">
               <span class="text-field--label">archived</span>
+            </div>
+          </div>
+
+          <!-- REVISION PICKER -->
+          <div ng-if="showEditorSubEditor('revision')"
+            class="container-sub-editor swiper-no-swiping animate-fade-in row-top-parent-disable"
+            editable-field-container="auto" editable-field-container-scrollable="true"
+            editable-field-container-clicked-elsewhere="closeRevisionPicker()" data-snap-ignore="true">
+            <div class="group-mixed" ng-repeat="revision in task.trans.revisions track by revision.uuid">
+              <a href class="group-mixed--middle link-search-result"
+              ng-click="closeTaskRevisionPickerAndActivateRevision(task, revision)">
+                <span class="text-search-result">
+                  {{ revision.number + '. ' + formatToLocaleDateWithTime(revision.created)}}
+                </span>
+              </a>
+              <div class="group-mixed--right">
+                <span class="text-search-type"
+                ng-bind="revision.itemType"></span>
+              </div>
             </div>
           </div>
 

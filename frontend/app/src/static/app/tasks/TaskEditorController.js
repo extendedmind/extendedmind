@@ -101,7 +101,8 @@
   };
 
   $scope.getTaskPropertyInEditHasContainer = function() {
-    return calendarOpen || contextPickerOpen || $scope.listPickerOpen || repeatingPickerOpen;
+    return calendarOpen || contextPickerOpen || $scope.listPickerOpen || repeatingPickerOpen ||
+           $scope.revisionPickerOpen;
   };
 
   // COMPLETING, SAVING, DELETING
@@ -190,7 +191,7 @@
 
   function isSubEditorOpenInTaskEditor(){
     return calendarOpen || contextPickerOpen || $scope.listPickerOpen || reminderPickerOpen ||
-    repeatingPickerOpen;
+    repeatingPickerOpen || $scope.revisionPickerOpen;
   }
   $scope.registerIsSubEditorOpenCondition(isSubEditorOpenInTaskEditor);
 
@@ -692,6 +693,26 @@
       return $scope.doScrollToBottomOnTextareaResize(getLaterFooterHeight());
     }else{
       return $scope.doScrollToBottomOnTextareaResize();
+    }
+  };
+
+
+  // REVISION HANDLING
+
+  $scope.closeTaskRevisionPickerAndActivateRevision = function(task, revision){
+    var promise = $scope.closeRevisionPickerAndActivateRevision(task, revision);
+    if (promise){
+      promise.then(function(revisionItem){
+        var revisionItemType = revisionItem.trans.itemType;
+        TasksService.resetTask(revisionItem);
+        if (revisionItemType === 'task'){
+          $scope.task = revisionItem;
+        }else if (revisionItemType === 'note'){
+          $scope.convertToNote(revisionItem);
+        } else if (revisionItemType === 'list'){
+          $scope.convertToList(revisionItem);
+        }
+      });
     }
   };
 
