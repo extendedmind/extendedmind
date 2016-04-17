@@ -47,7 +47,7 @@ trait NoteService extends ServiceBase {
   import JsonImplicits._
 
   def noteRoutes = {
-      getNote { (ownerUUID, noteUUID) =>
+      v2GetNote { (ownerUUID, noteUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(readAccess(ownerUUID, securityContext)) {
             complete {
@@ -62,7 +62,7 @@ trait NoteService extends ServiceBase {
           }
         }
       } ~
-      putNewNote { ownerUUID =>
+      v2PutNewNote { ownerUUID =>
         authenticate(ExtendedAuth(authenticator, "shareable", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext, shareable=true)) {
             entity(as[Note]) { note =>
@@ -79,7 +79,7 @@ trait NoteService extends ServiceBase {
           }
         }
       } ~
-      putExistingNote { (ownerUUID, noteUUID) =>
+      v2PutExistingNote { (ownerUUID, noteUUID) =>
         authenticate(ExtendedAuth(authenticator, "shareable", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext, shareable=true)) {
             entity(as[Note]) { note =>
@@ -96,7 +96,7 @@ trait NoteService extends ServiceBase {
           }
         }
       } ~
-      deleteNote { (ownerUUID, noteUUID) =>
+      v2DeleteNote { (ownerUUID, noteUUID) =>
         authenticate(ExtendedAuth(authenticator, "shareable", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext, shareable=true)) {
             complete {
@@ -111,7 +111,7 @@ trait NoteService extends ServiceBase {
           }
         }
       } ~
-      undeleteNote { (ownerUUID, noteUUID) =>
+      v2UndeleteNote { (ownerUUID, noteUUID) =>
         authenticate(ExtendedAuth(authenticator, "shareable", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext, shareable=true)) {
             complete {
@@ -126,7 +126,7 @@ trait NoteService extends ServiceBase {
           }
         }
       }  ~
-      favoriteNote { (ownerUUID, noteUUID) =>
+      v2FavoriteNote { (ownerUUID, noteUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
             complete {
@@ -141,7 +141,7 @@ trait NoteService extends ServiceBase {
           }
         }
       } ~
-      unfavoriteNote { (ownerUUID, noteUUID) =>
+      v2UnfavoriteNote { (ownerUUID, noteUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
             complete {
@@ -156,7 +156,7 @@ trait NoteService extends ServiceBase {
           }
         }
       } ~
-      noteToTask { (ownerUUID, noteUUID) =>
+      v2NoteToTask { (ownerUUID, noteUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
             entity(as[Note]) { note =>
@@ -173,7 +173,7 @@ trait NoteService extends ServiceBase {
           }
         }
       } ~
-      noteToList { (ownerUUID, noteUUID) =>
+      v2NoteToList { (ownerUUID, noteUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
             entity(as[Note]) { note =>
@@ -190,7 +190,7 @@ trait NoteService extends ServiceBase {
           }
         }
       } ~
-      previewNote { (ownerUUID, noteUUID) =>
+      v2PreviewNote { (ownerUUID, noteUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
             entity(as[PreviewPayload]) { payload =>
@@ -207,7 +207,7 @@ trait NoteService extends ServiceBase {
           }
         }
       } ~
-      publishNote { (ownerUUID, noteUUID) =>
+      v2PublishNote { (ownerUUID, noteUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
             entity(as[PublishPayload]) { payload =>
@@ -224,7 +224,7 @@ trait NoteService extends ServiceBase {
           }
         }
       } ~
-      unpublishNote { (ownerUUID, noteUUID) =>
+      v2UnpublishNote { (ownerUUID, noteUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
             complete {

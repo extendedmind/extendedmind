@@ -47,7 +47,7 @@ trait InviteService extends ServiceBase {
   import JsonImplicits._
 
   def inviteRoutes = {
-    putNewInvite { ownerUUID =>
+    v2PutNewInvite { ownerUUID =>
       authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
         authorize(writeAccess(ownerUUID, securityContext)) {
           entity(as[Invite]) { invite =>
@@ -64,7 +64,7 @@ trait InviteService extends ServiceBase {
         }
       }
     } ~
-    postResendInvite { (ownerUUID, inviteUUID) =>
+    v2PostResendInvite { (ownerUUID, inviteUUID) =>
       authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
         authorize(writeAccess(ownerUUID, securityContext)) {
           complete {
@@ -79,7 +79,7 @@ trait InviteService extends ServiceBase {
         }
       }
     } ~
-    deleteInvite { (ownerUUID, inviteUUID) =>
+    v2DeleteInvite { (ownerUUID, inviteUUID) =>
       authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
         authorize(writeAccess(ownerUUID, securityContext)) {
           complete {
@@ -94,7 +94,7 @@ trait InviteService extends ServiceBase {
         }
       }
     } ~
-    getInvites { ownerUUID =>
+    v2GetInvites { ownerUUID =>
       authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
         authorize(readAccess(ownerUUID, securityContext)) {
           complete {

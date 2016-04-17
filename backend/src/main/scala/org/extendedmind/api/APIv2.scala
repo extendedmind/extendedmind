@@ -26,10 +26,7 @@ import spray.routing.PathMatchers._
 /**
  * Specifies the Extended Mind API v2
  */
-trait APIv2 extends HttpService {
-
-  // All valid paths
-  val v2getRoot = get & path("v2")
+trait APIv2 extends LegacyAPI {
 
   // USER
   val v2PostSignUp = post & path("v2" / "signup".r)
@@ -140,13 +137,5 @@ trait APIv2 extends HttpService {
   val v2PostSetItemProperty = post & path("v2" / "admin" / "item" / JavaUUID / "property")
   val v2PostSetOwnerProperty = post & path("v2" / "admin" / "owner" / JavaUUID / "property")
   val v2PutInfo = put & path("v2" / "admin" / "info".r)
-
-  // SYSTEM
-  val v2Shutdown = post & path("v2" / "shutdown")
-  val v2Tick = post & path("v2" / "tick")
-  val v2GetInfo = get & path("v2" / "info")
-  val v2GetHAAvailable = get & path("v2" / "ha" / "available")
-  val v2GetHAMaster = get & path("v2" / "ha" / "master")
-  val v2GetHASlave = get & path("v2" / "ha" / "slave")
 
 }

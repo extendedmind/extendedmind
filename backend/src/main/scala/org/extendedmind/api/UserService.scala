@@ -46,7 +46,7 @@ trait UserService extends ServiceBase {
   import JsonImplicits._
 
   def userRoutes = {
-      postSignUp { url =>
+      v2PostSignUp { url =>
         authorize(settings.signUpMethod == SIGNUP_ON) {
           entity(as[SignUp]) { signUp =>
             complete {
@@ -60,7 +60,7 @@ trait UserService extends ServiceBase {
           }
         }
       } ~
-      postVerifyResend { url =>
+      v2PostVerifyResend { url =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           complete {
             Future[CountResult] {
@@ -72,7 +72,7 @@ trait UserService extends ServiceBase {
           }
         }
       } ~
-      getAccount { url =>
+      v2GetAccount { url =>
         authenticate(ExtendedAuth(authenticator, "account", None)) { securityContext =>
           complete {
             Future[User] {
@@ -85,7 +85,7 @@ trait UserService extends ServiceBase {
           }
         }
       } ~
-      putAccount { url =>
+      v2PutAccount { url =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           entity(as[User]) { user =>
             complete {
@@ -100,7 +100,7 @@ trait UserService extends ServiceBase {
           }
         }
       } ~
-      deleteAccount { url =>
+      v2DeleteAccount { url =>
         authenticate(ExtendedAuth(authenticator, "secure", None)) { securityContext =>
           complete {
             Future[DeleteItemResult] {
@@ -113,7 +113,7 @@ trait UserService extends ServiceBase {
           }
         }
       } ~
-      postSubscribe { url =>
+      v2PostSubscribe { url =>
         authenticate(ExtendedAuth(authenticator, "secure", None)) { securityContext =>
           authorize(settings.signUpMode == MODE_NORMAL &&
                     (securityContext.userType == Token.BETA || securityContext.userType == Token.NORMAL)) {
@@ -131,7 +131,7 @@ trait UserService extends ServiceBase {
           }
         }
       } ~
-      putEmail { url =>
+      v2PutEmail { url =>
         authenticate(ExtendedAuth(authenticator, "secure", None)) { securityContext =>
           entity(as[UserEmail]) { email =>
             complete {
@@ -146,7 +146,7 @@ trait UserService extends ServiceBase {
           }
         }
       } ~
-      putNewAgreement { url =>
+      v2PutNewAgreement { url =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           entity(as[Agreement]) { agreement =>
             complete {
@@ -161,7 +161,7 @@ trait UserService extends ServiceBase {
           }
         }
       } ~
-      postAgreementAccess { (agreementUUID, access) =>
+      v2PostAgreementAccess { (agreementUUID, access) =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           complete {
             Future[SetResult] {
@@ -174,7 +174,7 @@ trait UserService extends ServiceBase {
           }
         }
       } ~
-      deleteAgreement  { agreementUUID =>
+      v2DeleteAgreement  { agreementUUID =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           complete {
             Future[SetResult] {
@@ -200,7 +200,7 @@ trait UserService extends ServiceBase {
           }
         }
       } ~
-      postAgreementAccept { code =>
+      v2PostAgreementAccept { code =>
         entity(as[UserEmail]) { email =>
           complete {
             Future[SetResult] {

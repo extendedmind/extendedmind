@@ -47,22 +47,22 @@ trait AdminService extends ServiceBase {
   import JsonImplicits._
 
   def adminRoutes = {
-    getStatistics { url =>
-      authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
-        authorize(adminAccess(securityContext)) {
-          complete {
-            Future[Statistics] {
-              setLogContext(securityContext)
-              adminActions.getStatistics match {
-                case Right(users) => processResult(users)
-                case Left(e) => processErrors(e)
+      v2GetStatistics { url =>
+        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+          authorize(adminAccess(securityContext)) {
+            complete {
+              Future[Statistics] {
+                setLogContext(securityContext)
+                adminActions.getStatistics match {
+                  case Right(users) => processResult(users)
+                  case Left(e) => processErrors(e)
+                }
               }
             }
           }
         }
-      }
-    } ~
-      postChangeUserType { (userUUID, userType) =>
+      } ~
+      v2PostChangeUserType { (userUUID, userType) =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           // Only admins can change user type
           authorize(adminAccess(securityContext)) {
@@ -78,7 +78,7 @@ trait AdminService extends ServiceBase {
           }
         }
       } ~
-      getUser { url =>
+      v2GetUser { url =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           // Only admins can get users for now
           authorize(adminAccess(securityContext)) {
@@ -96,7 +96,7 @@ trait AdminService extends ServiceBase {
           }
         }
       } ~
-      deleteUser { userUUID =>
+      v2DeleteUser { userUUID =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           // Only admins can destroy users
           authorize(adminAccess(securityContext)) {
@@ -112,7 +112,7 @@ trait AdminService extends ServiceBase {
           }
         }
       } ~
-      getUsers { url =>
+      v2GetUsers { url =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           authorize(adminAccess(securityContext)) {
             complete {
@@ -127,7 +127,7 @@ trait AdminService extends ServiceBase {
           }
         }
       } ~
-      putNewCollective { url =>
+      v2PutNewCollective { url =>
         authenticate(ExtendedAuth(authenticator, "shareable", None)) { securityContext =>
           // Only admins can create new collectives for now
           authorize(adminAccess(securityContext)) {
@@ -145,7 +145,7 @@ trait AdminService extends ServiceBase {
           }
         }
       } ~
-      putExistingCollective { collectiveUUID =>
+      v2PutExistingCollective { collectiveUUID =>
         authenticate(ExtendedAuth(authenticator, "collective", None)) { securityContext =>
           // Only admins can update collectives for now
           authorize(adminAccess(securityContext)) {
@@ -163,7 +163,7 @@ trait AdminService extends ServiceBase {
           }
         }
       } ~
-      postCollectiveUserPermission { (collectiveUUID, userUUID) =>
+      v2PostCollectiveUserPermission { (collectiveUUID, userUUID) =>
         authenticate(ExtendedAuth(authenticator, "collective", None)) { securityContext =>
           // Only founder admin can assign people to exclusive collectives for now
           authorize(adminAccess(securityContext)) {
@@ -181,7 +181,7 @@ trait AdminService extends ServiceBase {
           }
         }
       } ~
-      resetTokens { url =>
+      v2ResetTokens { url =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           authorize(adminAccess(securityContext)) {
             complete {
@@ -196,7 +196,7 @@ trait AdminService extends ServiceBase {
           }
         }
       } ~
-      rebuildUserItemsIndex { ownerUUID =>
+      v2RebuildUserItemsIndex { ownerUUID =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           authorize(adminAccess(securityContext)) {
             complete {
@@ -211,7 +211,7 @@ trait AdminService extends ServiceBase {
           }
         }
       } ~
-      rebuildItemsIndexes { url =>
+      v2RebuildItemsIndexes { url =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           authorize(adminAccess(securityContext)) {
             complete {
@@ -226,7 +226,7 @@ trait AdminService extends ServiceBase {
           }
         }
       } ~
-      rebuildUserIndexes { url =>
+      v2RebuildUserIndexes { url =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           authorize(adminAccess(securityContext)) {
             complete {
@@ -241,7 +241,7 @@ trait AdminService extends ServiceBase {
           }
         }
       } ~
-      getItemStatistics { uuid =>
+      v2GetItemStatistics { uuid =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           authorize(adminAccess(securityContext)) {
             complete {
@@ -256,7 +256,7 @@ trait AdminService extends ServiceBase {
           }
         }
       } ~
-      getOwnerStatistics{ uuid =>
+      v2GetOwnerStatistics{ uuid =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           authorize(adminAccess(securityContext)) {
             complete {
@@ -271,7 +271,7 @@ trait AdminService extends ServiceBase {
           }
         }
       } ~
-      postSetItemProperty { uuid =>
+      v2PostSetItemProperty { uuid =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           authorize(adminAccess(securityContext)) {
             entity(as[NodeProperty]) { property =>
@@ -288,7 +288,7 @@ trait AdminService extends ServiceBase {
           }
         }
       } ~
-      postSetOwnerProperty{ uuid =>
+      v2PostSetOwnerProperty{ uuid =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           authorize(adminAccess(securityContext)) {
             entity(as[NodeProperty]) { property =>
@@ -305,7 +305,7 @@ trait AdminService extends ServiceBase {
           }
         }
       } ~
-      putInfo { url =>
+      v2PutInfo { url =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           authorize(adminAccess(securityContext)) {
             entity(as[Info]) { info =>

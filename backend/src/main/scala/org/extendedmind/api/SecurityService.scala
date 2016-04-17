@@ -47,7 +47,7 @@ trait SecurityService extends ServiceBase {
   import JsonImplicits._
 
   def securityRoutes = {
-      postAuthenticate { url =>
+      v2PostAuthenticate { url =>
         authenticate(ExtendedAuth(authenticateAuthenticator)) { securityContext =>
           complete {
             setLogContext(securityContext)
@@ -56,7 +56,7 @@ trait SecurityService extends ServiceBase {
           }
         }
       } ~
-      postLogout { url =>
+      v2PostLogout { url =>
         authenticate(ExtendedAuth(authenticator, "logout", None)) { securityContext =>
           entity(as[Option[LogoutPayload]]) { payload =>
             complete {
@@ -71,7 +71,7 @@ trait SecurityService extends ServiceBase {
           }
         }
       } ~
-      postClear { url =>
+      v2PostClear { url =>
         authenticate(ExtendedAuth(authenticator, "secure", None)) { securityContext =>
           complete {
             Future[CountResult] {
@@ -84,7 +84,7 @@ trait SecurityService extends ServiceBase {
           }
         }
       } ~
-      putChangePassword { url =>
+      v2PutChangePassword { url =>
         authenticate(ExtendedAuth(authenticator, "secure", None)) { securityContext =>
           entity(as[NewPassword]) { newPassword =>
             complete {
@@ -99,7 +99,7 @@ trait SecurityService extends ServiceBase {
           }
         }
       } ~
-      postForgotPassword { url =>
+      v2PostForgotPassword { url =>
         entity(as[UserEmail]) { userEmail =>
           complete {
             Future[ForgotPasswordResult] {
@@ -111,7 +111,7 @@ trait SecurityService extends ServiceBase {
           }
         }
       } ~
-      getPasswordResetExpires { code =>
+      v2GetPasswordResetExpires { code =>
         parameters("email") { email =>
           complete {
             Future[ForgotPasswordResult] {
@@ -123,7 +123,7 @@ trait SecurityService extends ServiceBase {
           }
         }
       } ~
-      postResetPassword { code =>
+      v2PostResetPassword { code =>
         entity(as[SignUp]) { signUp =>
           complete {
             Future[CountResult] {
@@ -135,7 +135,7 @@ trait SecurityService extends ServiceBase {
           }
         }
       } ~
-      postVerifyEmail { code =>
+      v2PostVerifyEmail { code =>
         entity(as[UserEmail]) { email =>
           complete {
             Future[SetResult] {

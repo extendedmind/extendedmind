@@ -44,7 +44,7 @@ import MediaTypes._
 import akka.event.LoggingAdapter
 
 // this class defines our service behavior independently from the service actor
-trait ServiceBase extends API with Injectable {
+trait ServiceBase extends APIv2 with Injectable {
 
   // Settings, configuration and logging need to be initialized in the child class
   def settings: Settings

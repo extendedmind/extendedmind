@@ -47,7 +47,7 @@ trait TagService extends ServiceBase {
   import JsonImplicits._
 
   def tagRoutes = {
-      getTag { (ownerUUID, tagUUID) =>
+      v2GetTag { (ownerUUID, tagUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(readAccess(ownerUUID, securityContext)) {
             complete {
@@ -62,7 +62,7 @@ trait TagService extends ServiceBase {
           }
         }
       } ~
-      putNewTag { ownerUUID =>
+      v2PutNewTag { ownerUUID =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
             entity(as[Tag]) { tag =>
@@ -79,7 +79,7 @@ trait TagService extends ServiceBase {
           }
         }
       } ~
-      putExistingTag { (ownerUUID, tagUUID) =>
+      v2PutExistingTag { (ownerUUID, tagUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
             entity(as[Tag]) { tag =>
@@ -96,7 +96,7 @@ trait TagService extends ServiceBase {
           }
         }
       } ~
-      deleteTag { (ownerUUID, tagUUID) =>
+      v2DeleteTag { (ownerUUID, tagUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
             complete {
@@ -111,7 +111,7 @@ trait TagService extends ServiceBase {
           }
         }
       } ~
-      undeleteTag { (ownerUUID, tagUUID) =>
+      v2UndeleteTag { (ownerUUID, tagUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
             complete {

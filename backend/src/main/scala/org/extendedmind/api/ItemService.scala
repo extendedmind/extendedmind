@@ -48,7 +48,7 @@ trait ItemService extends ServiceBase {
   import JsonImplicits._
 
   def itemRoutes = {
-      getItems { ownerUUID =>
+      v2GetItems { ownerUUID =>
         parameters('modified.as[Long].?, 'active ? true, 'deleted ? false, 'archived ? false, 'completed ? false, 'tagsOnly? false) { (modified, active, deleted, archived, completed, tagsOnly) =>
           authenticate(ExtendedAuth(authenticator, "shareable", Some(ownerUUID))) { securityContext =>
             authorize(readAccess(ownerUUID, securityContext, shareable = true)) {
@@ -65,7 +65,7 @@ trait ItemService extends ServiceBase {
           }
         }
       } ~
-      getItem { (ownerUUID, itemUUID) =>
+      v2GetItem { (ownerUUID, itemUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(readAccess(ownerUUID, securityContext)) {
             complete {
@@ -80,7 +80,7 @@ trait ItemService extends ServiceBase {
           }
         }
       } ~
-      putNewItem { ownerUUID =>
+      v2PutNewItem { ownerUUID =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
             entity(as[Item]) { item =>
@@ -97,7 +97,7 @@ trait ItemService extends ServiceBase {
           }
         }
       } ~
-      putExistingItem { (ownerUUID, itemUUID) =>
+      v2PutExistingItem { (ownerUUID, itemUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
             entity(as[Item]) { item =>
@@ -114,7 +114,7 @@ trait ItemService extends ServiceBase {
           }
         }
       } ~
-      deleteItem { (ownerUUID, itemUUID) =>
+      v2DeleteItem { (ownerUUID, itemUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
             complete {
@@ -129,7 +129,7 @@ trait ItemService extends ServiceBase {
           }
         }
       } ~
-      undeleteItem { (ownerUUID, itemUUID) =>
+      v2UndeleteItem { (ownerUUID, itemUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
             complete {
@@ -144,7 +144,7 @@ trait ItemService extends ServiceBase {
           }
         }
       } ~
-      postInbox { inboxId =>
+      v2PostInbox { inboxId =>
         entity(as[FormData]) { formData =>
           complete {
             Future[SetResult] {
@@ -156,7 +156,7 @@ trait ItemService extends ServiceBase {
           }
         }
       } ~
-      getPublicItems { handle =>
+      v2GetPublicItems { handle =>
         parameters('modified.as[Long].?) { modified =>
           complete {
             Future[PublicItems] {
@@ -168,7 +168,7 @@ trait ItemService extends ServiceBase {
           }
         }
       } ~
-      getPublicItem { (handle, path) =>
+      v2GetPublicItem { (handle, path) =>
         complete {
           Future[PublicItem] {
             itemActions.getPublicItem(handle, path) match {
@@ -178,7 +178,7 @@ trait ItemService extends ServiceBase {
           }
         }
       } ~
-      getPublicItemHeader { (shortId) =>
+      v2GetPublicItemHeader { (shortId) =>
         complete {
           Future[PublicItemHeader] {
             itemActions.getPublicItemHeader(shortId) match {
@@ -188,7 +188,7 @@ trait ItemService extends ServiceBase {
           }
         }
       } ~
-      getPreviewItem { (ownerUUID, itemUUID, previewCode) =>
+      v2GetPreviewItem { (ownerUUID, itemUUID, previewCode) =>
         complete {
           Future[PublicItem] {
             itemActions.getPreviewItem(ownerUUID, itemUUID, previewCode) match {
@@ -198,7 +198,7 @@ trait ItemService extends ServiceBase {
           }
         }
       } ~
-      getItemRevisionList { (ownerUUID, itemUUID) =>
+      v2GetItemRevisionList { (ownerUUID, itemUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
             complete {
@@ -213,7 +213,7 @@ trait ItemService extends ServiceBase {
           }
         }
       } ~
-      getItemRevision { (ownerUUID, itemUUID, revision) =>
+      v2GetItemRevision { (ownerUUID, itemUUID, revision) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
             complete {

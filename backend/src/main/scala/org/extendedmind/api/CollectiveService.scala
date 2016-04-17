@@ -47,7 +47,7 @@ trait CollectiveService extends ServiceBase {
   import JsonImplicits._
 
   def collectiveRoutes = {
-    getCollective { collectiveUUID =>
+    v2GetCollective { collectiveUUID =>
       authenticate(ExtendedAuth(authenticator, "collective", None)) { securityContext =>
         authorize(readAccess(collectiveUUID, securityContext)) {
           complete {

@@ -47,7 +47,7 @@ trait ListService extends ServiceBase {
   import JsonImplicits._
 
   def listRoutes = {
-      getList { (ownerUUID, listUUID) =>
+      v2GetList { (ownerUUID, listUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(readAccess(ownerUUID, securityContext)) {
             complete {
@@ -62,7 +62,7 @@ trait ListService extends ServiceBase {
           }
         }
       } ~
-      putNewList { ownerUUID =>
+      v2PutNewList { ownerUUID =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
             entity(as[List]) { list =>
@@ -79,7 +79,7 @@ trait ListService extends ServiceBase {
           }
         }
       } ~
-      putExistingList { (ownerUUID, listUUID) =>
+      v2PutExistingList { (ownerUUID, listUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
             entity(as[List]) { list =>
@@ -96,7 +96,7 @@ trait ListService extends ServiceBase {
           }
         }
       } ~
-      deleteList { (ownerUUID, listUUID) =>
+      v2DeleteList { (ownerUUID, listUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
             complete {
@@ -111,7 +111,7 @@ trait ListService extends ServiceBase {
           }
         }
       } ~
-      undeleteList { (ownerUUID, listUUID) =>
+      v2UndeleteList { (ownerUUID, listUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
             complete {
@@ -126,7 +126,7 @@ trait ListService extends ServiceBase {
           }
         }
       } ~
-      archiveList { (ownerUUID, listUUID) =>
+      v2ArchiveList { (ownerUUID, listUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
             entity(as[Option[ArchivePayload]]) { payload =>
@@ -143,7 +143,7 @@ trait ListService extends ServiceBase {
           }
         }
       } ~
-      unarchiveList { (ownerUUID, listUUID) =>
+      v2UnarchiveList { (ownerUUID, listUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
             entity(as[Option[ArchivePayload]]) { payload =>
@@ -160,7 +160,7 @@ trait ListService extends ServiceBase {
           }
         }
       } ~
-      listToTask { (ownerUUID, listUUID) =>
+      v2ListToTask { (ownerUUID, listUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
             entity(as[List]) { list =>
@@ -177,7 +177,7 @@ trait ListService extends ServiceBase {
           }
         }
       } ~
-      listToNote { (ownerUUID, listUUID) =>
+      v2ListToNote { (ownerUUID, listUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
             entity(as[List]) { list =>
