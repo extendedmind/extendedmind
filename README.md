@@ -6,8 +6,14 @@ This is the root of the Extended Mind code repository.
 
 ### Compile
 
-To compile Extended Mind, download the latest Java 8 JDK and setup a $JAVA_HOME environment variable to point to the directory. Both OpenJDK and Oracle JDK are supported.
-Then install the latest Apache Maven 3 (e.g. with Brew on OSX) and run:
+To compile Extended Mind, download the latest Java 8 JDK (Both OpenJDK and Oracle JDK are supported), and install the latest Apache Maven 3 (e.g. with Brew on OSX). Then setup a $JAVA_HOME environment variable to point to the JDK install directory, and $MAVEN_OPTS variable to increased stack space, by adding the following in your .bashrc:
+
+```
+export JAVA_HOME=$(/usr/libexec/java_home)
+export MAVEN_OPTS="-Xss8m"
+```
+
+After that run:
 
 ```
 mvn clean install
@@ -31,7 +37,7 @@ to add the certificate to the JDK keystore.
 
 To debug the Extended Mind UI at localhost, you want to install a local NGinx server (e.g. using Brew on OSX).
 
-AngularJS is set to use 'html5mode' so you have to configure a rewrite such as the following to your `nginx.conf`.  
+AngularJS is set to use 'html5mode' so you have to configure a rewrite such as the following to your `nginx.conf`.
 Default installation location on OS X is `/usr/local/etc/nginx/nginx.conf`.
 
 ```
@@ -42,8 +48,8 @@ location / {
 }
 ```
 
-In production, it is critical that `/api/shutdown` and `/api/tick` are 
-only allowed locally with a segment like this, where the backend is 
+In production, it is critical that `/api/shutdown` and `/api/tick` are
+only allowed locally with a segment like this, where the backend is
 running at port 8081:
 
 ```
