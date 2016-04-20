@@ -62,32 +62,16 @@ trait AdminService extends ServiceBase {
           }
         }
       } ~
-      v2PostChangeUserType { (userUUID, userType) =>
+      v2PostChangeUserType { userUUID =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           // Only admins can change user type
           authorize(adminAccess(securityContext)) {
-            complete {
-              Future[SetResult] {
-                setLogContext(securityContext)
-                userActions.changeUserType(userUUID, userType) match {
-                  case Right(sr) => processResult(sr)
-                  case Left(e) => processErrors(e)
-                }
-              }
-            }
-          }
-        }
-      } ~
-      v2GetUser { url =>
-        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
-          // Only admins can get users for now
-          authorize(adminAccess(securityContext)) {
-            parameters("email") { email =>
+            entity(as[Access]) { payload =>
               complete {
-                Future[PublicUser] {
+                Future[SetResult] {
                   setLogContext(securityContext)
-                  userActions.getPublicUser(email) match {
-                    case Right(publicUser) => processResult(publicUser)
+                  userActions.changeUserType(userUUID, payload.access) match {
+                    case Right(sr) => processResult(sr)
                     case Left(e) => processErrors(e)
                   }
                 }
@@ -96,7 +80,7 @@ trait AdminService extends ServiceBase {
           }
         }
       } ~
-      v2DeleteUser { userUUID =>
+      v2DestroyUser { userUUID =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           // Only admins can destroy users
           authorize(adminAccess(securityContext)) {
@@ -105,21 +89,6 @@ trait AdminService extends ServiceBase {
                 setLogContext(securityContext)
                 userActions.destroyUser(userUUID) match {
                   case Right(result) => processResult(result)
-                  case Left(e) => processErrors(e)
-                }
-              }
-            }
-          }
-        }
-      } ~
-      v2GetUsers { url =>
-        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
-          authorize(adminAccess(securityContext)) {
-            complete {
-              Future[Users] {
-                setLogContext(securityContext)
-                userActions.getUsers match {
-                  case Right(users) => processResult(users)
                   case Left(e) => processErrors(e)
                 }
               }
@@ -145,7 +114,7 @@ trait AdminService extends ServiceBase {
           }
         }
       } ~
-      v2PutExistingCollective { collectiveUUID =>
+      v2PatchExistingCollective { collectiveUUID =>
         authenticate(ExtendedAuth(authenticator, "collective", None)) { securityContext =>
           // Only admins can update collectives for now
           authorize(adminAccess(securityContext)) {
@@ -163,7 +132,7 @@ trait AdminService extends ServiceBase {
           }
         }
       } ~
-      v2PostCollectiveUserPermission { (collectiveUUID, userUUID) =>
+      v2PostCollectiveChangePermission { (collectiveUUID, userUUID) =>
         authenticate(ExtendedAuth(authenticator, "collective", None)) { securityContext =>
           // Only founder admin can assign people to exclusive collectives for now
           authorize(adminAccess(securityContext)) {
@@ -305,7 +274,7 @@ trait AdminService extends ServiceBase {
           }
         }
       } ~
-      v2PutInfo { url =>
+      v2PostUpdateInfo { url =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           authorize(adminAccess(securityContext)) {
             entity(as[Info]) { info =>

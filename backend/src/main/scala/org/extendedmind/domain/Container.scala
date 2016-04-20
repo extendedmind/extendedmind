@@ -20,10 +20,22 @@
 package org.extendedmind.domain
 
 import java.util.UUID
+import Validators._
 
 trait Container {
   val uuid: Option[UUID]
   val created: Option[Long]
   val modified: Option[Long]
   val deleted: Option[Long]
+}
+
+case class HexCode(code: String){
+  require(validateHexLong(code), "Given hex code " + code + " not valid")
+  def codeAsLong = {
+    java.lang.Long.parseLong(code, 16)
+  }
+}
+
+case class Access(access: Byte){
+  require(access >=0 && access <=2)
 }

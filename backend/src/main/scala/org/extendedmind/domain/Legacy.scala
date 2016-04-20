@@ -17,16 +17,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.extendedmind.db
+package org.extendedmind.domain
 
-trait GraphDatabase extends AbstractGraphDatabase
-with SecurityDatabase
-with OwnerDatabase
-with UserDatabase
-with CollectiveDatabase
-with ItemDatabase
-with TaskDatabase
-with NoteDatabase
-with ListDatabase
-with TagDatabase
-with InviteDatabase
+import java.util.UUID
+import Validators._
+
+case class UserType(userType: Byte)
+
+case class Users(users: scala.List[User])

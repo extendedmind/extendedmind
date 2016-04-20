@@ -72,7 +72,7 @@ trait UserService extends ServiceBase {
           }
         }
       } ~
-      v2GetAccount { url =>
+      v2GetUser { url =>
         authenticate(ExtendedAuth(authenticator, "account", None)) { securityContext =>
           complete {
             Future[User] {
@@ -85,7 +85,25 @@ trait UserService extends ServiceBase {
           }
         }
       } ~
-      v2PutAccount { url =>
+      v2GetUsers { url =>
+        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+          // Only admins can get users for now
+          authorize(adminAccess(securityContext)) {
+            parameters("email") { email =>
+              complete {
+                Future[PublicUser] {
+                  setLogContext(securityContext)
+                  userActions.getPublicUser(email) match {
+                    case Right(publicUser) => processResult(publicUser)
+                    case Left(e) => processErrors(e)
+                  }
+                }
+              }
+            }
+          }
+        }
+      } ~
+      v2PatchUser { url =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           entity(as[User]) { user =>
             complete {
@@ -100,7 +118,7 @@ trait UserService extends ServiceBase {
           }
         }
       } ~
-      v2DeleteAccount { url =>
+      v2DeleteUser { url =>
         authenticate(ExtendedAuth(authenticator, "secure", None)) { securityContext =>
           complete {
             Future[DeleteItemResult] {
@@ -131,7 +149,7 @@ trait UserService extends ServiceBase {
           }
         }
       } ~
-      v2PutEmail { url =>
+      v2PostChangeEmail { url =>
         authenticate(ExtendedAuth(authenticator, "secure", None)) { securityContext =>
           entity(as[UserEmail]) { email =>
             complete {
@@ -161,14 +179,16 @@ trait UserService extends ServiceBase {
           }
         }
       } ~
-      v2PostAgreementAccess { (agreementUUID, access) =>
+      v2PostAgreementAccess { agreementUUID =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
-          complete {
-            Future[SetResult] {
-              setLogContext(securityContext)
-              userActions.changeAgreementAccess(securityContext.userUUID, securityContext.userType, agreementUUID, access.toByte) match {
-                case Right(sr) => processResult(sr)
-                case Left(e) => processErrors(e)
+          entity(as[Access]) { payload =>
+            complete {
+              Future[SetResult] {
+                setLogContext(securityContext)
+                userActions.changeAgreementAccess(securityContext.userUUID, securityContext.userType, agreementUUID, payload.access) match {
+                  case Right(sr) => processResult(sr)
+                  case Left(e) => processErrors(e)
+                }
               }
             }
           }
@@ -200,11 +220,11 @@ trait UserService extends ServiceBase {
           }
         }
       } ~
-      v2PostAgreementAccept { code =>
-        entity(as[UserEmail]) { email =>
+      v2PostAgreementAccept { url =>
+        entity(as[EmailVerification]) { payload =>
           complete {
             Future[SetResult] {
-              userActions.acceptAgreement(code, email.email) match {
+              userActions.acceptAgreement(payload.codeAsLong, payload.email) match {
                 case Right(sr) => processResult(sr)
                 case Left(e) => processErrors(e)
               }

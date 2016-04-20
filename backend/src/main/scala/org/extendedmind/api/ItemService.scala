@@ -48,7 +48,7 @@ trait ItemService extends ServiceBase {
   import JsonImplicits._
 
   def itemRoutes = {
-      v2GetItems { ownerUUID =>
+      v2GetData { ownerUUID =>
         parameters('modified.as[Long].?, 'active ? true, 'deleted ? false, 'archived ? false, 'completed ? false, 'tagsOnly? false) { (modified, active, deleted, archived, completed, tagsOnly) =>
           authenticate(ExtendedAuth(authenticator, "shareable", Some(ownerUUID))) { securityContext =>
             authorize(readAccess(ownerUUID, securityContext, shareable = true)) {
@@ -188,7 +188,7 @@ trait ItemService extends ServiceBase {
           }
         }
       } ~
-      v2GetPreviewItem { (ownerUUID, itemUUID, previewCode) =>
+      v2GetPreview { (ownerUUID, itemUUID, previewCode) =>
         complete {
           Future[PublicItem] {
             itemActions.getPreviewItem(ownerUUID, itemUUID, previewCode) match {
@@ -198,7 +198,7 @@ trait ItemService extends ServiceBase {
           }
         }
       } ~
-      v2GetItemRevisionList { (ownerUUID, itemUUID) =>
+      v2GetRevisionList { (ownerUUID, itemUUID) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
             complete {
@@ -213,7 +213,7 @@ trait ItemService extends ServiceBase {
           }
         }
       } ~
-      v2GetItemRevision { (ownerUUID, itemUUID, revision) =>
+      v2GetRevision { (ownerUUID, itemUUID, revision) =>
         authenticate(ExtendedAuth(authenticator, "user", Some(ownerUUID))) { securityContext =>
           authorize(writeAccess(ownerUUID, securityContext)) {
             complete {

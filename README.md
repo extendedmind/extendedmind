@@ -10,7 +10,7 @@ To compile Extended Mind, download the latest Java 8 JDK (Both OpenJDK and Oracl
 
 ```
 export JAVA_HOME=$(/usr/libexec/java_home)
-export MAVEN_OPTS="-Xss8m"
+export MAVEN_OPTS="-Xss32m"
 ```
 
 After that run:

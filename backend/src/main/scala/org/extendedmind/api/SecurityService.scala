@@ -71,7 +71,7 @@ trait SecurityService extends ServiceBase {
           }
         }
       } ~
-      v2PostClear { url =>
+      v2PostDestroyTokens { url =>
         authenticate(ExtendedAuth(authenticator, "secure", None)) { securityContext =>
           complete {
             Future[CountResult] {
@@ -84,7 +84,7 @@ trait SecurityService extends ServiceBase {
           }
         }
       } ~
-      v2PutChangePassword { url =>
+      v2PostChangePassword { url =>
         authenticate(ExtendedAuth(authenticator, "secure", None)) { securityContext =>
           entity(as[NewPassword]) { newPassword =>
             complete {
@@ -123,11 +123,11 @@ trait SecurityService extends ServiceBase {
           }
         }
       } ~
-      v2PostResetPassword { code =>
-        entity(as[SignUp]) { signUp =>
+      v2PostResetPassword { url =>
+        entity(as[PasswordReset]) { passwordReset =>
           complete {
             Future[CountResult] {
-              securityActions.resetPassword(code, signUp) match {
+              securityActions.resetPassword(passwordReset.codeAsLong, passwordReset.email, passwordReset.password) match {
                 case Right(count) => count
                 case Left(e) => processErrors(e)
               }
@@ -135,11 +135,11 @@ trait SecurityService extends ServiceBase {
           }
         }
       } ~
-      v2PostVerifyEmail { code =>
-        entity(as[UserEmail]) { email =>
+      v2PostVerifyEmail { url =>
+        entity(as[EmailVerification]) { payload =>
           complete {
             Future[SetResult] {
-              securityActions.verifyEmail(code, email.email) match {
+              securityActions.verifyEmail(payload.codeAsLong, payload.email) match {
                 case Right(result) => result
                 case Left(e) => processErrors(e)
               }

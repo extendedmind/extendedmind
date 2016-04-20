@@ -23,7 +23,8 @@ import java.util.UUID
 import Validators._
 import org.extendedmind.security.SecurityContext
 
-case class Users(users: scala.List[User])
+
+case class Owners(users: scala.List[User], collectives: Option[scala.List[Collective]])
 
 case class Statistics(users: Long, items: Long)
 

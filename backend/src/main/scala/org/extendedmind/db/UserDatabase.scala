@@ -1161,7 +1161,6 @@ trait UserDatabase extends AbstractGraphDatabase {
 
   protected def hasPublicItemRevisionNodes(ownerUUID: UUID)(implicit neo4j: DatabaseService): Boolean;
 
-
   protected def setOwnerHandleValue(ownerNode: Node, handle: String)(implicit neo4j: DatabaseService): Response[(Boolean, Option[String])] = {
     val validateResult = validateHandleUniqueness(Some(handle))
     if (validateResult.isRight){

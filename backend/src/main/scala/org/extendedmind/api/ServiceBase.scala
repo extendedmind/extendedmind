@@ -96,6 +96,10 @@ trait ServiceBase extends APIv2 with Injectable {
     inject[SecurityActions]
   }
 
+  def ownerActions: OwnerActions = {
+    inject[OwnerActions]
+  }
+
   def userActions: UserActions = {
     inject[UserActions]
   }

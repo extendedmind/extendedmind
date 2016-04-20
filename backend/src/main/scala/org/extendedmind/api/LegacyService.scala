@@ -997,7 +997,7 @@ trait LegacyService extends ServiceBase {
         entity(as[SignUp]) { signUp =>
           complete {
             Future[CountResult] {
-              securityActions.resetPassword(code, signUp) match {
+              securityActions.resetPassword(code, signUp.email, signUp.password) match {
                 case Right(count) => count
                 case Left(e) => processErrors(e)
               }

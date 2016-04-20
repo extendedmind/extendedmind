@@ -201,9 +201,9 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     }
   }
 
-  def resetPassword(code: Long, signUp: SignUp): Response[SetResult] = {
+  def resetPassword(code: Long, email: String, password: String): Response[SetResult] = {
     for {
-      userNode <- resetPasswordNode(code, signUp).right
+      userNode <- resetPasswordNode(code, email, password).right
       result <- Right(getSetResult(userNode, true)).right
     } yield result
   }
@@ -606,13 +606,13 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     }
   }
 
-  private def resetPasswordNode(code: Long, signUp: SignUp): Response[Node] = {
+  private def resetPasswordNode(code: Long, email: String, password: String): Response[Node] = {
     withTx {
       implicit neo =>
         for {
-          userNode <- getUserNode(signUp.email).right
+          userNode <- getUserNode(email).right
           expires <- getPasswordResetExpires(code, userNode).right
-          result <- Right(setUserPassword(userNode, signUp.password)).right
+          result <- Right(setUserPassword(userNode, password)).right
           result <- Right(finalizePasswordReset(userNode)).right
         } yield userNode
     }

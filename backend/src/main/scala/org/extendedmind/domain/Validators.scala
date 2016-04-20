@@ -35,6 +35,8 @@ object Validators {
   val dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd")
   val timeFormat = DateTimeFormatter.ofPattern("hh:mm")
 
+  val hexPattern = ("^[0-9a-fA-F]+$").r
+
   def validateEmailAddress(email: String): Boolean = {
     if (email.length() > 254) false
     else emailPattern.pattern.matcher(email).matches()
@@ -56,6 +58,11 @@ object Validators {
   def validateLength(value: String, maxLength: Int): Boolean = {
     if (value.length() > maxLength) false
     else true
+  }
+
+  def validateHexLong(value: String): Boolean = {
+    if (value.length > 16) false
+    else hexPattern.pattern.matcher(value).matches()
   }
 
   def validateDateString(dateString: String): Boolean = {

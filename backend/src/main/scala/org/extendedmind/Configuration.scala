@@ -130,6 +130,7 @@ class Configuration(settings: Settings, actorRefFactory: ActorRefFactory) extend
   bind [GraphDatabase] to new EmbeddedGraphDatabase
   bind [MailgunClient] to new MailgunClientImpl
   bind [SecurityActions] to new SecurityActionsImpl
+  bind [OwnerActions] to new OwnerActionsImpl
   bind [UserActions] to new UserActionsImpl
   bind [CollectiveActions] to new CollectiveActionsImpl
   bind [ItemActions] to new ItemActionsImpl

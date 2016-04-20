@@ -28,114 +28,132 @@ import spray.routing.PathMatchers._
  */
 trait APIv2 extends LegacyAPI {
 
-  // USER
-  val v2PostSignUp = post & path("v2" / "signup".r)
-  val v2PostVerifyResend = post & path("v2" / "email" / "resend".r)
-  val v2GetAccount = get & path("v2" / "account".r)
-  val v2PutAccount = put & path("v2" / "account".r)
-  val v2DeleteAccount = delete & path("v2" / "account".r)
-  val v2GetUser = get & path("v2" / "user".r)
-  val v2PostSubscribe = post & path("v2" / "subscribe".r)
-  val v2PutNewAgreement = put & path("v2" / "agreement".r)
-  val v2PostAgreementAccess = post & path("v2" / "agreement" / JavaUUID / "access" / IntNumber)
-  val v2PostAgreementResend = post & path("v2" / "agreement" / JavaUUID / "resend")
-  val v2DeleteAgreement = delete & path("v2" / "agreement" / JavaUUID)
-  val v2PostAgreementAccept = post & path("v2" / "agreement" / HexLongNumber / "accept")
+  // USERS
 
-  // SECURITY
-  val v2PostAuthenticate = post & path("v2" / "authenticate".r)
-  val v2PostLogout = post & path("v2" / "logout".r)
-  val v2PostClear = post & path("v2" / "clear".r)
-  val v2PutChangePassword = put & path("v2" / "password".r)
-  val v2PutEmail = put & path("v2" / "email".r)
-  val v2PostForgotPassword = post & path("v2" / "password" / "forgot".r)
-  val v2GetPasswordResetExpires = get & path("v2" / "password" / HexLongNumber)
-  val v2PostResetPassword = post & path("v2" / "password" / HexLongNumber / "reset")
-  val v2PostVerifyEmail = post & path("v2" / "email" / HexLongNumber / "verify")
+  // Security
+  val v2PostAuthenticate = post & path("v2" / "users" / "authenticate".r)
+  val v2PostLogout = post & path("v2" / "users" / "log_out".r)
+  val v2PostSignUp = post & path("v2" / "users"/ "sign_up".r)
+  val v2PostDestroyTokens = post & path("v2" / "users" / "destroy_tokens".r)
+  val v2PostVerifyResend = post & path("v2" / "users"/ "resend_verification".r)
+  val v2PostChangePassword = put & path("v2" / "users" / "change_password".r)
+  val v2PostChangeEmail = put & path("v2" / "users" / "change_email".r)
+  val v2PostForgotPassword = post & path("v2" / "users" / "forgot_password".r)
+  val v2PostVerifyEmail = post & path("v2" / "users" / "verify_email".r)
+  val v2PostResetPassword = post & path("v2" / "users" / "reset_password".r)
+  val v2GetPasswordResetExpires = get & path("v2" / "users" / "password_expires" / HexLongNumber)
+
+  // Account
+  val v2GetUser = get & path("v2" / "users"/ JavaUUID)
+  val v2PatchUser = patch & path("v2" / "users" / JavaUUID)
+  val v2DeleteUser = delete & path("v2" / "users" / JavaUUID)
+  val v2GetUsers = get & path("v2" / "users".r)
+  val v2PostSubscribe = post & path("v2" / "users" / JavaUUID / "subscribe")
+
+  // Agreements
+  val v2PutNewAgreement = put & path("v2" / "users" / "agreement".r)
+  val v2PostAgreementAccess = post & path("v2" / "users" / "agreement" / JavaUUID / "access")
+  val v2PostAgreementResend = post & path("v2" / "users" / "agreement" / JavaUUID / "resend")
+  val v2DeleteAgreement = delete & path("v2" / "users" / "agreement" / JavaUUID)
+  val v2PostAgreementAccept = post & path("v2" / "users" / "accept_agreement")
 
   // COLLECTIVES
-  val v2PutNewCollective = put & path("v2" / "collective".r)
-  val v2PutExistingCollective = put & path("v2" / "collective" / JavaUUID)
-  val v2GetCollective = get & path("v2" / "collective" / JavaUUID)
-  val v2PostCollectiveUserPermission = post & path("v2" / "collective" / JavaUUID / "user" / JavaUUID)
 
-  // ITEMS
-  val v2GetItems = get & path("v2" / JavaUUID / "items")
-  val v2GetItem = get & path("v2" / JavaUUID / "item" / JavaUUID)
-  val v2PutNewItem = put & path("v2" / JavaUUID / "item")
-  val v2PutExistingItem = put & path("v2" / JavaUUID / "item" / JavaUUID)
-  val v2DeleteItem = delete & path("v2" / JavaUUID / "item" / JavaUUID)
-  val v2UndeleteItem = post & path("v2" / JavaUUID / "item" / JavaUUID / "undelete")
+  val v2PutNewCollective = put & path("v2" / "collectives" / "create_collective".r)
+  val v2PatchExistingCollective = patch & path("v2" / "collectives" / JavaUUID)
+  val v2GetCollective = get & path("v2" / "collectives" / JavaUUID)
+  val v2PostCollectiveChangePermission = post & path("v2" / "collectives" / JavaUUID / "change_permission" / JavaUUID)
+
+  // OWNERS
+
+  val v2GetOwners = get & path("v2" / "owners".r)
+  val v2GetData = get & path("v2" / "owners" / JavaUUID / "data")
+  val v2GetPreview = get & path("v2" / "owners" / JavaUUID / "data" / JavaUUID / "preview" / HexLongNumber)
+  val v2GetRevisionList = get & path("v2" / "owners" / JavaUUID / "data" / JavaUUID / "revisions")
+  val v2GetRevision = get & path("v2" /  "owners" / JavaUUID / "data" / JavaUUID / "revision" / LongNumber)
+
+  // Items
+  val v2GetItem = get & path("v2" / "owners" / JavaUUID / "data" / "items" / JavaUUID)
+  val v2PutNewItem = put & path("v2" / "owners" / JavaUUID / "data" / "items")
+  val v2PutExistingItem = put & path("v2" / "owners" / JavaUUID / "data" / "items" / JavaUUID)
+  val v2DeleteItem = delete & path("v2" / "owners" / JavaUUID / "data" / "items" / JavaUUID)
+  val v2UndeleteItem = post & path("v2" / "owners" / JavaUUID / "data" / "items" / JavaUUID / "undelete")
+
+  // Tasks
+  val v2GetTask = get & path("v2" / "owners" / JavaUUID / "data" / "tasks" / JavaUUID)
+  val v2PutNewTask = put & path("v2" / "owners" / JavaUUID / "data" / "tasks")
+  val v2PutExistingTask = put & path("v2" / "owners" / JavaUUID / "data" / "tasks" / JavaUUID)
+  val v2DeleteTask = delete & path("v2" / "owners" / JavaUUID / "data" / "tasks" / JavaUUID)
+  val v2UndeleteTask = post & path("v2" / "owners" / JavaUUID / "data" / "tasks" / JavaUUID / "undelete")
+  val v2CompleteTask = post & path("v2" / "owners" / JavaUUID / "data" / "tasks" / JavaUUID / "complete")
+  val v2UncompleteTask = post & path("v2" / "owners" / JavaUUID / "data" / "tasks" / JavaUUID / "uncomplete")
+  val v2TaskToList = post & path("v2" / "owners" / JavaUUID / "data" / "tasks" / JavaUUID / "convert_to_list")
+  val v2TaskToNote = post & path("v2" / "owners" / JavaUUID / "data" / "tasks" / JavaUUID / "convert_to_note")
+
+  // Notes
+  val v2GetNote = get & path("v2" / "owners" / JavaUUID / "data" / "notes" / JavaUUID)
+  val v2PutNewNote = put & path("v2" / "owners" / JavaUUID / "data" / "notes")
+  val v2PutExistingNote = put & path("v2" / "owners" / JavaUUID / "data" / "notes" / JavaUUID)
+  val v2DeleteNote = delete & path("v2" / "owners" / JavaUUID / "data" / "notes" / JavaUUID)
+  val v2UndeleteNote = post & path("v2" / "owners" / JavaUUID / "data" / "notes" / JavaUUID / "undelete")
+  val v2FavoriteNote = post & path("v2" / "owners" / JavaUUID / "data" / "notes" / JavaUUID / "favorite")
+  val v2UnfavoriteNote = post & path("v2" / "owners" / JavaUUID / "data" / "notes" / JavaUUID / "unfavorite")
+  val v2NoteToTask = post & path("v2" / "owners" / JavaUUID / "data" / "notes" / JavaUUID / "covert_to_task")
+  val v2NoteToList = post & path("v2" / "owners" / JavaUUID / "data" / "notes" / JavaUUID / "convert_to_list")
+  val v2PublishNote = post & path("v2" / "owners" / JavaUUID / "data" / "notes" / JavaUUID / "publish")
+  val v2UnpublishNote = post & path("v2" / "owners" / JavaUUID / "data" / "notes" / JavaUUID / "unpublish")
+  val v2PreviewNote = post & path("v2" / "owners" / JavaUUID / "data" / "notes" / JavaUUID / "create_preview")
+
+  // Lists
+  val v2GetList = get & path("v2" / "owners" / JavaUUID / "data" / "lists" / JavaUUID)
+  val v2PutNewList = put & path("v2" / "owners" / JavaUUID / "data" / "lists")
+  val v2PutExistingList = put & path("v2" / "owners" / JavaUUID / "data" / "lists" / JavaUUID)
+  val v2DeleteList = delete & path("v2" / "owners" / JavaUUID / "data" / "lists" / JavaUUID)
+  val v2UndeleteList = post & path("v2" / "owners" / JavaUUID / "data" / "lists" / JavaUUID / "undelete")
+  val v2ArchiveList = post & path("v2" / "owners" / JavaUUID / "data" / "lists" / JavaUUID / "archive")
+  val v2UnarchiveList = post & path("v2" / "owners" / JavaUUID / "data" / "lists" / JavaUUID / "unarchive")
+  val v2ListToTask = post & path("v2" / "owners" / JavaUUID / "data" / "lists" / JavaUUID / "convert_to_task")
+  val v2ListToNote = post & path("v2" / "owners" / JavaUUID / "data" / "lists" / JavaUUID / "convert_to_note")
+
+  // Tags
+  val v2GetTag = get & path("v2" / "owners" / JavaUUID / "data" / "tags" / JavaUUID)
+  val v2PutNewTag = put & path("v2" / "owners" / JavaUUID / "data" / "tags")
+  val v2PutExistingTag = put & path("v2" / "owners" / JavaUUID / "data" / "tags" / JavaUUID)
+  val v2DeleteTag = delete & path("v2" / "owners" / JavaUUID / "data" / "tags" / JavaUUID)
+  val v2UndeleteTag = post & path("v2" / "owners" / JavaUUID / "data" / "tags" / JavaUUID / "undelete")
+
+  // Invites
+  val v2PutNewInvite = put & path("v2" / "owners" / JavaUUID / "invites")
+  val v2PostResendInvite = put & path("v2" / "owners" / JavaUUID / "invites" / JavaUUID)
+  val v2DeleteInvite = delete & path("v2" / "owners" / JavaUUID / "invites" / JavaUUID)
+  val v2GetInvites = get & path("v2" / "owners" / JavaUUID / "invites")
+
+  // INBOX
+
   val v2PostInbox = post & path("v2" / "inbox" / """^[0-9a-z]{8,32}""".r )
+
+  // PUBLIC
+
   val v2GetPublicItems = get & path("v2" / "public" / """^[0-9a-z-]+$""".r )
   val v2GetPublicItem = get & path("v2" / "public" / """^[0-9a-z-]+$""".r / """^[0-9a-z-]+$""".r )
+
+  // SHORT URL
+
   val v2GetPublicItemHeader = get & path("v2" / "short" / """^[0-9][1-9A-Za-z]{0,20}$""".r )
-  val v2GetPreviewItem = get & path("v2" / JavaUUID / "item" / JavaUUID / "preview" / HexLongNumber)
-  val v2GetItemRevisionList = get & path("v2" / JavaUUID / "item" / JavaUUID / "revisions")
-  val v2GetItemRevision = get & path("v2" / JavaUUID / "item" / JavaUUID / "revision" / LongNumber)
-
-  // TASKS
-  val v2GetTask = get & path("v2" / JavaUUID / "task" / JavaUUID)
-  val v2PutNewTask = put & path("v2" / JavaUUID / "task")
-  val v2PutExistingTask = put & path("v2" / JavaUUID / "task" / JavaUUID)
-  val v2DeleteTask = delete & path("v2" / JavaUUID / "task" / JavaUUID)
-  val v2UndeleteTask = post & path("v2" / JavaUUID / "task" / JavaUUID / "undelete")
-  val v2CompleteTask = post & path("v2" / JavaUUID / "task" / JavaUUID / "complete")
-  val v2UncompleteTask = post & path("v2" / JavaUUID / "task" / JavaUUID / "uncomplete")
-  val v2TaskToList = post & path("v2" / JavaUUID / "task" / JavaUUID / "list")
-  val v2TaskToNote = post & path("v2" / JavaUUID / "task" / JavaUUID / "note")
-
-  // INVITES
-  val v2PutNewInvite = put & path("v2" / JavaUUID / "invite")
-  val v2PostResendInvite = put & path("v2" / JavaUUID / "invite" / JavaUUID)
-  val v2DeleteInvite = delete & path("v2" / JavaUUID / "invite" / JavaUUID)
-  val v2GetInvites = get & path("v2" / JavaUUID / "invites")
-
-  // NOTES
-  val v2GetNote = get & path("v2" / JavaUUID / "note" / JavaUUID)
-  val v2PutNewNote = put & path("v2" / JavaUUID / "note")
-  val v2PutExistingNote = put & path("v2" / JavaUUID / "note" / JavaUUID)
-  val v2DeleteNote = delete & path("v2" / JavaUUID / "note" / JavaUUID)
-  val v2UndeleteNote = post & path("v2" / JavaUUID / "note" / JavaUUID / "undelete")
-  val v2FavoriteNote = post & path("v2" / JavaUUID / "note" / JavaUUID / "favorite")
-  val v2UnfavoriteNote = post & path("v2" / JavaUUID / "note" / JavaUUID / "unfavorite")
-  val v2NoteToTask = post & path("v2" / JavaUUID / "note" / JavaUUID / "task")
-  val v2NoteToList = post & path("v2" / JavaUUID / "note" / JavaUUID / "list")
-  val v2PublishNote = post & path("v2" / JavaUUID / "note" / JavaUUID / "publish")
-  val v2UnpublishNote = post & path("v2" / JavaUUID / "note" / JavaUUID / "unpublish")
-  val v2PreviewNote = post & path("v2" / JavaUUID / "note" / JavaUUID / "preview")
-
-  // LISTS
-  val v2GetList = get & path("v2" / JavaUUID / "list" / JavaUUID)
-  val v2PutNewList = put & path("v2" / JavaUUID / "list")
-  val v2PutExistingList = put & path("v2" / JavaUUID / "list" / JavaUUID)
-  val v2DeleteList = delete & path("v2" / JavaUUID / "list" / JavaUUID)
-  val v2UndeleteList = post & path("v2" / JavaUUID / "list" / JavaUUID / "undelete")
-  val v2ArchiveList = post & path("v2" / JavaUUID / "list" / JavaUUID / "archive")
-  val v2UnarchiveList = post & path("v2" / JavaUUID / "list" / JavaUUID / "unarchive")
-  val v2ListToTask = post & path("v2" / JavaUUID / "list" / JavaUUID / "task")
-  val v2ListToNote = post & path("v2" / JavaUUID / "list" / JavaUUID / "note")
-
-  // TAGS
-  val v2GetTag = get & path("v2" / JavaUUID / "tag" / JavaUUID)
-  val v2PutNewTag = put & path("v2" / JavaUUID / "tag")
-  val v2PutExistingTag = put & path("v2" / JavaUUID / "tag" / JavaUUID)
-  val v2DeleteTag = delete & path("v2" / JavaUUID / "tag" / JavaUUID)
-  val v2UndeleteTag = post & path("v2" / JavaUUID / "tag" / JavaUUID / "undelete")
 
   // ADMIN
+
   val v2GetStatistics = get & path("v2" / "admin".r)
-  val v2DeleteUser = delete & path("v2" / "admin" / "user" / JavaUUID)
-  val v2GetUsers = get & path("v2" / "admin" / "users".r)
-  val v2PostChangeUserType = post & path("v2" / "admin" / "user" / JavaUUID / "type" / IntNumber)
-  val v2RebuildUserItemsIndex = post & path("v2" / "admin" / "user" / JavaUUID / "items" / "rebuild")
-  val v2RebuildItemsIndexes = post & path("v2" / "admin" / "items" / "rebuild".r)
-  val v2RebuildUserIndexes = post & path("v2" / "admin" / "users" / "rebuild".r)
-  val v2ResetTokens = post & path("v2" / "admin" / "tokens" / "reset".r)
-  val v2GetItemStatistics = get & path("v2" / "admin" / "item" / JavaUUID)
-  val v2GetOwnerStatistics = get & path("v2" / "admin" / "owner" / JavaUUID)
-  val v2PostSetItemProperty = post & path("v2" / "admin" / "item" / JavaUUID / "property")
-  val v2PostSetOwnerProperty = post & path("v2" / "admin" / "owner" / JavaUUID / "property")
-  val v2PutInfo = put & path("v2" / "admin" / "info".r)
+  val v2DestroyUser = post & path("v2" / "admin" / "users" / JavaUUID / "destroy_user")
+  val v2PostChangeUserType = post & path("v2" / "admin" / "users" / JavaUUID / "change_user_type")
+  val v2RebuildUserItemsIndex = post & path("v2" / "admin" / "user" / JavaUUID / "rebuild_items_index")
+  val v2RebuildItemsIndexes = post & path("v2" / "admin" / "rebuild_items_indexes".r)
+  val v2RebuildUserIndexes = post & path("v2" / "admin" / "rebuild_users_index".r)
+  val v2ResetTokens = post & path("v2" / "admin" / "reset_tokens".r)
+  val v2GetItemStatistics = get & path("v2" / "admin" / "items" / JavaUUID / "stats")
+  val v2GetOwnerStatistics = get & path("v2" / "admin" / "owners" / JavaUUID / "stats")
+  val v2PostSetItemProperty = post & path("v2" / "admin" / "items" / JavaUUID / "change_property")
+  val v2PostSetOwnerProperty = post & path("v2" / "admin" / "owners" / JavaUUID / "change_property")
+  val v2PostUpdateInfo = post & path("v2" / "admin" / "update_info".r)
 
 }
