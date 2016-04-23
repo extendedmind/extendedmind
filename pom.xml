@@ -319,9 +319,9 @@
           <version>1.2.1.jbossorg-3</version>
         </plugin>
         <plugin>
-          <groupId>org.jolokia</groupId>
+          <groupId>io.fabric8</groupId>
           <artifactId>docker-maven-plugin</artifactId>
-          <version>0.13.8</version>
+          <version>0.14.1</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
