@@ -920,13 +920,21 @@
 
     // SUCCESS SAVE PROCESS
 
+    function doSetSaved() {
+      saveStatus = 'saved';
+      resetNoteStatusTimer = $timeout(function() {
+        saveStatus = getDefaultSaveStatus();
+      }, 1000);
+    }
+
+    function doSetFailed() {
+      saveStatus = 'failed';
+      resetNoteStatusTimer = $timeout(function() {
+        saveStatus = getDefaultSaveStatus();
+      }, 1000);
+    }
+
     function saveSuccess(result){
-      function doSetSaved() {
-        saveStatus = 'saved';
-        resetNoteStatusTimer = $timeout(function() {
-          saveStatus = getDefaultSaveStatus();
-        }, 1000);
-      }
 
       // Do this only when actually saving something
       if (result !== 'unmodified'){
@@ -966,9 +974,10 @@
 
     // FAILED SAVE PROCESS
 
-    function saveFailure(){
+    function saveFailure(error){
       savingInProgress = false;
-      saveStatus = getDefaultSaveStatus();
+      if (error.type === 'offline') doSetSaved();
+      else doSetFailed();
     }
 
     if (!savingInProgress) {
