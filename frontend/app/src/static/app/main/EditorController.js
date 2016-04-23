@@ -967,8 +967,8 @@
     // FAILED SAVE PROCESS
 
     function saveFailure(){
-      // Do nothing here
       savingInProgress = false;
+      saveStatus = getDefaultSaveStatus();
     }
 
     if (!savingInProgress) {
