@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.extendedmind</groupId>
     <artifactId>root</artifactId>
-    <version>${revision}</version>
+    <version>0-SNAPSHOT</version>
   </parent>
   <artifactId>e2e</artifactId>
   <packaging>pom</packaging>
