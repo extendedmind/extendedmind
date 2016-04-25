@@ -52,11 +52,11 @@ import org.mockito.ArgumentCaptor
  */
 class SecurityBestCaseSpec extends ServiceSpecBase {
 
-  val mockMailgunClient = mock[MailgunClient]
+  val mockMailClient = mock[MailClient]
 
   object TestDataGeneratorConfiguration extends Module {
     bind[GraphDatabase] to db
-    bind[MailgunClient] to mockMailgunClient
+    bind[MailClient] to mockMailClient
   }
 
   override def configurations = TestDataGeneratorConfiguration :: new Configuration(settings, actorRefFactory)
@@ -67,7 +67,7 @@ class SecurityBestCaseSpec extends ServiceSpecBase {
 
   after {
     cleanDb(db.ds.gds)
-    reset(mockMailgunClient)
+    reset(mockMailClient)
   }
 
   describe("In the best case, SecurityService") {
@@ -161,7 +161,7 @@ class SecurityBestCaseSpec extends ServiceSpecBase {
     }
     it("should successfully send password with email with POST to /password/forgot "
        + "get password expires with given code to ") {
-      stub(mockMailgunClient.sendPasswordResetLink(mockEq(TIMO_EMAIL), anyObject())).toReturn(Future { SendEmailResponse("OK", "1234") })
+      stub(mockMailClient.sendPasswordResetLink(mockEq(TIMO_EMAIL), anyObject())).toReturn(Future { SendEmailResponse("OK", "1234") })
       val resetCodeCaptor: ArgumentCaptor[Long] = ArgumentCaptor.forClass(classOf[Long])
       val emailCaptor: ArgumentCaptor[String] = ArgumentCaptor.forClass(classOf[String])
 
@@ -169,7 +169,7 @@ class SecurityBestCaseSpec extends ServiceSpecBase {
         writeJsonOutput("forgotPasswordResponse", responseAs[String])
         val forgotPasswordResponse = responseAs[ForgotPasswordResult]
         forgotPasswordResponse.resetCodeExpires should not be None
-        verify(mockMailgunClient).sendPasswordResetLink(emailCaptor.capture(), resetCodeCaptor.capture())
+        verify(mockMailClient).sendPasswordResetLink(emailCaptor.capture(), resetCodeCaptor.capture())
         // Get reset code expiration
         Get("/password/" + resetCodeCaptor.getValue().toHexString + "?email=" + TIMO_EMAIL) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
           val passwordResetExpiresResponse = responseAs[ForgotPasswordResult]

@@ -43,41 +43,23 @@ import scala.concurrent.Await
 import scala.concurrent.ExecutionContext
 import akka.actor.ActorRefFactory
 import java.util.UUID
+import java.io.File
+import org.apache.commons.io.FileUtils
+import org.extendedmind.security.Random
 
-object MailgunProtocol extends DefaultJsonProtocol {
-  implicit val sendEmailRequestMarshaller =
-    Marshaller.delegate[SendEmailRequest, FormData](`application/x-www-form-urlencoded`) { (sendEmailRequest, contentType) =>
-      new FormData(getCCParams(sendEmailRequest).map { case (k, v) => (k, v) } toList)
-    }
-  implicit val sendEmailResponseFormat = jsonFormat2(SendEmailResponse)
-
-  def getCCParams(cc: AnyRef): Map[String, String] =
-    (Map[String, String]() /: cc.getClass.getDeclaredFields) { (a, f) =>
-      f.setAccessible(true)
-      a + (f.getName -> f.get(cc).asInstanceOf[String])
-    }
-}
-
-trait MailgunClient extends MailClient{
-
-  import MailgunProtocol._
-
-  val sendEmailPipeline = sendReceive ~> unmarshal[SendEmailResponse]
-
+trait DummyMailClient extends MailClient{
   override def sendEmail(sendEmailRequest: SendEmailRequest): Future[SendEmailResponse] = {
-    implicit val timeout = Timeout(10 seconds)
-    val address = "https://api.mailgun.net/v2/" + settings.mailgunDomain + "/messages"
-    sendEmailPipeline {
-      Post(address,
-          marshal(sendEmailRequest).right.get
-              ) ~> addCredentials(BasicHttpCredentials("api", settings.mailgunApiKey))
-    }
+    val emailDir = new File(settings.dummyEmailLocation)
+    emailDir.mkdirs()
+    val emailFile = new File(settings.dummyEmailLocation + "/" + sendEmailRequest.to + " " + sendEmailRequest.subject + ".html")
+    FileUtils.writeStringToFile(emailFile, sendEmailRequest.html)
+    Future { SendEmailResponse("OK", Random.generateRandomUnsignedLong().toString()) }
   }
 }
 
-class MailgunClientImpl(implicit val implSettings: Settings, implicit val implActorRefFactory: ActorRefFactory,
+class DummyMailClientImpl(implicit val implSettings: Settings, implicit val implActorRefFactory: ActorRefFactory,
   implicit val inj: Injector)
-  extends MailgunClient with Injectable {
+  extends DummyMailClient with Injectable {
   override def actorRefFactory = implActorRefFactory
   override def settings = implSettings
 }

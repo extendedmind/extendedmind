@@ -188,6 +188,12 @@
       <version>1.8</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <type>jar</type>
+      <scope>compile</scope>
+    </dependency>
 
     <!-- Test -->
     <dependency>
@@ -249,12 +255,6 @@
       <type>jar</type>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <type>jar</type>
-      <scope>test</scope>
-    </dependency>
 
   </dependencies>
 
@@ -306,6 +306,11 @@
             </goals>
           </execution>
         </executions>
+        <configuration>
+          <jvmArgs>
+            <jvmArg>-Xss8M</jvmArg>
+          </jvmArgs>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.scalatest</groupId>

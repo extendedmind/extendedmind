@@ -32,6 +32,7 @@
     <e2e.mailgunDomain>extendedmind.org</e2e.mailgunDomain>
     <e2e.mailgunKey>TEST KEY</e2e.mailgunKey>
     <e2e.emailFrom>extended mind &lt;info@extendedmind.org&gt;</e2e.emailFrom>
+    <e2e.emailProvider>DUMMY</e2e.emailProvider>
   </properties>
 
   <developers>
@@ -220,6 +221,7 @@
                   <EXTENDEDMIND_BACKEND_TOKENSECRET>01234567890123456789012345678901</EXTENDEDMIND_BACKEND_TOKENSECRET>
                   <EXTENDEDMIND_BACKEND_SIGNUPMODE>BETA</EXTENDEDMIND_BACKEND_SIGNUPMODE>
                   <EXTENDEDMIND_URLORIGIN>${e2e.urlOrigin}</EXTENDEDMIND_URLORIGIN>
+                  <EXTENDEDMIND_BACKEND_EMAILPROVIDER>${e2e.emailProvider}</EXTENDEDMIND_BACKEND_EMAILPROVIDER>
                   <EXTENDEDMIND_BACKEND_MAILGUNDOMAIN>${e2e.mailgunDomain}</EXTENDEDMIND_BACKEND_MAILGUNDOMAIN>
                   <EXTENDEDMIND_BACKEND_MAILGUNKEY>${e2e.mailgunKey}</EXTENDEDMIND_BACKEND_MAILGUNKEY>
                   <EXTENDEDMIND_EMAILFROM>${e2e.emailFrom}</EXTENDEDMIND_EMAILFROM>
@@ -279,6 +281,9 @@
                     <image>backend-conf</image>
                     <image>backend-data</image>
                   </from>
+                  <bind>
+                    <volume>${project.build.directory}/email-tests:/var/log/dummy-emails</volume>
+                  </bind>
                 </volumes>
                 <ports>
                   <port>8007:8081</port>

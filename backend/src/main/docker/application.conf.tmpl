@@ -25,6 +25,8 @@ extendedmind {
     port = 8081
   }
   email {
+    provider = "{{getv "/extendedmind/backend/emailprovider"}}",
+    dummy = "/var/log/dummy-emails",
     mailgun {
       domain = "{{getv "/extendedmind/backend/mailgundomain"}}"
       apiKey = "{{getv "/extendedmind/backend/mailgunkey"}}"

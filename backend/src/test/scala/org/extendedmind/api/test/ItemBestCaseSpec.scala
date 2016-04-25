@@ -52,11 +52,8 @@ import scala.collection.mutable.ListBuffer
  */
 class ItemBestCaseSpec extends ServiceSpecBase {
 
-  val mockMailgunClient = mock[MailgunClient]
-
   object TestDataGeneratorConfiguration extends Module {
     bind[GraphDatabase] to db
-    bind[MailgunClient] to mockMailgunClient
   }
 
   override def configurations = TestDataGeneratorConfiguration :: new Configuration(settings, actorRefFactory)
@@ -67,7 +64,6 @@ class ItemBestCaseSpec extends ServiceSpecBase {
 
   after {
     cleanDb(db.ds.gds)
-    reset(mockMailgunClient)
   }
 
   describe("In the best case, ItemService") {

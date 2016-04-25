@@ -29,14 +29,15 @@ import org.extendedmind._
 import org.extendedmind.Response._
 import akka.actor.ActorRefFactory
 import akka.event.LoggingAdapter
-import org.extendedmind.email.MailgunClient
+import org.extendedmind.email.MailClient
 import org.extendedmind.email.SendEmailResponse
 import org.extendedmind.security.Random
+import org.extendedmind.email.MailClient
 
 trait InviteActions {
 
   def db: GraphDatabase;
-  def mailgun: MailgunClient
+  def mail: MailClient
   def settings: Settings
 
   def actorRefFactory: ActorRefFactory
@@ -73,7 +74,7 @@ trait InviteActions {
     }else{
       val acceptCode = Random.generateRandomUnsignedLong
       val inviteToSend = invite.copy(code = Some(acceptCode))
-      val futureMailResponse = mailgun.sendInvite(inviteToSend, displayOwner)
+      val futureMailResponse = mail.sendInvite(inviteToSend, displayOwner)
       futureMailResponse onSuccess {
         case SendEmailResponse(message, id) => {
           val saveResponse = db.putExistingInvite(owner, inviteToSend.uuid.get,
@@ -97,6 +98,6 @@ class InviteActionsImpl(implicit val implSettings: Settings, implicit val inj: I
   extends InviteActions with Injectable {
   override def settings  = implSettings
   override def db = inject[GraphDatabase]
-  override def mailgun = inject[MailgunClient]
+  override def mail = inject[MailClient]
   override def actorRefFactory = implActorRefFactory
 }

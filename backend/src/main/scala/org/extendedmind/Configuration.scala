@@ -50,6 +50,10 @@ case object MODE_ALFA extends SignUpMode
 case object MODE_BETA extends SignUpMode
 case object MODE_NORMAL extends SignUpMode
 
+sealed abstract class EmailProvider
+case object EMAIL_MAILGUN extends EmailProvider
+case object EMAIL_DUMMY extends EmailProvider
+
 class Settings(config: Config) extends Extension {
   val version = config.getString("extendedmind.version")
   val serverPort = config.getInt("extendedmind.server.port")
@@ -96,8 +100,18 @@ class Settings(config: Config) extends Extension {
       case "NORMAL" => MODE_NORMAL
     }
   }
+
+  val emailProvider: EmailProvider  = {
+    config.getString("extendedmind.email.provider") match {
+      case "MAILGUN" => EMAIL_MAILGUN
+      case "DUMMY" => EMAIL_DUMMY
+    }
+  }
   val mailgunDomain = config.getString("extendedmind.email.mailgun.domain")
   val mailgunApiKey = config.getString("extendedmind.email.mailgun.apiKey")
+
+  val dummyEmailLocation: String = config.getString("extendedmind.email.dummy")
+
   // Email templates
   val emailFrom = config.getString("extendedmind.email.from")
   val emailUrlOrigin = config.getString("extendedmind.email.urlOrigin")
@@ -128,7 +142,12 @@ class Configuration(settings: Settings, actorRefFactory: ActorRefFactory) extend
   implicit val implSettings = settings
   implicit val implActorRefFactory = actorRefFactory
   bind [GraphDatabase] to new EmbeddedGraphDatabase
-  bind [MailgunClient] to new MailgunClientImpl
+  bind [MailClient] to {
+    settings.emailProvider match {
+      case EMAIL_MAILGUN => new MailgunClientImpl
+      case EMAIL_DUMMY => new DummyMailClientImpl
+    }
+  }
   bind [SecurityActions] to new SecurityActionsImpl
   bind [OwnerActions] to new OwnerActionsImpl
   bind [UserActions] to new UserActionsImpl

@@ -52,11 +52,11 @@ import org.mockito.ArgumentCaptor
  */
 class UserBestCaseSpec extends ServiceSpecBase {
 
-  val mockMailgunClient = mock[MailgunClient]
+  val mockMailClient = mock[MailClient]
 
   object TestDataGeneratorConfiguration extends Module {
     bind[GraphDatabase] to db
-    bind[MailgunClient] to mockMailgunClient
+    bind[MailClient] to mockMailClient
   }
 
   override def configurations = TestDataGeneratorConfiguration :: new Configuration(settings, actorRefFactory)
@@ -67,14 +67,14 @@ class UserBestCaseSpec extends ServiceSpecBase {
 
   after {
     cleanDb(db.ds.gds)
-    reset(mockMailgunClient)
+    reset(mockMailClient)
   }
 
   describe("In the best case, UserService") {
     it("should create an administrator with POST to /signup because adminSignUp is set to true " +
        "and resend verification email with POST to /email/resend") {
       val testEmail = "example@example.com"
-      stub(mockMailgunClient.sendEmailVerificationLink(mockEq(testEmail), anyObject())).toReturn(
+      stub(mockMailClient.sendEmailVerificationLink(mockEq(testEmail), anyObject())).toReturn(
         Future { SendEmailResponse("OK", "1234") })
       val verificationCodeCaptor: ArgumentCaptor[Long] = ArgumentCaptor.forClass(classOf[Long])
       val emailCaptor: ArgumentCaptor[String] = ArgumentCaptor.forClass(classOf[String])
@@ -84,7 +84,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
         marshal(signUp).right.get) ~> route ~> check {
           val signUpResponse = responseAs[String]
           writeJsonOutput("signUpResponse", signUpResponse)
-          verify(mockMailgunClient).sendEmailVerificationLink(emailCaptor.capture(), verificationCodeCaptor.capture())
+          verify(mockMailClient).sendEmailVerificationLink(emailCaptor.capture(), verificationCodeCaptor.capture())
           val verificationCode = verificationCodeCaptor.getValue
           signUpResponse should include("uuid")
           signUpResponse should include("modified")
@@ -92,15 +92,15 @@ class UserBestCaseSpec extends ServiceSpecBase {
           authenticationResponse.userType should be(0)
           authenticationResponse.cohort.get should be(1)
 
-          reset(mockMailgunClient)
-          stub(mockMailgunClient.sendEmailVerificationLink(testEmail, verificationCode)).toReturn(
+          reset(mockMailClient)
+          stub(mockMailClient.sendEmailVerificationLink(testEmail, verificationCode)).toReturn(
             Future { SendEmailResponse("OK", "4321") })
 
           // Should resend verification link email
           Post("/email/resend") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticationResponse.token.get)) ~> route ~> check {
             val resendResponse = responseAs[CountResult]
             writeJsonOutput("emailResendResponse", responseAs[String])
-            verify(mockMailgunClient).sendEmailVerificationLink(testEmail, verificationCode)
+            verify(mockMailClient).sendEmailVerificationLink(testEmail, verificationCode)
           }
         }
     }
@@ -371,7 +371,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
 
       val newEmail = UserEmail("timo.tiuraniemi@filosofianakatemia.fi")
-      stub(mockMailgunClient.sendEmailVerificationLink(mockEq(newEmail.email), anyObject())).toReturn(
+      stub(mockMailClient.sendEmailVerificationLink(mockEq(newEmail.email), anyObject())).toReturn(
         Future { SendEmailResponse("OK", "1234") })
       val verificationCodeCaptor: ArgumentCaptor[Long] = ArgumentCaptor.forClass(classOf[Long])
       val emailCaptor: ArgumentCaptor[String] = ArgumentCaptor.forClass(classOf[String])
@@ -381,7 +381,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
           writeJsonOutput("putEmailResponse", responseAs[String])
           val putAccountResponse = responseAs[SetResult]
           putAccountResponse.modified should not be None
-          verify(mockMailgunClient).sendEmailVerificationLink(emailCaptor.capture(), verificationCodeCaptor.capture())
+          verify(mockMailClient).sendEmailVerificationLink(emailCaptor.capture(), verificationCodeCaptor.capture())
       }
       Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val accountResponse = responseAs[User]

@@ -51,11 +51,9 @@ import spray.http.StatusCodes._
  */
 class NoteBestCaseSpec extends ServiceSpecBase {
 
-  val mockMailgunClient = mock[MailgunClient]
 
   object TestDataGeneratorConfiguration extends Module {
     bind[GraphDatabase] to db
-    bind[MailgunClient] to mockMailgunClient
   }
 
   override def configurations = TestDataGeneratorConfiguration :: new Configuration(settings, actorRefFactory)
@@ -66,7 +64,6 @@ class NoteBestCaseSpec extends ServiceSpecBase {
 
   after {
     cleanDb(db.ds.gds)
-    reset(mockMailgunClient)
   }
 
   describe("In the best case, NoteService") {

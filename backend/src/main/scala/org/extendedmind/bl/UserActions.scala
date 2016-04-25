@@ -38,7 +38,7 @@ import java.util.UUID
 trait UserActions {
 
   def db: GraphDatabase
-  def mailgun: MailgunClient
+  def mail: MailClient
   def settings: Settings
 
   def actorRefFactory: ActorRefFactory
@@ -182,7 +182,7 @@ trait UserActions {
 
   protected def sendEmailVerification(email: String, emailVerificationCode: Long)(implicit log: LoggingAdapter) {
     log.info("sendEmailVerification: email {}", email)
-    val futureMailResponse = mailgun.sendEmailVerificationLink(email, emailVerificationCode)
+    val futureMailResponse = mail.sendEmailVerificationLink(email, emailVerificationCode)
     futureMailResponse onSuccess {
       case SendEmailResponse(message, id) => {
         log.info("Email verification sent to " + email + " with id " + id)
@@ -197,7 +197,7 @@ trait UserActions {
       fail(INVALID_PARAMETER, ERR_USER_AGREEMENT_ACCEPTED, "Agreeement has already been accepted, no need to send email")
     }else{
       val acceptCode = Random.generateRandomUnsignedLong
-      val futureMailResponse = mailgun.sendShareListAgreement(agreement, acceptCode, sharedListTitle, proposedByDisplayName)
+      val futureMailResponse = mail.sendShareListAgreement(agreement, acceptCode, sharedListTitle, proposedByDisplayName)
       futureMailResponse onSuccess {
         case SendEmailResponse(message, id) => {
           val saveResponse = db.saveAgreementAcceptInformation(agreement.uuid.get, acceptCode, id)
@@ -220,6 +220,6 @@ class UserActionsImpl(implicit val implSettings: Settings, implicit val inj: Inj
   extends UserActions with Injectable {
   override def settings  = implSettings
   override def db = inject[GraphDatabase]
-  override def mailgun = inject[MailgunClient]
+  override def mail = inject[MailClient]
   override def actorRefFactory = implActorRefFactory
 }

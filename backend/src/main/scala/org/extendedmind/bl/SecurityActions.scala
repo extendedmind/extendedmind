@@ -28,14 +28,14 @@ import scaldi.Injectable
 import akka.event.LoggingAdapter
 import org.extendedmind.security._
 import java.util.UUID
-import org.extendedmind.email.MailgunClient
+import org.extendedmind.email.MailClient
 import akka.actor.ActorRefFactory
 import org.extendedmind.email.SendEmailResponse
 
 trait SecurityActions {
 
   def db: GraphDatabase;
-  def mailgun: MailgunClient
+  def mail: MailClient
   def settings: Settings
 
   def actorRefFactory: ActorRefFactory
@@ -100,7 +100,7 @@ trait SecurityActions {
     val currentTime = System.currentTimeMillis
     val resetCodeValid = currentTime + db.PASSWORD_RESET_DURATION
 
-    val futureMailResponse = mailgun.sendPasswordResetLink(user.email.get, resetCode)
+    val futureMailResponse = mail.sendPasswordResetLink(user.email.get, resetCode)
     futureMailResponse onSuccess {
       case SendEmailResponse(message, id) => {
         val saveResponse = db.savePasswordResetInformation(user.uuid.get, resetCode, resetCodeValid, id)
@@ -123,6 +123,6 @@ class SecurityActionsImpl(implicit val implSettings: Settings, implicit val inj:
   extends SecurityActions with Injectable {
   override def settings  = implSettings
   override def db = inject[GraphDatabase]
-  override def mailgun = inject[MailgunClient]
+  override def mail = inject[MailClient]
   override def actorRefFactory = implActorRefFactory
 }

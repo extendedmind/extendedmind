@@ -5,6 +5,7 @@ keys = [
     "/extendedmind/ha",
     "/extendedmind/backend/tokensecret",
     "/extendedmind/backend/signupmode",
+    "/extendedmind/backend/emailprovider",
     "/extendedmind/backend/mailgundomain",
     "/extendedmind/backend/mailgunkey",
     "/extendedmind/emailfrom",
