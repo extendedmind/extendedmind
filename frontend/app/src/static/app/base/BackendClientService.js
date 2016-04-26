@@ -309,6 +309,14 @@
     HttpClientService.clearAll();
   };
 
+  methods.getForceOffline = function(){
+    return HttpClientService.getForceOffline();
+  };
+
+  methods.setForceOffline = function(value){
+    return HttpClientService.setForceOffline(value);
+  };
+
   // Callback registration
   methods.registerRefreshCredentialsCallback = function(callback) {
     refreshCredentialsCallback = callback;

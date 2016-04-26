@@ -24,6 +24,7 @@
   var methods = {};
   var credentials;
   var cacheOnly;
+  var forceOffline;
 
   // Offline checker for the entire application
   function isOffline(status) {
@@ -103,12 +104,21 @@
   }
 
   var retryingExecution = false;
+
   // Recursive method to empty the queue
   function executeRequests(previousRequest) {
 
-    // When cacheOnly is set to true, the only thing that needs to be done here
-    // is analytics
+    function processHttpOffline(request) {
+      retryingExecution = false;
+      // offline, stop processing
+      HttpRequestQueueService.setOffline(request);
+      // Execute callback
+      handleOnlineCallback(false);
+    }
+
     if (cacheOnly){
+      // When cacheOnly is set to true (i.e. fake user), the only thing that needs to be done here
+      // is analytics
       var lastRequest = HttpRequestQueueService.getLast();
       if (lastRequest){
         executeLastRequest(lastRequest);
@@ -134,6 +144,13 @@
     var skipSecondary = previousRequest && !previousRequest.primary;
     var headRequest = HttpRequestQueueService.getHead(skipSecondary);
     if (headRequest) {
+
+      if (forceOffline){
+        // It is possible to force offline using a flag. Used in testing.
+        processHttpOffline(headRequest);
+        return;
+      }
+
       if (!headRequest.last) {
 
         // First validate that request is valid to begin with
@@ -215,11 +232,7 @@
         }).error(function(data, status, headers, config) {
           delete headRequest.executing;
           if (isOffline(status)) {
-            retryingExecution = false;
-            // Seems to be offline, stop processing
-            HttpRequestQueueService.setOffline(headRequest);
-            // Execute callback
-            handleOnlineCallback(false);
+            processHttpOffline();
           } else {
             // Add retrying to 403 Forbidden which may have to do with
             // an old request being run on refocus to app after 12 hours
@@ -606,6 +619,14 @@
 
   methods.clearAll = function(){
     HttpRequestQueueService.clearAll();
+  };
+
+  methods.getForceOffline = function(){
+    return forceOffline;
+  };
+
+  methods.setForceOffline = function(value){
+    forceOffline = value;
   };
 
   methods.executeRequests = executeRequests;

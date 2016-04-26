@@ -10,6 +10,10 @@ ng-switch on="adminMode">
       <h3>items</h3>
       <span ng-bind="itemCount"></span>
     </div>
+    <div class="row-form">
+      <h3>actions</h3>
+      <a href class="highlighted" ng-click="toggleOffline()"><span ng-bind="offlineOnlineText"></span></a>
+    </div>
   </section>
   <section ng-switch-when="users" class="container-content">
     <h2 class="group-heading row justified">users</h2>

@@ -14,7 +14,8 @@
  */
  'use strict';
 
- function AdminController($scope, AdminService, AuthenticationService, AnalyticsService, DateService) {
+ function AdminController($scope, AdminService, AuthenticationService, AnalyticsService, BackendClientService,
+                          DateService) {
 
   AnalyticsService.visit('admin');
 
@@ -46,6 +47,21 @@
     }
   };
 
+  function resetOffineOnlineText(){
+    $scope.offlineOnlineText =
+      BackendClientService.getForceOffline() ? 'go online' : 'go offline';
+  };
+  resetOffineOnlineText();
+
+  $scope.toggleOffline = function(){
+    if (BackendClientService.getForceOffline()){
+      BackendClientService.setForceOffline(false);
+    }else{
+      BackendClientService.setForceOffline(true);
+    }
+    resetOffineOnlineText();
+  };
+
   function removeUser(user) {
     var index = $scope.users.indexOf(user);
     if (index > -1) {
@@ -57,6 +73,6 @@
 }
 
 AdminController['$inject'] = [
-'$scope', 'AdminService', 'AuthenticationService', 'AnalyticsService', 'DateService'
-];
+'$scope', 'AdminService', 'AuthenticationService', 'AnalyticsService', 'BackendClientService',
+'DateService'];
 angular.module('em.admin').controller('AdminController', AdminController);
