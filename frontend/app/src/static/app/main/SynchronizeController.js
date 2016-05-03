@@ -16,7 +16,7 @@
  'use strict';
 
 // Controller for synchronizing
-function SynchronizeController($q, $rootScope, $scope, $timeout,
+function SynchronizeController($interval, $q, $rootScope, $scope,
                         BackendClientService, SynchronizeService, TagsService,
                         UISessionService, UserSessionService, packaging) {
 
@@ -55,14 +55,13 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
     synchronizeDelayed();
   }
   function cancelSynchronizeDelayed() {
-    $timeout.cancel(synchronizeTimer);
+    $interval.cancel(synchronizeTimer);
   }
 
   // https://developer.mozilla.org/en/docs/Web/API/window.setInterval
   function synchronizeDelayed() {
-    synchronizeTimer = $timeout(function() {
+    synchronizeTimer = $interval(function() {
       synchronize();
-      synchronizeDelayed();
     }, synchronizeDelay);
   }
 
@@ -329,7 +328,7 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
 
   $scope.$on('$destroy', function() {
     // http://www.bennadel.com/blog/2548-Don-t-Forget-To-Cancel-timeout-Timers-In-Your-destroy-Events-In-AngularJS.htm
-    $timeout.cancel(synchronizeTimer);
+    cancelSynchronizeDelayed();
     $scope.unregisterActivateDeactivateCallbacks('SynchronizeController');
   });
 
@@ -353,7 +352,7 @@ function SynchronizeController($q, $rootScope, $scope, $timeout,
   synchronizeAndSynchronizeDelayed();
 }
 
-SynchronizeController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout',
+SynchronizeController['$inject'] = ['$interval', '$q', '$rootScope', '$scope',
 'BackendClientService', 'SynchronizeService', 'TagsService', 'UISessionService', 'UserSessionService',
 'packaging'];
 angular.module('em.main').controller('SynchronizeController', SynchronizeController);

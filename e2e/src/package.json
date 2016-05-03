@@ -1,0 +1,26 @@
+{
+  "name": "extendedmind-e2e",
+  "version": "0.0.1",
+  "description": "Extended Mind E2E tests",
+  "private": true,
+  "devDependencies": {
+    "protractor": "^3.3.0"
+  },
+  "scripts": {
+    "test": "./node_modules/protractor/bin/protractor protractor-live-conf.js",
+    "postinstall": "./node_modules/protractor/bin/webdriver-manager update"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:extendedmind/extendedmind.git"
+  },
+  "keywords": [
+    "productivity"
+  ],
+  "author": "Timo Tiuraniemi",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/extendedmind/extendedmind/issues"
+  },
+  "homepage": "https://ext.md"
+}

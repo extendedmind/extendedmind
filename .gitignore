@@ -88,3 +88,6 @@ frontend/electron/src/Gruntfile.js
 # Analytics
 frontend/analytics/src/data/
 
+# E2E
+e2e/src/node/
+e2e/src/node_modules/

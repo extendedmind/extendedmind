@@ -232,7 +232,7 @@
         }).error(function(data, status, headers, config) {
           delete headRequest.executing;
           if (isOffline(status)) {
-            processHttpOffline();
+            processHttpOffline(headRequest);
           } else {
             // Add retrying to 403 Forbidden which may have to do with
             // an old request being run on refocus to app after 12 hours

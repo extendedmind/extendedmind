@@ -35,6 +35,89 @@
     <e2e.emailProvider>DUMMY</e2e.emailProvider>
   </properties>
 
+  <profiles>
+    <profile>
+      <id>live-browser</id>
+      <activation>
+        <property>
+          <name>e2e.useLiveBrowser</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.github.eirslett</groupId>
+            <artifactId>frontend-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>install node and npm</id>
+                <goals>
+                  <goal>install-node-and-npm</goal>
+                </goals>
+                <configuration>
+                  <nodeVersion>v6.0.0</nodeVersion>
+                  <npmVersion>3.8.8</npmVersion>
+                  <nodeDownloadRoot>https://nodejs.org/dist/</nodeDownloadRoot>
+                </configuration>
+              </execution>
+              <execution>
+                <id>npm install</id>
+                <goals>
+                  <goal>npm</goal>
+                </goals>
+                <phase>generate-resources</phase>
+                <configuration>
+                  <arguments>install</arguments>
+                </configuration>
+              </execution>
+              <execution>
+                <id>npm test</id>
+                <goals>
+                  <goal>npm</goal>
+                </goals>
+                <phase>integration-test</phase>
+                <configuration>
+                  <arguments>test</arguments>
+                </configuration>
+              </execution>
+            </executions>
+            <configuration>
+              <workingDirectory>src</workingDirectory>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>headless-browser</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>protractor-headless</id>
+                <phase>integration-test</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <configuration>
+                  <executable>sh</executable>
+                  <commandlineArgs>protractor-headless.sh /protractor/src/protractor-headless-conf.js</commandlineArgs>
+                  <background>false</background>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
   <developers>
     <developer>
       <id>ttiurani</id>
@@ -425,6 +508,23 @@
              </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-clean-plugin</artifactId>
+        <configuration>
+          <filesets>
+            <fileset>
+              <directory>${basedir}/src/etc</directory>
+            </fileset>
+            <fileset>
+              <directory>${basedir}/src/node</directory>
+            </fileset>
+            <fileset>
+              <directory>${basedir}/src/node_modules</directory>
+            </fileset>
+          </filesets>
+        </configuration>
       </plugin>
     </plugins>
   </build>
