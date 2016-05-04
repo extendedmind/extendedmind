@@ -51,7 +51,6 @@ import spray.http.StatusCodes._
  */
 class NoteBestCaseSpec extends ServiceSpecBase {
 
-
   object TestDataGeneratorConfiguration extends Module {
     bind[GraphDatabase] to db
   }
@@ -544,9 +543,6 @@ class NoteBestCaseSpec extends ServiceSpecBase {
           }
         }
       }
-
-      //PITÄISI ENSIN TEHDÄ NOTE, SITTEN KONVERTOIDA TASKIKSI, SITTEN TAKAISIN NOTEKSI, SITTEN JULKAISTA, SITTEN SAVETTAA, SITTEN HAKEA REVISIOITA
-
     }
   }
 }

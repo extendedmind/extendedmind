@@ -443,11 +443,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     else if (noteNode.hasProperty("publicUi")) noteNode.removeProperty("publicUi")
 
     // Add revision to public revision index
-    val publicRevisionIndex = neo4j.gds.index().forNodes("public")
-    publicRevisionIndex.add(noteRevisionNode, "owner", IdUtils.getTrimmedBase64UUIDForLucene(ownerUUID))
-    publicRevisionIndex.add(noteRevisionNode, "sid", sid)
-    publicRevisionIndex.add(noteRevisionNode, "path", path)
-    publicRevisionIndex.add(noteRevisionNode, "modified", new ValueContext(publishedTimestamp).indexNumeric())
+    addToPublicIndex(noteRevisionNode, ownerUUID, sid, path, publishedTimestamp)
     (publishedTimestamp, IdUtils.getShortIdAsString(sid))
   }
 

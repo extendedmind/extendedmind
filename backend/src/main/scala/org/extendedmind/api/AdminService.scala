@@ -210,6 +210,21 @@ trait AdminService extends ServiceBase {
           }
         }
       } ~
+      v2RebuildPublicAndItemsIndexes { url =>
+        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+          authorize(adminAccess(securityContext)) {
+            complete {
+              Future[CountResult] {
+                setLogContext(securityContext)
+                adminActions.rebuildPublicAndItemsIndexes match {
+                  case Right(result) => processResult(result)
+                  case Left(e) => processErrors(e)
+                }
+              }
+            }
+          }
+        }
+      } ~
       v2GetItemStatistics { uuid =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           authorize(adminAccess(securityContext)) {

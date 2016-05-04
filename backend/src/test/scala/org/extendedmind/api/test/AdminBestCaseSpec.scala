@@ -326,6 +326,23 @@ class AdminBestCaseSpec extends ServiceSpecBase {
         countResult.count should be(17)
       }
     }
+    it("should successfully rebuild items and public indexes with POST to /v2/admin/rebuild_public_and_items_indexes") {
+      val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+      Post("/v2/admin/rebuild_public_and_items_indexes") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        val countResult = responseAs[CountResult]
+        countResult.count should be(6)
+        Get("/public/timo/productivity") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+          val publicItem = responseAs[PublicItem]
+          Get("/public/timo") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+            val publicItems = responseAs[PublicItems]
+          }
+        }
+        Get("/" + authenticateResponse.userUUID + "/items") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+          val itemsResponse = responseAs[Items]
+          itemsResponse.tasks.get.length should equal(6)
+        }
+      }
+    }
     it("should successfully get statistics with GET to /admin") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       Get("/admin") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {

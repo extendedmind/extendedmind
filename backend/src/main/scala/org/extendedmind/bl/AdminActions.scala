@@ -65,6 +65,19 @@ trait AdminActions {
     result
   }
 
+  def rebuildPublicAndItemsIndexes(implicit log: LoggingAdapter): Response[CountResult] = {
+    log.info("rebuildPublicAndItemsIndexes")
+    val result = db.rebuildPublicAndItemsIndexes
+    if (result.isRight){
+      val totalItemCount = result.right.get.foldLeft(0) { (m: Int, n:(UUID, Int, Int))  => m + n._2}
+      val totalPublicCount = result.right.get.foldLeft(0) { (m: Int, n:(UUID, Int, Int))  => m + n._3}
+      log.info("rebuilt " + result.right.get.size + " users' item and public indexes, total " + totalItemCount + " items and " + totalPublicCount + " public revisions")
+      Right(CountResult(result.right.get.size))
+    }else{
+      Left(result.left.get)
+    }
+  }
+
   def getItemStatistics(uuid: UUID)(implicit log: LoggingAdapter): Response[NodeStatistics] = {
     log.info("getItemStatistics")
     db.getItemStatistics(uuid)

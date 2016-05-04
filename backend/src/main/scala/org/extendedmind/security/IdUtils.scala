@@ -42,8 +42,9 @@ object IdUtils {
     }
   }
   def getTrimmedBase64UUIDForLucene(uuid: UUID): String = {
-    // In Lucene the + character in Base64 is reserved, so changing it to @ is needed
-    getTrimmedBase64UUID(uuid).replace('+', '@')
+    // In Lucene the + character in Base64 is reserved, so changing it to @ is needed,
+    // also in Lucene 5 '/' is reserved so we change it to #
+    getTrimmedBase64UUID(uuid).replace('+', '@').replace('/', '#')
   }
 
   def convertByteArrayToLong(byteArray: Array[Byte]): Long = {

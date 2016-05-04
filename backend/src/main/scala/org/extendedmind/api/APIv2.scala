@@ -149,6 +149,7 @@ trait APIv2 extends LegacyAPI {
   val v2RebuildUserItemsIndex = post & path("v2" / "admin" / "user" / JavaUUID / "rebuild_items_index")
   val v2RebuildItemsIndexes = post & path("v2" / "admin" / "rebuild_items_indexes".r)
   val v2RebuildUserIndexes = post & path("v2" / "admin" / "rebuild_users_index".r)
+  val v2RebuildPublicAndItemsIndexes = post & path("v2" / "admin" / "rebuild_public_and_items_indexes".r)
   val v2ResetTokens = post & path("v2" / "admin" / "reset_tokens".r)
   val v2GetItemStatistics = get & path("v2" / "admin" / "items" / JavaUUID / "stats")
   val v2GetOwnerStatistics = get & path("v2" / "admin" / "owners" / JavaUUID / "stats")

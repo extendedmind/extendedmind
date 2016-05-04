@@ -158,6 +158,13 @@ trait ItemDatabase extends UserDatabase {
     } yield count
   }
 
+  def rebuildPublicAndItemsIndexes: Response[scala.List[(UUID, Int, Int)]] = {
+    for {
+      ownerUUIDs <- getOwnerUUIDs.right
+      count <- rebuildPublicAndItemsIndexes(ownerUUIDs).right
+    } yield count
+  }
+
   def getItemStatistics(uuid: UUID): Response[NodeStatistics] = {
     for {
       itemNode <- getItemNodeByUUID(uuid).right
@@ -398,14 +405,12 @@ trait ItemDatabase extends UserDatabase {
     val itemNodeList = {
       val ownerSearchString = IdUtils.getTrimmedBase64UUIDForLucene(ownerUUID)
 
-
-
+/*
 ERRORERROR:
 
 Status code: 500 Internal Server Error: org.apache.lucene.queryparser.classic.ParseException: Cannot parse 'owner:/oh@SLtzRAODtvDLMVvGAA': Lexical error at line 1, column 29.  Encountered: <EOF> after : "/oh@SLtzRAODtvDLMVvGAA" @1462355017717
 java.lang.RuntimeException: org.apache.lucene.queryparser.classic.ParseException: Cannot parse 'owner:/oh@SLtzRAODtvDLMVvGAA': Lexical error at line 1, column 29.  Encountered: <EOF> after : "/oh@SLtzRAODtvDLMVvGAA"
-
-
+*/
 
       val ownerQuery = new TermQuery(new Term("owner", ownerSearchString))
       val assigneeQuery = new TermQuery(new Term("assignee", ownerSearchString))
@@ -1357,6 +1362,71 @@ java.lang.RuntimeException: org.apache.lucene.queryparser.classic.ParseException
       addToItemsIndex(ownerUUID, itemNode, itemNode.getProperty("modified").asInstanceOf[Long])
     })
     Right(CountResult(traverser.nodes.size))
+  }
+
+  protected def rebuildPublicAndItemsIndexes(ownerUUIDs: scala.List[UUID]): Response[scala.List[(UUID, Int, Int)]] = {
+    // First, drop both indexes
+    dropPublicAndItemsIndexes()
+    // Then create the indexes again for every owner
+    val itemsAndPublicCounts = ownerUUIDs.map(ownerUUID => {
+      val rebuildResult = createPublicAndItemsIndexesForOwner(ownerUUID)
+      if (rebuildResult.isLeft) {
+        return Left(rebuildResult.left.get)
+      }
+      (ownerUUID, rebuildResult.right.get._1, rebuildResult.right.get._2)
+    })
+    Right(itemsAndPublicCounts)
+  }
+
+  protected def dropPublicAndItemsIndexes(): Unit = {
+    withTx {
+      implicit neo4j =>
+        val publicRevisionIndex = neo4j.gds.index().forNodes("public")
+        publicRevisionIndex.delete()
+        val itemsIndex = neo4j.gds.index().forNodes("items")
+        itemsIndex.delete()
+    }
+  }
+
+  protected def createPublicAndItemsIndexesForOwner(ownerUUID: UUID): Response[(Int, Int)] = {
+    withTx {
+      implicit neo4j =>
+        for {
+          ownerNode <- getNode(ownerUUID, MainLabel.OWNER).right
+          result <- createPublicAndItemsIndexesForOwnerNode(ownerNode).right
+        } yield result
+    }
+  }
+
+  protected def createPublicAndItemsIndexesForOwnerNode(ownerNode: Node)(implicit neo4j: DatabaseService): Response[(Int, Int)] = {
+    val itemsIndex = neo4j.gds.index().forNodes("items")
+    val ownerUUID = getUUID(ownerNode)
+    val itemsFromOwner: TraversalDescription = itemsTraversal
+    val traverser = itemsFromOwner.traverse(ownerNode)
+    var itemCount: Int = 0
+    var publishedCount: Int = 0
+    traverser.nodes.foreach(itemNode => {
+      addToItemsIndex(ownerUUID, itemNode, itemNode.getProperty("modified").asInstanceOf[Long])
+      itemCount += 1
+      val publishedRevisionRel = getPublishedExtendedItemRevisionRelationship(itemNode)
+      if (publishedRevisionRel.isDefined){
+        val publishedRevisionNode = publishedRevisionRel.get.getEndNode
+        val sid = itemNode.getProperty("sid").asInstanceOf[Long]
+        val path = itemNode.getProperty("path").asInstanceOf[String]
+        val published = publishedRevisionNode.getProperty("modified").asInstanceOf[Long]
+        addToPublicIndex(publishedRevisionNode, ownerUUID, sid, path, published)
+        publishedCount += 1
+      }
+    })
+    Right((itemCount, publishedCount))
+  }
+
+  protected def addToPublicIndex(revisionNode: Node, ownerUUID: UUID, sid: Long, path: String, publishedTimestamp: Long)(implicit neo4j: DatabaseService): Unit = {
+    val publicRevisionIndex = neo4j.gds.index().forNodes("public")
+    publicRevisionIndex.add(revisionNode, "owner", IdUtils.getTrimmedBase64UUIDForLucene(ownerUUID))
+    publicRevisionIndex.add(revisionNode, "sid", sid)
+    publicRevisionIndex.add(revisionNode, "path", path)
+    publicRevisionIndex.add(revisionNode, "modified", new ValueContext(publishedTimestamp).indexNumeric())
   }
 
   protected def getItemNodeByUUID(uuid: UUID): Response[Node] = {

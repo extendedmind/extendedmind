@@ -171,6 +171,8 @@ class SecurityBestCaseSpec extends ServiceSpecBase {
         forgotPasswordResponse.resetCodeExpires should not be None
         verify(mockMailClient).sendPasswordResetLink(emailCaptor.capture(), resetCodeCaptor.capture())
         // Get reset code expiration
+        // Sleep here for a little while to make sure the code has been saved to the database so that the next call doesn't fail
+        Thread.sleep(100)
         Get("/password/" + resetCodeCaptor.getValue().toHexString + "?email=" + TIMO_EMAIL) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
           val passwordResetExpiresResponse = responseAs[ForgotPasswordResult]
           writeJsonOutput("passwordResetExpiresResponse", responseAs[String])
