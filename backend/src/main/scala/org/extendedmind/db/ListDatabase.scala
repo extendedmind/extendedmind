@@ -25,11 +25,10 @@ import org.extendedmind.Response._
 import org.extendedmind._
 import org.extendedmind.domain._
 import org.neo4j.graphdb.Direction
-import org.neo4j.graphdb.DynamicRelationshipType
+import org.neo4j.graphdb.RelationshipType
 import org.neo4j.graphdb.Node
 import org.neo4j.graphdb.traversal.Evaluators
 import org.neo4j.graphdb.traversal.TraversalDescription
-import org.neo4j.kernel.Traversal
 import org.neo4j.scala.DatabaseService
 import scala.collection.mutable.ListBuffer
 import org.neo4j.graphdb.traversal.Evaluation
@@ -225,7 +224,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
   protected def getArchivedListHistoryTag(listNode: Node)(implicit neo4j: DatabaseService): Response[Node] = {
     val historyTagTraversal = neo4j.gds.traversalDescription()
         .depthFirst()
-        .relationships(DynamicRelationshipType.withName(ItemRelationship.HAS_TAG.name), Direction.OUTGOING)
+        .relationships(RelationshipType.withName(ItemRelationship.HAS_TAG.name), Direction.OUTGOING)
         .evaluator(Evaluators.excludeStartPosition())
         .evaluator(PropertyEvaluator(
           MainLabel.ITEM, "deleted",
@@ -420,7 +419,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
   protected def getListAgreementNodes(listNode: Node)(implicit neo4j: DatabaseService): Response[Option[scala.List[Node]]] = {
     val agreementNodes = neo4j.gds.traversalDescription()
           .depthFirst()
-          .relationships(DynamicRelationshipType.withName(AgreementRelationship.CONCERNING.name), Direction.INCOMING)
+          .relationships(RelationshipType.withName(AgreementRelationship.CONCERNING.name), Direction.INCOMING)
           .evaluator(Evaluators.excludeStartPosition())
           .evaluator(LabelEvaluator(scala.List(MainLabel.AGREEMENT)))
           .evaluator(Evaluators.toDepth(1))

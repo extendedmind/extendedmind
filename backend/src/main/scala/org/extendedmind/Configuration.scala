@@ -34,7 +34,6 @@ import org.extendedmind.security._
 import org.neo4j.graphdb.factory.GraphDatabaseFactory
 import org.neo4j.graphdb.factory.HighlyAvailableGraphDatabaseFactory
 import org.neo4j.kernel.extension.KernelExtensionFactory
-import org.neo4j.extension.uuid.UUIDKernelExtensionFactory
 import scala.collection.JavaConverters._
 import akka.actor.ActorRefFactory
 

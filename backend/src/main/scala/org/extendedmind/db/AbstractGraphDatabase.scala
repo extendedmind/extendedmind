@@ -33,11 +33,6 @@ import org.neo4j.graphdb.GraphDatabaseService
 import org.neo4j.graphdb.DynamicRelationshipType
 import org.neo4j.graphdb.Direction
 import org.neo4j.kernel.extension.KernelExtensionFactory
-import org.neo4j.extension.uuid.UUIDKernelExtensionFactory
-import org.neo4j.extension.timestamp.TimestampKernelExtensionFactory
-import org.neo4j.server.configuration.ServerConfigurator
-import org.neo4j.server.configuration.Configurator
-import org.neo4j.server.WrappingNeoServerBootstrapper
 import org.neo4j.kernel._
 import org.neo4j.scala._
 import org.neo4j.graphdb.traversal._
@@ -47,7 +42,6 @@ import org.neo4j.graphdb.RelationshipType
 import spray.util.LoggingContext
 import scala.reflect.runtime.universe._
 import java.lang.Boolean
-import org.neo4j.cypher.javacompat.ExecutionEngine
 import akka.event.LoggingAdapter
 import org.neo4j.index.lucene.QueryContext
 import org.neo4j.extension.timestamp.TimestampCustomPropertyHandler
@@ -65,8 +59,6 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
   // Settings
   def settings: Settings
   implicit val implSettings = settings
-
-  var engine: ExecutionEngine = null;
 
   // Implicit Neo4j Scala wrapper serialization exclusions
   implicit val serializeExclusions: Option[scala.List[String]] = Some(
@@ -115,18 +107,6 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     eventHandlers
   }
 
-  protected def startServer() {
-    if (settings.startNeo4jServer) {
-      val config: ServerConfigurator = new ServerConfigurator(ds.gds.asInstanceOf[GraphDatabaseAPI]);
-      config.configuration().setProperty(
-        Configurator.WEBSERVER_PORT_PROPERTY_KEY, settings.neo4jServerPort);
-      val srv: WrappingNeoServerBootstrapper =
-        new WrappingNeoServerBootstrapper(ds.gds.asInstanceOf[GraphDatabaseAPI], config);
-      srv.start();
-    }
-
-  }
-
   // LOAD DATABASE TO MEMORY
 
   def loadDatabase(implicit log: LoggingAdapter): Boolean = {
@@ -134,7 +114,6 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
       implicit neo4j =>
         // Sixty seconds wait for first load
         val available = neo4j.gds.isAvailable(1000 * 60)
-        engine = new ExecutionEngine(ds.gds)
         val statistics = getStatisticsInTx
         log.info("users: " + statistics.users +
           ", items: " + statistics.items)
@@ -167,8 +146,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
   }
 
   def getStatisticsInTx(implicit neo4j: DatabaseService): Statistics = {
-    if (engine == null) engine = new ExecutionEngine(neo4j.gds)
-    val userCountResult = engine.execute("start n=node(*) match (n:USER) return count(n) as userCount").iterator().next()
+    val userCountResult = neo4j.gds.execute("start n=node(*) match (n:USER) return count(n) as userCount").next()
     // Use index to get items
     val itemCount = neo4j.gds.index().forNodes("items").query("*:*").size()
 

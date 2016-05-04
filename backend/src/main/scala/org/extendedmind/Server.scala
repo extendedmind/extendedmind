@@ -25,9 +25,6 @@ import spray.can.Http
 import com.typesafe.config.{ Config, ConfigFactory }
 import org.extendedmind.api.ServiceActor
 import org.slf4j.LoggerFactory
-import ch.qos.logback.access.joran.JoranConfigurator
-import ch.qos.logback.core.util.StatusPrinter
-import ch.qos.logback.classic.LoggerContext
 
 object Server extends App {
 

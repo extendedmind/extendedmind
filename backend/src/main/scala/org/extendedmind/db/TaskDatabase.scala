@@ -25,11 +25,10 @@ import org.extendedmind.Response._
 import org.extendedmind._
 import org.extendedmind.domain._
 import org.neo4j.graphdb.Direction
-import org.neo4j.graphdb.DynamicRelationshipType
+import org.neo4j.graphdb.RelationshipType
 import org.neo4j.graphdb.Node
 import org.neo4j.graphdb.traversal.Evaluators
 import org.neo4j.graphdb.traversal.TraversalDescription
-import org.neo4j.kernel.Traversal
 import org.neo4j.scala.DatabaseService
 import scala.collection.mutable.ListBuffer
 import org.neo4j.graphdb.Relationship
@@ -327,7 +326,7 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
   protected def getReminderNodes(taskNode: Node)(implicit neo4j: DatabaseService): scala.List[Node] = {
     val reminderTraversal = neo4j.gds.traversalDescription()
       .breadthFirst()
-      .relationships(DynamicRelationshipType.withName(ItemRelationship.HAS_REMINDER.name), Direction.OUTGOING)
+      .relationships(RelationshipType.withName(ItemRelationship.HAS_REMINDER.name), Direction.OUTGOING)
       .evaluator(Evaluators.excludeStartPosition())
       .evaluator(LabelEvaluator(scala.List(MainLabel.REMINDER)))
       .evaluator(Evaluators.toDepth(1))

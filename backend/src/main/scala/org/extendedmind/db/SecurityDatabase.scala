@@ -27,11 +27,10 @@ import org.extendedmind.security._
 import org.extendedmind._
 import org.extendedmind.Response._
 import org.neo4j.graphdb.Direction
-import org.neo4j.graphdb.DynamicRelationshipType
+import org.neo4j.graphdb.RelationshipType
 import org.neo4j.graphdb.Node
 import org.neo4j.graphdb.traversal.Evaluators
 import org.neo4j.graphdb.traversal.TraversalDescription
-import org.neo4j.kernel.Traversal
 import org.neo4j.scala.DatabaseService
 import org.neo4j.graphdb.traversal.Evaluation
 import scala.collection.mutable.HashMap
@@ -288,7 +287,7 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
   protected def hasValidOrReplaceableToken(userNode: Node)(implicit neo4j: DatabaseService): Boolean = {
     val tokenTraversal = neo4j.gds.traversalDescription()
       .breadthFirst()
-      .relationships(DynamicRelationshipType.withName(SecurityRelationship.IDS.name), Direction.INCOMING)
+      .relationships(RelationshipType.withName(SecurityRelationship.IDS.name), Direction.INCOMING)
       .evaluator(Evaluators.excludeStartPosition())
       .evaluator(LabelEvaluator(List(MainLabel.TOKEN)))
       .evaluator(Evaluators.toDepth(1))
@@ -343,7 +342,7 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
   protected def destroyTokens(userNode: Node, destroyCondition: Option[(Node => Boolean)])(implicit neo4j: DatabaseService): Response[CountResult] = {
     val tokenTraversal = neo4j.gds.traversalDescription()
       .breadthFirst()
-      .relationships(DynamicRelationshipType.withName(SecurityRelationship.IDS.name), Direction.INCOMING)
+      .relationships(RelationshipType.withName(SecurityRelationship.IDS.name), Direction.INCOMING)
       .evaluator(Evaluators.excludeStartPosition())
       .evaluator(LabelEvaluator(List(MainLabel.TOKEN)))
       .evaluator(Evaluators.toDepth(1))

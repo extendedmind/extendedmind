@@ -28,8 +28,6 @@ import java.util.UUID
 import org.apache.commons.codec.binary.Base64
 import org.neo4j.scala.ImpermanentGraphDatabaseServiceProvider
 import org.neo4j.graphdb.factory.GraphDatabaseFactory
-import org.neo4j.kernel.extension.KernelExtensionFactory
-import org.neo4j.extension.uuid.UUIDKernelExtensionFactory
 import org.neo4j.test.TestGraphDatabaseFactory
 import org.neo4j.graphdb.Node
 import java.io.PrintWriter

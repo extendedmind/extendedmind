@@ -27,16 +27,13 @@ import org.extendedmind.domain._
 import org.extendedmind.security._
 import org.extendedmind.security.Authorization._
 import org.neo4j.graphdb.Direction
-import org.neo4j.graphdb.DynamicRelationshipType
 import org.neo4j.graphdb.Node
 import org.neo4j.graphdb.traversal.Evaluators
 import org.neo4j.graphdb.traversal.Uniqueness
 import org.neo4j.graphdb.traversal.TraversalDescription
-import org.neo4j.kernel.Traversal
 import org.neo4j.scala.DatabaseService
 import scala.collection.mutable.ListBuffer
 import org.neo4j.graphdb.traversal.Evaluation
-import org.neo4j.kernel.OrderedByTypeExpander
 import org.neo4j.graphdb.Relationship
 import org.neo4j.graphdb.PathExpander
 import org.neo4j.index.lucene.ValueContext
@@ -53,6 +50,7 @@ import org.neo4j.graphdb.NotFoundException
 import boopickle.CompositePickler
 import java.nio.ByteBuffer
 import scala.collection.mutable.ArrayBuffer
+import org.neo4j.graphdb.impl.OrderedByTypeExpander
 
 trait ItemDatabase extends UserDatabase {
 
@@ -399,20 +397,29 @@ trait ItemDatabase extends UserDatabase {
 
     val itemNodeList = {
       val ownerSearchString = IdUtils.getTrimmedBase64UUIDForLucene(ownerUUID)
+
+
+
+ERRORERROR:
+
+Status code: 500 Internal Server Error: org.apache.lucene.queryparser.classic.ParseException: Cannot parse 'owner:/oh@SLtzRAODtvDLMVvGAA': Lexical error at line 1, column 29.  Encountered: <EOF> after : "/oh@SLtzRAODtvDLMVvGAA" @1462355017717
+java.lang.RuntimeException: org.apache.lucene.queryparser.classic.ParseException: Cannot parse 'owner:/oh@SLtzRAODtvDLMVvGAA': Lexical error at line 1, column 29.  Encountered: <EOF> after : "/oh@SLtzRAODtvDLMVvGAA"
+
+
+
+      val ownerQuery = new TermQuery(new Term("owner", ownerSearchString))
+      val assigneeQuery = new TermQuery(new Term("assignee", ownerSearchString))
+      val userQuery = new BooleanQuery.Builder
+      userQuery.add(ownerQuery, BooleanClause.Occur.SHOULD)
+      userQuery.add(assigneeQuery, BooleanClause.Occur.SHOULD)
       if (modified.isDefined) {
-        val ownerQuery = new TermQuery(new Term("owner", ownerSearchString))
-        val assigneeQuery = new TermQuery(new Term("assignee", ownerSearchString))
-        val userQuery = new BooleanQuery
-        userQuery.add(ownerQuery, BooleanClause.Occur.SHOULD)
-        userQuery.add(assigneeQuery, BooleanClause.Occur.SHOULD)
-        val modifiedRangeQuery = NumericRangeQuery.newLongRange("modified", 8, modified.get, null, false, false)
-        val userModifiedQuery = new BooleanQuery;
-        userModifiedQuery.add(modifiedRangeQuery, BooleanClause.Occur.MUST)
-        userModifiedQuery.add(userQuery, BooleanClause.Occur.MUST)
-        itemsIndex.query(userModifiedQuery).toList
+        val modifiedRangeQuery = QueryContext.numericRange("modified", modified.get, null, false, false)
+        val userModifiedQuery = new BooleanQuery.Builder;
+        userModifiedQuery.add(modifiedRangeQuery.getQueryOrQueryObject().asInstanceOf[org.apache.lucene.search.Query], BooleanClause.Occur.MUST)
+        userModifiedQuery.add(userQuery.build(), BooleanClause.Occur.MUST)
+        itemsIndex.query(userModifiedQuery.build()).toList
       } else {
-        val userQuery = "(owner:" + ownerSearchString + " OR assignee:" + ownerSearchString + ")"
-        itemsIndex.query(userQuery).toList
+        itemsIndex.query(userQuery.build()).toList
       }
     }
 
@@ -442,11 +449,11 @@ trait ItemDatabase extends UserDatabase {
       val ownerSearchString = IdUtils.getTrimmedBase64UUIDForLucene(ownerUUID)
       if (modified.isDefined) {
         val ownerQuery = new TermQuery(new Term("owner", ownerSearchString))
-        val modifiedRangeQuery = NumericRangeQuery.newLongRange("modified", 8, modified.get, null, false, false)
-        val combinedQuery = new BooleanQuery
-        combinedQuery.add(modifiedRangeQuery, BooleanClause.Occur.MUST)
+        val modifiedRangeQuery = QueryContext.numericRange("modified", modified.get, null, false, false)
+        val combinedQuery = new BooleanQuery.Builder
+        combinedQuery.add(modifiedRangeQuery.getQueryOrQueryObject().asInstanceOf[org.apache.lucene.search.Query], BooleanClause.Occur.MUST)
         combinedQuery.add(ownerQuery, BooleanClause.Occur.MUST)
-        publicRevisionIndex.query(combinedQuery).toList
+        publicRevisionIndex.query(combinedQuery.build()).toList
       } else {
         publicRevisionIndex.query("owner:" + ownerSearchString).toList
       }
@@ -493,7 +500,7 @@ trait ItemDatabase extends UserDatabase {
 
   protected def itemsTraversal(implicit neo4j: DatabaseService): TraversalDescription = {
     neo4j.gds.traversalDescription()
-      .relationships(DynamicRelationshipType.withName(SecurityRelationship.OWNS.name),
+      .relationships(RelationshipType.withName(SecurityRelationship.OWNS.name),
         Direction.OUTGOING)
       .depthFirst()
       .evaluator(Evaluators.excludeStartPosition())
@@ -700,7 +707,7 @@ trait ItemDatabase extends UserDatabase {
     val itemsFromParentSkeleton: TraversalDescription =
       neo4j.gds.traversalDescription()
         .depthFirst()
-        .relationships(DynamicRelationshipType.withName(ItemRelationship.HAS_PARENT.name), Direction.INCOMING)
+        .relationships(RelationshipType.withName(ItemRelationship.HAS_PARENT.name), Direction.INCOMING)
         .evaluator(Evaluators.excludeStartPosition())
         .depthFirst()
         .evaluator(Evaluators.toDepth(1))
@@ -770,7 +777,7 @@ trait ItemDatabase extends UserDatabase {
     val itemsFromTagSkeleton: TraversalDescription =
       neo4j.gds.traversalDescription()
         .depthFirst()
-        .relationships(DynamicRelationshipType.withName(ItemRelationship.HAS_TAG.name), Direction.INCOMING)
+        .relationships(RelationshipType.withName(ItemRelationship.HAS_TAG.name), Direction.INCOMING)
         .evaluator(Evaluators.excludeStartPosition())
         .depthFirst()
         .evaluator(Evaluators.toDepth(1))
@@ -848,8 +855,8 @@ trait ItemDatabase extends UserDatabase {
       neo4j.gds.traversalDescription()
         .depthFirst()
         .expand(new OrderedByTypeExpander()
-          .add(DynamicRelationshipType.withName(relationshipType.name), direction)
-          .add(DynamicRelationshipType.withName(SecurityRelationship.OWNS.name), Direction.INCOMING)
+          .add(RelationshipType.withName(relationshipType.name), direction)
+          .add(RelationshipType.withName(SecurityRelationship.OWNS.name), Direction.INCOMING)
           .asInstanceOf[PathExpander[_]])
         .evaluator(Evaluators.excludeStartPosition())
         .evaluator(LabelEvaluator(scala.List(MainLabel.ITEM),
@@ -1050,7 +1057,7 @@ trait ItemDatabase extends UserDatabase {
       // Check that owner has access to all tags
       val ownerFromTag: TraversalDescription =
         neo4j.gds.traversalDescription()
-          .relationships(DynamicRelationshipType.withName(SecurityRelationship.OWNS.name),
+          .relationships(RelationshipType.withName(SecurityRelationship.OWNS.name),
             Direction.INCOMING)
           .depthFirst()
           .evaluator(Evaluators.excludeStartPosition())
@@ -1098,8 +1105,8 @@ trait ItemDatabase extends UserDatabase {
       neo4j.gds.traversalDescription()
         .depthFirst()
         .expand(new OrderedByTypeExpander()
-          .add(DynamicRelationshipType.withName(ItemRelationship.HAS_TAG.name), Direction.OUTGOING)
-          .add(DynamicRelationshipType.withName(SecurityRelationship.OWNS.name), Direction.INCOMING)
+          .add(RelationshipType.withName(ItemRelationship.HAS_TAG.name), Direction.OUTGOING)
+          .add(RelationshipType.withName(SecurityRelationship.OWNS.name), Direction.INCOMING)
           .asInstanceOf[PathExpander[_]])
         .evaluator(Evaluators.excludeStartPosition())
         .evaluator(LabelEvaluator(scala.List(MainLabel.ITEM),
@@ -1149,7 +1156,7 @@ trait ItemDatabase extends UserDatabase {
     val tagNodesFromItem: TraversalDescription =
       neo4j.gds.traversalDescription()
         .depthFirst()
-        .relationships(DynamicRelationshipType.withName(ItemRelationship.HAS_TAG.name), Direction.OUTGOING)
+        .relationships(RelationshipType.withName(ItemRelationship.HAS_TAG.name), Direction.OUTGOING)
         .evaluator(Evaluators.excludeStartPosition())
         .evaluator(LabelEvaluator(scala.List(ItemLabel.TAG)))
         .evaluator(Evaluators.toDepth(1))
@@ -1243,7 +1250,7 @@ trait ItemDatabase extends UserDatabase {
   protected def destroyDeletedItems(ownerNodes: OwnerNodes)(implicit neo4j: DatabaseService): CountResult = {
     val deletedItemsFromOwner: TraversalDescription =
       neo4j.gds.traversalDescription()
-        .relationships(DynamicRelationshipType.withName(SecurityRelationship.OWNS.name),
+        .relationships(RelationshipType.withName(SecurityRelationship.OWNS.name),
           Direction.OUTGOING)
         .depthFirst()
         .evaluator(Evaluators.excludeStartPosition())
@@ -1355,13 +1362,13 @@ trait ItemDatabase extends UserDatabase {
   protected def getItemNodeByUUID(uuid: UUID): Response[Node] = {
     withTx {
       implicit neo4j =>
-        val nodeIter = findNodesByLabelAndProperty(MainLabel.ITEM, "uuid", IdUtils.getTrimmedBase64UUID(uuid))
-        if (nodeIter.toList.isEmpty) {
+        val nodeList = findNodesByLabelAndProperty(MainLabel.ITEM, "uuid", IdUtils.getTrimmedBase64UUID(uuid)).toList
+        if (nodeList.isEmpty) {
           fail(INVALID_PARAMETER, ERR_ITEM_NOT_FOUND, "Item not found for statistics with given uuid")
-        } else if (nodeIter.toList.size > 1) {
+        } else if (nodeList.size > 1) {
           fail(INVALID_PARAMETER, ERR_ITEM_MORE_THAN_1, "More than one item found for statistics with given uuid")
         } else {
-          Right(nodeIter.toList(0))
+          Right(nodeList(0))
         }
     }
   }

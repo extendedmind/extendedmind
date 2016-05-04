@@ -26,7 +26,7 @@ import org.neo4j.scala.EmbeddedGraphDatabaseServiceProvider
 import scala.reflect.io.File
 
 class EmbeddedGraphDatabase(implicit val settings: Settings)
-	extends GraphDatabase with EmbeddedGraphDatabaseServiceProvider{
+  extends GraphDatabase with EmbeddedGraphDatabaseServiceProvider{
   def neo4jStoreDir = settings.neo4jStoreDir
   override def configFileLocation = {
     if (settings.neo4jPropertiesFile.isDefined)
@@ -79,5 +79,4 @@ class EmbeddedGraphDatabase(implicit val settings: Settings)
       new GraphDatabaseFactory()
     }
   }
-  startServer()
 }

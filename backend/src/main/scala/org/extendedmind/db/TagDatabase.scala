@@ -26,18 +26,15 @@ import org.extendedmind._
 import org.extendedmind.domain._
 import org.extendedmind.security._
 import org.neo4j.graphdb.Direction
-import org.neo4j.graphdb.DynamicRelationshipType
+import org.neo4j.graphdb.RelationshipType
 import org.neo4j.graphdb.Node
 import org.neo4j.graphdb.traversal.Evaluators
 import org.neo4j.graphdb.traversal.TraversalDescription
-import org.neo4j.kernel.Traversal
 import org.neo4j.scala.DatabaseService
 import scala.collection.mutable.ListBuffer
 import org.neo4j.graphdb.traversal.Evaluation
-import org.neo4j.kernel.OrderedByTypeExpander
 import org.neo4j.graphdb.Relationship
 import org.neo4j.graphdb.PathExpander
-import org.neo4j.kernel.Uniqueness
 
 trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
 

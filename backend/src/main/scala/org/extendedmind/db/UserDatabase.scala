@@ -27,7 +27,7 @@ import org.extendedmind.Response._
 import org.extendedmind.domain._
 import org.extendedmind.security._
 import org.neo4j.graphdb.Direction
-import org.neo4j.graphdb.DynamicRelationshipType
+import org.neo4j.graphdb.RelationshipType
 import org.neo4j.graphdb.Node
 import org.neo4j.graphdb.traversal.Evaluators
 import org.neo4j.graphdb.traversal.TraversalDescription
@@ -399,12 +399,12 @@ trait UserDatabase extends AbstractGraphDatabase {
   protected def getUserNode(email: String): Response[Node] = {
     withTx {
       implicit neo =>
-        val nodeIter = findNodesByLabelAndProperty(OwnerLabel.USER, "email", email)
-        if (nodeIter.toList.isEmpty) {
+        val nodeList = findNodesByLabelAndProperty(OwnerLabel.USER, "email", email).toList
+        if (nodeList.isEmpty) {
           fail(INVALID_PARAMETER, ERR_USER_NO_USERS, "No users found with given email " + email)
-        } else if (nodeIter.toList.size > 1) {
+        } else if (nodeList.size > 1) {
 
-          nodeIter.toList.foreach(node => {
+          nodeList.foreach(node => {
             println("User " + node.getProperty("email").asInstanceOf[String]
               + " has duplicate node "
               + IdUtils.getUUID(node.getProperty("uuid").asInstanceOf[String])
@@ -413,14 +413,14 @@ trait UserDatabase extends AbstractGraphDatabase {
 
           fail(INTERNAL_SERVER_ERROR, ERR_USER_MORE_THAN_1_USERS, "Ḿore than one user found with given email " + email)
         } else
-          Right(nodeIter.toList(0))
+          Right(nodeList(0))
     }
   }
 
   protected def getUserNode(tokenNode: Node)(implicit neo4j: DatabaseService): Response[Node] = {
     val userFromToken: TraversalDescription =
       neo4j.gds.traversalDescription()
-        .relationships(DynamicRelationshipType.withName(SecurityRelationship.IDS.name),
+        .relationships(RelationshipType.withName(SecurityRelationship.IDS.name),
           Direction.OUTGOING)
         .depthFirst()
         .evaluator(Evaluators.excludeStartPosition())
@@ -653,7 +653,7 @@ trait UserDatabase extends AbstractGraphDatabase {
 
     val agreementsFromProposedBy: TraversalDescription =
     neo4j.gds.traversalDescription()
-      .relationships(DynamicRelationshipType.withName(AgreementRelationship.PROPOSES.name),
+      .relationships(RelationshipType.withName(AgreementRelationship.PROPOSES.name),
         Direction.OUTGOING)
       .depthFirst()
       .evaluator(Evaluators.excludeStartPosition())
@@ -767,9 +767,9 @@ trait UserDatabase extends AbstractGraphDatabase {
   protected def sharingTraversalDescription(implicit neo4j: DatabaseService): TraversalDescription = {
     neo4j.gds.traversalDescription()
           .depthFirst()
-          .relationships(DynamicRelationshipType.withName(SecurityRelationship.IS_FOUNDER.name), Direction.OUTGOING)
-          .relationships(DynamicRelationshipType.withName(SecurityRelationship.CAN_READ.name), Direction.OUTGOING)
-          .relationships(DynamicRelationshipType.withName(SecurityRelationship.CAN_READ_WRITE.name), Direction.OUTGOING)
+          .relationships(RelationshipType.withName(SecurityRelationship.IS_FOUNDER.name), Direction.OUTGOING)
+          .relationships(RelationshipType.withName(SecurityRelationship.CAN_READ.name), Direction.OUTGOING)
+          .relationships(RelationshipType.withName(SecurityRelationship.CAN_READ_WRITE.name), Direction.OUTGOING)
           .evaluator(Evaluators.excludeStartPosition())
           .evaluator(LabelEvaluator(scala.List(ItemLabel.LIST, OwnerLabel.COLLECTIVE)))
           .evaluator(Evaluators.toDepth(1))
@@ -777,9 +777,9 @@ trait UserDatabase extends AbstractGraphDatabase {
 
   protected def incomingSharingTraversalDescription(implicit neo4j: DatabaseService): TraversalDescription = {
     neo4j.gds.traversalDescription()
-          .relationships(DynamicRelationshipType.withName(SecurityRelationship.IS_FOUNDER.name), Direction.INCOMING)
-          .relationships(DynamicRelationshipType.withName(SecurityRelationship.CAN_READ.name), Direction.INCOMING)
-          .relationships(DynamicRelationshipType.withName(SecurityRelationship.CAN_READ_WRITE.name), Direction.INCOMING)
+          .relationships(RelationshipType.withName(SecurityRelationship.IS_FOUNDER.name), Direction.INCOMING)
+          .relationships(RelationshipType.withName(SecurityRelationship.CAN_READ.name), Direction.INCOMING)
+          .relationships(RelationshipType.withName(SecurityRelationship.CAN_READ_WRITE.name), Direction.INCOMING)
           .depthFirst()
           .evaluator(Evaluators.excludeStartPosition())
           .evaluator(Evaluators.toDepth(1))
@@ -875,7 +875,7 @@ trait UserDatabase extends AbstractGraphDatabase {
 
         val ownerNodeList = neo4j.gds.traversalDescription()
           .depthFirst()
-          .relationships(DynamicRelationshipType.withName(SecurityRelationship.OWNS.name), Direction.INCOMING)
+          .relationships(RelationshipType.withName(SecurityRelationship.OWNS.name), Direction.INCOMING)
           .evaluator(Evaluators.excludeStartPosition())
           .evaluator(Evaluators.toDepth(1))
           .traverse(sharedList)

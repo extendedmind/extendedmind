@@ -25,7 +25,7 @@ import org.extendedmind.Response._
 import org.extendedmind._
 import org.extendedmind.domain._
 import org.neo4j.graphdb.Direction
-import org.neo4j.graphdb.DynamicRelationshipType
+import org.neo4j.graphdb.RelationshipType
 import org.neo4j.graphdb.Node
 import org.neo4j.graphdb.traversal.Evaluators
 import org.neo4j.graphdb.traversal.TraversalDescription
@@ -113,7 +113,7 @@ trait InviteDatabase extends UserDatabase {
 
   protected def inviteTraversal(implicit neo4j: DatabaseService): TraversalDescription = {
     neo4j.gds.traversalDescription()
-      .relationships(DynamicRelationshipType.withName(SecurityRelationship.OWNS.name), Direction.OUTGOING)
+      .relationships(RelationshipType.withName(SecurityRelationship.OWNS.name), Direction.OUTGOING)
       .depthFirst()
       .evaluator(Evaluators.excludeStartPosition())
       .evaluator(LabelEvaluator(scala.List(MainLabel.INVITE)))
@@ -139,7 +139,7 @@ trait InviteDatabase extends UserDatabase {
 
   protected def addTransientInviteProperties(inviteNode: Node, invite: Invite)(implicit neo4j: DatabaseService): Response[Invite] = {
     val traversal = neo4j.gds.traversalDescription()
-      .relationships(DynamicRelationshipType.withName(SecurityRelationship.IS_ORIGIN.name), Direction.INCOMING)
+      .relationships(RelationshipType.withName(SecurityRelationship.IS_ORIGIN.name), Direction.INCOMING)
       .depthFirst()
       .evaluator(Evaluators.excludeStartPosition())
       .evaluator(LabelEvaluator(scala.List(OwnerLabel.USER)))
