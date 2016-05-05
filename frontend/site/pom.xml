@@ -39,11 +39,6 @@
       <artifactId>frontend-app</artifactId>
       <type>war</type>
     </dependency>
-    <dependency>
-      <groupId>org.extendedmind.frontend</groupId>
-      <artifactId>frontend-analytics</artifactId>
-      <type>jar</type>
-    </dependency>
   </dependencies>
 
   <build>

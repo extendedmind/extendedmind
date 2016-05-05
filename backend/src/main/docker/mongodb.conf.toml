@@ -1,6 +1,0 @@
-[template]
-src = "../templates/mongodb/mongodb.conf.tmpl"
-dest = "/etc/mongodb/mongodb.conf"
-keys = [
-    "/extendedmind/ha"
-]

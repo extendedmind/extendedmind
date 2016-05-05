@@ -1,0 +1,16 @@
+[General]
+enable_trusted_host_check = 0
+assume_secure_protocol = 1
+proxy_client_headers[] = HTTP_X_FORWARDED_FOR
+proxy_host_headers[] = HTTP_X_FORWARDED_HOST
+
+[database]
+host = localhost
+username = "piwik"
+password = "{{getv "/extendedmind/db/piwikpassword"}}"
+dbname = "piwik"
+tables_prefix = "piwik_"
+port = 3306
+adapter = PDO\MYSQL
+type = InnoDB
+schema = Mysql

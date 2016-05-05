@@ -1,0 +1,8 @@
+[template]
+src = "../templates/mariadb/mariadb.cnf.tmpl"
+dest = "/etc/mysql/conf.d/mariadb.cnf"
+keys = [
+    "/extendedmind/ha",
+    "/extendedmind/servers",
+    "/extendedmind/db/replicate"
+]

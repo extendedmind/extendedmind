@@ -15,18 +15,6 @@
         </excludes>
       </unpackOptions>
     </dependencySet>
-    <dependencySet>
-      <outputDirectory>extendedmind/analytics</outputDirectory>
-      <includes>
-        <include>org.extendedmind.frontend:frontend-analytics:jar:${project.version}</include>
-      </includes>
-      <unpack>true</unpack>
-      <unpackOptions>
-        <excludes>
-          <exclude>META-INF/**</exclude>
-        </excludes>
-      </unpackOptions>
-    </dependencySet>
   </dependencySets>
   <fileSets>
     <fileSet>

@@ -359,8 +359,8 @@
         <configuration>
           <images>
             <image>
-              <name>extendedmind/mongodb-conf</name>
-              <alias>mongodb-conf</alias>
+              <name>extendedmind/mariadb-conf</name>
+              <alias>mariadb-conf</alias>
               <build>
                 <from>ubuntu:14.04</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
@@ -370,18 +370,18 @@
                 <assembly>
                   <mode>dir</mode>
                   <basedir>/etc/confd</basedir>
-                  <descriptor>mongodb-conf-assembly.xml</descriptor>
+                  <descriptor>mariadb-conf-assembly.xml</descriptor>
                 </assembly>
                 <volumes>
-                  <volume>/etc/confd/conf.d/mongodb</volume>
-                  <volume>/etc/confd/templates/mongodb</volume>
-                  <volume>/etc/mongodb</volume>
+                  <volume>/etc/confd/conf.d/mariadb</volume>
+                  <volume>/etc/confd/templates/mariadb</volume>
+                  <volume>/etc/mysql/conf.d</volume>
                 </volumes>
               </build>
             </image>
             <image>
-              <name>extendedmind/mongodb-data</name>
-              <alias>mongodb-data</alias>
+              <name>extendedmind/mariadb-data</name>
+              <alias>mariadb-data</alias>
               <build>
                 <from>ubuntu:14.04</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
@@ -390,59 +390,33 @@
                 </tags>
                 <assembly>
                   <mode>dir</mode>
-                  <basedir>/var/extendedmind</basedir>
-                  <descriptor>mongodb-data-assembly.xml</descriptor>
+                  <basedir>/var/lib</basedir>
+                  <descriptor>mariadb-data-assembly.xml</descriptor>
                 </assembly>
                 <volumes>
-                  <volume>/var/extendedmind/mongodb</volume>
+                  <volume>/var/lib/mysql</volume>
                 </volumes>
               </build>
             </image>
             <image>
-              <name>extendedmind/mongodb</name>
-              <alias>mongodb</alias>
+              <name>extendedmind/piwik-conf</name>
+              <alias>piwik-conf</alias>
               <build>
-                <from>mongo:3</from>
-                <maintainer>timo.tiuraniemi@iki.fi</maintainer>
-                <tags>
-                  <tag>latest</tag>
-                </tags>
-                <ports>
-                  <port>27017</port>
-                </ports>
-                <assembly>
-                  <mode>dir</mode>
-                  <basedir>/etc</basedir>
-                  <descriptor>mongodb-assembly.xml</descriptor>
-                </assembly>
-                <entryPoint>
-                  <exec>
-                    <arg>/usr/bin/mongod</arg>
-                    <arg>--config</arg>
-                    <arg>/etc/mongodb/mongodb.conf</arg>
-                  </exec>
-                </entryPoint>
-              </build>
-            </image>
-            <image>
-              <name>extendedmind/mongodb-backup</name>
-              <alias>mongodb-backup</alias>
-              <build>
-                <from>extendedmind/cloud-sdk</from>
+                <from>ubuntu:14.04</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
                 <tags>
                   <tag>latest</tag>
                 </tags>
                 <assembly>
                   <mode>dir</mode>
-                  <basedir>/usr/src/extendedmind</basedir>
-                  <descriptor>mongodb-backup-assembly.xml</descriptor>
+                  <basedir>/etc/confd</basedir>
+                  <descriptor>piwik-conf-assembly.xml</descriptor>
                 </assembly>
-                <entryPoint>
-                  <exec>
-                    <arg>/usr/src/extendedmind/run-mongodb-backup.pl</arg>
-                  </exec>
-                </entryPoint>
+                <volumes>
+                  <volume>/etc/confd/conf.d/piwik</volume>
+                  <volume>/etc/confd/templates/piwik</volume>
+                  <volume>/etc/piwik</volume>
+                </volumes>
               </build>
             </image>
             <image>

@@ -4,17 +4,17 @@
   <fileSets>
     <fileSet>
       <directory>${project.basedir}/src/main/docker</directory>
-      <outputDirectory>conf.d/mongodb</outputDirectory>
+      <outputDirectory>conf.d/piwik</outputDirectory>
       <includes>
-        <include>mongodb.conf.toml</include>
+        <include>piwik.config.ini.php.toml</include>
       </includes>
     </fileSet>
     <fileSet>
       <directory>${project.basedir}/src/main/docker</directory>
-      <outputDirectory>templates/mongodb</outputDirectory>
+      <outputDirectory>templates/piwik</outputDirectory>
       <filtered>true</filtered>
       <includes>
-        <include>mongodb.conf.tmpl</include>
+        <include>piwik.config.ini.php.tmpl</include>
       </includes>
     </fileSet>
   </fileSets>

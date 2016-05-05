@@ -4,10 +4,18 @@
   <fileSets>
     <fileSet>
       <directory>${project.basedir}/src/main/docker</directory>
-      <outputDirectory>.</outputDirectory>
-      <excludes>
-        <exclude>**/*</exclude>
-      </excludes>      
+      <outputDirectory>conf.d/mariadb</outputDirectory>
+      <includes>
+        <include>mariadb.cnf.toml</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>${project.basedir}/src/main/docker</directory>
+      <outputDirectory>templates/mariadb</outputDirectory>
+      <filtered>true</filtered>
+      <includes>
+        <include>mariadb.cnf.tmpl</include>
+      </includes>
     </fileSet>
   </fileSets>
 </assembly>
