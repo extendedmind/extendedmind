@@ -361,6 +361,9 @@
                     <image>piwik-conf</image>
                   </from>
                 </volumes>
+                <links>
+                  <link>mariadb:mariadb</link>
+                </links>
               </run>
             </image>
             <image>
