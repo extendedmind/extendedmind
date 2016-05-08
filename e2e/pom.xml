@@ -310,6 +310,8 @@
                   <EXTENDEDMIND_EMAILFROM>${e2e.emailFrom}</EXTENDEDMIND_EMAILFROM>
                   <EXTENDEDMIND_SITE_BACKENDCOLLECTIVE>11111111-1111-1111-1111-111111111111</EXTENDEDMIND_SITE_BACKENDCOLLECTIVE>
                   <EXTENDEDMIND_DB_PIWIKPASSWORD>piwikpwd</EXTENDEDMIND_DB_PIWIKPASSWORD>
+                  <!-- Salt randomly generated when the test localhost:8008 piwik database was created -->
+                  <EXTENDEDMIND_DB_PIWIKSALT>1617253e9c4e9719d9cedc7dbfade0a8</EXTENDEDMIND_DB_PIWIKSALT>
                   <EXTENDEDMIND_DB_PASSWORD>rootpwd</EXTENDEDMIND_DB_PASSWORD>
                   <EXTENDEDMIND_DB_REPLICATE>piwik</EXTENDEDMIND_DB_REPLICATE>
                 </env>

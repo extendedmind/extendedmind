@@ -79,7 +79,7 @@
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
-	<dependency>
+	  <dependency>
       <groupId>io.spray</groupId>
       <artifactId>spray-client_${scala.version.short}</artifactId>
       <version>${spray.version}</version>
@@ -268,6 +268,26 @@
             <configuration>
               <outputDirectory>${project.build.directory}/backend-runtime-dependencies</outputDirectory>
               <includeScope>runtime</includeScope>
+            </configuration>
+          </execution>
+          <execution>
+            <id>unpack-test-database</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.piwik</groupId>
+                  <artifactId>test-mariadb-10.1.13</artifactId>
+                  <version>2.16.1</version>
+                  <type>zip</type>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${project.build.directory}/piwik</outputDirectory>
+                  <includes>mysql/**</includes>
+                </artifactItem>
+              </artifactItems>
             </configuration>
           </execution>
         </executions>
