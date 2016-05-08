@@ -11,7 +11,7 @@ schema = Mysql
 
 [General]
 enable_trusted_host_check = 0
-assume_secure_protocol = 1
+assume_secure_protocol = {{getv "/extendedmind/db/piwiksecure"}}
 proxy_client_headers[] = HTTP_X_FORWARDED_FOR
 proxy_host_headers[] = HTTP_X_FORWARDED_HOST
 salt = "{{getv "/extendedmind/db/piwiksalt"}}"

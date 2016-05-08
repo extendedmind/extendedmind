@@ -3,5 +3,6 @@ src = "../templates/piwik/piwik.config.ini.php.tmpl"
 dest = "/etc/piwik/config.ini.php"
 keys = [
     "/extendedmind/db/piwikpassword",
-    "/extendedmind/db/piwiksalt"
+    "/extendedmind/db/piwiksalt",
+    "/extendedmind/db/piwiksecure"
 ]
