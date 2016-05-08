@@ -30,7 +30,7 @@
     "babel-plugin-syntax-async-functions": "^6.5.0",
     "babel-plugin-syntax-async-generators": "^6.5.0",
     "babel-preset-stage-0": "^6.5.0",
-    "less": "^2.5.3",
+    "less": "^2.7.0",
     "less-plugin-clean-css": "^1.5.1"
   },
   "scripts": {
