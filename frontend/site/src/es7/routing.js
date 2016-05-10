@@ -20,6 +20,20 @@ module.exports = (config, app, backendApi) => {
     dev: config.debug
   });
   nunjucks.env.addGlobal('development', config.debug);
+  nunjucks.env.addGlobal('urlOrigin', config.urlOrigin);
+
+  let domain;
+  if (config.urlOrigin && config.urlOrigin.startsWith('https://')){
+    domain = config.urlOrigin.substr(8);
+  }else if (config.urlOrigin && config.urlOrigin.startsWith('http://')){
+    domain = config.urlOrigin.substr(7);
+  }else{
+    // Fail if urlOrigin is invalid
+    console.log('FATAL: config.urlOrigin invalid or not set, exiting');
+    return;
+  }
+  nunjucks.env.addGlobal('domain', domain);
+
   const render = nunjucks.render;
   const madoko = require('./madoko.js');
 
