@@ -14,508 +14,67 @@
  */
  'use strict';
 
-function AnalyticsService($q, $rootScope, $timeout, BackendClientService, HttpClientService,
+function AnalyticsService($location, $q, $rootScope, $timeout, $window, BackendClientService,
                           UserSessionService, packaging, version) {
 
-  var deferredLocation = $q.defer();
   var collectAnalytics = packaging !== 'devel';
 
-  // Skip all analytics, if it is not in use
-  if (collectAnalytics){
-
-    // START SESSION.JS
-
-    /**
-     * session.js 0.4.1
-     * (c) 2012 Iain, CodeJoust
-     * session.js is freely distributable under the MIT license.
-     * Portions of session.js are inspired or borrowed from Underscore.js, and quirksmode.org demo javascript.
-     * This version uses google's jsapi library for location services.
-     * For details, see: https://github.com/codejoust/session.js
-     */
-    var session_fetch = (function(win, doc, nav){
-      // Changing the API Version invalidates olde cookies with previous api version tags.
-      var API_VERSION = 0.4;
-      // Settings: defaults
-      var options = {
-        // Use the HTML5 Geolocation API
-        // this ONLY returns lat & long, no city/address
-        use_html5_location: false,
-        // Attempts to use IPInfoDB if provided a valid key
-        // Get a key at http://ipinfodb.com/register.php
-        ipinfodb_key: false,
-        // Leaving true allows for fallback for both
-        // the HTML5 location and the IPInfoDB
-        gapi_location: false,
-        // Name of the location cookie (set blank to disable cookie)
-        //   - WARNING: different providers use the same cookie
-        //   - if switching providers, remember to use another cookie or provide checks for old cookies
-        location_cookie: undefined,
-        // Location cookie expiration in hours
-        location_cookie_timeout: 5,
-        // Session expiration in days
-        session_timeout: 32,
-        // Session cookie name (set blank to disable cookie)
-        session_cookie: undefined,
-        get_object: null, set_object: null // used for cookie session adaptors
-        // if null, will be reset to use cookies by default.
-      };
-
-      // Session object
-      var SessionRunner = function(){
-        win.session = win.session || {};
-        // Helper for querying.
-        // Usage: session.current_session.referrer_info.hostname.contains(['github.com','news.ycombinator.com'])
-        win.session.contains = function(other_str){
-          if (typeof(other_str) === 'string'){
-            return (this.indexOf(other_str) !== -1); }
-          for (var i = 0; i < other_str.length; i++){
-            if (this.indexOf(other_str[i]) !== -1){ return true; } }
-          return false; };
-        // Merge options
-        if (win.session && win.session.options) {
-          for (var option in win.session.options){
-            options[option] = win.session.options[option]; }
-        }
-        // Modules to run
-        // If the module has arguments,
-        //   it _needs_ to return a callback function.
-        var unloaded_modules = {
-          api_version: API_VERSION,
-          locale: modules.locale(),
-          current_session: modules.session(),
-          original_session: modules.session(
-            options.session_cookie,
-            options.session_timeout * 24 * 60 * 60 * 1000),
-          browser: modules.browser(),
-          plugins: modules.plugins(),
-          time: modules.time(),
-          device: modules.device()
-        };
-        // Location switch
-        if (options.use_html5_location){
-          unloaded_modules.location = modules.html5_location();
-        } else if (options.ipinfodb_key){
-          unloaded_modules.location = modules.ipinfodb_location(options.ipinfodb_key);
-        } else if (options.gapi_location){
-          unloaded_modules.location = modules.gapi_location();
-        }
-        // Cache win.session.start
-        if (win.session && win.session.start){
-          var start = win.session.start;
-        }
-        // Set up checking, if all modules are ready
-        var asynchs = 0, module, result,
-        check_asynch = function(deinc){
-          if (deinc){ asynchs--; }
-          if (asynchs === 0){
-            // Run start calback
-            if (start){ start(win.session); }
-          }
-        };
-        win.session = {};
-        // Run asynchronous methods
-        for (var name in unloaded_modules){
-          module = unloaded_modules[name];
-          if (typeof module === "function"){
-            try {
-              module(function(data){
-                win.session[name] = data;
-                check_asynch(true);
-              });
-              asynchs++;
-            } catch(err){
-              if (win.console && typeof(console.log) === "function"){
-                console.log(err); check_asynch(true); }
-            }
-          } else {
-            win.session[name] = module;
-          } }
-        check_asynch();
-      };
-
-
-      // Browser (and OS) detection
-      var browser = {
-        detect: function(){
-          var ret = {
-            browser: this.search(this.data.browser),
-            version: this.search(nav.userAgent) || this.search(nav.appVersion),
-            os: this.search(this.data.os)
-          };
-          if (ret.os=='Linux'){
-            var distros = ['CentOS','Debian','Fedora','Gentoo','Mandriva','Mageia','Red Hat','Slackware','SUSE','Turbolinux','Ubuntu'];
-            for (var i = 0; i < distros.length;i++){
-              if (nav.userAgent.toLowerCase().match(distros[i].toLowerCase())){
-                ret.distro = distros[i];
-                break;
-              }
-            }
-          }
-          return ret;
-         },
-        search: function(data) {
-          if (typeof data === "object"){
-            // search for string match
-            for(var i = 0; i < data.length; i++) {
-              var dataString = data[i].string,
-                  dataProp   = data[i].prop;
-              this.version_string = data[i].versionSearch || data[i].identity;
-              if (dataString){
-                if (dataString.indexOf(data[i].subString) != -1){
-                  return data[i].identity;
-                }
-              } else if (dataProp){
-                return data[i].identity;
-              }
-            }
-          } else {
-            // search for version number
-            var index = data.indexOf(this.version_string);
-            if (index == -1) return;
-            return parseFloat(data.substr(index + this.version_string.length + 1));
-          }
-        },
-        data: {
-          browser: [
-            { string: nav.userAgent, subString: "Chrome", identity: "Chrome" },
-            { string: nav.userAgent, subString: "OmniWeb", versionSearch: "OmniWeb/", identity: "OmniWeb" },
-            { string: nav.vendor, subString: "Apple", identity: "Safari", versionSearch: "Version" },
-            { prop:   win.opera, identity: "Opera", versionSearch: "Version" },
-            { string: nav.vendor, subString: "iCab",identity: "iCab" },
-            { string: nav.vendor, subString: "KDE", identity: "Konqueror" },
-            { string: nav.userAgent, subString: "Firefox", identity: "Firefox" },
-            { string: nav.vendor, subString: "Camino", identity: "Camino" },
-            { string: nav.userAgent, subString: "Netscape", identity: "Netscape" },
-            { string: nav.userAgent, subString: "MSIE", identity: "Explorer", versionSearch: "MSIE" },
-            { string: nav.userAgent, subString: "Gecko", identity: "Mozilla", versionSearch: "rv" },
-            { string: nav.userAgent, subString: "Mozilla", identity: "Netscape", versionSearch: "Mozilla" }
-          ],
-          os: [
-            { string: nav.platform, subString: "Win", identity: "Windows" },
-            { string: nav.platform, subString: "Mac", identity: "Mac" },
-            { string: nav.userAgent, subString: "iPhone", identity: "iPhone/iPod" },
-            { string: nav.userAgent, subString: "iPad", identity: "iPad" },
-            { string: nav.userAgent, subString: "Android", identity: "Android" },
-            { string: nav.platform, subString: "Linux", identity: "Linux" }
-          ]}
-      };
-
-      var modules = {
-        browser: function(){
-          return browser.detect();
-        },
-        time: function(){
-          // split date and grab timezone estimation.
-          // timezone estimation: http://www.onlineaspect.com/2007/06/08/auto-detect-a-time-zone-with-javascript/
-          var d1 = new Date(), d2 = new Date();
-          d1.setMonth(0); d1.setDate(1); d2.setMonth(6); d2.setDate(1);
-          return({tz_offset: -(new Date().getTimezoneOffset()) / 60, observes_dst: (d1.getTimezoneOffset() !== d2.getTimezoneOffset()) });
-          // Gives a browser estimation, not guaranteed to be correct.
-        },
-        locale: function() {
-          var lang = ((
-            nav.language        ||
-            nav.browserLanguage ||
-            nav.systemLanguage  ||
-            nav.userLanguage
-          ) || '').split("-");
-          if (lang.length == 2){
-            return { country: lang[1].toLowerCase(), lang: lang[0].toLowerCase() };
-          } else if (lang) {
-            return {lang: lang[0].toLowerCase(), country: null };
-          } else { return{lang: null, country: null }; }
-        },
-        device: function() {
-          var device = {
-            screen: {
-              width:  win.screen.width,
-              height: win.screen.height
-            }
-          };
-          device.viewport = {
-            width: win.innerWidth || doc.documentElement.clientWidth || doc.body.clientWidth,
-            height: win.innerHeight || doc.documentElement.clientHeight || doc.body.clientHeight
-          };
-          device.is_tablet = !!nav.userAgent.match(/(iPad|SCH-I800|xoom|kindle)/i);
-          device.is_phone = !device.is_tablet && !!nav.userAgent.match(/(iPhone|iPod|blackberry|android 0.5|htc|lg|midp|mmp|mobile|nokia|opera mini|palm|pocket|psp|sgh|smartphone|symbian|treo mini|Playstation Portable|SonyEricsson|Samsung|MobileExplorer|PalmSource|Benq|Windows Phone|Windows Mobile|IEMobile|Windows CE|Nintendo Wii)/i);
-          device.is_mobile = device.is_tablet || device.is_phone;
-          return device;
-        },
-        plugins: function(){
-          var check_plugin = function(name){
-            if (nav.plugins){
-              var plugin, i = 0, length = nav.plugins.length;
-              for (; i < length; i++ ){
-                plugin = nav.plugins[i];
-                if (plugin && plugin.name && plugin.name.toLowerCase().indexOf(name) !== -1){
-                  return true;
-                } }
-              return false;
-            } return false;
-          };
-          var check_activex_flash = function(versions){
-            var found = true;
-            for (var i = 0; i < versions.length; i++){
-              try {
-                var obj = new ActiveXObject("ShockwaveFlash.ShockwaveFlash" + versions[i])
-                  , found = !0;
-              } catch (e){ /* nil */ }
-              if (found) return true;
-            }
-            return false;
-          }
-          return {
-            flash:       check_plugin("flash") || check_activex_flash(['.7','.6','']),
-            silverlight: check_plugin("silverlight"),
-            java:        check_plugin("java"),
-            quicktime:   check_plugin("quicktime")
-          };
-        },
-        session: function (cookie, expires){
-          var session = util.get_obj(cookie);
-          if (session == null){
-            session = {
-              visits: 1,
-              start: new Date().getTime(), last_visit: new Date().getTime(),
-              url: win.location.href, path: win.location.pathname,
-              referrer: doc.referrer, referrer_info: util.parse_url(doc.referrer),
-              search: { engine: null, query: null }
-            };
-            var search_engines = [
-              { name: "Google", host: "google", query: "q" },
-              { name: "Bing", host: "bing.com", query: "q" },
-              { name: "Yahoo", host: "search.yahoo", query: "p" },
-              { name: "AOL", host: "search.aol", query: "q" },
-              { name: "Ask", host: "ask.com", query: "q" },
-              { name: "Baidu", host: "baidu.com", query: "wd" }
-            ], length = search_engines.length,
-               engine, match, i = 0,
-               fallbacks = 'q query term p wd query text'.split(' ');
-            for (i = 0; i < length; i++){
-              engine = search_engines[i];
-              if (session.referrer_info.host.indexOf(engine.host) !== -1){
-                session.search.engine = engine.name;
-                session.search.query  = session.referrer_info.query[engine.query];
-                session.search.terms  = session.search.query ? session.search.query.split(" ") : null;
-                break;
-              }
-            }
-            if (session.search.engine === null && session.referrer_info.search.length > 1){
-              for (i = 0; i < fallbacks.length; i++){
-                var terms = session.referrer_info.query[fallbacks[i]];
-                if (terms){
-                  session.search.engine = "Unknown";
-                  session.search.query  = terms; session.search.terms  = terms.split(" ");
-                  break;
-                }
-              }
-            }
-          } else {
-            session.prev_visit = session.last_visit;
-            session.last_visit = new Date().getTime();
-            session.visits++;
-            session.time_since_last_visit = session.last_visit - session.prev_visit;
-          }
-          util.set_obj(cookie, session, expires);
-          return session;
-        },
-        html5_location: function(){
-          return function(callback){
-            nav.geolocation.getCurrentPosition(function(pos){
-              pos.source = 'html5';
-              callback(pos);
-            }, function(err) {
-              if (options.gapi_location){
-                modules.gapi_location()(callback);
-              } else {
-                callback({error: true, source: 'html5'}); }
-            });
-          };
-        },
-        gapi_location: function(){
-          return function(callback){
-            var location = util.get_obj(options.location_cookie);
-            if (!location || location.source !== 'google'){
-              win.gloader_ready = function() {
-                if ("google" in win){
-                  if (win.google.loader.ClientLocation){
-                    win.google.loader.ClientLocation.source = "google";
-                    callback(win.google.loader.ClientLocation);
-                  } else {
-                    callback({error: true, source: "google"});
-                  }
-                  util.set_obj(
-                    options.location_cookie,
-                    win.google.loader.ClientLocation,
-                    options.location_cookie_timeout * 60 * 60 * 1000);
-                }
-                // #### CUSTOM CALLBACK
-                deferredLocation.resolve(window.session.location);
-                // ####
-              };
-              util.embed_script("https://www.google.com/jsapi?callback=gloader_ready");
-            } else {
-              callback(location);
-            }};
-        },
-        architecture: function(){
-          var arch = n.userAgent.match(/x86_64|Win64|WOW64|x86-64|x64\;|AMD64|amd64/) ||
-                    (n.cpuClass === 'x64') ? 'x64' : 'x86';
-          return {
-            arch: arch,
-            is_x64: arch == 'x64',
-            is_x86: arch == 'x68'
-          }
-        },
-        ipinfodb_location: function(api_key){
-          return function (callback){
-            var location_cookie = util.get_obj(options.location_cookie);
-            if (!location_cookie && location_cookie.source === 'ipinfodb'){
-            win.ipinfocb = function(data){
-              if (data.statusCode === "OK"){
-                data.source = "ipinfodb";
-                util.set_obj(
-                  options.location_cookie,
-                  data,
-                  options.location_cookie * 60 * 60 * 1000);
-                callback(data);
-              } else {
-                if (options.gapi_location){ return modules.gapi_location()(callback); }
-                else { callback({error: true, source: "ipinfodb", message: data.statusMessage}); }
-              }};
-            util.embed_script("http://api.ipinfodb.com/v3/ip-city/?key=" + api_key + "&format=json&callback=ipinfocb");
-            } else { callback(location_cookie); }
-          }}
-      };
-
-      // Utilities
-      var util = {
-        parse_url: function(url_str){
-          var a = doc.createElement("a"), query = {};
-          a.href = url_str; var query_str = a.search.substr(1);
-          // Disassemble query string
-          if (query_str != ''){
-            var pairs = query_str.split("&"), i = 0,
-                length = pairs.length, parts;
-            for (; i < length; i++){
-              parts = pairs[i].split("=");
-              if (parts.length === 2){
-                query[parts[0]] = decodeURI(parts[1]); }
-            }
-          }
-          return {
-            host:     a.host,
-            path:     a.pathname,
-            protocol: a.protocol,
-            port:     a.port === '' ? 80 : a.port,
-            search:   a.search,
-            query:    query }
-        },
-        set_cookie: function(cname, value, expires, options){ // from jquery.cookie.js
-          if (!cname){ return null; }
-          if (!options){ options = {}; }
-          if (value === null || value === undefined){ expires = -1; }
-          if (expires){ options.expires = (new Date().getTime()) + expires; }
-          return (doc.cookie = [
-              encodeURIComponent(cname), '=',
-              encodeURIComponent(String(value)),
-              options.expires ? '; expires=' + new Date(options.expires).toUTCString() : '', // use expires attribute, max-age is not supported by IE
-              '; path=' + (options.path ? options.path : '/'),
-              options.domain ? '; domain=' + options.domain : '',
-              (win.location && win.location.protocol === 'https:') ? '; secure' : ''
-          ].join(''));
-        },
-        get_cookie: function(cookie_name, result){ // from jquery.cookie.js
-          return (result = new RegExp('(?:^|; )' + encodeURIComponent(cookie_name) + '=([^;]*)').exec(doc.cookie)) ? decodeURIComponent(result[1]) : null;
-        },
-        embed_script: function(url){
-          var element  = doc.createElement("script");
-          element.type = "text/javascript";
-          element.src  = url;
-          doc.getElementsByTagName("body")[0].appendChild(element);
-        },
-        package_obj: function (obj){
-          if(obj) {
-            obj.version = API_VERSION;
-            var ret = JSON.stringify(obj);
-            delete obj.version;
-            return ret;
-          }
-        },
-        set_obj: function(cname, value, expires, options){
-          util.set_cookie(cname, util.package_obj(value), expires, options);
-        },
-        get_obj: function(cookie_name){
-          var obj;
-          try { obj = JSON.parse(util.get_cookie(cookie_name)); } catch(e){}
-          if (obj && obj.version == API_VERSION){
-            delete obj.version; return obj;
-          }
-        }
-      };
-
-      // cookie options override
-      if (options.get_object != null){
-        util.get_obj = options['get_object']; }
-      if (options.set_object != null){
-        util.set_obj = options['set_object']; }
-
-      // JSON
-      var JSON = {
-        parse: (win.JSON && win.JSON.parse) || function(data){
-            if (typeof data !== "string" || !data){ return null; }
-            return (new Function("return " + data))();
-        },
-        stringify: (win.JSON && win.JSON.stringify) || function(object){
-          var type = typeof object;
-          if (type !== "object" || object === null) {
-            if (type === "string"){ return '"' + object + '"'; }
-          } else {
-            var k, v, json = [],
-                isArray = (object && object.constructor === Array);
-            for (k in object ) {
-              v = object[k]; type = typeof v;
-              if (type === "string")
-                v = '"' + v + '"';
-              else if (type === "object" && v !== null)
-                v = this.stringify(v);
-              json.push((isArray ? "" : '"' + k + '":') + v);
-            }
-            return (isArray ? "[" : "{") + json.join(",") + (isArray ? "]" : "}");
-          } } };
-
-      // Initialize SessionRunner
-      SessionRunner();
-
-    });
-    // Switch for testing purposes.
-    if (typeof(window.exports) === 'undefined'){
-      session_fetch(window, document, navigator);
-    } else {
-      window.exports.session = session_fetch;
+  function generateRandomPiwikId() {
+    var letters = '0123456789abcdef'.split('');
+    var randomId = '';
+    for (var i = 0; i < 6; i++ ) {
+        randomId += letters[Math.floor(Math.random() * 16)];
     }
+    return randomId;
+  }
+  var sessionId = generateRandomPiwikId();
 
-    // END SESSION.JS
-
-    // if more than 3 seconds has passed without location, fail location search
-    $timeout(function(){
-      if (!window.session.location){
-        deferredLocation.reject();
-      }
-    }, 3000)
+  var _cid;
+  function getPiwikCid(){
+    if (!_cid){
+      _cid = generateRandomPiwikId();
+    }
+    return _cid;
   }
 
-  var analyticsUrl = BackendClientService.getUrlPrefix() + '/collect/1.0/event/put';
+  var ANALYTICS_URL = '/analytics/piwik.php';
 
-  function getPayload(type, description, id, fullSession){
-    var session = $.extend({},window.session);
-
-    if (!fullSession){
-      // Remove unnecessary
-      delete session.current_session;
-      delete session.original_session;
+  function getPayload(category, action, id, variables, overrideNow){
+    var now = overrideNow ? overrideNow : Date.now();
+    var urlPrefix = BackendClientService.getUrlPrefix();
+    if (urlPrefix === ''){
+      // Web version has an empty prefix, but analytics needs a full path
+      urlPrefix = $location.protocol() + '//' + $location.host();
+      var port = $location.port();
+      if (port !== 80 && port !== 443){
+        urlPrefix += ':' + port;
+      }
     }
+    var currentUrl = urlPrefix + $location.path();
+
+    request = '&idsite=1&rec=1' +
+              '&rand=' + String(Math.random()).slice(2, 8) +
+              '&_id=' + sessionId +
+              '&h=' + now.getHours() + '&m=' + now.getMinutes() + '&s=' + now.getSeconds() +
+              '&url=' + $window.encodeURIComponent(currentUrl) +
+              '&action_name=' + $window.encodeURIComponent(category + '/' + action) +
+              '&res=' + $window.screen.width + 'x' + $window.screen.height +
+              ((id && id.length) ? ('&uid=' + id) : ('&cid=' + getPiwikCid()));
+
+    if (variables && variables.length){
+      var cvar = '&_cvar={';
+      for(var i=0; i<variables.length; i++){
+        if (i>0) cvar += ',';
+        cvar += '"' + (i+1) +'":["' + variables[i].name + '","' + variables[i].value + '"]';
+      }
+      cvar += '}';
+      request += cvar;
+    }
+
+    // TODO: analyticsUser, dimensions for version and packaging
+
+    // OLD VERSION
+/*
     var payload =  [
       {
         type: type,
@@ -537,24 +96,22 @@ function AnalyticsService($q, $rootScope, $timeout, BackendClientService, HttpCl
     if (user){
       payload[0].data.user = user;
     }
+*/
+
+// Example actual piwik POST content:
+/*
+action_name=extended%20mind%20%E2%80%93%20manifesto&idsite=1&rec=1&r=112200&h=16&m=43&s=38&url=http%3A%2F%2Flocalhost%3A8008%2Fmanifesto&urlref=http%3A%2F%2Flocalhost%3A8008%2F&_id=6ffddb23578963a3&_idts=1462865698&_idvc=2&_idn=0&_refts=0&_viewts=1462887813&send_image=0&pdf=1&qt=0&realp=0&wma=0&dir=0&fla=0&java=0&gears=0&ag=0&cookie=1&res=1920x1080&gt_ms=46
+Name*/
+
     return payload;
   };
 
   function postAnalytics(payload, forceOnline){
-    function postAnalyticsOnlineOffline(payload, forceOnline){
-      if (!forceOnline){
-        HttpClientService.postLast(analyticsUrl, payload);
-      }else{
-        HttpClientService.postLastOnline(analyticsUrl, payload);
-      }
+    if (!forceOnline){
+      BackendClientService.postLast(ANALYTICS_URL, payload);
+    }else{
+      BackendClientService.postLastOnline(ANALYTICS_URL, payload);
     }
-    deferredLocation.promise.then(function(location){
-      // Got location
-      postAnalyticsOnlineOffline(payload, forceOnline);
-    }, function() {
-      // No location data, send analytics without it
-      postAnalyticsOnlineOffline(payload, forceOnline);
-    });
   }
 
   function sendAnalytics(type, description){
@@ -564,23 +121,23 @@ function AnalyticsService($q, $rootScope, $timeout, BackendClientService, HttpCl
   return {
     visitEntry: function(location) {
       if (collectAnalytics){
-        var payload = getPayload("visit_" + location, undefined, undefined, true);
+        var payload = getPayload("entry", "visit_" + location);
         return postAnalytics(payload, true);
       }
     },
-    visit: function(location) {
+    visit: function(category, location) {
       if (collectAnalytics){
-        return sendAnalytics("visit_" + location);
+        return sendAnalytics(category, "visit_" + location);
       }
     },
-    do: function(action, description) {
+    do: function(category, action, variables) {
       if (collectAnalytics){
-        return sendAnalytics(action, description);
+        return sendAnalytics(category, action, variables);
       }
     },
-    doWithUuid: function(action, description, uuid, online) {
+    doWithUuid: function(category, action, uuid, online) {
       if (collectAnalytics){
-        var payload = getPayload(action, description)
+        var payload = getPayload(category, action, uuid)
         if (!payload[0].data.user){
           payload[0].data.user = {uuid: uuid};
         }else{
@@ -596,22 +153,24 @@ function AnalyticsService($q, $rootScope, $timeout, BackendClientService, HttpCl
     },
     startSession: function(id) {
       if (collectAnalytics){
-        var payload = getPayload("session", undefined, id);
+        var overrideNow = Date.now();
+        var payload = getPayload("session", "start_session", id, undefined, overrideNow);
         postAnalytics(payload);
-        return payload.time;
+        return overrideNow;
       }
     },
     stopSession: function(id, startTime) {
       if (collectAnalytics){
-        var payload = getPayload("session", undefined, id);
-        payload[0].data.endTime = payload[0].time;
-        payload[0].time = startTime;
+        var overrideNow = Date.now();
+        var payload = getPayload("session", "stop_session", id,
+                                 [{name: "sessionStart", value: startTime}],
+                                 overrideNow);
         postAnalytics(payload);
-        return payload[0].data.endTime;
+        return overrideNow;
       }
     }
   };
 }
-AnalyticsService['$inject'] = ['$q', '$rootScope', '$timeout', 'BackendClientService', 'HttpClientService',
+AnalyticsService['$inject'] = ['$location', '$q', '$rootScope', '$timeout', '$window', 'BackendClientService',
 'UserSessionService', 'packaging', 'version'];
 angular.module('em.base').factory('AnalyticsService', AnalyticsService);

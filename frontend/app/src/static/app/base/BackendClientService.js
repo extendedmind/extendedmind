@@ -264,6 +264,14 @@
     });
   };
 
+  methods.postLast = function(url, data) {
+    return HttpClientService.postLast(getUrlPrefix() + url, data);
+  };
+
+  methods.postLastOnline = function(url, data) {
+    return HttpClientService.postLastOnline(getUrlPrefix() + url, data);
+  };
+
   methods.getUrlPrefix = function() {
     return getUrlPrefix();
   };
