@@ -1,4 +1,5 @@
 exports.config = {
   specs: ['test/*Spec.js'],
-  directConnect: true
+  directConnect: true,
+  jasmineNodeOpts: {defaultTimeoutInterval: 40000}
 };
