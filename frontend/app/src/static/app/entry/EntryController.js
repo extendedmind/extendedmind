@@ -22,7 +22,7 @@ function EntryController($location, $rootScope, $routeParams, $scope, $timeout,
                          DetectBrowserService, PlatformService, SwiperService, UISessionService, UserService,
                          UserSessionService, packaging) {
 
-  AnalyticsService.visitEntry('entry');
+  AnalyticsService.visit('entry','load_entry', true);
 
   $scope.directToEntryMain = false;
   function initializeLogin(){
@@ -30,7 +30,7 @@ function EntryController($location, $rootScope, $routeParams, $scope, $timeout,
     $scope.entryState = 'login';
     $scope.user = {};
     SwiperService.setInitialSlidePath('entry', 'entry/main');
-    AnalyticsService.visitEntry('login');
+    AnalyticsService.visit('entry', 'log_in', true);
   }
 
   function initializeSignup(){
@@ -38,7 +38,7 @@ function EntryController($location, $rootScope, $routeParams, $scope, $timeout,
     $scope.entryState = 'signup';
     $scope.user = {};
     SwiperService.setInitialSlidePath('entry', 'entry/main');
-    AnalyticsService.visitEntry('signup');
+    AnalyticsService.visit('entry', 'sign_up', true);
   }
 
   $scope.isWeb = function() {
@@ -83,7 +83,7 @@ function EntryController($location, $rootScope, $routeParams, $scope, $timeout,
     SwiperService.swipeTo('entry/main');
     SwiperService.setEnableSwipeToNext('entry', true);
     if (angular.isFunction(pauseExtendedMindAnimation)) pauseExtendedMindAnimation();
-    AnalyticsService.visitEntry('login');
+    AnalyticsService.visit('entry', 'log_in', true);
   };
 
   $scope.swipeToHome = function() {
@@ -150,7 +150,7 @@ function EntryController($location, $rootScope, $routeParams, $scope, $timeout,
   };
 
   function logInSuccess() {
-    AnalyticsService.do('login');
+    AnalyticsService.do('entry', 'log_in');
     // blur all inputs to prevent swiper from breaking
     if (entryEmailMainInputBlurCallbackFunction) entryEmailMainInputBlurCallbackFunction();
     if (entryPasswordMainInputBlurCallbackFunction) entryPasswordMainInputBlurCallbackFunction();
@@ -290,11 +290,7 @@ function EntryController($location, $rootScope, $routeParams, $scope, $timeout,
 
     UserSessionService.setPreference('onboarded', newUserFeatureValues);
     UserService.saveAccountPreferences();
-    if (UserSessionService.isFakeUser()){
-      AnalyticsService.doWithUuid('startTutorial', undefined, userUUID);
-    }else{
-      AnalyticsService.do('startTutorial');
-    }
+    AnalyticsService.do('entry', 'start_tutorial');
     // Manually kill sound at this stage to prevent audio from leaking to tutorial
     if (typeof extendedMindAudio !== 'undefined' && extendedMindAudio &&
         angular.isFunction(extendedMindAudio.pause)){
@@ -344,7 +340,7 @@ function EntryController($location, $rootScope, $routeParams, $scope, $timeout,
   };
 
   function animationEndCallback(){
-    AnalyticsService.do('endAnimation');
+    AnalyticsService.do('entry', 'animation_end');
   }
 
   $scope.playExtendedMindAnimation = function(){
@@ -388,7 +384,7 @@ function EntryController($location, $rootScope, $routeParams, $scope, $timeout,
     else if (packaging === 'ios-cordova'){
       extendedMindAnimationDelay = 0.05;
     }
-    AnalyticsService.do('playAnimation');
+    AnalyticsService.do('entry', 'animation_play');
     playExtendedMindAnimation();
   };
 

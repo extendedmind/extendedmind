@@ -380,8 +380,8 @@
   // SAVING
 
   $scope.saveKeyword = function(keyword, saveReady) {
-    if (keyword.trans.uuid) AnalyticsService.do('saveKeyword');
-    else AnalyticsService.do('addKeyword');
+    if (keyword.trans.uuid) AnalyticsService.do('tags', 'save_keyword');
+    else AnalyticsService.do('tags', 'add_keyword');
 
     return TagsService.saveTag(keyword, saveReady);
   };
@@ -390,14 +390,14 @@
 
   $scope.deleteKeyword = function (keyword) {
     if (keyword.trans.uuid){
-      AnalyticsService.do('deleteKeyword');
+      AnalyticsService.do('tags', 'delete_keyword');
       return TagsService.deleteTag(keyword);
     }
   };
 
   $scope.undeleteKeyword = function(keyword) {
     if (keyword.trans.uuid){
-      AnalyticsService.do('undeleteKeyword');
+      AnalyticsService.do('tags', 'undelete_keyword');
       return TagsService.undeleteTag(keyword);
     }
   };
@@ -411,8 +411,8 @@
   // SAVING
 
   $scope.saveContext = function(context, saveReady) {
-    if (context.trans.uuid) AnalyticsService.do('saveContext');
-    else AnalyticsService.do('addContext');
+    if (context.trans.uuid) AnalyticsService.do('tags', 'save_context');
+    else AnalyticsService.do('tags', 'add_context');
 
     return TagsService.saveTag(context, saveReady);
   };
@@ -433,14 +433,14 @@
         UISessionService.activateDelayedNotifications();
       }, $rootScope.LIST_ITEM_LEAVE_ANIMATION_SPEED);
 
-      AnalyticsService.do('deleteContext');
+      AnalyticsService.do('tags', 'delete_context');
       return TagsService.deleteTag(context);
     }
   };
 
   $scope.undeleteContext = function(context) {
     if (context.trans.uuid){
-      AnalyticsService.do('undeleteContext');
+      AnalyticsService.do('tags', 'undelete_context');
       return TagsService.undeleteTag(context);
     }
   };

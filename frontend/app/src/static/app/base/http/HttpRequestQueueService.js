@@ -187,7 +187,7 @@ function HttpRequestQueueService(enableOffline) {
       } else {
         // last already exists and is not currently executing, concat the data from this request to
         // the end of the data array in the last request
-        last.content.data = last.content.data.concat(request.content.data);
+        last.content.data.requests.push(request.content.data.requests[0]);
       }
       storage.setItem('lastRequest', JSON.stringify(last));
     },

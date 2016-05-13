@@ -18,7 +18,7 @@
                           AnalyticsService, AuthenticationService, DetectBrowserService, UISessionService,
                           packaging) {
 
-  AnalyticsService.visitEntry('reset');
+  AnalyticsService.visit('entry', 'reset_password', true);
 
   var passwordResetCode = $routeParams.hex_code;
   $scope.user = {username: $routeParams.email};

@@ -430,7 +430,7 @@ function MainController($element, $controller, $document, $filter, $q, $rootScop
     * DEBUG
     */
 
-    AnalyticsService.do('completeTutorial');
+    AnalyticsService.do('tutorial', 'complete_tutorial');
     $scope.increaseOnboardingPhase('focus', 'tasks');
   };
 
@@ -448,10 +448,10 @@ function MainController($element, $controller, $document, $filter, $q, $rootScop
     if (subfeature){
       if (!angular.isObject(featurePreferences)) featurePreferences = {};
       featurePreferences[subfeature] = onboardedValue;
-      AnalyticsService.do(feature + subfeature.capitalizeFirstLetter() + 'Onboarded');
+      AnalyticsService.do('tutorial', feature + '_' + subfeature + '_onboarded');
     }else{
       featurePreferences = onboardedValue;
-      AnalyticsService.do(feature + 'Onboarded');
+      AnalyticsService.do('tutorial', feature + '_onboarded');
     }
     UserSessionService.setFeaturePreferences(feature, featurePreferences);
     UserService.saveAccountPreferences();

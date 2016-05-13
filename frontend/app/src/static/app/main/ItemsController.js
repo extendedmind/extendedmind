@@ -80,14 +80,14 @@
 
   $scope.deleteItem = function(item) {
     if (item.trans.uuid) {
-      AnalyticsService.do('deleteItem');
+      AnalyticsService.do('items', 'delete_item');
       return ItemsService.deleteItem(item);
     }
   };
 
   $scope.undeleteItem = function(item) {
     if (item.trans.uuid) {
-      AnalyticsService.do('undeleteItem');
+      AnalyticsService.do('items', 'undelete_item');
       return ItemsService.undeleteItem(item);
     }
   };

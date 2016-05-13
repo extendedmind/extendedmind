@@ -8,7 +8,7 @@
   "newcap"  : false,
 
   "globals": {
-  "angular":  false,
+    "angular":  false,
     
     // JASMINE
     "after"           : false,
@@ -25,7 +25,6 @@
     "spyOn"           : false
   },
 
-  "globalstrict"  : true,
   "quotmark"      : true,
   "smarttabs"     : true,
   "sub"           : true,

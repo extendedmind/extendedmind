@@ -204,7 +204,7 @@
     // Register uuid change
     var oldUUID = UserSessionService.getUserUUID();
     processUUIDChange(oldUUID, response.uuid);
-    AnalyticsService.doWithUuid('signUp', oldUUID, response.uuid, true);
+    AnalyticsService.doWithOldUuid('user', 'sign_up', oldUUID, true);
     if (UserSessionService.isPersistentStorageEnabled()){
       $scope.user.remember = true;
     }
@@ -259,7 +259,7 @@
         SynchronizeService.clearUserUpdate();
 
         // Analytics
-        AnalyticsService.doWithUuid('innerLogIn', oldUUID, response.userUUID, true);
+        AnalyticsService.doWithOldUuid('user', 'inner_login', oldUUID, true);
 
         // Start executing all pending requests now
         BackendClientService.executeRequests();

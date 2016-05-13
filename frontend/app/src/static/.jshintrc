@@ -18,7 +18,6 @@
     "urlPrefix"         : false
   },
 
-  "globalstrict"  : true,
   "quotmark"      : true,
   "smarttabs"     : true,
   "sub"           : true,

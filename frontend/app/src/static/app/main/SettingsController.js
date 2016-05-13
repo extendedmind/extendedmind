@@ -135,13 +135,12 @@
           notesPrefs = $scope.activateFeatureOnboarding(notesPrefs);
           focusPrefs = $scope.activateFeatureOnboarding(focusPrefs, 'notes');
           if (notesPrefs === 1)
-            AnalyticsService.do('notesOnboarding');
-          else
-            AnalyticsService.do('enableNotes');
+            AnalyticsService.do('tutorial', 'start_notes_onboarding');
+          AnalyticsService.do('notes', 'enable_notes');
         }else {
           notesPrefs = deactivateFeature(notesPrefs);
           focusPrefs = deactivateFeature(focusPrefs, 'notes', 'tasks');
-          AnalyticsService.do('disableNotes');
+          AnalyticsService.do('notes', 'disable_notes');
         }
         $scope.features.focus.resizeFix = true;
         $scope.features.list.resizeFix = true;
@@ -154,9 +153,8 @@
           listsPrefs = $scope.activateFeatureOnboarding(listsPrefs, 'active');
           listPrefs = $scope.activateFeatureOnboarding(listPrefs);
           if (angular.isObject(listsPrefs) && listsPrefs.active === 1)
-            AnalyticsService.do('listsActiveOnboarding');
-          else
-            AnalyticsService.do('enableLists');
+            AnalyticsService.do('tutorial', 'start_lists_onboarding');
+          AnalyticsService.do('lists', 'enable_lists');
         }else {
           if ($scope.isToggleDisabled('lists', !enable)){
             // Can't disable lists if archive is enabled or currently onboarding
@@ -169,7 +167,7 @@
           }
           listsPrefs = deactivateFeature(listsPrefs, 'active');
           listPrefs = deactivateFeature(listPrefs);
-          AnalyticsService.do('disableLists');
+          AnalyticsService.do('lists', 'disable_lists');
         }
         UserSessionService.setFeaturePreferences('lists', listsPrefs);
         UserSessionService.setFeaturePreferences('list', listPrefs);
@@ -178,12 +176,11 @@
         if (enable){
           inboxPrefs = $scope.activateFeatureOnboarding(inboxPrefs);
           if (inboxPrefs === 1)
-            AnalyticsService.do('inboxOnboarding');
-          else
-            AnalyticsService.do('enableInbox');
+            AnalyticsService.do('tutorial', 'start_inbox_onboarding');
+          AnalyticsService.do('items', 'enable_inbox');
         }else {
           inboxPrefs = deactivateFeature(inboxPrefs);
-          AnalyticsService.do('disableInbox');
+          AnalyticsService.do('items', 'disable_inbox');
         }
         UserSessionService.setFeaturePreferences('inbox', inboxPrefs);
       }else if (feature === 'contexts'){
@@ -192,13 +189,12 @@
           tasksPrefs = $scope.activateFeatureOnboarding(tasksPrefs, 'contexts');
           tasksPrefs = $scope.activateFeatureOnboarding(tasksPrefs, 'context');
           if (angular.isObject(tasksPrefs) && tasksPrefs.contexts === 1)
-            AnalyticsService.do('tasksContextsOnboarding');
-          else
-            AnalyticsService.do('enableContexts');
+            AnalyticsService.do('tutorial', 'start_contexts_onboarding');
+          AnalyticsService.do('tags', 'enable_contexts');
         }else {
           tasksPrefs = deactivateFeature(tasksPrefs, 'contexts', 'all');
           tasksPrefs = deactivateFeature(tasksPrefs, 'context', 'all');
-          AnalyticsService.do('disableContexts');
+          AnalyticsService.do('tags', 'disable_contexts');
         }
         $scope.features.tasks.resizeFix = true;
         UserSessionService.setFeaturePreferences('tasks', tasksPrefs);
@@ -216,12 +212,11 @@
           }
           listsPrefs = $scope.activateFeatureOnboarding(listsPrefs, 'archived');
           if (angular.isObject(listsPrefs) && listsPrefs.archived === 1)
-            AnalyticsService.do('listsArchivedOnboarding');
-          else
-            AnalyticsService.do('enableArchive');
+            AnalyticsService.do('tutorial', 'start_archive_onboarding');
+          AnalyticsService.do('lists', 'enable_archive');
         }else {
           listsPrefs = deactivateFeature(listsPrefs, 'archived', 'active');
-          AnalyticsService.do('disableArchive');
+          AnalyticsService.do('lists', 'disable_archive');
         }
         $scope.features.lists.resizeFix = true;
         UserSessionService.setFeaturePreferences('lists', listsPrefs);

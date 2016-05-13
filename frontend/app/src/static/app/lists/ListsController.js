@@ -500,9 +500,9 @@
 
   $scope.saveList = function(list) {
     if (list.trans.uuid){
-      AnalyticsService.do('saveList');
+      AnalyticsService.do('lists', 'save_list');
     }else{
-      AnalyticsService.do('addList');
+      AnalyticsService.do('lists','add_list');
     }
     return ListsService.saveList(list);
   };
@@ -520,7 +520,7 @@
 
   $scope.saveAndArchiveList = function(list, customOfflineProcessFn){
     var deferred = $q.defer();
-    AnalyticsService.do('saveAndArchiveList');
+    AnalyticsService.do('lists', 'save_and_archive_list');
     var offlineProcessFn = customOfflineProcessFn ? customOfflineProcessFn : processListOffline;
     ListsService.saveAndArchiveList(list).then(
       function(success){
@@ -536,7 +536,7 @@
 
   $scope.saveAndUnarchiveList = function(list, customOfflineProcessFn){
     var deferred = $q.defer();
-    AnalyticsService.do('saveAndUnarchiveList');
+    AnalyticsService.do('lists', 'save_and_unarchive_list');
     var offlineProcessFn = customOfflineProcessFn ? customOfflineProcessFn : processListOffline;
     ListsService.saveAndUnarchiveList(list).then(
       function(success){
@@ -567,14 +567,14 @@
 
   $scope.deleteList = function(list) {
     if (list.trans.uuid){
-      AnalyticsService.do('deleteList');
+      AnalyticsService.do('lists', 'delete_list');
       return ListsService.deleteList(list);
     }
   };
 
   $scope.undeleteList = function(list) {
     if (list.trans.uuid){
-      AnalyticsService.do('undeleteList');
+      AnalyticsService.do('lists', 'undelete_list');
       return ListsService.undeleteList(list);
     }
   };

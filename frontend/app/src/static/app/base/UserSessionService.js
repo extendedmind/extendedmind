@@ -554,20 +554,30 @@
       var userUUID = SessionStorageService.getUserUUID();
       if (userUUID) {
         var user = { uuid: userUUID };
-        var userType = SessionStorageService.getUserType();
-        if (userType !== null && userType !== undefined){
-          user.userType = parseInt(userType);
-        }
-        if (SessionStorageService.getUserCreated()){
-          user.created = SessionStorageService.getUserCreated();
-        }
-        if (SessionStorageService.getUserModified()){
-          user.modified = SessionStorageService.getUserModified();
+        if (this.isFakeUser()){
+          user.userType = 'fake';
+        }else{
+          user.userType = parseInt(SessionStorageService.getUserType());
         }
         if (SessionStorageService.getCohort()) {
           user.cohort = parseInt(SessionStorageService.getCohort());
+        }else{
+          user.cohort = 0;
+        }
+        // TODO: Subscription type
+        user.subscriptionType = 'free';
+
+        // Optional value created
+        if (SessionStorageService.getUserCreated()){
+          user.created = SessionStorageService.getUserCreated();
         }
         return user;
+      }else{
+        return {
+          userType: 'anonymous',
+          subscriptionType: 'free',
+          cohort: 0
+        };
       }
     },
     getUserCreated: function() {

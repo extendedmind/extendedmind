@@ -361,15 +361,14 @@
 
       // SESSION MANAGEMENT
 
-      var currentSessionId, currentSessionStartTime, currentSessionLatestActivity;
+      var currentSessionStartTime, currentSessionLatestActivity;
       scope.registerActivity = function registerActivity() {
-        if (!currentSessionId) {
+        if (!currentSessionStartTime) {
           startNewSession();
         } else {
           var now = Date.now();
           // If 20 seconds has passed since last activity, consider this a new session
           if (currentSessionLatestActivity && (currentSessionLatestActivity < (now - 20000))) {
-            AnalyticsService.stopSession(currentSessionId, currentSessionStartTime);
             startNewSession();
           } else {
             currentSessionLatestActivity = now;
@@ -378,8 +377,8 @@
       };
 
       function startNewSession() {
-        currentSessionId = UUIDService.randomUUID();
-        currentSessionStartTime = AnalyticsService.startSession(currentSessionId);
+        currentSessionStartTime = Date.now();
+        AnalyticsService.startSession();
         currentSessionLatestActivity = undefined;
       }
 

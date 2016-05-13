@@ -14,7 +14,7 @@
  */
  'use strict';
 
-function AnalyticsService($location, $q, $rootScope, $timeout, $window, BackendClientService,
+function AnalyticsService($injector, $q, $rootScope, $timeout, $window, BackendClientService,
                           UserSessionService, packaging, version) {
 
   var collectAnalytics = packaging !== 'devel';
@@ -23,89 +23,77 @@ function AnalyticsService($location, $q, $rootScope, $timeout, $window, BackendC
     var letters = '0123456789abcdef'.split('');
     var randomId = '';
     for (var i = 0; i < 6; i++ ) {
-        randomId += letters[Math.floor(Math.random() * 16)];
+      randomId += letters[Math.floor(Math.random() * 16)];
     }
     return randomId;
   }
   var sessionId = generateRandomPiwikId();
 
-  var _cid;
-  function getPiwikCid(){
-    if (!_cid){
-      _cid = generateRandomPiwikId();
-    }
-    return _cid;
-  }
-
   var ANALYTICS_URL = '/analytics/piwik.php';
+  // These values need to be configured and activated in Piwik in this order
+  // for analytics to work
+  var DIMENSION_PACKAGING_ID = 1;
+  var DIMENSION_VERSION_ID = 2;
+  var DIMENSION_USER_TYPE = 3;
+  var DIMENSION_SUBSCRIPTION_TYPE = 4;
+  var DIMENSION_COHORT = 5;
 
-  function getPayload(category, action, id, variables, overrideNow){
-    var now = overrideNow ? overrideNow : Date.now();
+  var VARIABLE_OLD_UUID = 1;
+
+  function getPayload(category, action, variables){
+    var now = new Date();
     var urlPrefix = BackendClientService.getUrlPrefix();
+    var $location = $injector.get('$location');
     if (urlPrefix === ''){
       // Web version has an empty prefix, but analytics needs a full path
-      urlPrefix = $location.protocol() + '//' + $location.host();
+      urlPrefix = $location.protocol() + '://' + $location.host();
       var port = $location.port();
       if (port !== 80 && port !== 443){
         urlPrefix += ':' + port;
       }
     }
     var currentUrl = urlPrefix + $location.path();
+    var analyticsUser = UserSessionService.getAnalyticsUser();
+    var uuid = analyticsUser.uuid;
 
-    request = '&idsite=1&rec=1' +
-              '&rand=' + String(Math.random()).slice(2, 8) +
+    var request = '?idsite=1&rec=1&apiv=1&cookie=0&url=' + currentUrl +
+              '&r=' + String(Math.random()).slice(2, 8) +
               '&_id=' + sessionId +
               '&h=' + now.getHours() + '&m=' + now.getMinutes() + '&s=' + now.getSeconds() +
-              '&url=' + $window.encodeURIComponent(currentUrl) +
-              '&action_name=' + $window.encodeURIComponent(category + '/' + action) +
-              '&res=' + $window.screen.width + 'x' + $window.screen.height +
-              ((id && id.length) ? ('&uid=' + id) : ('&cid=' + getPiwikCid()));
+              '&e_c=' + category +
+              '&e_n=' + action +
+              '&res=' + $window.screen.width + 'x' + $window.screen.height;
+
+    if (uuid && uuid.length){
+      request += '&uid=' + uuid;
+    }
+
+    // Add dimensions
+
+    request += '&dimension' + DIMENSION_PACKAGING_ID + '=' + packaging +
+              '&dimension' + DIMENSION_VERSION_ID + '=' + version +
+              '&dimension' + DIMENSION_USER_TYPE + '=' + analyticsUser.userType +
+              '&dimension' + DIMENSION_SUBSCRIPTION_TYPE + '=' + analyticsUser.subscriptionType +
+              '&dimension' + DIMENSION_COHORT + '=' + analyticsUser.cohort;
+
+    if (analyticsUser.created){
+     request += '&_idts=' + Math.floor(analyticsUser.created / 1000);
+    }
 
     if (variables && variables.length){
       var cvar = '&_cvar={';
       for(var i=0; i<variables.length; i++){
         if (i>0) cvar += ',';
-        cvar += '"' + (i+1) +'":["' + variables[i].name + '","' + variables[i].value + '"]';
+        cvar += '"' + variables[i].index +'":["' + variables[i].name + '","' + variables[i].value + '"]';
       }
       cvar += '}';
       request += cvar;
     }
 
-    // TODO: analyticsUser, dimensions for version and packaging
-
-    // OLD VERSION
-/*
-    var payload =  [
-      {
-        type: type,
-        time: new Date().toISOString(),
-        data: {
-          packaging: packaging,
-          version: version,
-          session: session
-        }
-      }
-    ];
-    if (description){
-      payload[0].data.description = description;
-    }
-    if (id){
-      payload[0].id = id;
-    }
-    var user = UserSessionService.getAnalyticsUser();
-    if (user){
-      payload[0].data.user = user;
-    }
-*/
-
-// Example actual piwik POST content:
-/*
-action_name=extended%20mind%20%E2%80%93%20manifesto&idsite=1&rec=1&r=112200&h=16&m=43&s=38&url=http%3A%2F%2Flocalhost%3A8008%2Fmanifesto&urlref=http%3A%2F%2Flocalhost%3A8008%2F&_id=6ffddb23578963a3&_idts=1462865698&_idvc=2&_idn=0&_refts=0&_viewts=1462887813&send_image=0&pdf=1&qt=0&realp=0&wma=0&dir=0&fla=0&java=0&gears=0&ag=0&cookie=1&res=1920x1080&gt_ms=46
-Name*/
-
-    return payload;
-  };
-
+    return {
+      requests: [request]
+    };
+  }
   function postAnalytics(payload, forceOnline){
     if (!forceOnline){
       BackendClientService.postLast(ANALYTICS_URL, payload);
@@ -116,18 +104,13 @@ Name*/
 
   function sendAnalytics(type, description){
     return postAnalytics(getPayload(type, description));
-  };
+  }
 
   return {
-    visitEntry: function(location) {
+    visit: function(category, location, online) {
       if (collectAnalytics){
-        var payload = getPayload("entry", "visit_" + location);
-        return postAnalytics(payload, true);
-      }
-    },
-    visit: function(category, location) {
-      if (collectAnalytics){
-        return sendAnalytics(category, "visit_" + location);
+        var payload = getPayload(category, 'visit_' + location);
+        return postAnalytics(payload, online);
       }
     },
     do: function(category, action, variables) {
@@ -135,42 +118,31 @@ Name*/
         return sendAnalytics(category, action, variables);
       }
     },
-    doWithUuid: function(category, action, uuid, online) {
+    doWithOldUuid: function(category, action, oldUUID, online) {
       if (collectAnalytics){
-        var payload = getPayload(category, action, uuid)
-        if (!payload[0].data.user){
-          payload[0].data.user = {uuid: uuid};
-        }else{
-          payload[0].data.user.uuid = uuid;
-        }
+        var variables = [];
+        variables.push({
+          index: VARIABLE_OLD_UUID,
+          name: 'old_uuid',
+          value: oldUUID
+        });
+        var payload = getPayload(category, action, variables);
         return postAnalytics(payload, online);
       }
     },
     error: function(location, errorType) {
       if (collectAnalytics){
-        return sendAnalytics("error_" + location, errorType);
+        return sendAnalytics('error_' + location, errorType);
       }
     },
-    startSession: function(id) {
+    startSession: function() {
       if (collectAnalytics){
-        var overrideNow = Date.now();
-        var payload = getPayload("session", "start_session", id, undefined, overrideNow);
-        postAnalytics(payload);
-        return overrideNow;
-      }
-    },
-    stopSession: function(id, startTime) {
-      if (collectAnalytics){
-        var overrideNow = Date.now();
-        var payload = getPayload("session", "stop_session", id,
-                                 [{name: "sessionStart", value: startTime}],
-                                 overrideNow);
-        postAnalytics(payload);
-        return overrideNow;
+        var payload = getPayload('session', 'start_session');
+        return postAnalytics(payload);
       }
     }
   };
 }
-AnalyticsService['$inject'] = ['$location', '$q', '$rootScope', '$timeout', '$window', 'BackendClientService',
+AnalyticsService['$inject'] = ['$injector', '$q', '$rootScope', '$timeout', '$window', 'BackendClientService',
 'UserSessionService', 'packaging', 'version'];
 angular.module('em.base').factory('AnalyticsService', AnalyticsService);

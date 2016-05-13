@@ -133,6 +133,46 @@
       }
     });
 
+    $routeProvider.when('/new', {
+      resolve: {
+        initializeNewUserWithOnboarding: ['$location', '$rootScope', 'AnalyticsService',
+        'PlatformService', 'UserService', 'UserSessionService',
+        function($location, $rootScope, AnalyticsService, PlatformService, UserService, UserSessionService) {
+          // Clear all previous data to prevent problems with tutorial starting again after login
+          $rootScope.$emit('emException', {type: 'clearAll'});
+          var userUUID = UserSessionService.createFakeUserUUID();
+          // Start tutorial from focus/tasks
+          var newUserFeatureValues = {
+            focus: { tasks: 1 }
+          };
+          PlatformService.getFeatureValue('timeFormat').then(
+            function(timeFormat){
+              if (timeFormat === '12h'){
+                UserSessionService.setUIPreference('hour12', true);
+              }
+            },function(error) {
+              console.error('could not get time format');
+              console.error(error);
+            }
+          );
+          PlatformService.getFeatureValue('firstDayOfWeek').then(
+            function(firstDayOfWeek){
+              if (firstDayOfWeek === 0){
+                UserSessionService.setUIPreference('sundayWeek', true);
+              }
+            },function(error) {
+              console.error('could not get first day of week');
+              console.error(error);
+            }
+          );
+          UserSessionService.setPreference('onboarded', newUserFeatureValues);
+          UserService.saveAccountPreferences();
+          AnalyticsService.do('entry','start_tutorial');
+          $location.path('/my');
+        }]
+      }
+    });
+
     $routeProvider.when('/my', {
       templateUrl: urlBase + 'app/main/main.html',
       resolve: {
@@ -195,7 +235,7 @@
       resolve: {
         routes: ['$location', '$route', 'AnalyticsService', 'AuthenticationService', 'UISessionService',
         function($location, $route, AnalyticsService, AuthenticationService, UISessionService) {
-          AnalyticsService.visitEntry('verify');
+          AnalyticsService.visit('entry', 'verify_email', true);
           var verifyCode = $route.current.params.hex_code;
           var email = $route.current.params.email;
           $location.url($location.path());
@@ -228,7 +268,7 @@
       resolve: {
         routes: ['$location', '$route', 'AnalyticsService', 'AuthenticationService', 'UISessionService',
         function($location, $route, AnalyticsService, AuthenticationService, UISessionService) {
-          AnalyticsService.visitEntry('accept');
+          AnalyticsService.visit('entry', 'accept_share', true);
           var acceptCode = $route.current.params.hex_code;
           var email = $route.current.params.email;
           $location.url($location.path());
@@ -276,7 +316,6 @@
 angular.module('em.app').run(['$injector', '$rootScope', 'version', function($injector, $rootScope, version) {
 
   // SETUP VERSIONING
-
   if (version !== 'devel'){
     $rootScope.urlBase = 'static/' + version + '/';
   }else{
