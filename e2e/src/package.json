@@ -4,10 +4,13 @@
   "description": "Extended Mind E2E tests",
   "private": true,
   "devDependencies": {
-    "protractor": "^3.3.0"
+    "protractor": "^3.3.0",
+    "visualreview-protractor": "^0.2.0",
+    "request": "^2.72.0",
+    "q": "^1.4.1"
   },
   "scripts": {
-    "test": "./node_modules/protractor/bin/protractor protractor-live-conf.js",
+    "test": "./node_modules/protractor/bin/protractor test/protractor-live-conf.js",
     "postinstall": "./node_modules/protractor/bin/webdriver-manager update"
   },
   "repository": {

@@ -1,5 +1,9 @@
 # Extended Mind End-to-End tests
 
+## Docker configuration
+
+On OSX using VirtualBox, you need to forward the localhost port 8008 and 7000 to the VirtualBox Docker guest "default" ports 8008 and 7000 repectively for tests to succeed. On the VirtualBox console, right click on the "default" container, select "settings..." then "Port forwarding" and press plus to create host 127.0.0.1:8008 port forwarding to guest port 8008, and a second rule for 127.0.0.1:7000 to guest port 7000.
+
 ## Piwik test database creation
 
 First: copying of /etc/piwik/config.ini.php to /var/www/piwik/config was disabled in piwik-docker by building a temporary new extendedmind/piwik:latest container. Then accessing localhost:8008/analytics/index.php begins Piwik installation from scratch.

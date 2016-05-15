@@ -25,7 +25,7 @@ in this directory. If you're using Oracle Java, access to the Extended Mind CI s
 sun.security.validator.ValidatorException: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target
 ```
 
-because the Let's Encrypt certificate we use is not (yet) supported by default in the Oracle JDK. To fix the problem, obtain the Let's Encrypt CA pem file and then run (on OSX):
+because the Let's Encrypt certificate we use is not (yet) supported by default in the Oracle JDK. To fix the problem, obtain the [Let's Encrypt CA pem file](https://letsencrypt.org/certificates/) and then run (on OSX):
 
 ```
 sudo keytool -trustcacerts -keystore $JAVA_HOME/jre/lib/security/cacerts -storepass changeit -noprompt -importcert -file lets_encrypt_authority_x1.pem

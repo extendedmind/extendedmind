@@ -1,14 +1,15 @@
 'use strict';
 
 describe('extended mind', function() {
-  var helpers = require('./testHelpers.js');
-
+  var helpers = browser.params.helpers;
+  var vr = browser.params.visualreview;
   it('should process basic online functionality of logged in user', function() {
     // Load the login page and press login
     browser.get('http://localhost:8008/login');
     element(by.model('user.username')).sendKeys('timo@ext.md');
     element(by.model('user.password')).sendKeys('timopwd');
     helpers.waitForBackendReady(40000).then(function () {
+      vr.takeScreenshot('login-ready');
       var doneButton = element(by.buttonText('done'));
       var errorSearch = by.css('.text-error');
       doneButton.click();

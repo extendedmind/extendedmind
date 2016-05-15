@@ -1,6 +1,9 @@
 'use strict';
-var waitForUrlToChangeTo = function (newUrl, timeout) {
-  var currentUrl;
+
+const request = require('request');
+
+const waitForUrlToChangeTo = function (newUrl, timeout) {
+  let currentUrl;
   return browser.driver.getCurrentUrl().then(function(url) {
     currentUrl = url;
   }).then(function() {
@@ -13,9 +16,9 @@ var waitForUrlToChangeTo = function (newUrl, timeout) {
   );
 };
 
-var waitForBackendReady = function(timeout) {
+const waitForBackendReady = function(timeout) {
   return browser.driver.wait(function() {
-    var deferred = protractor.promise.defer();
+    let deferred = protractor.promise.defer();
     browser.driver.executeAsyncScript(function() {
       var callback = arguments[arguments.length - 1];
       var xmlHttp = new XMLHttpRequest();
@@ -45,5 +48,26 @@ var waitForBackendReady = function(timeout) {
   }, timeout);
 };
 
+
+const waitForVisualReviewReady = (function() {
+  let count = 0;
+
+  return function(max, timeout, next) {
+    request('http://localhost:7000', function (error, response) {
+      if (error || response.statusCode !== 200) {
+        if (count++ < max) {
+          return setTimeout(function() {
+            waitForVisualReviewReady(max, timeout, next);
+          }, timeout);
+        } else {
+          return next(false);
+        }
+      }
+      next(true);
+    });
+  };
+})();
+
 exports.waitForUrlToChangeTo = waitForUrlToChangeTo;
 exports.waitForBackendReady = waitForBackendReady;
+exports.waitForVisualReviewReady = waitForVisualReviewReady;

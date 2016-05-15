@@ -28,6 +28,7 @@
   </scm>
 
   <properties>
+    <e2e.visualReviewDataRevision>1</e2e.visualReviewDataRevision>
     <e2e.urlOrigin>http://localhost:8008</e2e.urlOrigin>
     <e2e.mailgunDomain>extendedmind.org</e2e.mailgunDomain>
     <e2e.mailgunKey>TEST KEY</e2e.mailgunKey>
@@ -107,7 +108,7 @@
                 </goals>
                 <configuration>
                   <executable>sh</executable>
-                  <commandlineArgs>protractor-headless.sh /protractor/src/protractor-headless-conf.js</commandlineArgs>
+                  <commandlineArgs>protractor-headless.sh /protractor/test/protractor-headless-conf.js</commandlineArgs>
                   <background>false</background>
                 </configuration>
               </execution>
@@ -175,6 +176,14 @@
                   <overWrite>true</overWrite>
                   <outputDirectory>${project.build.directory}</outputDirectory>
                   <includes>*.zip, testData.properties</includes>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.extendedmind.e2e</groupId>
+                  <artifactId>test-visualreview</artifactId>
+                  <version>${e2e.visualReviewDataRevision}</version>
+                  <type>zip</type>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${project.build.directory}</outputDirectory>
                 </artifactItem>
               </artifactItems>
             </configuration>
@@ -260,6 +269,22 @@
         <configuration>
           <verbose>true</verbose>
           <images>
+            <image>
+              <name>extendedmind/visualreview</name>
+              <alias>visualreview</alias>
+              <run>
+                <namingStrategy>alias</namingStrategy>
+                <volumes>
+                  <bind>
+                    <volume>${project.build.directory}/vr/screenshots:/usr/vr/screenshots</volume>
+                    <volume>${project.build.directory}/vr/db:/usr/vr/db</volume>
+                  </bind>
+                </volumes>
+                <ports>
+                  <port>7000:7000</port>
+                </ports>
+              </run>
+            </image>
             <image>
               <name>extendedmind/mariadb-conf</name>
               <alias>mariadb-conf</alias>
