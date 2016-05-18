@@ -54,31 +54,37 @@ describe('extended mind', function() {
         // Go to inbox
         const inboxLink = element(by.xpath(h.XPATH_MENU_LINK.replace('${linkText}', 'inbox')));
         inboxLink.click();
-        vr.takeScreenshot('inbox-menu');
         const rememberTheMilkLink = element(by.xpath(h.XPATH_INBOX_CONTENT + h.XPATH_LINK_LIST_ITEM.replace('${linkText}', 'remember the milk')));
+        expect(rememberTheMilkLink.isDisplayed()).toBeTruthy();
+        vr.takeScreenshot('inbox-menu');
         rememberTheMilkLink.click();
-        vr.takeScreenshot('inbox-menu-editor');
         const itemEditorCloseLink = element(by.xpath(h.XPATH_EDITOR_CLOSE.replace('${ItemType}', 'Item')));
+        expect(itemEditorCloseLink.isDisplayed()).toBeTruthy();
+        vr.takeScreenshot('inbox-menu-editor');
         itemEditorCloseLink.click();
 
         // Go to tasks
         const tasksLink = element(by.xpath(h.XPATH_MENU_LINK.replace('${linkText}', 'tasks')));
         tasksLink.click();
-        vr.takeScreenshot('tasks-menu');
         const writeEssayBodyLink = element(by.xpath(h.XPATH_TASKS_ALL_SLIDE + h.XPATH_LINK_LIST_ITEM.replace('${linkText}', 'write essay body')));
+        expect(writeEssayBodyLink.isDisplayed()).toBeTruthy();
+        vr.takeScreenshot('tasks-menu');
         writeEssayBodyLink.click();
-        vr.takeScreenshot('tasks-menu-editor');
         taskEditorCloseLink = element(by.xpath(h.XPATH_EDITOR_CLOSE.replace('${ItemType}', 'Task')));
+        expect(taskEditorCloseLink.isDisplayed()).toBeTruthy();
+        vr.takeScreenshot('tasks-menu-editor');
         taskEditorCloseLink.click();
 
         // Go to notes
         const notesLink = element(by.xpath(h.XPATH_MENU_LINK.replace('${linkText}', 'notes')));
         notesLink.click();
-        vr.takeScreenshot('notes-menu');
         const notesOnProductivityLink = element(by.xpath(h.XPATH_NOTES_CONTENT + h.XPATH_LINK_LIST_ITEM.replace('${linkText}', 'notes on productivity')));
+        expect(notesOnProductivityLink.isDisplayed()).toBeTruthy();
+        vr.takeScreenshot('notes-menu');
         notesOnProductivityLink.click();
-        vr.takeScreenshot('notes-menu-editor');
         let noteEditorCloseLink = element(by.xpath(h.XPATH_EDITOR_CLOSE.replace('${ItemType}', 'Note')));
+        expect(noteEditorCloseLink.isDisplayed()).toBeTruthy();
+        vr.takeScreenshot('notes-menu-editor');
         noteEditorCloseLink.click();
       });
     });
