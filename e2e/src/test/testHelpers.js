@@ -68,6 +68,31 @@ const waitForVisualReviewReady = (function() {
   };
 })();
 
+
+
+
+
 exports.waitForUrlToChangeTo = waitForUrlToChangeTo;
 exports.waitForBackendReady = waitForBackendReady;
 exports.waitForVisualReviewReady = waitForVisualReviewReady;
+
+
+// CONSTANTS
+
+// Animations
+exports.MENU_ANIMATION_SPEED = 200;
+exports.SWIPER_ANIMATION_SPEED = 300;
+
+// XPath searches
+exports.XPATH_FOCUS_TASKS_TODAY_SLIDE = '//div[@swiper-slide="focus/tasks/left"]';
+exports.XPATH_FOCUS_TASKS_SLIDE = '//div[@swiper-slide="focus/tasks"]';
+exports.XPATH_FOCUS_NOTES_SLIDE = '//div[@swiper-slide="focus/notes"]';
+exports.XPATH_TASKS_ALL_SLIDE = '//div[@swiper-slide="tasks/all"]';
+exports.XPATH_MENU_BUTTON = '//button[@ng-click="toggleMenu()"]';
+exports.XPATH_FOOTER_NAVIGATION_LINK = '//footer//a[contains(@class, "link-navigation") and ./span/text()="${linkText}"]';
+exports.XPATH_LINK_LIST_ITEM = '//a[contains(@class, "link-list-item") and ./span/text()="${linkText}"]';
+exports.XPATH_TASK_EDITOR_BASIC_SLIDE = '//div[@swiper-slide="taskEditor/basic"]';
+exports.XPATH_EDITOR_CLOSE = '//div[contains(@class, "container-editor")]//div[contains(@class, "container-titlebar")]//a[@swiper-click="end${ItemType}Edit()"]';
+exports.XPATH_MENU_LINK = '//div[contains(@class, "container-menu")]//div[contains(@class, "link-menu") and ./span/text()="${linkText}"]';
+exports.XPATH_INBOX_CONTENT = '//section[@ng-show="isContentVisible(\'inbox\')"]';
+exports.XPATH_NOTES_CONTENT = '//div[@ng-show="isContentVisible(\'notes\')"]';
