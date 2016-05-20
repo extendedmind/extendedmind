@@ -71,25 +71,6 @@ exports.waitForUrlToChangeTo = waitForUrlToChangeTo;
 exports.waitForBackendReady = waitForBackendReady;
 exports.waitForVisualReviewReady = waitForVisualReviewReady;
 
-// MOCKS
-
-exports.mockTimestampFormatterService = function(){
-  return {
-    formatToLocaleTime: function(date, useHour12) {
-      if (useHour12) return '9:35 am';
-      else return '09:35';
-    },
-    formatToLocaleTimeWithDate: function(date, useHour12) {
-      if (useHour12) return 'tue 1 september 9:35 am';
-      else return 'tue 1 september 09:35';
-    },
-    formatToLocaleDateWithTime: function(date, useHour12) {
-      if (useHour12) return 'tue 1 september 2015 9:35 am';
-      else return 'tue 1 september 2015 09:35';
-    }
-  };
-};
-
 // CONSTANTS
 
 // Animations
@@ -102,12 +83,15 @@ exports.XPATH_FOCUS_TASKS_SLIDE = '//div[@swiper-slide="focus/tasks"]';
 exports.XPATH_FOCUS_NOTES_SLIDE = '//div[@swiper-slide="focus/notes"]';
 exports.XPATH_TASKS_ALL_SLIDE = '//div[@swiper-slide="tasks/all"]';
 exports.XPATH_MENU_BUTTON = '//button[@ng-click="toggleMenu()"]';
+exports.XPATH_EDITOR_HEADER_NAVIGATION_LINK = '//div[contains(@class, "container-editor")]//header//a[contains(@class, "link-navigation") and ./span/text()="${linkText}"]';
+exports.XPATH_EDITOR_FOOTER_NAVIGATION_LINK = '//div[contains(@class, "container-editor")]//footer//a[contains(@class, "link-navigation") and ./span/text()="${linkText}"]';
 exports.XPATH_FOOTER_NAVIGATION_LINK = '//footer//a[contains(@class, "link-navigation") and ./span/text()="${linkText}"]';
 exports.XPATH_LINK_LIST_ITEM = '//a[contains(@class, "link-list-item") and ./span/text()="${linkText}"]';
 exports.XPATH_TASK_EDITOR_BASIC_SLIDE = '//div[@swiper-slide="taskEditor/basic"]';
 exports.XPATH_EDITOR_CLOSE = '//div[contains(@class, "container-editor")]//div[contains(@class, "container-titlebar")]//a[@swiper-click="end${ItemType}Edit()"]';
 exports.XPATH_MENU_LINK = '//div[contains(@class, "container-menu")]//div[contains(@class, "link-menu") and ./span/text()="${linkText}"]';
 exports.XPATH_USER_HOME_SLIDE = '//div[@swiper-slide="user/home"]';
+exports.XPATH_USER_DETAILS_SLIDE = '//div[@swiper-slide="user/details"]';
 exports.XPATH_LINK_ITEM = '//a[contains(@class, "link") and ./span/text()="${linkText}"]';
 exports.XPATH_INBOX_CONTENT = '//section[@ng-show="isContentVisible(\'inbox\')"]';
 exports.XPATH_NOTES_CONTENT = '//div[@ng-show="isContentVisible(\'notes\')"]';

@@ -14,21 +14,18 @@ describe('extended mind', function() {
       const errorSearch = by.css('.text-error');
       doneButton.click();
       h.waitForUrlToChangeTo('http://localhost:8008/my', 10000).then(function () {
-        // Assert that we are in the today page
+
+        // FOCUS
         const activeSlide = element(by.xpath(h.XPATH_FOCUS_TASKS_TODAY_SLIDE));
         expect(activeSlide.isDisplayed()).toBeTruthy();
         const activeSlideHeading = activeSlide.element(by.css('h2.group-heading'));
         expect(activeSlideHeading.getText()).toBe('today');
         vr.takeScreenshot('focus-tasks-today');
-
-        // Find menu button
         const menuButton = element(by.xpath(h.XPATH_MENU_BUTTON));
         menuButton.click();
         browser.driver.sleep(h.MENU_ANIMATION_SPEED);
         vr.takeScreenshot('focus-tasks-today-menu');
         const errorSearch = by.css('.text-error');
-
-        // Go to focus/notes and back to focus/tasks
         const focusToNotesLink = element(by.xpath(h.XPATH_FOCUS_TASKS_SLIDE +
                                                   h.XPATH_FOOTER_NAVIGATION_LINK.replace('${linkText}', 'notes')));
         focusToNotesLink.click();
@@ -39,30 +36,40 @@ describe('extended mind', function() {
         focusToTasksLink.click();
         browser.driver.sleep(h.SWIPER_ANIMATION_SPEED);
 
-        // Find finalize essay task and click editor open
-        // NOTE: Xpath search always needs full path
+        // TASK EDITOR
         const finalizeEssayLink = element(by.xpath(h.XPATH_FOCUS_TASKS_TODAY_SLIDE +
                                                    h.XPATH_LINK_LIST_ITEM.replace('${linkText}', 'finalize essay')));
         expect(finalizeEssayLink.isDisplayed()).toBeTruthy();
         finalizeEssayLink.click();
         const activeTaskEditorSlide = element(by.xpath(h.XPATH_TASK_EDITOR_BASIC_SLIDE));
         expect(activeTaskEditorSlide.isDisplayed()).toBeTruthy();
-        vr.takeScreenshot('focus-tasks-today-menu-editor');
+        vr.takeScreenshot('focus-tasks-today-menu-editor-basic');
+        const taskEditorAdvancedLink = element(by.xpath(h.XPATH_EDITOR_FOOTER_NAVIGATION_LINK.replace('${linkText}', 'advanced')));
+        taskEditorAdvancedLink.click();
+        browser.driver.sleep(h.SWIPER_ANIMATION_SPEED);
         let taskEditorCloseLink = element(by.xpath(h.XPATH_EDITOR_CLOSE.replace('${ItemType}', 'Task')));
+        expect(taskEditorCloseLink.isDisplayed()).toBeTruthy();
+        vr.takeScreenshot('focus-tasks-today-menu-editor-advanced');
         taskEditorCloseLink.click();
 
-        // Go to user
+        // USER
         const userLink = element(by.xpath(h.XPATH_MENU_LINK.replace('${linkText}', 'timo@ext.md')));
         userLink.click();
         const accountLink = element(by.xpath(h.XPATH_USER_HOME_SLIDE + h.XPATH_LINK_ITEM.replace('${linkText}', 'account')));
         expect(accountLink.isDisplayed()).toBeTruthy();
         vr.takeScreenshot('user-home-menu');
-        // Swipe to account
         accountLink.click();
         browser.driver.sleep(h.SWIPER_ANIMATION_SPEED);
-        vr.takeScreenshot('user-account-menu');
+        const changePasswordLink = element(by.xpath(h.XPATH_USER_DETAILS_SLIDE + h.XPATH_LINK_ITEM.replace('${linkText}', 'change password')));
+        expect(changePasswordLink.isDisplayed()).toBeTruthy();
+        vr.takeScreenshot('user-details-menu');
+        changePasswordLink.click();
+        const closeChangePasswordEditor = element(by.xpath(h.XPATH_EDITOR_HEADER_NAVIGATION_LINK.replace('${linkText}', 'back')));
+        expect(closeChangePasswordEditor.isDisplayed()).toBeTruthy();
+        vr.takeScreenshot('user-details-menu-change-password-editor');
+        closeChangePasswordEditor.click();
 
-        // Go to inbox
+        // INBOX
         const inboxLink = element(by.xpath(h.XPATH_MENU_LINK.replace('${linkText}', 'inbox')));
         inboxLink.click();
         const rememberTheMilkLink = element(by.xpath(h.XPATH_INBOX_CONTENT + h.XPATH_LINK_LIST_ITEM.replace('${linkText}', 'remember the milk')));
@@ -74,7 +81,7 @@ describe('extended mind', function() {
         vr.takeScreenshot('inbox-menu-editor');
         itemEditorCloseLink.click();
 
-        // Go to tasks
+        // TASKS
         const tasksLink = element(by.xpath(h.XPATH_MENU_LINK.replace('${linkText}', 'tasks')));
         tasksLink.click();
         const writeEssayBodyLink = element(by.xpath(h.XPATH_TASKS_ALL_SLIDE + h.XPATH_LINK_LIST_ITEM.replace('${linkText}', 'write essay body')));
@@ -86,7 +93,7 @@ describe('extended mind', function() {
         vr.takeScreenshot('tasks-all-menu-editor');
         taskEditorCloseLink.click();
 
-        // Go to notes
+        // NOTES
         const notesLink = element(by.xpath(h.XPATH_MENU_LINK.replace('${linkText}', 'notes')));
         notesLink.click();
         const notesOnProductivityLink = element(by.xpath(h.XPATH_NOTES_CONTENT + h.XPATH_LINK_LIST_ITEM.replace('${linkText}', 'notes on productivity')));
@@ -98,14 +105,14 @@ describe('extended mind', function() {
         vr.takeScreenshot('notes-menu-editor');
         noteEditorCloseLink.click();
 
-        // Go to lists
+        // LISTS
         const listsLink = element(by.xpath(h.XPATH_MENU_LINK.replace('${linkText}', 'lists')));
         listsLink.click();
         const tripToDublinLink = element(by.xpath(h.XPATH_LISTS_ACTIVE_SLIDE + h.XPATH_LINK_LIST_ITEM.replace('${linkText}', 'trip to Dublin')));
         expect(tripToDublinLink.isDisplayed()).toBeTruthy();
         vr.takeScreenshot('lists-active-menu');
 
-        // Then under a list
+        // LIST
         tripToDublinLink.click();
         expect(element(by.xpath(h.XPATH_LIST_TASKS_SLIDE + h.XPATH_LINK_LIST_ITEM.replace('${linkText}', 'print tickets'))).isDisplayed()).toBeTruthy();
         vr.takeScreenshot('list-tasks-menu');
