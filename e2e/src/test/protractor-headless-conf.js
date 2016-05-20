@@ -32,6 +32,26 @@ exports.config = {
   },
   onPrepare: function () {
     browser.driver.manage().window().setSize(1280, 1024);
+    var timestampServiceMock = function() {
+      angular.module('e2eMock', []).factory("TimestampFormatterService",
+        ['$filter', function($filter){
+          return {
+            formatToLocaleTime: function(date, useHour12) {
+              if (useHour12) return '9:35 am';
+              else return '09:35';
+            },
+            formatToLocaleTimeWithDate: function(date, useHour12) {
+              if (useHour12) return 'tue 1 september 9:35 am';
+              else return 'tue 1 september 09:35';
+            },
+            formatToLocaleDateWithTime: function(date, useHour12) {
+              if (useHour12) return 'tue 1 september 2015 9:35 am';
+              else return 'tue 1 september 2015 09:35';
+            }
+          };
+        }]);
+    };
+    browser.addMockModule('e2eMock', timestampServiceMock);
   },
   afterLaunch: function (exitCode) {
     // finalizes the run, cleans up temporary files

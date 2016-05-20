@@ -23,7 +23,8 @@
 function MainController($element, $controller, $document, $filter, $q, $rootScope, $scope, $timeout,
                         $window, AnalyticsService, CalendarService, ContentService, DateService,
                         DrawerService, ItemsService, PlatformService, ReminderService, SwiperService,
-                        TasksService, UISessionService, UserService, UserSessionService, packaging) {
+                        TasksService, TimestampFormatterService, UISessionService, UserService,
+                        UserSessionService, packaging) {
 
 
   // SHARED ACCESS
@@ -1282,39 +1283,19 @@ function MainController($element, $controller, $document, $filter, $q, $rootScop
   };
 
   $scope.formatToLocaleTime = function(date) {
-    if (UserSessionService.getUIPreference('hour12')) {
-      // e.g. 9:35 am
-      return $filter('date')(date, 'h:mm a').toLowerCase();
-    } else {
-      // e.g. 09:35
-      return $filter('date')(date, 'HH:mm');
-    }
+    return TimestampFormatterService.formatToLocaleTime(date,
+              UserSessionService.getUIPreference('hour12'));
   };
 
   $scope.formatToLocaleTimeWithDate = function(date) {
-    var formattedDate;
-    if (UserSessionService.getUIPreference('hour12')) {
-      // e.g. tue 1 september 9:35 am
-      formattedDate = $filter('date')(date, 'h:mm a EEE d MMM');
-    } else {
-      // e.g. tue 1 september 09:35
-      formattedDate = $filter('date')(date, 'HH:mm EEE d MMM');
-    }
-    return formattedDate.toLowerCase();
+    return TimestampFormatterService.formatToLocaleTimeWithDate(date,
+              UserSessionService.getUIPreference('hour12'));
   };
 
   $scope.formatToLocaleDateWithTime = function(date) {
-    var formattedDate;
-    if (UserSessionService.getUIPreference('hour12')) {
-      // e.g. tue 1 september 9:35 am
-      formattedDate = $filter('date')(date, 'EEE d MMMM y h:mm a');
-    } else {
-      // e.g. tue 1 september 09:35
-      formattedDate = $filter('date')(date, 'EEE d MMMM y HH:mm');
-    }
-    return formattedDate.toLowerCase();
+    return TimestampFormatterService.formatToLocaleDateWithTime(date,
+              UserSessionService.getUIPreference('hour12'));
   };
-
 
   // SHOW ONBOARDING TEXT
 
@@ -1431,6 +1412,6 @@ function MainController($element, $controller, $document, $filter, $q, $rootScop
 MainController['$inject'] = [
 '$element', '$controller', '$document', '$filter', '$q', '$rootScope', '$scope', '$timeout',
 '$window', 'AnalyticsService', 'CalendarService', 'ContentService', 'DateService', 'DrawerService',
-'ItemsService', 'PlatformService', 'ReminderService', 'SwiperService', 'TasksService', 'UISessionService',
-'UserService', 'UserSessionService', 'packaging'];
+'ItemsService', 'PlatformService', 'ReminderService', 'SwiperService', 'TasksService',
+'TimestampFormatterService', 'UISessionService', 'UserService', 'UserSessionService', 'packaging'];
 angular.module('em.main').controller('MainController', MainController);

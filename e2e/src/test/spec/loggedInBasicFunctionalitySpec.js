@@ -28,7 +28,7 @@ describe('extended mind', function() {
         vr.takeScreenshot('focus-tasks-today-menu');
         const errorSearch = by.css('.text-error');
 
-        // Go to notes and back
+        // Go to focus/notes and back to focus/tasks
         const focusToNotesLink = element(by.xpath(h.XPATH_FOCUS_TASKS_SLIDE +
                                                   h.XPATH_FOOTER_NAVIGATION_LINK.replace('${linkText}', 'notes')));
         focusToNotesLink.click();
@@ -51,6 +51,17 @@ describe('extended mind', function() {
         let taskEditorCloseLink = element(by.xpath(h.XPATH_EDITOR_CLOSE.replace('${ItemType}', 'Task')));
         taskEditorCloseLink.click();
 
+        // Go to user
+        const userLink = element(by.xpath(h.XPATH_MENU_LINK.replace('${linkText}', 'timo@ext.md')));
+        userLink.click();
+        const accountLink = element(by.xpath(h.XPATH_USER_HOME_SLIDE + h.XPATH_LINK_ITEM.replace('${linkText}', 'account')));
+        expect(accountLink.isDisplayed()).toBeTruthy();
+        vr.takeScreenshot('user-home-menu');
+        // Swipe to account
+        accountLink.click();
+        browser.driver.sleep(h.SWIPER_ANIMATION_SPEED);
+        vr.takeScreenshot('user-account-menu');
+
         // Go to inbox
         const inboxLink = element(by.xpath(h.XPATH_MENU_LINK.replace('${linkText}', 'inbox')));
         inboxLink.click();
@@ -68,11 +79,11 @@ describe('extended mind', function() {
         tasksLink.click();
         const writeEssayBodyLink = element(by.xpath(h.XPATH_TASKS_ALL_SLIDE + h.XPATH_LINK_LIST_ITEM.replace('${linkText}', 'write essay body')));
         expect(writeEssayBodyLink.isDisplayed()).toBeTruthy();
-        vr.takeScreenshot('tasks-menu');
+        vr.takeScreenshot('tasks-all-menu');
         writeEssayBodyLink.click();
         taskEditorCloseLink = element(by.xpath(h.XPATH_EDITOR_CLOSE.replace('${ItemType}', 'Task')));
         expect(taskEditorCloseLink.isDisplayed()).toBeTruthy();
-        vr.takeScreenshot('tasks-menu-editor');
+        vr.takeScreenshot('tasks-all-menu-editor');
         taskEditorCloseLink.click();
 
         // Go to notes
@@ -86,6 +97,25 @@ describe('extended mind', function() {
         expect(noteEditorCloseLink.isDisplayed()).toBeTruthy();
         vr.takeScreenshot('notes-menu-editor');
         noteEditorCloseLink.click();
+
+        // Go to lists
+        const listsLink = element(by.xpath(h.XPATH_MENU_LINK.replace('${linkText}', 'lists')));
+        listsLink.click();
+        const tripToDublinLink = element(by.xpath(h.XPATH_LISTS_ACTIVE_SLIDE + h.XPATH_LINK_LIST_ITEM.replace('${linkText}', 'trip to Dublin')));
+        expect(tripToDublinLink.isDisplayed()).toBeTruthy();
+        vr.takeScreenshot('lists-active-menu');
+
+        // Then under a list
+        tripToDublinLink.click();
+        expect(element(by.xpath(h.XPATH_LIST_TASKS_SLIDE + h.XPATH_LINK_LIST_ITEM.replace('${linkText}', 'print tickets'))).isDisplayed()).toBeTruthy();
+        vr.takeScreenshot('list-tasks-menu');
+
+/*        let noteEditorCloseLink = element(by.xpath(h.XPATH_EDITOR_CLOSE.replace('${ItemType}', 'Note')));
+        expect(noteEditorCloseLink.isDisplayed()).toBeTruthy();
+        vr.takeScreenshot('notes-menu-editor');
+        noteEditorCloseLink.click();
+*/
+
       });
     });
   });
