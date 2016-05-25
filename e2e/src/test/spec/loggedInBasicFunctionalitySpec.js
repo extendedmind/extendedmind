@@ -262,5 +262,5 @@ describe('extended mind', function() {
         });
       });
     });
-  });
+  }, 60000); // Use a large enough timeout for this test
 });
