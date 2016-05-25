@@ -1,9 +1,9 @@
 'use strict';
 
-describe('extended mind', function() {
+describe('extended mind layout', function() {
   const h = browser.params.helpers;
   const vr = browser.params.visualreview;
-  it('should have the correct visual layout for an existing user', function() {
+  it('should be correct for an existing user', function() {
     // Load the login page and press login
     browser.get('http://localhost:8008/login');
     element(by.model('user.username')).sendKeys('timo@ext.md');

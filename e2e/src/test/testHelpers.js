@@ -79,6 +79,7 @@ exports.SWIPER_ANIMATION_SPEED = 300;
 
 // XPath searches
 exports.XPATH_FOCUS_TASKS_TODAY_SLIDE = '//div[@swiper-slide="focus/tasks/left"]';
+exports.XPATH_FOCUS_TASKS_TOMORROW_SLIDE = '//div[@swiper-slide="focus/tasks/middle"]';
 exports.XPATH_FOCUS_TASKS_SLIDE = '//div[@swiper-slide="focus/tasks"]';
 exports.XPATH_FOCUS_NOTES_SLIDE = '//div[@swiper-slide="focus/notes"]';
 exports.XPATH_TASKS_ALL_SLIDE = '//div[@swiper-slide="tasks/all"]';
@@ -114,3 +115,8 @@ exports.XPATH_KEYWORD_LINK = '//a[contains(@class, "keyword") and ./span/text()=
 exports.XPATH_FOOTER_BUTTON = '//footer//button[@ng-click="${clickMethod}"]';
 exports.XPATH_ENTRY_MAIN_SLIDE = '//div[@swiper-slide="entry/main"]';
 exports.XPATH_TAG_EDITOR_HIGHLIGHTED_LINK = '//div[@ng-switch-when="tag"]//a[contains(@class, "highlighted") and ./span/text()="${linkText}"]';
+exports.XPATH_ADD_ITEM = '//div[@swiper-click="addItem()"]';
+exports.XPATH_PRECEDING_COMPLETE = '/preceding-sibling::div[./input]';
+exports.XPATH_TOGGLE_COMPLETE_BUTTON = '//button[@ng-click="toggleShowCompletedTasks()"]';
+exports.XPATH_COMPLETED_TASK = '//div[contains(@class, "checkbox-checked")]//a[contains(@class, "link-list-item") and ./span/text()="${linkText}"]';
+exports.XPATH_UNCOMPLETED_TASK = '//div[not(contains(@class, "checkbox-checked"))]//a[contains(@class, "link-list-item") and ./span/text()="${linkText}"]';
