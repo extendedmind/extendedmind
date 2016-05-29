@@ -77,7 +77,7 @@ describe('extended mind tasks', function() {
         toasterUndoLink.click();
         expect(secondTestTaskToday.isDisplayed()).toBeTruthy();
 
-        // ADD TASK THAT CONVERTS TO NOTE AND ONE THAT IS A LIST
+        // ADD TASK THAT CONVERTS TO NOTE AND ONE THAT CONVERTS TO A LIST
         addTaskButton.click();
         newItemTextarea = element(by.xpath(h.XPATH_FOCUS_TASKS_TODAY_SLIDE + '//textarea'));
         newItemTextarea.sendKeys('task that is a note');

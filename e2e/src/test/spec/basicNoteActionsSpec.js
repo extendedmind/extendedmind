@@ -74,7 +74,7 @@ describe('extended mind notes', function() {
         toasterUndoLink.click();
         expect(secondTestNoteLink.isDisplayed()).toBeTruthy();
 
-        // ADD TASK THAT CONVERTS TO NOTE AND ONE THAT CONTERS TO LIST
+        // ADD TASK THAT CONVERTS TO NOTE AND ONE THAT CONVERTS TO LIST
         addNoteButton.click();
         element(by.model('note.trans.title')).sendKeys('note that is a task');
         browser.actions().sendKeys(protractor.Key.ESCAPE).perform();

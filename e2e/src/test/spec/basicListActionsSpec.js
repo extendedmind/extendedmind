@@ -17,16 +17,10 @@ describe('extended mind lists', function() {
         const activeSlideHeading = activeSlide.element(by.css('h2.group-heading'));
         expect(activeSlideHeading.getText()).toBe('today');
 
-        // NAVIGATE TO SETTINGS AND ENABLE ARCHIVE
+        // NAVIGATE TO LISTS
         const menuButton = element(by.xpath(h.XPATH_MENU_BUTTON));
         menuButton.click();
         browser.driver.sleep(h.MENU_ANIMATION_SPEED);
-        const settingsLink = element(by.xpath(h.XPATH_MENU_LINK.replace('${linkText}', 'settings')));
-        settingsLink.click();
-        const enableArchiveCheckbox = element(by.xpath(h.XPATH_SETTINGS_CONTENT +
-                                                   h.XPATH_TEXT_LINK_CONTAINER.replace('${linkText}', 'lists archive') +
-                                                   h.XPATH_PRECEDING_COMPLETE));
-        enableArchiveCheckbox.click();
         const listsLink = element(by.xpath(h.XPATH_MENU_LINK.replace('${linkText}', 'lists')));
         listsLink.click();
 
@@ -37,14 +31,14 @@ describe('extended mind lists', function() {
         newItemTextarea.sendKeys('test list');
         browser.actions().sendKeys(protractor.Key.ENTER).perform();
         newItemTextarea = element(by.xpath(h.XPATH_LISTS_ACTIVE_SLIDE + '//textarea'));
-        newItemTextarea.sendKeys('second test active list');
+        newItemTextarea.sendKeys('second test list');
         browser.actions().sendKeys(protractor.Key.ENTER).perform();
         browser.actions().sendKeys(protractor.Key.ESCAPE).perform();
         const firstTestListLink = element(by.xpath(h.XPATH_LISTS_ACTIVE_SLIDE +
                                                    h.XPATH_LINK_LIST_ITEM.replace('${linkText}', 'test list')));
         expect(firstTestListLink.isDisplayed()).toBeTruthy();
         const secondTestListLink = element(by.xpath(h.XPATH_LISTS_ACTIVE_SLIDE +
-                                                   h.XPATH_LINK_LIST_ITEM.replace('${linkText}', 'second test active list')));
+                                                   h.XPATH_LINK_LIST_ITEM.replace('${linkText}', 'second test list')));
         expect(secondTestListLink.isDisplayed()).toBeTruthy();
 
         // OPEN EDITOR, CHANGE TITLE AND FAVORITE
@@ -75,7 +69,51 @@ describe('extended mind lists', function() {
         toasterUndoLink.click();
         expect(secondTestListLink.isDisplayed()).toBeTruthy();
 
-        // ADD LIST THAT CONVERTS TO NOTE AND ONE THAT CONTERS TO TASK
+        // NAVIGATE TO SETTINGS AND ENABLE ARCHIVE
+        const settingsLink = element(by.xpath(h.XPATH_MENU_LINK.replace('${linkText}', 'settings')));
+        settingsLink.click();
+        const enableArchiveCheckbox = element(by.xpath(h.XPATH_SETTINGS_CONTENT +
+                                                   h.XPATH_TEXT_LINK_CONTAINER.replace('${linkText}', 'lists archive') +
+                                                   h.XPATH_PRECEDING_COMPLETE));
+        enableArchiveCheckbox.click();
+        listsLink.click();
+
+        // ARCHIVE AND UNARCHIVE
+        secondTestListLink.click();
+        listHeadingLink.click();
+        const archiveLink = element(by.xpath(h.XPATH_EDITOR_HIGHLIGHTED_LINK.replace('${linkText}', 'archive')));
+        archiveLink.click();
+        const archiveButton = element(by.xpath(h.XPATH_MODAL_BUTTON.replace('${linkText}', 'archive')));
+        archiveButton.click();
+        const activeToArchivedLink = element(by.xpath(h.XPATH_LISTS_ACTIVE_SLIDE +
+                                                     h.XPATH_FOOTER_NAVIGATION_LINK.replace('${linkText}', 'archived')));
+        activeToArchivedLink.click();
+        browser.driver.sleep(h.SWIPER_ANIMATION_SPEED);
+        const archivedSecondTestListLinkXpath = by.xpath(h.XPATH_LISTS_ARCHIVED_SLIDE +
+                                                   h.XPATH_LINK_LIST_ITEM.replace('${linkText}', 'second test list'));
+        const archivedSecondTestListLink = element(archivedSecondTestListLinkXpath);
+        expect(archivedSecondTestListLink.isDisplayed()).toBeTruthy();
+        archivedSecondTestListLink.click();
+        listHeadingLink.click();
+        const unarchiveLink = element(by.xpath(h.XPATH_EDITOR_HIGHLIGHTED_LINK.replace('${linkText}', 'activate')));
+        unarchiveLink.click();
+        const unarchiveButton = element(by.xpath(h.XPATH_MODAL_BUTTON.replace('${linkText}', 'activate')));
+        unarchiveButton.click();
+        expect(secondTestListLink.isDisplayed()).toBeTruthy();
+        activeToArchivedLink.click();
+        browser.driver.sleep(h.SWIPER_ANIMATION_SPEED);
+        expect(browser.driver.isElementPresent(archivedSecondTestListLinkXpath)).toBeFalsy();
+        const archivedToActiveLink = element(by.xpath(h.XPATH_LISTS_ARCHIVED_SLIDE +
+                                                     h.XPATH_FOOTER_NAVIGATION_LINK.replace('${linkText}', 'active')));
+        archivedToActiveLink.click();
+        browser.driver.sleep(h.SWIPER_ANIMATION_SPEED);
+
+        // REMOVE ARCHIVE FEATURE AGAIN FROM SETTINGS
+        settingsLink.click();
+        enableArchiveCheckbox.click();
+        listsLink.click();
+
+        // ADD LIST THAT CONVERTS TO NOTE AND ONE THAT CONVERTS TO TASK
         addListButton.click();
         newItemTextarea = element(by.xpath(h.XPATH_LISTS_ACTIVE_SLIDE + '//textarea'));
         newItemTextarea.sendKeys('list that is a note');

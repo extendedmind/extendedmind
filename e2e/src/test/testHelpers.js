@@ -111,6 +111,7 @@ exports.XPATH_SETTINGS_CONTENT = '//section[@ng-show="isContentVisible(\'setting
 exports.XPATH_NOTE_EDITOR_BASIC_SLIDE = '//div[@swiper-slide="noteEditor/basic"]';
 exports.XPATH_NOTE_EDITOR_ADVANCED_SLIDE = '//div[@swiper-slide="noteEditor/advanced"]';
 exports.XPATH_LISTS_ACTIVE_SLIDE = '//div[@swiper-slide="lists/active"]';
+exports.XPATH_LISTS_ARCHIVED_SLIDE = '//div[@swiper-slide="lists/archived"]';
 exports.XPATH_LIST_TASKS_SLIDE = '//div[@swiper-slide="list/tasks"]';
 exports.XPATH_LIST_EDITOR_BASIC_SLIDE = '//div[@swiper-slide="listEditor/basic"]';
 exports.XPATH_LIST_EDITOR_ADVANCED_SLIDE = '//div[@swiper-slide="listEditor/advanced"]';
@@ -127,3 +128,4 @@ exports.XPATH_TOGGLE_COMPLETE_BUTTON = '//button[@ng-click="toggleShowCompletedT
 exports.XPATH_COMPLETED_TASK = '//div[contains(@class, "checkbox-checked")]//a[contains(@class, "link-list-item") and ./span/text()="${linkText}"]';
 exports.XPATH_UNCOMPLETED_TASK = '//div[not(contains(@class, "checkbox-checked"))]//a[contains(@class, "link-list-item") and ./span/text()="${linkText}"]';
 exports.XPATH_TOASTER_INLINE_LINK = '//div[contains(@class, "container-toaster")]//a[contains(@class, "link-inline")]';
+exports.XPATH_MODAL_BUTTON = '//div[contains(@class, "container-modal")]//button[./span/text()="${linkText}"]';
