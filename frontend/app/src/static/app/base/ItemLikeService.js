@@ -105,8 +105,7 @@
       }else{
         // Use compare values to do the isEdited comparison
         if (item.mod && item.mod.hasOwnProperty(fieldName) &&
-            item.mod[fieldName] !== compareValues[fieldName])
-        {
+            item.mod[fieldName] !== compareValues[fieldName]){
           return true;
         }
       }

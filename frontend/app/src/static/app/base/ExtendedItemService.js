@@ -182,14 +182,15 @@
     }
   }
 
-  function tagsAndRelationshipsMatch(context, keywords, relationships, ownerUUID){
-    if (!context && (!keywords || keywords.length === 0)){
+  function tagsAndRelationshipsMatch(context, keywords, history, relationships, ownerUUID){
+    if (!context && (!keywords || keywords.length === 0) && (!history || history.length === 0)){
       if ((relationships.tags && relationships.tags.length) ||
            (relationships.collectiveTags && relationships.collectiveTags.length)) return false;
     }
     var i;
     var tags = keywords && keywords.length ? keywords.slice() : [];
     if (context) tags.push(context);
+    if (history && history.length) tags = tags.concat(history);
 
     // Split tags into own and collective tags
     var ownerTags = getOwnerTags(tags, ownerUUID);
@@ -274,7 +275,8 @@
       };
     },
     isRelationshipsEdited: function(extendedItem, ownerUUID, compareValues){
-      if (extendedItem.trans.list || extendedItem.trans.context || extendedItem.trans.keywords){
+      if (extendedItem.trans.list || extendedItem.trans.context ||
+          extendedItem.trans.keywords || extendedItem.trans.history){
         if (!compareValues){
           if (!extendedItem.relationships && (!extendedItem.mod || !extendedItem.mod.relationships)){
             // Relationships are in trans but not in mod nor database
@@ -339,17 +341,20 @@
         if (!compareValues){
           if (extendedItem.mod && extendedItem.mod.relationships){
             if (!tagsAndRelationshipsMatch(extendedItem.trans.context, extendedItem.trans.keywords,
+                                           extendedItem.trans.history,
                                            extendedItem.mod.relationships, extendedItem.trans.owner)){
               return true;
             }
           }else if (extendedItem.relationships){
             if (!tagsAndRelationshipsMatch(extendedItem.trans.context, extendedItem.trans.keywords,
+                                           extendedItem.trans.history,
                                            extendedItem.relationships, extendedItem.trans.owner)){
               return true;
             }
           }
         }else{
           if (!tagsAndRelationshipsMatch(extendedItem.trans.context, extendedItem.trans.keywords,
+                                         extendedItem.trans.history,
                                          compareValues.relationships, extendedItem.trans.owner)){
             return true;
           }

@@ -174,6 +174,8 @@
     $scope.focusedTextProperty = undefined;
     titleBarInputFocusCallbackFunction = titleBarInputBlurCallbackFunction = undefined;
     featureEditorAboutToCloseCallback = undefined;
+    saveStatus = getDefaultSaveStatus();
+    clearAutoSaveTimers();
   }
 
   if (angular.isFunction($scope.registerEditorAboutToOpenCallback))
@@ -886,7 +888,7 @@
 
   // AUTOSAVING
 
-  var setSavedTimer, resetNoteStatusTimer, savingSetTime;
+  var setSavedTimer, resetStatusTimer, savingSetTime, savingTransString;
   var saveStatus = getDefaultSaveStatus();
   var savingInProgress;
   var saveReadyDeferred;
@@ -922,20 +924,19 @@
 
     function doSetSaved() {
       saveStatus = 'saved';
-      resetNoteStatusTimer = $timeout(function() {
+      resetStatusTimer = $timeout(function() {
         saveStatus = getDefaultSaveStatus();
       }, 1000);
     }
 
     function doSetFailed() {
       saveStatus = 'failed';
-      resetNoteStatusTimer = $timeout(function() {
+      resetStatusTimer = $timeout(function() {
         saveStatus = getDefaultSaveStatus();
       }, 1000);
     }
 
     function saveSuccess(result){
-
       // Do this only when actually saving something
       if (result !== 'unmodified'){
 
@@ -988,20 +989,20 @@
 
   // Create a debounced auto save function from save function
   $scope.autoSave = function(itemInEdit){
-    if ($scope.isEdited(itemInEdit)){
-      if (setSavedTimer) {
-        $timeout.cancel(setSavedTimer);
-      }
-      if (resetNoteStatusTimer) {
-        $timeout.cancel(resetNoteStatusTimer);
-      }
-      // This is returned immediately, so here we set saving.
+    if ($scope.isEdited(itemInEdit) &&
+        (!savingTransString || savingTransString !== JSON.stringify(itemInEdit.trans))){
+      // Saving something new
+      clearAutoSaveTimers();
+      savingTransString = JSON.stringify(itemInEdit.trans);
       savingSetTime = Date.now();
-      saveStatus = 'saving';
-
+      if (saveStatus !== 'saving'){
+        saveStatus = 'saving';
+        if (!$scope.$$phase && !$rootScope.$$phase) $scope.$digest();
+      }
       // Autosave after two seconds since last autosave
       var sinceSavingSet = (Date.now() - savingSetTime);
       var setSavedTimeout = sinceSavingSet > 1900 ? 100 : 100 + (1900 - sinceSavingSet);
+
       setSavedTimer = $timeout(
         function(){
           $scope.saveItemInEdit(itemInEdit);
@@ -1011,16 +1012,22 @@
 
   $scope.resetSaveStatus = function(){
     saveStatus = getDefaultSaveStatus();
-    if (setSavedTimer) {
-      $timeout.cancel(setSavedTimer);
-      if (resetNoteStatusTimer) {
-        $timeout.cancel(resetNoteStatusTimer);
-      }
-    }
+    clearAutoSaveTimers();
     if (saveReadyDeferred){
       saveReadyDeferred.reject();
     }
   };
+
+  function clearAutoSaveTimers() {
+    if (setSavedTimer) {
+      $timeout.cancel(setSavedTimer);
+      setSavedTimer = undefined;
+    }
+    if (resetStatusTimer) {
+      $timeout.cancel(resetStatusTimer);
+      resetStatusTimer = undefined;
+    }
+  }
 
   $scope.isAutoSavingPrevented = function() {
     return $scope.editorType === 'recurring' || $scope.isOnboarding('notes');
