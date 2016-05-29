@@ -14,8 +14,8 @@
  */
  'use strict';
 
- function toasterDirective($rootScope, $timeout, UISessionService) {
-  var notificationVisibleInMilliseconds = 3000;
+ function toasterDirective($rootScope, $interval, UISessionService) {
+  var notificationVisibleInMilliseconds = 30000;
 
   return {
     restrict: 'A',
@@ -48,10 +48,10 @@
           scope.notification = notification;
 
           // Proceed to next notification when timeout is reached or promise is cancelled.
-          var notificationTimer = $timeout(function() {
+          var notificationTimer = $interval(function() {
             scope.notification = undefined; // clear notification just in case
             showNotifications(notifications);
-          }, notificationVisibleInMilliseconds);
+          }, notificationVisibleInMilliseconds, 1);
 
           // Timeout promise cancelled.
           notificationTimer.then(null, function() {
@@ -68,7 +68,7 @@
       * Cancel notification's timeout promise and fire callback.
       */
       scope.closeNotificationAndCall = function(notification, item, callback) {
-        if (notification.timer) $timeout.cancel(notification.timer);
+        if (notification.timer) $interval.cancel(notification.timer);
         if (callback) callback(item);
       };
 
@@ -79,5 +79,5 @@
     }
   };
 }
-toasterDirective['$inject'] = ['$rootScope', '$timeout', 'UISessionService'];
+toasterDirective['$inject'] = ['$rootScope', '$interval', 'UISessionService'];
 angular.module('em.base').directive('toaster', toasterDirective);
