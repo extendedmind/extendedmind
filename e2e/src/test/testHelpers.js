@@ -97,6 +97,7 @@ exports.XPATH_TASK_EDITOR_BASIC_SLIDE = '//div[@swiper-slide="taskEditor/basic"]
 exports.XPATH_TASK_EDITOR_ADVANCED_SLIDE = '//div[@swiper-slide="taskEditor/advanced"]';
 exports.XPATH_LINK_SWIPER_CLICK = '//a[@swiper-click="${clickMethod}"]';
 exports.XPATH_EDITOR_CLOSE = '//div[contains(@class, "container-editor")]//div[contains(@class, "container-titlebar--inner")]//a[@swiper-click="end${ItemType}Edit()"]';
+exports.XPATH_EDITOR_DELETE = '//div[contains(@class, "container-editor")]//div[contains(@class, "container-titlebar--inner")]//a[@swiper-click="delete${ItemType}InEdit()"]';
 exports.XPATH_MENU_LINK = '//div[contains(@class, "container-menu")]//div[contains(@class, "link-menu") and ./span/text()="${linkText}"]';
 exports.XPATH_USER_HOME_SLIDE = '//div[@swiper-slide="user/home"]';
 exports.XPATH_USER_DETAILS_SLIDE = '//div[@swiper-slide="user/details"]';
@@ -120,3 +121,4 @@ exports.XPATH_PRECEDING_COMPLETE = '/preceding-sibling::div[./input]';
 exports.XPATH_TOGGLE_COMPLETE_BUTTON = '//button[@ng-click="toggleShowCompletedTasks()"]';
 exports.XPATH_COMPLETED_TASK = '//div[contains(@class, "checkbox-checked")]//a[contains(@class, "link-list-item") and ./span/text()="${linkText}"]';
 exports.XPATH_UNCOMPLETED_TASK = '//div[not(contains(@class, "checkbox-checked"))]//a[contains(@class, "link-list-item") and ./span/text()="${linkText}"]';
+exports.XPATH_TOASTER_INLINE_LINK = '//div[contains(@class, "container-toaster")]//a[contains(@class, "link-inline")]';

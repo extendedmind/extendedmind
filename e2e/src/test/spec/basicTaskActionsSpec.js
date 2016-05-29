@@ -68,14 +68,66 @@ describe('extended mind tasks', function() {
                                                    h.XPATH_UNCOMPLETED_TASK.replace('${linkText}', 'second test today task')));
         expect(uncompletedSecondTestTaskToday.isDisplayed()).toBeTruthy();
 
-        // OPEN MENU AND NAVIGATE TO USER
+        // DELETE AND UNDELETE
+        secondTestTaskToday.click();
+        let secondTestTaskTodayDelete = element(by.xpath(h.XPATH_EDITOR_DELETE.replace('${ItemType}', 'Task')));
+        expect(secondTestTaskTodayDelete.isDisplayed()).toBeTruthy();
+        secondTestTaskTodayDelete.click();
+        const toasterUndoLink = element(by.xpath(h.XPATH_TOASTER_INLINE_LINK));
+        toasterUndoLink.click();
+        expect(secondTestTaskToday.isDisplayed()).toBeTruthy();
+
+        // ADD TASK THAT CONVERTS TO NOTE AND ONE THAT IS A LIST
+        addTaskButton.click();
+        newItemTextarea = element(by.xpath(h.XPATH_FOCUS_TASKS_TODAY_SLIDE + '//textarea'));
+        newItemTextarea.sendKeys('task that is a note');
+        browser.actions().sendKeys(protractor.Key.ENTER).perform();
+        newItemTextarea = element(by.xpath(h.XPATH_FOCUS_TASKS_TODAY_SLIDE + '//textarea'));
+        newItemTextarea.sendKeys('task that is a list');
+        browser.actions().sendKeys(protractor.Key.ENTER).perform();
+        browser.actions().sendKeys(protractor.Key.ESCAPE).perform();
+        const taskThatIsANoteLinkXpath = by.xpath(h.XPATH_FOCUS_TASKS_TODAY_SLIDE +
+                                                   h.XPATH_UNCOMPLETED_TASK.replace('${linkText}', 'task that is a note'));
+        const taskThatIsANoteLink = element(taskThatIsANoteLinkXpath);
+        expect(taskThatIsANoteLink.isDisplayed()).toBeTruthy();
+        taskThatIsANoteLink.click();
+        const taskEditorAdvancedLink = element(by.xpath(h.XPATH_EDITOR_FOOTER_NAVIGATION_LINK.replace('${linkText}', 'advanced')));
+        taskEditorAdvancedLink.click();
+        browser.driver.sleep(h.SWIPER_ANIMATION_SPEED);
+        const convertToNoteLink = element(by.xpath(h.XPATH_TASK_EDITOR_ADVANCED_SLIDE +
+                                                   h.XPATH_LINK_ITEM.replace('${linkText}', 'note')));
+        convertToNoteLink.click();
+        element(by.xpath(h.XPATH_EDITOR_CLOSE.replace('${ItemType}', 'Note'))).click();
+        expect(browser.driver.isElementPresent(taskThatIsANoteLinkXpath)).toBeFalsy();
+
+        const taskThatIsAListLinkXpath = by.xpath(h.XPATH_FOCUS_TASKS_TODAY_SLIDE +
+                                                   h.XPATH_UNCOMPLETED_TASK.replace('${linkText}', 'task that is a list'));
+        const taskThatIsAListLink = element(taskThatIsAListLinkXpath);
+        expect(taskThatIsAListLink.isDisplayed()).toBeTruthy();
+        taskThatIsAListLink.click();
+        taskEditorAdvancedLink.click();
+        browser.driver.sleep(h.SWIPER_ANIMATION_SPEED);
+        const convertToListLink = element(by.xpath(h.XPATH_TASK_EDITOR_ADVANCED_SLIDE +
+                                                   h.XPATH_LINK_ITEM.replace('${linkText}', 'list')));
+        convertToListLink.click();
+        element(by.xpath(h.XPATH_EDITOR_CLOSE.replace('${ItemType}', 'List'))).click();
+        expect(browser.driver.isElementPresent(taskThatIsAListLinkXpath)).toBeFalsy();
+
+        // OPEN MENU AND NAVIGATE TO NOTES AND LISTS AND VERIFY PRESENCE OF CONVERTED TASKS
         const menuButton = element(by.xpath(h.XPATH_MENU_BUTTON));
         menuButton.click();
         browser.driver.sleep(h.MENU_ANIMATION_SPEED);
-        const userLink = element(by.xpath(h.XPATH_MENU_LINK.replace('${linkText}', 'jp@ext.md')));
-        userLink.click();
+        const notesLink = element(by.xpath(h.XPATH_MENU_LINK.replace('${linkText}', 'notes')));
+        notesLink.click();
+        const convertedNoteLink = element(by.xpath(h.XPATH_NOTES_CONTENT + h.XPATH_LINK_LIST_ITEM.replace('${linkText}', 'task that is a note')));
+        expect(convertedNoteLink.isDisplayed()).toBeTruthy();
+        const listsLink = element(by.xpath(h.XPATH_MENU_LINK.replace('${linkText}', 'lists')));
+        listsLink.click();
+        const convertedListLink = element(by.xpath(h.XPATH_LISTS_ACTIVE_SLIDE + h.XPATH_LINK_LIST_ITEM.replace('${linkText}', 'task that is a list')));
+        expect(convertedListLink.isDisplayed()).toBeTruthy();
 
         // LOGOUT
+        const userLink = element(by.xpath(h.XPATH_MENU_LINK.replace('${linkText}', 'jp@ext.md')));
         userLink.click();
         const logoutButton = element(by.xpath(h.XPATH_FOOTER_BUTTON.replace('${clickMethod}', 'logOut()')));
         logoutButton.click();
