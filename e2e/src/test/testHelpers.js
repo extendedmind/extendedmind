@@ -102,7 +102,9 @@ exports.XPATH_MENU_LINK = '//div[contains(@class, "container-menu")]//div[contai
 exports.XPATH_USER_HOME_SLIDE = '//div[@swiper-slide="user/home"]';
 exports.XPATH_USER_DETAILS_SLIDE = '//div[@swiper-slide="user/details"]';
 exports.XPATH_LINK_ITEM = '//a[contains(@class, "link") and ./span/text()="${linkText}"]';
+exports.XPATH_INBOX = '//div[@id="inbox"]';
 exports.XPATH_INBOX_CONTENT = '//section[@ng-show="isContentVisible(\'inbox\')"]';
+exports.XPATH_NOTES_ALL = '//div[@id="notes-all"]';
 exports.XPATH_NOTES_CONTENT = '//div[@ng-show="isContentVisible(\'notes\')"]';
 exports.XPATH_NOTE_EDITOR_BASIC_SLIDE = '//div[@swiper-slide="noteEditor/basic"]';
 exports.XPATH_NOTE_EDITOR_ADVANCED_SLIDE = '//div[@swiper-slide="noteEditor/advanced"]';

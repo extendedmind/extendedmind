@@ -3,7 +3,7 @@
 const helpers = require('./testHelpers.js');
 
 exports.config = {
-  specs: ['spec/basicTaskActionsSpec.js'],
+  specs: ['spec/*.js'],
   directConnect: true,
   jasmineNodeOpts: {defaultTimeoutInterval: 40000},
   onPrepare: function () {
