@@ -15,7 +15,7 @@
  'use strict';
 
  function toasterDirective($rootScope, $interval, UISessionService) {
-  var notificationVisibleInMilliseconds = 30000;
+  var notificationVisibleInMilliseconds = 3000;
 
   return {
     restrict: 'A',
