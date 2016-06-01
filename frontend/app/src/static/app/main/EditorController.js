@@ -154,9 +154,7 @@
       preventFocus = true;
     }
 
-    if (!preventFocus && (!dataInEdit || !dataInEdit.deleted) &&
-        typeof titleBarInputFocusCallbackFunction === 'function')
-    {
+    if (!preventFocus && (!dataInEdit || !dataInEdit.deleted)){
       // Focus on found and not deleted item
       setFocusOnTitlebarInput();
     }
@@ -173,6 +171,7 @@
     $scope.editorVisible = false;
     $scope.focusedTextProperty = undefined;
     titleBarInputFocusCallbackFunction = titleBarInputBlurCallbackFunction = undefined;
+    titleBarFocusRequested = false;
     featureEditorAboutToCloseCallback = undefined;
     saveStatus = getDefaultSaveStatus();
     clearAutoSaveTimers();
@@ -383,14 +382,22 @@
 
   var titleBarInputFocusCallbackFunction;
   var titleBarInputBlurCallbackFunction;
+  var titleBarFocusRequested = true;
 
   $scope.registerTitleBarInputCallbacks = function (focusCallback, blurCallback) {
     titleBarInputFocusCallbackFunction = focusCallback;
     titleBarInputBlurCallbackFunction = blurCallback;
+    if (titleBarFocusRequested) setFocusOnTitlebarInput();
   };
 
   function setFocusOnTitlebarInput() {
-    if (typeof titleBarInputFocusCallbackFunction === 'function') titleBarInputFocusCallbackFunction();
+    if (typeof titleBarInputFocusCallbackFunction === 'function'){
+      titleBarInputFocusCallbackFunction();
+      titleBarFocusRequested = false;
+    }
+    else{
+      titleBarFocusRequested = true;
+    }
   }
   function blurTitlebarInput() {
     if (typeof titleBarInputBlurCallbackFunction === 'function') titleBarInputBlurCallbackFunction();
