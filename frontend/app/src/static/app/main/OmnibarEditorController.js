@@ -17,8 +17,8 @@
  'use strict';
 
  function OmnibarEditorController($q, $rootScope, $scope, $timeout,
-                                  AnalyticsService, ArrayService, packaging,
-                                  UISessionService, UserSessionService) {
+                                  AnalyticsService, ArrayService, PlatformService,
+                                  UISessionService, UserSessionService, packaging) {
 
   // INITIALIZING
 
@@ -119,11 +119,15 @@
   $scope.$watch('titlebar.text', function(newTitle/*, oldTitle*/) {
     $scope.searchText.current = newTitle;
     if (newTitle && newTitle.length > 1) {
-      // Use a delayed update for search
-      $timeout(function() {
-        if ($scope.searchText.current === newTitle)
-          $scope.searchText.delayed = newTitle;
-      }, 700);
+      // Use a delayed update for search for those platforms that require it
+      if (PlatformService.isSupported('immediateSearch')){
+        $scope.searchText.delayed = newTitle;
+      }else{
+        $timeout(function() {
+          if ($scope.searchText.current === newTitle)
+            $scope.searchText.delayed = newTitle;
+        }, 700);
+      }
     } else {
       $scope.searchText.delayed = undefined;
     }
@@ -334,6 +338,6 @@
 }
 
 OmnibarEditorController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout',
-'AnalyticsService', 'ArrayService', 'packaging', 'UISessionService',
-'UserSessionService'];
+'AnalyticsService', 'ArrayService', 'PlatformService', 'UISessionService',
+'UserSessionService', 'packaging'];
 angular.module('em.main').controller('OmnibarEditorController', OmnibarEditorController);

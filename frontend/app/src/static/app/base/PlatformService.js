@@ -113,6 +113,9 @@ function PlatformService($q, packaging) {
 
         case 'openLinkExternal':
         return packaging.endsWith('cordova') || packaging.endsWith('electron');
+
+        case 'immediateSearch':
+        return !packaging.endsWith('cordova');
       }
     }
   }
