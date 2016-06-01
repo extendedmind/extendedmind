@@ -111,8 +111,8 @@
 
   function getAuthenticatePayload(remember) {
     var payload = {rememberMe: remember};
-    if (remember && packaging.endsWith('cordova')) {
-      // In apps use extended 90 day replaceable authentication
+    if (remember && PlatformService.isSupported('extendedLogin')) {
+      // Use extended 90 day replaceable authentication where supported
       payload.extended = true;
     }
     return payload;

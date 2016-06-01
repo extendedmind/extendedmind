@@ -116,6 +116,9 @@ function PlatformService($q, packaging) {
 
         case 'immediateSearch':
         return !packaging.endsWith('cordova');
+
+        case 'extendedLogin':
+        return packaging.endsWith('cordova') || packaging.endsWith('electron');
       }
     }
   }
