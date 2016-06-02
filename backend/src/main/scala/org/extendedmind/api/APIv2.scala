@@ -59,7 +59,7 @@ trait APIv2 extends LegacyAPI {
 
   // COLLECTIVES
 
-  val v2PutNewCollective = put & path("v2" / "collectives" / "create_collective".r)
+  val v2PostCreateCollective = post & path("v2" / "collectives" / "create_collective".r)
   val v2PatchExistingCollective = patch & path("v2" / "collectives" / JavaUUID)
   val v2GetCollective = get & path("v2" / "collectives" / JavaUUID)
   val v2PostCollectiveChangePermission = post & path("v2" / "collectives" / JavaUUID / "change_permission" / JavaUUID)
@@ -146,7 +146,7 @@ trait APIv2 extends LegacyAPI {
   val v2GetStatistics = get & path("v2" / "admin".r)
   val v2DestroyUser = post & path("v2" / "admin" / "users" / JavaUUID / "destroy_user")
   val v2PostChangeUserType = post & path("v2" / "admin" / "users" / JavaUUID / "change_user_type")
-  val v2RebuildUserItemsIndex = post & path("v2" / "admin" / "user" / JavaUUID / "rebuild_items_index")
+  val v2RebuildUserItemsIndex = post & path("v2" / "admin" / "users" / JavaUUID / "rebuild_items_index")
   val v2RebuildItemsIndexes = post & path("v2" / "admin" / "rebuild_items_indexes".r)
   val v2RebuildUserIndexes = post & path("v2" / "admin" / "rebuild_users_index".r)
   val v2RebuildPublicAndItemsIndexes = post & path("v2" / "admin" / "rebuild_public_and_items_indexes".r)

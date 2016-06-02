@@ -37,5 +37,5 @@ case class HexCode(code: String){
 }
 
 case class Access(access: Byte){
-  require(access >=0 && access <=2)
+  require(access >=0 && access <=3)
 }

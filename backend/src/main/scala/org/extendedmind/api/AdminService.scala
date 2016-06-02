@@ -96,8 +96,8 @@ trait AdminService extends ServiceBase {
           }
         }
       } ~
-      v2PutNewCollective { url =>
-        authenticate(ExtendedAuth(authenticator, "shareable", None)) { securityContext =>
+      v2PostCreateCollective { url =>
+        authenticate(ExtendedAuth(authenticator, "collective", None)) { securityContext =>
           // Only admins can create new collectives for now
           authorize(adminAccess(securityContext)) {
             entity(as[Collective]) { collective =>
