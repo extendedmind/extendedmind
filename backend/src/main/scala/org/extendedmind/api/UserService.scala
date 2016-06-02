@@ -72,7 +72,7 @@ trait UserService extends ServiceBase {
           }
         }
       } ~
-      v2GetUser { url =>
+      v2GetUser { ownerUUID =>
         authenticate(ExtendedAuth(authenticator, "account", None)) { securityContext =>
           complete {
             Future[User] {
@@ -103,13 +103,13 @@ trait UserService extends ServiceBase {
           }
         }
       } ~
-      v2PatchUser { url =>
+      v2PatchUser { ownerUUID =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           entity(as[User]) { user =>
             complete {
-              Future[SetResult] {
+              Future[PatchUserResponse] {
                 setLogContext(securityContext)
-                userActions.putUser(securityContext.userUUID, user) match {
+                userActions.patchUser(securityContext.userUUID, user) match {
                   case Right(sr) => processResult(sr)
                   case Left(e) => processErrors(e)
                 }
@@ -118,7 +118,7 @@ trait UserService extends ServiceBase {
           }
         }
       } ~
-      v2DeleteUser { url =>
+      v2DeleteUser { ownerUUID =>
         authenticate(ExtendedAuth(authenticator, "secure", None)) { securityContext =>
           complete {
             Future[DeleteItemResult] {

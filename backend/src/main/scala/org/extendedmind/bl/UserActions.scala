@@ -86,9 +86,9 @@ trait UserActions {
     db.getUsers
   }
 
-  def putUser(userUUID: UUID, user: User)(implicit log: LoggingAdapter): Response[SetResult] = {
+  def patchUser(userUUID: UUID, user: User)(implicit log: LoggingAdapter): Response[PatchUserResponse] = {
     log.info("putUser")
-    db.putExistingUser(userUUID, user)
+    db.patchExistingUser(userUUID, user)
   }
 
   def deleteUser(userUUID: UUID)(implicit log: LoggingAdapter): Response[DeleteItemResult] = {

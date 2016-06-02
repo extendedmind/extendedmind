@@ -116,13 +116,13 @@ trait TestGraphDatabase extends GraphDatabase {
         val testOnboardingPreferences = "{\"user\":\"1432192930431:devel:devel\",\"focus\":\"1432192930431:devel:devel\",\"inbox\":\"1432192930431:devel:devel\",\"tasks\":\"1432192930431:devel:devel\",\"notes\":\"1432192930431:devel:devel\",\"lists\":{\"active\":\"1432192930431:devel:devel\"},\"list\":\"1432192930431:devel:devel\",\"trash\":\"1432192930431:devel:devel\",\"settings\":\"1432192930431:devel:devel\"}"
 
         // Add preferences to timo node
-        putExistingUser(getUUID(timoNode), timoUser.copy(preferences = Some(OwnerPreferences(Some(testOnboardingPreferences), None))))
+        patchExistingUser(getUUID(timoNode), timoUser.copy(preferences = Some(OwnerPreferences(Some(testOnboardingPreferences), None))))
 
         // Add preferences to lauri node
-        putExistingUser(getUUID(lauriNode), lauriUser.copy(preferences = Some(OwnerPreferences(Some(testOnboardingPreferences), None))))
+        patchExistingUser(getUUID(lauriNode), lauriUser.copy(preferences = Some(OwnerPreferences(Some(testOnboardingPreferences), None))))
 
         // Add preferences to JP node
-        putExistingUser(getUUID(jpNode), jpUser.copy(preferences = Some(OwnerPreferences(Some(testOnboardingPreferences), None))))
+        patchExistingUser(getUUID(jpNode), jpUser.copy(preferences = Some(OwnerPreferences(Some(testOnboardingPreferences), None))))
 
         // Valid, unreplaceable
         timoUUID = getUUID(timoNode)

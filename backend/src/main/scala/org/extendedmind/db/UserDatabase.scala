@@ -58,11 +58,11 @@ trait UserDatabase extends AbstractGraphDatabase {
     } yield (result, userResult._2, userResult._3)
   }
 
-  def putExistingUser(userUUID: UUID, user: User): Response[SetResult] = {
+  def patchExistingUser(userUUID: UUID, user: User): Response[PatchUserResponse] = {
     for {
       userResult <- updateUser(userUUID, user).right
       result <- Right(getSetResult(userResult._1, false)).right
-    } yield result
+    } yield PatchUserResponse(userResult._2, result)
   }
 
   def changeUserEmail(userUUID: UUID, email: String): Response[(SetResult, Option[Long])] = {

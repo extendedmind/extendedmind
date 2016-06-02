@@ -434,8 +434,28 @@ class UserBestCaseSpec extends ServiceSpecBase {
         })
         lauri(0).deleted should be(None)
       }
+    }
 
+    it("should successfully add handle with PATCH to /v2/users/UserUUID "
+      + "and get shortId as response") {
+      val authenticateResponse = emailPasswordAuthenticate(INFO_EMAIL, INFO_PASSWORD)
+      Get("/v2/users/" + authenticateResponse.userUUID) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        val accountResponse = responseAs[User]
+        accountResponse.handle should be (None)
+        accountResponse.shortId should be (None)
+        println("here")
+        Patch("/v2/users/" + authenticateResponse.userUUID,
+          marshal(accountResponse.copy(handle = Some("info"))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+            writeJsonOutput("patchUserResponse", responseAs[String])
+            val patchUserResponse = responseAs[PatchUserResponse]
+            patchUserResponse.shortId should not be None
+            Get("/v2/short/" + patchUserResponse.shortId.get) ~> route ~> check {
+              val publicItemHeaderResponse = responseAs[PublicItemHeader]
+              publicItemHeaderResponse.handle should be ("info")
+              publicItemHeaderResponse.path should be (None)
+            }
+        }
+      }
     }
   }
-
 }

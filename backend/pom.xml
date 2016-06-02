@@ -617,6 +617,7 @@
     								<versionRange>[2.8,)</versionRange>
     								<goals>
     									<goal>copy-dependencies</goal>
+										<goal>unpack</goal>
     								</goals>
     							</pluginExecutionFilter>
     							<action>

@@ -220,3 +220,5 @@ object Agreement{
             proposedBy: Option[AgreementUser], proposedTo: AgreementUser)
         = new Agreement(None, None, None, agreementType.toString, access, None, Some(targetItem), proposedBy, Some(proposedTo))
 }
+
+case class PatchUserResponse(shortId: Option[String], result: SetResult)

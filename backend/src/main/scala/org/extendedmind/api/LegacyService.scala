@@ -1292,8 +1292,8 @@ trait LegacyService extends ServiceBase {
             complete {
               Future[SetResult] {
                 setLogContext(securityContext)
-                userActions.putUser(securityContext.userUUID, user) match {
-                  case Right(sr) => processResult(sr)
+                userActions.patchUser(securityContext.userUUID, user) match {
+                  case Right(sr) => processResult(sr.result)
                   case Left(e) => processErrors(e)
                 }
               }
