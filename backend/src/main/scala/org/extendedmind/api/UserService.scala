@@ -224,7 +224,7 @@ trait UserService extends ServiceBase {
         entity(as[EmailVerification]) { payload =>
           complete {
             Future[SetResult] {
-              userActions.acceptAgreement(payload.codeAsLong, payload.email) match {
+              userActions.acceptAgreement(Random.codeAsLong(payload.code), payload.email) match {
                 case Right(sr) => processResult(sr)
                 case Left(e) => processErrors(e)
               }

@@ -45,7 +45,6 @@ import spray.httpx.marshalling._
 import spray.json.DefaultJsonProtocol._
 import spray.http.StatusCodes._
 
-
 /**
  * Worst case test for item routes.
  */
@@ -69,7 +68,7 @@ class ItemWorstCaseSpec extends ServiceSpecBase{
     it("should return 'not found' when getting item that does not exist") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       val randomUUID = UUID.randomUUID().toString()
-      Get("/" + authenticateResponse.userUUID + "/item/" + randomUUID
+      Get("/v2/owners/" + authenticateResponse.userUUID + "/data/items/" + randomUUID
           ) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val failure = responseAs[ErrorResult]
         status should be (BadRequest)
@@ -79,10 +78,10 @@ class ItemWorstCaseSpec extends ServiceSpecBase{
     it("should return 409 Conflict when trying to modify task with invalid modified timestamp") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       val newItem = Item("learn how to fly", None, None)
-      Put("/" + authenticateResponse.userUUID + "/item",
+      Put("/v2/owners/" + authenticateResponse.userUUID + "/data/items",
           marshal(newItem).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val putItemResponse = responseAs[SetResult]
-        Put("/" + authenticateResponse.userUUID + "/item/" + putItemResponse.uuid.get,
+        Put("/v2/owners/" + authenticateResponse.userUUID + "/data/items/" + putItemResponse.uuid.get,
             marshal(newItem.copy(modified = Some(putItemResponse.modified + 1))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           status should be (Conflict)
           val failure = responseAs[ErrorResult]

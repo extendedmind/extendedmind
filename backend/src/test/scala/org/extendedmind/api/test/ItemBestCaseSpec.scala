@@ -67,9 +67,9 @@ class ItemBestCaseSpec extends ServiceSpecBase {
   }
 
   describe("In the best case, ItemService") {
-    it("should generate item list response on /[userUUID]/items") {
+    it("should generate item list response on /v2/owners/[userUUID]/data") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-      Get("/" + authenticateResponse.userUUID + "/items?completed=true") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+      Get("/v2/owners/" + authenticateResponse.userUUID + "/data?completed=true") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val itemsResponse = responseAs[Items]
         writeJsonOutput("itemsResponse", responseAs[String])
         itemsResponse.items should not be None
@@ -88,7 +88,7 @@ class ItemBestCaseSpec extends ServiceSpecBase {
           value._2._3
         }).get._1
 
-        Get("/" + commonCollectiveUUID + "/items?tagsOnly=true") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        Get("/v2/owners/" + commonCollectiveUUID + "/data?tagsOnly=true") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           val tagsOnlyItemsResponse = responseAs[Items]
           writeJsonOutput("tagsOnlyItemsResponse", responseAs[String])
           tagsOnlyItemsResponse.items should be (None)
@@ -130,18 +130,18 @@ class ItemBestCaseSpec extends ServiceSpecBase {
           })
         }
       }
-      Post("/authenticate") ~> addHeader(Authorization(BasicHttpCredentials(LAURI_EMAIL, LAURI_PASSWORD))) ~> route ~> check {
+      Post("/v2/users/authenticate") ~> addHeader(Authorization(BasicHttpCredentials(LAURI_EMAIL, LAURI_PASSWORD))) ~> route ~> check {
         val lauriAuthenticateResponse = responseAs[SecurityContext]
         writeJsonOutput("sharedToAuthenticateResponse", responseAs[String])
-        Get("/" + authenticateResponse.userUUID + "/items") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
+        Get("/v2/owners/" + authenticateResponse.userUUID + "/data") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
           val sharedItemsResponse = responseAs[Items]
           writeJsonOutput("sharedItemsResponse", responseAs[String])
         }
       }
     }
-    it("should generate limited item list response on /[userUUID]/items to foreign user") {
+    it("should generate limited item list response on /v2/owners/[userUUID]/data to foreign user") {
       val authenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
-      Get("/" + authenticateResponse.sharedLists.get.last._1 + "/items") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+      Get("/v2/owners/" + authenticateResponse.sharedLists.get.last._1 + "/data") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val itemsResponse = responseAs[Items]
         writeJsonOutput("limitedItemsResponse", responseAs[String])
         itemsResponse.items should be (None)
@@ -153,14 +153,14 @@ class ItemBestCaseSpec extends ServiceSpecBase {
         itemsResponse.lists.get(0).visibility.get.agreements.get(0).proposedBy.get.email.get should be (TIMO_EMAIL)
        }
     }
-    it("should successfully put new item on PUT to /[userUUID]/item "
-      + "update it with PUT to /[userUUID]/item/[itemUUID] "
-      + "and get it back with GET to /[userUUID]/item/[itemUUID] "
-      + "and delete it with DELETE to /[userUUID]/item/[itemUUID] "
-      + "and undelete it with POST to /[userUUID]/item/[itemUUID]") {
+    it("should successfully put new item on PUT to /v2/owners/[userUUID]/data/items "
+      + "update it with PUT to /v2/owners/[userUUID]/data/items/[itemUUID] "
+      + "and get it back with GET to /v2/owners/[userUUID]/data/items/[itemUUID] "
+      + "and delete it with DELETE to /v2/owners/[userUUID]/data/items/[itemUUID] "
+      + "and undelete it with POST to /v2/owners/[userUUID]/data/items/[itemUUID]") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       val newItem = Item("learn how to fly", None, None).copy(ui = Some("testUI"))
-      Put("/" + authenticateResponse.userUUID + "/item",
+      Put("/v2/owners/" + authenticateResponse.userUUID + "/data/items",
         marshal(newItem).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           val putItemResponse = responseAs[SetResult]
           writeJsonOutput("putItemResponse", responseAs[String])
@@ -168,32 +168,32 @@ class ItemBestCaseSpec extends ServiceSpecBase {
           putItemResponse.uuid should not be None
 
           val updatedItem = Item("learn how to fly", Some("not kidding"), None).copy(ui = Some("testUI"))
-          Put("/" + authenticateResponse.userUUID + "/item/" + putItemResponse.uuid.get,
+          Put("/v2/owners/" + authenticateResponse.userUUID + "/data/items/" + putItemResponse.uuid.get,
             marshal(updatedItem).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
               val putExistingItemResponse = responseAs[String]
               writeJsonOutput("putExistingItemResponse", putExistingItemResponse)
               putExistingItemResponse should include("modified")
               putExistingItemResponse should not include ("uuid")
-              Get("/" + authenticateResponse.userUUID + "/item/" + putItemResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+              Get("/v2/owners/" + authenticateResponse.userUUID + "/data/items/" + putItemResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                 val itemResponse = responseAs[Item]
                 writeJsonOutput("itemResponse", responseAs[String])
                 itemResponse.description.get should be("not kidding")
                 itemResponse.ui.get should be("testUI")
-                Delete("/" + authenticateResponse.userUUID + "/item/" + putItemResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                Delete("/v2/owners/" + authenticateResponse.userUUID + "/data/items/" + putItemResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                   val deleteItemResponse = responseAs[DeleteItemResult]
                   writeJsonOutput("deleteItemResponse", responseAs[String])
-                  Get("/" + authenticateResponse.userUUID + "/item/" + putItemResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                  Get("/v2/owners/" + authenticateResponse.userUUID + "/data/items/" + putItemResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                     val failure = responseAs[ErrorResult]
                     status should be (BadRequest)
                     failure.description should startWith("Item " + putItemResponse.uuid.get + " is deleted")
                   }
                   // Deleting again should return the same deleted and modified values
-                  Delete("/" + authenticateResponse.userUUID + "/item/" + putItemResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                  Delete("/v2/owners/" + authenticateResponse.userUUID + "/data/items/" + putItemResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                     val redeleteItemResponse = responseAs[DeleteItemResult]
                     redeleteItemResponse.deleted should be (deleteItemResponse.deleted)
                     redeleteItemResponse.result.modified should be (deleteItemResponse.result.modified)
                   }
-                  Post("/" + authenticateResponse.userUUID + "/item/" + putItemResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                  Post("/v2/owners/" + authenticateResponse.userUUID + "/data/items/" + putItemResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                     val undeleteItemResponse = responseAs[SetResult]
                     writeJsonOutput("undeleteItemResponse", responseAs[String])
                     val undeletedItem = getItem(putItemResponse.uuid.get, authenticateResponse)
@@ -201,7 +201,7 @@ class ItemBestCaseSpec extends ServiceSpecBase {
                     undeletedItem.modified should not be (None)
 
                     // Re-undelete should also work
-                    Post("/" + authenticateResponse.userUUID + "/item/" + putItemResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                    Post("/v2/owners/" + authenticateResponse.userUUID + "/data/items/" + putItemResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                       val reundeleteItemResponse = responseAs[SetResult]
                       reundeleteItemResponse.modified should be (undeleteItemResponse.modified)
                     }
@@ -211,10 +211,10 @@ class ItemBestCaseSpec extends ServiceSpecBase {
             }
         }
     }
-    it("should delete items, notes and tasks and generate shorter item list response on /[userUUID]/items ") {
+    it("should delete items, notes and tasks and generate shorter item list response on /v2/owners/[userUUID]/data ") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
 
-      Get("/" + authenticateResponse.userUUID + "/items") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+      Get("/v2/owners/" + authenticateResponse.userUUID + "/data") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val itemsResponse = responseAs[Items]
         itemsResponse.items should not be None
         itemsResponse.tasks should not be None
@@ -227,16 +227,16 @@ class ItemBestCaseSpec extends ServiceSpecBase {
         val deletedItem = itemsResponse.items.get(0)
         val deletedTask = itemsResponse.tasks.get(0)
         val deletedNote = itemsResponse.notes.get(1)
-        Delete("/" + authenticateResponse.userUUID + "/item/" + deletedItem.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        Delete("/v2/owners/" + authenticateResponse.userUUID + "/data/items/" + deletedItem.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           responseAs[String] should include("deleted")
         }
-        Delete("/" + authenticateResponse.userUUID + "/task/" + deletedTask.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        Delete("/v2/owners/" + authenticateResponse.userUUID + "/data/tasks/" + deletedTask.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           responseAs[String] should include("deleted")
         }
-        Delete("/" + authenticateResponse.userUUID + "/note/" + deletedNote.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        Delete("/v2/owners/" + authenticateResponse.userUUID + "/data/notes/" + deletedNote.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           responseAs[String] should include("deleted")
         }
-        Get("/" + authenticateResponse.userUUID + "/items") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        Get("/v2/owners/" + authenticateResponse.userUUID + "/data") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           val shorterItemsResponse = responseAs[Items]
           shorterItemsResponse.items.get.length should be(numberOfItems - 1)
           shorterItemsResponse.tasks.get.length should be(numberOfTasks - 1)
@@ -245,15 +245,15 @@ class ItemBestCaseSpec extends ServiceSpecBase {
         }
       }
     }
-    it("should generate filter responses using get parameters for /[userUUID]/items") {
+    it("should generate filter responses using get parameters for /v2/owners/[userUUID]/data") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       // When active is set to false, should return empty list
-      Get("/" + authenticateResponse.userUUID + "/items" + "?active=false") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+      Get("/v2/owners/" + authenticateResponse.userUUID + "/data?active=false") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val itemsResponse = responseAs[Items]
         isEmptyItems(itemsResponse) should be (true)
       }
       // When active is set to false and completed to true, should return list of one
-      Get("/" + authenticateResponse.userUUID + "/items" + "?active=false&completed=true") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+      Get("/v2/owners/" + authenticateResponse.userUUID + "/data?active=false&completed=true") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val itemsResponse = responseAs[Items]
         itemsResponse.items should be (None)
         itemsResponse.tasks.get.length should be (1)
@@ -262,14 +262,14 @@ class ItemBestCaseSpec extends ServiceSpecBase {
         itemsResponse.tags should be (None)
       }
       // When searching for items that have been modified after now, should return empty list
-      Get("/" + authenticateResponse.userUUID + "/items" + "?modified=" + System.currentTimeMillis) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+      Get("/v2/owners/" + authenticateResponse.userUUID + "/data?modified=" + System.currentTimeMillis) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val itemsResponse = responseAs[Items]
         isEmptyItems(itemsResponse) should be (true)
       }
       // When searching for items that have been modified after the epoch, should return equal list as normal query
-      Get("/" + authenticateResponse.userUUID + "/items" + "?modified=0") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+      Get("/v2/owners/" + authenticateResponse.userUUID + "/data?modified=0") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val itemsResponse = responseAs[Items]
-        Get("/" + authenticateResponse.userUUID + "/items") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        Get("/v2/owners/" + authenticateResponse.userUUID + "/data") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           val equalItemsResponse = responseAs[Items]
           equalItemsResponse.items.get.length should be (itemsResponse.items.get.length)
           equalItemsResponse.tasks.get.length should be (itemsResponse.tasks.get.length)
@@ -283,7 +283,7 @@ class ItemBestCaseSpec extends ServiceSpecBase {
       val test2Response = putNewItem(Item("test2", None, None), authenticateResponse)
 
       // Check that getting with the modified value of first we get only the second
-      Get("/" + authenticateResponse.userUUID + "/items" + "?modified=" + testResponse.modified) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+      Get("/v2/owners/" + authenticateResponse.userUUID + "/data?modified=" + testResponse.modified) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val itemsResponse = responseAs[Items]
         itemsResponse.items.get.length should be (1)
         itemsResponse.tasks should be (None)
@@ -292,29 +292,29 @@ class ItemBestCaseSpec extends ServiceSpecBase {
         itemsResponse.tags should be (None)
       }
       // Check that it succeeds again
-      Get("/" + authenticateResponse.userUUID + "/items" + "?modified=" + testResponse.modified) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+      Get("/v2/owners/" + authenticateResponse.userUUID + "/data?modified=" + testResponse.modified) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val itemsResponse = responseAs[Items]
         itemsResponse.items.get.length should be (1)
       }
       // Check that getting with the modified value of second we get an empty list
-      Get("/" + authenticateResponse.userUUID + "/items" + "?modified=" + test2Response.modified) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+      Get("/v2/owners/" + authenticateResponse.userUUID + "/data?modified=" + test2Response.modified) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val itemsResponse = responseAs[Items]
         isEmptyItems(itemsResponse) should be (true)
       }
 
       // Check that deleting the second, we get it back with deleted query
-      Delete("/" + authenticateResponse.userUUID + "/item/" + test2Response.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+      Delete("/v2/owners/" + authenticateResponse.userUUID + "/data/items/" + test2Response.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val deleteResponse = responseAs[DeleteItemResult]
         deleteResponse.deleted should not be None
       }
       // Check that getting with the modified value of second we get the deleted item
-      Get("/" + authenticateResponse.userUUID + "/items" + "?modified=" + test2Response.modified + "&deleted=true") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+      Get("/v2/owners/" + authenticateResponse.userUUID + "/data?modified=" + test2Response.modified + "&deleted=true") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val itemsResponse = responseAs[Items]
         itemsResponse.items.get.length should be (1)
         itemsResponse.items.get(0).deleted should not be None
       }
       // Check that we can get it again with the same modified value
-      Get("/" + authenticateResponse.userUUID + "/items" + "?modified=" + test2Response.modified + "&deleted=true") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+      Get("/v2/owners/" + authenticateResponse.userUUID + "/data?modified=" + test2Response.modified + "&deleted=true") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val itemsResponse = responseAs[Items]
         itemsResponse.items.get.length should be (1)
         itemsResponse.items.get(0).deleted should not be None

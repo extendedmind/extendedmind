@@ -43,6 +43,10 @@ object Random {
     else Math.abs(randomLong)
   }
 
+  def codeAsLong(code: String): Long = {
+    java.lang.Long.parseLong(code, 16)
+  }
+
   def generateRandomUniqueString(characterLimit: Int = 32): String = {
     // Need to use synchronized block because ByteBuffer isn't thread safe.
     // Not optimal and this method should not be used too frequently.

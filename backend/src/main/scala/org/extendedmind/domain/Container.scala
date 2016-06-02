@@ -31,9 +31,6 @@ trait Container {
 
 case class HexCode(code: String){
   require(validateHexLong(code), "Given hex code " + code + " not valid")
-  def codeAsLong = {
-    java.lang.Long.parseLong(code, 16)
-  }
 }
 
 case class Access(access: Byte){

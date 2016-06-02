@@ -127,7 +127,7 @@ trait SecurityService extends ServiceBase {
         entity(as[PasswordReset]) { passwordReset =>
           complete {
             Future[CountResult] {
-              securityActions.resetPassword(passwordReset.codeAsLong, passwordReset.email, passwordReset.password) match {
+              securityActions.resetPassword(Random.codeAsLong(passwordReset.code), passwordReset.email, passwordReset.password) match {
                 case Right(count) => count
                 case Left(e) => processErrors(e)
               }
@@ -139,7 +139,7 @@ trait SecurityService extends ServiceBase {
         entity(as[EmailVerification]) { payload =>
           complete {
             Future[SetResult] {
-              securityActions.verifyEmail(payload.codeAsLong, payload.email) match {
+              securityActions.verifyEmail(Random.codeAsLong(payload.code), payload.email) match {
                 case Right(result) => result
                 case Left(e) => processErrors(e)
               }

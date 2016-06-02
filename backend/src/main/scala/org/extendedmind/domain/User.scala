@@ -93,17 +93,11 @@ case class PasswordReset(email: String, password: String, code: String){
   require(validateEmailAddress(email), "Not a valid email address")
   require(validatePassword(password), "Password needs to be 7 or more characters long")
   require(validateHexLong(code), "Given hex code " + code + " not valid")
-  def codeAsLong = {
-    java.lang.Long.parseLong(code, 16)
-  }
 }
 
 case class EmailVerification(email: String, code: String){
   require(validateEmailAddress(email), "Not a valid email address")
   require(validateHexLong(code), "Given hex code " + code + " not valid")
-  def codeAsLong = {
-    java.lang.Long.parseLong(code, 16)
-  }
 }
 
 case class UserEmail(email: String){

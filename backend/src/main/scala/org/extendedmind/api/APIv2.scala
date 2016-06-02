@@ -51,11 +51,11 @@ trait APIv2 extends LegacyAPI {
   val v2PostSubscribe = post & path("v2" / "users" / JavaUUID / "subscribe")
 
   // Agreements
-  val v2PutNewAgreement = put & path("v2" / "users" / "agreement".r)
-  val v2PostAgreementAccess = post & path("v2" / "users" / "agreement" / JavaUUID / "access")
-  val v2PostAgreementResend = post & path("v2" / "users" / "agreement" / JavaUUID / "resend")
-  val v2DeleteAgreement = delete & path("v2" / "users" / "agreement" / JavaUUID)
-  val v2PostAgreementAccept = post & path("v2" / "users" / "accept_agreement")
+  val v2PutNewAgreement = put & path("v2" / "users" / "agreements".r)
+  val v2PostAgreementAccess = post & path("v2" / "users" / "agreements" / JavaUUID / "change_accesss")
+  val v2PostAgreementResend = post & path("v2" / "users" / "agreements" / JavaUUID / "resend_agreement")
+  val v2DeleteAgreement = delete & path("v2" / "users" / "agreements" / JavaUUID)
+  val v2PostAgreementAccept = post & path("v2" / "users" / "accept_agreement".r)
 
   // COLLECTIVES
 
