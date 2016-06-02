@@ -1,6 +1,8 @@
 'use strict';
 
 const request = require('request');
+const fs = require('fs');
+const jsdom = require('jsdom').jsdom;
 
 const waitForUrlToChangeTo = function (newUrl, timeout) {
   let currentUrl;
@@ -67,9 +69,22 @@ const waitForVisualReviewReady = (function() {
     });
   };
 })();
+
+const readSentEmail = function(emailDirectory, emailFileName){
+  var htmlFileContent;
+  try {
+    htmlFileContent = fs.readFileSync(emailDirectory + '/' + emailFileName, 'utf-8');
+  } catch (e) {
+    htmlFileContent = fs.readFileSync(emailDirectory + '/' + emailFileName, 'utf-8');
+  }
+  var domContent = jsdom(htmlFileContent);
+  return domContent;
+};
+
 exports.waitForUrlToChangeTo = waitForUrlToChangeTo;
 exports.waitForBackendReady = waitForBackendReady;
 exports.waitForVisualReviewReady = waitForVisualReviewReady;
+exports.readSentEmail = readSentEmail;
 
 // CONSTANTS
 
@@ -79,6 +94,7 @@ exports.SWIPER_ANIMATION_SPEED = 300;
 
 // XPath searches
 exports.XPATH_FOCUS_TASKS_TODAY_SLIDE = '//div[@swiper-slide="focus/tasks/left"]';
+exports.XPATH_FOCUS_TASKS_NO_DATE_SLIDE = '//div[@swiper-slide="focus/tasks/rightDuplicate"]';
 exports.XPATH_FOCUS_TASKS_TOMORROW_SLIDE = '//div[@swiper-slide="focus/tasks/middle"]';
 exports.XPATH_FOCUS_TASKS_SLIDE = '//div[@swiper-slide="focus/tasks"]';
 exports.XPATH_FOCUS_NOTES_SLIDE = '//div[@swiper-slide="focus/notes"]';
@@ -97,12 +113,15 @@ exports.XPATH_LINK_SEARCH_RESULT = '//a[contains(@class, "link-search-result") a
 exports.XPATH_TASK_EDITOR_BASIC_SLIDE = '//div[@swiper-slide="taskEditor/basic"]';
 exports.XPATH_TASK_EDITOR_ADVANCED_SLIDE = '//div[@swiper-slide="taskEditor/advanced"]';
 exports.XPATH_LINK_SWIPER_CLICK = '//a[@swiper-click="${clickMethod}"]';
+exports.XPATH_LINK_CLICK = '//a[@ng-click="${clickMethod}"]';
+exports.XPATH_BUTTON_CLICK = '//button[@ng-click="${clickMethod}"]';
 exports.XPATH_EDITOR_CLOSE = '//div[contains(@class, "container-editor")]//div[contains(@class, "container-titlebar--inner")]//a[@swiper-click="end${ItemType}Edit()"]';
 exports.XPATH_EDITOR_DELETE = '//div[contains(@class, "container-editor")]//div[contains(@class, "container-titlebar--inner")]//a[@swiper-click="delete${ItemType}InEdit()"]';
 exports.XPATH_MENU_LINK = '//div[contains(@class, "container-menu")]//div[contains(@class, "link-menu") and ./span/text()="${linkText}"]';
 exports.XPATH_MENU_LINK_SMALL = '//div[contains(@class, "container-menu")]//div[contains(@class, "link-menu-small") and ./span/text()="${linkText}"]';
 exports.XPATH_USER_HOME_SLIDE = '//div[@swiper-slide="user/home"]';
 exports.XPATH_USER_DETAILS_SLIDE = '//div[@swiper-slide="user/details"]';
+exports.XPATH_USER_EDITOR = '//div[@ng-switch-when="user"]';
 exports.XPATH_LINK_ITEM = '//a[contains(@class, "link") and ./span/text()="${linkText}"]';
 exports.XPATH_INBOX = '//div[@id="inbox"]';
 exports.XPATH_INBOX_CONTENT = '//section[@ng-show="isContentVisible(\'inbox\')"]';
@@ -122,6 +141,7 @@ exports.XPATH_OMNIBAR_EDITOR = '//div[@ng-controller="OmnibarEditorController"]'
 exports.XPATH_KEYWORD_LINK = '//a[contains(@class, "keyword") and ./span/text()="${linkText}"]';
 exports.XPATH_FOOTER_BUTTON = '//footer//button[@ng-click="${clickMethod}"]';
 exports.XPATH_ENTRY_MAIN_SLIDE = '//div[@swiper-slide="entry/main"]';
+exports.XPATH_ENTRY_DETAILS_SLIDE = '//div[@swiper-slide="entry/details"]';
 exports.XPATH_TAG_EDITOR_HIGHLIGHTED_LINK = '//div[@ng-switch-when="tag"]//a[contains(@class, "highlighted") and ./span/text()="${linkText}"]';
 exports.XPATH_ITEM_EDITOR = '//div[@ng-switch-when="item"]';
 exports.XPATH_ADD_ITEM = '//div[@swiper-click="addItem()"]';
@@ -132,9 +152,14 @@ exports.XPATH_RECURRING_UNDO = '//div[@ng-switch-when="recurring"]//a[@swiper-cl
 exports.XPATH_RECURRING_SKIP = '//div[@ng-switch-when="recurring"]//a[@swiper-click="saveItemAndGotoNextItem(iterableItem)" and ./span/text()="skip"]';
 exports.XPATH_PRECEDING_COMPLETE = '/preceding-sibling::div[./input]';
 exports.XPATH_TEXT_LINK_CONTAINER = '//div[./span[contains(@class, "text-link") and text()="${linkText}"]]';
+exports.XPATH_TEXT_DETAILS_CONTAINER = '//div[./span[contains(@class, "text-details") and text()="${linkText}"]]';
 exports.XPATH_TOGGLE_COMPLETE_BUTTON = '//button[@ng-click="toggleShowCompletedTasks()"]';
 exports.XPATH_COMPLETED_TASK = '//div[contains(@class, "checkbox-checked")]//a[contains(@class, "link-list-item") and ./span/text()="${linkText}"]';
 exports.XPATH_UNCOMPLETED_TASK = '//div[not(contains(@class, "checkbox-checked"))]//a[contains(@class, "link-list-item") and ./span/text()="${linkText}"]';
+exports.XPATH_TOASTER_TEXT = '//div[contains(@class, "container-toaster")]//span[contains(@class, "textgroup-toaster") and text() = "${toasterText}"]';
 exports.XPATH_TOASTER_INLINE_LINK = '//div[contains(@class, "container-toaster")]//a[contains(@class, "link-inline")]';
 exports.XPATH_TOASTER_CLOSE_LINK = '//div[contains(@class, "container-toaster")]//a[@swiper-click="closeNotificationAndCall(notification)"]';
 exports.XPATH_MODAL_BUTTON = '//div[contains(@class, "container-modal")]//button[./span/text()="${linkText}"]';
+exports.XPATH_MODAL_CLOSE_BUTTON = '//div[contains(@class, "container-modal")]//a[@ng-click="close()"]';
+exports.XPATH_MODAL_HEADING = '//div[contains(@class, "container-modal")]//h2[contains(@class, "group-heading") and ./span/text()="${headingText}"]';
+exports.XPATH_TEXTGROUP_INGRESS = '//div[contains(@class, "textgroup-ingress") and text()="${ingressText}"]';

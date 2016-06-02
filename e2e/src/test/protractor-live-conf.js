@@ -14,6 +14,7 @@ exports.config = {
     visualreview: {
       takeScreenshot: function(){}
     },
-    helpers: helpers
+    helpers: helpers,
+    emailTestPath: '../target/email-tests'
   }
 };

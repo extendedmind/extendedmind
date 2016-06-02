@@ -59,6 +59,7 @@ exports.config = {
   },
   params: {
     visualreview: vr,
-    helpers: helpers
+    helpers: helpers,
+    emailTestPath: '/protractor/email-tests'
   }
 };

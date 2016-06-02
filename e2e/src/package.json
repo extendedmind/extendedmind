@@ -4,6 +4,7 @@
   "description": "Extended Mind E2E tests",
   "private": true,
   "devDependencies": {
+    "jsdom": "^9.2.1",
     "protractor": "^3.3.0",
     "visualreview-protractor": "^0.2.0",
     "request": "^2.72.0",
