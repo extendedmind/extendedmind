@@ -16,25 +16,22 @@
 
  function AdminService(BackendClientService) {
 
-  var adminRegex = /admin\//;
-
   var statisticsRegexp = new RegExp(
-    /^/.source +
+    '^' +
     BackendClientService.apiv2PrefixRegex.source +
-    /admin$/.source
+    '/admin$'
     );
 
   var ownersRegexp = new RegExp(
-    /^/.source +
+    '^' +
     BackendClientService.apiv2PrefixRegex.source +
-    /owners$/.source
+    '/owners$'
     );
 
   var destroyUserRegexp = new RegExp(
-    /^/.source +
+    '^' +
     BackendClientService.apiv2PrefixRegex.source +
-    adminRegex.source +
-    /users\//.source +
+    '/admin/users/' +
     BackendClientService.uuidRegex.source +
     '/destroy_user$'
     );

@@ -152,7 +152,7 @@ describe('AuthenticationService', function() {
 
   it('should authenticate with username and password', function () {
     var returned;
-    $httpBackend.expectPOST('/api/authenticate').respond(200, authenticateResponse);
+    $httpBackend.expectPOST('/api/v2/users/authenticate').respond(200, authenticateResponse);
     AuthenticationService.login({username:'timo@ext.md', password: 'timopwd'}).then(function() {
       returned = true;
     });
@@ -166,7 +166,7 @@ describe('AuthenticationService', function() {
       password: 'example'
     };
     spyOn(MockUserSessionService, 'setEmail');
-    $httpBackend.expectPOST('/api/authenticate').respond(200, authenticateResponse);
+    $httpBackend.expectPOST('/api/v2/users/authenticate').respond(200, authenticateResponse);
     AuthenticationService.login(user);
     $httpBackend.flush();
     expect(MockUserSessionService.setEmail).toHaveBeenCalledWith(user.username);
@@ -174,7 +174,7 @@ describe('AuthenticationService', function() {
 
   it('should sign up', function() {
     var signUp;
-    $httpBackend.expectPOST('/api/signup').respond(200, signUpResponse);
+    $httpBackend.expectPOST('/api/v2/users/sign_up').respond(200, signUpResponse);
     AuthenticationService.signUp({email: 'timo@ext.md', password: 'timopwd', cohort: 123})
     .then(function(response) {
       signUp = response;
@@ -201,7 +201,7 @@ describe('AuthenticationService', function() {
 
     spyOn(MockUserSessionService, 'setAuthenticateInformation');
 
-    $httpBackend.expectPOST('/api/authenticate').respond(200, authenticateResponse);
+    $httpBackend.expectPOST('/api/v2/users/authenticate').respond(200, authenticateResponse);
     AuthenticationService.verifyAndUpdateAuthentication();
     $httpBackend.flush();
 
@@ -234,8 +234,8 @@ describe('AuthenticationService', function() {
     var newPassword = 'newPassword';
     spyOn(BackendClientService, 'setUsernamePassword');
 
-    $httpBackend.expectPUT('/api/password', {password: newPassword}).respond(200, changePasswordResponse);
-    AuthenticationService.putChangePassword(email, currentPassword, newPassword);
+    $httpBackend.expectPOST('/api/v2/users/change_password', {password: newPassword}).respond(200, changePasswordResponse);
+    AuthenticationService.postChangePassword(email, currentPassword, newPassword);
     $httpBackend.flush();
   });
 });

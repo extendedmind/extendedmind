@@ -59,7 +59,7 @@ function MockAuthBackendService($httpBackend, AuthenticationService, UUIDService
 
   function mockPostVerifyEmail() {
     $httpBackend.whenPOST(AuthenticationService.postVerifyEmailRegex).respond(function(method, url, data, headers) {
-      var verifyEmailResponse = getJSONFixture('putAccountResponse.json');
+      var verifyEmailResponse = getJSONFixture('verifyEmailResponse.json');
       return [200, verifyEmailResponse];
     });
   }
@@ -81,16 +81,16 @@ function MockAuthBackendService($httpBackend, AuthenticationService, UUIDService
     });
   }
 
-  function mockPutChangePassword(expectResponse) {
-    $httpBackend.whenPUT(AuthenticationService.putChangePasswordRegex).respond(function(method, url, data, headers) {
+  function mockPostChangePassword(expectResponse) {
+    $httpBackend.whenPOST(AuthenticationService.postChangePasswordRegex).respond(function(method, url, data, headers) {
       var changePasswordResponse = getJSONFixture('passwordResponse.json');
       return expectResponse(method, url, data, headers, changePasswordResponse);
     });
   }
 
-  function mockPutChangeEmail(expectResponse) {
-    $httpBackend.whenPUT(AuthenticationService.putChangeEmailRegex).respond(function(method, url, data, headers) {
-      var changeEmailResponse = getJSONFixture('putEmailResponse.json');
+  function mockPostChangeEmail(expectResponse) {
+    $httpBackend.whenPOST(AuthenticationService.postChangeEmailRegex).respond(function(method, url, data, headers) {
+      var changeEmailResponse = getJSONFixture('changeEmailResponse.json');
       return expectResponse(method, url, data, headers, changeEmailResponse);
     });
   }
@@ -104,8 +104,8 @@ function MockAuthBackendService($httpBackend, AuthenticationService, UUIDService
       mockPostVerifyEmail();
       mockPostAcceptShare();
       mockPostSignUp();
-      mockPutChangePassword(expectResponse);
-      mockPutChangeEmail(expectResponse);
+      mockPostChangePassword(expectResponse);
+      mockPostChangeEmail(expectResponse);
     }
   };
 }

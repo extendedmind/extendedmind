@@ -22,67 +22,52 @@
   var passwordRegex = /password/;
 
   var signUpRegexp = new RegExp(
-    /^/.source +
-    BackendClientService.apiPrefixRegex.source +
-    /signup/.source +
-    /$/.source
+    '^' +
+    BackendClientService.apiv2PrefixRegex.source +
+    '/users/sign_up$'
     ),
   postAuthenticateRegexp = new RegExp(
-    /^/.source +
-    BackendClientService.apiPrefixRegex.source +
-    authenticateRegex.source +
-    /$/.source
+    '^' +
+    BackendClientService.apiv2PrefixRegex.source +
+    '/users/authenticate$'
     ),
   postForgotPasswordRegexp = new RegExp(
-    /^/.source +
-    BackendClientService.apiPrefixRegex.source +
-    passwordRegex.source +
-    /\/forgot/.source +
-    /$/.source
+    '^' +
+    BackendClientService.apiv2PrefixRegex.source +
+    '/users/forgot_password$'
     ),
   getPasswordResetExpiresRegexp = new RegExp(
-    /^/.source +
-    BackendClientService.apiPrefixRegex.source +
-    passwordRegex.source +
-    /\//.source +
+    '^' +
+    BackendClientService.apiv2PrefixRegex.source +
+    '/users/password_expires/' +
     BackendClientService.hexCodeRegex.source +
     emailRegex.source +
-    /$/.source
+    '$'
     ),
   postResetPasswordRegexp = new RegExp(
-    /^/.source +
-    BackendClientService.apiPrefixRegex.source +
-    passwordRegex.source +
-    /\//.source +
-    BackendClientService.hexCodeRegex.source +
-    /\/reset/.source +
-    /$/.source
+    '^' +
+    BackendClientService.apiv2PrefixRegex.source +
+    '/users/reset_password$'
     ),
   postVerifyEmailRegexp = new RegExp(
-    /^/.source +
-    BackendClientService.apiPrefixRegex.source +
-    /email\//.source +
-    BackendClientService.hexCodeRegex.source +
-    /\/verify/.source +
-    /$/.source
+    '^' +
+    BackendClientService.apiv2PrefixRegex.source +
+    '/users/verify_email$'
     ),
   postAcceptShareRegexp = new RegExp(
-    /^/.source +
-    BackendClientService.apiPrefixRegex.source +
-    /agreement\//.source +
-    BackendClientService.hexCodeRegex.source +
-    /\/accept/.source +
-    /$/.source
+    '^' +
+    BackendClientService.apiv2PrefixRegex.source +
+    '/users/accept_agreement$'
     ),
-  putChangePasswordRegexp = new RegExp(
-    /^/.source +
-    BackendClientService.apiPrefixRegex.source +
-    /password$/.source
+  postChangePasswordRegexp = new RegExp(
+    '^' +
+    BackendClientService.apiv2PrefixRegex.source +
+    '/users/change_password$'
     ),
-  putChangeEmailRegexp = new RegExp(
-    /^/.source +
-    BackendClientService.apiPrefixRegex.source +
-    /email/.source
+  postChangeEmailRegexp = new RegExp(
+    '^' +
+    BackendClientService.apiv2PrefixRegex.source +
+    '/users/change_email$'
     );
 
   // Register refresh credentials callback to backend
@@ -127,7 +112,7 @@
       BackendClientService.setCredentials(UserSessionService.getCredentials());
 
       // Create new primary request
-      return {url: '/api/authenticate', data: getAuthenticatePayload(true)};
+      return {url: '/api/v2/users/authenticate', data: getAuthenticatePayload(true)};
     }
   };
   BackendClientService.registerPrimaryPostCreateCallback(createAuthenticationRequest);
@@ -149,7 +134,7 @@
   }
 
   function authenticate(remember) {
-    return BackendClientService.postOnline('/api/authenticate', postAuthenticateRegexp,
+    return BackendClientService.postOnline('/api/v2/users/authenticate', postAuthenticateRegexp,
       getAuthenticatePayload(remember),
       true, true);
   }
@@ -172,7 +157,7 @@
           if (!online) {
             // Push token swap to be the first thing that is done
             // when online connection is up
-            BackendClientService.postPrimary('/api/authenticate',
+            BackendClientService.postPrimary('/api/v2/users/authenticate',
                                              postAuthenticateRegexp,
                                              getAuthenticatePayload(true));
             validateAuthentication();
@@ -247,51 +232,54 @@
       });
     },
     signUp: function(data) {
-      return BackendClientService.postOnline('/api/signup', signUpRegexp, data, true, true);
+      return BackendClientService.postOnline('/api/v2/users/sign_up', signUpRegexp, data, true, true);
     },
     postForgotPassword: function(email) {
       return BackendClientService.postOnline(
-        '/api/password/forgot',
+        '/api/v2/users/forgot_password',
         postForgotPasswordRegexp,
         {email: sanitizeEmail(email)}, true);
     },
     getPasswordResetExpires: function(resetCode, email) {
       return BackendClientService.get(
-        '/api/password/' + resetCode + '?email=' + sanitizeEmail(email),
+        '/api/v2/users/password_expires/' + resetCode + '?email=' + sanitizeEmail(email),
         getPasswordResetExpiresRegexp,
         {email: sanitizeEmail(email)});
     },
     postResetPassword: function(resetCode, email, password) {
       return BackendClientService.postOnline(
-        '/api/password/' + resetCode + '/reset',
+        '/api/v2/users/reset_password',
         postResetPasswordRegexp,
         {email: sanitizeEmail(email),
-         password: password}, true);
+         password: password,
+         code: resetCode}, true);
     },
     postVerifyEmail: function(resetCode, email) {
       return BackendClientService.postOnline(
-        '/api/email/' + resetCode + '/verify',
+        '/api/v2/users/verify_email',
         postVerifyEmailRegexp,
-        {email: sanitizeEmail(email)}, true);
+        {email: sanitizeEmail(email),
+          code: resetCode}, true);
     },
     postAcceptShare: function(acceptCode, email) {
       return BackendClientService.postOnline(
-        '/api/agreement/' + acceptCode + '/accept',
+        '/api/v2/users/accept_agreement',
         postAcceptShareRegexp,
-        {email: sanitizeEmail(email)}, true);
+        {email: sanitizeEmail(email),
+         code: acceptCode}, true);
     },
-    putChangePassword: function(email, currentPassword, newPassword) {
-      return BackendClientService.putOnlineWithUsernamePassword(
-        '/api/password',
-        this.putChangePasswordRegex,
+    postChangePassword: function(email, currentPassword, newPassword) {
+      return BackendClientService.postOnlineWithUsernamePassword(
+        '/api/v2/users/change_password',
+        this.postChangePasswordRegex,
         {password: newPassword},
         sanitizeEmail(email),
         currentPassword);
     },
-    putChangeEmail: function(email, password, newEmail) {
-      return BackendClientService.putOnlineWithUsernamePassword(
-        '/api/email',
-        this.putChangeEmailRegex,
+    postChangeEmail: function(email, password, newEmail) {
+      return BackendClientService.postOnlineWithUsernamePassword(
+        '/api/v2/users/change_email',
+        this.postChangeEmailRegex,
         {email: newEmail},
         sanitizeEmail(email),
         password);
@@ -304,8 +292,8 @@
     postForgotPasswordRegex: postForgotPasswordRegexp,
     getPasswordResetExpiresRegex: getPasswordResetExpiresRegexp,
     postResetPasswordRegex: postResetPasswordRegexp,
-    putChangePasswordRegex: putChangePasswordRegexp,
-    putChangeEmailRegex: putChangeEmailRegexp,
+    postChangePasswordRegex: postChangePasswordRegexp,
+    postChangeEmailRegex: postChangeEmailRegexp,
     postVerifyEmailRegex: postVerifyEmailRegexp,
     postAcceptShareRegex: postAcceptShareRegexp
   };

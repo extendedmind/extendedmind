@@ -100,7 +100,7 @@
   $scope.changePassword = function (oldPassword, newPassword) {
     $scope.userEditOffline = false;
     $scope.changePasswordFailed = false;
-    AuthenticationService.putChangePassword(UserSessionService.getEmail(), oldPassword, newPassword)
+    AuthenticationService.postChangePassword(UserSessionService.getEmail(), oldPassword, newPassword)
     .then(function(){
       // Need to relogin with new password
       AuthenticationService.login({username: UserSessionService.getEmail(),
@@ -122,7 +122,7 @@
     $scope.userEditOffline = false;
     $scope.changeEmailFailed = false;
     $scope.changeEmailLoginFailed = false;
-    AuthenticationService.putChangeEmail(UserSessionService.getEmail(), password, newEmail)
+    AuthenticationService.postChangeEmail(UserSessionService.getEmail(), password, newEmail)
     .then(function(){
       // Need to relogin with new email
       AuthenticationService.login({username: newEmail,

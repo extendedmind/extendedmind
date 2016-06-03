@@ -24,7 +24,7 @@ function MockAdminBackendService($httpBackend, AdminService) {
     });
   }
 
-  function mockGetUsers(){
+  function mockGetOwners(){
     $httpBackend.whenGET(AdminService.ownersRegexp).respond(function() {
       var usersResponse = getJSONFixture('ownersResponse.json');
       return [200, usersResponse];
@@ -42,7 +42,7 @@ function MockAdminBackendService($httpBackend, AdminService) {
   return {
     mockAdminBackend: function() {
       mockGetStatistics();
-      mockGetUsers();
+      mockGetOwners();
       mockDestroyUser();
     }
   };

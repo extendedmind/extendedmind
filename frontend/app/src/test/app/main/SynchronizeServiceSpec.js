@@ -2510,7 +2510,7 @@ describe('SynchronizeService', function() {
       'title': 'test note'
     };
     var testItem = ItemsService.getNewItem(testItemValues, testOwnerUUID);
-    $httpBackend.expectPOST('/api/authenticate', {rememberMe: true})
+    $httpBackend.expectPOST('/api/v2/users/authenticate', {rememberMe: true})
        .respond(200, authenticateResponse);
     $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
         .respond(200, putNewItemResponse);

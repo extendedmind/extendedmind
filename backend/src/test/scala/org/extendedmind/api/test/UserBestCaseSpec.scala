@@ -101,6 +101,13 @@ class UserBestCaseSpec extends ServiceSpecBase {
             val resendResponse = responseAs[CountResult]
             writeJsonOutput("emailResendResponse", responseAs[String])
             verify(mockMailClient).sendEmailVerificationLink(testEmail, verificationCode)
+
+            // Should verify email
+            Post("/v2/users/verify_email",
+                marshal(EmailVerification(testEmail, verificationCode.toHexString))) ~> addHeader("Content-Type", "application/json") ~>  route ~> check {
+              val resendResponse = responseAs[SetResult]
+              writeJsonOutput("verifyEmailResponse", responseAs[String])
+            }
           }
         }
     }
@@ -378,7 +385,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
 
       Post("/v2/users/change_email",
         marshal(newEmail).right.get) ~> addHeader("Content-Type", "application/json") ~> addHeader(Authorization(BasicHttpCredentials(TIMO_EMAIL, TIMO_PASSWORD))) ~> route ~> check {
-          writeJsonOutput("putEmailResponse", responseAs[String])
+          writeJsonOutput("changeEmailResponse", responseAs[String])
           val putAccountResponse = responseAs[SetResult]
           putAccountResponse.modified should not be None
           verify(mockMailClient).sendEmailVerificationLink(emailCaptor.capture(), verificationCodeCaptor.capture())
