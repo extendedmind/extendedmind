@@ -188,7 +188,7 @@
       'title': 'test note'
     };
     var testNote = NotesService.getNewNote(testNoteValues, testOwnerUUID);
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/note', testNoteValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/notes', testNoteValues)
     .respond(200, putNewNoteResponse);
     NotesService.saveNote(testNote);
     $httpBackend.flush();
@@ -210,7 +210,7 @@
   it('should update existing note', function() {
     var officeDoorCode = NotesService.getNoteInfo('c2cd149a-a287-40a0-86d9-0a14462f22d6', testOwnerUUID).note;
     officeDoorCode.trans.content = '1234';
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/note/' + officeDoorCode.uuid,
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/notes/' + officeDoorCode.uuid,
                            {title: officeDoorCode.trans.title,
                             content: officeDoorCode.trans.content,
                             relationships: officeDoorCode.relationships,
@@ -233,7 +233,7 @@
 
   it('should delete and undelete note', function() {
     var officeDoorCode = NotesService.getNoteInfo('c2cd149a-a287-40a0-86d9-0a14462f22d6', testOwnerUUID).note;
-    $httpBackend.expectDELETE('/api/' + testOwnerUUID + '/note/' + officeDoorCode.uuid)
+    $httpBackend.expectDELETE('/api/v2/owners/' + testOwnerUUID + '/data/notes/' + officeDoorCode.uuid)
     .respond(200, deleteNoteResponse);
     NotesService.deleteNote(officeDoorCode);
     $httpBackend.flush();
@@ -246,7 +246,8 @@
     .toBe(2);
 
     // Undelete the note
-    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/note/' + officeDoorCode.uuid + '/undelete')
+    $httpBackend.expectPOST('/api/v2/owners/' + testOwnerUUID + '/data/notes/' +
+                            officeDoorCode.uuid + '/undelete')
     .respond(200, undeleteNoteResponse);
     NotesService.undeleteNote(officeDoorCode);
     $httpBackend.flush();
@@ -266,7 +267,8 @@
     // Favorite
     var officeDoorCode = NotesService.getNoteInfo('c2cd149a-a287-40a0-86d9-0a14462f22d6', testOwnerUUID).note;
 
-    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/note/' + officeDoorCode.uuid + '/favorite')
+    $httpBackend.expectPOST('/api/v2/owners/' + testOwnerUUID + '/data/notes/' +
+                            officeDoorCode.uuid + '/favorite')
     .respond(200, favoriteNoteResponse);
     NotesService.favoriteNote(officeDoorCode);
     $httpBackend.flush();
@@ -284,7 +286,8 @@
     .toBe(notes[0].mod.favorited);
 
     // Unfavorite
-    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/note/' + officeDoorCode.uuid + '/unfavorite')
+    $httpBackend.expectPOST('/api/v2/owners/' + testOwnerUUID + '/data/notes/' +
+                            officeDoorCode.uuid + '/unfavorite')
     .respond(200, unfavoriteNoteResponse);
     NotesService.unfavoriteNote(officeDoorCode);
     $httpBackend.flush();

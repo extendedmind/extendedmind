@@ -256,7 +256,7 @@
       function(response){
         // Remove user synchronization from the queue to prevent tutorial from starting again
         // for existing user
-        SynchronizeService.clearUserUpdate();
+        SynchronizeService.clearUserUpdate(oldUUID);
 
         // Analytics
         AnalyticsService.doWithOldUuid('user', 'inner_login', oldUUID, true);

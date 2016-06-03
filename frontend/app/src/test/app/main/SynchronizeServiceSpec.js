@@ -335,7 +335,7 @@ describe('SynchronizeService', function() {
         MockUserSessionService.callbacks[id](testOwnerUUID);
       }
       // Syncronize with test data
-      $httpBackend.expectGET('/api/' + testOwnerUUID + '/items')
+      $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID + '/data')
        .respond(200, testItemData);
       SynchronizeService.synchronize(testOwnerUUID);
       $httpBackend.flush();
@@ -390,8 +390,8 @@ describe('SynchronizeService', function() {
     }
 
     // Expect to get data from the persistent storage
-    $httpBackend.expectGET('/api/' + testOwnerUUID +
-                           '/items?modified=' + MockUserSessionService.latestModified +
+    $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID +
+                           '/data?modified=' + MockUserSessionService.latestModified +
                            '&deleted=true&archived=true&completed=true').respond(
                            200, {});
     SynchronizeService.synchronize(testOwnerUUID);
@@ -418,8 +418,8 @@ describe('SynchronizeService', function() {
       }]
     };
 
-    $httpBackend.expectGET('/api/' + testOwnerUUID +
-                           '/items?modified=' + MockUserSessionService.getLatestModified() +
+    $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID +
+                           '/data?modified=' + MockUserSessionService.getLatestModified() +
                            '&deleted=true&archived=true&completed=true')
      .respond(200, modifiedGetItemsResponse);
     SynchronizeService.synchronize(testOwnerUUID);
@@ -447,7 +447,7 @@ describe('SynchronizeService', function() {
 
   it('should syncronize with empty result', function () {
     MockUserSessionService.setLatestModified(undefined);
-    $httpBackend.expectGET('/api/' + testOwnerUUID + '/items')
+    $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID + '/data')
      .respond(200, '{}');
     SynchronizeService.synchronize(testOwnerUUID);
     $httpBackend.flush();
@@ -471,7 +471,7 @@ describe('SynchronizeService', function() {
       'title': 'test item',
     };
     var testItem = ItemsService.getNewItem(testItemValues, testOwnerUUID);
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/items', testItemValues)
        .respond(404);
     ItemsService.saveItem(testItem);
     $httpBackend.flush();
@@ -487,7 +487,7 @@ describe('SynchronizeService', function() {
 
     testItem.trans.description = 'test description';
     // We're expecting to get another try at creating the item
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item',
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/items',
                            testItemValues)
        .respond(404);
     ItemsService.saveItem(testItem);
@@ -499,7 +499,7 @@ describe('SynchronizeService', function() {
 
     // 3. delete item
     // We're still expecting to get another try at creating the first
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/items', testItemValues)
        .respond(404);
     ItemsService.deleteItem(testItem);
     $httpBackend.flush();
@@ -508,7 +508,7 @@ describe('SynchronizeService', function() {
 
     // 4. undelete item
     // We're again, still expecting to get another try at creating the first
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/items', testItemValues)
        .respond(404);
     ItemsService.undeleteItem(testItem);
     $httpBackend.flush();
@@ -519,12 +519,12 @@ describe('SynchronizeService', function() {
 
     var latestModified = now.getTime();
     MockUserSessionService.setLatestModified(latestModified);
-    $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
+    $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID + '/data?modified=' +
                             latestModified + '&deleted=true&archived=true&completed=true')
         .respond(200, '{}');
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/items', testItemValues)
         .respond(200, putNewItemResponse);
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item/' + putNewItemResponse.uuid,
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/items/' + putNewItemResponse.uuid,
                            {id: testItem.trans.id,
                             title: testItem.trans.title,
                             description: testItem.trans.description,
@@ -542,7 +542,7 @@ describe('SynchronizeService', function() {
       .toBe('test description');
 
     // 6. delete online
-    $httpBackend.expectDELETE('/api/' + testOwnerUUID + '/item/' +
+    $httpBackend.expectDELETE('/api/v2/owners/' + testOwnerUUID + '/data/items/' +
                               testItem.mod.uuid)
        .respond(200, deleteItemResponse);
     ItemsService.deleteItem(testItem);
@@ -555,7 +555,7 @@ describe('SynchronizeService', function() {
       .toBe(deleteItemResponse.result.modified);
 
     // 7. undelete online
-    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/item/' + testItem.mod.uuid +
+    $httpBackend.expectPOST('/api/v2/owners/' + testOwnerUUID + '/data/items/' + testItem.mod.uuid +
                             '/undelete')
        .respond(200, undeleteItemResponse);
     ItemsService.undeleteItem(testItem);
@@ -568,7 +568,7 @@ describe('SynchronizeService', function() {
       .toBe(undeleteItemResponse.modified);
 
     // 8. synchronize and get new item as it is back,
-    $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
+    $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID + '/data?modified=' +
                             latestModified + '&deleted=true&archived=true&completed=true')
         .respond(200, {
           items: [
@@ -598,7 +598,7 @@ describe('SynchronizeService', function() {
                       description: yoga.trans.description,
                       modified: yoga.modified};
 
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item/' + yoga.trans.uuid,
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/items/' + yoga.trans.uuid,
                           yogaValues)
        .respond(404);
     ItemsService.saveItem(yoga);
@@ -628,10 +628,10 @@ describe('SynchronizeService', function() {
       }]
     };
     yogaValues.modified = newLatestModified;
-    $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
+    $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID + '/data?modified=' +
                             latestModified + '&deleted=true&archived=true&completed=true')
         .respond(200, conflictYogaResponse);
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item/' + yoga.trans.uuid,
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/items/' + yoga.trans.uuid,
                            yogaValues)
         .respond(200, putNewItemResponse);
     SynchronizeService.synchronize(testOwnerUUID);
@@ -642,7 +642,7 @@ describe('SynchronizeService', function() {
     yoga.trans.description = 'just do it, or not';
     yogaValues.description = yoga.trans.description;
     yogaValues.modified = yoga.trans.modified;
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item/' + yoga.uuid,
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/items/' + yoga.uuid,
                            yogaValues)
        .respond(404);
     ItemsService.saveItem(yoga);
@@ -653,7 +653,7 @@ describe('SynchronizeService', function() {
     // 4. synchronize with conflicting item that is newer, expect PUT to have been deleted
     var veryLatestModified = Date.now() + 1;
     conflictYogaResponse.items[0].modified = veryLatestModified;
-    $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
+    $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID + '/data?modified=' +
                             newLatestModified + '&deleted=true&archived=true&completed=true')
         .respond(200, conflictYogaResponse);
     SynchronizeService.synchronize(testOwnerUUID);
@@ -675,7 +675,7 @@ describe('SynchronizeService', function() {
       title: 'test item'
     };
     var testItem = ItemsService.getNewItem(testItemValues, testOwnerUUID);
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/items', testItemValues)
        .respond(200, {testing: true});
     ItemsService.saveItem(testItem);
     $httpBackend.flush();
@@ -691,7 +691,7 @@ describe('SynchronizeService', function() {
     var latestModified = now.getTime();
     MockUserSessionService.setLatestModified(latestModified);
     var testItemUUID = 'c2724771-4469-488c-aabd-9db188672a00';
-    $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
+    $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID + '/data?modified=' +
                             latestModified + '&deleted=true&archived=true&completed=true')
         .respond(200,
         {
@@ -723,7 +723,7 @@ describe('SynchronizeService', function() {
       'title': 'test task'
     };
     var testItem = ItemsService.getNewItem(testItemValues, testOwnerUUID);
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/items', testItemValues)
        .respond(404);
     ItemsService.saveItem(testItem);
     $httpBackend.flush();
@@ -732,7 +732,7 @@ describe('SynchronizeService', function() {
       .toBe(4);
 
     // 2. make item into task
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/items', testItemValues)
        .respond(404);
     ItemsService.itemToTask(testItem);
     $httpBackend.flush();
@@ -748,7 +748,7 @@ describe('SynchronizeService', function() {
     //    is a task update and updating is lastReplaceable
     var updatedTestTask = tasks[4];
     updatedTestTask.trans.description = 'test description';
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/items', testItemValues)
        .respond(404);
     TasksService.saveTask(updatedTestTask);
     $httpBackend.flush();
@@ -757,7 +757,7 @@ describe('SynchronizeService', function() {
       .toBe(5);
 
     // 4. delete task
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/items', testItemValues)
        .respond(404);
     TasksService.deleteTask(updatedTestTask);
     $httpBackend.flush();
@@ -765,7 +765,7 @@ describe('SynchronizeService', function() {
       .toBe(4);
 
     // 5. undelete task
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/items', testItemValues)
        .respond(404);
     TasksService.undeleteTask(updatedTestTask);
     $httpBackend.flush();
@@ -775,12 +775,12 @@ describe('SynchronizeService', function() {
     // 6. synchronize items and get back online, we're expecting the delete and undelete to cancel each other
     var latestModified = now.getTime();
     MockUserSessionService.setLatestModified(latestModified);
-    $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
+    $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID + '/data?modified=' +
                             latestModified + '&deleted=true&archived=true&completed=true')
         .respond(200, '{}');
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/items', testItemValues)
         .respond(200, putNewItemResponse);
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' +
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' +
                            putNewItemResponse.uuid,
                            {id: updatedTestTask.trans.id,
                             title: updatedTestTask.trans.title,
@@ -803,7 +803,7 @@ describe('SynchronizeService', function() {
       .toBeUndefined();
 
     // 7. delete online
-    $httpBackend.expectDELETE('/api/' + testOwnerUUID + '/task/' + updatedTestTask.mod.uuid)
+    $httpBackend.expectDELETE('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' + updatedTestTask.mod.uuid)
        .respond(200, deleteItemResponse);
     TasksService.deleteTask(updatedTestTask);
     $httpBackend.flush();
@@ -816,7 +816,7 @@ describe('SynchronizeService', function() {
       .toBe(deleteItemResponse.result.modified);
 
     // 8. undelete online
-    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + updatedTestTask.mod.uuid + '/undelete')
+    $httpBackend.expectPOST('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' + updatedTestTask.mod.uuid + '/undelete')
        .respond(200, undeleteItemResponse);
     TasksService.undeleteTask(updatedTestTask);
     $httpBackend.flush();
@@ -828,7 +828,7 @@ describe('SynchronizeService', function() {
       .toBe(undeleteItemResponse.modified);
 
     // 9. synchronize and get new task as it is back,
-    $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
+    $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID + '/data?modified=' +
                             latestModified + '&deleted=true&archived=true&completed=true')
         .respond(200, {
           tasks: [
@@ -857,7 +857,7 @@ describe('SynchronizeService', function() {
       'title': 'test task'
     };
     var testTask = TasksService.getNewTask(testTaskValues, testOwnerUUID);
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task', testTaskValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/tasks', testTaskValues)
        .respond(404);
     TasksService.saveTask(testTask);
     $httpBackend.flush();
@@ -867,7 +867,7 @@ describe('SynchronizeService', function() {
 
     // 2. complete it
 
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task', testTaskValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/tasks', testTaskValues)
        .respond(404);
     TasksService.completeTask(testTask);
     $httpBackend.flush();
@@ -877,7 +877,7 @@ describe('SynchronizeService', function() {
 
     // 3. uncomplete it
 
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task', testTaskValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/tasks', testTaskValues)
        .respond(404);
     TasksService.uncompleteTask(testTask);
     $httpBackend.flush();
@@ -888,9 +888,9 @@ describe('SynchronizeService', function() {
 
     // 4. complete it again but go online, expect only one complete
 
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task', testTaskValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/tasks', testTaskValues)
        .respond(200, putNewItemResponse);
-    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + putNewItemResponse.uuid + '/complete')
+    $httpBackend.expectPOST('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' + putNewItemResponse.uuid + '/complete')
        .respond(200, completeTaskResponse);
     TasksService.completeTask(testTask);
     $httpBackend.flush();
@@ -903,7 +903,7 @@ describe('SynchronizeService', function() {
 
     // 5. uncomplete online
 
-    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + putNewItemResponse.uuid + '/uncomplete')
+    $httpBackend.expectPOST('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' + putNewItemResponse.uuid + '/uncomplete')
        .respond(200, uncompleteTaskResponse);
     TasksService.uncompleteTask(testTask);
     $httpBackend.flush();
@@ -915,7 +915,7 @@ describe('SynchronizeService', function() {
     // 6. complete offline but get conflicting completed response from the server: expect that double
     //    complete has been removed from queue
     var buyTickets = TasksService.getTaskInfo('1a1ce3aa-f476-43c4-845e-af59a9a33760', testOwnerUUID).task;
-    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + buyTickets.uuid + '/complete')
+    $httpBackend.expectPOST('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' + buyTickets.uuid + '/complete')
        .respond(404);
     TasksService.completeTask(buyTickets);
     $httpBackend.flush();
@@ -936,7 +936,7 @@ describe('SynchronizeService', function() {
       'relationships': buyTickets.relationships
     };
 
-    $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
+    $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID + '/data?modified=' +
                             latestModified + '&deleted=true&archived=true&completed=true')
         .respond(200, {tasks: [conflictingBuyTickets]});
     SynchronizeService.synchronize(testOwnerUUID);
@@ -962,7 +962,7 @@ describe('SynchronizeService', function() {
                                 description: cleanCloset.trans.description,
                                 modified: cleanCloset.trans.modified};
 
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' + cleanCloset.trans.uuid, cleanClosetTransport)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' + cleanCloset.trans.uuid, cleanClosetTransport)
        .respond(404);
     TasksService.saveTask(cleanCloset);
     $httpBackend.flush();
@@ -985,10 +985,10 @@ describe('SynchronizeService', function() {
       }]
     };
     cleanClosetTransport.modified = newLatestModified;
-    $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
+    $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID + '/data?modified=' +
                             latestModified + '&deleted=true&archived=true&completed=true')
         .respond(200, conflictCleanClosetResponse);
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' + cleanCloset.trans.uuid,
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' + cleanCloset.trans.uuid,
         cleanClosetTransport).respond(200, {modified: newLatestModified});
     SynchronizeService.synchronize(testOwnerUUID);
     $httpBackend.flush();
@@ -1009,7 +1009,7 @@ describe('SynchronizeService', function() {
 
     cleanCloset.trans.title = 'clean my closet';
     cleanClosetTransport.title = cleanCloset.trans.title;
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' + cleanCloset.trans.uuid,
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' + cleanCloset.trans.uuid,
                            cleanClosetTransport)
        .respond(404);
     TasksService.saveTask(cleanCloset);
@@ -1022,7 +1022,7 @@ describe('SynchronizeService', function() {
     conflictCleanClosetResponse.tasks[0].modified = veryLatestModified;
     conflictCleanClosetResponse.tasks[0].title = cleanCloset.trans.title;
 
-    $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
+    $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID + '/data?modified=' +
                             newLatestModified + '&deleted=true&archived=true&completed=true')
         .respond(200, conflictCleanClosetResponse);
     SynchronizeService.synchronize(testOwnerUUID);
@@ -1051,7 +1051,7 @@ describe('SynchronizeService', function() {
                                 due: cleanCloset.trans.due,
                                 repeating: cleanCloset.trans.repeating,
                                 modified: cleanCloset.trans.modified};
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' + cleanCloset.trans.uuid, cleanClosetTransport)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' + cleanCloset.trans.uuid, cleanClosetTransport)
        .respond(404);
     TasksService.saveTask(cleanCloset);
     $httpBackend.flush();
@@ -1059,7 +1059,7 @@ describe('SynchronizeService', function() {
       .toBe(4);
 
     // 2. uncomplete task
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' + cleanCloset.trans.uuid, cleanClosetTransport)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' + cleanCloset.trans.uuid, cleanClosetTransport)
        .respond(404);
     TasksService.uncompleteTask(cleanCloset);
     $httpBackend.flush();
@@ -1068,7 +1068,7 @@ describe('SynchronizeService', function() {
     expect(cleanCloset.mod.completed).toBeUndefined();
 
     // 3. complete task, expect new task to be created
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' + cleanCloset.trans.uuid, cleanClosetTransport)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' + cleanCloset.trans.uuid, cleanClosetTransport)
        .respond(404);
     TasksService.completeTask(cleanCloset);
     $httpBackend.flush();
@@ -1094,13 +1094,13 @@ describe('SynchronizeService', function() {
       created: latestModified + 100
     };
 
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' + cleanCloset.trans.uuid, cleanClosetTransport)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' + cleanCloset.trans.uuid, cleanClosetTransport)
        .respond(200, putExistingItemResponse);
-    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + cleanCloset.trans.uuid + '/uncomplete')
+    $httpBackend.expectPOST('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' + cleanCloset.trans.uuid + '/uncomplete')
        .respond(200, uncompleteTaskResponse);
-    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + cleanCloset.trans.uuid + '/complete')
+    $httpBackend.expectPOST('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' + cleanCloset.trans.uuid + '/complete')
        .respond(200, completeRepeatingTaskResponse);
-    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + cleanCloset.trans.uuid + '/uncomplete')
+    $httpBackend.expectPOST('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' + cleanCloset.trans.uuid + '/uncomplete')
        .respond(200, uncompleteTaskResponse);
     TasksService.uncompleteTask(cleanCloset);
     $httpBackend.flush();
@@ -1121,7 +1121,7 @@ describe('SynchronizeService', function() {
         'title': cleanCloset.trans.title
       }, completeRepeatingTaskResponse.generated]
     };
-    $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
+    $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID + '/data?modified=' +
                             latestModified + '&deleted=true&archived=true&completed=true')
         .respond(200, backendTaskResponse);
     SynchronizeService.synchronize(testOwnerUUID);
@@ -1145,7 +1145,7 @@ describe('SynchronizeService', function() {
                                 due: buyTickets.trans.due,
                                 repeating: buyTickets.trans.repeating,
                                 modified: buyTickets.trans.modified};
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' + buyTickets.trans.uuid, buyTicketsTransport)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' + buyTickets.trans.uuid, buyTicketsTransport)
        .respond(200, putExistingItemResponse);
     TasksService.saveTask(buyTickets);
     $httpBackend.flush();
@@ -1166,7 +1166,7 @@ describe('SynchronizeService', function() {
         'title': buyTickets.trans.title
       }]
     };
-    $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
+    $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID + '/data?modified=' +
                             latestModified + '&deleted=true&archived=true&completed=true')
         .respond(200, backendTaskResponse);
     SynchronizeService.synchronize(testOwnerUUID);
@@ -1176,7 +1176,7 @@ describe('SynchronizeService', function() {
     expect(buyTickets.mod).toBeUndefined();
 
     // 3. complete task offline, expect new task to be created
-    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + buyTickets.trans.uuid + '/complete')
+    $httpBackend.expectPOST('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' + buyTickets.trans.uuid + '/complete')
        .respond(404);
     TasksService.completeTask(buyTickets);
     $httpBackend.flush();
@@ -1194,7 +1194,7 @@ describe('SynchronizeService', function() {
 
 
     // 4. complete the generated task offline again, expect another task to be created
-    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + buyTickets.trans.uuid + '/complete')
+    $httpBackend.expectPOST('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' + buyTickets.trans.uuid + '/complete')
        .respond(404);
     TasksService.completeTask(generatedTask);
     $httpBackend.flush();
@@ -1226,7 +1226,7 @@ describe('SynchronizeService', function() {
         }
       }]
     };
-    $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
+    $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID + '/data?modified=' +
                             latestModified + '&deleted=true&archived=true&completed=true')
         .respond(200, backendTaskResponse);
     SynchronizeService.synchronize(testOwnerUUID);
@@ -1250,7 +1250,7 @@ describe('SynchronizeService', function() {
       title: 'test task'
     };
     var testTask = TasksService.getNewTask(testTaskValues, testOwnerUUID);
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task', testTaskValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/tasks', testTaskValues)
        .respond(200, {testing: true});
     TasksService.saveTask(testTask);
     $httpBackend.flush();
@@ -1266,7 +1266,7 @@ describe('SynchronizeService', function() {
     var latestModified = now.getTime();
     MockUserSessionService.setLatestModified(latestModified);
     var testTaskUUID = 'b2724771-4469-488c-aabd-9db188672a00';
-    $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
+    $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID + '/data?modified=' +
                             latestModified + '&deleted=true&archived=true&completed=true')
         .respond(200,
         {
@@ -1298,7 +1298,7 @@ describe('SynchronizeService', function() {
       'title': 'test note'
     };
     var testItem = ItemsService.getNewItem(testItemValues, testOwnerUUID);
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/items', testItemValues)
        .respond(404);
     ItemsService.saveItem(testItem);
     $httpBackend.flush();
@@ -1307,7 +1307,7 @@ describe('SynchronizeService', function() {
       .toBe(4);
 
     // 2. make item into note
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/items', testItemValues)
        .respond(404);
     ItemsService.itemToNote(testItem);
     $httpBackend.flush();
@@ -1323,7 +1323,7 @@ describe('SynchronizeService', function() {
     var updatedTestNote = notes[4];
     updatedTestNote.trans.description = 'test description';
 
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/items', testItemValues)
        .respond(404);
     NotesService.saveNote(updatedTestNote);
     $httpBackend.flush();
@@ -1332,7 +1332,7 @@ describe('SynchronizeService', function() {
       .toBe(5);
 
     // 4. delete note
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/items', testItemValues)
        .respond(404);
     NotesService.deleteNote(updatedTestNote);
     $httpBackend.flush();
@@ -1340,7 +1340,7 @@ describe('SynchronizeService', function() {
       .toBe(4);
 
     // 5. undelete note
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/items', testItemValues)
        .respond(404);
     NotesService.undeleteNote(updatedTestNote);
     $httpBackend.flush();
@@ -1350,12 +1350,12 @@ describe('SynchronizeService', function() {
     // 6. synchronize items and get back online, we're expecting the delete and undelete to cancel each other
     var latestModified = now.getTime();
     MockUserSessionService.setLatestModified(latestModified);
-    $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
+    $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID + '/data?modified=' +
                             latestModified + '&deleted=true&archived=true&completed=true')
         .respond(200, '{}');
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/items', testItemValues)
         .respond(200, putNewItemResponse);
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/note/' + putNewItemResponse.uuid,
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/notes/' + putNewItemResponse.uuid,
                            {id: updatedTestNote.trans.id,
                             title: updatedTestNote.trans.title,
                             description: updatedTestNote.trans.description,
@@ -1375,7 +1375,7 @@ describe('SynchronizeService', function() {
       .toBeDefined();
 
     // 7. delete online
-    $httpBackend.expectDELETE('/api/' + testOwnerUUID + '/note/' + updatedTestNote.mod.uuid)
+    $httpBackend.expectDELETE('/api/v2/owners/' + testOwnerUUID + '/data/notes/' + updatedTestNote.mod.uuid)
        .respond(200, deleteItemResponse);
     NotesService.deleteNote(updatedTestNote);
     $httpBackend.flush();
@@ -1387,7 +1387,7 @@ describe('SynchronizeService', function() {
       .toBe(deleteItemResponse.result.modified);
 
     // 8. undelete online
-    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/note/' + updatedTestNote.mod.uuid + '/undelete')
+    $httpBackend.expectPOST('/api/v2/owners/' + testOwnerUUID + '/data/notes/' + updatedTestNote.mod.uuid + '/undelete')
        .respond(200, undeleteItemResponse);
     NotesService.undeleteNote(updatedTestNote);
     $httpBackend.flush();
@@ -1399,7 +1399,7 @@ describe('SynchronizeService', function() {
       .toBe(undeleteItemResponse.modified);
 
     // 9. synchronize and get new note as it is back
-    $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
+    $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID + '/data?modified=' +
                             latestModified + '&deleted=true&archived=true&completed=true')
         .respond(200, {
           notes: [
@@ -1426,7 +1426,7 @@ describe('SynchronizeService', function() {
     var aboutContexts = NotesService.getNoteInfo('a1cd149a-a287-40a0-86d9-0a14462f22d6', testOwnerUUID).note;
     var aboutContextsOriginalTitle = aboutContexts.trans.title;
     aboutContexts.trans.title = 'contexts might be used to prevent access to data';
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/note/' + aboutContexts.uuid,
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/notes/' + aboutContexts.uuid,
                           { title: aboutContexts.trans.title,
                             content: aboutContexts.trans.content,
                             modified: aboutContexts.trans.modified})
@@ -1452,7 +1452,7 @@ describe('SynchronizeService', function() {
         'content': 'might be a good idea, maybe'
       }]
     };
-    $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
+    $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID + '/data?modified=' +
                             latestModified + '&deleted=true&archived=true&completed=true')
         .respond(200, conflictAboutContextsResponse);
     var aboutContextsTransport = {
@@ -1460,7 +1460,7 @@ describe('SynchronizeService', function() {
       content: aboutContexts.trans.content + '\n\n>>> conflicting changes >>>\n\n' +
                conflictAboutContextsResponse.notes[0].content,
       modified: newLatestModified};
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/note/' + aboutContexts.uuid,
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/notes/' + aboutContexts.uuid,
                            aboutContextsTransport)
         .respond(200, {modified: newLatestModified + 1});
     SynchronizeService.synchronize(testOwnerUUID);
@@ -1475,7 +1475,7 @@ describe('SynchronizeService', function() {
     aboutContextsConflictingContent.trans.title = aboutContextsOriginalTitle;
     aboutContextsTransport.title = aboutContextsOriginalTitle;
     aboutContextsTransport.modified = newLatestModified + 1;
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/note/' + aboutContexts.uuid,
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/notes/' + aboutContexts.uuid,
                            aboutContextsTransport)
        .respond(404);
     NotesService.saveNote(aboutContextsConflictingContent);
@@ -1488,7 +1488,7 @@ describe('SynchronizeService', function() {
     conflictAboutContextsResponse.notes[0].modified = veryLatestModified;
     conflictAboutContextsResponse.notes[0].title = aboutContextsConflictingContent.trans.title;
     conflictAboutContextsResponse.notes[0].content = aboutContextsConflictingContent.trans.content;
-    $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
+    $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID + '/data?modified=' +
                             newLatestModified + '&deleted=true&archived=true&completed=true')
         .respond(200, conflictAboutContextsResponse);
     SynchronizeService.synchronize(testOwnerUUID);
@@ -1516,7 +1516,7 @@ describe('SynchronizeService', function() {
       title: 'test note'
     };
     var testNote = NotesService.getNewNote(testNoteValues, testOwnerUUID);
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/note', testNoteValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/notes', testNoteValues)
        .respond(200, {testing: true});
     NotesService.saveNote(testNote);
     $httpBackend.flush();
@@ -1532,7 +1532,7 @@ describe('SynchronizeService', function() {
     var latestModified = now.getTime();
     MockUserSessionService.setLatestModified(latestModified);
     var testNoteUUID = 'd2724771-4469-488c-aabd-9db188672a00';
-    $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
+    $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID + '/data?modified=' +
                             latestModified + '&deleted=true&archived=true&completed=true')
         .respond(200,
         {
@@ -1564,7 +1564,7 @@ describe('SynchronizeService', function() {
       'title': 'test list'
     };
     var testItem = ItemsService.getNewItem(testItemValues, testOwnerUUID);
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/items', testItemValues)
        .respond(404);
     ItemsService.saveItem(testItem);
     $httpBackend.flush();
@@ -1573,7 +1573,7 @@ describe('SynchronizeService', function() {
       .toBe(4);
 
     // 2. make item into list
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/items', testItemValues)
        .respond(404);
     ItemsService.itemToList(testItem);
     $httpBackend.flush();
@@ -1589,7 +1589,7 @@ describe('SynchronizeService', function() {
     //    is a list update and updating is lastReplaceable
     var updatedTestList = lists[4];
     updatedTestList.trans.description = 'test description';
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/items', testItemValues)
        .respond(404);
     ListsService.saveList(updatedTestList);
     $httpBackend.flush();
@@ -1606,13 +1606,13 @@ describe('SynchronizeService', function() {
       }
     };
     var testTask = TasksService.getNewTask({title: testTaskValues.title, list: lists[4]}, testOwnerUUID);
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/items', testItemValues)
        .respond(404);
     TasksService.saveTask(testTask);
     $httpBackend.flush();
 
     // 5. delete list offline
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/items', testItemValues)
        .respond(404);
     ListsService.deleteList(updatedTestList);
     $httpBackend.flush();
@@ -1629,7 +1629,7 @@ describe('SynchronizeService', function() {
       .toBeUndefined();
 
     // 6. undelete list offline
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/items', testItemValues)
        .respond(404);
     ListsService.undeleteList(updatedTestList);
     $httpBackend.flush();
@@ -1647,12 +1647,12 @@ describe('SynchronizeService', function() {
     // 7. synchronize items and get back online
     var latestModified = now.getTime();
     MockUserSessionService.setLatestModified(latestModified);
-    $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
+    $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID + '/data?modified=' +
                             latestModified + '&deleted=true&archived=true&completed=true')
         .respond(200, '{}');
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/items', testItemValues)
         .respond(200, putNewItemResponse);
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/list/' +
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/lists/' +
                            putNewItemResponse.uuid,
                            {id: updatedTestList.trans.id,
                             title: updatedTestList.trans.title,
@@ -1660,7 +1660,7 @@ describe('SynchronizeService', function() {
                             modified: putNewItemResponse.modified})
         .respond(200, putExistingItemResponse);
     testTaskValues.relationships.parent = putNewItemResponse.uuid;
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task',
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/tasks',
                            testTaskValues)
         .respond(200, putNewTaskResponse);
     SynchronizeService.synchronize(testOwnerUUID);
@@ -1681,7 +1681,7 @@ describe('SynchronizeService', function() {
       .toBe(lists[4].mod.uuid);
 
     // 8. delete online
-    $httpBackend.expectDELETE('/api/' + testOwnerUUID + '/list/' + updatedTestList.mod.uuid)
+    $httpBackend.expectDELETE('/api/v2/owners/' + testOwnerUUID + '/data/lists/' + updatedTestList.mod.uuid)
        .respond(200, deleteItemResponse);
     ListsService.deleteList(updatedTestList);
     $httpBackend.flush();
@@ -1694,7 +1694,7 @@ describe('SynchronizeService', function() {
       .toBe(deleteItemResponse.result.modified);
 
     // 9. undelete online
-    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/list/' + updatedTestList.mod.uuid + '/undelete')
+    $httpBackend.expectPOST('/api/v2/owners/' + testOwnerUUID + '/data/lists/' + updatedTestList.mod.uuid + '/undelete')
        .respond(200, undeleteItemResponse);
     ListsService.undeleteList(updatedTestList);
     $httpBackend.flush();
@@ -1706,7 +1706,7 @@ describe('SynchronizeService', function() {
       .toBe(undeleteItemResponse.modified);
 
     // 10. synchronize and get new list as it is back,
-    $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
+    $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID + '/data?modified=' +
                             latestModified + '&deleted=true&archived=true&completed=true')
         .respond(200, {
           lists: [
@@ -1750,7 +1750,7 @@ describe('SynchronizeService', function() {
       title: 'test list'
     };
     var testList = ListsService.getNewList(testListValues, testOwnerUUID);
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/list', testListValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/lists', testListValues)
        .respond(200, {testing: true});
     ListsService.saveList(testList);
     $httpBackend.flush();
@@ -1766,7 +1766,7 @@ describe('SynchronizeService', function() {
     var latestModified = now.getTime();
     MockUserSessionService.setLatestModified(latestModified);
     var testNoteUUID = 'd2724771-4469-488c-aabd-9db188672a00';
-    $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
+    $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID + '/data?modified=' +
                             latestModified + '&deleted=true&archived=true&completed=true')
         .respond(200,
         {
@@ -1800,13 +1800,13 @@ describe('SynchronizeService', function() {
       'title': 'test list'
     };
     var testItem = ItemsService.getNewItem(testItemValues, testOwnerUUID);
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/items', testItemValues)
        .respond(404);
     ItemsService.saveItem(testItem);
     $httpBackend.flush();
 
     // 2. make item into list
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/items', testItemValues)
        .respond(404);
     ItemsService.itemToList(testItem);
     $httpBackend.flush();
@@ -1815,7 +1815,7 @@ describe('SynchronizeService', function() {
     //    is a list update and updating is lastReplaceable
     var updatedTestList = lists[4];
     updatedTestList.trans.description = 'test description';
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/items', testItemValues)
        .respond(404);
     ListsService.saveList(updatedTestList);
     $httpBackend.flush();
@@ -1823,9 +1823,9 @@ describe('SynchronizeService', function() {
     // 4. delete online, expect queue to empty
     var latestModified = now.getTime();
     MockUserSessionService.setLatestModified(latestModified);
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/items', testItemValues)
         .respond(200, putNewItemResponse);
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/list/' +
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/lists/' +
                            putNewItemResponse.uuid,
                            {id: updatedTestList.trans.id,
                             title: updatedTestList.trans.title,
@@ -1837,7 +1837,7 @@ describe('SynchronizeService', function() {
 
     runs(function() {
       flag = false;
-      $httpBackend.expectPOST('/api/' + testOwnerUUID + '/list/' + updatedTestList.mod.uuid  + '/archive')
+      $httpBackend.expectPOST('/api/v2/owners/' + testOwnerUUID + '/data/lists/' + updatedTestList.mod.uuid  + '/archive')
          .respond(200, archiveListResponse);
       setTimeout(function(){
         $httpBackend.flush();
@@ -1869,7 +1869,7 @@ describe('SynchronizeService', function() {
       tagType: 'keyword'
     };
     var testTag = TagsService.getNewTag(testTagValues, testOwnerUUID);
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/tag', testTagValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/tags', testTagValues)
        .respond(404);
     TagsService.saveTag(testTag);
     $httpBackend.flush();
@@ -1882,7 +1882,7 @@ describe('SynchronizeService', function() {
 
     // 2. update tag
     testTag.trans.description = 'test description';
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/tag', testTagValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/tags', testTagValues)
        .respond(404);
     TagsService.saveTag(testTag);
     $httpBackend.flush();
@@ -1898,13 +1898,13 @@ describe('SynchronizeService', function() {
       }
     };
     var testNote = NotesService.getNewNote({title: testNoteValues.title, keywords: [testTag]}, testOwnerUUID);
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/tag', testTagValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/tags', testTagValues)
        .respond(404);
     NotesService.saveNote(testNote);
     $httpBackend.flush();
 
     // 4. delete offline
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/tag', testTagValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/tags', testTagValues)
        .respond(404);
     TagsService.deleteTag(testTag);
     $httpBackend.flush();
@@ -1921,7 +1921,7 @@ describe('SynchronizeService', function() {
       .toBeUndefined();
 
     // 5. undelete offline
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/tag', testTagValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/tags', testTagValues)
        .respond(404);
     TagsService.undeleteTag(testTag);
     $httpBackend.flush();
@@ -1939,12 +1939,12 @@ describe('SynchronizeService', function() {
     // 6. synchronize items and get back online
     var latestModified = now.getTime();
     MockUserSessionService.setLatestModified(latestModified);
-    $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
+    $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID + '/data?modified=' +
                             latestModified + '&deleted=true&archived=true&completed=true')
         .respond(200, '{}');
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/tag', testTagValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/tags', testTagValues)
         .respond(200, putNewItemResponse);
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/tag/' +
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/tags/' +
                            putNewItemResponse.uuid,
                            {id: testTag.trans.id,
                             title: testTag.trans.title,
@@ -1953,7 +1953,7 @@ describe('SynchronizeService', function() {
                             modified: putNewItemResponse.modified})
         .respond(200, putExistingItemResponse);
     testNoteValues.relationships.tags[0] = putNewItemResponse.uuid;
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/note',
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/notes',
                            testNoteValues)
         .respond(200, putNewNoteResponse);
     SynchronizeService.synchronize(testOwnerUUID);
@@ -1970,7 +1970,7 @@ describe('SynchronizeService', function() {
       .toBeUndefined();
 
     // 5. delete online
-    $httpBackend.expectDELETE('/api/' + testOwnerUUID + '/tag/' + testTag.mod.uuid)
+    $httpBackend.expectDELETE('/api/v2/owners/' + testOwnerUUID + '/data/tags/' + testTag.mod.uuid)
        .respond(200, deleteItemResponse);
     TagsService.deleteTag(testTag);
     $httpBackend.flush();
@@ -1983,7 +1983,7 @@ describe('SynchronizeService', function() {
       .toBe(deleteItemResponse.result.modified);
 
     // 6. undelete online
-    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/tag/' + testTag.mod.uuid + '/undelete')
+    $httpBackend.expectPOST('/api/v2/owners/' + testOwnerUUID + '/data/tags/' + testTag.mod.uuid + '/undelete')
        .respond(200, undeleteItemResponse);
     TagsService.undeleteTag(testTag);
     $httpBackend.flush();
@@ -1993,7 +1993,7 @@ describe('SynchronizeService', function() {
       .toBe(undeleteItemResponse.modified);
 
     // 7. synchronize and get new tag as it is back,
-    $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
+    $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID + '/data?modified=' +
                             latestModified + '&deleted=true&archived=true&completed=true')
         .respond(200, {
           tags: [
@@ -2040,7 +2040,7 @@ describe('SynchronizeService', function() {
       tagType: 'keyword'
     };
     var testTag = TagsService.getNewTag(testTagValues, testOwnerUUID);
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/tag', testTagValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/tags', testTagValues)
        .respond(200, {});
     TagsService.saveTag(testTag);
     $httpBackend.flush();
@@ -2060,7 +2060,7 @@ describe('SynchronizeService', function() {
       }
     };
     var testNote = NotesService.getNewNote({title: testNoteValues.title, keywords: [testTag]}, testOwnerUUID);
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/note', testNoteValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/notes', testNoteValues)
        .respond(404);
     NotesService.saveNote(testNote);
     $httpBackend.flush();
@@ -2070,7 +2070,7 @@ describe('SynchronizeService', function() {
     var latestModified = now.getTime();
     MockUserSessionService.setLatestModified(latestModified);
     var testTagUUID = 'a2724771-4469-488c-aabd-9db188672a00';
-    $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
+    $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID + '/data?modified=' +
                             latestModified + '&deleted=true&archived=true&completed=true')
         .respond(200,
         {
@@ -2084,7 +2084,7 @@ describe('SynchronizeService', function() {
           ]
         });
     testNoteValues.relationships.tags[0] = testTagUUID;
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/note',
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/notes',
                            testNoteValues)
         .respond(200, putNewNoteResponse);
     SynchronizeService.synchronize(testOwnerUUID);
@@ -2119,7 +2119,7 @@ describe('SynchronizeService', function() {
                     {title: 'buy oranges',
                      list: shoppingList,
                      context: homeContext}, testOwnerUUID);
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task',
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/tasks',
                            orangesTransport)
        .respond(404);
     TasksService.saveTask(oranges);
@@ -2137,7 +2137,7 @@ describe('SynchronizeService', function() {
     var cleanCloset = TasksService.getTaskInfo('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID).task;
     cleanCloset.trans.list = shoppingList;
     cleanCloset.trans.context = homeContext;
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task',
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/tasks',
                            orangesTransport)
        .respond(404);
     TasksService.saveTask(cleanCloset);
@@ -2153,7 +2153,7 @@ describe('SynchronizeService', function() {
     MockUserSessionService.setLatestModified(latestModified);
 
     delete orangesTransport.relationships;
-    $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
+    $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID + '/data?modified=' +
                             latestModified + '&deleted=true&archived=true&completed=true')
         .respond(200, {
           lists: [
@@ -2171,10 +2171,10 @@ describe('SynchronizeService', function() {
              modified: latestModified
             }
           ]});
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task',
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/tasks',
                            orangesTransport)
         .respond(200, putNewItemResponse);
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' +
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' +
                            cleanCloset.trans.uuid,
                            {id: cleanCloset.trans.id,
                             title: cleanCloset.trans.title,
@@ -2212,7 +2212,7 @@ describe('SynchronizeService', function() {
       },
       modified: cleanCloset.modified
     };
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid,
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' + cleanCloset.uuid,
                            cleanClosetTransport)
        .respond(404);
     TasksService.saveTask(cleanCloset);
@@ -2225,7 +2225,7 @@ describe('SynchronizeService', function() {
     // 2. Update the list as well
     shoppingList = ListsService.getListInfo(shoppingListUUID, testOwnerUUID).list;
     shoppingList.trans.description = 'test description';
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid,
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' + cleanCloset.uuid,
        cleanClosetTransport)
        .respond(404);
     ListsService.saveList(shoppingList);
@@ -2241,7 +2241,7 @@ describe('SynchronizeService', function() {
     MockUserSessionService.setLatestModified(latestModified);
 
     delete cleanClosetTransport.relationships;
-    $httpBackend.expectGET('/api/' + testOwnerUUID + '/items?modified=' +
+    $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID + '/data?modified=' +
                             latestModified + '&deleted=true&archived=true&completed=true')
         .respond(200, {
           notes: [
@@ -2250,7 +2250,7 @@ describe('SynchronizeService', function() {
              created: shoppingList.created,
              modified: latestModified}]
            });
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' +
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' +
                            cleanCloset.trans.uuid,
                            cleanClosetTransport)
         .respond(200, putExistingItemResponse);
@@ -2281,8 +2281,8 @@ describe('SynchronizeService', function() {
         }
       ]
     };
-    $httpBackend.expectGET('/api/' + testOwnerUUID +
-                           '/items?modified=' + latestModified +
+    $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID +
+                           '/data?modified=' + latestModified +
                            '&deleted=true&archived=true&completed=true').respond(
                            200, itemsResponseWithItemToTask);
     SynchronizeService.synchronize(testOwnerUUID);
@@ -2308,8 +2308,8 @@ describe('SynchronizeService', function() {
         }
       ]
     };
-    $httpBackend.expectGET('/api/' + testOwnerUUID +
-                           '/items?modified=' + latestModified +
+    $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID +
+                           '/data?modified=' + latestModified +
                            '&deleted=true&archived=true&completed=true').respond(
                            200, itemsResponseWithNoteToTask);
     SynchronizeService.synchronize(testOwnerUUID);
@@ -2330,8 +2330,8 @@ describe('SynchronizeService', function() {
         }
       ]
     };
-    $httpBackend.expectGET('/api/' + testOwnerUUID +
-                           '/items?modified=' + latestModified +
+    $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID +
+                           '/data?modified=' + latestModified +
                            '&deleted=true&archived=true&completed=true').respond(
                            200, itemsResponseWithListToTask);
     SynchronizeService.synchronize(testOwnerUUID);
@@ -2360,8 +2360,8 @@ describe('SynchronizeService', function() {
         }
       ]
     };
-    $httpBackend.expectGET('/api/' + testOwnerUUID +
-                           '/items?modified=' + latestModified +
+    $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID +
+                           '/data?modified=' + latestModified +
                            '&deleted=true&archived=true&completed=true').respond(
                            200, itemsResponseWithItemToNote);
     SynchronizeService.synchronize(testOwnerUUID);
@@ -2384,8 +2384,8 @@ describe('SynchronizeService', function() {
         }
       ]
     };
-    $httpBackend.expectGET('/api/' + testOwnerUUID +
-                           '/items?modified=' + latestModified +
+    $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID +
+                           '/data?modified=' + latestModified +
                            '&deleted=true&archived=true&completed=true').respond(
                            200, itemsResponseWithTaskToNote);
     SynchronizeService.synchronize(testOwnerUUID);
@@ -2406,8 +2406,8 @@ describe('SynchronizeService', function() {
         }
       ]
     };
-    $httpBackend.expectGET('/api/' + testOwnerUUID +
-                           '/items?modified=' + latestModified +
+    $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID +
+                           '/data?modified=' + latestModified +
                            '&deleted=true&archived=true&completed=true').respond(
                            200, itemsResponseWithListToNote);
     SynchronizeService.synchronize(testOwnerUUID);
@@ -2434,8 +2434,8 @@ describe('SynchronizeService', function() {
         }
       ]
     };
-    $httpBackend.expectGET('/api/' + testOwnerUUID +
-                           '/items?modified=' + latestModified +
+    $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID +
+                           '/data?modified=' + latestModified +
                            '&deleted=true&archived=true&completed=true').respond(
                            200, itemsResponseWithItemToList);
     SynchronizeService.synchronize(testOwnerUUID);
@@ -2456,8 +2456,8 @@ describe('SynchronizeService', function() {
         }
       ]
     };
-    $httpBackend.expectGET('/api/' + testOwnerUUID +
-                           '/items?modified=' + latestModified +
+    $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID +
+                           '/data?modified=' + latestModified +
                            '&deleted=true&archived=true&completed=true').respond(
                            200, itemsResponseWithTaskToList);
     SynchronizeService.synchronize(testOwnerUUID);
@@ -2481,8 +2481,8 @@ describe('SynchronizeService', function() {
         }
       ]
     };
-    $httpBackend.expectGET('/api/' + testOwnerUUID +
-                           '/items?modified=' + latestModified +
+    $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID +
+                           '/data?modified=' + latestModified +
                            '&deleted=true&archived=true&completed=true').respond(
                            200, itemsResponseWithNoteToList);
     SynchronizeService.synchronize(testOwnerUUID);
@@ -2512,7 +2512,7 @@ describe('SynchronizeService', function() {
     var testItem = ItemsService.getNewItem(testItemValues, testOwnerUUID);
     $httpBackend.expectPOST('/api/v2/users/authenticate', {rememberMe: true})
        .respond(200, authenticateResponse);
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/items', testItemValues)
         .respond(200, putNewItemResponse);
     ItemsService.saveItem(testItem);
     $httpBackend.flush();
@@ -2530,7 +2530,8 @@ describe('SynchronizeService', function() {
     var cleanCloset = TasksService.getTaskInfo(cleanClosetUUID, testOwnerUUID).task;
     var cleanClosetTransport = {title: cleanCloset.trans.title,
                                 modified: cleanCloset.trans.modified};
-    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + cleanCloset.trans.uuid + '/note',
+    $httpBackend.expectPOST('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' +
+                             cleanCloset.trans.uuid + '/convert_to_note',
                             cleanClosetTransport)
        .respond(404);
     ConvertService.finishTaskToNoteConvert(cleanCloset, testOwnerUUID);
@@ -2545,7 +2546,8 @@ describe('SynchronizeService', function() {
     expect(cleanCloset.hist.convert.task.completed)
       .toBeDefined();
 
-    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + cleanCloset.trans.uuid + '/note',
+    $httpBackend.expectPOST('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' +
+                            cleanCloset.trans.uuid + '/convert_to_note',
                             cleanClosetTransport)
        .respond(404);
     ConvertService.finishNoteToListConvert(cleanCloset, testOwnerUUID);
@@ -2560,7 +2562,8 @@ describe('SynchronizeService', function() {
     expect(cleanCloset.hist.convert.task.completed)
       .toBeDefined();
 
-    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + cleanCloset.trans.uuid + '/note',
+    $httpBackend.expectPOST('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' +
+                            cleanCloset.trans.uuid + '/convert_to_note',
                             cleanClosetTransport)
        .respond(404);
     ConvertService.finishListToTaskConvert(cleanCloset, testOwnerUUID);
@@ -2575,7 +2578,8 @@ describe('SynchronizeService', function() {
     expect(cleanCloset.hist)
       .toBeUndefined();
 
-    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + cleanCloset.trans.uuid + '/note',
+    $httpBackend.expectPOST('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' +
+                            cleanCloset.trans.uuid + '/convert_to_note',
                             cleanClosetTransport)
        .respond(404);
     ConvertService.finishTaskToListConvert(cleanCloset, testOwnerUUID);
@@ -2590,7 +2594,8 @@ describe('SynchronizeService', function() {
     expect(cleanCloset.hist.convert.task.completed)
       .toBeDefined();
 
-    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + cleanCloset.trans.uuid + '/note',
+    $httpBackend.expectPOST('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' +
+                            cleanCloset.trans.uuid + '/convert_to_note',
                             cleanClosetTransport)
        .respond(404);
     ConvertService.finishListToNoteConvert(cleanCloset, testOwnerUUID);
@@ -2605,7 +2610,8 @@ describe('SynchronizeService', function() {
     expect(cleanCloset.hist.convert.task.completed)
       .toBeDefined();
 
-    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + cleanCloset.trans.uuid + '/note',
+    $httpBackend.expectPOST('/api/v2/owners/' + testOwnerUUID + '/data/tasks/'
+                            + cleanCloset.trans.uuid + '/convert_to_note',
                             cleanClosetTransport)
        .respond(404);
     ConvertService.finishNoteToTaskConvert(cleanCloset, testOwnerUUID);

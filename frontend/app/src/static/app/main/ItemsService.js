@@ -25,16 +25,17 @@
   var items = {};
 
   var getItemRevisionsRegexp = new RegExp('^' +
-    BackendClientService.apiPrefixRegex.source +
+    BackendClientService.apiv2PrefixRegex.source +
+    '/owners/' +
     BackendClientService.uuidRegex.source +
-    '/item/' +
+    '/data/' +
     BackendClientService.uuidRegex.source +
-    '/revisions' +
-    '$');
+    '/revisions$');
   var getItemRevisionRegexp = new RegExp('^' +
-    BackendClientService.apiPrefixRegex.source +
+    BackendClientService.apiv2PrefixRegex.source +
+    '/owners/' +
     BackendClientService.uuidRegex.source +
-    '/item/' +
+    '/data/' +
     BackendClientService.uuidRegex.source +
     '/revision/' +
     BackendClientService.numberRegex.source +
@@ -312,7 +313,7 @@
       if (items[ownerUUID].deletedItems.findFirstObjectByKeyValue('uuid', item.trans.uuid, 'trans')) {
         deferred.reject({type: 'deleted'});
       } else {
-        BackendClientService.get('/api/' + ownerUUID + '/item/' + item.trans.uuid + '/revisions',
+        BackendClientService.get('/api/v2/owners/' + ownerUUID + '/data/' + item.trans.uuid + '/revisions',
                                  getItemRevisionsRegexp)
         .then(function(response) {
           deferred.resolve(response);
@@ -331,7 +332,7 @@
       if (items[ownerUUID].deletedItems.findFirstObjectByKeyValue('uuid', item.trans.uuid, 'trans')) {
         deferred.reject({type: 'deleted'});
       } else {
-        BackendClientService.get('/api/' + ownerUUID + '/item/' + item.trans.uuid +
+        BackendClientService.get('/api/v2/owners/' + ownerUUID + '/data/' + item.trans.uuid +
                                  '/revision/' + revisionNumber,
                                  getItemRevisionRegexp)
         .then(function(response) {

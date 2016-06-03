@@ -16,28 +16,28 @@
 
  function UserService(AuthenticationService, BackendClientService, UISessionService, UserSessionService) {
 
-  var logoutRegex = /logout/;
   var postLogoutRegexp = new RegExp(
-    /^/.source +
-    BackendClientService.apiPrefixRegex.source +
-    logoutRegex.source +
-    /$/.source
+    '^' +
+    BackendClientService.apiv2PrefixRegex.source +
+    '/users/log_out$'
     ),
   postClearRegexp = new RegExp(
-    /^/.source +
-    BackendClientService.apiPrefixRegex.source +
-    /clear$/.source
+    '^' +
+    BackendClientService.apiv2PrefixRegex.source +
+    '/users/destroy_tokens$'
     ),
   postResendVerificationRegexp = new RegExp(
-    /^/.source +
-    BackendClientService.apiPrefixRegex.source +
-    /email\/resend$/.source
+    '^' +
+    BackendClientService.apiv2PrefixRegex.source +
+    '/users/resend_verification$'
     ),
   deleteAccountRegexp = new RegExp(
-    /^/.source +
-    BackendClientService.apiPrefixRegex.source +
-    /account$/.source
-    );
+    '^' +
+    BackendClientService.apiv2PrefixRegex.source +
+    '/users/' +
+    BackendClientService.uuidRegex.source +
+    '$'
+  );
 
   return {
     storeUserAccountResponse: function(response){
@@ -50,9 +50,10 @@
       UserSessionService.setAccessInformation(response.uuid, response.collectives, response.sharedLists);
       return response;
     },
-    getAccount: function() {
+    getAccount: function(overrideUserUUID) {
+      var userUUID = overrideUserUUID ? overrideUserUUID : UserSessionService.getUserUUID();
       var thisService = this;
-      return BackendClientService.get('/api/account',
+      return BackendClientService.get('/api/v2/users/' + userUUID,
         this.getAccountRegex)
       .then(function(response) {
         return thisService.storeUserAccountResponse(response);
@@ -77,16 +78,16 @@
         replaceable: true,
         type: 'user'
       };
-      BackendClientService.putOffline('/api/account', this.putAccountRegex, params, payload,
+      BackendClientService.patchOffline('/api/v2/users/' + params.uuid, this.patchAccountRegex, params, payload,
                                BackendClientService.generateFakeTimestamp());
     },
     logout: function() {
       // Bypass queue
-      return BackendClientService.postOnline('/api/logout', postLogoutRegexp, undefined, false, true);
+      return BackendClientService.postOnline('/api/v2/users/log_out', postLogoutRegexp, undefined, false, true);
     },
     clear: function(user) {
       return BackendClientService.postOnlineWithUsernamePassword(
-        '/api/clear',
+        '/api/v2/users/destroy_tokens',
         this.postClearRegex,
         undefined,
         AuthenticationService.sanitizeEmail(user.username),
@@ -94,12 +95,12 @@
     },
     resendVerification: function() {
       return BackendClientService.postOnline(
-        '/api/email/resend',
+        '/api/v2/users/resend_verification',
         postResendVerificationRegexp);
     },
     deleteAccount: function(username, password) {
       return BackendClientService.deleteOnlineWithUsernamePassword(
-        '/api/account',
+        '/api/v2/users/' + UserSessionService.getUserUUID(),
         deleteAccountRegexp,
         undefined,
         username,
@@ -181,15 +182,19 @@
       }
     },
     // Regular expressions for account requests
-    getAccountRegex: new RegExp(/api\/account/.source),
-    putAccountRegex: new RegExp(/api\/account/.source),
+    getAccountRegex: new RegExp('^' +
+                                BackendClientService.apiv2PrefixRegex.source +
+                                '/users/' +
+                                BackendClientService.uuidRegex.source +
+                                '$'),
+    patchAccountRegex: new RegExp('^' +
+                                BackendClientService.apiv2PrefixRegex.source +
+                                '/users/' +
+                                BackendClientService.uuidRegex.source +
+                                '$'),
     postLogoutRegex: postLogoutRegexp,
     postResendVerificationRegex: postResendVerificationRegexp,
     deleteAccountRegex: deleteAccountRegexp,
-    putChangePasswordRegex: new RegExp(
-      /^/.source +
-      BackendClientService.apiPrefixRegex.source +
-      /password$/.source),
     postClearRegex: postClearRegexp
   };
 }

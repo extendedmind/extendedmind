@@ -61,10 +61,10 @@ angular.module('em.appTest')
                 // Delay every API call except login, logout and the first items call
                 // NOTE: Sometimes causes duplicate remove/complete leave animation.
                 if (typeof delayMockAPIResponse !== 'undefined' && delayMockAPIResponse === true &&
-                    url.startsWith('/api') &&
-                    url !=='/api/authenticate' &&
-                    url !=='/api/logout' &&
-                    !url.endsWith('/items')){
+                    url.startsWith('/api/v2/') &&
+                    url !=='/api/v2/users/authenticate' &&
+                    url !=='/api/v2/users/log_out' &&
+                    !url.endsWith('/data')){
                   setTimeout(function() {
                       callback.apply(_this, _arguments);
                   }, 500);

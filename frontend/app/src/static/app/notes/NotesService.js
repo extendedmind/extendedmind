@@ -63,36 +63,30 @@
 
   // An object containing notes for every owner
   var notes = {};
-  var noteSlashRegex = /\/note\//;
-  var favoriteRegex = /\/favorite/;
-  var unfavoriteRegex = /\/unfavorite/;
-  var previewRegex = /\/preview/;
-  var publishRegex = /\/publish/;
-  var unpublishRegex = /\/unpublish/;
 
   var previewNoteRegexp = new RegExp('^' +
-    BackendClientService.apiPrefixRegex.source +
+    BackendClientService.apiv2PrefixRegex.source +
+    '/owners/' +
     BackendClientService.uuidRegex.source +
-    noteSlashRegex.source +
+    '/data/notes/' +
     BackendClientService.uuidRegex.source +
-    previewRegex.source +
-    '$');
+    '/create_preview$');
 
   var publishNoteRegexp = new RegExp('^' +
-    BackendClientService.apiPrefixRegex.source +
+    BackendClientService.apiv2PrefixRegex.source +
+    '/owners/' +
     BackendClientService.uuidRegex.source +
-    noteSlashRegex.source +
+    '/data/notes/' +
     BackendClientService.uuidRegex.source +
-    publishRegex.source +
-    '$');
+    '/publish$');
 
   var unpublishNoteRegexp = new RegExp('^' +
-    BackendClientService.apiPrefixRegex.source +
+    BackendClientService.apiv2PrefixRegex.source +
+    '/owners/' +
     BackendClientService.uuidRegex.source +
-    noteSlashRegex.source +
+    '/data/notes/' +
     BackendClientService.uuidRegex.source +
-    unpublishRegex.source +
-    '$');
+    '/unpublish$');
 
   function initializeArrays(ownerUUID) {
     if (!notes[ownerUUID]) {
@@ -492,11 +486,11 @@
           type: NOTE_TYPE, owner: ownerUUID, uuid: note.trans.uuid,
           reverse: {
             method: 'post',
-            url: '/api/' + ownerUUID + '/note/' + note.trans.uuid + '/unfavorite'
+            url: '/api/v2/owners/' + ownerUUID + '/data/notes/' + note.trans.uuid + '/unfavorite'
           }, lastReplaceable: true
         };
         var fakeTimestamp = BackendClientService.generateFakeTimestamp();
-        BackendClientService.postOffline('/api/' + ownerUUID + '/note/' + note.trans.uuid + '/favorite',
+        BackendClientService.postOffline('/api/v2/owners/' + ownerUUID + '/data/notes/' + note.trans.uuid + '/favorite',
                                   this.favoriteNoteRegex, params, undefined, fakeTimestamp);
         if (!note.mod) note.mod = {};
         var propertiesToReset = {saved: fakeTimestamp,
@@ -518,7 +512,7 @@
       } else {
         var params = {type: NOTE_TYPE, owner: ownerUUID, uuid: note.trans.uuid, lastReplaceable: true};
         var fakeTimestamp = BackendClientService.generateFakeTimestamp();
-        BackendClientService.postOffline('/api/' + ownerUUID + '/note/' + note.trans.uuid + '/unfavorite',
+        BackendClientService.postOffline('/api/v2/owners/' + ownerUUID + '/data/notes/' + note.trans.uuid + '/unfavorite',
                                   this.unfavoriteNoteRegex, params, undefined, fakeTimestamp);
         if (!note.mod) note.mod = {};
         var propertiesToReset = {saved: fakeTimestamp,
@@ -531,7 +525,7 @@
     },
     previewNote: function(note) {
       function getPreviewUrl(params){
-        return params.prefix + params.note.trans.uuid + '/preview';
+        return params.prefix + params.note.trans.uuid + '/create_preview';
       }
       var ownerUUID = note.trans.owner;
       // Check that note is not deleted before trying to preview
@@ -540,11 +534,11 @@
         deferred.reject({type: 'deleted'});
       } else {
         var payload = {format: 'md'};
-        BackendClientService.postOnline({ value: '/api/' + ownerUUID + '/note/' +
-                                                 note.trans.uuid + '/preview',
+        BackendClientService.postOnline({ value: '/api/v2/owners/' + ownerUUID + '/data/notes/' +
+                                                 note.trans.uuid + '/create_preview',
                                           refresh: getPreviewUrl,
                                           params: {
-                                            prefix: '/api/' + ownerUUID + '/note/',
+                                            prefix: '/api/v2/owners/' + ownerUUID + '/data/notes/',
                                             note: note }},
                                         previewNoteRegexp, payload)
         .then(function(response) {
@@ -579,11 +573,11 @@
         var payload = {format: 'md', 'path': path};
         if (licence) payload.licence = licence;
         if (publicUi) payload.publicUi = JSON.stringify(publicUi);
-        BackendClientService.postOnline({ value: '/api/' + ownerUUID + '/note/' +
+        BackendClientService.postOnline({ value: '/api/v2/owners/' + ownerUUID + '/data/notes/' +
                                                  note.trans.uuid + '/publish',
                                           refresh: getPublishUrl,
                                           params: {
-                                            prefix: '/api/' + ownerUUID + '/note/',
+                                            prefix: '/api/v2/owners/' + ownerUUID + '/data/notes/',
                                             note: note }},
                                         publishNoteRegexp, payload)
         .then(function(response) {
@@ -620,11 +614,11 @@
       if (notes[ownerUUID].deletedNotes.findFirstObjectByKeyValue('uuid', note.trans.uuid, 'trans')) {
         deferred.reject({type: 'deleted'});
       } else {
-        BackendClientService.postOnline({ value: '/api/' + ownerUUID + '/note/' +
+        BackendClientService.postOnline({ value: '/api/v2/owners/' + ownerUUID + '/data/notes/' +
                                                  note.trans.uuid + '/unpublish',
                                           refresh: getUnpublishUrl,
                                           params: {
-                                            prefix: '/api/' + ownerUUID + '/note/',
+                                            prefix: '/api/v2/owners/' + ownerUUID + '/data/notes/',
                                             note: note }},
                                         unpublishNoteRegexp)
         .then(function(response) {
@@ -692,19 +686,19 @@
     deleteNoteRegex: ItemLikeService.getDeleteRegex(NOTE_TYPE),
     undeleteNoteRegex: ItemLikeService.getUndeleteRegex(NOTE_TYPE),
     favoriteNoteRegex: new RegExp('^' +
-                                  BackendClientService.apiPrefixRegex.source +
+                                  BackendClientService.apiv2PrefixRegex.source +
+                                  '/owners/' +
                                   BackendClientService.uuidRegex.source +
-                                  noteSlashRegex.source +
+                                  '/data/notes/' +
                                   BackendClientService.uuidRegex.source +
-                                  favoriteRegex.source +
-                                  '$'),
+                                  '/favorite$'),
     unfavoriteNoteRegex: new RegExp('^' +
-                                    BackendClientService.apiPrefixRegex.source +
+                                    BackendClientService.apiv2PrefixRegex.source +
+                                    '/owners/' +
                                     BackendClientService.uuidRegex.source +
-                                    noteSlashRegex.source +
+                                    '/data/notes/' +
                                     BackendClientService.uuidRegex.source +
-                                    unfavoriteRegex.source +
-                                    '$'),
+                                    '/unfavorite$'),
     previewNoteRegex : previewNoteRegexp,
     publishNoteRegex : publishNoteRegexp,
     unpublishNoteRegex: unpublishNoteRegexp

@@ -202,7 +202,7 @@ describe('ListsService', function() {
     };
     var testList = ListsService.getNewList(testListValues, testOwnerUUID);
 
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/list', testListValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/lists', testListValues)
        .respond(200, putNewListResponse);
     ListsService.saveList(testList);
     $httpBackend.flush();
@@ -223,7 +223,7 @@ describe('ListsService', function() {
   it('should update existing list', function () {
     var tripToDublin = ListsService.getListInfo('bf726d03-8fee-4614-8b68-f9f885938a51', testOwnerUUID).list;
     tripToDublin.trans.title = 'another trip to Dublin';
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/list/' + tripToDublin.uuid,
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/lists/' + tripToDublin.uuid,
                           {title: tripToDublin.trans.title,
                            due: tripToDublin.due,
                            modified: tripToDublin.modified})
@@ -248,7 +248,7 @@ describe('ListsService', function() {
 
   it('should delete and undelete list', function () {
     var tripToDublin = ListsService.getListInfo('bf726d03-8fee-4614-8b68-f9f885938a51', testOwnerUUID).list;
-    $httpBackend.expectDELETE('/api/' + testOwnerUUID + '/list/' + tripToDublin.uuid)
+    $httpBackend.expectDELETE('/api/v2/owners/' + testOwnerUUID + '/data/lists/' + tripToDublin.uuid)
        .respond(200, deleteListResponse);
     ListsService.deleteList(tripToDublin);
     $httpBackend.flush();
@@ -261,7 +261,7 @@ describe('ListsService', function() {
       .toBe(2);
 
     // Undelete the list
-    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/list/' + tripToDublin.uuid + '/undelete')
+    $httpBackend.expectPOST('/api/v2/owners/' + testOwnerUUID + '/data/lists/' + tripToDublin.uuid + '/undelete')
        .respond(200, undeleteListResponse);
     ListsService.undeleteList(tripToDublin);
     $httpBackend.flush();
@@ -288,7 +288,7 @@ describe('ListsService', function() {
 
     // Make call
     var tripToDublin = ListsService.getListInfo('bf726d03-8fee-4614-8b68-f9f885938a51', testOwnerUUID).list;
-    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/list/' + tripToDublin.uuid + '/archive')
+    $httpBackend.expectPOST('/api/v2/owners/' + testOwnerUUID + '/data/lists/' + tripToDublin.uuid + '/archive')
        .respond(200, archiveListResponse);
     ListsService.archiveList(tripToDublin);
     $httpBackend.flush();
@@ -350,7 +350,8 @@ describe('ListsService', function() {
 
     // First complete the task
     var printTickets = TasksService.getTaskInfo('9a1ce3aa-f476-43c4-845e-af59a9a33760', testOwnerUUID).task;
-    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + printTickets.uuid + '/complete')
+    $httpBackend.expectPOST('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' +
+                            printTickets.uuid +'/complete')
        .respond(200, completeTaskResponse);
     TasksService.completeTask(printTickets);
     $httpBackend.flush();
@@ -360,7 +361,8 @@ describe('ListsService', function() {
 
     // Archive list
     var tripToDublin = ListsService.getListInfo('bf726d03-8fee-4614-8b68-f9f885938a51', testOwnerUUID).list;
-    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/list/' + tripToDublin.uuid + '/archive')
+    $httpBackend.expectPOST('/api/v2/owners/' + testOwnerUUID + '/data/lists/' +
+                            tripToDublin.uuid + '/archive')
        .respond(200, archiveTripToDublinResponse);
     ListsService.archiveList(tripToDublin);
     $httpBackend.flush();
@@ -414,7 +416,8 @@ describe('ListsService', function() {
       }
     };
 
-    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/list/' + tripToDublin.uuid + '/unarchive')
+    $httpBackend.expectPOST('/api/v2/owners/' + testOwnerUUID + '/data/lists/' +
+                            tripToDublin.uuid + '/unarchive')
        .respond(200, unarchiveTripToDublinResponse);
     ListsService.unarchiveList(tripToDublin);
     $httpBackend.flush();

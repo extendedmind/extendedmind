@@ -140,79 +140,64 @@
   // An object containing lists for every owner
   var lists = {};
 
-  var listSlashRegex = /\/list\//;
-  var archiveRegex = /\/archive/;
-  var unarchiveRegex = /\/unarchive/;
-  var agreementRegex = /agreement/;
-  var agreementSlashRegex = /agreement\//;
-  var acceptRegex = /\/accept/;
-  var accessSlashRegex = /\/access\//;
-  var resendRegex = /\/resend/;
-  var oneOrTwoRegex = /[1-2]/;
-
-  // PUT /api/agreement
+  // PUT /api/v2/users/agreements
   var putNewAgreementRegexp = new RegExp(
-    /^/.source +
-    BackendClientService.apiPrefixRegex.source +
-    agreementRegex.source +
-    /$/.source
+    '^' +
+    BackendClientService.apiv2PrefixRegex.source +
+    '/users/agreements$'
   );
 
-  // POST /api/agreement/HEX/accept
+  // POST /api/v2/users/accept_agreement
   var postAcceptShareListRegexp = new RegExp(
-    /^/.source +
-    BackendClientService.apiPrefixRegex.source +
-    agreementSlashRegex.source +
-    BackendClientService.hexCodeRegex.source +
-    acceptRegex.source +
-    /$/.source
+    '^' +
+    BackendClientService.apiv2PrefixRegex.source +
+    '/users/accept_agreement$'
   );
 
-  // DELETE /api/agreement/UUID/
+  // DELETE /api/v2/users/agreements/UUID
   var deleteAgreementRegexp = new RegExp(
-    /^/.source +
-    BackendClientService.apiPrefixRegex.source +
-    agreementSlashRegex.source +
+    '^' +
+    BackendClientService.apiv2PrefixRegex.source +
+    '/users/agreements/' +
     BackendClientService.uuidRegex.source +
-    /$/.source
+    '$'
   );
 
-  // POST /api/agreement/UUID/access/#
+  // POST /api/v2/users/agreements/UUID/change_access
   var postChangeAgreementAccessRegexp = new RegExp(
-    /^/.source +
-    BackendClientService.apiPrefixRegex.source +
-    agreementSlashRegex.source +
+    '^' +
+    BackendClientService.apiv2PrefixRegex.source +
+    '/users/agreements/' +
     BackendClientService.uuidRegex.source +
-    accessSlashRegex.source +
-    oneOrTwoRegex.source +
-    /$/.source
+    '/change_access$'
   );
 
-  // POST /api/agreement/UUID/resend
+  // POST /api/v2/users/agreement/UUID/resend
   var postResendAgreementRegexp = new RegExp(
-    /^/.source +
-    BackendClientService.apiPrefixRegex.source +
-    agreementSlashRegex.source +
+    '^' +
+    BackendClientService.apiv2PrefixRegex.source +
+    '/users/agreements/' +
     BackendClientService.uuidRegex.source +
-    resendRegex.source +
-    /$/.source
+    '/resend_agreement$'
   );
 
-  var archiveListRegexp = new RegExp('^' +
-    BackendClientService.apiPrefixRegex.source +
+  var archiveListRegexp = new RegExp(
+    '^' +
+    BackendClientService.apiv2PrefixRegex.source +
+    '/owners/' +
     BackendClientService.uuidRegex.source +
-    listSlashRegex.source +
+    '/data/lists/' +
     BackendClientService.uuidRegex.source +
-    archiveRegex.source +
-    '$');
+    '/archive$');
 
-  var unarchiveListRegexp = new RegExp('^' +
-    BackendClientService.apiPrefixRegex.source +
+  var unarchiveListRegexp = new RegExp(
+    '^' +
+    BackendClientService.apiv2PrefixRegex.source +
+    '/owners/' +
     BackendClientService.uuidRegex.source +
-    listSlashRegex.source +
+    '/data/lists/' +
     BackendClientService.uuidRegex.source +
-    unarchiveRegex.source +
-    '$');
+    '/unarchive$');
 
   var putNewListRegexp = ItemLikeService.getPutNewRegex(LIST_TYPE);
   var putExistingListRegexp = ItemLikeService.getPutExistingRegex(LIST_TYPE);
@@ -675,11 +660,11 @@
         deferred.resolve('unmodified');
       } else {
         var payload = list.trans.archiveParent ? {parent: list.trans.archiveParent.trans.uuid} : undefined;
-        BackendClientService.postOnline({ value: '/api/' + ownerUUID + '/list/' +
+        BackendClientService.postOnline({ value: '/api/v2/owners/' + ownerUUID + '/data/lists/' +
                                                  list.trans.uuid + '/archive',
                                           refresh: getArchiveUrl,
                                           params: {
-                                            prefix: '/api/' + ownerUUID + '/list/',
+                                            prefix: '/api/v2/owners/' + ownerUUID + '/data/lists/',
                                             list: list }},
                                         archiveListRegexp, payload)
         .then(function(response) {
@@ -737,11 +722,11 @@
         deferred.resolve('unmodified');
       } else {
         var payload = list.trans.activeParent ? {parent: list.trans.activeParent.trans.uuid} : undefined;
-        BackendClientService.postOnline({ value: '/api/' + ownerUUID + '/list/' +
+        BackendClientService.postOnline({ value: '/api/v2/owners/' + ownerUUID + '/data/lists/' +
                                                  list.trans.uuid + '/unarchive',
                                           refresh: getUnarchiveUrl,
                                           params: {
-                                            prefix: '/api/' + ownerUUID + '/list/',
+                                            prefix: '/api/v2/owners/' + ownerUUID + '/data/lists/',
                                             list: list }},
                                         unarchiveListRegexp, payload)
         .then(function(response) {
@@ -789,7 +774,7 @@
       return deferred.promise;
     },
     shareList: function(list, newAgreement) {
-      return BackendClientService.putOnline('/api/agreement', putNewAgreementRegexp, newAgreement)
+      return BackendClientService.putOnline('/api/v2/users/agreements', putNewAgreementRegexp, newAgreement)
       .then(function(response) {
         var ownerUUID = list.trans.owner;
         if (!list.mod) list.mod = {};
@@ -808,7 +793,7 @@
       });
     },
     unshareList: function(list, agreementUUID) {
-      return BackendClientService.deleteOnline('/api/agreement/' + agreementUUID, deleteAgreementRegexp)
+      return BackendClientService.deleteOnline('/api/v2/users/agreements/' + agreementUUID, deleteAgreementRegexp)
       .then(function(response) {
         var ownerUUID = list.trans.owner;
         if (!list.mod) list.mod = {};
@@ -828,8 +813,9 @@
       });
     },
     updateExistingListShareAccess: function(list, agreementUUID, agreementAccess) {
-      return BackendClientService.postOnline('/api/agreement/' + agreementUUID + '/access/' +
-                                             agreementAccess, postChangeAgreementAccessRegexp)
+      return BackendClientService.postOnline('/api/v2/users/agreements/' + agreementUUID + '/change_access',
+                                             postChangeAgreementAccessRegexp,
+                                             {access: agreementAccess})
       .then(function(response) {
         var ownerUUID = list.trans.owner;
         if (!list.mod) list.mod = {};
@@ -851,7 +837,7 @@
       });
     },
     resendListShare: function(agreementUUID) {
-      return BackendClientService.postOnline('/api/agreement/' + agreementUUID + '/resend',
+      return BackendClientService.postOnline('/api/v2/users/agreements/' + agreementUUID + '/resend',
                                              postResendAgreementRegexp);
     },
     clearLists: function() {

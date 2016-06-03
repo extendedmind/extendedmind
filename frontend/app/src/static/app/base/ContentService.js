@@ -18,14 +18,14 @@
 function ContentService($q, BackendClientService, PlatformService) {
 
   var publicExtendedMindNoteRegexp = new RegExp(
-    /^/.source +
-    BackendClientService.apiPrefixRegex.source +
-    /public\/extended-mind\//.source +
+    '^' +
+    BackendClientService.apiv2PrefixRegex.source +
+    '/public/extended-mind/' +
     /[0-9a-z-]+/.source +
     '$'
     );
   var privacyRegexp = new RegExp(
-    /^/.source +
+    '^'.source +
     /\/static\/privacy\.html/.source +
     '$'
     );
@@ -78,7 +78,7 @@ function ContentService($q, BackendClientService, PlatformService) {
 
   function getPublicExtendedMindNote(pathPostfix){
     return $q(function(resolve, reject) {
-      BackendClientService.get('/api/public/extended-mind/' + pathPostfix,
+      BackendClientService.get('/api/v2/public/extended-mind/' + pathPostfix,
                                publicExtendedMindNoteRegexp, true).then(function(publicNoteResponse){
         var messageParams = {
           messageHeading: publicNoteResponse.note.title,

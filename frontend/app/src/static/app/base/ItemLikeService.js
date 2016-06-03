@@ -486,7 +486,7 @@
           // Push to offline buffer
           params = {type: itemType, owner: ownerUUID, uuid: item.trans.uuid, lastReplaceable: true};
           fakeTimestamp = BackendClientService.generateFakeTimestamp();
-          BackendClientService.putOffline('/api/' + params.owner + '/'+ itemType + '/' + item.trans.uuid,
+          BackendClientService.putOffline('/api/v2/owners/' + params.owner + '/data/'+ itemType + 's/' + item.trans.uuid,
                                    this.getPutExistingRegex(itemType), params, transportItem,
                                    fakeTimestamp)
           .then(function() {
@@ -505,7 +505,7 @@
 
           fakeTimestamp = BackendClientService.generateFakeTimestamp();
           params = {type: itemType, owner: ownerUUID, fakeUUID: fakeUUID};
-          BackendClientService.putOffline('/api/' + params.owner + '/'+ itemType,
+          BackendClientService.putOffline('/api/v2/owners/' + params.owner + '/data/'+ itemType + 's',
                                    this.getPutNewRegex(itemType), params, transportItem, fakeTimestamp)
           .then(function() {
             updateObjectProperties(item.mod, {uuid: fakeUUID, saved: fakeTimestamp,
@@ -522,11 +522,11 @@
         type: itemType, owner: ownerUUID, uuid: item.trans.uuid,
         reverse: {
           method: 'post',
-          url: '/api/' + ownerUUID + '/' + itemType + '/' + item.trans.uuid + '/undelete'
+          url: '/api/v2/owners/' + ownerUUID + '/data/' + itemType + 's/' + item.trans.uuid + '/undelete'
         }, lastReplaceable: true
       };
       var fakeTimestamp = BackendClientService.generateFakeTimestamp();
-      BackendClientService.deleteOffline('/api/' + ownerUUID + '/' + itemType +'/' + item.trans.uuid,
+      BackendClientService.deleteOffline('/api/v2/owners/' + ownerUUID + '/data/' + itemType +'s/' + item.trans.uuid,
                                          this.getDeleteRegex(itemType), params, data, fakeTimestamp)
       .then(function() {
         if (!item.mod) item.mod = {};
@@ -539,7 +539,7 @@
       var deferred = $q.defer();
       var params = {type: itemType, owner: ownerUUID, uuid: item.trans.uuid, lastReplaceable: true};
       var fakeTimestamp = BackendClientService.generateFakeTimestamp();
-      BackendClientService.postOffline('/api/' + ownerUUID + '/' + itemType +'/' + item.trans.uuid +
+      BackendClientService.postOffline('/api/v2/owners/' + ownerUUID + '/data/' + itemType +'s/' + item.trans.uuid +
                                        '/undelete',
                                        this.getUndeleteRegex(itemType), params, data, fakeTimestamp)
       .then(function() {
@@ -566,32 +566,35 @@
     // Regexp helper functions
     getPutNewRegex: function(itemType){
       return new RegExp('^' +
-                        BackendClientService.apiPrefixRegex.source +
+                        BackendClientService.apiv2PrefixRegex.source +
+                        '/owners/' +
                         BackendClientService.uuidRegex.source +
-                        '/' + itemType +
-                        '$');
+                        '/data/' + itemType + 's$');
     },
     getPutExistingRegex: function(itemType){
       return new RegExp('^' +
-                        BackendClientService.apiPrefixRegex.source +
+                        BackendClientService.apiv2PrefixRegex.source +
+                        '/owners/' +
                         BackendClientService.uuidRegex.source +
-                        '/' + itemType + '/' +
+                        '/data/' + itemType + 's/' +
                         BackendClientService.uuidRegex.source +
                         '$');
     },
     getDeleteRegex: function(itemType){
       return new RegExp('^' +
-                        BackendClientService.apiPrefixRegex.source +
+                        BackendClientService.apiv2PrefixRegex.source +
+                       '/owners/' +
                         BackendClientService.uuidRegex.source +
-                        '/' + itemType + '/' +
+                        '/data/' + itemType + 's/' +
                         BackendClientService.uuidRegex.source +
                         '$');
     },
     getUndeleteRegex: function(itemType){
       return new RegExp('^' +
-                        BackendClientService.apiPrefixRegex.source +
+                        BackendClientService.apiv2PrefixRegex.source +
+                        '/owners/' +
                         BackendClientService.uuidRegex.source +
-                        '/' + itemType + '/' +
+                        '/data/' + itemType + 's/' +
                         BackendClientService.uuidRegex.source +
                         BackendClientService.undeleteRegex.source +
                         '$');

@@ -20,11 +20,12 @@
                              ListsService, NotesService, PersistentStorageService, ReminderService,
                              TagsService, TasksService, UserService, UserSessionService, UUIDService) {
 
-  var itemsRegex = /\/items/;
   // NOTE: Do not set start/end of string anchors into getItemsRegex!
-  var getItemsRegex = new RegExp(BackendClientService.apiPrefixRegex.source +
+  var getItemsRegex = new RegExp('^' +
+                                 BackendClientService.apiv2PrefixRegex.source +
+                                 '/owners/' +
                                  BackendClientService.uuidRegex.source +
-                                 itemsRegex.source);
+                                 '/data(\\?)?');
   var itemsSynchronizedCallback;
 
   function getLatestModified(latestTag, latestList, latestTask, latestNote, latestItem) {
@@ -947,9 +948,9 @@
   }
 
   function getAllItemsOnline(ownerUUID) {
-    return BackendClientService.getSecondary('/api/' +
+    return BackendClientService.getSecondary('/api/v2/owners/' +
                                              ownerUUID +
-                                             '/items', getItemsRegex,
+                                             '/data', getItemsRegex,
                                              undefined, true).then(function(response) {
       setItemArrays(response, ownerUUID);
       UserSessionService.setPersistentDataLoaded(true);
@@ -959,9 +960,9 @@
 
   function getAllTagsOnline(ownerUUID) {
 
-    return BackendClientService.getSecondary('/api/' +
+    return BackendClientService.getSecondary('/api/v2/owners/' +
                                              ownerUUID +
-                                             '/items?tagsOnly=true', getItemsRegex,
+                                             '/data?tagsOnly=true', getItemsRegex,
                                              undefined, true).then(function(response) {
       setItemArrays(response, ownerUUID, undefined, undefined, true);
       return response;
@@ -975,9 +976,9 @@
   }
 
   function getAllDeletedTagsOnline(ownerUUID) {
-    return BackendClientService.getSecondary('/api/' +
+    return BackendClientService.getSecondary('/api/v2/owners/' +
                                              ownerUUID +
-                                             '/items?deleted=true&active=false&tagsOnly=true',
+                                             '/data?deleted=true&active=false&tagsOnly=true',
                                              getItemsRegex, undefined, true).then(function(response) {
       setItemArrays(response, ownerUUID, false, true, true);
       return response;
@@ -1028,7 +1029,7 @@
       latestModified = undefined;
     }
 
-    var url = '/api/' + ownerUUID + '/items';
+    var url = '/api/v2/owners/' + ownerUUID + '/data';
     if (UserSessionService.isPersistentStorageEnabled() && !UserSessionService.isPersistentDataLoaded()){
       // Load items from the database
       PersistentStorageService.getAll().then(function(itemInfos){
@@ -1062,9 +1063,9 @@
   }
 
   function getAllArchivedAndCompletedOnline(ownerUUID) {
-    return BackendClientService.getSecondary('/api/' +
+    return BackendClientService.getSecondary('/api/v2/owners/' +
                                              ownerUUID +
-                                             '/items?archived=true&completed=true&active=false',
+                                             '/data?archived=true&completed=true&active=false',
                                              getItemsRegex, undefined, true).then(function(response) {
       setItemArrays(response, ownerUUID, false, true);
       return response;
@@ -1072,9 +1073,9 @@
   }
 
   function getAllDeletedOnline(ownerUUID) {
-    return BackendClientService.getSecondary('/api/' +
+    return BackendClientService.getSecondary('/api/v2/owners/' +
                                              ownerUUID +
-                                             '/items?deleted=true&active=false',
+                                             '/data?deleted=true&active=false',
                                              getItemsRegex, undefined, true).then(function(response) {
       setItemArrays(response, ownerUUID, false, true);
       return response;
@@ -1101,7 +1102,7 @@
     },
     synchronizeUser: function() {
       var deferred = $q.defer();
-      BackendClientService.getBeforeLast('/api/account',
+      BackendClientService.getBeforeLast('/api/v2/users/' + UserSessionService.getUserUUID(),
        UserService.getAccountRegex);
       deferred.resolve();
       return deferred.promise;
@@ -1139,8 +1140,8 @@
       TasksService.changeOwnerUUID(oldUUID, newUUID);
       NotesService.changeOwnerUUID(oldUUID, newUUID);
     },
-    clearUserUpdate: function(){
-      BackendClientService.clearRequest('put', '/api/account');
+    clearUserUpdate: function(oldUUID){
+      BackendClientService.clearRequest('patch', '/api/v2/users/' + oldUUID);
     },
     registerItemsSynchronizedCallback: function(callback){
       itemsSynchronizedCallback = callback;

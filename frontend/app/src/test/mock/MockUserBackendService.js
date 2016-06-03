@@ -102,11 +102,11 @@ function MockUserBackendService($httpBackend, UserService, UserSessionService) {
     respond(termsOfService);
   }
 
-  function mockPutAccount(expectResponse) {
-    $httpBackend.whenPUT(UserService.putAccountRegex)
+  function mockPatchUser(expectResponse) {
+    $httpBackend.whenPATCH(UserService.putAccountRegex)
     .respond(function(method, url, data, headers) {
-      var putAccountResponse = getJSONFixture('putAccountResponse.json');
-      return expectResponse(method, url, data, headers, putAccountResponse);
+      var patchUserResponse = getJSONFixture('patchUserResponse.json');
+      return expectResponse(method, url, data, headers, patchUserResponse);
     });
   }
 
@@ -142,7 +142,7 @@ function MockUserBackendService($httpBackend, UserService, UserSessionService) {
   return {
     mockUserBackend: function(expectResponse) {
       mockGetAccount(expectResponse);
-      mockPutAccount(expectResponse);
+      mockPatchUser(expectResponse);
       mockGetTermsOfService();
       mockGetPrivacyPolicy();
       mockLogout(expectResponse);

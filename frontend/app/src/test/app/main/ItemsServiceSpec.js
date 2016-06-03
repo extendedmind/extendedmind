@@ -167,7 +167,7 @@ describe('ItemsService', function() {
       title: 'test item'
     };
     var testItem = ItemsService.getNewItem(testItemValues, testOwnerUUID);
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item', testItemValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/items', testItemValues)
        .respond(200, putNewItemResponse);
     ItemsService.saveItem(testItem);
     $httpBackend.flush();
@@ -187,7 +187,7 @@ describe('ItemsService', function() {
   it('should update existing item', function () {
     var rememberTheMilk = ItemsService.getItemInfo('d1e764e8-3be3-4e3f-8bec-8c3f9e7843e9', testOwnerUUID).item;
     rememberTheMilk.trans.title = 'remember the milk!';
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/item/' + rememberTheMilk.uuid,
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/items/' + rememberTheMilk.uuid,
                            {title: rememberTheMilk.trans.title,
                            modified: rememberTheMilk.modified})
        .respond(200, putExistingItemResponse);
@@ -208,7 +208,7 @@ describe('ItemsService', function() {
 
   it('should delete and undelete item', function () {
     var rememberTheMilk = ItemsService.getItemInfo('d1e764e8-3be3-4e3f-8bec-8c3f9e7843e9', testOwnerUUID).item;
-    $httpBackend.expectDELETE('/api/' + testOwnerUUID + '/item/' + rememberTheMilk.uuid)
+    $httpBackend.expectDELETE('/api/v2/owners/' + testOwnerUUID + '/data/items/' + rememberTheMilk.uuid)
        .respond(200, deleteItemResponse);
     ItemsService.deleteItem(rememberTheMilk);
     $httpBackend.flush();
@@ -221,7 +221,7 @@ describe('ItemsService', function() {
       .toBe(2);
 
     // Undelete the item
-    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/item/' + rememberTheMilk.uuid + '/undelete')
+    $httpBackend.expectPOST('/api/v2/owners/' + testOwnerUUID + '/data/items/' + rememberTheMilk.uuid + '/undelete')
        .respond(200, undeleteItemResponse);
     ItemsService.undeleteItem(rememberTheMilk);
     $httpBackend.flush();
@@ -238,7 +238,7 @@ describe('ItemsService', function() {
 
   it('should convert item to task', function () {
     var rememberTheMilk = ItemsService.getItemInfo('d1e764e8-3be3-4e3f-8bec-8c3f9e7843e9', testOwnerUUID).item;
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' + rememberTheMilk.uuid)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' + rememberTheMilk.uuid)
        .respond(200, putExistingTaskResponse);
     ItemsService.itemToTask(rememberTheMilk);
     $httpBackend.flush();
@@ -258,7 +258,7 @@ describe('ItemsService', function() {
 
   it('should convert item to note', function () {
     var yoga = ItemsService.getItemInfo('f7724771-4469-488c-aabd-9db188672a9b', testOwnerUUID).item;
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/note/' + yoga.uuid)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/notes/' + yoga.uuid)
        .respond(200, putExistingNoteResponse);
     ItemsService.itemToNote(yoga);
     $httpBackend.flush();
@@ -278,7 +278,7 @@ describe('ItemsService', function() {
 
   it('should convert item to list', function () {
     var yoga = ItemsService.getItemInfo('f7724771-4469-488c-aabd-9db188672a9b', testOwnerUUID).item;
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/list/' + yoga.uuid)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/lists/' + yoga.uuid)
        .respond(200, putExistingListResponse);
     ItemsService.itemToList(yoga);
     $httpBackend.flush();

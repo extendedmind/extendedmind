@@ -63,10 +63,11 @@ describe('UserService', function() {
     BackendClientService.registerRefreshCredentialsCallback(testRefreshCallback);
 
     spyOn(UserSessionService, 'setEmail');
-    $httpBackend.expectGET('/api/account').respond(200, accountResponse);
-    UserService.getAccount().then(function(authenticateResponse) {
+    $httpBackend.expectGET('/api/v2/users/' + accountResponse.uuid).
+      respond(200, accountResponse);
+    UserService.getAccount(accountResponse.uuid).then(function(authenticateResponse) {
       expect(UserSessionService.setEmail).toHaveBeenCalledWith(authenticateResponse.email);
-    });
+    }, function(error){console.log(error)});
     $httpBackend.flush();
   });
 
@@ -79,7 +80,7 @@ describe('UserService', function() {
     BackendClientService.registerRefreshCredentialsCallback(testRefreshCallback);
 
     var loggedOut;
-    $httpBackend.expectPOST('/api/logout').respond(200, logoutResponse);
+    $httpBackend.expectPOST('/api/v2/users/log_out').respond(200, logoutResponse);
     UserService.logout().then(function(response) {
       loggedOut = response;
     });

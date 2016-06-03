@@ -63,8 +63,8 @@ function MockTasksBackendService($httpBackend, TasksService, UUIDService) {
       completeTaskResponse.completed = Date.now();
 
       // Add generated to repeating task to better test task repeat logic
-      var ownerUUID = url.substr(5, 36);
-      var taskUUID = url.substr(47, 36);
+      var ownerUUID = url.substr(15, 36);
+      var taskUUID = url.substr(63, 36);
       var task = TasksService.getTaskInfo(taskUUID, ownerUUID).task;
       if (task.hist && task.hist.generatedUUID){
         var modifiedTasks = TasksService.getModifiedTasks(ownerUUID);

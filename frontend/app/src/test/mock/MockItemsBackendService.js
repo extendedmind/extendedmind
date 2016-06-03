@@ -93,8 +93,7 @@ function MockItemsBackendService($httpBackend, ItemsService, SynchronizeService,
         var i;
         if (url.indexOf('?modified=') !== -1 || url.indexOf('?deleted=') !== -1){
           var modifiedResponse = {};
-          var ownerUUID = url.substr(5, 36);
-
+          var ownerUUID = url.substr(15, 36);
           var tagsOnly = (url.indexOf('tagsOnly=true') !== -1);
           // Search values that contain mod from the PersistentStorageService and return them
           var modifiedItems = SynchronizeService.getModifiedItems('item', ownerUUID);

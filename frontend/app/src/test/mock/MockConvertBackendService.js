@@ -21,8 +21,8 @@
   function mockConvertTaskToNote(expectResponse) {
     $httpBackend.whenPOST(ConvertService.convertTaskToNoteRegex)
     .respond(function(method, url, data, headers) {
-      var ownerUUID = url.substr(5, 36);
-      var taskUUID = url.substr(47, 36);
+      var ownerUUID = url.substr(15, 36);
+      var taskUUID = url.substr(63, 36);
       var task = TasksService.getTaskInfo(taskUUID, ownerUUID) ?
                     TasksService.getTaskInfo(taskUUID, ownerUUID).task :
                     NotesService.getNoteInfo(taskUUID, ownerUUID).note;
@@ -42,8 +42,8 @@
   function mockConvertTaskToList(expectResponse) {
     $httpBackend.whenPOST(ConvertService.convertTaskToListRegex)
     .respond(function(method, url, data, headers) {
-      var ownerUUID = url.substr(5, 36);
-      var taskUUID = url.substr(47, 36);
+      var ownerUUID = url.substr(15, 36);
+      var taskUUID = url.substr(63, 36);
       var task = TasksService.getTaskInfo(taskUUID, ownerUUID) ?
                     TasksService.getTaskInfo(taskUUID, ownerUUID).task :
                     ListsService.getListInfo(taskUUID, ownerUUID).list;
@@ -63,8 +63,8 @@
   function mockConvertNoteToTask(expectResponse) {
     $httpBackend.whenPOST(ConvertService.convertNoteToTaskRegex)
     .respond(function(method, url, data, headers) {
-      var ownerUUID = url.substr(5, 36);
-      var noteUUID = url.substr(47, 36);
+      var ownerUUID = url.substr(15, 36);
+      var noteUUID = url.substr(63, 36);
       var note = NotesService.getNoteInfo(noteUUID, ownerUUID) ?
                     NotesService.getNoteInfo(noteUUID, ownerUUID).task :
                     TasksService.getTaskInfo(noteUUID, ownerUUID).task;
@@ -84,8 +84,8 @@
   function mockConvertNoteToList(expectResponse) {
     $httpBackend.whenPOST(ConvertService.convertNoteToListRegex)
     .respond(function(method, url, data, headers) {
-      var ownerUUID = url.substr(5, 36);
-      var noteUUID = url.substr(47, 36);
+      var ownerUUID = url.substr(15, 36);
+      var noteUUID = url.substr(63, 36);
       var note = NotesService.getNoteInfo(noteUUID, ownerUUID) ?
                     NotesService.getNoteInfo(noteUUID, ownerUUID).note :
                     ListsService.getListInfo(noteUUID, ownerUUID).list;
@@ -105,8 +105,8 @@
   function mockConvertListToTask(expectResponse) {
     $httpBackend.whenPOST(ConvertService.convertListToTaskRegex)
     .respond(function(method, url, data, headers) {
-      var ownerUUID = url.substr(5, 36);
-      var listUUID = url.substr(47, 36);
+      var ownerUUID = url.substr(15, 36);
+      var listUUID = url.substr(63, 36);
       var list = ListsService.getListInfo(listUUID, ownerUUID) ?
                     ListsService.getListInfo(listUUID, ownerUUID).list :
                     TasksService.getTaskInfo(listUUID, ownerUUID).task;
@@ -126,8 +126,8 @@
   function mockConvertListToNote(expectResponse) {
     $httpBackend.whenPOST(ConvertService.convertListToNoteRegex)
     .respond(function(method, url, data, headers) {
-      var ownerUUID = url.substr(5, 36);
-      var listUUID = url.substr(47, 36);
+      var ownerUUID = url.substr(15, 36);
+      var listUUID = url.substr(63, 36);
       var list = ListsService.getListInfo(listUUID, ownerUUID) ?
                     ListsService.getListInfo(listUUID, ownerUUID).list :
                     NotesService.getNoteInfo(listUUID, ownerUUID).note;

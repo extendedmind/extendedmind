@@ -25,7 +25,6 @@
   }
 
   methods.uuidRegex = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
-  methods.apiPrefixRegex = /\/api\//;
   methods.apiv2PrefixRegex = /\/api\/v2/;
   methods.undeleteRegex = /\/undelete/;
   methods.hexCodeRegex = /[0-9a-f]+/;
@@ -211,6 +210,16 @@
     } else {
       return emitRegexException(regex, 'put', url);
     }
+  };
+
+  methods.patchOffline = function(url, regex, params, data, timestamp) {
+    return refreshCredentials().then(function() {
+      if (regex.test(url)) {
+        return HttpClientService.patchOffline(getUrlPrefix() + url, params, data, timestamp);
+      } else {
+        return emitRegexException(regex, 'put', url);
+      }
+    });
   };
 
   methods.postPrimary = function(url, regex, data) {

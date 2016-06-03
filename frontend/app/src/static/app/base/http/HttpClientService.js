@@ -553,6 +553,12 @@
     executeRequests();
   };
 
+  methods.patchOffline = function(url, params, data, timestamp) {
+    var request = getRequest('patch', url, params, data, timestamp);
+    HttpRequestQueueService.push(request);
+    executeRequests();
+  };
+
   methods.isOffline = function(status) {
     return isOffline(status);
   };

@@ -213,9 +213,6 @@
   }
 
   var tasks = {};
-  var taskSlashRegex = /\/task\//;
-  var completeRegex = /\/complete/;
-  var uncompleteRegex = /\/uncomplete/;
 
   function initializeArrays(ownerUUID) {
     if (!tasks[ownerUUID]) {
@@ -752,7 +749,7 @@
           // completing can be reversed only if a new task has not been generated
           params.reverse = {
             method: 'post',
-            url: '/api/' + ownerUUID + '/task/' + task.trans.uuid + '/uncomplete'
+            url: '/api/v2/owners/' + ownerUUID + '/data/tasks/' + task.trans.uuid + '/uncomplete'
           };
         }
         var data, reminder = ReminderService.unscheduleReminder(task, fakeTimestamp);
@@ -761,7 +758,8 @@
           data = {reminderId: reminder.id, removed: fakeTimestamp};
         }
 
-        BackendClientService.postOffline('/api/' + ownerUUID + '/task/' + task.trans.uuid + '/complete',
+        BackendClientService.postOffline('/api/v2/owners/' + ownerUUID + '/data/tasks/' +
+                                         task.trans.uuid + '/complete',
                                   this.completeTaskRegex, params, data, fakeTimestamp);
         if (!task.mod) task.mod = {};
         var propertiesToReset = {saved: fakeTimestamp,
@@ -791,7 +789,8 @@
           data = {reminderId: reminder.id};
         }
 
-        BackendClientService.postOffline('/api/' + ownerUUID + '/task/' + task.trans.uuid + '/uncomplete',
+        BackendClientService.postOffline('/api/v2/owners/' + ownerUUID + '/data/tasks/' +
+                                         task.trans.uuid + '/uncomplete',
                                   this.uncompleteTaskRegex, params, data, fakeTimestamp);
         if (!task.mod) task.mod = {};
         var propertiesToReset = {saved: fakeTimestamp, completed: undefined};
@@ -871,19 +870,19 @@
     deleteTaskRegex: ItemLikeService.getDeleteRegex(TASK_TYPE),
     undeleteTaskRegex: ItemLikeService.getUndeleteRegex(TASK_TYPE),
     completeTaskRegex: new RegExp('^' +
-                                  BackendClientService.apiPrefixRegex.source +
+                                  BackendClientService.apiv2PrefixRegex.source +
+                                  '/owners/' +
                                   BackendClientService.uuidRegex.source +
-                                  taskSlashRegex.source +
+                                  '/data/tasks/' +
                                   BackendClientService.uuidRegex.source +
-                                  completeRegex.source +
-                                  '$'),
+                                  '/complete$'),
     uncompleteTaskRegex: new RegExp('^' +
-                                    BackendClientService.apiPrefixRegex.source +
+                                    BackendClientService.apiv2PrefixRegex.source +
+                                    '/owners/' +
                                     BackendClientService.uuidRegex.source +
-                                    taskSlashRegex.source +
+                                    '/data/tasks/' +
                                     BackendClientService.uuidRegex.source +
-                                    uncompleteRegex.source +
-                                    '$')
+                                    '/uncomplete$')
   };
 }
 

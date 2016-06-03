@@ -176,7 +176,7 @@ afterEach(function() {
       'title': 'test task'
     };
     var testTask = TasksService.getNewTask(testTaskValues, testOwnerUUID);
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task', testTaskValues)
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/tasks', testTaskValues)
     .respond(200, putNewTaskResponse);
     TasksService.saveTask(testTask);
     $httpBackend.flush();
@@ -196,7 +196,7 @@ afterEach(function() {
   it('should update existing task', function () {
     var cleanCloset = TasksService.getTaskInfo('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID).task;
     cleanCloset.trans.title = 'clean closet now';
-    $httpBackend.expectPUT('/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid,
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' + cleanCloset.uuid,
                            {title: cleanCloset.trans.title,
                            modified: cleanCloset.modified})
     .respond(200, putExistingTaskResponse);
@@ -217,7 +217,7 @@ afterEach(function() {
 
   it('should delete and undelete task', function () {
     var cleanCloset = TasksService.getTaskInfo('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID).task;
-    $httpBackend.expectDELETE('/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid)
+    $httpBackend.expectDELETE('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' + cleanCloset.uuid)
     .respond(200, deleteTaskResponse);
     TasksService.deleteTask(cleanCloset);
     $httpBackend.flush();
@@ -230,7 +230,8 @@ afterEach(function() {
     .toBe(2);
 
     // Undelete the task
-    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid + '/undelete')
+    $httpBackend.expectPOST('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' +
+                            cleanCloset.uuid + '/undelete')
     .respond(200, undeleteTaskResponse);
     TasksService.undeleteTask(cleanCloset);
     $httpBackend.flush();
@@ -253,7 +254,8 @@ it('should complete and uncomplete task', function () {
     expect(TasksService.getTasks(testOwnerUUID).length)
     .toBe(3);
 
-    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid + '/complete')
+    $httpBackend.expectPOST('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' +
+                            cleanCloset.uuid + '/complete')
     .respond(200, completeTaskResponse);
     TasksService.completeTask(cleanCloset);
     $httpBackend.flush();
@@ -276,7 +278,8 @@ it('should complete and uncomplete task', function () {
     .toBe(tasks[0].mod.completed);
 
     // Uncomplete
-    $httpBackend.expectPOST('/api/' + testOwnerUUID + '/task/' + cleanCloset.uuid + '/uncomplete')
+    $httpBackend.expectPOST('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' +
+                            cleanCloset.uuid + '/uncomplete')
     .respond(200, uncompleteTaskResponse);
     TasksService.uncompleteTask(cleanCloset);
     $httpBackend.flush();
