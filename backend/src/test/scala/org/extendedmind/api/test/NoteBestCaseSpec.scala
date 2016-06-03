@@ -66,12 +66,12 @@ class NoteBestCaseSpec extends ServiceSpecBase {
   }
 
   describe("In the best case, NoteService") {
-    it("should successfully put new note on PUT to /[userUUID]/note, "
-      + "update it with PUT to /[userUUID]/note/[noteUUID] "
-      + "and get it back with GET to /[userUUID]/note/[noteUUID]") {
+    it("should successfully put new note on PUT to /v2/owners/[userUUID]/data/notes, "
+      + "update it with PUT to /v2/owners/[userUUID]/data/notes/[noteUUID] "
+      + "and get it back with GET to /v2/owners/[userUUID]/data/notes/[noteUUID]") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       val newNote = Note("home measurements", None, None, Some("bedroom wall: 420cm*250cm"), None, None, None).copy(ui = Some("testUI"))
-      Put("/" + authenticateResponse.userUUID + "/note",
+      Put("/v2/owners/" + authenticateResponse.userUUID + "/data/notes",
         marshal(newNote).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           val putNoteResponse = responseAs[SetResult]
           writeJsonOutput("putNoteResponse", responseAs[String])
@@ -79,35 +79,35 @@ class NoteBestCaseSpec extends ServiceSpecBase {
           putNoteResponse.uuid should not be None
 
           val updatedNote = newNote.copy(description = Some("Helsinki home dimensions"))
-          Put("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get,
+          Put("/v2/owners/" + authenticateResponse.userUUID + "/data/notes/" + putNoteResponse.uuid.get,
             marshal(updatedNote).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
               val putExistingNoteResponse = responseAs[String]
               writeJsonOutput("putExistingNoteResponse", putExistingNoteResponse)
               putExistingNoteResponse should include("modified")
               putExistingNoteResponse should not include ("uuid")
-              Get("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+              Get("/v2/owners/" + authenticateResponse.userUUID + "/data/notes/" + putNoteResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                 val noteResponse = responseAs[Note]
                 writeJsonOutput("noteResponse", responseAs[String])
                 noteResponse.content should not be None
                 noteResponse.description.get should be("Helsinki home dimensions")
                 noteResponse.ui.get should be("testUI")
-                Delete("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                Delete("/v2/owners/" + authenticateResponse.userUUID + "/data/notes/" + putNoteResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                   val deleteNoteResponse = responseAs[DeleteItemResult]
                   writeJsonOutput("deleteNoteResponse", responseAs[String])
-                  Get("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                  Get("/v2/owners/" + authenticateResponse.userUUID + "/data/notes/" + putNoteResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                   val failure = responseAs[ErrorResult]
                   status should be (BadRequest)
                     failure.description should startWith("Item " + putNoteResponse.uuid.get + " is deleted")
                   }
 
                   // Deleting again should return the same deleted and modified values
-                  Delete("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                  Delete("/v2/owners/" + authenticateResponse.userUUID + "/data/notes/" + putNoteResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                     val redeleteNoteResponse = responseAs[DeleteItemResult]
                     redeleteNoteResponse.deleted should be (deleteNoteResponse.deleted)
                     redeleteNoteResponse.result.modified should be (deleteNoteResponse.result.modified)
                   }
 
-                  Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                  Post("/v2/owners/" + authenticateResponse.userUUID + "/data/notes/" + putNoteResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                     val undeleteNoteResponse = responseAs[SetResult]
                     writeJsonOutput("undeleteNoteResponse", responseAs[String])
                     val undeletedTask = getNote(putNoteResponse.uuid.get, authenticateResponse)
@@ -115,7 +115,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
                     undeletedTask.modified should not be (None)
 
                     // Re-undelete should also work
-                    Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                    Post("/v2/owners/" + authenticateResponse.userUUID + "/data/notes/" + putNoteResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                       val reundeleteNoteResponse = responseAs[SetResult]
                       reundeleteNoteResponse.modified should be (undeleteNoteResponse.modified)
                     }
@@ -125,13 +125,13 @@ class NoteBestCaseSpec extends ServiceSpecBase {
             }
         }
     }
-    it("should successfully convert note to list with POST to /[userUUID]/note/[itemUUID]/list "
-      + "and transform it back with POST to /[userUUID]/list/[itemUUID]/note") {
+    it("should successfully convert note to list with POST to /v2/owners/[userUUID]/data/notes/[itemUUID]/convert_to_list "
+      + "and transform it back with POST to /v2/owners/[userUUID]/data/lists/[itemUUID]/convert_to_note") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       val newNote = Note("Spanish 101", None, None, Some("lecture notes for Spanish 101 class"), None, None, None)
       val putNoteResponse = putNewNote(newNote, authenticateResponse)
 
-      Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/list",
+      Post("/v2/owners/" + authenticateResponse.userUUID + "/data/notes/" + putNoteResponse.uuid.get + "/convert_to_list",
           marshal(newNote.copy(title = "Spanish studies"))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val listFromNote = responseAs[List]
         writeJsonOutput("noteToListResponse", responseAs[String])
@@ -140,7 +140,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
         listFromNote.description.get should be ("lecture notes for Spanish 101 class")
         listFromNote.revision.get should be (1l)
 
-        Post("/" + authenticateResponse.userUUID + "/list/" + putNoteResponse.uuid.get + "/note",
+        Post("/v2/owners/" + authenticateResponse.userUUID + "/data/lists/" + putNoteResponse.uuid.get + "/convert_to_note",
           marshal(listFromNote.copy(title = "Spanish 101"))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           val noteFromList = responseAs[Note]
           writeJsonOutput("listToNoteResponse", responseAs[String])
@@ -151,30 +151,30 @@ class NoteBestCaseSpec extends ServiceSpecBase {
         }
       }
     }
-    it("should successfully favorite note with POST to /[userUUID]/note/[itemUUID]/favorite "
-      + "and unfavorite it with POST to /[userUUID]/note/[itemUUID]/unfavorite") {
+    it("should successfully favorite note with POST to /v2/owners/[userUUID]/data/notes/[itemUUID]/favorite "
+      + "and unfavorite it with POST to /v2/owners/[userUUID]/data/notes/[itemUUID]/unfavorite") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       val newNote = Note("Spanish 101", None, None, Some("lecture notes for Spanish 101 class"), None, Some(100L), None)
       val putNoteResponse = putNewNote(newNote, authenticateResponse)
       val originalNoteResponse = getNote(putNoteResponse.uuid.get, authenticateResponse)
       originalNoteResponse.favorited should be (None)
 
-      Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/favorite") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+      Post("/v2/owners/" + authenticateResponse.userUUID + "/data/notes/" + putNoteResponse.uuid.get + "/favorite") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         writeJsonOutput("favoriteNoteResponse", responseAs[String])
         val favoriteNoteResponse = responseAs[FavoriteNoteResult]
         favoriteNoteResponse.favorited should not be None
         val noteResponse = getNote(putNoteResponse.uuid.get, authenticateResponse)
         noteResponse.favorited should not be None
 
-        Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/unfavorite") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        Post("/v2/owners/" + authenticateResponse.userUUID + "/data/notes/" + putNoteResponse.uuid.get + "/unfavorite") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           writeJsonOutput("unfavoriteNoteResponse", responseAs[String])
           val unfavoritedNoteResponse = getNote(putNoteResponse.uuid.get, authenticateResponse)
           unfavoritedNoteResponse.favorited should be(None)
         }
       }
     }
-    it("should successfully get public note with GET to /public/[handle]/[path]") {
-      Get("/public/timo/productivity") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+    it("should successfully get public note with GET to /v2/public/[handle]/[path]") {
+      Get("/v2/public/timo/productivity") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
         val publicItem = responseAs[PublicItem]
         writeJsonOutput("publicItemResponse", responseAs[String])
         publicItem.note.relationships.get.parent should be(None)
@@ -186,7 +186,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
         publicItem.collectiveTags.get.length should be(1)
         publicItem.collectiveTags.get(0)._2.length should be(2)
 
-        Get("/short/" + publicItem.note.visibility.get.shortId.get) ~> route ~> check {
+        Get("/v2/short/" + publicItem.note.visibility.get.shortId.get) ~> route ~> check {
           val publicItemHeaderResponse = responseAs[PublicItemHeader]
           writeJsonOutput("publicItemHeaderResponse", responseAs[String])
           publicItemHeaderResponse.handle should be ("timo")
@@ -194,29 +194,29 @@ class NoteBestCaseSpec extends ServiceSpecBase {
         }
       }
     }
-    it("should successfully publish note with POST to [userUUID]/note/[itemUUID]/publish "
-      + "and unpublish it with POST to /[userUUID]/note/[itemUUID]/unpublish") {
+    it("should successfully publish note with POST to /v2/owners/[userUUID]/data/notes/[itemUUID]/publish "
+      + "and unpublish it with POST to /v2/owners/[userUUID]/data/notes/[itemUUID]/unpublish") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       val newNote = Note("Public note", None, None, Some("this is public"), None, None, None)
       val putNoteResponse = putNewNote(newNote, authenticateResponse)
 
       // First preview note
-      Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/preview",
+      Post("/v2/owners/" + authenticateResponse.userUUID + "/data/notes/" + putNoteResponse.uuid.get + "/create_preview",
           marshal(PreviewPayload("md"))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val previewNoteResult = responseAs[PreviewNoteResult]
         writeJsonOutput("previewNoteResponse", responseAs[String])
-        Get("/" + authenticateResponse.userUUID + "/item/" + putNoteResponse.uuid.get + "/preview/" + previewNoteResult.preview) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+        Get("/v2/owners/" + authenticateResponse.userUUID + "/data/" + putNoteResponse.uuid.get + "/preview/" + previewNoteResult.preview) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
           val publicDraftItem = responseAs[PublicItem]
           writeJsonOutput("itemPreviewResponse", responseAs[String])
           publicDraftItem.note.visibility.get.preview.get should be (previewNoteResult.preview)
           publicDraftItem.note.visibility.get.previewExpires.get should be (previewNoteResult.previewExpires)
           // Next publish with path
-          Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/publish",
+          Post("/v2/owners/" + authenticateResponse.userUUID + "/data/notes/" + putNoteResponse.uuid.get + "/publish",
               marshal(PublishPayload("md", "test", Some(LicenceType.CC_BY_SA_4_0.toString), Some("test ui"), None))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
             val publishNoteResult = responseAs[PublishNoteResult]
             writeJsonOutput("publishNoteResponse", responseAs[String])
             val shortId = publishNoteResult.shortId
-            Get("/public/timo/test") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+            Get("/v2/public/timo/test") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
               val publicItem = responseAs[PublicItem]
               publicItem.note.relationships should be(None)
               publicItem.note.visibility should not be(None)
@@ -226,13 +226,13 @@ class NoteBestCaseSpec extends ServiceSpecBase {
               publicItem.note.visibility.get.licence.get should be (LicenceType.CC_BY_SA_4_0.toString)
               publicItem.note.visibility.get.shortId.get should be (shortId)
               publicItem.note.visibility.get.publicUi.get should be ("test ui")
-              Get("/public/timo?modified=" + (publishNoteResult.published-1)) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+              Get("/v2/public/timo?modified=" + (publishNoteResult.published-1)) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
                 val publicItems = responseAs[PublicItems]
                 publicItems.notes.get.length should be(1)
                 publicItem.note.visibility.get.publishedRevision.get should be(1l)
               }
               shortId should be (publicItem.note.visibility.get.shortId.get)
-              Get("/short/" + shortId) ~> route ~> check {
+              Get("/v2/short/" + shortId) ~> route ~> check {
                 val publicItemHeaderResponse = responseAs[PublicItemHeader]
                 publicItemHeaderResponse.handle should be ("timo")
                 publicItemHeaderResponse.path.get should be ("test")
@@ -242,24 +242,24 @@ class NoteBestCaseSpec extends ServiceSpecBase {
             // Save note, should not change title of published note and create a new revision
             val updatedNote = newNote.copy(title = "Public note modified")
             putExistingNote(updatedNote, putNoteResponse.uuid.get, authenticateResponse)
-            Get("/public/timo/test") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+            Get("/v2/public/timo/test") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
               val publicItem = responseAs[PublicItem]
               publicItem.note.title should be(newNote.title)
               publicItem.note.visibility.get.publishedRevision.get should be(1l)
             }
 
             // Publish with same path, make sure that title is changed
-            Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/publish",
+            Post("/v2/owners/" + authenticateResponse.userUUID + "/data/notes/" + putNoteResponse.uuid.get + "/publish",
                 marshal(PublishPayload("md", "test", Some(LicenceType.CC_BY_SA_4_0.toString), None, None))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
               val republishNoteResult = responseAs[PublishNoteResult]
-              Get("/public/timo/test") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+              Get("/v2/public/timo/test") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
                 val publicItem = responseAs[PublicItem]
                 publicItem.note.title should be(updatedNote.title)
                 publicItem.note.visibility.get.publishedRevision.get should be(3l)
                 publicItem.note.visibility.get.publicUi should be(None)
                 publicItem.note.visibility.get.shortId.get should be(shortId)
               }
-              Get("/short/" + shortId) ~> route ~> check {
+              Get("/v2/short/" + shortId) ~> route ~> check {
                 val publicItemHeaderResponse = responseAs[PublicItemHeader]
                 publicItemHeaderResponse.handle should be ("timo")
                 publicItemHeaderResponse.path.get should be ("test")
@@ -267,9 +267,9 @@ class NoteBestCaseSpec extends ServiceSpecBase {
             }
 
             // Publish with new path and see that there are four revisions
-            Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/publish",
+            Post("/v2/owners/" + authenticateResponse.userUUID + "/data/notes/" + putNoteResponse.uuid.get + "/publish",
               marshal(PublishPayload("md", "test2", None, None, None))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-              Get("/" + authenticateResponse.userUUID + "/item/" + putNoteResponse.uuid.get + "/revisions") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+              Get("/v2/owners/" + authenticateResponse.userUUID + "/data/" + putNoteResponse.uuid.get + "/revisions") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                 val revisionsResult = responseAs[ItemRevisions]
                 revisionsResult.revisions.get.length should be (4)
                 val firstRevision = revisionsResult.revisions.get.find(revision => revision.number == 1l).get
@@ -286,7 +286,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
                 fourthRevision.published should not be (None)
 
               }
-              Get("/short/" + shortId) ~> route ~> check {
+              Get("/v2/short/" + shortId) ~> route ~> check {
                 val publicItemHeaderResponse = responseAs[PublicItemHeader]
                 publicItemHeaderResponse.handle should be ("timo")
                 publicItemHeaderResponse.path.get should be ("test2")
@@ -294,16 +294,16 @@ class NoteBestCaseSpec extends ServiceSpecBase {
             }
 
             // Unpublish the latest
-            Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/unpublish") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+            Post("/v2/owners/" + authenticateResponse.userUUID + "/data/notes/" + putNoteResponse.uuid.get + "/unpublish") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
               writeJsonOutput("unpublishNoteResponse", responseAs[String])
               val unpublishedNoteResponse = getNote(putNoteResponse.uuid.get, authenticateResponse)
               unpublishedNoteResponse.visibility.get.published should be(None)
               unpublishedNoteResponse.visibility.get.path.get should be("test2")
-              Get("/public/timo/test") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+              Get("/v2/public/timo/test") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
                 val failure = responseAs[ErrorResult]
                 failure.code should be (3027)
               }
-              Get("/" + authenticateResponse.userUUID + "/item/" + putNoteResponse.uuid.get + "/revisions") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+              Get("/v2/owners/" + authenticateResponse.userUUID + "/data/" + putNoteResponse.uuid.get + "/revisions") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                 val revisionsResult = responseAs[ItemRevisions]
                 revisionsResult.revisions.get.length should be (4)
                 val firstRevision = revisionsResult.revisions.get.find(revision => revision.number == 1l).get
@@ -321,7 +321,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
               }
 
               // Try to get with previous modified value that returned the note, make sure it has moved to "unpublished"
-              Get("/public/timo?modified=" + (publishNoteResult.published-1)) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+              Get("/v2/public/timo?modified=" + (publishNoteResult.published-1)) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
                 val publicItems = responseAs[PublicItems]
                 publicItems.notes should be(None)
                 publicItems.unpublished.get.length should be (1)
@@ -334,12 +334,12 @@ class NoteBestCaseSpec extends ServiceSpecBase {
                 statusResponse should be ("{\"status\":true}")
               }
               // Now the unpublished should have been pruned
-              Get("/public/timo?modified=" + (publishNoteResult.published-1)) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+              Get("/v2/public/timo?modified=" + (publishNoteResult.published-1)) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
                 val publicItems = responseAs[PublicItems]
                 publicItems.notes should be(None)
                 publicItems.unpublished should be (None)
               }
-              Get("/short/" + shortId) ~> route ~> check {
+              Get("/v2/short/" + shortId) ~> route ~> check {
                 val failure = responseAs[ErrorResult]
                 status should be (BadRequest)
                 failure.code should be(ERR_ITEM_INVALID_PUBLIC_PATH.number)
@@ -349,25 +349,25 @@ class NoteBestCaseSpec extends ServiceSpecBase {
         }
       }
     }
-    it("should successfully get all public notes with GET to /public/[handle]") {
-      Get("/public/timo/productivity") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+    it("should successfully get all public notes with GET to /v2/public/[handle]") {
+      Get("/v2/public/timo/productivity") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
         val publicItem = responseAs[PublicItem]
         val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
         // Put the same tags to the new public note as in the note before that
         val newNote = Note("Public note", None, None, Some("this is public"), None, None,
             Some(ExtendedItemRelationships(None, None, None, None, None, publicItem.note.relationships.get.collectiveTags)))
         val putNoteResponse = putNewNote(newNote, authenticateResponse)
-        Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/publish",
+        Post("/v2/owners/" + authenticateResponse.userUUID + "/data/notes/" + putNoteResponse.uuid.get + "/publish",
             marshal(PublishPayload("md", "test", Some(LicenceType.CC_BY_SA_4_0.toString), None, None))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           val publishNoteResult = responseAs[PublishNoteResult]
-          Get("/public/timo") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+          Get("/v2/public/timo") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
             val publicItems = responseAs[PublicItems]
             writeJsonOutput("publicItemsResponse", responseAs[String])
             publicItems.notes.get.size should be(2)
             publicItems.collectiveTags.get.size should be(1)
             publicItems.collectiveTags.get(0)._2.size should be(2)
             // Getting modified should return only the latter
-            Get("/public/timo?modified=" + putNoteResponse.modified) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+            Get("/v2/public/timo?modified=" + putNoteResponse.modified) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
               val modifiedPublicItems = responseAs[PublicItems]
               modifiedPublicItems.owner should be(None)
               modifiedPublicItems.notes.get.size should be(1)
@@ -377,22 +377,22 @@ class NoteBestCaseSpec extends ServiceSpecBase {
 
               val latestModified = modifiedPublicItems.notes.get(0).modified.get
               // Change account values, expect modified to return different values
-              Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+              Get("/v2/users/" + authenticateResponse.userUUID) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                 val account = responseAs[User]
                 // Should be able to update public modified value of owner
-                Put("/account",
+                Patch("/v2/users/" + authenticateResponse.userUUID,
                   marshal(account.copy(preferences=Some(OwnerPreferences(None, None)))).right.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                   // This should not change the response as public items have not changed
-                  Get("/public/timo?modified=" + latestModified) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+                  Get("/v2/public/timo?modified=" + latestModified) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
                     val nonPublicModifiedItems = responseAs[PublicItems]
                     nonPublicModifiedItems.owner should be(None)
                     nonPublicModifiedItems.modified should be (None)
                     nonPublicModifiedItems.notes should be(None)
                     nonPublicModifiedItems.tags should be(None)
                     nonPublicModifiedItems.collectiveTags should be(None)
-                    Put("/account",
+                    Patch("/v2/users/" + authenticateResponse.userUUID,
                       marshal(account.copy(displayName=Some("testing"))).right.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                      Get("/public/timo?modified=" + putNoteResponse.modified) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+                      Get("/v2/public/timo?modified=" + putNoteResponse.modified) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
                         val ownerModifiedPublicItems = responseAs[PublicItems]
                         ownerModifiedPublicItems.owner.get should be("testing")
                         assert(ownerModifiedPublicItems.modified.get > publicItems.modified.get)
@@ -409,35 +409,35 @@ class NoteBestCaseSpec extends ServiceSpecBase {
         }
       }
     }
-    it("should successfully get unpublished UUIDs from unpublished or deleted notes with GET to /public/[handle]?modified") {
+    it("should successfully get unpublished UUIDs from unpublished or deleted notes with GET to /v2/public/[handle]?modified") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-      Get("/public/timo") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+      Get("/v2/public/timo") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
         val publicItems = responseAs[PublicItems]
         publicItems.notes.get.size should be (1)
         val newNote = Note("Public note", None, None, Some("this is public"), None, None, None)
         val putNoteResponse = putNewNote(newNote, authenticateResponse)
 
         // Publish a second note
-        Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/publish",
+        Post("/v2/owners/" + authenticateResponse.userUUID + "/data/notes/" + putNoteResponse.uuid.get + "/publish",
             marshal(PublishPayload("md", "test", Some(LicenceType.CC_BY_SA_4_0.toString), None, None))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           val publishNoteResult = responseAs[PublishNoteResult]
-          Get("/public/timo") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+          Get("/v2/public/timo") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
              responseAs[PublicItems].notes.get.size should be (2)
              // Delete the first note
-             Delete("/" + authenticateResponse.userUUID + "/note/" +  publicItems.notes.get(0).uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+             Delete("/v2/owners/" + authenticateResponse.userUUID + "/data/notes/" +  publicItems.notes.get(0).uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                // Getting notes
-               Get("/public/timo") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+               Get("/v2/public/timo") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
                  responseAs[PublicItems].notes.get.size should be (1)
                }
-               Get("/public/timo?modified=" + publicItems.notes.get(0).modified.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+               Get("/v2/public/timo?modified=" + publicItems.notes.get(0).modified.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
                  val oneDeletedPublicItem = responseAs[PublicItems]
                  oneDeletedPublicItem.notes.get.size should be (1)
                  oneDeletedPublicItem.unpublished.get.size should be (1)
                  oneDeletedPublicItem.unpublished.get(0) should be(publicItems.notes.get(0).uuid.get)
                }
                // Unpublish the second note and check that unpublished contains two uuids
-               Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/unpublish") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                 Get("/public/timo?modified=" + publicItems.notes.get(0).modified.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+               Post("/v2/owners/" + authenticateResponse.userUUID + "/data/notes/" + putNoteResponse.uuid.get + "/unpublish") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                 Get("/v2/public/timo?modified=" + publicItems.notes.get(0).modified.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
                    val oneDeletedOneUnpublishedPublicItem = responseAs[PublicItems]
                    oneDeletedOneUnpublishedPublicItem.notes should be (None)
                    oneDeletedOneUnpublishedPublicItem.tags should be (None)
@@ -451,7 +451,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
         }
       }
     }
-    it("should successfully get revisions with GET to /[userUUID]/item/[itemUUID]/revision") {
+    it("should successfully get revisions with GET to /v2/owners/[userUUID]/data/[itemUUID]/revisions") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       val newNote = Note("Spanish 101", None, None, Some("lecture notes for Spanish 101 class"), None, None, None)
       val putNoteResponse = putNewNote(newNote, authenticateResponse)
@@ -473,7 +473,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
 
       // Note revision 3 is created when note converting to list
       val noteRevision3 = newNote.copy(title = "Spanish 101 list")
-      Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/list",
+      Post("/v2/owners/" + authenticateResponse.userUUID + "/data/notes/" + putNoteResponse.uuid.get + "/convert_to_list",
           marshal(noteRevision3)) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val listFromNote = responseAs[List]
         getItemRevisionList(putNoteResponse.uuid.get, authenticateResponse).revisions.get.length should be (3)
@@ -483,7 +483,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
 
         // Note revision 4 is created when list is converted to task
         val noteRevision4 = newNote.copy(title = "Spanish 101 task")
-        Post("/" + authenticateResponse.userUUID + "/list/" + putNoteResponse.uuid.get + "/task",
+        Post("/v2/owners/" + authenticateResponse.userUUID + "/data/lists/" + putNoteResponse.uuid.get + "/convert_to_task",
           marshal(noteRevision4)) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           val taskFromList = responseAs[Task]
           getItemRevisionList(putNoteResponse.uuid.get, authenticateResponse).revisions.get.length should be (4)
@@ -494,7 +494,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
 
           // Note revision 5 is created when task is converted back to note
           val noteRevision5 = newNote.copy(title = "Spanish 101 back to note")
-          Post("/" + authenticateResponse.userUUID + "/task/" + putNoteResponse.uuid.get + "/note",
+          Post("/v2/owners/" + authenticateResponse.userUUID + "/data/tasks/" + putNoteResponse.uuid.get + "/convert_to_note",
             marshal(noteRevision5)) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
             getItemRevisionList(putNoteResponse.uuid.get, authenticateResponse).revisions.get.length should be (5)
             getItemRevision(putNoteResponse.uuid.get, 5l, authenticateResponse).note.get.title should be (noteRevision5.title)
@@ -504,7 +504,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
             getItemRevision(putNoteResponse.uuid.get, 1l, authenticateResponse).note.get.title should be (noteRevision1.title)
 
             // Publish the note thus creating a 6. revision
-            Post("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get + "/publish",
+            Post("/v2/owners/" + authenticateResponse.userUUID + "/data/notes/" + putNoteResponse.uuid.get + "/publish",
                 marshal(PublishPayload("md", "spanish", Some(LicenceType.CC_BY_SA_4_0.toString), None, None))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
               getItemRevisionList(putNoteResponse.uuid.get, authenticateResponse).revisions.get.length should be (6)
               getItemRevision(putNoteResponse.uuid.get, 6l, authenticateResponse).note.get.title should be (noteRevision5.title)
