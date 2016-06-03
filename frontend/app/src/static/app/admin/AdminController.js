@@ -25,7 +25,7 @@
   });
 
   $scope.gotoUsers = function gotoUsers() {
-    AdminService.getUsers().then(function(response) {
+    AdminService.getOwners().then(function(response) {
       $scope.users = response.users;
       $scope.adminMode = 'users';
     });

@@ -25,16 +25,16 @@ function MockAdminBackendService($httpBackend, AdminService) {
   }
 
   function mockGetUsers(){
-    $httpBackend.whenGET(AdminService.usersRegex).respond(function() {
-      var usersResponse = getJSONFixture('usersResponse.json');
+    $httpBackend.whenGET(AdminService.ownersRegexp).respond(function() {
+      var usersResponse = getJSONFixture('ownersResponse.json');
       return [200, usersResponse];
     });
   }
 
   function mockDestroyUser(){
-    $httpBackend.whenDELETE(AdminService.destroyUserRegex)
+    $httpBackend.whenPOST(AdminService.destroyUserRegex)
       .respond(function() {
-        var destroyUserResponse = getJSONFixture('deleteUserResponse.json');
+        var destroyUserResponse = getJSONFixture('destroyUserResponse.json');
         return [200, destroyUserResponse];
       });
   }

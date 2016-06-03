@@ -20,43 +20,42 @@
 
   var statisticsRegexp = new RegExp(
     /^/.source +
-    BackendClientService.apiPrefixRegex.source +
+    BackendClientService.apiv2PrefixRegex.source +
     /admin$/.source
     );
 
-  var usersRegexp = new RegExp(
+  var ownersRegexp = new RegExp(
     /^/.source +
-    BackendClientService.apiPrefixRegex.source +
-    adminRegex.source +
-    /users$/.source
+    BackendClientService.apiv2PrefixRegex.source +
+    /owners$/.source
     );
 
   var destroyUserRegexp = new RegExp(
     /^/.source +
-    BackendClientService.apiPrefixRegex.source +
+    BackendClientService.apiv2PrefixRegex.source +
     adminRegex.source +
-    /user\//.source +
+    /users\//.source +
     BackendClientService.uuidRegex.source +
-    '$'
+    '/destroy_user$'
     );
 
   return {
     getStatistics: function() {
-      return BackendClientService.get('/api/admin',
+      return BackendClientService.get('/api/v2/admin',
         statisticsRegexp, true);
     },
-    getUsers: function() {
-      return BackendClientService.get('/api/admin/users',
-        usersRegexp, true);
+    getOwners: function() {
+      return BackendClientService.get('/api/v2/owners',
+        ownersRegexp, true);
     },
     destroyUser: function(user){
-      return BackendClientService.deleteOnline('/api/admin/user/' + user.uuid,
+      return BackendClientService.postOnline('/api/v2/admin/users/' + user.uuid + '/destroy_user',
         destroyUserRegexp, true);
     },
 
     // Regular expressions for admin requests
     statisticsRegex: statisticsRegexp,
-    usersRegex: usersRegexp,
+    ownersRegexp: ownersRegexp,
     destroyUserRegex: destroyUserRegexp
   };
 }
