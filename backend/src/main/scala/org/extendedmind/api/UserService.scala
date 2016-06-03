@@ -60,7 +60,7 @@ trait UserService extends ServiceBase {
           }
         }
       } ~
-      v2PostVerifyResend { url =>
+      v2PostResendVerification { url =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           complete {
             Future[CountResult] {

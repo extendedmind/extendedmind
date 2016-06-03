@@ -71,8 +71,8 @@ class UserBestCaseSpec extends ServiceSpecBase {
   }
 
   describe("In the best case, UserService") {
-    it("should create an administrator with POST to /signup because adminSignUp is set to true " +
-       "and resend verification email with POST to /email/resend") {
+    it("should create an administrator with POST to /v2/users/sign_up because adminSignUp is set to true " +
+       "and resend verification email with POST to /v2/users/resend_verification") {
       val testEmail = "example@example.com"
       stub(mockMailClient.sendEmailVerificationLink(mockEq(testEmail), anyObject())).toReturn(
         Future { SendEmailResponse("OK", "1234") })
@@ -80,7 +80,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
       val emailCaptor: ArgumentCaptor[String] = ArgumentCaptor.forClass(classOf[String])
 
       val signUp = SignUp(testEmail, "infopwd", Some("Info account"), Some("info"), None, None, Some(1), None)
-      Post("/signup",
+      Post("/v2/users/sign_up",
         marshal(signUp).right.get) ~> route ~> check {
           val signUpResponse = responseAs[String]
           writeJsonOutput("signUpResponse", signUpResponse)
@@ -97,26 +97,26 @@ class UserBestCaseSpec extends ServiceSpecBase {
             Future { SendEmailResponse("OK", "4321") })
 
           // Should resend verification link email
-          Post("/email/resend") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticationResponse.token.get)) ~> route ~> check {
+          Post("/v2/users/resend_verification") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticationResponse.token.get)) ~> route ~> check {
             val resendResponse = responseAs[CountResult]
             writeJsonOutput("emailResendResponse", responseAs[String])
             verify(mockMailClient).sendEmailVerificationLink(testEmail, verificationCode)
           }
         }
     }
-    it("should successfully get user with GET to /account, "
-      + "change email and set onboarded with PUT to /account "
+    it("should successfully get user with GET to /v2/users/[UserUUID], "
+      + "change email and set onboarded with PATCH to /v2/users/[UserUUID] "
       + "and get the changed email and onboarded status back") {
       val authenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
       val initialUIPreferences = "{hideFooter: true}"
       val newUser = User("ignored@example.com", None, None, None, None, None, Some(OwnerPreferences(Some("web"), Some(initialUIPreferences))))
-      Put("/account",
+      Patch("/v2/users/" + authenticateResponse.userUUID,
         marshal(newUser).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-          writeJsonOutput("putAccountResponse", responseAs[String])
-          val putAccountResponse = responseAs[SetResult]
-          putAccountResponse.modified should not be None
+          writeJsonOutput("patchUserResponse", responseAs[String])
+          val patchUserResponse = responseAs[PatchUserResponse]
+          patchUserResponse.result.modified should not be None
         }
-      Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+      Get("/v2/users/" + authenticateResponse.userUUID) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val accountResponse = responseAs[User]
         accountResponse.inboxId should not be None
         accountResponse.shortId should be (None)
@@ -130,16 +130,16 @@ class UserBestCaseSpec extends ServiceSpecBase {
 
         // Add more UI preferences, make sure onboarded isn't removed
         val newUIPreferences = "{hideFooter: true, hidePlus: true}"
-        Put("/account", marshal(accountResponse.copy(email = None, preferences = Some(OwnerPreferences(None, Some(newUIPreferences))))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", newEmailAuthenticateResponse.token.get)) ~> route ~> check {
-          val putAccountResponse = responseAs[SetResult]
-          putAccountResponse.modified should not be None
-          Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", newEmailAuthenticateResponse.token.get)) ~> route ~> check {
+        Patch("/v2/users/" + authenticateResponse.userUUID, marshal(accountResponse.copy(email = None, preferences = Some(OwnerPreferences(None, Some(newUIPreferences))))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", newEmailAuthenticateResponse.token.get)) ~> route ~> check {
+          val patchUserResponse = responseAs[PatchUserResponse]
+          patchUserResponse.result.modified should not be None
+          Get("/v2/users/" + authenticateResponse.userUUID) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", newEmailAuthenticateResponse.token.get)) ~> route ~> check {
             val accountResponse = responseAs[User]
             accountResponse.preferences.get.onboarded.get should be("web")
             accountResponse.preferences.get.ui.get should be(newUIPreferences)
             // Add more onboarded values, make sure UI preferences isn't removed
-            Put("/account", marshal(accountResponse.copy(email = None, preferences = Some(OwnerPreferences(Some("{web}"), None)))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-              Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", newEmailAuthenticateResponse.token.get)) ~> route ~> check {
+            Patch("/v2/users/" + authenticateResponse.userUUID, marshal(accountResponse.copy(email = None, preferences = Some(OwnerPreferences(Some("{web}"), None)))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+              Get("/v2/users/" + authenticateResponse.userUUID) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", newEmailAuthenticateResponse.token.get)) ~> route ~> check {
                 val accountResponse2 = responseAs[User]
                 accountResponse2.preferences.get.onboarded.get should be("{web}")
                 accountResponse2.preferences.get.ui.get should be(newUIPreferences)
@@ -151,14 +151,14 @@ class UserBestCaseSpec extends ServiceSpecBase {
 
     }
 
-    it("should successfully get the correct response from GET to /account " +
-       "that matches what is returned from GET /collective/[UUID]") {
+    it("should successfully get the correct response from GET to /v2/users/[UUID] " +
+       "that matches what is returned from GET /v2/collectives/[UUID]") {
       val timoAuthenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       val emtCollectiveUUID = timoAuthenticateResponse.collectives.get.find(collectiveInfo => collectiveInfo._2._1 == "extended mind technologies").get._1
 
       // TIMO IS THE FOUNDER OF EMT AND EM COLLECTIVES
 
-      Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
+      Get("/v2/users/" + timoAuthenticateResponse.userUUID) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
         writeJsonOutput("accountResponse", responseAs[String])
         val accountResponse = responseAs[User]
         accountResponse.uuid.get should equal(timoAuthenticateResponse.userUUID)
@@ -175,7 +175,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
         commonCollective._2._4.get.created should be(None)
         commonCollective._2._4.get.creator should be(None)
 
-        Get("/collective/" + commonCollective._1) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
+        Get("/v2/collectives/" + commonCollective._1) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
           val fullCommonCollective = responseAs[Collective]
           fullCommonCollective.apiKey should not be (None)
           fullCommonCollective.handle.get should be(commonCollective._2._4.get.handle.get)
@@ -203,7 +203,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
         emtCollective._2._4.get.created should be(None)
         emtCollective._2._4.get.creator should be(None)
 
-        Get("/collective/" + emtCollective._1) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
+        Get("/v2/collectives/" + emtCollective._1) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
           val fullEMTCollective = responseAs[Collective]
           fullEMTCollective.apiKey should not be (None)
           fullEMTCollective.description.get should be(emtCollective._2._4.get.description.get)
@@ -214,7 +214,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
           fullEMTCollective.access.get.find(accessInfo => accessInfo._2 == "Timo") should not be(None)
         }
 
-        Get("/short/" + accountResponse.shortId.get) ~> route ~> check {
+        Get("/v2/short/" + accountResponse.shortId.get) ~> route ~> check {
           val publicItemHeaderResponse = responseAs[PublicItemHeader]
           publicItemHeaderResponse.handle should be ("timo")
           publicItemHeaderResponse.path should be (None)
@@ -225,7 +225,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
       // LAURI HAS READ/WRITE ACCESS TO EMT AND READ TO EM
 
       val lauriAuthenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
-      Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
+      Get("/v2/users/" + lauriAuthenticateResponse.userUUID) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
         writeJsonOutput("accountResponseReadWrite", responseAs[String])
         val accountResponse = responseAs[User]
         val commonCollective = accountResponse.collectives.get.find(collectiveInfo => collectiveInfo._2._3).get
@@ -239,7 +239,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
         commonCollective._2._4.get.created should be(None)
         commonCollective._2._4.get.creator should be(None)
 
-        Get("/collective/" + commonCollective._1) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
+        Get("/v2/collectives/" + commonCollective._1) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
           val fullCommonCollective = responseAs[Collective]
           fullCommonCollective.apiKey should be (None)
           fullCommonCollective.handle.get should be(commonCollective._2._4.get.handle.get)
@@ -265,7 +265,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
         emtCollective._2._4.get.modified should be(None)
         emtCollective._2._4.get.created should be(None)
         emtCollective._2._4.get.creator should be(None)
-        Get("/collective/" + emtCollective._1) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
+        Get("/v2/collectives/" + emtCollective._1) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
           val fullEMTCollective = responseAs[Collective]
           fullEMTCollective.apiKey should be (None) // This needs to be none, only admin can see the api key
           fullEMTCollective.description.get should be(emtCollective._2._4.get.description.get)
@@ -280,7 +280,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
       // JP HAS READ ACCESS TO EMT AND READ TO EM
 
       val jpAuthenticateResponse = emailPasswordAuthenticate(JP_EMAIL, JP_PASSWORD)
-      Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", jpAuthenticateResponse.token.get)) ~> route ~> check {
+      Get("/v2/users/" + jpAuthenticateResponse.userUUID) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", jpAuthenticateResponse.token.get)) ~> route ~> check {
         writeJsonOutput("accountResponseRead", responseAs[String])
         val accountResponse = responseAs[User]
         accountResponse.uuid.get should equal(jpAuthenticateResponse.userUUID)
@@ -297,7 +297,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
         commonCollective._2._4.get.created should be(None)
         commonCollective._2._4.get.creator should be(None)
 
-        Get("/collective/" + commonCollective._1) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", jpAuthenticateResponse.token.get)) ~> route ~> check {
+        Get("/v2/collectives/" + commonCollective._1) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", jpAuthenticateResponse.token.get)) ~> route ~> check {
           val fullCommonCollective = responseAs[Collective]
           fullCommonCollective.apiKey should be (None)
           fullCommonCollective.handle.get should be(commonCollective._2._4.get.handle.get)
@@ -320,7 +320,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
         emtCollective._2._4.get.modified should be(None)
         emtCollective._2._4.get.created should be(None)
         emtCollective._2._4.get.creator should be(None)
-        Get("/collective/" + emtCollective._1) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", jpAuthenticateResponse.token.get)) ~> route ~> check {
+        Get("/v2/collectives/" + emtCollective._1) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", jpAuthenticateResponse.token.get)) ~> route ~> check {
           val fullEMTCollective = responseAs[Collective]
           fullEMTCollective.apiKey should be (None) // This needs to be none, only admin can see the api key
           fullEMTCollective.description.get should be(emtCollective._2._4.get.description.get)
@@ -336,7 +336,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
       // INFO HAS READ ACCESS TO EM
 
       val infoAuthenticateResponse = emailPasswordAuthenticate(INFO_EMAIL, INFO_PASSWORD)
-      Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", infoAuthenticateResponse.token.get)) ~> route ~> check {
+      Get("/v2/users/" + infoAuthenticateResponse.userUUID) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", infoAuthenticateResponse.token.get)) ~> route ~> check {
         writeJsonOutput("accountResponseNormal", responseAs[String])
         val accountResponse = responseAs[User]
         accountResponse.uuid.get should equal(infoAuthenticateResponse.userUUID)
@@ -352,7 +352,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
         commonCollective._2._4.get.modified should be(None)
         commonCollective._2._4.get.created should be(None)
         commonCollective._2._4.get.creator should be(None)
-        Get("/collective/" + commonCollective._1) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", infoAuthenticateResponse.token.get)) ~> route ~> check {
+        Get("/v2/collectives/" + commonCollective._1) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", infoAuthenticateResponse.token.get)) ~> route ~> check {
           val fullCommonCollective = responseAs[Collective]
           fullCommonCollective.apiKey should be (None)
           fullCommonCollective.handle.get should be(commonCollective._2._4.get.handle.get)
@@ -366,7 +366,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
         }
       }
     }
-    it("should successfully change email with PUT to /email "
+    it("should successfully change email with POST to /v2/users/change_email "
       + "and get the changed email back") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
 
@@ -376,14 +376,14 @@ class UserBestCaseSpec extends ServiceSpecBase {
       val verificationCodeCaptor: ArgumentCaptor[Long] = ArgumentCaptor.forClass(classOf[Long])
       val emailCaptor: ArgumentCaptor[String] = ArgumentCaptor.forClass(classOf[String])
 
-      Put("/email",
+      Post("/v2/users/change_email",
         marshal(newEmail).right.get) ~> addHeader("Content-Type", "application/json") ~> addHeader(Authorization(BasicHttpCredentials(TIMO_EMAIL, TIMO_PASSWORD))) ~> route ~> check {
           writeJsonOutput("putEmailResponse", responseAs[String])
           val putAccountResponse = responseAs[SetResult]
           putAccountResponse.modified should not be None
           verify(mockMailClient).sendEmailVerificationLink(emailCaptor.capture(), verificationCodeCaptor.capture())
       }
-      Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+      Get("/v2/users/" + authenticateResponse.userUUID) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val accountResponse = responseAs[User]
         accountResponse.email.get should equal(newEmail.email)
         accountResponse.shortId should not be (None)
@@ -391,23 +391,23 @@ class UserBestCaseSpec extends ServiceSpecBase {
       val newEmailAuthenticateResponse = emailPasswordAuthenticate(newEmail.email, TIMO_PASSWORD)
       newEmailAuthenticateResponse.userUUID should not be None
     }
-    it("should successfully delete user with DELETE to /account "
+    it("should successfully delete user with DELETE to /v2/users/[UUID] "
       + "and resurrect user with new authenticate") {
       val authenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
       val authenticateResponse2 = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
 
-      Delete("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials(LAURI_EMAIL, LAURI_PASSWORD)) ~> route ~> check {
+      Delete("/v2/users/" + authenticateResponse.userUUID) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials(LAURI_EMAIL, LAURI_PASSWORD)) ~> route ~> check {
         writeJsonOutput("deleteAccountResponse", responseAs[String])
         val deleteAccountResponse = responseAs[DeleteItemResult]
         deleteAccountResponse.result.modified should not be None
 
         // Should not be able to do anything else with any previous login
-        Get("/account") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        Get("/v2/users/" + authenticateResponse.userUUID) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           status should be (Forbidden)
           val failure = responseAs[ErrorResult]
           failure.code should be(ERR_BASE_AUTHENTICATION_FAILED.number)
         }
-        Get("/" + authenticateResponse2.userUUID + "/items") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse2.token.get)) ~> route ~> check {
+        Get("/v2/owners/" + authenticateResponse2.userUUID + "/data") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse2.token.get)) ~> route ~> check {
           status should be (Forbidden)
           val failure = responseAs[ErrorResult]
           failure.code should be(ERR_BASE_AUTHENTICATION_FAILED.number)
@@ -415,9 +415,9 @@ class UserBestCaseSpec extends ServiceSpecBase {
       }
       val adminAuthenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
 
-      Get("/admin/users") ~> addCredentials(BasicHttpCredentials("token", adminAuthenticateResponse.token.get)) ~> route ~> check {
-        val users = responseAs[Users]
-        val lauri = users.users.filter(user => {
+      Get("/v2/owners") ~> addCredentials(BasicHttpCredentials("token", adminAuthenticateResponse.token.get)) ~> route ~> check {
+        val owners = responseAs[Owners]
+        val lauri = owners.users.filter(user => {
           if (user.email.get == LAURI_EMAIL) true
           else false
         })
@@ -426,9 +426,9 @@ class UserBestCaseSpec extends ServiceSpecBase {
 
       // Resurrect with new authenticate
       val reauthenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
-      Get("/admin/users") ~> addCredentials(BasicHttpCredentials("token", adminAuthenticateResponse.token.get)) ~> route ~> check {
-        val users = responseAs[Users]
-        val lauri = users.users.filter(user => {
+      Get("/v2/owners") ~> addCredentials(BasicHttpCredentials("token", adminAuthenticateResponse.token.get)) ~> route ~> check {
+        val owners = responseAs[Owners]
+        val lauri = owners.users.filter(user => {
           if (user.email.get == LAURI_EMAIL) true
           else false
         })

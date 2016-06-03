@@ -66,32 +66,32 @@ class TagBestCaseSpec extends ServiceSpecBase {
   }
 
   describe("In the best case, TagService") {
-    it("should successfully put new tag on PUT to /[userUUID]/tag, "
-      + "update it with PUT to /[userUUID]/tag/[tagUUID] "
-      + "and get it back with GET to /[userUUID]/tag/[tagUUID] "
-      + "and delete it with DELETE to /[userUUID]/tag/[itemUUID] "
-      + "and undelete it with POST to /[userUUID]/tag/[itemUUID]") {
+    it("should successfully put new tag on PUT to /v2/owners/[userUUID]/data/tags, "
+      + "update it with PUT to /v2/owners/[userUUID]/data/tags/[tagUUID] "
+      + "and get it back with GET to /v2/owners/[userUUID]/data/tags/[tagUUID] "
+      + "and delete it with DELETE to /v2/owners/[userUUID]/data/tags/[itemUUID] "
+      + "and undelete it with POST to /v2/owners/[userUUID]/data/tags/[itemUUID]") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       val newTag = Tag("home", None, None, CONTEXT, None).copy(ui = Some("testUI"))
       val newTag2 = Tag("office", None, None, CONTEXT, None)
-      Put("/" + authenticateResponse.userUUID + "/tag",
+      Put("/v2/owners/" + authenticateResponse.userUUID + "/data/tags",
         marshal(newTag).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           val putTagResponse = responseAs[SetResult]
           writeJsonOutput("putTagResponse", responseAs[String])
           putTagResponse.modified should not be None
           putTagResponse.uuid should not be None
 
-          Put("/" + authenticateResponse.userUUID + "/tag",
+          Put("/v2/owners/" + authenticateResponse.userUUID + "/data/tags",
             marshal(newTag2).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
               val putTag2Response = responseAs[SetResult]
               val updatedTag = newTag.copy(description = Some("my home"))
-              Put("/" + authenticateResponse.userUUID + "/tag/" + putTagResponse.uuid.get,
+              Put("/v2/owners/" + authenticateResponse.userUUID + "/data/tags/" + putTagResponse.uuid.get,
                 marshal(updatedTag).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                   val putExistingTagResponse = responseAs[String]
                   writeJsonOutput("putExistingTagResponse", putExistingTagResponse)
                   putExistingTagResponse should include("modified")
                   putExistingTagResponse should not include ("uuid")
-                  Get("/" + authenticateResponse.userUUID + "/tag/" + putTagResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                  Get("/v2/owners/" + authenticateResponse.userUUID + "/data/tags/" + putTagResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                     val tagResponse = responseAs[Tag]
                     writeJsonOutput("tagResponse", responseAs[String])
                     tagResponse.description.get should be("my home")
@@ -102,30 +102,30 @@ class TagBestCaseSpec extends ServiceSpecBase {
                     val putNoteResponse = putNewNote(newNote, authenticateResponse)
                     val noteWithTag = getNote(putNoteResponse.uuid.get, authenticateResponse)
                     noteWithTag.relationships.get.tags.get should be(scala.List(putTagResponse.uuid.get))
-                    Delete("/" + authenticateResponse.userUUID + "/tag/" + putTagResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                    Delete("/v2/owners/" + authenticateResponse.userUUID + "/data/tags/" + putTagResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                       val deleteTagResponse = responseAs[DeleteItemResult]
                       writeJsonOutput("deleteTagResponse", responseAs[String])
-                      Get("/" + authenticateResponse.userUUID + "/tag/" + putTagResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                      Get("/v2/owners/" + authenticateResponse.userUUID + "/data/tags/" + putTagResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                         val failure = responseAs[ErrorResult]
                         status should be(BadRequest)
                         failure.description should startWith("Item " + putTagResponse.uuid.get + " is deleted")
                       }
 
                       // Deleting again should return the same deleted and modified values
-                      Delete("/" + authenticateResponse.userUUID + "/tag/" + putTagResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                      Delete("/v2/owners/" + authenticateResponse.userUUID + "/data/tags/" + putTagResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                         val redeleteTagResponse = responseAs[DeleteItemResult]
                         redeleteTagResponse.deleted should be (deleteTagResponse.deleted)
                         redeleteTagResponse.result.modified should be (deleteTagResponse.result.modified)
                       }
 
                       // Change note context to new value and verify that change works
-                      Put("/" + authenticateResponse.userUUID + "/note/" + putNoteResponse.uuid.get,
+                      Put("/v2/owners/" + authenticateResponse.userUUID + "/data/notes/" + putNoteResponse.uuid.get,
                         marshal(newNote.copy(relationships = Some(ExtendedItemRelationships(None, None, None, None, Some(scala.List(putTag2Response.uuid.get)), None)))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                           val reputExistingNoteResponse = responseAs[SetResult]
                           reputExistingNoteResponse.modified should not be None
                       }
 
-                      Post("/" + authenticateResponse.userUUID + "/tag/" + putTagResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                      Post("/v2/owners/" + authenticateResponse.userUUID + "/data/tags/" + putTagResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                         val undeleteTagResponse = responseAs[SetResult]
                         writeJsonOutput("undeleteTagResponse", responseAs[String])
                         val undeletedTag = getTag(putTagResponse.uuid.get, authenticateResponse)
@@ -133,7 +133,7 @@ class TagBestCaseSpec extends ServiceSpecBase {
                         undeletedTag.modified should not be (None)
 
                         // Re-undelete should also work
-                        Post("/" + authenticateResponse.userUUID + "/tag/" + putTagResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                        Post("/v2/owners/" + authenticateResponse.userUUID + "/data/tags/" + putTagResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                           val reundeleteTagResponse = responseAs[SetResult]
                           reundeleteTagResponse.modified should be (undeleteTagResponse.modified)
                         }
@@ -145,7 +145,7 @@ class TagBestCaseSpec extends ServiceSpecBase {
         }
     }
 
-    it("should successfully add tag with PUT to /[userUUID]/[task or note]/[itemUUID] "
+    it("should successfully add tag with PUT to /v2/owners/[userUUID]/data/[tasks or notes]/[itemUUID] "
        + "and update modified values when deleting and undeleting tag") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
 
@@ -160,9 +160,9 @@ class TagBestCaseSpec extends ServiceSpecBase {
       val putNoteResponse = putNewNote(newNote, authenticateResponse)
 
       // Delete tag and expect child tag and note to have a new modified timestamp
-      Delete("/" + authenticateResponse.userUUID + "/tag/" + putTagResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+      Delete("/v2/owners/" + authenticateResponse.userUUID + "/data/tags/" + putTagResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val deleteTagResult = responseAs[DeleteItemResult]
-        Get("/" + authenticateResponse.userUUID + "/items?modified=" + (deleteTagResult.result.modified - 1) + "&deleted=true") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        Get("/v2/owners/" + authenticateResponse.userUUID + "/data?modified=" + (deleteTagResult.result.modified - 1) + "&deleted=true") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           val itemsResponse = responseAs[Items]
           itemsResponse.tags.get.size should be (2)
           itemsResponse.tags.get(0).modified.get should be (deleteTagResult.result.modified)
@@ -173,9 +173,9 @@ class TagBestCaseSpec extends ServiceSpecBase {
       }
 
       // Undelete tag and expect child tag and note to have a new modified timestamp
-      Post("/" + authenticateResponse.userUUID + "/tag/" + putTagResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+      Post("/v2/owners/" + authenticateResponse.userUUID + "/data/tags/" + putTagResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val undeleteTagResult = responseAs[SetResult]
-        Get("/" + authenticateResponse.userUUID + "/items?modified=" + (undeleteTagResult.modified - 1)) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        Get("/v2/owners/" + authenticateResponse.userUUID + "/data?modified=" + (undeleteTagResult.modified - 1)) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           val itemsResponse = responseAs[Items]
           itemsResponse.tags.get.size should be (2)
           itemsResponse.tags.get(0).modified.get should be (undeleteTagResult.modified)
