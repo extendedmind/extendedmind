@@ -374,7 +374,7 @@
                                        BackendClientService.uuidRegex.source +
                                        '/data/lists/' +
                                        BackendClientService.uuidRegex.source +
-                                       '/convert_to_note$'),
+                                       '/convert_to_note$')
   };
 }
 ConvertService['$inject'] = ['$q', 'BackendClientService', 'ExtendedItemService', 'ItemLikeService',
