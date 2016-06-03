@@ -65,9 +65,9 @@ class ServiceSpec extends SpraySpecBase with ImpermanentGraphDatabaseSpecBase{
       Get() ~> route ~> check {responseAs[String] should startWith("{\"version\":") }
     }
 
-    it("should generate token response on /authenticate") {
+    it("should generate token response on /v2/users/authenticate") {
       stubTimoAuthenticate()
-      Post("/authenticate"
+      Post("/v2/users/authenticate"
           ) ~> addHeader(Authorization(BasicHttpCredentials(TIMO_EMAIL, TIMO_PASSWORD))
           ) ~> route ~> check {
         val authenticateResponse = responseAs[String]

@@ -278,7 +278,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
       val updatedTask = getTask(putTaskResponse.uuid.get, authenticateResponse, Some(emtUUID))
       updatedTask.description should not be None
     }
-    it("should successfully change user type with POST to /user/UUID/type/INT") {
+    it("should successfully change user type with POST to /v2/admin/users/UUID/change_user_type") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       Get("/v2/users?email=" + INFO_EMAIL) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val infoUser = responseAs[PublicUser]
@@ -311,7 +311,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
     it("should successfully reset tokens with POST to /v2/admin/reset_tokens, " +
       "rebuild user indexes with POST to /v2/admin/users/rebuild, " +
       "and rebuild item indexes with POST to /admin/[userUUID]/items/rebuild") {
-      Post("/admin/tokens/reset") ~> addCredentials(BasicHttpCredentials("token", emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD).token.get)) ~> route ~> check {
+      Post("/v2/admin/reset_tokens") ~> addCredentials(BasicHttpCredentials("token", emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD).token.get)) ~> route ~> check {
         writeJsonOutput("tokensResetResponse", responseAs[String])
         val countResult = responseAs[CountResult]
         countResult.count should be(6)
@@ -438,15 +438,15 @@ class AdminBestCaseSpec extends ServiceSpecBase {
         }
       }
     }
-    it("should successfully get owner statistics with GET to /admin/owner/[ownerUUID]") {
+    it("should successfully get owner statistics with GET to /v2/admin/owners/[ownerUUID]/stats") {
       val timoAuthenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       val lauriAuthenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
-      Get("/admin/owner/" + lauriAuthenticateResponse.userUUID.toString) ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
+      Get("/v2/admin/owners/" + lauriAuthenticateResponse.userUUID.toString + "/stats") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
         val statisticsResponse = responseAs[NodeStatistics]
         writeJsonOutput("ownerStatisticsResponse", responseAs[String])
       }
     }
-    it("should successfully put info with PUT to /admin/info " +
+    it("should successfully put info with POST to /v2/admin/update_info " +
        "and get it back without authentication from GET to /info") {
       Get("/info") ~> route ~> check {
         val info = responseAs[Info]
@@ -454,7 +454,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
         info.frontend should be (None)
       }
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-      Put("/admin/info",
+      Post("/v2/admin/update_info",
           marshal(Info(None, Some(scala.List(VersionInfo("osx", "2.0"))))).right.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get))  ~> route ~> check {
         val setResult = responseAs[Info]
         Get("/info") ~> route ~> check {
@@ -463,7 +463,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
           info.frontend.get.size should be (1)
           info.frontend.get(0).platform should be("osx")
           info.frontend.get(0).version should be("2.0")
-          Put("/admin/info",
+          Post("/v2/admin/update_info",
               marshal(Info(None, Some(scala.List(VersionInfo("win", "1.0"))))).right.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get))  ~> route ~> check {
             val setResult2 = responseAs[Info]
             Get("/info") ~> route ~> check {
@@ -472,7 +472,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
               info2.frontend.get.size should be (1)
               info2.frontend.get(0).platform should be("win")
               info2.frontend.get(0).version should be("1.0")
-              Put("/admin/info",
+                Post("/v2/admin/update_info",
                   marshal(Info(None, None)).right.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                 Get("/info") ~> route ~> check {
                   val info3 = responseAs[Info]
