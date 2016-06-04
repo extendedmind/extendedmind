@@ -150,7 +150,7 @@ class SecurityBestCaseSpec extends ServiceSpecBase {
     it("should successfully change password with POST to /v2/users/change_password") {
       val authenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
       val newPassword = "newTestPassword"
-      Put("/v2/users/change_password",
+      Post("/v2/users/change_password",
         marshal(NewPassword(newPassword)).right.get) ~> addHeader("Content-Type", "application/json") ~> addHeader(Authorization(BasicHttpCredentials(LAURI_EMAIL, LAURI_PASSWORD))) ~> route ~> check {
           writeJsonOutput("passwordResponse", responseAs[String])
           val passwordResponse = responseAs[CountResult]

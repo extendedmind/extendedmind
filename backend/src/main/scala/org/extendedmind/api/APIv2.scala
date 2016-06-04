@@ -36,7 +36,7 @@ trait APIv2 extends LegacyAPI {
   val v2PostSignUp = post & path("v2" / "users"/ "sign_up".r)
   val v2PostDestroyTokens = post & path("v2" / "users" / "destroy_tokens".r)
   val v2PostResendVerification = post & path("v2" / "users"/ "resend_verification".r)
-  val v2PostChangePassword = put & path("v2" / "users" / "change_password".r)
+  val v2PostChangePassword = post & path("v2" / "users" / "change_password".r)
   val v2PostChangeEmail = post & path("v2" / "users" / "change_email".r)
   val v2PostForgotPassword = post & path("v2" / "users" / "forgot_password".r)
   val v2PostVerifyEmail = post & path("v2" / "users" / "verify_email".r)
