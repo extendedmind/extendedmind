@@ -580,7 +580,7 @@
     $scope.getItemRevisions(itemInEdit).then(function(response){
       itemInEdit.trans.revisions = response.revisions.sort(
         function(a,b) {
-          return (a.number > b.number) ? 1 : ((b.number > a.number) ? -1 : 0);
+          return (b.number > a.number) ? 1 : ((a.number > b.number) ? -1 : 0);
         });
       $scope.revisionPickerOpen = true;
     });
