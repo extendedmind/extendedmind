@@ -327,8 +327,8 @@
     if (!list.trans.uuid)
       list.trans.id = UUIDService.getShortIdFromFakeUUID(UUIDService.generateFakeUUID());
     var transportList = ItemLikeService.prepareTransport(list, LIST_TYPE, ownerUUID, listFieldInfos);
-    var putUrl = list.trans.uuid ? '/api/' + ownerUUID + '/list/' + list.trans.uuid :
-                                   '/api/' + ownerUUID + '/list';
+    var putUrl = list.trans.uuid ? '/api/v2/owners/' + ownerUUID + '/data/lists/' + list.trans.uuid :
+                                   '/api/v2/owners/' + ownerUUID + '/data/lists';
     var putRegex = !list.trans.uuid ? putNewListRegexp : putExistingListRegexp;
     return BackendClientService.putOnline(putUrl, putRegex, transportList).then(
       function(response) {
