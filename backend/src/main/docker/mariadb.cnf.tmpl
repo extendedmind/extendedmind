@@ -9,7 +9,7 @@ query_cache_type=0
 
 {{if exists "/extendedmind/ha"}}
 {{$servers := getvs "/extendedmind/servers/*"}}
-replicate-do-db="{{getv "/extendedmind/db/replicate"}}"
+innodb_buffer_pool_size={{getv "/extendedmind/db/buffersize"}}
 [galera]
 wsrep_on=ON
 wsrep_provider="/usr/lib/galera/libgalera_smm.so"
