@@ -187,7 +187,12 @@ function HttpRequestQueueService(enableOffline) {
       } else {
         // last already exists and is not currently executing, concat the data from this request to
         // the end of the data array in the last request
-        last.content.data.requests.push(request.content.data.requests[0]);
+        if (angular.isObject(last.content.data)){
+          last.content.data.requests.push(request.content.data.requests[0]);
+        }else{
+          // Contains old, pre 1.9.10 values where data was a string value, just overwrite the old value
+          last = request;
+        }
       }
       storage.setItem('lastRequest', JSON.stringify(last));
     },
