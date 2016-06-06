@@ -187,7 +187,7 @@ function HttpRequestQueueService(enableOffline) {
       } else {
         // last already exists and is not currently executing, concat the data from this request to
         // the end of the data array in the last request
-        if (angular.isObject(last.content.data)){
+        if (last.content.data && last.content.data.requests){
           last.content.data.requests.push(request.content.data.requests[0]);
         }else{
           // Contains old, pre 1.9.10 values where data was a string value, just overwrite the old value
