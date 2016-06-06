@@ -4,7 +4,7 @@
   "description": "Extended Mind Cordova",
   "private": true,
   "dependencies": {
-    "cordova": "6.0.0",
+    "cordova": "6.2.0",
     "shelljs": "^0.5.3"
   },
   "repository": {

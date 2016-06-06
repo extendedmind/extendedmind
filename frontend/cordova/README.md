@@ -40,7 +40,7 @@ Open Logcat from Window->Show View->Android->Logcat
 
 * Debugging on phone
 
-``
+```
 adb devices
 cordova run --device --target=[DEVICE_ID] android
 ```
@@ -62,8 +62,9 @@ Steps needed in XCode when updating cordova sources to new version, so that shar
 5. Select Application Extension -> Share Extension.
 6. Set "extmd-share" as the product name, "Extended Mind Technologies Oy" as the organization name, and change language to Swift.
 7. Change deployment target in the extmd-share target match extmd app.
-8. Resurrect SharePreprocessor.js and add is as new source to the project.
-9. Resurrect images.xcassets and add it to the share extension.
-10. Select the Capabilities tab and turn on App Groups for both extmd-share and extmd.
-11. Replace content in ShareViewController.swift with code from version control.
-12. Replace content in info.plist with code from version control.
+8. Resurrect Bridging-Header.h file and under extmd-share -> Build Settings (select show All) -> Swift Compiler Code Generation -> Objective C Bridging Header select "$(PROJECT_DIR)/extmd-share/Bridging-Header.h".
+9. Resurrect SharePreprocessor.js and add is as new source to the project.
+10. Resurrect images.xcassets and add it to the share extension.
+11. Select the Capabilities tab and turn on App Groups for both extmd-share and extmd.
+12. Replace content in ShareViewController.swift with code from version control.
+13. Replace content in info.plist with code from version control.
