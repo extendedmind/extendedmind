@@ -568,9 +568,9 @@
                 queue.splice(i, 1);
                 continue;
               }else if (queue[i].params.type === 'task' &&
-                        queue[i].content.url.endsWith('/note') ||
-                        queue[i].content.url.endsWith('/list')){
-                if (!(queue[i].content.url.endsWith('/list') && conflictingItem.relationships &&
+                        queue[i].content.url.endsWith('/convert_to_note') ||
+                        queue[i].content.url.endsWith('/convert_to_list')){
+                if (!(queue[i].content.url.endsWith('/convert_to_list') && conflictingItem.relationships &&
                       conflictingItem.relationships.parent)){
                   // Converting task: do the convert, but replace payload to server version
                   queue[i].content.data = ItemLikeService.createTransportItem(conflictingItem,
@@ -581,9 +581,9 @@
                   continue;
                 }
               }else if (queue[i].params.type === 'note' &&
-                        queue[i].content.url.endsWith('/task') ||
-                        queue[i].content.url.endsWith('/list')){
-                if (!(queue[i].content.url.endsWith('/list') && conflictingItem.relationships &&
+                        queue[i].content.url.endsWith('/convert_to_task') ||
+                        queue[i].content.url.endsWith('/convert_to_list')){
+                if (!(queue[i].content.url.endsWith('/convert_to_list') && conflictingItem.relationships &&
                     conflictingItem.relationships.parent)){
                   // Converting note: do the convert, but replace payload to server version
                   queue[i].content.data = ItemLikeService.createTransportItem(conflictingItem,
@@ -594,8 +594,8 @@
                   continue;
                 }
               }else if (queue[i].params.type === 'list' &&
-                        queue[i].content.url.endsWith('/note') ||
-                        queue[i].content.url.endsWith('/list')){
+                        queue[i].content.url.endsWith('/convert_to_note') ||
+                        queue[i].content.url.endsWith('/convert_to_list')){
                 if (!isListAsParentInResponse(response, queue[i].params.uuid)){
                   // Converting list: do the convert, but replace payload to server version
                   queue[i].content.data = ItemLikeService.createTransportItem(conflictingItem,
@@ -793,11 +793,11 @@
             updateHistProperties(request.params.uuid, request.params.type,
                                  {generatedUUID: response.generated.uuid}, request.params.owner);
           }
-        } else if (request.content.url.endsWith('/note')){
+        } else if (request.content.url.endsWith('/convert_to_note')){
           // Convert to note
           properties = {modified: response.modified, revision: response.revision};
           updateModProperties(request.params.uuid, 'note', properties, request.params.owner);
-        } else if (request.content.url.endsWith('/list')){
+        } else if (request.content.url.endsWith('/convert_to_list')){
           // Convert to list
           properties = {modified: response.modified, revision: response.revision};
           updateModProperties(request.params.uuid, 'list', properties, request.params.owner);
@@ -814,11 +814,11 @@
           // Favorite
           properties = {favorited: response.favorited, modified: response.result.modified};
           localModToggleValueWins = true;
-        } else if (request.content.url.endsWith('/task')){
+        } else if (request.content.url.endsWith('/convert_to_task')){
           // Convert to task
           properties = {modified: response.modified, revision: response.revision};
           updateModProperties(request.params.uuid, 'task', properties, request.params.owner);
-        } else if (request.content.url.endsWith('/list')){
+        } else if (request.content.url.endsWith('/convert_to_list')){
           // Convert to list
           properties = {modified: response.modified, revision: response.revision};
           updateModProperties(request.params.uuid, 'list', properties, request.params.owner);
@@ -830,11 +830,11 @@
         if (request.content.url.endsWith('/undelete')){
           properties = {modified: response.modified, deleted: undefined};
           updateModProperties(request.params.uuid, request.params.type, properties, request.params.owner);
-        } else if (request.content.url.endsWith('/note')){
+        } else if (request.content.url.endsWith('/convert_to_note')){
           // Convert to note
           properties = {modified: response.modified, revision: response.revision};
           updateModProperties(request.params.uuid, 'note', properties, request.params.owner);
-        } else if (request.content.url.endsWith('/task')){
+        } else if (request.content.url.endsWith('/convert_to_task')){
           // Convert to task
           properties = {modified: response.modified, revision: response.revision};
           updateModProperties(request.params.uuid, 'task', properties, request.params.owner);
@@ -855,11 +855,7 @@
         if (response.archived) properties.archived = response.archived;
         if (response.associated) properties.associated = response.associated;
         if (response.revision) properties.revision = response.revision;
-        if (request.params.type === 'user') {
-          UserSessionService.setUserModified(properties.modified);
-        } else {
-          updateModProperties(request.params.uuid, request.params.type, properties, request.params.owner);
-        }
+        updateModProperties(request.params.uuid, request.params.type, properties, request.params.owner);
       } else {
         // New, there should be an uuid in the response and a fake one in the request
         if (!response.uuid) {
@@ -875,6 +871,13 @@
                             response.created, response.modified, response.archived, response.associated,
                             request.params.type, request.params.owner, queue);
         }
+      }
+    // *****
+    // PATCH
+    // *****
+    } else if (request.content.method === 'patch') {
+      if (request.params.type === 'user') {
+        UserSessionService.setUserModified(response.result.modified);
       }
     // ******
     // DELETE
