@@ -16,7 +16,7 @@
  /* global angular, jQuery */
  'use strict';
 
- function SynchronizeService($q, $rootScope, BackendClientService, ItemLikeService, ItemsService,
+ function SynchronizeService($q, $rootScope, BackendClientService, DiffService, ItemLikeService, ItemsService,
                              ListsService, NotesService, PersistentStorageService, ReminderService,
                              TagsService, TasksService, UserService, UserSessionService, UUIDService) {
 
@@ -1154,7 +1154,7 @@
   };
 }
 
-SynchronizeService['$inject'] = ['$q', '$rootScope', 'BackendClientService', 'ItemLikeService',
+SynchronizeService['$inject'] = ['$q', '$rootScope', 'BackendClientService', 'DiffService', 'ItemLikeService',
 'ItemsService', 'ListsService', 'NotesService', 'PersistentStorageService', 'ReminderService',
 'TagsService', 'TasksService', 'UserService', 'UserSessionService', 'UUIDService'];
 angular.module('em.main').factory('SynchronizeService', SynchronizeService);
