@@ -152,14 +152,14 @@
             topElementBottomPosition = getTopElementBottomPosition();
           }
           if (angular.isFunction(scrollToBottomOnResizeFn)){
-            scrollDownIfCaretBelowScreen(elem[0]);
+            scrollDownIfCaretBelowScreen(elem[0], true);
           }
         });
       }
       if (attrs.scrollThenToggleResizeableToBottomCallback)
         $parse(attrs.scrollThenToggleResizeableToBottomCallback)(scope)(scrollDownIfCaretBelowScreen);
 
-      function scrollDownIfCaretBelowScreen(textareaElement){
+      function scrollDownIfCaretBelowScreen(textareaElement, afterResize){
         var elementScrollInfo = scrollToBottomOnResizeFn();
         if (elementScrollInfo){
           if (!elementToScroll && !elementScrollInfo.id){
@@ -180,7 +180,13 @@
             // caret is near the bottom of the screen
             if (caretDistanceToBottom < (35 + elementScrollInfo.footerHeight)){
               // Nudge one down
-              elementToScroll.scrollTop += elementScrollInfo.scrollAmount;
+              if (afterResize){
+                window.requestAnimationFrame(function(){
+                  elementToScroll.scrollTop += elementScrollInfo.scrollAmount;
+                });
+              }else{
+                elementToScroll.scrollTop += elementScrollInfo.scrollAmount;
+              }
             }
           }
         }
