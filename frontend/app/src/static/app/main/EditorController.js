@@ -65,6 +65,9 @@
       initializeEditorVisibilityAndPermission(dataInEdit[0]);
     }
     if (angular.isFunction(reinitializeEditorCallback)) reinitializeEditorCallback();
+
+    // Handle editor opened straight away when there is no animation for editor opening
+    if ($scope.columns === 3) handleEditorOpened();
   };
 
   // Re-initializing, this is fired only on the second go, as the above method is fired before
@@ -141,23 +144,22 @@
     }
   }
 
-  // Callback from Snap.js, outside of AngularJS event loop
-  function editorOpened() {
-
+  function handleEditorOpened(){
     if (featureEditorOpenedCallback) featureEditorOpenedCallback();
-
-    var preventFocus;
-
-    if ($scope.editorType === 'recurring' ||
-        ($scope.mode !== 'new' &&  ($scope.editorType === 'task' || $scope.editorType === 'note')))
-    {
-      preventFocus = true;
-    }
-
-    if (!preventFocus && (!dataInEdit || !dataInEdit.deleted)){
-      // Focus on found and not deleted item
+    var autoFocusTitle =
+      $scope.editorType === 'omnibar' ||
+      ($scope.editorType === 'note' && !$scope.note.uuid);
+    if (autoFocusTitle && (!dataInEdit || !dataInEdit.deleted)){
+      // Focus on title
       setFocusOnTitlebarInput();
     }
+  }
+
+  // Callback from Snap.js, outside of AngularJS event loop
+  function editorOpened() {
+    // Handle editor opened from here only when there is an animation for editor
+    // opening, as there is for below three columns
+    if ($scope.columns < 3) handleEditorOpened();
   }
 
   // Callback from Snap.js, outside of AngularJS event loop
@@ -382,7 +384,7 @@
 
   var titleBarInputFocusCallbackFunction;
   var titleBarInputBlurCallbackFunction;
-  var titleBarFocusRequested = true;
+  var titleBarFocusRequested = false;
 
   $scope.registerTitleBarInputCallbacks = function (focusCallback, blurCallback) {
     titleBarInputFocusCallbackFunction = focusCallback;
