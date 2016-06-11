@@ -62,6 +62,26 @@
     }
   }
 
+  function getLocalItem(ownerUUID, itemUUID, itemType){
+    switch(itemType) {
+    case 'item':
+      var itemInfo = ItemsService.getItemInfo(itemUUID, ownerUUID);
+      if (itemInfo) return itemInfo.item;
+    case 'task':
+      var taskInfo = TasksService.getTaskInfo(itemUUID, ownerUUID);
+      if (taskInfo) return taskInfo.task;
+    case 'note':
+      var noteInfo = NotesService.getNoteInfo(itemUUID, ownerUUID);
+      if (noteInfo) return noteInfo.note;
+    case 'list':
+      var listInfo = ListsService.getListInfo(itemUUID, ownerUUID);
+      if (listInfo) return noteInfo.list;
+    case 'tag':
+      var tagInfo = TagsService.getTagInfo(itemUUID, ownerUUID);
+      if (tagInfo) return tagInfo.tag;
+    }
+  }
+
   function removeItemFromArray(ownerUUID, item, itemType){
     switch(itemType) {
     case 'item':
@@ -414,6 +434,30 @@
     }
   }
 
+  function mergeReminders(request, conflictingItem){
+    if (request.params.type === 'task' &&
+      !angular.equals(request.content.data.reminders, conflictingItem.reminders)){
+      // Reminder conflict, merge reminders and change PUT in queue to reflect the change
+      var mergedReminders = [];
+      var correctReminderForThisDevice =
+        ReminderService.findReminderForThisDevice(request.content.data.reminders);
+      if (correctReminderForThisDevice) {
+        mergedReminders.push(correctReminderForThisDevice);
+      }
+
+      if (conflictingItem.reminders && conflictingItem.reminders.length){
+        var invalidReminderForThisDevice =
+          ReminderService.findReminderForThisDevice(conflictingItem.reminders);
+        for(var k=0; k<conflictingItem.reminders.length; k++){
+          if (conflictingItem.reminders[k] !== invalidReminderForThisDevice){
+            mergedReminders.push(conflictingItem.reminders[k]);
+          }
+        }
+      }
+      return mergedReminders;
+    }
+  }
+
   // Register callbacks to BackendClientService
   function synchronizeCallback(request, response, queue) {
     var ownerUUID = request.params.owner;
@@ -446,67 +490,37 @@
               queue.splice(i, 1);
               continue;
             }else if (queue[i].content.method === 'put'){
-              if (queue[i].params.type === 'note' &&
-                  queue[i].content.data.content && queue[i].content.data.content.length &&
-                  conflictingItem.content && conflictingItem.content.length &&
-                  queue[i].content.data.content !== conflictingItem.content){
+              // Check to see if we should do a merge of properties between the conflicting item
+              // and the item in the request.
+              var localItem = getLocalItem(request.params.owner,
+                                           queue[i].params.uuid,
+                                           conflictingItemInfo.type);
+              var mergedTitleDescriptionContent =
+                DiffService.mergeTitleContentAndDescription(localItem, queue[i].content.data, conflictingItem,
+                                                  queue[i].content.timestamp > conflictingItem.modified);
+              var mergedReminders = mergeReminders(queue[i], conflictingItem);
 
-                // Content conflict, create hybrid and change PUT in queue to reflect the change
-                var conflictDelimiter = '\n\n>>> conflicting changes >>>\n\n', conflictedContent;
-                if (conflictingItem.modified > queue[i].content.timestamp){
-                  conflictedContent = conflictingItem.content +
-                                            conflictDelimiter +
-                                            queue[i].content.data.content;
-                }else{
-                  conflictedContent = queue[i].content.data.content +
-                                            conflictDelimiter +
-                                            conflictingItem.content;
+              if (mergedTitleDescriptionContent || mergedReminders){
+                // Merging is needed
+                var properties = mergedTitleDescriptionContent ? mergedTitleDescriptionContent : {};
+                if (mergedReminders){
+                  queue[i].content.data.reminders = mergedReminders;
+                  properties.reminders = mergedReminders;
                 }
-                queue[i].content.data.content = conflictedContent;
-                queue[i].content.data.modified = conflictingItem.modified;
-                conflictingItem.content = conflictedContent;
-
-                // Also update the current note modifications to match the queue
-                updateModProperties(conflictingItem.uuid,
-                                    queue[i].params.type,
-                                    {content: conflictedContent,
-                                     modified: conflictingItem.modified},
-                                     request.params.owner);
-                // In both cases remove the item to prevent mixed data model
-                removeItemFromResponse(response, conflictingItem.uuid, queue[i].params.type);
-              } else if (queue[i].params.type === 'task' &&
-                         !angular.equals(queue[i].content.data.reminders, conflictingItem.reminders)){
-
-                // Reminder conflict, merge reminders and change PUT in queue to reflect the change
-                var mergedReminders = [];
-                var correctReminderForThisDevice =
-                  ReminderService.findReminderForThisDevice(queue[i].content.data.reminders);
-                if (correctReminderForThisDevice) {
-                  mergedReminders.push(correctReminderForThisDevice);
-                }
-
-                if (conflictingItem.reminders && conflictingItem.reminders.length){
-                  var invalidReminderForThisDevice =
-                    ReminderService.findReminderForThisDevice(conflictingItem.reminders);
-                  for(var k=0; k<conflictingItem.reminders.length; k++){
-                    if (conflictingItem.reminders[k] !== invalidReminderForThisDevice){
-                      mergedReminders.push(conflictingItem.reminders[k]);
-                    }
-                  }
-                }
-
-                queue[i].content.data.reminders = mergedReminders;
+                if (properties.title) queue[i].content.data.title = properties.title;
+                if (properties.description) queue[i].content.data.description = properties.description;
+                if (properties.content) queue[i].content.data.content = properties.content;
                 queue[i].content.data.modified = conflictingItem.modified;
 
-                // Also update the current task modifications to match the queue
+                // Also update the current local item to match the queue. Do it through this method
+                // instead of localItem to get arrays also re-sorted.
                 updateModProperties(conflictingItem.uuid,
                                     queue[i].params.type,
-                                    {reminders: mergedReminders,
-                                     modified: conflictingItem.modified},
-                                     request.params.owner);
+                                    properties,
+                                    request.params.owner);
                 removeItemFromResponse(response, conflictingItem.uuid, queue[i].params.type);
               } else{
-                // Other types than note: no need to do a merge of content
+                // No need for a merge of data
                 if (conflictingItem.modified > queue[i].content.timestamp){
                   // Database item is newer, remove the PUT from the queue. ItemService.evaluateMod()
                   // should be able to remove local modifications eventually. We can't delete them here,

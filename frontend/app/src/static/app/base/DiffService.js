@@ -30,10 +30,35 @@ function DiffService($window) {
   }
 
   function getMergedValue(v0value, v1value, v2value){
-    var titlePatches = dmp.patch_make(v0value, v2value);
-    var result = dmp.patch_apply(titlePatches, v1value);
-    if (result[1].length){
+    // Don't do a merge, if all values are identical
+    if (v0value !== v1value || v1value !== v2value){
+      // If the later values are identical, just return either value to prevent odd errors with DMP
+      if (v1value === v2value) return v1value;
+      var titlePatches = dmp.patch_make(v0value, v2value);
+      var result = dmp.patch_apply(titlePatches, v1value);
       return result[0];
+    }
+  }
+
+  function needsMerging(v0, v1, v2){
+    // Only merge if v1 and v2 have both had changes from the
+    // v0 value and are different from each other
+    if (v1.title !== v0.title ||
+        v1.description !== v0.description ||
+        v2.content !== v0.content){
+      // There is a change in v1 compared to v2, is there a change
+      // in v2?
+      if (v2.title !== v0.title ||
+          v2.description !== v0.description ||
+          v2.content !== v0.content){
+        // v2 has also changed, have v1 and v2 changed in different ways?
+        if (v2.title !== v1.title ||
+            v2.description !== v1.description ||
+            v2.content !== v1.content){
+          // Yes, there is a need to do a merge
+          return true;
+        }
+      }
     }
   }
 
@@ -50,16 +75,17 @@ function DiffService($window) {
         v1 = getCompareObject(itemRequest);
         v2 = getCompareObject(itemResponse);
       }
-
-      var mergedTitle = getMergedValue(v0.title, v1.title, v2.title);
-      var mergedDescription = getMergedValue(v0.description, v1.description, v2.description);
-      var mergedContent = getMergedValue(v0.content, v1.content, v2.content);
-      if (mergedTitle || mergedDescription || mergedContent){
-        var mergedProperties = {};
-        if (mergedTitle) mergedProperties.title = mergedTitle;
-        if (mergedDescription) mergedProperties.description = mergedDescription;
-        if (mergedContent) mergedProperties.content = mergedContent;
-        return mergedProperties;
+      if (needsMerging(v0, v1, v2)){
+        var mergedTitle = getMergedValue(v0.title, v1.title, v2.title);
+        var mergedDescription = getMergedValue(v0.description, v1.description, v2.description);
+        var mergedContent = getMergedValue(v0.content, v1.content, v2.content);
+        if (mergedTitle || mergedDescription || mergedContent){
+          var mergedProperties = {};
+          if (mergedTitle) mergedProperties.title = mergedTitle;
+          if (mergedDescription) mergedProperties.description = mergedDescription;
+          if (mergedContent) mergedProperties.content = mergedContent;
+          return mergedProperties;
+        }
       }
     }
   };

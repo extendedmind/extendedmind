@@ -614,7 +614,7 @@ describe('SynchronizeService', function() {
       .toBeUndefined();
 
     // 2. synchronize items and get back online with conflicting yoga response, that's older than the
-    //    offline saved item: the newer is still executed
+    //    offline saved item: the newer is executed
     var latestModified = now.getTime()-100000;
     MockUserSessionService.setLatestModified(latestModified);
 
@@ -628,6 +628,7 @@ describe('SynchronizeService', function() {
       }]
     };
     yogaValues.modified = newLatestModified;
+    yogaValues.title = 'I will start yoga';
     $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID + '/data?modified=' +
                             latestModified + '&deleted=true&archived=true&completed=true')
         .respond(200, conflictYogaResponse);
@@ -637,6 +638,7 @@ describe('SynchronizeService', function() {
     SynchronizeService.synchronize(testOwnerUUID);
     $httpBackend.flush();
     MockUserSessionService.setLatestModified(newLatestModified);
+    expect(yoga.mod.title).toBe(yogaValues.title);
 
     // 3. save existing offline again
     yoga.trans.description = 'just do it, or not';
@@ -650,12 +652,16 @@ describe('SynchronizeService', function() {
     expect(items.length)
       .toBe(3);
 
-    // 4. synchronize with conflicting item that is newer, expect PUT to have been deleted
+    // 4. synchronize with conflicting item that is newer, expect PUT to have been merged
     var veryLatestModified = Date.now() + 1;
     conflictYogaResponse.items[0].modified = veryLatestModified;
+    yogaValues.modified = veryLatestModified;
     $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID + '/data?modified=' +
                             newLatestModified + '&deleted=true&archived=true&completed=true')
         .respond(200, conflictYogaResponse);
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/items/' + yoga.trans.uuid,
+                           yogaValues)
+        .respond(200, putNewItemResponse);
     SynchronizeService.synchronize(testOwnerUUID);
     $httpBackend.flush();
     expect(items.length)
@@ -970,7 +976,7 @@ describe('SynchronizeService', function() {
       .toBe(4);
 
     // 2. synchronize items and get back online with conflicting response, that's older than the
-    //    offline saved one: the newer is still executed
+    //    offline saved one, the newer is executed with merged values
     var latestModified = now.getTime()-100000;
     MockUserSessionService.setLatestModified(latestModified);
 
@@ -985,6 +991,7 @@ describe('SynchronizeService', function() {
       }]
     };
     cleanClosetTransport.modified = newLatestModified;
+    cleanClosetTransport.title = conflictCleanClosetResponse.tasks[0].title;
     $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID + '/data?modified=' +
                             latestModified + '&deleted=true&archived=true&completed=true')
         .respond(200, conflictCleanClosetResponse);
@@ -1017,27 +1024,30 @@ describe('SynchronizeService', function() {
     expect(tasks.length)
       .toBe(4);
 
-    // 4. synchronize with conflicting task that is newer, expect PUT to have been deleted
+    // 4. synchronize with conflicting task that is newer, expect PUT to be merged
     var veryLatestModified = Date.now() + 1;
     conflictCleanClosetResponse.tasks[0].modified = veryLatestModified;
     conflictCleanClosetResponse.tasks[0].title = cleanCloset.trans.title;
-
+    cleanClosetTransport.modified = veryLatestModified;
+    var lastModified = veryLatestModified+100;
     $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID + '/data?modified=' +
                             newLatestModified + '&deleted=true&archived=true&completed=true')
         .respond(200, conflictCleanClosetResponse);
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' + cleanCloset.trans.uuid,
+        cleanClosetTransport).respond(200, {modified: lastModified});
     SynchronizeService.synchronize(testOwnerUUID);
     $httpBackend.flush();
     expect(tasks.length)
       .toBe(4);
 
-    expect(tasks[0].title)
-      .toBe('clean my closet');
     expect(tasks[0].modified)
-      .toBe(veryLatestModified);
-    expect(tasks[0].mod)
-      .toBeUndefined();
+      .toBe(cleanClosetOriginalModified);
+    expect(tasks[0].mod.title)
+      .toBe('clean my closet');
+    expect(tasks[0].mod.modified)
+      .toBe(lastModified);
     expect(tasks[0].trans.modified)
-      .toBe(veryLatestModified);
+      .toBe(lastModified);
   });
 
   it('should handle task offline update to repeating and complete', function () {
@@ -1438,7 +1448,7 @@ describe('SynchronizeService', function() {
       .toBe(4);
 
     // 2. synchronize items and get back online with conflicting response, that's older than the
-    //    offline saved one: the newer is still executed
+    //    offline saved one: the newer is executed with merged values
     var latestModified = now.getTime()-100000;
     MockUserSessionService.setLatestModified(latestModified);
 
@@ -1457,8 +1467,7 @@ describe('SynchronizeService', function() {
         .respond(200, conflictAboutContextsResponse);
     var aboutContextsTransport = {
       title: aboutContexts.trans.title,
-      content: aboutContexts.trans.content + '\n\n>>> conflicting changes >>>\n\n' +
-               conflictAboutContextsResponse.notes[0].content,
+      content: conflictAboutContextsResponse.notes[0].content,
       modified: newLatestModified};
     $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/notes/' + aboutContexts.uuid,
                            aboutContextsTransport)
@@ -1469,7 +1478,7 @@ describe('SynchronizeService', function() {
 
     var aboutContextsConflictingContent = NotesService.getNoteInfo('a1cd149a-a287-40a0-86d9-0a14462f22d6',
                                                       testOwnerUUID).note;
-    expect(aboutContextsConflictingContent.mod.content).toContain('conflicting changes');
+    expect(aboutContextsConflictingContent.mod.content).toBe(conflictAboutContextsResponse.notes[0].content);
 
     // 3. save existing offline again
     aboutContextsConflictingContent.trans.title = aboutContextsOriginalTitle;
