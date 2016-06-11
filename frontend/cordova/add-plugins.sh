@@ -36,4 +36,7 @@ else
     rm -rf platforms/ios-tmp
   fi
 
+  # copy AndroidManifest.xml
+  cp -f assets/build/android/AndroidManifest.xml platforms/android/
+
 fi

@@ -7,4 +7,4 @@ cd src
 export PATH=$PATH:./node/
 
 # make cordova build
-./node/node ./node_modules/.bin/cordova build ios
+./node/node ./node_modules/.bin/cordova compile ios

@@ -13,9 +13,6 @@ else
   # add android platform
   ./node/node ./node_modules/.bin/cordova platform add https://github.com/ttiurani/cordova-android
 
-  # copy AndroidManifest.xml
-  cp -f assets/build/android/AndroidManifest.xml platforms/android/
-
   # copy java sources
   if [ -d "platforms/android/src/org/extendedmind/nightly" ]
   then
