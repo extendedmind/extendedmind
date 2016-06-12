@@ -39,18 +39,23 @@
     $scope.editorType = editorType;
     $scope.editorVisible = true;
     $scope.mode = mode;
+    var overrideTitleFocus = false;
     if (editorType === 'task'){
       $scope.task = dataInEdit;
+      if (mode == 'title') overrideTitleFocus = true;
       initializeEditorVisibilityAndPermission(dataInEdit);
     }else if (editorType === 'note'){
       $scope.note = dataInEdit;
       initializeEditorVisibilityAndPermission(dataInEdit);
       if (mode === 'advanced'){
         SwiperService.setInitialSlidePath('noteEditor', 'noteEditor/advanced');
+      }else if (mode == 'expand'){
+        $scope.toggleExpandEditor();
       }
     }else if (editorType === 'list'){
       var list = dataInEdit.list || dataInEdit;
       $scope.list = list;
+      if (mode == 'title') overrideTitleFocus = true;
       initializeEditorVisibilityAndPermission(list);
     }else if (editorType === 'item'){
       $scope.item = dataInEdit;
@@ -68,7 +73,7 @@
 
     // Handle editor opened straight away when there is no animation for editor opening
     if ($scope.columns === 3){
-      handleEditorOpened();
+      handleEditorOpened(overrideTitleFocus);
     }
     if ($scope.columns === 3 || $scope.isEditorVisible()){
       // Broadcast an adjust that will hopefully fix title textarea not containing last words in mobile
@@ -77,6 +82,7 @@
         $scope.$broadcast('elastic:adjust');
       });
     }
+    if (!$scope.$$phase && !$rootScope.$$phase) $scope.$digest();
   };
 
   // Re-initializing, this is fired only on the second go, as the above method is fired before
@@ -153,9 +159,10 @@
     }
   }
 
-  function handleEditorOpened(){
+  function handleEditorOpened(overrideTitleFocus){
     if (featureEditorOpenedCallback) featureEditorOpenedCallback();
     var autoFocusTitle =
+      overrideTitleFocus ||
       $scope.editorType === 'omnibar' ||
       ($scope.editorType === 'note' && !$scope.note.uuid);
     if (autoFocusTitle && (!dataInEdit || !dataInEdit.deleted)){

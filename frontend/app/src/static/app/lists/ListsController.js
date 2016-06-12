@@ -623,6 +623,9 @@
         SwiperService.swipePrevious('listInverse');
       }
     }, 'left', 'ListsControllerLeft');
+    $scope.registerKeyboardShortcutCallback(function(){
+      $scope.openEditor('list', $scope.getNewList(), 'title');
+    }, 'ctrl-l', 'ListsControllerCtrlL');
   }
 }
 

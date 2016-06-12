@@ -742,6 +742,9 @@
         SwiperService.swipePrevious('focus');
       }
     }, 'left', 'TasksControllerLeft');
+    $scope.registerKeyboardShortcutCallback(function(){
+      $scope.openEditor('task', $scope.getNewTask(), 'title');
+    }, 'ctrl-t', 'TasksControllerCtrlT');
   }
 
 }

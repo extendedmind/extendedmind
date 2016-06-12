@@ -1335,8 +1335,16 @@ function MainController($element, $controller, $document, $filter, $q, $rootScop
       }else if (keydownEvent.keyCode === 40){
         if (keydownEvent.shiftKey) executeKeyboardShortcutCallbacks('shift-down');
         else executeKeyboardShortcutCallbacks('down');
-      }else if (event.keyCode === 27){
+      }else if (keydownEvent.keyCode === 27){
         executeKeyboardShortcutCallbacks('esc');
+      }else if (keydownEvent.keyCode === 70){
+        if (keydownEvent.ctrlKey) executeKeyboardShortcutCallbacks('ctrl-f');
+      }else if (keydownEvent.keyCode === 78){
+        if (keydownEvent.ctrlKey) executeKeyboardShortcutCallbacks('ctrl-n');
+      }else if (keydownEvent.keyCode === 84){
+        if (keydownEvent.ctrlKey) executeKeyboardShortcutCallbacks('ctrl-t');
+      }else if (keydownEvent.keyCode === 76){
+        if (keydownEvent.ctrlKey) executeKeyboardShortcutCallbacks('ctrl-l');
       }
     }
   }

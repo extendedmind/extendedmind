@@ -244,6 +244,14 @@
     return $scope.openEditor('note', note/*, 'fullScreen'*/);
   };
 
+  // KEYBOARD SHORTCUTS
+
+  if (angular.isFunction($scope.registerKeyboardShortcutCallback)){
+    $scope.registerKeyboardShortcutCallback(function(){
+      $scope.openEditor('note', $scope.getNewNote(), 'expand');
+    }, 'ctrl-n', 'NotesControllerCtrlN');
+  }
+
 }
 
 NotesController['$inject'] = ['$q', '$rootScope', '$scope', '$timeout', 'AnalyticsService', 'ArrayService',

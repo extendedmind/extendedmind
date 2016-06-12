@@ -165,6 +165,16 @@
     $rootScope.$emit('emInteraction', rejection);
   }
 
+  // KEYBOARD SHORTCUTS
+
+  if (angular.isFunction($scope.registerKeyboardShortcutCallback)){
+    $scope.registerKeyboardShortcutCallback(function(){
+      window.requestAnimationFrame(function(){
+        $scope.openEditor('omnibar');
+      });
+    }, 'ctrl-f', 'ItemsControllerCtrlF');
+  }
+
 }
 
 ItemsController['$inject'] = ['$q', '$rootScope', '$scope', 'AnalyticsService', 'ArrayService',
