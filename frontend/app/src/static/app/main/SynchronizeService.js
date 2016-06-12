@@ -25,7 +25,7 @@
                                  BackendClientService.apiv2PrefixRegex.source +
                                  '/owners/' +
                                  BackendClientService.uuidRegex.source +
-                                 '/data(\\?)?');
+                                 '/data(?!\/).*');
   var itemsSynchronizedCallback;
 
   function getLatestModified(latestTag, latestList, latestTask, latestNote, latestItem) {
