@@ -67,7 +67,16 @@
     if (angular.isFunction(reinitializeEditorCallback)) reinitializeEditorCallback();
 
     // Handle editor opened straight away when there is no animation for editor opening
-    if ($scope.columns === 3) handleEditorOpened();
+    if ($scope.columns === 3){
+      handleEditorOpened();
+    }
+    if ($scope.columns === 3 || $scope.isEditorVisible()){
+      // Broadcast an adjust that will hopefully fix title textarea not containing last words in mobile
+      // when editor is already open, and also for larger screens when editor is opened
+      window.requestAnimationFrame(function(){
+        $scope.$broadcast('elastic:adjust');
+      });
+    }
   };
 
   // Re-initializing, this is fired only on the second go, as the above method is fired before
@@ -159,7 +168,13 @@
   function editorOpened() {
     // Handle editor opened from here only when there is an animation for editor
     // opening, as there is for below three columns
-    if ($scope.columns < 3) handleEditorOpened();
+    if ($scope.columns < 3){
+      handleEditorOpened();
+      // Broadcast an adjust, that will hopefully fix textarea problems for mobile devices,
+      // initializeEditor broadcasts this for larger screens that don't have an animation,
+      // and also in situations where there is a change of editor, say from omnibar to note
+      $scope.$broadcast('elastic:adjust');
+    }
   }
 
   // Callback from Snap.js, outside of AngularJS event loop
