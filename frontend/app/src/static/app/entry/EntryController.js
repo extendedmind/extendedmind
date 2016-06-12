@@ -398,7 +398,9 @@ function EntryController($location, $rootScope, $routeParams, $scope, $timeout,
     if (audioReady && sloganReady && logoReady && slidesReady &&
         UISessionService.getTransientUIState() !== 'loggedOut'){
       $timeout(function(){
-        $scope.playExtendedMindAnimation();
+        if ($scope.entryState !== 'login'){
+          $scope.playExtendedMindAnimation();
+        }
       }, 1000);
     }
   };
