@@ -164,7 +164,7 @@
     var autoFocusTitle =
       overrideTitleFocus ||
       $scope.editorType === 'omnibar' ||
-      ($scope.editorType === 'note' && !$scope.note.uuid);
+      ($scope.editorType === 'note' && (!$scope.note.uuid && !$scope.note.mod));
     if (autoFocusTitle && (!dataInEdit || !dataInEdit.deleted)){
       // Focus on title
       setFocusOnTitlebarInput();
