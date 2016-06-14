@@ -423,13 +423,8 @@ function MainController($element, $controller, $document, $filter, $q, $rootScop
     // Open up menu
     DrawerService.enableDragging('left');
 
-    /*
-    * DEBUG
-    *
-    * Uncomment to test anchoring modal to element.
+    // Enable feature onboarding.
     $scope.registerMenuOpenedCallbacks(menuOpenedFirstTime, 'MainController');
-    * DEBUG
-    */
 
     AnalyticsService.do('tutorial', 'complete_tutorial');
     $scope.increaseOnboardingPhase('focus', 'tasks');
@@ -1399,7 +1394,10 @@ function MainController($element, $controller, $document, $filter, $q, $rootScop
       $scope.increaseOnboardingPhase('settings');
     }
 
-    $timeout($scope.openModal, 500);
+    $timeout(function() {
+      $scope.openModal(
+        document.getElementsByClassName('active-under-modal'));
+      }, 500);
     unregisterMenuOpenedCallback('MainController');
   }
   // INJECT OTHER CONTENT CONTROLLERS
