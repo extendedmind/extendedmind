@@ -15,7 +15,7 @@
  /* global cordova */
  'use strict';
 
- function rootViewDirective($injector, $rootScope, $templateCache, $window, $timeout,
+ function rootViewDirective($http, $injector, $rootScope, $templateCache, $window, $timeout,
                             AnalyticsService, BackendClientService, PlatformService, SynchronizeService,
                             UISessionService, UUIDService, UserSessionService, packaging) {
 
@@ -151,10 +151,21 @@
       };
 
       $scope.showModal = function(type, params) {
-        $scope.modal.visible = true;
-        $scope.modal.type = type;
-        if (params) {
-          $scope.modal.params = params;
+        function doShowModal(type, params){
+          $scope.modal.visible = true;
+          $scope.modal.type = type;
+          if (params) {
+            $scope.modal.params = params;
+          }
+        };
+        if (!$templateCache.get($rootScope.urlBase + 'app/base/modal.html')){
+          // Because of 1.5.0-beta.1 introduced "Lazily compile the `transclude` function", this is
+          // needed to make modal be consistently visible also on first time it is called
+          $http.get($rootScope.urlBase + 'app/base/modal.html', {cache:$templateCache}).then(function(){
+            doShowModal(type, params);
+          });
+        }else{
+          doShowModal(type, params);
         }
       };
 
@@ -204,7 +215,6 @@
             }
           };
         }
-
         var initialModalParams = {
           messageHeading: 'hello there',
           messageIngress: 'let\'s walk through the features',
@@ -533,7 +543,7 @@
   };
 }
 
-rootViewDirective['$inject'] = ['$injector', '$rootScope', '$templateCache', '$window', '$timeout',
+rootViewDirective['$inject'] = ['$http', '$injector', '$rootScope', '$templateCache', '$window', '$timeout',
 'AnalyticsService', 'BackendClientService', 'PlatformService', 'SynchronizeService', 'UISessionService',
 'UUIDService', 'UserSessionService', 'packaging'];
 angular.module('em.root').directive('rootView', rootViewDirective);
