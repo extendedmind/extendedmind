@@ -731,7 +731,7 @@ input[type="checkbox"]:checked + label:before {
   100%   { color: @color-text-highlighted; }
 }
 
-.onboarding .icon-plus:after {
+div.editable-field-backdrop:not(.active) .onboarding .icon-plus:after {
   -webkit-animation: onboarding-highlighed-pulse ease-in-out 3.5s infinite;
   -moz-animation:    onboarding-highlighed-pulse ease-in-out 3.5s infinite;
   -o-animation:      onboarding-highlighed-pulse ease-in-out 3.5s infinite;
@@ -779,7 +779,7 @@ input[type="checkbox"]:checked + label:before {
   100%   { background-color: @color-background-btn-active; }
 }
 
-.onboarding .btn-action .text-btn {
+div.editable-field-backdrop:not(.active) .onboarding .btn-action .text-btn {
   -webkit-animation: onboarding-btn-pulse ease-in-out 3.5s infinite;
   -moz-animation:    onboarding-btn-pulse ease-in-out 3.5s infinite;
   -o-animation:      onboarding-btn-pulse ease-in-out 3.5s infinite;
@@ -809,14 +809,16 @@ input[type="checkbox"]:checked + label:before {
   100%   { color: @color-text; }
 }
 
-.onboarding h2,
-.onboarding .text-heading,
-.onboarding .text-heading-primary,
-.onboarding.btn .icon-menu:after {
-  -webkit-animation: onboarding-text-pulse ease-in-out 3.5s infinite;
-  -moz-animation:    onboarding-text-pulse ease-in-out 3.5s infinite;
-  -o-animation:      onboarding-text-pulse ease-in-out 3.5s infinite;
-  animation:         onboarding-text-pulse ease-in-out 3.5s infinite;
+div.editable-field-backdrop:not(.active) {
+  .onboarding h2,
+  .onboarding .text-heading,
+  .onboarding .text-heading-primary,
+  .onboarding.btn .icon-menu:after {
+    -webkit-animation: onboarding-text-pulse ease-in-out 3.5s infinite;
+    -moz-animation:    onboarding-text-pulse ease-in-out 3.5s infinite;
+    -o-animation:      onboarding-text-pulse ease-in-out 3.5s infinite;
+    animation:         onboarding-text-pulse ease-in-out 3.5s infinite;
+  }
 }
 
 @-webkit-keyframes onboarding-menu-pulse {
@@ -860,7 +862,7 @@ input[type="checkbox"]:checked + label:before {
   100%   { color: @color-text-inverse; }
 }
 
-.link-menu.onboarding:not(.highlighted) span {
+div.editable-field-backdrop:not(.active) .link-menu.onboarding:not(.highlighted) span {
   -webkit-animation: onboarding-menu-pulse ease-in-out 3.5s infinite;
   -moz-animation:    onboarding-menu-pulse ease-in-out 3.5s infinite;
   -o-animation:      onboarding-menu-pulse ease-in-out 3.5s infinite;
@@ -869,7 +871,7 @@ input[type="checkbox"]:checked + label:before {
 
 // Bounce active and next slide.
 // From https://coveloping.com/tools/css-animation-generator
-.onboarding .swiper-slide {
+div.editable-field-backdrop:not(.active) .onboarding .swiper-slide {
   -webkit-animation:  onboarding-slide-bounce 2s ease-in-out 1s 1 both;
   -moz-animation:     onboarding-slide-bounce 2s ease-in-out 1s 1 both;
   -o-animation:       onboarding-slide-bounce 2s ease-in-out 1s 1 both;
