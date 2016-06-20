@@ -69,22 +69,4 @@ location /api {
 }
 ```
 
-After starting Nginx, the development version of extended mind should be running on 'localhost'. To add support for collecting analytics to Cube, also add:
-```
-  location /collect {
-    rewrite /collect(.*) $1 break;
-    proxy_pass http://127.0.0.1:1080;
-    proxy_redirect     off;
-    proxy_set_header   Host             $host;
-    proxy_set_header   X-Real-IP        $remote_addr;
-    proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
-  }
-  location /evaluate/ {
-    rewrite /evaluate(.*) $1 break;
-    proxy_pass http://127.0.0.1:1081;
-    proxy_redirect     off;
-    proxy_set_header   Host             $host;
-    proxy_set_header   X-Real-IP        $remote_addr;
-    proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
-  }
-```
+After starting Nginx, the development version of extended mind should be running on 'localhost'.
