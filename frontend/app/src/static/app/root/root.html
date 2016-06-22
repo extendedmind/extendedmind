@@ -2,7 +2,8 @@
   <div class="container-root--inner" ng-view
     ng-class="{'height-small': smallDeviceHeight,
                'width-small': smallDeviceWidth,
-               'twelve-hour-time': is12HourTime()}">
+               'twelve-hour-time': is12HourTime(),
+               'menu-visible-under-modal': isMenuVisibleUnderModal()}">
    </div>
 
   <div ng-if="modal.visible" class="container-modal--outer animate-modal"

@@ -2,26 +2,20 @@
   <div class="container-menu--top">
 
     <div class="clickable link-menu row" ng-click="gotoFeature('user')"
-      ng-class="isFeatureActive('user') && 'highlighted'">
+      ng-class="getMenuItemClasses('user')">
       <span class="text-navigation-menu-small" clamp=1 ng-bind="getActiveDisplayName()"></span>
     </div>
 
     <div class="clickable link-menu separate row" ng-click="gotoFeature('focus')"
-      ng-class="{'highlighted': isFeatureActive('focus'),
-                 'active-under-modal active': showAllFeatures}">
+      ng-class="getMenuItemClasses('focus')">
       <span class="text-navigation-menu">focus</span>
     </div>
-    <div ng-if="features.inbox.getStatus() !== 'disabled' || showAllFeatures" class="clickable link-menu row"
-      ng-click="gotoFeature('inbox')"
-      ng-class="{'highlighted': isFeatureActive('inbox'),
-                 'onboarding': isOnboarding('inbox') && !isOnboarding('settings'),
-                 'active-under-modal active': showAllFeatures}">
+    <div ng-if="isMenuItemVisible('inbox')" class="clickable link-menu row"
+      ng-click="gotoFeature('inbox')" ng-class="getMenuItemClasses('inbox')">
       <span class="text-navigation-menu">inbox</span>
     </div>
-    <div class="clickable link-menu row" ng-click="gotoFeature('tasks')"
-      ng-class="{'highlighted': isFeatureActive('tasks'),
-                 'onboarding': isOnboarding('tasks', 'all') && !isOnboarding('settings'),
-                 'active-under-modal active': showAllFeatures}">
+    <div id="menu-item-tasks" class="clickable link-menu row" ng-click="gotoFeature('tasks')"
+      ng-class="getMenuItemClasses('tasks')">
       <span class="text-navigation-menu">tasks</span>
     </div>
     <div ng-if="useContexts()" class="container-menu--extras">
@@ -52,18 +46,12 @@
         </div>
       </div>
     </div>
-    <div ng-if="features.notes.getStatus() !== 'disabled' || showAllFeatures" class="clickable link-menu row"
-      ng-click="gotoFeature('notes')"
-      ng-class="{'highlighted': isFeatureActive('notes'),
-                 'onboarding': isOnboarding('notes') && !isOnboarding('settings'),
-                 'active-under-modal active': showAllFeatures}">
+    <div ng-if="isMenuItemVisible('notes')" class="clickable link-menu row" ng-click="gotoFeature('notes')"
+         ng-class="getMenuItemClasses('notes')">
       <span class="text-navigation-menu">notes</span>
     </div>
-    <div ng-if="features.lists.getStatus() !== 'disabled' || showAllFeatures" class="clickable link-menu row active-under-modal asd"
-      ng-click="gotoFeature('lists')"
-      ng-class="{'highlighted': isFeatureActive('lists'),
-                 'onboarding': isOnboarding('lists', 'active') && !isOnboarding('settings'),
-                 'active-under-modal active': showAllFeatures}">
+    <div id="menu-item-lists" ng-show="isMenuItemVisible('lists', 'active')" class="clickable link-menu row"
+      ng-click="gotoFeature('lists')" ng-class="getMenuItemClasses('lists', 'active')">
       <span class="text-navigation-menu">lists</span>
     </div>
 
@@ -96,12 +84,12 @@
     <div class="container-menu--push"></div>
   </div>
   <div class="container-menu--bottom">
-    <div class="clickable link-menu row" ng-click="gotoFeature('trash')"
-      ng-class="isFeatureActive('trash') ? 'highlighted' : 'downplayed'">
+    <div id="menu-item-trash" class="clickable link-menu row" ng-click="gotoFeature('trash')"
+      ng-class="getMenuItemClasses('trash')">
       <span class="text-navigation-menu-small">trash</span>
     </div>
-    <div class="clickable link-menu row active-under-modal asd" ng-click="gotoFeature('settings')"
-      ng-class="{'highlighted': isFeatureActive('settings'), 'downplayed': !isFeatureActive('settings')}">
+    <div id="menu-item-settings" class="clickable link-menu row" ng-click="gotoFeature('settings')"
+      ng-class="getMenuItemClasses('settings')">
       <span class="text-navigation-menu-small">settings</span>
     </div>
   </div>

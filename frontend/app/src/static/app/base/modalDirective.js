@@ -40,7 +40,7 @@
         scope.listPicker = params.listPicker;
         if (params.customPosition) {
           if (params.anchorToElement) {
-            initAnchoredModal(params.activeElement, params.previousActiveElement, reinit);
+            initAnchoredModal(params.anchorElement, params.previousAnchorElement, reinit);
           }
         }
         if (scope.messageHtml){
@@ -49,10 +49,6 @@
       }
 
       function initAnchoredModal(targetElement, previousTargetElement, reinit) {
-        if (previousTargetElement) {
-          previousTargetElement.classList.remove('active');
-        }
-        targetElement.classList.add('active');
         if (!reinit) {
           // NOTE:  Class has to be added before calculating targetElementBottom using offsetHeight and
           //        offsetTop.
@@ -136,7 +132,7 @@
         scope.saveError = undefined;
         if (typeof scope.modalInfos.confirmAction === 'function') {
           if (scope.modalInfos.keepOpenOnClose) {
-            scope.modalInfos.confirmAction();
+            scope.modalInfos.confirmAction(scope.modalInfos.anchorToElement);
           } else {
             if (scope.modalInfos.anchorToElement) closeAnchoredModal();
             scope.closeModal();
@@ -183,17 +179,18 @@
           });
         }
         if (params.anchorToElement) {
-          var targetElement = params.activeElement;
-          var newPosition = targetElement.offsetHeight + targetElement.offsetTop; // Target bottom.
-          if (newPosition + element[0].offsetHeight > window.innerHeight) {
-            newPosition = targetElement.offsetTop - element[0].offsetHeight;  // Modal bottom to target top.
-          }
-          // http://stackoverflow.com/a/9845896
-          if (scope.modalInfos.oldPosition === undefined) {
-            scope.modalInfos.oldPosition = element[0].offsetHeight;
-            element[0].classList.add('anchor-to-menu-element');
-          }
           if ($rootScope.columns === 1) {
+            var targetElement = params.anchorElement;
+            var newPosition = targetElement.offsetHeight + targetElement.offsetTop; // Target bottom.
+            if (newPosition + element[0].offsetHeight > window.innerHeight) {
+              newPosition = targetElement.offsetTop - element[0].offsetHeight;  // Modal bottom to target top.
+            }
+            // http://stackoverflow.com/a/9845896
+            if (scope.modalInfos.oldPosition === undefined) {
+              scope.modalInfos.oldPosition = element[0].offsetHeight;
+              element[0].classList.add('anchor-to-menu-element');
+            }
+
             element[0].firstElementChild.classList.add('modal-fade-scale-anchored');
             $animateCss(element, {
               from: {
@@ -206,15 +203,17 @@
             }).start().done(function() {
               element[0].firstElementChild.classList.remove('modal-fade-scale-anchored');
             });
+            params.oldPosition = newPosition;
           } else {
             doDefaultModalFadeScale();
           }
-          params.oldPosition = newPosition;
         } else {
           doDefaultModalFadeScale();
         }
         scope.modalInfos = params;
         init(scope.modalInfos, true);
+        // Digest needed here as reinit needs to be called from a RAF function
+        if (!scope.$$phase && !$rootScope.$$phase) scope.$digest();
       }
 
       scope.getModalUrlHref = function(url){

@@ -78,6 +78,13 @@
         return UserSessionService.getUIPreference('hour12');
       };
 
+      var menuVisibleUnderModalFn;
+      $scope.isMenuVisibleUnderModal = function() {
+        if (angular.isFunction(menuVisibleUnderModalFn)){
+          return menuVisibleUnderModalFn();
+        }
+      };
+
       // Online/offline status, optimistic default
       $scope.online = true;
       var onlineStatusCallback = function(online) {
@@ -150,7 +157,7 @@
         visible: false
       };
 
-      $scope.showModal = function(type, params) {
+      $scope.showModal = function(type, params, isMenuVisible) {
         function doShowModal(type, params){
           $scope.modal.visible = true;
           $scope.modal.type = type;
@@ -158,6 +165,7 @@
             $scope.modal.params = params;
           }
         };
+        menuVisibleUnderModalFn = isMenuVisible;
         if (!$templateCache.get($rootScope.urlBase + 'app/base/modal.html')){
           // Because of 1.5.0-beta.1 introduced "Lazily compile the `transclude` function", this is
           // needed to make modal be consistently visible also on first time it is called
@@ -175,76 +183,14 @@
         if ($scope.modal.params) {
           delete $scope.modal.params;
         }
+        menuVisibleUnderModalFn = undefined;
       };
 
-      var reinitModal;
       $scope.registerModalReinit = function(reinitFn) {
-        reinitModal = reinitFn;
+        $scope.reinitModal = reinitFn;
       };
       $scope.unregisterModalReinit = function() {
-        reinitModal = undefined;
-      };
-
-      $scope.openModal = function(activeElementsArrayLike) {
-
-        function getParams(previousActiveElement, activeElements, messages) {
-          var activeElement;
-          if (activeElements.length > 0) {
-            activeElement = activeElements.shift();
-          }
-          console.log(messages);
-          if (messages.length > 0) {
-            var message = messages.shift();
-            console.log(messages);
-          }
-          return {
-            messageHeading: message.messageHeading,
-            messageIngress: message.messageIngress,
-            confirmText: 'next',
-            cancelDisabled: true,
-            customPosition: true,
-            activeElement: activeElement,
-            previousActiveElement: previousActiveElement,
-            anchorToElement: true,
-            keepOpenOnClose: activeElements.length > 0,
-            confirmAction: function() {
-              if (activeElements.length > 0) reinitModal(getParams(activeElement, activeElements, messages));
-              else {
-                // TODO: menu tutorial complete etc.
-              }
-            }
-          };
-        }
-        var initialModalParams = {
-          messageHeading: 'hello there',
-          messageIngress: 'let\'s walk through the features',
-          confirmText: 'next',
-          keepOpenOnClose: true,
-          confirmAction: function() {
-            $scope.setAllFeaturesVisible();
-            var messages = [{
-              messageHeading: 'text',
-              messageIngress: 'these are all the possible features'
-            },{
-              messageIngress: 'enable them by clicking the settings'
-            }];
-            window.requestAnimationFrame(function() {
-              var activeElementsArrayLike = document.getElementsByClassName('active-under-modal asd');
-              var activeElements = [];
-              for (var i = 0; i < activeElementsArrayLike.length; i++) {
-                activeElements.push(activeElementsArrayLike[i]);
-              }
-              reinitModal(getParams(undefined, activeElements, messages));
-              if (!$rootScope.$$phase && !$scope.$$phase) $scope.$digest();
-            });
-          }
-        };
-
-        $scope.showModal(undefined, initialModalParams);
-      };
-
-      $scope.setAllFeaturesVisible = function() {
-        $rootScope.showAllFeatures = true;
+        $scope.reinitModal = undefined;
       };
 
       // EVENTS - user interactions, exceptions

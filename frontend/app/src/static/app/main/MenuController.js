@@ -40,6 +40,48 @@
     }
   };
 
+  // MENU ITEM VISIBILITY AND CLASSES
+
+  $scope.isMenuItemVisible = function(feature, subfeature){
+    return ($scope.features[feature].getStatus(subfeature) !== 'disabled') ||
+           ($scope.getOnboardingPhase('settings') > 1);
+  };
+
+  $scope.getMenuItemClasses = function(feature, subfeature) {
+    // When feature is active, it should be highlighted by default
+    var menuClasses;
+    if ($scope.isFeatureActive(feature)){
+      menuClasses = {highlighted: true};
+    }else if (feature === 'settings' || feature === 'trash'){
+      // Special case settings and trash, which are downplayed if not hightlighted
+      menuClasses = {'downplayed': true};
+    }else{
+      menuClasses = {};
+    }
+
+    // Handle menu onboarding
+    var settingsOnboardingPhase = $scope.getOnboardingPhase('settings');
+    if (settingsOnboardingPhase > 1){
+      // Menu onboarding happening, nothing should be highlighted
+      menuClasses['highlighted'] = false;
+      if (settingsOnboardingPhase === 1){
+        // Also don't downplay on the first step to make menu blur consistent
+        menuClasses['downplayed'] = false;
+      }else if (settingsOnboardingPhase > 1){
+        // After the first prompt, everything should be potentially visible in the menu
+        menuClasses['menu-item-visible-under-modal'] = true;
+      }
+      // Pulse settings when it is highlighted
+      if (feature === 'settings' && settingsOnboardingPhase === 3){
+        menuClasses['onboarding'] = true;
+      }
+    }else if ($scope.isOnboarding(feature, subfeature)){
+      menuClasses['onboarding'] = true;
+    }
+
+    return menuClasses;
+  };
+
   // KEYBOARD SHORTCUTS
 
   if (angular.isFunction($scope.registerKeyboardShortcutCallback)){

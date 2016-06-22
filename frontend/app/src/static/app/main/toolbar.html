@@ -1,7 +1,7 @@
 <div class="container-toolbar--inner" ng-controller="ToolbarController">
   <div ng-hide="isCustomToolbar()" class="swiper-no-swiping group-symmetrical">
     <button ng-show="isMoreThanOneFeatureActive()" type="button" class="group-symmetrical--left btn animate-fade-in"
-      ng-click="toggleMenu()" alt="menu" ng-class="{'onboarding': isOnboarding('settings')}">
+      ng-click="toggleMenu()" alt="menu" ng-class="{'onboarding': getOnboardingPhase('settings') === 1}">
       <span class="icon-menu"></span>
     </button>
     <div class="group-symmetrical--middle" ng-style="{maxWidth: calculateHeadingWidth()}">

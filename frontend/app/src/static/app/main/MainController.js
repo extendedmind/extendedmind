@@ -273,179 +273,6 @@ function MainController($element, $controller, $document, $filter, $q, $rootScop
     }
   };
 
-  $scope.isOnboarding = function(feature, subfeature){
-    var status = getFeatureStatus(UserSessionService.getFeaturePreferences(feature), subfeature);
-    if (status && status.startsWith('onboarding')){
-      return true;
-    }
-  };
-
-  $scope.getOnboardingPhase = function(feature, subfeature){
-    var featurePreferences = UserSessionService.getFeaturePreferences(feature);
-    if (angular.isNumber(featurePreferences) && featurePreferences > 0) return featurePreferences;
-    else if (subfeature && angular.isObject(featurePreferences)){
-      if (angular.isNumber(featurePreferences[subfeature]) && featurePreferences[subfeature] > 0)
-        return featurePreferences[subfeature];
-    }
-  };
-
-  function increaseOnboardingPhase(feature, featurePreferences, subfeature, warpIntoPhase){
-    if (subfeature) {
-      if (warpIntoPhase) {
-        featurePreferences[subfeature] = warpIntoPhase;
-      } else {
-        featurePreferences[subfeature] += 1;
-      }
-    }
-    else {
-      if (warpIntoPhase) {
-        featurePreferences = warpIntoPhase;
-      } else {
-        featurePreferences += 1;
-      }
-    }
-    UserSessionService.setFeaturePreferences(feature, featurePreferences);
-    UserService.saveAccountPreferences();
-  }
-
-  $scope.increaseOnboardingPhase = function(feature, subfeature){
-    var featurePreferences = UserSessionService.getFeaturePreferences(feature);
-    increaseOnboardingPhase(feature, featurePreferences, subfeature);
-  };
-
-  function decreaseOnboardingPhase(feature, featurePreferences, subfeature){
-    if (subfeature) featurePreferences[subfeature] -= 1;
-    else featurePreferences -= 1;
-    UserSessionService.setFeaturePreferences(feature, featurePreferences);
-    UserService.saveAccountPreferences();
-  }
-
-  $scope.activateFeatureOnboarding = function(featurePreferences, subfeature){
-    if (angular.isString(featurePreferences)){
-      if (featurePreferences.endsWith(':d')){
-        return featurePreferences.substring(0, featurePreferences.length - 2);
-      }
-    }else if (angular.isObject(featurePreferences) && subfeature){
-      featurePreferences[subfeature] = $scope.activateFeatureOnboarding(featurePreferences[subfeature]);
-      return featurePreferences;
-    }else if (!featurePreferences && subfeature){
-      var newPreferences = {};
-      newPreferences[subfeature] = 1;
-      return newPreferences;
-    }
-    return 1;
-  };
-
-  // Plus button is pressed or new item is added, this function figures out what to do then
-  $scope.notifyAddAction = function(type, featureInfo, subfeature){
-    if (featureInfo === $scope.features.user){
-
-    }else if (featureInfo === $scope.features.focus){
-      var focusPreferences = UserSessionService.getFeaturePreferences('focus');
-      if (subfeature === 'tasks'){
-        var phase = $scope.getOnboardingPhase('focus', 'tasks');
-        if (phase && (phase === 1 || phase === 2)){
-          if (type === 'noAdd'){
-            decreaseOnboardingPhase('focus', focusPreferences, subfeature);
-          }else if (type === 'add' || type === 'activate'){
-            // Focus tasks is the current feature and it is onboarding: we update the onboarding status
-            var warpIntoPhase;
-            if (phase === 2 && !CalendarService.isCalendarEnabled()) {
-              warpIntoPhase = 5;
-            }
-            increaseOnboardingPhase('focus', focusPreferences, subfeature, warpIntoPhase);
-            return true;
-          }
-        }
-      }
-    }else if (featureInfo === $scope.features.inbox){
-
-    }else if (featureInfo === $scope.features.tasks){
-
-    }else if (featureInfo === $scope.features.notes){
-
-    }else if (featureInfo === $scope.features.lists){
-      var listsPreferences = UserSessionService.getFeaturePreferences('lists');
-      if (subfeature == 'active'){
-        if (getFeatureStatus(listsPreferences, subfeature).startsWith('onboarding')){
-          if (type === 'noAdd'){
-            decreaseOnboardingPhase('lists', listsPreferences, subfeature);
-          }else if (type === 'add' || type === 'activate'){
-            // Lists is the current feature and it is onboarding: we update the onboarding status
-            increaseOnboardingPhase('lists', listsPreferences, subfeature);
-            return true;
-          }
-        }
-      }else if (subfeature === 'archived'){
-        if (type === 'beginAdd'){
-          // When adding new archived lists, it is important it is done one at a time, to prevent
-          // problems with online causing list to appear too slow
-          return true;
-        }
-      }
-    }else if (featureInfo === $scope.features.list){
-
-    }else if (featureInfo === $scope.features.trash){
-
-    }else if (featureInfo === $scope.features.settings){
-
-    }
-  };
-
-  $scope.isTutorialInProgress = function(){
-    var phase = $scope.getOnboardingPhase('focus', 'tasks');
-    if (phase !== undefined && phase < 6){
-      return true;
-    }
-  };
-
-  $scope.getTutorialPhase = function(){
-    var phase = $scope.getOnboardingPhase('focus', 'tasks');
-    if (phase !== undefined){
-      if (phase < 3 ) return 1;
-      if (phase < 5) return 2;
-      if (phase === 5) return $scope.getTutorialLength();
-    }
-  };
-
-  $scope.getTutorialLength = function() {
-    return CalendarService.isCalendarEnabled() ? 3 : 2;
-  };
-
-  $scope.completeTutorial = function(){
-    // Tutorial is now ready, open up other avenues
-    var onboardedValue = UISessionService.getOnboardedValue();
-
-    UserSessionService.setFeaturePreferences('user', onboardedValue);
-    UserSessionService.setFeaturePreferences('tasks', {all: 1});
-    UserSessionService.setFeaturePreferences('trash', onboardedValue);
-    UserSessionService.setFeaturePreferences('settings', 1);
-    // Open up menu
-    DrawerService.enableDragging('left');
-
-    // Enable feature onboarding.
-    $scope.registerMenuOpenedCallbacks(menuOpenedFirstTime, 'MainController');
-
-    AnalyticsService.do('tutorial', 'complete_tutorial');
-    $scope.increaseOnboardingPhase('focus', 'tasks');
-  };
-
-  $scope.completeOnboarding = function(feature, subfeature){
-    var featurePreferences = UserSessionService.getFeaturePreferences(feature);
-
-    var onboardedValue = UISessionService.getOnboardedValue();
-    if (subfeature){
-      if (!angular.isObject(featurePreferences)) featurePreferences = {};
-      featurePreferences[subfeature] = onboardedValue;
-      AnalyticsService.do('tutorial', feature + '_' + subfeature + '_onboarded');
-    }else{
-      featurePreferences = onboardedValue;
-      AnalyticsService.do('tutorial', feature + '_onboarded');
-    }
-    UserSessionService.setFeaturePreferences(feature, featurePreferences);
-    UserService.saveAccountPreferences();
-  };
-
   // NAVIGATION
 
   var openEditorAfterMenuClosed;
@@ -1175,6 +1002,254 @@ function MainController($element, $controller, $document, $filter, $q, $rootScop
     }
   }
 
+  // ONBOARDING
+
+  $scope.isOnboarding = function(feature, subfeature){
+    var status = getFeatureStatus(UserSessionService.getFeaturePreferences(feature), subfeature);
+    if (status && status.startsWith('onboarding')){
+      return true;
+    }
+  };
+
+  $scope.getOnboardingPhase = function(feature, subfeature){
+    var featurePreferences = UserSessionService.getFeaturePreferences(feature);
+    if (angular.isNumber(featurePreferences) && featurePreferences > 0) return featurePreferences;
+    else if (subfeature && angular.isObject(featurePreferences)){
+      if (angular.isNumber(featurePreferences[subfeature]) && featurePreferences[subfeature] > 0)
+        return featurePreferences[subfeature];
+    }
+  };
+
+  function increaseOnboardingPhase(feature, featurePreferences, subfeature, warpIntoPhase){
+    if (subfeature) {
+      if (warpIntoPhase) {
+        featurePreferences[subfeature] = warpIntoPhase;
+      } else {
+        featurePreferences[subfeature] += 1;
+      }
+    }
+    else {
+      if (warpIntoPhase) {
+        featurePreferences = warpIntoPhase;
+      } else {
+        featurePreferences += 1;
+      }
+    }
+    UserSessionService.setFeaturePreferences(feature, featurePreferences);
+    UserService.saveAccountPreferences();
+  }
+
+  $scope.increaseOnboardingPhase = function(feature, subfeature){
+    var featurePreferences = UserSessionService.getFeaturePreferences(feature);
+    increaseOnboardingPhase(feature, featurePreferences, subfeature);
+  };
+
+  function decreaseOnboardingPhase(feature, featurePreferences, subfeature, toValue){
+    if (subfeature){
+      if (toValue === undefined) featurePreferences[subfeature] -= 1;
+      else featurePreferences[subfeature] = toValue;
+    }else{
+      if (toValue === undefined) featurePreferences -= 1;
+      else featurePreferences = toValue;
+    }
+    UserSessionService.setFeaturePreferences(feature, featurePreferences);
+    UserService.saveAccountPreferences();
+  }
+
+  $scope.activateFeatureOnboarding = function(featurePreferences, subfeature){
+    if (angular.isString(featurePreferences)){
+      if (featurePreferences.endsWith(':d')){
+        return featurePreferences.substring(0, featurePreferences.length - 2);
+      }
+    }else if (angular.isObject(featurePreferences) && subfeature){
+      featurePreferences[subfeature] = $scope.activateFeatureOnboarding(featurePreferences[subfeature]);
+      return featurePreferences;
+    }else if (!featurePreferences && subfeature){
+      var newPreferences = {};
+      newPreferences[subfeature] = 1;
+      return newPreferences;
+    }
+    return 1;
+  };
+
+  // Plus button is pressed or new item is added, this function figures out what to do then
+  $scope.notifyAddAction = function(type, featureInfo, subfeature){
+    if (featureInfo === $scope.features.focus){
+      var focusPreferences = UserSessionService.getFeaturePreferences('focus');
+      if (subfeature === 'tasks'){
+        var phase = $scope.getOnboardingPhase('focus', 'tasks');
+        if (phase && (phase === 1 || phase === 2)){
+          if (type === 'noAdd'){
+            decreaseOnboardingPhase('focus', focusPreferences, subfeature);
+          }else if (type === 'add' || type === 'activate'){
+            // Focus tasks is the current feature and it is onboarding: we update the onboarding status
+            var warpIntoPhase;
+            if (phase === 2 && !CalendarService.isCalendarEnabled()) {
+              warpIntoPhase = 5;
+            }
+            increaseOnboardingPhase('focus', focusPreferences, subfeature, warpIntoPhase);
+            return true;
+          }
+        }
+      }
+    }else if (featureInfo === $scope.features.lists){
+      var listsPreferences = UserSessionService.getFeaturePreferences('lists');
+      if (subfeature == 'active'){
+        if (getFeatureStatus(listsPreferences, subfeature).startsWith('onboarding')){
+          if (type === 'noAdd'){
+            decreaseOnboardingPhase('lists', listsPreferences, subfeature);
+          }else if (type === 'add' || type === 'activate'){
+            // Lists is the current feature and it is onboarding: we update the onboarding status
+            increaseOnboardingPhase('lists', listsPreferences, subfeature);
+            return true;
+          }
+        }
+      }else if (subfeature === 'archived'){
+        if (type === 'beginAdd'){
+          // When adding new archived lists, it is important it is done one at a time, to prevent
+          // problems with online causing list to appear too slow
+          return true;
+        }
+      }
+    }
+  };
+
+  $scope.isTutorialInProgress = function(){
+    var phase = $scope.getOnboardingPhase('focus', 'tasks');
+    if (phase !== undefined && phase < 6){
+      return true;
+    }
+  };
+
+  $scope.getTutorialPhase = function(){
+    var phase = $scope.getOnboardingPhase('focus', 'tasks');
+    if (phase !== undefined){
+      if (phase < 3 ) return 1;
+      if (phase < 5) return 2;
+      if (phase === 5) return $scope.getTutorialLength();
+    }
+  };
+
+  $scope.getTutorialLength = function() {
+    return CalendarService.isCalendarEnabled() ? 3 : 2;
+  };
+
+  $scope.completeTutorial = function(){
+    // Tutorial is now ready, open up other avenues
+    var onboardedValue = UISessionService.getOnboardedValue();
+
+    UserSessionService.setFeaturePreferences('user', onboardedValue);
+    UserSessionService.setFeaturePreferences('tasks', {all: 1});
+    UserSessionService.setFeaturePreferences('trash', onboardedValue);
+    UserSessionService.setFeaturePreferences('settings', 1);
+    // Open up menu
+    DrawerService.enableDragging('left');
+
+    // Enable menu onboarding.
+    $scope.registerMenuOpenedCallbacks(launchMenuOnboarding, 'MainController');
+
+    AnalyticsService.do('tutorial', 'complete_tutorial');
+    $scope.increaseOnboardingPhase('focus', 'tasks');
+  };
+
+  $scope.completeOnboarding = function(feature, subfeature){
+    var featurePreferences = UserSessionService.getFeaturePreferences(feature);
+
+    var onboardedValue = UISessionService.getOnboardedValue();
+    if (subfeature){
+      if (!angular.isObject(featurePreferences)) featurePreferences = {};
+      featurePreferences[subfeature] = onboardedValue;
+      AnalyticsService.do('tutorial', feature + '_' + subfeature + '_onboarded');
+    }else{
+      featurePreferences = onboardedValue;
+      AnalyticsService.do('tutorial', feature + '_onboarded');
+    }
+    UserSessionService.setFeaturePreferences(feature, featurePreferences);
+    UserService.saveAccountPreferences();
+  };
+
+  var settingsOnboardingPhase = $scope.getOnboardingPhase('settings');
+  if (settingsOnboardingPhase === 1 || settingsOnboardingPhase === 2 || settingsOnboardingPhase === 3) {
+    $scope.registerMenuOpenedCallbacks(launchMenuOnboarding, 'MainController');
+  }
+
+  function launchMenuOnboarding() {
+    unregisterMenuOpenedCallback('MainController');
+
+    if ($scope.getOnboardingPhase('settings') !== 1){
+      var settingsPreferences = UserSessionService.getFeaturePreferences('settings');
+      decreaseOnboardingPhase('settings', settingsPreferences, undefined, 1);
+    }
+
+    var settingsOnboardingFirstModalParams = {
+      messageHeading: 'menu opened',
+      messageIngress: 'let\'s walk through how to use the menu',
+      confirmText: 'next',
+      keepOpenOnClose: true,
+      confirmAction: settingsOnboardingFirstConfirm
+    };
+
+    // Show first onboarding modal, confirm functions cascade to following modals
+    $scope.showModal(undefined, settingsOnboardingFirstModalParams, function isMenuVisible(){
+      return $scope.getOnboardingPhase('settings') > 1;
+    });
+  }
+
+  function getSettingsOnboardingModalParameters(
+        message, anchorElement, previousAnchorElement, isLastScreen, confirmFn){
+    return {
+      messageHeading: message.messageHeading,
+      messageIngress: message.messageIngress,
+      confirmText: message.confirmText,
+      cancelDisabled: true,
+      customPosition: true,
+      anchorElement: anchorElement,
+      previousAnchorElement: previousAnchorElement,
+      anchorToElement: true,
+      keepOpenOnClose: !isLastScreen,
+      confirmAction: confirmFn
+    };
+  }
+
+  // Settings onboarding confirm functions
+  function settingsOnboardingFirstConfirm() {
+    $scope.increaseOnboardingPhase('settings');
+    var directionOfFeaturesFromModal = $rootScope.columns === 1 ? 'above' : 'on the left';
+    var message = {
+      messageHeading: undefined,
+      messageIngress: directionOfFeaturesFromModal + ' you can see all the possible menu items',
+      confirmText: 'next'
+    };
+    window.requestAnimationFrame(function(){
+      var listsAnchorElement = document.getElementById('menu-item-lists');
+      var settingsOnboardingSecondModalParameters =
+        getSettingsOnboardingModalParameters(message, listsAnchorElement, undefined,
+                                             false, settingsOnboardingSecondConfirm);
+      $scope.reinitModal(settingsOnboardingSecondModalParameters);
+    });
+  }
+
+  function settingsOnboardingSecondConfirm(previousAnchor) {
+    $scope.increaseOnboardingPhase('settings');
+    var directionOfSettingsFromModal = $rootScope.columns === 1 ? 'below' : 'down on the left';
+    var message = {
+      messageHeading: undefined,
+      messageIngress: 'you can enable them from the settings tab ' + directionOfSettingsFromModal,
+      confirmText: 'got it'
+    };
+    window.requestAnimationFrame(function(){
+      var trashAnchorElement = document.getElementById('menu-item-trash');
+      var settingsOnboardingThirdModalParameters =
+        getSettingsOnboardingModalParameters(message, trashAnchorElement, previousAnchor,
+                                             true, settingsOnboardingThirdConfirm);
+      $scope.reinitModal(settingsOnboardingThirdModalParameters);
+    });
+  }
+
+  function settingsOnboardingThirdConfirm(previousAnchor) {
+    $scope.completeOnboarding('settings');
+  }
+
   // UI FUNCTIONS
 
   $scope.customToolbar = undefined;
@@ -1385,21 +1460,6 @@ function MainController($element, $controller, $document, $filter, $q, $rootScop
     });
   }
 
-  if ($scope.isOnboarding('settings')) {
-    $scope.registerMenuOpenedCallbacks(menuOpenedFirstTime, 'MainController');
-  }
-
-  function menuOpenedFirstTime() {
-    if ($scope.getOnboardingPhase('settings') === 1) {
-      $scope.increaseOnboardingPhase('settings');
-    }
-
-    $timeout(function() {
-      $scope.openModal(
-        document.getElementsByClassName('active-under-modal'));
-      }, 500);
-    unregisterMenuOpenedCallback('MainController');
-  }
   // INJECT OTHER CONTENT CONTROLLERS
 
   $controller('SynchronizeController',{$scope: $scope});
