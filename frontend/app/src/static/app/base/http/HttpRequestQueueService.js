@@ -137,10 +137,10 @@ function HttpRequestQueueService(enableOffline) {
         // Found reverse method that is not currently executing
         removeFromQueue(reverseRequestIndex);
         return false;
-      }
-      var replaceableIndex = findReplaceableRequestIndex(request);
-      if (replaceableIndex !== undefined){
-        if (queue[replaceableIndex].content.data === undefined && request.content.data === undefined){
+    }
+    var replaceableIndex = findReplaceableRequestIndex(request);
+    if (replaceableIndex !== undefined){
+      if (queue[replaceableIndex].content.data === undefined && request.content.data === undefined){
         // The method does not have a payload, we just stop here. This happens e.g. for
         // delete, where second identical call will fail with "already deleted" if this is not done.
         return false;
@@ -232,12 +232,7 @@ function HttpRequestQueueService(enableOffline) {
         var requestIndex = findRequestIndex(request);
         if (requestIndex !== undefined) {
           queue[requestIndex].offline = true;
-          // We want to retry to see if there are reverse or replaceable items in the queue
-          if (pruneQueue(queue[requestIndex])){
-            persistQueue();
-          }else{
-            removeFromQueue(requestIndex);
-          }
+          persistQueue();
         } else {
           // This shouldn't happen, but if it does, I guess we want to retry
           request.offline = true;
