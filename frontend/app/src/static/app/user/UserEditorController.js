@@ -199,33 +199,33 @@
   function signUpSuccess(response) {
     // Add sync user to the request queue to prevent problems authenticate response overriding
     // changes in offline queue
-    SynchronizeService.synchronizeUser();
-
-    // Register uuid change
     var oldUUID = UserSessionService.getUserUUID();
-    processUUIDChange(oldUUID, response.uuid);
-    AnalyticsService.doWithOldUuid('user', 'sign_up', oldUUID, true);
-    if (UserSessionService.isPersistentStorageEnabled()){
-      $scope.user.remember = true;
-    }
-    AuthenticationService.login($scope.user).then(
-      function(/*response*/) {
-        // Start executing all pending requests now
-        BackendClientService.executeRequests();
-        $scope.closeEditor();
-        $timeout(function() {
-          $scope.showVerifyEmailModal('account created');
-        }, $rootScope.EDITOR_CLOSED_FAILSAFE_TIME);
-      },
-      function(error) {
-        if (error.type === 'offline') {
-          $scope.userEditOffline = true;
-        } else if (error.type === 'forbidden') {
-          $scope.loginFailed = true;
-        }
-        $scope.signingUp = false;
+    SynchronizeService.synchronizeUser().then(function(){
+      // Register uuid change
+      processUUIDChange(oldUUID, response.uuid);
+      AnalyticsService.doWithOldUuid('user', 'sign_up', oldUUID, true);
+      if (UserSessionService.isPersistentStorageEnabled()){
+        $scope.user.remember = true;
       }
-    );
+      AuthenticationService.login($scope.user).then(
+        function(/*response*/) {
+          // Start executing all pending requests now
+          BackendClientService.executeRequests();
+          $scope.closeEditor();
+          $timeout(function() {
+            $scope.showVerifyEmailModal('account created');
+          }, $rootScope.EDITOR_CLOSED_FAILSAFE_TIME);
+        },
+        function(error) {
+          if (error.type === 'offline') {
+            $scope.userEditOffline = true;
+          } else if (error.type === 'forbidden') {
+            $scope.loginFailed = true;
+          }
+          $scope.signingUp = false;
+        }
+      );
+    });
   }
 
   function processUUIDChange(oldUUID, newUUID){
