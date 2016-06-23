@@ -44,7 +44,7 @@
 
   $scope.isMenuItemVisible = function(feature, subfeature){
     return ($scope.features[feature].getStatus(subfeature) !== 'disabled') ||
-           ($scope.getOnboardingPhase('settings') > 1);
+           ($scope.getOnboardingPhase('settings') === 2);
   };
 
   $scope.getMenuItemClasses = function(feature, subfeature) {
@@ -61,10 +61,10 @@
 
     // Handle menu onboarding
     var settingsOnboardingPhase = $scope.getOnboardingPhase('settings');
-    if (settingsOnboardingPhase > 1){
-      // Menu onboarding happening, nothing should be highlighted
-      menuClasses['highlighted'] = false;
+    if (settingsOnboardingPhase >= 1){
       if (settingsOnboardingPhase === 1){
+        // Menu onboarding happening, nothing should be highlighted
+        menuClasses['highlighted'] = false;
         // Also don't downplay on the first step to make menu blur consistent
         menuClasses['downplayed'] = false;
       }else if (settingsOnboardingPhase > 1){
@@ -73,7 +73,7 @@
       }
       // Pulse settings when it is highlighted
       if (feature === 'settings' && settingsOnboardingPhase === 3){
-        menuClasses['onboarding'] = true;
+        menuClasses['onboarding-force'] = true;
       }
     }else if ($scope.isOnboarding(feature, subfeature)){
       menuClasses['onboarding'] = true;

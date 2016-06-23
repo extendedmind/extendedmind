@@ -42,6 +42,7 @@
       element.addClass('editable-field-container');
 
       scope.containerActive = false;
+      var deactivateCallback, preventClickElsewhereCallback;
       function clickedContainer() {
         if (attrs.editableFieldContainerScrollable) {
           // Scrollable editable field container has height: 100% so when it does not have enough content to
@@ -68,7 +69,8 @@
       };
 
       scope.deactivateContainer = function() {
-        if (scope.containerActive){
+        if (scope.containerActive &&
+            (!preventClickElsewhereCallback || !preventClickElsewhereCallback())){
           backdropController.deactivateContainer(element[0]);
           element[0].removeEventListener('click', clickedContainer, false);
           element.removeClass('active');
@@ -104,11 +106,15 @@
 
       // optional click elsewhere function can be set with editable-field-container-click-elswhere="fn"
       // If not set, clicking elsewhere just deactivates the backdrop
-      var deactivateCallback;
       if (attrs.editableFieldContainerClickedElsewhere){
         deactivateCallback = $parse(attrs.editableFieldContainerClickedElsewhere).bind(undefined, scope);
       }
-
+      // optional preventing click elsewhere can be set with
+      // editable-field-container-prevent-click-elswhere="fn"
+      if (attrs.editableFieldContainerPreventClickElsewhere){
+        preventClickElsewhereCallback =
+          $parse(attrs.editableFieldContainerPreventClickElsewhere).bind(undefined, scope);
+      }
       backdropController.registerContainer(element[0], scope.deactivateContainer);
 
       if (attrs.editableFieldContainer === 'auto') {

@@ -1183,9 +1183,10 @@ function MainController($element, $controller, $document, $filter, $q, $rootScop
 
     var settingsOnboardingFirstModalParams = {
       messageHeading: 'menu opened',
-      messageIngress: 'let\'s walk through how to use the menu',
+      messageIngress: 'let\'s walk through how to use it',
       confirmText: 'next',
       keepOpenOnClose: true,
+      cancelDisabled: true,
       confirmAction: settingsOnboardingFirstConfirm
     };
 
@@ -1231,10 +1232,10 @@ function MainController($element, $controller, $document, $filter, $q, $rootScop
 
   function settingsOnboardingSecondConfirm(previousAnchor) {
     $scope.increaseOnboardingPhase('settings');
-    var directionOfSettingsFromModal = $rootScope.columns === 1 ? 'below' : 'down on the left';
+    var directionOfSettingsFromModal = $rootScope.columns === 1 ? 'below' : 'at the bottom of the menu';
     var message = {
       messageHeading: undefined,
-      messageIngress: 'you can enable them from the settings tab ' + directionOfSettingsFromModal,
+      messageIngress: 'you can toggle menu items from settings ' + directionOfSettingsFromModal,
       confirmText: 'got it'
     };
     window.requestAnimationFrame(function(){

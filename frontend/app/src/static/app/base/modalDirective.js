@@ -38,6 +38,7 @@
         scope.confirmText = params.confirmText || 'ok';
         scope.hideCloseText = params.cancelDisabled;
         scope.listPicker = params.listPicker;
+        scope.keepOpenOnClose = params.keepOpenOnClose;
         if (params.customPosition) {
           if (params.anchorToElement) {
             initAnchoredModal(params.anchorElement, params.previousAnchorElement, reinit);
@@ -97,6 +98,10 @@
         scope.closeModal();
       };
 
+      scope.isKeepOpenOnClose = function(){
+        return scope.keepOpenOnClose;
+      };
+
       function closeAnchoredModal() {
         var translateY = $rootScope.columns === 1 ? scope.modalInfos.oldPosition + 'px' : -50 + '%';
         $animateCss(element, {
@@ -131,7 +136,7 @@
       scope.confirmAction = function() {
         scope.saveError = undefined;
         if (typeof scope.modalInfos.confirmAction === 'function') {
-          if (scope.modalInfos.keepOpenOnClose) {
+          if (scope.keepOpenOnClose) {
             scope.modalInfos.confirmAction(scope.modalInfos.anchorToElement);
           } else {
             if (scope.modalInfos.anchorToElement) closeAnchoredModal();
@@ -182,7 +187,10 @@
           if ($rootScope.columns === 1) {
             var targetElement = params.anchorElement;
             var newPosition = targetElement.offsetHeight + targetElement.offsetTop; // Target bottom.
-            if (newPosition + element[0].offsetHeight > window.innerHeight) {
+
+            // "80" is the height of the menu bottom section. Bit of a hack to make the settings
+            // tutorial work for iPhone 5
+            if (newPosition + element[0].offsetHeight > (window.innerHeight + 80)) {
               newPosition = targetElement.offsetTop - element[0].offsetHeight;  // Modal bottom to target top.
             }
             // http://stackoverflow.com/a/9845896

@@ -676,7 +676,7 @@ input[type="checkbox"]:checked + label:before {
   &.menu-visible-under-modal .container-master:after{
     .blurred-backdrop();
   }
-  .menu-item-visible-under-modal {
+  .menu-item-visible-under-modal:not(.highlighted):not(.downplayed) {
     position: relative;
     z-index: 1;
     &, * {
@@ -869,7 +869,8 @@ div.editable-field-backdrop:not(.active) {
   100%   { color: @color-text-inverse; }
 }
 
-div.editable-field-backdrop:not(.active) .link-menu.onboarding:not(.highlighted) span {
+div.editable-field-backdrop:not(.active) .link-menu.onboarding:not(.highlighted) span,
+.link-menu.onboarding-force span{
   -webkit-animation: onboarding-menu-pulse ease-in-out 3.5s infinite;
   -moz-animation:    onboarding-menu-pulse ease-in-out 3.5s infinite;
   -o-animation:      onboarding-menu-pulse ease-in-out 3.5s infinite;
