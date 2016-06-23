@@ -95,12 +95,16 @@
           return true;
         }
       }else if (!compareValues){
-        if (item.mod && item.mod.hasOwnProperty(fieldInfos[i])){
-          if (item.mod[fieldName] !== item.trans[fieldName]){
+        if (fieldName !== 'modified'){
+          // Having a different modified value in trans than in mod or persistent can never cause
+          // item is edited, because modified value is also updated on offline save to match .mod.saved.
+          if (item.mod && item.mod.hasOwnProperty(fieldInfos[i])){
+            if (item.mod[fieldName] !== item.trans[fieldName]){
+              return true;
+            }
+          }else if (item[fieldName] !== item.trans[fieldName]){
             return true;
           }
-        }else if (item[fieldName] !== item.trans[fieldName]){
-          return true;
         }
       }else{
         // Use compare values to do the isEdited comparison
@@ -117,19 +121,23 @@
     for (var i=0, len=fieldInfos.length; i<len; i++){
       var fieldName = angular.isObject(fieldInfos[i]) ? fieldInfos[i].name : fieldInfos[i];
 
-      if (angular.isObject(fieldInfos[i])){
-        // Custom field overrides all
-        if (fieldInfos[i].isEdited(item, ownerUUID)){
+      if (fieldName !== 'modified'){
+        // Different modified value is trans is never an edited field, as trans.modified also matches
+        // .mod.saved
+        if (angular.isObject(fieldInfos[i])){
+          // Custom field overrides all
+          if (fieldInfos[i].isEdited(item, ownerUUID)){
+            editedFieldInfos.push(fieldInfos[i]);
+          }
+        }else if (item.mod && item.mod.hasOwnProperty(fieldName)) {
+          if (item.mod[fieldName] !== item.trans[fieldName]){
+            // This field has been modified, and the modification does not match
+            editedFieldInfos.push(fieldInfos[i]);
+          }
+        }else if (item[fieldName] !== item.trans[fieldName]){
+          // Persistent value does not match
           editedFieldInfos.push(fieldInfos[i]);
         }
-      }else if (item.mod && item.mod.hasOwnProperty(fieldName)) {
-        if (item.mod[fieldName] !== item.trans[fieldName]){
-          // This field has been modified, and the modification does not match
-          editedFieldInfos.push(fieldInfos[i]);
-        }
-      }else if (item[fieldName] !== item.trans[fieldName]){
-        // Persistent value does not match
-        editedFieldInfos.push(fieldInfos[i]);
       }
     }
     return editedFieldInfos;
