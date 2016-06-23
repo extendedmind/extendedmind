@@ -43,7 +43,7 @@ describe('extended mind users', function() {
         // OPEN MENU FOR THE FIRST TIME
         const menuButton = element(by.xpath(h.XPATH_MENU_BUTTON));
         menuButton.click();
-        browser.driver.sleep(h.MENU_ANIMATION_SPEED);
+        browser.driver.sleep(h.MENU_ANIMATION_SPEED + h.MODAL_REPEAT_ANIMATION_SPEED);
 
         // CLICK THROUGH THE SETTINGS TUTORIAL
         element(by.xpath(h.XPATH_MODAL_BUTTON.replace('${linkText}', 'next'))).click();
