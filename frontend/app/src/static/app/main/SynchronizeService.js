@@ -196,7 +196,8 @@
     return executeUpdateFns(updateFns, itemUUID, probableItemType, properties, ownerUUID);
   }
 
-  function updateModProperties(itemUUID, probableItemType, properties, ownerUUID, localModToggleValueWins){
+  function updateModProperties(itemUUID, probableItemType, properties, ownerUUID,
+                               localModToggleValueWins, queue){
     function updateItemModProperties (itemUUID, properties, ownerUUID){
       return {type: 'item', item: ItemsService.updateItemModProperties(itemUUID, properties, ownerUUID)};
     }
@@ -220,8 +221,20 @@
                      updateNoteModProperties,
                      updateListModProperties,
                      updateTagModProperties];
-    return executeUpdateFns(updateFns, itemUUID, probableItemType, properties, ownerUUID,
+    var updatedItem = executeUpdateFns(updateFns, itemUUID, probableItemType, properties, ownerUUID,
                             localModToggleValueWins);
+    if (queue && updatedItem && properties.modified){
+      // Also update modified values in subsequent PUT calls when queue is given.
+      // NOTE: Start search from 1 as the current request is in the queue also with index 0.
+      for (var i=1; i < queue.length; i++) {
+        if (queue[i].params.uuid === itemUUID &&
+            queue[i].content && queue[i].content.data &&
+            queue[i].content.method  === 'put') {
+          queue[i].content.data.modified = properties.modified;
+        }
+      }
+    }
+    return updatedItem;
   }
 
   function processUUIDChange(oldUUID, newUUID, created, modified, archived, associated, type, ownerUUID,
@@ -233,7 +246,8 @@
         if (queue[i].params.uuid === oldUUID) {
           queue[i].params.uuid = newUUID;
           queue[i].content.url = queue[i].content.url.replace(oldUUID, newUUID);
-          if (queue[i].content.data && queue[i].content.data.modified){
+          if (queue[i].content.data &&
+             (queue[i].content.data.modified || queue[i].content.method  === 'put')){
             queue[i].content.data.modified = modified;
           }
         }
@@ -804,12 +818,14 @@
     // ****
     // POST
     // ****
+    var bestGuessForLocalType = request.params.type;
     if (request.content.method === 'post') {
       if (request.params.type === 'item') {
         if (request.content.url.endsWith('/undelete')) {
           // Undelete
           properties = {modified: response.modified, deleted: undefined};
-          updateModProperties(request.params.uuid, request.params.type, properties, request.params.owner);
+          updateModProperties(request.params.uuid, request.params.type, properties, request.params.owner,
+                              localModToggleValueWins, queue);
         }
       } else if (request.params.type === 'task') {
         if (request.content.url.endsWith('/undelete')){
@@ -827,7 +843,7 @@
                                 {uuid: response.generated.uuid,
                                  created: response.generated.created,
                                  modified: response.generated.modified},
-                                 request.params.owner);
+                                 request.params.owner, localModToggleValueWins, queue);
             // Also update the UUID in the task's history
             updateHistProperties(request.params.uuid, request.params.type,
                                  {generatedUUID: response.generated.uuid}, request.params.owner);
@@ -835,15 +851,15 @@
         } else if (request.content.url.endsWith('/convert_to_note')){
           // Convert to note
           properties = {modified: response.modified, revision: response.revision};
-          updateModProperties(request.params.uuid, 'note', properties, request.params.owner);
+          bestGuessForLocalType = 'note';
         } else if (request.content.url.endsWith('/convert_to_list')){
           // Convert to list
           properties = {modified: response.modified, revision: response.revision};
-          updateModProperties(request.params.uuid, 'list', properties, request.params.owner);
+          bestGuessForLocalType = 'list';
         }
         if (properties)
-          updateModProperties(request.params.uuid, request.params.type, properties, request.params.owner,
-                              localModToggleValueWins);
+          updateModProperties(request.params.uuid, bestGuessForLocalType, properties, request.params.owner,
+                              localModToggleValueWins, queue);
       } else if (request.params.type === 'note') {
         if (request.content.url.endsWith('/undelete')){
           properties = {modified: response.modified, deleted: undefined};
@@ -856,32 +872,35 @@
         } else if (request.content.url.endsWith('/convert_to_task')){
           // Convert to task
           properties = {modified: response.modified, revision: response.revision};
-          updateModProperties(request.params.uuid, 'task', properties, request.params.owner);
+          bestGuessForLocalType = 'task';
         } else if (request.content.url.endsWith('/convert_to_list')){
           // Convert to list
           properties = {modified: response.modified, revision: response.revision};
-          updateModProperties(request.params.uuid, 'list', properties, request.params.owner);
+          bestGuessForLocalType = 'list';
         }
         if (properties)
-          updateModProperties(request.params.uuid, request.params.type, properties, request.params.owner,
-                              localModToggleValueWins);
+          updateModProperties(request.params.uuid, bestGuessForLocalType, properties, request.params.owner,
+                              localModToggleValueWins, queue);
       } else if (request.params.type === 'list') {
         if (request.content.url.endsWith('/undelete')){
           properties = {modified: response.modified, deleted: undefined};
-          updateModProperties(request.params.uuid, request.params.type, properties, request.params.owner);
         } else if (request.content.url.endsWith('/convert_to_note')){
           // Convert to note
           properties = {modified: response.modified, revision: response.revision};
-          updateModProperties(request.params.uuid, 'note', properties, request.params.owner);
+          bestGuessForLocalType = 'note';
         } else if (request.content.url.endsWith('/convert_to_task')){
           // Convert to task
           properties = {modified: response.modified, revision: response.revision};
-          updateModProperties(request.params.uuid, 'task', properties, request.params.owner);
+          bestGuessForLocalType = 'task';
         }
+        if (properties)
+          updateModProperties(request.params.uuid, bestGuessForLocalType, properties, request.params.owner,
+                              localModToggleValueWins, queue);
       } else if (request.params.type === 'tag') {
         if (request.content.url.endsWith('/undelete')){
           properties = {modified: response.modified, deleted: undefined};
-          updateModProperties(request.params.uuid, request.params.type, properties, request.params.owner);
+          updateModProperties(request.params.uuid, request.params.type, properties, request.params.owner,
+                              localModToggleValueWins, queue);
         }
       }
     // ***
@@ -894,7 +913,8 @@
         if (response.archived) properties.archived = response.archived;
         if (response.associated) properties.associated = response.associated;
         if (response.revision) properties.revision = response.revision;
-        updateModProperties(request.params.uuid, request.params.type, properties, request.params.owner);
+        updateModProperties(request.params.uuid, request.params.type, properties, request.params.owner,
+                            localModToggleValueWins, queue);
       } else {
         // New, there should be an uuid in the response and a fake one in the request
         if (!response.uuid) {
@@ -923,7 +943,8 @@
     // ******
     } else if (request.content.method === 'delete') {
       properties = {deleted: response.deleted, modified: response.result.modified};
-      updateModProperties(request.params.uuid, request.params.type, properties, request.params.owner);
+      updateModProperties(request.params.uuid, request.params.type, properties, request.params.owner,
+                          localModToggleValueWins, queue);
     }
   }
 
