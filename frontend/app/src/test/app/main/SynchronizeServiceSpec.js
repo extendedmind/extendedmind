@@ -1050,6 +1050,85 @@ describe('SynchronizeService', function() {
       .toBe(lastModified);
   });
 
+
+
+  it('should handle task offline update and complete and update again then sync', function () {
+
+    // 1. save existing task
+    var tasks = TasksService.getTasks(testOwnerUUID);
+    var cleanCloset = TasksService.getTaskInfo('7b53d509-853a-47de-992c-c572a6952629', testOwnerUUID).task;
+    var cleanClosetOriginalModified = cleanCloset.modified;
+    cleanCloset.trans.description = 'now';
+    var cleanClosetTransport = {title: cleanCloset.trans.title,
+                                description: cleanCloset.trans.description,
+                                modified: cleanCloset.modified};
+
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' + cleanCloset.trans.uuid,
+                           cleanClosetTransport)
+       .respond(404);
+    TasksService.saveTask(cleanCloset);
+    $httpBackend.flush();
+    expect(tasks.length)
+      .toBe(4);
+
+    // 2. complete existing task
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' + cleanCloset.trans.uuid,
+                           cleanClosetTransport)
+       .respond(404);
+    TasksService.uncompleteTask(cleanCloset);
+    $httpBackend.flush();
+    expect(tasks.length)
+      .toBe(4);
+    expect(cleanCloset.trans.completed)
+      .toBeFalsy();
+
+    // 3. save existing task again
+    cleanCloset.trans.description = 'do it now!';
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' + cleanCloset.trans.uuid,
+                           cleanClosetTransport)
+       .respond(404);
+    TasksService.saveTask(cleanCloset);
+    $httpBackend.flush();
+    expect(tasks.length)
+      .toBe(4);
+
+    // 4. synchronize items and get back online with correct value
+    var firstSaveModified = now.getTime()+100;
+    var uncompletedModified = now.getTime()+200;
+    var secondSaveModified = now.getTime()+300;
+    var latestModified = now.getTime();
+    MockUserSessionService.setLatestModified(latestModified);
+
+    $httpBackend.expectGET('/api/v2/owners/' + testOwnerUUID + '/data?modified=' +
+                            latestModified + '&deleted=true&archived=true&completed=true')
+        .respond(200, {});
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' + cleanCloset.trans.uuid,
+        cleanClosetTransport)
+        .respond(200, {modified: firstSaveModified});
+    $httpBackend.expectPOST('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' + cleanCloset.trans.uuid +
+                            '/uncomplete')
+        .respond(200, {modified: uncompletedModified});
+    var recleanClosetTransport = {
+      title: cleanCloset.trans.title,
+      description: cleanCloset.trans.description,
+      modified: uncompletedModified
+    };
+    $httpBackend.expectPUT('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' + cleanCloset.trans.uuid,
+        recleanClosetTransport)
+        .respond(200, {modified: secondSaveModified});
+    SynchronizeService.synchronize(testOwnerUUID);
+    $httpBackend.flush();
+
+    expect(tasks.length)
+      .toBe(4);
+    expect(tasks[0].modified)
+      .toBe(cleanClosetOriginalModified);
+    expect(tasks[0].mod.modified)
+      .toBe(secondSaveModified);
+    expect(tasks[0].trans.modified)
+      .toBe(secondSaveModified);
+  });
+
   it('should handle task offline update to repeating and complete', function () {
 
     // 1. save existing task with repeating
@@ -1631,7 +1710,7 @@ describe('SynchronizeService', function() {
     expect(updatedTestList.mod.deleted)
       .toBeDefined();
     expect(updatedTestList.mod.modified)
-      .toBeDefined();
+      .toBeUndefined();
     expect(testTask.hist.deletedList)
       .toBe(updatedTestList.trans.uuid);
     expect(testTask.mod.relationships.parent)
@@ -1647,7 +1726,7 @@ describe('SynchronizeService', function() {
     expect(lists[4].mod.deleted)
       .toBeUndefined();
     expect(lists[4].mod.modified)
-      .toBeDefined();
+      .toBeUndefined();
     expect(testTask.hist)
       .toBeUndefined();
     expect(testTask.mod.relationships.parent)
@@ -1923,7 +2002,7 @@ describe('SynchronizeService', function() {
     expect(testTag.mod.deleted)
       .toBeDefined();
     expect(testTag.mod.modified)
-      .toBeDefined();
+      .toBeUndefined();
     expect(testNote.hist.deletedTags[0])
       .toBe(testTag.mod.uuid);
     expect(testNote.mod.relationships.tags)
@@ -1939,7 +2018,7 @@ describe('SynchronizeService', function() {
     expect(tags[3].mod.deleted)
       .toBeUndefined();
     expect(tags[3].mod.modified)
-      .toBeDefined();
+      .toBeUndefined();
     expect(testNote.hist)
       .toBeUndefined();
     expect(testNote.mod.relationships.tags[0])
@@ -2619,8 +2698,8 @@ describe('SynchronizeService', function() {
     expect(cleanCloset.hist.convert.task.completed)
       .toBeDefined();
 
-    $httpBackend.expectPOST('/api/v2/owners/' + testOwnerUUID + '/data/tasks/'
-                            + cleanCloset.trans.uuid + '/convert_to_note',
+    $httpBackend.expectPOST('/api/v2/owners/' + testOwnerUUID + '/data/tasks/' +
+                            cleanCloset.trans.uuid + '/convert_to_note',
                             cleanClosetTransport)
        .respond(404);
     ConvertService.finishNoteToTaskConvert(cleanCloset, testOwnerUUID);
