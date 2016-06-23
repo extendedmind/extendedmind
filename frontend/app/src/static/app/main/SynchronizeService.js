@@ -67,18 +67,23 @@
     case 'item':
       var itemInfo = ItemsService.getItemInfo(itemUUID, ownerUUID);
       if (itemInfo) return itemInfo.item;
+      break;
     case 'task':
       var taskInfo = TasksService.getTaskInfo(itemUUID, ownerUUID);
       if (taskInfo) return taskInfo.task;
+      break;
     case 'note':
       var noteInfo = NotesService.getNoteInfo(itemUUID, ownerUUID);
       if (noteInfo) return noteInfo.note;
+      break;
     case 'list':
       var listInfo = ListsService.getListInfo(itemUUID, ownerUUID);
       if (listInfo) return noteInfo.list;
+      break;
     case 'tag':
       var tagInfo = TagsService.getTagInfo(itemUUID, ownerUUID);
       if (tagInfo) return tagInfo.tag;
+      break;
     }
   }
 
@@ -472,7 +477,8 @@
       if (queue && queue.length){
         var mismatchTypeConflictInfos = [];
         var danglingItemsToDestroy = [];
-        var i, len;
+        var modifiedValuesForRemovedPuts = [];
+        var i, j, k, len;
 
         // Loop over the queue to see if there are any conflicting requests there
         for (i = queue.length-1; i >= 0; i--){
@@ -518,6 +524,10 @@
                                     queue[i].params.type,
                                     properties,
                                     request.params.owner);
+                modifiedValuesForRemovedPuts.push({
+                  uuid: conflictingItem.uuid,
+                  modified: conflictingItem.modified
+                });
                 removeItemFromResponse(response, conflictingItem.uuid, queue[i].params.type);
               } else{
                 // No need for a merge of data
@@ -540,6 +550,10 @@
                                       {modified: conflictingItem.modified},
                                       request.params.owner);
                   // Remove database item from response
+                  modifiedValuesForRemovedPuts.push({
+                    uuid: conflictingItem.uuid,
+                    modified: conflictingItem.modified
+                  });
                   removeItemFromResponse(response, conflictingItem.uuid, queue[i].params.type);
                 }
               }
@@ -630,6 +644,17 @@
             // in starting from the beginning, where we know to delete
             if (mismatchTypeConflictInfos.indexOf(conflictingItemInfo) === -1)
               mismatchTypeConflictInfos.push(conflictingItemInfo);
+          }else if (modifiedValuesForRemovedPuts.length){
+            // Check if item for this action has not been removed from the response
+            for (k = 0; k < modifiedValuesForRemovedPuts.length; k++){
+              if (modifiedValuesForRemovedPuts[k].uuid === queue[i].params.uuid){
+                if (queue[i].content && queue[i].content.data && queue[i].content.data.modified){
+                  // Change the modified value in the request to match the one we got from the
+                  // items response to prevent conflict response.
+                  queue[i].content.data.modified = modifiedValuesForRemovedPuts[k].modified;
+                }
+              }
+            }
           }
 
           // Handle deleted lists and tags
@@ -708,7 +733,7 @@
           // Loop again from the beginning
           var queueSpliceInfos = [];
           for (i = 0, len=queue.length; i < len; i++){
-            for(var j = mismatchTypeConflictInfos.length-1; j >= 0; j--){
+            for(j = mismatchTypeConflictInfos.length-1; j >= 0; j--){
               if (mismatchTypeConflictInfos[j].item.uuid === queue[i].params.uuid){
                 if (queue[i].params.type !== mismatchTypeConflictInfos[j].type){
                   // Wrong type, need to splice IF not turning an item into a task/note which is ok
@@ -906,7 +931,7 @@
   BackendClientService.registerBeforeLastGetCallback(synchronizeUserAccountCallback);
   BackendClientService.registerDefaultCallback(defaultCallback);
 
-  function getAllOnline(ownerUUID, getAllMethod, deferred, tagsOnly) {
+  function getAllOnline(ownerUUID, getAllMethod, deferred) {
     getAllMethod(ownerUUID).then(
       function(result) {
         deferred.resolve('firstSync');
@@ -1022,9 +1047,9 @@
         BackendClientService.getSecondary(url, getItemsRegex, params);
         deferred.resolve('delta');
       } else if (tagsOnly){
-        getAllOnline(ownerUUID, getAllTagsOnline, deferred, tagsOnly);
+        getAllOnline(ownerUUID, getAllTagsOnline, deferred);
       } else {
-        getAllOnline(ownerUUID, getAllItemsOnline, deferred, tagsOnly);
+        getAllOnline(ownerUUID, getAllItemsOnline, deferred);
       }
     }
     var deferred = $q.defer();
