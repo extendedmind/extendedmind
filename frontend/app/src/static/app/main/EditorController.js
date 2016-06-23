@@ -921,7 +921,7 @@
 
   var setSavedTimer, resetStatusTimer, savingSetTime, savingTransString;
   var saveStatus = getDefaultSaveStatus();
-  var savingInProgress;
+  var savingInProgress, recursiveCallInProgress;
   var saveReadyDeferred;
 
   function getDefaultSaveStatus(){
@@ -985,15 +985,21 @@
         })();
         saveReadyDeferred.promise.then(function(){
           // Previous save is ready now. We might get another save right after this one if there
-          // are other changes, so always set a timeout. Recursively call this function to also saved
+          // are other changes, so always set a timeout. Recursively call this function once to also saved
           // changes after this.
           doSetSaved();
           savingInProgress = false;
           saveReadyDeferred = undefined;
-          $scope.saveItemInEdit(itemInEdit);
+          if (!recursiveCallInProgress){
+            recursiveCallInProgress = true;
+            $scope.saveItemInEdit(itemInEdit);
+          }else{
+            recursiveCallInProgress = false;
+          }
         }, function(){
           // Rejected because editor for another item was opened
           savingInProgress = false;
+          recursiveCallInProgress = false;
           saveReadyDeferred = undefined;
           // Save the previous item again without any save status changes, so that no changes are
           // left unsaved
@@ -1001,6 +1007,7 @@
         });
       }else{
         savingInProgress = false;
+        recursiveCallInProgress = false;
       }
     }
 
@@ -1008,6 +1015,7 @@
 
     function saveFailure(error){
       savingInProgress = false;
+      recursiveCallInProgress = false;
       if (error.type === 'offline') doSetSaved();
       else doSetFailed();
     }
