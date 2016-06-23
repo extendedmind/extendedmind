@@ -1164,11 +1164,8 @@
       return deferred.promise;
     },
     synchronizeUser: function() {
-      var deferred = $q.defer();
-      BackendClientService.getBeforeLast('/api/v2/users/' + UserSessionService.getUserUUID(),
-       UserService.getAccountRegex);
-      deferred.resolve();
-      return deferred.promise;
+      return BackendClientService.getBeforeLast('/api/v2/users/' + UserSessionService.getUserUUID(),
+                                                UserService.getAccountRegex);
     },
     getModifiedItems: function(itemType, ownerUUID) {
       switch(itemType) {
