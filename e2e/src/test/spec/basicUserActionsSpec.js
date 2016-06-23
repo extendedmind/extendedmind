@@ -40,10 +40,19 @@ describe('extended mind users', function() {
         browser.actions().sendKeys(protractor.Key.ENTER).perform();
         browser.actions().sendKeys(protractor.Key.ESCAPE).perform();
 
-        // NAVIGATE TO USER ACCOUNT
+        // OPEN MENU FOR THE FIRST TIME
         const menuButton = element(by.xpath(h.XPATH_MENU_BUTTON));
         menuButton.click();
         browser.driver.sleep(h.MENU_ANIMATION_SPEED);
+
+        // CLICK THROUGH THE SETTINGS TUTORIAL
+        element(by.xpath(h.XPATH_MODAL_BUTTON.replace('${linkText}', 'next'))).click();
+        browser.driver.sleep(h.MODAL_REPEAT_ANIMATION_SPEED);
+        element(by.xpath(h.XPATH_MODAL_BUTTON.replace('${linkText}', 'next'))).click();
+        browser.driver.sleep(h.MODAL_REPEAT_ANIMATION_SPEED);
+        element(by.xpath(h.XPATH_MODAL_BUTTON.replace('${linkText}', 'got it'))).click();
+
+        // NAVIGATE TO USER ACCOUNT
         let userLink = element(by.xpath(h.XPATH_MENU_LINK.replace('${linkText}', 'signuptest@ext.md')));
         userLink.click();
         const accountLink = element(by.xpath(h.XPATH_USER_HOME_SLIDE + h.XPATH_LINK_SWIPER_CLICK.replace('${clickMethod}', 'swipeToDetails(\'account\')')));

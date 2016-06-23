@@ -91,6 +91,7 @@ exports.readSentEmail = readSentEmail;
 // Animations
 exports.MENU_ANIMATION_SPEED = 200;
 exports.SWIPER_ANIMATION_SPEED = 300;
+exports.MODAL_REPEAT_ANIMATION_SPEED = 140;
 
 // XPath searches
 exports.XPATH_FOCUS_TASKS_TODAY_SLIDE = '//div[@swiper-slide="focus/tasks/left"]';
