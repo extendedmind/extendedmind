@@ -66,7 +66,7 @@ sudo nginx
 You can bookmark following ulrs to speed up the development:
 
 | Links | What it does |
-| --- | --- |
+| :--- | :--- |
 | http://localhost:8235/fresh | starts fresh session |
 | http://localhost:8235/fresh?offline=true | starts fresh offline session |
 | http://localhost:8235/new | starts the tutorial |
