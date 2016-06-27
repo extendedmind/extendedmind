@@ -525,7 +525,7 @@
 
         if (!swiperSlides) return;
 
-        // hide previous
+        // hide or remove hide from previous
         var previousSlideIndex = activeSlideIndex - 1;
         if (previousSlideIndex >= 0) {
           var previousSwiperSlide = swiperSlides[previousSlideIndex];
@@ -533,7 +533,7 @@
             previousSwiperSlide.style.visibility = visibilityValue;
         }
 
-        // hide next
+        // hide or remove hide from next
         var nextSlideIndex = activeSlideIndex + 1;
         if (nextSlideIndex <= swiperSlides.length - 1) {
           var nextSwiperSlide = swiperSlides[nextSlideIndex];
@@ -568,7 +568,7 @@
       }
 
       function swiperResizeReady(){
-        toggleAdjacentInactiveSwiperSlidesVisiblity('visible');
+        toggleAdjacentInactiveSwiperSlidesVisiblity('inherit');
         SwiperService.resizeFixSwiperAndChildSwipers(scope.swiperPath);
       }
 
