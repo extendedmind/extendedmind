@@ -134,6 +134,7 @@ trait APIv2 extends LegacyAPI {
 
   // PUBLIC
 
+  val v2GetPublicStats = get & path("v2" / "public".r)
   val v2GetPublicItems = get & path("v2" / "public" / """^[0-9a-z-]+$""".r )
   val v2GetPublicItem = get & path("v2" / "public" / """^[0-9a-z-]+$""".r / """^[0-9a-z-]+$""".r )
 

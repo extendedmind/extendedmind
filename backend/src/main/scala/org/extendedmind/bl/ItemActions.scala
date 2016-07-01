@@ -198,6 +198,11 @@ trait ItemActions {
     db.getPublicItemHeader(shortId)
   }
 
+  def getPublicStats(modified: Option[Long])(implicit log: LoggingAdapter): Response[PublicStats] = {
+    log.info("getPublicStats")
+    db.getPublicStats(modified)
+  }
+
   def getPreviewItem(ownerUUID: UUID, itemUUID: UUID, previewCode: Long)(implicit log: LoggingAdapter): Response[PublicItem] = {
     log.info("getPreviewItem")
     db.getPreviewItem(ownerUUID, itemUUID, previewCode)

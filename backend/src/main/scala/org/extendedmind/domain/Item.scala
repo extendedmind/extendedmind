@@ -143,3 +143,7 @@ case class PublicItems(owner: Option[String], content: Option[String], format: O
                        collectiveTags: Option[scala.List[(UUID, scala.List[Tag])]],
                        assignees: Option[scala.List[Assignee]],
                        unpublished: Option[scala.List[UUID]])
+
+case class PublicOwnerItemHeader(path: String, title: String, tags: Option[scala.List[Tag]])
+case class PublicOwnerStats(handle: String, displayName: String, notes: scala.List[PublicOwnerItemHeader])
+case class PublicStats(users: Option[scala.List[PublicOwnerStats]], collectives: Option[scala.List[PublicOwnerStats]])

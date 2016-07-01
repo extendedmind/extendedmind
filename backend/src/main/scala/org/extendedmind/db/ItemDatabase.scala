@@ -248,6 +248,17 @@ trait ItemDatabase extends UserDatabase {
     }
   }
 
+  def getPublicStats(modified: Option[Long]): Response[PublicStats] = {
+    withTx {
+      implicit neo4j =>
+        val publicRevisionIndex = neo4j.gds.index().forNodes("public")
+        val revisionNodeList = publicRevisionIndex.query().toList
+        revisionNodeList.foreach (publishedRevision => {
+          // TODO loop through everything, strip out unpublished and create one big result
+        })
+    }
+  }
+
   def purgeUnpublishedFromPublicIndex(): Unit = {
     withTx {
       implicit neo4j =>

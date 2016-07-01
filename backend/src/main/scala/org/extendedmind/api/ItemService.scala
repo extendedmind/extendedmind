@@ -156,6 +156,18 @@ trait ItemService extends ServiceBase {
           }
         }
       } ~
+      v2GetPublicStats { url =>
+        parameters('modified.as[Long].?) { modified =>
+          complete {
+            Future[PublicStats] {
+              itemActions.getPublicStats(modified) match {
+                case Right(ps) => processResult(ps)
+                case Left(e) => processErrors(e)
+              }
+            }
+          }
+        }
+      } ~
       v2GetPublicItems { handle =>
         parameters('modified.as[Long].?) { modified =>
           complete {
