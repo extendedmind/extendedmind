@@ -529,7 +529,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
         assignee)
   }
 
-  protected def noteRevisionToPublicItem(ownerNode: Node, noteRevisionNode: Node, displayOwner: String)(implicit neo4j: DatabaseService): Response[PublicItem] = {
+  protected def noteRevisionToPublicItem(ownerNode: Node, noteRevisionNode: Node, displayOwner: String, includeOnlyTagsByOwner: Option[UUID] = None)(implicit neo4j: DatabaseService): Response[PublicItem] = {
     val owner = Owner(getUUID(ownerNode), None, Token.ANONYMOUS)
     val published = noteRevisionNode.getProperty("published").asInstanceOf[Long]
     val publishedRevision = noteRevisionNode.getProperty("number").asInstanceOf[Long]
@@ -559,7 +559,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     for {
       unprocessedNote <- unpickleNote(noteRevisionNode.getProperty("data").asInstanceOf[Array[Byte]]).right
       note <- Right(validateNote(ownerNode, stripNonPublicFieldsFromNote(unprocessedNote))).right
-      tagsResult <- getExtendedItemTagsWithParents(note, owner, noUi=true).right
+      tagsResult <- getExtendedItemTagsWithParents(note, owner, noUi=true, includeOnlyTagsByOwner).right
       assignee <- getAssignee(note).right
     } yield PublicItem(displayOwner,
         note.copy(modified = Some(published),

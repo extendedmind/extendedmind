@@ -131,7 +131,8 @@ case class NodeStatistics(properties: scala.List[(String, Long)], labels: scala.
 case class NodeProperty(key: String, stringValue: Option[String], longValue: Option[Long])
 
 // Owner is the display name of the owner, and assignee is the display name of the person the note is assigned to
-case class PublicItem(owner: String, note: Note,
+case class PublicItem(owner: String,
+                      note: Note,
                       tags: Option[scala.List[Tag]],
                       collectiveTags: Option[scala.List[(UUID, scala.List[Tag])]],
                       assignee: Option[Assignee])
@@ -144,6 +145,6 @@ case class PublicItems(owner: Option[String], content: Option[String], format: O
                        assignees: Option[scala.List[Assignee]],
                        unpublished: Option[scala.List[UUID]])
 
-case class PublicOwnerItemHeader(path: String, title: String, tags: Option[scala.List[Tag]])
-case class PublicOwnerStats(handle: String, displayName: String, notes: scala.List[PublicOwnerItemHeader])
-case class PublicStats(users: Option[scala.List[PublicOwnerStats]], collectives: Option[scala.List[PublicOwnerStats]])
+case class PublicOwnerItemHeader(path: String, title: String, licence: Option[String], assigneeName: Option[String], commonTags: Option[scala.List[UUID]])
+case class PublicOwnerStats(handle: String, displayName: String, notes: Option[scala.List[PublicOwnerItemHeader]], unpublished: Option[scala.List[UUID]])
+case class PublicStats(users: Option[scala.List[PublicOwnerStats]], collectives: Option[scala.List[PublicOwnerStats]], commonTags: Option[scala.List[Tag]])

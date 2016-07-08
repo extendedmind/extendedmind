@@ -251,11 +251,64 @@ trait ItemDatabase extends UserDatabase {
   def getPublicStats(modified: Option[Long]): Response[PublicStats] = {
     withTx {
       implicit neo4j =>
+        val ownerInfoBuffer = new ListBuffer[(UUID, Label, String, String)]
+        val ownerItemHeaderBuffer = new ListBuffer[(UUID, PublicOwnerItemHeader)]
+        val ownerUnpublishedBuffer = new ListBuffer[(UUID, UUID)]
+        val commonTagsBuffer = new ListBuffer[Tag]
+
         val publicRevisionIndex = neo4j.gds.index().forNodes("public")
-        val revisionNodeList = publicRevisionIndex.query().toList
-        revisionNodeList.foreach (publishedRevision => {
-          // TODO loop through everything, strip out unpublished and create one big result
+        val revisionNodeList = if (modified.isDefined) {
+          val modifiedRangeQuery = QueryContext.numericRange("modified", modified.get, null, false, false)
+          publicRevisionIndex.query(modifiedRangeQuery).toList
+        } else {
+          publicRevisionIndex.query("owner:*").toList
+        }
+
+        val commonCollectiveUUIDResult = getCommonCollectiveUUID()
+        val commonCollectiveUUID = commonCollectiveUUIDResult.fold(
+          // Use a random UUID in the off chance that common collective has not been created yet,
+          // to prevent any tags from leaking out
+          UUID.randomUUID()
+        )(commonCollectiveUUID => commonCollectiveUUID)
+
+        revisionNodeList.foreach (publishedRevisionNode => {
+          // Only accept notes for now
+          if (publishedRevisionNode.hasLabel(ItemLabel.NOTE)){
+            val ownerNodeOption =
+              publishedRevisionNode.getRelationships.find(rel => rel.getType.name == ItemRelationship.HAS_REVISION.name)
+              .flatMap(rel => rel.getStartNode.getRelationships.find(rel => rel.getType.name == SecurityRelationship.OWNS.name))
+                .flatMap(rel => Some(rel.getStartNode))
+            if (ownerNodeOption.isDefined){
+              val ownerNode = ownerNodeOption.get
+              val ownerUUID = getUUID(ownerNode)
+              val displayOwner = getDisplayOwner(ownerNode)
+              if (ownerInfoBuffer.find(userInfo => userInfo._1 == ownerUUID).isEmpty){
+                val ownerLabel =
+                  if (ownerNode.hasLabel(OwnerLabel.USER)) OwnerLabel.USER
+                  else OwnerLabel.COLLECTIVE
+                ownerInfoBuffer.append((ownerUUID, ownerLabel, ownerNode.getProperty("handle").asInstanceOf[String], displayOwner))
+              }
+              if (publishedRevisionNode.hasProperty("unpublished")){
+                ownerUnpublishedBuffer.append((ownerUUID, getUUID(publishedRevisionNode)))
+              }else{
+                val publicNoteResult = noteRevisionToPublicItem(ownerNode, publishedRevisionNode, displayOwner, Some(commonCollectiveUUID))
+                if (publicNoteResult.isRight){
+                  val publicNote = publicNoteResult.right.get
+                  val publicItemHeader = getPublicOwnerItemHeader(publicNote, commonCollectiveUUID)
+                  ownerItemHeaderBuffer.append((ownerUUID, publicItemHeader))
+                  mergeCommonTagsBuffer(commonTagsBuffer, publicNote, commonCollectiveUUID)
+                }
+              }
+            }
+          }
         })
+
+      // Generate users and collectives normal lists from buffers
+      val userStats: Option[scala.List[PublicOwnerStats]] =
+        getPublicOwnerStats(ownerInfoBuffer, ownerItemHeaderBuffer, ownerUnpublishedBuffer, OwnerLabel.USER)
+      val collectiveStats: Option[scala.List[PublicOwnerStats]] =
+        getPublicOwnerStats(ownerInfoBuffer, ownerItemHeaderBuffer, ownerUnpublishedBuffer, OwnerLabel.COLLECTIVE)
+      Right(PublicStats(userStats, collectiveStats, if (commonTagsBuffer.isEmpty) None else Some(commonTagsBuffer.toList)))
     }
   }
 
@@ -415,14 +468,6 @@ trait ItemDatabase extends UserDatabase {
 
     val itemNodeList = {
       val ownerSearchString = IdUtils.getTrimmedBase64UUIDForLucene(ownerUUID)
-
-/*
-ERRORERROR:
-
-Status code: 500 Internal Server Error: org.apache.lucene.queryparser.classic.ParseException: Cannot parse 'owner:/oh@SLtzRAODtvDLMVvGAA': Lexical error at line 1, column 29.  Encountered: <EOF> after : "/oh@SLtzRAODtvDLMVvGAA" @1462355017717
-java.lang.RuntimeException: org.apache.lucene.queryparser.classic.ParseException: Cannot parse 'owner:/oh@SLtzRAODtvDLMVvGAA': Lexical error at line 1, column 29.  Encountered: <EOF> after : "/oh@SLtzRAODtvDLMVvGAA"
-*/
-
       val ownerQuery = new TermQuery(new Term("owner", ownerSearchString))
       val assigneeQuery = new TermQuery(new Term("assignee", ownerSearchString))
       val userQuery = new BooleanQuery.Builder
@@ -1605,7 +1650,7 @@ java.lang.RuntimeException: org.apache.lucene.queryparser.classic.ParseException
 
   // Abstract functions
   protected def noteToPreviewItem(ownerNode: Node, noteNode: Node, displayOwner: String)(implicit neo4j: DatabaseService): Response[PublicItem]
-  protected def noteRevisionToPublicItem(ownerNode: Node, noteRevisionNode: Node, displayOwner: String)(implicit neo4j: DatabaseService): Response[PublicItem]
+  protected def noteRevisionToPublicItem(ownerNode: Node, noteRevisionNode: Node, displayOwner: String, includeOnlyTagsByOwner: Option[UUID] = None)(implicit neo4j: DatabaseService): Response[PublicItem]
 
   protected def validateUser(userUUID: UUID)(implicit neo4j: DatabaseService): Option[UUID] = {
     val userNodeResult = getNode(userUUID, OwnerLabel.USER)
@@ -1738,7 +1783,7 @@ java.lang.RuntimeException: org.apache.lucene.queryparser.classic.ParseException
     }
   }
 
-  protected def getExtendedItemTagsWithParents(extendedItem: ExtendedItem, owner: Owner, noUi: Boolean = false)
+  protected def getExtendedItemTagsWithParents(extendedItem: ExtendedItem, owner: Owner, noUi: Boolean = false, includeOnlyTagsByOwner: Option[UUID] = None)
           (implicit neo4j: DatabaseService): Response[(Option[scala.List[Tag]], Option[scala.List[(UUID, scala.List[Tag])]])] = {
 
     if (extendedItem.relationships.isDefined &&
@@ -1749,7 +1794,8 @@ java.lang.RuntimeException: org.apache.lucene.queryparser.classic.ParseException
       // FIRST: Owner tags
 
       val tagNodeBuffer = new ListBuffer[Node]
-      if (extendedItem.relationships.get.tags.isDefined){
+      if (extendedItem.relationships.get.tags.isDefined &&
+          (includeOnlyTagsByOwner.isEmpty || includeOnlyTagsByOwner.get == ownerUUID)){
         val tagNodesResult = getItemNodeList(ownerUUID, extendedItem.relationships.get.tags.get, Some(ItemLabel.TAG))
         if (tagNodesResult.isLeft) return Left(tagNodesResult.left.get)
         tagNodeBuffer.appendAll(tagNodesResult.right.get)
@@ -1762,12 +1808,14 @@ java.lang.RuntimeException: org.apache.lucene.queryparser.classic.ParseException
 
       if (extendedItem.relationships.get.collectiveTags.isDefined){
         extendedItem.relationships.get.collectiveTags.get.foreach(tagsInCollective => {
-          val tagNodesResult = getItemNodeList(tagsInCollective._1, tagsInCollective._2, Some(ItemLabel.TAG))
-          if (tagNodesResult.isLeft) return Left(tagNodesResult.left.get)
-          tagNodesResult.right.get.foreach(collectiveTag => {
-            collectiveTagNodeBuffer.append((tagsInCollective._1, collectiveTag))
-            addNewAncestors((tagsInCollective._1, collectiveTag), collectiveTagNodeBuffer)
-          })
+          if (includeOnlyTagsByOwner.isEmpty || includeOnlyTagsByOwner.get == tagsInCollective._1){
+            val tagNodesResult = getItemNodeList(tagsInCollective._1, tagsInCollective._2, Some(ItemLabel.TAG))
+            if (tagNodesResult.isLeft) return Left(tagNodesResult.left.get)
+            tagNodesResult.right.get.foreach(collectiveTag => {
+              collectiveTagNodeBuffer.append((tagsInCollective._1, collectiveTag))
+              addNewAncestors((tagsInCollective._1, collectiveTag), collectiveTagNodeBuffer)
+            })
+          }
         })
       }
       getTagItemsWithParents(tagNodeBuffer, collectiveTagNodeBuffer, owner, noUi)
@@ -2147,4 +2195,68 @@ java.lang.RuntimeException: org.apache.lucene.queryparser.classic.ParseException
     revisionNode.delete()
   }
 
+  protected def getPublicOwnerItemHeader(publicNote: PublicItem, commonCollectiveUUID: UUID)(implicit neo4j: DatabaseService): PublicOwnerItemHeader = {
+    val commonTags: Option[scala.List[UUID]] =
+      if (publicNote.note.relationships.isDefined){
+        if (publicNote.note.relationships.get.collectiveTags.isDefined){
+          publicNote.note.relationships.get.collectiveTags.get.find(tagsPerOwner => tagsPerOwner._1 == commonCollectiveUUID)
+            .flatMap(tagsPerOwner => Some(tagsPerOwner._2))
+        }else if (publicNote.note.relationships.get.tags.isDefined){
+          publicNote.note.relationships.get.tags
+        }else{
+          None
+        }
+      }else{
+        None
+      }
+    PublicOwnerItemHeader(
+        publicNote.note.visibility.get.path.get, publicNote.note.title, publicNote.note.visibility.get.licence,
+        if (publicNote.assignee.isDefined) Some(publicNote.assignee.get.name) else None,
+        commonTags)
+  }
+
+  protected def mergeCommonTagsBuffer(tagsBuffer: ListBuffer[Tag], publicNote: PublicItem, commonCollectiveUUID: UUID)(implicit neo4j: DatabaseService): Unit = {
+    if (publicNote.collectiveTags.isDefined){
+      publicNote.collectiveTags.get.foreach(tagsPerOwner => {
+        if (commonCollectiveUUID == tagsPerOwner._1){
+          tagsPerOwner._2.foreach(tag => {
+            if (tagsBuffer.find(storedTag => storedTag.uuid == tag.uuid).isEmpty){
+              tagsBuffer.append(tag)
+            }
+          })
+        }
+      })
+    }
+    if (publicNote.tags.isDefined){
+      // This is a note in the common collective itself
+      publicNote.tags.get.foreach(tag => {
+        if (tagsBuffer.find(storedTag => storedTag.uuid == tag.uuid).isEmpty){
+          tagsBuffer.append(tag)
+        }
+      })
+    }
+  }
+
+  protected def getPublicOwnerStats(ownerInfoBuffer: ListBuffer[(UUID, Label, String, String)],
+                                    ownerItemHeaderBuffer: ListBuffer[(UUID, PublicOwnerItemHeader)],
+                                    ownerUnpublishedBuffer: ListBuffer[(UUID, UUID)], label: Label): Option[scala.List[PublicOwnerStats]] ={
+    if (!ownerInfoBuffer.isEmpty){
+      val ownerInfos = ownerInfoBuffer.toList.filter(ownerInfo => ownerInfo._2 == label)
+      if (!ownerInfos.isEmpty){
+        Some(ownerInfos.map(ownerInfo => {
+          val ownerItemHeadersForUser = ownerItemHeaderBuffer.filter(itemHeader => itemHeader._1 == ownerInfo._1)
+          val ownerUnpublishedForUser = ownerUnpublishedBuffer.filter(unpublished => unpublished._1 == ownerInfo._1)
+          PublicOwnerStats(
+            ownerInfo._3,
+            ownerInfo._4,
+            if (ownerItemHeadersForUser.isEmpty) None else Some(ownerItemHeadersForUser.toList.map(header => header._2)),
+            if (ownerUnpublishedForUser.isEmpty) None else Some(ownerUnpublishedForUser.toList.map(unpublished => unpublished._2)))
+        }))
+      }else{
+        None
+      }
+    }else{
+      None
+    }
+  }
 }

@@ -183,6 +183,8 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     } yield result
   }
 
+
+
   // ID GENERATION
 
   def generateShortId(implicit neo4j: DatabaseService): Long = {
@@ -507,6 +509,18 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
       info.frontend.get.foreach(versionInfo => {
         infoNode.setProperty(versionInfo.platform, versionInfo.version)
       })
+    }
+  }
+
+  protected def getCommonCollectiveUUID()(implicit neo4j: DatabaseService): Option[UUID] = {
+    val collectives = findNodesByLabel(OwnerLabel.COLLECTIVE).toList
+    if (collectives.isEmpty) {
+      None
+    } else {
+      collectives foreach (collectiveNode => {
+        if (collectiveNode.hasProperty("common")) return Some(getUUID(collectiveNode))
+      })
+      None
     }
   }
 }
