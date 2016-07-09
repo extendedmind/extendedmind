@@ -421,6 +421,13 @@ class NoteBestCaseSpec extends ServiceSpecBase {
         val putTimoNoteResponse = putNewNote(newTimoNote, timoAuthenticateResponse)
         val publishTimoResult = publishNoteCC(putTimoNoteResponse.uuid.get, "timo-test-note", timoAuthenticateResponse)
 
+        // Put another note that has no common collective tags, and should therefore not be returned from stats
+        val newNonStatsTimoNote = Note("Published but not indexed from stats note by Timo", None, None, Some("this is public but not returned"), None, None,
+            Some(ExtendedItemRelationships(None, None, None, None,
+                 publicItem.note.relationships.get.tags, None)))
+        val putTimoNonStatsNoteResponse = putNewNote(newNonStatsTimoNote, timoAuthenticateResponse)
+        val publishNonStatsTimoResult = publishNoteCC(putTimoNonStatsNoteResponse.uuid.get, "timo-non-stats-test-note", timoAuthenticateResponse)
+
         // Also publish notes in Lauri's account, to get better results from stats
         val lauriAuthenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
         // Set handle to lauri to be able to publish

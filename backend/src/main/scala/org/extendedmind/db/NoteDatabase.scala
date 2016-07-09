@@ -529,9 +529,12 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
         assignee)
   }
 
-  protected def noteRevisionToPublicItem(ownerNode: Node, noteRevisionNode: Node, displayOwner: String, includeOnlyTagsByOwner: Option[UUID] = None)(implicit neo4j: DatabaseService): Response[PublicItem] = {
+  protected def noteRevisionToPublicItem(ownerNode: Node, noteRevisionNode: Node, displayOwner: String, includeOnlyTagsByOwner: Option[UUID] = None, allowUnpublished: Boolean = false)(implicit neo4j: DatabaseService): Response[PublicItem] = {
     val owner = Owner(getUUID(ownerNode), None, Token.ANONYMOUS)
-    val published = noteRevisionNode.getProperty("published").asInstanceOf[Long]
+    if (!allowUnpublished && !noteRevisionNode.hasProperty("published"))
+      return fail(INTERNAL_SERVER_ERROR, ERR_ITEM_REVISION_NOT_PUBLISED, "Note revision is not published")
+    val published = if (allowUnpublished && !noteRevisionNode.hasProperty("published")) None else Some(noteRevisionNode.getProperty("published").asInstanceOf[Long])
+    val modified = if (published.isDefined) published.get else noteRevisionNode.getProperty("modified").asInstanceOf[Long]
     val publishedRevision = noteRevisionNode.getProperty("number").asInstanceOf[Long]
     val revisionRelationship = noteRevisionNode.getRelationships().find (relationship => relationship.getType.name == ItemRelationship.HAS_REVISION.name)
     if (revisionRelationship.isEmpty)
@@ -562,8 +565,8 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
       tagsResult <- getExtendedItemTagsWithParents(note, owner, noUi=true, includeOnlyTagsByOwner).right
       assignee <- getAssignee(note).right
     } yield PublicItem(displayOwner,
-        note.copy(modified = Some(published),
-                  visibility = Some(SharedItemVisibility(Some(published), Some(path), licence, Some(publishedRevision), shortId, publicUi, None, None, None, None))),
+        note.copy(modified = Some(modified),
+                  visibility = Some(SharedItemVisibility(published, Some(path), licence, Some(publishedRevision), shortId, publicUi, None, None, None, None))),
         tagsResult._1,
         tagsResult._2,
         assignee)

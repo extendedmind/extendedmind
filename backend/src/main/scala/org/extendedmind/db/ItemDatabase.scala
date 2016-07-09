@@ -282,23 +282,28 @@ trait ItemDatabase extends UserDatabase {
                 .flatMap(rel => Some(rel.getStartNode))
             if (ownerNodeOption.isDefined){
               val ownerNode = ownerNodeOption.get
-              val ownerUUID = getUUID(ownerNode)
               val displayOwner = getDisplayOwner(ownerNode)
-              if (ownerInfoBuffer.find(userInfo => userInfo._1 == ownerUUID).isEmpty){
-                val ownerLabel =
-                  if (ownerNode.hasLabel(OwnerLabel.USER)) OwnerLabel.USER
-                  else OwnerLabel.COLLECTIVE
-                ownerInfoBuffer.append((ownerUUID, ownerLabel, ownerNode.getProperty("handle").asInstanceOf[String], displayOwner))
-              }
-              if (publishedRevisionNode.hasProperty("unpublished")){
-                ownerUnpublishedBuffer.append((ownerUUID, getUUID(itemNodeOption.get)))
-              }else{
-                val publicNoteResult = noteRevisionToPublicItem(ownerNode, publishedRevisionNode, displayOwner, Some(commonCollectiveUUID))
-                if (publicNoteResult.isRight){
-                  val publicNote = publicNoteResult.right.get
-                  val publicItemHeader = getPublicOwnerItemHeader(publicNote, commonCollectiveUUID)
-                  ownerItemHeaderBuffer.append((ownerUUID, publicItemHeader))
-                  mergeCommonTagsBuffer(commonTagsBuffer, publicNote, commonCollectiveUUID)
+              // Get notes, filter out other tags except ones that are in the common collective
+              val publicNoteResult = noteRevisionToPublicItem(ownerNode, publishedRevisionNode, displayOwner,
+                                                              includeOnlyTagsByOwner = Some(commonCollectiveUUID), allowUnpublished = true)
+              if (publicNoteResult.isRight){
+                val publicNote = publicNoteResult.right.get
+                // Only return notes that have common collective tags in them
+                if (publicNote.collectiveTags.isDefined || publicNote.tags.isDefined){
+                  val ownerUUID = getUUID(ownerNode)
+                  if (ownerInfoBuffer.find(userInfo => userInfo._1 == ownerUUID).isEmpty){
+                    val ownerLabel =
+                      if (ownerNode.hasLabel(OwnerLabel.USER)) OwnerLabel.USER
+                      else OwnerLabel.COLLECTIVE
+                    ownerInfoBuffer.append((ownerUUID, ownerLabel, ownerNode.getProperty("handle").asInstanceOf[String], displayOwner))
+                  }
+                  if (publishedRevisionNode.hasProperty("unpublished")){
+                    ownerUnpublishedBuffer.append((ownerUUID, getUUID(itemNodeOption.get)))
+                  }else{
+                    val publicItemHeader = getPublicOwnerItemHeader(publicNote, commonCollectiveUUID)
+                    ownerItemHeaderBuffer.append((ownerUUID, publicItemHeader))
+                    mergeCommonTagsBuffer(commonTagsBuffer, publicNote, commonCollectiveUUID)
+                  }
                 }
               }
             }
@@ -1652,7 +1657,7 @@ trait ItemDatabase extends UserDatabase {
 
   // Abstract functions
   protected def noteToPreviewItem(ownerNode: Node, noteNode: Node, displayOwner: String)(implicit neo4j: DatabaseService): Response[PublicItem]
-  protected def noteRevisionToPublicItem(ownerNode: Node, noteRevisionNode: Node, displayOwner: String, includeOnlyTagsByOwner: Option[UUID] = None)(implicit neo4j: DatabaseService): Response[PublicItem]
+  protected def noteRevisionToPublicItem(ownerNode: Node, noteRevisionNode: Node, displayOwner: String, includeOnlyTagsByOwner: Option[UUID] = None, allowUnpublished: Boolean = false)(implicit neo4j: DatabaseService): Response[PublicItem]
 
   protected def validateUser(userUUID: UUID)(implicit neo4j: DatabaseService): Option[UUID] = {
     val userNodeResult = getNode(userUUID, OwnerLabel.USER)
