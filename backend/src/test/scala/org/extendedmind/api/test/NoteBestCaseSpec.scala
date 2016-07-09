@@ -366,6 +366,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
             publicItems.notes.get.size should be(2)
             publicItems.collectiveTags.get.size should be(1)
             publicItems.collectiveTags.get(0)._2.size should be(2)
+
             // Getting modified should return only the latter
             Get("/v2/public/timo?modified=" + putNoteResponse.modified) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
               val modifiedPublicItems = responseAs[PublicItems]
@@ -409,6 +410,69 @@ class NoteBestCaseSpec extends ServiceSpecBase {
         }
       }
     }
+    it("should successfully get basic info of all public notes with GET to /v2/public") {
+      Get("/v2/public/timo/productivity") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+        val publicItem = responseAs[PublicItem]
+        val timoAuthenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+        // Put the same tags to a new public note
+        val newTimoNote = Note("Public note by Timo", None, None, Some("this is public"), None, None,
+            Some(ExtendedItemRelationships(None, None, None, None,
+                 publicItem.note.relationships.get.tags, publicItem.note.relationships.get.collectiveTags)))
+        val putTimoNoteResponse = putNewNote(newTimoNote, timoAuthenticateResponse)
+        val publishTimoResult = publishNoteCC(putTimoNoteResponse.uuid.get, "timo-test-note", timoAuthenticateResponse)
+
+        // Also publish notes in Lauri's account, to get better results from stats
+        val lauriAuthenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
+        // Set handle to lauri to be able to publish
+        Get("/v2/users/" + lauriAuthenticateResponse.userUUID) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
+          val lauriAccount = responseAs[User]
+          Patch("/v2/users/" + lauriAuthenticateResponse.userUUID,
+            marshal(lauriAccount.copy(handle=Some("lauri"))).right.get) ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
+            responseAs[PatchUserResponse]
+          }
+        }
+        val newLauriNote = Note("Public note by Lauri", None, None, Some("this is a public note by Lauri"), None, None,
+            Some(ExtendedItemRelationships(None, None, None, None,
+                 None, publicItem.note.relationships.get.collectiveTags)))
+        val putLauriNoteResponse = putNewNote(newLauriNote, lauriAuthenticateResponse)
+        val publishLauriResult = publishNoteCC(putLauriNoteResponse.uuid.get, "lauri-test-note", lauriAuthenticateResponse)
+
+        // Get stats
+        Get("/v2/public") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+          val publicStats = responseAs[PublicStats]
+          writeJsonOutput("publicResponse", responseAs[String])
+          publicStats.users.get.size should be (2)
+          val timoStats = publicStats.users.get.find(userStats => userStats.displayName == "Timo").get
+          timoStats.notes.get.size should be (2)
+          val lauriStats = publicStats.users.get.find(userStats => userStats.displayName == "lauri@ext.md").get
+          lauriStats.notes.get.size should be (1)
+          publicStats.collectives.get.size should be (1)
+          publicStats.collectives.get(0).notes.get.size should be (1)
+          publicStats.commonTags.get.size should be (3)
+        }
+        // Get stats using modified, should return only one result
+        Get("/v2/public?modified=" + putLauriNoteResponse.modified) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+          val publicStats = responseAs[PublicStats]
+          publicStats.users.get.size should be (1)
+          publicStats.users.get(0).displayName should be ("lauri@ext.md")
+          publicStats.users.get(0).notes.get.size should be (1)
+          publicStats.collectives should be (None)
+          publicStats.commonTags.get.size should be (2)
+        }
+        // Unpublish and get stats
+        Post("/v2/owners/" + timoAuthenticateResponse.userUUID + "/data/notes/" + putTimoNoteResponse.uuid.get + "/unpublish") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
+          // Now get stats, should include unpublished
+          Get("/v2/public") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+            val publicStats = responseAs[PublicStats]
+            val timoStats = publicStats.users.get.find(userStats => userStats.displayName == "Timo").get
+            timoStats.notes.get.size should be (1)
+            timoStats.unpublished.get.size should be (1)
+            timoStats.unpublished.get(0) should be (putTimoNoteResponse.uuid.get)
+          }
+        }
+      }
+    }
+
     it("should successfully get unpublished UUIDs from unpublished or deleted notes with GET to /v2/public/[handle]?modified") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       Get("/v2/public/timo") ~> addHeader("Content-Type", "application/json") ~> route ~> check {

@@ -86,6 +86,15 @@ abstract class ServiceSpecBase extends ImpermanentGraphDatabaseSpecBase {
       }
   }
 
+  def publishNoteCC(noteUUID: UUID, path: String, authenticateResponse: SecurityContext, foreignOwnerUUID: Option[UUID] = None): PublishNoteResult = {
+    val ownerUUID = if (foreignOwnerUUID.isDefined) foreignOwnerUUID.get else authenticateResponse.userUUID
+    Post("/v2/owners/" + ownerUUID + "/data/notes/" + noteUUID + "/publish",
+      marshal(PublishPayload("md", path, Some(LicenceType.CC_BY_SA_4_0.toString), None, None))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+        responseAs[PublishNoteResult]
+      }
+  }
+
+
   def deleteNote(noteUUID: UUID, authenticateResponse: SecurityContext, foreignUUID: Option[UUID] = None): DeleteItemResult = {
     val ownerUUID = if (foreignUUID.isDefined) foreignUUID.get else authenticateResponse.userUUID
     Delete("/v2/owners/" + ownerUUID + "/data/notes/" + noteUUID) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {

@@ -274,9 +274,11 @@ trait ItemDatabase extends UserDatabase {
         revisionNodeList.foreach (publishedRevisionNode => {
           // Only accept notes for now
           if (publishedRevisionNode.hasLabel(ItemLabel.NOTE)){
-            val ownerNodeOption =
+            val itemNodeOption =
               publishedRevisionNode.getRelationships.find(rel => rel.getType.name == ItemRelationship.HAS_REVISION.name)
-              .flatMap(rel => rel.getStartNode.getRelationships.find(rel => rel.getType.name == SecurityRelationship.OWNS.name))
+              .flatMap(rel => Some(rel.getStartNode))
+            val ownerNodeOption =
+              itemNodeOption.flatMap(itemNode => itemNode.getRelationships.find(rel => rel.getType.name == SecurityRelationship.OWNS.name))
                 .flatMap(rel => Some(rel.getStartNode))
             if (ownerNodeOption.isDefined){
               val ownerNode = ownerNodeOption.get
@@ -289,7 +291,7 @@ trait ItemDatabase extends UserDatabase {
                 ownerInfoBuffer.append((ownerUUID, ownerLabel, ownerNode.getProperty("handle").asInstanceOf[String], displayOwner))
               }
               if (publishedRevisionNode.hasProperty("unpublished")){
-                ownerUnpublishedBuffer.append((ownerUUID, getUUID(publishedRevisionNode)))
+                ownerUnpublishedBuffer.append((ownerUUID, getUUID(itemNodeOption.get)))
               }else{
                 val publicNoteResult = noteRevisionToPublicItem(ownerNode, publishedRevisionNode, displayOwner, Some(commonCollectiveUUID))
                 if (publicNoteResult.isRight){

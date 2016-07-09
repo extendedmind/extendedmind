@@ -175,6 +175,8 @@ trait TestGraphDatabase extends GraphDatabase {
       Tag("work", None, None, KEYWORD, None))
     val productivityTag = putNewTag(Owner(timoUUID, Some(emUUID), Token.ADMIN),
       Tag("productivity", None, None, KEYWORD, workTag.right.get.uuid))
+    val technologyTag = putNewTag(Owner(timoUUID, Some(emUUID), Token.ADMIN),
+      Tag("technology", None, None, KEYWORD, None))
 
     // Extended Mind Technologies
 
@@ -193,9 +195,11 @@ trait TestGraphDatabase extends GraphDatabase {
       Task("backup script changes", None, None, Some("2014-06-02"), None, None, None)).right.get
 
     // Store notes for EMT
-    putNewNote(Owner(timoUUID, Some(emtUUID), Token.ADMIN),
+    val listOfServersNoteResult = putNewNote(Owner(timoUUID, Some(emtUUID), Token.ADMIN),
       Note("list of servers", None, None, None, None, None,
-          Some(ExtendedItemRelationships(None, None, None, None, Some(scala.List(devopsTag.right.get.uuid.get)), None)))).right.get
+          Some(ExtendedItemRelationships(None, None, None, None, Some(scala.List(devopsTag.right.get.uuid.get)),
+              Some(scala.List((emUUID, scala.List(technologyTag.right.get.uuid.get)))))))).right.get
+    publishNote(Owner(timoUUID, Some(emtUUID), Token.ADMIN), listOfServersNoteResult.uuid.get, "md", "list-of-servers", Some(LicenceType.CC_BY_SA_4_0.toString), None, None)
 
     // Timo's personal items
 
@@ -254,7 +258,7 @@ trait TestGraphDatabase extends GraphDatabase {
     putNewNote(Owner(timoUUID, None, Token.ADMIN),
       Note("office door code", None, None, Some("4321"), None, None,
         Some(ExtendedItemRelationships(None, None, None, None, Some(scala.List(secretTag.right.get.uuid.get)), None)))).right.get
-    val result = putNewNote(Owner(timoUUID, None, Token.ADMIN),
+    val productivityNoteResult = putNewNote(Owner(timoUUID, None, Token.ADMIN),
       Note("notes on productivity", None, None, Some(
         "# what I've learned about productivity \n" +
           "## focus \n" +
@@ -270,7 +274,7 @@ trait TestGraphDatabase extends GraphDatabase {
         Some("md"), None,
         Some(ExtendedItemRelationships(Some(extendedMindTechnologiesList.uuid.get), None, None, None, Some(scala.List(blogTag.right.get.uuid.get)),
           Some(scala.List((emUUID, scala.List(productivityTag.right.get.uuid.get)))))))).right.get
-    publishNote(Owner(timoUUID, None, Token.ADMIN), result.uuid.get, "md", "productivity", Some(LicenceType.CC_BY_SA_4_0.toString), None, None)
+    publishNote(Owner(timoUUID, None, Token.ADMIN), productivityNoteResult.uuid.get, "md", "productivity", Some(LicenceType.CC_BY_SA_4_0.toString), None, None)
 
     // Timo shares essay list with Lauri
 
