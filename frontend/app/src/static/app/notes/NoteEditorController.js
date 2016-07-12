@@ -326,6 +326,13 @@
       if (note.visibility && note.visibility.publicUi) sharing =
         JSON.parse(note.visibility.publicUi).sharing;
       note.trans.sharing = sharing;
+
+      var defaultIndexing = UserSessionService.getUIPreference('indexing', note.trans.owner);
+      var indexing = defaultIndexing ? defaultIndexing : false;
+      // Override with previous index value for this note if this note already has been published
+      if (note.visibility && note.visibility.indexed) indexing = true;
+      note.trans.indexing = indexing;
+
       note.trans.publishPath = note.visibility && note.visibility.path ? note.visibility.path : undefined;
       if (!note.trans.publishPath){
         // Create a path from note title
@@ -345,6 +352,8 @@
         checkboxText: 'publish under creative commons (' + $rootScope.CC_LICENCE + ')',
         checkbox2: note.trans.sharing,
         checkboxText2: 'enable social sharing',
+        checkbox3: note.trans.indexing,
+        checkboxText3: 'include note in the public directory',
         submitErrorText: 'publishing failed'
       };
 

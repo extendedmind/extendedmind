@@ -101,13 +101,24 @@
           </div>
         </div>
         <!-- CHECKBOX 2 -->
-        <div ng-if="messageForm.checkbox2 !== undefined" class="group-mixed details form-last">
+        <div ng-if="messageForm.checkbox2 !== undefined" class="group-mixed details"
+             ng-class="messageForm.checkbox3 === undefined && 'form-last'">
           <div class="group-mixed--left">
             <input type="checkbox" ng-model="messageForm.checkbox2" ng-true-value="true"
             icon-checkbox="'modalCheckbox2'" />
           </div>
           <div class="group-mixed--middle">
             <span class="text-details" ng-bind="messageForm.checkboxText2"></span>
+          </div>
+        </div>
+        <!-- CHECKBOX 3 -->
+        <div ng-if="messageForm.checkbox3 !== undefined" class="group-mixed details form-last">
+          <div class="group-mixed--left">
+            <input type="checkbox" ng-model="messageForm.checkbox3" ng-true-value="true"
+            icon-checkbox="'modalCheckbox3'" />
+          </div>
+          <div class="group-mixed--middle">
+            <span class="text-details" ng-bind="messageForm.checkboxText3"></span>
           </div>
         </div>
         <div class="group-error row-form">
