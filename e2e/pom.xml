@@ -28,7 +28,7 @@
   </scm>
 
   <properties>
-    <e2e.visualReviewDataRevision>2</e2e.visualReviewDataRevision>
+    <e2e.visualReviewDataRevision>4</e2e.visualReviewDataRevision>
     <e2e.urlOrigin>http://localhost:8008</e2e.urlOrigin>
     <e2e.mailgunDomain>extendedmind.org</e2e.mailgunDomain>
     <e2e.mailgunKey>TEST KEY</e2e.mailgunKey>
