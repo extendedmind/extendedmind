@@ -559,7 +559,7 @@
       }
       return deferred.promise;
     },
-    publishNote: function(note, path, licence, publicUi) {
+    publishNote: function(note, path, licence, index, publicUi) {
       function getPublishUrl(params){
         return params.prefix + params.note.trans.uuid + '/publish';
       }
@@ -572,6 +572,7 @@
       } else {
         var payload = {format: 'md', 'path': path};
         if (licence) payload.licence = licence;
+        if (index) payload.index = true;
         if (publicUi) payload.publicUi = JSON.stringify(publicUi);
         BackendClientService.postOnline({ value: '/api/v2/owners/' + ownerUUID + '/data/notes/' +
                                                  note.trans.uuid + '/publish',
@@ -588,6 +589,7 @@
           propertiesToReset.visibility = note.visibility ? note.visibility : {};
           propertiesToReset.visibility.publishedRevision = propertiesToReset.revision;
           propertiesToReset.visibility.published = response.published;
+          if (response.indexed) propertiesToReset.visibility.indexed = response.indexed;
           propertiesToReset.visibility.path = path;
           propertiesToReset.visibility.licence = licence;
           propertiesToReset.visibility.publicUi = payload.publicUi;

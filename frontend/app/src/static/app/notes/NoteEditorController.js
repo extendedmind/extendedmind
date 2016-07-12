@@ -366,7 +366,8 @@
         confirmActionDeferredFn: function(messageForm){
           var licence = messageForm.checkbox ? $rootScope.CC_LICENCE : undefined;
           var publicUi = messageForm.checkbox2 ? {sharing:true} : undefined;
-          return NotesService.publishNote($scope.note, messageForm.input, licence, publicUi);
+          var indexing = messageForm.checkbox3;
+          return NotesService.publishNote($scope.note, messageForm.input, licence, indexing, publicUi);
         },
         confirmActionDeferredParam: messageForm,
         allowCancel: true

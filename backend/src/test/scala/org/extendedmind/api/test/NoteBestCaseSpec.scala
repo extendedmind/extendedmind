@@ -212,10 +212,11 @@ class NoteBestCaseSpec extends ServiceSpecBase {
           publicDraftItem.note.visibility.get.previewExpires.get should be (previewNoteResult.previewExpires)
           // Next publish with path
           Post("/v2/owners/" + authenticateResponse.userUUID + "/data/notes/" + putNoteResponse.uuid.get + "/publish",
-              marshal(PublishPayload("md", "test", Some(LicenceType.CC_BY_SA_4_0.toString), None, Some("test ui"), None))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+              marshal(PublishPayload("md", "test", Some(LicenceType.CC_BY_SA_4_0.toString), Some(true), Some("test ui"), None))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
             val publishNoteResult = responseAs[PublishNoteResult]
             writeJsonOutput("publishNoteResponse", responseAs[String])
             val shortId = publishNoteResult.shortId
+            val indexed = publishNoteResult.indexed.get
             Get("/v2/public/timo/test") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
               val publicItem = responseAs[PublicItem]
               publicItem.note.relationships should be(None)
@@ -224,6 +225,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
               publicItem.note.visibility.get.previewExpires should be (None)
               publicItem.note.visibility.get.published.get should be (publicItem.note.modified.get)
               publicItem.note.visibility.get.licence.get should be (LicenceType.CC_BY_SA_4_0.toString)
+              publicItem.note.visibility.get.indexed.get should be (indexed)
               publicItem.note.visibility.get.shortId.get should be (shortId)
               publicItem.note.visibility.get.publicUi.get should be ("test ui")
               Get("/v2/public/timo?modified=" + (publishNoteResult.published-1)) ~> addHeader("Content-Type", "application/json") ~> route ~> check {

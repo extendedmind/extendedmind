@@ -159,7 +159,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
   def publishNote(owner: Owner, noteUUID: UUID, format: String, path: String, licence: Option[String], index: Boolean, publicUi: Option[String], overridePublished: Option[Long]): Response[PublishNoteResult] = {
     for {
       publishResult <- publishNoteNode(owner, noteUUID, format, path, licence, index, publicUi, overridePublished).right
-      result <- Right(PublishNoteResult(publishResult._2, publishResult._3, getSetResult(publishResult._1, false))).right
+      result <- Right(PublishNoteResult(publishResult._2, publishResult._3, publishResult._4, getSetResult(publishResult._1, false))).right
       unit <- Right(updateItemsIndex(publishResult._1, result.result)).right
     } yield result
   }
@@ -358,18 +358,18 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     }
   }
 
-  protected def publishNoteNode(owner: Owner, noteUUID: UUID, format: String, path: String, licence: Option[String], index: Boolean,  publicUi: Option[String], overridePublished: Option[Long]): Response[(Node, Long, String, OwnerNodes)] = {
+  protected def publishNoteNode(owner: Owner, noteUUID: UUID, format: String, path: String, licence: Option[String], index: Boolean,  publicUi: Option[String], overridePublished: Option[Long]): Response[(Node, Long, Option[Long], String, OwnerNodes)] = {
     withTx {
       implicit neo4j =>
         for {
           ownerNodes <- getOwnerNodes(owner).right
           noteNode <- getItemNode(getOwnerUUID(owner), noteUUID, Some(ItemLabel.NOTE)).right
           publishResult <- publishNoteNode(ownerNodes, noteNode, format, path, licence, index, publicUi, overridePublished).right
-        } yield (noteNode, publishResult._1, publishResult._2, ownerNodes)
+        } yield (noteNode, publishResult._1, publishResult._2, publishResult._3, ownerNodes)
     }
   }
 
-  protected def publishNoteNode(ownerNodes: OwnerNodes, noteNode: Node, format: String, path: String, licence: Option[String], index: Boolean, publicUi: Option[String], overridePublished: Option[Long]): Response[(Long, String)] = {
+  protected def publishNoteNode(ownerNodes: OwnerNodes, noteNode: Node, format: String, path: String, licence: Option[String], index: Boolean, publicUi: Option[String], overridePublished: Option[Long]): Response[(Long, Option[Long], String)] = {
     withTx {
       implicit neo4j =>
         val ownerNode = if (ownerNodes.foreignOwner.isDefined) ownerNodes.foreignOwner.get else ownerNodes.user
@@ -414,7 +414,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     }
   }
 
-  protected def setNotePublished(ownerUUID: UUID, noteNode: Node, noteRevisionNode: Node, format: String, path: String, licence: Option[String], index: Boolean, publicUi: Option[String], overridePublished: Option[Long])(implicit neo4j: DatabaseService): (Long, String) = {
+  protected def setNotePublished(ownerUUID: UUID, noteNode: Node, noteRevisionNode: Node, format: String, path: String, licence: Option[String], index: Boolean, publicUi: Option[String], overridePublished: Option[Long])(implicit neo4j: DatabaseService): (Long, Option[Long], String) = {
     val publishedTimestamp = if (overridePublished.isDefined) overridePublished.get else System.currentTimeMillis()
     // Set path
     noteNode.setProperty("path", path)
@@ -429,12 +429,20 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
       noteNode.removeProperty("licence")
 
     // Set indexed property, can be set only once per note
-    if (index && licence.isDefined){
-      if (!noteNode.hasProperty("indexed"))
-        noteNode.setProperty("indexed", publishedTimestamp)
-    }else if (noteNode.hasProperty("indexed")){
-      noteNode.removeProperty("indexed")
-    }
+    val indexed =
+      if (index && licence.isDefined){
+        if (!noteNode.hasProperty("indexed")){
+          noteNode.setProperty("indexed", publishedTimestamp)
+          Some(publishedTimestamp)
+        }else{
+          None
+        }
+      }else if (noteNode.hasProperty("indexed")){
+        noteNode.removeProperty("indexed")
+        None
+      }else{
+        None
+      }
 
     // Set published timestamp to revision
     noteRevisionNode.setProperty("published", publishedTimestamp)
@@ -455,7 +463,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
 
     // Add revision to public revision index
     addToPublicIndex(noteRevisionNode, ownerUUID, sid, path, index, publishedTimestamp)
-    (publishedTimestamp, IdUtils.getShortIdAsString(sid))
+    (publishedTimestamp, indexed, IdUtils.getShortIdAsString(sid))
   }
 
   protected def unpublishNoteNode(owner: Owner, noteUUID: UUID): Response[(Node, OwnerNodes)] = {

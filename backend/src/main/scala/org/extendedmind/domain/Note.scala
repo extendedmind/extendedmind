@@ -144,7 +144,6 @@ case class PublishPayload(format: String, path: String, licence: Option[String],
     },
     "Expected 'CC BY-SA 4.0' but got " + licence.get)
   if (publicUi.isDefined) require(validateLength(publicUi.get, 10000), "UI preferences max length is 10000")
-  if (index.isDefined && index.get) require(licence.isDefined && licence.get == LicenceType.CC_BY_SA_4_0.toString(), "Indexed items need to be licenced under CC BY-SA 4.0")
 }
 
 case class PreviewPayload(format: String){
@@ -158,6 +157,6 @@ case class PreviewPayload(format: String){
     "Expected 'md', 'madoko' or 'bibtex' but got " + format)
 }
 
-case class PublishNoteResult(published: Long, shortId: String, result: SetResult)
+case class PublishNoteResult(published: Long, indexed: Option[Long], shortId: String, result: SetResult)
 
 case class PreviewNoteResult(preview: String, previewExpires: Long, result: SetResult)
