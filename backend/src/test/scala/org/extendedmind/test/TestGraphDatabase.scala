@@ -199,7 +199,7 @@ trait TestGraphDatabase extends GraphDatabase {
       Note("list of servers", None, None, None, None, None,
           Some(ExtendedItemRelationships(None, None, None, None, Some(scala.List(devopsTag.right.get.uuid.get)),
               Some(scala.List((emUUID, scala.List(technologyTag.right.get.uuid.get)))))))).right.get
-    publishNote(Owner(timoUUID, Some(emtUUID), Token.ADMIN), listOfServersNoteResult.uuid.get, "md", "list-of-servers", Some(LicenceType.CC_BY_SA_4_0.toString), None, None)
+    publishNote(Owner(timoUUID, Some(emtUUID), Token.ADMIN), listOfServersNoteResult.uuid.get, "md", "list-of-servers", Some(LicenceType.CC_BY_SA_4_0.toString), true, None, None)
 
     // Timo's personal items
 
@@ -274,7 +274,7 @@ trait TestGraphDatabase extends GraphDatabase {
         Some("md"), None,
         Some(ExtendedItemRelationships(Some(extendedMindTechnologiesList.uuid.get), None, None, None, Some(scala.List(blogTag.right.get.uuid.get)),
           Some(scala.List((emUUID, scala.List(productivityTag.right.get.uuid.get)))))))).right.get
-    publishNote(Owner(timoUUID, None, Token.ADMIN), productivityNoteResult.uuid.get, "md", "productivity", Some(LicenceType.CC_BY_SA_4_0.toString), None, None)
+    publishNote(Owner(timoUUID, None, Token.ADMIN), productivityNoteResult.uuid.get, "md", "productivity", Some(LicenceType.CC_BY_SA_4_0.toString), true, None, None)
 
     // Timo shares essay list with Lauri
 

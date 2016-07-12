@@ -253,7 +253,7 @@ trait ItemActions {
               if (strippedAgreementsForCurrentUser.isEmpty){
                 None
               }else{
-                Some(SharedItemVisibility(None, None, None, None, None, None, None, None, None,
+                Some(SharedItemVisibility(None, None, None, None, None, None, None, None, None, None,
                     Some(strippedAgreementsForCurrentUser)))
               }
             }else{

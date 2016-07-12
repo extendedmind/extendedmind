@@ -110,7 +110,7 @@ trait NoteActions {
   def publishNote(owner: Owner, noteUUID: UUID, payload: PublishPayload)(implicit log: LoggingAdapter): Response[PublishNoteResult] = {
     log.info("publishNote")
     val overridePublished = if (owner.userType == Token.ADMIN) payload.overridePublished else None
-    db.publishNote(owner, noteUUID, payload.format, payload.path, payload.licence, payload.publicUi, overridePublished)
+    db.publishNote(owner, noteUUID, payload.format, payload.path, payload.licence, payload.index.isDefined && payload.index.get, payload.publicUi, overridePublished)
   }
 
   def unpublishNote(owner: Owner, noteUUID: UUID)(implicit log: LoggingAdapter): Response[SetResult] = {

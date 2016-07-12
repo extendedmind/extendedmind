@@ -86,10 +86,10 @@ abstract class ServiceSpecBase extends ImpermanentGraphDatabaseSpecBase {
       }
   }
 
-  def publishNoteCC(noteUUID: UUID, path: String, authenticateResponse: SecurityContext, foreignOwnerUUID: Option[UUID] = None): PublishNoteResult = {
+  def publishNoteCC(noteUUID: UUID, path: String, index: Boolean, authenticateResponse: SecurityContext, foreignOwnerUUID: Option[UUID] = None): PublishNoteResult = {
     val ownerUUID = if (foreignOwnerUUID.isDefined) foreignOwnerUUID.get else authenticateResponse.userUUID
     Post("/v2/owners/" + ownerUUID + "/data/notes/" + noteUUID + "/publish",
-      marshal(PublishPayload("md", path, Some(LicenceType.CC_BY_SA_4_0.toString), None, None))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+      marshal(PublishPayload("md", path, Some(LicenceType.CC_BY_SA_4_0.toString), if (index) Some(true) else None, None, None))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         responseAs[PublishNoteResult]
       }
   }

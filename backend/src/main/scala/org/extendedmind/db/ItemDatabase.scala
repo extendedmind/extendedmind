@@ -257,11 +257,15 @@ trait ItemDatabase extends UserDatabase {
         val commonTagsBuffer = new ListBuffer[Tag]
 
         val publicRevisionIndex = neo4j.gds.index().forNodes("public")
-        val revisionNodeList = if (modified.isDefined) {
+        val indexedQuery = new TermQuery(new Term("indexed", "true"))
+        val indexedRevisionNodeList = if (modified.isDefined) {
+          val statsQuery = new BooleanQuery.Builder
+          statsQuery.add(indexedQuery, BooleanClause.Occur.MUST)
           val modifiedRangeQuery = QueryContext.numericRange("modified", modified.get, null, false, false)
-          publicRevisionIndex.query(modifiedRangeQuery).toList
+          statsQuery.add(modifiedRangeQuery.getQueryOrQueryObject().asInstanceOf[org.apache.lucene.search.Query], BooleanClause.Occur.MUST)
+          publicRevisionIndex.query(statsQuery.build()).toList
         } else {
-          publicRevisionIndex.query("owner:*").toList
+          publicRevisionIndex.query(indexedQuery).toList
         }
 
         val commonCollectiveUUIDResult = getCommonCollectiveUUID()
@@ -271,11 +275,11 @@ trait ItemDatabase extends UserDatabase {
           UUID.randomUUID()
         )(commonCollectiveUUID => commonCollectiveUUID)
 
-        revisionNodeList.foreach (publishedRevisionNode => {
+        indexedRevisionNodeList.foreach (indexedRevisionNode => {
           // Only accept notes for now
-          if (publishedRevisionNode.hasLabel(ItemLabel.NOTE)){
+          if (indexedRevisionNode.hasLabel(ItemLabel.NOTE)){
             val itemNodeOption =
-              publishedRevisionNode.getRelationships.find(rel => rel.getType.name == ItemRelationship.HAS_REVISION.name)
+              indexedRevisionNode.getRelationships.find(rel => rel.getType.name == ItemRelationship.HAS_REVISION.name)
               .flatMap(rel => Some(rel.getStartNode))
             val ownerNodeOption =
               itemNodeOption.flatMap(itemNode => itemNode.getRelationships.find(rel => rel.getType.name == SecurityRelationship.OWNS.name))
@@ -283,27 +287,24 @@ trait ItemDatabase extends UserDatabase {
             if (ownerNodeOption.isDefined){
               val ownerNode = ownerNodeOption.get
               val displayOwner = getDisplayOwner(ownerNode)
-              // Get notes, filter out other tags except ones that are in the common collective
-              val publicNoteResult = noteRevisionToPublicItem(ownerNode, publishedRevisionNode, displayOwner,
-                                                              includeOnlyTagsByOwner = Some(commonCollectiveUUID), allowUnpublished = true)
-              if (publicNoteResult.isRight){
-                val publicNote = publicNoteResult.right.get
-                // Only return notes that have common collective tags in them
-                if (publicNote.collectiveTags.isDefined || publicNote.tags.isDefined){
-                  val ownerUUID = getUUID(ownerNode)
-                  if (ownerInfoBuffer.find(userInfo => userInfo._1 == ownerUUID).isEmpty){
-                    val ownerLabel =
-                      if (ownerNode.hasLabel(OwnerLabel.USER)) OwnerLabel.USER
-                      else OwnerLabel.COLLECTIVE
-                    ownerInfoBuffer.append((ownerUUID, ownerLabel, ownerNode.getProperty("handle").asInstanceOf[String], displayOwner))
-                  }
-                  if (publishedRevisionNode.hasProperty("unpublished")){
-                    ownerUnpublishedBuffer.append((ownerUUID, getUUID(itemNodeOption.get)))
-                  }else{
-                    val publicItemHeader = getPublicOwnerItemHeader(publicNote, commonCollectiveUUID)
-                    ownerItemHeaderBuffer.append((ownerUUID, publicItemHeader))
-                    mergeCommonTagsBuffer(commonTagsBuffer, publicNote, commonCollectiveUUID)
-                  }
+              val ownerUUID = getUUID(ownerNode)
+              if (ownerInfoBuffer.find(userInfo => userInfo._1 == ownerUUID).isEmpty){
+                val ownerLabel =
+                  if (ownerNode.hasLabel(OwnerLabel.USER)) OwnerLabel.USER
+                  else OwnerLabel.COLLECTIVE
+                ownerInfoBuffer.append((ownerUUID, ownerLabel, ownerNode.getProperty("handle").asInstanceOf[String], displayOwner))
+              }
+              if (indexedRevisionNode.hasProperty("unpublished")){
+                ownerUnpublishedBuffer.append((ownerUUID, getUUID(itemNodeOption.get)))
+              }else{
+                // Get public note, filter out other tags except ones that are in the common collective
+                val publicNoteResult = noteRevisionToPublicItem(ownerNode, indexedRevisionNode, displayOwner,
+                                                                includeOnlyTagsByOwner = Some(commonCollectiveUUID), allowUnpublished = true)
+                if (publicNoteResult.isRight){
+                  val publicNote = publicNoteResult.right.get
+                  val publicItemHeader = getPublicOwnerItemHeader(publicNote, commonCollectiveUUID)
+                  ownerItemHeaderBuffer.append((ownerUUID, publicItemHeader))
+                  mergeCommonTagsBuffer(commonTagsBuffer, publicNote, commonCollectiveUUID)
                 }
               }
             }
@@ -1476,20 +1477,22 @@ trait ItemDatabase extends UserDatabase {
         val publishedRevisionNode = publishedRevisionRel.get.getEndNode
         val sid = itemNode.getProperty("sid").asInstanceOf[Long]
         val path = itemNode.getProperty("path").asInstanceOf[String]
+        val index = itemNode.hasProperty("indexed")
         val published = publishedRevisionNode.getProperty("modified").asInstanceOf[Long]
-        addToPublicIndex(publishedRevisionNode, ownerUUID, sid, path, published)
+        addToPublicIndex(publishedRevisionNode, ownerUUID, sid, path, index, published)
         publishedCount += 1
       }
     })
     Right((itemCount, publishedCount))
   }
 
-  protected def addToPublicIndex(revisionNode: Node, ownerUUID: UUID, sid: Long, path: String, publishedTimestamp: Long)(implicit neo4j: DatabaseService): Unit = {
+  protected def addToPublicIndex(revisionNode: Node, ownerUUID: UUID, sid: Long, path: String, index: Boolean, publishedTimestamp: Long)(implicit neo4j: DatabaseService): Unit = {
     val publicRevisionIndex = neo4j.gds.index().forNodes("public")
     publicRevisionIndex.add(revisionNode, "owner", IdUtils.getTrimmedBase64UUIDForLucene(ownerUUID))
     publicRevisionIndex.add(revisionNode, "sid", sid)
     publicRevisionIndex.add(revisionNode, "path", path)
     publicRevisionIndex.add(revisionNode, "modified", new ValueContext(publishedTimestamp).indexNumeric())
+    if (index) publicRevisionIndex.add(revisionNode, "indexed", true)
   }
 
   protected def getItemNodeByUUID(uuid: UUID): Response[Node] = {
