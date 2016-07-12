@@ -87,6 +87,9 @@ trait TestGraphDatabase extends GraphDatabase {
         extendedMind.setProperty("uuid", "EREREREREREREREREREREQ")
         // Store a uuid with + character that needs to be escaped in Lucene indices
         timoNode.setProperty("uuid","+eDZ9pdBSQWexIARddL9zA")
+
+        // Store a predictable inbox id (use "w" as the widest character)
+        timoNode.setProperty("inboxId", "wwwwwwww")
     }
 
     val extendedMindTechnologies = createCollective(
