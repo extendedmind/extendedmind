@@ -32,7 +32,7 @@ because the Let's Encrypt certificate we use is not (yet) supported by default i
 **NOTE**: Remember to replace `[YOUR_LOCATION]` with correct directory.
 
 ```
-sudo keytool -trustcacerts -keystore $JAVA_HOME/jre/lib/security/cacerts -storepass changeit -noprompt -importcert -file [YOUR_LOCATION]/lets_encrypt_x3-cross-signed.pem
+sudo keytool -trustcacerts -keystore $JAVA_HOME/jre/lib/security/cacerts -storepass changeit -noprompt -importcert -file [YOUR_LOCATION]/lets-encrypt-x3-cross-signed.pem
 ```
 
 to add the certificate to the JDK keystore.
