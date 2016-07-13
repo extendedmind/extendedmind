@@ -454,7 +454,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
           publicStats.users.get.size should be (2)
           val timoStats = publicStats.users.get.find(userStats => userStats.displayName == "Timo").get
           timoStats.notes.get.size should be (2)
-          val lauriStats = publicStats.users.get.find(userStats => userStats.displayName == "lauri@ext.md").get
+          val lauriStats = publicStats.users.get.find(userStats => userStats.displayName == "lauri@extendedmind.org").get
           lauriStats.notes.get.size should be (1)
           publicStats.collectives.get.size should be (1)
           publicStats.collectives.get(0).notes.get.size should be (1)
@@ -464,7 +464,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
         Get("/v2/public?modified=" + putLauriNoteResponse.modified) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
           val publicStats = responseAs[PublicStats]
           publicStats.users.get.size should be (1)
-          publicStats.users.get(0).displayName should be ("lauri@ext.md")
+          publicStats.users.get(0).displayName should be ("lauri@extendedmind.org")
           publicStats.users.get(0).notes.get.size should be (1)
           publicStats.collectives should be (None)
           publicStats.commonTags.get.size should be (2)

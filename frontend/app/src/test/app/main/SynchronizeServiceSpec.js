@@ -291,7 +291,7 @@ describe('SynchronizeService', function() {
               'created': 1390912600957,
               'modified': 1390912600957,
               'title': 'extended mind technologies',
-              'link': 'http://ext.md'
+              'link': 'http://extendedmind.org'
             }, {
               'uuid': 'bf726d03-8fee-4614-8b68-f9f885938a51',
               'created': 1390912600947,

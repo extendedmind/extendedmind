@@ -82,22 +82,20 @@ angular.module('em.appTest')
 
     $routeProvider.when('/fresh', {
       resolve: {
-        auth: ['$location', '$route', 'AuthenticationService', 'MockPlatformService', 'UserSessionService',
-        function($location, $route, AuthenticationService, MockPlatformService, UserSessionService) {
-          localStorage.clear();
-          sessionStorage.clear();
-
+        auth: ['$location', '$rootScope', '$route', 'AuthenticationService', 'MockPlatformService', 'UserSessionService',
+        function($location, $rootScope, $route, AuthenticationService, MockPlatformService, UserSessionService) {
+          $rootScope.$emit('emException', {type: 'clearAll'});
           var user = {};
           if ($route.current.params.user) {
             if ($route.current.params.user === 'lauri') {
-              user.username = 'lauri@ext.md';
+              user.username = 'lauri@extendedmind.org';
               user.password = 'lauripwd';
             } else if ($route.current.params.user === 'jp') {
-              user.username = 'jp@ext.md';
+              user.username = 'jp@extendedmind.org';
               user.password = 'jiipeepwd';
             }
           } else {
-            user.username = 'timo@ext.md';
+            user.username = 'timo@extendedmind.org';
             user.password = 'timopwd';
           }
 
@@ -114,10 +112,9 @@ angular.module('em.appTest')
 
     $routeProvider.when('/tutorial', {
       resolve: {
-        auth: ['$location', '$route', 'AuthenticationService', 'UserSessionService',
-        function($location, $route, AuthenticationService, UserSessionService) {
-          localStorage.clear();
-          sessionStorage.clear();
+        auth: ['$location', '$rootScope', '$route', 'AuthenticationService', 'UserSessionService',
+        function($location, $rootScope, $route, AuthenticationService, UserSessionService) {
+          $rootScope.$emit('emException', {type: 'clearAll'});
           if ($route.current.params.offline)
             UserSessionService.enableOffline(true);
 

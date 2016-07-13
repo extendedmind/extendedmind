@@ -155,6 +155,7 @@
       LocalStorageService.clearUser();
       latestModified = {};
       itemsSynchronized = {};
+      tagsSynchronized = undefined;
       itemsSynchronizeAttempted = {};
       persistentDataLoaded = false;
       persistentStorageEnabled = enableOffline;

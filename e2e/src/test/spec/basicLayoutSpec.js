@@ -6,7 +6,7 @@ describe('extended mind layout', function() {
   it('should be correct for an existing user', function() {
     // Load the login page and press login
     browser.get('http://localhost:8008/login');
-    element(by.model('user.username')).sendKeys('timo@ext.md');
+    element(by.model('user.username')).sendKeys('timo@extendedmind.org');
     element(by.model('user.password')).sendKeys('timopwd');
     h.waitForBackendReady(40000).then(function () {
       vr.takeScreenshot('login-ready');
@@ -69,7 +69,7 @@ describe('extended mind layout', function() {
         taskEditorCloseLink.click();
 
         // USER
-        const userLink = element(by.xpath(h.XPATH_MENU_LINK.replace('${linkText}', 'timo@ext.md')));
+        const userLink = element(by.xpath(h.XPATH_MENU_LINK.replace('${linkText}', 'timo@extendedmind.org')));
         userLink.click();
         const accountLink = element(by.xpath(h.XPATH_USER_HOME_SLIDE + h.XPATH_LINK_ITEM.replace('${linkText}', 'account')));
         expect(accountLink.isDisplayed()).toBeTruthy();

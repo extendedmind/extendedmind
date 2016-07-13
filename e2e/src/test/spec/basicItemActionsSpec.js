@@ -5,7 +5,7 @@ describe('extended mind items', function() {
   it('should have basic functionality for an existing user', function() {
     // Load the login page and press login
     browser.get('http://localhost:8008/login');
-    element(by.model('user.username')).sendKeys('jp@ext.md');
+    element(by.model('user.username')).sendKeys('jp@extendedmind.org');
     element(by.model('user.password')).sendKeys('jiipeepwd');
     h.waitForBackendReady(40000).then(function () {
       const doneButton = element(by.buttonText('done'));
@@ -140,7 +140,7 @@ describe('extended mind items', function() {
         expect(fourthTestItemSearchResult.isDisplayed()).toBeTruthy();
 
         // LOGOUT
-        const userLink = element(by.xpath(h.XPATH_MENU_LINK.replace('${linkText}', 'jp@ext.md')));
+        const userLink = element(by.xpath(h.XPATH_MENU_LINK.replace('${linkText}', 'jp@extendedmind.org')));
         userLink.click();
         const logoutButton = element(by.xpath(h.XPATH_FOOTER_BUTTON.replace('${clickMethod}', 'logOut()')));
         logoutButton.click();

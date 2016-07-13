@@ -153,7 +153,7 @@ describe('AuthenticationService', function() {
   it('should authenticate with username and password', function () {
     var returned;
     $httpBackend.expectPOST('/api/v2/users/authenticate').respond(200, authenticateResponse);
-    AuthenticationService.login({username:'timo@ext.md', password: 'timopwd'}).then(function() {
+    AuthenticationService.login({username:'timo@extendedmind.org', password: 'timopwd'}).then(function() {
       returned = true;
     });
     $httpBackend.flush();
@@ -175,7 +175,7 @@ describe('AuthenticationService', function() {
   it('should sign up', function() {
     var signUp;
     $httpBackend.expectPOST('/api/v2/users/sign_up').respond(200, signUpResponse);
-    AuthenticationService.signUp({email: 'timo@ext.md', password: 'timopwd', cohort: 123})
+    AuthenticationService.signUp({email: 'timo@extendedmind.org', password: 'timopwd', cohort: 123})
     .then(function(response) {
       signUp = response;
     });

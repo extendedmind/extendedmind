@@ -36,7 +36,7 @@ function MockAuthBackendService($httpBackend, AuthenticationService, UUIDService
       var forgotPasswordResponse = getJSONFixture('forgotPasswordResponse.json');
       var parsedData = JSON.parse(data);
 
-      if (parsedData.email !== 'jp@ext.md' && parsedData.email !== 'timo@ext.md') {
+      if (parsedData.email !== 'jp@extendedmind.org' && parsedData.email !== 'timo@extendedmind.org') {
         return [400, {}];
       }
       return [200, forgotPasswordResponse];

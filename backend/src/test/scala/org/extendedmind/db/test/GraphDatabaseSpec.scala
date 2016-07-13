@@ -183,8 +183,8 @@ class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
         case Right(securityContext) => {
           assert(securityContext.collectives.get.size === 2)
           val nameSet = getCollectiveAccess(securityContext)
-          assert(nameSet.contains(("extended mind", 0, true, Some("extended-mind"))))
-          assert(nameSet.contains(("extended mind technologies", 0, false, Some("emt"))))
+          assert(nameSet.contains(("test data", 0, true, Some("test-data"))))
+          assert(nameSet.contains(("test company", 0, false, Some("tc"))))
         }
         case Left(e) => {
           fail("Could not authenticate as Timo")
@@ -194,8 +194,8 @@ class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
         case Right(securityContext) => {
           assert(securityContext.collectives.get.size === 2)
           val nameSet = getCollectiveAccess(securityContext)
-          assert(nameSet.contains(("extended mind", 1, true, Some("extended-mind"))))
-          assert(nameSet.contains(("extended mind technologies", 2, false, Some("emt"))))
+          assert(nameSet.contains(("test data", 1, true, Some("test-data"))))
+          assert(nameSet.contains(("test company", 2, false, Some("tc"))))
         }
         case Left(e) => {
           fail("Could not authenticate as Lauri")
@@ -205,7 +205,7 @@ class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
         case Right(securityContext) => {
           assert(securityContext.collectives.get.size === 1)
           val nameSet = getCollectiveAccess(securityContext)
-          assert(nameSet.contains(("extended mind", 1, true, Some("extended-mind"))))
+          assert(nameSet.contains(("test data", 1, true, Some("test-data"))))
         }
         case Left(e) => {
           fail("Could not authenticate as info")
@@ -220,7 +220,7 @@ class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
           // Change permission for Lauri
           val lauri = db.getUser(LAURI_EMAIL).right.get
 
-          db.setCollectiveUserPermission(collectiveUuidMap.get("extended mind technologies").get,
+          db.setCollectiveUserPermission(collectiveUuidMap.get("test company").get,
                                          securityContext.userUUID, lauri.uuid.get, Some(SecurityContext.READ))
 
           // Authenticate as Lauri and check modified permission
@@ -228,8 +228,8 @@ class GraphDatabaseSpec extends ImpermanentGraphDatabaseSpecBase{
             case Right(lauriSecurityContext) => {
               assert(lauriSecurityContext.collectives.get.size === 2)
               val nameSet = getCollectiveAccess(lauriSecurityContext)
-              assert(nameSet.contains(("extended mind", 1, true, Some("extended-mind"))))
-              assert(nameSet.contains(("extended mind technologies", 1, false, Some("emt"))))
+              assert(nameSet.contains(("test data", 1, true, Some("test-data"))))
+              assert(nameSet.contains(("test company", 1, false, Some("tc"))))
             }
             case Left(e) => {
               fail("Could not authenticate as Lauri")

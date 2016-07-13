@@ -175,10 +175,10 @@ function MockItemsBackendService($httpBackend, ItemsService, SynchronizeService,
           }
 
           if (headers.Authorization === 'Basic dG9rZW46VEVTVA=='){
-            // Token 'TEST' returned for jp@ext.md
+            // Token 'TEST' returned for jp@extendedmind.org
             return expectResponse(method, url, data, headers, {});
           } else if (headers.Authorization === 'Basic dG9rZW46U0hBUkVE'){
-            // Token 'SHARED' returned for lauri@ext.md
+            // Token 'SHARED' returned for lauri@extendedmind.org
             var activeUUID = sessionStorage.getItem('activeUUID');
             if (activeUUID && url.indexOf(activeUUID) === -1){
               return expectResponse(method, url, data, headers, getJSONFixture('sharedItemsResponse.json'));

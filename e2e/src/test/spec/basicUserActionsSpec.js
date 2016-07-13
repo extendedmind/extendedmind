@@ -5,7 +5,7 @@ describe('extended mind users', function() {
   it('should have basic functionality', function() {
     // Load the sign up page and press and sign up
     browser.get('http://localhost:8008/signup');
-    element(by.model('user.username')).sendKeys('signuptest@ext.md');
+    element(by.model('user.username')).sendKeys('signuptest@extendedmind.org');
     element(by.model('user.password')).sendKeys('signuptestpwd');
 
     const agreeToTermsCheckbox = element(by.xpath(h.XPATH_ENTRY_MAIN_SLIDE +
@@ -53,7 +53,7 @@ describe('extended mind users', function() {
         element(by.xpath(h.XPATH_MODAL_BUTTON.replace('${linkText}', 'got it'))).click();
 
         // NAVIGATE TO USER ACCOUNT
-        let userLink = element(by.xpath(h.XPATH_MENU_LINK.replace('${linkText}', 'signuptest@ext.md')));
+        let userLink = element(by.xpath(h.XPATH_MENU_LINK.replace('${linkText}', 'signuptest@extendedmind.org')));
         userLink.click();
         const accountLink = element(by.xpath(h.XPATH_USER_HOME_SLIDE + h.XPATH_LINK_SWIPER_CLICK.replace('${clickMethod}', 'swipeToDetails(\'account\')')));
         accountLink.click();
@@ -80,7 +80,7 @@ describe('extended mind users', function() {
           const entryMainSlide = element(by.xpath(h.XPATH_ENTRY_MAIN_SLIDE));
           expect(entryMainSlide.isDisplayed()).toBeTruthy();
 
-          const verifyEmailDom = h.readSentEmail(browser.params.emailTestPath, 'signuptest@ext.md verify your email address.html');
+          const verifyEmailDom = h.readSentEmail(browser.params.emailTestPath, 'signuptest@extendedmind.org verify your email address.html');
           const verifyLinkElement = verifyEmailDom.getElementById('em-button').firstElementChild;
           const verifyUrl = verifyLinkElement.getAttribute('href');
           browser.get(verifyUrl);
@@ -89,7 +89,7 @@ describe('extended mind users', function() {
           // TODO: Click does not hit the toaster, because toaster CSS is somehow broken on entry.
           //       This is a minor inconvenience, so just don't try to close the toaster for now.
           //element(by.xpath(h.XPATH_TOASTER_CLOSE_LINK)).click();
-          element(by.model('user.username')).sendKeys('signuptest@ext.md');
+          element(by.model('user.username')).sendKeys('signuptest@extendedmind.org');
           element(by.model('user.password')).sendKeys('signuptestpwd2');
           element(by.buttonText('done')).click();
           h.waitForUrlToChangeTo('http://localhost:8008/my', 10000).then(function () {
@@ -110,7 +110,7 @@ describe('extended mind users', function() {
             // CHANGE EMAIL
             const changeEmailLink = element(by.xpath(h.XPATH_USER_DETAILS_SLIDE + h.XPATH_LINK_ITEM.replace('${linkText}', 'change email')));
             changeEmailLink.click();
-            element(by.model('user.emailNew')).sendKeys('signuptest2@ext.md');
+            element(by.model('user.emailNew')).sendKeys('signuptest2@extendedmind.org');
             element(by.model('user.password')).sendKeys('signuptestpwd2');
             const changeEmailButton = element(by.xpath(h.XPATH_USER_EDITOR +
                                                  h.XPATH_BUTTON_CLICK.replace('${clickMethod}', 'changeEmail(user.emailNew, user.password)')));
@@ -129,13 +129,13 @@ describe('extended mind users', function() {
                                          h.XPATH_LINK_CLICK.replace('${clickMethod}', 'swipeToDetails(\'forgot\')')));
               forgotLink.click();
               browser.driver.sleep(h.SWIPER_ANIMATION_SPEED);
-              element(by.xpath(h.XPATH_ENTRY_DETAILS_SLIDE + '//input')).sendKeys('signuptest2@ext.md');
+              element(by.xpath(h.XPATH_ENTRY_DETAILS_SLIDE + '//input')).sendKeys('signuptest2@extendedmind.org');
               const doneButton = element(by.buttonText('send instructions'));
               doneButton.click();
               browser.driver.sleep(1000).then(function(){
                 const hasBeenSentText = element(by.xpath(h.XPATH_TEXTGROUP_INGRESS.replace('${ingressText}', 'password reset instructions have been sent to your email')));
                 expect(hasBeenSentText.isDisplayed()).toBeTruthy();
-                const forgotEmailDom = h.readSentEmail(browser.params.emailTestPath, 'signuptest2@ext.md password reset instructions.html');
+                const forgotEmailDom = h.readSentEmail(browser.params.emailTestPath, 'signuptest2@extendedmind.org password reset instructions.html');
                 const forgotLinkElement = forgotEmailDom.getElementById('em-button').firstElementChild;
                 const forgotUrl = forgotLinkElement.getAttribute('href');
                 browser.get(forgotUrl);
@@ -147,7 +147,7 @@ describe('extended mind users', function() {
                   expect(activeSlide.isDisplayed()).toBeTruthy();
                   menuButton.click();
                   browser.driver.sleep(h.MENU_ANIMATION_SPEED);
-                  userLink = element(by.xpath(h.XPATH_MENU_LINK.replace('${linkText}', 'signuptest2@ext.md')));
+                  userLink = element(by.xpath(h.XPATH_MENU_LINK.replace('${linkText}', 'signuptest2@extendedmind.org')));
                   userLink.click();
                   accountLink.click();
                   browser.driver.sleep(h.SWIPER_ANIMATION_SPEED);

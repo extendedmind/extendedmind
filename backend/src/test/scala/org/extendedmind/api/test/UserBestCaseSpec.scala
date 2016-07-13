@@ -161,9 +161,9 @@ class UserBestCaseSpec extends ServiceSpecBase {
     it("should successfully get the correct response from GET to /v2/users/[UUID] " +
        "that matches what is returned from GET /v2/collectives/[UUID]") {
       val timoAuthenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-      val emtCollectiveUUID = timoAuthenticateResponse.collectives.get.find(collectiveInfo => collectiveInfo._2._1 == "extended mind technologies").get._1
+      val tcCollectiveUUID = timoAuthenticateResponse.collectives.get.find(collectiveInfo => collectiveInfo._2._1 == "test company").get._1
 
-      // TIMO IS THE FOUNDER OF EMT AND EM COLLECTIVES
+      // TIMO IS THE FOUNDER OF "test company" AND "test data" COLLECTIVES
 
       Get("/v2/users/" + timoAuthenticateResponse.userUUID) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
         writeJsonOutput("accountResponse", responseAs[String])
@@ -172,7 +172,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
         accountResponse.email.get should equal(TIMO_EMAIL)
         accountResponse.collectives.get.size should be (2)
         val commonCollective = accountResponse.collectives.get.find(collectiveInfo => collectiveInfo._2._3).get
-        commonCollective._2._4.get.handle.get should be("extended-mind")
+        commonCollective._2._4.get.handle.get should be("test-data")
         commonCollective._2._4.get.shortId should not be(None)
         commonCollective._2._4.get.description should not be(None)
         commonCollective._2._4.get.access should be(None)
@@ -196,29 +196,29 @@ class UserBestCaseSpec extends ServiceSpecBase {
           fullCommonCollective.access should be (None)
         }
 
-        val emtCollective = accountResponse.collectives.get.find(collectiveInfo => collectiveInfo._1 == emtCollectiveUUID).get
-        emtCollective._2._4.get.handle.get should be("emt")
-        emtCollective._2._4.get.shortId should not be(None)
-        emtCollective._2._4.get.access should not be(None)
-        emtCollective._2._4.get.access.get.size should be(2)
-        emtCollective._2._4.get.access.get.find(accessInfo => accessInfo._2 == "Timo") should be (None)
-        emtCollective._2._4.get.description should not be(None)
-        emtCollective._2._4.get.handle should not be(None)
-        emtCollective._2._4.get.inboxId should not be(None)
-        emtCollective._2._4.get.apiKey should be(None)
-        emtCollective._2._4.get.modified should be(None)
-        emtCollective._2._4.get.created should be(None)
-        emtCollective._2._4.get.creator should be(None)
+        val tcCollective = accountResponse.collectives.get.find(collectiveInfo => collectiveInfo._1 == tcCollectiveUUID).get
+        tcCollective._2._4.get.handle.get should be("tc")
+        tcCollective._2._4.get.shortId should not be(None)
+        tcCollective._2._4.get.access should not be(None)
+        tcCollective._2._4.get.access.get.size should be(2)
+        tcCollective._2._4.get.access.get.find(accessInfo => accessInfo._2 == "Timo") should be (None)
+        tcCollective._2._4.get.description should not be(None)
+        tcCollective._2._4.get.handle should not be(None)
+        tcCollective._2._4.get.inboxId should not be(None)
+        tcCollective._2._4.get.apiKey should be(None)
+        tcCollective._2._4.get.modified should be(None)
+        tcCollective._2._4.get.created should be(None)
+        tcCollective._2._4.get.creator should be(None)
 
-        Get("/v2/collectives/" + emtCollective._1) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
-          val fullEMTCollective = responseAs[Collective]
-          fullEMTCollective.apiKey should not be (None)
-          fullEMTCollective.description.get should be(emtCollective._2._4.get.description.get)
-          fullEMTCollective.inboxId.get should be (emtCollective._2._4.get.inboxId.get)
-          fullEMTCollective.modified should not be(None)
-          fullEMTCollective.created should not be(None)
-          fullEMTCollective.creator.get should be(timoAuthenticateResponse.userUUID)
-          fullEMTCollective.access.get.find(accessInfo => accessInfo._2 == "Timo") should not be(None)
+        Get("/v2/collectives/" + tcCollective._1) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
+          val fullTCCollective = responseAs[Collective]
+          fullTCCollective.apiKey should not be (None)
+          fullTCCollective.description.get should be(tcCollective._2._4.get.description.get)
+          fullTCCollective.inboxId.get should be (tcCollective._2._4.get.inboxId.get)
+          fullTCCollective.modified should not be(None)
+          fullTCCollective.created should not be(None)
+          fullTCCollective.creator.get should be(timoAuthenticateResponse.userUUID)
+          fullTCCollective.access.get.find(accessInfo => accessInfo._2 == "Timo") should not be(None)
         }
 
         Get("/v2/short/" + accountResponse.shortId.get) ~> route ~> check {
@@ -229,14 +229,14 @@ class UserBestCaseSpec extends ServiceSpecBase {
 
       }
 
-      // LAURI HAS READ/WRITE ACCESS TO EMT AND READ TO EM
+      // LAURI HAS READ/WRITE ACCESS TO "test company" AND READ TO "test data"
 
       val lauriAuthenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
       Get("/v2/users/" + lauriAuthenticateResponse.userUUID) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
         writeJsonOutput("accountResponseReadWrite", responseAs[String])
         val accountResponse = responseAs[User]
         val commonCollective = accountResponse.collectives.get.find(collectiveInfo => collectiveInfo._2._3).get
-        commonCollective._2._4.get.handle.get should be("extended-mind")
+        commonCollective._2._4.get.handle.get should be("test-data")
         commonCollective._2._4.get.shortId should not be(None)
         commonCollective._2._4.get.description should not be(None)
         commonCollective._2._4.get.access should be(None)
@@ -259,32 +259,32 @@ class UserBestCaseSpec extends ServiceSpecBase {
           fullCommonCollective.access should be (None)
         }
 
-        val emtCollective = accountResponse.collectives.get.find(collectiveInfo => collectiveInfo._1 == emtCollectiveUUID).get
-        emtCollective._2._4.get.handle.get should be("emt")
-        emtCollective._2._4.get.handle.get should not be(None)
-        emtCollective._2._4.get.access should not be(None)
-        emtCollective._2._4.get.access.get.size should be(2)
-        emtCollective._2._4.get.access.get.find(accessInfo => accessInfo._2 == LAURI_EMAIL) should be (None)
-        emtCollective._2._4.get.description should not be(None)
-        emtCollective._2._4.get.handle should not be(None)
-        emtCollective._2._4.get.inboxId should not be(None)
-        emtCollective._2._4.get.apiKey should be(None)
-        emtCollective._2._4.get.modified should be(None)
-        emtCollective._2._4.get.created should be(None)
-        emtCollective._2._4.get.creator should be(None)
-        Get("/v2/collectives/" + emtCollective._1) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
-          val fullEMTCollective = responseAs[Collective]
-          fullEMTCollective.apiKey should be (None) // This needs to be none, only admin can see the api key
-          fullEMTCollective.description.get should be(emtCollective._2._4.get.description.get)
-          fullEMTCollective.inboxId.get should be (emtCollective._2._4.get.inboxId.get)
-          fullEMTCollective.modified should not be(None)
-          fullEMTCollective.created should not be(None)
-          fullEMTCollective.creator.get should be(timoAuthenticateResponse.userUUID)
-          fullEMTCollective.access.get.find(accessInfo => accessInfo._2 == LAURI_EMAIL) should not be(None)
+        val tcCollective = accountResponse.collectives.get.find(collectiveInfo => collectiveInfo._1 == tcCollectiveUUID).get
+        tcCollective._2._4.get.handle.get should be("tc")
+        tcCollective._2._4.get.handle.get should not be(None)
+        tcCollective._2._4.get.access should not be(None)
+        tcCollective._2._4.get.access.get.size should be(2)
+        tcCollective._2._4.get.access.get.find(accessInfo => accessInfo._2 == LAURI_EMAIL) should be (None)
+        tcCollective._2._4.get.description should not be(None)
+        tcCollective._2._4.get.handle should not be(None)
+        tcCollective._2._4.get.inboxId should not be(None)
+        tcCollective._2._4.get.apiKey should be(None)
+        tcCollective._2._4.get.modified should be(None)
+        tcCollective._2._4.get.created should be(None)
+        tcCollective._2._4.get.creator should be(None)
+        Get("/v2/collectives/" + tcCollective._1) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
+          val fullTCCollective = responseAs[Collective]
+          fullTCCollective.apiKey should be (None) // This needs to be none, only admin can see the api key
+          fullTCCollective.description.get should be(tcCollective._2._4.get.description.get)
+          fullTCCollective.inboxId.get should be (tcCollective._2._4.get.inboxId.get)
+          fullTCCollective.modified should not be(None)
+          fullTCCollective.created should not be(None)
+          fullTCCollective.creator.get should be(timoAuthenticateResponse.userUUID)
+          fullTCCollective.access.get.find(accessInfo => accessInfo._2 == LAURI_EMAIL) should not be(None)
         }
       }
 
-      // JP HAS READ ACCESS TO EMT AND READ TO EM
+      // JP HAS READ ACCESS TO "test company" AND READ TO "test data"
 
       val jpAuthenticateResponse = emailPasswordAuthenticate(JP_EMAIL, JP_PASSWORD)
       Get("/v2/users/" + jpAuthenticateResponse.userUUID) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", jpAuthenticateResponse.token.get)) ~> route ~> check {
@@ -294,7 +294,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
         accountResponse.email.get should equal(JP_EMAIL)
         accountResponse.collectives.get.size should be (2)
         val commonCollective = accountResponse.collectives.get.find(collectiveInfo => collectiveInfo._2._3).get
-        commonCollective._2._4.get.handle.get should be("extended-mind")
+        commonCollective._2._4.get.handle.get should be("test-data")
         commonCollective._2._4.get.shortId should not be(None)
         commonCollective._2._4.get.description should not be(None)
         commonCollective._2._4.get.access should be(None)
@@ -316,31 +316,31 @@ class UserBestCaseSpec extends ServiceSpecBase {
           fullCommonCollective.creator should be(None)
           fullCommonCollective.access should be (None)
         }
-        val emtCollective = accountResponse.collectives.get.find(collectiveInfo => collectiveInfo._1 == emtCollectiveUUID).get
-        emtCollective._2._4.get.handle.get should be("emt")
-        emtCollective._2._4.get.shortId should not be(None)
-        emtCollective._2._4.get.access should be(None)
-        emtCollective._2._4.get.description should not be(None)
-        emtCollective._2._4.get.handle should not be(None)
-        emtCollective._2._4.get.inboxId should be(None)
-        emtCollective._2._4.get.apiKey should be(None)
-        emtCollective._2._4.get.modified should be(None)
-        emtCollective._2._4.get.created should be(None)
-        emtCollective._2._4.get.creator should be(None)
-        Get("/v2/collectives/" + emtCollective._1) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", jpAuthenticateResponse.token.get)) ~> route ~> check {
-          val fullEMTCollective = responseAs[Collective]
-          fullEMTCollective.apiKey should be (None) // This needs to be none, only admin can see the api key
-          fullEMTCollective.description.get should be(emtCollective._2._4.get.description.get)
-          fullEMTCollective.inboxId should be (None)
-          fullEMTCollective.modified should be(None)
-          fullEMTCollective.created should be(None)
-          fullEMTCollective.creator should be(None)
-          fullEMTCollective.access should be(None)
+        val tcCollective = accountResponse.collectives.get.find(collectiveInfo => collectiveInfo._1 == tcCollectiveUUID).get
+        tcCollective._2._4.get.handle.get should be("tc")
+        tcCollective._2._4.get.shortId should not be(None)
+        tcCollective._2._4.get.access should be(None)
+        tcCollective._2._4.get.description should not be(None)
+        tcCollective._2._4.get.handle should not be(None)
+        tcCollective._2._4.get.inboxId should be(None)
+        tcCollective._2._4.get.apiKey should be(None)
+        tcCollective._2._4.get.modified should be(None)
+        tcCollective._2._4.get.created should be(None)
+        tcCollective._2._4.get.creator should be(None)
+        Get("/v2/collectives/" + tcCollective._1) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", jpAuthenticateResponse.token.get)) ~> route ~> check {
+          val fullTCCollective = responseAs[Collective]
+          fullTCCollective.apiKey should be (None) // This needs to be none, only admin can see the api key
+          fullTCCollective.description.get should be(tcCollective._2._4.get.description.get)
+          fullTCCollective.inboxId should be (None)
+          fullTCCollective.modified should be(None)
+          fullTCCollective.created should be(None)
+          fullTCCollective.creator should be(None)
+          fullTCCollective.access should be(None)
         }
 
       }
 
-      // INFO HAS READ ACCESS TO EM
+      // INFO HAS READ ACCESS TO "test data"
 
       val infoAuthenticateResponse = emailPasswordAuthenticate(INFO_EMAIL, INFO_PASSWORD)
       Get("/v2/users/" + infoAuthenticateResponse.userUUID) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", infoAuthenticateResponse.token.get)) ~> route ~> check {
@@ -350,7 +350,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
         accountResponse.email.get should equal(INFO_EMAIL)
         accountResponse.collectives.get.size should be (1)
         val commonCollective = accountResponse.collectives.get.find(collectiveInfo => collectiveInfo._2._3).get
-        commonCollective._2._4.get.handle.get should be("extended-mind")
+        commonCollective._2._4.get.handle.get should be("test-data")
         commonCollective._2._4.get.shortId should not be(None)
         commonCollective._2._4.get.description should not be(None)
         commonCollective._2._4.get.access should be(None)

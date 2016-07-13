@@ -125,7 +125,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
                     access._3 == 0
                   }) should not be(None)
                   modifiedCollectiveResponse.access.get.find(access => {
-                    access._2 =="lauri@ext.md" &&
+                    access._2 =="lauri@extendedmind.org" &&
                     access._3 == 2
                   }) should not be(None)
                 }
@@ -216,7 +216,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
                   publicItemsResponse.notes.get(0).visibility.get.publicUi.get should be ("test ui")
                   publicItemsResponse.assignees.get.length should be (1)
                   publicItemsResponse.assignees.get(0).uuid should be (lauriUUID)
-                  publicItemsResponse.assignees.get(0).name should be ("lauri@ext.md")
+                  publicItemsResponse.assignees.get(0).name should be ("lauri@extendedmind.org")
                 }
 
                 // Convert note to list, verify that it fails because note is published
@@ -260,8 +260,8 @@ class AdminBestCaseSpec extends ServiceSpecBase {
       + "and get it back with GET to /v2/owners/[collectiveUUID]/data/tasks/[itemUUID]") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
       val collectiveUuidMap = getCollectiveUUIDMap(authenticateResponse)
-      val emtUUID = collectiveUuidMap.get("extended mind technologies").get
-      Get("/v2/owners/" + emtUUID + "/data") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+      val tcUUID = collectiveUuidMap.get("test company").get
+      Get("/v2/owners/" + tcUUID + "/data") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
         val itemsResponse = responseAs[Items]
         writeJsonOutput("collectiveItemsResponse", responseAs[String])
         itemsResponse.items should not be None
@@ -270,12 +270,12 @@ class AdminBestCaseSpec extends ServiceSpecBase {
         itemsResponse.notes should not be None
       }
       val newTask = Task("change border colour to lighter gray", None, None, None, None, None, None)
-      val putTaskResponse = putNewTask(newTask, authenticateResponse, Some(emtUUID))
+      val putTaskResponse = putNewTask(newTask, authenticateResponse, Some(tcUUID))
       val putExistingTaskResponse = putExistingTask(newTask.copy(description = Some("e.g. #EDEDED")),
-        putTaskResponse.uuid.get, authenticateResponse, Some(emtUUID))
+        putTaskResponse.uuid.get, authenticateResponse, Some(tcUUID))
       assert(putExistingTaskResponse.modified > putTaskResponse.modified)
 
-      val updatedTask = getTask(putTaskResponse.uuid.get, authenticateResponse, Some(emtUUID))
+      val updatedTask = getTask(putTaskResponse.uuid.get, authenticateResponse, Some(tcUUID))
       updatedTask.description should not be None
     }
     it("should successfully change user type with POST to /v2/admin/users/UUID/change_user_type") {
