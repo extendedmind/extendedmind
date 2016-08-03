@@ -1,6 +1,12 @@
 {
   "name": "extended-mind",
   "version": "${project.version.node}",
-  "description": "extended mind",
-  "main": "main.js"
+  "description": "minimal task and note organizer",
+  "author": {
+    "name": "Extended Mind Technologies",
+    "email": "info@ext.md"
+  },
+  "main": "main.js",
+  "license": "Apache-2.0",
+  "homepage": "https://ext.md"
 }

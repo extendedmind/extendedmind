@@ -4,42 +4,43 @@
   "description": "Extended Mind Desktop",
   "private": true,
   "dependencies": {
-    "electron-prebuilt": "^0.37.2",
-    "electron-packager": "^5.2.1",
-    "electron-builder": "^2.11.0"
+    "electron-prebuilt": "^1.2.7",
+    "electron-builder": "^5.12.1"
   },
-  "devDependencies": {
-    "grunt": "^0.4.5",
-    "grunt-cli": "^0.1.13",
-    "grunt-electron-debian-installer": "^0.0.5"
+  "build": {
+    "appId": "org.extendedmind.desktop",
+    "app-category-type": "productivity",
+    "productName": "extended mind",
+    "iconUrl" : "https://ext.md/files/win/icon.ico",
+    "dmg" : {
+      "contents": [
+        { "x": 408, "y": 154, "type": "link", "path": "/Applications" },
+        { "x": 148, "y": 154, "type": "file" }
+      ]
+    },
+    "linux" : {
+      "target" : ["deb"],
+      "synopsis" : "minimal task and note organizer",
+      "depends" : []
+    }
   },
   "scripts": {
-    "dev": "./node_modules/.bin/electron ./app",
+    "postinstall": "install-app-deps",
 
     "clean": "rm -rf ./dist",
-    "clean:osx": "rm -rf ./dist/osx",
+    "clean:osx": "rm -rf ./dist/mac",
     "clean:win": "rm -rf ./dist/win",
     "clean:linux": "rm -rf ./dist/linux",
 
-    "pack": "npm run clean && npm run pack:osx && npm run pack:win && npm run pack:linux",
-    "pack:osx": "electron-packager ./app \"extended mind\" --out=dist/osx --platform=darwin --arch=x64 --version=0.31.2 --app-version=${project.version.node} --build-version=${buildNumber} --icon=assets/osx/icon.icns --sign=\"${settings.servers.osx-developer-certificate.username}\"",
-    "pack:win": "electron-packager ./app \"extended mind\" --out=dist/win --platform=win32 --arch=x64 --version=0.31.2 --app-version=${project.version.node} --icon=assets/win/icon.ico",
-    "pack:linux": "electron-packager ./app \"extended-mind\" --out=dist/linux --platform=linux --arch=x64 --version=0.31.2 --app-version=${project.version.node}",
-
-    "build:osx": "electron-builder \"dist/osx/extended mind-darwin-x64/extended mind.app\" --platform=osx --out=\"dist/osx\" --config=packager.json && mv \"dist/osx/extended mind.dmg\" dist/osx/extended-mind-${project.version.node}-osx.dmg",
-    "build:win": "electron-builder \"dist/win/extended mind-win32-x64\" --platform=win --out=\"dist/win\" --config=packager.json && mv \"dist/win/extended mind Setup.exe\" dist/win/extended-mind-${project.version.node}-win.exe",
-    "build:linux": "./node_modules/.bin/grunt electron-debian-installer --verbose",
-
-    "full": "npm run clean && npm run full:osx && npm run full:win && npm run full:linux",
-    "full:osx": "npm run pack:osx && npm run build:osx",
-    "full:win": "npm run pack:win && npm run build:win",
-    "full:linux": "npm run pack:linux && npm run build:linux"
+    "build": "build -mwl",
+    "build:osx": "build --osx",
+    "build:win": "build --win",
+    "build:linux": "build --linux"
   },
   "keywords": [
     "productivity"
   ],
   "author": "Timo Tiuraniemi",
-  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/extendedmind/extendedmind/issues"
   },
