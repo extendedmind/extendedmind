@@ -89,7 +89,7 @@ function PlatformService($q, packaging) {
       if (packaging.endsWith('cordova') && cordova && cordova.InAppBrowser){
         resolve(cordova.InAppBrowser.open(url, '_system', 'location=yes'));
       }else if (packaging.endsWith('electron') && typeof require !== 'undefined' && require){
-        resolve(require('remote').require('shell').openExternal(url));
+        resolve(require('electron').shell.openExternal(url));
       }else{
         reject('invalid configuration');
       }
