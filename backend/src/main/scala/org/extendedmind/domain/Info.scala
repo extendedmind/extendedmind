@@ -23,7 +23,7 @@ import java.util.UUID
 import Validators._
 
 // Backend version info not actually optional
-case class Info(version: String, build: String, created: Long, clients: Option[scala.List[VersionInfo]])
+case class Info(commonCollective: (UUID, String), version: String, build: String, created: Long, clients: Option[scala.List[VersionInfo]])
 
 // List of platforms, value matches Node's process.platform for easier use
 object PlatformType extends Enumeration {

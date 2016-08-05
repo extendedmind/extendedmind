@@ -171,8 +171,12 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     withTx {
       implicit neo4j =>
         val infoNode = getInfoNode
+        val commonCollectiveNode =
+          infoNode.getRelationships().find(relationship => relationship.getEndNode.hasLabel(OwnerLabel.COLLECTIVE)).get.getEndNode
+
+        val commonCollectiveInfo = (getUUID(commonCollectiveNode), commonCollectiveNode.getProperty("title").asInstanceOf[String])
         if (!latest && !history){
-          Right(Info(settings.version.getValue, settings.build, infoNode.getProperty("created").asInstanceOf[Long], None))
+          Right(Info(commonCollectiveInfo, settings.version.getValue, settings.build, infoNode.getProperty("created").asInstanceOf[Long], None))
         }else{
           val versions = infoNode.getRelationships().filter(relationship => {
             relationship.getEndNode.hasLabel(MainLabel.VERSION)
@@ -209,7 +213,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
                   getPlatformVersionInfo(versionInfo._2, versionInfo._3, squirrel = false).get)
               }).toList
             }
-          Right(Info(settings.version.getValue, settings.build, infoNode.getProperty("created").asInstanceOf[Long], Some(versionInfos)))
+          Right(Info(commonCollectiveInfo, settings.version.getValue, settings.build, infoNode.getProperty("created").asInstanceOf[Long], Some(versionInfos)))
         }
     }
   }
@@ -600,14 +604,10 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
   }
 
   protected def getCommonCollectiveNode()(implicit neo4j: DatabaseService): Node = {
-    findNodesByLabelAndProperty(OwnerLabel.COLLECTIVE, "common", java.lang.Boolean.TRUE).toList(0)
+    getInfoNode.getRelationships().find(relationship => relationship.getEndNode.hasLabel(OwnerLabel.COLLECTIVE)).get.getEndNode
   }
 
   protected def getInfoNode(implicit neo4j: DatabaseService): Node = {
     findNodesByLabel(MainLabel.INFO).toList(0)
   }
-
-
-
-
 }

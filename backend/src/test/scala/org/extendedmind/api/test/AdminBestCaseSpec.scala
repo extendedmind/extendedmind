@@ -518,6 +518,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
       }
       Get("/info?history=true") ~> route ~> check {
         val info = responseAs[Info]
+        info.commonCollective._2 should be ("test data")
         info.clients.get.size should be (2)
         info.clients.get.find(info => info.platform == "darwin") should not be None
         info.clients.get.find(info => info.platform == "win32") should not be None
