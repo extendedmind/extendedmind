@@ -66,10 +66,13 @@ trait TestGraphDatabase extends GraphDatabase {
          import scala.collection.JavaConversions._
          transactionEventHandlers.foreach( eventHandler => neo4j.gds.registerTransactionEventHandler(eventHandler))
     }
-    val verifiedTimestamp = System.currentTimeMillis + 1000
+    // Initialize database and create common collective and admin user
     val timoUser = User(TIMO_EMAIL, Some("Timo"), Some("timo"), None, None, Some(1), None)
-    val timoNode = createUser(timoUser, TIMO_PASSWORD, Some(UserLabel.ADMIN),
-                               None, overrideEmailVerified=Some(verifiedTimestamp)).right.get._1
+    val testDataCollective = Collective("test data", Some("common collective for all test users"), None, Some("test-data"), None, None, None)
+    val initializeResult = initializeDatabase(Some(testDataCollective), Some(timoUser), Some(TIMO_PASSWORD))
+    val testDataNode = withTx { implicit neo => getNode(initializeResult._2.get, OwnerLabel.COLLECTIVE).right.get }
+    val timoNode = withTx { implicit neo => getNode(initializeResult._3.get, OwnerLabel.USER).right.get }
+    val verifiedTimestamp = System.currentTimeMillis + 1000
     val lauriUser = User(LAURI_EMAIL, None, None, None, None, None, None)
     val lauriNode = createUser(lauriUser, LAURI_PASSWORD, Some(UserLabel.ADMIN),
                                None, overrideEmailVerified=Some(verifiedTimestamp)).right.get._1
@@ -78,13 +81,12 @@ trait TestGraphDatabase extends GraphDatabase {
                                None, overrideEmailVerified=Some(verifiedTimestamp)).right.get._1
 
     // Collectives
-    val testData = createCollective(timoNode, "test data", Some("common collective for all test users"), true, None, Some("test-data"), None, None, None)
     withTx {
       implicit neo =>
         // Set a predictable test UUID "11111111-1111-1111-1111-111111111111" for the common collective,
         // stored as tight base64
         tdUUID = java.util.UUID.fromString("11111111-1111-1111-1111-111111111111")
-        testData.setProperty("uuid", "EREREREREREREREREREREQ")
+        testDataNode.setProperty("uuid", "EREREREREREREREREREREQ")
         // Store a uuid with + character that needs to be escaped in Lucene indices
         timoNode.setProperty("uuid","+eDZ9pdBSQWexIARddL9zA")
 

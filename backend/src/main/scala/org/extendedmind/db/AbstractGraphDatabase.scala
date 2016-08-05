@@ -49,6 +49,14 @@ import org.neo4j.graphdb.index.IndexHits
 import org.neo4j.graphdb.event.TransactionEventHandler
 import org.neo4j.extension.uuid.UUIDTransactionEventHandler
 import org.neo4j.extension.timestamp.TimestampTransactionEventHandler
+import scala.collection.mutable.HashMap
+import com.vdurmont.semver4j.Semver
+import com.vdurmont.semver4j.Semver.SemverType
+import java.time.format.DateTimeFormatter
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZoneOffset
 
 case class OwnerNodes(user: Node, foreignOwner: Option[Node])
 
@@ -109,24 +117,27 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
 
   // LOAD DATABASE TO MEMORY
 
-  def loadDatabase(implicit log: LoggingAdapter): Boolean = {
-    withTx {
-      implicit neo4j =>
-        // Sixty seconds wait for first load
-        val available = neo4j.gds.isAvailable(1000 * 60)
-        val statistics = getStatisticsInTx
-        log.info("users: " + statistics.users +
-          ", items: " + statistics.items)
-        // Add transaction event handlers here
-        transactionEventHandlers.foreach(eventHandler => neo4j.gds.registerTransactionEventHandler(eventHandler))
-        available
-    }
-  }
+  sealed abstract class DatabaseStatus
+  case object DB_READY extends DatabaseStatus
+  case object DB_NEW_SLAVE extends DatabaseStatus
+  case object DB_ERROR extends DatabaseStatus
 
-  def checkDatabase(): Boolean = {
-    withTx {
-      implicit neo4j =>
-        neo4j.gds.isAvailable(1000)
+  def loadDatabase()(implicit log: LoggingAdapter): Boolean = {
+    initializeDatabase(None, None, None)._1 match {
+      case DB_READY => {
+        withTx {
+          implicit neo4j =>
+            val statistics = getStatisticsInTx
+            log.info("users: " + statistics.users +
+              ", items: " + statistics.items +
+              ", common collective " + statistics.commonCollective._1 + ": " + statistics.commonCollective._2)
+            // Add transaction event handlers here
+            transactionEventHandlers.foreach(eventHandler => neo4j.gds.registerTransactionEventHandler(eventHandler))
+        }
+        true
+      }
+      case DB_NEW_SLAVE => true
+      case DB_ERROR => false
     }
   }
 
@@ -149,41 +160,96 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     val userCountResult = neo4j.gds.execute("start n=node(*) match (n:USER) return count(n) as userCount").next()
     // Use index to get items
     val itemCount = neo4j.gds.index().forNodes("items").query("*:*").size()
+    val collectiveNode = getCommonCollectiveNode
 
     Statistics(userCountResult.get("userCount").asInstanceOf[Long],
-      itemCount)
+               itemCount,
+               (getUUID(collectiveNode), collectiveNode.getProperty("title").asInstanceOf[String]))
   }
 
-  def getInfo(): Response[Info] = {
+  def getInfo(latest: Boolean, history: Boolean): Response[Info] = {
     withTx {
       implicit neo4j =>
-        val infoNodes = findNodesByLabel(MainLabel.INFO).toList
-        if (infoNodes.size == 1){
-          val infoNode = infoNodes(0)
-          val platforms = infoNode.getPropertyKeys.filter(property => {
-            property != "created" && property != "modified" && property != "uuid"
+        val infoNode = getInfoNode
+        if (!latest && !history){
+          Right(Info(settings.version.getValue, settings.build, infoNode.getProperty("created").asInstanceOf[Long], None))
+        }else{
+          val versions = infoNode.getRelationships().filter(relationship => {
+            relationship.getEndNode.hasLabel(MainLabel.VERSION)
+          }).map(versionRel => versionRel.getEndNode)
+          val latestVersionNodeByPlatform = new HashMap[String, (Node, Semver)]
+          val allVersionNodes = new ListBuffer[(String, Node, Semver)]
+          versions.foreach(versionNode => {
+            val platform = versionNode.getProperty("platform").asInstanceOf[String]
+            val version = new Semver(versionNode.getProperty("version").asInstanceOf[String], SemverType.LOOSE)
+            if (!latest || !history){
+              if (latestVersionNodeByPlatform.isDefinedAt(platform)){
+                if (version.isGreaterThan(latestVersionNodeByPlatform.get(platform).get._2)){
+                  // This is a greater version value, change it
+                  latestVersionNodeByPlatform.put(platform, (versionNode, version))
+                }
+              }else{
+                latestVersionNodeByPlatform.put(platform, (versionNode, version))
+              }
+            }
+            allVersionNodes.append((platform, versionNode, version))
           })
-          val frontend = platforms.map(platform => VersionInfo(platform, infoNode.getProperty(platform).asInstanceOf[String]))
-          if (frontend.isEmpty){
-            Right(Info(None, None))
-          }else{
-            Right(Info(None, Some(frontend.toList)))
-          }
-        }else {
-          Right(Info(None, None))
+          // Now filter out the rest
+          val versionInfos: scala.List[VersionInfo] =
+            if (latest && !history){
+              latestVersionNodeByPlatform.map(latestMapInfo =>
+                VersionInfo(
+                  latestMapInfo._1,
+                  getPlatformVersionInfo(latestMapInfo._2._1, latestMapInfo._2._2, squirrel = false).get)
+                ).toList
+            }else{
+              allVersionNodes.map(versionInfo => {
+                VersionInfo(
+                  versionInfo._1,
+                  getPlatformVersionInfo(versionInfo._2, versionInfo._3, squirrel = false).get)
+              }).toList
+            }
+          Right(Info(settings.version.getValue, settings.build, infoNode.getProperty("created").asInstanceOf[Long], Some(versionInfos)))
         }
     }
   }
 
-  def putInfo(info: Info): Response[SetResult] = {
+  def putVersion(platform: String, versionInfo: PlatformVersionInfo): Response[SetResult] = {
     for {
-      // Don't set history tag of parent to list
-      infoNode <- putInfoNode(info).right
-      result <- Right(getSetResult(infoNode, false)).right
+      versionNode <- putVersionNode(platform, versionInfo).right
+      result <- Right(getSetResult(versionNode, false)).right
     } yield result
   }
 
-
+  def getUpdateVersion(platform: String, version: String): Response[Option[PlatformVersionInfo]] = {
+    val previousVersion = new Semver(version, SemverType.LOOSE)
+    withTx {
+      implicit neo4j =>
+        val infoNode = getInfoNode
+        val platformVersionRelationships = infoNode.getRelationships().filter(relationship =>
+          relationship.getEndNode.hasLabel(MainLabel.VERSION) &&
+          relationship.getEndNode.getProperty("platform").asInstanceOf[String] == platform
+        )
+        val latestVersionInfo = if (platformVersionRelationships.size > 0){
+          val latestVersionRelationship = platformVersionRelationships.reduceLeft((rel1, rel2) => {
+            if (new Semver(rel1.getEndNode.getProperty("version").asInstanceOf[String], SemverType.LOOSE).isGreaterThan(
+                new Semver(rel2.getEndNode.getProperty("version").asInstanceOf[String], SemverType.LOOSE)))
+              rel1
+            else
+              rel2
+          })
+          val latestVersionNode = latestVersionRelationship.getEndNode
+          val latestVersion = new Semver(latestVersionNode.getProperty("version").asInstanceOf[String], SemverType.LOOSE)
+          if (latestVersion.isGreaterThan(previousVersion))
+            getPlatformVersionInfo(latestVersionNode, latestVersion, squirrel = true)
+          else
+            None
+        }else{
+          None
+        }
+        Right(latestVersionInfo)
+    }
+  }
 
   // ID GENERATION
 
@@ -476,51 +542,72 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     }
   }
 
-  protected def putInfoNode(info: Info): Response[Node] = {
+  protected def initializeDatabase(overrideCommonCollective: Option[Collective] = None,
+                   overrideAdminUser: Option[User] = None,
+                   overrideAdminUserPassword: Option[String] = None): (DatabaseStatus, Option[UUID], Option[UUID])
+
+  protected def putVersionNode(platform: String, versionInfo: PlatformVersionInfo): Response[Node] = {
     withTx {
       implicit neo4j =>
-        val infoNodes = findNodesByLabel(MainLabel.INFO).toList
-        if (infoNodes.size == 0){
-          val infoNode = createNode(MainLabel.INFO)
-          putInfoNodeValues(infoNode, info)
-          Right(infoNode)
-        }else if (infoNodes.size == 1){
-          putInfoNodeValues(infoNodes(0), info)
-          Right(infoNodes(0))
-        }else {
-          fail(INTERNAL_SERVER_ERROR, ERR_BASE_INFO_MORE_THAN_1, "More than one info node found.")
-        }
+        val infoNode = getInfoNode
+        val previousVersionNode = infoNode.getRelationships().find(relationship => {
+          relationship.getEndNode.hasLabel(MainLabel.VERSION) &&
+          relationship.getEndNode.getProperty("platform").asInstanceOf[String] == platform &&
+          relationship.getEndNode.getProperty("version").asInstanceOf[String] == versionInfo.version
+        }).flatMap(versionRel => Some(versionRel.getEndNode))
+
+        Right(previousVersionNode.fold({
+          val versionNode = createNode(MainLabel.VERSION)
+          setVersionNodeProperties(versionNode, platform, versionInfo)
+          infoNode --> SecurityRelationship.IS_ORIGIN --> versionNode;
+          versionNode
+        })(previousVersionNode => {
+          setVersionNodeProperties(previousVersionNode, platform, versionInfo)
+          previousVersionNode
+        }))
     }
   }
 
-  protected def putInfoNodeValues(infoNode: Node, info: Info)(implicit neo4j: DatabaseService): Unit = {
-    // First remove missing keys
-    infoNode.getPropertyKeys.foreach(property => {
-      val versionInfo =
-        if (info.frontend.isDefined)
-          info.frontend.get.find({ versionInfo => versionInfo.platform == property })
-        else None
-      if (property != "created" && property != "modified" && property != "uuid" && versionInfo.isEmpty){
-        infoNode.removeProperty(property)
-      }
-    })
-    // Then set new keys
-    if (info.frontend.isDefined){
-      info.frontend.get.foreach(versionInfo => {
-        infoNode.setProperty(versionInfo.platform, versionInfo.version)
-      })
+  protected def setVersionNodeProperties(versionNode: Node, platform: String, versionInfo: PlatformVersionInfo): Unit = {
+    versionNode.setProperty("platform", platform)
+    versionNode.setProperty("version", versionInfo.version)
+    if (versionInfo.updateUrl.isDefined) versionNode.setProperty("updateUrl", versionInfo.updateUrl.get)
+    if (versionInfo.fullUrl.isDefined) versionNode.setProperty("fullUrl", versionInfo.fullUrl.get)
+    if (versionInfo.notes.isDefined) versionNode.setProperty("notes", versionInfo.notes.get)
+    if (versionInfo.name.isDefined) versionNode.setProperty("name", versionInfo.name.get)
+  }
+
+  val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern( "yyyy-MM-dd'T'HH:mm:ss" );
+
+  protected def getPlatformVersionInfo(versionNode: Node, version: Semver, squirrel: Boolean)(implicit neo4j: DatabaseService): Option[PlatformVersionInfo] = {
+    if (squirrel && !versionNode.hasProperty("updateUrl")){
+      None
+    }else{
+      val url = if (squirrel) Some(versionNode.getProperty("updateUrl").asInstanceOf[String]) else None
+      val name = if (versionNode.hasProperty("name")) Some(versionNode.getProperty("name").asInstanceOf[String]) else None
+      val notes = if (versionNode.hasProperty("notes")) Some(versionNode.getProperty("notes").asInstanceOf[String]) else None
+      val updateUrl = if (versionNode.hasProperty("updateUrl") && !squirrel) Some(versionNode.getProperty("updateUrl").asInstanceOf[String]) else None
+      val fullUrl = if (!squirrel && versionNode.hasProperty("fullUrl")) Some(versionNode.getProperty("fullUrl").asInstanceOf[String]) else None
+      val modified = versionNode.getProperty("modified").asInstanceOf[Long]
+      val pubDate: LocalDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(modified), ZoneOffset.UTC);
+      val pubDateString = dateTimeFormatter.format(pubDate)
+      Some(PlatformVersionInfo(url, name, notes, Some(pubDateString), version.getValue, updateUrl, fullUrl))
     }
   }
 
-  protected def getCommonCollectiveUUID()(implicit neo4j: DatabaseService): Option[UUID] = {
-    val collectives = findNodesByLabel(OwnerLabel.COLLECTIVE).toList
-    if (collectives.isEmpty) {
-      None
-    } else {
-      collectives foreach (collectiveNode => {
-        if (collectiveNode.hasProperty("common")) return Some(getUUID(collectiveNode))
-      })
-      None
-    }
+  protected def getCommonCollectiveUUID()(implicit neo4j: DatabaseService): UUID = {
+    getUUID(getCommonCollectiveNode())
   }
+
+  protected def getCommonCollectiveNode()(implicit neo4j: DatabaseService): Node = {
+    findNodesByLabelAndProperty(OwnerLabel.COLLECTIVE, "common", java.lang.Boolean.TRUE).toList(0)
+  }
+
+  protected def getInfoNode(implicit neo4j: DatabaseService): Node = {
+    findNodesByLabel(MainLabel.INFO).toList(0)
+  }
+
+
+
+
 }

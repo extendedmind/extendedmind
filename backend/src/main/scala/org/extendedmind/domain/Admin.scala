@@ -26,6 +26,6 @@ import org.extendedmind.security.SecurityContext
 
 case class Owners(users: scala.List[User], collectives: Option[scala.List[Collective]])
 
-case class Statistics(users: Long, items: Long)
+case class Statistics(users: Long, items: Long, commonCollective: (UUID, String))
 
 case class Tick(priority: Int)

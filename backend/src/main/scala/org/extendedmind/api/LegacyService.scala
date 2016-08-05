@@ -305,22 +305,6 @@ trait LegacyService extends ServiceBase {
           }
         }
       } ~
-      putInfo { url =>
-        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
-          authorize(adminAccess(securityContext)) {
-            entity(as[Info]) { info =>
-              complete {
-                Future[SetResult] {
-                  adminActions.putInfo(info) match {
-                    case Right(sr) => processResult(sr)
-                    case Left(e) => processErrors(e)
-                  }
-                }
-              }
-            }
-          }
-        }
-      } ~
       getCollective { collectiveUUID =>
         authenticate(ExtendedAuth(authenticator, "collective", None)) { securityContext =>
           authorize(readAccess(collectiveUUID, securityContext)) {
@@ -959,7 +943,7 @@ trait LegacyService extends ServiceBase {
           entity(as[NewPassword]) { newPassword =>
             complete {
               Future[CountResult] {
-            	setLogContext(securityContext)
+              setLogContext(securityContext)
                 securityActions.changePassword(securityContext.userUUID, newPassword.password) match {
                   case Right(count) => processResult(count)
                   case Left(e) => processErrors(e)

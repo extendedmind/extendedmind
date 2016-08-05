@@ -36,8 +36,11 @@ import org.neo4j.graphdb.factory.HighlyAvailableGraphDatabaseFactory
 import org.neo4j.kernel.extension.KernelExtensionFactory
 import scala.collection.JavaConverters._
 import akka.actor.ActorRefFactory
+import com.typesafe.config.ConfigFactory
+import com.vdurmont.semver4j.Semver
+import com.vdurmont.semver4j.Semver.SemverType
 
-// Custom settings from application.conf or overridden file
+// Combined custom settings from application.conf or overridden file, and version.conf which is always inside the generated jar
 
 sealed abstract class SignUpMethod
 case object SIGNUP_ON extends SignUpMethod
@@ -53,8 +56,13 @@ sealed abstract class EmailProvider
 case object EMAIL_MAILGUN extends EmailProvider
 case object EMAIL_DUMMY extends EmailProvider
 
-class Settings(config: Config) extends Extension {
-  val version = config.getString("extendedmind.version")
+class Settings(config: Config, versionConfig: Config) extends Extension {
+
+  // Non-overridable parameters from version.conf
+  val version: Semver = new Semver(versionConfig.getString("extendedmind.version"), SemverType.LOOSE)
+  val build = versionConfig.getString("extendedmind.build")
+
+  // Neo4j parameters
   val serverPort = config.getInt("extendedmind.server.port")
   val neo4jStoreDir = config.getString("extendedmind.neo4j.storeDir")
   val neo4jPropertiesFile: Option[String] = {
@@ -77,18 +85,35 @@ class Settings(config: Config) extends Extension {
       config.getBoolean("extendedmind.neo4j.disableTimestamps")
     else false
 
+  // First launch parameters
+  val commonCollectiveTitle: Option[String] = {
+    if (config.hasPath("extendedmind.commonCollectiveTitle"))
+      Some(config.getString("extendedmind.commonCollectiveTitle"))
+    else
+      None
+  }
+  val adminUserEmail: Option[String] = {
+    if (config.hasPath("extendedmind.adminUserEmail"))
+      Some(config.getString("extendedmind.adminUserEmail"))
+    else
+      None
+  }
+  val adminUserPassword: Option[String] = {
+    if (config.hasPath("extendedmind.adminUserPassword"))
+      Some(config.getString("extendedmind.adminUserPassword"))
+    else
+      None
+  }
+
+
+  // Security parameters
+
   val tokenSecret = config.getString("extendedmind.security.tokenSecret")
   val signUpMethod: SignUpMethod  = {
     config.getString("extendedmind.security.signUpMethod") match {
       case "OFF" => SIGNUP_OFF
       case "ON" => SIGNUP_ON
     }
-  }
-  val signUpCoupon: Option[String] = {
-    if (config.hasPath("extendedmind.security.signUpCoupon"))
-      Some(config.getString("extendedmind.security.signUpCoupon"))
-    else
-      None
   }
 
   val signUpMode: SignUpMode  = {
@@ -100,6 +125,8 @@ class Settings(config: Config) extends Extension {
     }
   }
 
+  // Email parameters
+
   val emailProvider: EmailProvider  = {
     config.getString("extendedmind.email.provider") match {
       case "MAILGUN" => EMAIL_MAILGUN
@@ -110,8 +137,6 @@ class Settings(config: Config) extends Extension {
   val mailgunApiKey = config.getString("extendedmind.email.mailgun.apiKey")
 
   val dummyEmailLocation: String = config.getString("extendedmind.email.dummy")
-
-  // Email templates
   val emailFrom = config.getString("extendedmind.email.from")
   val emailUrlOrigin = config.getString("extendedmind.email.urlOrigin")
   val emailTemplateDir: Option[String] = {
@@ -132,7 +157,10 @@ class Settings(config: Config) extends Extension {
 
 object SettingsExtension extends ExtensionId[Settings] with ExtensionIdProvider{
   override def lookup = SettingsExtension
-  override def createExtension(system: ExtendedActorSystem) = new Settings(system.settings.config)
+  override def createExtension(system: ExtendedActorSystem) = {
+    val versionConfig = ConfigFactory.load("version")
+    new Settings(system.settings.config, versionConfig)
+  }
 }
 
 // Scaldi default configuration

@@ -268,12 +268,7 @@ trait ItemDatabase extends UserDatabase {
           publicRevisionIndex.query(indexedQuery).toList
         }
 
-        val commonCollectiveUUIDResult = getCommonCollectiveUUID()
-        val commonCollectiveUUID = commonCollectiveUUIDResult.fold(
-          // Use a random UUID in the off chance that common collective has not been created yet,
-          // to prevent any tags from leaking out
-          UUID.randomUUID()
-        )(commonCollectiveUUID => commonCollectiveUUID)
+        val commonCollectiveUUID = getCommonCollectiveUUID()
 
         indexedRevisionNodeList.foreach (indexedRevisionNode => {
           // Only accept notes for now

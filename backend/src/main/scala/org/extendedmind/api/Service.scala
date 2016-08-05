@@ -132,8 +132,7 @@ class ServiceActor extends HttpServiceActor with Service {
       }else{
         log.error(errorString)
       }
-      }
-    )
+    })
   }
 
   // Setup implicits
@@ -199,11 +198,13 @@ trait Service extends LegacyService
       }
     } ~
     getInfo {
-      complete {
-        Future[Info] {
-          adminActions.getInfo match {
-            case Right(info) => processResult(info.copy(backend=Some(settings.version)))
-            case Left(e) => processErrors(e)
+      parameters('latest ? false, 'history ? false) { (latest, history)=>
+        complete {
+          Future[Info] {
+            adminActions.getInfo(latest, history) match {
+              case Right(info) => processResult(info)
+              case Left(e) => processErrors(e)
+            }
           }
         }
       }

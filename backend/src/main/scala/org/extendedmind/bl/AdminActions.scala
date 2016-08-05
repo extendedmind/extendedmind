@@ -103,11 +103,6 @@ trait AdminActions {
     db.loadDatabase
   }
 
-  def checkDatabase(implicit log: LoggingAdapter): Boolean = {
-    log.info("checkDatabase")
-    db.checkDatabase
-  }
-
   def shutdown(implicit log: LoggingAdapter): Unit = {
     log.info("shutdown")
     db.shutdownServer
@@ -152,12 +147,17 @@ trait AdminActions {
     }
   }
 
-  def getInfo: Response[Info] = {
-    db.getInfo
+  def getInfo(latest: Boolean, history: Boolean): Response[Info] = {
+    db.getInfo(latest, history)
   }
 
-  def putInfo(info: Info): Response[SetResult] = {
-    db.putInfo(info)
+  def putVersion(versionInfo: VersionInfo)(implicit log: LoggingAdapter): Response[SetResult] = {
+    log.info("putVersion for " + versionInfo.platform)
+    db.putVersion(versionInfo.platform, versionInfo.info)
+  }
+
+  def getUpdateVersion(platform: String, version: String)(implicit log: LoggingAdapter): Response[Option[PlatformVersionInfo]] = {
+    db.getUpdateVersion(platform, version)
   }
 }
 

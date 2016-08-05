@@ -35,14 +35,15 @@ import org.neo4j.scala.DatabaseService
 import scala.collection.mutable.ListBuffer
 import org.neo4j.graphdb.traversal.Evaluation
 import org.neo4j.graphdb.Relationship
+import akka.event.LoggingAdapter
 
 trait CollectiveDatabase extends UserDatabase {
 
   // PUBLIC
 
-  def putNewCollective(founderUUID: UUID, collective: Collective, commonCollective: Boolean): Response[SetResult] = {
+  def putNewCollective(founderUUID: UUID, collective: Collective): Response[SetResult] = {
     for{
-      collectiveResult <- createCollective(founderUUID, collective, commonCollective).right
+      collectiveResult <- createCollective(founderUUID, collective, false).right
       result <- Right(getSetResult(collectiveResult._1, true)).right
     }yield result
   }
@@ -73,17 +74,6 @@ trait CollectiveDatabase extends UserDatabase {
             else if (collectiveAccess == SecurityContext.READ_WRITE)
               collective.copy(apiKey=None)
             else collective)
-    }
-  }
-
-  def hasCommonCollective(): Boolean = {
-    withTx {
-      implicit neo4j =>
-        val collectives = findNodesByLabelAndProperty(OwnerLabel.COLLECTIVE, "common", java.lang.Boolean.TRUE).toList
-        if (collectives.isEmpty)
-          false
-        else
-          true
     }
   }
 
@@ -321,6 +311,124 @@ trait CollectiveDatabase extends UserDatabase {
 
       collective.copy(shortId = shortId, access = collectiveAccessList, creator=creatorUUID, preferences = getOwnerPreferences(collectiveNode))
     }
+  }
+
+  protected def initializeDatabase(overrideCommonCollective: Option[Collective],
+                   overrideAdminUser: Option[User],
+                   overrideAdminUserPassword: Option[String]): (DatabaseStatus, Option[UUID], Option[UUID]) = {
+    val initializeResult =
+      withTx {
+        implicit neo4j =>
+          initializeDatabaseInTx(overrideCommonCollective: Option[Collective],
+                   overrideAdminUser: Option[User],
+                   overrideAdminUserPassword: Option[String])
+      }
+    withTx {
+      implicit neo4j =>
+        (initializeResult._1,
+            initializeResult._2.flatMap(collectiveNode => Some(getUUID(collectiveNode))),
+            initializeResult._3.flatMap(userNode => Some(getUUID(userNode))))
+    }
+  }
+
+  protected def initializeDatabaseInTx(overrideCommonCollective: Option[Collective] = None,
+                   overrideAdminUser: Option[User] = None,
+                   overrideAdminUserPassword: Option[String] = None)(implicit neo4j: DatabaseService): (DatabaseStatus, Option[Node], Option[Node]) = {
+    val available = neo4j.gds.isAvailable(1000)
+    if (available){
+      // Try to get the info node
+      val infoNodeOption: Option[Node] = {
+        val infoNodes = findNodesByLabel(MainLabel.INFO).toList
+        if (infoNodes.size == 1){
+          Some(infoNodes(0))
+        }else if (infoNodes.isEmpty){
+          None
+        }else {
+          println("More than one (" + infoNodes.size + ") info nodes found")
+          return (DB_ERROR, None, None)
+        }
+      }
+
+      if (infoNodeOption.isEmpty){
+        // Info node needs to possibly be created, see if this is the first load with no common collective
+        val commonCollectiveList = findNodesByLabelAndProperty(OwnerLabel.COLLECTIVE, "common", java.lang.Boolean.TRUE).toList
+        if (commonCollectiveList.isEmpty){
+          // Database seems to be empty, this might be because this is a new HA slave
+          if (settings.isHighAvailability){
+            // So this is high availability empty database
+            println("No common collective, but HA enabled. Assuming new slave.")
+            return (DB_NEW_SLAVE, None, None)
+          }else {
+            // Single server mode, no common collective nor user, check if this is the first time this is started
+            if (overrideCommonCollective.isEmpty && settings.commonCollectiveTitle.isEmpty ||
+                overrideAdminUser.isEmpty && settings.adminUserEmail.isEmpty ||
+                overrideAdminUserPassword.isEmpty && settings.adminUserPassword.isEmpty){
+              println("ERROR: To initialize a new database please provide the following parameters:\n" +
+                       "  -Dextendedmind.commonCollectiveTitle=\"[name for your service]\"\n" +
+                       "  -Dextendedmind.adminUserEmail=\"[your email]\"\n" +
+                       "  -Dextendedmind.adminUserPassword=\"[your password]\"\n")
+              return (DB_ERROR, None, None)
+            }else{
+              println("Initializing database...")
+              val commonCollective =
+                if (overrideCommonCollective.isDefined) overrideCommonCollective.get
+                else Collective(settings.commonCollectiveTitle.get, None, None, None, None, None, None)
+              if (!Validators.validateTitle(commonCollective.title.get)){
+                println("ERROR: Invalid common collective title")
+                return (DB_ERROR, None, None)
+              }
+
+              val adminUser =
+                if (overrideAdminUser.isDefined) overrideAdminUser.get
+                else User(settings.adminUserEmail.get, None, None, None, None, None, None)
+              if (!Validators.validateEmailAddress(adminUser.email.get)){
+                println("ERROR: Invalid admin user email address")
+                return (DB_ERROR, None, None)
+              }
+              val adminUserPassword =
+                if (overrideAdminUserPassword.isDefined) overrideAdminUserPassword.get
+                else settings.adminUserPassword.get
+              if (!Validators.validatePassword(adminUserPassword)){
+                println("ERROR: Invalid admin user password, password must be more than 7 and less than 100 characters long.")
+                return (DB_ERROR, None, None)
+              }
+
+              val adminUserNode =
+                createUser(adminUser, adminUserPassword, Some(UserLabel.ADMIN),
+                                         None, overrideEmailVerified=Some(System.currentTimeMillis)).right.get._1
+              val commonCollectiveNode =
+                createCollectiveNode(adminUserNode, commonCollective, true).right.get._1
+              val infoNode = createNode(MainLabel.INFO)
+              infoNode --> SecurityRelationship.IS_ORIGIN --> commonCollectiveNode;
+              infoNode --> SecurityRelationship.IS_ORIGIN --> adminUserNode;
+              println("...database initialization ready.")
+              return (DB_READY, Some(commonCollectiveNode), Some(adminUserNode))
+            }
+          }
+        }else if (commonCollectiveList.size == 0){
+          val commonCollective = commonCollectiveList(0)
+          // Common collective found, but no info node, migrate to new database structure
+          // TODO: Remove this code when database is migrated to post v1.9.13
+          println("Migrating to post 1.9.13 structure...")
+          val adminUsers = findNodesByLabel(UserLabel.ADMIN).toList
+          if (adminUsers.isEmpty){
+            println("ERROR: No admin users found")
+            return (DB_ERROR, None, None)
+          }
+          val firstAdminUser = adminUsers.reduceLeft((u1: Node, u2:Node) => if (u1.getId < u2.getId) u1 else u2)
+          val infoNode = createNode(MainLabel.INFO)
+          infoNode --> SecurityRelationship.IS_ORIGIN --> commonCollective;
+          infoNode --> SecurityRelationship.IS_ORIGIN --> firstAdminUser;
+          println("..migration ready, attached INFO node to " +
+                    firstAdminUser.getProperty("email").asInstanceOf[String] + " and common collective " +
+                    commonCollective.getProperty("title").asInstanceOf[String])
+        }else{
+          println("ERROR: More than one (" + commonCollectiveList.size + ") common collective node found")
+          return (DB_ERROR, None, None)
+        }
+      }
+    }
+    (DB_READY, None, None)
   }
 
 }

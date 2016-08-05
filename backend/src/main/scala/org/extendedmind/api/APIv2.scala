@@ -142,6 +142,10 @@ trait APIv2 extends LegacyAPI {
 
   val v2GetPublicItemHeader = get & path("v2" / "short" / """^[0-9][1-9A-Za-z]{0,20}$""".r )
 
+  // UPDATES QUERY
+
+  val v2GetUpdate = get & path("v2" / "update".r)
+
   // ADMIN
 
   val v2GetStatistics = get & path("v2" / "admin".r)
@@ -156,6 +160,6 @@ trait APIv2 extends LegacyAPI {
   val v2GetOwnerStatistics = get & path("v2" / "admin" / "owners" / JavaUUID / "stats")
   val v2PostSetItemProperty = post & path("v2" / "admin" / "items" / JavaUUID / "change_property")
   val v2PostSetOwnerProperty = post & path("v2" / "admin" / "owners" / JavaUUID / "change_property")
-  val v2PostUpdateInfo = post & path("v2" / "admin" / "update_info".r)
+  val v2PostUpdateVersion = post & path("v2" / "admin" / "update_version".r)
 
 }

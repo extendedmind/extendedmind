@@ -43,13 +43,7 @@ trait CollectiveActions {
 
   def putNewCollective(creatorUUID: UUID, collective: Collective)(implicit log: LoggingAdapter): Response[SetResult] = {
     if (collective.title.isEmpty) return fail(INVALID_PARAMETER, ERR_COLLECTIVE_NO_TITLE, "Collective title is mandatory")
-    if (!db.hasCommonCollective){
-      log.info("Making collective {} a common collective to all "
-                 +"users because it is the first inserted collective", collective.title)
-      db.putNewCollective(creatorUUID, collective, true)
-    }else{
-      db.putNewCollective(creatorUUID, collective, false)
-    }
+    db.putNewCollective(creatorUUID, collective)
   }
 
   def putExistingCollective(collectiveUUID: UUID, collective: Collective)(implicit log: LoggingAdapter): Response[SetResult] = {

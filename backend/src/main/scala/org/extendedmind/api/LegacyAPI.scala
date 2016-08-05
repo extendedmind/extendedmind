@@ -136,5 +136,4 @@ trait LegacyAPI extends API {
   val getOwnerStatistics = get & path("admin" / "owner" / JavaUUID)
   val postSetItemProperty = post & path("admin" / "item" / JavaUUID / "property")
   val postSetOwnerProperty = post & path("admin" / "owner" / JavaUUID / "property")
-  val putInfo = put & path("admin" / "info".r)
 }

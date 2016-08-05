@@ -82,7 +82,7 @@ trait UserDatabase extends AbstractGraphDatabase {
     }
   }
 
-  def getUsers: Response[Users] = {
+  def getUsers(): Response[Users] = {
     withTx {
       implicit neo4j =>
         val users = findNodesByLabel(OwnerLabel.USER).toList

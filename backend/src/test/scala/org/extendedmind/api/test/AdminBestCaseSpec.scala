@@ -446,43 +446,127 @@ class AdminBestCaseSpec extends ServiceSpecBase {
         writeJsonOutput("ownerStatisticsResponse", responseAs[String])
       }
     }
-    it("should successfully put info with POST to /v2/admin/update_info " +
-       "and get it back without authentication from GET to /info") {
+    it("should successfully put version info with POST to /v2/admin/update_version " +
+       "and get it back without authentication from GET to /info and GET to /v2/update") {
       Get("/info") ~> route ~> check {
         val info = responseAs[Info]
-        info.backend should not be(None)
-        info.frontend should be (None)
+        info.clients should be (None)
       }
+      Get("/v2/update?platform=darwin&version=0.9") ~> route ~> check {
+        status should be (NoContent)
+      }
+
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-      Post("/v2/admin/update_info",
-          marshal(Info(None, Some(scala.List(VersionInfo("osx", "2.0"))))).right.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get))  ~> route ~> check {
-        val setResult = responseAs[Info]
-        Get("/info") ~> route ~> check {
-          val info = responseAs[Info]
-          info.backend should not be(None)
-          info.frontend.get.size should be (1)
-          info.frontend.get(0).platform should be("osx")
-          info.frontend.get(0).version should be("2.0")
-          Post("/v2/admin/update_info",
-              marshal(Info(None, Some(scala.List(VersionInfo("win", "1.0"))))).right.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get))  ~> route ~> check {
-            val setResult2 = responseAs[Info]
-            Get("/info") ~> route ~> check {
-              val info2 = responseAs[Info]
-              info2.backend should not be(None)
-              info2.frontend.get.size should be (1)
-              info2.frontend.get(0).platform should be("win")
-              info2.frontend.get(0).version should be("1.0")
-                Post("/v2/admin/update_info",
-                  marshal(Info(None, None)).right.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                Get("/info") ~> route ~> check {
-                  val info3 = responseAs[Info]
-                  info3.backend should not be(None)
-                  info3.frontend should be (None)
-                }
-              }
-            }
-          }
-        }
+      val osxVersionBeta =
+        PlatformVersionInfo(None, Some("beta"), None, None, "1.0-beta",
+          Some("http://localhost:8008/files/testdata-1.0-beta.zip"),
+          Some("http://localhost:8008/files/testdata-1.0-beta.dmg"))
+
+      Post("/v2/admin/update_version",
+          marshal(VersionInfo("darwin", osxVersionBeta)).right.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get))  ~> route ~> check {
+        val setResult = responseAs[SetResult]
+      }
+      Get("/info?history=true") ~> route ~> check {
+        val info = responseAs[Info]
+        info.clients.get.size should be (1)
+        info.clients.get(0).platform should be("darwin")
+        info.clients.get(0).info.version should be("1.0-beta")
+        info.clients.get(0).info.notes should be(None)
+      }
+      Get("/v2/update?platform=darwin&version=0.9") ~> route ~> check {
+        val squirrelInfo = responseAs[PlatformVersionInfo]
+        squirrelInfo.url.get should be ("http://localhost:8008/files/testdata-1.0-beta.zip")
+        squirrelInfo.fullUrl should be (None)
+        squirrelInfo.updateUrl should be (None)
+        squirrelInfo.notes should be(None)
+      }
+      Get("/v2/update?platform=darwin&version=1.0-beta") ~> route ~> check {
+        status should be (NoContent)
+      }
+
+      // Update the previous version
+      Post("/v2/admin/update_version",
+          marshal(VersionInfo("darwin", osxVersionBeta.copy(notes=Some("this is a beta version")))).right.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get))  ~> route ~> check {
+        val setResult = responseAs[SetResult]
+      }
+      Get("/info?history=true") ~> route ~> check {
+        val info = responseAs[Info]
+        info.clients.get.size should be (1)
+        info.clients.get(0).platform should be("darwin")
+        info.clients.get(0).info.version should be("1.0-beta")
+        info.clients.get(0).info.notes.get should be("this is a beta version")
+      }
+      Get("/v2/update?platform=darwin&version=0.9") ~> route ~> check {
+        val squirrelInfo = responseAs[PlatformVersionInfo]
+        writeJsonOutput("updateResponse", responseAs[String])
+        squirrelInfo.url.get should be ("http://localhost:8008/files/testdata-1.0-beta.zip")
+        squirrelInfo.fullUrl should be (None)
+        squirrelInfo.updateUrl should be (None)
+        squirrelInfo.notes.get should be("this is a beta version")
+      }
+      Get("/v2/update?platform=win32&version=0.9") ~> route ~> check {
+        status should be (NoContent)
+      }
+
+      // Add another platform
+      val winVersionBeta = osxVersionBeta.copy(
+          updateUrl = Some("http://localhost:8008/files/testdata-1.0-beta.nupkg"),
+          fullUrl = Some("http://localhost:8008/files/testdata-1.0-beta.exe"))
+      Post("/v2/admin/update_version",
+          marshal(VersionInfo("win32", winVersionBeta)).right.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get))  ~> route ~> check {
+        val setResult = responseAs[SetResult]
+      }
+      Get("/info?history=true") ~> route ~> check {
+        val info = responseAs[Info]
+        info.clients.get.size should be (2)
+        info.clients.get.find(info => info.platform == "darwin") should not be None
+        info.clients.get.find(info => info.platform == "win32") should not be None
+      }
+      Get("/v2/update?platform=win32&version=0.9") ~> route ~> check {
+        val squirrelInfo = responseAs[PlatformVersionInfo]
+        squirrelInfo.url.get should be ("http://localhost:8008/files/testdata-1.0-beta.nupkg")
+        squirrelInfo.fullUrl should be (None)
+        squirrelInfo.updateUrl should be (None)
+      }
+      Get("/v2/update?platform=win32&version=1.0-beta") ~> route ~> check {
+        status should be (NoContent)
+      }
+
+      // Add another version to first platform
+      val osxVersionBeta2 = osxVersionBeta.copy(
+          version = "1.0-beta.2",
+          name = Some("beta2"),
+          updateUrl = Some("http://localhost:8008/files/testdata-1.0-beta.2.zip"),
+          fullUrl = Some("http://localhost:8008/files/testdata-1.0-beta.2.dmg"))
+      Post("/v2/admin/update_version",
+          marshal(VersionInfo("darwin", osxVersionBeta2)).right.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get))  ~> route ~> check {
+        val setResult = responseAs[SetResult]
+      }
+      Get("/info?history=true") ~> route ~> check {
+        val info = responseAs[Info]
+        writeJsonOutput("infoResponse", responseAs[String])
+        info.clients.get.size should be (3)
+        info.clients.get.filter(info => info.platform == "darwin").size should be(2)
+        info.clients.get.find(info => info.platform == "win32") should not be None
+      }
+
+      // Updates should only return beta 2
+      Get("/info?latest=true") ~> route ~> check {
+        val info = responseAs[Info]
+        info.clients.get.size should be (2)
+        info.clients.get.find(info => info.platform == "darwin").get.info.version should be("1.0-beta.2")
+        info.clients.get.find(info => info.platform == "win32") should not be None
+      }
+      Get("/v2/update?platform=darwin&version=0.9") ~> route ~> check {
+        val squirrelInfo = responseAs[PlatformVersionInfo]
+        squirrelInfo.url.get should be ("http://localhost:8008/files/testdata-1.0-beta.2.zip")
+      }
+      Get("/v2/update?platform=darwin&version=1.0-beta") ~> route ~> check {
+        val squirrelInfo = responseAs[PlatformVersionInfo]
+        squirrelInfo.url.get should be ("http://localhost:8008/files/testdata-1.0-beta.2.zip")
+      }
+      Get("/v2/update?platform=darwin&version=1.0-beta.2") ~> route ~> check {
+        status should be (NoContent)
       }
     }
   }

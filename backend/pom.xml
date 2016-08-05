@@ -175,7 +175,7 @@
       <scope>compile</scope>
     </dependency>
 
-    <!-- Security -->
+    <!-- Security and Versioning -->
     <dependency>
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
@@ -188,6 +188,12 @@
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+	  <groupId>com.vdurmont</groupId>
+	  <artifactId>semver4j</artifactId>
+	  <version>2.0.1</version>
+      <scope>compile</scope>
+	</dependency>
 
     <!-- Test -->
     <dependency>

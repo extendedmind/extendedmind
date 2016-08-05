@@ -51,10 +51,9 @@ abstract class SpraySpecBase extends SpecBase
   override def processNewItemResult(itemType: String, result: SetResult) = {result}
   override def logErrors(errors: scala.List[ResponseContent]) = {
     errors foreach (e => {
-    	val errorString = e.responseType + ": " + e.description
-    	println(errorString)
-      }
-    )
+      val errorString = e.responseType + ": " + e.description
+      println(errorString)
+    })
   }
 
   // Empty Scaldi bindings

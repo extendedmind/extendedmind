@@ -289,17 +289,36 @@ trait AdminService extends ServiceBase {
           }
         }
       } ~
-      v2PostUpdateInfo { url =>
+      v2PostUpdateVersion { url =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           authorize(adminAccess(securityContext)) {
-            entity(as[Info]) { info =>
+            entity(as[VersionInfo]) { info =>
               complete {
                 Future[SetResult] {
-                  adminActions.putInfo(info) match {
+                  adminActions.putVersion(info) match {
                     case Right(sr) => processResult(sr)
                     case Left(e) => processErrors(e)
                   }
                 }
+              }
+            }
+          }
+        }
+      } ~
+      v2GetUpdate { url =>
+        parameters('platform.as[String], 'version.as[String]) { (platform, version) =>
+          adminActions.getUpdateVersion(platform, version) match {
+            case Right(optionalInfo) => {
+              if (optionalInfo.isEmpty){
+                complete(NoContent)
+              }else{
+                complete{
+                  processResult(optionalInfo.get)
+                }
+              }
+            }case Left(e) => {
+              complete{
+                processErrors(e)
               }
             }
           }
