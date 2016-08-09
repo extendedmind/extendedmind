@@ -405,7 +405,7 @@ trait CollectiveDatabase extends UserDatabase {
               return (DB_READY, Some(commonCollectiveNode), Some(adminUserNode))
             }
           }
-        }else if (commonCollectiveList.size == 0){
+        }else if (commonCollectiveList.size == 1){
           val commonCollective = commonCollectiveList(0)
           // Common collective found, but no info node, migrate to new database structure
           // TODO: Remove this code when database is migrated to post v1.9.13
