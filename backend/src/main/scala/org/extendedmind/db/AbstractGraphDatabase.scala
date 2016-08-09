@@ -225,15 +225,18 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     } yield result
   }
 
-  def getUpdateVersion(platform: String, version: String): Response[Option[PlatformVersionInfo]] = {
+  def getUpdateVersion(platform: String, version: String, userType: Option[Byte]): Response[Option[PlatformVersionInfo]] = {
     val previousVersion = new Semver(version, SemverType.LOOSE)
     withTx {
       implicit neo4j =>
         val infoNode = getInfoNode
-        val platformVersionRelationships = infoNode.getRelationships().filter(relationship =>
-          relationship.getEndNode.hasLabel(MainLabel.VERSION) &&
-          relationship.getEndNode.getProperty("platform").asInstanceOf[String] == platform
-        )
+        val platformVersionRelationships = infoNode.getRelationships().filter(relationship => {
+          val versionNode = relationship.getEndNode
+          versionNode.hasLabel(MainLabel.VERSION) &&
+          versionNode.getProperty("platform").asInstanceOf[String] == platform &&
+          (!versionNode.hasProperty("userType") ||
+            (userType.isDefined && userType.get <= versionNode.getProperty("userType").asInstanceOf[Byte]))
+        })
         val latestVersionInfo = if (platformVersionRelationships.size > 0){
           val latestVersionRelationship = platformVersionRelationships.reduceLeft((rel1, rel2) => {
             if (new Semver(rel1.getEndNode.getProperty("version").asInstanceOf[String], SemverType.LOOSE).isGreaterThan(
@@ -575,10 +578,20 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
   protected def setVersionNodeProperties(versionNode: Node, platform: String, versionInfo: PlatformVersionInfo): Unit = {
     versionNode.setProperty("platform", platform)
     versionNode.setProperty("version", versionInfo.version)
+    if (versionInfo.userType.isDefined)
+      versionNode.setProperty("userType", versionInfo.userType.get)
+    else if (versionNode.hasProperty("userType"))
+      versionNode.removeProperty("userType")
     if (versionInfo.updateUrl.isDefined) versionNode.setProperty("updateUrl", versionInfo.updateUrl.get)
     if (versionInfo.fullUrl.isDefined) versionNode.setProperty("fullUrl", versionInfo.fullUrl.get)
-    if (versionInfo.notes.isDefined) versionNode.setProperty("notes", versionInfo.notes.get)
-    if (versionInfo.name.isDefined) versionNode.setProperty("name", versionInfo.name.get)
+    if (versionInfo.notes.isDefined)
+      versionNode.setProperty("notes", versionInfo.notes.get)
+    else if (versionNode.hasProperty("notes"))
+      versionNode.removeProperty("notes")
+    if (versionInfo.name.isDefined)
+      versionNode.setProperty("name", versionInfo.name.get)
+    else if (versionNode.hasProperty("name"))
+      versionNode.removeProperty("name")
   }
 
   val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern( "yyyy-MM-dd'T'HH:mm:ss" );
@@ -592,10 +605,11 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
       val notes = if (versionNode.hasProperty("notes")) Some(versionNode.getProperty("notes").asInstanceOf[String]) else None
       val updateUrl = if (versionNode.hasProperty("updateUrl") && !squirrel) Some(versionNode.getProperty("updateUrl").asInstanceOf[String]) else None
       val fullUrl = if (!squirrel && versionNode.hasProperty("fullUrl")) Some(versionNode.getProperty("fullUrl").asInstanceOf[String]) else None
+      val userType = if (!squirrel && versionNode.hasProperty("userType")) Some(versionNode.getProperty("userType").asInstanceOf[Byte]) else None
       val modified = versionNode.getProperty("modified").asInstanceOf[Long]
       val pubDate: LocalDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(modified), ZoneOffset.UTC);
       val pubDateString = dateTimeFormatter.format(pubDate)
-      Some(PlatformVersionInfo(url, name, notes, Some(pubDateString), version.getValue, updateUrl, fullUrl))
+      Some(PlatformVersionInfo(url, name, notes, Some(pubDateString), version.getValue, userType, updateUrl, fullUrl))
     }
   }
 

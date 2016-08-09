@@ -156,8 +156,8 @@ trait AdminActions {
     db.putVersion(versionInfo.platform, versionInfo.info)
   }
 
-  def getUpdateVersion(platform: String, version: String)(implicit log: LoggingAdapter): Response[Option[PlatformVersionInfo]] = {
-    db.getUpdateVersion(platform, version)
+  def getUpdateVersion(platform: String, version: String, userType: Option[Byte])(implicit log: LoggingAdapter): Response[Option[PlatformVersionInfo]] = {
+    db.getUpdateVersion(platform, version, userType)
   }
 }
 

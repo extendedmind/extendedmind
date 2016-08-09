@@ -118,7 +118,7 @@ object JsonImplicits extends DefaultJsonProtocol {
   implicit val implPublicItemHeader = jsonFormat2(PublicItemHeader.apply)
   implicit val implItemRevision = jsonFormat11(ItemRevision.apply)
   implicit val implItemRevisions = jsonFormat1(ItemRevisions.apply)
-  implicit val implPlatformVersionInfo = jsonFormat7(PlatformVersionInfo.apply)
+  implicit val implPlatformVersionInfo = jsonFormat8(PlatformVersionInfo.apply)
   implicit val implVersionInfo = jsonFormat2(VersionInfo.apply)
   implicit val implInfo = jsonFormat5(Info.apply)
   implicit val implInvite = jsonFormat10(Invite.apply)

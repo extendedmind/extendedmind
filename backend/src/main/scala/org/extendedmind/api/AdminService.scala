@@ -306,8 +306,8 @@ trait AdminService extends ServiceBase {
         }
       } ~
       v2GetUpdate { url =>
-        parameters('platform.as[String], 'version.as[String]) { (platform, version) =>
-          adminActions.getUpdateVersion(platform, version) match {
+        parameters('platform.as[String], 'version.as[String], 'userType.as[Byte] . ?) { (platform, version, userType) =>
+          adminActions.getUpdateVersion(platform, version, userType) match {
             case Right(optionalInfo) => {
               if (optionalInfo.isEmpty){
                 complete(NoContent)
