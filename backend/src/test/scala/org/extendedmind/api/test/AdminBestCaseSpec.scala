@@ -481,6 +481,8 @@ class AdminBestCaseSpec extends ServiceSpecBase {
         squirrelInfo.fullUrl should be (None)
         squirrelInfo.updateUrl should be (None)
         squirrelInfo.notes should be(None)
+        squirrelInfo.version should be("1.0-beta")
+        squirrelInfo.name.get should be("beta")
       }
       Get("/v2/update?platform=darwin&version=1.0-beta") ~> route ~> check {
         status should be (NoContent)
@@ -512,6 +514,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
 
       // Add another platform
       val winVersionBeta = osxVersionBeta.copy(
+          name = None,
           updateUrl = Some("http://localhost:8008/files/testdata-1.0-beta.nupkg"),
           fullUrl = Some("http://localhost:8008/files/testdata-1.0-beta.exe"))
       Post("/v2/admin/update_version",
@@ -530,6 +533,9 @@ class AdminBestCaseSpec extends ServiceSpecBase {
         squirrelInfo.url.get should be ("http://localhost:8008/files/testdata-1.0-beta.nupkg")
         squirrelInfo.fullUrl should be (None)
         squirrelInfo.updateUrl should be (None)
+        squirrelInfo.version should be("1.0-beta")
+        // When name is not set, it should default to version
+        squirrelInfo.name.get should be(squirrelInfo.version)
       }
       Get("/v2/update?platform=win32&version=0.9&userType=3") ~> route ~> check {
         val squirrelInfo = responseAs[PlatformVersionInfo]

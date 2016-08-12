@@ -601,7 +601,9 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
       None
     }else{
       val url = if (squirrel) Some(versionNode.getProperty("updateUrl").asInstanceOf[String]) else None
-      val name = if (versionNode.hasProperty("name")) Some(versionNode.getProperty("name").asInstanceOf[String]) else None
+      val name = if (versionNode.hasProperty("name")) Some(versionNode.getProperty("name").asInstanceOf[String])
+                 else if (squirrel) Some(version.getValue)
+                 else None
       val notes = if (versionNode.hasProperty("notes")) Some(versionNode.getProperty("notes").asInstanceOf[String]) else None
       val updateUrl = if (versionNode.hasProperty("updateUrl") && !squirrel) Some(versionNode.getProperty("updateUrl").asInstanceOf[String]) else None
       val fullUrl = if (!squirrel && versionNode.hasProperty("fullUrl")) Some(versionNode.getProperty("fullUrl").asInstanceOf[String]) else None
