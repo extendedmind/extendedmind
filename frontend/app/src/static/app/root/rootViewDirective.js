@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- /* global cordova */
+ /* global cordova, console */
  'use strict';
 
  function rootViewDirective($http, $injector, $rootScope, $templateCache, $window, $timeout,
@@ -102,7 +102,7 @@
           PlatformService.setFeatureValue('setInboxId', '').then(
             undefined,
             function(error){
-              console.error("Could not remove inboxId from user defaults: " + error);
+              console.error('Could not remove inboxId from user defaults: ' + error);
             }
           );
         }
@@ -164,7 +164,7 @@
           if (params) {
             $scope.modal.params = params;
           }
-        };
+        }
         menuVisibleUnderModalFn = isMenuVisible;
         if (!$templateCache.get($rootScope.urlBase + 'app/base/modal.html')){
           // Because of 1.5.0-beta.1 introduced "Lazily compile the `transclude` function", this is
@@ -256,6 +256,9 @@
         else if (exception.type === 'clearAll') {
           clearAll();
         }
+        else if (exception.type === 'updateDownloaded'){
+          updateDownloaded(exception.value.releaseName);
+        }
         else if (exception.type === 'premium') {
           var primaryMessageTextNodes = [
           {
@@ -273,7 +276,7 @@
             type: 'link',
             data: 'click here',
             action: function() {
-              reinitModal(secondaryParams);
+              $scope.reinitModal(secondaryParams);
             }
           },
           {
@@ -290,7 +293,7 @@
             type: 'link',
             data: 'take me back',
             action: function() {
-              reinitModal(primaryParams);
+              $scope.reinitModal(primaryParams);
             }
           }];
 
@@ -335,6 +338,21 @@
           $scope.showModal(undefined, params);
         }
       });
+
+      function updateDownloaded(releaseName){
+        // Create a modal for updating
+        var versionName = releaseName ? ' ' + releaseName : '';
+        var params = {
+          messageHeading: 'update ready',
+          messageIngress: 'press restart the app to update to the latest version' + versionName,
+          confirmText: 'restart',
+          cancelDisabled: true,
+          confirmAction: function(){
+            PlatformService.doAction('restartAndUpdate');
+          }
+        };
+        $scope.showModal(undefined, params);
+      }
 
       // Clean up listening by executing the variable
       $scope.$on('$destroy', function() {
@@ -468,6 +486,13 @@
         window.addEventListener('orientationchange', orientationChanged, false);
       } else {
         window.addEventListener('resize', windowResized, false);
+      }
+
+      // SETUP UPDATA FEED URL ALWAYS ON BOOT
+
+      if (PlatformService.isSupported('setUpdateFeedUrl')){
+        PlatformService.setFeatureValue('setUpdateFeedUrl', UserSessionService.getUserType());
+        PlatformService.doAction('checkForUpdates');
       }
 
       // CLEANUP

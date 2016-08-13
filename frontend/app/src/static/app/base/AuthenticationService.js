@@ -82,9 +82,14 @@
       PlatformService.setFeatureValue('setInboxId', authenticateResponse.inboxId).then(
         undefined,
         function(error){
-          console.error("Could not save inboxId to user defaults: " + error);
+          console.error('Could not save inboxId to user defaults: ' + error);
         }
       );
+    }
+    // This is a good place to check for updates, as token is swapped once per day
+    if (PlatformService.isSupported('setUpdateFeedUrl')){
+      PlatformService.setFeatureValue('setUpdateFeedUrl', UserSessionService.getUserType());
+      PlatformService.doAction('checkForUpdates');
     }
   }
 

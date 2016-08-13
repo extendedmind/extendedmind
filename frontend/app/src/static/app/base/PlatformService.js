@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-/*global angular */
+/*global angular, require, cordova */
 'use strict';
 
-function PlatformService($q, packaging) {
+function PlatformService($q, $rootScope, BackendClientService, packaging, version) {
 
   function getFirstDayOfWeek(){
     return $q(function(resolve, reject) {
@@ -70,9 +70,9 @@ function PlatformService($q, packaging) {
     return $q(function(resolve, reject) {
       if (window.AppGroupsUserDefaults){
         var options = {
-              key: "inboxId",
+              key: 'inboxId',
               value: inboxId,
-              suite: "group.org.extendedmind"};
+              suite: 'group.org.extendedmind'};
         window.AppGroupsUserDefaults.save(options, function(){
           resolve();
         }, function(){
@@ -81,6 +81,18 @@ function PlatformService($q, packaging) {
       }else{
         reject('invalid configuration');
       }
+    });
+  }
+
+  function setUpdateFeedUrl(userType){
+    return $q(function(resolve) {
+      var platform = require('os').platform();
+      var urlPrefix = BackendClientService.getUrlPrefix();
+      var url = urlPrefix + '/api/v2/update?version=' + version + '&platform=' + platform;
+      if (userType !== undefined) url += '&userType=' + userType;
+      var electron = require('electron');
+      electron.remote.autoUpdater.on('update-downloaded', updateDownloaded);
+      resolve(electron.remote.autoUpdater.setFeedURL(url));
     });
   }
 
@@ -93,6 +105,33 @@ function PlatformService($q, packaging) {
       }else{
         reject('invalid configuration');
       }
+    });
+  }
+
+  function updateDownloaded(event, releaseNotes, releaseName){
+    $rootScope.$emit('emException',
+                     {type: 'updateDownloaded',
+                      value: {
+                        releaseNotes: releaseNotes,
+                        releaseName: releaseName
+                      }});
+  }
+
+  var updateCheckStarted;
+  function checkForUpdates(){
+    return $q(function(resolve, reject) {
+      // Check for updates only once every 11 hours
+      if (!updateCheckStarted || ((updateCheckStarted + 39600000) < Date.now())){
+        updateCheckStarted = Date.now();
+        resolve(require('electron').remote.autoUpdater.checkForUpdates());
+      }else{
+        reject();
+      }
+    });
+  }
+  function restartAndUpdate(){
+    return $q(function(resolve) {
+      resolve(require('electron').remote.autoUpdater.quitAndInstall());
     });
   }
 
@@ -119,6 +158,16 @@ function PlatformService($q, packaging) {
 
         case 'extendedLogin':
         return packaging.endsWith('cordova') || packaging.endsWith('electron');
+
+        // TODO: Remove "false &&" when live backend supports Squirrel /api/v2/update endpoint
+        case 'setUpdateFeedUrl':
+        return false && packaging === 'electron';
+
+        case 'checkForUpdates':
+        return false && packaging === 'electron';
+
+        case 'restartAndUpdate':
+        return false && packaging === 'electron';
       }
     }
   }
@@ -148,6 +197,9 @@ function PlatformService($q, packaging) {
             case 'setInboxId':
             resolve(setInboxId(featureValue));
             break;
+            case 'setUpdateFeedUrl':
+            resolve(setUpdateFeedUrl(featureValue));
+            break;
           }
         }else{
           reject('not supported');
@@ -161,6 +213,12 @@ function PlatformService($q, packaging) {
             case 'openLinkExternal':
             resolve(openLinkExternal(actionValue));
             break;
+            case 'checkForUpdates':
+            resolve(checkForUpdates());
+            break;
+            case 'restartAndUpdate':
+            resolve(restartAndUpdate());
+            break;
           }
         }else{
           reject('not supported');
@@ -169,5 +227,5 @@ function PlatformService($q, packaging) {
     }
   };
 }
-PlatformService['$inject'] = ['$q', 'packaging'];
+PlatformService['$inject'] = ['$q', '$rootScope', 'BackendClientService', 'packaging', 'version'];
 angular.module('em.base').factory('PlatformService', PlatformService);
