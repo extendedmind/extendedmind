@@ -46,23 +46,23 @@ function resumeCounter(){
             counterElem.text(counterText);
             currentCounterText = counterText;
             if (extendedMindAudio.setVolume){
-              if (currentCounterText === '1:14'){
+              if (currentCounterText === '1:14' && !extendedMindAudio.muted){
                 extendedMindAudio.setVolume(0.11);
-              }else if (currentCounterText === '1:13'){
+              }else if (currentCounterText === '1:13' && !extendedMindAudio.muted){
                 extendedMindAudio.setVolume(0.22);
-              }else if (currentCounterText === '1:12'){
+              }else if (currentCounterText === '1:12' && !extendedMindAudio.muted){
                 extendedMindAudio.setVolume(0.33);
-              }else if (currentCounterText === '1:11'){
+              }else if (currentCounterText === '1:11' && !extendedMindAudio.muted){
                 extendedMindAudio.setVolume(0.44);
-              }else if (currentCounterText === '1:10'){
+              }else if (currentCounterText === '1:10' && !extendedMindAudio.muted){
                 extendedMindAudio.setVolume(0.55);
-              }else if (currentCounterText === '1:09'){
+              }else if (currentCounterText === '1:09' && !extendedMindAudio.muted){
                 extendedMindAudio.setVolume(0.66);
-              }else if (currentCounterText === '1:08'){
+              }else if (currentCounterText === '1:08' && !extendedMindAudio.muted){
                 extendedMindAudio.setVolume(0.77);
-              }else if (currentCounterText === '1:07'){
+              }else if (currentCounterText === '1:07' && !extendedMindAudio.muted){
                 extendedMindAudio.setVolume(0.88);
-              }else if (currentCounterText === '1:06'){
+              }else if (currentCounterText === '1:06' && !extendedMindAudio.muted){
                 extendedMindAudio.setVolume(1.0);
               }
             }
