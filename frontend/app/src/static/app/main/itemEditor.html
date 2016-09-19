@@ -69,11 +69,11 @@
   </header>
 
   <div ng-style="{'padding-bottom': isPropertyInDedicatedEdit() ? 0 : getEditorFooterHeight()}"
-    class="container-fluid--inner">
+    class="container-fluid--inner no-swiper">
     <div class="container-content" drawer-override-aisle="right" ng-init="drawerAisleInitialized = true"
       scroll-then-toggle="itemEditorTitlebarTitle" scroll-then-toggle-top="itemEditorTitleInput"
-      scroll-then-toggle-reset="registerGotoItemTitleCallback">
-
+      scroll-then-toggle-reset="registerGotoItemTitleCallback"
+      ng-style="{'height': useNoSwiperEditorHeightOverride() && getNoSwiperEditorHeightOverride()}">
       <!-- ITEM TITLE -->
       <div ng-show="showEditorProperty('title')" class="row-vertically-centered with-textarea">
         <textarea class="text-heading-primary large" ng-model="item.trans.title" id="itemEditorTitleInput"

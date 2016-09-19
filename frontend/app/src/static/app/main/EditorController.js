@@ -1098,6 +1098,18 @@
     }
   };
 
+  // PLATFORM SPECIFIC HACKS
+
+  $scope.useNoSwiperEditorHeightOverride =  function(){
+    return PlatformService.isSupported('noSwiperHeightOverride');
+  };
+
+  $scope.getNoSwiperEditorHeightOverride =  function(){
+    if ($rootScope.softKeyboard && $rootScope.softKeyboard.height){
+      return $rootScope.currentHeight - ($rootScope.EDITOR_HEADER_HEIGHT + $rootScope.softKeyboard.height);
+    }
+  };
+
   // KEYBOARD SHORTCUTS
 
   if (angular.isFunction($scope.registerKeyboardShortcutCallback)){

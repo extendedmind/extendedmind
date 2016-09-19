@@ -34,6 +34,7 @@
       $rootScope.CONTAINER_MASTER_MAX_HEIGHT = 1025;
       $rootScope.MAX_HEIGHT = 1025;
       $rootScope.MENU_WIDTH = 260;
+      $rootScope.EDITOR_HEADER_HEIGHT = 53;
       $rootScope.EDITOR_FOOTER_HEIGHT = 44;
       $rootScope.EDITOR_FOOTER_HEIGHT_THREE_COLUMN = 68;
       $rootScope.TOOLBAR_BUTTON_WIDTH = $rootScope.TITLEBAR_BUTTON_WIDTH = 80;

@@ -69,10 +69,11 @@
     </div>
   </header>
 
-  <div class="container-fluid--inner">
+  <div class="container-fluid--inner no-swiper no-footer">
     <div class="container-content" drawer-override-aisle="right" ng-init="drawerAisleInitialized = true"
       scroll-then-toggle="tagEditorTitlebarTitle" scroll-then-toggle-top="tagEditorTitlebarTitle"
-      scroll-then-toggle-reset="registerGotoTagTitleCallback">
+      scroll-then-toggle-reset="registerGotoTagTitleCallback"
+      ng-style="{'height': useNoSwiperEditorHeightOverride() && getNoSwiperEditorHeightOverride()}">
 
       <!-- TITLE -->
       <div ng-show="showEditorProperty('title')">

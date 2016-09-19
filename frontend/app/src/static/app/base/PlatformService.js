@@ -168,6 +168,9 @@ function PlatformService($q, $rootScope, BackendClientService, packaging, versio
 
         case 'restartAndUpdate':
         return false && packaging === 'electron';
+
+        case 'noSwiperHeightOverride':
+        return packaging === 'ios-cordova'
       }
     }
   }

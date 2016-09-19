@@ -578,6 +578,22 @@ Vertically center .container-master and .container-editor in large screens
   box-sizing: content-box;  // [1]
 }
 
+// iOS 10 specific hack for preventing notes, inbox, settings, item and tag editor from overflowing
+// container-content on top of footer, when there is long enough content.
+.ios .container-fluid--inner.no-swiper > .container-content {
+  height: calc(~"100vh - " @height-footer + @height-toolbar);
+}
+.ios .container-fluid--inner.no-swiper.no-footer > .container-content {
+  height: calc(~"100vh - " @height-toolbar);
+}
+// In item editor, there is a small footer, and in tag editor, there is no footer
+.ios .container-editor .container-fluid--inner.no-swiper > .container-content {
+  height: calc(~"100vh - " @margin-top-heading + @grid-vertical + @grid-vertical);
+}
+.ios .container-editor .container-fluid--inner.no-swiper.no-footer > .container-content {
+  height: calc(~"100vh - " @margin-top-heading + @grid-vertical);
+}
+
 /*
 **************************************************************************
 # LEVEL 6: row and groups
