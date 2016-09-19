@@ -31,8 +31,8 @@
     $scope.registerFeatureEditorAboutToCloseCallback(omnibarEditorAboutToClose, 'OmnibarEditorController');
 
   function omnibarEditorAboutToClose() {
-    if (packaging === 'android-cordova'){
-      // In Android we need to force the keyboard down
+    if (packaging.endsWith('cordova')){
+      // In Android and iOS 10 we need to force the keyboard down
       cordova.plugins.Keyboard.close();
     }
   }
