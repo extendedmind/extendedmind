@@ -19,7 +19,7 @@
     <preference name="orientation" value="portrait" />
     <preference name="target-device" value="universal" />
     <preference name="fullscreen" value="true" />
-    <preference name="fullscreen-immersive" value="false" />
+    <preference name="FullscreenNotImmersive" value="true" />
     <preference name="webviewbounce" value="true" />
     <preference name="prerendered-icon" value="true" />
     <preference name="stay-in-webview" value="false" />
@@ -33,6 +33,8 @@
     <preference name="SplashScreen" value="splash" />
     <preference name="disable-cursor" value="false" />
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />
+    <preference name="BackupWebStorage" value="none" />
+
     <platform name="ios">
         <preference name="deployment-target" value="8.0" />
         <!-- images are determined by width and height. The following are supported -->

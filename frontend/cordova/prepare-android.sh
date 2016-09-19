@@ -11,7 +11,7 @@ else
   cd src
 
   # add android platform
-  ./node/node ./node_modules/.bin/cordova platform add https://github.com/ttiurani/cordova-android
+  ./node/node ./node_modules/.bin/cordova platform add https://github.com/apache/cordova-android#23fd0982b0faa6b7e169c2946eab07930f1f4d16
 
   # copy java sources
   if [ -d "platforms/android/src/org/extendedmind/nightly" ]
