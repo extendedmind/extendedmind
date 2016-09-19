@@ -5,7 +5,7 @@
     <key>CFBundleDevelopmentRegion</key>
     <string>English</string>
     <key>CFBundleDisplayName</key>
-    <string>ext.md</string>
+    <string>extended mind</string>
     <key>CFBundleExecutable</key>
     <string>${EXECUTABLE_NAME}</string>
     <key>CFBundleIcons</key>
@@ -168,6 +168,8 @@
     <true/>
     <key>UIStatusBarStyle</key>
     <string>UIStatusBarStyleDefault</string>
+    <key>NSCalendarsUsageDescription</key>
+    <string>Calendar events can be viewed alongside tasks for each day.</string>
     <!-- EXTENDED MIND DEFINITIONS END -->
   </dict>
 </plist>
