@@ -68,3 +68,4 @@ Steps needed in XCode when updating cordova sources to new version, so that shar
 11. Select the Capabilities tab and turn on App Groups for both extmd-share and extmd.
 12. Replace content in ShareViewController.swift with code from version control.
 13. Replace content in info.plist with code from version control.
+14. Select "Use Legacy Swift Language Version" to Yes and iOS deployment version to match main project version.
