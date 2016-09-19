@@ -21,4 +21,9 @@ then
   ./node/node ./node_modules/.bin/cordova run android --target=4272b012
 fi
 
+if test "$1" == "timonew"
+then
+  ./node/node ./node_modules/.bin/cordova run android --target=425c1a86
+fi
+
 cd ..
