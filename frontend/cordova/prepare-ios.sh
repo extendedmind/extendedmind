@@ -14,7 +14,7 @@ else
   fi
 
   # add iOS platform
-  ./node/node ./node_modules/.bin/cordova platform add ios@4.1.1
+  ./node/node ./node_modules/.bin/cordova platform add ios@4.2.1
 
   # copy edited iOS sources
   cp -Rf assets/build/ios/*.m platforms/ios/extmd/Classes/
