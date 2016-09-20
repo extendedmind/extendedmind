@@ -6,9 +6,9 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <application android:hardwareAccelerated="true" android:icon="@drawable/icon" android:label="@string/app_name">
+    <application android:hardwareAccelerated="true" android:icon="@drawable/icon" android:label="extended mind">
         <activity android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale" android:name="extmd" android:label="extended mind" android:launchMode="singleInstance" android:screenOrientation="userPortrait" android:theme="@android:style/Theme.Black.NoTitleBar">
-            <intent-filter android:label="@string/launcher_name">
+            <intent-filter android:label="extended mind">
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
