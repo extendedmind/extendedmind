@@ -17,20 +17,5 @@
         <include>nginx.conf</include>
       </includes>
     </fileSet>
-    <fileSet>
-      <directory>${project.basedir}/docker</directory>
-      <outputDirectory>confd/conf.d/nginx</outputDirectory>
-      <includes>
-        <include>evaluate.htpasswd.toml</include>
-      </includes>
-    </fileSet>
-    <fileSet>
-      <directory>${project.basedir}/docker</directory>
-      <outputDirectory>confd/templates/nginx</outputDirectory>
-      <filtered>true</filtered>
-      <includes>
-        <include>evaluate.htpasswd.tmpl</include>
-      </includes>
-    </fileSet>
   </fileSets>
 </assembly>
