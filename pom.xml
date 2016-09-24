@@ -137,13 +137,6 @@
       </dependency>
 
       <dependency>
-        <groupId>org.extendedmind.frontend</groupId>
-        <artifactId>frontend-analytics</artifactId>
-        <version>${project.version}</version>
-        <type>jar</type>
-      </dependency>
-
-      <dependency>
         <groupId>org.extendedmind</groupId>
         <artifactId>phantomjs</artifactId>
         <version>${phantomjs.version}</version>
