@@ -33,6 +33,7 @@ frontend/site/src/static/js/animo.min.js
 frontend/site/src/static/js/em-animation.js
 frontend/site/src/views/terms.html
 frontend/site/src/views/privacy.html
+frontend/site/docker/nginx.extendedmind.conf
 
 # Ignore PhantomJS logs
 phantomjsdriver.log

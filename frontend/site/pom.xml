@@ -41,6 +41,10 @@
     </dependency>
   </dependencies>
 
+  <properties>
+    <extraNginxConf></extraNginxConf>
+  </properties>
+
   <build>
     <plugins>
       <plugin>
@@ -152,6 +156,23 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
         <executions>
+          <execution>
+            <id>copy-templates</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.basedir}/docker</outputDirectory>
+              <overwrite>true</overwrite>
+              <resources>
+                <resource>
+                  <directory>${basedir}/templates</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
           <execution>
             <id>copy-static</id>
             <phase>generate-resources</phase>
@@ -368,6 +389,12 @@
         <configuration>
           <filesets>
             <fileset>
+              <directory>${basedir}/docker</directory>
+              <includes>
+                <include>nginx.extendedmind.conf</include>
+              </includes>
+            </fileset>
+            <fileset>
               <directory>${basedir}/src/etc</directory>
             </fileset>
             <fileset>
@@ -408,6 +435,26 @@
             </fileset>
           </filesets>
         </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.4</version>
+        <configuration>
+          <appendAssemblyId>true</appendAssemblyId>
+          <finalName>${project.artifactId}-${project.version}</finalName>
+          <descriptors>
+            <descriptor>sources-assembly.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
