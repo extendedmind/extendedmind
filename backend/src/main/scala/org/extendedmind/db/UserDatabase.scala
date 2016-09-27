@@ -153,13 +153,13 @@ trait UserDatabase extends AbstractGraphDatabase {
     }
   }
 
-  def getAgreement(userUUID: UUID, agreementUUID: UUID): Response[(Agreement, String, String)] = {
+  def getAgreement(userUUID: UUID, agreementUUID: UUID, includeAcceptCode: Boolean = false): Response[(Agreement, String, String, Option[Long])] = {
     withTx {
       implicit neo =>
         for {
-          agreementInfo <- getAgreementInformation(userUUID, agreementUUID).right
+          agreementInfo <- getAgreementInformation(userUUID, agreementUUID, includeAcceptCode).right
           agreement <- toAgreement(agreementInfo, showProposedBy=true).right
-        } yield (agreement, agreementInfo.concerningTitle, agreementInfo.proposedByDisplayName)
+        } yield (agreement, agreementInfo.concerningTitle, agreementInfo.proposedByDisplayName, agreementInfo.acceptCode)
     }
   }
 
@@ -699,20 +699,20 @@ trait UserDatabase extends AbstractGraphDatabase {
     }
   }
 
-  case class AgreementInformation(agreement: Node, agreementType: String, proposedBy: Node, proposedByDisplayName: String, concerning: Node, proposedTo: Option[Node], userIsCreator: Boolean, concerningTitle: String)
+  case class AgreementInformation(agreement: Node, agreementType: String, proposedBy: Node, proposedByDisplayName: String, concerning: Node, proposedTo: Option[Node], userIsCreator: Boolean, concerningTitle: String, acceptCode: Option[Long])
 
-  protected def getAgreementInformation(userUUID: UUID, agreementUUID: UUID): Response[AgreementInformation] = {
+  protected def getAgreementInformation(userUUID: UUID, agreementUUID: UUID, includeAcceptCode: Boolean = false): Response[AgreementInformation] = {
     withTx {
       implicit neo4j =>
         for {
           agreementNode <- getNode(agreementUUID, MainLabel.AGREEMENT).right
           userNode <- getNode(userUUID, OwnerLabel.USER).right
-          result <- getAgreementInformation(agreementNode, userNode).right
+          result <- getAgreementInformation(agreementNode, userNode, includeAcceptCode).right
         } yield result
     }
   }
 
-  protected def getAgreementInformation(agreementNode: Node, userNode: Node)(implicit neo4j: DatabaseService): Response[AgreementInformation] = {
+  protected def getAgreementInformation(agreementNode: Node, userNode: Node, includeAcceptCode: Boolean)(implicit neo4j: DatabaseService): Response[AgreementInformation] = {
     val proposedByRelationship = agreementNode.getRelationships.find(relationship => {
       relationship.getType.name == AgreementRelationship.PROPOSES.name
     })
@@ -722,6 +722,12 @@ trait UserDatabase extends AbstractGraphDatabase {
     val proposedByUser = proposedByRelationship.get.getStartNode
     val userIsCreator = proposedByUser.getId == userNode.getId
     val agreementType = agreementNode.getProperty("agreementType").asInstanceOf[String]
+
+    val acceptCode =
+      if (includeAcceptCode && agreementNode.hasProperty("acceptCode"))
+        Some(agreementNode.getProperty("acceptCode").asInstanceOf[Long])
+      else
+        None
 
     val concerningRelationship = agreementNode.getRelationships.find(relationship => {
       relationship.getType.name == AgreementRelationship.CONCERNING.name
@@ -745,7 +751,7 @@ trait UserDatabase extends AbstractGraphDatabase {
 
     val proposedByDisplayName = getDisplayOwner(proposedByUser)
 
-    Right(AgreementInformation(agreementNode, agreementType, proposedByUser, proposedByDisplayName, concerningNode, proposedToUser, userIsCreator, concerningNode.getProperty("title").asInstanceOf[String]))
+    Right(AgreementInformation(agreementNode, agreementType, proposedByUser, proposedByDisplayName, concerningNode, proposedToUser, userIsCreator, concerningNode.getProperty("title").asInstanceOf[String], acceptCode))
   }
 
   protected def changeAgreementAccessNode(agreementInfo: AgreementInformation, access: Byte)(implicit neo4j: DatabaseService): Response[Option[Relationship]] = {
@@ -1025,7 +1031,7 @@ trait UserDatabase extends AbstractGraphDatabase {
           proposedToNode <- getUserNode(proposedToEmail).right
           agreementNode <- getAgreementNodeForAcceptance(proposedToNode, acceptCode).right
           unit <- acceptAgreementNode(proposedToNode, agreementNode).right
-          agreementInformation <- getAgreementInformation(agreementNode, proposedToNode).right
+          agreementInformation <- getAgreementInformation(agreementNode, proposedToNode, false).right
         } yield agreementInformation
     }
   }

@@ -26,7 +26,7 @@ import spray.routing.PathMatchers._
 /**
  * Specifies the Extended Mind API v2
  */
-trait APIv2 extends LegacyAPI {
+trait APIv2 extends API {
 
   // USERS
 

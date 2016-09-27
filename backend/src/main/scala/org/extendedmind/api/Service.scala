@@ -156,8 +156,7 @@ class ServiceActor extends HttpServiceActor with Service {
 }
 
 // this class defines our service behavior independently from the service actor
-trait Service extends LegacyService
-        with AdminService
+trait Service extends AdminService
         with SecurityService
         with OwnerService
         with UserService
@@ -223,6 +222,6 @@ trait Service extends LegacyService
       val haStatus = adminActions.getHAStatus
       if (haStatus == "slave") ctx.complete(200, "true")
       else ctx.complete(NotFound, "false")
-    } ~ legacyRoutes ~ adminRoutes ~ securityRoutes ~ ownerRoutes ~ userRoutes ~ collectiveRoutes ~ itemRoutes ~ taskRoutes ~ noteRoutes ~ listRoutes ~ tagRoutes ~ inviteRoutes
+    } ~ adminRoutes ~ securityRoutes ~ ownerRoutes ~ userRoutes ~ collectiveRoutes ~ itemRoutes ~ taskRoutes ~ noteRoutes ~ listRoutes ~ tagRoutes ~ inviteRoutes
   }
 }

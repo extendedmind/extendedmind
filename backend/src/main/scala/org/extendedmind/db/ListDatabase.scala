@@ -437,7 +437,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
       Right(None)
     }else{
       val agreementInformations = agreementNodes.get.map(agreementNode => {
-        val agreementInfoResult = getAgreementInformation(agreementNode, userNode.get)
+        val agreementInfoResult = getAgreementInformation(agreementNode, userNode.get, false)
         if (agreementInfoResult.isLeft) return Left(agreementInfoResult.left.get)
         else agreementInfoResult.right.get
       })

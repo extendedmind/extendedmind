@@ -170,8 +170,8 @@ trait UserActions {
   def resendAgreement(userUUID: UUID, agreementUUID: UUID)(implicit log: LoggingAdapter): Response[CountResult] = {
     log.info("resendAgreement")
     for {
-      agreementResult <- db.getAgreement(userUUID, agreementUUID).right
-      result <- sendAgreementEmail(agreementResult._1, agreementResult._2, agreementResult._3).right
+      agreementResult <- db.getAgreement(userUUID, agreementUUID, true).right
+      result <- sendAgreementEmail(agreementResult._1, agreementResult._2, agreementResult._3, agreementResult._4).right
     } yield result
   }
 
@@ -192,11 +192,11 @@ trait UserActions {
     }
   }
 
-  private def sendAgreementEmail(agreement: Agreement, sharedListTitle: String, proposedByDisplayName: String)(implicit log: LoggingAdapter): Response[CountResult] = {
+  private def sendAgreementEmail(agreement: Agreement, sharedListTitle: String, proposedByDisplayName: String, existingAcceptCode: Option[Long] = None)(implicit log: LoggingAdapter): Response[CountResult] = {
     if (agreement.accepted.isDefined){
       fail(INVALID_PARAMETER, ERR_USER_AGREEMENT_ACCEPTED, "Agreeement has already been accepted, no need to send email")
     }else{
-      val acceptCode = Random.generateRandomUnsignedLong
+      val acceptCode = existingAcceptCode.fold(Random.generateRandomUnsignedLong)(acceptCode => acceptCode)
       val futureMailResponse = mail.sendShareListAgreement(agreement, acceptCode, sharedListTitle, proposedByDisplayName)
       futureMailResponse onSuccess {
         case SendEmailResponse(message, id) => {

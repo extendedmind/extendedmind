@@ -207,7 +207,7 @@ trait UserService extends ServiceBase {
           }
         }
       } ~
-      postAgreementResend { agreementUUID =>
+      v2PostAgreementResend { agreementUUID =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           complete {
             Future[CountResult] {

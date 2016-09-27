@@ -491,6 +491,15 @@ class ListBestCaseSpec extends ServiceSpecBase {
           itemsResponse.lists.get(0).modified.get should be (agreementSetResult.modified)
         }
 
+        // Resend agreement
+        val agreementCodeReCaptor: ArgumentCaptor[Long] = ArgumentCaptor.forClass(classOf[Long])
+        Post("/v2/users/agreements/" + agreementSetResult.uuid.get + "/resend_agreement") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+          writeJsonOutput("resendAgreementResponse", responseAs[String])
+          val resendAgreementResponse = responseAs[CountResult]
+          verify(mockMailClient, times(2)).sendShareListAgreement(anyObject(), agreementCodeReCaptor.capture(), anyObject(), anyObject())
+          agreementCode should be(agreementCodeReCaptor.getValue)
+        }
+
         // Accept agreement
         Post("/v2/users/accept_agreement",
           marshal(EmailVerification(TIMO_EMAIL, agreementCode.toHexString)).right.get) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
