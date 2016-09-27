@@ -9,5 +9,6 @@ keys = [
     "/extendedmind/backend/mailgundomain",
     "/extendedmind/backend/mailgunkey",
     "/extendedmind/emailfrom",
-    "/extendedmind/urlorigin"
+    "/extendedmind/urlorigin",
+	"/extendedmind/ui"
 ]

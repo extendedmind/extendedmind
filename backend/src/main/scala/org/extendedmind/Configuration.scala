@@ -105,7 +105,6 @@ class Settings(config: Config, versionConfig: Config) extends Extension {
       None
   }
 
-
   // Security parameters
 
   val tokenSecret = config.getString("extendedmind.security.tokenSecret")
@@ -153,6 +152,15 @@ class Settings(config: Config, versionConfig: Config) extends Extension {
   val resetPasswordURI = config.getString("extendedmind.email.templates.resetPasswordURI")
   val verifyEmailTitle = config.getString("extendedmind.email.templates.verifyEmailTitle")
   val verifyEmailURI = config.getString("extendedmind.email.templates.verifyEmailURI")
+
+  // UI field, returned from /info path
+  val ui: Option[String] = {
+    if (config.hasPath("extendedmind.ui"))
+      Some(config.getString("extendedmind.ui"))
+    else
+      None
+  }
+
 }
 
 object SettingsExtension extends ExtensionId[Settings] with ExtensionIdProvider{

@@ -176,7 +176,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
 
         val commonCollectiveInfo = (getUUID(commonCollectiveNode), commonCollectiveNode.getProperty("title").asInstanceOf[String])
         if (!latest && !history){
-          Right(Info(commonCollectiveInfo, settings.version.getValue, settings.build, infoNode.getProperty("created").asInstanceOf[Long], None))
+          Right(Info(commonCollectiveInfo, settings.version.getValue, settings.build, infoNode.getProperty("created").asInstanceOf[Long], settings.ui, None))
         }else{
           val versions = infoNode.getRelationships().filter(relationship => {
             relationship.getEndNode.hasLabel(MainLabel.VERSION)
@@ -213,7 +213,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
                   getPlatformVersionInfo(versionInfo._2, versionInfo._3, squirrel = false).get)
               }).toList
             }
-          Right(Info(commonCollectiveInfo, settings.version.getValue, settings.build, infoNode.getProperty("created").asInstanceOf[Long], Some(versionInfos)))
+          Right(Info(commonCollectiveInfo, settings.version.getValue, settings.build, infoNode.getProperty("created").asInstanceOf[Long], settings.ui, Some(versionInfos)))
         }
     }
   }

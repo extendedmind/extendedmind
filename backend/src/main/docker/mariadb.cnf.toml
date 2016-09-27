@@ -1,8 +1,0 @@
-[template]
-src = "../templates/mariadb/mariadb.cnf.tmpl"
-dest = "/etc/mysql/conf.d/cluster.cnf"
-keys = [
-    "/extendedmind/ha",
-    "/extendedmind/servers",
-    "/extendedmind/db/buffersize"
-]
