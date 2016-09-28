@@ -15,9 +15,7 @@
  'use strict';
 
 function AnalyticsService($injector, $q, $rootScope, $timeout, $window, BackendClientService,
-                          UserSessionService, packaging, version) {
-
-  var collectAnalytics = packaging !== 'devel';
+                          UserSessionService, packaging, version, collectAnalytics) {
 
   function generateRandomPiwikId() {
     var letters = '0123456789abcdef'.split('');
@@ -144,5 +142,5 @@ function AnalyticsService($injector, $q, $rootScope, $timeout, $window, BackendC
   };
 }
 AnalyticsService['$inject'] = ['$injector', '$q', '$rootScope', '$timeout', '$window', 'BackendClientService',
-'UserSessionService', 'packaging', 'version'];
+'UserSessionService', 'packaging', 'version', 'collectAnalytics'];
 angular.module('em.base').factory('AnalyticsService', AnalyticsService);

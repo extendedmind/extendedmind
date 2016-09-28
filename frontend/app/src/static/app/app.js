@@ -65,6 +65,9 @@
  // Global variable "version" is defined in index.html
  angular.module('em.app').constant('version', (typeof version !== 'undefined') ? version : 'devel');
 
+ // Global variable "collectAnalytics" can be defined in index.html
+ angular.module('em.app').constant('collectAnalytics', (typeof collectAnalytics !== 'undefined') ? collectAnalytics : false);
+
  // Global variable "enableOffline" can be defined in index.html
  angular.module('em.app').constant('enableOffline', (typeof enableOffline !== 'undefined') ? enableOffline :
                                    false);
