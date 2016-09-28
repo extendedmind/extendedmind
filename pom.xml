@@ -42,6 +42,10 @@
     <root.project.basedir>${project.basedir}</root.project.basedir>
     <!-- 0 is the default build number that is used when not running a build from the root, using buildnumber-maven-plugin below. -->
     <buildNumber>0</buildNumber>
+    <!-- Incrementing build number does not happen by default, only when there is a new version set with mvn versions:set -DnewVersion=X which
+         creates a pom.xml.versionsBackup file which then activates a profile build-number-activation. -->
+    <buildNumberIncrementSkip>true</buildNumberIncrementSkip>
+
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <encoding>UTF-8</encoding>
@@ -223,6 +227,17 @@
         <docker.skip>false</docker.skip>
       </properties>
     </profile>
+    <profile>
+      <id>build-number-activation</id>
+      <activation>
+        <file>
+          <exists>${basedir}/pom.xml.versionsBackup</exists>
+        </file>
+      </activation>
+      <properties>
+        <buildNumberIncrementSkip>false</buildNumberIncrementSkip>
+      </properties>
+    </profile>
   </profiles>
 
   <build>
@@ -246,7 +261,8 @@
           </execution>
         </executions>
         <configuration>
-          <doCheck>true</doCheck>
+          <skip>${buildNumberIncrementSkip}</skip>
+          <doCheck>false</doCheck>
           <doUpdate>false</doUpdate>
           <getRevisionOnlyOnce>true</getRevisionOnlyOnce>
           <format>{0,number,#}</format>
