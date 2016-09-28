@@ -33,6 +33,10 @@
     </developer>
   </developers>
 
+  <properties>
+    <root.project.basedir>${project.parent.parent.basedir}</root.project.basedir>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.extendedmind.frontend</groupId>

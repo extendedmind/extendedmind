@@ -28,6 +28,7 @@
   </scm>
 
   <properties>
+    <root.project.basedir>${project.parent.basedir}</root.project.basedir>
     <e2e.visualReviewDataRevision>4</e2e.visualReviewDataRevision>
     <e2e.urlOrigin>http://localhost:8008</e2e.urlOrigin>
     <e2e.mailgunDomain>extendedmind.org</e2e.mailgunDomain>

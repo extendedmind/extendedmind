@@ -43,6 +43,10 @@
     </developer>
   </developers>
 
+  <properties>
+    <root.project.basedir>${project.parent.parent.basedir}</root.project.basedir>
+  </properties>
+
   <profiles>
     <profile>
       <id>debug-minified</id>

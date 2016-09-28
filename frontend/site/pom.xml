@@ -42,6 +42,7 @@
   </dependencies>
 
   <properties>
+    <root.project.basedir>${project.parent.parent.basedir}</root.project.basedir>
     <extraNginxConf></extraNginxConf>
   </properties>
 

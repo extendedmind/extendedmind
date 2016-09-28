@@ -33,6 +33,7 @@
   </developers>
 
   <properties>
+    <root.project.basedir>${project.parent.parent.basedir}</root.project.basedir>
     <encoding>UTF-8</encoding>
     <skipAndroid>true</skipAndroid>
     <skipIos>true</skipIos>

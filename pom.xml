@@ -39,6 +39,9 @@
   </developers>
 
   <properties>
+    <root.project.basedir>${project.basedir}</root.project.basedir>
+    <!-- 0 is the default build number that is used when not running a build from the root, using buildnumber-maven-plugin below. -->
+    <buildNumber>0</buildNumber>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <encoding>UTF-8</encoding>
@@ -49,7 +52,10 @@
     <phantomjs.version>2.1.1</phantomjs.version>
     <jetty.version>9.0.4.v20130625</jetty.version>
     <docker.skip>true</docker.skip>
-    <buildNumber>0</buildNumber>
+
+    <!-- Compilation default properties -->
+    <extendedmind.analytics>false</extendedmind.analytics>
+    <extendedmind.name>test data</extendedmind.name>
   </properties>
 
   <repositories>
@@ -227,10 +233,27 @@
         <version>2.1</version>
       </plugin>
       <plugin>
-          <artifactId>maven-scm-plugin</artifactId>
-          <version>1.9</version>
-          <configuration>
-          <tag>${project.version}</tag>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>buildnumber-maven-plugin</artifactId>
+        <version>1.4</version>
+        <inherited>false</inherited>
+        <executions>
+          <execution>
+            <phase>validate</phase>
+            <goals>
+              <goal>create</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <doCheck>true</doCheck>
+          <doUpdate>false</doUpdate>
+          <getRevisionOnlyOnce>true</getRevisionOnlyOnce>
+          <format>{0,number,#}</format>
+          <items>
+            <item>buildNumber</item>
+          </items>
+          <buildNumberPropertiesFileLocation>${root.project.basedir}/buildNumber.properties</buildNumberPropertiesFileLocation>
         </configuration>
       </plugin>
     </plugins>
