@@ -35,36 +35,10 @@
   <properties>
     <root.project.basedir>${project.parent.parent.basedir}</root.project.basedir>
     <encoding>UTF-8</encoding>
-    <skipAndroid>true</skipAndroid>
-    <skipIos>true</skipIos>
     <cordova.bundleId>org.extendedmind</cordova.bundleId>
     <cordova.urlPrefix>https://ext.md</cordova.urlPrefix>
   </properties>
 
-  <profiles>
-    <profile>
-      <id>cordova-android</id>
-      <activation>
-        <file>
-          <exists>${user.home}/.extendedmind/android</exists>
-        </file>
-      </activation>
-      <properties>
-        <skipAndroid>false</skipAndroid>
-      </properties>
-    </profile>
-    <profile>
-      <id>cordova-ios</id>
-      <activation>
-        <file>
-          <exists>${user.home}/.extendedmind/ios</exists>
-        </file>
-      </activation>
-      <properties>
-        <skipIos>false</skipIos>
-      </properties>
-    </profile>
-  </profiles>
   <build>
     <resources>
       <resource>

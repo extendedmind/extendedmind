@@ -34,6 +34,8 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 
   <properties>
     <root.project.basedir>${project.parent.basedir}</root.project.basedir>
+    <skipAndroid>true</skipAndroid>
+    <skipIos>true</skipIos>
   </properties>
 
   <modules>
@@ -42,15 +44,32 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   </modules>
   <profiles>
     <profile>
-      <id>cordova</id>
+      <id>cordova-ios</id>
       <activation>
         <file>
-          <exists>${user.home}/.extendedmind</exists>
+          <exists>/usr/bin/xcode-select</exists>
         </file>
       </activation>
       <modules>
         <module>cordova</module>
       </modules>
+      <properties>
+        <skipIos>false</skipIos>
+      </properties>
+    </profile>
+    <profile>
+      <id>cordova-android</id>
+      <activation>
+        <property>
+          <name>env.ANDROID_HOME</name>
+        </property>
+      </activation>
+      <modules>
+        <module>cordova</module>
+      </modules>
+      <properties>
+        <skipAndroid>false</skipAndroid>
+      </properties>
     </profile>
     <profile>
       <id>electron</id>
