@@ -14,25 +14,13 @@ target/
 # Ignore frontend app generated files
 frontend/app/src/test/json/
 frontend/app/src/static/em.min.js
-frontend/app/src/static/terms.html
-frontend/app/src/static/privacy.html
 frontend/app/src/static/css/em.css
-frontend/app/src/static/audio/
 
 # Ignore frontend site generated files
 frontend/site/src/node/
 frontend/site/src/node_modules/
 frontend/site/src/js/
-frontend/site/src/static/audio/
-frontend/site/src/static/css
-frontend/site/src/static/favicon/
 frontend/site/src/static/fonts/
-frontend/site/src/static/img/
-frontend/site/src/static/js/less.js
-frontend/site/src/static/js/animo.min.js
-frontend/site/src/static/js/em-animation.js
-frontend/site/src/views/terms.html
-frontend/site/src/views/privacy.html
 frontend/site/docker/nginx.extendedmind.conf
 
 # Ignore PhantomJS logs

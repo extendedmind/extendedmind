@@ -13,14 +13,13 @@
  * limitations under the License.
  */
 
-/* global angular, pauseExtendedMindAnimation, extendedMindAudio, setupHTML5Audio, extendedMindAnimationDelay,
-playExtendedMindAnimation, extendedMindAnimationPhase, Media, cordova */
+/* global angular, cordova, console */
 'use strict';
 
 function EntryController($location, $rootScope, $routeParams, $scope, $timeout,
                          AnalyticsService, AuthenticationService, BackendClientService, ContentService,
-                         DetectBrowserService, PlatformService, SwiperService, UISessionService, UserService,
-                         UserSessionService, packaging) {
+                         DetectBrowserService, HookService, PlatformService, SwiperService, UISessionService,
+                         UserService, UserSessionService, packaging) {
 
   AnalyticsService.visit('entry','load_entry', true);
 
@@ -82,7 +81,7 @@ function EntryController($location, $rootScope, $routeParams, $scope, $timeout,
     $scope.user = {};
     SwiperService.swipeTo('entry/main');
     SwiperService.setEnableSwipeToNext('entry', true);
-    if (angular.isFunction(pauseExtendedMindAnimation)) pauseExtendedMindAnimation();
+    HookService.swipeToEntryLogin($scope);
     AnalyticsService.visit('entry', 'log_in', true);
   };
 
@@ -291,11 +290,7 @@ function EntryController($location, $rootScope, $routeParams, $scope, $timeout,
     UserSessionService.setPreference('onboarded', newUserFeatureValues);
     UserService.saveAccountPreferences();
     AnalyticsService.do('entry', 'start_tutorial');
-    // Manually kill sound at this stage to prevent audio from leaking to tutorial
-    if (typeof extendedMindAudio !== 'undefined' && extendedMindAudio &&
-        angular.isFunction(extendedMindAudio.pause)){
-      extendedMindAudio.pause();
-    }
+    HookService.startEntryTutorial($scope);
     $location.path('/my');
   };
 
@@ -325,120 +320,14 @@ function EntryController($location, $rootScope, $routeParams, $scope, $timeout,
     }
   };
 
-  function getAudioUrl(){
-    if (packaging === 'android-cordova'){
-      return 'file:///android_asset/www/' + $scope.urlBase + 'audio/theme.mp3';
-    }else if (packaging === 'ios-cordova'){
-      return $scope.urlBase + 'audio/theme.mp3';
-    }
-  }
+  // Add ability to hook into entry scope
 
-  $scope.useHTML5Audio = function(){
-    if (!packaging.endsWith('cordova')){
-      return true;
-    }
-  };
+  HookService.initializeEntryControllerScope($scope);
 
-  function animationEndCallback(){
-    AnalyticsService.do('entry', 'animation_end');
-  }
-
-  $scope.playExtendedMindAnimation = function(){
-    if (!extendedMindAudio){
-      if ($scope.useHTML5Audio()){
-        setupHTML5Audio(animationEndCallback);
-      }else if (Media){
-        var src = getAudioUrl();
-        $scope.theme = new Media(src, function(){
-          if (extendedMindAudio !== undefined) extendedMindAudio.ended = true;
-          if (packaging === 'android-cordova'){
-            // TODO: Fork and improve KeepScreenOnPlugin
-            cordova.exec(null, null, 'KeepScreenOn', 'CancelKeepScreenOn', ['']);
-          }
-        });
-        extendedMindAudio = {
-          ended: false,
-          play: function(){
-            $scope.theme.play();
-          },
-          pause: function(){
-            $scope.theme.pause();
-          },
-          muted: false,
-          setVolume: function(volume){
-            $scope.theme.setVolume(volume);
-          },
-          readyState: 1,
-          HAVE_FUTURE_DATA: 1,
-          endCallback: animationEndCallback
-        };
-        // Start off with a very quiet volume, volume is added gradually as animation progresses
-        extendedMindAudio.setVolume(0.05);
-      }
-    }
-    if (packaging === 'android-cordova'){
-      extendedMindAnimationDelay = 0.1;
-      // TODO: Fork and improve KeepScreenOnPlugin
-      cordova.exec(null, null, 'KeepScreenOn', 'KeepScreenOn', ['']);
-    }
-    else if (packaging === 'ios-cordova'){
-      extendedMindAnimationDelay = 0.05;
-    }
-    AnalyticsService.do('entry', 'animation_play');
-    playExtendedMindAnimation();
-  };
-
-  var audioReady = !$scope.useHTML5Audio();
-  var sloganReady, logoReady, slidesReady;
-  $scope.notifyAnimationReady = function(type){
-    if (type === 'audio') audioReady = true;
-    else if (type === 'slogan') sloganReady = true;
-    else if (type === 'logo') logoReady = true;
-    else if (type === 'slides') slidesReady = true;
-    if (audioReady && sloganReady && logoReady && slidesReady &&
-        UISessionService.getTransientUIState() !== 'loggedOut'){
-      $timeout(function(){
-        if ($scope.entryState !== 'login'){
-          $scope.playExtendedMindAnimation();
-        }
-      }, 1000);
-    }
-  };
-
-  $scope.toggleVolume = function(clickEvent){
-    extendedMindAudio.muted = !extendedMindAudio.muted;
-    if (!$scope.useHTML5Audio()){
-      if (extendedMindAudio.muted) $scope.theme.setVolume('0.0');
-      else $scope.theme.setVolume('1.0');
-    }
-    var volumeElem = document.getElementById("volume");
-    if (extendedMindAudio.muted){
-      volumeElem.className = 'icon-volume-up';
-    }else {
-      volumeElem.className = 'icon-volume-mute';
-    }
-    if (clickEvent){
-      clickEvent.stopPropagation();
-      clickEvent.preventDefault();
-    }
-    return false;
-  };
-
-  // Pause animation when entering background, not really working on iOS
-  function pauseCallback(){
-    if (extendedMindAudio && extendedMindAnimationPhase !== undefined){
-      pauseExtendedMindAnimation();
-    }
-  }
-  if (packaging.endsWith('cordova')){
-    document.addEventListener('pause', pauseCallback, false);
-    $scope.$on('$destroy', function() {
-      document.removeEventListener('pause', pauseCallback, false);
-    });
-  }
 }
 
 EntryController['$inject'] = ['$location', '$rootScope', '$routeParams', '$scope', '$timeout',
 'AnalyticsService', 'AuthenticationService', 'BackendClientService', 'ContentService', 'DetectBrowserService',
-'PlatformService', 'SwiperService', 'UISessionService', 'UserService', 'UserSessionService', 'packaging'];
+'HookService', 'PlatformService', 'SwiperService', 'UISessionService', 'UserService',
+'UserSessionService', 'packaging'];
 angular.module('em.entry').controller('EntryController', EntryController);

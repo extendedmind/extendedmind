@@ -1,83 +1,8 @@
 <div ng-if="entryState !== 'unsupported' && !isWeb()">
-  <section class="container-content em-animation-background">
+  <section class="container-content">
     <div class="group-instruction-jumbotron row">
-      <div class="group-instruction--animation" >
-        <div id="em-animation">
-          <audio ng-if="useHTML5Audio()" id="theme" ng-init="notifyAnimationReady('audio')">
-            <source ng-src="{{urlBase + 'audio/theme.ogg'}}" type="audio/ogg">
-            <source ng-src="{{urlBase + 'audio/theme.m4a'}}" type="audio/mp4">
-            <source ng-src="{{urlBase + 'audio/theme.mp3'}}" type="audio/mpeg">
-          </audio>
-          <span id="em-animation-logo" class="icon-logo"></span>
-          <a href id="em-animation-controls" ng-click="toggleVolume($event)">
-            <span id="em-animation-counter"></span>
-            <span id="volume" class="icon-volume-mute hide"></span>
-          </a>
-          <div id="em-animation-play" ng-click="playExtendedMindAnimation()">
-            <span id="play" class="icon-play invisible"></span>
-          </div>
-          <div id="em-animation-0">
-            <span class="icon-logo-text" ng-init="notifyAnimationReady('logo')"></span><br/><br/>
-            <span ng-init="notifyAnimationReady('slogan')">minimal task and note organizer</span>
-          </div>
-          <div id="em-animation-1" class="hide">
-            <span>what if you never had to forget anything again?</span>
-          </div>
-          <div id="em-animation-2" class="hide">
-            <span>what if software was an extension of you?</span>
-          </div>
-          <div id="em-animation-3" class="hide">
-            <span>your <b>mind</b> is bigger than you think</span>
-          </div>
-          <div id="em-animation-4" class="hide">
-            <span>but it is limited</span>
-          </div>
-          <div id="em-animation-5" class="hide">
-            <span>your subconscious mind can process over<br/>
-            <b>11.2 million</b> bits of information in a second</span>
-          </div>
-          <div id="em-animation-6" class="hide">
-            <span>your conscious mind: only <b>40</b></span>
-          </div>
-          <div id="em-animation-7" class="hide">
-            <span>we know how the <b>mind</b> works</span>
-          </div>
-          <div id="em-animation-8" class="hide">
-            <span>yet we design our tools the way software works</span>
-          </div>
-          <div id="em-animation-9" class="hide">
-            <span>it's time for a new perspective</span>
-          </div>
-          <div id="em-animation-10" class="hide">
-            <span>it's time to let the biological mind do what it does best:</span>
-          </div>
-          <div id="em-animation-11" class="hide">
-            <span id="em-animation-11-create" class="invisible animation-word">create</span>
-            <span id="em-animation-11-connect" class="invisible animation-word">connect</span>
-            <span id="em-animation-11-care" class="invisible animation-word">care</span>
-          </div>
-          <div id="em-animation-12" class="hide">
-            <span>it's time for the digital mind to do what it does best:</span>
-          </div>
-          <div id="em-animation-13" class="hide">
-            <span id="em-animation-13-focus" class="invisible animation-word">focus</span>
-            <span id="em-animation-13-organize" class="invisible animation-word">organize</span>
-            <span id="em-animation-13-keep" class="invisible animation-word">keep</span>
-          </div>
-          <div id="em-animation-14" class="hide">
-            <span>this is not a piece of software</span>
-          </div>
-          <div id="em-animation-15" class="hide">
-            <span>this is an <b>extension</b> to your <b>mind</b></span>
-          </div>
-          <div id="em-animation-16" class="hide">
-            <span id="em-animation-16-change" class="invisible text-jumbotron">change</span><br/>
-            <span id="em-animation-16-way" class="invisible text-jumbotron">the way</span><br/>
-            <span id="em-animation-16-you" class="invisible text-jumbotron nudge">you</span><br/>
-            <span id="em-animation-16-think" class="invisible text-jumbotron highlighted">think</span>
-          </div>
-        </div>
-      </div>
+      <h2 class="group-heading instruction row" style="padding-top: 15vh;" ng-bind="commonCollectiveName">
+      </h2>
     </div>
   </section>
   <footer class="container-content--after group-btn em-animation-background">
@@ -91,33 +16,11 @@
 </div>
 <div ng-if="entryState === 'unsupported'">
   <section class="container-content" style="padding-bottom: 122px;">
-    <ul style="padding-left: 28px;">
-      <li style="display:inline; margin-right: 15px;">
-        <span class="icon-logo" style="display:inline;"></span>
-      </li>
-    </ul>
-
     <h2 class="group-heading instruction row" style="padding-top: 15vh;">
-      download<br/>
-      the <span class="text-highlighted">app</span>
+      unsupported
     </h2>
     <div ng-if="!mobilePlatform" class="textgroup-ingress row">currently only the
       <span class="text-highlighted">google chrome</span> browser is supported
     </div>
-
   </section>
-  <footer class="container-content--after" style="height: 122px;">
-    <div class="table row">
-      <div class="table-row" style="vertical-align: middle;">
-        <a class="table-cell" style="text-align: left;" href="itms://itunes.com/apps/extendedmind">
-          <img ng-src="/{{urlBase}}img/download-app-store@2x.png" style="width: 120px;"/><br/>
-          <span class="text-details" style="padding-left: 10px;">iphone 4s or later</span>
-        </a>
-        <a class="table-cell" style="text-align: right;" href="market://details?id=org.extendedmind">
-          <img ng-src="/{{urlBase}}img/download-google-play@2x.png" style="width: 120px;"/><br/>
-          <span class="text-details" style="padding-right: 10px;">4.4 kitkat or later</span>
-        </a>
-      </div>
-    </div>
-  </footer>
 </div>

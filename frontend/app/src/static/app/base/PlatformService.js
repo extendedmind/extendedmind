@@ -16,7 +16,7 @@
 /*global angular, require, cordova */
 'use strict';
 
-function PlatformService($q, $rootScope, BackendClientService, packaging, version) {
+function PlatformService($q, $rootScope, BackendClientService, HookService, packaging, version) {
 
   function getFirstDayOfWeek(){
     return $q(function(resolve, reject) {
@@ -64,24 +64,6 @@ function PlatformService($q, $rootScope, BackendClientService, packaging, versio
     }else{
       return '24h';
     }
-  }
-
-  function setInboxId(inboxId){
-    return $q(function(resolve, reject) {
-      if (window.AppGroupsUserDefaults){
-        var options = {
-              key: 'inboxId',
-              value: inboxId,
-              suite: 'group.org.extendedmind'};
-        window.AppGroupsUserDefaults.save(options, function(){
-          resolve();
-        }, function(){
-          reject('error saving');
-        });
-      }else{
-        reject('invalid configuration');
-      }
-    });
   }
 
   function setUpdateFeedUrl(userType){
@@ -198,7 +180,7 @@ function PlatformService($q, $rootScope, BackendClientService, packaging, versio
         if (isSupported(featureName)){
           switch (featureName) {
             case 'setInboxId':
-            resolve(setInboxId(featureValue));
+            resolve(HookService.setInboxId(featureValue));
             break;
             case 'setUpdateFeedUrl':
             resolve(setUpdateFeedUrl(featureValue));
@@ -230,5 +212,5 @@ function PlatformService($q, $rootScope, BackendClientService, packaging, versio
     }
   };
 }
-PlatformService['$inject'] = ['$q', '$rootScope', 'BackendClientService', 'packaging', 'version'];
+PlatformService['$inject'] = ['$q', '$rootScope', 'BackendClientService', 'HookService', 'packaging', 'version'];
 angular.module('em.base').factory('PlatformService', PlatformService);
