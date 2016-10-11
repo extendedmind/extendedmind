@@ -423,16 +423,11 @@
             <fileset>
               <directory>${basedir}/src/static/js</directory>
               <includes>
-                <include>em-animation.js</include>
-                <include>animo.min.js</include>
                 <include>less.js</include>
               </includes>
             </fileset>
             <fileset>
               <directory>${basedir}/src/static/css</directory>
-            </fileset>
-            <fileset>
-              <directory>${basedir}/src/static/audio</directory>
             </fileset>
           </filesets>
         </configuration>

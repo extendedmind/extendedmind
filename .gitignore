@@ -20,7 +20,9 @@ frontend/app/src/static/css/em.css
 frontend/site/src/node/
 frontend/site/src/node_modules/
 frontend/site/src/js/
+frontend/site/src/static/js/less.js
 frontend/site/src/static/fonts/
+frontend/site/src/static/css/site.min.css
 frontend/site/docker/nginx.extendedmind.conf
 
 # Ignore PhantomJS logs
