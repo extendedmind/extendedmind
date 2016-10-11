@@ -342,6 +342,7 @@
                   <EXTENDEDMIND_DB_PASSWORD>rootpwd</EXTENDEDMIND_DB_PASSWORD>
                   <EXTENDEDMIND_DB_REPLICATE>piwik</EXTENDEDMIND_DB_REPLICATE>
                   <EXTENDEDMIND_DB_BUFFERSIZE>400M</EXTENDEDMIND_DB_BUFFERSIZE>
+                  <EXTENDEDMIND_UI>{}</EXTENDEDMIND_UI>
                 </env>
                 <volumes>
                   <from>

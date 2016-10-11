@@ -22,7 +22,6 @@ xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assemb
         <include>js/**</include>
         <include>static/**</include>
         <include>views/**</include>
-        <include>node_modules</include>
         <include>index.js</include>
         <include>package.json</include>
       </includes>
