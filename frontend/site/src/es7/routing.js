@@ -35,7 +35,6 @@ module.exports = (config, app, backendApi) => {
   nunjucks.env.addGlobal('domain', domain);
 
   const render = nunjucks.render;
-  const madoko = require('./madoko.js');
 
   // CONFIGURE MARKDOWN
 
@@ -221,7 +220,6 @@ module.exports = (config, app, backendApi) => {
   app.use(route.get('/privacy', privacy));
   app.use(route.get('/our/:handle', ourOwner));
   app.use(route.get('/our/:handle/:path', ourOwnerPath));
-  app.use(route.get('/our/:handle/:path/pdf', ourOwnerPathPdf));
   app.use(route.get('/preview/:ownerUUID/:itemUUID/:previewCode', previewPath));
 
   // routes
@@ -297,39 +295,7 @@ module.exports = (config, app, backendApi) => {
       let backendResponse = await request.get(backendApi + '/public/' + handle + '/' + path);
       if (backendResponse.status === 200){
         let ownerPathData = backendResponse.body;
-        if (ownerPathData.note && ownerPathData.note.format === 'madoko' && ownerPathData.note.content &&
-            ownerPathData.note.content.length){
-          let bibPath = madoko.getMadokoBibliographyPath(ownerPathData);
-          let bibPathData;
-          if (bibPath){
-            let bibResponse = await request.get(backendApi + '/public/' + bibPath);
-            if (bibResponse.status === 200) bibPathData = bibResponse.body;
-          }
-          ctx.body = await madoko.getMadokoHtml(handle, path, ownerPathData, bibPathData, bibPath);
-        }else{
-          // TODO: Format non-Madoko page with markdown-it normally
-        }
-      }
-    }
-  }
-
-  async function ourOwnerPathPdf(ctx, handle, path) {
-    console.log('GET /our/' + handle + '/' + path + '/pdf');
-    if (backendApi){
-      let backendResponse = await request.get(backendApi + '/public/' + handle + '/' + path);
-      if (backendResponse.status === 200){
-        let ownerPathData = backendResponse.body;
-        if (ownerPathData.note && ownerPathData.note.format === 'madoko' && ownerPathData.note.content &&
-            ownerPathData.note.content.length){
-          let bibPath = madoko.getMadokoBibliographyPath(ownerPathData);
-          let bibPathData;
-          if (bibPath){
-            let bibResponse = await request.get(backendApi + '/public/' + bibPath);
-            if (bibResponse.status === 200) bibPathData = bibResponse.body;
-          }
-          let madokoHtml = await madoko.getMadokoHtml(handle, path, ownerPathData, bibPathData, bibPath);
-          if (madokoHtml) await sendfile(ctx, madoko.getMadokoPDFPath(handle, path));
-        }
+        // TODO: Format with markdown-it
       }
     }
   }
