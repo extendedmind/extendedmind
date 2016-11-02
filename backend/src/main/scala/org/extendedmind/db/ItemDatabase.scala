@@ -2217,7 +2217,9 @@ trait ItemDatabase extends UserDatabase {
     PublicOwnerItemHeader(
         publicNote.note.visibility.get.path.get, publicNote.note.title, publicNote.note.visibility.get.licence,
         if (publicNote.assignee.isDefined) Some(publicNote.assignee.get.name) else None,
-        commonTags)
+        commonTags,
+        publicNote.note.visibility.get.published.get,
+        publicNote.note.modified.get)
   }
 
   protected def mergeCommonTagsBuffer(tagsBuffer: ListBuffer[Tag], publicNote: PublicItem, commonCollectiveUUID: UUID)(implicit neo4j: DatabaseService): Unit = {
