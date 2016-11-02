@@ -2215,6 +2215,7 @@ trait ItemDatabase extends UserDatabase {
         None
       }
     PublicOwnerItemHeader(
+        publicNote.note.uuid.get,
         publicNote.note.visibility.get.path.get, publicNote.note.title, publicNote.note.visibility.get.licence,
         if (publicNote.assignee.isDefined) Some(publicNote.assignee.get.name) else None,
         commonTags,
