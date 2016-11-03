@@ -462,6 +462,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
           publicStats.collectives.get.size should be (1)
           publicStats.collectives.get(0).notes.get.size should be (1)
           publicStats.commonTags.get.size should be (3)
+          publicStats.commonTags.get.find(tag => tag.title == "productivity" && tag.parent.isDefined) should not be(None)
         }
         // Get stats using modified, should return only one result
         Get("/v2/public?modified=" + putLauriNoteResponse.modified) ~> addHeader("Content-Type", "application/json") ~> route ~> check {

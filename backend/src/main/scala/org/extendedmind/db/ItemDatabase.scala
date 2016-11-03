@@ -599,7 +599,7 @@ trait ItemDatabase extends UserDatabase {
       } yield OwnerNodes(userNode, foreignOwnerNode)
     }else{
       for {
-        unspecifiedOwnerNode <- getNode(owner.userUUID, MainLabel.OWNER).right
+        unspecifiedOwnerNode <- getNode(if(owner.foreignOwnerUUID.isDefined) owner.foreignOwnerUUID.get else owner.userUUID, MainLabel.OWNER).right
       } yield OwnerNodes(unspecifiedOwnerNode, None)
     }
   }
@@ -915,6 +915,7 @@ trait ItemDatabase extends UserDatabase {
     relationshipType: RelationshipType,
     endNodeLabel: Label,
     direction: Direction = Direction.OUTGOING)(implicit neo4j: DatabaseService): Option[Relationship] = {
+
     val relatedNodeFromItem: TraversalDescription =
       neo4j.gds.traversalDescription()
         .depthFirst()
@@ -1851,7 +1852,8 @@ trait ItemDatabase extends UserDatabase {
 
     // Convert node buffer to tag buffer
     collectiveTagNodeBuffer.foreach(collectiveTagNode => {
-      val tagResult = toTag(collectiveTagNode._2, owner)
+      val actualTagOwner = owner.copy(foreignOwnerUUID = Some(collectiveTagNode._1))
+      val tagResult = toTag(collectiveTagNode._2, actualTagOwner)
       if (tagResult.isLeft) return Left(tagResult.left.get)
       val tag = if (noUi) tagResult.right.get.copy(ui = None) else tagResult.right.get
       collectiveTagBuffer.find(existingCollectiveTag => existingCollectiveTag._1 == collectiveTagNode._1).fold({
