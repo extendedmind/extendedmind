@@ -379,16 +379,22 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
           val handle = ownerNode.getProperty("handle").asInstanceOf[String]
 
           val pathResult = getPublicItemRevisionNodeByPath(getUUID(ownerNode), path)
-          if (pathResult.isRight){
-            val publishedNodeRevision = pathResult.right.get
-            if (publishedNodeRevision.getRelationships.find(relationship =>
-                relationship.getType.name == ItemRelationship.HAS_REVISION.name &&
-                relationship.getStartNode != noteNode).isDefined){
-              return fail(INVALID_PARAMETER, ERR_NOTE_PATH_IN_USE,
-                  "Can not publish because given path is already in use with a different item")
+          val published: Option[Long] =
+            if (pathResult.isRight){
+              val publishedNodeRevision = pathResult.right.get
+              if (publishedNodeRevision.getRelationships.find(relationship =>
+                  relationship.getType.name == ItemRelationship.HAS_REVISION.name &&
+                  relationship.getStartNode != noteNode).isDefined){
+                return fail(INVALID_PARAMETER, ERR_NOTE_PATH_IN_USE,
+                    "Can not publish because given path is already in use with a different item")
+              }
+              // Republishing the same node with the same path, don't change published timestamp, "modified"
+              // indicates edits after publishing
+              if (overridePublished.isEmpty) Some(publishedNodeRevision.getProperty("published").asInstanceOf[Long])
+              else overridePublished
+            }else{
+              overridePublished
             }
-            // Republishing the same node with the same path
-          }
 
           val previouslyPublishedRevisionRelationship =
             getPublishedExtendedItemRevisionRelationship(noteNode)
@@ -408,7 +414,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
             note <- toNote(noteNode, ownerNodes, skipParent = true).right
             noteBytes <- Right(pickleNote(getNoteForPickling(note))).right
             noteRevisionNode <- Right(createExtendedItemRevision(noteNode, ownerNodes, ItemLabel.NOTE, noteBytes, latestRevisionRel, base = true)).right
-            publishResult <- Right(setNotePublished(getUUID(ownerNode), noteNode, noteRevisionNode, format, path, licence, index, publicUi, overridePublished)).right
+            publishResult <- Right(setNotePublished(getUUID(ownerNode), noteNode, noteRevisionNode, format, path, licence, index, publicUi, published)).right
           } yield publishResult
         }
     }

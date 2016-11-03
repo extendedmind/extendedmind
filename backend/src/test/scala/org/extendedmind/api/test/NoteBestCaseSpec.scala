@@ -254,6 +254,8 @@ class NoteBestCaseSpec extends ServiceSpecBase {
             Post("/v2/owners/" + authenticateResponse.userUUID + "/data/notes/" + putNoteResponse.uuid.get + "/publish",
                 marshal(PublishPayload("md", "test", Some(LicenceType.CC_BY_SA_4_0.toString), Some(true), None, None))) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
               val republishNoteResult = responseAs[PublishNoteResult]
+              // Published the same note with edits should not change
+              republishNoteResult.published should be(publishNoteResult.published)
               Get("/v2/public/timo/test") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
                 val publicItem = responseAs[PublicItem]
                 publicItem.note.title should be(updatedNote.title)
@@ -261,6 +263,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
                 publicItem.note.visibility.get.publicUi should be(None)
                 publicItem.note.visibility.get.shortId.get should be(shortId)
                 publicItem.note.visibility.get.indexed should not be(None)
+                publicItem.note.visibility.get.published.get should be(publishNoteResult.published)
               }
               Get("/v2/short/" + shortId) ~> route ~> check {
                 val publicItemHeaderResponse = responseAs[PublicItemHeader]
