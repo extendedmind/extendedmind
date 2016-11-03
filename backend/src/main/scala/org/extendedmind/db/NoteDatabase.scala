@@ -443,7 +443,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
         }else{
           None
         }
-      }else if (noteNode.hasProperty("indexed")){
+      }else if (!index && noteNode.hasProperty("indexed")){
         noteNode.removeProperty("indexed")
         None
       }else{
@@ -589,7 +589,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     for {
       unprocessedNote <- unpickleNote(noteRevisionNode.getProperty("data").asInstanceOf[Array[Byte]]).right
       note <- Right(validateNote(ownerNode, stripNonPublicFieldsFromNote(unprocessedNote))).right
-      tagsResult <- getExtendedItemTagsWithParents(note, owner, noUi=true, includeOnlyTagsByOwner).right
+      tagsResult <- getExtendedItemTagsWithParents(note, owner, public=true, includeOnlyTagsByOwner).right
       assignee <- getAssignee(note).right
     } yield PublicItem(displayOwner,
         note.copy(modified = Some(modified),

@@ -1789,7 +1789,7 @@ trait ItemDatabase extends UserDatabase {
     }
   }
 
-  protected def getExtendedItemTagsWithParents(extendedItem: ExtendedItem, owner: Owner, noUi: Boolean = false, includeOnlyTagsByOwner: Option[UUID] = None)
+  protected def getExtendedItemTagsWithParents(extendedItem: ExtendedItem, owner: Owner, public: Boolean = false, includeOnlyTagsByOwner: Option[UUID] = None)
           (implicit neo4j: DatabaseService): Response[(Option[scala.List[Tag]], Option[scala.List[(UUID, scala.List[Tag])]])] = {
 
     if (extendedItem.relationships.isDefined &&
@@ -1824,13 +1824,13 @@ trait ItemDatabase extends UserDatabase {
           }
         })
       }
-      getTagItemsWithParents(tagNodeBuffer, collectiveTagNodeBuffer, owner, noUi)
+      getTagItemsWithParents(tagNodeBuffer, collectiveTagNodeBuffer, owner, public)
     }else{
       Right((None, None))
     }
   }
 
-  protected def getTagItemsWithParents(tagNodeBuffer: ListBuffer[Node], collectiveTagNodeBuffer: ListBuffer[(UUID, Node)], owner: Owner, noUi: Boolean = false)
+  protected def getTagItemsWithParents(tagNodeBuffer: ListBuffer[Node], collectiveTagNodeBuffer: ListBuffer[(UUID, Node)], owner: Owner, public: Boolean = false)
           (implicit neo4j: DatabaseService): Response[(Option[scala.List[Tag]], Option[scala.List[(UUID, scala.List[Tag])]])] = {
 
     // FIRST: Owner tags
@@ -1839,7 +1839,16 @@ trait ItemDatabase extends UserDatabase {
     tagNodeBuffer.foreach(tagNode => {
       val tagResult = toTag(tagNode, owner)
       if (tagResult.isRight){
-        val tag = if (noUi) tagResult.right.get.copy(ui = None) else tagResult.right.get
+        val tag = {
+          if (public){
+            tagResult.right.get.copy(
+                ui = None,
+                creator = None,
+                created = None)
+          }else {
+            tagResult.right.get
+          }
+        }
         tagBuffer.append(tag)
       }else{
         return Left(tagResult.left.get)
@@ -1855,7 +1864,16 @@ trait ItemDatabase extends UserDatabase {
       val actualTagOwner = owner.copy(foreignOwnerUUID = Some(collectiveTagNode._1))
       val tagResult = toTag(collectiveTagNode._2, actualTagOwner)
       if (tagResult.isLeft) return Left(tagResult.left.get)
-      val tag = if (noUi) tagResult.right.get.copy(ui = None) else tagResult.right.get
+      val tag = {
+        if (public){
+          tagResult.right.get.copy(
+              ui = None,
+              creator = None,
+              created = None)
+        }else {
+          tagResult.right.get
+        }
+      }
       collectiveTagBuffer.find(existingCollectiveTag => existingCollectiveTag._1 == collectiveTagNode._1).fold({
         collectiveTagBuffer.append( (collectiveTagNode._1, scala.List(tag)) )
       })(existingCollectiveTags => {
@@ -2218,7 +2236,10 @@ trait ItemDatabase extends UserDatabase {
       }
     PublicOwnerItemHeader(
         publicNote.note.uuid.get,
-        publicNote.note.visibility.get.path.get, publicNote.note.title, publicNote.note.visibility.get.licence,
+        publicNote.note.visibility.get.path.get,
+        publicNote.note.title,
+        publicNote.note.visibility.get.indexed.get,
+        publicNote.note.visibility.get.licence,
         if (publicNote.assignee.isDefined) Some(publicNote.assignee.get.name) else None,
         commonTags,
         publicNote.note.visibility.get.published.get,
