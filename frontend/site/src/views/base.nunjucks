@@ -4,58 +4,16 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}extended mind{% endblock %}</title>
-  <meta name="description" content="{% block description %}extended mind{% endblock %}">
-  <meta name="application-name" content="extended mind">
+  <title>{% block title %}{% endblock %}</title>
+  <meta name="description" content="{% block description %}{{ commonCollectiveName }}{% endblock %}">
+  <meta name="application-name" content="{{ commonCollectiveName }}">
 
-  <meta property="og:title" content="{% block ogtitle %}extended mind{% endblock %}" />
+  <meta property="og:title" content="{% block ogTitle %}{{ commonCollectiveName }}{% endblock %}" />
   <meta property="og:type" content="{% block ogtype %}website{% endblock %}" />
-  <meta property="og:image:url" content="https://ext.md/static/img/logo-text.png" />
-  <meta property="og:image:secure_url" content="https://ext.md/static/img/logo-text.png" />
-  <meta property="og:image:url" content="https://ext.md/static/img/logo.png" />
-  <meta property="og:image:secure_url" content="https://ext.md/static/img/logo.png" />
 
   {% block stylesheets %}
-  {% if development %}
-  <link rel="stylesheet/less" href="/static/less/site.less"/>
-  <script src="/static/js/less.js"></script>
-  {% else %}
-  <link rel="stylesheet" href="/static/css/site.min.css" >
-  {% endif %}
+  <link rel="stylesheet" href="/static/css/site.css" >
   {% endblock %}
-
-  <link rel="apple-touch-icon" sizes="57x57" href="static/favicon/apple-touch-icon-57x57.png">
-  <link rel="apple-touch-icon" sizes="114x114" href="static/favicon/apple-touch-icon-114x114.png">
-  <link rel="apple-touch-icon" sizes="72x72" href="static/favicon/apple-touch-icon-72x72.png">
-  <link rel="apple-touch-icon" sizes="144x144" href="static/favicon/apple-touch-icon-144x144.png">
-  <link rel="apple-touch-icon" sizes="60x60" href="static/favicon/apple-touch-icon-60x60.png">
-  <link rel="apple-touch-icon" sizes="120x120" href="static/favicon/apple-touch-icon-120x120.png">
-  <link rel="apple-touch-icon" sizes="76x76" href="static/favicon/apple-touch-icon-76x76.png">
-  <link rel="apple-touch-icon" sizes="152x152" href="static/favicon/apple-touch-icon-152x152.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="static/favicon/apple-touch-icon-180x180.png">
-  <meta name="apple-mobile-web-app-title" content="extended mind">
-  <link rel="icon" type="image/png" href="static/favicon/favicon-192x192.png" sizes="192x192">
-  <link rel="icon" type="image/png" href="static/favicon/favicon-160x160.png" sizes="160x160">
-  <link rel="icon" type="image/png" href="static/favicon/favicon-96x96.png" sizes="96x96">
-  <link rel="icon" type="image/png" href="static/favicon/favicon-16x16.png" sizes="16x16">
-  <link rel="icon" type="image/png" href="static/favicon/favicon-32x32.png" sizes="32x32">
-  <meta name="msapplication-TileColor" content="#2b5797">
-  <meta name="msapplication-TileImage" content="static/favicon/mstile-144x144.png">
-
-  <script>
-    var _paq = _paq || [];
-    _paq.push(['setRequestMethod', 'POST']);
-    _paq.push(['disableCookies']);
-    _paq.push(['trackPageView']);
-    _paq.push(['enableLinkTracking']);
-    (function() {
-      var u="//{{ domain }}/analytics/";
-      _paq.push(['setTrackerUrl', u+'piwik.php']);
-      _paq.push(['setSiteId', 1]);
-      var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-      g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
-    })();
-  </script>
 
 </head>
 
@@ -69,6 +27,9 @@
   </div>
   <footer>
     {% block footer %}{% endblock %}
+    {% if powered %}
+    <h5 class="text-center">powered by <a target="_blank" rel="noopener" href="https://extendedmind.org">extended mind</a></h5>
+    {% endif %}
   </footer>
   {% block scripts %}{% endblock %}
 </body>

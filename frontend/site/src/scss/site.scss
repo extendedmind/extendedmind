@@ -1,0 +1,65 @@
+/************************************************************/
+/* FOUNDATION IMPORTS                                       */
+/* These are located at node_modules/foundation-sites/scss  */
+/************************************************************/
+
+@import "foundation";
+@include foundation-global-styles;
+@include foundation-grid;
+@include foundation-visibility-classes;
+
+/************************/
+/* FOUNDATION OVERRIDES */
+/************************/
+
+body, button, .button, .top-bar-section ul li > a {
+  font-family: 'HelveticaNeue-Light', 'Helvetica Neue Light', 'HelveticaNeue',
+'Helvetica Neue',  'Segoe UI Light', 'Segoe UI', 'sans-serif-light', 'sans-serif';
+  font-weight: 100;
+}
+
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+html {
+  /* Disable overflow-y in mobile to get momentum scrolling to work */
+  overflow-y: hidden;
+}
+
+body {
+  font-size: 15px;
+  color: #000000;
+}
+
+/* LARGE */
+@media only screen and (min-width: 64.063em){
+  html {
+    /* Set overflow-y to initial to get animated scroll to work in desktop */
+    overflow-y: initial;
+  }
+  body {
+    font-size: 16px;
+  }
+}
+
+/* EXTRA LARGE */
+@media only screen and (min-width: 90.063em){
+  body {
+    font-size: 20px;
+  }
+}
+
+.row {
+  max-width: none;
+}
+
+button, .button {
+  background-color: #0f82fe;
+}
+
+
+button:hover, button:focus, .button:hover, .button:focus {
+  background-color: #0171ea;
+}

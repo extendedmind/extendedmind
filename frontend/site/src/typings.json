@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "koa-static": "github:extendedmind/typings/koa-static#7c59c462c23b1aba9425a1f94454b1473ddc4944",
+    "markdown-it": "github:rapropos/typed-markdown-it#70184c9d393c09fb93e5cdac9ccf8df2a0f8d291"
+  }
+}

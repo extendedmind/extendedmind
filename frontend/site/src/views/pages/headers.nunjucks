@@ -1,0 +1,19 @@
+{% extends "base.nunjucks" %}
+{% set pageName = 'home' %}
+{% block title %}{{ super() }}{% endblock %}
+{% block description %}{{ commonCollectiveName }}{% endblock %}
+{% block ogtitle %}{{ super() }}{% endblock %}
+{% block ogtype %}{{ super() }}{% endblock %}
+{% block stylesheets %}{{ super() }}{% endblock %}
+{% block bodyattrs %}{% endblock %}
+{% block header %}{% endblock %}
+{% block main %}
+<div class="section">
+  <div class="row">
+    <div class="large-12 end columns">
+      <h1 class="text-center">{{ commonCollectiveName }}</h1>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}{% endblock %}

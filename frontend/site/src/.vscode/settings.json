@@ -1,0 +1,6 @@
+{
+  "typescript.tsdk": "./node_modules/typescript/lib",
+  "editor.insertSpaces": true,
+  "editor.tabSize": 2,
+  "files.trimTrailingWhitespace": true
+}

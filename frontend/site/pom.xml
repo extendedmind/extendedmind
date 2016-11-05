@@ -181,59 +181,13 @@
               <goal>copy-resources</goal>
             </goals>
             <configuration>
-              <outputDirectory>${project.basedir}/src/static</outputDirectory>
+              <outputDirectory>${project.basedir}/src/public/static</outputDirectory>
               <overwrite>true</overwrite>
               <resources>
                 <resource>
                   <directory>${project.build.directory}/unpacked-app/static/${project.version}</directory>
                   <includes>
-                    <include>css/em-animation.css</include>
-                    <include>css/animate-animo.css</include>
-                    <include>js/animo.min.js</include>
-                    <include>js/em-animation.js</include>
-                    <include>favicon/*</include>
-                    <include>audio/*</include>
-                    <include>img/*</include>
                     <include>fonts/*</include>
-                  </includes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-          <execution>
-            <id>copy-terms-and-privacy</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.basedir}/src/views</outputDirectory>
-              <overwrite>true</overwrite>
-              <resources>
-                <resource>
-                  <directory>${project.build.directory}/unpacked-app/static</directory>
-                  <includes>
-                    <include>terms.html</include>
-                    <include>privacy.html</include>
-                  </includes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-          <execution>
-            <id>copy-less-compiler</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.basedir}/src/static/js</outputDirectory>
-              <overwrite>true</overwrite>
-              <resources>
-                <resource>
-                  <directory>${project.basedir}/src/node_modules/less/dist</directory>
-                  <includes>
-                    <include>less.js</include>
                   </includes>
                 </resource>
               </resources>
@@ -405,29 +359,13 @@
               <directory>${basedir}/src/node_modules</directory>
             </fileset>
             <fileset>
-              <directory>${basedir}/src/static/favicon</directory>
+              <directory>${basedir}/src/public/fonts</directory>
             </fileset>
             <fileset>
-              <directory>${basedir}/src/views</directory>
-              <includes>
-                <include>terms.html</include>
-                <include>privacy.html</include>
-              </includes>
+              <directory>${basedir}/src/public/static/css</directory>
             </fileset>
             <fileset>
-              <directory>${basedir}/src/static/img</directory>
-            </fileset>
-            <fileset>
-              <directory>${basedir}/src/static/fonts</directory>
-            </fileset>
-            <fileset>
-              <directory>${basedir}/src/static/js</directory>
-              <includes>
-                <include>less.js</include>
-              </includes>
-            </fileset>
-            <fileset>
-              <directory>${basedir}/src/static/css</directory>
+              <directory>${basedir}/src/dist</directory>
             </fileset>
           </filesets>
         </configuration>
