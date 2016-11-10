@@ -1,12 +1,12 @@
-import {Render} from "./rendering";
+import { Render } from "./rendering";
 import * as Router from "koa-router";
-import {ExtendedMindInfo, ExtendedMindUtilsAPI} from "extendedmind-siteutils";
+import { Info, Utils } from "extendedmind-siteutils";
 
 export class Routing {
   private router = new Router();
 
-  constructor(private backendClient: ExtendedMindUtilsAPI,
-              private backendInfo: ExtendedMindInfo) {
+  constructor(private backendClient: Utils,
+              private backendInfo: Info) {
     // SETUP router
     this.router.get("/", this.index);
     this.router.get("/:handle", this.owner);

@@ -19,11 +19,14 @@ xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assemb
       <directory>${project.basedir}/src</directory>
       <useDefaultExcludes>true</useDefaultExcludes>
       <includes>
-        <include>js/**</include>
-        <include>static/**</include>
+        <include>lib/**</include>
+        <include>scss/**</include>
         <include>views/**</include>
-        <include>index.js</include>
+        <include>config-devel.json</include>
         <include>package.json</include>
+        <include>tsconfig.json</include>
+        <include>tslint.json</include>
+        <include>typings.json</include>
       </includes>
     </fileSet>
   </fileSets>

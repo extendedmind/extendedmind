@@ -1,10 +1,9 @@
-import {runServer, ServerConfig} from  "./server";
-import * as chalk from "chalk";
+import {Server, Config} from  "./server";
 
 /**
  * Load configuration file given as command line parameter
  */
-let config: ServerConfig;
+let config: Config;
 if (process.argv.length > 2) {
   console.info("loading configuration file: " + process.argv[2]);
   config = require(process.argv[2]);
@@ -12,7 +11,8 @@ if (process.argv.length > 2) {
     config.backend = process.argv[3];
   }
 }else {
-  console.error(chalk.red("no configuration file provided"));
+  console.error("no configuration file provided, exiting...");
   process.exit();
 };
-runServer(config);
+const server = new Server(config);
+server.run();

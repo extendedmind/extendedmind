@@ -74,36 +74,6 @@
             </configuration>
           </execution>
           <execution>
-            <id>npm-build-transpile-modules</id>
-            <goals>
-              <goal>npm</goal>
-            </goals>
-            <phase>compile</phase>
-            <configuration>
-              <arguments>run transpile:modules</arguments>
-            </configuration>
-          </execution>
-          <execution>
-            <id>npm-build-transpile-sources</id>
-            <goals>
-              <goal>npm</goal>
-            </goals>
-            <phase>compile</phase>
-            <configuration>
-              <arguments>run transpile:sources</arguments>
-            </configuration>
-          </execution>
-          <execution>
-            <id>npm-build-less</id>
-            <goals>
-              <goal>npm</goal>
-            </goals>
-            <phase>compile</phase>
-            <configuration>
-              <arguments>run build:less</arguments>
-            </configuration>
-          </execution>
-          <execution>
             <id>npm-prune-to-production</id>
             <goals>
               <goal>npm</goal>
@@ -359,10 +329,10 @@
               <directory>${basedir}/src/node_modules</directory>
             </fileset>
             <fileset>
-              <directory>${basedir}/src/public/fonts</directory>
+              <directory>${basedir}/src/typings</directory>
             </fileset>
             <fileset>
-              <directory>${basedir}/src/public/static/css</directory>
+              <directory>${basedir}/src/public</directory>
             </fileset>
             <fileset>
               <directory>${basedir}/src/dist</directory>
