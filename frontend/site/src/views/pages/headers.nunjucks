@@ -8,12 +8,31 @@
 {% block bodyattrs %}{% endblock %}
 {% block header %}{% endblock %}
 {% block main %}
-<div class="section">
+<section class="headers-top">
+  <div class="menu">
+    <a class="toggle" href="#">
+      <i class="icon-menu"></i>
+    </a>
+    <ul>
+      <li><a href="#">home</a></li>
+      <li><a href="/login">log in</a></li>
+    </ul>
+  </div>
+  <h1 class="heading-main text-center">{{ commonCollectiveName }}</h1>
+</section>
+<section class="headers-main">
   <div class="row">
-    <div class="large-12 end columns">
-      <h1 class="text-center">{{ commonCollectiveName }}</h1>
+    <div class="header-note large-offset-3 large-6 columns">
+      <h3>heading of first note</h3>
+      <p>excerpt of first note</p>
     </div>
   </div>
-</div>
+  <div class="row">
+    <div class="header-note large-offset-3 large-6 columns">
+      <h3>heading of second note</h3>
+      <p>excerpt of second note</p>
+    </div>
+  </div>
+</section>
 {% endblock %}
 {% block scripts %}{% endblock %}

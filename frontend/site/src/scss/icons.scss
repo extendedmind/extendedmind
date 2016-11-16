@@ -1,0 +1,59 @@
+@import 'constants';
+
+$icon-menu: "\e605";
+$size-icon-menu: 12px;
+$size-icon-menu-large: 17px;
+
+@font-face {
+  font-family: 'icomoon';
+  src:  url('../fonts/icomoon.eot?19wtd8');
+  src:  url('../fonts/icomoon.eot?19wtd8#iefix') format('embedded-opentype'),
+    url('../fonts/icomoon.woff2?19wtd8') format('woff2'),
+    url('../fonts/icomoon.ttf?19wtd8') format('truetype'),
+    url('../fonts/icomoon.woff?19wtd8') format('woff'),
+    url('../fonts/icomoon.svg?19wtd8#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+// 1. Better font rendering.
+// 2. Center icons vertically.
+//    NOTE: Do not change this, override it locally.
+@mixin set-icon-font() {
+  font-family: 'icomoon' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;  // [1]
+  -moz-osx-font-smoothing: grayscale;   // [1]
+  vertical-align: middle; // [2]
+}
+
+/*
+Icon classes
+*/
+.icon-menu {
+  font-size: $size-icon-menu;
+  line-height: $size-icon-menu;
+  height: $size-icon-menu;
+  display: block;
+  &:after {
+    @include set-icon-font();
+    vertical-align: baseline;
+    color: $color-text;
+    content: $icon-menu;
+  }
+}
+
+@include breakpoint(medium up) {
+  .icon-menu {
+    // For large screens, menu icon should be larger
+    font-size: $size-icon-menu-large;
+    line-height: $size-icon-menu-large;
+    height: $size-icon-menu-large;
+  }
+}
+
+

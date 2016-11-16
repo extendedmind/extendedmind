@@ -1,64 +1,132 @@
+@import 'constants';
+
 /************************************************************/
 /* FOUNDATION IMPORTS                                       */
 /* These are located at node_modules/foundation-sites/scss  */
 /************************************************************/
 
-@import "foundation";
+// Override Foundation font: set to Source Sans Pro
+// everywhere, and color to our text color
+$body-font-family: 'Source Sans Pro', sans-serif !default;
+$body-font-color: $color-text !default;
+
+@import 'foundation';
 @include foundation-global-styles;
 @include foundation-grid;
+@include foundation-typography;
 @include foundation-visibility-classes;
 
-/************************/
-/* FOUNDATION OVERRIDES */
-/************************/
+// Import icons here
 
-body, button, .button, .top-bar-section ul li > a {
-  font-family: 'HelveticaNeue-Light', 'Helvetica Neue Light', 'HelveticaNeue',
-'Helvetica Neue',  'Segoe UI Light', 'Segoe UI', 'sans-serif-light', 'sans-serif';
-  font-weight: 100;
+@import "icons";
+
+/************************************************************/
+/* MENU                                                     */
+/************************************************************/
+
+.menu {
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  z-index: 50;
+}
+.menu:hover ul {
+  display: block;
 }
 
-body {
-  height: 100%;
-  overflow: hidden;
+.menu a.toggle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 15px;
+  background: $color-white-bg;
+  border-radius: 2px;
+  border: 1px solid transparent;
+  z-index: 5;
 }
 
-html {
-  /* Disable overflow-y in mobile to get momentum scrolling to work */
-  overflow-y: hidden;
+.menu:hover a.toggle {
+  border: 1px solid $color-visible-line;
+  border-bottom: none;
+}
+
+.menu ul {
+  display: none;
+  position: absolute;
+  top: 42px;
+  right: 0;
+  margin: 0;
+  border: 1px solid $color-faint-line;
+  border-bottom: 1px solid $color-visible-line;
+  border-radius: 2px;
+  padding: 45px;
+  background: $color-white-bg;
+  box-shadow: 0 1px 3px 0 $color-faint-line;
+  li {
+    list-style: none;
+    a {
+      display: block;
+      text-decoration: none;
+      padding: 3px 0;
+    }
+  }
+}
+
+@include breakpoint(medium up) {
+  .menu {
+    // For medium and larger screens, move menu a bit more to the center
+    top: 35px;
+    right: 30px;
+  }
+  .menu ul {
+    // Also because menu icon size is bigger for medium and larger, move ul down a bit
+    top: 47px;
+  }
+}
+
+/************************************************************/
+/* GRID                                                     */
+/************************************************************/
+
+section.headers-top {
+  .heading-main{
+    margin-top: 15vh;
+    text-align: center;
+    width: 100%;
+  }
+  padding-bottom: 50px;
+}
+
+section.headers-main {
+  padding-top: 50px;
+  padding-bottom: 50px;
+  border-bottom: 1px $color-faint-line solid;
+}
+
+footer{
+  padding-top: 50px;
+  padding-bottom: 50px;
 }
 
 body {
   font-size: 15px;
-  color: #000000;
 }
 
-/* LARGE */
-@media only screen and (min-width: 64.063em){
-  html {
-    /* Set overflow-y to initial to get animated scroll to work in desktop */
-    overflow-y: initial;
-  }
+@include breakpoint(medium up) {
   body {
-    font-size: 16px;
+    font-size: 17px;
   }
 }
 
-/* EXTRA LARGE */
-@media only screen and (min-width: 90.063em){
+@include breakpoint(large up) {
   body {
     font-size: 20px;
   }
 }
 
-.row {
-  max-width: none;
-}
-
 button, .button {
   background-color: #0f82fe;
 }
-
 
 button:hover, button:focus, .button:hover, .button:focus {
   background-color: #0171ea;

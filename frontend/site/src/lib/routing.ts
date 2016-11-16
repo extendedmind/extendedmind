@@ -8,8 +8,9 @@ export class Routing {
   constructor(private backendClient: Utils,
               private backendInfo: Info) {
     // SETUP router
-    this.router.get("/", this.index);
-    this.router.get("/:handle", this.owner);
+    this.router.get("/", this.headers);
+    this.router.get("/preview/:ownerUUID:/itemUUID/:previewCode", this.preview);
+    //this.router.get("/:handle", this.owner);
   }
 
   // PUBLIC
@@ -20,20 +21,24 @@ export class Routing {
 
   // ROUTES
 
-  private index(ctx: Router.IRouterContext, next: () => Promise<any>) {
-    ctx.body = ctx.state.render.template("pages/headers");
-    return next();
+  private async headers(ctx: Router.IRouterContext, next: () => Promise<any>) {
+    console.info("GET ", ctx.path);
+    const publicHeaders = await ctx.state.backendClient.getPublicHeaders();
+    let renderContext: any = {};
+    // TODO: add support for basic info of owner from .content field of publicItemsResponse.json
+    ctx.body = ctx.state.render.template("pages/headers", renderContext);
   }
   private async owner(ctx: Router.IRouterContext, next: () => Promise<any>) {
     console.info("GET ", ctx.path);
-    const publicItems = await this.backendClient.getPublicItems(ctx.params.handle);
-    let context: any = {};
+    const publicItems = await ctx.state.backendClient.getPublicItems(ctx.params.handle);
+    let renderContext: any = {};
     // TODO: add support for basic info of owner from .content field of publicItemsResponse.json
-    ctx.body = ctx.state.render.template("pages/owner", context);
+    ctx.body = ctx.state.render.template("pages/owner", renderContext);
   }
 
-  private async previewPath(ctx, ownerUUID, itemUUID, previewCode) {
-    console.info("GET /preview/" + ownerUUID + "/" + itemUUID + "/" + previewCode);
+  private preview(ctx: Router.IRouterContext, next: () => Promise<any>) {
+    console.info("SDSGET ", ctx.path);
+    ctx.body = "preview";
     /*
     let context = {};
     if (backendApi) {

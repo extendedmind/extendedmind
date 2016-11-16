@@ -83,10 +83,19 @@ export class Server {
 
     // setup rendering
     const viewsPath = path.join(__dirname, "../views");
+
+    let powered: boolean = true;
+    if (backendInfo.ui) {
+      const ui = JSON.parse(backendInfo.ui);
+      if (ui.powered === false) powered = false;
+    }
     const render = new Render("nunjucks", backendInfo.commonCollective[1],
-                              viewsPath, this.debug, this.urlOrigin);
+                              viewsPath, this.debug, powered, this.urlOrigin);
+
+    // setup context for all routes
 
     this.app.use((ctx, next) => {
+      ctx.state.backendClient = this.utils;
       ctx.state.render = render;
       return next();
     });

@@ -12,23 +12,22 @@
   <meta property="og:type" content="{% block ogtype %}website{% endblock %}" />
 
   {% block stylesheets %}
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro" rel="stylesheet">
   <link rel="stylesheet" href="/static/css/site.css" >
   {% endblock %}
 
 </head>
 
 <body {% block bodyattrs %}{% endblock %}>
-
-  <header>
-    {% block header %}{% endblock %}
-  </header>
   <div class="main">
     {% block main %}{% endblock %}
   </div>
   <footer>
     {% block footer %}{% endblock %}
     {% if powered %}
-    <h5 class="text-center">powered by <a target="_blank" rel="noopener" href="https://extendedmind.org">extended mind</a></h5>
+    <div class="powered">
+      <h5 class="text-center">powered by <a target="_blank" rel="noopener" href="https://extendedmind.org">extended mind</a></h5
+    </div>
     {% endif %}
   </footer>
   {% block scripts %}{% endblock %}
