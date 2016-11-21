@@ -251,7 +251,7 @@ trait ItemDatabase extends UserDatabase {
   def getPublicStats(modified: Option[Long]): Response[PublicStats] = {
     withTx {
       implicit neo4j =>
-        val ownerInfoBuffer = new ListBuffer[(UUID, Label, String, String)]
+        val ownerInfoBuffer = new ListBuffer[(UUID, Label, String, String, Option[Long])]
         val ownerItemHeaderBuffer = new ListBuffer[(UUID, PublicOwnerItemHeader)]
         val ownerUnpublishedBuffer = new ListBuffer[(UUID, UUID)]
         val commonTagsBuffer = new ListBuffer[Tag]
@@ -287,7 +287,8 @@ trait ItemDatabase extends UserDatabase {
                 val ownerLabel =
                   if (ownerNode.hasLabel(OwnerLabel.USER)) OwnerLabel.USER
                   else OwnerLabel.COLLECTIVE
-                ownerInfoBuffer.append((ownerUUID, ownerLabel, ownerNode.getProperty("handle").asInstanceOf[String], displayOwner))
+                ownerInfoBuffer.append((ownerUUID, ownerLabel,
+                    ownerNode.getProperty("handle").asInstanceOf[String], displayOwner, getBlacklisted(ownerNode)))
               }
               if (indexedRevisionNode.hasProperty("unpublished")){
                 ownerUnpublishedBuffer.append((ownerUUID, getUUID(itemNodeOption.get)))
@@ -1597,7 +1598,8 @@ trait ItemDatabase extends UserDatabase {
                 tags = if (tagBuffer.isEmpty) None else Some(tagBuffer.toList),
                 collectiveTags = if (foreignTagBuffer.isEmpty) None else Some(foreignTagBuffer.toList),
                 assignees = if (assigneeBuffer.isEmpty) None else Some(assigneeBuffer.toList),
-                unpublished = if (unpublishedBuffer.isEmpty) None else Some(unpublishedBuffer.toList)))
+                unpublished = if (unpublishedBuffer.isEmpty) None else Some(unpublishedBuffer.toList),
+                getBlacklisted(ownerNode)))
   }
 
   protected def toPreviewItem(ownerNode: Node, itemNode: Node, displayOwner: String)(implicit neo4j: DatabaseService): Response[PublicItem] = {
@@ -2268,7 +2270,7 @@ trait ItemDatabase extends UserDatabase {
     }
   }
 
-  protected def getPublicOwnerStats(ownerInfoBuffer: ListBuffer[(UUID, Label, String, String)],
+  protected def getPublicOwnerStats(ownerInfoBuffer: ListBuffer[(UUID, Label, String, String, Option[Long])],
                                     ownerItemHeaderBuffer: ListBuffer[(UUID, PublicOwnerItemHeader)],
                                     ownerUnpublishedBuffer: ListBuffer[(UUID, UUID)], label: Label): Option[scala.List[PublicOwnerStats]] ={
     if (!ownerInfoBuffer.isEmpty){
@@ -2281,7 +2283,8 @@ trait ItemDatabase extends UserDatabase {
             ownerInfo._3,
             ownerInfo._4,
             if (ownerItemHeadersForUser.isEmpty) None else Some(ownerItemHeadersForUser.toList.map(header => header._2)),
-            if (ownerUnpublishedForUser.isEmpty) None else Some(ownerUnpublishedForUser.toList.map(unpublished => unpublished._2)))
+            if (ownerUnpublishedForUser.isEmpty) None else Some(ownerUnpublishedForUser.toList.map(unpublished => unpublished._2)),
+            ownerInfo._5)
         }))
       }else{
         None

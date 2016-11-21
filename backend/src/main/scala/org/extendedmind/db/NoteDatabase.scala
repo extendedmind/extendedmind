@@ -543,6 +543,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
 
   protected def noteToPreviewItem(ownerNode: Node, noteNode: Node, displayOwner: String)(implicit neo4j: DatabaseService): Response[PublicItem] = {
     val owner = Owner(getUUID(ownerNode), None, Token.ANONYMOUS)
+
     for {
       tagRels <- getTagRelationships(noteNode, OwnerNodes(ownerNode, None)).right
       note <- toNote(noteNode, owner, tagRelationships=Some(tagRels), skipParent=true).right
@@ -551,7 +552,8 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     } yield PublicItem(displayOwner, stripNonPublicFieldsFromNote(note),
         tagsResult._1,
         tagsResult._2,
-        assignee)
+        assignee,
+        getBlacklisted(ownerNode))
   }
 
   protected def noteRevisionToPublicItem(ownerNode: Node, noteRevisionNode: Node, displayOwner: String, includeOnlyTagsByOwner: Option[UUID] = None, allowUnpublished: Boolean = false)(implicit neo4j: DatabaseService): Response[PublicItem] = {
@@ -596,7 +598,8 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
                   visibility = Some(SharedItemVisibility(published, Some(path), licence, indexed, Some(publishedRevision), shortId, publicUi, None, None, None, None))),
         tagsResult._1,
         tagsResult._2,
-        assignee)
+        assignee,
+        getBlacklisted(ownerNode))
   }
 
   protected def stripNonPublicFieldsFromNote(note: Note): Note ={

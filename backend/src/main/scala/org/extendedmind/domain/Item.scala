@@ -135,7 +135,8 @@ case class PublicItem(owner: String,
                       note: Note,
                       tags: Option[scala.List[Tag]],
                       collectiveTags: Option[scala.List[(UUID, scala.List[Tag])]],
-                      assignee: Option[Assignee])
+                      assignee: Option[Assignee],
+                      blacklisted: Option[Long])
 case class PublicItemHeader(handle: String, path: Option[String])
 
 case class PublicItems(owner: Option[String], content: Option[String], format: Option[String], modified: Option[Long],
@@ -143,8 +144,9 @@ case class PublicItems(owner: Option[String], content: Option[String], format: O
                        tags: Option[scala.List[Tag]],
                        collectiveTags: Option[scala.List[(UUID, scala.List[Tag])]],
                        assignees: Option[scala.List[Assignee]],
-                       unpublished: Option[scala.List[UUID]])
+                       unpublished: Option[scala.List[UUID]],
+                       blacklisted: Option[Long])
 
 case class PublicOwnerItemHeader(uuid: UUID, path: String, title: String, indexed: Long, licence: Option[String], assigneeName: Option[String], commonTags: Option[scala.List[UUID]], published: Long, modified: Long)
-case class PublicOwnerStats(handle: String, displayName: String, notes: Option[scala.List[PublicOwnerItemHeader]], unpublished: Option[scala.List[UUID]])
+case class PublicOwnerStats(handle: String, displayName: String, notes: Option[scala.List[PublicOwnerItemHeader]], unpublished: Option[scala.List[UUID]], blacklisted: Option[Long])
 case class PublicStats(users: Option[scala.List[PublicOwnerStats]], collectives: Option[scala.List[PublicOwnerStats]], commonTags: Option[scala.List[Tag]])

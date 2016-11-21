@@ -80,6 +80,38 @@ trait AdminService extends ServiceBase {
           }
         }
       } ~
+      v2PostBlacklistOwner { ownerUUID =>
+        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+          // Only admins can blacklist users
+          authorize(adminAccess(securityContext)) {
+            complete {
+              Future[SetResult] {
+                setLogContext(securityContext)
+                ownerActions.blacklistOwner(ownerUUID) match {
+                  case Right(sr) => processResult(sr)
+                  case Left(e) => processErrors(e)
+                }
+              }
+            }
+          }
+        }
+      } ~
+      v2PostUnblacklistOwner { ownerUUID =>
+        authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
+          // Only admins can remove user from blacklist
+          authorize(adminAccess(securityContext)) {
+            complete {
+              Future[SetResult] {
+                setLogContext(securityContext)
+                ownerActions.unblacklistOwner(ownerUUID) match {
+                  case Right(sr) => processResult(sr)
+                  case Left(e) => processErrors(e)
+                }
+              }
+            }
+          }
+        }
+      } ~
       v2DestroyUser { userUUID =>
         authenticate(ExtendedAuth(authenticator, "user", None)) { securityContext =>
           // Only admins can destroy users

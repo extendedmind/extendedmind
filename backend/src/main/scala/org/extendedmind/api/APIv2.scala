@@ -158,6 +158,8 @@ trait APIv2 extends API {
   val v2ResetTokens = post & path("v2" / "admin" / "reset_tokens".r)
   val v2GetItemStatistics = get & path("v2" / "admin" / "items" / JavaUUID / "stats")
   val v2GetOwnerStatistics = get & path("v2" / "admin" / "owners" / JavaUUID / "stats")
+  val v2PostBlacklistOwner = post & path("v2" / "admin" / "owners" / JavaUUID / "blacklist")
+  val v2PostUnblacklistOwner = post & path("v2" / "admin" / "owners" / JavaUUID / "unblacklist")
   val v2PostSetItemProperty = post & path("v2" / "admin" / "items" / JavaUUID / "change_property")
   val v2PostSetOwnerProperty = post & path("v2" / "admin" / "owners" / JavaUUID / "change_property")
   val v2PostUpdateVersion = post & path("v2" / "admin" / "update_version".r)

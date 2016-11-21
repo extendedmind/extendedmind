@@ -63,4 +63,9 @@ trait OwnerDatabase extends AbstractGraphDatabase {
         Right(Owners(usersList, collectivesList))
     }
   }
+
+  protected def getBlacklisted(ownerNode: Node)(implicit neo4j: DatabaseService): Option[Long] = {
+    if (ownerNode.hasProperty("blacklisted")) Some(ownerNode.getProperty("blacklisted").asInstanceOf[Long])
+    else None
+  }
 }

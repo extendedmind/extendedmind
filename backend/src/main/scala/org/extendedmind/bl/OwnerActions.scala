@@ -48,6 +48,17 @@ trait OwnerActions {
     log.info("getOwners")
     db.getOwners
   }
+
+  def blacklistOwner(ownerUUID: UUID)(implicit log: LoggingAdapter): Response[SetResult] = {
+    log.info("blacklist owner {}", ownerUUID)
+    db.blacklistOwner(ownerUUID)
+  }
+
+  def unblacklistOwner(ownerUUID: UUID)(implicit log: LoggingAdapter): Response[SetResult] = {
+    log.info("unblacklist owner {}", ownerUUID)
+    db.unblacklistOwner(ownerUUID)
+  }
+
 }
 
 class OwnerActionsImpl(implicit val implSettings: Settings, implicit val inj: Injector,

@@ -167,6 +167,20 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     } yield result
   }
 
+  def blacklistOwner(ownerUUID: UUID): Response[SetResult] = {
+    for {
+      ownerNode <- blacklistOwnerNode(ownerUUID).right
+      result <- Right(getSetResult(ownerNode, false)).right
+    } yield result
+  }
+
+  def unblacklistOwner(ownerUUID: UUID): Response[SetResult] = {
+    for {
+      ownerNode <- unblacklistOwnerNode(ownerUUID).right
+      result <- Right(getSetResult(ownerNode, false)).right
+    } yield result
+  }
+
   def destroyAllTokens: Response[CountResult] = {
     withTx {
       implicit neo4j =>
@@ -564,6 +578,38 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
       Token.BETA
     else
       Token.NORMAL
+  }
+
+  private def blacklistOwnerNode(ownerUUID: UUID): Response[Node] = {
+    withTx {
+      implicit neo4j =>
+        for {
+          ownerNode <- getNode(ownerUUID, MainLabel.OWNER).right
+          result <- Right(blacklistOwnerNode(ownerNode)).right
+        } yield ownerNode
+    }
+  }
+
+  private def blacklistOwnerNode(ownerNode: Node)(implicit neo4j: DatabaseService) = {
+    if(!ownerNode.hasProperty("blacklisted")){
+      ownerNode.setProperty("blacklisted", System.currentTimeMillis())
+    }
+  }
+
+  private def unblacklistOwnerNode(ownerUUID: UUID): Response[Node] = {
+    withTx {
+      implicit neo4j =>
+        for {
+          ownerNode <- getNode(ownerUUID, MainLabel.OWNER).right
+          result <- Right(unblacklistOwnerNode(ownerNode)).right
+        } yield ownerNode
+    }
+  }
+
+  private def unblacklistOwnerNode(ownerNode: Node)(implicit neo4j: DatabaseService) = {
+    if(ownerNode.hasProperty("blacklisted")){
+      ownerNode.removeProperty("blacklisted")
+    }
   }
 
   private def getSubscription(user: Node): Option[String] = {

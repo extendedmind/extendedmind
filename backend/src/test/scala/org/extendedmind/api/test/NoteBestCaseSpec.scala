@@ -192,6 +192,22 @@ class NoteBestCaseSpec extends ServiceSpecBase {
           publicItemHeaderResponse.handle should be ("timo")
           publicItemHeaderResponse.path.get should be ("productivity")
         }
+
+        // Blacklist and unblacklist user and check response
+        val lauriAuthenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
+        val timoUUID = getUserUUID(TIMO_EMAIL, lauriAuthenticateResponse)
+        Post("/v2/admin/owners/" + timoUUID + "/blacklist") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
+          Get("/v2/public/timo/productivity") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+            val blacklistedPublicItem = responseAs[PublicItem]
+            blacklistedPublicItem.blacklisted should not be(None)
+          }
+        }
+        Post("/v2/admin/owners/" + timoUUID + "/unblacklist") ~> addCredentials(BasicHttpCredentials("token", lauriAuthenticateResponse.token.get)) ~> route ~> check {
+          Get("/v2/public/timo/productivity") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+            val unblacklistedPublicItem = responseAs[PublicItem]
+            unblacklistedPublicItem.blacklisted should be(None)
+          }
+        }
       }
     }
     it("should successfully publish note with POST to /v2/owners/[userUUID]/data/notes/[itemUUID]/publish "

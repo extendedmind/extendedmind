@@ -38,7 +38,7 @@ import spray.util.LoggingContext
 import scala.collection.mutable.HashMap
 import org.neo4j.graphdb.traversal.Evaluation
 
-trait UserDatabase extends AbstractGraphDatabase {
+trait UserDatabase extends OwnerDatabase {
 
   // User that has been deleted over one minute ago is is destroyed
   val USER_DESTROY_TRESHOLD: Long = 60000l
