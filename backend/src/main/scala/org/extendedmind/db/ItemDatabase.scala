@@ -259,11 +259,22 @@ trait ItemDatabase extends UserDatabase {
         val publicRevisionIndex = neo4j.gds.index().forNodes("public")
         val indexedQuery = new TermQuery(new Term("indexed", "true"))
         val indexedRevisionNodeList = if (modified.isDefined) {
-          val statsQuery = new BooleanQuery.Builder
-          statsQuery.add(indexedQuery, BooleanClause.Occur.MUST)
-          val modifiedRangeQuery = QueryContext.numericRange("modified", modified.get, null, false, false)
-          statsQuery.add(modifiedRangeQuery.getQueryOrQueryObject().asInstanceOf[org.apache.lucene.search.Query], BooleanClause.Occur.MUST)
-          publicRevisionIndex.query(statsQuery.build()).toList
+
+          // Check if blacklist has been updated after last modified
+          val infoNode = getInfoNode
+          val indexedBlacklistUpdated =
+            if (infoNode.hasProperty("indexedBlacklistUpdated")) Some(infoNode.getProperty("indexedBlacklistUpdated").asInstanceOf[Long])
+            else None
+          if (indexedBlacklistUpdated.isDefined && indexedBlacklistUpdated.get > modified.get){
+            // Return everything
+            publicRevisionIndex.query(indexedQuery).toList
+          }else{
+            val statsQuery = new BooleanQuery.Builder
+            statsQuery.add(indexedQuery, BooleanClause.Occur.MUST)
+            val modifiedRangeQuery = QueryContext.numericRange("modified", modified.get, null, false, false)
+            statsQuery.add(modifiedRangeQuery.getQueryOrQueryObject().asInstanceOf[org.apache.lucene.search.Query], BooleanClause.Occur.MUST)
+            publicRevisionIndex.query(statsQuery.build()).toList
+          }
         } else {
           publicRevisionIndex.query(indexedQuery).toList
         }

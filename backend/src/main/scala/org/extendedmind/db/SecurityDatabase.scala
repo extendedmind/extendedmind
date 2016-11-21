@@ -34,6 +34,11 @@ import org.neo4j.graphdb.traversal.TraversalDescription
 import org.neo4j.scala.DatabaseService
 import org.neo4j.graphdb.traversal.Evaluation
 import scala.collection.mutable.HashMap
+import org.apache.lucene.search.TermQuery
+import org.apache.lucene.index.Term
+import org.apache.lucene.search.NumericRangeQuery
+import org.apache.lucene.search.BooleanQuery
+import org.apache.lucene.search.BooleanClause
 import org.neo4j.graphdb.Relationship
 import spray.util.LoggingContext
 import org.extendedmind.domain.SignUp
@@ -592,7 +597,14 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
 
   private def blacklistOwnerNode(ownerNode: Node)(implicit neo4j: DatabaseService) = {
     if(!ownerNode.hasProperty("blacklisted")){
-      ownerNode.setProperty("blacklisted", System.currentTimeMillis())
+      val blacklisted = System.currentTimeMillis()
+      ownerNode.setProperty("blacklisted", blacklisted)
+
+      // Now check if this owner has indexed notes, to make sure items are removed from /public
+      if (hasIndexedPublicNotes(getUUID(ownerNode))){
+        val infoNode = getInfoNode
+        infoNode.setProperty("indexedBlacklistUpdated", blacklisted)
+      }
     }
   }
 
@@ -609,7 +621,23 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
   private def unblacklistOwnerNode(ownerNode: Node)(implicit neo4j: DatabaseService) = {
     if(ownerNode.hasProperty("blacklisted")){
       ownerNode.removeProperty("blacklisted")
+      // Info node is not updated as the blacklisted timestamp won't be returned which would
+      // result in modified not working anymore. Unblacklisting shows notes in public index
+      // the next day
     }
+  }
+
+  private def hasIndexedPublicNotes(ownerUUID: UUID)(implicit neo4j: DatabaseService): Boolean = {
+    // Now check if this owner has indexed notes, to make sure items are removed from /public
+    val publicRevisionIndex = neo4j.gds.index().forNodes("public")
+    val indexedQuery = new TermQuery(new Term("indexed", "true"))
+    val ownerSearchString = IdUtils.getTrimmedBase64UUIDForLucene(ownerUUID)
+    val ownerQuery = new TermQuery(new Term("owner", ownerSearchString))
+    val combinedQuery = new BooleanQuery.Builder
+    combinedQuery.add(indexedQuery, BooleanClause.Occur.MUST)
+    combinedQuery.add(ownerQuery, BooleanClause.Occur.MUST)
+    val indexedItemList = publicRevisionIndex.query(combinedQuery.build())
+    return indexedItemList.hasNext()
   }
 
   private def getSubscription(user: Node): Option[String] = {

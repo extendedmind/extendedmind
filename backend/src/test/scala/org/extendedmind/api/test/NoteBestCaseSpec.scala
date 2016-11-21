@@ -488,6 +488,37 @@ class NoteBestCaseSpec extends ServiceSpecBase {
           publicStats.users.get(0).notes.get.size should be (1)
           publicStats.collectives should be (None)
           publicStats.commonTags.get.size should be (2)
+
+          val latestNoteModified = publicStats.users.get(0).notes.get(0).modified
+          Get("/v2/public?modified=" + latestNoteModified) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+            val nothingPublicStats = responseAs[PublicStats]
+            nothingPublicStats.collectives should be(None)
+            nothingPublicStats.users should be(None)
+            nothingPublicStats.commonTags should be(None)
+
+            // Blacklist Lauri and unblacklist user and check response
+            val timoAuthenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
+            val lauriUUID = lauriAuthenticateResponse.userUUID
+            Post("/v2/admin/owners/" + lauriUUID + "/blacklist") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
+              Get("/v2/public?modified=" + latestNoteModified) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+                val allBlackistedPublicStats = responseAs[PublicStats]
+                allBlackistedPublicStats.users.get.size should be (2)
+                val lauriReStats = allBlackistedPublicStats.users.get.find(userStats => userStats.displayName == "lauri@extendedmind.org").get
+                val lauriBlacklisted: Long = lauriReStats.blacklisted.get
+
+                Post("/v2/admin/owners/" + lauriUUID + "/unblacklist") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
+                  Get("/v2/public") ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+                    val unblacklistedPublicStats = responseAs[PublicStats]
+                    val lauriUnStats = unblacklistedPublicStats.users.get.find(userStats => userStats.displayName == "lauri@extendedmind.org").get
+                    lauriUnStats.blacklisted should be(None)
+                    Get("/v2/public?modified=" + lauriBlacklisted) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+                      responseAs[PublicStats].users should be(None)
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
         // Unpublish and get stats
         Post("/v2/owners/" + timoAuthenticateResponse.userUUID + "/data/notes/" + putTimoNoteResponse.uuid.get + "/unpublish") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", timoAuthenticateResponse.token.get)) ~> route ~> check {
