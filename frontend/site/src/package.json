@@ -12,6 +12,7 @@
     "@types/node": "^6.0.46",
     "@types/nunjucks": "0.0.32",
     "extendedmind-siteutils": "^2.0.5",
+    "jquery": "^3.1.1",
     "koa": "^2.0.0",
     "koa-logger": "^2.0.0",
     "koa-router": "^7.0.1",
@@ -37,8 +38,9 @@
     "webpack-merge": "^0.15.0"
   },
   "scripts": {
-    "prepublish": "npm run clean && typings install && npm run build",
+    "prepublish": "npm run clean && typings install && npm run build && npm run copy:js",
     "clean": "rimraf dist && rimraf typings",
+    "copy:js": "mkdir -p ./public/static/js && cp ./node_modules/waypoints/lib/jquery.waypoints.min.js ./public/static/js/ && cp ./node_modules/waypoints/lib/shortcuts/infinite.min.js ./public/static/js/ && cp ./node_modules/jquery/dist/jquery.min.js ./public/static/js/",
     "build:ts": "tsc",
     "build:ts:watch": "tsc --watch",
     "build:scss": "node-sass --output-style compressed --source-map true --include-path node_modules/foundation-sites/scss scss --output public/static/css",

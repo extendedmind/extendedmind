@@ -1,8 +1,6 @@
 @import 'constants';
 
 $icon-menu: "\e605";
-$size-icon-menu: 12px;
-$size-icon-menu-large: 17px;
 
 @font-face {
   font-family: 'icomoon';
@@ -46,14 +44,3 @@ Icon classes
     content: $icon-menu;
   }
 }
-
-@include breakpoint(medium up) {
-  .icon-menu {
-    // For large screens, menu icon should be larger
-    font-size: $size-icon-menu-large;
-    line-height: $size-icon-menu-large;
-    height: $size-icon-menu-large;
-  }
-}
-
-

@@ -13,26 +13,53 @@
     <a class="toggle" href="#">
       <i class="icon-menu"></i>
     </a>
-    <ul>
-      <li><a href="#">home</a></li>
-      <li><a href="/login">log in</a></li>
-    </ul>
+    {% include 'partials/menu.nunjucks' %}
   </div>
   <h1 class="heading-main text-center">{{ commonCollectiveName }}</h1>
 </section>
 <section class="headers-main">
-  <div class="row">
-    <div class="header-note large-offset-3 large-6 columns">
-      <h3>heading of first note</h3>
-      <p>excerpt of first note</p>
+  <div class="row headers-heading">
+    <div class="large-offset-3 large-6 columns">
+      <h3>Latest published notes:</h3>
     </div>
   </div>
-  <div class="row">
-    <div class="header-note large-offset-3 large-6 columns">
-      <h3>heading of second note</h3>
-      <p>excerpt of second note</p>
+
+  {% if remaining > 0 %}
+  <div class="infinite-container">
+  {% endif %}
+
+  {% for header in headers %}
+  <div class="row header-note infinite-item">
+    <div class="large-offset-3 large-6 columns">
+      <h4>{{ header.title }}</h4>
+      <p>by: {{ header.owner.displayName }}</p>
     </div>
   </div>
+  {% else %}
+  <div class="row">
+    <div class="large-offset-3 large-6 columns">
+      <h4><i>no notes published yet</i></h4>
+    </div>
+  </div>
+  {% endfor %}
+
+  {% if remaining > 0 %}
+  </div>
+  <div class="row">
+    <a class="infinite-more-link large-12 columns text-center" href="?remaining={{ remaining }}">more</a>
+  </div>
+  {% endif %}
 </section>
 {% endblock %}
-{% block scripts %}{% endblock %}
+{% block scripts %}
+{% if remaining > 0 %}
+{{ super() }}
+<script src="/static/js/infinite.min.js"></script>
+<script>
+var infinite = new Waypoint.Infinite({
+  element: $('.infinite-container')[0],
+  offset: 2
+});
+{% endif %}
+</script>
+{% endblock %}

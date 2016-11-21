@@ -16,7 +16,7 @@ $body-font-color: $color-text !default;
 @include foundation-typography;
 @include foundation-visibility-classes;
 
-// Import icons here
+// Import icons here, in a different file to allow overriding
 
 @import "icons";
 
@@ -82,6 +82,12 @@ $body-font-color: $color-text !default;
     // Also because menu icon size is bigger for medium and larger, move ul down a bit
     top: 47px;
   }
+  .icon-menu {
+    // For large screens, menu icon should be larger
+    font-size: $size-icon-menu-large;
+    line-height: $size-icon-menu-large;
+    height: $size-icon-menu-large;
+  }
 }
 
 /************************************************************/
@@ -101,6 +107,14 @@ section.headers-main {
   padding-top: 50px;
   padding-bottom: 50px;
   border-bottom: 1px $color-faint-line solid;
+
+  .headers-heading{
+    padding-bottom: 20px;
+  }
+
+  .header-note{
+    padding-bottom: 10px;
+  }
 }
 
 footer{
