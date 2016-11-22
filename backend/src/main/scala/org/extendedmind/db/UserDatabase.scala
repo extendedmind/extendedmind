@@ -1192,6 +1192,11 @@ trait UserDatabase extends OwnerDatabase {
     else ownerNode.getProperty("email").asInstanceOf[String]
   }
 
+  protected def getHandleOption(ownerNode: Node)(implicit neo4j: DatabaseService): Option[String] = {
+    if (ownerNode.hasProperty("handle")) Some(ownerNode.getProperty("handle").asInstanceOf[String])
+    else None
+  }
+
   // Abstract invite methods
   protected def getInviteNodeOption(email: String, inviteCode: Option[Long]): Response[Option[Node]];
   protected def acceptInviteNode(inviteNode: Node, userNode: Node)(implicit neo4j: DatabaseService): Unit;

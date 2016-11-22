@@ -549,7 +549,10 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
       note <- toNote(noteNode, owner, tagRelationships=Some(tagRels), skipParent=true).right
       tagsResult <- getTagsWithParents(tagRels, owner, noUi=true).right
       assignee <- Right(getAssignee(noteNode)).right
-    } yield PublicItem(displayOwner, stripNonPublicFieldsFromNote(note),
+    } yield PublicItem(
+        displayOwner,
+        getOwnerType(ownerNode),
+        stripNonPublicFieldsFromNote(note),
         tagsResult._1,
         tagsResult._2,
         assignee,
@@ -593,7 +596,9 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
       note <- Right(validateNote(ownerNode, stripNonPublicFieldsFromNote(unprocessedNote))).right
       tagsResult <- getExtendedItemTagsWithParents(note, owner, public=true, includeOnlyTagsByOwner).right
       assignee <- getAssignee(note).right
-    } yield PublicItem(displayOwner,
+    } yield PublicItem(
+        displayOwner,
+        getOwnerType(ownerNode),
         note.copy(modified = Some(modified),
                   visibility = Some(SharedItemVisibility(published, Some(path), licence, indexed, Some(publishedRevision), shortId, publicUi, None, None, None, None))),
         tagsResult._1,

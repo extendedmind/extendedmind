@@ -68,4 +68,9 @@ trait OwnerDatabase extends AbstractGraphDatabase {
     if (ownerNode.hasProperty("blacklisted")) Some(ownerNode.getProperty("blacklisted").asInstanceOf[Long])
     else None
   }
+
+  protected def getOwnerType(ownerNode: Node)(implicit neo4j: DatabaseService): String = {
+    if (ownerNode.hasLabel(OwnerLabel.COLLECTIVE)) "collective"
+    else "user"
+  }
 }

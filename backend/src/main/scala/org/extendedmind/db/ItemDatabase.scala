@@ -1600,8 +1600,12 @@ trait ItemDatabase extends UserDatabase {
         Some(ownerNode.getProperty("format").asInstanceOf[String])
       else None
 
+    val ownerType: Option[String] =
+      if (modified.isEmpty || ownerPublicModified > modified.get) Some(getOwnerType(ownerNode))
+      else None
     Right(PublicItems(
-                owner = if (modified.isEmpty || ownerPublicModified > modified.get) Some(displayOwner) else None,
+                displayName = if (modified.isEmpty || ownerPublicModified > modified.get) Some(displayOwner) else None,
+                ownerType = ownerType,
                 content = content,
                 format = format,
                 modified = if (modified.isEmpty || ownerPublicModified > modified.get) Some(ownerPublicModified) else None,
@@ -1751,7 +1755,11 @@ trait ItemDatabase extends UserDatabase {
     itemNode.getRelationships.toList.find(relationship => {
       relationship.getType().name == ItemRelationship.IS_ASSIGNED_TO.name
     }).flatMap(assigneeRelationship =>
-      Some(Assignee(getUUID(assigneeRelationship.getEndNode), getDisplayOwner(assigneeRelationship.getEndNode)))
+      Some(
+        Assignee(
+          Some(getUUID(assigneeRelationship.getEndNode)),
+          getDisplayOwner(assigneeRelationship.getEndNode),
+          getHandleOption(assigneeRelationship.getEndNode)))
     )
   }
 
@@ -1760,7 +1768,7 @@ trait ItemDatabase extends UserDatabase {
       val assigneeUUID = extendedItem.relationships.get.assignee.get
       val ownerNodeResult = getNode(assigneeUUID, MainLabel.OWNER)
       if (ownerNodeResult.isLeft) return Left(ownerNodeResult.left.get)
-      Right(Some(Assignee(assigneeUUID, getDisplayOwner(ownerNodeResult.right.get))))
+      Right(Some(Assignee(Some(assigneeUUID), getDisplayOwner(ownerNodeResult.right.get), getHandleOption(ownerNodeResult.right.get))))
     }else Right(None)
   }
 
@@ -2253,7 +2261,7 @@ trait ItemDatabase extends UserDatabase {
         publicNote.note.title,
         publicNote.note.visibility.get.indexed.get,
         publicNote.note.visibility.get.licence,
-        if (publicNote.assignee.isDefined) Some(publicNote.assignee.get.name) else None,
+        publicNote.assignee.flatMap(assignee => Some(assignee.copy(uuid = None))),
         commonTags,
         publicNote.note.visibility.get.published.get,
         publicNote.note.modified.get)

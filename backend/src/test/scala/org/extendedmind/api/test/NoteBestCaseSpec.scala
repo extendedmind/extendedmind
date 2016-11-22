@@ -392,7 +392,8 @@ class NoteBestCaseSpec extends ServiceSpecBase {
             // Getting modified should return only the latter
             Get("/v2/public/timo?modified=" + putNoteResponse.modified) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
               val modifiedPublicItems = responseAs[PublicItems]
-              modifiedPublicItems.owner should be(None)
+              modifiedPublicItems.displayName should be(None)
+              modifiedPublicItems.ownerType should be(None)
               modifiedPublicItems.notes.get.size should be(1)
               modifiedPublicItems.tags should be(None)
               modifiedPublicItems.collectiveTags.get.size should be(1)
@@ -408,7 +409,8 @@ class NoteBestCaseSpec extends ServiceSpecBase {
                   // This should not change the response as public items have not changed
                   Get("/v2/public/timo?modified=" + latestModified) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
                     val nonPublicModifiedItems = responseAs[PublicItems]
-                    nonPublicModifiedItems.owner should be(None)
+                    nonPublicModifiedItems.displayName should be(None)
+                    nonPublicModifiedItems.ownerType should be(None)
                     nonPublicModifiedItems.modified should be (None)
                     nonPublicModifiedItems.notes should be(None)
                     nonPublicModifiedItems.tags should be(None)
@@ -417,7 +419,8 @@ class NoteBestCaseSpec extends ServiceSpecBase {
                       marshal(account.copy(displayName=Some("testing"))).right.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                       Get("/v2/public/timo?modified=" + putNoteResponse.modified) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
                         val ownerModifiedPublicItems = responseAs[PublicItems]
-                        ownerModifiedPublicItems.owner.get should be("testing")
+                        ownerModifiedPublicItems.displayName.get should be("testing")
+                        ownerModifiedPublicItems.ownerType.get should be("user")
                         assert(ownerModifiedPublicItems.modified.get > publicItems.modified.get)
                         nonPublicModifiedItems.notes should be(None)
                         nonPublicModifiedItems.tags should be(None)
