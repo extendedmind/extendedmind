@@ -75,7 +75,7 @@ $body-font-color: $color-text !default;
 @include breakpoint(medium up) {
   .menu {
     // For medium and larger screens, move menu a bit more to the center
-    top: 35px;
+    top: 30px;
     right: 30px;
   }
   .menu ul {

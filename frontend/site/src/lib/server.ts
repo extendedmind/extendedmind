@@ -13,6 +13,7 @@ export interface Config {
   debug: boolean;
   backend: any; // Can be true, false or a string
   urlOrigin: string;
+  syncTimeTreshold?: number;
 }
 
 export class Server {
@@ -45,7 +46,9 @@ export class Server {
     }else {
       throw new Error("FATAL: config.backend must be set to either true or specific address");
     }
-    this.utils = new Utils(this.backendApiAddress);
+    const utilsConfig = config.syncTimeTreshold !== undefined ?
+      {"syncTimeTreshold": config.syncTimeTreshold} : undefined;
+    this.utils = new Utils(this.backendApiAddress, utilsConfig);
   }
 
   public run() {

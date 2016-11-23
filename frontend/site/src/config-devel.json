@@ -3,5 +3,6 @@
   "externalStatic": false,
   "debug": true,
   "backend": "http://localhost:3004",
-  "urlOrigin": "http://localhost:3000"
+  "urlOrigin": "http://localhost:3000",
+  "syncTimeTreshold": 3000
 }

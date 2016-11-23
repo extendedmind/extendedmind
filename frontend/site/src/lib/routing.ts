@@ -25,7 +25,7 @@ export class Routing {
     console.info("GET ", ctx.path);
     const HEADERS_PER_PAGE: number = 10;
     const publicHeaders = await ctx.state.backendClient.getPublicHeaders();
-    const headers = publicHeaders.getNotes();
+    const headers = publicHeaders.getNotes([{type: "blacklisted"}]);
     // How many items were indicated as being not shown previously. If first query, everything is not shown
     const previousRemaining: number = ctx.query.remaining === undefined ? headers.length : ctx.query.remaining;
     // Because new headers might be added to the top of the array, we use remaining to count the index from
