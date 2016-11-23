@@ -18,26 +18,21 @@
   <h1 class="heading-main text-center">{{ commonCollectiveName }}</h1>
 </section>
 <section class="headers-main">
-  <div class="row headers-heading">
-    <div class="large-offset-3 large-6 columns">
-      <h3>Latest published notes:</h3>
-    </div>
-  </div>
-
   {% if remaining > 0 %}
   <div class="infinite-container">
   {% endif %}
 
   {% for header in headers %}
   <div class="row header-note infinite-item">
-    <div class="large-offset-3 large-6 columns">
+    <div class="large-offset-3 large-6 medium-offset-2 medium-8 small-offset-1 small-10 columns end">
       <h4>{{ header.title }}</h4>
-      <p>by: {{ header.owner.displayName }}</p>
+      <p>by: {{ header.owner.displayName }}<br/>
+      <small>at: {{ formatDate(header.indexed) }}</small></p>
     </div>
   </div>
   {% else %}
   <div class="row">
-    <div class="large-offset-3 large-6 columns">
+    <div class="small-12 columns text-center">
       <h4><i>no notes published yet</i></h4>
     </div>
   </div>
@@ -46,7 +41,7 @@
   {% if remaining > 0 %}
   </div>
   <div class="row">
-    <a class="infinite-more-link large-12 columns text-center" href="?remaining={{ remaining }}">more</a>
+    <a class="infinite-more-link small-12 columns text-center" href="?remaining={{ remaining }}">more</a>
   </div>
   {% endif %}
 </section>

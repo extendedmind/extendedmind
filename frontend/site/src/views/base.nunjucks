@@ -25,8 +25,8 @@
   <footer>
     {% block footer %}{% endblock %}
     {% if powered %}
-    <div class="powered">
-      <h5 class="text-center">powered by <a target="_blank" rel="noopener" href="https://extendedmind.org">extended mind</a></h5
+    <div class="powered text-center">
+      <small class="text-center">powered by <a target="_blank" rel="noopener" href="https://extendedmind.org">extended mind</a></small>
     </div>
     {% endif %}
   </footer>

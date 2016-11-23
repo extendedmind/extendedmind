@@ -42,6 +42,9 @@ export class Render {
     nj.addGlobal("urlOrigin", urlOrigin);
     if (powered) nj.addGlobal("powered", true);
 
+    // Add utility methods
+    nj.addGlobal("formatDate", this.formatDate);
+
     let domain;
     if (urlOrigin && urlOrigin.startsWith("https://")){
       domain = urlOrigin.substr(8);
@@ -233,4 +236,9 @@ export class Render {
     return tokenize_return;
   }
 
+  // UTILITY CLASSES
+
+  private formatDate(timestamp: number): string {
+    return new Date(timestamp).toDateString();
+  }
 }

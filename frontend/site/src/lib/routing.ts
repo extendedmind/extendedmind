@@ -41,6 +41,7 @@ export class Routing {
     // TODO: add support for basic info of owner from .content field of publicItemsResponse.json
     ctx.body = ctx.state.render.template("pages/headers", renderContext);
   }
+
   private async owner(ctx: Router.IRouterContext, next: () => Promise<any>) {
     console.info("GET ", ctx.path);
     const publicItems = await ctx.state.backendClient.getPublicItems(ctx.params.handle);

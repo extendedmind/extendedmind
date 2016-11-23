@@ -94,32 +94,31 @@ $body-font-color: $color-text !default;
 /* GRID                                                     */
 /************************************************************/
 
+$padding-section: 50px;
+$padding-inside-section: 30px;
+
 section.headers-top {
   .heading-main{
     margin-top: 15vh;
     text-align: center;
     width: 100%;
   }
-  padding-bottom: 50px;
+  padding-bottom: $padding-section;
 }
 
 section.headers-main {
-  padding-top: 50px;
-  padding-bottom: 50px;
+  padding-top: $padding-section;
+  padding-bottom: $padding-section;
   border-bottom: 1px $color-faint-line solid;
 
-  .headers-heading{
-    padding-bottom: 20px;
-  }
-
   .header-note{
-    padding-bottom: 10px;
+    padding-bottom: $padding-inside-section;
   }
 }
 
 footer{
-  padding-top: 50px;
-  padding-bottom: 50px;
+  padding-top: $padding-section;
+  padding-bottom: $padding-section;
 }
 
 body {
@@ -130,18 +129,33 @@ body {
   body {
     font-size: 17px;
   }
+  h1 {
+    font-size: 35px;
+  }
 }
 
 @include breakpoint(large up) {
   body {
     font-size: 20px;
   }
+  h1 {
+    font-size: 45px;
+  }
 }
 
+section:nth-child(2n) {
+  background: $color-very-light-gray;
+  box-shadow: inset 0 1px 0 0 white;
+}
+
+/************************************************************/
+/* CONTROLS                                                 */
+/************************************************************/
+
 button, .button {
-  background-color: #0f82fe;
+  background-color: $color-button;
 }
 
 button:hover, button:focus, .button:hover, .button:focus {
-  background-color: #0171ea;
+  background-color: $color-button-pressed;
 }
