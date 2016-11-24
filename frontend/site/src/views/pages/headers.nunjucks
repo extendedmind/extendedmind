@@ -26,7 +26,7 @@
   <div class="row header-note infinite-item">
     <div class="large-offset-3 large-6 medium-offset-2 medium-8 small-offset-1 small-10 columns end">
       <h4>{{ header.title }}</h4>
-      <p>by: {{ header.owner.displayName }}<br/>
+      <p>by: <a href="/{{ ownersPath }}/{{ header.owner.handle }}">{{ header.owner.displayName }}</a><br/>
       <small>at: {{ formatDate(header.indexed) }}</small></p>
     </div>
   </div>

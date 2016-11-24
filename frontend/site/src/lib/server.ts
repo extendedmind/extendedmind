@@ -13,6 +13,7 @@ export interface Config {
   debug: boolean;
   backend: any; // Can be true, false or a string
   urlOrigin: string;
+  ownersPath: string;
   syncTimeTreshold?: number;
 }
 
@@ -26,12 +27,18 @@ export class Server {
   private utils: Utils;
   private backendApiAddress: string;
   private urlOrigin: string;
+  private ownersPath: string;
 
   constructor(config: Config) {
     this.port = config.port;
     this.debug = config.debug;
     this.externalStatic = config.externalStatic;
     this.urlOrigin = config.urlOrigin;
+    if (config.ownersPath) {
+      this.ownersPath = config.ownersPath;
+    } else {
+      this.ownersPath = "our";
+    }
     this.app = new Koa();
     this.router = new Router();
 
@@ -93,7 +100,8 @@ export class Server {
       if (ui.powered === false) powered = false;
     }
     const render = new Render("nunjucks", backendInfo.commonCollective[1],
-                              viewsPath, this.debug, powered, this.urlOrigin);
+                              viewsPath, this.debug, powered, this.urlOrigin,
+                              this.ownersPath);
 
     // setup context for all routes
 

@@ -9,11 +9,11 @@ export class Render {
             options: any, env: any, self: MarkdownIt.MarkdownIt) => any;
 
   constructor(private extension: string, commonCollectiveName: string, viewsDirectory: string,
-              debug: boolean, powered: boolean, urlOrigin: string) {
+              debug: boolean, powered: boolean, urlOrigin: string, ownersPath: string) {
     this.nunjucksEnvironment =
       this.initializeNunjucs(
         commonCollectiveName, viewsDirectory,
-        debug, powered, urlOrigin);
+        debug, powered, urlOrigin, ownersPath);
     this.markdownParser = this.initializeMarkdown();
   }
 
@@ -30,7 +30,8 @@ export class Render {
   // NUNJUCKS
 
   private initializeNunjucs(commonCollectiveName: string, viewsDirectory: string,
-                            debug: boolean, powered: boolean, urlOrigin: string): nunjucks.Environment{
+                            debug: boolean, powered: boolean, urlOrigin: string,
+                            ownersPath: string): nunjucks.Environment{
     let nj: nunjucks.Environment = nunjucks.configure(viewsDirectory, {
       autoescape: true,
       noCache: debug,
@@ -40,6 +41,7 @@ export class Render {
     nj.addGlobal("commonCollectiveName", commonCollectiveName);
     nj.addGlobal("development", debug);
     nj.addGlobal("urlOrigin", urlOrigin);
+    nj.addGlobal("ownersPath", ownersPath);
     if (powered) nj.addGlobal("powered", true);
 
     // Add utility methods
