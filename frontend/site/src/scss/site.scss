@@ -98,10 +98,8 @@ $padding-section: 50px;
 $padding-inside-section: 30px;
 
 section.headers-top {
-  .heading-main{
+  .heading-main {
     margin-top: 15vh;
-    text-align: center;
-    width: 100%;
   }
   padding-bottom: $padding-section;
 }
@@ -116,7 +114,7 @@ section.headers-main {
   }
 }
 
-footer{
+footer {
   padding-top: $padding-section;
   padding-bottom: $padding-section;
 }
@@ -132,6 +130,11 @@ body {
   h1 {
     font-size: 35px;
   }
+  section.headers-top {
+    .heading-main {
+      margin-top: 20vh;
+    }
+  }
 }
 
 @include breakpoint(large up) {
@@ -140,6 +143,11 @@ body {
   }
   h1 {
     font-size: 45px;
+  }
+  section.headers-top {
+    .heading-main {
+      margin-top: 25vh;
+    }
   }
 }
 

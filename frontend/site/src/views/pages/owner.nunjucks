@@ -1,36 +1,64 @@
 {% extends "base.nunjucks" %}
-{% set pageName = 'owner' %}
-{% block title %}{{ super() }} &ndash; {{ ownerTitle }}{% endblock %}
-{% block description %}{{ super() }} &ndash; {{ ownerTitle }}{% endblock %}
-{% block ogtitle %}{{ super() }} {{ ownerTitle }}{% endblock %}
+{% block title %}{{ super() }} &ndash; {{ owner.displayName }}{% endblock %}
+{% block description %}{{ super() }} &ndash; {{ owner.displayName }}{% endblock %}
+{% block ogtitle %}{{ super() }} &ndash; {{ owner.displayName }}{% endblock %}
 {% block ogtype %}{{ super() }}{% endblock %}
-{% block stylesheets %}
-<link rel="stylesheet" href="static/css/normalize.css">
-<link rel="stylesheet" href="static/css/foundation.min.css">
-<link rel="stylesheet" href="static/css/main.css">
-{% endblock %}
-{% block trackactions %}
-{% include 'partials/trackaction.nunjucks' %}
-{% endblock %}
+{% block stylesheets %}{{ super() }}{% endblock %}
+{% block header %}{% endblock %}
 {% block main %}
-<div id="owner">
-  <div id="owner-container">
-    <p id="owner-heading-top"><span class="text-large">{{ ownerTitle }}</span></p>
-    <div class="html-inline">{{ ownerContent | safe }}</div>
+<section class="headers-top">
+  <div class="menu">
+    <a class="toggle" href="#">
+      <i class="icon-menu"></i>
+    </a>
+    {% include 'partials/menu.nunjucks' %}
   </div>
-</div>
-{% endblock %}
-{% block footer %}
-<div class="centered">
-  <a href="/signup" class="button" onclick="trackAction(this.href, 'signup');return false;">sign up</a>
-</div>
+  <small class="text-center">{{ commonCollectiveName }}</small>
+  <h1 class="heading-main text-center">{{ owner.displayName }}</h1>
+</section>
+<section class="headers-main">
+  {% if remaining > 0 %}
+  <div class="infinite-container">
+  {% endif %}
+
+  {% for note in notes %}
+  <div class="row header-note infinite-item">
+    <div class="large-offset-3 large-6 medium-offset-2 medium-8 small-offset-1 small-10 columns end">
+      <h4>{{ note.title }}</h4>
+      <p>
+      {% if note.author %}
+        by: {{ note.author }}<br/>
+      {% endif %}
+      <small>at: {{ formatDate(note.indexed) }}</small></p>
+      <p>{{ note.excerpt | unsafe }}</p>
+    </div>
+  </div>
+  {% else %}
+  <div class="row">
+    <div class="small-12 columns text-center">
+      <h4><i>{{ owner.displayName }} has no published notes</i></h4>
+    </div>
+  </div>
+  {% endfor %}
+
+  {% if remaining > 0 %}
+  </div>
+  <div class="row">
+    <a class="infinite-more-link small-12 columns text-center" href="?remaining={{ remaining }}">more</a>
+  </div>
+  {% endif %}
+</section>
 {% endblock %}
 {% block scripts %}
-<script type='text/javascript' src='//code.jquery.com/jquery-2.1.3.min.js'></script>
-<script type='text/javascript' src='//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js'></script>
-<script type='text/javascript' src='//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js'></script>
-<script type='text/javascript' src='static/js/foundation.min.js'></script>
+{% if remaining > 0 %}
+{{ super() }}
+<script src="/static/js/infinite.min.js"></script>
 <script>
-  $(document).foundation();
+var infinite = new Waypoint.Infinite({
+  element: $('.infinite-container')[0],
+  offset: 2
+});
+{% endif %}
 </script>
 {% endblock %}
+

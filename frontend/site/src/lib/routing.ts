@@ -6,11 +6,12 @@ export class Routing {
   private router = new Router();
 
   constructor(private backendClient: Utils,
-              private backendInfo: Info) {
+              private backendInfo: Info,
+              private ownersPath: string) {
     // SETUP router
     this.router.get("/", this.headers);
-    this.router.get("/preview/:ownerUUID:/itemUUID/:previewCode", this.preview);
-    //this.router.get("/:handle", this.owner);
+    this.router.get("/" + ownersPath + "/:handle", this.owner);
+    this.router.get("/preview/:ownerUUID/:itemUUID/:previewCode", this.preview);
   }
 
   // PUBLIC

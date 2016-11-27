@@ -112,7 +112,7 @@ export class Server {
     });
 
     // setup routing
-    const routing = new Routing(this.utils, backendInfo);
+    const routing = new Routing(this.utils, backendInfo, this.ownersPath);
     this.app.use(routing.getRoutes());
 
     // start listening
