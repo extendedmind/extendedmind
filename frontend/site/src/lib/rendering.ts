@@ -3,35 +3,54 @@ import * as MarkdownIt from "markdown-it";
 
 export class Render {
   private nunjucksEnvironment: nunjucks.Environment;
-  private markdownParser: MarkdownIt.MarkdownIt;
-  private defaultLinkOpenRenderer: (
-            tokens: MarkdownIt.Token[], idx: number,
-            options: any, env: any, self: MarkdownIt.MarkdownIt) => any;
+  private contentMarkdownParser: MarkdownIt.MarkdownIt;
 
   constructor(private extension: string, commonCollectiveName: string, viewsDirectory: string,
-              debug: boolean, powered: boolean, urlOrigin: string, ownersPath: string) {
+              debug: boolean, powered: boolean, urlOrigin: string, ownersPath: string, headersPath: string) {
     this.nunjucksEnvironment =
       this.initializeNunjucs(
         commonCollectiveName, viewsDirectory,
-        debug, powered, urlOrigin, ownersPath);
-    this.markdownParser = this.initializeMarkdown();
+        debug, powered, urlOrigin, ownersPath, headersPath);
+    this.contentMarkdownParser = this.initializeFullMarkdown();
   }
 
   // PUBLIC INTERFACE
 
+  // Simple Nunjucks processor
   public template(pathToView:string, context?:any): string{
     pathToView += "." + this.extension;
     return this.nunjucksEnvironment.render(pathToView, context);
   };
+  // Simple markdown processor
   public markdown(content:string): string{
-    return this.markdownParser.render(content);
+    return this.contentMarkdownParser.render(content);
+  };
+  // Process entire note into a usable object
+  public processNote(note: any): any {
+    let processedNote: any = {
+      uuid: note.uuid,
+      modified: note.modified,
+      path: note.visibility.path,
+      published: note.visibility.published,
+      title: note.title,
+    };
+    if (note.content) {
+      processedNote.content = this.contentMarkdownParser.render(note.content);
+    }
+    if (note.keywords) {
+      processedNote.keywords = note.keywords;
+    }
+    if (note.assignee) {
+      processedNote.assignee = note.assignee;
+    }
+    return processedNote;
   };
 
   // NUNJUCKS
 
   private initializeNunjucs(commonCollectiveName: string, viewsDirectory: string,
                             debug: boolean, powered: boolean, urlOrigin: string,
-                            ownersPath: string): nunjucks.Environment{
+                            ownersPath: string, headersPath: string): nunjucks.Environment{
     let nj: nunjucks.Environment = nunjucks.configure(viewsDirectory, {
       autoescape: true,
       noCache: debug,
@@ -42,6 +61,7 @@ export class Render {
     nj.addGlobal("development", debug);
     nj.addGlobal("urlOrigin", urlOrigin);
     nj.addGlobal("ownersPath", ownersPath);
+    nj.addGlobal("headersPath", headersPath);
     if (powered) nj.addGlobal("powered", true);
 
     // Add utility methods
@@ -62,69 +82,43 @@ export class Render {
 
   // MARKDOWN-IT
 
-  private initializeMarkdown(): MarkdownIt.MarkdownIt{
-
+  private initializeFullMarkdown(): MarkdownIt.MarkdownIt{
     let mp: MarkdownIt.MarkdownIt = new MarkdownIt();
-
-    // Open links to new tab.
-    // https://github.com/markdown-it/markdown-it/blob/master/docs/architecture.md#renderer
-
-    // Remember old renderer, if overriden, or proxy to default renderer
-    this.defaultLinkOpenRenderer = mp.renderer.rules["link_open"] || function(tokens, idx, options, env, self) {
-      return self["renderToken"](tokens, idx, options);
-    };
-
-    mp.renderer.rules["link_open"] = function (tokens, idx, options, env, self) {
-      // If you are sure other plugins can't add `target` - drop check below
-      var aIndex = tokens[idx].attrIndex("target");
-      var relIndex = tokens[idx].attrIndex("rel");
-      var hrefIndex = tokens[idx].attrIndex("href");
-      var hrefString = tokens[idx].attrs[hrefIndex][1];
-
-      if (!hrefString.startsWith("tel:") && !hrefString.startsWith("mailto:")) {
-        if (aIndex < 0) {
-          tokens[idx].attrPush(["target", "_blank"]); // add new attribute
-        } else {
-          tokens[idx].attrs[aIndex][1] = "_blank";    // replace value of existing attr
-        }
-        if (relIndex < 0) {
-          tokens[idx].attrPush(["rel", "noopener"]); // add new attribute
-        } else {
-          tokens[idx].attrs[relIndex][1] = "noopener";    // replace value of existing attr
-        }
-      }
-
-      // pass token to default renderer.
-      return this.defaultLinkOpenRenderer(tokens, idx, options, env, self);
-    };
-    mp.renderer.rules["video"] = this.tokenize_video(this.markdownParser);
+    mp.enable("linkify");
+    mp.renderer.rules["video"] = this.tokenize_video(mp);
     mp.inline.ruler.before("emphasis", "video", this.video_embed(mp));
-
     return mp;
   }
 
-  // Youtube (and non-tested Vimeo)
+  private tokenize_video(md) {
+    function tokenize_return(tokens, idx, options, env, self) {
+        var videoID = md.utils.escapeHtml(tokens[idx].videoID);
+        var service = md.utils.escapeHtml(tokens[idx].service);
+        if (videoID === "") {
+            return "";
+        }
 
-  // The youtube_parser is from http://stackoverflow.com/a/8260383
-  private youtube_parser(url){
-    var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]*).*/;
-    var match = url.match(regExp);
-    if (match&&match[7].length==11){
-      return match[7];
-    } else{
-      return url;
+      if (service.toLowerCase() === "youtube") {
+        return this.tokenize_youtube(videoID);
+      } else if (service.toLowerCase() === "vimeo") {
+          return this.tokenize_vimeo(videoID);
+      } else{
+        return("");
+      }
     }
+    return tokenize_return;
   }
 
-  // The vimeo_parser is from http://stackoverflow.com/a/13286930
-  private vimeo_parser(url){
-    var regExp = /https?:\/\/(?:www\.|player\.)?vimeo.com\/(?:channels\/(?:\w+\/)?|groups\/([^\/]*)\/videos\/|album\/(\d+)\/video\/|)(\d+)(?:$|\/|\?)/;
-    var match = url.match(regExp);
-    if (match){
-      return match[3];
-    } else{
-      return url;
-    }
+  private tokenize_youtube(videoID) {
+    var embedStart = '<div class="embed-responsive embed-responsive-16by9"><iframe class="embed-responsive-item" id="ytplayer" type="text/html" width="640" height="390" src="//www.youtube.com/embed/';
+    var embedEnd = '" frameborder="0"></iframe></div>';
+    return embedStart + videoID + embedEnd;
+  }
+
+  private tokenize_vimeo(videoID) {
+    var embedStart = '<div class="embed-responsive embed-responsive-16by9"><iframe class="embed-responsive-item" id="vimeoplayer" width="500" height="281" src="//player.vimeo.com/video/';
+    var embedEnd = '" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div>';
+    return embedStart + videoID + embedEnd;
   }
 
   private video_embed(md:MarkdownIt.MarkdownIt) {
@@ -207,35 +201,28 @@ export class Render {
     return video_return;
   }
 
-  private tokenize_youtube(videoID) {
-    var embedStart = '<div class="embed-responsive embed-responsive-16by9"><iframe class="embed-responsive-item" id="ytplayer" type="text/html" width="640" height="390" src="//www.youtube.com/embed/';
-    var embedEnd = '" frameborder="0"></iframe></div>';
-    return embedStart + videoID + embedEnd;
-  }
+  // Youtube (and non-tested Vimeo)
 
-  private tokenize_vimeo(videoID) {
-    var embedStart = '<div class="embed-responsive embed-responsive-16by9"><iframe class="embed-responsive-item" id="vimeoplayer" width="500" height="281" src="//player.vimeo.com/video/';
-    var embedEnd = '" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div>';
-    return embedStart + videoID + embedEnd;
-  }
-
-  private tokenize_video(md) {
-    function tokenize_return(tokens, idx, options, env, self) {
-        var videoID = md.utils.escapeHtml(tokens[idx].videoID);
-        var service = md.utils.escapeHtml(tokens[idx].service);
-        if (videoID === "") {
-            return "";
-        }
-
-      if (service.toLowerCase() === "youtube") {
-        return this.tokenize_youtube(videoID);
-      } else if (service.toLowerCase() === "vimeo") {
-          return this.tokenize_vimeo(videoID);
-      } else{
-        return("");
-      }
+  // The youtube_parser is from http://stackoverflow.com/a/8260383
+  private youtube_parser(url){
+    var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]*).*/;
+    var match = url.match(regExp);
+    if (match&&match[7].length==11){
+      return match[7];
+    } else{
+      return url;
     }
-    return tokenize_return;
+  }
+
+  // The vimeo_parser is from http://stackoverflow.com/a/13286930
+  private vimeo_parser(url){
+    var regExp = /https?:\/\/(?:www\.|player\.)?vimeo.com\/(?:channels\/(?:\w+\/)?|groups\/([^\/]*)\/videos\/|album\/(\d+)\/video\/|)(\d+)(?:$|\/|\?)/;
+    var match = url.match(regExp);
+    if (match){
+      return match[3];
+    } else{
+      return url;
+    }
   }
 
   // UTILITY CLASSES

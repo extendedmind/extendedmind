@@ -14,6 +14,7 @@ export interface Config {
   backend: any; // Can be true, false or a string
   urlOrigin: string;
   ownersPath: string;
+  headersPath: string;
   syncTimeTreshold?: number;
 }
 
@@ -27,18 +28,18 @@ export class Server {
   private utils: Utils;
   private backendApiAddress: string;
   private urlOrigin: string;
-  private ownersPath: string;
+  private ownersPath: string = "our";
+  // Serve headers from root by default
+  private headersPath: string = "";
 
   constructor(config: Config) {
     this.port = config.port;
     this.debug = config.debug;
     this.externalStatic = config.externalStatic;
     this.urlOrigin = config.urlOrigin;
-    if (config.ownersPath) {
-      this.ownersPath = config.ownersPath;
-    } else {
-      this.ownersPath = "our";
-    }
+    if (config.ownersPath) this.ownersPath = config.ownersPath;
+    if (config.headersPath) this.headersPath = config.headersPath;
+
     this.app = new Koa();
     this.router = new Router();
 
@@ -101,13 +102,28 @@ export class Server {
     }
     const render = new Render("nunjucks", backendInfo.commonCollective[1],
                               viewsPath, this.debug, powered, this.urlOrigin,
-                              this.ownersPath);
+                              this.ownersPath, this.headersPath);
 
     // setup context for all routes
 
     this.app.use((ctx, next) => {
       ctx.state.backendClient = this.utils;
       ctx.state.render = render;
+      ctx.state.getSliceOfArrayWithRemaining = function(array, queryParamRemaining): any {
+        const HEADERS_PER_PAGE: number = 10;
+        // How many items were indicated as being not shown previously. If first query, everything is remaining
+        const previousRemaining: number = queryParamRemaining === undefined ? array.length : queryParamRemaining;
+        // Because new headers might be added to the top of the array, we use remaining to count the index from
+        // the end.
+        const firstHeaderIndex = array.length - previousRemaining;
+        const arraySlice = array.slice(firstHeaderIndex, firstHeaderIndex + HEADERS_PER_PAGE);
+        const remaining: number = array.length - (firstHeaderIndex + HEADERS_PER_PAGE) < 0
+          ? 0 : array.length - (firstHeaderIndex + HEADERS_PER_PAGE);
+        return {
+          arraySlice: arraySlice,
+          remaining: remaining,
+        };
+      };
       return next();
     });
 
@@ -119,6 +135,5 @@ export class Server {
     this.app.listen(this.port);
     console.info("listening on port " + this.port);
   }
-
 }
 

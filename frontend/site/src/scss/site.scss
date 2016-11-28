@@ -9,6 +9,9 @@
 // everywhere, and color to our text color
 $body-font-family: 'Source Sans Pro', sans-serif !default;
 $body-font-color: $color-text !default;
+$global-font-size: 125%;
+
+
 
 @import 'foundation';
 @include foundation-global-styles;
@@ -97,20 +100,28 @@ $body-font-color: $color-text !default;
 $padding-section: 50px;
 $padding-inside-section: 30px;
 
-section.headers-top {
+section.top {
   .heading-main {
     margin-top: 15vh;
   }
   padding-bottom: $padding-section;
 }
 
-section.headers-main {
+section.main {
   padding-top: $padding-section;
-  padding-bottom: $padding-section;
   border-bottom: 1px $color-faint-line solid;
+
+  &.headers {
+    padding-bottom: $padding-inside-section;
+  }
 
   .header-note{
     padding-bottom: $padding-inside-section;
+  }
+  .note{
+    padding-top: $padding-inside-section;
+    padding-bottom: $padding-inside-section;
+    border-top: 1px $color-faint-line solid;
   }
 }
 
@@ -119,16 +130,43 @@ footer {
   padding-bottom: $padding-section;
 }
 
-body {
-  font-size: 15px;
+h2 {
+  font-size: 1.12rem;
+}
+
+.markdown {
+  h1 {
+    font-size: 1.08rem;
+  }
+  h2 {
+    font-size: 1.05rem;
+  }
+  h3 {
+    font-size: 1.02rem;
+  }
+  h4,h5,h6 {
+    font-size: 1rem;
+  }
 }
 
 @include breakpoint(medium up) {
-  body {
-    font-size: 17px;
+  h2 {
+    font-size: 2rem;
   }
-  h1 {
-    font-size: 35px;
+
+  .markdown {
+    h1 {
+      font-size: 1.6rem;
+    }
+    h2 {
+      font-size: 1.4rem;
+    }
+    h3 {
+      font-size: 1.2rem;
+    }
+    h4,h5,h6 {
+      font-size: 1rem;
+    }
   }
   section.headers-top {
     .heading-main {
@@ -138,12 +176,6 @@ body {
 }
 
 @include breakpoint(large up) {
-  body {
-    font-size: 20px;
-  }
-  h1 {
-    font-size: 45px;
-  }
   section.headers-top {
     .heading-main {
       margin-top: 25vh;

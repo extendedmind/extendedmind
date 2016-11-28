@@ -6,31 +6,39 @@
 {% block stylesheets %}{{ super() }}{% endblock %}
 {% block header %}{% endblock %}
 {% block main %}
-<section class="headers-top">
+<section class="top">
   <div class="menu">
     <a class="toggle" href="#">
       <i class="icon-menu"></i>
     </a>
     {% include 'partials/menu.nunjucks' %}
   </div>
-  <small class="text-center">{{ commonCollectiveName }}</small>
-  <h1 class="heading-main text-center">{{ owner.displayName }}</h1>
+  <div class="heading-main row">
+    <div class="large-offset-3 large-6 medium-offset-2 medium-8 small-offset-1 small-10 columns end">
+      <small><a href="/{{ headersPath }}">{{ commonCollectiveName }}</a></small>
+      <h1>{{ owner.displayName }}</h1>
+    </div>
+  </div>
 </section>
-<section class="headers-main">
+<section class="main">
   {% if remaining > 0 %}
   <div class="infinite-container">
   {% endif %}
 
   {% for note in notes %}
-  <div class="row header-note infinite-item">
+  <div class="row note infinite-item">
     <div class="large-offset-3 large-6 medium-offset-2 medium-8 small-offset-1 small-10 columns end">
-      <h4>{{ note.title }}</h4>
+      <h2>{{ note.title }}</h2>
       <p>
-      {% if note.author %}
-        by: {{ note.author }}<br/>
+      {% if note.assignee %}
+        by: {{ note.assignee.displayName }}<br/>
       {% endif %}
-      <small>at: {{ formatDate(note.indexed) }}</small></p>
-      <p>{{ note.excerpt | unsafe }}</p>
+      <small>at: {{ formatDate(note.published) }}</small></p>
+      {% if note.content %}
+      <div class="markdown">
+      {{ note.content | safe }}
+      </div>
+      {% endif %}
     </div>
   </div>
   {% else %}
