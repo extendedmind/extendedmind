@@ -20,7 +20,19 @@
              <a href="/{{ ownersPath }}/{{ handle }}">{{ owner.displayName }}</a>
       </small>
       <h1>{{ note.title }}</h1>
-      <small>by: {{ owner.displayName }}</small><br/>
+      {% if owner.type == 'collective' %}
+      {% if note.assignee %}
+      {% if note.assignee.handle %}
+      by: <a href="/{{ ownersPath }}/{{ note.assignee.handle }}">{{ note.assignee.displayName }}</a><br/>
+      {% else %}
+      by: {{ note.assignee.displayName }}<br/>
+      {% endif %}
+      {% endif %}
+      from:
+      {% else %}
+      by:
+      {% endif %}
+      {{ owner.displayName }}<br/>
       <small>at: {{ formatDate(note.published) }}</small>
     </div>
   </div>
