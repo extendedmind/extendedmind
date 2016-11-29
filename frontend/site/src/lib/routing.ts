@@ -45,9 +45,11 @@ export class Routing {
       let arrayInfo = ctx.state.getSliceOfArrayWithRemaining(allNotes, ctx.query.remaining);
       renderContext.notes = arrayInfo.arraySlice;
       renderContext.remaining = arrayInfo.remaining;
+      // TODO: add support for basic info of owner from .content field of publicItemsResponse.json
+      ctx.body = ctx.state.render.template("pages/owner", renderContext);
+    }else {
+      ctx.status = 404;
     }
-    // TODO: add support for basic info of owner from .content field of publicItemsResponse.json
-    ctx.body = ctx.state.render.template("pages/owner", renderContext);
   }
 
   private preview(ctx: Router.IRouterContext, next: () => Promise<any>) {
