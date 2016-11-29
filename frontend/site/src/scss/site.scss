@@ -9,7 +9,7 @@
 // everywhere, and color to our text color
 $body-font-family: 'Source Sans Pro', sans-serif !default;
 $body-font-color: $color-text !default;
-$global-font-size: 125%;
+$global-font-size: 115%;
 
 
 
@@ -108,20 +108,30 @@ section.top {
 }
 
 section.main {
-  padding-top: $padding-section;
   border-bottom: 1px $color-faint-line solid;
 
   &.headers {
+    padding-top: $padding-section;
     padding-bottom: $padding-inside-section;
+    a {
+      color: $color-text;
+    }
   }
 
   .header-note{
+    padding-top: $padding-section;
     padding-bottom: $padding-inside-section;
   }
-  .note{
+  .note-excerpt {
     padding-top: $padding-inside-section;
     padding-bottom: $padding-inside-section;
     border-top: 1px $color-faint-line solid;
+    a {
+      color: $color-text;
+    }
+  }
+  .note {
+    padding-bottom: $padding-section;
   }
 }
 

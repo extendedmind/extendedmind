@@ -27,7 +27,7 @@
   {% for header in headers %}
   <div class="row header-note infinite-item">
     <div class="large-offset-3 large-6 medium-offset-2 medium-8 small-offset-1 small-10 columns end">
-      <h2>{{ header.title }}</h2>
+      <h2><a href="/{{ ownersPath }}/{{ header.owner.handle }}/{{ header.path }}">{{ header.title }}</a></h2>
       <p>
       {% if header.owner.type == 'collective' %}
       {% if header.assignee %}

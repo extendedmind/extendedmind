@@ -1,6 +1,7 @@
 @import 'constants';
 
 $icon-menu: "\e605";
+$icon-arrow-right: "\e60c";
 
 @font-face {
   font-family: 'icomoon';
@@ -42,5 +43,17 @@ Icon classes
     vertical-align: baseline;
     color: $color-text;
     content: $icon-menu;
+  }
+}
+
+.icon-arrow-right{
+  font-size: $size-icon-arrow;
+  padding-left: 5px;
+  padding-right: 5px;
+  &:after {
+    @include set-icon-font();
+    color: $color-text;
+    vertical-align: 10%;
+    content: $icon-arrow-right;
   }
 }

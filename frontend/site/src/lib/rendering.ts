@@ -1,5 +1,6 @@
 import * as nunjucks from "nunjucks";
 import * as MarkdownIt from "markdown-it";
+import * as excerpt from "excerpt-html";
 
 export class Render {
   private nunjucksEnvironment: nunjucks.Environment;
@@ -36,6 +37,7 @@ export class Render {
     };
     if (note.content) {
       processedNote.content = this.contentMarkdownParser.render(note.content);
+      processedNote.excerpt = excerpt(processedNote.content);
     }
     if (note.keywords) {
       processedNote.keywords = note.keywords;

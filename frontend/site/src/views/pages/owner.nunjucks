@@ -26,19 +26,22 @@
   {% endif %}
 
   {% for note in notes %}
-  <div class="row note infinite-item">
+  <div class="row note-excerpt infinite-item">
     <div class="large-offset-3 large-6 medium-offset-2 medium-8 small-offset-1 small-10 columns end">
-      <h2>{{ note.title }}</h2>
+      <h2><a href="/{{ ownersPath }}/{{ handle }}/{{ note.path }}">{{ note.title }}</a></h2>
       <p>
+      <a href="/{{ ownersPath }}/{{ handle }}/{{ note.path }}">
       {% if note.assignee %}
         by: {{ note.assignee.displayName }}<br/>
       {% endif %}
       <small>at: {{ formatDate(note.published) }}</small></p>
       {% if note.content %}
       <div class="markdown">
-      {{ note.content | safe }}
+      {{ note.excerpt | safe }}
       </div>
-      {% endif %}
+      {% endif %}<br/>
+      </a>
+      <p><small><a href="/{{ ownersPath }}/{{ handle }}/{{ note.path }}">read more&hellip;</a></small></p>
     </div>
   </div>
   {% else %}

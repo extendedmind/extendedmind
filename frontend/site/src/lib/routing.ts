@@ -11,6 +11,7 @@ export class Routing {
     // SETUP router
     this.router.get("/", this.headers);
     this.router.get("/" + ownersPath + "/:handle", this.owner);
+    this.router.get("/" + ownersPath + "/:handle/:path", this.note);
     this.router.get("/preview/:ownerUUID/:itemUUID/:previewCode", this.preview);
   }
 
@@ -39,6 +40,7 @@ export class Routing {
     const publicItems = await ctx.state.backendClient.getPublicItems(ctx.params.handle);
     let renderContext: any = {
       owner: publicItems.getOwner(),
+      handle: ctx.params.handle,
     };
     if (!renderContext.owner.blacklisted) {
       const allNotes = publicItems.getNotes().map(note => ctx.state.render.processNote(note));
@@ -51,6 +53,21 @@ export class Routing {
       ctx.status = 404;
     }
   }
+
+  private async note(ctx: Router.IRouterContext, next: () => Promise<any>) {
+    console.info("GET ", ctx.path);
+    const publicItems = await ctx.state.backendClient.getPublicItems(ctx.params.handle);
+    let renderContext: any = {
+      owner: publicItems.getOwner(),
+      note: ctx.state.render.processNote(publicItems.getNote(ctx.params.path)),
+      handle: ctx.params.handle,
+    };
+    if (renderContext.note && !renderContext.owner.blacklisted) {
+      console.log(renderContext.note)
+      ctx.body = ctx.state.render.template("pages/note", renderContext);
+    }
+  }
+
 
   private preview(ctx: Router.IRouterContext, next: () => Promise<any>) {
     console.info("SDSGET ", ctx.path);
