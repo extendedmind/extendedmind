@@ -15,10 +15,15 @@
   </div>
   <div class="heading-main row">
     <div class="large-offset-3 large-6 medium-offset-2 medium-8 small-offset-1 small-10 columns end">
+      {% if preview %}
+      <small>PREVIEW</small>
+      {% else %}
       <small><a href="/{{ headersPath }}">{{ commonCollectiveName }}</a>
              <span class="icon-arrow-right"></span>
              <a href="/{{ ownersPath }}/{{ handle }}">{{ owner.displayName }}</a>
       </small>
+      {% endif %}
+
       <h1>{{ note.title }}</h1>
       {% if owner.type == 'collective' %}
       {% if note.assignee %}
@@ -33,7 +38,9 @@
       by:
       {% endif %}
       {{ owner.displayName }}<br/>
+      {% if not preview %}
       <small>at: {{ formatDate(note.published) }}</small>
+      {% endif %}
     </div>
   </div>
 </section>

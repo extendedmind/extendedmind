@@ -32,8 +32,6 @@ export class Render {
     let processedNote: any = {
       uuid: note.uuid,
       modified: note.modified,
-      path: note.visibility.path,
-      published: note.visibility.published,
       title: note.title,
     };
     if (note.content) {
@@ -45,6 +43,10 @@ export class Render {
     }
     if (note.assignee) {
       processedNote.assignee = note.assignee;
+    }
+    if (note.visibility) {
+      if (note.visibility.path) processedNote.path = note.visibility.path;
+      if (note.visibility.published) processedNote.published = note.visibility.published;
     }
     return processedNote;
   };

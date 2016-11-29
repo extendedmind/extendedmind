@@ -71,8 +71,20 @@ export class Routing {
   }
 
 
-  private preview(ctx: Router.IRouterContext, next: () => Promise<any>) {
+  private async preview(ctx: Router.IRouterContext, next: () => Promise<any>) {
     console.info("GET ", ctx.path);
+    const previewNote = await ctx.state.backendClient.getPreviewItem(
+      ctx.params.ownerUUID, ctx.params.itemUUID, ctx.params.previewCode);
+
+    if (previewNote) {
+      let renderContext: any = {
+        owner: previewNote.owner,
+        note: ctx.state.render.processNote(previewNote),
+        preview: true,
+      };
+      ctx.body = ctx.state.render.template("pages/note", renderContext);
+    }
+
     /*
     let context = {};
     if (backendApi) {
