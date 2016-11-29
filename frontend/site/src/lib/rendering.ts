@@ -1,5 +1,6 @@
 import * as nunjucks from "nunjucks";
 import * as MarkdownIt from "markdown-it";
+import * as MarkdownItLinks from "markdown-it-link-attributes";
 import * as excerpt from "excerpt-html";
 
 export class Render {
@@ -23,7 +24,7 @@ export class Render {
     return this.nunjucksEnvironment.render(pathToView, context);
   };
   // Simple markdown processor
-  public markdown(content:string): string{
+  public markdown(content:string): string {
     return this.contentMarkdownParser.render(content);
   };
   // Process entire note into a usable object
@@ -84,11 +85,15 @@ export class Render {
 
   // MARKDOWN-IT
 
-  private initializeFullMarkdown(): MarkdownIt.MarkdownIt{
-    let mp: MarkdownIt.MarkdownIt = new MarkdownIt();
-    mp.enable("linkify");
+  private initializeFullMarkdown(): MarkdownIt.MarkdownIt {
+    let mp: MarkdownIt.MarkdownIt =
+      new MarkdownIt("default", { linkify: true, typographer: true});
     mp.renderer.rules["video"] = this.tokenize_video(mp);
     mp.inline.ruler.before("emphasis", "video", this.video_embed(mp));
+    mp.use(MarkdownItLinks, {
+      target: "_blank",
+      rel: "noopener",
+    });
     return mp;
   }
 

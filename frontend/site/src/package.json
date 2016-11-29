@@ -19,6 +19,7 @@
     "koa-router": "^7.0.1",
     "koa-static": "^3.0.0",
     "markdown-it": "^8.1.0",
+    "markdown-it-link-attributes": "^1.0.0",
     "nunjucks": "^2.1.0",
     "path": "^0.11.14"
   },

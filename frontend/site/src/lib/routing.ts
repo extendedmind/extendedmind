@@ -57,21 +57,22 @@ export class Routing {
   private async note(ctx: Router.IRouterContext, next: () => Promise<any>) {
     console.info("GET ", ctx.path);
     const publicItems = await ctx.state.backendClient.getPublicItems(ctx.params.handle);
-    let renderContext: any = {
-      owner: publicItems.getOwner(),
-      note: ctx.state.render.processNote(publicItems.getNote(ctx.params.path)),
-      handle: ctx.params.handle,
-    };
-    if (renderContext.note && !renderContext.owner.blacklisted) {
-      console.log(renderContext.note)
+    const note = publicItems.getNote(ctx.params.path);
+    const owner = publicItems.getOwner();
+
+    if (note && !owner.blacklisted) {
+      let renderContext: any = {
+        owner: owner,
+        note: ctx.state.render.processNote(note),
+        handle: ctx.params.handle,
+      };
       ctx.body = ctx.state.render.template("pages/note", renderContext);
     }
   }
 
 
   private preview(ctx: Router.IRouterContext, next: () => Promise<any>) {
-    console.info("SDSGET ", ctx.path);
-    ctx.body = "preview";
+    console.info("GET ", ctx.path);
     /*
     let context = {};
     if (backendApi) {
