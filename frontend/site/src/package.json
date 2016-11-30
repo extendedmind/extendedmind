@@ -28,6 +28,7 @@
     "concurrently": "^3.1.0",
     "express": "^4.14.0",
     "foundation-sites": "^6.2.4",
+    "google-fonts-offline": "^0.1.2",
     "node-sass": "^3.11.2",
     "raw-loader": "^0.5.1",
     "rimraf": "^2.5.4",
@@ -41,9 +42,11 @@
     "webpack-merge": "^0.15.0"
   },
   "scripts": {
-    "prepublish": "npm run clean && typings install && npm run build && npm run copy:js",
+    "prepublish": "npm run clean && typings install && npm run build && npm run copy:js && npm run copy:fonts && npm run prepare:img",
     "clean": "rimraf dist && rimraf typings",
     "copy:js": "mkdir -p ./public/static/js && cp ./node_modules/clipboard/dist/clipboard.min.js ./public/static/js/ && cp ./node_modules/waypoints/lib/jquery.waypoints.min.js ./public/static/js/ && cp ./node_modules/waypoints/lib/shortcuts/infinite.min.js ./public/static/js/ && cp ./node_modules/jquery/dist/jquery.min.js ./public/static/js/",
+    "copy:fonts": "mkdir -p ./public/static/fonts && goofoffline outDir=./public/static/fonts 'http://fonts.googleapis.com/css?family=Source+Sans+Pro'",
+    "prepare:img": "mkdir -p ./public/static/img",
     "build:ts": "tsc",
     "build:ts:watch": "tsc --watch",
     "build:scss": "node-sass --output-style compressed --source-map true --include-path node_modules/foundation-sites/scss scss --output public/static/css",

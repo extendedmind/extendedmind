@@ -10,6 +10,12 @@
 
   <meta property="og:title" content="{% block ogTitle %}{{ commonCollectiveName }}{% endblock %}" />
   <meta property="og:type" content="{% block ogtype %}website{% endblock %}" />
+  {% if imageUrl %}
+  <meta property="og:image:url" content="{{ imageUrl }}" />
+  {% endif %}
+  {% if secureImageUrl %}
+  <meta property="og:image:secure_url" content="{{ secureImageUrl }}" />
+  {% endif %}
 
   {% block stylesheets %}
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro" rel="stylesheet">

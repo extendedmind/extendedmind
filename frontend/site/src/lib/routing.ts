@@ -64,6 +64,16 @@ export class Routing {
         note: ctx.state.render.processNote(note),
         handle: ctx.params.handle,
       };
+
+      // Create an image for this
+      const imageFileName = ctx.state.visualization.generateImageFromText(
+        renderContext.note.title, renderContext.note.shortId);
+      if (imageFileName){
+        renderContext.imageUrl = ctx.state.urlOrigin + "/static/img/" + imageFileName;
+        if (ctx.state.urlOrigin.startsWith("https://")){
+          renderContext.secureImageUrl = ctx.state.urlOrigin + "/static/img/" + renderContext.note.shortId;
+        }
+      }
       ctx.body = ctx.state.render.template("pages/note", renderContext);
     }
   }

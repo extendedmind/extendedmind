@@ -6,6 +6,7 @@ import * as path from "path";
 import { Render } from "./rendering";
 import { Utils, Info } from "extendedmind-siteutils";
 import { Routing } from "./routing";
+import { Visualization } from "./visualization";
 
 export interface Config {
   port: number;
@@ -13,9 +14,10 @@ export interface Config {
   debug: boolean;
   backend: any; // Can be true, false or a string
   urlOrigin: string;
-  ownersPath: string;
-  headersPath: string;
+  ownersPath?: string;
+  headersPath?: string;
   syncTimeTreshold?: number;
+  imagePath?: string;
 }
 
 export class Server {
@@ -31,6 +33,8 @@ export class Server {
   private ownersPath: string = "our";
   // Serve headers from root by default
   private headersPath: string = "";
+  // Save images to static image path by default
+  private imagePath: string = path.join(__dirname, "../public/static/img");
 
   constructor(config: Config) {
     this.port = config.port;
@@ -39,6 +43,7 @@ export class Server {
     this.urlOrigin = config.urlOrigin;
     if (config.ownersPath) this.ownersPath = config.ownersPath;
     if (config.headersPath) this.headersPath = config.headersPath;
+    if (config.imagePath) this.imagePath = config.imagePath;
 
     this.app = new Koa();
     this.router = new Router();
@@ -104,11 +109,15 @@ export class Server {
                               viewsPath, this.debug, powered, this.urlOrigin,
                               this.ownersPath, this.headersPath);
 
+    const visualization = new Visualization(this.imagePath);
+
     // setup context for all routes
 
     this.app.use((ctx, next) => {
       ctx.state.backendClient = this.utils;
       ctx.state.render = render;
+      ctx.state.visualization = visualization;
+      ctx.state.urlOrigin = this.urlOrigin;
       ctx.state.getSliceOfArrayWithRemaining = function(array, queryParamRemaining): any {
         const HEADERS_PER_PAGE: number = 10;
         // How many items were indicated as being not shown previously. If first query, everything is remaining
