@@ -55,7 +55,33 @@
     </div>
   </div>
   {% endif %}
+  {% if note.ui.sharing %}
+  <div class="row sharing">
+    <div class="large-offset-3 large-6 medium-offset-2 medium-8 small-offset-1 small-10 columns end">
+      <span class="icon-facebook"></span><span class="icon-twitter"></span><small id="shortUrl" data-clipboard-text="{{ urlOrigin }}/{{ note.shortId }}">{{ domain }}/{{ note.shortId }}</small>
+      <br/><small id="copySuccess" class="hide">url copied to clipboard!</small>
+      <small id="copyFailure" class="hide">copy paste url to clipboard</small>
+    </div>
+  </div>
+  {% endif %}
 </section>
 {% endblock %}
-{% block scripts %}{% endblock %}
+{% block scripts %}
+{% if note.ui.sharing %}
+{{ super() }}
+<script src="/static/js/clipboard.min.js"></script>
+<script>
+var clipboard = new Clipboard("#shortUrl");
+clipboard.on("success", function(e) {
+  $("#copySuccess").removeClass("hide");
+});
+
+clipboard.on("error", function(e) {
+  $("#copyFailure").removeClass("hide");
+});
+{% endif %}
+</script>
+{% endblock %}
+
+
 

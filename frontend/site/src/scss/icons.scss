@@ -2,6 +2,8 @@
 
 $icon-menu: "\e605";
 $icon-arrow-right: "\e60c";
+$icon-facebook: "\e619";
+$icon-twitter: "\e61a";
 
 @font-face {
   font-family: 'icomoon';
@@ -55,5 +57,31 @@ Icon classes
     color: $color-text;
     vertical-align: 10%;
     content: $icon-arrow-right;
+  }
+}
+
+.icon-twitter {
+  font-size: $size-icon-social;
+  line-height: $size-icon-social;
+  height: $size-icon-social;
+  padding-right: 10px;
+  &:after {
+    @include set-icon-font();
+    vertical-align: -23%;
+    color: $color-text;
+    content: $icon-twitter;
+  }
+}
+
+.icon-facebook {
+  font-size: $size-icon-social;
+  line-height: $size-icon-social;
+  height: $size-icon-social;
+  padding-right: 10px;
+  &:after {
+    @include set-icon-font();
+    vertical-align: -23%;
+    color: $color-text;
+    content: $icon-facebook;
   }
 }

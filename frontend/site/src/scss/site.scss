@@ -133,6 +133,16 @@ section.main {
   .note {
     padding-bottom: $padding-section;
   }
+  .sharing {
+    padding-bottom: $padding-section;
+    #copySuccess, #copyFailure{
+      padding-left: 90px;
+    }
+    #shortUrl {
+      font-weight: 700;
+      cursor: pointer;
+    }
+  }
 }
 
 footer {

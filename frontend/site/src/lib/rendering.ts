@@ -44,9 +44,13 @@ export class Render {
     if (note.assignee) {
       processedNote.assignee = note.assignee;
     }
+    if (note.ui) {
+      processedNote.ui = note.ui;
+    }
     if (note.visibility) {
       if (note.visibility.path) processedNote.path = note.visibility.path;
       if (note.visibility.published) processedNote.published = note.visibility.published;
+      if (note.visibility.shortId) processedNote.shortId = note.visibility.shortId;
     }
     return processedNote;
   };
@@ -65,6 +69,15 @@ export class Render {
     nj.addGlobal("commonCollectiveName", commonCollectiveName);
     nj.addGlobal("development", debug);
     nj.addGlobal("urlOrigin", urlOrigin);
+
+    if (urlOrigin.startsWith("http://")) {
+      nj.addGlobal("domain", urlOrigin.substr(7));
+    } else if (urlOrigin.startsWith("https://")) {
+      nj.addGlobal("domain", urlOrigin.substr(8));
+    } else {
+      nj.addGlobal("domain", urlOrigin);
+    }
+
     nj.addGlobal("ownersPath", ownersPath);
     nj.addGlobal("headersPath", headersPath);
     if (powered) nj.addGlobal("powered", true);

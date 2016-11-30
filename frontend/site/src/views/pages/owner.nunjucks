@@ -63,6 +63,7 @@
 {% block scripts %}
 {% if remaining > 0 %}
 {{ super() }}
+<script src="/static/js/jquery.waypoints.min.js"></script>
 <script src="/static/js/infinite.min.js"></script>
 <script>
 var infinite = new Waypoint.Infinite({

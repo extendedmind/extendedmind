@@ -1,4 +1,3 @@
-import { Render } from "./rendering";
 import * as Router from "koa-router";
 import { Info, Utils } from "extendedmind-siteutils";
 
@@ -59,7 +58,6 @@ export class Routing {
     const publicItems = await ctx.state.backendClient.getPublicItems(ctx.params.handle);
     const note = publicItems.getNote(ctx.params.path);
     const owner = publicItems.getOwner();
-
     if (note && !owner.blacklisted) {
       let renderContext: any = {
         owner: owner,
@@ -69,7 +67,6 @@ export class Routing {
       ctx.body = ctx.state.render.template("pages/note", renderContext);
     }
   }
-
 
   private async preview(ctx: Router.IRouterContext, next: () => Promise<any>) {
     console.info("GET ", ctx.path);
@@ -84,22 +81,6 @@ export class Routing {
       };
       ctx.body = ctx.state.render.template("pages/note", renderContext);
     }
-
-    /*
-    let context = {};
-    if (backendApi) {
-      let backendResponse = await request.get(backendApi + "/" + ownerUUID + "/item/" +
-                                              itemUUID + "/preview/" + previewCode);
-      if (backendResponse.status === 200) {
-        let previewPathData = backendResponse.body;
-        context.owner = previewPathData.owner;
-        context.note = previewPathData.note;
-        if (context.note.content && context.note.format === "md")
-          context.note.content = markdownParser.render(context.note.content);
-        ctx.body = ctx.state.render.template("pages/preview", context);
-      }
-    }
-    */
   }
 
 }
