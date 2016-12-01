@@ -9,6 +9,8 @@ export class Routing {
               private ownersPath: string) {
     // SETUP router
     this.router.get("/", this.headers);
+    // Short id starts with a number, then follows whatever
+    this.router.get("/:sid(\\d\\w*)", this.short);
     this.router.get("/" + ownersPath + "/:handle", this.owner);
     this.router.get("/" + ownersPath + "/:handle/:path", this.note);
     this.router.get("/preview/:ownerUUID/:itemUUID/:previewCode", this.preview);
@@ -32,6 +34,19 @@ export class Routing {
       remaining: arrayInfo.remaining,
     };
     ctx.body = ctx.state.render.template("pages/headers", renderContext);
+  }
+
+  private async short(ctx: Router.IRouterContext, next: () => Promise<any>) {
+    console.info("GET ", ctx.path);
+    const shortIdInfo = await ctx.state.backendClient.getShortId(ctx.params.sid);
+    if (shortIdInfo) {
+      let redirectPath = "/" + ctx.state.ownersPath + "/" + shortIdInfo.handle;
+      if (shortIdInfo.path) {
+        redirectPath += "/" + shortIdInfo.path;
+      }
+      ctx.redirect(redirectPath);
+      ctx.status = 301;
+    }
   }
 
   private async owner(ctx: Router.IRouterContext, next: () => Promise<any>) {

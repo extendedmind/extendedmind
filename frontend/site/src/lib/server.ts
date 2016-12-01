@@ -118,6 +118,7 @@ export class Server {
       ctx.state.render = render;
       ctx.state.visualization = visualization;
       ctx.state.urlOrigin = this.urlOrigin;
+      ctx.state.ownersPath = this.ownersPath;
       ctx.state.getSliceOfArrayWithRemaining = function(array, queryParamRemaining): any {
         const HEADERS_PER_PAGE: number = 10;
         // How many items were indicated as being not shown previously. If first query, everything is remaining
