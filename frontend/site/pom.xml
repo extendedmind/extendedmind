@@ -276,7 +276,7 @@
               <name>extendedmind/site</name>
               <alias>site</alias>
               <build>
-                <from>node:6</from>
+                <from>quay.io/extendedmind/node</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
                 <tags>
                   <tag>latest</tag>
