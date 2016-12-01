@@ -1,0 +1,46 @@
+<script src="/static/js/clipboard.min.js"></script>
+<script>(function(d, s, id) {
+	  var js, fjs = d.getElementsByTagName(s)[0];
+	  if (d.getElementById(id)) return;
+	  js = d.createElement(s); js.id = id;
+	  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.5";
+	  fjs.parentNode.insertBefore(js, fjs);
+	}(document, 'script', 'facebook-jssdk'));
+</script>
+<script>
+var clipboard = new Clipboard("#shortUrl");
+clipboard.on("success", function(e) {
+  $("#copySuccess").removeClass("hide");
+});
+
+clipboard.on("error", function(e) {
+  $("#copyFailure").removeClass("hide");
+});
+
+// Social sharing
+
+window.facebookShare = function(event, title, excerpt, path) {
+  event.preventDefault();
+  var options = {
+    method: 'share',
+    href: '{{ urlOrigin }}/{{ ownersPath }}/{{ handle }}',
+    title: title,
+  };
+  if (path) options.href += '/' + path;
+  if (excerpt.length) options.description = excerpt;
+
+  {% if imageUrl %}
+  options.picture = "{{ imageUrl }}";
+  {% endif %}
+
+  FB.ui(options, function(/*response*/) {
+    return null;
+  });
+};
+window.twitterShare = function(event, title, path) {
+  event.preventDefault();
+  var sharelUrl = '{{ urlOrigin }}/{{ ownersPath }}/{{ handle }}';
+  if (path) shareUrl += '/' + path;
+  var url = 'https://twitter.com/intent/tweet?url=' + encodeURIComponent(sharelUrl) + '&text=' + encodeURIComponent(title);
+  window.open(url, '_blank', 'height=420, width=550');
+};

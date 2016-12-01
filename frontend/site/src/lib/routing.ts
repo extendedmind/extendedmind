@@ -53,7 +53,7 @@ export class Routing {
     console.info("GET ", ctx.path);
     const publicItems = await ctx.state.backendClient.getPublicItems(ctx.params.handle);
     let renderContext: any = {
-      owner: publicItems.getOwner(),
+      owner: ctx.state.render.processOwner(publicItems.getOwner()),
       handle: ctx.params.handle,
     };
     if (!renderContext.owner.blacklisted) {

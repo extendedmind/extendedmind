@@ -1,6 +1,0 @@
-<div class="left-aligned medium-8 medium-offset-2 note">
-  <h1>{{ note.title }}</h1>
-  <div class="note-content">
-    {{ note.content | safe }}
-  </div>
-</div>

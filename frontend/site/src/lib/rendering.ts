@@ -24,7 +24,7 @@ export class Render {
     return this.nunjucksEnvironment.render(pathToView, context);
   };
   // Simple markdown processor
-  public markdown(content:string): string {
+  public markdown(content: string): string {
     return this.contentMarkdownParser.render(content);
   };
   // Process entire note into a usable object
@@ -54,6 +54,24 @@ export class Render {
     }
     return processedNote;
   };
+
+  public processOwner(owner: any): any {
+    let processedOwner: any = {
+      handle: owner.handle,
+      ui: owner.ui,
+      displayName: owner.displayName,
+      format: owner.format,
+      type: owner.type,
+      blacklisted: owner.blacklisted,
+      shortId: owner.shortId,
+    };
+
+    if (owner.content) {
+      processedOwner.content = this.contentMarkdownParser.render(owner.content);
+      processedOwner.excerpt = excerpt(processedOwner.content);
+    }
+    return processedOwner;
+  }
 
   // NUNJUCKS
 

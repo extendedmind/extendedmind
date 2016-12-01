@@ -17,6 +17,20 @@
     <div class="large-offset-3 large-6 medium-offset-2 medium-8 small-offset-1 small-10 columns end">
       <small><a href="/{{ headersPath }}">{{ commonCollectiveName }}</a></small>
       <h1>{{ owner.displayName }}</h1>
+      {% if owner.content %}
+      {{ owner.content | safe }}
+      {% endif %}
+      {% if owner.ui.sharing %}
+      <a href class="sharing-link" onclick="window.facebookShare(event, '{{ owner.displayName }}', '{{ owner.excerpt }}');return false;">
+        <span class="icon-facebook"></span>
+      </a>
+      <a href class="sharing-link" onclick="window.twitterShare(event, '{{ owner.displayName }}');return false;">
+        <span class="icon-twitter"></span>
+      </a>
+      <small id="shortUrl" data-clipboard-text="{{ urlOrigin }}/{{ owner.shortId }}">{{ domain }}/{{ owner.shortId }}</small>
+      <br/><small id="copySuccess" class="hide">url copied to clipboard!</small>
+      <small id="copyFailure" class="hide">copy paste url to clipboard</small>
+      {% endif %}
     </div>
   </div>
 </section>
@@ -61,15 +75,14 @@
 </section>
 {% endblock %}
 {% block scripts %}
-{% if remaining > 0 %}
+{% if remaining > 0 or owner.ui.sharing %}
 {{ super() }}
-<script src="/static/js/jquery.waypoints.min.js"></script>
-<script src="/static/js/infinite.min.js"></script>
-<script>
-var infinite = new Waypoint.Infinite({
-  element: $('.infinite-container')[0],
-  offset: 2
-});
+{% if remaining > 0 %}
+{% include 'partials/infinite.nunjucks' %}
+{% endif %}
+{% if owner.ui.sharing %}
+{% include 'partials/sharing.nunjucks' %}
+{% endif %}
 {% endif %}
 </script>
 {% endblock %}

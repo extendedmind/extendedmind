@@ -135,19 +135,20 @@ section.main {
   }
   .sharing {
     padding-bottom: $padding-section;
-    #copySuccess, #copyFailure{
-      padding-left: 97px;
-    }
-    #shortUrl {
-      font-weight: 700;
-      cursor: pointer;
-    }
   }
 }
 
 footer {
   padding-top: $padding-section;
   padding-bottom: $padding-section;
+}
+
+#shortUrl {
+  font-weight: 700;
+  cursor: pointer;
+}
+#copySuccess, #copyFailure{
+  padding-left: 97px;
 }
 
 h2 {
