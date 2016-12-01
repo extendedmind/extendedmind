@@ -179,14 +179,20 @@ trait CollectiveDatabase extends UserDatabase {
       collectiveNode.setProperty("ui", collective.preferences.get.ui.get);
     }
 
+    var updatePublicModified = false
+
+    // Public UI modification
+    if (collective.preferences.isDefined && collective.preferences.get.publicUi.isDefined) {
+      collectiveNode.setProperty("publicUi", collective.preferences.get.publicUi.get);
+      updatePublicModified = true
+    }
+
     // Description
     if (collective.description.isDefined) {
       collectiveNode.setProperty("description", collective.description.get);
     }else if (collectiveNode.hasProperty("description")){
       collectiveNode.removeProperty("description");
     }
-
-    var updatePublicModified = false
 
     // Display name
     if (collective.displayName.isDefined){

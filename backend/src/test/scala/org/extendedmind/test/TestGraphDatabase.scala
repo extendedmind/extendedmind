@@ -67,7 +67,7 @@ trait TestGraphDatabase extends GraphDatabase {
          transactionEventHandlers.foreach( eventHandler => neo4j.gds.registerTransactionEventHandler(eventHandler))
     }
     // Initialize database and create common collective and admin user
-    val timoUser = User(TIMO_EMAIL, Some("Timo"), Some("timo"), None, None, Some(1), None)
+    val timoUser = User(TIMO_EMAIL, Some("Timo"), Some("timo"), Some("Test *bio* for Timo"), Some("md"), Some(1), None)
     val testDataCollective = Collective("test data", Some("common collective for all test users"), None, Some("test-data"), None, None, None)
     val initializeResult = initializeDatabase(Some(testDataCollective), Some(timoUser), Some(TIMO_PASSWORD))
     val testDataNode = withTx { implicit neo => getNode(initializeResult._2.get, OwnerLabel.COLLECTIVE).right.get }
@@ -98,7 +98,7 @@ trait TestGraphDatabase extends GraphDatabase {
       timoNode, "test company",
       Some("private collective for a test company"), false,
       Some("Test Company"), Some("tc"), Some("Test _underlined_content_ for the collective"), Some("md"),
-      Some(OwnerPreferences(None, Some("{\"useCC\":true}"))))
+      Some(OwnerPreferences(None, Some("{\"useCC\":true}"), Some("{\"sharing\":true}"))))
 
     // Info node created after common collective "extended mind" but should still be part of it,
     // Info does not have email verified
@@ -121,13 +121,13 @@ trait TestGraphDatabase extends GraphDatabase {
         val testOnboardingPreferences = "{\"user\":\"1432192930431:devel:devel\",\"focus\":\"1432192930431:devel:devel\",\"inbox\":\"1432192930431:devel:devel\",\"tasks\":\"1432192930431:devel:devel\",\"notes\":\"1432192930431:devel:devel\",\"lists\":{\"active\":\"1432192930431:devel:devel\"},\"list\":\"1432192930431:devel:devel\",\"trash\":\"1432192930431:devel:devel\",\"settings\":\"1432192930431:devel:devel\"}"
 
         // Add preferences to timo node
-        patchExistingUser(getUUID(timoNode), timoUser.copy(preferences = Some(OwnerPreferences(Some(testOnboardingPreferences), None))))
+        patchExistingUser(getUUID(timoNode), timoUser.copy(preferences = Some(OwnerPreferences(Some(testOnboardingPreferences), None, Some("{\"sharing\":true}")))))
 
         // Add preferences to lauri node
-        patchExistingUser(getUUID(lauriNode), lauriUser.copy(preferences = Some(OwnerPreferences(Some(testOnboardingPreferences), None))))
+        patchExistingUser(getUUID(lauriNode), lauriUser.copy(preferences = Some(OwnerPreferences(Some(testOnboardingPreferences), None, None))))
 
         // Add preferences to JP node
-        patchExistingUser(getUUID(jpNode), jpUser.copy(preferences = Some(OwnerPreferences(Some(testOnboardingPreferences), None))))
+        patchExistingUser(getUUID(jpNode), jpUser.copy(preferences = Some(OwnerPreferences(Some(testOnboardingPreferences), None, None))))
 
         // Valid, unreplaceable
         timoUUID = getUUID(timoNode)

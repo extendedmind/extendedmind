@@ -70,7 +70,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
       + "update it with PATCH to /v2/collectives/[collectiveUUID] "
       + "and get it back with GET to /v2/collectives/[collectiveUUID]") {
       val authenticateResponse = emailPasswordAuthenticate(TIMO_EMAIL, TIMO_PASSWORD)
-      val testCollective = Collective("Test", None, None, None, None, None, Some(OwnerPreferences(None, Some("{\"useCC\":true}"))))
+      val testCollective = Collective("Test", None, None, None, None, None, Some(OwnerPreferences(None, Some("{\"useCC\":true}"), Some("{\"sharing\":true}") )))
       Post("/v2/collectives/create_collective",
         marshal(testCollective).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           writeJsonOutput("putCollectiveResponse", responseAs[String])

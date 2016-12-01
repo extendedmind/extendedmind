@@ -323,6 +323,12 @@ trait UserDatabase extends OwnerDatabase {
     }
 
     var updatePublicModified = false
+
+    // Public UI Preferences
+    if (user.preferences.isDefined && user.preferences.get.publicUi.isDefined) {
+      userNode.setProperty("publicUi", user.preferences.get.publicUi.get);
+    }
+
     // Display name
     if (user.displayName.isDefined){
       if(!userNode.hasProperty("displayName") ||
@@ -493,7 +499,8 @@ trait UserDatabase extends OwnerDatabase {
     if (userNode.hasProperty("onboarded") || userNode.hasProperty("ui")) {
       Some(OwnerPreferences(
         if (userNode.hasProperty("onboarded")) Some(userNode.getProperty("onboarded").asInstanceOf[String]) else None,
-        if (userNode.hasProperty("ui")) Some(userNode.getProperty("ui").asInstanceOf[String]) else None))
+        if (userNode.hasProperty("ui")) Some(userNode.getProperty("ui").asInstanceOf[String]) else None,
+        if (userNode.hasProperty("publicUi")) Some(userNode.getProperty("publicUi").asInstanceOf[String]) else None))
     } else {
       None
     }

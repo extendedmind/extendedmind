@@ -1599,6 +1599,12 @@ trait ItemDatabase extends UserDatabase {
           (modified.isEmpty || ownerPublicModified > modified.get))
         Some(ownerNode.getProperty("format").asInstanceOf[String])
       else None
+    val publicUi: Option[String] =
+      if (ownerNode.hasProperty("publicUi") &&
+          (modified.isEmpty || ownerPublicModified > modified.get))
+        Some(ownerNode.getProperty("publicUi").asInstanceOf[String])
+      else None
+
     val ownerType: Option[String] =
       if (modified.isEmpty || ownerPublicModified > modified.get) Some(getOwnerType(ownerNode))
       else None
@@ -1615,12 +1621,13 @@ trait ItemDatabase extends UserDatabase {
                 content = content,
                 format = format,
                 modified = if (modified.isEmpty || ownerPublicModified > modified.get) Some(ownerPublicModified) else None,
+                publicUi = publicUi,
                 notes = if (noteBuffer.isEmpty) None else Some(noteBuffer.toList),
                 tags = if (tagBuffer.isEmpty) None else Some(tagBuffer.toList),
                 collectiveTags = if (foreignTagBuffer.isEmpty) None else Some(foreignTagBuffer.toList),
                 assignees = if (assigneeBuffer.isEmpty) None else Some(assigneeBuffer.toList),
                 unpublished = if (unpublishedBuffer.isEmpty) None else Some(unpublishedBuffer.toList),
-                getBlacklisted(ownerNode)))
+                blacklisted = getBlacklisted(ownerNode)))
   }
 
   protected def toPreviewItem(ownerNode: Node, itemNode: Node, displayOwner: String)(implicit neo4j: DatabaseService): Response[PublicItem] = {

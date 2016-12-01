@@ -116,7 +116,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
       + "and get the changed email and onboarded status back") {
       val authenticateResponse = emailPasswordAuthenticate(LAURI_EMAIL, LAURI_PASSWORD)
       val initialUIPreferences = "{hideFooter: true}"
-      val newUser = User("ignored@example.com", None, None, None, None, None, Some(OwnerPreferences(Some("web"), Some(initialUIPreferences))))
+      val newUser = User("ignored@example.com", None, None, None, None, None, Some(OwnerPreferences(Some("web"), Some(initialUIPreferences), None)))
       Patch("/v2/users/" + authenticateResponse.userUUID,
         marshal(newUser).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
           writeJsonOutput("patchUserResponse", responseAs[String])
@@ -137,7 +137,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
 
         // Add more UI preferences, make sure onboarded isn't removed
         val newUIPreferences = "{hideFooter: true, hidePlus: true}"
-        Patch("/v2/users/" + authenticateResponse.userUUID, marshal(accountResponse.copy(email = None, preferences = Some(OwnerPreferences(None, Some(newUIPreferences))))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", newEmailAuthenticateResponse.token.get)) ~> route ~> check {
+        Patch("/v2/users/" + authenticateResponse.userUUID, marshal(accountResponse.copy(email = None, preferences = Some(OwnerPreferences(None, Some(newUIPreferences), None)))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", newEmailAuthenticateResponse.token.get)) ~> route ~> check {
           val patchUserResponse = responseAs[PatchUserResponse]
           patchUserResponse.result.modified should not be None
           Get("/v2/users/" + authenticateResponse.userUUID) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", newEmailAuthenticateResponse.token.get)) ~> route ~> check {
@@ -145,13 +145,24 @@ class UserBestCaseSpec extends ServiceSpecBase {
             accountResponse.preferences.get.onboarded.get should be("web")
             accountResponse.preferences.get.ui.get should be(newUIPreferences)
             // Add more onboarded values, make sure UI preferences isn't removed
-            Patch("/v2/users/" + authenticateResponse.userUUID, marshal(accountResponse.copy(email = None, preferences = Some(OwnerPreferences(Some("{web}"), None)))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+            Patch("/v2/users/" + authenticateResponse.userUUID, marshal(accountResponse.copy(email = None, preferences = Some(OwnerPreferences(Some("{web}"), None, None)))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
               Get("/v2/users/" + authenticateResponse.userUUID) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", newEmailAuthenticateResponse.token.get)) ~> route ~> check {
                 val accountResponse2 = responseAs[User]
                 accountResponse2.preferences.get.onboarded.get should be("{web}")
                 accountResponse2.preferences.get.ui.get should be(newUIPreferences)
               }
             }
+          }
+        }
+
+        // Add public UI preferences
+        val publicUIPreferences = "{\"sharing\": true}"
+        Patch("/v2/users/" + authenticateResponse.userUUID, marshal(accountResponse.copy(preferences = Some(OwnerPreferences(None, None, Some(publicUIPreferences))))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", newEmailAuthenticateResponse.token.get)) ~> route ~> check {
+          val patchUserResponse = responseAs[PatchUserResponse]
+          patchUserResponse.result.modified should not be None
+          Get("/v2/users/" + authenticateResponse.userUUID) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", newEmailAuthenticateResponse.token.get)) ~> route ~> check {
+            val accountResponse = responseAs[User]
+            accountResponse.preferences.get.publicUi.get should be(publicUIPreferences)
           }
         }
       }
