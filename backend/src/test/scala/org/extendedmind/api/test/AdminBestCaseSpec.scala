@@ -210,12 +210,13 @@ class AdminBestCaseSpec extends ServiceSpecBase {
                 }
                 Get("/v2/public/test") ~> route ~> check {
                   val publicItemsResponse = responseAs[PublicItems]
+                  publicItemsResponse.shortId should not be (None)
                   publicItemsResponse.notes.get.length should be (1)
                   publicItemsResponse.notes.get(0).relationships.get.assignee.get should be (lauriUUID)
                   publicItemsResponse.notes.get(0).visibility.get.shortId should not be (None)
                   publicItemsResponse.notes.get(0).visibility.get.publicUi.get should be ("test ui")
                   publicItemsResponse.assignees.get.length should be (1)
-                  publicItemsResponse.assignees.get(0).uuid should be (lauriUUID)
+                  publicItemsResponse.assignees.get(0).uuid.get should be (lauriUUID)
                   publicItemsResponse.assignees.get(0).displayName should be ("lauri@extendedmind.org")
                 }
 

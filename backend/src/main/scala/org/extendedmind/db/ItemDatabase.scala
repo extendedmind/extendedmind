@@ -1599,13 +1599,19 @@ trait ItemDatabase extends UserDatabase {
           (modified.isEmpty || ownerPublicModified > modified.get))
         Some(ownerNode.getProperty("format").asInstanceOf[String])
       else None
-
     val ownerType: Option[String] =
       if (modified.isEmpty || ownerPublicModified > modified.get) Some(getOwnerType(ownerNode))
       else None
+    val shortId: Option[String] =
+      if (ownerNode.hasProperty("sid") &&
+          (modified.isEmpty || ownerPublicModified > modified.get))
+        Some(IdUtils.getShortIdAsString(ownerNode.getProperty("sid").asInstanceOf[Long]))
+      else None
+
     Right(PublicItems(
                 displayName = if (modified.isEmpty || ownerPublicModified > modified.get) Some(displayOwner) else None,
                 ownerType = ownerType,
+                shortId = shortId,
                 content = content,
                 format = format,
                 modified = if (modified.isEmpty || ownerPublicModified > modified.get) Some(ownerPublicModified) else None,

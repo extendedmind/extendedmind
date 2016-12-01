@@ -141,7 +141,8 @@ case class PublicItem(displayName: String,
 case class PublicItemHeader(handle: String, path: Option[String])
 
 case class PublicItems(displayName: Option[String],
-                       ownerType: Option[String], // Either "user" or "collective"
+                       ownerType: Option[String], // Either "user" or "collective",
+                       shortId: Option[String],
                        content: Option[String], format: Option[String], modified: Option[Long],
                        notes: Option[scala.List[Note]],
                        tags: Option[scala.List[Tag]],
