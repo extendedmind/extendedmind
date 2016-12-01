@@ -84,6 +84,17 @@
         <input type="text" name="displayName" ng-model="user.displayName"
         ng-minlength="1" ng-maxlength="256" placeholder="enter display name&#8230;" required />
       </div>
+
+      <div class="group-mixed details height-large">
+        <div class="group-mixed--left">
+          <input type="checkbox" ng-model="user.sharing" ng-true-value="true"
+          icon-checkbox="'addSharing'" />
+        </div>
+        <div class="group-mixed--middle">
+          <span class="text-details">enable social sharing on my home page</span>
+        </div>
+      </div>
+
       <div class="group-mixed details height-large">
         <div class="group-mixed--left">
           <input type="checkbox" ng-model="user.useCreativeCommons" ng-true-value="true"
@@ -104,7 +115,7 @@
           icon-checkbox="'enableSharing'" />
         </div>
         <div class="group-mixed--middle">
-          <span class="text-details">enable social sharing by default</span>
+          <span class="text-details">enable social sharing of new published notes by default</span>
         </div>
       </div>
       <div class="group-mixed details height-large">
@@ -148,7 +159,7 @@
       </button>
       <button ng-if="mode === 'publishing'" type="submit" class="btn-action"
       ng-disabled="!userForm.$valid || updatePublishingFailed"
-      ng-click="updatePublishing(user.handle, user.displayName, user.useCreativeCommons, user.enableSharing, user.addToIndex)">
+      ng-click="updatePublishing(user.handle, user.displayName, user.sharing, user.useCreativeCommons, user.enableSharing, user.addToIndex)">
         <span class="text-btn">save</span>
       </button>
       <button ng-if="mode === 'delete'" type="submit" class="btn-action"

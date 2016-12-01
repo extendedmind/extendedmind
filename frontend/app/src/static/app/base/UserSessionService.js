@@ -257,6 +257,17 @@
       }
       this.setPreferences(preferences);
     },
+    setPublicUIPreference: function(name, value) {
+      var preferences = this.getPreferences() || {};
+      if (!preferences.publicUi) preferences.publicUi = {};
+
+      if (value !== undefined){
+        preferences.publicUi[name] = value;
+      }else if (preferences.publicUi[name] !== undefined) {
+        delete preferences.publicUi[name];
+      }
+      this.setPreferences(preferences);
+    },
     setFeaturePreferences: function(feature, value) {
       // Feature preferences are in the "onboarded" field which is an object
       // of the following format:
@@ -517,6 +528,9 @@
       if (transportPreferences.onboarded) {
         transportPreferences.onboarded = JSON.stringify(preferences.onboarded);
       }
+      if (transportPreferences.publicUi) {
+        transportPreferences.publicUi = JSON.stringify(preferences.publicUi);
+      }
       return transportPreferences;
     },
     getPreferences: function() {
@@ -538,6 +552,23 @@
       }
       if (preferences && preferences.ui) {
         return preferences.ui[key];
+      }
+    },
+    getPublicUIPreference: function(key, ownerUUID) {
+      syncWebStorages();
+      var preferences;
+      if (ownerUUID && ownerUUID !== this.getUserUUID()){
+        var collectiveInfos = SessionStorageService.getCollectives();
+        if (collectiveInfos && collectiveInfos[ownerUUID] &&
+            angular.isObject(collectiveInfos[ownerUUID][3]) &&
+            collectiveInfos[ownerUUID][3].preferences){
+          preferences = collectiveInfos[ownerUUID][3].preferences;
+        }
+      }else{
+        preferences = SessionStorageService.getPreferences();
+      }
+      if (preferences && preferences.publicUi) {
+        return preferences.publicUi[key];
       }
     },
     getFeaturePreferences: function(feature) {
