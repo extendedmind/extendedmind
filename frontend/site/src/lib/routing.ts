@@ -52,8 +52,9 @@ export class Routing {
   private async owner(ctx: Router.IRouterContext, next: () => Promise<any>) {
     console.info("GET ", ctx.path);
     const publicItems = await ctx.state.backendClient.getPublicItems(ctx.params.handle);
+    const owner = publicItems.getOwner();
     let renderContext: any = {
-      owner: ctx.state.render.processOwner(publicItems.getOwner()),
+      owner: ctx.state.render.processOwner(owner),
       handle: ctx.params.handle,
     };
     if (!renderContext.owner.blacklisted) {
@@ -62,14 +63,28 @@ export class Routing {
       renderContext.notes = arrayInfo.arraySlice;
       renderContext.remaining = arrayInfo.remaining;
 
-      // Create an image for this owner
-      const imageFileName = await ctx.state.visualization.generateImageFromText(
-        renderContext.owner.displayName, renderContext.owner.shortId);
-      if (imageFileName){
-        renderContext.imageUrl = ctx.state.urlOrigin + "/static/img/" + imageFileName;
-        if (ctx.state.urlOrigin.startsWith("https://")){
-          renderContext.secureImageUrl = ctx.state.urlOrigin + "/static/img/" + renderContext.owner.shortId;
+      // Create an image for this owner if owner image not already processed, and sharing is enabled
+      if (renderContext.owner.ui && renderContext.owner.ui.sharing) {
+        let imageUrl, secureImageUrl;
+        if (!owner.processed || owner.processed.modified !== owner.modified){
+          const imageFileName = await ctx.state.visualization.generateImageFromText(
+            renderContext.owner.displayName, renderContext.owner.shortId);
+          if (imageFileName){
+            imageUrl = ctx.state.urlOrigin + "/static/img/" + imageFileName;
+            if (ctx.state.urlOrigin.startsWith("https://")){
+              secureImageUrl = ctx.state.urlOrigin + "/static/img/" + renderContext.owner.shortId;
+            }
+          }
+          publicItems.setOwnerProcessed({
+            imageUrl: imageUrl,
+            secureImageUrl: secureImageUrl,
+          });
+        }else{
+          imageUrl = owner.processed.data.imageUrl;
+          secureImageUrl = owner.processed.data.secureImageUrl;
         }
+        renderContext.imageUrl = imageUrl;
+        renderContext.secureImageUrl = secureImageUrl;
       }
       ctx.body = ctx.state.render.template("pages/owner", renderContext);
     }else {
@@ -89,14 +104,26 @@ export class Routing {
         handle: ctx.params.handle,
       };
 
-      // Create an image for this note
-      const imageFileName = await ctx.state.visualization.generateImageFromText(
-        renderContext.note.title, renderContext.note.shortId);
-      if (imageFileName){
-        renderContext.imageUrl = ctx.state.urlOrigin + "/static/img/" + imageFileName;
-        if (ctx.state.urlOrigin.startsWith("https://")){
-          renderContext.secureImageUrl = ctx.state.urlOrigin + "/static/img/" + renderContext.note.shortId;
+      // Create an image for this note if image has not already been processed, and sharing is enabled
+      if (renderContext.note.ui && renderContext.note.ui.sharing){
+        if (!note.processed || note.processed.modified !== note.modified){
+          let imageUrl, secureImageUrl;
+          const imageFileName = await ctx.state.visualization.generateImageFromText(
+            renderContext.note.title, renderContext.note.shortId);
+          if (imageFileName){
+            imageUrl = ctx.state.urlOrigin + "/static/img/" + imageFileName;
+            if (ctx.state.urlOrigin.startsWith("https://")){
+              secureImageUrl = ctx.state.urlOrigin + "/static/img/" + renderContext.note.shortId;
+            }
+          }
+          note.processed = {
+            modified: note.modified,
+            imageUrl: imageUrl,
+            secureImageUrl: secureImageUrl,
+          };
         }
+        renderContext.imageUrl = note.processed.imageUrl;
+        renderContext.secureImageUrl = note.processed.secureImageUrl;
       }
       ctx.body = ctx.state.render.template("pages/note", renderContext);
     }
