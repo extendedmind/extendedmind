@@ -461,7 +461,6 @@ class UserBestCaseSpec extends ServiceSpecBase {
         val accountResponse = responseAs[User]
         accountResponse.handle should be (None)
         accountResponse.shortId should be (None)
-        println("here")
         Patch("/v2/users/" + authenticateResponse.userUUID,
           marshal(accountResponse.copy(handle = Some("info"))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
             writeJsonOutput("patchUserResponse", responseAs[String])

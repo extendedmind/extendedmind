@@ -172,12 +172,12 @@ trait Service extends AdminService
   implicit val implTick = jsonFormat1(Tick.apply)
 
   val route = {
-    getRoot {
+    v2GetRoot {
       complete {
         "{\"version\":\"" + settings.version + "\"}"
       }
     } ~
-    shutdown {
+    v2Shutdown {
       complete {
         in(1.second) {
           // First shut down actor system
@@ -189,14 +189,14 @@ trait Service extends AdminService
         "Shutting down in 1 second..."
       }
     } ~
-    tick {
+    v2Tick {
       entity(as[Tick]) { payload =>
         complete {
           "{\"status\":" + adminActions.tick(payload.priority).toString + "}"
         }
       }
     } ~
-    getInfo {
+    v2GetInfo {
       parameters('latest ? false, 'history ? false) { (latest, history)=>
         complete {
           Future[Info] {
@@ -208,17 +208,17 @@ trait Service extends AdminService
         }
       }
     } ~
-    getHAAvailable { ctx =>
+    v2GetHAAvailable { ctx =>
       val haStatus = adminActions.getHAStatus
       if (haStatus == "master" || haStatus == "slave") ctx.complete(200, "true")
       else ctx.complete(NotFound, "false")
     } ~
-    getHAMaster { ctx =>
+    v2GetHAMaster { ctx =>
       val haStatus = adminActions.getHAStatus
       if (haStatus == "master") ctx.complete(200, "true")
       else ctx.complete(NotFound, "false")
     } ~
-    getHASlave { ctx =>
+    v2GetHASlave { ctx =>
       val haStatus = adminActions.getHAStatus
       if (haStatus == "slave") ctx.complete(200, "true")
       else ctx.complete(NotFound, "false")

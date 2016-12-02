@@ -376,7 +376,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
       }
     }
     it("should successfully send hourly tick with POST to /tick") {
-      Post("/tick",
+      Post("/v2/tick",
           marshal(Tick(2)).right.get) ~> route ~> check {
         val statusResponse = responseAs[String]
         statusResponse should be ("{\"status\":true}")
@@ -448,8 +448,8 @@ class AdminBestCaseSpec extends ServiceSpecBase {
       }
     }
     it("should successfully put version info with POST to /v2/admin/update_version " +
-       "and get it back without authentication from GET to /info and GET to /v2/update") {
-      Get("/info") ~> route ~> check {
+       "and get it back without authentication from GET to /v2/info and GET to /v2/update") {
+      Get("/v2/info") ~> route ~> check {
         val info = responseAs[Info]
         info.clients should be (None)
       }
@@ -468,7 +468,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
         val setResult = responseAs[SetResult]
       }
 
-      Get("/info?history=true") ~> route ~> check {
+      Get("/v2/info?history=true") ~> route ~> check {
         val info = responseAs[Info]
         info.clients.get.size should be (1)
         info.clients.get(0).platform should be("darwin")
@@ -494,7 +494,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
           marshal(VersionInfo("darwin", osxVersionBeta.copy(notes=Some("this is a beta version")))).right.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get))  ~> route ~> check {
         val setResult = responseAs[SetResult]
       }
-      Get("/info?history=true") ~> route ~> check {
+      Get("/v2/info?history=true") ~> route ~> check {
         val info = responseAs[Info]
         info.clients.get.size should be (1)
         info.clients.get(0).platform should be("darwin")
@@ -522,7 +522,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
           marshal(VersionInfo("win32", winVersionBeta)).right.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get))  ~> route ~> check {
         val setResult = responseAs[SetResult]
       }
-      Get("/info?history=true") ~> route ~> check {
+      Get("/v2/info?history=true") ~> route ~> check {
         val info = responseAs[Info]
         info.commonCollective._2 should be ("test data")
         info.clients.get.size should be (2)
@@ -557,7 +557,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
           marshal(VersionInfo("darwin", osxVersionBeta2)).right.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get))  ~> route ~> check {
         val setResult = responseAs[SetResult]
       }
-      Get("/info?history=true") ~> route ~> check {
+      Get("/v2/info?history=true") ~> route ~> check {
         val info = responseAs[Info]
         writeJsonOutput("infoResponse", responseAs[String])
         info.clients.get.size should be (3)
@@ -568,7 +568,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
       }
 
       // Updates should only return beta 2
-      Get("/info?latest=true") ~> route ~> check {
+      Get("/v2/info?latest=true") ~> route ~> check {
         val info = responseAs[Info]
         info.clients.get.size should be (2)
         info.clients.get.find(info => info.platform == "darwin").get.info.version should be("1.0-beta.2")

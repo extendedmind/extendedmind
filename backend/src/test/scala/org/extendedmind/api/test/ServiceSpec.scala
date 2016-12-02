@@ -61,8 +61,8 @@ class ServiceSpec extends SpraySpecBase with ImpermanentGraphDatabaseSpecBase{
 
   describe("Service") {
 
-    it("should return backend version at root") {
-      Get() ~> route ~> check {responseAs[String] should startWith("{\"version\":") }
+    it("should return backend version at v2 root") {
+      Get("/v2") ~> route ~> check {responseAs[String] should startWith("{\"version\":") }
     }
 
     it("should generate token response on /v2/users/authenticate") {

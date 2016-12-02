@@ -350,7 +350,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
                 publicItems.unpublished.get(0) should be (putNoteResponse.uuid.get)
               }
               // Now add an daily tick, which should prune the unpublished revision node from the index
-              Post("/tick",
+              Post("/v2/tick",
                   marshal(Tick(3)).right.get) ~> route ~> check {
                 val statusResponse = responseAs[String]
                 statusResponse should be ("{\"status\":true}")
