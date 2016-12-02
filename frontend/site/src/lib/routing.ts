@@ -61,7 +61,16 @@ export class Routing {
       let arrayInfo = ctx.state.getSliceOfArrayWithRemaining(allNotes, ctx.query.remaining);
       renderContext.notes = arrayInfo.arraySlice;
       renderContext.remaining = arrayInfo.remaining;
-      // TODO: add support for basic info of owner from .content field of publicItemsResponse.json
+
+      // Create an image for this owner
+      const imageFileName = await ctx.state.visualization.generateImageFromText(
+        renderContext.owner.displayName, renderContext.owner.shortId);
+      if (imageFileName){
+        renderContext.imageUrl = ctx.state.urlOrigin + "/static/img/" + imageFileName;
+        if (ctx.state.urlOrigin.startsWith("https://")){
+          renderContext.secureImageUrl = ctx.state.urlOrigin + "/static/img/" + renderContext.owner.shortId;
+        }
+      }
       ctx.body = ctx.state.render.template("pages/owner", renderContext);
     }else {
       ctx.status = 404;
@@ -80,8 +89,8 @@ export class Routing {
         handle: ctx.params.handle,
       };
 
-      // Create an image for this
-      const imageFileName = ctx.state.visualization.generateImageFromText(
+      // Create an image for this note
+      const imageFileName = await ctx.state.visualization.generateImageFromText(
         renderContext.note.title, renderContext.note.shortId);
       if (imageFileName){
         renderContext.imageUrl = ctx.state.urlOrigin + "/static/img/" + imageFileName;
