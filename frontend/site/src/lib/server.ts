@@ -17,7 +17,7 @@ export interface Config {
   ownersPath?: string;
   headersPath?: string;
   syncTimeTreshold?: number;
-  imagePath?: string;
+  generatedFilesPath?: string;
 }
 
 export class Server {
@@ -33,8 +33,8 @@ export class Server {
   private ownersPath: string = "our";
   // Serve headers from root by default
   private headersPath: string = "";
-  // Save images to static image path by default
-  private imagePath: string = path.join(__dirname, "../public/static/img");
+  // Save generated images to public path by default
+  private generatedFilesPath: string = path.join(__dirname, "../public/generated");
 
   constructor(config: Config) {
     this.port = config.port;
@@ -43,7 +43,7 @@ export class Server {
     this.urlOrigin = config.urlOrigin;
     if (config.ownersPath) this.ownersPath = config.ownersPath;
     if (config.headersPath) this.headersPath = config.headersPath;
-    if (config.imagePath) this.imagePath = config.imagePath;
+    if (config.generatedFilesPath) this.generatedFilesPath = config.generatedFilesPath;
 
     this.app = new Koa();
     this.router = new Router();
@@ -78,7 +78,7 @@ export class Server {
     let backendPollInterval = setInterval(() => {
       if (!requestInProgress) {
         requestInProgress = true;
-        console.info("GET " + this.backendApiAddress + "/info");
+        console.info("GET " + this.backendApiAddress + "/v2/info");
         const thisServer = this;
         this.utils.getInfo().then(function(backendInfo){
             requestInProgress = false;
@@ -109,7 +109,11 @@ export class Server {
                               viewsPath, this.debug, powered, this.urlOrigin,
                               this.ownersPath, this.headersPath);
 
-    const visualization = new Visualization(this.imagePath);
+    const visualization = new Visualization(this.generatedFilesPath);
+
+    // setup routing
+
+    const routing = new Routing(this.utils, backendInfo, this.ownersPath);
 
     // setup context for all routes
 
@@ -119,26 +123,13 @@ export class Server {
       ctx.state.visualization = visualization;
       ctx.state.urlOrigin = this.urlOrigin;
       ctx.state.ownersPath = this.ownersPath;
-      ctx.state.getSliceOfArrayWithRemaining = function(array, queryParamRemaining): any {
-        const HEADERS_PER_PAGE: number = 10;
-        // How many items were indicated as being not shown previously. If first query, everything is remaining
-        const previousRemaining: number = queryParamRemaining === undefined ? array.length : queryParamRemaining;
-        // Because new headers might be added to the top of the array, we use remaining to count the index from
-        // the end.
-        const firstHeaderIndex = array.length - previousRemaining;
-        const arraySlice = array.slice(firstHeaderIndex, firstHeaderIndex + HEADERS_PER_PAGE);
-        const remaining: number = array.length - (firstHeaderIndex + HEADERS_PER_PAGE) < 0
-          ? 0 : array.length - (firstHeaderIndex + HEADERS_PER_PAGE);
-        return {
-          arraySlice: arraySlice,
-          remaining: remaining,
-        };
-      };
+      routing.getHelperMethods().forEach(helperInfo => {
+        ctx.state[helperInfo[0]] = helperInfo[1];
+      });
       return next();
     });
 
-    // setup routing
-    const routing = new Routing(this.utils, backendInfo, this.ownersPath);
+    // add routes
     this.app.use(routing.getRoutes());
 
     // start listening

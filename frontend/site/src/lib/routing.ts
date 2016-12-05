@@ -22,6 +22,40 @@ export class Routing {
     return this.router.routes();
   }
 
+  public getHelperMethods(): Array<[string, any]> {
+    return [
+      ["getGeneratedUrls", function(fileName, urlOrigin) {
+        let url;
+        let secureUrl;
+        if (fileName) {
+          url = urlOrigin + "/generated/" + fileName;
+          if (urlOrigin.startsWith("https://")) {
+            secureUrl = url;
+          }
+        }
+        return {
+          url: url,
+          secureUrl: secureUrl,
+        };
+      }],
+      ["getSliceOfArrayWithRemaining", function(array, queryParamRemaining): any {
+        const HEADERS_PER_PAGE: number = 10;
+        // How many items were indicated as being not shown previously. If first query, everything is remaining
+        const previousRemaining: number = queryParamRemaining === undefined ? array.length : queryParamRemaining;
+        // Because new headers might be added to the top of the array, we use remaining to count the index from
+        // the end.
+        const firstHeaderIndex = array.length - previousRemaining;
+        const arraySlice = array.slice(firstHeaderIndex, firstHeaderIndex + HEADERS_PER_PAGE);
+        const remaining: number = array.length - (firstHeaderIndex + HEADERS_PER_PAGE) < 0
+          ? 0 : array.length - (firstHeaderIndex + HEADERS_PER_PAGE);
+        return {
+          arraySlice: arraySlice,
+          remaining: remaining,
+        };
+      }],
+    ];
+  };
+
   // ROUTES
 
   private async headers(ctx: Router.IRouterContext, next: () => Promise<any>) {
@@ -65,21 +99,19 @@ export class Routing {
 
       // Create an image for this owner if owner image not already processed, and sharing is enabled
       if (renderContext.owner.ui && renderContext.owner.ui.sharing) {
-        let imageUrl, secureImageUrl;
-        if (!owner.processed || owner.processed.modified !== owner.modified){
+        let imageUrl;
+        let secureImageUrl;
+        if (!owner.processed || owner.processed.modified !== owner.modified) {
           const imageFileName = await ctx.state.visualization.generateImageFromText(
-            renderContext.owner.displayName, renderContext.owner.shortId);
-          if (imageFileName){
-            imageUrl = ctx.state.urlOrigin + "/static/img/" + imageFileName;
-            if (ctx.state.urlOrigin.startsWith("https://")){
-              secureImageUrl = ctx.state.urlOrigin + "/static/img/" + renderContext.owner.shortId;
-            }
-          }
+            renderContext.owner.displayName, renderContext.owner.shortId, owner.modified);
+          const generatedUrls = ctx.state.getGeneratedUrls(imageFileName, ctx.state.urlOrigin);
+          imageUrl = generatedUrls.url;
+          secureImageUrl = generatedUrls.secureUrl;
           publicItems.setOwnerProcessed({
             imageUrl: imageUrl,
             secureImageUrl: secureImageUrl,
           });
-        }else{
+        }else {
           imageUrl = owner.processed.data.imageUrl;
           secureImageUrl = owner.processed.data.secureImageUrl;
         }
@@ -105,21 +137,15 @@ export class Routing {
       };
 
       // Create an image for this note if image has not already been processed, and sharing is enabled
-      if (renderContext.note.ui && renderContext.note.ui.sharing){
-        if (!note.processed || note.processed.modified !== note.modified){
-          let imageUrl, secureImageUrl;
+      if (renderContext.note.ui && renderContext.note.ui.sharing) {
+        if (!note.processed || note.processed.modified !== note.modified) {
           const imageFileName = await ctx.state.visualization.generateImageFromText(
-            renderContext.note.title, renderContext.note.shortId);
-          if (imageFileName){
-            imageUrl = ctx.state.urlOrigin + "/static/img/" + imageFileName;
-            if (ctx.state.urlOrigin.startsWith("https://")){
-              secureImageUrl = ctx.state.urlOrigin + "/static/img/" + renderContext.note.shortId;
-            }
-          }
+            renderContext.note.title, renderContext.note.shortId, note.modified);
+          const generatedUrls = ctx.state.getGeneratedUrls(imageFileName, ctx.state.urlOrigin);
           note.processed = {
             modified: note.modified,
-            imageUrl: imageUrl,
-            secureImageUrl: secureImageUrl,
+            imageUrl: generatedUrls.url,
+            secureImageUrl: generatedUrls.secureUrl,
           };
         }
         renderContext.imageUrl = note.processed.imageUrl;
