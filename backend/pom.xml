@@ -395,7 +395,7 @@
               <name>extendedmind/sync-folder</name>
               <alias>sync-folder</alias>
               <build>
-                <from>extendedmind/cloud-sdk</from>
+                <from>quay.io/extendedmind/google-cloud-sdk:gce-139.0.0</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
                 <tags>
                   <tag>latest</tag>
@@ -416,7 +416,7 @@
               <name>extendedmind/backend-conf</name>
               <alias>backend-conf</alias>
               <build>
-                <from>ubuntu:14.04</from>
+                <from>alpine:3.5</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
                 <tags>
                   <tag>latest</tag>
@@ -438,7 +438,7 @@
               <name>extendedmind/backend-data</name>
               <alias>backend-data</alias>
               <build>
-                <from>ubuntu:14.04</from>
+                <from>alpine:3.5</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
                 <tags>
                   <tag>latest</tag>
@@ -457,7 +457,7 @@
               <name>extendedmind/backend</name>
               <alias>backend</alias>
               <build>
-                <from>java:8</from>
+                <from>openjdk:8u111-jdk-alpine</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
                 <tags>
                   <tag>latest</tag>
@@ -495,7 +495,7 @@
               <name>extendedmind/backend-backup</name>
               <alias>backend-backup</alias>
               <build>
-                <from>extendedmind/cloud-sdk</from>
+                <from>quay.io/extendedmind/google-cloud-sdk:gce-139.0.0</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
                 <tags>
                   <tag>latest</tag>
@@ -517,7 +517,7 @@
               <name>extendedmind/backend-restore</name>
               <alias>backend-restore</alias>
               <build>
-                <from>extendedmind/cloud-sdk</from>
+                <from>quay.io/extendedmind/google-cloud-sdk:gce-139.0.0</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
                 <tags>
                   <tag>latest</tag>

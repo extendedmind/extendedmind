@@ -21,10 +21,7 @@ frontend/site/src/node/
 frontend/site/src/node_modules/
 frontend/site/src/dist/
 frontend/site/src/typings/
-frontend/site/src/public/static/fonts/
-frontend/site/src/public/static/css/
-frontend/site/src/public/static/js/
-frontend/site/src/public/static/img/
+frontend/site/src/public/
 frontend/site/docker/nginx.extendedmind.conf
 
 # Ignore PhantomJS logs

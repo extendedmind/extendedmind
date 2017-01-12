@@ -19,9 +19,9 @@ trap 'echo exiting backup script..; exit' SIGINT SIGQUIT SIGTERM
 POLL_INTERVAL=3600
 while true;
 do
-  # Only backup if current backend is master
-  IS_MASTER=$(curl --write-out %{http_code} --silent --output /dev/null http://$BACKEND_PORT_8081_TCP_ADDR:8081/ha/master)
-  if [ $IS_MASTER -eq 200 ]; then
+  # Only backup if current backend is available
+  IS_AVAILABLE=$(curl --write-out %{http_code} --silent --output /dev/null http://$BACKEND_PORT_8081_TCP_ADDR:8081/v2/ha/available)
+  if [ $IS_AVAILABLE -eq 200 ]; then
     echo "Begin full backend backup"
     TODAY=$(date +"%Y-%m-%d")
     BACKUP_LOCATION=$BACKUP_LOCATION_PREFIX/$TODAY/
@@ -30,7 +30,9 @@ do
     cd /usr/src/extendedmind/bin
     ./backend-backup-neo4j.sh -host $BACKEND_PORT_6362_TCP_ADDR -to /usr/src/extendedmind/work/neo4j &>> /var/log/neo4j-backup.log
     if [ $? -ne 0 ]; then
-      echo "problems in the backup"
+      status=$?
+      echo "Problems in the backup, errored with $status"
+      exit $status
     else
       BACKUP_FILE=/usr/src/extendedmind/work/em-$(date +"%Y-%m-%d-%H%M%S").tar.gz
       tar -zcf $BACKUP_FILE /usr/src/extendedmind/work/neo4j 2>&1 | grep -v 'Removing leading'
@@ -43,6 +45,8 @@ do
       echo "Executing: " $CP_PRE_COMMAND cp $BACKUP_FILE $BACKUP_LOCATION
       $CP_PRE_COMMAND cp $BACKUP_FILE $BACKUP_LOCATION
     fi
+  else
+    echo "Backend not available, can not backup!"
   fi
   sleep $POLL_INTERVAL
 done

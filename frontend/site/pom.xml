@@ -58,8 +58,8 @@
               <goal>install-node-and-npm</goal>
             </goals>
             <configuration>
-              <nodeVersion>v6.3.1</nodeVersion>
-              <npmVersion>3.10.3</npmVersion>
+              <nodeVersion>v7.4.0</nodeVersion>
+              <npmVersion>4.0.5</npmVersion>
               <nodeDownloadRoot>https://nodejs.org/dist/</nodeDownloadRoot>
             </configuration>
           </execution>
@@ -175,7 +175,7 @@
               <name>extendedmind/nginx-conf</name>
               <alias>nginx-conf</alias>
               <build>
-                <from>ubuntu:14.04</from>
+                <from>alpine:3.5</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
                 <tags>
                   <tag>latest</tag>
@@ -194,31 +194,10 @@
               </build>
             </image>
             <image>
-              <name>extendedmind/nginx</name>
-              <alias>nginx</alias>
-              <build>
-                <from>nginx:1.11</from>
-                <maintainer>timo.tiuraniemi@iki.fi</maintainer>
-                <tags>
-                  <tag>latest</tag>
-                </tags>
-                <ports>
-                  <port>8008</port>
-                  <port>8009</port>
-                </ports>
-                <assembly>
-                  <mode>dir</mode>
-                  <basedir>/usr/src/nginx</basedir>
-                  <descriptor>nginx-assembly.xml</descriptor>
-                </assembly>
-                <entryPoint><exec><arg>/usr/src/nginx/nginx-run.pl</arg></exec></entryPoint>
-              </build>
-            </image>
-            <image>
               <name>extendedmind/frontend-data</name>
               <alias>frontend-data</alias>
               <build>
-                <from>ubuntu:14.04</from>
+                <from>alpine:3.5</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
                 <tags>
                   <tag>latest</tag>
@@ -237,7 +216,7 @@
               <name>extendedmind/site-static</name>
               <alias>site-static</alias>
               <build>
-                <from>ubuntu:14.04</from>
+                <from>alpine:3.5</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
                 <tags>
                   <tag>latest</tag>
@@ -255,7 +234,7 @@
               <name>extendedmind/site-conf</name>
               <alias>site-conf</alias>
               <build>
-                <from>ubuntu:14.04</from>
+                <from>alpine:3.5</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
                 <tags>
                   <tag>latest</tag>
@@ -276,7 +255,7 @@
               <name>extendedmind/site</name>
               <alias>site</alias>
               <build>
-                <from>quay.io/extendedmind/node</from>
+                <from>quay.io/extendedmind/node:node-7.4.0</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
                 <tags>
                   <tag>latest</tag>
@@ -290,10 +269,34 @@
                   <basedir>/usr/src/extendedmind/site</basedir>
                   <descriptor>site-assembly.xml</descriptor>
                 </assembly>
+                <volumes>
+                  <volume>/var/www/extendedmind/cache</volume>
+                </volumes>
                 <workdir>/usr/src/extendedmind/site</workdir>
                 <entryPoint>
                   <exec><arg>/usr/src/extendedmind/site/site-run.pl</arg></exec>
                 </entryPoint>
+              </build>
+            </image>
+            <image>
+              <name>extendedmind/nginx</name>
+              <alias>nginx</alias>
+              <build>
+                <from>nginx:1.11.8-alpine</from>
+                <maintainer>timo.tiuraniemi@iki.fi</maintainer>
+                <tags>
+                  <tag>latest</tag>
+                </tags>
+                <ports>
+                  <port>8008</port>
+                  <port>8009</port>
+                </ports>
+                <assembly>
+                  <mode>dir</mode>
+                  <basedir>/usr/src/nginx</basedir>
+                  <descriptor>nginx-assembly.xml</descriptor>
+                </assembly>
+                <entryPoint><exec><arg>/usr/src/nginx/nginx-run.pl</arg></exec></entryPoint>
               </build>
             </image>
           </images>
@@ -303,7 +306,7 @@
              <id>build</id>
              <phase>package</phase>
              <goals>
-               <goal>build</goal>
+               <goal>build-nofork</goal>
              </goals>
           </execution>
         </executions>

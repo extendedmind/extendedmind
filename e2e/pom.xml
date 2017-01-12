@@ -57,8 +57,8 @@
                   <goal>install-node-and-npm</goal>
                 </goals>
                 <configuration>
-                  <nodeVersion>v6.3.1</nodeVersion>
-                  <npmVersion>3.10.3</npmVersion>
+                  <nodeVersion>v7.4.0</nodeVersion>
+                  <npmVersion>4.0.5</npmVersion>
                   <nodeDownloadRoot>https://nodejs.org/dist/</nodeDownloadRoot>
                 </configuration>
               </execution>
@@ -287,13 +287,6 @@
               </run>
             </image>
             <image>
-              <name>extendedmind/mariadb-conf</name>
-              <alias>mariadb-conf</alias>
-              <run>
-                <namingStrategy>alias</namingStrategy>
-              </run>
-            </image>
-            <image>
               <name>extendedmind/backend-conf</name>
               <alias>backend-conf</alias>
               <run>
@@ -303,13 +296,6 @@
             <image>
               <name>extendedmind/site-conf</name>
               <alias>site-conf</alias>
-              <run>
-                <namingStrategy>alias</namingStrategy>
-              </run>
-            </image>
-            <image>
-              <name>extendedmind/piwik-conf</name>
-              <alias>piwik-conf</alias>
               <run>
                 <namingStrategy>alias</namingStrategy>
               </run>
@@ -334,67 +320,16 @@
                   <EXTENDEDMIND_BACKEND_MAILGUNDOMAIN>${e2e.mailgunDomain}</EXTENDEDMIND_BACKEND_MAILGUNDOMAIN>
                   <EXTENDEDMIND_BACKEND_MAILGUNKEY>${e2e.mailgunKey}</EXTENDEDMIND_BACKEND_MAILGUNKEY>
                   <EXTENDEDMIND_EMAILFROM>${e2e.emailFrom}</EXTENDEDMIND_EMAILFROM>
-                  <EXTENDEDMIND_SITE_BACKENDCOLLECTIVE>11111111-1111-1111-1111-111111111111</EXTENDEDMIND_SITE_BACKENDCOLLECTIVE>
-                  <EXTENDEDMIND_DB_PIWIKPASSWORD>piwikpwd</EXTENDEDMIND_DB_PIWIKPASSWORD>
-                  <!-- Salt randomly generated when the test localhost:8008 piwik database was created -->
-                  <EXTENDEDMIND_DB_PIWIKSALT>1617253e9c4e9719d9cedc7dbfade0a8</EXTENDEDMIND_DB_PIWIKSALT>
-                  <EXTENDEDMIND_DB_PIWIKSECURE>0</EXTENDEDMIND_DB_PIWIKSECURE>
-                  <EXTENDEDMIND_DB_PASSWORD>rootpwd</EXTENDEDMIND_DB_PASSWORD>
-                  <EXTENDEDMIND_DB_REPLICATE>piwik</EXTENDEDMIND_DB_REPLICATE>
-                  <EXTENDEDMIND_DB_BUFFERSIZE>400M</EXTENDEDMIND_DB_BUFFERSIZE>
                   <EXTENDEDMIND_UI>{}</EXTENDEDMIND_UI>
                 </env>
                 <volumes>
                   <from>
-                    <image>mariadb-conf</image>
                     <image>backend-conf</image>
                     <image>site-conf</image>
-                    <image>piwik-conf</image>
                     <image>nginx-conf</image>
                   </from>
                 </volumes>
                 <cmd>-backend=env</cmd>
-              </run>
-            </image>
-            <image>
-              <name>extendedmind/mariadb-data</name>
-              <alias>mariadb-data</alias>
-              <run>
-                <namingStrategy>alias</namingStrategy>
-              </run>
-            </image>
-            <image>
-              <name>mariadb:10.1</name>
-              <alias>mariadb</alias>
-              <run>
-                <namingStrategy>alias</namingStrategy>
-                <env>
-                  <MYSQL_ROOT_PASSWORD>rootpwd</MYSQL_ROOT_PASSWORD>
-                </env>
-                <volumes>
-                  <from>
-                    <image>mariadb-conf</image>
-                    <image>mariadb-data</image>
-                  </from>
-                </volumes>
-                <ports>
-                  <port>3306:3306</port>
-                </ports>
-              </run>
-            </image>
-            <image>
-              <name>extendedmind/piwik:latest</name>
-              <alias>piwik</alias>
-              <run>
-                <namingStrategy>alias</namingStrategy>
-                <volumes>
-                  <from>
-                    <image>piwik-conf</image>
-                  </from>
-                </volumes>
-                <links>
-                  <link>mariadb:mariadb</link>
-                </links>
               </run>
             </image>
             <image>
@@ -466,13 +401,12 @@
                   <from>
                     <image>nginx-conf</image>
                     <image>frontend-data</image>
-                    <image>piwik</image>
+                    <image>site</image>
                   </from>
                 </volumes>
                 <links>
                   <link>backend:backend</link>
                   <link>site:site</link>
-                  <link>piwik:piwik</link>
                 </links>
                 <ports>
                   <port>8008:8008</port>
