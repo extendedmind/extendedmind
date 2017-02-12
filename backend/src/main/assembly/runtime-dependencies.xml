@@ -1,0 +1,15 @@
+<assembly>
+  <id>runtime-dependencies</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <fileSets>
+    <fileSet>
+      <directory>target/backend-runtime-dependencies</directory>
+      <outputDirectory>.</outputDirectory>
+      <includes>
+        <include>*.jar</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>
