@@ -11,18 +11,16 @@
 # Ignore Maven builds
 target/
 
-# Ignore frontend app generated files
-frontend/app/src/test/json/
-frontend/app/src/static/em.min.js
-frontend/app/src/static/css/em.css
+# Ignore node and node_modules
+node_modules/
+node/
 
-# Ignore frontend site generated files
-frontend/site/src/node/
-frontend/site/src/node_modules/
-frontend/site/src/dist/
-frontend/site/src/typings/
-frontend/site/src/public/
-frontend/site/docker/nginx.extendedmind.conf
+# Ignore dist folder
+dist/
+
+# Ignore all min.js files
+*.min.js
+*.min.css
 
 # Ignore PhantomJS logs
 phantomjsdriver.log
@@ -62,22 +60,11 @@ frontend/cordova/src/assets/build
 frontend/cordova/src/www
 frontend/cordova/src/config.xml
 frontend/cordova/src/merges
-frontend/cordova/src/node/
-frontend/cordova/src/node_modules/
 
 # Electron
 frontend/electron/src/app/index.html
 frontend/electron/src/app/package.json
 frontend/electron/src/app/static/
-frontend/electron/src/dist/
-frontend/electron/src/node/
-frontend/electron/src/node_modules/
 frontend/electron/src/package.json
 frontend/electron/src/Gruntfile.js
 
-# Analytics
-frontend/analytics/src/data/
-
-# E2E
-e2e/src/node/
-e2e/src/node_modules/
