@@ -23,7 +23,6 @@ import org.extendedmind.Settings
 import org.neo4j.graphdb.factory.GraphDatabaseFactory
 import org.neo4j.graphdb.factory.HighlyAvailableGraphDatabaseFactory
 import org.neo4j.scala.EmbeddedGraphDatabaseServiceProvider
-import scala.reflect.io.File
 
 class EmbeddedGraphDatabase(implicit val settings: Settings)
   extends GraphDatabase with EmbeddedGraphDatabaseServiceProvider{
@@ -34,46 +33,30 @@ class EmbeddedGraphDatabase(implicit val settings: Settings)
     else
       null
   }
+  
+  override def configParams = {
+    if (settings.neo4jPropertiesFile.isEmpty){
+      val configMap = new scala.collection.mutable.HashMap[String, String]()
+      if (settings.isHighAvailability){
+        // No config file, but HA, use enviroment variables to set HA properties
+        configMap.put("dbms.mode", "HA")
+        val serverId = System.getenv("EXTENDEDMIND_BACKEND_HA_SERVER_ID")
+        if (serverId != null) configMap.put("ha.server_id", serverId)
+        val initialHosts = System.getenv("EXTENDEDMIND_BACKEND_HA_INITIAL_HOSTS")
+        if (initialHosts != null) configMap.put("ha.initial_hosts", initialHosts)
+        val pushFactor = System.getenv("EXTENDEDMIND_BACKEND_HA_PUSH_FACTOR")
+        if (pushFactor != null) configMap.put("ha.tx_push_factor", pushFactor)
+      }
+      val formatMigration = System.getenv("EXTENDEDMIND_BACKEND_FORMAT_MIGRATION")
+      if (formatMigration != null) configMap.put("dbms.allow_format_migration", formatMigration)
+      configMap.toMap
+    }else{
+      null
+    }
+  }
 
   override def graphDatabaseFactory = {
-    if (settings.isHighAvailability){
-      if (settings.neo4jPropertiesFile.isDefined){
-        def getHAServerCount(propertiesFileLocation: String): Int = {
-          val propertiesInputStream = new java.io.FileInputStream(settings.neo4jPropertiesFile.get)
-          val properties = new java.util.Properties()
-          properties.load(propertiesInputStream)
-          if (properties.containsKey("ha.initial_hosts")){
-            val initialHosts = properties.getProperty("ha.initial_hosts")
-            propertiesInputStream.close()
-            val numberOfHAServers = {
-              if (initialHosts.length() > 0){
-                initialHosts.length() - initialHosts.replace(",", "").length() + 1
-              }else{
-                0
-              }
-            }
-            println("Configuration contains " + numberOfHAServers + " HA servers")
-            numberOfHAServers
-          }else{
-            println("Configuration does not have a ha.initial_hosts parameter")
-            0
-          }
-        }
-
-        // When upgrading Neo4j, every node needs to join one at a time, which is when
-        // startClusterCount needs to be set to 1 for master, 2 for first slave and default
-        // 3 for third slave
-        val startClusterCount =
-          if (settings.startClusterCount.isDefined) settings.startClusterCount.get
-          else 3
-
-        // We need to make sure that the properties file has at least the specified ha.initial_hosts before
-        // launching to get HA to work. Do a blocking poll here.
-        while(getHAServerCount(settings.neo4jPropertiesFile.get) < startClusterCount){
-          Thread.sleep(1000)
-        }
-        println("Found at least " + startClusterCount + " HA hosts, continuing")
-      }
+    if (settings.isHighAvailability){        
       new HighlyAvailableGraphDatabaseFactory()
     }else{
       new GraphDatabaseFactory()

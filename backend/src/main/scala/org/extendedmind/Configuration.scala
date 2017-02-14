@@ -72,14 +72,6 @@ class Settings(config: Config, versionConfig: Config) extends Extension {
       None
   }
   val isHighAvailability = config.getBoolean("extendedmind.neo4j.isHighAvailability")
-  val startClusterCount: Option[Int] = {
-    if (config.hasPath("extendedmind.neo4j.startClusterCount"))
-      Some(config.getInt("extendedmind.neo4j.startClusterCount"))
-    else
-      None
-  }
-  val startNeo4jServer = config.getBoolean("extendedmind.neo4j.startServer")
-  val neo4jServerPort = config.getInt("extendedmind.neo4j.serverPort")
   val disableTimestamps =
     if (config.hasPath("extendedmind.neo4j.disableTimestamps"))
       config.getBoolean("extendedmind.neo4j.disableTimestamps")

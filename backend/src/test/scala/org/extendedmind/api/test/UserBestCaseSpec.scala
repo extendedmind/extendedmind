@@ -71,7 +71,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
   }
 
   describe("In the best case, UserService") {
-    it("should create an administrator with POST to /v2/users/sign_up because adminSignUp is set to true " +
+    it("should create an alfa user with POST to /v2/users/sign_up because adminSignUp is set to false " +
        "and resend verification email with POST to /v2/users/resend_verification") {
       val testEmail = "example@example.com"
       stub(mockMailClient.sendEmailVerificationLink(mockEq(testEmail), anyObject())).toReturn(
@@ -89,7 +89,7 @@ class UserBestCaseSpec extends ServiceSpecBase {
           signUpResponse should include("uuid")
           signUpResponse should include("modified")
           val authenticationResponse = emailPasswordAuthenticate(signUp.email, signUp.password)
-          authenticationResponse.userType should be(0)
+          authenticationResponse.userType should be(1)
           authenticationResponse.cohort.get should be(1)
 
           reset(mockMailClient)
