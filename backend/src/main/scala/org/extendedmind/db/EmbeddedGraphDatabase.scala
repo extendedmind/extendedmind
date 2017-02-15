@@ -33,22 +33,20 @@ class EmbeddedGraphDatabase(implicit val settings: Settings)
     else
       null
   }
-  
+
   override def configParams = {
     if (settings.neo4jPropertiesFile.isEmpty){
       val configMap = new scala.collection.mutable.HashMap[String, String]()
       if (settings.isHighAvailability){
         // No config file, but HA, use enviroment variables to set HA properties
         configMap.put("dbms.mode", "HA")
-        val serverId = System.getenv("EXTENDEDMIND_BACKEND_HA_SERVER_ID")
-        if (serverId != null) configMap.put("ha.server_id", serverId)
-        val initialHosts = System.getenv("EXTENDEDMIND_BACKEND_HA_INITIAL_HOSTS")
-        if (initialHosts != null) configMap.put("ha.initial_hosts", initialHosts)
-        val pushFactor = System.getenv("EXTENDEDMIND_BACKEND_HA_PUSH_FACTOR")
-        if (pushFactor != null) configMap.put("ha.tx_push_factor", pushFactor)
+        for(serverId <- settings.haServerId) configMap.put("ha.server_id", serverId.toString)
+        for(initialHosts <- settings.haInitialHosts) configMap.put("ha.initial_hosts", initialHosts)
+        for(pushFactor <- settings.haPushFactor) configMap.put("ha.tx_push_factor", pushFactor.toString)
+      }else{
+        configMap.put("dbms.mode", "SINGLE")
       }
-      val formatMigration = System.getenv("EXTENDEDMIND_BACKEND_FORMAT_MIGRATION")
-      if (formatMigration != null) configMap.put("dbms.allow_format_migration", formatMigration)
+      configMap.put("dbms.allow_format_migration", settings.formatMigration.toString)
       configMap.toMap
     }else{
       null
@@ -56,7 +54,7 @@ class EmbeddedGraphDatabase(implicit val settings: Settings)
   }
 
   override def graphDatabaseFactory = {
-    if (settings.isHighAvailability){        
+    if (settings.isHighAvailability){
       new HighlyAvailableGraphDatabaseFactory()
     }else{
       new GraphDatabaseFactory()

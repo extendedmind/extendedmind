@@ -71,11 +71,35 @@ class Settings(config: Config, versionConfig: Config) extends Extension {
     else
       None
   }
-  val isHighAvailability = config.getBoolean("extendedmind.neo4j.isHighAvailability")
+  val formatMigration: Boolean = {
+    if (config.hasPath("extendedmind.neo4j.formatMigration"))
+      config.getBoolean("extendedmind.neo4j.formatMigration")
+    else
+      false
+  }
   val disableTimestamps =
     if (config.hasPath("extendedmind.neo4j.disableTimestamps"))
       config.getBoolean("extendedmind.neo4j.disableTimestamps")
     else false
+  val isHighAvailability = config.getBoolean("extendedmind.neo4j.isHighAvailability")
+  val haServerId: Option[Int] = {
+    if (config.hasPath("extendedmind.neo4j.ha.serverId"))
+      Some(config.getInt("extendedmind.neo4j.ha.serverId"))
+    else
+      None
+  }
+  val haInitialHosts: Option[String] = {
+    if (config.hasPath("extendedmind.neo4j.ha.initialHosts"))
+      Some(config.getString("extendedmind.neo4j.ha.initialHosts"))
+    else
+      None
+  }
+  val haPushFactor: Option[Int] = {
+    if (config.hasPath("extendedmind.neo4j.ha.pushFactor"))
+      Some(config.getInt("extendedmind.neo4j.ha.pushFactor"))
+    else
+      None
+  }
 
   // First launch parameters
   val commonCollectiveTitle: Option[String] = {
@@ -98,7 +122,6 @@ class Settings(config: Config, versionConfig: Config) extends Extension {
   }
 
   // Security parameters
-
   val tokenSecret = config.getString("extendedmind.security.tokenSecret")
   val signUpMethod: SignUpMethod  = {
     config.getString("extendedmind.security.signUpMethod") match {
@@ -106,7 +129,6 @@ class Settings(config: Config, versionConfig: Config) extends Extension {
       case "ON" => SIGNUP_ON
     }
   }
-
   val signUpMode: SignUpMode  = {
     config.getString("extendedmind.security.signUpMode") match {
       case "ADMIN" => MODE_ADMIN
@@ -117,7 +139,6 @@ class Settings(config: Config, versionConfig: Config) extends Extension {
   }
 
   // Email parameters
-
   val emailProvider: EmailProvider  = {
     config.getString("extendedmind.email.provider") match {
       case "MAILGUN" => EMAIL_MAILGUN
@@ -126,7 +147,6 @@ class Settings(config: Config, versionConfig: Config) extends Extension {
   }
   val mailgunDomain = config.getString("extendedmind.email.mailgun.domain")
   val mailgunApiKey = config.getString("extendedmind.email.mailgun.apiKey")
-
   val dummyEmailLocation: String = config.getString("extendedmind.email.dummy")
   val emailFrom = config.getString("extendedmind.email.from")
   val emailUrlOrigin = config.getString("extendedmind.email.urlOrigin")

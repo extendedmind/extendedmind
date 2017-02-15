@@ -27,16 +27,10 @@ import org.extendedmind.api.ServiceActor
 import org.slf4j.LoggerFactory
 
 object Server extends App {
+  // This makes it possible to use -Dconfig.file="" notation
+  implicit val system = ActorSystem("extendedmind", ConfigFactory.load())
 
-  // Don't start the server if the mandatory token secret has not been set
-  if (System.getenv("EXTENDEDMIND_BACKEND_TOKENSECRET").isEmpty()) {
-    println("The enviroment variable EXTENDEDMIND_BACKEND_TOKENSECRET must be set to launch the server")
-  }else {
-    // This makes it possible to use -Dconfig.file="" notation
-    implicit val system = ActorSystem("extendedmind", ConfigFactory.load())
-
-    // the handler actor replies to incoming HttpRequests
-    val handler = system.actorOf(Props[ServiceActor], name = "handler")
-    IO(Http) ! Http.Bind(handler, interface = "0.0.0.0", port = Integer.valueOf(SettingsExtension(system).serverPort))
-  }
+  // the handler actor replies to incoming HttpRequests
+  val handler = system.actorOf(Props[ServiceActor], name = "handler")
+  IO(Http) ! Http.Bind(handler, interface = "0.0.0.0", port = Integer.valueOf(SettingsExtension(system).serverPort))
 }
