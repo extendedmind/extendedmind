@@ -27,7 +27,7 @@ class ShareViewController: SLComposeServiceViewController {
     
     override func didSelectPost() {
         if let inboxId = self.inboxId, linkUrl = self.linkUrl, linkTitle = self.linkTitle{
-            let url = "https://ext.md/api/inbox/" + inboxId
+            let url = "https://ext.md/api/v2/inbox/" + inboxId
             let escLinkUrl = self.encodeStringForHttpRequest(linkUrl)
             let escLinkTitle = self.encodeStringForHttpRequest(linkTitle)
             let postData = ("Subject=" + escLinkTitle + "&stripped-text=" + escLinkUrl).dataUsingEncoding(NSUTF8StringEncoding)
