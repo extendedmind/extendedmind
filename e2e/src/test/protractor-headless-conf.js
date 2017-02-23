@@ -60,6 +60,6 @@ exports.config = {
   params: {
     visualreview: vr,
     helpers: helpers,
-    emailTestPath: '/protractor/email-tests'
+    emailTestPath: '/protractor/backend-emails'
   }
 };

@@ -57,8 +57,8 @@
                   <goal>install-node-and-npm</goal>
                 </goals>
                 <configuration>
-                  <nodeVersion>v7.4.0</nodeVersion>
-                  <npmVersion>4.0.5</npmVersion>
+                  <nodeVersion>v7.5.0</nodeVersion>
+                  <npmVersion>4.2.0</npmVersion>
                   <nodeDownloadRoot>https://nodejs.org/dist/</nodeDownloadRoot>
                 </configuration>
               </execution>
@@ -184,7 +184,7 @@
                   <version>${e2e.visualReviewDataRevision}</version>
                   <type>zip</type>
                   <overWrite>true</overWrite>
-                  <outputDirectory>${project.build.directory}</outputDirectory>
+                  <outputDirectory>${project.build.directory}/docker-dirs</outputDirectory>
                 </artifactItem>
               </artifactItems>
             </configuration>
@@ -213,18 +213,36 @@
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
           <execution>
+            <!-- This is needed sot that Docker doesn't make the dirs root:root -->
+            <id>create-target-dirs</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target name="create-docker-dirs">
+                <mkdir dir="target/docker-dirs/backend-emails" />
+                <mkdir dir="target/docker-dirs/backend-backup" />
+                <mkdir dir="target/docker-dirs/site-dynamic" />
+                <mkdir dir="target/docker-dirs/site-dynamic/generated" />
+                <mkdir dir="target/docker-dirs/site-dynamic/files" />
+                <mkdir dir="target/docker-dirs/site-data" />
+              </target>
+            </configuration>
+          </execution>
+          <execution>
             <id>unzip-database</id>
-            <phase>generate-resources</phase>
+            <phase>process-resources</phase>
             <goals>
               <goal>run</goal>
             </goals>
             <configuration>
               <target name="unzip-database">
-                <unzip src="target/neo4j-test.zip" dest="target/neo4j-test" />
+                <unzip src="target/neo4j-test.zip" dest="target/docker-dirs/backend-data" />
               </target>
             </configuration>
           </execution>
-        </executions>
+       </executions>
       </plugin>
       <plugin>
         <groupId>org.eclipse.jetty</groupId>
@@ -277,8 +295,8 @@
                 <namingStrategy>alias</namingStrategy>
                 <volumes>
                   <bind>
-                    <volume>${project.build.directory}/vr/screenshots:/usr/vr/screenshots</volume>
-                    <volume>${project.build.directory}/vr/db:/usr/vr/db</volume>
+                    <volume>${project.build.directory}/docker-dirs/vr/screenshots:/usr/vr/screenshots</volume>
+                    <volume>${project.build.directory}/docker-dirs/vr/db:/usr/vr/db</volume>
                   </bind>
                 </volumes>
                 <ports>
@@ -287,60 +305,7 @@
               </run>
             </image>
             <image>
-              <name>extendedmind/backend-conf</name>
-              <alias>backend-conf</alias>
-              <run>
-                <namingStrategy>alias</namingStrategy>
-              </run>
-            </image>
-            <image>
-              <name>extendedmind/site-conf</name>
-              <alias>site-conf</alias>
-              <run>
-                <namingStrategy>alias</namingStrategy>
-              </run>
-            </image>
-            <image>
-              <name>extendedmind/nginx-conf</name>
-              <alias>nginx-conf</alias>
-              <run>
-                <namingStrategy>alias</namingStrategy>
-              </run>
-            </image>
-            <image>
-              <name>extendedmind/confd</name>
-              <alias>confd</alias>
-              <run>
-                <namingStrategy>alias</namingStrategy>
-                <env>
-                  <EXTENDEDMIND_BACKEND_TOKENSECRET>01234567890123456789012345678901</EXTENDEDMIND_BACKEND_TOKENSECRET>
-                  <EXTENDEDMIND_BACKEND_SIGNUPMODE>BETA</EXTENDEDMIND_BACKEND_SIGNUPMODE>
-                  <EXTENDEDMIND_URLORIGIN>${e2e.urlOrigin}</EXTENDEDMIND_URLORIGIN>
-                  <EXTENDEDMIND_BACKEND_EMAILPROVIDER>${e2e.emailProvider}</EXTENDEDMIND_BACKEND_EMAILPROVIDER>
-                  <EXTENDEDMIND_BACKEND_MAILGUNDOMAIN>${e2e.mailgunDomain}</EXTENDEDMIND_BACKEND_MAILGUNDOMAIN>
-                  <EXTENDEDMIND_BACKEND_MAILGUNKEY>${e2e.mailgunKey}</EXTENDEDMIND_BACKEND_MAILGUNKEY>
-                  <EXTENDEDMIND_EMAILFROM>${e2e.emailFrom}</EXTENDEDMIND_EMAILFROM>
-                  <EXTENDEDMIND_UI>{}</EXTENDEDMIND_UI>
-                </env>
-                <volumes>
-                  <from>
-                    <image>backend-conf</image>
-                    <image>site-conf</image>
-                    <image>nginx-conf</image>
-                  </from>
-                </volumes>
-                <cmd>-backend=env</cmd>
-              </run>
-            </image>
-            <image>
-              <name>extendedmind/backend-data</name>
-              <alias>backend-data</alias>
-              <run>
-                <namingStrategy>alias</namingStrategy>
-              </run>
-            </image>
-            <image>
-              <name>extendedmind/backend</name>
+              <name>quay.io/extendedmind/backend</name>
               <alias>backend</alias>
               <run>
                 <namingStrategy>alias</namingStrategy>
@@ -348,61 +313,74 @@
                   <JAVA_TOOL_OPTIONS>-Xmx512m</JAVA_TOOL_OPTIONS>
                 </env>
                 <volumes>
-                  <from>
-                    <image>backend-conf</image>
-                    <image>backend-data</image>
-                  </from>
                   <bind>
-                    <volume>${project.build.directory}/email-tests:/var/log/dummy-emails</volume>
+                    <volume>${project.build.directory}/docker-dirs/backend-emails:/app/backend-emails</volume>
+                    <volume>${project.build.directory}/docker-dirs/backend-data:/app/backend-data</volume>
                   </bind>
                 </volumes>
                 <ports>
                   <port>8007:8081</port>
                 </ports>
-              </run>
+                <cmd>
+                  <arg>-Dextendedmind.security.tokenSecret=01234567890123456789012345678901</arg>
+                  <arg>-Dextendedmind.security.signupMode=BETA</arg>
+                  <arg>-Dextendedmind.email.urlOrigin=${e2e.urlOrigin}</arg>
+                  <arg>-Dextendedmind.email.provider=${e2e.emailProvider}</arg>
+                  <arg>-Dextendedmind.email.mailgun.domain=${e2e.mailgunDomain}</arg>
+                  <arg>-Dextendedmind.email.mailgun.apiKey=${e2e.mailgunKey}</arg>
+                  <arg>-Dextendedmind.email.from=${e2e.emailFrom}</arg>
+                  <arg>-Dextendedmind.email.dummy=/app/backend-emails</arg>
+                  <arg>-Dextendedmind.ui={}</arg>
+                  <arg>-cp</arg>
+                  <arg>/app/backend/lib/*</arg>
+                  <arg>org.extendedmind.Server</arg>
+                </cmd>
+             </run>
             </image>
             <image>
-              <name>extendedmind/frontend-data</name>
-              <alias>frontend-data</alias>
-            </image>
-            <image>
-              <name>extendedmind/site-static</name>
+              <name>quay.io/extendedmind/site-static</name>
               <alias>site-static</alias>
               <run>
                 <namingStrategy>alias</namingStrategy>
                 <volumes>
-                  <from>
-                    <image>frontend-data</image>
-                  </from>
+                  <bind>
+                    <volume>${project.build.directory}/docker-dirs/site-data:/app/site-data</volume>
+                  </bind>
                 </volumes>
               </run>
             </image>
             <image>
-              <name>extendedmind/site</name>
+              <name>quay.io/extendedmind/site</name>
               <alias>site</alias>
               <run>
                 <namingStrategy>alias</namingStrategy>
                 <volumes>
-                  <from>
-                    <image>site-conf</image>
-                  </from>
+                  <bind>
+                    <volume>${project.build.directory}/docker-dirs/site-dynamic:/app/site-dynamic</volume>
+                    <volume>${project.build.directory}/docker-dirs/site-data:/app/site/public:ro</volume>
+                  </bind>
                 </volumes>
                 <links>
                   <link>backend:backend</link>
                 </links>
+                <env>
+                  <EXTENDEDMIND_URL_ORIGIN>http://localhost:8008</EXTENDEDMIND_URL_ORIGIN>
+                </env>
               </run>
             </image>
             <image>
-              <name>extendedmind/nginx</name>
+              <name>quay.io/extendedmind/nginx:nginx-1.11.9-1</name>
               <alias>nginx</alias>
               <run>
                 <namingStrategy>alias</namingStrategy>
                 <volumes>
                   <from>
-                    <image>nginx-conf</image>
-                    <image>frontend-data</image>
                     <image>site</image>
                   </from>
+                  <bind>
+                    <volume>${project.build.directory}/docker-dirs/site-data:/app/site-data:ro</volume>
+                    <volume>${project.build.directory}/docker-dirs/site-dynamic:/app/site-dynamic:ro</volume>
+                  </bind>
                 </volumes>
                 <links>
                   <link>backend:backend</link>
@@ -414,27 +392,36 @@
               </run>
             </image>
             <image>
-              <name>extendedmind/backend-backup</name>
+              <name>quay.io/extendedmind/backend-backup</name>
               <alias>backend-backup</alias>
               <run>
                 <namingStrategy>alias</namingStrategy>
                 <links>
                   <link>backend:backend</link>
                 </links>
+                <volumes>
+                  <bind>
+                    <volume>${project.build.directory}/docker-dirs/backend-backup:/app/backend-backup/archives</volume>
+                  </bind>
+                </volumes>
+                <cmd>
+                  <arg>/app/backend-backup/archives</arg>
+                </cmd>
               </run>
             </image>
             <image>
-              <name>extendedmind/sync-folder</name>
+              <name>quay.io/extendedmind/sync-folder</name>
               <alias>sync-folder</alias>
               <run>
                 <namingStrategy>alias</namingStrategy>
                 <volumes>
-                  <from>
-                    <image>frontend-data</image>
-                  </from>
+                  <bind>
+                    <volume>${project.build.directory}/docker-dirs/site-data:/app/site-data:ro</volume>
+                    <volume>${project.build.directory}/docker-dirs/site-dynamic:/app/site-dynamic</volume>
+                  </bind>
                 </volumes>
-                <!-- Only testing purposes, try to mirror a random directory that has sub directories to the files path -->
-                <cmd>/var/www/extendedmind/static /var/www/extendedmind/files</cmd>
+                <!-- To test, rsync all static files to /files/test -->
+                <cmd>/app/site-data/static /app/site-dynamic/files/test</cmd>
               </run>
             </image>
           </images>
