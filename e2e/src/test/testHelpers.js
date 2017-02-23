@@ -33,7 +33,7 @@ const waitForBackendReady = function(timeout) {
           }, 500);
         }
       };
-      xmlHttp.open('GET', 'http://localhost:8008/api/info', true); // true for asynchronous
+      xmlHttp.open('GET', 'http://localhost:8008/api/v2/info', true); // true for asynchronous
       xmlHttp.timeout = 500; // time in milliseconds
       xmlHttp.ontimeout = function() {
         xmlHttp.abort();
