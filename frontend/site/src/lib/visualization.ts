@@ -9,7 +9,9 @@ import * as path from "path";
 import * as fs from "fs";
 
 export class Visualization {
-  constructor(private imagePath: string) {};
+  constructor(private imagePath: string) {
+    console.info("setting image path to: " + this.imagePath);
+  };
 
   public generateImageFromText(printText: string, id: string, modified: number): Promise<string> {
     const imagePath = this.imagePath;

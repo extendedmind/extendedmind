@@ -1,5 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.extendedmind</groupId>
@@ -32,7 +32,6 @@
       <email>timo.tiuraniemi@iki.fi</email>
     </developer>
   </developers>
-
   <dependencies>
     <dependency>
       <groupId>org.extendedmind.frontend</groupId>
@@ -40,12 +39,10 @@
       <type>war</type>
     </dependency>
   </dependencies>
-
   <properties>
     <root.project.basedir>${project.parent.parent.basedir}</root.project.basedir>
-    <extraNginxConf></extraNginxConf>
+    <extraNginxConf/>
   </properties>
-
   <build>
     <plugins>
       <plugin>
@@ -58,8 +55,8 @@
               <goal>install-node-and-npm</goal>
             </goals>
             <configuration>
-              <nodeVersion>v7.4.0</nodeVersion>
-              <npmVersion>4.0.5</npmVersion>
+              <nodeVersion>v7.5.0</nodeVersion>
+              <npmVersion>4.2.0</npmVersion>
               <nodeDownloadRoot>https://nodejs.org/dist/</nodeDownloadRoot>
             </configuration>
           </execution>
@@ -171,52 +168,11 @@
         <configuration>
           <sourceDirectory>docker</sourceDirectory>
           <images>
-            <image>
-              <name>extendedmind/nginx-conf</name>
-              <alias>nginx-conf</alias>
-              <build>
-                <from>alpine:3.5</from>
-                <maintainer>timo.tiuraniemi@iki.fi</maintainer>
-                <tags>
-                  <tag>latest</tag>
-                </tags>
-                <assembly>
-                  <mode>dir</mode>
-                  <basedir>/etc</basedir>
-                  <descriptor>nginx-conf-assembly.xml</descriptor>
-                </assembly>
-                <volumes>
-                  <volume>/etc/confd/conf.d/nginx</volume>
-                  <volume>/etc/confd/templates/nginx</volume>
-                  <volume>/etc/nginx/sites-enabled</volume>
-                  <volume>/etc/nginx/credentials</volume>
-                </volumes>
-              </build>
-            </image>
-            <image>
-              <name>extendedmind/frontend-data</name>
-              <alias>frontend-data</alias>
-              <build>
-                <from>alpine:3.5</from>
-                <maintainer>timo.tiuraniemi@iki.fi</maintainer>
-                <tags>
-                  <tag>latest</tag>
-                </tags>
-                <assembly>
-                  <mode>dir</mode>
-                  <basedir>/var/www</basedir>
-                  <descriptor>frontend-data-assembly.xml</descriptor>
-                </assembly>
-                <volumes>
-                  <volume>/var/www</volume>
-                </volumes>
-              </build>
-            </image>
-            <image>
-              <name>extendedmind/site-static</name>
+           <image>
+              <name>quay.io/extendedmind/site-static</name>
               <alias>site-static</alias>
               <build>
-                <from>alpine:3.5</from>
+                <from>quay.io/extendedmind/data-volume:dv-3.5-1</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
                 <tags>
                   <tag>latest</tag>
@@ -224,38 +180,24 @@
                 </tags>
                 <assembly>
                   <mode>dir</mode>
-                  <basedir>/usr/src/extendedmind</basedir>
+                  <basedir>/app/site-static</basedir>
                   <descriptor>site-static-assembly.xml</descriptor>
                 </assembly>
-                <cmd><shell>cp -R /usr/src/extendedmind/* /var/www</shell></cmd>
+                <entryPoint>
+                  <exec>
+                    <arg>/bin/cp</arg>
+                    <arg>-R</arg>
+                    <arg>/app/site-static/.</arg>
+                    <arg>/app/site-data</arg>
+                  </exec>
+                </entryPoint>
               </build>
             </image>
             <image>
-              <name>extendedmind/site-conf</name>
-              <alias>site-conf</alias>
-              <build>
-                <from>alpine:3.5</from>
-                <maintainer>timo.tiuraniemi@iki.fi</maintainer>
-                <tags>
-                  <tag>latest</tag>
-                </tags>
-                <assembly>
-                  <mode>dir</mode>
-                  <basedir>/etc</basedir>
-                  <descriptor>site-conf-assembly.xml</descriptor>
-                </assembly>
-                <volumes>
-                  <volume>/etc/confd/conf.d/site</volume>
-                  <volume>/etc/confd/templates/site</volume>
-                  <volume>/etc/extendedmind/site</volume>
-                </volumes>
-              </build>
-            </image>
-            <image>
-              <name>extendedmind/site</name>
+              <name>quay.io/extendedmind/site</name>
               <alias>site</alias>
               <build>
-                <from>quay.io/extendedmind/node:node-7.4.0</from>
+                <from>quay.io/extendedmind/node:node-7.5.0-1</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
                 <tags>
                   <tag>latest</tag>
@@ -264,50 +206,33 @@
                 <ports>
                   <port>3000</port>
                 </ports>
+                <volumes>
+                  <volume>/app/site-generated</volume>
+                  <volume>/etc/nginx/sites-enabled</volume>
+                </volumes>
                 <assembly>
                   <mode>dir</mode>
-                  <basedir>/usr/src/extendedmind/site</basedir>
+                  <basedir>/</basedir>
                   <descriptor>site-assembly.xml</descriptor>
                 </assembly>
-                <volumes>
-                  <volume>/var/www/extendedmind/cache</volume>
-                </volumes>
-                <workdir>/usr/src/extendedmind/site</workdir>
+                <workdir>/app/site</workdir>
                 <entryPoint>
-                  <exec><arg>/usr/src/extendedmind/site/site-run.pl</arg></exec>
+                  <exec>
+                    <arg>pm2-docker</arg>
+                    <arg>site-pm2.json</arg>
+                  </exec>
                 </entryPoint>
               </build>
             </image>
-            <image>
-              <name>extendedmind/nginx</name>
-              <alias>nginx</alias>
-              <build>
-                <from>nginx:1.11.8-alpine</from>
-                <maintainer>timo.tiuraniemi@iki.fi</maintainer>
-                <tags>
-                  <tag>latest</tag>
-                </tags>
-                <ports>
-                  <port>8008</port>
-                  <port>8009</port>
-                </ports>
-                <assembly>
-                  <mode>dir</mode>
-                  <basedir>/usr/src/nginx</basedir>
-                  <descriptor>nginx-assembly.xml</descriptor>
-                </assembly>
-                <entryPoint><exec><arg>/usr/src/nginx/nginx-run.pl</arg></exec></entryPoint>
-              </build>
-            </image>
-          </images>
+         </images>
         </configuration>
         <executions>
           <execution>
-             <id>build</id>
-             <phase>package</phase>
-             <goals>
-               <goal>build-nofork</goal>
-             </goals>
+            <id>build</id>
+            <phase>package</phase>
+            <goals>
+              <goal>build-nofork</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>

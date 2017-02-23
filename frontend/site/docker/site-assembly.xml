@@ -4,30 +4,40 @@
   <fileSets>
     <fileSet>
       <directory>${project.basedir}/src</directory>
-      <outputDirectory>.</outputDirectory>
+      <outputDirectory>app/site</outputDirectory>
       <includes>
         <include>package.json</include>
-        <include>index.js</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>${project.basedir}/src/dist</directory>
+      <outputDirectory>app/site/dist</outputDirectory>
+      <includes>
+        <include>**/*.js</include>
       </includes>
     </fileSet>
     <fileSet>
       <directory>${project.basedir}/docker</directory>
-      <outputDirectory>.</outputDirectory>
+      <outputDirectory>app/site</outputDirectory>
       <includes>
-        <include>site-run.pl</include>
+        <include>site-config.json</include>
+        <include>site-pm2.json</include>
       </includes>
     </fileSet>
     <fileSet>
       <directory>${project.basedir}/src/node_modules</directory>
-      <outputDirectory>node_modules</outputDirectory>
-    </fileSet>
-    <fileSet>
-      <directory>${project.basedir}/src/js</directory>
-      <outputDirectory>js</outputDirectory>
+      <outputDirectory>app/site/node_modules</outputDirectory>
     </fileSet>
     <fileSet>
       <directory>${project.basedir}/src/views</directory>
-      <outputDirectory>views</outputDirectory>
+      <outputDirectory>app/site/views</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>${project.basedir}/docker</directory>
+      <outputDirectory>etc/nginx/sites-enabled</outputDirectory>
+      <includes>
+        <include>nginx.extendedmind.conf</include>
+      </includes>
     </fileSet>
   </fileSets>
 </assembly>

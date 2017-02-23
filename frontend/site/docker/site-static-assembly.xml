@@ -3,7 +3,7 @@
     xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
   <dependencySets>
     <dependencySet>
-      <outputDirectory>extendedmind</outputDirectory>
+      <outputDirectory>.</outputDirectory>
       <includes>
         <include>org.extendedmind.frontend:frontend-app:war:${project.version}</include>
       </includes>
@@ -18,8 +18,8 @@
   </dependencySets>
   <fileSets>
     <fileSet>
-      <directory>${project.basedir}/src/static</directory>
-      <outputDirectory>extendedmind/static</outputDirectory>
+      <directory>${project.basedir}/src/public/static</directory>
+      <outputDirectory>./static</outputDirectory>
     </fileSet>
   </fileSets>
 </assembly>
