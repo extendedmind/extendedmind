@@ -1,0 +1,11 @@
+{
+  "apps" : [{
+    "name"        : "extendedmind-site",
+    "cwd"         : "/app/site",
+    "script"      : "./dist/index.js",
+    "args"        : "../site-config.json",
+    "env": {
+      "NODE_ENV"  : "production"
+    }
+  }]
+}
