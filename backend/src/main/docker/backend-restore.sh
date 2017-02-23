@@ -31,20 +31,20 @@ trap 'echo exiting restore script..; exit' SIGINT SIGQUIT SIGTERM
 echo "Begin restore from file: $BACKUP_FILE to $NEO4J_DIRECTORY"
 
 # Empty work directory
-rm -fR /usr/src/extendedmind/work
-mkdir /usr/src/extendedmind/work
-echo "Executing: $CP_PRE_COMMAND cp $BACKUP_FILE  /usr/src/extendedmind/work/backup.tar.gz"
-$CP_PRE_COMMAND cp $BACKUP_FILE /usr/src/extendedmind/work/backup.tar.gz
+rm -fR work
+mkdir work
+echo "Executing: $CP_PRE_COMMAND cp $BACKUP_FILE work/backup.tar.gz"
+$CP_PRE_COMMAND cp $BACKUP_FILE work/backup.tar.gz
 rc=$?; if [[ $rc != 0 ]]; then echo "Failed copying backup file $BACKUP_FILE"; exit $rc; fi
 
 # Unpack tar.gz backup file
-tar -xzf /usr/src/extendedmind/work/backup.tar.gz -C /usr/src/extendedmind/work
+tar -xzf work/backup.tar.gz -C work
 rc=$?; if [[ $rc != 0 ]]; then
   echo "Failed unpacking .tar.gz backup file $BACKUP_FILE, exiting";
   exit $rc;
 fi
 
-if [ ! -d /usr/src/extendedmind/work/neo4j ]
+if [ ! -d work/neo4j ]
 then
   echo "Backup file $BACKUP_FILE does not contain folder neo4j, exiting."
   exit 3
@@ -59,6 +59,6 @@ fi
 mv $NEO4J_DB $NEO4J_DB_BAK
 rc=$?; if [[ $rc != 0 ]]; then echo "Failed moving neo4j directory to bak, are you sure it's not in use?"; exit $rc; fi
 
-mv /usr/src/extendedmind/work/neo4j $NEO4J_DB
+mv work/neo4j $NEO4J_DB
 echo "Restore complete"
 exit 0;

@@ -1,6 +1,5 @@
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.extendedmind</groupId>
@@ -80,7 +79,7 @@
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
-	  <dependency>
+    <dependency>
       <groupId>io.spray</groupId>
       <artifactId>spray-client_${scala.version.short}</artifactId>
       <version>${spray.version}</version>
@@ -141,19 +140,18 @@
     </dependency>
 
     <!-- Binary Diff and Pickle -->
-	<dependency>
+    <dependency>
       <groupId>com.nitorcreations</groupId>
-	  <artifactId>javaxdelta</artifactId>
+      <artifactId>javaxdelta</artifactId>
       <version>1.5</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
-	<dependency>
+    <dependency>
       <groupId>me.chrons</groupId>
-	  <artifactId>boopickle_${scala.version.short}</artifactId>
+      <artifactId>boopickle_${scala.version.short}</artifactId>
       <version>1.1.0</version>
       <type>jar</type>
-      <scope>compile</scope>
     </dependency>
 
     <!-- Logging -->
@@ -196,11 +194,11 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-	  <groupId>com.vdurmont</groupId>
-	  <artifactId>semver4j</artifactId>
-	  <version>2.0.1</version>
+      <groupId>com.vdurmont</groupId>
+      <artifactId>semver4j</artifactId>
+      <version>2.0.1</version>
       <scope>compile</scope>
-	</dependency>
+    </dependency>
 
     <!-- Test -->
     <dependency>
@@ -363,7 +361,9 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
           <descriptors>
+            <descriptor>src/main/assembly/scripts.xml</descriptor>
             <descriptor>src/main/assembly/dist.xml</descriptor>
+            <descriptor>src/main/assembly/runtime-dependencies.xml</descriptor>
           </descriptors>
         </configuration>
         <executions>
@@ -392,72 +392,10 @@
         <configuration>
           <images>
             <image>
-              <name>extendedmind/sync-folder</name>
-              <alias>sync-folder</alias>
-              <build>
-                <from>quay.io/extendedmind/google-cloud-sdk:gce-139.0.0</from>
-                <maintainer>timo.tiuraniemi@iki.fi</maintainer>
-                <tags>
-                  <tag>latest</tag>
-                </tags>
-                <assembly>
-                  <mode>dir</mode>
-                  <basedir>/usr/src/extendedmind</basedir>
-                  <descriptor>sync-folder-assembly.xml</descriptor>
-                </assembly>
-                <entryPoint>
-                  <exec>
-                    <arg>/usr/src/extendedmind/run-sync-folder.pl</arg>
-                  </exec>
-                </entryPoint>
-              </build>
-            </image>
-            <image>
-              <name>extendedmind/backend-conf</name>
-              <alias>backend-conf</alias>
-              <build>
-                <from>alpine:3.5</from>
-                <maintainer>timo.tiuraniemi@iki.fi</maintainer>
-                <tags>
-                  <tag>latest</tag>
-                  <tag>${project.version}</tag>
-                </tags>
-                <assembly>
-                  <mode>dir</mode>
-                  <basedir>/etc/confd</basedir>
-                  <descriptor>backend-conf-assembly.xml</descriptor>
-                </assembly>
-                <volumes>
-                  <volume>/etc/confd/conf.d/backend</volume>
-                  <volume>/etc/confd/templates/backend</volume>
-                  <volume>/etc/extendedmind/backend</volume>
-                </volumes>
-              </build>
-            </image>
-            <image>
-              <name>extendedmind/backend-data</name>
-              <alias>backend-data</alias>
-              <build>
-                <from>alpine:3.5</from>
-                <maintainer>timo.tiuraniemi@iki.fi</maintainer>
-                <tags>
-                  <tag>latest</tag>
-                </tags>
-                <assembly>
-                  <mode>dir</mode>
-                  <basedir>/var/extendedmind/backend</basedir>
-                  <descriptor>backend-data-assembly.xml</descriptor>
-                </assembly>
-                <volumes>
-                  <volume>/var/extendedmind/backend</volume>
-                </volumes>
-              </build>
-            </image>
-            <image>
-              <name>extendedmind/backend</name>
+              <name>quay.io/extendedmind/backend</name>
               <alias>backend</alias>
               <build>
-                <from>openjdk:8u111-jdk-alpine</from>
+                <from>quay.io/extendedmind/openjdk:openjdk-8u111-1</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
                 <tags>
                   <tag>latest</tag>
@@ -472,9 +410,10 @@
                 </ports>
                 <assembly>
                   <mode>dir</mode>
-                  <basedir>/usr/src/extendedmind</basedir>
+                  <basedir>/app/backend</basedir>
                   <descriptor>backend-assembly.xml</descriptor>
                 </assembly>
+                <workdir>/app/backend</workdir>
                 <entryPoint>
                   <exec>
                     <arg>/usr/bin/java</arg>
@@ -482,55 +421,82 @@
                     <arg>-XX:+PrintCommandLineFlags</arg>
                     <!-- Neo4j suggests to use this -->
                     <arg>-XX:+UseConcMarkSweepGC</arg>
-                    <arg>-Dconfig.file=/etc/extendedmind/backend/application.conf</arg>
-                    <arg>-Dlogback.configurationFile=/etc/extendedmind/backend/logback.xml</arg>
-                    <arg>-cp</arg>
-                    <arg>/usr/src/extendedmind/lib/*</arg>
-                    <arg>org.extendedmind.Server</arg>
+                    <arg>-Dextendedmind.neo4j.storeDir=/app/backend-data</arg>
                   </exec>
                 </entryPoint>
+                <cmd>
+                  <arg>-cp</arg>
+                  <arg>/app/backend/lib/*</arg>
+                  <arg>org.extendedmind.Server</arg>
+                </cmd>
               </build>
             </image>
             <image>
-              <name>extendedmind/backend-backup</name>
+              <name>quay.io/extendedmind/backend-backup</name>
               <alias>backend-backup</alias>
               <build>
-                <from>quay.io/extendedmind/google-cloud-sdk:gce-139.0.0</from>
+                <from>quay.io/extendedmind/openjdk:openjdk-8u111-2</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
                 <tags>
                   <tag>latest</tag>
+                  <tag>${project.version}</tag>
                 </tags>
                 <assembly>
+                  <user>java:java:java</user>
                   <mode>dir</mode>
-                  <basedir>/usr/src/extendedmind</basedir>
+                  <basedir>/app/backend-backup</basedir>
                   <descriptor>backend-backup-assembly.xml</descriptor>
                 </assembly>
+                <workdir>/app/backend-backup</workdir>
                 <entryPoint>
                   <exec>
-                    <arg>/usr/src/extendedmind/run-backend-script.pl</arg>
-                    <arg>backup</arg>
+                    <arg>/app/backend-backup/backend-backup.sh</arg>
                   </exec>
                 </entryPoint>
               </build>
             </image>
             <image>
-              <name>extendedmind/backend-restore</name>
+              <name>quay.io/extendedmind/backend-restore</name>
               <alias>backend-restore</alias>
               <build>
-                <from>quay.io/extendedmind/google-cloud-sdk:gce-139.0.0</from>
+                <from>quay.io/extendedmind/tar-curl-rsync:tcr-3.5-1</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
                 <tags>
                   <tag>latest</tag>
+                  <tag>${project.version}</tag>
                 </tags>
                 <assembly>
                   <mode>dir</mode>
-                  <basedir>/usr/src/extendedmind</basedir>
+                  <basedir>/app/backend-restore</basedir>
                   <descriptor>backend-restore-assembly.xml</descriptor>
                 </assembly>
+                <workdir>/app/backend-restore</workdir>
                 <entryPoint>
                   <exec>
-                    <arg>/usr/src/extendedmind/run-backend-script.pl</arg>
-                    <arg>restore</arg>
+                    <arg>/app/backend-restore/backend-restore.sh</arg>
+                  </exec>
+                </entryPoint>
+              </build>
+            </image>
+            <image>
+              <name>quay.io/extendedmind/sync-folder</name>
+              <alias>sync-folder</alias>
+              <build>
+                <from>quay.io/extendedmind/tar-curl-rsync:tcr-3.5-1</from>
+                <maintainer>timo.tiuraniemi@iki.fi</maintainer>
+                <tags>
+                  <tag>latest</tag>
+                  <tag>${project.version}</tag>
+                </tags>
+                <assembly>
+                  <mode>dir</mode>
+                  <basedir>/app/sync-folder</basedir>
+                  <descriptor>sync-folder-assembly.xml</descriptor>
+                </assembly>
+                <workdir>/app</workdir>
+                <entryPoint>
+                  <exec>
+                    <arg>/app/sync-folder/sync-folder.sh</arg>
                   </exec>
                 </entryPoint>
               </build>
@@ -539,48 +505,48 @@
         </configuration>
         <executions>
           <execution>
-             <id>build</id>
-             <phase>package</phase>
-             <goals>
-               <goal>build-nofork</goal>
-             </goals>
+            <id>build</id>
+            <phase>package</phase>
+            <goals>
+              <goal>build-nofork</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>
     </plugins>
     <pluginManagement>
-    	<plugins>
-    		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-    		<plugin>
-    			<groupId>org.eclipse.m2e</groupId>
-    			<artifactId>lifecycle-mapping</artifactId>
-    			<version>1.0.0</version>
-    			<configuration>
-    				<lifecycleMappingMetadata>
-    					<pluginExecutions>
-    						<pluginExecution>
-    							<pluginExecutionFilter>
-    								<groupId>
-    									org.apache.maven.plugins
-    								</groupId>
-    								<artifactId>
-    									maven-dependency-plugin
-    								</artifactId>
-    								<versionRange>[2.8,)</versionRange>
-    								<goals>
-    									<goal>copy-dependencies</goal>
-										<goal>unpack</goal>
-    								</goals>
-    							</pluginExecutionFilter>
-    							<action>
-    								<ignore></ignore>
-    							</action>
-    						</pluginExecution>
-    					</pluginExecutions>
-    				</lifecycleMappingMetadata>
-    			</configuration>
-    		</plugin>
-    	</plugins>
+      <plugins>
+        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+        <plugin>
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <version>1.0.0</version>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>
+                      org.apache.maven.plugins
+                    </groupId>
+                    <artifactId>
+                      maven-dependency-plugin
+                    </artifactId>
+                    <versionRange>[2.8,)</versionRange>
+                    <goals>
+                      <goal>copy-dependencies</goal>
+                      <goal>unpack</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore></ignore>
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
+        </plugin>
+      </plugins>
     </pluginManagement>
   </build>
 </project>

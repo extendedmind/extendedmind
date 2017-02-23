@@ -6,7 +6,6 @@
       <directory>${project.basedir}/src/main/docker</directory>
       <outputDirectory>.</outputDirectory>
       <includes>
-        <include>run-backend-script.pl</include>
         <include>backend-backup.sh</include>
       </includes>
     </fileSet>
@@ -29,16 +28,7 @@
       <directory>${project.build.directory}/backend-runtime-dependencies</directory>
       <outputDirectory>lib</outputDirectory>
       <includes>
-        <include>commons-lang3-*</include>
-        <include>concurrentlinkedhashmap-*</include>
-        <include>lucene-core-*</include>
-        <include>metrics-*</include>
-        <include>neo4j-*</include>
-        <include>netty-*</include>
-        <include>opencsv-*</include>
-        <include>parboiled-*</include>
-        <include>scala-*</include>
-        <include>slf4j-api*</include>
+        <include>*.jar</include>
         <!-- There is no good way to include automatically all the needed dependencies of neo4j-enterprise
         http://stackoverflow.com/questions/19379613/maven-copy-specific-dependency-with-its-transitive-dependencies-to-a-give-loca -->
       </includes>

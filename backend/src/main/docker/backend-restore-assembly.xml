@@ -6,7 +6,6 @@
       <directory>${project.basedir}/src/main/docker</directory>
       <outputDirectory>.</outputDirectory>
       <includes>
-        <include>run-backend-script.pl</include>
         <include>backend-restore.sh</include>
       </includes>
     </fileSet>

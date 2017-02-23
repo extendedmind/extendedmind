@@ -65,6 +65,7 @@ class Settings(config: Config, versionConfig: Config) extends Extension {
   // Neo4j parameters
   val serverPort = config.getInt("extendedmind.server.port")
   val neo4jStoreDir = config.getString("extendedmind.neo4j.storeDir")
+  println("Setting neo4j store directory to: " + neo4jStoreDir)
   val neo4jPropertiesFile: Option[String] = {
     if (config.hasPath("extendedmind.neo4j.propertiesFile"))
       Some(config.getString("extendedmind.neo4j.propertiesFile"))

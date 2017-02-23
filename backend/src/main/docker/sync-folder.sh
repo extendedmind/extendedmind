@@ -18,12 +18,5 @@ fi
 # Add a clean exit trap
 trap 'echo exiting sync folder script..; exit' SIGINT SIGQUIT SIGTERM
 
-# Poll infinitely every minute
-POLL_INTERVAL=60
-while true;
-do
-  echo "Executing:" $RSYNC_PRE_COMMAND rsync -r -d $FROM_LOCATION $TO_DIRECTORY
-  $RSYNC_PRE_COMMAND rsync -r -d $FROM_LOCATION $TO_DIRECTORY
-  wait
-  sleep $POLL_INTERVAL
-done
+echo "Executing:" $RSYNC_PRE_COMMAND rsync -r -d $FROM_LOCATION $TO_DIRECTORY
+$RSYNC_PRE_COMMAND rsync -r -d $FROM_LOCATION $TO_DIRECTORY

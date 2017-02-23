@@ -6,7 +6,6 @@
       <directory>${project.basedir}/src/main/docker</directory>
       <outputDirectory>.</outputDirectory>
       <includes>
-        <include>run-sync-folder.pl</include>
         <include>sync-folder.sh</include>
       </includes>
     </fileSet>

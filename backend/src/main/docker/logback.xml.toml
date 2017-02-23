@@ -1,3 +1,0 @@
-[template]
-src = "../templates/backend/logback.xml.tmpl"
-dest = "/etc/extendedmind/backend/logback.xml"

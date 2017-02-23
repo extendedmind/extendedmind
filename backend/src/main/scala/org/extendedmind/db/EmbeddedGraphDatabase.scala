@@ -37,6 +37,7 @@ class EmbeddedGraphDatabase(implicit val settings: Settings)
   override def configParams = {
     if (settings.neo4jPropertiesFile.isEmpty){
       val configMap = new scala.collection.mutable.HashMap[String, String]()
+      configMap.put("dbms.backup.address", "0.0.0.0:6362")
       if (settings.isHighAvailability){
         // No config file, but HA, use enviroment variables to set HA properties
         configMap.put("dbms.mode", "HA")
