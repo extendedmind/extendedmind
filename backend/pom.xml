@@ -395,7 +395,7 @@
               <name>quay.io/extendedmind/backend</name>
               <alias>backend</alias>
               <build>
-                <from>quay.io/extendedmind/openjdk:openjdk-8u111-1</from>
+                <from>quay.io/extendedmind/openjdk:openjdk-8u111-2</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
                 <tags>
                   <tag>latest</tag>
