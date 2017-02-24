@@ -4,10 +4,10 @@
   "description": "Extended Mind E2E tests",
   "private": true,
   "devDependencies": {
-    "jsdom": "^9.2.1",
-    "protractor": "^3.3.0",
-    "visualreview-protractor": "^0.2.0",
-    "request": "^2.72.0",
+    "jsdom": "^9.11.0",
+    "protractor": "^4.0.14",
+    "visualreview-protractor": "^0.3.0",
+    "request": "^2.79.0",
     "q": "^1.4.1"
   },
   "scripts": {
@@ -26,5 +26,5 @@
   "bugs": {
     "url": "https://github.com/extendedmind/extendedmind/issues"
   },
-  "homepage": "https://ext.md"
+  "homepage": "https://extendedmind.org"
 }

@@ -15,6 +15,6 @@ exports.config = {
       takeScreenshot: function(){}
     },
     helpers: helpers,
-    emailTestPath: '../target/email-tests'
+    emailTestPath: '../target/docker-dirs/backend-emails'
   }
 };

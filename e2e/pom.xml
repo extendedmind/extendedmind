@@ -289,7 +289,7 @@
           <verbose>true</verbose>
           <images>
             <image>
-              <name>extendedmind/visualreview</name>
+              <name>quay.io/extendedmind/visualreview:vr-0.1.5</name>
               <alias>visualreview</alias>
               <run>
                 <namingStrategy>alias</namingStrategy>
