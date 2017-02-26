@@ -41,6 +41,7 @@
   </dependencies>
   <properties>
     <root.project.basedir>${project.parent.parent.basedir}</root.project.basedir>
+    <nginxSitePrefix/>
     <extraNginxConf/>
   </properties>
   <build>
