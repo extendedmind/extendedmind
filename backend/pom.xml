@@ -508,7 +508,7 @@
             <id>build</id>
             <phase>package</phase>
             <goals>
-              <goal>build-nofork</goal>
+              <goal>build</goal>
             </goals>
           </execution>
         </executions>
