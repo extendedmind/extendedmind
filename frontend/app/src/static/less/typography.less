@@ -5,20 +5,10 @@
 <h1 class="main-heading">Typography</h1>
 
 Fonts in use:
-* HelveticaNeue-Light
-* Helvetica Neue Light
-* HelveticaNeueLTStd-Lt
-* Helvetica Neue
-* Arial
-* Helvetica
-* sans-serif
-
-(Bold letters use HelveticaNeueLT-Roman instead of HelveticaNeueLTStd-Lt.)
+* Source Sans Pro
+* sans-serif as fallback
 */
-
-@font-family: 'HelveticaNeue-Light', 'Helvetica Neue Light', 'HelveticaNeue',
-'Helvetica Neue',  'Segoe UI Light', 'Segoe UI', 'sans-serif-light', 'sans-serif';
-@font-family-bold: 'HelveticaNeue', 'Helvetica Neue',  'Segoe UI Bold', 'Segoe UI', 'sans-serif';
+@font-family: 'Source Sans Pro', sans-serif;
 
 @size-font-jumbotron: 59px;
 @size-font-large: 48px;
@@ -34,7 +24,7 @@ Fonts in use:
 
 * {
   font-family: @font-family;
-  font-weight: 300;
+  font-weight: 400;
 }
 
 html {
@@ -45,8 +35,7 @@ html {
 Font mixins.
 */
 .set-font-bold() {
-  font-family: @font-family-bold;
-  font-weight: 700;
+  font-weight: 900;
 }
 
 .set-font-jumbotron() {

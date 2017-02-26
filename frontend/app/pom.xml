@@ -144,7 +144,45 @@
             <fileset>
               <directory>${basedir}/src/test/json</directory>
             </fileset>
+            <fileset>
+              <directory>${basedir}/src/static/fonts</directory>
+              <includes>
+                <include>Source+*</include>
+                <include>fonts.css</include>
+              </includes>
+            </fileset>
           </filesets>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>com.github.eirslett</groupId>
+        <artifactId>frontend-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>install node and npm</id>
+            <goals>
+              <goal>install-node-and-npm</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <nodeVersion>v7.5.0</nodeVersion>
+              <npmVersion>4.2.0</npmVersion>
+              <nodeDownloadRoot>https://nodejs.org/dist/</nodeDownloadRoot>
+            </configuration>
+          </execution>
+          <execution>
+            <id>npm install</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <arguments>install</arguments>
+            </configuration>
+          </execution>
+        </executions>
+        <configuration>
+          <workingDirectory>src</workingDirectory>
         </configuration>
       </plugin>
       <plugin>
