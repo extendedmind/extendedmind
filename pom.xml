@@ -88,12 +88,12 @@
     <repository>
       <id>extendedmind-releases</id>
       <name>Extended Mind Releases</name>
-      <url>https://ci.ext.md/nexus/content/repositories/releases</url>
+      <url>https://nexus.extendedmind.org/repository/releases</url>
     </repository>
     <repository>
       <id>extendedmind-snapshots</id>
       <name>Extended Mind Snapshots</name>
-      <url>https://ci.ext.md/nexus/content/repositories/snapshots</url>
+      <url>https://nexus.extendedmind.org/repository/snapshots</url>
     </repository>
   </repositories>
   <pluginRepositories>
@@ -106,7 +106,7 @@
     <pluginRepository>
       <id>extendedmind-releases</id>
       <name>Extended Mind Releases</name>
-      <url>https://ci.ext.md/nexus/content/repositories/releases</url>
+      <url>https://nexus.extendedmind.org/repository/releases</url>
     </pluginRepository>
   </pluginRepositories>
   <dependencyManagement>
@@ -352,14 +352,14 @@
       <uniqueVersion>false</uniqueVersion>
       <id>extendedmind-releases</id>
       <name>Extended Mind Releases</name>
-      <url>https://ci.ext.md/nexus/content/repositories/releases</url>
+      <url>https://nexus.extendedmind.org/repository/releases</url>
       <layout>default</layout>
     </repository>
     <snapshotRepository>
       <uniqueVersion>true</uniqueVersion>
       <id>extendedmind-snapshots</id>
       <name>Extended Mind Snapshots</name>
-      <url>https://ci.ext.md/nexus/content/repositories/snapshots</url>
+      <url>https://nexus.extendedmind.org/repository/snapshots</url>
       <layout>default</layout>
     </snapshotRepository>
   </distributionManagement>

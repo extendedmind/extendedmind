@@ -38,7 +38,7 @@ docker cp mariadb:/var/lib/test-mariadb.tar.gz .
 Then unpack and zip the backup script and the database and upload it to the Nexus directory with:
 
 ```
-mvn deploy:deploy-file -DgroupId=org.piwik -DartifactId=test-mariadb-10.1.13 -Dversion=2.16.1 -Dpackaging=zip -DgeneratePom=true -DrepositoryId=extendedmind-releases -Durl=https://ci.ext.md/nexus/content/repositories/releases -Dfile=extendedmind-mariadb-test-database.zip
+mvn deploy:deploy-file -DgroupId=org.piwik -DartifactId=test-mariadb-10.1.13 -Dversion=2.16.1 -Dpackaging=zip -DgeneratePom=true -DrepositoryId=extendedmind-releases -Durl=https://nexus.extendedmind.org/repository/releases -Dfile=extendedmind-mariadb-test-database.zip
 ```
 
 Finally replace the EXTENDEDMIND_DB_PIWIKSALT value in pom.xml by getting it from the config file with:
