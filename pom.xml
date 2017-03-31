@@ -56,44 +56,32 @@
   </properties>
   <repositories>
     <repository>
-      <id>oss-sonatype-public</id>
-      <name>OSS Sonatype Public</name>
-      <url>https://oss.sonatype.org/content/repositories/public</url>
-    </repository>
-    <repository>
-      <id>oss-sonatype-snapshots</id>
-      <name>OSS Sonatype Snapshots</name>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </repository>
-    <repository>
       <id>typesafe</id>
       <name>Typesafe repository</name>
       <url>http://repo.typesafe.com/typesafe/releases</url>
-    </repository>
-    <repository>
-      <id>akka.snapshots</id>
-      <name>Akka Snapshots</name>
-      <url>http://repo.akka.io/snapshots/</url>
+      <releases><enabled>true</enabled></releases>
+      <snapshots><enabled>false</enabled></snapshots>
     </repository>
     <repository>
       <id>spray.io</id>
       <name>Spray.io repository</name>
       <url>http://repo.spray.io</url>
-    </repository>
-    <repository>
-      <id>spray.io.nightlies</id>
-      <name>Spray.io Nightly Repository</name>
-      <url>http://nightlies.spray.io/</url>
+      <releases><enabled>true</enabled></releases>
+      <snapshots><enabled>false</enabled></snapshots>
     </repository>
     <repository>
       <id>extendedmind-releases</id>
       <name>Extended Mind Releases</name>
       <url>https://nexus.extendedmind.org/repository/releases</url>
+      <releases><enabled>true</enabled></releases>
+      <snapshots><enabled>false</enabled></snapshots>
     </repository>
     <repository>
       <id>extendedmind-snapshots</id>
       <name>Extended Mind Snapshots</name>
       <url>https://nexus.extendedmind.org/repository/snapshots</url>
+      <releases><enabled>false</enabled></releases>
+      <snapshots><enabled>true</enabled></snapshots>
     </repository>
   </repositories>
   <pluginRepositories>
@@ -102,11 +90,15 @@
       <name>JBoss - Third Party Repository</name>
       <url>https://repository.jboss.org/nexus/content/repositories/thirdparty-releases</url>
       <layout>default</layout>
+      <releases><enabled>true</enabled></releases>
+      <snapshots><enabled>false</enabled></snapshots>
     </pluginRepository>
     <pluginRepository>
       <id>extendedmind-releases</id>
       <name>Extended Mind Releases</name>
       <url>https://nexus.extendedmind.org/repository/releases</url>
+      <releases><enabled>true</enabled></releases>
+      <snapshots><enabled>false</enabled></snapshots>
     </pluginRepository>
   </pluginRepositories>
   <dependencyManagement>
