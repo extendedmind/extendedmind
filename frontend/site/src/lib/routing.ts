@@ -6,9 +6,10 @@ export class Routing {
 
   constructor(private backendClient: Utils,
               private backendInfo: Info,
+              private headersPath: string,
               private ownersPath: string) {
     // SETUP router
-    this.router.get("/", this.headers);
+    this.router.get("/" + headersPath, this.headers);
     // Short id starts with a number, then follows whatever
     this.router.get("/:sid(\\d\\w*)", this.short);
     this.router.get("/" + ownersPath + "/:handle", this.owner);

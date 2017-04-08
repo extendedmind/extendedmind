@@ -113,7 +113,7 @@ export class Server {
 
     // setup routing
 
-    const routing = new Routing(this.utils, backendInfo, this.ownersPath);
+    const routing = new Routing(this.utils, backendInfo, this.headersPath, this.ownersPath);
 
     // setup context for all routes
 
