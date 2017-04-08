@@ -1,6 +1,7 @@
 {% extends "base.nunjucks" %}
 {% block title %}{{ note.title }} | {{ owner.displayName }}{% endblock %}
 {% block description %}{{ note.title }} | {{ owner.displayName }}{% endblock %}
+{% block ogdescription %}{{ note.title }} | {{ owner.displayName }}{% endblock %}
 {% block ogtitle %}{{ note.title }} | {{ owner.displayName }}{% endblock %}
 {% block ogtype %}{{ super() }}{% endblock %}
 {% block stylesheets %}{{ super() }}{% endblock %}

@@ -1,6 +1,7 @@
 {% extends "base.nunjucks" %}
 {% block title %}{{ super() }}{% endblock %}
 {% block description %}{{ super() }}{% endblock %}
+{% block ogdescription %}{{ super() }}{% endblock %}
 {% block ogtitle %}{{ super() }}{% endblock %}
 {% block ogtype %}{{ super() }}{% endblock %}
 {% block stylesheets %}{{ super() }}{% endblock %}

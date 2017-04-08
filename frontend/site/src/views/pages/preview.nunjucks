@@ -2,6 +2,7 @@
 {% set pageName = 'preview' %}
 {% block title %}{{ super() }} &ndash; preview{% endblock %}
 {% block description %}{{ super() }} &ndash; preview{% endblock %}
+{% block ogdescription %}{{ super() }} &ndash; preview{% endblock %}
 {% block ogtitle %}{{ super() }} preview{% endblock %}
 {% block ogtype %}{{ super() }}{% endblock %}
 {% block stylesheets %}{{ super() }}{% endblock %}
