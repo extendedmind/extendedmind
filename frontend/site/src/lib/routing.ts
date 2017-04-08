@@ -7,7 +7,8 @@ export class Routing {
   constructor(private backendClient: Utils,
               private backendInfo: Info,
               private headersPath: string,
-              private ownersPath: string) {
+              private ownersPath: string,
+              private extraRoutingModule: string) {
     // SETUP router
     this.router.get("/" + headersPath, this.headers);
     // Short id starts with a number, then follows whatever
@@ -15,6 +16,9 @@ export class Routing {
     this.router.get("/" + ownersPath + "/:handle", this.owner);
     this.router.get("/" + ownersPath + "/:handle/:path", this.note);
     this.router.get("/preview/:ownerUUID/:itemUUID/:previewCode", this.preview);
+    if (extraRoutingModule){
+      require(extraRoutingModule).default(this.router);
+    }
   }
 
   // PUBLIC

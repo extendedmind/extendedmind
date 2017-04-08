@@ -16,6 +16,7 @@ export interface Config {
   urlOrigin: string;
   ownersPath?: string;
   headersPath?: string;
+  extraRoutingModule?: string;
   syncTimeTreshold?: number;
   generatedFilesPath?: string;
 }
@@ -35,6 +36,7 @@ export class Server {
   private headersPath: string = "";
   // Save generated images to public path by default
   private generatedFilesPath: string = path.join(__dirname, "../public/generated");
+  private extraRoutingModule: string;
 
   constructor(config: Config) {
     this.port = config.port;
@@ -44,6 +46,7 @@ export class Server {
     if (config.ownersPath) this.ownersPath = config.ownersPath;
     if (config.headersPath) this.headersPath = config.headersPath;
     if (config.generatedFilesPath) this.generatedFilesPath = config.generatedFilesPath;
+    if (config.extraRoutingModule) this.extraRoutingModule = config.extraRoutingModule;
 
     this.app = new Koa();
     this.router = new Router();
@@ -113,7 +116,7 @@ export class Server {
 
     // setup routing
 
-    const routing = new Routing(this.utils, backendInfo, this.headersPath, this.ownersPath);
+    const routing = new Routing(this.utils, backendInfo, this.headersPath, this.ownersPath, this.extraRoutingModule);
 
     // setup context for all routes
 
