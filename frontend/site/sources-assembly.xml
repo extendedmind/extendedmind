@@ -9,7 +9,9 @@ xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assemb
   <fileSets>
     <fileSet>
       <directory>${project.basedir}/templates</directory>
-      <useDefaultExcludes>true</useDefaultExcludes>
+      <excludes>
+        <exclude>package.json</exclude>
+      </excludes>
     </fileSet>
     <fileSet>
       <directory>${project.basedir}/docker</directory>

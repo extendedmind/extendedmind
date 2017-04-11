@@ -9,6 +9,7 @@ import { Routing } from "./routing";
 import { Visualization } from "./visualization";
 
 export interface Config {
+  version: string;
   port: number;
   externalStatic: boolean;
   debug: boolean;
@@ -23,6 +24,7 @@ export interface Config {
 
 export class Server {
 
+  private version: string;
   private port: number;
   private debug: boolean;
   private externalStatic: boolean;
@@ -39,6 +41,7 @@ export class Server {
   private extraRoutingModule: string;
 
   constructor(config: Config) {
+    this.version = config.version;
     this.port = config.port;
     this.debug = config.debug;
     this.externalStatic = config.externalStatic;
@@ -109,7 +112,7 @@ export class Server {
       if (ui.powered === false) powered = false;
     }
     const render = new Render("nunjucks", backendInfo.commonCollective[1],
-                              viewsPath, this.debug, powered, this.urlOrigin,
+                              viewsPath, this.version, this.debug, powered, this.urlOrigin,
                               this.ownersPath, this.headersPath);
 
     const visualization = new Visualization(this.generatedFilesPath);

@@ -19,8 +19,21 @@
   {% endif %}
 
   {% block stylesheets %}
-  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:bold,regular" rel="stylesheet">
-  <link rel="stylesheet" href="/static/css/site.css" >
+  <link rel="stylesheet" href="/static/fonts/{{ version }}/fonts.css"/>
+  <link rel="stylesheet" href="/static/css/{{ version }}/site.css" >
+  <style>
+  @font-face {
+    font-family: 'icomoon';
+    src:  url('/static/fonts/{{ version }}/icomoon.eot?19wtd8');
+    src:  url('/static/fonts/{{ version }}/icomoon.eot?19wtd8#iefix') format('embedded-opentype'),
+      url('/static/fonts/{{ version }}/icomoon.woff2?19wtd8') format('woff2'),
+      url('/static/fonts/{{ version }}/icomoon.ttf?19wtd8') format('truetype'),
+      url('/static//fonts/{{ version }}/icomoon.woff?19wtd8') format('woff'),
+      url('/static/fonts/{{ version }}/icomoon.svg?19wtd8#icomoon') format('svg');
+    font-weight: normal;
+    font-style: normal;
+  }
+  </style>
   {% endblock %}
 
 </head>
@@ -38,7 +51,7 @@
     {% endif %}
   </footer>
   {% block scripts %}
-  <script src="/static/js/jquery.min.js"></script>
+  <script src="/static/js/{{ version }}/jquery.min.js"></script>
   {% endblock %}
 </body>
 </html>

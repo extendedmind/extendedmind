@@ -126,7 +126,7 @@
         <artifactId>maven-resources-plugin</artifactId>
         <executions>
           <execution>
-            <id>copy-templates</id>
+            <id>copy-docker-templates</id>
             <phase>generate-resources</phase>
             <goals>
               <goal>copy-resources</goal>
@@ -137,6 +137,29 @@
               <resources>
                 <resource>
                   <directory>${basedir}/templates</directory>
+                  <includes>
+                    <include>*.conf</include>
+                  </includes>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-node-templates</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.basedir}/src</outputDirectory>
+              <overwrite>true</overwrite>
+              <resources>
+                <resource>
+                  <directory>${basedir}/templates</directory>
+                  <includes>
+                    <include>*.json</include>
+                  </includes>
                   <filtering>true</filtering>
                 </resource>
               </resources>
@@ -149,14 +172,11 @@
               <goal>copy-resources</goal>
             </goals>
             <configuration>
-              <outputDirectory>${project.basedir}/src/public/static</outputDirectory>
+              <outputDirectory>${project.basedir}/src/public/static/fonts/${project.version}</outputDirectory>
               <overwrite>true</overwrite>
               <resources>
                 <resource>
-                  <directory>${project.build.directory}/unpacked-app/static/${project.version}</directory>
-                  <includes>
-                    <include>fonts/*</include>
-                  </includes>
+                  <directory>${project.build.directory}/unpacked-app/static/${project.version}/fonts</directory>
                 </resource>
               </resources>
             </configuration>
@@ -246,6 +266,13 @@
               <directory>${basedir}/docker</directory>
               <includes>
                 <include>nginx.extendedmind.conf</include>
+              </includes>
+            </fileset>
+            <fileset>
+              <directory>${basedir}/src</directory>
+              <includes>
+                <include>package.json</include>
+                <include>config-devel.json</include>
               </includes>
             </fileset>
             <fileset>
