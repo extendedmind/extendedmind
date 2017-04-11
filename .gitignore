@@ -1,3 +1,6 @@
+# Ignore git
+.git/
+
 # Ignore Eclipse files
 .project
 .classpath
@@ -31,7 +34,21 @@ logs/
 # Ignore OSX DS store
 .DS_Store
 
-# Ignore Cordova generated directories
+# Ignore frontend/app
+frontend/app/src/static/fonts/fonts.css
+frontend/app/src/static/fonts/Source+*
+frontend/app/src/static/css/
+frontend/app/src/test/json/
+
+# Ignore frontend/site
+frontend/site/src/package.json
+frontend/site/src/config-devel.json
+frontend/site/src/typings/
+frontend/site/src/public/
+frontend/site/docker/nginx.extendedmind.conf
+frontend/site/docker/nginx.extendedmind.conf
+
+# Ignore frontend/cordova generated directories
 frontend/cordova/src/platforms/android
 frontend/cordova/src/platforms/ios/.gitignore
 frontend/cordova/src/platforms/ios/build
