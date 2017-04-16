@@ -64,8 +64,8 @@
     </profile>
   </profiles>
 
-<build>
-  <resources>
+  <build>
+    <resources>
       <resource>
         <directory>templates</directory>
         <includes>
@@ -303,6 +303,25 @@
           </filesets>
         </configuration>
       </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <appendAssemblyId>true</appendAssemblyId>
+          <finalName>${project.artifactId}-${project.version}</finalName>
+          <descriptors>
+            <descriptor>sources-assembly.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
     <pluginManagement>
       <plugins>
@@ -355,36 +374,36 @@
                   </action>
                 </pluginExecution>
                 <pluginExecution>
-                 <pluginExecutionFilter>
-                  <groupId>
-                   org.codehaus.mojo
-                 </groupId>
-                 <artifactId>
-                   exec-maven-plugin
-                 </artifactId>
-                 <versionRange>
-                   [1.2.1.jbossorg-3,)
-                 </versionRange>
-                 <goals>
-                   <goal>exec</goal>
-                 </goals>
-               </pluginExecutionFilter>
-               <action>
-                <ignore></ignore>
-              </action>
-            </pluginExecution>
-          </pluginExecutions>
-        </lifecycleMappingMetadata>
-      </configuration>
-    </plugin>
-  </plugins>
-</pluginManagement>
-<extensions>
-  <extension>
-    <groupId>com.github.shyiko.servers-maven-extension</groupId>
-    <artifactId>servers-maven-extension</artifactId>
-    <version>1.2.0</version>
-  </extension>
-</extensions>
-</build>
+                  <pluginExecutionFilter>
+                    <groupId>
+                      org.codehaus.mojo
+                    </groupId>
+                    <artifactId>
+                      exec-maven-plugin
+                    </artifactId>
+                    <versionRange>
+                      [1.2.1.jbossorg-3,)
+                    </versionRange>
+                    <goals>
+                      <goal>exec</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore></ignore>
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    <extensions>
+      <extension>
+        <groupId>com.github.shyiko.servers-maven-extension</groupId>
+        <artifactId>servers-maven-extension</artifactId>
+        <version>1.2.0</version>
+      </extension>
+    </extensions>
+  </build>
 </project>

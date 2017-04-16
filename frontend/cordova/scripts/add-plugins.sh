@@ -15,18 +15,18 @@ else
   export PATH=$PATH:./node/
 
   ./node/node ./node_modules/.bin/cordova plugin add https://github.com/extendedmind/ionic-plugin-keyboard
-  ./node/node ./node_modules/.bin/cordova plugin add cordova-plugin-vibration@2.1.2
-  ./node/node ./node_modules/.bin/cordova plugin add cordova-plugin-media@2.4.0
-  ./node/node ./node_modules/.bin/cordova plugin add cordova-plugin-splashscreen@4.0.0
+  ./node/node ./node_modules/.bin/cordova plugin add cordova-plugin-vibration@2.1.4
+  ./node/node ./node_modules/.bin/cordova plugin add cordova-plugin-media@3.0.0
+  ./node/node ./node_modules/.bin/cordova plugin add cordova-plugin-splashscreen@4.0.2
   ./node/node ./node_modules/.bin/cordova plugin add https://github.com/extendedmind/Calendar-PhoneGap-Plugin.git
   ./node/node ./node_modules/.bin/cordova plugin add https://github.com/extendedmind/cordova-plugin-local-notifications.git
   ./node/node ./node_modules/.bin/cordova plugin add https://github.com/extendedmind/KeepScreenOnPlugin.git
   ./node/node ./node_modules/.bin/cordova plugin add https://github.com/extendedmind/cordova-webintent.git
   ./node/node ./node_modules/.bin/cordova plugin add https://github.com/extendedmind/phonegap-backbutton-plugin.git
-  ./node/node ./node_modules/.bin/cordova plugin add cordova-plugin-device@1.1.3
-  ./node/node ./node_modules/.bin/cordova plugin add cordova-plugin-whitelist@1.3.0
-  ./node/node ./node_modules/.bin/cordova plugin add cordova-plugin-inappbrowser@1.5.0
-  ./node/node ./node_modules/.bin/cordova plugin add cordova-plugin-globalization@1.0.4
+  ./node/node ./node_modules/.bin/cordova plugin add cordova-plugin-device@1.1.5
+  ./node/node ./node_modules/.bin/cordova plugin add cordova-plugin-whitelist@1.3.2
+  ./node/node ./node_modules/.bin/cordova plugin add cordova-plugin-inappbrowser@1.7.0
+  ./node/node ./node_modules/.bin/cordova plugin add cordova-plugin-globalization@1.0.6
   ./node/node ./node_modules/.bin/cordova plugin add https://github.com/extendedmind/cordova-plugin-nsuserdefaults-for-app-groups
 
   if [ -d "platforms/android" ]
