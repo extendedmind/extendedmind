@@ -7,4 +7,4 @@
 cd src
 
 # run cordova command locally
-./node/node ./node_modules/.bin/cordova compile android --release
+./node/node ./node_modules/.bin/cordova compile android --release --no-telemetry

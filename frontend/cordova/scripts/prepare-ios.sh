@@ -14,7 +14,7 @@ else
   fi
 
   # add iOS platform
-  ./node/node ./node_modules/.bin/cordova platform add ios@4.2.1
+  ./node/node ./node_modules/.bin/cordova platform add ios@4.3.1
 
   # copy edited iOS sources
   cp -Rf assets/build/ios/*.m platforms/ios/extmd/Classes/
@@ -23,9 +23,9 @@ else
   cp -Rf assets/build/ios/*.plist platforms/ios/extmd/
 
   # clear generated Cordova icons
-  rm platforms/ios/extmd/Images.xcassets/AppIcon.appiconset/*.png
+  rm platforms/ios/extendedmind.org/Images.xcassets/AppIcon.appiconset/*.png
 
   # copy icons to Cordova iOS directories and filenames
-  cp -Rf assets/icons/ios/*.png platforms/ios/extmd/Images.xcassets/AppIcon.appiconset/
+  cp -Rf assets/icons/ios/*.png platforms/ios/extendedmind.org/Images.xcassets/AppIcon.appiconset/
 
 fi

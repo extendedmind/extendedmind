@@ -180,7 +180,7 @@
             <configuration>
               <skip>${skipAndroid}</skip>
               <executable>sh</executable>
-              <commandlineArgs>prepare-android.sh</commandlineArgs>
+              <commandlineArgs>scripts/prepare-android.sh</commandlineArgs>
               <background>false</background>
             </configuration>
           </execution>
@@ -193,7 +193,7 @@
             <configuration>
               <skip>${skipIos}</skip>
               <executable>sh</executable>
-              <commandlineArgs>prepare-ios.sh</commandlineArgs>
+              <commandlineArgs>scripts/prepare-ios.sh</commandlineArgs>
               <background>false</background>
             </configuration>
           </execution>
@@ -205,7 +205,7 @@
             </goals>
             <configuration>
               <executable>sh</executable>
-              <commandlineArgs>add-plugins.sh</commandlineArgs>
+              <commandlineArgs>scripts/add-plugins.sh</commandlineArgs>
               <background>false</background>
             </configuration>
           </execution>
@@ -218,7 +218,7 @@
             <configuration>
               <skip>${skipAndroid}</skip>
               <executable>sh</executable>
-              <commandlineArgs>build-android.sh</commandlineArgs>
+              <commandlineArgs>scripts/build-android.sh</commandlineArgs>
               <background>false</background>
             </configuration>
           </execution>
@@ -231,7 +231,7 @@
             <configuration>
               <skip>${skipIos}</skip>
               <executable>sh</executable>
-              <commandlineArgs>build-ios.sh ${settings.servers.ios-developer-certificate.username} ${settings.servers.ios-developer-certificate.passphrase}</commandlineArgs>
+              <commandlineArgs>scripts/build-ios.sh</commandlineArgs>
               <background>false</background>
             </configuration>
           </execution>
@@ -252,21 +252,7 @@
               <directory>${basedir}/src/node_modules</directory>
             </fileset>
             <fileset>
-              <directory>${basedir}/src/platforms/ios</directory>
-              <excludes>
-                <exclude>extmd/extmd.entitlements</exclude>
-                <exclude>extmd-share/**</exclude>
-                <exclude>extmd.xcodeproj/project.pbxproj</exclude>
-              </excludes>
-            </fileset>
-            <fileset>
-              <directory>${basedir}/src/platforms/android</directory>
-            </fileset>
-            <fileset>
               <directory>${basedir}/src/platforms</directory>
-              <includes>
-                <include>*.json</include>
-              </includes>
             </fileset>
             <fileset>
               <directory>${basedir}/src/plugins</directory>

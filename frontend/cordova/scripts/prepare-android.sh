@@ -11,7 +11,7 @@ else
   cd src
 
   # add android platform
-  ./node/node ./node_modules/.bin/cordova platform add https://github.com/apache/cordova-android#23fd0982b0faa6b7e169c2946eab07930f1f4d16
+  ./node/node ./node_modules/.bin/cordova platform add android@6.2.1
 
   # copy java sources
   if [ -d "platforms/android/src/org/extendedmind/nightly" ]
@@ -40,9 +40,6 @@ else
   mkdir platforms/android/res/drawable
   cp -f assets/icons/android/icon-96-xhdpi.png platforms/android/res/drawable/icon.png
   cp -f assets/screens/android/launch-xhdpi.png platforms/android/res/drawable/splash.9.png
-
-  # Copy reminder icon
-  cp -f assets/icons/android/ic_popup_reminder.png platforms/android/res/drawable/
 
   # copy build properties
   cp -f assets/build/android/build-extras.gradle platforms/android/

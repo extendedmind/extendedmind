@@ -29,13 +29,6 @@ else
   ./node/node ./node_modules/.bin/cordova plugin add cordova-plugin-globalization@1.0.4
   ./node/node ./node_modules/.bin/cordova plugin add https://github.com/extendedmind/cordova-plugin-nsuserdefaults-for-app-groups
 
-  if [ -d "platforms/ios-tmp" ]
-  then
-    # copy sourced iOS code back now. If this is done before adding plugins, extmd-share gets plugins as well
-    cp -R platforms/ios-tmp/* platforms/ios
-    rm -rf platforms/ios-tmp
-  fi
-
   if [ -d "platforms/android" ]
   then
     # copy AndroidManifest.xml
