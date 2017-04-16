@@ -1,12 +1,12 @@
 {
   "name": "extended-mind",
   "version": "${project.version.node}",
-  "description": "minimal task and note organizer",
+  "description": "extendedmind.org",
   "author": {
-    "name": "Extended Mind Technologies",
-    "email": "info@ext.md"
+    "name": "Timo Tiuraniemi",
+    "email": "timo.tiuraniemi@iki.fi"
   },
   "main": "main.js",
   "license": "Apache-2.0",
-  "homepage": "https://ext.md"
+  "homepage": "https://extendedmind.org"
 }

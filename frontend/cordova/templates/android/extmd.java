@@ -17,7 +17,7 @@
        under the License.
  */
 
-package ${cordova.bundleId};
+package ${extendedmind.app.package};
 
 import android.os.Bundle;
 import org.apache.cordova.*;

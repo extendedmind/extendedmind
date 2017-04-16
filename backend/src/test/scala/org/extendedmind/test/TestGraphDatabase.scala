@@ -100,7 +100,7 @@ trait TestGraphDatabase extends GraphDatabase {
       Some("Test Company"), Some("tc"), Some("Test _underlined_content_ for the collective"), Some("md"),
       Some(OwnerPreferences(None, Some("{\"useCC\":true}"), Some("{\"sharing\":true}"))))
 
-    // Info node created after common collective "extended mind" but should still be part of it,
+    // Info node created after common collective "test data" but should still be part of it,
     // Info does not have email verified
     val infoNode = createUser(User(INFO_EMAIL, None, None, None, None, None, None), INFO_PASSWORD, None).right.get
 

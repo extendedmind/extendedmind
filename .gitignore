@@ -49,28 +49,7 @@ frontend/site/docker/nginx.extendedmind.conf
 frontend/site/docker/nginx.extendedmind.conf
 
 # Ignore frontend/cordova generated directories
-frontend/cordova/src/platforms/android
-frontend/cordova/src/platforms/ios/.gitignore
-frontend/cordova/src/platforms/ios/build
-frontend/cordova/src/platforms/ios/cordova
-frontend/cordova/src/platforms/ios/CordovaLib
-frontend/cordova/src/platforms/ios/extmd/Classes
-frontend/cordova/src/platforms/ios/extmd/Plugins
-frontend/cordova/src/platforms/ios/extmd/Resources
-frontend/cordova/src/platforms/ios/extmd/config.xml
-frontend/cordova/src/platforms/ios/extmd/extmd-Info.plist
-frontend/cordova/src/platforms/ios/extmd/extmd-Prefix.pch
-frontend/cordova/src/platforms/ios/extmd/main.m
-frontend/cordova/src/platforms/ios/extmd/.gitignore
-frontend/cordova/src/platforms/ios/platform_www
-frontend/cordova/src/platforms/ios/www
-frontend/cordova/src/platforms/ios/extmd.xcodeproj/project.xcworkspace
-frontend/cordova/src/platforms/ios/extmd.xcodeproj/xcuserdata
-frontend/cordova/src/platforms/ios/extmd/Bridging-Header.h
-frontend/cordova/src/platforms/ios/extmd/Images.xcassets/
-frontend/cordova/src/platforms/ios/ios.json
-frontend/cordova/src/platforms/ios/frameworks.json
-frontend/cordova/src/platforms/platforms.json
+frontend/cordova/src/platforms
 frontend/cordova/src/plugins
 frontend/cordova/src/assets/fonts
 frontend/cordova/src/assets/build

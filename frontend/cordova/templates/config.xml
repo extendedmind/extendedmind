@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="${cordova.bundleId}" version="${project.version.trimmed}" xmlns="http://www.w3.org/ns/widgets">
-    <name>extmd</name>
+<widget id="${extendedmind.app.id}" version="${project.version.trimmed}" xmlns="http://www.w3.org/ns/widgets">
+    <name>${extendedmind.app.id}</name>
     <description>
-        Mobile application for Extended Mind.
+      ${extendedmind.app.name}
     </description>
-    <author email="timo.tiuraniemi@iki.fi" href="http://www.extendedmind.org">
-        Extended Mind Team
+    <author email="timo.tiuraniemi@iki.fi" href="https://extendedmind.org">
+      Extended Mind Community
     </author>
 
     <feature name="Keyboard">

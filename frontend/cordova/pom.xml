@@ -35,12 +35,37 @@
   <properties>
     <root.project.basedir>${project.parent.parent.basedir}</root.project.basedir>
     <encoding>UTF-8</encoding>
-    <cordova.bundleId>org.extendedmind</cordova.bundleId>
-    <cordova.urlPrefix>https://ext.md</cordova.urlPrefix>
+    <skipAndroid>true</skipAndroid>
+    <skipIos>true</skipIos>
   </properties>
 
-  <build>
-    <resources>
+  <profiles>
+    <profile>
+      <id>cordova-ios</id>
+      <activation>
+        <file>
+          <exists>/usr/bin/xcode-select</exists>
+        </file>
+      </activation>
+      <properties>
+        <skipIos>false</skipIos>
+      </properties>
+    </profile>
+    <profile>
+      <id>cordova-android</id>
+      <activation>
+        <property>
+          <name>env.ANDROID_HOME</name>
+        </property>
+      </activation>
+      <properties>
+        <skipAndroid>false</skipAndroid>
+      </properties>
+    </profile>
+  </profiles>
+
+<build>
+  <resources>
       <resource>
         <directory>templates</directory>
         <includes>
@@ -193,7 +218,7 @@
             <configuration>
               <skip>${skipIos}</skip>
               <executable>sh</executable>
-              <commandlineArgs>scripts/prepare-ios.sh</commandlineArgs>
+              <commandlineArgs>scripts/prepare-ios.sh ${extendedmind.app.id}</commandlineArgs>
               <background>false</background>
             </configuration>
           </execution>

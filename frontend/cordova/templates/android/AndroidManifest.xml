@@ -1,14 +1,15 @@
 <?xml version='1.0' encoding='utf-8'?>
-<manifest android:hardwareAccelerated="true" android:versionCode="${buildNumber}" android:versionName="${project.version.trimmed}" android:windowSoftInputMode="adjustResize" package="${cordova.bundleId}" xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest android:hardwareAccelerated="true" android:versionCode="${buildNumber}" android:versionName="${project.version.trimmed}" android:windowSoftInputMode="adjustResize" package="${extendedmind.app.package}" xmlns:android="http://schemas.android.com/apk/res/android">
     <supports-screens android:anyDensity="true" android:largeScreens="true" android:normalScreens="true" android:resizeable="true" android:smallScreens="true" android:xlargeScreens="true" />
     <uses-feature android:name="android.hardware.screen.portrait"/>
     <uses-permission android:name="android.permission.READ_CALENDAR"/>
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <application android:hardwareAccelerated="true" android:icon="@drawable/icon" android:label="extended mind">
-        <activity android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale" android:name="extmd" android:label="extended mind" android:launchMode="singleInstance" android:screenOrientation="userPortrait" android:theme="@android:style/Theme.Black.NoTitleBar">
-            <intent-filter android:label="extended mind">
+    <application android:hardwareAccelerated="true" android:icon="@drawable/icon"
+        android:label="${extendedmind.app.name}">
+        <activity android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale" android:name="${extendedmind.app.name}" android:label="${extendedmind.app.name}" android:launchMode="singleInstance" android:screenOrientation="userPortrait" android:theme="@android:style/Theme.Black.NoTitleBar">
+            <intent-filter android:label="${extendedmind.app.name}">
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>

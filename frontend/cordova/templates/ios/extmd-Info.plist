@@ -5,7 +5,7 @@
     <key>CFBundleDevelopmentRegion</key>
     <string>English</string>
     <key>CFBundleDisplayName</key>
-    <string>extended mind</string>
+    <string>${extendedmind.app.name}</string>
     <key>CFBundleExecutable</key>
     <string>${EXECUTABLE_NAME}</string>
     <key>CFBundleIcons</key>
@@ -134,7 +134,7 @@
     </array>
 
     <key>CFBundleIdentifier</key>
-    <string>${cordova.bundleId}</string>
+    <string>${extendedmind.app.id}</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>MinimumOSVersion</key>

@@ -38,7 +38,7 @@
     <!-- 0 is the default build number that is used when not running a build from the root, using buildnumber-maven-plugin below. -->
     <buildNumber>0</buildNumber>
     <!-- Incrementing build number does not happen by default, only when there is a new version set with mvn versions:set -DnewVersion=X which
-         creates a pom.xml.versionsBackup file which then activates a profile build-number-activation. -->
+      creates a pom.xml.versionsBackup file which then activates a profile build-number-activation. -->
     <buildNumberIncrementSkip>true</buildNumberIncrementSkip>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
@@ -50,9 +50,14 @@
     <phantomjs.version>2.1.1</phantomjs.version>
     <jetty.version>9.0.4.v20130625</jetty.version>
     <docker.skip>true</docker.skip>
-    <!-- Compilation default properties -->
+    <!-- Don't collect analytics by default -->
     <extendedmind.analytics>false</extendedmind.analytics>
-    <extendedmind.name>test data</extendedmind.name>
+    <extendedmind.app.package>org.extendedmind</extendedmind.app.package>
+    <extendedmind.app.id>org.extendedmind</extendedmind.app.id>
+    <extendedmind.app.name>extendedmind.org</extendedmind.app.name>
+    <!-- If compiling the mobile or desktop app, these settings need to be specified:
+      extendedmind.host: url of the root for the backend, e.g. https://example.com
+    -->
   </properties>
   <repositories>
     <repository>
