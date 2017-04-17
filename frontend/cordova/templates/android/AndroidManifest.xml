@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <application android:hardwareAccelerated="true" android:icon="@drawable/icon"
         android:label="${extendedmind.app.name}">
-        <activity android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale" android:name="${extendedmind.app.name}" android:label="${extendedmind.app.name}" android:launchMode="singleInstance" android:screenOrientation="userPortrait" android:theme="@android:style/Theme.Black.NoTitleBar">
+        <activity android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale" android:name="${extendedmind.app.id}" android:label="${extendedmind.app.name}" android:launchMode="singleInstance" android:screenOrientation="userPortrait" android:theme="@android:style/Theme.Black.NoTitleBar">
             <intent-filter android:label="${extendedmind.app.name}">
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
