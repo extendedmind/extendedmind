@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="${extendedmind.app.id}" version="${project.version.trimmed}" xmlns="http://www.w3.org/ns/widgets">
+<widget id="${extendedmind.app.package}" version="${project.version.trimmed}" xmlns="http://www.w3.org/ns/widgets">
     <name>${extendedmind.app.id}</name>
     <description>
       ${extendedmind.app.name}
