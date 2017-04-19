@@ -136,6 +136,7 @@ trait APIv2 extends HttpService {
   // INBOX
 
   val v2PostInbox = post & path("v2" / "inbox" / """^[0-9a-z]{8,32}""".r )
+  val legacyPostInbox = post & path("inbox" / """^[0-9a-z]{8,32}""".r )
 
   // PUBLIC
 

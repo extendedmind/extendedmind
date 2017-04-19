@@ -156,6 +156,18 @@ trait ItemService extends ServiceBase {
           }
         }
       } ~
+      legacyPostInbox { inboxId =>
+        entity(as[FormData]) { formData =>
+          complete {
+            Future[SetResult] {
+              itemActions.putNewItemToInbox(inboxId, formData.fields) match {
+                case Right(sr) => processResult(sr)
+                case Left(e) => processErrors(e, useNotAcceptable=true)
+              }
+            }
+          }
+        }
+      } ~
       v2GetPublicStats { url =>
         parameters('modified.as[Long].?) { modified =>
           complete {
