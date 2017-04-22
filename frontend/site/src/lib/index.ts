@@ -13,9 +13,9 @@ if (process.argv.length > 2) {
   if (process.argv.length > 4){
     config.generatedFilesPath = process.argv[4];
   }
-  if (process.env.EXTENDEDMIND_URL_ORIGIN){
-    console.info("setting url origin to: " + process.env.EXTENDEDMIND_URL_ORIGIN);
-    config.urlOrigin = process.env.EXTENDEDMIND_URL_ORIGIN;
+  if (process.env.EXTENDEDMIND_URL){
+    console.info("setting urlOrigin to: " + process.env.EXTENDEDMIND_URL);
+    config.urlOrigin = process.env.EXTENDEDMIND_URL;
   }
 }else {
   console.error("no configuration file provided, exiting...");

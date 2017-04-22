@@ -362,7 +362,7 @@
                   <link>backend:backend</link>
                 </links>
                 <env>
-                  <EXTENDEDMIND_URL_ORIGIN>http://localhost:8008</EXTENDEDMIND_URL_ORIGIN>
+                  <EXTENDEDMIND_URL>http://localhost:8008</EXTENDEDMIND_URL>
                 </env>
               </run>
             </image>
