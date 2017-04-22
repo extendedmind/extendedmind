@@ -46,7 +46,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       <id>cordova</id>
       <activation>
         <property>
-          <name>extendedmind.host</name>
+          <name>extendedmind.url</name>
         </property>
       </activation>
       <modules>
@@ -57,7 +57,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       <id>electron</id>
       <activation>
         <property>
-          <name>extendedmind.host</name>
+          <name>extendedmind.url</name>
         </property>
       </activation>
       <modules>

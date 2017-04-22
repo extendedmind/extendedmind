@@ -223,7 +223,6 @@
               <target name="create-docker-dirs">
                 <mkdir dir="target/docker-dirs/backend-emails" />
                 <mkdir dir="target/docker-dirs/backend-backup" />
-                <mkdir dir="target/docker-dirs/site-dynamic" />
                 <mkdir dir="target/docker-dirs/site-dynamic/generated" />
                 <mkdir dir="target/docker-dirs/site-dynamic/files" />
                 <mkdir dir="target/docker-dirs/site-data" />
@@ -357,7 +356,6 @@
                 <volumes>
                   <bind>
                     <volume>${project.build.directory}/docker-dirs/site-dynamic:/app/site-dynamic</volume>
-                    <volume>${project.build.directory}/docker-dirs/site-data:/app/site/public:ro</volume>
                   </bind>
                 </volumes>
                 <links>

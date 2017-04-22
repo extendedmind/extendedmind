@@ -6,7 +6,7 @@ if [ -z "$1" ]
   then
     mvn -o generate-resources
   else
-    mvn -o process-resources -Dextendedmind.host=$1
+    mvn -o process-resources -Dextendedmind.url=$1
 fi
 
 # copy sources to iOS

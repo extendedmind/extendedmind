@@ -56,7 +56,7 @@
     <extendedmind.app.id>org.extendedmind</extendedmind.app.id>
     <extendedmind.app.name>extendedmind.org</extendedmind.app.name>
     <!-- If compiling the mobile or desktop app, these settings need to be specified:
-      extendedmind.host: url of the root for the backend, e.g. https://example.com
+      extendedmind.url: url to the hosted extendedmind.org instance, e.g. https://example.com
     -->
   </properties>
   <repositories>

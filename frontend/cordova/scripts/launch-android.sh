@@ -6,7 +6,7 @@ if [ -z "$2" ]
   then
     mvn install -P !cordova-ios
   else
-    mvn install -P !cordova-ios -Dextendedmind.host=$2
+    mvn install -P !cordova-ios -Dextendedmind.url=$2
 fi
 
 cd src
