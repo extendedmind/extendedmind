@@ -223,9 +223,9 @@
               <target name="create-docker-dirs">
                 <mkdir dir="target/docker-dirs/backend-emails" />
                 <mkdir dir="target/docker-dirs/backend-backup" />
-                <mkdir dir="target/docker-dirs/site-dynamic/generated" />
-                <mkdir dir="target/docker-dirs/site-dynamic/files" />
-                <mkdir dir="target/docker-dirs/site-data" />
+                <mkdir dir="target/docker-dirs/site-public/generated" />
+                <mkdir dir="target/docker-dirs/site-public/files/test" />
+                <mkdir dir="target/docker-dirs/site-public/assets" />
               </target>
             </configuration>
           </execution>
@@ -343,7 +343,7 @@
                 <namingStrategy>alias</namingStrategy>
                 <volumes>
                   <bind>
-                    <volume>${project.build.directory}/docker-dirs/site-data:/app/site-data</volume>
+                    <volume>${project.build.directory}/docker-dirs/site-public/assets:/app/site-public/assets</volume>
                   </bind>
                 </volumes>
               </run>
@@ -355,7 +355,7 @@
                 <namingStrategy>alias</namingStrategy>
                 <volumes>
                   <bind>
-                    <volume>${project.build.directory}/docker-dirs/site-dynamic:/app/site-dynamic</volume>
+                    <volume>${project.build.directory}/docker-dirs/site-public:/app/site-public</volume>
                   </bind>
                 </volumes>
                 <links>
@@ -376,8 +376,7 @@
                     <image>site</image>
                   </from>
                   <bind>
-                    <volume>${project.build.directory}/docker-dirs/site-data:/app/site-data:ro</volume>
-                    <volume>${project.build.directory}/docker-dirs/site-dynamic:/app/site-dynamic:ro</volume>
+                    <volume>${project.build.directory}/docker-dirs/site-public:/app/site-public:ro</volume>
                   </bind>
                 </volumes>
                 <links>
@@ -414,12 +413,11 @@
                 <namingStrategy>alias</namingStrategy>
                 <volumes>
                   <bind>
-                    <volume>${project.build.directory}/docker-dirs/site-data:/app/site-data:ro</volume>
-                    <volume>${project.build.directory}/docker-dirs/site-dynamic:/app/site-dynamic</volume>
+                    <volume>${project.build.directory}/docker-dirs/site-public:/app/site-public</volume>
                   </bind>
                 </volumes>
                 <!-- To test, rsync all static files to /files/test -->
-                <cmd>/app/site-data/static /app/site-dynamic/files/test</cmd>
+                <cmd>/app/site-public/assets/static /app/site-public/files/test</cmd>
               </run>
             </image>
           </images>

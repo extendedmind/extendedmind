@@ -209,7 +209,7 @@
                     <arg>/bin/cp</arg>
                     <arg>-R</arg>
                     <arg>/app/site-static/.</arg>
-                    <arg>/app/site-data</arg>
+                    <arg>/app/site-public/assets</arg>
                   </exec>
                 </entryPoint>
               </build>

@@ -19,6 +19,7 @@
     <fileSet>
       <directory>${project.basedir}/docker</directory>
       <outputDirectory>app/site</outputDirectory>
+      <filtered>true</filtered>
       <includes>
         <include>site-config.json</include>
         <include>site-pm2.json</include>
