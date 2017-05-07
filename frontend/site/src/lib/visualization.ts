@@ -10,8 +10,8 @@ import * as fs from "fs";
 import * as path from "path";
 
 export class Visualization {
-  constructor(private imagePath: string) {
-    console.info("setting image path to: " + this.imagePath);
+  constructor(private imagePath: string, private fontPath: string) {
+    console.info("setting image path to: " + this.imagePath + " and font path to: " + this.fontPath);
   }
 
   public generateImageFromText(printText: string, id: string, modified: number): Promise<string> {
@@ -40,9 +40,6 @@ export class Visualization {
 
           // Set text color
           const txtColor = img.colorAllocate(0, 0, 0);
-
-          // Set full path to font file
-          const fontPath = path.join(__dirname, "../public/static/fonts/Source+Sans+Pro_400_normal.ttf");
 
           // Print words
           const printTextWords = printText.split(" ");
@@ -93,7 +90,7 @@ export class Visualization {
           for (let i = 0; i < printLines.length; i++) {
             // Render string in image
             const yCoord = padding + (i * distanceBetweenLines);
-            img.stringFT(txtColor, fontPath, fontSize, 0, SIZE_PADDING, yCoord, printLines[i]);
+            img.stringFT(txtColor, this.fontPath, fontSize, 0, SIZE_PADDING, yCoord, printLines[i]);
           }
 
           // Write image buffer to disk

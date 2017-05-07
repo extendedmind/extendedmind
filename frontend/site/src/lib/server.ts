@@ -20,6 +20,7 @@ export interface Config {
   extraRoutingModule?: string;
   syncTimeTreshold?: number;
   generatedFilesPath?: string;
+  fontPath?: string;
 }
 
 export class Server {
@@ -38,6 +39,7 @@ export class Server {
   private headersPath: string = "";
   // Save generated images to public path by default
   private generatedFilesPath: string = path.join(__dirname, "../public/generated");
+  private fontPath: string;
   private extraRoutingModule: string;
 
   constructor(config: Config) {
@@ -49,6 +51,13 @@ export class Server {
     if (config.ownersPath) this.ownersPath = config.ownersPath;
     if (config.headersPath) this.headersPath = config.headersPath;
     if (config.generatedFilesPath) this.generatedFilesPath = config.generatedFilesPath;
+    if (config.fontPath) {
+      this.fontPath = config.fontPath;
+    } else {
+      this.fontPath = path.join(__dirname,
+          "../public/static/fonts/" + this.version +
+          "/Source+Sans+Pro_400_normal.ttf");
+    }
     if (config.extraRoutingModule) this.extraRoutingModule = config.extraRoutingModule;
 
     this.app = new Koa();
@@ -115,7 +124,7 @@ export class Server {
                               viewsPath, this.version, this.debug, powered, this.urlOrigin,
                               this.ownersPath, this.headersPath);
 
-    const visualization = new Visualization(this.generatedFilesPath);
+    const visualization = new Visualization(this.generatedFilesPath, this.fontPath);
 
     // setup routing
 

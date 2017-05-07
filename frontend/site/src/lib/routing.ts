@@ -4,11 +4,12 @@ import * as Router from "koa-router";
 export class Routing {
   private router = new Router();
 
-  constructor(private backendClient: Utils,
-              private backendInfo: Info,
-              private headersPath: string,
-              private ownersPath: string,
-              private extraRoutingModule: string) {
+  constructor(
+      private backendClient: Utils,
+      private backendInfo: Info,
+      private headersPath: string,
+      private ownersPath: string,
+      private extraRoutingModule: string) {
     // SETUP router
     this.router.get("/" + headersPath, this.headers);
     // Short id starts with a number, then follows whatever
@@ -29,20 +30,7 @@ export class Routing {
 
   public getHelperMethods(): Array<[string, any]> {
     return [
-      ["getGeneratedUrls", (fileName, urlOrigin) => {
-        let url;
-        let secureUrl;
-        if (fileName) {
-          url = urlOrigin + "/generated/" + fileName;
-          if (urlOrigin.startsWith("https://")) {
-            secureUrl = url;
-          }
-        }
-        return {
-          url,
-          secureUrl,
-        };
-      }],
+      ["getGeneratedUrls", this.getGeneratedUrls],
       ["getSliceOfArrayWithRemaining", (array, queryParamRemaining) => {
         const HEADERS_PER_PAGE: number = 10;
         // How many items were indicated as being not shown previously. If first query, everything is remaining
@@ -175,4 +163,20 @@ export class Routing {
     }
   }
 
+  // HELPER METHODS
+
+  private getGeneratedUrls(fileName: string, urlOrigin: string): any {
+    let url;
+    let secureUrl;
+    if (fileName) {
+      url = urlOrigin + "/generated/" + fileName;
+      if (urlOrigin.startsWith("https://")) {
+        secureUrl = url;
+      }
+    }
+    return {
+      url,
+      secureUrl,
+    };
+  }
 }
