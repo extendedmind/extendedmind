@@ -1,5 +1,5 @@
-import * as Router from "koa-router";
 import { Info, Utils } from "extendedmind-siteutils";
+import * as Router from "koa-router";
 
 export class Routing {
   private router = new Router();
@@ -16,7 +16,7 @@ export class Routing {
     this.router.get("/" + ownersPath + "/:handle", this.owner);
     this.router.get("/" + ownersPath + "/:handle/:path", this.note);
     this.router.get("/preview/:ownerUUID/:itemUUID/:previewCode", this.preview);
-    if (extraRoutingModule){
+    if (extraRoutingModule) {
       require(extraRoutingModule).default(this.router);
     }
   }
@@ -29,7 +29,7 @@ export class Routing {
 
   public getHelperMethods(): Array<[string, any]> {
     return [
-      ["getGeneratedUrls", function(fileName, urlOrigin) {
+      ["getGeneratedUrls", (fileName, urlOrigin) => {
         let url;
         let secureUrl;
         if (fileName) {
@@ -39,11 +39,11 @@ export class Routing {
           }
         }
         return {
-          url: url,
-          secureUrl: secureUrl,
+          url,
+          secureUrl,
         };
       }],
-      ["getSliceOfArrayWithRemaining", function(array, queryParamRemaining): any {
+      ["getSliceOfArrayWithRemaining", (array, queryParamRemaining) => {
         const HEADERS_PER_PAGE: number = 10;
         // How many items were indicated as being not shown previously. If first query, everything is remaining
         const previousRemaining: number = queryParamRemaining === undefined ? array.length : queryParamRemaining;
@@ -54,12 +54,12 @@ export class Routing {
         const remaining: number = array.length - (firstHeaderIndex + HEADERS_PER_PAGE) < 0
           ? 0 : array.length - (firstHeaderIndex + HEADERS_PER_PAGE);
         return {
-          arraySlice: arraySlice,
-          remaining: remaining,
+          arraySlice,
+          remaining,
         };
       }],
     ];
-  };
+  }
 
   // ROUTES
 
@@ -67,8 +67,8 @@ export class Routing {
     console.info("GET ", ctx.path);
     const publicHeaders = await ctx.state.backendClient.getPublicHeaders();
     const headers = publicHeaders.getNotes([{type: "blacklisted"}]);
-    let arrayInfo = ctx.state.getSliceOfArrayWithRemaining(headers, ctx.query.remaining);
-    let renderContext: any = {
+    const arrayInfo = ctx.state.getSliceOfArrayWithRemaining(headers, ctx.query.remaining);
+    const renderContext: any = {
       headers: arrayInfo.arraySlice,
       remaining: arrayInfo.remaining,
     };
@@ -92,13 +92,13 @@ export class Routing {
     console.info("GET ", ctx.path);
     const publicItems = await ctx.state.backendClient.getPublicItems(ctx.params.handle);
     const owner = publicItems.getOwner();
-    let renderContext: any = {
+    const renderContext: any = {
       owner: ctx.state.render.processOwner(owner),
       handle: ctx.params.handle,
     };
     if (!renderContext.owner.blacklisted) {
-      const allNotes = publicItems.getNotes().map(note => ctx.state.render.processNote(note));
-      let arrayInfo = ctx.state.getSliceOfArrayWithRemaining(allNotes, ctx.query.remaining);
+      const allNotes = publicItems.getNotes().map((note) => ctx.state.render.processNote(note));
+      const arrayInfo = ctx.state.getSliceOfArrayWithRemaining(allNotes, ctx.query.remaining);
       renderContext.notes = arrayInfo.arraySlice;
       renderContext.remaining = arrayInfo.remaining;
 
@@ -113,8 +113,8 @@ export class Routing {
           imageUrl = generatedUrls.url;
           secureImageUrl = generatedUrls.secureUrl;
           publicItems.setOwnerProcessed({
-            imageUrl: imageUrl,
-            secureImageUrl: secureImageUrl,
+            imageUrl,
+            secureImageUrl,
           });
         }else {
           imageUrl = owner.processed.data.imageUrl;
@@ -135,8 +135,8 @@ export class Routing {
     const note = publicItems.getNote(ctx.params.path);
     const owner = publicItems.getOwner();
     if (note && !owner.blacklisted) {
-      let renderContext: any = {
-        owner: owner,
+      const renderContext: any = {
+        owner,
         note: ctx.state.render.processNote(note),
         handle: ctx.params.handle,
       };
@@ -166,7 +166,7 @@ export class Routing {
       ctx.params.ownerUUID, ctx.params.itemUUID, ctx.params.previewCode);
 
     if (previewNote) {
-      let renderContext: any = {
+      const renderContext: any = {
         owner: previewNote.owner,
         note: ctx.state.render.processNote(previewNote),
         preview: true,

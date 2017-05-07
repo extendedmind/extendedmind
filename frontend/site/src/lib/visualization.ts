@@ -2,25 +2,26 @@ let gd;
 try {
   gd = require("node-gd");
   console.info("support for generating images found");
-} catch(e) {
-  console.info("continuing without image support")
+} catch (e) {
+  console.info("continuing without image support");
 }
-import * as path from "path";
+
 import * as fs from "fs";
+import * as path from "path";
 
 export class Visualization {
   constructor(private imagePath: string) {
     console.info("setting image path to: " + this.imagePath);
-  };
+  }
 
   public generateImageFromText(printText: string, id: string, modified: number): Promise<string> {
     const imagePath = this.imagePath;
-    return new Promise(function(resolve, reject){
+    return new Promise((resolve, reject) => {
 
       // Check if this file has already been generated
       const fileName = id + "-" + modified + ".png";
       const fullFilePath = imagePath + "/" + fileName;
-      fs.access(fullFilePath, function(readErr) {
+      fs.access(fullFilePath, (readErr) => {
         if (!readErr) {
           // We already have this file, most likely generated on another server and then synced here
           resolve(fileName);
@@ -62,7 +63,7 @@ export class Visualization {
           }
           const longestLineLength = printLines[0].length;
 
-          let fontSizeHorizontally: number =
+          const fontSizeHorizontally: number =
             Math.floor(
               Math.min(SIZE_HORIZONTAL / longestLineLength * FONT_PIXEL_COEFFICIENT,
               MAX_FONT_SIZE));
@@ -96,11 +97,11 @@ export class Visualization {
           }
 
           // Write image buffer to disk
-          img.savePng(fullFilePath, 1, function(saveErr) {
+          img.savePng(fullFilePath, 1, (saveErr) => {
             img.destroy();
             if (saveErr) {
               reject(saveErr);
-            }else{
+            } else {
               // Destroy image to clean memory
               resolve(fileName);
             }

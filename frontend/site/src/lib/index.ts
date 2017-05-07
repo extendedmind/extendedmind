@@ -1,4 +1,4 @@
-import {Server, Config} from  "./server";
+import {Config, Server} from "./server";
 
 /**
  * Load configuration file given as command line parameter
@@ -13,13 +13,13 @@ if (process.argv.length > 2) {
     console.info("setting backend to: " + process.env.EXTENDEDMIND_API_URL);
     config.backend = process.env.EXTENDEDMIND_API_URL;
   }
-  if (process.env.EXTENDEDMIND_URL){
+  if (process.env.EXTENDEDMIND_URL) {
     console.info("setting urlOrigin to: " + process.env.EXTENDEDMIND_URL);
     config.urlOrigin = process.env.EXTENDEDMIND_URL;
   }
-}else {
+} else {
   console.error("no configuration file provided, exiting...");
   process.exit();
-};
+}
 const server = new Server(config);
 server.run();
