@@ -1,8 +1,9 @@
-import { Info, Utils } from "extendedmind-siteutils";
+import { ArraySlice, getSliceOfArrayWithRemaining, Info, Utils } from "extendedmind-siteutils";
 import * as Router from "koa-router";
 
 export class Routing {
   private router = new Router();
+  private HEADERS_PER_PAGE: number = 10;
 
   constructor(
       private backendClient: Utils,
@@ -32,19 +33,7 @@ export class Routing {
     return [
       ["getGeneratedUrls", this.getGeneratedUrls],
       ["getSliceOfArrayWithRemaining", (array, queryParamRemaining) => {
-        const HEADERS_PER_PAGE: number = 10;
-        // How many items were indicated as being not shown previously. If first query, everything is remaining
-        const previousRemaining: number = queryParamRemaining === undefined ? array.length : queryParamRemaining;
-        // Because new headers might be added to the top of the array, we use remaining to count the index from
-        // the end.
-        const firstHeaderIndex = array.length - previousRemaining;
-        const arraySlice = array.slice(firstHeaderIndex, firstHeaderIndex + HEADERS_PER_PAGE);
-        const remaining: number = array.length - (firstHeaderIndex + HEADERS_PER_PAGE) < 0
-          ? 0 : array.length - (firstHeaderIndex + HEADERS_PER_PAGE);
-        return {
-          arraySlice,
-          remaining,
-        };
+        return getSliceOfArrayWithRemaining(this.HEADERS_PER_PAGE, array, queryParamRemaining);
       }],
     ];
   }

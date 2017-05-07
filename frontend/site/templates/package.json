@@ -12,7 +12,7 @@
     "@types/nunjucks": "0.0.32",
     "clipboard": "^1.5.15",
     "excerpt-html": "^1.2.0",
-    "extendedmind-siteutils": "^2.0.6",
+    "extendedmind-siteutils": "^2.0.9",
     "jquery": "^3.1.1",
     "koa": "^2.0.0",
     "koa-logger": "^2.0.0",
