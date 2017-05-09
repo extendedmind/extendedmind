@@ -227,7 +227,7 @@
                 </ports>
                 <volumes>
                   <volume>/app/site-generated</volume>
-                  <volume>/etc/nginx/sites-enabled</volume>
+                  <volume>/etc/nginx/sites-enabled/site</volume>
                 </volumes>
                 <assembly>
                   <mode>dir</mode>

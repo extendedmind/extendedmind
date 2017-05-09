@@ -35,7 +35,7 @@
     </fileSet>
     <fileSet>
       <directory>${project.basedir}/docker</directory>
-      <outputDirectory>etc/nginx/sites-enabled</outputDirectory>
+      <outputDirectory>etc/nginx/sites-enabled/site</outputDirectory>
       <includes>
         <include>nginx.extendedmind.conf</include>
       </includes>
