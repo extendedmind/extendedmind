@@ -50,6 +50,7 @@
     <phantomjs.version>2.1.1</phantomjs.version>
     <jetty.version>9.0.4.v20130625</jetty.version>
     <docker.skip>true</docker.skip>
+    <node.version>v7.10.0</node.version>
     <!-- Don't collect analytics by default -->
     <extendedmind.analytics>false</extendedmind.analytics>
     <extendedmind.app.package>org.extendedmind</extendedmind.app.package>
@@ -339,7 +340,7 @@
         <plugin>
           <groupId>com.github.eirslett</groupId>
           <artifactId>frontend-maven-plugin</artifactId>
-          <version>1.0</version>
+          <version>1.4</version>
         </plugin>
       </plugins>
     </pluginManagement>

@@ -57,9 +57,7 @@
                   <goal>install-node-and-npm</goal>
                 </goals>
                 <configuration>
-                  <nodeVersion>v7.5.0</nodeVersion>
-                  <npmVersion>4.2.0</npmVersion>
-                  <nodeDownloadRoot>https://nodejs.org/dist/</nodeDownloadRoot>
+                  <nodeVersion>${node.version}</nodeVersion>
                 </configuration>
               </execution>
               <execution>
@@ -367,7 +365,7 @@
               </run>
             </image>
             <image>
-              <name>quay.io/extendedmind/nginx:nginx-1.11.9-1</name>
+              <name>quay.io/extendedmind/nginx:nginx-1.13.0</name>
               <alias>nginx</alias>
               <run>
                 <namingStrategy>alias</namingStrategy>

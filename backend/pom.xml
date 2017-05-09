@@ -281,26 +281,6 @@
               <includeScope>runtime</includeScope>
             </configuration>
           </execution>
-          <execution>
-            <id>unpack-test-database</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.piwik</groupId>
-                  <artifactId>test-mariadb-10.1.13</artifactId>
-                  <version>2.16.1</version>
-                  <type>zip</type>
-                  <overWrite>true</overWrite>
-                  <outputDirectory>${project.build.directory}/piwik</outputDirectory>
-                  <includes>mysql/**</includes>
-                </artifactItem>
-              </artifactItems>
-            </configuration>
-          </execution>
         </executions>
       </plugin>
       <plugin>
@@ -395,7 +375,7 @@
               <name>quay.io/extendedmind/backend</name>
               <alias>backend</alias>
               <build>
-                <from>quay.io/extendedmind/openjdk:openjdk-8u111-2</from>
+                <from>quay.io/extendedmind/openjdk:openjdk-8u121</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
                 <tags>
                   <tag>latest</tag>
@@ -435,7 +415,7 @@
               <name>quay.io/extendedmind/backend-backup</name>
               <alias>backend-backup</alias>
               <build>
-                <from>quay.io/extendedmind/openjdk:openjdk-8u111-2</from>
+                <from>quay.io/extendedmind/openjdk:openjdk-8u121</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
                 <tags>
                   <tag>latest</tag>

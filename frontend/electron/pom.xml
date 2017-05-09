@@ -143,9 +143,7 @@
               <goal>install-node-and-npm</goal>
             </goals>
             <configuration>
-              <nodeVersion>v6.3.1</nodeVersion>
-              <npmVersion>3.10.3</npmVersion>
-              <nodeDownloadRoot>https://nodejs.org/dist/</nodeDownloadRoot>
+              <nodeVersion>${node.version}</nodeVersion>
             </configuration>
           </execution>
           <execution>

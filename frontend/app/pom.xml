@@ -165,9 +165,7 @@
             </goals>
             <phase>generate-resources</phase>
             <configuration>
-              <nodeVersion>v7.5.0</nodeVersion>
-              <npmVersion>4.2.0</npmVersion>
-              <nodeDownloadRoot>https://nodejs.org/dist/</nodeDownloadRoot>
+              <nodeVersion>${node.version}</nodeVersion>
             </configuration>
           </execution>
           <execution>

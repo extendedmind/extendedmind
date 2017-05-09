@@ -120,9 +120,7 @@
             </goals>
             <phase>generate-resources</phase>
             <configuration>
-              <nodeVersion>v7.9.0</nodeVersion>
-              <npmVersion>4.4.4</npmVersion>
-              <nodeDownloadRoot>https://nodejs.org/dist/</nodeDownloadRoot>
+              <nodeVersion>${node.version}</nodeVersion>
             </configuration>
           </execution>
           <execution>
