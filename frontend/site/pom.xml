@@ -8,7 +8,7 @@
   </parent>
   <groupId>org.extendedmind.frontend</groupId>
   <artifactId>frontend-site</artifactId>
-  <packaging>pom</packaging>
+  <packaging>jar</packaging>
   <name>Extended Mind :: Frontend :: Site</name>
   <description>Extended Mind Frontend Site</description>
   <url>https://github.com/extendedmind/extendedmind</url>
@@ -183,7 +183,7 @@
       </plugin>
       <plugin>
         <groupId>io.fabric8</groupId>
-        <artifactId>docker-maven-plugin</artifactId>
+        <artifactId>fabric8-maven-plugin</artifactId>
         <configuration>
           <sourceDirectory>docker</sourceDirectory>
           <images>
