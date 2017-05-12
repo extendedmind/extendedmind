@@ -39,7 +39,7 @@ class EmbeddedGraphDatabase(implicit val settings: Settings)
       val configMap = new scala.collection.mutable.HashMap[String, String]()
       configMap.put("dbms.backup.address", "0.0.0.0:6362")
       if (settings.isHighAvailability){
-        // No config file, but HA, use enviroment variables to set HA properties
+        // No config file, but HA, use environment variables to set HA properties
         configMap.put("dbms.mode", "HA")
         for(serverId <- settings.haServerId) configMap.put("ha.server_id", serverId.toString)
         for(initialHosts <- settings.haInitialHosts) configMap.put("ha.initial_hosts", initialHosts)
