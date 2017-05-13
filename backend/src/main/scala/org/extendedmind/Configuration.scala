@@ -42,6 +42,11 @@ import com.vdurmont.semver4j.Semver.SemverType
 
 // Combined custom settings from application.conf or overridden file, and version.conf which is always inside the generated jar
 
+sealed abstract class OperationMode
+case object SINGLE extends OperationMode
+case object HA_BOOTSTRAP extends OperationMode
+case object HA extends OperationMode
+
 sealed abstract class SignUpMethod
 case object SIGNUP_ON extends SignUpMethod
 case object SIGNUP_OFF extends SignUpMethod
@@ -66,6 +71,13 @@ class Settings(config: Config, versionConfig: Config) extends Extension {
   val serverPort = config.getInt("extendedmind.server.port")
   val neo4jStoreDir = config.getString("extendedmind.neo4j.storeDir")
   println("Setting neo4j store directory to: " + neo4jStoreDir)
+  val operationMode: OperationMode =
+    config.getString("extendedmind.neo4j.operationMode") match {
+      case "SINGLE" => SINGLE
+      case "HA_BOOTSTRAP" => HA_BOOTSTRAP
+      case "HA" => HA
+    }
+  println("Setting operation mode to " + operationMode)
   val neo4jPropertiesFile: Option[String] = {
     if (config.hasPath("extendedmind.neo4j.propertiesFile"))
       Some(config.getString("extendedmind.neo4j.propertiesFile"))
@@ -82,7 +94,6 @@ class Settings(config: Config, versionConfig: Config) extends Extension {
     if (config.hasPath("extendedmind.neo4j.disableTimestamps"))
       config.getBoolean("extendedmind.neo4j.disableTimestamps")
     else false
-  val isHighAvailability = config.getBoolean("extendedmind.neo4j.isHighAvailability")
   val haServerId: Option[Int] = {
     if (config.hasPath("extendedmind.neo4j.ha.serverId"))
       Some(config.getInt("extendedmind.neo4j.ha.serverId"))

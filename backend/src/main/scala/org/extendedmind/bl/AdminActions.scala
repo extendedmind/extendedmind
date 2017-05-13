@@ -137,10 +137,12 @@ trait AdminActions {
   }
 
   def getHAStatus: String = {
-    if (settings.isHighAvailability){
+    if (settings.operationMode == HA_BOOTSTRAP || 
+        settings.operationMode == HA){
       val state = db.ds.gds.asInstanceOf[HighlyAvailableGraphDatabase].getInstanceState
       if (state == HighAvailabilityMemberState.MASTER) "master"
       else if (state == HighAvailabilityMemberState.SLAVE) "slave"
+      else if (state == HighAvailabilityMemberState.PENDING) "pending"
       else "none"
     }else{
       "master"

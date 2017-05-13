@@ -360,7 +360,8 @@ trait CollectiveDatabase extends UserDatabase {
         val commonCollectiveList = findNodesByLabelAndProperty(OwnerLabel.COLLECTIVE, "common", java.lang.Boolean.TRUE).toList
         if (commonCollectiveList.isEmpty){
           // Database seems to be empty, this might be because this is a new HA slave
-          if (settings.isHighAvailability){
+          if (settings.operationMode == HA_BOOTSTRAP || 
+              settings.operationMode == HA){
             // So this is high availability empty database
             println("No common collective, but HA enabled. Assuming new slave.")
             return (DB_NEW_SLAVE, None, None)

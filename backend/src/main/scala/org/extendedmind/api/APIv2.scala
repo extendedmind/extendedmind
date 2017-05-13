@@ -177,6 +177,7 @@ trait APIv2 extends HttpService {
 
   // HIGH AVAILABILITY
 
+  val v2GetHAReady = get & path("v2" / "ha" / "ready")
   val v2GetHAAvailable = get & path("v2" / "ha" / "available")
   val v2GetHAMaster = get & path("v2" / "ha" / "master")
   val v2GetHASlave = get & path("v2" / "ha" / "slave")

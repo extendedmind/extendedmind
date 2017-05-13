@@ -23,6 +23,7 @@ import org.extendedmind.Settings
 import org.neo4j.graphdb.factory.GraphDatabaseFactory
 import org.neo4j.graphdb.factory.HighlyAvailableGraphDatabaseFactory
 import org.neo4j.scala.EmbeddedGraphDatabaseServiceProvider
+import org.extendedmind._
 
 class EmbeddedGraphDatabase(implicit val settings: Settings)
   extends GraphDatabase with EmbeddedGraphDatabaseServiceProvider{
@@ -38,8 +39,9 @@ class EmbeddedGraphDatabase(implicit val settings: Settings)
     if (settings.neo4jPropertiesFile.isEmpty){
       val configMap = new scala.collection.mutable.HashMap[String, String]()
       configMap.put("dbms.backup.address", "0.0.0.0:6362")
-      if (settings.isHighAvailability){
-        // No config file, but HA, use environment variables to set HA properties
+      if (settings.operationMode == HA_BOOTSTRAP || 
+          settings.operationMode == HA){
+        // No config file but HA, use settings as Neo4j properties source
         configMap.put("dbms.mode", "HA")
         for(serverId <- settings.haServerId) configMap.put("ha.server_id", serverId.toString)
         for(initialHosts <- settings.haInitialHosts) configMap.put("ha.initial_hosts", initialHosts)
@@ -55,7 +57,8 @@ class EmbeddedGraphDatabase(implicit val settings: Settings)
   }
 
   override def graphDatabaseFactory = {
-    if (settings.isHighAvailability){
+    if (settings.operationMode == HA_BOOTSTRAP || 
+        settings.operationMode == HA){
       new HighlyAvailableGraphDatabaseFactory()
     }else{
       new GraphDatabaseFactory()

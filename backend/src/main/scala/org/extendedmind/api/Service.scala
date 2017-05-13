@@ -208,6 +208,22 @@ trait Service extends AdminService
         }
       }
     } ~
+    v2GetHAReady { ctx =>
+      val haStatus = adminActions.getHAStatus
+      val ready: Boolean = settings.operationMode match {
+        case HA_BOOTSTRAP => {
+          (haStatus == "master" || haStatus == "slave" || haStatus == "pending")
+        }
+        case HA => {
+          (haStatus == "master" || haStatus == "slave")
+        }
+        case SINGLE => {
+          (haStatus == "master")
+        }
+      }
+      if (ready) ctx.complete(200, "true")
+      else ctx.complete(NotFound, "false");
+    } ~
     v2GetHAAvailable { ctx =>
       val haStatus = adminActions.getHAStatus
       if (haStatus == "master" || haStatus == "slave") ctx.complete(200, "true")

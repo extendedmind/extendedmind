@@ -2,14 +2,14 @@
 
 if [ -z "$2" ]
 then
-  echo "Usage: generate-neo4j-properties.sh [POD_NAME] [TO_DIRECTORY] (--ha)"
+  echo "Usage: generate-neo4j-properties.sh [POD_NAME] [TO_DIRECTORY] (OPERATION_MODE)"
   exit 1
 fi
 
 POD_NAME=$1
 OUTPUT=$2/neo4j.properties
 HA=false
-if [ "$3" = "--ha" ]; then
+if [ "$3" = "HA" ] || [ "$3" = "HA_BOOTSTRAP" ]; then
   HA=true
 fi
 
