@@ -1,4 +1,4 @@
-- name: explicit
+- name: main
   enricher: 
     includes: 
       - fmp-project

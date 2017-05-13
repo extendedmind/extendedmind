@@ -1,5 +1,8 @@
 #!/bin/bash
 
+kubectl version
+sleep 30
+
 if [ -z "$2" ]
 then
   echo "Usage: generate-neo4j-properties.sh [POD_NAME] [TO_DIRECTORY] (OPERATION_MODE)"

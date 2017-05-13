@@ -519,6 +519,7 @@
               </all>
             </labels>
           </resources>
+          <profile>main</profile>
         </configuration>
         <executions>
           <execution>
