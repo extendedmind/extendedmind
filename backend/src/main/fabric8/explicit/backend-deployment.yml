@@ -1,0 +1,24 @@
+spec:
+  #replicas: 1
+  template:
+    spec:
+      initContainers:
+        - name: backend-discovery
+          image: quay.io/extendedmind/backend-discovery:${project.version}
+          command:
+          - backend-dep
+          - /app/backend-conf 
+          - HA
+          volumeMounts:
+          - name: confdir
+            mountPath: "/app/backend-conf"
+      containers:
+        - name: backend
+          image: quay.io/extendedmind/backend:${project.version}
+          volumeMounts:
+          - name: confdir
+            mountPath: "/app/backend-conf"
+      volumes:
+        - name: confdir
+          emptyDir: {}
+ 

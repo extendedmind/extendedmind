@@ -412,6 +412,29 @@
               </build>
             </image>
             <image>
+              <name>quay.io/extendedmind/backend-discovery</name>
+              <alias>backend-discovery</alias>
+              <build>
+                <from>quay.io/extendedmind/cloudsdk:cloudsdk-155.0.0-2</from>
+                <maintainer>timo.tiuraniemi@iki.fi</maintainer>
+                <tags>
+                  <tag>latest</tag>
+                  <tag>${project.version}</tag>
+                </tags>
+                <assembly>
+                  <mode>dir</mode>
+                  <basedir>/app</basedir>
+                  <descriptor>backend-discovery-assembly.xml</descriptor>
+                </assembly>
+                <workdir>/app</workdir>
+                <entryPoint>
+                  <exec>
+                    <arg>/app/backend-discovery/generate-neo4j-properties.sh</arg>
+                  </exec>
+                </entryPoint>
+              </build>
+            </image>
+            <image>
               <name>quay.io/extendedmind/backend-backup</name>
               <alias>backend-backup</alias>
               <build>
@@ -482,6 +505,20 @@
               </build>
             </image>
           </images>
+          <resources>
+            <labels>
+              <all>
+                <property>
+                  <name>app</name>
+                  <value>extendedmind</value>
+                </property>
+                <property>
+                  <name>tier</name>
+                  <value>backend</value>
+                </property>
+              </all>
+            </labels>
+          </resources>
         </configuration>
         <executions>
           <execution>
@@ -489,6 +526,7 @@
             <phase>package</phase>
             <goals>
               <goal>build</goal>
+              <goal>resource</goal>
             </goals>
           </execution>
         </executions>
