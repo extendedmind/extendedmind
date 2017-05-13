@@ -415,13 +415,14 @@
               <name>quay.io/extendedmind/backend-backup</name>
               <alias>backend-backup</alias>
               <build>
-                <from>quay.io/extendedmind/cloudsdk:cloudsdk-154.0.0-1</from>
+                <from>quay.io/extendedmind/cloudsdk:cloudsdk-155.0.0</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
                 <tags>
                   <tag>latest</tag>
                   <tag>${project.version}</tag>
                 </tags>
                 <assembly>
+                  <user>java:java:java</user>
                   <mode>dir</mode>
                   <basedir>/app/backend-backup</basedir>
                   <descriptor>backend-backup-assembly.xml</descriptor>
@@ -438,7 +439,7 @@
               <name>quay.io/extendedmind/backend-restore</name>
               <alias>backend-restore</alias>
               <build>
-                <from>quay.io/extendedmind/cloudsdk:cloudsdk-154.0.0-1</from>
+                <from>quay.io/extendedmind/cloudsdk:cloudsdk-155.0.0</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
                 <tags>
                   <tag>latest</tag>
@@ -461,7 +462,7 @@
               <name>quay.io/extendedmind/sync-folder</name>
               <alias>sync-folder</alias>
               <build>
-                <from>quay.io/extendedmind/cloudsdk:cloudsdk-154.0.0-1</from>
+                <from>quay.io/extendedmind/cloudsdk:cloudsdk-155.0.0</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
                 <tags>
                   <tag>latest</tag>
