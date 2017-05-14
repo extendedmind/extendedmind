@@ -1,5 +1,7 @@
+apiVersion: apps/v1beta1
 spec:
-  #replicas: 1
+  serviceName: "backend"
+  replicas: 2
   template:
     metadata:
       annotations:
@@ -7,7 +9,7 @@ spec:
             {
                 "name": "backend-discovery",
                 "image": "quay.io/extendedmind/backend-discovery:${project.version}",
-                "command": ["backend-dep", "/app/backend-conf", "HA"],
+                "args": ["backend-dep", "/app/backend-conf", "HA"],
                 "volumeMounts": [
                     {
                         "name": "confdir",

@@ -1,7 +1,7 @@
 #!/bin/bash
 
-kubectl version
-sleep 30
+SERVER_ID=$(($(hostname | sed s/.*-//) + 1))
+echo "Guessed server id: $SERVER_ID"
 
 if [ -z "$2" ]
 then
