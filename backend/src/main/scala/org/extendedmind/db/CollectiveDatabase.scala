@@ -36,6 +36,7 @@ import scala.collection.mutable.ListBuffer
 import org.neo4j.graphdb.traversal.Evaluation
 import org.neo4j.graphdb.Relationship
 import akka.event.LoggingAdapter
+import org.neo4j.graphdb.event.TransactionEventHandler
 
 trait CollectiveDatabase extends UserDatabase {
 
@@ -319,12 +320,18 @@ trait CollectiveDatabase extends UserDatabase {
     }
   }
 
-  protected def initializeDatabase(overrideCommonCollective: Option[Collective],
+  protected def initializeDatabase(
+                   transactionEventHandlers: java.util.ArrayList[TransactionEventHandler[_]],
+                   overrideCommonCollective: Option[Collective],
                    overrideAdminUser: Option[User],
                    overrideAdminUserPassword: Option[String]): (DatabaseStatus, Option[UUID], Option[UUID]) = {
+
     val initializeResult =
       withTx {
         implicit neo4j =>
+          // Add transaction event handlers here
+          transactionEventHandlers.foreach(eventHandler => neo4j.gds.registerTransactionEventHandler(eventHandler))
+
           initializeDatabaseInTx(overrideCommonCollective: Option[Collective],
                    overrideAdminUser: Option[User],
                    overrideAdminUserPassword: Option[String])
@@ -360,7 +367,7 @@ trait CollectiveDatabase extends UserDatabase {
         val commonCollectiveList = findNodesByLabelAndProperty(OwnerLabel.COLLECTIVE, "common", java.lang.Boolean.TRUE).toList
         if (commonCollectiveList.isEmpty){
           // Database seems to be empty, this might be because this is a new HA slave
-          if (settings.operationMode == HA_BOOTSTRAP || 
+          if (settings.operationMode == HA_BOOTSTRAP ||
               settings.operationMode == HA){
             // So this is high availability empty database
             println("No common collective, but HA enabled. Assuming new slave.")

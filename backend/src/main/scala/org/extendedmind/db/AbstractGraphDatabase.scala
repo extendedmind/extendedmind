@@ -123,7 +123,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
   case object DB_ERROR extends DatabaseStatus
 
   def loadDatabase()(implicit log: LoggingAdapter): Boolean = {
-    initializeDatabase(None, None, None)._1 match {
+    initializeDatabase(transactionEventHandlers(), None, None, None)._1 match {
       case DB_READY => {
         withTx {
           implicit neo4j =>
@@ -131,8 +131,6 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
             log.info("users: " + statistics.users +
               ", items: " + statistics.items +
               ", common collective " + statistics.commonCollective._1 + ": " + statistics.commonCollective._2)
-            // Add transaction event handlers here
-            transactionEventHandlers.foreach(eventHandler => neo4j.gds.registerTransactionEventHandler(eventHandler))
         }
         true
       }
@@ -549,7 +547,9 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     }
   }
 
-  protected def initializeDatabase(overrideCommonCollective: Option[Collective] = None,
+  protected def initializeDatabase(
+                   transactionEventHandlers: java.util.ArrayList[TransactionEventHandler[_]],
+                   overrideCommonCollective: Option[Collective] = None,
                    overrideAdminUser: Option[User] = None,
                    overrideAdminUserPassword: Option[String] = None): (DatabaseStatus, Option[UUID], Option[UUID])
 
