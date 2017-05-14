@@ -25,11 +25,10 @@ trap 'echo exiting generate neo4j properties script..; exit' SIGINT SIGQUIT SIGT
 if [ "$HA" = false ]; then 
   echo "dbms.allow_format_migration=true" >> $OUTPUT
 else
-  # TODO: Use kubectl to set these variables: 
-  SERVER_ID=1
-  HOSTS=$POD_NAME-1
+  # TODO: Use actual "replicas" value from kubernetes #31218
+  echo "HA: assuming exactly 3 nodes"
+  HOSTS=backend-0.backend.default.svc.cluster.local:5001,backend-1.backend.default.svc.cluster.local:5001,backend-2.backend.default.svc.cluster.local:5001
   PF=2
-
   echo "dbms.mode=ha" >> $OUTPUT
   echo "ha.server_id=$SERVER_ID" >> $OUTPUT
   echo "ha.initial_hosts=$HOSTS" >> $OUTPUT

@@ -1,7 +1,7 @@
 apiVersion: apps/v1beta1
 spec:
   serviceName: "backend"
-  replicas: 2
+  replicas: 1
   template:
     metadata:
       annotations:
@@ -9,7 +9,7 @@ spec:
             {
                 "name": "backend-discovery",
                 "image": "quay.io/extendedmind/backend-discovery:${project.version}",
-                "args": ["backend-dep", "/app/backend-conf", "HA"],
+                "args": ["backend-dep", "/app/backend-conf", "SINGLE"],
                 "volumeMounts": [
                     {
                         "name": "confdir",
@@ -22,10 +22,18 @@ spec:
       containers:
         - name: backend
           image: quay.io/extendedmind/backend:${project.version}
+          args:
+            - "-Dextendedmind.neo4j.operationMode=SINGLE"
+            - "-Dextendedmind.neo4j.propertiesFile=/app/backend-conf/neo4j.properties"
+            - "-Dextendedmind.commonCollectiveTitle=test"
+            - "-Dextendedmind.adminUserEmail=timo@extendedmind.org"
+            - "-Dextendedmind.adminUserPassword=timopwd"
+            - "-cp"
+            - "/app/backend/lib/*"
+            - "org.extendedmind.Server"
           volumeMounts:
           - name: confdir
             mountPath: "/app/backend-conf"
       volumes:
         - name: confdir
           emptyDir: {}
- 

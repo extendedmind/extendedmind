@@ -415,7 +415,7 @@
               <name>quay.io/extendedmind/backend-discovery</name>
               <alias>backend-discovery</alias>
               <build>
-                <from>quay.io/extendedmind/cloudsdk:cloudsdk-155.0.0-2</from>
+                <from>quay.io/extendedmind/cloudsdk:cloudsdk-155.0.0-3</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
                 <tags>
                   <tag>latest</tag>
@@ -462,7 +462,7 @@
               <name>quay.io/extendedmind/backend-restore</name>
               <alias>backend-restore</alias>
               <build>
-                <from>quay.io/extendedmind/cloudsdk:cloudsdk-155.0.0-2</from>
+                <from>quay.io/extendedmind/cloudsdk:cloudsdk-155.0.0-3</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
                 <tags>
                   <tag>latest</tag>
@@ -485,7 +485,7 @@
               <name>quay.io/extendedmind/sync-folder</name>
               <alias>sync-folder</alias>
               <build>
-                <from>quay.io/extendedmind/cloudsdk:cloudsdk-155.0.0-2</from>
+                <from>quay.io/extendedmind/cloudsdk:cloudsdk-155.0.0-3</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
                 <tags>
                   <tag>latest</tag>
