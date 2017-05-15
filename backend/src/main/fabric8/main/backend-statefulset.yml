@@ -51,6 +51,13 @@ spec:
           ports:
           - containerPort: 8081
             name: api
+          # This needs to be enabled when in HA mode for cluster to come up.
+          # readinessProbe:
+          #   httpGet:
+          #     path: /v2/ha/available
+          #     port: api
+          #   initialDelaySeconds: 5
+          #   timeoutSeconds: 5
       volumes:
         - name: confdir
           emptyDir: {}
