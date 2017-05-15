@@ -3,3 +3,5 @@
 spec:
   clusterIP: None
   name: "backend"
+  ports:
+    - port: 8081

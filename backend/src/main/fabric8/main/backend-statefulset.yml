@@ -1,7 +1,7 @@
 apiVersion: apps/v1beta1
 spec:
   serviceName: "backend"
-  replicas: 1
+  replicas: 3
   template:
     metadata:
       annotations:
@@ -9,11 +9,23 @@ spec:
             {
                 "name": "backend-discovery",
                 "image": "quay.io/extendedmind/backend-discovery:${project.version}",
-                "args": ["backend-dep", "/app/backend-conf", "SINGLE"],
+                "args": ["backend-dep", "/app/backend-conf", "HA_BOOTSTRAP"],
                 "volumeMounts": [
                     {
                         "name": "confdir",
                         "mountPath": "/app/backend-conf"
+                    }
+                ]
+            },
+            {
+                "name": "backend-access",
+                "image": "busybox",
+                "imagePullPolicy": "IfNotPresent",
+                "command": ["sh", "-c", "chown -R 1000:1000 /app/backend-data"],
+                "volumeMounts": [
+                    {
+                        "name": "datadir",
+                        "mountPath": "/app/backend-data"
                     }
                 ]
             }
@@ -23,17 +35,35 @@ spec:
         - name: backend
           image: quay.io/extendedmind/backend:${project.version}
           args:
-            - "-Dextendedmind.neo4j.operationMode=SINGLE"
+            - "-Dextendedmind.neo4j.operationMode=HA_BOOTSTRAP"
             - "-Dextendedmind.neo4j.propertiesFile=/app/backend-conf/neo4j.properties"
-            - "-Dextendedmind.commonCollectiveTitle=test"
-            - "-Dextendedmind.adminUserEmail=timo@extendedmind.org"
-            - "-Dextendedmind.adminUserPassword=timopwd"
+            # - "-Dextendedmind.commonCollectiveTitle=test"
+            # - "-Dextendedmind.adminUserEmail=timo@extendedmind.org"
+            # - "-Dextendedmind.adminUserPassword=timopwd"
             - "-cp"
             - "/app/backend/lib/*"
             - "org.extendedmind.Server"
           volumeMounts:
           - name: confdir
             mountPath: "/app/backend-conf"
+          - name: datadir
+            mountPath: "/app/backend-data"
+          ports:
+          - containerPort: 8081
+            name: api
       volumes:
         - name: confdir
           emptyDir: {}
+        - name: datadir
+          persistentVolumeClaim:
+            claimName: datadir
+  volumeClaimTemplates:
+  - metadata:
+      name: datadir
+      annotations:
+        volume.beta.kubernetes.io/storage-class: standard
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 100M
