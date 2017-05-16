@@ -9,20 +9,12 @@ spec:
             {
                 "name": "backend-discovery",
                 "image": "quay.io/extendedmind/backend-discovery:${project.version}",
-                "args": ["backend-dep", "/app/backend-conf", "HA_BOOTSTRAP"],
+                "args": ["/app/backend-conf", "/app/backend-data", "HA_BOOTSTRAP"],
                 "volumeMounts": [
                     {
                         "name": "confdir",
                         "mountPath": "/app/backend-conf"
-                    }
-                ]
-            },
-            {
-                "name": "backend-access",
-                "image": "busybox",
-                "imagePullPolicy": "IfNotPresent",
-                "command": ["sh", "-c", "chown -R 1000:1000 /app/backend-data"],
-                "volumeMounts": [
+                    },
                     {
                         "name": "datadir",
                         "mountPath": "/app/backend-data"

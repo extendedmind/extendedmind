@@ -6,7 +6,7 @@
       <directory>${project.basedir}/src/main/docker</directory>
       <outputDirectory>backend-discovery</outputDirectory>
       <includes>
-        <include>generate-neo4j-properties.sh</include>
+        <include>discover-backend.sh</include>
       </includes>
     </fileSet>
     <fileSet>

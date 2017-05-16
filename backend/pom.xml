@@ -415,7 +415,7 @@
               <name>quay.io/extendedmind/backend-discovery</name>
               <alias>backend-discovery</alias>
               <build>
-                <from>quay.io/extendedmind/cloudsdk:cloudsdk-155.0.0-3</from>
+                <from>busybox</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
                 <tags>
                   <tag>latest</tag>
@@ -429,7 +429,7 @@
                 <workdir>/app</workdir>
                 <entryPoint>
                   <exec>
-                    <arg>/app/backend-discovery/generate-neo4j-properties.sh</arg>
+                    <arg>/app/backend-discovery/discover-backend.sh</arg>
                   </exec>
                 </entryPoint>
               </build>
