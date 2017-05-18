@@ -80,6 +80,8 @@ spec:
             name: api
 {{ if .Values.operationMode }}
   {{ if eq .Values.operationMode "HA" }}
+          # NOTE: We need to wait for Kuberenetes issue #41015 to resolve for
+          # this to work, because there is now way to properly update container state.
           readinessProbe:
             httpGet:
               path: /v2/ha/available
