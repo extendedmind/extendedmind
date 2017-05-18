@@ -28,7 +28,7 @@ spec:
             ,{
                 "name": "backend-restore",
                 "image": "quay.io/extendedmind/backend-restore:${project.version}",
-                "args": ["{{ .Values.restore.file }}", "/app/backend-data", "{{ .Values.operationMode }}", "{{ .Values.copyPreCommand }}"],
+                "args": ["{{ .Values.restore.file }}", "/app/backend-data", "{{ .Values.operationMode }}", "{{ .Values.fsPreCommand }}"],
                 "volumeMounts": [
                     {
                         "name": "confdir",
@@ -90,7 +90,7 @@ spec:
 {{ if .Values.operationMode }}
   {{ if eq .Values.operationMode "HA" }}
           # NOTE: We need to wait for Kuberenetes issue #41015 to resolve for
-          # this to work, because there is now way to properly update container state.
+          # this to work, because there is now way to properly update statefulset parameters.
           readinessProbe:
             httpGet:
               path: /v2/ha/ready

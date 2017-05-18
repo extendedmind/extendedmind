@@ -18,9 +18,21 @@ spec:
           containers:
             - name: backend-backup
               args:
-              - /bin/sh
-              - -c
-              - date; echo Hello from the Kubernetes cluster
+              - "backend-external.default.svc.cluster.local"
+              - {{ .Values.backup.location | quote }}
+              - {{ .Values.backup.days | quote }}
+              - {{ .Values.fsPreCommand | quote }}
               image: quay.io/extendedmind/backend-backup:0-SNAPSHOT
-          restartPolicy: OnFailure
-  schedule: '0 * * * *'
+{{ if .Values.backup.hostPath }}
+              volumeMounts:
+              - name: backupdir
+                mountPath: "/app/backend-backup-data"
+{{ end }}
+          restartPolicy: Never
+{{ if .Values.backup.hostPath }}
+          volumes:
+          - name: backupdir
+            hostPath:
+              path: {{ .Values.backup.hostPath }}
+{{ end }}
+  schedule: '*/1 * * * *'

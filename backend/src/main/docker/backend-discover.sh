@@ -23,6 +23,8 @@ trap 'echo exiting generate neo4j properties script..; exit' SIGINT SIGQUIT SIGT
 
 # Create/empty the properties file
 > $NEO4J_PROPS
+echo "dbms.backup.enabled=true" >> $NEO4J_PROPS
+echo "dbms.backup.address=0.0.0.0:6362" >> $NEO4J_PROPS
 
 if [ "$HA" = false ]; then 
   echo "dbms.allow_format_migration=true" >> $NEO4J_PROPS
@@ -50,7 +52,7 @@ if [ "$OPERATION_MODE" = "HA_BOOTSTRAP" ]; then
   fi
 
   if [ -d $NEO4J_DB ]; then
-    if [ "$SERVER_ID" = 1 ]; then
+    if [ "$SERVER_ID" = "1" ]; then
       echo "For server id 1: copy database over to $NEO4J_DB_PREVIOUS"
       cp -r $NEO4J_DB $NEO4J_DB_PREVIOUS
       rc=$?; if [[ $rc != 0 ]]; then echo "Failed copying $NEO4J_DB directory to $NEO4J_DB_PREVIOUS, are you sure it's not in use?"; exit $rc; fi

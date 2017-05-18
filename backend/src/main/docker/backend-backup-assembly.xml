@@ -13,7 +13,7 @@
       <directory>${project.basedir}/src/main/docker</directory>
       <outputDirectory>bin</outputDirectory>
       <includes>
-        <include>backend-backup-neo4j.sh</include>
+        <include>backend-admin-neo4j.sh</include>
       </includes>
     </fileSet>
     <fileSet>

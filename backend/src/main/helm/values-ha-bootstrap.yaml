@@ -1,3 +1,8 @@
 operationMode: HA_BOOTSTRAP
 replicas: 3
 storageClass: ${extendedmind.dbStorageClass}
+fsPreCommand: "${extendedmind.fsPreCommand}"
+backup:
+  days: ${extendedmind.backupDays}
+  location: ${extendedmind.backupLocation}
+  ${extendedmind.backupHostPath}

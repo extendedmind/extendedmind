@@ -1,22 +1,26 @@
 #!/bin/bash
 
-if [ -z "$1" ]; then
-  BACKUP_LOCATION_PREFIX=backup
-else
-  BACKUP_LOCATION_PREFIX=$1
+if [ -z "$3" ]
+then
+  echo "Usage: backend-backup.sh [BACKEND_HOST] [BACKUP_LOCATION_PREFIX] [BACKUP_BUFFER_IN_DAYS] ([FS_PRE_COMMAND])"
+  exit 1
 fi
 
-if [ -z "$2" ]; then
-  CP_PRE_COMMAND=""
+BACKEND_HOST=$1
+BACKUP_LOCATION_PREFIX=$2
+BACKUP_BUFFER=$3
+
+if [ -z "$4" ]; then
+  FS_PRE_COMMAND=""
 else
-  CP_PRE_COMMAND=$2
+  FS_PRE_COMMAND=$4
 fi
 
 # Add a clean exit trap
 trap 'echo exiting backup script..; exit' SIGINT SIGQUIT SIGTERM
 
 # Only backup if current backend is available
-IS_AVAILABLE=$(curl --write-out %{http_code} --silent --output /dev/null http://backend:8081/v2/ha/available)
+IS_AVAILABLE=$(curl --write-out %{http_code} --silent --output /dev/null http://$BACKEND_HOST:8081/v2/ha/available)
 if [ $IS_AVAILABLE -eq 200 ]; then
   echo "Begin full backend backup"
   TODAY=$(date +"%Y-%m-%d")
@@ -24,7 +28,7 @@ if [ $IS_AVAILABLE -eq 200 ]; then
   rm -fR work
   mkdir work
   cd bin
-  ./backend-backup-neo4j.sh -host backend -to ../work/neo4j
+  ./backend-admin-neo4j.sh backup --backup-dir=../work --name=neo4j --from=$BACKEND_HOST:6362
   status=$?
   if [ $status -ne 0 ]; then
     echo "Problems in the backup, errored with $status"
@@ -34,13 +38,42 @@ if [ $IS_AVAILABLE -eq 200 ]; then
     BACKUP_FILE=work/em-$(date +"%Y-%m-%d-%H%M%S").tar.gz
     tar -zcf $BACKUP_FILE work/neo4j 2>&1 | grep -v 'Removing leading'
 
-    if [ -z  $CP_PRE_COMMAND ]; then
+    # When not using a pre-command, such as "gsutil" directories will have to be created
+    if [ -z  $FS_PRE_COMMAND ]; then
       if [ ! -d $BACKUP_LOCATION ]; then
         mkdir -p $BACKUP_LOCATION
       fi
     fi
-    echo "Executing: " $CP_PRE_COMMAND cp $BACKUP_FILE $BACKUP_LOCATION
-    $CP_PRE_COMMAND cp $BACKUP_FILE $BACKUP_LOCATION
+
+    echo "Executing: " $FS_PRE_COMMAND cp $BACKUP_FILE $BACKUP_LOCATION
+    $FS_PRE_COMMAND cp $BACKUP_FILE $BACKUP_LOCATION
+
+    # Now also check if there are too many days worth of backups
+    if [ "$FS_PRE_COMMAND" = "gsutil" ]; then
+      NUMBER_OF_DIRS=$($FS_PRE_COMMAND ls $BACKUP_LOCATION_PREFIX | grep ^gs: | wc -l)
+    else
+      NUMBER_OF_DIRS=$($FS_PRE_COMMAND ls -l $BACKUP_LOCATION_PREFIX | grep ^d | wc -l)
+    fi
+
+    if [ $(( $NUMBER_OF_DIRS > $BACKUP_BUFFER )) ]; then
+
+      echo There are more days worth of backups than the given buffer $BACKUP_BUFFER
+
+      # Get the oldest directory...
+      if [ "$FS_PRE_COMMAND" = "gsutil" ]; then
+        OLDEST_DIR=$($FS_PRE_COMMAND ls $BACKUP_LOCATION_PREFIX | grep ^gs: | head -1)
+      else
+        FIRST_DIR_LINE=$($FS_PRE_COMMAND ls -l $BACKUP_LOCATION_PREFIX | grep ^d | head -1 )
+        OLDEST_DIR=$BACKUP_LOCATION_PREFIX/${FIRST_DIR_LINE##* }
+      fi
+
+      # ...and then delete it
+      echo "Executing: " $FS_PRE_COMMAND rm -rf $BACKUP_LOCATION/$OLDEST_DIR
+      $FS_PRE_COMMAND rm -rf $OLDEST_DIR
+    fi
+
+    NUMBER_OF_DIRS=$($FS_PRE_COMMAND ls $BACKUP_LOCATION_PREFIX | wc)
+
   fi
 else
   echo "Backend not available, can not backup!"
