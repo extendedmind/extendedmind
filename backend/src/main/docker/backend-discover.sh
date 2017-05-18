@@ -49,14 +49,16 @@ if [ "$OPERATION_MODE" = "HA_BOOTSTRAP" ]; then
     rm -fR $NEO4J_DB_PREVIOUS
   fi
 
-  if [ "$SERVER_ID" = 1 ]; then
-    echo "For server id 1: copy database over to $NEO4J_DB_PREVIOUS"
-    cp -r $NEO4J_DB $NEO4J_DB_PREVIOUS
-    rc=$?; if [[ $rc != 0 ]]; then echo "Failed copying $NEO4J_DB directory to $NEO4J_DB_PREVIOUS, are you sure it's not in use?"; exit $rc; fi
-  else
-    echo "For server id >1: move database over to $NEO4J_DB_PREVIOUS"
-    mv $NEO4J_DB $NEO4J_DB_PREVIOUS
-    rc=$?; if [[ $rc != 0 ]]; then echo "Failed moving $NEO4J_DB directory to $NEO4J_DB_PREVIOUS, are you sure it's not in use?"; exit $rc; fi
+  if [ -d $NEO4J_DB ]; then
+    if [ "$SERVER_ID" = 1 ]; then
+      echo "For server id 1: copy database over to $NEO4J_DB_PREVIOUS"
+      cp -r $NEO4J_DB $NEO4J_DB_PREVIOUS
+      rc=$?; if [[ $rc != 0 ]]; then echo "Failed copying $NEO4J_DB directory to $NEO4J_DB_PREVIOUS, are you sure it's not in use?"; exit $rc; fi
+    else
+      echo "For server id >1: move database over to $NEO4J_DB_PREVIOUS"
+      mv $NEO4J_DB $NEO4J_DB_PREVIOUS
+      rc=$?; if [[ $rc != 0 ]]; then echo "Failed moving $NEO4J_DB directory to $NEO4J_DB_PREVIOUS, are you sure it's not in use?"; exit $rc; fi
+    fi
   fi
 fi
 

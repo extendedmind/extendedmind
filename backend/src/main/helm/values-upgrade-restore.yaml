@@ -1,5 +1,4 @@
-operationMode: HA_BOOTSTRAP
-replicas: 3
+operationMode: SINGLE
 storageClass: ${extendedmind.dbStorageClass}
 copyPreCommand: "${extendedmind.dbCopyPreCommand}"
 restore:

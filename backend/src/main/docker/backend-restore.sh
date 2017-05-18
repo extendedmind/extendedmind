@@ -15,7 +15,7 @@ else
   exit 2
 fi
 
-if [ $SERVER_ID = 1 ]; then 
+if [ "$SERVER_ID" = "1" ]; then 
 
   BACKUP_FILE=$1
   NEO4J_DIRECTORY=$2
@@ -67,8 +67,10 @@ if [ $SERVER_ID = 1 ]; then
     rm -fR $NEO4J_DB_BAK
   fi
 
-  mv $NEO4J_DB $NEO4J_DB_BAK
-  rc=$?; if [[ $rc != 0 ]]; then echo "Failed moving neo4j directory to bak, are you sure it's not in use?"; exit $rc; fi
+  if [ -d $NEO4J_DB ]; then
+    mv $NEO4J_DB $NEO4J_DB_BAK
+    rc=$?; if [[ $rc != 0 ]]; then echo "Failed moving neo4j directory to bak, are you sure it's not in use?"; exit $rc; fi
+  fi
 
   mv work/neo4j $NEO4J_DB
   echo "Restore complete"

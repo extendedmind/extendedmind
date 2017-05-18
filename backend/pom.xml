@@ -474,6 +474,7 @@
                   <tag>${project.version}</tag>
                 </tags>
                 <assembly>
+                  <user>java:java:java</user>
                   <mode>dir</mode>
                   <basedir>/app/backend-restore</basedir>
                   <descriptor>backend-restore-assembly.xml</descriptor>

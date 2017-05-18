@@ -28,7 +28,7 @@ spec:
             ,{
                 "name": "backend-restore",
                 "image": "quay.io/extendedmind/backend-restore:${project.version}",
-                "args": ["{{ .Values.restore.file }}", "/app/backend-data", "{{ .Values.copyPreCommand | default \"\"}}"],
+                "args": ["{{ .Values.restore.file }}", "/app/backend-data", "{{ .Values.operationMode }}", "{{ .Values.copyPreCommand }}"],
                 "volumeMounts": [
                     {
                         "name": "confdir",
@@ -38,6 +38,12 @@ spec:
                         "name": "datadir",
                         "mountPath": "/app/backend-data"
                     }
+  {{ if .Values.restore.hostPath }}
+                    ,{
+                        "name": "restoredir",
+                        "mountPath": "/app/backend-restore-data"
+                    }
+  {{ end }}
                 ]
             }
 {{ end }}
@@ -56,11 +62,11 @@ spec:
           args:
             - "-Dextendedmind.neo4j.operationMode={{ .Values.operationMode }}"
             - "-Dextendedmind.neo4j.propertiesFile=/app/backend-conf/neo4j.properties"
-            {{ if .Values.init }}
+{{ if .Values.init }}
             - "-Dextendedmind.commonCollectiveTitle=\"{{ .Values.init.commonCollectiveTitle }}\""
             - "-Dextendedmind.adminUserEmail={{ .Values.init.adminUserEmail }}"
             - "-Dextendedmind.adminUserPassword=\"{{ .Values.init.adminUserPassword }}\""
-            {{ end }}
+{{ end }}
             - "-cp"
             - "/app/backend/lib/*"
             - "org.extendedmind.Server"
@@ -72,22 +78,29 @@ spec:
           ports:
           - containerPort: 8081
             name: api
-          {{ if .Values.operationMode }}
-          {{ if eq .Values.operationMode "HA" }}
+{{ if .Values.operationMode }}
+  {{ if eq .Values.operationMode "HA" }}
           readinessProbe:
             httpGet:
               path: /v2/ha/available
               port: api
             initialDelaySeconds: 5
             timeoutSeconds: 5
-          {{ end }}
-          {{ end }}
+  {{ end }}
+{{ end }}
       volumes:
         - name: confdir
           emptyDir: {}
         - name: datadir
           persistentVolumeClaim:
             claimName: datadir
+{{ if .Values.restore }}
+  {{ if .Values.restore.hostPath }}
+        - name: restoredir
+          hostPath:
+            path: {{ .Values.restore.hostPath }}
+   {{ end }}
+{{ end }}
   volumeClaimTemplates:
   - metadata:
       name: datadir
