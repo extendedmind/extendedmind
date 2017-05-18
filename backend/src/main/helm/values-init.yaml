@@ -1,0 +1,6 @@
+operationMode: SINGLE
+storageClass: ${extendedmind.dbStorageClass}
+init:
+  commonCollectiveTitle: "${extendedmind.commonCollectiveTitle}"
+  adminUserEmail: "${extendedmind.adminUserEmail}"
+  adminUserPassword: "${extendedmind.adminUserPassword}"

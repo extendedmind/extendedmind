@@ -262,6 +262,11 @@
         <directory>src/main/resources</directory>
         <filtering>true</filtering>
       </resource>
+      <resource>
+        <directory>${project.basedir}/src/main/helm</directory>
+        <filtering>true</filtering>
+        <targetPath>${project.build.directory}/helm</targetPath>
+      </resource>
     </resources>
     <sourceDirectory>src/main/scala</sourceDirectory>
     <testSourceDirectory>src/test/scala</testSourceDirectory>
@@ -368,7 +373,7 @@
       </plugin>
       <plugin>
         <groupId>io.fabric8</groupId>
-        <artifactId>fabric8-maven-plugin</artifactId>
+        <artifactId>docker-maven-plugin</artifactId>
         <configuration>
           <images>
             <image>
@@ -401,7 +406,7 @@
                     <arg>-XX:+PrintCommandLineFlags</arg>
                     <!-- Neo4j suggests to use this -->
                     <arg>-XX:+UseConcMarkSweepGC</arg>
-                    <arg>-Dextendedmind.neo4j.storeDir=/app/backend-data</arg>
+                    <arg>-Dextendedmind.neo4j.storeDir=/app/backend-data/neo4j</arg>
                   </exec>
                 </entryPoint>
                 <cmd>
@@ -429,7 +434,7 @@
                 <workdir>/app</workdir>
                 <entryPoint>
                   <exec>
-                    <arg>/app/backend-discovery/discover-backend.sh</arg>
+                    <arg>/app/backend-discovery/backend-discover.sh</arg>
                   </exec>
                 </entryPoint>
               </build>
@@ -505,21 +510,6 @@
               </build>
             </image>
           </images>
-          <resources>
-            <labels>
-              <all>
-                <property>
-                  <name>app</name>
-                  <value>extendedmind</value>
-                </property>
-                <property>
-                  <name>tier</name>
-                  <value>backend</value>
-                </property>
-              </all>
-            </labels>
-          </resources>
-          <profile>main</profile>
         </configuration>
         <executions>
           <execution>
@@ -527,7 +517,6 @@
             <phase>package</phase>
             <goals>
               <goal>build</goal>
-              <goal>resource</goal>
             </goals>
           </execution>
         </executions>

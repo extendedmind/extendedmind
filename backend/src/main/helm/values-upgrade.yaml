@@ -1,0 +1,2 @@
+operationMode: SINGLE
+storageClass: ${extendedmind.dbStorageClass}

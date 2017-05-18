@@ -1,0 +1,22 @@
+# Headless service named "backend-internal" that exposes the stateful set under
+# backend-N.backend.default.svc.cluster.local
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: extendedmind
+    tier: backend
+    project: backend
+    version: ${project.version}
+    group: org.extendedmind
+  name: backend
+spec:
+  clusterIP: None
+  # Ports should not be needed but without at least one port, endpoints don't get created.
+  ports:
+  - port: 5001
+    name: ha
+  selector:
+    project: backend
+    group: org.extendedmind
+    role: server

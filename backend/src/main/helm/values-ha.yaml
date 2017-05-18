@@ -1,0 +1,3 @@
+operationMode: HA
+replicas: 3
+storageClass: ${extendedmind.dbStorageClass}

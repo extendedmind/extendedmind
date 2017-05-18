@@ -1,0 +1,3 @@
+operationMode: HA_BOOTSTRAP
+replicas: 3
+storageClass: ${extendedmind.dbStorageClass}

@@ -6,7 +6,7 @@
       <directory>${project.basedir}/src/main/docker</directory>
       <outputDirectory>backend-discovery</outputDirectory>
       <includes>
-        <include>discover-backend.sh</include>
+        <include>backend-discover.sh</include>
       </includes>
     </fileSet>
     <fileSet>

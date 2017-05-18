@@ -1,7 +1,0 @@
-# Headless service named "backend" that exposes the stateful set under
-# backend-N.backend.default.svc.cluster.local
-spec:
-  clusterIP: None
-  name: "backend"
-  ports:
-    - port: 8081
