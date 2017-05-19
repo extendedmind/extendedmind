@@ -59,6 +59,8 @@ spec:
           mountPath: "/app/backend-conf"
         - name: datadir
           mountPath: "/app/backend-data"
+        - name: logdir
+          mountPath: "/var/log/extendedmind"
 {{ if .Values.backup.hostPath }}
         - name: backupdir
           mountPath: "/app/backend-backup-data"
@@ -92,6 +94,8 @@ spec:
             mountPath: "/app/backend-conf"
           - name: datadir
             mountPath: "/app/backend-data"
+          - name: logdir
+            mountPath: "/var/log/extendedmind"
           ports:
           - containerPort: 8081
             name: api
@@ -118,6 +122,8 @@ spec:
 {{ end }}
       volumes:
         - name: confdir
+          emptyDir: {}
+        - name: logdir
           emptyDir: {}
         - name: datadir
           persistentVolumeClaim:
