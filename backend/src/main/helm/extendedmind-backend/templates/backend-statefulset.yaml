@@ -3,7 +3,7 @@ kind: StatefulSet
 metadata:
   name: backend
 spec:
-  replicas: {{ .Values.replicas | default 1 }}
+  replicas: {{ .Values.replicas }}
   serviceName: backend
   template:
     metadata:
@@ -19,6 +19,37 @@ spec:
       initContainers:
       - name: backend-discovery
         image: quay.io/extendedmind/backend-discovery:${project.version}
+        env:
+          - name: EXTENDEDMIND_OPERATION_MODE
+            value: {{ .Values.operationMode | quote }}
+          - name: EXTENDEDMIND_STORE_DIR
+            value: {{ .Values.storeDir | quote }}
+          - name: EXTENDEDMIND_TOKEN_SECRET
+            value: {{ .Values.tokenSecret | quote }}
+          - name: EXTENDEDMIND_SIGN_UP_METHOD
+            value: {{ .Values.signUpMethod | quote }}
+          - name: EXTENDEDMIND_SIGN_UP_MODE
+            value: {{ .Values.signUpMode | quote }}
+          - name: EXTENDEDMIND_EMAIL_PROVIDER
+            value: {{ .Values.emailProvider | quote }}
+          - name: EXTENDEDMIND_MAILGUN_DOMAIN
+            value: {{ .Values.mailgunDomain | quote }}
+          - name: EXTENDEDMIND_MAILGUN_API_KEY
+            value: {{ .Values.mailgunApiKey | quote }}
+          - name: EXTENDEDMIND_EMAIL_FROM
+            value: {{ .Values.emailFrom | quote }}
+          - name: EXTENDEDMIND_URL_ORIGIN
+            value: {{ .Values.urlOrigin | quote }}
+          - name: EXTENDEDMIND_UI
+            value: {{ .Values.ui | quote }}
+{{ if .Values.init }}
+          - name: EXTENDEDMIND_COMMON_COLLECTIVE_TITLE
+            value: {{ .Values.init.commonCollectiveTitle | quote }}
+          - name: EXTENDEDMIND_ADMIN_USER_EMAIL
+            value: {{ .Values.init.adminUserEmail | quote }}
+          - name: EXTENDEDMIND_ADMIN_USER_PASSWORD
+            value: {{ .Values.init.adminUserEmail | quote }}
+{{ end }}
         args:
           - "/app/backend-conf"
           - "/app/backend-data"

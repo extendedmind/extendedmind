@@ -1,0 +1,64 @@
+extendedmind {
+  version = ${project.version}
+  neo4j {
+    storeDir = "$EXTENDEDMIND_STORE_DIR"
+    propertiesFile = "/app/backend-conf/neo4j.properties"
+    operationMode = "$EXTENDEDMIND_OPERATION_MODE"
+  }
+  security {
+    tokenSecret = "$EXTENDEDMIND_TOKEN_SECRET"
+    signUpMethod = "$EXTENDEDMIND_SIGN_UP_METHOD"
+    signUpMode = "$EXTENDEDMIND_SIGN_UP_MODE"
+  }
+  server {
+    port = 8081
+  }
+  email {
+    provider = "$EXTENDEDMIND_EMAIL_PROVIDER"
+    mailgun {
+      domain = "$EXTENDEDMIND_MAILGUN_DOMAIN"
+      apiKey = "$EXTENDEDMIND_MAILGUN_API_KEY"
+    }
+    dummy = "target/test-emails",
+    from = "$EXTENDEDMIND_EMAIL_FROM"
+    urlOrigin = "$EXTENDEDMIND_URL_ORIGIN"
+    templates {
+      inviteTitle = "inviterDisplayName invited you to join extended mind"
+      joinInviteURI = "/join/inviteValue?email=emailValue"
+      shareListTitle = "proposedByDisplayName shared a list with you"
+      acceptShareURI = "/accept/shareValue?email=emailValue"
+      resetPasswordTitle = "password reset instructions"
+      resetPasswordURI = "/reset/resetCodeValue?email=emailValue"
+      verifyEmailTitle = "verify your email address"
+      verifyEmailURI = "/verify/verifyCodeValue?email=emailValue"
+    }
+  }
+  ui = "$EXTENDEDMIND_UI"
+  commonCollectiveTitle = "$EXTENDEDMIND_COMMON_COLLECTIVE_TITLE" 
+  adminUserEmail = "$EXTENDEDMIND_ADMIN_USER_EMAIL"
+  adminUserPassword = "$EXTENDEDMIND_ADMIN_USER_PASSWORD"
+}
+
+akka {
+  log-config-on-start = off
+  loglevel = DEBUG
+  loggers = ["akka.event.slf4j.Slf4jLogger"]
+  log-dead-letters = off
+  logger-startup-timeout = 30s  
+}
+
+# check the reference.conf in spray-can/src/main/resources for all defined settings
+spray.can.server {
+  idle-timeout = 60 s
+  request-timeout = 20 s
+  bind-timeout = 5 s
+  unbind-timeout = 5 s
+  registration-timeout = 5 s
+}
+
+spray.routing {
+  # Enables/disables more lenient HTTP header parsing
+  # off = illegal HTTP headers are not accepted, an error message is produced
+  # on = illegal HTTP headers are accepted as RawHeaders
+  relaxed-header-parsing = on
+}

@@ -420,7 +420,7 @@
               <name>quay.io/extendedmind/backend-discovery</name>
               <alias>backend-discovery</alias>
               <build>
-                <from>busybox</from>
+                <from>quay.io/extendedmind/tar-curl-rsync:tcr-4</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
                 <tags>
                   <tag>latest</tag>
@@ -443,14 +443,17 @@
               <name>quay.io/extendedmind/backend-backup</name>
               <alias>backend-backup</alias>
               <build>
-                <from>quay.io/extendedmind/cloudsdk:cloudsdk-155.0.0-2</from>
+                <from>quay.io/extendedmind/cloudsdk:cloudsdk-155.0.0-3</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
                 <tags>
                   <tag>latest</tag>
                   <tag>${project.version}</tag>
                 </tags>
                 <assembly>
+                  <!-- FIXME: Once CronJobs go out of beta switch back to this:
                   <user>java:java:java</user>
+                  -->
+                  <user>root:root:root</user>
                   <mode>dir</mode>
                   <basedir>/app/backend-backup</basedir>
                   <descriptor>backend-backup-assembly.xml</descriptor>

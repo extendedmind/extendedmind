@@ -39,6 +39,11 @@ else
   echo "ha.tx_push_factor=$PF" >> $NEO4J_PROPS
 fi
 
+# Now initialize application.conf using envsubst
+echo Preparing application.conf
+envsubst < "/app/backend-discovery/application.conf.tmpl" > "/app/backend-conf/application.conf"
+cat /app/backend-conf/application.conf
+
 # for HA_BOOTSTRAP, server id 1 uses its database but ids > 2 need to start from an empty database 
 
 if [ "$OPERATION_MODE" = "HA_BOOTSTRAP" ]; then

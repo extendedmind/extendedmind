@@ -1,8 +1,7 @@
 operationMode: HA
 replicas: 3
 storageClass: ${extendedmind.dbStorageClass}
-fsPreCommand: "${extendedmind.fsPreCommand}"
+fsPreCommand: ${extendedmind.fsPreCommand}
 backup:
-  days: ${extendedmind.backupDays}
   location: ${extendedmind.backupLocation}
   ${extendedmind.backupHostPath}

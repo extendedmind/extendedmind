@@ -55,9 +55,8 @@ if [ $IS_AVAILABLE -eq 200 ]; then
       NUMBER_OF_DIRS=$($FS_PRE_COMMAND ls -l $BACKUP_LOCATION_PREFIX | grep ^d | wc -l)
     fi
 
-    if [ $(( $NUMBER_OF_DIRS > $BACKUP_BUFFER )) ]; then
-
-      echo There are more days worth of backups than the given buffer $BACKUP_BUFFER
+    if [ "$NUMBER_OF_DIRS" -gt "$BACKUP_BUFFER" ]; then
+      echo There are $NUMBER_OF_DIRS worth of backups but the given buffer is only $BACKUP_BUFFER, cleaning up
 
       # Get the oldest directory...
       if [ "$FS_PRE_COMMAND" = "gsutil" ]; then
@@ -68,12 +67,11 @@ if [ $IS_AVAILABLE -eq 200 ]; then
       fi
 
       # ...and then delete it
-      echo "Executing: " $FS_PRE_COMMAND rm -rf $BACKUP_LOCATION/$OLDEST_DIR
+      echo "Executing: " $FS_PRE_COMMAND rm -rf $OLDEST_DIR
       $FS_PRE_COMMAND rm -rf $OLDEST_DIR
+    else
+      echo There are $NUMBER_OF_DIRS worth of backups and the given buffer $BACKUP_BUFFER, no need to clean up.
     fi
-
-    NUMBER_OF_DIRS=$($FS_PRE_COMMAND ls $BACKUP_LOCATION_PREFIX | wc)
-
   fi
 else
   echo "Backend not available, can not backup!"

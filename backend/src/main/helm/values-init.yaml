@@ -1,11 +1,10 @@
 operationMode: SINGLE
 storageClass: ${extendedmind.dbStorageClass}
-fsPreCommand: "${extendedmind.fsPreCommand}"
+fsPreCommand: ${extendedmind.fsPreCommand}
 init:
   commonCollectiveTitle: "${extendedmind.commonCollectiveTitle}"
   adminUserEmail: "${extendedmind.adminUserEmail}"
   adminUserPassword: "${extendedmind.adminUserPassword}"
 backup:
-  days: ${extendedmind.backupDays}
   location: ${extendedmind.backupLocation}
   ${extendedmind.backupHostPath}
