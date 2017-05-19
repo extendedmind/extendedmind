@@ -20,10 +20,10 @@ spec:
       - name: backend-discovery
         image: quay.io/extendedmind/backend-discovery:${project.version}
         env:
+          - name: EXTENDEDMIND_STORE_DIR
+            value: "/app/backend-data"
           - name: EXTENDEDMIND_OPERATION_MODE
             value: {{ .Values.operationMode | quote }}
-          - name: EXTENDEDMIND_STORE_DIR
-            value: {{ .Values.storeDir | quote }}
           - name: EXTENDEDMIND_TOKEN_SECRET
             value: {{ .Values.tokenSecret | quote }}
           - name: EXTENDEDMIND_SIGN_UP_METHOD

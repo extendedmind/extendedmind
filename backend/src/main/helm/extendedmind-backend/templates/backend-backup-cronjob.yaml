@@ -63,7 +63,7 @@ spec:
         command: ["/bin/bash"]
         args:
         - "-c"
-        - "mkdir /etc/periodic/{{ .Values.backup.frequency }} && echo \"#!/bin/sh\ncd /app/backend-backup\n./backend-backup.sh backend-external.default.svc.cluster.local {{ .Values.backup.location }} {{ .Values.backup.days }} {{ .Values.fsPreCommand }} > /var/log/backend-backup.log\" > /etc/periodic/{{ .Values.backup.frequency }}/backend-backup && chmod a+x /etc/periodic/{{ .Values.backup.frequency }}/backend-backup && (crontab -l ; echo \"*/1     *       *       *       *       run-parts /etc/periodic/1min\") | crontab - && crond -l 8 -f -d 8"
+        - "mkdir /etc/periodic/1min && echo \"#!/bin/sh\ncd /app/backend-backup\n./backend-backup.sh backend-external.default.svc.cluster.local {{ .Values.backup.location }} {{ .Values.backup.days }} {{ .Values.fsPreCommand }} > /var/log/backend-backup.log\" > /etc/periodic/{{ .Values.backup.frequency }}/backend-backup && chmod a+x /etc/periodic/{{ .Values.backup.frequency }}/backend-backup && (crontab -l ; echo \"*/1     *       *       *       *       run-parts /etc/periodic/1min\") | crontab - && crond -l 8 -f -d 8"
 {{ if .Values.backup.hostPath }}
         volumeMounts:
         - name: backupdir

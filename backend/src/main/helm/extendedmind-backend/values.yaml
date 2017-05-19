@@ -2,10 +2,7 @@
 # Other options are HA and HA_BOOTSTRAP and 3 replicas.
 operationMode: SINGLE
 replicas: 1
-# Default to insecure value: token does not actually contain any
-# sensitive informatino anyway, so encrypting it wiht this is 
-# not a security problem
-tokenSecret: "01234567890123456789012345678901"
+
 # Default to not using a pre command but instead doing backup/restore
 # using the local filestystem. Other option is "gsutil" for
 # google bucket save/restore.
@@ -14,27 +11,27 @@ backup:
   days: 14
   frequency: hourly
   location: /app/backend-backup-data
-ui: "{\"powered\": true, \"help\": false}"
 
-#             value: {{ .Values.operationMode }}
-#           - name: EXTENDEDMIND_STORE_DIR
-#             value: {{ .Values.storeDir }}
-#           - name: EXTENDEDMIND_TOKEN_SECRET
-#             value: {{ .Values.tokenSecret }} 
-#           - name: EXTENDEDMIND_SIGN_UP_METHOD
-#             value: {{ .Values.signUpMethod }}
-#           - name: EXTENDEDMIND_SIGN_UP_MODE
-#             value: {{ .Values.signUpMode }}
-#           - name: EXTENDEDMIND_EMAIL_PROVIDER
-#             value: {{ .Values.emailProvider }}
-#           - name: EXTENDEDMIND_MAILGUN_DOMAIN
-#             value: {{ .Values.mailgunDomain }}
-#           - name: EXTENDEDMIND_MAILGUN_API_KEY
-#             value: {{ .Values.mailgunApiKey }}
-#           - name: EXTENDEDMIND_EMAIL_FROM
-#             value: {{ .Values.emailFrom }}
-#           - name: EXTENDEDMIND_URL_ORIGIN
-#             value: {{ .Values.urlOrigin }}
-#           - name: EXTENDEDMIND_UI
-#             value: {{ .Values.ui }}
-# {
+# Default to insecure value: token does not actually contain any
+# sensitive informatino anyway, so encrypting it wiht this is 
+# not a security problem
+tokenSecret: "01234567890123456789012345678901"
+
+# Signing up is available and users get all latest features by
+# default
+signUpMethod: "ON"
+signUpMode: "ALFA"
+
+# Email settings:
+emailProvider: "DUMMY"
+# If the above is MAILGUN, the values below need to be set
+mailgunDomain: ""
+mailgunApiKey: ""
+# This needs to be set when actually sending emails via mailgun
+emailFrom: ""
+
+# Set this to e.g. http://yourdomain.com if you have a domain
+urlOrigin: "http://localhost"
+
+# Default values for the UI
+ui: "{\"powered\": true, \"help\": false}"

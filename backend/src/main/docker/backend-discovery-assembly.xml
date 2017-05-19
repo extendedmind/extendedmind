@@ -5,6 +5,7 @@
   	<fileSet>
       <directory>${project.basedir}/src/main/docker</directory>
       <outputDirectory>backend-discovery</outputDirectory>
+      <filtered>true</filtered>
       <includes>
         <include>backend-discover.sh</include>
         <include>application.conf.tmpl</include>
