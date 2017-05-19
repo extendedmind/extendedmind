@@ -28,7 +28,7 @@ emailProvider: "DUMMY"
 mailgunDomain: ""
 mailgunApiKey: ""
 # This needs to be set when actually sending emails via mailgun
-emailFrom: ""
+emailFrom: "example <example@example.com>"
 
 # Set this to e.g. http://yourdomain.com if you have a domain
 urlOrigin: "http://localhost"

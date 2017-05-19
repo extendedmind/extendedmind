@@ -406,10 +406,10 @@
                     <arg>-XX:+PrintCommandLineFlags</arg>
                     <!-- Neo4j suggests to use this -->
                     <arg>-XX:+UseConcMarkSweepGC</arg>
-                    <arg>-Dextendedmind.neo4j.storeDir=/app/backend-data/neo4j</arg>
                   </exec>
                 </entryPoint>
                 <cmd>
+                  <arg>-Dextendedmind.neo4j.storeDir=/app/backend-data/neo4j</arg>
                   <arg>-cp</arg>
                   <arg>/app/backend/lib/*</arg>
                   <arg>org.extendedmind.Server</arg>

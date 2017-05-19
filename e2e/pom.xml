@@ -319,6 +319,7 @@
                   <port>8007:8081</port>
                 </ports>
                 <cmd>
+                  <arg>-Dextendedmind.neo4j.storeDir=/app/backend-data/neo4j</arg>
                   <arg>-Dextendedmind.security.tokenSecret=01234567890123456789012345678901</arg>
                   <arg>-Dextendedmind.security.signupMode=BETA</arg>
                   <arg>-Dextendedmind.email.urlOrigin=${e2e.urlOrigin}</arg>

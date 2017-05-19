@@ -21,7 +21,7 @@ spec:
         image: quay.io/extendedmind/backend-discovery:${project.version}
         env:
           - name: EXTENDEDMIND_STORE_DIR
-            value: "/app/backend-data"
+            value: "/app/backend-data/neo4j"
           - name: EXTENDEDMIND_OPERATION_MODE
             value: {{ .Values.operationMode | quote }}
           - name: EXTENDEDMIND_TOKEN_SECRET
@@ -53,7 +53,7 @@ spec:
         args:
           - "/app/backend-conf"
           - "/app/backend-data"
-          - "{{ .Values.operationMode }}"
+          - {{ .Values.operationMode | quote }}
         volumeMounts:
         - name: confdir
           mountPath: "/app/backend-conf"
@@ -67,10 +67,10 @@ spec:
       - name: backend-restore
         image: quay.io/extendedmind/backend-restore:${project.version}
         args:
-          - "{{ .Values.restore.file }}"
+          - {{ .Values.restore.file | quote }}
           - "/app/backend-data"
-          - "{{ .Values.operationMode }}"
-          - "{{ .Values.fsPreCommand }}"
+          - {{ .Values.operationMode | quote }}
+          - {{ .Values.fsPreCommand | quote }}
         volumeMounts: 
         - name: datadir
           mountPath: "/app/backend-data"
@@ -83,14 +83,7 @@ spec:
         - name: backend
           image: quay.io/extendedmind/backend:${project.version}
           args:
-            - "-Dextendedmind.neo4j.operationMode={{ .Values.operationMode }}"
-            - "-Dextendedmind.neo4j.propertiesFile=/app/backend-conf/neo4j.properties"
-            - "-Dextendedmind.security.tokenSecret=$TOKEN_SECRET"
-{{ if .Values.init }}
-            - "-Dextendedmind.commonCollectiveTitle=\"{{ .Values.init.commonCollectiveTitle }}\""
-            - "-Dextendedmind.adminUserEmail={{ .Values.init.adminUserEmail }}"
-            - "-Dextendedmind.adminUserPassword=\"$ADMIN_USER_PASSWORD\""
-{{ end }}
+            - "-Dconfig.file=/app/backend-conf/application.conf"
             - "-cp"
             - "/app/backend/lib/*"
             - "org.extendedmind.Server"
