@@ -8,52 +8,6 @@ spec:
   template:
     metadata:
       annotations:
-        pod.beta.kubernetes.io/init-containers: '[
-            {
-                "name": "backend-discovery",
-                "image": "quay.io/extendedmind/backend-discovery:${project.version}",
-                "args": ["/app/backend-conf", "/app/backend-data", "{{ .Values.operationMode }}"],
-                "volumeMounts": [
-                    {
-                        "name": "confdir",
-                        "mountPath": "/app/backend-conf"
-                    },
-                    {
-                        "name": "datadir",
-                        "mountPath": "/app/backend-data"
-                    }
-{{ if .Values.backup.hostPath }}
-                    ,{
-                        "name": "backupdir",
-                        "mountPath": "/app/backend-backup-data"
-                    }
-{{ end }}
-                ]
-            }
-{{ if and (.Values.restore) ( ne .Values.operationMode "HA" ) }}
-            ,{
-                "name": "backend-restore",
-                "image": "quay.io/extendedmind/backend-restore:${project.version}",
-                "args": ["{{ .Values.restore.file }}", "/app/backend-data", "{{ .Values.operationMode }}", "{{ .Values.fsPreCommand }}"],
-                "volumeMounts": [
-                    {
-                        "name": "confdir",
-                        "mountPath": "/app/backend-conf"
-                    },
-                    {
-                        "name": "datadir",
-                        "mountPath": "/app/backend-data"
-                    }
-  {{ if .Values.restore.hostPath }}
-                    ,{
-                        "name": "restoredir",
-                        "mountPath": "/app/backend-restore-data"
-                    }
-  {{ end }}
-                ]
-            }
-{{ end }}
-        ]'
       labels:
         app: extendedmind
         tier: backend
@@ -62,16 +16,49 @@ spec:
         version: ${project.version}
         group: org.extendedmind
     spec:
+      initContainers:
+      - name: backend-discovery
+        image: quay.io/extendedmind/backend-discovery:${project.version}
+        args:
+          - "/app/backend-conf"
+          - "/app/backend-data"
+          - "{{ .Values.operationMode }}"
+        volumeMounts:
+        - name: confdir
+          mountPath: "/app/backend-conf"
+        - name: datadir
+          mountPath: "/app/backend-data"
+{{ if .Values.backup.hostPath }}
+        - name: backupdir
+          mountPath: "/app/backend-backup-data"
+{{ end }}
+{{ if and (.Values.restore) ( ne .Values.operationMode "HA" ) }}
+      - name: backend-restore
+        image: quay.io/extendedmind/backend-restore:${project.version}
+        args:
+          - "{{ .Values.restore.file }}"
+          - "/app/backend-data"
+          - "{{ .Values.operationMode }}"
+          - "{{ .Values.fsPreCommand }}"
+        volumeMounts: 
+        - name: datadir
+          mountPath: "/app/backend-data"
+  {{ if .Values.restore.hostPath }}
+        - name: restoredir
+          mountPath: "/app/backend-restore-data"
+  {{ end }}
+{{ end }}
       containers:
         - name: backend
           image: quay.io/extendedmind/backend:${project.version}
           args:
             - "-Dextendedmind.neo4j.operationMode={{ .Values.operationMode }}"
             - "-Dextendedmind.neo4j.propertiesFile=/app/backend-conf/neo4j.properties"
+            - "-Dextendedmind.security.tokenSecret=$TOKEN_SECRET"
 {{ if .Values.init }}
             - "-Dextendedmind.commonCollectiveTitle=\"{{ .Values.init.commonCollectiveTitle }}\""
             - "-Dextendedmind.adminUserEmail={{ .Values.init.adminUserEmail }}"
-            - "-Dextendedmind.adminUserPassword=\"{{ .Values.init.adminUserPassword }}\""
+            - "-Dextendedmind.adminUserPassword=\"$ADMIN_USER_PASSWORD\""
 {{ end }}
             - "-cp"
             - "/app/backend/lib/*"
