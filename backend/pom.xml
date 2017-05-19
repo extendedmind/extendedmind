@@ -490,30 +490,7 @@
                 </entryPoint>
               </build>
             </image>
-            <image>
-              <name>quay.io/extendedmind/sync-folder</name>
-              <alias>sync-folder</alias>
-              <build>
-                <from>quay.io/extendedmind/cloudsdk:cloudsdk-155.0.0-3</from>
-                <maintainer>timo.tiuraniemi@iki.fi</maintainer>
-                <tags>
-                  <tag>latest</tag>
-                  <tag>${project.version}</tag>
-                </tags>
-                <assembly>
-                  <mode>dir</mode>
-                  <basedir>/app/sync-folder</basedir>
-                  <descriptor>sync-folder-assembly.xml</descriptor>
-                </assembly>
-                <workdir>/app</workdir>
-                <entryPoint>
-                  <exec>
-                    <arg>/app/sync-folder/sync-folder.sh</arg>
-                  </exec>
-                </entryPoint>
-              </build>
-            </image>
-          </images>
+         </images>
         </configuration>
         <executions>
           <execution>
