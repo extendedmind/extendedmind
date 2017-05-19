@@ -67,3 +67,6 @@ fi
 # Fix permissions
 chown -R 1000:1000 $CONF_DIRECTORY
 chown -R 1000:1000 $DATA_DIRECTORY
+if [ -d /app/backend-backup-data ]; then
+  chown -R 1000:1000 /app/backend-backup-data
+fi

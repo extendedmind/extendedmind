@@ -22,6 +22,12 @@ spec:
                         "name": "datadir",
                         "mountPath": "/app/backend-data"
                     }
+{{ if .Values.backup.hostPath }}
+                    ,{
+                        "name": "backupdir",
+                        "mountPath": "/app/backend-backup-data"
+                    }
+{{ end }}
                 ]
             }
 {{ if and (.Values.restore) ( ne .Values.operationMode "HA" ) }}
@@ -105,6 +111,11 @@ spec:
         - name: datadir
           persistentVolumeClaim:
             claimName: datadir
+{{ if .Values.backup.hostPath }}
+        - name: backupdir
+          hostPath:
+            path: {{ .Values.backup.hostPath }}
+{{ end }}
 {{ if .Values.restore }}
   {{ if .Values.restore.hostPath }}
         - name: restoredir
