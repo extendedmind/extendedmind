@@ -25,7 +25,10 @@ spec:
           - name: EXTENDEDMIND_OPERATION_MODE
             value: {{ .Values.operationMode | quote }}
           - name: EXTENDEDMIND_TOKEN_SECRET
-            value: {{ .Values.tokenSecret | quote }}
+            valueFrom:
+              secretKeyRef:
+                name: backend-secrets
+                key: tokenSecret
           - name: EXTENDEDMIND_SIGN_UP_METHOD
             value: {{ .Values.signUpMethod | quote }}
           - name: EXTENDEDMIND_SIGN_UP_MODE
@@ -48,7 +51,10 @@ spec:
           - name: EXTENDEDMIND_ADMIN_USER_EMAIL
             value: {{ .Values.init.adminUserEmail | quote }}
           - name: EXTENDEDMIND_ADMIN_USER_PASSWORD
-            value: {{ .Values.init.adminUserEmail | quote }}
+            valueFrom:
+              secretKeyRef:
+                name: backend-secrets
+                key: adminUserPassword
 {{ end }}
         args:
           - "/app/backend-conf"
@@ -86,6 +92,7 @@ spec:
           image: quay.io/extendedmind/backend:${project.version}
           args:
             - "-Dconfig.file=/app/backend-conf/application.conf"
+            - "-Dlogback.configurationFile=/app/backend-conf/logback.xml"
             - "-cp"
             - "/app/backend/lib/*"
             - "org.extendedmind.Server"

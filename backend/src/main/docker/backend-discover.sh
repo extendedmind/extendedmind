@@ -42,6 +42,8 @@ fi
 # Now initialize application.conf using envsubst
 echo Preparing /app/backend-conf/application.conf
 envsubst < "/app/backend-discovery/application.conf.tmpl" > "/app/backend-conf/application.conf"
+echo Preparing /app/backend-conf/logback.xml
+envsubst < "/app/backend-discovery/logback.xml.tmpl" > "/app/backend-conf/logback.xml"
 
 # for HA_BOOTSTRAP, server id 1 uses its database but ids > 2 need to start from an empty database 
 

@@ -8,6 +8,7 @@
       <includes>
         <include>backend-discover.sh</include>
         <include>application.conf.tmpl</include>
+        <include>logback.xml.tmpl</include>
       </includes>
     </fileSet>
     <fileSet>
