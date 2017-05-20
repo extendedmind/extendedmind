@@ -368,6 +368,7 @@
           <finalName>${project.artifactId}-${project.version}</finalName>
           <descriptors>
             <descriptor>sources-assembly.xml</descriptor>
+            <descriptor>helm-assembly.xml</descriptor>
           </descriptors>
         </configuration>
         <executions>

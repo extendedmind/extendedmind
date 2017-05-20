@@ -3,4 +3,4 @@ dbStorageClass: ${extendedmind.dbStorageClass}
 fsPreCommand: ${extendedmind.fsPreCommand}
 backup:
   location: ${extendedmind.backupLocation}
-  ${extendedmind.backupHostPath}
+  ${extendedmind.backupStorageDefinition}

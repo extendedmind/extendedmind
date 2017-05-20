@@ -3,7 +3,7 @@ dbStorageClass: ${extendedmind.dbStorageClass}
 fsPreCommand: "${extendedmind.fsPreCommand}"
 restore:
   file: ${extendedmind.dbRestoreFile}
-  ${extendedmind.restoreHostPath}
+  ${extendedmind.dbRestoreStorageDefinition}
 backup:
   location: ${extendedmind.backupLocation}
-  ${extendedmind.backupHostPath}
+  ${extendedmind.backupStorageDefinition}

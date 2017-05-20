@@ -5,7 +5,7 @@
   </formats>
   <fileSets>
     <fileSet>
-      <directory>${project.build.directory}/helm</directory>
+      <directory>${project.basedir}/src/main/helm</directory>
       <outputDirectory>.</outputDirectory>
       <includes>
         <include>**</include>
