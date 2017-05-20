@@ -34,4 +34,4 @@ emailFrom: "example <example@example.com>"
 urlOrigin: "http://localhost"
 
 # Default values for the UI
-ui: "{\"powered\": true, \"help\": false}"
+ui: "{\\\"powered\\\": true, \\\"help\\\": false}"
