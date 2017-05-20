@@ -1,6 +1,15 @@
 operationMode: SINGLE
 dbStorageClass: ${extendedmind.dbStorageClass}
-fsPreCommand: ${extendedmind.fsPreCommand}
+${extendedmind.fsPreCommandDefinition}
+${extendedmind.tokenSecretDefition}
+signUpMethod: "${extendedmind.signUpMethod}"
+signUpMode: ${extendedmind.signUpMode}
+emailProvider: ${extendedmind.emailProvider}
+${extendedmind.mailgunDomainDefinition}
+${extendedmind.mailgunApiKeyDefinition}
+emailFrom: "${extendedmind.emailFrom}"
+urlOrigin: ${extendedmind.urlOrigin}
+${extendedmind.uiDefinition}
 backup:
   location: ${extendedmind.backupLocation}
   ${extendedmind.backupStorageDefinition}
