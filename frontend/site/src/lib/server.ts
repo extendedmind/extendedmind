@@ -65,11 +65,8 @@ export class Server {
 
     // backend link
 
-    if (config.backend === true) {
-      // True value means to use docker provided environment variable
-      this.backendApiAddress = "http://" + process.env.BACKEND_PORT_8081_TCP_ADDR + ":8081";
-    }else if (config.backend) {
-      // Backend API address can also be given with a string directly
+    if (config.backend) {
+      // Backend API address must be given with a string directly
       this.backendApiAddress = config.backend;
     }else {
       throw new Error("FATAL: config.backend must be set to either true or specific address");
