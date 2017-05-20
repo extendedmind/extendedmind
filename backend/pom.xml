@@ -346,7 +346,7 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
           <descriptors>
-            <descriptor>src/main/assembly/scripts.xml</descriptor>
+            <descriptor>src/main/assembly/helm.xml</descriptor>
             <descriptor>src/main/assembly/dist.xml</descriptor>
             <descriptor>src/main/assembly/runtime-dependencies.xml</descriptor>
           </descriptors>
