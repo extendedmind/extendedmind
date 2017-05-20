@@ -1,1 +1,7 @@
 # Default frontend values
+quayIoOrg: "extendedmind"
+urlOrigin: "http://localhost:8008"
+frontendReplicas: 1
+nginxReplicas: 1
+# If still proxying 8008 onward, set this to the default ClusterIP
+nginxServiceType: NodePort

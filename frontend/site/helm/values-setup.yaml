@@ -1,3 +1,6 @@
+frontendReplicas: 2
+nginxReplicas: 2
 nfs:
+  storageSize: ${extendedmind.nfsStorageSize}
   # gcePd: Use this instead for GCE install 
   hostPath: "${extendedmind.nfsHostPath}"

@@ -1,0 +1,32 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: site
+spec:
+  replicas: {{ .Values.frontendReplicas }}
+  template:
+    metadata:
+      labels:
+        app: extendedmind
+        tier: frontend
+        role: server
+        project: frontend-site
+        version: ${project.version}
+        group: org.extendedmind.frontend
+    spec:
+      containers:
+      - name: site
+        image: quay.io/{{ .Values.quayIoOrg }}/site:${project.version}
+        ports:
+        - name: koa
+          containerPort: 3000
+        env:
+        - name: EXTENDEDMIND_URL
+          value: {{ .Values.urlOrigin }}
+        volumeMounts:
+        - name: publicdir
+          mountPath: /app/site-public
+      volumes:
+      - name: publicdir
+        persistentVolumeClaim:
+          claimName: shared

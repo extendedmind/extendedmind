@@ -1,0 +1,15 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: shared
+  labels:
+    project: frontend-site
+    version: ${project.version}
+    group: org.extendedmind.frontend
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: "extendedmind-nfs"
+  resources:
+    requests:
+      storage: {{ .Values.nfs.storageSize }}

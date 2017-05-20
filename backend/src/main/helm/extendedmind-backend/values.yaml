@@ -1,7 +1,7 @@
 # Default to one node implementation
 # Other options are HA and HA_BOOTSTRAP and 3 replicas.
 operationMode: SINGLE
-replicas: 1
+backendReplicas: 1
 
 # Default to not using a pre command but instead doing backup/restore
 # using the local filestystem. Other option is "gsutil" for

@@ -1,24 +1,18 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: nfs-provisioner
+  name: nginx
   labels:
     project: frontend-site
     version: ${project.version}
     group: org.extendedmind.frontend
 spec:
   ports:
-    - name: nfs
-      port: 2049
-    - name: mountd
-      port: 20048
-    - name: rpcbind
-      port: 111
-    - name: rpcbind-udp
-      port: 111
-      protocol: UDP
+  - name: web
+    port: 8008
+  type: {{ .Values.nginxServiceType }}
   selector:
-    role: nfs
+    role: proxy
     project: frontend-site
     version: ${project.version}
     group: org.extendedmind.frontend

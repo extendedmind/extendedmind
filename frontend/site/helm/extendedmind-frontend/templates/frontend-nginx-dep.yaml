@@ -1,0 +1,30 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: nginx
+spec:
+  replicas: {{ .Values.nginxReplicas }}
+  template:
+    metadata:
+      labels:
+        app: extendedmind
+        tier: frontend
+        role: proxy
+        project: frontend-site
+        version: ${project.version}
+        group: org.extendedmind.frontend
+    spec:
+      containers:
+      - name: nginx
+        image: quay.io/extendedmind/nginx:nginx-1.13.0-1
+        ports:
+        - name: web
+          containerPort: 8008
+        volumeMounts:
+        - name: publicdir
+          mountPath: /app/site-public
+          readOnly: true
+      volumes:
+      - name: publicdir
+        persistentVolumeClaim:
+          claimName: shared

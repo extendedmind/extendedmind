@@ -1,24 +1,17 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: nfs-provisioner
+  name: site
   labels:
     project: frontend-site
     version: ${project.version}
     group: org.extendedmind.frontend
 spec:
   ports:
-    - name: nfs
-      port: 2049
-    - name: mountd
-      port: 20048
-    - name: rpcbind
-      port: 111
-    - name: rpcbind-udp
-      port: 111
-      protocol: UDP
+  - name: site
+    port: 3000
   selector:
-    role: nfs
+    role: server
     project: frontend-site
     version: ${project.version}
     group: org.extendedmind.frontend

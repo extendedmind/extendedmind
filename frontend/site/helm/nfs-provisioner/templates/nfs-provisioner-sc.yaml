@@ -1,0 +1,9 @@
+kind: StorageClass
+apiVersion: storage.k8s.io/v1beta1
+metadata:
+  name: extendedmind-nfs
+  labels:
+    project: frontend-site
+    version: ${project.version}
+    group: org.extendedmind.frontend
+provisioner: extendedmind.org/nfs
