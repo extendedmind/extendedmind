@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: site-static
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "-5"
+spec:
+  template:
+    metadata:
+      labels:
+        project: frontend-site
+        version: ${project.version}
+        group: org.extendedmind.frontend
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: site-static
+        image: quay.io/{{ .Values.quayIoOrg }}/site-static:${project.version}
+        volumeMounts:
+        - name: publicdir
+          mountPath: /app/site-public
+      volumes:
+      - name: publicdir
+        persistentVolumeClaim:
+          claimName: shared

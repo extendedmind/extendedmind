@@ -14,6 +14,12 @@ spec:
         version: ${project.version}
         group: org.extendedmind.frontend
     spec:
+      initContainers:
+      - name: nginx-etc-init
+        image: quay.io/{{ .Values.quayIoOrg }}/etc-init:${project.version}
+        volumeMounts:
+        - name: enableddir
+          mountPath: "/etc/nginx/sites-enabled"
       containers:
       - name: nginx
         image: quay.io/extendedmind/nginx:nginx-1.13.0-1
@@ -21,10 +27,14 @@ spec:
         - name: web
           containerPort: 8008
         volumeMounts:
+        - name: enableddir
+          mountPath: "/etc/nginx/sites-enabled"
         - name: publicdir
           mountPath: /app/site-public
           readOnly: true
       volumes:
+      - name: enableddir
+        emptyDir: {}
       - name: publicdir
         persistentVolumeClaim:
           claimName: shared

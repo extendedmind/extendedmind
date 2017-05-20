@@ -41,7 +41,7 @@
   </dependencies>
   <properties>
     <root.project.basedir>${project.parent.parent.basedir}</root.project.basedir>
-    <nginxSitePrefix/>
+    <nginxSiteHost>site</nginxSiteHost>
     <extraNginxConf/>
   </properties>
   <build>
@@ -256,6 +256,29 @@
                   <exec>
                     <arg>pm2-docker</arg>
                     <arg>site-pm2.json</arg>
+                  </exec>
+                </entryPoint>
+              </build>
+            </image>
+            <image>
+              <name>quay.io/extendedmind/etc-init</name>
+              <alias>etc-init</alias>
+              <build>
+                <from>quay.io/extendedmind/tar-curl-rsync:tcr-4</from>
+                <maintainer>timo.tiuraniemi@iki.fi</maintainer>
+                <tags>
+                  <tag>latest</tag>
+                  <tag>${project.version}</tag>
+                </tags>
+                <assembly>
+                  <mode>dir</mode>
+                  <basedir>/</basedir>
+                  <descriptor>etc-init-assembly.xml</descriptor>
+                </assembly>
+                <workdir>/app/etc-init</workdir>
+                <entryPoint>
+                  <exec>
+                    <arg>/app/etc-init/etc-init.sh</arg>
                   </exec>
                 </entryPoint>
               </build>
