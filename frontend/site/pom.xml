@@ -294,6 +294,10 @@
                   <tag>${project.version}</tag>
                 </tags>
                 <assembly>
+                  <!-- FIXME: Once CronJobs go out of beta switch back to this:
+                  <user>java:java:java</user>
+                  -->
+                  <user>root:root:root</user>
                   <mode>dir</mode>
                   <basedir>/app/sync-folder</basedir>
                   <descriptor>sync-folder-assembly.xml</descriptor>

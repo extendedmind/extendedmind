@@ -24,7 +24,7 @@ spec:
               - {{ .Values.backup.location | quote }}
               - {{ .Values.backup.days | quote }}
               - {{ .Values.fsPreCommand | quote }}
-              image: quay.io/extendedmind/backend-backup:0-SNAPSHOT
+              image: quay.io/extendedmind/backend-backup:${project.version}
 {{ if .Values.backup.hostPath }}
               volumeMounts:
               - name: backupdir
@@ -59,7 +59,7 @@ spec:
     spec:
       containers:
       - name: backend-cron
-        image: quay.io/extendedmind/backend-backup:0-SNAPSHOT
+        image: quay.io/extendedmind/backend-backup:${project.version}
         command: ["/bin/bash"]
         args:
         - "-c"
