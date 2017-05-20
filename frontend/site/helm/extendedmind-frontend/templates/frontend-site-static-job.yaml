@@ -20,6 +20,7 @@ spec:
         volumeMounts:
         - name: publicdir
           mountPath: /app/site-public
+          subPath: extendedmind
       volumes:
       - name: publicdir
         persistentVolumeClaim:

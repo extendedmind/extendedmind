@@ -32,6 +32,7 @@ spec:
         - name: publicdir
           mountPath: /app/site-public
           readOnly: true
+          subPath: extendedmind
       volumes:
       - name: enableddir
         emptyDir: {}
