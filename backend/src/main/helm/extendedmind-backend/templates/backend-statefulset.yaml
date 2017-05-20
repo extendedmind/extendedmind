@@ -149,7 +149,7 @@ spec:
         group: org.extendedmind
     spec:
       accessModes: [ "ReadWriteOnce" ]
-      storageClassName: {{ .Values.storageClass }}
+      storageClassName: {{ .Values.dbStorageClass }}
       resources:
         requests:
           storage: 100M

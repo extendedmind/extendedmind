@@ -1,0 +1,11 @@
+name: "extendedmind-frontend"
+home: "https://github.com/extendedmind/extendedmind"
+sources:
+- "git@github.com:extendedmind/extendedmind.git"
+version: "${project.version}"
+description: "${project.description}"
+keywords:
+- "productivity"
+maintainers:
+- name: "Timo Tiuraniemi"
+  email: "timo.tiuraniemi@iki.fi"

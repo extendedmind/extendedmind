@@ -1,5 +1,5 @@
 operationMode: SINGLE
-storageClass: ${extendedmind.dbStorageClass}
+dbStorageClass: ${extendedmind.dbStorageClass}
 fsPreCommand: ${extendedmind.fsPreCommand}
 init:
   commonCollectiveTitle: "${extendedmind.commonCollectiveTitle}"

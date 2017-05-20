@@ -1,6 +1,6 @@
 operationMode: HA_BOOTSTRAP
 replicas: 3
-storageClass: ${extendedmind.dbStorageClass}
+dbStorageClass: ${extendedmind.dbStorageClass}
 fsPreCommand: ${extendedmind.fsPreCommand}
 backup:
   location: ${extendedmind.backupLocation}

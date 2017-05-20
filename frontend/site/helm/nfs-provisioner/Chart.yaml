@@ -1,0 +1,9 @@
+name: "nfs-provisioner"
+home: "https://github.com/extendedmind/extendedmind"
+sources:
+- "git@github.com:extendedmind/extendedmind.git"
+version: "${project.version}"
+description: "NFS provisioner setup"
+maintainers:
+- name: "Timo Tiuraniemi"
+  email: "timo.tiuraniemi@iki.fi"
