@@ -11,7 +11,7 @@ spec:
         tier: frontend
         role: proxy
         project: frontend-site
-        version: ${project.version}
+        version: "${project.version}"
         group: org.extendedmind.frontend
     spec:
       initContainers:

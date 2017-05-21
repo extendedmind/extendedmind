@@ -1,4 +1,4 @@
-# External service named "backend-external" that exposes the API and backup ports
+# External service named "backend" that exposes the API and backup ports
 apiVersion: v1
 kind: Service
 metadata:
@@ -6,9 +6,9 @@ metadata:
     app: extendedmind
     tier: backend
     project: backend
-    version: ${project.version}
+    version: "${project.version}"
     group: org.extendedmind
-  name: backend-external
+  name: backend
 spec:
   ports:
   - port: 8081

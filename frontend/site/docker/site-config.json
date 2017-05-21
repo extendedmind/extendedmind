@@ -3,6 +3,6 @@
   "port": 3000,
   "externalStatic": true,
   "debug": false,
-  "backend": "http://backend-external:8081",
+  "backend": "http://backend:8081",
   "generatedFilesPath": "/app/site-public/generated"
 }

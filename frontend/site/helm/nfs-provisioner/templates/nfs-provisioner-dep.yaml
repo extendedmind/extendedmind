@@ -13,7 +13,7 @@ spec:
         tier: frontend
         role: nfs
         project: frontend-site
-        version: ${project.version}
+        version: "${project.version}"
         group: org.extendedmind.frontend
     spec:
       containers:

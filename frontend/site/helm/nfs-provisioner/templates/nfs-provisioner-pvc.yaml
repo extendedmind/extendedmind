@@ -4,7 +4,7 @@ metadata:
   name: shared
   labels:
     project: frontend-site
-    version: ${project.version}
+    version: "${project.version}"
     group: org.extendedmind.frontend
 spec:
   accessModes:

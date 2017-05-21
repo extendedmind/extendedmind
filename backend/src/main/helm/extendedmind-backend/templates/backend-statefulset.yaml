@@ -4,7 +4,7 @@ metadata:
   name: backend
 spec:
   replicas: {{ .Values.backendReplicas }}
-  serviceName: backend
+  serviceName: backend-internal
   template:
     metadata:
       annotations:
@@ -13,7 +13,7 @@ spec:
         tier: backend
         role: server
         project: backend
-        version: ${project.version}
+        version: "${project.version}"
         group: org.extendedmind
     spec:
       initContainers:
@@ -152,7 +152,7 @@ spec:
       name: datadir
       labels:
         project: backend
-        version: ${project.version}
+        version: "${project.version}"
         group: org.extendedmind
     spec:
       accessModes: [ "ReadWriteOnce" ]

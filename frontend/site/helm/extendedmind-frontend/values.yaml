@@ -1,5 +1,6 @@
 #l Default frontend values
 quayIoOrg: "extendedmind"
+siteHostName: "site"
 urlOrigin: "http://localhost:8008"
 frontendReplicas: 1
 nginxReplicas: 1

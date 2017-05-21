@@ -14,13 +14,13 @@ spec:
             tier: backend
             role: backup
             project: backend
-            version: ${project.version}
+            version: "${project.version}"
             group: org.extendedmind
         spec:
           containers:
             - name: backend-backup
               args:
-              - "backend-external.default.svc.cluster.local"
+              - "backend.default.svc.cluster.local"
               - {{ .Values.backup.location | quote }}
               - {{ .Values.backup.days | quote }}
               - {{ .Values.fsPreCommand | quote }}
@@ -54,7 +54,7 @@ spec:
         tier: backend
         role: cron
         project: backend
-        version: ${project.version}
+        version: "${project.version}"
         group: org.extendedmind
     spec:
       containers:
@@ -63,7 +63,7 @@ spec:
         command: ["/bin/bash"]
         args:
         - "-c"
-        - "mkdir /etc/periodic/1min && echo \"#!/bin/sh\ncd /app/backend-backup\n./backend-backup.sh backend-external.default.svc.cluster.local {{ .Values.backup.location }} {{ .Values.backup.days }} {{ .Values.fsPreCommand }} > /var/log/backend-backup.log\" > /etc/periodic/{{ .Values.backup.frequency }}/backend-backup && chmod a+x /etc/periodic/{{ .Values.backup.frequency }}/backend-backup &&  echo \"#!/bin/sh\ncurl -d '{\\\"priority\\\":2}' -H 'Content-Type:application/json' --silent backend-external.default.svc.cluster.local:8081/v2/tick\" > /etc/periodic/hourly/tick_hourly && echo \"#!/bin/sh\ncurl -d '{\\\"priority\\\":3}' -H 'Content-Type:application/json' --silent backend-external.default.svc.cluster.local:8081/v2/tick\" > /etc/periodic/daily/tick_daily && chmod a+x /etc/periodic/hourly/* && chmod a+x /etc/periodic/daily/* && (crontab -l ; echo \"*/1     *       *       *       *       run-parts /etc/periodic/1min\") | crontab - && crond -l 8 -f -d 8"
+        - "mkdir /etc/periodic/1min && echo \"#!/bin/sh\ncd /app/backend-backup\n./backend-backup.sh backend.default.svc.cluster.local {{ .Values.backup.location }} {{ .Values.backup.days }} {{ .Values.fsPreCommand }} > /var/log/backend-backup.log\" > /etc/periodic/{{ .Values.backup.frequency }}/backend-backup && chmod a+x /etc/periodic/{{ .Values.backup.frequency }}/backend-backup &&  echo \"#!/bin/sh\ncurl -d '{\\\"priority\\\":2}' -H 'Content-Type:application/json' --silent backend.default.svc.cluster.local:8081/v2/tick\" > /etc/periodic/hourly/tick_hourly && echo \"#!/bin/sh\ncurl -d '{\\\"priority\\\":3}' -H 'Content-Type:application/json' --silent backend.default.svc.cluster.local:8081/v2/tick\" > /etc/periodic/daily/tick_daily && chmod a+x /etc/periodic/hourly/* && chmod a+x /etc/periodic/daily/* && (crontab -l ; echo \"*/1     *       *       *       *       run-parts /etc/periodic/1min\") | crontab - && crond -l 8 -f -d 8"
 {{ if .Values.backup.hostPath }}
         volumeMounts:
         - name: backupdir

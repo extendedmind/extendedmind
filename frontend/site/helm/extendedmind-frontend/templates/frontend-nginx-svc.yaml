@@ -4,7 +4,7 @@ metadata:
   name: nginx
   labels:
     project: frontend-site
-    version: ${project.version}
+    version: "${project.version}"
     group: org.extendedmind.frontend
 spec:
   ports:
@@ -14,5 +14,5 @@ spec:
   selector:
     role: proxy
     project: frontend-site
-    version: ${project.version}
+    version: "${project.version}"
     group: org.extendedmind.frontend

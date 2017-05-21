@@ -360,7 +360,7 @@
                   </bind>
                 </volumes>
                 <links>
-                  <link>backend:backend-external</link>
+                  <link>backend:backend</link>
                 </links>
                 <env>
                   <EXTENDEDMIND_URL>http://localhost:8008</EXTENDEDMIND_URL>
@@ -381,7 +381,7 @@
                   </bind>
                 </volumes>
                 <links>
-                  <link>backend:backend-external</link>
+                  <link>backend:backend</link>
                   <link>site:site</link>
                 </links>
                 <ports>

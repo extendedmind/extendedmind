@@ -1,10 +1,10 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: site
+  name: {{ .Values.siteHostName }}
   labels:
     project: frontend-site
-    version: ${project.version}
+    version: "${project.version}"
     group: org.extendedmind.frontend
 spec:
   ports:
@@ -13,5 +13,5 @@ spec:
   selector:
     role: server
     project: frontend-site
-    version: ${project.version}
+    version: "${project.version}"
     group: org.extendedmind.frontend
