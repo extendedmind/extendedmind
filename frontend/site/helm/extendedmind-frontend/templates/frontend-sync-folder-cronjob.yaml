@@ -60,7 +60,7 @@ spec:
         command: ["/bin/bash"]
         args:
         - "-c"
-        - "mkdir /etc/periodic/1min && echo \"#!/bin/sh\n/app/sync-folder/sync-folder.sh {{ .Values.sync.source }} /app/site-public/extendedmind/files {{ .Values.fsPreCommand }} > /var/log/site-sync.log\" > /etc/periodic/1min/site-sync && echo \"{{ .Values.sync.extra1minJob }}\" {{ .Values.sync.extra1minJobPipe }} && chmod a+x /etc/periodic/1min/* && (crontab -l ; echo \"*/1     *       *       *       *       run-parts /etc/periodic/1min\") | crontab - && crond -l 8 -f -d 8"
+        - "mkdir /etc/periodic/1min && echo \"#!/bin/sh\n/app/sync-folder/sync-folder.sh {{ .Values.sync.source }} /app/site-public/extendedmind/files {{ .Values.fsPreCommand }} > /var/log/site-sync.log\" > /etc/periodic/1min/site-sync && echo \"#!/bin/sh\n{{ .Values.sync.extra1minJobContent }}\" {{ .Values.sync.extra1minJobPipe }} && chmod a+x /etc/periodic/1min/* && (crontab -l ; echo \"*/1     *       *       *       *       run-parts /etc/periodic/1min\") | crontab - && crond -l 8 -f -d 8"
         volumeMounts:
         - name: publicdir
           mountPath: /app/site-public

@@ -37,6 +37,7 @@ else
   echo "ha.server_id=$SERVER_ID" >> $NEO4J_PROPS
   echo "ha.initial_hosts=$HOSTS" >> $NEO4J_PROPS
   echo "ha.tx_push_factor=$PF" >> $NEO4J_PROPS
+  echo "ha.broadcast_timeout=300s" >> $NEO4J_PROPS
 fi
 
 # Now initialize application.conf using envsubst

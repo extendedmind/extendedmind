@@ -1,9 +1,9 @@
-name: "nfs-provisioner"
+name: "nginx"
 home: "https://github.com/extendedmind/extendedmind"
 sources:
 - "git@github.com:extendedmind/extendedmind.git"
 version: "1.0"
-description: "NFS provisioner setup"
+description: "Nginx setup"
 maintainers:
 - name: "Timo Tiuraniemi"
   email: "timo.tiuraniemi@iki.fi"

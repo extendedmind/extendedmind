@@ -15,6 +15,11 @@ else
   RSYNC_PRE_COMMAND=$3
 fi
 
+if [ ! -d $TO_DIRECTORY ]
+then
+  mkdir -p $TO_DIRECTORY
+fi
+
 # Add a clean exit trap
 trap 'echo exiting sync folder script..; exit' SIGINT SIGQUIT SIGTERM
 

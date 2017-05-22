@@ -33,9 +33,19 @@ spec:
           mountPath: /app/site-public
           readOnly: true
           subPath: extendedmind
+{{ if .Values.nginxSecretName }}
+        - name: secretdir
+          mountPath: /etc/nginx/secret
+          readOnly: true
+{{ end }}
       volumes:
       - name: enableddir
         emptyDir: {}
       - name: publicdir
         persistentVolumeClaim:
           claimName: shared
+{{ if .Values.nginxSecretName }}
+      - name: secretdir
+        secret:
+          secretName: {{ .Values.nginxSecretName | quote }}
+{{ end }}

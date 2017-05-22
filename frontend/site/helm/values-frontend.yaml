@@ -1,6 +1,7 @@
 frontendReplicas: 2
 nginxReplicas: 2
 quayIoOrg: ${extendedmind.quayIoOrg}
+${extendedmind.fsPreCommandDefinition}
 nfs:
   storageSize: ${extendedmind.nfsStorageSize}
   # either "hostPath: /..." or "gcePd: NNN"
@@ -8,5 +9,5 @@ nfs:
 sync:
   # For testing purposes, this syncs all css static assets to the /files path
   source: ${extendedmind.nfsSyncSource}
-  ${extendedmind.nfsSyncExtraJobContent}
-  ${extendedmind.nfsSyncExtraJobPipe}
+  ${extendedmind.nfsSyncExtra1minJobContentDefinition}
+  ${extendedmind.nfsSyncExtra1minJobPipeDefinition}

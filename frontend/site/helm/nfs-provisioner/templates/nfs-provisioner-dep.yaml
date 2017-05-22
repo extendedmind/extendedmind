@@ -58,6 +58,8 @@ spec:
         hostPath:
           path: {{ .Values.nfs.hostPath }}
 {{ else if .Values.nfs.gcePd }}
+      volumes:
+      - name: exportdir
         gcePersistentDisk:
           pdName: {{ .Values.nfs.gcePd }}
           fsType: ext4
