@@ -564,7 +564,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     if (!allowUnpublished && !noteRevisionNode.hasProperty("published"))
       return fail(INTERNAL_SERVER_ERROR, ERR_ITEM_REVISION_NOT_PUBLISED, "Note revision is not published")
     val published = if (allowUnpublished && !noteRevisionNode.hasProperty("published")) None else Some(noteRevisionNode.getProperty("published").asInstanceOf[Long])
-    val modified = if (published.isDefined) published.get else noteRevisionNode.getProperty("modified").asInstanceOf[Long]
+    val modified = noteRevisionNode.getProperty("modified").asInstanceOf[Long]
     val publishedRevision = noteRevisionNode.getProperty("number").asInstanceOf[Long]
     val revisionRelationship = noteRevisionNode.getRelationships().find (relationship => relationship.getType.name == ItemRelationship.HAS_REVISION.name)
     if (revisionRelationship.isEmpty)

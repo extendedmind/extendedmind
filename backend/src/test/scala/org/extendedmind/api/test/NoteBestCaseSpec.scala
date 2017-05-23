@@ -239,7 +239,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
               publicItem.note.visibility should not be(None)
               publicItem.note.visibility.get.preview should be (None)
               publicItem.note.visibility.get.previewExpires should be (None)
-              publicItem.note.visibility.get.published.get should be (publicItem.note.modified.get)
+              publicItem.note.visibility.get.published.get should be (publishNoteResult.published)
               publicItem.note.visibility.get.licence.get should be (LicenceType.CC_BY_SA_4_0.toString)
               publicItem.note.visibility.get.indexed.get should be (indexed)
               publicItem.note.visibility.get.shortId.get should be (shortId)
