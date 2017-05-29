@@ -14,12 +14,11 @@ spec:
             tier: frontend
             role: sync
             project: frontend-site
-            version: "${project.version}"
             group: org.extendedmind.frontend
         spec:
           containers:
             - name: sync-site
-              image: quay.io/extendedmind/sync-folder:${project.version}
+              image: quay.io/extendedmind/sync-folder:{{ .Values.syncFolderVersion }}
               args:
               - "TODO"
 {{ if .Values.sync.hostPath }}
@@ -51,12 +50,11 @@ spec:
         tier: frontend
         role: cron
         project: backend
-        version: "${project.version}"
         group: org.extendedmind
     spec:
       containers:
       - name: frontend-cron
-        image: quay.io/extendedmind/sync-folder:${project.version}
+        image: quay.io/extendedmind/sync-folder:{{ .Values.syncFolderVersion }}
         command: ["/bin/bash"]
         args:
         - "-c"

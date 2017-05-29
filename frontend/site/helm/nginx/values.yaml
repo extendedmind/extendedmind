@@ -1,3 +1,5 @@
+quayIoOrg: "extendedmind"
+etcInitVersion: "${project.version}"
 nginxReplicas: 1
 # If still proxying 8008 onward, set this to the default ClusterIP
 nginxServiceType: NodePort

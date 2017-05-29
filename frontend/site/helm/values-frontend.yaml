@@ -1,6 +1,5 @@
 frontendReplicas: 2
 nginxReplicas: 2
-quayIoOrg: ${extendedmind.quayIoOrg}
 ${extendedmind.fsPreCommandDefinition}
 nfs:
   storageSize: ${extendedmind.nfsStorageSize}

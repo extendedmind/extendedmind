@@ -11,12 +11,11 @@ spec:
         tier: frontend
         role: proxy
         project: frontend-site
-        version: "${project.version}"
         group: org.extendedmind.frontend
     spec:
       initContainers:
       - name: nginx-etc-init
-        image: quay.io/{{ .Values.quayIoOrg }}/etc-init:${project.version}
+        image: quay.io/{{ .Values.quayIoOrg }}/etc-init:{{ .Values.etcInitVersion }}
         volumeMounts:
         - name: enableddir
           mountPath: "/etc/nginx/sites-enabled"

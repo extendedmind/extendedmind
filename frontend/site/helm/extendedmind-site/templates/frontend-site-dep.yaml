@@ -11,12 +11,11 @@ spec:
         tier: frontend
         role: server
         project: frontend-site
-        version: "${project.version}"
         group: org.extendedmind.frontend
     spec:
       containers:
       - name: site
-        image: quay.io/{{ .Values.quayIoOrg }}/site:${project.version}
+        image: quay.io/{{ .Values.quayIoOrg }}/site:{{ .Values.siteVersion }}
         ports:
         - name: koa
           containerPort: 3000

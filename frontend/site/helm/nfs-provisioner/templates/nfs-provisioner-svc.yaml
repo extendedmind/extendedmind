@@ -4,7 +4,6 @@ metadata:
   name: nfs-provisioner
   labels:
     project: frontend-site
-    version: "${project.version}"
     group: org.extendedmind.frontend
 spec:
   ports:
@@ -20,5 +19,4 @@ spec:
   selector:
     role: nfs
     project: frontend-site
-    version: "${project.version}"
     group: org.extendedmind.frontend

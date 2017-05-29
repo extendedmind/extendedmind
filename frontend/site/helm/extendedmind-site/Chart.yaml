@@ -1,9 +1,9 @@
-name: "extendedmind-backend"
+name: "extendedmind-site"
 home: "https://github.com/extendedmind/extendedmind"
 sources:
 - "git@github.com:extendedmind/extendedmind.git"
 version: "1.0"
-description: "extendedmind.org backend"
+description: "extendedmind.org frontend site"
 keywords:
 - "productivity"
 maintainers:

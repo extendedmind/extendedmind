@@ -1494,12 +1494,12 @@ trait ItemDatabase extends UserDatabase {
     Right((itemCount, publishedCount))
   }
 
-  protected def addToPublicIndex(revisionNode: Node, ownerUUID: UUID, sid: Long, path: String, index: Boolean, publishedTimestamp: Long)(implicit neo4j: DatabaseService): Unit = {
+  protected def addToPublicIndex(revisionNode: Node, ownerUUID: UUID, sid: Long, path: String, index: Boolean, modified: Long)(implicit neo4j: DatabaseService): Unit = {
     val publicRevisionIndex = neo4j.gds.index().forNodes("public")
     publicRevisionIndex.add(revisionNode, "owner", IdUtils.getTrimmedBase64UUIDForLucene(ownerUUID))
     publicRevisionIndex.add(revisionNode, "sid", sid)
     publicRevisionIndex.add(revisionNode, "path", path)
-    publicRevisionIndex.add(revisionNode, "modified", new ValueContext(publishedTimestamp).indexNumeric())
+    publicRevisionIndex.add(revisionNode, "modified", new ValueContext(modified).indexNumeric())
     if (index) publicRevisionIndex.add(revisionNode, "indexed", true)
   }
 

@@ -13,12 +13,11 @@ spec:
         tier: backend
         role: server
         project: backend
-        version: "${project.version}"
         group: org.extendedmind
     spec:
       initContainers:
       - name: backend-discovery
-        image: quay.io/extendedmind/backend-discovery:${project.version}
+        image: quay.io/extendedmind/backend-discovery:{{ .Values.backendDiscoveryVersion }}
         env:
           - name: EXTENDEDMIND_STORE_DIR
             value: "/app/backend-data/neo4j"
@@ -38,7 +37,14 @@ spec:
           - name: EXTENDEDMIND_MAILGUN_DOMAIN
             value: {{ .Values.mailgunDomain | quote }}
           - name: EXTENDEDMIND_MAILGUN_API_KEY
-            value: {{ .Values.mailgunApiKey | quote }}
+{{ if .Values.mailgunApiKey }}
+            valueFrom:
+              secretKeyRef:
+                name: backend-secrets
+                key: mailgunApiKey
+{{ else }}
+            value: ""
+{{ end }}
           - name: EXTENDEDMIND_EMAIL_FROM
             value: {{ .Values.emailFrom | quote }}
           - name: EXTENDEDMIND_URL_ORIGIN
@@ -73,7 +79,7 @@ spec:
 {{ end }}
 {{ if and (.Values.restore) ( ne .Values.operationMode "HA" ) }}
       - name: backend-restore
-        image: quay.io/extendedmind/backend-restore:${project.version}
+        image: quay.io/extendedmind/backend-restore:{{ .Values.backendRestoreVersion }}
         args:
           - {{ .Values.restore.file | quote }}
           - "/app/backend-data"
@@ -89,7 +95,7 @@ spec:
 {{ end }}
       containers:
         - name: backend
-          image: quay.io/extendedmind/backend:${project.version}
+          image: quay.io/extendedmind/backend:{{ .Values.backendVersion }}
           args:
             - "-Dconfig.file=/app/backend-conf/application.conf"
             - "-Dlogback.configurationFile=/app/backend-conf/logback.xml"
@@ -152,7 +158,6 @@ spec:
       name: datadir
       labels:
         project: backend
-        version: "${project.version}"
         group: org.extendedmind
     spec:
       accessModes: [ "ReadWriteOnce" ]

@@ -14,7 +14,6 @@ spec:
             tier: backend
             role: backup
             project: backend
-            version: "${project.version}"
             group: org.extendedmind
         spec:
           containers:
@@ -24,7 +23,7 @@ spec:
               - {{ .Values.backup.location | quote }}
               - {{ .Values.backup.days | quote }}
               - {{ .Values.fsPreCommand | quote }}
-              image: quay.io/extendedmind/backend-backup:${project.version}
+              image: quay.io/extendedmind/backend-backup:{{ .Values.backendBackupVersion }}
 {{ if .Values.backup.hostPath }}
               volumeMounts:
               - name: backupdir
@@ -54,12 +53,11 @@ spec:
         tier: backend
         role: cron
         project: backend
-        version: "${project.version}"
         group: org.extendedmind
     spec:
       containers:
       - name: backend-cron
-        image: quay.io/extendedmind/backend-backup:${project.version}
+        image: quay.io/extendedmind/backend-backup:{{ .Values.backendBackupVersion }}
         command: ["/bin/bash"]
         args:
         - "-c"

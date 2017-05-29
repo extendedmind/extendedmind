@@ -4,7 +4,6 @@ metadata:
   name: {{ .Values.siteHostName }}
   labels:
     project: frontend-site
-    version: "${project.version}"
     group: org.extendedmind.frontend
 spec:
   ports:
@@ -13,5 +12,4 @@ spec:
   selector:
     role: server
     project: frontend-site
-    version: "${project.version}"
     group: org.extendedmind.frontend

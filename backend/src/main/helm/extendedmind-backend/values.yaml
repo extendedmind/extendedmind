@@ -1,7 +1,13 @@
-# Default to one node implementation
-# Other options are HA and HA_BOOTSTRAP and 3 replicas.
-operationMode: SINGLE
-backendReplicas: 1
+backendDiscoveryVersion: "${project.version}"
+backendRestoreVersion: "${project.version}"
+backendVersion: "${project.version}"
+
+# Default to non-secure token secret. This is not actually
+# a major security problem as the token does not contain
+# sensitive information – might as well be unencrypted as
+# well. Encryption might be useful only for DOS mitigation.
+tokenSecret: "01234567890123456789012345678901"
+ui: "{\\\"powered\\\":true,\\\"help\\\":false}"
 
 # Default to not using a pre command but instead doing backup/restore
 # using the local filestystem. Other option is "gsutil" for
@@ -11,27 +17,3 @@ backup:
   days: 14
   frequency: hourly
   location: /app/backend-backup-data
-
-# Default to insecure value: token does not actually contain any
-# sensitive informatino anyway, so encrypting it wiht this is 
-# not a security problem
-tokenSecret: "01234567890123456789012345678901"
-
-# Signing up is available and users get all latest features by
-# default
-signUpMethod: "ON"
-signUpMode: "ALFA"
-
-# Email settings:
-emailProvider: "DUMMY"
-# If the above is MAILGUN, the values below need to be set
-mailgunDomain: ""
-mailgunApiKey: ""
-# This needs to be set when actually sending emails via mailgun
-emailFrom: "example <example@example.com>"
-
-# Set this to e.g. http://yourdomain.com if you have a domain
-urlOrigin: "http://localhost"
-
-# Default values for the UI
-ui: "{\\\"powered\\\": true, \\\"help\\\": false}"

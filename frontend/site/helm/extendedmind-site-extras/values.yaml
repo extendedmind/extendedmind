@@ -1,8 +1,4 @@
-#l Default frontend values
-quayIoOrg: "extendedmind"
-siteHostName: "site"
-urlOrigin: "http://localhost:8008"
-frontendReplicas: 1
+syncFolderVersion: "${project.version}"
 sync:
   # For testing purposes, this syncs all css static assets to the /files path
   source: "/app/site-public/assets/static"
