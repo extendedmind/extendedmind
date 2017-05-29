@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: app-{{ .Values.appBuildNumber }}{{ .Values.extraAppJobSuffix }}
+spec:
+  template:
+    metadata:
+      labels:
+        project: app
+        group: org.extendedmind.frontend
+    spec:
+      restartPolicy: Never
+      initContainers:
+      - name: app-prepare
+        image: quay.io/extendedmind/tar-curl-rsync:tcr-4
+        command: ["/bin/bash"]
+        args:
+        - "-c"
+        - "mkdir -p /app/site-public/extendedmind && chown -R 1000:1000 /app/site-public/extendedmind"
+        volumeMounts:
+        - name: publicdir
+          mountPath: /app/site-public
+      containers:
+      - name: site-static
+        image: quay.io/{{ .Values.quayIoOrg }}/app:{{ .Values.appVersion }}
+        volumeMounts:
+        - name: publicdir
+          mountPath: /app/site-public
+          subPath: extendedmind
+      volumes:
+      - name: publicdir
+        persistentVolumeClaim:
+          claimName: shared

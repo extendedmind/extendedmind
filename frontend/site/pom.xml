@@ -204,7 +204,32 @@
         <configuration>
           <sourceDirectory>docker</sourceDirectory>
           <images>
-           <image>
+            <image>
+              <name>quay.io/extendedmind/app</name>
+              <alias>app</alias>
+              <build>
+                <from>quay.io/extendedmind/data-volume:dv-3.5-1</from>
+                <maintainer>timo.tiuraniemi@iki.fi</maintainer>
+                <tags>
+                  <tag>latest</tag>
+                  <tag>${project.version}</tag>
+                </tags>
+                <assembly>
+                  <mode>dir</mode>
+                  <basedir>/app/app</basedir>
+                  <descriptor>app-assembly.xml</descriptor>
+                </assembly>
+                <entryPoint>
+                  <exec>
+                    <arg>/bin/cp</arg>
+                    <arg>-R</arg>
+                    <arg>/app/app/.</arg>
+                    <arg>/app/site-public/assets</arg>
+                  </exec>
+                </entryPoint>
+              </build>
+            </image>
+            <image>
               <name>quay.io/extendedmind/site-static</name>
               <alias>site-static</alias>
               <build>

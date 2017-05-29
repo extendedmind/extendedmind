@@ -1,0 +1,4 @@
+appBuildNumber: "${buildNumber}"
+appVersion: "${project.version}"
+quayIoOrg: "extendedmind"
+extraAppJobSuffix: ""
