@@ -1486,21 +1486,25 @@ trait ItemDatabase extends UserDatabase {
         val sid = itemNode.getProperty("sid").asInstanceOf[Long]
         val path = itemNode.getProperty("path").asInstanceOf[String]
         val index = itemNode.hasProperty("indexed")
-        val published = publishedRevisionNode.getProperty("modified").asInstanceOf[Long]
-        addToPublicIndex(publishedRevisionNode, ownerUUID, sid, path, index, published)
+        addToPublicIndex(publishedRevisionNode, ownerUUID, sid, path, index)
         publishedCount += 1
       }
     })
     Right((itemCount, publishedCount))
   }
 
-  protected def addToPublicIndex(revisionNode: Node, ownerUUID: UUID, sid: Long, path: String, index: Boolean, modified: Long)(implicit neo4j: DatabaseService): Unit = {
-    val publicRevisionIndex = neo4j.gds.index().forNodes("public")
-    publicRevisionIndex.add(revisionNode, "owner", IdUtils.getTrimmedBase64UUIDForLucene(ownerUUID))
-    publicRevisionIndex.add(revisionNode, "sid", sid)
-    publicRevisionIndex.add(revisionNode, "path", path)
-    publicRevisionIndex.add(revisionNode, "modified", new ValueContext(modified).indexNumeric())
-    if (index) publicRevisionIndex.add(revisionNode, "indexed", true)
+  protected def addToPublicIndex(revisionNode: Node, ownerUUID: UUID, sid: Long, path: String, index: Boolean): Long = {
+    withTx {
+      implicit neo4j =>
+        val modified = revisionNode.getProperty("modified").asInstanceOf[Long]
+        val publicRevisionIndex = neo4j.gds.index().forNodes("public")
+        publicRevisionIndex.add(revisionNode, "owner", IdUtils.getTrimmedBase64UUIDForLucene(ownerUUID))
+        publicRevisionIndex.add(revisionNode, "sid", sid)
+        publicRevisionIndex.add(revisionNode, "path", path)
+        publicRevisionIndex.add(revisionNode, "modified", new ValueContext(modified).indexNumeric())
+        if (index) publicRevisionIndex.add(revisionNode, "indexed", true)
+        modified
+    }
   }
 
   protected def getItemNodeByUUID(uuid: UUID): Response[Node] = {

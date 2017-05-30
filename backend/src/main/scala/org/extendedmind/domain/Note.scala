@@ -157,6 +157,6 @@ case class PreviewPayload(format: String){
     "Expected 'md', 'madoko' or 'bibtex' but got " + format)
 }
 
-case class PublishNoteResult(published: Long, indexed: Option[Long], shortId: String, result: SetResult)
+case class PublishNoteResult(published: Long, modified: Long, indexed: Option[Long], shortId: String, result: SetResult)
 
 case class PreviewNoteResult(preview: String, previewExpires: Long, result: SetResult)

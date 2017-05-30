@@ -244,7 +244,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
               publicItem.note.visibility.get.indexed.get should be (indexed)
               publicItem.note.visibility.get.shortId.get should be (shortId)
               publicItem.note.visibility.get.publicUi.get should be ("test ui")
-              Get("/v2/public/timo?modified=" + (publishNoteResult.published-1)) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+              Get("/v2/public/timo?modified=" + (publishNoteResult.modified-1)) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
                 val publicItems = responseAs[PublicItems]
                 publicItems.notes.get.length should be(1)
                 publicItem.note.visibility.get.publishedRevision.get should be(1l)
@@ -343,7 +343,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
               }
 
               // Try to get with previous modified value that returned the note, make sure it has moved to "unpublished"
-              Get("/v2/public/timo?modified=" + (publishNoteResult.published-1)) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+              Get("/v2/public/timo?modified=" + (publishNoteResult.modified-1)) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
                 val publicItems = responseAs[PublicItems]
                 publicItems.notes should be(None)
                 publicItems.unpublished.get.length should be (1)
@@ -356,7 +356,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
                 statusResponse should be ("{\"status\":true}")
               }
               // Now the unpublished should have been pruned
-              Get("/v2/public/timo?modified=" + (publishNoteResult.published-1)) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
+              Get("/v2/public/timo?modified=" + (publishNoteResult.modified-1)) ~> addHeader("Content-Type", "application/json") ~> route ~> check {
                 val publicItems = responseAs[PublicItems]
                 publicItems.notes should be(None)
                 publicItems.unpublished should be (None)

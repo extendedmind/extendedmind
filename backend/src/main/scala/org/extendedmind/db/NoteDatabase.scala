@@ -159,7 +159,9 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
   def publishNote(owner: Owner, noteUUID: UUID, format: String, path: String, licence: Option[String], index: Boolean, publicUi: Option[String], overridePublished: Option[Long]): Response[PublishNoteResult] = {
     for {
       publishResult <- publishNoteNode(owner, noteUUID, format, path, licence, index, publicUi, overridePublished).right
-      result <- Right(PublishNoteResult(publishResult._2, publishResult._3, publishResult._4, getSetResult(publishResult._1, false))).right
+      // Add revision to public revision index
+      modified <- Right(addToPublicIndex(publishResult._2, getOwnerUUID(owner), publishResult._5, path, index)).right
+      result <- Right(PublishNoteResult(publishResult._3, modified, publishResult._4, IdUtils.getShortIdAsString(publishResult._5), getSetResult(publishResult._1, false))).right
       unit <- Right(updateItemsIndex(publishResult._1, result.result)).right
     } yield result
   }
@@ -358,18 +360,18 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     }
   }
 
-  protected def publishNoteNode(owner: Owner, noteUUID: UUID, format: String, path: String, licence: Option[String], index: Boolean,  publicUi: Option[String], overridePublished: Option[Long]): Response[(Node, Long, Option[Long], String, OwnerNodes)] = {
+  protected def publishNoteNode(owner: Owner, noteUUID: UUID, format: String, path: String, licence: Option[String], index: Boolean,  publicUi: Option[String], overridePublished: Option[Long]): Response[(Node, Node, Long, Option[Long], Long, OwnerNodes)] = {
     withTx {
       implicit neo4j =>
         for {
           ownerNodes <- getOwnerNodes(owner).right
           noteNode <- getItemNode(getOwnerUUID(owner), noteUUID, Some(ItemLabel.NOTE)).right
           publishResult <- publishNoteNode(ownerNodes, noteNode, format, path, licence, index, publicUi, overridePublished).right
-        } yield (noteNode, publishResult._1, publishResult._2, publishResult._3, ownerNodes)
+        } yield (noteNode, publishResult._1, publishResult._2, publishResult._3, publishResult._4, ownerNodes)
     }
   }
 
-  protected def publishNoteNode(ownerNodes: OwnerNodes, noteNode: Node, format: String, path: String, licence: Option[String], index: Boolean, publicUi: Option[String], overridePublished: Option[Long]): Response[(Long, Option[Long], String)] = {
+  protected def publishNoteNode(ownerNodes: OwnerNodes, noteNode: Node, format: String, path: String, licence: Option[String], index: Boolean, publicUi: Option[String], overridePublished: Option[Long]): Response[(Node, Long, Option[Long], Long)] = {
     withTx {
       implicit neo4j =>
         val ownerNode = if (ownerNodes.foreignOwner.isDefined) ownerNodes.foreignOwner.get else ownerNodes.user
@@ -415,12 +417,12 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
             noteBytes <- Right(pickleNote(getNoteForPickling(note))).right
             noteRevisionNode <- Right(createExtendedItemRevision(noteNode, ownerNodes, ItemLabel.NOTE, noteBytes, latestRevisionRel, base = true)).right
             publishResult <- Right(setNotePublished(getUUID(ownerNode), noteNode, noteRevisionNode, format, path, licence, index, publicUi, published)).right
-          } yield publishResult
+          } yield (noteRevisionNode, publishResult._1, publishResult._2, publishResult._3)
         }
     }
   }
 
-  protected def setNotePublished(ownerUUID: UUID, noteNode: Node, noteRevisionNode: Node, format: String, path: String, licence: Option[String], index: Boolean, publicUi: Option[String], overridePublished: Option[Long])(implicit neo4j: DatabaseService): (Long, Option[Long], String) = {
+  protected def setNotePublished(ownerUUID: UUID, noteNode: Node, noteRevisionNode: Node, format: String, path: String, licence: Option[String], index: Boolean, publicUi: Option[String], overridePublished: Option[Long])(implicit neo4j: DatabaseService): (Long, Option[Long], Long) = {
     val publishedTimestamp = if (overridePublished.isDefined) overridePublished.get else System.currentTimeMillis()
     // Set path
     noteNode.setProperty("path", path)
@@ -467,9 +469,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     if (publicUi.isDefined) noteNode.setProperty("publicUi", publicUi.get)
     else if (noteNode.hasProperty("publicUi")) noteNode.removeProperty("publicUi")
 
-    // Add revision to public revision index
-    addToPublicIndex(noteRevisionNode, ownerUUID, sid, path, index, publishedTimestamp)
-    (publishedTimestamp, indexed, IdUtils.getShortIdAsString(sid))
+    (publishedTimestamp, indexed, sid)
   }
 
   protected def unpublishNoteNode(owner: Owner, noteUUID: UUID): Response[(Node, OwnerNodes)] = {
