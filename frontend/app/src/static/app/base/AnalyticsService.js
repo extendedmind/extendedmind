@@ -54,7 +54,7 @@ function AnalyticsService($injector, $q, $rootScope, $timeout, $window, BackendC
     var analyticsUser = UserSessionService.getAnalyticsUser();
     var uuid = analyticsUser.uuid;
 
-    var request = '?idsite=1&rec=1&apiv=1&cookie=0&url=' + currentUrl +
+    var request = '?idsite=5&rec=1&apiv=1&cookie=0&url=' + currentUrl +
               '&r=' + String(Math.random()).slice(2, 8) +
               '&_id=' + sessionId +
               '&h=' + now.getHours() + '&m=' + now.getMinutes() + '&s=' + now.getSeconds() +
