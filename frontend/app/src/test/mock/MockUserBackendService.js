@@ -93,12 +93,12 @@ function MockUserBackendService($httpBackend, UserService, UserSessionService) {
   }
 
   function mockGetTermsOfService() {
-    $httpBackend.whenGET('/static/terms.html').
+    $httpBackend.whenGET('/files/terms.html').
     respond(termsOfService);
   }
 
   function mockGetPrivacyPolicy() {
-    $httpBackend.whenGET('/static/privacy.html').
+    $httpBackend.whenGET('/files/privacy.html').
     respond(termsOfService);
   }
 

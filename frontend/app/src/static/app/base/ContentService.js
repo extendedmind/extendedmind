@@ -26,12 +26,12 @@ function ContentService($q, BackendClientService, PlatformService) {
     );
   var privacyRegexp = new RegExp(
     '^'.source +
-    /\/static\/privacy\.html/.source +
+    /\/files\/privacy\.html/.source +
     '$'
     );
   var termsRegexp = new RegExp(
     /^/.source +
-    /\/static\/terms\.html/.source +
+    /\/files\/terms\.html/.source +
     '$'
     );
 
@@ -109,10 +109,10 @@ function ContentService($q, BackendClientService, PlatformService) {
       return $q(function(resolve, reject) {
         switch (type){
         case 'privacy':
-          resolve(getExternalHtml('/static/privacy.html', privacyRegexp));
+          resolve(getExternalHtml('/files/privacy.html', privacyRegexp));
           break;
         case 'terms':
-          resolve(getExternalHtml('/static/terms.html', termsRegexp));
+          resolve(getExternalHtml('/files/terms.html', termsRegexp));
           break;
         default:
           reject();
