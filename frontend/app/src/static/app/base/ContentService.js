@@ -25,7 +25,7 @@ function ContentService($q, BackendClientService, PlatformService) {
     '$'
     );
   var privacyRegexp = new RegExp(
-    '^'.source +
+    /^/.source +
     /\/files\/privacy\.html/.source +
     '$'
     );
