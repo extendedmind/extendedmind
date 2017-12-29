@@ -184,8 +184,11 @@ trait CollectiveDatabase extends UserDatabase {
 
     // Public UI modification
     if (collective.preferences.isDefined && collective.preferences.get.publicUi.isDefined) {
-      collectiveNode.setProperty("publicUi", collective.preferences.get.publicUi.get);
-      updatePublicModified = true
+      if (!collectiveNode.hasProperty("publicUi") ||
+          collectiveNode.getProperty("publicUi").asInstanceOf[String] != collective.preferences.get.publicUi.get) {
+        collectiveNode.setProperty("publicUi", collective.preferences.get.publicUi.get);
+        updatePublicModified = true
+      }
     }
 
     // Description

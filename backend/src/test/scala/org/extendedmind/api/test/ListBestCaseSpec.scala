@@ -85,69 +85,75 @@ class ListBestCaseSpec extends ServiceSpecBase {
           writeJsonOutput("putListResponse", responseAs[String])
           putListResponse.modified should not be None
           putListResponse.uuid should not be None
-        Put("/v2/owners/" + authenticateResponse.userUUID + "/data/lists",
-          marshal(newList2).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-            val putList2Response = responseAs[SetResult]
-            val updatedList = newList.copy(due = Some("2014-03-01"))
-            Put("/v2/owners/" + authenticateResponse.userUUID + "/data/lists/" + putListResponse.uuid.get,
-              marshal(updatedList).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                val putExistingListResponse = responseAs[String]
-                writeJsonOutput("putExistingListResponse", putExistingListResponse)
-                putExistingListResponse should include("modified")
-                putExistingListResponse should not include ("uuid")
-                Get("/v2/owners/" + authenticateResponse.userUUID + "/data/lists/" + putListResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                  val listResponse = responseAs[List]
-                  writeJsonOutput("listResponse", responseAs[String])
-                  listResponse.due.get should be("2014-03-01")
-                  listResponse.ui.get should be("testUI")
+          Put("/v2/owners/" + authenticateResponse.userUUID + "/data/lists",
+            marshal(newList2).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+              val putList2Response = responseAs[SetResult]
+              val updatedList = newList.copy(due = Some("2014-03-01"))
+              Put("/v2/owners/" + authenticateResponse.userUUID + "/data/lists/" + putListResponse.uuid.get,
+                marshal(updatedList).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                  val putExistingListResponse = responseAs[String]
+                  writeJsonOutput("putExistingListResponse", putExistingListResponse)
+                  putExistingListResponse should include("modified")
+                  putExistingListResponse should not include ("uuid")
+                  Get("/v2/owners/" + authenticateResponse.userUUID + "/data/lists/" + putListResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                    val listResponse = responseAs[List]
+                    writeJsonOutput("listResponse", responseAs[String])
+                    listResponse.due.get should be("2014-03-01")
+                    listResponse.ui.get should be("testUI")
 
-                  // Add the list to a note
-                  val newNote = Note("bike details", None, Some("model: 12345"), None, None, None,
-                    Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None, None, None, None)))
-                  val putNoteResponse = putNewNote(newNote, authenticateResponse)
-                  val noteWithList = getNote(putNoteResponse.uuid.get, authenticateResponse)
-                  noteWithList.relationships.get.parent.get should be(putListResponse.uuid.get)
-
-                  Delete("/v2/owners/" + authenticateResponse.userUUID + "/data/lists/" + putListResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                    val deleteListResponse = responseAs[DeleteItemResult]
-                    writeJsonOutput("deleteListResponse", responseAs[String])
-                    Get("/v2/owners/" + authenticateResponse.userUUID + "/data/lists/" + putListResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                    val failure = responseAs[ErrorResult]
-                    status should be (BadRequest)
-                      failure.description should startWith("Item " + putListResponse.uuid.get + " is deleted")
+                    // Put again with exactly same data should still change modified
+                    Put("/v2/owners/" + authenticateResponse.userUUID + "/data/items/" + putListResponse.uuid.get,
+                      marshal(listResponse).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                        responseAs[SetResult].modified should be > listResponse.modified.get
                     }
 
-                    // Re-deleting should be possible
+                    // Add the list to a note
+                    val newNote = Note("bike details", None, Some("model: 12345"), None, None, None,
+                      Some(ExtendedItemRelationships(Some(putListResponse.uuid.get), None, None, None, None, None)))
+                    val putNoteResponse = putNewNote(newNote, authenticateResponse)
+                    val noteWithList = getNote(putNoteResponse.uuid.get, authenticateResponse)
+                    noteWithList.relationships.get.parent.get should be(putListResponse.uuid.get)
+
                     Delete("/v2/owners/" + authenticateResponse.userUUID + "/data/lists/" + putListResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                      val redeleteListResponse = responseAs[DeleteItemResult]
-                      redeleteListResponse.deleted should be (deleteListResponse.deleted)
-                      redeleteListResponse.result.modified should be (deleteListResponse.result.modified)
-                    }
+                      val deleteListResponse = responseAs[DeleteItemResult]
+                      writeJsonOutput("deleteListResponse", responseAs[String])
+                      Get("/v2/owners/" + authenticateResponse.userUUID + "/data/lists/" + putListResponse.uuid.get) ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                      val failure = responseAs[ErrorResult]
+                      status should be (BadRequest)
+                        failure.description should startWith("Item " + putListResponse.uuid.get + " is deleted")
+                      }
 
-                    // Change note list to new value and verify that change works
-                    Put("/v2/owners/" + authenticateResponse.userUUID + "/data/notes/" + putNoteResponse.uuid.get,
-                      marshal(newNote.copy(relationships = Some(ExtendedItemRelationships(Some(putList2Response.uuid.get), None, None, None, None, None)))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                        val reputExistingNoteResponse = responseAs[SetResult]
-                        reputExistingNoteResponse.modified should not be None
-                    }
+                      // Re-deleting should be possible
+                      Delete("/v2/owners/" + authenticateResponse.userUUID + "/data/lists/" + putListResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                        val redeleteListResponse = responseAs[DeleteItemResult]
+                        redeleteListResponse.deleted should be (deleteListResponse.deleted)
+                        redeleteListResponse.result.modified should be (deleteListResponse.result.modified)
+                      }
 
-                    Post("/v2/owners/" + authenticateResponse.userUUID + "/data/lists/" + putListResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                      val undeleteListResponse = responseAs[SetResult]
-                      writeJsonOutput("undeleteListResponse", responseAs[String])
-                      val undeletedList = getList(putListResponse.uuid.get, authenticateResponse)
-                      undeletedList.deleted should be(None)
-                      undeletedList.modified should not be (None)
+                      // Change note list to new value and verify that change works
+                      Put("/v2/owners/" + authenticateResponse.userUUID + "/data/notes/" + putNoteResponse.uuid.get,
+                        marshal(newNote.copy(relationships = Some(ExtendedItemRelationships(Some(putList2Response.uuid.get), None, None, None, None, None)))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                          val reputExistingNoteResponse = responseAs[SetResult]
+                          reputExistingNoteResponse.modified should not be None
+                      }
 
-                      // Re-undeleting should be possible
                       Post("/v2/owners/" + authenticateResponse.userUUID + "/data/lists/" + putListResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
-                        val reundeleteListResponse = responseAs[SetResult]
-                        reundeleteListResponse.modified should be (undeleteListResponse.modified)
+                        val undeleteListResponse = responseAs[SetResult]
+                        writeJsonOutput("undeleteListResponse", responseAs[String])
+                        val undeletedList = getList(putListResponse.uuid.get, authenticateResponse)
+                        undeletedList.deleted should be(None)
+                        undeletedList.modified should not be (None)
+
+                        // Re-undeleting should be possible
+                        Post("/v2/owners/" + authenticateResponse.userUUID + "/data/lists/" + putListResponse.uuid.get + "/undelete") ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                          val reundeleteListResponse = responseAs[SetResult]
+                          reundeleteListResponse.modified should be (undeleteListResponse.modified)
+                        }
                       }
                     }
                   }
                 }
-              }
-          }
+            }
         }
     }
     it("should successfully update item to list with PUT to /v2/owners/[userUUID]/data/lists/[listUUID]") {

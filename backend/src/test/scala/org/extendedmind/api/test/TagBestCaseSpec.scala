@@ -96,6 +96,13 @@ class TagBestCaseSpec extends ServiceSpecBase {
                     writeJsonOutput("tagResponse", responseAs[String])
                     tagResponse.description.get should be("my home")
                     tagResponse.ui.get should be("testUI")
+
+                    // Put again with exactly same data should still change modified
+                    Put("/v2/owners/" + authenticateResponse.userUUID + "/data/tasks/" + putTagResponse.uuid.get,
+                      marshal(updatedTag).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                        responseAs[SetResult].modified should be > tagResponse.modified.get
+                    }
+
                     // Add the tag to a Note
                     val newNote = Note("bike details", None, Some("model: 12345"), None, None, None,
                       Some(ExtendedItemRelationships(None, None, None, None, Some(scala.List(putTagResponse.uuid.get)), None)))

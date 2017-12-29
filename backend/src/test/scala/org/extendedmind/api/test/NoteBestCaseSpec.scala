@@ -91,6 +91,13 @@ class NoteBestCaseSpec extends ServiceSpecBase {
                 noteResponse.content should not be None
                 noteResponse.description.get should be("Helsinki home dimensions")
                 noteResponse.ui.get should be("testUI")
+
+                // Put again with exactly same data should still change modified
+                Put("/v2/owners/" + authenticateResponse.userUUID + "/data/items/" + putNoteResponse.uuid.get,
+                  marshal(noteResponse).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                    responseAs[SetResult].modified should be > noteResponse.modified.get
+                }
+
                 Delete("/v2/owners/" + authenticateResponse.userUUID + "/data/notes/" + putNoteResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                   val deleteNoteResponse = responseAs[DeleteItemResult]
                   writeJsonOutput("deleteNoteResponse", responseAs[String])

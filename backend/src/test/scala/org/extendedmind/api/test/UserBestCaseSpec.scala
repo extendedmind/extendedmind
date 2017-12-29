@@ -470,6 +470,11 @@ class UserBestCaseSpec extends ServiceSpecBase {
               val publicItemHeaderResponse = responseAs[PublicItemHeader]
               publicItemHeaderResponse.handle should be ("info")
               publicItemHeaderResponse.path should be (None)
+              // Change handle again to identical value, should still change modified
+              Patch("/v2/users/" + authenticateResponse.userUUID,
+                marshal(accountResponse.copy(handle = Some("info"))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                responseAs[PatchUserResponse].result.modified should be > patchUserResponse.result.modified
+              }
             }
         }
       }

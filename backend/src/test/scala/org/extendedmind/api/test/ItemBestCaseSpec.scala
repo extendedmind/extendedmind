@@ -179,6 +179,13 @@ class ItemBestCaseSpec extends ServiceSpecBase {
                 writeJsonOutput("itemResponse", responseAs[String])
                 itemResponse.description.get should be("not kidding")
                 itemResponse.ui.get should be("testUI")
+
+                // Put again with exactly same data should still change modified
+                Put("/v2/owners/" + authenticateResponse.userUUID + "/data/items/" + putItemResponse.uuid.get,
+                  marshal(itemResponse).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                    responseAs[SetResult].modified should be > itemResponse.modified.get
+                }
+
                 Delete("/v2/owners/" + authenticateResponse.userUUID + "/data/items/" + putItemResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                   val deleteItemResponse = responseAs[DeleteItemResult]
                   writeJsonOutput("deleteItemResponse", responseAs[String])

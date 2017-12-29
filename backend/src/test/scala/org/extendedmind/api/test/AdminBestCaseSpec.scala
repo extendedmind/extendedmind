@@ -86,12 +86,20 @@ class AdminBestCaseSpec extends ServiceSpecBase {
           reauthenticateResponse.collectives.get.get(collectiveUUID).get._3 should equal(false)
 
           // Update collective
+          val updatedCollective = testCollective.copy(description = Some("test description"), common = Some(true), handle=Some("test"))
           Patch("/v2/collectives/" + collectiveUUID,
-            marshal(testCollective.copy(description = Some("test description"), common = Some(true), handle=Some("test"))).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", reauthenticateResponse.token.get)) ~> route ~> check {
+            marshal(updatedCollective).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", reauthenticateResponse.token.get)) ~> route ~> check {
               writeJsonOutput("putExistingCollectiveResponse", responseAs[String])
               val putExistingCollectiveResponse = responseAs[SetResult]
               putExistingCollectiveResponse.uuid should be(None)
               assert(putExistingCollectiveResponse.modified > putCollectiveResponse.modified)
+
+              // Put again identical value, should still change modified
+              Patch("/v2/collectives/" + collectiveUUID,
+                  marshal(updatedCollective).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", reauthenticateResponse.token.get)) ~> route ~> check {
+                responseAs[SetResult].modified should be > putExistingCollectiveResponse.modified
+              }
+
               // Get it back
               Get("/v2/collectives/" + collectiveUUID) ~> addCredentials(BasicHttpCredentials("token", reauthenticateResponse.token.get)) ~> route ~> check {
                 val collectiveResponse = responseAs[Collective]

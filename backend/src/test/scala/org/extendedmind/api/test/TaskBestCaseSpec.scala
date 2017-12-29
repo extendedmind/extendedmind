@@ -91,6 +91,13 @@ class TaskBestCaseSpec extends ServiceSpecBase {
                 writeJsonOutput("taskResponse", responseAs[String])
                 taskResponse.due.get should be("2014-03-01")
                 taskResponse.ui.get should be("testUI")
+
+                // Put again with exactly same data should still change modified
+                Put("/v2/owners/" + authenticateResponse.userUUID + "/data/tasks/" + putTaskResponse.uuid.get,
+                  marshal(taskResponse).right.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
+                    responseAs[SetResult].modified should be > taskResponse.modified.get
+                }
+
                 Delete("/v2/owners/" + authenticateResponse.userUUID + "/data/tasks/" + putTaskResponse.uuid.get) ~> addHeader("Content-Type", "application/json") ~> addCredentials(BasicHttpCredentials("token", authenticateResponse.token.get)) ~> route ~> check {
                   val deleteTaskResponse = responseAs[DeleteItemResult]
                   writeJsonOutput("deleteTaskResponse", responseAs[String])
@@ -462,8 +469,14 @@ class TaskBestCaseSpec extends ServiceSpecBase {
 
       // Delete every reminder
       val putOnceMoreExistingTaskResponse = putExistingTask(updatedTask.copy(reminders = None), putTaskResponse.uuid.get, authenticateResponse)
-      getTask(putTaskResponse.uuid.get, authenticateResponse).reminders should be (None)
+      val reminderlessTask = getTask(putTaskResponse.uuid.get, authenticateResponse)
+      reminderlessTask.reminders should be (None)
       putOnceMoreExistingTaskResponse.modified should not be (putAgainExistingTaskResponse.modified)
+
+      // Put identical once more, shoul cause modified change anyway
+      val putIdenticalExistingTaskResponse = putExistingTask(reminderlessTask, putTaskResponse.uuid.get, authenticateResponse)
+      putIdenticalExistingTaskResponse.modified should not be (putOnceMoreExistingTaskResponse.modified)
+
     }
   }
 }
