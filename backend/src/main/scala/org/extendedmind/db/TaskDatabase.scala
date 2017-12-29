@@ -157,8 +157,8 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
         for {
           taskResult <- putNewExtendedItem(owner, task, ItemLabel.TASK).right
           relationship <- setTaskOriginRelationship(taskResult._1, originTaskNode).right
-          reminderResult <- updateReminders(taskResult._1, task.reminders).right
-        } yield (taskResult._1, taskResult._2, reminderResult._1)
+          newReminderNodes <- updateReminders(taskResult._1, task.reminders).right
+        } yield (taskResult._1, taskResult._2, newReminderNodes)
     }
   }
 
@@ -176,9 +176,8 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
       implicit neo4j =>
         for {
           taskResult <- putExistingExtendedItem(owner, taskUUID, task, ItemLabel.TASK).right
-          reminderResult <- updateReminders(taskResult._1, task.reminders).right
-          unit <- Right(if (reminderResult._2) forceModifiedChange(taskResult._1)).right
-        } yield (taskResult._1, taskResult._2, reminderResult._1, taskResult._3)
+          newReminderNodes <- updateReminders(taskResult._1, task.reminders).right
+        } yield (taskResult._1, taskResult._2, newReminderNodes, taskResult._3)
     }
   }
 
@@ -347,15 +346,14 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     }
   }
 
-  protected def updateReminders(taskNode: Node, reminders: Option[scala.List[Reminder]])(implicit neo4j: DatabaseService): Response[(Option[scala.List[Node]], Boolean)] = {
+  protected def updateReminders(taskNode: Node, reminders: Option[scala.List[Reminder]])(implicit neo4j: DatabaseService): Response[Option[scala.List[Node]]] = {
     val reminderNodeList = getReminderNodes(taskNode)
 
     if (reminders.isEmpty || reminders.get.size == 0){
-      val remindersModified = reminderNodeList.size > 0
       reminderNodeList.foreach(reminderNode => {
         destroyReminder(reminderNode)
       })
-      Right(None, remindersModified)
+      Right(None)
     }else{
       // Loop over new list
       val createdReminderNodes = new ListBuffer[Node]
@@ -384,7 +382,7 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
         }
       })
 
-      Right(if (createdReminderNodes.size > 0) (Some(createdReminderNodes.toList), true) else (None, true))
+      Right(if (createdReminderNodes.size > 0) Some(createdReminderNodes.toList) else None)
     }
   }
 

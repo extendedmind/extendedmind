@@ -462,14 +462,8 @@ class TaskBestCaseSpec extends ServiceSpecBase {
 
       // Delete every reminder
       val putOnceMoreExistingTaskResponse = putExistingTask(updatedTask.copy(reminders = None), putTaskResponse.uuid.get, authenticateResponse)
-      val reminderlessTask = getTask(putTaskResponse.uuid.get, authenticateResponse)
-      reminderlessTask.reminders should be (None)
+      getTask(putTaskResponse.uuid.get, authenticateResponse).reminders should be (None)
       putOnceMoreExistingTaskResponse.modified should not be (putAgainExistingTaskResponse.modified)
-
-      // Put identical once more, shouldn't cause modified change as no reminders are set
-      val putIdenticalExistingTaskResponse = putExistingTask(reminderlessTask, putTaskResponse.uuid.get, authenticateResponse)
-      putIdenticalExistingTaskResponse.modified should be (putOnceMoreExistingTaskResponse.modified)
-
     }
   }
 }

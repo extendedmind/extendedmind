@@ -626,8 +626,4 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
   protected def getInfoNode(implicit neo4j: DatabaseService): Node = {
     findNodesByLabel(MainLabel.INFO).toList(0)
   }
-
-  protected def forceModifiedChange(node: Node)(implicit neo4j: DatabaseService): Unit = {
-    node.setProperty("modified", System.currentTimeMillis())
-  }
 }
