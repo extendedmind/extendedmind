@@ -97,10 +97,9 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
   def deleteNote(owner: Owner, noteUUID: UUID): Response[DeleteItemResult] = {
     for {
       noteNode <- validateExtendedItemModifiable(owner, noteUUID, ItemLabel.NOTE).right
-      deletedNoteNode <- deleteNoteNode(owner, noteNode).right
-      result <- Right(getDeleteItemResult(deletedNoteNode._1, deletedNoteNode._2)).right
-      unit <- Right(updateItemsIndex(deletedNoteNode._1, result.result)).right
-    } yield result
+      deleteNoteResult <- deleteNoteNode(owner, noteNode).right
+      unit <- Right(updateItemsIndex(deleteNoteResult._1, deleteNoteResult._2.result)).right
+    } yield deleteNoteResult._2
   }
 
   def undeleteNote(owner: Owner, noteUUID: UUID): Response[SetResult] = {
@@ -252,7 +251,7 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     }
   }
 
-  protected def deleteNoteNode(owner: Owner, noteNode: Node): Response[Tuple2[Node, Long]] = {
+  protected def deleteNoteNode(owner: Owner, noteNode: Node): Response[(Node, DeleteItemResult)] = {
     withTx {
       implicit neo =>
         for {

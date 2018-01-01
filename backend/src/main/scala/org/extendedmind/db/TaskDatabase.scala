@@ -96,10 +96,9 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
   def deleteTask(owner: Owner, taskUUID: UUID, rm: Option[ReminderModification]): Response[DeleteItemResult] = {
     for {
       taskNode <- validateExtendedItemModifiable(owner, taskUUID, ItemLabel.TASK, rm.isDefined).right
-      deletedTaskNode <- deleteTaskNode(owner, taskNode, rm).right
-      result <- Right(getDeleteItemResult(deletedTaskNode._1, deletedTaskNode._2)).right
-      unit <- Right(updateItemsIndex(deletedTaskNode._1, result.result)).right
-    } yield result
+      deleteTaskResult <- deleteTaskNode(owner, taskNode, rm).right
+      unit <- Right(updateItemsIndex(deleteTaskResult._1, deleteTaskResult._2.result)).right
+    } yield deleteTaskResult._2
   }
 
   def undeleteTask(owner: Owner, taskUUID: UUID, rm: Option[ReminderModification]): Response[SetResult] = {
@@ -418,7 +417,7 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     if (taskNode.hasProperty("completed")) taskNode.removeProperty("completed")
   }
 
-  protected def deleteTaskNode(owner: Owner, taskNode: Node, rm: Option[ReminderModification]): Response[Tuple2[Node, Long]] = {
+  protected def deleteTaskNode(owner: Owner, taskNode: Node, rm: Option[ReminderModification]): Response[(Node, DeleteItemResult)] = {
     withTx {
       implicit neo =>
         for {

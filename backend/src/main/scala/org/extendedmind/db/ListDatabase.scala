@@ -69,11 +69,10 @@ trait ListDatabase extends UserDatabase with TagDatabase {
 
   def deleteList(owner: Owner, listUUID: UUID): Response[DeleteItemResult] = {
     for {
-      deletedListNode <- deleteListNode(owner, listUUID).right
-      result <- Right(getDeleteItemResult(deletedListNode._1, deletedListNode._2)).right
-      unit <- Right(updateItemsIndex(deletedListNode._1, result.result)).right
-      unit <- Right(updateItemsIndex(deletedListNode._3, result.result)).right
-    } yield result
+      deleteListResult <- deleteListNode(owner, listUUID).right
+      unit <- Right(updateItemsIndex(deleteListResult._1, deleteListResult._2.result)).right
+      unit <- Right(updateItemsIndex(deleteListResult._3, deleteListResult._2.result)).right
+    } yield deleteListResult._2
   }
 
   def undeleteList(owner: Owner, listUUID: UUID): Response[SetResult] = {
@@ -102,10 +101,9 @@ trait ListDatabase extends UserDatabase with TagDatabase {
     for {
       listResult <- validateListUnarchivable(owner, listUUID, parent).right
       unarchiveResult <- unarchiveListNode(listResult._1, listResult._4, listResult._2, listResult._3).right
-      tagDeleteResult <- Right(getDeleteItemResult(listResult._2, unarchiveResult._2, true)).right
-      unit <- Right(updateItemsIndex(listResult._2, tagDeleteResult.result)).right
+      unit <- Right(updateItemsIndex(listResult._2, unarchiveResult._2.result)).right
       setResults <- Right(updateItemsIndex(unarchiveResult._1)).right
-      result <- Right(UnarchiveListResult(setResults, tagDeleteResult, getSetResult(listResult._1, false))).right
+      result <- Right(UnarchiveListResult(setResults, unarchiveResult._2, getSetResult(listResult._1, false))).right
       unit <- Right(updateItemsIndex(listResult._1, result.result)).right
     } yield result
   }
@@ -284,7 +282,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
     }
   }
 
-  protected def unarchiveListNode(listNode: Node, ownerNodes: OwnerNodes, historyTag: Node, parentNode: Option[Node]): Response[(scala.List[Node], Long)] = {
+  protected def unarchiveListNode(listNode: Node, ownerNodes: OwnerNodes, historyTag: Node, parentNode: Option[Node]): Response[(scala.List[Node], DeleteItemResult)] = {
     withTx {
       implicit neo4j =>
         // First: remove previous parent relationship
@@ -320,7 +318,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
     }
   }
 
-  protected def deleteListNode(owner: Owner, listUUID: UUID): Response[(Node, Long, scala.List[Node])] = {
+  protected def deleteListNode(owner: Owner, listUUID: UUID): Response[(Node, DeleteItemResult, scala.List[Node])] = {
     withTx {
       implicit neo =>
         for {

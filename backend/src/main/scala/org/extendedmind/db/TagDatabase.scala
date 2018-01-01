@@ -66,11 +66,10 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
 
   def deleteTag(owner: Owner, tagUUID: UUID): Response[DeleteItemResult] = {
     for {
-      deletedTagNode <- deleteTagNode(owner, tagUUID).right
-      result <- Right(getDeleteItemResult(deletedTagNode._1, deletedTagNode._2)).right
-      unit <- Right(updateItemsIndex(deletedTagNode._1, result.result)).right
-      unit <- Right(updateItemsIndex(deletedTagNode._3, result.result)).right
-    } yield result
+      deleteTagResult <- deleteTagNode(owner, tagUUID).right
+      unit <- Right(updateItemsIndex(deleteTagResult._1, deleteTagResult._2.result)).right
+      unit <- Right(updateItemsIndex(deleteTagResult._3, deleteTagResult._2.result)).right
+    } yield deleteTagResult._2
   }
 
   def undeleteTag(owner: Owner, tagUUID: UUID): Response[SetResult] = {
@@ -153,7 +152,7 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
     } yield completeTag
   }
 
-  protected def deleteTagNode(owner: Owner, tagUUID: UUID): Response[(Node, Long, scala.List[Node])] = {
+  protected def deleteTagNode(owner: Owner, tagUUID: UUID): Response[(Node, DeleteItemResult, scala.List[Node])] = {
     withTx {
       implicit neo =>
         for {

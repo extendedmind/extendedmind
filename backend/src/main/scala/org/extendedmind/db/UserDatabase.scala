@@ -130,9 +130,8 @@ trait UserDatabase extends OwnerDatabase {
 
   def deleteUser(userUUID: UUID): Response[DeleteItemResult] = {
     for {
-      deletedUserNode <- deleteUserNode(userUUID).right
-      result <- Right(getDeleteItemResult(deletedUserNode._1, deletedUserNode._2)).right
-    } yield result
+      deleteUserResult <- deleteUserNode(userUUID).right
+    } yield deleteUserResult._2
   }
 
   def destroyDeletedOwners: Response[CountResult] = {
@@ -613,7 +612,7 @@ trait UserDatabase extends OwnerDatabase {
     Right(DestroyResult(scala.List(userUUID)))
   }
 
-  protected def deleteUserNode(userUUID: UUID): Response[Tuple2[Node, Long]] = {
+  protected def deleteUserNode(userUUID: UUID): Response[Tuple2[Node, DeleteItemResult]] = {
     withTx {
       implicit neo =>
         for {

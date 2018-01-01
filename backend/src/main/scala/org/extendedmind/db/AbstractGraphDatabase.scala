@@ -218,9 +218,8 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
 
   def putVersion(platform: String, versionInfo: PlatformVersionInfo): Response[SetResult] = {
     for {
-      versionNode <- putVersionNode(platform, versionInfo).right
-      result <- Right(getSetResult(versionNode, false)).right
-    } yield result
+      result <- putVersionNode(platform, versionInfo).right
+    } yield result._2
   }
 
   def getUpdateVersion(platform: String, version: String, userType: Option[Byte]): Response[Option[PlatformVersionInfo]] = {
@@ -294,15 +293,19 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
 
   // CONVERSION
 
-  protected def updateNode(node: Node, caseClass: AnyRef): Response[(Node, SetResult)] = {
+  protected def updateNode(node: Node, caseClass: AnyRef)(implicit neo4j: DatabaseService): Response[(Node, SetResult)] = {
     try {
       val updatedNode: Node = Neo4jWrapper.serialize[Node](caseClass, node)
-      val timestamp: Long = System.currentTimeMillis()
-      node.setProperty("modified", timestamp)
-      Right(updatedNode, SetResult(None, None, timestamp))
+      Right(updatedNode, updateNodeModified(updatedNode))
     } catch {
       case e: Exception => fail(INTERNAL_SERVER_ERROR, ERR_BASE_UPDATE_NODE, "Exception while updating node", e)
     }
+  }
+
+  protected def updateNodeModified(node: Node)(implicit neo4j: DatabaseService): SetResult = {
+    val timestamp: Long = System.currentTimeMillis()
+    node.setProperty("modified", timestamp)
+    SetResult(None, None, timestamp)
   }
 
   protected def toCaseClass[T: Manifest](node: Node)(implicit tag: TypeTag[T]): Response[T] = {
@@ -492,13 +495,13 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     else ownerNodes.user
   }
 
-  protected def deleteItem(itemNode: Node)(implicit neo4j: DatabaseService): Long = {
+  protected def deleteItem(itemNode: Node)(implicit neo4j: DatabaseService): DeleteItemResult = {
+    val result = updateNodeModified(itemNode)
     if (itemNode.hasProperty("deleted")) {
-      itemNode.getProperty("deleted").asInstanceOf[Long]
+      DeleteItemResult(itemNode.getProperty("deleted").asInstanceOf[Long], result)
     } else {
-      val timestamp = System.currentTimeMillis()
-      itemNode.setProperty("deleted", timestamp)
-      timestamp
+      itemNode.setProperty("deleted", result.modified)
+      DeleteItemResult(result.modified, result)
     }
   }
 
@@ -556,20 +559,13 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     }
   }
 
-  protected def getDeleteItemResult(item: Node, deleted: Long, addUUID: Boolean = false): DeleteItemResult = {
-    withTx {
-      implicit neo4j =>
-        DeleteItemResult(deleted, getSetResult(item, addUUID))
-    }
-  }
-
   protected def initializeDatabase(
                    transactionEventHandlers: java.util.ArrayList[TransactionEventHandler[_]],
                    overrideCommonCollective: Option[Collective] = None,
                    overrideAdminUser: Option[User] = None,
                    overrideAdminUserPassword: Option[String] = None): (DatabaseStatus, Option[UUID], Option[UUID])
 
-  protected def putVersionNode(platform: String, versionInfo: PlatformVersionInfo): Response[Node] = {
+  protected def putVersionNode(platform: String, versionInfo: PlatformVersionInfo): Response[(Node, SetResult)] = {
     withTx {
       implicit neo4j =>
         val infoNode = getInfoNode
@@ -581,17 +577,17 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
 
         Right(previousVersionNode.fold({
           val versionNode = createNode(MainLabel.VERSION)
-          setVersionNodeProperties(versionNode, platform, versionInfo)
+          val result = setVersionNodeProperties(versionNode, platform, versionInfo)
           infoNode --> SecurityRelationship.IS_ORIGIN --> versionNode;
-          versionNode
+          (versionNode, result)
         })(previousVersionNode => {
-          setVersionNodeProperties(previousVersionNode, platform, versionInfo)
-          previousVersionNode
+          val result = setVersionNodeProperties(previousVersionNode, platform, versionInfo)
+          (previousVersionNode, result)
         }))
     }
   }
 
-  protected def setVersionNodeProperties(versionNode: Node, platform: String, versionInfo: PlatformVersionInfo): Unit = {
+  protected def setVersionNodeProperties(versionNode: Node, platform: String, versionInfo: PlatformVersionInfo)(implicit neo4j: DatabaseService): SetResult = {
     versionNode.setProperty("platform", platform)
     versionNode.setProperty("version", versionInfo.version)
     if (versionInfo.userType.isDefined)
@@ -608,6 +604,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
       versionNode.setProperty("name", versionInfo.name.get)
     else if (versionNode.hasProperty("name"))
       versionNode.removeProperty("name")
+    updateNodeModified(versionNode)
   }
 
   val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern( "yyyy-MM-dd'T'HH:mm:ss" );

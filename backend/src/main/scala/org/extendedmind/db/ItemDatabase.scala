@@ -99,10 +99,9 @@ trait ItemDatabase extends UserDatabase {
 
   def deleteItem(owner: Owner, itemUUID: UUID): Response[DeleteItemResult] = {
     for {
-      deletedItemNode <- deleteItemNode(owner, itemUUID).right
-      result <- Right(getDeleteItemResult(deletedItemNode._1, deletedItemNode._2)).right
-      unit <- Right(updateItemsIndex(deletedItemNode._1, result.result)).right
-    } yield result
+      deleteItemResult <- deleteItemNode(owner, itemUUID).right
+      unit <- Right(updateItemsIndex(deleteItemResult._1, deleteItemResult._2.result)).right
+    } yield deleteItemResult._2
   }
 
   def undeleteItem(owner: Owner, itemUUID: UUID, mandatoryLabel: Option[Label] = None): Response[SetResult] = {
@@ -1287,7 +1286,7 @@ trait ItemDatabase extends UserDatabase {
     }
   }
 
-  protected def deleteItemNode(owner: Owner, itemUUID: UUID): Response[Tuple2[Node, Long]] = {
+  protected def deleteItemNode(owner: Owner, itemUUID: UUID): Response[(Node, DeleteItemResult)] = {
     withTx {
       implicit neo =>
         for {
