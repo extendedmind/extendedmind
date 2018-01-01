@@ -52,24 +52,22 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
   def putNewTask(owner: Owner, task: Task, originTaskNode: Option[Node] = None): Response[SetResult] = {
     for {
       taskResult <- putNewTaskNode(owner, task, originTaskNode).right
-      result <- Right(getSetResult(taskResult._1, true, archived = taskResult._2, associated = taskResult._3)).right
-      unit <- Right(addToItemsIndex(owner, taskResult._1, result)).right
-    } yield result
+      unit <- Right(addToItemsIndex(owner, taskResult._1, taskResult._2)).right
+    } yield taskResult._2
   }
 
   def putNewLimitedTask(owner: Owner, limitedTask: LimitedTask): Response[SetResult] = {
     for {
       taskResult <- putNewLimitedExtendedItem(owner, limitedTask, ItemLabel.TASK).right
-      result <- Right(getSetResult(taskResult._1, true, archived = taskResult._2)).right
-      unit <- Right(addToItemsIndex(owner, taskResult._1, result)).right
-    } yield result
+      unit <- Right(addToItemsIndex(owner, taskResult._1, taskResult._2)).right
+    } yield taskResult._2
   }
 
   def putExistingTask(owner: Owner, taskUUID: UUID, task: Task): Response[SetResult] = {
     for {
       taskResult <- putExistingTaskNode(owner, taskUUID, task).right
-      revision <- Right(evaluateTaskRevision(task, taskResult._1, taskResult._4)).right
-      result <- Right(getSetResult(taskResult._1, false, revision = revision, archived = taskResult._2, associated = taskResult._3)).right
+      revision <- Right(evaluateTaskRevision(task, taskResult._1, taskResult._3)).right
+      result <- Right(taskResult._2.copy(revision = revision)).right
       unit <- Right(updateItemsIndex(taskResult._1, result)).right
     } yield result
   }
@@ -78,7 +76,7 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     for {
       taskResult <- putExistingLimitedExtendedItem(owner, taskUUID, limitedTask, ItemLabel.TASK).right
       revision <- Right(evaluateTaskRevision(Task(limitedTask), taskResult._1, taskResult._3)).right
-      result <- Right(getSetResult(taskResult._1, false, revision = revision, archived = taskResult._2)).right
+      result <- Right(taskResult._2.copy(revision = revision)).right
       unit <- Right(updateItemsIndex(taskResult._1, result)).right
     } yield result
   }
@@ -151,7 +149,7 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
 
   // PRIVATE
 
-  protected def putNewTaskNode(owner: Owner, task: Task, originTaskNode: Option[Node] = None): Response[(Node, Option[Long], Option[scala.List[Node]])] = {
+  protected def putNewTaskNode(owner: Owner, task: Task, originTaskNode: Option[Node] = None): Response[(Node, SetResult, Option[scala.List[Node]])] = {
     withTx {
       implicit neo4j =>
         for {
@@ -162,7 +160,7 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     }
   }
 
-  protected def putNewLimitedTaskNode(owner: Owner, limitedTask: LimitedTask): Response[(Node, Option[Long], OwnerNodes)] = {
+  protected def putNewLimitedTaskNode(owner: Owner, limitedTask: LimitedTask): Response[(Node, SetResult, OwnerNodes)] = {
     withTx {
       implicit neo4j =>
         for {
@@ -171,13 +169,13 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     }
   }
 
-  protected def putExistingTaskNode(owner: Owner, taskUUID: UUID, task: Task): Response[(Node, Option[Long], Option[scala.List[Node]], OwnerNodes)] = {
+  protected def putExistingTaskNode(owner: Owner, taskUUID: UUID, task: Task): Response[(Node, SetResult, OwnerNodes)] = {
     withTx {
       implicit neo4j =>
         for {
           taskResult <- putExistingExtendedItem(owner, taskUUID, task, ItemLabel.TASK).right
           newReminderNodes <- updateReminders(taskResult._1, task.reminders).right
-        } yield (taskResult._1, taskResult._2, newReminderNodes, taskResult._3)
+        } yield (taskResult._1, taskResult._2.copy(associated = getIdToUuids(newReminderNodes)), taskResult._3)
     }
   }
 

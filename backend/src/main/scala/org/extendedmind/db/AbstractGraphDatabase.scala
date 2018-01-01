@@ -294,9 +294,12 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
 
   // CONVERSION
 
-  protected def updateNode(node: Node, caseClass: AnyRef): Response[Node] = {
+  protected def updateNode(node: Node, caseClass: AnyRef): Response[(Node, SetResult)] = {
     try {
-      Right(Neo4jWrapper.serialize[Node](caseClass, node))
+      val updatedNode: Node = Neo4jWrapper.serialize[Node](caseClass, node)
+      val timestamp: Long = System.currentTimeMillis()
+      node.setProperty("modified", timestamp)
+      Right(updatedNode, SetResult(None, None, timestamp))
     } catch {
       case e: Exception => fail(INTERNAL_SERVER_ERROR, ERR_BASE_UPDATE_NODE, "Exception while updating node", e)
     }
@@ -313,6 +316,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     }
   }
 
+  // FIXME: delete this
   protected def getSetResult(node: Node, newNode: Boolean, revision: Option[Long] = None, archived: Option[Long] = None, associated: Option[scala.List[Node]] = None): SetResult = {
     withTx {
       implicit neo4j =>
@@ -335,6 +339,18 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
           }
         }
         SetResult(uuid, created, node.getProperty("modified").asInstanceOf[Long], revision, archived, idToUUIDList)
+    }
+  }
+
+  protected def getIdToUuids(associated: Option[scala.List[Node]]): Option[scala.List[IdToUUID]] = {
+    withTx {
+      implicit neo4j =>
+        if (associated.isEmpty) None
+        else {
+          Some(associated.get.map(associatedNode => {
+            IdToUUID(getUUID(associatedNode), associatedNode.getProperty("id").asInstanceOf[String])
+          }))
+        }
     }
   }
 

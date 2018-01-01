@@ -42,9 +42,8 @@ trait ListDatabase extends UserDatabase with TagDatabase {
     for {
       // Don't set history tag of parent to list
       listResult <- putNewExtendedItem(owner, list, ItemLabel.LIST, skipParentHistoryTag = true).right
-      result <- Right(getSetResult(listResult._1, true, archived = listResult._2)).right
-      unit <- Right(addToItemsIndex(owner, listResult._1, result)).right
-    } yield result
+      unit <- Right(addToItemsIndex(owner, listResult._1, listResult._2)).right
+    } yield listResult._2
   }
 
   def putExistingList(owner: Owner, listUUID: UUID, list: List): Response[SetResult] = {
@@ -52,7 +51,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
       // Don't set history tag of parent to list
       listResult <- putExistingExtendedItem(owner, listUUID, list, ItemLabel.LIST, skipParentHistoryTag = true).right
       revision <- Right(evaluateListRevision(list, listResult._1, listResult._3)).right
-      result <- Right(getSetResult(listResult._1, false, revision = revision, archived = listResult._2)).right
+      result <- Right(listResult._2.copy(revision = revision)).right
       unit <- Right(updateItemsIndex(listResult._1, result)).right
     } yield result
   }

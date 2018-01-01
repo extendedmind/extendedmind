@@ -47,9 +47,8 @@ trait InviteDatabase extends UserDatabase {
 
   def putExistingInvite(owner: Owner, inviteUUID: UUID, invite: Invite): Response[SetResult] = {
     for {
-      inviteNode <- updateInvite(owner, inviteUUID, invite).right
-      result <- Right(getSetResult(inviteNode, false)).right
-    } yield result
+      updateResult <- updateInvite(owner, inviteUUID, invite).right
+    } yield updateResult._2
   }
 
   def getInvite(owner: Owner, inviteUUID: UUID): Response[Invite] = {
@@ -100,14 +99,14 @@ trait InviteDatabase extends UserDatabase {
     }
   }
 
-  protected def updateInvite(owner: Owner, inviteUUID: UUID, invite: Invite): Response[Node] = {
+  protected def updateInvite(owner: Owner, inviteUUID: UUID, invite: Invite): Response[(Node, SetResult)] = {
     withTx {
       implicit neo4j =>
         for {
           userNode <- getNode(owner.userUUID, OwnerLabel.USER).right
           inviteNode <- getInviteNode(userNode, inviteUUID).right
-          updatedNode <- updateNode(inviteNode, invite).right
-        } yield updatedNode
+          updateResult <- updateNode(inviteNode, invite).right
+        } yield updateResult
     }
   }
 

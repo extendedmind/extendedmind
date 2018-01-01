@@ -64,18 +64,16 @@ trait ItemDatabase extends UserDatabase {
 
   def putNewItem(owner: Owner, item: Item): Response[SetResult] = {
     for {
-      itemNode <- createItem(owner, item).right
-      result <- Right(getSetResult(itemNode, true)).right
-      unit <- Right(addToItemsIndex(owner, itemNode, result)).right
-    } yield result
+      createResult <- createItem(owner, item).right
+      unit <- Right(addToItemsIndex(owner, createResult._1, createResult._2)).right
+    } yield createResult._2
   }
 
   def putExistingItem(owner: Owner, itemUUID: UUID, item: Item): Response[SetResult] = {
     for {
-      itemNode <- updateItem(owner, itemUUID, item, None, None, None, item.modified).right
-      result <- Right(getSetResult(itemNode, false)).right
-      unit <- Right(updateItemsIndex(itemNode, result)).right
-    } yield result
+      itemResult <- updateItem(owner, itemUUID, item, None, None, None, item.modified).right
+      unit <- Right(updateItemsIndex(itemResult._1, itemResult._2)).right
+    } yield itemResult._2
   }
 
   def getItem(owner: Owner, itemUUID: UUID): Response[Item] = {
@@ -120,7 +118,7 @@ trait ItemDatabase extends UserDatabase {
       ownerNode <- getNode("inboxId", inboxId, MainLabel.OWNER, None, false).right
       itemCreateResult <- createItem(ownerNode, item, Token.ANONYMOUS).right
       result <- Right(getSetResult(itemCreateResult._1, true)).right
-      unit <- Right(addToItemsIndex(itemCreateResult._2, itemCreateResult._1, result)).right
+      unit <- Right(addToItemsIndex(itemCreateResult._3, itemCreateResult._1, itemCreateResult._2)).right
     } yield result
   }
 
@@ -583,23 +581,23 @@ trait ItemDatabase extends UserDatabase {
       .evaluator(LabelEvaluator(scala.List(MainLabel.ITEM)))
   }
 
-  protected def createItem(ownerNode: Node, item: Item, userType: Byte): Response[(Node, Owner)] = {
+  protected def createItem(ownerNode: Node, item: Item, userType: Byte): Response[(Node, SetResult, Owner)] = {
     withTx {
       implicit neo4j =>
         for {
-          itemNode <- createItem(OwnerNodes(ownerNode, None), item, None, None).right
-        } yield (itemNode, Owner(getUUID(ownerNode), None, userType))
+          createResult <- createItem(OwnerNodes(ownerNode, None), item, None, None).right
+        } yield (createResult._1, createResult._2, Owner(getUUID(ownerNode), None, userType))
     }
   }
 
   protected def createItem(owner: Owner, item: AnyRef,
-    extraLabel: Option[Label] = None, extraSubLabel: Option[Label] = None): Response[Node] = {
+    extraLabel: Option[Label] = None, extraSubLabel: Option[Label] = None): Response[(Node, SetResult)] = {
     withTx {
       implicit neo4j =>
         for {
           ownerNodes <- getOwnerNodes(owner).right
-          itemNode <- createItem(ownerNodes, item, extraLabel, extraSubLabel).right
-        } yield itemNode
+          createResult <- createItem(ownerNodes, item, extraLabel, extraSubLabel).right
+        } yield createResult
     }
   }
 
@@ -616,7 +614,7 @@ trait ItemDatabase extends UserDatabase {
     }
   }
 
-  protected def createItem(ownerNodes: OwnerNodes, item: AnyRef, extraLabel: Option[Label], extraSubLabel: Option[Label])(implicit neo4j: DatabaseService): Response[Node] = {
+  protected def createItem(ownerNodes: OwnerNodes, item: AnyRef, extraLabel: Option[Label], extraSubLabel: Option[Label])(implicit neo4j: DatabaseService): Response[(Node, SetResult)] = {
     val itemNode = createNode(item, MainLabel.ITEM)
     if (extraLabel.isDefined) {
       itemNode.addLabel(extraLabel.get)
@@ -633,20 +631,29 @@ trait ItemDatabase extends UserDatabase {
       ownerNodes.user --> SecurityRelationship.OWNS --> itemNode
     }
 
-    Right(itemNode)
+    // Set UUID
+    val uuid: UUID = UUID.randomUUID()
+    itemNode.setProperty("uuid", IdUtils.getTrimmedBase64UUID(uuid))
+
+    // Set created and modified to same value
+    val timestamp: Long = System.currentTimeMillis()
+    itemNode.setProperty("created", timestamp)
+    itemNode.setProperty("modified", timestamp)
+
+    Right((itemNode, SetResult(Some(uuid), Some(timestamp), timestamp)))
   }
 
   protected def updateItem(owner: Owner, itemUUID: UUID, item: AnyRef,
     additionalLabel: Option[Label] = None,
     additionalSubLabel: Option[Label] = None,
     additionalSubLabelAlternatives: Option[scala.List[Label]] = None,
-    expectedModified: Option[Long] = None): Response[Node] = {
+    expectedModified: Option[Long] = None): Response[(Node, SetResult)] = {
     withTx {
       implicit neo4j =>
         for {
           itemNode <- getItemNode(getOwnerUUID(owner), itemUUID, exactLabelMatch = false).right
-          itemNode <- updateItemNode(itemNode, item, additionalLabel, additionalSubLabel, additionalSubLabelAlternatives, expectedModified).right
-        } yield itemNode
+          itemResult <- updateItemNode(itemNode, item, additionalLabel, additionalSubLabel, additionalSubLabelAlternatives, expectedModified).right
+        } yield itemResult
     }
   }
 
@@ -654,12 +661,12 @@ trait ItemDatabase extends UserDatabase {
     additionalLabel: Option[Label] = None,
     additionalSubLabel: Option[Label] = None,
     additionalSubLabelAlternatives: Option[scala.List[Label]] = None,
-    expectedModified: Option[Long] = None)(implicit neo4j: DatabaseService): Response[Node] = {
+    expectedModified: Option[Long] = None)(implicit neo4j: DatabaseService): Response[(Node, SetResult)] = {
     for {
       unit <- validateExpectedModified(itemNode, expectedModified).right
       itemNode <- Right(setLabel(itemNode, additionalLabel, additionalSubLabel, additionalSubLabelAlternatives)).right
-      itemNode <- updateNode(itemNode, item).right
-    } yield itemNode
+      itemResult <- updateNode(itemNode, item).right
+    } yield itemResult
   }
 
   protected def validateExpectedModified(node: Node, expectedModified: Option[Long])(implicit neo4j: DatabaseService): Response[Unit] = {
@@ -686,51 +693,51 @@ trait ItemDatabase extends UserDatabase {
     node
   }
 
-  protected def putExistingExtendedItem(owner: Owner, itemUUID: UUID, extItem: ExtendedItem, label: Label, skipParentHistoryTag: Boolean = false): Response[(Node, Option[Long], OwnerNodes)] = {
+  protected def putExistingExtendedItem(owner: Owner, itemUUID: UUID, extItem: ExtendedItem, label: Label, skipParentHistoryTag: Boolean = false): Response[(Node, SetResult, OwnerNodes)] = {
     withTx {
       implicit neo4j =>
         for {
-          itemNode <- updateItem(owner, itemUUID, extItem, Some(label), None, None, extItem.modified).right
+          itemResult <- updateItem(owner, itemUUID, extItem, Some(label), None, None, extItem.modified).right
           ownerNodes <- getOwnerNodes(owner).right
-          archived <- setParentNode(itemNode, ownerNodes, extItem.parent, skipParentHistoryTag).right
-          tagNodes <- setTagNodes(itemNode, ownerNodes, extItem).right
-          result <- setAssigneeRelationship(itemNode, ownerNodes, extItem).right
-        } yield (itemNode, archived, ownerNodes)
+          archived <- setParentNode(itemResult._1, ownerNodes, extItem.parent, skipParentHistoryTag).right
+          tagNodes <- setTagNodes(itemResult._1, ownerNodes, extItem).right
+          result <- setAssigneeRelationship(itemResult._1, ownerNodes, extItem).right
+        } yield (itemResult._1, itemResult._2.copy(archived = archived), ownerNodes)
     }
   }
 
-  protected def putNewExtendedItem(owner: Owner, extItem: ExtendedItem, label: Label, subLabel: Option[Label] = None, skipParentHistoryTag: Boolean = false): Response[(Node, Option[Long], OwnerNodes)] = {
+  protected def putNewExtendedItem(owner: Owner, extItem: ExtendedItem, label: Label, subLabel: Option[Label] = None, skipParentHistoryTag: Boolean = false): Response[(Node, SetResult, Option[Long], OwnerNodes)] = {
     withTx {
       implicit neo4j =>
         for {
-          itemNode <- createItem(owner, extItem, Some(label), subLabel).right
+          createResult <- createItem(owner, extItem, Some(label), subLabel).right
           ownerNodes <- getOwnerNodes(owner).right
-          archived <- setParentNode(itemNode, ownerNodes, extItem.parent, skipParentHistoryTag).right
-          tagNodes <- setTagNodes(itemNode, ownerNodes, extItem).right
-          result <- setAssigneeRelationship(itemNode, ownerNodes, extItem).right
-        } yield (itemNode, archived, ownerNodes)
+          archived <- setParentNode(createResult._1, ownerNodes, extItem.parent, skipParentHistoryTag).right
+          tagNodes <- setTagNodes(createResult._1, ownerNodes, extItem).right
+          result <- setAssigneeRelationship(createResult._1, ownerNodes, extItem).right
+        } yield (createResult._1, createResult._2, archived, ownerNodes)
     }
   }
 
-  protected def putExistingLimitedExtendedItem(owner: Owner, itemUUID: UUID, extItem: LimitedExtendedItem, label: Label): Response[(Node, Option[Long], OwnerNodes)] = {
+  protected def putExistingLimitedExtendedItem(owner: Owner, itemUUID: UUID, extItem: LimitedExtendedItem, label: Label): Response[(Node, SetResult, OwnerNodes)] = {
     withTx {
       implicit neo4j =>
         for {
-          itemNode <- updateItem(owner, itemUUID, extItem, Some(label), None, None, extItem.modified).right
+          itemResult <- updateItem(owner, itemUUID, extItem, Some(label), None, None, extItem.modified).right
           ownerNodes <- getOwnerNodes(owner).right
-          archived <- setParentNode(itemNode, ownerNodes, extItem.parent).right
-        } yield (itemNode, archived, ownerNodes)
+          archived <- setParentNode(itemResult._1, ownerNodes, extItem.parent).right
+        } yield (itemResult._1, itemResult._2.copy(archived = archived), ownerNodes)
     }
   }
 
-  protected def putNewLimitedExtendedItem(owner: Owner, extItem: LimitedExtendedItem, label: Label): Response[(Node, Option[Long], OwnerNodes)] = {
+  protected def putNewLimitedExtendedItem(owner: Owner, extItem: LimitedExtendedItem, label: Label): Response[(Node, SetResult, OwnerNodes)] = {
     withTx {
       implicit neo4j =>
         for {
-          itemNode <- createItem(owner, extItem, Some(label)).right
+          createResult <- createItem(owner, extItem, Some(label)).right
           ownerNodes <- getOwnerNodes(owner).right
-          archived <- setParentNode(itemNode, ownerNodes, extItem.parent).right
-        } yield (itemNode, archived, ownerNodes)
+          archived <- setParentNode(createResult._1, ownerNodes, extItem.parent).right
+        } yield (createResult._1, createResult._2.copy(archived = archived), ownerNodes)
     }
   }
 

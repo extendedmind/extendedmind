@@ -42,18 +42,16 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
 
   def putNewTag(owner: Owner, tag: Tag): Response[SetResult] = {
     for {
-      tagNode <- putNewTagNode(owner, tag).right
-      result <- Right(getSetResult(tagNode, true)).right
-      unit <- Right(addToItemsIndex(owner, tagNode, result)).right
-    } yield result
+      tagResult <- putNewTagNode(owner, tag).right
+      unit <- Right(addToItemsIndex(owner, tagResult._1, tagResult._2)).right
+    } yield tagResult._2
   }
 
   def putExistingTag(owner: Owner, tagUUID: UUID, tag: Tag): Response[SetResult] = {
     for {
-      tagNode <- putExistingTagNode(owner, tagUUID, tag).right
-      result <- Right(getSetResult(tagNode, false)).right
-      unit <- Right(updateItemsIndex(tagNode, result)).right
-    } yield result
+      tagResult <- putExistingTagNode(owner, tagUUID, tag).right
+      unit <- Right(updateItemsIndex(tagResult._1, tagResult._2)).right
+    } yield tagResult._2
   }
 
   def getTag(owner: Owner, tagUUID: UUID): Response[Tag] = {
@@ -87,7 +85,7 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
   // PRIVATE
 
   protected def putExistingTagNode(owner: Owner, tagUUID: UUID, tag: Tag):
-        Response[Node] = {
+        Response[(Node, SetResult)] = {
     val subLabel = if (tag.tagType.get == CONTEXT) Some(TagLabel.CONTEXT)
                    else if (tag.tagType.get == KEYWORD) Some(TagLabel.KEYWORD)
                    else Some(TagLabel.HISTORY)
@@ -103,25 +101,25 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
       implicit neo4j =>
         for {
           ownerNodes <- getOwnerNodes(owner).right
-          tagNode <- updateItem(owner, tagUUID, tag, Some(ItemLabel.TAG), subLabel, subLabelAlternative, tag.modified).right
-          result <- setTagParentNodes(tagNode, ownerNodes, tag).right
-        } yield tagNode
+          tagResult <- updateItem(owner, tagUUID, tag, Some(ItemLabel.TAG), subLabel, subLabelAlternative, tag.modified).right
+          result <- setTagParentNodes(tagResult._1, ownerNodes, tag).right
+        } yield tagResult
     }
   }
 
   def putNewTagNode(owner: Owner, tag: Tag):
-          Response[Node] = {
+          Response[(Node, SetResult)] = {
     withTx {
       implicit neo4j =>
         for {
           ownerNodes <- getOwnerNodes(owner).right
-          tagNode <- createItem(owner, tag, Some(ItemLabel.TAG),
+          tagResult <- createItem(owner, tag, Some(ItemLabel.TAG),
                          (if (tag.tagType.get == CONTEXT) Some(TagLabel.CONTEXT)
                           else if (tag.tagType.get == KEYWORD) Some(TagLabel.KEYWORD)
                           else Some(TagLabel.HISTORY))
                          ).right
-          result <- setTagParentNodes(tagNode, ownerNodes, tag).right
-        } yield tagNode
+          unit <- setTagParentNodes(tagResult._1, ownerNodes, tag).right
+        } yield tagResult
     }
   }
 
