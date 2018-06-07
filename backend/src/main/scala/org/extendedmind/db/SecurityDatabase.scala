@@ -166,24 +166,36 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
   }
 
   def changeUserType(userUUID: UUID, userType: Integer): Response[SetResult] = {
-    for {
-      userNode <- changeUserNodeType(userUUID, userType).right
-      result <- Right(getSetResult(userNode, false)).right
-    } yield result
+    withTx {
+      implicit neo4j =>
+        for {
+          userNode <- getNode(userUUID, OwnerLabel.USER).right
+          unit <- Right(changeUserType(userNode, userType)).right
+          result <- Right(updateNodeModified(userNode)).right
+        } yield result
+    }
   }
 
   def blacklistOwner(ownerUUID: UUID): Response[SetResult] = {
-    for {
-      ownerNode <- blacklistOwnerNode(ownerUUID).right
-      result <- Right(getSetResult(ownerNode, false)).right
-    } yield result
+    withTx {
+      implicit neo4j =>
+        for {
+          ownerNode <- getNode(ownerUUID, MainLabel.OWNER).right
+          unit <- Right(blacklistOwnerNode(ownerNode)).right
+          result <- Right(updateNodeModified(ownerNode)).right
+        } yield result
+    }
   }
 
   def unblacklistOwner(ownerUUID: UUID): Response[SetResult] = {
-    for {
-      ownerNode <- unblacklistOwnerNode(ownerUUID).right
-      result <- Right(getSetResult(ownerNode, false)).right
-    } yield result
+    withTx {
+      implicit neo4j =>
+        for {
+          ownerNode <- getNode(ownerUUID, MainLabel.OWNER).right
+          unit <- Right(unblacklistOwnerNode(ownerNode)).right
+          result <- Right(updateNodeModified(ownerNode)).right
+        } yield result
+    }
   }
 
   def destroyAllTokens: Response[CountResult] = {
@@ -220,17 +232,27 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
   }
 
   def resetPassword(code: Long, email: String, password: String): Response[SetResult] = {
-    for {
-      userNode <- resetPasswordNode(code, email, password).right
-      result <- Right(getSetResult(userNode, true)).right
-    } yield result
+    withTx {
+      implicit neo =>
+        for {
+          userNode <- getUserNode(email).right
+          expires <- getPasswordResetExpires(code, userNode).right
+          unit <- Right(setUserPassword(userNode, password)).right
+          unit <- Right(finalizePasswordReset(userNode)).right
+          result <- Right(updateNodeModified(userNode)).right
+        } yield result
+    }
   }
 
   def verifyEmail(code: Long, email: String): Response[SetResult] = {
-    for {
-      userNode <- verifyEmailNode(code, email).right
-      result <- Right(getSetResult(userNode, true)).right
-    } yield result
+    withTx {
+      implicit neo =>
+        for {
+          userNode <- getUserNode(email).right
+          emailVerified <- verifyEmail(code, userNode).right
+          result <- Right(updateNodeModified(userNode)).right
+        } yield result
+    }
   }
 
   // PRIVATE
@@ -548,16 +570,6 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     )
   }
 
-  private def changeUserNodeType(userUUID: UUID, userType: Integer): Response[Node] = {
-    withTx {
-      implicit neo4j =>
-        for {
-          userNode <- getNode(userUUID, OwnerLabel.USER).right
-          result <- Right(changeUserType(userNode, userType)).right
-        } yield userNode
-    }
-  }
-
   private def changeUserType(userNode: Node, userType: Integer)(implicit neo4j: DatabaseService) = {
     val currentUserType = getUserType(userNode)
 
@@ -585,16 +597,6 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
       Token.NORMAL
   }
 
-  private def blacklistOwnerNode(ownerUUID: UUID): Response[Node] = {
-    withTx {
-      implicit neo4j =>
-        for {
-          ownerNode <- getNode(ownerUUID, MainLabel.OWNER).right
-          result <- Right(blacklistOwnerNode(ownerNode)).right
-        } yield ownerNode
-    }
-  }
-
   private def blacklistOwnerNode(ownerNode: Node)(implicit neo4j: DatabaseService) = {
     if(!ownerNode.hasProperty("blacklisted")){
       val blacklisted = System.currentTimeMillis()
@@ -605,16 +607,6 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
         val infoNode = getInfoNode
         infoNode.setProperty("indexedBlacklistUpdated", blacklisted)
       }
-    }
-  }
-
-  private def unblacklistOwnerNode(ownerUUID: UUID): Response[Node] = {
-    withTx {
-      implicit neo4j =>
-        for {
-          ownerNode <- getNode(ownerUUID, MainLabel.OWNER).right
-          result <- Right(unblacklistOwnerNode(ownerNode)).right
-        } yield ownerNode
     }
   }
 
@@ -676,28 +668,6 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
       }
     }else{
       fail(INVALID_PARAMETER, ERR_BASE_PASSWORD_NOT_RESETABLE, "Password not resetable")
-    }
-  }
-
-  private def resetPasswordNode(code: Long, email: String, password: String): Response[Node] = {
-    withTx {
-      implicit neo =>
-        for {
-          userNode <- getUserNode(email).right
-          expires <- getPasswordResetExpires(code, userNode).right
-          result <- Right(setUserPassword(userNode, password)).right
-          result <- Right(finalizePasswordReset(userNode)).right
-        } yield userNode
-    }
-  }
-
-  private def verifyEmailNode(code: Long, email: String): Response[Node] = {
-    withTx {
-      implicit neo =>
-        for {
-          userNode <- getUserNode(email).right
-          emailVerified <- verifyEmail(code, userNode).right
-        } yield userNode
     }
   }
 

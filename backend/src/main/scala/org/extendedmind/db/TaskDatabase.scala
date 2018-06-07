@@ -102,48 +102,75 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
   }
 
   def undeleteTask(owner: Owner, taskUUID: UUID, rm: Option[ReminderModification]): Response[SetResult] = {
-    for {
-      taskNode <- validateExtendedItemModifiable(owner, taskUUID, ItemLabel.TASK, rm.isDefined).right
-      undeletedTaskNode <- undeleteTaskNode(owner, taskNode, rm).right
-      result <- Right(getSetResult(undeletedTaskNode, false)).right
-      unit <- Right(updateItemsIndex(undeletedTaskNode, result)).right
-    } yield result
+    withTx {
+      implicit neo =>
+        for {
+          taskNode <- validateExtendedItemModifiable(owner, taskUUID, ItemLabel.TASK, rm.isDefined).right
+          success <- Right(undeleteItem(taskNode)).right
+          unit <- modifyReminder(taskNode, rm).right
+          result <- Right(updateNodeModified(taskNode)).right
+          unit <- Right(updateItemsIndex(taskNode, result)).right
+        } yield result
+    }
   }
 
   def completeTask(owner: Owner, taskUUID: UUID, rm: Option[ReminderModification]): Response[CompleteTaskResult] = {
-    for {
-      taskNode <- validateExtendedItemModifiable(owner, taskUUID, ItemLabel.TASK, rm.isDefined).right
-      completeInfo <- completeTaskNode(owner, taskNode, rm).right
-      result <- Right(getCompleteTaskResult(completeInfo)).right
-      unit <- Right(updateItemsIndex(completeInfo._1, result.result)).right
-    } yield result
+    withTx {
+      implicit neo =>
+        for {
+          taskNode <- validateExtendedItemModifiable(owner, taskUUID, ItemLabel.TASK, rm.isDefined).right
+          completeInfo <- markTaskNodeComplete(owner, taskNode, rm).right
+          generatedTask <- evaluateRepeating(owner, completeInfo._1).right
+          fullGeneratedTask <- putGeneratedTask(owner, generatedTask, completeInfo._1).right
+          setResult <- Right(updateNodeModified(completeInfo._1)).right
+          result <- Right(CompleteTaskResult(completeInfo._2, setResult, fullGeneratedTask)).right
+          unit <- Right(updateItemsIndex(completeInfo._1, result.result)).right
+        } yield result
+    }
   }
 
   def uncompleteTask(owner: Owner, taskUUID: UUID, rm: Option[ReminderModification]): Response[SetResult] = {
-    for {
-      taskNode <- validateExtendedItemModifiable(owner, taskUUID, ItemLabel.TASK, rm.isDefined).right
-      taskNode <- uncompleteTaskNode(owner, taskNode, rm).right
-      result <- Right(getSetResult(taskNode, false)).right
-      unit <- Right(updateItemsIndex(taskNode, result)).right
-    } yield result
+    withTx {
+      implicit neo =>
+        for {
+          taskNode <- validateExtendedItemModifiable(owner, taskUUID, ItemLabel.TASK, rm.isDefined).right
+          result <- Right(uncompleteTaskNode(taskNode)).right
+          unit <- modifyReminder(taskNode, rm).right
+          result <- Right(updateNodeModified(taskNode)).right
+          unit <- Right(updateItemsIndex(taskNode, result)).right
+        } yield result
+    }
   }
 
   def taskToList(owner: Owner, taskUUID: UUID, task: Task): Response[List] = {
-    for {
-      convertResult <- convertTaskToList(owner, taskUUID, task).right
-      revision <- Right(evaluateListRevision(convertResult._2, convertResult._1, convertResult._3, force=true)).right
-      result <- Right(getSetResult(convertResult._1, false)).right
-      unit <- Right(updateItemsIndex(convertResult._1, result)).right
-    } yield (convertResult._2.copy(modified = Some(result.modified), revision = revision))
+    withTx {
+      implicit neo4j =>
+        for {
+          taskResult <- putExistingExtendedItem(owner, taskUUID, task, ItemLabel.TASK).right
+          result <- validateTaskConvertable(taskResult._1).right
+          listNode <- Right(setLabel(taskResult._1, Some(MainLabel.ITEM), Some(ItemLabel.LIST), Some(scala.List(ItemLabel.TASK)))).right
+          list <- toList(listNode, owner).right
+          revision <- Right(evaluateListRevision(list, taskResult._1, taskResult._3, force=true)).right
+          result <- Right(updateNodeModified(taskResult._1)).right
+          unit <- Right(updateItemsIndex(taskResult._1, result)).right
+        } yield (list.copy(modified = Some(result.modified), revision = revision))
+    }
   }
 
   def taskToNote(owner: Owner, taskUUID: UUID, task: Task): Response[Note] = {
-    for {
-      convertResult <- convertTaskToNote(owner, taskUUID, task).right
-      revision <- Right(evaluateNoteRevision(convertResult._2, convertResult._1, convertResult._3, force=true)).right
-      result <- Right(getSetResult(convertResult._1, false)).right
-      unit <- Right(updateItemsIndex(convertResult._1, result)).right
-    } yield (convertResult._2.copy(modified = Some(result.modified), revision = revision))
+    withTx {
+      implicit neo4j =>
+        for {
+          taskResult <- putExistingExtendedItem(owner, taskUUID, task, ItemLabel.TASK).right
+          result <- validateTaskConvertable(taskResult._1).right
+          noteNode <- Right(setLabel(taskResult._1, Some(MainLabel.ITEM), Some(ItemLabel.NOTE), Some(scala.List(ItemLabel.TASK)))).right
+          result <- Right(moveDescriptionToContent(noteNode)).right
+          note <- toNote(noteNode, owner).right
+          revision <- Right(evaluateNoteRevision(note, taskResult._1, taskResult._3, force=true)).right
+          result <- Right(updateNodeModified(taskResult._1)).right
+          unit <- Right(updateItemsIndex(taskResult._1, result)).right
+        } yield (note.copy(modified = Some(result.modified), revision = revision))
+    }
   }
 
   // PRIVATE
@@ -214,14 +241,6 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
            else None
           ))).right
     } yield task
-  }
-
-  protected def completeTaskNode(owner: Owner, taskNode: Node, rm: Option[ReminderModification]): Response[(Node, Long, Option[Task])] = {
-    for {
-      completeInfo <- markTaskNodeComplete(owner, taskNode, rm).right
-      generatedTask <- evaluateRepeating(owner, completeInfo._1).right
-      fullGeneratedTask <- putGeneratedTask(owner, generatedTask, completeInfo._1).right
-    } yield (completeInfo._1, completeInfo._2, fullGeneratedTask)
   }
 
   protected def markTaskNodeComplete(owner: Owner, taskNode: Node, rm: Option[ReminderModification]): Response[(Node, Long)] = {
@@ -397,22 +416,6 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     reminderNode.delete()
   }
 
-  protected def getCompleteTaskResult(completeInfo: (Node, Long, Option[Task])): CompleteTaskResult = {
-    CompleteTaskResult(completeInfo._2,
-      getSetResult(completeInfo._1, false),
-      completeInfo._3)
-  }
-
-  protected def uncompleteTaskNode(owner: Owner, taskNode: Node, rm: Option[ReminderModification]): Response[Node] = {
-    withTx {
-      implicit neo =>
-        for {
-          result <- Right(uncompleteTaskNode(taskNode)).right
-          unit <- modifyReminder(taskNode, rm).right
-        } yield taskNode
-    }
-  }
-
   protected def uncompleteTaskNode(taskNode: Node)(implicit neo4j: DatabaseService): Unit = {
     if (taskNode.hasProperty("completed")) taskNode.removeProperty("completed")
   }
@@ -424,41 +427,6 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
           deleted <- Right(deleteItem(taskNode)).right
           unit <- modifyReminder(taskNode, rm).right
         } yield (taskNode, deleted)
-    }
-  }
-
-  protected def convertTaskToList(owner: Owner, taskUUID: UUID, task: Task): Response[(Node, List, OwnerNodes)] = {
-    withTx {
-      implicit neo4j =>
-        for {
-          taskResult <- putExistingExtendedItem(owner, taskUUID, task, ItemLabel.TASK).right
-          result <- validateTaskConvertable(taskResult._1).right
-          listNode <- Right(setLabel(taskResult._1, Some(MainLabel.ITEM), Some(ItemLabel.LIST), Some(scala.List(ItemLabel.TASK)))).right
-          list <- toList(listNode, owner).right
-        } yield (taskResult._1, list, taskResult._3)
-    }
-  }
-
-  protected def convertTaskToNote(owner: Owner, taskUUID: UUID, task: Task): Response[(Node, Note, OwnerNodes)] = {
-    withTx {
-      implicit neo4j =>
-        for {
-          taskResult <- putExistingExtendedItem(owner, taskUUID, task, ItemLabel.TASK).right
-          result <- validateTaskConvertable(taskResult._1).right
-          noteNode <- Right(setLabel(taskResult._1, Some(MainLabel.ITEM), Some(ItemLabel.NOTE), Some(scala.List(ItemLabel.TASK)))).right
-          result <- Right(moveDescriptionToContent(noteNode)).right
-          note <- toNote(noteNode, owner).right
-        } yield (taskResult._1, note, taskResult._3)
-    }
-  }
-
-  protected def undeleteTaskNode(owner: Owner, taskNode: Node, rm: Option[ReminderModification]): Response[Node] = {
-    withTx {
-      implicit neo =>
-        for {
-          success <- Right(undeleteItem(taskNode)).right
-          unit <- modifyReminder(taskNode, rm).right
-        } yield taskNode
     }
   }
 

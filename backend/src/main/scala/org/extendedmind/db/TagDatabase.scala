@@ -73,12 +73,18 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
   }
 
   def undeleteTag(owner: Owner, tagUUID: UUID): Response[SetResult] = {
-    for {
-      undeleteTagResult <- undeleteTagNode(owner, tagUUID).right
-      result <- Right(getSetResult(undeleteTagResult._1, false)).right
-      unit <- Right(updateItemsIndex(undeleteTagResult._1, result)).right
-      unit <- Right(updateItemsIndex(undeleteTagResult._2, result)).right
-    } yield result
+    withTx {
+      implicit neo =>
+        for {
+          tagNode <- getItemNode(getOwnerUUID(owner), tagUUID, Some(ItemLabel.TAG), acceptDeleted = true).right
+          unit <- validateTagUndeletable(tagNode).right
+          success <- Right(undeleteItem(tagNode)).right
+          childrenAndTagged <- getChildrenAndTagged(owner, tagNode).right
+          result <- Right(updateNodeModified(tagNode)).right
+          unit <- Right(updateItemsIndex(tagNode, result)).right
+          unit <- Right(updateItemsIndex(childrenAndTagged, result)).right
+        } yield result
+    }
   }
 
   // PRIVATE
@@ -160,18 +166,6 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
           deleted <- Right(deleteItem(tagNode)).right
           childrenAndTagged <- getChildrenAndTagged(owner, tagNode).right
         } yield (tagNode, deleted, childrenAndTagged)
-    }
-  }
-
-  protected def undeleteTagNode(owner: Owner, tagUUID: UUID): Response[(Node, scala.List[Node])] = {
-    withTx {
-      implicit neo =>
-        for {
-          tagNode <- getItemNode(getOwnerUUID(owner), tagUUID, Some(ItemLabel.TAG), acceptDeleted = true).right
-          unit <- validateTagUndeletable(tagNode).right
-          success <- Right(undeleteItem(tagNode)).right
-          childrenAndTagged <- getChildrenAndTagged(owner, tagNode).right
-        } yield (tagNode, childrenAndTagged)
     }
   }
 

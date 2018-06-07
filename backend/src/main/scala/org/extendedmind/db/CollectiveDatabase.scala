@@ -45,14 +45,12 @@ trait CollectiveDatabase extends UserDatabase {
   def putNewCollective(founderUUID: UUID, collective: Collective): Response[SetResult] = {
     for{
       collectiveResult <- createCollective(founderUUID, collective, false).right
-      result <- Right(getSetResult(collectiveResult._1, true)).right
-    }yield result
+    } yield collectiveResult._1
   }
 
   def putExistingCollective(collectiveUUID: UUID, collective: Collective): Response[SetResult] = {
     for {
-      collectiveNode <- putExistingCollectiveNode(collectiveUUID, collective).right
-      result <- Right(getSetResult(collectiveNode._1, false)).right
+      result <- putExistingCollectiveNode(collectiveUUID, collective).right
     } yield result
   }
 
@@ -81,8 +79,7 @@ trait CollectiveDatabase extends UserDatabase {
   def setCollectiveUserPermission(collectiveUUID: UUID, founderUUID: UUID, userUUID: UUID, access: Option[Byte]):
         Response[SetResult] = {
     for {
-      collectiveNode <- setCollectiveUserPermissionNode(collectiveUUID, founderUUID, userUUID, access).right
-      result <- Right(getSetResult(collectiveNode, false)).right
+      result <- setCollectiveUserPermissionNode(collectiveUUID, founderUUID, userUUID, access).right
     } yield result
   }
 
@@ -95,7 +92,7 @@ trait CollectiveDatabase extends UserDatabase {
     } yield completeCollective
   }
 
-  protected def createCollective(founderUUID: UUID, collective: Collective, commonCollective: Boolean): Response[(Node, Option[String])] = {
+  protected def createCollective(founderUUID: UUID, collective: Collective, commonCollective: Boolean): Response[(SetResult, Node)] = {
     withTx{
       implicit neo4j =>
         for {
@@ -106,7 +103,7 @@ trait CollectiveDatabase extends UserDatabase {
   }
 
   protected def createCollectiveNode(founderNode: Node, collective: Collective, commonCollective: Boolean)
-               (implicit neo4j: DatabaseService): Response[(Node, Option[String])] = {
+               (implicit neo4j: DatabaseService): Response[(SetResult, Node)] = {
     val collectiveNode = createNode(collective.copy(inboxId=None, apiKey=None, handle=None, content=None, format=None, displayName=None, preferences=None), MainLabel.OWNER, OwnerLabel.COLLECTIVE)
     founderNode --> SecurityRelationship.IS_FOUNDER --> collectiveNode;
     collectiveNode.setProperty("inboxId", generateUniqueInboxId())
@@ -150,25 +147,26 @@ trait CollectiveDatabase extends UserDatabase {
     val handleResult = setOwnerHandle(collectiveNode, collective.handle)
     if (handleResult.isRight){
       if (handleResult.right.get._1) updatePublicModified = true
-      if (updatePublicModified) collectiveNode.setProperty("publicModified", System.currentTimeMillis)
-      Right((collectiveNode, handleResult.right.get._2))
+      val result = setNodeCreated(collectiveNode)
+      if (updatePublicModified) collectiveNode.setProperty("publicModified", result.modified)
+      Right((result, collectiveNode))
     }else{
       Left(handleResult.left.get)
     }
   }
 
   protected def putExistingCollectiveNode(collectiveUUID: UUID, collective: Collective):
-        Response[(Node, Option[String])] = {
+        Response[SetResult] = {
     withTx {
       implicit neo4j =>
         for {
           collectiveNode <- getNode(collectiveUUID, OwnerLabel.COLLECTIVE).right
-          shortId <- updateCollective(collectiveNode, collective).right
-        } yield (collectiveNode, shortId)
+          result <- updateCollective(collectiveNode, collective).right
+        } yield result
     }
   }
 
-  protected def updateCollective(collectiveNode: Node, collective: Collective)(implicit neo4j: DatabaseService): Response[Option[String]] = {
+  protected def updateCollective(collectiveNode: Node, collective: Collective)(implicit neo4j: DatabaseService): Response[SetResult] = {
 
     // Onboarding status
     if (collective.preferences.isDefined && collective.preferences.get.onboarded.isDefined) {
@@ -232,22 +230,24 @@ trait CollectiveDatabase extends UserDatabase {
     val handleResult = setOwnerHandle(collectiveNode, collective.handle)
     if (handleResult.isRight){
       if (handleResult.right.get._1) updatePublicModified = true
-      if (updatePublicModified) collectiveNode.setProperty("publicModified", System.currentTimeMillis)
-      Right(handleResult.right.get._2)
+      val result = updateNodeModified(collectiveNode)
+      if (updatePublicModified) collectiveNode.setProperty("publicModified", result.modified)
+      Right(result)
     }else{
       Left(handleResult.left.get)
     }
   }
 
   protected def setCollectiveUserPermissionNode(collectiveUUID: UUID, founderUUID: UUID, userUUID: UUID, access: Option[Byte]):
-      Response[Node] = {
+      Response[SetResult] = {
     withTx {
       implicit neo4j =>
         for {
           collectiveNode <- getFoundedCollective(collectiveUUID, founderUUID).right
           userNode <- getNode(userUUID, OwnerLabel.USER).right
           relationship <- setPermission(collectiveNode, userNode, access).right
-        } yield collectiveNode
+          result <- Right(updateNodeModified(collectiveNode)).right
+        } yield result
     }
   }
 
@@ -412,9 +412,9 @@ trait CollectiveDatabase extends UserDatabase {
 
               val adminUserNode =
                 createUser(adminUser, adminUserPassword, Some(UserLabel.ADMIN),
-                                         None, overrideEmailVerified=Some(System.currentTimeMillis)).right.get._1
+                                         None, overrideEmailVerified=Some(System.currentTimeMillis)).right.get._4
               val commonCollectiveNode =
-                createCollectiveNode(adminUserNode, commonCollective, true).right.get._1
+                createCollectiveNode(adminUserNode, commonCollective, true).right.get._2
               val infoNode = createNode(MainLabel.INFO)
               infoNode --> SecurityRelationship.IS_ORIGIN --> commonCollectiveNode;
               infoNode --> SecurityRelationship.IS_ORIGIN --> adminUserNode;

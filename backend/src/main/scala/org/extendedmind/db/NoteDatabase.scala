@@ -105,70 +105,75 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
   def undeleteNote(owner: Owner, noteUUID: UUID): Response[SetResult] = {
     for {
       noteNode <- validateExtendedItemModifiable(owner, noteUUID, ItemLabel.NOTE).right
-      undeletedNoteNode <- undeleteNoteNode(owner, noteNode).right
-      result <- Right(getSetResult(undeletedNoteNode, false)).right
-      unit <- Right(updateItemsIndex(undeletedNoteNode, result)).right
-    } yield result
+      undeletedResult <- undeleteNoteNode(owner, noteNode).right
+      unit <- Right(updateItemsIndex(undeletedResult._1, undeletedResult._2)).right
+    } yield undeletedResult._2
   }
 
   def favoriteNote(owner: Owner, noteUUID: UUID): Response[FavoriteNoteResult] = {
     for {
       favoriteInfo <- favoriteNoteNode(owner, noteUUID).right
-      result <- Right(FavoriteNoteResult(favoriteInfo._2, getSetResult(favoriteInfo._1, false))).right
-      unit <- Right(updateItemsIndex(favoriteInfo._1, result.result)).right
-    } yield result
+      unit <- Right(updateItemsIndex(favoriteInfo._1, favoriteInfo._2.result)).right
+    } yield favoriteInfo._2
   }
 
   def unfavoriteNote(owner: Owner, noteUUID: UUID): Response[SetResult] = {
     for {
       noteResult <- unfavoriteNoteNode(owner, noteUUID).right
-      result <- Right(getSetResult(noteResult._1, false)).right
-      unit <- Right(updateItemsIndex(noteResult._1, result)).right
-    } yield result
+      unit <- Right(updateItemsIndex(noteResult._1, noteResult._2)).right
+    } yield noteResult._2
   }
 
   def noteToTask(owner: Owner, noteUUID: UUID, note: Note): Response[Task] = {
     for {
       convertResult <- convertNoteToTask(owner, noteUUID, note).right
-      revision <- Right(evaluateTaskRevision(convertResult._2, convertResult._1, convertResult._3, force=true)).right
-      result <- Right(getSetResult(convertResult._1, false, revision = revision)).right
-      unit <- Right(updateItemsIndex(convertResult._1, result)).right
-    } yield (convertResult._2.copy(modified = Some(result.modified), revision = revision))
+      revision <- Right(evaluateTaskRevision(convertResult._3, convertResult._1, convertResult._4, force=true)).right
+      unit <- Right(updateItemsIndex(convertResult._1, convertResult._2)).right
+    } yield (convertResult._3.copy(revision = revision))
   }
 
   def noteToList(owner: Owner, noteUUID: UUID, note: Note): Response[List] = {
     for {
       convertResult <- convertNoteToList(owner, noteUUID, note).right
-      revision <- Right(evaluateListRevision(convertResult._2, convertResult._1, convertResult._3, force=true)).right
-      result <- Right(getSetResult(convertResult._1, false)).right
-      unit <- Right(updateItemsIndex(convertResult._1, result)).right
-    } yield (convertResult._2.copy(modified = Some(result.modified), revision = revision))
+      revision <- Right(evaluateListRevision(convertResult._3, convertResult._1, convertResult._4, force=true)).right
+      unit <- Right(updateItemsIndex(convertResult._1, convertResult._2)).right
+    } yield (convertResult._3.copy(revision = revision))
   }
 
   def previewNote(owner: Owner, noteUUID: UUID, format: String): Response[PreviewNoteResult] = {
     for {
       previewResult <- previewNoteNode(owner, noteUUID, format).right
-      result <- Right(PreviewNoteResult(previewResult._2, previewResult._3, getSetResult(previewResult._1, false))).right
-      unit <- Right(updateItemsIndex(previewResult._1, result.result)).right
-    } yield result
+      unit <- Right(updateItemsIndex(previewResult._1, previewResult._2.result)).right
+    } yield previewResult._2
   }
 
   def publishNote(owner: Owner, noteUUID: UUID, format: String, path: String, licence: Option[String], index: Boolean, publicUi: Option[String], overridePublished: Option[Long]): Response[PublishNoteResult] = {
-    for {
-      publishResult <- publishNoteNode(owner, noteUUID, format, path, licence, index, publicUi, overridePublished).right
-      // Add revision to public revision index
-      modified <- Right(addToPublicIndex(publishResult._2, getOwnerUUID(owner), publishResult._5, path, index)).right
-      result <- Right(PublishNoteResult(publishResult._3, modified, publishResult._4, IdUtils.getShortIdAsString(publishResult._5), getSetResult(publishResult._1, false))).right
-      unit <- Right(updateItemsIndex(publishResult._1, result.result)).right
-    } yield result
+    withTx {
+      implicit neo4j =>
+        for {
+          ownerNodes <- getOwnerNodes(owner).right
+          noteNode <- getItemNode(getOwnerUUID(owner), noteUUID, Some(ItemLabel.NOTE)).right
+          publishResult <- publishNoteNode(ownerNodes, noteNode, format, path, licence, index, publicUi, overridePublished).right
+          // Add revision to public revision index
+          modified <- Right(addToPublicIndex(publishResult._1, getOwnerUUID(owner), publishResult._4, path, index)).right
+          result <- Right(updateNodeModified(publishResult._1)).right
+          publishNoteResult <- Right(PublishNoteResult(publishResult._2, modified, publishResult._3, IdUtils.getShortIdAsString(publishResult._4), result)).right
+          unit <- Right(updateItemsIndex(publishResult._1, result)).right
+        } yield publishNoteResult
+    }
   }
 
   def unpublishNote(owner: Owner, noteUUID: UUID): Response[SetResult] = {
-    for {
-      noteResult <- unpublishNoteNode(owner, noteUUID).right
-      result <- Right(getSetResult(noteResult._1, false)).right
-      unit <- Right(updateItemsIndex(noteResult._1, result)).right
-    } yield result
+    withTx {
+      implicit neo =>
+        for {
+          ownerNodes <- getOwnerNodes(owner).right
+          noteNode <- getItemNode(getOwnerUUID(owner), noteUUID, Some(ItemLabel.NOTE)).right
+          unit <- Right(unpublishNoteNode(noteNode)).right
+          result <- Right(updateNodeModified(noteNode)).right
+          unit <- Right(updateItemsIndex(noteNode, result)).right
+        } yield result
+    }
   }
 
   // PRIVATE
@@ -262,160 +267,151 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     }
   }
 
-  protected def undeleteNoteNode(owner: Owner, noteNode: Node): Response[Node] = {
+  protected def undeleteNoteNode(owner: Owner, noteNode: Node): Response[(Node, SetResult)] = {
     withTx {
       implicit neo =>
         for {
-          success <- Right(undeleteItem(noteNode)).right
-        } yield noteNode
+          result <- Right(undeleteItem(noteNode)).right
+        } yield (noteNode, result)
     }
   }
 
-  protected def favoriteNoteNode(owner: Owner, noteUUID: UUID): Response[(Node, Long, OwnerNodes)] = {
+  protected def favoriteNoteNode(owner: Owner, noteUUID: UUID): Response[(Node, FavoriteNoteResult, OwnerNodes)] = {
     withTx {
       implicit neo4j =>
         for {
           ownerNodes <- getOwnerNodes(owner).right
           noteNode <- getItemNode(getOwnerUUID(owner), noteUUID, Some(ItemLabel.NOTE)).right
-          favorited <- Right(favoriteNoteNode(noteNode)).right
-        } yield (noteNode, favorited, ownerNodes)
+          result <- Right(favoriteNoteNode(noteNode)).right
+        } yield (noteNode, result, ownerNodes)
     }
   }
 
-  protected def favoriteNoteNode(noteNode: Node)(implicit neo4j: DatabaseService): Long = {
-    val currentTime = System.currentTimeMillis()
-    noteNode.setProperty("favorited", currentTime)
-    currentTime
+  protected def favoriteNoteNode(noteNode: Node)(implicit neo4j: DatabaseService): FavoriteNoteResult = {
+    val result = updateNodeModified(noteNode)
+    if (!noteNode.hasProperty("favorited")) {
+      noteNode.setProperty("favorited", result.modified)
+      FavoriteNoteResult(result.modified, result)
+    } else {
+      FavoriteNoteResult(noteNode.getProperty("favorited").asInstanceOf[Long], result)
+    }
   }
 
-  protected def unfavoriteNoteNode(owner: Owner, noteUUID: UUID): Response[(Node, OwnerNodes)] = {
+  protected def unfavoriteNoteNode(owner: Owner, noteUUID: UUID): Response[(Node, SetResult, OwnerNodes)] = {
     withTx {
       implicit neo =>
         for {
           ownerNodes <- getOwnerNodes(owner).right
           noteNode <- getItemNode(getOwnerUUID(owner), noteUUID, Some(ItemLabel.NOTE)).right
           result <- Right(unfavoriteNoteNode(noteNode)).right
-        } yield (noteNode, ownerNodes)
+        } yield (noteNode, result, ownerNodes)
     }
   }
 
-  protected def unfavoriteNoteNode(noteNode: Node)(implicit neo4j: DatabaseService): Unit = {
-    if (noteNode.hasProperty("favorited")) noteNode.removeProperty("favorited")
+  protected def unfavoriteNoteNode(noteNode: Node)(implicit neo4j: DatabaseService): SetResult = {
+    if (noteNode.hasProperty("favorited"))
+      noteNode.removeProperty("favorited")
+    updateNodeModified(noteNode)
   }
 
-  protected def convertNoteToTask(owner: Owner, noteUUID: UUID, note: Note): Response[(Node, Task, OwnerNodes)] = {
+  protected def convertNoteToTask(owner: Owner, noteUUID: UUID, note: Note): Response[(Node, SetResult, Task, OwnerNodes)] = {
     withTx {
       implicit neo4j =>
         for {
           noteResult <- putExistingExtendedItem(owner, noteUUID, note, ItemLabel.NOTE).right
           result <- validateNoteConvertable(noteResult._1).right
           taskNode <- Right(setLabel(noteResult._1, Some(MainLabel.ITEM), Some(ItemLabel.TASK), Some(scala.List(ItemLabel.NOTE)))).right
-          result <- moveContentToDescription(taskNode).right
+          unit <- moveContentToDescription(taskNode).right
+          result <- Right(updateNodeModified(taskNode)).right
           task <- toTask(taskNode, owner).right
-        } yield (taskNode, task, noteResult._3)
+        } yield (taskNode, result, task, noteResult._3)
     }
   }
 
-  protected def convertNoteToList(owner: Owner, noteUUID: UUID, note: Note): Response[(Node, List, OwnerNodes)] = {
+  protected def convertNoteToList(owner: Owner, noteUUID: UUID, note: Note): Response[(Node, SetResult, List, OwnerNodes)] = {
     withTx {
       implicit neo4j =>
         for {
           noteResult <- putExistingExtendedItem(owner, noteUUID, note, ItemLabel.NOTE).right
           result <- validateNoteConvertable(noteResult._1).right
           listNode <- Right(setLabel(noteResult._1, Some(MainLabel.ITEM), Some(ItemLabel.LIST), Some(scala.List(ItemLabel.NOTE)))).right
-          result <- moveContentToDescription(listNode).right
+          unit <- moveContentToDescription(listNode).right
+          result <- Right(updateNodeModified(listNode)).right
           list <- toList(listNode, owner).right
-        } yield (listNode, list, noteResult._3)
+        } yield (listNode, result, list, noteResult._3)
     }
   }
 
-  protected def previewNoteNode(owner: Owner, noteUUID: UUID, format: String): Response[(Node, String, Long)] = {
+  protected def previewNoteNode(owner: Owner, noteUUID: UUID, format: String): Response[(Node, PreviewNoteResult)] = {
     withTx {
       implicit neo4j =>
         for {
           noteNode <- getItemNode(getOwnerUUID(owner), noteUUID, Some(ItemLabel.NOTE)).right
-          previewResult <- previewNoteNode(noteNode, format).right
-        } yield (noteNode, previewResult._1, previewResult._2)
+          previewResult <- Right(previewNoteNode(noteNode, format)).right
+        } yield (noteNode, previewResult)
     }
   }
 
-  protected def previewNoteNode(noteNode: Node, format: String): Response[(String, Long)] = {
-    withTx {
-      implicit neo4j =>
-        // Set format
-        noteNode.setProperty("format", format)
+  protected def previewNoteNode(noteNode: Node, format: String)(implicit neo4j: DatabaseService): PreviewNoteResult = {
+    // Set format
+    noteNode.setProperty("format", format)
 
-        // Set preview code random long
-        val previewCode = Random.generateRandomUnsignedLong
-        noteNode.setProperty("preview", previewCode)
+    // Set preview code random long
+    val previewCode = Random.generateRandomUnsignedLong
+    noteNode.setProperty("preview", previewCode)
 
-        // Set preview expires timestamp
-        val previewExpires = System.currentTimeMillis() + PREVIEW_VALIDITY
-        noteNode.setProperty("previewExpires", previewExpires)
+    // Set preview expires timestamp
+    val previewExpires = System.currentTimeMillis() + PREVIEW_VALIDITY
+    noteNode.setProperty("previewExpires", previewExpires)
 
-        Right((previewCode.toHexString, previewExpires))
-    }
+    PreviewNoteResult(previewCode.toHexString, previewExpires, updateNodeModified(noteNode))
   }
 
-  protected def publishNoteNode(owner: Owner, noteUUID: UUID, format: String, path: String, licence: Option[String], index: Boolean,  publicUi: Option[String], overridePublished: Option[Long]): Response[(Node, Node, Long, Option[Long], Long, OwnerNodes)] = {
-    withTx {
-      implicit neo4j =>
-        for {
-          ownerNodes <- getOwnerNodes(owner).right
-          noteNode <- getItemNode(getOwnerUUID(owner), noteUUID, Some(ItemLabel.NOTE)).right
-          publishResult <- publishNoteNode(ownerNodes, noteNode, format, path, licence, index, publicUi, overridePublished).right
-        } yield (noteNode, publishResult._1, publishResult._2, publishResult._3, publishResult._4, ownerNodes)
-    }
-  }
+  protected def publishNoteNode(ownerNodes: OwnerNodes, noteNode: Node, format: String, path: String, licence: Option[String], index: Boolean, publicUi: Option[String], overridePublished: Option[Long])(implicit neo4j: DatabaseService): Response[(Node, Long, Option[Long], Long)] = {
+    val ownerNode = if (ownerNodes.foreignOwner.isDefined) ownerNodes.foreignOwner.get else ownerNodes.user
+    if (!ownerNode.hasProperty("handle")){
+      fail(INVALID_PARAMETER, ERR_NOTE_NO_HANDLE, "Can not publish because owner does not have a handle")
+    }else{
+      val handle = ownerNode.getProperty("handle").asInstanceOf[String]
 
-  protected def publishNoteNode(ownerNodes: OwnerNodes, noteNode: Node, format: String, path: String, licence: Option[String], index: Boolean, publicUi: Option[String], overridePublished: Option[Long]): Response[(Node, Long, Option[Long], Long)] = {
-    withTx {
-      implicit neo4j =>
-        val ownerNode = if (ownerNodes.foreignOwner.isDefined) ownerNodes.foreignOwner.get else ownerNodes.user
-        if (!ownerNode.hasProperty("handle")){
-          fail(INVALID_PARAMETER, ERR_NOTE_NO_HANDLE, "Can not publish because owner does not have a handle")
-        }else{
-          val handle = ownerNode.getProperty("handle").asInstanceOf[String]
-
-          val pathResult = getPublicItemRevisionNodeByPath(getUUID(ownerNode), path)
-          val published: Option[Long] =
-            if (pathResult.isRight){
-              val publishedNodeRevision = pathResult.right.get
-              if (publishedNodeRevision.getRelationships.find(relationship =>
-                  relationship.getType.name == ItemRelationship.HAS_REVISION.name &&
-                  relationship.getStartNode != noteNode).isDefined){
-                return fail(INVALID_PARAMETER, ERR_NOTE_PATH_IN_USE,
-                    "Can not publish because given path is already in use with a different item")
-              }
-              // Republishing the same node with the same path, don't change published timestamp, "modified"
-              // indicates edits after publishing
-              if (overridePublished.isEmpty) Some(publishedNodeRevision.getProperty("published").asInstanceOf[Long])
-              else overridePublished
-            }else{
-              overridePublished
-            }
-
-          val previouslyPublishedRevisionRelationship =
-            getPublishedExtendedItemRevisionRelationship(noteNode)
-          if (previouslyPublishedRevisionRelationship.isDefined){
-            // Previously published, remove it from the index
-            val previouslyPublishedRevisionNode = previouslyPublishedRevisionRelationship.get.getEndNode
-            val publicRevisionIndex = neo4j.gds.index().forNodes("public")
-            publicRevisionIndex.remove(previouslyPublishedRevisionNode)
-            // Remove published but leave unpublished timestamp to previous node
-            previouslyPublishedRevisionNode.removeProperty("published")
-            previouslyPublishedRevisionNode.setProperty("unpublished", System.currentTimeMillis)
+      val pathResult = getPublicItemRevisionNodeByPath(getUUID(ownerNode), path)
+      val published: Option[Long] =
+        if (pathResult.isRight){
+          val publishedNodeRevision = pathResult.right.get
+          if (publishedNodeRevision.getRelationships.find(relationship =>
+              relationship.getType.name == ItemRelationship.HAS_REVISION.name &&
+              relationship.getStartNode != noteNode).isDefined){
+            return fail(INVALID_PARAMETER, ERR_NOTE_PATH_IN_USE,
+                "Can not publish because given path is already in use with a different item")
           }
-
-          // Create a revision and mark it published
-          val latestRevisionRel = getLatestExtendedItemRevisionRelationship(noteNode)
-          for{
-            note <- toNote(noteNode, ownerNodes, skipParent = true).right
-            noteBytes <- Right(pickleNote(getNoteForPickling(note))).right
-            noteRevisionNode <- Right(createExtendedItemRevision(noteNode, ownerNodes, ItemLabel.NOTE, noteBytes, latestRevisionRel, base = true)).right
-            publishResult <- Right(setNotePublished(getUUID(ownerNode), noteNode, noteRevisionNode, format, path, licence, index, publicUi, published)).right
-          } yield (noteRevisionNode, publishResult._1, publishResult._2, publishResult._3)
+          // Republishing the same node with the same path, don't change published timestamp, "modified"
+          // indicates edits after publishing
+          if (overridePublished.isEmpty) Some(publishedNodeRevision.getProperty("published").asInstanceOf[Long])
+          else overridePublished
+        }else{
+          overridePublished
         }
+
+      val previouslyPublishedRevisionRelationship =
+        getPublishedExtendedItemRevisionRelationship(noteNode)
+      if (previouslyPublishedRevisionRelationship.isDefined){
+        // Previously published, remove it from the index
+        val previouslyPublishedRevisionNode = previouslyPublishedRevisionRelationship.get.getEndNode
+        val publicRevisionIndex = neo4j.gds.index().forNodes("public")
+        publicRevisionIndex.remove(previouslyPublishedRevisionNode)
+        // Remove published but leave unpublished timestamp to previous node
+        previouslyPublishedRevisionNode.removeProperty("published")
+        previouslyPublishedRevisionNode.setProperty("unpublished", System.currentTimeMillis)
+      }
+
+      // Create a revision and mark it published
+      val latestRevisionRel = getLatestExtendedItemRevisionRelationship(noteNode)
+      for{
+        note <- toNote(noteNode, ownerNodes, skipParent = true).right
+        noteBytes <- Right(pickleNote(getNoteForPickling(note))).right
+        noteRevisionNode <- Right(createExtendedItemRevision(noteNode, ownerNodes, ItemLabel.NOTE, noteBytes, latestRevisionRel, base = true)).right
+        publishResult <- Right(setNotePublished(getUUID(ownerNode), noteNode, noteRevisionNode, format, path, licence, index, publicUi, published)).right
+      } yield (noteRevisionNode, publishResult._1, publishResult._2, publishResult._3)
     }
   }
 
@@ -467,17 +463,6 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     else if (noteNode.hasProperty("publicUi")) noteNode.removeProperty("publicUi")
 
     (publishedTimestamp, indexed, sid)
-  }
-
-  protected def unpublishNoteNode(owner: Owner, noteUUID: UUID): Response[(Node, OwnerNodes)] = {
-    withTx {
-      implicit neo =>
-        for {
-          ownerNodes <- getOwnerNodes(owner).right
-          noteNode <- getItemNode(getOwnerUUID(owner), noteUUID, Some(ItemLabel.NOTE)).right
-          result <- Right(unpublishNoteNode(noteNode)).right
-        } yield (noteNode, ownerNodes)
-    }
   }
 
   protected def unpublishNoteNode(noteNode: Node)(implicit neo4j: DatabaseService): Unit = {

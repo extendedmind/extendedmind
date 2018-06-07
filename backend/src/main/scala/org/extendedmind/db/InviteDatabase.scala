@@ -41,8 +41,7 @@ trait InviteDatabase extends UserDatabase {
   def putNewInvite(owner: Owner, invite: Invite): Response[(SetResult, String)] = {
     for {
       inviteResult <- createInvite(owner, invite).right
-      result <- Right(getSetResult(inviteResult._1, true)).right
-    } yield (result, inviteResult._2)
+    } yield (inviteResult._1, inviteResult._2)
   }
 
   def putExistingInvite(owner: Owner, inviteUUID: UUID, invite: Invite): Response[SetResult] = {
@@ -86,16 +85,16 @@ trait InviteDatabase extends UserDatabase {
 
   // PRIVATE
 
-  protected def createInvite(owner: Owner, invite: Invite): Response[(Node, String)] = {
+  protected def createInvite(owner: Owner, invite: Invite): Response[(SetResult, String)] = {
     withTx {
       implicit neo4j =>
         for {
           unit <- validateEmailUniqueness(invite.email).right
           userNode <- getNode(owner.userUUID, OwnerLabel.USER).right
           displayOwner <- Right(getDisplayOwner(userNode)).right
-          inviteNode <- Right(createInvite(userNode, invite.copy(status = Some(InviteStatus.PENDING.toString),
+          result <- Right(createInvite(userNode, invite.copy(status = Some(InviteStatus.PENDING.toString),
                                                            emailId = None, code = None, invitee = None, accepted = None))).right
-        } yield (inviteNode, displayOwner)
+        } yield (result, displayOwner)
     }
   }
 
@@ -130,10 +129,10 @@ trait InviteDatabase extends UserDatabase {
     }
   }
 
-  protected def createInvite(userNode: Node, invite: Invite)(implicit neo4j: DatabaseService): Node = {
+  protected def createInvite(userNode: Node, invite: Invite)(implicit neo4j: DatabaseService): SetResult = {
     val inviteNode = createNode(invite, MainLabel.INVITE)
     userNode --> SecurityRelationship.OWNS --> inviteNode
-    inviteNode
+    setNodeCreated(inviteNode)
   }
 
   protected def addTransientInviteProperties(inviteNode: Node, invite: Invite)(implicit neo4j: DatabaseService): Response[Invite] = {

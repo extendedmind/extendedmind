@@ -106,19 +106,17 @@ trait ItemDatabase extends UserDatabase {
 
   def undeleteItem(owner: Owner, itemUUID: UUID, mandatoryLabel: Option[Label] = None): Response[SetResult] = {
     for {
-      itemNode <- undeleteItemNode(owner, itemUUID, mandatoryLabel).right
-      result <- Right(getSetResult(itemNode, false)).right
-      unit <- Right(updateItemsIndex(itemNode, result)).right
-    } yield result
+      itemResult <- undeleteItemNode(owner, itemUUID, mandatoryLabel).right
+      unit <- Right(updateItemsIndex(itemResult._1, itemResult._2)).right
+    } yield itemResult._2
   }
 
   def putNewItemToInbox(inboxId: String, item: Item): Response[SetResult] = {
     for {
       ownerNode <- getNode("inboxId", inboxId, MainLabel.OWNER, None, false).right
       itemCreateResult <- createItem(ownerNode, item, Token.ANONYMOUS).right
-      result <- Right(getSetResult(itemCreateResult._1, true)).right
       unit <- Right(addToItemsIndex(itemCreateResult._3, itemCreateResult._1, itemCreateResult._2)).right
-    } yield result
+    } yield itemCreateResult._2
   }
 
   def isInboxValid(inboxId: String): Response[SetResult] = {
@@ -172,8 +170,7 @@ trait ItemDatabase extends UserDatabase {
   def setItemProperty(uuid: UUID, key: String, stringValue: Option[String], longValue: Option[Long]): Response[SetResult] = {
     for {
       itemNode <- getItemNodeByUUID(uuid).right
-      unit <- Right(setNodeProperty(itemNode, key: String, stringValue: Option[String], longValue: Option[Long])).right
-      result <- Right(getSetResult(itemNode, false)).right
+      result <- Right(setNodeProperty(itemNode, key: String, stringValue: Option[String], longValue: Option[Long])).right
       unit <- Right(updateItemsIndex(itemNode, result)).right
     } yield result
   }
@@ -629,17 +626,7 @@ trait ItemDatabase extends UserDatabase {
       // User is the owner
       ownerNodes.user --> SecurityRelationship.OWNS --> itemNode
     }
-
-    // Set UUID
-    val uuid: UUID = UUID.randomUUID()
-    itemNode.setProperty("uuid", IdUtils.getTrimmedBase64UUID(uuid))
-
-    // Set created and modified to same value
-    val timestamp: Long = System.currentTimeMillis()
-    itemNode.setProperty("created", timestamp)
-    itemNode.setProperty("modified", timestamp)
-
-    Right((itemNode, SetResult(Some(uuid), Some(timestamp), timestamp)))
+    Right((itemNode, setNodeCreated(itemNode)))
   }
 
   protected def updateItem(owner: Owner, itemUUID: UUID, item: AnyRef,
@@ -1296,13 +1283,13 @@ trait ItemDatabase extends UserDatabase {
     }
   }
 
-  protected def undeleteItemNode(owner: Owner, itemUUID: UUID, mandatoryLabel: Option[Label] = None): Response[Node] = {
+  protected def undeleteItemNode(owner: Owner, itemUUID: UUID, mandatoryLabel: Option[Label] = None): Response[(Node, SetResult)] = {
     withTx {
       implicit neo =>
         for {
           itemNode <- getItemNode(getOwnerUUID(owner), itemUUID, mandatoryLabel, acceptDeleted = true).right
-          success <- Right(undeleteItem(itemNode)).right
-        } yield itemNode
+          result <- Right(undeleteItem(itemNode)).right
+        } yield (itemNode, result)
     }
   }
 
@@ -2223,6 +2210,7 @@ trait ItemDatabase extends UserDatabase {
       // If this is a collective, we store the creator UUID into the relationship for faster search
       relationship.setProperty("creator", ownerNodes.user.getProperty("uuid").asInstanceOf[String])
     }
+    setNodeCreated(revisionNode)
     revisionNode
   }
 

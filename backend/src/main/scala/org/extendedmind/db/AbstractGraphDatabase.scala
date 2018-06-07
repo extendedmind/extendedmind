@@ -278,7 +278,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
 
   // NODE PROPERTIES
 
-  protected def setNodeProperty(node: Node, key: String, stringValue: Option[String], longValue: Option[Long]): Unit = {
+  protected def setNodeProperty(node: Node, key: String, stringValue: Option[String], longValue: Option[Long]): SetResult = {
     withTx {
       implicit neo4j =>
         if (stringValue.isDefined){
@@ -288,8 +288,10 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
         }else if (node.hasProperty(key)){
           node.removeProperty(key)
         }
+        updateNodeModified(node)
     }
   }
+
 
   // CONVERSION
 
@@ -308,6 +310,18 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     SetResult(None, None, timestamp)
   }
 
+  protected def setNodeCreated(node: Node)(implicit neo4j: DatabaseService): SetResult = {
+      // Set UUID
+    val uuid: UUID = UUID.randomUUID()
+    node.setProperty("uuid", IdUtils.getTrimmedBase64UUID(uuid))
+
+    // Set created and modified to same value
+    val timestamp: Long = System.currentTimeMillis()
+    node.setProperty("created", timestamp)
+    node.setProperty("modified", timestamp)
+    SetResult(Some(uuid), Some(timestamp), timestamp)
+  }
+
   protected def toCaseClass[T: Manifest](node: Node)(implicit tag: TypeTag[T]): Response[T] = {
     try {
       Right(Neo4jWrapper.deSerialize[T](node))
@@ -316,32 +330,6 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
         val id: String = if (node.hasProperty("uuid")) getUUID(node).toString else node.getId.toString
         fail(INTERNAL_SERVER_ERROR, ERR_BASE_CONVERT_NODE, "Exception while converting node " + id + " to " + tag.tpe, e)
       }
-    }
-  }
-
-  // FIXME: delete this
-  protected def getSetResult(node: Node, newNode: Boolean, revision: Option[Long] = None, archived: Option[Long] = None, associated: Option[scala.List[Node]] = None): SetResult = {
-    withTx {
-      implicit neo4j =>
-        val uuid =
-          if (newNode)
-            Some(IdUtils.getUUID(node.getProperty("uuid").asInstanceOf[String]))
-          else None
-        val created =
-          if (newNode)
-            Some(node.getProperty("created").asInstanceOf[Long])
-          else
-            None
-
-        val idToUUIDList = {
-          if (associated.isEmpty) None
-          else {
-            Some(associated.get.map(associatedNode => {
-              IdToUUID(getUUID(associatedNode), associatedNode.getProperty("id").asInstanceOf[String])
-            }))
-          }
-        }
-        SetResult(uuid, created, node.getProperty("modified").asInstanceOf[Long], revision, archived, idToUUIDList)
     }
   }
 
@@ -505,10 +493,11 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     }
   }
 
-  protected def undeleteItem(itemNode: Node)(implicit neo4j: DatabaseService): Unit = {
+  protected def undeleteItem(itemNode: Node)(implicit neo4j: DatabaseService): SetResult = {
     if (itemNode.hasProperty("deleted")) {
       itemNode.removeProperty("deleted")
     }
+    updateNodeModified(itemNode)
   }
 
   protected def getItemNode(ownerUUID: UUID, itemUUID: UUID, mandatoryLabel: Option[Label] = None,

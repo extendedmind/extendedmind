@@ -60,7 +60,7 @@ trait TestGraphDatabase extends GraphDatabase {
   var tdUUID: UUID = null
 
   def insertTestData(testDataLocation: Option[String] = None) {
-    
+
     // Initialize database and create common collective and admin user
     val timoUser = User(TIMO_EMAIL, Some("Timo"), Some("timo"), Some("Test *bio* for Timo"), Some("md"), Some(1), None)
     val testDataCollective = Collective("test data", Some("common collective for all test users"), None, Some("test-data"), None, None, None)
@@ -70,10 +70,10 @@ trait TestGraphDatabase extends GraphDatabase {
     val verifiedTimestamp = System.currentTimeMillis + 1000
     val lauriUser = User(LAURI_EMAIL, None, None, None, None, None, None)
     val lauriNode = createUser(lauriUser, LAURI_PASSWORD, Some(UserLabel.ADMIN),
-                               None, overrideEmailVerified=Some(verifiedTimestamp)).right.get._1
+                               None, overrideEmailVerified=Some(verifiedTimestamp)).right.get._4
     val jpUser = User(JP_EMAIL, None, None, None, None, None, None)
     val jpNode = createUser(jpUser, JP_PASSWORD, Some(UserLabel.ALFA),
-                               None, overrideEmailVerified=Some(verifiedTimestamp)).right.get._1
+                               None, overrideEmailVerified=Some(verifiedTimestamp)).right.get._4
 
     // Collectives
     withTx {
@@ -313,7 +313,7 @@ trait TestGraphDatabase extends GraphDatabase {
       implicit neo =>
         val collective = createCollective(getUUID(creator),
             Collective(title, description, displayName, handle, content, format, preferences), common)
-        collective.right.get._1
+        collective.right.get._2
     }
   }
 
