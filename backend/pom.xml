@@ -96,20 +96,6 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.extendedmind</groupId>
-      <artifactId>neo4j-uuid</artifactId>
-      <version>${neo4j.version}</version>
-      <type>jar</type>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.extendedmind</groupId>
-      <artifactId>neo4j-timestamp</artifactId>
-      <version>${neo4j.version}</version>
-      <type>jar</type>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
       <groupId>org.neo4j.app</groupId>
       <artifactId>neo4j-server</artifactId>
       <version>${neo4j.version}</version>

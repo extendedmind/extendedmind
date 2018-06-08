@@ -239,7 +239,7 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
           expires <- getPasswordResetExpires(code, userNode).right
           unit <- Right(setUserPassword(userNode, password)).right
           unit <- Right(finalizePasswordReset(userNode)).right
-          result <- Right(updateNodeModified(userNode)).right
+          result <- Right(updateNodeModified(userNode).copy(uuid = Some(getUUID(userNode)))).right
         } yield result
     }
   }
@@ -373,6 +373,7 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
     val tokenNode = createNode(MainLabel.TOKEN)
     val tokenInfo = setTokenProperties(tokenNode, token, payload);
     tokenNode --> SecurityRelationship.IDS --> userNode
+    setNodeCreated(tokenNode)
     tokenInfo
   }
 

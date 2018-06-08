@@ -65,11 +65,17 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
   }
 
   def deleteTag(owner: Owner, tagUUID: UUID): Response[DeleteItemResult] = {
-    for {
-      deleteTagResult <- deleteTagNode(owner, tagUUID).right
-      unit <- Right(updateItemsIndex(deleteTagResult._1, deleteTagResult._2.result)).right
-      unit <- Right(updateItemsIndex(deleteTagResult._3, deleteTagResult._2.result)).right
-    } yield deleteTagResult._2
+    withTx {
+      implicit neo =>
+        for {
+          tagNode <- getItemNode(getOwnerUUID(owner), tagUUID, Some(ItemLabel.TAG), acceptDeleted = true).right
+          deleted <- Right(deleteItem(tagNode)).right
+          childrenAndTagged <- getChildrenAndTagged(owner, tagNode).right
+          childNodeResults <- Right(childrenAndTagged.map(node => setNodeModified(node, deleted.result.modified, skipOlderModified = true))).right
+          unit <- Right(updateItemsIndex(tagNode, deleted.result)).right
+          unit <- Right(updateItemsIndex(childrenAndTagged, deleted.result)).right
+        } yield deleted
+    }
   }
 
   def undeleteTag(owner: Owner, tagUUID: UUID): Response[SetResult] = {
@@ -78,9 +84,9 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
         for {
           tagNode <- getItemNode(getOwnerUUID(owner), tagUUID, Some(ItemLabel.TAG), acceptDeleted = true).right
           unit <- validateTagUndeletable(tagNode).right
-          success <- Right(undeleteItem(tagNode)).right
+          result <- Right(undeleteItem(tagNode)).right
           childrenAndTagged <- getChildrenAndTagged(owner, tagNode).right
-          result <- Right(updateNodeModified(tagNode)).right
+          childNodeResults <- Right(childrenAndTagged.map(node => setNodeModified(node, result.modified, skipOlderModified = true))).right
           unit <- Right(updateItemsIndex(tagNode, result)).right
           unit <- Right(updateItemsIndex(childrenAndTagged, result)).right
         } yield result
@@ -156,17 +162,6 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
                    else Some(HISTORY)),
         parent = (if (parent.isEmpty) None else (Some(getUUID(parent.get.getEndNode())))))).right
     } yield completeTag
-  }
-
-  protected def deleteTagNode(owner: Owner, tagUUID: UUID): Response[(Node, DeleteItemResult, scala.List[Node])] = {
-    withTx {
-      implicit neo =>
-        for {
-          tagNode <- getItemNode(getOwnerUUID(owner), tagUUID, Some(ItemLabel.TAG), acceptDeleted = true).right
-          deleted <- Right(deleteItem(tagNode)).right
-          childrenAndTagged <- getChildrenAndTagged(owner, tagNode).right
-        } yield (tagNode, deleted, childrenAndTagged)
-    }
   }
 
   protected def getChildrenAndTagged(owner: Owner, tagNode: Node)

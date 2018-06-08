@@ -324,7 +324,6 @@ trait CollectiveDatabase extends UserDatabase {
   }
 
   protected def initializeDatabase(
-                   transactionEventHandlers: java.util.ArrayList[TransactionEventHandler[_]],
                    overrideCommonCollective: Option[Collective],
                    overrideAdminUser: Option[User],
                    overrideAdminUserPassword: Option[String]): (DatabaseStatus, Option[UUID], Option[UUID]) = {
@@ -332,9 +331,6 @@ trait CollectiveDatabase extends UserDatabase {
     val initializeResult =
       withTx {
         implicit neo4j =>
-          // Add transaction event handlers here
-          transactionEventHandlers.foreach(eventHandler => neo4j.gds.registerTransactionEventHandler(eventHandler))
-
           initializeDatabaseInTx(overrideCommonCollective: Option[Collective],
                    overrideAdminUser: Option[User],
                    overrideAdminUserPassword: Option[String])
@@ -418,6 +414,7 @@ trait CollectiveDatabase extends UserDatabase {
               val infoNode = createNode(MainLabel.INFO)
               infoNode --> SecurityRelationship.IS_ORIGIN --> commonCollectiveNode;
               infoNode --> SecurityRelationship.IS_ORIGIN --> adminUserNode;
+              setNodeCreated(infoNode)
               println("...database initialization ready.")
               return (DB_READY, Some(commonCollectiveNode), Some(adminUserNode))
             }
@@ -436,6 +433,7 @@ trait CollectiveDatabase extends UserDatabase {
           val infoNode = createNode(MainLabel.INFO)
           infoNode --> SecurityRelationship.IS_ORIGIN --> commonCollective;
           infoNode --> SecurityRelationship.IS_ORIGIN --> firstAdminUser;
+          setNodeCreated(infoNode)
           println("..migration ready, attached INFO node to " +
                     firstAdminUser.getProperty("email").asInstanceOf[String] + " and common collective " +
                     commonCollective.getProperty("title").asInstanceOf[String])

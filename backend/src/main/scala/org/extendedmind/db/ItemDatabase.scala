@@ -65,7 +65,6 @@ trait ItemDatabase extends UserDatabase {
   def putNewItem(owner: Owner, item: Item): Response[SetResult] = {
     for {
       createResult <- createItem(owner, item).right
-      unit <- Right(addToItemsIndex(owner, createResult._1, createResult._2)).right
     } yield createResult._2
   }
 
@@ -98,17 +97,25 @@ trait ItemDatabase extends UserDatabase {
   }
 
   def deleteItem(owner: Owner, itemUUID: UUID): Response[DeleteItemResult] = {
-    for {
-      deleteItemResult <- deleteItemNode(owner, itemUUID).right
-      unit <- Right(updateItemsIndex(deleteItemResult._1, deleteItemResult._2.result)).right
-    } yield deleteItemResult._2
+    withTx {
+      implicit neo =>
+        for {
+          itemNode <- getItemNode(getOwnerUUID(owner), itemUUID, acceptDeleted = true).right
+          deleted <- Right(deleteItem(itemNode)).right
+          unit <- Right(updateItemsIndex(itemNode, deleted.result)).right
+        } yield deleted
+    }
   }
 
   def undeleteItem(owner: Owner, itemUUID: UUID, mandatoryLabel: Option[Label] = None): Response[SetResult] = {
-    for {
-      itemResult <- undeleteItemNode(owner, itemUUID, mandatoryLabel).right
-      unit <- Right(updateItemsIndex(itemResult._1, itemResult._2)).right
-    } yield itemResult._2
+    withTx {
+      implicit neo =>
+        for {
+          itemNode <- getItemNode(getOwnerUUID(owner), itemUUID, mandatoryLabel, acceptDeleted = true).right
+          result <- Right(undeleteItem(itemNode)).right
+          unit <- Right(updateItemsIndex(itemNode, result)).right
+        } yield result
+    }
   }
 
   def putNewItemToInbox(inboxId: String, item: Item): Response[SetResult] = {
@@ -593,6 +600,7 @@ trait ItemDatabase extends UserDatabase {
         for {
           ownerNodes <- getOwnerNodes(owner).right
           createResult <- createItem(ownerNodes, item, extraLabel, extraSubLabel).right
+          unit <- Right(addToItemsIndex(owner, createResult._1, createResult._2)).right
         } yield createResult
     }
   }
@@ -692,7 +700,7 @@ trait ItemDatabase extends UserDatabase {
     }
   }
 
-  protected def putNewExtendedItem(owner: Owner, extItem: ExtendedItem, label: Label, subLabel: Option[Label] = None, skipParentHistoryTag: Boolean = false): Response[(Node, SetResult, Option[Long], OwnerNodes)] = {
+  protected def putNewExtendedItem(owner: Owner, extItem: ExtendedItem, label: Label, subLabel: Option[Label] = None, skipParentHistoryTag: Boolean = false): Response[(Node, SetResult, OwnerNodes)] = {
     withTx {
       implicit neo4j =>
         for {
@@ -701,7 +709,7 @@ trait ItemDatabase extends UserDatabase {
           archived <- setParentNode(createResult._1, ownerNodes, extItem.parent, skipParentHistoryTag).right
           tagNodes <- setTagNodes(createResult._1, ownerNodes, extItem).right
           result <- setAssigneeRelationship(createResult._1, ownerNodes, extItem).right
-        } yield (createResult._1, createResult._2, archived, ownerNodes)
+        } yield (createResult._1, createResult._2.copy(archived = archived), ownerNodes)
     }
   }
 
@@ -1270,26 +1278,6 @@ trait ItemDatabase extends UserDatabase {
       }
     }else{
       Right()
-    }
-  }
-
-  protected def deleteItemNode(owner: Owner, itemUUID: UUID): Response[(Node, DeleteItemResult)] = {
-    withTx {
-      implicit neo =>
-        for {
-          itemNode <- getItemNode(getOwnerUUID(owner), itemUUID, acceptDeleted = true).right
-          deleted <- Right(deleteItem(itemNode)).right
-        } yield (itemNode, deleted)
-    }
-  }
-
-  protected def undeleteItemNode(owner: Owner, itemUUID: UUID, mandatoryLabel: Option[Label] = None): Response[(Node, SetResult)] = {
-    withTx {
-      implicit neo =>
-        for {
-          itemNode <- getItemNode(getOwnerUUID(owner), itemUUID, mandatoryLabel, acceptDeleted = true).right
-          result <- Right(undeleteItem(itemNode)).right
-        } yield (itemNode, result)
     }
   }
 

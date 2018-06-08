@@ -68,43 +68,63 @@ trait ListDatabase extends UserDatabase with TagDatabase {
   }
 
   def deleteList(owner: Owner, listUUID: UUID): Response[DeleteItemResult] = {
-    for {
-      deleteListResult <- deleteListNode(owner, listUUID).right
-      unit <- Right(updateItemsIndex(deleteListResult._1, deleteListResult._2.result)).right
-      unit <- Right(updateItemsIndex(deleteListResult._3, deleteListResult._2.result)).right
-    } yield deleteListResult._2
+    withTx {
+      implicit neo =>
+        for {
+          listNode <- getItemNode(getOwnerUUID(owner), listUUID, Some(ItemLabel.LIST), acceptDeleted=true).right
+          agreementNodes <- getListAgreementNodes(listNode).right
+          unit <- validateListDeletable(listNode, agreementNodes).right
+          deleted <- Right(deleteItem(listNode)).right
+          childNodes <- Right(getChildren(listNode, None, true)).right
+          childNodeResults <- Right(childNodes.map(childNode => setNodeModified(childNode, deleted.result.modified, skipOlderModified=true))).right
+          unit <- Right(updateItemsIndex(listNode, deleted.result)).right
+          unit <- Right(updateItemsIndex(childNodes, deleted.result)).right
+        } yield deleted
+    }
   }
 
   def undeleteList(owner: Owner, listUUID: UUID): Response[SetResult] = {
-    for {
-      undeleteListResult <- undeleteListNode(owner, listUUID).right
-      unit <- Right(updateItemsIndex(undeleteListResult._1, undeleteListResult._2)).right
-      unit <- Right(updateItemsIndex(undeleteListResult._3, undeleteListResult._2)).right
-    } yield undeleteListResult._2
+    withTx {
+      implicit neo =>
+        for {
+          itemNode <- getItemNode(getOwnerUUID(owner), listUUID, Some(ItemLabel.LIST), acceptDeleted = true).right
+          result <- Right(undeleteItem(itemNode)).right
+          childNodes <- Right(getChildren(itemNode, None, true)).right
+          childNodeResults <- Right(childNodes.map(childNode => setNodeModified(childNode, result.modified, skipOlderModified=true))).right
+          unit <- Right(updateItemsIndex(itemNode, result)).right
+          unit <- Right(updateItemsIndex(childNodes, result)).right
+        } yield result
+    }
   }
 
   def archiveList(owner: Owner, listUUID: UUID, parent: Option[UUID]): Response[ArchiveListResult] = {
-    for {
-      listResult <- validateListArchivable(owner, listUUID, parent).right
-      tagResult <- putNewTag(owner, Tag(listResult._2,
-                             None, None, HISTORY, None)).right
-      archivedChildren <- archiveListNode(listResult._1, listResult._4, tagResult.uuid.get, listResult._3).right
-      setResults <- Right(updateItemsIndex(archivedChildren)).right
-      tag <- getTag(owner, tagResult.uuid.get).right
-      result <- Right(finalizeArchiveList(listResult._1, tag, setResults)).right
-      unit <- Right(updateItemsIndex(listResult._1, result.result)).right
-    } yield result
+    withTx {
+      implicit neo =>
+        for {
+          listResult <- validateListArchivable(owner, listUUID, parent).right
+          tagResult <- putNewTag(owner, Tag(listResult._2, None, None, HISTORY, None)).right
+          archiveResult <- archiveListNode(listResult._1, listResult._4, tagResult.uuid.get, listResult._3).right
+          setResults <- Right(updateItemsIndex(archiveResult._1)).right
+          tag <- getTag(owner, tagResult.uuid.get).right
+          unit <- Right(updateItemsIndex(listResult._1, archiveResult._3)).right
+        } yield ArchiveListResult(archiveResult._2,
+              setResults,
+              tag,
+              archiveResult._3)
+    }
   }
 
   def unarchiveList(owner: Owner, listUUID: UUID, parent: Option[UUID]): Response[UnarchiveListResult] = {
-    for {
-      listResult <- validateListUnarchivable(owner, listUUID, parent).right
-      unarchiveResult <- unarchiveListNode(listResult._1, listResult._4, listResult._2, listResult._3).right
-      unit <- Right(updateItemsIndex(listResult._2, unarchiveResult._3.result)).right
-      setResults <- Right(updateItemsIndex(unarchiveResult._1)).right
-      result <- Right(UnarchiveListResult(setResults, unarchiveResult._3, unarchiveResult._2)).right
-      unit <- Right(updateItemsIndex(listResult._1, result.result)).right
-    } yield result
+    withTx {
+      implicit neo =>
+        for {
+          listResult <- validateListUnarchivable(owner, listUUID, parent).right
+          unarchiveResult <- unarchiveListNode(listResult._1, listResult._4, listResult._2, listResult._3).right
+          unit <- Right(updateItemsIndex(listResult._2, unarchiveResult._3.result)).right
+          setResults <- Right(updateItemsIndex(unarchiveResult._1)).right
+          unit <- Right(updateItemsIndex(listResult._1, unarchiveResult._2)).right
+        } yield UnarchiveListResult(setResults, unarchiveResult._3, unarchiveResult._2)
+    }
   }
 
   def listToTask(owner: Owner, listUUID: UUID, list: List): Response[Task] = {
@@ -238,7 +258,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
     }
   }
 
-  protected def archiveListNode(listNode: Node, ownerNodes: OwnerNodes, tagUUID: UUID, parentNode: Option[Node]): Response[scala.List[Node]] = {
+  protected def archiveListNode(listNode: Node, ownerNodes: OwnerNodes, tagUUID: UUID, parentNode: Option[Node]): Response[(scala.List[Node], Long, SetResult)] = {
     withTx {
       implicit neo =>
         val tagNodeResult = getItemNode(getOwnerUUID(ownerNodes), tagUUID, Some(ItemLabel.TAG))
@@ -267,14 +287,16 @@ trait ListDatabase extends UserDatabase with TagDatabase {
           val archivedTimestamp =
             if (archivedTimestampFromParent.isDefined) archivedTimestampFromParent.get
             else System.currentTimeMillis
+          val modifiedTimestamp = if (archivedTimestampFromParent.isDefined) System.currentTimeMillis else archivedTimestamp
           childNodes foreach (childNode => {
             childNode.setProperty("archived", archivedTimestamp)
             createTagRelationships(childNode, scala.List(tagNode))
+            setNodeModified(childNode, modifiedTimestamp)
           })
           createTagRelationships(listNode, scala.List(tagNode))
           if (archivedTimestampFromParent.isEmpty)
             listNode.setProperty("archived", archivedTimestamp)
-          Right(childNodes)
+          Right((childNodes, archivedTimestamp, setNodeModified(listNode, modifiedTimestamp)))
         }
     }
   }
@@ -295,47 +317,15 @@ trait ListDatabase extends UserDatabase with TagDatabase {
         }
 
         val childNodes = getChildren(listNode, None, true)
+        val modifiedTimestamp = System.currentTimeMillis
         // Remove archived from all children and list node
         childNodes foreach (childNode => {
           childNode.removeProperty("archived")
+          setNodeModified(childNode, modifiedTimestamp)
         })
         listNode.removeProperty("archived")
         // Mark the tag as deleted
-        Right(childNodes, updateNodeModified(listNode), deleteItem(historyTag))
-    }
-  }
-
-  protected def finalizeArchiveList(listNode: Node, tag: Tag, setResults: Option[scala.List[SetResult]]): ArchiveListResult = {
-    withTx {
-      implicit neo =>
-        ArchiveListResult(listNode.getProperty("archived").asInstanceOf[Long],
-          setResults,
-          tag,
-          updateNodeModified(listNode))
-    }
-  }
-
-  protected def deleteListNode(owner: Owner, listUUID: UUID): Response[(Node, DeleteItemResult, scala.List[Node])] = {
-    withTx {
-      implicit neo =>
-        for {
-          listNode <- getItemNode(getOwnerUUID(owner), listUUID, Some(ItemLabel.LIST), acceptDeleted=true).right
-          agreementNodes <- getListAgreementNodes(listNode).right
-          unit <- validateListDeletable(listNode, agreementNodes).right
-          deleted <- Right(deleteItem(listNode)).right
-          childNodes <- Right(getChildren(listNode, None, true)).right
-        } yield (listNode, deleted, childNodes)
-    }
-  }
-
-  protected def undeleteListNode(owner: Owner, itemUUID: UUID): Response[(Node, SetResult, scala.List[Node])] = {
-    withTx {
-      implicit neo =>
-        for {
-          itemNode <- getItemNode(getOwnerUUID(owner), itemUUID, Some(ItemLabel.LIST), acceptDeleted = true).right
-          result <- Right(undeleteItem(itemNode)).right
-          childNodes <- Right(getChildren(itemNode, None, true)).right
-        } yield (itemNode, result, childNodes)
+        Right((childNodes, setNodeModified(listNode, modifiedTimestamp), deleteItem(historyTag)))
     }
   }
 

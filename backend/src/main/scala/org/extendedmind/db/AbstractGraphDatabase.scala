@@ -44,11 +44,8 @@ import scala.reflect.runtime.universe._
 import java.lang.Boolean
 import akka.event.LoggingAdapter
 import org.neo4j.index.lucene.QueryContext
-import org.neo4j.extension.timestamp.TimestampCustomPropertyHandler
 import org.neo4j.graphdb.index.IndexHits
 import org.neo4j.graphdb.event.TransactionEventHandler
-import org.neo4j.extension.uuid.UUIDTransactionEventHandler
-import org.neo4j.extension.timestamp.TimestampTransactionEventHandler
 import scala.collection.mutable.HashMap
 import com.vdurmont.semver4j.Semver
 import com.vdurmont.semver4j.Semver.SemverType
@@ -86,35 +83,6 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     // Convert trimmed Base64 UUID to java.util.UUID
     Some(Map("uuid" -> (uuid => Some(IdUtils.getUUID(uuid.asInstanceOf[String])))))
 
-  // INITIALIZATION
-
-  protected def transactionEventHandlers(): java.util.ArrayList[TransactionEventHandler[_]] = {
-    val eventHandlers = new java.util.ArrayList[TransactionEventHandler[_]](2);
-    eventHandlers.add(new UUIDTransactionEventHandler(false, false));
-
-    if (settings.disableTimestamps) {
-      println("WARNING: Automatic timestamps disabled!")
-    } else {
-      val customPropertyHandlers = new java.util.ArrayList[TimestampCustomPropertyHandler](1)
-      // soft delete of list or tag needs to cause items associated with it to also modify themselves
-      val deletedModificationTags = new java.util.ArrayList[RelationshipType](2)
-      deletedModificationTags.add(ItemRelationship.HAS_TAG)
-      deletedModificationTags.add(ItemRelationship.HAS_PARENT)
-      val deletedHandler = new TimestampCustomPropertyHandler("deleted", deletedModificationTags, Direction.INCOMING)
-      customPropertyHandlers.add(deletedHandler)
-      // For some of our item relationships, the end node should not be updated when a new relationship is created
-      val skipEndNodeUpdateOnNewRelationshipsFor = new java.util.ArrayList[RelationshipType](2)
-      skipEndNodeUpdateOnNewRelationshipsFor.add(ItemRelationship.HAS_TAG)
-      skipEndNodeUpdateOnNewRelationshipsFor.add(ItemRelationship.HAS_PARENT)
-      val addCreatedTimestampToNewNodes = true
-      eventHandlers.add(new TimestampTransactionEventHandler(
-          addCreatedTimestampToNewNodes,
-          skipEndNodeUpdateOnNewRelationshipsFor,
-          customPropertyHandlers));
-    }
-    eventHandlers
-  }
-
   // LOAD DATABASE TO MEMORY
 
   sealed abstract class DatabaseStatus
@@ -123,7 +91,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
   case object DB_ERROR extends DatabaseStatus
 
   def loadDatabase()(implicit log: LoggingAdapter): Boolean = {
-    initializeDatabase(transactionEventHandlers(), None, None, None)._1 match {
+    initializeDatabase(None, None, None)._1 match {
       case DB_READY => {
         withTx {
           implicit neo4j =>
@@ -217,15 +185,30 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
   }
 
   def putVersion(platform: String, versionInfo: PlatformVersionInfo): Response[SetResult] = {
-    for {
-      result <- putVersionNode(platform, versionInfo).right
-    } yield result._2
+    withTx {
+      implicit neo4j =>
+        val infoNode = getInfoNode
+        val previousVersionNode = infoNode.getRelationships().find(relationship => {
+          relationship.getEndNode.hasLabel(MainLabel.VERSION) &&
+          relationship.getEndNode.getProperty("platform").asInstanceOf[String] == platform &&
+          relationship.getEndNode.getProperty("version").asInstanceOf[String] == versionInfo.version
+        }).flatMap(versionRel => Some(versionRel.getEndNode))
+
+        Right(previousVersionNode.fold({
+          val versionNode = createNode(MainLabel.VERSION)
+          val result = setVersionNodeProperties(versionNode, platform, versionInfo)
+          infoNode --> SecurityRelationship.IS_ORIGIN --> versionNode;
+          setNodeCreated(versionNode)
+        })(previousVersionNode => {
+          setVersionNodeProperties(previousVersionNode, platform, versionInfo)
+        }))
+    }
   }
 
   def getUpdateVersion(platform: String, version: String, userType: Option[Byte]): Response[Option[PlatformVersionInfo]] = {
-    val previousVersion = new Semver(version, SemverType.LOOSE)
     withTx {
       implicit neo4j =>
+        val previousVersion = new Semver(version, SemverType.LOOSE)
         val infoNode = getInfoNode
         val platformVersionRelationships = infoNode.getRelationships().filter(relationship => {
           val versionNode = relationship.getEndNode
@@ -266,6 +249,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
         // which translates to 9Z. Values 579 and below are reserved for internal use,
         // and can be set by the admin.
         idNode.setProperty("value", 579l)
+        setNodeCreated(idNode)
         idNode
       }else{
         idNodes(0)
@@ -273,6 +257,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     }
     val newShortId: Long = idNode.getProperty("value").asInstanceOf[Long] + 1
     idNode.setProperty("value", newShortId)
+    updateNodeModified(idNode)
     newShortId
   }
 
@@ -306,6 +291,16 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
 
   protected def updateNodeModified(node: Node)(implicit neo4j: DatabaseService): SetResult = {
     val timestamp: Long = System.currentTimeMillis()
+    setNodeModified(node, timestamp)
+  }
+
+  protected def setNodeModified(node: Node, timestamp: Long, skipOlderModified: Boolean = false)(implicit neo4j: DatabaseService): SetResult = {
+    if (skipOlderModified) {
+      val existingModified = node.getProperty("modified").asInstanceOf[Long]
+      if (existingModified > timestamp) {
+        return SetResult(None, None, existingModified)
+      }
+    }
     node.setProperty("modified", timestamp)
     SetResult(None, None, timestamp)
   }
@@ -484,10 +479,10 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
   }
 
   protected def deleteItem(itemNode: Node)(implicit neo4j: DatabaseService): DeleteItemResult = {
-    val result = updateNodeModified(itemNode)
     if (itemNode.hasProperty("deleted")) {
-      DeleteItemResult(itemNode.getProperty("deleted").asInstanceOf[Long], result)
+      DeleteItemResult(itemNode.getProperty("deleted").asInstanceOf[Long], SetResult(None, None, itemNode.getProperty("modified").asInstanceOf[Long]))
     } else {
+      val result = updateNodeModified(itemNode)
       itemNode.setProperty("deleted", result.modified)
       DeleteItemResult(result.modified, result)
     }
@@ -496,8 +491,10 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
   protected def undeleteItem(itemNode: Node)(implicit neo4j: DatabaseService): SetResult = {
     if (itemNode.hasProperty("deleted")) {
       itemNode.removeProperty("deleted")
+      updateNodeModified(itemNode)
+    } else {
+      SetResult(None, None, itemNode.getProperty("modified").asInstanceOf[Long])
     }
-    updateNodeModified(itemNode)
   }
 
   protected def getItemNode(ownerUUID: UUID, itemUUID: UUID, mandatoryLabel: Option[Label] = None,
@@ -549,32 +546,9 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
   }
 
   protected def initializeDatabase(
-                   transactionEventHandlers: java.util.ArrayList[TransactionEventHandler[_]],
                    overrideCommonCollective: Option[Collective] = None,
                    overrideAdminUser: Option[User] = None,
                    overrideAdminUserPassword: Option[String] = None): (DatabaseStatus, Option[UUID], Option[UUID])
-
-  protected def putVersionNode(platform: String, versionInfo: PlatformVersionInfo): Response[(Node, SetResult)] = {
-    withTx {
-      implicit neo4j =>
-        val infoNode = getInfoNode
-        val previousVersionNode = infoNode.getRelationships().find(relationship => {
-          relationship.getEndNode.hasLabel(MainLabel.VERSION) &&
-          relationship.getEndNode.getProperty("platform").asInstanceOf[String] == platform &&
-          relationship.getEndNode.getProperty("version").asInstanceOf[String] == versionInfo.version
-        }).flatMap(versionRel => Some(versionRel.getEndNode))
-
-        Right(previousVersionNode.fold({
-          val versionNode = createNode(MainLabel.VERSION)
-          val result = setVersionNodeProperties(versionNode, platform, versionInfo)
-          infoNode --> SecurityRelationship.IS_ORIGIN --> versionNode;
-          (versionNode, result)
-        })(previousVersionNode => {
-          val result = setVersionNodeProperties(previousVersionNode, platform, versionInfo)
-          (previousVersionNode, result)
-        }))
-    }
-  }
 
   protected def setVersionNodeProperties(versionNode: Node, platform: String, versionInfo: PlatformVersionInfo)(implicit neo4j: DatabaseService): SetResult = {
     versionNode.setProperty("platform", platform)

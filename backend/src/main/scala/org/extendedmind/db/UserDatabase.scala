@@ -161,21 +161,51 @@ trait UserDatabase extends OwnerDatabase {
 
   case class AgreementResult(result: SetResult, concerningTitle: String, proposedByEmail: String, proposedByDisplayName: String)
   def putNewAgreement(agreement: Agreement): Response[AgreementResult] = {
-    for {
-      agreementResult <- createAgreementNode(agreement).right
-    } yield (AgreementResult(agreementResult.result, agreementResult.concerningTitle, agreementResult.proposedByEmail, agreementResult.proposedByDisplayName))
+    withTx {
+      implicit neo4j =>
+        for {
+          proposedByUserNode <- getNode(agreement.proposedBy.get.uuid.get, OwnerLabel.USER).right
+          proposedByDisplayName <- Right(getDisplayOwner(proposedByUserNode)).right
+          proposedToUserNode <- getUserNode(agreement.proposedTo.get.email.get).right
+          concerningNode <- getItemNode(agreement.proposedBy.get.uuid.get, agreement.targetItem.get.uuid, ItemLabel.LIST, false).right
+          agreementNode <- createAgreementNode(agreement, proposedByUserNode, proposedToUserNode, concerningNode).right
+          result <- Right(setNodeCreated(agreementNode)).right
+          concerningSetResult <- Right(setNodeModified(concerningNode, result.modified)).right
+          unit <- Right(if (agreement.agreementType == "list") // Update items index with new list modified
+                updateItemsIndex(concerningNode, concerningSetResult)).right
+       } yield (AgreementResult(result,
+                 concerningNode.getProperty("title").asInstanceOf[String],
+                 proposedByUserNode.getProperty("email").asInstanceOf[String],
+                 proposedByDisplayName))
+    }
   }
 
   def changeAgreementAccess(owner: Owner, agreementUUID: UUID, access: Byte): Response[SetResult] = {
-    for {
-      result <- changeAgreementAccessNode(owner.userUUID, agreementUUID, access).right
-    } yield result
+    withTx {
+      implicit neo4j =>
+        for {
+          agreementInfo <- getAgreementInformation(owner.userUUID, agreementUUID).right
+          relationship <- changeAgreementAccessNode(agreementInfo, access).right
+          result <- Right(updateNodeModified(agreementInfo.agreement)).right
+          concerningResult <- Right(setNodeModified(agreementInfo.concerning, result.modified)).right
+          unit <- Right(if (agreementInfo.agreementType == "list") // Update items index with new list modified
+                      updateItemsIndex(agreementInfo.concerning, concerningResult)).right
+        } yield result
+    }
   }
 
   def destroyAgreement(userUUID: UUID, agreementUUID: UUID): Response[SetResult] = {
-    for {
-      result <- destroyAgreementNode(userUUID, agreementUUID).right
-    } yield result
+    withTx {
+      implicit neo4j =>
+        for {
+          agreementInfo <- getAgreementInformation(userUUID, agreementUUID).right
+          destroyResult <- Right(destroyAgreementNode(agreementInfo)).right
+          concerningSetResult <- Right(updateNodeModified(agreementInfo.concerning)).right
+          unit <- Right(if (agreementInfo.agreementType == "list") // Update items index with new list modified
+                      updateItemsIndex(agreementInfo.concerning,
+                                      concerningSetResult)).right
+        } yield concerningSetResult
+    }
   }
 
   def saveAgreementAcceptInformation(agreementUUID: UUID, acceptCode: Long, emailId: String): Response[Unit] = {
@@ -278,7 +308,6 @@ trait UserDatabase extends OwnerDatabase {
         if (handleResult.isRight){
           if (handleResult.right.get._1) updatePublicModified = true
           if (updatePublicModified) userNode.setProperty("publicModified", System.currentTimeMillis)
-
           Right((setNodeCreated(userNode), emailVerificationCode, handleResult.right.get._2, userNode))
         }else{
           Left(handleResult.left.get)
@@ -622,27 +651,6 @@ trait UserDatabase extends OwnerDatabase {
     Right(true)
   }
 
-  case class CreateAgreementResult(result: SetResult, concerningTitle: String, proposedByEmail: String, proposedByDisplayName: String)
-  protected def createAgreementNode(agreement: Agreement): Response[CreateAgreementResult] = {
-   withTx {
-      implicit neo4j =>
-        for {
-          proposedByUserNode <- getNode(agreement.proposedBy.get.uuid.get, OwnerLabel.USER).right
-          proposedByDisplayName <- Right(getDisplayOwner(proposedByUserNode)).right
-          proposedToUserNode <- getUserNode(agreement.proposedTo.get.email.get).right
-          concerningNode <- getItemNode(agreement.proposedBy.get.uuid.get, agreement.targetItem.get.uuid, ItemLabel.LIST, false).right
-          agreementNode <- createAgreementNode(agreement, proposedByUserNode, proposedToUserNode, concerningNode).right
-          result <- Right(setNodeCreated(agreementNode)).right
-          concerningSetResult <- Right(updateNodeModified(concerningNode)).right
-          unit <- Right(if (agreement.agreementType == "list") // Update items index with new list modified
-                updateItemsIndex(concerningNode, concerningSetResult)).right
-       } yield (CreateAgreementResult(result,
-                 concerningNode.getProperty("title").asInstanceOf[String],
-                 proposedByUserNode.getProperty("email").asInstanceOf[String],
-                 proposedByDisplayName))
-    }
-  }
-
   protected def createAgreementNode(agreement: Agreement, proposedByUserNode: Node, proposedToUserNode: Node, concerningNode: Node)(implicit neo4j: DatabaseService): Response[Node] = {
     if (proposedByUserNode.getId == proposedToUserNode.getId){
       return fail(INVALID_PARAMETER, ERR_USER_AGREEMENT_TO_SELF, "Can't share list to the same user")
@@ -672,35 +680,8 @@ trait UserDatabase extends OwnerDatabase {
       proposedByUserNode --> AgreementRelationship.PROPOSES --> agreementNode
       agreementNode --> AgreementRelationship.IS_PROPOSED_TO --> proposedToUserNode
       agreementNode --> AgreementRelationship.CONCERNING --> concerningNode
+      setNodeCreated(agreementNode)
       Right(agreementNode)
-    }
-  }
-
-  protected def changeAgreementAccessNode(userUUID: UUID, agreementUUID: UUID, access: Byte): Response[SetResult] = {
-    withTx {
-      implicit neo4j =>
-        for {
-          agreementInfo <- getAgreementInformation(userUUID, agreementUUID).right
-          relationship <- changeAgreementAccessNode(agreementInfo, access).right
-          result <- Right(updateNodeModified(agreementInfo.agreement)).right
-          concerningResult <- Right(updateNodeModified(agreementInfo.concerning)).right
-          unit <- Right(if (agreementInfo.agreementType == "list") // Update items index with new list modified
-                      updateItemsIndex(agreementInfo.concerning, concerningResult)).right
-        } yield result
-   }
-  }
-
-  def destroyAgreementNode(userUUID: UUID, agreementUUID: UUID): Response[SetResult] = {
-    withTx {
-      implicit neo4j =>
-        for {
-          agreementInfo <- getAgreementInformation(userUUID, agreementUUID).right
-          destroyResult <- Right(destroyAgreementNode(agreementInfo)).right
-          concerningSetResult <- Right(updateNodeModified(agreementInfo.concerning)).right
-          unit <- Right(if (agreementInfo.agreementType == "list") // Update items index with new list modified
-                      updateItemsIndex(agreementInfo.concerning,
-                                      concerningSetResult)).right
-        } yield concerningSetResult
     }
   }
 

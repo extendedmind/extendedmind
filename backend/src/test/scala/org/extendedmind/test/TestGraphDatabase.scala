@@ -64,7 +64,7 @@ trait TestGraphDatabase extends GraphDatabase {
     // Initialize database and create common collective and admin user
     val timoUser = User(TIMO_EMAIL, Some("Timo"), Some("timo"), Some("Test *bio* for Timo"), Some("md"), Some(1), None)
     val testDataCollective = Collective("test data", Some("common collective for all test users"), None, Some("test-data"), None, None, None)
-    val initializeResult = initializeDatabase(transactionEventHandlers(), Some(testDataCollective), Some(timoUser), Some(TIMO_PASSWORD))
+    val initializeResult = initializeDatabase(Some(testDataCollective), Some(timoUser), Some(TIMO_PASSWORD))
     val testDataNode = withTx { implicit neo => getNode(initializeResult._2.get, OwnerLabel.COLLECTIVE).right.get }
     val timoNode = withTx { implicit neo => getNode(initializeResult._3.get, OwnerLabel.USER).right.get }
     val verifiedTimestamp = System.currentTimeMillis + 1000
