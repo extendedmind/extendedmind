@@ -328,29 +328,23 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     }
   }
 
-  protected def getIdToUuids(associated: Option[scala.List[Node]]): Option[scala.List[IdToUUID]] = {
-    withTx {
-      implicit neo4j =>
-        if (associated.isEmpty) None
-        else {
-          Some(associated.get.map(associatedNode => {
-            IdToUUID(getUUID(associatedNode), associatedNode.getProperty("id").asInstanceOf[String])
-          }))
-        }
+  protected def getIdToUuids(associated: Option[scala.List[Node]])(implicit neo4j: DatabaseService): Option[scala.List[IdToUUID]] = {
+    if (associated.isEmpty) None
+    else {
+      Some(associated.get.map(associatedNode => {
+        IdToUUID(getUUID(associatedNode), associatedNode.getProperty("id").asInstanceOf[String])
+      }))
     }
   }
 
-  def forceUUID(setResult: SetResult, uuid: Option[UUID], label: Label): Response[SetResult] = {
+  def forceUUID(setResult: SetResult, uuid: Option[UUID], label: Label)(implicit neo4j: DatabaseService): Response[SetResult] = {
     if (uuid.isEmpty) Right(setResult)
     else {
-      withTx {
-        implicit neo4j =>
-          val node = getNode(setResult.uuid.get, label)
-          if (node.isLeft) Left(node.left.get)
-          else {
-            node.right.get.setProperty("uuid", IdUtils.getTrimmedBase64UUID(uuid.get))
-            Right(SetResult(uuid, None, node.right.get.getProperty("modified").asInstanceOf[Long]))
-          }
+      val node = getNode(setResult.uuid.get, label)
+      if (node.isLeft) Left(node.left.get)
+      else {
+        node.right.get.setProperty("uuid", IdUtils.getTrimmedBase64UUID(uuid.get))
+        Right(SetResult(uuid, None, node.right.get.getProperty("modified").asInstanceOf[Long]))
       }
     }
   }
@@ -365,7 +359,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
 
   // GENERAL
 
-  protected def getNodes(nodeUUIDList: scala.List[UUID], label: Label, acceptDeleted: Boolean = false, skipLabel: Option[Label] = None): Response[scala.List[Node]] = {
+  protected def getNodes(nodeUUIDList: scala.List[UUID], label: Label, acceptDeleted: Boolean = false, skipLabel: Option[Label] = None)(implicit neo4j: DatabaseService): Response[scala.List[Node]] = {
     val nodeList = nodeUUIDList map (uuid => {
       val nodeResponse = getNode(uuid, label, acceptDeleted)
       if (nodeResponse.isLeft) return Left(nodeResponse.left.get)
@@ -381,7 +375,7 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     }
   }
 
-  protected def getNodeOption(nodeUUID: Option[UUID], label: Label, acceptDeleted: Boolean = false): Response[Option[Node]] = {
+  protected def getNodeOption(nodeUUID: Option[UUID], label: Label, acceptDeleted: Boolean = false)(implicit neo4j: DatabaseService): Response[Option[Node]] = {
     if (nodeUUID.isDefined) {
       val nodeResponse = getNode(nodeUUID.get, label, acceptDeleted)
       if (nodeResponse.isLeft) return Left(nodeResponse.left.get)
@@ -389,45 +383,42 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     } else Right(None)
   }
 
-  protected def getNode(nodeUUID: UUID, label: Label, acceptDeleted: Boolean = false): Response[Node] = {
+  protected def getNode(nodeUUID: UUID, label: Label, acceptDeleted: Boolean = false)(implicit neo4j: DatabaseService): Response[Node] = {
     val uuidString = IdUtils.getTrimmedBase64UUID(nodeUUID)
     getNode("uuid", uuidString, label, Some(nodeUUID.toString()), acceptDeleted)
   }
 
-  protected def getNode(nodeProperty: String, nodeValue: AnyRef, label: Label, nodeStringValue: Option[String],
-    acceptDeleted: Boolean)(implicit log: LoggingContext): Response[Node] = {
-    withTx {
-      implicit neo =>
-        val nodeList = findNodesByLabelAndProperty(label, nodeProperty, nodeValue).toList
-        if (nodeList.isEmpty)
-          fail(INVALID_PARAMETER, ERR_BASE_NODE_LABEL_NOT_FOUND, label.labelName.toLowerCase() + " not found with given " + nodeProperty +
-            (if (nodeStringValue.isDefined) ": " + nodeStringValue.get else ""))
-        else if (nodeList.size > 1) {
-          // Check if nodeList contains the same node multiple times
-          if (nodeList.distinct.size() > 1) {
-            // Print debug information
-            if (nodeProperty == "uuid" && label.name == "REQUEST") {
-              nodeList.foreach(node => {
-                println("Invite request for " + node.getProperty("email").asInstanceOf[String]
-                  + " has duplicate uuid "
-                  + IdUtils.getUUID(node.getProperty("uuid").asInstanceOf[String])
-                  + " with id " + node.getId())
-              })
-            }
-            fail(INTERNAL_SERVER_ERROR, ERR_BASE_NODE_LABEL_MORE_THAN_1, "Ḿore than one " + label.labelName.toLowerCase() + " found with given " + nodeProperty +
-              (if (nodeStringValue.isDefined) ": " + nodeStringValue.get else ""))
-          } else {
-            log.warning("Found " + nodeList.size + " duplicate values in index for " + label.labelName + ":" + nodeProperty)
-            Right(nodeList(0))
-          }
-        } else {
-          if (!acceptDeleted && nodeList(0).hasProperty("deleted")) {
-            fail(INVALID_PARAMETER, ERR_BASE_NODE_LABEL_DELETED, label.labelName.toLowerCase() + " deleted with given " + nodeProperty +
-              (if (nodeStringValue.isDefined) ": " + nodeStringValue.get else ""))
-          } else {
-            Right(nodeList(0))
-          }
+  protected def getNode(nodeProperty: String, nodeValue: AnyRef, label: Label, nodeStringValue: Option[String], acceptDeleted: Boolean)
+                       (implicit log: LoggingContext, neo4j: DatabaseService): Response[Node] = {
+    val nodeList = findNodesByLabelAndProperty(label, nodeProperty, nodeValue).toList
+    if (nodeList.isEmpty)
+      fail(INVALID_PARAMETER, ERR_BASE_NODE_LABEL_NOT_FOUND, label.labelName.toLowerCase() + " not found with given " + nodeProperty +
+        (if (nodeStringValue.isDefined) ": " + nodeStringValue.get else ""))
+    else if (nodeList.size > 1) {
+      // Check if nodeList contains the same node multiple times
+      if (nodeList.distinct.size() > 1) {
+        // Print debug information
+        if (nodeProperty == "uuid" && label.name == "REQUEST") {
+          nodeList.foreach(node => {
+            println("Invite request for " + node.getProperty("email").asInstanceOf[String]
+              + " has duplicate uuid "
+              + IdUtils.getUUID(node.getProperty("uuid").asInstanceOf[String])
+              + " with id " + node.getId())
+          })
         }
+        fail(INTERNAL_SERVER_ERROR, ERR_BASE_NODE_LABEL_MORE_THAN_1, "Ḿore than one " + label.labelName.toLowerCase() + " found with given " + nodeProperty +
+          (if (nodeStringValue.isDefined) ": " + nodeStringValue.get else ""))
+      } else {
+        log.warning("Found " + nodeList.size + " duplicate values in index for " + label.labelName + ":" + nodeProperty)
+        Right(nodeList(0))
+      }
+    } else {
+      if (!acceptDeleted && nodeList(0).hasProperty("deleted")) {
+        fail(INVALID_PARAMETER, ERR_BASE_NODE_LABEL_DELETED, label.labelName.toLowerCase() + " deleted with given " + nodeProperty +
+          (if (nodeStringValue.isDefined) ": " + nodeStringValue.get else ""))
+      } else {
+        Right(nodeList(0))
+      }
     }
   }
 

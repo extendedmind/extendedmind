@@ -258,7 +258,7 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
   // PRIVATE
 
   protected def getTokenNode(token: Token, acceptDeleted: Boolean = false)
-        (implicit log: LoggingContext): Response[Node] = {
+        (implicit log: LoggingContext, neo4j: DatabaseService): Response[Node] = {
     val response = getNode("accessKey", token.accessKey: java.lang.Long, MainLabel.TOKEN, None, acceptDeleted)
     if (response.isLeft && response.left.get(0).responseType == INVALID_PARAMETER){
       fail(INVALID_AUTHENTICATION, ERR_BASE_TOKEN_NOT_FOUND, response.left.get(0).description);

@@ -45,28 +45,41 @@ trait UserDatabase extends OwnerDatabase {
 
   // METHODS THAT NEED TO BE OVERRIDDEN
 
-  def updateItemsIndex(itemNode: Node, setResult: SetResult): Unit
+  def updateItemsIndex(itemNode: Node, setResult: SetResult)(implicit neo4j: DatabaseService): Unit
 
   // PUBLICs
 
   def putNewUser(user: User, password: String, signUpMode: SignUpMode, inviteCode: Option[Long]): Response[(SetResult, Option[Long], Option[String])] = {
-    for {
-      unit <- validateEmailUniqueness(user.email.get).right
-      inviteNode <- getInviteNodeOption(user.email.get, inviteCode).right
-      userResult <- createUser(user, password, getExtraUserLabel(signUpMode), inviteNode).right
-    } yield (userResult._1, userResult._2, userResult._3)
+    withTx {
+      implicit neo4j =>
+        for {
+          unit <- validateEmailUniqueness(user.email.get).right
+          inviteNode <- getInviteNodeOption(user.email.get, inviteCode).right
+          userResult <- createUser(user, password, getExtraUserLabel(signUpMode), inviteNode).right
+        } yield (userResult._1, userResult._2, userResult._3)
+    }
   }
 
   def patchExistingUser(userUUID: UUID, user: User): Response[PatchUserResponse] = {
-    for {
-      userResult <- updateUser(userUUID, user).right
-    } yield PatchUserResponse(userResult._2, userResult._1)
+    withTx {
+      implicit neo4j =>
+        for {
+          userNode <- getNode(userUUID, OwnerLabel.USER).right
+          shortId <- updateUser(userNode, user).right
+          result <- Right(updateNodeModified(userNode)).right
+        } yield PatchUserResponse(shortId, result)
+    }
   }
 
   def changeUserEmail(userUUID: UUID, email: String): Response[(SetResult, Option[Long])] = {
-    for {
-      updateResult <- updateUserEmail(userUUID, email).right
-    } yield (updateResult._1, updateResult._2)
+    withTx {
+      implicit neo4j =>
+        for {
+          userNode <- getNode(userUUID, OwnerLabel.USER).right
+          verificationCode <- Right(updateUserEmail(userNode, email)).right
+          result <- Right(updateNodeModified(userNode)).right
+        } yield (result, verificationCode)
+    }
   }
 
   def getUser(email: String): Response[User] = {
@@ -116,6 +129,7 @@ trait UserDatabase extends OwnerDatabase {
   }
 
   def rebuildUserIndexes: Response[CountResult] = {
+
     dropIndexes(OwnerLabel.USER)
     createNewIndex(OwnerLabel.USER, "uuid")
     dropIndexes(OwnerLabel.COLLECTIVE)
@@ -126,16 +140,22 @@ trait UserDatabase extends OwnerDatabase {
   }
 
   def deleteUser(userUUID: UUID): Response[DeleteItemResult] = {
-    for {
-      deleteUserResult <- deleteUserNode(userUUID).right
-    } yield deleteUserResult._2
+    withTx {
+     implicit neo4j =>
+        for {
+          deleteUserResult <- deleteUserNode(userUUID).right
+        } yield deleteUserResult._2
+    }
   }
 
   def destroyDeletedOwners: Response[CountResult] = {
-    for {
-      ownerUUIDs <- getDeletedOwnerUUIDs.right
-      count <- destroyDeletedOwners(ownerUUIDs).right
-    } yield count
+    withTx {
+      implicit neo4j =>
+        for {
+          ownerUUIDs <- getDeletedOwnerUUIDs.right
+          count <- destroyDeletedOwners(ownerUUIDs).right
+        } yield count
+    }
   }
 
   def destroyUser(userUUID: UUID): Response[DestroyResult] = {
@@ -225,10 +245,13 @@ trait UserDatabase extends OwnerDatabase {
   }
 
   def getOwnerStatistics(uuid: UUID): Response[NodeStatistics] = {
-    for {
-      ownerNode <- getNode(uuid, MainLabel.OWNER).right
-      stats <- Right(getOwnerStatistics(ownerNode)).right
-    } yield stats
+    withTx {
+      implicit neo4j =>
+        for {
+          ownerNode <- getNode(uuid, MainLabel.OWNER).right
+          stats <- Right(getOwnerStatistics(ownerNode)).right
+        } yield stats
+    }
   }
 
   def validateEmailUniqueness(email: String): Response[Boolean] = {
@@ -255,74 +278,60 @@ trait UserDatabase extends OwnerDatabase {
   // PRIVATE
 
   protected def createUser(user: User, plainPassword: String,
-    userLabel: Option[Label], inviteNode: Option[Node] = None, overrideEmailVerified: Option[Long] = None): Response[(SetResult, Option[Long], Option[String], Node)] = {
-    withTx {
-     implicit neo4j =>
+    userLabel: Option[Label], inviteNode: Option[Node] = None, overrideEmailVerified: Option[Long] = None)(implicit neo4j: DatabaseService): Response[(SetResult, Option[Long], Option[String], Node)] = {
 
-        // Create a user node
-        val userNode = createNode(user.copy(handle = None, content = None, format = None, displayName = None), MainLabel.OWNER, OwnerLabel.USER)
-        if (userLabel.isDefined) userNode.addLabel(userLabel.get)
-        setUserPassword(userNode, plainPassword)
-        userNode.setProperty("email", user.email.get)
-        if (user.cohort.isDefined) userNode.setProperty("cohort", user.cohort.get)
-        userNode.setProperty("inboxId", generateUniqueInboxId())
+    // Create a user node
+    val userNode = createNode(user.copy(handle = None, content = None, format = None, displayName = None), MainLabel.OWNER, OwnerLabel.USER)
+    if (userLabel.isDefined) userNode.addLabel(userLabel.get)
+    setUserPassword(userNode, plainPassword)
+    userNode.setProperty("email", user.email.get)
+    if (user.cohort.isDefined) userNode.setProperty("cohort", user.cohort.get)
+    userNode.setProperty("inboxId", generateUniqueInboxId())
 
-        val emailVerificationCode = if (inviteNode.isDefined){
-          // When the user accepts invite using a code sent to her email,
-          // that means that the email is also verified
-          userNode.setProperty("emailVerified", System.currentTimeMillis)
-          acceptInviteNode(inviteNode.get, userNode)
-          None
-        } else if (overrideEmailVerified.isDefined) {
-          userNode.setProperty("emailVerified", overrideEmailVerified.get)
-          None
-        } else {
-          // Need to create a verification code
-          val emailVerificationCode = Random.generateRandomUnsignedLong
-          userNode.setProperty("emailVerificationCode", emailVerificationCode)
-          Some(emailVerificationCode)
-        }
-
-        // Give user read permissions to common collectives
-        val collectivesList = findNodesByLabelAndProperty(OwnerLabel.COLLECTIVE, "common", java.lang.Boolean.TRUE).toList
-        if (!collectivesList.isEmpty) {
-          collectivesList.foreach(collective => {
-            userNode --> SecurityRelationship.CAN_READ --> collective;
-          })
-        }
-
-        var updatePublicModified = false
-        if (user.displayName.isDefined){
-          userNode.setProperty("displayName", user.displayName.get)
-          updatePublicModified = true
-        }
-
-        // Only set content if format is also defined
-        if (user.content.isDefined && user.format.isDefined){
-          userNode.setProperty("content", user.content.get)
-          userNode.setProperty("format", user.format.get)
-          updatePublicModified = true
-        }
-
-        val handleResult = setOwnerHandle(userNode, user.handle)
-        if (handleResult.isRight){
-          if (handleResult.right.get._1) updatePublicModified = true
-          if (updatePublicModified) userNode.setProperty("publicModified", System.currentTimeMillis)
-          Right((setNodeCreated(userNode), emailVerificationCode, handleResult.right.get._2, userNode))
-        }else{
-          Left(handleResult.left.get)
-        }
+    val emailVerificationCode = if (inviteNode.isDefined){
+      // When the user accepts invite using a code sent to her email,
+      // that means that the email is also verified
+      userNode.setProperty("emailVerified", System.currentTimeMillis)
+      acceptInviteNode(inviteNode.get, userNode)
+      None
+    } else if (overrideEmailVerified.isDefined) {
+      userNode.setProperty("emailVerified", overrideEmailVerified.get)
+      None
+    } else {
+      // Need to create a verification code
+      val emailVerificationCode = Random.generateRandomUnsignedLong
+      userNode.setProperty("emailVerificationCode", emailVerificationCode)
+      Some(emailVerificationCode)
     }
-  }
 
-  protected def updateUser(userUUID: UUID, user: User): Response[(SetResult, Option[String])] = {
-    withTx {
-      implicit neo4j =>
-        for {
-          userNode <- getNode(userUUID, OwnerLabel.USER).right
-          shortId <- updateUser(userNode, user).right
-          result <- Right(updateNodeModified(userNode)).right
-        } yield (result, shortId)
+    // Give user read permissions to common collectives
+    val collectivesList = findNodesByLabelAndProperty(OwnerLabel.COLLECTIVE, "common", java.lang.Boolean.TRUE).toList
+    if (!collectivesList.isEmpty) {
+      collectivesList.foreach(collective => {
+        userNode --> SecurityRelationship.CAN_READ --> collective;
+      })
+    }
+
+    var updatePublicModified = false
+    if (user.displayName.isDefined){
+      userNode.setProperty("displayName", user.displayName.get)
+      updatePublicModified = true
+    }
+
+    // Only set content if format is also defined
+    if (user.content.isDefined && user.format.isDefined){
+      userNode.setProperty("content", user.content.get)
+      userNode.setProperty("format", user.format.get)
+      updatePublicModified = true
+    }
+
+    val handleResult = setOwnerHandle(userNode, user.handle)
+    if (handleResult.isRight){
+      if (handleResult.right.get._1) updatePublicModified = true
+      if (updatePublicModified) userNode.setProperty("publicModified", System.currentTimeMillis)
+      Right((setNodeCreated(userNode), emailVerificationCode, handleResult.right.get._2, userNode))
+    }else{
+      Left(handleResult.left.get)
     }
   }
 
@@ -385,17 +394,6 @@ trait UserDatabase extends OwnerDatabase {
     }
   }
 
-  protected def updateUserEmail(userUUID: UUID, email: String): Response[(SetResult, Option[Long])] = {
-    withTx {
-      implicit neo4j =>
-        for {
-          userNode <- getNode(userUUID, OwnerLabel.USER).right
-          verificationCode <- Right(updateUserEmail(userNode, email)).right
-          result <- Right(updateNodeModified(userNode)).right
-        } yield (result, verificationCode)
-    }
-  }
-
   protected def updateUserEmail(userNode: Node, email: String)(implicit neo4j: DatabaseService): Option[Long] = {
     if (userNode.getProperty("email").asInstanceOf[String] != email) {
       userNode.setProperty("email", email)
@@ -418,25 +416,22 @@ trait UserDatabase extends OwnerDatabase {
     userNode.setProperty("passwordSalt", encryptedPassword.salt)
   }
 
-  protected def getUserNode(email: String): Response[Node] = {
-    withTx {
-      implicit neo =>
-        val nodeList = findNodesByLabelAndProperty(OwnerLabel.USER, "email", email).toList
-        if (nodeList.isEmpty) {
-          fail(INVALID_PARAMETER, ERR_USER_NO_USERS, "No users found with given email " + email)
-        } else if (nodeList.size > 1) {
+  protected def getUserNode(email: String)(implicit neo4j: DatabaseService): Response[Node] = {
+    val nodeList = findNodesByLabelAndProperty(OwnerLabel.USER, "email", email).toList
+    if (nodeList.isEmpty) {
+      fail(INVALID_PARAMETER, ERR_USER_NO_USERS, "No users found with given email " + email)
+    } else if (nodeList.size > 1) {
 
-          nodeList.foreach(node => {
-            println("User " + node.getProperty("email").asInstanceOf[String]
-              + " has duplicate node "
-              + IdUtils.getUUID(node.getProperty("uuid").asInstanceOf[String])
-              + " with id " + node.getId())
-          })
+      nodeList.foreach(node => {
+        println("User " + node.getProperty("email").asInstanceOf[String]
+          + " has duplicate node "
+          + IdUtils.getUUID(node.getProperty("uuid").asInstanceOf[String])
+          + " with id " + node.getId())
+      })
 
-          fail(INTERNAL_SERVER_ERROR, ERR_USER_MORE_THAN_1_USERS, "Ḿore than one user found with given email " + email)
-        } else
-          Right(nodeList(0))
-    }
+      fail(INTERNAL_SERVER_ERROR, ERR_USER_MORE_THAN_1_USERS, "Ḿore than one user found with given email " + email)
+    } else
+      Right(nodeList(0))
   }
 
   protected def getUserNode(tokenNode: Node)(implicit neo4j: DatabaseService): Response[Node] = {
@@ -533,17 +528,14 @@ trait UserDatabase extends OwnerDatabase {
     }
   }
 
-  protected def getDeletedOwnerUUIDs: Response[scala.List[UUID]] = {
-    withTx {
-      implicit neo4j =>
-        val ownerNodeList = findNodesByLabel(MainLabel.OWNER).toList
-        val deletedOwnerBuffer = new ListBuffer[UUID]
-        ownerNodeList.foreach(ownerNode => {
-          if (ownerNode.hasProperty("deleted"))
-            deletedOwnerBuffer.append(getUUID(ownerNode))
-        })
-        Right(deletedOwnerBuffer.toList)
-    }
+  protected def getDeletedOwnerUUIDs(implicit neo4j: DatabaseService): Response[scala.List[UUID]] = {
+    val ownerNodeList = findNodesByLabel(MainLabel.OWNER).toList
+    val deletedOwnerBuffer = new ListBuffer[UUID]
+    ownerNodeList.foreach(ownerNode => {
+      if (ownerNode.hasProperty("deleted"))
+        deletedOwnerBuffer.append(getUUID(ownerNode))
+    })
+    Right(deletedOwnerBuffer.toList)
   }
 
   protected def getUserEmailVerificationInfo(userNode: Node)(implicit neo4j: DatabaseService): Response[(String, Long)] = {
@@ -557,7 +549,7 @@ trait UserDatabase extends OwnerDatabase {
     }
   }
 
-  protected def destroyDeletedOwners(ownerUUIDs: scala.List[UUID]): Response[CountResult] = {
+  protected def destroyDeletedOwners(ownerUUIDs: scala.List[UUID])(implicit neo4j: DatabaseService): Response[CountResult] = {
     val currentTimestamp = System.currentTimeMillis
     val destroyCount = ownerUUIDs.count(ownerUUID => {
       val destroyResult = destroyDeletedOwner(ownerUUID, currentTimestamp)
@@ -570,28 +562,25 @@ trait UserDatabase extends OwnerDatabase {
     Right(CountResult(destroyCount))
   }
 
-  protected def destroyDeletedOwner(ownerUUID: UUID, currentTimestamp: Long): Response[Boolean] = {
-    withTx {
-      implicit neo4j =>
-        val ownerNodeResponse = getNode(ownerUUID, MainLabel.OWNER, acceptDeleted=true)
-        if (ownerNodeResponse.isLeft)
-          Left(ownerNodeResponse.left.get)
-        else {
-          val ownerNode = ownerNodeResponse.right.get
-          if (ownerNode.hasLabel(OwnerLabel.USER)){
-            if (ownerNode.hasProperty("deleted") &&
-                ownerNode.getProperty("deleted").asInstanceOf[Long] < (currentTimestamp - USER_DESTROY_TRESHOLD)){
-              val destroyResult = destroyUserNode(ownerNode)
-              if (destroyResult.isLeft) Left(destroyResult.left.get)
-              else Right(true)
-            }else{
-              Right(false)
-            }
-          }else{
-            // TODO: Collective destroying
-            Right(false)
-          }
+  protected def destroyDeletedOwner(ownerUUID: UUID, currentTimestamp: Long)(implicit neo4j: DatabaseService): Response[Boolean] = {
+    val ownerNodeResponse = getNode(ownerUUID, MainLabel.OWNER, acceptDeleted=true)
+    if (ownerNodeResponse.isLeft)
+      Left(ownerNodeResponse.left.get)
+    else {
+      val ownerNode = ownerNodeResponse.right.get
+      if (ownerNode.hasLabel(OwnerLabel.USER)){
+        if (ownerNode.hasProperty("deleted") &&
+            ownerNode.getProperty("deleted").asInstanceOf[Long] < (currentTimestamp - USER_DESTROY_TRESHOLD)){
+          val destroyResult = destroyUserNode(ownerNode)
+          if (destroyResult.isLeft) Left(destroyResult.left.get)
+          else Right(true)
+        }else{
+          Right(false)
         }
+      }else{
+        // TODO: Collective destroying
+        Right(false)
+      }
     }
   }
 
@@ -629,15 +618,12 @@ trait UserDatabase extends OwnerDatabase {
     Right(DestroyResult(scala.List(userUUID)))
   }
 
-  protected def deleteUserNode(userUUID: UUID): Response[Tuple2[Node, DeleteItemResult]] = {
-    withTx {
-      implicit neo =>
-        for {
-          userNode <- getNode(userUUID, OwnerLabel.USER).right
-          deletable <- validateUserDeletable(userNode).right
-          deleted <- Right(deleteItem(userNode)).right
-        } yield (userNode, deleted)
-    }
+  protected def deleteUserNode(userUUID: UUID)(implicit neo4j: DatabaseService): Response[Tuple2[Node, DeleteItemResult]] = {
+    for {
+      userNode <- getNode(userUUID, OwnerLabel.USER).right
+      deletable <- validateUserDeletable(userNode).right
+      deleted <- Right(deleteItem(userNode)).right
+    } yield (userNode, deleted)
   }
 
   protected def validateUserDeletable(userNode: Node)(implicit neo4j: DatabaseService): Response[Boolean] = {

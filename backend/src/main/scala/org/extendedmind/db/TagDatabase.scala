@@ -41,17 +41,23 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
   // PUBLIC
 
   def putNewTag(owner: Owner, tag: Tag): Response[SetResult] = {
-    for {
-      tagResult <- putNewTagNode(owner, tag).right
-      unit <- Right(addToItemsIndex(owner, tagResult._1, tagResult._2)).right
-    } yield tagResult._2
+    withTx {
+      implicit neo =>
+        for {
+          tagResult <- putNewTagNode(owner, tag).right
+          unit <- Right(addToItemsIndex(owner, tagResult._1, tagResult._2)).right
+        } yield tagResult._2
+    }
   }
 
   def putExistingTag(owner: Owner, tagUUID: UUID, tag: Tag): Response[SetResult] = {
-    for {
-      tagResult <- putExistingTagNode(owner, tagUUID, tag).right
-      unit <- Right(updateItemsIndex(tagResult._1, tagResult._2)).right
-    } yield tagResult._2
+    withTx {
+      implicit neo =>
+        for {
+          tagResult <- putExistingTagNode(owner, tagUUID, tag).right
+          unit <- Right(updateItemsIndex(tagResult._1, tagResult._2)).right
+        } yield tagResult._2
+    }
   }
 
   def getTag(owner: Owner, tagUUID: UUID): Response[Tag] = {
@@ -95,7 +101,7 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
 
   // PRIVATE
 
-  protected def putExistingTagNode(owner: Owner, tagUUID: UUID, tag: Tag):
+  protected def putExistingTagNode(owner: Owner, tagUUID: UUID, tag: Tag)(implicit neo4j: DatabaseService):
         Response[(Node, SetResult)] = {
     val subLabel = if (tag.tagType.get == CONTEXT) Some(TagLabel.CONTEXT)
                    else if (tag.tagType.get == KEYWORD) Some(TagLabel.KEYWORD)
@@ -108,30 +114,24 @@ trait TagDatabase extends AbstractGraphDatabase with ItemDatabase {
       else // history
         Some(scala.List(TagLabel.CONTEXT, TagLabel.KEYWORD))
 
-    withTx {
-      implicit neo4j =>
-        for {
-          ownerNodes <- getOwnerNodes(owner).right
-          tagResult <- updateItem(owner, tagUUID, tag, Some(ItemLabel.TAG), subLabel, subLabelAlternative, tag.modified).right
-          result <- setTagParentNodes(tagResult._1, ownerNodes, tag).right
-        } yield tagResult
-    }
+    for {
+      ownerNodes <- getOwnerNodes(owner).right
+      tagResult <- updateItem(owner, tagUUID, tag, Some(ItemLabel.TAG), subLabel, subLabelAlternative, tag.modified).right
+      result <- setTagParentNodes(tagResult._1, ownerNodes, tag).right
+    } yield tagResult
   }
 
-  def putNewTagNode(owner: Owner, tag: Tag):
+  def putNewTagNode(owner: Owner, tag: Tag)(implicit neo4j: DatabaseService):
           Response[(Node, SetResult)] = {
-    withTx {
-      implicit neo4j =>
-        for {
-          ownerNodes <- getOwnerNodes(owner).right
-          tagResult <- createItem(owner, tag, Some(ItemLabel.TAG),
-                         (if (tag.tagType.get == CONTEXT) Some(TagLabel.CONTEXT)
-                          else if (tag.tagType.get == KEYWORD) Some(TagLabel.KEYWORD)
-                          else Some(TagLabel.HISTORY))
-                         ).right
-          unit <- setTagParentNodes(tagResult._1, ownerNodes, tag).right
-        } yield tagResult
-    }
+    for {
+      ownerNodes <- getOwnerNodes(owner).right
+      tagResult <- createItem(owner, tag, Some(ItemLabel.TAG),
+                     (if (tag.tagType.get == CONTEXT) Some(TagLabel.CONTEXT)
+                      else if (tag.tagType.get == KEYWORD) Some(TagLabel.KEYWORD)
+                      else Some(TagLabel.HISTORY))
+                     ).right
+      unit <- setTagParentNodes(tagResult._1, ownerNodes, tag).right
+    } yield tagResult
   }
 
   protected def setTagParentNodes(tagNode: Node,  ownerNodes: OwnerNodes, tag: Tag)(implicit neo4j: DatabaseService):

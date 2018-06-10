@@ -39,15 +39,27 @@ trait InviteDatabase extends UserDatabase {
   // PUBLIC
 
   def putNewInvite(owner: Owner, invite: Invite): Response[(SetResult, String)] = {
-    for {
-      inviteResult <- createInvite(owner, invite).right
-    } yield (inviteResult._1, inviteResult._2)
+    withTx {
+      implicit neo4j =>
+        for {
+          unit <- validateEmailUniqueness(invite.email).right
+          userNode <- getNode(owner.userUUID, OwnerLabel.USER).right
+          displayOwner <- Right(getDisplayOwner(userNode)).right
+          result <- Right(createInvite(userNode, invite.copy(status = Some(InviteStatus.PENDING.toString),
+                                                           emailId = None, code = None, invitee = None, accepted = None))).right
+        } yield (result, displayOwner)
+    }
   }
 
   def putExistingInvite(owner: Owner, inviteUUID: UUID, invite: Invite): Response[SetResult] = {
-    for {
-      updateResult <- updateInvite(owner, inviteUUID, invite).right
-    } yield updateResult._2
+    withTx {
+      implicit neo4j =>
+        for {
+          userNode <- getNode(owner.userUUID, OwnerLabel.USER).right
+          inviteNode <- getInviteNode(userNode, inviteUUID).right
+          updateResult <- updateNode(inviteNode, invite).right
+        } yield updateResult._2
+    }
   }
 
   def getInvite(owner: Owner, inviteUUID: UUID): Response[Invite] = {
@@ -84,30 +96,6 @@ trait InviteDatabase extends UserDatabase {
   }
 
   // PRIVATE
-
-  protected def createInvite(owner: Owner, invite: Invite): Response[(SetResult, String)] = {
-    withTx {
-      implicit neo4j =>
-        for {
-          unit <- validateEmailUniqueness(invite.email).right
-          userNode <- getNode(owner.userUUID, OwnerLabel.USER).right
-          displayOwner <- Right(getDisplayOwner(userNode)).right
-          result <- Right(createInvite(userNode, invite.copy(status = Some(InviteStatus.PENDING.toString),
-                                                           emailId = None, code = None, invitee = None, accepted = None))).right
-        } yield (result, displayOwner)
-    }
-  }
-
-  protected def updateInvite(owner: Owner, inviteUUID: UUID, invite: Invite): Response[(Node, SetResult)] = {
-    withTx {
-      implicit neo4j =>
-        for {
-          userNode <- getNode(owner.userUUID, OwnerLabel.USER).right
-          inviteNode <- getInviteNode(userNode, inviteUUID).right
-          updateResult <- updateNode(inviteNode, invite).right
-        } yield updateResult
-    }
-  }
 
   protected def inviteTraversal(implicit neo4j: DatabaseService): TraversalDescription = {
     neo4j.gds.traversalDescription()

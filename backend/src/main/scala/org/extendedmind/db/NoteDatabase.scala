@@ -53,35 +53,47 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
   }
 
   def putNewNote(owner: Owner, note: Note): Response[SetResult] = {
-    for {
-      noteResult <- putNewExtendedItem(owner, note, ItemLabel.NOTE).right
-      unit <- Right(addToItemsIndex(owner, noteResult._1, noteResult._2)).right
-    } yield noteResult._2
+    withTx {
+      implicit neo4j =>
+        for {
+          noteResult <- putNewExtendedItem(owner, note, ItemLabel.NOTE).right
+          unit <- Right(addToItemsIndex(owner, noteResult._1, noteResult._2)).right
+        } yield noteResult._2
+    }
   }
 
   def putNewLimitedNote(owner: Owner, limitedNote: LimitedNote): Response[SetResult] = {
-    for {
-      noteResult <- putNewLimitedExtendedItem(owner, limitedNote, ItemLabel.NOTE).right
-      unit <- Right(addToItemsIndex(owner, noteResult._1, noteResult._2)).right
-    } yield noteResult._2
+    withTx {
+      implicit neo4j =>
+        for {
+          noteResult <- putNewLimitedExtendedItem(owner, limitedNote, ItemLabel.NOTE).right
+          unit <- Right(addToItemsIndex(owner, noteResult._1, noteResult._2)).right
+        } yield noteResult._2
+    }
   }
 
   def putExistingNote(owner: Owner, noteUUID: UUID, note: Note): Response[SetResult] = {
-    for {
-      noteResult <- putExistingNoteNode(owner, noteUUID, note).right
-      revision <- Right(evaluateNoteRevision(note, noteResult._1, noteResult._3)).right
-      result <- Right(noteResult._2.copy(revision = revision)).right
-      unit <- Right(updateItemsIndex(noteResult._1, result)).right
-    } yield result
+    withTx {
+      implicit neo4j =>
+        for {
+          noteResult <- putExistingNoteNode(owner, noteUUID, note).right
+          revision <- Right(evaluateNoteRevision(note, noteResult._1, noteResult._3)).right
+          result <- Right(noteResult._2.copy(revision = revision)).right
+          unit <- Right(updateItemsIndex(noteResult._1, result)).right
+        } yield result
+    }
   }
 
   def putExistingLimitedNote(owner: Owner, noteUUID: UUID, limitedNote: LimitedNote): Response[SetResult] = {
-    for {
-      noteResult <- putExistingLimitedExtendedItem(owner, noteUUID, limitedNote, ItemLabel.NOTE).right
-      revision <- Right(evaluateNoteRevision(Note(limitedNote), noteResult._1, noteResult._3)).right
-      result <- Right(noteResult._2.copy(revision = revision)).right
-      unit <- Right(updateItemsIndex(noteResult._1, result)).right
-    } yield result
+    withTx {
+      implicit neo4j =>
+        for {
+          noteResult <- putExistingLimitedExtendedItem(owner, noteUUID, limitedNote, ItemLabel.NOTE).right
+          revision <- Right(evaluateNoteRevision(Note(limitedNote), noteResult._1, noteResult._3)).right
+          result <- Right(noteResult._2.copy(revision = revision)).right
+          unit <- Right(updateItemsIndex(noteResult._1, result)).right
+        } yield result
+    }
   }
 
   def getNote(owner: Owner, noteUUID: UUID): Response[Note] = {
@@ -95,56 +107,77 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
   }
 
   def deleteNote(owner: Owner, noteUUID: UUID): Response[DeleteItemResult] = {
-    for {
-      noteNode <- validateExtendedItemModifiable(owner, noteUUID, ItemLabel.NOTE).right
-      deleteNoteResult <- deleteNoteNode(owner, noteNode).right
-      unit <- Right(updateItemsIndex(deleteNoteResult._1, deleteNoteResult._2.result)).right
-    } yield deleteNoteResult._2
+    withTx {
+      implicit neo =>
+        for {
+          noteNode <- validateExtendedItemModifiable(owner, noteUUID, ItemLabel.NOTE).right
+          deleteNoteResult <- deleteNoteNode(owner, noteNode).right
+          unit <- Right(updateItemsIndex(deleteNoteResult._1, deleteNoteResult._2.result)).right
+        } yield deleteNoteResult._2
+    }
   }
 
   def undeleteNote(owner: Owner, noteUUID: UUID): Response[SetResult] = {
-    for {
-      noteNode <- validateExtendedItemModifiable(owner, noteUUID, ItemLabel.NOTE).right
-      undeletedResult <- undeleteNoteNode(owner, noteNode).right
-      unit <- Right(updateItemsIndex(undeletedResult._1, undeletedResult._2)).right
-    } yield undeletedResult._2
+    withTx {
+      implicit neo =>
+        for {
+          noteNode <- validateExtendedItemModifiable(owner, noteUUID, ItemLabel.NOTE).right
+          undeletedResult <- undeleteNoteNode(owner, noteNode).right
+          unit <- Right(updateItemsIndex(undeletedResult._1, undeletedResult._2)).right
+        } yield undeletedResult._2
+    }
   }
 
   def favoriteNote(owner: Owner, noteUUID: UUID): Response[FavoriteNoteResult] = {
-    for {
-      favoriteInfo <- favoriteNoteNode(owner, noteUUID).right
-      unit <- Right(updateItemsIndex(favoriteInfo._1, favoriteInfo._2.result)).right
-    } yield favoriteInfo._2
+    withTx {
+      implicit neo =>
+        for {
+          favoriteInfo <- favoriteNoteNode(owner, noteUUID).right
+          unit <- Right(updateItemsIndex(favoriteInfo._1, favoriteInfo._2.result)).right
+        } yield favoriteInfo._2
+    }
   }
 
   def unfavoriteNote(owner: Owner, noteUUID: UUID): Response[SetResult] = {
-    for {
-      noteResult <- unfavoriteNoteNode(owner, noteUUID).right
-      unit <- Right(updateItemsIndex(noteResult._1, noteResult._2)).right
-    } yield noteResult._2
+    withTx {
+      implicit neo =>
+        for {
+          noteResult <- unfavoriteNoteNode(owner, noteUUID).right
+          unit <- Right(updateItemsIndex(noteResult._1, noteResult._2)).right
+        } yield noteResult._2
+    }
   }
 
   def noteToTask(owner: Owner, noteUUID: UUID, note: Note): Response[Task] = {
-    for {
-      convertResult <- convertNoteToTask(owner, noteUUID, note).right
-      revision <- Right(evaluateTaskRevision(convertResult._3, convertResult._1, convertResult._4, force=true)).right
-      unit <- Right(updateItemsIndex(convertResult._1, convertResult._2)).right
-    } yield (convertResult._3.copy(revision = revision))
+    withTx {
+      implicit neo =>
+        for {
+          convertResult <- convertNoteToTask(owner, noteUUID, note).right
+          revision <- Right(evaluateTaskRevision(convertResult._3, convertResult._1, convertResult._4, force=true)).right
+          unit <- Right(updateItemsIndex(convertResult._1, convertResult._2)).right
+        } yield (convertResult._3.copy(revision = revision))
+    }
   }
 
   def noteToList(owner: Owner, noteUUID: UUID, note: Note): Response[List] = {
-    for {
-      convertResult <- convertNoteToList(owner, noteUUID, note).right
-      revision <- Right(evaluateListRevision(convertResult._3, convertResult._1, convertResult._4, force=true)).right
-      unit <- Right(updateItemsIndex(convertResult._1, convertResult._2)).right
-    } yield (convertResult._3.copy(revision = revision))
+    withTx {
+      implicit neo =>
+        for {
+          convertResult <- convertNoteToList(owner, noteUUID, note).right
+          revision <- Right(evaluateListRevision(convertResult._3, convertResult._1, convertResult._4, force=true)).right
+          unit <- Right(updateItemsIndex(convertResult._1, convertResult._2)).right
+        } yield (convertResult._3.copy(revision = revision))
+    }
   }
 
   def previewNote(owner: Owner, noteUUID: UUID, format: String): Response[PreviewNoteResult] = {
-    for {
-      previewResult <- previewNoteNode(owner, noteUUID, format).right
-      unit <- Right(updateItemsIndex(previewResult._1, previewResult._2.result)).right
-    } yield previewResult._2
+    withTx {
+      implicit neo =>
+        for {
+          previewResult <- previewNoteNode(owner, noteUUID, format).right
+          unit <- Right(updateItemsIndex(previewResult._1, previewResult._2.result)).right
+        } yield previewResult._2
+    }
   }
 
   def publishNote(owner: Owner, noteUUID: UUID, format: String, path: String, licence: Option[String], index: Boolean, publicUi: Option[String], overridePublished: Option[Long]): Response[PublishNoteResult] = {
@@ -241,50 +274,38 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     } yield note
   }
 
-  protected def putExistingNoteNode(owner: Owner, noteUUID: UUID, note: Note): Response[(Node, SetResult, OwnerNodes)] = {
-    withTx {
-      implicit neo4j =>
-        for {
-          ownerNodes <- getOwnerNodes(owner).right
-          noteNode <- getItemNode(getOwnerUUID(owner), noteUUID, exactLabelMatch = false).right
-          noteResult <- updateItemNode(noteNode, note,
-              Some(ItemLabel.NOTE), None, None, note.modified).right
-          archived <- setParentNode(noteResult._1, ownerNodes, note.parent, skipParentHistoryTag=false).right
-          tagNodes <- setTagNodes(noteResult._1, ownerNodes, note).right
-          result <- setAssigneeRelationship(noteResult._1, ownerNodes, note).right
-        } yield (noteNode, noteResult._2.copy(archived = archived), ownerNodes)
-    }
+  protected def putExistingNoteNode(owner: Owner, noteUUID: UUID, note: Note)(implicit neo4j: DatabaseService): Response[(Node, SetResult, OwnerNodes)] = {
+    for {
+      ownerNodes <- getOwnerNodes(owner).right
+      noteNode <- getItemNode(getOwnerUUID(owner), noteUUID, exactLabelMatch = false).right
+      noteResult <- updateItemNode(noteNode, note,
+          Some(ItemLabel.NOTE), None, None, note.modified).right
+      archived <- setParentNode(noteResult._1, ownerNodes, note.parent, skipParentHistoryTag=false).right
+      tagNodes <- setTagNodes(noteResult._1, ownerNodes, note).right
+      result <- setAssigneeRelationship(noteResult._1, ownerNodes, note).right
+    } yield (noteNode, noteResult._2.copy(archived = archived), ownerNodes)
   }
 
-  protected def deleteNoteNode(owner: Owner, noteNode: Node): Response[(Node, DeleteItemResult)] = {
-    withTx {
-      implicit neo =>
-        for {
-          // Unpublish if published
-          unit <- Right(unpublishNoteNode(noteNode)).right
-          deleted <- Right(deleteItem(noteNode)).right
-        } yield (noteNode, deleted)
-    }
+  protected def deleteNoteNode(owner: Owner, noteNode: Node)(implicit neo4j: DatabaseService): Response[(Node, DeleteItemResult)] = {
+    for {
+      // Unpublish if published
+      unit <- Right(unpublishNoteNode(noteNode)).right
+      deleted <- Right(deleteItem(noteNode)).right
+    } yield (noteNode, deleted)
   }
 
-  protected def undeleteNoteNode(owner: Owner, noteNode: Node): Response[(Node, SetResult)] = {
-    withTx {
-      implicit neo =>
-        for {
-          result <- Right(undeleteItem(noteNode)).right
-        } yield (noteNode, result)
-    }
+  protected def undeleteNoteNode(owner: Owner, noteNode: Node)(implicit neo4j: DatabaseService): Response[(Node, SetResult)] = {
+    for {
+      result <- Right(undeleteItem(noteNode)).right
+    } yield (noteNode, result)
   }
 
-  protected def favoriteNoteNode(owner: Owner, noteUUID: UUID): Response[(Node, FavoriteNoteResult, OwnerNodes)] = {
-    withTx {
-      implicit neo4j =>
-        for {
-          ownerNodes <- getOwnerNodes(owner).right
-          noteNode <- getItemNode(getOwnerUUID(owner), noteUUID, Some(ItemLabel.NOTE)).right
-          result <- Right(favoriteNoteNode(noteNode)).right
-        } yield (noteNode, result, ownerNodes)
-    }
+  protected def favoriteNoteNode(owner: Owner, noteUUID: UUID)(implicit neo4j: DatabaseService): Response[(Node, FavoriteNoteResult, OwnerNodes)] = {
+    for {
+      ownerNodes <- getOwnerNodes(owner).right
+      noteNode <- getItemNode(getOwnerUUID(owner), noteUUID, Some(ItemLabel.NOTE)).right
+      result <- Right(favoriteNoteNode(noteNode)).right
+    } yield (noteNode, result, ownerNodes)
   }
 
   protected def favoriteNoteNode(noteNode: Node)(implicit neo4j: DatabaseService): FavoriteNoteResult = {
@@ -297,15 +318,12 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     }
   }
 
-  protected def unfavoriteNoteNode(owner: Owner, noteUUID: UUID): Response[(Node, SetResult, OwnerNodes)] = {
-    withTx {
-      implicit neo =>
-        for {
-          ownerNodes <- getOwnerNodes(owner).right
-          noteNode <- getItemNode(getOwnerUUID(owner), noteUUID, Some(ItemLabel.NOTE)).right
-          result <- Right(unfavoriteNoteNode(noteNode)).right
-        } yield (noteNode, result, ownerNodes)
-    }
+  protected def unfavoriteNoteNode(owner: Owner, noteUUID: UUID)(implicit neo4j: DatabaseService): Response[(Node, SetResult, OwnerNodes)] = {
+    for {
+      ownerNodes <- getOwnerNodes(owner).right
+      noteNode <- getItemNode(getOwnerUUID(owner), noteUUID, Some(ItemLabel.NOTE)).right
+      result <- Right(unfavoriteNoteNode(noteNode)).right
+    } yield (noteNode, result, ownerNodes)
   }
 
   protected def unfavoriteNoteNode(noteNode: Node)(implicit neo4j: DatabaseService): SetResult = {
@@ -314,42 +332,33 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
     updateNodeModified(noteNode)
   }
 
-  protected def convertNoteToTask(owner: Owner, noteUUID: UUID, note: Note): Response[(Node, SetResult, Task, OwnerNodes)] = {
-    withTx {
-      implicit neo4j =>
-        for {
-          noteResult <- putExistingExtendedItem(owner, noteUUID, note, ItemLabel.NOTE).right
-          result <- validateNoteConvertable(noteResult._1).right
-          taskNode <- Right(setLabel(noteResult._1, Some(MainLabel.ITEM), Some(ItemLabel.TASK), Some(scala.List(ItemLabel.NOTE)))).right
-          unit <- moveContentToDescription(taskNode).right
-          result <- Right(updateNodeModified(taskNode)).right
-          task <- toTask(taskNode, owner).right
-        } yield (taskNode, result, task, noteResult._3)
-    }
+  protected def convertNoteToTask(owner: Owner, noteUUID: UUID, note: Note)(implicit neo4j: DatabaseService): Response[(Node, SetResult, Task, OwnerNodes)] = {
+    for {
+      noteResult <- putExistingExtendedItem(owner, noteUUID, note, ItemLabel.NOTE).right
+      result <- validateNoteConvertable(noteResult._1).right
+      taskNode <- Right(setLabel(noteResult._1, Some(MainLabel.ITEM), Some(ItemLabel.TASK), Some(scala.List(ItemLabel.NOTE)))).right
+      unit <- moveContentToDescription(taskNode).right
+      result <- Right(updateNodeModified(taskNode)).right
+      task <- toTask(taskNode, owner).right
+    } yield (taskNode, result, task, noteResult._3)
   }
 
-  protected def convertNoteToList(owner: Owner, noteUUID: UUID, note: Note): Response[(Node, SetResult, List, OwnerNodes)] = {
-    withTx {
-      implicit neo4j =>
-        for {
-          noteResult <- putExistingExtendedItem(owner, noteUUID, note, ItemLabel.NOTE).right
-          result <- validateNoteConvertable(noteResult._1).right
-          listNode <- Right(setLabel(noteResult._1, Some(MainLabel.ITEM), Some(ItemLabel.LIST), Some(scala.List(ItemLabel.NOTE)))).right
-          unit <- moveContentToDescription(listNode).right
-          result <- Right(updateNodeModified(listNode)).right
-          list <- toList(listNode, owner).right
-        } yield (listNode, result, list, noteResult._3)
-    }
+  protected def convertNoteToList(owner: Owner, noteUUID: UUID, note: Note)(implicit neo4j: DatabaseService): Response[(Node, SetResult, List, OwnerNodes)] = {
+    for {
+      noteResult <- putExistingExtendedItem(owner, noteUUID, note, ItemLabel.NOTE).right
+      result <- validateNoteConvertable(noteResult._1).right
+      listNode <- Right(setLabel(noteResult._1, Some(MainLabel.ITEM), Some(ItemLabel.LIST), Some(scala.List(ItemLabel.NOTE)))).right
+      unit <- moveContentToDescription(listNode).right
+      result <- Right(updateNodeModified(listNode)).right
+      list <- toList(listNode, owner).right
+    } yield (listNode, result, list, noteResult._3)
   }
 
-  protected def previewNoteNode(owner: Owner, noteUUID: UUID, format: String): Response[(Node, PreviewNoteResult)] = {
-    withTx {
-      implicit neo4j =>
-        for {
-          noteNode <- getItemNode(getOwnerUUID(owner), noteUUID, Some(ItemLabel.NOTE)).right
-          previewResult <- Right(previewNoteNode(noteNode, format)).right
-        } yield (noteNode, previewResult)
-    }
+  protected def previewNoteNode(owner: Owner, noteUUID: UUID, format: String)(implicit neo4j: DatabaseService): Response[(Node, PreviewNoteResult)] = {
+    for {
+      noteNode <- getItemNode(getOwnerUUID(owner), noteUUID, Some(ItemLabel.NOTE)).right
+      previewResult <- Right(previewNoteNode(noteNode, format)).right
+    } yield (noteNode, previewResult)
   }
 
   protected def previewNoteNode(noteNode: Node, format: String)(implicit neo4j: DatabaseService): PreviewNoteResult = {
@@ -494,15 +503,12 @@ trait NoteDatabase extends AbstractGraphDatabase with ItemDatabase {
       Right()
   }
 
-  protected def evaluateNoteRevision(note: Note, noteNode: Node, ownerNodes: OwnerNodes, force: Boolean = false): Option[Long] = {
-    withTx {
-      implicit neo4j =>
-        evaluateNeedForRevision(note.revision, noteNode, ownerNodes, force).flatMap(latestRevisionRel => {
-          val noteBytes = pickleNote(getNoteForPickling(note))
-          val revisionNode = createExtendedItemRevision(noteNode, ownerNodes, ItemLabel.NOTE, noteBytes, latestRevisionRel)
-          Some(revisionNode.getProperty("number").asInstanceOf[Long])
-        })
-    }
+  protected def evaluateNoteRevision(note: Note, noteNode: Node, ownerNodes: OwnerNodes, force: Boolean = false)(implicit neo4j: DatabaseService): Option[Long] = {
+    evaluateNeedForRevision(note.revision, noteNode, ownerNodes, force).flatMap(latestRevisionRel => {
+      val noteBytes = pickleNote(getNoteForPickling(note))
+      val revisionNode = createExtendedItemRevision(noteNode, ownerNodes, ItemLabel.NOTE, noteBytes, latestRevisionRel)
+      Some(revisionNode.getProperty("number").asInstanceOf[Long])
+    })
   }
 
   private def getNoteForPickling(note: Note): Note = {

@@ -63,16 +63,22 @@ trait ItemDatabase extends UserDatabase {
   // PUBLIC
 
   def putNewItem(owner: Owner, item: Item): Response[SetResult] = {
-    for {
-      createResult <- createItem(owner, item).right
-    } yield createResult._2
+    withTx {
+      implicit neo4j =>
+        for {
+          createResult <- createItem(owner, item).right
+        } yield createResult._2
+    }
   }
 
   def putExistingItem(owner: Owner, itemUUID: UUID, item: Item): Response[SetResult] = {
-    for {
-      itemResult <- updateItem(owner, itemUUID, item, None, None, None, item.modified).right
-      unit <- Right(updateItemsIndex(itemResult._1, itemResult._2)).right
-    } yield itemResult._2
+    withTx {
+      implicit neo4j =>
+        for {
+          itemResult <- updateItem(owner, itemUUID, item, None, None, None, item.modified).right
+          unit <- Right(updateItemsIndex(itemResult._1, itemResult._2)).right
+        } yield itemResult._2
+    }
   }
 
   def getItem(owner: Owner, itemUUID: UUID): Response[Item] = {
@@ -119,18 +125,24 @@ trait ItemDatabase extends UserDatabase {
   }
 
   def putNewItemToInbox(inboxId: String, item: Item): Response[SetResult] = {
-    for {
-      ownerNode <- getNode("inboxId", inboxId, MainLabel.OWNER, None, false).right
-      itemCreateResult <- createItem(ownerNode, item, Token.ANONYMOUS).right
-      unit <- Right(addToItemsIndex(itemCreateResult._3, itemCreateResult._1, itemCreateResult._2)).right
-    } yield itemCreateResult._2
+    withTx {
+      implicit neo =>
+        for {
+          ownerNode <- getNode("inboxId", inboxId, MainLabel.OWNER, None, false).right
+          itemCreateResult <- createItem(ownerNode, item, Token.ANONYMOUS).right
+          unit <- Right(addToItemsIndex(itemCreateResult._3, itemCreateResult._1, itemCreateResult._2)).right
+      } yield itemCreateResult._2
+    }
   }
 
   def isInboxValid(inboxId: String): Response[SetResult] = {
-    for {
-      ownerNode <- getNode("inboxId", inboxId, MainLabel.OWNER, None, false).right
-      result <- Right(SetResult(None, None, System.currentTimeMillis())).right
-    } yield result
+    withTx {
+      implicit neo =>
+        for {
+          ownerNode <- getNode("inboxId", inboxId, MainLabel.OWNER, None, false).right
+          result <- Right(SetResult(None, None, System.currentTimeMillis())).right
+        } yield result
+    }
   }
 
   def destroyDeletedItems(owner: Owner): Response[CountResult] = {
@@ -168,18 +180,24 @@ trait ItemDatabase extends UserDatabase {
   }
 
   def getItemStatistics(uuid: UUID): Response[NodeStatistics] = {
-    for {
-      itemNode <- getItemNodeByUUID(uuid).right
-      stats <- Right(getItemStatistics(itemNode)).right
-    } yield stats
+    withTx {
+      implicit neo4j =>
+        for {
+          itemNode <- getItemNodeByUUID(uuid).right
+          stats <- Right(getItemStatistics(itemNode)).right
+        } yield stats
+    }
   }
 
   def setItemProperty(uuid: UUID, key: String, stringValue: Option[String], longValue: Option[Long]): Response[SetResult] = {
-    for {
-      itemNode <- getItemNodeByUUID(uuid).right
-      result <- Right(setNodeProperty(itemNode, key: String, stringValue: Option[String], longValue: Option[Long])).right
-      unit <- Right(updateItemsIndex(itemNode, result)).right
-    } yield result
+    withTx {
+      implicit neo4j =>
+        for {
+          itemNode <- getItemNodeByUUID(uuid).right
+          result <- Right(setNodeProperty(itemNode, key: String, stringValue: Option[String], longValue: Option[Long])).right
+          unit <- Right(updateItemsIndex(itemNode, result)).right
+        } yield result
+    }
   }
 
   def getPreviewItem(ownerUUID: UUID, itemUUID: UUID, previewCode: Long): Response[PublicItem] = {
@@ -473,9 +491,9 @@ trait ItemDatabase extends UserDatabase {
   def toList(listNode: Node, owner: Owner)(implicit neo4j: DatabaseService): Response[List];
 
   // Methods for evaluating need for revisions
-  protected def evaluateTaskRevision(task: Task, taskNode: Node, ownerNodes: OwnerNodes, force: Boolean = false): Option[Long];
-  protected def evaluateNoteRevision(note: Note, noteNode: Node, ownerNodes: OwnerNodes, force: Boolean = false): Option[Long];
-  protected def evaluateListRevision(list: List, listNode: Node, ownerNodes: OwnerNodes, force: Boolean = false): Option[Long];
+  protected def evaluateTaskRevision(task: Task, taskNode: Node, ownerNodes: OwnerNodes, force: Boolean = false)(implicit neo4j: DatabaseService): Option[Long];
+  protected def evaluateNoteRevision(note: Note, noteNode: Node, ownerNodes: OwnerNodes, force: Boolean = false)(implicit neo4j: DatabaseService): Option[Long];
+  protected def evaluateListRevision(list: List, listNode: Node, ownerNodes: OwnerNodes, force: Boolean = false)(implicit neo4j: DatabaseService): Option[Long];
 
   protected def getItemNodes(ownerUUID: UUID, modified: Option[Long], active: Boolean, deleted: Boolean,
                              archived: Boolean, completed: Boolean, tagsOnly: Boolean = false)
@@ -594,15 +612,12 @@ trait ItemDatabase extends UserDatabase {
   }
 
   protected def createItem(owner: Owner, item: AnyRef,
-    extraLabel: Option[Label] = None, extraSubLabel: Option[Label] = None): Response[(Node, SetResult)] = {
-    withTx {
-      implicit neo4j =>
-        for {
-          ownerNodes <- getOwnerNodes(owner).right
-          createResult <- createItem(ownerNodes, item, extraLabel, extraSubLabel).right
-          unit <- Right(addToItemsIndex(owner, createResult._1, createResult._2)).right
-        } yield createResult
-    }
+    extraLabel: Option[Label] = None, extraSubLabel: Option[Label] = None)(implicit neo4j: DatabaseService): Response[(Node, SetResult)] = {
+    for {
+      ownerNodes <- getOwnerNodes(owner).right
+      createResult <- createItem(ownerNodes, item, extraLabel, extraSubLabel).right
+      unit <- Right(addToItemsIndex(owner, createResult._1, createResult._2)).right
+    } yield createResult
   }
 
   protected def getOwnerNodes(owner: Owner)(implicit neo4j: DatabaseService): Response[OwnerNodes] = {
@@ -641,14 +656,11 @@ trait ItemDatabase extends UserDatabase {
     additionalLabel: Option[Label] = None,
     additionalSubLabel: Option[Label] = None,
     additionalSubLabelAlternatives: Option[scala.List[Label]] = None,
-    expectedModified: Option[Long] = None): Response[(Node, SetResult)] = {
-    withTx {
-      implicit neo4j =>
-        for {
-          itemNode <- getItemNode(getOwnerUUID(owner), itemUUID, exactLabelMatch = false).right
-          itemResult <- updateItemNode(itemNode, item, additionalLabel, additionalSubLabel, additionalSubLabelAlternatives, expectedModified).right
-        } yield itemResult
-    }
+    expectedModified: Option[Long] = None)(implicit neo4j: DatabaseService): Response[(Node, SetResult)] = {
+    for {
+      itemNode <- getItemNode(getOwnerUUID(owner), itemUUID, exactLabelMatch = false).right
+      itemResult <- updateItemNode(itemNode, item, additionalLabel, additionalSubLabel, additionalSubLabelAlternatives, expectedModified).right
+    } yield itemResult
   }
 
   protected def updateItemNode(itemNode: Node, item: AnyRef,
@@ -687,52 +699,40 @@ trait ItemDatabase extends UserDatabase {
     node
   }
 
-  protected def putExistingExtendedItem(owner: Owner, itemUUID: UUID, extItem: ExtendedItem, label: Label, skipParentHistoryTag: Boolean = false): Response[(Node, SetResult, OwnerNodes)] = {
-    withTx {
-      implicit neo4j =>
-        for {
-          itemResult <- updateItem(owner, itemUUID, extItem, Some(label), None, None, extItem.modified).right
-          ownerNodes <- getOwnerNodes(owner).right
-          archived <- setParentNode(itemResult._1, ownerNodes, extItem.parent, skipParentHistoryTag).right
-          tagNodes <- setTagNodes(itemResult._1, ownerNodes, extItem).right
-          result <- setAssigneeRelationship(itemResult._1, ownerNodes, extItem).right
-        } yield (itemResult._1, itemResult._2.copy(archived = archived), ownerNodes)
-    }
+  protected def putExistingExtendedItem(owner: Owner, itemUUID: UUID, extItem: ExtendedItem, label: Label, skipParentHistoryTag: Boolean = false)(implicit neo4j: DatabaseService): Response[(Node, SetResult, OwnerNodes)] = {
+    for {
+      itemResult <- updateItem(owner, itemUUID, extItem, Some(label), None, None, extItem.modified).right
+      ownerNodes <- getOwnerNodes(owner).right
+      archived <- setParentNode(itemResult._1, ownerNodes, extItem.parent, skipParentHistoryTag).right
+      tagNodes <- setTagNodes(itemResult._1, ownerNodes, extItem).right
+      result <- setAssigneeRelationship(itemResult._1, ownerNodes, extItem).right
+    } yield (itemResult._1, itemResult._2.copy(archived = archived), ownerNodes)
   }
 
-  protected def putNewExtendedItem(owner: Owner, extItem: ExtendedItem, label: Label, subLabel: Option[Label] = None, skipParentHistoryTag: Boolean = false): Response[(Node, SetResult, OwnerNodes)] = {
-    withTx {
-      implicit neo4j =>
-        for {
-          createResult <- createItem(owner, extItem, Some(label), subLabel).right
-          ownerNodes <- getOwnerNodes(owner).right
-          archived <- setParentNode(createResult._1, ownerNodes, extItem.parent, skipParentHistoryTag).right
-          tagNodes <- setTagNodes(createResult._1, ownerNodes, extItem).right
-          result <- setAssigneeRelationship(createResult._1, ownerNodes, extItem).right
-        } yield (createResult._1, createResult._2.copy(archived = archived), ownerNodes)
-    }
+  protected def putNewExtendedItem(owner: Owner, extItem: ExtendedItem, label: Label, subLabel: Option[Label] = None, skipParentHistoryTag: Boolean = false)(implicit neo4j: DatabaseService): Response[(Node, SetResult, OwnerNodes)] = {
+    for {
+      createResult <- createItem(owner, extItem, Some(label), subLabel).right
+      ownerNodes <- getOwnerNodes(owner).right
+      archived <- setParentNode(createResult._1, ownerNodes, extItem.parent, skipParentHistoryTag).right
+      tagNodes <- setTagNodes(createResult._1, ownerNodes, extItem).right
+      result <- setAssigneeRelationship(createResult._1, ownerNodes, extItem).right
+    } yield (createResult._1, createResult._2.copy(archived = archived), ownerNodes)
   }
 
-  protected def putExistingLimitedExtendedItem(owner: Owner, itemUUID: UUID, extItem: LimitedExtendedItem, label: Label): Response[(Node, SetResult, OwnerNodes)] = {
-    withTx {
-      implicit neo4j =>
-        for {
-          itemResult <- updateItem(owner, itemUUID, extItem, Some(label), None, None, extItem.modified).right
-          ownerNodes <- getOwnerNodes(owner).right
-          archived <- setParentNode(itemResult._1, ownerNodes, extItem.parent).right
-        } yield (itemResult._1, itemResult._2.copy(archived = archived), ownerNodes)
-    }
+  protected def putExistingLimitedExtendedItem(owner: Owner, itemUUID: UUID, extItem: LimitedExtendedItem, label: Label)(implicit neo4j: DatabaseService): Response[(Node, SetResult, OwnerNodes)] = {
+    for {
+      itemResult <- updateItem(owner, itemUUID, extItem, Some(label), None, None, extItem.modified).right
+      ownerNodes <- getOwnerNodes(owner).right
+      archived <- setParentNode(itemResult._1, ownerNodes, extItem.parent).right
+    } yield (itemResult._1, itemResult._2.copy(archived = archived), ownerNodes)
   }
 
-  protected def putNewLimitedExtendedItem(owner: Owner, extItem: LimitedExtendedItem, label: Label): Response[(Node, SetResult, OwnerNodes)] = {
-    withTx {
-      implicit neo4j =>
-        for {
-          createResult <- createItem(owner, extItem, Some(label)).right
-          ownerNodes <- getOwnerNodes(owner).right
-          archived <- setParentNode(createResult._1, ownerNodes, extItem.parent).right
-        } yield (createResult._1, createResult._2.copy(archived = archived), ownerNodes)
-    }
+  protected def putNewLimitedExtendedItem(owner: Owner, extItem: LimitedExtendedItem, label: Label)(implicit neo4j: DatabaseService): Response[(Node, SetResult, OwnerNodes)] = {
+    for {
+      createResult <- createItem(owner, extItem, Some(label)).right
+      ownerNodes <- getOwnerNodes(owner).right
+      archived <- setParentNode(createResult._1, ownerNodes, extItem.parent).right
+    } yield (createResult._1, createResult._2.copy(archived = archived), ownerNodes)
   }
 
   protected def setParentNode(itemNode: Node, ownerNodes: OwnerNodes, parentUUID: Option[UUID], skipParentHistoryTag: Boolean = false)(implicit neo4j: DatabaseService): Response[Option[Long]] = {
@@ -1281,28 +1281,25 @@ trait ItemDatabase extends UserDatabase {
     }
   }
 
-  protected def validateExtendedItemModifiable(owner: Owner, itemUUID: UUID, label: Label, requireFounder: Boolean = false): Response[Node] = {
-    withTx {
-      implicit neo4j =>
-        for {
-          itemNode <- getItemNode(getOwnerUUID(owner), itemUUID, Some(label), acceptDeleted = true).right
-          parentRelationship <- (if(owner.isLimitedAccess) Right(getParentRelationship(itemNode)) else Right(None)).right
-          accessRight <-
-          (if (owner.isLimitedAccess) Right(getSharedListAccessRight(owner.sharedLists.get,
-              if (parentRelationship.isDefined){
-                Some(ExtendedItemRelationships(
-                  Some(getUUID(parentRelationship.get.getEndNode)), None, None, None, None, None))
-              }else{
-                None
-              }))
-           else Right(Some(SecurityContext.FOUNDER))
-          ).right
-          unit <- (if (requireFounder && accessRight.isDefined && accessRight.get != SecurityContext.FOUNDER)
-                fail(INVALID_PARAMETER, ERR_BASE_FOUNDER_ACCESS_RIGHT_REQUIRED, "Given parameters require founder access")
-               else if (writeAccess(accessRight)) Right()
-               else fail(INVALID_PARAMETER, ERR_BASE_NO_LIST_ACCESS, "No write access to (un)delete task")).right
-        } yield itemNode
-    }
+  protected def validateExtendedItemModifiable(owner: Owner, itemUUID: UUID, label: Label, requireFounder: Boolean = false)(implicit neo4j: DatabaseService): Response[Node] = {
+    for {
+      itemNode <- getItemNode(getOwnerUUID(owner), itemUUID, Some(label), acceptDeleted = true).right
+      parentRelationship <- (if(owner.isLimitedAccess) Right(getParentRelationship(itemNode)) else Right(None)).right
+      accessRight <-
+      (if (owner.isLimitedAccess) Right(getSharedListAccessRight(owner.sharedLists.get,
+          if (parentRelationship.isDefined){
+            Some(ExtendedItemRelationships(
+              Some(getUUID(parentRelationship.get.getEndNode)), None, None, None, None, None))
+          }else{
+            None
+          }))
+       else Right(Some(SecurityContext.FOUNDER))
+      ).right
+      unit <- (if (requireFounder && accessRight.isDefined && accessRight.get != SecurityContext.FOUNDER)
+            fail(INVALID_PARAMETER, ERR_BASE_FOUNDER_ACCESS_RIGHT_REQUIRED, "Given parameters require founder access")
+           else if (writeAccess(accessRight)) Right()
+           else fail(INVALID_PARAMETER, ERR_BASE_NO_LIST_ACCESS, "No write access to (un)delete task")).right
+    } yield itemNode
   }
 
   protected def destroyDeletedItems(ownerNodes: OwnerNodes)(implicit neo4j: DatabaseService): CountResult = {
@@ -1351,11 +1348,8 @@ trait ItemDatabase extends UserDatabase {
 
   protected def destroyTaskRelationship(relationship: Relationship)(implicit neo4j: DatabaseService)
 
-  protected def addToItemsIndex(owner: Owner, itemNode: Node, setResult: SetResult): Unit = {
-    withTx {
-      implicit neo4j =>
-        addToItemsIndex(getOwnerUUID(owner), itemNode, setResult.modified)
-    }
+  protected def addToItemsIndex(owner: Owner, itemNode: Node, setResult: SetResult)(implicit neo4j: DatabaseService): Unit = {
+    addToItemsIndex(getOwnerUUID(owner), itemNode, setResult.modified)
   }
 
   protected def addToItemsIndex(ownerUUID: UUID, itemNode: Node, modified: Long)(implicit neo4j: DatabaseService): Unit = {
@@ -1365,20 +1359,14 @@ trait ItemDatabase extends UserDatabase {
     addModifiedIndex(itemsIndex, itemNode, modified)
   }
 
-  def updateItemsIndex(itemNode: Node, setResult: SetResult): Unit = {
-    withTx {
-      implicit neo4j =>
-        val itemsIndex = neo4j.gds.index().forNodes("items")
-        updateModifiedIndex(itemsIndex, itemNode, setResult.modified)
-    }
+  def updateItemsIndex(itemNode: Node, setResult: SetResult)(implicit neo4j: DatabaseService): Unit = {
+    val itemsIndex = neo4j.gds.index().forNodes("items")
+    updateModifiedIndex(itemsIndex, itemNode, setResult.modified)
   }
 
-  protected def updateItemsIndex(itemNodeList: scala.List[Node], setResult: SetResult): Unit = {
-    withTx {
-      implicit neo4j =>
-        val itemsIndex = neo4j.gds.index().forNodes("items")
-        itemNodeList.foreach { itemNode => updateModifiedIndex(itemsIndex, itemNode, setResult.modified) }
-    }
+  protected def updateItemsIndex(itemNodeList: scala.List[Node], setResult: SetResult)(implicit neo4j: DatabaseService): Unit = {
+    val itemsIndex = neo4j.gds.index().forNodes("items")
+    itemNodeList.foreach { itemNode => updateModifiedIndex(itemsIndex, itemNode, setResult.modified) }
   }
 
   protected def updateModifiedIndex(index: Index[Node], node: Node, modified: Long)(implicit neo4j: DatabaseService): Unit = {
@@ -1474,53 +1462,44 @@ trait ItemDatabase extends UserDatabase {
     Right((itemCount, publishedCount))
   }
 
-  protected def addToPublicIndex(revisionNode: Node, ownerUUID: UUID, sid: Long, path: String, index: Boolean): Long = {
-    withTx {
-      implicit neo4j =>
-        val modified = revisionNode.getProperty("modified").asInstanceOf[Long]
-        val publicRevisionIndex = neo4j.gds.index().forNodes("public")
-        publicRevisionIndex.add(revisionNode, "owner", IdUtils.getTrimmedBase64UUIDForLucene(ownerUUID))
-        publicRevisionIndex.add(revisionNode, "sid", sid)
-        publicRevisionIndex.add(revisionNode, "path", path)
-        publicRevisionIndex.add(revisionNode, "modified", new ValueContext(modified).indexNumeric())
-        if (index) publicRevisionIndex.add(revisionNode, "indexed", true)
-        modified
+  protected def addToPublicIndex(revisionNode: Node, ownerUUID: UUID, sid: Long, path: String, index: Boolean)(implicit neo4j: DatabaseService): Long = {
+    val modified = revisionNode.getProperty("modified").asInstanceOf[Long]
+    val publicRevisionIndex = neo4j.gds.index().forNodes("public")
+    publicRevisionIndex.add(revisionNode, "owner", IdUtils.getTrimmedBase64UUIDForLucene(ownerUUID))
+    publicRevisionIndex.add(revisionNode, "sid", sid)
+    publicRevisionIndex.add(revisionNode, "path", path)
+    publicRevisionIndex.add(revisionNode, "modified", new ValueContext(modified).indexNumeric())
+    if (index) publicRevisionIndex.add(revisionNode, "indexed", true)
+    modified
+  }
+
+  protected def getItemNodeByUUID(uuid: UUID)(implicit neo4j: DatabaseService): Response[Node] = {
+    val nodeList = findNodesByLabelAndProperty(MainLabel.ITEM, "uuid", IdUtils.getTrimmedBase64UUID(uuid)).toList
+    if (nodeList.isEmpty) {
+      fail(INVALID_PARAMETER, ERR_ITEM_NOT_FOUND, "Item not found for statistics with given uuid")
+    } else if (nodeList.size > 1) {
+      fail(INVALID_PARAMETER, ERR_ITEM_MORE_THAN_1, "More than one item found for statistics with given uuid")
+    } else {
+      Right(nodeList(0))
     }
   }
 
-  protected def getItemNodeByUUID(uuid: UUID): Response[Node] = {
-    withTx {
-      implicit neo4j =>
-        val nodeList = findNodesByLabelAndProperty(MainLabel.ITEM, "uuid", IdUtils.getTrimmedBase64UUID(uuid)).toList
-        if (nodeList.isEmpty) {
-          fail(INVALID_PARAMETER, ERR_ITEM_NOT_FOUND, "Item not found for statistics with given uuid")
-        } else if (nodeList.size > 1) {
-          fail(INVALID_PARAMETER, ERR_ITEM_MORE_THAN_1, "More than one item found for statistics with given uuid")
-        } else {
-          Right(nodeList(0))
+  protected def getItemStatistics(itemNode: Node)(implicit neo4j: DatabaseService): NodeStatistics = {
+    val itemProperties: scala.List[(String, Long)] = {
+      itemNode.getPropertyKeys.toList.map(key => {
+        // we know that all item properties are either String or Long
+        if (key == "created" || key == "modified" || key == "deleted" ||
+            key == "completed" || key == "archived" || key == "favorited"){
+          (key, itemNode.getProperty(key).asInstanceOf[Long])
+        }else{
+          (key, itemNode.getProperty(key).asInstanceOf[String].length.asInstanceOf[Long])
         }
+      })
     }
-  }
-
-  protected def getItemStatistics(itemNode: Node): NodeStatistics = {
-    withTx {
-      implicit neo4j =>
-        val itemProperties: scala.List[(String, Long)] = {
-          itemNode.getPropertyKeys.toList.map(key => {
-            // we know that all item properties are either String or Long
-            if (key == "created" || key == "modified" || key == "deleted" ||
-                key == "completed" || key == "archived" || key == "favorited"){
-              (key, itemNode.getProperty(key).asInstanceOf[Long])
-            }else{
-              (key, itemNode.getProperty(key).asInstanceOf[String].length.asInstanceOf[Long])
-            }
-          })
-        }
-        val itemLabels = itemNode.getLabels.toList.map(label => {
-          label.name
-        })
-        NodeStatistics(itemProperties, itemLabels)
-    }
+    val itemLabels = itemNode.getLabels.toList.map(label => {
+      label.name
+    })
+    NodeStatistics(itemProperties, itemLabels)
   }
 
   protected def toPublicItems(ownerNode: Node, itemRevisionNodes: Iterable[Node], modified: Option[Long])(implicit neo4j: DatabaseService): Response[PublicItems] = {

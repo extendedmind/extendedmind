@@ -84,13 +84,15 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
   }
 
   def putExistingLimitedTask(owner: Owner, taskUUID: UUID, limitedTask: LimitedTask): Response[SetResult] = {
-
-    for {
-      taskResult <- putExistingLimitedExtendedItem(owner, taskUUID, limitedTask, ItemLabel.TASK).right
-      revision <- Right(evaluateTaskRevision(Task(limitedTask), taskResult._1, taskResult._3)).right
-      result <- Right(taskResult._2.copy(revision = revision)).right
-      unit <- Right(updateItemsIndex(taskResult._1, result)).right
-    } yield result
+    withTx {
+      implicit neo4j =>
+        for {
+          taskResult <- putExistingLimitedExtendedItem(owner, taskUUID, limitedTask, ItemLabel.TASK).right
+          revision <- Right(evaluateTaskRevision(Task(limitedTask), taskResult._1, taskResult._3)).right
+          result <- Right(taskResult._2.copy(revision = revision)).right
+          unit <- Right(updateItemsIndex(taskResult._1, result)).right
+        } yield result
+    }
   }
 
   def getTask(owner: Owner, taskUUID: UUID): Response[Task] = {
@@ -106,11 +108,14 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
   }
 
   def deleteTask(owner: Owner, taskUUID: UUID, rm: Option[ReminderModification]): Response[DeleteItemResult] = {
-    for {
-      taskNode <- validateExtendedItemModifiable(owner, taskUUID, ItemLabel.TASK, rm.isDefined).right
-      deleteTaskResult <- deleteTaskNode(owner, taskNode, rm).right
-      unit <- Right(updateItemsIndex(deleteTaskResult._1, deleteTaskResult._2.result)).right
-    } yield deleteTaskResult._2
+    withTx {
+      implicit neo =>
+        for {
+          taskNode <- validateExtendedItemModifiable(owner, taskUUID, ItemLabel.TASK, rm.isDefined).right
+          deleteTaskResult <- deleteTaskNode(owner, taskNode, rm).right
+          unit <- Right(updateItemsIndex(deleteTaskResult._1, deleteTaskResult._2.result)).right
+        } yield deleteTaskResult._2
+    }
   }
 
   def undeleteTask(owner: Owner, taskUUID: UUID, rm: Option[ReminderModification]): Response[SetResult] = {
@@ -186,13 +191,10 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
 
   // PRIVATE
 
-  protected def putNewLimitedTaskNode(owner: Owner, limitedTask: LimitedTask): Response[(Node, SetResult, OwnerNodes)] = {
-    withTx {
-      implicit neo4j =>
-        for {
-          taskResult <- putNewLimitedExtendedItem(owner, limitedTask, ItemLabel.TASK).right
-        } yield taskResult
-    }
+  protected def putNewLimitedTaskNode(owner: Owner, limitedTask: LimitedTask)(implicit neo4j: DatabaseService): Response[(Node, SetResult, OwnerNodes)] = {
+    for {
+      taskResult <- putNewLimitedExtendedItem(owner, limitedTask, ItemLabel.TASK).right
+    } yield taskResult
   }
 
   override def toTask(taskNode: Node, owner: Owner)(implicit neo4j: DatabaseService): Response[Task] = {
@@ -233,75 +235,66 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     } yield task
   }
 
-  protected def markTaskNodeComplete(owner: Owner, taskNode: Node, rm: Option[ReminderModification]): Response[(Node, Long)] = {
-    withTx {
-      implicit neo =>
-        for {
-          completed <- markTaskNodeComplete(owner, taskNode).right
-          unit <- modifyReminder(taskNode, rm).right
-        } yield (taskNode, completed)
-    }
+  protected def markTaskNodeComplete(owner: Owner, taskNode: Node, rm: Option[ReminderModification])(implicit neo4j: DatabaseService): Response[(Node, Long)] = {
+    for {
+      completed <- markTaskNodeComplete(owner, taskNode).right
+      unit <- modifyReminder(taskNode, rm).right
+    } yield (taskNode, completed)
   }
 
   protected def markTaskNodeComplete(owner: Owner, taskNode: Node)(implicit neo4j: DatabaseService): Response[Long] = {
-    withTx {
-      implicit neo4j =>
-        val currentTime = System.currentTimeMillis()
-        taskNode.setProperty("completed", currentTime)
-        Right(currentTime)
-    }
+    val currentTime = System.currentTimeMillis()
+    taskNode.setProperty("completed", currentTime)
+    Right(currentTime)
   }
 
-  protected def evaluateRepeating(owner: Owner, taskNode: Node): Response[Option[Task]] = {
-    withTx {
-      implicit neo =>
-        if (taskNode.hasProperty("repeating")) {
+  protected def evaluateRepeating(owner: Owner, taskNode: Node)(implicit neo4j: DatabaseService): Response[Option[Task]] = {
+    if (taskNode.hasProperty("repeating")) {
 
-          val ownerNodesResult = getOwnerNodes(owner)
-          if (ownerNodesResult.isRight){
-            val ownerNodes = ownerNodesResult.right.get
-            // Generate new task on complete if a new task has not already been created
-            val originRelationshipResponse = getItemRelationship(taskNode, ownerNodes, ItemRelationship.HAS_ORIGIN, ItemLabel.TASK, Direction.INCOMING)
-            if (originRelationshipResponse.isEmpty){
-              // First, get new due string
-              val repeatingType = RepeatingType.withName(taskNode.getProperty("repeating").asInstanceOf[String])
-              val oldDue: java.util.Calendar = java.util.Calendar.getInstance();
+      val ownerNodesResult = getOwnerNodes(owner)
+      if (ownerNodesResult.isRight){
+        val ownerNodes = ownerNodesResult.right.get
+        // Generate new task on complete if a new task has not already been created
+        val originRelationshipResponse = getItemRelationship(taskNode, ownerNodes, ItemRelationship.HAS_ORIGIN, ItemLabel.TASK, Direction.INCOMING)
+        if (originRelationshipResponse.isEmpty){
+          // First, get new due string
+          val repeatingType = RepeatingType.withName(taskNode.getProperty("repeating").asInstanceOf[String])
+          val oldDue: java.util.Calendar = java.util.Calendar.getInstance();
 
-              Validators.dateFormat.parse(taskNode.getProperty("due").asInstanceOf[String])
+          Validators.dateFormat.parse(taskNode.getProperty("due").asInstanceOf[String])
 
-              val dueDate = java.time.LocalDate.parse(taskNode.getProperty("due").asInstanceOf[String], Validators.dateFormat)
-              val newDue = repeatingType match {
-                case RepeatingType.DAILY => dueDate.plus(1, ChronoUnit.DAYS)
-                case RepeatingType.WEEKLY => dueDate.plus(7, ChronoUnit.DAYS)
-                case RepeatingType.BIWEEKLY => dueDate.plus(14, ChronoUnit.DAYS)
-                case RepeatingType.MONTHLY => dueDate.plus(1, ChronoUnit.MONTHS)
-                case RepeatingType.BIMONTHLY => dueDate.plus(2, ChronoUnit.MONTHS)
-                case RepeatingType.YEARLY => dueDate.plus(1, ChronoUnit.YEARS)
-              }
-              val newDueString = Validators.dateFormat.format(newDue)
-
-              // Second, duplicate old task
-              val oldTask = for {
-                task <- toCaseClass[Task](taskNode).right
-                completeTask <- addTransientTaskProperties(taskNode, ownerNodes, task).right
-              } yield completeTask
-              if (oldTask.isLeft) Left(oldTask.left.get)
-              else {
-                Right(Some(oldTask.right.get.copy(uuid = None, modified = None, due = Some(newDueString))))
-              }
-            }
-            else{
-              // A new task has already been created
-              Right(None)
-            }
-          }else{
-            Left(ownerNodesResult.left.get)
+          val dueDate = java.time.LocalDate.parse(taskNode.getProperty("due").asInstanceOf[String], Validators.dateFormat)
+          val newDue = repeatingType match {
+            case RepeatingType.DAILY => dueDate.plus(1, ChronoUnit.DAYS)
+            case RepeatingType.WEEKLY => dueDate.plus(7, ChronoUnit.DAYS)
+            case RepeatingType.BIWEEKLY => dueDate.plus(14, ChronoUnit.DAYS)
+            case RepeatingType.MONTHLY => dueDate.plus(1, ChronoUnit.MONTHS)
+            case RepeatingType.BIMONTHLY => dueDate.plus(2, ChronoUnit.MONTHS)
+            case RepeatingType.YEARLY => dueDate.plus(1, ChronoUnit.YEARS)
           }
+          val newDueString = Validators.dateFormat.format(newDue)
 
-        } else {
-          // Not a repeating task
+          // Second, duplicate old task
+          val oldTask = for {
+            task <- toCaseClass[Task](taskNode).right
+            completeTask <- addTransientTaskProperties(taskNode, ownerNodes, task).right
+          } yield completeTask
+          if (oldTask.isLeft) Left(oldTask.left.get)
+          else {
+            Right(Some(oldTask.right.get.copy(uuid = None, modified = None, due = Some(newDueString))))
+          }
+        }
+        else{
+          // A new task has already been created
           Right(None)
         }
+      }else{
+        Left(ownerNodesResult.left.get)
+      }
+
+    } else {
+      // Not a repeating task
+      Right(None)
     }
   }
 
@@ -411,14 +404,11 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     if (taskNode.hasProperty("completed")) taskNode.removeProperty("completed")
   }
 
-  protected def deleteTaskNode(owner: Owner, taskNode: Node, rm: Option[ReminderModification]): Response[(Node, DeleteItemResult)] = {
-    withTx {
-      implicit neo =>
-        for {
-          deleted <- Right(deleteItem(taskNode)).right
-          unit <- modifyReminder(taskNode, rm).right
-        } yield (taskNode, deleted)
-    }
+  protected def deleteTaskNode(owner: Owner, taskNode: Node, rm: Option[ReminderModification])(implicit neo4j: DatabaseService): Response[(Node, DeleteItemResult)] = {
+    for {
+      deleted <- Right(deleteItem(taskNode)).right
+      unit <- modifyReminder(taskNode, rm).right
+    } yield (taskNode, deleted)
   }
 
   protected def modifyReminder(taskNode: Node, rm: Option[ReminderModification])(implicit neo4j: DatabaseService): Response[Option[SetResult]] = {
@@ -457,16 +447,13 @@ trait TaskDatabase extends AbstractGraphDatabase with ItemDatabase {
     }
   }
 
-  protected def evaluateTaskRevision(task: Task, taskNode: Node, ownerNodes: OwnerNodes, force: Boolean = false): Option[Long] = {
-    withTx {
-      implicit neo4j =>
-        evaluateNeedForRevision(task.revision, taskNode, ownerNodes, force).flatMap(latestRevisionRel => {
-          // Create a revision containing only the fields that can be set using putExistingTask
-          val taskBytes = pickleTask(getTaskForPickling(task))
-          val revisionNode = createExtendedItemRevision(taskNode, ownerNodes, ItemLabel.TASK, taskBytes, latestRevisionRel)
-          Some(revisionNode.getProperty("number").asInstanceOf[Long])
-        })
-    }
+  protected def evaluateTaskRevision(task: Task, taskNode: Node, ownerNodes: OwnerNodes, force: Boolean = false)(implicit neo4j: DatabaseService): Option[Long] = {
+    evaluateNeedForRevision(task.revision, taskNode, ownerNodes, force).flatMap(latestRevisionRel => {
+      // Create a revision containing only the fields that can be set using putExistingTask
+      val taskBytes = pickleTask(getTaskForPickling(task))
+      val revisionNode = createExtendedItemRevision(taskNode, ownerNodes, ItemLabel.TASK, taskBytes, latestRevisionRel)
+      Some(revisionNode.getProperty("number").asInstanceOf[Long])
+    })
   }
 
   private def getTaskForPickling(task: Task): Task = {
