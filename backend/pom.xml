@@ -366,7 +366,7 @@
               <name>quay.io/extendedmind/backend</name>
               <alias>backend</alias>
               <build>
-                <from>quay.io/extendedmind/openjdk:openjdk-8u121</from>
+                <from>quay.io/extendedmind/openjdk:openjdk-8u151-4</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
                 <tags>
                   <tag>latest</tag>
@@ -406,7 +406,7 @@
               <name>quay.io/extendedmind/backend-discovery</name>
               <alias>backend-discovery</alias>
               <build>
-                <from>quay.io/extendedmind/tar-curl-rsync:tcr-4</from>
+                <from>quay.io/extendedmind/tar-curl-rsync:tcr-5</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
                 <tags>
                   <tag>latest</tag>
@@ -429,7 +429,7 @@
               <name>quay.io/extendedmind/backend-backup</name>
               <alias>backend-backup</alias>
               <build>
-                <from>quay.io/extendedmind/cloudsdk:cloudsdk-155.0.0-3</from>
+                <from>quay.io/extendedmind/cloudsdk:cloudsdk-204.0.0-2</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
                 <tags>
                   <tag>latest</tag>
@@ -456,7 +456,7 @@
               <name>quay.io/extendedmind/backend-restore</name>
               <alias>backend-restore</alias>
               <build>
-                <from>quay.io/extendedmind/cloudsdk:cloudsdk-155.0.0-3</from>
+                <from>quay.io/extendedmind/cloudsdk:cloudsdk-204.0.0-2</from>
                 <maintainer>timo.tiuraniemi@iki.fi</maintainer>
                 <tags>
                   <tag>latest</tag>
