@@ -39,7 +39,7 @@ class EmbeddedGraphDatabase(implicit val settings: Settings)
     if (settings.neo4jPropertiesFile.isEmpty){
       val configMap = new scala.collection.mutable.HashMap[String, String]()
       configMap.put("dbms.backup.address", "0.0.0.0:6362")
-      if (settings.operationMode == HA_BOOTSTRAP || 
+      if (settings.operationMode == HA_BOOTSTRAP ||
           settings.operationMode == HA){
         // No config file but HA, use settings as Neo4j properties source
         configMap.put("dbms.mode", "HA")
@@ -49,7 +49,7 @@ class EmbeddedGraphDatabase(implicit val settings: Settings)
       }else{
         configMap.put("dbms.mode", "SINGLE")
       }
-      configMap.put("dbms.allow_format_migration", settings.formatMigration.toString)
+      configMap.put("dbms.allow_upgrade", settings.formatMigration.toString)
       configMap.toMap
     }else{
       null
@@ -57,7 +57,7 @@ class EmbeddedGraphDatabase(implicit val settings: Settings)
   }
 
   override def graphDatabaseFactory = {
-    if (settings.operationMode == HA_BOOTSTRAP || 
+    if (settings.operationMode == HA_BOOTSTRAP ||
         settings.operationMode == HA){
       new HighlyAvailableGraphDatabaseFactory()
     }else{
