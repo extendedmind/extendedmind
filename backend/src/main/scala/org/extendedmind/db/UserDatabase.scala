@@ -239,9 +239,19 @@ trait UserDatabase extends OwnerDatabase {
   }
 
   def acceptAgreement(acceptCode: Long, proposedToEmail: String): Response[SetResult] = {
-    for {
-      result <- acceptAgreementNode(acceptCode, proposedToEmail).right
-    } yield result
+    withTx {
+      implicit neo4j =>
+        for {
+          proposedToNode <- getUserNode(proposedToEmail).right
+          agreementNode <- getAgreementNodeForAcceptance(proposedToNode, acceptCode).right
+          unit <- acceptAgreementNode(proposedToNode, agreementNode).right
+          agreementInformation <- getAgreementInformation(agreementNode, proposedToNode, false).right
+          result <- Right(updateNodeModified(agreementInformation.agreement, includeUuid = true)).right
+          concerningSetResult <- Right(updateNodeModified(agreementInformation.concerning)).right
+          unit <- Right(if (agreementInformation.agreementType == "list") // Update items index with new list modified
+                      updateItemsIndex(agreementInformation.concerning, concerningSetResult)).right
+        } yield result
+    }
   }
 
   def getOwnerStatistics(uuid: UUID): Response[NodeStatistics] = {
@@ -994,22 +1004,6 @@ trait UserDatabase extends OwnerDatabase {
   private def saveAgreementAcceptInformation(agreementNode: Node, acceptCode: Long, emailId: String)(implicit neo4j: DatabaseService){
     agreementNode.setProperty("acceptCode", acceptCode)
     agreementNode.setProperty("acceptEmailId", emailId)
-  }
-
-  protected def acceptAgreementNode(acceptCode: Long, proposedToEmail: String): Response[SetResult] = {
-    withTx {
-      implicit neo4j =>
-        for {
-          proposedToNode <- getUserNode(proposedToEmail).right
-          agreementNode <- getAgreementNodeForAcceptance(proposedToNode, acceptCode).right
-          unit <- acceptAgreementNode(proposedToNode, agreementNode).right
-          agreementInformation <- getAgreementInformation(agreementNode, proposedToNode, false).right
-          result <- Right(updateNodeModified(agreementInformation.agreement)).right
-          concerningSetResult <- Right(updateNodeModified(agreementInformation.concerning)).right
-          unit <- Right(if (agreementInformation.agreementType == "list") // Update items index with new list modified
-                      updateItemsIndex(agreementInformation.concerning, concerningSetResult)).right
-        } yield result
-    }
   }
 
   private def getAgreementNodeForAcceptance(proposedToNode: Node, acceptCode: Long)(implicit neo4j: DatabaseService): Response[Node] = {

@@ -326,7 +326,7 @@ trait ListDatabase extends UserDatabase with TagDatabase {
     })
     listNode.removeProperty("archived")
     // Mark the tag as deleted
-    Right((childNodes, setNodeModified(listNode, modifiedTimestamp), deleteItem(historyTag)))
+    Right((childNodes, setNodeModified(listNode, modifiedTimestamp), deleteItem(historyTag, includeUuid = true)))
   }
 
   protected def validateListDeletable(listNode: Node, agreementNodes: Option[scala.List[Node]])(implicit neo4j: DatabaseService): Response[Unit] = {

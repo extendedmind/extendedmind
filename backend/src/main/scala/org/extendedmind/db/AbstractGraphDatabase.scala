@@ -289,9 +289,10 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     }
   }
 
-  protected def updateNodeModified(node: Node)(implicit neo4j: DatabaseService): SetResult = {
+  protected def updateNodeModified(node: Node, includeUuid: Boolean = false)(implicit neo4j: DatabaseService): SetResult = {
+    val uuid = if (includeUuid) Some(getUUID(node)) else None
     val timestamp: Long = System.currentTimeMillis()
-    setNodeModified(node, timestamp)
+    setNodeModified(node, timestamp).copy(uuid = uuid)
   }
 
   protected def setNodeModified(node: Node, timestamp: Long, skipOlderModified: Boolean = false)(implicit neo4j: DatabaseService): SetResult = {
@@ -469,11 +470,12 @@ abstract class AbstractGraphDatabase extends Neo4jWrapper {
     else ownerNodes.user
   }
 
-  protected def deleteItem(itemNode: Node)(implicit neo4j: DatabaseService): DeleteItemResult = {
+  protected def deleteItem(itemNode: Node, includeUuid: Boolean = false)(implicit neo4j: DatabaseService): DeleteItemResult = {
+    val uuid = if (includeUuid) Some(getUUID(itemNode)) else None
     if (itemNode.hasProperty("deleted")) {
-      DeleteItemResult(itemNode.getProperty("deleted").asInstanceOf[Long], SetResult(None, None, itemNode.getProperty("modified").asInstanceOf[Long]))
+      DeleteItemResult(itemNode.getProperty("deleted").asInstanceOf[Long], SetResult(uuid, None, itemNode.getProperty("modified").asInstanceOf[Long]))
     } else {
-      val result = updateNodeModified(itemNode)
+      val result = updateNodeModified(itemNode).copy(uuid = uuid)
       itemNode.setProperty("deleted", result.modified)
       DeleteItemResult(result.modified, result)
     }

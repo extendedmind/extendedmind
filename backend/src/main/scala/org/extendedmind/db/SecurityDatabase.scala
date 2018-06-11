@@ -250,7 +250,7 @@ trait SecurityDatabase extends AbstractGraphDatabase with UserDatabase {
         for {
           userNode <- getUserNode(email).right
           emailVerified <- verifyEmail(code, userNode).right
-          result <- Right(updateNodeModified(userNode)).right
+          result <- Right(updateNodeModified(userNode, includeUuid = true)).right
         } yield result
     }
   }
