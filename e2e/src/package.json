@@ -4,11 +4,11 @@
   "description": "Extended Mind E2E tests",
   "private": true,
   "devDependencies": {
-    "jsdom": "^9.11.0",
-    "protractor": "^4.0.14",
+    "jsdom": "^11.11.0",
+    "protractor": "^5.3.2",
     "visualreview-protractor": "^0.3.0",
-    "request": "^2.79.0",
-    "q": "^1.4.1"
+    "request": "^2.87.0",
+    "q": "^1.5.1"
   },
   "scripts": {
     "test": "./node_modules/protractor/bin/protractor test/protractor-live-conf.js",

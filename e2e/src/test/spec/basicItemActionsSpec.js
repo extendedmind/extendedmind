@@ -91,9 +91,9 @@ describe('extended mind items', function() {
         element(by.xpath(h.XPATH_RECURRING_FINISH)).click();
 
         // VERIFY THAT CONVERTING WORKED
-        expect(browser.driver.isElementPresent(testItemLinkXpath)).toBeFalsy();
-        expect(browser.driver.isElementPresent(secondItemLinkXpath)).toBeFalsy();
-        expect(browser.driver.isElementPresent(fourthItemLinkXpath)).toBeFalsy();
+        expect(element(testItemLinkXpath).isPresent()).toBeFalsy();
+        expect(element(secondItemLinkXpath).isPresent()).toBeFalsy();
+        expect(element(fourthItemLinkXpath).isPresent()).toBeFalsy();
         expect(thirdItemLink.isDisplayed()).toBeTruthy();
 
         // DELETE AND UNDELETE

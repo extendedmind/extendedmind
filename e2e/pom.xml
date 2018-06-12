@@ -236,7 +236,7 @@
             </goals>
             <configuration>
               <target name="unzip-database">
-                <unzip src="target/neo4j-test.zip" dest="target/docker-dirs/backend-data" />
+                <unzip src="target/neo4j-test.zip" dest="target/docker-dirs/backend-data/neo4j" />
               </target>
             </configuration>
           </execution>
@@ -335,7 +335,19 @@
                   <arg>/app/backend/lib/*</arg>
                   <arg>org.extendedmind.Server</arg>
                 </cmd>
-             </run>
+              </run>
+            </image>
+            <image>
+              <name>quay.io/extendedmind/app</name>
+              <alias>app</alias>
+              <run>
+                <namingStrategy>alias</namingStrategy>
+                <volumes>
+                  <bind>
+                    <volume>${project.build.directory}/docker-dirs/site-public/assets:/app/site-public/assets</volume>
+                  </bind>
+                </volumes>
+              </run>
             </image>
             <image>
               <name>quay.io/extendedmind/site-static</name>
@@ -368,7 +380,7 @@
               </run>
             </image>
             <image>
-              <name>quay.io/extendedmind/nginx:nginx-1.13.0-1</name>
+              <name>quay.io/extendedmind/nginx:nginx-1.15.0</name>
               <alias>nginx</alias>
               <run>
                 <namingStrategy>alias</namingStrategy>

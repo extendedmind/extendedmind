@@ -2,7 +2,8 @@
 
 const request = require('request');
 const fs = require('fs');
-const jsdom = require('jsdom').jsdom;
+var jsdom = require('jsdom');
+const { JSDOM } = jsdom;
 
 const waitForUrlToChangeTo = function (newUrl, timeout) {
   let currentUrl;
@@ -77,8 +78,8 @@ const readSentEmail = function(emailDirectory, emailFileName){
   } catch (e) {
     htmlFileContent = fs.readFileSync(emailDirectory + '/' + emailFileName, 'utf-8');
   }
-  var domContent = jsdom(htmlFileContent);
-  return domContent;
+  const { document } = (new JSDOM(htmlFileContent)).window;
+  return document;
 };
 
 exports.waitForUrlToChangeTo = waitForUrlToChangeTo;

@@ -57,7 +57,7 @@ describe('extended mind lists', function() {
         favoriteLink.click();
         element(by.xpath(h.XPATH_EDITOR_CLOSE.replace('${ItemType}', 'List'))).click();
         listsLink.click();
-        expect(browser.driver.isElementPresent(favoriteListMenuLinkXpath)).toBeFalsy();
+        expect(element(favoriteListMenuLinkXpath).isPresent()).toBeFalsy();
 
         // DELETE AND UNDELETE
         secondTestListLink.click();
@@ -102,7 +102,7 @@ describe('extended mind lists', function() {
         expect(secondTestListLink.isDisplayed()).toBeTruthy();
         activeToArchivedLink.click();
         browser.driver.sleep(h.SWIPER_ANIMATION_SPEED);
-        expect(browser.driver.isElementPresent(archivedSecondTestListLinkXpath)).toBeFalsy();
+        expect(element(archivedSecondTestListLinkXpath).isPresent()).toBeFalsy();
         const archivedToActiveLink = element(by.xpath(h.XPATH_LISTS_ARCHIVED_SLIDE +
                                                      h.XPATH_FOOTER_NAVIGATION_LINK.replace('${linkText}', 'active')));
         archivedToActiveLink.click();
@@ -136,7 +136,7 @@ describe('extended mind lists', function() {
         convertToNoteLink.click();
         element(by.xpath(h.XPATH_EDITOR_CLOSE.replace('${ItemType}', 'Note'))).click();
         listsLink.click();
-        expect(browser.driver.isElementPresent(listThatIsANoteLinkXpath)).toBeFalsy();
+        expect(element(listThatIsANoteLinkXpath).isPresent()).toBeFalsy();
         const listThatIsATaskLinkXpath = by.xpath(h.XPATH_LISTS_ACTIVE_SLIDE +
                                                    h.XPATH_LINK_LIST_ITEM.replace('${linkText}', 'list that is a task'));
         const listThatIsATaskLink = element(listThatIsATaskLinkXpath);
@@ -150,7 +150,7 @@ describe('extended mind lists', function() {
         convertToTaskLink.click();
         element(by.xpath(h.XPATH_EDITOR_CLOSE.replace('${ItemType}', 'Task'))).click();
         listsLink.click();
-        expect(browser.driver.isElementPresent(listThatIsATaskLinkXpath)).toBeFalsy();
+        expect(element(listThatIsATaskLinkXpath).isPresent()).toBeFalsy();
 
         // OPEN MENU AND NAVIGATE TO TASKS AND NOTES AND VERIFY PRESENCE OF CONVERTED LISTS
         const tasksLink = element(by.xpath(h.XPATH_MENU_LINK.replace('${linkText}', 'tasks')));

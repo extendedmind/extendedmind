@@ -98,7 +98,7 @@ describe('extended mind tasks', function() {
                                                    h.XPATH_LINK_ITEM.replace('${linkText}', 'note')));
         convertToNoteLink.click();
         element(by.xpath(h.XPATH_EDITOR_CLOSE.replace('${ItemType}', 'Note'))).click();
-        expect(browser.driver.isElementPresent(taskThatIsANoteLinkXpath)).toBeFalsy();
+        expect(element(taskThatIsANoteLinkXpath).isPresent()).toBeFalsy();
 
         const taskThatIsAListLinkXpath = by.xpath(h.XPATH_FOCUS_TASKS_TODAY_SLIDE +
                                                    h.XPATH_UNCOMPLETED_TASK.replace('${linkText}', 'task that is a list'));
@@ -111,7 +111,7 @@ describe('extended mind tasks', function() {
                                                    h.XPATH_LINK_ITEM.replace('${linkText}', 'list')));
         convertToListLink.click();
         element(by.xpath(h.XPATH_EDITOR_CLOSE.replace('${ItemType}', 'List'))).click();
-        expect(browser.driver.isElementPresent(taskThatIsAListLinkXpath)).toBeFalsy();
+        expect(element(taskThatIsAListLinkXpath).isPresent()).toBeFalsy();
 
         // OPEN MENU AND NAVIGATE TO NOTES AND LISTS AND VERIFY PRESENCE OF CONVERTED TASKS
         const menuButton = element(by.xpath(h.XPATH_MENU_BUTTON));

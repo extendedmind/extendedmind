@@ -59,7 +59,7 @@ describe('extended mind notes', function() {
         const unfavoriteLink = element(by.xpath(h.XPATH_NOTE_EDITOR_BASIC_SLIDE + h.XPATH_LINK_SWIPER_CLICK.replace('${clickMethod}', 'clickFavorite()')));
         unfavoriteLink.click();
         element(by.xpath(h.XPATH_EDITOR_CLOSE.replace('${ItemType}', 'Note'))).click();
-        expect(browser.driver.isElementPresent(firstFavoriteNoteInStarredLinkXpath)).toBeFalsy();
+        expect(element(firstFavoriteNoteInStarredLinkXpath).isPresent()).toBeFalsy();
         notesLink.click();
         const firstFavoriteTestNoteLink = element(by.xpath(h.XPATH_NOTES_CONTENT +
                                                    h.XPATH_LINK_LIST_ITEM.replace('${linkText}', 'first test note is my favorite')));
@@ -93,7 +93,7 @@ describe('extended mind notes', function() {
                                                    h.XPATH_LINK_ITEM.replace('${linkText}', 'task')));
         convertToTaskLink.click();
         element(by.xpath(h.XPATH_EDITOR_CLOSE.replace('${ItemType}', 'Task'))).click();
-        expect(browser.driver.isElementPresent(noteThatIsATaskLinkXpath)).toBeFalsy();
+        expect(element(noteThatIsATaskLinkXpath).isPresent()).toBeFalsy();
 
         const noteThatIsAListLinkXpath = by.xpath(h.XPATH_NOTES_CONTENT +
                                                    h.XPATH_LINK_LIST_ITEM.replace('${linkText}', 'note that is a list'));
@@ -106,7 +106,7 @@ describe('extended mind notes', function() {
                                                    h.XPATH_LINK_ITEM.replace('${linkText}', 'list')));
         convertToListLink.click();
         element(by.xpath(h.XPATH_EDITOR_CLOSE.replace('${ItemType}', 'List'))).click();
-        expect(browser.driver.isElementPresent(noteThatIsAListLinkXpath)).toBeFalsy();
+        expect(element(noteThatIsAListLinkXpath).isPresent()).toBeFalsy();
 
         // OPEN MENU AND NAVIGATE TO TASKS AND LISTS AND VERIFY PRESENCE OF CONVERTED TASKS
         const tasksLink = element(by.xpath(h.XPATH_MENU_LINK.replace('${linkText}', 'tasks')));
