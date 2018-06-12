@@ -5,8 +5,8 @@
   "private": true,
   "dependencies": {
     "google-fonts-offline": "^0.1.2"
-   },
+  },
   "scripts": {
-    "prepare": "goofoffline outDir=./static/fonts 'http://fonts.googleapis.com/css?family=Source+Sans+Pro:bold,regular'"
+    "prepare": "goofoffline outDir=./static/fonts 'http://fonts.googleapis.com/css?family=Source+Sans+Pro:bold,regular,400italic,700italic'"
   }
-} 
+}

@@ -21,7 +21,7 @@ spec:
           mountPath: "/etc/nginx/sites-enabled"
       containers:
       - name: nginx
-        image: quay.io/extendedmind/nginx:nginx-1.13.0-1
+        image: quay.io/extendedmind/nginx:nginx-1.15.0
         ports:
         - name: web
           containerPort: 8008

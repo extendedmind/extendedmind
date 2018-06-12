@@ -165,7 +165,7 @@
             </goals>
             <phase>generate-resources</phase>
             <configuration>
-              <nodeVersion>${node.version}</nodeVersion>
+              <nodeVersion>v8.11.2</nodeVersion>
             </configuration>
           </execution>
           <execution>
