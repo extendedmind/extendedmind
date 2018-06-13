@@ -15,7 +15,7 @@ spec:
       restartPolicy: Never
       initContainers:
       - name: site-static-prepare
-        image: quay.io/extendedmind/tar-curl-rsync:tcr-4
+        image: quay.io/extendedmind/tar-curl-rsync:tcr-5
         command: ["/bin/bash"]
         args:
         - "-c"
