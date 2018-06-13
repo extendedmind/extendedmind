@@ -1,0 +1,6 @@
+db:
+  provisioner: k8s.io/minikube-hostpath
+  # type: pd-ssd
+files:
+  provisioner: k8s.io/minikube-hostpath
+  # type: pd-ssd

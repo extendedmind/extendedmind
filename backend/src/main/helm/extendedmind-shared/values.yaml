@@ -1,0 +1,3 @@
+# By default, 90 mebibytes of shared RW disk space 
+nfs:
+  volumeSize: 90Mi
