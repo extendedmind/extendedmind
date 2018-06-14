@@ -175,7 +175,7 @@
                   <type>test-jar</type>
                   <overWrite>true</overWrite>
                   <outputDirectory>${project.build.directory}</outputDirectory>
-                  <includes>*.zip, testData.properties</includes>
+                  <includes>*.tar.gz, testData.properties</includes>
                 </artifactItem>
                 <artifactItem>
                   <groupId>org.extendedmind.e2e</groupId>
@@ -237,7 +237,7 @@
             </goals>
             <configuration>
               <target name="unzip-database">
-                <unzip src="target/neo4j-test.zip" dest="target/docker-dirs/backend-data/neo4j" />
+                <untar src="target/neo4j-test.tar.gz" dest="target/docker-dirs/backend-data/neo4j" compression="gzip" />
               </target>
             </configuration>
           </execution>

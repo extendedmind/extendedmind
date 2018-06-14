@@ -1,6 +1,4 @@
-{{ if .Values.useCronJobs }}
-# CronJobs are alpha features until Kubernetes 1.7,
-apiVersion: batch/v2alpha1
+apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: backend-backup
@@ -37,40 +35,3 @@ spec:
               path: {{ .Values.backup.hostPath }}
 {{ end }}
   schedule: '0 * * * *'
-
-{{ else }}
-# As a workaround, create a normal deployment that runs cron inside the docker image
-apiVersion: apps/v1beta1
-kind: Deployment
-metadata:
-  name: backend-cron-dep
-spec:
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        app: extendedmind
-        tier: backend
-        role: cron
-        project: backend
-        group: org.extendedmind
-    spec:
-      containers:
-      - name: backend-cron
-        image: quay.io/extendedmind/backend-backup:{{ .Values.backendBackupVersion }}
-        command: ["/bin/bash"]
-        args:
-        - "-c"
-        - "mkdir /etc/periodic/1min && echo \"#!/bin/sh\ncd /app/backend-backup\n./backend-backup.sh backend.default.svc.cluster.local {{ .Values.backup.location }} {{ .Values.backup.days }} {{ .Values.fsPreCommand }} > /var/log/backend-backup.log\" > /etc/periodic/{{ .Values.backup.frequency }}/backend-backup && chmod a+x /etc/periodic/{{ .Values.backup.frequency }}/backend-backup &&  echo \"#!/bin/sh\ncurl -d '{\\\"priority\\\":2}' -H 'Content-Type:application/json' --silent backend.default.svc.cluster.local:8081/v2/tick\" > /etc/periodic/hourly/tick_hourly && echo \"#!/bin/sh\ncurl -d '{\\\"priority\\\":3}' -H 'Content-Type:application/json' --silent backend.default.svc.cluster.local:8081/v2/tick\" > /etc/periodic/daily/tick_daily && chmod a+x /etc/periodic/hourly/* && chmod a+x /etc/periodic/daily/* && (crontab -l ; echo \"*/1     *       *       *       *       run-parts /etc/periodic/1min\") | crontab - && crond -l 8 -f -d 8"
-{{ if .Values.backup.hostPath }}
-        volumeMounts:
-        - name: backupdir
-          mountPath: "/app/backend-backup-data"
-{{ end }}
-{{ if .Values.backup.hostPath }}
-      volumes:
-      - name: backupdir
-        hostPath:
-          path: {{ .Values.backup.hostPath }}
-{{ end }}
-{{ end }}

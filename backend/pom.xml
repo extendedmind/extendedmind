@@ -233,12 +233,6 @@
       <version>1.9.5</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.zeroturnaround</groupId>
-      <artifactId>zt-zip</artifactId>
-      <type>jar</type>
-      <scope>test</scope>
-    </dependency>
 
   </dependencies>
 

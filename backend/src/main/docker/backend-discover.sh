@@ -27,7 +27,7 @@ echo "dbms.backup.enabled=true" >> $NEO4J_PROPS
 echo "dbms.backup.address=0.0.0.0:6362" >> $NEO4J_PROPS
 
 if [ "$HA" = false ]; then 
-  echo "dbms.allow_upgrade=rue" >> $NEO4J_PROPS
+  echo "dbms.allow_upgrade=true" >> $NEO4J_PROPS
 else
   # TODO: Use actual "replicas" value from kubernetes #31218
   echo "HA: assuming exactly 3 nodes"

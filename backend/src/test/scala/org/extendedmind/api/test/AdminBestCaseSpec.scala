@@ -35,10 +35,7 @@ import org.mockito.Matchers.{ eq => mockEq }
 import scaldi.Module
 import spray.http.BasicHttpCredentials
 import spray.http.HttpHeaders.Authorization
-import org.zeroturnaround.zip.ZipUtil
 import java.io.File
-import org.zeroturnaround.zip.FileUtil
-import org.apache.commons.io.FileUtils
 import org.extendedmind.api.JsonImplicits._
 import spray.httpx.SprayJsonSupport._
 import spray.httpx.marshalling._
