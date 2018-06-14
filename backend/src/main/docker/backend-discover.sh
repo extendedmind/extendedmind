@@ -33,7 +33,7 @@ else
   echo "HA: assuming exactly 3 nodes"
   HOSTS=backend-0.backend-internal.default.svc.cluster.local:5001,backend-1.backend-internal.default.svc.cluster.local:5001,backend-2.backend-internal.default.svc.cluster.local:5001
   PF=2
-  echo "dbms.mode=ha" >> $NEO4J_PROPS
+  echo "dbms.mode=HA" >> $NEO4J_PROPS
   echo "ha.server_id=$SERVER_ID" >> $NEO4J_PROPS
   echo "ha.initial_hosts=$HOSTS" >> $NEO4J_PROPS
   echo "ha.tx_push_factor=$PF" >> $NEO4J_PROPS

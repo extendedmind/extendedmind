@@ -5,6 +5,8 @@ metadata:
 spec:
   replicas: {{ .Values.backendReplicas }}
   serviceName: backend-internal
+  updateStrategy:
+    type: RollingUpdate
   template:
     metadata:
       annotations:
@@ -86,6 +88,8 @@ spec:
           - {{ .Values.operationMode | quote }}
           - {{ .Values.fsPreCommand | quote }}
         volumeMounts: 
+        - name: confdir
+          mountPath: "/app/backend-conf"
         - name: datadir
           mountPath: "/app/backend-data"
   {{ if .Values.restore.hostPath }}
@@ -121,18 +125,12 @@ spec:
             initialDelaySeconds: 60
             periodSeconds: 30
             timeoutSeconds: 10
-{{ if .Values.operationMode }}
-  {{ if eq .Values.operationMode "HA" }}
-          # NOTE: We need to wait for Kuberenetes issue #41015 to resolve for
-          # this to work, because there is now way to properly update statefulset parameters.
           readinessProbe:
             httpGet:
               path: /v2/ha/ready
               port: api
             initialDelaySeconds: 10
             timeoutSeconds: 5
-  {{ end }}
-{{ end }}
       volumes:
         - name: confdir
           emptyDir: {}

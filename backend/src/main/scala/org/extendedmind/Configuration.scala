@@ -39,6 +39,7 @@ import akka.actor.ActorRefFactory
 import com.typesafe.config.ConfigFactory
 import com.vdurmont.semver4j.Semver
 import com.vdurmont.semver4j.Semver.SemverType
+import akka.actor.ActorSystem
 
 // Combined custom settings from application.conf or overridden file, and version.conf which is always inside the generated jar
 
@@ -197,9 +198,10 @@ object SettingsExtension extends ExtensionId[Settings] with ExtensionIdProvider{
 
 // Scaldi default configuration
 
-class Configuration(settings: Settings, actorRefFactory: ActorRefFactory) extends Module{
+class Configuration(settings: Settings, actorRefFactory: ActorRefFactory, actorSystem: ActorSystem) extends Module{
   implicit val implSettings = settings
   implicit val implActorRefFactory = actorRefFactory
+  implicit val implActorSystem = actorSystem
   bind [GraphDatabase] to new EmbeddedGraphDatabase
   bind [MailClient] to {
     settings.emailProvider match {

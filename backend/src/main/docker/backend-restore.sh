@@ -7,7 +7,7 @@ then
 fi
 
 if [ "$3" = "HA_BOOTSTRAP" ]; then
-  SERVER_ID=$(cat /app/backend-conf/neo4j.properties | grep ha.server_id= | cut -d\'=\' -f 2)
+  SERVER_ID=$(cat /app/backend-conf/neo4j.properties | grep ha.server_id= | cut -d'=' -f 2)
 elif [ "$3" = "SINGLE" ]; then
   SERVER_ID=1
 else

@@ -57,7 +57,7 @@ class SecurityBestCaseSpec extends ServiceSpecBase {
     bind[MailClient] to mockMailClient
   }
 
-  override def configurations = TestDataGeneratorConfiguration :: new Configuration(settings, actorRefFactory)
+  override def configurations = TestDataGeneratorConfiguration :: new Configuration(settings, actorRefFactory, actorSystem)
 
   before {
     db.insertTestData()

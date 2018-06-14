@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2013-2017 Extended Mind Technologies Oy
+ * Copyright (c) 2011-2017 Extended Mind Technologies Oy
  *
  * This file is part of Extended Mind.
  *
@@ -46,6 +46,9 @@ import akka.event._
 import scala.collection.JavaConverters._
 
 object Service {
+
+  final val FAILURE_STATUS_RESPONSE = "{\"status\":false}"
+
   def rejectionHandler: RejectionHandler = {
     RejectionHandler.apply {
       case AuthenticationFailedRejection(cause, authenticator) :: _ =>
@@ -71,6 +74,9 @@ object Service {
         if (e.code.number == ERR_BASE_WRONG_EXPECTED_MODIFIED.number){
           log.error("Status code: " + Conflict + ", Error code: " + e.code.number + ", Description: " + e.description + " @" + currentTime)
           ctx.complete(Conflict, ErrorResult(e.code.number, e.description, currentTime))
+        } else if (e.code.number == ERR_BASE_HA_FAILURE.number){
+          // Don't log an error as these are to expected
+          ctx.complete(NotFound, FAILURE_STATUS_RESPONSE)
         }else{
           log.error("Status code: " + BadRequest + ", Error code: " + e.code.number + ", Description: " + e.description + " @" + currentTime)
           ctx.complete(BadRequest, ErrorResult(e.code.number, e.description, currentTime))
@@ -102,7 +108,7 @@ class ServiceActor extends HttpServiceActor with Service {
 
   // Implement abstract field from Service
   def settings = SettingsExtension(context.system)
-  def configurations = new Configuration(settings, actorRefFactory)
+  def configurations = new Configuration(settings, actorRefFactory, context.system)
 
   // LOGGING WITH MDC
 
@@ -140,10 +146,14 @@ class ServiceActor extends HttpServiceActor with Service {
   implicit def implExceptionHandler = Service.exceptionHandler
 
   override def preStart = {
+    log.debug("actor system preStart begin..");
     // Load database on start
-    if (!adminActions.loadDatabase){
-      throw new RuntimeException("Could not load database")
+    val futureLoadResponse = adminActions.loadDatabase
+    futureLoadResponse onSuccess {
+      case false => throw new RuntimeException("Could not load database")
+      case true => log.info("loadDatabase success")
     }
+    log.debug("...actor system preStart end");
   }
 
   // this actor only runs our route, but you could add
@@ -170,6 +180,8 @@ trait Service extends AdminService
 
   import JsonImplicits._
   implicit val implTick = jsonFormat1(Tick.apply)
+
+  final val SUCCESS_STATUS_RESPONSE = "{\"status\":true}"
 
   val route = {
     v2GetRoot {
@@ -208,36 +220,48 @@ trait Service extends AdminService
         }
       }
     } ~
-    v2GetHAReady { ctx =>
-      val haStatus = adminActions.getHAStatus
-      val ready: Boolean = settings.operationMode match {
-        case HA_BOOTSTRAP => {
-          (haStatus == "master" || haStatus == "slave" || haStatus == "pending")
-        }
-        case HA => {
-          (haStatus == "master" || haStatus == "slave")
-        }
-        case SINGLE => {
-          (haStatus == "master")
-        }
+    v2GetHAReady { url =>
+      complete {
+        adminActions.getHAStatus.map(haStatus => {
+           val ready: Boolean = settings.operationMode match {
+             case HA_BOOTSTRAP => {
+               (haStatus == "master" || haStatus == "slave" || haStatus == "pending")
+             }
+             case HA => {
+               (haStatus == "master" || haStatus == "slave")
+             }
+             case SINGLE => {
+               (haStatus == "master")
+             }
+          }
+          if (ready) processResult(SUCCESS_STATUS_RESPONSE)
+          else throw new InvalidParameterException(ERR_BASE_HA_FAILURE, "HA not ready")
+        })
       }
-      if (ready) ctx.complete(200, "true")
-      else ctx.complete(NotFound, "false");
     } ~
-    v2GetHAAvailable { ctx =>
-      val haStatus = adminActions.getHAStatus
-      if (haStatus == "master" || haStatus == "slave") ctx.complete(200, "true")
-      else ctx.complete(NotFound, "false")
+    v2GetHAAvailable { url =>
+      complete {
+        adminActions.getHAStatus.map(haStatus => {
+          if (haStatus == "master" || haStatus == "slave") processResult(SUCCESS_STATUS_RESPONSE)
+          else throw new InvalidParameterException(ERR_BASE_HA_FAILURE, "HA not available")
+        })
+      }
     } ~
-    v2GetHAMaster { ctx =>
-      val haStatus = adminActions.getHAStatus
-      if (haStatus == "master") ctx.complete(200, "true")
-      else ctx.complete(NotFound, "false")
+    v2GetHAMaster { url =>
+      complete {
+        adminActions.getHAStatus.map(haStatus => {
+          if (haStatus == "master") processResult(SUCCESS_STATUS_RESPONSE)
+          else throw new InvalidParameterException(ERR_BASE_HA_FAILURE, "HA not master")
+        })
+      }
     } ~
-    v2GetHASlave { ctx =>
-      val haStatus = adminActions.getHAStatus
-      if (haStatus == "slave") ctx.complete(200, "true")
-      else ctx.complete(NotFound, "false")
+    v2GetHASlave { url =>
+      complete {
+        adminActions.getHAStatus.map(haStatus => {
+          if (haStatus == "slave") processResult(SUCCESS_STATUS_RESPONSE)
+          else throw new InvalidParameterException(ERR_BASE_HA_FAILURE, "HA not slave")
+        })
+      }
     } ~ adminRoutes ~ securityRoutes ~ ownerRoutes ~ userRoutes ~ collectiveRoutes ~ itemRoutes ~ taskRoutes ~ noteRoutes ~ listRoutes ~ tagRoutes ~ inviteRoutes
   }
 }

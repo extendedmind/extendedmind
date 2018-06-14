@@ -30,11 +30,20 @@ import java.util.UUID
 import akka.event.LoggingAdapter
 import org.neo4j.kernel.ha.HighlyAvailableGraphDatabase
 import org.neo4j.kernel.ha.cluster.HighAvailabilityMemberState
+import scala.concurrent.Future
+import scala.concurrent.duration._
+import akka.actor.ActorRefFactory
+import scala.concurrent.Await
+import akka.actor.ActorSystem
 
 trait AdminActions {
 
   def db: GraphDatabase;
   def settings: Settings
+
+  def actorSystem: ActorSystem
+  implicit val implicitActorSystem = actorSystem
+  implicit val implicitExecutionContext = actorSystem.dispatcher
 
   def getStatistics()(implicit log: LoggingAdapter): Response[Statistics] = {
     log.info("getStatistics")
@@ -98,9 +107,9 @@ trait AdminActions {
     db.setOwnerProperty(uuid, property.key, property.stringValue, property.longValue)
   }
 
-  def loadDatabase(implicit log: LoggingAdapter): Boolean = {
+  def loadDatabase(implicit log: LoggingAdapter): Future[Boolean] = {
     log.info("loadDatabase")
-    db.loadDatabase
+    Future { db.loadDatabase }
   }
 
   def shutdown(implicit log: LoggingAdapter): Unit = {
@@ -136,16 +145,26 @@ trait AdminActions {
     }
   }
 
-  def getHAStatus: String = {
-    if (settings.operationMode == HA_BOOTSTRAP || 
+  def getHAStatus(implicit log: LoggingAdapter): Future[String] = {
+    if (settings.operationMode == HA_BOOTSTRAP ||
         settings.operationMode == HA){
-      val state = db.ds.gds.asInstanceOf[HighlyAvailableGraphDatabase].getInstanceState
-      if (state == HighAvailabilityMemberState.MASTER) "master"
-      else if (state == HighAvailabilityMemberState.SLAVE) "slave"
-      else if (state == HighAvailabilityMemberState.PENDING) "pending"
-      else "none"
+      // Get the state, of default to pending after 200 milliseconds
+      val stateFuture: Future[HighAvailabilityMemberState] = Future { db.ds.gds.asInstanceOf[HighlyAvailableGraphDatabase].getInstanceState }
+      val defaultStateFuture: Future[HighAvailabilityMemberState] = akka.pattern.after(200 millis, using = actorSystem.scheduler)(Future { HighAvailabilityMemberState.PENDING })
+
+      (Future firstCompletedOf Seq(stateFuture, defaultStateFuture)).map(state => {
+        if (state == HighAvailabilityMemberState.MASTER) "master"
+        else if (state == HighAvailabilityMemberState.SLAVE) "slave"
+        else if (state == HighAvailabilityMemberState.PENDING ||
+                 state == HighAvailabilityMemberState.TO_MASTER ||
+                 state == HighAvailabilityMemberState.TO_SLAVE) "pending"
+        else {
+          log.info("Neo4j HA statue " + state.toString() + ", returning state none")
+          "none"
+        }
+      })
     }else{
-      "master"
+      Future { "master" }
     }
   }
 
@@ -163,8 +182,9 @@ trait AdminActions {
   }
 }
 
-class AdminActionsImpl(implicit val implSettings: Settings, implicit val inj: Injector)
+class AdminActionsImpl(implicit val implSettings: Settings, implicit val inj: Injector, implicit val implActorSystem: ActorSystem)
   extends AdminActions with Injectable {
   override def settings  = implSettings
   def db = inject[GraphDatabase]
+  override def actorSystem = implActorSystem
 }

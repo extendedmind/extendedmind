@@ -52,7 +52,7 @@ class AdminBestCaseSpec extends ServiceSpecBase {
     bind[GraphDatabase] to db
   }
 
-  override def configurations = TestDataGeneratorConfiguration :: new Configuration(settings, actorRefFactory)
+  override def configurations = TestDataGeneratorConfiguration :: new Configuration(settings, actorRefFactory, actorSystem)
 
   before {
     db.insertTestData()
@@ -452,6 +452,25 @@ class AdminBestCaseSpec extends ServiceSpecBase {
         writeJsonOutput("ownerStatisticsResponse", responseAs[String])
       }
     }
+    it("should successfully get HA status with GET to /v2/ha/ready, /v2/ha/available, /v2/ha/master and /v2/ha/slave") {
+      Get("/v2/ha/ready") ~> route ~> check {
+        val status = responseAs[String]
+        status should include("true")
+      }
+      Get("/v2/ha/available") ~> route ~> check {
+        val response = responseAs[String]
+        response should include("true")
+      }
+      Get("/v2/ha/master") ~> route ~> check {
+        val response = responseAs[String]
+        response should include("true")
+      }
+      Get("/v2/ha/slave") ~> route ~> check {
+        val response = responseAs[String]
+        status should be (NotFound)
+        response should include("false")
+      }
+    }
     it("should successfully put version info with POST to /v2/admin/update_version " +
        "and get it back without authentication from GET to /v2/info and GET to /v2/update") {
       Get("/v2/info") ~> route ~> check {
@@ -600,5 +619,8 @@ class AdminBestCaseSpec extends ServiceSpecBase {
       }
     }
   }
+
+
+
 
 }

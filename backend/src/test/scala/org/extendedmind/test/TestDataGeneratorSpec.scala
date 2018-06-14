@@ -55,7 +55,8 @@ import org.apache.commons.compress.utils.IOUtils
  */
 class TestDataGeneratorSpec extends SpraySpecBase {
 
-  val TEST_DATA_STORE = "target/neo4j-test-database"
+  val TEST_DATA_DIRECTORY = "target/neo4j-test-database"
+  val TEST_DATA_STORE = TEST_DATA_DIRECTORY + "/neo4j"
   val EXPORT_TEST_DATA_STORE = "target/neo4j-test"
 
   // Create test database
@@ -75,7 +76,7 @@ class TestDataGeneratorSpec extends SpraySpecBase {
   }
 
   def packNeo4jStore() {
-    createTarFile(TEST_DATA_STORE, db.TEST_DATA_DESTINATION + "/neo4j-test.tar.gz")
+    createTarFile(TEST_DATA_DIRECTORY, db.TEST_DATA_DESTINATION + "/neo4j-test.tar.gz")
     val exportStoreDir = new File(EXPORT_TEST_DATA_STORE)
     val storeDir = new File(TEST_DATA_STORE)
     if (exportStoreDir.exists()) FileUtils.deleteDirectory(exportStoreDir)

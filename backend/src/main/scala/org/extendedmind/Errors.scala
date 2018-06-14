@@ -36,6 +36,7 @@ case object ERR_BASE_HANDLE_EXISTS extends ErrorCode(30)
 case object ERR_BASE_INFO_MORE_THAN_1 extends ErrorCode(31)
 case object ERR_BASE_CAN_NOT_REMOVE_PUBLISHED_HANDLE extends ErrorCode(32)
 case object ERR_BASE_INVALID_SHORT_ID extends ErrorCode(33)
+case object ERR_BASE_HA_FAILURE extends ErrorCode(34)
 
 case object ERR_COLLECTIVE_NO_FOUNDER extends ErrorCode(1001)
 case object ERR_COLLECTIVE_MORE_THAN_1_FOUNDER extends ErrorCode(1002)

@@ -53,7 +53,7 @@ class NoteBestCaseSpec extends ServiceSpecBase {
     bind[GraphDatabase] to db
   }
 
-  override def configurations = TestDataGeneratorConfiguration :: new Configuration(settings, actorRefFactory)
+  override def configurations = TestDataGeneratorConfiguration :: new Configuration(settings, actorRefFactory, actorSystem)
 
   before {
     db.insertTestData()
