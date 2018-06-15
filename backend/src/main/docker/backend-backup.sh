@@ -34,9 +34,9 @@ if [ $IS_AVAILABLE -eq 200 ]; then
     echo "Problems in the backup, errored with $status"
     exit $status
   else
-    cd ..
-    BACKUP_FILE=work/em-$(date +"%Y-%m-%d-%H%M%S").tar.gz
-    tar -zcf $BACKUP_FILE work/neo4j 2>&1 | grep -v 'Removing leading'
+    cd ../work
+    BACKUP_FILE=em-$(date +"%Y-%m-%d-%H%M%S").tar.gz
+    tar -zcf $BACKUP_FILE neo4j 2>&1 | grep -v 'Removing leading'
 
     # When not using a pre-command, such as "gsutil" directories will have to be created
     if [ -z  $FS_PRE_COMMAND ]; then
