@@ -19,11 +19,13 @@ spec:
               image: quay.io/extendedmind/tar-curl-rsync:tcr-5
               command: ["/usr/bin/curl"]
               args:
-              - "-d"
-              - "'{\"priority\":3}'"
               - "-H"
-              - "'Content-Type:application/json'"
+              - "Content-Type: application/json"
+              - "-d"
+              - "{\"priority\":3}"
               - "--silent"
               - "backend.default.svc.cluster.local:8081/v2/tick"
           restartPolicy: Never
   schedule: "0 0 * * *"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
