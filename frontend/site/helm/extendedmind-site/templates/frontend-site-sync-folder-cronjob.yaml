@@ -1,0 +1,45 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: sync-folder
+spec:
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: extendedmind
+            tier: frontend
+            role: sync
+            project: frontend-site
+            group: org.extendedmind.frontend
+        spec:
+          containers:
+            - name: sync-site
+              image: quay.io/extendedmind/sync-folder:{{ .Values.syncFolderVersion }}
+              args:
+              - {{ .Values.sync.source | quote }}
+              - "/app/site-public/extendedmind/files"
+{{ if .Values.fsPreCommand }}
+              - {{ .Values.fsPreCommand | quote }}
+{{ end }}
+              volumeMounts:
+              - name: publicdir
+                mountPath: /app/site-public
+{{ if .Values.sync.hostPath }}
+              - name: sourcedir
+                mountPath: "/app/sync-source"
+{{ end }}
+          restartPolicy: Never
+          volumes:
+          - name: publicdir
+            persistentVolumeClaim:
+              claimName: shared
+{{ if .Values.sync.hostPath }}
+          - name: sourcedir
+            hostPath:
+              path: {{ .Values.sync.hostPath }}
+{{ end }}
+  schedule: '*/1 * * * *'
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1

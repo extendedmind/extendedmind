@@ -1,7 +1,0 @@
-syncFolderVersion: "${project.version}"
-sync:
-  # For testing purposes, this syncs all css static assets to the /files path
-  source: "/app/site-public/assets/static"
-  # Give a possibility to set another echo to the 1min folder
-  extra1minJobContent: ""
-  extra1minJobPipe: ""
