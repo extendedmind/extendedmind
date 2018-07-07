@@ -1,5 +1,6 @@
 operationMode: SINGLE
 dbStorageClass: ${extendedmind.dbStorageClass}
+dbStorageSize: ${extendedmind.dbStorageSize}
 ${extendedmind.fsPreCommandDefinition}
 ${extendedmind.tokenSecretDefition}
 signUpMethod: "${extendedmind.signUpMethod}"

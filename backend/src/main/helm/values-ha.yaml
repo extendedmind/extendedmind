@@ -1,6 +1,7 @@
 operationMode: HA
 backendReplicas: 3
 dbStorageClass: ${extendedmind.dbStorageClass}
+dbStorageSize: ${extendedmind.dbStorageSize}
 ${extendedmind.fsPreCommandDefinition}
 ${extendedmind.tokenSecretDefition}
 signUpMethod: "${extendedmind.signUpMethod}"

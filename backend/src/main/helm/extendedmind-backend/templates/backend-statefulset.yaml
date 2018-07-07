@@ -162,4 +162,4 @@ spec:
       storageClassName: {{ .Values.dbStorageClass }}
       resources:
         requests:
-          storage: 100M
+          storage: {{ .Values.dbStorageSize }}
