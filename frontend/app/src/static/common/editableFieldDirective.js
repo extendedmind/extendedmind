@@ -46,7 +46,7 @@
           element[0].focus();
           if (packaging === 'android-cordova'){
             // In Android we need to force the keyboard up
-            cordova.plugins.Keyboard.show();
+            Keyboard.show();
           }
         }
         // https://developer.mozilla.org/en-US/docs/Web/API/document.activeElement
@@ -116,7 +116,7 @@
           unfocusInProgress = false;
           if (packaging === 'android-cordova'){
             // In Android we need to force the keyboard down
-            cordova.plugins.Keyboard.close();
+            Keyboard.hide();
           }
         }
         if (typeof blurCallback === 'function') blurCallback();

@@ -50,8 +50,8 @@
     <phantomjs.version>2.1.1</phantomjs.version>
     <jetty.version>9.0.4.v20130625</jetty.version>
     <docker.skip>true</docker.skip>
-    <node.version>v10.4.0</node.version>
-    <npm.version>6.1.0</npm.version>
+    <node.version>v10.16.0</node.version>
+    <npm.version>6.9.0</npm.version>
     <!-- Don't collect analytics by default -->
     <extendedmind.analytics>false</extendedmind.analytics>
     <extendedmind.app.package>org.extendedmind</extendedmind.app.package>

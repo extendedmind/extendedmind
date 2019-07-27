@@ -33,7 +33,7 @@
   function omnibarEditorAboutToClose() {
     if (packaging.endsWith('cordova')){
       // In Android and iOS 10 we need to force the keyboard down
-      cordova.plugins.Keyboard.close();
+      Keyboard.hide();
     }
   }
 

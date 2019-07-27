@@ -11,7 +11,7 @@ else
   cd src
 
   # add android platform
-  ./node/node ./node_modules/.bin/cordova platform add android@6.2.1
+  ./node/node ./node_modules/.bin/cordova platform add android@8.0.0
 
   # copy java sources
   if [ -d "platforms/android/src/org/extendedmind/nightly" ]

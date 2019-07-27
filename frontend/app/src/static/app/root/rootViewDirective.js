@@ -462,8 +462,8 @@
       function orientationChanged() {
         var height = window.innerHeight;
 
-        if (cordova && cordova.plugins && cordova.plugins.Keyboard && cordova.plugins.Keyboard.isVisible) {
-          // Height of the open cordova.plugins.Keyboard is not included in window.innerHeight.
+        if (Keyboard && Keyboard.isVisible) {
+          // Height of the open cordova Keyboard is not included in window.innerHeight.
           height += $rootScope.softKeyboard.height;
         }
         scope.$apply(function() {
@@ -482,8 +482,8 @@
         if (!$rootScope.$$phase && !scope.$$phase) scope.$apply();
       }
       if (packaging.endsWith('cordova')) {
-        window.addEventListener('native.keyboardshow', cordovaKeyboardShow);
-        window.addEventListener('native.keyboardhide', cordovaKeyboardHide);
+        window.addEventListener('keyboardDidShow', cordovaKeyboardShow);
+        window.addEventListener('keyboardDidHide', cordovaKeyboardHide);
         window.addEventListener('orientationchange', orientationChanged, false);
       } else {
         window.addEventListener('resize', windowResized, false);
@@ -507,8 +507,8 @@
         previousLayout = undefined;
 
         if (packaging === 'ios-cordova') {
-          window.removeEventListener('native.keyboardshow', cordovaKeyboardShow);
-          window.removeEventListener('native.keyboardhide', cordovaKeyboardHide);
+          window.removeEventListener('keyboardDidShow', cordovaKeyboardShow);
+          window.removeEventListener('keyboardDidHide', cordovaKeyboardHide);
         }
       });
     }

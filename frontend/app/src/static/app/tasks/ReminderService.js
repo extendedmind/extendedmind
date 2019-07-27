@@ -151,7 +151,9 @@
       return modifiedItems;
     },
     clearTriggeredReminders: function() {
-      cordova.plugins.notification.local.clearAll();
+      if (cordova && cordova.plugins && cordova.plugins.notification) {
+        cordova.plugins.notification.local.clearAll();
+      }
     },
     isReminderInThisDevice: function(reminder) {
       if (reminder.packaging === packaging) {

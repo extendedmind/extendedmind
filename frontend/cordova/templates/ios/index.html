@@ -47,8 +47,7 @@
     //
     function onDeviceReady() {
       // Now safe to use device APIs
-      cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
-      cordova.plugins.Keyboard.disableScroll(true);
+      Keyboard.hideFormAccessoryBar(value, successCallback);
       if (navigator && navigator.splashscreen && navigator.splashscreen.hide)
         navigator.splashscreen.hide();
     }
