@@ -76,20 +76,6 @@
       <releases><enabled>true</enabled></releases>
       <snapshots><enabled>false</enabled></snapshots>
     </repository>
-    <repository>
-      <id>extendedmind-releases</id>
-      <name>Extended Mind Releases</name>
-      <url>https://nexus.extendedmind.org/repository/releases</url>
-      <releases><enabled>true</enabled></releases>
-      <snapshots><enabled>false</enabled></snapshots>
-    </repository>
-    <repository>
-      <id>extendedmind-snapshots</id>
-      <name>Extended Mind Snapshots</name>
-      <url>https://nexus.extendedmind.org/repository/snapshots</url>
-      <releases><enabled>false</enabled></releases>
-      <snapshots><enabled>true</enabled></snapshots>
-    </repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>
@@ -97,13 +83,6 @@
       <name>JBoss - Third Party Repository</name>
       <url>https://repository.jboss.org/nexus/content/repositories/thirdparty-releases</url>
       <layout>default</layout>
-      <releases><enabled>true</enabled></releases>
-      <snapshots><enabled>false</enabled></snapshots>
-    </pluginRepository>
-    <pluginRepository>
-      <id>extendedmind-releases</id>
-      <name>Extended Mind Releases</name>
-      <url>https://nexus.extendedmind.org/repository/releases</url>
       <releases><enabled>true</enabled></releases>
       <snapshots><enabled>false</enabled></snapshots>
     </pluginRepository>
@@ -346,20 +325,4 @@
       </plugins>
     </pluginManagement>
   </build>
-  <distributionManagement>
-    <repository>
-      <uniqueVersion>false</uniqueVersion>
-      <id>extendedmind-releases</id>
-      <name>Extended Mind Releases</name>
-      <url>https://nexus.extendedmind.org/repository/releases</url>
-      <layout>default</layout>
-    </repository>
-    <snapshotRepository>
-      <uniqueVersion>true</uniqueVersion>
-      <id>extendedmind-snapshots</id>
-      <name>Extended Mind Snapshots</name>
-      <url>https://nexus.extendedmind.org/repository/snapshots</url>
-      <layout>default</layout>
-    </snapshotRepository>
-  </distributionManagement>
 </project>
