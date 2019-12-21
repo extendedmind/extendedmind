@@ -22,6 +22,10 @@ spec:
         env:
         - name: EXTENDEDMIND_URL
           value: {{ .Values.urlOrigin }}
+        resources:
+          limits:
+            memory: 100Mi
+            cpu: 100m
         volumeMounts:
         - name: publicdir
           mountPath: /app/site-public

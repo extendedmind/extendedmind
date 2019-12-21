@@ -37,6 +37,10 @@ spec:
           mountPath: /etc/nginx/secret
           readOnly: true
 {{ end }}
+        resources:
+          limits:
+            memory: 100Mi
+            cpu: 50m
       volumes:
       - name: enableddir
         emptyDir: {}

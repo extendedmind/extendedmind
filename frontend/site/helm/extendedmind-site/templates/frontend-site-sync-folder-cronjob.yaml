@@ -23,6 +23,10 @@ spec:
 {{ if .Values.fsPreCommand }}
               - {{ .Values.fsPreCommand | quote }}
 {{ end }}
+              resources:
+                limits:
+                  memory: 10Mi
+                  cpu: 10m
               volumeMounts:
               - name: publicdir
                 mountPath: /app/site-public

@@ -26,6 +26,10 @@ spec:
               - "--silent"
               - "backend.default.svc.cluster.local:8081/v2/tick"
           restartPolicy: Never
+          resources:
+            limits:
+              memory: 10Mi
+              cpu: 10m
   schedule: "0 0 * * *"
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 1

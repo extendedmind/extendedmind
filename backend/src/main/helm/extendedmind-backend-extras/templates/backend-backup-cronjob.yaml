@@ -22,6 +22,10 @@ spec:
               - {{ .Values.backup.days | quote }}
               - {{ .Values.fsPreCommand | quote }}
               image: quay.io/extendedmind/backend-backup:{{ .Values.backendBackupVersion }}
+              resources:
+                limits:
+                  memory: 100Mi
+                  cpu: 50m
 {{ if .Values.backup.hostPath }}
               volumeMounts:
               - name: backupdir

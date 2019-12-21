@@ -131,6 +131,10 @@ spec:
               port: api
             initialDelaySeconds: 10
             timeoutSeconds: 5
+          resources:
+            limits:
+              memory: 700Mi
+              cpu: 200m
       volumes:
         - name: confdir
           emptyDir: {}
