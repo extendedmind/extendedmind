@@ -5,3 +5,4 @@ nginxReplicas: 1
 nginxServiceType: NodePort
 # Use this to e.g. add .httsecrets to /etc/nginx/secret
 #nginxSecretName: my-secrets
+frontendNginxResources: {}

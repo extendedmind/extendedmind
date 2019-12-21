@@ -7,3 +7,5 @@ backup:
   days: 14
   frequency: hourly
   location: /app/backend-backup-data
+backendBackupResources: {}
+backendTickResources: {}

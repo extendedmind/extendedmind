@@ -23,9 +23,7 @@ spec:
               - {{ .Values.fsPreCommand | quote }}
               image: quay.io/extendedmind/backend-backup:{{ .Values.backendBackupVersion }}
               resources:
-                limits:
-                  memory: 100Mi
-                  cpu: 50m
+{{ toYaml .Values.backendBackupResourceses | indent 16 }}
 {{ if .Values.backup.hostPath }}
               volumeMounts:
               - name: backupdir

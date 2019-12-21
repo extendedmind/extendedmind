@@ -10,3 +10,5 @@ frontendReplicas: 1
 sync:
   # For testing purposes, this syncs all css static assets to the /files path
   source: "/app/site-public/extendedmind/assets/static"
+frontendSiteResources: {}
+frontendSyncResources: {}

@@ -24,9 +24,7 @@ spec:
               - {{ .Values.fsPreCommand | quote }}
 {{ end }}
               resources:
-                limits:
-                  memory: 10Mi
-                  cpu: 10m
+{{ toYaml .Values.frontendSyncResources | indent 16 }}
               volumeMounts:
               - name: publicdir
                 mountPath: /app/site-public

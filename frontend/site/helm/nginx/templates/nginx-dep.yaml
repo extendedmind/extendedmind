@@ -38,9 +38,7 @@ spec:
           readOnly: true
 {{ end }}
         resources:
-          limits:
-            memory: 100Mi
-            cpu: 50m
+{{ toYaml .Values.frontendNginxResources | indent 10 }}
       volumes:
       - name: enableddir
         emptyDir: {}

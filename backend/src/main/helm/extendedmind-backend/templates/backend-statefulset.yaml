@@ -132,9 +132,7 @@ spec:
             initialDelaySeconds: 10
             timeoutSeconds: 5
           resources:
-            limits:
-              memory: 700Mi
-              cpu: 200m
+{{ toYaml .Values.backendResourceses | indent 12 }}
       volumes:
         - name: confdir
           emptyDir: {}
