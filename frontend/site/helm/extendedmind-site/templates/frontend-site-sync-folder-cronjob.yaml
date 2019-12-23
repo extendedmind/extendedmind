@@ -42,6 +42,6 @@ spec:
             hostPath:
               path: {{ .Values.sync.hostPath }}
 {{ end }}
-  schedule: '*/1 * * * *'
+  schedule: {{ .Values.sync.cronSchedule | quote }}
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 1
