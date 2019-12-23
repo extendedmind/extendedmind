@@ -29,3 +29,12 @@ storageClass:
   ## Set a StorageClass name
   ## Ignored if storageClass.create is false
   name: nfs
+
+# Resources
+resources:
+  limits:
+    cpu: 50m
+    memory: 100Mi
+  requests:
+    cpu: 50m
+    memory: 100Mi
