@@ -17,6 +17,8 @@ spec:
           containers:
             - name: backend-tick-daily
               image: quay.io/extendedmind/tar-curl-rsync:tcr-5
+              resources:
+{{ toYaml .Values.backendTickResources | indent 16 }}
               command: ["/usr/bin/curl"]
               args:
               - "-H"
@@ -26,8 +28,6 @@ spec:
               - "--silent"
               - "backend.default.svc.cluster.local:8081/v2/tick"
           restartPolicy: Never
-          resources:
-{{ toYaml .Values.backendTickResources | indent 12 }}
   schedule: "0 0 * * *"
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 1

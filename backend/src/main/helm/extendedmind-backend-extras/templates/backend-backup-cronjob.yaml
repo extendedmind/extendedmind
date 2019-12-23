@@ -23,7 +23,7 @@ spec:
               - {{ .Values.fsPreCommand | quote }}
               image: quay.io/extendedmind/backend-backup:{{ .Values.backendBackupVersion }}
               resources:
-{{ toYaml .Values.backendBackupResourceses | indent 16 }}
+{{ toYaml .Values.backendBackupResources | indent 16 }}
 {{ if .Values.backup.hostPath }}
               volumeMounts:
               - name: backupdir
