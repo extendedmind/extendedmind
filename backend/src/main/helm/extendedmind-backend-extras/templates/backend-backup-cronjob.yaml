@@ -36,6 +36,6 @@ spec:
             hostPath:
               path: {{ .Values.backup.hostPath }}
 {{ end }}
-  schedule: '5 * * * *'
+  schedule: '10 * * * *'
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 1
