@@ -26,6 +26,7 @@ setup_environment() {
 setup_heap() {
   JAVA_MEMORY_OPTS=()
   if [[ -n "${HEAP_SIZE:-}" ]]; then
+    echo "Setting Java HEAP_SIZE to ${HEAP_SIZE}"
     JAVA_MEMORY_OPTS+=("-Xmx${HEAP_SIZE}")
     JAVA_MEMORY_OPTS+=("-Xms${HEAP_SIZE}")
   fi

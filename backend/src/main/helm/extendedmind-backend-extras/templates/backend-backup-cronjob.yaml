@@ -24,6 +24,11 @@ spec:
               image: quay.io/extendedmind/backend-backup:{{ .Values.backendBackupVersion }}
               resources:
 {{ toYaml .Values.backendBackupResources | indent 16 }}
+{{ if .Values.backendBackupHeapSize }}
+              env:
+              - name: HEAP_SIZE
+                value: {{ .Values.backendBackupHeapSize }}
+{{ end }}
 {{ if .Values.backup.hostPath }}
               volumeMounts:
               - name: backupdir
