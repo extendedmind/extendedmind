@@ -32,7 +32,7 @@ spec:
 {{ end }}
 {{ if .Values.backendBackupTempDir }}
               - name: BACKUP_TMPDIR
-                value: {{ .Values.backendBackupTempDir }}
+                value: "/app/backend-backup-tmp"
 {{ end }}
 {{ end }}
 {{ if or .Values.backup.hostPath .Values.backendBackupTempDir }}

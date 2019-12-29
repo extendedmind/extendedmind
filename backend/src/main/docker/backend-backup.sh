@@ -31,7 +31,7 @@ if [ $IS_AVAILABLE -eq 200 ]; then
   BACKUP_LOCATION=$BACKUP_LOCATION_PREFIX/$TODAY/
   echo "Emptying and recreating work directory ${BACKUP_TMPDIR}/work"
   rm -fR ${BACKUP_TMPDIR}/work
-  mkdir ${BACKUP_TMPDIR}/work
+  mkdir -p ${BACKUP_TMPDIR}/work
   cd bin
   ./backend-admin-neo4j.sh backup --backup-dir=${BACKUP_TMPDIR}/work --name=neo4j --from=$BACKEND_HOST:6362
   status=$?
