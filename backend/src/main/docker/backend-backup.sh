@@ -16,6 +16,10 @@ else
   FS_PRE_COMMAND=$4
 fi
 
+if [ -z "${BACKUP_TMPDIR}" ]; then
+  BACKUP_TMPDIR="$( cd "$(dirname "$0")" ; pwd -P )"
+fi
+
 # Add a clean exit trap
 trap 'echo exiting backup script..; exit' SIGINT SIGQUIT SIGTERM
 
@@ -25,16 +29,16 @@ if [ $IS_AVAILABLE -eq 200 ]; then
   echo "Begin full backend backup"
   TODAY=$(date +"%Y-%m-%d")
   BACKUP_LOCATION=$BACKUP_LOCATION_PREFIX/$TODAY/
-  rm -fR work
-  mkdir work
+  rm -fR ${BACKUP_TMPDIR}/work
+  mkdir ${BACKUP_TMPDIR}/work
   cd bin
-  ./backend-admin-neo4j.sh backup --backup-dir=../work --name=neo4j --from=$BACKEND_HOST:6362
+  ./backend-admin-neo4j.sh backup --backup-dir=${BACKUP_TMPDIR}/work --name=neo4j --from=$BACKEND_HOST:6362
   status=$?
   if [ $status -ne 0 ]; then
     echo "Problems in the backup, errored with $status"
     exit $status
   else
-    cd ../work
+    cd ${BACKUP_TMPDIR}/work
     BACKUP_FILE=em-$(date +"%Y-%m-%d-%H%M%S").tar.gz
     tar -zcf $BACKUP_FILE neo4j 2>&1 | grep -v 'Removing leading'
 
