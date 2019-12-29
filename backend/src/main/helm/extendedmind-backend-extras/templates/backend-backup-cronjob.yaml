@@ -24,40 +24,40 @@ spec:
               image: quay.io/extendedmind/backend-backup:{{ .Values.backendBackupVersion }}
               resources:
 {{ toYaml .Values.backendBackupResources | indent 16 }}
-{{ if or .Values.backendBackupHeapSize .Values.backup.tmpDir }}
+{{ if or .Values.backendBackupHeapSize .Values.backendBackupTempDir }}
               env:
 {{ if .Values.backendBackupHeapSize }}
               - name: HEAP_SIZE
                 value: {{ .Values.backendBackupHeapSize }}
 {{ end }}
-{{ if .Values.backup.tmpDir }}
+{{ if .Values.backendBackupTempDir }}
               - name: BACKUP_TMPDIR
-                value: {{ .Values.backup.tmpDir }}
+                value: {{ .Values.backendBackupTempDir }}
 {{ end }}
 {{ end }}
-{{ if or .Values.backup.hostPath .Values.backup.tmpDir }}
+{{ if or .Values.backup.hostPath .Values.backendBackupTempDir }}
               volumeMounts:
 {{ if .Values.backup.hostPath }}
               - name: backupdir
                 mountPath: "/app/backend-backup-data"
 {{ end }}
-{{ if .Values.backup.tmpDir }}
+{{ if .Values.backendBackupTempDir }}
               - name: tmpdir
                 mountPath: "/app/backend-backup-tmp"
 {{ end }}
 {{ end }}
           restartPolicy: Never
-{{ if or .Values.backup.hostPath .Values.backup.tmpDir }}
+{{ if or .Values.backup.hostPath .Values.backendBackupTempDir }}
           volumes:
 {{ if .Values.backup.hostPath }}
           - name: backupdir
             hostPath:
               path: {{ .Values.backup.hostPath }}
 {{ end }}
-{{ if .Values.backup.tmpDir }}
+{{ if .Values.backendBackupTempDir }}
           - name: tmpdir
             hostPath:
-              path: {{ .Values.backup.tmpDir }}
+              path: {{ .Values.backendBackupTempDir }}
 {{ end }}
 {{ end }}
   schedule: '10 * * * *'
