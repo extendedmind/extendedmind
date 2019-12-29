@@ -24,22 +24,41 @@ spec:
               image: quay.io/extendedmind/backend-backup:{{ .Values.backendBackupVersion }}
               resources:
 {{ toYaml .Values.backendBackupResources | indent 16 }}
-{{ if .Values.backendBackupHeapSize }}
+{{ if or .Values.backendBackupHeapSize .Values.backup.tmpDir }}
               env:
+{{ if .Values.backendBackupHeapSize }}
               - name: HEAP_SIZE
                 value: {{ .Values.backendBackupHeapSize }}
 {{ end }}
-{{ if .Values.backup.hostPath }}
+{{ if .Values.backup.tmpDir }}
+              - name: BACKUP_TMPDIR
+                value: {{ .Values.backup.tmpDir }}
+{{ end }}
+{{ end }}
+{{ if or .Values.backup.hostPath .Values.backup.tmpDir }}
               volumeMounts:
+{{ if .Values.backup.hostPath }}
               - name: backupdir
                 mountPath: "/app/backend-backup-data"
 {{ end }}
+{{ if .Values.backup.tmpDir }}
+              - name: tmpdir
+                mountPath: "/app/backend-backup-tmp"
+{{ end }}
+{{ end }}
           restartPolicy: Never
-{{ if .Values.backup.hostPath }}
+{{ if or .Values.backup.hostPath .Values.backup.tmpDir }}
           volumes:
+{{ if .Values.backup.hostPath }}
           - name: backupdir
             hostPath:
               path: {{ .Values.backup.hostPath }}
+{{ end }}
+{{ if .Values.backup.tmpDir }}
+          - name: tmpdir
+            hostPath:
+              path: {{ .Values.backup.tmpDir }}
+{{ end }}
 {{ end }}
   schedule: '10 * * * *'
   successfulJobsHistoryLimit: 1
