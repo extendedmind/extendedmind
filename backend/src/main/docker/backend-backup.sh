@@ -29,6 +29,7 @@ if [ $IS_AVAILABLE -eq 200 ]; then
   echo "Begin full backend backup"
   TODAY=$(date +"%Y-%m-%d")
   BACKUP_LOCATION=$BACKUP_LOCATION_PREFIX/$TODAY/
+  echo "Emptying and recreating work directory ${BACKUP_TMPDIR}/work"
   rm -fR ${BACKUP_TMPDIR}/work
   mkdir ${BACKUP_TMPDIR}/work
   cd bin
