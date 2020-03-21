@@ -17,6 +17,6 @@ spec:
     protocol: TCP
     name: backup
   selector:
+    role: server
     project: backend
     group: org.extendedmind
-    role: server

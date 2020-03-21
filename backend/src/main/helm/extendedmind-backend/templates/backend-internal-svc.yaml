@@ -16,6 +16,6 @@ spec:
   - port: 5001
     name: ha
   selector:
+    role: server
     project: backend
     group: org.extendedmind
-    role: server
