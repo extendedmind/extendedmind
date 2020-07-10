@@ -26,7 +26,13 @@ trap 'echo exiting generate neo4j properties script..; exit' SIGINT SIGQUIT SIGT
 echo "dbms.backup.enabled=true" >> $NEO4J_PROPS
 echo "dbms.backup.address=0.0.0.0:6362" >> $NEO4J_PROPS
 
+# Defaults are 10MiB and 7, which take up many gigabytes of disk space
+echo "metrics.csv.rotation.size=1048576" >> $NEO4J_PROPS
+echo "metrics.csv.rotation.keep_number=2" >> $NEO4J_PROPS
+
 if [ "$HA" = false ]; then 
+  # Metrics for a single node operation are disabled
+  echo "metrics.enabled=false" >> $NEO4J_PROPS
   echo "dbms.allow_upgrade=true" >> $NEO4J_PROPS
 else
   # TODO: Use actual "replicas" value from kubernetes #31218
