@@ -1,5 +1,0 @@
-frontendReplicas: 2
-nginxReplicas: 2
-${extendedmind.fsPreCommandDefinition}
-sync:
-  source: ${extendedmind.nfsSyncSource}

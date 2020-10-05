@@ -1,7 +1,0 @@
-<script src="/static/js/{{ version }}/jquery.waypoints.min.js"></script>
-<script src="/static/js/{{ version }}/infinite.min.js"></script>
-<script>
-var infinite = new Waypoint.Infinite({
-  element: $('.infinite-container')[0],
-  offset: 2
-});

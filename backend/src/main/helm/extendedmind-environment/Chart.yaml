@@ -1,9 +1,0 @@
-name: "extendedmind-environment"
-home: "https://github.com/extendedmind/extendedmind"
-sources:
-- "git@github.com:extendedmind/extendedmind.git"
-version: "1.0"
-description: "Kubernetes environment setup"
-maintainers:
-- name: "Timo Tiuraniemi"
-  email: "timo.tiuraniemi@iki.fi"

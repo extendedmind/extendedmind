@@ -1,8 +1,0 @@
-db:
-  provisioner: ${extendedmind.dbStorageClassProvisioner}
-  ${extendedmind.dbStorageClassProvisionerParameters}
-files:
-  provisioner: ${extendedmind.filesStorageClassProvisioner}
-  ${extendedmind.filesStorageClassProvisionerParameters}
-nfs:
-  volumeSize: ${extendedmind.nfsVolumeSize}

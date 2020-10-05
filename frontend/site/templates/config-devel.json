@@ -1,9 +1,0 @@
-{
-  "version": "${project.version}",
-  "port": 3000,
-  "externalStatic": false,
-  "debug": true,
-  "backend": "http://localhost:3004",
-  "urlOrigin": "http://localhost:3000",
-  "syncTimeTreshold": 3000
-}
