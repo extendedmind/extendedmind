@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft/2019-09/schema#",
+  "description": "Extended Mind Schema",
+  "$ref": "#/definitions/Data",
+  "definitions": {
+    "Data": {
+      "required": [
+        "items",
+        "reminders"
+      ],
+      "properties": {
+        "items": {
+          "description": "Items",
+          "type": "string"
+        },
+        "reminders": {
+          "description": "Reminders",
+          "type": "string"
+        },
+        "ui": {
+          "description": "UI settings",
+          "type": "string"
+        }
+      }
+    }
+  }
+}
