@@ -3,6 +3,33 @@
   "description": "Extended Mind Schema",
   "$ref": "#/definitions/Data",
   "definitions": {
+    "Item": {
+      "required": [
+        "uuid",
+        "title"
+      ],
+      "properties": {
+        "uuid": {
+          "description": "UUID",
+          "type": "string"
+        },
+        "title": {
+          "description": "Title",
+          "type": "string"
+        }
+      }
+    },
+    "Reminder": {
+      "required": [
+        "uuid"
+      ],
+      "properties": {
+        "uuid": {
+          "description": "UUID",
+          "type": "string"
+        }
+      }
+    },
     "Data": {
       "required": [
         "items",
@@ -11,11 +38,17 @@
       "properties": {
         "items": {
           "description": "Items",
-          "type": "string"
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Item"
+          }
         },
         "reminders": {
           "description": "Reminders",
-          "type": "string"
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Reminder"
+          }
         },
         "ui": {
           "description": "UI settings",

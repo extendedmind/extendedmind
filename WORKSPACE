@@ -40,6 +40,8 @@ openapi_repositories(
 )
 
 # Rust
+load("//third_party/cargo:crates.bzl", "raze_fetch_remote_crates")
+raze_fetch_remote_crates()
 http_archive(
     name = "io_bazel_rules_rust",
     sha256 = "618cba29165b7a893960de7bc48510b0fb182b21a4286e1d3dbacfef89ace906",
@@ -50,6 +52,6 @@ http_archive(
     ],
 )
 load("@io_bazel_rules_rust//rust:repositories.bzl", "rust_repositories")
-rust_repositories()
+rust_repositories(version = "1.46.0", edition="2018")
 load("@io_bazel_rules_rust//:workspace.bzl", "rust_workspace")
 rust_workspace()

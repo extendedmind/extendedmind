@@ -3,6 +3,7 @@ package(default_visibility = ["//visibility:public"])
 load("@io_bazel_rules_rust//rust:rust.bzl", "rust_library")
 
 rust_library(
-    name = "engine",
-    srcs = ["//schema:schema_rust"] + glob(["src/**"]),
+    name = "extendedmind_engine",
+    deps = ["//schema:extendedmind_schema_rust"],
+    srcs = glob(["src/**"]),
 )
