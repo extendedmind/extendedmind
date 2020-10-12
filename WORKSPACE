@@ -20,18 +20,14 @@ maven_install(
 )
 
 # OpenAPI
-# http_archive(
-#     name = "openapi_tools_generator_bazel",
-#     sha256 = "720b9cb82687fca4387cdac1f2fd578ef064ec9f039fa5593d297c2bcc7125aa",
-#     strip_prefix = "openapi-generator-bazel-1517b59ff968c823d034684897c243e1d96ee4c5",
-#     urls = [
-#         "https://github.com/ttiurani/openapi-generator-bazel/archive/1517b59ff968c823d034684897c243e1d96ee4c5.tar.gz",
-#     ],
-# )
-# local_repository(name = "openapi_tools_generator_bazel", path = "../openapi-generator-bazel")
-local_repository(
+http_archive(
     name = "io_bazel_rules_openapi",
-    path = "../rules_openapi")
+    sha256 = "85bfdf9e404050994babcefee64a690db0a2365d943b61879c79d34cc5586f5f",
+    strip_prefix = "rules_openapi-28408ea51191bd79ab8ddecde3b434af12ae89d4",
+    urls = [
+        "https://github.com/ttiurani/rules_openapi/archive/28408ea51191bd79ab8ddecde3b434af12ae89d4.tar.gz",
+    ],
+)
 load("@io_bazel_rules_openapi//openapi:openapi.bzl", "openapi_repositories")
 openapi_repositories(
     codegen_cli_provider = "openapi",
