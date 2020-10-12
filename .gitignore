@@ -1,6 +1,12 @@
 # Ignore git
 .git/
 
+# Ignore Bazel Uutput symlinks
+bazel-*
+
+# Ignore Cargo/Maven builds
+target/
+
 # Ignore Eclipse files
 .project
 .classpath
@@ -11,56 +17,5 @@
 # Ignore Sublime Text files
 *.sublime-workspace
 
-# Ignore Maven builds
-target/
-
-# Ignore node and node_modules
-node_modules/
-node/
-
-# Ignore dist folder
-dist/
-
-# Ignore all min.js files
-*.min.js
-*.min.css
-
-# Ignore PhantomJS logs
-phantomjsdriver.log
-
-# Ignore Logback logs
-logs/
-
 # Ignore OSX DS store
 .DS_Store
-
-# Ignore frontend/app
-frontend/app/src/static/fonts/fonts.css
-frontend/app/src/static/fonts/Source+*
-frontend/app/src/static/css/
-frontend/app/src/test/json/
-
-# Ignore frontend/site
-frontend/site/src/package.json
-frontend/site/src/config-devel.json
-frontend/site/src/typings/
-frontend/site/src/public/
-frontend/site/docker/nginx.extendedmind.conf
-frontend/site/docker/nginx.extendedmind.conf
-
-# Ignore frontend/cordova generated directories
-frontend/cordova/src/platforms
-frontend/cordova/src/plugins
-frontend/cordova/src/assets/fonts
-frontend/cordova/src/assets/build
-frontend/cordova/src/www
-frontend/cordova/src/config.xml
-frontend/cordova/src/merges
-
-# Electron
-frontend/electron/src/app/index.html
-frontend/electron/src/app/package.json
-frontend/electron/src/app/static/
-frontend/electron/src/package.json
-frontend/electron/src/Gruntfile.js
-
