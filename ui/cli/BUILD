@@ -12,5 +12,5 @@ rust_test(
     name = "extendedmind_cli_test",
     srcs = ["tests/cli_integration_test.rs"],
     deps = [":extendedmind_cli", "//third_party/cargo:duct"],
-    size="small",
+    size = "small",
 )

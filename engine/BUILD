@@ -15,5 +15,5 @@ rust_library(
 rust_test(
     name = "extendedmind_engine_test",
     crate = ":extendedmind_engine",
-    size="small",
+    size = "small",
 )
