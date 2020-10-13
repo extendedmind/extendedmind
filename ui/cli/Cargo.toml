@@ -1,0 +1,10 @@
+[package]
+name = "extendedmind_cli"
+version = "0.1.0"
+authors = ["Timo Tiuraniemi <timo.tiuraniemi@iki.fi>"]
+
+[dependencies]
+extendedmind_engine = { path = "../../engine" }
+
+[dev-dependencies]
+duct = "0.13.4"

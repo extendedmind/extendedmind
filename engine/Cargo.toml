@@ -7,5 +7,6 @@ version = "0.1.0"
 authors = ["Timo Tiuraniemi <timo.tiuraniemi@iki.fi>"]
 
 [dependencies]
-extendedmind_schema = { path = "../schema" }
+extendedmind_schema_rust = { path = "../schema" }
 automerge-frontend = { git = "https://github.com/ttiurani/automerge-rs.git", rev = "c4230c029b0e20328fe2f5606e5503ffcd2cc964" }
+serde_json = "=1.0.58"

@@ -2,7 +2,7 @@
 path = "target/src/lib.rs"
 
 [package]
-name = "extendedmind_schema"
+name = "extendedmind_schema_rust"
 version = "0.1.0"
 authors = ["Timo Tiuraniemi <timo.tiuraniemi@iki.fi>"]
 
