@@ -8,7 +8,7 @@ fn main() {
     let bazel_build_dir = &format!("{}/../bazel-extendedmind/bazel-out/darwin-fastbuild/bin/schema", current_dir);
     if Command::new("sh")
         .arg("-c")
-        .arg(&format!("mkdir -p target/src \
+        .arg(&format!("rm -rf target/src && mkdir -p target/src \
                       && cp -r {}/models {}/target/src/ \
                       && cp {}/lib.rs {}/target/src/", bazel_build_dir, current_dir, bazel_build_dir, current_dir))
         .stdout(Stdio::inherit())

@@ -1,8 +1,11 @@
+[lib]
+path = "src/lib.rs"
+
 [package]
-name = "extendedmind-engine"
+name = "extendedmind_engine"
 version = "0.1.0"
 authors = ["Timo Tiuraniemi <timo.tiuraniemi@iki.fi>"]
 
 [dependencies]
-serde = { version = "^1.0", features=["derive"] }
-serde_json = "^1.0"
+extendedmind_schema = { path = "../schema" }
+automerge-frontend = { git = "https://github.com/ttiurani/automerge-rs.git", rev = "c4230c029b0e20328fe2f5606e5503ffcd2cc964" }
