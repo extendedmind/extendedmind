@@ -1,0 +1,16 @@
+openapi: 3.0.3
+info:
+  version: 2.0.0
+  title: Extended Mind Schema for OpenApi Generator
+paths:
+  /:
+    get:
+      operationId: getData
+      summary: OpenAPI model generator endpoint
+      responses:
+        '200':
+          description: Data response
+          content:
+            application/json:
+              schema:
+                $ref: "./schema.json#/definitions/Data"

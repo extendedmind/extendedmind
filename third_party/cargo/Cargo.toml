@@ -1,0 +1,20 @@
+# From https://github.com/google/cargo-raze#remote-dependency-mode
+[package]
+name = "compile_with_bazel"
+version = "0.0.0"
+
+# Mandatory (or Cargo tooling is unhappy)
+[lib]
+path = "fake_lib.rs"
+
+[dependencies]
+serde = "=1.0.116"
+serde_derive = "=1.0.116"
+serde_json = "=1.0.58"
+automerge-frontend = { git = "https://github.com/ttiurani/automerge-rs.git", rev = "c4230c029b0e20328fe2f5606e5503ffcd2cc964" }
+duct = "=0.13.4"
+
+[raze]
+workspace_path = "//third_party/cargo"
+genmode = "Remote"
+default_gen_buildrs = true
