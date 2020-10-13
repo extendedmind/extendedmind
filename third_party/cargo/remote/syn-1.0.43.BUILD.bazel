@@ -48,11 +48,13 @@ cargo_build_script(
       "clone-impls",
       "default",
       "derive",
+      "full",
       "parsing",
       "printing",
       "proc-macro",
       "quote",
       "visit",
+      "visit-mut",
     ],
     build_script_env = {
     },
@@ -93,11 +95,13 @@ rust_library(
         "clone-impls",
         "default",
         "derive",
+        "full",
         "parsing",
         "printing",
         "proc-macro",
         "quote",
         "visit",
+        "visit-mut",
     ],
 )
 # Unsupported target "test_asyncness" with type "test" omitted
