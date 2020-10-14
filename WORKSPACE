@@ -48,6 +48,6 @@ http_archive(
     ],
 )
 load("@io_bazel_rules_rust//rust:repositories.bzl", "rust_repositories")
-rust_repositories(version = "1.46.0", edition="2018")
+rust_repositories(version = "1.46.0", edition="2018", rustfmt_version = "1.4.18")
 load("@io_bazel_rules_rust//:workspace.bzl", "rust_workspace")
 rust_workspace()

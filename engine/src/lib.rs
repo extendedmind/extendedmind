@@ -8,7 +8,9 @@ pub struct Engine {
 
 impl Engine {
     pub fn new() -> Engine {
-        Engine { data: Data::new(Vec::new(),Vec::new()) }
+        Engine {
+            data: Data::new(Vec::new(), Vec::new()),
+        }
     }
     pub fn get_data(&self) -> String {
         serde_json::to_string(&self.data).unwrap()
