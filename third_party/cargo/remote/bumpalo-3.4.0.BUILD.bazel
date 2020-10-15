@@ -26,15 +26,15 @@ licenses([
 ])
 
 # Generated targets
-# Unsupported target "channel" with type "test" omitted
+# Unsupported target "alloc_fill" with type "test" omitted
+# Unsupported target "alloc_with" with type "test" omitted
+# Unsupported target "benches" with type "bench" omitted
 
 # buildifier: leave-alone
 rust_library(
-    name = "futures_channel",
+    name = "bumpalo",
     crate_type = "lib",
     deps = [
-        "@raze__futures_core__0_3_6//:futures_core",
-        "@raze__futures_sink__0_3_6//:futures_sink",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/lib.rs",
@@ -42,20 +42,18 @@ rust_library(
     rustc_flags = [
         "--cap-lints=allow",
     ],
-    version = "0.3.6",
+    version = "3.4.0",
     tags = [
         "cargo-raze",
         "manual",
     ],
     crate_features = [
-        "alloc",
         "default",
-        "futures-sink",
-        "sink",
-        "std",
     ],
 )
-# Unsupported target "mpsc" with type "test" omitted
-# Unsupported target "mpsc-close" with type "test" omitted
-# Unsupported target "oneshot" with type "test" omitted
-# Unsupported target "sync_mpsc" with type "bench" omitted
+# Unsupported target "quickchecks" with type "test" omitted
+# Unsupported target "readme_up_to_date" with type "test" omitted
+# Unsupported target "string" with type "test" omitted
+# Unsupported target "tests" with type "test" omitted
+# Unsupported target "try_alloc" with type "test" omitted
+# Unsupported target "vec" with type "test" omitted

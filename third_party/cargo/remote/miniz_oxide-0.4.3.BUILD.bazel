@@ -22,7 +22,7 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT OR Apache-2.0"
+    "notice",  # MIT from expression "MIT OR (Zlib OR Apache-2.0)"
 ])
 
 # Generated targets
@@ -34,30 +34,18 @@ load(
 
 # buildifier: leave-alone
 cargo_build_script(
-    name = "winapi_build_script",
+    name = "miniz_oxide_build_script",
     srcs = glob(["**/*.rs"]),
     crate_root = "build.rs",
-    edition = "2015",
+    edition = "2018",
     # buildifier: leave-alone
     deps = [
+        "@raze__autocfg__1_0_1//:autocfg",
     ],
     rustc_flags = [
         "--cap-lints=allow",
     ],
     crate_features = [
-      "handleapi",
-      "ioapiset",
-      "minwindef",
-      "namedpipeapi",
-      "ntsecapi",
-      "processthreadsapi",
-      "profileapi",
-      "synchapi",
-      "winbase",
-      "winerror",
-      "winnt",
-      "winsock2",
-      "ws2tcpip",
     ],
     build_script_env = {
     },
@@ -66,42 +54,30 @@ cargo_build_script(
         "cargo-raze",
         "manual",
     ],
-    version = "0.3.9",
+    version = "0.4.3",
     visibility = ["//visibility:private"],
 )
 
 
 # buildifier: leave-alone
 rust_library(
-    name = "winapi",
+    name = "miniz_oxide",
     crate_type = "lib",
     deps = [
-        ":winapi_build_script",
+        ":miniz_oxide_build_script",
+        "@raze__adler__0_2_3//:adler",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/lib.rs",
-    edition = "2015",
+    edition = "2018",
     rustc_flags = [
         "--cap-lints=allow",
     ],
-    version = "0.3.9",
+    version = "0.4.3",
     tags = [
         "cargo-raze",
         "manual",
     ],
     crate_features = [
-        "handleapi",
-        "ioapiset",
-        "minwindef",
-        "namedpipeapi",
-        "ntsecapi",
-        "processthreadsapi",
-        "profileapi",
-        "synchapi",
-        "winbase",
-        "winerror",
-        "winnt",
-        "winsock2",
-        "ws2tcpip",
     ],
 )

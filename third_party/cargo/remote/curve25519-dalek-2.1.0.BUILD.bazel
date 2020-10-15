@@ -22,40 +22,37 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT OR Apache-2.0"
+    "notice",  # BSD-3-Clause from expression "BSD-3-Clause"
 ])
 
 # Generated targets
-# Unsupported target "channel" with type "test" omitted
 
 # buildifier: leave-alone
 rust_library(
-    name = "futures_channel",
+    name = "curve25519_dalek",
     crate_type = "lib",
     deps = [
-        "@raze__futures_core__0_3_6//:futures_core",
-        "@raze__futures_sink__0_3_6//:futures_sink",
+        "@raze__byteorder__1_3_4//:byteorder",
+        "@raze__digest__0_8_1//:digest",
+        "@raze__rand_core__0_5_1//:rand_core",
+        "@raze__subtle__2_3_0//:subtle",
+        "@raze__zeroize__1_1_1//:zeroize",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/lib.rs",
-    edition = "2018",
+    edition = "2015",
     rustc_flags = [
         "--cap-lints=allow",
     ],
-    version = "0.3.6",
+    version = "2.1.0",
     tags = [
         "cargo-raze",
         "manual",
     ],
     crate_features = [
         "alloc",
-        "default",
-        "futures-sink",
-        "sink",
         "std",
+        "u64_backend",
     ],
 )
-# Unsupported target "mpsc" with type "test" omitted
-# Unsupported target "mpsc-close" with type "test" omitted
-# Unsupported target "oneshot" with type "test" omitted
-# Unsupported target "sync_mpsc" with type "bench" omitted
+# Unsupported target "dalek_benchmarks" with type "bench" omitted

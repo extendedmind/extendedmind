@@ -26,15 +26,20 @@ licenses([
 ])
 
 # Generated targets
-# Unsupported target "channel" with type "test" omitted
+# Unsupported target "accuracy" with type "test" omitted
+# Unsupported target "backtrace" with type "example" omitted
 
 # buildifier: leave-alone
 rust_library(
-    name = "futures_channel",
+    name = "backtrace",
     crate_type = "lib",
     deps = [
-        "@raze__futures_core__0_3_6//:futures_core",
-        "@raze__futures_sink__0_3_6//:futures_sink",
+        "@raze__addr2line__0_13_0//:addr2line",
+        "@raze__cfg_if__1_0_0//:cfg_if",
+        "@raze__libc__0_2_79//:libc",
+        "@raze__miniz_oxide__0_4_3//:miniz_oxide",
+        "@raze__object__0_21_1//:object",
+        "@raze__rustc_demangle__0_1_17//:rustc_demangle",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/lib.rs",
@@ -42,20 +47,23 @@ rust_library(
     rustc_flags = [
         "--cap-lints=allow",
     ],
-    version = "0.3.6",
+    version = "0.3.53",
     tags = [
         "cargo-raze",
         "manual",
     ],
     crate_features = [
-        "alloc",
+        "addr2line",
         "default",
-        "futures-sink",
-        "sink",
+        "gimli-symbolize",
+        "miniz_oxide",
+        "object",
         "std",
     ],
 )
-# Unsupported target "mpsc" with type "test" omitted
-# Unsupported target "mpsc-close" with type "test" omitted
-# Unsupported target "oneshot" with type "test" omitted
-# Unsupported target "sync_mpsc" with type "bench" omitted
+# Unsupported target "benchmarks" with type "bench" omitted
+# Unsupported target "concurrent-panics" with type "test" omitted
+# Unsupported target "long_fn_name" with type "test" omitted
+# Unsupported target "raw" with type "example" omitted
+# Unsupported target "skip_inner_frames" with type "test" omitted
+# Unsupported target "smoke" with type "test" omitted

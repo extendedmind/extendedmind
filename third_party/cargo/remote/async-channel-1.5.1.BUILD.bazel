@@ -22,19 +22,19 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT OR Apache-2.0"
+    "notice",  # Apache-2.0 from expression "Apache-2.0 OR MIT"
 ])
 
 # Generated targets
-# Unsupported target "channel" with type "test" omitted
 
 # buildifier: leave-alone
 rust_library(
-    name = "futures_channel",
+    name = "async_channel",
     crate_type = "lib",
     deps = [
+        "@raze__concurrent_queue__1_2_2//:concurrent_queue",
+        "@raze__event_listener__2_5_1//:event_listener",
         "@raze__futures_core__0_3_6//:futures_core",
-        "@raze__futures_sink__0_3_6//:futures_sink",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/lib.rs",
@@ -42,20 +42,13 @@ rust_library(
     rustc_flags = [
         "--cap-lints=allow",
     ],
-    version = "0.3.6",
+    version = "1.5.1",
     tags = [
         "cargo-raze",
         "manual",
     ],
     crate_features = [
-        "alloc",
-        "default",
-        "futures-sink",
-        "sink",
-        "std",
     ],
 )
-# Unsupported target "mpsc" with type "test" omitted
-# Unsupported target "mpsc-close" with type "test" omitted
-# Unsupported target "oneshot" with type "test" omitted
-# Unsupported target "sync_mpsc" with type "bench" omitted
+# Unsupported target "bounded" with type "test" omitted
+# Unsupported target "unbounded" with type "test" omitted

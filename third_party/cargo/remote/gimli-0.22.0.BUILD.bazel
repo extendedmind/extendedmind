@@ -22,19 +22,20 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT OR Apache-2.0"
+    "notice",  # Apache-2.0 from expression "Apache-2.0 OR MIT"
 ])
 
 # Generated targets
-# Unsupported target "channel" with type "test" omitted
+# Unsupported target "bench" with type "bench" omitted
+# Unsupported target "convert_self" with type "test" omitted
+# Unsupported target "dwarf-validate" with type "example" omitted
+# Unsupported target "dwarfdump" with type "example" omitted
 
 # buildifier: leave-alone
 rust_library(
-    name = "futures_channel",
+    name = "gimli",
     crate_type = "lib",
     deps = [
-        "@raze__futures_core__0_3_6//:futures_core",
-        "@raze__futures_sink__0_3_6//:futures_sink",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/lib.rs",
@@ -42,20 +43,15 @@ rust_library(
     rustc_flags = [
         "--cap-lints=allow",
     ],
-    version = "0.3.6",
+    version = "0.22.0",
     tags = [
         "cargo-raze",
         "manual",
     ],
     crate_features = [
-        "alloc",
-        "default",
-        "futures-sink",
-        "sink",
-        "std",
+        "read",
     ],
 )
-# Unsupported target "mpsc" with type "test" omitted
-# Unsupported target "mpsc-close" with type "test" omitted
-# Unsupported target "oneshot" with type "test" omitted
-# Unsupported target "sync_mpsc" with type "bench" omitted
+# Unsupported target "parse_self" with type "test" omitted
+# Unsupported target "simple" with type "example" omitted
+# Unsupported target "simple_line" with type "example" omitted

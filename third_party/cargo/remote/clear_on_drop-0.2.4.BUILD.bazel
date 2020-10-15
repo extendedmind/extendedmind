@@ -34,30 +34,18 @@ load(
 
 # buildifier: leave-alone
 cargo_build_script(
-    name = "winapi_build_script",
+    name = "clear_on_drop_build_script",
     srcs = glob(["**/*.rs"]),
     crate_root = "build.rs",
     edition = "2015",
     # buildifier: leave-alone
     deps = [
+        "@raze__cc__1_0_61//:cc",
     ],
     rustc_flags = [
         "--cap-lints=allow",
     ],
     crate_features = [
-      "handleapi",
-      "ioapiset",
-      "minwindef",
-      "namedpipeapi",
-      "ntsecapi",
-      "processthreadsapi",
-      "profileapi",
-      "synchapi",
-      "winbase",
-      "winerror",
-      "winnt",
-      "winsock2",
-      "ws2tcpip",
     ],
     build_script_env = {
     },
@@ -66,17 +54,18 @@ cargo_build_script(
         "cargo-raze",
         "manual",
     ],
-    version = "0.3.9",
+    version = "0.2.4",
     visibility = ["//visibility:private"],
 )
 
+# Unsupported target "clear_on_drop" with type "bench" omitted
 
 # buildifier: leave-alone
 rust_library(
-    name = "winapi",
+    name = "clear_on_drop",
     crate_type = "lib",
     deps = [
-        ":winapi_build_script",
+        ":clear_on_drop_build_script",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/lib.rs",
@@ -84,24 +73,12 @@ rust_library(
     rustc_flags = [
         "--cap-lints=allow",
     ],
-    version = "0.3.9",
+    version = "0.2.4",
     tags = [
         "cargo-raze",
         "manual",
     ],
     crate_features = [
-        "handleapi",
-        "ioapiset",
-        "minwindef",
-        "namedpipeapi",
-        "ntsecapi",
-        "processthreadsapi",
-        "profileapi",
-        "synchapi",
-        "winbase",
-        "winerror",
-        "winnt",
-        "winsock2",
-        "ws2tcpip",
     ],
 )
+# Unsupported target "clear_stack_on_return" with type "bench" omitted

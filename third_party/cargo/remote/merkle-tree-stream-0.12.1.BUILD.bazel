@@ -26,15 +26,16 @@ licenses([
 ])
 
 # Generated targets
-# Unsupported target "channel" with type "test" omitted
+# Unsupported target "async" with type "example" omitted
+# Unsupported target "lib" with type "test" omitted
+# Unsupported target "main" with type "example" omitted
 
 # buildifier: leave-alone
 rust_library(
-    name = "futures_channel",
+    name = "merkle_tree_stream",
     crate_type = "lib",
     deps = [
-        "@raze__futures_core__0_3_6//:futures_core",
-        "@raze__futures_sink__0_3_6//:futures_sink",
+        "@raze__flat_tree__5_0_0//:flat_tree",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/lib.rs",
@@ -42,20 +43,11 @@ rust_library(
     rustc_flags = [
         "--cap-lints=allow",
     ],
-    version = "0.3.6",
+    version = "0.12.1",
     tags = [
         "cargo-raze",
         "manual",
     ],
     crate_features = [
-        "alloc",
-        "default",
-        "futures-sink",
-        "sink",
-        "std",
     ],
 )
-# Unsupported target "mpsc" with type "test" omitted
-# Unsupported target "mpsc-close" with type "test" omitted
-# Unsupported target "oneshot" with type "test" omitted
-# Unsupported target "sync_mpsc" with type "bench" omitted

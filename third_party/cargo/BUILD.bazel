@@ -31,6 +31,15 @@ alias(
 )
 
 alias(
+    name = "hypercore",
+    actual = "@raze__hypercore__0_11_1_beta_10//:hypercore",
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+)
+
+alias(
     name = "serde",
     actual = "@raze__serde__1_0_116//:serde",
     tags = [

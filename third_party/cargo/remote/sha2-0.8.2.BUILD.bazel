@@ -26,36 +26,35 @@ licenses([
 ])
 
 # Generated targets
-# Unsupported target "channel" with type "test" omitted
+# Unsupported target "lib" with type "test" omitted
 
 # buildifier: leave-alone
 rust_library(
-    name = "futures_channel",
+    name = "sha2",
     crate_type = "lib",
     deps = [
-        "@raze__futures_core__0_3_6//:futures_core",
-        "@raze__futures_sink__0_3_6//:futures_sink",
+        "@raze__block_buffer__0_7_3//:block_buffer",
+        "@raze__digest__0_8_1//:digest",
+        "@raze__fake_simd__0_1_2//:fake_simd",
+        "@raze__opaque_debug__0_2_3//:opaque_debug",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/lib.rs",
-    edition = "2018",
+    edition = "2015",
     rustc_flags = [
         "--cap-lints=allow",
     ],
-    version = "0.3.6",
+    version = "0.8.2",
     tags = [
         "cargo-raze",
         "manual",
     ],
     crate_features = [
-        "alloc",
         "default",
-        "futures-sink",
-        "sink",
         "std",
     ],
 )
-# Unsupported target "mpsc" with type "test" omitted
-# Unsupported target "mpsc-close" with type "test" omitted
-# Unsupported target "oneshot" with type "test" omitted
-# Unsupported target "sync_mpsc" with type "bench" omitted
+# Unsupported target "sha256" with type "bench" omitted
+# Unsupported target "sha256sum" with type "example" omitted
+# Unsupported target "sha512" with type "bench" omitted
+# Unsupported target "sha512sum" with type "example" omitted

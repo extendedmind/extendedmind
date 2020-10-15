@@ -34,9 +34,9 @@ load(
 
 # buildifier: leave-alone
 cargo_build_script(
-    name = "winapi_build_script",
+    name = "typenum_build_script",
     srcs = glob(["**/*.rs"]),
-    crate_root = "build.rs",
+    crate_root = "build/main.rs",
     edition = "2015",
     # buildifier: leave-alone
     deps = [
@@ -45,19 +45,6 @@ cargo_build_script(
         "--cap-lints=allow",
     ],
     crate_features = [
-      "handleapi",
-      "ioapiset",
-      "minwindef",
-      "namedpipeapi",
-      "ntsecapi",
-      "processthreadsapi",
-      "profileapi",
-      "synchapi",
-      "winbase",
-      "winerror",
-      "winnt",
-      "winsock2",
-      "ws2tcpip",
     ],
     build_script_env = {
     },
@@ -66,17 +53,18 @@ cargo_build_script(
         "cargo-raze",
         "manual",
     ],
-    version = "0.3.9",
+    version = "1.12.0",
     visibility = ["//visibility:private"],
 )
 
+# Unsupported target "test" with type "test" omitted
 
 # buildifier: leave-alone
 rust_library(
-    name = "winapi",
+    name = "typenum",
     crate_type = "lib",
     deps = [
-        ":winapi_build_script",
+        ":typenum_build_script",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/lib.rs",
@@ -84,24 +72,11 @@ rust_library(
     rustc_flags = [
         "--cap-lints=allow",
     ],
-    version = "0.3.9",
+    version = "1.12.0",
     tags = [
         "cargo-raze",
         "manual",
     ],
     crate_features = [
-        "handleapi",
-        "ioapiset",
-        "minwindef",
-        "namedpipeapi",
-        "ntsecapi",
-        "processthreadsapi",
-        "profileapi",
-        "synchapi",
-        "winbase",
-        "winerror",
-        "winnt",
-        "winsock2",
-        "ws2tcpip",
     ],
 )

@@ -34,10 +34,10 @@ load(
 
 # buildifier: leave-alone
 cargo_build_script(
-    name = "winapi_build_script",
+    name = "wasm_bindgen_shared_build_script",
     srcs = glob(["**/*.rs"]),
     crate_root = "build.rs",
-    edition = "2015",
+    edition = "2018",
     # buildifier: leave-alone
     deps = [
     ],
@@ -45,19 +45,6 @@ cargo_build_script(
         "--cap-lints=allow",
     ],
     crate_features = [
-      "handleapi",
-      "ioapiset",
-      "minwindef",
-      "namedpipeapi",
-      "ntsecapi",
-      "processthreadsapi",
-      "profileapi",
-      "synchapi",
-      "winbase",
-      "winerror",
-      "winnt",
-      "winsock2",
-      "ws2tcpip",
     ],
     build_script_env = {
     },
@@ -66,42 +53,29 @@ cargo_build_script(
         "cargo-raze",
         "manual",
     ],
-    version = "0.3.9",
+    version = "0.2.68",
     visibility = ["//visibility:private"],
 )
 
 
 # buildifier: leave-alone
 rust_library(
-    name = "winapi",
+    name = "wasm_bindgen_shared",
     crate_type = "lib",
     deps = [
-        ":winapi_build_script",
+        ":wasm_bindgen_shared_build_script",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/lib.rs",
-    edition = "2015",
+    edition = "2018",
     rustc_flags = [
         "--cap-lints=allow",
     ],
-    version = "0.3.9",
+    version = "0.2.68",
     tags = [
         "cargo-raze",
         "manual",
     ],
     crate_features = [
-        "handleapi",
-        "ioapiset",
-        "minwindef",
-        "namedpipeapi",
-        "ntsecapi",
-        "processthreadsapi",
-        "profileapi",
-        "synchapi",
-        "winbase",
-        "winerror",
-        "winnt",
-        "winsock2",
-        "ws2tcpip",
     ],
 )

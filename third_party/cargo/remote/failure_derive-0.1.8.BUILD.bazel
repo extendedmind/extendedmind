@@ -34,7 +34,7 @@ load(
 
 # buildifier: leave-alone
 cargo_build_script(
-    name = "winapi_build_script",
+    name = "failure_derive_build_script",
     srcs = glob(["**/*.rs"]),
     crate_root = "build.rs",
     edition = "2015",
@@ -45,19 +45,6 @@ cargo_build_script(
         "--cap-lints=allow",
     ],
     crate_features = [
-      "handleapi",
-      "ioapiset",
-      "minwindef",
-      "namedpipeapi",
-      "ntsecapi",
-      "processthreadsapi",
-      "profileapi",
-      "synchapi",
-      "winbase",
-      "winerror",
-      "winnt",
-      "winsock2",
-      "ws2tcpip",
     ],
     build_script_env = {
     },
@@ -66,17 +53,23 @@ cargo_build_script(
         "cargo-raze",
         "manual",
     ],
-    version = "0.3.9",
+    version = "0.1.8",
     visibility = ["//visibility:private"],
 )
 
+# Unsupported target "backtrace" with type "test" omitted
+# Unsupported target "custom_type_bounds" with type "test" omitted
 
 # buildifier: leave-alone
 rust_library(
-    name = "winapi",
-    crate_type = "lib",
+    name = "failure_derive",
+    crate_type = "proc-macro",
     deps = [
-        ":winapi_build_script",
+        ":failure_derive_build_script",
+        "@raze__proc_macro2__1_0_24//:proc_macro2",
+        "@raze__quote__1_0_7//:quote",
+        "@raze__syn__1_0_44//:syn",
+        "@raze__synstructure__0_12_4//:synstructure",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/lib.rs",
@@ -84,24 +77,14 @@ rust_library(
     rustc_flags = [
         "--cap-lints=allow",
     ],
-    version = "0.3.9",
+    version = "0.1.8",
     tags = [
         "cargo-raze",
         "manual",
     ],
     crate_features = [
-        "handleapi",
-        "ioapiset",
-        "minwindef",
-        "namedpipeapi",
-        "ntsecapi",
-        "processthreadsapi",
-        "profileapi",
-        "synchapi",
-        "winbase",
-        "winerror",
-        "winnt",
-        "winsock2",
-        "ws2tcpip",
     ],
 )
+# Unsupported target "no_derive_display" with type "test" omitted
+# Unsupported target "tests" with type "test" omitted
+# Unsupported target "wraps" with type "test" omitted

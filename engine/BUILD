@@ -9,6 +9,7 @@ rust_library(
         "//schema:extendedmind_schema_rust",
         "//third_party/cargo:automerge_frontend",
         "//third_party/cargo:serde_json",
+        "//third_party/cargo:hypercore",
     ],
     srcs = glob(["src/**"]),
 )
