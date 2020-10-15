@@ -10,6 +10,7 @@ rust_library(
         "//third_party/cargo:automerge_frontend",
         "//third_party/cargo:serde_json",
         "//third_party/cargo:hypercore",
+        "//third_party/cargo:hyperspace_rpc_rs",
     ],
     srcs = glob(["src/**"]),
 )

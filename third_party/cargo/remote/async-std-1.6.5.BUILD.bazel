@@ -35,7 +35,7 @@ rust_library(
     crate_type = "lib",
     deps = [
         "@raze__async_global_executor__1_3_0//:async_global_executor",
-        "@raze__async_io__1_1_10//:async_io",
+        "@raze__async_io__1_1_0//:async_io",
         "@raze__async_mutex__1_4_0//:async_mutex",
         "@raze__blocking__1_0_2//:blocking",
         "@raze__crossbeam_utils__0_7_2//:crossbeam_utils",

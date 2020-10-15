@@ -26,47 +26,19 @@ licenses([
 ])
 
 # Generated targets
-# buildifier: disable=load-on-top
-load(
-    "@io_bazel_rules_rust//cargo:cargo_build_script.bzl",
-    "cargo_build_script",
-)
-
-# buildifier: leave-alone
-cargo_build_script(
-    name = "libc_build_script",
-    srcs = glob(["**/*.rs"]),
-    crate_root = "build.rs",
-    edition = "2015",
-    # buildifier: leave-alone
-    deps = [
-    ],
-    rustc_flags = [
-        "--cap-lints=allow",
-    ],
-    crate_features = [
-      "default",
-      "std",
-    ],
-    build_script_env = {
-    },
-    data = glob(["**"]),
-    tags = [
-        "cargo-raze",
-        "manual",
-    ],
-    version = "0.2.79",
-    visibility = ["//visibility:private"],
-)
-
-# Unsupported target "const_fn" with type "test" omitted
+# Unsupported target "client" with type "example" omitted
+# Unsupported target "find_internet_password" with type "example" omitted
 
 # buildifier: leave-alone
 rust_library(
-    name = "libc",
+    name = "security_framework",
     crate_type = "lib",
     deps = [
-        ":libc_build_script",
+        "@raze__bitflags__1_2_1//:bitflags",
+        "@raze__core_foundation__0_7_0//:core_foundation",
+        "@raze__core_foundation_sys__0_7_0//:core_foundation_sys",
+        "@raze__libc__0_2_76//:libc",
+        "@raze__security_framework_sys__0_4_3//:security_framework_sys",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/lib.rs",
@@ -74,13 +46,12 @@ rust_library(
     rustc_flags = [
         "--cap-lints=allow",
     ],
-    version = "0.2.79",
+    version = "0.4.4",
     tags = [
         "cargo-raze",
         "manual",
     ],
     crate_features = [
-        "default",
-        "std",
     ],
 )
+# Unsupported target "set_internet_password" with type "example" omitted

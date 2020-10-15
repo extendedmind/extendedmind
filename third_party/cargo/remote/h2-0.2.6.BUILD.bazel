@@ -22,20 +22,29 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # Apache-2.0 from expression "Apache-2.0 OR MIT"
+    "notice",  # MIT from expression "MIT"
 ])
 
 # Generated targets
-# Unsupported target "notify" with type "test" omitted
+# Unsupported target "akamai" with type "example" omitted
+# Unsupported target "client" with type "example" omitted
 
 # buildifier: leave-alone
 rust_library(
-    name = "polling",
+    name = "h2",
     crate_type = "lib",
     deps = [
-        "@raze__cfg_if__0_1_10//:cfg_if",
-        "@raze__libc__0_2_79//:libc",
-        "@raze__log__0_4_11//:log",
+        "@raze__bytes__0_5_6//:bytes",
+        "@raze__fnv__1_0_7//:fnv",
+        "@raze__futures_core__0_3_6//:futures_core",
+        "@raze__futures_sink__0_3_6//:futures_sink",
+        "@raze__futures_util__0_3_6//:futures_util",
+        "@raze__http__0_2_1//:http",
+        "@raze__indexmap__1_6_0//:indexmap",
+        "@raze__slab__0_4_2//:slab",
+        "@raze__tokio__0_2_22//:tokio",
+        "@raze__tokio_util__0_3_1//:tokio_util",
+        "@raze__tracing__0_1_21//:tracing",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/lib.rs",
@@ -43,16 +52,12 @@ rust_library(
     rustc_flags = [
         "--cap-lints=allow",
     ],
-    version = "2.0.1",
+    version = "0.2.6",
     tags = [
         "cargo-raze",
         "manual",
     ],
     crate_features = [
-        "default",
-        "std",
     ],
 )
-# Unsupported target "precision" with type "test" omitted
-# Unsupported target "timeout" with type "test" omitted
-# Unsupported target "two-listeners" with type "example" omitted
+# Unsupported target "server" with type "example" omitted
