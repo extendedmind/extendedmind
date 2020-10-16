@@ -744,7 +744,7 @@ def raze_fetch_remote_crates():
         new_git_repository,
         name = "raze__hyperspace_rpc_rs__0_1_0",
         remote = "https://github.com/ttiurani/hyperspace-rpc-rs.git",
-        commit = "ce8c0db50f55df09bc2ca7ab128ddba6a6ba2461",
+        commit = "82fd8f17c1b556fa365f3307df5505251533ab0c",
         build_file = Label("//third_party/cargo/remote:hyperspace-rpc-rs-0.1.0.BUILD.bazel"),
         init_submodules = True,
     )

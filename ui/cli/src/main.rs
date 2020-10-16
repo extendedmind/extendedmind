@@ -1,4 +1,3 @@
-extern crate extendedmind_engine;
 use extendedmind_engine::Engine;
 
 fn main() {

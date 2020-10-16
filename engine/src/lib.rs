@@ -1,5 +1,4 @@
-extern crate extendedmind_schema_rust;
-extern crate serde_json;
+use ::serde_json;
 use extendedmind_schema_rust::models::Data;
 
 pub struct Engine {

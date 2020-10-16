@@ -16,6 +16,7 @@ def _rust_format_srcs_impl(ctx):
         args.add("--")
         args.add(rustfmt_bin.path)
         args.add("--emit", "stdout")
+        args.add("--edition", "2018")
         args.add("--quiet")
         args.add(unformatted_file.path)
         ctx.actions.run(

@@ -819,7 +819,7 @@ dependencies = [
 [[package]]
 name = "hyperspace-rpc-rs"
 version = "0.1.0"
-source = "git+https://github.com/ttiurani/hyperspace-rpc-rs.git?branch=main#ce8c0db50f55df09bc2ca7ab128ddba6a6ba2461"
+source = "git+https://github.com/ttiurani/hyperspace-rpc-rs.git?branch=main#82fd8f17c1b556fa365f3307df5505251533ab0c"
 dependencies = [
  "bytes",
  "protobuf",
