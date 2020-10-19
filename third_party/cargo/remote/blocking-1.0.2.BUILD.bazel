@@ -33,7 +33,7 @@ rust_library(
     crate_type = "lib",
     deps = [
         "@raze__async_channel__1_5_1//:async_channel",
-        "@raze__async_task__4_0_2//:async_task",
+        "@raze__async_task__4_0_3//:async_task",
         "@raze__atomic_waker__1_0_0//:atomic_waker",
         "@raze__fastrand__1_4_0//:fastrand",
         "@raze__futures_lite__1_11_1//:futures_lite",

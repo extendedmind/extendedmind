@@ -46,8 +46,6 @@ rust_library(
         "manual",
     ],
     crate_features = [
-        "default",
-        "std",
     ],
 )
 # Unsupported target "test" with type "test" omitted

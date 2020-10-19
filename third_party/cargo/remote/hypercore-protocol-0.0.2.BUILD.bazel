@@ -1,0 +1,105 @@
+"""
+@generated
+cargo-raze crate build file.
+
+DO NOT EDIT! Replaced on runs of cargo-raze
+"""
+
+# buildifier: disable=load
+load(
+    "@io_bazel_rules_rust//rust:rust.bzl",
+    "rust_binary",
+    "rust_library",
+    "rust_test",
+)
+
+package(default_visibility = [
+    # Public for visibility by "@raze__crate__version//" targets.
+    #
+    # Prefer access through "//third_party/cargo", which limits external
+    # visibility to explicit Cargo.toml dependencies.
+    "//visibility:public",
+])
+
+licenses([
+    "notice",  # MIT from expression "MIT OR Apache-2.0"
+])
+
+# Generated targets
+# buildifier: disable=load-on-top
+load(
+    "@io_bazel_rules_rust//cargo:cargo_build_script.bzl",
+    "cargo_build_script",
+)
+
+# buildifier: leave-alone
+cargo_build_script(
+    name = "hypercore_protocol_build_script",
+    srcs = glob(["**/*.rs"]),
+    crate_root = "build.rs",
+    edition = "2018",
+    # buildifier: leave-alone
+    deps = [
+        "@raze__prost_build__0_6_1//:prost_build",
+    ],
+    rustc_flags = [
+        "--cap-lints=allow",
+    ],
+    crate_features = [
+    ],
+    build_script_env = {
+    },
+    data = glob(["**"]),
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+    version = "0.0.2",
+    visibility = ["//visibility:private"],
+)
+
+# Unsupported target "basic" with type "example" omitted
+# Unsupported target "hypercore" with type "example" omitted
+
+# buildifier: leave-alone
+rust_library(
+    name = "hypercore_protocol",
+    crate_type = "lib",
+    deps = [
+        ":hypercore_protocol_build_script",
+        "@raze__blake2_rfc__0_2_18//:blake2_rfc",
+        "@raze__bytes__0_5_6//:bytes",
+        "@raze__futures__0_3_6//:futures",
+        "@raze__futures_timer__3_0_2//:futures_timer",
+        "@raze__getrandom__0_1_15//:getrandom",
+        "@raze__hex__0_4_2//:hex",
+        "@raze__instant__0_1_7//:instant",
+        "@raze__log__0_4_11//:log",
+        "@raze__pretty_hash__0_4_1//:pretty_hash",
+        "@raze__prost__0_6_1//:prost",
+        "@raze__rand__0_7_3//:rand",
+        "@raze__salsa20__0_4_1//:salsa20",
+        "@raze__snow__0_7_2//:snow",
+        "@raze__varinteger__1_0_6//:varinteger",
+    ],
+    srcs = glob(["**/*.rs"]),
+    crate_root = "src/lib.rs",
+    edition = "2018",
+    proc_macro_deps = [
+        "@raze__async_trait__0_1_41//:async_trait",
+    ],
+    rustc_flags = [
+        "--cap-lints=allow",
+    ],
+    version = "0.0.2",
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+    crate_features = [
+    ],
+)
+# Unsupported target "pipe" with type "bench" omitted
+# Unsupported target "pipe" with type "example" omitted
+# Unsupported target "throughput" with type "bench" omitted
+# Unsupported target "util" with type "example" omitted

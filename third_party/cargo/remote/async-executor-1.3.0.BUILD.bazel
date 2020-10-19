@@ -32,7 +32,7 @@ rust_library(
     name = "async_executor",
     crate_type = "lib",
     deps = [
-        "@raze__async_task__4_0_2//:async_task",
+        "@raze__async_task__4_0_3//:async_task",
         "@raze__concurrent_queue__1_2_2//:concurrent_queue",
         "@raze__fastrand__1_4_0//:fastrand",
         "@raze__futures_lite__1_11_1//:futures_lite",
