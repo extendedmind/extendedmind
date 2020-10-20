@@ -32,7 +32,7 @@ rust_library(
     name = "shared_child",
     crate_type = "lib",
     deps = [
-        "@raze__libc__0_2_79//:libc",
+        "@raze__libc__0_2_76//:libc",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/lib.rs",

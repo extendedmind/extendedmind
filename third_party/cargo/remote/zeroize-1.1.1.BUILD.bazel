@@ -49,6 +49,7 @@ rust_library(
     ],
     crate_features = [
         "alloc",
+        "default",
         "zeroize_derive",
     ],
 )

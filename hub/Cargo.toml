@@ -1,0 +1,13 @@
+[package]
+name = "extendedmind_hub"
+version = "0.1.0"
+edition = "2018"
+licence = "AGPL-3.0-only"
+authors = ["Timo Tiuraniemi <timo.tiuraniemi@iki.fi>"]
+
+[dependencies]
+extendedmind_engine = { path = "../engine" }
+actix-web = "=3.1.0"
+actix-protobuf = "=0.6.0"
+rusoto_s3 = "=0.45.0"
+rusoto_core = "=0.45.0"

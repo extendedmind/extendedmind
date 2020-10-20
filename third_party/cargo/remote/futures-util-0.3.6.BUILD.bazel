@@ -63,6 +63,7 @@ rust_library(
         "async-await",
         "async-await-macro",
         "channel",
+        "default",
         "futures-channel",
         "futures-io",
         "futures-macro",

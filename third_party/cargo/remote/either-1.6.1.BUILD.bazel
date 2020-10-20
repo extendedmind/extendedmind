@@ -45,5 +45,7 @@ rust_library(
         "manual",
     ],
     crate_features = [
+        "default",
+        "use_std",
     ],
 )
