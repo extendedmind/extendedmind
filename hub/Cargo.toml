@@ -9,5 +9,3 @@ authors = ["Timo Tiuraniemi <timo.tiuraniemi@iki.fi>"]
 extendedmind_engine = { path = "../engine" }
 actix-web = "=3.1.0"
 actix-protobuf = "=0.6.0"
-rusoto_s3 = "=0.45.0"
-rusoto_core = "=0.45.0"

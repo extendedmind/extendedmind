@@ -85,24 +85,6 @@ alias(
 )
 
 alias(
-    name = "rusoto_core",
-    actual = "@raze__rusoto_core__0_45_0//:rusoto_core",
-    tags = [
-        "cargo-raze",
-        "manual",
-    ],
-)
-
-alias(
-    name = "rusoto_s3",
-    actual = "@raze__rusoto_s3__0_45_0//:rusoto_s3",
-    tags = [
-        "cargo-raze",
-        "manual",
-    ],
-)
-
-alias(
     name = "security_framework",
     actual = "@raze__security_framework__0_4_4//:security_framework",
     tags = [

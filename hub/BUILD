@@ -9,8 +9,6 @@ rust_binary(
             "//engine:extendedmind_engine",
             "//third_party/cargo:actix_web",
             "//third_party/cargo:actix_protobuf",
-            "//third_party/cargo:rusoto_s3",
-            "//third_party/cargo:rusoto_core",
     ],
     srcs = glob(["src/**"]),
 )

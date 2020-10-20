@@ -18,8 +18,6 @@ hypercore-protocol = { git = "https://github.com/ttiurani/hypercore-protocol-rs.
 async-tungstenite = { version ="=0.9.3", features = ["async-std-runtime"] }
 actix-web = "=3.1.0"
 actix-protobuf = "=0.6.0"
-rusoto_s3 = "=0.45.0"
-rusoto_core = "=0.45.0"
 
 # See https://github.com/google/cargo-raze/issues/41#issuecomment-682272829
 # Needed for lazy_static 0.2.4 to build on OSX...
