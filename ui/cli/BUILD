@@ -5,7 +5,10 @@ load("//:format.bzl", "rust_format")
 
 rust_binary(
     name = "extendedmind_cli",
-    deps = ["//schema:extendedmind_schema_rust", "//engine:extendedmind_engine"],
+    deps = ["//schema:extendedmind_schema_rust",
+            "//engine:extendedmind_engine",
+            "//third_party/cargo:async_tungstenite",
+    ],
     srcs = glob(["src/**"]),
 )
 

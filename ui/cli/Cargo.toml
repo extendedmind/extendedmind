@@ -7,6 +7,7 @@ authors = ["Timo Tiuraniemi <timo.tiuraniemi@iki.fi>"]
 
 [dependencies]
 extendedmind_engine = { path = "../../engine" }
+async-tungstenite = { version ="=0.9.3", features = ["async-std-runtime"] }
 
 [dev-dependencies]
 duct = "0.13.4"

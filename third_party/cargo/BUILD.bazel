@@ -13,6 +13,15 @@ licenses([
 
 # Aliased targets
 alias(
+    name = "async_tungstenite",
+    actual = "@raze__async_tungstenite__0_9_3//:async_tungstenite",
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+)
+
+alias(
     name = "automerge_frontend",
     actual = "@raze__automerge_frontend__0_1_0//:automerge_frontend",
     tags = [

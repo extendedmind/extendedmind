@@ -26,13 +26,13 @@ licenses([
 ])
 
 # Generated targets
-# Unsupported target "bench" with type "bench" omitted
 
 # buildifier: leave-alone
 rust_library(
-    name = "itoa",
+    name = "unicode_bidi",
     crate_type = "lib",
     deps = [
+        "@raze__matches__0_1_8//:matches",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/lib.rs",
@@ -40,14 +40,12 @@ rust_library(
     rustc_flags = [
         "--cap-lints=allow",
     ],
-    version = "0.4.6",
+    version = "0.3.4",
     tags = [
         "cargo-raze",
         "manual",
     ],
     crate_features = [
         "default",
-        "std",
     ],
 )
-# Unsupported target "test" with type "test" omitted

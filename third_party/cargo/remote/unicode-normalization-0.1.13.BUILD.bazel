@@ -30,17 +30,18 @@ licenses([
 
 # buildifier: leave-alone
 rust_library(
-    name = "itoa",
+    name = "unicode_normalization",
     crate_type = "lib",
     deps = [
+        "@raze__tinyvec__0_3_4//:tinyvec",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/lib.rs",
-    edition = "2015",
+    edition = "2018",
     rustc_flags = [
         "--cap-lints=allow",
     ],
-    version = "0.4.6",
+    version = "0.1.13",
     tags = [
         "cargo-raze",
         "manual",
@@ -50,4 +51,3 @@ rust_library(
         "std",
     ],
 )
-# Unsupported target "test" with type "test" omitted
