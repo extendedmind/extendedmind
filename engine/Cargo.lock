@@ -530,6 +530,8 @@ dependencies = [
  "extendedmind_schema_rust",
  "hypercore",
  "hypercore-protocol",
+ "prost",
+ "prost-derive",
  "serde_json",
 ]
 

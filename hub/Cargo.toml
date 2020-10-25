@@ -7,5 +7,15 @@ authors = ["Timo Tiuraniemi <timo.tiuraniemi@iki.fi>"]
 
 [dependencies]
 extendedmind_engine = { path = "../engine" }
+actix = "=0.10.0"
 actix-web = "=3.1.0"
+actix-web-actors = "=3.0.0"
 actix-protobuf = "=0.6.0"
+actix-files = "=0.4.0"
+log = "=0.4.11"
+env_logger = "=0.8.1"
+hypercore-protocol = { git = "https://github.com/ttiurani/hypercore-protocol-rs.git", branch = "master" }
+bytes = "=0.5.6"
+futures = "=0.3.6"
+futures-channel = "=0.3.6"
+async-pipe = { git = "https://github.com/ttiurani/async-pipe-rs", branch = "master", features = ["futures"] }
