@@ -520,7 +520,6 @@ source = "git+https://github.com/ttiurani/async-pipe-rs#18f06784138300e7e7e3d135
 dependencies = [
  "futures",
  "log",
- "tokio",
 ]
 
 [[package]]
@@ -1119,7 +1118,6 @@ dependencies = [
  "env_logger",
  "extendedmind_engine",
  "futures",
- "futures-channel",
  "hypercore-protocol",
  "log",
 ]
