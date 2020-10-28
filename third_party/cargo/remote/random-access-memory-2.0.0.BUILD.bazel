@@ -34,7 +34,7 @@ rust_library(
     crate_type = "lib",
     deps = [
         "@raze__anyhow__1_0_33//:anyhow",
-        "@raze__futures__0_3_6//:futures",
+        "@raze__futures__0_3_7//:futures",
         "@raze__random_access_storage__4_0_0//:random_access_storage",
     ],
     srcs = glob(["**/*.rs"]),

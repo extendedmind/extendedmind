@@ -8,36 +8,29 @@ version = "0.0.0"
 path = "fake_lib.rs"
 
 [dependencies]
-serde = "=1.0.116"
-serde_derive = "=1.0.116"
-serde_json = "=1.0.58"
+serde = "=1.0.117"
+serde_derive = "=1.0.117"
+serde_json = "=1.0.59"
 automerge-frontend = { git = "https://github.com/ttiurani/automerge-rs.git", rev = "c4230c029b0e20328fe2f5606e5503ffcd2cc964" }
 duct = "=0.13.4"
 hypercore = { git = "https://github.com/datrs/hypercore.git", rev = "97ba31844886a4672a0ea8df6412881048bba1cb" }
 hypercore-protocol = { git = "https://github.com/ttiurani/hypercore-protocol-rs.git", branch = "master" }
 async-tungstenite = { version ="=0.9.3", features = ["async-std-runtime"] }
-actix-web = "=3.1.0"
-actix-protobuf = "=0.6.0"
+fern = "0.6.0"
+log = "0.4.11"
+anyhow = "1.0.33"
+chrono = { version = "0.4.19" }
+futures = "^0.3.5"
+async-std = { version = "1.6.2", features = ["unstable"] }
+tide = "0.14.0"
+http-types = "^2.4.0"
 
-# See https://github.com/google/cargo-raze/issues/41#issuecomment-682272829
-# Needed for lazy_static 0.2.4 to build on OSX...
-security-framework = "0.4.4" # bazel fix
-security-framework-sys = "0.4.3"
-tempfile = "3.1.0"
-libc = "=0.2.76"
-# ...lazy_static end
+[patch.crates-io]
+http-types = { git = "https://github.com/ttiurani/http-types.git", rev = "910c3a299756a17fce36176839af3bd3463c7ffe" }
+async-h1 = { git = "https://github.com/ttiurani/async-h1.git", rev = "550a10d2de15267c0f5661dcebace30aff929546" }
+tide = { git = "https://github.com/ttiurani/tide.git", rev = "8c5d5184a70c44061a0f146ec11118345d1e52a9" }
 
 [raze]
 workspace_path = "//third_party/cargo"
 genmode = "Remote"
 default_gen_buildrs = true
-
-# See https://github.com/google/cargo-raze/issues/41#issuecomment-682272829
-[raze.crates.native-tls.'0.2.4']
-additional_deps = [
-    "@raze__lazy_static__1_4_0//:lazy_static",
-    "@raze__security_framework__0_4_4//:security_framework",
-    "@raze__security_framework_sys__0_4_3//:security_framework_sys",
-    "@raze__tempfile__3_1_0//:tempfile",
-    "@raze__libc__0_2_76//:libc"
-]

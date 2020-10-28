@@ -38,6 +38,7 @@ rust_library(
         "@raze__idna__0_2_0//:idna",
         "@raze__matches__0_1_8//:matches",
         "@raze__percent_encoding__2_1_0//:percent_encoding",
+        "@raze__serde__1_0_117//:serde",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/lib.rs",
@@ -51,5 +52,6 @@ rust_library(
         "manual",
     ],
     crate_features = [
+        "serde",
     ],
 )

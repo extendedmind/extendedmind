@@ -34,8 +34,8 @@ rust_library(
     crate_type = "lib",
     deps = [
         "@raze__async_std__1_6_5//:async_std",
-        "@raze__futures_io__0_3_6//:futures_io",
-        "@raze__futures_util__0_3_6//:futures_util",
+        "@raze__futures_io__0_3_7//:futures_io",
+        "@raze__futures_util__0_3_7//:futures_util",
         "@raze__log__0_4_11//:log",
         "@raze__pin_project__1_0_1//:pin_project",
         "@raze__tungstenite__0_11_1//:tungstenite",

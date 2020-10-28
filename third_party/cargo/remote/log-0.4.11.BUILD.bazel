@@ -46,6 +46,7 @@ cargo_build_script(
     ],
     crate_features = [
       "kv_unstable",
+      "std",
     ],
     build_script_env = {
     },
@@ -81,6 +82,7 @@ rust_library(
     ],
     crate_features = [
         "kv_unstable",
+        "std",
     ],
 )
 # Unsupported target "macros" with type "test" omitted

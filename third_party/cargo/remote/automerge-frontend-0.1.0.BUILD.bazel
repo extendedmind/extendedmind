@@ -33,10 +33,10 @@ rust_library(
     crate_type = "lib",
     deps = [
         "@raze__automerge_protocol__0_1_0//:automerge_protocol",
-        "@raze__futures__0_3_6//:futures",
+        "@raze__futures__0_3_7//:futures",
         "@raze__maplit__1_0_2//:maplit",
-        "@raze__serde__1_0_116//:serde",
-        "@raze__serde_json__1_0_58//:serde_json",
+        "@raze__serde__1_0_117//:serde",
+        "@raze__serde_json__1_0_59//:serde_json",
         "@raze__thiserror__1_0_21//:thiserror",
         "@raze__uuid__0_5_1//:uuid",
     ],

@@ -44,7 +44,7 @@ rust_library(
         "@raze__byteorder__1_3_4//:byteorder",
         "@raze__ed25519_dalek__1_0_0_pre_3//:ed25519_dalek",
         "@raze__flat_tree__5_0_0//:flat_tree",
-        "@raze__futures__0_3_6//:futures",
+        "@raze__futures__0_3_7//:futures",
         "@raze__lazy_static__1_4_0//:lazy_static",
         "@raze__memory_pager__0_9_0//:memory_pager",
         "@raze__merkle_tree_stream__0_12_1//:merkle_tree_stream",

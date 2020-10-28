@@ -5,7 +5,20 @@ edition = "2018"
 licence = "AGPL-3.0-only"
 authors = ["Timo Tiuraniemi <timo.tiuraniemi@iki.fi>"]
 
+# [dependencies]
+
 [dependencies]
 extendedmind_engine = { path = "../engine" }
-actix-web = "=3.1.0"
-actix-protobuf = "=0.6.0"
+fern = "0.6.0"
+log = "0.4.11"
+anyhow = "1.0.33"
+chrono = { version = "0.4.19" }
+futures = "^0.3.5"
+async-std = { version = "1.6.2", features = ["unstable"] }
+tide = "0.14.0"
+http-types = "^2.4.0"
+
+[patch.crates-io]
+http-types = { git = "https://github.com/ttiurani/http-types.git", rev = "910c3a299756a17fce36176839af3bd3463c7ffe" }
+async-h1 = { git = "https://github.com/ttiurani/async-h1.git", rev = "550a10d2de15267c0f5661dcebace30aff929546" }
+tide = { git = "https://github.com/ttiurani/tide.git", rev = "8c5d5184a70c44061a0f146ec11118345d1e52a9" }

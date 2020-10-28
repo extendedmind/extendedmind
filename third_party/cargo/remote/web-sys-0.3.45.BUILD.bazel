@@ -54,5 +54,6 @@ rust_library(
         "Window",
         "Worker",
         "WorkerGlobalScope",
+        "console",
     ],
 )

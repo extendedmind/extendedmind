@@ -1,0 +1,66 @@
+"""
+@generated
+cargo-raze crate build file.
+
+DO NOT EDIT! Replaced on runs of cargo-raze
+"""
+
+# buildifier: disable=load
+load(
+    "@io_bazel_rules_rust//rust:rust.bzl",
+    "rust_binary",
+    "rust_library",
+    "rust_test",
+)
+
+package(default_visibility = [
+    # Public for visibility by "@raze__crate__version//" targets.
+    #
+    # Prefer access through "//third_party/cargo", which limits external
+    # visibility to explicit Cargo.toml dependencies.
+    "//visibility:public",
+])
+
+licenses([
+    "notice",  # MIT from expression "MIT"
+])
+
+# Generated targets
+# Unsupported target "channel_logging" with type "test" omitted
+# Unsupported target "cmd-program" with type "example" omitted
+# Unsupported target "colored" with type "example" omitted
+# Unsupported target "date-based-file-log" with type "example" omitted
+# Unsupported target "enabled_is_deep_check" with type "test" omitted
+
+# buildifier: leave-alone
+rust_library(
+    name = "fern",
+    crate_type = "lib",
+    deps = [
+        "@raze__log__0_4_11//:log",
+    ],
+    srcs = glob(["**/*.rs"]),
+    crate_root = "src/lib.rs",
+    edition = "2018",
+    rustc_flags = [
+        "--cap-lints=allow",
+    ],
+    version = "0.6.0",
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+    crate_features = [
+    ],
+)
+# Unsupported target "file_logging" with type "test" omitted
+# Unsupported target "global_logging" with type "test" omitted
+# Unsupported target "meta-logging" with type "example" omitted
+# Unsupported target "meta_logging" with type "test" omitted
+# Unsupported target "panic_logging" with type "test" omitted
+# Unsupported target "pretty-colored" with type "example" omitted
+# Unsupported target "reopen_logging" with type "test" omitted
+# Unsupported target "support" with type "test" omitted
+# Unsupported target "syslog" with type "example" omitted
+# Unsupported target "syslog3" with type "example" omitted
+# Unsupported target "write_logging" with type "test" omitted

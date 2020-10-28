@@ -32,7 +32,7 @@ rust_library(
     name = "random_access_storage",
     crate_type = "lib",
     deps = [
-        "@raze__futures_io__0_3_6//:futures_io",
+        "@raze__futures_io__0_3_7//:futures_io",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/lib.rs",

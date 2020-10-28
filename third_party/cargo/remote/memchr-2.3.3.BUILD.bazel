@@ -47,7 +47,6 @@ cargo_build_script(
     crate_features = [
       "default",
       "std",
-      "use_std",
     ],
     build_script_env = {
     },
@@ -82,6 +81,5 @@ rust_library(
     crate_features = [
         "default",
         "std",
-        "use_std",
     ],
 )
