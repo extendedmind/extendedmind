@@ -7,7 +7,10 @@ authors = ["Timo Tiuraniemi <timo.tiuraniemi@iki.fi>"]
 
 [dependencies]
 extendedmind_engine = { path = "../../engine" }
-async-tungstenite = { version ="=0.9.3", features = ["async-std-runtime"] }
+futures = "^0.3.5"
+async-std = { version = "1.6.2", features = ["unstable"] }
+async-tungstenite = { version ="=0.10.0", features = ["async-std-runtime"] }
+clap = "3.0.0-beta.2"
 
 [dev-dependencies]
 duct = "0.13.4"

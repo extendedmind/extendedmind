@@ -34,7 +34,7 @@ load(
 
 # buildifier: leave-alone
 cargo_build_script(
-    name = "winapi_build_script",
+    name = "bitflags_build_script",
     srcs = glob(["**/*.rs"]),
     crate_root = "build.rs",
     edition = "2015",
@@ -45,29 +45,7 @@ cargo_build_script(
         "--cap-lints=allow",
     ],
     crate_features = [
-      "consoleapi",
-      "errhandlingapi",
-      "fileapi",
-      "handleapi",
-      "ioapiset",
-      "minwinbase",
-      "minwindef",
-      "namedpipeapi",
-      "ntdef",
-      "ntsecapi",
-      "processenv",
-      "processthreadsapi",
-      "profileapi",
-      "std",
-      "synchapi",
-      "sysinfoapi",
-      "timezoneapi",
-      "winbase",
-      "wincon",
-      "winerror",
-      "winnt",
-      "winsock2",
-      "ws2tcpip",
+      "default",
     ],
     build_script_env = {
     },
@@ -76,17 +54,17 @@ cargo_build_script(
         "cargo-raze",
         "manual",
     ],
-    version = "0.3.9",
+    version = "1.2.1",
     visibility = ["//visibility:private"],
 )
 
 
 # buildifier: leave-alone
 rust_library(
-    name = "winapi",
+    name = "bitflags",
     crate_type = "lib",
     deps = [
-        ":winapi_build_script",
+        ":bitflags_build_script",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/lib.rs",
@@ -94,34 +72,12 @@ rust_library(
     rustc_flags = [
         "--cap-lints=allow",
     ],
-    version = "0.3.9",
+    version = "1.2.1",
     tags = [
         "cargo-raze",
         "manual",
     ],
     crate_features = [
-        "consoleapi",
-        "errhandlingapi",
-        "fileapi",
-        "handleapi",
-        "ioapiset",
-        "minwinbase",
-        "minwindef",
-        "namedpipeapi",
-        "ntdef",
-        "ntsecapi",
-        "processenv",
-        "processthreadsapi",
-        "profileapi",
-        "std",
-        "synchapi",
-        "sysinfoapi",
-        "timezoneapi",
-        "winbase",
-        "wincon",
-        "winerror",
-        "winnt",
-        "winsock2",
-        "ws2tcpip",
+        "default",
     ],
 )

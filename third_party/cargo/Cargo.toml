@@ -19,6 +19,7 @@ async-tungstenite = { version ="=0.9.3", features = ["async-std-runtime"] }
 fern = "0.6.0"
 log = "0.4.11"
 anyhow = "1.0.33"
+clap = "3.0.0-beta.2"
 chrono = { version = "0.4.19" }
 futures = "^0.3.5"
 async-std = { version = "1.6.2", features = ["unstable"] }

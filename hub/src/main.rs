@@ -37,7 +37,7 @@ fn main() -> Result<()> {
                 message
             ))
         })
-        .level(log::LevelFilter::Warn)
+        .level(log::LevelFilter::Debug)
         .chain(std::io::stdout())
         .apply()?;
 

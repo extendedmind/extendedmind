@@ -8,6 +8,9 @@ rust_binary(
     deps = ["//schema:extendedmind_schema_rust",
             "//engine:extendedmind_engine",
             "//third_party/cargo:async_tungstenite",
+            "//third_party/cargo:futures",
+            "//third_party/cargo:async_std",
+            "//third_party/cargo:clap",
     ],
     srcs = glob(["src/**"]),
 )
