@@ -10,6 +10,7 @@ rust_binary(
             "//third_party/cargo:fern",
             "//third_party/cargo:log",
             "//third_party/cargo:anyhow",
+            "//third_party/cargo:bytes",
             "//third_party/cargo:chrono",
             "//third_party/cargo:futures",
             "//third_party/cargo:tide",

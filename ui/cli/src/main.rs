@@ -26,6 +26,7 @@ async fn run(url: String) -> Result<(), Box<dyn std::error::Error>> {
         .ok_or_else(|| "didn't receive anything")??;
 
     println!("Received: {:?}", msg);
+    ws_stream.close(None).await?;
 
     Ok(())
 }
