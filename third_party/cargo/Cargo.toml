@@ -15,7 +15,8 @@ automerge-frontend = { git = "https://github.com/ttiurani/automerge-rs.git", rev
 duct = "=0.13.4"
 hypercore = { git = "https://github.com/datrs/hypercore.git", rev = "97ba31844886a4672a0ea8df6412881048bba1cb" }
 hypercore-protocol = { git = "https://github.com/ttiurani/hypercore-protocol-rs.git", branch = "master" }
-async-tungstenite = { version ="=0.9.3", features = ["async-std-runtime"] }
+async-tungstenite = { version = "0.10.0", features = ["async-std-runtime"] }
+tungstenite = "0.11.1"
 bytes = "0.6.0"
 fern = "0.6.0"
 log = "0.4.11"

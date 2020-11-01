@@ -3,6 +3,7 @@ use futures::prelude::*;
 
 use async_std::task;
 use async_tungstenite::{async_std::connect_async, tungstenite::Message};
+use std::time::Duration;
 
 use clap::Clap;
 
@@ -14,18 +15,18 @@ struct Opts {
 
 async fn run(url: String) -> Result<(), Box<dyn std::error::Error>> {
     let (mut ws_stream, _) = connect_async(url).await?;
+    println!("Sending: demo");
+    ws_stream.send(Message::text("demo")).await?;
 
-    let text = "Hello, World!";
+    for _ in 1..101 {
+        println!("Sending: client_msg");
+        ws_stream.send(Message::text("client_msg")).await?;
+        let msg = ws_stream.next().await;
 
-    println!("Sending: \"{}\"", text);
-    ws_stream.send(Message::text(text)).await?;
+        println!("Received: {:?}", msg);
+        task::sleep(Duration::from_millis(1000)).await;
+    }
 
-    let msg = ws_stream
-        .next()
-        .await
-        .ok_or_else(|| "didn't receive anything")??;
-
-    println!("Received: {:?}", msg);
     ws_stream.close(None).await?;
 
     Ok(())

@@ -18,6 +18,8 @@ futures = "^0.3.5"
 async-std = { version = "1.6.2", features = ["unstable"] }
 tide = "0.14.0"
 http-types = "^2.4.0"
+async-tungstenite = { version = "0.10.0", features = ["async-std-runtime"] }
+tungstenite = "0.11.1"
 
 [patch.crates-io]
 http-types = { git = "https://github.com/ttiurani/http-types.git", rev = "910c3a299756a17fce36176839af3bd3463c7ffe" }
