@@ -7,7 +7,6 @@ use tide::Request;
 use async_std::sync::{channel, Arc, Receiver, Sender};
 use futures::sink::SinkExt;
 use futures::stream::StreamExt;
-// use futures_util::stream::StreamExt as UtilsStreamExt;
 use tungstenite::Message;
 
 use async_std::task;
@@ -29,15 +28,15 @@ enum ReceiverType {
 #[derive(Clone)]
 struct State {
     system_commands: Receiver<Bytes>,
-    writers: HashMap<String, Sender<Bytes>>,
-    readers: HashMap<String, Receiver<Bytes>>,
+    writers: HashMap<Bytes, Sender<Bytes>>,
+    readers: HashMap<Bytes, Receiver<Bytes>>,
 }
 
 #[derive(Clone)]
 struct WrappedData {
     data: Bytes,
     receiver_type: ReceiverType,
-    id: Option<String>,
+    id: Option<Bytes>,
 }
 
 type WrappedBytesClosure = Box<dyn Fn(Bytes) -> WrappedData + Send + Sync>;
@@ -51,134 +50,29 @@ async fn async_main(initial_state: State) -> Result<()> {
         tide::websocket::upgrade(req, |_req, handle| async move {
             // https://docs.rs/async-tungstenite/0.10.0/async_tungstenite/struct.WebSocketStream.html
             let (mut ws_writer, mut ws_reader) = handle.into_inner().split();
-            // Handshake the inner protocol
-            // let init_msg: Arc<String> =
-            //     Arc::new(ws_reader.next().await.unwrap().unwrap().to_string());
-
-            let init_msg: String = ws_reader.next().await.unwrap().unwrap().to_string();
-
-            // let system_command_reader =
-            //     _req.state()
-            //         .system_commands
-            //         .clone()
-            //         .map(Box::new(|data| WrappedData {
-            //             data,
-            //             receiver_type: ReceiverType::System,
-            //             id: None,
-            //         }) as WrappedBytesClosure);
-            // let system_command_reader = ;
+            let init_msg: Bytes = Bytes::from(ws_reader.next().await.unwrap().unwrap().into_data());
             dbg!(&init_msg);
             let hypercore_writer = _req.state().writers[&*init_msg].clone();
-            // let reader = _req.state().readers[&*init_msg]
-            //     .clone()
-            //     .map(Box::new(move |data| WrappedData {
-            //         data,
-            //         receiver_type: ReceiverType::System,
-            //         id: Some((&*init_msg).to_string()),
-            //     }) as WrappedBytesClosure);
             ws_writer
                 .send(Message::Text("reply-to-init".to_string()))
                 .await
                 .unwrap();
-
-            // use futures::future::Either;
-            // let client_reader_writer =
-            //     ws.get_ref()
-            //         .clone()
-            //         .map(
-            //             Box::new(move |_msg: Result<tungstenite::Message, _>| WrappedData {
-            //                 data: Bytes::from(_msg.ok().unwrap().into_data()),
-            //                 receiver_type: ReceiverType::Client,
-            //                 id: None,
-            //             }) as WrappedWebSocketClosure,
-            //         );
-
-            // let streams: Vec<
-            //     Either<
-            //         futures::stream::Map<
-            //             async_std::sync::Receiver<bytes::Bytes>,
-            //             std::boxed::Box<
-            //                 dyn std::ops::Fn(bytes::Bytes) -> WrappedData
-            //                     + std::marker::Send
-            //                     + std::marker::Sync,
-            //             >,
-            //         >,
-            //         futures::stream::Map<
-            //             async_std::sync::Receiver<bytes::Bytes>,
-            //             std::boxed::Box<
-            //                 dyn std::ops::Fn(bytes::Bytes) -> WrappedData
-            //                     + std::marker::Send
-            //                     + std::marker::Sync,
-            //             >,
-            //         >,
-            //     >,
-            // > = vec![
-            //     Either::Left(system_command_reader),
-            //     Either::Left(reader),
-            //     Either::Right(client_reader_writer),
-            // ];
-            //
-            //
             let (client_sender, client_receiver): (Sender<Bytes>, Receiver<Bytes>) = channel(1000);
-            // let client_reader = client_receiver
-            //     .clone()
-            //     .map(Box::new(move |data| WrappedData {
-            //         data,
-            //         receiver_type: ReceiverType::Client,
-            //         id: None,
-            //     }) as WrappedBytesClosure);
-
-            // Start polling
-            //
-            // Use https://docs.rs/futures/0.3.7/futures/stream/fn.select_all.html
-            // to merge many streams.
-            //
-
-            task::Builder::new()
-                .name(init_msg.clone())
-                .spawn(async move {
-                    while let Some(wrapped_value) = futures::stream::select_all(vec![
-                        _req.state()
-                            .system_commands
-                            .clone()
-                            .map(Box::new(|data| WrappedData {
-                                data,
-                                receiver_type: ReceiverType::System,
-                                id: None,
-                            }) as WrappedBytesClosure),
-                        _req.state().readers[&String::from(task::current().name().unwrap())]
-                            .clone()
-                            .map(Box::new(move |data| WrappedData {
-                                data,
-                                receiver_type: ReceiverType::Hypercore,
-                                id: Some(String::from(task::current().name().unwrap())),
-                            }) as WrappedBytesClosure), /*, reader, client_reader*/
-                        client_receiver
-                            .clone()
-                            .map(Box::new(move |data| WrappedData {
-                                data,
-                                receiver_type: ReceiverType::Client,
-                                id: None,
-                            }) as WrappedBytesClosure),
-                    ])
-                    .next()
-                    .await
-                    {
-                        dbg!("got value of type {}", wrapped_value.receiver_type);
-                        ws_writer
-                            .send(tungstenite::Message::Binary(
-                                wrapped_value.data.as_ref().to_vec(),
-                            ))
-                            .await
-                            .unwrap();
-                        dbg!("got result");
-                    }
-                })
-                .unwrap();
-
-            // let msg = ws.next().await.unwrap().unwrap();
-            // dbg!(&msg);
-            // ws.send(msg).await.unwrap();
+            let init_msg: Arc<Bytes> = Arc::new(init_msg.clone());
+            task::spawn(async move {
+                let receivers = collect_receivers(_req.state(), client_receiver.clone(), init_msg);
+                let mut merged = futures::stream::select_all(receivers);
+                while let Some(wrapped_value) = merged.next().await {
+                    dbg!("got value of type {}", wrapped_value.receiver_type);
+                    ws_writer
+                        .send(tungstenite::Message::Binary(
+                            wrapped_value.data.as_ref().to_vec(),
+                        ))
+                        .await
+                        .unwrap();
+                    dbg!("got result");
+                }
+            });
             loop {
                 let incoming_msg = ws_reader.next().await;
                 let msg = incoming_msg.unwrap().unwrap();
@@ -189,6 +83,34 @@ async fn async_main(initial_state: State) -> Result<()> {
 
     app.listen("0.0.0.0:8080").await?;
     Ok(())
+}
+
+fn collect_receivers(
+    state: &State,
+    client_receiver: Receiver<Bytes>,
+    init_msg: Arc<Bytes>,
+) -> Vec<futures::stream::Map<async_std::sync::Receiver<bytes::Bytes>, WrappedBytesClosure>> {
+    let reader = state.readers[init_msg.as_ref()].clone();
+    vec![
+        state
+            .system_commands
+            .clone()
+            .map(Box::new(|data| WrappedData {
+                data,
+                receiver_type: ReceiverType::System,
+                id: None,
+            }) as WrappedBytesClosure),
+        reader.map(Box::new(move |data| WrappedData {
+            data,
+            receiver_type: ReceiverType::Hypercore,
+            id: Some((*init_msg).clone()),
+        }) as WrappedBytesClosure),
+        client_receiver.map(Box::new(move |data| WrappedData {
+            data,
+            receiver_type: ReceiverType::Client,
+            id: None,
+        }) as WrappedBytesClosure),
+    ]
 }
 
 fn main() -> Result<()> {
@@ -209,11 +131,11 @@ fn main() -> Result<()> {
     let (demo_sender, demo_receiver) = channel(1000);
     let initial_state = State {
         system_commands: system_command_receiver,
-        writers: [("demo".to_string(), demo_sender)]
+        writers: [(Bytes::from_static("demo".as_bytes()), demo_sender)]
             .iter()
             .cloned()
             .collect(),
-        readers: [("demo".to_string(), demo_receiver)]
+        readers: [(Bytes::from_static("demo".as_bytes()), demo_receiver)]
             .iter()
             .cloned()
             .collect(),
