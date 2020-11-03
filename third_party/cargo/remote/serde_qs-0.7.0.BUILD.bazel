@@ -34,7 +34,7 @@ rust_library(
     name = "serde_qs",
     crate_type = "lib",
     deps = [
-        "@raze__data_encoding__2_3_0//:data_encoding",
+        "@raze__data_encoding__2_3_1//:data_encoding",
         "@raze__percent_encoding__2_1_0//:percent_encoding",
         "@raze__serde__1_0_117//:serde",
         "@raze__thiserror__1_0_21//:thiserror",

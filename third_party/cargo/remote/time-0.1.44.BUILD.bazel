@@ -32,7 +32,7 @@ rust_library(
     name = "time",
     crate_type = "lib",
     deps = [
-        "@raze__libc__0_2_80//:libc",
+        "@raze__libc__0_2_76//:libc",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/lib.rs",

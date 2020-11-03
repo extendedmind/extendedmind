@@ -34,7 +34,7 @@ load(
 
 # buildifier: leave-alone
 cargo_build_script(
-    name = "getrandom_build_script",
+    name = "http_types_build_script",
     srcs = glob(["**/*.rs"]),
     crate_root = "build.rs",
     edition = "2018",
@@ -45,7 +45,10 @@ cargo_build_script(
         "--cap-lints=allow",
     ],
     crate_features = [
-      "std",
+      "async-std",
+      "cookie-secure",
+      "default",
+      "fs",
     ],
     build_script_env = {
     },
@@ -54,20 +57,33 @@ cargo_build_script(
         "cargo-raze",
         "manual",
     ],
-    version = "0.1.15",
+    version = "2.7.0",
     visibility = ["//visibility:private"],
 )
 
-# Unsupported target "common" with type "test" omitted
+# Unsupported target "error" with type "test" omitted
+# Unsupported target "headers" with type "test" omitted
 
 # buildifier: leave-alone
 rust_library(
-    name = "getrandom",
+    name = "http_types",
     crate_type = "lib",
     deps = [
-        ":getrandom_build_script",
-        "@raze__cfg_if__0_1_10//:cfg_if",
-        "@raze__libc__0_2_76//:libc",
+        ":http_types_build_script",
+        "@raze__anyhow__1_0_34//:anyhow",
+        "@raze__async_channel__1_5_1//:async_channel",
+        "@raze__async_std__1_6_5//:async_std",
+        "@raze__base64__0_13_0//:base64",
+        "@raze__cookie__0_14_2//:cookie",
+        "@raze__futures_lite__1_11_2//:futures_lite",
+        "@raze__infer__0_2_3//:infer",
+        "@raze__pin_project_lite__0_1_11//:pin_project_lite",
+        "@raze__rand__0_7_3//:rand",
+        "@raze__serde__1_0_117//:serde",
+        "@raze__serde_json__1_0_59//:serde_json",
+        "@raze__serde_qs__0_7_0//:serde_qs",
+        "@raze__serde_urlencoded__0_7_0//:serde_urlencoded",
+        "@raze__url__2_1_1//:url",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/lib.rs",
@@ -75,13 +91,19 @@ rust_library(
     rustc_flags = [
         "--cap-lints=allow",
     ],
-    version = "0.1.15",
+    version = "2.7.0",
     tags = [
         "cargo-raze",
         "manual",
     ],
     crate_features = [
-        "std",
+        "async-std",
+        "cookie-secure",
+        "default",
+        "fs",
     ],
 )
-# Unsupported target "mod" with type "bench" omitted
+# Unsupported target "mime" with type "test" omitted
+# Unsupported target "querystring" with type "test" omitted
+# Unsupported target "req_res_body" with type "test" omitted
+# Unsupported target "security" with type "test" omitted

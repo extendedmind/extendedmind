@@ -26,17 +26,16 @@ licenses([
 ])
 
 # Generated targets
+# Unsupported target "notify" with type "test" omitted
 
 # buildifier: leave-alone
 rust_library(
-    name = "async_global_executor",
+    name = "polling",
     crate_type = "lib",
     deps = [
-        "@raze__async_executor__1_3_0//:async_executor",
-        "@raze__async_io__1_1_10//:async_io",
-        "@raze__futures_lite__1_11_2//:futures_lite",
-        "@raze__num_cpus__1_13_0//:num_cpus",
-        "@raze__once_cell__1_4_1//:once_cell",
+        "@raze__cfg_if__0_1_10//:cfg_if",
+        "@raze__libc__0_2_76//:libc",
+        "@raze__log__0_4_11//:log",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/lib.rs",
@@ -44,13 +43,14 @@ rust_library(
     rustc_flags = [
         "--cap-lints=allow",
     ],
-    version = "1.4.2",
+    version = "1.0.2",
     tags = [
         "cargo-raze",
         "manual",
     ],
     crate_features = [
-        "async-io",
-        "default",
     ],
 )
+# Unsupported target "precision" with type "test" omitted
+# Unsupported target "timeout" with type "test" omitted
+# Unsupported target "two-listeners" with type "example" omitted

@@ -14,7 +14,7 @@ licenses([
 # Aliased targets
 alias(
     name = "anyhow",
-    actual = "@raze__anyhow__1_0_33//:anyhow",
+    actual = "@raze__anyhow__1_0_34//:anyhow",
     tags = [
         "cargo-raze",
         "manual",
@@ -32,7 +32,7 @@ alias(
 
 alias(
     name = "async_tungstenite",
-    actual = "@raze__async_tungstenite__0_9_3//:async_tungstenite",
+    actual = "@raze__async_tungstenite__0_10_0//:async_tungstenite",
     tags = [
         "cargo-raze",
         "manual",
@@ -104,7 +104,7 @@ alias(
 
 alias(
     name = "http_types",
-    actual = "@raze__http_types__2_6_0//:http_types",
+    actual = "@raze__http_types__2_7_0//:http_types",
     tags = [
         "cargo-raze",
         "manual",
@@ -130,8 +130,35 @@ alias(
 )
 
 alias(
+    name = "libc",
+    actual = "@raze__libc__0_2_76//:libc",
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+)
+
+alias(
     name = "log",
     actual = "@raze__log__0_4_11//:log",
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+)
+
+alias(
+    name = "security_framework",
+    actual = "@raze__security_framework__0_4_4//:security_framework",
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+)
+
+alias(
+    name = "security_framework_sys",
+    actual = "@raze__security_framework_sys__0_4_3//:security_framework_sys",
     tags = [
         "cargo-raze",
         "manual",
@@ -166,8 +193,26 @@ alias(
 )
 
 alias(
+    name = "tempfile",
+    actual = "@raze__tempfile__3_1_0//:tempfile",
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+)
+
+alias(
     name = "tide",
     actual = "@raze__tide__0_14_0//:tide",
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+)
+
+alias(
+    name = "tungstenite",
+    actual = "@raze__tungstenite__0_11_1//:tungstenite",
     tags = [
         "cargo-raze",
         "manual",

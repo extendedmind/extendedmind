@@ -33,7 +33,7 @@ rust_library(
     name = "random_access_disk",
     crate_type = "lib",
     deps = [
-        "@raze__anyhow__1_0_33//:anyhow",
+        "@raze__anyhow__1_0_34//:anyhow",
         "@raze__async_std__1_6_5//:async_std",
         "@raze__mkdirp__1_0_0//:mkdirp",
         "@raze__random_access_storage__4_0_0//:random_access_storage",

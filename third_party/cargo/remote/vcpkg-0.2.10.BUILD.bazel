@@ -26,47 +26,12 @@ licenses([
 ])
 
 # Generated targets
-# buildifier: disable=load-on-top
-load(
-    "@io_bazel_rules_rust//cargo:cargo_build_script.bzl",
-    "cargo_build_script",
-)
-
-# buildifier: leave-alone
-cargo_build_script(
-    name = "libc_build_script",
-    srcs = glob(["**/*.rs"]),
-    crate_root = "build.rs",
-    edition = "2015",
-    # buildifier: leave-alone
-    deps = [
-    ],
-    rustc_flags = [
-        "--cap-lints=allow",
-    ],
-    crate_features = [
-      "default",
-      "std",
-    ],
-    build_script_env = {
-    },
-    data = glob(["**"]),
-    tags = [
-        "cargo-raze",
-        "manual",
-    ],
-    version = "0.2.80",
-    visibility = ["//visibility:private"],
-)
-
-# Unsupported target "const_fn" with type "test" omitted
 
 # buildifier: leave-alone
 rust_library(
-    name = "libc",
+    name = "vcpkg",
     crate_type = "lib",
     deps = [
-        ":libc_build_script",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/lib.rs",
@@ -74,13 +39,11 @@ rust_library(
     rustc_flags = [
         "--cap-lints=allow",
     ],
-    version = "0.2.80",
+    version = "0.2.10",
     tags = [
         "cargo-raze",
         "manual",
     ],
     crate_features = [
-        "default",
-        "std",
     ],
 )

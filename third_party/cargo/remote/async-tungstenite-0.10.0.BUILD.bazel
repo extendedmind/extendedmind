@@ -22,26 +22,23 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT OR Apache-2.0"
+    "notice",  # MIT from expression "MIT"
 ])
 
 # Generated targets
+# Unsupported target "async-std-echo" with type "example" omitted
 
 # buildifier: leave-alone
 rust_library(
-    name = "async_h1",
+    name = "async_tungstenite",
     crate_type = "lib",
     deps = [
         "@raze__async_std__1_6_5//:async_std",
-        "@raze__byte_pool__0_2_2//:byte_pool",
-        "@raze__futures_channel__0_3_7//:futures_channel",
-        "@raze__futures_core__0_3_7//:futures_core",
+        "@raze__futures_io__0_3_7//:futures_io",
         "@raze__futures_util__0_3_7//:futures_util",
-        "@raze__http_types__2_6_0//:http_types",
-        "@raze__httparse__1_3_4//:httparse",
-        "@raze__lazy_static__1_4_0//:lazy_static",
         "@raze__log__0_4_11//:log",
-        "@raze__pin_project_lite__0_1_11//:pin_project_lite",
+        "@raze__pin_project__1_0_1//:pin_project",
+        "@raze__tungstenite__0_11_1//:tungstenite",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/lib.rs",
@@ -49,18 +46,24 @@ rust_library(
     rustc_flags = [
         "--cap-lints=allow",
     ],
-    version = "2.1.3",
+    version = "0.10.0",
     tags = [
         "cargo-raze",
         "manual",
     ],
     crate_features = [
+        "async-std",
+        "async-std-runtime",
+        "default",
     ],
 )
+# Unsupported target "autobahn-client" with type "example" omitted
+# Unsupported target "autobahn-server" with type "example" omitted
 # Unsupported target "client" with type "example" omitted
-# Unsupported target "client" with type "test" omitted
-# Unsupported target "continue" with type "test" omitted
+# Unsupported target "communication" with type "test" omitted
+# Unsupported target "echo-server" with type "example" omitted
+# Unsupported target "gio-echo" with type "example" omitted
+# Unsupported target "handshakes" with type "test" omitted
+# Unsupported target "interval-server" with type "example" omitted
 # Unsupported target "server" with type "example" omitted
-# Unsupported target "server" with type "test" omitted
-# Unsupported target "server-chunked-encode-large" with type "test" omitted
-# Unsupported target "server-chunked-encode-small" with type "test" omitted
+# Unsupported target "tokio-echo" with type "example" omitted

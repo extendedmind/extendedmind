@@ -47,6 +47,7 @@ rust_library(
         "@raze__httparse__1_3_4//:httparse",
         "@raze__input_buffer__0_3_1//:input_buffer",
         "@raze__log__0_4_11//:log",
+        "@raze__native_tls__0_2_4//:native_tls",
         "@raze__rand__0_7_3//:rand",
         "@raze__sha_1__0_9_1//:sha_1",
         "@raze__url__2_1_1//:url",
@@ -64,5 +65,8 @@ rust_library(
         "manual",
     ],
     crate_features = [
+        "default",
+        "native-tls",
+        "tls",
     ],
 )

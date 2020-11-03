@@ -34,10 +34,10 @@ load(
 
 # buildifier: leave-alone
 cargo_build_script(
-    name = "getrandom_build_script",
+    name = "libc_build_script",
     srcs = glob(["**/*.rs"]),
     crate_root = "build.rs",
-    edition = "2018",
+    edition = "2015",
     # buildifier: leave-alone
     deps = [
     ],
@@ -45,6 +45,7 @@ cargo_build_script(
         "--cap-lints=allow",
     ],
     crate_features = [
+      "default",
       "std",
     ],
     build_script_env = {
@@ -54,34 +55,32 @@ cargo_build_script(
         "cargo-raze",
         "manual",
     ],
-    version = "0.1.15",
+    version = "0.2.76",
     visibility = ["//visibility:private"],
 )
 
-# Unsupported target "common" with type "test" omitted
+# Unsupported target "const_fn" with type "test" omitted
 
 # buildifier: leave-alone
 rust_library(
-    name = "getrandom",
+    name = "libc",
     crate_type = "lib",
     deps = [
-        ":getrandom_build_script",
-        "@raze__cfg_if__0_1_10//:cfg_if",
-        "@raze__libc__0_2_76//:libc",
+        ":libc_build_script",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/lib.rs",
-    edition = "2018",
+    edition = "2015",
     rustc_flags = [
         "--cap-lints=allow",
     ],
-    version = "0.1.15",
+    version = "0.2.76",
     tags = [
         "cargo-raze",
         "manual",
     ],
     crate_features = [
+        "default",
         "std",
     ],
 )
-# Unsupported target "mod" with type "bench" omitted

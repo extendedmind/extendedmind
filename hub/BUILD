@@ -16,6 +16,8 @@ rust_binary(
             "//third_party/cargo:tide",
             "//third_party/cargo:http_types",
             "//third_party/cargo:async_std",
+            "//third_party/cargo:async_tungstenite",
+            "//third_party/cargo:tungstenite",
     ],
     srcs = glob(["src/**"]),
 )

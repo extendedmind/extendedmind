@@ -22,44 +22,31 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT OR Apache-2.0"
+    "notice",  # MIT from expression "MIT"
 ])
 
 # Generated targets
-# Unsupported target "chrono" with type "bench" omitted
 
 # buildifier: leave-alone
 rust_library(
-    name = "chrono",
+    name = "data_encoding",
     crate_type = "lib",
     deps = [
-        "@raze__libc__0_2_76//:libc",
-        "@raze__num_integer__0_1_44//:num_integer",
-        "@raze__num_traits__0_2_14//:num_traits",
-        "@raze__serde__1_0_117//:serde",
-        "@raze__time__0_1_44//:time",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/lib.rs",
-    edition = "2015",
+    edition = "2018",
     rustc_flags = [
         "--cap-lints=allow",
     ],
-    version = "0.4.19",
+    version = "2.3.1",
     tags = [
         "cargo-raze",
         "manual",
     ],
     crate_features = [
-        "clock",
+        "alloc",
         "default",
-        "libc",
-        "oldtime",
-        "serde",
         "std",
-        "time",
-        "winapi",
     ],
 )
-# Unsupported target "serde" with type "bench" omitted
-# Unsupported target "wasm" with type "test" omitted

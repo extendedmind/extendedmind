@@ -22,6 +22,6 @@ async-tungstenite = { version = "0.10.0", features = ["async-std-runtime"] }
 tungstenite = "0.11.1"
 
 [patch.crates-io]
-http-types = { git = "https://github.com/ttiurani/http-types.git", rev = "910c3a299756a17fce36176839af3bd3463c7ffe" }
-async-h1 = { git = "https://github.com/ttiurani/async-h1.git", rev = "550a10d2de15267c0f5661dcebace30aff929546" }
-tide = { git = "https://github.com/ttiurani/tide.git", rev = "8c5d5184a70c44061a0f146ec11118345d1e52a9" }
+http-types = { git = "https://github.com/ttiurani/http-types.git", rev = "a6377e219a7a1b86be814cd4e299293a2d9aca90" }
+async-h1 = { git = "https://github.com/ttiurani/async-h1.git", rev = "aa995a01120fa21dfc71b4c4a415ac3ed938ac18" }
+tide = { git = "https://github.com/ttiurani/tide.git", rev = "907724c4c3159bbe222bd06ca7673f7b0096e922" }

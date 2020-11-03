@@ -33,7 +33,7 @@ rust_library(
     crate_type = "lib",
     deps = [
         "@raze__async_executor__1_3_0//:async_executor",
-        "@raze__async_io__1_1_10//:async_io",
+        "@raze__async_io__1_1_0//:async_io",
         "@raze__futures_lite__1_11_2//:futures_lite",
         "@raze__num_cpus__1_13_0//:num_cpus",
         "@raze__once_cell__1_4_1//:once_cell",

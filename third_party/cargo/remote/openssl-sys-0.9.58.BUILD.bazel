@@ -22,7 +22,7 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT OR Apache-2.0"
+    "notice",  # MIT from expression "MIT"
 ])
 
 # Generated targets
@@ -34,18 +34,20 @@ load(
 
 # buildifier: leave-alone
 cargo_build_script(
-    name = "getrandom_build_script",
+    name = "openssl_sys_build_script",
     srcs = glob(["**/*.rs"]),
-    crate_root = "build.rs",
-    edition = "2018",
+    crate_root = "build/main.rs",
+    edition = "2015",
     # buildifier: leave-alone
     deps = [
+        "@raze__autocfg__1_0_1//:autocfg",
+        "@raze__cc__1_0_61//:cc",
+        "@raze__pkg_config__0_3_19//:pkg_config",
     ],
     rustc_flags = [
         "--cap-lints=allow",
     ],
     crate_features = [
-      "std",
     ],
     build_script_env = {
     },
@@ -54,34 +56,30 @@ cargo_build_script(
         "cargo-raze",
         "manual",
     ],
-    version = "0.1.15",
+    version = "0.9.58",
     visibility = ["//visibility:private"],
 )
 
-# Unsupported target "common" with type "test" omitted
 
 # buildifier: leave-alone
 rust_library(
-    name = "getrandom",
+    name = "openssl_sys",
     crate_type = "lib",
     deps = [
-        ":getrandom_build_script",
-        "@raze__cfg_if__0_1_10//:cfg_if",
+        ":openssl_sys_build_script",
         "@raze__libc__0_2_76//:libc",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/lib.rs",
-    edition = "2018",
+    edition = "2015",
     rustc_flags = [
         "--cap-lints=allow",
     ],
-    version = "0.1.15",
+    version = "0.9.58",
     tags = [
         "cargo-raze",
         "manual",
     ],
     crate_features = [
-        "std",
     ],
 )
-# Unsupported target "mod" with type "bench" omitted

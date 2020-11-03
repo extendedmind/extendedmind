@@ -26,13 +26,17 @@ licenses([
 ])
 
 # Generated targets
+# Unsupported target "ar" with type "example" omitted
+# Unsupported target "integration" with type "test" omitted
+# Unsupported target "nm" with type "example" omitted
+# Unsupported target "objcopy" with type "example" omitted
+# Unsupported target "objdump" with type "example" omitted
 
 # buildifier: leave-alone
 rust_library(
-    name = "nb_connect",
+    name = "object",
     crate_type = "lib",
     deps = [
-        "@raze__libc__0_2_80//:libc",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/lib.rs",
@@ -40,11 +44,20 @@ rust_library(
     rustc_flags = [
         "--cap-lints=allow",
     ],
-    version = "1.0.2",
+    version = "0.22.0",
     tags = [
         "cargo-raze",
         "manual",
     ],
     crate_features = [
+        "archive",
+        "coff",
+        "elf",
+        "macho",
+        "pe",
+        "read_core",
+        "unaligned",
     ],
 )
+# Unsupported target "objectmap" with type "example" omitted
+# Unsupported target "parse_self" with type "test" omitted

@@ -34,13 +34,12 @@ load(
 
 # buildifier: leave-alone
 cargo_build_script(
-    name = "num_traits_build_script",
+    name = "core_foundation_sys_build_script",
     srcs = glob(["**/*.rs"]),
     crate_root = "build.rs",
     edition = "2015",
     # buildifier: leave-alone
     deps = [
-        "@raze__autocfg__1_0_1//:autocfg",
     ],
     rustc_flags = [
         "--cap-lints=allow",
@@ -54,18 +53,17 @@ cargo_build_script(
         "cargo-raze",
         "manual",
     ],
-    version = "0.2.12",
+    version = "0.7.0",
     visibility = ["//visibility:private"],
 )
 
-# Unsupported target "cast" with type "test" omitted
 
 # buildifier: leave-alone
 rust_library(
-    name = "num_traits",
+    name = "core_foundation_sys",
     crate_type = "lib",
     deps = [
-        ":num_traits_build_script",
+        ":core_foundation_sys_build_script",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/lib.rs",
@@ -73,7 +71,7 @@ rust_library(
     rustc_flags = [
         "--cap-lints=allow",
     ],
-    version = "0.2.12",
+    version = "0.7.0",
     tags = [
         "cargo-raze",
         "manual",

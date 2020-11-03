@@ -26,48 +26,12 @@ licenses([
 ])
 
 # Generated targets
-# buildifier: disable=load-on-top
-load(
-    "@io_bazel_rules_rust//cargo:cargo_build_script.bzl",
-    "cargo_build_script",
-)
-
-# buildifier: leave-alone
-cargo_build_script(
-    name = "getrandom_build_script",
-    srcs = glob(["**/*.rs"]),
-    crate_root = "build.rs",
-    edition = "2018",
-    # buildifier: leave-alone
-    deps = [
-    ],
-    rustc_flags = [
-        "--cap-lints=allow",
-    ],
-    crate_features = [
-      "std",
-    ],
-    build_script_env = {
-    },
-    data = glob(["**"]),
-    tags = [
-        "cargo-raze",
-        "manual",
-    ],
-    version = "0.1.15",
-    visibility = ["//visibility:private"],
-)
-
-# Unsupported target "common" with type "test" omitted
 
 # buildifier: leave-alone
 rust_library(
-    name = "getrandom",
+    name = "ppv_lite86",
     crate_type = "lib",
     deps = [
-        ":getrandom_build_script",
-        "@raze__cfg_if__0_1_10//:cfg_if",
-        "@raze__libc__0_2_76//:libc",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/lib.rs",
@@ -75,13 +39,13 @@ rust_library(
     rustc_flags = [
         "--cap-lints=allow",
     ],
-    version = "0.1.15",
+    version = "0.2.10",
     tags = [
         "cargo-raze",
         "manual",
     ],
     crate_features = [
+        "simd",
         "std",
     ],
 )
-# Unsupported target "mod" with type "bench" omitted

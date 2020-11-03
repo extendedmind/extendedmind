@@ -35,7 +35,7 @@ rust_binary(
     deps = [
         # Binaries get an implicit dependency on their crate's lib
         ":os_pipe",
-        "@raze__libc__0_2_80//:libc",
+        "@raze__libc__0_2_76//:libc",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/bin/cat.rs",
@@ -60,7 +60,7 @@ rust_binary(
     deps = [
         # Binaries get an implicit dependency on their crate's lib
         ":os_pipe",
-        "@raze__libc__0_2_80//:libc",
+        "@raze__libc__0_2_76//:libc",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/bin/cat_both.rs",
@@ -82,7 +82,7 @@ rust_library(
     name = "os_pipe",
     crate_type = "lib",
     deps = [
-        "@raze__libc__0_2_80//:libc",
+        "@raze__libc__0_2_76//:libc",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/lib.rs",
@@ -107,7 +107,7 @@ rust_binary(
     deps = [
         # Binaries get an implicit dependency on their crate's lib
         ":os_pipe",
-        "@raze__libc__0_2_80//:libc",
+        "@raze__libc__0_2_76//:libc",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/bin/swap.rs",

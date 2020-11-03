@@ -36,7 +36,7 @@ rust_library(
     name = "failure",
     crate_type = "lib",
     deps = [
-        "@raze__backtrace__0_3_53//:backtrace",
+        "@raze__backtrace__0_3_54//:backtrace",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/lib.rs",

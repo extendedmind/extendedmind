@@ -22,18 +22,16 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # Apache-2.0 from expression "Apache-2.0 OR MIT"
+    "notice",  # MIT from expression "MIT OR Apache-2.0"
 ])
 
 # Generated targets
-# Unsupported target "addr2line" with type "example" omitted
 
 # buildifier: leave-alone
 rust_library(
-    name = "addr2line",
+    name = "pkg_config",
     crate_type = "lib",
     deps = [
-        "@raze__gimli__0_22_0//:gimli",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/lib.rs",
@@ -41,7 +39,7 @@ rust_library(
     rustc_flags = [
         "--cap-lints=allow",
     ],
-    version = "0.13.0",
+    version = "0.3.19",
     tags = [
         "cargo-raze",
         "manual",
@@ -49,6 +47,4 @@ rust_library(
     crate_features = [
     ],
 )
-# Unsupported target "correctness" with type "test" omitted
-# Unsupported target "output_equivalence" with type "test" omitted
-# Unsupported target "parse" with type "test" omitted
+# Unsupported target "test" with type "test" omitted

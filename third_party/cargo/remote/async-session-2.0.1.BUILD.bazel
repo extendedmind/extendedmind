@@ -32,7 +32,7 @@ rust_library(
     name = "async_session",
     crate_type = "lib",
     deps = [
-        "@raze__anyhow__1_0_33//:anyhow",
+        "@raze__anyhow__1_0_34//:anyhow",
         "@raze__async_std__1_6_5//:async_std",
         "@raze__base64__0_12_3//:base64",
         "@raze__bincode__1_3_1//:bincode",

@@ -32,7 +32,7 @@ rust_library(
     name = "http_client",
     crate_type = "lib",
     deps = [
-        "@raze__http_types__2_6_0//:http_types",
+        "@raze__http_types__2_7_0//:http_types",
         "@raze__log__0_4_11//:log",
     ],
     srcs = glob(["**/*.rs"]),
