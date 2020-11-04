@@ -26,63 +26,27 @@ licenses([
 ])
 
 # Generated targets
-# buildifier: disable=load-on-top
-load(
-    "@io_bazel_rules_rust//cargo:cargo_build_script.bzl",
-    "cargo_build_script",
-)
-
-# buildifier: leave-alone
-cargo_build_script(
-    name = "libc_build_script",
-    srcs = glob(["**/*.rs"]),
-    crate_root = "build.rs",
-    edition = "2015",
-    # buildifier: leave-alone
-    deps = [
-    ],
-    rustc_flags = [
-        "--cap-lints=allow",
-    ],
-    crate_features = [
-      "default",
-      "extra_traits",
-      "std",
-    ],
-    build_script_env = {
-    },
-    data = glob(["**"]),
-    tags = [
-        "cargo-raze",
-        "manual",
-    ],
-    version = "0.2.76",
-    visibility = ["//visibility:private"],
-)
-
-# Unsupported target "const_fn" with type "test" omitted
 
 # buildifier: leave-alone
 rust_library(
-    name = "libc",
+    name = "async_ctrlc",
     crate_type = "lib",
     deps = [
-        ":libc_build_script",
+        "@raze__ctrlc__3_1_7//:ctrlc",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/lib.rs",
-    edition = "2015",
+    edition = "2018",
     rustc_flags = [
         "--cap-lints=allow",
     ],
-    version = "0.2.76",
+    version = "1.2.0",
     tags = [
         "cargo-raze",
         "manual",
     ],
     crate_features = [
-        "default",
-        "extra_traits",
-        "std",
     ],
 )
+# Unsupported target "async_std" with type "example" omitted
+# Unsupported target "stream" with type "example" omitted

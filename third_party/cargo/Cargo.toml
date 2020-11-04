@@ -27,6 +27,8 @@ futures = "^0.3.5"
 async-std = { version = "1.6.2", features = ["unstable"] }
 tide = "0.14.0"
 http-types = "^2.4.0"
+ctrlc = { version = "3.0", features = ["termination"] }
+async-ctrlc = "1.2.0"
 
 # Needed for lazy_static to build on OSX...
 security-framework = "0.4.4" # bazel fix

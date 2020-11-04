@@ -20,6 +20,8 @@ tide = "0.14.0"
 http-types = "^2.4.0"
 async-tungstenite = { version = "0.10.0", features = ["async-std-runtime"] }
 tungstenite = "0.11.1"
+ctrlc = { version = "3.0", features = ["termination"] }
+async-ctrlc = { version = "1.2.0", features = ["stream"] }
 
 [patch.crates-io]
 http-types = { git = "https://github.com/ttiurani/http-types.git", rev = "a6377e219a7a1b86be814cd4e299293a2d9aca90" }
