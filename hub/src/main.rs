@@ -44,8 +44,6 @@ struct WrappedData {
 }
 
 type WrappedBytesClosure = Box<dyn Fn(Bytes) -> WrappedData + Send + Sync>;
-// type WrappedWebSocketClosure =
-//     Box<dyn Fn(Result<tungstenite::Message, std::io::Error>) -> WrappedData + Send + Sync>;
 
 async fn async_main(initial_state: State) -> Result<()> {
     let mut app = tide::with_state(initial_state);
@@ -169,6 +167,7 @@ fn main() -> Result<()> {
             .collect(),
     };
 
+    // Listen to ctrlc in a separate task
     let ctrlc = CtrlC::new().expect("cannot create Ctrl+C handler?");
     let disconnect_sender = ping_sender.clone();
     let abort: Arc<Mutex<AtomicBool>> = Arc::new(Mutex::new(AtomicBool::new(false)));
@@ -179,7 +178,7 @@ fn main() -> Result<()> {
             .send(Bytes::from_static(&[SystemCommand::Disconnect as u8]))
             .await;
         *abort_writer.as_ref().lock().unwrap() = AtomicBool::new(true);
-        // Wait 2s before killing
+        // Wait 2s before killing, to allow time for file saving and closing sockets
         task::sleep(Duration::from_millis(2000)).await;
         process::exit(0);
     });
@@ -187,10 +186,8 @@ fn main() -> Result<()> {
     // Need to start a system executor to send the WakeUp command, we send it once per second so
     // that the listener will send a WS Ping when it wants to in a 1s delay.
     task::spawn(async move {
-        loop {
-            if *abort.as_ref().lock().unwrap().get_mut() {
-                break;
-            }
+        let mut interval = async_std::stream::interval(Duration::from_secs(1));
+        while interval.next().await.is_some() && !*abort.as_ref().lock().unwrap().get_mut() {
             task::sleep(Duration::from_millis(1000)).await;
             dbg!("Sending WakeUp");
             ping_sender
@@ -199,6 +196,7 @@ fn main() -> Result<()> {
         }
     });
 
+    // Block server with initial state
     futures::executor::block_on(async_main(initial_state))?;
 
     Ok(())
