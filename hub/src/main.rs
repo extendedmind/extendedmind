@@ -61,8 +61,8 @@ async fn async_main(initial_state: State) -> Result<()> {
             let init_msg: Arc<Bytes> = Arc::new(init_msg.clone());
             task::spawn(async move {
                 let receivers = collect_receivers(_req.state(), client_receiver.clone(), init_msg);
-                let mut merged = futures::stream::select_all(receivers);
-                while let Some(wrapped_value) = merged.next().await {
+                let mut merged_receivers = futures::stream::select_all(receivers);
+                while let Some(wrapped_value) = merged_receivers.next().await {
                     dbg!("got value of type {}", wrapped_value.receiver_type);
                     ws_writer
                         .send(tungstenite::Message::Binary(
