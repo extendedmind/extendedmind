@@ -89,7 +89,7 @@ fn collect_receivers(
     state: &State,
     client_receiver: Receiver<Bytes>,
     init_msg: Arc<Bytes>,
-) -> Vec<futures::stream::Map<async_std::sync::Receiver<bytes::Bytes>, WrappedBytesClosure>> {
+) -> Vec<futures::stream::Map<Receiver<Bytes>, WrappedBytesClosure>> {
     let reader = state.readers[init_msg.as_ref()].clone();
     vec![
         state
