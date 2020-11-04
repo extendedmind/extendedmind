@@ -1,7 +1,10 @@
 use anyhow::Result;
 use bytes::Bytes;
 use std::collections::HashMap;
-use std::time::Duration;
+use std::process;
+use std::sync::atomic::AtomicBool;
+use std::sync::Mutex;
+use std::time::{Duration, Instant};
 use tide::Request;
 
 use async_std::sync::{channel, Arc, Receiver, Sender};
@@ -9,6 +12,7 @@ use futures::sink::SinkExt;
 use futures::stream::StreamExt;
 use tungstenite::Message;
 
+use async_ctrlc::CtrlC;
 use async_std::task;
 
 #[derive(Clone, Copy)]
@@ -18,7 +22,7 @@ enum SystemCommand {
     Disconnect = 2,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Copy, Clone, Debug)]
 enum ReceiverType {
     System,
     Hypercore,
@@ -49,7 +53,8 @@ async fn async_main(initial_state: State) -> Result<()> {
     app.at("/ws").get(|req: Request<State>| async move {
         tide::websocket::upgrade(req, |_req, handle| async move {
             // https://docs.rs/async-tungstenite/0.10.0/async_tungstenite/struct.WebSocketStream.html
-            let (mut ws_writer, mut ws_reader) = handle.into_inner().split();
+            let ws = handle.into_inner();
+            let (mut ws_writer, mut ws_reader) = ws.split();
             let init_msg: Bytes = Bytes::from(ws_reader.next().await.unwrap().unwrap().into_data());
             dbg!(&init_msg);
             let hypercore_writer = _req.state().writers[&*init_msg].clone();
@@ -62,15 +67,38 @@ async fn async_main(initial_state: State) -> Result<()> {
             task::spawn(async move {
                 let receivers = collect_receivers(_req.state(), client_receiver.clone(), init_msg);
                 let mut merged_receivers = futures::stream::select_all(receivers);
+                let mut now = Instant::now();
                 while let Some(wrapped_value) = merged_receivers.next().await {
-                    dbg!("got value of type {}", wrapped_value.receiver_type);
-                    ws_writer
-                        .send(tungstenite::Message::Binary(
-                            wrapped_value.data.as_ref().to_vec(),
-                        ))
-                        .await
-                        .unwrap();
-                    dbg!("got result");
+                    match wrapped_value.receiver_type {
+                        ReceiverType::System => {
+                            if wrapped_value.data.as_ref().get(0)
+                                == Some(&(SystemCommand::Disconnect as u8))
+                            {
+                                dbg!("got disconnect");
+                                ws_writer.close().await.unwrap();
+                                break;
+                            }
+                            // Send ping message if enough time has elapsed
+                            if now.elapsed().as_secs() > 30 {
+                                dbg!("sending ping");
+                                ws_writer
+                                    .send(tungstenite::Message::Ping(Vec::new()))
+                                    .await
+                                    .unwrap();
+                                now = Instant::now();
+                            }
+                        }
+                        ReceiverType::Client => {
+                            dbg!("got client request");
+                            ws_writer
+                                .send(tungstenite::Message::Binary(
+                                    wrapped_value.data.as_ref().to_vec(),
+                                ))
+                                .await
+                                .unwrap();
+                        }
+                        _ => break,
+                    }
                 }
             });
             loop {
@@ -141,14 +169,29 @@ fn main() -> Result<()> {
             .collect(),
     };
 
-    // TODO: This should be used on SIGINT/SIGTERM
+    let ctrlc = CtrlC::new().expect("cannot create Ctrl+C handler?");
     let disconnect_sender = ping_sender.clone();
+    let abort: Arc<Mutex<AtomicBool>> = Arc::new(Mutex::new(AtomicBool::new(false)));
+    let abort_writer = abort.clone();
+    task::spawn(async move {
+        ctrlc.await;
+        disconnect_sender
+            .send(Bytes::from_static(&[SystemCommand::Disconnect as u8]))
+            .await;
+        *abort_writer.as_ref().lock().unwrap() = AtomicBool::new(true);
+        // Wait 2s before killing
+        task::sleep(Duration::from_millis(2000)).await;
+        process::exit(0);
+    });
 
-    // Need to start a system executor to send the WakeUp command, we send it once per 5 seconds so
-    // that the listener will send a WS Ping every 30 to 35 seconds.
+    // Need to start a system executor to send the WakeUp command, we send it once per second so
+    // that the listener will send a WS Ping when it wants to in a 1s delay.
     task::spawn(async move {
         loop {
-            task::sleep(Duration::from_millis(5000)).await;
+            if *abort.as_ref().lock().unwrap().get_mut() {
+                break;
+            }
+            task::sleep(Duration::from_millis(1000)).await;
             dbg!("Sending WakeUp");
             ping_sender
                 .send(Bytes::from_static(&[SystemCommand::WakeUp as u8]))
