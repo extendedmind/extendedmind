@@ -87,7 +87,11 @@ async fn async_main(initial_state: State) -> Result<()> {
                             }
                         }
                         ReceiverType::Client => {
-                            dbg!("got client request");
+                            dbg!("got client request, forwarding to hypercore");
+                            hypercore_writer.send(wrapped_value.data).await;
+                        }
+                        ReceiverType::Hypercore => {
+                            dbg!("got hypercore message, sending to client");
                             ws_writer
                                 .send(tungstenite::Message::Binary(
                                     wrapped_value.data.as_ref().to_vec(),
@@ -95,7 +99,6 @@ async fn async_main(initial_state: State) -> Result<()> {
                                 .await
                                 .unwrap();
                         }
-                        _ => break,
                     }
                 }
             });
@@ -153,15 +156,18 @@ fn main() -> Result<()> {
         .level(log::LevelFilter::Debug)
         .chain(std::io::stdout())
         .apply()?;
+
     let (ping_sender, system_command_receiver) = channel(1000);
     let (demo_sender, demo_receiver) = channel(1000);
+    let state_demo_sender = demo_sender.clone();
+    let state_demo_receiver = demo_receiver.clone();
     let initial_state = State {
         system_commands: system_command_receiver,
-        writers: [(Bytes::from_static("demo".as_bytes()), demo_sender)]
+        writers: [(Bytes::from_static("demo".as_bytes()), state_demo_sender)]
             .iter()
             .cloned()
             .collect(),
-        readers: [(Bytes::from_static("demo".as_bytes()), demo_receiver)]
+        readers: [(Bytes::from_static("demo".as_bytes()), state_demo_receiver)]
             .iter()
             .cloned()
             .collect(),
@@ -193,6 +199,14 @@ fn main() -> Result<()> {
             ping_sender
                 .send(Bytes::from_static(&[SystemCommand::WakeUp as u8]))
                 .await;
+        }
+    });
+
+    // Launch a task for the demo owner
+    task::spawn(async move {
+        while let Some(data) = demo_receiver.clone().next().await {
+            dbg!("Got hypercore data, pinging it right back");
+            demo_sender.send(data).await;
         }
     });
 
