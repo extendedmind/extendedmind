@@ -619,8 +619,11 @@ dependencies = [
 name = "extendedmind_engine"
 version = "0.1.0"
 dependencies = [
+ "async-std",
  "automerge-frontend",
+ "bytes",
  "extendedmind_schema_rust",
+ "futures",
  "hypercore",
  "hypercore-protocol",
  "serde_json",

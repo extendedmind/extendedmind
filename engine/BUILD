@@ -11,6 +11,9 @@ rust_library(
         "//third_party/cargo:serde_json",
         "//third_party/cargo:hypercore",
         "//third_party/cargo:hypercore_protocol",
+        "//third_party/cargo:async_std",
+        "//third_party/cargo:bytes",
+        "//third_party/cargo:futures",
     ],
     srcs = glob(["src/**"]),
 )
