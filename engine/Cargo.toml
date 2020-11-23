@@ -17,3 +17,8 @@ async-std = { version = "1.6.2", features = ["unstable"] }
 futures = "^0.3.5"
 hypercore = { git = "https://github.com/datrs/hypercore.git", rev = "97ba31844886a4672a0ea8df6412881048bba1cb" }
 hypercore-protocol = { git = "https://github.com/ttiurani/hypercore-protocol-rs.git", branch = "master" }
+random-access-disk = "2.0.0"
+random-access-storage = "4.0.0"
+hex = "0.4"
+anyhow = "1.0.28"
+log = "0.4"

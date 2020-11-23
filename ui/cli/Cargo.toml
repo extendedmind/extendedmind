@@ -10,6 +10,7 @@ extendedmind_engine = { path = "../../engine" }
 futures = "^0.3.5"
 async-std = { version = "1.6.2", features = ["unstable"] }
 async-tungstenite = { version ="=0.10.0", features = ["async-std-runtime"] }
+tungstenite = "0.11.1"
 clap = "3.0.0-beta.2"
 
 [dev-dependencies]

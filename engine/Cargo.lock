@@ -526,13 +526,18 @@ checksum = "f7531096570974c3a9dcf9e4b8e1cede1ec26cf5046219fb3b9d897503b9be59"
 name = "extendedmind_engine"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "async-std",
  "automerge-frontend",
  "bytes",
  "extendedmind_schema_rust",
  "futures",
+ "hex",
  "hypercore",
  "hypercore-protocol",
+ "log",
+ "random-access-disk",
+ "random-access-storage",
  "serde_json",
 ]
 
