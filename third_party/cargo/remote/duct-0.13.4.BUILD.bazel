@@ -36,7 +36,7 @@ rust_binary(
         # Binaries get an implicit dependency on their crate's lib
         ":duct",
         "@raze__libc__0_2_76//:libc",
-        "@raze__once_cell__1_4_1//:once_cell",
+        "@raze__once_cell__1_5_2//:once_cell",
         "@raze__os_pipe__0_9_2//:os_pipe",
         "@raze__shared_child__0_3_4//:shared_child",
     ],
@@ -64,7 +64,7 @@ rust_binary(
         # Binaries get an implicit dependency on their crate's lib
         ":duct",
         "@raze__libc__0_2_76//:libc",
-        "@raze__once_cell__1_4_1//:once_cell",
+        "@raze__once_cell__1_5_2//:once_cell",
         "@raze__os_pipe__0_9_2//:os_pipe",
         "@raze__shared_child__0_3_4//:shared_child",
     ],
@@ -89,7 +89,7 @@ rust_library(
     crate_type = "lib",
     deps = [
         "@raze__libc__0_2_76//:libc",
-        "@raze__once_cell__1_4_1//:once_cell",
+        "@raze__once_cell__1_5_2//:once_cell",
         "@raze__os_pipe__0_9_2//:os_pipe",
         "@raze__shared_child__0_3_4//:shared_child",
     ],
@@ -117,7 +117,7 @@ rust_binary(
         # Binaries get an implicit dependency on their crate's lib
         ":duct",
         "@raze__libc__0_2_76//:libc",
-        "@raze__once_cell__1_4_1//:once_cell",
+        "@raze__once_cell__1_5_2//:once_cell",
         "@raze__os_pipe__0_9_2//:os_pipe",
         "@raze__shared_child__0_3_4//:shared_child",
     ],
@@ -145,7 +145,7 @@ rust_binary(
         # Binaries get an implicit dependency on their crate's lib
         ":duct",
         "@raze__libc__0_2_76//:libc",
-        "@raze__once_cell__1_4_1//:once_cell",
+        "@raze__once_cell__1_5_2//:once_cell",
         "@raze__os_pipe__0_9_2//:os_pipe",
         "@raze__shared_child__0_3_4//:shared_child",
     ],
@@ -173,7 +173,7 @@ rust_binary(
         # Binaries get an implicit dependency on their crate's lib
         ":duct",
         "@raze__libc__0_2_76//:libc",
-        "@raze__once_cell__1_4_1//:once_cell",
+        "@raze__once_cell__1_5_2//:once_cell",
         "@raze__os_pipe__0_9_2//:os_pipe",
         "@raze__shared_child__0_3_4//:shared_child",
     ],
@@ -201,7 +201,7 @@ rust_binary(
         # Binaries get an implicit dependency on their crate's lib
         ":duct",
         "@raze__libc__0_2_76//:libc",
-        "@raze__once_cell__1_4_1//:once_cell",
+        "@raze__once_cell__1_5_2//:once_cell",
         "@raze__os_pipe__0_9_2//:os_pipe",
         "@raze__shared_child__0_3_4//:shared_child",
     ],
@@ -229,7 +229,7 @@ rust_binary(
         # Binaries get an implicit dependency on their crate's lib
         ":duct",
         "@raze__libc__0_2_76//:libc",
-        "@raze__once_cell__1_4_1//:once_cell",
+        "@raze__once_cell__1_5_2//:once_cell",
         "@raze__os_pipe__0_9_2//:os_pipe",
         "@raze__shared_child__0_3_4//:shared_child",
     ],
@@ -257,7 +257,7 @@ rust_binary(
         # Binaries get an implicit dependency on their crate's lib
         ":duct",
         "@raze__libc__0_2_76//:libc",
-        "@raze__once_cell__1_4_1//:once_cell",
+        "@raze__once_cell__1_5_2//:once_cell",
         "@raze__os_pipe__0_9_2//:os_pipe",
         "@raze__shared_child__0_3_4//:shared_child",
     ],
@@ -285,7 +285,7 @@ rust_binary(
         # Binaries get an implicit dependency on their crate's lib
         ":duct",
         "@raze__libc__0_2_76//:libc",
-        "@raze__once_cell__1_4_1//:once_cell",
+        "@raze__once_cell__1_5_2//:once_cell",
         "@raze__os_pipe__0_9_2//:os_pipe",
         "@raze__shared_child__0_3_4//:shared_child",
     ],

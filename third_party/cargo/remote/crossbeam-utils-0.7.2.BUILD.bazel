@@ -46,7 +46,6 @@ cargo_build_script(
         "--cap-lints=allow",
     ],
     crate_features = [
-      "default",
       "lazy_static",
       "std",
     ],
@@ -86,7 +85,6 @@ rust_library(
         "manual",
     ],
     crate_features = [
-        "default",
         "lazy_static",
         "std",
     ],

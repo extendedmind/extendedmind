@@ -33,8 +33,8 @@ rust_library(
     name = "async_tungstenite",
     crate_type = "lib",
     deps = [
-        "@raze__futures_io__0_3_7//:futures_io",
-        "@raze__futures_util__0_3_7//:futures_util",
+        "@raze__futures_io__0_3_8//:futures_io",
+        "@raze__futures_util__0_3_8//:futures_util",
         "@raze__log__0_4_11//:log",
         "@raze__pin_project__0_4_27//:pin_project",
         "@raze__tungstenite__0_11_1//:tungstenite",

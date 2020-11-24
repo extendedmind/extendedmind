@@ -37,7 +37,7 @@ rust_library(
         "@raze__data_encoding__2_3_1//:data_encoding",
         "@raze__percent_encoding__2_1_0//:percent_encoding",
         "@raze__serde__1_0_117//:serde",
-        "@raze__thiserror__1_0_21//:thiserror",
+        "@raze__thiserror__1_0_22//:thiserror",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/lib.rs",

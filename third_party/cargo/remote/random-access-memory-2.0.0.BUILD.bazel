@@ -34,14 +34,14 @@ rust_library(
     crate_type = "lib",
     deps = [
         "@raze__anyhow__1_0_34//:anyhow",
-        "@raze__futures__0_3_7//:futures",
+        "@raze__futures__0_3_8//:futures",
         "@raze__random_access_storage__4_0_0//:random_access_storage",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/lib.rs",
     edition = "2018",
     proc_macro_deps = [
-        "@raze__async_trait__0_1_41//:async_trait",
+        "@raze__async_trait__0_1_42//:async_trait",
     ],
     rustc_flags = [
         "--cap-lints=allow",

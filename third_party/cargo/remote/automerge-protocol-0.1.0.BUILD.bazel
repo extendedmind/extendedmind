@@ -34,7 +34,7 @@ rust_library(
     deps = [
         "@raze__hex__0_4_2//:hex",
         "@raze__serde__1_0_117//:serde",
-        "@raze__thiserror__1_0_21//:thiserror",
+        "@raze__thiserror__1_0_22//:thiserror",
         "@raze__uuid__0_5_1//:uuid",
     ],
     srcs = glob(["**/*.rs"]),

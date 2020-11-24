@@ -15,7 +15,7 @@ anyhow = "1.0.33"
 chrono = { version = "0.4.19" }
 futures = "^0.3.5"
 async-std = { version = "1.6.2", features = ["unstable"] }
-tide = "0.14.0"
+tide = "0.15.0"
 http-types = "^2.4.0"
 async-tungstenite = { version = "0.10.0", features = ["async-std-runtime"] }
 tungstenite = "0.11.1"
@@ -23,6 +23,6 @@ ctrlc = { version = "3.0", features = ["termination"] }
 async-ctrlc = { version = "1.2.0", features = ["stream"] }
 
 [patch.crates-io]
-http-types = { git = "https://github.com/ttiurani/http-types.git", rev = "a6377e219a7a1b86be814cd4e299293a2d9aca90" }
-async-h1 = { git = "https://github.com/ttiurani/async-h1.git", rev = "aa995a01120fa21dfc71b4c4a415ac3ed938ac18" }
-tide = { git = "https://github.com/ttiurani/tide.git", rev = "907724c4c3159bbe222bd06ca7673f7b0096e922" }
+http-types = { git = "https://github.com/ttiurani/http-types.git", rev = "4be6cedc445976df2880b865548b729a756e705f" }
+async-h1 = { git = "https://github.com/ttiurani/async-h1.git", rev = "cfd5ad1ac26df41030c9d45803f859e48308c01d" }
+tide = { git = "https://github.com/ttiurani/tide.git", rev = "926d8727563f4661059d9520e62690bfef09e47e" }

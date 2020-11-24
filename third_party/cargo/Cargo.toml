@@ -17,7 +17,7 @@ hypercore = { git = "https://github.com/datrs/hypercore.git", rev = "97ba3184488
 hypercore-protocol = { git = "https://github.com/ttiurani/hypercore-protocol-rs.git", branch = "master" }
 async-tungstenite = { version = "0.10.0", features = ["async-std-runtime"] }
 tungstenite = "0.11.1"
-bytes = "0.6.0"
+bytes = "0.5.0"
 fern = "0.6.0"
 log = "0.4.11"
 anyhow = "1.0.33"
@@ -25,22 +25,26 @@ clap = "3.0.0-beta.2"
 chrono = { version = "0.4.19" }
 futures = "^0.3.5"
 async-std = { version = "1.6.2", features = ["unstable"] }
-tide = "0.14.0"
+tide = "0.15.0"
 http-types = "^2.4.0"
 ctrlc = { version = "3.0", features = ["termination"] }
 async-ctrlc = "1.2.0"
+random-access-disk = "2.0.0"
+random-access-storage = "4.0.0"
+hex = "0.4"
 
 # Needed for lazy_static to build on OSX...
 security-framework = "0.4.4" # bazel fix
 security-framework-sys = "0.4.3"
 tempfile = "3.1.0"
+lazy_static = "1.4.0"
 libc = "=0.2.76"
 # ...lazy_static end
 
 [patch.crates-io]
-http-types = { git = "https://github.com/ttiurani/http-types.git", rev = "a6377e219a7a1b86be814cd4e299293a2d9aca90" }
-async-h1 = { git = "https://github.com/ttiurani/async-h1.git", rev = "aa995a01120fa21dfc71b4c4a415ac3ed938ac18" }
-tide = { git = "https://github.com/ttiurani/tide.git", rev = "907724c4c3159bbe222bd06ca7673f7b0096e922" }
+http-types = { git = "https://github.com/ttiurani/http-types.git", rev = "4be6cedc445976df2880b865548b729a756e705f" }
+async-h1 = { git = "https://github.com/ttiurani/async-h1.git", rev = "cfd5ad1ac26df41030c9d45803f859e48308c01d" }
+tide = { git = "https://github.com/ttiurani/tide.git", rev = "926d8727563f4661059d9520e62690bfef09e47e" }
 
 [raze]
 workspace_path = "//third_party/cargo"
@@ -48,7 +52,7 @@ genmode = "Remote"
 default_gen_buildrs = true
 
 # See https://github.com/google/cargo-raze/issues/41#issuecomment-682272829
-[raze.crates.native-tls.'0.2.4']
+[raze.crates.native-tls.'0.2.6']
 additional_deps = [
     "@raze__lazy_static__1_4_0//:lazy_static",
     "@raze__security_framework__0_4_4//:security_framework",

@@ -32,14 +32,14 @@ rust_library(
     name = "http_client",
     crate_type = "lib",
     deps = [
-        "@raze__http_types__2_7_0//:http_types",
+        "@raze__http_types__2_8_0//:http_types",
         "@raze__log__0_4_11//:log",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/lib.rs",
     edition = "2018",
     proc_macro_deps = [
-        "@raze__async_trait__0_1_41//:async_trait",
+        "@raze__async_trait__0_1_42//:async_trait",
     ],
     rustc_flags = [
         "--cap-lints=allow",

@@ -69,11 +69,11 @@ rust_library(
         ":hypercore_protocol_build_script",
         "@raze__blake2_rfc__0_2_18//:blake2_rfc",
         "@raze__bytes__0_5_6//:bytes",
-        "@raze__futures__0_3_7//:futures",
+        "@raze__futures__0_3_8//:futures",
         "@raze__futures_timer__3_0_2//:futures_timer",
         "@raze__getrandom__0_1_15//:getrandom",
         "@raze__hex__0_4_2//:hex",
-        "@raze__instant__0_1_8//:instant",
+        "@raze__instant__0_1_9//:instant",
         "@raze__log__0_4_11//:log",
         "@raze__pretty_hash__0_4_1//:pretty_hash",
         "@raze__prost__0_6_1//:prost",
@@ -86,7 +86,7 @@ rust_library(
     crate_root = "src/lib.rs",
     edition = "2018",
     proc_macro_deps = [
-        "@raze__async_trait__0_1_41//:async_trait",
+        "@raze__async_trait__0_1_42//:async_trait",
     ],
     rustc_flags = [
         "--cap-lints=allow",

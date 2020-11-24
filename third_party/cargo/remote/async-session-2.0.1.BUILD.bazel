@@ -33,7 +33,7 @@ rust_library(
     crate_type = "lib",
     deps = [
         "@raze__anyhow__1_0_34//:anyhow",
-        "@raze__async_std__1_6_5//:async_std",
+        "@raze__async_std__1_7_0//:async_std",
         "@raze__base64__0_12_3//:base64",
         "@raze__bincode__1_3_1//:bincode",
         "@raze__blake3__0_3_7//:blake3",
@@ -43,13 +43,13 @@ rust_library(
         "@raze__rand__0_7_3//:rand",
         "@raze__serde__1_0_117//:serde",
         "@raze__serde_json__1_0_59//:serde_json",
-        "@raze__sha2__0_9_1//:sha2",
+        "@raze__sha2__0_9_2//:sha2",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/lib.rs",
     edition = "2018",
     proc_macro_deps = [
-        "@raze__async_trait__0_1_41//:async_trait",
+        "@raze__async_trait__0_1_42//:async_trait",
     ],
     rustc_flags = [
         "--cap-lints=allow",

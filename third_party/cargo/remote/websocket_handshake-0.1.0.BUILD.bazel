@@ -33,7 +33,7 @@ rust_library(
     crate_type = "lib",
     deps = [
         "@raze__base64__0_12_3//:base64",
-        "@raze__http_types__2_7_0//:http_types",
+        "@raze__http_types__2_8_0//:http_types",
         "@raze__sha_1__0_8_2//:sha_1",
     ],
     srcs = glob(["**/*.rs"]),

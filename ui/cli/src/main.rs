@@ -50,7 +50,10 @@ async fn run(url: String, public_key: String) -> Result<(), Box<dyn std::error::
         dbg!("GOT INCOMING MESSAGE");
         let msg = incoming_msg.unwrap().unwrap();
         dbg!("INCOMING msg {:?}", msg.len());
-        hypercore_sender.clone().send(Bytes::from(msg.into_data())).await;
+        hypercore_sender
+            .clone()
+            .send(Bytes::from(msg.into_data()))
+            .await;
     }
 }
 

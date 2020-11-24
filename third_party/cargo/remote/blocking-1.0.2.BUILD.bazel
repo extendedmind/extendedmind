@@ -37,7 +37,7 @@ rust_library(
         "@raze__atomic_waker__1_0_0//:atomic_waker",
         "@raze__fastrand__1_4_0//:fastrand",
         "@raze__futures_lite__1_11_2//:futures_lite",
-        "@raze__once_cell__1_4_1//:once_cell",
+        "@raze__once_cell__1_5_2//:once_cell",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/lib.rs",

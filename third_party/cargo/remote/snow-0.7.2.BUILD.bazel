@@ -82,7 +82,7 @@ rust_library(
         "@raze__chacha20poly1305__0_6_0//:chacha20poly1305",
         "@raze__rand__0_7_3//:rand",
         "@raze__rand_core__0_5_1//:rand_core",
-        "@raze__sha2__0_9_1//:sha2",
+        "@raze__sha2__0_9_2//:sha2",
         "@raze__subtle__2_3_0//:subtle",
         "@raze__x25519_dalek__1_1_0//:x25519_dalek",
     ],

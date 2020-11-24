@@ -33,8 +33,8 @@ rust_library(
     crate_type = "lib",
     deps = [
         "@raze__async_channel__1_5_1//:async_channel",
-        "@raze__async_std__1_6_5//:async_std",
-        "@raze__http_types__2_7_0//:http_types",
+        "@raze__async_std__1_7_0//:async_std",
+        "@raze__http_types__2_8_0//:http_types",
         "@raze__log__0_4_11//:log",
         "@raze__memchr__2_3_4//:memchr",
         "@raze__pin_project_lite__0_1_11//:pin_project_lite",

@@ -40,7 +40,7 @@ cargo_build_script(
     edition = "2018",
     # buildifier: leave-alone
     deps = [
-        "@raze__cc__1_0_61//:cc",
+        "@raze__cc__1_0_65//:cc",
     ],
     rustc_flags = [
         "--cap-lints=allow",

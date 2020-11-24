@@ -32,13 +32,13 @@ rust_library(
     name = "random_access_storage",
     crate_type = "lib",
     deps = [
-        "@raze__futures_io__0_3_7//:futures_io",
+        "@raze__futures_io__0_3_8//:futures_io",
     ],
     srcs = glob(["**/*.rs"]),
     crate_root = "src/lib.rs",
     edition = "2018",
     proc_macro_deps = [
-        "@raze__async_trait__0_1_41//:async_trait",
+        "@raze__async_trait__0_1_42//:async_trait",
     ],
     rustc_flags = [
         "--cap-lints=allow",
