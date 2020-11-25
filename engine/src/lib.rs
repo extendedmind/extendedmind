@@ -21,6 +21,7 @@ use hypercore_protocol::schema::*;
 pub use hypercore_protocol::Protocol;
 use hypercore_protocol::{discovery_key, Channel, Event, Message, ProtocolBuilder};
 
+#[derive(Clone)]
 pub struct Engine {
     data: Data,
     is_initiator: bool,
@@ -87,9 +88,9 @@ impl Engine {
             )
             .await
             .unwrap();
-            dbg!("USING GIVEN PUBLIC KEY");
-            let public_key =
-                PublicKey::from_bytes(hex::decode(public_key).unwrap().as_ref()).unwrap();
+            let key = hex::decode(public_key).unwrap();
+            dbg!("USING GIVEN PUBLIC KEY {}", &key);
+            let public_key = PublicKey::from_bytes(key.as_ref()).unwrap();
             Feed::builder(public_key, storage).build().await.unwrap()
         } else {
             dbg!("USING EXISTING");
@@ -118,6 +119,7 @@ impl Engine {
         }
     }
 
+    // TEMPORARY....
     pub fn new() -> Engine {
         Engine {
             data: Data::new(Vec::new(), Vec::new()),
@@ -125,10 +127,10 @@ impl Engine {
             feedstore: None,
         }
     }
-
     pub fn get_data(&self) -> String {
         serde_json::to_string(&self.data).unwrap()
     }
+    // ...TEMPORARY
 
     pub async fn connect_passive(
         self,
@@ -168,7 +170,9 @@ impl Engine {
                 Event::Handshake(_) => {
                     if self.is_initiator {
                         for feed in feedstore.feeds.values() {
-                            protocol.open(feed.key().to_vec()).await?;
+                            let feed_key = feed.key().to_vec();
+                            dbg!("Opening feed {}", &feed_key);
+                            protocol.open(feed_key).await?;
                         }
                     }
                 }

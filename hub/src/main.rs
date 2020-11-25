@@ -32,9 +32,18 @@ enum ReceiverType {
 
 #[derive(Clone)]
 struct State {
+    // Engine
+    engine: Engine,
+    // System command receiver
     system_commands: Receiver<Result<Bytes, io::Error>>,
-    // Stores
-    streams: HashMap<String, (AsyncSender, Receiver<Result<Bytes, io::Error>>)>,
+    // Stores the channels needed to make a protocol
+    channels: HashMap<String, SplitChannels>,
+}
+
+#[derive(Clone)]
+struct SplitChannels {
+    engine_channel: (AsyncSender, Receiver<Result<Bytes, io::Error>>),
+    socket_channel: (AsyncSender, Receiver<Result<Bytes, io::Error>>),
 }
 
 #[derive(Clone)]
@@ -58,19 +67,33 @@ async fn async_main(initial_state: State) -> Result<()> {
     app.at("/ws/:discovery_key")
         .get(|req: Request<State>| async move {
             tide::websocket::upgrade(req, |_req, handle| async move {
-                // https://docs.rs/async-tungstenite/0.10.0/async_tungstenite/struct.WebSocketStream.html
+                // Get handle to async-tungstenite WebSocketStream
                 let ws = handle.into_inner();
                 let (mut ws_writer, mut ws_reader) = ws.split();
-                let discovery_key: String = _req.param("discovery_key")?.parse().unwrap();
+
+                // Get discovery key from the path
+                let discovery_key: Arc<String> =
+                    Arc::new(_req.param("discovery_key")?.parse().unwrap());
                 dbg!(&discovery_key);
-                let (client_sender, client_receiver): ChannelSenderReceiver = channel(1000);
-                let discovery_key: Arc<String> = Arc::new("demo".to_string());
+
+                // Launch a task for the protocol
+                let (engine_sender, engine_receiver) = _req.state().channels
+                    [discovery_key.as_ref()]
+                .engine_channel
+                .clone();
+                let engine = _req.state().engine.clone();
                 task::spawn(async move {
-                    let (receivers, hypercore_sender) = collect_receivers_and_sender(
-                        _req.state(),
-                        client_receiver.clone(),
-                        discovery_key,
-                    );
+                    engine
+                        .connect_passive(engine_receiver, engine_sender)
+                        .await
+                        .unwrap();
+                });
+
+                // Launch a second task for listening to receivers
+                let (client_sender, client_receiver): ChannelSenderReceiver = channel(1000);
+                task::spawn(async move {
+                    let (receivers, hypercore_sender) =
+                        collect_receivers_and_sender(_req.state(), client_receiver, discovery_key);
                     let mut merged_receivers = futures::stream::select_all(receivers);
                     let mut now = Instant::now();
                     while let Some(Ok(wrapped_value)) = merged_receivers.next().await {
@@ -111,6 +134,8 @@ async fn async_main(initial_state: State) -> Result<()> {
                         }
                     }
                 });
+
+                // Block loop on incoming messages
                 loop {
                     let incoming_msg = ws_reader.next().await;
                     let msg = incoming_msg.unwrap().unwrap();
@@ -134,7 +159,9 @@ fn collect_receivers_and_sender(
     client_receiver: Receiver<Result<Bytes, io::Error>>,
     discovery_key: Arc<String>,
 ) -> CollectedReceiversAndSender {
-    let (writer, reader) = state.streams[discovery_key.as_ref()].clone();
+    let (writer, reader) = state.channels[discovery_key.as_ref()]
+        .socket_channel
+        .clone();
     (
         vec![
             state
@@ -181,17 +208,30 @@ fn main() -> Result<()> {
         .chain(std::io::stdout())
         .apply()?;
 
+    // Initialize the engine blocking
+    let engine = futures::executor::block_on(async move { Engine::new_disk(false, None).await });
+
+    // Create channels
     let (ping_sender, system_command_receiver): ChannelSenderReceiver = channel(1000);
     let (incoming_sender, incoming_receiver): ChannelSenderReceiver = channel(1000);
     let (outgoing_sender, outgoing_receiver): ChannelSenderReceiver = channel(1000);
     let incoming_sender = AsyncSender::new(incoming_sender);
     let outgoing_sender = AsyncSender::new(outgoing_sender);
+
+    // Create state for websocket
     let initial_state = State {
+        engine,
         system_commands: system_command_receiver,
-        streams: [("demo".to_string(), (incoming_sender, outgoing_receiver))]
-            .iter()
-            .cloned()
-            .collect(),
+        channels: [(
+            "demo".to_string(),
+            SplitChannels {
+                engine_channel: (incoming_sender, outgoing_receiver),
+                socket_channel: (outgoing_sender, incoming_receiver),
+            },
+        )]
+        .iter()
+        .cloned()
+        .collect(),
     };
 
     // Listen to ctrlc in a separate task
@@ -221,15 +261,6 @@ fn main() -> Result<()> {
                 .send(Ok(Bytes::from_static(&[SystemCommand::WakeUp as u8])))
                 .await;
         }
-    });
-
-    // Launch a task for the demo owner
-    task::spawn(async move {
-        let engine = Engine::new_disk(false, None).await;
-        engine
-            .connect_passive(incoming_receiver, outgoing_sender)
-            .await
-            .unwrap();
     });
 
     // Block server with initial state
