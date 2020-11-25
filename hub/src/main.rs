@@ -245,8 +245,8 @@ fn main() -> Result<()> {
             .send(Ok(Bytes::from_static(&[SystemCommand::Disconnect as u8])))
             .await;
         *abort_writer.as_ref().lock().unwrap() = AtomicBool::new(true);
-        // Wait 2s before killing, to allow time for file saving and closing sockets
-        task::sleep(Duration::from_millis(2000)).await;
+        // Wait 200ms before killing, to allow time for file saving and closing sockets
+        task::sleep(Duration::from_millis(200)).await;
         process::exit(0);
     });
 
