@@ -1,0 +1,189 @@
+SUCCESSFUL HUB OUTPUT:
+
+warning: unused manifest key: package.licence
+    Finished dev [unoptimized + debuginfo] target(s) in 0.16s
+     Running `target/debug/extendedmind_hub`
+[/Users/ttiurani/devel/em/extendedmind/engine/src/lib.rs:96] "USING EXISTING" = "USING EXISTING"
+[/Users/ttiurani/devel/em/extendedmind/engine/src/lib.rs:101] "PUBLIC KEY {} {}" = "PUBLIC KEY {} {}"
+[/Users/ttiurani/devel/em/extendedmind/engine/src/lib.rs:101] is_initiator = false
+[/Users/ttiurani/devel/em/extendedmind/engine/src/lib.rs:101] public_key = "f92ef247aaa25466822728d76f3197d76560f2d1b965222d9bc04764d237cedb"
+[2020-11-25 12:11:45][tide::server][INFO] Server listening on http://0.0.0.0:8080
+√[2020-11-25 12:11:48][tide::log::middleware][INFO] <-- Request received
+[2020-11-25 12:11:48][tide::log::middleware][INFO] --> Response sent
+[src/main.rs:77] &discovery_key = "demo"
+[/Users/ttiurani/devel/em/extendedmind/engine/src/lib.rs:161] "poll_protocol" = "poll_protocol"
+[/Users/ttiurani/devel/em/extendedmind/engine/src/lib.rs:164] "waiting for protocol event" = "waiting for protocol event"
+[src/main.rs:142] "got incoming client message {:?}" = "got incoming client message {:?}"
+[src/main.rs:142] msg.len() = 59
+[src/main.rs:120] "got client request, forwarding to hypercore {}" = "got client request, forwarding to hypercore {}"
+[src/main.rs:120] wrapped_value.data.len() = 59
+[/Users/ttiurani/devel/em/extendedmind/engine/src/lib.rs:61] "BYTES BUF SIZE {}" = "BYTES BUF SIZE {}"
+[/Users/ttiurani/devel/em/extendedmind/engine/src/lib.rs:61] buf_size = 123
+[src/main.rs:128] "got hypercore message, sending to client, {:?}" = "got hypercore message, sending to client, {:?}"
+[src/main.rs:128] msg.len() = 123
+[src/main.rs:142] "got incoming client message {:?}" = "got incoming client message {:?}"
+[src/main.rs:142] msg.len() = 91
+[src/main.rs:120] "got client request, forwarding to hypercore {}" = "got client request, forwarding to hypercore {}"
+[src/main.rs:120] wrapped_value.data.len() = 91
+[src/main.rs:142] "got incoming client message {:?}" = "got incoming client message {:?}"
+[src/main.rs:142] msg.len() = 70
+[src/main.rs:120] "got client request, forwarding to hypercore {}" = "got client request, forwarding to hypercore {}"
+[src/main.rs:120] wrapped_value.data.len() = 70
+[/Users/ttiurani/devel/em/extendedmind/engine/src/lib.rs:166] "got protocol event {:?}" = "got protocol event {:?}"
+[/Users/ttiurani/devel/em/extendedmind/engine/src/lib.rs:166] &event = Ok(
+    Handshake(remote_key=e32e54..2f),
+)
+[2020-11-25 12:11:48][extendedmind_engine][DEBUG] protocol event Handshake(remote_key=e32e54..2f)
+[/Users/ttiurani/devel/em/extendedmind/engine/src/lib.rs:166] "got protocol event {:?}" = "got protocol event {:?}"
+[/Users/ttiurani/devel/em/extendedmind/engine/src/lib.rs:166] &event = Ok(
+    DiscoveryKey(237184..87),
+)
+[2020-11-25 12:11:48][extendedmind_engine][DEBUG] protocol event DiscoveryKey(237184..87)
+[/Users/ttiurani/devel/em/extendedmind/engine/src/lib.rs:166] "got protocol event {:?}" = "got protocol event {:?}"
+[/Users/ttiurani/devel/em/extendedmind/engine/src/lib.rs:166] &event = Ok(
+    Channel { discovery_key: "237184..87" },
+)
+[2020-11-25 12:11:48][extendedmind_engine][DEBUG] protocol event Channel { discovery_key: "237184..87" }
+[/Users/ttiurani/devel/em/extendedmind/engine/src/lib.rs:61] "BYTES BUF SIZE {}" = "BYTES BUF SIZE {}"
+[/Users/ttiurani/devel/em/extendedmind/engine/src/lib.rs:61] buf_size = 70
+[src/main.rs:128] "got hypercore message, sending to client, {:?}" = "got hypercore message, sending to client, {:?}"
+[src/main.rs:128] msg.len() = 70
+[/Users/ttiurani/devel/em/extendedmind/engine/src/lib.rs:61] "BYTES BUF SIZE {}" = "BYTES BUF SIZE {}"
+[/Users/ttiurani/devel/em/extendedmind/engine/src/lib.rs:61] buf_size = 4
+[src/main.rs:128] "got hypercore message, sending to client, {:?}" = "got hypercore message, sending to client, {:?}"
+[src/main.rs:128] msg.len() = 4
+[src/main.rs:142] "got incoming client message {:?}" = "got incoming client message {:?}"
+[src/main.rs:142] msg.len() = 4
+[src/main.rs:120] "got client request, forwarding to hypercore {}" = "got client request, forwarding to hypercore {}"
+[src/main.rs:120] wrapped_value.data.len() = 4
+^C[src/main.rs:105] "got disconnect" = "got disconnect"
+[2020-11-25 12:11:56][tungstenite::protocol][DEBUG] Received close frame: None
+[src/main.rs:142] "got incoming client message {:?}" = "got incoming client message {:?}"
+[src/main.rs:142] msg.len() = 0
+thread 'async-std/runtime' panicked at 'called `Option::unwrap()` on a `None` value', src/main.rs:141:44
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+
+
+AND MATCHING CLI OUTPUT:
+
+warning: unused manifest key: package.licence
+    Finished dev [unoptimized + debuginfo] target(s) in 0.13s
+     Running `target/debug/extendedmind_cli 'ws://localhost:8080/ws' f92ef247aaa25466822728d76f3197d76560f2d1b965222d9bc04764d237cedb`
+{"items":[],"reminders":[]}
+[/Users/ttiurani/devel/em/extendedmind/engine/src/lib.rs:92] "USING GIVEN PUBLIC KEY {}" = "USING GIVEN PUBLIC KEY {}"
+[/Users/ttiurani/devel/em/extendedmind/engine/src/lib.rs:92] &key = [
+    249,
+    46,
+    242,
+    71,
+    170,
+    162,
+    84,
+    102,
+    130,
+    39,
+    40,
+    215,
+    111,
+    49,
+    151,
+    215,
+    101,
+    96,
+    242,
+    209,
+    185,
+    101,
+    34,
+    45,
+    155,
+    192,
+    71,
+    100,
+    210,
+    55,
+    206,
+    219,
+]
+[/Users/ttiurani/devel/em/extendedmind/engine/src/lib.rs:161] "poll_protocol" = "poll_protocol"
+[/Users/ttiurani/devel/em/extendedmind/engine/src/lib.rs:164] "waiting for protocol event" = "waiting for protocol event"
+[/Users/ttiurani/devel/em/extendedmind/engine/src/lib.rs:61] "BYTES BUF SIZE {}" = "BYTES BUF SIZE {}"
+[/Users/ttiurani/devel/em/extendedmind/engine/src/lib.rs:61] buf_size = 59
+[src/main.rs:41] "GOT OUTGOING MESSAGE" = "GOT OUTGOING MESSAGE"
+[src/main.rs:43] "Outputting msg {:?}" = "Outputting msg {:?}"
+[src/main.rs:43] &msg = b":\xb1u\xd9'\xed\x01q;\xdfm\x92\xd3\x8c\xd8\xd0\xd1\x8cgN\x97>\r\x81Q>\x96Q\xb4h:ya\n\x18Q\xf3\xd2\x1a\xba\x815i\xfcd\xd4\xd5v\x1e\xf6y\x01\x13DH'\xc8$v"
+[src/main.rs:50] "GOT INCOMING MESSAGE" = "GOT INCOMING MESSAGE"
+[src/main.rs:52] "INCOMING msg {:?}" = "INCOMING msg {:?}"
+[src/main.rs:52] msg.len() = 123
+[/Users/ttiurani/devel/em/extendedmind/engine/src/lib.rs:61] "BYTES BUF SIZE {}" = "BYTES BUF SIZE {}"
+[/Users/ttiurani/devel/em/extendedmind/engine/src/lib.rs:61] buf_size = 91
+[src/main.rs:41] "GOT OUTGOING MESSAGE" = "GOT OUTGOING MESSAGE"
+[src/main.rs:43] "Outputting msg {:?}" = "Outputting msg {:?}"
+[src/main.rs:43] &msg = b"Z\r\xfe\xe41\x104\x1ce\xe8\xb5\x13\xc3\x80{4K\xb2bCCS\xae\xa7P%\x99~\x12s-\t\xc2\xf9:\x1cho\xbf\xeft\xce\x8657\x90\xf7d\x11\x19\xd1\x89$NqA\xbfe\x16\xd6e\xb5\x11\xb4r$\xe7\x98E'\xd6\xd4\xd6\xb63\x9ev\x168\xa0\xc3\x85\x89\xcb@\x9d\x01-kx\xc5"
+[/Users/ttiurani/devel/em/extendedmind/engine/src/lib.rs:166] "got protocol event {:?}" = "got protocol event {:?}"
+[/Users/ttiurani/devel/em/extendedmind/engine/src/lib.rs:166] &event = Ok(
+    Handshake(remote_key=6b7892..04),
+)
+[/Users/ttiurani/devel/em/extendedmind/engine/src/lib.rs:174] "Opening feed {}" = "Opening feed {}"
+[/Users/ttiurani/devel/em/extendedmind/engine/src/lib.rs:174] &feed_key = [
+    249,
+    46,
+    242,
+    71,
+    170,
+    162,
+    84,
+    102,
+    130,
+    39,
+    40,
+    215,
+    111,
+    49,
+    151,
+    215,
+    101,
+    96,
+    242,
+    209,
+    185,
+    101,
+    34,
+    45,
+    155,
+    192,
+    71,
+    100,
+    210,
+    55,
+    206,
+    219,
+]
+[/Users/ttiurani/devel/em/extendedmind/engine/src/lib.rs:61] "BYTES BUF SIZE {}" = "BYTES BUF SIZE {}"
+[/Users/ttiurani/devel/em/extendedmind/engine/src/lib.rs:61] buf_size = 70
+[src/main.rs:41] "GOT OUTGOING MESSAGE" = "GOT OUTGOING MESSAGE"
+[src/main.rs:43] "Outputting msg {:?}" = "Outputting msg {:?}"
+[src/main.rs:43] &msg = b"\xb2\xf5UJq}-\xf6n\xe5\xb0\xb9\xcd\xdf\x81\xe1\xc3\xca\xc2\xd5\x03\xf5\t\x9f$\xfa\x88\xcb\xab\xbd9\x8f\xf8\xb4\xa1\xca\x0e*\xc6\x9bO\x11y@\x1e\xf1![Z\x16\x9d\xc0\\~!y\xefn\xcc\xd6\xb8\x19w\xdb\x13\x17V\xdfXs"
+[src/main.rs:50] "GOT INCOMING MESSAGE" = "GOT INCOMING MESSAGE"
+[src/main.rs:52] "INCOMING msg {:?}" = "INCOMING msg {:?}"
+[src/main.rs:52] msg.len() = 70
+[src/main.rs:50] "GOT INCOMING MESSAGE" = "GOT INCOMING MESSAGE"
+[src/main.rs:52] "INCOMING msg {:?}" = "INCOMING msg {:?}"
+[src/main.rs:52] msg.len() = 4
+[src/main.rs:41] "GOT OUTGOING MESSAGE" = "GOT OUTGOING MESSAGE"
+[src/main.rs:43] "Outputting msg {:?}" = "Outputting msg {:?}"
+[src/main.rs:43] &msg = b"r\xa7\xeb\xae"
+[/Users/ttiurani/devel/em/extendedmind/engine/src/lib.rs:166] "got protocol event {:?}" = "got protocol event {:?}"
+[/Users/ttiurani/devel/em/extendedmind/engine/src/lib.rs:166] &event = Ok(
+    Channel { discovery_key: "237184..87" },
+)
+[/Users/ttiurani/devel/em/extendedmind/engine/src/lib.rs:61] "BYTES BUF SIZE {}" = "BYTES BUF SIZE {}"
+[/Users/ttiurani/devel/em/extendedmind/engine/src/lib.rs:61] buf_size = 4
+[src/main.rs:50] "GOT INCOMING MESSAGE" = "GOT INCOMING MESSAGE"
+[src/main.rs:52] "INCOMING msg {:?}" = "INCOMING msg {:?}"
+[src/main.rs:52] msg.len() = 0
+[src/main.rs:50] "GOT INCOMING MESSAGE" = "GOT INCOMING MESSAGE"
+thread 'main' panicked at 'called `Option::unwrap()` on a `None` value', src/main.rs:51:32
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
