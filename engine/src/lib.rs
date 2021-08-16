@@ -1,79 +1,34 @@
+mod channel_writer;
+
 use ::serde_json;
 use anyhow::Result;
-use async_std::sync::{Arc, Mutex, Receiver, Sender};
+use async_std::sync::{Arc, Mutex};
+use async_std::channel::Receiver;
 use async_std::task;
-use extendedmind_schema_rust::models::Data;
-use futures::io::AsyncWrite;
+use extendedmind_schema_rust::models::Data as ExtendedMindData;
+use futures::io::{AsyncRead, AsyncWrite};
 use futures::stream::{IntoAsyncRead, StreamExt, TryStreamExt};
-use futures::task::{Context, Poll};
-use hypercore::{Feed, Node, Proof, PublicKey, Signature, Storage};
+use hypercore::{Feed, Node, NodeTrait, Proof, PublicKey, Signature, Storage};
 use log::*;
 use random_access_disk::RandomAccessDisk;
 use random_access_storage::RandomAccess;
 use std::collections::HashMap;
+use std::convert::TryFrom;
 use std::fmt::Debug;
 use std::io;
 use std::path::PathBuf;
-use std::pin::Pin;
 
 pub use bytes::Bytes;
 use hypercore_protocol::schema::*;
 pub use hypercore_protocol::Protocol;
 use hypercore_protocol::{discovery_key, Channel, Event, Message, ProtocolBuilder};
+pub use channel_writer::ChannelWriter;
 
 #[derive(Clone)]
 pub struct Engine {
-    data: Data,
+    data: ExtendedMindData,
     is_initiator: bool,
     feedstore: Option<Arc<FeedStore<RandomAccessDisk>>>,
-}
-
-#[derive(Clone, Debug)]
-pub struct AsyncSender {
-    sender: Sender<Result<Bytes, io::Error>>,
-}
-
-impl AsyncSender {
-    pub fn new(sender: Sender<Result<Bytes, io::Error>>) -> AsyncSender {
-        AsyncSender { sender }
-    }
-
-    pub async fn send(self: Self, msg: Bytes) {
-        self.sender.send(Ok(msg)).await
-    }
-}
-
-//
-// hypercore-protocol-rs has an example that uses piper:
-//
-// https://github.com/Jancd/piper
-//
-//
-impl AsyncWrite for AsyncSender {
-    fn poll_write(
-        self: Pin<&mut Self>,
-        _: &mut Context<'_>,
-        buf: &[u8],
-    ) -> Poll<io::Result<usize>> {
-        let buf_size = buf.len();
-        // TODO: This is not very efficient when we need to copy every buffer.
-        let bytes_buf = Bytes::copy_from_slice(buf);
-        dbg!("BYTES BUF SIZE {}", buf_size);
-        let result: io::Result<usize> = Pin::new(&mut &*self)
-            .sender
-            .try_send(Ok(bytes_buf))
-            .map(|_| buf_size)
-            .map_err(|e| io::Error::new(io::ErrorKind::Other, e.to_string()));
-        Poll::Ready(result)
-    }
-
-    fn poll_flush(self: Pin<&mut Self>, _: &mut Context<'_>) -> Poll<io::Result<()>> {
-        Poll::Ready(Ok(()))
-    }
-
-    fn poll_close(self: Pin<&mut Self>, _: &mut Context<'_>) -> Poll<io::Result<()>> {
-        Poll::Ready(Ok(()))
-    }
 }
 
 impl Engine {
@@ -113,7 +68,7 @@ impl Engine {
         // feedstore.add(local_feed_wrapper);
         let feedstore = Arc::new(feedstore);
         Engine {
-            data: Data::new(Vec::new(), Vec::new()),
+            data: ExtendedMindData::new(Vec::new(), Vec::new()),
             is_initiator,
             feedstore: Some(feedstore),
         }
@@ -122,7 +77,7 @@ impl Engine {
     // TEMPORARY....
     pub fn new() -> Engine {
         Engine {
-            data: Data::new(Vec::new(), Vec::new()),
+            data: ExtendedMindData::new(Vec::new(), Vec::new()),
             is_initiator: true,
             feedstore: None,
         }
@@ -135,7 +90,7 @@ impl Engine {
     pub async fn connect_passive(
         self,
         receiver: Receiver<Result<Bytes, io::Error>>,
-        sender: AsyncSender,
+        sender: ChannelWriter,
     ) -> Result<()> {
         let receiver: IntoAsyncRead<Receiver<Result<Bytes, io::Error>>> =
             receiver.into_async_read();
@@ -145,7 +100,7 @@ impl Engine {
 
     pub async fn connect_active(
         self,
-        sender: AsyncSender,
+        sender: ChannelWriter,
         receiver: Receiver<Result<Bytes, io::Error>>,
     ) -> Result<()> {
         let receiver: IntoAsyncRead<Receiver<Result<Bytes, io::Error>>> =
@@ -154,12 +109,14 @@ impl Engine {
         self.poll_protocol(protocol).await
     }
 
-    async fn poll_protocol(
+    async fn poll_protocol<IO>(
         self,
-        protocol: Protocol<IntoAsyncRead<Receiver<Result<Bytes, io::Error>>>, AsyncSender>,
-    ) -> Result<()> {
+        mut protocol: Protocol<IO>,
+    ) -> Result<()>
+    where
+        IO: AsyncWrite + AsyncRead + Send + Unpin + 'static,
+    {
         dbg!("poll_protocol");
-        let mut protocol = protocol.into_stream();
         let feedstore = self.feedstore.unwrap().clone();
         dbg!("waiting for protocol event");
         while let Some(event) = protocol.next().await {
@@ -170,7 +127,7 @@ impl Engine {
                 Event::Handshake(_) => {
                     if self.is_initiator {
                         for feed in feedstore.feeds.values() {
-                            let feed_key = feed.key().to_vec();
+                            let feed_key = feed.key().clone();
                             dbg!("Opening feed {}", &feed_key);
                             protocol.open(feed_key).await?;
                         }
@@ -178,7 +135,8 @@ impl Engine {
                 }
                 Event::DiscoveryKey(dkey) => {
                     if let Some(feed) = feedstore.get(&dkey) {
-                        protocol.open(feed.key().to_vec()).await?;
+                        let feed_key = feed.key().clone();
+                        protocol.open(feed_key).await?;
                     }
                 }
                 Event::Channel(channel) => {
@@ -187,6 +145,7 @@ impl Engine {
                     }
                 }
                 Event::Close(_dkey) => {}
+                _ => {}
             }
         }
         Ok(())
@@ -202,6 +161,7 @@ impl Default for Engine {
 // From the hypercore.rs example:
 
 /// A container for hypercores.
+#[derive(Debug)]
 struct FeedStore<T>
 where
     T: RandomAccess<Error = Box<dyn std::error::Error + Send + Sync>> + Debug + Send,
@@ -222,7 +182,7 @@ where
         self.feeds.insert(hdkey, Arc::new(feed));
     }
 
-    pub fn get(&self, discovery_key: &[u8]) -> Option<&Arc<FeedWrapper<T>>> {
+    pub fn get(&self, discovery_key: &[u8; 32]) -> Option<&Arc<FeedWrapper<T>>> {
         let hdkey = hex::encode(discovery_key);
         self.feeds.get(&hdkey)
     }
@@ -234,8 +194,8 @@ struct FeedWrapper<T>
 where
     T: RandomAccess<Error = Box<dyn std::error::Error + Send + Sync>> + Debug + Send,
 {
-    discovery_key: Vec<u8>,
-    key: Vec<u8>,
+    discovery_key: [u8; 32],
+    key: [u8; 32],
     feed: Arc<Mutex<Feed<T>>>,
 }
 
@@ -243,7 +203,7 @@ impl FeedWrapper<RandomAccessDisk> {
     pub fn from_disk_feed(feed: Feed<RandomAccessDisk>) -> Self {
         let key = feed.public_key().to_bytes();
         FeedWrapper {
-            key: key.to_vec(),
+            key,
             discovery_key: discovery_key(&key),
             feed: Arc::new(Mutex::new(feed)),
         }
@@ -254,7 +214,7 @@ impl<T> FeedWrapper<T>
 where
     T: RandomAccess<Error = Box<dyn std::error::Error + Send + Sync>> + Debug + Send + 'static,
 {
-    pub fn key(&self) -> &[u8] {
+    pub fn key(&self) -> &[u8; 32] {
         &self.key
     }
 
@@ -262,6 +222,11 @@ where
         let mut state = PeerState::default();
         let mut feed = self.feed.clone();
         task::spawn(async move {
+            let msg = Want {
+                start: 0,
+                length: None,
+            };
+            channel.send(Message::Want(msg)).await.unwrap();
             while let Some(message) = channel.next().await {
                 let result = onmessage(&mut feed, &mut state, &mut channel, message).await;
                 if let Err(e) = result {
@@ -302,6 +267,19 @@ where
             };
             channel.send(Message::Want(msg)).await?;
         }
+        Message::Want(msg) => {
+            let mut feed = feed.lock().await;
+            if feed.has(msg.start) {
+                channel
+                    .have(Have {
+                        start: msg.start,
+                        ack: None,
+                        bitfield: None,
+                        length: None,
+                    })
+                    .await?;
+            }
+        }
         Message::Have(msg) => {
             if state.remote_head == None {
                 state.remote_head = Some(msg.start);
@@ -318,22 +296,44 @@ where
                 }
             }
         }
+        Message::Request(request) => {
+            let mut feed = feed.lock().await;
+            let index = request.index;
+            let value = feed.get(index).await?;
+            let proof = feed.proof(index, false).await?;
+            let nodes = proof
+                .nodes
+                .iter()
+                .map(|node| data::Node {
+                    index: NodeTrait::index(node),
+                    hash: NodeTrait::hash(node).to_vec(),
+                    size: NodeTrait::len(node),
+                })
+                .collect();
+            let message = Data {
+                index,
+                value: value.clone(),
+                nodes,
+                signature: proof.signature.map(|s| s.to_bytes().to_vec()),
+            };
+            channel.data(message).await?;
+        }
         Message::Data(msg) => {
             let mut feed = feed.lock().await;
             let value: Option<&[u8]> = match msg.value.as_ref() {
                 None => None,
                 Some(value) => {
-                    eprintln!(
-                        "recv idx {}: {:?}",
-                        msg.index,
-                        String::from_utf8(value.clone()).unwrap()
-                    );
+                    // eprintln!(
+                    //     "recv idx {}: {:?}",
+                    //     msg.index,
+                    //     String::from_utf8(value.clone()).unwrap()
+                    // );
                     Some(value)
                 }
             };
 
             let signature = match msg.signature {
-                Some(bytes) => Some(Signature::from_bytes(&bytes)?),
+                Some(bytes) => Some(Signature::try_from(&bytes[..])?),
                 None => None,
             };
             let nodes = msg

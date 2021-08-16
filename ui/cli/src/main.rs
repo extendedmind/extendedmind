@@ -1,7 +1,6 @@
-use extendedmind_engine::{AsyncSender, Bytes, Engine};
+use extendedmind_engine::{ChannelWriter, Bytes, Engine};
 use futures::prelude::*;
-
-use async_std::sync::{channel, Receiver, Sender};
+use async_std::channel::{Receiver, Sender, bounded};
 use async_std::task;
 use async_tungstenite::{async_std::connect_async, tungstenite::Message};
 use std::io;
@@ -23,11 +22,10 @@ async fn run(url: String, public_key: String) -> Result<(), Box<dyn std::error::
     let (sender, mut receiver): (
         Sender<Result<Bytes, io::Error>>,
         Receiver<Result<Bytes, io::Error>>,
-    ) = channel(1000);
+    ) = bounded(1000);
 
-    let hypercore_sender = AsyncSender::new(sender);
     let hypercore_receiver = receiver.clone();
-    let state_hypercore_sender = hypercore_sender.clone();
+    let state_hypercore_sender = ChannelWriter::new(sender.clone());
     task::spawn(async move {
         engine
             .connect_active(state_hypercore_sender, hypercore_receiver)
@@ -50,8 +48,8 @@ async fn run(url: String, public_key: String) -> Result<(), Box<dyn std::error::
         dbg!("GOT INCOMING MESSAGE");
         let msg = incoming_msg.unwrap().unwrap();
         dbg!("INCOMING msg {:?}", msg.len());
+        let hypercore_sender = ChannelWriter::new(sender.clone());
         hypercore_sender
-            .clone()
             .send(Bytes::from(msg.into_data()))
             .await;
     }

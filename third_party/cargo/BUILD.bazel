@@ -1,6 +1,6 @@
 """
 @generated
-cargo-raze workspace build file.
+cargo-raze generated Bazel file.
 
 DO NOT EDIT! Replaced on runs of cargo-raze
 """
@@ -14,7 +14,7 @@ licenses([
 # Aliased targets
 alias(
     name = "anyhow",
-    actual = "@raze__anyhow__1_0_34//:anyhow",
+    actual = "@raze__anyhow__1_0_43//:anyhow",
     tags = [
         "cargo-raze",
         "manual",
@@ -32,7 +32,7 @@ alias(
 
 alias(
     name = "async_std",
-    actual = "@raze__async_std__1_7_0//:async_std",
+    actual = "@raze__async_std__1_9_0//:async_std",
     tags = [
         "cargo-raze",
         "manual",
@@ -42,15 +42,6 @@ alias(
 alias(
     name = "async_tungstenite",
     actual = "@raze__async_tungstenite__0_10_0//:async_tungstenite",
-    tags = [
-        "cargo-raze",
-        "manual",
-    ],
-)
-
-alias(
-    name = "automerge_frontend",
-    actual = "@raze__automerge_frontend__0_1_0//:automerge_frontend",
     tags = [
         "cargo-raze",
         "manual",
@@ -77,7 +68,7 @@ alias(
 
 alias(
     name = "clap",
-    actual = "@raze__clap__3_0_0_beta_2//:clap",
+    actual = "@raze__clap__3_0_0_beta_4//:clap",
     tags = [
         "cargo-raze",
         "manual",
@@ -86,7 +77,7 @@ alias(
 
 alias(
     name = "ctrlc",
-    actual = "@raze__ctrlc__3_1_7//:ctrlc",
+    actual = "@raze__ctrlc__3_2_0//:ctrlc",
     tags = [
         "cargo-raze",
         "manual",
@@ -113,7 +104,7 @@ alias(
 
 alias(
     name = "futures",
-    actual = "@raze__futures__0_3_8//:futures",
+    actual = "@raze__futures__0_3_16//:futures",
     tags = [
         "cargo-raze",
         "manual",
@@ -122,16 +113,7 @@ alias(
 
 alias(
     name = "hex",
-    actual = "@raze__hex__0_4_2//:hex",
-    tags = [
-        "cargo-raze",
-        "manual",
-    ],
-)
-
-alias(
-    name = "http_types",
-    actual = "@raze__http_types__2_8_0//:http_types",
+    actual = "@raze__hex__0_4_3//:hex",
     tags = [
         "cargo-raze",
         "manual",
@@ -149,25 +131,7 @@ alias(
 
 alias(
     name = "hypercore_protocol",
-    actual = "@raze__hypercore_protocol__0_0_2//:hypercore_protocol",
-    tags = [
-        "cargo-raze",
-        "manual",
-    ],
-)
-
-alias(
-    name = "lazy_static",
-    actual = "@raze__lazy_static__1_4_0//:lazy_static",
-    tags = [
-        "cargo-raze",
-        "manual",
-    ],
-)
-
-alias(
-    name = "libc",
-    actual = "@raze__libc__0_2_76//:libc",
+    actual = "@raze__hypercore_protocol__0_3_1//:hypercore_protocol",
     tags = [
         "cargo-raze",
         "manual",
@@ -176,7 +140,7 @@ alias(
 
 alias(
     name = "log",
-    actual = "@raze__log__0_4_11//:log",
+    actual = "@raze__log__0_4_14//:log",
     tags = [
         "cargo-raze",
         "manual",
@@ -202,17 +166,8 @@ alias(
 )
 
 alias(
-    name = "security_framework",
-    actual = "@raze__security_framework__0_4_4//:security_framework",
-    tags = [
-        "cargo-raze",
-        "manual",
-    ],
-)
-
-alias(
-    name = "security_framework_sys",
-    actual = "@raze__security_framework_sys__0_4_3//:security_framework_sys",
+    name = "reusable_box_future",
+    actual = "@raze__reusable_box_future__0_2_0//:reusable_box_future",
     tags = [
         "cargo-raze",
         "manual",
@@ -247,17 +202,8 @@ alias(
 )
 
 alias(
-    name = "tempfile",
-    actual = "@raze__tempfile__3_1_0//:tempfile",
-    tags = [
-        "cargo-raze",
-        "manual",
-    ],
-)
-
-alias(
     name = "tide",
-    actual = "@raze__tide__0_15_0//:tide",
+    actual = "@raze__tide__0_16_0//:tide",
     tags = [
         "cargo-raze",
         "manual",
@@ -271,4 +217,12 @@ alias(
         "cargo-raze",
         "manual",
     ],
+)
+
+# Export file for Stardoc support
+exports_files(
+    [
+        "crates.bzl",
+    ],
+    visibility = ["//visibility:public"],
 )

@@ -1,0 +1,146 @@
+"""
+@generated
+cargo-raze crate build file.
+
+DO NOT EDIT! Replaced on runs of cargo-raze
+"""
+
+# buildifier: disable=load
+load("@bazel_skylib//lib:selects.bzl", "selects")
+
+# buildifier: disable=load
+load(
+    "@rules_rust//rust:rust.bzl",
+    "rust_binary",
+    "rust_library",
+    "rust_test",
+)
+
+package(default_visibility = [
+    # Public for visibility by "@raze__crate__version//" targets.
+    #
+    # Prefer access through "//third_party/cargo", which limits external
+    # visibility to explicit Cargo.toml dependencies.
+    "//visibility:public",
+])
+
+licenses([
+    "notice",  # MIT from expression "MIT OR Apache-2.0"
+])
+
+# Generated Targets
+
+# Unsupported target "router" with type "bench" omitted
+
+# Unsupported target "catflap" with type "example" omitted
+
+# Unsupported target "chunked" with type "example" omitted
+
+# Unsupported target "concurrent_listeners" with type "example" omitted
+
+# Unsupported target "cookies" with type "example" omitted
+
+# Unsupported target "error_handling" with type "example" omitted
+
+# Unsupported target "fib" with type "example" omitted
+
+# Unsupported target "graphql" with type "example" omitted
+
+# Unsupported target "hello" with type "example" omitted
+
+# Unsupported target "json" with type "example" omitted
+
+# Unsupported target "middleware" with type "example" omitted
+
+# Unsupported target "nested" with type "example" omitted
+
+# Unsupported target "redirect" with type "example" omitted
+
+# Unsupported target "sessions" with type "example" omitted
+
+# Unsupported target "sse" with type "example" omitted
+
+# Unsupported target "state" with type "example" omitted
+
+# Unsupported target "static_file" with type "example" omitted
+
+# Unsupported target "upload" with type "example" omitted
+
+rust_library(
+    name = "tide",
+    srcs = glob(["**/*.rs"]),
+    crate_features = [
+        "async-h1",
+        "async-session",
+        "cookies",
+        "default",
+        "femme",
+        "h1-server",
+        "logger",
+        "sessions",
+    ],
+    crate_root = "src/lib.rs",
+    crate_type = "lib",
+    data = [],
+    edition = "2018",
+    proc_macro_deps = [
+        "@raze__async_trait__0_1_51//:async_trait",
+    ],
+    rustc_flags = [
+        "--cap-lints=allow",
+    ],
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+    version = "0.16.0",
+    # buildifier: leave-alone
+    deps = [
+        "@raze__async_h1__2_3_2//:async_h1",
+        "@raze__async_session__2_0_1//:async_session",
+        "@raze__async_sse__4_1_0//:async_sse",
+        "@raze__async_std__1_9_0//:async_std",
+        "@raze__femme__2_1_1//:femme",
+        "@raze__futures_util__0_3_16//:futures_util",
+        "@raze__http_client__6_4_1//:http_client",
+        "@raze__http_types__2_12_0//:http_types",
+        "@raze__kv_log_macro__1_0_7//:kv_log_macro",
+        "@raze__log__0_4_14//:log",
+        "@raze__pin_project_lite__0_2_7//:pin_project_lite",
+        "@raze__route_recognizer__0_2_0//:route_recognizer",
+        "@raze__serde__1_0_117//:serde",
+        "@raze__serde_json__1_0_59//:serde_json",
+    ],
+)
+
+# Unsupported target "chunked-encode-large" with type "test" omitted
+
+# Unsupported target "chunked-encode-small" with type "test" omitted
+
+# Unsupported target "cookies" with type "test" omitted
+
+# Unsupported target "endpoint" with type "test" omitted
+
+# Unsupported target "function_middleware" with type "test" omitted
+
+# Unsupported target "log" with type "test" omitted
+
+# Unsupported target "nested" with type "test" omitted
+
+# Unsupported target "params" with type "test" omitted
+
+# Unsupported target "response" with type "test" omitted
+
+# Unsupported target "route_middleware" with type "test" omitted
+
+# Unsupported target "serve_dir" with type "test" omitted
+
+# Unsupported target "server" with type "test" omitted
+
+# Unsupported target "sessions" with type "test" omitted
+
+# Unsupported target "test_utils" with type "test" omitted
+
+# Unsupported target "unix" with type "test" omitted
+
+# Unsupported target "wildcard" with type "test" omitted
