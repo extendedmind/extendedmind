@@ -51,7 +51,7 @@ async fn run(url: String, public_key: String) -> Result<(), Box<dyn std::error::
         let hypercore_sender = ChannelWriter::new(sender.clone());
         hypercore_sender
             .send(Bytes::from(msg.into_data()))
-            .await;
+            .await.unwrap();
     }
 }
 
