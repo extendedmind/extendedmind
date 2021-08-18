@@ -1,6 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("@io_bazel_rules_rust//rust:rust.bzl", "rust_binary")
+load("@rules_rust//rust:rust.bzl", "rust_binary")
 load("//:format.bzl", "rust_format")
 
 rust_binary(
@@ -13,10 +13,9 @@ rust_binary(
             "//third_party/cargo:chrono",
             "//third_party/cargo:futures",
             "//third_party/cargo:tide",
-            "//third_party/cargo:http_types",
+            "//third_party/cargo:tide_websockets",
             "//third_party/cargo:async_std",
             "//third_party/cargo:async_tungstenite",
-            "//third_party/cargo:tungstenite",
             "//third_party/cargo:async_ctrlc",
             "//third_party/cargo:ctrlc",
     ],

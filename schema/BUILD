@@ -25,10 +25,10 @@ genrule(
     cmd = ("unzip -j $< src/lib.rs src/{} -d $(@D)/models "
          + "&& cd $(@D) "
          + "&& mv models/lib.rs ./"
-         + "&& sed -i -e '/crate url/ s/^/\/\//' lib.rs "
-         + "&& sed -i -e '/crate hyper/ s/^/\/\//' lib.rs "
-         + "&& sed -i -e '/crate futures/ s/^/\/\//' lib.rs"
-         + "&& sed -i -e '/mod apis/ s/^/\/\//' lib.rs"
+         + "&& sed -i -e '/crate url/ s/^/\\/\\//' lib.rs "
+         + "&& sed -i -e '/crate hyper/ s/^/\\/\\//' lib.rs "
+         + "&& sed -i -e '/crate futures/ s/^/\\/\\//' lib.rs"
+         + "&& sed -i -e '/mod apis/ s/^/\\/\\//' lib.rs"
           ).format(" src/".join(RUST_OPENAPI_MODEL_OUTS)),
 )
 rust_library(
