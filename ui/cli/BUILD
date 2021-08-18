@@ -1,7 +1,7 @@
 package(default_visibility = ["//visibility:public"])
 
 load("@rules_rust//rust:rust.bzl", "rust_binary", "rust_test")
-load("//:format.bzl", "rust_format")
+load("@rules_rust//rust:defs.bzl", "rustfmt_test")
 
 rust_binary(
     name = "extendedmind_cli",
@@ -23,15 +23,7 @@ rust_test(
     size = "small",
 )
 
-rust_format(
-    name = "extendedmind_cli_format",
-    srcs = glob(["src/**"]) + glob(["tests/**"]),
-)
-
-sh_test(
-    name = "extendedmind_cli_format_test",
-    srcs = ["//:format_test.sh"],
-    data = [":extendedmind_cli_format_input", ":extendedmind_cli_format_output"],
-    deps = ["@bazel_tools//tools/bash/runfiles"],
-    size = "small",
+rustfmt_test(
+    name = "extendedmind_cli_rustfmt_test",
+    targets = [":extendedmind_cli"],
 )

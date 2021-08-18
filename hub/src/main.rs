@@ -1,13 +1,13 @@
 use anyhow::Result;
+use async_std::channel::{bounded, Receiver, Sender};
+use async_std::sync::{Arc, Mutex};
+use futures::stream::StreamExt;
 use std::collections::HashMap;
 use std::io;
 use std::process;
 use std::sync::atomic::AtomicBool;
 use std::time::{Duration, Instant};
 use tide_websockets::{Message, WebSocket};
-use async_std::channel::{Receiver, Sender, bounded};
-use async_std::sync::{Arc, Mutex};
-use futures::stream::StreamExt;
 
 use async_ctrlc::CtrlC;
 use async_std::task;
@@ -40,8 +40,14 @@ struct State {
 
 #[derive(Clone)]
 struct SplitChannels {
-    engine_channel: (Sender<Result<Bytes, io::Error>>, Receiver<Result<Bytes, io::Error>>),
-    socket_channel: (Sender<Result<Bytes, io::Error>>, Receiver<Result<Bytes, io::Error>>),
+    engine_channel: (
+        Sender<Result<Bytes, io::Error>>,
+        Receiver<Result<Bytes, io::Error>>,
+    ),
+    socket_channel: (
+        Sender<Result<Bytes, io::Error>>,
+        Receiver<Result<Bytes, io::Error>>,
+    ),
 }
 
 #[derive(Clone)]
@@ -62,28 +68,26 @@ type ChannelSenderReceiver = (
 async fn async_main(initial_state: State) -> Result<()> {
     let mut app = tide::with_state(initial_state);
 
-    app.at("/ws/:discovery_key")
-        .get(WebSocket::new(|req: tide::Request<State>, stream| async move {
+    app.at("/ws/:discovery_key").get(WebSocket::new(
+        |req: tide::Request<State>, stream| async move {
             // Get handle to async-tungstenite WebSocketStream
             let ws_writer = stream.clone();
             let mut ws_reader = stream.clone();
 
             // Get discovery key from the path
-            let discovery_key: Arc<String> =
-                Arc::new(req.param("discovery_key")?.parse().unwrap());
+            let discovery_key: Arc<String> = Arc::new(req.param("discovery_key")?.parse().unwrap());
             dbg!(&discovery_key);
 
             // Launch a task for the protocol
-            let (engine_sender, engine_receiver) = req.state().channels
-                [discovery_key.as_ref()]
-            .engine_channel
-            .clone();
+            let (engine_sender, engine_receiver) = req.state().channels[discovery_key.as_ref()]
+                .engine_channel
+                .clone();
             let engine = req.state().engine.clone();
             task::spawn(async move {
                 engine
                     .connect_passive(engine_receiver, ChannelWriter::new(engine_sender))
                     .await
-                    .unwrap();
+                    .ok();
             });
 
             // Launch a second task for listening to receivers
@@ -105,10 +109,7 @@ async fn async_main(initial_state: State) -> Result<()> {
                             // Send ping message if enough time has elapsed
                             if now.elapsed().as_secs() > 30 {
                                 dbg!("sending ping");
-                                ws_writer
-                                    .send(Message::Ping(Vec::new()))
-                                    .await
-                                    .unwrap();
+                                ws_writer.send(Message::Ping(Vec::new())).await.unwrap();
                                 now = Instant::now();
                             }
                         }
@@ -117,15 +118,16 @@ async fn async_main(initial_state: State) -> Result<()> {
                                 "got client request, forwarding to hypercore {}",
                                 wrapped_value.data.len()
                             );
-                            hypercore_sender.clone().send(Ok(wrapped_value.data)).await.unwrap();
+                            hypercore_sender
+                                .clone()
+                                .send(Ok(wrapped_value.data))
+                                .await
+                                .unwrap();
                         }
                         ReceiverType::Hypercore => {
                             let msg = wrapped_value.data.as_ref().to_vec();
                             dbg!("got hypercore message, sending to client, {:?}", msg.len());
-                            ws_writer
-                                .send(Message::Binary(msg))
-                                .await
-                                .unwrap();
+                            ws_writer.send(Message::Binary(msg)).await.unwrap();
                         }
                     }
                 }
@@ -137,7 +139,8 @@ async fn async_main(initial_state: State) -> Result<()> {
                 client_sender.send(Ok(Bytes::from(msg))).await.unwrap();
             }
             Ok(())
-        }));
+        },
+    ));
 
     app.listen("0.0.0.0:8080").await?;
     Ok(())

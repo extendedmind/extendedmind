@@ -1,11 +1,11 @@
+use anyhow::Result;
+use async_std::channel::{SendError, Sender};
+use bytes::Bytes;
+use futures::io::AsyncWrite;
+use reusable_box_future::ReusableBoxFuture;
 use std::io;
 use std::pin::Pin;
 use std::task::{Context, Poll};
-use anyhow::Result;
-use bytes::Bytes;
-use async_std::channel::{Sender, SendError};
-use futures::io::AsyncWrite;
-use reusable_box_future::ReusableBoxFuture;
 
 #[derive(Debug)]
 pub struct ChannelWriter {
@@ -62,4 +62,3 @@ impl AsyncWrite for ChannelWriter {
         Poll::Ready(Ok(()))
     }
 }
-

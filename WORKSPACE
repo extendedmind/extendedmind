@@ -40,11 +40,11 @@ openapi_repositories(
 # Rust
 http_archive(
     name = "rules_rust",
-    sha256 = "18391ccdc9aa061266c88d4a902af3d11bc3c803e695105df0fae5aa41e39d2a",
-    strip_prefix = "rules_rust-c2f5701dad159c3ce2b5997e6599445b1d21a123",
+    sha256 = "5ef76c7ca318f0795c2a524a01e0a7a399fd845d7cdebf7bc7ea7321859069b6",
+    strip_prefix = "rules_rust-af2f908a2d342d79b74ea97fcbfbe7b0d03e2bdf",
     urls = [
-        # Master branch as of 2021-08-03
-        "https://github.com/bazelbuild/rules_rust/archive/c2f5701dad159c3ce2b5997e6599445b1d21a123.tar.gz",
+        # Master branch as of 2021-08-16
+        "https://github.com/bazelbuild/rules_rust/archive/af2f908a2d342d79b74ea97fcbfbe7b0d03e2bdf.tar.gz",
     ],
 )
 load("@rules_rust//rust:repositories.bzl", "rust_repositories")

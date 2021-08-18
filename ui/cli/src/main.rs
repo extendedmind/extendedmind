@@ -1,8 +1,8 @@
-use extendedmind_engine::{ChannelWriter, Bytes, Engine};
-use futures::prelude::*;
-use async_std::channel::{Receiver, Sender, bounded};
+use async_std::channel::{bounded, Receiver, Sender};
 use async_std::task;
 use async_tungstenite::{async_std::connect_async, tungstenite::Message};
+use extendedmind_engine::{Bytes, ChannelWriter, Engine};
+use futures::prelude::*;
 use std::io;
 
 use clap::Clap;
@@ -51,7 +51,8 @@ async fn run(url: String, public_key: String) -> Result<(), Box<dyn std::error::
         let hypercore_sender = ChannelWriter::new(sender.clone());
         hypercore_sender
             .send(Bytes::from(msg.into_data()))
-            .await.unwrap();
+            .await
+            .unwrap();
     }
 }
 

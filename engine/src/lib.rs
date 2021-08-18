@@ -2,8 +2,8 @@ mod channel_writer;
 
 use ::serde_json;
 use anyhow::Result;
-use async_std::sync::{Arc, Mutex};
 use async_std::channel::Receiver;
+use async_std::sync::{Arc, Mutex};
 use async_std::task;
 use extendedmind_schema_rust::models::Data as ExtendedMindData;
 use futures::io::{AsyncRead, AsyncWrite};
@@ -19,10 +19,10 @@ use std::io;
 use std::path::PathBuf;
 
 pub use bytes::Bytes;
+pub use channel_writer::ChannelWriter;
 use hypercore_protocol::schema::*;
 pub use hypercore_protocol::Protocol;
 use hypercore_protocol::{discovery_key, Channel, Event, Message, ProtocolBuilder};
-pub use channel_writer::ChannelWriter;
 
 #[derive(Clone)]
 pub struct Engine {
@@ -109,10 +109,7 @@ impl Engine {
         self.poll_protocol(protocol).await
     }
 
-    async fn poll_protocol<IO>(
-        self,
-        mut protocol: Protocol<IO>,
-    ) -> Result<()>
+    async fn poll_protocol<IO>(self, mut protocol: Protocol<IO>) -> Result<()>
     where
         IO: AsyncWrite + AsyncRead + Send + Unpin + 'static,
     {
