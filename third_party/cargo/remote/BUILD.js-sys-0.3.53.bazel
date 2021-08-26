@@ -25,26 +25,20 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # Apache-2.0 from expression "Apache-2.0"
+    "notice",  # MIT from expression "MIT OR Apache-2.0"
 ])
 
 # Generated Targets
 
-# Unsupported target "varint" with type "bench" omitted
-
 rust_library(
-    name = "prost",
+    name = "js_sys",
     srcs = glob(["**/*.rs"]),
     crate_features = [
-        "prost-derive",
     ],
     crate_root = "src/lib.rs",
     crate_type = "lib",
     data = [],
     edition = "2018",
-    proc_macro_deps = [
-        "@raze__prost_derive__0_8_0//:prost_derive",
-    ],
     rustc_flags = [
         "--cap-lints=allow",
     ],
@@ -52,9 +46,13 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "0.8.0",
+    version = "0.3.53",
     # buildifier: leave-alone
     deps = [
-        "@raze__bytes__1_0_1//:bytes",
+        "@raze__wasm_bindgen__0_2_76//:wasm_bindgen",
     ],
 )
+
+# Unsupported target "headless" with type "test" omitted
+
+# Unsupported target "wasm" with type "test" omitted

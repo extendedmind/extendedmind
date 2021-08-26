@@ -67,10 +67,10 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "0.26.0",
+    version = "0.26.1",
     # buildifier: leave-alone
     deps = [
-        "@raze__memchr__2_4_0//:memchr",
+        "@raze__memchr__2_4_1//:memchr",
     ],
 )
 

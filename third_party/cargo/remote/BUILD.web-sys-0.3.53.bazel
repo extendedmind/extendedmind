@@ -25,17 +25,22 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT"
+    "notice",  # MIT from expression "MIT OR Apache-2.0"
 ])
 
 # Generated Targets
 
 rust_library(
-    name = "which",
+    name = "web_sys",
     srcs = glob(["**/*.rs"]),
-    aliases = {
-    },
     crate_features = [
+        "Event",
+        "EventTarget",
+        "MessageEvent",
+        "Window",
+        "Worker",
+        "WorkerGlobalScope",
+        "console",
     ],
     crate_root = "src/lib.rs",
     crate_type = "lib",
@@ -48,20 +53,12 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "4.2.2",
+    version = "0.3.53",
     # buildifier: leave-alone
     deps = [
-        "@raze__either__1_6_1//:either",
-        "@raze__libc__0_2_99//:libc",
-    ] + selects.with_or({
-        # cfg(windows)
-        (
-            "@rules_rust//rust/platform:x86_64-pc-windows-msvc",
-        ): [
-            "@raze__lazy_static__1_4_0//:lazy_static",
-        ],
-        "//conditions:default": [],
-    }),
+        "@raze__js_sys__0_3_53//:js_sys",
+        "@raze__wasm_bindgen__0_2_76//:wasm_bindgen",
+    ],
 )
 
-# Unsupported target "basic" with type "test" omitted
+# Unsupported target "wasm" with type "test" omitted

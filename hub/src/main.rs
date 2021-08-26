@@ -2,6 +2,7 @@ use anyhow::Result;
 use async_std::channel::{bounded, Receiver, Sender};
 use async_std::sync::{Arc, Mutex};
 use futures::stream::StreamExt;
+use log::*;
 use std::collections::HashMap;
 use std::io;
 use std::process;
@@ -76,7 +77,7 @@ async fn async_main(initial_state: State) -> Result<()> {
 
             // Get discovery key from the path
             let discovery_key: Arc<String> = Arc::new(req.param("discovery_key")?.parse().unwrap());
-            dbg!(&discovery_key);
+            debug!("{}", &discovery_key);
 
             // Launch a task for the protocol
             let (engine_sender, engine_receiver) = req.state().channels[discovery_key.as_ref()]
@@ -103,18 +104,18 @@ async fn async_main(initial_state: State) -> Result<()> {
                             if wrapped_value.data.as_ref().get(0)
                                 == Some(&(SystemCommand::Disconnect as u8))
                             {
-                                dbg!("got disconnect");
+                                debug!("got disconnect");
                                 break;
                             }
                             // Send ping message if enough time has elapsed
                             if now.elapsed().as_secs() > 30 {
-                                dbg!("sending ping");
+                                debug!("sending ping");
                                 ws_writer.send(Message::Ping(Vec::new())).await.unwrap();
                                 now = Instant::now();
                             }
                         }
                         ReceiverType::Client => {
-                            dbg!(
+                            debug!(
                                 "got client request, forwarding to hypercore {}",
                                 wrapped_value.data.len()
                             );
@@ -126,7 +127,7 @@ async fn async_main(initial_state: State) -> Result<()> {
                         }
                         ReceiverType::Hypercore => {
                             let msg = wrapped_value.data.as_ref().to_vec();
-                            dbg!("got hypercore message, sending to client, {:?}", msg.len());
+                            debug!("got hypercore message, sending to client, {:?}", msg.len());
                             ws_writer.send(Message::Binary(msg)).await.unwrap();
                         }
                     }
@@ -135,7 +136,7 @@ async fn async_main(initial_state: State) -> Result<()> {
 
             // Block loop on incoming messages
             while let Some(Ok(Message::Binary(msg))) = ws_reader.next().await {
-                dbg!("got incoming client message {:?}", msg.len());
+                debug!("got incoming client message {:?}", msg.len());
                 client_sender.send(Ok(Bytes::from(msg))).await.unwrap();
             }
             Ok(())
@@ -252,7 +253,7 @@ fn main() -> Result<()> {
         let mut interval = async_std::stream::interval(Duration::from_secs(1));
         while interval.next().await.is_some() && !*abort.as_ref().lock().await.get_mut() {
             task::sleep(Duration::from_millis(1000)).await;
-            // dbg!("Sending WakeUp");
+            // debug!("Sending WakeUp");
             ping_sender
                 .send(Ok(Bytes::from_static(&[SystemCommand::WakeUp as u8])))
                 .await

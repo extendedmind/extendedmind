@@ -43,17 +43,21 @@ impl Engine {
             )
             .await
             .unwrap();
+            dbg!("USING GIVEN PUBLIC KEY  {}", &public_key);
             let key = hex::decode(public_key).unwrap();
-            dbg!("USING GIVEN PUBLIC KEY {}", &key);
             let public_key = PublicKey::from_bytes(key.as_ref()).unwrap();
             Feed::builder(public_key, storage).build().await.unwrap()
         } else {
-            dbg!("USING EXISTING");
+            dbg!("Opening/creating feed");
             let remote_feed = Feed::open(format!("/tmp/testremote_{}.db", is_initiator))
                 .await
                 .unwrap();
             let public_key = hex::encode(remote_feed.public_key());
-            dbg!("PUBLIC KEY {} {}", is_initiator, public_key);
+            dbg!(
+                "Reading public key, init: {} value: {}",
+                is_initiator,
+                public_key
+            );
             remote_feed
         };
 
@@ -125,7 +129,7 @@ impl Engine {
                     if self.is_initiator {
                         for feed in feedstore.feeds.values() {
                             let feed_key = feed.key().clone();
-                            dbg!("Opening feed {}", &feed_key);
+                            dbg!("Opening feed with key length {}", &feed_key.len());
                             protocol.open(feed_key).await?;
                         }
                     }

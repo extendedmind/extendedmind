@@ -122,7 +122,7 @@ rust_library(
         "@raze__futures_io__0_3_16//:futures_io",
         "@raze__kv_log_macro__1_0_7//:kv_log_macro",
         "@raze__log__0_4_14//:log",
-        "@raze__memchr__2_4_0//:memchr",
+        "@raze__memchr__2_4_1//:memchr",
         "@raze__num_cpus__1_13_0//:num_cpus",
         "@raze__once_cell__1_8_0//:once_cell",
         "@raze__pin_project_lite__0_2_7//:pin_project_lite",

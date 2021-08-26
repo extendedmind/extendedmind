@@ -3,6 +3,7 @@ use async_std::task;
 use async_tungstenite::{async_std::connect_async, tungstenite::Message};
 use extendedmind_engine::{Bytes, ChannelWriter, Engine};
 use futures::prelude::*;
+use log::*;
 use std::io;
 
 use clap::Clap;
@@ -36,18 +37,18 @@ async fn run(url: String, public_key: String) -> Result<(), Box<dyn std::error::
     task::spawn(async move {
         loop {
             let outgoing_msg = receiver.next().await;
-            dbg!("GOT OUTGOING MESSAGE");
+            debug!("GOT OUTGOING MESSAGE");
             let msg = outgoing_msg.unwrap().unwrap();
-            dbg!("Outputting msg {:?}", &msg);
+            debug!("Outputting msg {:?}", &msg);
             ws_writer.send(Message::Binary(msg.to_vec())).await.unwrap();
         }
     });
 
     loop {
         let incoming_msg = ws_reader.next().await;
-        dbg!("GOT INCOMING MESSAGE");
+        debug!("GOT INCOMING MESSAGE");
         let msg = incoming_msg.unwrap().unwrap();
-        dbg!("INCOMING msg {:?}", msg.len());
+        debug!("INCOMING msg {:?}", msg.len());
         let hypercore_sender = ChannelWriter::new(sender.clone());
         hypercore_sender
             .send(Bytes::from(msg.into_data()))

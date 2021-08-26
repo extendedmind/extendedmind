@@ -10,6 +10,7 @@ rust_binary(
             "//third_party/cargo:async_tungstenite",
             "//third_party/cargo:futures",
             "//third_party/cargo:async_std",
+            "//third_party/cargo:log",
             "//third_party/cargo:clap",
             "//third_party/cargo:bytes",
     ],

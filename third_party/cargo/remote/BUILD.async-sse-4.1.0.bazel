@@ -53,7 +53,7 @@ rust_library(
         "@raze__async_std__1_9_0//:async_std",
         "@raze__http_types__2_12_0//:http_types",
         "@raze__log__0_4_14//:log",
-        "@raze__memchr__2_4_0//:memchr",
+        "@raze__memchr__2_4_1//:memchr",
         "@raze__pin_project_lite__0_1_12//:pin_project_lite",
     ],
 )

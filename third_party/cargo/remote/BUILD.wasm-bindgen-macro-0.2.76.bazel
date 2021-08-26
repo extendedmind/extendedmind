@@ -25,15 +25,16 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # Apache-2.0 from expression "Apache-2.0"
+    "notice",  # MIT from expression "MIT OR Apache-2.0"
 ])
 
 # Generated Targets
 
 rust_library(
-    name = "prost_derive",
+    name = "wasm_bindgen_macro",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "spans",
     ],
     crate_root = "src/lib.rs",
     crate_type = "proc-macro",
@@ -46,13 +47,12 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "0.8.0",
+    version = "0.2.76",
     # buildifier: leave-alone
     deps = [
-        "@raze__anyhow__1_0_43//:anyhow",
-        "@raze__itertools__0_10_1//:itertools",
-        "@raze__proc_macro2__1_0_28//:proc_macro2",
         "@raze__quote__1_0_9//:quote",
-        "@raze__syn__1_0_74//:syn",
+        "@raze__wasm_bindgen_macro_support__0_2_76//:wasm_bindgen_macro_support",
     ],
 )
+
+# Unsupported target "ui" with type "test" omitted

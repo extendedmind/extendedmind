@@ -30,15 +30,22 @@ licenses([
 
 # Generated Targets
 
+# Unsupported target "print_client_debug" with type "example" omitted
+
 rust_library(
-    name = "wasm_bindgen_futures",
+    name = "http_client",
     srcs = glob(["**/*.rs"]),
+    aliases = {
+    },
     crate_features = [
     ],
     crate_root = "src/lib.rs",
     crate_type = "lib",
     data = [],
     edition = "2018",
+    proc_macro_deps = [
+        "@raze__async_trait__0_1_51//:async_trait",
+    ],
     rustc_flags = [
         "--cap-lints=allow",
     ],
@@ -46,13 +53,23 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "0.4.25",
+    version = "6.5.1",
     # buildifier: leave-alone
     deps = [
         "@raze__cfg_if__1_0_0//:cfg_if",
-        "@raze__js_sys__0_3_52//:js_sys",
-        "@raze__wasm_bindgen__0_2_75//:wasm_bindgen",
-    ],
+        "@raze__dashmap__4_0_2//:dashmap",
+        "@raze__http_types__2_12_0//:http_types",
+        "@raze__log__0_4_14//:log",
+    ] + selects.with_or({
+        # cfg(not(target_arch = "wasm32"))
+        (
+            "@rules_rust//rust/platform:x86_64-apple-darwin",
+            "@rules_rust//rust/platform:x86_64-pc-windows-msvc",
+            "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
+        ): [
+        ],
+        "//conditions:default": [],
+    }),
 )
 
-# Unsupported target "tests" with type "test" omitted
+# Unsupported target "test" with type "test" omitted

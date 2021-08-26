@@ -586,6 +586,7 @@ dependencies = [
  "duct",
  "extendedmind_engine",
  "futures",
+ "log",
  "tungstenite",
 ]
 
