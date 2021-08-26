@@ -103,7 +103,7 @@ rust_library(
     deps = [
         ":snow_build_script",
         "@raze__aes_gcm__0_7_0//:aes_gcm",
-        "@raze__blake2__0_9_1//:blake2",
+        "@raze__blake2__0_9_2//:blake2",
         "@raze__chacha20poly1305__0_6_0//:chacha20poly1305",
         "@raze__rand__0_7_3//:rand",
         "@raze__rand_core__0_5_1//:rand_core",

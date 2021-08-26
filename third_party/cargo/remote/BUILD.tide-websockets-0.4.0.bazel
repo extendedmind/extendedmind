@@ -57,7 +57,7 @@ rust_library(
         "@raze__base64__0_13_0//:base64",
         "@raze__futures_util__0_3_16//:futures_util",
         "@raze__pin_project__1_0_8//:pin_project",
-        "@raze__serde__1_0_127//:serde",
+        "@raze__serde__1_0_129//:serde",
         "@raze__serde_json__1_0_66//:serde_json",
         "@raze__sha_1__0_9_7//:sha_1",
         "@raze__tide__0_16_0//:tide",

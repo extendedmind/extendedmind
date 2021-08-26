@@ -99,7 +99,7 @@ rust_library(
         ":hypercore_protocol_build_script",
         "@raze__async_channel__1_6_1//:async_channel",
         "@raze__blake2_rfc__0_2_18//:blake2_rfc",
-        "@raze__bytes__1_0_1//:bytes",
+        "@raze__bytes__1_1_0//:bytes",
         "@raze__futures_lite__1_12_0//:futures_lite",
         "@raze__futures_timer__3_0_2//:futures_timer",
         "@raze__getrandom__0_1_16//:getrandom",

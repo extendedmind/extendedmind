@@ -14,8 +14,7 @@ serde_json = "1.0.66"
 # automerge-frontend = { git = "https://github.com/ttiurani/automerge-rs.git", rev = "c4230c029b0e20328fe2f5606e5503ffcd2cc964" }
 duct = "=0.13.4"
 hypercore = { git = "https://github.com/datrs/hypercore", rev = "8d8cbef8a884a70e8d12d80968c1d97be2ceea0b" }
-# hypercore-protocol = { git = "https://github.com/ttiurani/hypercore-protocol-rs", rev = "7208fda866b8235992e988b0e9ed3e4edf6787d4" }
-hypercore-protocol = { git = "file:///Users/ttiurani/devel/em/hypercore-protocol-rs", branch = "debug" }
+hypercore-protocol = { git = "https://github.com/ttiurani/hypercore-protocol-rs", rev = "7208fda866b8235992e988b0e9ed3e4edf6787d4" }
 async-tungstenite = { version = "0.13.1", features = ["async-std-runtime"] }
 bytes = "0.5.0"
 fern = "0.6.0"
