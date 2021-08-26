@@ -11,6 +11,7 @@ path = "fake_lib.rs"
 serde = "1.0.127"
 serde_derive = "1.0.127"
 serde_json = "1.0.66"
+# TODO: Add this back
 # automerge-frontend = { git = "https://github.com/ttiurani/automerge-rs.git", rev = "c4230c029b0e20328fe2f5606e5503ffcd2cc964" }
 duct = "=0.13.4"
 hypercore = { git = "https://github.com/datrs/hypercore", rev = "8d8cbef8a884a70e8d12d80968c1d97be2ceea0b" }
@@ -44,14 +45,6 @@ additional_flags = [
 [package.metadata.raze.crates.clap.'3.0.0-beta.4']
 compile_data_attr = "glob([\"README.md\"])"
 
-# Needed for lazy_static to build on OSX...
-# security-framework = "0.4.4" # bazel fix
-# security-framework-sys = "0.4.3"
-# tempfile = "3.1.0"
-# lazy_static = "1.4.0"
-# libc = "=0.2.76"
-# ...lazy_static end
-
 [package.metadata.raze]
 workspace_path = "//third_party/cargo"
 package_aliases_dir = "."
@@ -62,16 +55,3 @@ targets = [
     "x86_64-pc-windows-msvc",
     "x86_64-unknown-linux-gnu",
 ]
-
-# See https://github.com/google/cargo-raze/issues/41#issuecomment-682272829
-# [raze.crates.native-tls.'0.2.6']
-# additional_deps = [
-#    "@raze__lazy_static__1_4_0//:lazy_static",
-#    "@raze__security_framework__0_4_4//:security_framework",
-#    "@raze__security_framework_sys__0_4_3//:security_framework_sys",
-#    "@raze__tempfile__3_1_0//:tempfile",
-#    "@raze__libc__0_2_76//:libc"
-# ]
-
-# [build-dependencies]
-# prost-build = "0.8.0"
