@@ -7,7 +7,7 @@ rust_library(
     name = "extendedmind_engine",
     deps = [
         "//schema:extendedmind_schema_rust",
-        # "//third_party/cargo:automerge_frontend",
+        "//third_party/cargo:automerge_frontend",
         "//third_party/cargo:serde_json",
         "//third_party/cargo:hypercore",
         "//third_party/cargo:hypercore_protocol",

@@ -25,23 +25,17 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT OR Apache-2.0"
+    "reciprocal",  # MPL-2.0 from expression "MPL-2.0"
 ])
 
 # Generated Targets
 
-# Unsupported target "mod" with type "bench" omitted
-
 rust_library(
-    name = "getrandom",
+    name = "sized_chunks",
     srcs = glob(["**/*.rs"]),
-    aliases = {
-    },
     crate_features = [
-        "js",
-        "js-sys",
+        "default",
         "std",
-        "wasm-bindgen",
     ],
     crate_root = "src/lib.rs",
     crate_type = "lib",
@@ -54,24 +48,10 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "0.2.3",
+    version = "0.6.5",
     # buildifier: leave-alone
     deps = [
-        "@raze__cfg_if__1_0_0//:cfg_if",
-    ] + selects.with_or({
-        # cfg(unix)
-        (
-            "@rules_rust//rust/platform:x86_64-apple-darwin",
-            "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
-        ): [
-            "@raze__libc__0_2_101//:libc",
-        ],
-        "//conditions:default": [],
-    }),
+        "@raze__bitmaps__2_1_0//:bitmaps",
+        "@raze__typenum__1_13_0//:typenum",
+    ],
 )
-
-# Unsupported target "custom" with type "test" omitted
-
-# Unsupported target "normal" with type "test" omitted
-
-# Unsupported target "rdrand" with type "test" omitted
