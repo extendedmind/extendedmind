@@ -13,6 +13,22 @@
           "description": "UUID",
           "type": "string"
         },
+        "content": {
+          "description": "Content",
+          "type": "string"
+        }
+      }
+    },
+    "Tag": {
+      "required": [
+        "uuid",
+        "title"
+      ],
+      "properties": {
+        "uuid": {
+          "description": "UUID",
+          "type": "string"
+        },
         "title": {
           "description": "Title",
           "type": "string"
@@ -33,6 +49,7 @@
     "Data": {
       "required": [
         "items",
+        "tags",
         "reminders"
       ],
       "properties": {
@@ -41,6 +58,13 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/Item"
+          }
+        },
+        "tags": {
+          "description": "Tags",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Tag"
           }
         },
         "reminders": {

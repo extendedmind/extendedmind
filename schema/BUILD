@@ -7,6 +7,7 @@ RUST_OPENAPI_MODEL_OUTS = [
     "models/data.rs",
     "models/reminder.rs",
     "models/item.rs",
+    "models/tag.rs",
     "models/mod.rs",
 ]
 openapi_gen(
@@ -15,9 +16,9 @@ openapi_gen(
     spec = "src/openapi.yaml",
     spec_refs = ["src/schema.json"],
 )
-# We only want the schema models so the generated lib.rs needs to be modified to comment out unnecessary
-# fields. A bit awkward but the OpenAPI generator is the best JSON Schema generator for Rust, so this is
-# still better than the alternative.
+# We only want the schema models so the generated lib.rs needs to be modified to comment out
+# unnecessary fields. A bit awkward but the OpenAPI generator is the best JSON Schema generator for
+# Rust, so this is still better than the alternative.
 genrule(
     name = "schema_rust_models",
     srcs = ["schema_openapi_gen_rust"],

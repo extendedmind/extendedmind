@@ -72,7 +72,7 @@ impl Engine {
         // feedstore.add(local_feed_wrapper);
         let feedstore = Arc::new(feedstore);
         Engine {
-            data: ExtendedMindData::new(Vec::new(), Vec::new()),
+            data: ExtendedMindData::new(Vec::new(), Vec::new(), Vec::new()),
             is_initiator,
             feedstore: Some(feedstore),
         }
@@ -81,7 +81,7 @@ impl Engine {
     // TEMPORARY....
     pub fn new() -> Engine {
         Engine {
-            data: ExtendedMindData::new(Vec::new(), Vec::new()),
+            data: ExtendedMindData::new(Vec::new(), Vec::new(), Vec::new()),
             is_initiator: true,
             feedstore: None,
         }
@@ -383,6 +383,9 @@ mod tests {
 
     #[test]
     fn test_get_data() {
-        assert_eq!("{\"items\":[],\"reminders\":[]}", Engine::new().get_data());
+        assert_eq!(
+            "{\"items\":[],\"tags\":[],\"reminders\":[]}",
+            Engine::new().get_data()
+        );
     }
 }

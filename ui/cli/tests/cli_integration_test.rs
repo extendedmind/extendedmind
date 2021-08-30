@@ -9,7 +9,7 @@ fn test_no_params() {
     let no_params = cmd!(cli, "--version").stdout_capture().run().unwrap();
     let stdout = std::str::from_utf8(&no_params.stdout).unwrap();
     assert_eq!(
-        "{\"items\":[],\"reminders\":[]}\nextendedmind_cli 0.1.0\n",
+        "{\"items\":[],\"tags\":[],\"reminders\":[]}\nextendedmind_cli 0.1.0\n",
         stdout
     );
 }
