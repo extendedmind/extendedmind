@@ -105,6 +105,7 @@ async fn async_main(initial_state: State) -> Result<()> {
                                 == Some(&(SystemCommand::Disconnect as u8))
                             {
                                 debug!("got disconnect");
+                                ws_writer.send(Message::Close(None)).await.unwrap();
                                 break;
                             }
                             // Send ping message if enough time has elapsed
