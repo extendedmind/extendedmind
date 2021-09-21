@@ -33,6 +33,8 @@ licenses([
 rust_library(
     name = "js_sys",
     srcs = glob(["**/*.rs"]),
+    aliases = {
+    },
     crate_features = [
     ],
     crate_root = "src/lib.rs",
@@ -50,7 +52,14 @@ rust_library(
     # buildifier: leave-alone
     deps = [
         "@raze__wasm_bindgen__0_2_78//:wasm_bindgen",
-    ],
+    ] + selects.with_or({
+        # cfg(target_arch = "wasm32")
+        (
+            "@rules_rust//rust/platform:wasm32-wasi",
+        ): [
+        ],
+        "//conditions:default": [],
+    }),
 )
 
 # Unsupported target "headless" with type "test" omitted

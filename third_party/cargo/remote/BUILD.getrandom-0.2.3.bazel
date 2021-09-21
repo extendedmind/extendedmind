@@ -59,6 +59,14 @@ rust_library(
     deps = [
         "@raze__cfg_if__1_0_0//:cfg_if",
     ] + selects.with_or({
+        # cfg(target_os = "wasi")
+        (
+            "@rules_rust//rust/platform:wasm32-wasi",
+        ): [
+            "@raze__wasi__0_10_0_wasi_snapshot_preview1//:wasi",
+        ],
+        "//conditions:default": [],
+    }) + selects.with_or({
         # cfg(unix)
         (
             "@rules_rust//rust/platform:x86_64-apple-darwin",

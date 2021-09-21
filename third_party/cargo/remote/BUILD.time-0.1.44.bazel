@@ -53,6 +53,14 @@ rust_library(
     deps = [
         "@raze__libc__0_2_102//:libc",
     ] + selects.with_or({
+        # cfg(target_os = "wasi")
+        (
+            "@rules_rust//rust/platform:wasm32-wasi",
+        ): [
+            "@raze__wasi__0_10_0_wasi_snapshot_preview1//:wasi",
+        ],
+        "//conditions:default": [],
+    }) + selects.with_or({
         # cfg(windows)
         (
             "@rules_rust//rust/platform:x86_64-pc-windows-msvc",

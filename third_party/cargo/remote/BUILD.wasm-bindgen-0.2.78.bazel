@@ -62,12 +62,21 @@ cargo_build_script(
     version = "0.2.78",
     visibility = ["//visibility:private"],
     deps = [
-    ],
+    ] + selects.with_or({
+        # cfg(target_arch = "wasm32")
+        (
+            "@rules_rust//rust/platform:wasm32-wasi",
+        ): [
+        ],
+        "//conditions:default": [],
+    }),
 )
 
 rust_library(
     name = "wasm_bindgen",
     srcs = glob(["**/*.rs"]),
+    aliases = {
+    },
     crate_features = [
         "default",
         "serde",
@@ -97,7 +106,14 @@ rust_library(
         "@raze__cfg_if__1_0_0//:cfg_if",
         "@raze__serde__1_0_130//:serde",
         "@raze__serde_json__1_0_68//:serde_json",
-    ],
+    ] + selects.with_or({
+        # cfg(target_arch = "wasm32")
+        (
+            "@rules_rust//rust/platform:wasm32-wasi",
+        ): [
+        ],
+        "//conditions:default": [],
+    }),
 )
 
 # Unsupported target "headless" with type "test" omitted

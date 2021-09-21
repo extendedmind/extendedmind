@@ -69,6 +69,13 @@ rust_library(
         ): [
         ],
         "//conditions:default": [],
+    }) + selects.with_or({
+        # cfg(target_arch = "wasm32")
+        (
+            "@rules_rust//rust/platform:wasm32-wasi",
+        ): [
+        ],
+        "//conditions:default": [],
     }),
 )
 
