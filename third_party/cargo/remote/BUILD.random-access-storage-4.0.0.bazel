@@ -52,6 +52,6 @@ rust_library(
     version = "4.0.0",
     # buildifier: leave-alone
     deps = [
-        "@raze__futures_io__0_3_16//:futures_io",
+        "@raze__futures_io__0_3_17//:futures_io",
     ],
 )

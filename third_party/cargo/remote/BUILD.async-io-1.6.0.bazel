@@ -66,7 +66,7 @@ rust_library(
         "@raze__parking__2_0_0//:parking",
         "@raze__polling__2_1_0//:polling",
         "@raze__slab__0_4_4//:slab",
-        "@raze__socket2__0_4_1//:socket2",
+        "@raze__socket2__0_4_2//:socket2",
         "@raze__waker_fn__1_1_0//:waker_fn",
     ] + selects.with_or({
         # cfg(target_os = "linux")
@@ -81,7 +81,7 @@ rust_library(
             "@rules_rust//rust/platform:x86_64-apple-darwin",
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
         ): [
-            "@raze__libc__0_2_101//:libc",
+            "@raze__libc__0_2_102//:libc",
         ],
         "//conditions:default": [],
     }) + selects.with_or({

@@ -48,7 +48,7 @@ rust_library(
     data = [],
     edition = "2018",
     proc_macro_deps = [
-        "@raze__ctor__0_1_20//:ctor",
+        "@raze__ctor__0_1_21//:ctor",
     ],
     rustc_flags = [
         "--cap-lints=allow",

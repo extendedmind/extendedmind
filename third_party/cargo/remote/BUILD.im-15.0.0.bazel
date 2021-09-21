@@ -94,6 +94,6 @@ rust_library(
         "@raze__rand_core__0_5_1//:rand_core",
         "@raze__rand_xoshiro__0_4_0//:rand_xoshiro",
         "@raze__sized_chunks__0_6_5//:sized_chunks",
-        "@raze__typenum__1_13_0//:typenum",
+        "@raze__typenum__1_14_0//:typenum",
     ],
 )

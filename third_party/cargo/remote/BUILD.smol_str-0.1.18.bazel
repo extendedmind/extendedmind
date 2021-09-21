@@ -50,7 +50,7 @@ rust_library(
     version = "0.1.18",
     # buildifier: leave-alone
     deps = [
-        "@raze__serde__1_0_129//:serde",
+        "@raze__serde__1_0_130//:serde",
     ],
 )
 

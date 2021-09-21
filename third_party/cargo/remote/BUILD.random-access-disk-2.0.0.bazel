@@ -54,8 +54,8 @@ rust_library(
     version = "2.0.0",
     # buildifier: leave-alone
     deps = [
-        "@raze__anyhow__1_0_43//:anyhow",
-        "@raze__async_std__1_9_0//:async_std",
+        "@raze__anyhow__1_0_44//:anyhow",
+        "@raze__async_std__1_10_0//:async_std",
         "@raze__mkdirp__1_0_0//:mkdirp",
         "@raze__random_access_storage__4_0_0//:random_access_storage",
     ],

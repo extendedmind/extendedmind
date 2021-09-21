@@ -68,7 +68,7 @@ rust_library(
     # buildifier: leave-alone
     deps = [
         "@raze__getrandom__0_2_3//:getrandom",
-        "@raze__serde__1_0_129//:serde",
+        "@raze__serde__1_0_130//:serde",
     ] + selects.with_or({
         # cfg(windows)
         (

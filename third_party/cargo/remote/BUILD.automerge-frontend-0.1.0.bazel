@@ -56,13 +56,13 @@ rust_library(
     # buildifier: leave-alone
     deps = [
         "@raze__automerge_protocol__0_1_0//:automerge_protocol",
-        "@raze__futures__0_3_16//:futures",
+        "@raze__futures__0_3_17//:futures",
         "@raze__im__15_0_0//:im",
         "@raze__maplit__1_0_2//:maplit",
-        "@raze__serde__1_0_129//:serde",
-        "@raze__serde_json__1_0_66//:serde_json",
+        "@raze__serde__1_0_130//:serde",
+        "@raze__serde_json__1_0_68//:serde_json",
         "@raze__smol_str__0_1_18//:smol_str",
-        "@raze__thiserror__1_0_26//:thiserror",
+        "@raze__thiserror__1_0_29//:thiserror",
         "@raze__unicode_segmentation__1_8_0//:unicode_segmentation",
         "@raze__uuid__0_8_2//:uuid",
     ],

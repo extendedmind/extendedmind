@@ -52,8 +52,8 @@ rust_library(
     version = "2.0.1",
     # buildifier: leave-alone
     deps = [
-        "@raze__anyhow__1_0_43//:anyhow",
-        "@raze__async_std__1_9_0//:async_std",
+        "@raze__anyhow__1_0_44//:anyhow",
+        "@raze__async_std__1_10_0//:async_std",
         "@raze__base64__0_12_3//:base64",
         "@raze__bincode__1_3_3//:bincode",
         "@raze__blake3__0_3_8//:blake3",
@@ -61,9 +61,9 @@ rust_library(
         "@raze__hmac__0_8_1//:hmac",
         "@raze__kv_log_macro__1_0_7//:kv_log_macro",
         "@raze__rand__0_7_3//:rand",
-        "@raze__serde__1_0_129//:serde",
-        "@raze__serde_json__1_0_66//:serde_json",
-        "@raze__sha2__0_9_5//:sha2",
+        "@raze__serde__1_0_130//:serde",
+        "@raze__serde_json__1_0_68//:serde_json",
+        "@raze__sha2__0_9_8//:sha2",
     ],
 )
 

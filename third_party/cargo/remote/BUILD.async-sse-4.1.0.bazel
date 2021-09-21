@@ -50,7 +50,7 @@ rust_library(
     # buildifier: leave-alone
     deps = [
         "@raze__async_channel__1_6_1//:async_channel",
-        "@raze__async_std__1_9_0//:async_std",
+        "@raze__async_std__1_10_0//:async_std",
         "@raze__http_types__2_12_0//:http_types",
         "@raze__log__0_4_14//:log",
         "@raze__memchr__2_4_1//:memchr",

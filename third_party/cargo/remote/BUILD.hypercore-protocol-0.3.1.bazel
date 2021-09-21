@@ -110,7 +110,7 @@ rust_library(
         "@raze__prost__0_7_0//:prost",
         "@raze__rand__0_7_3//:rand",
         "@raze__salsa20__0_6_0//:salsa20",
-        "@raze__snow__0_7_2//:snow",
+        "@raze__snow__0_8_0//:snow",
         "@raze__varinteger__1_0_6//:varinteger",
     ],
 )
