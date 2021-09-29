@@ -52,3 +52,21 @@ rust_repositories(version = "1.54.0", edition="2018", rustfmt_version = "1.54.0"
 
 load("//third_party/cargo:crates.bzl", "raze_fetch_remote_crates")
 raze_fetch_remote_crates()
+
+# Node/Javascript/Typescript/Svelte/Esbuild
+
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+http_archive(
+    name = "build_bazel_rules_nodejs",
+    sha256 = "3635797a96c7bfcd0d265dacd722a07335e64d6ded9834af8d3f1b7ba5a25bba",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/4.3.0/rules_nodejs-4.3.0.tar.gz"],
+)
+
+load("@build_bazel_rules_nodejs//:index.bzl", "npm_install")
+
+npm_install(
+    name = "npm",
+    package_json = "//ui/web:package.json",
+    package_lock_json = "//ui/web:package-lock.json",
+    quiet = False,
+)
