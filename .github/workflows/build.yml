@@ -7,14 +7,6 @@ jobs:
         steps:
           - name: Check out the repo
             uses: actions/checkout@v2
-          - name: Install Node.js to setup Playwright
-            uses: actions/setup-node@v1
-            with:
-                node-version: 16.x
-          - name: Install Playwright Chromium dependencies
-            run: npx playwright install-deps chromium
-          - name: Install Playwright Chromium
-            run: npx playwright install chromium
           - name: Run Bazel build
             uses: ttiurani/bazel-action@develop
             with:
