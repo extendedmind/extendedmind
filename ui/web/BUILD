@@ -1,4 +1,5 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin", "nodejs_test")
+load("@npm//@bazel/cypress:index.bzl", "cypress_web_test")
 load("@npm//@sveltejs/kit:index.bzl", "svelte_kit")
 
 load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
@@ -6,6 +7,7 @@ load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
 filegroup(
     name = "conf",
     srcs = [
+        "cypress.json",
         "package.json",
         "package-lock.json",
         "svelte.config.js",
@@ -15,7 +17,7 @@ filegroup(
 )
 
 svelte_kit(
-    name = "build",
+    name = "web",
     outs = ["dist"],
     chdir = "ui/web",
     args = [
@@ -27,9 +29,7 @@ svelte_kit(
         "../../$(@D)/dist/extendedmind"
     ],
     data = [
-        ":svelte.config.js",
-        ":tsconfig.json",
-        ":package.json",
+        ":conf",
         "//ui/web/src",
         "//ui/web/static",
         "@npm//@sveltejs/adapter-static",
@@ -41,4 +41,12 @@ svelte_kit(
         "@npm//svelte-check",
         "@npm//svelte-preprocess",
     ],
+)
+
+cypress_web_test(
+    name = "it",
+    srcs = [
+        "//ui/web/tests/cypress/integration:frontPage.spec.js",
+    ],
+    config_file = "cypress.json",
 )

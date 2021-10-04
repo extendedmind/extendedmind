@@ -53,7 +53,7 @@ rust_repositories(version = "1.54.0", edition="2018", rustfmt_version = "1.54.0"
 load("//third_party/cargo:crates.bzl", "raze_fetch_remote_crates")
 raze_fetch_remote_crates()
 
-# Node/Javascript/Typescript/Svelte/Esbuild
+# Node/Javascript/Typescript/Svelte/Cypress
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 http_archive(
@@ -70,3 +70,7 @@ npm_install(
     package_lock_json = "//ui/web:package-lock.json",
     quiet = False,
 )
+
+load("@build_bazel_rules_nodejs//toolchains/cypress:cypress_repositories.bzl", "cypress_repositories")
+
+cypress_repositories(name = "cypress", version = "8.5.0")

@@ -1,3 +1,7 @@
 node_modules/
 dist/
 .svelte-kit/
+
+# test results
+cypress/videos
+cypress/screenshots
