@@ -1,5 +1,4 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin", "nodejs_test")
-load("@npm//testcafe:index.bzl", "testcafe_test")
 load("@npm//@sveltejs/kit:index.bzl", "svelte_kit")
 
 load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
@@ -42,18 +41,4 @@ svelte_kit(
         "@npm//svelte-check",
         "@npm//svelte-preprocess",
     ],
-)
-
-testcafe_test(
-    name = "integration_test",
-    chdir = "ui/web",
-    args = [
-        "\"chrome:headless\"",
-        "src/it/*.spec.ts",
-    ],
-    data = [
-        ":tsconfig.json",
-        ":package.json",
-        "//ui/web/src",
-    ]
 )
