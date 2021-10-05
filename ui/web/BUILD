@@ -1,7 +1,5 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin", "nodejs_test")
 load("@npm//@sveltejs/kit:index.bzl", "svelte_kit")
-
-load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
+load(":jest.bzl", "jest_test")
 
 filegroup(
     name = "conf",
@@ -40,5 +38,20 @@ svelte_kit(
         "@npm//svelte",
         "@npm//svelte-check",
         "@npm//svelte-preprocess",
+    ],
+)
+
+jest_test(
+    name = "integration_test",
+    srcs = [
+        "//ui/web/tests",
+    ],
+    jest_config = ":jest.e2e.config.js",
+    jest_playwright_config = ":jest-playwright.config.js",
+    hub_bin = "//hub:extendedmind_hub",
+    hub_port = "8080",
+    deps = [
+        "@npm//jest-playwright-preset",
+        "@npm//playwright",
     ],
 )
