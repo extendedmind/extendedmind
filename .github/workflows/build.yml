@@ -1,13 +1,13 @@
 name: Build
 on: push
 jobs:
-    build-and-test:
-        name: Build and Test with Bazel
-        runs-on: ubuntu-latest
-        steps:
-          - name: Check out the repo
-            uses: actions/checkout@v2
-          - name: Run Bazel build
-            uses: ttiurani/bazel-action@develop
-            with:
-                command: 'test //...'
+  build-and-test:
+    name: Build and Test with Bazel
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+      - name: Run Bazel build
+        uses: ttiurani/bazel-action@develop
+        with:
+          command: 'test //...'
