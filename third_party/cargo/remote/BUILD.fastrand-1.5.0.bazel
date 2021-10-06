@@ -58,7 +58,7 @@ rust_library(
         (
             "@rules_rust//rust/platform:wasm32-wasi",
         ): [
-            "@raze__instant__0_1_10//:instant",
+            "@raze__instant__0_1_11//:instant",
         ],
         "//conditions:default": [],
     }),

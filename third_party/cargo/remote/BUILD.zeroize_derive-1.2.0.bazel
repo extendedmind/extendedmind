@@ -46,12 +46,12 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "1.1.0",
+    version = "1.2.0",
     # buildifier: leave-alone
     deps = [
         "@raze__proc_macro2__1_0_29//:proc_macro2",
-        "@raze__quote__1_0_9//:quote",
-        "@raze__syn__1_0_76//:syn",
+        "@raze__quote__1_0_10//:quote",
+        "@raze__syn__1_0_80//:syn",
         "@raze__synstructure__0_12_5//:synstructure",
     ],
 )

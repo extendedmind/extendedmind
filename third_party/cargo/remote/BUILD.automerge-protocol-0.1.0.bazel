@@ -54,7 +54,7 @@ rust_library(
         "@raze__smol_str__0_1_18//:smol_str",
         "@raze__strum__0_21_0//:strum",
         "@raze__thiserror__1_0_29//:thiserror",
-        "@raze__tinyvec__1_4_0//:tinyvec",
+        "@raze__tinyvec__1_5_0//:tinyvec",
         "@raze__uuid__0_8_2//:uuid",
     ],
 )

@@ -17,6 +17,7 @@ futures = "^0.3.5"
 async-std = { version = "1.6.2", features = ["unstable"] }
 tide = "0.16.0"
 tide-websockets = "0.4.0"
+tide-naive-static-files = "2.2.0"
 async-tungstenite = { version = "0.13.1", features = ["async-std-runtime"] }
 ctrlc = { version = "3.0", features = ["termination"] }
 async-ctrlc = { version = "1.2.0", features = ["stream"] }

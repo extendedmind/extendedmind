@@ -1,0 +1,89 @@
+"""
+@generated
+cargo-raze crate build file.
+
+DO NOT EDIT! Replaced on runs of cargo-raze
+"""
+
+# buildifier: disable=load
+load("@bazel_skylib//lib:selects.bzl", "selects")
+
+# buildifier: disable=load
+load(
+    "@rules_rust//rust:rust.bzl",
+    "rust_binary",
+    "rust_library",
+    "rust_test",
+)
+
+package(default_visibility = [
+    # Public for visibility by "@raze__crate__version//" targets.
+    #
+    # Prefer access through "//third_party/cargo", which limits external
+    # visibility to explicit Cargo.toml dependencies.
+    "//visibility:public",
+])
+
+licenses([
+    "notice",  # MIT from expression "MIT OR Apache-2.0"
+])
+
+# Generated Targets
+
+# Unsupported target "cookies" with type "example" omitted
+
+# Unsupported target "graphql" with type "example" omitted
+
+# Unsupported target "hello" with type "example" omitted
+
+# Unsupported target "json" with type "example" omitted
+
+rust_library(
+    name = "tide",
+    srcs = glob(["**/*.rs"]),
+    crate_features = [
+        "default",
+        "http-service-hyper",
+        "hyper-server",
+    ],
+    crate_root = "src/lib.rs",
+    crate_type = "lib",
+    data = [],
+    edition = "2018",
+    rustc_flags = [
+        "--cap-lints=allow",
+    ],
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+    version = "0.6.0",
+    # buildifier: leave-alone
+    deps = [
+        "@raze__async_std__1_10_0//:async_std",
+        "@raze__cookie__0_12_0//:cookie",
+        "@raze__futures__0_3_17//:futures",
+        "@raze__http__0_1_21//:http",
+        "@raze__http_service__0_4_0//:http_service",
+        "@raze__http_service_hyper__0_4_1//:http_service_hyper",
+        "@raze__log__0_4_14//:log",
+        "@raze__mime__0_3_16//:mime",
+        "@raze__pin_project_lite__0_1_12//:pin_project_lite",
+        "@raze__route_recognizer__0_1_13//:route_recognizer",
+        "@raze__serde__1_0_130//:serde",
+        "@raze__serde_json__1_0_68//:serde_json",
+        "@raze__serde_qs__0_5_2//:serde_qs",
+    ],
+)
+
+# Unsupported target "cookies" with type "test" omitted
+
+# Unsupported target "nested" with type "test" omitted
+
+# Unsupported target "querystring" with type "test" omitted
+
+# Unsupported target "response" with type "test" omitted
+
+# Unsupported target "server" with type "test" omitted
+
+# Unsupported target "wildcard" with type "test" omitted

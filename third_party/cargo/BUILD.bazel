@@ -220,6 +220,15 @@ alias(
 )
 
 alias(
+    name = "tide_naive_static_files",
+    actual = "@raze__tide_naive_static_files__2_2_0//:tide_naive_static_files",
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+)
+
+alias(
     name = "tide_websockets",
     actual = "@raze__tide_websockets__0_4_0//:tide_websockets",
     tags = [

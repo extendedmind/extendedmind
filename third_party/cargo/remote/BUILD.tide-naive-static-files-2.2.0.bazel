@@ -1,0 +1,67 @@
+"""
+@generated
+cargo-raze crate build file.
+
+DO NOT EDIT! Replaced on runs of cargo-raze
+"""
+
+# buildifier: disable=load
+load("@bazel_skylib//lib:selects.bzl", "selects")
+
+# buildifier: disable=load
+load(
+    "@rules_rust//rust:rust.bzl",
+    "rust_binary",
+    "rust_library",
+    "rust_test",
+)
+
+package(default_visibility = [
+    # Public for visibility by "@raze__crate__version//" targets.
+    #
+    # Prefer access through "//third_party/cargo", which limits external
+    # visibility to explicit Cargo.toml dependencies.
+    "//visibility:public",
+])
+
+licenses([
+    "notice",  # MIT from expression "MIT OR Apache-2.0"
+])
+
+# Generated Targets
+
+# Unsupported target "static-file-endpoint" with type "example" omitted
+
+# Unsupported target "static-file-function" with type "example" omitted
+
+rust_library(
+    name = "tide_naive_static_files",
+    srcs = glob(["**/*.rs"]),
+    crate_features = [
+    ],
+    crate_root = "src/lib.rs",
+    crate_type = "lib",
+    data = [],
+    edition = "2018",
+    rustc_flags = [
+        "--cap-lints=allow",
+    ],
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+    version = "2.2.0",
+    # buildifier: leave-alone
+    deps = [
+        "@raze__async_std__1_10_0//:async_std",
+        "@raze__bytes__0_5_6//:bytes",
+        "@raze__futures_fs__0_0_5//:futures_fs",
+        "@raze__futures_util__0_3_17//:futures_util",
+        "@raze__http__0_1_21//:http",
+        "@raze__http_service__0_4_0//:http_service",
+        "@raze__mime__0_3_16//:mime",
+        "@raze__mime_guess__2_0_3//:mime_guess",
+        "@raze__percent_encoding__2_1_0//:percent_encoding",
+        "@raze__tide__0_6_0//:tide",
+    ],
+)
