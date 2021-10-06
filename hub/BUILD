@@ -14,7 +14,6 @@ rust_binary(
             "//third_party/cargo:futures",
             "//third_party/cargo:tide",
             "//third_party/cargo:tide_websockets",
-            "//third_party/cargo:tide_naive_static_files",
             "//third_party/cargo:async_std",
             "//third_party/cargo:async_tungstenite",
             "//third_party/cargo:async_ctrlc",
