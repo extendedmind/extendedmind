@@ -50,6 +50,7 @@ jest_test(
     jest_playwright_config = ":jest-playwright.config.js",
     hub_bin = "//hub:extendedmind_hub",
     hub_port = "8080",
+    dist_dir = ":build",
     deps = [
         "@npm//jest-playwright-preset",
         "@npm//playwright",

@@ -1,13 +1,16 @@
 use anyhow::Result;
 use async_std::channel::{bounded, Receiver, Sender};
 use async_std::sync::{Arc, Mutex};
+use clap::Clap;
 use futures::stream::StreamExt;
 use log::*;
 use std::collections::HashMap;
 use std::io;
+use std::path::PathBuf;
 use std::process;
 use std::sync::atomic::AtomicBool;
 use std::time::{Duration, Instant};
+use tide::{Body, Response, StatusCode};
 use tide_websockets::{Message, WebSocket};
 
 use async_ctrlc::CtrlC;
@@ -37,6 +40,10 @@ struct State {
     system_commands: Receiver<Result<Bytes, io::Error>>,
     // Stores the channels needed to make a protocol
     channels: HashMap<String, SplitChannels>,
+    // Directory for static files
+    static_root_dir: PathBuf,
+    // Port to listen on
+    port: u16,
 }
 
 #[derive(Clone)]
@@ -66,8 +73,31 @@ type ChannelSenderReceiver = (
     Receiver<Result<Bytes, io::Error>>,
 );
 
+async fn index(req: tide::Request<State>) -> tide::Result<Response> {
+    let static_root_dir = &req.state().static_root_dir;
+
+    let mut res = Response::new(StatusCode::Ok);
+    res.set_body(
+        Body::from_file(
+            static_root_dir
+                .join(req.url().path().get(1..).unwrap())
+                .join("index.html"),
+        )
+        .await
+        .unwrap(),
+    );
+
+    Ok(res)
+}
+
 async fn async_main(initial_state: State) -> Result<()> {
+    let static_root_dir = initial_state.static_root_dir.clone();
+    let port = initial_state.port;
     let mut app = tide::with_state(initial_state);
+
+    app.at("").get(index);
+    app.at("/extendedmind").get(index);
+    app.at("/").serve_dir(static_root_dir.to_str().unwrap())?;
 
     app.at("/ws/:discovery_key").get(WebSocket::new(
         |req: tide::Request<State>, stream| async move {
@@ -144,7 +174,8 @@ async fn async_main(initial_state: State) -> Result<()> {
         },
     ));
 
-    app.listen("0.0.0.0:8080").await?;
+    app.listen("0.0.0.0:".to_owned() + &port.to_string())
+        .await?;
     Ok(())
 }
 
@@ -192,6 +223,13 @@ fn collect_receivers_and_sender(
     )
 }
 
+#[derive(Clap)]
+#[clap(version = "0.1.0", author = "Timo Tiuraniemi <timo.tiuraniemi@iki.fi>")]
+struct Opts {
+    port: u16,
+    static_root_dir: PathBuf,
+}
+
 fn main() -> Result<()> {
     fern::Dispatch::new()
         .format(|out, message, record| {
@@ -207,6 +245,9 @@ fn main() -> Result<()> {
         .chain(std::io::stdout())
         .apply()?;
 
+    // Read in command line arguments
+    let opts: Opts = Opts::parse();
+
     // Initialize the engine blocking
     let engine = futures::executor::block_on(async move { Engine::new_disk(false, None).await });
 
@@ -219,6 +260,8 @@ fn main() -> Result<()> {
     let initial_state = State {
         engine,
         system_commands: system_command_receiver,
+        port: opts.port,
+        static_root_dir: opts.static_root_dir,
         channels: [(
             "demo".to_string(),
             SplitChannels {

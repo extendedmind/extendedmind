@@ -1,16 +1,17 @@
 <script lang="ts">
+    import { base } from '$app/paths';
     export let name: string;
     const useDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const icons = {
         logo: {
             alt: 'extended mind logo',
-            srcLight: 'logo.svg',
-            srcDark: 'logo-inverse.svg',
+            srcLight: `${base}/logo.svg`,
+            srcDark: `${base}/logo-inverse.svg`,
         },
         logoText: {
             alt: 'extended mind logo with text',
-            srcLight: 'logo-text.svg',
-            srcDark: 'logo-text-inverse.svg',
+            srcLight: `${base}/logo-text.svg`,
+            srcDark: `${base}/logo-text-inverse.svg`,
         },
     };
     const icon = icons[name];

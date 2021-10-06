@@ -18,6 +18,7 @@ rust_binary(
             "//third_party/cargo:async_tungstenite",
             "//third_party/cargo:async_ctrlc",
             "//third_party/cargo:ctrlc",
+            "//third_party/cargo:clap",
     ],
     srcs = glob(["src/**"]),
 )
