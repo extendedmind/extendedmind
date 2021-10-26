@@ -127,11 +127,10 @@ rust_library(
         "@raze__once_cell__1_8_0//:once_cell",
         "@raze__pin_project_lite__0_2_7//:pin_project_lite",
         "@raze__pin_utils__0_1_0//:pin_utils",
-        "@raze__slab__0_4_4//:slab",
+        "@raze__slab__0_4_5//:slab",
     ] + selects.with_or({
         # cfg(not(target_os = "unknown"))
         (
-            "@rules_rust//rust/platform:wasm32-wasi",
             "@rules_rust//rust/platform:x86_64-apple-darwin",
             "@rules_rust//rust/platform:x86_64-pc-windows-msvc",
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
@@ -140,16 +139,6 @@ rust_library(
             "@raze__async_io__1_6_0//:async_io",
             "@raze__async_process__1_2_0//:async_process",
             "@raze__futures_lite__1_12_0//:futures_lite",
-        ],
-        "//conditions:default": [],
-    }) + selects.with_or({
-        # cfg(target_arch = "wasm32")
-        (
-            "@rules_rust//rust/platform:wasm32-wasi",
-        ): [
-            "@raze__futures_channel__0_3_17//:futures_channel",
-            "@raze__gloo_timers__0_2_1//:gloo_timers",
-            "@raze__wasm_bindgen_futures__0_4_28//:wasm_bindgen_futures",
         ],
         "//conditions:default": [],
     }),

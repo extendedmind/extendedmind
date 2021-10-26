@@ -33,8 +33,6 @@ licenses([
 rust_library(
     name = "async_lock",
     srcs = glob(["**/*.rs"]),
-    aliases = {
-    },
     crate_features = [
     ],
     crate_root = "src/lib.rs",
@@ -52,14 +50,7 @@ rust_library(
     # buildifier: leave-alone
     deps = [
         "@raze__event_listener__2_5_1//:event_listener",
-    ] + selects.with_or({
-        # cfg(target_arch = "wasm32")
-        (
-            "@rules_rust//rust/platform:wasm32-wasi",
-        ): [
-        ],
-        "//conditions:default": [],
-    }),
+    ],
 )
 
 # Unsupported target "barrier" with type "test" omitted

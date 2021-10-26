@@ -42,6 +42,10 @@ licenses([
 
 # Unsupported target "06_rustup" with type "bench" omitted
 
+# Unsupported target "busybox" with type "example" omitted
+
+# Unsupported target "hostname" with type "example" omitted
+
 rust_library(
     name = "clap",
     srcs = glob(["**/*.rs"]),
@@ -58,7 +62,8 @@ rust_library(
         "strsim",
         "suggestions",
         "termcolor",
-        "unicode_help",
+        "unicase",
+        "unicode",
     ],
     crate_root = "src/lib.rs",
     crate_type = "lib",
@@ -66,7 +71,7 @@ rust_library(
     compile_data = glob(["README.md"]),
     edition = "2018",
     proc_macro_deps = [
-        "@raze__clap_derive__3_0_0_beta_4//:clap_derive",
+        "@raze__clap_derive__3_0_0_beta_5//:clap_derive",
     ],
     rustc_flags = [
         "--cap-lints=allow",
@@ -75,17 +80,17 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "3.0.0-beta.4",
+    version = "3.0.0-beta.5",
     # buildifier: leave-alone
     deps = [
         "@raze__atty__0_2_14//:atty",
         "@raze__bitflags__1_3_2//:bitflags",
         "@raze__indexmap__1_7_0//:indexmap",
         "@raze__lazy_static__1_4_0//:lazy_static",
-        "@raze__os_str_bytes__3_1_0//:os_str_bytes",
+        "@raze__os_str_bytes__4_2_0//:os_str_bytes",
         "@raze__strsim__0_10_0//:strsim",
         "@raze__termcolor__1_1_2//:termcolor",
         "@raze__textwrap__0_14_2//:textwrap",
-        "@raze__vec_map__0_8_2//:vec_map",
+        "@raze__unicase__2_6_0//:unicase",
     ],
 )

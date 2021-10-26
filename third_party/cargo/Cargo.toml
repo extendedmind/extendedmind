@@ -13,14 +13,14 @@ serde_derive = "1.0.127"
 serde_json = "1.0.66"
 automerge-frontend = { git = "https://github.com/ttiurani/automerge-rs.git", rev = "bb6e4b95569ddef775da01c2ced69c5641371bbf" }
 duct = "=0.13.4"
-hypercore = { git = "https://github.com/datrs/hypercore", rev = "8d8cbef8a884a70e8d12d80968c1d97be2ceea0b" }
-hypercore-protocol = { git = "https://github.com/ttiurani/hypercore-protocol-rs", rev = "6de4459c5b99a8585a4ac24783b9edbafa2ee07d" }
+hypercore = { git = "https://github.com/ttiurani/hypercore", rev = "f9cd0fcf190ff892529678e9249197f0b14969d1" }
+hypercore-protocol = { git = "https://github.com/ttiurani/hypercore-protocol-rs", rev = "4ef9856762b21e1bcaf1e5ba70d115a3bbbff5e4" }
 async-tungstenite = { version = "0.13.1", features = ["async-std-runtime"] }
 bytes = "0.5.0"
 fern = "0.6.0"
 log = "0.4.14" # See below for hack to get the dependency value-bag to work with build.rs
 anyhow = "1.0.33"
-clap = "3.0.0-beta.4" # See below for hack to get #![doc = include_str!("../README.md")] to work
+clap = "3.0.0-beta.5" # See below for hack to get #![doc = include_str!("../README.md")] to work
 chrono = { version = "0.4.19" }
 futures = "^0.3.5"
 async-std = "1.9.0"
@@ -28,8 +28,8 @@ tide = "0.16.0"
 tide-websockets = "0.4.0"
 ctrlc = { version = "3.0", features = ["termination"] }
 async-ctrlc = "1.2.0"
-random-access-disk = "2.0.0"
-random-access-storage = "4.0.0"
+random-access-disk = { git = "https://github.com/ttiurani/random-access-disk", rev = "6b17771d174722bff442dba9aaf633aae4f3e40f" }
+random-access-storage = { git = "https://github.com/ttiurani/random-access-storage", rev = "16412bab28f8f8d0c4b6b71a25f6646e0910180b" }
 hex = "0.4"
 reusable-box-future = "0.2.0"
 
@@ -41,7 +41,7 @@ additional_flags = [
 ]
 
 # Needed for clap to build with spurious include
-[package.metadata.raze.crates.clap.'3.0.0-beta.4']
+[package.metadata.raze.crates.clap.'3.0.0-beta.5']
 compile_data_attr = "glob([\"README.md\"])"
 
 [package.metadata.raze]
@@ -53,5 +53,5 @@ targets = [
     "x86_64-apple-darwin",
     "x86_64-pc-windows-msvc",
     "x86_64-unknown-linux-gnu",
-    "wasm32-wasi"
+    # "wasm32-unknown-unknown"
 ]

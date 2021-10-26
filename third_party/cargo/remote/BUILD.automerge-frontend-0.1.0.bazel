@@ -62,7 +62,7 @@ rust_library(
         "@raze__serde__1_0_130//:serde",
         "@raze__serde_json__1_0_68//:serde_json",
         "@raze__smol_str__0_1_18//:smol_str",
-        "@raze__thiserror__1_0_29//:thiserror",
+        "@raze__thiserror__1_0_30//:thiserror",
         "@raze__unicode_segmentation__1_8_0//:unicode_segmentation",
         "@raze__uuid__0_8_2//:uuid",
     ],

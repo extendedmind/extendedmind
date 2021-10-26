@@ -50,10 +50,10 @@ rust_library(
     version = "0.2.78",
     # buildifier: leave-alone
     deps = [
-        "@raze__bumpalo__3_7_1//:bumpalo",
+        "@raze__bumpalo__3_8_0//:bumpalo",
         "@raze__lazy_static__1_4_0//:lazy_static",
         "@raze__log__0_4_14//:log",
-        "@raze__proc_macro2__1_0_29//:proc_macro2",
+        "@raze__proc_macro2__1_0_30//:proc_macro2",
         "@raze__quote__1_0_10//:quote",
         "@raze__syn__1_0_80//:syn",
         "@raze__wasm_bindgen_shared__0_2_78//:wasm_bindgen_shared",

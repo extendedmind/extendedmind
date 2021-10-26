@@ -25,18 +25,25 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT"
+    "notice",  # Apache-2.0 from expression "Apache-2.0 OR MIT"
 ])
 
 # Generated Targets
 
 rust_library(
-    name = "strum_macros",
+    name = "object",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "archive",
+        "coff",
+        "elf",
+        "macho",
+        "pe",
+        "read_core",
+        "unaligned",
     ],
     crate_root = "src/lib.rs",
-    crate_type = "proc-macro",
+    crate_type = "lib",
     data = [],
     edition = "2018",
     rustc_flags = [
@@ -46,12 +53,13 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "0.21.1",
+    version = "0.27.1",
     # buildifier: leave-alone
     deps = [
-        "@raze__heck__0_3_3//:heck",
-        "@raze__proc_macro2__1_0_30//:proc_macro2",
-        "@raze__quote__1_0_10//:quote",
-        "@raze__syn__1_0_80//:syn",
+        "@raze__memchr__2_4_1//:memchr",
     ],
 )
+
+# Unsupported target "integration" with type "test" omitted
+
+# Unsupported target "parse_self" with type "test" omitted

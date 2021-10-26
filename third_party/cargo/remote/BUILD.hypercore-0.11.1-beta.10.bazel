@@ -41,6 +41,8 @@ licenses([
 rust_library(
     name = "hypercore",
     srcs = glob(["**/*.rs"]),
+    aliases = {
+    },
     crate_features = [
     ],
     crate_root = "src/lib.rs",
@@ -70,14 +72,23 @@ rust_library(
         "@raze__merkle_tree_stream__0_12_1//:merkle_tree_stream",
         "@raze__pretty_hash__0_4_1//:pretty_hash",
         "@raze__rand__0_7_3//:rand",
-        "@raze__random_access_disk__2_0_0//:random_access_disk",
         "@raze__random_access_memory__2_0_0//:random_access_memory",
         "@raze__random_access_storage__4_0_0//:random_access_storage",
         "@raze__sha2__0_9_8//:sha2",
         "@raze__sleep_parser__0_8_0//:sleep_parser",
         "@raze__sparse_bitfield__0_11_0//:sparse_bitfield",
         "@raze__tree_index__0_6_1//:tree_index",
-    ],
+    ] + selects.with_or({
+        # cfg(not(target_arch = "wasm32"))
+        (
+            "@rules_rust//rust/platform:x86_64-apple-darwin",
+            "@rules_rust//rust/platform:x86_64-pc-windows-msvc",
+            "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
+        ): [
+            "@raze__random_access_disk__2_0_0//:random_access_disk",
+        ],
+        "//conditions:default": [],
+    }),
 )
 
 # Unsupported target "bitfield" with type "test" omitted

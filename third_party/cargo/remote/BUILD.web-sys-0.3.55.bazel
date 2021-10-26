@@ -33,8 +33,6 @@ licenses([
 rust_library(
     name = "web_sys",
     srcs = glob(["**/*.rs"]),
-    aliases = {
-    },
     crate_features = [
         "Event",
         "EventTarget",
@@ -60,14 +58,7 @@ rust_library(
     deps = [
         "@raze__js_sys__0_3_55//:js_sys",
         "@raze__wasm_bindgen__0_2_78//:wasm_bindgen",
-    ] + selects.with_or({
-        # cfg(target_arch = "wasm32")
-        (
-            "@rules_rust//rust/platform:wasm32-wasi",
-        ): [
-        ],
-        "//conditions:default": [],
-    }),
+    ],
 )
 
 # Unsupported target "wasm" with type "test" omitted

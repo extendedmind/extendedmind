@@ -53,6 +53,6 @@ rust_library(
     version = "1.2.0",
     # buildifier: leave-alone
     deps = [
-        "@raze__ctrlc__3_2_0//:ctrlc",
+        "@raze__ctrlc__3_2_1//:ctrlc",
     ],
 )

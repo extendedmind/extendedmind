@@ -31,11 +31,11 @@ licenses([
 # Generated Targets
 
 rust_library(
-    name = "slab",
+    name = "nix",
     srcs = glob(["**/*.rs"]),
+    aliases = {
+    },
     crate_features = [
-        "default",
-        "std",
     ],
     crate_root = "src/lib.rs",
     crate_type = "lib",
@@ -48,12 +48,31 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "0.4.4",
+    version = "0.23.0",
     # buildifier: leave-alone
     deps = [
-    ],
+        "@raze__bitflags__1_3_2//:bitflags",
+        "@raze__cfg_if__1_0_0//:cfg_if",
+        "@raze__libc__0_2_105//:libc",
+        "@raze__memoffset__0_6_4//:memoffset",
+    ] + selects.with_or({
+        # cfg(any(target_os = "android", target_os = "linux"))
+        (
+            "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
+        ): [
+        ],
+        "//conditions:default": [],
+    }),
 )
 
-# Unsupported target "serde" with type "test" omitted
+# Unsupported target "test" with type "test" omitted
 
-# Unsupported target "slab" with type "test" omitted
+# Unsupported target "test-aio-drop" with type "test" omitted
+
+# Unsupported target "test-clearenv" with type "test" omitted
+
+# Unsupported target "test-lio-listio-resubmit" with type "test" omitted
+
+# Unsupported target "test-mount" with type "test" omitted
+
+# Unsupported target "test-ptymaster-drop" with type "test" omitted

@@ -42,7 +42,10 @@ cargo_build_script(
     build_script_env = {
     },
     crate_features = [
+        "bindgen",
+        "js-sys",
         "std",
+        "wasm-bindgen",
     ],
     crate_root = "build.rs",
     data = glob(["**"]),
@@ -58,13 +61,6 @@ cargo_build_script(
     visibility = ["//visibility:private"],
     deps = [
     ] + selects.with_or({
-        # cfg(target_os = "wasi")
-        (
-            "@rules_rust//rust/platform:wasm32-wasi",
-        ): [
-        ],
-        "//conditions:default": [],
-    }) + selects.with_or({
         # cfg(unix)
         (
             "@rules_rust//rust/platform:x86_64-apple-darwin",
@@ -83,7 +79,10 @@ rust_library(
     aliases = {
     },
     crate_features = [
+        "bindgen",
+        "js-sys",
         "std",
+        "wasm-bindgen",
     ],
     crate_root = "src/lib.rs",
     crate_type = "lib",
@@ -102,20 +101,12 @@ rust_library(
         ":getrandom_build_script",
         "@raze__cfg_if__1_0_0//:cfg_if",
     ] + selects.with_or({
-        # cfg(target_os = "wasi")
-        (
-            "@rules_rust//rust/platform:wasm32-wasi",
-        ): [
-            "@raze__wasi__0_9_0_wasi_snapshot_preview1//:wasi",
-        ],
-        "//conditions:default": [],
-    }) + selects.with_or({
         # cfg(unix)
         (
             "@rules_rust//rust/platform:x86_64-apple-darwin",
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
         ): [
-            "@raze__libc__0_2_103//:libc",
+            "@raze__libc__0_2_105//:libc",
         ],
         "//conditions:default": [],
     }),

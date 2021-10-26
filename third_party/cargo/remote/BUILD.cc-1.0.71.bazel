@@ -25,36 +25,39 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # Apache-2.0 from expression "Apache-2.0 OR MIT"
+    "notice",  # MIT from expression "MIT OR Apache-2.0"
 ])
 
 # Generated Targets
 
-# Unsupported target "ar" with type "example" omitted
-
-# Unsupported target "dyldcachedump" with type "example" omitted
-
-# Unsupported target "nm" with type "example" omitted
-
-# Unsupported target "objcopy" with type "example" omitted
-
-# Unsupported target "objdump" with type "example" omitted
-
-# Unsupported target "objectmap" with type "example" omitted
-
-# Unsupported target "readobj" with type "example" omitted
-
-rust_library(
-    name = "object",
+rust_binary(
+    # Prefix bin name to disambiguate from (probable) collision with lib name
+    # N.B.: The exact form of this is subject to change.
+    name = "cargo_bin_gcc_shim",
     srcs = glob(["**/*.rs"]),
     crate_features = [
-        "archive",
-        "coff",
-        "elf",
-        "macho",
-        "pe",
-        "read_core",
-        "unaligned",
+    ],
+    crate_root = "src/bin/gcc-shim.rs",
+    data = [],
+    edition = "2018",
+    rustc_flags = [
+        "--cap-lints=allow",
+    ],
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+    version = "1.0.71",
+    # buildifier: leave-alone
+    deps = [
+        ":cc",
+    ],
+)
+
+rust_library(
+    name = "cc",
+    srcs = glob(["**/*.rs"]),
+    crate_features = [
     ],
     crate_root = "src/lib.rs",
     crate_type = "lib",
@@ -67,13 +70,16 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "0.26.2",
+    version = "1.0.71",
     # buildifier: leave-alone
     deps = [
-        "@raze__memchr__2_4_1//:memchr",
     ],
 )
 
-# Unsupported target "integration" with type "test" omitted
+# Unsupported target "cc_env" with type "test" omitted
 
-# Unsupported target "parse_self" with type "test" omitted
+# Unsupported target "cflags" with type "test" omitted
+
+# Unsupported target "cxxflags" with type "test" omitted
+
+# Unsupported target "test" with type "test" omitted

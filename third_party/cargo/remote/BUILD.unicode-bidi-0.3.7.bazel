@@ -31,10 +31,11 @@ licenses([
 # Generated Targets
 
 rust_library(
-    name = "os_str_bytes",
+    name = "unicode_bidi",
     srcs = glob(["**/*.rs"]),
     crate_features = [
-        "raw",
+        "default",
+        "std",
     ],
     crate_root = "src/lib.rs",
     crate_type = "lib",
@@ -47,7 +48,7 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "3.1.0",
+    version = "0.3.7",
     # buildifier: leave-alone
     deps = [
     ],

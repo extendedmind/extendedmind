@@ -25,22 +25,16 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT OR Apache-2.0"
+    "notice",  # Apache-2.0 from expression "Apache-2.0 OR MIT"
 ])
 
 # Generated Targets
 
-# Unsupported target "issue_46_example" with type "example" omitted
-
-# Unsupported target "readme_example" with type "example" omitted
-
 rust_library(
-    name = "ctrlc",
+    name = "signature",
     srcs = glob(["**/*.rs"]),
-    aliases = {
-    },
     crate_features = [
-        "termination",
+        "std",
     ],
     crate_root = "src/lib.rs",
     crate_type = "lib",
@@ -53,27 +47,10 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "3.2.0",
+    version = "1.4.0",
     # buildifier: leave-alone
     deps = [
-    ] + selects.with_or({
-        # cfg(unix)
-        (
-            "@rules_rust//rust/platform:x86_64-apple-darwin",
-            "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
-        ): [
-            "@raze__nix__0_22_0//:nix",
-        ],
-        "//conditions:default": [],
-    }) + selects.with_or({
-        # cfg(windows)
-        (
-            "@rules_rust//rust/platform:x86_64-pc-windows-msvc",
-        ): [
-            "@raze__winapi__0_3_9//:winapi",
-        ],
-        "//conditions:default": [],
-    }),
+    ],
 )
 
-# Unsupported target "tests" with type "test" omitted
+# Unsupported target "signature_derive" with type "test" omitted

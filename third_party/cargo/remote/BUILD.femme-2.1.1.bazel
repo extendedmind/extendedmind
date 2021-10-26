@@ -37,8 +37,6 @@ licenses([
 rust_library(
     name = "femme",
     srcs = glob(["**/*.rs"]),
-    aliases = {
-    },
     crate_features = [
     ],
     crate_root = "src/lib.rs",
@@ -62,15 +60,5 @@ rust_library(
         "@raze__log__0_4_14//:log",
         "@raze__serde__1_0_130//:serde",
         "@raze__serde_json__1_0_68//:serde_json",
-    ] + selects.with_or({
-        # cfg(target_arch = "wasm32")
-        (
-            "@rules_rust//rust/platform:wasm32-wasi",
-        ): [
-            "@raze__js_sys__0_3_55//:js_sys",
-            "@raze__wasm_bindgen__0_2_78//:wasm_bindgen",
-            "@raze__web_sys__0_3_55//:web_sys",
-        ],
-        "//conditions:default": [],
-    }),
+    ],
 )

@@ -62,13 +62,6 @@ cargo_build_script(
     deps = [
         "@raze__version_check__0_9_3//:version_check",
     ] + selects.with_or({
-        # cfg(target_arch = "wasm32")
-        (
-            "@rules_rust//rust/platform:wasm32-wasi",
-        ): [
-        ],
-        "//conditions:default": [],
-    }) + selects.with_or({
         # cfg(unix)
         (
             "@rules_rust//rust/platform:x86_64-apple-darwin",
@@ -118,20 +111,12 @@ rust_library(
         "@raze__standback__0_2_17//:standback",
         "@raze__time_macros__0_1_1//:time_macros",
     ] + selects.with_or({
-        # cfg(target_arch = "wasm32")
-        (
-            "@rules_rust//rust/platform:wasm32-wasi",
-        ): [
-            "@raze__stdweb__0_4_20//:stdweb",
-        ],
-        "//conditions:default": [],
-    }) + selects.with_or({
         # cfg(unix)
         (
             "@rules_rust//rust/platform:x86_64-apple-darwin",
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
         ): [
-            "@raze__libc__0_2_103//:libc",
+            "@raze__libc__0_2_105//:libc",
         ],
         "//conditions:default": [],
     }) + selects.with_or({

@@ -50,6 +50,6 @@ rust_library(
     version = "1.2.0",
     # buildifier: leave-alone
     deps = [
-        "@raze__signature__1_3_1//:signature",
+        "@raze__signature__1_4_0//:signature",
     ],
 )

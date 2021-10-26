@@ -31,11 +31,9 @@ licenses([
 # Generated Targets
 
 rust_library(
-    name = "ppv_lite86",
+    name = "rand_pcg",
     srcs = glob(["**/*.rs"]),
     crate_features = [
-        "simd",
-        "std",
     ],
     crate_root = "src/lib.rs",
     crate_type = "lib",
@@ -48,8 +46,15 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "0.2.10",
+    version = "0.2.1",
     # buildifier: leave-alone
     deps = [
+        "@raze__rand_core__0_5_1//:rand_core",
     ],
 )
+
+# Unsupported target "lcg128xsl64" with type "test" omitted
+
+# Unsupported target "lcg64xsh32" with type "test" omitted
+
+# Unsupported target "mcg128xsl64" with type "test" omitted

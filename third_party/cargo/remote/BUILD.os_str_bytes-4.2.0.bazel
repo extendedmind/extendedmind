@@ -30,13 +30,13 @@ licenses([
 
 # Generated Targets
 
-# Unsupported target "benches" with type "bench" omitted
-
 rust_library(
-    name = "bumpalo",
+    name = "os_str_bytes",
     srcs = glob(["**/*.rs"]),
     crate_features = [
         "default",
+        "memchr",
+        "raw_os_str",
     ],
     crate_root = "src/lib.rs",
     crate_type = "lib",
@@ -49,10 +49,9 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "3.7.1",
+    version = "4.2.0",
     # buildifier: leave-alone
     deps = [
+        "@raze__memchr__2_4_1//:memchr",
     ],
 )
-
-# Unsupported target "try_alloc" with type "test" omitted

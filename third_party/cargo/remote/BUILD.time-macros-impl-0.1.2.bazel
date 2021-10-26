@@ -52,7 +52,7 @@ rust_library(
     version = "0.1.2",
     # buildifier: leave-alone
     deps = [
-        "@raze__proc_macro2__1_0_29//:proc_macro2",
+        "@raze__proc_macro2__1_0_30//:proc_macro2",
         "@raze__quote__1_0_10//:quote",
         "@raze__standback__0_2_17//:standback",
         "@raze__syn__1_0_80//:syn",

@@ -56,11 +56,10 @@ rust_binary(
     ] + selects.with_or({
         # cfg(not(windows))
         (
-            "@rules_rust//rust/platform:wasm32-wasi",
             "@rules_rust//rust/platform:x86_64-apple-darwin",
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
         ): [
-            "@raze__libc__0_2_103//:libc",
+            "@raze__libc__0_2_105//:libc",
         ],
         "//conditions:default": [],
     }) + selects.with_or({
@@ -100,11 +99,10 @@ rust_binary(
     ] + selects.with_or({
         # cfg(not(windows))
         (
-            "@rules_rust//rust/platform:wasm32-wasi",
             "@rules_rust//rust/platform:x86_64-apple-darwin",
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
         ): [
-            "@raze__libc__0_2_103//:libc",
+            "@raze__libc__0_2_105//:libc",
         ],
         "//conditions:default": [],
     }) + selects.with_or({
@@ -144,11 +142,10 @@ rust_binary(
     ] + selects.with_or({
         # cfg(not(windows))
         (
-            "@rules_rust//rust/platform:wasm32-wasi",
             "@rules_rust//rust/platform:x86_64-apple-darwin",
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
         ): [
-            "@raze__libc__0_2_103//:libc",
+            "@raze__libc__0_2_105//:libc",
         ],
         "//conditions:default": [],
     }) + selects.with_or({
@@ -186,11 +183,10 @@ rust_library(
     ] + selects.with_or({
         # cfg(not(windows))
         (
-            "@rules_rust//rust/platform:wasm32-wasi",
             "@rules_rust//rust/platform:x86_64-apple-darwin",
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
         ): [
-            "@raze__libc__0_2_103//:libc",
+            "@raze__libc__0_2_105//:libc",
         ],
         "//conditions:default": [],
     }) + selects.with_or({
