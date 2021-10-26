@@ -1,14 +1,13 @@
 use async_std::channel::{bounded, Receiver, Sender};
 use async_std::task;
 use async_tungstenite::{async_std::connect_async, tungstenite::Message};
+use clap::Parser;
 use extendedmind_engine::{Bytes, ChannelWriter, Engine};
 use futures::prelude::*;
 use log::*;
 use std::io;
 
-use clap::Clap;
-
-#[derive(Clap)]
+#[derive(Parser)]
 #[clap(version = "0.1.0", author = "Timo Tiuraniemi <timo.tiuraniemi@iki.fi>")]
 struct Opts {
     hub: String,

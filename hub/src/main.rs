@@ -1,7 +1,7 @@
 use anyhow::Result;
 use async_std::channel::{bounded, Receiver, Sender};
 use async_std::sync::{Arc, Mutex};
-use clap::Clap;
+use clap::Parser;
 use futures::stream::StreamExt;
 use log::*;
 use std::collections::HashMap;
@@ -223,7 +223,7 @@ fn collect_receivers_and_sender(
     )
 }
 
-#[derive(Clap)]
+#[derive(Parser)]
 #[clap(version = "0.1.0", author = "Timo Tiuraniemi <timo.tiuraniemi@iki.fi>")]
 struct Opts {
     port: u16,
