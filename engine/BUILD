@@ -16,6 +16,7 @@ rust_library(
         "//third_party/cargo:futures",
         "//third_party/cargo:random_access_storage",
         "//third_party/cargo:random_access_disk",
+        "//third_party/cargo:random_access_memory",
         "//third_party/cargo:hex",
         "//third_party/cargo:anyhow",
         "//third_party/cargo:log",
