@@ -58,7 +58,7 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "1.0.0-alpha.7",
+    version = "1.0.0-alpha.8",
     # buildifier: leave-alone
     deps = [
         "@raze__sval__1_0_0_alpha_5//:sval",

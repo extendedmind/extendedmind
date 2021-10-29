@@ -1809,12 +1809,12 @@ def raze_fetch_remote_crates():
 
     maybe(
         http_archive,
-        name = "raze__proc_macro2__1_0_30",
-        url = "https://crates.io/api/v1/crates/proc-macro2/1.0.30/download",
+        name = "raze__proc_macro2__1_0_32",
+        url = "https://crates.io/api/v1/crates/proc-macro2/1.0.32/download",
         type = "tar.gz",
-        sha256 = "edc3358ebc67bc8b7fa0c007f945b0b18226f78437d61bec735a9eb96b61ee70",
-        strip_prefix = "proc-macro2-1.0.30",
-        build_file = Label("//third_party/cargo/remote:BUILD.proc-macro2-1.0.30.bazel"),
+        sha256 = "ba508cc11742c0dc5c1659771673afbab7a0efab23aa17e854cbab0837ed0b43",
+        strip_prefix = "proc-macro2-1.0.32",
+        build_file = Label("//third_party/cargo/remote:BUILD.proc-macro2-1.0.32.bazel"),
     )
 
     maybe(
@@ -2466,12 +2466,12 @@ def raze_fetch_remote_crates():
 
     maybe(
         http_archive,
-        name = "raze__syn__1_0_80",
-        url = "https://crates.io/api/v1/crates/syn/1.0.80/download",
+        name = "raze__syn__1_0_81",
+        url = "https://crates.io/api/v1/crates/syn/1.0.81/download",
         type = "tar.gz",
-        sha256 = "d010a1623fbd906d51d650a9916aaefc05ffa0e4053ff7fe601167f3e715d194",
-        strip_prefix = "syn-1.0.80",
-        build_file = Label("//third_party/cargo/remote:BUILD.syn-1.0.80.bazel"),
+        sha256 = "f2afee18b8beb5a596ecb4a2dce128c719b4ba399d34126b9e4396e3f9860966",
+        strip_prefix = "syn-1.0.81",
+        build_file = Label("//third_party/cargo/remote:BUILD.syn-1.0.81.bazel"),
     )
 
     maybe(
@@ -2756,12 +2756,12 @@ def raze_fetch_remote_crates():
 
     maybe(
         http_archive,
-        name = "raze__value_bag__1_0_0_alpha_7",
-        url = "https://crates.io/api/v1/crates/value-bag/1.0.0-alpha.7/download",
+        name = "raze__value_bag__1_0_0_alpha_8",
+        url = "https://crates.io/api/v1/crates/value-bag/1.0.0-alpha.8/download",
         type = "tar.gz",
-        sha256 = "dd320e1520f94261153e96f7534476ad869c14022aee1e59af7c778075d840ae",
-        strip_prefix = "value-bag-1.0.0-alpha.7",
-        build_file = Label("//third_party/cargo/remote:BUILD.value-bag-1.0.0-alpha.7.bazel"),
+        sha256 = "79923f7731dc61ebfba3633098bf3ac533bbd35ccd8c57e7088d9a5eebe0263f",
+        strip_prefix = "value-bag-1.0.0-alpha.8",
+        build_file = Label("//third_party/cargo/remote:BUILD.value-bag-1.0.0-alpha.8.bazel"),
     )
 
     maybe(

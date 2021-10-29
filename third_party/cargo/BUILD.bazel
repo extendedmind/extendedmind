@@ -166,6 +166,15 @@ alias(
 )
 
 alias(
+    name = "random_access_memory",
+    actual = "@raze__random_access_memory__2_0_0//:random_access_memory",
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+)
+
+alias(
     name = "random_access_storage",
     actual = "@raze__random_access_storage__4_0_0//:random_access_storage",
     tags = [

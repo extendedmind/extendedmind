@@ -29,6 +29,7 @@ tide-websockets = "0.4.0"
 ctrlc = { version = "3.0", features = ["termination"] }
 async-ctrlc = "1.2.0"
 random-access-disk = { git = "https://github.com/ttiurani/random-access-disk", rev = "6b17771d174722bff442dba9aaf633aae4f3e40f" }
+random-access-memory = { git = "https://github.com/ttiurani/random-access-memory", rev = "e48f2a9040656724327ae30d12ab636c3bf0a074" }
 random-access-storage = { git = "https://github.com/ttiurani/random-access-storage", rev = "16412bab28f8f8d0c4b6b71a25f6646e0910180b" }
 hex = "0.4"
 reusable-box-future = "0.2.0"
