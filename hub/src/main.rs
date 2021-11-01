@@ -1,7 +1,10 @@
 use anyhow::Result;
+use async_ctrlc::CtrlC;
 use async_std::channel::{bounded, Receiver, Sender};
 use async_std::sync::{Arc, Mutex};
+use async_std::task;
 use clap::Parser;
+use derivative::Derivative;
 use futures::stream::StreamExt;
 use log::*;
 use std::collections::HashMap;
@@ -13,10 +16,7 @@ use std::time::{Duration, Instant};
 use tide::{Body, Response, StatusCode};
 use tide_websockets::{Message, WebSocket};
 
-use async_ctrlc::CtrlC;
-use async_std::task;
-
-use extendedmind_engine::{Bytes, ChannelWriter, Engine};
+use extendedmind_engine::{Bytes, ChannelWriter, Engine, RandomAccessDisk};
 
 #[derive(Clone, Copy)]
 #[repr(u8)]
@@ -32,10 +32,11 @@ enum ReceiverType {
     Client,
 }
 
-#[derive(Clone)]
+#[derive(Derivative)]
+#[derivative(Clone(bound = ""))]
 struct State {
     // Engine
-    engine: Engine,
+    engine: Engine<RandomAccessDisk>,
     // System command receiver
     system_commands: Receiver<Result<Bytes, io::Error>>,
     // Stores the channels needed to make a protocol
