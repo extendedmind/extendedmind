@@ -20,6 +20,9 @@ rust_binary(
             "//third_party/cargo:ctrlc",
             "//third_party/cargo:clap",
     ],
+    proc_macro_deps = [
+        "//third_party/cargo:derivative",
+    ],
     srcs = glob(["src/**"]),
 )
 

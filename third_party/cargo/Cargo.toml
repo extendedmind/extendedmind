@@ -33,6 +33,7 @@ random-access-memory = { git = "https://github.com/ttiurani/random-access-memory
 random-access-storage = { git = "https://github.com/ttiurani/random-access-storage", rev = "16412bab28f8f8d0c4b6b71a25f6646e0910180b" }
 hex = "0.4"
 reusable-box-future = "0.2.0"
+derivative = "2.2.0"
 
 # Needed for log to build
 [package.metadata.raze.crates.value-bag.'1.0.0-alpha.7']

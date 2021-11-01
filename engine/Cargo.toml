@@ -23,6 +23,7 @@ hex = "0.4"
 anyhow = "1.0.28"
 log = "0.4.14"
 reusable-box-future = "0.2.0"
+derivative = "2.2.0"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 random-access-disk = { git = "https://github.com/ttiurani/random-access-disk", rev = "6b17771d174722bff442dba9aaf633aae4f3e40f" }

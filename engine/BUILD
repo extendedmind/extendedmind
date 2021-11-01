@@ -22,6 +22,9 @@ rust_library(
         "//third_party/cargo:log",
         "//third_party/cargo:reusable_box_future",
     ],
+    proc_macro_deps = [
+        "//third_party/cargo:derivative",
+    ],
     srcs = glob(["src/**"]),
 )
 
