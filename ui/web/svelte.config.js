@@ -23,7 +23,7 @@ const config = {
             base: '/extendedmind',
         },
         ssr: false,
-        // hydrate the <div id="svelte"> element in src/app.html
+        // hydrate the <div id="extendedmind"> element in src/app.html
         target: '#extendedmind',
     },
 };
