@@ -48,7 +48,7 @@ http_archive(
     ],
 )
 load("@rules_rust//rust:repositories.bzl", "rust_repositories")
-rust_repositories(version = "1.54.0", edition="2018", rustfmt_version = "1.54.0")
+rust_repositories(version = "1.56.1", edition="2018", rustfmt_version = "1.56.1")
 
 load("//third_party/cargo:crates.bzl", "raze_fetch_remote_crates")
 raze_fetch_remote_crates()
