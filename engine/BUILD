@@ -1,7 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("@rules_rust//rust:rust.bzl", "rust_library", "rust_test")
-load("@rules_rust//rust:defs.bzl", "rustfmt_test")
+load("@rules_rust//rust:defs.bzl", "rust_library", "rust_test", "rustfmt_test")
 
 rust_library(
     name = "extendedmind_engine",

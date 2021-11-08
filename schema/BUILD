@@ -1,7 +1,7 @@
 package(default_visibility = ["//visibility:public"])
 
 load("@io_bazel_rules_openapi//openapi:openapi.bzl", "openapi_gen")
-load("@rules_rust//rust:rust.bzl", "rust_library")
+load("@rules_rust//rust:defs.bzl", "rust_library")
 
 RUST_OPENAPI_MODEL_OUTS = [
     "models/data.rs",
