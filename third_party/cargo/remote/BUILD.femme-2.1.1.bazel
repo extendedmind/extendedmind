@@ -10,9 +10,10 @@ load("@bazel_skylib//lib:selects.bzl", "selects")
 
 # buildifier: disable=load
 load(
-    "@rules_rust//rust:rust.bzl",
+    "@rules_rust//rust:defs.bzl",
     "rust_binary",
     "rust_library",
+    "rust_proc_macro",
     "rust_test",
 )
 
@@ -37,10 +38,11 @@ licenses([
 rust_library(
     name = "femme",
     srcs = glob(["**/*.rs"]),
+    aliases = {
+    },
     crate_features = [
     ],
     crate_root = "src/lib.rs",
-    crate_type = "lib",
     data = [],
     edition = "2018",
     proc_macro_deps = [
@@ -59,6 +61,16 @@ rust_library(
         "@raze__cfg_if__0_1_10//:cfg_if",
         "@raze__log__0_4_14//:log",
         "@raze__serde__1_0_130//:serde",
-        "@raze__serde_json__1_0_68//:serde_json",
-    ],
+        "@raze__serde_json__1_0_69//:serde_json",
+    ] + selects.with_or({
+        # cfg(target_arch = "wasm32")
+        (
+            "@rules_rust//rust/platform:wasm32-unknown-unknown",
+        ): [
+            "@raze__js_sys__0_3_55//:js_sys",
+            "@raze__wasm_bindgen__0_2_78//:wasm_bindgen",
+            "@raze__web_sys__0_3_55//:web_sys",
+        ],
+        "//conditions:default": [],
+    }),
 )

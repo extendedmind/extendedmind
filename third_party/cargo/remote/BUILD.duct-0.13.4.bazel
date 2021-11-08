@@ -10,9 +10,10 @@ load("@bazel_skylib//lib:selects.bzl", "selects")
 
 # buildifier: disable=load
 load(
-    "@rules_rust//rust:rust.bzl",
+    "@rules_rust//rust:defs.bzl",
     "rust_binary",
     "rust_library",
+    "rust_proc_macro",
     "rust_test",
 )
 
@@ -61,8 +62,9 @@ rust_binary(
         (
             "@rules_rust//rust/platform:x86_64-apple-darwin",
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
+            "@rules_rust//rust/platform:aarch64-linux-android",
         ): [
-            "@raze__libc__0_2_106//:libc",
+            "@raze__libc__0_2_107//:libc",
         ],
         "//conditions:default": [],
     }),
@@ -99,8 +101,9 @@ rust_binary(
         (
             "@rules_rust//rust/platform:x86_64-apple-darwin",
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
+            "@rules_rust//rust/platform:aarch64-linux-android",
         ): [
-            "@raze__libc__0_2_106//:libc",
+            "@raze__libc__0_2_107//:libc",
         ],
         "//conditions:default": [],
     }),
@@ -137,8 +140,9 @@ rust_binary(
         (
             "@rules_rust//rust/platform:x86_64-apple-darwin",
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
+            "@rules_rust//rust/platform:aarch64-linux-android",
         ): [
-            "@raze__libc__0_2_106//:libc",
+            "@raze__libc__0_2_107//:libc",
         ],
         "//conditions:default": [],
     }),
@@ -175,8 +179,9 @@ rust_binary(
         (
             "@rules_rust//rust/platform:x86_64-apple-darwin",
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
+            "@rules_rust//rust/platform:aarch64-linux-android",
         ): [
-            "@raze__libc__0_2_106//:libc",
+            "@raze__libc__0_2_107//:libc",
         ],
         "//conditions:default": [],
     }),
@@ -213,8 +218,9 @@ rust_binary(
         (
             "@rules_rust//rust/platform:x86_64-apple-darwin",
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
+            "@rules_rust//rust/platform:aarch64-linux-android",
         ): [
-            "@raze__libc__0_2_106//:libc",
+            "@raze__libc__0_2_107//:libc",
         ],
         "//conditions:default": [],
     }),
@@ -251,8 +257,9 @@ rust_binary(
         (
             "@rules_rust//rust/platform:x86_64-apple-darwin",
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
+            "@rules_rust//rust/platform:aarch64-linux-android",
         ): [
-            "@raze__libc__0_2_106//:libc",
+            "@raze__libc__0_2_107//:libc",
         ],
         "//conditions:default": [],
     }),
@@ -289,8 +296,9 @@ rust_binary(
         (
             "@rules_rust//rust/platform:x86_64-apple-darwin",
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
+            "@rules_rust//rust/platform:aarch64-linux-android",
         ): [
-            "@raze__libc__0_2_106//:libc",
+            "@raze__libc__0_2_107//:libc",
         ],
         "//conditions:default": [],
     }),
@@ -327,8 +335,9 @@ rust_binary(
         (
             "@rules_rust//rust/platform:x86_64-apple-darwin",
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
+            "@rules_rust//rust/platform:aarch64-linux-android",
         ): [
-            "@raze__libc__0_2_106//:libc",
+            "@raze__libc__0_2_107//:libc",
         ],
         "//conditions:default": [],
     }),
@@ -365,8 +374,9 @@ rust_binary(
         (
             "@rules_rust//rust/platform:x86_64-apple-darwin",
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
+            "@rules_rust//rust/platform:aarch64-linux-android",
         ): [
-            "@raze__libc__0_2_106//:libc",
+            "@raze__libc__0_2_107//:libc",
         ],
         "//conditions:default": [],
     }),
@@ -380,7 +390,6 @@ rust_library(
     crate_features = [
     ],
     crate_root = "src/lib.rs",
-    crate_type = "lib",
     data = [],
     edition = "2018",
     rustc_flags = [
@@ -401,8 +410,9 @@ rust_library(
         (
             "@rules_rust//rust/platform:x86_64-apple-darwin",
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
+            "@rules_rust//rust/platform:aarch64-linux-android",
         ): [
-            "@raze__libc__0_2_106//:libc",
+            "@raze__libc__0_2_107//:libc",
         ],
         "//conditions:default": [],
     }),

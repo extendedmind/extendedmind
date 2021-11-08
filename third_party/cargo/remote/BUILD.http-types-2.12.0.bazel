@@ -10,9 +10,10 @@ load("@bazel_skylib//lib:selects.bzl", "selects")
 
 # buildifier: disable=load
 load(
-    "@rules_rust//rust:rust.bzl",
+    "@rules_rust//rust:defs.bzl",
     "rust_binary",
     "rust_library",
+    "rust_proc_macro",
     "rust_test",
 )
 
@@ -77,7 +78,6 @@ rust_library(
         "fs",
     ],
     crate_root = "src/lib.rs",
-    crate_type = "lib",
     data = [],
     edition = "2018",
     rustc_flags = [
@@ -91,7 +91,7 @@ rust_library(
     # buildifier: leave-alone
     deps = [
         ":http_types_build_script",
-        "@raze__anyhow__1_0_44//:anyhow",
+        "@raze__anyhow__1_0_45//:anyhow",
         "@raze__async_channel__1_6_1//:async_channel",
         "@raze__async_std__1_10_0//:async_std",
         "@raze__base64__0_13_0//:base64",
@@ -101,7 +101,7 @@ rust_library(
         "@raze__pin_project_lite__0_2_7//:pin_project_lite",
         "@raze__rand__0_7_3//:rand",
         "@raze__serde__1_0_130//:serde",
-        "@raze__serde_json__1_0_68//:serde_json",
+        "@raze__serde_json__1_0_69//:serde_json",
         "@raze__serde_qs__0_8_5//:serde_qs",
         "@raze__serde_urlencoded__0_7_0//:serde_urlencoded",
         "@raze__url__2_2_2//:url",
