@@ -57,8 +57,6 @@ async fn run(url: String, public_key: String) -> Result<(), Box<dyn std::error::
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let data = Engine::new_memory().get_data();
-    println!("{}", data);
     let opts: Opts = Opts::parse();
     task::block_on(run(opts.hub, opts.public_key))
 }

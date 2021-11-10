@@ -6,7 +6,7 @@ rust_library(
     name = "extendedmind_engine",
     deps = [
         "//schema:extendedmind_schema_rust",
-        "//third_party/cargo:automerge_frontend",
+        "//third_party/cargo:automerge",
         "//third_party/cargo:serde_json",
         "//third_party/cargo:hypercore",
         "//third_party/cargo:hypercore_protocol",
@@ -22,6 +22,7 @@ rust_library(
         "//third_party/cargo:reusable_box_future",
     ],
     proc_macro_deps = [
+        "//third_party/cargo:async_attributes",
         "//third_party/cargo:derivative",
     ],
     srcs = glob(["src/**"]),
