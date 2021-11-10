@@ -31,12 +31,20 @@ licenses([
 
 # Generated Targets
 
+# Unsupported target "crdt_benchmarks" with type "bench" omitted
+
+# Unsupported target "save_load" with type "bench" omitted
+
+# Unsupported target "sync" with type "bench" omitted
+
+# Unsupported target "cards" with type "example" omitted
+
 rust_library(
-    name = "automerge_protocol",
+    name = "automerge",
     srcs = glob(["**/*.rs"]),
     crate_features = [
     ],
-    crate_root = "automerge-protocol/src/lib.rs",
+    crate_root = "automerge/src/lib.rs",
     data = [],
     edition = "2018",
     rustc_flags = [
@@ -46,19 +54,21 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "0.1.0",
+    version = "0.0.2",
     # buildifier: leave-alone
     deps = [
-        "@raze__hex__0_4_3//:hex",
+        "@raze__automerge_backend__0_0_1//:automerge_backend",
+        "@raze__automerge_frontend__0_1_0//:automerge_frontend",
+        "@raze__automerge_protocol__0_1_0//:automerge_protocol",
         "@raze__serde__1_0_130//:serde",
-        "@raze__smol_str__0_1_21//:smol_str",
-        "@raze__strum__0_21_0//:strum",
+        "@raze__serde_json__1_0_69//:serde_json",
         "@raze__thiserror__1_0_30//:thiserror",
-        "@raze__tinyvec__1_5_1//:tinyvec",
         "@raze__uuid__0_8_2//:uuid",
     ],
 )
 
-# Unsupported target "serde_round_trip" with type "test" omitted
+# Unsupported target "frontend_backend_roundtrip" with type "test" omitted
 
-# Unsupported target "serde_round_trip_proptest" with type "test" omitted
+# Unsupported target "save_load" with type "test" omitted
+
+# Unsupported target "text_grapheme_clusters" with type "test" omitted

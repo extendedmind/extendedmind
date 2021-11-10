@@ -26,17 +26,24 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT"
+    "notice",  # Zlib from expression "Zlib OR (Apache-2.0 OR MIT)"
 ])
 
 # Generated Targets
 
+# Unsupported target "macros" with type "bench" omitted
+
+# Unsupported target "smallvec" with type "bench" omitted
+
 rust_library(
-    name = "automerge_protocol",
+    name = "tinyvec",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "alloc",
+        "default",
+        "tinyvec_macros",
     ],
-    crate_root = "automerge-protocol/src/lib.rs",
+    crate_root = "src/lib.rs",
     data = [],
     edition = "2018",
     rustc_flags = [
@@ -46,19 +53,13 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "0.1.0",
+    version = "1.5.1",
     # buildifier: leave-alone
     deps = [
-        "@raze__hex__0_4_3//:hex",
-        "@raze__serde__1_0_130//:serde",
-        "@raze__smol_str__0_1_21//:smol_str",
-        "@raze__strum__0_21_0//:strum",
-        "@raze__thiserror__1_0_30//:thiserror",
-        "@raze__tinyvec__1_5_1//:tinyvec",
-        "@raze__uuid__0_8_2//:uuid",
+        "@raze__tinyvec_macros__0_1_0//:tinyvec_macros",
     ],
 )
 
-# Unsupported target "serde_round_trip" with type "test" omitted
+# Unsupported target "arrayvec" with type "test" omitted
 
-# Unsupported target "serde_round_trip_proptest" with type "test" omitted
+# Unsupported target "tinyvec" with type "test" omitted

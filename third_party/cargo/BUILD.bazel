@@ -22,6 +22,15 @@ alias(
 )
 
 alias(
+    name = "async_attributes",
+    actual = "@raze__async_attributes__1_1_2//:async_attributes",
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+)
+
+alias(
     name = "async_ctrlc",
     actual = "@raze__async_ctrlc__1_2_0//:async_ctrlc",
     tags = [
@@ -49,8 +58,8 @@ alias(
 )
 
 alias(
-    name = "automerge_frontend",
-    actual = "@raze__automerge_frontend__0_1_0//:automerge_frontend",
+    name = "automerge",
+    actual = "@raze__automerge__0_0_2//:automerge",
     tags = [
         "cargo-raze",
         "manual",

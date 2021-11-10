@@ -52,13 +52,13 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "2.1.0",
+    version = "2.2.0",
     # buildifier: leave-alone
     deps = [
         "@raze__cfg_if__1_0_0//:cfg_if",
         "@raze__log__0_4_14//:log",
     ] + selects.with_or({
-        # cfg(unix)
+        # cfg(any(unix, target_os = "fuchsia", target_os = "vxworks"))
         (
             "@rules_rust//rust/platform:x86_64-apple-darwin",
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
@@ -78,6 +78,8 @@ rust_library(
         "//conditions:default": [],
     }),
 )
+
+# Unsupported target "concurrent_modification" with type "test" omitted
 
 # Unsupported target "notify" with type "test" omitted
 
