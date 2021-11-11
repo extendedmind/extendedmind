@@ -40,15 +40,18 @@ openapi_repositories(
 # Rust
 http_archive(
     name = "rules_rust",
-    sha256 = "d6a8bc37502f252ef190b37945c922e0d0104dc2250940a3ea5f9c42e7a0dc10",
-    strip_prefix = "rules_rust-e2f0fccda912daac686b533ad77c5bc5d2f2ddb7",
+    sha256 = "59ffb4b9d26525e1ed2cfb45eb0253bbf3b1d8974cda58f93a14183c47d28b3c",
+    strip_prefix = "rules_rust-332542944e0c444e689ab011955df462f8f1f2b5",
     urls = [
-        # Master branch as of 2021-11-05
-        "https://github.com/bazelbuild/rules_rust/archive/e2f0fccda912daac686b533ad77c5bc5d2f2ddb7.tar.gz",
+        # Master branch as of 2021-11-10
+        "https://github.com/bazelbuild/rules_rust/archive/332542944e0c444e689ab011955df462f8f1f2b5.tar.gz",
     ],
 )
 load("@rules_rust//rust:repositories.bzl", "rust_repositories")
 rust_repositories(version = "1.56.1", edition="2018", rustfmt_version = "1.56.1")
+
+load("@rules_rust//wasm_bindgen:repositories.bzl", "rust_wasm_bindgen_repositories")
+rust_wasm_bindgen_repositories()
 
 load("//third_party/cargo:crates.bzl", "raze_fetch_remote_crates")
 raze_fetch_remote_crates()
@@ -58,8 +61,8 @@ raze_fetch_remote_crates()
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 http_archive(
     name = "build_bazel_rules_nodejs",
-    sha256 = "3635797a96c7bfcd0d265dacd722a07335e64d6ded9834af8d3f1b7ba5a25bba",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/4.3.0/rules_nodejs-4.3.0.tar.gz"],
+    sha256 = "4913ea835810c195df24d3a929315c29a64566cc48e409d8b0f35008b4e02e59",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/4.4.4/rules_nodejs-4.4.4.tar.gz"],
 )
 
 load("@build_bazel_rules_nodejs//:index.bzl", "npm_install")
