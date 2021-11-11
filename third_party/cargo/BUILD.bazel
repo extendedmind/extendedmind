@@ -255,6 +255,15 @@ alias(
     ],
 )
 
+alias(
+    name = "wasm_bindgen",
+    actual = "@raze__wasm_bindgen__0_2_78//:wasm_bindgen",
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+)
+
 # Export file for Stardoc support
 exports_files(
     [

@@ -59,7 +59,7 @@ cargo_build_script(
     version = "0.3.63",
     visibility = ["//visibility:private"],
     deps = [
-        "@raze__cc__1_0_71//:cc",
+        "@raze__cc__1_0_72//:cc",
     ],
 )
 

@@ -138,7 +138,7 @@ rust_library(
         ): [
             "@raze__async_global_executor__2_0_2//:async_global_executor",
             "@raze__async_io__1_6_0//:async_io",
-            "@raze__async_process__1_2_0//:async_process",
+            "@raze__async_process__1_3_0//:async_process",
             "@raze__futures_lite__1_12_0//:futures_lite",
         ],
         "//conditions:default": [],
