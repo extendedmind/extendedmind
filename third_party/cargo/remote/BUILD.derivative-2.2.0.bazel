@@ -47,6 +47,7 @@ rust_proc_macro(
         "manual",
     ],
     version = "2.2.0",
+
     # buildifier: leave-alone
     deps = [
         "@raze__proc_macro2__1_0_32//:proc_macro2",

@@ -101,6 +101,7 @@ rust_library(
         "manual",
     ],
     version = "0.14.4",
+
     # buildifier: leave-alone
     deps = [
         ":cookie_build_script",

@@ -81,6 +81,7 @@ rust_library(
         "manual",
     ],
     version = "3.0.0-beta.5",
+
     # buildifier: leave-alone
     deps = [
         "@raze__atty__0_2_14//:atty",

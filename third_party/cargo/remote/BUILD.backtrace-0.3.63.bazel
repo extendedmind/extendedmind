@@ -87,6 +87,7 @@ rust_library(
         "manual",
     ],
     version = "0.3.63",
+
     # buildifier: leave-alone
     deps = [
         ":backtrace_build_script",

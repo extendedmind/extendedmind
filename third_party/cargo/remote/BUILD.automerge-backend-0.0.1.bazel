@@ -47,6 +47,7 @@ rust_library(
         "manual",
     ],
     version = "0.0.1",
+
     # buildifier: leave-alone
     deps = [
         "@raze__automerge_protocol__0_1_0//:automerge_protocol",

@@ -82,6 +82,7 @@ rust_library(
         "manual",
     ],
     version = "0.2.107",
+
     # buildifier: leave-alone
     deps = [
         ":libc_build_script",

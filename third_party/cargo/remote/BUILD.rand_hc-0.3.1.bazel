@@ -47,6 +47,7 @@ rust_library(
         "manual",
     ],
     version = "0.3.1",
+
     # buildifier: leave-alone
     deps = [
         "@raze__rand_core__0_6_3//:rand_core",

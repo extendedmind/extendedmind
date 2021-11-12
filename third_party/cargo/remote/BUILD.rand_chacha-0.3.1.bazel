@@ -48,6 +48,7 @@ rust_library(
         "manual",
     ],
     version = "0.3.1",
+
     # buildifier: leave-alone
     deps = [
         "@raze__ppv_lite86__0_2_15//:ppv_lite86",

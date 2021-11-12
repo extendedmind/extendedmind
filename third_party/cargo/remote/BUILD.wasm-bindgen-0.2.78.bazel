@@ -91,6 +91,7 @@ rust_library(
         "manual",
     ],
     version = "0.2.78",
+
     # buildifier: leave-alone
     deps = [
         ":wasm_bindgen_build_script",

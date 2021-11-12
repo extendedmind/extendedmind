@@ -57,6 +57,7 @@ rust_library(
         "manual",
     ],
     version = "0.11.1-beta.10",
+
     # buildifier: leave-alone
     deps = [
         "@raze__anyhow__1_0_45//:anyhow",

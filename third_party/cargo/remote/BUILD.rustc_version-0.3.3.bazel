@@ -47,6 +47,7 @@ rust_library(
         "manual",
     ],
     version = "0.3.3",
+
     # buildifier: leave-alone
     deps = [
         "@raze__semver__0_11_0//:semver",

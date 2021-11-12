@@ -83,6 +83,7 @@ rust_library(
         "manual",
     ],
     version = "0.1.44",
+
     # buildifier: leave-alone
     deps = [
         ":num_integer_build_script",

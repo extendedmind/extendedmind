@@ -51,6 +51,7 @@ rust_library(
         "manual",
     ],
     version = "0.12.1",
+
     # buildifier: leave-alone
     deps = [
         "@raze__flat_tree__5_0_0//:flat_tree",

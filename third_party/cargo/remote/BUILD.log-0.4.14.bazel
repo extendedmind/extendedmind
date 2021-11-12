@@ -86,6 +86,7 @@ rust_library(
         "manual",
     ],
     version = "0.4.14",
+
     # buildifier: leave-alone
     deps = [
         ":log_build_script",

@@ -79,6 +79,7 @@ rust_library(
         "manual",
     ],
     version = "0.2.17",
+
     # buildifier: leave-alone
     deps = [
         ":standback_build_script",

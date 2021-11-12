@@ -51,6 +51,7 @@ rust_library(
         "manual",
     ],
     version = "1.5.0",
+
     # buildifier: leave-alone
     deps = [
     ] + selects.with_or({

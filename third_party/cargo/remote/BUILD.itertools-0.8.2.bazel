@@ -63,6 +63,7 @@ rust_library(
         "manual",
     ],
     version = "0.8.2",
+
     # buildifier: leave-alone
     deps = [
         "@raze__either__1_6_1//:either",

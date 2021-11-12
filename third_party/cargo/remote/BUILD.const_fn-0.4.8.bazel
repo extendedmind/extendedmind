@@ -76,6 +76,7 @@ rust_proc_macro(
         "manual",
     ],
     version = "0.4.8",
+
     # buildifier: leave-alone
     deps = [
         ":const_fn_build_script",

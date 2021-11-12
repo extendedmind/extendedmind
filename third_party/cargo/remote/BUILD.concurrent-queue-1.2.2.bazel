@@ -47,6 +47,7 @@ rust_library(
         "manual",
     ],
     version = "1.2.2",
+
     # buildifier: leave-alone
     deps = [
         "@raze__cache_padded__1_1_1//:cache_padded",

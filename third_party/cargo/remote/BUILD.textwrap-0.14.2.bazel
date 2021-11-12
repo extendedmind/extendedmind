@@ -52,6 +52,7 @@ rust_library(
         "manual",
     ],
     version = "0.14.2",
+
     # buildifier: leave-alone
     deps = [
         "@raze__unicode_width__0_1_9//:unicode_width",

@@ -52,6 +52,7 @@ rust_library(
         "manual",
     ],
     version = "3.2.0",
+
     # buildifier: leave-alone
     deps = [
         "@raze__byteorder__1_4_3//:byteorder",

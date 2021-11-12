@@ -76,6 +76,7 @@ rust_proc_macro(
         "manual",
     ],
     version = "0.5.19",
+
     # buildifier: leave-alone
     deps = [
         ":proc_macro_hack_build_script",

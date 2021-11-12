@@ -49,6 +49,7 @@ rust_binary(
         "manual",
     ],
     version = "1.0.72",
+
     # buildifier: leave-alone
     deps = [
         ":cc",
@@ -71,6 +72,7 @@ rust_library(
         "manual",
     ],
     version = "1.0.72",
+
     # buildifier: leave-alone
     deps = [
     ],

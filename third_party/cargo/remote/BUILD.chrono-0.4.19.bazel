@@ -61,6 +61,7 @@ rust_library(
         "manual",
     ],
     version = "0.4.19",
+
     # buildifier: leave-alone
     deps = [
         "@raze__libc__0_2_107//:libc",

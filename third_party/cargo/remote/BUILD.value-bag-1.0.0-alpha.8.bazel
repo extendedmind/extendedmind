@@ -51,15 +51,20 @@ rust_library(
     proc_macro_deps = [
         "@raze__ctor__0_1_21//:ctor",
     ],
-    rustc_flags = [
-        "--cap-lints=allow",
-        "--cfg=value_bag_capture_ctor",
-    ],
+    rustc_flags =     [ "--cap-lints=allow" ] +
+    selects.with_or({
+        (
+            "@rules_rust//rust/platform:wasm32-unknown-unknown",
+        ): ["--cfg=value_bag_capture_fallback"],
+        "//conditions:default": ["--cfg=value_bag_capture_ctor"],
+    })
+,
     tags = [
         "cargo-raze",
         "manual",
     ],
     version = "1.0.0-alpha.8",
+
     # buildifier: leave-alone
     deps = [
         "@raze__sval__1_0_0_alpha_5//:sval",

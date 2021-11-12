@@ -48,6 +48,7 @@ rust_library(
         "manual",
     ],
     version = "0.2.78",
+
     # buildifier: leave-alone
     deps = [
         "@raze__bumpalo__3_8_0//:bumpalo",

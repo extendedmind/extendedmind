@@ -115,6 +115,7 @@ rust_library(
         "manual",
     ],
     version = "0.3.17",
+
     # buildifier: leave-alone
     deps = [
         ":futures_util_build_script",

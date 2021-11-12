@@ -53,6 +53,7 @@ rust_library(
         "manual",
     ],
     version = "0.6.4",
+
     # buildifier: leave-alone
     deps = [
         "@raze__cipher__0_2_5//:cipher",

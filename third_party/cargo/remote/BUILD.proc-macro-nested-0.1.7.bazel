@@ -76,6 +76,7 @@ rust_library(
         "manual",
     ],
     version = "0.1.7",
+
     # buildifier: leave-alone
     deps = [
         ":proc_macro_nested_build_script",

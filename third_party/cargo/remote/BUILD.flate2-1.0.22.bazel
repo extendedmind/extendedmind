@@ -96,6 +96,7 @@ rust_library(
         "manual",
     ],
     version = "1.0.22",
+
     # buildifier: leave-alone
     deps = [
         "@raze__cfg_if__1_0_0//:cfg_if",

@@ -68,6 +68,7 @@ rust_library(
         "manual",
     ],
     version = "0.13.1",
+
     # buildifier: leave-alone
     deps = [
         "@raze__async_std__1_10_0//:async_std",

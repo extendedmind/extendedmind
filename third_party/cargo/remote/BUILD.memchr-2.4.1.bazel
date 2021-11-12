@@ -80,6 +80,7 @@ rust_library(
         "manual",
     ],
     version = "2.4.1",
+
     # buildifier: leave-alone
     deps = [
         ":memchr_build_script",

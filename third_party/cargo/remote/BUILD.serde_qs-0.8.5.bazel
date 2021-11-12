@@ -52,6 +52,7 @@ rust_library(
         "manual",
     ],
     version = "0.8.5",
+
     # buildifier: leave-alone
     deps = [
         "@raze__percent_encoding__2_1_0//:percent_encoding",

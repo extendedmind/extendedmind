@@ -47,6 +47,7 @@ rust_library(
         "manual",
     ],
     version = "0.3.55",
+
     # buildifier: leave-alone
     deps = [
         "@raze__wasm_bindgen__0_2_78//:wasm_bindgen",

@@ -51,6 +51,7 @@ rust_library(
         "manual",
     ],
     version = "0.2.1",
+
     # buildifier: leave-alone
     deps = [
         "@raze__futures_channel__0_3_17//:futures_channel",

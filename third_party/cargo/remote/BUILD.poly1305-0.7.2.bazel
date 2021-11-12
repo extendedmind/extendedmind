@@ -51,6 +51,7 @@ rust_library(
         "manual",
     ],
     version = "0.7.2",
+
     # buildifier: leave-alone
     deps = [
         "@raze__opaque_debug__0_3_0//:opaque_debug",

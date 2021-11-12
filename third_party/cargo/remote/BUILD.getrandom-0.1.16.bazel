@@ -106,6 +106,7 @@ rust_library(
         "manual",
     ],
     version = "0.1.16",
+
     # buildifier: leave-alone
     deps = [
         ":getrandom_build_script",

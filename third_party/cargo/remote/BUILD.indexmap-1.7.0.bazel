@@ -83,6 +83,7 @@ rust_library(
         "manual",
     ],
     version = "1.7.0",
+
     # buildifier: leave-alone
     deps = [
         ":indexmap_build_script",

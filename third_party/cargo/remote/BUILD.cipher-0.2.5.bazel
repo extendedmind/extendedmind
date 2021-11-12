@@ -47,6 +47,7 @@ rust_library(
         "manual",
     ],
     version = "0.2.5",
+
     # buildifier: leave-alone
     deps = [
         "@raze__generic_array__0_14_4//:generic_array",

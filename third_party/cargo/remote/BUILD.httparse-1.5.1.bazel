@@ -82,6 +82,7 @@ rust_library(
         "manual",
     ],
     version = "1.5.1",
+
     # buildifier: leave-alone
     deps = [
         ":httparse_build_script",

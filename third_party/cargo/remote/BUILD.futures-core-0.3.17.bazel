@@ -82,6 +82,7 @@ rust_library(
         "manual",
     ],
     version = "0.3.17",
+
     # buildifier: leave-alone
     deps = [
         ":futures_core_build_script",

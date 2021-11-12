@@ -94,6 +94,7 @@ rust_library(
         "manual",
     ],
     version = "0.3.1",
+
     # buildifier: leave-alone
     deps = [
         ":hypercore_protocol_build_script",

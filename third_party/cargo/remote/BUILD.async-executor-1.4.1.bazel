@@ -51,6 +51,7 @@ rust_library(
         "manual",
     ],
     version = "1.4.1",
+
     # buildifier: leave-alone
     deps = [
         "@raze__async_task__4_0_3//:async_task",

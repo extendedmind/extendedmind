@@ -102,6 +102,7 @@ rust_library(
         "manual",
     ],
     version = "1.0.81",
+
     # buildifier: leave-alone
     deps = [
         ":syn_build_script",

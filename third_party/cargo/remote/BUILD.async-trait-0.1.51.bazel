@@ -76,6 +76,7 @@ rust_proc_macro(
         "manual",
     ],
     version = "0.1.51",
+
     # buildifier: leave-alone
     deps = [
         ":async_trait_build_script",

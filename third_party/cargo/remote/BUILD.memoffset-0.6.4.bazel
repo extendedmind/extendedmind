@@ -79,6 +79,7 @@ rust_library(
         "manual",
     ],
     version = "0.6.4",
+
     # buildifier: leave-alone
     deps = [
         ":memoffset_build_script",

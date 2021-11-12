@@ -50,6 +50,7 @@ rust_library(
         "manual",
     ],
     version = "2.2.2",
+
     # buildifier: leave-alone
     deps = [
         "@raze__form_urlencoded__1_0_1//:form_urlencoded",

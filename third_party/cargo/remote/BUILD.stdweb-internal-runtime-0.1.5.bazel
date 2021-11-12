@@ -78,6 +78,7 @@ rust_library(
         "manual",
     ],
     version = "0.1.5",
+
     # buildifier: leave-alone
     deps = [
         ":stdweb_internal_runtime_build_script",

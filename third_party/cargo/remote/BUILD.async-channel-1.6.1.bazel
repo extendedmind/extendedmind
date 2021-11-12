@@ -47,6 +47,7 @@ rust_library(
         "manual",
     ],
     version = "1.6.1",
+
     # buildifier: leave-alone
     deps = [
         "@raze__concurrent_queue__1_2_2//:concurrent_queue",

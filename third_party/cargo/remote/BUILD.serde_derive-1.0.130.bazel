@@ -78,6 +78,7 @@ rust_proc_macro(
         "manual",
     ],
     version = "1.0.130",
+
     # buildifier: leave-alone
     deps = [
         ":serde_derive_build_script",

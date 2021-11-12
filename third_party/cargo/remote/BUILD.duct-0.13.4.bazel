@@ -51,6 +51,7 @@ rust_binary(
         "manual",
     ],
     version = "0.13.4",
+
     # buildifier: leave-alone
     deps = [
         ":duct",
@@ -90,6 +91,7 @@ rust_binary(
         "manual",
     ],
     version = "0.13.4",
+
     # buildifier: leave-alone
     deps = [
         ":duct",
@@ -129,6 +131,7 @@ rust_binary(
         "manual",
     ],
     version = "0.13.4",
+
     # buildifier: leave-alone
     deps = [
         ":duct",
@@ -168,6 +171,7 @@ rust_binary(
         "manual",
     ],
     version = "0.13.4",
+
     # buildifier: leave-alone
     deps = [
         ":duct",
@@ -207,6 +211,7 @@ rust_binary(
         "manual",
     ],
     version = "0.13.4",
+
     # buildifier: leave-alone
     deps = [
         ":duct",
@@ -246,6 +251,7 @@ rust_binary(
         "manual",
     ],
     version = "0.13.4",
+
     # buildifier: leave-alone
     deps = [
         ":duct",
@@ -285,6 +291,7 @@ rust_binary(
         "manual",
     ],
     version = "0.13.4",
+
     # buildifier: leave-alone
     deps = [
         ":duct",
@@ -324,6 +331,7 @@ rust_binary(
         "manual",
     ],
     version = "0.13.4",
+
     # buildifier: leave-alone
     deps = [
         ":duct",
@@ -363,6 +371,7 @@ rust_binary(
         "manual",
     ],
     version = "0.13.4",
+
     # buildifier: leave-alone
     deps = [
         ":duct",
@@ -400,6 +409,7 @@ rust_library(
         "manual",
     ],
     version = "0.13.4",
+
     # buildifier: leave-alone
     deps = [
         "@raze__once_cell__1_8_0//:once_cell",

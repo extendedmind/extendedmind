@@ -55,6 +55,7 @@ rust_library(
         "manual",
     ],
     version = "0.0.2",
+
     # buildifier: leave-alone
     deps = [
         "@raze__automerge_backend__0_0_1//:automerge_backend",

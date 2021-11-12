@@ -59,6 +59,7 @@ rust_library(
         "manual",
     ],
     version = "0.5.1",
+
     # buildifier: leave-alone
     deps = [
         "@raze__fixedbitset__0_2_0//:fixedbitset",

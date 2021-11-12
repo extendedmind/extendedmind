@@ -71,6 +71,7 @@ rust_library(
         "manual",
     ],
     version = "0.7.3",
+
     # buildifier: leave-alone
     deps = [
         "@raze__getrandom__0_1_16//:getrandom",

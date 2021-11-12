@@ -80,6 +80,7 @@ rust_library(
         "manual",
     ],
     version = "0.4.12",
+
     # buildifier: leave-alone
     deps = [
         ":arrayvec_build_script",

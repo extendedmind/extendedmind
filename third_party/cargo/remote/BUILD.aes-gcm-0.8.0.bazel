@@ -50,6 +50,7 @@ rust_library(
         "manual",
     ],
     version = "0.8.0",
+
     # buildifier: leave-alone
     deps = [
         "@raze__aead__0_3_2//:aead",

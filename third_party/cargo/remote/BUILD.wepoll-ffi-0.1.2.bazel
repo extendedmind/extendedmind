@@ -79,6 +79,7 @@ rust_library(
         "manual",
     ],
     version = "0.1.2",
+
     # buildifier: leave-alone
     deps = [
         ":wepoll_ffi_build_script",

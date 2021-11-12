@@ -80,6 +80,7 @@ rust_library(
         "manual",
     ],
     version = "1.0.69",
+
     # buildifier: leave-alone
     deps = [
         ":serde_json_build_script",

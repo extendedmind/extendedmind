@@ -77,6 +77,7 @@ rust_library(
         "manual",
     ],
     version = "2.6.0",
+
     # buildifier: leave-alone
     deps = [
         ":unicase_build_script",

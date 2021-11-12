@@ -51,6 +51,7 @@ rust_library(
         "manual",
     ],
     version = "2.3.2",
+
     # buildifier: leave-alone
     deps = [
         "@raze__async_channel__1_6_1//:async_channel",

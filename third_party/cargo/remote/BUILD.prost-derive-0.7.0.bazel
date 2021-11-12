@@ -47,6 +47,7 @@ rust_proc_macro(
         "manual",
     ],
     version = "0.7.0",
+
     # buildifier: leave-alone
     deps = [
         "@raze__anyhow__1_0_45//:anyhow",

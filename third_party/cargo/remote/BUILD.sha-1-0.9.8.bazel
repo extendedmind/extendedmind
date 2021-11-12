@@ -64,6 +64,7 @@ rust_library(
         "manual",
     ],
     version = "0.9.8",
+
     # buildifier: leave-alone
     deps = [
         "@raze__block_buffer__0_9_0//:block_buffer",

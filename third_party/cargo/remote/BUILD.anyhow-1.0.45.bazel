@@ -80,6 +80,7 @@ rust_library(
         "manual",
     ],
     version = "1.0.45",
+
     # buildifier: leave-alone
     deps = [
         ":anyhow_build_script",

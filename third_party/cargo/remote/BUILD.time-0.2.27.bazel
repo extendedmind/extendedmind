@@ -113,6 +113,7 @@ rust_library(
         "manual",
     ],
     version = "0.2.27",
+
     # buildifier: leave-alone
     deps = [
         ":time_build_script",

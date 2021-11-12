@@ -59,6 +59,7 @@ rust_library(
         "manual",
     ],
     version = "0.13.0",
+
     # buildifier: leave-alone
     deps = [
         "@raze__base64__0_13_0//:base64",

@@ -80,6 +80,7 @@ rust_proc_macro(
         "manual",
     ],
     version = "0.3.17",
+
     # buildifier: leave-alone
     deps = [
         ":futures_macro_build_script",

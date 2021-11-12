@@ -47,6 +47,7 @@ rust_library(
         "manual",
     ],
     version = "0.8.1",
+
     # buildifier: leave-alone
     deps = [
         "@raze__crypto_mac__0_8_0//:crypto_mac",

@@ -51,6 +51,7 @@ rust_binary(
         "manual",
     ],
     version = "0.9.2",
+
     # buildifier: leave-alone
     deps = [
         ":os_pipe",
@@ -96,6 +97,7 @@ rust_binary(
         "manual",
     ],
     version = "0.9.2",
+
     # buildifier: leave-alone
     deps = [
         ":os_pipe",
@@ -141,6 +143,7 @@ rust_binary(
         "manual",
     ],
     version = "0.9.2",
+
     # buildifier: leave-alone
     deps = [
         ":os_pipe",
@@ -184,6 +187,7 @@ rust_library(
         "manual",
     ],
     version = "0.9.2",
+
     # buildifier: leave-alone
     deps = [
     ] + selects.with_or({
