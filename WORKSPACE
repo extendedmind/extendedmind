@@ -56,6 +56,26 @@ rust_wasm_bindgen_repositories()
 load("//third_party/cargo:crates.bzl", "raze_fetch_remote_crates")
 raze_fetch_remote_crates()
 
+CARGO_RAZE_VERSION = "07c775bd436316f6e837d5dd5eec61320dddb79e"
+CARGO_RAZE_SHA256 = "82bf8d769611025b0b81872876dd830524693a6e93af96e18ee18701f1e50cf6"
+
+http_archive(
+    name = "cargo_raze",
+    strip_prefix = "cargo-raze-%s" % CARGO_RAZE_VERSION,
+    url = "https://github.com/ttiurani/cargo-raze/archive/%s.tar.gz" % CARGO_RAZE_VERSION,
+    sha256 = CARGO_RAZE_SHA256
+)
+# # Example on using local version of cargo raze for hacking:
+# new_local_repository(
+#     name = "cargo_raze",
+#     path = "[path to cargo raze]/cargo-raze",
+#     build_file = "[path to cargo raze]/cargo-raze/BUILD.bazel",
+# )
+load("@cargo_raze//:repositories.bzl", "cargo_raze_repositories")
+cargo_raze_repositories()
+load("@cargo_raze//:transitive_deps.bzl", "cargo_raze_transitive_deps")
+cargo_raze_transitive_deps()
+
 # Node/Javascript/Typescript/Svelte/Esbuild
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
