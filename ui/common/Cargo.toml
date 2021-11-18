@@ -1,0 +1,13 @@
+[lib]
+path = "src/lib.rs"
+
+[package]
+name = "extendedmind_ui_common"
+version = "0.1.0"
+edition = "2018"
+licence = "AGPL-3.0-only"
+authors = ["Timo Tiuraniemi <timo.tiuraniemi@iki.fi>"]
+
+[dependencies]
+extendedmind_engine = { path = "../../engine" }
+log = "0.4.14"

@@ -1,5 +1,5 @@
 filegroup(
     name = "src",
-    srcs = glob(["**"]),
+    srcs = glob(include=["**"], exclude=["lib/ui-common/**"]),
     visibility = ["//visibility:public"],
 )

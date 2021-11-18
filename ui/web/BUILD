@@ -18,16 +18,17 @@ svelte_kit(
     chdir = "ui/web",
     args = [
         "build",
-        # This is a terrible hack: apparently Sveltekit ignores these, but they can still be found
-        # via process.argv in svelte.config.js. --out gives error, but just words work.
+        # This is a terrible hack: Sveltekit ignores everything after "--, but they can still be
+        # found via process.argv in svelte.config.js.
         "--",
-        "--out",
-        "../../$(@D)/dist/extendedmind"
+        "--out-dir",
+        "../../$(@D)/dist/extendedmind",
+        "--wasm-dir",
+        "../../$(@D)/../common",
     ],
     data = [
-        ":svelte.config.js",
-        ":tsconfig.json",
-        ":package.json",
+        ":conf",
+        "//ui/common:extendedmind_ui_common_wasm",
         "//ui/web/src",
         "//ui/web/static",
         "@npm//@sveltejs/adapter-static",
