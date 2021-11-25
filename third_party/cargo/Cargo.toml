@@ -36,6 +36,7 @@ hex = "0.4"
 reusable-box-future = "0.2.0"
 derivative = "2.2.0"
 wasm-bindgen = "0.2.78"
+js-sys = "0.3.55"
 
 # Needed for log to build
 [package.metadata.raze.crates.value-bag.'1.0.0-alpha.8']
