@@ -26,16 +26,15 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # Apache-2.0 from expression "Apache-2.0 OR MIT"
+    "notice",  # MIT from expression "MIT OR Apache-2.0"
 ])
 
 # Generated Targets
 
-rust_library(
-    name = "ed25519",
+rust_proc_macro(
+    name = "futures_macro",
     srcs = glob(["**/*.rs"]),
     crate_features = [
-        "std",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -47,10 +46,12 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "1.2.0",
+    version = "0.3.18",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__signature__1_4_0//:signature",
+        "@raze__proc_macro2__1_0_32//:proc_macro2",
+        "@raze__quote__1_0_10//:quote",
+        "@raze__syn__1_0_82//:syn",
     ],
 )

@@ -65,7 +65,7 @@ rust_binary(
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
         ): [
-            "@raze__libc__0_2_107//:libc",
+            "@raze__libc__0_2_108//:libc",
         ],
         "//conditions:default": [],
     }),
@@ -105,7 +105,7 @@ rust_binary(
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
         ): [
-            "@raze__libc__0_2_107//:libc",
+            "@raze__libc__0_2_108//:libc",
         ],
         "//conditions:default": [],
     }),
@@ -145,7 +145,7 @@ rust_binary(
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
         ): [
-            "@raze__libc__0_2_107//:libc",
+            "@raze__libc__0_2_108//:libc",
         ],
         "//conditions:default": [],
     }),
@@ -185,7 +185,7 @@ rust_binary(
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
         ): [
-            "@raze__libc__0_2_107//:libc",
+            "@raze__libc__0_2_108//:libc",
         ],
         "//conditions:default": [],
     }),
@@ -225,7 +225,7 @@ rust_binary(
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
         ): [
-            "@raze__libc__0_2_107//:libc",
+            "@raze__libc__0_2_108//:libc",
         ],
         "//conditions:default": [],
     }),
@@ -265,7 +265,7 @@ rust_binary(
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
         ): [
-            "@raze__libc__0_2_107//:libc",
+            "@raze__libc__0_2_108//:libc",
         ],
         "//conditions:default": [],
     }),
@@ -305,7 +305,7 @@ rust_binary(
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
         ): [
-            "@raze__libc__0_2_107//:libc",
+            "@raze__libc__0_2_108//:libc",
         ],
         "//conditions:default": [],
     }),
@@ -345,7 +345,7 @@ rust_binary(
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
         ): [
-            "@raze__libc__0_2_107//:libc",
+            "@raze__libc__0_2_108//:libc",
         ],
         "//conditions:default": [],
     }),
@@ -385,7 +385,7 @@ rust_binary(
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
         ): [
-            "@raze__libc__0_2_107//:libc",
+            "@raze__libc__0_2_108//:libc",
         ],
         "//conditions:default": [],
     }),
@@ -422,7 +422,7 @@ rust_library(
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
         ): [
-            "@raze__libc__0_2_107//:libc",
+            "@raze__libc__0_2_108//:libc",
         ],
         "//conditions:default": [],
     }),

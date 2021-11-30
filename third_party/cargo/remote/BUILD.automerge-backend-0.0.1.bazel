@@ -61,7 +61,7 @@ rust_library(
         "@raze__nonzero_ext__0_2_0//:nonzero_ext",
         "@raze__rand__0_8_4//:rand",
         "@raze__serde__1_0_130//:serde",
-        "@raze__serde_json__1_0_69//:serde_json",
+        "@raze__serde_json__1_0_72//:serde_json",
         "@raze__sha2__0_9_8//:sha2",
         "@raze__smol_str__0_1_21//:smol_str",
         "@raze__thiserror__1_0_30//:thiserror",

@@ -7,6 +7,7 @@ deps = [
     "//schema:extendedmind_schema_rust",
     "//engine:extendedmind_engine",
     "//third_party/cargo:wasm_bindgen",
+    "//third_party/cargo:wasm_bindgen_futures",
     "//third_party/cargo:js_sys",
     "//third_party/cargo:anyhow",
     "//third_party/cargo:log",

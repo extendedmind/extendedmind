@@ -50,18 +50,16 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "2.3.2",
+    version = "2.3.3",
 
     # buildifier: leave-alone
     deps = [
         "@raze__async_channel__1_6_1//:async_channel",
         "@raze__async_dup__1_2_2//:async_dup",
         "@raze__async_std__1_10_0//:async_std",
-        "@raze__byte_pool__0_2_3//:byte_pool",
-        "@raze__futures_core__0_3_17//:futures_core",
+        "@raze__futures_core__0_3_18//:futures_core",
         "@raze__http_types__2_12_0//:http_types",
         "@raze__httparse__1_5_1//:httparse",
-        "@raze__lazy_static__1_4_0//:lazy_static",
         "@raze__log__0_4_14//:log",
         "@raze__pin_project__1_0_8//:pin_project",
     ],

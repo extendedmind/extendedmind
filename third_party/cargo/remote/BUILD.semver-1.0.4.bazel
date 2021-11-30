@@ -38,7 +38,7 @@ load(
 )
 
 cargo_build_script(
-    name = "serde_json_build_script",
+    name = "semver_build_script",
     srcs = glob(["**/*.rs"]),
     build_script_env = {
     },
@@ -56,14 +56,16 @@ cargo_build_script(
         "cargo-raze",
         "manual",
     ],
-    version = "1.0.69",
+    version = "1.0.4",
     visibility = ["//visibility:private"],
     deps = [
     ],
 )
 
+# Unsupported target "parse" with type "bench" omitted
+
 rust_library(
-    name = "serde_json",
+    name = "semver",
     srcs = glob(["**/*.rs"]),
     crate_features = [
         "default",
@@ -79,13 +81,16 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "1.0.69",
+    version = "1.0.4",
 
     # buildifier: leave-alone
     deps = [
-        ":serde_json_build_script",
-        "@raze__itoa__0_4_8//:itoa",
-        "@raze__ryu__1_0_5//:ryu",
-        "@raze__serde__1_0_130//:serde",
+        ":semver_build_script",
     ],
 )
+
+# Unsupported target "test_identifier" with type "test" omitted
+
+# Unsupported target "test_version" with type "test" omitted
+
+# Unsupported target "test_version_req" with type "test" omitted

@@ -31,13 +31,10 @@ licenses([
 
 # Generated Targets
 
-# Unsupported target "thread_notify" with type "bench" omitted
-
 rust_library(
-    name = "futures_executor",
+    name = "send_wrapper",
     srcs = glob(["**/*.rs"]),
     crate_features = [
-        "std",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -49,14 +46,9 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "0.3.17",
+    version = "0.5.0",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__futures_core__0_3_17//:futures_core",
-        "@raze__futures_task__0_3_17//:futures_task",
-        "@raze__futures_util__0_3_17//:futures_util",
     ],
 )
-
-# Unsupported target "local_pool" with type "test" omitted

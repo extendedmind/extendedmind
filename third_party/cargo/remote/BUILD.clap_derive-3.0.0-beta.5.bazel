@@ -55,6 +55,6 @@ rust_proc_macro(
         "@raze__proc_macro2__1_0_32//:proc_macro2",
         "@raze__proc_macro_error__1_0_4//:proc_macro_error",
         "@raze__quote__1_0_10//:quote",
-        "@raze__syn__1_0_81//:syn",
+        "@raze__syn__1_0_82//:syn",
     ],
 )

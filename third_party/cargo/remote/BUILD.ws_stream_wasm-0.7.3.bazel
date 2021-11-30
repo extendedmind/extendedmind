@@ -26,7 +26,7 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # Apache-2.0 from expression "Apache-2.0 OR BSL-1.0"
+    "unencumbered",  # Unlicense from expression "Unlicense"
 ])
 
 # Generated Targets
@@ -38,7 +38,7 @@ load(
 )
 
 cargo_build_script(
-    name = "ryu_build_script",
+    name = "ws_stream_wasm_build_script",
     srcs = glob(["**/*.rs"]),
     build_script_env = {
     },
@@ -54,18 +54,17 @@ cargo_build_script(
         "cargo-raze",
         "manual",
     ],
-    version = "1.0.5",
+    version = "0.7.3",
     visibility = ["//visibility:private"],
     deps = [
+        "@raze__js_sys__0_3_55//:js_sys",
+        "@raze__rustc_version__0_4_0//:rustc_version",
+        "@raze__web_sys__0_3_55//:web_sys",
     ],
 )
 
-# Unsupported target "bench" with type "bench" omitted
-
-# Unsupported target "upstream_benchmark" with type "example" omitted
-
 rust_library(
-    name = "ryu",
+    name = "ws_stream_wasm",
     srcs = glob(["**/*.rs"]),
     crate_features = [
     ],
@@ -79,24 +78,19 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "1.0.5",
+    version = "0.7.3",
 
     # buildifier: leave-alone
     deps = [
-        ":ryu_build_script",
+        ":ws_stream_wasm_build_script",
+        "@raze__async_io_stream__0_3_3//:async_io_stream",
+        "@raze__futures__0_3_18//:futures",
+        "@raze__js_sys__0_3_55//:js_sys",
+        "@raze__pharos__0_5_3//:pharos",
+        "@raze__send_wrapper__0_5_0//:send_wrapper",
+        "@raze__thiserror__1_0_30//:thiserror",
+        "@raze__wasm_bindgen__0_2_78//:wasm_bindgen",
+        "@raze__wasm_bindgen_futures__0_4_28//:wasm_bindgen_futures",
+        "@raze__web_sys__0_3_55//:web_sys",
     ],
 )
-
-# Unsupported target "common_test" with type "test" omitted
-
-# Unsupported target "d2s_table_test" with type "test" omitted
-
-# Unsupported target "d2s_test" with type "test" omitted
-
-# Unsupported target "exhaustive" with type "test" omitted
-
-# Unsupported target "f2s_test" with type "test" omitted
-
-# Unsupported target "s2d_test" with type "test" omitted
-
-# Unsupported target "s2f_test" with type "test" omitted
