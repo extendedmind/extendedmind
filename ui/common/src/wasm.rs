@@ -2,7 +2,10 @@ mod wasm {
 
     use anyhow::{anyhow, Error, Result};
     use async_std::sync::{Arc, Mutex};
-    use extendedmind_engine::{AutomergeBackend, Engine, FeedStore, RandomAccess, Store};
+    use extendedmind_engine::{
+        get_public_key, AutomergeBackend, Engine, Feed, FeedStore, FeedWrapper, RandomAccess,
+        Storage, Store,
+    };
     use futures::future::FutureExt;
     use futures::stream::StreamExt;
     use js_sys::Uint8Array;
@@ -150,7 +153,7 @@ mod wasm {
 
     impl WasmEngine<RandomAccessProxy> {
         /// Create a new Engine backed by a `RandomAccessProxy` instance.
-        pub async fn new_proxy() -> Engine<RandomAccessProxy> {
+        pub async fn new_proxy(public_key: &str) -> Engine<RandomAccessProxy> {
             let create = |store: Store| {
                 async move {
                     let name = match store {
@@ -160,11 +163,16 @@ mod wasm {
                         Store::Signatures => "signatures",
                         Store::Keypair => "key",
                     };
-                    RandomAccessProxy::new(name.to_string())
+                    Ok(RandomAccessProxy::new(name.to_string()))
                 }
                 .boxed()
             };
-            let feedstore: FeedStore<RandomAccessProxy> = FeedStore::new();
+            let storage: Storage<RandomAccessProxy> = Storage::new(create, true).await.unwrap();
+            let public_key = get_public_key(&public_key);
+            let remote_feed = Feed::builder(public_key, storage).build().await.unwrap();
+            let remote_feed_wrapper = FeedWrapper::from(remote_feed);
+            let mut feedstore: FeedStore<RandomAccessProxy> = FeedStore::new();
+            feedstore.add(remote_feed_wrapper);
             let engine = Engine {
                 data: Arc::new(Mutex::new(None)),
                 is_initiator: true,
@@ -179,7 +187,7 @@ mod wasm {
     pub async fn connect_to_hub(address: String, public_key: String) -> Result<(), JsValue> {
         let (_ws_meta, ws_stream) = WsMeta::connect(address, None).await.unwrap();
         let (reader, writer) = ws_stream.split();
-        let engine = WasmEngine::new_proxy();
+        let engine = WasmEngine::new_proxy(public_key.as_str());
         Ok(())
     }
 }

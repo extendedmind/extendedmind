@@ -13,6 +13,7 @@ use log::*;
 use random_access_memory::RandomAccessMemory;
 use std::fmt::Debug;
 use std::io;
+use std::path::PathBuf;
 
 pub use automerge::{
     Backend as AutomergeBackend, BackendError as AutomergeBackendError,
@@ -21,7 +22,7 @@ pub use automerge::{
 };
 pub use bytes::Bytes;
 pub use channel_writer::ChannelWriter;
-pub use hypercore::Store;
+pub use hypercore::{Feed, PublicKey, Storage, Store};
 pub use hypercore_protocol::Protocol;
 #[cfg(not(target_arch = "wasm32"))]
 pub use random_access_disk::RandomAccessDisk;
@@ -31,7 +32,6 @@ mod communication;
 pub use communication::FeedStore;
 mod common;
 pub use common::FeedWrapper;
-mod persistence;
 
 #[derive(Derivative)]
 #[derivative(Clone(bound = ""))]
@@ -63,6 +63,11 @@ fn get_initial_data() -> Arc<Mutex<Option<AutomergeBackend>>> {
     Arc::new(Mutex::new(Some(backend)))
 }
 
+pub fn get_public_key(public_key: &str) -> PublicKey {
+    let key = hex::decode(public_key).unwrap();
+    PublicKey::from_bytes(key.as_ref()).unwrap()
+}
+
 #[cfg(not(target_arch = "wasm32"))]
 impl Engine<RandomAccessDisk> {
     pub async fn new_disk(
@@ -72,17 +77,33 @@ impl Engine<RandomAccessDisk> {
         let mut feedstore: FeedStore<RandomAccessDisk> = FeedStore::new();
 
         // Create a hypercore.
-        let remote_feed = persistence::get_disk_feed(is_initiator, public_key).await;
-
-        // let local_feed = Feed::open(format!("/tmp/testlocal_{}.db", is_initiator))
-        //     .await
-        //     .unwrap();
+        let remote_feed = if let Some(public_key) = public_key {
+            let storage = Storage::new_disk(
+                &PathBuf::from(format!("/tmp/testremote_{}.db", is_initiator)),
+                false,
+            )
+            .await
+            .unwrap();
+            dbg!("USING GIVEN PUBLIC KEY  {}", &public_key);
+            let public_key = get_public_key(&public_key);
+            Feed::builder(public_key, storage).build().await.unwrap()
+        } else {
+            dbg!("Opening/creating feed");
+            let remote_feed = Feed::open(format!("/tmp/testremote_{}.db", is_initiator))
+                .await
+                .unwrap();
+            let public_key = hex::encode(remote_feed.public_key());
+            dbg!(
+                "Reading public key, init: {} value: {}",
+                is_initiator,
+                public_key
+            );
+            remote_feed
+        };
 
         // Wrap it and add to the feed store.
         let remote_feed_wrapper = FeedWrapper::from(remote_feed);
-        // let local_feed_wrapper = FeedWrapper::from_disk_feed(local_feed);
         feedstore.add(remote_feed_wrapper);
-        // feedstore.add(local_feed_wrapper);
 
         Engine {
             data: get_initial_data(),
