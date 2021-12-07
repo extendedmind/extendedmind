@@ -4,9 +4,6 @@ use ::serde_json;
 use anyhow::Result;
 use async_std::channel::Receiver;
 use async_std::sync::{Arc, Mutex};
-use automerge::{
-    Backend as AutomergeBackend, Frontend as AutomergeFrontend, LocalChange, Path, Value,
-};
 use derivative::Derivative;
 use extendedmind_schema_rust::models::Data as ExtendedMindData;
 use futures::io::{AsyncRead, AsyncWrite};
@@ -14,21 +11,26 @@ use futures::stream::{IntoAsyncRead, StreamExt, TryStreamExt};
 use hypercore_protocol::{Event, ProtocolBuilder};
 use log::*;
 use random_access_memory::RandomAccessMemory;
-use random_access_storage::RandomAccess;
 use std::fmt::Debug;
 use std::io;
 
-pub use automerge::Automerge;
+pub use automerge::{
+    Backend as AutomergeBackend, BackendError as AutomergeBackendError,
+    Frontend as AutomergeFrontend, FrontendError as AutomergeFrontendError, LocalChange,
+    Path as AutomergePath, Value as AutomergeValue,
+};
 pub use bytes::Bytes;
 pub use channel_writer::ChannelWriter;
+pub use hypercore::Store;
 pub use hypercore_protocol::Protocol;
 #[cfg(not(target_arch = "wasm32"))]
 pub use random_access_disk::RandomAccessDisk;
+pub use random_access_storage::RandomAccess;
 
 mod communication;
-use communication::FeedStore;
+pub use communication::FeedStore;
 mod common;
-use common::FeedWrapper;
+pub use common::FeedWrapper;
 mod persistence;
 
 #[derive(Derivative)]
@@ -37,19 +39,19 @@ pub struct Engine<T>
 where
     T: RandomAccess<Error = Box<dyn std::error::Error + Send + Sync>> + Debug + Send,
 {
-    data: Arc<Mutex<AutomergeBackend>>,
-    is_initiator: bool,
-    feedstore: Option<Arc<FeedStore<T>>>,
+    pub data: Arc<Mutex<Option<AutomergeBackend>>>,
+    pub is_initiator: bool,
+    pub feedstore: Arc<FeedStore<T>>,
 }
 
-fn get_initial_data() -> Arc<Mutex<AutomergeBackend>> {
+fn get_initial_data() -> Arc<Mutex<Option<AutomergeBackend>>> {
     let mut backend = AutomergeBackend::new();
     let mut frontend = AutomergeFrontend::new();
     let (_output, change) = frontend
         .change(Some("init".into()), |doc| {
             doc.add_change(LocalChange::set(
-                Path::root(),
-                Value::from_json(&serde_json::json!(ExtendedMindData::new(
+                AutomergePath::root(),
+                AutomergeValue::from_json(&serde_json::json!(ExtendedMindData::new(
                     Vec::new(),
                     Vec::new(),
                     Vec::new()
@@ -58,7 +60,7 @@ fn get_initial_data() -> Arc<Mutex<AutomergeBackend>> {
         })
         .unwrap();
     backend.apply_local_change(change.unwrap()).unwrap();
-    Arc::new(Mutex::new(backend))
+    Arc::new(Mutex::new(Some(backend)))
 }
 
 #[cfg(not(target_arch = "wasm32"))]
@@ -81,22 +83,22 @@ impl Engine<RandomAccessDisk> {
         // let local_feed_wrapper = FeedWrapper::from_disk_feed(local_feed);
         feedstore.add(remote_feed_wrapper);
         // feedstore.add(local_feed_wrapper);
-        let feedstore = Arc::new(feedstore);
 
         Engine {
             data: get_initial_data(),
             is_initiator,
-            feedstore: Some(feedstore),
+            feedstore: Arc::new(feedstore),
         }
     }
 }
 
 impl Engine<RandomAccessMemory> {
     pub fn new_memory() -> Engine<RandomAccessMemory> {
+        let feedstore: FeedStore<RandomAccessMemory> = FeedStore::new();
         Engine {
             data: get_initial_data(),
             is_initiator: true,
-            feedstore: None,
+            feedstore: Arc::new(feedstore),
         }
     }
 }
@@ -105,9 +107,14 @@ impl<T: 'static> Engine<T>
 where
     T: RandomAccess<Error = Box<dyn std::error::Error + Send + Sync>> + Debug + Send,
 {
+    pub async fn set_data(&self, backend: AutomergeBackend) {
+        let mut state = self.data.lock().await;
+        *state = Some(backend);
+    }
+
     pub async fn get_data_heads_len(&self) -> usize {
         let data = &mut self.data.lock().await;
-        data.get_heads().len()
+        data.as_ref().unwrap().get_heads().len()
     }
 
     pub async fn connect_passive(
@@ -137,7 +144,7 @@ where
         IO: AsyncWrite + AsyncRead + Send + Unpin + 'static,
     {
         dbg!("poll_protocol");
-        let feedstore = self.feedstore.unwrap().clone();
+        let feedstore = self.feedstore.clone();
         dbg!("waiting for protocol event");
         while let Some(event) = protocol.next().await {
             dbg!("got protocol event {:?}", &event);

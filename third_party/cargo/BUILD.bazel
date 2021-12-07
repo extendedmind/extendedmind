@@ -49,6 +49,15 @@ alias(
 )
 
 alias(
+    name = "async_trait",
+    actual = "@raze__async_trait__0_1_51//:async_trait",
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+)
+
+alias(
     name = "async_tungstenite",
     actual = "@raze__async_tungstenite__0_13_1//:async_tungstenite",
     tags = [

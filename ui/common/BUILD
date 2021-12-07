@@ -8,13 +8,17 @@ deps = [
     "//engine:extendedmind_engine",
     "//third_party/cargo:wasm_bindgen",
     "//third_party/cargo:wasm_bindgen_futures",
+    "//third_party/cargo:ws_stream_wasm",
     "//third_party/cargo:js_sys",
+    "//third_party/cargo:async_std",
+    "//third_party/cargo:futures",
     "//third_party/cargo:anyhow",
     "//third_party/cargo:log",
 ]
 
 proc_macro_deps = [
     "//third_party/cargo:async_attributes",
+    "//third_party/cargo:async_trait",
     "//third_party/cargo:derivative",
 ]
 

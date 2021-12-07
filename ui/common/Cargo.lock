@@ -627,7 +627,10 @@ dependencies = [
 name = "extendedmind_ui_common"
 version = "0.1.0"
 dependencies = [
+ "async-std",
+ "async-trait",
  "extendedmind_engine",
+ "futures",
  "js-sys",
  "log",
  "wasm-bindgen",

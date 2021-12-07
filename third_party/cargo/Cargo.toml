@@ -25,6 +25,7 @@ chrono = { version = "0.4.19" }
 futures = "^0.3.5"
 async-std = "1.9.0"
 async-attributes = "1.1.2"
+async-trait = "0.1.51"
 tide = "0.16.0"
 tide-websockets = "0.4.0"
 ctrlc = { version = "3.0", features = ["termination"] }
@@ -37,7 +38,7 @@ reusable-box-future = "0.2.0"
 derivative = "2.2.0"
 wasm-bindgen = "0.2.78"
 wasm-bindgen-futures = "0.4.28"
-ws_stream_wasm = "0.7.3"
+ws_stream_wasm = "0.7.3" # See below two hacks to get #![doc = include_str!("../README.md")] to work
 js-sys = "0.3.55"
 
 # Needed for log to build
@@ -53,8 +54,14 @@ override_rustc_flags = """
     })
 """
 
-# Needed for clap to build with spurious include
+# Needed for clap to build
 [package.metadata.raze.crates.clap.'3.0.0-beta.5']
+compile_data_attr = "glob([\"README.md\"])"
+
+# Needed for ws_stream_wasm to build
+[package.metadata.raze.crates.pharos.'0.5.3']
+compile_data_attr = "glob([\"README.md\"])"
+[package.metadata.raze.crates.async_io_stream.'0.3.3']
 compile_data_attr = "glob([\"README.md\"])"
 
 [package.metadata.raze]
