@@ -41,6 +41,8 @@ struct State {
     system_commands: Receiver<Result<Bytes, io::Error>>,
     // Stores the channels needed to make a protocol
     channels: HashMap<String, SplitChannels>,
+    // Directory for data files
+    data_root_dir: PathBuf,
     // Directory for static files
     static_root_dir: PathBuf,
     // Port to listen on
@@ -228,6 +230,7 @@ fn collect_receivers_and_sender(
 #[clap(version = "0.1.0", author = "Timo Tiuraniemi <timo.tiuraniemi@iki.fi>")]
 struct Opts {
     port: u16,
+    data_root_dir: PathBuf,
     static_root_dir: PathBuf,
 }
 
@@ -248,9 +251,13 @@ fn main() -> Result<()> {
 
     // Read in command line arguments
     let opts: Opts = Opts::parse();
+    let data_root_dir = &opts.data_root_dir;
 
     // Initialize the engine blocking
-    let engine = futures::executor::block_on(async move { Engine::new_disk(false, None).await });
+    let engine =
+        futures::executor::block_on(
+            async move { Engine::new_disk(data_root_dir, false, None).await },
+        );
 
     // Create channels
     let (ping_sender, system_command_receiver): ChannelSenderReceiver = bounded(1000);
@@ -262,6 +269,7 @@ fn main() -> Result<()> {
         engine,
         system_commands: system_command_receiver,
         port: opts.port,
+        data_root_dir: opts.data_root_dir,
         static_root_dir: opts.static_root_dir,
         channels: [(
             "demo".to_string(),

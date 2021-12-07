@@ -71,27 +71,21 @@ pub fn get_public_key(public_key: &str) -> PublicKey {
 #[cfg(not(target_arch = "wasm32"))]
 impl Engine<RandomAccessDisk> {
     pub async fn new_disk(
+        data_root_dir: &PathBuf,
         is_initiator: bool,
-        public_key: Option<String>,
+        public_key: Option<&str>,
     ) -> Engine<RandomAccessDisk> {
         let mut feedstore: FeedStore<RandomAccessDisk> = FeedStore::new();
 
-        // Create a hypercore.
+        // Create a hypercore
+        let feed_dir = data_root_dir.join(PathBuf::from(format!("{}.db", is_initiator)));
         let remote_feed = if let Some(public_key) = public_key {
-            let storage = Storage::new_disk(
-                &PathBuf::from(format!("/tmp/testremote_{}.db", is_initiator)),
-                false,
-            )
-            .await
-            .unwrap();
-            dbg!("USING GIVEN PUBLIC KEY  {}", &public_key);
+            let storage = Storage::new_disk(&feed_dir, false).await.unwrap();
+            dbg!("Using given public key {}", &public_key);
             let public_key = get_public_key(&public_key);
             Feed::builder(public_key, storage).build().await.unwrap()
         } else {
-            dbg!("Opening/creating feed");
-            let remote_feed = Feed::open(format!("/tmp/testremote_{}.db", is_initiator))
-                .await
-                .unwrap();
+            let remote_feed = Feed::open(&feed_dir).await.unwrap();
             let public_key = hex::encode(remote_feed.public_key());
             dbg!(
                 "Reading public key, init: {} value: {}",

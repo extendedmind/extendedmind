@@ -6,6 +6,7 @@ use extendedmind_engine::{Bytes, ChannelWriter, Engine};
 use futures::prelude::*;
 use log::*;
 use std::io;
+use std::path::PathBuf;
 
 #[derive(Parser)]
 #[clap(version = "0.1.0", author = "Timo Tiuraniemi <timo.tiuraniemi@iki.fi>")]
@@ -14,8 +15,8 @@ struct Opts {
     public_key: String,
 }
 
-async fn run(url: String, public_key: String) -> Result<(), Box<dyn std::error::Error>> {
-    let engine = Engine::new_disk(true, Some(public_key)).await;
+async fn run(url: &str, public_key: &str) -> Result<(), Box<dyn std::error::Error>> {
+    let engine = Engine::new_disk(&PathBuf::from("/tmp"), true, Some(public_key)).await;
     let (ws, _) = connect_async(format!("{}/demo", url)).await?;
 
     let (mut ws_writer, mut ws_reader) = ws.split();
@@ -58,5 +59,5 @@ async fn run(url: String, public_key: String) -> Result<(), Box<dyn std::error::
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let opts: Opts = Opts::parse();
-    task::block_on(run(opts.hub, opts.public_key))
+    task::block_on(run(opts.hub.as_str(), opts.public_key.as_str()))
 }

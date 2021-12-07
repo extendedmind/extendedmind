@@ -17,11 +17,15 @@ module.exports = async () => {
     const playwrightConfig = getExtraArg('--playwright-config', true, 'jest-playwright.config.js');
     const hubBin = getExtraArg('--hub-bin', true);
     const hubPort = getExtraArg('--hub-port');
+    const hubDataDir = getExtraArg('--hub-data-dir', true);
     const distDir = getExtraArg('--dist-dir', true);
+
+    console.log("HUB SDASDSADA", hubDataDir)
 
     process.env.JEST_PLAYWRIGHT_CONFIG = playwrightConfig;
     process.env.EXTENDEDMIND_HUB_BIN = hubBin;
     process.env.EXTENDEDMIND_HUB_PORT = hubPort;
+    process.env.EXTENDEDMIND_HUB_DATA_DIR = hubDataDir;
     process.env.EXTENDEDMIND_UI_WEB_DIST = distDir;
 
     return {
