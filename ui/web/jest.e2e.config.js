@@ -20,8 +20,6 @@ module.exports = async () => {
     const hubDataDir = getExtraArg('--hub-data-dir', true);
     const distDir = getExtraArg('--dist-dir', true);
 
-    console.log("HUB SDASDSADA", hubDataDir)
-
     process.env.JEST_PLAYWRIGHT_CONFIG = playwrightConfig;
     process.env.EXTENDEDMIND_HUB_BIN = hubBin;
     process.env.EXTENDEDMIND_HUB_PORT = hubPort;

@@ -13,6 +13,8 @@ use log::*;
 use random_access_memory::RandomAccessMemory;
 use std::fmt::Debug;
 use std::io;
+#[cfg(not(target_arch = "wasm32"))]
+use std::io::Write;
 use std::path::PathBuf;
 
 pub use automerge::{
@@ -87,6 +89,14 @@ impl Engine<RandomAccessDisk> {
         } else {
             let remote_feed = Feed::open(&feed_dir).await.unwrap();
             let public_key = hex::encode(remote_feed.public_key());
+            let mut hub_key_file = std::fs::OpenOptions::new()
+                .create(true)
+                .write(true)
+                .truncate(true)
+                .open(data_root_dir.join("HUB_KEY.txt"))
+                .unwrap();
+            hub_key_file.write_all(&public_key.as_bytes()).unwrap();
+            hub_key_file.flush().unwrap();
             dbg!(
                 "Reading public key, init: {} value: {}",
                 is_initiator,
