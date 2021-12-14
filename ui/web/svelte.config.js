@@ -23,7 +23,10 @@ function workAroundSvelteKitIssue1896(jsFileContent) {
     const lines = jsFileContent.split(/\r?\n/);
     let nextLineNeedsCommenting = false;
     lines.forEach((line) => {
-        if (nextLineNeedsCommenting || (line.includes('new URL(') && line.includes('import.meta.url);'))) {
+        if (
+            nextLineNeedsCommenting ||
+            (line.includes('new URL(') && line.includes('import.meta.url);'))
+        ) {
             modifiedJsFileContent += '// ' + line + '\n';
             nextLineNeedsCommenting = false;
         } else if (line.includes('init.__wbindgen_wasm_module = module;')) {
@@ -39,15 +42,19 @@ function workAroundSvelteKitIssue1896(jsFileContent) {
     return modifiedJsFileContent;
 }
 
-function prepareUiCommon(){
-    const wasmDirectory = getExtraArg('--wasm-dir', true, '../../bazel-out/darwin-fastbuild/bin/ui/common');
+function prepareUiCommon() {
+    const wasmDirectory = getExtraArg(
+        '--wasm-dir',
+        true,
+        '../../bazel-out/darwin-fastbuild/bin/ui/common',
+    );
     const wasmOutputDirectory = path.join('.', 'src/lib/ui-common');
-    const uiCommonWasmFileName = 'extendedmind_ui_common_wasm_bg.wasm'
-    const uiCommonJsFileName = 'extendedmind_ui_common_wasm.js'
-    const uiCommonTsFileName = 'extendedmind_ui_common_wasm.d.ts'
+    const uiCommonWasmFileName = 'extendedmind_ui_common_wasm_bg.wasm';
+    const uiCommonJsFileName = 'extendedmind_ui_common_wasm.js';
+    const uiCommonTsFileName = 'extendedmind_ui_common_wasm.d.ts';
 
     if (!fs.existsSync(wasmOutputDirectory)) {
-      fs.mkdirSync(wasmOutputDirectory)
+        fs.mkdirSync(wasmOutputDirectory);
     }
 
     const uiCommonWasmFilePath = fs.realpathSync(path.join(wasmDirectory, uiCommonWasmFileName));
@@ -56,15 +63,20 @@ function prepareUiCommon(){
 
     fs.writeFileSync(
         path.join(wasmOutputDirectory, uiCommonWasmFileName),
-        fs.readFileSync(uiCommonWasmFilePath, {flag:'r'}));
+        fs.readFileSync(uiCommonWasmFilePath, { flag: 'r' }),
+    );
 
     fs.writeFileSync(
         path.join(wasmOutputDirectory, uiCommonJsFileName),
-        workAroundSvelteKitIssue1896(fs.readFileSync(uiCommonJsFilePath, {encoding:'utf8', flag:'r'})));
+        workAroundSvelteKitIssue1896(
+            fs.readFileSync(uiCommonJsFilePath, { encoding: 'utf8', flag: 'r' }),
+        ),
+    );
 
     fs.writeFileSync(
         path.join(wasmOutputDirectory, uiCommonTsFileName),
-        fs.readFileSync(uiCommonTsFilePath, {encoding:'utf8', flag:'r'}));
+        fs.readFileSync(uiCommonTsFilePath, { encoding: 'utf8', flag: 'r' }),
+    );
 }
 
 const outputDirectory = getExtraArg('--out-dir', true, 'dist/extendedmind');

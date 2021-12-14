@@ -1,7 +1,6 @@
 const path = require('path');
 
 module.exports = async () => {
-
     function getExtraArg(argName, resolvePath, defaultValue) {
         const index = process.argv.indexOf(argName);
         let value = defaultValue;

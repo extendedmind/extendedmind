@@ -1,21 +1,15 @@
 <script lang="ts">
-    import Icon from '$lib/Icon.svelte';
+    import Entry from '$lib/views/Entry.svelte';
+    import Focus from '$lib/views/Focus.svelte';
+    import { hubKey } from '../stores/hubKey';
 </script>
 
 <svelte:head>
     <title>extended mind</title>
 </svelte:head>
 
-<section>
-    <Icon name="logo" />
-</section>
-
-<style>
-    section {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        flex: 1;
-    }
-</style>
+{#if $hubKey}
+    <Focus />
+{:else}
+    <Entry />
+{/if}
