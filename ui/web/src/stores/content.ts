@@ -11,7 +11,7 @@ const loadContent = async (storedHubKey: string): Object => {
     };
     const wasmExports = await init(wasm);
     return {
-        diary: '55 * 3 = ' + wasmExports.triple_from_js(55),
+        diary: '55 * 3 = ' + wasmExports.tripleFromJs(55),
     };
 };
 

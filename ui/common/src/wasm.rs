@@ -57,7 +57,7 @@ mod wasm {
         async fn storage_sync_all(id: &str) -> Result<(), JsValue>;
     }
 
-    #[wasm_bindgen]
+    #[wasm_bindgen(js_name = "tripleFromJs")]
     pub fn triple_from_js(i: i32) -> i32 {
         unsafe { triple(i).unwrap().as_f64().unwrap().to_int_unchecked() }
     }
