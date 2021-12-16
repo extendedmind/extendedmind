@@ -5,7 +5,7 @@
 </script>
 
 <svelte:head>
-    <title>extended mind</title>
+    <title>extended mind v2</title>
 </svelte:head>
 
 {#if $hubKey}

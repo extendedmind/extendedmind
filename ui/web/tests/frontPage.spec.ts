@@ -11,7 +11,7 @@ beforeAll(async () => {
 
 test('should navigate to extendedmind UI front page', async () => {
     console.log('Hub Key', hubKey);
-    expect(await page.title()).toBe('extended mind');
+    expect(await page.title()).toBe('extended mind v2');
     await page.type('input[name="hubKey"]', hubKey);
     await page.click('button[type="submit"]');
     const diaryContentText = await page.textContent('#diaryContent');

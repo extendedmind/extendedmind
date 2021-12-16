@@ -183,9 +183,17 @@ mod wasm {
         }
     }
 
-    #[wasm_bindgen]
+    #[wasm_bindgen(js_name = "connectToHub")]
     pub async fn connect_to_hub(address: String, public_key: String) -> Result<(), JsValue> {
+        console_error_panic_hook::set_once();
+        console_log::init_with_level(log::Level::Debug).unwrap();
+        info!(
+            "call: connect_to_hub, address: {}, public_key: {}",
+            &address, &public_key
+        );
+        debug!("attempting to make websocket connection...");
         let (_ws_meta, ws_stream) = WsMeta::connect(address, None).await.unwrap();
+        debug!("...connection success");
         let (reader, writer) = ws_stream.split();
         let engine = WasmEngine::new_proxy(public_key.as_str());
         Ok(())

@@ -260,7 +260,7 @@ fn main() -> Result<()> {
         );
 
     // Create channels
-    let (ping_sender, system_command_receiver): ChannelSenderReceiver = bounded(1000);
+    let (system_command_sender, system_command_receiver): ChannelSenderReceiver = bounded(1000);
     let (incoming_sender, incoming_receiver): ChannelSenderReceiver = bounded(1000);
     let (outgoing_sender, outgoing_receiver): ChannelSenderReceiver = bounded(1000);
 
@@ -285,7 +285,7 @@ fn main() -> Result<()> {
 
     // Listen to ctrlc in a separate task
     let ctrlc = CtrlC::new().expect("cannot create Ctrl+C handler?");
-    let disconnect_sender = ping_sender.clone();
+    let disconnect_sender = system_command_sender.clone();
     let abort: Arc<Mutex<AtomicBool>> = Arc::new(Mutex::new(AtomicBool::new(false)));
     let abort_writer = abort.clone();
     task::spawn(async move {
@@ -306,8 +306,7 @@ fn main() -> Result<()> {
         let mut interval = async_std::stream::interval(Duration::from_secs(1));
         while interval.next().await.is_some() && !*abort.as_ref().lock().await.get_mut() {
             task::sleep(Duration::from_millis(1000)).await;
-            // debug!("Sending WakeUp");
-            ping_sender
+            system_command_sender
                 .send(Ok(Bytes::from_static(&[SystemCommand::WakeUp as u8])))
                 .await
                 .unwrap();

@@ -10,6 +10,7 @@ const loadContent = async (storedHubKey: string): Object => {
         return a * 3;
     };
     const wasmExports = await init(wasm);
+    // await wasmExports.connectToHub(`${window.location.hostname}:8080`, storedHubKey);
     return {
         diary: '55 * 3 = ' + wasmExports.tripleFromJs(55),
     };
