@@ -192,7 +192,12 @@ mod wasm {
             &address, &public_key
         );
         debug!("attempting to make websocket connection...");
-        let (_ws_meta, ws_stream) = WsMeta::connect(address, None).await.unwrap();
+        let (_ws_meta, ws_stream) = WsMeta::connect(
+            format!("ws://{}/extendedmind/hypercore/demo", address),
+            None,
+        )
+        .await
+        .unwrap();
         debug!("...connection success");
         let (reader, writer) = ws_stream.split();
         let engine = WasmEngine::new_proxy(public_key.as_str());

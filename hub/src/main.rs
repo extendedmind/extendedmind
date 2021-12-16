@@ -102,80 +102,82 @@ async fn async_main(initial_state: State) -> Result<()> {
     app.at("/extendedmind").get(index);
     app.at("/").serve_dir(static_root_dir.to_str().unwrap())?;
 
-    app.at("/ws/:discovery_key").get(WebSocket::new(
-        |req: tide::Request<State>, stream| async move {
-            // Get handle to async-tungstenite WebSocketStream
-            let ws_writer = stream.clone();
-            let mut ws_reader = stream.clone();
+    app.at("/extendedmind/hypercore/:discovery_key")
+        .get(WebSocket::new(
+            |req: tide::Request<State>, stream| async move {
+                // Get handle to async-tungstenite WebSocketStream
+                let ws_writer = stream.clone();
+                let mut ws_reader = stream.clone();
 
-            // Get discovery key from the path
-            let discovery_key: Arc<String> = Arc::new(req.param("discovery_key")?.parse().unwrap());
-            debug!("{}", &discovery_key);
+                // Get discovery key from the path
+                let discovery_key: Arc<String> =
+                    Arc::new(req.param("discovery_key")?.parse().unwrap());
+                debug!("{}", &discovery_key);
 
-            // Launch a task for the protocol
-            let (engine_sender, engine_receiver) = req.state().channels[discovery_key.as_ref()]
-                .engine_channel
-                .clone();
-            let engine = req.state().engine.clone();
-            task::spawn(async move {
-                engine
-                    .connect_passive(engine_receiver, ChannelWriter::new(engine_sender))
-                    .await
-                    .ok();
-            });
+                // Launch a task for the protocol
+                let (engine_sender, engine_receiver) = req.state().channels[discovery_key.as_ref()]
+                    .engine_channel
+                    .clone();
+                let engine = req.state().engine.clone();
+                task::spawn(async move {
+                    engine
+                        .connect_passive(engine_receiver, ChannelWriter::new(engine_sender))
+                        .await
+                        .ok();
+                });
 
-            // Launch a second task for listening to receivers
-            let (client_sender, client_receiver): ChannelSenderReceiver = bounded(1000);
-            task::spawn(async move {
-                let (receivers, hypercore_sender) =
-                    collect_receivers_and_sender(req.state(), client_receiver, discovery_key);
-                let mut merged_receivers = futures::stream::select_all(receivers);
-                let mut now = Instant::now();
-                while let Some(Ok(wrapped_value)) = merged_receivers.next().await {
-                    match wrapped_value.receiver_type {
-                        ReceiverType::System => {
-                            if wrapped_value.data.as_ref().get(0)
-                                == Some(&(SystemCommand::Disconnect as u8))
-                            {
-                                debug!("got disconnect");
-                                ws_writer.send(Message::Close(None)).await.unwrap();
-                                break;
+                // Launch a second task for listening to receivers
+                let (client_sender, client_receiver): ChannelSenderReceiver = bounded(1000);
+                task::spawn(async move {
+                    let (receivers, hypercore_sender) =
+                        collect_receivers_and_sender(req.state(), client_receiver, discovery_key);
+                    let mut merged_receivers = futures::stream::select_all(receivers);
+                    let mut now = Instant::now();
+                    while let Some(Ok(wrapped_value)) = merged_receivers.next().await {
+                        match wrapped_value.receiver_type {
+                            ReceiverType::System => {
+                                if wrapped_value.data.as_ref().get(0)
+                                    == Some(&(SystemCommand::Disconnect as u8))
+                                {
+                                    debug!("got disconnect");
+                                    ws_writer.send(Message::Close(None)).await.unwrap();
+                                    break;
+                                }
+                                // Send ping message if enough time has elapsed
+                                if now.elapsed().as_secs() > 30 {
+                                    debug!("sending ping");
+                                    ws_writer.send(Message::Ping(Vec::new())).await.unwrap();
+                                    now = Instant::now();
+                                }
                             }
-                            // Send ping message if enough time has elapsed
-                            if now.elapsed().as_secs() > 30 {
-                                debug!("sending ping");
-                                ws_writer.send(Message::Ping(Vec::new())).await.unwrap();
-                                now = Instant::now();
+                            ReceiverType::Client => {
+                                debug!(
+                                    "got client request, forwarding to hypercore {}",
+                                    wrapped_value.data.len()
+                                );
+                                hypercore_sender
+                                    .clone()
+                                    .send(Ok(wrapped_value.data))
+                                    .await
+                                    .unwrap();
                             }
-                        }
-                        ReceiverType::Client => {
-                            debug!(
-                                "got client request, forwarding to hypercore {}",
-                                wrapped_value.data.len()
-                            );
-                            hypercore_sender
-                                .clone()
-                                .send(Ok(wrapped_value.data))
-                                .await
-                                .unwrap();
-                        }
-                        ReceiverType::Hypercore => {
-                            let msg = wrapped_value.data.as_ref().to_vec();
-                            debug!("got hypercore message, sending to client, {:?}", msg.len());
-                            ws_writer.send(Message::Binary(msg)).await.unwrap();
+                            ReceiverType::Hypercore => {
+                                let msg = wrapped_value.data.as_ref().to_vec();
+                                debug!("got hypercore message, sending to client, {:?}", msg.len());
+                                ws_writer.send(Message::Binary(msg)).await.unwrap();
+                            }
                         }
                     }
-                }
-            });
+                });
 
-            // Block loop on incoming messages
-            while let Some(Ok(Message::Binary(msg))) = ws_reader.next().await {
-                debug!("got incoming client message {:?}", msg.len());
-                client_sender.send(Ok(Bytes::from(msg))).await.unwrap();
-            }
-            Ok(())
-        },
-    ));
+                // Block loop on incoming messages
+                while let Some(Ok(Message::Binary(msg))) = ws_reader.next().await {
+                    debug!("got incoming client message {:?}", msg.len());
+                    client_sender.send(Ok(Bytes::from(msg))).await.unwrap();
+                }
+                Ok(())
+            },
+        ));
 
     app.listen("0.0.0.0:".to_owned() + &port.to_string())
         .await?;

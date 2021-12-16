@@ -1,5 +1,5 @@
 import wasm from '../lib/ui-common/extendedmind_ui_common_wasm_bg.wasm';
-import init from '../lib/ui-common/extendedmind_ui_common_wasm';
+import init, { connectToHub } from '../lib/ui-common/extendedmind_ui_common_wasm';
 import { readable } from 'svelte/store';
 import { hubKey } from './hubKey';
 
@@ -10,7 +10,7 @@ const loadContent = async (storedHubKey: string): Object => {
         return a * 3;
     };
     const wasmExports = await init(wasm);
-    // await wasmExports.connectToHub(`${window.location.hostname}:8080`, storedHubKey);
+    await connectToHub(`${window.location.hostname}:8080`, storedHubKey);
     return {
         diary: '55 * 3 = ' + wasmExports.tripleFromJs(55),
     };
