@@ -26,7 +26,7 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT OR Apache-2.0"
+    "notice",  # Apache-2.0 from expression "Apache-2.0 OR MIT"
 ])
 
 # Generated Targets
@@ -38,13 +38,13 @@ load(
 )
 
 cargo_build_script(
-    name = "proc_macro2_build_script",
+    name = "signal_hook_build_script",
     srcs = glob(["**/*.rs"]),
     build_script_env = {
     },
     crate_features = [
-        "default",
-        "proc-macro",
+        "channel",
+        "iterator",
     ],
     crate_root = "build.rs",
     data = glob(["**"]),
@@ -56,18 +56,20 @@ cargo_build_script(
         "cargo-raze",
         "manual",
     ],
-    version = "1.0.32",
+    version = "0.3.12",
     visibility = ["//visibility:private"],
     deps = [
     ],
 )
 
+# Unsupported target "print" with type "example" omitted
+
 rust_library(
-    name = "proc_macro2",
+    name = "signal_hook",
     srcs = glob(["**/*.rs"]),
     crate_features = [
-        "default",
-        "proc-macro",
+        "channel",
+        "iterator",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -79,21 +81,18 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "1.0.32",
+    version = "0.3.12",
 
     # buildifier: leave-alone
     deps = [
-        ":proc_macro2_build_script",
-        "@raze__unicode_xid__0_2_2//:unicode_xid",
+        ":signal_hook_build_script",
+        "@raze__libc__0_2_112//:libc",
+        "@raze__signal_hook_registry__1_4_0//:signal_hook_registry",
     ],
 )
 
-# Unsupported target "comments" with type "test" omitted
+# Unsupported target "default" with type "test" omitted
 
-# Unsupported target "features" with type "test" omitted
+# Unsupported target "iterator" with type "test" omitted
 
-# Unsupported target "marker" with type "test" omitted
-
-# Unsupported target "test" with type "test" omitted
-
-# Unsupported target "test_fmt" with type "test" omitted
+# Unsupported target "shutdown" with type "test" omitted

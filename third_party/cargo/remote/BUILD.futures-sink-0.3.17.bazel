@@ -31,11 +31,12 @@ licenses([
 
 # Generated Targets
 
-rust_proc_macro(
-    name = "clap_derive",
+rust_library(
+    name = "futures_sink",
     srcs = glob(["**/*.rs"]),
     crate_features = [
-        "default",
+        "alloc",
+        "std",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -47,14 +48,9 @@ rust_proc_macro(
         "cargo-raze",
         "manual",
     ],
-    version = "3.0.0-beta.5",
+    version = "0.3.17",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__heck__0_3_3//:heck",
-        "@raze__proc_macro2__1_0_32//:proc_macro2",
-        "@raze__proc_macro_error__1_0_4//:proc_macro_error",
-        "@raze__quote__1_0_10//:quote",
-        "@raze__syn__1_0_82//:syn",
     ],
 )

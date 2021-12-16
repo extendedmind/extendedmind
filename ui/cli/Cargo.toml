@@ -10,7 +10,7 @@ extendedmind_engine = { path = "../../engine" }
 futures = "^0.3.5"
 async-std = "1.9.0"
 async-tungstenite = { version = "0.13.1", features = ["async-std-runtime"] }
-clap = "3.0.0-beta.5"
+clap = { version = "3.0.0-rc.5", features = ["derive"] }
 log = "0.4.14"
 
 [dev-dependencies]

@@ -20,7 +20,7 @@ bytes = "0.5.0"
 fern = "0.6.0"
 log = "0.4.14" # See below for hack to get the dependency value-bag to work with build.rs
 anyhow = "1.0.33"
-clap = "3.0.0-beta.5" # See below for hack to get #![doc = include_str!("../README.md")] to work
+clap = { version = "3.0.0-rc.5", features = ["derive"] } # See below for hack to get #![doc = include_str!("../README.md")] to work
 chrono = { version = "0.4.19" }
 futures = "^0.3.5"
 async-std = "1.9.0"
@@ -36,10 +36,13 @@ random-access-storage = { git = "https://github.com/ttiurani/random-access-stora
 hex = "0.4"
 reusable-box-future = "0.2.0"
 derivative = "2.2.0"
+# Wasm dependencies
 wasm-bindgen = "0.2.78"
 wasm-bindgen-futures = "0.4.28"
 ws_stream_wasm = "0.7.3" # See below two hacks to get #![doc = include_str!("../README.md")] to work
 js-sys = "0.3.55"
+console_error_panic_hook = "0.1.7"
+console_log = "0.2.0"
 
 # Needed for log to build
 [package.metadata.raze.crates.value-bag.'1.0.0-alpha.8']
@@ -55,7 +58,9 @@ override_rustc_flags = """
 """
 
 # Needed for clap to build
-[package.metadata.raze.crates.clap.'3.0.0-beta.5']
+[package.metadata.raze.crates.clap.'3.0.0-rc.5']
+compile_data_attr = "glob([\"README.md\"])"
+[package.metadata.raze.crates.clap_derive.'3.0.0-rc.5']
 compile_data_attr = "glob([\"README.md\"])"
 
 # Needed for ws_stream_wasm to build

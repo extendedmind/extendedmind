@@ -58,7 +58,7 @@ rust_library(
         "@raze__concurrent_queue__1_2_2//:concurrent_queue",
         "@raze__fastrand__1_5_0//:fastrand",
         "@raze__futures_lite__1_12_0//:futures_lite",
-        "@raze__once_cell__1_8_0//:once_cell",
+        "@raze__once_cell__1_9_0//:once_cell",
         "@raze__slab__0_4_5//:slab",
     ],
 )

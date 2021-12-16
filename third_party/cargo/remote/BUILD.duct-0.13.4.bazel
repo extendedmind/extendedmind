@@ -55,7 +55,7 @@ rust_binary(
     # buildifier: leave-alone
     deps = [
         ":duct",
-        "@raze__once_cell__1_8_0//:once_cell",
+        "@raze__once_cell__1_9_0//:once_cell",
         "@raze__os_pipe__0_9_2//:os_pipe",
         "@raze__shared_child__0_3_5//:shared_child",
     ] + selects.with_or({
@@ -65,7 +65,7 @@ rust_binary(
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
         ): [
-            "@raze__libc__0_2_108//:libc",
+            "@raze__libc__0_2_112//:libc",
         ],
         "//conditions:default": [],
     }),
@@ -95,7 +95,7 @@ rust_binary(
     # buildifier: leave-alone
     deps = [
         ":duct",
-        "@raze__once_cell__1_8_0//:once_cell",
+        "@raze__once_cell__1_9_0//:once_cell",
         "@raze__os_pipe__0_9_2//:os_pipe",
         "@raze__shared_child__0_3_5//:shared_child",
     ] + selects.with_or({
@@ -105,7 +105,7 @@ rust_binary(
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
         ): [
-            "@raze__libc__0_2_108//:libc",
+            "@raze__libc__0_2_112//:libc",
         ],
         "//conditions:default": [],
     }),
@@ -135,7 +135,7 @@ rust_binary(
     # buildifier: leave-alone
     deps = [
         ":duct",
-        "@raze__once_cell__1_8_0//:once_cell",
+        "@raze__once_cell__1_9_0//:once_cell",
         "@raze__os_pipe__0_9_2//:os_pipe",
         "@raze__shared_child__0_3_5//:shared_child",
     ] + selects.with_or({
@@ -145,7 +145,7 @@ rust_binary(
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
         ): [
-            "@raze__libc__0_2_108//:libc",
+            "@raze__libc__0_2_112//:libc",
         ],
         "//conditions:default": [],
     }),
@@ -175,7 +175,7 @@ rust_binary(
     # buildifier: leave-alone
     deps = [
         ":duct",
-        "@raze__once_cell__1_8_0//:once_cell",
+        "@raze__once_cell__1_9_0//:once_cell",
         "@raze__os_pipe__0_9_2//:os_pipe",
         "@raze__shared_child__0_3_5//:shared_child",
     ] + selects.with_or({
@@ -185,7 +185,7 @@ rust_binary(
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
         ): [
-            "@raze__libc__0_2_108//:libc",
+            "@raze__libc__0_2_112//:libc",
         ],
         "//conditions:default": [],
     }),
@@ -215,7 +215,7 @@ rust_binary(
     # buildifier: leave-alone
     deps = [
         ":duct",
-        "@raze__once_cell__1_8_0//:once_cell",
+        "@raze__once_cell__1_9_0//:once_cell",
         "@raze__os_pipe__0_9_2//:os_pipe",
         "@raze__shared_child__0_3_5//:shared_child",
     ] + selects.with_or({
@@ -225,7 +225,7 @@ rust_binary(
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
         ): [
-            "@raze__libc__0_2_108//:libc",
+            "@raze__libc__0_2_112//:libc",
         ],
         "//conditions:default": [],
     }),
@@ -255,7 +255,7 @@ rust_binary(
     # buildifier: leave-alone
     deps = [
         ":duct",
-        "@raze__once_cell__1_8_0//:once_cell",
+        "@raze__once_cell__1_9_0//:once_cell",
         "@raze__os_pipe__0_9_2//:os_pipe",
         "@raze__shared_child__0_3_5//:shared_child",
     ] + selects.with_or({
@@ -265,7 +265,7 @@ rust_binary(
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
         ): [
-            "@raze__libc__0_2_108//:libc",
+            "@raze__libc__0_2_112//:libc",
         ],
         "//conditions:default": [],
     }),
@@ -295,7 +295,7 @@ rust_binary(
     # buildifier: leave-alone
     deps = [
         ":duct",
-        "@raze__once_cell__1_8_0//:once_cell",
+        "@raze__once_cell__1_9_0//:once_cell",
         "@raze__os_pipe__0_9_2//:os_pipe",
         "@raze__shared_child__0_3_5//:shared_child",
     ] + selects.with_or({
@@ -305,7 +305,7 @@ rust_binary(
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
         ): [
-            "@raze__libc__0_2_108//:libc",
+            "@raze__libc__0_2_112//:libc",
         ],
         "//conditions:default": [],
     }),
@@ -335,7 +335,7 @@ rust_binary(
     # buildifier: leave-alone
     deps = [
         ":duct",
-        "@raze__once_cell__1_8_0//:once_cell",
+        "@raze__once_cell__1_9_0//:once_cell",
         "@raze__os_pipe__0_9_2//:os_pipe",
         "@raze__shared_child__0_3_5//:shared_child",
     ] + selects.with_or({
@@ -345,7 +345,7 @@ rust_binary(
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
         ): [
-            "@raze__libc__0_2_108//:libc",
+            "@raze__libc__0_2_112//:libc",
         ],
         "//conditions:default": [],
     }),
@@ -375,7 +375,7 @@ rust_binary(
     # buildifier: leave-alone
     deps = [
         ":duct",
-        "@raze__once_cell__1_8_0//:once_cell",
+        "@raze__once_cell__1_9_0//:once_cell",
         "@raze__os_pipe__0_9_2//:os_pipe",
         "@raze__shared_child__0_3_5//:shared_child",
     ] + selects.with_or({
@@ -385,7 +385,7 @@ rust_binary(
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
         ): [
-            "@raze__libc__0_2_108//:libc",
+            "@raze__libc__0_2_112//:libc",
         ],
         "//conditions:default": [],
     }),
@@ -412,7 +412,7 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__once_cell__1_8_0//:once_cell",
+        "@raze__once_cell__1_9_0//:once_cell",
         "@raze__os_pipe__0_9_2//:os_pipe",
         "@raze__shared_child__0_3_5//:shared_child",
     ] + selects.with_or({
@@ -422,7 +422,7 @@ rust_library(
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
         ): [
-            "@raze__libc__0_2_108//:libc",
+            "@raze__libc__0_2_112//:libc",
         ],
         "//conditions:default": [],
     }),

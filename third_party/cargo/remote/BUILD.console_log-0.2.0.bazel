@@ -32,11 +32,10 @@ licenses([
 # Generated Targets
 
 rust_library(
-    name = "futures_sink",
+    name = "console_log",
     srcs = glob(["**/*.rs"]),
     crate_features = [
-        "alloc",
-        "std",
+        "default",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -48,9 +47,11 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "0.3.18",
+    version = "0.2.0",
 
     # buildifier: leave-alone
     deps = [
+        "@raze__log__0_4_14//:log",
+        "@raze__web_sys__0_3_55//:web_sys",
     ],
 )

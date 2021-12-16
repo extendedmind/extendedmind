@@ -39,7 +39,6 @@ rust_library(
     name = "textwrap",
     srcs = glob(["**/*.rs"]),
     crate_features = [
-        "unicode-width",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -55,7 +54,6 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__unicode_width__0_1_9//:unicode_width",
     ],
 )
 

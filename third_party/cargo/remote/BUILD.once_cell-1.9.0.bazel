@@ -26,31 +26,33 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # Apache-2.0 from expression "Apache-2.0 OR MIT"
+    "notice",  # MIT from expression "MIT OR Apache-2.0"
 ])
 
 # Generated Targets
 
-# Unsupported target "format_str" with type "bench" omitted
+# Unsupported target "bench" with type "example" omitted
 
-# Unsupported target "invalid_parse_str" with type "bench" omitted
+# Unsupported target "bench_acquire" with type "example" omitted
 
-# Unsupported target "mod" with type "bench" omitted
+# Unsupported target "bench_vs_lazy_static" with type "example" omitted
 
-# Unsupported target "serde_support" with type "bench" omitted
+# Unsupported target "lazy_static" with type "example" omitted
 
-# Unsupported target "valid_parse_str" with type "bench" omitted
+# Unsupported target "reentrant_init_deadlocks" with type "example" omitted
+
+# Unsupported target "regex" with type "example" omitted
+
+# Unsupported target "test_synchronization" with type "example" omitted
 
 rust_library(
-    name = "uuid",
+    name = "once_cell",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "alloc",
         "default",
-        "getrandom",
-        "serde",
+        "race",
         "std",
-        "v4",
-        "wasm-bindgen",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -62,11 +64,11 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "0.8.2",
+    version = "1.9.0",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__getrandom__0_2_3//:getrandom",
-        "@raze__serde__1_0_131//:serde",
     ],
 )
+
+# Unsupported target "it" with type "test" omitted

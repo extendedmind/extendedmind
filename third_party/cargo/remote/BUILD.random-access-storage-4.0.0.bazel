@@ -40,7 +40,7 @@ rust_library(
     data = [],
     edition = "2018",
     proc_macro_deps = [
-        "@raze__async_trait__0_1_51//:async_trait",
+        "@raze__async_trait__0_1_52//:async_trait",
     ],
     rustc_flags = [
         "--cap-lints=allow",
@@ -53,6 +53,6 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__futures_io__0_3_18//:futures_io",
+        "@raze__futures_io__0_3_17//:futures_io",
     ],
 )

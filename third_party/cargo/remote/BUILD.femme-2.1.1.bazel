@@ -46,7 +46,7 @@ rust_library(
     data = [],
     edition = "2018",
     proc_macro_deps = [
-        "@raze__serde_derive__1_0_130//:serde_derive",
+        "@raze__serde_derive__1_0_131//:serde_derive",
     ],
     rustc_flags = [
         "--cap-lints=allow",
@@ -61,8 +61,8 @@ rust_library(
     deps = [
         "@raze__cfg_if__0_1_10//:cfg_if",
         "@raze__log__0_4_14//:log",
-        "@raze__serde__1_0_130//:serde",
-        "@raze__serde_json__1_0_72//:serde_json",
+        "@raze__serde__1_0_131//:serde",
+        "@raze__serde_json__1_0_73//:serde_json",
     ] + selects.with_or({
         # cfg(target_arch = "wasm32")
         (
