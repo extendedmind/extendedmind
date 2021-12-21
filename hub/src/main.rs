@@ -6,7 +6,7 @@ use async_std::task;
 use clap::Parser;
 use derivative::Derivative;
 use futures::stream::StreamExt;
-use log::*;
+use log::{debug, info};
 use std::collections::HashMap;
 use std::io;
 use std::path::PathBuf;
@@ -234,10 +234,12 @@ struct Opts {
     port: u16,
     data_root_dir: PathBuf,
     static_root_dir: PathBuf,
+    #[clap(short, long)]
+    log_to_stderr: bool,
 }
 
-fn main() -> Result<()> {
-    fern::Dispatch::new()
+fn setup_logging(log_to_stderr: bool) {
+    let base_config = fern::Dispatch::new()
         .format(|out, message, record| {
             out.finish(format_args!(
                 "{}[{}][{}] {}",
@@ -247,12 +249,21 @@ fn main() -> Result<()> {
                 message
             ))
         })
-        .level(log::LevelFilter::Debug)
-        .chain(std::io::stdout())
-        .apply()?;
+        .level(log::LevelFilter::Debug);
+    let std_config = if log_to_stderr {
+        fern::Dispatch::new().chain(std::io::stderr())
+    } else {
+        fern::Dispatch::new().chain(std::io::stdout())
+    };
 
-    // Read in command line arguments
+    base_config.chain(std_config).apply().unwrap();
+}
+
+fn main() -> Result<()> {
+    // Read in command line arguments and setup logging
     let opts: Opts = Opts::parse();
+    setup_logging(opts.log_to_stderr);
+    info!("enter: hub");
     let data_root_dir = &opts.data_root_dir;
 
     // Initialize the engine blocking
