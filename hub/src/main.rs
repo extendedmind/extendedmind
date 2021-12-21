@@ -260,6 +260,7 @@ fn main() -> Result<()> {
         futures::executor::block_on(
             async move { Engine::new_disk(data_root_dir, false, None).await },
         );
+    let discovery_keys = engine.get_discovery_keys();
 
     // Create channels
     let (system_command_sender, system_command_receiver): ChannelSenderReceiver = bounded(1000);
@@ -274,7 +275,7 @@ fn main() -> Result<()> {
         data_root_dir: opts.data_root_dir,
         static_root_dir: opts.static_root_dir,
         channels: [(
-            "demo".to_string(),
+            discovery_keys[0].clone(), // TODO: Support many discovery keys
             SplitChannels {
                 engine_channel: (incoming_sender, outgoing_receiver),
                 socket_channel: (outgoing_sender, incoming_receiver),

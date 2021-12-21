@@ -3,8 +3,8 @@ mod wasm {
     use anyhow::{anyhow, Error, Result};
     use async_std::sync::{Arc, Mutex};
     use extendedmind_engine::{
-        get_public_key, AutomergeBackend, Engine, Feed, FeedStore, FeedWrapper, RandomAccess,
-        Storage, Store,
+        get_discovery_key, get_public_key, AutomergeBackend, Engine, Feed, FeedStore, FeedWrapper,
+        RandomAccess, Storage, Store,
     };
     use futures::future::FutureExt;
     use futures::stream::StreamExt;
@@ -193,7 +193,11 @@ mod wasm {
         );
         debug!("attempting to make websocket connection...");
         let (_ws_meta, ws_stream) = WsMeta::connect(
-            format!("ws://{}/extendedmind/hypercore/demo", address),
+            format!(
+                "ws://{}/extendedmind/hypercore/{}",
+                address,
+                get_discovery_key(get_public_key(public_key.as_str())),
+            ),
             None,
         )
         .await

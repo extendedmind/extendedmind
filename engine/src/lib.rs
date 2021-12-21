@@ -8,7 +8,7 @@ use derivative::Derivative;
 use extendedmind_schema_rust::models::Data as ExtendedMindData;
 use futures::io::{AsyncRead, AsyncWrite};
 use futures::stream::{IntoAsyncRead, StreamExt, TryStreamExt};
-use hypercore_protocol::{Event, ProtocolBuilder};
+use hypercore_protocol::{discovery_key, Event, ProtocolBuilder};
 use log::*;
 use random_access_memory::RandomAccessMemory;
 use std::fmt::Debug;
@@ -68,6 +68,11 @@ fn get_initial_data() -> Arc<Mutex<Option<AutomergeBackend>>> {
 pub fn get_public_key(public_key: &str) -> PublicKey {
     let key = hex::decode(public_key).unwrap();
     PublicKey::from_bytes(key.as_ref()).unwrap()
+}
+
+pub fn get_discovery_key(public_key: PublicKey) -> String {
+    let public_key = public_key.to_bytes();
+    hex::encode(discovery_key(&public_key))
 }
 
 #[cfg(not(target_arch = "wasm32"))]
@@ -140,6 +145,10 @@ where
     pub async fn get_data_heads_len(&self) -> usize {
         let data = &mut self.data.lock().await;
         data.as_ref().unwrap().get_heads().len()
+    }
+
+    pub fn get_discovery_keys(&self) -> Vec<String> {
+        self.feedstore.feeds.keys().cloned().collect()
     }
 
     pub async fn connect_passive(

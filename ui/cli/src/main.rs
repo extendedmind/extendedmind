@@ -2,7 +2,7 @@ use async_std::channel::{bounded, Receiver, Sender};
 use async_std::task;
 use async_tungstenite::{async_std::connect_async, tungstenite::Message};
 use clap::Parser;
-use extendedmind_engine::{Bytes, ChannelWriter, Engine};
+use extendedmind_engine::{get_discovery_key, get_public_key, Bytes, ChannelWriter, Engine};
 use futures::prelude::*;
 use log::*;
 use std::io;
@@ -17,7 +17,12 @@ struct Opts {
 
 async fn run(url: &str, public_key: &str) -> Result<(), Box<dyn std::error::Error>> {
     let engine = Engine::new_disk(&PathBuf::from("/tmp"), true, Some(public_key)).await;
-    let (ws, _) = connect_async(format!("{}/demo", url)).await?;
+    let (ws, _) = connect_async(format!(
+        "{}/{}",
+        url,
+        get_discovery_key(get_public_key(&public_key))
+    ))
+    .await?;
 
     let (mut ws_writer, mut ws_reader) = ws.split();
     let (sender, mut receiver): (
