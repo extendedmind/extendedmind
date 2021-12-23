@@ -84,7 +84,7 @@ rust_library(
     deps = [
         ":ws_stream_wasm_build_script",
         "@raze__async_io_stream__0_3_3//:async_io_stream",
-        "@raze__futures__0_3_17//:futures",
+        "@raze__futures__0_3_19//:futures",
         "@raze__js_sys__0_3_55//:js_sys",
         "@raze__pharos__0_5_3//:pharos",
         "@raze__send_wrapper__0_5_0//:send_wrapper",

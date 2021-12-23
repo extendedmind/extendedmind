@@ -31,12 +31,10 @@ licenses([
 
 # Generated Targets
 
-rust_library(
-    name = "futures_io",
+rust_proc_macro(
+    name = "futures_macro",
     srcs = glob(["**/*.rs"]),
     crate_features = [
-        "default",
-        "std",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -48,9 +46,12 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "0.3.17",
+    version = "0.3.19",
 
     # buildifier: leave-alone
     deps = [
+        "@raze__proc_macro2__1_0_34//:proc_macro2",
+        "@raze__quote__1_0_10//:quote",
+        "@raze__syn__1_0_83//:syn",
     ],
 )

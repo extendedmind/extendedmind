@@ -86,6 +86,6 @@ rust_library(
         ":serde_json_build_script",
         "@raze__itoa__1_0_1//:itoa",
         "@raze__ryu__1_0_9//:ryu",
-        "@raze__serde__1_0_131//:serde",
+        "@raze__serde__1_0_132//:serde",
     ],
 )

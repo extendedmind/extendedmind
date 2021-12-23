@@ -61,7 +61,7 @@ rust_library(
         "@raze__automerge_backend__0_0_1//:automerge_backend",
         "@raze__automerge_frontend__0_1_0//:automerge_frontend",
         "@raze__automerge_protocol__0_1_0//:automerge_protocol",
-        "@raze__serde__1_0_131//:serde",
+        "@raze__serde__1_0_132//:serde",
         "@raze__serde_json__1_0_73//:serde_json",
         "@raze__thiserror__1_0_30//:thiserror",
         "@raze__uuid__0_8_2//:uuid",

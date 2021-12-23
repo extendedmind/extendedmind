@@ -65,7 +65,7 @@ rust_library(
         ): [
             "@raze__async_io__1_6_0//:async_io",
             "@raze__libc__0_2_112//:libc",
-            "@raze__signal_hook__0_3_12//:signal_hook",
+            "@raze__signal_hook__0_3_13//:signal_hook",
         ],
         "//conditions:default": [],
     }) + selects.with_or({

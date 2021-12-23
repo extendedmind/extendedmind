@@ -62,7 +62,7 @@ rust_library(
         "@raze__hmac__0_8_1//:hmac",
         "@raze__kv_log_macro__1_0_7//:kv_log_macro",
         "@raze__rand__0_7_3//:rand",
-        "@raze__serde__1_0_131//:serde",
+        "@raze__serde__1_0_132//:serde",
         "@raze__serde_json__1_0_73//:serde_json",
         "@raze__sha2__0_9_8//:sha2",
     ],

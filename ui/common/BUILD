@@ -16,6 +16,7 @@ deps = [
     "//third_party/cargo:log",
     "//third_party/cargo:console_error_panic_hook",
     "//third_party/cargo:console_log",
+    "//third_party/cargo:indexed_db_futures",
 ]
 
 proc_macro_deps = [

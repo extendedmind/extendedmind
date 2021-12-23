@@ -82,6 +82,6 @@ rust_library(
     # buildifier: leave-alone
     deps = [
         ":pharos_build_script",
-        "@raze__futures__0_3_17//:futures",
+        "@raze__futures__0_3_19//:futures",
     ],
 )

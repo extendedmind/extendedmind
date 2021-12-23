@@ -65,7 +65,7 @@ cargo_build_script(
         "cargo-raze",
         "manual",
     ],
-    version = "1.0.82",
+    version = "1.0.83",
     visibility = ["//visibility:private"],
     deps = [
     ],
@@ -101,7 +101,7 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "1.0.82",
+    version = "1.0.83",
 
     # buildifier: leave-alone
     deps = [
@@ -111,6 +111,8 @@ rust_library(
         "@raze__unicode_xid__0_2_2//:unicode_xid",
     ],
 )
+
+# Unsupported target "regression" with type "test" omitted
 
 # Unsupported target "test_asyncness" with type "test" omitted
 

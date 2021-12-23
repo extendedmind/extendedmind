@@ -26,48 +26,23 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT OR Apache-2.0"
+    "notice",  # Apache-2.0 from expression "Apache-2.0 OR MIT"
 ])
 
 # Generated Targets
-# buildifier: disable=out-of-order-load
-# buildifier: disable=load-on-top
-load(
-    "@rules_rust//cargo:cargo_build_script.bzl",
-    "cargo_build_script",
-)
 
-cargo_build_script(
-    name = "proc_macro_nested_build_script",
-    srcs = glob(["**/*.rs"]),
-    build_script_env = {
-    },
-    crate_features = [
-    ],
-    crate_root = "build.rs",
-    data = glob(["**"]),
-    edition = "2015",
-    rustc_flags = [
-        "--cap-lints=allow",
-    ],
-    tags = [
-        "cargo-raze",
-        "manual",
-    ],
-    version = "0.1.7",
-    visibility = ["//visibility:private"],
-    deps = [
-    ],
-)
+# Unsupported target "bench" with type "bench" omitted
 
 rust_library(
-    name = "proc_macro_nested",
+    name = "fastrand",
     srcs = glob(["**/*.rs"]),
+    aliases = {
+    },
     crate_features = [
     ],
     crate_root = "src/lib.rs",
     data = [],
-    edition = "2015",
+    edition = "2018",
     rustc_flags = [
         "--cap-lints=allow",
     ],
@@ -75,10 +50,19 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "0.1.7",
+    version = "1.6.0",
 
     # buildifier: leave-alone
     deps = [
-        ":proc_macro_nested_build_script",
-    ],
+    ] + selects.with_or({
+        # cfg(target_arch = "wasm32")
+        (
+            "@rules_rust//rust/platform:wasm32-unknown-unknown",
+        ): [
+            "@raze__instant__0_1_12//:instant",
+        ],
+        "//conditions:default": [],
+    }),
 )
+
+# Unsupported target "smoke" with type "test" omitted

@@ -56,7 +56,7 @@ rust_library(
     deps = [
         "@raze__async_task__4_0_3//:async_task",
         "@raze__concurrent_queue__1_2_2//:concurrent_queue",
-        "@raze__fastrand__1_5_0//:fastrand",
+        "@raze__fastrand__1_6_0//:fastrand",
         "@raze__futures_lite__1_12_0//:futures_lite",
         "@raze__once_cell__1_9_0//:once_cell",
         "@raze__slab__0_4_5//:slab",

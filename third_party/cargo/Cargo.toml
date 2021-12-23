@@ -43,6 +43,7 @@ ws_stream_wasm = "0.7.3" # See below two hacks to get #![doc = include_str!("../
 js-sys = "0.3.55"
 console_error_panic_hook = "0.1.7"
 console_log = "0.2.0"
+indexed_db_futures = "0.2.1"
 
 # Needed for log to build
 [package.metadata.raze.crates.value-bag.'1.0.0-alpha.8']

@@ -24,37 +24,6 @@ mod wasm {
     extern "C" {
         #[wasm_bindgen(catch)]
         fn triple(i: i32) -> Result<JsValue, JsValue>;
-
-        /// Write bytes at an offset to the backend.
-        #[wasm_bindgen(catch)]
-        pub async fn storage_write(id: &str, offset: u64, data: &[u8]) -> Result<(), JsValue>;
-
-        /// Read a sequence of bytes at an offset from the backend.
-        #[wasm_bindgen(catch)]
-        async fn storage_read(id: &str, offset: u64, length: u64) -> Result<JsValue, JsValue>;
-
-        /// Delete a sequence of bytes at an offset from the backend.
-        #[wasm_bindgen(catch)]
-        async fn storage_del(id: &str, offset: u64, length: u64) -> Result<(), JsValue>;
-
-        /// Resize the sequence of bytes, possibly discarding or zero-padding bytes
-        /// from the end.
-        #[wasm_bindgen(catch)]
-        async fn storage_truncate(id: &str, length: u64) -> Result<(), JsValue>;
-
-        /// Get the size of the storage in bytes.
-        #[wasm_bindgen(catch)]
-        async fn storage_len(id: &str) -> Result<JsValue, JsValue>;
-
-        /// Whether the storage is empty.
-        /// For some storage backends it may be cheaper to calculate whether the
-        /// storage is empty than to calculate the length.
-        #[wasm_bindgen(catch)]
-        async fn storage_is_empty(id: &str) -> Result<JsValue, JsValue>;
-
-        /// Flush buffered data on the underlying storage resource.
-        #[wasm_bindgen(catch)]
-        async fn storage_sync_all(id: &str) -> Result<(), JsValue>;
     }
 
     #[wasm_bindgen(js_name = "tripleFromJs")]
@@ -80,19 +49,8 @@ mod wasm {
         type Error = Box<dyn std::error::Error + Sync + Send>;
 
         async fn write(&mut self, offset: u64, data: &[u8]) -> Result<(), Self::Error> {
-            let data = data.to_vec();
-            info!("writing to offset {}, id {}", &offset, &self.id);
-            match storage_write(&self.id, offset, &data).await {
-                Ok(_) => {
-                    // We've changed the length of our file.
-                    let new_len = offset + (data.len() as u64);
-                    if new_len > self.length {
-                        self.length = new_len;
-                    }
-                    Ok(())
-                }
-                Err(err) => Err(err.as_string().unwrap().into()),
-            }
+            // TODO: Maybe use Alorel / rust-indexed-db to implement this directly?
+            Ok(())
         }
 
         async fn read(&mut self, offset: u64, length: u64) -> Result<Vec<u8>, Self::Error> {
@@ -105,13 +63,7 @@ mod wasm {
                 )
                 .into());
             }
-            match storage_read(&self.id, offset, length).await {
-                Ok(value) => {
-                    let value: Uint8Array = value.unchecked_into();
-                    Ok(value.to_vec())
-                }
-                Err(err) => Err(err.as_string().unwrap().into()),
-            }
+            Ok(vec![])
         }
 
         async fn read_to_writer(
@@ -124,10 +76,7 @@ mod wasm {
         }
 
         async fn del(&mut self, offset: u64, length: u64) -> Result<(), Self::Error> {
-            match storage_del(&self.id, offset, length).await {
-                Ok(()) => Ok(()),
-                Err(err) => Err(err.as_string().unwrap().into()),
-            }
+            Ok(())
         }
 
         async fn truncate(&mut self, length: u64) -> Result<(), Self::Error> {
@@ -204,7 +153,8 @@ mod wasm {
         .unwrap();
         debug!("...connection success");
         let (reader, writer) = ws_stream.split();
-        let engine = WasmEngine::new_proxy(public_key.as_str());
+        let engine = WasmEngine::new_proxy(public_key.as_str()).await;
+        // engine.connect_to_hub();
         Ok(())
     }
 }

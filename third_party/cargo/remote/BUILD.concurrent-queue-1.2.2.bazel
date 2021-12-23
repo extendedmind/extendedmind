@@ -50,7 +50,7 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__cache_padded__1_1_1//:cache_padded",
+        "@raze__cache_padded__1_2_0//:cache_padded",
     ],
 )
 

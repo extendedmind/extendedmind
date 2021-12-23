@@ -26,18 +26,20 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # Apache-2.0 from expression "Apache-2.0 OR MIT"
+    "notice",  # MIT from expression "MIT OR Apache-2.0"
 ])
 
 # Generated Targets
 
-rust_library(
-    name = "cache_padded",
+rust_proc_macro(
+    name = "clap_derive",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "default",
     ],
     crate_root = "src/lib.rs",
     data = [],
+    compile_data = glob(["README.md"]),
     edition = "2018",
     rustc_flags = [
         "--cap-lints=allow",
@@ -46,11 +48,14 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "1.1.1",
+    version = "3.0.0-rc.7",
 
     # buildifier: leave-alone
     deps = [
+        "@raze__heck__0_3_3//:heck",
+        "@raze__proc_macro2__1_0_34//:proc_macro2",
+        "@raze__proc_macro_error__1_0_4//:proc_macro_error",
+        "@raze__quote__1_0_10//:quote",
+        "@raze__syn__1_0_83//:syn",
     ],
 )
-
-# Unsupported target "padding" with type "test" omitted
