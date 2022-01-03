@@ -653,7 +653,6 @@ dependencies = [
  "console_log",
  "extendedmind_engine",
  "futures",
- "indexed_db_futures",
  "js-sys",
  "log",
  "wasm-bindgen",
@@ -979,20 +978,6 @@ dependencies = [
  "salsa20",
  "snow",
  "varinteger",
-]
-
-[[package]]
-name = "indexed_db_futures"
-version = "0.2.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e58caf85eb69adf94753e2308d1534c200d29fe3b1e4ba09263324fd864e023c"
-dependencies = [
- "cfg-if",
- "js-sys",
- "uuid",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "web-sys",
 ]
 
 [[package]]

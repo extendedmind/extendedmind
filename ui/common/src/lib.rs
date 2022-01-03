@@ -4,3 +4,5 @@ pub use extendedmind_engine::RandomAccessDisk;
 
 #[cfg(target_arch = "wasm32")]
 pub mod wasm;
+
+mod connect;

@@ -86,14 +86,14 @@ impl Engine<RandomAccessDisk> {
 
         // Create a hypercore
         let feed_dir = data_root_dir.join(PathBuf::from(format!("{}.db", is_initiator)));
-        let remote_feed = if let Some(public_key) = public_key {
+        let primary_feed = if let Some(public_key) = public_key {
             let storage = Storage::new_disk(&feed_dir, false).await.unwrap();
-            dbg!("Using given public key {}", &public_key);
+            dbg!("Disk: Using given public key {}", &public_key);
             let public_key = get_public_key(&public_key);
             Feed::builder(public_key, storage).build().await.unwrap()
         } else {
-            let remote_feed = Feed::open(&feed_dir).await.unwrap();
-            let public_key = hex::encode(remote_feed.public_key());
+            let primary_feed = Feed::open(&feed_dir).await.unwrap();
+            let public_key = hex::encode(primary_feed.public_key());
             let mut hub_key_file = std::fs::OpenOptions::new()
                 .create(true)
                 .write(true)
@@ -103,16 +103,16 @@ impl Engine<RandomAccessDisk> {
             hub_key_file.write_all(&public_key.as_bytes()).unwrap();
             hub_key_file.flush().unwrap();
             dbg!(
-                "Reading public key, init: {} value: {}",
+                "Disk: Reading public key, init: {} value: {}",
                 is_initiator,
                 public_key
             );
-            remote_feed
+            primary_feed
         };
 
         // Wrap it and add to the feed store.
-        let remote_feed_wrapper = FeedWrapper::from(remote_feed);
-        feedstore.add(remote_feed_wrapper);
+        let primary_feed_wrapper = FeedWrapper::from(primary_feed);
+        feedstore.add(primary_feed_wrapper);
 
         Engine {
             data: get_initial_data(),
@@ -123,11 +123,33 @@ impl Engine<RandomAccessDisk> {
 }
 
 impl Engine<RandomAccessMemory> {
-    pub fn new_memory() -> Engine<RandomAccessMemory> {
-        let feedstore: FeedStore<RandomAccessMemory> = FeedStore::new();
+    pub async fn new_memory(
+        is_initiator: bool,
+        public_key: Option<&str>,
+    ) -> Engine<RandomAccessMemory> {
+        let mut feedstore: FeedStore<RandomAccessMemory> = FeedStore::new();
+
+        let storage = Storage::new_memory().await.unwrap();
+        let primary_feed = if let Some(public_key) = public_key {
+            dbg!("Memory: Using given public key {}", &public_key);
+            let public_key = get_public_key(&public_key);
+            Feed::builder(public_key, storage).build().await.unwrap()
+        } else {
+            let primary_feed = Feed::with_storage(storage).await.unwrap();
+            let public_key = hex::encode(primary_feed.public_key());
+            dbg!(
+                "Memory: Reading public key, init: {} value: {}",
+                is_initiator,
+                public_key
+            );
+            primary_feed
+        };
+        let primary_feed_wrapper = FeedWrapper::from(primary_feed);
+        feedstore.add(primary_feed_wrapper);
+
         Engine {
-            data: get_initial_data(),
-            is_initiator: true,
+            data: Arc::new(Mutex::new(None)),
+            is_initiator,
             feedstore: Arc::new(feedstore),
         }
     }
@@ -144,7 +166,10 @@ where
 
     pub async fn get_data_heads_len(&self) -> usize {
         let data = &mut self.data.lock().await;
-        data.as_ref().unwrap().get_heads().len()
+        match data.as_ref() {
+            None => 0,
+            Some(data) => data.get_heads().len(),
+        }
     }
 
     pub fn get_discovery_keys(&self) -> Vec<String> {
@@ -219,6 +244,7 @@ mod tests {
 
     #[async_attributes::test]
     async fn test_get_data_heads_len() {
-        assert_eq!(1, Engine::new_memory().get_data_heads_len().await);
+        let engine = Engine::new_memory(true, None).await;
+        assert_eq!(0, engine.get_data_heads_len().await);
     }
 }
