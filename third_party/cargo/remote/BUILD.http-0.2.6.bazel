@@ -31,12 +31,20 @@ licenses([
 
 # Generated Targets
 
+# Unsupported target "header_map" with type "bench" omitted
+
+# Unsupported target "header_name" with type "bench" omitted
+
+# Unsupported target "header_value" with type "bench" omitted
+
+# Unsupported target "method" with type "bench" omitted
+
+# Unsupported target "uri" with type "bench" omitted
+
 rust_library(
-    name = "ppv_lite86",
+    name = "http",
     srcs = glob(["**/*.rs"]),
     crate_features = [
-        "simd",
-        "std",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -48,9 +56,18 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "0.2.15",
+    version = "0.2.6",
 
     # buildifier: leave-alone
     deps = [
+        "@raze__bytes__1_1_0//:bytes",
+        "@raze__fnv__1_0_7//:fnv",
+        "@raze__itoa__1_0_1//:itoa",
     ],
 )
+
+# Unsupported target "header_map" with type "test" omitted
+
+# Unsupported target "header_map_fuzz" with type "test" omitted
+
+# Unsupported target "status_code" with type "test" omitted

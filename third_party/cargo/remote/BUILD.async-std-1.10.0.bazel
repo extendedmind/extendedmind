@@ -126,7 +126,7 @@ rust_library(
         "@raze__memchr__2_4_1//:memchr",
         "@raze__num_cpus__1_13_1//:num_cpus",
         "@raze__once_cell__1_9_0//:once_cell",
-        "@raze__pin_project_lite__0_2_7//:pin_project_lite",
+        "@raze__pin_project_lite__0_2_8//:pin_project_lite",
         "@raze__pin_utils__0_1_0//:pin_utils",
         "@raze__slab__0_4_5//:slab",
     ] + selects.with_or({

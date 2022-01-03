@@ -75,7 +75,7 @@ rust_library(
         "@raze__futures_io__0_3_19//:futures_io",
         "@raze__futures_util__0_3_19//:futures_util",
         "@raze__log__0_4_14//:log",
-        "@raze__pin_project_lite__0_2_7//:pin_project_lite",
+        "@raze__pin_project_lite__0_2_8//:pin_project_lite",
         "@raze__tungstenite__0_13_0//:tungstenite",
     ],
 )

@@ -65,7 +65,7 @@ rust_library(
         "@raze__base64__0_13_0//:base64",
         "@raze__byteorder__1_4_3//:byteorder",
         "@raze__bytes__1_1_0//:bytes",
-        "@raze__http__0_2_5//:http",
+        "@raze__http__0_2_6//:http",
         "@raze__httparse__1_5_1//:httparse",
         "@raze__input_buffer__0_4_0//:input_buffer",
         "@raze__log__0_4_14//:log",
