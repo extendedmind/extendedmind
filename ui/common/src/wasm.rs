@@ -1,16 +1,10 @@
 mod wasm {
     use crate::connect::connect_active;
-    use anyhow::{anyhow, Error, Result};
-    use extendedmind_engine::{
-        get_discovery_key, get_public_key, AutomergeBackend, Engine, Feed, FeedStore, FeedWrapper,
-        RandomAccess, Storage, Store,
-    };
-    use futures::future::FutureExt;
+    use anyhow::Result;
+    use extendedmind_engine::{get_discovery_key, get_public_key, Engine};
     use futures::stream::StreamExt;
-    use js_sys::Uint8Array;
     use log::*;
-    use std::fmt::Debug;
-    use wasm_bindgen::{prelude::*, JsCast};
+    use wasm_bindgen::prelude::*;
     use wasm_bindgen_futures::spawn_local;
     use ws_stream_wasm::WsMeta;
 
