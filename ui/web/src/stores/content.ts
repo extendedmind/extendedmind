@@ -5,24 +5,28 @@ import { hubKey } from './hubKey';
 
 const { subscribe } = readable();
 
-const loadContent = async (storedHubKey: string): Object => {
-    window['triple'] = (a: number): number => {
-        return a * 3;
+const syncWithHub = async (storedHubKey: string, setContent: (newContent: Object) => void): void => {
+    window['updateContent'] = (numberFromWasm: number): Promise<void> => {
+        const newContent =  {
+            diary: `${Number(numberFromWasm)}`,
+        };
+        return new Promise((resolve) => {
+            setContent(newContent);
+            resolve();
+        });
     };
+
     const wasmExports = await init(wasm);
     await connectToHub(`${window.location.hostname}:8080`, storedHubKey);
-    return {
-        diary: '55 * 3 = ' + wasmExports.tripleFromJs(55),
-    };
+    // Not expected to actually return, but throw an error
 };
 
-export const content = readable(null, function start(set) {
+export const content = readable(null, function start(setContent: (newContent: Object) => void) {
     hubKey.subscribe((storedHubKey) => {
         if (storedHubKey) {
-            loadContent(storedHubKey)
-                .then(set)
+            syncWithHub(storedHubKey, setContent)
                 .catch((err) => {
-                    console.error('Failed to load content', err);
+                    console.error('Error polling', err);
                 });
         }
     });

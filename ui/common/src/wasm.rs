@@ -1,7 +1,8 @@
 mod wasm {
-    use crate::connect::connect_active;
+    use crate::connect::{connect_active, test, Message};
     use anyhow::Result;
     use extendedmind_engine::{get_discovery_key, get_public_key, Engine};
+    use futures::channel::mpsc;
     use futures::stream::StreamExt;
     use log::*;
     use wasm_bindgen::prelude::*;
@@ -9,19 +10,9 @@ mod wasm {
     use ws_stream_wasm::WsMeta;
 
     #[wasm_bindgen]
-    pub fn double(i: i32) -> i32 {
-        i * 2
-    }
-
-    #[wasm_bindgen]
     extern "C" {
-        #[wasm_bindgen(catch)]
-        fn triple(i: i32) -> Result<JsValue, JsValue>;
-    }
-
-    #[wasm_bindgen(js_name = "tripleFromJs")]
-    pub fn triple_from_js(i: i32) -> i32 {
-        unsafe { triple(i).unwrap().as_f64().unwrap().to_int_unchecked() }
+        #[wasm_bindgen(catch, js_name = "updateContent")]
+        async fn update_content(number_from_wasm: u64) -> Result<(), JsValue>;
     }
 
     #[wasm_bindgen(js_name = "connectToHub")]
@@ -32,6 +23,7 @@ mod wasm {
             "call: connect_to_hub, address: {}, public_key: {}",
             &address, &public_key
         );
+
         debug!("attempting to make websocket connection...");
         let (_ws_meta, ws_stream) = WsMeta::connect(
             format!(
@@ -46,13 +38,24 @@ mod wasm {
         debug!("...connection success, splitting stream...");
         let (reader, writer) = ws_stream.split();
         debug!("...split ready, creating engine...");
+        let engine = Engine::new_memory(true, Some(public_key.as_str())).await;
+        debug!("...engine created, connecting...");
 
+        let (msg_sender, mut msg_receiver) = mpsc::unbounded();
         spawn_local(async move {
-            let engine = Engine::new_memory(true, Some(public_key.as_str())).await;
-            debug!("...engine created, connecting...");
-            connect_active(engine).await;
+            connect_active(engine, msg_sender).await;
             debug!("...connected");
         });
+
+        // TODO: Eventually this would be a loop
+        // loop {
+        let event = msg_receiver.next().await.unwrap();
+        match event {
+            Message::ContentUpdated(number_from_wasm) => {
+                update_content(number_from_wasm).await;
+            }
+        }
+        // }
 
         Ok(())
     }
