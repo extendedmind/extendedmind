@@ -20,13 +20,13 @@ maven_install(
 )
 
 # OpenAPI
-RULES_OPEN_API_VERSION = "3778d76697ca1386b3263bd22f1b292c84dbd08f"
-RULES_OPEN_API_SHA256 = "9e2a7c3dcf23e170a24a7851223d36766eee6c8dc67266f5f193dab5027571cb"
+RULES_OPEN_API_VERSION = "86fa11d0a8a8188ceecb74b5674af3f7363701e8"
+RULES_OPEN_API_SHA256 = "73c98d5a8283bb70142b6fbb49a944752a677e1b11553790d4d9aee9e9950942"
 
 http_archive(
     name = "io_bazel_rules_openapi",
     strip_prefix = "rules_openapi-%s" % RULES_OPEN_API_VERSION,
-    url = "https://github.com/ttiurani/rules_openapi/archive/%s.tar.gz" % RULES_OPEN_API_VERSION,
+    url = "https://github.com/meetup/rules_openapi/archive/%s.tar.gz" % RULES_OPEN_API_VERSION,
     sha256 = RULES_OPEN_API_SHA256
 )
 
