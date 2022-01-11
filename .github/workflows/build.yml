@@ -5,6 +5,15 @@ jobs:
     name: Build and Test with Bazel
     runs-on: ubuntu-latest
     steps:
+      - name: Cache bazel
+        uses: actions/cache@v2
+        env:
+          cache-name: bazel-cache
+        with:
+          path: |
+            ~/.cache/bazelisk
+            ~/.cache/bazel
+          key: ${{ runner.os }}-${{ env.cache-name }}
       - name: Check out the repo
         uses: actions/checkout@v2
       - name: Run Bazel build
