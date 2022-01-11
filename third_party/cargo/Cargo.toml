@@ -37,7 +37,7 @@ hex = "0.4"
 reusable-box-future = "0.2.0"
 derivative = "2.2.0"
 # Wasm dependencies
-wasm-bindgen = "0.2.78"
+wasm-bindgen = "0.2.78" # See below for hack to get #![doc = include_str!("../README.md")] to work
 wasm-bindgen-futures = "0.4.28"
 ws_stream_wasm = "0.7.3" # See below two hacks to get #![doc = include_str!("../README.md")] to work
 js-sys = "0.3.55"
@@ -67,6 +67,10 @@ compile_data_attr = "glob([\"README.md\"])"
 [package.metadata.raze.crates.pharos.'0.5.3']
 compile_data_attr = "glob([\"README.md\"])"
 [package.metadata.raze.crates.async_io_stream.'0.3.3']
+compile_data_attr = "glob([\"README.md\"])"
+
+# Needed for wasm-bindgen to build
+[package.metadata.raze.crates.bumpalo.'3.9.1']
 compile_data_attr = "glob([\"README.md\"])"
 
 [package.metadata.raze]

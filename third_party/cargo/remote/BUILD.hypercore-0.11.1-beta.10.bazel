@@ -75,7 +75,7 @@ rust_library(
         "@raze__rand__0_7_3//:rand",
         "@raze__random_access_memory__2_0_0//:random_access_memory",
         "@raze__random_access_storage__4_0_0//:random_access_storage",
-        "@raze__sha2__0_9_8//:sha2",
+        "@raze__sha2__0_9_9//:sha2",
         "@raze__sleep_parser__0_8_0//:sleep_parser",
         "@raze__sparse_bitfield__0_11_0//:sparse_bitfield",
         "@raze__tree_index__0_6_1//:tree_index",

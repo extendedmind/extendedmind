@@ -149,7 +149,7 @@ rust_library(
     compile_data = glob(["README.md"]),
     edition = "2018",
     proc_macro_deps = [
-        "@raze__clap_derive__3_0_0//:clap_derive",
+        "@raze__clap_derive__3_0_6//:clap_derive",
     ],
     rustc_flags = [
         "--cap-lints=allow",
@@ -158,13 +158,13 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "3.0.0",
+    version = "3.0.6",
 
     # buildifier: leave-alone
     deps = [
         "@raze__atty__0_2_14//:atty",
         "@raze__bitflags__1_3_2//:bitflags",
-        "@raze__indexmap__1_7_0//:indexmap",
+        "@raze__indexmap__1_8_0//:indexmap",
         "@raze__lazy_static__1_4_0//:lazy_static",
         "@raze__os_str_bytes__6_0_0//:os_str_bytes",
         "@raze__strsim__0_10_0//:strsim",

@@ -64,7 +64,7 @@ rust_library(
         "@raze__ed25519__1_3_0//:ed25519",
         "@raze__rand__0_7_3//:rand",
         "@raze__serde__1_0_133//:serde",
-        "@raze__sha2__0_9_8//:sha2",
+        "@raze__sha2__0_9_9//:sha2",
         "@raze__zeroize__1_3_0//:zeroize",
     ],
 )

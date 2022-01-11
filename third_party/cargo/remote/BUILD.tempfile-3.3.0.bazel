@@ -31,22 +31,12 @@ licenses([
 
 # Generated Targets
 
-# Unsupported target "sha256" with type "bench" omitted
-
-# Unsupported target "sha512" with type "bench" omitted
-
-# Unsupported target "sha256sum" with type "example" omitted
-
-# Unsupported target "sha512sum" with type "example" omitted
-
 rust_library(
-    name = "sha2",
+    name = "tempfile",
     srcs = glob(["**/*.rs"]),
     aliases = {
     },
     crate_features = [
-        "default",
-        "std",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -58,26 +48,38 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "0.9.8",
+    version = "3.3.0",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__block_buffer__0_9_0//:block_buffer",
         "@raze__cfg_if__1_0_0//:cfg_if",
-        "@raze__digest__0_9_0//:digest",
-        "@raze__opaque_debug__0_3_0//:opaque_debug",
+        "@raze__fastrand__1_6_0//:fastrand",
+        "@raze__remove_dir_all__0_5_3//:remove_dir_all",
     ] + selects.with_or({
-        # cfg(any(target_arch = "aarch64", target_arch = "x86_64", target_arch = "x86"))
+        # cfg(any(unix, target_os = "wasi"))
         (
             "@rules_rust//rust/platform:x86_64-apple-darwin",
-            "@rules_rust//rust/platform:x86_64-pc-windows-msvc",
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
         ): [
-            "@raze__cpufeatures__0_2_1//:cpufeatures",
+            "@raze__libc__0_2_112//:libc",
+        ],
+        "//conditions:default": [],
+    }) + selects.with_or({
+        # cfg(windows)
+        (
+            "@rules_rust//rust/platform:x86_64-pc-windows-msvc",
+        ): [
+            "@raze__winapi__0_3_9//:winapi",
         ],
         "//conditions:default": [],
     }),
 )
 
-# Unsupported target "lib" with type "test" omitted
+# Unsupported target "namedtempfile" with type "test" omitted
+
+# Unsupported target "spooled" with type "test" omitted
+
+# Unsupported target "tempdir" with type "test" omitted
+
+# Unsupported target "tempfile" with type "test" omitted

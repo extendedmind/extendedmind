@@ -32,16 +32,15 @@ licenses([
 # Generated Targets
 
 rust_proc_macro(
-    name = "stdweb_internal_macros",
+    name = "clap_derive",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "default",
     ],
     crate_root = "src/lib.rs",
     data = [],
-    edition = "2015",
-    proc_macro_deps = [
-        "@raze__serde_derive__1_0_133//:serde_derive",
-    ],
+    compile_data = glob(["README.md"]),
+    edition = "2018",
     rustc_flags = [
         "--cap-lints=allow",
     ],
@@ -49,16 +48,14 @@ rust_proc_macro(
         "cargo-raze",
         "manual",
     ],
-    version = "0.2.9",
+    version = "3.0.6",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__base_x__0_2_8//:base_x",
+        "@raze__heck__0_4_0//:heck",
         "@raze__proc_macro2__1_0_36//:proc_macro2",
+        "@raze__proc_macro_error__1_0_4//:proc_macro_error",
         "@raze__quote__1_0_14//:quote",
-        "@raze__serde__1_0_133//:serde",
-        "@raze__serde_json__1_0_74//:serde_json",
-        "@raze__sha1__0_6_0//:sha1",
         "@raze__syn__1_0_85//:syn",
     ],
 )

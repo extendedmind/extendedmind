@@ -89,6 +89,6 @@ rust_library(
         "@raze__petgraph__0_5_1//:petgraph",
         "@raze__prost__0_6_1//:prost",
         "@raze__prost_types__0_6_1//:prost_types",
-        "@raze__tempfile__3_2_0//:tempfile",
+        "@raze__tempfile__3_3_0//:tempfile",
     ],
 )
