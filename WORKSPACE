@@ -92,4 +92,5 @@ npm_install(
     package_json = "//ui/web:package.json",
     package_lock_json = "//ui/web:package-lock.json",
     quiet = False,
+    symlink_node_modules = False,
 )
