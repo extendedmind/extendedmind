@@ -103,7 +103,7 @@ rust_library(
         "@raze__bytes__1_1_0//:bytes",
         "@raze__futures_lite__1_12_0//:futures_lite",
         "@raze__futures_timer__3_0_2//:futures_timer",
-        "@raze__getrandom__0_2_3//:getrandom",
+        "@raze__getrandom__0_2_4//:getrandom",
         "@raze__hex__0_4_3//:hex",
         "@raze__instant__0_1_12//:instant",
         "@raze__log__0_4_14//:log",

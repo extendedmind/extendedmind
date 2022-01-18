@@ -85,6 +85,15 @@ alias(
 )
 
 alias(
+    name = "capnp",
+    actual = "@raze__capnp__0_14_5//:capnp",
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+)
+
+alias(
     name = "chrono",
     actual = "@raze__chrono__0_4_19//:chrono",
     tags = [
@@ -95,7 +104,7 @@ alias(
 
 alias(
     name = "clap",
-    actual = "@raze__clap__3_0_6//:clap",
+    actual = "@raze__clap__3_0_7//:clap",
     tags = [
         "cargo-raze",
         "manual",
@@ -266,7 +275,7 @@ alias(
 
 alias(
     name = "serde_json",
-    actual = "@raze__serde_json__1_0_74//:serde_json",
+    actual = "@raze__serde_json__1_0_75//:serde_json",
     tags = [
         "cargo-raze",
         "manual",

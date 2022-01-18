@@ -38,16 +38,12 @@ load(
 )
 
 cargo_build_script(
-    name = "wasm_bindgen_build_script",
+    name = "serde_json_build_script",
     srcs = glob(["**/*.rs"]),
     build_script_env = {
     },
     crate_features = [
         "default",
-        "serde",
-        "serde-serialize",
-        "serde_json",
-        "spans",
         "std",
     ],
     crate_root = "build.rs",
@@ -60,29 +56,22 @@ cargo_build_script(
         "cargo-raze",
         "manual",
     ],
-    version = "0.2.78",
+    version = "1.0.75",
     visibility = ["//visibility:private"],
     deps = [
     ],
 )
 
 rust_library(
-    name = "wasm_bindgen",
+    name = "serde_json",
     srcs = glob(["**/*.rs"]),
     crate_features = [
         "default",
-        "serde",
-        "serde-serialize",
-        "serde_json",
-        "spans",
         "std",
     ],
     crate_root = "src/lib.rs",
     data = [],
     edition = "2018",
-    proc_macro_deps = [
-        "@raze__wasm_bindgen_macro__0_2_78//:wasm_bindgen_macro",
-    ],
     rustc_flags = [
         "--cap-lints=allow",
     ],
@@ -90,25 +79,13 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "0.2.78",
+    version = "1.0.75",
 
     # buildifier: leave-alone
     deps = [
-        ":wasm_bindgen_build_script",
-        "@raze__cfg_if__1_0_0//:cfg_if",
+        ":serde_json_build_script",
+        "@raze__itoa__1_0_1//:itoa",
+        "@raze__ryu__1_0_9//:ryu",
         "@raze__serde__1_0_133//:serde",
-        "@raze__serde_json__1_0_75//:serde_json",
     ],
 )
-
-# Unsupported target "headless" with type "test" omitted
-
-# Unsupported target "must_use" with type "test" omitted
-
-# Unsupported target "non_wasm" with type "test" omitted
-
-# Unsupported target "std-crate-no-std-dep" with type "test" omitted
-
-# Unsupported target "unwrap_throw" with type "test" omitted
-
-# Unsupported target "wasm" with type "test" omitted

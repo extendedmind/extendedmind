@@ -42,7 +42,7 @@ rust_library(
     data = [],
     edition = "2018",
     proc_macro_deps = [
-        "@raze__zeroize_derive__1_2_2//:zeroize_derive",
+        "@raze__zeroize_derive__1_3_1//:zeroize_derive",
     ],
     rustc_flags = [
         "--cap-lints=allow",

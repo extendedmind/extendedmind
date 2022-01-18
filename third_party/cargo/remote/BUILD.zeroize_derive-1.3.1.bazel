@@ -26,22 +26,19 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT OR Apache-2.0"
+    "notice",  # Apache-2.0 from expression "Apache-2.0 OR MIT"
 ])
 
 # Generated Targets
 
 rust_proc_macro(
-    name = "stdweb_internal_macros",
+    name = "zeroize_derive",
     srcs = glob(["**/*.rs"]),
     crate_features = [
     ],
     crate_root = "src/lib.rs",
     data = [],
-    edition = "2015",
-    proc_macro_deps = [
-        "@raze__serde_derive__1_0_133//:serde_derive",
-    ],
+    edition = "2018",
     rustc_flags = [
         "--cap-lints=allow",
     ],
@@ -49,16 +46,13 @@ rust_proc_macro(
         "cargo-raze",
         "manual",
     ],
-    version = "0.2.9",
+    version = "1.3.1",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__base_x__0_2_8//:base_x",
         "@raze__proc_macro2__1_0_36//:proc_macro2",
         "@raze__quote__1_0_14//:quote",
-        "@raze__serde__1_0_133//:serde",
-        "@raze__serde_json__1_0_75//:serde_json",
-        "@raze__sha1__0_6_1//:sha1",
         "@raze__syn__1_0_85//:syn",
+        "@raze__synstructure__0_12_6//:synstructure",
     ],
 )
