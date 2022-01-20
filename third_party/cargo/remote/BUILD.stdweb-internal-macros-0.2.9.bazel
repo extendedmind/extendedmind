@@ -59,6 +59,6 @@ rust_proc_macro(
         "@raze__serde__1_0_133//:serde",
         "@raze__serde_json__1_0_75//:serde_json",
         "@raze__sha1__0_6_1//:sha1",
-        "@raze__syn__1_0_85//:syn",
+        "@raze__syn__1_0_86//:syn",
     ],
 )

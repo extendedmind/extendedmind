@@ -8,9 +8,6 @@ version = "0.0.0"
 path = "fake_lib.rs"
 
 [dependencies]
-serde = "1.0.127"
-serde_derive = "1.0.127"
-serde_json = "1.0.66"
 automerge = { git = "https://github.com/automerge/automerge-rs.git", rev = "e72571962b51c2f0726fb534890ef3b4f7c74dfc" }
 duct = "=0.13.4"
 hypercore = { git = "https://github.com/ttiurani/hypercore", rev = "f9cd0fcf190ff892529678e9249197f0b14969d1" }
@@ -39,7 +36,8 @@ derivative = "2.2.0"
 capnp = "0.14.5"
 smol_str = "0.1.18"
 # Wasm dependencies
-wasm-bindgen = "0.2.78" # See below for hack to get #![doc = include_str!("../README.md")] to work
+# NOTE: This version needs to match that of rules_rust
+wasm-bindgen = "=0.2.78" # See below for hack to get #![doc = include_str!("../README.md")] to work
 wasm-bindgen-futures = "0.4.28"
 ws_stream_wasm = "0.7.3" # See below two hacks to get #![doc = include_str!("../README.md")] to work
 js-sys = "0.3.55"

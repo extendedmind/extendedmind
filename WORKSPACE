@@ -1,24 +1,5 @@
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-# Maven
-RULES_JVM_EXTERNAL_TAG = "3.3"
-RULES_JVM_EXTERNAL_SHA = "d85951a92c0908c80bd8551002d66cb23c3434409c814179c0ff026b53544dab"
-http_archive(
-    name = "rules_jvm_external",
-    strip_prefix = "rules_jvm_external-%s" % RULES_JVM_EXTERNAL_TAG,
-    sha256 = RULES_JVM_EXTERNAL_SHA,
-    url = "https://github.com/bazelbuild/rules_jvm_external/archive/%s.zip" % RULES_JVM_EXTERNAL_TAG,
-)
-load("@rules_jvm_external//:defs.bzl", "maven_install")
-maven_install(
-    artifacts = [
-        "org.openapitools:openapi-generator-cli:4.3.1",
-    ],
-    repositories = [
-        "https://repo1.maven.org/maven2",
-    ],
-)
-
 # Cap'n Proto
 RULES_CAPNPROTO_VERSION = "b02150cc8d81cda29195f93dafdc4d49befad19f"
 RULES_CAPNPROTO_SHA256 = "98aab9cfc26dd648a66d82a1cfc1befd0f3067ec96d0ab18296b29a5f6288788"
@@ -40,24 +21,6 @@ load(
 capnp_dependencies()
 capnp_toolchain()
 capnp_rust_toolchain()
-
-# OpenAPI
-RULES_OPEN_API_VERSION = "86fa11d0a8a8188ceecb74b5674af3f7363701e8"
-RULES_OPEN_API_SHA256 = "73c98d5a8283bb70142b6fbb49a944752a677e1b11553790d4d9aee9e9950942"
-
-http_archive(
-    name = "io_bazel_rules_openapi",
-    strip_prefix = "rules_openapi-%s" % RULES_OPEN_API_VERSION,
-    url = "https://github.com/meetup/rules_openapi/archive/%s.tar.gz" % RULES_OPEN_API_VERSION,
-    sha256 = RULES_OPEN_API_SHA256
-)
-
-load("@io_bazel_rules_openapi//openapi:openapi.bzl", "openapi_repositories")
-openapi_repositories(
-    codegen_cli_provider = "openapi",
-    codegen_cli_version = "4.3.1",
-    codegen_cli_sha256 = "f438cd16bc1db28d3363e314cefb59384f252361db9cb1a04a322e7eb5b331c1",
-)
 
 # Rust
 http_archive(
