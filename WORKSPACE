@@ -62,8 +62,6 @@ load("@cargo_raze//:transitive_deps.bzl", "cargo_raze_transitive_deps")
 cargo_raze_transitive_deps()
 
 # Node/Javascript/Typescript/Svelte/Esbuild
-
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 http_archive(
     name = "build_bazel_rules_nodejs",
     sha256 = "d63ecec7192394f5cc4ad95a115f8a6c9de55c60d56c1f08da79c306355e4654",
