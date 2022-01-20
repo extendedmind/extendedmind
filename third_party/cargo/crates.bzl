@@ -669,12 +669,12 @@ def raze_fetch_remote_crates():
 
     maybe(
         http_archive,
-        name = "raze__clap__3_0_7",
-        url = "https://crates.io/api/v1/crates/clap/3.0.7/download",
+        name = "raze__clap__3_0_9",
+        url = "https://crates.io/api/v1/crates/clap/3.0.9/download",
         type = "tar.gz",
-        sha256 = "12e8611f9ae4e068fa3e56931fded356ff745e70987ff76924a6e0ab1c8ef2e3",
-        strip_prefix = "clap-3.0.7",
-        build_file = Label("//third_party/cargo/remote:BUILD.clap-3.0.7.bazel"),
+        sha256 = "8c506244a13c87262f84bf16369740d0b7c3850901b6a642aa41b031a710c473",
+        strip_prefix = "clap-3.0.9",
+        build_file = Label("//third_party/cargo/remote:BUILD.clap-3.0.9.bazel"),
     )
 
     maybe(
@@ -1443,16 +1443,6 @@ def raze_fetch_remote_crates():
         sha256 = "284f18f85651fe11e8a991b2adb42cb078325c996ed026d994719efcfca1d54b",
         strip_prefix = "itertools-0.9.0",
         build_file = Label("//third_party/cargo/remote:BUILD.itertools-0.9.0.bazel"),
-    )
-
-    maybe(
-        http_archive,
-        name = "raze__itoa__0_4_8",
-        url = "https://crates.io/api/v1/crates/itoa/0.4.8/download",
-        type = "tar.gz",
-        sha256 = "b71991ff56294aa922b450139ee08b3bfc70982c6b2c7562771375cf73542dd4",
-        strip_prefix = "itoa-0.4.8",
-        build_file = Label("//third_party/cargo/remote:BUILD.itoa-0.4.8.bazel"),
     )
 
     maybe(
@@ -2314,12 +2304,12 @@ def raze_fetch_remote_crates():
 
     maybe(
         http_archive,
-        name = "raze__serde_urlencoded__0_7_0",
-        url = "https://crates.io/api/v1/crates/serde_urlencoded/0.7.0/download",
+        name = "raze__serde_urlencoded__0_7_1",
+        url = "https://crates.io/api/v1/crates/serde_urlencoded/0.7.1/download",
         type = "tar.gz",
-        sha256 = "edfa57a7f8d9c1d260a549e7224100f6c43d43f9103e06dd8b4095a9b2b43ce9",
-        strip_prefix = "serde_urlencoded-0.7.0",
-        build_file = Label("//third_party/cargo/remote:BUILD.serde_urlencoded-0.7.0.bazel"),
+        sha256 = "d3491c14715ca2294c4d6a88f15e84739788c1d030eed8c110436aafdaa2f3fd",
+        strip_prefix = "serde_urlencoded-0.7.1",
+        build_file = Label("//third_party/cargo/remote:BUILD.serde_urlencoded-0.7.1.bazel"),
     )
 
     maybe(

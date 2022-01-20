@@ -104,7 +104,7 @@ alias(
 
 alias(
     name = "clap",
-    actual = "@raze__clap__3_0_7//:clap",
+    actual = "@raze__clap__3_0_9//:clap",
     tags = [
         "cargo-raze",
         "manual",
@@ -276,6 +276,15 @@ alias(
 alias(
     name = "serde_json",
     actual = "@raze__serde_json__1_0_75//:serde_json",
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+)
+
+alias(
+    name = "smol_str",
+    actual = "@raze__smol_str__0_1_21//:smol_str",
     tags = [
         "cargo-raze",
         "manual",

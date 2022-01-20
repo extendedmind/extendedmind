@@ -104,7 +104,7 @@ rust_library(
         "@raze__serde__1_0_133//:serde",
         "@raze__serde_json__1_0_75//:serde_json",
         "@raze__serde_qs__0_8_5//:serde_qs",
-        "@raze__serde_urlencoded__0_7_0//:serde_urlencoded",
+        "@raze__serde_urlencoded__0_7_1//:serde_urlencoded",
         "@raze__url__2_2_2//:url",
     ],
 )

@@ -19,6 +19,28 @@ maven_install(
     ],
 )
 
+# Cap'n Proto
+RULES_CAPNPROTO_VERSION = "b02150cc8d81cda29195f93dafdc4d49befad19f"
+RULES_CAPNPROTO_SHA256 = "98aab9cfc26dd648a66d82a1cfc1befd0f3067ec96d0ab18296b29a5f6288788"
+
+http_archive(
+    name = "rules_capnproto",
+    strip_prefix = "rules_capnproto-%s" % RULES_CAPNPROTO_VERSION,
+    url = "https://github.com/ttiurani/rules_capnproto/archive/%s.tar.gz" % RULES_CAPNPROTO_VERSION,
+    sha256 = RULES_CAPNPROTO_SHA256,
+)
+
+load(
+    "@rules_capnproto//capnp:repositories.bzl",
+    "capnp_dependencies",
+    "capnp_toolchain",
+    "capnp_rust_toolchain",
+)
+
+capnp_dependencies()
+capnp_toolchain()
+capnp_rust_toolchain()
+
 # OpenAPI
 RULES_OPEN_API_VERSION = "86fa11d0a8a8188ceecb74b5674af3f7363701e8"
 RULES_OPEN_API_SHA256 = "73c98d5a8283bb70142b6fbb49a944752a677e1b11553790d4d9aee9e9950942"
@@ -40,11 +62,11 @@ openapi_repositories(
 # Rust
 http_archive(
     name = "rules_rust",
-    sha256 = "59ffb4b9d26525e1ed2cfb45eb0253bbf3b1d8974cda58f93a14183c47d28b3c",
-    strip_prefix = "rules_rust-332542944e0c444e689ab011955df462f8f1f2b5",
+    sha256 = "257d08303b2814ff29f11d1d4f2ed9dff39d5fa9f7362dc802faa090875ea5d9",
+    strip_prefix = "rules_rust-fd436df9e2d4ac1b234ca5e969e34a4cb5891910",
     urls = [
-        # Master branch as of 2021-11-10
-        "https://github.com/bazelbuild/rules_rust/archive/332542944e0c444e689ab011955df462f8f1f2b5.tar.gz",
+        # Master branch as of 2022-01-18
+        "https://github.com/bazelbuild/rules_rust/archive/fd436df9e2d4ac1b234ca5e969e34a4cb5891910.tar.gz",
     ],
 )
 load("@rules_rust//rust:repositories.bzl", "rust_repositories")

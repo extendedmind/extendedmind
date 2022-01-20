@@ -11,7 +11,6 @@ authors = ["Timo Tiuraniemi <timo.tiuraniemi@iki.fi>"]
 [dependencies]
 extendedmind_schema_rust = { path = "../schema" }
 automerge = { git = "https://github.com/automerge/automerge-rs.git", rev = "e72571962b51c2f0726fb534890ef3b4f7c74dfc" }
-serde_json = "1.0.59"
 bytes = "0.5.0"
 async-std = "1.9.0"
 async-attributes = "1.1.2"
@@ -25,6 +24,7 @@ anyhow = "1.0.28"
 log = "0.4.14"
 reusable-box-future = "0.2.0"
 derivative = "2.2.0"
+smol_str = "0.1.18"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 random-access-disk = { git = "https://github.com/ttiurani/random-access-disk", rev = "6b17771d174722bff442dba9aaf633aae4f3e40f" }

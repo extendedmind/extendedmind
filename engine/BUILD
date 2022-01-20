@@ -8,7 +8,6 @@ rust_library(
     deps = [
         "//schema:extendedmind_schema_rust",
         "//third_party/cargo:automerge",
-        "//third_party/cargo:serde_json",
         "//third_party/cargo:hypercore",
         "//third_party/cargo:hypercore_protocol",
         "//third_party/cargo:async_std",
@@ -20,6 +19,7 @@ rust_library(
         "//third_party/cargo:anyhow",
         "//third_party/cargo:log",
         "//third_party/cargo:reusable_box_future",
+        "//third_party/cargo:smol_str",
     ] + selects.with_or({
         (
             "@rules_rust//rust/platform:wasm32-unknown-unknown",

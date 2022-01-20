@@ -1,5 +1,5 @@
 [lib]
-path = "target/src/lib.rs"
+path = "src/lib.rs"
 
 [package]
 name = "extendedmind_schema_rust"
@@ -7,8 +7,10 @@ version = "0.1.0"
 edition = "2018"
 licence = "AGPL-3.0-only"
 authors = ["Timo Tiuraniemi <timo.tiuraniemi@iki.fi>"]
+build = "build.rs"
 
 [dependencies]
-serde = "1.0.116"
-serde_derive = "1.0.116"
-serde_json = "1.0.59"
+capnp = "0.14.5"
+
+[build-dependencies]
+capnpc = "0.14.4"
