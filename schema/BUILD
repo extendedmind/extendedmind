@@ -3,6 +3,7 @@ package(default_visibility = ["//visibility:public"])
 load("@rules_rust//rust:defs.bzl", "rust_library")
 load("@rules_capnproto//capnp:capnp_library.bzl", "capnp_library")
 load("@rules_capnproto//capnp:rust_capnp_sources.bzl", "rust_capnp_sources")
+load("@rules_capnproto//capnp:ts_capnp_sources.bzl", "ts_capnp_sources")
 
 capnp_library(
     name = "extendedmind_schema_data_capnp",
@@ -24,4 +25,10 @@ rust_library(
     name = "extendedmind_schema_rust",
     srcs = [":extendedmind_schema_capnp_rust_sources"],
     deps = ["//third_party/cargo:capnp"],
+)
+
+ts_capnp_sources(
+    name = "extendedmind_schema_capnp_ts_sources",
+    visibility = ["//visibility:public"],
+    deps = [":extendedmind_schema_data_capnp"],
 )

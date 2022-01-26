@@ -1,8 +1,32 @@
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
+# Node/Javascript/Typescript/Svelte/Esbuild
+http_archive(
+    name = "build_bazel_rules_nodejs",
+    sha256 = "f690430f4d4cc403b5c90d0f0b21842183b56b732fff96cfe6555fe73189906a",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/5.0.1/rules_nodejs-5.0.1.tar.gz"],
+)
+load("@build_bazel_rules_nodejs//:repositories.bzl", "build_bazel_rules_nodejs_dependencies")
+build_bazel_rules_nodejs_dependencies()
+load("@rules_nodejs//nodejs:repositories.bzl", "nodejs_register_toolchains")
+
+nodejs_register_toolchains(
+    name = "nodejs"
+)
+
+load("@build_bazel_rules_nodejs//:index.bzl", "npm_install", "node_repositories")
+
+npm_install(
+    name = "npm",
+    package_json = "//ui/web:package.json",
+    package_lock_json = "//ui/web:package-lock.json",
+    quiet = False,
+    symlink_node_modules = False,
+)
+
 # Cap'n Proto
-RULES_CAPNPROTO_VERSION = "b02150cc8d81cda29195f93dafdc4d49befad19f"
-RULES_CAPNPROTO_SHA256 = "98aab9cfc26dd648a66d82a1cfc1befd0f3067ec96d0ab18296b29a5f6288788"
+RULES_CAPNPROTO_VERSION = "2ac5f766ff17fc15bf066f92bbe9e372e5226b45"
+RULES_CAPNPROTO_SHA256 = "2d63ef098d8a004367ae6b2211490c793afa435f095d1be6495d57778c938866"
 
 http_archive(
     name = "rules_capnproto",
@@ -16,11 +40,13 @@ load(
     "capnp_dependencies",
     "capnp_toolchain",
     "capnp_rust_toolchain",
+    "capnp_ts_toolchain",
 )
 
 capnp_dependencies()
 capnp_toolchain()
 capnp_rust_toolchain()
+capnp_ts_toolchain()
 
 # Rust
 http_archive(
@@ -51,29 +77,11 @@ http_archive(
     sha256 = CARGO_RAZE_SHA256
 )
 # # Example on using local version of cargo raze for hacking:
-# new_local_repository(
+# local_repository(
 #     name = "cargo_raze",
-#     path = "[path to cargo raze]/cargo-raze",
-#     build_file = "[path to cargo raze]/cargo-raze/BUILD.bazel",
+#     path = "[path to]/cargo-raze",
 # )
 load("@cargo_raze//:repositories.bzl", "cargo_raze_repositories")
 cargo_raze_repositories()
 load("@cargo_raze//:transitive_deps.bzl", "cargo_raze_transitive_deps")
 cargo_raze_transitive_deps()
-
-# Node/Javascript/Typescript/Svelte/Esbuild
-http_archive(
-    name = "build_bazel_rules_nodejs",
-    sha256 = "d63ecec7192394f5cc4ad95a115f8a6c9de55c60d56c1f08da79c306355e4654",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/4.6.1/rules_nodejs-4.6.1.tar.gz"],
-)
-
-load("@build_bazel_rules_nodejs//:index.bzl", "npm_install")
-
-npm_install(
-    name = "npm",
-    package_json = "//ui/web:package.json",
-    package_lock_json = "//ui/web:package-lock.json",
-    quiet = False,
-    symlink_node_modules = False,
-)
