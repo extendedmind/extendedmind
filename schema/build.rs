@@ -3,5 +3,6 @@ fn main() {
         .src_prefix("src")
         .file("src/data.capnp")
         .file("src/wire_protocol.capnp")
+        .file("src/ui_protocol.capnp")
         .run().expect("schema compiler command");
 }

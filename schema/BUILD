@@ -4,15 +4,18 @@ load("@rules_rust//rust:defs.bzl", "rust_library")
 load("@rules_capnproto//capnp:capnp_library.bzl", "capnp_library")
 load("@rules_capnproto//capnp:rust_capnp_sources.bzl", "rust_capnp_sources")
 load("@rules_capnproto//capnp:ts_capnp_sources.bzl", "ts_capnp_sources")
+load("@rules_capnproto//capnp:java_capnp_sources.bzl", "java_capnp_sources")
 
 capnp_library(
-    name = "extendedmind_schema_data_capnp",
-    srcs = ["src/data.capnp"],
+    name = "extendedmind_schema_ui_capnp",
+    srcs = ["src/data.capnp", "src/ui_protocol.capnp"],
+    deps = ["@capnproto_java//:capnpc_java_capnp"]
 )
 
 capnp_library(
     name = "extendedmind_schema_capnp",
-    srcs = ["src/data.capnp", "src/wire_protocol.capnp"],
+    srcs = ["src/data.capnp", "src/wire_protocol.capnp", "src/ui_protocol.capnp"],
+    deps = ["@capnproto_java//:capnpc_java_capnp"]
 )
 
 rust_capnp_sources(
@@ -30,5 +33,11 @@ rust_library(
 ts_capnp_sources(
     name = "extendedmind_schema_capnp_ts_sources",
     visibility = ["//visibility:public"],
-    deps = [":extendedmind_schema_data_capnp"],
+    deps = [":extendedmind_schema_ui_capnp"],
+)
+
+java_capnp_sources(
+    name = "extendedmind_schema_capnp_java_sources",
+    visibility = ["//visibility:public"],
+    deps = [":extendedmind_schema_ui_capnp"],
 )

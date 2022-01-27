@@ -25,8 +25,8 @@ npm_install(
 )
 
 # Cap'n Proto
-RULES_CAPNPROTO_VERSION = "2ac5f766ff17fc15bf066f92bbe9e372e5226b45"
-RULES_CAPNPROTO_SHA256 = "2d63ef098d8a004367ae6b2211490c793afa435f095d1be6495d57778c938866"
+RULES_CAPNPROTO_VERSION = "efc991d58a54e1173eacf9702e3da9bd272f712c"
+RULES_CAPNPROTO_SHA256 = "2997a42b1cdb9c32a7b7f72030bfe4b3634e2c59e4a64ecdd8d081bfcf6d64c5"
 
 http_archive(
     name = "rules_capnproto",
@@ -41,12 +41,14 @@ load(
     "capnp_toolchain",
     "capnp_rust_toolchain",
     "capnp_ts_toolchain",
+    "capnp_java_toolchain"
 )
 
 capnp_dependencies()
 capnp_toolchain()
 capnp_rust_toolchain()
 capnp_ts_toolchain()
+capnp_java_toolchain()
 
 # Rust
 http_archive(
