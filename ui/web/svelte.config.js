@@ -55,31 +55,36 @@ function prepareExternalDeps() {
     }
     const schemaFiles = fs.readdirSync(schemaDirectory);
     const copySchemaFiles = [];
-    schemaFiles.forEach(schemaFile => {
-        if (schemaFile.endsWith(".js")) {
+    schemaFiles.forEach((schemaFile) => {
+        if (schemaFile.endsWith('.js')) {
             copySchemaFiles.push({
                 input: schemaFile,
-                output: schemaFile.substring(0, schemaFile.length - 3) + ".cjs"
+                output: schemaFile.substring(0, schemaFile.length - 3) + '.cjs',
             });
-        } else if (schemaFile.endsWith(".d.ts")) {
+        } else if (schemaFile.endsWith('.d.ts')) {
             copySchemaFiles.push({
                 input: schemaFile,
-                output: schemaFile
+                output: schemaFile,
             });
         }
     });
 
-    copySchemaFiles.forEach(copySchemaFile => {
-        const inputSchemaFilePath = fs.realpathSync(path.join(schemaDirectory, copySchemaFile.input));
-        let processedContent = fs.readFileSync(inputSchemaFilePath, { encoding: 'utf8', flag: 'r' });
-        copySchemaFiles.forEach(replaceCopySchemaFile => {
-            // One replace should be enough as cross-referenced files are once in the import
-            processedContent = processedContent.replace(replaceCopySchemaFile.input, replaceCopySchemaFile.output);
-        });
-        fs.writeFileSync(
-            path.join(schemaOutputDirectory, copySchemaFile.output),
-            processedContent,
+    copySchemaFiles.forEach((copySchemaFile) => {
+        const inputSchemaFilePath = fs.realpathSync(
+            path.join(schemaDirectory, copySchemaFile.input),
         );
+        let processedContent = fs.readFileSync(inputSchemaFilePath, {
+            encoding: 'utf8',
+            flag: 'r',
+        });
+        copySchemaFiles.forEach((replaceCopySchemaFile) => {
+            // One replace should be enough as cross-referenced files are once in the import
+            processedContent = processedContent.replace(
+                replaceCopySchemaFile.input,
+                replaceCopySchemaFile.output,
+            );
+        });
+        fs.writeFileSync(path.join(schemaOutputDirectory, copySchemaFile.output), processedContent);
     });
 
     // Copy WASM files

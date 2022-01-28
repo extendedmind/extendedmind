@@ -1,4 +1,4 @@
-import * as capnp from "capnp-ts";
+import * as capnp from 'capnp-ts';
 import { UiProtocol } from '../lib/schema/ui_protocol.capnp';
 import wasm from '../lib/ui-common/extendedmind_ui_common_wasm_bg.wasm';
 import init, { connectToHub } from '../lib/ui-common/extendedmind_ui_common_wasm';
@@ -8,13 +8,16 @@ import { hubKey } from './hubKey';
 const { subscribe } = readable();
 
 const loadUiProtocol = (buffer: ArrayBuffer): UiProtocol => {
-  const message = new capnp.Message(buffer);
-  return message.getRoot(UiProtocol);
-}
+    const message = new capnp.Message(buffer);
+    return message.getRoot(UiProtocol);
+};
 
-const syncWithHub = async (storedHubKey: string, setContent: (newContent: Object) => void): void => {
+const syncWithHub = async (
+    storedHubKey: string,
+    setContent: (newContent: Object) => void,
+): void => {
     window['updateContent'] = (numberFromWasm: number): Promise<void> => {
-        const newContent =  {
+        const newContent = {
             diary: `${Number(numberFromWasm)}`,
         };
         return new Promise((resolve) => {
@@ -31,10 +34,9 @@ const syncWithHub = async (storedHubKey: string, setContent: (newContent: Object
 export const content = readable(null, function start(setContent: (newContent: Object) => void) {
     hubKey.subscribe((storedHubKey) => {
         if (storedHubKey) {
-            syncWithHub(storedHubKey, setContent)
-                .catch((err) => {
-                    console.error('Error polling', err);
-                });
+            syncWithHub(storedHubKey, setContent).catch((err) => {
+                console.error('Error polling', err);
+            });
         }
     });
     return function stop() {};
