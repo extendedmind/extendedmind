@@ -18,16 +18,20 @@ svelte_kit(
     chdir = "ui/web",
     args = [
         "build",
-        # This is a terrible hack: Sveltekit ignores everything after "--, but they can still be
-        # found via process.argv in svelte.config.js.
+        # This is a terrible hack to find Bazel-generated code using the @D variable: Sveltekit
+        # ignores everything after "--, but they can still be found via process.argv in
+        # svelte.config.js.
         "--",
         "--out-dir",
         "../../$(@D)/dist/extendedmind",
+        "--schema-dir",
+        "../../$(@D)/../../schema/src",
         "--wasm-dir",
         "../../$(@D)/../common",
     ],
     data = [
         ":conf",
+        "//schema:extendedmind_schema_capnp_ts_sources",
         "//ui/common:extendedmind_ui_common_wasm",
         "//ui/web/src",
         "//ui/web/static",
@@ -39,6 +43,7 @@ svelte_kit(
         "@npm//svelte",
         "@npm//svelte-check",
         "@npm//svelte-preprocess",
+        "@npm//capnp-ts",
     ],
 )
 

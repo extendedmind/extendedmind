@@ -42,7 +42,47 @@ function workAroundSvelteKitIssue1896(jsFileContent) {
     return modifiedJsFileContent;
 }
 
-function prepareUiCommon() {
+function prepareExternalDeps() {
+    // Copy schema files
+    const schemaDirectory = getExtraArg(
+        '--schema-dir',
+        true,
+        '../../bazel-out/darwin-fastbuild/bin/schema/src',
+    );
+    const schemaOutputDirectory = path.join('.', 'src/lib/schema');
+    if (!fs.existsSync(schemaOutputDirectory)) {
+        fs.mkdirSync(schemaOutputDirectory);
+    }
+    const schemaFiles = fs.readdirSync(schemaDirectory);
+    const copySchemaFiles = [];
+    schemaFiles.forEach(schemaFile => {
+        if (schemaFile.endsWith(".js")) {
+            copySchemaFiles.push({
+                input: schemaFile,
+                output: schemaFile.substring(0, schemaFile.length - 3) + ".cjs"
+            });
+        } else if (schemaFile.endsWith(".d.ts")) {
+            copySchemaFiles.push({
+                input: schemaFile,
+                output: schemaFile
+            });
+        }
+    });
+
+    copySchemaFiles.forEach(copySchemaFile => {
+        const inputSchemaFilePath = fs.realpathSync(path.join(schemaDirectory, copySchemaFile.input));
+        let processedContent = fs.readFileSync(inputSchemaFilePath, { encoding: 'utf8', flag: 'r' });
+        copySchemaFiles.forEach(replaceCopySchemaFile => {
+            // One replace should be enough as cross-referenced files are once in the import
+            processedContent = processedContent.replace(replaceCopySchemaFile.input, replaceCopySchemaFile.output);
+        });
+        fs.writeFileSync(
+            path.join(schemaOutputDirectory, copySchemaFile.output),
+            processedContent,
+        );
+    });
+
+    // Copy WASM files
     const wasmDirectory = getExtraArg(
         '--wasm-dir',
         true,
@@ -52,27 +92,22 @@ function prepareUiCommon() {
     const uiCommonWasmFileName = 'extendedmind_ui_common_wasm_bg.wasm';
     const uiCommonJsFileName = 'extendedmind_ui_common_wasm.js';
     const uiCommonTsFileName = 'extendedmind_ui_common_wasm.d.ts';
-
     if (!fs.existsSync(wasmOutputDirectory)) {
         fs.mkdirSync(wasmOutputDirectory);
     }
-
     const uiCommonWasmFilePath = fs.realpathSync(path.join(wasmDirectory, uiCommonWasmFileName));
     const uiCommonJsFilePath = fs.realpathSync(path.join(wasmDirectory, uiCommonJsFileName));
     const uiCommonTsFilePath = fs.realpathSync(path.join(wasmDirectory, uiCommonTsFileName));
-
     fs.writeFileSync(
         path.join(wasmOutputDirectory, uiCommonWasmFileName),
         fs.readFileSync(uiCommonWasmFilePath, { flag: 'r' }),
     );
-
     fs.writeFileSync(
         path.join(wasmOutputDirectory, uiCommonJsFileName),
         workAroundSvelteKitIssue1896(
             fs.readFileSync(uiCommonJsFilePath, { encoding: 'utf8', flag: 'r' }),
         ),
     );
-
     fs.writeFileSync(
         path.join(wasmOutputDirectory, uiCommonTsFileName),
         fs.readFileSync(uiCommonTsFilePath, { encoding: 'utf8', flag: 'r' }),
@@ -80,8 +115,8 @@ function prepareUiCommon() {
 }
 
 const outputDirectory = getExtraArg('--out-dir', true, 'dist/extendedmind');
-if (fs.existsSync('src/lib')) {
-    prepareUiCommon();
+if (fs.existsSync('svelte.config.js')) {
+    prepareExternalDeps();
 }
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -98,7 +133,6 @@ const config = {
         paths: {
             base: '/extendedmind',
         },
-        ssr: false,
         // hydrate the <div id="extendedmind"> element in src/app.html
         target: '#extendedmind',
     },

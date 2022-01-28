@@ -3,4 +3,5 @@ dist/
 .svelte-kit/
 
 # Ignore bazel generated files
+src/lib/schema
 src/lib/ui-common

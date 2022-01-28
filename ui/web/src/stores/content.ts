@@ -1,9 +1,16 @@
+import * as capnp from "capnp-ts";
+import { UiProtocol } from '../lib/schema/ui_protocol.capnp';
 import wasm from '../lib/ui-common/extendedmind_ui_common_wasm_bg.wasm';
 import init, { connectToHub } from '../lib/ui-common/extendedmind_ui_common_wasm';
 import { readable } from 'svelte/store';
 import { hubKey } from './hubKey';
 
 const { subscribe } = readable();
+
+const loadUiProtocol = (buffer: ArrayBuffer): UiProtocol => {
+  const message = new capnp.Message(buffer);
+  return message.getRoot(UiProtocol);
+}
 
 const syncWithHub = async (storedHubKey: string, setContent: (newContent: Object) => void): void => {
     window['updateContent'] = (numberFromWasm: number): Promise<void> => {
