@@ -2,15 +2,17 @@
     "name": "web",
     "version": "0.0.1",
     "scripts": {
-        "dev": "svelte-kit dev",
+        "dev": "EXTENDEDMIND_HUB_PORT=3001 svelte-kit dev",
         "build": "svelte-kit build",
         "preview": "svelte-kit preview",
         "check": "svelte-check --tsconfig ./tsconfig.json",
         "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
         "lint": "prettier --ignore-path .gitignore --check --plugin-search-dir=. . && eslint --ignore-path .gitignore .",
-        "format": "prettier --ignore-path .gitignore --write --plugin-search-dir=. ."
+        "format": "prettier --ignore-path .gitignore --write --plugin-search-dir=. .",
+        "copyExternalDeps": "node copyExternalDeps.js"
     },
     "devDependencies": {
+        "@bazel/ibazel": "^0.15.10",
         "@bazel/typescript": "^5.0.1",
         "@sveltejs/adapter-static": "^1.0.0-next.26",
         "@sveltejs/kit": "^1.0.0-next.245",

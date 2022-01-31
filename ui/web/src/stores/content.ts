@@ -27,7 +27,10 @@ const syncWithHub = async (
     };
 
     const wasmExports = await init(wasm);
-    await connectToHub(`${window.location.hostname}:8080`, storedHubKey);
+    const hubWsHost = window?.process?.env?.EXTENDEDMIND_HUB_PORT
+        ? `${window.location.hostname}:${window.process.env.EXTENDEDMIND_HUB_PORT}`
+        : window.location.host;
+    await connectToHub(hubWsHost, storedHubKey);
     // Not expected to actually return, but throw an error
 };
 

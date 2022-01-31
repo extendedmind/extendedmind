@@ -7,6 +7,7 @@ filegroup(
         "package.json",
         "package-lock.json",
         "svelte.config.js",
+        "tools.js",
         "tsconfig.json",
     ],
     visibility = ["//visibility:public"],
@@ -62,4 +63,21 @@ jest_test(
         "@npm//jest-playwright-preset",
         "@npm//playwright",
     ],
+)
+
+genrule(
+    name = "external-deps-refresh",
+    visibility = ["//visibility:public"],
+    srcs = [
+        "//schema:extendedmind_schema_capnp_ts_sources",
+        "//ui/common:extendedmind_ui_common_wasm",
+    ],
+    outs = ["external-deps-refresh.sh"],
+    cmd = """
+    cat <<\\EOF > $@
+#!/bin/bash
+npm run copyExternalDeps
+EOF
+    """,
+    executable = True,
 )
