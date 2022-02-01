@@ -8,13 +8,13 @@ load("@rules_capnproto//capnp:java_capnp_sources.bzl", "java_capnp_sources")
 
 capnp_library(
     name = "extendedmind_schema_ui_capnp",
-    srcs = ["src/data.capnp", "src/ui_protocol.capnp"],
+    srcs = ["src/model.capnp", "src/ui_protocol.capnp"],
     deps = ["@capnproto_java//:capnpc_java_capnp"]
 )
 
 capnp_library(
     name = "extendedmind_schema_capnp",
-    srcs = ["src/data.capnp", "src/wire_protocol.capnp", "src/ui_protocol.capnp"],
+    srcs = ["src/model.capnp", "src/wire_protocol.capnp", "src/ui_protocol.capnp"],
     deps = ["@capnproto_java//:capnpc_java_capnp"]
 )
 

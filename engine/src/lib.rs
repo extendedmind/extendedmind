@@ -3,80 +3,78 @@ mod channel_writer;
 use anyhow::Result;
 use async_std::channel::Receiver;
 use async_std::sync::{Arc, Mutex};
-use capnp::message::{Builder, HeapAllocator, ReaderOptions, TypedBuilder, TypedReader};
-use capnp::serialize_packed::{read_message, write_message};
-use derivative::Derivative;
-use extendedmind_schema_rust::capnp;
-use extendedmind_schema_rust::wire_protocol_capnp::wire_protocol;
 use futures::io::{AsyncRead, AsyncWrite};
 use futures::stream::{IntoAsyncRead, StreamExt, TryStreamExt};
-use hypercore_protocol::{discovery_key, Event, ProtocolBuilder};
 use log::*;
 use random_access_memory::RandomAccessMemory;
 use smol_str::SmolStr;
 use std::collections::HashMap;
 use std::fmt::Debug;
 use std::io;
-#[cfg(not(target_arch = "wasm32"))]
-use std::io::Write;
-use std::ops::Deref;
 use std::path::PathBuf;
 
-pub use automerge::{
-    Backend as AutomergeBackend, BackendError as AutomergeBackendError,
-    Frontend as AutomergeFrontend, FrontendError as AutomergeFrontendError, LocalChange,
-    Path as AutomergePath, Primitive as AutomergePrimitive, Value as AutomergeValue,
-};
+// Non-WASM imports
+#[cfg(not(target_arch = "wasm32"))]
+use std::io::Write;
+
+pub use automerge;
 pub use bytes::Bytes;
 pub use channel_writer::ChannelWriter;
-pub use hypercore::{Feed, PublicKey, Storage, Store};
-pub use hypercore_protocol::Protocol;
+pub use extendedmind_schema_rust::capnp;
+pub use extendedmind_schema_rust::model_capnp::model;
+pub use extendedmind_schema_rust::ui_protocol_capnp::ui_protocol;
+pub use extendedmind_schema_rust::wire_protocol_capnp::wire_protocol;
+pub use hypercore;
+pub use hypercore_protocol;
 #[cfg(not(target_arch = "wasm32"))]
 pub use random_access_disk::RandomAccessDisk;
 pub use random_access_storage::RandomAccess;
 
 mod communication;
-pub use communication::FeedStore;
+use communication::FeedStore;
 mod common;
-pub use common::FeedWrapper;
+use common::FeedWrapper;
 
-#[derive(Derivative)]
+#[derive(derivative::Derivative)]
 #[derivative(Clone(bound = ""))]
 pub struct Engine<T>
 where
     T: RandomAccess<Error = Box<dyn std::error::Error + Send + Sync>> + Debug + Send,
 {
-    pub data: Arc<Mutex<Option<AutomergeBackend>>>,
+    pub data: Arc<Mutex<Option<automerge::Backend>>>,
     pub is_initiator: bool,
     pub feedstore: Arc<FeedStore<T>>,
 }
 
-fn get_initial_data() -> Arc<Mutex<Option<AutomergeBackend>>> {
-    let mut backend = AutomergeBackend::new();
-    let mut frontend = AutomergeFrontend::new();
+fn get_initial_data() -> Arc<Mutex<Option<automerge::Backend>>> {
+    let mut backend = automerge::Backend::new();
+    let mut frontend = automerge::Frontend::new();
     let (_output, change) = frontend
         .change(Some("init".into()), |doc| {
-            let mut initial_value = HashMap::<SmolStr, AutomergeValue>::new();
+            let mut initial_value = HashMap::<SmolStr, automerge::Value>::new();
             initial_value.insert(
                 "version".into(),
-                AutomergeValue::Primitive(AutomergePrimitive::Uint(0)),
+                automerge::Value::Primitive(automerge::Primitive::Uint(0)),
             );
-            let initial_value = AutomergeValue::Map(initial_value);
-            doc.add_change(LocalChange::set(AutomergePath::root(), initial_value))
+            let initial_value = automerge::Value::Map(initial_value);
+            doc.add_change(automerge::LocalChange::set(
+                automerge::Path::root(),
+                initial_value,
+            ))
         })
         .unwrap();
     backend.apply_local_change(change.unwrap()).unwrap();
     Arc::new(Mutex::new(Some(backend)))
 }
 
-pub fn get_public_key(public_key: &str) -> PublicKey {
+pub fn get_public_key(public_key: &str) -> hypercore::PublicKey {
     let key = hex::decode(public_key).unwrap();
-    PublicKey::from_bytes(key.as_ref()).unwrap()
+    hypercore::PublicKey::from_bytes(key.as_ref()).unwrap()
 }
 
-pub fn get_discovery_key(public_key: PublicKey) -> String {
+pub fn get_discovery_key(public_key: hypercore::PublicKey) -> String {
     let public_key = public_key.to_bytes();
-    hex::encode(discovery_key(&public_key))
+    hex::encode(hypercore_protocol::discovery_key(&public_key))
 }
 
 #[cfg(not(target_arch = "wasm32"))]
@@ -91,12 +89,17 @@ impl Engine<RandomAccessDisk> {
         // Create a hypercore
         let feed_dir = data_root_dir.join(PathBuf::from(format!("{}.db", is_initiator)));
         let primary_feed = if let Some(public_key) = public_key {
-            let storage = Storage::new_disk(&feed_dir, false).await.unwrap();
+            let storage = hypercore::Storage::new_disk(&feed_dir, false)
+                .await
+                .unwrap();
             dbg!("Disk: Using given public key {}", &public_key);
             let public_key = get_public_key(&public_key);
-            Feed::builder(public_key, storage).build().await.unwrap()
+            hypercore::Feed::builder(public_key, storage)
+                .build()
+                .await
+                .unwrap()
         } else {
-            let primary_feed = Feed::open(&feed_dir).await.unwrap();
+            let primary_feed = hypercore::Feed::open(&feed_dir).await.unwrap();
             let public_key = hex::encode(primary_feed.public_key());
             let mut hub_key_file = std::fs::OpenOptions::new()
                 .create(true)
@@ -133,13 +136,16 @@ impl Engine<RandomAccessMemory> {
     ) -> Engine<RandomAccessMemory> {
         let mut feedstore: FeedStore<RandomAccessMemory> = FeedStore::new();
 
-        let storage = Storage::new_memory().await.unwrap();
+        let storage = hypercore::Storage::new_memory().await.unwrap();
         let primary_feed = if let Some(public_key) = public_key {
             dbg!("Memory: Using given public key {}", &public_key);
             let public_key = get_public_key(&public_key);
-            Feed::builder(public_key, storage).build().await.unwrap()
+            hypercore::Feed::builder(public_key, storage)
+                .build()
+                .await
+                .unwrap()
         } else {
-            let primary_feed = Feed::with_storage(storage).await.unwrap();
+            let primary_feed = hypercore::Feed::with_storage(storage).await.unwrap();
             let public_key = hex::encode(primary_feed.public_key());
             dbg!(
                 "Memory: Reading public key, init: {} value: {}",
@@ -163,7 +169,7 @@ impl<T: 'static> Engine<T>
 where
     T: RandomAccess<Error = Box<dyn std::error::Error + Send + Sync>> + Debug + Send,
 {
-    pub async fn set_data(&self, backend: AutomergeBackend) {
+    pub async fn set_data(&self, backend: automerge::Backend) {
         let mut state = self.data.lock().await;
         *state = Some(backend);
     }
@@ -179,7 +185,7 @@ where
 
     // TODO: Start using this in actual communication
     pub fn demo_create_wire_protocol_message(&self) -> Vec<u8> {
-        let mut message = TypedBuilder::<wire_protocol::Owned>::new_default();
+        let mut message = capnp::message::TypedBuilder::<wire_protocol::Owned>::new_default();
         {
             let mut wire_protocol = message.init_root();
             wire_protocol.set_version(99);
@@ -188,14 +194,19 @@ where
             personal_access_key.fill(5);
         }
         let mut packed_message = Vec::<u8>::new();
-        write_message(&mut packed_message, message.borrow_inner()).unwrap();
+        capnp::serialize_packed::write_message(&mut packed_message, message.borrow_inner())
+            .unwrap();
         packed_message
     }
 
     // TODO: Start using this in actual communication
     pub fn demo_read_wire_protocol_message(&self, message: &Vec<u8>) -> Vec<u8> {
-        let reader = read_message(message.as_slice(), ReaderOptions::new()).unwrap();
-        let typed_reader = TypedReader::<_, wire_protocol::Owned>::new(reader);
+        let reader = capnp::serialize_packed::read_message(
+            message.as_slice(),
+            capnp::message::ReaderOptions::new(),
+        )
+        .unwrap();
+        let typed_reader = capnp::message::TypedReader::<_, wire_protocol::Owned>::new(reader);
         let reader_root = typed_reader.get().unwrap();
         let message = reader_root.get_message().which();
         match message {
@@ -216,7 +227,7 @@ where
     ) -> Result<()> {
         let receiver: IntoAsyncRead<Receiver<Result<Bytes, io::Error>>> =
             receiver.into_async_read();
-        let protocol = ProtocolBuilder::new(false).connect_rw(receiver, sender);
+        let protocol = hypercore_protocol::ProtocolBuilder::new(false).connect_rw(receiver, sender);
         self.poll_protocol(protocol).await
     }
 
@@ -227,11 +238,11 @@ where
     ) -> Result<()> {
         let receiver: IntoAsyncRead<Receiver<Result<Bytes, io::Error>>> =
             receiver.into_async_read();
-        let protocol = ProtocolBuilder::new(true).connect_rw(receiver, sender);
+        let protocol = hypercore_protocol::ProtocolBuilder::new(true).connect_rw(receiver, sender);
         self.poll_protocol(protocol).await
     }
 
-    async fn poll_protocol<IO>(self, mut protocol: Protocol<IO>) -> Result<()>
+    async fn poll_protocol<IO>(self, mut protocol: hypercore_protocol::Protocol<IO>) -> Result<()>
     where
         IO: AsyncWrite + AsyncRead + Send + Unpin + 'static,
     {
@@ -243,7 +254,7 @@ where
             let event = event?;
             debug!("protocol event {:?}", event);
             match event {
-                Event::Handshake(_) => {
+                hypercore_protocol::Event::Handshake(_) => {
                     if self.is_initiator {
                         for feed in feedstore.feeds.values() {
                             let feed_key = feed.key().clone();
@@ -252,18 +263,18 @@ where
                         }
                     }
                 }
-                Event::DiscoveryKey(dkey) => {
+                hypercore_protocol::Event::DiscoveryKey(dkey) => {
                     if let Some(feed) = feedstore.get(&dkey) {
                         let feed_key = feed.key().clone();
                         protocol.open(feed_key).await?;
                     }
                 }
-                Event::Channel(channel) => {
+                hypercore_protocol::Event::Channel(channel) => {
                     if let Some(feed) = feedstore.get(&channel.discovery_key()) {
                         communication::on_peer(feed, channel);
                     }
                 }
-                Event::Close(_dkey) => {}
+                hypercore_protocol::Event::Close(_dkey) => {}
                 _ => {}
             }
         }

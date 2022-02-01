@@ -22,7 +22,7 @@ fn main() {
     capnpc::CompilerCommand::new()
         .import_path("target")
         .src_prefix("src")
-        .file("src/data.capnp")
+        .file("src/model.capnp")
         .file("src/wire_protocol.capnp")
         .file("src/ui_protocol.capnp")
         .run()

@@ -4,7 +4,6 @@ use async_std::channel::{bounded, Receiver, Sender};
 use async_std::sync::{Arc, Mutex};
 use async_std::task;
 use clap::Parser;
-use derivative::Derivative;
 use futures::stream::StreamExt;
 use log::{debug, info};
 use std::collections::HashMap;
@@ -32,7 +31,7 @@ enum ReceiverType {
     Client,
 }
 
-#[derive(Derivative)]
+#[derive(derivative::Derivative)]
 #[derivative(Clone(bound = ""))]
 struct State {
     // Engine

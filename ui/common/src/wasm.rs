@@ -1,5 +1,5 @@
 mod wasm {
-    use crate::connect::{connect_active, Message};
+    use crate::connect::connect_active;
     use anyhow::Result;
     use extendedmind_engine::{get_discovery_key, get_public_key, Engine};
     use futures::channel::mpsc;
@@ -8,6 +8,26 @@ mod wasm {
     use wasm_bindgen::prelude::*;
     use wasm_bindgen_futures::spawn_local;
     use ws_stream_wasm::WsMeta;
+
+    // An no-copy struct to pass data from WASM to JS and back
+    // wasm-bindgen issue #2456, comment-781984748
+    // or domoritz/arrow-wasm => src/table.rs
+    #[wasm_bindgen]
+    pub struct WasmUint8Array(Vec<u8>);
+
+    #[wasm_bindgen]
+    impl WasmUint8Array {
+        #[wasm_bindgen(constructor)]
+        pub fn new(size: usize) -> Self {
+            let buffer = vec![0; size];
+            Self { 0: buffer }
+        }
+
+        #[wasm_bindgen(getter)]
+        pub fn view(&mut self) -> js_sys::Uint8Array {
+            unsafe { js_sys::Uint8Array::view_mut_raw(self.0.as_mut_ptr(), self.0.len()) }
+        }
+    }
 
     #[wasm_bindgen]
     extern "C" {
@@ -49,12 +69,8 @@ mod wasm {
 
         // TODO: Eventually this would be a loop
         // loop {
-        let event = msg_receiver.next().await.unwrap();
-        match event {
-            Message::ContentUpdated(number_from_wasm) => {
-                update_content(number_from_wasm).await;
-            }
-        }
+        let data = msg_receiver.next().await.unwrap();
+        update_content(data[0].into()).await;
         // }
 
         Ok(())

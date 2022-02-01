@@ -2,9 +2,9 @@
 
 using Java = import "/capnp/java.capnp";
 $Java.package("org.extendedmind.schema");
-$Java.outerClassname("Data");
+$Java.outerClassname("Model");
 
-struct Data @0x8b5980e82d7915ee {
+struct Model @0x8b5980e82d7915ee {
     version @0 :UInt8;
     items @1 :List(Item);
     tags @2 :List(Tag);

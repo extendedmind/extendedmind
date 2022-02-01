@@ -1,6 +1,4 @@
 use async_std::sync::{Arc, Mutex};
-use hypercore::Feed;
-use hypercore_protocol::discovery_key;
 use random_access_storage::RandomAccess;
 use std::fmt::Debug;
 
@@ -24,18 +22,18 @@ where
 {
     pub discovery_key: [u8; 32],
     pub key: [u8; 32],
-    pub feed: Arc<Mutex<Feed<T>>>,
+    pub feed: Arc<Mutex<hypercore::Feed<T>>>,
 }
 
 impl<T> FeedWrapper<T>
 where
     T: RandomAccess<Error = Box<dyn std::error::Error + Send + Sync>> + Debug + Send + 'static,
 {
-    pub fn from(feed: Feed<T>) -> Self {
+    pub fn from(feed: hypercore::Feed<T>) -> Self {
         let key = feed.public_key().to_bytes();
         FeedWrapper {
             key,
-            discovery_key: discovery_key(&key),
+            discovery_key: hypercore_protocol::discovery_key(&key),
             feed: Arc::new(Mutex::new(feed)),
         }
     }

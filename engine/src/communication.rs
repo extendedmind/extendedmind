@@ -1,18 +1,14 @@
+use crate::common::FeedWrapper;
 use crate::common::PeerState;
 use anyhow::Result;
 use async_std::sync::{Arc, Mutex};
 use async_std::task;
 use futures::stream::StreamExt;
-use hypercore::{Feed, Node, NodeTrait, Proof, Signature};
-use hypercore_protocol::schema::*;
-use hypercore_protocol::{Channel, Message};
 use log::*;
 use random_access_storage::RandomAccess;
 use std::collections::HashMap;
 use std::convert::TryFrom;
 use std::fmt::Debug;
-
-use crate::common::FeedWrapper;
 
 /// A container for hypercores.
 #[derive(Debug)]
@@ -42,8 +38,10 @@ where
     }
 }
 
-pub fn on_peer<T: 'static>(feed_wrapper: &Arc<FeedWrapper<T>>, mut channel: Channel)
-where
+pub fn on_peer<T: 'static>(
+    feed_wrapper: &Arc<FeedWrapper<T>>,
+    mut channel: hypercore_protocol::Channel,
+) where
     T: RandomAccess<Error = Box<dyn std::error::Error + Send + Sync>> + Debug + Send,
 {
     let mut state = PeerState::default();
@@ -51,11 +49,14 @@ where
 
     #[cfg(not(target_arch = "wasm32"))]
     task::spawn(async move {
-        let msg = Want {
+        let msg = hypercore_protocol::schema::Want {
             start: 0,
             length: None,
         };
-        channel.send(Message::Want(msg)).await.unwrap();
+        channel
+            .send(hypercore_protocol::Message::Want(msg))
+            .await
+            .unwrap();
         while let Some(message) = channel.next().await {
             let result = on_message(&mut feed, &mut state, &mut channel, message).await;
             if let Err(e) = result {
@@ -67,27 +68,27 @@ where
 }
 
 async fn on_message<T>(
-    feed: &mut Arc<Mutex<Feed<T>>>,
+    feed: &mut Arc<Mutex<hypercore::Feed<T>>>,
     state: &mut PeerState,
-    channel: &mut Channel,
-    message: Message,
+    channel: &mut hypercore_protocol::Channel,
+    message: hypercore_protocol::Message,
 ) -> Result<()>
 where
     T: RandomAccess<Error = Box<dyn std::error::Error + Send + Sync>> + Debug + Send,
 {
     match message {
-        Message::Open(_) => {
-            let msg = Want {
+        hypercore_protocol::Message::Open(_) => {
+            let msg = hypercore_protocol::schema::Want {
                 start: 0,
                 length: None,
             };
-            channel.send(Message::Want(msg)).await?;
+            channel.send(hypercore_protocol::Message::Want(msg)).await?;
         }
-        Message::Want(msg) => {
+        hypercore_protocol::Message::Want(msg) => {
             let mut feed = feed.lock().await;
             if feed.has(msg.start) {
                 channel
-                    .have(Have {
+                    .have(hypercore_protocol::schema::Have {
                         start: msg.start,
                         ack: None,
                         bitfield: None,
@@ -96,23 +97,25 @@ where
                     .await?;
             }
         }
-        Message::Have(msg) => {
+        hypercore_protocol::Message::Have(msg) => {
             if state.remote_head == None {
                 state.remote_head = Some(msg.start);
-                let msg = Request {
+                let msg = hypercore_protocol::schema::Request {
                     index: 0,
                     bytes: None,
                     hash: None,
                     nodes: None,
                 };
-                channel.send(Message::Request(msg)).await?;
+                channel
+                    .send(hypercore_protocol::Message::Request(msg))
+                    .await?;
             } else if let Some(remote_head) = state.remote_head {
                 if remote_head < msg.start {
                     state.remote_head = Some(msg.start)
                 }
             }
         }
-        Message::Request(request) => {
+        hypercore_protocol::Message::Request(request) => {
             let mut feed = feed.lock().await;
             let index = request.index;
             let value = feed.get(index).await?;
@@ -120,13 +123,13 @@ where
             let nodes = proof
                 .nodes
                 .iter()
-                .map(|node| data::Node {
-                    index: NodeTrait::index(node),
-                    hash: NodeTrait::hash(node).to_vec(),
-                    size: NodeTrait::len(node),
+                .map(|node| hypercore_protocol::schema::data::Node {
+                    index: hypercore::NodeTrait::index(node),
+                    hash: hypercore::NodeTrait::hash(node).to_vec(),
+                    size: hypercore::NodeTrait::len(node),
                 })
                 .collect();
-            let message = Data {
+            let message = hypercore_protocol::schema::Data {
                 index,
                 value: value.clone(),
                 nodes,
@@ -134,7 +137,7 @@ where
             };
             channel.data(message).await?;
         }
-        Message::Data(msg) => {
+        hypercore_protocol::Message::Data(msg) => {
             let mut feed = feed.lock().await;
             let value: Option<&[u8]> = match msg.value.as_ref() {
                 None => None,
@@ -149,15 +152,15 @@ where
             };
 
             let signature = match msg.signature {
-                Some(bytes) => Some(Signature::try_from(&bytes[..])?),
+                Some(bytes) => Some(hypercore::Signature::try_from(&bytes[..])?),
                 None => None,
             };
             let nodes = msg
                 .nodes
                 .iter()
-                .map(|n| Node::new(n.index, n.hash.clone(), n.size))
+                .map(|n| hypercore::Node::new(n.index, n.hash.clone(), n.size))
                 .collect();
-            let proof = Proof {
+            let proof = hypercore::Proof {
                 index: msg.index,
                 nodes,
                 signature,
@@ -177,13 +180,15 @@ where
             if let Some(remote_head) = state.remote_head {
                 if remote_head >= next {
                     // Request next data block.
-                    let msg = Request {
+                    let msg = hypercore_protocol::schema::Request {
                         index: next,
                         bytes: None,
                         hash: None,
                         nodes: None,
                     };
-                    channel.send(Message::Request(msg)).await?;
+                    channel
+                        .send(hypercore_protocol::Message::Request(msg))
+                        .await?;
                 }
             };
         }
