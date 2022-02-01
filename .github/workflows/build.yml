@@ -13,7 +13,8 @@ jobs:
           path: |
             ~/.cache/bazelisk
             ~/.cache/bazel
-          key: ${{ runner.os }}-${{ env.cache-name }}-r1
+            ~/.cache/ms-playwright
+          key: ${{ runner.os }}-${{ env.cache-name }}-r2
       - name: Check out the repo
         uses: actions/checkout@v2
       - name: Run Bazel build
