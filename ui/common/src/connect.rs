@@ -15,8 +15,3 @@ where
     debug!("connect_to_hub called");
     msg_sender.send(Message::ContentUpdated(1)).await.unwrap();
 }
-
-pub async fn test(mut msg_sender: Sender<Message>) {
-    debug!("test");
-    msg_sender.send(Message::ContentUpdated(1)).await.unwrap();
-}

@@ -1,5 +1,5 @@
 mod wasm {
-    use crate::connect::{connect_active, test, Message};
+    use crate::connect::{connect_active, Message};
     use anyhow::Result;
     use extendedmind_engine::{get_discovery_key, get_public_key, Engine};
     use futures::channel::mpsc;
