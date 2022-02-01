@@ -13,7 +13,7 @@ jobs:
           path: |
             ~/.cache/bazelisk
             ~/.cache/bazel
-          key: ${{ runner.os }}-${{ env.cache-name }}
+          key: ${{ runner.os }}-${{ env.cache-name }}-r1
       - name: Check out the repo
         uses: actions/checkout@v2
       - name: Run Bazel build
