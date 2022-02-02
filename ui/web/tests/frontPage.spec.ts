@@ -15,5 +15,5 @@ test('should navigate to extendedmind UI front page', async () => {
     await page.type('input[name="hubKey"]', hubKey);
     await page.click('button[type="submit"]');
     const diaryContentText = await page.textContent('#diaryContent');
-    await expect(diaryContentText).toBe('1');
+    await expect(diaryContentText).toBe('55');
 });

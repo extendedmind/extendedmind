@@ -8,7 +8,7 @@ using Model = import "model.capnp";
 
 struct UiProtocol @0x9c8d211a236b1cfd {
     version @0 :UInt8;
-    message :union {
+    payload :union {
         init @1 :Model.Model;
         destroy @2 :Data;
     }

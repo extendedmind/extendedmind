@@ -189,8 +189,8 @@ where
         {
             let mut wire_protocol = message.init_root();
             wire_protocol.set_version(99);
-            let wire_message = wire_protocol.init_message();
-            let personal_access_key = wire_message.init_share_personal_access_key(2);
+            let wire_payload = wire_protocol.init_payload();
+            let personal_access_key = wire_payload.init_share_personal_access_key(2);
             personal_access_key.fill(5);
         }
         let mut packed_message = Vec::<u8>::new();
@@ -208,10 +208,10 @@ where
         .unwrap();
         let typed_reader = capnp::message::TypedReader::<_, wire_protocol::Owned>::new(reader);
         let reader_root = typed_reader.get().unwrap();
-        let message = reader_root.get_message().which();
+        let message = reader_root.get_payload().which();
         match message {
-            Ok(wire_protocol::message::SharePersonalAccessKey(key)) => key.unwrap().to_vec(),
-            Ok(wire_protocol::message::ShareCollectiveAccessKeys(_)) => vec![],
+            Ok(wire_protocol::payload::SharePersonalAccessKey(key)) => key.unwrap().to_vec(),
+            Ok(wire_protocol::payload::ShareCollectiveAccessKeys(_)) => vec![],
             Err(_) => vec![],
         }
     }

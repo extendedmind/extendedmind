@@ -8,7 +8,7 @@ import { hubKey } from './hubKey';
 const { subscribe } = readable();
 
 const loadUiProtocol = (buffer: ArrayBuffer): UiProtocol => {
-    const message = new capnp.Message(buffer);
+    const message = new capnp.Message(buffer, false, true);
     return message.getRoot(UiProtocol);
 };
 
@@ -16,11 +16,12 @@ const syncWithHub = async (
     storedHubKey: string,
     setContent: (newContent: Object) => void,
 ): void => {
-    window['updateContent'] = (numberFromWasm: number): Promise<void> => {
-        const newContent = {
-            diary: `${Number(numberFromWasm)}`,
-        };
+    window['jsUiProtocol'] = (data: Uint8Array): Promise<void> => {
         return new Promise((resolve) => {
+            const uiProtocol = loadUiProtocol(data);
+            const newContent = {
+                diary: uiProtocol.getPayload().getInit().getVersion(),
+            };
             setContent(newContent);
             resolve();
         });

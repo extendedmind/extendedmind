@@ -10,5 +10,19 @@ where
 {
     debug!("connect_to_hub called");
 
-    msg_sender.send(vec![1]).await.unwrap();
+    let mut message = capnp::message::TypedBuilder::<ui_protocol::Owned>::new_default();
+    {
+        let mut ui_protocol = message.init_root();
+        ui_protocol.set_version(99);
+        let payload = ui_protocol.init_payload();
+        let mut model = payload.init_init();
+        model.set_version(55);
+    }
+    let reader = capnp::message::Reader::new(
+        message.borrow_inner().get_segments_for_output(),
+        Default::default(),
+    );
+    let words = &reader.canonicalize().unwrap();
+    let bytes = capnp::Word::words_to_bytes(words).to_vec();
+    msg_sender.send(bytes).await.unwrap();
 }

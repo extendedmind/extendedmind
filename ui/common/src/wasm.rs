@@ -9,30 +9,10 @@ mod wasm {
     use wasm_bindgen_futures::spawn_local;
     use ws_stream_wasm::WsMeta;
 
-    // An no-copy struct to pass data from WASM to JS and back
-    // wasm-bindgen issue #2456, comment-781984748
-    // or domoritz/arrow-wasm => src/table.rs
-    #[wasm_bindgen]
-    pub struct WasmUint8Array(Vec<u8>);
-
-    #[wasm_bindgen]
-    impl WasmUint8Array {
-        #[wasm_bindgen(constructor)]
-        pub fn new(size: usize) -> Self {
-            let buffer = vec![0; size];
-            Self { 0: buffer }
-        }
-
-        #[wasm_bindgen(getter)]
-        pub fn view(&mut self) -> js_sys::Uint8Array {
-            unsafe { js_sys::Uint8Array::view_mut_raw(self.0.as_mut_ptr(), self.0.len()) }
-        }
-    }
-
     #[wasm_bindgen]
     extern "C" {
-        #[wasm_bindgen(catch, js_name = "updateContent")]
-        async fn update_content(number_from_wasm: u64) -> Result<(), JsValue>;
+        #[wasm_bindgen(catch, js_name = "jsUiProtocol")]
+        async fn js_ui_protocol(data: &[u8]) -> Result<(), JsValue>;
     }
 
     #[wasm_bindgen(js_name = "connectToHub")]
@@ -70,7 +50,7 @@ mod wasm {
         // TODO: Eventually this would be a loop
         // loop {
         let data = msg_receiver.next().await.unwrap();
-        update_content(data[0].into()).await;
+        js_ui_protocol(data.as_slice()).await;
         // }
 
         Ok(())
