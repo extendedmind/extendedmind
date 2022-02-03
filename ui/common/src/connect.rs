@@ -4,8 +4,12 @@ use futures::sink::SinkExt;
 use log::*;
 use std::fmt::Debug;
 
-pub async fn connect_active<T>(engine: Engine<T>, mut msg_sender: UnboundedSender<Vec<u8>>)
-where
+pub async fn connect_active<T>(
+    engine: Engine<T>,
+    mut msg_sender: UnboundedSender<
+        capnp::message::TypedBuilder<extendedmind_engine::ui_protocol::Owned>,
+    >,
+) where
     T: RandomAccess<Error = Box<dyn std::error::Error + Send + Sync>> + Debug + Send,
 {
     debug!("connect_to_hub called");
@@ -18,7 +22,5 @@ where
         let mut model = payload.init_init();
         model.set_version(55);
     }
-    let mut packed_message = Vec::<u8>::new();
-    capnp::serialize_packed::write_message(&mut packed_message, message.borrow_inner()).unwrap();
-    msg_sender.send(packed_message).await.unwrap();
+    msg_sender.send(message).await.unwrap();
 }

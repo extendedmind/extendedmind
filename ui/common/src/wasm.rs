@@ -1,7 +1,7 @@
 mod wasm {
     use crate::connect::connect_active;
     use anyhow::Result;
-    use extendedmind_engine::{get_discovery_key, get_public_key, Engine};
+    use extendedmind_engine::{capnp, get_discovery_key, get_public_key, ui_protocol, Engine};
     use futures::channel::mpsc;
     use futures::stream::StreamExt;
     use log::*;
@@ -49,8 +49,11 @@ mod wasm {
 
         // TODO: Eventually this would be a loop
         // loop {
-        let data = msg_receiver.next().await.unwrap();
-        js_ui_protocol(data.as_slice()).await;
+        let message = msg_receiver.next().await.unwrap();
+        let mut packed_message = Vec::<u8>::new();
+        capnp::serialize_packed::write_message(&mut packed_message, message.borrow_inner())
+            .unwrap();
+        js_ui_protocol(packed_message.as_slice()).await;
         // }
 
         Ok(())
