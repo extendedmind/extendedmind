@@ -8,7 +8,7 @@ import { hubKey } from './hubKey';
 const { subscribe } = readable();
 
 const loadUiProtocol = (buffer: ArrayBuffer): UiProtocol => {
-    const message = new capnp.Message(buffer, false, true);
+    const message = new capnp.Message(buffer);
     return message.getRoot(UiProtocol);
 };
 

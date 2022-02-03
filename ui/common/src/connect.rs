@@ -18,11 +18,7 @@ where
         let mut model = payload.init_init();
         model.set_version(55);
     }
-    let reader = capnp::message::Reader::new(
-        message.borrow_inner().get_segments_for_output(),
-        Default::default(),
-    );
-    let words = &reader.canonicalize().unwrap();
-    let bytes = capnp::Word::words_to_bytes(words).to_vec();
-    msg_sender.send(bytes).await.unwrap();
+    let mut packed_message = Vec::<u8>::new();
+    capnp::serialize_packed::write_message(&mut packed_message, message.borrow_inner()).unwrap();
+    msg_sender.send(packed_message).await.unwrap();
 }
