@@ -26,17 +26,17 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT OR Apache-2.0"
+    "notice",  # MIT from expression "MIT"
 ])
 
 # Generated Targets
 
 rust_library(
-    name = "quote",
+    name = "tracing_core",
     srcs = glob(["**/*.rs"]),
     crate_features = [
-        "default",
-        "proc-macro",
+        "lazy_static",
+        "std",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -48,14 +48,16 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "1.0.14",
+    version = "0.1.22",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__proc_macro2__1_0_36//:proc_macro2",
+        "@raze__lazy_static__1_4_0//:lazy_static",
     ],
 )
 
-# Unsupported target "compiletest" with type "test" omitted
+# Unsupported target "dispatch" with type "test" omitted
 
-# Unsupported target "test" with type "test" omitted
+# Unsupported target "global_dispatch" with type "test" omitted
+
+# Unsupported target "macros" with type "test" omitted

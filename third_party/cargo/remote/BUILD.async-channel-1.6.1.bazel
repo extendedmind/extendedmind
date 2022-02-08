@@ -51,8 +51,8 @@ rust_library(
     # buildifier: leave-alone
     deps = [
         "@raze__concurrent_queue__1_2_2//:concurrent_queue",
-        "@raze__event_listener__2_5_1//:event_listener",
-        "@raze__futures_core__0_3_19//:futures_core",
+        "@raze__event_listener__2_5_2//:event_listener",
+        "@raze__futures_core__0_3_21//:futures_core",
     ],
 )
 

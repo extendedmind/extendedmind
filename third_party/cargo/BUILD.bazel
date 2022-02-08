@@ -14,7 +14,7 @@ licenses([
 # Aliased targets
 alias(
     name = "anyhow",
-    actual = "@raze__anyhow__1_0_52//:anyhow",
+    actual = "@raze__anyhow__1_0_53//:anyhow",
     tags = [
         "cargo-raze",
         "manual",
@@ -104,7 +104,7 @@ alias(
 
 alias(
     name = "clap",
-    actual = "@raze__clap__3_0_10//:clap",
+    actual = "@raze__clap__3_0_14//:clap",
     tags = [
         "cargo-raze",
         "manual",
@@ -167,7 +167,7 @@ alias(
 
 alias(
     name = "futures",
-    actual = "@raze__futures__0_3_19//:futures",
+    actual = "@raze__futures__0_3_21//:futures",
     tags = [
         "cargo-raze",
         "manual",

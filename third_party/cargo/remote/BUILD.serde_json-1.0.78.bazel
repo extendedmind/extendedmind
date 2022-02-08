@@ -56,7 +56,7 @@ cargo_build_script(
         "cargo-raze",
         "manual",
     ],
-    version = "1.0.75",
+    version = "1.0.78",
     visibility = ["//visibility:private"],
     deps = [
     ],
@@ -79,13 +79,27 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "1.0.75",
+    version = "1.0.78",
 
     # buildifier: leave-alone
     deps = [
         ":serde_json_build_script",
         "@raze__itoa__1_0_1//:itoa",
         "@raze__ryu__1_0_9//:ryu",
-        "@raze__serde__1_0_133//:serde",
+        "@raze__serde__1_0_136//:serde",
     ],
 )
+
+# Unsupported target "compiletest" with type "test" omitted
+
+# Unsupported target "debug" with type "test" omitted
+
+# Unsupported target "lexical" with type "test" omitted
+
+# Unsupported target "map" with type "test" omitted
+
+# Unsupported target "regression" with type "test" omitted
+
+# Unsupported target "stream" with type "test" omitted
+
+# Unsupported target "test" with type "test" omitted

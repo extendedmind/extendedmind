@@ -26,19 +26,15 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT OR Apache-2.0"
+    "notice",  # MIT from expression "MIT"
 ])
 
 # Generated Targets
 
-rust_library(
-    name = "gloo_timers",
+rust_proc_macro(
+    name = "tracing_attributes",
     srcs = glob(["**/*.rs"]),
     crate_features = [
-        "default",
-        "futures",
-        "futures-channel",
-        "futures-core",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -50,16 +46,32 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "0.2.2",
+    version = "0.1.19",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__futures_channel__0_3_19//:futures_channel",
-        "@raze__futures_core__0_3_19//:futures_core",
-        "@raze__js_sys__0_3_55//:js_sys",
-        "@raze__wasm_bindgen__0_2_78//:wasm_bindgen",
-        "@raze__web_sys__0_3_55//:web_sys",
+        "@raze__proc_macro2__1_0_36//:proc_macro2",
+        "@raze__quote__1_0_15//:quote",
+        "@raze__syn__1_0_86//:syn",
     ],
 )
 
-# Unsupported target "web" with type "test" omitted
+# Unsupported target "async_fn" with type "test" omitted
+
+# Unsupported target "destructuring" with type "test" omitted
+
+# Unsupported target "err" with type "test" omitted
+
+# Unsupported target "fields" with type "test" omitted
+
+# Unsupported target "instrument" with type "test" omitted
+
+# Unsupported target "levels" with type "test" omitted
+
+# Unsupported target "names" with type "test" omitted
+
+# Unsupported target "ret" with type "test" omitted
+
+# Unsupported target "support" with type "test" omitted
+
+# Unsupported target "targets" with type "test" omitted

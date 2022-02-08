@@ -57,7 +57,7 @@ rust_library(
         "@raze__async_channel__1_6_1//:async_channel",
         "@raze__async_dup__1_2_2//:async_dup",
         "@raze__async_std__1_10_0//:async_std",
-        "@raze__futures_core__0_3_19//:futures_core",
+        "@raze__futures_core__0_3_21//:futures_core",
         "@raze__http_types__2_12_0//:http_types",
         "@raze__httparse__1_5_1//:httparse",
         "@raze__log__0_4_14//:log",

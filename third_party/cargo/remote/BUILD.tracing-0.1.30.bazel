@@ -31,6 +31,8 @@ licenses([
 
 # Generated Targets
 
+# Unsupported target "global_subscriber" with type "bench" omitted
+
 # Unsupported target "no_subscriber" with type "bench" omitted
 
 # Unsupported target "subscriber" with type "bench" omitted
@@ -49,7 +51,7 @@ rust_library(
     data = [],
     edition = "2018",
     proc_macro_deps = [
-        "@raze__tracing_attributes__0_1_18//:tracing_attributes",
+        "@raze__tracing_attributes__0_1_19//:tracing_attributes",
     ],
     rustc_flags = [
         "--cap-lints=allow",
@@ -58,16 +60,18 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "0.1.29",
+    version = "0.1.30",
 
     # buildifier: leave-alone
     deps = [
         "@raze__cfg_if__1_0_0//:cfg_if",
         "@raze__log__0_4_14//:log",
         "@raze__pin_project_lite__0_2_8//:pin_project_lite",
-        "@raze__tracing_core__0_1_21//:tracing_core",
+        "@raze__tracing_core__0_1_22//:tracing_core",
     ],
 )
+
+# Unsupported target "enabled" with type "test" omitted
 
 # Unsupported target "event" with type "test" omitted
 

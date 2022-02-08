@@ -58,7 +58,7 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__event_listener__2_5_1//:event_listener",
+        "@raze__event_listener__2_5_2//:event_listener",
     ],
 )
 

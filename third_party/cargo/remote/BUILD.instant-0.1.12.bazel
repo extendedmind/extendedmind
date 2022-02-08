@@ -34,7 +34,14 @@ licenses([
 rust_library(
     name = "instant",
     srcs = glob(["**/*.rs"]),
+    aliases = {
+        "@raze__wasm_bindgen__0_2_78//:wasm_bindgen": "wasm_bindgen_rs",
+    },
     crate_features = [
+        "js-sys",
+        "wasm-bindgen",
+        "wasm-bindgen_rs",
+        "web-sys",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -51,7 +58,17 @@ rust_library(
     # buildifier: leave-alone
     deps = [
         "@raze__cfg_if__1_0_0//:cfg_if",
-    ],
+    ] + selects.with_or({
+        # wasm32-unknown-unknown
+        (
+            "@rules_rust//rust/platform:wasm32-unknown-unknown",
+        ): [
+            "@raze__js_sys__0_3_55//:js_sys",
+            "@raze__wasm_bindgen__0_2_78//:wasm_bindgen",
+            "@raze__web_sys__0_3_55//:web_sys",
+        ],
+        "//conditions:default": [],
+    }),
 )
 
 # Unsupported target "wasm" with type "test" omitted

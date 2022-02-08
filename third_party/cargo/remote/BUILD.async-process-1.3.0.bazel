@@ -53,7 +53,7 @@ rust_library(
     # buildifier: leave-alone
     deps = [
         "@raze__cfg_if__1_0_0//:cfg_if",
-        "@raze__event_listener__2_5_1//:event_listener",
+        "@raze__event_listener__2_5_2//:event_listener",
         "@raze__futures_lite__1_12_0//:futures_lite",
         "@raze__once_cell__1_9_0//:once_cell",
     ] + selects.with_or({
@@ -64,7 +64,7 @@ rust_library(
             "@rules_rust//rust/platform:aarch64-linux-android",
         ): [
             "@raze__async_io__1_6_0//:async_io",
-            "@raze__libc__0_2_112//:libc",
+            "@raze__libc__0_2_117//:libc",
             "@raze__signal_hook__0_3_13//:signal_hook",
         ],
         "//conditions:default": [],

@@ -60,7 +60,7 @@ rust_library(
             "@rules_rust//rust/platform:aarch64-linux-android",
             "@rules_rust//rust/platform:wasm32-unknown-unknown",
         ): [
-            "@raze__libc__0_2_112//:libc",
+            "@raze__libc__0_2_117//:libc",
         ],
         "//conditions:default": [],
     }) + selects.with_or({

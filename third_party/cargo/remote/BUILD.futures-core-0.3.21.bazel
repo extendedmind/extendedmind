@@ -38,11 +38,12 @@ load(
 )
 
 cargo_build_script(
-    name = "backtrace_build_script",
+    name = "futures_core_build_script",
     srcs = glob(["**/*.rs"]),
     build_script_env = {
     },
     crate_features = [
+        "alloc",
         "default",
         "std",
     ],
@@ -56,23 +57,17 @@ cargo_build_script(
         "cargo-raze",
         "manual",
     ],
-    version = "0.3.63",
+    version = "0.3.21",
     visibility = ["//visibility:private"],
     deps = [
-        "@raze__cc__1_0_72//:cc",
     ],
 )
 
-# Unsupported target "benchmarks" with type "bench" omitted
-
-# Unsupported target "backtrace" with type "example" omitted
-
-# Unsupported target "raw" with type "example" omitted
-
 rust_library(
-    name = "backtrace",
+    name = "futures_core",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "alloc",
         "default",
         "std",
     ],
@@ -86,26 +81,10 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "0.3.63",
+    version = "0.3.21",
 
     # buildifier: leave-alone
     deps = [
-        ":backtrace_build_script",
-        "@raze__addr2line__0_17_0//:addr2line",
-        "@raze__cfg_if__1_0_0//:cfg_if",
-        "@raze__libc__0_2_112//:libc",
-        "@raze__miniz_oxide__0_4_4//:miniz_oxide",
-        "@raze__object__0_27_1//:object",
-        "@raze__rustc_demangle__0_1_21//:rustc_demangle",
+        ":futures_core_build_script",
     ],
 )
-
-# Unsupported target "accuracy" with type "test" omitted
-
-# Unsupported target "concurrent-panics" with type "test" omitted
-
-# Unsupported target "long_fn_name" with type "test" omitted
-
-# Unsupported target "skip_inner_frames" with type "test" omitted
-
-# Unsupported target "smoke" with type "test" omitted

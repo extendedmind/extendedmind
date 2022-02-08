@@ -118,9 +118,9 @@ rust_library(
     deps = [
         "@raze__async_channel__1_6_1//:async_channel",
         "@raze__async_lock__2_4_0//:async_lock",
-        "@raze__crossbeam_utils__0_8_6//:crossbeam_utils",
-        "@raze__futures_core__0_3_19//:futures_core",
-        "@raze__futures_io__0_3_19//:futures_io",
+        "@raze__crossbeam_utils__0_8_7//:crossbeam_utils",
+        "@raze__futures_core__0_3_21//:futures_core",
+        "@raze__futures_io__0_3_21//:futures_io",
         "@raze__kv_log_macro__1_0_7//:kv_log_macro",
         "@raze__log__0_4_14//:log",
         "@raze__memchr__2_4_1//:memchr",
@@ -148,8 +148,8 @@ rust_library(
         (
             "@rules_rust//rust/platform:wasm32-unknown-unknown",
         ): [
-            "@raze__futures_channel__0_3_19//:futures_channel",
-            "@raze__gloo_timers__0_2_2//:gloo_timers",
+            "@raze__futures_channel__0_3_21//:futures_channel",
+            "@raze__gloo_timers__0_2_3//:gloo_timers",
             "@raze__wasm_bindgen_futures__0_4_28//:wasm_bindgen_futures",
         ],
         "//conditions:default": [],

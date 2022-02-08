@@ -38,14 +38,25 @@ load(
 )
 
 cargo_build_script(
-    name = "proc_macro_error_build_script",
+    name = "futures_util_build_script",
     srcs = glob(["**/*.rs"]),
     build_script_env = {
     },
     crate_features = [
+        "alloc",
+        "async-await",
+        "async-await-macro",
+        "channel",
         "default",
-        "syn",
-        "syn-error",
+        "futures-channel",
+        "futures-io",
+        "futures-macro",
+        "futures-sink",
+        "io",
+        "memchr",
+        "sink",
+        "slab",
+        "std",
     ],
     crate_root = "build.rs",
     data = glob(["**"]),
@@ -57,26 +68,40 @@ cargo_build_script(
         "cargo-raze",
         "manual",
     ],
-    version = "1.0.4",
+    version = "0.3.21",
     visibility = ["//visibility:private"],
     deps = [
-        "@raze__version_check__0_9_4//:version_check",
     ],
 )
 
+# Unsupported target "flatten_unordered" with type "bench" omitted
+
+# Unsupported target "futures_unordered" with type "bench" omitted
+
 rust_library(
-    name = "proc_macro_error",
+    name = "futures_util",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "alloc",
+        "async-await",
+        "async-await-macro",
+        "channel",
         "default",
-        "syn",
-        "syn-error",
+        "futures-channel",
+        "futures-io",
+        "futures-macro",
+        "futures-sink",
+        "io",
+        "memchr",
+        "sink",
+        "slab",
+        "std",
     ],
     crate_root = "src/lib.rs",
     data = [],
     edition = "2018",
     proc_macro_deps = [
-        "@raze__proc_macro_error_attr__1_0_4//:proc_macro_error_attr",
+        "@raze__futures_macro__0_3_21//:futures_macro",
     ],
     rustc_flags = [
         "--cap-lints=allow",
@@ -85,19 +110,19 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "1.0.4",
+    version = "0.3.21",
 
     # buildifier: leave-alone
     deps = [
-        ":proc_macro_error_build_script",
-        "@raze__proc_macro2__1_0_36//:proc_macro2",
-        "@raze__quote__1_0_15//:quote",
-        "@raze__syn__1_0_86//:syn",
+        ":futures_util_build_script",
+        "@raze__futures_channel__0_3_21//:futures_channel",
+        "@raze__futures_core__0_3_21//:futures_core",
+        "@raze__futures_io__0_3_21//:futures_io",
+        "@raze__futures_sink__0_3_21//:futures_sink",
+        "@raze__futures_task__0_3_21//:futures_task",
+        "@raze__memchr__2_4_1//:memchr",
+        "@raze__pin_project_lite__0_2_8//:pin_project_lite",
+        "@raze__pin_utils__0_1_0//:pin_utils",
+        "@raze__slab__0_4_5//:slab",
     ],
 )
-
-# Unsupported target "macro-errors" with type "test" omitted
-
-# Unsupported target "ok" with type "test" omitted
-
-# Unsupported target "runtime-errors" with type "test" omitted

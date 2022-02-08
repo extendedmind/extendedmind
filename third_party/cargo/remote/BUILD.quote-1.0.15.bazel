@@ -32,12 +32,11 @@ licenses([
 # Generated Targets
 
 rust_library(
-    name = "socket2",
+    name = "quote",
     srcs = glob(["**/*.rs"]),
-    aliases = {
-    },
     crate_features = [
-        "all",
+        "default",
+        "proc-macro",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -49,27 +48,14 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "0.4.2",
+    version = "1.0.15",
 
     # buildifier: leave-alone
     deps = [
-    ] + selects.with_or({
-        # cfg(unix)
-        (
-            "@rules_rust//rust/platform:x86_64-apple-darwin",
-            "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
-            "@rules_rust//rust/platform:aarch64-linux-android",
-        ): [
-            "@raze__libc__0_2_112//:libc",
-        ],
-        "//conditions:default": [],
-    }) + selects.with_or({
-        # cfg(windows)
-        (
-            "@rules_rust//rust/platform:x86_64-pc-windows-msvc",
-        ): [
-            "@raze__winapi__0_3_9//:winapi",
-        ],
-        "//conditions:default": [],
-    }),
+        "@raze__proc_macro2__1_0_36//:proc_macro2",
+    ],
 )
+
+# Unsupported target "compiletest" with type "test" omitted
+
+# Unsupported target "test" with type "test" omitted
