@@ -1,14 +1,20 @@
-use crate::common::FeedWrapper;
-use crate::common::PeerState;
+use crate::common::{EngineEvent, FeedWrapper, PeerState};
 use anyhow::Result;
+use async_std::channel::Sender;
 use async_std::sync::{Arc, Mutex};
-use async_std::task;
+use automerge::Backend;
 use futures::stream::StreamExt;
 use log::*;
 use random_access_storage::RandomAccess;
 use std::collections::HashMap;
 use std::convert::TryFrom;
 use std::fmt::Debug;
+
+#[cfg(target_arch = "wasm32")]
+use wasm_bindgen_futures::spawn_local;
+
+#[cfg(not(target_arch = "wasm32"))]
+use async_std::task;
 
 /// A container for hypercores.
 #[derive(Debug)]
@@ -41,24 +47,61 @@ where
 pub fn on_peer<T: 'static>(
     feed_wrapper: &Arc<FeedWrapper<T>>,
     mut channel: hypercore_protocol::Channel,
+    mut engine_event_sender: Sender<EngineEvent>,
+    active: bool,
 ) where
     T: RandomAccess<Error = Box<dyn std::error::Error + Send + Sync>> + Debug + Send,
 {
     let mut state = PeerState::default();
     let mut feed = feed_wrapper.feed.clone();
-
+    let msg = hypercore_protocol::schema::Want {
+        start: 0,
+        length: None,
+    };
     #[cfg(not(target_arch = "wasm32"))]
     task::spawn(async move {
-        let msg = hypercore_protocol::schema::Want {
-            start: 0,
-            length: None,
-        };
-        channel
-            .send(hypercore_protocol::Message::Want(msg))
-            .await
-            .unwrap();
+        if active {
+            debug!("Sending Want from non-WASM");
+            channel
+                .send(hypercore_protocol::Message::Want(msg))
+                .await
+                .unwrap();
+        }
+
         while let Some(message) = channel.next().await {
-            let result = on_message(&mut feed, &mut state, &mut channel, message).await;
+            let result = on_message(
+                &mut feed,
+                &mut state,
+                &mut channel,
+                message,
+                &mut engine_event_sender,
+            )
+            .await;
+            if let Err(e) = result {
+                error!("protocol error: {}", e);
+                break;
+            }
+        }
+    });
+
+    #[cfg(target_arch = "wasm32")]
+    spawn_local(async move {
+        if active {
+            debug!("Sending Want from WASM");
+            channel
+                .send(hypercore_protocol::Message::Want(msg))
+                .await
+                .unwrap();
+        }
+        while let Some(message) = channel.next().await {
+            let result = on_message(
+                &mut feed,
+                &mut state,
+                &mut channel,
+                message,
+                &mut engine_event_sender,
+            )
+            .await;
             if let Err(e) = result {
                 error!("protocol error: {}", e);
                 break;
@@ -72,12 +115,14 @@ async fn on_message<T>(
     state: &mut PeerState,
     channel: &mut hypercore_protocol::Channel,
     message: hypercore_protocol::Message,
+    engine_event_sender: &mut Sender<EngineEvent>,
 ) -> Result<()>
 where
     T: RandomAccess<Error = Box<dyn std::error::Error + Send + Sync>> + Debug + Send,
 {
     match message {
         hypercore_protocol::Message::Open(_) => {
+            debug!("Message::Open");
             let msg = hypercore_protocol::schema::Want {
                 start: 0,
                 length: None,
@@ -85,6 +130,7 @@ where
             channel.send(hypercore_protocol::Message::Want(msg)).await?;
         }
         hypercore_protocol::Message::Want(msg) => {
+            debug!("Message::Want");
             let mut feed = feed.lock().await;
             if feed.has(msg.start) {
                 channel
@@ -98,6 +144,7 @@ where
             }
         }
         hypercore_protocol::Message::Have(msg) => {
+            debug!("Message::Have");
             if state.remote_head == None {
                 state.remote_head = Some(msg.start);
                 let msg = hypercore_protocol::schema::Request {
@@ -116,6 +163,7 @@ where
             }
         }
         hypercore_protocol::Message::Request(request) => {
+            debug!("Message::Request");
             let mut feed = feed.lock().await;
             let index = request.index;
             let value = feed.get(index).await?;
@@ -138,6 +186,7 @@ where
             channel.data(message).await?;
         }
         hypercore_protocol::Message::Data(msg) => {
+            debug!("Message::Data");
             let mut feed = feed.lock().await;
             let value: Option<&[u8]> = match msg.value.as_ref() {
                 None => None,
@@ -168,29 +217,13 @@ where
 
             feed.put(msg.index, value, proof.clone()).await?;
 
-            let i = msg.index;
-            let node = feed.get(i).await?;
-            if let Some(value) = node {
-                println!("feed idx {}: {:?}", i, String::from_utf8(value).unwrap());
-            } else {
-                println!("feed idx {}: {:?}", i, "NONE");
-            }
-
-            let next = msg.index + 1;
-            if let Some(remote_head) = state.remote_head {
-                if remote_head >= next {
-                    // Request next data block.
-                    let msg = hypercore_protocol::schema::Request {
-                        index: next,
-                        bytes: None,
-                        hash: None,
-                        nodes: None,
-                    };
-                    channel
-                        .send(hypercore_protocol::Message::Request(msg))
-                        .await?;
-                }
-            };
+            // TODO: This only works if the backend is the message, read all of the feed first
+            // and then find out how to construct the backend!
+            let backend = Backend::load(value.unwrap().to_vec()).unwrap();
+            engine_event_sender
+                .send(EngineEvent::BackendLoaded(backend))
+                .await
+                .unwrap();
         }
         _ => {}
     };

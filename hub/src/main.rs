@@ -15,7 +15,7 @@ use std::time::{Duration, Instant};
 use tide::{Body, Response, StatusCode};
 use tide_websockets::{Message, WebSocket};
 
-use extendedmind_engine::{Bytes, ChannelWriter, Engine, RandomAccessDisk};
+use extendedmind_engine::{Bytes, ChannelWriter, Engine, EngineEvent, RandomAccessDisk};
 
 #[derive(Clone, Copy)]
 #[repr(u8)]
@@ -117,10 +117,19 @@ async fn async_main(initial_state: State) -> Result<()> {
                 let (engine_sender, engine_receiver) = req.state().channels[discovery_key.as_ref()]
                     .engine_channel
                     .clone();
+                let (engine_event_sender, engine_event_receiver): (
+                    Sender<EngineEvent>,
+                    Receiver<EngineEvent>,
+                ) = async_std::channel::bounded(1000);
                 let engine = req.state().engine.clone();
                 task::spawn(async move {
                     engine
-                        .connect_passive(engine_receiver, ChannelWriter::new(engine_sender))
+                        .connect_passive(
+                            ChannelWriter::new(engine_sender),
+                            engine_receiver,
+                            engine_event_sender,
+                            engine_event_receiver,
+                        )
                         .await
                         .ok();
                 });

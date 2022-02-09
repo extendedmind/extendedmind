@@ -1,6 +1,12 @@
 use async_std::sync::{Arc, Mutex};
+use automerge::Backend;
 use random_access_storage::RandomAccess;
 use std::fmt::Debug;
+
+#[derive(Clone, Debug)]
+pub enum EngineEvent {
+    BackendLoaded(Backend),
+}
 
 /// A PeerState stores the head seq of the remote.
 /// This would have a bitfield to support sparse sync in the actual impl.

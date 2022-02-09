@@ -2,7 +2,9 @@ use async_std::channel::{bounded, Receiver, Sender};
 use async_std::task;
 use async_tungstenite::{async_std::connect_async, tungstenite::Message};
 use clap::Parser;
-use extendedmind_engine::{get_discovery_key, get_public_key, Bytes, ChannelWriter, Engine};
+use extendedmind_engine::{
+    get_discovery_key, get_public_key, Bytes, ChannelWriter, Engine, EngineEvent,
+};
 use futures::prelude::*;
 use log::*;
 use std::io;
@@ -29,12 +31,19 @@ async fn run(url: &str, public_key: &str) -> Result<(), Box<dyn std::error::Erro
         Sender<Result<Bytes, io::Error>>,
         Receiver<Result<Bytes, io::Error>>,
     ) = bounded(1000);
+    let (engine_event_sender, engine_event_receiver): (Sender<EngineEvent>, Receiver<EngineEvent>) =
+        async_std::channel::bounded(1000);
 
     let hypercore_receiver = receiver.clone();
     let state_hypercore_sender = ChannelWriter::new(sender.clone());
     task::spawn(async move {
         engine
-            .connect_active(state_hypercore_sender, hypercore_receiver)
+            .connect_active(
+                state_hypercore_sender,
+                hypercore_receiver,
+                engine_event_sender,
+                engine_event_receiver,
+            )
             .await
             .unwrap();
     });

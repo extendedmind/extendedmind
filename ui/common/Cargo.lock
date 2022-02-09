@@ -693,6 +693,8 @@ dependencies = [
  "random-access-storage",
  "reusable-box-future",
  "smol_str",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
 ]
 
 [[package]]

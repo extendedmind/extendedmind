@@ -1,7 +1,7 @@
 mod channel_writer;
 
 use anyhow::Result;
-use async_std::channel::Receiver;
+use async_std::channel::{Receiver, Sender};
 use async_std::sync::{Arc, Mutex};
 use futures::io::{AsyncRead, AsyncWrite};
 use futures::stream::{IntoAsyncRead, StreamExt, TryStreamExt};
@@ -10,7 +10,7 @@ use random_access_memory::RandomAccessMemory;
 use smol_str::SmolStr;
 use std::collections::HashMap;
 use std::fmt::Debug;
-use std::io;
+use std::io::{self, Read, Seek, SeekFrom};
 use std::path::PathBuf;
 
 // Non-WASM imports
@@ -33,6 +33,7 @@ pub use random_access_storage::RandomAccess;
 mod communication;
 use communication::FeedStore;
 mod common;
+pub use common::EngineEvent;
 use common::FeedWrapper;
 
 #[derive(derivative::Derivative)]
@@ -46,7 +47,7 @@ where
     pub feedstore: Arc<FeedStore<T>>,
 }
 
-fn get_initial_data() -> Arc<Mutex<Option<automerge::Backend>>> {
+fn get_initial_backend() -> automerge::Backend {
     let mut backend = automerge::Backend::new();
     let mut frontend = automerge::Frontend::new();
     let (_output, change) = frontend
@@ -54,7 +55,7 @@ fn get_initial_data() -> Arc<Mutex<Option<automerge::Backend>>> {
             let mut initial_value = HashMap::<SmolStr, automerge::Value>::new();
             initial_value.insert(
                 "version".into(),
-                automerge::Value::Primitive(automerge::Primitive::Uint(0)),
+                automerge::Value::Primitive(automerge::Primitive::Uint(2)),
             );
             let initial_value = automerge::Value::Map(initial_value);
             doc.add_change(automerge::LocalChange::set(
@@ -64,7 +65,7 @@ fn get_initial_data() -> Arc<Mutex<Option<automerge::Backend>>> {
         })
         .unwrap();
     backend.apply_local_change(change.unwrap()).unwrap();
-    Arc::new(Mutex::new(Some(backend)))
+    backend
 }
 
 pub fn get_public_key(public_key: &str) -> hypercore::PublicKey {
@@ -87,32 +88,44 @@ impl Engine<RandomAccessDisk> {
         let mut feedstore: FeedStore<RandomAccessDisk> = FeedStore::new();
 
         // Create a hypercore
+        let backend = get_initial_backend();
         let feed_dir = data_root_dir.join(PathBuf::from(format!("{}.db", is_initiator)));
         let primary_feed = if let Some(public_key) = public_key {
             let storage = hypercore::Storage::new_disk(&feed_dir, false)
                 .await
                 .unwrap();
-            dbg!("Disk: Using given public key {}", &public_key);
+            debug!("Disk: Using given public key {}", &public_key);
             let public_key = get_public_key(&public_key);
             hypercore::Feed::builder(public_key, storage)
                 .build()
                 .await
                 .unwrap()
         } else {
-            let primary_feed = hypercore::Feed::open(&feed_dir).await.unwrap();
+            let mut primary_feed = hypercore::Feed::open(&feed_dir).await.unwrap();
             let public_key = hex::encode(primary_feed.public_key());
             let mut hub_key_file = std::fs::OpenOptions::new()
                 .create(true)
+                .read(true)
                 .write(true)
-                .truncate(true)
                 .open(data_root_dir.join("HUB_KEY.txt"))
                 .unwrap();
-            hub_key_file.write_all(&public_key.as_bytes()).unwrap();
-            hub_key_file.flush().unwrap();
-            dbg!(
+            let mut existing_hub_key = String::new();
+            let bytes_read = hub_key_file.read_to_string(&mut existing_hub_key).unwrap();
+            if bytes_read > 0 && existing_hub_key.eq(&public_key) {
+                debug!("Already created hypercore opened");
+            } else {
+                debug!("New hypercore created, setting initial data");
+                hub_key_file.set_len(0).unwrap();
+                hub_key_file.seek(SeekFrom::Start(0)).unwrap();
+                hub_key_file.write_all(&public_key.as_bytes()).unwrap();
+                hub_key_file.flush().unwrap();
+                let data = backend.save().unwrap();
+                primary_feed.append(data.as_slice()).await.unwrap();
+            }
+
+            debug!(
                 "Disk: Reading public key, init: {} value: {}",
-                is_initiator,
-                public_key
+                is_initiator, public_key
             );
             primary_feed
         };
@@ -122,7 +135,7 @@ impl Engine<RandomAccessDisk> {
         feedstore.add(primary_feed_wrapper);
 
         Engine {
-            data: get_initial_data(),
+            data: Arc::new(Mutex::new(Some(backend))),
             is_initiator,
             feedstore: Arc::new(feedstore),
         }
@@ -222,27 +235,39 @@ where
 
     pub async fn connect_passive(
         self,
-        receiver: Receiver<Result<Bytes, io::Error>>,
         sender: ChannelWriter,
+        receiver: Receiver<Result<Bytes, io::Error>>,
+        engine_event_sender: Sender<EngineEvent>,
+        engine_event_receiver: Receiver<EngineEvent>,
     ) -> Result<()> {
         let receiver: IntoAsyncRead<Receiver<Result<Bytes, io::Error>>> =
             receiver.into_async_read();
         let protocol = hypercore_protocol::ProtocolBuilder::new(false).connect_rw(receiver, sender);
-        self.poll_protocol(protocol).await
+        self.poll_protocol(protocol, engine_event_sender, engine_event_receiver, false)
+            .await
     }
 
     pub async fn connect_active(
         self,
         sender: ChannelWriter,
         receiver: Receiver<Result<Bytes, io::Error>>,
+        engine_event_sender: Sender<EngineEvent>,
+        engine_event_receiver: Receiver<EngineEvent>,
     ) -> Result<()> {
         let receiver: IntoAsyncRead<Receiver<Result<Bytes, io::Error>>> =
             receiver.into_async_read();
         let protocol = hypercore_protocol::ProtocolBuilder::new(true).connect_rw(receiver, sender);
-        self.poll_protocol(protocol).await
+        self.poll_protocol(protocol, engine_event_sender, engine_event_receiver, true)
+            .await
     }
 
-    async fn poll_protocol<IO>(self, mut protocol: hypercore_protocol::Protocol<IO>) -> Result<()>
+    async fn poll_protocol<IO>(
+        self,
+        mut protocol: hypercore_protocol::Protocol<IO>,
+        engine_event_sender: Sender<EngineEvent>,
+        _engine_event_receiver: Receiver<EngineEvent>, // TODO: Use receiver to initiate engine actions
+        active: bool,
+    ) -> Result<()>
     where
         IO: AsyncWrite + AsyncRead + Send + Unpin + 'static,
     {
@@ -271,7 +296,7 @@ where
                 }
                 hypercore_protocol::Event::Channel(channel) => {
                     if let Some(feed) = feedstore.get(&channel.discovery_key()) {
-                        communication::on_peer(feed, channel);
+                        communication::on_peer(feed, channel, engine_event_sender.clone(), active);
                     }
                 }
                 hypercore_protocol::Event::Close(_dkey) => {}
