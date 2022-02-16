@@ -64,7 +64,7 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__libc__0_2_117//:libc",
+        "@raze__libc__0_2_118//:libc",
         "@raze__num_integer__0_1_44//:num_integer",
         "@raze__num_traits__0_2_14//:num_traits",
         "@raze__serde__1_0_136//:serde",

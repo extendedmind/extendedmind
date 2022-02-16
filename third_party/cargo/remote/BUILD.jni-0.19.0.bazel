@@ -38,13 +38,12 @@ load(
 )
 
 cargo_build_script(
-    name = "serde_json_build_script",
+    name = "jni_build_script",
     srcs = glob(["**/*.rs"]),
     build_script_env = {
     },
     crate_features = [
         "default",
-        "std",
     ],
     crate_root = "build.rs",
     data = glob(["**"]),
@@ -56,18 +55,21 @@ cargo_build_script(
         "cargo-raze",
         "manual",
     ],
-    version = "1.0.78",
+    version = "0.19.0",
     visibility = ["//visibility:private"],
     deps = [
+        "@raze__jni_sys__0_3_0//:jni_sys",
+        "@raze__walkdir__2_3_2//:walkdir",
     ],
 )
 
+# Unsupported target "api_calls" with type "bench" omitted
+
 rust_library(
-    name = "serde_json",
+    name = "jni",
     srcs = glob(["**/*.rs"]),
     crate_features = [
         "default",
-        "std",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -79,27 +81,45 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "1.0.78",
+    version = "0.19.0",
 
     # buildifier: leave-alone
     deps = [
-        ":serde_json_build_script",
-        "@raze__itoa__1_0_1//:itoa",
-        "@raze__ryu__1_0_9//:ryu",
-        "@raze__serde__1_0_136//:serde",
+        ":jni_build_script",
+        "@raze__cesu8__1_1_0//:cesu8",
+        "@raze__combine__4_6_3//:combine",
+        "@raze__jni_sys__0_3_0//:jni_sys",
+        "@raze__log__0_4_14//:log",
+        "@raze__thiserror__1_0_30//:thiserror",
     ],
 )
 
-# Unsupported target "compiletest" with type "test" omitted
+# Unsupported target "executor" with type "test" omitted
 
-# Unsupported target "debug" with type "test" omitted
+# Unsupported target "executor_nested_attach" with type "test" omitted
 
-# Unsupported target "lexical" with type "test" omitted
+# Unsupported target "java_integers" with type "test" omitted
 
-# Unsupported target "map" with type "test" omitted
+# Unsupported target "jmap" with type "test" omitted
 
-# Unsupported target "regression" with type "test" omitted
+# Unsupported target "jni_api" with type "test" omitted
 
-# Unsupported target "stream" with type "test" omitted
+# Unsupported target "jni_global_refs" with type "test" omitted
 
-# Unsupported target "test" with type "test" omitted
+# Unsupported target "threads_attach_guard" with type "test" omitted
+
+# Unsupported target "threads_detach" with type "test" omitted
+
+# Unsupported target "threads_detach_daemon" with type "test" omitted
+
+# Unsupported target "threads_explicit_detach" with type "test" omitted
+
+# Unsupported target "threads_explicit_detach_daemon" with type "test" omitted
+
+# Unsupported target "threads_explicit_detach_permanent" with type "test" omitted
+
+# Unsupported target "threads_nested_attach_daemon" with type "test" omitted
+
+# Unsupported target "threads_nested_attach_guard" with type "test" omitted
+
+# Unsupported target "threads_nested_attach_permanently" with type "test" omitted

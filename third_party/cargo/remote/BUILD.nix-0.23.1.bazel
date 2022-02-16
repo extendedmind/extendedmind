@@ -54,7 +54,7 @@ rust_library(
     deps = [
         "@raze__bitflags__1_3_2//:bitflags",
         "@raze__cfg_if__1_0_0//:cfg_if",
-        "@raze__libc__0_2_117//:libc",
+        "@raze__libc__0_2_118//:libc",
     ] + selects.with_or({
         # cfg(not(target_os = "redox"))
         (
@@ -62,7 +62,9 @@ rust_library(
             "@rules_rust//rust/platform:x86_64-pc-windows-msvc",
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
+            "@rules_rust//rust/platform:i686-linux-android",
             "@rules_rust//rust/platform:wasm32-unknown-unknown",
+            "@rules_rust//rust/platform:x86_64-linux-android",
         ): [
             "@raze__memoffset__0_6_5//:memoffset",
         ],

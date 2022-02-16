@@ -202,6 +202,15 @@ alias(
 )
 
 alias(
+    name = "jni",
+    actual = "@raze__jni__0_19_0//:jni",
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+)
+
+alias(
     name = "js_sys",
     actual = "@raze__js_sys__0_3_55//:js_sys",
     tags = [

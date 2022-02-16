@@ -32,16 +32,23 @@ licenses([
 # Generated Targets
 
 rust_library(
-    name = "async_session",
+    name = "rand",
     srcs = glob(["**/*.rs"]),
+    aliases = {
+    },
     crate_features = [
+        "alloc",
+        "default",
+        "getrandom",
+        "libc",
+        "rand_chacha",
+        "small_rng",
+        "std",
+        "std_rng",
     ],
     crate_root = "src/lib.rs",
     data = [],
     edition = "2018",
-    proc_macro_deps = [
-        "@raze__async_trait__0_1_52//:async_trait",
-    ],
     rustc_flags = [
         "--cap-lints=allow",
     ],
@@ -49,23 +56,23 @@ rust_library(
         "cargo-raze",
         "manual",
     ],
-    version = "2.0.1",
+    version = "0.8.5",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__anyhow__1_0_53//:anyhow",
-        "@raze__async_std__1_10_0//:async_std",
-        "@raze__base64__0_12_3//:base64",
-        "@raze__bincode__1_3_3//:bincode",
-        "@raze__blake3__0_3_8//:blake3",
-        "@raze__chrono__0_4_19//:chrono",
-        "@raze__hmac__0_8_1//:hmac",
-        "@raze__kv_log_macro__1_0_7//:kv_log_macro",
-        "@raze__rand__0_7_3//:rand",
-        "@raze__serde__1_0_136//:serde",
-        "@raze__serde_json__1_0_79//:serde_json",
-        "@raze__sha2__0_9_9//:sha2",
-    ],
+        "@raze__rand_chacha__0_3_1//:rand_chacha",
+        "@raze__rand_core__0_6_3//:rand_core",
+    ] + selects.with_or({
+        # cfg(unix)
+        (
+            "@rules_rust//rust/platform:x86_64-apple-darwin",
+            "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
+            "@rules_rust//rust/platform:aarch64-linux-android",
+            "@rules_rust//rust/platform:i686-linux-android",
+            "@rules_rust//rust/platform:x86_64-linux-android",
+        ): [
+            "@raze__libc__0_2_118//:libc",
+        ],
+        "//conditions:default": [],
+    }),
 )
-
-# Unsupported target "test" with type "test" omitted

@@ -2,6 +2,10 @@ name: Build
 on: push
 jobs:
   build-and-test:
+    # Android build, maybe use OSX for everything?
+    #
+    #  https://proandroiddev.com/getting-started-ci-cd-for-android-project-part-3-github-actions-157857224cb1
+    #  https://github.com/ReactiveCircus/android-emulator-runner
     name: Build and Test with Bazel
     runs-on: ubuntu-latest
     steps:
@@ -14,7 +18,7 @@ jobs:
             ~/.cache/bazelisk
             ~/.cache/bazel
             ~/.cache/ms-playwright
-          key: ${{ runner.os }}-${{ env.cache-name }}-r2
+          key: ${{ runner.os }}-${{ env.cache-name }}-r3
       - name: Check out the repo
         uses: actions/checkout@v2
       - name: Run Bazel build
