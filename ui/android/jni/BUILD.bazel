@@ -1,0 +1,21 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@rules_rust//rust:defs.bzl", "rust_shared_library", "rustfmt_test")
+
+deps = [
+    # "//ui/common:extendedmind_ui_common",
+    "//third_party/cargo:jni"
+]
+
+srcs = glob(["src/**"])
+
+rust_shared_library(
+    name = "extendedmind_ui_android_jni",
+    deps = deps,
+    srcs = srcs,
+)
+
+rustfmt_test(
+    name = "extendedmind_ui_android_jni_rustfmt_test",
+    targets = [":extendedmind_ui_android_jni"],
+)

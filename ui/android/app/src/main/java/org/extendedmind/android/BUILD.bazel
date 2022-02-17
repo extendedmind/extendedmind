@@ -1,0 +1,22 @@
+package(
+    default_visibility = ["//ui:__subpackages__"],
+)
+
+android_library(
+    name = "extendedmind_ui_android_lib",
+    srcs = [
+        "MainActivity.java",
+        "JNICallback.java",
+    ],
+    manifest = "//ui/android/app/src/main:AndroidManifest.xml",
+    resource_files = ["//ui/android/app/src/main:res"],
+    deps = [
+        "@maven//:androidx_appcompat_appcompat",
+        "@maven//:androidx_constraintlayout_constraintlayout",
+    ],
+    # TODO: Doesn't actually work: it goes into the APK but only the executor platform
+    assets = [
+        "//ui/android/jni:extendedmind_ui_android_jni",
+    ],
+    assets_dir = "",
+)

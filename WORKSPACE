@@ -53,15 +53,24 @@ capnp_java_toolchain()
 # Rust
 http_archive(
     name = "rules_rust",
-    sha256 = "257d08303b2814ff29f11d1d4f2ed9dff39d5fa9f7362dc802faa090875ea5d9",
-    strip_prefix = "rules_rust-fd436df9e2d4ac1b234ca5e969e34a4cb5891910",
+    sha256 = "f670898f3ba391ec3cc2b18aef37a92a4f602fa68c9e6cb52d201d0966af369b",
+    strip_prefix = "rules_rust-e7a9b8b1843ffb0e1c6c645590b0ac18b28f11ae",
     urls = [
-        # Master branch as of 2022-01-18
-        "https://github.com/bazelbuild/rules_rust/archive/fd436df9e2d4ac1b234ca5e969e34a4cb5891910.tar.gz",
+        # Master branch as of 2022-02-15
+        "https://github.com/bazelbuild/rules_rust/archive/e7a9b8b1843ffb0e1c6c645590b0ac18b28f11ae.tar.gz",
     ],
 )
-load("@rules_rust//rust:repositories.bzl", "rust_repositories")
-rust_repositories(version = "1.56.1", edition="2018", rustfmt_version = "1.56.1")
+load("@rules_rust//rust:repositories.bzl", "rust_register_toolchains", "rust_repository_set")
+RUST_VERSION = "1.56.1"
+rust_register_toolchains(version = RUST_VERSION, edition="2018", rustfmt_version = RUST_VERSION)
+rust_repository_set(
+    name = "rust_apple_x86_64",
+    edition = "2018",
+    version = RUST_VERSION,
+    rustfmt_version = RUST_VERSION,
+    exec_triple = "x86_64-apple-darwin",
+    extra_target_triples=["aarch64-linux-android"]
+)
 
 load("@rules_rust//wasm_bindgen:repositories.bzl", "rust_wasm_bindgen_repositories")
 rust_wasm_bindgen_repositories()
@@ -87,3 +96,60 @@ load("@cargo_raze//:repositories.bzl", "cargo_raze_repositories")
 cargo_raze_repositories()
 load("@cargo_raze//:transitive_deps.bzl", "cargo_raze_transitive_deps")
 cargo_raze_transitive_deps()
+
+# Android / Java
+#
+# The required older build-tools and NDK, and the SDK for the oldest supported device can be
+# locally installed with (using java 1.8):
+#
+#    sdkmanager "build-tools;30.0.3"
+#    sdkmanager "ndk;21.4.7075529"
+#    sdkmanager "system-images;android-18;default;armeabi-v7a"
+#
+# Also to get gradle<->android bridge to work, install to cargo platforms
+#
+#    rustup target add armv7-linux-androideabi
+#    rustup target add aarch64-linux-android
+#    rustup target add i686-linux-android
+#    rustup target add x86_64-linux-android
+#
+# and then setting ANDROID_HOME normally and augmenting that with
+#
+#    export ANDROID_NDK_HOME="$ANDROID_HOME/ndk/21.4.7075529"
+#
+android_sdk_repository(name = "androidsdk", build_tools_version = "30.0.3")
+android_ndk_repository(name = "androidndk")
+
+ATS_COMMIT = "8db1c766bd88b5e22e177c9783b9f6af8839c703"
+http_archive(
+    name = "android_test_support",
+    sha256 = "2d5832f18decf4e89c5525a12446a0321a8751ae95f58d9a6deb397068355044",
+    strip_prefix = "android-test-%s" % ATS_COMMIT,
+    urls = ["https://github.com/android/android-test/archive/%s.tar.gz" % ATS_COMMIT],
+)
+load("@android_test_support//:repo.bzl", "android_test_repositories")
+android_test_repositories()
+
+RULES_JVM_EXTERNAL_TAG = "4.2"
+RULES_JVM_EXTERNAL_SHA = "cd1a77b7b02e8e008439ca76fd34f5b07aecb8c752961f9640dea15e9e5ba1ca"
+
+http_archive(
+    name = "rules_jvm_external",
+    strip_prefix = "rules_jvm_external-%s" % RULES_JVM_EXTERNAL_TAG,
+    sha256 = RULES_JVM_EXTERNAL_SHA,
+    url = "https://github.com/bazelbuild/rules_jvm_external/archive/%s.zip" % RULES_JVM_EXTERNAL_TAG,
+)
+
+load("@rules_jvm_external//:defs.bzl", "maven_install")
+
+maven_install(
+    artifacts = [
+        # Newer versions don't work yet, probably has to do with build tools 30.0.0 above^
+        "androidx.appcompat:appcompat:1.3.1",
+        "androidx.constraintlayout:constraintlayout:2.0.4",
+    ],
+    repositories = [
+        "https://repo1.maven.org/maven2",
+        "https://maven.google.com",
+    ],
+)

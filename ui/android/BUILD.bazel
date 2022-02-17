@@ -1,0 +1,18 @@
+# Oldest supported device is Galaxy Nexus with SDK 18 Jelly Bean, released 17 November 2011:
+#
+#  bazel query --output=build @android_test_support//tools/android/emulated_devices/galaxy_nexus:android_18_arm
+
+platform(
+    name = "android_arm64",
+    constraint_values = [
+        "@platforms//os:android",
+        "@platforms//cpu:aarch64",
+    ],
+)
+
+android_binary(
+    name = "extendedmind_ui_android",
+    manifest = "//ui/android/app/src/main:AndroidManifest.xml",
+    custom_package = "org.extendedmind.android",
+    deps = ["//ui/android/app/src/main/java/org/extendedmind/android:extendedmind_ui_android_lib"],
+)
