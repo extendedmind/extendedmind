@@ -2,10 +2,6 @@ name: Build
 on: push
 jobs:
   build-and-test:
-    # Android build, maybe use OSX for everything?
-    #
-    #  https://proandroiddev.com/getting-started-ci-cd-for-android-project-part-3-github-actions-157857224cb1
-    #  https://github.com/ReactiveCircus/android-emulator-runner
     name: Build and Test with Bazel
     runs-on: ubuntu-latest
     steps:
