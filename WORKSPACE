@@ -63,17 +63,27 @@ http_archive(
 load("@rules_rust//rust:repositories.bzl", "rust_register_toolchains", "rust_repository_set")
 RUST_VERSION = "1.56.1"
 rust_register_toolchains(version = RUST_VERSION, edition="2018", rustfmt_version = RUST_VERSION)
+# rust_repository_set(
+#     name = "rust_apple_x86_64",
+#     edition = "2018",
+#     version = RUST_VERSION,
+#     rustfmt_version = RUST_VERSION,
+#     exec_triple = "x86_64-apple-darwin",
+#     extra_target_triples=[
+#         # "armv7-linux-android", TODO: This doesn't yet work
+#         "aarch64-linux-android",
+#         "i686-linux-android",
+#         "x86_64-linux-android"
+#     ],
+# )
 rust_repository_set(
-    name = "rust_apple_x86_64",
+    name = "rust_linux_x86_64",
     edition = "2018",
     version = RUST_VERSION,
     rustfmt_version = RUST_VERSION,
-    exec_triple = "x86_64-apple-darwin",
+    exec_triple = "x86_64-unknown-linux-gnu",
     extra_target_triples=[
-        # "armv7-linux-android", TODO: This doesn't yet work
-        "aarch64-linux-android",
         "i686-linux-android",
-        "x86_64-linux-android"
     ],
 )
 
