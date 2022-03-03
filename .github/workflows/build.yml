@@ -21,7 +21,11 @@ jobs:
           key: ${{ runner.os }}-${{ env.cache-name }}-r3
       - name: Check out the repo
         uses: actions/checkout@v2
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
+      - name: Install Android build-tools and NDK
+        run: echo "y" | $ANDROID_HOME/tools/bin/sdkmanager "build-tools;30.0.3" "ndk;21.4.7075529"
       - name: Run Bazel build
         uses: ttiurani/bazel-action@develop
         with:
-          command: 'test //...'
+          command: 'test //... --fat_apk_cpu=x86'
