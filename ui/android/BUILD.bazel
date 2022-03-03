@@ -1,14 +1,6 @@
-# Oldest supported device is Galaxy Nexus with SDK 18 Jelly Bean, released 17 November 2011:
+# Oldest supported device is Nexus 4 with SDK 21 5.0 Lollipop, released November 13, 2012:
 #
-#  bazel query --output=build @android_test_support//tools/android/emulated_devices/galaxy_nexus:android_18_arm
-
-platform(
-    name = "android_arm64",
-    constraint_values = [
-        "@platforms//os:android",
-        "@platforms//cpu:aarch64",
-    ],
-)
+#  bazel query --output=build @android_test_support//tools/android/emulated_devices/nexus_4:android_21_arm
 
 android_binary(
     name = "extendedmind_ui_android",

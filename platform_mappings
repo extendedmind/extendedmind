@@ -1,0 +1,16 @@
+flags:
+  --crosstool_top=//external:android/crosstool
+  --android_cpu=armeabi-v7a
+    @rules_android//android/platforms:armeabi_v7a
+
+  --crosstool_top=//external:android/crosstool
+  --android_cpu=arm64-v8a
+    @rules_android//android/platforms:arm64-v8a
+
+  --crosstool_top=//external:android/crosstool
+  --android_cpu=x86
+    @rules_android//android/platforms:x86
+
+  --crosstool_top=//external:android/crosstool
+  --android_cpu=x86_64
+    @rules_android//android/platforms:x86_64

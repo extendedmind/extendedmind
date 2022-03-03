@@ -69,7 +69,12 @@ rust_repository_set(
     version = RUST_VERSION,
     rustfmt_version = RUST_VERSION,
     exec_triple = "x86_64-apple-darwin",
-    extra_target_triples=["aarch64-linux-android"]
+    extra_target_triples=[
+        # "armv7-linux-android", TODO: This doesn't yet work
+        "aarch64-linux-android",
+        "i686-linux-android",
+        "x86_64-linux-android"
+    ],
 )
 
 load("@rules_rust//wasm_bindgen:repositories.bzl", "rust_wasm_bindgen_repositories")
@@ -117,8 +122,17 @@ cargo_raze_transitive_deps()
 #
 #    export ANDROID_NDK_HOME="$ANDROID_HOME/ndk/21.4.7075529"
 #
+RULES_ANDROID_VERSION = "e8fbc49f913101e846235b9c9a31b3aa9788364a"
+RULES_ANDROID_SHA256 = "6a3cfb7b7e54cf704bf2ff169bde03666ae3b49a536c27a5f43d013388a7c38d"
+http_archive(
+    name = "rules_android",
+    strip_prefix = "rules_android-%s" % RULES_ANDROID_VERSION,
+    url = "https://github.com/bazelbuild/rules_android/archive/%s.tar.gz" % RULES_ANDROID_VERSION,
+    sha256 = RULES_ANDROID_SHA256
+)
 android_sdk_repository(name = "androidsdk", build_tools_version = "30.0.3")
 android_ndk_repository(name = "androidndk")
+# register_toolchains("@androidndk//:all")
 
 ATS_COMMIT = "8db1c766bd88b5e22e177c9783b9f6af8839c703"
 http_archive(
