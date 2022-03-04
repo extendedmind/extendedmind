@@ -75,6 +75,7 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
+        "crate-name=stdweb-internal-runtime",
         "manual",
     ],
     version = "0.1.5",

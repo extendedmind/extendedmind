@@ -48,6 +48,7 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
+        "crate-name=async-ctrlc",
         "manual",
     ],
     version = "1.2.0",

@@ -46,6 +46,7 @@ rust_proc_macro(
     ],
     tags = [
         "cargo-raze",
+        "crate-name=async-attributes",
         "manual",
     ],
     version = "1.1.2",

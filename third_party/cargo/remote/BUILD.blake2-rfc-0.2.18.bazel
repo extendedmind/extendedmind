@@ -46,6 +46,7 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
+        "crate-name=blake2-rfc",
         "manual",
     ],
     version = "0.2.18",

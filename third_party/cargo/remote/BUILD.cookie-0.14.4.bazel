@@ -98,6 +98,7 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
+        "crate-name=cookie",
         "manual",
     ],
     version = "0.14.4",

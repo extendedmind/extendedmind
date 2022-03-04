@@ -2,6 +2,14 @@
 #
 #  bazel query --output=build @android_test_support//tools/android/emulated_devices/nexus_4:android_21_arm
 
+platform(
+	name = "armeabi_v7a",
+	constraint_values = [
+		"@platforms//cpu:arm", # <- This is armv7 in upstream
+		"@platforms//os:android",
+	],
+)
+
 android_binary(
     name = "extendedmind_ui_android",
     manifest = "//ui/android/app/src/main:AndroidManifest.xml",

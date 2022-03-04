@@ -47,6 +47,7 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
+        "crate-name=futures-timer",
         "manual",
     ],
     version = "3.0.2",

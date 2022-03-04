@@ -75,6 +75,7 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
+        "crate-name=pharos",
         "manual",
     ],
     version = "0.5.3",

@@ -46,6 +46,7 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
+        "crate-name=stream-cipher",
         "manual",
     ],
     version = "0.7.1",

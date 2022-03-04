@@ -46,6 +46,7 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
+        "crate-name=flat-tree",
         "manual",
     ],
     version = "5.0.0",

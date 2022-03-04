@@ -51,6 +51,7 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
+        "crate-name=sval",
         "manual",
     ],
     version = "1.0.0-alpha.5",

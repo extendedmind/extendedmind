@@ -56,6 +56,7 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
+        "crate-name=aesni",
         "manual",
     ],
     version = "0.10.0",

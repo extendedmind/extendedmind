@@ -45,6 +45,7 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
+        "crate-name=dashmap",
         "manual",
     ],
     version = "4.0.2",

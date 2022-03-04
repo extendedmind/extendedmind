@@ -93,6 +93,7 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
+        "crate-name=hypercore-protocol",
         "manual",
     ],
     version = "0.3.1",

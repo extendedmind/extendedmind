@@ -96,6 +96,7 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
+        "crate-name=snow",
         "manual",
     ],
     version = "0.8.0",

@@ -56,6 +56,7 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
+        "crate-name=tungstenite",
         "manual",
     ],
     version = "0.13.0",

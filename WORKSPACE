@@ -1,5 +1,10 @@
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
+local_repository(
+    name = "rules_rust",
+    path = "/Users/ttiurani/devel/em/rules_rust",
+)
+
 # Node/Javascript/Typescript/Svelte/Esbuild
 http_archive(
     name = "build_bazel_rules_nodejs",
@@ -51,15 +56,16 @@ capnp_ts_toolchain()
 capnp_java_toolchain()
 
 # Rust
-http_archive(
-    name = "rules_rust",
-    sha256 = "f670898f3ba391ec3cc2b18aef37a92a4f602fa68c9e6cb52d201d0966af369b",
-    strip_prefix = "rules_rust-e7a9b8b1843ffb0e1c6c645590b0ac18b28f11ae",
-    urls = [
-        # Master branch as of 2022-02-15
-        "https://github.com/bazelbuild/rules_rust/archive/e7a9b8b1843ffb0e1c6c645590b0ac18b28f11ae.tar.gz",
-    ],
-)
+# http_archive(
+#     name = "rules_rust",
+#     sha256 = "84bce6b6a56b74429d226456c1060eddfb97b3dd22567ae5a793e72cc0bd6867",
+#     strip_prefix = "rules_rust-a9be87493cad02e192b927e42d66284f21fbe1ec",
+#     urls = [
+#         # Change to rules_rust upstream with one extra commit
+#         "https://github.com/ttiurani/rules_rust/archive/a9be87493cad02e192b927e42d66284f21fbe1ec.tar.gz",
+#     ],
+# )
+
 load("@rules_rust//rust:repositories.bzl", "rust_register_toolchains", "rust_repository_set")
 RUST_VERSION = "1.56.1"
 rust_register_toolchains(version = RUST_VERSION, edition="2018", rustfmt_version = RUST_VERSION)
@@ -70,7 +76,7 @@ rust_repository_set(
     rustfmt_version = RUST_VERSION,
     exec_triple = "x86_64-apple-darwin",
     extra_target_triples=[
-        # "armv7-linux-android", TODO: This doesn't yet work
+        "arm-linux-androideabi",
         "aarch64-linux-android",
         "i686-linux-android",
         "x86_64-linux-android"
@@ -96,8 +102,8 @@ rust_wasm_bindgen_repositories()
 load("//third_party/cargo:crates.bzl", "raze_fetch_remote_crates")
 raze_fetch_remote_crates()
 
-CARGO_RAZE_VERSION = "07c775bd436316f6e837d5dd5eec61320dddb79e"
-CARGO_RAZE_SHA256 = "82bf8d769611025b0b81872876dd830524693a6e93af96e18ee18701f1e50cf6"
+CARGO_RAZE_VERSION = "ef6f4bd083889bc2e792b16e51dc359dd71f5a6d"
+CARGO_RAZE_SHA256 = "dcae99bf247a837cba34eeb4ff34d91016c95e8940d3a92852154f8156f28586"
 
 http_archive(
     name = "cargo_raze",

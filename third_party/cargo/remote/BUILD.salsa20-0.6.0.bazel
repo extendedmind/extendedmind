@@ -48,6 +48,7 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
+        "crate-name=salsa20",
         "manual",
     ],
     version = "0.6.0",

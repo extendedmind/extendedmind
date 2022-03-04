@@ -45,6 +45,7 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
+        "crate-name=signature",
         "manual",
     ],
     version = "1.5.0",

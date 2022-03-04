@@ -48,6 +48,7 @@ rust_binary(
     ],
     tags = [
         "cargo-raze",
+        "crate-name=cat",
         "manual",
     ],
     version = "0.13.4",
@@ -64,6 +65,7 @@ rust_binary(
             "@rules_rust//rust/platform:x86_64-apple-darwin",
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
+            "@rules_rust//rust/platform:arm-linux-androideabi",
             "@rules_rust//rust/platform:i686-linux-android",
             "@rules_rust//rust/platform:x86_64-linux-android",
         ): [
@@ -90,6 +92,7 @@ rust_binary(
     ],
     tags = [
         "cargo-raze",
+        "crate-name=child_grandchild",
         "manual",
     ],
     version = "0.13.4",
@@ -106,6 +109,7 @@ rust_binary(
             "@rules_rust//rust/platform:x86_64-apple-darwin",
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
+            "@rules_rust//rust/platform:arm-linux-androideabi",
             "@rules_rust//rust/platform:i686-linux-android",
             "@rules_rust//rust/platform:x86_64-linux-android",
         ): [
@@ -132,6 +136,7 @@ rust_binary(
     ],
     tags = [
         "cargo-raze",
+        "crate-name=echo",
         "manual",
     ],
     version = "0.13.4",
@@ -148,6 +153,7 @@ rust_binary(
             "@rules_rust//rust/platform:x86_64-apple-darwin",
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
+            "@rules_rust//rust/platform:arm-linux-androideabi",
             "@rules_rust//rust/platform:i686-linux-android",
             "@rules_rust//rust/platform:x86_64-linux-android",
         ): [
@@ -174,6 +180,7 @@ rust_binary(
     ],
     tags = [
         "cargo-raze",
+        "crate-name=exe_in_dir",
         "manual",
     ],
     version = "0.13.4",
@@ -190,6 +197,7 @@ rust_binary(
             "@rules_rust//rust/platform:x86_64-apple-darwin",
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
+            "@rules_rust//rust/platform:arm-linux-androideabi",
             "@rules_rust//rust/platform:i686-linux-android",
             "@rules_rust//rust/platform:x86_64-linux-android",
         ): [
@@ -216,6 +224,7 @@ rust_binary(
     ],
     tags = [
         "cargo-raze",
+        "crate-name=print_env",
         "manual",
     ],
     version = "0.13.4",
@@ -232,6 +241,7 @@ rust_binary(
             "@rules_rust//rust/platform:x86_64-apple-darwin",
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
+            "@rules_rust//rust/platform:arm-linux-androideabi",
             "@rules_rust//rust/platform:i686-linux-android",
             "@rules_rust//rust/platform:x86_64-linux-android",
         ): [
@@ -258,6 +268,7 @@ rust_binary(
     ],
     tags = [
         "cargo-raze",
+        "crate-name=pwd",
         "manual",
     ],
     version = "0.13.4",
@@ -274,6 +285,7 @@ rust_binary(
             "@rules_rust//rust/platform:x86_64-apple-darwin",
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
+            "@rules_rust//rust/platform:arm-linux-androideabi",
             "@rules_rust//rust/platform:i686-linux-android",
             "@rules_rust//rust/platform:x86_64-linux-android",
         ): [
@@ -300,6 +312,7 @@ rust_binary(
     ],
     tags = [
         "cargo-raze",
+        "crate-name=sleep",
         "manual",
     ],
     version = "0.13.4",
@@ -316,6 +329,7 @@ rust_binary(
             "@rules_rust//rust/platform:x86_64-apple-darwin",
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
+            "@rules_rust//rust/platform:arm-linux-androideabi",
             "@rules_rust//rust/platform:i686-linux-android",
             "@rules_rust//rust/platform:x86_64-linux-android",
         ): [
@@ -342,6 +356,7 @@ rust_binary(
     ],
     tags = [
         "cargo-raze",
+        "crate-name=status",
         "manual",
     ],
     version = "0.13.4",
@@ -358,6 +373,7 @@ rust_binary(
             "@rules_rust//rust/platform:x86_64-apple-darwin",
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
+            "@rules_rust//rust/platform:arm-linux-androideabi",
             "@rules_rust//rust/platform:i686-linux-android",
             "@rules_rust//rust/platform:x86_64-linux-android",
         ): [
@@ -384,6 +400,7 @@ rust_binary(
     ],
     tags = [
         "cargo-raze",
+        "crate-name=x_to_y",
         "manual",
     ],
     version = "0.13.4",
@@ -400,6 +417,7 @@ rust_binary(
             "@rules_rust//rust/platform:x86_64-apple-darwin",
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
+            "@rules_rust//rust/platform:arm-linux-androideabi",
             "@rules_rust//rust/platform:i686-linux-android",
             "@rules_rust//rust/platform:x86_64-linux-android",
         ): [
@@ -424,6 +442,7 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
+        "crate-name=duct",
         "manual",
     ],
     version = "0.13.4",
@@ -439,6 +458,7 @@ rust_library(
             "@rules_rust//rust/platform:x86_64-apple-darwin",
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
+            "@rules_rust//rust/platform:arm-linux-androideabi",
             "@rules_rust//rust/platform:i686-linux-android",
             "@rules_rust//rust/platform:x86_64-linux-android",
         ): [

@@ -48,6 +48,7 @@ rust_binary(
     ],
     tags = [
         "cargo-raze",
+        "crate-name=cat",
         "manual",
     ],
     version = "0.9.2",
@@ -61,6 +62,7 @@ rust_binary(
             "@rules_rust//rust/platform:x86_64-apple-darwin",
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
+            "@rules_rust//rust/platform:arm-linux-androideabi",
             "@rules_rust//rust/platform:i686-linux-android",
             "@rules_rust//rust/platform:wasm32-unknown-unknown",
             "@rules_rust//rust/platform:x86_64-linux-android",
@@ -96,6 +98,7 @@ rust_binary(
     ],
     tags = [
         "cargo-raze",
+        "crate-name=cat_both",
         "manual",
     ],
     version = "0.9.2",
@@ -109,6 +112,7 @@ rust_binary(
             "@rules_rust//rust/platform:x86_64-apple-darwin",
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
+            "@rules_rust//rust/platform:arm-linux-androideabi",
             "@rules_rust//rust/platform:i686-linux-android",
             "@rules_rust//rust/platform:wasm32-unknown-unknown",
             "@rules_rust//rust/platform:x86_64-linux-android",
@@ -144,6 +148,7 @@ rust_binary(
     ],
     tags = [
         "cargo-raze",
+        "crate-name=swap",
         "manual",
     ],
     version = "0.9.2",
@@ -157,6 +162,7 @@ rust_binary(
             "@rules_rust//rust/platform:x86_64-apple-darwin",
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
+            "@rules_rust//rust/platform:arm-linux-androideabi",
             "@rules_rust//rust/platform:i686-linux-android",
             "@rules_rust//rust/platform:wasm32-unknown-unknown",
             "@rules_rust//rust/platform:x86_64-linux-android",
@@ -190,6 +196,7 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
+        "crate-name=os_pipe",
         "manual",
     ],
     version = "0.9.2",
@@ -202,6 +209,7 @@ rust_library(
             "@rules_rust//rust/platform:x86_64-apple-darwin",
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
+            "@rules_rust//rust/platform:arm-linux-androideabi",
             "@rules_rust//rust/platform:i686-linux-android",
             "@rules_rust//rust/platform:wasm32-unknown-unknown",
             "@rules_rust//rust/platform:x86_64-linux-android",

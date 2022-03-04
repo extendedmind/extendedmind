@@ -49,6 +49,7 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
+        "crate-name=http-client",
         "manual",
     ],
     version = "6.5.1",

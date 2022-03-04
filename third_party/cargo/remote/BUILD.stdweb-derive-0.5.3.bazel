@@ -47,6 +47,7 @@ rust_proc_macro(
     ],
     tags = [
         "cargo-raze",
+        "crate-name=stdweb-derive",
         "manual",
     ],
     version = "0.5.3",

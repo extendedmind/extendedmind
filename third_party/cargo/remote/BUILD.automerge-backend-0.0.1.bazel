@@ -44,6 +44,7 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
+        "crate-name=automerge-backend",
         "manual",
     ],
     version = "0.0.1",
