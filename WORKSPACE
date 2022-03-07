@@ -1,10 +1,5 @@
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-local_repository(
-    name = "rules_rust",
-    path = "/Users/ttiurani/devel/em/rules_rust",
-)
-
 # Node/Javascript/Typescript/Svelte/Esbuild
 http_archive(
     name = "build_bazel_rules_nodejs",
@@ -56,15 +51,15 @@ capnp_ts_toolchain()
 capnp_java_toolchain()
 
 # Rust
-# http_archive(
-#     name = "rules_rust",
-#     sha256 = "84bce6b6a56b74429d226456c1060eddfb97b3dd22567ae5a793e72cc0bd6867",
-#     strip_prefix = "rules_rust-a9be87493cad02e192b927e42d66284f21fbe1ec",
-#     urls = [
-#         # Change to rules_rust upstream with one extra commit
-#         "https://github.com/ttiurani/rules_rust/archive/a9be87493cad02e192b927e42d66284f21fbe1ec.tar.gz",
-#     ],
-# )
+http_archive(
+    name = "rules_rust",
+    sha256 = "929d2eea04ec752f03f1f3b8e44c9ca1901ad2902e1e366847032765835c9730",
+    strip_prefix = "rules_rust-2fa92e5a139c7cb64d606718273e295ce756f0f3",
+    urls = [
+        # Change to rules_rust upstream with one extra commit
+        "https://github.com/ttiurani/rules_rust/archive/2fa92e5a139c7cb64d606718273e295ce756f0f3.tar.gz",
+    ],
+)
 
 load("@rules_rust//rust:repositories.bzl", "rust_register_toolchains", "rust_repository_set")
 RUST_VERSION = "1.56.1"
@@ -76,6 +71,18 @@ rust_repository_set(
     rustfmt_version = RUST_VERSION,
     exec_triple = "x86_64-apple-darwin",
     extra_target_triples=[
+        # Instead of this, this should apparently be "thumbv7neon-linux-androideabi", but that
+        # requires changes to upstream, roughly here bazel core should return armv7:
+        #
+        # https://github.com/bazelbuild/bazel/blob/master/src/main/java/com/google/devtools/build/lib/bazel/rules/android/ndkcrosstools/r19/ArmCrosstools.java#L105
+        #
+        # after which the platform upstream:
+        #
+        # https://github.com/bazelbuild/rules_android/blob/master/android/platforms/BUILD#L6
+        #
+        # would also work. Then rules_rust could perhaps map armv7 to that thumbv7neon for rust
+        # builds. With this, it seems the build isn't for Neon ARM which is much faster than just
+        # arm.
         "arm-linux-androideabi",
         "aarch64-linux-android",
         "i686-linux-android",
