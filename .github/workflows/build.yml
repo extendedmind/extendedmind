@@ -3,7 +3,7 @@ on: push
 jobs:
   build-and-test:
     name: Build and Test with Bazel
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Cache bazel
         uses: actions/cache@v2
