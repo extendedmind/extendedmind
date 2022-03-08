@@ -22,6 +22,8 @@ fn main() {
     capnpc::CompilerCommand::new()
         .import_path("target")
         .src_prefix("src")
+        // TODO: This is very fragile and OSX only
+        .capnp_executable("/usr/local/Cellar/capnp/0.9.1/bin/capnp")
         .file("src/model.capnp")
         .file("src/wire_protocol.capnp")
         .file("src/ui_protocol.capnp")

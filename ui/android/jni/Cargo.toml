@@ -10,4 +10,5 @@ licence = "AGPL-3.0-only"
 authors = ["Timo Tiuraniemi <timo.tiuraniemi@iki.fi>"]
 
 [dependencies]
+extendedmind_ui_common = { path = "../../common" }
 jni = "0.19.0"
