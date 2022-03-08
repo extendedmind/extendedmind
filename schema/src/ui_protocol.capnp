@@ -2,7 +2,7 @@
 
 using Java = import "/capnp/java.capnp";
 $Java.package("org.extendedmind.schema");
-$Java.outerClassname("UiProtocol");
+$Java.outerClassname("UiProtocolCapnp");
 
 using Model = import "model.capnp";
 

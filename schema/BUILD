@@ -41,3 +41,10 @@ java_capnp_sources(
     visibility = ["//visibility:public"],
     deps = [":extendedmind_schema_ui_capnp"],
 )
+
+java_library(
+    name = "extendedmind_schema_capnp_java_lib",
+    visibility = ["//visibility:public"],
+    srcs = [":extendedmind_schema_capnp_java_sources"],
+    deps = ["@maven//:org_capnproto_runtime"],
+)

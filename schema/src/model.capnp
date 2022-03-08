@@ -2,7 +2,7 @@
 
 using Java = import "/capnp/java.capnp";
 $Java.package("org.extendedmind.schema");
-$Java.outerClassname("Model");
+$Java.outerClassname("ModelCapnp");
 
 struct Model @0x8b5980e82d7915ee {
     version @0 :UInt8;

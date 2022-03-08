@@ -25,8 +25,8 @@ npm_install(
 )
 
 # Cap'n Proto
-RULES_CAPNPROTO_VERSION = "c8c751513dfd54194e098c253053309f091311e9"
-RULES_CAPNPROTO_SHA256 = "6bdbfb7ab678a94f2120a97b9688a95535b3b5ec6b148d388dccaba1a14870d8"
+RULES_CAPNPROTO_VERSION = "578ab6770e83b7c8f47a4d95dee691184896336f"
+RULES_CAPNPROTO_SHA256 = "14cc900f190bf3b08e3e98fe85d6f48672d086f635c03355217e9cd0a57946f4"
 
 http_archive(
     name = "rules_capnproto",
@@ -188,6 +188,7 @@ maven_install(
         # Newer versions don't work yet, probably has to do with build tools 30.0.0 above^
         "androidx.appcompat:appcompat:1.3.1",
         "androidx.constraintlayout:constraintlayout:2.0.4",
+        "org.capnproto:runtime:0.1.13",
     ],
     repositories = [
         "https://repo1.maven.org/maven2",
