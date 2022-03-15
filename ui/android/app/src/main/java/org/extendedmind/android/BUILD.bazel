@@ -1,18 +1,15 @@
 package(
     default_visibility = ["//ui:__subpackages__"],
 )
+load("@io_bazel_rules_kotlin//kotlin:android.bzl", "kt_android_library")
 
-android_library(
+kt_android_library(
     name = "extendedmind_ui_android_lib",
-    srcs = [
-        "MainActivity.java",
-        "JNICallback.java",
-    ],
+    srcs = glob(["**/*.kt"]),
     manifest = "//ui/android/app/src/main:AndroidManifest.xml",
     resource_files = ["//ui/android/app/src/main:res"],
     deps = [
         "//schema:extendedmind_schema_capnp_java_lib",
-        "//ui/android/jni:extendedmind_ui_android_jni_import",
         "@maven//:androidx_appcompat_appcompat",
         "@maven//:androidx_constraintlayout_constraintlayout",
     ],

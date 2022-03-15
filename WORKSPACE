@@ -129,7 +129,7 @@ cargo_raze_repositories()
 load("@cargo_raze//:transitive_deps.bzl", "cargo_raze_transitive_deps")
 cargo_raze_transitive_deps()
 
-# Android / Java
+# Android / Kotlin
 #
 # The required older build-tools and NDK, and the SDK for the oldest supported device can be
 # locally installed with (using java 1.8):
@@ -149,17 +149,23 @@ cargo_raze_transitive_deps()
 #
 #    export ANDROID_NDK_HOME="$ANDROID_HOME/ndk/21.4.7075529"
 #
-RULES_ANDROID_VERSION = "e8fbc49f913101e846235b9c9a31b3aa9788364a"
-RULES_ANDROID_SHA256 = "6a3cfb7b7e54cf704bf2ff169bde03666ae3b49a536c27a5f43d013388a7c38d"
+
+RULES_KOTLIN_VERSION = "v1.5.0"
+RULES_KOTLIN_SHA256 = "12d22a3d9cbcf00f2e2d8f0683ba87d3823cb8c7f6837568dd7e48846e023307"
 http_archive(
-    name = "rules_android",
-    strip_prefix = "rules_android-%s" % RULES_ANDROID_VERSION,
-    url = "https://github.com/bazelbuild/rules_android/archive/%s.tar.gz" % RULES_ANDROID_VERSION,
-    sha256 = RULES_ANDROID_SHA256
+    name = "io_bazel_rules_kotlin",
+    url = "https://github.com/bazelbuild/rules_kotlin/releases/download/%s/rules_kotlin_release.tgz" % RULES_KOTLIN_VERSION,
+    sha256 = RULES_KOTLIN_SHA256,
 )
+
+load("@io_bazel_rules_kotlin//kotlin:repositories.bzl", "kotlin_repositories")
+kotlin_repositories()
+
+load("@io_bazel_rules_kotlin//kotlin:core.bzl", "kt_register_toolchains")
+kt_register_toolchains()
+
 android_sdk_repository(name = "androidsdk", build_tools_version = "30.0.3")
 android_ndk_repository(name = "androidndk")
-# register_toolchains("@androidndk//:all")
 
 ATS_COMMIT = "8db1c766bd88b5e22e177c9783b9f6af8839c703"
 http_archive(
