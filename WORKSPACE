@@ -157,12 +157,22 @@ http_archive(
     url = "https://github.com/bazelbuild/rules_kotlin/releases/download/%s/rules_kotlin_release.tgz" % RULES_KOTLIN_VERSION,
     sha256 = RULES_KOTLIN_SHA256,
 )
+KOTLIN_COMPILER_VERSION = "1.6.10"
+KOTLIN_COMPILER_SHA = "432267996d0d6b4b17ca8de0f878e44d4a099b7e9f1587a98edc4d27e76c215a"
+JETPACK_COMPOSE_VERSION = "1.1.0"
 
-load("@io_bazel_rules_kotlin//kotlin:repositories.bzl", "kotlin_repositories")
-kotlin_repositories()
+load("@io_bazel_rules_kotlin//kotlin:repositories.bzl", "kotlin_repositories", "kotlinc_version")
+kotlin_repositories(
+    compiler_release = kotlinc_version(
+        release = KOTLIN_COMPILER_VERSION,
+        sha256 = KOTLIN_COMPILER_SHA,
+    ),
+)
 
-load("@io_bazel_rules_kotlin//kotlin:core.bzl", "kt_register_toolchains")
-kt_register_toolchains()
+register_toolchains("//ui/android:kotlin_toolchain")
+
+# load("@io_bazel_rules_kotlin//kotlin:core.bzl", "kt_register_toolchains")
+# kt_register_toolchains()
 
 android_sdk_repository(name = "androidsdk", build_tools_version = "30.0.3")
 android_ndk_repository(name = "androidndk")
@@ -188,16 +198,71 @@ http_archive(
 )
 
 load("@rules_jvm_external//:defs.bzl", "maven_install")
+load("@rules_jvm_external//:specs.bzl", "maven")
 
 maven_install(
     artifacts = [
-        # Newer versions don't work yet, probably has to do with build tools 30.0.0 above^
-        "androidx.appcompat:appcompat:1.3.1",
-        "androidx.constraintlayout:constraintlayout:2.0.4",
+        "org.jetbrains.kotlin:kotlin-stdlib:{}".format(KOTLIN_COMPILER_VERSION),
+        "androidx.core:core-ktx:1.7.0",
+        "androidx.appcompat:appcompat:1.4.1",
+        "androidx.activity:activity-compose:1.3.0",
+        "com.google.android.material:material:1.5.0",
+        "androidx.constraintlayout:constraintlayout:2.1.3",
+        "androidx.lifecycle:lifecycle-livedata-ktx:2.3.1",
+        "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1",
+        "androidx.compose.material:material:{}".format(JETPACK_COMPOSE_VERSION),
+        "androidx.compose.ui:ui:{}".format(JETPACK_COMPOSE_VERSION),
+        "androidx.compose.ui:ui-tooling:{}".format(JETPACK_COMPOSE_VERSION),
+        "androidx.compose.compiler:compiler:{}".format(JETPACK_COMPOSE_VERSION),
+        "androidx.compose.runtime:runtime:{}".format(JETPACK_COMPOSE_VERSION),
+        maven.artifact(
+            group = "androidx.navigation",
+            artifact = "navigation-runtime",
+            version = "2.4.1",
+            exclusions = [
+                maven.exclusion(
+                    group = "androidx.activity",
+                    artifact = "activity-ktx"
+                ),
+            ]
+        ),
+        maven.artifact(
+            group = "androidx.fragment",
+            artifact = "fragment-ktx",
+            version = "1.4.1",
+            exclusions = [
+                maven.exclusion(
+                    group = "androidx.activity",
+                    artifact = "activity-ktx"
+                ),
+            ]
+        ),
+        maven.artifact(
+            group = "androidx.activity",
+            artifact = "activity-ktx",
+            version = "1.2.4",
+        ),
+        "androidx.navigation:navigation-fragment-ktx:2.4.1",
+        "androidx.navigation:navigation-ui-ktx:2.4.1",
         "org.capnproto:runtime:0.1.13",
     ],
+    override_targets = {
+        "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm": "@//ui/android:kotlinx_coroutines_core_jvm",
+    },
     repositories = [
-        "https://repo1.maven.org/maven2",
         "https://maven.google.com",
+        "https://repo1.maven.org/maven2",
     ],
+)
+
+# Secondary maven repository used mainly for workarounds
+maven_install(
+    name = "maven_secondary",
+    artifacts = [
+        # Workaround to add missing 'sun.misc' dependencies to 'kotlinx-coroutines-core-jvm' artifact
+        # Check root BUILD file and 'override_targets' arg of a primary 'maven_install'
+        "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.0",
+    ],
+    fetch_sources = True,
+    repositories = ["https://repo1.maven.org/maven2"],
 )

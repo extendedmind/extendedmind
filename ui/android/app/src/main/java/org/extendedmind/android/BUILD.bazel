@@ -6,11 +6,23 @@ load("@io_bazel_rules_kotlin//kotlin:android.bzl", "kt_android_library")
 kt_android_library(
     name = "extendedmind_ui_android_lib",
     srcs = glob(["**/*.kt"]),
+    custom_package = "org.extendedmind.android",
     manifest = "//ui/android/app/src/main:AndroidManifest.xml",
+    plugins = ["//ui/android:jetpack_compose_compiler_plugin"],
     resource_files = ["//ui/android/app/src/main:res"],
     deps = [
         "//schema:extendedmind_schema_capnp_java_lib",
+        "@maven//:androidx_activity_activity_compose",
+        "@maven//:androidx_core_core_ktx",
         "@maven//:androidx_appcompat_appcompat",
+        "@maven//:com_google_android_material_material",
         "@maven//:androidx_constraintlayout_constraintlayout",
+        "@maven//:androidx_lifecycle_lifecycle_livedata_ktx",
+        "@maven//:androidx_lifecycle_lifecycle_viewmodel_ktx",
+        "@maven//:androidx_compose_material_material",
+        "@maven//:androidx_compose_runtime_runtime",
+        "@maven//:androidx_compose_ui_ui",
+        "@maven//:androidx_compose_ui_ui_tooling",
+        "@maven//:org_jetbrains_kotlin_kotlin_stdlib",
     ],
 )

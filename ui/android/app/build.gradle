@@ -51,20 +51,25 @@ android {
 
 cargo {
     module = "../jni"
-    // TODO: target Intel as well as ARM, ["arm", "x86", "x86_64", "arm64"]
     targets = ["arm", "arm64", "x86", "x86_64"]
     libname = "extendedmind_ui_android_jni"
 }
 
 dependencies {
     implementation 'androidx.core:core-ktx:1.3.2'
-    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.appcompat:appcompat:1.3.1'
     implementation 'com.google.android.material:material:1.3.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'androidx.compose.material:material:1.1.0'
+    implementation 'androidx.compose.ui:ui:1.1.0'
+    implementation 'androidx.compose.ui:ui-tooling:1.1.0'
+    implementation 'androidx.compose.runtime:runtime:1.1.0'
+    // Uncecessary but linter complains about AndroidManifest.mf Bazel-hack if this is not here
+    implementation 'androidx.startup:startup-runtime:1.1.0'
     implementation 'org.capnproto:runtime:0.1.13'
-    testImplementation 'junit:junit:4.+'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 }
 
 // Copy Capn' Proto source files

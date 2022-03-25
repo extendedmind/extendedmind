@@ -15,9 +15,10 @@ pub extern "C" fn invokeCallbackViaJNA(callback: Callback) {
     }
 }
 
+// NB: "00024" seems random but it's the unicode character for "$"
 #[no_mangle]
 #[allow(non_snake_case)]
-pub extern "C" fn Java_org_extendedmind_android_MainActivity_invokeCallbackViaJNI(
+pub extern "C" fn Java_org_extendedmind_android_Application_00024Companion_invokeCallbackViaJNI(
     env: JNIEnv,
     _class: JClass,
     callback: JObject,
