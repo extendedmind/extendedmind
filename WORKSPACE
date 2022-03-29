@@ -159,7 +159,7 @@ http_archive(
 )
 KOTLIN_COMPILER_VERSION = "1.6.10"
 KOTLIN_COMPILER_SHA = "432267996d0d6b4b17ca8de0f878e44d4a099b7e9f1587a98edc4d27e76c215a"
-JETPACK_COMPOSE_VERSION = "1.1.0"
+JETPACK_COMPOSE_VERSION = "1.1.1"
 
 load("@io_bazel_rules_kotlin//kotlin:repositories.bzl", "kotlin_repositories", "kotlinc_version")
 kotlin_repositories(

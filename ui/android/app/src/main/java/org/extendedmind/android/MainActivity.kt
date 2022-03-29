@@ -36,4 +36,4 @@ class MainActivity : AppCompatActivity(), JNICallback {
 
 @Preview
 @Composable
-fun Greeting(name: String) = Text(text = "Hello $name!")
+fun Greeting(name: String = "test") = Text(text = "Hello $name!")
