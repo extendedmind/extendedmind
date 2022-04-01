@@ -205,7 +205,7 @@ maven_install(
         "org.jetbrains.kotlin:kotlin-stdlib:{}".format(KOTLIN_COMPILER_VERSION),
         "androidx.core:core-ktx:1.7.0",
         "androidx.appcompat:appcompat:1.4.1",
-        "androidx.activity:activity-compose:1.3.0",
+        "androidx.activity:activity-compose:1.4.0",
         "com.google.android.material:material:1.5.0",
         "androidx.constraintlayout:constraintlayout:2.1.3",
         "androidx.lifecycle:lifecycle-livedata-ktx:2.3.1",

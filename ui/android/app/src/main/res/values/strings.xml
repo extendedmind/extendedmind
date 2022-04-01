@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="click_me_button">Say hello</string>
-  <string name="thinking_face">🤔</string>
+    <string name="click_me_button">Say hello</string>
+    <string name="thinking_face">🤔</string>
+    <string name="ui_preferences_file_key">org.extendedmind.android.UI_PREFERENCES</string>
+    <string name="ui_preferences_connect_shown_key">CONNECT_SHOWN</string>
 </resources>

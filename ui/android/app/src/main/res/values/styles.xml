@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base application theme. These colors don't affect the Composable functions, just the color
+     of the Status Bar. For the colors used by the Composable functions, see Theme.kt -->
+    <style name="Theme.ExtendedMindStatusBar" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <!-- Default for v21 and v22 to dark background to avoid invisible text -->
+        <item name="android:statusBarColor">@color/dark_background</item>
+    </style>
+</resources>

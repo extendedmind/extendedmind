@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.ExtendedMindStatusBar" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <!-- Use status bar color based on day/night values -->
+        <item name="android:statusBarColor">@color/background</item>
+        <item name="android:windowLightStatusBar">?attr/isLightTheme</item>
+    </style>
+</resources>
