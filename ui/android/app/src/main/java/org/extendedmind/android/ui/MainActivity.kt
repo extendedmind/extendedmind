@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.TextView
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -13,7 +14,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import org.extendedmind.android.Application
 import org.extendedmind.android.JNICallback
 import org.extendedmind.android.R
+import org.extendedmind.android.ui.connect.Connect
 import org.extendedmind.android.ui.connect.ConnectActivity
+import org.extendedmind.android.ui.focus.Focus
 
 
 /**
@@ -27,25 +30,26 @@ class MainActivity : AppCompatActivity(), JNICallback {
 
         super.onCreate(savedInstanceState)
 
-        val uiPreferences = this.getSharedPreferences(
-            getString(R.string.ui_preferences_file_key), Context.MODE_PRIVATE
-        )
-        val connectShown = uiPreferences.getBoolean(
-            getString(R.string.ui_preferences_connect_shown_key), false
-        )
-        if (connectShown) {
-            Log.v("Android", "Connect shown")
+
+//        setContentView(R.layout.activity_main)
+//        val clickMeButton = findViewById<Button>(R.id.clickMeButton)
+//        val textView: TextView = findViewById(R.id.helloWorldTextView)
+//        helloWorldTextView = textView
+//        val greeting = "Hello, World from Kotlin! \uD83D\uDC4B\uD83C\uDF31"
+//        clickMeButton.setOnClickListener { textView.text = greeting }
+//        Application.invokeCallbackViaJNI(this)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val appContainer = (application as org.extendedmind.android.Application).container
+        if (appContainer.preferencesRepository.isConnectShown()) {
+            setContent {
+                Focus(appContainer)
+            }
         } else {
-            Log.v("Android", "Connect not shown")
-            // startActivity(Intent(this, ConnectActivity::class.java))
+            startActivity(Intent(this, ConnectActivity::class.java))
         }
-        setContentView(R.layout.activity_main)
-        val clickMeButton = findViewById<Button>(R.id.clickMeButton)
-        val textView: TextView = findViewById(R.id.helloWorldTextView)
-        helloWorldTextView = textView
-        val greeting = "Hello, World from Kotlin! \uD83D\uDC4B\uD83C\uDF31"
-        clickMeButton.setOnClickListener { textView.text = greeting }
-        Application.invokeCallbackViaJNI(this)
     }
 
     override fun callback(string: String) {

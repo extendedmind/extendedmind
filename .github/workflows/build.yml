@@ -24,4 +24,4 @@ jobs:
       - name: Run Bazel build
         uses: ttiurani/bazel-action@develop
         with:
-          command: 'test //... --fat_apk_cpu=x86'
+          command: 'test //...'

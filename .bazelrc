@@ -5,3 +5,6 @@ build --define=android_dexmerger_tool=d8_dexmerger
 build --define=android_incremental_dexing_tool=d8_dexbuilder
 build --define=android_standalone_dexing_tool=d8_compat_dx
 build --nouse_workers_with_dexbuilder
+
+# Default to building only the x86 version for Android because that works with emulators
+build --fat_apk_cpu=x86
