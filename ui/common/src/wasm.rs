@@ -3,10 +3,7 @@ mod wasm {
     use crate::connect::poll_engine_event;
     use anyhow::Result;
     use async_std::channel::{Receiver, Sender};
-    use extendedmind_engine::{
-        capnp, get_discovery_key, get_public_key, ui_protocol, Bytes, ChannelWriter, Engine,
-        EngineEvent,
-    };
+    use extendedmind_engine::{capnp, ui_protocol, Bytes, ChannelWriter, Engine, EngineEvent};
     use futures::SinkExt;
     use futures::StreamExt;
     use log::*;
@@ -30,16 +27,10 @@ mod wasm {
         );
 
         debug!("attempting to make websocket connection...");
-        let (_ws_meta, mut ws_stream) = WsMeta::connect(
-            format!(
-                "ws://{}/extendedmind/hypercore/{}",
-                address,
-                get_discovery_key(get_public_key(public_key.as_str())),
-            ),
-            None,
-        )
-        .await
-        .unwrap();
+        let (_ws_meta, mut ws_stream) =
+            WsMeta::connect(format!("ws://{}/extendedmind/hypercore", address), None)
+                .await
+                .unwrap();
         debug!("...connection success, splitting stream...");
         let (mut ws_writer, mut ws_reader) = ws_stream.split();
         debug!("...split ready, creating engine...");

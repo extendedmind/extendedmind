@@ -6,7 +6,6 @@ use async_std::task;
 use clap::Parser;
 use futures::stream::StreamExt;
 use log::{debug, info};
-use std::collections::HashMap;
 use std::io;
 use std::path::PathBuf;
 use std::process;
@@ -38,8 +37,6 @@ struct State {
     engine: Engine<RandomAccessDisk>,
     // System command receiver
     system_commands: Receiver<Result<Bytes, io::Error>>,
-    // Stores the channels needed to make a protocol
-    channels: HashMap<String, SplitChannels>,
     // Directory for data files
     data_root_dir: PathBuf,
     // Directory for static files
@@ -49,22 +46,9 @@ struct State {
 }
 
 #[derive(Clone)]
-struct SplitChannels {
-    engine_channel: (
-        Sender<Result<Bytes, io::Error>>,
-        Receiver<Result<Bytes, io::Error>>,
-    ),
-    socket_channel: (
-        Sender<Result<Bytes, io::Error>>,
-        Receiver<Result<Bytes, io::Error>>,
-    ),
-}
-
-#[derive(Clone)]
 struct WrappedData {
     data: Bytes,
     receiver_type: ReceiverType,
-    discovery_key: Option<String>,
 }
 
 type WrappedBytesClosure =
@@ -101,139 +85,126 @@ async fn async_main(initial_state: State) -> Result<()> {
     app.at("/extendedmind").get(index);
     app.at("/").serve_dir(static_root_dir.to_str().unwrap())?;
 
-    app.at("/extendedmind/hypercore/:discovery_key")
-        .get(WebSocket::new(
-            |req: tide::Request<State>, stream| async move {
-                // Get handle to async-tungstenite WebSocketStream
-                let ws_writer = stream.clone();
-                let mut ws_reader = stream.clone();
+    app.at("/extendedmind/hypercore").get(WebSocket::new(
+        |req: tide::Request<State>, stream| async move {
+            debug!("WS connect to hypercore");
+            // Get handle to async-tungstenite WebSocketStream
+            let ws_writer = stream.clone();
+            let mut ws_reader = stream.clone();
 
-                // Get discovery key from the path
-                let discovery_key: Arc<String> =
-                    Arc::new(req.param("discovery_key")?.parse().unwrap());
-                debug!("{}", &discovery_key);
+            // Create engine and hypercore channels for this connection
+            let (engine_sender, hypercore_receiver): ChannelSenderReceiver = bounded(1000);
+            let (hypercore_sender, engine_receiver): ChannelSenderReceiver = bounded(1000);
 
-                // Launch a task for the protocol
-                let (engine_sender, engine_receiver) = req.state().channels[discovery_key.as_ref()]
-                    .engine_channel
-                    .clone();
-                let (engine_event_sender, engine_event_receiver): (
-                    Sender<EngineEvent>,
-                    Receiver<EngineEvent>,
-                ) = async_std::channel::bounded(1000);
-                let engine = req.state().engine.clone();
-                task::spawn(async move {
-                    engine
-                        .connect_passive(
-                            ChannelWriter::new(engine_sender),
-                            engine_receiver,
-                            engine_event_sender,
-                            engine_event_receiver,
-                        )
-                        .await
-                        .ok();
-                });
+            // Create the engine event channel
+            let (engine_event_sender, engine_event_receiver): (
+                Sender<EngineEvent>,
+                Receiver<EngineEvent>,
+            ) = async_std::channel::bounded(1000);
 
-                // Launch a second task for listening to receivers
-                let (client_sender, client_receiver): ChannelSenderReceiver = bounded(1000);
-                task::spawn(async move {
-                    let (receivers, hypercore_sender) =
-                        collect_receivers_and_sender(req.state(), client_receiver, discovery_key);
-                    let mut merged_receivers = futures::stream::select_all(receivers);
-                    let mut now = Instant::now();
-                    while let Some(Ok(wrapped_value)) = merged_receivers.next().await {
-                        match wrapped_value.receiver_type {
-                            ReceiverType::System => {
-                                if wrapped_value.data.as_ref().get(0)
-                                    == Some(&(SystemCommand::Disconnect as u8))
-                                {
-                                    debug!("got disconnect");
-                                    ws_writer.send(Message::Close(None)).await.unwrap();
-                                    break;
-                                }
-                                // Send ping message if enough time has elapsed
-                                if now.elapsed().as_secs() > 30 {
-                                    debug!("sending ping");
-                                    ws_writer.send(Message::Ping(Vec::new())).await.unwrap();
-                                    now = Instant::now();
-                                }
+            // Get passable handle on engine
+            let engine = req.state().engine.clone();
+
+            // Launch a task for the protocol
+            task::spawn(async move {
+                engine
+                    .connect_passive(
+                        ChannelWriter::new(engine_sender),
+                        engine_receiver,
+                        engine_event_sender,
+                        engine_event_receiver,
+                    )
+                    .await
+                    .ok();
+            });
+
+            // Create channel for client data
+            let (client_sender, client_receiver): ChannelSenderReceiver = bounded(1000);
+
+            // Launch a second task for listening to receivers
+            task::spawn(async move {
+                let receivers = collect_receivers(req.state(), hypercore_receiver, client_receiver);
+                let mut merged_receivers = futures::stream::select_all(receivers);
+                let mut now = Instant::now();
+                while let Some(Ok(wrapped_value)) = merged_receivers.next().await {
+                    match wrapped_value.receiver_type {
+                        ReceiverType::System => {
+                            if wrapped_value.data.as_ref().get(0)
+                                == Some(&(SystemCommand::Disconnect as u8))
+                            {
+                                debug!("got disconnect");
+                                ws_writer.send(Message::Close(None)).await.unwrap();
+                                break;
                             }
-                            ReceiverType::Client => {
-                                debug!(
-                                    "got client request, forwarding to hypercore {}",
-                                    wrapped_value.data.len()
-                                );
-                                hypercore_sender
-                                    .clone()
-                                    .send(Ok(wrapped_value.data))
-                                    .await
-                                    .unwrap();
-                            }
-                            ReceiverType::Hypercore => {
-                                let msg = wrapped_value.data.as_ref().to_vec();
-                                debug!("got hypercore message, sending to client, {:?}", msg.len());
-                                ws_writer.send(Message::Binary(msg)).await.unwrap();
+                            // Send ping message if enough time has elapsed
+                            if now.elapsed().as_secs() > 30 {
+                                debug!("sending ping");
+                                ws_writer.send(Message::Ping(Vec::new())).await.unwrap();
+                                now = Instant::now();
                             }
                         }
+                        ReceiverType::Client => {
+                            debug!(
+                                "got client request, forwarding to hypercore {}",
+                                wrapped_value.data.len()
+                            );
+                            hypercore_sender
+                                .clone()
+                                .send(Ok(wrapped_value.data))
+                                .await
+                                .unwrap();
+                        }
+                        ReceiverType::Hypercore => {
+                            let msg = wrapped_value.data.as_ref().to_vec();
+                            debug!("got hypercore message, sending to client, {:?}", msg.len());
+                            ws_writer.send(Message::Binary(msg)).await.unwrap();
+                        }
                     }
-                });
-
-                // Block loop on incoming messages
-                while let Some(Ok(Message::Binary(msg))) = ws_reader.next().await {
-                    debug!("got incoming client message {:?}", msg.len());
-                    client_sender.send(Ok(Bytes::from(msg))).await.unwrap();
                 }
-                Ok(())
-            },
-        ));
+            });
+
+            // Block loop on incoming messages
+            while let Some(Ok(Message::Binary(msg))) = ws_reader.next().await {
+                debug!("got incoming client message {:?}", msg.len());
+                client_sender.send(Ok(Bytes::from(msg))).await.unwrap();
+            }
+            Ok(())
+        },
+    ));
 
     app.listen("0.0.0.0:".to_owned() + &port.to_string())
         .await?;
     Ok(())
 }
 
-type CollectedReceiversAndSender = (
-    Vec<futures::stream::Map<Receiver<Result<Bytes, io::Error>>, WrappedBytesClosure>>,
-    Sender<Result<Bytes, io::Error>>,
-);
-
-fn collect_receivers_and_sender(
+fn collect_receivers(
     state: &State,
+    hypercore_receiver: Receiver<Result<Bytes, io::Error>>,
     client_receiver: Receiver<Result<Bytes, io::Error>>,
-    discovery_key: Arc<String>,
-) -> CollectedReceiversAndSender {
-    let (writer, reader) = state.channels[discovery_key.as_ref()]
-        .socket_channel
-        .clone();
-    (
-        vec![
-            state
-                .system_commands
-                .clone()
-                .map(Box::new(|read_result: Result<Bytes, io::Error>| {
-                    read_result.map(|data| WrappedData {
-                        data,
-                        receiver_type: ReceiverType::System,
-                        discovery_key: None,
-                    })
-                }) as WrappedBytesClosure),
-            reader.map(Box::new(move |read_result: Result<Bytes, io::Error>| {
+) -> Vec<futures::stream::Map<Receiver<Result<Bytes, io::Error>>, WrappedBytesClosure>> {
+    vec![
+        state
+            .system_commands
+            .clone()
+            .map(Box::new(|read_result: Result<Bytes, io::Error>| {
                 read_result.map(|data| WrappedData {
                     data,
-                    receiver_type: ReceiverType::Hypercore,
-                    discovery_key: Some((*discovery_key).clone()),
+                    receiver_type: ReceiverType::System,
                 })
             }) as WrappedBytesClosure),
-            client_receiver.map(Box::new(|read_result: Result<Bytes, io::Error>| {
-                read_result.map(|data| WrappedData {
-                    data,
-                    receiver_type: ReceiverType::Client,
-                    discovery_key: None,
-                })
-            }) as WrappedBytesClosure),
-        ],
-        writer,
-    )
+        hypercore_receiver.map(Box::new(move |read_result: Result<Bytes, io::Error>| {
+            read_result.map(|data| WrappedData {
+                data,
+                receiver_type: ReceiverType::Hypercore,
+            })
+        }) as WrappedBytesClosure),
+        client_receiver.map(Box::new(|read_result: Result<Bytes, io::Error>| {
+            read_result.map(|data| WrappedData {
+                data,
+                receiver_type: ReceiverType::Client,
+            })
+        }) as WrappedBytesClosure),
+    ]
 }
 
 #[derive(Parser)]
@@ -279,12 +250,9 @@ fn main() -> Result<()> {
         futures::executor::block_on(
             async move { Engine::new_disk(data_root_dir, false, None).await },
         );
-    let discovery_keys = engine.get_discovery_keys();
 
     // Create channels
     let (system_command_sender, system_command_receiver): ChannelSenderReceiver = bounded(1000);
-    let (incoming_sender, incoming_receiver): ChannelSenderReceiver = bounded(1000);
-    let (outgoing_sender, outgoing_receiver): ChannelSenderReceiver = bounded(1000);
 
     // Create state for websocket
     let initial_state = State {
@@ -293,16 +261,6 @@ fn main() -> Result<()> {
         port: opts.port,
         data_root_dir: opts.data_root_dir,
         static_root_dir: opts.static_root_dir,
-        channels: [(
-            discovery_keys[0].clone(), // TODO: Support many discovery keys
-            SplitChannels {
-                engine_channel: (incoming_sender, outgoing_receiver),
-                socket_channel: (outgoing_sender, incoming_receiver),
-            },
-        )]
-        .iter()
-        .cloned()
-        .collect(),
     };
 
     // Listen to ctrlc in a separate task
