@@ -14,7 +14,7 @@ jobs:
             ~/.cache/bazelisk
             ~/.cache/bazel
             ~/.cache/ms-playwright
-          key: ${{ runner.os }}-${{ env.cache-name }}-r5
+          key: ${{ runner.os }}-${{ env.cache-name }}-r6
       - name: Check out the repo
         uses: actions/checkout@v2
       - name: Setup Android SDK
