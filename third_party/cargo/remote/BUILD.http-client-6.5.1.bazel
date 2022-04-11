@@ -42,7 +42,7 @@ rust_library(
     data = [],
     edition = "2018",
     proc_macro_deps = [
-        "@raze__async_trait__0_1_52//:async_trait",
+        "@raze__async_trait__0_1_53//:async_trait",
     ],
     rustc_flags = [
         "--cap-lints=allow",
@@ -59,7 +59,7 @@ rust_library(
         "@raze__cfg_if__1_0_0//:cfg_if",
         "@raze__dashmap__4_0_2//:dashmap",
         "@raze__http_types__2_12_0//:http_types",
-        "@raze__log__0_4_14//:log",
+        "@raze__log__0_4_16//:log",
     ],
 )
 

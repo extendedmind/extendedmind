@@ -93,9 +93,9 @@ rust_library(
     # buildifier: leave-alone
     deps = [
         ":http_types_build_script",
-        "@raze__anyhow__1_0_53//:anyhow",
+        "@raze__anyhow__1_0_56//:anyhow",
         "@raze__async_channel__1_6_1//:async_channel",
-        "@raze__async_std__1_10_0//:async_std",
+        "@raze__async_std__1_11_0//:async_std",
         "@raze__base64__0_13_0//:base64",
         "@raze__cookie__0_14_4//:cookie",
         "@raze__futures_lite__1_12_0//:futures_lite",

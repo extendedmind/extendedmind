@@ -66,7 +66,7 @@ rust_library(
             "@rules_rust//rust/platform:i686-linux-android",
             "@rules_rust//rust/platform:x86_64-linux-android",
         ): [
-            "@raze__cpufeatures__0_2_1//:cpufeatures",
+            "@raze__cpufeatures__0_2_2//:cpufeatures",
         ],
         "//conditions:default": [],
     }),

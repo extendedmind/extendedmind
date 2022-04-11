@@ -90,7 +90,7 @@ rust_library(
         "@raze__cesu8__1_1_0//:cesu8",
         "@raze__combine__4_6_3//:combine",
         "@raze__jni_sys__0_3_0//:jni_sys",
-        "@raze__log__0_4_14//:log",
+        "@raze__log__0_4_16//:log",
         "@raze__thiserror__1_0_30//:thiserror",
     ],
 )

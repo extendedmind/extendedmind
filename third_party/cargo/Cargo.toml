@@ -20,7 +20,7 @@ anyhow = "1.0.33"
 clap = { version = "3.0.0-rc.5", features = ["derive"] } # See below for hack to get #![doc = include_str!("../README.md")] to work
 chrono = { version = "0.4.19" }
 futures = "^0.3.5"
-async-std = "1.9.0"
+async-std = { version = "1.9.0", features = ["unstable"] }
 async-attributes = "1.1.2"
 async-trait = "0.1.51"
 tide = "0.16.0"
@@ -73,6 +73,10 @@ compile_data_attr = "glob([\"README.md\"])"
 
 # Needed for wasm-bindgen to build
 [package.metadata.raze.crates.bumpalo.'3.9.1']
+compile_data_attr = "glob([\"README.md\"])"
+
+# Needed for hypercore to build
+[package.metadata.raze.crates.ed25519.'1.4.1']
 compile_data_attr = "glob([\"README.md\"])"
 
 [package.metadata.raze]

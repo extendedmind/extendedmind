@@ -56,7 +56,7 @@ rust_library(
         "@raze__cfg_if__1_0_0//:cfg_if",
         "@raze__event_listener__2_5_2//:event_listener",
         "@raze__futures_lite__1_12_0//:futures_lite",
-        "@raze__once_cell__1_9_0//:once_cell",
+        "@raze__once_cell__1_10_0//:once_cell",
     ] + selects.with_or({
         # cfg(unix)
         (
@@ -68,7 +68,7 @@ rust_library(
             "@rules_rust//rust/platform:x86_64-linux-android",
         ): [
             "@raze__async_io__1_6_0//:async_io",
-            "@raze__libc__0_2_118//:libc",
+            "@raze__libc__0_2_122//:libc",
             "@raze__signal_hook__0_3_13//:signal_hook",
         ],
         "//conditions:default": [],
@@ -77,7 +77,7 @@ rust_library(
         (
             "@rules_rust//rust/platform:x86_64-pc-windows-msvc",
         ): [
-            "@raze__blocking__1_1_0//:blocking",
+            "@raze__blocking__1_2_0//:blocking",
             "@raze__winapi__0_3_9//:winapi",
         ],
         "//conditions:default": [],

@@ -38,9 +38,14 @@ licenses([
 rust_library(
     name = "sval",
     srcs = glob(["**/*.rs"]),
+    aliases = {
+        "@raze__serde__1_0_136//:serde": "serde1_lib",
+    },
     crate_features = [
         "alloc",
         "fmt",
+        "serde1",
+        "serde1_lib",
         "std",
     ],
     crate_root = "src/lib.rs",
@@ -58,5 +63,6 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
+        "@raze__serde__1_0_136//:serde",
     ],
 )

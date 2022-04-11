@@ -14,7 +14,7 @@ licenses([
 # Aliased targets
 alias(
     name = "anyhow",
-    actual = "@raze__anyhow__1_0_53//:anyhow",
+    actual = "@raze__anyhow__1_0_56//:anyhow",
     tags = [
         "cargo-raze",
         "manual",
@@ -41,7 +41,7 @@ alias(
 
 alias(
     name = "async_std",
-    actual = "@raze__async_std__1_10_0//:async_std",
+    actual = "@raze__async_std__1_11_0//:async_std",
     tags = [
         "cargo-raze",
         "manual",
@@ -50,7 +50,7 @@ alias(
 
 alias(
     name = "async_trait",
-    actual = "@raze__async_trait__0_1_52//:async_trait",
+    actual = "@raze__async_trait__0_1_53//:async_trait",
     tags = [
         "cargo-raze",
         "manual",
@@ -86,7 +86,7 @@ alias(
 
 alias(
     name = "capnp",
-    actual = "@raze__capnp__0_14_5//:capnp",
+    actual = "@raze__capnp__0_14_6//:capnp",
     tags = [
         "cargo-raze",
         "manual",
@@ -104,7 +104,7 @@ alias(
 
 alias(
     name = "clap",
-    actual = "@raze__clap__3_0_14//:clap",
+    actual = "@raze__clap__3_1_8//:clap",
     tags = [
         "cargo-raze",
         "manual",
@@ -221,7 +221,7 @@ alias(
 
 alias(
     name = "log",
-    actual = "@raze__log__0_4_14//:log",
+    actual = "@raze__log__0_4_16//:log",
     tags = [
         "cargo-raze",
         "manual",

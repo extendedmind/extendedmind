@@ -72,7 +72,7 @@ rust_library(
         (
             "@rules_rust//rust/platform:wasm32-unknown-unknown",
         ): [
-            "@raze__getrandom__0_2_4//:getrandom",
+            "@raze__getrandom__0_2_6//:getrandom",
         ],
         "//conditions:default": [],
     }),

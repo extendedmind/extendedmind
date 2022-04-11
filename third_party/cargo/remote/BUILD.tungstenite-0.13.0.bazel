@@ -69,7 +69,7 @@ rust_library(
         "@raze__http__0_2_6//:http",
         "@raze__httparse__1_6_0//:httparse",
         "@raze__input_buffer__0_4_0//:input_buffer",
-        "@raze__log__0_4_14//:log",
+        "@raze__log__0_4_16//:log",
         "@raze__rand__0_8_5//:rand",
         "@raze__sha_1__0_9_8//:sha_1",
         "@raze__thiserror__1_0_30//:thiserror",

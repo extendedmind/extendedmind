@@ -43,6 +43,7 @@ cargo_build_script(
     build_script_env = {
     },
     crate_features = [
+        "alloc",
         "default",
         "derive",
         "rc",
@@ -69,6 +70,7 @@ rust_library(
     name = "serde",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "alloc",
         "default",
         "derive",
         "rc",
