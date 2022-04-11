@@ -1,77 +1,68 @@
-use async_std::channel::{bounded, Receiver, Sender};
+use async_std::channel::{Receiver, Sender};
 use async_std::task;
-use async_tungstenite::{async_std::connect_async, tungstenite::Message};
 use clap::Parser;
-use extendedmind_engine::{
-    get_discovery_key, get_public_key, Bytes, ChannelWriter, Engine, EngineEvent,
-};
+use extendedmind_engine::capnp;
+use extendedmind_ui_common::non_wasm::connect_to_hub;
 use futures::prelude::*;
 use log::*;
-use std::io;
 use std::path::PathBuf;
 
 #[derive(Parser)]
 #[clap(version = "0.1.0", author = "Timo Tiuraniemi <timo.tiuraniemi@iki.fi>")]
 struct Opts {
+    data_root_dir: PathBuf,
     hub: String,
     public_key: String,
 }
 
-async fn run(url: &str, public_key: &str) -> Result<(), Box<dyn std::error::Error>> {
-    let engine = Engine::new_disk(&PathBuf::from("/tmp"), true, Some(public_key)).await;
-    let (ws, _) = connect_async(format!(
-        "{}/{}",
-        url,
-        get_discovery_key(get_public_key(&public_key))
-    ))
-    .await?;
+fn setup_logging() {
+    let base_config = fern::Dispatch::new()
+        .format(|out, message, record| {
+            out.finish(format_args!(
+                "{}[{}][{}] {}",
+                chrono::Local::now().format("[%Y-%m-%d %H:%M:%S]"),
+                record.target(),
+                record.level(),
+                message
+            ))
+        })
+        .level(log::LevelFilter::Debug);
+    let std_config = fern::Dispatch::new().chain(std::io::stdout());
+    base_config.chain(std_config).apply().unwrap();
+}
 
-    let (mut ws_writer, mut ws_reader) = ws.split();
-    let (sender, mut receiver): (
-        Sender<Result<Bytes, io::Error>>,
-        Receiver<Result<Bytes, io::Error>>,
-    ) = bounded(1000);
-    let (engine_event_sender, engine_event_receiver): (Sender<EngineEvent>, Receiver<EngineEvent>) =
-        async_std::channel::bounded(1000);
+async fn run(
+    data_root_dir: PathBuf,
+    hub_url: String,
+    public_key: String,
+) -> Result<(), Box<dyn std::error::Error>> {
+    debug!("Cli run");
+    let (ui_protocol_sender, mut ui_protocol_receiver): (
+        Sender<capnp::message::TypedBuilder<extendedmind_engine::ui_protocol::Owned>>,
+        Receiver<capnp::message::TypedBuilder<extendedmind_engine::ui_protocol::Owned>>,
+    ) = async_std::channel::bounded(1000);
 
-    let hypercore_receiver = receiver.clone();
-    let state_hypercore_sender = ChannelWriter::new(sender.clone());
-    task::spawn(async move {
-        engine
-            .connect_active(
-                state_hypercore_sender,
-                hypercore_receiver,
-                engine_event_sender,
-                engine_event_receiver,
-            )
+    task::spawn_local(async move {
+        debug!("Connecting to hub");
+        connect_to_hub(data_root_dir, &hub_url, &public_key, ui_protocol_sender)
             .await
             .unwrap();
     });
 
-    task::spawn(async move {
-        loop {
-            let outgoing_msg = receiver.next().await;
-            debug!("GOT OUTGOING MESSAGE");
-            let msg = outgoing_msg.unwrap().unwrap();
-            debug!("Outputting msg {:?}", &msg);
-            ws_writer.send(Message::Binary(msg.to_vec())).await.unwrap();
-        }
-    });
+    // TODO: Eventually this would be a loop
+    // loop {
+    debug!("Begin listening to ui protocol messages");
+    let message = ui_protocol_receiver.next().await.unwrap();
+    let mut packed_message = Vec::<u8>::new();
+    capnp::serialize_packed::write_message(&mut packed_message, message.borrow_inner()).unwrap();
+    debug!("Got message {:?}", packed_message);
+    // }
 
-    loop {
-        let incoming_msg = ws_reader.next().await;
-        debug!("GOT INCOMING MESSAGE");
-        let msg = incoming_msg.unwrap().unwrap();
-        debug!("INCOMING msg {:?}", msg.len());
-        let hypercore_sender = ChannelWriter::new(sender.clone());
-        hypercore_sender
-            .send(Bytes::from(msg.into_data()))
-            .await
-            .unwrap();
-    }
+    Ok(())
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    setup_logging();
     let opts: Opts = Opts::parse();
-    task::block_on(run(opts.hub.as_str(), opts.public_key.as_str()))
+    task::block_on(run(opts.data_root_dir, opts.hub, opts.public_key))
 }

@@ -1,6 +1,5 @@
 mod channel_writer;
 
-use anyhow::Result;
 use async_std::channel::{Receiver, Sender};
 use async_std::sync::{Arc, Mutex};
 use futures::io::{AsyncRead, AsyncWrite};
@@ -10,13 +9,14 @@ use random_access_memory::RandomAccessMemory;
 use smol_str::SmolStr;
 use std::collections::HashMap;
 use std::fmt::Debug;
+#[cfg(not(target_arch = "wasm32"))]
+use std::io::Write;
 use std::io::{self, Read, Seek, SeekFrom};
 use std::path::PathBuf;
 
-// Non-WASM imports
+pub use anyhow::Result;
 #[cfg(not(target_arch = "wasm32"))]
-use std::io::Write;
-
+use async_std::net::TcpStream;
 pub use automerge;
 pub use bytes::Bytes;
 pub use channel_writer::ChannelWriter;
@@ -35,6 +35,8 @@ use communication::FeedStore;
 mod common;
 pub use common::EngineEvent;
 use common::FeedWrapper;
+#[cfg(not(target_arch = "wasm32"))]
+pub mod tcp;
 
 #[derive(derivative::Derivative)]
 #[derivative(Clone(bound = ""))]
@@ -151,7 +153,7 @@ impl Engine<RandomAccessMemory> {
 
         let storage = hypercore::Storage::new_memory().await.unwrap();
         let primary_feed = if let Some(public_key) = public_key {
-            dbg!("Memory: Using given public key {}", &public_key);
+            debug!("Memory: Using given public key {}", &public_key);
             let public_key = get_public_key(&public_key);
             hypercore::Feed::builder(public_key, storage)
                 .build()
@@ -160,10 +162,9 @@ impl Engine<RandomAccessMemory> {
         } else {
             let primary_feed = hypercore::Feed::with_storage(storage).await.unwrap();
             let public_key = hex::encode(primary_feed.public_key());
-            dbg!(
+            debug!(
                 "Memory: Reading public key, init: {} value: {}",
-                is_initiator,
-                public_key
+                is_initiator, public_key
             );
             primary_feed
         };
@@ -247,6 +248,18 @@ where
             .await
     }
 
+    #[cfg(not(target_arch = "wasm32"))]
+    pub async fn connect_passive_tcp(
+        self,
+        tcp_stream: TcpStream,
+        engine_event_sender: Sender<EngineEvent>,
+        engine_event_receiver: Receiver<EngineEvent>,
+    ) -> Result<()> {
+        let protocol = hypercore_protocol::ProtocolBuilder::new(false).connect(tcp_stream);
+        self.poll_protocol(protocol, engine_event_sender, engine_event_receiver, false)
+            .await
+    }
+
     pub async fn connect_active(
         self,
         sender: ChannelWriter,
@@ -261,6 +274,18 @@ where
             .await
     }
 
+    #[cfg(not(target_arch = "wasm32"))]
+    pub async fn connect_active_tcp(
+        self,
+        tcp_stream: TcpStream,
+        engine_event_sender: Sender<EngineEvent>,
+        engine_event_receiver: Receiver<EngineEvent>,
+    ) -> Result<()> {
+        let protocol = hypercore_protocol::ProtocolBuilder::new(true).connect(tcp_stream);
+        self.poll_protocol(protocol, engine_event_sender, engine_event_receiver, true)
+            .await
+    }
+
     async fn poll_protocol<IO>(
         self,
         mut protocol: hypercore_protocol::Protocol<IO>,
@@ -271,11 +296,11 @@ where
     where
         IO: AsyncWrite + AsyncRead + Send + Unpin + 'static,
     {
-        dbg!("poll_protocol");
+        debug!("poll_protocol");
         let feedstore = self.feedstore.clone();
-        dbg!("waiting for protocol event");
+        debug!("waiting for protocol event");
         while let Some(event) = protocol.next().await {
-            dbg!("got protocol event {:?}", &event);
+            debug!("got protocol event {:?}", &event);
             let event = event?;
             debug!("protocol event {:?}", event);
             match event {
@@ -283,7 +308,7 @@ where
                     if self.is_initiator {
                         for feed in feedstore.feeds.values() {
                             let feed_key = feed.key().clone();
-                            dbg!("Opening feed with key length {}", &feed_key.len());
+                            debug!("Opening feed with key length {}", &feed_key.len());
                             protocol.open(feed_key).await?;
                         }
                     }

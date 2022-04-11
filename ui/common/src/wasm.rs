@@ -1,9 +1,10 @@
 mod wasm {
     // use crate::connect::connect_active;
     use crate::connect::poll_engine_event;
-    use anyhow::Result;
     use async_std::channel::{Receiver, Sender};
-    use extendedmind_engine::{capnp, ui_protocol, Bytes, ChannelWriter, Engine, EngineEvent};
+    use extendedmind_engine::{
+        capnp, ui_protocol, Bytes, ChannelWriter, Engine, EngineEvent, Result,
+    };
     use futures::SinkExt;
     use futures::StreamExt;
     use log::*;

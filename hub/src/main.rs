@@ -14,7 +14,7 @@ use std::time::{Duration, Instant};
 use tide::{Body, Response, StatusCode};
 use tide_websockets::{Message, WebSocket};
 
-use extendedmind_engine::{Bytes, ChannelWriter, Engine, EngineEvent, RandomAccessDisk};
+use extendedmind_engine::{tcp, Bytes, ChannelWriter, Engine, EngineEvent, RandomAccessDisk};
 
 #[derive(Clone, Copy)]
 #[repr(u8)]
@@ -40,9 +40,11 @@ struct State {
     // Directory for data files
     data_root_dir: PathBuf,
     // Directory for static files
-    static_root_dir: PathBuf,
-    // Port to listen on
-    port: u16,
+    static_root_dir: Option<PathBuf>,
+    // Port to listen for HTTP traffic
+    http_port: Option<u16>,
+    // Port to listen for TCP hypercore protocol traffic
+    tcp_port: Option<u16>,
 }
 
 #[derive(Clone)]
@@ -61,29 +63,59 @@ type ChannelSenderReceiver = (
 
 async fn index(req: tide::Request<State>) -> tide::Result<Response> {
     let static_root_dir = &req.state().static_root_dir;
+    if let Some(static_root_dir) = static_root_dir {
+        let mut res = Response::new(StatusCode::Ok);
+        res.set_body(
+            Body::from_file(
+                static_root_dir
+                    .join(req.url().path().get(1..).unwrap())
+                    .join("index.html"),
+            )
+            .await
+            .unwrap(),
+        );
 
-    let mut res = Response::new(StatusCode::Ok);
-    res.set_body(
-        Body::from_file(
-            static_root_dir
-                .join(req.url().path().get(1..).unwrap())
-                .join("index.html"),
-        )
-        .await
-        .unwrap(),
-    );
-
-    Ok(res)
+        Ok(res)
+    } else {
+        let res = Response::new(StatusCode::NotFound);
+        Ok(res)
+    }
 }
 
 async fn async_main(initial_state: State) -> Result<()> {
+    let http_port = initial_state.http_port;
+    let tcp_port = initial_state.tcp_port;
+    let engine = initial_state.engine.clone();
+
+    if let Some(http_port) = http_port {
+        let http_server = http_server(initial_state).unwrap();
+        let http_listener = http_server.listen("0.0.0.0:".to_owned() + &http_port.to_string());
+        if let Some(tcp_port) = tcp_port {
+            let tcp_listener = tcp::listen(format!("0.0.0.0:{}", tcp_port), engine);
+            futures::try_join!(http_listener, tcp_listener)?;
+        } else {
+            http_listener.await?;
+        }
+    } else {
+        if let Some(tcp_port) = tcp_port {
+            tcp::listen(format!("0.0.0.0:{}", tcp_port), engine).await?;
+        } else {
+            anyhow::bail!("Either tcp_port or http_port has to be provided");
+        };
+    }
+
+    Ok(())
+}
+
+fn http_server(initial_state: State) -> Result<tide::Server<State>> {
     let static_root_dir = initial_state.static_root_dir.clone();
-    let port = initial_state.port;
     let mut app = tide::with_state(initial_state);
 
-    app.at("").get(index);
-    app.at("/extendedmind").get(index);
-    app.at("/").serve_dir(static_root_dir.to_str().unwrap())?;
+    if let Some(static_root_dir) = static_root_dir {
+        app.at("").get(index);
+        app.at("/extendedmind").get(index);
+        app.at("/").serve_dir(static_root_dir.to_str().unwrap())?;
+    }
 
     app.at("/extendedmind/hypercore").get(WebSocket::new(
         |req: tide::Request<State>, stream| async move {
@@ -171,10 +203,7 @@ async fn async_main(initial_state: State) -> Result<()> {
             Ok(())
         },
     ));
-
-    app.listen("0.0.0.0:".to_owned() + &port.to_string())
-        .await?;
-    Ok(())
+    return Ok(app);
 }
 
 fn collect_receivers(
@@ -210,9 +239,14 @@ fn collect_receivers(
 #[derive(Parser)]
 #[clap(version = "0.1.0", author = "Timo Tiuraniemi <timo.tiuraniemi@iki.fi>")]
 struct Opts {
-    port: u16,
+    #[clap(short, long)]
     data_root_dir: PathBuf,
-    static_root_dir: PathBuf,
+    #[clap(short, long)]
+    static_root_dir: Option<PathBuf>,
+    #[clap(short, long)]
+    http_port: Option<u16>,
+    #[clap(short, long)]
+    tcp_port: Option<u16>,
     #[clap(short, long)]
     log_to_stderr: bool,
 }
@@ -258,7 +292,8 @@ fn main() -> Result<()> {
     let initial_state = State {
         engine,
         system_commands: system_command_receiver,
-        port: opts.port,
+        http_port: opts.http_port,
+        tcp_port: opts.tcp_port,
         data_root_dir: opts.data_root_dir,
         static_root_dir: opts.static_root_dir,
     };
