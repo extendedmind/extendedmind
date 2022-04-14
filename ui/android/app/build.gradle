@@ -65,6 +65,8 @@ dependencies {
     implementation "androidx.compose.ui:ui-tooling:${composeVersion}"
     implementation "androidx.compose.runtime:runtime:${composeVersion}"
     implementation "androidx.activity:activity-compose:1.4.0"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.4.1"
 
     // Unnecessary but linter complains about AndroidManifest.mf Bazel-hack if this is not here
     implementation "androidx.startup:startup-runtime:${composeVersion}"

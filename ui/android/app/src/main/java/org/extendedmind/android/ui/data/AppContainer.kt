@@ -1,15 +1,14 @@
 package org.extendedmind.android.ui.data
 
-import android.content.Context
-import android.content.SharedPreferences
-import org.extendedmind.android.ui.data.preferences.PreferencesRepository
-import org.extendedmind.android.ui.data.preferences.impl.SharedPreferencesRepository
+import org.extendedmind.android.Application
+import org.extendedmind.android.ui.data.content.ContentRepository
+import org.extendedmind.android.ui.data.content.impl.P2pContentRepository
 
 /**
  * Dependency Injection container at the application level.
  */
 interface AppContainer {
-    val preferencesRepository: PreferencesRepository
+    val contentRepository: ContentRepository
 }
 
 /**
@@ -17,10 +16,9 @@ interface AppContainer {
  *
  * Variables are initialized lazily and the same instance is shared across the whole app.
  */
-class AppContainerImpl(private val applicationContext: Context) : AppContainer {
+class AppContainerImpl(private val application: Application) : AppContainer {
 
-    override val preferencesRepository: PreferencesRepository by lazy {
-        SharedPreferencesRepository(applicationContext)
+    override val contentRepository: ContentRepository by lazy {
+        P2pContentRepository(application)
     }
-
 }

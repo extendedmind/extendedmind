@@ -24,7 +24,7 @@ class ConnectActivity : AppCompatActivity() {
 
     private fun onClickConnect(appContainer: AppContainer, url: String, publicKey: String) {
         Log.v("Connect", "GOT $url and $publicKey")
-        appContainer.preferencesRepository.setHubParams(url, publicKey)
+        appContainer.contentRepository.setHubParams(url, publicKey)
         startActivity(Intent(this, MainActivity::class.java))
         finish()
     }

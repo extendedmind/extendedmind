@@ -208,42 +208,66 @@ maven_install(
         "androidx.activity:activity-compose:1.4.0",
         "com.google.android.material:material:1.5.0",
         "androidx.constraintlayout:constraintlayout:2.1.3",
-        "androidx.lifecycle:lifecycle-livedata-ktx:2.3.1",
-        "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1",
         "androidx.compose.material:material:{}".format(JETPACK_COMPOSE_VERSION),
         "androidx.compose.ui:ui:{}".format(JETPACK_COMPOSE_VERSION),
         "androidx.compose.ui:ui-tooling:{}".format(JETPACK_COMPOSE_VERSION),
         "androidx.compose.compiler:compiler:{}".format(JETPACK_COMPOSE_VERSION),
         "androidx.compose.runtime:runtime:{}".format(JETPACK_COMPOSE_VERSION),
         maven.artifact(
-            group = "androidx.navigation",
-            artifact = "navigation-runtime",
+            group = "androidx.lifecycle",
+            artifact = "lifecycle-viewmodel-compose",
             version = "2.4.1",
             exclusions = [
                 maven.exclusion(
-                    group = "androidx.activity",
-                    artifact = "activity-ktx"
+                    group = "androidx.compose.runtime",
+                    artifact = "runtime"
                 ),
-            ]
-        ),
-        maven.artifact(
-            group = "androidx.fragment",
-            artifact = "fragment-ktx",
-            version = "1.4.1",
-            exclusions = [
                 maven.exclusion(
-                    group = "androidx.activity",
-                    artifact = "activity-ktx"
+                    group = "androidx.compose.ui",
+                    artifact = "ui"
                 ),
+                maven.exclusion(
+                    group = "androidx.lifecycle",
+                    artifact = "lifecycle-viewmodel-ktx"
+                ),
+
             ]
         ),
         maven.artifact(
-            group = "androidx.activity",
-            artifact = "activity-ktx",
-            version = "1.2.4",
+            group = "androidx.lifecycle",
+            artifact = "lifecycle-viewmodel-ktx",
+            version = "2.4.1",
         ),
-        "androidx.navigation:navigation-fragment-ktx:2.4.1",
-        "androidx.navigation:navigation-ui-ktx:2.4.1",
+        # maven.artifact(
+        #     group = "androidx.navigation",
+        #     artifact = "navigation-runtime",
+        #     version = "2.4.1",
+        #     exclusions = [
+        #         maven.exclusion(
+        #             group = "androidx.activity",
+        #             artifact = "activity-ktx"
+        #         ),
+        #     ]
+        # ),
+        # maven.artifact(
+        #     group = "androidx.fragment",
+        #     artifact = "fragment-ktx",
+        #     version = "1.4.1",
+        #     exclusions = [
+        #         maven.exclusion(
+        #             group = "androidx.activity",
+        #             artifact = "activity-ktx"
+        #         ),
+        #     ]
+        # ),
+        # maven.artifact(
+        #     group = "androidx.activity",
+        #     artifact = "activity-ktx",
+        #     version = "1.2.4",
+        # ),
+        # "androidx.navigation:navigation-fragment-ktx:2.4.1",
+        # "androidx.navigation:navigation-ui-ktx:2.4.1",
+        # "androidx.navigation:navigation-compose:2.4.1",
         "org.capnproto:runtime:0.1.13",
     ],
     override_targets = {

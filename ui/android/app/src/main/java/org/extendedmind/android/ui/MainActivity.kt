@@ -1,20 +1,11 @@
 package org.extendedmind.android.ui
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.widget.Button
 import android.widget.TextView
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
-import org.extendedmind.android.Application
 import org.extendedmind.android.JNICallback
-import org.extendedmind.android.R
-import org.extendedmind.android.ui.connect.Connect
 import org.extendedmind.android.ui.connect.ConnectActivity
 import org.extendedmind.android.ui.focus.Focus
 
@@ -43,7 +34,7 @@ class MainActivity : AppCompatActivity(), JNICallback {
     override fun onStart() {
         super.onStart()
         val appContainer = (application as org.extendedmind.android.Application).container
-        if (appContainer.preferencesRepository.isConnectShown()) {
+        if (appContainer.contentRepository.isConnectShown()) {
             setContent {
                 Focus(appContainer)
             }
@@ -56,7 +47,3 @@ class MainActivity : AppCompatActivity(), JNICallback {
         helloWorldTextView!!.append("From JNI: $string\n")
     }
 }
-
-@Preview
-@Composable
-fun Greeting(name: String = "test") = Text(text = "Hello $name!")

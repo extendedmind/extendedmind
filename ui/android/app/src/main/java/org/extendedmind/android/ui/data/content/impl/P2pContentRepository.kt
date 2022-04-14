@@ -1,19 +1,22 @@
-package org.extendedmind.android.ui.data.preferences.impl
+package org.extendedmind.android.ui.data.content.impl
 
 import android.content.Context
 import android.content.SharedPreferences
+import kotlinx.coroutines.delay
+import org.extendedmind.android.Application
 import org.extendedmind.android.R
-import org.extendedmind.android.ui.data.preferences.PreferencesRepository
+import org.extendedmind.android.ui.data.content.ContentRepository
+import org.extendedmind.android.ui.data.Result
 
-class SharedPreferencesRepository(private val applicationContext: Context) : PreferencesRepository {
-    private val uiPreferences: SharedPreferences = applicationContext.getSharedPreferences(
-        applicationContext.getString(R.string.ui_preferences_file_key), Context.MODE_PRIVATE
+class P2pContentRepository(private val application: Application): ContentRepository {
+    private val uiPreferences: SharedPreferences = application.getSharedPreferences(
+        application.getString(R.string.ui_preferences_file_key), Context.MODE_PRIVATE
     )
     private val connectShownKey =
-        applicationContext.getString(R.string.ui_preferences_connect_shown_key)
-    private val hubUrlKey = applicationContext.getString(R.string.ui_preferences_hub_url)
+        application.getString(R.string.ui_preferences_connect_shown_key)
+    private val hubUrlKey = application.getString(R.string.ui_preferences_hub_url)
     private val hubPublicKeyKey =
-        applicationContext.getString(R.string.ui_preferences_hub_public_key)
+        application.getString(R.string.ui_preferences_hub_public_key)
 
     override fun isConnectShown(): Boolean {
         return uiPreferences.getBoolean(connectShownKey, false)
@@ -41,5 +44,9 @@ class SharedPreferencesRepository(private val applicationContext: Context) : Pre
             null
         )
     }
-}
 
+    override suspend fun getVersion(): Result<Int> {
+        delay(1000L)
+        return Result.Success(0)
+    }
+}
