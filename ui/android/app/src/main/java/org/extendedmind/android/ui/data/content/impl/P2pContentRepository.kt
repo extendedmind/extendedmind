@@ -3,10 +3,14 @@ package org.extendedmind.android.ui.data.content.impl
 import android.content.Context
 import android.content.SharedPreferences
 import kotlinx.coroutines.delay
+import org.capnproto.ArrayInputStream
+import org.capnproto.BufferedInputStream
 import org.extendedmind.android.Application
 import org.extendedmind.android.R
 import org.extendedmind.android.ui.data.content.ContentRepository
 import org.extendedmind.android.ui.data.Result
+import org.extendedmind.schema.UiProtocolCapnp
+import java.nio.ByteBuffer
 
 class P2pContentRepository(private val application: Application): ContentRepository {
     private val uiPreferences: SharedPreferences = application.getSharedPreferences(
@@ -46,7 +50,12 @@ class P2pContentRepository(private val application: Application): ContentReposit
     }
 
     override suspend fun getVersion(): Result<Int> {
-        delay(1000L)
-        return Result.Success(0)
+        val dataRootDir = application.getExternalFilesDir("data");
+        val packedMessage = Application.connectToHub(dataRootDir!!.absolutePath, getHubUrl()!!, getHubPublicKey()!!);
+        val messageReader =
+            org.capnproto.SerializePacked.read(ArrayInputStream(ByteBuffer.wrap(packedMessage)))
+        val uiProtocol = messageReader.getRoot(UiProtocolCapnp.UiProtocol.factory)
+        val payload = uiProtocol.payload
+        return Result.Success(payload.init.version.toInt())
     }
 }

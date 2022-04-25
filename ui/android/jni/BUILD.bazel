@@ -3,8 +3,13 @@ package(default_visibility = ["//visibility:public"])
 load("@rules_rust//rust:defs.bzl", "rust_shared_library", "rustfmt_test")
 
 deps = [
+    "//schema:extendedmind_schema_rust",
+    "//engine:extendedmind_engine",
     "//ui/common:extendedmind_ui_common",
-    "//third_party/cargo:jni"
+    "//third_party/cargo:jni",
+    "//third_party/cargo:futures",
+    "//third_party/cargo:async_std",
+    "//third_party/cargo:log",
 ]
 
 srcs = glob(["src/**"])

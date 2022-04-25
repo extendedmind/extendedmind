@@ -2,16 +2,18 @@ package org.extendedmind.android
 
 import org.extendedmind.android.ui.data.AppContainer
 import org.extendedmind.android.ui.data.AppContainerImpl
+import java.nio.ByteBuffer
 import android.app.Application as AndroidApplication
 
 class Application : AndroidApplication() {
 
     companion object {
         /**
-         * A native method that is implemented by the native library,
-         * which is packaged with this application.
+         * TODO: Remove this
          */
         external fun invokeCallbackViaJNI(callback: JNICallback?)
+
+        external fun connectToHub(dataRootDir: String, hubUrl: String, hubPublicKey: String): ByteArray
     }
 
     lateinit var container: AppContainer
