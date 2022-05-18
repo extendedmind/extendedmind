@@ -86,7 +86,8 @@ rust_repository_set(
         "arm-linux-androideabi",
         "aarch64-linux-android",
         "i686-linux-android",
-        "x86_64-linux-android"
+        "x86_64-linux-android",
+        "aarch64-unknown-linux-gnu",
     ],
 )
 
@@ -100,7 +101,8 @@ rust_repository_set(
         "arm-linux-androideabi",
         "aarch64-linux-android",
         "i686-linux-android",
-        "x86_64-linux-android"
+        "x86_64-linux-android",
+        "aarch64-unknown-linux-gnu",
     ],
 )
 
