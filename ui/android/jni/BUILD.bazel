@@ -24,8 +24,3 @@ cc_import(
     name = "extendedmind_ui_android_jni_import",
     shared_library = ":extendedmind_ui_android_jni",
 )
-
-rustfmt_test(
-    name = "extendedmind_ui_android_jni_rustfmt_test",
-    targets = [":extendedmind_ui_android_jni"],
-)

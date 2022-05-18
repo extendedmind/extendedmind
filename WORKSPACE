@@ -53,15 +53,16 @@ capnp_java_toolchain()
 # Rust
 http_archive(
     name = "rules_rust",
-    sha256 = "929d2eea04ec752f03f1f3b8e44c9ca1901ad2902e1e366847032765835c9730",
-    strip_prefix = "rules_rust-2fa92e5a139c7cb64d606718273e295ce756f0f3",
+    sha256 = "1f7c257298521eea71e956e70c38d7fd9c52ea2d2834c5da7c2616cb162e264b",
+    strip_prefix = "rules_rust-2ecf4a99b8c90e451d14cb16924fea833acabd49",
     urls = [
         # Change to rules_rust upstream with one extra commit
-        "https://github.com/ttiurani/rules_rust/archive/2fa92e5a139c7cb64d606718273e295ce756f0f3.tar.gz",
+        "https://github.com/ttiurani/rules_rust/archive/2ecf4a99b8c90e451d14cb16924fea833acabd49.tar.gz",
     ],
 )
 
-load("@rules_rust//rust:repositories.bzl", "rust_register_toolchains", "rust_repository_set")
+load("@rules_rust//rust:repositories.bzl", "rules_rust_dependencies", "rust_register_toolchains", "rust_repository_set")
+rules_rust_dependencies()
 RUST_VERSION = "1.56.1"
 rust_register_toolchains(version = RUST_VERSION, edition="2018", rustfmt_version = RUST_VERSION)
 rust_repository_set(
