@@ -88,7 +88,6 @@ rust_repository_set(
         "aarch64-linux-android",
         "i686-linux-android",
         "x86_64-linux-android",
-        "aarch64-unknown-linux-gnu",
     ],
 )
 
@@ -131,6 +130,12 @@ load("@cargo_raze//:repositories.bzl", "cargo_raze_repositories")
 cargo_raze_repositories()
 load("@cargo_raze//:transitive_deps.bzl", "cargo_raze_transitive_deps")
 cargo_raze_transitive_deps()
+
+# CC Toolchains
+load("//third_party/crosstools:deps.bzl", "crosstool_deps")
+crosstool_deps()
+load("//third_party/cc_toolchains:toolchains.bzl", "register_rpi_toolchain")
+register_rpi_toolchain()
 
 # Android / Kotlin
 #
