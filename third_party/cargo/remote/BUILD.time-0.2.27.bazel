@@ -143,7 +143,7 @@ rust_library(
             "@rules_rust//rust/platform:i686-linux-android",
             "@rules_rust//rust/platform:x86_64-linux-android",
         ): [
-            "@raze__libc__0_2_122//:libc",
+            "@raze__libc__0_2_126//:libc",
         ],
         "//conditions:default": [],
     }) + selects.with_or({

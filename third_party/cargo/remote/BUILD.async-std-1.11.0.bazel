@@ -123,11 +123,11 @@ rust_library(
         "@raze__futures_core__0_3_21//:futures_core",
         "@raze__futures_io__0_3_21//:futures_io",
         "@raze__kv_log_macro__1_0_7//:kv_log_macro",
-        "@raze__log__0_4_16//:log",
-        "@raze__memchr__2_4_1//:memchr",
+        "@raze__log__0_4_17//:log",
+        "@raze__memchr__2_5_0//:memchr",
         "@raze__num_cpus__1_13_1//:num_cpus",
-        "@raze__once_cell__1_10_0//:once_cell",
-        "@raze__pin_project_lite__0_2_8//:pin_project_lite",
+        "@raze__once_cell__1_11_0//:once_cell",
+        "@raze__pin_project_lite__0_2_9//:pin_project_lite",
         "@raze__pin_utils__0_1_0//:pin_utils",
         "@raze__slab__0_4_6//:slab",
     ] + selects.with_or({
@@ -144,7 +144,7 @@ rust_library(
         ): [
             "@raze__async_global_executor__2_0_4//:async_global_executor",
             "@raze__async_io__1_6_0//:async_io",
-            "@raze__async_process__1_3_0//:async_process",
+            "@raze__async_process__1_4_0//:async_process",
             "@raze__futures_lite__1_12_0//:futures_lite",
         ],
         "//conditions:default": [],
@@ -154,7 +154,7 @@ rust_library(
             "@rules_rust//rust/platform:wasm32-unknown-unknown",
         ): [
             "@raze__futures_channel__0_3_21//:futures_channel",
-            "@raze__gloo_timers__0_2_3//:gloo_timers",
+            "@raze__gloo_timers__0_2_4//:gloo_timers",
             "@raze__wasm_bindgen_futures__0_4_28//:wasm_bindgen_futures",
         ],
         "//conditions:default": [],

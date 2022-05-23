@@ -69,7 +69,7 @@ override_deps = """
             "@rules_rust//rust/platform:aarch64-linux-android",
             "@rules_rust//rust/platform:aarch64-unknown-linux-gnu",
         ): [
-            "@raze__libc__0_2_122//:libc",
+            "@raze__libc__0_2_126//:libc",
         ],
         "//conditions:default": [],
     })

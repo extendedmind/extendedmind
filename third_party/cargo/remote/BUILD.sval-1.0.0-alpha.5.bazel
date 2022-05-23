@@ -39,7 +39,7 @@ rust_library(
     name = "sval",
     srcs = glob(["**/*.rs"]),
     aliases = {
-        "@raze__serde__1_0_136//:serde": "serde1_lib",
+        "@raze__serde__1_0_137//:serde": "serde1_lib",
     },
     crate_features = [
         "alloc",
@@ -63,7 +63,7 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__serde__1_0_136//:serde",
+        "@raze__serde__1_0_137//:serde",
     ],
 )
 

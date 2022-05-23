@@ -85,7 +85,7 @@ rust_library(
         "@raze__bytes__0_5_6//:bytes",
         "@raze__heck__0_3_3//:heck",
         "@raze__itertools__0_8_2//:itertools",
-        "@raze__log__0_4_16//:log",
+        "@raze__log__0_4_17//:log",
         "@raze__multimap__0_8_3//:multimap",
         "@raze__petgraph__0_5_1//:petgraph",
         "@raze__prost__0_6_1//:prost",

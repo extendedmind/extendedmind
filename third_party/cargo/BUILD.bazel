@@ -14,7 +14,7 @@ licenses([
 # Aliased targets
 alias(
     name = "anyhow",
-    actual = "@raze__anyhow__1_0_56//:anyhow",
+    actual = "@raze__anyhow__1_0_57//:anyhow",
     tags = [
         "cargo-raze",
         "manual",
@@ -104,7 +104,7 @@ alias(
 
 alias(
     name = "clap",
-    actual = "@raze__clap__3_1_8//:clap",
+    actual = "@raze__clap__3_1_18//:clap",
     tags = [
         "cargo-raze",
         "manual",
@@ -131,7 +131,7 @@ alias(
 
 alias(
     name = "ctrlc",
-    actual = "@raze__ctrlc__3_2_1//:ctrlc",
+    actual = "@raze__ctrlc__3_2_2//:ctrlc",
     tags = [
         "cargo-raze",
         "manual",
@@ -158,7 +158,7 @@ alias(
 
 alias(
     name = "fern",
-    actual = "@raze__fern__0_6_0//:fern",
+    actual = "@raze__fern__0_6_1//:fern",
     tags = [
         "cargo-raze",
         "manual",
@@ -221,7 +221,7 @@ alias(
 
 alias(
     name = "log",
-    actual = "@raze__log__0_4_16//:log",
+    actual = "@raze__log__0_4_17//:log",
     tags = [
         "cargo-raze",
         "manual",
@@ -266,7 +266,7 @@ alias(
 
 alias(
     name = "smol_str",
-    actual = "@raze__smol_str__0_1_21//:smol_str",
+    actual = "@raze__smol_str__0_1_23//:smol_str",
     tags = [
         "cargo-raze",
         "manual",

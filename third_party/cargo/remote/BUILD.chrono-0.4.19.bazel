@@ -65,10 +65,10 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__libc__0_2_122//:libc",
-        "@raze__num_integer__0_1_44//:num_integer",
-        "@raze__num_traits__0_2_14//:num_traits",
-        "@raze__serde__1_0_136//:serde",
+        "@raze__libc__0_2_126//:libc",
+        "@raze__num_integer__0_1_45//:num_integer",
+        "@raze__num_traits__0_2_15//:num_traits",
+        "@raze__serde__1_0_137//:serde",
         "@raze__time__0_1_44//:time",
     ] + selects.with_or({
         # cfg(windows)
