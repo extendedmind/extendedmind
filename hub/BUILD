@@ -3,7 +3,7 @@ package(default_visibility = ["//visibility:public"])
 load("@rules_rust//rust:defs.bzl", "rust_binary", "rustfmt_test")
 
 platform(
-	name = "arm64_linux",
+	name = "arm64_linux_rpi3b",
 	constraint_values = [
 		"@platforms//cpu:aarch64",
 		"@platforms//os:linux",

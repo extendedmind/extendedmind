@@ -1,0 +1,39 @@
+name: Cross-build hub on the main branch
+on:
+  push:
+    branches:
+      - 'main'
+    paths-ignore:
+      - 'ui/**'
+      - '.github/test.yml'
+      - '**.md'
+      - '**.toml'
+      - '**.lock'
+jobs:
+  crossbuild_rpi3b:
+    name: Cross-build for Raspberry Pi 3B(+) with Bazel
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache bazel
+        uses: actions/cache@v2
+        env:
+          cache-name: bazel-cache
+        with:
+          path: |
+            ~/.cache/bazelisk
+            ~/.cache/bazel
+          key: crossbuild_rpi3b-${{ runner.os }}-${{ env.cache-name }}-r1
+      - name: Check out the repo
+        uses: actions/checkout@v2
+      - name: Run Bazel build of hub targeting Raspberry Pi 3B(+)
+        uses: ttiurani/bazel-action@develop
+        with:
+          command: 'build //hub:extendedmind_hub --platforms //hub:arm64_linux_rpi3b'
+      - name: Create a Pre-Release
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          automatic_release_tag: latest-hub-rpi3b
+          prerelease: true
+          title: 'Rasperry Pi 3B(+) Development Build'
+          files: bazel-bin/hub/extendedmind_hub

@@ -1,0 +1,35 @@
+name: Test the main branch
+on:
+  push:
+    branches:
+      - 'main'
+    paths-ignore:
+      - '.github/crossbuild.yml'
+      - '**.md'
+      - '**.toml'
+      - '**.lock'
+jobs:
+  test:
+    name: Test with Bazel
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache bazel
+        uses: actions/cache@v2
+        env:
+          cache-name: bazel-cache
+        with:
+          path: |
+            ~/.cache/bazelisk
+            ~/.cache/bazel
+            ~/.cache/ms-playwright
+          key: test-${{ runner.os }}-${{ env.cache-name }}-r1
+      - name: Check out the repo
+        uses: actions/checkout@v2
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
+      - name: Install Android build-tools and NDK
+        run: echo "y" | $ANDROID_HOME/tools/bin/sdkmanager "build-tools;30.0.3" "ndk;21.4.7075529"
+      - name: Run Bazel test
+        uses: ttiurani/bazel-action@develop
+        with:
+          command: 'test //...'
