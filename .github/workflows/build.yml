@@ -47,4 +47,4 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: extendedmind_hub_for_rpi3b
-          path: bazel-bi*/hub/extedednmind_hub
+          path: bazel-bi*/hub/extededmind_hub
