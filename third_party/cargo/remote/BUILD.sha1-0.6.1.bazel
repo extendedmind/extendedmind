@@ -54,3 +54,4 @@ rust_library(
         "@raze__sha1_smol__1_0_0//:sha1_smol",
     ],
 )
+

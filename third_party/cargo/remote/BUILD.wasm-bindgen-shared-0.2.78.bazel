@@ -84,3 +84,4 @@ rust_library(
         ":wasm_bindgen_shared_build_script",
     ],
 )
+

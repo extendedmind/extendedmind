@@ -58,6 +58,7 @@ rust_binary(
     ],
 )
 
+
 rust_library(
     name = "semver_parser",
     srcs = glob(["**/*.rs"]),
@@ -81,5 +82,6 @@ rust_library(
         "@raze__pest__2_1_3//:pest",
     ],
 )
+
 
 # Unsupported target "genpest" with type "test" omitted

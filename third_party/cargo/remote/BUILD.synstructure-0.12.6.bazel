@@ -59,3 +59,4 @@ rust_library(
         "@raze__unicode_xid__0_2_2//:unicode_xid",
     ],
 )
+

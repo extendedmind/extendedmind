@@ -59,6 +59,7 @@ rust_binary(
     ],
 )
 
+
 rust_library(
     name = "leb128",
     srcs = glob(["**/*.rs"]),
@@ -81,5 +82,6 @@ rust_library(
     deps = [
     ],
 )
+
 
 # Unsupported target "quickchecks" with type "test" omitted

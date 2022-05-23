@@ -71,3 +71,4 @@ rust_library(
         "@raze__serde__1_0_136//:serde",
     ],
 )
+

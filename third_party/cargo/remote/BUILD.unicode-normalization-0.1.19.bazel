@@ -58,3 +58,4 @@ rust_library(
         "@raze__tinyvec__1_5_1//:tinyvec",
     ],
 )
+

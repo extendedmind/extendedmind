@@ -85,3 +85,4 @@ rust_library(
         "@raze__adler__1_0_2//:adler",
     ],
 )
+

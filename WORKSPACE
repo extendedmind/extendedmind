@@ -113,8 +113,8 @@ rust_wasm_bindgen_repositories()
 load("//third_party/cargo:crates.bzl", "raze_fetch_remote_crates")
 raze_fetch_remote_crates()
 
-CARGO_RAZE_VERSION = "ef6f4bd083889bc2e792b16e51dc359dd71f5a6d"
-CARGO_RAZE_SHA256 = "dcae99bf247a837cba34eeb4ff34d91016c95e8940d3a92852154f8156f28586"
+CARGO_RAZE_VERSION = "0c9dd254cb2854f304a3c0abedeb8f15b28c3b23"
+CARGO_RAZE_SHA256 = "4ec348e9c9afb1be04b951a24b94d6d941310bcb8c10db5f17fb329f134b1c73"
 
 http_archive(
     name = "cargo_raze",

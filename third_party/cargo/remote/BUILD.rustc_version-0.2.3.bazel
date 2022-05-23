@@ -54,3 +54,4 @@ rust_library(
         "@raze__semver__0_9_0//:semver",
     ],
 )
+

@@ -98,3 +98,4 @@ rust_library(
         ":serde_build_script",
     ],
 )
+

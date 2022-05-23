@@ -65,6 +65,7 @@ rust_library(
             "@rules_rust//rust/platform:x86_64-apple-darwin",
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
+            "@rules_rust//rust/platform:aarch64-unknown-linux-gnu",
             "@rules_rust//rust/platform:arm-linux-androideabi",
             "@rules_rust//rust/platform:i686-linux-android",
             "@rules_rust//rust/platform:x86_64-linux-android",
@@ -83,6 +84,7 @@ rust_library(
         "//conditions:default": [],
     }),
 )
+
 
 # Unsupported target "concurrent_modification" with type "test" omitted
 

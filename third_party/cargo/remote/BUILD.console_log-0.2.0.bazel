@@ -56,3 +56,4 @@ rust_library(
         "@raze__web_sys__0_3_55//:web_sys",
     ],
 )
+

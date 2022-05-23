@@ -52,17 +52,20 @@ rust_library(
     version = "0.2.2",
 
     # buildifier: leave-alone
-    deps = [
+    deps =     [
     ] + selects.with_or({
         # aarch64-linux-android
         (
             "@rules_rust//rust/platform:aarch64-linux-android",
+            "@rules_rust//rust/platform:aarch64-unknown-linux-gnu",
         ): [
             "@raze__libc__0_2_122//:libc",
         ],
         "//conditions:default": [],
-    }),
+    })
+,
 )
+
 
 # Unsupported target "aarch64" with type "test" omitted
 

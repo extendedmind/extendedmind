@@ -89,3 +89,4 @@ rust_library(
         ":memchr_build_script",
     ],
 )
+
