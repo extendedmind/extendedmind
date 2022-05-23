@@ -1,8 +1,8 @@
 name: Build
 on: push
 jobs:
-  build-and-test:
-    name: Build and Test with Bazel
+  test:
+    name: Test with Bazel
     runs-on: ubuntu-latest
     steps:
       - name: Cache bazel
@@ -14,14 +14,35 @@ jobs:
             ~/.cache/bazelisk
             ~/.cache/bazel
             ~/.cache/ms-playwright
-          key: ${{ runner.os }}-${{ env.cache-name }}-r6
+          key: test-${{ runner.os }}-${{ env.cache-name }}-r1
       - name: Check out the repo
         uses: actions/checkout@v2
       - name: Setup Android SDK
         uses: android-actions/setup-android@v2
       - name: Install Android build-tools and NDK
         run: echo "y" | $ANDROID_HOME/tools/bin/sdkmanager "build-tools;30.0.3" "ndk;21.4.7075529"
-      - name: Run Bazel build
+      - name: Run Bazel test
         uses: ttiurani/bazel-action@develop
         with:
           command: 'test //...'
+  crossbuild:
+    name: Cross-build with Bazel
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache bazel
+        uses: actions/cache@v2
+        env:
+          cache-name: bazel-cache
+        with:
+          path: |
+            ~/.cache/bazelisk
+            ~/.cache/bazel
+          key: crossbuild-${{ runner.os }}-${{ env.cache-name }}-r1
+      - name: Run Bazel cross-build of hub for Raspberry Pi 3B(+)
+        uses: ttiurani/bazel-action@develop
+        with:
+          command: 'build //hub:extendedmind_hub --platforms //hub:arm64-linux --crosstool_top=//third_party/cc_toolchains/aarch64-rpi3-linux-gnu:gcc_toolchain --host_crosstool_top=@bazel_tools//tools/cpp:toolchain --cpu=aarch64 --incompatible_enable_cc_toolchain_resolution'
+      - uses: actions/upload-artifact@v3
+        with:
+          name: extendedmind_hub_for_rpi3b
+          path: bazel-bi*/hub/extedednmind_hub
