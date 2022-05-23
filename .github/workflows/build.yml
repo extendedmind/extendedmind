@@ -43,7 +43,7 @@ jobs:
       - name: Run Bazel build of hub targeting Raspberry Pi 3B(+)
         uses: ttiurani/bazel-action@develop
         with:
-          command: 'build //hub:extendedmind_hub --platforms //hub:arm64-linux'
+          command: 'build //hub:extendedmind_hub --platforms //hub:arm64_linux'
       - uses: actions/upload-artifact@v3
         with:
           name: extendedmind_hub_for_rpi3b
