@@ -1,3 +1,10 @@
+platforms:
+  //hub:arm64_linux
+    --crosstool_top=//third_party/cc_toolchains/aarch64-rpi3-linux-gnu:gcc_toolchain
+    --host_crosstool_top=@bazel_tools//tools/cpp:toolchain
+    --cpu=aarch64
+    --incompatible_enable_cc_toolchain_resolution
+
 flags:
   --crosstool_top=//external:android/crosstool
   --android_cpu=armeabi-v7a
