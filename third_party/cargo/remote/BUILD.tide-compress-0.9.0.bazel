@@ -26,19 +26,20 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # Apache-2.0 from expression "Apache-2.0 OR MIT"
+    "restricted",  # BlueOak-1.0.0 from expression "BlueOak-1.0.0"
 ])
 
 # Generated Targets
 
-# Unsupported target "executor" with type "bench" omitted
-
-# Unsupported target "priority" with type "example" omitted
-
 rust_library(
-    name = "async_executor",
+    name = "tide_compress",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "all",
+        "brotli",
+        "default",
+        "deflate",
+        "gzip",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -48,21 +49,23 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=async-executor",
+        "crate-name=tide-compress",
         "manual",
     ],
-    version = "1.4.1",
+    version = "0.9.0",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__async_task__4_2_0//:async_task",
-        "@raze__concurrent_queue__1_2_2//:concurrent_queue",
-        "@raze__fastrand__1_7_0//:fastrand",
+        "@raze__async_compression__0_3_14//:async_compression",
         "@raze__futures_lite__1_12_0//:futures_lite",
-        "@raze__once_cell__1_12_0//:once_cell",
-        "@raze__slab__0_4_6//:slab",
+        "@raze__http_types__2_12_0//:http_types",
+        "@raze__tide__0_16_0//:tide",
     ],
 )
 
 
-# Unsupported target "drop" with type "test" omitted
+# Unsupported target "compressed" with type "test" omitted
+
+# Unsupported target "existing-encoding" with type "test" omitted
+
+# Unsupported target "unencoded" with type "test" omitted

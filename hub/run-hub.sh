@@ -1,9 +1,10 @@
 #!/bin/bash
-set -euo pipefail
 STATIC_OPT=""
 if [ -n "$1" ]; then
-    STATIC_OPT="--static-root-dir=$1"
+    STATIC_OPT="--static-root-dir $1"
 fi
+
+set -euo pipefail
 
 mkdir -p target
 TARGET_PATH=$(echo "$(cd "$(dirname "target")"; pwd -P)/$(basename "target")")

@@ -64,7 +64,7 @@ rust_library(
         "@raze__concurrent_queue__1_2_2//:concurrent_queue",
         "@raze__futures_lite__1_12_0//:futures_lite",
         "@raze__log__0_4_17//:log",
-        "@raze__once_cell__1_11_0//:once_cell",
+        "@raze__once_cell__1_12_0//:once_cell",
         "@raze__parking__2_0_0//:parking",
         "@raze__polling__2_2_0//:polling",
         "@raze__slab__0_4_6//:slab",

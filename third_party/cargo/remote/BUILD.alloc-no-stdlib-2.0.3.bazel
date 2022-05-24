@@ -26,43 +26,60 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # Apache-2.0 from expression "Apache-2.0 OR MIT"
+    "notice",  # BSD-3-Clause from expression "BSD-3-Clause"
 ])
 
 # Generated Targets
 
-# Unsupported target "executor" with type "bench" omitted
-
-# Unsupported target "priority" with type "example" omitted
-
-rust_library(
-    name = "async_executor",
+rust_binary(
+    # Prefix bin name to disambiguate from (probable) collision with lib name
+    # N.B.: The exact form of this is subject to change.
+    name = "cargo_bin_example",
     srcs = glob(["**/*.rs"]),
     crate_features = [
     ],
-    crate_root = "src/lib.rs",
+    crate_root = "src/bin/example.rs",
     data = [],
-    edition = "2018",
+    edition = "2015",
     rustc_flags = [
         "--cap-lints=allow",
     ],
     tags = [
         "cargo-raze",
-        "crate-name=async-executor",
+        "crate-name=example",
         "manual",
     ],
-    version = "1.4.1",
+    version = "2.0.3",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__async_task__4_2_0//:async_task",
-        "@raze__concurrent_queue__1_2_2//:concurrent_queue",
-        "@raze__fastrand__1_7_0//:fastrand",
-        "@raze__futures_lite__1_12_0//:futures_lite",
-        "@raze__once_cell__1_12_0//:once_cell",
-        "@raze__slab__0_4_6//:slab",
+        ":alloc_no_stdlib",
     ],
 )
 
 
-# Unsupported target "drop" with type "test" omitted
+rust_library(
+    name = "alloc_no_stdlib",
+    srcs = glob(["**/*.rs"]),
+    crate_features = [
+    ],
+    crate_root = "src/lib.rs",
+    data = [],
+    edition = "2015",
+    rustc_flags = [
+        "--cap-lints=allow",
+    ],
+    tags = [
+        "cargo-raze",
+        "crate-name=alloc-no-stdlib",
+        "manual",
+    ],
+    version = "2.0.3",
+
+    # buildifier: leave-alone
+    deps = [
+    ],
+)
+
+
+# Unsupported target "lib" with type "test" omitted

@@ -283,6 +283,15 @@ alias(
 )
 
 alias(
+    name = "tide_compress",
+    actual = "@raze__tide_compress__0_9_0//:tide_compress",
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+)
+
+alias(
     name = "tide_websockets",
     actual = "@raze__tide_websockets__0_4_0//:tide_websockets",
     tags = [

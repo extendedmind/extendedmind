@@ -26,51 +26,62 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT OR Apache-2.0"
+    "notice",  # BSD-3-Clause from expression "BSD-3-Clause"
 ])
 
 # Generated Targets
 
-# Unsupported target "bench" with type "example" omitted
-
-# Unsupported target "bench_acquire" with type "example" omitted
-
-# Unsupported target "bench_vs_lazy_static" with type "example" omitted
-
-# Unsupported target "lazy_static" with type "example" omitted
-
-# Unsupported target "reentrant_init_deadlocks" with type "example" omitted
-
-# Unsupported target "regex" with type "example" omitted
-
-# Unsupported target "test_synchronization" with type "example" omitted
-
-rust_library(
-    name = "once_cell",
+rust_binary(
+    # Prefix bin name to disambiguate from (probable) collision with lib name
+    # N.B.: The exact form of this is subject to change.
+    name = "cargo_bin_example",
     srcs = glob(["**/*.rs"]),
     crate_features = [
-        "alloc",
-        "default",
-        "race",
-        "std",
     ],
-    crate_root = "src/lib.rs",
+    crate_root = "src/bin/example.rs",
     data = [],
-    edition = "2018",
+    edition = "2015",
     rustc_flags = [
         "--cap-lints=allow",
     ],
     tags = [
         "cargo-raze",
-        "crate-name=once_cell",
+        "crate-name=example",
         "manual",
     ],
-    version = "1.11.0",
+    version = "0.2.1",
 
     # buildifier: leave-alone
     deps = [
+        ":alloc_stdlib",
+        "@raze__alloc_no_stdlib__2_0_3//:alloc_no_stdlib",
     ],
 )
 
 
-# Unsupported target "it" with type "test" omitted
+rust_library(
+    name = "alloc_stdlib",
+    srcs = glob(["**/*.rs"]),
+    crate_features = [
+    ],
+    crate_root = "src/lib.rs",
+    data = [],
+    edition = "2015",
+    rustc_flags = [
+        "--cap-lints=allow",
+    ],
+    tags = [
+        "cargo-raze",
+        "crate-name=alloc-stdlib",
+        "manual",
+    ],
+    version = "0.2.1",
+
+    # buildifier: leave-alone
+    deps = [
+        "@raze__alloc_no_stdlib__2_0_3//:alloc_no_stdlib",
+    ],
+)
+
+
+# Unsupported target "lib" with type "test" omitted

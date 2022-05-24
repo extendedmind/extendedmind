@@ -58,7 +58,7 @@ rust_library(
         "@raze__atomic_waker__1_0_0//:atomic_waker",
         "@raze__fastrand__1_7_0//:fastrand",
         "@raze__futures_lite__1_12_0//:futures_lite",
-        "@raze__once_cell__1_11_0//:once_cell",
+        "@raze__once_cell__1_12_0//:once_cell",
     ],
 )
 

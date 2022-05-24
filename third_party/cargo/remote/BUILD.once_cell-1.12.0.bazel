@@ -26,19 +26,33 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # Apache-2.0 from expression "Apache-2.0 OR MIT"
+    "notice",  # MIT from expression "MIT OR Apache-2.0"
 ])
 
 # Generated Targets
 
-# Unsupported target "executor" with type "bench" omitted
+# Unsupported target "bench" with type "example" omitted
 
-# Unsupported target "priority" with type "example" omitted
+# Unsupported target "bench_acquire" with type "example" omitted
+
+# Unsupported target "bench_vs_lazy_static" with type "example" omitted
+
+# Unsupported target "lazy_static" with type "example" omitted
+
+# Unsupported target "reentrant_init_deadlocks" with type "example" omitted
+
+# Unsupported target "regex" with type "example" omitted
+
+# Unsupported target "test_synchronization" with type "example" omitted
 
 rust_library(
-    name = "async_executor",
+    name = "once_cell",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "alloc",
+        "default",
+        "race",
+        "std",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -48,21 +62,15 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=async-executor",
+        "crate-name=once_cell",
         "manual",
     ],
-    version = "1.4.1",
+    version = "1.12.0",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__async_task__4_2_0//:async_task",
-        "@raze__concurrent_queue__1_2_2//:concurrent_queue",
-        "@raze__fastrand__1_7_0//:fastrand",
-        "@raze__futures_lite__1_12_0//:futures_lite",
-        "@raze__once_cell__1_12_0//:once_cell",
-        "@raze__slab__0_4_6//:slab",
     ],
 )
 
 
-# Unsupported target "drop" with type "test" omitted
+# Unsupported target "it" with type "test" omitted

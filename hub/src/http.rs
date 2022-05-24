@@ -1,5 +1,6 @@
 use crate::common::State;
 use anyhow::Result;
+use tide_compress::CompressMiddleware;
 use tide_websockets::WebSocket;
 
 mod websocket;
@@ -22,6 +23,8 @@ pub fn http_server(initial_state: State) -> Result<tide::Server<State>> {
 
     app.at("/extendedmind/hypercore")
         .get(WebSocket::new(handle_hypercore));
+
+    app.with(CompressMiddleware::new());
 
     return Ok(app);
 }

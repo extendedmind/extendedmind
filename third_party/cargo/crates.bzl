@@ -113,6 +113,26 @@ def raze_fetch_remote_crates():
 
     maybe(
         http_archive,
+        name = "raze__alloc_no_stdlib__2_0_3",
+        url = "https://crates.io/api/v1/crates/alloc-no-stdlib/2.0.3/download",
+        type = "tar.gz",
+        sha256 = "35ef4730490ad1c4eae5c4325b2a95f521d023e5c885853ff7aca0a6a1631db3",
+        strip_prefix = "alloc-no-stdlib-2.0.3",
+        build_file = Label("//third_party/cargo/remote:BUILD.alloc-no-stdlib-2.0.3.bazel"),
+    )
+
+    maybe(
+        http_archive,
+        name = "raze__alloc_stdlib__0_2_1",
+        url = "https://crates.io/api/v1/crates/alloc-stdlib/0.2.1/download",
+        type = "tar.gz",
+        sha256 = "697ed7edc0f1711de49ce108c541623a0af97c6c60b2f6e2b65229847ac843c2",
+        strip_prefix = "alloc-stdlib-0.2.1",
+        build_file = Label("//third_party/cargo/remote:BUILD.alloc-stdlib-0.2.1.bazel"),
+    )
+
+    maybe(
+        http_archive,
         name = "raze__anyhow__1_0_57",
         url = "https://crates.io/api/v1/crates/anyhow/1.0.57/download",
         type = "tar.gz",
@@ -169,6 +189,16 @@ def raze_fetch_remote_crates():
         sha256 = "2114d64672151c0c5eaa5e131ec84a74f06e1e559830dabba01ca30605d66319",
         strip_prefix = "async-channel-1.6.1",
         build_file = Label("//third_party/cargo/remote:BUILD.async-channel-1.6.1.bazel"),
+    )
+
+    maybe(
+        http_archive,
+        name = "raze__async_compression__0_3_14",
+        url = "https://crates.io/api/v1/crates/async-compression/0.3.14/download",
+        type = "tar.gz",
+        sha256 = "345fd392ab01f746c717b1357165b76f0b67a60192007b234058c9045fdcf695",
+        strip_prefix = "async-compression-0.3.14",
+        build_file = Label("//third_party/cargo/remote:BUILD.async-compression-0.3.14.bazel"),
     )
 
     maybe(
@@ -525,6 +555,26 @@ def raze_fetch_remote_crates():
         sha256 = "c6ccb65d468978a086b69884437ded69a90faab3bbe6e67f242173ea728acccc",
         strip_prefix = "blocking-1.2.0",
         build_file = Label("//third_party/cargo/remote:BUILD.blocking-1.2.0.bazel"),
+    )
+
+    maybe(
+        http_archive,
+        name = "raze__brotli__3_3_4",
+        url = "https://crates.io/api/v1/crates/brotli/3.3.4/download",
+        type = "tar.gz",
+        sha256 = "a1a0b1dbcc8ae29329621f8d4f0d835787c1c38bb1401979b49d13b0b305ff68",
+        strip_prefix = "brotli-3.3.4",
+        build_file = Label("//third_party/cargo/remote:BUILD.brotli-3.3.4.bazel"),
+    )
+
+    maybe(
+        http_archive,
+        name = "raze__brotli_decompressor__2_3_2",
+        url = "https://crates.io/api/v1/crates/brotli-decompressor/2.3.2/download",
+        type = "tar.gz",
+        sha256 = "59ad2d4653bf5ca36ae797b1f4bb4dbddb60ce49ca4aed8a2ce4829f60425b80",
+        strip_prefix = "brotli-decompressor-2.3.2",
+        build_file = Label("//third_party/cargo/remote:BUILD.brotli-decompressor-2.3.2.bazel"),
     )
 
     maybe(
@@ -1717,12 +1767,12 @@ def raze_fetch_remote_crates():
 
     maybe(
         http_archive,
-        name = "raze__once_cell__1_11_0",
-        url = "https://crates.io/api/v1/crates/once_cell/1.11.0/download",
+        name = "raze__once_cell__1_12_0",
+        url = "https://crates.io/api/v1/crates/once_cell/1.12.0/download",
         type = "tar.gz",
-        sha256 = "7b10983b38c53aebdf33f542c6275b0f58a238129d00c4ae0e6fb59738d783ca",
-        strip_prefix = "once_cell-1.11.0",
-        build_file = Label("//third_party/cargo/remote:BUILD.once_cell-1.11.0.bazel"),
+        sha256 = "7709cef83f0c1f58f666e746a08b21e0085f7440fa6a29cc194d68aac97a4225",
+        strip_prefix = "once_cell-1.12.0",
+        build_file = Label("//third_party/cargo/remote:BUILD.once_cell-1.12.0.bazel"),
     )
 
     maybe(
@@ -2710,6 +2760,15 @@ def raze_fetch_remote_crates():
         sha256 = "c459573f0dd2cc734b539047f57489ea875af8ee950860ded20cf93a79a1dee0",
         strip_prefix = "tide-0.16.0",
         build_file = Label("//third_party/cargo/remote:BUILD.tide-0.16.0.bazel"),
+    )
+
+    maybe(
+        new_git_repository,
+        name = "raze__tide_compress__0_9_0",
+        remote = "https://github.com/ttiurani/tide-compress",
+        commit = "1127c91e9e2b7ea52cb505ff432222ce05baeaf4",
+        build_file = Label("//third_party/cargo/remote:BUILD.tide-compress-0.9.0.bazel"),
+        init_submodules = True,
     )
 
     maybe(
