@@ -12,6 +12,12 @@ impl ServeStaticFiles {
     pub fn new(prefix: String, dir: PathBuf) -> Self {
         Self { prefix, dir }
     }
+
+    pub fn get_path_with_extension(path: &AsyncPathBuf, extension: &str) -> AsyncPathBuf {
+        let mut path_with_extension = path.clone();
+        path_with_extension.set_extension(extension);
+        return path_with_extension;
+    }
 }
 
 #[async_trait::async_trait]
@@ -38,16 +44,18 @@ where
         let file_path = AsyncPathBuf::from(file_path);
 
         // Search for .html suffix and/or directory with index.html
-        let mut file_path_to_search = file_path.clone();
-        let mut file_path_with_extension = file_path.clone();
-        file_path_with_extension.set_extension("html");
-        if file_path.is_dir().await {
+        let mut file_path_to_search = file_path;
+        if file_path_to_search.is_dir().await {
+            let file_path_with_extension =
+                ServeStaticFiles::get_path_with_extension(&file_path_to_search, "html");
             if file_path_with_extension.exists().await {
                 file_path_to_search = file_path_with_extension;
             } else {
                 file_path_to_search.push("index.html");
             }
-        } else if !file_path.exists().await {
+        } else if !file_path_to_search.exists().await {
+            let file_path_with_extension =
+                ServeStaticFiles::get_path_with_extension(&file_path_to_search, "html");
             file_path_to_search = file_path_with_extension;
         }
 
