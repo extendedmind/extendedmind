@@ -6,7 +6,6 @@ use futures::stream::StreamExt;
 use log::debug;
 use std::io;
 use std::time::Instant;
-use tide::{Body, Response, StatusCode};
 use tide_websockets::{Message, WebSocketConnection};
 
 #[derive(Copy, Clone, Debug)]
@@ -24,27 +23,6 @@ struct WrappedData {
 
 type WrappedBytesClosure =
     Box<dyn Fn(Result<Bytes, io::Error>) -> Result<WrappedData, io::Error> + Send + Sync>;
-
-pub async fn handle_index(req: tide::Request<State>) -> tide::Result<Response> {
-    let static_root_dir = &req.state().static_root_dir;
-    if let Some(static_root_dir) = static_root_dir {
-        let mut res = Response::new(StatusCode::Ok);
-        res.set_body(
-            Body::from_file(
-                static_root_dir
-                    .join(req.url().path().get(1..).unwrap())
-                    .join("index.html"),
-            )
-            .await
-            .unwrap(),
-        );
-
-        Ok(res)
-    } else {
-        let res = Response::new(StatusCode::NotFound);
-        Ok(res)
-    }
-}
 
 pub async fn handle_hypercore(
     req: tide::Request<State>,

@@ -2,8 +2,10 @@ use crate::common::State;
 use anyhow::Result;
 use tide_websockets::WebSocket;
 
-mod endpoints;
-use endpoints::{handle_hypercore, handle_index};
+mod websocket;
+use websocket::handle_hypercore;
+mod html;
+use html::handle_index;
 
 pub fn http_server(initial_state: State) -> Result<tide::Server<State>> {
     let static_root_dir = initial_state.static_root_dir.clone();
