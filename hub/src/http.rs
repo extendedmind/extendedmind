@@ -5,16 +5,19 @@ use tide_websockets::WebSocket;
 mod websocket;
 use websocket::handle_hypercore;
 mod html;
-use html::handle_index;
+use html::ServeStaticFiles;
 
 pub fn http_server(initial_state: State) -> Result<tide::Server<State>> {
     let static_root_dir = initial_state.static_root_dir.clone();
     let mut app = tide::with_state(initial_state);
 
     if let Some(static_root_dir) = static_root_dir {
-        app.at("").get(handle_index);
-        app.at("/extendedmind").get(handle_index);
-        app.at("/").serve_dir(static_root_dir.to_str().unwrap())?;
+        let index_path = static_root_dir.join("index.html");
+        if index_path.exists() {
+            app.at("").serve_file(index_path)?;
+        }
+        app.at("*")
+            .get(ServeStaticFiles::new("*".to_string(), static_root_dir));
     }
 
     app.at("/extendedmind/hypercore")

@@ -29,6 +29,7 @@ rust_binary(
     ],
     proc_macro_deps = [
         "//third_party/cargo:derivative",
+        "//third_party/cargo:async_trait",
     ],
     srcs = glob(["src/**"]),
 )

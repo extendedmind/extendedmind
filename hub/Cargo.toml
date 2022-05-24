@@ -18,6 +18,7 @@ async-std = { version = "1.6.2", features = ["unstable"] }
 tide = "0.16.0"
 tide-websockets = "0.4.0"
 async-tungstenite = { version = "0.13.1", features = ["async-std-runtime"] }
+async-trait = "0.1.51"
 ctrlc = { version = "3.0", features = ["termination"] }
 async-ctrlc = { version = "1.2.0", features = ["stream"] }
 clap = { version = "3.0.0-rc.5", features = ["derive"] }

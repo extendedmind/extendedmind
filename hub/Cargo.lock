@@ -1028,6 +1028,7 @@ dependencies = [
  "anyhow",
  "async-ctrlc",
  "async-std",
+ "async-trait",
  "async-tungstenite",
  "chrono",
  "clap",
