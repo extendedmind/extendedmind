@@ -14,7 +14,6 @@ use std::time::Duration;
 
 mod common;
 mod http;
-mod routing;
 
 use common::{ChannelSenderReceiver, State, SystemCommand};
 use http::http_server;

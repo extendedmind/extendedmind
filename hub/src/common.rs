@@ -10,13 +10,6 @@ pub enum SystemCommand {
     Disconnect = 2,
 }
 
-#[derive(Copy, Clone, Debug)]
-pub enum ReceiverType {
-    System,
-    Hypercore,
-    Client,
-}
-
 #[derive(derivative::Derivative)]
 #[derivative(Clone(bound = ""))]
 pub struct State {
