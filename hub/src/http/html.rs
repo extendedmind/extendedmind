@@ -55,13 +55,13 @@ impl ServeStaticFiles {
             Some(skip_compress_mime) => skip_compress_mime.contains(&mime.essence().to_string()),
             None => false,
         };
+        let response = Response::builder(StatusCode::Ok)
+            .body(body)
+            .header("Permissions-Policy", "browsing-topics=()");
         if skip_compression {
-            Response::builder(StatusCode::Ok)
-                .body(body)
-                .header("Cache-Control", "no-transform")
-                .build()
+            response.header("Cache-Control", "no-transform").build()
         } else {
-            Response::builder(StatusCode::Ok).body(body).build()
+            response.build()
         }
     }
 
