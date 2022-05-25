@@ -184,6 +184,15 @@ alias(
 )
 
 alias(
+    name = "html_escape",
+    actual = "@raze__html_escape__0_2_11//:html_escape",
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+)
+
+alias(
     name = "hypercore",
     actual = "@raze__hypercore__0_11_1_beta_10//:hypercore",
     tags = [
@@ -321,6 +330,15 @@ alias(
 alias(
     name = "wasm_bindgen_futures",
     actual = "@raze__wasm_bindgen_futures__0_4_28//:wasm_bindgen_futures",
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+)
+
+alias(
+    name = "wildmatch",
+    actual = "@raze__wildmatch__2_1_0//:wildmatch",
     tags = [
         "cargo-raze",
         "manual",

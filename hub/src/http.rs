@@ -15,6 +15,7 @@ pub fn http_server(
     skip_compress_mime: Option<Vec<String>>,
     cache_ttl_sec: Option<u64>,
     cache_tti_sec: Option<u64>,
+    inline_css_path: Option<Vec<String>>,
 ) -> Result<tide::Server<State>> {
     let skip_compress_mime = skip_compress_mime.clone();
     let mut app = tide::with_state(initial_state);
@@ -30,6 +31,7 @@ pub fn http_server(
             skip_compress_mime,
             cache_ttl_sec,
             cache_tti_sec,
+            inline_css_path,
         ));
     }
 

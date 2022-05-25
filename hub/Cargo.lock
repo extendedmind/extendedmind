@@ -1169,11 +1169,13 @@ dependencies = [
  "extendedmind_engine",
  "fern",
  "futures",
+ "html-escape",
  "log",
  "moka",
  "tide",
  "tide-compress",
  "tide-websockets",
+ "wildmatch",
 ]
 
 [[package]]
@@ -1548,6 +1550,15 @@ checksum = "c1441c6b1e930e2817404b5046f1f989899143a12bf92de603b69f4e0aee1e15"
 dependencies = [
  "crypto-mac 0.10.1",
  "digest",
+]
+
+[[package]]
+name = "html-escape"
+version = "0.2.11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b8e7479fa1ef38eb49fb6a42c426be515df2d063f06cb8efd3e50af073dbc26c"
+dependencies = [
+ "utf8-width",
 ]
 
 [[package]]
@@ -3318,6 +3329,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "09cc8ee72d2a9becf2f2febe0205bbed8fc6615b7cb429ad062dc7b7ddd036a9"
 
 [[package]]
+name = "utf8-width"
+version = "0.1.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5190c9442dcdaf0ddd50f37420417d219ae5261bbf5db120d0f9bab996c9cba1"
+
+[[package]]
 name = "uuid"
 version = "0.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3480,6 +3497,12 @@ checksum = "d011071ae14a2f6671d0b74080ae0cd8ebf3a6f8c9589a2cd45f23126fe29724"
 dependencies = [
  "libc",
 ]
+
+[[package]]
+name = "wildmatch"
+version = "2.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d6c48bd20df7e4ced539c12f570f937c6b4884928a87fee70a479d72f031d4e0"
 
 [[package]]
 name = "winapi"

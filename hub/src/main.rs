@@ -37,6 +37,8 @@ struct Opts {
     cache_ttl_sec: Option<u64>,
     #[clap(long)]
     cache_tti_sec: Option<u64>,
+    #[clap(long)]
+    inline_css_path: Option<Vec<String>>,
 }
 
 fn setup_logging(log_to_stderr: bool) {
@@ -68,6 +70,7 @@ async fn async_main(
     skip_compress_mime: Option<Vec<String>>,
     cache_ttl_sec: Option<u64>,
     cache_tti_sec: Option<u64>,
+    inline_css_path: Option<Vec<String>>,
 ) -> Result<()> {
     let engine = initial_state.engine.clone();
 
@@ -78,6 +81,7 @@ async fn async_main(
             skip_compress_mime,
             cache_ttl_sec,
             cache_tti_sec,
+            inline_css_path,
         )
         .unwrap();
         let http_listener = http_server.listen("0.0.0.0:".to_owned() + &http_port.to_string());
@@ -159,6 +163,7 @@ fn main() -> Result<()> {
         opts.skip_compress_mime,
         opts.cache_ttl_sec,
         opts.cache_tti_sec,
+        opts.inline_css_path,
     ))?;
 
     Ok(())
