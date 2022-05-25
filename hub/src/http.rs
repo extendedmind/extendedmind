@@ -1,5 +1,6 @@
 use crate::common::State;
 use anyhow::Result;
+use std::path::PathBuf;
 use tide_compress::CompressMiddleware;
 use tide_websockets::WebSocket;
 
@@ -10,9 +11,9 @@ use html::ServeStaticFiles;
 
 pub fn http_server(
     initial_state: State,
+    static_root_dir: Option<PathBuf>,
     skip_compress_mime: Option<Vec<String>>,
 ) -> Result<tide::Server<State>> {
-    let static_root_dir = initial_state.static_root_dir.clone();
     let skip_compress_mime = skip_compress_mime.clone();
     let mut app = tide::with_state(initial_state);
 
