@@ -26,6 +26,7 @@ async-trait = "0.1.51"
 tide = "0.16.0"
 tide-websockets = "0.4.0"
 tide-compress = { git = "https://github.com/ttiurani/tide-compress", rev = "1127c91e9e2b7ea52cb505ff432222ce05baeaf4" }
+moka = { version = "0.8.4", default-features = false, features = ["atomic64", "future"] }
 ctrlc = { version = "3.0", features = ["termination"] }
 async-ctrlc = "1.2.0"
 random-access-disk = { git = "https://github.com/ttiurani/random-access-disk", rev = "6b17771d174722bff442dba9aaf633aae4f3e40f" }

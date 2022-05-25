@@ -229,6 +229,15 @@ alias(
 )
 
 alias(
+    name = "moka",
+    actual = "@raze__moka__0_8_4//:moka",
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+)
+
+alias(
     name = "random_access_disk",
     actual = "@raze__random_access_disk__2_0_0//:random_access_disk",
     tags = [

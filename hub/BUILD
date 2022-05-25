@@ -22,6 +22,7 @@ rust_binary(
             "//third_party/cargo:tide",
             "//third_party/cargo:tide_websockets",
             "//third_party/cargo:tide_compress",
+            "//third_party/cargo:moka",
             "//third_party/cargo:async_std",
             "//third_party/cargo:async_tungstenite",
             "//third_party/cargo:async_ctrlc",
