@@ -14,19 +14,39 @@ pub struct ServeStaticFiles {
 }
 
 impl ServeStaticFiles {
-    pub fn new(prefix: String, dir: PathBuf, skip_compress_mime: Option<Vec<String>>) -> Self {
+    pub fn new(
+        prefix: String,
+        dir: PathBuf,
+        skip_compress_mime: Option<Vec<String>>,
+        cache_ttl_sec: Option<u64>,
+        cache_tti_sec: Option<u64>,
+    ) -> Self {
+        let cache = if cache_ttl_sec.is_some() && cache_tti_sec.is_some() {
+            let cache_ttl_sec = cache_ttl_sec.unwrap();
+            let cache_tti_sec = cache_tti_sec.unwrap();
+            log::info!(
+                "Setting up cache for path {} with time-to-live: {}s and time-to-idle: {}s",
+                &prefix,
+                &cache_ttl_sec,
+                &cache_tti_sec,
+            );
+            Some(
+                Cache::builder()
+                    // TTL: 5 minutes
+                    .time_to_live(Duration::from_secs(cache_ttl_sec))
+                    // TTI: 1 minute
+                    .time_to_idle(Duration::from_secs(cache_tti_sec))
+                    .build(),
+            )
+        } else {
+            log::info!("Not caching path {}", &prefix);
+            None
+        };
         Self {
             prefix,
             dir,
             skip_compress_mime,
-            cache: Some(
-                Cache::builder()
-                    // TTL: 5 minutes
-                    .time_to_live(Duration::from_secs(5 * 60))
-                    // TTI: 1 minute
-                    .time_to_idle(Duration::from_secs(60))
-                    .build(),
-            ),
+            cache,
         }
     }
 

@@ -13,6 +13,8 @@ pub fn http_server(
     initial_state: State,
     static_root_dir: Option<PathBuf>,
     skip_compress_mime: Option<Vec<String>>,
+    cache_ttl_sec: Option<u64>,
+    cache_tti_sec: Option<u64>,
 ) -> Result<tide::Server<State>> {
     let skip_compress_mime = skip_compress_mime.clone();
     let mut app = tide::with_state(initial_state);
@@ -26,6 +28,8 @@ pub fn http_server(
             "*".to_string(),
             static_root_dir,
             skip_compress_mime,
+            cache_ttl_sec,
+            cache_tti_sec,
         ));
     }
 

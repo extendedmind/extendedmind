@@ -33,6 +33,10 @@ struct Opts {
     log_to_stderr: bool,
     #[clap(long)]
     skip_compress_mime: Option<Vec<String>>,
+    #[clap(long)]
+    cache_ttl_sec: Option<u64>,
+    #[clap(long)]
+    cache_tti_sec: Option<u64>,
 }
 
 fn setup_logging(log_to_stderr: bool) {
@@ -62,11 +66,20 @@ async fn async_main(
     http_port: Option<u16>,
     tcp_port: Option<u16>,
     skip_compress_mime: Option<Vec<String>>,
+    cache_ttl_sec: Option<u64>,
+    cache_tti_sec: Option<u64>,
 ) -> Result<()> {
     let engine = initial_state.engine.clone();
 
     if let Some(http_port) = http_port {
-        let http_server = http_server(initial_state, static_root_dir, skip_compress_mime).unwrap();
+        let http_server = http_server(
+            initial_state,
+            static_root_dir,
+            skip_compress_mime,
+            cache_ttl_sec,
+            cache_tti_sec,
+        )
+        .unwrap();
         let http_listener = http_server.listen("0.0.0.0:".to_owned() + &http_port.to_string());
         if let Some(tcp_port) = tcp_port {
             let tcp_listener = tcp::listen(format!("0.0.0.0:{}", tcp_port), engine);
@@ -144,6 +157,8 @@ fn main() -> Result<()> {
         opts.http_port,
         opts.tcp_port,
         opts.skip_compress_mime,
+        opts.cache_ttl_sec,
+        opts.cache_tti_sec,
     ))?;
 
     Ok(())
