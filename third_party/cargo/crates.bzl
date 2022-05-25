@@ -3003,12 +3003,13 @@ def raze_fetch_remote_crates():
     )
 
     maybe(
-        new_git_repository,
+        http_archive,
         name = "raze__tide_compress__0_9_0",
-        remote = "https://github.com/ttiurani/tide-compress",
-        commit = "1127c91e9e2b7ea52cb505ff432222ce05baeaf4",
+        url = "https://crates.io/api/v1/crates/tide-compress/0.9.0/download",
+        type = "tar.gz",
+        sha256 = "1d59e3885ecbc547a611d81e501b51bb5f52abd44c3eb3b733ac3c44ff2f2619",
+        strip_prefix = "tide-compress-0.9.0",
         build_file = Label("//third_party/cargo/remote:BUILD.tide-compress-0.9.0.bazel"),
-        init_submodules = True,
     )
 
     maybe(

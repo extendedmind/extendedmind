@@ -9,14 +9,16 @@ use tide::{Body, Endpoint, Request, Response, Result, StatusCode};
 pub struct ServeStaticFiles {
     prefix: String,
     dir: PathBuf,
+    skip_compress_mime: Option<Vec<String>>,
     cache: Option<Cache<String, (Vec<u8>, Mime)>>,
 }
 
 impl ServeStaticFiles {
-    pub fn new(prefix: String, dir: PathBuf) -> Self {
+    pub fn new(prefix: String, dir: PathBuf, skip_compress_mime: Option<Vec<String>>) -> Self {
         Self {
             prefix,
             dir,
+            skip_compress_mime,
             cache: Some(
                 Cache::builder()
                     // TTL: 5 minutes
@@ -48,8 +50,19 @@ impl ServeStaticFiles {
 
     pub fn get_ok_response_from_body(&self, body_as_bytes: Vec<u8>, mime: Mime) -> Response {
         let mut body = Body::from_bytes(body_as_bytes);
-        body.set_mime(mime);
-        Response::builder(StatusCode::Ok).body(body).build()
+        body.set_mime(mime.clone());
+        let skip_compression: bool = match &self.skip_compress_mime {
+            Some(skip_compress_mime) => skip_compress_mime.contains(&mime.essence().to_string()),
+            None => false,
+        };
+        if skip_compression {
+            Response::builder(StatusCode::Ok)
+                .body(body)
+                .header("Cache-Control", "no-transform")
+                .build()
+        } else {
+            Response::builder(StatusCode::Ok).body(body).build()
+        }
     }
 
     pub fn get_path_with_extension(path: &AsyncPathBuf, extension: &str) -> AsyncPathBuf {

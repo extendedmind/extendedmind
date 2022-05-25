@@ -31,6 +31,8 @@ struct Opts {
     tcp_port: Option<u16>,
     #[clap(short, long)]
     log_to_stderr: bool,
+    #[clap(long)]
+    skip_compress_mime: Option<Vec<String>>,
 }
 
 fn setup_logging(log_to_stderr: bool) {
@@ -54,13 +56,13 @@ fn setup_logging(log_to_stderr: bool) {
     base_config.chain(std_config).apply().unwrap();
 }
 
-async fn async_main(initial_state: State) -> Result<()> {
+async fn async_main(initial_state: State, skip_compress_mime: Option<Vec<String>>) -> Result<()> {
     let http_port = initial_state.http_port;
     let tcp_port = initial_state.tcp_port;
     let engine = initial_state.engine.clone();
 
     if let Some(http_port) = http_port {
-        let http_server = http_server(initial_state).unwrap();
+        let http_server = http_server(initial_state, skip_compress_mime).unwrap();
         let http_listener = http_server.listen("0.0.0.0:".to_owned() + &http_port.to_string());
         if let Some(tcp_port) = tcp_port {
             let tcp_listener = tcp::listen(format!("0.0.0.0:{}", tcp_port), engine);
@@ -136,7 +138,7 @@ fn main() -> Result<()> {
     });
 
     // Block server with initial state
-    futures::executor::block_on(async_main(initial_state))?;
+    futures::executor::block_on(async_main(initial_state, opts.skip_compress_mime))?;
 
     Ok(())
 }
