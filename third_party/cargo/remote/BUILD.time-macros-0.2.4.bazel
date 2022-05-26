@@ -31,10 +31,8 @@ licenses([
 
 # Generated Targets
 
-# Unsupported target "bench" with type "bench" omitted
-
-rust_library(
-    name = "regex_syntax",
+rust_proc_macro(
+    name = "time_macros",
     srcs = glob(["**/*.rs"]),
     crate_features = [
     ],
@@ -46,13 +44,12 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=regex-syntax",
+        "crate-name=time-macros",
         "manual",
     ],
-    version = "0.6.26",
+    version = "0.2.4",
 
     # buildifier: leave-alone
     deps = [
     ],
 )
-

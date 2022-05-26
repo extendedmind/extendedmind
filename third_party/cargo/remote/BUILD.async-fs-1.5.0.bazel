@@ -26,18 +26,15 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT OR Apache-2.0"
+    "notice",  # Apache-2.0 from expression "Apache-2.0 OR MIT"
 ])
 
 # Generated Targets
 
 rust_library(
-    name = "yasna",
+    name = "async_fs",
     srcs = glob(["**/*.rs"]),
     crate_features = [
-        "chrono",
-        "default",
-        "std",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -47,14 +44,16 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=yasna",
+        "crate-name=async-fs",
         "manual",
     ],
-    version = "0.4.0",
+    version = "1.5.0",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__chrono__0_4_19//:chrono",
+        "@raze__async_lock__2_5_0//:async_lock",
+        "@raze__blocking__1_2_0//:blocking",
+        "@raze__futures_lite__1_12_0//:futures_lite",
     ],
 )
 

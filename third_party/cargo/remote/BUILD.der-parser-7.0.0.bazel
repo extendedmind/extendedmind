@@ -32,31 +32,55 @@ licenses([
 # Generated Targets
 
 rust_library(
-    name = "tide_acme",
+    name = "der_parser",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "bigint",
+        "default",
+        "num-bigint",
+        "std",
     ],
     crate_root = "src/lib.rs",
     data = [],
     edition = "2018",
     proc_macro_deps = [
-        "@raze__async_trait__0_1_53//:async_trait",
+        "@raze__displaydoc__0_2_3//:displaydoc",
     ],
     rustc_flags = [
         "--cap-lints=allow",
     ],
     tags = [
         "cargo-raze",
-        "crate-name=tide-acme",
+        "crate-name=der-parser",
         "manual",
     ],
-    version = "0.1.1",
+    version = "7.0.0",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__async_std__1_11_0//:async_std",
-        "@raze__rustls_acme__0_1_8//:rustls_acme",
-        "@raze__tide_rustls__0_3_0//:tide_rustls",
+        "@raze__asn1_rs__0_3_1//:asn1_rs",
+        "@raze__nom__7_1_1//:nom",
+        "@raze__num_bigint__0_4_3//:num_bigint",
+        "@raze__num_traits__0_2_15//:num_traits",
+        "@raze__rusticata_macros__4_1_0//:rusticata_macros",
     ],
 )
 
+
+# Unsupported target "ber_parser" with type "test" omitted
+
+# Unsupported target "constructed" with type "test" omitted
+
+# Unsupported target "custom_error" with type "test" omitted
+
+# Unsupported target "der_constructed" with type "test" omitted
+
+# Unsupported target "der_parser" with type "test" omitted
+
+# Unsupported target "fuzz01" with type "test" omitted
+
+# Unsupported target "fuzz02" with type "test" omitted
+
+# Unsupported target "oid" with type "test" omitted
+
+# Unsupported target "primitive" with type "test" omitted

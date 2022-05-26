@@ -32,25 +32,50 @@ licenses([
 # Generated Targets
 
 rust_library(
-    name = "static_assertions",
+    name = "minimal_lexical",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "std",
     ],
     crate_root = "src/lib.rs",
     data = [],
-    edition = "2015",
+    edition = "2018",
     rustc_flags = [
         "--cap-lints=allow",
     ],
     tags = [
         "cargo-raze",
-        "crate-name=static_assertions",
+        "crate-name=minimal-lexical",
         "manual",
     ],
-    version = "1.1.0",
+    version = "0.2.1",
 
     # buildifier: leave-alone
     deps = [
     ],
 )
 
+
+# Unsupported target "bellerophon" with type "test" omitted
+
+# Unsupported target "bellerophon_tests" with type "test" omitted
+
+# Unsupported target "integration_tests" with type "test" omitted
+
+# Unsupported target "lemire_tests" with type "test" omitted
+
+# Unsupported target "libm_tests" with type "test" omitted
+
+# Unsupported target "mask_tests" with type "test" omitted
+
+# Unsupported target "number_tests" with type "test" omitted
+
+# Unsupported target "parse_tests" with type "test" omitted
+
+# Unsupported target "rounding_tests" with type "test" omitted
+
+# Unsupported target "slow_tests" with type "test" omitted
+
+# Unsupported target "stackvec" with type "test" omitted
+
+# Unsupported target "vec_tests" with type "test" omitted

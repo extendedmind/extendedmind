@@ -11,12 +11,15 @@ use std::path::PathBuf;
 use std::process;
 use std::sync::atomic::AtomicBool;
 use std::time::Duration;
+use tide_acme::rustls_acme::caches::DirCache;
+use tide_acme::{AcmeConfig, TideRustlsExt};
+use tide_rustls::TlsListener;
 
 mod common;
 mod http;
 
 use common::{ChannelSenderReceiver, State, SystemCommand};
-use http::http_server;
+use http::{http_main_server, http_redirect_server};
 
 #[derive(Parser)]
 #[clap(version = "0.1.0", author = "Timo Tiuraniemi <timo.tiuraniemi@iki.fi>")]
@@ -27,6 +30,14 @@ struct Opts {
     static_root_dir: Option<PathBuf>,
     #[clap(short, long)]
     http_port: Option<u16>,
+    #[clap(long)]
+    https_port: Option<u16>,
+    #[clap(long)]
+    domain: Option<String>,
+    #[clap(long)]
+    acme_email: Option<String>,
+    #[clap(long)]
+    acme_dir: Option<String>,
     #[clap(short, long)]
     tcp_port: Option<u16>,
     #[clap(short, long)]
@@ -68,6 +79,10 @@ async fn async_main(
     initial_state: State,
     static_root_dir: Option<PathBuf>,
     http_port: Option<u16>,
+    https_port: Option<u16>,
+    domain: Option<String>,
+    acme_email: Option<String>,
+    acme_dir: Option<String>,
     tcp_port: Option<u16>,
     skip_compress_mime: Option<Vec<String>>,
     cache_ttl_sec: Option<u64>,
@@ -78,7 +93,7 @@ async fn async_main(
     let engine = initial_state.engine.clone();
 
     if let Some(http_port) = http_port {
-        let http_server = http_server(
+        let main_server = http_main_server(
             initial_state,
             static_root_dir,
             skip_compress_mime,
@@ -88,18 +103,51 @@ async fn async_main(
             immutable_path,
         )
         .unwrap();
-        let http_listener = http_server.listen("0.0.0.0:".to_owned() + &http_port.to_string());
-        if let Some(tcp_port) = tcp_port {
-            let tcp_listener = tcp::listen(format!("0.0.0.0:{}", tcp_port), engine);
-            futures::try_join!(http_listener, tcp_listener)?;
+        if let Some(https_port) = https_port {
+            if domain.is_none() || acme_dir.is_none() || acme_email.is_none() {
+                anyhow::bail!(
+                    "With --https-port also --domain, --acme-email and --acme-dir are required"
+                );
+            }
+            let domain = domain.unwrap();
+            let acme_dir = acme_dir.unwrap();
+            let acme_email = acme_email.unwrap();
+            let redirect_server =
+                http_redirect_server(format!("https://{}:{}", &domain, &https_port).as_str())
+                    .unwrap();
+            let redirect_listener = redirect_server.listen(format!("0.0.0.0:{}", &http_port));
+            let main_listener = main_server.listen(
+                tide_rustls::TlsListener::build()
+                    .addrs(format!("0.0.0.0:{}", &https_port))
+                    .acme(
+                        AcmeConfig::new(vec![domain])
+                            .contact_push(acme_email)
+                            .cache(DirCache::new(acme_dir)),
+                    ),
+            );
+
+            if let Some(tcp_port) = tcp_port {
+                let tcp_listener = tcp::listen(format!("0.0.0.0:{}", tcp_port), engine);
+                futures::try_join!(main_listener, redirect_listener, tcp_listener)?;
+            } else {
+                futures::try_join!(main_listener, redirect_listener)?;
+            }
+
+            // TODO
         } else {
-            http_listener.await?;
+            let main_listener = main_server.listen(format!("0.0.0.0:{}", &http_port));
+            if let Some(tcp_port) = tcp_port {
+                let tcp_listener = tcp::listen(format!("0.0.0.0:{}", tcp_port), engine);
+                futures::try_join!(main_listener, tcp_listener)?;
+            } else {
+                main_listener.await?;
+            }
         }
     } else {
         if let Some(tcp_port) = tcp_port {
             tcp::listen(format!("0.0.0.0:{}", tcp_port), engine).await?;
         } else {
-            anyhow::bail!("Either tcp_port or http_port has to be provided");
+            anyhow::bail!("Either --tcp-port or --http-port is mandatory");
         };
     }
 
@@ -163,6 +211,10 @@ fn main() -> Result<()> {
         initial_state,
         opts.static_root_dir,
         opts.http_port,
+        opts.https_port,
+        opts.domain,
+        opts.acme_email,
+        opts.acme_dir,
         opts.tcp_port,
         opts.skip_compress_mime,
         opts.cache_ttl_sec,

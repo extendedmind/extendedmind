@@ -1,6 +1,7 @@
 use crate::common::State;
 use anyhow::Result;
 use std::path::PathBuf;
+use tide::{Redirect, Request};
 use tide_compress::CompressMiddleware;
 use tide_websockets::WebSocket;
 
@@ -9,7 +10,7 @@ use websocket::handle_hypercore;
 mod html;
 use html::ServeStaticFiles;
 
-pub fn http_server(
+pub fn http_main_server(
     initial_state: State,
     static_root_dir: Option<PathBuf>,
     skip_compress_mime: Option<Vec<String>>,
@@ -42,5 +43,30 @@ pub fn http_server(
 
     app.with(CompressMiddleware::new());
 
+    return Ok(app);
+}
+
+/// The shared application state.
+#[derive(Clone)]
+pub struct RedirectState {
+    redirect_to_url: String,
+}
+
+pub fn http_redirect_server(redirect_to_url: &str) -> Result<tide::Server<RedirectState>> {
+    let mut app = tide::with_state(RedirectState {
+        redirect_to_url: redirect_to_url.to_string(),
+    });
+
+    app.at("")
+        .get(Redirect::temporary(redirect_to_url.to_string()));
+
+    app.at("*").get(|req: Request<RedirectState>| async move {
+        let path = req.url().path();
+        Ok(Redirect::temporary(format!(
+            "{}{}",
+            req.state().redirect_to_url,
+            path
+        )))
+    });
     return Ok(app);
 }

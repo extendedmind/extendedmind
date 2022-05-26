@@ -26,7 +26,7 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT"
+    "notice",  # MIT from expression "MIT OR Apache-2.0"
 ])
 
 # Generated Targets
@@ -38,11 +38,22 @@ load(
 )
 
 cargo_build_script(
-    name = "radium_build_script",
+    name = "oid_registry_build_script",
     srcs = glob(["**/*.rs"]),
     build_script_env = {
     },
     crate_features = [
+        "crypto",
+        "default",
+        "kdf",
+        "nist_algs",
+        "pkcs1",
+        "pkcs12",
+        "pkcs7",
+        "pkcs9",
+        "registry",
+        "x509",
+        "x962",
     ],
     crate_root = "build.rs",
     data = glob(["**"]),
@@ -54,16 +65,27 @@ cargo_build_script(
         "cargo-raze",
         "manual",
     ],
-    version = "0.5.3",
+    version = "0.4.0",
     visibility = ["//visibility:private"],
     deps = [
     ],
 )
 
 rust_library(
-    name = "radium",
+    name = "oid_registry",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "crypto",
+        "default",
+        "kdf",
+        "nist_algs",
+        "pkcs1",
+        "pkcs12",
+        "pkcs7",
+        "pkcs9",
+        "registry",
+        "x509",
+        "x962",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -73,14 +95,15 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=radium",
+        "crate-name=oid-registry",
         "manual",
     ],
-    version = "0.5.3",
+    version = "0.4.0",
 
     # buildifier: leave-alone
     deps = [
-        ":radium_build_script",
+        ":oid_registry_build_script",
+        "@raze__asn1_rs__0_3_1//:asn1_rs",
     ],
 )
 

@@ -1,0 +1,108 @@
+"""
+@generated
+cargo-raze crate build file.
+
+DO NOT EDIT! Replaced on runs of cargo-raze
+"""
+
+# buildifier: disable=load
+load("@bazel_skylib//lib:selects.bzl", "selects")
+
+# buildifier: disable=load
+load(
+    "@rules_rust//rust:defs.bzl",
+    "rust_binary",
+    "rust_library",
+    "rust_proc_macro",
+    "rust_test",
+)
+
+package(default_visibility = [
+    # Public for visibility by "@raze__crate__version//" targets.
+    #
+    # Prefer access through "//third_party/cargo", which limits external
+    # visibility to explicit Cargo.toml dependencies.
+    "//visibility:public",
+])
+
+licenses([
+    "notice",  # Apache-2.0 from expression "Apache-2.0 OR MIT"
+])
+
+# Generated Targets
+
+# Unsupported target "async-h1-client" with type "example" omitted
+
+# Unsupported target "async-h1-server" with type "example" omitted
+
+# Unsupported target "chat-client" with type "example" omitted
+
+# Unsupported target "chat-server" with type "example" omitted
+
+# Unsupported target "ctrl-c" with type "example" omitted
+
+# Unsupported target "get-request" with type "example" omitted
+
+# Unsupported target "hyper-client" with type "example" omitted
+
+# Unsupported target "hyper-server" with type "example" omitted
+
+# Unsupported target "linux-inotify" with type "example" omitted
+
+# Unsupported target "linux-timerfd" with type "example" omitted
+
+# Unsupported target "simple-client" with type "example" omitted
+
+# Unsupported target "simple-server" with type "example" omitted
+
+# Unsupported target "tcp-client" with type "example" omitted
+
+# Unsupported target "tcp-server" with type "example" omitted
+
+# Unsupported target "tls-client" with type "example" omitted
+
+# Unsupported target "tls-server" with type "example" omitted
+
+# Unsupported target "unix-signal" with type "example" omitted
+
+# Unsupported target "web-crawler" with type "example" omitted
+
+# Unsupported target "websocket-client" with type "example" omitted
+
+# Unsupported target "websocket-server" with type "example" omitted
+
+# Unsupported target "windows-uds" with type "example" omitted
+
+rust_library(
+    name = "smol",
+    srcs = glob(["**/*.rs"]),
+    crate_features = [
+    ],
+    crate_root = "src/lib.rs",
+    data = [],
+    edition = "2018",
+    rustc_flags = [
+        "--cap-lints=allow",
+    ],
+    tags = [
+        "cargo-raze",
+        "crate-name=smol",
+        "manual",
+    ],
+    version = "1.2.5",
+
+    # buildifier: leave-alone
+    deps = [
+        "@raze__async_channel__1_6_1//:async_channel",
+        "@raze__async_executor__1_4_1//:async_executor",
+        "@raze__async_fs__1_5_0//:async_fs",
+        "@raze__async_io__1_7_0//:async_io",
+        "@raze__async_lock__2_5_0//:async_lock",
+        "@raze__async_net__1_6_1//:async_net",
+        "@raze__async_process__1_4_0//:async_process",
+        "@raze__blocking__1_2_0//:blocking",
+        "@raze__futures_lite__1_12_0//:futures_lite",
+        "@raze__once_cell__1_12_0//:once_cell",
+    ],
+)
+

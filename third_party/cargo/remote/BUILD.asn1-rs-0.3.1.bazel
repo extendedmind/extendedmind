@@ -26,43 +26,57 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT"
+    "notice",  # MIT from expression "MIT OR Apache-2.0"
 ])
 
 # Generated Targets
 
-# Unsupported target "macros" with type "bench" omitted
-
-# Unsupported target "memcpy" with type "bench" omitted
-
-# Unsupported target "slice" with type "bench" omitted
-
 rust_library(
-    name = "bitvec",
+    name = "asn1_rs",
     srcs = glob(["**/*.rs"]),
     crate_features = [
-        "alloc",
+        "datetime",
+        "default",
         "std",
+        "time",
     ],
     crate_root = "src/lib.rs",
     data = [],
     edition = "2018",
+    proc_macro_deps = [
+        "@raze__asn1_rs_derive__0_1_0//:asn1_rs_derive",
+        "@raze__asn1_rs_impl__0_1_0//:asn1_rs_impl",
+        "@raze__displaydoc__0_2_3//:displaydoc",
+    ],
     rustc_flags = [
         "--cap-lints=allow",
     ],
     tags = [
         "cargo-raze",
-        "crate-name=bitvec",
+        "crate-name=asn1-rs",
         "manual",
     ],
-    version = "0.19.6",
+    version = "0.3.1",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__funty__1_1_0//:funty",
-        "@raze__radium__0_5_3//:radium",
-        "@raze__tap__1_0_1//:tap",
-        "@raze__wyz__0_2_0//:wyz",
+        "@raze__nom__7_1_1//:nom",
+        "@raze__num_traits__0_2_15//:num_traits",
+        "@raze__rusticata_macros__4_1_0//:rusticata_macros",
+        "@raze__thiserror__1_0_31//:thiserror",
+        "@raze__time__0_3_9//:time",
     ],
 )
 
+
+# Unsupported target "ber" with type "test" omitted
+
+# Unsupported target "compile_tests" with type "test" omitted
+
+# Unsupported target "der" with type "test" omitted
+
+# Unsupported target "krb5" with type "test" omitted
+
+# Unsupported target "to_der" with type "test" omitted
+
+# Unsupported target "x509" with type "test" omitted

@@ -52,19 +52,20 @@ rust_library(
         "crate-name=x509-parser",
         "manual",
     ],
-    version = "0.10.0",
+    version = "0.13.2",
 
     # buildifier: leave-alone
     deps = [
+        "@raze__asn1_rs__0_3_1//:asn1_rs",
         "@raze__base64__0_13_0//:base64",
-        "@raze__chrono__0_4_19//:chrono",
         "@raze__data_encoding__2_3_2//:data_encoding",
-        "@raze__der_parser__5_1_2//:der_parser",
+        "@raze__der_parser__7_0_0//:der_parser",
         "@raze__lazy_static__1_4_0//:lazy_static",
-        "@raze__nom__6_1_2//:nom",
-        "@raze__oid_registry__0_1_5//:oid_registry",
-        "@raze__rusticata_macros__3_2_0//:rusticata_macros",
+        "@raze__nom__7_1_1//:nom",
+        "@raze__oid_registry__0_4_0//:oid_registry",
+        "@raze__rusticata_macros__4_1_0//:rusticata_macros",
         "@raze__thiserror__1_0_31//:thiserror",
+        "@raze__time__0_3_9//:time",
     ],
 )
 

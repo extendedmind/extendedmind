@@ -32,55 +32,29 @@ licenses([
 # Generated Targets
 
 rust_library(
-    name = "der_parser",
+    name = "yasna",
     srcs = glob(["**/*.rs"]),
     crate_features = [
-        "bigint",
         "default",
-        "num-bigint",
+        "std",
+        "time",
     ],
     crate_root = "src/lib.rs",
     data = [],
     edition = "2018",
-    proc_macro_deps = [
-        "@raze__der_oid_macro__0_4_0//:der_oid_macro",
-    ],
     rustc_flags = [
         "--cap-lints=allow",
     ],
     tags = [
         "cargo-raze",
-        "crate-name=der-parser",
+        "crate-name=yasna",
         "manual",
     ],
-    version = "5.1.2",
+    version = "0.5.0",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__nom__6_1_2//:nom",
-        "@raze__num_bigint__0_4_3//:num_bigint",
-        "@raze__num_traits__0_2_15//:num_traits",
-        "@raze__rusticata_macros__3_2_0//:rusticata_macros",
+        "@raze__time__0_3_9//:time",
     ],
 )
 
-
-# Unsupported target "ber_parser" with type "test" omitted
-
-# Unsupported target "constructed" with type "test" omitted
-
-# Unsupported target "custom_error" with type "test" omitted
-
-# Unsupported target "der_constructed" with type "test" omitted
-
-# Unsupported target "der_parser" with type "test" omitted
-
-# Unsupported target "fuzz01" with type "test" omitted
-
-# Unsupported target "fuzz02" with type "test" omitted
-
-# Unsupported target "macros" with type "test" omitted
-
-# Unsupported target "oid" with type "test" omitted
-
-# Unsupported target "primitive" with type "test" omitted
