@@ -1,6 +1,10 @@
 #!/bin/bash
- 
+
 NAME=aarch64-rpi3-linux-gnu-gcov
 TOOLCHAIN_BINDIR=external/aarch64-rpi3-linux-gnu/bin
- 
+
+if [[ ! -d $TOOLCHAIN_BINDIR ]]; then
+    TOOLCHAIN_BINDIR=$(realpath ../../../../../../../${TOOLCHAIN_BINDIR}/.)
+fi
+
 exec "${TOOLCHAIN_BINDIR}"/"${NAME}" "$@"
