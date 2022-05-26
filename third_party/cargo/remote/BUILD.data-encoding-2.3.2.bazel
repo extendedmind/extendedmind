@@ -26,15 +26,18 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT OR Apache-2.0"
+    "notice",  # MIT from expression "MIT"
 ])
 
 # Generated Targets
 
 rust_library(
-    name = "clap_lex",
+    name = "data_encoding",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "alloc",
+        "default",
+        "std",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -44,14 +47,13 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=clap_lex",
+        "crate-name=data-encoding",
         "manual",
     ],
-    version = "0.2.0",
+    version = "2.3.2",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__os_str_bytes__6_1_0//:os_str_bytes",
     ],
 )
 

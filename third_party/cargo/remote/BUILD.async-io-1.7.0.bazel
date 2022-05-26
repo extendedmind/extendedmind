@@ -57,7 +57,7 @@ rust_library(
         "crate-name=async-io",
         "manual",
     ],
-    version = "1.6.0",
+    version = "1.7.0",
 
     # buildifier: leave-alone
     deps = [

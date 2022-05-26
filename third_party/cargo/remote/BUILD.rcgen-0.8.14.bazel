@@ -30,51 +30,50 @@ licenses([
 ])
 
 # Generated Targets
-# buildifier: disable=out-of-order-load
-# buildifier: disable=load-on-top
-load(
-    "@rules_rust//cargo:cargo_build_script.bzl",
-    "cargo_build_script",
-)
 
-cargo_build_script(
-    name = "num_integer_build_script",
+rust_binary(
+    # Prefix bin name to disambiguate from (probable) collision with lib name
+    # N.B.: The exact form of this is subject to change.
+    name = "cargo_bin_rcgen",
     srcs = glob(["**/*.rs"]),
-    build_script_env = {
-    },
     crate_features = [
-        "i128",
-        "std",
+        "default",
+        "pem",
     ],
-    crate_root = "build.rs",
-    data = glob(["**"]),
+    crate_root = "src/main.rs",
+    data = [],
     edition = "2015",
     rustc_flags = [
         "--cap-lints=allow",
     ],
     tags = [
         "cargo-raze",
+        "crate-name=rcgen",
         "manual",
     ],
-    version = "0.1.45",
-    visibility = ["//visibility:private"],
+    version = "0.8.14",
+
+    # buildifier: leave-alone
     deps = [
-        "@raze__autocfg__1_1_0//:autocfg",
+        ":rcgen",
+        "@raze__chrono__0_4_19//:chrono",
+        "@raze__pem__1_0_2//:pem",
+        "@raze__ring__0_16_20//:ring",
+        "@raze__yasna__0_4_0//:yasna",
     ],
 )
 
-# Unsupported target "average" with type "bench" omitted
 
-# Unsupported target "gcd" with type "bench" omitted
+# Unsupported target "rsa-irc" with type "example" omitted
 
-# Unsupported target "roots" with type "bench" omitted
+# Unsupported target "rsa-irc-openssl" with type "example" omitted
 
 rust_library(
-    name = "num_integer",
+    name = "rcgen",
     srcs = glob(["**/*.rs"]),
     crate_features = [
-        "i128",
-        "std",
+        "default",
+        "pem",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -84,19 +83,27 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=num-integer",
+        "crate-name=rcgen",
         "manual",
     ],
-    version = "0.1.45",
+    version = "0.8.14",
 
     # buildifier: leave-alone
     deps = [
-        ":num_integer_build_script",
-        "@raze__num_traits__0_2_15//:num_traits",
+        "@raze__chrono__0_4_19//:chrono",
+        "@raze__pem__1_0_2//:pem",
+        "@raze__ring__0_16_20//:ring",
+        "@raze__yasna__0_4_0//:yasna",
     ],
 )
 
 
-# Unsupported target "average" with type "test" omitted
+# Unsupported target "botan" with type "test" omitted
 
-# Unsupported target "roots" with type "test" omitted
+# Unsupported target "generic" with type "test" omitted
+
+# Unsupported target "openssl" with type "test" omitted
+
+# Unsupported target "util" with type "test" omitted
+
+# Unsupported target "webpki" with type "test" omitted

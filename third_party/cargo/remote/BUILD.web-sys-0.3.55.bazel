@@ -38,6 +38,7 @@ rust_library(
         "BinaryType",
         "Blob",
         "CloseEvent",
+        "Crypto",
         "DomException",
         "Event",
         "EventTarget",

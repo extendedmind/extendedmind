@@ -26,6 +26,8 @@ async-trait = "0.1.51"
 tide = "0.16.0"
 tide-websockets = "0.4.0"
 tide-compress = "0.9.0"
+tide-rustls = "0.3.0"
+tide-acme = "0.1.1"
 moka = { version = "0.8.4", default-features = false, features = ["atomic64", "future"] }
 wildmatch = "2.1.0"
 html-escape = "0.2.11"
@@ -98,6 +100,12 @@ compile_data_attr = "glob([\"README.md\"])"
 # Needed for hypercore to build
 [package.metadata.raze.crates.ed25519.'1.4.1']
 compile_data_attr = "glob([\"README.md\"])"
+
+# Needed for ring to build
+[package.metadata.raze.crates.ring.'*']
+compile_data_attr = "glob([\"**/*.der\"])"
+[package.metadata.raze.crates.webpki.'*']
+compile_data_attr = "glob([\"**/*.der\"])"
 
 [package.metadata.raze]
 workspace_path = "//third_party/cargo"

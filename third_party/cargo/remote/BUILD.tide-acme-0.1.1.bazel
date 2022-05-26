@@ -32,26 +32,31 @@ licenses([
 # Generated Targets
 
 rust_library(
-    name = "clap_lex",
+    name = "tide_acme",
     srcs = glob(["**/*.rs"]),
     crate_features = [
     ],
     crate_root = "src/lib.rs",
     data = [],
     edition = "2018",
+    proc_macro_deps = [
+        "@raze__async_trait__0_1_53//:async_trait",
+    ],
     rustc_flags = [
         "--cap-lints=allow",
     ],
     tags = [
         "cargo-raze",
-        "crate-name=clap_lex",
+        "crate-name=tide-acme",
         "manual",
     ],
-    version = "0.2.0",
+    version = "0.1.1",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__os_str_bytes__6_1_0//:os_str_bytes",
+        "@raze__async_std__1_11_0//:async_std",
+        "@raze__rustls_acme__0_1_8//:rustls_acme",
+        "@raze__tide_rustls__0_3_0//:tide_rustls",
     ],
 )
 

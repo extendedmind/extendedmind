@@ -26,17 +26,17 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT OR Apache-2.0"
+    "notice",  # ISC from expression "ISC"
 ])
 
 # Generated Targets
 
 rust_library(
-    name = "clap_lex",
+    name = "untrusted",
     srcs = glob(["**/*.rs"]),
     crate_features = [
     ],
-    crate_root = "src/lib.rs",
+    crate_root = "src/untrusted.rs",
     data = [],
     edition = "2018",
     rustc_flags = [
@@ -44,14 +44,15 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=clap_lex",
+        "crate-name=untrusted",
         "manual",
     ],
-    version = "0.2.0",
+    version = "0.7.1",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__os_str_bytes__6_1_0//:os_str_bytes",
     ],
 )
 
+
+# Unsupported target "tests" with type "test" omitted

@@ -31,8 +31,10 @@ licenses([
 
 # Generated Targets
 
+# Unsupported target "bench" with type "bench" omitted
+
 rust_library(
-    name = "clap_lex",
+    name = "rusticata_macros",
     srcs = glob(["**/*.rs"]),
     crate_features = [
     ],
@@ -44,14 +46,14 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=clap_lex",
+        "crate-name=rusticata-macros",
         "manual",
     ],
-    version = "0.2.0",
+    version = "3.2.0",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__os_str_bytes__6_1_0//:os_str_bytes",
+        "@raze__nom__6_1_2//:nom",
     ],
 )
 

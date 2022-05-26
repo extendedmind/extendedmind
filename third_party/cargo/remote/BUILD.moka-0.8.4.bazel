@@ -91,7 +91,7 @@ rust_library(
     # buildifier: leave-alone
     deps = [
         ":moka_build_script",
-        "@raze__async_io__1_6_0//:async_io",
+        "@raze__async_io__1_7_0//:async_io",
         "@raze__async_lock__2_5_0//:async_lock",
         "@raze__crossbeam_channel__0_5_4//:crossbeam_channel",
         "@raze__crossbeam_epoch__0_8_2//:crossbeam_epoch",

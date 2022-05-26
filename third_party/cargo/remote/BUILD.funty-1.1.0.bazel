@@ -26,13 +26,13 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT OR Apache-2.0"
+    "notice",  # MIT from expression "MIT"
 ])
 
 # Generated Targets
 
 rust_library(
-    name = "clap_lex",
+    name = "funty",
     srcs = glob(["**/*.rs"]),
     crate_features = [
     ],
@@ -44,14 +44,13 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=clap_lex",
+        "crate-name=funty",
         "manual",
     ],
-    version = "0.2.0",
+    version = "1.1.0",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__os_str_bytes__6_1_0//:os_str_bytes",
     ],
 )
 

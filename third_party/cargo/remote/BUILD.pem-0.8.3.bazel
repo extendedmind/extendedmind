@@ -26,13 +26,15 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT OR Apache-2.0"
+    "notice",  # MIT from expression "MIT"
 ])
 
 # Generated Targets
 
+# Unsupported target "pem_benchmark" with type "bench" omitted
+
 rust_library(
-    name = "clap_lex",
+    name = "pem",
     srcs = glob(["**/*.rs"]),
     crate_features = [
     ],
@@ -44,14 +46,16 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=clap_lex",
+        "crate-name=pem",
         "manual",
     ],
-    version = "0.2.0",
+    version = "0.8.3",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__os_str_bytes__6_1_0//:os_str_bytes",
+        "@raze__base64__0_13_0//:base64",
+        "@raze__once_cell__1_12_0//:once_cell",
+        "@raze__regex__1_5_6//:regex",
     ],
 )
 

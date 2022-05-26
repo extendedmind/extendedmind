@@ -26,17 +26,32 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # Apache-2.0 from expression "Apache-2.0 OR MIT"
+    "notice",  # Apache-2.0 from expression "Apache-2.0 OR (ISC OR MIT)"
 ])
 
 # Generated Targets
 
+# Unsupported target "benchmarks" with type "bench" omitted
+
+# Unsupported target "bench" with type "example" omitted
+
+# Unsupported target "bogo_shim" with type "example" omitted
+
+# Unsupported target "limitedclient" with type "example" omitted
+
+# Unsupported target "simple_0rtt_client" with type "example" omitted
+
+# Unsupported target "simpleclient" with type "example" omitted
+
+# Unsupported target "trytls_shim" with type "example" omitted
+
 rust_library(
-    name = "async_global_executor",
+    name = "rustls",
     srcs = glob(["**/*.rs"]),
     crate_features = [
-        "async-io",
         "default",
+        "log",
+        "logging",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -46,21 +61,22 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=async-global-executor",
+        "crate-name=rustls",
         "manual",
     ],
-    version = "2.0.4",
+    version = "0.19.1",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__async_channel__1_6_1//:async_channel",
-        "@raze__async_executor__1_4_1//:async_executor",
-        "@raze__async_io__1_7_0//:async_io",
-        "@raze__async_mutex__1_4_0//:async_mutex",
-        "@raze__blocking__1_2_0//:blocking",
-        "@raze__futures_lite__1_12_0//:futures_lite",
-        "@raze__num_cpus__1_13_1//:num_cpus",
-        "@raze__once_cell__1_12_0//:once_cell",
+        "@raze__base64__0_13_0//:base64",
+        "@raze__log__0_4_17//:log",
+        "@raze__ring__0_16_20//:ring",
+        "@raze__sct__0_6_1//:sct",
+        "@raze__webpki__0_21_4//:webpki",
     ],
 )
 
+
+# Unsupported target "api" with type "test" omitted
+
+# Unsupported target "benchmarks" with type "test" omitted

@@ -143,7 +143,7 @@ rust_library(
             "@rules_rust//rust/platform:x86_64-linux-android",
         ): [
             "@raze__async_global_executor__2_0_4//:async_global_executor",
-            "@raze__async_io__1_6_0//:async_io",
+            "@raze__async_io__1_7_0//:async_io",
             "@raze__async_process__1_4_0//:async_process",
             "@raze__futures_lite__1_12_0//:futures_lite",
         ],

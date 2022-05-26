@@ -31,8 +31,8 @@ licenses([
 
 # Generated Targets
 
-rust_library(
-    name = "clap_lex",
+rust_proc_macro(
+    name = "der_oid_macro",
     srcs = glob(["**/*.rs"]),
     crate_features = [
     ],
@@ -44,14 +44,16 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=clap_lex",
+        "crate-name=der-oid-macro",
         "manual",
     ],
-    version = "0.2.0",
+    version = "0.4.0",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__os_str_bytes__6_1_0//:os_str_bytes",
+        "@raze__nom__6_1_2//:nom",
+        "@raze__num_bigint__0_4_3//:num_bigint",
+        "@raze__num_traits__0_2_15//:num_traits",
+        "@raze__syn__1_0_95//:syn",
     ],
 )
-

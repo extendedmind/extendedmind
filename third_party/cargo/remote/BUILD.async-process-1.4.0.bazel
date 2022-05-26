@@ -68,7 +68,7 @@ rust_library(
             "@rules_rust//rust/platform:i686-linux-android",
             "@rules_rust//rust/platform:x86_64-linux-android",
         ): [
-            "@raze__async_io__1_6_0//:async_io",
+            "@raze__async_io__1_7_0//:async_io",
             "@raze__libc__0_2_126//:libc",
             "@raze__signal_hook__0_3_14//:signal_hook",
         ],

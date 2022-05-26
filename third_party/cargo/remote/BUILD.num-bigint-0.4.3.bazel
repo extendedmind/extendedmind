@@ -38,17 +38,17 @@ load(
 )
 
 cargo_build_script(
-    name = "num_integer_build_script",
+    name = "num_bigint_build_script",
     srcs = glob(["**/*.rs"]),
     build_script_env = {
     },
     crate_features = [
-        "i128",
+        "default",
         "std",
     ],
     crate_root = "build.rs",
     data = glob(["**"]),
-    edition = "2015",
+    edition = "2018",
     rustc_flags = [
         "--cap-lints=allow",
     ],
@@ -56,47 +56,64 @@ cargo_build_script(
         "cargo-raze",
         "manual",
     ],
-    version = "0.1.45",
+    version = "0.4.3",
     visibility = ["//visibility:private"],
     deps = [
         "@raze__autocfg__1_1_0//:autocfg",
     ],
 )
 
-# Unsupported target "average" with type "bench" omitted
+# Unsupported target "bigint" with type "bench" omitted
+
+# Unsupported target "factorial" with type "bench" omitted
 
 # Unsupported target "gcd" with type "bench" omitted
 
 # Unsupported target "roots" with type "bench" omitted
 
+# Unsupported target "shootout-pidigits" with type "bench" omitted
+
 rust_library(
-    name = "num_integer",
+    name = "num_bigint",
     srcs = glob(["**/*.rs"]),
     crate_features = [
-        "i128",
+        "default",
         "std",
     ],
     crate_root = "src/lib.rs",
     data = [],
-    edition = "2015",
+    edition = "2018",
     rustc_flags = [
         "--cap-lints=allow",
     ],
     tags = [
         "cargo-raze",
-        "crate-name=num-integer",
+        "crate-name=num-bigint",
         "manual",
     ],
-    version = "0.1.45",
+    version = "0.4.3",
 
     # buildifier: leave-alone
     deps = [
-        ":num_integer_build_script",
+        ":num_bigint_build_script",
+        "@raze__num_integer__0_1_45//:num_integer",
         "@raze__num_traits__0_2_15//:num_traits",
     ],
 )
 
 
-# Unsupported target "average" with type "test" omitted
+# Unsupported target "bigint" with type "test" omitted
+
+# Unsupported target "bigint_bitwise" with type "test" omitted
+
+# Unsupported target "bigint_scalar" with type "test" omitted
+
+# Unsupported target "biguint" with type "test" omitted
+
+# Unsupported target "biguint_scalar" with type "test" omitted
+
+# Unsupported target "fuzzed" with type "test" omitted
+
+# Unsupported target "modpow" with type "test" omitted
 
 # Unsupported target "roots" with type "test" omitted
