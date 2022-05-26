@@ -104,6 +104,7 @@ compile_data_attr = "glob([\"README.md\"])"
 # Needed for ring to build
 [package.metadata.raze.crates.ring.'*']
 compile_data_attr = "glob([\"**/*.der\"])"
+gen_buildrs = false
 [package.metadata.raze.crates.webpki.'*']
 compile_data_attr = "glob([\"**/*.der\"])"
 
