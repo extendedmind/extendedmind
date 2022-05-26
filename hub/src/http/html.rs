@@ -18,6 +18,7 @@ pub struct ServeStaticFiles {
     skip_compress_mime: Option<Vec<String>>,
     cache: Option<Cache<String, (Vec<u8>, Mime)>>,
     inline_css_wildmatch: Option<Vec<WildMatch>>,
+    immutable_path_wildmatch: Option<Vec<WildMatch>>,
 }
 
 impl ServeStaticFiles {
@@ -28,6 +29,7 @@ impl ServeStaticFiles {
         cache_ttl_sec: Option<u64>,
         cache_tti_sec: Option<u64>,
         inline_css_path: Option<Vec<String>>,
+        immutable_path: Option<Vec<String>>,
     ) -> Self {
         let cache = if cache_ttl_sec.is_some() && cache_tti_sec.is_some() {
             let cache_ttl_sec = cache_ttl_sec.unwrap();
@@ -60,6 +62,15 @@ impl ServeStaticFiles {
             ),
             None => None,
         };
+        let immutable_path_wildmatch = match immutable_path {
+            Some(immutable_path) => Some(
+                immutable_path
+                    .iter()
+                    .map(|path| WildMatch::new(path))
+                    .collect(),
+            ),
+            None => None,
+        };
 
         Self {
             prefix,
@@ -67,6 +78,7 @@ impl ServeStaticFiles {
             skip_compress_mime,
             cache,
             inline_css_wildmatch,
+            immutable_path_wildmatch,
         }
     }
 
@@ -114,25 +126,25 @@ impl ServeStaticFiles {
         }
     }
 
-    fn get_body_from_cache(&self, url: &str) -> Option<(Vec<u8>, Mime)> {
+    fn get_body_from_cache(&self, path: &str) -> Option<(Vec<u8>, Mime)> {
         match &self.cache {
-            Some(cache) => cache.get(&url.to_string()),
+            Some(cache) => cache.get(&path.to_string()),
             None => None,
         }
     }
 
-    async fn insert_body_to_cache(&self, url: String, body_as_bytes: Vec<u8>, mime: Mime) {
+    async fn insert_body_to_cache(&self, path: &str, body_as_bytes: Vec<u8>, mime: Mime) {
         match &self.cache {
             Some(cache) => {
                 cache
-                    .insert(url.clone(), (body_as_bytes.clone(), mime))
+                    .insert(path.to_string(), (body_as_bytes.clone(), mime))
                     .await
             }
             None => (),
         }
     }
 
-    async fn process_body_inlining(&self, path: &str, mut body: Body) -> Body {
+    async fn process_body_inlining(&self, path: &str, body: Body) -> Body {
         let mime = body.mime().clone();
         if mime.essence() == "text/html" {
             let inline_css: bool = match &self.inline_css_wildmatch {
@@ -190,11 +202,23 @@ impl ServeStaticFiles {
         body
     }
 
-    fn get_ok_response_from_body(&self, body_as_bytes: Vec<u8>, mime: Mime) -> Response {
+    fn get_ok_response_from_body(
+        &self,
+        path: &str,
+        body_as_bytes: Vec<u8>,
+        mime: Mime,
+    ) -> Response {
         let mut body = Body::from_bytes(body_as_bytes);
         body.set_mime(mime.clone());
         let skip_compression: bool = match &self.skip_compress_mime {
             Some(skip_compress_mime) => skip_compress_mime.contains(&mime.essence().to_string()),
+            None => false,
+        };
+        let immutable_path: bool = match &self.immutable_path_wildmatch {
+            Some(immutable_path) => immutable_path
+                .iter()
+                .find(|wildmatch_path| wildmatch_path.matches(path))
+                .is_some(),
             None => false,
         };
         let response = Response::builder(StatusCode::Ok)
@@ -203,7 +227,13 @@ impl ServeStaticFiles {
         if skip_compression {
             response.header("Cache-Control", "no-transform").build()
         } else {
-            response.build()
+            if immutable_path {
+                response
+                    .header("Cache-Control", "public, max-age=604800, immutable")
+                    .build()
+            } else {
+                response.build()
+            }
         }
     }
 
@@ -220,16 +250,16 @@ where
     State: Clone + Send + Sync + 'static,
 {
     async fn call(&self, req: Request<State>) -> Result {
-        let url = &req.url().to_string();
-        let cached_body = self.get_body_from_cache(&url);
+        let path = &req.url().path();
+        let cached_body = self.get_body_from_cache(&path);
         return if cached_body.is_some() {
             // The body for the URL was found from the cache, return it without any file IO
-            log::debug!("Cache hit: {}", &url);
+            log::debug!("Cache hit: {}", &path);
             let cached_body = cached_body.unwrap();
-            Ok(self.get_ok_response_from_body(cached_body.0, cached_body.1))
+            Ok(self.get_ok_response_from_body(path, cached_body.0, cached_body.1))
         } else {
             // Read the file from the file system
-            log::debug!("Cache miss: {}", &url);
+            log::debug!("Cache miss: {}", &path);
             let url_path = req.url().path();
             let file_path = self.get_file_path_from_url_path(url_path).await;
             if file_path.is_none() {
@@ -239,12 +269,12 @@ where
                 let file_path = file_path.unwrap();
                 match Body::from_file(&file_path).await {
                     Ok(body) => {
-                        let body = self.process_body_inlining(req.url().path(), body).await;
+                        let body = self.process_body_inlining(&path, body).await;
                         let mime = body.mime().clone();
                         let body_as_bytes = body.into_bytes().await.unwrap();
-                        self.insert_body_to_cache(url.clone(), body_as_bytes.clone(), mime.clone())
+                        self.insert_body_to_cache(path, body_as_bytes.clone(), mime.clone())
                             .await;
-                        Ok(self.get_ok_response_from_body(body_as_bytes, mime))
+                        Ok(self.get_ok_response_from_body(path, body_as_bytes, mime))
                     }
                     Err(e) if e.kind() == io::ErrorKind::NotFound => {
                         log::warn!("File not found: {:?}", &file_path);
