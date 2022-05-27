@@ -3,8 +3,8 @@
 NAME=aarch64-rpi3-linux-gnu-ar
 TOOLCHAIN_BINDIR=external/aarch64-rpi3-linux-gnu/bin
 
-if [[ ! -d $TOOLCHAIN_BINDIR ]]; then
-    TOOLCHAIN_BINDIR=$(realpath ../../../../../../../${TOOLCHAIN_BINDIR}/.)
+if [[ ! -d external && ! -L external ]]; then
+    ln -s $(realpath ../../../../../../../external/.) external
 fi
 
 exec "${TOOLCHAIN_BINDIR}"/"${NAME}" "$@"
