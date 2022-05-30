@@ -72,8 +72,6 @@ pub async fn start_server(
             } else {
                 futures::try_join!(main_listener, redirect_listener)?;
             }
-
-            // TODO
         } else {
             let main_listener = main_server.listen(format!("0.0.0.0:{}", &http_port));
             if let Some(tcp_port) = tcp_port {

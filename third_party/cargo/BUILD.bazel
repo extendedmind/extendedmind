@@ -239,7 +239,7 @@ alias(
 
 alias(
     name = "moka",
-    actual = "@raze__moka__0_8_4//:moka",
+    actual = "@raze__moka__0_8_5//:moka",
     tags = [
         "cargo-raze",
         "manual",
@@ -285,6 +285,15 @@ alias(
 alias(
     name = "smol_str",
     actual = "@raze__smol_str__0_1_23//:smol_str",
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+)
+
+alias(
+    name = "thread_priority",
+    actual = "@raze__thread_priority__0_8_2//:thread_priority",
     tags = [
         "cargo-raze",
         "manual",

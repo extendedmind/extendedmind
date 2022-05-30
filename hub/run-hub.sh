@@ -12,4 +12,5 @@ TARGET_PATH=$(echo "$(cd "$(dirname "target")"; pwd -P)/$(basename "target")")
     --data-root-dir ${TARGET_PATH} --http-port 3001 --tcp-port 3002 \
     ${STATIC_OPT} \
     --skip-compress-mime application/wasm --cache-ttl-sec 300 --cache-tti-sec 60 \
-    --inline-css-path /blog/* --immutable-path /_app/*.css --immutable-path /_app/*.js
+    --inline-css-path /blog/* --immutable-path /_app/*.css --immutable-path /_app/*.js \
+    --verbose true --log-dir ${TARGET_PATH}

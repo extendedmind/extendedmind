@@ -33,6 +33,7 @@ wildmatch = "2.1.0"
 html-escape = "0.2.11"
 ctrlc = { version = "3.0", features = ["termination"] }
 async-ctrlc = "1.2.0"
+thread-priority = "0.8.2"
 random-access-disk = { git = "https://github.com/ttiurani/random-access-disk", rev = "6b17771d174722bff442dba9aaf633aae4f3e40f" }
 random-access-memory = { git = "https://github.com/ttiurani/random-access-memory", rev = "e48f2a9040656724327ae30d12ab636c3bf0a074" }
 random-access-storage = { git = "https://github.com/ttiurani/random-access-storage", rev = "16412bab28f8f8d0c4b6b71a25f6646e0910180b" }
@@ -76,6 +77,34 @@ override_deps = """
             "@rules_rust//rust/platform:aarch64-unknown-linux-gnu",
         ): [
             "@raze__libc__0_2_126//:libc",
+        ],
+        "//conditions:default": [],
+    })
+"""
+
+# Needed for libc to build
+[package.metadata.raze.crates.thread-priority.'0.8.2']
+override_deps = """
+    [
+        "@raze__cfg_if__1_0_0//:cfg_if",
+        "@raze__log__0_4_17//:log",
+    ] + selects.with_or({
+        # cfg(any(target_os = "linux", target_os = "macos", target_os = "dragonfly", target_os = "freebsd", target_os = "openbsd", target_os = "netbsd"))
+        (
+            "@rules_rust//rust/platform:x86_64-apple-darwin",
+            "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
+            "@rules_rust//rust/platform:aarch64-unknown-linux-gnu",
+            "@rules_rust//rust/platform:x86_64-pc-windows-msvc",
+        ): [
+            "@raze__libc__0_2_126//:libc",
+        ],
+        "//conditions:default": [],
+    }) + selects.with_or({
+        # cfg(windows)
+        (
+            "@rules_rust//rust/platform:x86_64-pc-windows-msvc",
+        ): [
+            "@raze__winapi__0_3_9//:winapi",
         ],
         "//conditions:default": [],
     })

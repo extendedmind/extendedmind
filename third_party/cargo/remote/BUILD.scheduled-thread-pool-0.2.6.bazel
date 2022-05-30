@@ -47,11 +47,11 @@ rust_library(
         "crate-name=scheduled-thread-pool",
         "manual",
     ],
-    version = "0.2.5",
+    version = "0.2.6",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__parking_lot__0_11_2//:parking_lot",
+        "@raze__parking_lot__0_12_0//:parking_lot",
     ],
 )
 

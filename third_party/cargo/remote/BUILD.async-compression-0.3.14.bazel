@@ -63,7 +63,7 @@ rust_library(
     # buildifier: leave-alone
     deps = [
         "@raze__brotli__3_3_4//:brotli",
-        "@raze__flate2__1_0_23//:flate2",
+        "@raze__flate2__1_0_24//:flate2",
         "@raze__futures_core__0_3_21//:futures_core",
         "@raze__futures_io__0_3_21//:futures_io",
         "@raze__memchr__2_5_0//:memchr",

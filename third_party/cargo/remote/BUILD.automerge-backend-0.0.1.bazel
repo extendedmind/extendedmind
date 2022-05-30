@@ -52,7 +52,7 @@ rust_library(
     # buildifier: leave-alone
     deps = [
         "@raze__automerge_protocol__0_1_0//:automerge_protocol",
-        "@raze__flate2__1_0_23//:flate2",
+        "@raze__flate2__1_0_24//:flate2",
         "@raze__fxhash__0_2_1//:fxhash",
         "@raze__hex__0_4_3//:hex",
         "@raze__itertools__0_9_0//:itertools",

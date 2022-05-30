@@ -63,7 +63,7 @@ http_archive(
 
 load("@rules_rust//rust:repositories.bzl", "rules_rust_dependencies", "rust_register_toolchains", "rust_repository_set")
 rules_rust_dependencies()
-RUST_VERSION = "1.56.1"
+RUST_VERSION = "1.61.0"
 rust_register_toolchains(version = RUST_VERSION, edition="2018", rustfmt_version = RUST_VERSION)
 rust_repository_set(
     name = "extendedmind_rust_apple_x86_64",

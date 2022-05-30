@@ -58,6 +58,9 @@ impl ServeStaticFiles {
             None
         };
 
+        if let Some(paths) = &inline_css_path {
+            log::info!("Inlining CSS for paths {:?}", &paths);
+        }
         let inline_css_wildmatch = match inline_css_path {
             Some(inline_css_path) => Some(
                 inline_css_path
@@ -67,6 +70,11 @@ impl ServeStaticFiles {
             ),
             None => None,
         };
+
+        if let Some(paths) = &immutable_path {
+            log::info!("Using immutable response headers for paths {:?}", &paths);
+        }
+
         let immutable_path_wildmatch = match immutable_path {
             Some(immutable_path) => Some(
                 immutable_path
@@ -76,6 +84,18 @@ impl ServeStaticFiles {
             ),
             None => None,
         };
+
+        if let Some(max_age) = hsts_max_age {
+            log::info!(
+                "Setting HSTS max-age to: {}, {}",
+                &max_age,
+                if hsts_preload {
+                    "preloading"
+                } else {
+                    "not preloading"
+                }
+            );
+        }
 
         Self {
             prefix,
@@ -259,6 +279,17 @@ impl ServeStaticFiles {
         path_with_extension.set_extension(extension);
         return path_with_extension;
     }
+
+    fn log_access(url_path: &str, code: u32, extra: Option<&str>) {
+        // This value should be
+        log::info!(
+            "{} {} {} {}",
+            crate::common::ACCESS_LOG_IDENTIFIER,
+            code,
+            &url_path,
+            extra.unwrap_or("")
+        );
+    }
 }
 
 #[async_trait::async_trait]
@@ -267,34 +298,37 @@ where
     State: Clone + Send + Sync + 'static,
 {
     async fn call(&self, req: Request<State>) -> Result {
-        let path = &req.url().path();
-        let cached_body = self.get_body_from_cache(&path);
+        let url_path = &req.url().path();
+        let cached_body = self.get_body_from_cache(&url_path);
         return if cached_body.is_some() {
             // The body for the URL was found from the cache, return it without any file IO
-            log::debug!("Cache hit: {}", &path);
+            log::debug!("Cache hit: {}", &url_path);
             let cached_body = cached_body.unwrap();
-            Ok(self.get_ok_response_from_body(path, cached_body.0, cached_body.1))
+            ServeStaticFiles::log_access(url_path, 200, Some("cached"));
+            Ok(self.get_ok_response_from_body(url_path, cached_body.0, cached_body.1))
         } else {
             // Read the file from the file system
-            log::debug!("Cache miss: {}", &path);
-            let url_path = req.url().path();
+            log::debug!("Cache miss: {}", &url_path);
             let file_path = self.get_file_path_from_url_path(url_path).await;
             if file_path.is_none() {
-                log::warn!("Unauthorized attempt to read: {:?}", file_path);
+                log::warn!("Unauthorized attempt to read: {:?}", url_path);
+                ServeStaticFiles::log_access(url_path, 403, None);
                 Ok(Response::new(StatusCode::Forbidden))
             } else {
                 let file_path = file_path.unwrap();
                 match Body::from_file(&file_path).await {
                     Ok(body) => {
-                        let body = self.process_body_inlining(&path, body).await;
+                        let body = self.process_body_inlining(&url_path, body).await;
                         let mime = body.mime().clone();
                         let body_as_bytes = body.into_bytes().await.unwrap();
-                        self.insert_body_to_cache(path, body_as_bytes.clone(), mime.clone())
+                        self.insert_body_to_cache(url_path, body_as_bytes.clone(), mime.clone())
                             .await;
-                        Ok(self.get_ok_response_from_body(path, body_as_bytes, mime))
+                        ServeStaticFiles::log_access(url_path, 200, None);
+                        Ok(self.get_ok_response_from_body(url_path, body_as_bytes, mime))
                     }
                     Err(e) if e.kind() == io::ErrorKind::NotFound => {
-                        log::warn!("File not found: {:?}", &file_path);
+                        ServeStaticFiles::log_access(url_path, 404, None);
+                        log::info!("File not found: {:?}", &file_path);
                         Ok(Response::new(StatusCode::NotFound))
                     }
                     Err(e) => Err(e.into()),

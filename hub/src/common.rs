@@ -2,6 +2,10 @@ use async_std::channel::{Receiver, Sender};
 use extendedmind_engine::{Bytes, Engine, RandomAccessDisk};
 use std::io;
 
+// Identifies that the log entry belongs in the access log. Needs to be separate from actual paths,
+// hence the space.
+pub const ACCESS_LOG_IDENTIFIER: &str = "GET _";
+
 #[derive(Clone, Copy)]
 #[repr(u8)]
 pub enum SystemCommand {
