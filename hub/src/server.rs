@@ -73,7 +73,7 @@ pub async fn start_server(
                     .addrs(format!("0.0.0.0:{}", &https_port))
                     .acme(
                         AcmeConfig::new(vec![domain])
-                            .contact_push(acme_email)
+                            .contact_push(format!("mailto:{}", acme_email))
                             .cache(DirCache::new(acme_dir)),
                     ),
             );
