@@ -19,6 +19,8 @@ pub struct ServeStaticFiles {
     cache: Option<Cache<String, (Vec<u8>, Mime)>>,
     inline_css_wildmatch: Option<Vec<WildMatch>>,
     immutable_path_wildmatch: Option<Vec<WildMatch>>,
+    hsts_max_age: Option<u64>,
+    hsts_preload: bool,
 }
 
 impl ServeStaticFiles {
@@ -30,6 +32,8 @@ impl ServeStaticFiles {
         cache_tti_sec: Option<u64>,
         inline_css_path: Option<Vec<String>>,
         immutable_path: Option<Vec<String>>,
+        hsts_max_age: Option<u64>,
+        hsts_preload: bool,
     ) -> Self {
         let cache = if cache_ttl_sec.is_some() && cache_tti_sec.is_some() {
             let cache_ttl_sec = cache_ttl_sec.unwrap();
@@ -79,6 +83,8 @@ impl ServeStaticFiles {
             cache,
             inline_css_wildmatch,
             immutable_path_wildmatch,
+            hsts_max_age,
+            hsts_preload,
         }
     }
 
@@ -224,6 +230,16 @@ impl ServeStaticFiles {
         let response = Response::builder(StatusCode::Ok)
             .body(body)
             .header("Permissions-Policy", "browsing-topics=()");
+        let response = match &self.hsts_max_age {
+            Some(hsts_max_age) => {
+                let mut value = format!("max-age={}; includeSubDomains", hsts_max_age);
+                if self.hsts_preload {
+                    value += "; preload";
+                }
+                response.header("Strict-Transport-Security", value)
+            }
+            None => response,
+        };
         if skip_compression {
             response.header("Cache-Control", "no-transform").build()
         } else {

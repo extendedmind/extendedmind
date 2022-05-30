@@ -14,6 +14,10 @@ pub async fn start_server(
     domain: Option<String>,
     acme_email: Option<String>,
     acme_dir: Option<String>,
+    acme_production: bool,
+    hsts_max_age: Option<u64>,
+    hsts_permanent_redirect: bool,
+    hsts_preload: bool,
     tcp_port: Option<u16>,
     skip_compress_mime: Option<Vec<String>>,
     cache_ttl_sec: Option<u64>,
@@ -32,6 +36,8 @@ pub async fn start_server(
             cache_tti_sec,
             inline_css_path,
             immutable_path,
+            hsts_max_age,
+            hsts_preload,
         )
         .unwrap();
         if let Some(https_port) = https_port {
@@ -43,9 +49,11 @@ pub async fn start_server(
             let domain = domain.unwrap();
             let acme_dir = acme_dir.unwrap();
             let acme_email = acme_email.unwrap();
-            let redirect_server =
-                http_redirect_server(format!("https://{}:{}", &domain, &https_port).as_str())
-                    .unwrap();
+            let redirect_server = http_redirect_server(
+                format!("https://{}:{}", &domain, &https_port).as_str(),
+                hsts_permanent_redirect,
+            )
+            .unwrap();
             let redirect_listener = redirect_server.listen(format!("0.0.0.0:{}", &http_port));
             let main_listener = main_server.listen(
                 tide_rustls::TlsListener::build()
@@ -54,7 +62,7 @@ pub async fn start_server(
                         AcmeConfig::new(vec![domain])
                             .contact_push(format!("mailto:{}", acme_email))
                             .cache(DirCache::new(acme_dir))
-                            .directory_lets_encrypt(true),
+                            .directory_lets_encrypt(acme_production),
                     ),
             );
 

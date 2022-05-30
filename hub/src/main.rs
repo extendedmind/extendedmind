@@ -36,6 +36,14 @@ struct Opts {
     acme_email: Option<String>,
     #[clap(long)]
     acme_dir: Option<String>,
+    #[clap(long)]
+    acme_production: Option<bool>,
+    #[clap(long)]
+    hsts_max_age: Option<u64>,
+    #[clap(long)]
+    hsts_permanent_redirect: Option<bool>,
+    #[clap(long)]
+    hsts_preload: Option<bool>,
     #[clap(short, long)]
     tcp_port: Option<u16>,
     #[clap(short, long)]
@@ -134,6 +142,10 @@ fn main() -> Result<()> {
         opts.domain,
         opts.acme_email,
         opts.acme_dir,
+        opts.acme_production.unwrap_or(false),
+        opts.hsts_max_age,
+        opts.hsts_permanent_redirect.unwrap_or(false),
+        opts.hsts_preload.unwrap_or(false),
         opts.tcp_port,
         opts.skip_compress_mime,
         opts.cache_ttl_sec,

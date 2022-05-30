@@ -18,6 +18,8 @@ pub fn http_main_server(
     cache_tti_sec: Option<u64>,
     inline_css_path: Option<Vec<String>>,
     immutable_path: Option<Vec<String>>,
+    hsts_max_age: Option<u64>,
+    hsts_preload: bool,
 ) -> Result<tide::Server<State>> {
     let skip_compress_mime = skip_compress_mime.clone();
     let mut app = tide::with_state(initial_state);
@@ -35,6 +37,8 @@ pub fn http_main_server(
             cache_tti_sec,
             inline_css_path,
             immutable_path,
+            hsts_max_age,
+            hsts_preload,
         ));
     }
 
@@ -50,23 +54,32 @@ pub fn http_main_server(
 #[derive(Clone)]
 pub struct RedirectState {
     redirect_to_url: String,
+    permanent: bool,
 }
 
-pub fn http_redirect_server(redirect_to_url: &str) -> Result<tide::Server<RedirectState>> {
+pub fn http_redirect_server(
+    redirect_to_url: &str,
+    permanent: bool,
+) -> Result<tide::Server<RedirectState>> {
     let mut app = tide::with_state(RedirectState {
         redirect_to_url: redirect_to_url.to_string(),
+        permanent,
     });
 
-    app.at("")
-        .get(Redirect::temporary(redirect_to_url.to_string()));
+    app.at("").get(if permanent {
+        Redirect::permanent(redirect_to_url.to_string())
+    } else {
+        Redirect::temporary(redirect_to_url.to_string())
+    });
 
     app.at("*").get(|req: Request<RedirectState>| async move {
         let path = req.url().path();
-        Ok(Redirect::temporary(format!(
-            "{}{}",
-            req.state().redirect_to_url,
-            path
-        )))
+        let redirect_to = format!("{}{}", req.state().redirect_to_url, path);
+        Ok(if req.state().permanent {
+            Redirect::permanent(redirect_to)
+        } else {
+            Redirect::temporary(redirect_to)
+        })
     });
     return Ok(app);
 }
