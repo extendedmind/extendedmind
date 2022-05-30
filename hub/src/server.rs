@@ -6,27 +6,6 @@ use std::path::PathBuf;
 use tide_acme::rustls_acme::caches::DirCache;
 use tide_acme::{AcmeConfig, TideRustlsExt};
 
-fn setup_logging(log_to_stderr: bool) {
-    let base_config = fern::Dispatch::new()
-        .format(|out, message, record| {
-            out.finish(format_args!(
-                "{}[{}][{}] {}",
-                chrono::Local::now().format("[%Y-%m-%d %H:%M:%S]"),
-                record.target(),
-                record.level(),
-                message
-            ))
-        })
-        .level(log::LevelFilter::Debug);
-    let std_config = if log_to_stderr {
-        fern::Dispatch::new().chain(std::io::stderr())
-    } else {
-        fern::Dispatch::new().chain(std::io::stdout())
-    };
-
-    base_config.chain(std_config).apply().unwrap();
-}
-
 pub async fn start_server(
     initial_state: State,
     static_root_dir: Option<PathBuf>,
@@ -74,7 +53,8 @@ pub async fn start_server(
                     .acme(
                         AcmeConfig::new(vec![domain])
                             .contact_push(format!("mailto:{}", acme_email))
-                            .cache(DirCache::new(acme_dir)),
+                            .cache(DirCache::new(acme_dir))
+                            .directory_lets_encrypt(true),
                     ),
             );
 
