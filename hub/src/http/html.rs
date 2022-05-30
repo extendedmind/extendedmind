@@ -12,6 +12,7 @@ const CSS_NEEDLE: &str = "<link rel=\"stylesheet\" href=\"/";
 const CSS_ELEMENT_START: &str = "<style>";
 const CSS_ELEMENT_END: &str = "</style>";
 
+#[derive(Clone)]
 pub struct ServeStaticFiles {
     prefix: String,
     dir: PathBuf,

@@ -26,10 +26,7 @@ pub fn http_main_server(
 
     if let Some(static_root_dir) = static_root_dir {
         let index_path = static_root_dir.join("index.html");
-        if index_path.exists() {
-            app.at("").serve_file(index_path)?;
-        }
-        app.at("*").get(ServeStaticFiles::new(
+        let serve_static_files = ServeStaticFiles::new(
             "*".to_string(),
             static_root_dir,
             skip_compress_mime,
@@ -39,7 +36,11 @@ pub fn http_main_server(
             immutable_path,
             hsts_max_age,
             hsts_preload,
-        ));
+        );
+        if index_path.exists() {
+            app.at("").get(serve_static_files.clone());
+        }
+        app.at("*").get(serve_static_files);
     }
 
     app.at("/extendedmind/hypercore")
