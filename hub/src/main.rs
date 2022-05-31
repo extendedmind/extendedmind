@@ -102,6 +102,7 @@ fn main() -> Result<()> {
     let abort_writer = abort.clone();
     task::spawn(async move {
         ctrlc.await;
+        info!("Received termination signal, sending disconnect");
         disconnect_sender
             .send(Ok(Bytes::from_static(&[SystemCommand::Disconnect as u8])))
             .await
@@ -109,6 +110,7 @@ fn main() -> Result<()> {
         *abort_writer.as_ref().lock().await = AtomicBool::new(true);
         // Wait 200ms before killing, to allow time for file saving and closing sockets
         task::sleep(Duration::from_millis(200)).await;
+        info!("Exiting process with 0");
         process::exit(0);
     });
 
