@@ -11,11 +11,14 @@ use thread_priority::{set_current_thread_priority, ThreadPriority};
 // from "2022-05-30_17.06.03", 13 means "2022-05-30.metrics".
 const DEFAULT_METRICS_FILE_PRECISION: u8 = 10;
 
+// The default time to sleep when trying to refresh metrics
+const DEFAULT_METRICS_INTERVAL_SECONDS: u64 = 10;
+
 pub fn process_metrics(metrics_dir: PathBuf, metrics_precision: Option<u8>, log_dir: PathBuf) {
     thread::spawn(move || {
         set_current_thread_priority(ThreadPriority::Min).unwrap();
         let metrics_precision = metrics_precision.unwrap_or(DEFAULT_METRICS_FILE_PRECISION);
-        let sleep_duration = time::Duration::from_millis(10000);
+        let sleep_duration = time::Duration::from_secs(DEFAULT_METRICS_INTERVAL_SECONDS);
 
         // Read in the last file checked
         let metrics_state_file_path = metrics_dir.join(".state");
