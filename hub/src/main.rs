@@ -15,10 +15,12 @@ use std::time::Duration;
 mod common;
 mod http;
 mod logging;
+mod metrics;
 mod server;
 
 use common::{ChannelSenderReceiver, State, SystemCommand};
 use logging::setup_logging;
+use metrics::process_metrics;
 use server::start_server;
 
 #[derive(Parser)]
@@ -57,6 +59,10 @@ struct Opts {
     #[clap(long)]
     log_precision: Option<u8>,
     #[clap(long)]
+    metrics_dir: Option<PathBuf>,
+    #[clap(long)]
+    metrics_precision: Option<u8>,
+    #[clap(long)]
     skip_compress_mime: Option<Vec<String>>,
     #[clap(long)]
     cache_ttl_sec: Option<u64>,
@@ -74,7 +80,7 @@ fn main() -> Result<()> {
     setup_logging(
         opts.log_to_stderr,
         opts.verbose.unwrap_or(false),
-        opts.log_dir,
+        opts.log_dir.clone(),
         opts.log_precision,
     );
     info!("enter: hub");
@@ -126,6 +132,12 @@ fn main() -> Result<()> {
                 .unwrap();
         }
     });
+
+    if let Some(metrics_dir) = opts.metrics_dir {
+        if let Some(log_dir) = opts.log_dir {
+            process_metrics(metrics_dir, opts.metrics_precision, log_dir);
+        }
+    }
 
     // Block server with initial state
     futures::executor::block_on(start_server(
