@@ -33,7 +33,7 @@ pub fn setup_logging(
         .format(|out, message, record| {
             out.finish(format_args!(
                 "{}[{}][{}] {}",
-                chrono::Local::now().format("[%Y-%m-%d_%H.%M.%S]"),
+                chrono::Utc::now().format("[%Y-%m-%d_%H.%M.%S]"),
                 record.target(),
                 record.level(),
                 message

@@ -25,6 +25,7 @@ rust_binary(
             "//third_party/cargo:tide_rustls",
             "//third_party/cargo:tide_acme",
             "//third_party/cargo:thread_priority",
+            "//third_party/cargo:serde",
             "//third_party/cargo:moka",
             "//third_party/cargo:wildmatch",
             "//third_party/cargo:html_escape",

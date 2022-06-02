@@ -14,4 +14,4 @@ TARGET_PATH=$(echo "$(cd "$(dirname "target")"; pwd -P)/$(basename "target")")
     --skip-compress-mime application/wasm --cache-ttl-sec 300 --cache-tti-sec 60 \
     --inline-css-path /blog/* --immutable-path /_app/*.css --immutable-path /_app/*.js \
     --verbose true --log-dir ${TARGET_PATH}/logs --log-precision 18 \
-    --metrics-dir ${TARGET_PATH}/logs/metrics --metrics-precision 16
+    --metrics-dir ${TARGET_PATH}/logs/metrics --metrics-precision 16 --metrics-endpoint /metrics

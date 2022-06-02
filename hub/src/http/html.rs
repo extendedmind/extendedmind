@@ -300,10 +300,9 @@ where
     async fn call(&self, req: Request<State>) -> Result {
         let url_path = &req.url().path();
         let cached_body = self.get_body_from_cache(&url_path);
-        return if cached_body.is_some() {
+        return if let Some(cached_body) = cached_body {
             // The body for the URL was found from the cache, return it without any file IO
             log::debug!("Cache hit: {}", &url_path);
-            let cached_body = cached_body.unwrap();
             ServeStaticFiles::log_access(url_path, 200, Some("cached"));
             Ok(self.get_ok_response_from_body(url_path, cached_body.0, cached_body.1))
         } else {

@@ -51,7 +51,7 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__bytecount__0_6_2//:bytecount",
+        "@raze__bytecount__0_6_3//:bytecount",
         "@raze__cargo_metadata__0_14_2//:cargo_metadata",
         "@raze__error_chain__0_12_4//:error_chain",
         "@raze__glob__0_3_0//:glob",

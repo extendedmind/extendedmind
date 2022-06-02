@@ -63,6 +63,8 @@ struct Opts {
     #[clap(long)]
     metrics_precision: Option<u8>,
     #[clap(long)]
+    metrics_endpoint: Option<String>,
+    #[clap(long)]
     skip_compress_mime: Option<Vec<String>>,
     #[clap(long)]
     cache_ttl_sec: Option<u64>,
@@ -133,9 +135,9 @@ fn main() -> Result<()> {
         }
     });
 
-    if let Some(metrics_dir) = opts.metrics_dir {
+    if let Some(ref metrics_dir) = opts.metrics_dir {
         if let Some(log_dir) = opts.log_dir {
-            process_metrics(metrics_dir, opts.metrics_precision, log_dir);
+            process_metrics(metrics_dir.to_path_buf(), opts.metrics_precision, log_dir);
         }
     }
 
@@ -158,6 +160,8 @@ fn main() -> Result<()> {
         opts.cache_tti_sec,
         opts.inline_css_path,
         opts.immutable_path,
+        opts.metrics_endpoint,
+        opts.metrics_dir,
     ))?;
 
     Ok(())

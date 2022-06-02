@@ -283,6 +283,15 @@ alias(
 )
 
 alias(
+    name = "serde",
+    actual = "@raze__serde__1_0_137//:serde",
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+)
+
+alias(
     name = "smol_str",
     actual = "@raze__smol_str__0_1_23//:smol_str",
     tags = [

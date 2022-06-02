@@ -24,6 +24,8 @@ pub async fn start_server(
     cache_tti_sec: Option<u64>,
     inline_css_path: Option<Vec<String>>,
     immutable_path: Option<Vec<String>>,
+    metrics_endpoint: Option<String>,
+    metrics_dir: Option<PathBuf>,
 ) -> Result<()> {
     let engine = initial_state.engine.clone();
 
@@ -38,6 +40,8 @@ pub async fn start_server(
             immutable_path,
             hsts_max_age,
             hsts_preload,
+            metrics_endpoint,
+            metrics_dir,
         )
         .unwrap();
         if let Some(https_port) = https_port {

@@ -629,22 +629,22 @@ def raze_fetch_remote_crates():
 
     maybe(
         http_archive,
-        name = "raze__bumpalo__3_9_1",
-        url = "https://crates.io/api/v1/crates/bumpalo/3.9.1/download",
+        name = "raze__bumpalo__3_10_0",
+        url = "https://crates.io/api/v1/crates/bumpalo/3.10.0/download",
         type = "tar.gz",
-        sha256 = "a4a45a46ab1f2412e53d3a0ade76ffad2025804294569aae387231a0cd6e0899",
-        strip_prefix = "bumpalo-3.9.1",
-        build_file = Label("//third_party/cargo/remote:BUILD.bumpalo-3.9.1.bazel"),
+        sha256 = "37ccbd214614c6783386c1af30caf03192f17891059cecc394b4fb119e363de3",
+        strip_prefix = "bumpalo-3.10.0",
+        build_file = Label("//third_party/cargo/remote:BUILD.bumpalo-3.10.0.bazel"),
     )
 
     maybe(
         http_archive,
-        name = "raze__bytecount__0_6_2",
-        url = "https://crates.io/api/v1/crates/bytecount/0.6.2/download",
+        name = "raze__bytecount__0_6_3",
+        url = "https://crates.io/api/v1/crates/bytecount/0.6.3/download",
         type = "tar.gz",
-        sha256 = "72feb31ffc86498dacdbd0fcebb56138e7177a8cc5cea4516031d15ae85a742e",
-        strip_prefix = "bytecount-0.6.2",
-        build_file = Label("//third_party/cargo/remote:BUILD.bytecount-0.6.2.bazel"),
+        sha256 = "2c676a478f63e9fa2dd5368a42f28bba0d6c560b775f38583c8bbaa7fcd67c9c",
+        strip_prefix = "bytecount-0.6.3",
+        build_file = Label("//third_party/cargo/remote:BUILD.bytecount-0.6.3.bazel"),
     )
 
     maybe(
@@ -1897,12 +1897,12 @@ def raze_fetch_remote_crates():
 
     maybe(
         http_archive,
-        name = "raze__miniz_oxide__0_5_1",
-        url = "https://crates.io/api/v1/crates/miniz_oxide/0.5.1/download",
+        name = "raze__miniz_oxide__0_5_3",
+        url = "https://crates.io/api/v1/crates/miniz_oxide/0.5.3/download",
         type = "tar.gz",
-        sha256 = "d2b29bd4bc3f33391105ebee3589c19197c4271e3e5a9ec9bfe8127eeff8f082",
-        strip_prefix = "miniz_oxide-0.5.1",
-        build_file = Label("//third_party/cargo/remote:BUILD.miniz_oxide-0.5.1.bazel"),
+        sha256 = "6f5c75688da582b8ffc1f1799e9db273f32133c49e048f614d22ec3256773ccc",
+        strip_prefix = "miniz_oxide-0.5.3",
+        build_file = Label("//third_party/cargo/remote:BUILD.miniz_oxide-0.5.3.bazel"),
     )
 
     maybe(
@@ -2097,12 +2097,12 @@ def raze_fetch_remote_crates():
 
     maybe(
         http_archive,
-        name = "raze__parking_lot__0_12_0",
-        url = "https://crates.io/api/v1/crates/parking_lot/0.12.0/download",
+        name = "raze__parking_lot__0_12_1",
+        url = "https://crates.io/api/v1/crates/parking_lot/0.12.1/download",
         type = "tar.gz",
-        sha256 = "87f5ec2493a61ac0506c0f4199f99070cbe83857b0337006a30f3e6719b8ef58",
-        strip_prefix = "parking_lot-0.12.0",
-        build_file = Label("//third_party/cargo/remote:BUILD.parking_lot-0.12.0.bazel"),
+        sha256 = "3742b2c103b9f06bc9fff0a37ff4912935851bee6d36f3c02bcc755bcfec228f",
+        strip_prefix = "parking_lot-0.12.1",
+        build_file = Label("//third_party/cargo/remote:BUILD.parking_lot-0.12.1.bazel"),
     )
 
     maybe(

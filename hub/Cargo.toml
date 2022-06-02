@@ -21,6 +21,7 @@ tide-compress = "0.9.0"
 tide-rustls = "0.3.0"
 tide-acme = "0.2.0-beta.1"
 thread-priority = "0.8.2"
+serde = "1.0.137"
 wildmatch = "2.1.0"
 html-escape = "0.2.11"
 moka = { version = "0.8.4", default-features = false, features = ["atomic64", "future"] }

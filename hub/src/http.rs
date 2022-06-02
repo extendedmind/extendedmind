@@ -1,4 +1,4 @@
-use crate::common::State;
+use crate::{common::State, metrics::ProduceMetrics};
 use anyhow::Result;
 use std::path::PathBuf;
 use tide::{Redirect, Request};
@@ -20,6 +20,8 @@ pub fn http_main_server(
     immutable_path: Option<Vec<String>>,
     hsts_max_age: Option<u64>,
     hsts_preload: bool,
+    metrics_endpoint: Option<String>,
+    metrics_dir: Option<PathBuf>,
 ) -> Result<tide::Server<State>> {
     let skip_compress_mime = skip_compress_mime.clone();
     let mut app = tide::with_state(initial_state);
@@ -33,7 +35,7 @@ pub fn http_main_server(
             cache_ttl_sec,
             cache_tti_sec,
             inline_css_path,
-            immutable_path,
+            immutable_path.clone(),
             hsts_max_age,
             hsts_preload,
         );
@@ -41,6 +43,16 @@ pub fn http_main_server(
             app.at("").get(serve_static_files.clone());
         }
         app.at("*").get(serve_static_files);
+    }
+
+    if let Some(metrics_endpoint) = metrics_endpoint {
+        if let Some(metrics_dir) = metrics_dir {
+            app.at(&metrics_endpoint).get(ProduceMetrics::new(
+                metrics_endpoint,
+                metrics_dir,
+                immutable_path,
+            ));
+        }
     }
 
     app.at("/extendedmind/hypercore")

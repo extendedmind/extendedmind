@@ -1,11 +1,17 @@
+use chrono::prelude::*;
+use moka::future::Cache;
+use serde::Serialize;
 use std::collections::HashMap;
+use std::convert::TryInto;
 use std::ffi::OsStr;
 use std::fs::{read_dir, File, OpenOptions};
 use std::io::{BufRead, BufReader, Write};
 use std::path::PathBuf;
 use std::thread;
 use std::time;
+use std::time::Duration;
 use thread_priority::{set_current_thread_priority, ThreadPriority};
+use wildmatch::WildMatch;
 
 // This is the number of characters taken from timestamp to create new metrics file. E.g.
 // from "2022-05-30_17.06.03", 13 means "2022-05-30.metrics".
@@ -13,6 +19,9 @@ const DEFAULT_METRICS_FILE_PRECISION: u8 = 10;
 
 // The default time to sleep when trying to refresh metrics
 const DEFAULT_METRICS_INTERVAL_SECONDS: u64 = 10;
+
+// Show 30 by default, maps to showing one month with DEFAULT_METRICS_FILE_PRECISION
+const DEFAULT_METRICS_LIMIT: usize = 30;
 
 pub fn process_metrics(metrics_dir: PathBuf, metrics_precision: Option<u8>, log_dir: PathBuf) {
     thread::spawn(move || {
@@ -61,12 +70,7 @@ pub fn process_metrics(metrics_dir: PathBuf, metrics_precision: Option<u8>, log_
             paths.sort();
 
             for path in paths {
-                let stem: String = path
-                    .file_stem()
-                    .unwrap()
-                    .to_os_string()
-                    .into_string()
-                    .unwrap();
+                let stem: String = get_stem_from_path(&path);
                 if stem.len() <= metrics_precision.into() {
                     log::warn!(
                         "Log file {} has too low precision, needs at least {}",
@@ -183,20 +187,207 @@ pub fn process_metrics(metrics_dir: PathBuf, metrics_precision: Option<u8>, log_
                         )
                         .unwrap();
                 }
-
-                // TODO: Lue jotenkin näin se sisältö HashMappiin, lue sitten rivi kerrallaan
-                // sisään edellinen metrics-tiedosto, ja samalla kun looppaa, vaihda arvot,
-                // poista avain hashmapistä, ja lopuksi lisää pohjalle kaikki loput arvot, ja
-                // vaihda .state arvo oikeaan.
-                //
-                // let mut reader = BufReader::new(metrics_state_file);
-                // let mut previous_path = String::new();
-                // reader.read_line(&mut previous_path).unwrap();
             }
-
             thread::sleep(sleep_duration);
         }
     });
+}
+
+#[derive(Serialize, Clone)]
+struct MetricsResponse {
+    start: String,
+    end: String,
+    metrics: Vec<MetricsRange>,
+}
+
+#[derive(Serialize, Clone)]
+struct MetricsRange {
+    start: String,
+    end: String,
+    entries: Vec<MetricsEntry>,
+}
+
+#[derive(Serialize, Clone)]
+struct MetricsEntry {
+    path: String,
+    status: usize,
+    count: usize,
+    immutable: bool,
+}
+
+#[derive(Clone)]
+pub struct ProduceMetrics {
+    metrics_endpoint: String,
+    metrics_dir: PathBuf,
+    immutable_path_wildmatch: Option<Vec<WildMatch>>,
+    cache: Cache<String, MetricsResponse>,
+}
+
+impl ProduceMetrics {
+    pub fn new(
+        metrics_endpoint: String,
+        metrics_dir: PathBuf,
+        immutable_path: Option<Vec<String>>,
+    ) -> Self {
+        let cache_ttl_sec = DEFAULT_METRICS_INTERVAL_SECONDS;
+        log::info!(
+            "Setting up cache for metrics endpoint at {} with time-to-live: {}s",
+            &metrics_endpoint,
+            &cache_ttl_sec,
+        );
+        let cache = Cache::builder()
+            .time_to_live(Duration::from_secs(cache_ttl_sec))
+            .build();
+
+        let immutable_path_wildmatch = match immutable_path {
+            Some(immutable_path) => Some(
+                immutable_path
+                    .iter()
+                    .map(|path| WildMatch::new(path))
+                    .collect(),
+            ),
+            None => None,
+        };
+
+        Self {
+            metrics_endpoint,
+            metrics_dir,
+            immutable_path_wildmatch,
+            cache,
+        }
+    }
+
+    fn get_metrics_response_from_cache(&self, query: String) -> Option<MetricsResponse> {
+        self.cache.get(&query)
+    }
+
+    async fn insert_metrics_response_to_cache(
+        &self,
+        query: String,
+        metrics_response: MetricsResponse,
+    ) {
+        self.cache.insert(query, metrics_response).await
+    }
+}
+
+#[async_trait::async_trait]
+impl<State> tide::Endpoint<State> for ProduceMetrics
+where
+    State: Clone + Send + Sync + 'static,
+{
+    async fn call(&self, req: tide::Request<State>) -> tide::Result {
+        // TODO: This value could also be in a query param
+        let limit = DEFAULT_METRICS_LIMIT;
+        let query = format!("limit={}", limit);
+        let url_path = &req.url().path();
+        let cached_metrics_response = self.get_metrics_response_from_cache(query.clone());
+        return if let Some(cached_metrics_response) = cached_metrics_response {
+            // The body for the URL was found from the cache, return it without any file IO
+            log::debug!("Metrics cache hit: {}", &url_path);
+            let body = tide::Body::from_json(&cached_metrics_response).unwrap();
+            Ok(tide::Response::builder(200).body(body).build())
+        } else {
+            // Read the file from the file system
+            log::debug!("Metrics cache miss: {}", &url_path);
+
+            let mut paths = read_dir(self.metrics_dir.to_str().unwrap())
+                .unwrap()
+                .map(|res| res.map(|e| e.path()))
+                .filter(|path| {
+                    if let Ok(path) = path {
+                        return path.is_file() && path.extension() == Some(OsStr::new("metrics"));
+                    }
+                    false
+                })
+                .collect::<Result<Vec<_>, std::io::Error>>()
+                .unwrap();
+            paths.sort();
+
+            let end_timestamp = get_timestamp_diff(&get_stem_from_path(&paths[paths.len() - 1]), 1);
+            let limit: i64 = limit.try_into().unwrap();
+            let start_timestamp = get_timestamp_diff(&end_timestamp, limit * -1);
+
+            let mut metrics: Vec<MetricsRange> = vec![];
+            for path in paths {
+                let stem = get_stem_from_path(&path);
+                if stem >= start_timestamp {
+                    let mut entries: Vec<MetricsEntry> = vec![];
+                    let metrics_file = File::open(&path).unwrap();
+                    let metrics_reader = BufReader::new(metrics_file);
+                    for line in metrics_reader.lines() {
+                        let line = line.unwrap();
+                        let split = line.split(" ");
+                        let metric: Vec<&str> = split.collect();
+                        let status = metric[0].parse::<usize>().unwrap();
+                        let url_path: String = metric[1].to_string();
+                        let count = trim_newline(metric[2]).parse::<usize>().unwrap();
+                        let immutable: bool = match &self.immutable_path_wildmatch {
+                            Some(immutable_path) => immutable_path
+                                .iter()
+                                .find(|wildmatch_path| wildmatch_path.matches(&url_path))
+                                .is_some(),
+                            None => false,
+                        };
+                        entries.push(MetricsEntry {
+                            path: url_path,
+                            status,
+                            count,
+                            immutable,
+                        })
+                    }
+                    metrics.push(MetricsRange {
+                        end: get_timestamp_diff(&stem, 1),
+                        start: stem,
+                        entries,
+                    })
+                }
+            }
+
+            let metrics_response: MetricsResponse = MetricsResponse {
+                start: start_timestamp,
+                end: end_timestamp,
+                metrics,
+            };
+
+            self.insert_metrics_response_to_cache(query, metrics_response.clone())
+                .await;
+
+            let body = tide::Body::from_json(&metrics_response).unwrap();
+            Ok(tide::Response::builder(200).body(body).build())
+        };
+    }
+}
+
+fn get_stem_from_path(path: &PathBuf) -> String {
+    path.file_stem()
+        .unwrap()
+        .to_os_string()
+        .into_string()
+        .unwrap()
+}
+
+fn get_timestamp_diff(timestamp: &str, delta: i64) -> String {
+    match timestamp.len() {
+        10 => {
+            let diff_date = Utc
+                .datetime_from_str(
+                    format!("{}_00.00.00", &timestamp).as_str(),
+                    "%Y-%m-%d_%H.%M.%S",
+                )
+                .unwrap();
+            let diff = diff_date + chrono::Duration::days(delta);
+            diff.format("%Y-%m-%d").to_string()
+        }
+        16 => {
+            let diff_date = Utc
+                .datetime_from_str(format!("{}.00", &timestamp).as_str(), "%Y-%m-%d_%H.%M.%S")
+                .unwrap();
+            let diff = diff_date + chrono::Duration::minutes(delta);
+            diff.format("%Y-%m-%d_%H.%M").to_string()
+        }
+        // TODO: Rest of the accepted precisions
+        _ => "".to_string(),
+    }
 }
 
 fn trim_newline(s: &str) -> String {
