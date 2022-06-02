@@ -13,6 +13,15 @@ licenses([
 
 # Aliased targets
 alias(
+    name = "age",
+    actual = "@raze__age__0_8_0//:age",
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+)
+
+alias(
     name = "anyhow",
     actual = "@raze__anyhow__1_0_57//:anyhow",
     tags = [
@@ -166,6 +175,15 @@ alias(
 )
 
 alias(
+    name = "flate2",
+    actual = "@raze__flate2__1_0_24//:flate2",
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+)
+
+alias(
     name = "futures",
     actual = "@raze__futures__0_3_21//:futures",
     tags = [
@@ -294,6 +312,15 @@ alias(
 alias(
     name = "smol_str",
     actual = "@raze__smol_str__0_1_23//:smol_str",
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+)
+
+alias(
+    name = "tar",
+    actual = "@raze__tar__0_4_38//:tar",
     tags = [
         "cargo-raze",
         "manual",

@@ -26,27 +26,21 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # Apache-2.0 from expression "Apache-2.0 OR MIT"
+    "notice",  # MIT from expression "MIT OR Apache-2.0"
 ])
 
 # Generated Targets
 
-# Unsupported target "chacha12" with type "bench" omitted
-
-# Unsupported target "chacha20" with type "bench" omitted
-
-# Unsupported target "chacha8" with type "bench" omitted
+# Unsupported target "mod" with type "bench" omitted
 
 rust_library(
-    name = "chacha20",
+    name = "sha2",
     srcs = glob(["**/*.rs"]),
     aliases = {
     },
     crate_features = [
-        "cipher",
         "default",
-        "xchacha",
-        "zeroize",
+        "std",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -56,22 +50,23 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=chacha20",
+        "crate-name=sha2",
         "manual",
     ],
-    version = "0.7.3",
+    version = "0.10.2",
 
     # buildifier: leave-alone
     deps = [
         "@raze__cfg_if__1_0_0//:cfg_if",
-        "@raze__cipher__0_3_0//:cipher",
-        "@raze__zeroize__1_3_0//:zeroize",
+        "@raze__digest__0_10_3//:digest",
     ] + selects.with_or({
-        # cfg(any(target_arch = "x86_64", target_arch = "x86"))
+        # cfg(any(target_arch = "aarch64", target_arch = "x86_64", target_arch = "x86"))
         (
             "@rules_rust//rust/platform:x86_64-apple-darwin",
             "@rules_rust//rust/platform:x86_64-pc-windows-msvc",
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
+            "@rules_rust//rust/platform:aarch64-linux-android",
+            "@rules_rust//rust/platform:aarch64-unknown-linux-gnu",
             "@rules_rust//rust/platform:i686-linux-android",
             "@rules_rust//rust/platform:x86_64-linux-android",
         ): [
@@ -82,4 +77,4 @@ rust_library(
 )
 
 
-# Unsupported target "lib" with type "test" omitted
+# Unsupported target "mod" with type "test" omitted

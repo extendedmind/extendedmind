@@ -26,25 +26,15 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # BSD-3-Clause from expression "BSD-3-Clause"
+    "notice",  # MIT from expression "MIT OR Apache-2.0"
 ])
 
 # Generated Targets
 
-# Unsupported target "ed25519_benchmarks" with type "bench" omitted
-
 rust_library(
-    name = "ed25519_dalek",
+    name = "hmac",
     srcs = glob(["**/*.rs"]),
-    aliases = {
-        "@raze__serde__1_0_137//:serde": "serde_crate",
-    },
     crate_features = [
-        "default",
-        "rand",
-        "serde_crate",
-        "std",
-        "u64_backend",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -54,21 +44,16 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=ed25519-dalek",
+        "crate-name=hmac",
         "manual",
     ],
-    version = "1.0.1",
+    version = "0.12.1",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__curve25519_dalek__3_2_0//:curve25519_dalek",
-        "@raze__ed25519__1_5_2//:ed25519",
-        "@raze__rand__0_7_3//:rand",
-        "@raze__serde__1_0_137//:serde",
-        "@raze__sha2__0_9_9//:sha2",
-        "@raze__zeroize__1_4_3//:zeroize",
+        "@raze__digest__0_10_3//:digest",
     ],
 )
 
 
-# Unsupported target "ed25519" with type "test" omitted
+# Unsupported target "mod" with type "test" omitted

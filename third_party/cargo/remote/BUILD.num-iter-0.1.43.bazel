@@ -26,7 +26,7 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT"
+    "notice",  # MIT from expression "MIT OR Apache-2.0"
 ])
 
 # Generated Targets
@@ -38,12 +38,11 @@ load(
 )
 
 cargo_build_script(
-    name = "generic_array_build_script",
+    name = "num_iter_build_script",
     srcs = glob(["**/*.rs"]),
     build_script_env = {
     },
     crate_features = [
-        "more_lengths",
     ],
     crate_root = "build.rs",
     data = glob(["**"]),
@@ -55,18 +54,17 @@ cargo_build_script(
         "cargo-raze",
         "manual",
     ],
-    version = "0.14.5",
+    version = "0.1.43",
     visibility = ["//visibility:private"],
     deps = [
-        "@raze__version_check__0_9_4//:version_check",
+        "@raze__autocfg__1_1_0//:autocfg",
     ],
 )
 
 rust_library(
-    name = "generic_array",
+    name = "num_iter",
     srcs = glob(["**/*.rs"]),
     crate_features = [
-        "more_lengths",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -76,27 +74,16 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=generic_array",
+        "crate-name=num-iter",
         "manual",
     ],
-    version = "0.14.5",
+    version = "0.1.43",
 
     # buildifier: leave-alone
     deps = [
-        ":generic_array_build_script",
-        "@raze__typenum__1_15_0//:typenum",
+        ":num_iter_build_script",
+        "@raze__num_integer__0_1_45//:num_integer",
+        "@raze__num_traits__0_2_15//:num_traits",
     ],
 )
 
-
-# Unsupported target "arr" with type "test" omitted
-
-# Unsupported target "generics" with type "test" omitted
-
-# Unsupported target "hex" with type "test" omitted
-
-# Unsupported target "import_name" with type "test" omitted
-
-# Unsupported target "iter" with type "test" omitted
-
-# Unsupported target "mod" with type "test" omitted

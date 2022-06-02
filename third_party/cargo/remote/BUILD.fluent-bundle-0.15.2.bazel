@@ -26,25 +26,20 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # BSD-3-Clause from expression "BSD-3-Clause"
+    "notice",  # Apache-2.0 from expression "Apache-2.0 OR MIT"
 ])
 
 # Generated Targets
 
-# Unsupported target "ed25519_benchmarks" with type "bench" omitted
+# Unsupported target "resolver" with type "bench" omitted
+
+# Unsupported target "resolver_iai" with type "bench" omitted
 
 rust_library(
-    name = "ed25519_dalek",
+    name = "fluent_bundle",
     srcs = glob(["**/*.rs"]),
-    aliases = {
-        "@raze__serde__1_0_137//:serde": "serde_crate",
-    },
     crate_features = [
         "default",
-        "rand",
-        "serde_crate",
-        "std",
-        "u64_backend",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -54,21 +49,21 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=ed25519-dalek",
+        "crate-name=fluent-bundle",
         "manual",
     ],
-    version = "1.0.1",
+    version = "0.15.2",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__curve25519_dalek__3_2_0//:curve25519_dalek",
-        "@raze__ed25519__1_5_2//:ed25519",
-        "@raze__rand__0_7_3//:rand",
-        "@raze__serde__1_0_137//:serde",
-        "@raze__sha2__0_9_9//:sha2",
-        "@raze__zeroize__1_4_3//:zeroize",
+        "@raze__fluent_langneg__0_13_0//:fluent_langneg",
+        "@raze__fluent_syntax__0_11_0//:fluent_syntax",
+        "@raze__intl_memoizer__0_5_1//:intl_memoizer",
+        "@raze__intl_pluralrules__7_0_1//:intl_pluralrules",
+        "@raze__rustc_hash__1_1_0//:rustc_hash",
+        "@raze__self_cell__0_10_2//:self_cell",
+        "@raze__smallvec__1_8_0//:smallvec",
+        "@raze__unic_langid__0_9_0//:unic_langid",
     ],
 )
 
-
-# Unsupported target "ed25519" with type "test" omitted

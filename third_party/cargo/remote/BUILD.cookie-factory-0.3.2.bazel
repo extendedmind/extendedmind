@@ -26,25 +26,21 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # BSD-3-Clause from expression "BSD-3-Clause"
+    "notice",  # MIT from expression "MIT"
 ])
 
 # Generated Targets
 
-# Unsupported target "ed25519_benchmarks" with type "bench" omitted
+# Unsupported target "cursor" with type "example" omitted
+
+# Unsupported target "http" with type "example" omitted
 
 rust_library(
-    name = "ed25519_dalek",
+    name = "cookie_factory",
     srcs = glob(["**/*.rs"]),
-    aliases = {
-        "@raze__serde__1_0_137//:serde": "serde_crate",
-    },
     crate_features = [
         "default",
-        "rand",
-        "serde_crate",
         "std",
-        "u64_backend",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -54,21 +50,15 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=ed25519-dalek",
+        "crate-name=cookie-factory",
         "manual",
     ],
-    version = "1.0.1",
+    version = "0.3.2",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__curve25519_dalek__3_2_0//:curve25519_dalek",
-        "@raze__ed25519__1_5_2//:ed25519",
-        "@raze__rand__0_7_3//:rand",
-        "@raze__serde__1_0_137//:serde",
-        "@raze__sha2__0_9_9//:sha2",
-        "@raze__zeroize__1_4_3//:zeroize",
     ],
 )
 
 
-# Unsupported target "ed25519" with type "test" omitted
+# Unsupported target "http" with type "test" omitted

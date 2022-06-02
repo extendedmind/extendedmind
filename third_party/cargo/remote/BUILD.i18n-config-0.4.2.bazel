@@ -26,49 +26,39 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # BSD-3-Clause from expression "BSD-3-Clause"
+    "notice",  # MIT from expression "MIT"
 ])
 
 # Generated Targets
 
-# Unsupported target "ed25519_benchmarks" with type "bench" omitted
-
 rust_library(
-    name = "ed25519_dalek",
+    name = "i18n_config",
     srcs = glob(["**/*.rs"]),
-    aliases = {
-        "@raze__serde__1_0_137//:serde": "serde_crate",
-    },
     crate_features = [
-        "default",
-        "rand",
-        "serde_crate",
-        "std",
-        "u64_backend",
     ],
     crate_root = "src/lib.rs",
     data = [],
     edition = "2018",
+    proc_macro_deps = [
+        "@raze__serde_derive__1_0_137//:serde_derive",
+    ],
     rustc_flags = [
         "--cap-lints=allow",
     ],
     tags = [
         "cargo-raze",
-        "crate-name=ed25519-dalek",
+        "crate-name=i18n-config",
         "manual",
     ],
-    version = "1.0.1",
+    version = "0.4.2",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__curve25519_dalek__3_2_0//:curve25519_dalek",
-        "@raze__ed25519__1_5_2//:ed25519",
-        "@raze__rand__0_7_3//:rand",
+        "@raze__log__0_4_17//:log",
         "@raze__serde__1_0_137//:serde",
-        "@raze__sha2__0_9_9//:sha2",
-        "@raze__zeroize__1_4_3//:zeroize",
+        "@raze__thiserror__1_0_31//:thiserror",
+        "@raze__toml__0_5_9//:toml",
+        "@raze__unic_langid__0_9_0//:unic_langid",
     ],
 )
 
-
-# Unsupported target "ed25519" with type "test" omitted

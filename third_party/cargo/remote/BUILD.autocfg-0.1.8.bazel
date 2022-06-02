@@ -32,36 +32,26 @@ licenses([
 # Generated Targets
 
 rust_library(
-    name = "chacha20poly1305",
+    name = "autocfg",
     srcs = glob(["**/*.rs"]),
     crate_features = [
-        "alloc",
-        "chacha20",
-        "default",
-        "xchacha20",
     ],
     crate_root = "src/lib.rs",
     data = [],
-    edition = "2018",
+    edition = "2015",
     rustc_flags = [
         "--cap-lints=allow",
     ],
     tags = [
         "cargo-raze",
-        "crate-name=chacha20poly1305",
+        "crate-name=autocfg",
         "manual",
     ],
-    version = "0.8.2",
+    version = "0.1.8",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__aead__0_4_3//:aead",
-        "@raze__chacha20__0_7_3//:chacha20",
-        "@raze__cipher__0_3_0//:cipher",
-        "@raze__poly1305__0_7_2//:poly1305",
-        "@raze__zeroize__1_3_0//:zeroize",
+        "@raze__autocfg__1_1_0//:autocfg",
     ],
 )
 
-
-# Unsupported target "lib" with type "test" omitted

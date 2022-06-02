@@ -26,25 +26,21 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # BSD-3-Clause from expression "BSD-3-Clause"
+    "notice",  # Apache-2.0 from expression "Apache-2.0 OR MIT"
 ])
 
 # Generated Targets
 
-# Unsupported target "ed25519_benchmarks" with type "bench" omitted
-
 rust_library(
-    name = "ed25519_dalek",
+    name = "pkcs8",
     srcs = glob(["**/*.rs"]),
-    aliases = {
-        "@raze__serde__1_0_137//:serde": "serde_crate",
-    },
     crate_features = [
-        "default",
-        "rand",
-        "serde_crate",
+        "alloc",
+        "pem",
+        "pem-rfc7468",
+        "pkcs1",
         "std",
-        "u64_backend",
+        "zeroize",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -54,21 +50,24 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=ed25519-dalek",
+        "crate-name=pkcs8",
         "manual",
     ],
-    version = "1.0.1",
+    version = "0.7.6",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__curve25519_dalek__3_2_0//:curve25519_dalek",
-        "@raze__ed25519__1_5_2//:ed25519",
-        "@raze__rand__0_7_3//:rand",
-        "@raze__serde__1_0_137//:serde",
-        "@raze__sha2__0_9_9//:sha2",
+        "@raze__der__0_4_5//:der",
+        "@raze__pem_rfc7468__0_2_4//:pem_rfc7468",
+        "@raze__pkcs1__0_2_4//:pkcs1",
+        "@raze__spki__0_4_1//:spki",
         "@raze__zeroize__1_4_3//:zeroize",
     ],
 )
 
 
-# Unsupported target "ed25519" with type "test" omitted
+# Unsupported target "encrypted_private_key" with type "test" omitted
+
+# Unsupported target "private_key" with type "test" omitted
+
+# Unsupported target "public_key" with type "test" omitted

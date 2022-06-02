@@ -26,41 +26,33 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # BSD-3-Clause from expression "BSD-3-Clause"
+    "notice",  # Apache-2.0 from expression "Apache-2.0 OR MIT"
 ])
 
 # Generated Targets
 
-# Unsupported target "dalek_benchmarks" with type "bench" omitted
-
 rust_library(
-    name = "curve25519_dalek",
+    name = "intl_memoizer",
     srcs = glob(["**/*.rs"]),
     crate_features = [
-        "alloc",
-        "std",
-        "u64_backend",
     ],
     crate_root = "src/lib.rs",
     data = [],
-    edition = "2015",
+    edition = "2018",
     rustc_flags = [
         "--cap-lints=allow",
     ],
     tags = [
         "cargo-raze",
-        "crate-name=curve25519-dalek",
+        "crate-name=intl-memoizer",
         "manual",
     ],
-    version = "3.2.1",
+    version = "0.5.1",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__byteorder__1_4_3//:byteorder",
-        "@raze__digest__0_9_0//:digest",
-        "@raze__rand_core__0_5_1//:rand_core",
-        "@raze__subtle__2_4_1//:subtle",
-        "@raze__zeroize__1_3_0//:zeroize",
+        "@raze__type_map__0_4_0//:type_map",
+        "@raze__unic_langid__0_9_0//:unic_langid",
     ],
 )
 

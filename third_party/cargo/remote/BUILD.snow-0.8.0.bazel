@@ -106,12 +106,12 @@ rust_library(
         ":snow_build_script",
         "@raze__aes_gcm__0_9_4//:aes_gcm",
         "@raze__blake2__0_9_2//:blake2",
-        "@raze__chacha20poly1305__0_8_2//:chacha20poly1305",
+        "@raze__chacha20poly1305__0_8_0//:chacha20poly1305",
         "@raze__rand__0_8_5//:rand",
         "@raze__rand_core__0_6_3//:rand_core",
         "@raze__sha2__0_9_9//:sha2",
         "@raze__subtle__2_4_1//:subtle",
-        "@raze__x25519_dalek__1_2_0//:x25519_dalek",
+        "@raze__x25519_dalek__1_1_1//:x25519_dalek",
     ],
 )
 

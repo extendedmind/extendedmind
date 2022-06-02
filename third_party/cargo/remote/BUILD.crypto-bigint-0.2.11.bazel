@@ -26,25 +26,19 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # BSD-3-Clause from expression "BSD-3-Clause"
+    "notice",  # Apache-2.0 from expression "Apache-2.0 OR MIT"
 ])
 
 # Generated Targets
 
-# Unsupported target "ed25519_benchmarks" with type "bench" omitted
-
 rust_library(
-    name = "ed25519_dalek",
+    name = "crypto_bigint",
     srcs = glob(["**/*.rs"]),
-    aliases = {
-        "@raze__serde__1_0_137//:serde": "serde_crate",
-    },
     crate_features = [
         "default",
+        "generic-array",
         "rand",
-        "serde_crate",
-        "std",
-        "u64_backend",
+        "rand_core",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -54,21 +48,18 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=ed25519-dalek",
+        "crate-name=crypto-bigint",
         "manual",
     ],
-    version = "1.0.1",
+    version = "0.2.11",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__curve25519_dalek__3_2_0//:curve25519_dalek",
-        "@raze__ed25519__1_5_2//:ed25519",
-        "@raze__rand__0_7_3//:rand",
-        "@raze__serde__1_0_137//:serde",
-        "@raze__sha2__0_9_9//:sha2",
-        "@raze__zeroize__1_4_3//:zeroize",
+        "@raze__generic_array__0_14_5//:generic_array",
+        "@raze__rand_core__0_6_3//:rand_core",
+        "@raze__subtle__2_4_1//:subtle",
     ],
 )
 
 
-# Unsupported target "ed25519" with type "test" omitted
+# Unsupported target "proptests" with type "test" omitted
