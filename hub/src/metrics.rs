@@ -13,6 +13,10 @@ use std::time::Duration;
 use thread_priority::{set_current_thread_priority, ThreadPriority};
 use wildmatch::WildMatch;
 
+use crate::common::{
+    get_stem_from_path, TIMESTAMP_DAYS_FORMAT, TIMESTAMP_MINUTES_FORMAT, TIMESTAMP_SECONDS_FORMAT,
+};
+
 // This is the number of characters taken from timestamp to create new metrics file. E.g.
 // from "2022-05-30_17.06.03", 13 means "2022-05-30.metrics".
 const DEFAULT_METRICS_FILE_PRECISION: u8 = 10;
@@ -358,32 +362,27 @@ where
     }
 }
 
-fn get_stem_from_path(path: &PathBuf) -> String {
-    path.file_stem()
-        .unwrap()
-        .to_os_string()
-        .into_string()
-        .unwrap()
-}
-
 fn get_timestamp_diff(timestamp: &str, delta: i64) -> String {
     match timestamp.len() {
         10 => {
             let diff_date = Utc
                 .datetime_from_str(
                     format!("{}_00.00.00", &timestamp).as_str(),
-                    "%Y-%m-%d_%H.%M.%S",
+                    TIMESTAMP_SECONDS_FORMAT,
                 )
                 .unwrap();
             let diff = diff_date + chrono::Duration::days(delta);
-            diff.format("%Y-%m-%d").to_string()
+            diff.format(TIMESTAMP_DAYS_FORMAT).to_string()
         }
         16 => {
             let diff_date = Utc
-                .datetime_from_str(format!("{}.00", &timestamp).as_str(), "%Y-%m-%d_%H.%M.%S")
+                .datetime_from_str(
+                    format!("{}.00", &timestamp).as_str(),
+                    TIMESTAMP_SECONDS_FORMAT,
+                )
                 .unwrap();
             let diff = diff_date + chrono::Duration::minutes(delta);
-            diff.format("%Y-%m-%d_%H.%M").to_string()
+            diff.format(TIMESTAMP_MINUTES_FORMAT).to_string()
         }
         // TODO: Rest of the accepted precisions
         _ => "".to_string(),
