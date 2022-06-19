@@ -51,7 +51,7 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__semver__1_0_9//:semver",
+        "@raze__semver__1_0_10//:semver",
     ],
 )
 

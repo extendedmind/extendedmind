@@ -60,9 +60,9 @@ rust_proc_macro(
         "@raze__lazy_static__1_4_0//:lazy_static",
         "@raze__proc_macro2__1_0_39//:proc_macro2",
         "@raze__proc_macro_error__1_0_4//:proc_macro_error",
-        "@raze__quote__1_0_18//:quote",
+        "@raze__quote__1_0_19//:quote",
         "@raze__strsim__0_10_0//:strsim",
-        "@raze__syn__1_0_95//:syn",
+        "@raze__syn__1_0_98//:syn",
         "@raze__unic_langid__0_9_0//:unic_langid",
     ],
 )

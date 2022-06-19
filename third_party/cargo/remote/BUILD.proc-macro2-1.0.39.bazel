@@ -85,7 +85,7 @@ rust_library(
     # buildifier: leave-alone
     deps = [
         ":proc_macro2_build_script",
-        "@raze__unicode_ident__1_0_0//:unicode_ident",
+        "@raze__unicode_ident__1_0_1//:unicode_ident",
     ],
 )
 

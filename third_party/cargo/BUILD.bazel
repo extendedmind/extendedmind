@@ -14,7 +14,7 @@ licenses([
 # Aliased targets
 alias(
     name = "age",
-    actual = "@raze__age__0_8_0//:age",
+    actual = "@raze__age__0_8_1//:age",
     tags = [
         "cargo-raze",
         "manual",
@@ -23,7 +23,7 @@ alias(
 
 alias(
     name = "anyhow",
-    actual = "@raze__anyhow__1_0_57//:anyhow",
+    actual = "@raze__anyhow__1_0_58//:anyhow",
     tags = [
         "cargo-raze",
         "manual",
@@ -50,7 +50,7 @@ alias(
 
 alias(
     name = "async_std",
-    actual = "@raze__async_std__1_11_0//:async_std",
+    actual = "@raze__async_std__1_12_0//:async_std",
     tags = [
         "cargo-raze",
         "manual",
@@ -59,7 +59,7 @@ alias(
 
 alias(
     name = "async_trait",
-    actual = "@raze__async_trait__0_1_53//:async_trait",
+    actual = "@raze__async_trait__0_1_56//:async_trait",
     tags = [
         "cargo-raze",
         "manual",
@@ -113,7 +113,7 @@ alias(
 
 alias(
     name = "clap",
-    actual = "@raze__clap__3_1_18//:clap",
+    actual = "@raze__clap__3_2_5//:clap",
     tags = [
         "cargo-raze",
         "manual",

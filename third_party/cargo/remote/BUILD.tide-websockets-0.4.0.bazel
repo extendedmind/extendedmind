@@ -54,7 +54,7 @@ rust_library(
     # buildifier: leave-alone
     deps = [
         "@raze__async_dup__1_2_2//:async_dup",
-        "@raze__async_std__1_11_0//:async_std",
+        "@raze__async_std__1_12_0//:async_std",
         "@raze__async_tungstenite__0_13_1//:async_tungstenite",
         "@raze__base64__0_13_0//:base64",
         "@raze__futures_util__0_3_21//:futures_util",

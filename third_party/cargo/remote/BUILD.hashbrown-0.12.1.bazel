@@ -39,6 +39,7 @@ rust_library(
     name = "hashbrown",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "raw",
     ],
     crate_root = "src/lib.rs",
     data = [],

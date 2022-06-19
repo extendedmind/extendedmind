@@ -33,7 +33,7 @@ wildmatch = "2.1.0"
 serde = "1.0.137"
 tar = "0.4.38"
 flate2 = "1.0.24"
-age = { version = "0.8.0", features = ["ssh"] }
+age = { version = "0.8.1", features = ["ssh", "cli-common"] }
 html-escape = "0.2.11"
 ctrlc = { version = "3.0", features = ["termination"] }
 async-ctrlc = "1.2.0"

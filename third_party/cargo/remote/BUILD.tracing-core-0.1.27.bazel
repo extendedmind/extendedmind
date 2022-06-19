@@ -26,25 +26,17 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT OR Apache-2.0"
+    "notice",  # MIT from expression "MIT"
 ])
 
 # Generated Targets
 
-# Unsupported target "header_map" with type "bench" omitted
-
-# Unsupported target "header_name" with type "bench" omitted
-
-# Unsupported target "header_value" with type "bench" omitted
-
-# Unsupported target "method" with type "bench" omitted
-
-# Unsupported target "uri" with type "bench" omitted
-
 rust_library(
-    name = "http",
+    name = "tracing_core",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "once_cell",
+        "std",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -54,22 +46,20 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=http",
+        "crate-name=tracing-core",
         "manual",
     ],
-    version = "0.2.7",
+    version = "0.1.27",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__bytes__1_1_0//:bytes",
-        "@raze__fnv__1_0_7//:fnv",
-        "@raze__itoa__1_0_2//:itoa",
+        "@raze__once_cell__1_12_0//:once_cell",
     ],
 )
 
 
-# Unsupported target "header_map" with type "test" omitted
+# Unsupported target "dispatch" with type "test" omitted
 
-# Unsupported target "header_map_fuzz" with type "test" omitted
+# Unsupported target "global_dispatch" with type "test" omitted
 
-# Unsupported target "status_code" with type "test" omitted
+# Unsupported target "macros" with type "test" omitted

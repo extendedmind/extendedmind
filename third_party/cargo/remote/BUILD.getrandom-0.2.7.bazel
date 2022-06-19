@@ -56,7 +56,7 @@ rust_library(
         "crate-name=getrandom",
         "manual",
     ],
-    version = "0.2.6",
+    version = "0.2.7",
 
     # buildifier: leave-alone
     deps = [

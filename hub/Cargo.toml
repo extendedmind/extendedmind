@@ -26,7 +26,7 @@ wildmatch = "2.1.0"
 html-escape = "0.2.11"
 tar = "0.4.38"
 flate2 = "1.0.24"
-age = { version = "0.8.0", features = ["ssh"] }
+age = { version = "0.8.1", features = ["ssh", "cli-common"] }
 moka = { version = "0.8.4", default-features = false, features = ["atomic64", "future"] }
 async-tungstenite = { version = "0.13.1", features = ["async-std-runtime"] }
 async-trait = "0.1.51"

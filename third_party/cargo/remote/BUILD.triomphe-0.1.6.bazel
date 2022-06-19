@@ -31,32 +31,26 @@ licenses([
 
 # Generated Targets
 
-# Unsupported target "xid" with type "bench" omitted
-
 rust_library(
-    name = "unicode_ident",
+    name = "triomphe",
     srcs = glob(["**/*.rs"]),
     crate_features = [
     ],
     crate_root = "src/lib.rs",
     data = [],
-    edition = "2018",
+    edition = "2015",
     rustc_flags = [
         "--cap-lints=allow",
     ],
     tags = [
         "cargo-raze",
-        "crate-name=unicode-ident",
+        "crate-name=triomphe",
         "manual",
     ],
-    version = "1.0.0",
+    version = "0.1.6",
 
     # buildifier: leave-alone
     deps = [
     ],
 )
 
-
-# Unsupported target "compare" with type "test" omitted
-
-# Unsupported target "static_size" with type "test" omitted

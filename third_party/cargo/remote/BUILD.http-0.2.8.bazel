@@ -26,18 +26,27 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # Apache-2.0 from expression "Apache-2.0 OR MIT"
+    "notice",  # MIT from expression "MIT OR Apache-2.0"
 ])
 
 # Generated Targets
 
-# Unsupported target "bench" with type "bench" omitted
+# Unsupported target "header_map" with type "bench" omitted
+
+# Unsupported target "header_name" with type "bench" omitted
+
+# Unsupported target "header_name2" with type "bench" omitted
+
+# Unsupported target "header_value" with type "bench" omitted
+
+# Unsupported target "method" with type "bench" omitted
+
+# Unsupported target "uri" with type "bench" omitted
 
 rust_library(
-    name = "hashbrown",
+    name = "http",
     srcs = glob(["**/*.rs"]),
     crate_features = [
-        "raw",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -47,21 +56,22 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=hashbrown",
+        "crate-name=http",
         "manual",
     ],
-    version = "0.11.2",
+    version = "0.2.8",
 
     # buildifier: leave-alone
     deps = [
+        "@raze__bytes__1_1_0//:bytes",
+        "@raze__fnv__1_0_7//:fnv",
+        "@raze__itoa__1_0_2//:itoa",
     ],
 )
 
 
-# Unsupported target "hasher" with type "test" omitted
+# Unsupported target "header_map" with type "test" omitted
 
-# Unsupported target "rayon" with type "test" omitted
+# Unsupported target "header_map_fuzz" with type "test" omitted
 
-# Unsupported target "serde" with type "test" omitted
-
-# Unsupported target "set" with type "test" omitted
+# Unsupported target "status_code" with type "test" omitted

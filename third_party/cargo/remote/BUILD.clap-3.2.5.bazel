@@ -31,18 +31,6 @@ licenses([
 
 # Generated Targets
 
-# Unsupported target "01_default" with type "bench" omitted
-
-# Unsupported target "02_simple" with type "bench" omitted
-
-# Unsupported target "03_complex" with type "bench" omitted
-
-# Unsupported target "04_new_help" with type "bench" omitted
-
-# Unsupported target "05_ripgrep" with type "bench" omitted
-
-# Unsupported target "06_rustup" with type "bench" omitted
-
 rust_binary(
     # Prefix bin name to disambiguate from (probable) collision with lib name
     # N.B.: The exact form of this is subject to change.
@@ -54,7 +42,7 @@ rust_binary(
         "color",
         "default",
         "derive",
-        "lazy_static",
+        "once_cell",
         "std",
         "strsim",
         "suggestions",
@@ -63,9 +51,9 @@ rust_binary(
     crate_root = "src/bin/stdio-fixture.rs",
     data = [],
     compile_data = glob(["README.md"]),
-    edition = "2018",
+    edition = "2021",
     proc_macro_deps = [
-        "@raze__clap_derive__3_1_18//:clap_derive",
+        "@raze__clap_derive__3_2_5//:clap_derive",
     ],
     rustc_flags = [
         "--cap-lints=allow",
@@ -75,16 +63,16 @@ rust_binary(
         "crate-name=stdio-fixture",
         "manual",
     ],
-    version = "3.1.18",
+    version = "3.2.5",
 
     # buildifier: leave-alone
     deps = [
         ":clap",
         "@raze__atty__0_2_14//:atty",
         "@raze__bitflags__1_3_2//:bitflags",
-        "@raze__clap_lex__0_2_0//:clap_lex",
-        "@raze__indexmap__1_8_2//:indexmap",
-        "@raze__lazy_static__1_4_0//:lazy_static",
+        "@raze__clap_lex__0_2_2//:clap_lex",
+        "@raze__indexmap__1_9_0//:indexmap",
+        "@raze__once_cell__1_12_0//:once_cell",
         "@raze__strsim__0_10_0//:strsim",
         "@raze__termcolor__1_1_3//:termcolor",
         "@raze__textwrap__0_15_0//:textwrap",
@@ -203,7 +191,7 @@ rust_library(
         "color",
         "default",
         "derive",
-        "lazy_static",
+        "once_cell",
         "std",
         "strsim",
         "suggestions",
@@ -212,9 +200,9 @@ rust_library(
     crate_root = "src/lib.rs",
     data = [],
     compile_data = glob(["README.md"]),
-    edition = "2018",
+    edition = "2021",
     proc_macro_deps = [
-        "@raze__clap_derive__3_1_18//:clap_derive",
+        "@raze__clap_derive__3_2_5//:clap_derive",
     ],
     rustc_flags = [
         "--cap-lints=allow",
@@ -224,15 +212,15 @@ rust_library(
         "crate-name=clap",
         "manual",
     ],
-    version = "3.1.18",
+    version = "3.2.5",
 
     # buildifier: leave-alone
     deps = [
         "@raze__atty__0_2_14//:atty",
         "@raze__bitflags__1_3_2//:bitflags",
-        "@raze__clap_lex__0_2_0//:clap_lex",
-        "@raze__indexmap__1_8_2//:indexmap",
-        "@raze__lazy_static__1_4_0//:lazy_static",
+        "@raze__clap_lex__0_2_2//:clap_lex",
+        "@raze__indexmap__1_9_0//:indexmap",
+        "@raze__once_cell__1_12_0//:once_cell",
         "@raze__strsim__0_10_0//:strsim",
         "@raze__termcolor__1_1_3//:termcolor",
         "@raze__textwrap__0_15_0//:textwrap",

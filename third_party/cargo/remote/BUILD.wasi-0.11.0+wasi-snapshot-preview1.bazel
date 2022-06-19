@@ -26,15 +26,17 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # Apache-2.0 from expression "Apache-2.0 OR MIT"
+    "notice",  # Apache-2.0 from expression "Apache-2.0 OR (Apache-2.0 OR MIT)"
 ])
 
 # Generated Targets
 
-rust_proc_macro(
-    name = "pin_project_internal",
+rust_library(
+    name = "wasi",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "default",
+        "std",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -44,15 +46,13 @@ rust_proc_macro(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=pin-project-internal",
+        "crate-name=wasi",
         "manual",
     ],
-    version = "1.0.10",
+    version = "0.11.0+wasi-snapshot-preview1",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__proc_macro2__1_0_39//:proc_macro2",
-        "@raze__quote__1_0_19//:quote",
-        "@raze__syn__1_0_98//:syn",
     ],
 )
+
