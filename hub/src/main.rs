@@ -73,6 +73,8 @@ struct Opts {
     #[clap(long)]
     backup_interval_min: Option<u32>,
     #[clap(long)]
+    backup_ssh_recipients_file: Option<PathBuf>,
+    #[clap(long)]
     skip_compress_mime: Option<Vec<String>>,
     #[clap(long)]
     cache_ttl_sec: Option<u64>,
@@ -135,6 +137,7 @@ fn main() -> Result<()> {
     let backup_dir = opts.backup_dir.clone();
     let metrics_dir = opts.metrics_dir.clone();
     let backup_interval_min = opts.backup_interval_min.clone();
+    let backup_ssh_recipients_file = opts.backup_ssh_recipients_file;
     task::spawn(async move {
         let mut interval = async_std::stream::interval(Duration::from_secs(1));
         let mut next_backup_timestamp =
@@ -149,7 +152,11 @@ fn main() -> Result<()> {
                     if let Some(ref metrics_dir) = metrics_dir {
                         if is_now_after(*next_backup_timestamp_ref) {
                             log::debug!("creating backup");
-                            create_backup(backup_dir.to_path_buf(), metrics_dir.to_path_buf());
+                            create_backup(
+                                backup_dir.to_path_buf(),
+                                metrics_dir.to_path_buf(),
+                                backup_ssh_recipients_file.clone(),
+                            );
                             next_backup_timestamp =
                                 Some(get_next_backup_timestamp(backup_interval_min));
                         }
