@@ -1,5 +1,7 @@
 use crate::common::{get_stem_from_path, TIMESTAMP_SECONDS_FORMAT};
 use chrono::prelude::*;
+use flate2::write::GzEncoder;
+use flate2::Compression;
 use std::fs::read_dir;
 use std::path::PathBuf;
 use std::thread;
@@ -69,14 +71,15 @@ pub fn create_backup(backup_dir: PathBuf, metrics_dir: PathBuf) {
         set_current_thread_priority(ThreadPriority::Min).unwrap();
         let metrics_dir = metrics_dir.canonicalize().unwrap();
         let timestamp_seconds = chrono::Utc::now().format(TIMESTAMP_SECONDS_FORMAT);
-        let backup_tar_file = std::fs::File::create(format!(
-            "{}/{}{}.tar",
+        let backup_file = std::fs::File::create(format!(
+            "{}/{}{}.tar.gz",
             backup_dir.display(),
             BACKUP_FILE_PREFIX,
             timestamp_seconds
         ))
         .unwrap();
-        let mut a = tar::Builder::new(backup_tar_file);
+        let enc = GzEncoder::new(backup_file, Compression::default());
+        let mut a = tar::Builder::new(enc);
         a.append_dir_all(
             metrics_dir.as_path().file_name().unwrap(),
             metrics_dir.as_path(),
