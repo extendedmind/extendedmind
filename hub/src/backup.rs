@@ -1,4 +1,4 @@
-use crate::common::{get_stem_from_path, TIMESTAMP_SECONDS_FORMAT};
+use crate::common::{get_stem_from_path, TIMESTAMP_SECONDS_FORMAT, TIMESTAMP_SECONDS_FORMAT_LEN};
 use chrono::prelude::*;
 use flate2::write::GzEncoder;
 use flate2::Compression;
@@ -45,7 +45,8 @@ pub fn get_next_backup_timestamp_on_launch(
             Utc::now() + chrono::Duration::minutes(backup_interval_min)
         } else {
             let previous_backup_timestamp = get_stem_from_path(paths.get(paths.len() - 1).unwrap())
-                [(BACKUP_FILE_PREFIX.len())..]
+                [BACKUP_FILE_PREFIX.len()
+                    ..(BACKUP_FILE_PREFIX.len() + TIMESTAMP_SECONDS_FORMAT_LEN)]
                 .to_string();
             let previous_backup = Utc
                 .datetime_from_str(
@@ -78,7 +79,7 @@ pub fn create_backup(backup_dir: PathBuf, metrics_dir: PathBuf) {
             timestamp_seconds
         ))
         .unwrap();
-        let enc = GzEncoder::new(backup_file, Compression::default());
+        let enc = GzEncoder::new(backup_file, Compression::best());
         let mut a = tar::Builder::new(enc);
         a.append_dir_all(
             metrics_dir.as_path().file_name().unwrap(),
