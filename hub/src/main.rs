@@ -172,7 +172,7 @@ fn main() -> Result<()> {
                 if let Some(ref backup_dir) = backup_dir {
                     if let Some(ref metrics_dir) = metrics_dir {
                         if is_now_after(*next_backup_timestamp_ref) {
-                            log::debug!("creating backup");
+                            log::info!("Creating backup");
                             create_backup(
                                 backup_dir.to_path_buf(),
                                 metrics_dir.to_path_buf(),

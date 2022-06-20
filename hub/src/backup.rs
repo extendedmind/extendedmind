@@ -3,7 +3,7 @@ use age::cli_common::file_io;
 use chrono::prelude::*;
 use flate2::write::GzEncoder;
 use flate2::Compression;
-use lettre::message::{header, Attachment, Body, Message, SinglePart};
+use lettre::message::{Attachment, Body, Message};
 use lettre::transport::smtp::authentication::Credentials;
 use lettre::transport::smtp::SmtpTransport;
 use lettre::Transport;
@@ -22,7 +22,7 @@ pub fn get_next_backup_timestamp(backup_interval_min: Option<u32>) -> i64 {
         .unwrap_or(DEFAULT_BACKUP_INTERVAL_MIN)
         .into();
     let next_backup = Utc::now() + chrono::Duration::minutes(backup_interval_min);
-    log::debug!("Next backup timestamp: {}", next_backup);
+    log::info!("Next backup timestamp: {}", next_backup);
     next_backup.timestamp_millis()
 }
 
@@ -63,7 +63,7 @@ pub fn get_next_backup_timestamp_on_launch(
                 .unwrap();
             previous_backup + chrono::Duration::minutes(backup_interval_min)
         };
-        log::debug!("Next backup timestamp is after: {}", next_backup);
+        log::info!("Next backup timestamp is after: {}", next_backup);
         return Some(next_backup.timestamp_millis());
     }
     None
