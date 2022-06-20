@@ -365,7 +365,7 @@ alias(
 
 alias(
     name = "tide_compress",
-    actual = "@raze__tide_compress__0_10_1//:tide_compress",
+    actual = "@raze__tide_compress__0_9_0//:tide_compress",
     tags = [
         "cargo-raze",
         "manual",

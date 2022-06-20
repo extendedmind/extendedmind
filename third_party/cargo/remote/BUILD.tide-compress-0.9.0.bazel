@@ -26,17 +26,20 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT"
+    "restricted",  # BlueOak-1.0.0 from expression "BlueOak-1.0.0"
 ])
 
 # Generated Targets
 
-# Unsupported target "pipe" with type "bench" omitted
-
 rust_library(
-    name = "sluice",
+    name = "tide_compress",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "all",
+        "brotli",
+        "default",
+        "deflate",
+        "gzip",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -46,18 +49,23 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=sluice",
+        "crate-name=tide-compress",
         "manual",
     ],
-    version = "0.5.5",
+    version = "0.9.0",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__async_channel__1_6_1//:async_channel",
-        "@raze__futures_core__0_3_21//:futures_core",
-        "@raze__futures_io__0_3_21//:futures_io",
+        "@raze__async_compression__0_3_14//:async_compression",
+        "@raze__futures_lite__1_12_0//:futures_lite",
+        "@raze__http_types__2_12_0//:http_types",
+        "@raze__tide__0_16_0//:tide",
     ],
 )
 
 
-# Unsupported target "pipe" with type "test" omitted
+# Unsupported target "compressed" with type "test" omitted
+
+# Unsupported target "existing-encoding" with type "test" omitted
+
+# Unsupported target "unencoded" with type "test" omitted
