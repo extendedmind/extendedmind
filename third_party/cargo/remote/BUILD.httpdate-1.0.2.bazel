@@ -26,13 +26,15 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT"
+    "notice",  # MIT from expression "MIT OR Apache-2.0"
 ])
 
 # Generated Targets
 
-rust_proc_macro(
-    name = "tracing_attributes",
+# Unsupported target "benchmarks" with type "bench" omitted
+
+rust_library(
+    name = "httpdate",
     srcs = glob(["**/*.rs"]),
     crate_features = [
     ],
@@ -44,37 +46,13 @@ rust_proc_macro(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=tracing-attributes",
+        "crate-name=httpdate",
         "manual",
     ],
-    version = "0.1.21",
+    version = "1.0.2",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__proc_macro2__1_0_40//:proc_macro2",
-        "@raze__quote__1_0_20//:quote",
-        "@raze__syn__1_0_98//:syn",
     ],
 )
 
-# Unsupported target "async_fn" with type "test" omitted
-
-# Unsupported target "destructuring" with type "test" omitted
-
-# Unsupported target "err" with type "test" omitted
-
-# Unsupported target "fields" with type "test" omitted
-
-# Unsupported target "follows_from" with type "test" omitted
-
-# Unsupported target "instrument" with type "test" omitted
-
-# Unsupported target "levels" with type "test" omitted
-
-# Unsupported target "names" with type "test" omitted
-
-# Unsupported target "parents" with type "test" omitted
-
-# Unsupported target "ret" with type "test" omitted
-
-# Unsupported target "targets" with type "test" omitted

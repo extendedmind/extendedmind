@@ -38,7 +38,7 @@ load(
 )
 
 cargo_build_script(
-    name = "proc_macro2_build_script",
+    name = "quote_build_script",
     srcs = glob(["**/*.rs"]),
     build_script_env = {
     },
@@ -56,14 +56,14 @@ cargo_build_script(
         "cargo-raze",
         "manual",
     ],
-    version = "1.0.39",
+    version = "1.0.20",
     visibility = ["//visibility:private"],
     deps = [
     ],
 )
 
 rust_library(
-    name = "proc_macro2",
+    name = "quote",
     srcs = glob(["**/*.rs"]),
     crate_features = [
         "default",
@@ -77,25 +77,19 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=proc-macro2",
+        "crate-name=quote",
         "manual",
     ],
-    version = "1.0.39",
+    version = "1.0.20",
 
     # buildifier: leave-alone
     deps = [
-        ":proc_macro2_build_script",
-        "@raze__unicode_ident__1_0_1//:unicode_ident",
+        ":quote_build_script",
+        "@raze__proc_macro2__1_0_40//:proc_macro2",
     ],
 )
 
 
-# Unsupported target "comments" with type "test" omitted
-
-# Unsupported target "features" with type "test" omitted
-
-# Unsupported target "marker" with type "test" omitted
+# Unsupported target "compiletest" with type "test" omitted
 
 # Unsupported target "test" with type "test" omitted
-
-# Unsupported target "test_fmt" with type "test" omitted

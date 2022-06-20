@@ -54,7 +54,7 @@ rust_library(
         "crate-name=rustls-acme",
         "manual",
     ],
-    version = "0.3.0-beta.4",
+    version = "0.3.0",
 
     # buildifier: leave-alone
     deps = [

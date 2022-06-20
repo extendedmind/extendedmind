@@ -53,7 +53,7 @@ rust_proc_macro(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__quote__1_0_19//:quote",
+        "@raze__quote__1_0_20//:quote",
         "@raze__syn__1_0_98//:syn",
     ],
 )

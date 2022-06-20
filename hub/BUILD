@@ -30,6 +30,7 @@ rust_binary(
             "//third_party/cargo:tar",
             "//third_party/cargo:flate2",
             "//third_party/cargo:age",
+            "//third_party/cargo:lettre",
             "//third_party/cargo:wildmatch",
             "//third_party/cargo:html_escape",
             "//third_party/cargo:async_std",

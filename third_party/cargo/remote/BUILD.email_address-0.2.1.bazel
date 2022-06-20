@@ -26,17 +26,15 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT OR Apache-2.0"
+    "notice",  # MIT from expression "MIT"
 ])
 
 # Generated Targets
 
 rust_library(
-    name = "quote",
+    name = "email_address",
     srcs = glob(["**/*.rs"]),
     crate_features = [
-        "default",
-        "proc-macro",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -46,18 +44,13 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=quote",
+        "crate-name=email_address",
         "manual",
     ],
-    version = "1.0.19",
+    version = "0.2.1",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__proc_macro2__1_0_39//:proc_macro2",
     ],
 )
 
-
-# Unsupported target "compiletest" with type "test" omitted
-
-# Unsupported target "test" with type "test" omitted

@@ -3,6 +3,10 @@ use age::cli_common::file_io;
 use chrono::prelude::*;
 use flate2::write::GzEncoder;
 use flate2::Compression;
+use lettre::message::{header, Attachment, Body, Message, SinglePart};
+use lettre::transport::smtp::authentication::Credentials;
+use lettre::transport::smtp::SmtpTransport;
+use lettre::Transport;
 use std::fs::File;
 use std::io::BufRead;
 use std::path::PathBuf;
@@ -74,17 +78,20 @@ pub fn create_backup(
     backup_dir: PathBuf,
     metrics_dir: PathBuf,
     backup_ssh_recipients_file: Option<PathBuf>,
+    backup_email_from: Option<String>,
+    backup_email_to: Option<String>,
+    backup_email_smtp_host: Option<String>,
+    backup_email_smtp_username: Option<String>,
+    backup_email_smtp_password: Option<String>,
+    backup_email_smtp_tls_port: Option<u16>,
+    backup_email_smtp_starttls_port: Option<u16>,
 ) {
     thread::spawn(move || {
         set_current_thread_priority(ThreadPriority::Min).unwrap();
         let metrics_dir = metrics_dir.canonicalize().unwrap();
         let timestamp_seconds = chrono::Utc::now().format(TIMESTAMP_SECONDS_FORMAT);
-        let backup_file_str = format!(
-            "{}/{}{}.tar.gz",
-            backup_dir.display(),
-            BACKUP_FILE_PREFIX,
-            timestamp_seconds
-        );
+        let backup_file_name_str = format!("{}{}.tar.gz", BACKUP_FILE_PREFIX, &timestamp_seconds);
+        let backup_file_str = format!("{}/{}", backup_dir.display(), &backup_file_name_str);
         {
             let backup_file = std::fs::File::create(&backup_file_str).unwrap();
             let enc = GzEncoder::new(backup_file, Compression::best());
@@ -130,21 +137,43 @@ pub fn create_backup(
                 }
             }
             if !recipients.is_empty() {
-                log::debug!("Encrypting backup file {}", backup_file_str.clone());
-                let encryptor = age::Encryptor::with_recipients(recipients);
-                let mut input = File::open(&backup_file_str).unwrap();
-                let encrypted_backup_file_str = backup_file_str + ".age";
-                let output = file_io::OutputWriter::new(
-                    Some(encrypted_backup_file_str.clone()),
-                    file_io::OutputFormat::Binary,
-                    0o666,
-                    false,
-                )
-                .unwrap();
-                let mut output = encryptor.wrap_output(output).unwrap();
-                std::io::copy(&mut input, &mut output).unwrap();
-                output.finish().unwrap();
-                log::debug!("Encrypted backup to {}", encrypted_backup_file_str);
+                let encrypted_backup_file_str = format!("{}.age", &backup_file_str);
+                {
+                    log::debug!("Encrypting backup file {}", backup_file_str.clone());
+                    let encryptor = age::Encryptor::with_recipients(recipients);
+                    let mut input = File::open(&backup_file_str).unwrap();
+                    let output = file_io::OutputWriter::new(
+                        Some(encrypted_backup_file_str.clone()),
+                        file_io::OutputFormat::Binary,
+                        0o666,
+                        false,
+                    )
+                    .unwrap();
+                    let mut output = encryptor.wrap_output(output).unwrap();
+                    std::io::copy(&mut input, &mut output).unwrap();
+                    output.finish().unwrap();
+                    log::debug!("Encrypted backup to {}", &encrypted_backup_file_str);
+                }
+                let encrypted_backup_file_name_str = format!("{}.age", &backup_file_name_str);
+                match send_backup_email(
+                    encrypted_backup_file_str,
+                    encrypted_backup_file_name_str,
+                    timestamp_seconds.to_string(),
+                    backup_email_from,
+                    backup_email_to,
+                    backup_email_smtp_host,
+                    backup_email_smtp_username,
+                    backup_email_smtp_password,
+                    backup_email_smtp_tls_port,
+                    backup_email_smtp_starttls_port,
+                ) {
+                    Some(()) => {
+                        log::debug!("Backup email sent successfully");
+                    }
+                    None => {
+                        log::debug!("Skipped sending email");
+                    }
+                }
             } else {
                 log::error!(
                     "Could not find any recipients from backup SSH recipients file {}",
@@ -153,4 +182,59 @@ pub fn create_backup(
             }
         };
     });
+}
+
+fn send_backup_email(
+    encrypted_backup_file_str: String,
+    encrypted_backup_file_name_str: String,
+    encrypted_backup_timestamp_seconds: String,
+    backup_email_from: Option<String>,
+    backup_email_to: Option<String>,
+    backup_email_smtp_host: Option<String>,
+    backup_email_smtp_username: Option<String>,
+    backup_email_smtp_password: Option<String>,
+    backup_email_smtp_tls_port: Option<u16>,
+    backup_email_smtp_starttls_port: Option<u16>,
+) -> Option<()> {
+    let from = backup_email_from?;
+    let to = backup_email_to?;
+    let smtp_host = backup_email_smtp_host?;
+    let smtp_username = backup_email_smtp_username?;
+    let smtp_password = backup_email_smtp_password?;
+    let body = Body::new(std::fs::read(&encrypted_backup_file_str).unwrap());
+
+    let message = Message::builder()
+        .from(from.parse().unwrap())
+        .to(to.parse().unwrap())
+        .subject(format!(
+            "[extendemind hub backup] {}",
+            &encrypted_backup_timestamp_seconds
+        ))
+        .singlepart(
+            Attachment::new(encrypted_backup_file_name_str)
+                .body(body, "application/octet-stream".parse().unwrap()),
+        )
+        .unwrap();
+
+    let mailer = if let Some(starttls_port) = backup_email_smtp_starttls_port {
+        SmtpTransport::starttls_relay(&smtp_host)
+            .unwrap()
+            .credentials(Credentials::new(smtp_username, smtp_password))
+            .port(starttls_port)
+    } else {
+        // Default to TLS
+        let builder = SmtpTransport::relay(&smtp_host)
+            .unwrap()
+            .credentials(Credentials::new(smtp_username, smtp_password));
+        if let Some(tls_port) = backup_email_smtp_tls_port {
+            builder.port(tls_port)
+        } else {
+            builder
+        }
+    }
+    .build();
+    let result = mailer.send(&message).unwrap();
+    let result_message: Vec<&str> = result.message().collect();
+    log::debug!("Sent email, got response message: {:?}", &result_message);
+    Some(())
 }
