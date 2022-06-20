@@ -32,24 +32,11 @@ licenses([
 # Generated Targets
 
 rust_library(
-    name = "windows_sys",
+    name = "siphasher",
     srcs = glob(["**/*.rs"]),
-    aliases = {
-    },
     crate_features = [
-        "Win32",
-        "Win32_Foundation",
-        "Win32_Security",
-        "Win32_Security_Authentication",
-        "Win32_Security_Authentication_Identity",
-        "Win32_Security_Credentials",
-        "Win32_Security_Cryptography",
-        "Win32_System",
-        "Win32_System_LibraryLoader",
-        "Win32_System_Memory",
-        "Win32_System_SystemServices",
-        "Win32_System_WindowsProgramming",
         "default",
+        "std",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -59,21 +46,13 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=windows-sys",
+        "crate-name=siphasher",
         "manual",
     ],
-    version = "0.36.1",
+    version = "0.3.10",
 
     # buildifier: leave-alone
     deps = [
-    ] + selects.with_or({
-        # x86_64-pc-windows-msvc
-        (
-            "@rules_rust//rust/platform:x86_64-pc-windows-msvc",
-        ): [
-            "@raze__windows_x86_64_msvc__0_36_1//:windows_x86_64_msvc",
-        ],
-        "//conditions:default": [],
-    }),
+    ],
 )
 

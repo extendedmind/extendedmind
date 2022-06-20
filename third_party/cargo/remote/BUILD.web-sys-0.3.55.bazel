@@ -45,6 +45,7 @@ rust_library(
         "MessageEvent",
         "Performance",
         "PerformanceTiming",
+        "TextDecoder",
         "WebSocket",
         "Window",
         "Worker",

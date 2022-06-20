@@ -31,17 +31,30 @@ licenses([
 
 # Generated Targets
 
-# Unsupported target "print_client_debug" with type "example" omitted
+# Unsupported target "browser" with type "example" omitted
+
+# Unsupported target "hello_world" with type "example" omitted
+
+# Unsupported target "middleware" with type "example" omitted
+
+# Unsupported target "next_reuse" with type "example" omitted
+
+# Unsupported target "persistent" with type "example" omitted
+
+# Unsupported target "post" with type "example" omitted
 
 rust_library(
-    name = "http_client",
+    name = "surf",
     srcs = glob(["**/*.rs"]),
-    aliases = {
-    },
     crate_features = [
-        "async-std",
-        "curl_client",
-        "isahc",
+        "curl-client",
+        "default",
+        "default-client",
+        "encoding",
+        "encoding_rs",
+        "middleware-logger",
+        "once_cell",
+        "web-sys",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -54,33 +67,28 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=http-client",
+        "crate-name=surf",
         "manual",
     ],
-    version = "6.5.2",
+    version = "2.3.2",
 
     # buildifier: leave-alone
     deps = [
         "@raze__async_std__1_12_0//:async_std",
         "@raze__cfg_if__1_0_0//:cfg_if",
+        "@raze__encoding_rs__0_8_31//:encoding_rs",
+        "@raze__futures_util__0_3_21//:futures_util",
+        "@raze__getrandom__0_2_7//:getrandom",
+        "@raze__http_client__6_5_2//:http_client",
         "@raze__http_types__2_12_0//:http_types",
         "@raze__log__0_4_17//:log",
-    ] + selects.with_or({
-        # cfg(not(target_arch = "wasm32"))
-        (
-            "@rules_rust//rust/platform:x86_64-apple-darwin",
-            "@rules_rust//rust/platform:x86_64-pc-windows-msvc",
-            "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
-            "@rules_rust//rust/platform:aarch64-linux-android",
-            "@rules_rust//rust/platform:aarch64-unknown-linux-gnu",
-            "@rules_rust//rust/platform:arm-linux-androideabi",
-            "@rules_rust//rust/platform:i686-linux-android",
-            "@rules_rust//rust/platform:x86_64-linux-android",
-        ): [
-            "@raze__isahc__0_9_14//:isahc",
-        ],
-        "//conditions:default": [],
-    }),
+        "@raze__mime_guess__2_0_4//:mime_guess",
+        "@raze__once_cell__1_12_0//:once_cell",
+        "@raze__pin_project_lite__0_2_9//:pin_project_lite",
+        "@raze__serde__1_0_137//:serde",
+        "@raze__serde_json__1_0_81//:serde_json",
+        "@raze__web_sys__0_3_55//:web_sys",
+    ],
 )
 
 

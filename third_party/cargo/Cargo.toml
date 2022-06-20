@@ -25,7 +25,7 @@ async-attributes = "1.1.2"
 async-trait = "0.1.51"
 tide = "0.16.0"
 tide-websockets = "0.4.0"
-tide-compress = "0.9.0"
+tide-compress = "0.10.1"
 tide-rustls = "0.3.0"
 tide-acme = "0.2.0-beta.1"
 moka = { version = "0.8.4", default-features = false, features = ["atomic64", "future"] }

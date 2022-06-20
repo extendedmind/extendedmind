@@ -26,29 +26,47 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT OR Apache-2.0"
+    "notice",  # Apache-2.0 from expression "(Apache-2.0 OR MIT) AND BSD-3-Clause"
 ])
 
 # Generated Targets
+# buildifier: disable=out-of-order-load
+# buildifier: disable=load-on-top
+load(
+    "@rules_rust//cargo:cargo_build_script.bzl",
+    "cargo_build_script",
+)
 
-rust_library(
-    name = "windows_sys",
+cargo_build_script(
+    name = "encoding_rs_build_script",
     srcs = glob(["**/*.rs"]),
-    aliases = {
+    build_script_env = {
     },
     crate_features = [
-        "Win32",
-        "Win32_Foundation",
-        "Win32_Security",
-        "Win32_Security_Authentication",
-        "Win32_Security_Authentication_Identity",
-        "Win32_Security_Credentials",
-        "Win32_Security_Cryptography",
-        "Win32_System",
-        "Win32_System_LibraryLoader",
-        "Win32_System_Memory",
-        "Win32_System_SystemServices",
-        "Win32_System_WindowsProgramming",
+        "alloc",
+        "default",
+    ],
+    crate_root = "build.rs",
+    data = glob(["**"]),
+    edition = "2018",
+    rustc_flags = [
+        "--cap-lints=allow",
+    ],
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+    version = "0.8.31",
+    visibility = ["//visibility:private"],
+    deps = [
+    ],
+)
+
+rust_library(
+    name = "encoding_rs",
+    srcs = glob(["**/*.rs"]),
+    crate_features = [
+        "alloc",
         "default",
     ],
     crate_root = "src/lib.rs",
@@ -59,21 +77,15 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=windows-sys",
+        "crate-name=encoding_rs",
         "manual",
     ],
-    version = "0.36.1",
+    version = "0.8.31",
 
     # buildifier: leave-alone
     deps = [
-    ] + selects.with_or({
-        # x86_64-pc-windows-msvc
-        (
-            "@rules_rust//rust/platform:x86_64-pc-windows-msvc",
-        ): [
-            "@raze__windows_x86_64_msvc__0_36_1//:windows_x86_64_msvc",
-        ],
-        "//conditions:default": [],
-    }),
+        ":encoding_rs_build_script",
+        "@raze__cfg_if__1_0_0//:cfg_if",
+    ],
 )
 

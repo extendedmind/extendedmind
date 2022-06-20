@@ -17,7 +17,7 @@ futures = "^0.3.5"
 async-std = { version = "1.6.2", features = ["unstable"] }
 tide = "0.16.0"
 tide-websockets = "0.4.0"
-tide-compress = "0.9.0"
+tide-compress = "0.10.1"
 tide-rustls = "0.3.0"
 tide-acme = "0.2.0-beta.1"
 thread-priority = "0.8.2"
