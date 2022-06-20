@@ -317,8 +317,14 @@ where
                 let file_path = file_path.unwrap();
                 match Body::from_file(&file_path).await {
                     Ok(body) => {
+                        log::debug!("File path is {:?}", &file_path.extension());
                         let body = self.process_body_inlining(&url_path, body).await;
-                        let mime = body.mime().clone();
+                        // For some reason this does not work by default, so add it here
+                        let mime = if file_path.extension() == Some(OsStr::new("atom")) {
+                            Mime::from("application/atom+xml")
+                        } else {
+                            body.mime().clone()
+                        };
                         let body_as_bytes = body.into_bytes().await.unwrap();
                         self.insert_body_to_cache(url_path, body_as_bytes.clone(), mime.clone())
                             .await;
