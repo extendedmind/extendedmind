@@ -61,12 +61,12 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__curve25519_dalek__3_2_1//:curve25519_dalek",
+        "@raze__curve25519_dalek__3_2_0//:curve25519_dalek",
         "@raze__ed25519__1_5_2//:ed25519",
         "@raze__rand__0_7_3//:rand",
         "@raze__serde__1_0_137//:serde",
         "@raze__sha2__0_9_9//:sha2",
-        "@raze__zeroize__1_3_0//:zeroize",
+        "@raze__zeroize__1_4_3//:zeroize",
     ],
 )
 

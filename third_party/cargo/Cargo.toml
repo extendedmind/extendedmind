@@ -31,6 +31,10 @@ tide-acme = "0.2.0-beta.1"
 moka = { version = "0.8.4", default-features = false, features = ["atomic64", "future"] }
 wildmatch = "2.1.0"
 serde = "1.0.137"
+tar = "0.4.38"
+flate2 = "1.0.24"
+age = { version = "0.8.1", features = ["ssh", "cli-common"] }
+lettre = { version = "0.10.0-rc.7", default-features = false, features = ["smtp-transport", "rustls-tls", "hostname", "builder"] }
 html-escape = "0.2.11"
 ctrlc = { version = "3.0", features = ["termination"] }
 async-ctrlc = "1.2.0"
@@ -136,6 +140,10 @@ compile_data_attr = "glob([\"README.md\"])"
 compile_data_attr = "glob([\"**/*.der\"])"
 [package.metadata.raze.crates.webpki.'*']
 compile_data_attr = "glob([\"**/*.der\"])"
+
+# Needed for age to build
+[package.metadata.raze.crates.age.'*']
+compile_data_attr = "glob([\"Cargo.toml\",\"i18n.toml\",\"i18n/**/*.*\",\"assets/**\"])"
 
 [package.metadata.raze]
 workspace_path = "//third_party/cargo"

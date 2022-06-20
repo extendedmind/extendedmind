@@ -66,7 +66,7 @@ rust_library(
         "@raze__sha2__0_9_9//:sha2",
         "@raze__smol_str__0_1_23//:smol_str",
         "@raze__thiserror__1_0_31//:thiserror",
-        "@raze__tracing__0_1_34//:tracing",
+        "@raze__tracing__0_1_35//:tracing",
         "@raze__wasm_bindgen__0_2_78//:wasm_bindgen",
         "@raze__web_sys__0_3_55//:web_sys",
     ],

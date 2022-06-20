@@ -12,12 +12,16 @@ use std::process;
 use std::sync::atomic::AtomicBool;
 use std::time::Duration;
 
+mod backup;
 mod common;
 mod http;
 mod logging;
 mod metrics;
 mod server;
 
+use backup::{
+    create_backup, get_next_backup_timestamp, get_next_backup_timestamp_on_launch, is_now_after,
+};
 use common::{ChannelSenderReceiver, State, SystemCommand};
 use logging::setup_logging;
 use metrics::process_metrics;
@@ -64,6 +68,26 @@ struct Opts {
     metrics_precision: Option<u8>,
     #[clap(long)]
     metrics_endpoint: Option<String>,
+    #[clap(long)]
+    backup_dir: Option<PathBuf>,
+    #[clap(long)]
+    backup_interval_min: Option<u32>,
+    #[clap(long)]
+    backup_ssh_recipients_file: Option<PathBuf>,
+    #[clap(long)]
+    backup_email_from: Option<String>,
+    #[clap(long)]
+    backup_email_to: Option<String>,
+    #[clap(long)]
+    backup_email_smtp_host: Option<String>,
+    #[clap(long)]
+    backup_email_smtp_username: Option<String>,
+    #[clap(long)]
+    backup_email_smtp_password: Option<String>,
+    #[clap(long)]
+    backup_email_smtp_tls_port: Option<u16>,
+    #[clap(long)]
+    backup_email_smtp_starttls_port: Option<u16>,
     #[clap(long)]
     skip_compress_mime: Option<Vec<String>>,
     #[clap(long)]
@@ -124,14 +148,49 @@ fn main() -> Result<()> {
 
     // Need to start a system executor to send the WakeUp command, we send it once per second so
     // that the listener will send a WS Ping when it wants to in a 1s delay.
+    let backup_dir = opts.backup_dir.clone();
+    let metrics_dir = opts.metrics_dir.clone();
+    let backup_interval_min = opts.backup_interval_min.clone();
+    let backup_ssh_recipients_file = opts.backup_ssh_recipients_file;
+    let backup_email_from = opts.backup_email_from;
+    let backup_email_to = opts.backup_email_to;
+    let backup_email_smtp_host = opts.backup_email_smtp_host;
+    let backup_email_smtp_username = opts.backup_email_smtp_username;
+    let backup_email_smtp_password = opts.backup_email_smtp_password;
+    let backup_email_smtp_tls_port = opts.backup_email_smtp_tls_port;
+    let backup_email_smtp_starttls_port = opts.backup_email_smtp_starttls_port;
     task::spawn(async move {
         let mut interval = async_std::stream::interval(Duration::from_secs(1));
+        let mut next_backup_timestamp =
+            get_next_backup_timestamp_on_launch(backup_dir.clone(), backup_interval_min);
         while interval.next().await.is_some() && !*abort.as_ref().lock().await.get_mut() {
-            task::sleep(Duration::from_millis(1000)).await;
             system_command_sender
                 .send(Ok(Bytes::from_static(&[SystemCommand::WakeUp as u8])))
                 .await
                 .unwrap();
+            if let Some(ref next_backup_timestamp_ref) = next_backup_timestamp {
+                if let Some(ref backup_dir) = backup_dir {
+                    if let Some(ref metrics_dir) = metrics_dir {
+                        if is_now_after(*next_backup_timestamp_ref) {
+                            log::info!("Creating backup");
+                            create_backup(
+                                backup_dir.to_path_buf(),
+                                metrics_dir.to_path_buf(),
+                                backup_ssh_recipients_file.clone(),
+                                backup_email_from.clone(),
+                                backup_email_to.clone(),
+                                backup_email_smtp_host.clone(),
+                                backup_email_smtp_username.clone(),
+                                backup_email_smtp_password.clone(),
+                                backup_email_smtp_tls_port.clone(),
+                                backup_email_smtp_starttls_port.clone(),
+                            );
+                            next_backup_timestamp =
+                                Some(get_next_backup_timestamp(backup_interval_min));
+                        }
+                    }
+                }
+            }
         }
     });
 

@@ -1,0 +1,87 @@
+"""
+@generated
+cargo-raze crate build file.
+
+DO NOT EDIT! Replaced on runs of cargo-raze
+"""
+
+# buildifier: disable=load
+load("@bazel_skylib//lib:selects.bzl", "selects")
+
+# buildifier: disable=load
+load(
+    "@rules_rust//rust:defs.bzl",
+    "rust_binary",
+    "rust_library",
+    "rust_proc_macro",
+    "rust_test",
+)
+
+package(default_visibility = [
+    # Public for visibility by "@raze__crate__version//" targets.
+    #
+    # Prefer access through "//third_party/cargo", which limits external
+    # visibility to explicit Cargo.toml dependencies.
+    "//visibility:public",
+])
+
+licenses([
+    "notice",  # MIT from expression "MIT"
+])
+
+# Generated Targets
+
+# Unsupported target "actix" with type "example" omitted
+
+# Unsupported target "axum" with type "example" omitted
+
+# Unsupported target "basic" with type "example" omitted
+
+# Unsupported target "poem" with type "example" omitted
+
+# Unsupported target "rocket" with type "example" omitted
+
+# Unsupported target "salvo" with type "example" omitted
+
+# Unsupported target "warp" with type "example" omitted
+
+rust_library(
+    name = "rust_embed",
+    srcs = glob(["**/*.rs"]),
+    crate_features = [
+    ],
+    crate_root = "src/lib.rs",
+    data = [],
+    edition = "2018",
+    proc_macro_deps = [
+        "@raze__rust_embed_impl__6_2_0//:rust_embed_impl",
+    ],
+    rustc_flags = [
+        "--cap-lints=allow",
+    ],
+    tags = [
+        "cargo-raze",
+        "crate-name=rust-embed",
+        "manual",
+    ],
+    version = "6.4.0",
+
+    # buildifier: leave-alone
+    deps = [
+        "@raze__rust_embed_utils__7_2_0//:rust_embed_utils",
+        "@raze__walkdir__2_3_2//:walkdir",
+    ],
+)
+
+
+# Unsupported target "include_exclude" with type "test" omitted
+
+# Unsupported target "interpolated_path" with type "test" omitted
+
+# Unsupported target "lib" with type "test" omitted
+
+# Unsupported target "metadata" with type "test" omitted
+
+# Unsupported target "path_traversal_attack" with type "test" omitted
+
+# Unsupported target "prefix" with type "test" omitted

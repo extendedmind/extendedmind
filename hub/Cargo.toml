@@ -24,6 +24,10 @@ thread-priority = "0.8.2"
 serde = "1.0.137"
 wildmatch = "2.1.0"
 html-escape = "0.2.11"
+tar = "0.4.38"
+flate2 = "1.0.24"
+age = { version = "0.8.1", features = ["ssh", "cli-common"] }
+lettre = { version = "0.10.0-rc.7", default-features = false, features = ["smtp-transport", "rustls-tls", "hostname", "builder"] }
 moka = { version = "0.8.4", default-features = false, features = ["atomic64", "future"] }
 async-tungstenite = { version = "0.13.1", features = ["async-std-runtime"] }
 async-trait = "0.1.51"

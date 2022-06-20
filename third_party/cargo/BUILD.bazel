@@ -13,8 +13,17 @@ licenses([
 
 # Aliased targets
 alias(
+    name = "age",
+    actual = "@raze__age__0_8_1//:age",
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+)
+
+alias(
     name = "anyhow",
-    actual = "@raze__anyhow__1_0_57//:anyhow",
+    actual = "@raze__anyhow__1_0_58//:anyhow",
     tags = [
         "cargo-raze",
         "manual",
@@ -41,7 +50,7 @@ alias(
 
 alias(
     name = "async_std",
-    actual = "@raze__async_std__1_11_0//:async_std",
+    actual = "@raze__async_std__1_12_0//:async_std",
     tags = [
         "cargo-raze",
         "manual",
@@ -50,7 +59,7 @@ alias(
 
 alias(
     name = "async_trait",
-    actual = "@raze__async_trait__0_1_53//:async_trait",
+    actual = "@raze__async_trait__0_1_56//:async_trait",
     tags = [
         "cargo-raze",
         "manual",
@@ -104,7 +113,7 @@ alias(
 
 alias(
     name = "clap",
-    actual = "@raze__clap__3_1_18//:clap",
+    actual = "@raze__clap__3_2_5//:clap",
     tags = [
         "cargo-raze",
         "manual",
@@ -159,6 +168,15 @@ alias(
 alias(
     name = "fern",
     actual = "@raze__fern__0_6_1//:fern",
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+)
+
+alias(
+    name = "flate2",
+    actual = "@raze__flate2__1_0_24//:flate2",
     tags = [
         "cargo-raze",
         "manual",
@@ -222,6 +240,15 @@ alias(
 alias(
     name = "js_sys",
     actual = "@raze__js_sys__0_3_55//:js_sys",
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+)
+
+alias(
+    name = "lettre",
+    actual = "@raze__lettre__0_10_0_rc_7//:lettre",
     tags = [
         "cargo-raze",
         "manual",
@@ -301,6 +328,15 @@ alias(
 )
 
 alias(
+    name = "tar",
+    actual = "@raze__tar__0_4_38//:tar",
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+)
+
+alias(
     name = "thread_priority",
     actual = "@raze__thread_priority__0_8_2//:thread_priority",
     tags = [
@@ -320,7 +356,7 @@ alias(
 
 alias(
     name = "tide_acme",
-    actual = "@raze__tide_acme__0_2_0_beta_1//:tide_acme",
+    actual = "@raze__tide_acme__0_2_0//:tide_acme",
     tags = [
         "cargo-raze",
         "manual",

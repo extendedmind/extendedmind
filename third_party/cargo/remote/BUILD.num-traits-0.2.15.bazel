@@ -45,6 +45,7 @@ cargo_build_script(
     crate_features = [
         "default",
         "i128",
+        "libm",
         "std",
     ],
     crate_root = "build.rs",
@@ -70,6 +71,7 @@ rust_library(
     crate_features = [
         "default",
         "i128",
+        "libm",
         "std",
     ],
     crate_root = "src/lib.rs",
@@ -88,6 +90,7 @@ rust_library(
     # buildifier: leave-alone
     deps = [
         ":num_traits_build_script",
+        "@raze__libm__0_2_2//:libm",
     ],
 )
 
