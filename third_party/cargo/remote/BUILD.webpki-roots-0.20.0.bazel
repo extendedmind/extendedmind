@@ -26,41 +26,60 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT OR Apache-2.0"
+    "reciprocal",  # MPL-2.0 from expression "MPL-2.0"
 ])
 
 # Generated Targets
 
-# Unsupported target "print_client_debug" with type "example" omitted
+rust_binary(
+    # Prefix bin name to disambiguate from (probable) collision with lib name
+    # N.B.: The exact form of this is subject to change.
+    name = "cargo_bin_process_cert",
+    srcs = glob(["**/*.rs"]),
+    crate_features = [
+    ],
+    crate_root = "src/bin/process_cert.rs",
+    data = [],
+    edition = "2018",
+    rustc_flags = [
+        "--cap-lints=allow",
+    ],
+    tags = [
+        "cargo-raze",
+        "crate-name=process_cert",
+        "manual",
+    ],
+    version = "0.20.0",
+
+    # buildifier: leave-alone
+    deps = [
+        ":webpki_roots",
+        "@raze__webpki__0_21_4//:webpki",
+    ],
+)
+
 
 rust_library(
-    name = "http_client",
+    name = "webpki_roots",
     srcs = glob(["**/*.rs"]),
     crate_features = [
     ],
     crate_root = "src/lib.rs",
     data = [],
     edition = "2018",
-    proc_macro_deps = [
-        "@raze__async_trait__0_1_56//:async_trait",
-    ],
     rustc_flags = [
         "--cap-lints=allow",
     ],
     tags = [
         "cargo-raze",
-        "crate-name=http-client",
+        "crate-name=webpki-roots",
         "manual",
     ],
-    version = "6.5.2",
+    version = "0.20.0",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__cfg_if__1_0_0//:cfg_if",
-        "@raze__http_types__2_12_0//:http_types",
-        "@raze__log__0_4_17//:log",
+        "@raze__webpki__0_21_4//:webpki",
     ],
 )
 
-
-# Unsupported target "test" with type "test" omitted

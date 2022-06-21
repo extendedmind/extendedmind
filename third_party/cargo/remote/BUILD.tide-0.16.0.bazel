@@ -104,7 +104,7 @@ rust_library(
         "@raze__async_std__1_12_0//:async_std",
         "@raze__femme__2_2_1//:femme",
         "@raze__futures_util__0_3_21//:futures_util",
-        "@raze__http_client__6_5_2//:http_client",
+        "@raze__http_client__6_5_3//:http_client",
         "@raze__http_types__2_12_0//:http_types",
         "@raze__kv_log_macro__1_0_7//:kv_log_macro",
         "@raze__log__0_4_17//:log",

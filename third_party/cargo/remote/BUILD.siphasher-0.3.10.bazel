@@ -26,40 +26,33 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # Apache-2.0 from expression "Apache-2.0 OR MIT"
+    "notice",  # MIT from expression "MIT OR Apache-2.0"
 ])
 
 # Generated Targets
 
 rust_library(
-    name = "async_global_executor",
+    name = "siphasher",
     srcs = glob(["**/*.rs"]),
     crate_features = [
-        "async-io",
         "default",
+        "std",
     ],
     crate_root = "src/lib.rs",
     data = [],
-    edition = "2021",
+    edition = "2018",
     rustc_flags = [
         "--cap-lints=allow",
     ],
     tags = [
         "cargo-raze",
-        "crate-name=async-global-executor",
+        "crate-name=siphasher",
         "manual",
     ],
-    version = "2.1.0",
+    version = "0.3.10",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__async_channel__1_6_1//:async_channel",
-        "@raze__async_executor__1_4_1//:async_executor",
-        "@raze__async_io__1_7_0//:async_io",
-        "@raze__async_lock__2_5_0//:async_lock",
-        "@raze__blocking__1_2_0//:blocking",
-        "@raze__futures_lite__1_12_0//:futures_lite",
-        "@raze__once_cell__1_12_0//:once_cell",
     ],
 )
 
