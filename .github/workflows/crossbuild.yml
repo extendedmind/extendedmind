@@ -5,7 +5,8 @@ on:
       - 'main'
     paths-ignore:
       - 'ui/**'
-      - '.github/test.yml'
+      - '.github/workflows/branch-crossbuild.yml'
+      - '.github/workflows/test.yml'
       - '**.md'
       - '**.toml'
       - '**.lock'

@@ -4,7 +4,8 @@ on:
     branches:
       - 'main'
     paths-ignore:
-      - '.github/crossbuild.yml'
+      - '.github/workflows/branch-crossbuild.yml'
+      - '.github/workflows/crossbuild.yml'
       - '**.md'
       - '**.toml'
       - '**.lock'
