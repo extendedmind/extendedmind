@@ -1,5 +1,3 @@
-import preprocess from 'svelte-preprocess';
-import adapter from '@sveltejs/adapter-static';
 import * as path from 'path';
 import * as fs from 'fs';
 

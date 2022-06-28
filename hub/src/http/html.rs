@@ -317,7 +317,6 @@ where
                 let file_path = file_path.unwrap();
                 match Body::from_file(&file_path).await {
                     Ok(body) => {
-                        log::debug!("File path is {:?}", &file_path.extension());
                         let body = self.process_body_inlining(&url_path, body).await;
                         // For some reason this does not work by default, so add it here
                         let mime = if file_path.extension() == Some(OsStr::new("atom")) {

@@ -20,10 +20,11 @@ const config = {
             assets: outputDirectory,
         }),
         paths: {
-            base: '/extendedmind',
+            base: process.env.NODE_ENV == 'development' ?  '' : '/extendedmind',
         },
-        // hydrate the <div id="extendedmind"> element in src/app.html
-        target: '#extendedmind',
+        prerender: {
+            default: true
+        },
         vite: () => {
             return {
                 define: {

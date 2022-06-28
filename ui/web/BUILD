@@ -41,6 +41,7 @@ svelte_kit(
         "@npm//@fontsource/fira-mono",
         "@npm//@lukeed/uuid",
         "@npm//cookie",
+        "@npm//mkdirp",
         "@npm//svelte",
         "@npm//svelte-check",
         "@npm//svelte-preprocess",
